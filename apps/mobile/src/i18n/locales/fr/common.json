@@ -75,7 +75,9 @@
     "placeholderCity": "Dis bonjour à ta ville 👋",
     "placeholderHangout": "Dis-leur que tu es là 🙌",
     "placeholderEvent": "Discute avec les participants 🎉",
-    "placeholderChallenge": "Encourage-les ou donne ton astuce 🔥"
+    "placeholderChallenge": "Encourage-les ou donne ton astuce 🔥",
+    "send": "Envoyer",
+    "emoji": "Émojis"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "La carte des spots arrive bientôt.",
   "firstLaunch": "Un challenge local par jour.",
-  "signUp": "S'inscrire"
+  "signUp": "S'inscrire",
+  "open": "Ouvrir",
+  "camera": {
+    "grant": "Autoriser la caméra",
+    "retake": "Reprendre",
+    "usePhoto": "Utiliser la photo",
+    "flash": "Flash",
+    "flip": "Changer de caméra"
+  }
 }

@@ -8,6 +8,10 @@ import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { IconButton } from '@/ui';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -39,6 +43,8 @@ async function ensureLocalCopy(remoteUrl: string): Promise<string> {
 }
 
 export function ImagePreviewModal({ uri, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('chat');
   const insets = useSafeAreaInsets();
   const translateY = useRef(new Animated.Value(0)).current;
@@ -190,13 +196,8 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
 
         {/* Close button (top-right) - safe-area aware so it never lands under
             the notch / status bar area. */}
-        <TouchableOpacity
-          style={[styles.closeBtn, { top: Math.max(insets.top + 8, 28) }]}
-          onPress={onClose}
-          activeOpacity={0.75}
-        >
-          <Text style={styles.closeIcon}>✕</Text>
-        </TouchableOpacity>
+        <IconButton icon="close" tone="onPhoto" label={t('close', { ns: 'common' })} onPress={onClose}
+                    style={[styles.closeBtn, { top: Math.max(insets.top + 8, 28) }]} />
 
         {/* Action bar - bottom of the lightbox. Two thumb-friendly pill
             buttons. Bottom inset keeps them above the Android nav bar /
@@ -210,8 +211,9 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
             onPress={handleDownload}
             disabled={!!busy}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
-            <Text style={styles.actionIcon}>⬇</Text>
+            <Ionicons name="download-outline" size={18} color={colors.white} />
             <Text style={styles.actionLabel}>{t('actionDownload', { defaultValue: 'Save' })}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -219,8 +221,9 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
             onPress={handleShare}
             disabled={!!busy}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
-            <Text style={styles.actionIcon}>↗</Text>
+            <Ionicons name="share-outline" size={18} color={colors.white} />
             <Text style={styles.actionLabel}>{t('actionShare', { defaultValue: 'Share' })}</Text>
           </TouchableOpacity>
         </View>
@@ -230,69 +233,15 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backdropFill: {
-    backgroundColor: 'rgba(0,0,0,0.95)',
-  },
-  imageWrap: {
-    width:           SW,
-    height:          SH,
-    justifyContent:  'center',
-    alignItems:      'center',
-  },
-  image: {
-    width:  SW,
-    height: SH,
-  },
-  closeBtn: {
-    position:        'absolute',
-    right:           20,
-    width:           36,
-    height:          36,
-    borderRadius:    18,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent:  'center',
-    alignItems:      'center',
-  },
-  closeIcon: {
-    color:      '#fff',
-    fontSize:   15,
-    fontWeight: '700',
-  },
-  actionBar: {
-    position:       'absolute',
-    left:           0,
-    right:          0,
-    flexDirection:  'row',
-    justifyContent: 'center',
-    gap:            12,
-  },
-  actionBtn: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               8,
-    paddingHorizontal: 18,
-    paddingVertical:   11,
-    borderRadius:      24,
-    backgroundColor:   'rgba(255,255,255,0.15)',
-    borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.18)',
-  },
-  actionBtnBusy: {
-    opacity: 0.5,
-  },
-  actionIcon: {
-    color:    '#fff',
-    fontSize: 16,
-  },
-  actionLabel: {
-    color:      '#fff',
-    fontSize:   15,
-    fontWeight: '600',
-  },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop:      { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  backdropFill:  { backgroundColor: c.photoScrim },
+  imageWrap:     { width: SW, height: SH, justifyContent: 'center', alignItems: 'center' },
+  image:         { width: SW, height: SH },
+  closeBtn:      { position: 'absolute', right: 16 },
+  actionBar:     { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 12 },
+  actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18, borderRadius: Radius.full,
+                   backgroundColor: c.photoControl },
+  actionBtnBusy: { opacity: 0.5 },
+  actionLabel:   { color: c.white, fontSize: 15, fontWeight: '700' },
 });

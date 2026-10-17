@@ -74,7 +74,9 @@
     "placeholderEvent": "Chat met de aanwezigen 🎉",
     "placeholderChallenge": "Moedig ze aan of deel je tip 🔥",
     "endedEvent": "Dit event is afgelopen",
-    "closedChallenge": "Deze challenge is gesloten"
+    "closedChallenge": "Deze challenge is gesloten",
+    "send": "Versturen",
+    "emoji": "Emoji’s"
   },
   "modeHeading": "MODUS",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "De kaart met spots komt binnenkort.",
   "firstLaunch": "Eén lokale challenge per dag.",
-  "signUp": "Aanmelden"
+  "signUp": "Aanmelden",
+  "open": "Openen",
+  "camera": {
+    "grant": "Camera toestaan",
+    "retake": "Opnieuw",
+    "usePhoto": "Foto gebruiken",
+    "flash": "Flitser",
+    "flip": "Camera wisselen"
+  }
 }

@@ -22,7 +22,8 @@ import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Button, IconButton } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 // ── Leaflet HTML - loaded in WebView ─────────────────────────────────────────
@@ -50,7 +51,7 @@ const MAP_HTML = `<!DOCTYPE html>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    html,body,#map { width:100%; height:100%; background:#1a1512; }
+    html,body,#map { width:100%; height:100%; background:transparent; }
     .leaflet-control-attribution, .leaflet-control-zoom { display:none !important; }
   </style>
 </head>
@@ -305,11 +306,9 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
         {/* ── Header ── */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose} activeOpacity={0.7}>
-            <Ionicons name="close" size={20} color={colors.text} />
-          </TouchableOpacity>
-          <Text style={styles.title}>{t('locationPicker.title')}</Text>
-          <View style={styles.closeBtn} />
+          <IconButton icon="close" label={t('close')} onPress={onClose} />
+          <Text style={styles.title} accessibilityRole="header">{t('locationPicker.title')}</Text>
+          <View style={styles.headerSpacer} />
         </View>
 
         {/* ── Map ── */}
@@ -318,7 +317,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
           {/* Fixed pin - sits in center, pointer events disabled so map stays draggable */}
           <View style={styles.pinWrap} pointerEvents="none">
-            <Text style={styles.pin}>📍</Text>
+            <Ionicons name="location" size={44} color={colors.primary} />
           </View>
 
           <View style={styles.hintWrap} pointerEvents="none">
@@ -328,25 +327,27 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
           {/* ── Address search overlay (top of map) ── */}
           <View style={styles.searchWrap}>
             <View style={styles.searchBox}>
-              <Ionicons name="search" size={16} color={colors.muted2} />
+              <Ionicons name="search-outline" size={20} color={colors.muted} />
               <TextInput
                 style={styles.searchInput}
                 value={query}
                 onChangeText={onSearchChange}
                 placeholder={t('locationPicker.search')}
-                placeholderTextColor={colors.muted2}
+                placeholderTextColor={colors.muted}
                 returnKeyType="search"
                 autoCorrect={false}
                 autoCapitalize="none"
               />
               {searching ? (
-                <ActivityIndicator size="small" color={colors.muted2} />
+                <ActivityIndicator size="small" color={colors.muted} />
               ) : query.length > 0 ? (
                 <TouchableOpacity
                   onPress={() => { setQuery(''); setHits([]); setSearched(false); Keyboard.dismiss(); }}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('close')}
                 >
-                  <Ionicons name="close-circle" size={16} color={colors.muted2} />
+                  <Ionicons name="close-circle" size={20} color={colors.muted} />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -362,7 +363,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
                         activeOpacity={0.7}
                         onPress={() => selectHit(hit)}
                       >
-                        <Ionicons name="location-outline" size={15} color={colors.muted2} style={{ marginTop: 1 }} />
+                        <Ionicons name="location-outline" size={16} color={colors.primaryText} style={styles.suggestionIcon} />
                         <Text style={styles.suggestionText} numberOfLines={2}>{hit.label}</Text>
                       </TouchableOpacity>
                     ))}
@@ -380,7 +381,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
           <View style={styles.addressCard}>
             {geocoding ? (
               <View style={styles.geocodingRow}>
-                <ActivityIndicator size="small" color={colors.accent} />
+                <ActivityIndicator size="small" color={colors.primary} />
                 <Text style={styles.geocodingText}>{t('locationPicker.loading')}</Text>
               </View>
             ) : (
@@ -391,18 +392,9 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
             )}
           </View>
 
-          <TouchableOpacity
-            style={[styles.confirmBtn, geocoding && styles.confirmBtnDisabled]}
-            onPress={() => onConfirm({ place: place || t('locationPicker.yourLocation'), address, lat: currentCoords.current.lat, lng: currentCoords.current.lng })}
-            disabled={geocoding}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.confirmBtnText}>{t('locationPicker.confirm')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.cancelBtn} onPress={onClose} activeOpacity={0.7}>
-            <Text style={styles.cancelBtnText}>{t('cancel')}</Text>
-          </TouchableOpacity>
+          <Button label={t('locationPicker.confirm')} disabled={geocoding}
+                  onPress={() => onConfirm({ place: place || t('locationPicker.yourLocation'), address, lat: currentCoords.current.lat, lng: currentCoords.current.lng })} />
+          <Button variant="secondary" label={t('cancel')} onPress={onClose} />
         </View>
 
       </View>
@@ -413,132 +405,34 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container:  { flex: 1, backgroundColor: c.bg },
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  title:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  closeBtn: {
-    width:           36,
-    height:          36,
-    borderRadius:    Radius.full,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  mapWrap: { flex: 1, position: 'relative' },
-  webview: { flex: 1, backgroundColor: '#1a1512' },
+  container:    { flex: 1, backgroundColor: c.bg },
+  header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  title:        { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
+  headerSpacer: { width: 44 },
+  mapWrap:      { flex: 1, position: 'relative' },
+  webview:      { flex: 1, backgroundColor: c.bg3 },
 
   // ── Address search overlay ──
-  searchWrap: { position: 'absolute', top: 12, left: 12, right: 12 },
-  searchBox: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               8,
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-    borderRadius:      12,
-    paddingHorizontal: 12,
-    height:            44,
-    shadowColor:       '#000',
-    shadowOffset:      { width: 0, height: 2 },
-    shadowOpacity:     0.3,
-    shadowRadius:      6,
-    elevation:         4,
-  },
-  searchInput: { flex: 1, color: c.text, fontSize: FontSizes.sm, padding: 0 },
-  suggestions: {
-    marginTop:       6,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    borderRadius:    12,
-    overflow:        'hidden',
-    shadowColor:     '#000',
-    shadowOffset:    { width: 0, height: 2 },
-    shadowOpacity:   0.3,
-    shadowRadius:    6,
-    elevation:       4,
-  },
-  suggestionsScroll: { maxHeight: 240 },
-  suggestionRow: {
-    flexDirection:     'row',
-    alignItems:        'flex-start',
-    gap:               8,
-    paddingHorizontal: 12,
-    paddingVertical:   11,
-  },
-  suggestionRowBorder: { borderTopWidth: 1, borderTopColor: c.border },
-  suggestionText: { flex: 1, color: c.text, fontSize: FontSizes.xs, lineHeight: 17 },
-  noResults: { color: c.muted2, fontSize: FontSizes.xs, paddingHorizontal: 12, paddingVertical: 12 },
-  pinWrap: {
-    position:       'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    alignItems:     'center',
-    justifyContent: 'center',
-    marginBottom:   40, // visually center the tip of the pin emoji
-  },
-  pin:      { fontSize: 40, lineHeight: 44 },
+  searchWrap:  { position: 'absolute', top: 12, left: 12, right: 12 },
+  searchBox:   { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 16, borderRadius: Radius.full,
+                 borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  searchInput: { flex: 1, color: c.text, fontSize: 15, fontWeight: '500', padding: 0 },
+  suggestions: { marginTop: 6, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line, borderRadius: Radius.card, overflow: 'hidden' },
+  suggestionsScroll:   { maxHeight: 240 },
+  suggestionRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 8, minHeight: 44, paddingHorizontal: 14, paddingVertical: 11 },
+  suggestionRowBorder: { borderTopWidth: 1, borderTopColor: c.line },
+  suggestionIcon:      { marginTop: 1 },
+  suggestionText:      { flex: 1, color: c.text, fontSize: FontSizes.xs, fontWeight: '500', lineHeight: 17 },
+  noResults:           { color: c.muted, fontSize: FontSizes.xs, fontWeight: '400', paddingHorizontal: 14, paddingVertical: 12 },
+  // The pin's tip marks the map centre.
+  pinWrap:  { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', marginBottom: 44 },
   hintWrap: { position: 'absolute', bottom: 16, left: 0, right: 0, alignItems: 'center' },
-  hint: {
-    fontSize:          12,
-    fontWeight:        '500',
-    color:             c.overlayStrong,
-    backgroundColor:   'rgba(0,0,0,0.5)',
-    paddingHorizontal: 14,
-    paddingVertical:   5,
-    borderRadius:      999,
-    overflow:          'hidden',
-  },
-  footer: {
-    paddingHorizontal: 16,
-    paddingTop:        16,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-    backgroundColor:   c.bg,
-    gap:               10,
-  },
-  addressCard: {
-    backgroundColor: c.overlayWeak,
-    borderWidth:     1,
-    borderColor:     c.border,
-    borderRadius:    14,
-    padding:         14,
-    minHeight:       60,
-    justifyContent:  'center',
-  },
+  hint:     { fontSize: 12, fontWeight: '600', color: c.text, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line,
+              paddingHorizontal: 14, paddingVertical: 6, borderRadius: Radius.full, overflow: 'hidden' },
+  footer:       { paddingHorizontal: Spacing.md, paddingTop: 14, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg, gap: 10 },
+  addressCard:  { minHeight: 60, justifyContent: 'center', padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   geocodingRow:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  geocodingText: { fontSize: FontSizes.sm, color: c.muted2 },
+  geocodingText: { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   placeName:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  addressText:   { fontSize: FontSizes.xs, color: c.muted2, marginTop: 3, lineHeight: 16 },
-  confirmBtn: {
-    backgroundColor: c.accent,
-    borderRadius:    14,
-    padding:         16,
-    alignItems:      'center',
-    shadowColor:     c.accent,
-    shadowOffset:    { width: 0, height: 6 },
-    shadowOpacity:   0.3,
-    shadowRadius:    12,
-    elevation:       6,
-  },
-  confirmBtnDisabled: { opacity: 0.4 },
-  confirmBtnText:     { fontSize: FontSizes.md, fontWeight: '700', color: '#fff' },
-  cancelBtn: {
-    borderWidth:  1,
-    borderColor:  c.border,
-    borderRadius: 14,
-    padding:      13,
-    alignItems:   'center',
-  },
-  cancelBtnText: { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted2 },
+  addressText:   { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: 3, lineHeight: 16 },
 });

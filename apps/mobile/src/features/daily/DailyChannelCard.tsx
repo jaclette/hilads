@@ -108,7 +108,10 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
           <View style={styles.cta}><Text style={styles.ctaText}>{t('cta')}</Text></View>
           {p.yesterday && p.yesterdayTop3 && p.yesterdayTop3.length > 0 && (
             <View style={styles.top3}>
-              <Text style={styles.top3Title}>🏆 {t('results.yesterdayTop3')}</Text>
+              <View style={styles.top3Head}>
+                <Ionicons name="trophy-outline" size={14} color={colors.muted} />
+                <Text style={styles.top3Title}>{t('results.yesterdayTop3')}</Text>
+              </View>
               {p.yesterdayTop3.map(r => (
                 <TouchableOpacity key={r.proofId} style={styles.topRow} onPress={() => router.push(`/daily/${p.yesterday!.date}?proof=${r.proofId}` as never)} accessibilityRole="button">
                   <Text style={styles.topMedal}>{MEDALS[r.rank - 1] ?? `${r.rank}`}</Text>
@@ -117,7 +120,10 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
                     {r.user.displayName || r.user.username}
                     {r.city ? <Text style={styles.sub}> · {localizeCityName(r.city.name)}</Text> : null}
                   </Text>
-                  <Text style={styles.topVotes}>♥ {r.voteCount}</Text>
+                  <View style={styles.topVotesRow}>
+                    <Ionicons name="heart" size={12} color={colors.muted} />
+                    <Text style={styles.topVotes}>{r.voteCount}</Text>
+                  </View>
                 </TouchableOpacity>
               ))}
             </View>
@@ -146,6 +152,7 @@ function GroupCard({ message, reactions, time, longPress }: {
   message: Message; reactions: ReactNode; time: string | null; longPress?: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const p = (message.payload ?? {}) as Partial<GroupPayload>;
@@ -162,7 +169,10 @@ function GroupCard({ message, reactions, time, longPress }: {
     <View style={styles.wrap}>
       <TouchableOpacity style={styles.card} onPress={open} onLongPress={longPress} activeOpacity={0.9} accessibilityRole="button"
         accessibilityLabel={`${t('group.title', { n: count })}. ${where}`}>
-        <Text style={styles.kicker}>📸 {t('group.title', { n: count })}</Text>
+        <View style={styles.kickerRow}>
+          <Ionicons name="images-outline" size={15} color={colors.primaryText} />
+          <Text style={styles.kicker}>{t('group.title', { n: count })}</Text>
+        </View>
         {!!where && <Text style={styles.sub} numberOfLines={1}>{where}</Text>}
         <View style={styles.strip}>
           {shown.map((e, i) => (
@@ -184,6 +194,7 @@ function GroupCard({ message, reactions, time, longPress }: {
 /** "Proposed by <name> · <city>" (V2-05); the name opens the author's profile. */
 export function ProposedBy({ credit }: { credit: NonNullable<ChallengePayload['proposedBy']> }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const { account } = useApp();
@@ -193,9 +204,10 @@ export function ProposedBy({ credit }: { credit: NonNullable<ChallengePayload['p
     router.push(`/user/${credit.user.id}` as never);
   };
   return (
-    <TouchableOpacity onPress={open} hitSlop={6} accessibilityRole="button" style={styles.proposedBy}>
+    <TouchableOpacity onPress={open} hitSlop={{ top: 14, bottom: 14, left: 6, right: 6 }} accessibilityRole="button" style={styles.proposedBy}>
+      <Ionicons name="bulb-outline" size={14} color={colors.primaryText} />
       <Text style={styles.proposedByText} numberOfLines={1}>
-        💡 {credit.city?.name
+        {credit.city?.name
           ? t('propose.proposedByCity', { name, city: localizeCityName(credit.city.name) })
           : t('propose.proposedBy', { name })}
       </Text>
@@ -254,14 +266,14 @@ function ProofCard({ message, reactions, time, longPress }: {
               {!!p.city && <Text style={styles.sub} numberOfLines={1}>{localizeCityName(p.city.name)}</Text>}
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={report} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('report.title')}>
+          <TouchableOpacity style={styles.more} onPress={report} accessibilityRole="button" accessibilityLabel={t('report.title')}>
             <Ionicons name="ellipsis-horizontal" size={18} color={colors.muted} />
           </TouchableOpacity>
         </View>
         <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (
-          <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={6}>
+          <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>
             <Ionicons name="location-outline" size={14} color={colors.primaryText} />
             <Text style={styles.spotText} numberOfLines={1}>{p.spot.name}</Text>
           </TouchableOpacity>
@@ -331,9 +343,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stripPhoto:    { width: '100%', height: '100%', borderRadius: Radius.md, backgroundColor: c.bg3 },
   stripMore:     { ...StyleSheet.absoluteFillObject, borderRadius: Radius.md, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
   stripMoreText: { color: c.white, fontSize: FontSizes.md, fontWeight: '900' },
-  proposedBy:    { alignSelf: 'flex-start' },
-  proposedByText:{ fontSize: 12, fontWeight: '700', color: c.accentText },
-  top3:          { borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8, gap: 6 },
+  proposedBy:    { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 },
+  proposedByText:{ flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.primaryText },
+  top3:          { borderTopWidth: 1, borderTopColor: c.line, paddingTop: 8, gap: 6 },
+  top3Head:      { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  topVotesRow:   { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  more:          { width: 44, height: 44, marginRight: -10, marginTop: -10, alignItems: 'center', justifyContent: 'center' },
   top3Title:     { fontSize: 11, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   topRow:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
   topMedal:      { fontSize: 18, width: 24 },

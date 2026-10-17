@@ -140,5 +140,13 @@
     "arrivals_other": "이번 주 {{count}}명 도착",
     "nearby_one": "지금 여기 {{count}}명",
     "nearby_other": "지금 여기 {{count}}명"
-  }
+  },
+  "mentionNudge": "누군가 너를 언급했어! 놓치지 않도록 계정을 만들어 봐.",
+  "guestOnline": "게스트 · 온라인",
+  "tapToOpenMaps": "탭해서 지도에서 열기",
+  "campaignAllCities": "모든 도시",
+  "campaignWorld": "월드",
+  "campaignCta": "포인트 2배 · 챌린지 도전",
+  "imageRetry": "탭해서 다시 시도",
+  "imageUnavailable": "이미지를 볼 수 없어"
 }

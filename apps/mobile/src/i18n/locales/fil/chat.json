@@ -140,5 +140,13 @@
     "arrivals_other": "{{count}} dumating ngayong linggo",
     "nearby_one": "{{count}} narito ngayon",
     "nearby_other": "{{count}} narito ngayon"
-  }
+  },
+  "mentionNudge": "May nagbanggit sa'yo! Gumawa ng account para hindi ka makaligta.",
+  "guestOnline": "Bisita · online",
+  "tapToOpenMaps": "I-tap para buksan sa mapa",
+  "campaignAllCities": "Lahat ng lungsod",
+  "campaignWorld": "Mundo",
+  "campaignCta": "Dobleng puntos · Tanggapin ang hamon",
+  "imageRetry": "I-tap para subukan ulit",
+  "imageUnavailable": "Hindi available ang larawan"
 }

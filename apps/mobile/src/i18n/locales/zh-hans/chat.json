@@ -140,5 +140,13 @@
     "arrivals_other": "本周新来 {{count}} 人",
     "nearby_one": "{{count}} 人在这里",
     "nearby_other": "{{count}} 人在这里"
-  }
+  },
+  "mentionNudge": "有人提到了你！创建账号，不错过任何消息。",
+  "guestOnline": "访客 · 在线",
+  "tapToOpenMaps": "点按在地图中打开",
+  "campaignAllCities": "所有城市",
+  "campaignWorld": "全球",
+  "campaignCta": "双倍积分 · 接受挑战",
+  "imageRetry": "点按重试",
+  "imageUnavailable": "图片不可用"
 }

@@ -152,5 +152,13 @@
     "nearby_few": "{{count}} здесь сейчас",
     "nearby_many": "{{count}} здесь сейчас",
     "nearby_other": "{{count}} здесь сейчас"
-  }
+  },
+  "mentionNudge": "Тебя упоминают! Создай аккаунт, чтобы ничего не пропустить.",
+  "guestOnline": "Гость · в сети",
+  "tapToOpenMaps": "Нажми, чтобы открыть на карте",
+  "campaignAllCities": "Все города",
+  "campaignWorld": "Мир",
+  "campaignCta": "Двойные очки · Прими вызов",
+  "imageRetry": "Нажми, чтобы повторить",
+  "imageUnavailable": "Изображение недоступно"
 }

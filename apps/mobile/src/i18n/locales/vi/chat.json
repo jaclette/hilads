@@ -140,5 +140,13 @@
     "arrivals_other": "{{count}} người đến tuần này",
     "nearby_one": "{{count}} người ở đây",
     "nearby_other": "{{count}} người ở đây"
-  }
+  },
+  "mentionNudge": "Có người nhắc đến bạn! Tạo tài khoản để không bỏ lỡ nhé.",
+  "guestOnline": "Khách · đang online",
+  "tapToOpenMaps": "Chạm để mở trong bản đồ",
+  "campaignAllCities": "Mọi thành phố",
+  "campaignWorld": "Thế giới",
+  "campaignCta": "Nhân đôi điểm · Nhận thử thách",
+  "imageRetry": "Chạm để thử lại",
+  "imageUnavailable": "Không có hình ảnh"
 }

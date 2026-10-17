@@ -146,6 +146,11 @@ export const Colors = {
   travelerBg:    '#17263A',   // Traveler label
   travelerText:  '#9DBDF0',
   gold:          '#D9AE52',   // Local Pass seal
+  // Fixed, theme-independent: text on the caramel own-bubble, and the black
+  // photo viewer / camera with its translucent controls.
+  onCaramelMuted: 'rgba(255,255,255,0.78)',
+  photoScrim:     'rgba(0,0,0,0.94)',
+  photoControl:   'rgba(255,255,255,0.16)',
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -193,6 +198,11 @@ export const LightColors: ThemeColors = {
   travelerBg:    '#E4ECF7',
   travelerText:  '#2F5E9E',
   gold:          '#B98A2E',
+  // Fixed, theme-independent: text on the caramel own-bubble, and the black
+  // photo viewer / camera with its translucent controls.
+  onCaramelMuted: 'rgba(255,255,255,0.78)',
+  photoScrim:     'rgba(0,0,0,0.94)',
+  photoControl:   'rgba(255,255,255,0.16)',
 };
 
 export type ThemeName = 'light' | 'dark';

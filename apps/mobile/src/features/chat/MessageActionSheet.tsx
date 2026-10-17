@@ -1,19 +1,18 @@
 /**
  * MessageActionSheet - bottom sheet that appears on message long-press.
  *
- * Shows an emoji strip (❤️ 👍 😂 😮 🔥) + a "Reply" action.
+ * An emoji strip (❤️ 👍 😂 😮 🔥), then Reply / Copy / Translate / Edit / Delete.
  * Highlighted emojis = already reacted by viewer.
  */
 
 import React from 'react';
-import {
-  Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback,
-  StyleSheet, Share,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Share } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import type { Reaction } from '@/types';
-import { type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Button, Sheet } from '@/ui';
 
 const EMOJIS = ['❤️', '👍', '😂', '😮', '🔥'] as const;
 
@@ -40,175 +39,70 @@ interface Props {
 }
 
 export function MessageActionSheet({ visible, reactions = [], onReact, onReply, onCopy, translateText, onEdit, onDelete, onClose }: Props) {
-  const { t, i18n } = useTranslation('chat');
+  const { t } = useTranslation('chat');
   const styles = useThemedStyles(makeStyles);
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
+  const run = (fn: () => void) => () => { fn(); onClose(); };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={onClose}
-    >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay} />
-      </TouchableWithoutFeedback>
-
-      <View style={styles.sheet}>
-        {/* Emoji strip - only for messages (onReact); titles show just Copy/Translate. */}
-        {onReact && (
+    <Sheet visible={visible} onClose={onClose} closeLabel={t('actionCancel')}>
+      {/* Emoji strip - only for messages (onReact); titles show just Copy/Translate. */}
+      {onReact && (
         <View style={styles.emojiRow}>
           {EMOJIS.map(emoji => (
             <TouchableOpacity
               key={emoji}
               style={[styles.emojiBtn, selfMap[emoji] && styles.emojiBtnActive]}
-              onPress={() => { onReact(emoji); onClose(); }}
+              onPress={run(() => onReact(emoji))}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={emoji}
+              accessibilityState={{ selected: !!selfMap[emoji] }}
             >
               <Text style={styles.emojiText}>{emoji}</Text>
             </TouchableOpacity>
           ))}
         </View>
-        )}
+      )}
 
-        {/* Reply action */}
-        {onReply && (
-          <TouchableOpacity
-            style={styles.action}
-            onPress={() => { onReply(); onClose(); }}
-            activeOpacity={0.75}
-          >
-            <Text style={styles.actionIcon}>↩️</Text>
-            <Text style={styles.actionLabel}>{t('actionReply')}</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Copy action - text messages only; callers pass undefined for images/locations. */}
-        {onCopy && (
-          <TouchableOpacity
-            style={styles.action}
-            onPress={() => { onCopy(); onClose(); }}
-            activeOpacity={0.75}
-          >
-            <Text style={styles.actionIcon}>📋</Text>
-            <Text style={styles.actionLabel}>{t('actionCopy')}</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Translate action - text messages only. Opens Google Translate with the
-            message text, target = the app's current language. */}
-        {translateText && (
-          <TouchableOpacity
-            style={styles.action}
-            onPress={() => { openTranslate(translateText); onClose(); }}
-            activeOpacity={0.75}
-          >
-            <Text style={styles.actionIcon}>🌐</Text>
-            <Text style={styles.actionLabel}>{t('actionTranslate')}</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Edit / Delete - only present when the viewer owns the message. Callers
-            pass undefined for messages they don't own, or for non-editable kinds
-            (image/location). */}
-        {onEdit && (
-          <TouchableOpacity
-            style={styles.action}
-            onPress={() => { onEdit(); onClose(); }}
-            activeOpacity={0.75}
-          >
-            <Text style={styles.actionIcon}>✏️</Text>
-            <Text style={styles.actionLabel}>{t('actionEdit')}</Text>
-          </TouchableOpacity>
-        )}
-
-        {onDelete && (
-          <TouchableOpacity
-            style={styles.action}
-            onPress={() => { onDelete(); onClose(); }}
-            activeOpacity={0.75}
-          >
-            <Text style={styles.actionIcon}>🗑️</Text>
-            <Text style={[styles.actionLabel, styles.actionLabelDanger]}>{t('actionDelete')}</Text>
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity style={styles.cancel} onPress={onClose} activeOpacity={0.7}>
-          <Text style={styles.cancelText}>{t('actionCancel')}</Text>
-        </TouchableOpacity>
+      <View style={styles.actions}>
+        {onReply && <Action icon="arrow-undo-outline" label={t('actionReply')} onPress={run(onReply)} />}
+        {/* Copy - text messages only; callers pass undefined for images/locations. */}
+        {onCopy && <Action icon="copy-outline" label={t('actionCopy')} onPress={run(onCopy)} />}
+        {/* Translate - text messages only, through the OS share sheet. */}
+        {translateText && <Action icon="language-outline" label={t('actionTranslate')} onPress={run(() => openTranslate(translateText))} />}
+        {/* Edit / Delete - only when the viewer owns the message (callers pass undefined otherwise). */}
+        {onEdit && <Action icon="create-outline" label={t('actionEdit')} onPress={run(onEdit)} />}
+        {onDelete && <Action icon="trash-outline" label={t('actionDelete')} onPress={run(onDelete)} danger />}
       </View>
-    </Modal>
+
+      <Button variant="link" label={t('actionCancel')} onPress={onClose} style={styles.cancel} />
+    </Sheet>
+  );
+}
+
+function Action({ icon, label, onPress, danger = false }: {
+  icon: React.ComponentProps<typeof Ionicons>['name']; label: string; onPress: () => void; danger?: boolean;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const color = danger ? colors.red : colors.text;
+  return (
+    <TouchableOpacity style={styles.action} onPress={onPress} activeOpacity={0.75} accessibilityRole="button">
+      <Ionicons name={icon} size={22} color={color} />
+      <Text style={[styles.actionLabel, { color }]}>{label}</Text>
+    </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  overlay: {
-    flex:            1,
-    backgroundColor: c.scrim,
-  },
-  sheet: {
-    backgroundColor:   c.elevated,
-    borderTopWidth:    1,
-    borderTopColor:    c.separator,
-    borderRadius:      20,
-    paddingHorizontal: 16,
-    paddingTop:        20,
-    paddingBottom:     36,
-    gap:               10,
-  },
-  emojiRow: {
-    flexDirection:   'row',
-    justifyContent:  'space-around',
-    paddingVertical: 8,
-  },
-  emojiBtn: {
-    width:           52,
-    height:          52,
-    borderRadius:    26,
-    backgroundColor: c.overlay,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  emojiBtnActive: {
-    backgroundColor: 'rgba(255,122,60,0.25)',
-    borderWidth:     1.5,
-    borderColor:     c.accent,
-  },
-  emojiText: {
-    fontSize: 26,
-  },
-  action: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            12,
-    paddingVertical: 14,
-    paddingHorizontal: 4,
-    borderTopWidth: 1,
-    borderTopColor: c.separator,
-  },
-  actionIcon: {
-    fontSize: 20,
-  },
-  actionLabel: {
-    fontSize:   16,
-    color:      c.text,
-    fontWeight: '500',
-  },
-  actionLabelDanger: {
-    color: c.red,
-  },
-  cancel: {
-    alignItems:      'center',
-    paddingVertical: 14,
-    borderTopWidth:  1,
-    borderTopColor:  c.separator,
-    marginTop:       2,
-  },
-  cancelText: {
-    fontSize:   16,
-    color:      c.muted,
-    fontWeight: '500',
-  },
+  emojiRow:       { flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 6 },
+  emojiBtn:       { width: 52, height: 52, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center',
+                    borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  emojiBtnActive: { borderColor: c.primary, backgroundColor: c.primaryTint },
+  emojiText:      { fontSize: 26 },
+  actions:        { borderTopWidth: 1, borderTopColor: c.line },
+  action:         { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 52, borderBottomWidth: 1, borderBottomColor: c.line },
+  actionLabel:    { fontSize: FontSizes.md, fontWeight: '600' },
+  cancel:         { alignSelf: 'center', marginTop: 4 },
 });

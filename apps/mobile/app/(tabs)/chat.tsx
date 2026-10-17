@@ -14,10 +14,8 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Keyboard, Platform,
-  TouchableOpacity, Animated, Alert, Modal,
+  TouchableOpacity, Animated, Alert,
 } from 'react-native';
-import { avatarColor } from '@/lib/avatarColors';
-import { Image } from 'expo-image';
 import { thumbUrl } from '@/lib/imageThumb';
 import { formatSmartTime } from '@/lib/messageTime';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -48,7 +46,8 @@ import { DailyPinBar } from '@/features/daily/DailyPinBar';
 import { useDailyToday } from '@/hooks/useDaily';
 import { isDailyCard } from '@/lib/dailyEvents';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
+import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, SectionTitle, Segmented, Sheet } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
@@ -80,16 +79,9 @@ function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
   }
 
   return (
-    <Animated.View style={[styles.bannerStrip, { opacity }]}>
-      <Text style={styles.bannerText} numberOfLines={1}>
-        {t('bannerNewEvent', { title })}
-      </Text>
-      <TouchableOpacity style={styles.bannerBtn} onPress={handleJoin} activeOpacity={0.8}>
-        <Text style={styles.bannerBtnText}>{t('join')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.bannerDismiss} onPress={onDismiss} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <Text style={styles.bannerDismissText}>✕</Text>
-      </TouchableOpacity>
+    <Animated.View style={[styles.notice, { opacity }]}>
+      <Banner icon="calendar-outline" text={t('bannerNewEvent', { title })} action={{ label: t('join'), onPress: handleJoin }}
+              onClose={onDismiss} closeLabel={t('close', { ns: 'common' })} />
     </Animated.View>
   );
 }
@@ -845,19 +837,12 @@ export default function ChatTab() {
   // No city yet - prompt to pick one
   if (!city) {
     return (
-      <SafeAreaView style={[styles.container, { paddingBottom: 0 }]}>
-        <View style={styles.noCityWrap}>
-          <Text style={styles.noCityTitle}>{t('noCityTitle')}</Text>
-          <Text style={styles.noCitySubtitle}>{t('noCitySub')}</Text>
-          <TouchableOpacity
-            style={styles.citiesBtn}
-            onPress={() => router.push('/switch-city' as never)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.citiesBtnText}>{t('browseCities')}</Text>
-          </TouchableOpacity>
+      <Screen>
+        <View style={styles.center}>
+          <EmptyState icon="location-outline" title={t('noCityTitle')} body={t('noCitySub')}
+                      action={<Button label={t('browseCities')} onPress={() => router.push('/switch-city' as never)} />} />
         </View>
-      </SafeAreaView>
+      </Screen>
     );
   }
 
@@ -870,79 +855,46 @@ export default function ChatTab() {
       <View style={styles.header}>
 
         {/* ── Header (chat.html): "Chat", share the city, private messages. ── */}
-        <View style={styles.chatTop}>
-          <Text style={styles.chatTitle}>{t('tabTitle')}</Text>
-          {city && (
-            <TouchableOpacity
-              style={styles.roundBtn}
-              onPress={async () => {
-                // Locale-prefixed URL (Option A) so the link preview (OG tags -
-                // all Android shares show) renders in the sharer's language.
-                const url     = buildCityUrl(city.slug);
-                const title   = t('shareTitle', { city: localizeCityName(city.name) });
-                const message = t('shareMessage', { city: localizeCityName(city.name) });
-                await shareLink({ title, message, url });
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={t('shareCity')}
-            >
-              <Ionicons name="share-outline" size={20} color={colors.text} />
-            </TouchableOpacity>
-          )}
-          {account && (
-            <TouchableOpacity
-              style={styles.roundBtn}
-              onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }}
-              accessibilityRole="button"
-              accessibilityLabel={t('messages', { ns: 'common' })}
-            >
-              <Ionicons name="paper-plane-outline" size={20} color={colors.text} />
-              {unreadDMs > 0 && <View style={styles.roundDot} />}
-            </TouchableOpacity>
-          )}
-        </View>
+        <ScreenHeader variant="tab" title={t('tabTitle')} right={
+          <View style={styles.headerButtons}>
+            <IconButton icon="share-outline" iconSize={20} label={t('shareCity')} onPress={async () => {
+              // Locale-prefixed URL (Option A) so the link preview (OG tags -
+              // all Android shares show) renders in the sharer's language.
+              const url     = buildCityUrl(city.slug);
+              const title   = t('shareTitle', { city: localizeCityName(city.name) });
+              const message = t('shareMessage', { city: localizeCityName(city.name) });
+              await shareLink({ title, message, url });
+            }} />
+            {account && (
+              <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={unreadDMs > 0}
+                          onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }} />
+            )}
+          </View>
+        } />
 
         {/* ── City / World switch (the app-wide scope). Tapping the active city
             changes city. Symmetric unread badges. ── */}
-        <View style={styles.scopeToggle}>
-          <TouchableOpacity
-            style={[styles.scopeBtn, channelScope === 'city' && styles.scopeBtnActive]}
-            onPress={() => (channelScope === 'world' ? switchScope('city') : router.push('/switch-city' as never))}
-            activeOpacity={0.8}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: channelScope === 'city' }}
-          >
-            <Text style={[styles.scopeBtnText, channelScope === 'city' && styles.scopeBtnTextActive]} numberOfLines={1}>
-              {localizeCityName(city.name)}
-            </Text>
-            {channelScope === 'world' && cityUnread > 0 && (
-              <Text style={styles.scopeBadge}>{cityUnread > 99 ? '99+' : cityUnread}</Text>
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.scopeBtn, channelScope === 'world' && styles.scopeBtnActive]}
-            onPress={() => switchScope('world')}
-            activeOpacity={0.8}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: channelScope === 'world' }}
-          >
-            <Text style={[styles.scopeBtnText, channelScope === 'world' && styles.scopeBtnTextActive]} numberOfLines={1}>
-              {t('world.tab')}
-            </Text>
-            {channelScope === 'city' && worldUnread > 0 && (
-              <Text style={styles.scopeBadge}>{worldUnread > 99 ? '99+' : worldUnread}</Text>
-            )}
-          </TouchableOpacity>
+        <View style={styles.inset}>
+          <Segmented
+            options={[
+              { key: 'city' as const, label: localizeCityName(city.name), badge: cityUnread },
+              { key: 'world' as const, label: t('world.tab'), badge: worldUnread },
+            ]}
+            value={channelScope === 'world' ? 'world' : 'city'}
+            onChange={k => (k === 'world' ? switchScope('world') : channelScope === 'world' ? switchScope('city') : router.push('/switch-city' as never))}
+          />
         </View>
 
         {/* ── People row (SPEC 9.6): only above the threshold. World shows its
             arrivals from 3 on. ── */}
         {channelScope === 'city' ? (
-          channelId ? <PeopleRow cityId={String(channelId)} onArrivals={() => setArrivalsSheetOpen(true)} /> : null
+          channelId ? <View style={styles.inset}><PeopleRow cityId={String(channelId)} onArrivals={() => setArrivalsSheetOpen(true)} /></View> : null
         ) : worldArrivals.length >= 3 ? (
-          <TouchableOpacity style={styles.peopleChip} onPress={() => setShowWorldArrivals(true)} accessibilityRole="button">
-            <Text style={styles.peopleChipText}>{t('world.arrivals', { count: worldArrivals.length })}</Text>
-          </TouchableOpacity>
+          <View style={styles.inset}>
+            <TouchableOpacity style={styles.peopleChip} onPress={() => setShowWorldArrivals(true)} accessibilityRole="button">
+              <Text style={styles.peopleChipText}>{t('world.arrivals', { count: worldArrivals.length })}</Text>
+            </TouchableOpacity>
+          </View>
         ) : null}
 
       </View>
@@ -950,7 +902,8 @@ export default function ChatTab() {
 
       {/* Error banner */}
       {error && (
-        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8} accessibilityRole="alert">
+          <Ionicons name="alert-circle-outline" size={18} color={colors.red} />
           <Text style={styles.errorBannerText}>{t('dismissHint', { error })}</Text>
         </TouchableOpacity>
       )}
@@ -967,6 +920,7 @@ export default function ChatTab() {
           <TouchableOpacity
             style={styles.quietCard}
             activeOpacity={0.85}
+            accessibilityRole="button"
             onPress={() => {
               track('quiet_city_card_tapped', { city_id: channelId });
               quietCardDismissed.current = true;
@@ -979,7 +933,7 @@ export default function ChatTab() {
         )}
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator color={colors.accent} />
+            <ActivityIndicator color={colors.primary} />
           </View>
         ) : (
           <FlatList
@@ -1016,9 +970,7 @@ export default function ChatTab() {
             }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
-                <Text style={styles.emptyIcon}>🔥</Text>
-                <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
-                <Text style={styles.emptySub}>{t('emptySub')}</Text>
+                <EmptyState icon="chatbubbles-outline" title={t('emptyTitle')} body={t('emptySub')} />
               </View>
             }
           />
@@ -1036,20 +988,10 @@ export default function ChatTab() {
 
         {/* ── Guest @mention nudge - discreet, non-blocking signup prompt ── */}
         {mentionNudge && !account && (
-          <View style={styles.mentionNudge}>
-            <Text style={styles.mentionNudgeText} numberOfLines={2}>
-              👀 You're getting mentioned! Create an account so you never miss it.
-            </Text>
-            <TouchableOpacity
-              style={styles.mentionNudgeBtn}
-              onPress={() => { setMentionNudge(false); router.push('/auth-gate'); }}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.mentionNudgeBtnText}>Sign up</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setMentionNudge(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Text style={styles.mentionNudgeDismiss}>✕</Text>
-            </TouchableOpacity>
+          <View style={styles.notice}>
+            <Banner icon="at-outline" text={t('mentionNudge')}
+                    action={{ label: t('signUp', { ns: 'common' }), onPress: () => { setMentionNudge(false); router.push('/auth-gate'); } }}
+                    onClose={() => setMentionNudge(false)} closeLabel={t('close', { ns: 'common' })} />
           </View>
         )}
 
@@ -1107,54 +1049,38 @@ export default function ChatTab() {
       />
 
       {/* World arrivals sheet - global "who just landed", each with city + flag. */}
-      <Modal visible={showWorldArrivals} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowWorldArrivals(false)}>
-        <SafeAreaView style={styles.waSheet}>
-          <View style={styles.waHeader}>
-            <Text style={styles.waTitle}>{t('world.arrivalsTitle')}</Text>
-            <TouchableOpacity onPress={() => setShowWorldArrivals(false)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Ionicons name="close" size={24} color={colors.text} />
-            </TouchableOpacity>
-          </View>
-          {worldArrivals.length === 0 ? (
-            <Text style={styles.waEmpty}>{t('world.arrivalsEmpty')}</Text>
-          ) : (
-            <FlatList
-              data={worldArrivals}
-              keyExtractor={(a, i) => `${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
-              renderItem={({ item: a }) => (
-                <TouchableOpacity
-                  style={styles.waRow}
-                  activeOpacity={0.7}
-                  onPress={() => {
-                    // Tap → open the arriver's profile (guard guests behind auth gate).
-                    if (a.userId) {
-                      if (!canAccessProfile(account)) { setShowWorldArrivals(false); router.push('/auth-gate'); return; }
-                      setShowWorldArrivals(false);
-                      router.push({ pathname: '/user/[id]', params: { id: a.userId } });
-                    } else if (a.guestId) {
-                      setShowWorldArrivals(false);
-                      router.push({ pathname: '/user/guest', params: { guestId: a.guestId, nickname: a.nickname ?? '' } });
-                    }
-                  }}
-                >
-                  {a.thumbAvatarUrl ? (
-                    <Image source={{ uri: thumbUrl(a.thumbAvatarUrl) }} style={styles.waAvatar} contentFit="cover" cachePolicy="memory-disk" />
-                  ) : (
-                    <View style={[styles.waAvatar, { backgroundColor: avatarColor(a.nickname), alignItems: 'center', justifyContent: 'center' }]}>
-                      <Text style={styles.waAvatarLetter}>{(a.nickname ?? '?')[0].toUpperCase()}</Text>
-                    </View>
-                  )}
-                  <Text style={styles.waName} numberOfLines={1}>{a.nickname}</Text>
-                  <View style={styles.waMeta}>
-                    <Text style={styles.waCity} numberOfLines={1}>{cityFlag(a.country ?? undefined)} {a.city}</Text>
-                    <Text style={styles.waTime}>{formatSmartTime(a.createdAt)}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          )}
-        </SafeAreaView>
-      </Modal>
+      <Sheet visible={showWorldArrivals} onClose={() => setShowWorldArrivals(false)} closeLabel={t('close', { ns: 'common' })} style={styles.waSheet}>
+        <SectionTitle title={t('world.arrivalsTitle')} />
+        {worldArrivals.length === 0 ? (
+          <EmptyState body={t('world.arrivalsEmpty')} />
+        ) : (
+          <FlatList
+            data={worldArrivals}
+            keyExtractor={(a, i) => `${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
+            renderItem={({ item: a, index }) => (
+              <ListRow
+                divider={index > 0}
+                style={styles.waRow}
+                leading={<Avatar uri={a.thumbAvatarUrl ? thumbUrl(a.thumbAvatarUrl) : null} name={a.nickname ?? '?'} size={36} fallback="color" />}
+                title={a.nickname ?? ''}
+                value={`${cityFlag(a.country ?? undefined)} ${a.city ?? ''} · ${formatSmartTime(a.createdAt)}`}
+                chevron={false}
+                onPress={() => {
+                  // Tap → open the arriver's profile (guard guests behind auth gate).
+                  if (a.userId) {
+                    if (!canAccessProfile(account)) { setShowWorldArrivals(false); router.push('/auth-gate'); return; }
+                    setShowWorldArrivals(false);
+                    router.push({ pathname: '/user/[id]', params: { id: a.userId } });
+                  } else if (a.guestId) {
+                    setShowWorldArrivals(false);
+                    router.push({ pathname: '/user/guest', params: { guestId: a.guestId, nickname: a.nickname ?? '' } });
+                  }
+                }}
+              />
+            )}
+          />
+        )}
+      </Sheet>
     </SafeAreaView>
   );
 }
@@ -1162,419 +1088,28 @@ export default function ChatTab() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-  flex:      { flex: 1 },
-
-  // ── Header container ───────────────────────────────────────────────────────
-  // The orange halo around the logo used to live here; it now lives inside
-  // AppHeader's own glowWrap so every tab consuming AppHeader gets it
-  // consistently (no more drift between MY CITY and NOW/HERE/ME).
-  header: {
-    flexDirection:     'column',
-    gap:               10,
-    paddingTop:        10,
-    paddingBottom:     8,
-    paddingHorizontal: 16,
-    backgroundColor:   c.bg,
-  },
-  // ── Header (chat.html) ──
-  chatTop:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  chatTitle: { flex: 1, fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  roundBtn:  { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  roundDot:  { position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: c.primary, borderWidth: 2, borderColor: c.bg2 },
-  peopleChip:     { alignSelf: 'flex-start', height: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 999, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  peopleChipText: { fontSize: 14, fontWeight: '600', color: c.text },
-
-  // ── Section 1: Top bar ─────────────────────────────────────────────────────
-  topBar: {
-    flexDirection:  'row',
-    justifyContent: 'space-between',
-    alignItems:     'center',
-  },
-  topLeft: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    // Fixed min-width keeps center block truly centered
-    minWidth:      36,
-  },
-  // Center block: logo + tagline side-by-side
-  topCenter: {
-    flex:             1,
-    flexDirection:    'row',
-    alignItems:       'center',
-    justifyContent:   'center',
-    gap:              8,
-    paddingHorizontal: 8,
-  },
-  topRight: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           8,
-  },
-
-  // Icon buttons - must match AppHeader's iconBtn: flat, 40×40, radius 12.
-  // Only used here for the Share button passed in via AppHeader's rightExtra
-  // slot. No background / border so Share is visually consistent with the
-  // flat bell + DM icons rendered by AppHeader itself.
-  iconBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    alignItems:      'center',
-    justifyContent:  'center',
-    position:        'relative',
-  },
-  iconBtnUnread: {
-    backgroundColor: 'rgba(255,122,60,0.08)',
-    borderColor:     'rgba(255,122,60,0.18)',
-  },
-  iconBadge: {
-    position:          'absolute',
-    top:               -5,
-    right:             -5,
-    minWidth:          16,
-    height:            16,
-    borderRadius:      8,
-    backgroundColor:   '#ef4444',
-    borderWidth:       1.5,
-    borderColor:       c.bg2,
-    alignItems:        'center',
-    justifyContent:    'center',
-    paddingHorizontal: 2,
-  },
-  iconBadgeText: {
-    color:      c.white,
-    fontSize:   9,
-    fontWeight: '700',
-    lineHeight: 11,
-  },
-
-  // Logo + tagline
-  headerTagline: {
-    fontSize:      11,
-    lineHeight:    14,   /* 11 × 1.3 ≈ 14 */
-    color:         c.overlayStrong,
-    fontWeight:    '400',
-    letterSpacing: 0.2,
-    // Narrow enough to force "Become local. Anywhere." onto separate lines
-    maxWidth:      72,
-  },
-
-  // ── Logo glow - web: .chat-header .logo svg { drop-shadow orange } ─────────
-  iconGlow: {
-    shadowColor:   '#C24A38',
-    shadowOffset:  { width: 0, height: 0 },
-    shadowOpacity: 0.55,
-    shadowRadius:  14,
-    elevation:     10,
-  },
-
-  // ── City row: selector (left, ellipsizes) + compact "recent" pill (right) ──
-  cityRow: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    justifyContent: 'center', // keep city name + recent pill grouped & centered
-    gap:            10,
-  },
-  // ── City ↔ World scope toggle ──
-  // Segmented city / World switch (chat.html).
-  scopeToggle: {
-    flexDirection:   'row',
-    gap:             4,
-    padding:         3,
-    borderRadius:    999,
-    borderWidth:     1.5,
-    borderColor:     c.line,
-    backgroundColor: c.bg2,
-  },
-  scopeBtn: {
-    flex:           1,
-    flexDirection:  'row',
-    alignItems:     'center',
-    justifyContent: 'center',
-    gap:            6,
-    height:         38,
-    paddingHorizontal: 10,
-    borderRadius:   999,
-  },
-  scopeBtnActive: { backgroundColor: c.primary },
-  scopeBtnText:   { color: c.text, fontSize: 14, fontWeight: '600' },
-  scopeBtnTextActive: { color: c.white },
-  scopeChevron:   { opacity: 0.7 },
-  scopeBadge: {
-    minWidth:   18,
-    paddingHorizontal: 5,
-    borderRadius: 999,
-    backgroundColor: c.primary,
-    color:      '#fff',
-    fontSize:   11,
-    fontWeight: '800',
-    textAlign:  'center',
-    overflow:   'hidden',
-  },
-  quietCard: {
-    marginHorizontal: 12,
-    marginTop:      8,
-    paddingVertical:   11,
-    paddingHorizontal: 14,
-    borderRadius:   14,
-    backgroundColor: c.bg2,
-    borderWidth:    1,
-    borderColor:    c.accent2,
-  },
-  quietCardText: { color: c.text, fontSize: 14, fontWeight: '700', textAlign: 'center' },
-  // World arrivals sheet
-  waSheet:  { flex: 1, backgroundColor: c.bg },
-  waHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.border },
-  waTitle:  { color: c.text, fontSize: 17, fontWeight: '800' },
-  waEmpty:  { color: c.muted, textAlign: 'center', paddingVertical: 40 },
-  waRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 10 },
-  waAvatar: { width: 34, height: 34, borderRadius: 17 },
-  waAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  waName:   { color: c.text, fontWeight: '700', fontSize: 15, flex: 1 },
-  waMeta:   { alignItems: 'flex-end', marginLeft: 'auto' },
-  waCity:   { color: c.muted, fontSize: 13, fontWeight: '600' },
-  waTime:   { color: c.muted2, fontSize: 11, marginTop: 2 },
-  citySelector: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    flexShrink:    1,        // ellipsize the city name first when space is tight
-    minWidth:      0,
-  },
-  cityName: {
-    flexShrink:    1,
-    fontSize:      22,
-    fontWeight:    '600',
-    color:         c.text,
-    letterSpacing: -0.3,
-  },
-  cityChevron: {
-    marginLeft: 4,
-    flexShrink: 0,
-  },
-  recentPill: {
-    flexShrink:        0,      // never shrink - the city name truncates instead
-    paddingVertical:   6,
-    paddingHorizontal: 12,
-    borderRadius:      999,
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-  },
-  recentPillText: {
-    fontSize:   12,
-    fontWeight: '600',
-    color:      c.muted,
-  },
-
-  // ── Hero challenge card - full width, orange-rimmed glow, two lines ──
-  hero: {
-    paddingVertical:   16,
-    paddingHorizontal: 16,
-    borderRadius:      Radius.lg,
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.35)',
-    gap:               4,
-    shadowColor:   c.accent,
-    shadowOpacity: 0.22,
-    shadowRadius:  14,
-    shadowOffset:  { width: 0, height: 0 },
-    elevation:     6,
-  },
-  heroMain: {
-    color:         c.text,
-    fontSize:      FontSizes.md,
-    fontWeight:    '800',
-    letterSpacing: 0.2,
-    textTransform: 'uppercase',
-  },
-  heroSub: {
-    color:      c.muted,
-    fontSize:   FontSizes.xs,
-    fontWeight: '500',
-  },
-  // Challenges + rank row under the Daily card (the former hero, compact).
-  heroRow: {
-    paddingVertical:   9,
-    paddingHorizontal: 12,
-    borderRadius:      Radius.md,
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-  },
-  heroRowText: {
-    color:      c.text,
-    fontSize:   FontSizes.xs,
-    fontWeight: '700',
-  },
-
-  // ── World hero: carousel of recent international challenges ──────────────────
-  heroCarousel: { gap: 12, paddingRight: 4 },
-  heroSlide: {
-    width:             280,
-    paddingVertical:   14,
-    paddingHorizontal: 15,
-    borderRadius:      18,
-    borderWidth:       1.5,
-    gap:               10,
-  },
-  heroSlideHead:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  heroSlideAvatar: { width: 30, height: 30, borderRadius: 15 },
-  heroSlideAvatarLetter: { alignItems: 'center', justifyContent: 'center' },
-  heroSlideAvatarLetterText: { color: '#fff', fontWeight: '800', fontSize: 13 },
-  heroSlideOwner: { color: c.text, fontWeight: '800', fontSize: 14, flexShrink: 1, letterSpacing: -0.2 },
-  heroSlideType:  { marginLeft: 'auto', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
-  heroSlideTypeText: { color: '#fff', fontWeight: '800', fontSize: 10, letterSpacing: 0.4, textTransform: 'uppercase' },
-  heroSlideTitleWrap: { alignSelf: 'stretch' },
-  heroSlideTitle: { color: c.text, fontWeight: '800', fontSize: 17, letterSpacing: -0.3 },
-  heroSlideFoot:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  heroSlidePlace: { flex: 1, fontSize: 12.5, fontWeight: '700', color: c.text },
-  heroSlideArrow: { color: c.muted, fontWeight: '800', fontSize: 13 },
-  heroSeeAll: {
-    width: 130, borderRadius: 18, borderWidth: 1.5, borderColor: c.accent,
-    borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4,
-    backgroundColor: c.overlayWeak, paddingVertical: 14,
-  },
-  heroSeeAllIcon:  { fontSize: 22 },
-  heroSeeAllText:  { color: c.text, fontWeight: '800', fontSize: 14 },
-  heroSeeAllArrow: { color: c.accent, fontWeight: '800', fontSize: 16 },
-
-  // ── Error banner ─────────────────────────────────────────────────────────
-  errorBanner:     { backgroundColor: c.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorBannerText: { color: c.white, fontSize: FontSizes.xs, textAlign: 'center' },
-
-  // ── Secondary pills - 3 equal-width, evenly spaced (nearby / Hi locals /
-  // Hi later). 0-count pills get pillMuted (neutral border + muted text).
-  pillsRow: {
-    flexDirection: 'row',
-    gap:           8,
-  },
-  pill: {
-    flex:              1,
-    alignItems:        'center',
-    justifyContent:    'center',
-    paddingVertical:   9,
-    paddingHorizontal: 6,
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.md,
-    borderWidth:       1,
-    borderColor:       c.border,
-  },
-  pillAccent: {
-    borderColor: 'rgba(255,122,60,0.30)',
-  },
-  pillMuted: {
-    borderColor: c.border,
-  },
-  pillText: {
-    fontSize:   12,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  pillTextAccent: {
-    color: c.accent,
-  },
-  pillTextMuted: {
-    color: c.muted,
-  },
-
-  // ── Typing indicator bar ──────────────────────────────────────────────────
-  // Sits between messages and input. Subtle - just a dim text label.
-  typingBar: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   6,
-  },
-  typingText: {
-    fontSize:   FontSizes.xs,
-    color:      c.muted,
-    fontStyle:  'italic',
-  },
-  mentionNudge: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               10,
-    marginHorizontal:  Spacing.md,
-    marginBottom:      6,
-    paddingHorizontal: 12,
-    paddingVertical:   10,
-    borderRadius:      14,
-    backgroundColor:   'rgba(139,92,246,0.14)',
-    borderWidth:       1,
-    borderColor:       'rgba(139,92,246,0.45)',
-  },
-  mentionNudgeText:    { flex: 1, fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
-  mentionNudgeBtn:     { backgroundColor: '#8B5CF6', borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6 },
-  mentionNudgeBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
-  mentionNudgeDismiss: { color: c.muted, fontSize: 14, paddingHorizontal: 2 },
-
-  // ── Messages ─────────────────────────────────────────────────────────────
-  // web: .messages { padding: 22px 18px 14px; gap: 8px }
-  listContent: {
-    paddingTop:    28,
-    paddingBottom: 18,
-  },
-
-  // ── Empty state - web: .empty ─────────────────────────────────────────────
-  emptyWrap: {
-    flex:           1,
-    justifyContent: 'center',
-    alignItems:     'center',
-    padding:        Spacing.xl,
-    gap:            8,
-  },
-  emptyIcon:  { fontSize: 36 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '600', color: c.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-
-  // ── No city state ─────────────────────────────────────────────────────────
-  noCityWrap: {
-    flex:           1,
-    justifyContent: 'center',
-    alignItems:     'center',
-    padding:        Spacing.xl,
-    gap:            8,
-  },
-  noCityTitle:    { fontSize: FontSizes.md, fontWeight: '600', color: c.text, textAlign: 'center' },
-  noCitySubtitle: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
-  citiesBtn: {
-    marginTop:         Spacing.lg,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    backgroundColor:   c.accentDim,
-    borderRadius:      999,
-  },
-  citiesBtnText: { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
-
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container:      { flex: 1, backgroundColor: c.bg },
+  flex:           { flex: 1 },
+  header:         { gap: 10, paddingBottom: 8, backgroundColor: c.bg },
+  headerButtons:  { flexDirection: 'row', gap: 8 },
+  inset:          { paddingHorizontal: Spacing.md },
+  peopleChip:     { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: Radius.full,
+                    borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  peopleChipText: { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  errorBanner:    { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginHorizontal: Spacing.md, marginBottom: 6,
+                    paddingHorizontal: 12, borderRadius: Radius.button, borderWidth: Border, borderColor: c.red, backgroundColor: c.bg2 },
+  errorBannerText:{ flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
+  quietCard:      { minHeight: 44, justifyContent: 'center', marginHorizontal: Spacing.md, marginTop: 8, paddingVertical: 11, paddingHorizontal: 14,
+                    borderRadius: Radius.card, borderWidth: Border, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  quietCardText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center' },
+  center:         { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.lg },
+  listContent:    { paddingTop: 28, paddingBottom: 18 },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
-
-  // ── EventBannerStrip ──────────────────────────────────────────────────────
-  bannerStrip: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 14,
-    paddingVertical:   10,
-    backgroundColor:   'rgba(194,74,56,0.12)',
-    borderTopWidth:    1,
-    borderTopColor:    'rgba(255,122,60,0.22)',
-    gap:               10,
-  },
-  bannerText: {
-    flex:       1,
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.text,
-  },
-  bannerBtn: {
-    backgroundColor:   'rgba(255,122,60,0.55)',
-    borderRadius:      10,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    flexShrink:        0,
-  },
-  bannerBtnText: { color: '#fff', fontSize: FontSizes.sm, fontWeight: '700' },
-  bannerDismiss: { flexShrink: 0, padding: 2 },
-  bannerDismissText: { fontSize: 13, color: c.muted2 },
+  beginningText:  { fontSize: 12, fontWeight: '600', color: c.muted },
+  emptyWrap:      { flex: 1, justifyContent: 'center', padding: Spacing.lg },
+  notice:         { paddingHorizontal: Spacing.md, paddingBottom: 6 },
+  typingBar:      { paddingHorizontal: Spacing.md, paddingVertical: 6 },
+  typingText:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, fontStyle: 'italic' },
+  waSheet:        { maxHeight: '75%' },
+  waRow:          { paddingHorizontal: 0 },
 });

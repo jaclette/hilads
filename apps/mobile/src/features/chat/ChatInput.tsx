@@ -14,14 +14,13 @@ import {
   ActivityIndicator, StyleSheet, Platform, Alert, Linking, Keyboard,
   Animated,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Border, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import type { ReplyRef } from '@/types';
@@ -470,8 +469,8 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
             {replyingTo.type === 'image' ? t('photoLabel') : replyingTo.content}
           </Text>
         </View>
-        <TouchableOpacity onPress={onCancelReply} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={replyStyles.close}>✕</Text>
+        <TouchableOpacity style={replyStyles.close} onPress={onCancelReply} accessibilityRole="button" accessibilityLabel={t('close')}>
+          <Ionicons name="close" size={20} color={colors.muted} />
         </TouchableOpacity>
       </View>
     )}
@@ -485,8 +484,8 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
           <Text style={editStyles.name}>{t('editingBanner', { ns: 'chat' })}</Text>
           <Text style={editStyles.preview} numberOfLines={1}>{editing.content}</Text>
         </View>
-        <TouchableOpacity onPress={onCancelEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={editStyles.close}>✕</Text>
+        <TouchableOpacity style={replyStyles.close} onPress={onCancelEdit} accessibilityRole="button" accessibilityLabel={t('close')}>
+          <Ionicons name="close" size={20} color={colors.muted} />
         </TouchableOpacity>
       </View>
     )}
@@ -513,18 +512,13 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
           accessibilityRole="button"
           accessibilityLabel={t('composer.attach')}
         >
-          <LinearGradient
-            colors={[colors.primary, colors.primary]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.vibeBtn}
-          >
+          <View style={styles.vibeBtn}>
             {uploading ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={colors.white} />
             ) : (
-              <Ionicons name="add" size={24} color="#fff" />
+              <Ionicons name="add" size={24} color={colors.white} />
             )}
-          </LinearGradient>
+          </View>
         </Pressable>
       </Animated.View>
 
@@ -533,8 +527,11 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         style={[styles.emojiBtn, showEmoji && styles.emojiBtnActive]}
         onPress={handleEmojiToggle}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={t('composer.emoji')}
+        accessibilityState={{ selected: showEmoji }}
       >
-        <Text style={styles.emojiBtnIcon}>😊</Text>
+        <Ionicons name="happy-outline" size={24} color={showEmoji ? colors.primaryOnTint : colors.muted} />
       </TouchableOpacity>
 
       {/* ── Input - web: border-radius 28px, min-height 56px, padding 0 20px ── */}
@@ -545,7 +542,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         onChangeText={handleChangeText}
         onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; detectMention(selection.end); }}
         placeholder={placeholder ?? t('composer.placeholderDefault')}
-        placeholderTextColor={colors.muted2}
+        placeholderTextColor={colors.mutedDim}
         multiline
         maxLength={1000}
         returnKeyType="send"
@@ -556,21 +553,20 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         onBlur={() => { clearTypingTimer(); if (isTypingRef.current) { isTypingRef.current = false; onTypingStop?.(); } onBlur?.(); }}
       />
 
-      {/* ── Send button - web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}
-      {/* Gradient approximated with #B87228 (accent2 - warm amber end of gradient)  */}
-      {/* Web: disabled = opacity 0.3 on the same gradient (not a different bg)      */}
+      {/* ── Send button (chat.html): round, primary; dimmed while there's nothing to send. ── */}
       <TouchableOpacity
         style={[styles.sendBtnWrap, !canSend && styles.sendBtnDisabled]}
         onPress={handleSend}
         activeOpacity={0.8}
         disabled={!canSend}
+        accessibilityRole="button"
+        accessibilityLabel={t('composer.send')}
       >
         <View style={styles.sendBtn}>
           {sending ? (
             <ActivityIndicator size="small" color={colors.white} />
           ) : (
-            // Web: SendIcon SVG 20×20px, strokeWidth 2.5, color: #fff
-            <Ionicons name="send" size={20} color="#fff" />
+            <Ionicons name="send" size={19} color={colors.white} />
           )}
         </View>
       </TouchableOpacity>
@@ -583,140 +579,67 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-
-  // ── Composer container - aligned with the DM composer's compact rhythm
-  // (apps/mobile/app/dm/[id].tsx). Single source of truth for City + Event +
-  // Topic chats; shrinking values here propagates to all three.
+  // ── Composer (chat.html): single source of truth for City, Event, Topic and
+  // Challenge chats; the DM composer is its own (app/dm/[id].tsx).
   container: {
     flexDirection:     'row',
     alignItems:        'center',
-    paddingHorizontal: 14,
-    paddingVertical:   12,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   10,
     borderTopWidth:    1,
-    borderTopColor:    c.border,
-    backgroundColor:   c.elevated,
-    gap:               10,
-    shadowColor:       '#000',
-    shadowOffset:      { width: 0, height: -5 },
-    shadowOpacity:     0.28,
-    shadowRadius:      12,
-    elevation:         30, // must exceed tab bar (elevation: 24) to render above its upward shadow
+    borderTopColor:    c.line,
+    backgroundColor:   c.bg,
+    gap:               8,
   },
-
-  // ── Vibe ("+") button - 48px to match DM ──────────────────────────────────
+  // "+" (attach, plan, Hi now): round, primary.
   vibeBtnGlow: {
     flexShrink:    0,
-    borderRadius:  24,
-    shadowColor:   '#C24A38',
+    borderRadius:  Radius.full,
+    shadowColor:   c.primary,
     shadowOffset:  { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius:  14,
-    elevation:     10,
+    shadowOpacity: 0,
+    shadowRadius:  12,
   },
-  vibeBtn: {
-    width:          48,
-    height:         48,
-    borderRadius:   24,
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-
-  // ── Text input - 48px min, FontSizes.sm to match DM ───────────────────────
+  vibeBtn:  { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
   input: {
     flex:              1,
     flexShrink:        1,
     minWidth:          0,
-    minHeight:         48,
+    minHeight:         44,
     maxHeight:         130,
-    backgroundColor:   c.bg,
-    borderRadius:      999,
-    borderWidth:       1,
-    borderColor:       c.border,
-    paddingHorizontal: 20,
-    paddingVertical:   13,
+    backgroundColor:   c.bg2,
+    borderRadius:      22,
+    borderWidth:       Border,
+    borderColor:       c.line,
+    paddingHorizontal: 16,
+    paddingVertical:   11,
     color:             c.text,
-    fontSize:          FontSizes.sm,
+    fontSize:          15,
+    fontWeight:        '400',
     lineHeight:        20,
   },
-
-  // ── Send button - 48px to match DM ────────────────────────────────────────
-  sendBtnWrap: {
-    flexShrink:    0,
-    flexGrow:      0,
-    shadowColor:   '#C24A38',
-    shadowOffset:  { width: 0, height: 6 },
-    shadowOpacity: 0.32,
-    shadowRadius:  12,
-    elevation:     8,
-  },
-  sendBtn: {
-    width:           48,
-    height:          48,
-    borderRadius:    24,
-    backgroundColor: '#B87228',   // web gradient approximation (warm amber end)
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  sendBtnDisabled: {
-    opacity:       0.3,
-    shadowOpacity: 0,
-    elevation:     0,
-  },
-
-  btnDisabled: { opacity: 0.35 },
-
-  emojiBtn: {
-    width:           36,
-    height:          36,
-    flexShrink:      0,
-    alignItems:      'center',
-    justifyContent:  'center',
-    borderRadius:    18,
-    backgroundColor: c.overlayWeak,
-    borderWidth:     1,
-    borderColor:     c.overlay,
-    opacity:         0.6,
-  },
-  emojiBtnActive: {
-    opacity:         1,
-    backgroundColor: c.overlay,
-  },
-  emojiBtnIcon: {
-    fontSize:   18,
-    lineHeight: 22,
-  },
+  sendBtnWrap:     { flexShrink: 0, flexGrow: 0 },
+  sendBtn:         { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  sendBtnDisabled: { opacity: 0.35 },
+  btnDisabled:     { opacity: 0.35 },
+  emojiBtn:        { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: Radius.full, marginHorizontal: -4 },
+  emojiBtnActive:  { backgroundColor: c.primaryTint },
 });
 
 const makeReplyStyles = (c: ThemeColors) => StyleSheet.create({
-  strip: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 16,
-    paddingVertical:   8,
-    backgroundColor:   c.overlayWeak,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-    gap:               10,
-  },
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+             backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line, borderLeftWidth: 3, borderLeftColor: c.primary },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.accent, marginBottom: 2 },
-  preview: { fontSize: 12, color: c.muted2 },
-  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
+  name:    { fontSize: 12, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
+  preview: { fontSize: 12, fontWeight: '400', color: c.muted },
+  close:   { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
+// Editing: same strip, the label on the primary tint.
 const makeEditStyles = (c: ThemeColors) => StyleSheet.create({
-  strip: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 16,
-    paddingVertical:   8,
-    backgroundColor:   'rgba(255,122,60,0.10)',
-    borderTopWidth:    1,
-    borderTopColor:    'rgba(255,122,60,0.22)',
-    gap:               10,
-  },
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+             backgroundColor: c.primaryTint, borderTopWidth: 1, borderTopColor: c.line },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: '#FF7A3C', marginBottom: 2 },
-  preview: { fontSize: 12, color: c.muted2 },
-  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
+  name:    { fontSize: 12, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
+  preview: { fontSize: 12, fontWeight: '400', color: c.primaryOnTint },
 });

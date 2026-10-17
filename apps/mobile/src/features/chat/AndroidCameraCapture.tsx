@@ -21,8 +21,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
-import { type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Button, IconButton } from '@/ui';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -45,6 +47,8 @@ const JPEG_QUALITY = 0.78;
 
 export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const { t } = useTranslation('common');
 
   const cameraRef = useRef<CameraView>(null);
   const insets    = useSafeAreaInsets();
@@ -160,13 +164,10 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
         {/* ── Permission denied ─────────────────────────────────────────── */}
         {!permission.granted ? (
           <View style={styles.center}>
-            <Text style={styles.permText}>Camera access is required to take photos.</Text>
-            <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
-              <Text style={styles.permBtnText}>Grant permission</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.permBtn, styles.permBtnSecondary]} onPress={onClose}>
-              <Text style={styles.permBtnText}>Cancel</Text>
-            </TouchableOpacity>
+            <View style={styles.permIcon}><Ionicons name="camera-outline" size={34} color={colors.primaryOnTint} /></View>
+            <Text style={styles.permText}>{t('composer.cameraPermBody')}</Text>
+            <Button label={t('camera.grant')} onPress={requestPermission} style={styles.permBtn} />
+            <Button variant="secondary" label={t('cancel')} onPress={onClose} style={styles.permBtn} />
           </View>
 
         /* ── Preview screen ─────────────────────────────────────────────── */
@@ -176,9 +177,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
             <Image source={{ uri: capturedUri }} style={styles.previewImage} resizeMode="cover" />
 
             {/* Close button (top-left) */}
-            <TouchableOpacity style={styles.previewClose} onPress={onClose}>
-              <Ionicons name="close" size={26} color="#fff" />
-            </TouchableOpacity>
+            <IconButton icon="close" tone="onPhoto" iconSize={26} label={t('close')} onPress={onClose} style={styles.previewClose} />
 
             {/* Action bar - paddingBottom absorbs bottom nav bar on Android */}
             <View style={[styles.previewBar, insets.bottom > 0 && { paddingBottom: 20 + insets.bottom }]}>
@@ -189,27 +188,14 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
                 onPress={handleRetake}
                 disabled={compressing}
                 activeOpacity={0.7}
+                accessibilityRole="button"
               >
-                <Ionicons name="camera-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-                <Text style={styles.retakeBtnText}>Retake</Text>
+                <Ionicons name="camera-outline" size={20} color={colors.white} />
+                <Text style={styles.retakeBtnText}>{t('camera.retake')}</Text>
               </TouchableOpacity>
 
               {/* Use Photo - primary CTA */}
-              <TouchableOpacity
-                style={[styles.useBtn, compressing && styles.btnDisabled]}
-                onPress={handleUsePhoto}
-                disabled={compressing}
-                activeOpacity={0.85}
-              >
-                {compressing ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <>
-                    <Text style={styles.useBtnText}>Use Photo</Text>
-                    <Ionicons name="checkmark" size={20} color="#fff" style={{ marginLeft: 6 }} />
-                  </>
-                )}
-              </TouchableOpacity>
+              <Button icon="checkmark" label={t('camera.usePhoto')} onPress={handleUsePhoto} loading={compressing} style={styles.useBtn} />
 
             </View>
           </View>
@@ -230,12 +216,12 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 
             {/* ── Top bar: close + flash ───────────────────────────────── */}
             <View style={styles.topBar}>
-              <TouchableOpacity style={styles.iconBtn} onPress={onClose}>
-                <Ionicons name="close" size={28} color="#fff" />
+              <TouchableOpacity style={styles.iconBtn} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('close')}>
+                <Ionicons name="close" size={28} color={colors.white} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.iconBtn} onPress={cycleFlash}>
-                <Ionicons name={flashIcon} size={26} color={flash !== 'off' ? '#FFD60A' : '#fff'} />
+              <TouchableOpacity style={styles.iconBtn} onPress={cycleFlash} accessibilityRole="button" accessibilityLabel={t('camera.flash')}>
+                <Ionicons name={flashIcon} size={26} color={flash !== 'off' ? colors.gold : colors.white} />
               </TouchableOpacity>
             </View>
 
@@ -251,9 +237,11 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
                 onPress={takePhoto}
                 disabled={!ready || taking}
                 activeOpacity={0.75}
+                accessibilityRole="button"
+                accessibilityLabel={t('composer.takePhoto')}
               >
                 {taking
-                  ? <ActivityIndicator size="small" color="#fff" />
+                  ? <ActivityIndicator size="small" color={colors.white} />
                   : <View style={styles.shutterInner} />}
               </TouchableOpacity>
 
@@ -266,8 +254,10 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
                   console.log('[android-camera] flip →', facing === 'back' ? 'front' : 'back');
                 }}
                 disabled={taking}
+                accessibilityRole="button"
+                accessibilityLabel={t('camera.flip')}
               >
-                <Ionicons name="camera-reverse-outline" size={28} color="#fff" />
+                <Ionicons name="camera-reverse-outline" size={28} color={colors.white} />
               </TouchableOpacity>
 
             </View>
@@ -282,179 +272,30 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  // The camera and its preview stay black in both themes; the permission screen follows the theme.
+  root:   { flex: 1, backgroundColor: c.photoScrim },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: Spacing.lg, backgroundColor: c.bg },
+  permIcon: { width: 72, height: 72, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  permText: { color: c.text, fontSize: 16, fontWeight: '600', textAlign: 'center', lineHeight: 22, marginBottom: 8 },
+  permBtn:  { alignSelf: 'stretch' },
 
-  root: {
-    flex:            1,
-    backgroundColor: '#000',
-  },
+  camera:    { flex: 1 },
+  topBar:    { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+               paddingTop: 8, paddingHorizontal: 8, backgroundColor: c.photoControl },
+  bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around',
+               paddingBottom: 16, backgroundColor: c.photoControl },
+  iconBtn:   { width: 60, height: 60, alignItems: 'center', justifyContent: 'center' },
+  shutter:         { width: 78, height: 78, borderRadius: Radius.full, borderWidth: 4, borderColor: c.white, alignItems: 'center', justifyContent: 'center' },
+  shutterInner:    { width: 60, height: 60, borderRadius: Radius.full, backgroundColor: c.white },
+  shutterDisabled: { opacity: 0.4 },
 
-  center: {
-    flex:           1,
-    alignItems:     'center',
-    justifyContent: 'center',
-    padding:        32,
-  },
-
-  // ── Camera ────────────────────────────────────────────────────────────────
-
-  camera: {
-    flex: 1,
-  },
-
-  topBar: {
-    position:        'absolute',
-    top:             0,
-    left:            0,
-    right:           0,
-    flexDirection:   'row',
-    justifyContent:  'space-between',
-    alignItems:      'center',
-    paddingTop:      8,
-    paddingHorizontal: 8,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-  },
-
-  bottomBar: {
-    position:        'absolute',
-    bottom:          0,
-    left:            0,
-    right:           0,
-    height:          120,
-    flexDirection:   'row',
-    alignItems:      'center',
-    justifyContent:  'space-around',
-    paddingBottom:   16,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-  },
-
-  iconBtn: {
-    width:          60,
-    height:         60,
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-
-  shutter: {
-    width:           78,
-    height:          78,
-    borderRadius:    39,
-    borderWidth:     4,
-    borderColor:     '#fff',
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-
-  shutterInner: {
-    width:           60,
-    height:          60,
-    borderRadius:    30,
-    backgroundColor: '#fff',
-  },
-
-  shutterDisabled: {
-    opacity: 0.4,
-  },
-
-  // ── Preview ───────────────────────────────────────────────────────────────
-
-  previewRoot: {
-    flex:            1,
-    backgroundColor: '#000',
-  },
-
-  previewImage: {
-    flex: 1,
-  },
-
-  previewClose: {
-    position:        'absolute',
-    top:             12,
-    left:            12,
-    width:           44,
-    height:          44,
-    borderRadius:    22,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-
-  previewBar: {
-    position:        'absolute',
-    bottom:          0,
-    left:            0,
-    right:           0,
-    flexDirection:   'row',
-    alignItems:      'center',
-    justifyContent:  'space-between',
-    paddingHorizontal: 20,
-    paddingVertical:  20,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    gap:             12,
-  },
-
-  retakeBtn: {
-    flexDirection:   'row',
-    alignItems:      'center',
-    paddingHorizontal: 20,
-    paddingVertical:   13,
-    borderRadius:    28,
-    borderWidth:     1.5,
-    borderColor:     c.overlayStrong,
-  },
-
-  retakeBtnText: {
-    color:      '#fff',
-    fontSize:   15,
-    fontWeight: '500',
-  },
-
-  useBtn: {
-    flex:            1,
-    flexDirection:   'row',
-    alignItems:      'center',
-    justifyContent:  'center',
-    paddingVertical: 14,
-    borderRadius:    28,
-    backgroundColor: c.accent,
-  },
-
-  useBtnText: {
-    color:      '#fff',
-    fontSize:   16,
-    fontWeight: '700',
-    letterSpacing: 0.2,
-  },
-
-  btnDisabled: {
-    opacity: 0.5,
-  },
-
-  // ── Permission ────────────────────────────────────────────────────────────
-
-  permText: {
-    color:        '#fff',
-    fontSize:     16,
-    textAlign:    'center',
-    marginBottom: 28,
-    lineHeight:   22,
-  },
-
-  permBtn: {
-    backgroundColor:   c.accent,
-    paddingHorizontal: 28,
-    paddingVertical:   13,
-    borderRadius:      28,
-  },
-
-  permBtnSecondary: {
-    marginTop:       12,
-    backgroundColor: c.overlayStrong,
-  },
-
-  permBtnText: {
-    color:      '#fff',
-    fontSize:   15,
-    fontWeight: '600',
-  },
-
+  previewRoot:  { flex: 1, backgroundColor: c.photoScrim },
+  previewImage: { flex: 1 },
+  previewClose: { position: 'absolute', top: 12, left: 12 },
+  previewBar:   { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                  gap: 12, paddingHorizontal: 20, paddingVertical: 20, backgroundColor: c.photoScrim },
+  retakeBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 48, paddingHorizontal: 20, borderRadius: Radius.button,
+                   backgroundColor: c.photoControl },
+  retakeBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  useBtn:        { flex: 1 },
 });

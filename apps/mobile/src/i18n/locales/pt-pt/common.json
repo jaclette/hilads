@@ -74,7 +74,9 @@
     "placeholderEvent": "Conversa com quem vai 🎉",
     "placeholderChallenge": "Apoia-os ou partilha a tua dica 🔥",
     "endedEvent": "Este evento terminou",
-    "closedChallenge": "Este desafio está fechado"
+    "closedChallenge": "Este desafio está fechado",
+    "send": "Enviar",
+    "emoji": "Emojis"
   },
   "modeHeading": "MODO",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "O mapa de spots chega em breve.",
   "firstLaunch": "Um challenge local por dia.",
-  "signUp": "Registar"
+  "signUp": "Registar",
+  "open": "Abrir",
+  "camera": {
+    "grant": "Permitir câmara",
+    "retake": "Tirar outra",
+    "usePhoto": "Usar fotografia",
+    "flash": "Flash",
+    "flip": "Trocar câmara"
+  }
 }

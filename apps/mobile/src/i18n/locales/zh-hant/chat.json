@@ -140,5 +140,13 @@
     "arrivals_other": "本週新來 {{count}} 人",
     "nearby_one": "{{count}} 人在這裡",
     "nearby_other": "{{count}} 人在這裡"
-  }
+  },
+  "mentionNudge": "有人提到了你！建立帳號，不錯過任何訊息。",
+  "guestOnline": "訪客 · 在線",
+  "tapToOpenMaps": "點按在地圖中開啟",
+  "campaignAllCities": "所有城市",
+  "campaignWorld": "全球",
+  "campaignCta": "雙倍積分 · 接受挑戰",
+  "imageRetry": "點按重試",
+  "imageUnavailable": "圖片無法使用"
 }

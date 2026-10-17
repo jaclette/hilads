@@ -140,5 +140,13 @@
     "arrivals_other": "มาถึงสัปดาห์นี้ {{count}} คน",
     "nearby_one": "อยู่ที่นี่ {{count}} คน",
     "nearby_other": "อยู่ที่นี่ {{count}} คน"
-  }
+  },
+  "mentionNudge": "มีคนพูดถึงคุณ! สร้างบัญชีเพื่อไม่พลาดอะไรเลย",
+  "guestOnline": "ผู้เยี่ยมชม · ออนไลน์",
+  "tapToOpenMaps": "แตะเพื่อเปิดในแผนที่",
+  "campaignAllCities": "ทุกเมือง",
+  "campaignWorld": "ทั่วโลก",
+  "campaignCta": "แต้มสองเท่า · รับคำท้า",
+  "imageRetry": "แตะเพื่อลองอีกครั้ง",
+  "imageUnavailable": "ไม่มีรูปภาพ"
 }

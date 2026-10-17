@@ -74,7 +74,9 @@
     "placeholderEvent": "Chatte mit den Teilnehmern 🎉",
     "placeholderChallenge": "Feuere sie an oder teile deinen Tipp 🔥",
     "endedEvent": "Dieses Event ist vorbei",
-    "closedChallenge": "Diese Challenge ist geschlossen"
+    "closedChallenge": "Diese Challenge ist geschlossen",
+    "send": "Senden",
+    "emoji": "Emojis"
   },
   "modeHeading": "MODUS",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "Die Karte der Spots kommt bald.",
   "firstLaunch": "Eine lokale Challenge pro Tag.",
-  "signUp": "Registrieren"
+  "signUp": "Registrieren",
+  "open": "Öffnen",
+  "camera": {
+    "grant": "Kamera erlauben",
+    "retake": "Neu aufnehmen",
+    "usePhoto": "Foto verwenden",
+    "flash": "Blitz",
+    "flip": "Kamera wechseln"
+  }
 }

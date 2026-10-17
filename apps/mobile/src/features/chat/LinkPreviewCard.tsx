@@ -28,7 +28,7 @@ export function LinkPreviewCard({ url, isMine = false }: Props) {
   const onOpen = () => { Linking.openURL(url).catch(() => {}); };
 
   return (
-    <Pressable onPress={onOpen} style={[styles.card, isMine && styles.cardMine]}>
+    <Pressable onPress={onOpen} style={[styles.card, isMine && styles.cardMine]} accessibilityRole="link">
       {preview.image && !imgError && (
         <Image
           source={{ uri: preview.image }}
@@ -61,51 +61,14 @@ export function LinkPreviewCard({ url, isMine = false }: Props) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card: {
-    marginTop:       6,
-    flexDirection:   'row',
-    borderRadius:    10,
-    overflow:        'hidden',
-    backgroundColor: c.overlay,
-    borderWidth:     StyleSheet.hairlineWidth,
-    borderColor:     c.separator,
-    maxWidth:        320,
-    alignSelf:       'stretch',
-  },
-  cardMine: {
-    backgroundColor: 'rgba(0,0,0,0.18)',
-    borderColor:     'rgba(0,0,0,0.20)',
-  },
-  image: {
-    width:           80,
-    height:          80,
-    backgroundColor: 'rgba(0,0,0,0.25)',
-  },
-  body: {
-    flex:          1,
-    paddingHorizontal: 10,
-    paddingVertical:    8,
-    justifyContent:    'center',
-    gap:                2,
-  },
-  site: {
-    fontSize:      10,
-    letterSpacing: 0.5,
-    color:         c.muted2,
-  },
-  title: {
-    fontSize:   13,
-    fontWeight: '600',
-    color:      c.text,
-    lineHeight: 17,
-  },
-  desc: {
-    fontSize:   12,
-    color:      c.muted,
-    lineHeight: 16,
-    marginTop:  1,
-  },
-  textMine: {
-    color: 'rgba(255,255,255,0.96)',
-  },
+  card:     { marginTop: 6, flexDirection: 'row', borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg2,
+              borderWidth: 1, borderColor: c.line, maxWidth: 320, alignSelf: 'stretch' },
+  // On the caramel bubble: a slightly darker inset, white text.
+  cardMine: { backgroundColor: c.caramel, borderColor: c.onCaramelMuted },
+  image:    { width: 80, height: 80, backgroundColor: c.bg3 },
+  body:     { flex: 1, paddingHorizontal: 10, paddingVertical: 8, justifyContent: 'center', gap: 2 },
+  site:     { fontSize: 11, fontWeight: '600', letterSpacing: 0.5, color: c.muted },
+  title:    { fontSize: 13, fontWeight: '700', color: c.text, lineHeight: 17 },
+  desc:     { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16, marginTop: 1 },
+  textMine: { color: c.white },
 });

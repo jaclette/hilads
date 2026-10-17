@@ -74,7 +74,9 @@
     "placeholderEvent": "พูดคุยกับผู้เข้าร่วม 🎉",
     "placeholderChallenge": "เชียร์พวกเขา หรือแชร์เคล็ดลับของคุณ 🔥",
     "endedEvent": "อีเวนต์นี้จบแล้ว",
-    "closedChallenge": "ชาเลนจ์นี้ปิดแล้ว"
+    "closedChallenge": "ชาเลนจ์นี้ปิดแล้ว",
+    "send": "ส่ง",
+    "emoji": "อีโมจิ"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "แผนที่สปอตกำลังจะมาเร็วๆ นี้",
   "firstLaunch": "วันละหนึ่ง challenge ท้องถิ่น",
-  "signUp": "สมัคร"
+  "signUp": "สมัคร",
+  "open": "เปิด",
+  "camera": {
+    "grant": "อนุญาตกล้อง",
+    "retake": "ถ่ายใหม่",
+    "usePhoto": "ใช้รูปนี้",
+    "flash": "แฟลช",
+    "flip": "สลับกล้อง"
+  }
 }

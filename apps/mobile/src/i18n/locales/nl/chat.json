@@ -140,5 +140,13 @@
     "arrivals_other": "{{count}} deze week aangekomen",
     "nearby_one": "{{count}} nu hier",
     "nearby_other": "{{count}} nu hier"
-  }
+  },
+  "mentionNudge": "Je wordt genoemd! Maak een account aan zodat je niets mist.",
+  "guestOnline": "Gast · online",
+  "tapToOpenMaps": "Tik om te openen in kaarten",
+  "campaignAllCities": "Alle steden",
+  "campaignWorld": "Wereld",
+  "campaignCta": "Dubbele punten · Doe de challenge",
+  "imageRetry": "Tik om opnieuw te proberen",
+  "imageUnavailable": "Afbeelding niet beschikbaar"
 }

@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { Reaction } from '@/types';
-import { type ThemeColors } from '@/constants';
+import { Border, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
@@ -29,6 +29,10 @@ export function ReactionPills({ reactions, onReact, isMine }: Props) {
           style={[styles.pill, r.self && styles.pillActive]}
           onPress={() => onReact(r.emoji)}
           activeOpacity={0.7}
+          hitSlop={{ top: 6, bottom: 6, left: 2, right: 2 }}
+          accessibilityRole="button"
+          accessibilityLabel={`${r.emoji} ${r.count}`}
+          accessibilityState={{ selected: r.self }}
         >
           <Text style={styles.emoji}>{r.emoji}</Text>
           {r.count > 1 && <Text style={[styles.count, r.self && styles.countActive]}>{r.count}</Text>}
@@ -39,42 +43,13 @@ export function ReactionPills({ reactions, onReact, isMine }: Props) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row: {
-    flexDirection:  'row',
-    flexWrap:       'wrap',
-    gap:            4,
-    marginTop:      4,
-    paddingLeft:    8,
-  },
-  rowRight: {
-    justifyContent: 'flex-end',
-    paddingLeft:    0,
-    paddingRight:   8,
-  },
-  pill: {
-    flexDirection:   'row',
-    alignItems:      'center',
-    gap:             3,
-    backgroundColor: c.overlay,
-    borderRadius:    12,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderWidth:     1,
-    borderColor:     'transparent',
-  },
-  pillActive: {
-    backgroundColor: 'rgba(255,122,60,0.18)',
-    borderColor:     c.accent,
-  },
-  emoji: {
-    fontSize: 14,
-  },
-  count: {
-    fontSize:  12,
-    color:     c.muted2,
-    fontWeight: '600',
-  },
-  countActive: {
-    color: c.accentText,
-  },
+  row:         { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 4, paddingLeft: 4 },
+  rowRight:    { justifyContent: 'flex-end', paddingLeft: 0, paddingRight: 4 },
+  // 32 high; hitSlop brings the touch area to 44.
+  pill:        { flexDirection: 'row', alignItems: 'center', gap: 4, height: 32, paddingHorizontal: 10, borderRadius: Radius.full,
+                 borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  pillActive:  { backgroundColor: c.primaryTint, borderColor: c.primary },
+  emoji:       { fontSize: 14 },
+  count:       { fontSize: 12, fontWeight: '700', color: c.muted },
+  countActive: { color: c.primaryOnTint },
 });

@@ -74,7 +74,9 @@
     "placeholderEvent": "जाने वालों से बात कीजिए 🎉",
     "placeholderChallenge": "हौसला बढ़ाइए या अपना टिप शेयर कीजिए 🔥",
     "endedEvent": "यह इवेंट ख़त्म हो गया",
-    "closedChallenge": "यह चैलेंज बंद है"
+    "closedChallenge": "यह चैलेंज बंद है",
+    "send": "भेजो",
+    "emoji": "इमोजी"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "स्पॉट्स का मैप जल्द आ रहा है।",
   "firstLaunch": "हर दिन एक लोकल challenge.",
-  "signUp": "साइन अप"
+  "signUp": "साइन अप",
+  "open": "खोलो",
+  "camera": {
+    "grant": "कैमरा की अनुमति दो",
+    "retake": "फिर से लो",
+    "usePhoto": "फोटो इस्तेमाल करो",
+    "flash": "फ्लैश",
+    "flip": "कैमरा बदलो"
+  }
 }

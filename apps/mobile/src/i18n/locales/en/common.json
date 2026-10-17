@@ -76,7 +76,9 @@
     "placeholderCity": "Say hi to your city 👋",
     "placeholderHangout": "Let them know you're in 🙌",
     "placeholderEvent": "Chat with attendees 🎉",
-    "placeholderChallenge": "Cheer them on, or share your tip 🔥"
+    "placeholderChallenge": "Cheer them on, or share your tip 🔥",
+    "send": "Send",
+    "emoji": "Emoji"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "The map of spots is coming soon.",
   "firstLaunch": "One local challenge a day.",
-  "signUp": "Sign up"
+  "signUp": "Sign up",
+  "open": "Open",
+  "camera": {
+    "grant": "Allow camera",
+    "retake": "Retake",
+    "usePhoto": "Use photo",
+    "flash": "Flash",
+    "flip": "Switch camera"
+  }
 }

@@ -140,5 +140,13 @@
     "arrivals_other": "{{count}} tiba minggu ini",
     "nearby_one": "{{count}} di sini sekarang",
     "nearby_other": "{{count}} di sini sekarang"
-  }
+  },
+  "mentionNudge": "Kamu disebut! Buat akun supaya kamu tidak ketinggalan.",
+  "guestOnline": "Tamu · online",
+  "tapToOpenMaps": "Ketuk untuk membuka di peta",
+  "campaignAllCities": "Semua kota",
+  "campaignWorld": "Dunia",
+  "campaignCta": "Poin ganda · Ikuti tantangannya",
+  "imageRetry": "Ketuk untuk mencoba lagi",
+  "imageUnavailable": "Gambar tidak tersedia"
 }

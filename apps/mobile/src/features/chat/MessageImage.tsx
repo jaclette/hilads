@@ -23,6 +23,10 @@ import {
   type ImageStyle, type StyleProp,
 } from 'react-native';
 import { thumbUrl } from '@/lib/imageThumb';
+import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 interface Props {
   uri: string | undefined | null;
@@ -50,6 +54,9 @@ function fitBox(ratio: number) {
 }
 
 export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, imageStyle, surface = 'msg' }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const { t } = useTranslation('chat');
   const [loadFailed, setLoadFailed] = useState(false);
   // Natural aspect ratio (w/h), learned from onLoad. null → fall back to the
   // caller's box until known; 'contain' still shows the full image meanwhile.
@@ -98,14 +105,14 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
       />
       {isSending && !loadFailed && (
         <View style={styles.overlay}>
-          <ActivityIndicator size="small" color="rgba(255,255,255,0.85)" />
+          <ActivityIndicator size="small" color={colors.white} />
         </View>
       )}
       {showFailed && (
         <View style={styles.overlay}>
-          <Text style={styles.failedIcon}>!</Text>
+          <Ionicons name={isFailed ? 'refresh' : 'alert-circle-outline'} size={24} color={colors.white} />
           <Text style={styles.failedLabel}>
-            {isFailed ? 'Tap to retry' : 'Image unavailable'}
+            {isFailed ? t('imageRetry') : t('imageUnavailable')}
           </Text>
         </View>
       )}
@@ -113,27 +120,7 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    position:        'absolute',
-    top:             0,
-    left:            0,
-    right:           0,
-    bottom:          0,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    alignItems:      'center',
-    justifyContent:  'center',
-    gap:             4,
-  },
-  failedIcon: {
-    color:      '#fff',
-    fontSize:   22,
-    fontWeight: '800',
-  },
-  failedLabel: {
-    color:         'rgba(255,255,255,0.85)',
-    fontSize:      11,
-    fontWeight:    '600',
-    letterSpacing: 0.3,
-  },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  overlay:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: 4 },
+  failedLabel: { color: c.white, fontSize: 12, fontWeight: '700' },
 });

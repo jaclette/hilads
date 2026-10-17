@@ -56,6 +56,8 @@ export function EmojiPanel({ onSelect }: Props) {
             style={styles.item}
             onPress={() => onSelect(emoji)}
             activeOpacity={0.6}
+            accessibilityRole="button"
+            accessibilityLabel={emoji}
           >
             <Text style={styles.emoji}>{emoji}</Text>
           </TouchableOpacity>
@@ -68,9 +70,9 @@ export function EmojiPanel({ onSelect }: Props) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   panel: {
     maxHeight:       220,
-    backgroundColor: c.elevated,
+    backgroundColor: c.bg2,
     borderTopWidth:  1,
-    borderTopColor:  c.border,
+    borderTopColor:  c.line,
   },
   grid: {
     flexDirection: 'row',

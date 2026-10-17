@@ -74,7 +74,9 @@
     "placeholderEvent": "Chatta con i partecipanti 🎉",
     "placeholderChallenge": "Tifa o condividi il tuo tip 🔥",
     "endedEvent": "Questo evento è terminato",
-    "closedChallenge": "Questa sfida è chiusa"
+    "closedChallenge": "Questa sfida è chiusa",
+    "send": "Invia",
+    "emoji": "Emoji"
   },
   "modeHeading": "MODALITÀ",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "La mappa degli spot arriva presto.",
   "firstLaunch": "Un challenge locale al giorno.",
-  "signUp": "Registrati"
+  "signUp": "Registrati",
+  "open": "Apri",
+  "camera": {
+    "grant": "Consenti la fotocamera",
+    "retake": "Rifai",
+    "usePhoto": "Usa la foto",
+    "flash": "Flash",
+    "flip": "Cambia fotocamera"
+  }
 }

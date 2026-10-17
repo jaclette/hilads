@@ -74,7 +74,9 @@
     "placeholderEvent": "和參加的人聊聊 🎉",
     "placeholderChallenge": "為他們加油，或分享你的小提示 🔥",
     "endedEvent": "此活動已結束",
-    "closedChallenge": "此挑戰已關閉"
+    "closedChallenge": "此挑戰已關閉",
+    "send": "傳送",
+    "emoji": "表情"
   },
   "modeHeading": "模式",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "地點地圖即將推出。",
   "firstLaunch": "每天一個在地 challenge。",
-  "signUp": "註冊"
+  "signUp": "註冊",
+  "open": "開啟",
+  "camera": {
+    "grant": "允許使用相機",
+    "retake": "重拍",
+    "usePhoto": "使用照片",
+    "flash": "閃光燈",
+    "flip": "切換相機"
+  }
 }

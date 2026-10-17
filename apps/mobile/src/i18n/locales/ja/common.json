@@ -74,7 +74,9 @@
     "placeholderEvent": "参加者と話そう 🎉",
     "placeholderChallenge": "応援したり、コツを共有しよう 🔥",
     "endedEvent": "このイベントは終了しました",
-    "closedChallenge": "このチャレンジは終了しました"
+    "closedChallenge": "このチャレンジは終了しました",
+    "send": "送信",
+    "emoji": "絵文字"
   },
   "modeHeading": "モード",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "スポットのマップは近日公開です。",
   "firstLaunch": "1日1つのローカル challenge。",
-  "signUp": "登録する"
+  "signUp": "登録する",
+  "open": "開く",
+  "camera": {
+    "grant": "カメラを許可",
+    "retake": "撮り直す",
+    "usePhoto": "この写真を使う",
+    "flash": "フラッシュ",
+    "flip": "カメラを切り替え"
+  }
 }

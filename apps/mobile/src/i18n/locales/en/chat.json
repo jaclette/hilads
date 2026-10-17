@@ -140,5 +140,13 @@
     "arrivals_other": "{{count}} arrived this week",
     "nearby_one": "{{count}} here now",
     "nearby_other": "{{count}} here now"
-  }
+  },
+  "mentionNudge": "You're getting mentioned! Create an account so you never miss it.",
+  "guestOnline": "Guest · online",
+  "tapToOpenMaps": "Tap to open in maps",
+  "campaignAllCities": "All cities",
+  "campaignWorld": "World",
+  "campaignCta": "Double points · Take the challenge",
+  "imageRetry": "Tap to retry",
+  "imageUnavailable": "Image unavailable"
 }

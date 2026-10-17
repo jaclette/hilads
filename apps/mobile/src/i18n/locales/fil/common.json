@@ -74,7 +74,9 @@
     "placeholderEvent": "Mag-chat sa mga papasok 🎉",
     "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo 🔥",
     "endedEvent": "Tapos na ang event na ito",
-    "closedChallenge": "Sarado na ang challenge na ito"
+    "closedChallenge": "Sarado na ang challenge na ito",
+    "send": "Ipadala",
+    "emoji": "Emoji"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "Malapit nang dumating ang mapa ng mga spot.",
   "firstLaunch": "Isang local challenge bawat araw.",
-  "signUp": "Mag-sign up"
+  "signUp": "Mag-sign up",
+  "open": "Buksan",
+  "camera": {
+    "grant": "Payagan ang camera",
+    "retake": "Kunan ulit",
+    "usePhoto": "Gamitin ang larawan",
+    "flash": "Flash",
+    "flip": "Palitan ang camera"
+  }
 }

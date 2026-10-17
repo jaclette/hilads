@@ -74,7 +74,9 @@
     "placeholderCity": "Chào thành phố của bạn 👋",
     "placeholderHangout": "Báo với mọi người bạn tham gia 🙌",
     "placeholderEvent": "Trò chuyện với người tham dự 🎉",
-    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn 🔥"
+    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn 🔥",
+    "send": "Gửi",
+    "emoji": "Biểu tượng cảm xúc"
   },
   "modeHeading": "CHẾ ĐỘ",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "Bản đồ các spot sắp ra mắt.",
   "firstLaunch": "Mỗi ngày một challenge địa phương.",
-  "signUp": "Đăng ký"
+  "signUp": "Đăng ký",
+  "open": "Mở",
+  "camera": {
+    "grant": "Cho phép camera",
+    "retake": "Chụp lại",
+    "usePhoto": "Dùng ảnh này",
+    "flash": "Đèn flash",
+    "flip": "Đổi camera"
+  }
 }

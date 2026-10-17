@@ -13,5 +13,6 @@ export { ModeLabel } from './ModeLabel';
 export { Screen } from './Screen';
 export { ScreenHeader } from './ScreenHeader';
 export { SectionTitle } from './SectionTitle';
+export { Segmented } from './Segmented';
 export { Sheet } from './Sheet';
 export { TextField } from './TextField';

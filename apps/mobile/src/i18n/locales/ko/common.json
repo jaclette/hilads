@@ -74,7 +74,9 @@
     "placeholderEvent": "참가자들과 이야기해요 🎉",
     "placeholderChallenge": "응원하거나 팁을 공유해요 🔥",
     "endedEvent": "이 이벤트는 종료되었어요",
-    "closedChallenge": "이 챌린지는 종료되었어요"
+    "closedChallenge": "이 챌린지는 종료되었어요",
+    "send": "보내기",
+    "emoji": "이모지"
   },
   "modeHeading": "모드",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "스팟 지도가 곧 나와요.",
   "firstLaunch": "하루에 하나, 로컬 challenge.",
-  "signUp": "가입하기"
+  "signUp": "가입하기",
+  "open": "열기",
+  "camera": {
+    "grant": "카메라 허용",
+    "retake": "다시 찍기",
+    "usePhoto": "사진 사용",
+    "flash": "플래시",
+    "flip": "카메라 전환"
+  }
 }

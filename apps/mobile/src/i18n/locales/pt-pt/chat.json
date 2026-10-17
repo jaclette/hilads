@@ -140,5 +140,13 @@
     "arrivals_other": "{{count}} chegaram esta semana",
     "nearby_one": "{{count}} aqui agora",
     "nearby_other": "{{count}} aqui agora"
-  }
+  },
+  "mentionNudge": "Estão a mencionar-te! Cria uma conta para nunca perderes nada.",
+  "guestOnline": "Convidado · online",
+  "tapToOpenMaps": "Toca para abrir no mapa",
+  "campaignAllCities": "Todas as cidades",
+  "campaignWorld": "Mundo",
+  "campaignCta": "Pontos a dobrar · Aceita o desafio",
+  "imageRetry": "Toca para tentar de novo",
+  "imageUnavailable": "Imagem indisponível"
 }

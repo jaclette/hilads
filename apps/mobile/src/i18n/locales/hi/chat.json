@@ -140,5 +140,13 @@
     "arrivals_other": "इस हफ़्ते {{count}} आए",
     "nearby_one": "अभी {{count}} यहाँ",
     "nearby_other": "अभी {{count}} यहाँ"
-  }
+  },
+  "mentionNudge": "तुम्हें मेंशन किया जा रहा है! अकाउंट बनाओ ताकि कुछ भी न छूटे।",
+  "guestOnline": "मेहमान · ऑनलाइन",
+  "tapToOpenMaps": "मैप में खोलने के लिए टैप करो",
+  "campaignAllCities": "सभी शहर",
+  "campaignWorld": "दुनिया",
+  "campaignCta": "डबल पॉइंट्स · चैलेंज लो",
+  "imageRetry": "फिर से कोशिश करने के लिए टैप करो",
+  "imageUnavailable": "इमेज उपलब्ध नहीं"
 }

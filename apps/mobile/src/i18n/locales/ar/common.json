@@ -74,7 +74,9 @@
     "placeholderEvent": "تحدّث مع الحاضرين 🎉",
     "placeholderChallenge": "شجّعهم أو شارك نصيحتك 🔥",
     "endedEvent": "انتهت هذه الفعالية",
-    "closedChallenge": "هذا التحدي مغلق"
+    "closedChallenge": "هذا التحدي مغلق",
+    "send": "إرسال",
+    "emoji": "رموز تعبيرية"
   },
   "modeHeading": "الوضع",
   "mode": {
@@ -191,5 +193,13 @@
   },
   "mapSoon": "خريطة الأماكن قادمة قريبًا.",
   "firstLaunch": "challenge محلي واحد كل يوم.",
-  "signUp": "سجّل"
+  "signUp": "سجّل",
+  "open": "فتح",
+  "camera": {
+    "grant": "السماح بالكاميرا",
+    "retake": "إعادة الالتقاط",
+    "usePhoto": "استخدام الصورة",
+    "flash": "الفلاش",
+    "flip": "تبديل الكاميرا"
+  }
 }

@@ -74,7 +74,9 @@
     "placeholderEvent": "Ngobrol sama yang datang 🎉",
     "placeholderChallenge": "Dukung mereka, atau bagi tipsmu 🔥",
     "endedEvent": "Acara ini sudah berakhir",
-    "closedChallenge": "Tantangan ini sudah ditutup"
+    "closedChallenge": "Tantangan ini sudah ditutup",
+    "send": "Kirim",
+    "emoji": "Emoji"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -183,5 +185,13 @@
   },
   "mapSoon": "Peta spot segera hadir.",
   "firstLaunch": "Satu challenge lokal setiap hari.",
-  "signUp": "Daftar"
+  "signUp": "Daftar",
+  "open": "Buka",
+  "camera": {
+    "grant": "Izinkan kamera",
+    "retake": "Ulangi",
+    "usePhoto": "Pakai foto",
+    "flash": "Lampu kilat",
+    "flip": "Ganti kamera"
+  }
 }
