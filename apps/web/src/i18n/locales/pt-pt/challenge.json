@@ -830,7 +830,11 @@
     "proofs_other": "{{count}} provas",
     "votes_one": "{{count}} voto",
     "votes_other": "{{count}} votos",
-    "unavailable": "O mapa não está disponível neste momento."
+    "unavailable": "O mapa não está disponível neste momento.",
+    "nearYou": "Perto de ti",
+    "locationDenied": "Permite a localização para hilads.live no browser para centrar o mapa em ti.",
+    "locate": "Centrar o mapa em mim",
+    "locationFailed": "A tua localização não está disponível agora."
   },
   "spot": {
     "rankWeekFirst": "O mais votado esta semana em {{city}}",

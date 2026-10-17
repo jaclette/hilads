@@ -830,7 +830,11 @@
     "proofs_other": "{{count}} bằng chứng",
     "votes_one": "{{count}} phiếu",
     "votes_other": "{{count}} phiếu",
-    "unavailable": "Bản đồ hiện không khả dụng."
+    "unavailable": "Bản đồ hiện không khả dụng.",
+    "nearYou": "Gần bạn",
+    "locationDenied": "Cho phép hilads.live truy cập vị trí trong trình duyệt để căn bản đồ theo bạn.",
+    "locate": "Đưa bản đồ về vị trí của tôi",
+    "locationFailed": "Hiện chưa lấy được vị trí của bạn."
   },
   "spot": {
     "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

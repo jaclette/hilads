@@ -12,6 +12,16 @@ import { THEME_KEYS, THEME_NAMES, THEME_EMOJI, CITY_ZOOM, MIN_ZOOM, mapTiles, cl
 const IDLE_MS = 350
 // The camera stays around the city (like the app): about 110 km each way.
 const CITY_SPAN = 1
+// Within this distance of the city centre, "where I am" just moves the camera;
+// further away, the map re-centres on me and shows the spots around me.
+const NEAR_CITY_KM = 50
+
+function km(a, b) {
+  const r = Math.PI / 180
+  const x = (b[1] - a[1]) * r * Math.cos(((a[0] + b[0]) / 2) * r)
+  const y = (b[0] - a[0]) * r
+  return Math.sqrt(x * x + y * y) * 6371
+}
 
 const spotIcon = (spot) => L.divIcon({
   className: 'wm-pin-wrap',
@@ -22,6 +32,11 @@ const clusterIcon = (n) => L.divIcon({
   className: 'wm-pin-wrap',
   html: `<span class="wm-cluster">${n}</span>`,
   iconSize: [44, 44], iconAnchor: [22, 22],
+})
+const meIcon = L.divIcon({
+  className: 'wm-pin-wrap',
+  html: '<span class="wm-me"></span>',
+  iconSize: [22, 22], iconAnchor: [11, 11],
 })
 const planIcon = () => L.divIcon({
   className: 'wm-pin-wrap',
@@ -92,7 +107,11 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
   const [results, setResults] = useState(null)
   const [camera, setCamera]   = useState(null)
   const [failed, setFailed]   = useState(false)
+  const [me, setMe]           = useState(null)      // my position, once the browser gives it
+  const [nearMe, setNearMe]   = useState(false)     // far from the city: the map is around me
+  const [notice, setNotice]   = useState(null)
   const areaRef = useRef(null)
+  const cityCenterRef = useRef(null)
   const dark = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark'
   const tiles = mapTiles(dark)
 
@@ -103,19 +122,52 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
     if (!channelId) return
     fetchMap({ cityId: channelId, theme: null })
       .then(d => {
-        setCenter(d.city ? [d.city.lat, d.city.lng] : (d.spots[0] ? [d.spots[0].lat, d.spots[0].lng] : null))
+        const c = d.city ? [d.city.lat, d.city.lng] : (d.spots[0] ? [d.spots[0].lat, d.spots[0].lng] : null)
+        cityCenterRef.current = c
+        setCenter(c)
         setSpots(d.spots); setPlans(d.plans)
-        if (!d.city && !d.spots[0]) setFailed(true)
+        if (!c) setFailed(true)
+        // Location already allowed for this site: use it without asking.
+        navigator.permissions?.query({ name: 'geolocation' })
+          .then(p => { if (p.state === 'granted') locate(false) })
+          .catch(() => {})
       })
       .catch(() => setFailed(true))
-  }, [channelId])
+  }, [channelId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Where I am: near the city, the camera moves to me; far from it (another
+  // city, travelling), the map re-centres on me with the spots around me.
+  const locate = (asked) => {
+    if (!navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(pos => {
+      const here = [pos.coords.latitude, pos.coords.longitude]
+      const city = cityCenterRef.current
+      const near = !!city && km(city, here) <= NEAR_CITY_KM
+      setMe(here)
+      track('web_map_located', { auto: !asked, near_city: near })
+      if (near) {
+        setCamera({ lat: here[0], lng: here[1], zoom: Math.max(zoom, 15) })
+      } else {
+        setNearMe(true); setSelected(null); setSpots([]); setPlans([])
+        setCenter(here)
+      }
+    }, err => {
+      if (asked) setNotice(err.code === 1 ? t('map.locationDenied') : t('map.locationFailed'))
+    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 })
+  }
+
+  useEffect(() => {
+    if (!notice) return
+    const id = setTimeout(() => setNotice(null), 4000)
+    return () => clearTimeout(id)
+  }, [notice])
 
   const loadArea = useCallback((bbox, th = theme) => {
     areaRef.current = bbox
-    fetchMap({ cityId: channelId, bbox, theme: th })
+    fetchMap({ cityId: nearMe ? null : channelId, bbox, theme: th })
       .then(d => { setSpots(d.spots); setPlans(d.plans) })
       .catch(() => {})
-  }, [channelId, theme])
+  }, [channelId, theme, nearMe])
 
   const pickTheme = (k) => {
     const next = theme === k ? null : k
@@ -148,7 +200,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
     <div className="full-page full-page--tab wm-page">
       <div className="page-header">
         <BackButton onClick={onClose} />
-        <span className="page-title">{cityName || t('map.button')}</span>
+        <span className="page-title">{nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
       </div>
 
       <div className="wm-top">
@@ -186,7 +238,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
 
       <div className="wm-map">
         {center ? (
-          <MapContainer center={center} zoom={CITY_ZOOM} minZoom={MIN_ZOOM} zoomControl={false} className="wm-leaflet"
+          <MapContainer key={center.join(',')} center={center} zoom={CITY_ZOOM} minZoom={MIN_ZOOM} zoomControl={false} className="wm-leaflet"
                         maxBounds={[[center[0] - CITY_SPAN, center[1] - CITY_SPAN], [center[0] + CITY_SPAN, center[1] + CITY_SPAN]]}
                         maxBoundsViscosity={1}>
             <TileLayer url={tiles.url} attribution={tiles.attribution} tileSize={tiles.tileSize} zoomOffset={tiles.zoomOffset} maxZoom={19} />
@@ -194,6 +246,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
             <CameraTo target={camera} />
             <Pins spots={spots} zoom={zoom} onSpot={setSelected}
                   onCluster={g => setCamera({ lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })} />
+            {me && <Marker position={me} icon={meIcon} interactive={false} />}
             {plans.map(p => (
               <Marker key={`p:${p.id}`} position={[p.lat, p.lng]} icon={planIcon()} title={p.title}
                       eventHandlers={{ click: () => onOpenPlan?.(p.id) }} />
@@ -202,6 +255,14 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
         ) : (
           <div className="wm-loading">{failed ? t('map.unavailable') : <span className="wm-spinner" aria-hidden="true" />}</div>
         )}
+        {center && (
+          <button type="button" className="wm-locate" onClick={() => locate(true)} aria-label={t('map.locate')} title={t('map.locate')}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+            </svg>
+          </button>
+        )}
+        {notice && <div className="wm-notice" role="status">{notice}</div>}
         {tiles.mapbox && (
           <a className="wm-mapbox-logo" href="https://www.mapbox.com/" target="_blank" rel="noopener noreferrer" aria-label="Mapbox">mapbox</a>
         )}

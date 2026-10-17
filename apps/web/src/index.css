@@ -16389,3 +16389,6 @@ body.has-app-promo-banner .page-header {
   .wm-photos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .wm-sheet { left: auto; right: 1rem; width: 380px; }
 }
+.wm-me { display: block; width: 22px; height: 22px; border-radius: 50%; background: #2F80ED; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47, 128, 237, 0.22), 0 2px 6px rgba(0, 0, 0, 0.25); }
+.wm-locate { position: absolute; right: 12px; top: 12px; z-index: 550; width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.18); cursor: pointer; }
+.wm-notice { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 560; max-width: calc(100% - 96px); background: var(--text); color: var(--bg); font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.875rem; border-radius: 12px; text-align: center; }

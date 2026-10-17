@@ -830,7 +830,11 @@
     "proofs_other": "プルーフ {{count}} 件",
     "votes_one": "{{count}} 票",
     "votes_other": "{{count}} 票",
-    "unavailable": "マップは現在利用できません。"
+    "unavailable": "マップは現在利用できません。",
+    "nearYou": "近く",
+    "locationDenied": "マップを現在地に合わせるには、ブラウザで hilads.live の位置情報を許可してください。",
+    "locate": "地図を現在地に合わせる",
+    "locationFailed": "現在地を取得できません。"
   },
   "spot": {
     "rankWeekFirst": "今週{{city}}で最多得票",

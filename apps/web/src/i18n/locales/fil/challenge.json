@@ -830,7 +830,11 @@
     "proofs_other": "{{count}} proof",
     "votes_one": "{{count}} boto",
     "votes_other": "{{count}} boto",
-    "unavailable": "Hindi available ang mapa ngayon."
+    "unavailable": "Hindi available ang mapa ngayon.",
+    "nearYou": "Malapit sa iyo",
+    "locationDenied": "Payagan ang location para sa hilads.live sa browser mo para ma-center ang mapa sa iyo.",
+    "locate": "Igitna ang mapa sa akin",
+    "locationFailed": "Hindi available ang lokasyon mo ngayon."
   },
   "spot": {
     "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",

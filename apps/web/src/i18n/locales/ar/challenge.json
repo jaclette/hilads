@@ -838,7 +838,11 @@
     "votes_few": "{{count}} أصوات",
     "votes_many": "{{count}} صوتًا",
     "votes_other": "{{count}} صوت",
-    "unavailable": "الخريطة غير متاحة الآن."
+    "unavailable": "الخريطة غير متاحة الآن.",
+    "nearYou": "بالقرب منك",
+    "locationDenied": "اسمح لموقع hilads.live بالوصول إلى موقعك في المتصفح لتتمركز الخريطة عليك.",
+    "locate": "ركّز الخريطة عليّ",
+    "locationFailed": "موقعك غير متاح الآن."
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",

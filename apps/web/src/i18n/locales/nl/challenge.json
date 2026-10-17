@@ -830,7 +830,11 @@
     "proofs_other": "{{count}} bewijzen",
     "votes_one": "{{count}} stem",
     "votes_other": "{{count}} stemmen",
-    "unavailable": "De kaart is nu niet beschikbaar."
+    "unavailable": "De kaart is nu niet beschikbaar.",
+    "nearYou": "Bij jou in de buurt",
+    "locationDenied": "Sta locatie toe voor hilads.live in je browser om de kaart op jou te centreren.",
+    "locate": "Kaart op mij centreren",
+    "locationFailed": "Je locatie is nu niet beschikbaar."
   },
   "spot": {
     "rankWeekFirst": "Meest gestemd deze week in {{city}}",

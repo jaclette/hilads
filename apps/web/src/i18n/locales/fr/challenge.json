@@ -830,7 +830,11 @@
     "proofs_other": "{{count}} preuves",
     "votes_one": "{{count}} vote",
     "votes_other": "{{count}} votes",
-    "unavailable": "La carte n'est pas disponible pour le moment."
+    "unavailable": "La carte n'est pas disponible pour le moment.",
+    "nearYou": "Autour de toi",
+    "locationDenied": "Autorise la localisation pour hilads.live dans ton navigateur pour centrer la carte sur toi.",
+    "locate": "Centrer la carte sur moi",
+    "locationFailed": "Ta position n'est pas disponible pour le moment."
   },
   "spot": {
     "rankWeekFirst": "Le plus voté cette semaine à {{city}}",
