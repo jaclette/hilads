@@ -12,7 +12,6 @@ import {
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
   Animated, Alert, Linking, InteractionManager, Keyboard,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { EmojiPanel } from '@/features/chat/EmojiPanel';
 import { ShareSheet } from '@/features/chat/ShareSheet';
 import { LocationPicker } from '@/features/chat/LocationPicker';
@@ -24,7 +23,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
 import { findOrCreateDM, toggleDmReaction, fetchConversations } from '@/api/conversations';
 import { submitBlock } from '@/api/blocks';
@@ -35,7 +34,8 @@ import { track } from '@/services/analytics';
 import { linkifyText, extractFirstUrl } from '@/lib/linkify';
 import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
 import * as Clipboard from 'expo-clipboard';
-import { FontSizes, Spacing, Radius, Gradients, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Avatar, Button, EmptyState, IconButton } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
@@ -61,30 +61,9 @@ function DateSeparator({ label }: { label: string }) {
 }
 
 const makeSepStyles = (c: ThemeColors) => StyleSheet.create({
-  row: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    marginVertical:    18,
-    paddingHorizontal: 16,
-    gap:               10,
-  },
-  line: {
-    flex:            1,
-    height:          1,
-    backgroundColor: c.overlay,
-  },
-  text: {
-    fontSize:          FontSizes.xs,  // 13 - was 11 (Apple G4 floor)
-    fontWeight:        '600',
-    color:             c.muted2,
-    letterSpacing:     0.5,
-    textTransform:     'uppercase',
-    backgroundColor:   c.bg2,
-    paddingHorizontal: 10,
-    paddingVertical:   3,
-    borderRadius:      999,
-    overflow:          'hidden',
-  },
+  row:  { flexDirection: 'row', alignItems: 'center', marginVertical: 16, paddingHorizontal: Spacing.md, gap: 10 },
+  line: { flex: 1, height: 1, backgroundColor: c.line },
+  text: { fontSize: 12, fontWeight: '700', color: c.muted },
 });
 
 // ── Message row ───────────────────────────────────────────────────────────────
@@ -138,13 +117,13 @@ function openMaps(lat: number, lng: number, label: string) {
 
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
   const dmLocStyles = useThemedStyles(makeDmLocStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('chat');
   const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
-  // Outgoing bubble matches web .loc-bubble--me - 135° accent → accent2 gradient.
   const innerContent = (
     <>
-      <Text style={dmLocStyles.icon}>📍</Text>
+      <Ionicons name="location" size={22} color={isMine ? colors.white : colors.primary} style={dmLocStyles.icon} />
       <View style={dmLocStyles.body}>
         <Text style={[dmLocStyles.line1, isMine && dmLocStyles.textMine]} numberOfLines={2}>
           {line1.replace('📍 ', '')}
@@ -154,25 +133,12 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
       </View>
     </>
   );
-  const card = isMine ? (
-    <LinearGradient
-      colors={Gradients.primary.colors}
-      start={Gradients.primary.start}
-      end={Gradients.primary.end}
-      style={[dmLocStyles.card, dmLocStyles.cardMine]}
-    >
-      {innerContent}
-    </LinearGradient>
-  ) : (
-    <View style={[dmLocStyles.card, dmLocStyles.cardOther]}>
-      {innerContent}
-    </View>
-  );
+  const card = <View style={[dmLocStyles.card, isMine ? dmLocStyles.cardMine : dmLocStyles.cardOther]}>{innerContent}</View>;
   if (hasCoords) {
     // Use place name or address as the map label - never the social display wording ("nick is at ...")
     const mapLabel = place || addr;
     return (
-      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, mapLabel)}>
+      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, mapLabel)} accessibilityRole="link">
         {card}
       </TouchableOpacity>
     );
@@ -181,36 +147,19 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
 }
 
 const makeDmLocStyles = (c: ThemeColors) => StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems:    'flex-start',
-    gap:           10,
-    borderRadius:  22,
-    padding:       14,
-    // minWidth required: parent bubble row shrinks children to content-width in
-    // React Native yoga; without a concrete width, flex:1 on body collapses to 0.
-    minWidth:      190,
-    maxWidth:      260,
-  },
-  cardOther: {
-    backgroundColor: c.bg3,
-    borderWidth:     1,
-    borderColor:     c.overlay,
-    borderBottomLeftRadius: 5,
-  },
-  cardMine: {
-    // Background is the LinearGradient itself; this style only shapes the
-    // bottom-right "tail" corner.
-    borderBottomRightRadius: 5,
-  },
-  icon:     { fontSize: 20, lineHeight: 26, flexShrink: 0 },
-  body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
+  // minWidth required: the bubble row shrinks children to content width, which
+  // would collapse the flex body.
+  card:        { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderRadius: 18, padding: 14, minWidth: 190, maxWidth: 260 },
+  cardOther:   { backgroundColor: c.bg3, borderTopLeftRadius: 6 },
+  cardMine:    { backgroundColor: c.caramel, borderTopRightRadius: 6 },
+  icon:        { marginTop: 1, flexShrink: 0 },
+  body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
   line1:       { fontSize: 14, fontWeight: '700', color: c.text, lineHeight: 20 },
-  addr:        { fontSize: 12, color: c.muted2, lineHeight: 17 },
-  textMine:    { color: '#fff' },
-  addrMine:    { color: c.overlayStrong },
-  tapHint:     { fontSize: FontSizes.xs, color: c.muted2, marginTop: 2 },
-  tapHintMine: { color: c.overlayStrong },
+  addr:        { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 17 },
+  textMine:    { color: c.white },
+  addrMine:    { color: c.onCaramelMuted },
+  tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: 2 },
+  tapHintMine: { color: c.onCaramelMuted },
 });
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted, onReact }: RowProps) {
@@ -254,7 +203,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
         isMine ? styles.rowWrapperMine : styles.rowWrapperOther,
         isFirst ? styles.rowFirst : styles.rowGrouped,
         { opacity, transform: [{ translateY }] },
-        { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.22], outputRange: ['transparent', 'rgba(255,122,60,0.15)'] }) },
+        { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.22], outputRange: ['transparent', colors.primaryTint] }) },
       ]}>
       {/* Received: small avatar dot to the left, visible only on first of group */}
       {/* Tap avatar → open sender's public profile */}
@@ -268,10 +217,9 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               }}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityRole="button"
             >
-              <View style={[styles.avatar, { backgroundColor: color }]}>
-                <Text style={styles.avatarText}>{initial}</Text>
-              </View>
+              <Avatar name={msg.sender_name || initial} size={AVATAR_SIZE} fallback="color" />
             </TouchableOpacity>
           )}
         </View>
@@ -286,7 +234,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
             isMine  ? bubbleMineShape    : bubbleOtherShape,
             { opacity: 0.6 },
           ]}>
-            <Text style={[styles.bubbleText, { fontStyle: 'italic', color: colors.overlayStrong }]}>
+            <Text style={[styles.bubbleText, styles.tombstone]}>
               {i18n.t('messageDeleted', { ns: 'chat' })}
             </Text>
           </View>
@@ -340,7 +288,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {linkifyText(msg.content)}
                 {msg.edited_at && (
-                  <Text style={{ fontSize: 11, color: isMine ? colors.overlayStrong : colors.overlayStrong }}>
+                  <Text style={[styles.edited, isMine && styles.editedMine]}>
                     {`  ${i18n.t('edited', { ns: 'chat' })}`}
                   </Text>
                 )}
@@ -635,14 +583,15 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {error && (
-        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8} accessibilityRole="alert">
+          <Ionicons name="alert-circle-outline" size={18} color={colors.red} />
           <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error })}</Text>
         </TouchableOpacity>
       )}
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
       ) : (
         <FlatList
@@ -670,9 +619,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
-              <Text style={styles.emptyEmoji}>💬</Text>
-              <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
-              <Text style={styles.emptySub}>{t('emptySub', { name: displayName })}</Text>
+              <EmptyState icon="chatbubbles-outline" title={t('emptyTitle')} body={t('emptySub', { name: displayName })} />
             </View>
           }
         />
@@ -712,8 +659,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
               {replyingTo.type === 'image' ? t('photoLabel', { ns: 'common' }) : replyingTo.content}
             </Text>
           </View>
-          <TouchableOpacity onPress={() => setReplyingTo(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={dmComposerReplyStyles.close}>✕</Text>
+          <TouchableOpacity style={dmComposerReplyStyles.close} onPress={() => setReplyingTo(null)} accessibilityRole="button" accessibilityLabel={t('close', { ns: 'common' })}>
+            <Ionicons name="close" size={20} color={colors.muted} />
           </TouchableOpacity>
         </View>
       )}
@@ -725,8 +672,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
             <Text style={dmComposerEditStyles.name}>{i18n.t('editingBanner', { ns: 'chat' })}</Text>
             <Text style={dmComposerEditStyles.preview} numberOfLines={1}>{editingMsg.content}</Text>
           </View>
-          <TouchableOpacity onPress={() => setEditingMsg(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={dmComposerEditStyles.close}>✕</Text>
+          <TouchableOpacity style={dmComposerReplyStyles.close} onPress={() => setEditingMsg(null)} accessibilityRole="button" accessibilityLabel={t('close', { ns: 'common' })}>
+            <Ionicons name="close" size={20} color={colors.primaryOnTint} />
           </TouchableOpacity>
         </View>
       )}
@@ -742,25 +689,23 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
             accessibilityRole="button"
             accessibilityLabel={t('composer.attach', { ns: 'common' })}
           >
-            <LinearGradient
-              colors={['#C24A38', '#B87228']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.vibeBtn}
-            >
+            <View style={styles.vibeBtn}>
               {uploading
-                ? <ActivityIndicator size="small" color="#fff" />
-                : <Ionicons name="add" size={24} color="#fff" />
+                ? <ActivityIndicator size="small" color={colors.white} />
+                : <Ionicons name="add" size={24} color={colors.white} />
               }
-            </LinearGradient>
+            </View>
           </Pressable>
         </Animated.View>
         <TouchableOpacity
           style={[styles.emojiBtn, showEmoji && styles.emojiBtnActive]}
           onPress={handleEmojiToggle}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={t('composer.emoji', { ns: 'common' })}
+          accessibilityState={{ selected: showEmoji }}
         >
-          <Text style={styles.emojiBtnIcon}>😊</Text>
+          <Ionicons name="happy-outline" size={24} color={showEmoji ? colors.primaryOnTint : colors.muted} />
         </TouchableOpacity>
         <TextInput
           style={styles.input}
@@ -770,7 +715,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           onFocus={() => { setFocused(true); setShowEmoji(false); }}
           onBlur={() => setFocused(false)}
           placeholder={t('messagePlaceholder', { name: displayName })}
-          placeholderTextColor={colors.muted2}
+          placeholderTextColor={colors.mutedDim}
           multiline
           maxLength={1000}
           returnKeyType="send"
@@ -783,10 +728,12 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           onPress={handleSend}
           disabled={!text.trim() || busy}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={t('composer.send', { ns: 'common' })}
         >
           {sending
             ? <ActivityIndicator size="small" color={colors.white} />
-            : <Ionicons name="send" size={20} color={text.trim() ? '#fff' : colors.muted2} />
+            : <Ionicons name="send" size={19} color={colors.white} />
           }
         </TouchableOpacity>
       </View>
@@ -872,8 +819,6 @@ export default function DMThreadScreen() {
   const [blockBusy,       setBlockBusy]       = useState(false);
 
   const displayName = name ?? t('fallbackName');
-  const color       = avatarColor(displayName);
-  const initial     = displayName.slice(0, 1).toUpperCase();
 
   useEffect(() => {
     console.log('[dm-screen] route params = id:', id, '| name:', name, '| conv:', conv);
@@ -968,9 +913,7 @@ export default function DMThreadScreen() {
 
       {/* ── Header ── */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={26} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" label={t('back', { ns: 'common' })} onPress={() => router.back()} />
 
         {/* Tap the avatar + name to open the other user's profile. */}
         <TouchableOpacity
@@ -981,9 +924,7 @@ export default function DMThreadScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('viewProfile')}
         >
-          <View style={[styles.headerAvatar, { backgroundColor: color + '22', borderColor: color + '55' }]}>
-            <Text style={[styles.headerAvatarText, { color }]}>{initial}</Text>
-          </View>
+          <Avatar name={displayName} size={40} fallback="color" />
 
           <View style={styles.headerInfo}>
             <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
@@ -992,14 +933,7 @@ export default function DMThreadScreen() {
         </TouchableOpacity>
 
         {/* … menu - Apple G1.2 requires Block + Report visible from chat thread */}
-        <TouchableOpacity
-          style={styles.headerMore}
-          onPress={() => setShowActionSheet(true)}
-          activeOpacity={0.7}
-          accessibilityLabel={t('moreOptions')}
-        >
-          <Ionicons name="ellipsis-horizontal" size={22} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="ellipsis-horizontal" label={t('moreOptions')} onPress={() => setShowActionSheet(true)} />
       </View>
 
       {/* Action sheet - View profile / Report / Block. otherUserId may briefly
@@ -1041,14 +975,12 @@ export default function DMThreadScreen() {
       {/* ── Body ── */}
       {resolveError ? (
         <View style={styles.center}>
-          <Text style={styles.resolveErrorText}>{resolveError}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => router.back()} activeOpacity={0.8}>
-            <Text style={styles.retryBtnText}>{t('goBack')}</Text>
-          </TouchableOpacity>
+          <EmptyState icon="cloud-offline-outline" body={resolveError}
+                      action={<Button variant="secondary" label={t('goBack')} onPress={() => router.back()} />} />
         </View>
       ) : !conversationId ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
       ) : (
         <DMThread conversationId={conversationId} displayName={displayName} />
@@ -1061,378 +993,96 @@ export default function DMThreadScreen() {
 
 // DM bubbles: paddingHorizontal 18, paddingVertical 12 (see styles.bubble)
 const makeDmReplyStyles = (c: ThemeColors) => StyleSheet.create({
-  quote: {
-    marginTop:    -12,
-    marginLeft:   -18,
-    marginRight:  -18,
-    marginBottom:  9,
-    paddingHorizontal: 18,
-    paddingVertical:   8,
-    borderLeftWidth:   3,
-    borderBottomWidth: 1,
-  },
-  quoteOther: {
-    backgroundColor:   'rgba(0,0,0,0.12)',
-    borderLeftColor:   'rgba(255,122,60,0.75)',
-    borderBottomColor: c.overlay,
-    borderTopLeftRadius:  18,
-    borderTopRightRadius: 18,
-  },
-  quoteMine: {
-    backgroundColor:   'rgba(0,0,0,0.2)',
-    borderLeftColor:   c.overlayStrong,
-    borderBottomColor: c.overlayStrong,
-    borderTopLeftRadius:  18,
-    borderTopRightRadius: 18,
-  },
-  name:     { fontSize: FontSizes.xs, fontWeight: '700', color: '#FF7A3C', marginBottom: 2, lineHeight: 17 },
-  nameMine: { color: c.overlayStrong },
-  text:     { fontSize: 12, color: c.overlayStrong, lineHeight: 16 },
-  textMine: { color: c.overlayStrong },
+  // Quote of the replied message: a left rule inside the bubble.
+  quote:      { marginBottom: 6, paddingLeft: 8, paddingVertical: 2, borderLeftWidth: 3 },
+  quoteOther: { borderLeftColor: c.primary },
+  quoteMine:  { borderLeftColor: c.onCaramelMuted },
+  name:       { fontSize: 12, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
+  nameMine:   { color: c.white },
+  text:       { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16 },
+  textMine:   { color: c.onCaramelMuted },
 });
 
 const makeDmComposerReplyStyles = (c: ThemeColors) => StyleSheet.create({
-  strip: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 16,
-    paddingVertical:   8,
-    backgroundColor:   c.overlayWeak,
-    borderTopWidth:    1,
-    borderTopColor:    c.overlay,
-    gap:               10,
-  },
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+             backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line, borderLeftWidth: 3, borderLeftColor: c.primary },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.accent, marginBottom: 2 },
-  preview: { fontSize: 12, color: c.muted2 },
-  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
+  name:    { fontSize: 12, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
+  preview: { fontSize: 12, fontWeight: '400', color: c.muted },
+  close:   { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
 const makeDmComposerEditStyles = (c: ThemeColors) => StyleSheet.create({
-  strip: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 16,
-    paddingVertical:   8,
-    backgroundColor:   'rgba(255,122,60,0.10)',
-    borderTopWidth:    1,
-    borderTopColor:    'rgba(255,122,60,0.22)',
-    gap:               10,
-  },
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+             backgroundColor: c.primaryTint, borderTopWidth: 1, borderTopColor: c.line },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: '#FF7A3C', marginBottom: 2 },
-  preview: { fontSize: 12, color: c.muted2 },
-  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
+  name:    { fontSize: 12, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
+  preview: { fontSize: 12, fontWeight: '400', color: c.primaryOnTint },
 });
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const AVATAR_SIZE = 28;
-const SEND_BTN    = 48;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
 
-  // ── Header ──────────────────────────────────────────────────────────────────
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    gap:               12,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    Radius.md,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-  },
-  headerAvatar: {
-    width:          44,
-    height:         44,
-    borderRadius:   Radius.full,
-    borderWidth:    1.5,
-    alignItems:     'center',
-    justifyContent: 'center',
-    flexShrink:     0,
-  },
-  headerAvatarText: { fontWeight: '800', fontSize: FontSizes.md },
-  headerTap:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  headerInfo: { flex: 1, gap: 1 },
-  headerName: {
-    fontSize:      FontSizes.md,
-    fontWeight:    '700',
-    color:         c.text,
-    letterSpacing: -0.3,
-  },
-  headerSub: {
-    fontSize: FontSizes.xs,
-    color:    c.muted2,
-  },
-  headerMore: {
-    width:           36,
-    height:          36,
-    borderRadius:    Radius.md,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-  },
+  header:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8,
+                borderBottomWidth: 1, borderBottomColor: c.line },
+  headerTap:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
+  headerInfo: { flex: 1, minWidth: 0 },
+  headerName: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  headerSub:  { fontSize: 12, fontWeight: '400', color: c.muted },
 
-  // ── States ──────────────────────────────────────────────────────────────────
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  resolveErrorText: {
-    color:      c.muted,
-    fontSize:   FontSizes.sm,
-    textAlign:  'center',
-    paddingHorizontal: Spacing.xl,
-  },
-  retryBtn: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       c.border,
-  },
-  retryBtnText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '600' },
-
-  errorBanner: {
-    backgroundColor:   c.accent2,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   8,
-  },
-  errorBannerText: { color: '#fff', fontSize: FontSizes.xs, textAlign: 'center' },
-
-  // ── Message list ────────────────────────────────────────────────────────────
-  listContent: {
-    paddingTop:        24,
-    paddingBottom:     8,
-    paddingHorizontal: 16,
-  },
+  center:          { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
+  errorBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginHorizontal: Spacing.md, marginTop: 6,
+                     paddingHorizontal: 12, borderRadius: Radius.button, borderWidth: Border, borderColor: c.red, backgroundColor: c.bg2 },
+  errorBannerText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
+  listContent:      { paddingHorizontal: Spacing.md, paddingVertical: 16 },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
+  beginningText:    { fontSize: 12, fontWeight: '600', color: c.muted },
+  emptyWrap:        { flex: 1, justifyContent: 'center', padding: Spacing.lg },
 
-  // ── Row wrapper ─────────────────────────────────────────────────────────────
-  rowWrapper: {
-    flexDirection: 'row',
-    alignItems:    'flex-end',
-    maxWidth:      '82%',
-  },
-  rowWrapperMine:  { alignSelf: 'flex-end' },
-  rowWrapperOther: { alignSelf: 'flex-start' },
-  rowFirst:   { marginTop: 18 },
-  rowGrouped: { marginTop: 3 },
+  // ── Rows and bubbles (same look as the city chat) ──
+  rowWrapper:      { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  rowWrapperMine:  { justifyContent: 'flex-end' },
+  rowWrapperOther: { justifyContent: 'flex-start' },
+  rowFirst:        { marginTop: 10 },
+  rowGrouped:      { marginTop: 3 },
+  avatarSlot:      { width: AVATAR_SIZE },
+  bubbleCol:       { maxWidth: '78%' },
+  bubbleColMine:   { alignItems: 'flex-end' },
+  bubble:          { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 9 },
+  bubbleOther:     { backgroundColor: c.bg3 },
+  bubbleMine:      { backgroundColor: c.caramel },
+  bubbleOtherFirst:{ borderTopLeftRadius: 6 },
+  bubbleMineFirst: { borderTopRightRadius: 6 },
+  bubbleSending:   { opacity: 0.65 },
+  bubbleFailed:    { borderWidth: Border, borderColor: c.red },
+  bubbleText:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
+  bubbleTextMine:  { color: c.white },
+  tombstone:       { fontStyle: 'italic', color: c.muted },
+  edited:          { fontSize: 11, fontWeight: '400', color: c.muted },
+  editedMine:      { color: c.onCaramelMuted },
+  imageBubble:     { borderRadius: 18, overflow: 'hidden' },
+  bubbleImage:     { width: 240, height: 200 },
+  metaRow:         { marginTop: 3, paddingHorizontal: 2 },
+  metaRowMine:     { alignItems: 'flex-end' },
+  metaText:        { fontSize: 11, fontWeight: '400', color: c.mutedDim },
+  metaTextFailed:  { fontSize: 11, fontWeight: '600', color: c.red },
 
-  // ── Avatar slot (received messages only) ────────────────────────────────────
-  avatarSlot: {
-    width:       AVATAR_SIZE + 6,   // fixed slot keeps bubbles aligned within a run
-    alignItems:  'flex-end',
-    paddingRight: 6,
-    paddingBottom: 2,
-  },
-  avatar: {
-    width:          AVATAR_SIZE,
-    height:         AVATAR_SIZE,
-    borderRadius:   Radius.full,
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-  avatarText: { color: '#fff', fontSize: 11, fontWeight: '800' },
-
-  // ── Bubble column ────────────────────────────────────────────────────────────
-  bubbleCol:     { flexShrink: 1 },
-  bubbleColMine: { alignItems: 'flex-end' },
-
-  // ── Bubble ──────────────────────────────────────────────────────────────────
-  bubble: {
-    borderRadius:      22,
-    paddingHorizontal: 18,
-    paddingVertical:   12,
-    maxWidth:          '100%',
-  },
-  // Received: warm dark surface with subtle border
-  bubbleOther: {
-    backgroundColor: c.bg3,
-    borderWidth:     1,
-    borderColor:     c.overlay,
-  },
-  // "Tail" corner on first message of a received group
-  bubbleOtherFirst: {
-    borderBottomLeftRadius: 5,
-  },
-  // Sent: brand orange - bright, unmistakably mine
-  bubbleMine: {
-    backgroundColor: c.accent,
-    shadowColor:     c.accent,
-    shadowOffset:    { width: 0, height: 3 },
-    shadowOpacity:   0.35,
-    shadowRadius:    8,
-    elevation:       5,
-  },
-  // "Tail" corner on first message of a sent group
-  bubbleMineFirst: {
-    borderBottomRightRadius: 5,
-  },
-  bubbleSending: { opacity: 0.6 },
-  bubbleFailed: {
-    borderWidth: 1.5,
-    borderColor: 'rgba(248,113,113,0.6)',
-    backgroundColor: 'rgba(248,113,113,0.08)',
-  },
-  bubbleText: {
-    fontSize:   15,
-    color:      c.text,
-    lineHeight: 22,
-  },
-  bubbleTextMine: { color: '#fff', fontWeight: '500' },
-
-  // ── Meta row (timestamp / status) ────────────────────────────────────────────
-  metaRow:     { marginTop: 4, paddingHorizontal: 4 },
-  metaRowMine: { alignItems: 'flex-end' },
-  // DM message timestamps - was 11pt + #635650 (~2.4:1). Apple G4 floor.
-  metaText: {
-    fontSize: FontSizes.xs,
-    color:    c.muted2,
-  },
-  metaTextFailed: {
-    fontSize: FontSizes.xs,
-    color:    c.red,
-  },
-
-  // ── Empty state ──────────────────────────────────────────────────────────────
-  emptyWrap: {
-    flex:           1,
-    justifyContent: 'center',
-    alignItems:     'center',
-    paddingVertical: Spacing.xxl,
-    gap:            8,
-  },
-  emptyEmoji: { fontSize: 40 },
-  emptyTitle: {
-    fontSize:   FontSizes.md,
-    fontWeight: '600',
-    color:      c.text,
-    textAlign:  'center',
-  },
-  emptySub: {
-    fontSize:  FontSizes.sm,
-    color:     c.muted,
-    textAlign: 'center',
-  },
-
-  // ── Composer ─────────────────────────────────────────────────────────────────
-  composer: {
-    flexDirection:     'row',
-    alignItems:        'flex-end',
-    paddingHorizontal: 14,
-    paddingVertical:   12,
-    paddingBottom:     Platform.OS === 'android' ? 12 : 14,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-    backgroundColor:   c.bg,
-    gap:               10,
-    shadowColor:       '#000',
-    shadowOffset:      { width: 0, height: -4 },
-    shadowOpacity:     0.22,
-    shadowRadius:      10,
-    elevation:         8,
-  },
-  composerFocused: {
-    borderTopColor: 'rgba(255,122,60,0.3)',
-  },
-  vibeBtnGlow: {
-    flexShrink:    0,
-    borderRadius:  Radius.full,
-    shadowColor:   '#C24A38',
-    shadowOffset:  { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius:  12,
-    elevation:     10,
-  },
-  vibeBtn: {
-    width:          SEND_BTN,
-    height:         SEND_BTN,
-    borderRadius:   Radius.full,
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-  imageBtnDisabled: { opacity: 0.4 },
-  emojiBtn: {
-    width:           36,
-    height:          36,
-    borderRadius:    18,
-    alignItems:      'center',
-    justifyContent:  'center',
-    backgroundColor: c.overlayWeak,
-    borderWidth:     1,
-    borderColor:     c.overlay,
-    flexShrink:      0,
-    opacity:         0.6,
-  },
-  emojiBtnActive: {
-    opacity:         1,
-    backgroundColor: c.overlayStrong,
-  },
-  emojiBtnIcon: { fontSize: 18, lineHeight: 22 },
-  input: {
-    flex:              1,
-    flexShrink:        1,
-    minWidth:          0,
-    minHeight:         48,
-    maxHeight:         130,
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.full,
-    borderWidth:       1.5,
-    borderColor:       c.border,
-    paddingHorizontal: 20,
-    paddingTop:        13,
-    paddingBottom:     13,
-    color:             c.text,
-    fontSize:          FontSizes.sm,
-    lineHeight:        22,
-  },
-  sendBtn: {
-    width:           SEND_BTN,
-    height:          SEND_BTN,
-    borderRadius:    Radius.full,
-    backgroundColor: c.accent,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-    shadowColor:     c.accent,
-    shadowOffset:    { width: 0, height: 4 },
-    shadowOpacity:   0.5,
-    shadowRadius:    10,
-    elevation:       8,
-  },
-  sendBtnOff: {
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    shadowOpacity:   0,
-    elevation:       0,
-  },
-
-  // ── Image bubble ─────────────────────────────────────────────────────────────
-  imageBubble: {
-    borderRadius:    22,
-    overflow:        'hidden',
-    maxWidth:        '100%',
-    padding:         0,
-  },
-  bubbleImage: {
-    width:  220,
-    height: 180,
-  },
+  // ── Composer (same look as the city chat composer) ──
+  composer:         { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 10,
+                      borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  composerFocused:  {},
+  vibeBtnGlow:      { flexShrink: 0 },
+  vibeBtn:          { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  imageBtnDisabled: { opacity: 0.35 },
+  emojiBtn:         { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: Radius.full, marginHorizontal: -4 },
+  emojiBtnActive:   { backgroundColor: c.primaryTint },
+  input:            { flex: 1, minWidth: 0, minHeight: 44, maxHeight: 130, backgroundColor: c.bg2, borderRadius: 22, borderWidth: Border,
+                      borderColor: c.line, paddingHorizontal: 16, paddingVertical: 11, color: c.text, fontSize: 15, fontWeight: '400', lineHeight: 20 },
+  sendBtn:          { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  sendBtnOff:       { opacity: 0.35 },
 });

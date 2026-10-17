@@ -193,5 +193,18 @@
     "usePhoto": "Pakai foto",
     "flash": "Lampu kilat",
     "flip": "Ganti kamera"
+  },
+  "report": {
+    "title": "Laporkan pengguna",
+    "subtitle": "Ceritakan apa yang salah dengan {{name}}. Laporan bersifat anonim.",
+    "subtitleAnon": "Ceritakan apa yang salah dengan pengguna ini. Laporan bersifat anonim.",
+    "placeholder": "Jelaskan masalahnya (min. 10 karakter)",
+    "submit": "Kirim laporan",
+    "sentTitle": "Laporan terkirim",
+    "sentBody": "Terima kasih sudah memberi tahu. Tim kami akan memeriksanya.",
+    "dupTitle": "Sudah dilaporkan",
+    "dupBody": "Kamu melaporkan pengguna ini pada {{date}}. Laporanmu sedang ditinjau.",
+    "errorTitle": "Kesalahan",
+    "errorBody": "Laporan gagal dikirim. Coba lagi."
   }
 }

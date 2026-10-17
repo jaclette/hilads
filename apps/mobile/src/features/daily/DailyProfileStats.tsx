@@ -3,8 +3,10 @@ import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-nati
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Button } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
 import { DailyProofViewer } from './DailyProofViewer';
 import { MEDALS } from './DailyProofTile';
@@ -19,6 +21,7 @@ import type { DailyProof, DailyUserStats } from '@/types';
  */
 export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: boolean }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const [stats, setStats] = useState<DailyUserStats | null>(null);
@@ -37,13 +40,14 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
 
   return (
     <View style={styles.card}>
-      <Text style={styles.kicker}>🔥 {t('kicker')}</Text>
+      <View style={styles.kickerRow}>
+        <Ionicons name="flame-outline" size={16} color={colors.primaryText} />
+        <Text style={styles.kicker}>{t('kicker')}</Text>
+      </View>
       {stats.completed === 0 ? (
         <>
           <Text style={styles.empty}>{t('profile.emptyMine')}</Text>
-          <TouchableOpacity style={styles.cta} onPress={() => router.push('/daily/today' as never)} accessibilityRole="button">
-            <Text style={styles.ctaText}>{t('cta')}</Text>
-          </TouchableOpacity>
+          <Button size="sm" label={t('cta')} onPress={() => router.push('/daily/today' as never)} style={styles.cta} />
         </>
       ) : (
         <>
@@ -54,11 +58,15 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
           </View>
           {((stats.localPasses?.length ?? 0) > 0 || (isMe && inProgress.length > 0)) && (
             <>
-              <Text style={styles.subTitle}>🎫 {t('localPass.profileTitle')}</Text>
+              <View style={styles.kickerRow}>
+                <Ionicons name="ribbon-outline" size={15} color={colors.gold} />
+                <Text style={styles.subTitle}>{t('localPass.profileTitle')}</Text>
+              </View>
               <View style={styles.passes}>
                 {stats.localPasses?.map(p => (
                   <View key={`p${p.city.id}`} style={[styles.pass, styles.passEarned]}>
-                    <Text style={styles.passText}>🎫 {localizeCityName(p.city.name ?? '')} · ✓ {t('localPass.earned')}</Text>
+                    <Ionicons name="checkmark-circle" size={14} color={colors.gold} />
+                    <Text style={[styles.passText, styles.passTextEarned]}>{localizeCityName(p.city.name ?? '')} · {t('localPass.earned')}</Text>
                   </View>
                 ))}
                 {isMe && inProgress.map(p => (
@@ -100,21 +108,23 @@ function Stat({ value, label }: { value: number; label: string }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:      { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)', padding: 14, gap: 10, marginBottom: 12 },
-  kicker:    { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
-  empty:     { fontSize: FontSizes.sm, color: c.muted },
-  cta:       { alignSelf: 'flex-start', backgroundColor: c.accent, borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 10 },
-  ctaText:   { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
+  card:      { backgroundColor: c.bg2, borderRadius: Radius.ticket, borderWidth: Border, borderColor: c.ticketLine, padding: 14, gap: 10 },
+  kickerRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  kicker:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
+  empty:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
+  cta:       { alignSelf: 'flex-start' },
   statsRow:  { flexDirection: 'row', gap: 8 },
-  stat:      { flex: 1, backgroundColor: c.bg3, borderRadius: Radius.md, paddingVertical: 10, paddingHorizontal: 6, alignItems: 'center', gap: 2 },
+  stat:      { flex: 1, backgroundColor: c.bg3, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 6, alignItems: 'center', gap: 2 },
   statValue: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  statLabel: { fontSize: 11, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  statLabel: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
   subTitle:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
   thumbs:    { gap: 8 },
-  thumb:     { width: 72, height: 72, borderRadius: Radius.sm, backgroundColor: c.bg3 },
+  thumb:     { width: 72, height: 72, borderRadius: 12, backgroundColor: c.bg3 },
   medal:     { position: 'absolute', top: 2, left: 4, fontSize: 16 },
   passes:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  pass:      { borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg3, paddingHorizontal: 10, paddingVertical: 5 },
-  passEarned:{ borderColor: c.accent, backgroundColor: c.accentDim },
-  passText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  pass:      { flexDirection: 'row', alignItems: 'center', gap: 4, height: 28, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line,
+               backgroundColor: c.bg2, paddingHorizontal: 10 },
+  passEarned:    { borderColor: c.gold },
+  passText:      { fontSize: 12, fontWeight: '700', color: c.text },
+  passTextEarned:{ color: c.gold },
 });

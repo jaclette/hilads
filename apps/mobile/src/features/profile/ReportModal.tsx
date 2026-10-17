@@ -6,14 +6,13 @@
  */
 
 import React, { useState } from 'react';
-import {
-  Modal, View, Text, TextInput, TouchableOpacity,
-  TouchableWithoutFeedback, ActivityIndicator, StyleSheet, Alert,
-} from 'react-native';
+import { Text, StyleSheet, Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { submitReport, DuplicateReportError } from '@/api/reports';
 import { formatDateLabel } from '@/lib/messageTime';
-import { type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
+import { Button, Sheet, TextField } from '@/ui';
 
 interface Props {
   visible:         boolean;
@@ -26,6 +25,7 @@ interface Props {
 
 export function ReportModal({ visible, reporterGuestId, targetUserId, targetGuestId, targetNickname, onClose }: Props) {
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('common');
   const [reason,  setReason]  = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -44,18 +44,15 @@ export function ReportModal({ visible, reporterGuestId, targetUserId, targetGues
       });
       setReason('');
       onClose();
-      Alert.alert('Report sent', 'Thanks for letting us know. Our team will review it.');
+      Alert.alert(t('report.sentTitle'), t('report.sentBody'));
     } catch (err: any) {
       if (err instanceof DuplicateReportError) {
         const when = formatDateLabel(err.existing.created_at);
         setReason('');
         onClose();
-        Alert.alert(
-          'Already reported',
-          `You reported this user on ${when}. Your report is being reviewed.`,
-        );
+        Alert.alert(t('report.dupTitle'), t('report.dupBody', { date: when }));
       } else {
-        Alert.alert('Error', err?.message ?? 'Could not send report. Try again.');
+        Alert.alert(t('report.errorTitle'), err?.message ?? t('report.errorBody'));
       }
     } finally {
       setLoading(false);
@@ -69,121 +66,32 @@ export function ReportModal({ visible, reporterGuestId, targetUserId, targetGues
   }
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={handleClose}
-    >
-      <TouchableWithoutFeedback onPress={handleClose}>
-        <View style={styles.overlay} />
-      </TouchableWithoutFeedback>
+    <Sheet visible={visible} onClose={handleClose} closeLabel={t('cancel')}>
+      <Text style={styles.title} accessibilityRole="header">{t('report.title')}</Text>
+      <Text style={styles.subtitle}>
+        {targetNickname ? t('report.subtitle', { name: `@${targetNickname}` }) : t('report.subtitleAnon')}
+      </Text>
 
-      <View style={styles.sheet}>
-        <Text style={styles.title}>Report user</Text>
-        <Text style={styles.subtitle}>
-          Tell us what's wrong with {targetNickname ? `@${targetNickname}` : 'this user'}.
-          Reports are anonymous.
-        </Text>
+      <TextField
+        placeholder={t('report.placeholder')}
+        value={reason}
+        onChangeText={setReason}
+        multiline
+        maxLength={500}
+        editable={!loading}
+        returnKeyType="default"
+      />
+      <Text style={styles.charCount}>{reason.trim().length} / 500</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Describe the issue (min 10 characters)…"
-          placeholderTextColor="rgba(128,128,128,0.7)"
-          value={reason}
-          onChangeText={setReason}
-          multiline
-          maxLength={500}
-          editable={!loading}
-          returnKeyType="default"
-          textAlignVertical="top"
-        />
-        <Text style={styles.charCount}>{reason.trim().length} / 500</Text>
-
-        <TouchableOpacity
-          style={[styles.submitBtn, !canSubmit && styles.submitBtnDisabled]}
-          onPress={handleSubmit}
-          disabled={!canSubmit}
-          activeOpacity={0.8}
-        >
-          {loading
-            ? <ActivityIndicator color="#fff" size="small" />
-            : <Text style={styles.submitText}>Send report</Text>
-          }
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelBtn} onPress={handleClose} disabled={loading} activeOpacity={0.7}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
+      <Button label={t('report.submit')} onPress={handleSubmit} disabled={!canSubmit} loading={loading} />
+      <Button variant="link" label={t('cancel')} onPress={handleClose} disabled={loading} style={styles.cancel} />
+    </Sheet>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  overlay: {
-    flex:            1,
-    backgroundColor: c.scrim,
-  },
-  sheet: {
-    backgroundColor:   c.elevated,
-    borderTopWidth:    1,
-    borderTopColor:    c.separator,
-    borderRadius:      20,
-    paddingHorizontal: 20,
-    paddingTop:        24,
-    paddingBottom:     40,
-    gap:               12,
-  },
-  title: {
-    fontSize:   18,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  subtitle: {
-    fontSize:  13,
-    color:     c.muted,
-    lineHeight: 18,
-  },
-  input: {
-    backgroundColor: c.overlay,
-    borderWidth:     1,
-    borderColor:     c.separator,
-    borderRadius:    10,
-    padding:         12,
-    color:           c.text,
-    fontSize:        14,
-    minHeight:       100,
-    marginTop:       4,
-  },
-  charCount: {
-    fontSize:  11,
-    color:     c.mutedDim,
-    textAlign: 'right',
-    marginTop: -6,
-  },
-  submitBtn: {
-    backgroundColor: c.accent,
-    borderRadius:    12,
-    paddingVertical: 14,
-    alignItems:      'center',
-    marginTop:       4,
-  },
-  submitBtnDisabled: {
-    opacity: 0.4,
-  },
-  submitText: {
-    fontSize:   16,
-    fontWeight: '600',
-    color:      '#fff',
-  },
-  cancelBtn: {
-    alignItems:      'center',
-    paddingVertical: 10,
-  },
-  cancelText: {
-    fontSize: 15,
-    color:    c.muted,
-  },
+  title:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  subtitle:  { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 18 },
+  charCount: { fontSize: 11, fontWeight: '400', color: c.mutedDim, textAlign: 'right', marginTop: -4 },
+  cancel:    { alignSelf: 'center' },
 });

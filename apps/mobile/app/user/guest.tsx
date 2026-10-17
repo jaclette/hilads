@@ -9,16 +9,13 @@
 
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor as avatarBg } from '@/lib/avatarColors';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
+import { Avatar, Button, Chip, Screen, ScreenHeader } from '@/ui';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
@@ -29,16 +26,13 @@ import { formatDateLabel } from '@/lib/messageTime';
 
 export default function GuestProfileScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
 
   const router = useRouter();
   const { t } = useTranslation('publicProfile');
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
   const { city, identity, account, addBlocked, removeBlocked } = useApp();
 
-  const name    = nickname || t('ghostName');
-  const initial = name[0].toUpperCase();
-  const bg      = avatarBg(name);
+  const name = nickname || t('ghostName');
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
@@ -87,45 +81,19 @@ export default function GuestProfileScreen() {
   }, [guestId, account, identity?.guestId]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <Screen>
+      <ScreenHeader title={t('title')} />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('title')}</Text>
-        </View>
-      </View>
-
-      {/* Hero */}
       <View style={styles.hero}>
-        <View style={[styles.avatar, { backgroundColor: bg }]}>
-          <Text style={styles.avatarInitial}>{initial}</Text>
-        </View>
-
+        <Avatar name={name} size={88} fallback="color" />
         <Text style={styles.displayName}>{name}</Text>
-
-        <View style={styles.guestBadge}>
-          <Text style={styles.guestBadgeText}>{t('badge.ghost', { ns: 'common' })}</Text>
-        </View>
-
-        {city ? (
-          <Text style={styles.cityLabel}>{t('visiting', { city: localizeCityName(city.name) })}</Text>
-        ) : null}
+        <Chip label={t('badge.ghost', { ns: 'common' })} />
+        {city ? <Text style={styles.cityLabel}>{t('visiting', { city: localizeCityName(city.name) })}</Text> : null}
       </View>
 
       <Text style={styles.note}>{t('ghostNote')}</Text>
 
-      <TouchableOpacity
-        style={styles.reportLink}
-        onPress={() => setShowActionSheet(true)}
-        activeOpacity={0.6}
-        accessibilityLabel={t('moreOptions')}
-      >
-        <Text style={styles.reportLinkText}>{t('moreOptions')}</Text>
-      </TouchableOpacity>
+      <Button variant="link" label={t('moreOptions')} onPress={() => setShowActionSheet(true)} style={styles.moreOptions} />
 
       <ProfileActionSheet
         visible={showActionSheet}
@@ -167,110 +135,16 @@ export default function GuestProfileScreen() {
         onClose={() => setShowReportModal(false)}
       />
 
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const AVATAR_SIZE = 88;
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    minHeight:         56,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    Radius.md,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-    zIndex:          1,
-  },
-  headerCenter: {
-    position:   'absolute',
-    left:       0,
-    right:      0,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize:      FontSizes.xl,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.5,
-  },
-
-  hero: {
-    alignItems:    'center',
-    paddingTop:    Spacing.xxl,
-    paddingBottom: Spacing.md,
-    gap:           12,
-  },
-  avatar: {
-    width:          AVATAR_SIZE,
-    height:         AVATAR_SIZE,
-    borderRadius:   AVATAR_SIZE / 2,
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: {
-    fontSize:   36,
-    fontWeight: '800',
-    color:      '#fff',
-  },
-  displayName: {
-    fontSize:      FontSizes.xl,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.5,
-    textAlign:     'center',
-  },
-  guestBadge: {
-    backgroundColor: c.overlay,
-    borderWidth:     1,
-    borderColor:     c.overlayStrong,
-    borderRadius:    Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical:   4,
-  },
-  guestBadgeText: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    color:         c.muted,
-    letterSpacing: 0.6,
-  },
-  cityLabel: {
-    fontSize: FontSizes.sm,
-    color:    c.muted2,
-  },
-  note: {
-    textAlign:         'center',
-    fontSize:          FontSizes.sm,
-    color:             c.muted2,
-    opacity:           0.6,
-    paddingHorizontal: Spacing.xl,
-    marginTop:         Spacing.sm,
-  },
-  reportLink: {
-    alignItems:  'center',
-    marginTop:   Spacing.xl,
-  },
-  // "More options" link - was rgba(255,255,255,0.2) (~1.7:1, near-invisible).
-  // Routed through the theme so it inherits future contrast fixes.
-  reportLinkText: {
-    fontSize: FontSizes.xs,
-    color:    c.muted2,
-  },
+  hero:        { alignItems: 'center', paddingTop: Spacing.xl, paddingBottom: Spacing.md, gap: 12 },
+  displayName: { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5, textAlign: 'center' },
+  cityLabel:   { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
+  note:        { textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, paddingHorizontal: Spacing.xl, marginTop: Spacing.sm },
+  moreOptions: { alignSelf: 'center', marginTop: Spacing.lg },
 });

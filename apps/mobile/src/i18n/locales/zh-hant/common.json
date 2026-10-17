@@ -193,5 +193,18 @@
     "usePhoto": "使用照片",
     "flash": "閃光燈",
     "flip": "切換相機"
+  },
+  "report": {
+    "title": "檢舉用戶",
+    "subtitle": "告訴我們 {{name}} 有什麼問題。檢舉是匿名的。",
+    "subtitleAnon": "告訴我們這位用戶有什麼問題。檢舉是匿名的。",
+    "placeholder": "描述問題（至少 10 個字）",
+    "submit": "送出檢舉",
+    "sentTitle": "檢舉已送出",
+    "sentBody": "感謝告知，我們的團隊會進行審核。",
+    "dupTitle": "已檢舉",
+    "dupBody": "你已於 {{date}} 檢舉過此用戶，正在審核中。",
+    "errorTitle": "發生錯誤",
+    "errorBody": "檢舉送出失敗，請重試。"
   }
 }

@@ -193,5 +193,18 @@
     "usePhoto": "Dùng ảnh này",
     "flash": "Đèn flash",
     "flip": "Đổi camera"
+  },
+  "report": {
+    "title": "Báo cáo người dùng",
+    "subtitle": "Cho chúng tôi biết {{name}} có vấn đề gì. Báo cáo được ẩn danh.",
+    "subtitleAnon": "Cho chúng tôi biết người dùng này có vấn đề gì. Báo cáo được ẩn danh.",
+    "placeholder": "Mô tả vấn đề (tối thiểu 10 ký tự)",
+    "submit": "Gửi báo cáo",
+    "sentTitle": "Đã gửi báo cáo",
+    "sentBody": "Cảm ơn bạn đã báo. Đội ngũ của chúng tôi sẽ xem xét.",
+    "dupTitle": "Đã báo cáo",
+    "dupBody": "Bạn đã báo cáo người dùng này vào {{date}}. Báo cáo đang được xem xét.",
+    "errorTitle": "Lỗi",
+    "errorBody": "Không gửi được báo cáo. Thử lại nhé."
   }
 }

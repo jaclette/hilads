@@ -193,5 +193,18 @@
     "usePhoto": "Gamitin ang larawan",
     "flash": "Flash",
     "flip": "Palitan ang camera"
+  },
+  "report": {
+    "title": "I-report ang user",
+    "subtitle": "Sabihin sa amin kung ano ang problema kay {{name}}. Anonymous ang mga report.",
+    "subtitleAnon": "Sabihin sa amin kung ano ang problema sa user na ito. Anonymous ang mga report.",
+    "placeholder": "Ilarawan ang problema (min. 10 character)",
+    "submit": "Ipadala ang report",
+    "sentTitle": "Naipadala ang report",
+    "sentBody": "Salamat sa pagsabi. Susuriin ito ng aming team.",
+    "dupTitle": "Na-report na",
+    "dupBody": "Na-report mo ang user na ito noong {{date}}. Sinusuri na ang report mo.",
+    "errorTitle": "Error",
+    "errorBody": "Hindi naipadala ang report. Subukan ulit."
   }
 }

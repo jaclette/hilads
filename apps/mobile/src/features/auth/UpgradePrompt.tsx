@@ -1,73 +1,34 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useTranslation } from 'react-i18next';
+import { Spacing } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
+import { Button, EmptyState } from '@/ui';
 
-interface Props {
-  title?:    string;
-  subtitle?: string;
-}
-
-export function UpgradePrompt({
-  title    = 'Create a free account',
-  subtitle = 'Sign in to unlock direct messages, notifications, and a persistent identity.',
-}: Props) {
+/** Guest-only invitation to create an account (Messages): the reason, then Sign up / I have an account. */
+export function UpgradePrompt({ title, subtitle }: { title: string; subtitle: string }) {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
+  const { t } = useTranslation('auth');
 
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>🔓</Text>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
-
-      <TouchableOpacity
-        style={styles.primaryBtn}
-        onPress={() => router.push('/sign-up')}
-        activeOpacity={0.85}
-      >
-        <Text style={styles.primaryText}>Create account</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.secondaryBtn}
-        onPress={() => router.push('/sign-in')}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.secondaryText}>Sign in</Text>
-      </TouchableOpacity>
+      <EmptyState
+        icon="lock-open-outline"
+        title={title}
+        body={subtitle}
+        action={
+          <View style={styles.actions}>
+            <Button label={t('sheet.signUp')} onPress={() => router.push('/sign-up')} />
+            <Button variant="secondary" label={t('sheet.haveAccount')} onPress={() => router.push('/sign-in')} />
+          </View>
+        }
+      />
     </View>
   );
 }
 
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: {
-    flex:            1,
-    justifyContent:  'center',
-    alignItems:      'center',
-    paddingHorizontal: Spacing.xl,
-    gap:             Spacing.sm,
-  },
-  icon:      { fontSize: 40, marginBottom: Spacing.sm },
-  title:     { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
-  subtitle:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20, marginBottom: Spacing.md },
-
-  primaryBtn: {
-    width:             '100%',
-    backgroundColor:   c.accent,
-    borderRadius:      Radius.lg,
-    paddingVertical:   Spacing.md,
-    alignItems:        'center',
-  },
-  primaryText: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
-
-  secondaryBtn: {
-    width:         '100%',
-    borderRadius:  Radius.lg,
-    paddingVertical: Spacing.md,
-    alignItems:    'center',
-    borderWidth:   1,
-    borderColor:   c.border,
-  },
-  secondaryText: { color: c.text, fontWeight: '600', fontSize: FontSizes.md },
+const makeStyles = () => StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
+  actions:   { alignSelf: 'stretch', gap: 10, marginTop: Spacing.sm },
 });

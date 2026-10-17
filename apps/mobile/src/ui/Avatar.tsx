@@ -22,7 +22,7 @@ export function Avatar({ uri, name, size, fallback = 'tint', ring = false }: {
     return <Image source={{ uri }} style={[styles.round, box, tint && styles.tint, ring && styles.ring]} contentFit="cover" />;
   }
   const initial = (name.replace('@', '') || '?')[0].toUpperCase();
-  const textSize = size >= 56 ? styles.lg : size >= 36 ? styles.md : styles.sm;
+  const textSize = size >= 80 ? styles.xl : size >= 56 ? styles.lg : size >= 36 ? styles.md : styles.sm;
   return (
     <View style={[styles.round, styles.center, box, tint ? styles.tint : { backgroundColor: avatarColor(name) }, ring && styles.ring]}>
       <Text style={[textSize, tint ? styles.onTint : styles.onColor]}>{initial}</Text>
@@ -36,6 +36,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tint:    { backgroundColor: c.primaryTint },
   ring:    { borderWidth: 2.5, borderColor: c.primary },
   // Each size carries its weight: src/scaling.ts gives a size-only text style the Regular family.
+  xl:      { fontSize: 34, fontWeight: '800' },
   lg:      { fontSize: 24, fontWeight: '800' },
   md:      { fontSize: FontSizes.sm, fontWeight: '800' },
   sm:      { fontSize: FontSizes.xs, fontWeight: '800' },

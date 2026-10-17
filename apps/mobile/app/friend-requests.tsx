@@ -8,20 +8,15 @@ import { thumbUrl } from '@/lib/imageThumb';
  */
 
 import { useState, useMemo } from 'react';
-import {
-  View, Text, TouchableOpacity, FlatList, Image,
-  ActivityIndicator, StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Feather, Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor as avatarBg } from '@/lib/avatarColors';
+import { Avatar, Button, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import type { FriendRequest } from '@/types';
 
 type Tab = 'incoming' | 'sent';
@@ -44,95 +39,52 @@ export default function FriendRequestsScreen() {
   }
 
   function renderRow({ item }: { item: FriendRequest }) {
-    const name    = item.other_display_name ?? '?';
-    const initial = name[0]?.toUpperCase() ?? '?';
-    const photo   = item.other_photo_url ?? null;
-
+    const name = item.other_display_name ?? '?';
     return (
-      <TouchableOpacity style={styles.row} activeOpacity={0.85} onPress={() => handleOpenProfile(item)}>
-        {photo ? (
-          <Image source={{ uri: thumbUrl(photo) }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.avatar, { backgroundColor: avatarBg(name), alignItems: 'center', justifyContent: 'center' }]}>
-            <Text style={styles.avatarInitial}>{initial}</Text>
-          </View>
-        )}
-
+      <TouchableOpacity style={styles.row} activeOpacity={0.85} onPress={() => handleOpenProfile(item)} accessibilityRole="button">
+        <Avatar uri={item.other_photo_url ? thumbUrl(item.other_photo_url) : null} name={name} size={44} fallback="color" />
         <View style={styles.body}>
           <Text style={styles.name} numberOfLines={1}>{name}</Text>
           <Text style={styles.sub} numberOfLines={1}>
             {tab === 'incoming' ? t('friendReq.wantsToBeFriend') : t('friendReq.requestSent')}
           </Text>
         </View>
-
         {tab === 'incoming' ? (
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.btnDecline} onPress={() => decline(item.id)} activeOpacity={0.8}>
-              <Text style={styles.btnDeclineText}>{t('friendReq.decline')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnAccept} onPress={() => accept(item.id)} activeOpacity={0.85}>
-              <Text style={styles.btnAcceptText}>{t('friendReq.accept')}</Text>
-            </TouchableOpacity>
+            <Button variant="secondary" size="sm" label={t('friendReq.decline')} onPress={() => decline(item.id)} />
+            <Button size="sm" label={t('friendReq.accept')} onPress={() => accept(item.id)} />
           </View>
         ) : (
-          <TouchableOpacity style={styles.btnCancel} onPress={() => cancel(item.id)} activeOpacity={0.8}>
-            <Text style={styles.btnCancelText}>{t('friendReq.cancel')}</Text>
-          </TouchableOpacity>
+          <Button variant="secondary" size="sm" label={t('friendReq.cancel')} onPress={() => cancel(item.id)} />
         )}
       </TouchableOpacity>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('friendReq.title')}</Text>
-        <View style={styles.backBtn} />
-      </View>
+    <Screen>
+      <ScreenHeader title={t('friendReq.title')} />
 
       <View style={styles.tabs}>
-        <TouchableOpacity
-          style={[styles.tab, tab === 'incoming' && styles.tabActive]}
-          onPress={() => setTab('incoming')}
-          activeOpacity={0.85}
-        >
-          <Text style={[styles.tabText, tab === 'incoming' && styles.tabTextActive]}>
-            {t('friendReq.incoming')}{incoming.length > 0 ? ` · ${incoming.length}` : ''}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, tab === 'sent' && styles.tabActive]}
-          onPress={() => setTab('sent')}
-          activeOpacity={0.85}
-        >
-          <Text style={[styles.tabText, tab === 'sent' && styles.tabTextActive]}>
-            {t('friendReq.sent')}{outgoing.length > 0 ? ` · ${outgoing.length}` : ''}
-          </Text>
-        </TouchableOpacity>
+        <Segmented
+          options={[
+            { key: 'incoming' as const, label: `${t('friendReq.incoming')}${incoming.length > 0 ? ` · ${incoming.length}` : ''}` },
+            { key: 'sent' as const, label: `${t('friendReq.sent')}${outgoing.length > 0 ? ` · ${outgoing.length}` : ''}` },
+          ]}
+          value={tab}
+          onChange={setTab}
+        />
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} />
-        </View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : data.length === 0 ? (
         <View style={styles.center}>
-          <Ionicons
-            name={tab === 'incoming' ? 'person-add-outline' : 'paper-plane-outline'}
-            size={36}
-            color={colors.muted2}
+          <EmptyState
+            icon={tab === 'incoming' ? 'person-add-outline' : 'paper-plane-outline'}
+            title={tab === 'incoming' ? t('friendReq.emptyIncomingTitle') : t('friendReq.emptySentTitle')}
+            body={tab === 'incoming' ? t('friendReq.emptyIncomingSub') : t('friendReq.emptySentSub')}
           />
-          <Text style={styles.emptyTitle}>
-            {tab === 'incoming' ? t('friendReq.emptyIncomingTitle') : t('friendReq.emptySentTitle')}
-          </Text>
-          <Text style={styles.emptySub}>
-            {tab === 'incoming'
-              ? t('friendReq.emptyIncomingSub')
-              : t('friendReq.emptySentSub')}
-          </Text>
         </View>
       ) : (
         <FlatList
@@ -143,72 +95,18 @@ export default function FriendRequestsScreen() {
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       )}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: c.border,
-  },
-  backBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text },
-
-  tabs: { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 8 },
-  tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-    backgroundColor: c.bg2,
-    borderWidth: 1,
-    borderColor: c.border,
-  },
-  tabActive: { backgroundColor: c.accent, borderColor: c.accent },
-  tabText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
-  tabTextActive: { color: c.white },
-
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 6 },
-  emptyTitle: { color: c.text, fontWeight: '700', fontSize: FontSizes.md, marginTop: 8 },
-  emptySub: { color: c.muted, fontSize: FontSizes.sm, textAlign: 'center', maxWidth: 280 },
-
-  listContent: { paddingVertical: Spacing.sm },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: 12,
-  },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: c.bg3 },
-  avatarInitial: { color: c.white, fontWeight: '700', fontSize: 18 },
-  body: { flex: 1, minWidth: 0 },
-  name: { color: c.text, fontWeight: '700', fontSize: FontSizes.md },
-  sub:  { color: c.muted, fontSize: FontSizes.sm, marginTop: 1 },
-
-  actions: { flexDirection: 'row', gap: 8 },
-  btnDecline: {
-    paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.full,
-    borderWidth: 1, borderColor: c.border,
-  },
-  btnDeclineText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
-  btnAccept: {
-    paddingVertical: 8, paddingHorizontal: 14, borderRadius: Radius.full,
-    backgroundColor: c.accent,
-  },
-  btnAcceptText: { color: c.white, fontWeight: '700', fontSize: FontSizes.sm },
-  btnCancel: {
-    paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.full,
-    borderWidth: 1, borderColor: c.border,
-  },
-  btnCancelText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
-
-  separator: { height: StyleSheet.hairlineWidth, backgroundColor: c.border, marginLeft: Spacing.md + 44 + 12 },
+  tabs:        { paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: 8 },
+  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
+  listContent: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
+  separator:   { height: 1, backgroundColor: c.line },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
+  body:        { flex: 1, minWidth: 0 },
+  name:        { fontSize: 15, fontWeight: '700', color: c.text },
+  sub:         { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: 2 },
+  actions:     { flexDirection: 'row', gap: 8 },
 });

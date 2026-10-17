@@ -7,13 +7,12 @@
  */
 
 import React from 'react';
-import {
-  Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback,
-  StyleSheet,
-} from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useTranslation } from 'react-i18next';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Button, Sheet } from '@/ui';
 
 export interface ProfileSheetAction {
   key:          string;
@@ -35,115 +34,38 @@ interface Props {
 export function ProfileActionSheet({ visible, title, actions, onClose }: Props) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
+  const { t } = useTranslation('common');
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={onClose}
-    >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay} />
-      </TouchableWithoutFeedback>
+    <Sheet visible={visible} onClose={onClose} closeLabel={t('cancel')}>
+      {title ? <Text style={styles.title} numberOfLines={1}>{title}</Text> : null}
 
-      <View style={styles.sheet}>
-        {title ? <Text style={styles.title} numberOfLines={1}>{title}</Text> : null}
-
-        {actions.map((a, idx) => (
-          <TouchableOpacity
-            key={a.key}
-            style={[
-              styles.action,
-              idx === 0 && !title ? null : styles.actionDivider,
-              a.disabled ? styles.actionDisabled : null,
-            ]}
-            onPress={() => { if (!a.disabled) { a.onPress(); onClose(); } }}
-            disabled={a.disabled}
-            activeOpacity={0.75}
-          >
-            <Ionicons
-              name={a.icon}
-              size={20}
-              color={a.destructive ? colors.red : colors.text}
-            />
-            <Text style={[
-              styles.actionLabel,
-              a.destructive ? styles.actionLabelDestructive : null,
-              a.disabled ? styles.actionLabelDisabled : null,
-            ]}>
-              {a.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-
-        <TouchableOpacity style={styles.cancel} onPress={onClose} activeOpacity={0.7}>
-          <Text style={styles.cancelText}>Cancel</Text>
+      {actions.map((a, idx) => (
+        <TouchableOpacity
+          key={a.key}
+          style={[styles.action, (idx > 0 || !!title) && styles.actionDivider, a.disabled && styles.actionDisabled]}
+          onPress={() => { if (!a.disabled) { a.onPress(); onClose(); } }}
+          disabled={a.disabled}
+          activeOpacity={0.75}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !!a.disabled }}
+        >
+          <Ionicons name={a.icon} size={22} color={a.destructive ? colors.red : colors.text} />
+          <Text style={[styles.actionLabel, a.destructive && styles.actionLabelDestructive]}>{a.label}</Text>
         </TouchableOpacity>
-      </View>
-    </Modal>
+      ))}
+
+      <Button variant="secondary" label={t('cancel')} onPress={onClose} style={styles.cancel} />
+    </Sheet>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  overlay: {
-    flex:            1,
-    backgroundColor: c.scrim,
-  },
-  sheet: {
-    backgroundColor:   c.bg2,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-    borderTopLeftRadius:  Radius.lg,
-    borderTopRightRadius: Radius.lg,
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.md,
-    paddingBottom:     Spacing.xl,
-    gap:               4,
-  },
-  title: {
-    fontSize:      FontSizes.sm,
-    color:         c.muted,
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
-    fontWeight:    '600',
-  },
-  action: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            14,
-    paddingVertical: 14,
-    paddingHorizontal: Spacing.xs,
-  },
-  actionDivider: {
-    borderTopWidth: 1,
-    borderTopColor: c.border,
-  },
-  actionDisabled: {
-    opacity: 0.4,
-  },
-  actionLabel: {
-    fontSize:   FontSizes.md,
-    color:      c.text,
-    fontWeight: '500',
-  },
-  actionLabelDestructive: {
-    color: c.red,
-  },
-  actionLabelDisabled: {
-    color: c.muted2,
-  },
-  cancel: {
-    alignItems:      'center',
-    paddingVertical: 14,
-    marginTop:       Spacing.sm,
-    backgroundColor: c.bg3,
-    borderRadius:    Radius.md,
-  },
-  cancelText: {
-    fontSize:   FontSizes.md,
-    color:      c.text,
-    fontWeight: '600',
-  },
+  title:                  { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingBottom: 4 },
+  action:                 { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 52 },
+  actionDivider:          { borderTopWidth: 1, borderTopColor: c.line },
+  actionDisabled:         { opacity: 0.4 },
+  actionLabel:            { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  actionLabelDestructive: { color: c.red },
+  cancel:                 { marginTop: 6 },
 });

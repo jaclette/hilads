@@ -193,5 +193,18 @@
     "usePhoto": "Foto gebruiken",
     "flash": "Flitser",
     "flip": "Camera wisselen"
+  },
+  "report": {
+    "title": "Gebruiker melden",
+    "subtitle": "Vertel ons wat er mis is met {{name}}. Meldingen zijn anoniem.",
+    "subtitleAnon": "Vertel ons wat er mis is met deze gebruiker. Meldingen zijn anoniem.",
+    "placeholder": "Beschrijf het probleem (min. 10 tekens)",
+    "submit": "Melding versturen",
+    "sentTitle": "Melding verstuurd",
+    "sentBody": "Bedankt voor je melding. Ons team bekijkt het.",
+    "dupTitle": "Al gemeld",
+    "dupBody": "Je hebt deze gebruiker op {{date}} gemeld. Je melding wordt bekeken.",
+    "errorTitle": "Fout",
+    "errorBody": "Melding versturen mislukt. Probeer het opnieuw."
   }
 }

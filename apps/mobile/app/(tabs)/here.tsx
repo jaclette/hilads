@@ -9,14 +9,9 @@ import { thumbUrl } from '@/lib/imageThumb';
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import {
-  View, Text, Image, ScrollView, StyleSheet,
-  TouchableOpacity, ActivityIndicator,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchCityMembers, fetchCityAmbassadors, fetchMessageBadges, type CityMember, type CityAmbassador, type UserBadgeInfo } from '@/api/channels';
@@ -24,10 +19,9 @@ import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor } from '@/lib/avatarColors';
-import { AppHeader } from '@/features/shell/AppHeader';
+import { Avatar, Button, Chip, EmptyState, IconButton, ModeLabel, Screen, ScreenHeader } from '@/ui';
 
 const CONTEXT_BADGE_KEYS = new Set(['host']);
 
@@ -39,124 +33,84 @@ function BadgePill({ badgeKey }: { badgeKey: string }) {
   const { t } = useTranslation('common');
   const meta = BADGE_META[badgeKey as keyof typeof BADGE_META] ?? BADGE_META.regular;
   return (
-    <View style={[pillStyles.pill, { backgroundColor: meta.bg, borderColor: meta.border }]}>
-      <Text style={[pillStyles.text, { color: meta.color }]}>{t(`badge.${badgeKey}`, { defaultValue: meta.label })}</Text>
+    <View style={[pillStyles.pill, badgeKey === 'host' && pillStyles.pillGold]}>
+      <Text style={[pillStyles.text, badgeKey === 'host' && pillStyles.textGold]}>{t(`badge.${badgeKey}`, { defaultValue: meta.label })}</Text>
     </View>
   );
 }
 
-// ── Vibe pill ─────────────────────────────────────────────────────────────────
-
-const MODE_META: Record<string, { emoji: string; label: string }> = {
-  local:     { emoji: '🌍', label: 'Local'     },
-  exploring: { emoji: '🧭', label: 'Exploring' },
-};
-
-const VIBE_META: Record<string, { emoji: string; label: string; color: string; bg: string; border: string }> = {
-  party:       { emoji: '🔥', label: 'Party',       color: '#f97316', bg: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.25)'  },
-  board_games: { emoji: '🎲', label: 'Board Games', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.25)' },
-  coffee:      { emoji: '☕', label: 'Coffee',      color: '#c4a882', bg: 'rgba(196,168,130,0.12)', border: 'rgba(196,168,130,0.25)' },
-  music:       { emoji: '🎧', label: 'Music',       color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.25)'  },
-  food:        { emoji: '🍜', label: 'Food',        color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.25)'  },
-  chill:       { emoji: '🧘', label: 'Chill',       color: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.25)'  },
-};
+const VIBES = ['party', 'board_games', 'coffee', 'music', 'food', 'chill'] as const;
+const VIBE_LABEL: Record<string, string> = { party: 'Party', board_games: 'Board Games', coffee: 'Coffee', music: 'Music', food: 'Food', chill: 'Chill' };
 
 function VibePill({ vibe }: { vibe?: string | null }) {
   const pillStyles = useThemedStyles(makePillStyles);
   const { t } = useTranslation('common');
-  if (!vibe) return null;
-  const meta = VIBE_META[vibe];
-  if (!meta) return null;
+  if (!vibe || !VIBE_LABEL[vibe]) return null;
   return (
-    <View style={[pillStyles.pill, { backgroundColor: meta.bg, borderColor: meta.border }]}>
-      <Text style={[pillStyles.text, { color: meta.color, opacity: 0.85 }]}>{meta.emoji} {t(`vibe.${vibe}`, { defaultValue: meta.label })}</Text>
+    <View style={[pillStyles.pill, pillStyles.pillTint]}>
+      <Text style={[pillStyles.text, pillStyles.textTint]}>{t(`vibe.${vibe}`, { defaultValue: VIBE_LABEL[vibe] })}</Text>
     </View>
   );
 }
 
+function Mode({ mode }: { mode?: string | null }) {
+  const { t } = useTranslation('common');
+  if (mode !== 'local' && mode !== 'exploring') return null;
+  return <ModeLabel mode={mode === 'local' ? 'local' : 'traveler'} label={t(`mode.${mode}.label`)} />;
+}
+
 const makePillStyles = (c: ThemeColors) => StyleSheet.create({
-  pill: { alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1 },
-  text: { fontSize: 10, fontWeight: '700' },
+  pill:     { alignSelf: 'flex-start', height: 22, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: 8, backgroundColor: c.bg3 },
+  pillTint: { backgroundColor: c.primaryTint },
+  pillGold: { backgroundColor: c.bg3 },
+  text:     { fontSize: 11, fontWeight: '700', color: c.muted },
+  textTint: { color: c.primaryOnTint },
+  textGold: { color: c.gold },
 });
 
-// ── Filter config ─────────────────────────────────────────────────────────────
-
-const MODE_FILTERS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, emoji: v.emoji }));
-const BADGE_FILTERS = [{ key: 'fresh' }, { key: 'regular' }, { key: 'host' }];
-const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, emoji: v.emoji }));
-
-// ── Online user row ───────────────────────────────────────────────────────────
+const MODE_FILTERS = ['local', 'exploring'] as const;
+const BADGE_FILTERS = ['fresh', 'regular', 'host'] as const;
 
 function OnlineUserRow({ user, isMe, onPress, onDm }: {
   user: OnlineUser; isMe: boolean; onPress?: () => void; onDm: () => void;
 }) {
-  const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('here');
-  const initials = (user.nickname ?? '?').slice(0, 2).toUpperCase();
-  const color    = avatarColor(user.nickname ?? '');
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress}>
-      <View style={styles.avatarWrap}>
-        {user.profilePhotoUrl ? (
-          <Image source={{ uri: thumbUrl(user.profileThumbPhotoUrl ?? user.profilePhotoUrl) }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
-            <Text style={[styles.avatarText, { color }]}>{initials}</Text>
-          </View>
-        )}
+    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress} accessibilityRole={onPress ? 'button' : undefined}>
+      <View>
+        <Avatar uri={user.profilePhotoUrl ? thumbUrl(user.profileThumbPhotoUrl ?? user.profilePhotoUrl) : null} name={user.nickname ?? '?'} size={44} fallback="color" />
         <View style={styles.liveDot} />
       </View>
       <View style={styles.rowInfo}>
-        <Text style={styles.nickname}>
+        <Text style={styles.nickname} numberOfLines={1}>
           {user.nickname}{isMe ? <Text style={styles.youLabel}> {t('you')}</Text> : ''}
         </Text>
         <View style={styles.badgeRow}>
-          {user.mode && MODE_META[user.mode] && (
-            <Text style={[{ fontSize: 14 }, user.mode === 'local' ? styles.modeEmojiLocal : styles.modeEmojiExploring]}>
-              {MODE_META[user.mode].emoji}
-            </Text>
-          )}
+          <Mode mode={user.mode} />
           {user.primaryBadge
             ? <BadgePill badgeKey={user.primaryBadge.key} />
-            : <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />
-          }
+            : <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />}
           {user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
           <VibePill vibe={user.vibe} />
         </View>
       </View>
       {!isMe && user.userId && (
-        <TouchableOpacity style={styles.dmBtn} onPress={onDm} activeOpacity={0.7}>
-          <Feather name="message-square" size={22} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="chatbubble-outline" iconSize={20} label={t('messages', { ns: 'common' })} onPress={onDm} />
       )}
     </TouchableOpacity>
   );
 }
 
-// ── City crew row ─────────────────────────────────────────────────────────────
-
 function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
-  const initials = (member.displayName ?? '?').slice(0, 2).toUpperCase();
-  const color    = avatarColor(member.displayName ?? '');
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      {member.avatarUrl ? (
-        <Image source={{ uri: thumbUrl(member.thumbAvatarUrl ?? member.avatarUrl) }} style={styles.avatar} />
-      ) : (
-        <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
-          <Text style={[styles.avatarText, { color }]}>{initials}</Text>
-        </View>
-      )}
+    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7} accessibilityRole="button">
+      <Avatar uri={member.avatarUrl ? thumbUrl(member.thumbAvatarUrl ?? member.avatarUrl) : null} name={member.displayName ?? '?'} size={44} fallback="color" />
       <View style={styles.rowInfo}>
-        <Text style={styles.nickname}>{member.displayName}</Text>
+        <Text style={styles.nickname} numberOfLines={1}>{member.displayName}</Text>
         <View style={styles.badgeRow}>
-          {member.mode && MODE_META[member.mode] && (
-            <Text style={[{ fontSize: 14 }, member.mode === 'local' ? styles.modeEmojiLocal : styles.modeEmojiExploring]}>
-              {MODE_META[member.mode].emoji}
-            </Text>
-          )}
+          <Mode mode={member.mode} />
           {member.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
           <VibePill vibe={member.vibe} />
         </View>
@@ -164,8 +118,6 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
     </TouchableOpacity>
   );
 }
-
-// ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function HereScreen() {
   const { colors } = useTheme();
@@ -290,345 +242,187 @@ export default function HereScreen() {
   const me     = filteredOnline.find(u => u.sessionId === mySessionId);
   const liveList = me ? [...others, me] : others;
 
+  const header = (
+    <ScreenHeader title={t('title')} onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chat' as never))}
+                  right={city ? <Text style={styles.headerSub} numberOfLines={1}>{city.name}</Text> : undefined} />
+  );
+
   if (!city) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.appHeaderWrap}>
-          <AppHeader />
-        </View>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>{t('title')}</Text>
-        </View>
+      <Screen>
+        {header}
         <View style={styles.empty}>
-          <Text style={styles.emptyEmoji}>📍</Text>
-          <Text style={styles.emptyTitle}>{t('noCityTitle')}</Text>
-          <Text style={styles.emptySub}>{t('noCitySub')}</Text>
-          <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
-            <Text style={styles.emptyBtnText}>{t('browseCities')}</Text>
-          </TouchableOpacity>
+          <EmptyState icon="location-outline" title={t('noCityTitle')} body={t('noCitySub')}
+                      action={<Button label={t('browseCities')} onPress={() => router.push('/switch-city' as never)} />} />
         </View>
-      </SafeAreaView>
+      </Screen>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Screen>
+      {header}
 
-      {/* Persistent app header */}
-      <View style={styles.appHeaderWrap}>
-        <AppHeader />
-      </View>
+      {/* Filters: badge, vibe, mode (combinable). */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow} style={styles.filtersWrap}>
+        <Text style={styles.filterGroupLabel}>{t('filterBadge')}</Text>
+        {BADGE_FILTERS.map(k => (
+          <Chip key={k} variant="filter" label={t(`badge.${k}`, { ns: 'common' })} selected={filterBadge === k}
+                onPress={() => setFilterBadge(v => v === k ? null : k)} />
+        ))}
+        <View style={styles.filterDivider} />
+        <Text style={styles.filterGroupLabel}>{t('filterVibe')}</Text>
+        {VIBES.map(k => (
+          <Chip key={k} variant="filter" label={t(`vibe.${k}`, { ns: 'common', defaultValue: VIBE_LABEL[k] })} selected={filterVibe === k}
+                onPress={() => setFilterVibe(v => v === k ? null : k)} />
+        ))}
+        <View style={styles.filterDivider} />
+        <Text style={styles.filterGroupLabel}>{t('filterMode')}</Text>
+        {MODE_FILTERS.map(k => (
+          <Chip key={k} variant="filter" label={t(`mode.${k}.label`, { ns: 'common' })} selected={filterMode === k}
+                onPress={() => setFilterMode(v => v === k ? null : k)} />
+        ))}
+      </ScrollView>
 
-      {/* Tab-specific sub-header */}
-      <View style={styles.header}>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('title')}</Text>
-          <Text style={styles.headerSub}>{city.name}</Text>
-        </View>
-      </View>
-
-      {/* Filters */}
-      <View style={styles.filtersWrap}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-          <Text style={styles.filterGroupLabel}>{t('filterBadge')}</Text>
-          {BADGE_FILTERS.map(f => (
-            <TouchableOpacity
-              key={f.key}
-              style={[styles.chip, filterBadge === f.key && styles.chipOn]}
-              onPress={() => setFilterBadge(v => v === f.key ? null : f.key)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.chipText, filterBadge === f.key && styles.chipTextOn]}>{t(`badge.${f.key}`, { ns: 'common' })}</Text>
-            </TouchableOpacity>
-          ))}
-          <View style={styles.filterDivider} />
-          <Text style={styles.filterGroupLabel}>{t('filterVibe')}</Text>
-          {VIBE_FILTERS.map(f => (
-            <TouchableOpacity
-              key={f.key}
-              style={[styles.chip, filterVibe === f.key && styles.chipOn]}
-              onPress={() => setFilterVibe(v => v === f.key ? null : f.key)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.chipText, filterVibe === f.key && styles.chipTextOn]}>{f.emoji} {t(`vibe.${f.key}`, { ns: 'common' })}</Text>
-            </TouchableOpacity>
-          ))}
-          <View style={styles.filterDivider} />
-          <Text style={styles.filterGroupLabel}>{t('filterMode')}</Text>
-          {MODE_FILTERS.map(f => (
-            <TouchableOpacity
-              key={f.key}
-              style={[styles.chip, filterMode === f.key && (f.key === 'local' ? styles.chipOnLocal : styles.chipOnExploring)]}
-              onPress={() => setFilterMode(v => v === f.key ? null : f.key)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.chipText, filterMode === f.key && (f.key === 'local' ? styles.chipTextOnLocal : styles.chipTextOnExploring)]}>{f.emoji} {t(`mode.${f.key}.label`, { ns: 'common' })}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Content */}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-        {/* ── Section 1: Here now — shown only when ≥2 people are present. On
-            your own, "here now" is just you, which isn't activity worth a
-            section (matches the header pill dropping to "Members"). ── */}
+        {/* ── Here now: only from 2 people (on your own it's just you). ── */}
         {liveList.length >= 2 && (
           <>
             <View style={styles.sectionHeader}>
               <View style={styles.liveDotSection} />
               <Text style={styles.sectionTitle}>{t('hereNow')} · {liveList.length}</Text>
             </View>
-
-            {liveList.map((item) => {
-              const isMe = item.sessionId === mySessionId;
-              return (
-                <OnlineUserRow
-                  key={item.sessionId}
-                  user={item}
-                  isMe={isMe}
-                  onPress={!isMe && item.userId ? () => {
-                    if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
-                    router.push({ pathname: '/user/[id]', params: { id: item.userId! } });
-                  } : undefined}
-                  onDm={() => {
-                    if (!canAccessProfile(account)) { router.push('/auth-gate?reason=send_dm'); return; }
-                    if (item.userId) router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
-                  }}
-                />
-              );
-            })}
+            <View style={styles.group}>
+              {liveList.map((item, i) => {
+                const isMe = item.sessionId === mySessionId;
+                return (
+                  <View key={item.sessionId} style={i > 0 && styles.divider}>
+                    <OnlineUserRow
+                      user={item}
+                      isMe={isMe}
+                      onPress={!isMe && item.userId ? () => {
+                        if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                        router.push({ pathname: '/user/[id]', params: { id: item.userId! } });
+                      } : undefined}
+                      onDm={() => {
+                        if (!canAccessProfile(account)) { router.push('/auth-gate?reason=send_dm'); return; }
+                        if (item.userId) router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
+                      }}
+                    />
+                  </View>
+                );
+              })}
+            </View>
           </>
         )}
 
-        {/* ── Section 2: Local legends ── */}
+        {/* ── Local legends ── */}
         {legends.length > 0 && (
           <>
-            <View style={[styles.sectionHeader, { marginTop: Spacing.xl, flexDirection: 'column', alignItems: 'flex-start', gap: 2 }]}>
-              <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: colors.text }]}>
-                👑 {t('legends')}
-              </Text>
-              <Text style={{ fontSize: FontSizes.xs, color: colors.muted }}>{t('legendsSub')}</Text>
+            <View style={styles.sectionHeaderCol}>
+              <View style={styles.sectionTitleRow}>
+                <Ionicons name="ribbon-outline" size={18} color={colors.gold} />
+                <Text style={styles.sectionTitle}>{t('legends')}</Text>
+              </View>
+              <Text style={styles.sectionSub}>{t('legendsSub')}</Text>
             </View>
-            {legends.map(m => {
-              const initials = (m.displayName ?? '?').slice(0, 2).toUpperCase();
-              const color    = avatarColor(m.displayName ?? '');
-              const firstPick = m.ambassadorPicks?.tip ?? m.ambassadorPicks?.restaurant ?? m.ambassadorPicks?.spot ?? m.ambassadorPicks?.story;
-              return (
-                <TouchableOpacity
-                  key={m.id}
-                  style={[styles.row, styles.legendRow]}
+            <View style={[styles.group, styles.groupGold]}>
+              {legends.map((m, i) => {
+                const firstPick = m.ambassadorPicks?.tip ?? m.ambassadorPicks?.restaurant ?? m.ambassadorPicks?.spot ?? m.ambassadorPicks?.story;
+                return (
+                  <TouchableOpacity
+                    key={m.id}
+                    style={[styles.row, i > 0 && styles.divider]}
+                    onPress={() => {
+                      if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                      router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } });
+                    }}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                  >
+                    <Avatar uri={m.avatarUrl ? thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl) : null} name={m.displayName ?? '?'} size={44} fallback="color" />
+                    <View style={styles.rowInfo}>
+                      <Text style={styles.nickname} numberOfLines={1}>{m.displayName}</Text>
+                      <View style={styles.badgeRow}>
+                        {m.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
+                        <VibePill vibe={m.vibe} />
+                      </View>
+                      {firstPick ? (
+                        <View style={styles.pickRow}>
+                          <Ionicons name="bulb-outline" size={13} color={colors.muted} />
+                          <Text style={styles.legendPickPreview} numberOfLines={1}>{firstPick}</Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </>
+        )}
+
+        {/* ── City crew ── */}
+        <View style={styles.sectionHeader}>
+          <Ionicons name="people-outline" size={18} color={colors.text} />
+          <Text style={styles.sectionTitle}>{t('cityCrew')}</Text>
+        </View>
+
+        {crewLoading && visibleCrew.length === 0 ? (
+          <ActivityIndicator color={colors.primary} style={styles.loader} />
+        ) : visibleCrew.length === 0 ? (
+          <EmptyState body={t('noMatchCrew')} />
+        ) : (
+          <View style={styles.group}>
+            {visibleCrew.map((m, i) => (
+              <View key={m.id} style={i > 0 && styles.divider}>
+                <CrewMemberRow
+                  member={m}
                   onPress={() => {
                     if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
                     router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } });
                   }}
-                  activeOpacity={0.7}
-                >
-                  {m.avatarUrl ? (
-                    <Image source={{ uri: thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl) }} style={[styles.avatar, styles.legendAvatar]} />
-                  ) : (
-                    <View style={[styles.avatar, styles.legendAvatar, { backgroundColor: color + '28', borderColor: 'rgba(255,193,7,0.35)' }]}>
-                      <Text style={[styles.avatarText, { color }]}>{initials}</Text>
-                    </View>
-                  )}
-                  <View style={styles.rowInfo}>
-                    <Text style={styles.nickname}>{m.displayName}</Text>
-                    <View style={styles.badgeRow}>
-                      {m.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
-                      <VibePill vibe={m.vibe} />
-                    </View>
-                    {firstPick ? (
-                      <Text style={styles.legendPickPreview} numberOfLines={1}>💡 {firstPick}</Text>
-                    ) : null}
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </>
+                />
+              </View>
+            ))}
+          </View>
         )}
 
-        {/* ── Section 3: City crew ── */}
-        <View style={[styles.sectionHeader, { marginTop: Spacing.xl }]}>
-          <Text style={styles.sectionTitle}>🏙️ {t('cityCrew')}</Text>
-        </View>
-
-        {crewLoading && visibleCrew.length === 0 ? (
-          <ActivityIndicator color={colors.accent} style={{ marginTop: 12 }} />
-        ) : visibleCrew.length === 0 ? (
-          <Text style={styles.sectionEmpty}>{t('noMatchCrew')}</Text>
-        ) : visibleCrew.map(m => (
-          <CrewMemberRow
-            key={m.id}
-            member={m}
-            onPress={() => {
-              if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
-              router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } });
-            }}
-          />
-        ))}
-
         {crewHasMore && (
-          <TouchableOpacity
-            style={styles.loadMoreBtn}
-            onPress={() => loadCrew(crewPage + 1, false)}
-            disabled={crewLoading}
-            activeOpacity={0.7}
-          >
-            {crewLoading
-              ? <ActivityIndicator color={colors.muted} size="small" />
-              : <Text style={styles.loadMoreText}>{t('loadMore')}</Text>
-            }
-          </TouchableOpacity>
+          <Button variant="secondary" label={t('loadMore')} onPress={() => loadCrew(crewPage + 1, false)} loading={crewLoading} style={styles.loadMore} />
         )}
 
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-
-  // ── Header ────────────────────────────────────────────────────────────────
-  header: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
-    borderBottomWidth: 1, borderBottomColor: c.border, minHeight: 56,
-  },
-  // No borderBottom - header flows directly into the tab sub-header,
-  // matching MY CITY's look.
-  appHeaderWrap: {
-    paddingHorizontal: Spacing.md,
-    paddingTop:        10,
-    paddingBottom:     12,
-    backgroundColor:   c.bg,
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
-  headerSub:    { fontSize: FontSizes.sm, color: c.muted, marginTop: 2, textAlign: 'center' },
-
-  // ── Filters ───────────────────────────────────────────────────────────────
-  filtersWrap: {
-    borderBottomWidth: 1, borderBottomColor: c.border,
-    backgroundColor: c.bg2,
-  },
-  filterRow: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: Spacing.md, paddingVertical: 10, gap: 6,
-  },
-  filterGroupLabel: {
-    fontSize: 9, fontWeight: '700', textTransform: 'uppercase',
-    letterSpacing: 0.8, color: c.muted, marginRight: 2,
-  },
-  filterDivider: {
-    width: 1, height: 16, backgroundColor: c.border, marginHorizontal: 4,
-  },
-  chip: {
-    paddingHorizontal: 10, paddingVertical: 5,
-    borderRadius: 999, borderWidth: 1, borderColor: c.border,
-    backgroundColor: 'transparent',
-  },
-  chipOn: {
-    borderColor: c.accent,
-    backgroundColor: 'rgba(194,74,56,0.12)',
-  },
-  chipOnLocal:     { borderColor: '#FF7A3C', backgroundColor: 'rgba(255,122,60,0.12)' },
-  chipOnExploring: { borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.12)' },
-  chipText:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  chipTextOn:         { color: c.accent },
-  chipTextOnLocal:     { color: '#FF7A3C' },
-  chipTextOnExploring: { color: '#60a5fa' },
-
-  // ── Scroll content ────────────────────────────────────────────────────────
-  scrollContent: { padding: Spacing.md, gap: Spacing.sm, paddingBottom: 40 },
-
-  // ── Section headers ───────────────────────────────────────────────────────
-  sectionHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 8,
-  },
-  liveDotSection: {
-    width: 7, height: 7, borderRadius: 4,
-    backgroundColor: c.green,
-    shadowColor: c.green, shadowOpacity: 0.8, shadowRadius: 4, elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: FontSizes.xs, fontWeight: '700', textTransform: 'uppercase',
-    letterSpacing: 0.8, color: c.muted,
-  },
-  sectionEmpty: {
-    fontSize: FontSizes.sm, color: c.muted,
-    paddingVertical: 8, paddingLeft: 2,
-  },
-
-  // ── User row ──────────────────────────────────────────────────────────────
-  row: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: c.bg2, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: c.border,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.md,
-  },
-  avatarWrap: {
-    width: 44, height: 44, position: 'relative',
-  },
-  avatar: {
-    width: 44, height: 44, borderRadius: Radius.full,
-    borderWidth: 1, alignItems: 'center', justifyContent: 'center',
-  },
-  avatarText: { fontWeight: '700', fontSize: FontSizes.sm },
-  liveDot: {
-    position: 'absolute', bottom: 1, right: 1,
-    width: 10, height: 10, borderRadius: 5,
-    backgroundColor: c.green, borderWidth: 2, borderColor: c.bg2,
-  },
-  rowInfo: { flex: 1, gap: 4 },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 4 },
-  nickname:  { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  youLabel:  { fontSize: FontSizes.sm, color: c.muted, fontWeight: '400' },
-
-  dmBtn: {
-    width: 40, height: 40, borderRadius: 12,
-    backgroundColor: '#1A1A1A', borderWidth: 1, borderColor: '#2A2A2A',
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  },
-
-  // ── Legend row ────────────────────────────────────────────────────────────
-  legendRow: {
-    borderColor: 'rgba(255,193,7,0.18)',
-    backgroundColor: 'rgba(255,193,7,0.04)',
-  },
-  legendAvatar: {
-    borderColor: 'rgba(255,193,7,0.35)',
-  },
-  legendPickPreview: {
-    fontSize: FontSizes.xs,
-    color: c.muted,
-    marginTop: 2,
-  },
-
-  // ── Load more ─────────────────────────────────────────────────────────────
-  loadMoreBtn: {
-    marginTop: 4, paddingVertical: 12,
-    backgroundColor: c.bg2, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: c.border,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  loadMoreText: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
-
-  // ── Empty (no city) ───────────────────────────────────────────────────────
-  empty: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22 },
-  emptyBtn: {
-    marginTop: Spacing.md, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 2,
-    backgroundColor: c.accent, borderRadius: Radius.full,
-  },
-  emptyBtnText: { color: c.white, fontWeight: '700', fontSize: FontSizes.sm },
-
-  // ── Mode emoji colors ─────────────────────────────────────────────────────
-  modeEmojiLocal:     { color: '#FF7A3C', opacity: 0.85 },
-  modeEmojiExploring: { color: '#60a5fa', opacity: 0.85 },
+  headerSub:        { maxWidth: 160, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  empty:            { flex: 1, justifyContent: 'center', padding: Spacing.lg },
+  filtersWrap:      { flexGrow: 0 },
+  filterRow:        { alignItems: 'center', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  filterGroupLabel: { fontSize: 12, fontWeight: '700', color: c.muted },
+  filterDivider:    { width: 1, height: 22, backgroundColor: c.line, marginHorizontal: 4 },
+  scrollContent:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
+  sectionHeader:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: Spacing.md, marginBottom: 8 },
+  sectionHeaderCol: { gap: 2, marginTop: Spacing.md, marginBottom: 8 },
+  sectionTitleRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sectionTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  sectionSub:       { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
+  liveDotSection:   { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: c.green },
+  group:            { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  groupGold:        { borderColor: c.gold },
+  divider:          { borderTopWidth: 1, borderTopColor: c.line },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
+  liveDot:          { position: 'absolute', right: 0, bottom: 0, width: 12, height: 12, borderRadius: Radius.full, backgroundColor: c.green,
+                      borderWidth: 2, borderColor: c.bg2 },
+  rowInfo:          { flex: 1, minWidth: 0, gap: 4 },
+  nickname:         { fontSize: 15, fontWeight: '700', color: c.text },
+  youLabel:         { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  badgeRow:         { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
+  pickRow:          { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  legendPickPreview:{ flex: 1, fontSize: 12, fontWeight: '400', color: c.muted },
+  loader:           { marginTop: 12 },
+  loadMore:         { marginTop: Spacing.md },
 });

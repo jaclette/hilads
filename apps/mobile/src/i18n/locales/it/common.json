@@ -193,5 +193,18 @@
     "usePhoto": "Usa la foto",
     "flash": "Flash",
     "flip": "Cambia fotocamera"
+  },
+  "report": {
+    "title": "Segnala utente",
+    "subtitle": "Dicci cosa non va con {{name}}. Le segnalazioni sono anonime.",
+    "subtitleAnon": "Dicci cosa non va con questo utente. Le segnalazioni sono anonime.",
+    "placeholder": "Descrivi il problema (min. 10 caratteri)",
+    "submit": "Invia segnalazione",
+    "sentTitle": "Segnalazione inviata",
+    "sentBody": "Grazie per avercelo detto. Il nostro team la esaminerà.",
+    "dupTitle": "Già segnalato",
+    "dupBody": "Hai segnalato questo utente il {{date}}. La tua segnalazione è in revisione.",
+    "errorTitle": "Errore",
+    "errorBody": "Impossibile inviare la segnalazione. Riprova."
   }
 }

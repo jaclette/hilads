@@ -193,5 +193,18 @@
     "usePhoto": "Foto verwenden",
     "flash": "Blitz",
     "flip": "Kamera wechseln"
+  },
+  "report": {
+    "title": "Nutzer melden",
+    "subtitle": "Sag uns, was mit {{name}} nicht stimmt. Meldungen sind anonym.",
+    "subtitleAnon": "Sag uns, was mit dieser Person nicht stimmt. Meldungen sind anonym.",
+    "placeholder": "Beschreibe das Problem (mind. 10 Zeichen)",
+    "submit": "Meldung senden",
+    "sentTitle": "Meldung gesendet",
+    "sentBody": "Danke für den Hinweis. Unser Team schaut es sich an.",
+    "dupTitle": "Bereits gemeldet",
+    "dupBody": "Du hast diese Person am {{date}} gemeldet. Deine Meldung wird geprüft.",
+    "errorTitle": "Fehler",
+    "errorBody": "Die Meldung konnte nicht gesendet werden. Versuch es noch mal."
   }
 }

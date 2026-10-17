@@ -193,5 +193,18 @@
     "usePhoto": "Use photo",
     "flash": "Flash",
     "flip": "Switch camera"
+  },
+  "report": {
+    "title": "Report user",
+    "subtitle": "Tell us what's wrong with {{name}}. Reports are anonymous.",
+    "subtitleAnon": "Tell us what's wrong with this user. Reports are anonymous.",
+    "placeholder": "Describe the issue (10 characters min.)",
+    "submit": "Send report",
+    "sentTitle": "Report sent",
+    "sentBody": "Thanks for letting us know. Our team will review it.",
+    "dupTitle": "Already reported",
+    "dupBody": "You reported this user on {{date}}. Your report is being reviewed.",
+    "errorTitle": "Error",
+    "errorBody": "Could not send the report. Try again."
   }
 }

@@ -13,12 +13,12 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { useState, useEffect } from 'react';
 import {
   View, Text, Image, ScrollView, TouchableOpacity,
-  ActivityIndicator, StyleSheet, TextInput, Alert, Modal, Pressable,
+  ActivityIndicator, StyleSheet, Alert, Modal, Pressable,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
 import {
   sendFriendRequest, acceptFriendRequest, cancelFriendRequest,
@@ -26,9 +26,9 @@ import {
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Avatar, Button, Chip, EmptyState, IconButton, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { EventPill } from '@/features/events/EventPill';
@@ -61,26 +61,6 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// ── Badge helpers ─────────────────────────────────────────────────────────────
-
-const PROFILE_BADGE_BG: Record<string, object> = {
-  ghost:   { backgroundColor: 'rgba(128,128,128,0.14)', borderColor: 'rgba(128,128,128,0.24)' },
-  fresh:   { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  regular: {
-  backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
-  local:   { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
-  host:    { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
-};
-const PROFILE_BADGE_COLOR: Record<string, object> = {
-  ghost:   { color: '#666' },
-  fresh:   { color: '#4ade80' },
-  regular: { color: '#60a5fa' },
-  local:   { color: '#34d399' },
-  host:    { color: '#fbbf24' },
-};
-function profileBadgeBg(key: string): object   { return PROFILE_BADGE_BG[key]    ?? PROFILE_BADGE_BG.regular;    }
-function profileBadgeColor(key: string): object { return PROFILE_BADGE_COLOR[key] ?? PROFILE_BADGE_COLOR.regular; }
-
 // ── Mode meta ─────────────────────────────────────────────────────────────────
 
 const MODE_META: Record<string, { emoji: string; label: string }> = {
@@ -106,12 +86,18 @@ const VIBE_META: Record<string, { emoji: string; label: string; caption: string 
 
 type TabKey = 'challenges' | 'hangouts' | 'events' | 'friends' | 'vibes' | 'picks';
 
-const HANGOUT_ICONS: Record<string, string> = {
-  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const HANGOUT_ICONS: Record<string, IconName> = {
+  general: 'chatbubbles-outline', tips: 'bulb-outline', food: 'restaurant-outline', drinks: 'beer-outline', help: 'hand-left-outline', meetup: 'people-outline',
 };
 
-const CHALLENGE_ICONS: Record<string, string> = {
-  food: '🍜', place: '📍', culture: '🎭', help: '🤪',
+const CHALLENGE_ICONS: Record<string, IconName> = {
+  food: 'restaurant-outline', place: 'location-outline', culture: 'color-palette-outline', help: 'hand-left-outline',
+};
+
+const VIBE_ICONS: Record<string, IconName> = {
+  party: 'sparkles-outline', board_games: 'dice-outline', coffee: 'cafe-outline', music: 'headset-outline', food: 'restaurant-outline', chill: 'leaf-outline',
 };
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -390,8 +376,6 @@ export default function PublicProfileScreen() {
   }
 
   const name   = user?.displayName ?? '?';
-  const initial = name[0].toUpperCase();
-  const bg     = avatarBg(name);
   const isSelf = account?.id === id;
   // First badge that carries microcopy → a single sub-line under the meta row
   // (mirrors My Profile's vibe sub-line), instead of one caption per badge.
@@ -411,7 +395,7 @@ export default function PublicProfileScreen() {
     { key: 'hangouts', label: hangouts.length > 0 ? `${t('tabHangouts')} · ${hangouts.length}` : t('tabHangouts') },
     { key: 'events',  label: events.length  > 0 ? `${t('tabEvents')} · ${events.length}` : t('tabEvents') },
     { key: 'friends', label: friends.length > 0 ? `${t('tabFriends')} · ${friends.length}` : t('tabFriends') },
-    { key: 'vibes',   label: vibeCount      > 0 ? `Vibes · ${vibeCount}`        : 'Vibes'   },
+    { key: 'vibes',   label: vibeCount      > 0 ? `${t('tabVibes')} · ${vibeCount}` : t('tabVibes') },
     ...(hasPicks ? [{ key: 'picks' as TabKey, label: t('tabPicks') }] : []),
   ];
 
@@ -419,25 +403,17 @@ export default function PublicProfileScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
 
       {/* ── Header ── */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('title')}</Text>
-        </View>
-      </View>
+      <ScreenHeader title={t('title')}
+                    right={user && !isSelf && account ? <IconButton icon="ellipsis-horizontal" label={t('moreOptions')} onPress={() => setShowActionSheet(true)} /> : undefined} />
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => router.back()} activeOpacity={0.8}>
-            <Text style={styles.retryBtnText}>{t('goBack')}</Text>
-          </TouchableOpacity>
+          <EmptyState icon="person-outline" body={error}
+                      action={<Button variant="secondary" label={t('goBack')} onPress={() => router.back()} />} />
         </View>
       ) : user ? (
         <>
@@ -456,13 +432,11 @@ export default function PublicProfileScreen() {
                 Mirrors My Profile (me.tsx) so the two screens align. */}
             <View style={styles.identityRow}>
               {user.avatarUrl ? (
-                <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
-                  <Image source={{ uri: thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl) }} style={styles.avatar} resizeMode="cover" />
+                <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)} accessibilityRole="imagebutton" accessibilityLabel={name}>
+                  <Avatar uri={thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl)} name={name} size={72} ring />
                 </TouchableOpacity>
               ) : (
-                <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>
-                  <Text style={styles.avatarInitial}>{initial}</Text>
-                </View>
+                <Avatar name={name} size={72} fallback="color" ring />
               )}
 
               <View style={styles.identityInfo}>
@@ -471,11 +445,7 @@ export default function PublicProfileScreen() {
                   {user.badges.map(badgeKey => {
                     const meta = BADGE_META[badgeKey as keyof typeof BADGE_META];
                     if (!meta) return null;
-                    return (
-                      <View key={badgeKey} style={[styles.memberBadge, profileBadgeBg(badgeKey)]}>
-                        <Text style={[styles.memberBadgeText, profileBadgeColor(badgeKey)]}>{t(`badge.${badgeKey}`, { ns: 'common', defaultValue: meta.label })}</Text>
-                      </View>
-                    );
+                    return <Chip key={badgeKey} label={t(`badge.${badgeKey}`, { ns: 'common', defaultValue: meta.label })} />;
                   })}
                   {city ? (
                     <Text style={styles.identityMetaCity} numberOfLines={1}>
@@ -508,14 +478,14 @@ export default function PublicProfileScreen() {
               <View style={styles.identityCards}>
                 {user.vibe && VIBE_META[user.vibe] ? (
                   <View style={styles.identityCard}>
-                    <Text style={styles.identityCardEmoji}>{VIBE_META[user.vibe].emoji}</Text>
+                    <Ionicons name={VIBE_ICONS[user.vibe] ?? 'sparkles-outline'} size={22} color={colors.primaryText} />
                     <Text style={styles.identityCardTitle}>{t(`vibe.${user.vibe}`, { ns: 'common', defaultValue: VIBE_META[user.vibe].label })}</Text>
                     <Text style={styles.identityCardSub}>{t(`vibeCaption.${user.vibe}`, { defaultValue: VIBE_META[user.vibe].caption })}</Text>
                   </View>
                 ) : null}
                 {user.mode && MODE_META[user.mode] ? (
                   <View style={styles.identityCard}>
-                    <Text style={styles.identityCardEmoji}>{MODE_META[user.mode].emoji}</Text>
+                    <Ionicons name={user.mode === 'local' ? 'location-outline' : 'compass-outline'} size={22} color={user.mode === 'local' ? colors.primaryText : colors.travelerText} />
                     <Text style={styles.identityCardTitle}>{t(`mode.${user.mode}.label`, { ns: 'common' })}</Text>
                     <Text style={styles.identityCardSub}>
                       {user.mode === 'local'
@@ -553,17 +523,8 @@ export default function PublicProfileScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.tabBar}
             >
-              {tabs.map(t => (
-                <TouchableOpacity
-                  key={t.key}
-                  style={[styles.tabPill, activeTab === t.key && styles.tabPillActive]}
-                  onPress={() => setActiveTab(t.key)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.tabPillText, activeTab === t.key && styles.tabPillTextActive]}>
-                    {t.label}
-                  </Text>
-                </TouchableOpacity>
+              {tabs.map(tab => (
+                <Chip key={tab.key} variant="filter" label={tab.label} selected={activeTab === tab.key} onPress={() => setActiveTab(tab.key)} />
               ))}
             </ScrollView>
           </View>
@@ -579,27 +540,13 @@ export default function PublicProfileScreen() {
 
                   {/* Mode sub-tabs - All / Local / International. */}
                   <View style={styles.profileSubTabsRow}>
-                    {(['all', 'local', 'international'] as const).map(key => {
-                      const active = challengeSubTab === key;
-                      const emoji  = key === 'all' ? '✨' : key === 'local' ? '🏙️' : '🌐';
-                      return (
-                        <TouchableOpacity
-                          key={key}
-                          style={[styles.profileSubTabBtn, active && styles.profileSubTabBtnActive]}
-                          onPress={() => setChallengeSubTab(key)}
-                          activeOpacity={0.75}
-                        >
-                          <Text style={[styles.profileSubTabText, active && styles.profileSubTabTextActive]}>
-                            {emoji} {key === 'all'
-                              ? t('modeFilter.all', { ns: 'challenge' })
-                              : t(`mode.${key}`,    { ns: 'challenge' })}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
+                    {(['all', 'local', 'international'] as const).map(key => (
+                      <Chip key={key} variant="filter" selected={challengeSubTab === key} onPress={() => setChallengeSubTab(key)}
+                            label={key === 'all' ? t('modeFilter.all', { ns: 'challenge' }) : t(`mode.${key}`, { ns: 'challenge' })} />
+                    ))}
                   </View>
                   {filteredChallenges.length === 0 ? (
-                    <Text style={styles.tabEmpty}>{t('noChallenges')}</Text>
+                    <EmptyState body={t('noChallenges')} />
                   ) : (
                     <View style={styles.eventList}>
                       {filteredChallenges.map(c => (
@@ -609,17 +556,13 @@ export default function PublicProfileScreen() {
                           activeOpacity={0.75}
                           onPress={() => router.push(`/challenge/${c.id}` as never)}
                         >
-                          <Text style={styles.hangoutIcon}>{CHALLENGE_ICONS[c.challenge_type] ?? '🔥'}</Text>
+                          <Ionicons name={CHALLENGE_ICONS[c.challenge_type] ?? 'flame-outline'} size={20} color={colors.primaryText} />
                           <Text style={styles.hangoutTitle} numberOfLines={1}>{c.title}</Text>
                           {(c.mode ?? 'local') === 'international' && (
-                            <View style={[styles.hostTag, { backgroundColor: 'rgba(56,189,248,0.10)', borderColor: 'rgba(56,189,248,0.30)' }]}>
-                              <Text style={[styles.hostTagText, { color: '#38bdf8' }]}>🌐</Text>
-                            </View>
+                            <Ionicons name="globe-outline" size={18} color={colors.travelerText} accessibilityLabel={t('mode.international', { ns: 'challenge' })} />
                           )}
                           {c.status === 'validated' && (
-                            <View style={[styles.hostTag, { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' }]}>
-                              <Text style={[styles.hostTagText, { color: '#4ade80' }]}>✓</Text>
-                            </View>
+                            <Ionicons name="checkmark-circle" size={18} color={colors.localText} />
                           )}
                           {c.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
                         </TouchableOpacity>
@@ -633,7 +576,7 @@ export default function PublicProfileScreen() {
             {/* Hangouts tab */}
             {activeTab === 'hangouts' && (
               hangouts.length === 0 ? (
-                <Text style={styles.tabEmpty}>{t('noHangouts')}</Text>
+                <EmptyState body={t('noHangouts')} />
               ) : (
                 <View style={styles.eventList}>
                   {hangouts.map(h => (
@@ -643,7 +586,7 @@ export default function PublicProfileScreen() {
                       activeOpacity={0.75}
                       onPress={() => router.push({ pathname: '/topic/[id]', params: { id: h.id } })}
                     >
-                      <Text style={styles.hangoutIcon}>{HANGOUT_ICONS[h.category ?? 'general'] ?? '💬'}</Text>
+                      <Ionicons name={HANGOUT_ICONS[h.category ?? 'general'] ?? 'chatbubbles-outline'} size={20} color={colors.primaryText} />
                       <Text style={styles.hangoutTitle} numberOfLines={1}>{h.title}</Text>
                       {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
                     </TouchableOpacity>
@@ -655,7 +598,7 @@ export default function PublicProfileScreen() {
             {/* Events tab */}
             {activeTab === 'events' && (
               events.length === 0 ? (
-                <Text style={styles.tabEmpty}>{t('noEvents')}</Text>
+                <EmptyState body={t('noEvents')} />
               ) : (
                 <View style={styles.eventList}>
                   {events.map(event => (
@@ -672,7 +615,7 @@ export default function PublicProfileScreen() {
             {/* Friends tab */}
             {activeTab === 'friends' && (
               friends.length === 0 ? (
-                <Text style={styles.tabEmpty}>{t('noFriends')}</Text>
+                <EmptyState body={t('noFriends')} />
               ) : (
                 <View style={styles.friendList}>
                   {friends.map(f => (
@@ -682,13 +625,7 @@ export default function PublicProfileScreen() {
                       onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id } })}
                       activeOpacity={0.7}
                     >
-                      {f.avatarUrl ? (
-                        <Image source={{ uri: thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl) }} style={styles.friendAvatar} resizeMode="cover" />
-                      ) : (
-                        <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
-                          <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
-                        </View>
-                      )}
+                      <Avatar uri={f.avatarUrl ? thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl) : null} name={f.displayName} size={40} fallback="color" />
                       <View style={styles.friendInfo}>
                         <Text style={styles.friendName} numberOfLines={1}>{f.displayName}</Text>
                         {f.badges[0] && (
@@ -709,7 +646,7 @@ export default function PublicProfileScreen() {
                   <View style={styles.vibeScoreCard}>
                     <View style={styles.vibeStarsRow}>
                       {[1,2,3,4,5].map(s => (
-                        <Text key={s} style={[styles.vibeStarStatic, s <= Math.round(vibeScore ?? 0) && styles.vibeStarStaticOn]}>★</Text>
+                        <Ionicons key={s} name={s <= Math.round(vibeScore ?? 0) ? 'star' : 'star-outline'} size={24} color={colors.gold} />
                       ))}
                     </View>
                     <Text style={styles.vibeScoreAvg}>{t('vibeScore', { score: vibeScore?.toFixed(1) })}</Text>
@@ -719,46 +656,29 @@ export default function PublicProfileScreen() {
 
                 {!isSelf && account && (
                   !showVibeForm ? (
-                    <TouchableOpacity style={styles.vibeCtaBtn} onPress={() => setShowVibeForm(true)} activeOpacity={0.8}>
-                      <Text style={styles.vibeCtaBtnText}>
-                        {myVibe ? t('updateNote', { rating: myVibe.rating }) : t('leaveNote')}
-                      </Text>
-                    </TouchableOpacity>
+                    <Button variant="secondary" icon="star-outline" label={myVibe ? t('updateNote', { rating: myVibe.rating }) : t('leaveNote')}
+                            onPress={() => setShowVibeForm(true)} />
                   ) : (
                     <View style={styles.vibeForm}>
                       <View style={styles.vibeFormStars}>
                         {[1,2,3,4,5].map(s => (
-                          <TouchableOpacity key={s} onPress={() => setVibeRating(s)} activeOpacity={0.7}>
-                            <Text style={[styles.vibeFormStar, vibeRating >= s && styles.vibeFormStarOn]}>★</Text>
+                          <TouchableOpacity key={s} style={styles.vibeFormStar} onPress={() => setVibeRating(s)} activeOpacity={0.7}
+                                            accessibilityRole="button" accessibilityLabel={`${s}/5`} accessibilityState={{ selected: vibeRating >= s }}>
+                            <Ionicons name={vibeRating >= s ? 'star' : 'star-outline'} size={30} color={colors.gold} />
                           </TouchableOpacity>
                         ))}
                       </View>
-                      <TextInput
-                        style={styles.vibeInput}
+                      <TextField
                         placeholder={t('vibePlaceholder')}
-                        placeholderTextColor={colors.muted2}
                         value={vibeMessage}
                         onChangeText={setVibeMessage}
                         maxLength={300}
                         multiline
-                        numberOfLines={2}
                       />
                       <View style={styles.vibeFormActions}>
-                        <TouchableOpacity
-                          style={styles.vibeCancelBtn}
-                          onPress={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }}
-                          activeOpacity={0.7}
-                        >
-                          <Text style={styles.vibeCancelBtnText}>{t('cancel', { ns: 'common' })}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[styles.vibeSubmitBtn, (vibeBusy || vibeRating === 0) && styles.vibeSubmitBtnDisabled]}
-                          onPress={handleSubmitVibe}
-                          activeOpacity={0.8}
-                          disabled={vibeBusy || vibeRating === 0}
-                        >
-                          <Text style={styles.vibeSubmitBtnText}>{vibeBusy ? t('sending') : t('sendNote')}</Text>
-                        </TouchableOpacity>
+                        <Button variant="secondary" label={t('cancel', { ns: 'common' })} style={styles.flex1}
+                                onPress={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }} />
+                        <Button label={vibeBusy ? t('sending') : t('sendNote')} onPress={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0} style={styles.flex1} />
                       </View>
                     </View>
                   )
@@ -768,17 +688,13 @@ export default function PublicProfileScreen() {
                   <View style={styles.vibeList}>
                     {vibes.map(v => (
                       <View key={v.id} style={styles.vibeRow}>
-                        {v.authorPhoto ? (
-                          <Image source={{ uri: thumbUrl(v.authorPhoto) }} style={styles.vibeAvatar} resizeMode="cover" />
-                        ) : (
-                          <View style={[styles.vibeAvatar, styles.vibeAvatarFallback, { backgroundColor: avatarBg(v.authorName) }]}>
-                            <Text style={styles.vibeAvatarInitial}>{(v.authorName || '?')[0].toUpperCase()}</Text>
-                          </View>
-                        )}
+                        <Avatar uri={v.authorPhoto ? thumbUrl(v.authorPhoto) : null} name={v.authorName || '?'} size={36} fallback="color" />
                         <View style={styles.vibeContent}>
                           <View style={styles.vibeHeader}>
                             <Text style={styles.vibeAuthor}>{v.authorName}</Text>
-                            <Text style={styles.vibeRating}>{'★'.repeat(v.rating)}</Text>
+                            <View style={styles.vibeRating}>
+                              {Array.from({ length: v.rating }, (_, i) => <Ionicons key={i} name="star" size={12} color={colors.gold} />)}
+                            </View>
                           </View>
                           {v.message ? <Text style={styles.vibeMsg}>{v.message}</Text> : null}
                         </View>
@@ -786,10 +702,7 @@ export default function PublicProfileScreen() {
                     ))}
                   </View>
                 ) : (
-                  <View style={styles.vibeEmpty}>
-                    <Text style={styles.vibeEmptyTitle}>{t('noNotesTitle')}</Text>
-                    <Text style={styles.vibeEmptySubtitle}>{t('noNotesSub')}</Text>
-                  </View>
+                  <EmptyState icon="star-outline" title={t('noNotesTitle')} body={t('noNotesSub')} />
                 )}
               </>
             )}
@@ -818,52 +731,25 @@ export default function PublicProfileScreen() {
       {/* ── 4. Sticky action bar ── */}
       {user && !isSelf && account && (
         <View style={[styles.stickyBar, { paddingBottom: Math.max(12, insets.bottom) }]}>
-          <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
-            <Feather name="message-square" size={18} color={colors.white} />
-            <Text style={styles.dmBtnText}>{t('message')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.friendBtn,
-              (friendState === 'friend' || friendState === 'pending_out') && styles.friendBtnActive,
-            ]}
+          <Button icon="chatbubble-outline" label={t('message')} onPress={handleDm} style={styles.flex1} />
+          <Button
+            variant="secondary"
+            icon={
+              friendState === 'friend'      ? 'person-remove-outline' :
+              friendState === 'pending_out' ? 'time-outline'         :
+              friendState === 'pending_in'  ? 'checkmark-outline'    :
+                                              'person-add-outline'
+            }
+            label={
+              friendState === 'friend'      ? t('friend')        :
+              friendState === 'pending_out' ? t('requestSent')  :
+              friendState === 'pending_in'  ? t('acceptRequest'):
+                                              t('addFriend')
+            }
             onPress={handleFriendToggle}
-            activeOpacity={0.85}
-            disabled={friendBusy}
-          >
-            <Ionicons
-              name={
-                friendState === 'friend'      ? 'person-remove-outline' :
-                friendState === 'pending_out' ? 'time-outline'         :
-                friendState === 'pending_in'  ? 'checkmark-outline'    :
-                                                'person-add-outline'
-              }
-              size={18}
-              color={
-                friendState === 'friend'      ? colors.accent :
-                friendState === 'pending_out' ? colors.muted2 :
-                                                colors.text
-              }
-            />
-            <Text style={[
-              styles.friendBtnText,
-              (friendState === 'friend' || friendState === 'pending_out') && styles.friendBtnTextActive,
-            ]}>
-              {friendBusy             ? '…'              :
-               friendState === 'friend'      ? t('friend')        :
-               friendState === 'pending_out' ? t('requestSent')  :
-               friendState === 'pending_in'  ? t('acceptRequest'):
-                                               t('addFriend')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.reportBtn}
-            onPress={() => setShowActionSheet(true)}
-            activeOpacity={0.75}
-            accessibilityLabel={t('moreOptions')}
-          >
-            <Ionicons name="ellipsis-horizontal" size={20} color={colors.muted} />
-          </TouchableOpacity>
+            loading={friendBusy}
+            style={styles.flex1}
+          />
         </View>
       )}
 
@@ -924,9 +810,7 @@ export default function PublicProfileScreen() {
         >
           <Pressable style={styles.lightboxOverlay} onPress={() => setShowAvatarLightbox(false)}>
             <Image source={{ uri: user.avatarUrl }} style={styles.lightboxImage} resizeMode="contain" />
-            <Pressable style={styles.lightboxClose} onPress={() => setShowAvatarLightbox(false)}>
-              <Text style={styles.lightboxCloseText}>✕</Text>
-            </Pressable>
+            <IconButton icon="close" tone="onPhoto" label={t('close', { ns: 'common' })} onPress={() => setShowAvatarLightbox(false)} style={styles.lightboxClose} />
           </Pressable>
         </Modal>
       ) : null}
@@ -936,540 +820,80 @@ export default function PublicProfileScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const AVATAR_SIZE = 72;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
+  container:      { flex: 1, backgroundColor: c.bg },
+  center:         { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
+  flex1:          { flex: 1 },
+  tabContent:     { flex: 1 },
+  tabContentBody: { paddingHorizontal: Spacing.md, gap: 12 },
 
-  // ── Header ────────────────────────────────────────────────────────────────
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    minHeight:         56,
-    flexShrink:        0,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    Radius.md,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-    zIndex:          1,
-  },
-  headerCenter: {
-    position:   'absolute',
-    left:       0,
-    right:      0,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize:      FontSizes.xl,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.5,
-  },
+  // ── Identity ──
+  identitySection:  { gap: 12 },
+  identityRow:      { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  identityInfo:     { flex: 1, gap: 6 },
+  displayName:      { fontSize: FontSizes.xl, fontWeight: '800', color: c.text },
+  identityMetaRow:  { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  identityMetaCity: { fontSize: 12, fontWeight: '600', color: c.muted },
+  badgeMicrocopy:   { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
+  aboutMe:          { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
+  identityCards:    { flexDirection: 'row', gap: 10 },
+  identityCard:     { flex: 1, gap: 4, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  identityCardTitle:{ fontSize: 15, fontWeight: '700', color: c.text },
+  identityCardSub:  { fontSize: 12, fontWeight: '400', color: c.muted },
+  detailsCard:      { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  detailRow:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, borderTopWidth: 1, borderTopColor: c.line },
+  detailRowFirst:   { borderTopWidth: 0 },
+  detailLabel:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
+  detailValue:      { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
 
-  // ── States ────────────────────────────────────────────────────────────────
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  errorText: {
-    color:     c.muted,
-    fontSize:  FontSizes.sm,
-    textAlign: 'center',
-    paddingHorizontal: Spacing.xl,
-  },
-  retryBtn: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       c.border,
-  },
-  retryBtnText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '600' },
+  // ── Tabs ──
+  tabBarWrap:        { marginHorizontal: -Spacing.md },
+  tabBar:            { gap: 8, paddingHorizontal: Spacing.md },
+  profileSubTabsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 
-  // ── Identity section (sticky, always visible) ─────────────────────────────
-  identitySection: {
-    flexShrink:        0,
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.md,
-    paddingBottom:     Spacing.sm,
-    gap:               Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    backgroundColor:   c.bg,
-  },
+  // ── Lists ──
+  eventList:    { gap: 8 },
+  hangoutRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderRadius: Radius.card,
+                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  hangoutTitle: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  hostTag:      { height: 22, justifyContent: 'center', paddingHorizontal: 8, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  hostTagText:  { fontSize: 11, fontWeight: '700', color: c.primaryOnTint },
+  friendList:   { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  friendRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: c.line },
+  friendInfo:   { flex: 1, minWidth: 0, gap: 2 },
+  friendName:   { fontSize: 15, fontWeight: '700', color: c.text },
+  friendBadge:  { fontSize: 12, fontWeight: '400', color: c.muted },
 
-  // ── Hero: avatar left + identity column right (mirrors My Profile) ─────────
-  identityRow: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           Spacing.md,
-  },
-  identityInfo: { flex: 1, gap: 5 },
-  identityMetaRow: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    flexWrap:      'wrap',
-    gap:           6,
-  },
-  identityMetaCity: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    fontWeight: '500',
-  },
-  avatar: {
-    width:        AVATAR_SIZE,
-    height:       AVATAR_SIZE,
-    borderRadius: AVATAR_SIZE / 2,
-    borderWidth:  2,
-    borderColor:  c.accent,
-  },
-  avatarFallback: {
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: {
-    fontSize:   30,
-    fontWeight: '800',
-    color:      '#fff',
-  },
-  displayName: {
-    fontSize:      FontSizes.xl,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.5,
-  },
-  badgeBlock: {
-    alignItems: 'center',
-    gap:        3,
-  },
-  memberBadge: {
-    borderRadius:      Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical:   4,
-    borderWidth:       1,
-  },
-  memberBadgeText: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    letterSpacing: 0.6,
-  },
-  badgeMicrocopy: {
-    fontSize: FontSizes.xs,
-    color:    c.muted,
-  },
-  cityPill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 12,
-    paddingVertical:   4,
-    borderRadius:      Radius.full,
-    backgroundColor:   c.overlayWeak,
-    borderWidth:       1,
-    borderColor:       c.overlay,
-  },
-  cityPillText: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    fontWeight: '500',
-  },
-  aboutMe: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    textAlign:  'center',
-    lineHeight: FontSizes.sm * 1.45,
-    maxWidth:   260,
-    alignSelf:  'center',
-    marginTop:  8,
-  },
-
-  // ── Identity cards: vibe + mode - side by side ────────────────────────────
-  identityCards: {
-    flexDirection: 'row',
-    gap:           Spacing.sm,
-  },
-  identityCard: {
-    flex:             1,
-    backgroundColor:  c.bg2,
-    borderRadius:     Radius.lg,
-    borderWidth:      1,
-    borderColor:      'rgba(251,146,60,0.18)',
-    padding:          Spacing.sm + 2,
-    gap:              3,
-  },
-  identityCardEmoji: {
-    fontSize:     22,
-    marginBottom: 2,
-  },
-  identityCardTitle: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  identityCardSub: {
-    fontSize:   FontSizes.xs,
-    color:      c.muted,
-    lineHeight: 16,
-  },
-
-  // ── Details card - From + Age ─────────────────────────────────────────────
-  detailsCard: {
-    backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     c.border,
-    overflow:        'hidden',
-  },
-  detailRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-  },
-  detailRowFirst: { borderTopWidth: 0 },
-  detailLabel: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    fontWeight: '500',
-  },
-  detailValue: {
-    fontSize:   FontSizes.sm,
-    color:      c.text,
-    fontWeight: '600',
-  },
-
-  // ── Tab bar ───────────────────────────────────────────────────────────────
-  tabBarWrap: {
-    flexShrink:        0,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  tabBar: {
-    flexDirection:    'row',
-    gap:              8,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-  },
-  tabPill: {
-    paddingHorizontal: 14,
-    paddingVertical:   7,
-    borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       c.border,
-    backgroundColor:   c.overlayWeak,
-  },
-  tabPillActive: {
-    borderColor:     c.accent,
-    backgroundColor: 'rgba(255,107,0,0.10)',
-  },
-  tabPillText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.muted,
-  },
-  tabPillTextActive: {
-    color: c.accent,
-  },
-
-  // ── Tab content ───────────────────────────────────────────────────────────
-  tabContent: { flex: 1 },
-  tabContentBody: {
-    padding: Spacing.md,
-    gap:     Spacing.md,
-  },
-  tabEmpty: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    textAlign:  'center',
-    paddingVertical: Spacing.xl,
-  },
-
-  // ── Profile sub-tabs (mode filter on the Défi list) ───────────────────────
-  profileSubTabsRow: { flexDirection: 'row', gap: 6, paddingBottom: 8 },
-  profileSubTabBtn: {
-    paddingHorizontal: 10, paddingVertical: 5,
-    borderRadius: Radius.full,
-    borderWidth: 1, borderColor: c.overlayStrong,
-    backgroundColor: c.overlayWeak,
-  },
-  profileSubTabBtnActive: {
-    borderColor: 'rgba(255,122,60,0.45)',
-    backgroundColor: 'rgba(255,122,60,0.14)',
-  },
-  profileSubTabText:       { fontSize: 12, fontWeight: '700', color: c.muted },
-  profileSubTabTextActive: { color: '#FF7A3C' },
-
-  // ── Event list ────────────────────────────────────────────────────────────
-  eventList: { gap: Spacing.xs },
-  hangoutRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 12, paddingHorizontal: 14,
-    backgroundColor: 'rgba(96,165,250,0.06)', borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: 'rgba(96,165,250,0.15)',
-  },
-  hangoutIcon:  { fontSize: 16 },
-  hangoutTitle: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
-  hostTag: {
-    backgroundColor: 'rgba(96,165,250,0.14)', borderRadius: Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)',
-  },
-  hostTagText: { fontSize: 10, fontWeight: '700', color: '#60a5fa' },
-  // Orphaned - left in place briefly to keep the diff small; safe to drop
-  // in a follow-up. Live inside src/features/events/EventPill.tsx now.
-  eventPill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.lg,
-    borderWidth:       1,
-    borderColor:       c.border,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm + 2,
-    gap:               Spacing.sm,
-  },
-  eventIcon:  { fontSize: 20 },
-  eventInfo:  { flex: 1, gap: 2 },
-  eventTitle: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  eventMeta: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           6,
-    flexWrap:      'wrap',
-  },
-  eventTime:     { fontSize: FontSizes.xs, color: c.muted },
-  eventLocation: { fontSize: FontSizes.xs, color: c.muted, flexShrink: 1 },
-  liveBadge: {
-    backgroundColor:   'rgba(61,220,132,0.12)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 6,
-    paddingVertical:   1,
-    borderWidth:       1,
-    borderColor:       'rgba(61,220,132,0.25)',
-  },
-  liveBadgeText: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    color:         c.green,
-    letterSpacing: 0.4,
-  },
-
-  // ── Friends list ──────────────────────────────────────────────────────────
-  friendList: { gap: Spacing.xs },
-  friendRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.lg,
-    borderWidth:       1,
-    borderColor:       c.border,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm + 2,
-    gap:               Spacing.sm,
-  },
-  friendAvatar: {
-    width:        40,
-    height:       40,
-    borderRadius: 20,
-    flexShrink:   0,
-  },
-  friendAvatarFallback: { alignItems: 'center', justifyContent: 'center' },
-  friendAvatarInitial:  { fontSize: 16, fontWeight: '700', color: '#fff' },
-  friendInfo:  { flex: 1, gap: 2 },
-  friendName: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  friendBadge: { fontSize: FontSizes.xs, color: c.muted },
-
-  // ── Vibe score card ───────────────────────────────────────────────────────
-  vibeScoreCard: {
-    alignItems:      'center',
-    gap:             6,
-    padding:         Spacing.md,
-    backgroundColor: 'rgba(251,191,36,0.04)',
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     'rgba(251,191,36,0.12)',
-  },
-  vibeStarsRow:     { flexDirection: 'row', gap: 4 },
-  vibeStarStatic:   { fontSize: 22, color: c.overlayStrong },
-  vibeStarStaticOn: { color: '#fbbf24' },
-  vibeScoreAvg:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  vibeScoreCount:   { fontSize: FontSizes.xs, color: c.muted2 },
-  vibeCtaBtn: {
-    paddingVertical: 14,
-    backgroundColor: 'rgba(251,191,36,0.08)',
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     'rgba(251,191,36,0.20)',
-    alignItems:      'center',
-  },
-  vibeCtaBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#fbbf24' },
-  vibeForm: {
-    backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     'rgba(251,191,36,0.18)',
-    padding:         Spacing.md,
-    gap:             Spacing.sm,
-  },
-  vibeFormStars:  { flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  vibeFormStar:   { fontSize: 30, color: c.overlayStrong },
-  vibeFormStarOn: { color: '#fbbf24' },
-  vibeInput: {
-    backgroundColor:   c.bg3,
-    borderWidth:       1,
-    borderColor:       c.border,
-    borderRadius:      Radius.md,
-    color:             c.text,
-    fontSize:          FontSizes.sm,
-    paddingHorizontal: Spacing.sm + 2,
-    paddingVertical:   Spacing.sm,
-    minHeight:         60,
-    textAlignVertical: 'top',
-  },
-  vibeFormActions:       { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'flex-end' },
-  vibeCancelBtn:         { paddingHorizontal: Spacing.md, paddingVertical: 9, borderWidth: 1, borderColor: c.border, borderRadius: Radius.md },
-  vibeCancelBtnText:     { fontSize: FontSizes.xs, color: c.muted, fontWeight: '600' },
-  vibeSubmitBtn:         { paddingHorizontal: Spacing.md, paddingVertical: 9, backgroundColor: '#fbbf24', borderRadius: Radius.md },
-  vibeSubmitBtnDisabled: { opacity: 0.45 },
-  vibeSubmitBtnText:     { fontSize: FontSizes.xs, fontWeight: '700', color: '#000' },
-  vibeList:  { gap: Spacing.sm },
-  vibeRow:   { flexDirection: 'row', gap: Spacing.sm, alignItems: 'flex-start' },
-  vibeAvatar: {
-    width:        38,
-    height:       38,
-    borderRadius: 19,
-    flexShrink:   0,
-  },
-  vibeAvatarFallback: { alignItems: 'center', justifyContent: 'center' },
-  vibeAvatarInitial:  { fontSize: 14, fontWeight: '700', color: '#fff' },
+  // ── Vibes ──
+  vibeScoreCard:  { alignItems: 'center', gap: 4, padding: 16, borderRadius: Radius.card, borderWidth: Border, borderColor: c.gold, backgroundColor: c.bg2 },
+  vibeStarsRow:   { flexDirection: 'row', gap: 4 },
+  vibeScoreAvg:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  vibeScoreCount: { fontSize: 12, fontWeight: '400', color: c.muted },
+  vibeForm:        { gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  vibeFormStars:   { flexDirection: 'row', justifyContent: 'center' },
+  vibeFormStar:    { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
+  vibeFormActions: { flexDirection: 'row', gap: 10 },
+  vibeList:    { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  vibeRow:     { flexDirection: 'row', gap: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.line },
   vibeContent: { flex: 1, gap: 3 },
-  vibeHeader:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  vibeHeader:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
   vibeAuthor:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  vibeRating:  { fontSize: FontSizes.xs, color: '#fbbf24', letterSpacing: 1 },
-  vibeMsg:     { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
-  vibeEmpty:          { alignItems: 'center', paddingVertical: Spacing.lg, gap: 4 },
-  vibeEmptyTitle:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
-  vibeEmptySubtitle:  { fontSize: FontSizes.xs, color: c.muted2 },
+  vibeRating:  { flexDirection: 'row', gap: 1 },
+  vibeMsg:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
 
-  // ── City Picks cards ──────────────────────────────────────────────────────
-  picksGrid: { gap: Spacing.sm },
-  pickCard: {
-    gap:             6,
-    padding:         Spacing.md,
-    backgroundColor: 'rgba(255,193,7,0.05)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,193,7,0.15)',
-    borderRadius:    Radius.lg,
-  },
-  pickCardTitle: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    color:         'rgba(255,193,7,0.70)',
-  },
-  pickCardContent: {
-    fontSize:   FontSizes.sm,
-    color:      c.text,
-    fontWeight: '500',
-    lineHeight: 20,
-  },
+  // ── City Picks (legends) ──
+  picksGrid:       { gap: 10 },
+  pickCard:        { gap: 4, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.gold, backgroundColor: c.bg2 },
+  pickCardTitle:   { fontSize: 12, fontWeight: '700', color: c.gold },
+  pickCardContent: { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
 
-  // ── Sticky action bar ─────────────────────────────────────────────────────
-  stickyBar: {
-    flexDirection:     'row',
-    gap:               10,
-    paddingHorizontal: Spacing.md,
-    paddingTop:        12,
-    backgroundColor:   c.bg2,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-    flexShrink:        0,
-  },
-  friendBtn: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'center',
-    gap:               8,
-    paddingVertical:   15,
-    paddingHorizontal: Spacing.md,
-    backgroundColor:   'transparent',
-    borderRadius:      Radius.lg,
-    borderWidth:       1,
-    borderColor:       c.border,
-  },
-  friendBtnActive:     { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: c.accent },
-  friendBtnText:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  friendBtnTextActive: { color: c.accent },
+  // ── Bottom bar ──
+  stickyBar: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', gap: 10, paddingHorizontal: Spacing.md, paddingTop: 12,
+               borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
 
-  dmBtn: {
-    flex:            1,
-    flexDirection:   'row',
-    alignItems:      'center',
-    justifyContent:  'center',
-    gap:             8,
-    paddingVertical: 15,
-    backgroundColor: c.accent2,
-    borderRadius:    Radius.lg,
-    shadowColor:     c.accent2,
-    shadowOffset:    { width: 0, height: 4 },
-    shadowOpacity:   0.30,
-    shadowRadius:    8,
-    elevation:       5,
-  },
-  dmBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
-
-  reportBtn: {
-    width:           44,
-    height:          44,
-    alignItems:      'center',
-    justifyContent:  'center',
-    borderRadius:    Radius.lg,
-    backgroundColor: c.overlay,
-    borderWidth:     1,
-    borderColor:     c.overlay,
-  },
-
-  // ── Avatar lightbox ───────────────────────────────────────────────────────
-  lightboxOverlay: {
-    flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.93)',
-    justifyContent:  'center',
-    alignItems:      'center',
-  },
-  lightboxImage: {
-    width:       '92%',
-    aspectRatio: 1,
-    borderRadius: 12,
-  },
-  lightboxClose: {
-    position:        'absolute',
-    top:             52,
-    right:           18,
-    width:           38,
-    height:          38,
-    borderRadius:    19,
-    backgroundColor: c.overlayStrong,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  lightboxCloseText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  // ── Avatar lightbox ──
+  lightboxOverlay: { flex: 1, backgroundColor: c.photoScrim, alignItems: 'center', justifyContent: 'center' },
+  lightboxImage:   { width: '100%', height: '80%' },
+  lightboxClose:   { position: 'absolute', top: 56, right: 16 },
 });

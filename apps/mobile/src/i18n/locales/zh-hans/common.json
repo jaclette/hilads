@@ -193,5 +193,18 @@
     "usePhoto": "使用照片",
     "flash": "闪光灯",
     "flip": "切换相机"
+  },
+  "report": {
+    "title": "举报用户",
+    "subtitle": "告诉我们 {{name}} 有什么问题。举报是匿名的。",
+    "subtitleAnon": "告诉我们这位用户有什么问题。举报是匿名的。",
+    "placeholder": "描述问题（至少 10 个字）",
+    "submit": "提交举报",
+    "sentTitle": "举报已提交",
+    "sentBody": "感谢告知，我们的团队会进行审核。",
+    "dupTitle": "已举报",
+    "dupBody": "你已于 {{date}} 举报过此用户，正在审核中。",
+    "errorTitle": "出错了",
+    "errorBody": "举报提交失败，请重试。"
   }
 }

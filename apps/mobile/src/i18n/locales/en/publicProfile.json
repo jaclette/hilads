@@ -68,5 +68,6 @@
   "blocking": "Blocking…",
   "ghostName": "Ghost",
   "visiting": "Visiting {{city}}",
-  "ghostNote": "Floating around as a ghost 👻"
+  "ghostNote": "Floating around as a ghost 👻",
+  "tabVibes": "Vibes"
 }

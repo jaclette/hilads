@@ -3,8 +3,9 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { RankBadge } from './RankBadge';
 import { countryToFlag } from '../lib/countryFlag';
-import { type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { MonthlyRank } from '@/types';
 
 /**
@@ -35,6 +36,7 @@ export function ProfileRankRow({
   cityCountry?: string | null;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('challenge');
   const router = useRouter();
 
@@ -45,7 +47,7 @@ export function ProfileRankRow({
   // registrations without geolocation hit this path.
   if (!hasCity && score === 0 && global == null) return null;
 
-  const flag = cityCountry ? countryToFlag(cityCountry) : '📍';
+  const flag = cityCountry ? countryToFlag(cityCountry) : '';
 
   const cityLine =
     !hasCity || !cityName
@@ -70,64 +72,44 @@ export function ProfileRankRow({
           style={styles.row}
           activeOpacity={0.7}
           onPress={() => router.push('/leaderboard?scope=city&period=month' as never)}
+          accessibilityRole="button"
         >
-          <Text style={styles.emoji}>{flag}</Text>
+          {flag ? <Text style={styles.emoji}>{flag}</Text> : <Ionicons name="location-outline" size={18} color={colors.muted} style={styles.icon} />}
           {city != null ? (
             <View style={styles.badgeSlot}>
               <RankBadge rank={city} size={22} />
             </View>
           ) : null}
           <Text style={styles.line} numberOfLines={1}>{cityLine}</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.muted} />
         </TouchableOpacity>
       ) : null}
       <TouchableOpacity
-        style={styles.row}
+        style={[styles.row, !!cityLine && styles.divider]}
         activeOpacity={0.7}
         onPress={() => router.push('/leaderboard?scope=world&period=month' as never)}
+        accessibilityRole="button"
       >
-        <Text style={styles.emoji}>🌐</Text>
+        <Ionicons name="globe-outline" size={18} color={colors.muted} style={styles.icon} />
         {global != null ? (
           <View style={styles.badgeSlot}>
             <RankBadge rank={global} size={22} />
           </View>
         ) : null}
         <Text style={styles.line} numberOfLines={1}>{worldLine}</Text>
+        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
       </TouchableOpacity>
     </View>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap: {
-    marginTop:        12,
-    paddingHorizontal: 16,
-    paddingVertical:   10,
-    backgroundColor:   c.bg2,
-    borderRadius:      12,
-    gap:               6,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           8,
-  },
-  emoji: {
-    fontSize: 18,
-    width:    22,
-    textAlign: 'center',
-  },
-  badgeSlot: {
-    // Reserves stable horizontal space for the RankBadge so the text
-    // baseline doesn't jump between top-10 and 11-100 ranks.
-    width:           24,
-    height:          22,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  line: {
-    flex:     1,
-    color:    c.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  wrap:      { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  row:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48 },
+  divider:   { borderTopWidth: 1, borderTopColor: c.line },
+  emoji:     { fontSize: 18, width: 22, textAlign: 'center' },
+  icon:      { width: 22, textAlign: 'center' },
+  // Stable space for the RankBadge so the text doesn't jump between ranks.
+  badgeSlot: { width: 24, height: 22, alignItems: 'center', justifyContent: 'center' },
+  line:      { flex: 1, color: c.text, fontSize: FontSizes.sm, fontWeight: '600' },
 });

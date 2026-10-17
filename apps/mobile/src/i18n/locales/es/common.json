@@ -193,5 +193,18 @@
     "usePhoto": "Usar la foto",
     "flash": "Flash",
     "flip": "Cambiar cámara"
+  },
+  "report": {
+    "title": "Denunciar usuario",
+    "subtitle": "Cuéntanos qué pasa con {{name}}. Las denuncias son anónimas.",
+    "subtitleAnon": "Cuéntanos qué pasa con este usuario. Las denuncias son anónimas.",
+    "placeholder": "Describe el problema (mín. 10 caracteres)",
+    "submit": "Enviar denuncia",
+    "sentTitle": "Denuncia enviada",
+    "sentBody": "Gracias por avisarnos. Nuestro equipo lo revisará.",
+    "dupTitle": "Ya denunciado",
+    "dupBody": "Denunciaste a este usuario el {{date}}. Tu denuncia está en revisión.",
+    "errorTitle": "Error",
+    "errorBody": "No se pudo enviar la denuncia. Inténtalo de nuevo."
   }
 }

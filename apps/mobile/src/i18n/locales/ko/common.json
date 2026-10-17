@@ -193,5 +193,18 @@
     "usePhoto": "사진 사용",
     "flash": "플래시",
     "flip": "카메라 전환"
+  },
+  "report": {
+    "title": "사용자 신고",
+    "subtitle": "{{name}}에게 어떤 문제가 있는지 알려줘. 신고는 익명이야.",
+    "subtitleAnon": "이 사용자에게 어떤 문제가 있는지 알려줘. 신고는 익명이야.",
+    "placeholder": "문제를 설명해줘 (최소 10자)",
+    "submit": "신고 보내기",
+    "sentTitle": "신고를 보냈어",
+    "sentBody": "알려줘서 고마워. 팀이 검토할게.",
+    "dupTitle": "이미 신고했어",
+    "dupBody": "{{date}}에 이 사용자를 신고했어. 검토 중이야.",
+    "errorTitle": "오류",
+    "errorBody": "신고를 보내지 못했어. 다시 시도해 줘."
   }
 }

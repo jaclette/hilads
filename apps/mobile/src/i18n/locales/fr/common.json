@@ -193,5 +193,18 @@
     "usePhoto": "Utiliser la photo",
     "flash": "Flash",
     "flip": "Changer de caméra"
+  },
+  "report": {
+    "title": "Signaler",
+    "subtitle": "Dis-nous ce qui ne va pas avec {{name}}. Les signalements sont anonymes.",
+    "subtitleAnon": "Dis-nous ce qui ne va pas avec cette personne. Les signalements sont anonymes.",
+    "placeholder": "Décris le problème (10 caractères min.)",
+    "submit": "Envoyer le signalement",
+    "sentTitle": "Signalement envoyé",
+    "sentBody": "Merci de nous avoir prévenus. Notre équipe va regarder.",
+    "dupTitle": "Déjà signalé",
+    "dupBody": "Tu as signalé cette personne le {{date}}. Ton signalement est en cours d’examen.",
+    "errorTitle": "Erreur",
+    "errorBody": "Impossible d’envoyer le signalement. Réessaie."
   }
 }

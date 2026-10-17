@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import type { HiladsEvent } from '@/types';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 // Icon map - mirrors the web's EVENT_ICONS in apps/web/src/cityMeta.js
@@ -88,10 +88,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     backgroundColor:   c.bg2,
-    borderRadius:      Radius.lg,
-    borderWidth:       1,
-    borderColor:       c.border,
-    padding:           Spacing.md,
+    borderRadius:      Radius.card,
+    borderWidth:       1.5,
+    borderColor:       c.line,
+    padding:           14,
+    minHeight:         56,
     gap:               10,
   },
   eventIcon:  { fontSize: 20 },
@@ -109,7 +110,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   eventTime:     { fontSize: FontSizes.xs, color: c.muted },
   eventLocation: { fontSize: FontSizes.xs, color: c.muted, flexShrink: 1 },
   liveBadge: {
-    backgroundColor:   'rgba(61,220,132,0.12)',
+    backgroundColor:   c.localBg,
     borderRadius:      Radius.full,
     paddingHorizontal: 6,
     paddingVertical:   2,
@@ -117,11 +118,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   liveBadgeText: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         c.green,
+    color:         c.localText,
     letterSpacing: 0.4,
   },
   pastBadge: {
-    backgroundColor:   c.overlay,
+    backgroundColor:   c.bg3,
     borderRadius:      Radius.full,
     paddingHorizontal: 6,
     paddingVertical:   2,

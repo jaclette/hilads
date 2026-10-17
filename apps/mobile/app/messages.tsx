@@ -13,14 +13,13 @@ import { thumbUrl } from '@/lib/imageThumb';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, Image, Switch,
+  View, Text, ScrollView, TouchableOpacity, Switch,
   ActivityIndicator, RefreshControl, StyleSheet, Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
@@ -29,9 +28,9 @@ import {
   type NotificationPreferences,
 } from '@/api/notifications';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor } from '@/lib/avatarColors';
+import { Avatar, Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
 
 type FilterKey = 'all' | 'dms' | 'events';
@@ -59,8 +58,6 @@ function DMRow({ convo, onPress, onDelete }: { convo: Conversation; onPress: () 
   const styles = useThemedStyles(makeStyles);
   const { t }   = useTranslation('common');
   const name    = convo.other_display_name;
-  const color   = avatarColor(name);
-  const initial = name.slice(0, 1).toUpperCase();
   const time    = relativeTime(convo.last_message_at);
   const confirmDelete = () => Alert.alert(
     t('deleteConversationTitle', { defaultValue: 'Delete conversation?' }),
@@ -72,14 +69,8 @@ function DMRow({ convo, onPress, onDelete }: { convo: Conversation; onPress: () 
   );
 
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={confirmDelete} delayLongPress={350} activeOpacity={0.7}>
-      {convo.other_photo_url ? (
-        <Image source={{ uri: thumbUrl(convo.other_photo_url) }} style={styles.avatar} />
-      ) : (
-        <View style={[styles.avatarCircle, { backgroundColor: color + '28', borderColor: color + '50' }]}>
-          <Text style={[styles.avatarInitial, { color }]}>{initial}</Text>
-        </View>
-      )}
+    <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={confirmDelete} delayLongPress={350} activeOpacity={0.7} accessibilityRole="button">
+      <Avatar uri={convo.other_photo_url ? thumbUrl(convo.other_photo_url) : null} name={name} size={48} fallback="color" />
       <View style={styles.rowBody}>
         <View style={styles.rowTop}>
           <Text style={[styles.rowName, convo.has_unread && styles.rowNameUnread]} numberOfLines={1}>
@@ -111,6 +102,7 @@ function EventRow({
   onPress: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('dm');
   const hasUnread = (unread?.count ?? 0) > 0;
   const preview   = unread?.preview
@@ -120,9 +112,9 @@ function EventRow({
   const time = unread?.previewAt ? relativeTime(unread.previewAt) : '';
 
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7} accessibilityRole="button">
       <View style={styles.eventIcon}>
-        <Text style={styles.eventEmoji}>🔥</Text>
+        <Ionicons name="calendar-outline" size={22} color={colors.primaryOnTint} />
       </View>
       <View style={styles.rowBody}>
         <View style={styles.rowTop}>
@@ -180,6 +172,8 @@ function FilterBar({
             style={[styles.pill, isActive && styles.pillActive]}
             onPress={() => onSelect(key)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
           >
             <Text style={[styles.pillLabel, isActive && styles.pillLabelActive]}>{t(labelKey)}</Text>
             {hasUnread && <View style={[styles.pillDot, isActive && styles.pillDotActive]} />}
@@ -187,23 +181,6 @@ function FilterBar({
         );
       })}
     </View>
-  );
-}
-
-// ── Back button ───────────────────────────────────────────────────────────────
-
-function BackButton() {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
-  const router = useRouter();
-  return (
-    <TouchableOpacity
-      style={styles.backBtn}
-      onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
-      activeOpacity={0.7}
-    >
-      <Feather name="chevron-left" size={22} color={colors.text} />
-    </TouchableOpacity>
   );
 }
 
@@ -274,20 +251,14 @@ export default function MessagesScreen() {
   }, [prefs]);
 
   const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
+  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chat'));
 
   if (!account) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <BackButton />
-          <Text style={styles.headerTitle}>{t('messages', { ns: 'common' })}</Text>
-          <View style={styles.markReadBtn} />
-        </View>
-        <UpgradePrompt
-          title={t('upgradeTitle')}
-          subtitle={t('upgradeSub')}
-        />
-      </SafeAreaView>
+      <Screen>
+        <ScreenHeader title={t('messages', { ns: 'common' })} onBack={goBack} />
+        <UpgradePrompt title={t('upgradeTitle')} subtitle={t('upgradeSub')} />
+      </Screen>
     );
   }
 
@@ -304,20 +275,9 @@ export default function MessagesScreen() {
     (showEvents ? events.length === 0        : true);
 
   return (
-    <SafeAreaView style={styles.container}>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <BackButton />
-        <Text style={styles.headerTitle}>{t('messages', { ns: 'common' })}</Text>
-        {hasUnread ? (
-          <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
-            <Text style={styles.markReadText}>{t('markAllRead')}</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.markReadBtn} />
-        )}
-      </View>
+    <Screen>
+      <ScreenHeader title={t('messages', { ns: 'common' })} onBack={goBack}
+                    right={hasUnread ? <Button variant="link" label={t('markAllRead')} onPress={markAllRead} /> : undefined} />
 
       {/* Filter pills */}
       <FilterBar
@@ -330,28 +290,20 @@ export default function MessagesScreen() {
       {/* Content */}
       {initialLoading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={reload} activeOpacity={0.8}>
-            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
-          </TouchableOpacity>
+          <EmptyState icon="cloud-offline-outline" body={error}
+                      action={<Button variant="secondary" label={t('retry', { ns: 'common' })} onPress={reload} />} />
         </View>
       ) : filteredEmpty ? (
         <View style={styles.center}>
-          <Text style={styles.emptyIcon}>
-            {activeFilter === 'events' ? '🔥' : '💬'}
-          </Text>
-          <Text style={styles.emptyTitle}>
-            {activeFilter === 'events' ? t('emptyEventsTitle') : t('emptyDmsTitle')}
-          </Text>
-          <Text style={styles.emptySub}>
-            {activeFilter === 'events'
-              ? t('emptyEventsSub')
-              : t('emptyDmsSub')}
-          </Text>
+          <EmptyState
+            icon={activeFilter === 'events' ? 'calendar-outline' : 'chatbubbles-outline'}
+            title={activeFilter === 'events' ? t('emptyEventsTitle') : t('emptyDmsTitle')}
+            body={activeFilter === 'events' ? t('emptyEventsSub') : t('emptyDmsSub')}
+          />
         </View>
       ) : (
         <ScrollView
@@ -359,7 +311,7 @@ export default function MessagesScreen() {
             <RefreshControl
               refreshing={loadingDMs || loadingEvts}
               onRefresh={reload}
-              tintColor={colors.accent}
+              tintColor={colors.primary}
             />
           }
           contentContainerStyle={styles.listContent}
@@ -386,7 +338,7 @@ export default function MessagesScreen() {
           {showEvents && (
             loadingEvts && events.length === 0 ? (
               <View style={styles.sectionLoader}>
-                <ActivityIndicator color={colors.accent} size="small" />
+                <ActivityIndicator color={colors.primary} size="small" />
               </View>
             ) : events.length > 0 ? (
               <>
@@ -436,7 +388,7 @@ export default function MessagesScreen() {
           )}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -456,9 +408,10 @@ function PrefRow({
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ false: colors.bg3, true: colors.accent }}
+        trackColor={{ false: colors.line, true: colors.primary }}
         thumbColor={colors.white}
-        ios_backgroundColor={colors.bg3}
+        ios_backgroundColor={colors.line}
+        accessibilityLabel={label}
       />
     </View>
   );
@@ -467,200 +420,39 @@ function PrefRow({
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container:   { flex: 1, backgroundColor: c.bg },
+  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   listContent: { paddingBottom: Spacing.xl },
 
-  // ── Header ────────────────────────────────────────────────────────────────
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  headerTitle: {
-    flex:          1,
-    textAlign:     'center',
-    fontSize:      FontSizes.lg,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.4,
-  },
-  markReadBtn: {
-    width:          80,
-    alignItems:     'flex-end',
-    justifyContent: 'center',
-  },
-  markReadText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.accent,
-  },
+  filterBar:       { flexDirection: 'row', gap: 8, paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: 10 },
+  pill:            { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 14, borderRadius: Radius.full,
+                     borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  pillActive:      { backgroundColor: c.primary, borderColor: c.primary },
+  pillLabel:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  pillLabelActive: { fontWeight: '700', color: c.white },
+  pillDot:         { width: 7, height: 7, borderRadius: Radius.full, backgroundColor: c.primary },
+  pillDotActive:   { backgroundColor: c.white },
 
-  // ── Filter pills ──────────────────────────────────────────────────────────
-  filterBar: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
-    gap:               8,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  pill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               5,
-    paddingHorizontal: 12,
-    paddingVertical:   6,
-    borderRadius:      20,
-    borderWidth:       1,
-    borderColor:       c.border,
-    backgroundColor:   c.bg2,
-  },
-  pillActive: {
-    borderColor:     c.accent,
-    backgroundColor: c.accent + '18',
-  },
-  pillLabel: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.muted,
-  },
-  pillLabelActive: {
-    color: c.accent,
-  },
-  pillDot: {
-    width:           6,
-    height:          6,
-    borderRadius:    3,
-    backgroundColor: c.muted,
-  },
-  pillDotActive: {
-    backgroundColor: c.accent,
-  },
+  sectionHeader: { paddingHorizontal: Spacing.md, paddingTop: 14, paddingBottom: 6 },
+  sectionTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  sectionLoader: { paddingVertical: Spacing.md, alignItems: 'center' },
 
-  // ── Section header ────────────────────────────────────────────────────────
-  sectionHeader: {
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.lg,
-    paddingBottom:     Spacing.sm,
-  },
-  sectionTitle: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    color:         c.muted2,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  sectionLoader: {
-    paddingVertical: Spacing.lg,
-    alignItems:      'center',
-  },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 68, paddingHorizontal: Spacing.md, paddingVertical: 10 },
+  eventIcon:        { width: 48, height: 48, borderRadius: 14, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  rowBody:          { flex: 1, minWidth: 0, gap: 2 },
+  rowTop:           { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rowName:          { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  rowNameUnread:    { fontWeight: '800' },
+  rowTime:          { fontSize: 12, fontWeight: '400', color: c.muted },
+  rowPreview:       { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
+  rowPreviewUnread: { fontWeight: '600', color: c.text },
+  unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary },
 
-  // ── Row ───────────────────────────────────────────────────────────────────
-  row: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   14,
-    gap:               Spacing.md,
-  },
-
-  avatar: {
-    width: 52, height: 52, borderRadius: Radius.full,
-  },
-  avatarCircle: {
-    width:          52,
-    height:         52,
-    borderRadius:   Radius.full,
-    borderWidth:    1.5,
-    alignItems:     'center',
-    justifyContent: 'center',
-    flexShrink:     0,
-  },
-  avatarInitial: {
-    fontSize:   FontSizes.lg,
-    fontWeight: '700',
-  },
-
-  eventIcon: {
-    width:           52,
-    height:          52,
-    borderRadius:    16,
-    backgroundColor: c.bg3,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-  },
-  eventEmoji: { fontSize: 24 },
-
-  rowBody: { flex: 1, gap: 5 },
-  rowTop:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-
-  rowName: {
-    flex:       1,
-    fontSize:   FontSizes.md,
-    fontWeight: '600',
-    color:      c.text,
-  },
-  rowNameUnread: { fontWeight: '800', color: c.white },
-
-  rowTime: {
-    fontSize:   FontSizes.xs,
-    color:      c.muted2,
-    flexShrink: 0,
-  },
-  rowPreview: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    lineHeight: 20,
-  },
-  rowPreviewUnread: { color: c.text },
-
-  unreadDot: {
-    width:           10,
-    height:          10,
-    borderRadius:    5,
-    backgroundColor: c.accent,
-    flexShrink:      0,
-  },
-
-  // ── States ────────────────────────────────────────────────────────────────
-  center: {
-    flex: 1, justifyContent: 'center', alignItems: 'center',
-    padding: Spacing.xl, gap: Spacing.sm,
-  },
-  errorText:  { fontSize: FontSizes.sm, color: c.red },
-  retryBtn: {
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    backgroundColor: c.bg3, borderRadius: Radius.md,
-  },
-  retryText:  { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
-  emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.md, fontWeight: '600', color: c.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
-
-  // ── Preferences (envelope-scoped - DM, event-chat, city-chat) ────────────
-  prefSection:      { marginTop: Spacing.xl, paddingHorizontal: Spacing.md },
-  prefSectionTitle: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted2, letterSpacing: 0.8, marginBottom: Spacing.sm },
-  prefCard:         { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, overflow: 'hidden' },
-  prefRow:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.md },
-  prefText:         { flex: 1, gap: 3 },
-  prefLabel:        { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
-  prefSub:          { fontSize: FontSizes.xs, color: c.muted, lineHeight: 17 },
-  prefDivider:      { height: 1, backgroundColor: c.border, marginHorizontal: Spacing.md },
+  prefSection:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.lg, gap: 8 },
+  prefSectionTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  prefCard:         { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  prefDivider:      { height: 1, backgroundColor: c.line },
+  prefRow:          { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
+  prefText:         { flex: 1, gap: 2 },
+  prefLabel:        { fontSize: 15, fontWeight: '700', color: c.text },
+  prefSub:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
 });
