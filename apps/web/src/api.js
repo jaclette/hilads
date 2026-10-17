@@ -2398,14 +2398,80 @@ export async function fetchSpot(id, offset = 0) {
   return res.json() // { spot, ranking, photos: { items, nextOffset }, captions }
 }
 
-// ── Daily Challenge (W2+: the web mirrors the app's Today) ──────────────────
+// ── Daily Challenge (W1/W2: the web mirrors the app's Today) ────────────────
+// Same endpoints as the app (docs/daily-challenge/API.md). Reads send the UI
+// language; errors carry the API's status and machine code (err.status/.code).
+
+async function daily(method, path, { params, body } = {}) {
+  const q = new URLSearchParams()
+  Object.entries(params || {}).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') q.set(k, v) })
+  const res = await fetch(`${BASE}${path}${q.toString() ? `?${q}` : ''}`, {
+    method,
+    credentials: 'include',
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err = new Error(data.error || `HTTP ${res.status}`)
+    err.status = res.status
+    err.code = data.code || null
+    throw err
+  }
+  return res.status === 204 ? null : res.json()
+}
+
+const cityNum = (cityId) => (cityId ? String(cityId).replace(/^city_/, '') : null)
 
 /** GET /daily/today: today's challenge, the city's Local Twist, my proof, streak… */
-export async function fetchDailyToday(cityId, locale) {
-  const q = new URLSearchParams()
-  if (cityId) q.set('cityId', String(cityId).replace(/^city_/, ''))
-  if (locale) q.set('locale', locale)
-  const res = await fetch(`${BASE}/daily/today?${q}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch today')
-  return res.json()
+export function fetchDailyToday(cityId, locale) {
+  return daily('GET', '/daily/today', { params: { cityId: cityNum(cityId), locale } })
+}
+
+/** GET /daily/challenges/{date}: the sheet (proofs paged by `before`, results once closed). */
+export function fetchDailySheet(date, { scope = 'world', cityId, before, limit = 20, locale } = {}) {
+  return daily('GET', `/daily/challenges/${date}`, { params: { scope, cityId: cityNum(cityId), before, limit, locale } })
+}
+
+export async function fetchDailyProof(id, locale) {
+  return (await daily('GET', `/daily/proofs/${id}`, { params: { locale } })).proof
+}
+
+/** Week strip / calendar: days from..to with my status, and my streak. */
+export function fetchDailyCalendar(from, to) {
+  return daily('GET', '/daily/calendar', { params: { from, to } })
+}
+
+/** Provisional leaderboard of the active challenge. */
+export function fetchDailyLeaderboard() {
+  return daily('GET', '/daily/leaderboard')
+}
+
+/** Vote / withdraw my vote (3 per challenge). → { voted, votesLeft, voteCount, validatedByLocal } */
+export function voteDailyProof(id)   { return daily('POST', `/daily/proofs/${id}/vote`, { body: {} }) }
+export function unvoteDailyProof(id) { return daily('DELETE', `/daily/proofs/${id}/vote`) }
+
+/** Report a visible proof. 409 = already reported. */
+export function reportDailyProof(id, reasonCode) {
+  return daily('POST', `/daily/proofs/${id}/report`, { body: { reasonCode } })
+}
+
+/** Proposals (signed in): a challenge, mine, withdraw. */
+export async function proposeChallenge(input) {
+  return (await daily('POST', '/daily/proposals', { body: input })).proposal
+}
+export function fetchMyProposals(locale) { return daily('GET', '/daily/proposals/mine', { params: { locale } }) }
+export function withdrawDailyProposal(id) { return daily('DELETE', `/daily/proposals/${id}`) }
+
+/** Tomorrow's Local Twist proposal (locals of a live city). */
+export function fetchTwistProposal(locale) { return daily('GET', '/daily/twist-proposal', { params: { locale } }) }
+export async function proposeTwist(text)  { return (await daily('POST', '/daily/twist-proposal', { body: { text } })).proposal }
+export async function editTwistProposal(text) { return (await daily('PATCH', '/daily/twist-proposal', { body: { text } })).proposal }
+export function withdrawTwistProposal()   { return daily('DELETE', '/daily/twist-proposal') }
+
+/** The nearest spots (Today's "Spots near you"); fallback: the nearest anywhere. */
+export function fetchSpotsNear({ lat, lng, cityId }) {
+  return daily('GET', '/spots/near', { params: {
+    lat: lat !== undefined ? lat.toFixed(4) : null, lng: lng !== undefined ? lng.toFixed(4) : null, cityId: cityNum(cityId),
+  } })
 }

@@ -16,6 +16,10 @@ import EmptyCityChallenges from './components/EmptyCityChallenges'
 import AppMapCard from './components/AppMapCard'
 import MapScreen from './components/map/MapScreen'
 import TodayScreen from './components/today/TodayScreen'
+import ChallengeScreen from './components/daily/ChallengeScreen'
+import CalendarScreen from './components/daily/CalendarScreen'
+import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
+import { DailyContext } from './components/daily/dailyShared'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -681,10 +685,8 @@ const DAILY_THEME_EMOJI = {
 // when installed, else the page offers the stores. Shows V2 details too: the
 // theme and "Proposed by" on the challenge, Local Pass / Early on proofs, and
 // the hour's group card of a busy channel (photo strip, count, cities).
-function DailyFeedCard({ item, t }) {
+function DailyFeedCard({ item, t, onOpen }) {
   const p = item.payload || {}
-  const lang = i18n.language
-  const todayHref = SUPPORTED.includes(lang) && lang !== DEFAULT_LOCALE ? `/${lang}/today` : '/today'
   const time = item.createdAt ? formatMsgTime(item.createdAt) : null
   if (item.subtype === 'daily_proof_group') {
     const proofs = Array.isArray(p.proofs) ? p.proofs : []
@@ -707,7 +709,7 @@ function DailyFeedCard({ item, t }) {
             </div>
           ))}
         </div>
-        <a className="feed-daily-cta feed-daily-cta--ghost" href={todayHref}>{t('daily.ctaApp')}</a>
+        <button type="button" className="feed-daily-cta feed-daily-cta--ghost" onClick={() => onOpen({ date: p.date ?? 'today' })}>{t('dc.seeProofs', { ns: 'challenge' })}</button>
         {time && <span className="feed-join-time">{time}</span>}
       </div>
     )
@@ -727,7 +729,7 @@ function DailyFeedCard({ item, t }) {
             : t('daily.proposedBy', { name: by })}</div>
         )}
         {p.twist?.text && <div className="feed-daily-twist">📍 {t('daily.localTwist')}: {p.twist.text}</div>}
-        <a className="feed-daily-cta" href={todayHref}>{t('daily.ctaApp')}</a>
+        <button type="button" className="feed-daily-cta" onClick={() => onOpen({ date: p.date ?? 'today' })}>{t('dc.cta', { ns: 'challenge' })}</button>
         {time && <span className="feed-join-time">{time}</span>}
       </div>
     )
@@ -745,7 +747,7 @@ function DailyFeedCard({ item, t }) {
       <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-sub">🔥 {t('daily.kicker')} · {p.challengeText}</div>
-      <a className="feed-daily-cta feed-daily-cta--ghost" href={todayHref}>{t('daily.ctaApp')}</a>
+      <button type="button" className="feed-daily-cta feed-daily-cta--ghost" onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })}>{t('dc.map.seeProof', { ns: 'challenge' })}</button>
       {time && <span className="feed-join-time">{time}</span>}
     </div>
   )
@@ -1001,6 +1003,12 @@ export default function App() {
   // URL points at content (a city, an event, a challenge…), which opens Chat.
   const [showToday, setShowToday] = useState(() => parseDeepLink() === null)
   const [showScopeSheet, setShowScopeSheet] = useState(false)
+  // The Daily screens (W2): a small stack over the tabs - the challenge
+  // screen, propose, tomorrow's twist, my proposals, the calendar.
+  const [dailyStack, setDailyStack] = useState([])
+  const openDaily  = (name, params = {}) => setDailyStack(st => [...st, { name, params }])
+  const closeDaily = () => setDailyStack(st => st.slice(0, -1))
+  const [mapSpotId, setMapSpotId] = useState(null)
   useEffect(() => {
     fetchAppConfig().then(c => setCreationClosed(!!c.challengeCreationClosed)).catch(() => {})
   }, [])
@@ -3726,6 +3734,8 @@ export default function App() {
   function dismissFullPageOverlays() {
     setShowMap(false)
     setShowToday(false)
+    setDailyStack([])
+    setMapSpotId(null)
     setActiveTopic(null)
     setActiveChallenge(null)
     setShowCreateChallenge(false)
@@ -5385,7 +5395,7 @@ export default function App() {
           )}
           {feed.map((item, i) => {
             if (item.type === 'daily') {
-              return <DailyFeedCard key={item.id} item={item} t={t} />
+              return <DailyFeedCard key={item.id} item={item} t={t} onOpen={(params) => openDaily('challenge', { source: 'chat', ...params })} />
             }
             if (item.type === 'world_system') {
               const p = item.payload || {}
@@ -5919,14 +5929,36 @@ export default function App() {
 
       {/* ── Full-screen pages ─────────────────────────── */}
 
-      {showToday && !showMap && !showProfileDrawer && (
-        <TodayScreen channelId={channelId} header={renderAppHeader()} />
-      )}
+      <DailyContext.Provider value={{
+        account, cityId: channelId, scope: channelScope,
+        openDaily,
+        openProfile: (id, name) => openProfile(id, name ?? ''),
+        // A spot (or the map) from Today / a proof: the Map tab, on that spot.
+        openSpot: (id) => { goToMapTab(); setMapSpotId(id ?? null) },
+        needAccount: (reason) => setGuestGate({ reason }),
+      }}>
+        {showToday && !showMap && !showProfileDrawer && (
+          <TodayScreen header={renderAppHeader()} />
+        )}
+        {(() => {
+          const top = dailyStack[dailyStack.length - 1]
+          if (!top) return null
+          const key = `${dailyStack.length}:${top.name}`
+          if (top.name === 'challenge') return <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
+          if (top.name === 'propose')   return <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
+          if (top.name === 'twist')     return <TwistScreen key={key} onBack={closeDaily} />
+          if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
+          if (top.name === 'calendar')  return <CalendarScreen key={key} onBack={closeDaily} />
+          return null
+        })()}
+      </DailyContext.Provider>
 
       {renderScopeSheet()}
 
       {showMap && (
         <MapScreen
+          key={mapSpotId ?? 'map'}
+          initialSpotId={mapSpotId}
           channelId={channelId}
           cityName={city ? localizeCityName(city) : null}
           onClose={() => setShowMap(false)}
