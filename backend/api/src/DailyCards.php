@@ -50,6 +50,10 @@ final class DailyCards
             'photoUrl'      => $proof['photo_url'],
             'thumbUrl'      => R2Uploader::thumbProxy($proof['photo_url']),
             'caption'       => $proof['caption'],
+            // V3-09: the theme chip and the spot on the Chat card.
+            'theme'         => DailyThemes::format($proof['challenge_theme'] ?? null, $proof['challenge_date'] ?? null),
+            'spot'          => ($proof['place_id'] ?? null) !== null && ($proof['spot_status'] ?? null) === 'approved'
+                ? ['id' => $proof['place_id'], 'name' => $proof['spot_name']] : null,
         ];
     }
 

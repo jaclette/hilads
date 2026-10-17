@@ -131,5 +131,16 @@
     "arrivalsTitle": "Vừa đến",
     "arrivalsEmpty": "Chưa có ai vừa đến",
     "seeAll": "Xem tất cả"
+  },
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} người đang muốn làm gì đó",
+    "going_one": "{{count}} người đi",
+    "going_other": "{{count}} người đi",
+    "arrivals_one": "{{count}} người đến tuần này",
+    "arrivals_other": "{{count}} người đến tuần này",
+    "nearby_one": "{{count}} người ở đây",
+    "nearby_other": "{{count}} người ở đây"
   }
 }

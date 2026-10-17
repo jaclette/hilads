@@ -426,5 +426,6 @@
     "body": "Tu pasaporte de {{city}} tiene un sello nuevo.",
     "ok": "Genial",
     "close": "Cerrar"
-  }
+  },
+  "takeIt": "Acéptalo"
 }

@@ -426,5 +426,6 @@
     "body": "Ton passeport de {{city}} a un nouveau tampon.",
     "ok": "Super",
     "close": "Fermer"
-  }
+  },
+  "takeIt": "Je le relève"
 }

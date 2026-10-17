@@ -426,5 +426,6 @@
     "body": "Your {{city}} passport has a new stamp.",
     "ok": "Nice",
     "close": "Close"
-  }
+  },
+  "takeIt": "Take it"
 }

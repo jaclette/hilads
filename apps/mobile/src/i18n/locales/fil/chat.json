@@ -131,5 +131,16 @@
     "arrivalsTitle": "Kababa lang",
     "arrivalsEmpty": "Walang kababa lang",
     "seeAll": "Tingnan lahat"
+  },
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} tao ang gustong gumawa ng kahit ano ngayon",
+    "going_one": "{{count}} pupunta",
+    "going_other": "{{count}} pupunta",
+    "arrivals_one": "{{count}} dumating ngayong linggo",
+    "arrivals_other": "{{count}} dumating ngayong linggo",
+    "nearby_one": "{{count}} narito ngayon",
+    "nearby_other": "{{count}} narito ngayon"
   }
 }

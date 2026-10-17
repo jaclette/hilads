@@ -131,5 +131,16 @@
     "arrivalsTitle": "हाल की आमद",
     "arrivalsEmpty": "हाल में कोई नहीं आया",
     "seeAll": "सभी देखें"
+  },
+  "tabTitle": "चैट",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} लोग अभी कुछ करने को तैयार",
+    "going_one": "{{count}} जा रहा है",
+    "going_other": "{{count}} जा रहे हैं",
+    "arrivals_one": "इस हफ़्ते {{count}} आया",
+    "arrivals_other": "इस हफ़्ते {{count}} आए",
+    "nearby_one": "अभी {{count}} यहाँ",
+    "nearby_other": "अभी {{count}} यहाँ"
   }
 }

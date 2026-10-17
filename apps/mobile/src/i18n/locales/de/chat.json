@@ -131,5 +131,16 @@
     "arrivalsTitle": "Neue Ankünfte",
     "arrivalsEmpty": "Keine neuen Ankünfte",
     "seeAll": "Alle ansehen"
+  },
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} Leute haben gerade Lust auf was",
+    "going_one": "{{count}} geht hin",
+    "going_other": "{{count}} gehen hin",
+    "arrivals_one": "{{count}} diese Woche angekommen",
+    "arrivals_other": "{{count}} diese Woche angekommen",
+    "nearby_one": "{{count}} gerade hier",
+    "nearby_other": "{{count}} gerade hier"
   }
 }

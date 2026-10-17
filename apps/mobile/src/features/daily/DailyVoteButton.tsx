@@ -75,7 +75,11 @@ export function DailyVoteButton({ proofId, date, cityName = null, variant = 'car
       accessibilityLabel={state?.myVote ? t('vote.withdraw') : t('vote.vote')}
     >
       <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={variant === 'tile' ? 15 : 18} color={iconColor} />
-      {count !== null && <Text style={[styles.count, variant === 'tile' && styles.countTile, onDark && styles.white]}>{count}</Text>}
+      {count !== null && (
+        <Text style={[styles.count, variant === 'tile' && styles.countTile, onDark && styles.white]}>
+          {variant === 'card' && !state?.myVote && !state?.isMine ? `${t('vote.vote')} ${count}` : count}
+        </Text>
+      )}
       {!!sub && variant !== 'tile' && (
         <View style={styles.subWrap}><Text style={[styles.sub, onDark && styles.subDark]} numberOfLines={1}>{sub}</Text></View>
       )}
@@ -84,11 +88,11 @@ export function DailyVoteButton({ proofId, date, cityName = null, variant = 'car
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  btn:       { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg3 },
+  btn:       { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', minHeight: 36, paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   btnTile:   { paddingHorizontal: 8, paddingVertical: 4, gap: 4 },
   btnDark:   { backgroundColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.25)' },
-  btnOn:     { borderColor: c.accent },
-  count:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
+  btnOn:     { borderColor: c.primary, backgroundColor: c.primaryTint },
+  count:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   countTile: { fontSize: FontSizes.xs },
   white:     { color: '#fff' },
   subWrap:   { flexShrink: 1 },

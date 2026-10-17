@@ -426,5 +426,6 @@
     "body": "Paspor {{city}}-mu dapat stempel baru.",
     "ok": "Mantap",
     "close": "Tutup"
-  }
+  },
+  "takeIt": "Ikuti"
 }

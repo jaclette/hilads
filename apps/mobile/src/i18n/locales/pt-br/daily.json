@@ -426,5 +426,6 @@
     "body": "Seu passaporte de {{city}} ganhou um novo carimbo.",
     "ok": "Boa",
     "close": "Fechar"
-  }
+  },
+  "takeIt": "Aceitar"
 }

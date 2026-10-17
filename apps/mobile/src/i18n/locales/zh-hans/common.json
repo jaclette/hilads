@@ -83,7 +83,11 @@
     "snapDesc": "拍摄或上传照片",
     "spot": "分享你的位置",
     "spotDesc": "分享你当前的位置",
-    "spotLoading": "正在获取你的位置…"
+    "spotLoading": "正在获取你的位置…",
+    "plan": "创建计划",
+    "planDesc": "选好时间和地点，大家一起来",
+    "hiNow": "Hi now",
+    "hiNowDesc": "现在想做点什么？说出来"
   },
   "locationPicker": {
     "title": "你在哪里？👀",

@@ -72,9 +72,12 @@ interface Props {
       by the challenge thread chat so the header re-expands on send. Defaults
       to false (city/event chats keep the keyboard up for rapid replies). */
   dismissOnSend?:   boolean;
+  /** "+" menu extras (city Chat, V3-09): create a Hi plan / start a Hi now. */
+  onCreatePlan?:    () => void;
+  onHiNow?:         () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false, onCreatePlan, onHiNow }: Props) {
   const styles      = useThemedStyles(makeStyles);
   const replyStyles = useThemedStyles(makeReplyStyles);
   const editStyles  = useThemedStyles(makeEditStyles);
@@ -446,6 +449,8 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       visible={showShareSheet}
       onSnap={() => { setShowShareSheet(false); setTimeout(handlePickImage, 0); }}
       onSpot={handleMySpot}
+      onPlan={onCreatePlan ? () => { setShowShareSheet(false); onCreatePlan(); } : undefined}
+      onHiNow={onHiNow ? () => { setShowShareSheet(false); onHiNow(); } : undefined}
       onClose={() => setShowShareSheet(false)}
       spotLoading={false}
     />
@@ -509,7 +514,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
           accessibilityLabel={t('composer.attach')}
         >
           <LinearGradient
-            colors={['#C24A38', '#B87228']}
+            colors={[colors.primary, colors.primary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.vibeBtn}

@@ -426,5 +426,6 @@
     "body": "Je paspoort van {{city}} heeft een nieuwe stempel.",
     "ok": "Top",
     "close": "Sluiten"
-  }
+  },
+  "takeIt": "Doe mee"
 }

@@ -131,5 +131,16 @@
     "arrivalsTitle": "เพิ่งมาถึง",
     "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา",
     "seeAll": "ดูทั้งหมด"
+  },
+  "tabTitle": "แชท",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} คนอยากทำอะไรสักอย่างตอนนี้",
+    "going_one": "ไป {{count}} คน",
+    "going_other": "ไป {{count}} คน",
+    "arrivals_one": "มาถึงสัปดาห์นี้ {{count}} คน",
+    "arrivals_other": "มาถึงสัปดาห์นี้ {{count}} คน",
+    "nearby_one": "อยู่ที่นี่ {{count}} คน",
+    "nearby_other": "อยู่ที่นี่ {{count}} คน"
   }
 }

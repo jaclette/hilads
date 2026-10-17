@@ -19,7 +19,8 @@ import { EarlyBadge } from './EarlyBadge';
 import { MEDALS } from './DailyProofTile';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
-import type { DailyPerson, DailyTwist, Message } from '@/types';
+import { THEME_ICON } from '@/features/today/format';
+import type { DailyPerson, DailyThemeKey, DailyTwist, Message } from '@/types';
 
 type TopProof = {
   rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
@@ -40,6 +41,9 @@ type ProofPayload = {
   user: DailyPerson; isLocal: boolean; city: { id: number; name: string } | null;
   photoUrl: string; thumbUrl: string | null; caption: string | null;
   isEarly?: boolean;
+  /** V3-09 (absent on older cards). */
+  theme?: { key: DailyThemeKey; name: string } | null;
+  spot?:  { id: string; name: string } | null;
 };
 
 const REPORT_REASONS: DailyReportReason[] = ['inappropriate', 'person_without_consent', 'dangerous', 'spam', 'other'];
@@ -64,6 +68,7 @@ interface Props {
  */
 export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Props) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { city } = useApp();
@@ -86,14 +91,17 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
     return (
       <View style={styles.wrap}>
         <TouchableOpacity style={[styles.card, styles.challengeCard]} onPress={open} onLongPress={longPress} activeOpacity={0.85} accessibilityRole="button">
-          <Text style={styles.kicker}>🔥 {t('kicker')}</Text>
+          <View style={styles.kickerRow}>
+            <Ionicons name="flame-outline" size={16} color={colors.primaryText} />
+            <Text style={styles.kicker}>{t('kicker')}</Text>
+          </View>
           <Text style={styles.challengeText}>{tr?.text ?? p.text}</Text>
           {!!p.context && <Text style={styles.context} numberOfLines={3}>{tr?.context ?? p.context}</Text>}
           <OriginalToggle translated={translated} showingOriginal={showOriginal} onPress={toggleOriginal} />
           {p.proposedBy && <ProposedBy credit={p.proposedBy} />}
           {isLive && p.twist && (
             <View style={styles.twist}>
-              <Text style={styles.twistLabel}>📍 {t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+              <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
               <Text style={styles.twistText}>{tr?.twist ?? p.twist.text}</Text>
             </View>
           )}
@@ -238,12 +246,12 @@ function ProofCard({ message, reactions, time, longPress }: {
             <View style={styles.flex}>
               <View style={styles.nameRow}>
                 <Text style={styles.name} numberOfLines={1}>{name}</Text>
+                <View style={[styles.modeChip, p.isLocal ? styles.modeLocal : styles.modeTraveler]}>
+                  <Text style={[styles.modeText, p.isLocal ? styles.modeLocalText : styles.modeTravelerText]}>{p.isLocal ? t('local') : t('traveler')}</Text>
+                </View>
                 {p.user?.localPass && <LocalPassBadge />}
               </View>
-              <Text style={styles.sub} numberOfLines={1}>
-                {p.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
-                {p.city ? ` · ${localizeCityName(p.city.name)}` : ''}
-              </Text>
+              {!!p.city && <Text style={styles.sub} numberOfLines={1}>{localizeCityName(p.city.name)}</Text>}
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={report} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('report.title')}>
@@ -252,12 +260,26 @@ function ProofCard({ message, reactions, time, longPress }: {
         </View>
         <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
+        {!!p.spot && (
+          <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={6}>
+            <Ionicons name="location-outline" size={14} color={colors.primaryText} />
+            <Text style={styles.spotText} numberOfLines={1}>{p.spot.name}</Text>
+          </TouchableOpacity>
+        )}
         <View style={styles.voteRow}>
-          <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} />
-          {vote?.validatedByLocal && <Text style={styles.badge} numberOfLines={1}>✓ {t('validatedByLocal')}</Text>}
-          {p.isEarly && <EarlyBadge />}
+          {p.theme ? (
+            <View style={styles.themeChip}>
+              <Ionicons name={THEME_ICON[p.theme.key] ?? 'pricetag-outline'} size={13} color={colors.primaryOnTint} />
+              <Text style={styles.themeText}>{p.theme.name}</Text>
+            </View>
+          ) : <View />}
+          <View style={styles.voteRight}>
+            {vote?.validatedByLocal && <Ionicons name="checkmark-circle" size={18} color={colors.localText} accessibilityLabel={t('validatedByLocal')} />}
+            {p.isEarly && <EarlyBadge />}
+            <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} />
+          </View>
         </View>
-        <Text style={styles.proofOf} numberOfLines={1}>🔥 {t('kicker')} · {p.challengeText}</Text>
+        <Text style={styles.proofOf} numberOfLines={1}>{t('kicker')} · {p.challengeText}</Text>
       </TouchableOpacity>
       {reactions}
       {time && <Text style={styles.time}>{time}</Text>}
@@ -268,16 +290,17 @@ function ProofCard({ message, reactions, time, longPress }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:          { paddingHorizontal: 12, marginVertical: 6, alignItems: 'stretch' },
   flex:          { flex: 1 },
-  card:          { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, padding: 12, gap: 8 },
-  challengeCard: { borderColor: 'rgba(255,122,60,0.45)' },
-  kicker:        { fontSize: 11, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
+  card:          { backgroundColor: c.bg2, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 8 },
+  challengeCard: { borderColor: c.ticketLine },
+  kickerRow:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  kicker:        { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   challengeText: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
   context:       { fontSize: FontSizes.xs, color: c.muted },
   twist:         { backgroundColor: c.bg3, borderRadius: Radius.md, padding: 8, gap: 2 },
-  twistLabel:    { fontSize: 11, fontWeight: '800', color: c.accentText, textTransform: 'uppercase', letterSpacing: 0.4 },
+  twistLabel:    { fontSize: 12, fontWeight: '700', color: c.muted },
   twistText:     { fontSize: FontSizes.sm, color: c.text },
-  cta:           { alignSelf: 'flex-start', backgroundColor: c.accent, borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 8 },
-  ctaText:       { color: c.white, fontSize: FontSizes.xs, fontWeight: '800' },
+  cta:           { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', backgroundColor: c.primary, borderRadius: 14, paddingHorizontal: 16 },
+  ctaText:       { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
   authorRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
   author:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   avatar:        { width: 30, height: 30, borderRadius: 15 },
@@ -286,11 +309,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   nameRow:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   name:          { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   sub:           { fontSize: 11, color: c.muted },
-  photo:         { width: '100%', aspectRatio: 4 / 3, borderRadius: Radius.md, backgroundColor: c.bg3 },
+  photo:         { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, backgroundColor: c.bg3 },
+  modeChip:      { paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
+  modeLocal:     { backgroundColor: c.primaryTint },
+  modeTraveler:  { backgroundColor: c.travelerBg },
+  modeText:      { fontSize: 12, fontWeight: '700' },
+  modeLocalText: { color: c.primaryOnTint },
+  modeTravelerText: { color: c.travelerText },
+  spot:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 },
+  spotText:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
+  themeChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  themeText:     { fontSize: 12, fontWeight: '700', color: c.primaryOnTint },
+  voteRight:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
   caption:       { fontSize: FontSizes.sm, color: c.text },
   proofOf:       { fontSize: 11, color: c.muted },
   time:          { fontSize: 11, color: c.muted, marginTop: 4, alignSelf: 'flex-start' },
-  voteRow:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  voteRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   badge:         { flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.green },
   strip:         { flexDirection: 'row', gap: 6 },
   stripCell:     { flex: 1, aspectRatio: 1 },

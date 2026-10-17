@@ -25,20 +25,16 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
 import { consumeWorldScopeOpen } from '@/lib/worldScopeOpen';
 import { useScope } from '@/context/ScopeContext';
+import { PeopleRow } from '@/features/chat/PeopleRow';
 import { useTranslation } from 'react-i18next';
-import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
-import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction, fetchCityMembers } from '@/api/channels';
-import { fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival, type WorldChallenge } from '@/api/world';
-import { MarqueeText } from '@/components/MarqueeText';
+import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
+import { fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, type WorldArrival } from '@/api/world';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
-import { fetchCityTopics } from '@/api/topics';
-import { fetchCityChallenges } from '@/api/challenges';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
@@ -48,8 +44,6 @@ import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
-import { AppHeader } from '@/features/shell/AppHeader';
-import { DailyHeroCardView } from '@/features/daily/DailyHeroCard';
 import { DailyPinBar } from '@/features/daily/DailyPinBar';
 import { useDailyToday } from '@/hooks/useDaily';
 import { isDailyCard } from '@/lib/dailyEvents';
@@ -60,7 +54,6 @@ import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
-import { fetchLeaderboard } from '@/api/leaderboard';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
 // ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
@@ -112,31 +105,6 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// Per-challenge-type colour theme for the World hero carousel slides.
-const CH_TYPE_THEME: Record<string, { a: string; tint: string }> = {
-  food:    { a: '#FF7A3C', tint: 'rgba(255,122,60,0.16)' },
-  place:   { a: '#2DD4BF', tint: 'rgba(45,212,191,0.15)' },
-  culture: { a: '#A78BFA', tint: 'rgba(167,139,250,0.16)' },
-  help:    { a: '#F472B6', tint: 'rgba(244,114,182,0.16)' },
-};
-
-// ── City short name for the challenge hero ───────────────────────────────────
-// Hero copy is English-only for this phase (per spec). Known cities map to a
-// canonical short form; otherwise keep the full name unless it's too long
-// (>12 chars), then ellipsize. Add to SHORT as needed.
-const CITY_SHORT: Record<string, string> = {
-  'Ho Chi Minh City': 'HCMC',
-  'New York City':    'NYC',
-  'New York':         'NYC',
-  'San Francisco':    'SF',
-  'Los Angeles':      'LA',
-  'Rio de Janeiro':   'Rio',
-};
-function cityShortName(name: string): string {
-  if (CITY_SHORT[name]) return CITY_SHORT[name];
-  if (name.length <= 12) return name;
-  return name.slice(0, 11).trimEnd() + '…';
-}
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 // Tab bar is in-flow (flex-column sibling), so the screen content area ends
@@ -152,7 +120,6 @@ export default function ChatTab() {
   const {
     city, identity, sessionId, account,
     unreadDMs, setUnreadDMs,
-    unreadNotifications,
     clearEventChatCounts,
     bootstrapData,
     joined, setShowOnboarding,
@@ -219,9 +186,6 @@ export default function ChatTab() {
   const [cityUnread,   setCityUnread]   = useState(0);
   // Total city members - gates the header pill: with <2 nearby we show a
   // "N members" pill instead, and hide it entirely for empty cities (<2 members).
-  const [cityMemberCount, setCityMemberCount] = useState<number | null>(null);
-  const [worldActivity, setWorldActivity] = useState<WorldActivity | null>(null);
-  const [worldChallenges, setWorldChallenges] = useState<WorldChallenge[]>([]);
   const [worldArrivals, setWorldArrivals] = useState<WorldArrival[]>([]);
   const [showWorldArrivals, setShowWorldArrivals] = useState(false);
   const [quietCardOpen, setQuietCardOpen] = useState(false);
@@ -232,25 +196,6 @@ export default function ChatTab() {
   // pin and the live-city flag (which channel opens first, twists on cards).
   const daily = useDailyToday(city?.channelId);
   const dailyLive = !!daily.data?.city?.isLive;
-
-  // ── Leaderboard chip - caller's monthly city rank ─────────────────────────
-  // One bounded fetch per city change. limit=1 to skip the list payload;
-  // we only need me.rank/me.points. Silent failure → neutral chip copy.
-  // Re-fires on city switch so the chip reflects the new city's standings.
-  const [myCityRank,   setMyCityRank]   = useState<number | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    if (!account?.id || !channelId) { setMyCityRank(null); return; }
-    (async () => {
-      const res = await fetchLeaderboard({
-        scope: 'city', period: 'month', limit: 1, offset: 0,
-        cityId: `city_${channelId}`,
-      });
-      if (cancelled) return;
-      setMyCityRank(res?.me?.rank ?? null);
-    })();
-    return () => { cancelled = true; };
-  }, [account?.id, channelId]);
 
   // ── Typing indicators ─────────────────────────────────────────────────────
   // Server broadcasts typingUsers to the city room whenever typingStart/Stop fires.
@@ -377,87 +322,6 @@ export default function ChatTab() {
     };
   }, [channelId]);
 
-  // ── Topic feed item synthesis ─────────────────────────────────────────────
-  // Active topics appear as blue pills in the city chat.
-  // WS `newTopic` handles instant append; 5-min poll handles expiry cleanup.
-
-  const [topicFeedItems, setTopicFeedItems] = useState<Message[]>([]);
-
-  useEffect(() => {
-    if (!channelId) return;
-
-    async function loadTopics() {
-      try {
-        const topics = await fetchCityTopics(channelId);
-        const now = Date.now() / 1000;
-        setTopicFeedItems(topics.map(t => ({
-          id:        `topic-msg-${t.id}`,
-          type:      'topic' as const,
-          topicId:   t.id,
-          content:   t.title,
-          nickname:  '',
-          createdAt: now,
-        })));
-      } catch {}
-    }
-
-    loadTopics();
-
-    // Fallback poll for topic expiry cleanup - runs only when WS is disconnected.
-    // New topics arrive instantly via newTopic WS event; this only removes expired ones.
-    let pollId: ReturnType<typeof setInterval> | null = null;
-
-    function startTopicPoll() {
-      if (pollId !== null) return;
-      pollId = setInterval(loadTopics, 5 * 60_000);
-    }
-    function stopTopicPoll() {
-      if (pollId !== null) { clearInterval(pollId); pollId = null; }
-    }
-
-    if (!socket.isConnected) startTopicPoll();
-    const offDisconnected = socket.on('disconnected', () => startTopicPoll());
-    const offConnected    = socket.on('connected', () => { stopTopicPoll(); loadTopics(); });
-
-    // WS: new topic created - append pill immediately.
-    const offTopic = socket.on('newTopic', (data: Record<string, unknown>) => {
-      if (String(data.channelId) !== String(channelId)) return;
-      const t = data.topic as Record<string, unknown> | undefined;
-      const topicId = (t?.id ?? '') as string;
-      if (!topicId) return;
-      const now = Date.now() / 1000;
-      setTopicFeedItems(prev => {
-        if (prev.some(p => p.topicId === topicId)) return prev;
-        return [...prev, {
-          id:        `topic-msg-${topicId}`,
-          type:      'topic' as const,
-          topicId,
-          content:   (t?.title as string) ?? '',
-          nickname:  '',
-          createdAt: now,
-        }];
-      });
-    });
-
-    return () => { stopTopicPoll(); offDisconnected(); offConnected(); offTopic(); };
-  }, [channelId]);
-
-  // ── Challenge feed item synthesis ────────────────────────────────────────
-  // Active challenges appear as orange pills in the city chat ("X défie les
-  // locaux : <title>"). Same pattern as events: fetch on channel load to
-  // synthesize current items, WS new_challenge appends fresh ones.
-
-  // Open-challenge count for the city, used by the hero ("{n} CHALLENGES").
-  // Seeded from the full fetch; kept in sync by the WS handlers below.
-  // seenChallengeIds/seenValidatedIds dedup the +1 / -1 against re-fired events.
-  const seenChallengeIds = useRef(new Set<string>());
-  const seenValidatedIds = useRef(new Set<string>());
-  const [challengeCount, setChallengeCount] = useState(0);
-  // False until THIS city's count has been fetched. Gates the hero's empty
-  // ("be the first") state so switching cities can't flash it while the new
-  // count is still loading (count is reset to 0 on every city change).
-  const [challengeCountLoaded, setChallengeCountLoaded] = useState(false);
-
   // While the keyboard is up, collapse the top chrome (header + city row +
   // challenges hero + secondary pills) so the conversation gets full height -
   // only the feed and the composer remain. iOS gets the smoother will* events.
@@ -469,46 +333,6 @@ export default function ChatTab() {
     const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
     return () => { onShow.remove(); onHide.remove(); };
   }, []);
-
-  useEffect(() => {
-    if (!channelId) return;
-    seenChallengeIds.current.clear();
-    seenValidatedIds.current.clear();
-    setChallengeCount(0);
-    setChallengeCountLoaded(false);
-
-    fetchCityChallenges(channelId).then(chs => {
-      setChallengeCount(chs.length);
-      setChallengeCountLoaded(true);
-      // Remember the ids already counted so a racing `new_challenge` WS event
-      // for one of them can't double-count.
-      chs.forEach(c => seenChallengeIds.current.add(c.id));
-    }).catch(() => { setChallengeCountLoaded(true); });
-
-    // WS: new challenge created → bump the hero count (deduped against the
-    // initial fetch + repeat events).
-    const offChallenge = socket.on('new_challenge', (data: Record<string, unknown>) => {
-      if (String(data.channelId) !== String(channelId)) return;
-      const ch = data.challenge as Record<string, unknown> | undefined;
-      const id = (ch?.id ?? '') as string;
-      if (!id || seenChallengeIds.current.has(id)) return;
-      seenChallengeIds.current.add(id);
-      setChallengeCount(c => c + 1);
-    });
-
-    // WS: challenge validated → leaves the open pool, so drop it from the hero
-    // count (once per challenge; validate is idempotent).
-    const offValidated = socket.on('challenge_validated', (data: Record<string, unknown>) => {
-      if (String(data.channelId) !== String(channelId)) return;
-      const ch = data.challenge as Record<string, unknown> | undefined;
-      const id = (ch?.id ?? '') as string;
-      if (!id || seenValidatedIds.current.has(id)) return;
-      seenValidatedIds.current.add(id);
-      setChallengeCount(c => Math.max(0, c - 1));
-    });
-
-    return () => { offChallenge(); offValidated(); };
-  }, [channelId]);
 
   const loadFn = useCallback(
     (opts?: { beforeId?: string }) =>
@@ -558,9 +382,7 @@ export default function ChatTab() {
     if (scope === 'world') {
       track('world_channel_viewed');
       setWorldUnread(0);
-      fetchWorldActivity().then(setWorldActivity).catch(() => {});
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
-      fetchWorldChallenges().then(setWorldChallenges).catch(() => {});
       if (identity?.guestId) markChannelRead('world', identity.guestId);
     } else {
       setCityUnread(0);
@@ -585,9 +407,7 @@ export default function ChatTab() {
   useEffect(() => {
     if (channelScope !== 'world') return;
     const id = setInterval(() => {
-      fetchWorldActivity().then(setWorldActivity).catch(() => {});
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
-      fetchWorldChallenges().then(setWorldChallenges).catch(() => {});
     }, 30000);
     return () => clearInterval(id);
   }, [channelScope]);
@@ -601,14 +421,6 @@ export default function ChatTab() {
       setWorldUnread(Math.min(u.world ?? 0, 999));
     }).catch(() => {});
   }, [sessionId, identity?.guestId, channelId]);
-
-  // City member count for the header pill (off the boot critical path). Only the
-  // total is needed - limit=1 keeps the payload tiny. Reset on city change.
-  useEffect(() => {
-    setCityMemberCount(null);
-    if (!channelId) return;
-    fetchCityMembers(channelId, { limit: 1 }).then(r => setCityMemberCount(r.total ?? 0)).catch(() => {});
-  }, [channelId]);
 
   // Unread badge for the channel the user is NOT currently viewing (useMessages
   // handles the active one). Only while on the chat tab, which is where badges show.
@@ -1090,33 +902,6 @@ export default function ChatTab() {
     );
   }
 
-  const flag = cityFlag(city.country);
-
-  // ── Hero copy. Localized via the cityHero.* keys; the main line is
-  // uppercased by style (so translations stay normal-case and Latin scripts
-  // read as caps, non-Latin as-is). City uses the short form (HCMC).
-  const cityShort = cityShortName(city.name);
-  let heroMain: string;
-  let heroSub:  string;
-  if (!challengeCountLoaded) {
-    // Loading the new city's count - show a neutral line, NEVER the empty
-    // "be the first" state (which would flash on every city switch).
-    heroMain = t('cityHero.mainLoading', { city: cityShort, defaultValue: `🔥 Challenges in ${cityShort}` });
-    heroSub  = t('cityHero.subLoading', { defaultValue: ' ' });
-  } else if (challengeCount === 0) {
-    heroMain = t('cityHero.mainEmpty', { city: cityShort });
-    heroSub  = t('cityHero.subEmpty');
-  } else if (myCityRank === null) {
-    heroMain = t('cityHero.mainUnranked', { count: challengeCount, city: cityShort });
-    heroSub  = t('cityHero.subUnranked');
-  } else if (myCityRank === 1) {
-    heroMain = t('cityHero.mainTop', { count: challengeCount, city: cityShort });
-    heroSub  = t('cityHero.subTop');
-  } else {
-    heroMain = t('cityHero.mainRanked', { count: challengeCount, rank: myCityRank, city: cityShort });
-    heroSub  = t('cityHero.subRanked');
-  }
-
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: 0 }]} edges={['top']}>
 
@@ -1125,15 +910,12 @@ export default function ChatTab() {
       {!keyboardUp && (
       <View style={styles.header}>
 
-        {/* ── Section 1: App header - persistent across all 4 tabs ── */}
-        {/* Share lives here (MY-CITY-only) as a tab-specific extra. */}
-        <AppHeader
-          messages
-          rightExtra={city && (
+        {/* ── Header (chat.html): "Chat", share the city, private messages. ── */}
+        <View style={styles.chatTop}>
+          <Text style={styles.chatTitle}>{t('tabTitle')}</Text>
+          {city && (
             <TouchableOpacity
-              style={styles.iconBtn}
-              activeOpacity={0.65}
-              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+              style={styles.roundBtn}
               onPress={async () => {
                 // Locale-prefixed URL (Option A) so the link preview (OG tags -
                 // all Android shares show) renders in the sharer's language.
@@ -1142,29 +924,38 @@ export default function ChatTab() {
                 const message = t('shareMessage', { city: localizeCityName(city.name) });
                 await shareLink({ title, message, url });
               }}
+              accessibilityRole="button"
               accessibilityLabel={t('shareCity')}
             >
-              <Feather name="share" size={20} color={colors.text} />
+              <Ionicons name="share-outline" size={20} color={colors.text} />
             </TouchableOpacity>
           )}
-        />
+          {account && (
+            <TouchableOpacity
+              style={styles.roundBtn}
+              onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }}
+              accessibilityRole="button"
+              accessibilityLabel={t('messages', { ns: 'common' })}
+            >
+              <Ionicons name="paper-plane-outline" size={20} color={colors.text} />
+              {unreadDMs > 0 && <View style={styles.roundDot} />}
+            </TouchableOpacity>
+          )}
+        </View>
 
-        {/* ── City row: name selector (left) + compact "recent" pill (right) ──
-            City name ellipsizes first on narrow screens; the recent pill never
-            shrinks (flexShrink 0). */}
-        {/* ── City ↔ World channel toggle. City side opens the switcher when
-            active, returns to city when inactive. Symmetric unread badges. ── */}
+        {/* ── City / World switch (the app-wide scope). Tapping the active city
+            changes city. Symmetric unread badges. ── */}
         <View style={styles.scopeToggle}>
           <TouchableOpacity
             style={[styles.scopeBtn, channelScope === 'city' && styles.scopeBtnActive]}
             onPress={() => (channelScope === 'world' ? switchScope('city') : router.push('/switch-city' as never))}
             activeOpacity={0.8}
             accessibilityRole="tab"
+            accessibilityState={{ selected: channelScope === 'city' }}
           >
             <Text style={[styles.scopeBtnText, channelScope === 'city' && styles.scopeBtnTextActive]} numberOfLines={1}>
-              {flag ? `${flag} ` : ''}{localizeCityName(city.name)}
+              {localizeCityName(city.name)}
             </Text>
-            {channelScope === 'city' && <Ionicons name="chevron-down" size={15} color={colors.bg} style={styles.scopeChevron} />}
             {channelScope === 'world' && cityUnread > 0 && (
               <Text style={styles.scopeBadge}>{cityUnread > 99 ? '99+' : cityUnread}</Text>
             )}
@@ -1174,9 +965,10 @@ export default function ChatTab() {
             onPress={() => switchScope('world')}
             activeOpacity={0.8}
             accessibilityRole="tab"
+            accessibilityState={{ selected: channelScope === 'world' }}
           >
             <Text style={[styles.scopeBtnText, channelScope === 'world' && styles.scopeBtnTextActive]} numberOfLines={1}>
-              🌍 {t('world.tab')}
+              {t('world.tab')}
             </Text>
             {channelScope === 'city' && worldUnread > 0 && (
               <Text style={styles.scopeBadge}>{worldUnread > 99 ? '99+' : worldUnread}</Text>
@@ -1184,162 +976,15 @@ export default function ChatTab() {
           </TouchableOpacity>
         </View>
 
-        {/* ── World hero + pills (banner: N cross-city challenges + cities;
-            pills: N online / N cities). Replaces the city hero in World scope. ── */}
-        {channelScope === 'world' ? (
-          <>
-            {worldChallenges.length > 0 ? (
-              <FlatList
-                horizontal
-                data={worldChallenges}
-                keyExtractor={c => c.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.heroCarousel}
-                renderItem={({ item: c }) => {
-                  const th = CH_TYPE_THEME[c.challenge_type] ?? CH_TYPE_THEME.food;
-                  const emoji = (({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' } as Record<string, string>)[c.challenge_type] ?? '🔥');
-                  return (
-                    <TouchableOpacity
-                      style={[styles.heroSlide, { backgroundColor: th.tint, borderColor: th.a }]}
-                      activeOpacity={0.85}
-                      onPress={() => router.push(`/challenge/${c.id}` as never)}
-                      accessibilityRole="button"
-                    >
-                      <View style={styles.heroSlideHead}>
-                        {c.creator_thumb_avatar_url ? (
-                          <Image source={{ uri: thumbUrl(c.creator_thumb_avatar_url) }} style={[styles.heroSlideAvatar, { borderWidth: 2, borderColor: th.a }]} contentFit="cover" cachePolicy="memory-disk" />
-                        ) : (
-                          <View style={[styles.heroSlideAvatar, styles.heroSlideAvatarLetter, { backgroundColor: th.a, borderWidth: 2, borderColor: th.a }]}>
-                            <Text style={styles.heroSlideAvatarLetterText}>{(c.creator_display_name ?? '?')[0].toUpperCase()}</Text>
-                          </View>
-                        )}
-                        <Text style={styles.heroSlideOwner} numberOfLines={1}>{c.creator_display_name ?? '—'}</Text>
-                        <View style={[styles.heroSlideType, { backgroundColor: th.a }]}>
-                          <Text style={styles.heroSlideTypeText} numberOfLines={1}>{emoji} {t(`typeBadge.${c.challenge_type}`, { ns: 'challenge', defaultValue: c.challenge_type })}</Text>
-                        </View>
-                      </View>
-                      <MarqueeText text={c.title} fadeColor="#181113" style={styles.heroSlideTitleWrap} textStyle={styles.heroSlideTitle} active={channelScope === 'world'} />
-                      <View style={styles.heroSlideFoot}>
-                        <Text style={styles.heroSlidePlace} numberOfLines={1}>{cityFlag(c.country ?? undefined) || '🌍'}{c.city ? ` ${localizeCityName(c.city)}` : ''}</Text>
-                        <Text style={styles.heroSlideArrow}>→</Text>
-                        <Text style={styles.heroSlidePlace} numberOfLines={1}>{cityFlag(c.target_country ?? undefined) || '🌍'}{c.target_city ? ` ${localizeCityName(c.target_city)}` : ''}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }}
-                ListFooterComponent={
-                  <TouchableOpacity
-                    style={styles.heroSeeAll}
-                    activeOpacity={0.85}
-                    onPress={() => router.push('/(tabs)/today' as never)}
-                  >
-                    <Text style={styles.heroSeeAllIcon}>🌍</Text>
-                    <Text style={styles.heroSeeAllText}>{t('world.seeAll', { defaultValue: 'See all' })}</Text>
-                    <Text style={styles.heroSeeAllArrow}>→</Text>
-                  </TouchableOpacity>
-                }
-              />
-            ) : (
-              <TouchableOpacity
-                style={styles.hero}
-                onPress={() => router.push('/challenge/create' as never)}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-              >
-                <Text style={styles.heroMain} numberOfLines={2}>🔥 {t('world.heroEmpty')}</Text>
-                <Text style={styles.heroSub} numberOfLines={1}>{t('world.heroEmptySub')}</Text>
-              </TouchableOpacity>
-            )}
-            <View style={styles.pillsRow}>
-              <TouchableOpacity style={[styles.pill, !worldArrivals.length && styles.pillMuted]} onPress={() => setShowWorldArrivals(true)} activeOpacity={0.75}>
-                <Text style={[styles.pillText, !worldArrivals.length && styles.pillTextMuted]} numberOfLines={1}>✈️ {t('world.arrivals', { count: worldArrivals.length })}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.pill, styles.pillAccent]} onPress={() => router.push('/leaderboard?scope=world' as never)} activeOpacity={0.75}>
-                <Text style={[styles.pillText, styles.pillTextAccent]} numberOfLines={1}>🏆 {t('world.leaderboard')}</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : (
-        <>
-        {/* ── HERO: today's Daily Challenge (full width). ── */}
-        <DailyHeroCardView data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} />
-
-        {/* ── Challenges + rank, just below the Daily card: same copy and
-            behaviour as the former hero (see heroMain), as one compact row.
-            Zero-challenge cities get a one-line "be the first" → create. ── */}
-        {challengeCount === 0 ? (
-          <TouchableOpacity
-            style={styles.heroRow}
-            onPress={() => router.push('/challenge/create' as never)}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-          >
-            <Text style={styles.heroRowText} numberOfLines={1}>🔥 {t('cityRowEmpty', { ns: 'daily', city: cityShort })}</Text>
+        {/* ── People row (SPEC 9.6): only above the threshold. World shows its
+            arrivals from 3 on. ── */}
+        {channelScope === 'city' ? (
+          channelId ? <PeopleRow cityId={String(channelId)} onArrivals={() => setArrivalsSheetOpen(true)} /> : null
+        ) : worldArrivals.length >= 3 ? (
+          <TouchableOpacity style={styles.peopleChip} onPress={() => setShowWorldArrivals(true)} accessibilityRole="button">
+            <Text style={styles.peopleChipText}>{t('world.arrivals', { count: worldArrivals.length })}</Text>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={styles.heroRow}
-            onPress={() => router.push('/(tabs)/today' as never)}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={`${heroMain} ${heroSub}`}
-          >
-            <Text style={styles.heroRowText} numberOfLines={1}>{heroMain}</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* ── Secondary pills: nearby / Hi locals / Hi later. Equal width;
-            0-count pills stay visible but greyed (still tappable → the target
-            screen's own empty state). ── */}
-        <View style={styles.pillsRow}>
-          {(() => {
-            // ≥2 present → live "N nearby". Otherwise the count would just be you,
-            // so show "N members" instead - but only if the city actually has ≥2
-            // members; an empty/near-empty city shows no pill at all.
-            const online = onlineCount ?? 0;
-            const showNearby  = online >= 2;
-            const showMembers = !showNearby && (cityMemberCount ?? 0) >= 2;
-            if (!showNearby && !showMembers) return null;
-            return (
-              <TouchableOpacity
-                style={styles.pill}
-                onPress={() => router.push('/(tabs)/here' as never)}
-                activeOpacity={0.75}
-                accessibilityRole="button"
-                accessibilityLabel={showNearby ? t('onlineAria', { count: online }) : t('cityHero.members', { count: cityMemberCount ?? 0 })}
-              >
-                <Text style={styles.pillText} numberOfLines={1}>
-                  {showNearby
-                    ? `🟢 ${t('cityHero.nearby',  { count: online })}`
-                    : `👥 ${t('cityHero.members', { count: cityMemberCount ?? 0 })}`}
-                </Text>
-              </TouchableOpacity>
-            );
-          })()}
-          {/* Recent arrivals pill (restored - it used to live in the city row,
-              which the channel toggle now occupies). */}
-          <TouchableOpacity
-            style={[styles.pill, !arrivals.length && styles.pillMuted]}
-            onPress={() => setArrivalsSheetOpen(true)}
-            activeOpacity={0.75}
-            accessibilityRole="button"
-            accessibilityLabel={`${arrivals.length} recent arrivals`}
-          >
-            <Text style={[styles.pillText, !arrivals.length && styles.pillTextMuted]} numberOfLines={1}>✈️ {t('cityHero.recent', { count: arrivals.length })}</Text>
-          </TouchableOpacity>
-          {/* Hi now (topics) + Hi plan (events) merged into one "Hi plans" pill. */}
-          <TouchableOpacity
-            style={[styles.pill, styles.pillAccent, !(topicFeedItems.length + eventFeedItems.length) && styles.pillMuted]}
-            onPress={() => router.push('/(tabs)/events' as never)}
-            activeOpacity={0.75}
-            accessibilityRole="button"
-            accessibilityLabel={`${topicFeedItems.length + eventFeedItems.length} Hi plans`}
-          >
-            <Text style={[styles.pillText, styles.pillTextAccent, !(topicFeedItems.length + eventFeedItems.length) && styles.pillTextMuted]} numberOfLines={1}>🎉 {(topicFeedItems.length + eventFeedItems.length) > 0 ? `${topicFeedItems.length + eventFeedItems.length} ` : ''}Hi plans</Text>
-          </TouchableOpacity>
-        </View>
-        </>
-        )}
+        ) : null}
 
       </View>
       )}
@@ -1358,7 +1003,7 @@ export default function ChatTab() {
       >
         {/* Today's Daily Challenge pinned on top of World (in a city channel
             the Daily hero card above is the pin). */}
-        {channelScope === 'world' && !keyboardUp && <DailyPinBar data={daily.data} secondsLeft={daily.secondsLeft} />}
+        {!keyboardUp && <DailyPinBar data={daily.data} source="chat_pin" />}
         {channelScope === 'city' && quietCardOpen && (
           <TouchableOpacity
             style={styles.quietCard}
@@ -1475,6 +1120,9 @@ export default function ChatTab() {
           editing={editingMsg}
           onSubmitEdit={submitEdit}
           onCancelEdit={() => setEditingMsg(null)}
+          // "+" menu (SPEC 9.6): creating a Hi plan / a Hi now lives here (city Chat).
+          onCreatePlan={channelScope === 'city' ? () => router.push((account ? '/event/create' : '/auth-gate?reason=create_event') as never) : undefined}
+          onHiNow={channelScope === 'city' ? () => router.push((account ? '/topic/create' : '/auth-gate?reason=create_hangout') as never) : undefined}
         />
       </KeyboardAvoidingView>
 
@@ -1578,14 +1226,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // consistently (no more drift between MY CITY and NOW/HERE/ME).
   header: {
     flexDirection:     'column',
-    gap:               14,
-    paddingTop:        14,
-    paddingBottom:     16,
+    gap:               10,
+    paddingTop:        10,
+    paddingBottom:     8,
     paddingHorizontal: 16,
     backgroundColor:   c.bg,
-    borderBottomWidth: 1,
-    borderBottomColor: c.overlay,
   },
+  // ── Header (chat.html) ──
+  chatTop:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  chatTitle: { flex: 1, fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  roundBtn:  { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
+  roundDot:  { position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: c.primary, borderWidth: 2, borderColor: c.bg2 },
+  peopleChip:     { alignSelf: 'flex-start', height: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 999, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  peopleChipText: { fontSize: 14, fontWeight: '600', color: c.text },
 
   // ── Section 1: Top bar ─────────────────────────────────────────────────────
   topBar: {
@@ -1679,34 +1332,35 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap:            10,
   },
   // ── City ↔ World scope toggle ──
+  // Segmented city / World switch (chat.html).
   scopeToggle: {
-    flexDirection: 'row',
-    gap:           6,
-    marginHorizontal: 12,
-    marginBottom:  4,
+    flexDirection:   'row',
+    gap:             4,
+    padding:         3,
+    borderRadius:    999,
+    borderWidth:     1.5,
+    borderColor:     c.line,
+    backgroundColor: c.bg2,
   },
   scopeBtn: {
     flex:           1,
     flexDirection:  'row',
     alignItems:     'center',
     justifyContent: 'center',
-    gap:            4,
-    paddingVertical:   8,
+    gap:            6,
+    height:         38,
     paddingHorizontal: 10,
     borderRadius:   999,
-    backgroundColor: c.bg2,
-    borderWidth:    1,
-    borderColor:    c.border,
   },
-  scopeBtnActive: { backgroundColor: c.accent, borderColor: c.accent }, // energy-orange selected (lighter than the deep accent2)
-  scopeBtnText:   { color: c.text, fontSize: 13, fontWeight: '700' },
+  scopeBtnActive: { backgroundColor: c.primary },
+  scopeBtnText:   { color: c.text, fontSize: 14, fontWeight: '600' },
   scopeBtnTextActive: { color: c.white },
   scopeChevron:   { opacity: 0.7 },
   scopeBadge: {
     minWidth:   18,
     paddingHorizontal: 5,
     borderRadius: 999,
-    backgroundColor: c.accent,
+    backgroundColor: c.primary,
     color:      '#fff',
     fontSize:   11,
     fontWeight: '800',

@@ -131,5 +131,16 @@
     "arrivalsTitle": "Baru tiba",
     "arrivalsEmpty": "Belum ada yang baru tiba",
     "seeAll": "Lihat semua"
+  },
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} orang lagi pengin ngapain sekarang",
+    "going_one": "{{count}} ikut",
+    "going_other": "{{count}} ikut",
+    "arrivals_one": "{{count}} tiba minggu ini",
+    "arrivals_other": "{{count}} tiba minggu ini",
+    "nearby_one": "{{count}} di sini sekarang",
+    "nearby_other": "{{count}} di sini sekarang"
   }
 }

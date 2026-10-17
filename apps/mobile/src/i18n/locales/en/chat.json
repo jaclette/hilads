@@ -131,5 +131,16 @@
     "mainLoading": "🔥 Challenges in {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "Translate"
+  "actionTranslate": "Translate",
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} people up for something now",
+    "going_one": "{{count}} going",
+    "going_other": "{{count}} going",
+    "arrivals_one": "{{count}} arrived this week",
+    "arrivals_other": "{{count}} arrived this week",
+    "nearby_one": "{{count}} here now",
+    "nearby_other": "{{count}} here now"
+  }
 }

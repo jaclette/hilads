@@ -83,7 +83,11 @@
     "snapDesc": "Ambil atau unggah foto",
     "spot": "Bagikan lokasimu",
     "spotDesc": "Bagikan lokasi terkinimu",
-    "spotLoading": "Mengambil lokasimu…"
+    "spotLoading": "Mengambil lokasimu…",
+    "plan": "Buat rencana",
+    "planDesc": "Pilih waktu dan tempat, yang lain ikut",
+    "hiNow": "Hi now",
+    "hiNowDesc": "Lagi pengin ngapain sekarang? Bilang aja"
   },
   "locationPicker": {
     "title": "Kamu di mana? 👀",

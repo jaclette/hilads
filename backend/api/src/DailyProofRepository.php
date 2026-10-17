@@ -16,7 +16,7 @@ final class DailyProofRepository
 
     private const SELECT = "
         SELECT p.*,
-               dc.challenge_date,
+               dc.challenge_date, dc.theme AS challenge_theme,
                u.username, u.display_name, u.profile_photo_url,
                ch.name AS city_name,
                wr.rank AS world_rank, cr.rank AS city_rank,

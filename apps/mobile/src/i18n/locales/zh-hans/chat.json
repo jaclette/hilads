@@ -131,5 +131,16 @@
     "arrivalsTitle": "最近到达",
     "arrivalsEmpty": "暂无新到达",
     "seeAll": "查看全部"
+  },
+  "tabTitle": "聊天",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} 人现在想找点事做",
+    "going_one": "{{count}} 人参加",
+    "going_other": "{{count}} 人参加",
+    "arrivals_one": "本周新来 {{count}} 人",
+    "arrivals_other": "本周新来 {{count}} 人",
+    "nearby_one": "{{count}} 人在这里",
+    "nearby_other": "{{count}} 人在这里"
   }
 }

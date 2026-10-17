@@ -426,5 +426,6 @@
     "body": "Il tuo passaporto di {{city}} ha un nuovo timbro.",
     "ok": "Grande",
     "close": "Chiudi"
-  }
+  },
+  "takeIt": "Accetta"
 }

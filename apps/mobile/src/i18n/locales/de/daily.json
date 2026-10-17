@@ -426,5 +426,6 @@
     "body": "Dein {{city}}-Pass hat einen neuen Stempel.",
     "ok": "Super",
     "close": "Schließen"
-  }
+  },
+  "takeIt": "Annehmen"
 }

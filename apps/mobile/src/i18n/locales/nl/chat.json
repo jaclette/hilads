@@ -131,5 +131,16 @@
     "arrivalsTitle": "Recente aankomsten",
     "arrivalsEmpty": "Geen recente aankomsten",
     "seeAll": "Alles bekijken"
+  },
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} mensen hebben nu zin in iets",
+    "going_one": "{{count}} gaat",
+    "going_other": "{{count}} gaan",
+    "arrivals_one": "{{count}} deze week aangekomen",
+    "arrivals_other": "{{count}} deze week aangekomen",
+    "nearby_one": "{{count}} nu hier",
+    "nearby_other": "{{count}} nu hier"
   }
 }

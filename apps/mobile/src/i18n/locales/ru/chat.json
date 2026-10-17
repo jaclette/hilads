@@ -137,5 +137,22 @@
     "arrivalsTitle": "Недавно прибыли",
     "arrivalsEmpty": "Пока никто не прибыл",
     "seeAll": "Показать все"
+  },
+  "tabTitle": "Чат",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} человек хотят чем-то заняться прямо сейчас",
+    "going_one": "идёт {{count}}",
+    "going_few": "идут {{count}}",
+    "going_many": "идут {{count}}",
+    "going_other": "идут {{count}}",
+    "arrivals_one": "{{count}} приехал на этой неделе",
+    "arrivals_few": "{{count}} приехали на этой неделе",
+    "arrivals_many": "{{count}} приехали на этой неделе",
+    "arrivals_other": "{{count}} приехали на этой неделе",
+    "nearby_one": "{{count}} здесь сейчас",
+    "nearby_few": "{{count}} здесь сейчас",
+    "nearby_many": "{{count}} здесь сейчас",
+    "nearby_other": "{{count}} здесь сейчас"
   }
 }

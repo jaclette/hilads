@@ -1,42 +1,60 @@
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { FontSizes, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
-import { formatCountdown, isFinalHours } from '@/hooks/useDaily';
+import { THEME_ICON } from '@/features/today/format';
+import { DailyStatusChip } from './DailyStatusChip';
 import type { DailyToday } from '@/types';
 
 /**
- * Today's Daily Challenge pinned at the top of the World channel, above the
- * message list. (In a city channel the Daily hero card plays this role.)
+ * Today's Daily Challenge pinned at the top of Chat, in the city and in World
+ * (SPEC 9.6, chat.html): theme icon, "Daily Challenge", the challenge on one
+ * line, and "Take it" (or my proof's status). The bar opens the challenge.
  */
-export function DailyPinBar({ data, secondsLeft }: { data: DailyToday | null; secondsLeft: number | null }) {
+export function DailyPinBar({ data, source = 'pin' }: { data: DailyToday | null; secondsLeft?: number | null; source?: string }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
+  const { account } = useApp();
   const challenge = data?.challenge;
   if (!challenge) return null;
+  const myProof = data?.myProof ?? null;
   const open = () => {
-    track('daily_challenge_viewed', { source: 'pin', challenge_date: challenge.date, city: 'World' });
+    track('daily_challenge_viewed', { source, challenge_date: challenge.date, city: data?.city?.name ?? 'World' });
     router.push(`/daily/${challenge.date}` as never);
   };
+  const take = () => router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
   return (
     <TouchableOpacity style={styles.bar} onPress={open} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${t('kicker')}: ${challenge.text}`}>
-      <Text style={styles.pin}>📌</Text>
-      <Text style={styles.text} numberOfLines={1}>
-        <Text style={styles.kicker}>{t('kicker')} · </Text>{challenge.text}
-      </Text>
-      {secondsLeft !== null && <Text style={[styles.time, isFinalHours(secondsLeft) && styles.timeWarn]}>{formatCountdown(secondsLeft)}</Text>}
+      <View style={styles.icon}>
+        <Ionicons name={challenge.theme ? THEME_ICON[challenge.theme.key] : 'flame-outline'} size={20} color={colors.primary} />
+      </View>
+      <View style={styles.body}>
+        <Text style={styles.kicker}>{t('kicker')}</Text>
+        <Text style={styles.text} numberOfLines={1}>{challenge.text}</Text>
+      </View>
+      {myProof ? <DailyStatusChip status={myProof.status} />
+        : challenge.isActive ? (
+          <TouchableOpacity style={styles.take} onPress={take} accessibilityRole="button">
+            <Text style={styles.takeText}>{t('takeIt')}</Text>
+          </TouchableOpacity>
+        ) : null}
     </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  bar:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 12, marginTop: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.md, backgroundColor: c.bg2, borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)' },
-  pin:    { fontSize: FontSizes.xs },
-  text:   { flex: 1, fontSize: FontSizes.xs, color: c.text, fontWeight: '600' },
-  kicker: { color: c.accentText, fontWeight: '800' },
-  time:   { fontSize: 11, color: c.muted, fontWeight: '700' },
-  timeWarn: { color: c.warning },
+  bar:      { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginTop: 6, paddingVertical: 10, paddingLeft: 14, paddingRight: 10,
+              borderRadius: 18, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  icon:     { width: 36, height: 36, borderRadius: 12, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  body:     { flex: 1, minWidth: 0 },
+  kicker:   { fontSize: 12, fontWeight: '700', color: c.primaryText },
+  text:     { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  take:     { minHeight: 44, paddingHorizontal: 14, borderRadius: 14, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  takeText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
 });

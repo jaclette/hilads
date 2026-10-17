@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Image } from 'expo-image';
 import { avatarColor } from '@/lib/avatarColors';
@@ -538,10 +538,10 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       <Text style={[styles.author, { color }]}>{nickname}</Text>
       {/* World: home-country flag instead of the local/traveler mode label. */}
       {worldScope ? (
-        flagCountry ? <Text style={styles.modeLabel}>{countryToFlag(flagCountry)}</Text> : null
+        flagCountry ? <Text style={styles.modeFlag}>{countryToFlag(flagCountry)}</Text> : null
       ) : (() => { const m = mode || (isMine ? account?.mode : undefined) || 'exploring'; return MODE_EMOJI[m] ? (
         <Text style={[styles.modeLabel, m === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
-          {MODE_EMOJI[m]} {t(`mode.${m}.label`)}
+          {t(`mode.${m}.label`)}
         </Text>
       ) : null; })()}
       {contextBadge?.key === 'host' && <BadgePill badge={contextBadge} />}
@@ -1461,9 +1461,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   // ── .msg-author ───────────────────────────────────────────────────────────
   author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
-  modeLabel:          { fontSize: FontSizes.xs, fontWeight: '600' },
-  modeLabelLocal:     { color: '#FF7A3C', opacity: 0.85 },
-  modeLabelExploring: { color: '#60a5fa', opacity: 0.85 },
+  // Local / Traveler chip (SPEC 9.11): primary tint for locals, blue for travelers.
+  modeLabel:          { fontSize: 11, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: Radius.full, overflow: 'hidden' },
+  modeLabelLocal:     { color: c.primaryOnTint, backgroundColor: c.primaryTint },
+  modeLabelExploring: { color: c.travelerText, backgroundColor: c.travelerBg },
+  modeFlag:           { fontSize: FontSizes.xs },
 
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {
@@ -1477,14 +1479,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor:         c.overlayWeak,
     borderTopLeftRadius: 4,
   },
+  // Own messages in caramel (SPEC 9.11), flat.
   bubbleMine: {
-    backgroundColor:      '#B87228',
+    backgroundColor:      c.caramel,
     borderTopRightRadius: 4,
-    shadowColor:          '#8a5418',
-    shadowOffset:         { width: 0, height: 2 },
-    shadowOpacity:        0.35,
-    shadowRadius:         6,
-    elevation:            4,
   },
   bubbleText:     { fontSize: 15,           color: c.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },

@@ -131,5 +131,16 @@
     "arrivalsTitle": "Chegadas recentes",
     "arrivalsEmpty": "Sem chegadas recentes",
     "seeAll": "Ver tudo"
+  },
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} pessoas com vontade de fazer algo agora",
+    "going_one": "{{count}} vai",
+    "going_other": "{{count}} vão",
+    "arrivals_one": "{{count}} chegou esta semana",
+    "arrivals_other": "{{count}} chegaram esta semana",
+    "nearby_one": "{{count}} aqui agora",
+    "nearby_other": "{{count}} aqui agora"
   }
 }
