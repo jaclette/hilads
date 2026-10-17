@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { useDailyCalendar } from '@/hooks/useDaily';
 import { addDays, ymd } from '@/features/daily/themes';
@@ -23,6 +24,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
+  const { account } = useApp();
   const router = useRouter();
   const now = ymd(new Date());
   const cal = useDailyCalendar(addDays(now, -8), addDays(now, 8));
@@ -83,6 +85,17 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           );
         })}
       </View>
+      {/* Propose a challenge (SPEC 8.6): guests get the sign-up sheet, then the form. */}
+      <TouchableOpacity
+        style={styles.propose}
+        onPress={() => router.push((account ? '/daily/propose?source=week_strip'
+          : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)}
+        accessibilityRole="button"
+        hitSlop={6}
+      >
+        <Ionicons name="bulb-outline" size={16} color={colors.primaryText} />
+        <Text style={styles.proposeText}>{t('propose.cta')}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -95,6 +108,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   streak:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 },
   streakText:   { fontSize: 15, fontWeight: '800', color: c.text },
   tomorrowText: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'right' },
+  propose:      { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 },
+  proposeText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   row:          { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
   day:          { flex: 1, alignItems: 'center', gap: 6, minHeight: 44 },
   weekday:      { fontSize: 12, fontWeight: '600', color: c.muted },

@@ -20,7 +20,7 @@ import type { DailyToday } from '@/types';
  * Today's Daily Challenge as a ticket (SPEC 9.3, today.html): kicker and theme
  * chip, the challenge, the time left and the early-bonus hint, a perforated
  * divider, the Local Twist in live cities, and "Take the challenge" (or my
- * proof's status). Tapping the card opens the challenge sheet.
+ * proof's status), then tomorrow's Local Twist proposal for locals. Tapping the card opens the challenge sheet.
  */
 export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday | null; loading: boolean; secondsLeft: number | null }) {
   const styles = useThemedStyles(makeStyles);
@@ -114,6 +114,25 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
             <Text style={styles.ctaText}>{t('cta')}</Text>
           </TouchableOpacity>
         )}
+        {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6). */}
+        {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
+          <TouchableOpacity
+            style={styles.propose}
+            onPress={() => {
+              track('daily_proposal_started', { entry: 'twist_hero', type: 'twist', city: city?.name ?? null });
+              router.push('/daily/twist' as never);
+            }}
+            accessibilityRole="button"
+          >
+            <Ionicons name="leaf-outline" size={16} color={colors.primaryText} />
+            <Text style={styles.proposeText} numberOfLines={2}>
+              {data.twistProposal.status
+                ? t('twist.heroStatus', { status: t(`twist.status.${data.twistProposal.status}`) })
+                : t('twist.heroCta', { time: new Date(data.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -171,6 +190,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   notchRight:  { right: -NOTCH / 2 - 1.5 },
   bottom:      { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 16, gap: 10 },
   twist:       { gap: 4 },
+  propose:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40 },
+  proposeText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   twistLabel:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   twistText:   { fontSize: 15, lineHeight: 22, fontWeight: '500', color: c.text },
   cta:         { minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
