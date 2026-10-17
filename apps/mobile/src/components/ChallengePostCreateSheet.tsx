@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchCityMembers } from '@/api/channels';
 import { inviteToChallenge } from '@/api/challenges';
 import type { Challenge, UserDTO } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 
@@ -98,7 +98,10 @@ function SeedView({
   const city = cityName ?? t('postCreate.thisCity');
   return (
     <View style={styles.body}>
-      <Text style={styles.title}>{t('postCreate.title')} 🎯</Text>
+      <View style={styles.titleRow}>
+        <Text style={styles.title}>{t('postCreate.title')}</Text>
+        <Ionicons name="locate-outline" size={20} color={colors.primaryText} />
+      </View>
       <Text style={styles.subtitle}>{t('postCreate.subtitle')}</Text>
 
       <TouchableOpacity style={styles.ctaPrimary} onPress={onPickPeople} activeOpacity={0.85}>
@@ -107,11 +110,11 @@ function SeedView({
           <Text style={styles.ctaPrimaryText}>{t('postCreate.ctaInvite', { city })}</Text>
           <Text style={styles.ctaPrimarySub}>{t('postCreate.ctaInviteSub', { audience: audienceLabel })}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.7)" />
+        <Ionicons name="chevron-forward" size={18} color={colors.onCaramelMuted} />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.ctaSecondary} onPress={onShare} activeOpacity={0.85}>
-        <Ionicons name="share-social-outline" size={18} color="#FF7A3C" />
+        <Ionicons name="share-social-outline" size={18} color={colors.primaryText} />
         <Text style={styles.ctaSecondaryText}>{t('postCreate.ctaShare')}</Text>
       </TouchableOpacity>
 
@@ -233,7 +236,7 @@ function PickerView({
   if (sentCount !== null) {
     return (
       <View style={[styles.body, { alignItems: 'center', paddingVertical: Spacing.xl }]}>
-        <Text style={{ fontSize: 40 }}>🤝</Text>
+        <Ionicons name="people-outline" size={40} color={colors.primaryText} />
         <Text style={styles.title}>{t('postCreate.sentTitle', { count: sentCount })}</Text>
         <Text style={styles.subtitle}>{t('postCreate.sentSubtitle')}</Text>
       </View>
@@ -326,32 +329,33 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4,
+    backgroundColor: c.line, marginTop: 8, marginBottom: 4,
   },
   body: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.sm },
 
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   subtitle: { fontSize: FontSizes.sm, color: c.muted, marginBottom: Spacing.sm },
 
   // ── Seed view CTAs ─────────────────────────────────────────────────────────
   ctaPrimary: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.primary,
     paddingVertical: Spacing.md, paddingHorizontal: Spacing.md,
     borderRadius: Radius.lg,
     marginTop: Spacing.xs,
   },
   ctaPrimaryText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  ctaPrimarySub:  { color: c.overlayStrong, fontSize: FontSizes.xs + 1, marginTop: 2 },
+  ctaPrimarySub:  { color: c.onCaramelMuted, fontSize: FontSizes.xs + 1, marginTop: 2 },
 
   ctaSecondary: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
     paddingVertical: Spacing.md - 2,
     borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: 'rgba(255,122,60,0.4)',
-    backgroundColor: 'rgba(255,122,60,0.08)',
+    borderWidth: Border, borderColor: c.primary,
+    backgroundColor: c.primaryTint,
   },
-  ctaSecondaryText: { color: '#FF7A3C', fontSize: FontSizes.md, fontWeight: '700' },
+  ctaSecondaryText: { color: c.primaryText, fontSize: FontSizes.md, fontWeight: '700' },
 
   skipBtn: { paddingVertical: Spacing.sm, alignItems: 'center' },
   skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
@@ -360,7 +364,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pickerHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingBottom: 4 },
   headerBack: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: c.overlay,
+    backgroundColor: c.bg3,
     alignItems: 'center', justifyContent: 'center',
     marginTop: 2,
   },
@@ -374,25 +378,25 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical: 10, paddingHorizontal: 10,
     borderRadius: Radius.md,
   },
-  memberRowSelected: { backgroundColor: 'rgba(255,122,60,0.08)' },
+  memberRowSelected: { backgroundColor: c.primaryTint },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.md },
+  avatarText: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
   rowInfo: { flex: 1 },
   name: { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
   handleText: { fontSize: FontSizes.sm, color: c.muted },
   check: {
     width: 24, height: 24, borderRadius: 12,
-    borderWidth: 2, borderColor: c.overlayStrong,
+    borderWidth: 2, borderColor: c.line,
     alignItems: 'center', justifyContent: 'center',
   },
   checkSelected: {
-    backgroundColor: '#FF7A3C',
-    borderColor: '#FF7A3C',
+    backgroundColor: c.primary,
+    borderColor: c.primary,
   },
 
   sendBtn: {
     marginTop: Spacing.sm,
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.primary,
     borderRadius: Radius.full,
     paddingVertical: Spacing.md,
     alignItems: 'center',

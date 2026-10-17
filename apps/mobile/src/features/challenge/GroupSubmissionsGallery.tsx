@@ -17,10 +17,11 @@ import {
   View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Pressable, ScrollView,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchGroupSubmissions, pickWinner, type GroupSubmission } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export function GroupSubmissionsGallery({
@@ -108,11 +109,12 @@ export function GroupSubmissionsGallery({
             <Image key={s.id} source={{ uri: s.media_url }} style={[styles.ctaThumb, i > 0 && { marginLeft: -10 }]} contentFit="cover" cachePolicy="memory-disk" />
           ))}
         </View>
+        <Ionicons name="eye-outline" size={16} color={colors.gold} />
         <Text style={styles.ctaLabel} numberOfLines={1}>
-          👀 {t('group.checkPhotos', { count: subs.length, defaultValue: 'Check out the {{count}} photos' })}
+          {t('group.checkPhotos', { count: subs.length, defaultValue: 'Check out the {{count}} photos' })}
           {!winnerId && canPick ? `  ·  ${t('group.tapToPick', { defaultValue: 'pick the best one' })}` : ''}
         </Text>
-        <Text style={styles.ctaChev}>›</Text>
+        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
       </TouchableOpacity>
 
       {/* Grid modal - every submission + who. */}
@@ -120,9 +122,12 @@ export function GroupSubmissionsGallery({
         <Pressable style={styles.modalBackdrop} onPress={() => setOpen(false)} />
         <View style={styles.modalSheet}>
           <View style={styles.modalHead}>
-            <Text style={styles.modalTitle}>📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}</Text>
-            <TouchableOpacity onPress={() => setOpen(false)} hitSlop={10}>
-              <Text style={styles.modalClose}>✕</Text>
+            <View style={styles.modalTitleRow}>
+              <Ionicons name="camera-outline" size={20} color={colors.text} />
+              <Text style={styles.modalTitle}>{t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}</Text>
+            </View>
+            <TouchableOpacity onPress={() => setOpen(false)} hitSlop={10} style={styles.modalClose}>
+              <Ionicons name="close" size={20} color={colors.muted} />
             </TouchableOpacity>
           </View>
           {canPick ? <Text style={styles.modalHint}>{t('group.winnerSub', { defaultValue: 'Choose the best photo. The winner earns the big reward.' })}</Text> : null}
@@ -135,11 +140,12 @@ export function GroupSubmissionsGallery({
                 <Image source={{ uri: s.media_url }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
                 {isWin ? (
                   <View style={styles.winBadge}>
-                    <Text style={styles.winBadgeText}>👑 {t('group.winnerTag', { defaultValue: 'Winner' })}</Text>
+                    <Ionicons name="ribbon-outline" size={11} color={colors.onGold} />
+                    <Text style={styles.winBadgeText}>{t('group.winnerTag', { defaultValue: 'Winner' })}</Text>
                   </View>
                 ) : null}
                 {picking === s.user_id ? (
-                  <View style={styles.pickingOverlay}><ActivityIndicator color="#fff" /></View>
+                  <View style={styles.pickingOverlay}><ActivityIndicator color={colors.white} /></View>
                 ) : null}
               </TouchableOpacity>
 
@@ -154,7 +160,8 @@ export function GroupSubmissionsGallery({
 
               {canPick ? (
                 <TouchableOpacity style={styles.pickBtn} activeOpacity={0.85} onPress={() => handlePick(s)} disabled={!!picking}>
-                  <Text style={styles.pickBtnText}>👑 {t('group.pickThis', { defaultValue: 'Pick winner' })}</Text>
+                  <Ionicons name="ribbon-outline" size={14} color={colors.onGold} />
+                  <Text style={styles.pickBtnText}>{t('group.pickThis', { defaultValue: 'Pick winner' })}</Text>
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -177,7 +184,8 @@ export function GroupSubmissionsGallery({
                   activeOpacity={0.85}
                   onPress={() => { const p = preview; setPreview(null); if (p) handlePick(p); }}
                 >
-                  <Text style={styles.previewPickText}>👑 {t('group.pickThis', { defaultValue: 'Pick winner' })}</Text>
+                  <Ionicons name="ribbon-outline" size={17} color={colors.onGold} />
+                  <Text style={styles.previewPickText}>{t('group.pickThis', { defaultValue: 'Pick winner' })}</Text>
                 </TouchableOpacity>
               ) : null}
             </>
@@ -197,13 +205,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: 8,
-    borderRadius: Radius.md, backgroundColor: 'rgba(255,201,60,0.08)',
-    borderWidth: 1, borderColor: 'rgba(255,201,60,0.55)',
+    borderRadius: Radius.md, backgroundColor: c.goldTint,
+    borderWidth: Border, borderColor: c.gold,
   },
   ctaThumbs: { flexDirection: 'row' },
   ctaThumb:  { width: 32, height: 32, borderRadius: 8, borderWidth: 2, borderColor: c.bg3 },
   ctaLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  ctaChev:   { fontSize: 20, color: c.muted },
 
   // Grid modal (bottom sheet).
   modalBackdrop: { flex: 1, backgroundColor: c.scrim },
@@ -213,8 +220,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.md, paddingTop: 12, paddingBottom: 28, maxHeight: '85%',
   },
   modalHead:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  modalTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  modalClose: { fontSize: 18, color: c.muted, paddingHorizontal: 4 },
+  modalClose: { paddingHorizontal: 4 },
   modalHint:  { fontSize: FontSizes.sm, color: c.muted, marginTop: 4, marginBottom: 8 },
 
   grid:    { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, paddingTop: Spacing.sm },
@@ -222,40 +230,43 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     width: '47.5%',
     backgroundColor: c.bg3,
     borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: c.overlay,
+    borderWidth: Border,
+    borderColor: c.line,
     overflow: 'hidden',
   },
-  tileWin: { borderColor: '#FFC93C', borderWidth: 2 },
+  tileWin: { borderColor: c.gold, borderWidth: 2 },
 
-  photo: { width: '100%', aspectRatio: 1, backgroundColor: '#000' },
+  photo: { width: '100%', aspectRatio: 1, backgroundColor: c.photoScrim },
   winBadge: {
     position: 'absolute', top: 6, left: 6,
-    backgroundColor: 'rgba(255,201,60,0.95)',
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: c.gold,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
   },
-  winBadgeText: { fontSize: 11, fontWeight: '800', color: '#1a1206' },
-  pickingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.45)' },
+  winBadgeText: { fontSize: 11, fontWeight: '800', color: c.onGold },
+  pickingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
 
   tileFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8 },
   avatar: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 11 },
+  avatarLetter: { color: c.white, fontWeight: '700', fontSize: 11 },
   name: { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '700', color: c.text },
 
   pickBtn: {
     // Solid fill (matches the fullscreen previewPick) so the challenger reads
     // it as "tap to crown", not a passive/already-picked label.
-    margin: 8, marginTop: 0, paddingVertical: 9, borderRadius: Radius.full, alignItems: 'center',
-    backgroundColor: '#FFC93C',
+    margin: 8, marginTop: 0, paddingVertical: 9, borderRadius: Radius.full,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
+    backgroundColor: c.gold,
   },
-  pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: '#1a1206' },
+  pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: c.onGold },
 
   previewBackdrop: { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
   previewImg:  { width: '92%', height: '70%' },
-  previewName: { fontSize: FontSizes.md, fontWeight: '800', color: '#fff' },
+  previewName: { fontSize: FontSizes.md, fontWeight: '800', color: c.white },
   previewPick: {
     paddingHorizontal: 22, paddingVertical: 12, borderRadius: Radius.full,
-    backgroundColor: '#FFC93C',
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: c.gold,
   },
-  previewPickText: { fontSize: FontSizes.md, fontWeight: '800', color: '#1a1206' },
+  previewPickText: { fontSize: FontSizes.md, fontWeight: '800', color: c.onGold },
 });

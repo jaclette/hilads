@@ -1,17 +1,16 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Border, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
  * Rank badge for the versus-card avatars. Two tiers:
  *
- *   Tier 1 - podium (#1 / #2 / #3): metallic gradient disc with a
- *   subtle ring + inner highlight. Reads as "this player won the
- *   month."
+ *   Tier 1 - podium (#1 / #2 / #3): token-coloured disc (gold /
+ *   sand / caramel) with a ring + inner highlight. Reads as "this
+ *   player won the month."
  *
- *   Tier 2 - rank ≥ 4 (no cap): sober dark disc with a thin
- *   accent-orange border. Same visual for #4 and #347 - only the
+ *   Tier 2 - rank ≥ 4 (no cap): sober card disc with a thin
+ *   primary border. Same visual for #4 and #347 - only the
  *   number changes. Reads as "ranked this month" without competing
  *   visually with the podium.
  *
@@ -35,22 +34,18 @@ export interface RankBadgeProps {
   accessibilityLabel?: string;
 }
 
-// Podium colour stops (start, end). Aligned with the universally-read
-// gold/silver/bronze palette so users don't need to learn a new
-// vocabulary. End stop is slightly darker so the disc reads as 3D.
-const PODIUM_GRADIENTS: Record<1 | 2 | 3, [string, string]> = {
-  1: ['#FFE17A', '#C8A02E'], // gold
-  2: ['#E9E9E9', '#9C9C9C'], // silver
-  3: ['#E0A36F', '#8B5A33'], // bronze
-};
-const PODIUM_NUMBER_COLOR: Record<1 | 2 | 3, string> = {
-  1: '#3B2F00',
-  2: '#2A2A2A',
-  3: '#3A1F0A',
-};
+// Podium tiers (fill, ring, number) mapped onto V3 tokens, keeping the
+// universally-read gold / silver / bronze order: gold fill, sand fill
+// with a muted ring, caramel (bronze) fill.
+const podiumColors = (c: ThemeColors): Record<1 | 2 | 3, { fill: string; ring: string; number: string }> => ({
+  1: { fill: c.gold,    ring: c.gold,    number: c.onGold }, // gold
+  2: { fill: c.bg3,     ring: c.muted,   number: c.text },   // silver
+  3: { fill: c.caramel, ring: c.caramel, number: c.white },  // bronze
+});
 
 export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProps) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
 
   if (rank == null || rank < 1) return null;
   const isPodium = rank <= 3;
@@ -68,17 +63,18 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
 
   if (isPodium) {
     const tier = rank as 1 | 2 | 3;
-    const [start, end] = PODIUM_GRADIENTS[tier];
+    const tierColors = podiumColors(colors)[tier];
     return (
       <View
         style={[styles.wrap, { width: size, height: size, borderRadius: size / 2 }]}
         accessibilityLabel={accessibilityLabel}
       >
-        <LinearGradient
-          colors={[start, end]}
-          start={{ x: 0.2, y: 0 }}
-          end={{ x: 0.8, y: 1 }}
-          style={[styles.disc, { borderRadius: size / 2 }]}
+        <View
+          style={[
+            styles.disc,
+            styles.podiumDisc,
+            { borderRadius: size / 2, backgroundColor: tierColors.fill, borderColor: tierColors.ring },
+          ]}
         >
           {/* Inner highlight - a soft, almost-white sheen at the top
               left so the disc reads as a polished metal coin instead
@@ -97,14 +93,14 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
             ]}
             pointerEvents="none"
           />
-          <Text style={[styles.number, { fontSize, color: PODIUM_NUMBER_COLOR[tier] }]}>{tier}</Text>
-        </LinearGradient>
+          <Text style={[styles.number, { fontSize, color: tierColors.number }]}>{tier}</Text>
+        </View>
       </View>
     );
   }
 
-  // Tier 2 - neutral pill for #4 through ∞. Same dark surface +
-  // accent-orange thin border for every non-podium rank - only the
+  // Tier 2 - neutral pill for #4 through ∞. Same card surface +
+  // primary thin border for every non-podium rank - only the
   // number changes - so the hierarchy reads at a glance (gold/silver/
   // bronze stand alone; everyone else shares one visual).
   return (
@@ -120,7 +116,7 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
       ]}
       accessibilityLabel={accessibilityLabel}
     >
-      <Text style={[styles.number, { fontSize, color: '#fff' }]}>{rank}</Text>
+      <Text style={[styles.number, { fontSize, color: colors.text }]}>{rank}</Text>
     </View>
   );
 }
@@ -133,7 +129,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems:     'center',
     justifyContent: 'center',
     overflow:       'hidden',
-    shadowColor:    '#000',
+    shadowColor:    c.scrim,
     shadowOpacity:  0.35,
     shadowRadius:   3,
     shadowOffset:   { width: 0, height: 1 },
@@ -144,16 +140,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems:     'center',
     justifyContent: 'center',
   },
+  podiumDisc: {
+    borderWidth:     Border,
+  },
   podiumSheen: {
     position:        'absolute',
-    backgroundColor: c.overlayStrong,
+    backgroundColor: c.photoControl,
   },
   neutralDisc: {
     // bg2 surface keeps the disc readable against light photo avatars
-    // too; the orange border doubles as the "elite group" cue.
+    // too; the primary border doubles as the "elite group" cue.
     backgroundColor: c.bg2,
-    borderWidth:     1.5,
-    borderColor:     'rgba(255,122,60,0.65)',
+    borderWidth:     Border,
+    borderColor:     c.primary,
   },
   number: {
     fontWeight:        '900',

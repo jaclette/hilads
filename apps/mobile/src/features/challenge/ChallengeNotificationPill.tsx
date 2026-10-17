@@ -6,7 +6,7 @@ import {
   fetchMyChallengeParticipation,
   setChallengeNotificationPreference,
 } from '@/api/challenges';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
@@ -67,11 +67,11 @@ export function ChallengeNotificationPill({
       accessibilityState={{ checked: isOn }}
     >
       {busy
-        ? <ActivityIndicator size="small" color={isOn ? '#FFB37A' : colors.muted} />
+        ? <ActivityIndicator size="small" color={isOn ? colors.primaryOnTint : colors.muted} />
         : <Ionicons
             name={isOn ? 'notifications-outline' : 'notifications-off-outline'}
             size={14}
-            color={isOn ? '#FFB37A' : colors.muted}
+            color={isOn ? colors.primaryOnTint : colors.muted}
           />}
       <Text style={[styles.label, isOn && styles.labelOn]} numberOfLines={1}>
         {t(isOn ? 'notif.on' : 'notif.off')}
@@ -88,14 +88,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical:   6,
     borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
+    borderWidth:       Border,
+    borderColor:       c.line,
     backgroundColor:   'transparent',
   },
   pillOn: {
-    backgroundColor: 'rgba(255,122,60,0.10)',
-    borderColor:     'rgba(255,122,60,0.42)',
+    backgroundColor: c.primaryTint,
+    borderColor:     c.primary,
   },
   label:   { fontSize: 11, fontWeight: '700', color: c.muted, letterSpacing: 0.2 },
-  labelOn: { color: '#FFB37A' },
+  labelOn: { color: c.primaryOnTint },
 });

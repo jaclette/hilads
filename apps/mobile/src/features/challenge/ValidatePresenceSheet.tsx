@@ -99,7 +99,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
                   </View>
                   <Text style={styles.name} numberOfLines={1}>{item.displayName}</Text>
                   <View style={[isWinner ? styles.radio : styles.check, on && (isWinner ? styles.radioOn : styles.checkOn)]}>
-                    {on ? <Ionicons name="checkmark" size={16} color="#fff" /> : null}
+                    {on ? <Ionicons name="checkmark" size={16} color={isWinner ? colors.onGold : colors.white} /> : null}
                   </View>
                 </TouchableOpacity>
               );
@@ -117,7 +117,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
                   <Ionicons
                     name={n <= rating ? 'star' : 'star-outline'}
                     size={32}
-                    color={n <= rating ? '#FFC93C' : colors.border}
+                    color={n <= rating ? colors.gold : colors.line}
                   />
                 </TouchableOpacity>
               ))}
@@ -132,7 +132,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
           onPress={() => onConfirm(selectedIds, isWinner ? null : rating)}
         >
           {submitting
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color={colors.white} />
             : <Text style={styles.confirmText}>
                 {isWinner
                   ? t('group.winnerConfirm', { defaultValue: 'Crown the winner' })
@@ -151,26 +151,26 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
     paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: 34, maxHeight: '80%',
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, marginBottom: 12 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginBottom: 12 },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   sub:   { fontSize: FontSizes.sm, color: c.muted, marginTop: 4, marginBottom: 12 },
   empty: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 24 },
   list:  { maxHeight: 360 },
   row:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  avatarLetter: { color: c.white, fontWeight: '700', fontSize: 15 },
   name:  { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
-  check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
-  checkOn: { backgroundColor: '#3DDC84', borderColor: '#3DDC84' },
-  radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
-  radioOn: { backgroundColor: '#FFC93C', borderColor: '#FFC93C' },
+  check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
+  checkOn: { backgroundColor: c.green, borderColor: c.green },
+  radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
+  radioOn: { backgroundColor: c.gold, borderColor: c.gold },
   rateBlock: { marginTop: 14, alignItems: 'center', gap: 8 },
   rateLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   stars:     { flexDirection: 'row', gap: 8 },
   confirmBtn: {
     // Solid fill - reads as a primary action, not an already-done state.
     marginTop: 14, paddingVertical: 14, borderRadius: 14, alignItems: 'center',
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.primary,
   },
-  confirmText: { color: '#fff', fontSize: 15, fontWeight: '800' },
+  confirmText: { color: c.white, fontSize: 15, fontWeight: '800' },
 });

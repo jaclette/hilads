@@ -5,14 +5,16 @@ import {
   type NativeSyntheticEvent, type NativeScrollEvent, type LayoutChangeEvent,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
 import { fetchGroupSubmissions, type ShowcaseItem, type GroupSubmission } from '@/api/challenges';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
-const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+const TYPE_ICON: Record<string, IconName> = { food: 'restaurant-outline', place: 'location-outline', culture: 'color-palette-outline', help: 'hand-left-outline' };
 
 function PersonRow({ label, name, avatar, country, userId, onAvatar }: {
   label: string;
@@ -49,6 +51,7 @@ export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
   onAvatar?: (userId: string) => void;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('challenge');
 
   // Full-size proof viewer - the photo IS the story, a thumbnail-sized crop
@@ -86,7 +89,7 @@ export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
   const onCarouselLayout = (e: LayoutChangeEvent) => setCarouselW(e.nativeEvent.layout.width);
 
   const intl     = item.mode === 'international';
-  const icon     = TYPE_ICON[item.challenge_type] ?? '🔥';
+  const icon     = TYPE_ICON[item.challenge_type] ?? 'flame-outline';
   const fromFlag = countryToFlag(item.country);
   const toFlag   = countryToFlag(item.target_country);
   const hasProof = item.proof_media_url && item.proof_media_type === 'image';
@@ -114,7 +117,10 @@ export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
                       <ThumbImage uri={s.media_url} style={styles.carouselImg} />
                     </Pressable>
                     {winnerId && s.user_id === winnerId ? (
-                      <View style={styles.winnerPill}><Text style={styles.winnerPillText}>🏆 {t('group.winnerTag')}</Text></View>
+                      <View style={styles.winnerPill}>
+                        <Ionicons name="trophy-outline" size={12} color={colors.onGold} />
+                        <Text style={styles.winnerPillText}>{t('group.winnerTag')}</Text>
+                      </View>
                     ) : null}
                     {s.display_name ? (
                       <View style={styles.nameChip}><Text style={styles.nameChipText} numberOfLines={1}>{s.display_name}</Text></View>
@@ -132,15 +138,37 @@ export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
 
           <View style={styles.badges}>
             <View style={[styles.modePill, intl ? styles.modeIntl : styles.modeLocal]}>
-              <Text style={styles.modeText}>
-                {intl ? `${fromFlag || '🌐'} → ${toFlag || '🌍'}` : `${fromFlag || '📍'} ${t('showcase.localTag')}`}
-              </Text>
+              {intl ? (
+                <>
+                  {fromFlag ? <Text style={styles.modeText}>{fromFlag}</Text> : <Ionicons name="globe-outline" size={12} color={colors.travelerText} />}
+                  <Text style={styles.modeText}>→</Text>
+                  {toFlag ? <Text style={styles.modeText}>{toFlag}</Text> : <Ionicons name="globe-outline" size={12} color={colors.travelerText} />}
+                </>
+              ) : (
+                <>
+                  {fromFlag ? <Text style={styles.modeText}>{fromFlag}</Text> : <Ionicons name="location-outline" size={12} color={colors.text} />}
+                  <Text style={styles.modeText}>{t('showcase.localTag')}</Text>
+                </>
+              )}
             </View>
-            {(item.rating_count ?? 0) > 0 && item.avg_stars != null ? <Text style={styles.stars}>★ {item.avg_stars.toFixed(1)}</Text> : null}
+            {(item.rating_count ?? 0) > 0 && item.avg_stars != null ? (
+              <View style={styles.starsRow}>
+                <Ionicons name="star" size={14} color={colors.gold} />
+                <Text style={styles.stars}>{item.avg_stars.toFixed(1)}</Text>
+              </View>
+            ) : null}
           </View>
 
-          <Text style={styles.title}>{icon} {item.title}</Text>
-          {cityLabel ? <Text style={styles.city}>📍 {cityLabel}</Text> : null}
+          <View style={styles.titleRow}>
+            <Ionicons name={icon} size={20} color={colors.primaryText} style={styles.titleIcon} />
+            <Text style={styles.title}>{item.title}</Text>
+          </View>
+          {cityLabel ? (
+            <View style={styles.cityRow}>
+              <Ionicons name="location-outline" size={14} color={colors.muted} />
+              <Text style={styles.city}>{cityLabel}</Text>
+            </View>
+          ) : null}
 
           <View style={styles.people}>
             <PersonRow
@@ -204,62 +232,67 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     maxHeight: '88%',
     backgroundColor: c.bg2,
     borderTopLeftRadius: 22, borderTopRightRadius: 22,
-    borderWidth: 1, borderColor: c.border,
+    borderWidth: Border, borderColor: c.line,
     paddingBottom: Spacing.lg,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, marginTop: 10, marginBottom: 6 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginTop: 10, marginBottom: 6 },
   scroll: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm },
 
-  proof: { width: '100%', height: 220, borderRadius: 14, marginBottom: 14, backgroundColor: '#000' },
+  proof: { width: '100%', height: 220, borderRadius: 14, marginBottom: 14, backgroundColor: c.photoScrim },
 
   // Multi-taker photo carousel: winner tile first with a gold pill.
   carouselWrap: { position: 'relative', marginBottom: 14 },
-  carouselImg:  { width: '100%', height: 220, borderRadius: 14, backgroundColor: '#000' },
+  carouselImg:  { width: '100%', height: 220, borderRadius: 14, backgroundColor: c.photoScrim },
   winnerPill: {
     position: 'absolute', top: 10, left: 10,
-    backgroundColor: '#fbbf24', paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: c.gold, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
   },
-  winnerPillText: { fontSize: 12, fontWeight: '800', color: '#1a1205', letterSpacing: 0.2 },
+  winnerPillText: { fontSize: 12, fontWeight: '800', color: c.onGold, letterSpacing: 0.2 },
   nameChip: {
     position: 'absolute', bottom: 12, left: 10, maxWidth: '68%',
-    backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
+    backgroundColor: c.scrim, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
   },
-  nameChipText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  nameChipText: { fontSize: 12, fontWeight: '700', color: c.white },
   counter: {
     position: 'absolute', bottom: 12, right: 10,
-    backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full,
+    backgroundColor: c.scrim, paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full,
   },
-  counterText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+  counterText: { fontSize: 11, fontWeight: '700', color: c.white },
 
   badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  modePill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full },
-  modeIntl: { backgroundColor: 'rgba(96,165,250,0.14)' },
-  modeLocal: { backgroundColor: c.overlay },
+  modePill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full },
+  modeIntl: { backgroundColor: c.travelerBg },
+  modeLocal: { backgroundColor: c.bg3 },
   modeText: { fontSize: 12, fontWeight: '700', color: c.text },
-  stars: { fontSize: 14, fontWeight: '800', color: '#FFC93C' },
+  starsRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  stars: { fontSize: 14, fontWeight: '800', color: c.gold },
 
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: 14, lineHeight: 24 },
-  city:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted, marginTop: -8, marginBottom: 14 },
+  titleRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 14 },
+  titleIcon: { marginTop: 2 },
+  title: { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 24 },
+  cityRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: -8, marginBottom: 14 },
+  city:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
 
   people: { gap: 8, marginBottom: 14 },
   person: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12,
-    backgroundColor: c.overlayWeak, borderWidth: 1, borderColor: c.overlay,
+    backgroundColor: c.bg3, borderWidth: Border, borderColor: c.line,
   },
   personAvatar: { width: 36, height: 36, borderRadius: 18 },
-  personAvatarFallback: { alignItems: 'center', justifyContent: 'center', backgroundColor: c.overlayStrong },
+  personAvatarFallback: { alignItems: 'center', justifyContent: 'center', backgroundColor: c.line },
   personInitial: { fontSize: 14, fontWeight: '700', color: c.text },
   personLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: c.muted },
   personName: { fontSize: 14, fontWeight: '600', color: c.text },
 
   noteBox: {
     padding: 12, borderRadius: 12, marginBottom: 8,
-    backgroundColor: 'rgba(255,201,60,0.07)', borderWidth: 1, borderColor: 'rgba(255,201,60,0.18)',
+    backgroundColor: c.goldTint, borderWidth: Border, borderColor: c.gold,
   },
-  noteLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: '#FFC93C', marginBottom: 6 },
+  noteLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: c.gold, marginBottom: 6 },
   noteQuote: { gap: 1 },
-  noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.overlay },
+  noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.line },
   noteWho: { fontSize: 12, fontWeight: '700', color: c.text },
   noteRole: { fontSize: 10, fontWeight: '600', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   noteText: { fontSize: 14, lineHeight: 20, color: c.text, fontStyle: 'italic' },

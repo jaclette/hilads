@@ -23,11 +23,12 @@ import {
   StyleSheet, ActivityIndicator, TextInput, ScrollView,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import {
   fetchProofs, approveProof, rejectProof, type ChallengeProof,
 } from '@/api/challenges';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type Props = {
@@ -150,7 +151,8 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                   disabled={!!busy}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.btnRejectText}>✕ {t('intl.proof.rejectCta')}</Text>
+                  <Ionicons name="close" size={18} color={colors.red} />
+                  <Text style={styles.btnRejectText}>{t('intl.proof.rejectCta')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.btn, styles.btnApprove, busy && { opacity: 0.5 }]}
@@ -159,8 +161,13 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                   activeOpacity={0.85}
                 >
                   {busy === 'approve'
-                    ? <ActivityIndicator color={colors.white} size="small" />
-                    : <Text style={styles.btnApproveText}>✓ {t('intl.proof.approveCta')}</Text>}
+                    ? <ActivityIndicator color={colors.localText} size="small" />
+                    : (
+                      <>
+                        <Ionicons name="checkmark" size={18} color={colors.localText} />
+                        <Text style={styles.btnApproveText}>{t('intl.proof.approveCta')}</Text>
+                      </>
+                    )}
                 </TouchableOpacity>
               </View>
             ) : (
@@ -171,7 +178,7 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                   value={reason}
                   onChangeText={setReason}
                   placeholder={t('intl.proof.reasonPlaceholder')}
-                  placeholderTextColor={colors.muted2}
+                  placeholderTextColor={colors.mutedDim}
                   maxLength={200}
                   multiline
                   autoFocus
@@ -193,7 +200,7 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                     activeOpacity={0.85}
                   >
                     {busy === 'reject'
-                      ? <ActivityIndicator color={colors.white} size="small" />
+                      ? <ActivityIndicator color={colors.red} size="small" />
                       : <Text style={styles.btnRejectText}>{t('intl.proof.rejectConfirm')}</Text>}
                   </TouchableOpacity>
                 </View>
@@ -219,33 +226,36 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4,
+    backgroundColor: c.line, marginTop: 8, marginBottom: 4,
   },
   scroll: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.md },
   loadingWrap: { padding: Spacing.xl, alignItems: 'center' },
   title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  image:    { width: '100%', aspectRatio: 1, borderRadius: Radius.md, backgroundColor: '#111' },
+  image:    { width: '100%', aspectRatio: 1, borderRadius: Radius.md, backgroundColor: c.bg3 },
   hint:     { fontSize: FontSizes.sm, color: c.muted },
   emptyText:{ fontSize: FontSizes.sm, color: c.muted },
 
   verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.xs },
-  btn: { flex: 1, paddingVertical: 14, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  btnApprove: { backgroundColor: '#4ade80' },
-  btnApproveText: { color: '#0b0d12', fontSize: FontSizes.md, fontWeight: '800' },
-  btnReject:  { backgroundColor: '#ef4444' },
-  btnRejectText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  btnSecondary: { backgroundColor: c.overlay },
+  btn: { flex: 1, flexDirection: 'row', gap: 6, paddingVertical: 14, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  // Green tint + border (V3 local tokens) - readable in both themes.
+  btnApprove: { backgroundColor: c.localBg, borderWidth: Border, borderColor: c.localText },
+  btnApproveText: { color: c.localText, fontSize: FontSizes.md, fontWeight: '800' },
+  // Red border on the transparent ground (V3: no tinted red fills).
+  btnReject:  { borderWidth: Border, borderColor: c.red },
+  btnRejectText:  { color: c.red, fontSize: FontSizes.md, fontWeight: '800' },
+  btnSecondary: { backgroundColor: c.bg3 },
   btnSecondaryText: { color: c.muted, fontSize: FontSizes.md, fontWeight: '700' },
 
   reasonInput: {
     minHeight: 96,
     padding: 12,
     borderRadius: Radius.md,
-    backgroundColor: c.overlayWeak,
+    backgroundColor: c.bg3,
+    borderWidth: Border, borderColor: c.line,
     color: c.text,
     fontSize: FontSizes.sm,
     textAlignVertical: 'top',
   },
-  charCount: { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.muted2 },
-  errorLine: { color: '#ef4444', fontSize: FontSizes.sm, marginTop: 4 },
+  charCount: { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.mutedDim },
+  errorLine: { color: c.red, fontSize: FontSizes.sm, marginTop: 4 },
 });

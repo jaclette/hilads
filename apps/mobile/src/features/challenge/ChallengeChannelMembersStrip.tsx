@@ -132,7 +132,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical:   Spacing.sm + 2,
     borderTopWidth:    StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor:       c.overlay,
+    borderColor:       c.line,
   },
   avatars: { flexDirection: 'row', alignItems: 'center' },
   avatar:  {
@@ -141,7 +141,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     overflow:        'hidden',
     borderWidth:     2, borderColor: c.bg,
   },
-  avatarText: { color: '#fff', fontWeight: '700', fontSize: 11 },
+  avatarText: { color: c.white, fontWeight: '700', fontSize: 11 },
   countLabel: { flex: 1, fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
-  seeAll:     { fontSize: FontSizes.sm, color: '#FF7A3C', fontWeight: '700' },
+  seeAll:     { fontSize: FontSizes.sm, color: c.primaryText, fontWeight: '700' },
 });

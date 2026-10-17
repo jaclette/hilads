@@ -5,7 +5,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { proposeDate, withdrawProposal, approveDate } from '@/api/challenges';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary } from '@/types';
 import { DatePickerModal } from './DatePickerModal';
@@ -116,7 +116,7 @@ export function ThreadScheduleBlock({
           accessibilityRole="button"
           accessibilityLabel={t('schedule.editCta')}
         >
-          <Ionicons name="checkmark-circle" size={18} color="#22c55e" />
+          <Ionicons name="checkmark-circle" size={18} color={colors.localText} />
           <View style={styles.bandTextWrap}>
             <Text style={styles.bandTitleScheduled}>{t('schedule.scheduled.title')}</Text>
             <Text style={styles.bandSubtitle} numberOfLines={2}>
@@ -158,7 +158,7 @@ export function ThreadScheduleBlock({
   if (phase === 'approved') {
     return (
       <View style={[styles.band, styles.bandScheduled]}>
-        <Text style={styles.verdictEmoji}>🎉</Text>
+        <Ionicons name="sparkles-outline" size={18} color={colors.localText} style={styles.verdictIcon} />
         <View style={styles.bandTextWrap}>
           <Text style={styles.bandTitleScheduled}>{t('debrief.approved.title')}</Text>
           {thread.approved_at && (
@@ -194,7 +194,7 @@ export function ThreadScheduleBlock({
       <>
         <View style={styles.band}>
           <TouchableOpacity style={styles.proposeCta} onPress={() => setPickerOpen(true)} activeOpacity={0.85} disabled={busy !== null}>
-            <Ionicons name="calendar-outline" size={16} color="#FF7A3C" />
+            <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />
             <Text style={styles.proposeCtaText}>{t('schedule.proposeCta')}</Text>
           </TouchableOpacity>
         </View>
@@ -217,7 +217,7 @@ export function ThreadScheduleBlock({
         <Ionicons
           name={iProposed ? 'time-outline' : 'calendar-outline'}
           size={16}
-          color="#FF7A3C"
+          color={colors.primaryText}
         />
         <View style={styles.bandTextWrap}>
           <Text style={styles.bandTitle} numberOfLines={1}>
@@ -311,29 +311,29 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap:               Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    backgroundColor:   'rgba(255,122,60,0.06)',
+    backgroundColor:   c.bg2,
     borderTopWidth:    1,
-    borderTopColor:    'rgba(255,122,60,0.18)',
+    borderTopColor:    c.line,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,122,60,0.18)',
+    borderBottomColor: c.line,
   },
   bandProposal: {
-    backgroundColor:   'rgba(255,122,60,0.10)',
+    backgroundColor:   c.primaryTint,
   },
   bandScheduled: {
-    backgroundColor:   'rgba(34,197,94,0.08)',
-    borderTopColor:    'rgba(34,197,94,0.20)',
-    borderBottomColor: 'rgba(34,197,94,0.20)',
+    backgroundColor:   c.localBg,
+    borderTopColor:    c.line,
+    borderBottomColor: c.line,
   },
   bandRejected: {
-    backgroundColor:   c.overlayWeak,
-    borderTopColor:    c.overlay,
-    borderBottomColor: c.overlay,
+    backgroundColor:   c.bg3,
+    borderTopColor:    c.line,
+    borderBottomColor: c.line,
   },
-  verdictEmoji: { fontSize: 18, marginLeft: 1 },
+  verdictIcon:  { marginLeft: 1 },
   bandTextWrap: { flex: 1, minWidth: 0 },
   bandTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  bandTitleScheduled: { fontSize: FontSizes.sm, fontWeight: '800', color: '#22c55e' },
+  bandTitleScheduled: { fontSize: FontSizes.sm, fontWeight: '800', color: c.localText },
   bandSubtitle: { fontSize: 12, color: c.muted, marginTop: 2 },
   bandActions:  { flexDirection: 'row', gap: 6 },
 
@@ -345,23 +345,23 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap: 6,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,122,60,0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,122,60,0.30)',
+    backgroundColor: c.primaryTint,
+    borderWidth: Border,
+    borderColor: c.primary,
   },
-  proposeCtaText: { color: '#FF7A3C', fontWeight: '800', fontSize: 13, letterSpacing: 0.2 },
+  proposeCtaText: { color: c.primaryText, fontWeight: '800', fontSize: 13, letterSpacing: 0.2 },
 
   actionPrimary: {
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#22c55e',
+    backgroundColor: c.green,
   },
   actionSecondary: {
     width: 32, height: 32, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: c.overlay,
-    borderWidth: 1,
-    borderColor: c.overlayStrong,
+    backgroundColor: c.bg3,
+    borderWidth: Border,
+    borderColor: c.line,
   },
 });
 

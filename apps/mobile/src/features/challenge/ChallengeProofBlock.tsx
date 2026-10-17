@@ -27,6 +27,7 @@ import {
   ActivityIndicator, Alert, Modal, TextInput, Pressable, Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import {
@@ -35,7 +36,7 @@ import {
 } from '@/api/challenges';
 import { uploadFile } from '@/api/uploads';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type Props = {
@@ -192,7 +193,10 @@ export function ChallengeProofBlock({
   if (latest?.status === 'approved') {
     return (
       <View style={styles.card}>
-        <Text style={styles.terminalLine}>🎉 {t('intl.proof.approvedLine')}</Text>
+        <View style={styles.iconRow}>
+          <Ionicons name="sparkles-outline" size={16} color={colors.primaryText} />
+          <Text style={styles.terminalLine}>{t('intl.proof.approvedLine')}</Text>
+        </View>
       </View>
     );
   }
@@ -230,7 +234,12 @@ export function ChallengeProofBlock({
             >
               {busy === 'approve'
                 ? <ActivityIndicator color={colors.white} size="small" />
-                : <Text style={styles.verdictApproveText}>✓ {t('intl.proof.approveCta')}</Text>}
+                : (
+                  <View style={styles.iconRow}>
+                    <Ionicons name="checkmark" size={16} color={colors.white} />
+                    <Text style={styles.verdictApproveText}>{t('intl.proof.approveCta')}</Text>
+                  </View>
+                )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.verdictBtn, styles.verdictReject, busy && { opacity: 0.5 }]}
@@ -238,7 +247,10 @@ export function ChallengeProofBlock({
               disabled={!!busy}
               activeOpacity={0.85}
             >
-              <Text style={styles.verdictRejectText}>✕ {t('intl.proof.rejectCta')}</Text>
+              <View style={styles.iconRow}>
+                <Ionicons name="close" size={16} color={colors.red} />
+                <Text style={styles.verdictRejectText}>{t('intl.proof.rejectCta')}</Text>
+              </View>
             </TouchableOpacity>
           </View>
         ) : (
@@ -257,7 +269,7 @@ export function ChallengeProofBlock({
               value={rejectReason}
               onChangeText={setRejectReason}
               placeholder={t('intl.proof.reasonPlaceholder')}
-              placeholderTextColor={colors.muted2}
+              placeholderTextColor={colors.mutedDim}
               maxLength={200}
               multiline
               autoFocus
@@ -307,9 +319,12 @@ export function ChallengeProofBlock({
         {busy === 'submit'
           ? <ActivityIndicator color={colors.white} />
           : (
-            <Text style={[styles.submitBtnText, compact && styles.submitBtnTextCompact]}>
-              📸 {canRetry ? t('intl.proof.tryAgainCta', { count: attemptsLeft }) : t('intl.proof.submitCta')}
-            </Text>
+            <View style={styles.iconRow}>
+              <Ionicons name="camera-outline" size={compact ? 16 : 18} color={colors.white} />
+              <Text style={[styles.submitBtnText, compact && styles.submitBtnTextCompact]}>
+                {canRetry ? t('intl.proof.tryAgainCta', { count: attemptsLeft }) : t('intl.proof.submitCta')}
+              </Text>
+            </View>
           )}
       </TouchableOpacity>
 
@@ -331,31 +346,31 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     padding:          Spacing.md,
     borderRadius:     Radius.lg,
     backgroundColor:  c.bg2,
-    borderWidth:      1,
-    borderColor:      c.overlay,
+    borderWidth:      Border,
+    borderColor:      c.line,
     gap:              Spacing.sm,
   },
   reqsBlock: {
     borderLeftWidth: 3,
-    borderLeftColor: 'rgba(255,122,60,0.5)',
+    borderLeftColor: c.primary,
     paddingLeft:     Spacing.sm,
     gap:             2,
   },
-  reqsLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.6, textTransform: 'uppercase' },
+  reqsLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.6, textTransform: 'uppercase' },
   reqsText:  { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
 
-  media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: '#000' },
+  media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: c.photoScrim },
 
 
   verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: 4 },
   verdictBtn: { flex: 1, paddingVertical: Spacing.sm + 2, borderRadius: Radius.full, alignItems: 'center' },
-  verdictApprove: { backgroundColor: '#22c55e' },
-  verdictReject:  { borderWidth: 1, borderColor: 'rgba(239,68,68,0.5)', backgroundColor: 'rgba(239,68,68,0.08)' },
+  verdictApprove: { backgroundColor: c.green },
+  verdictReject:  { borderWidth: Border, borderColor: c.red, backgroundColor: 'transparent' },
   verdictApproveText: { color: c.white, fontWeight: '800', fontSize: FontSizes.sm },
-  verdictRejectText:  { color: '#ef4444', fontWeight: '800', fontSize: FontSizes.sm },
+  verdictRejectText:  { color: c.red, fontWeight: '800', fontSize: FontSizes.sm },
 
   submitBtn: {
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.primary,
     paddingVertical: Spacing.md,
     borderRadius:    Radius.full,
     alignItems:      'center',
@@ -367,6 +382,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   submitBtnCompact: { paddingVertical: Spacing.sm, marginTop: 0 },
   submitBtnTextCompact: { fontSize: FontSizes.sm },
 
+  iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
   terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: 4 },
   reasonLine:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 18 },
   // Inline-rendered proof requirements (no popin, no separate button).
@@ -394,25 +410,25 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   modalHandle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.overlayStrong, marginBottom: Spacing.sm,
+    backgroundColor: c.line, marginBottom: Spacing.sm,
   },
   modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   modalHint:  { fontSize: FontSizes.sm, color: c.muted },
   reasonInput: {
     minHeight:         96,
     textAlignVertical: 'top',
-    backgroundColor:   c.overlayWeak,
-    borderWidth:       1,
-    borderColor:       c.border,
+    backgroundColor:   c.bg3,
+    borderWidth:       Border,
+    borderColor:       c.line,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     fontSize:          FontSizes.md,
     color:             c.text,
   },
-  charCount: { fontSize: 11, color: c.muted2, textAlign: 'right' },
+  charCount: { fontSize: 11, color: c.mutedDim, textAlign: 'right' },
   modalSubmit: {
-    backgroundColor: '#ef4444',
+    backgroundColor: c.red,
     paddingVertical: Spacing.md,
     borderRadius:    Radius.full,
     alignItems:      'center',

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { submitHostRating, submitTakerRating, type ChallengeReveal } from '@/api/challenges';
 
@@ -60,7 +60,7 @@ export function ChallengeResultModal({
     ]).start();
   }, [visible, reveal, targetPoints, pointsAnim, glow, pop]);
 
-  // Host breakdown: reveal one 🙋 at a time, the running +points ticking up
+  // Host breakdown: reveal one person icon at a time, the running +points ticking up
   // with each, so the host *sees* "each person who showed up = points". Only
   // staggers for a sane head count; big groups show at once.
   const hb        = reveal?.hostBreakdown ?? null;
@@ -97,28 +97,28 @@ export function ChallengeResultModal({
   const displayTotal = Math.max(0, finalTotal - myPoints) + displayPoints;
 
   // Headline + body per role (all non-negative).
-  let emoji = '🎉';
+  let icon: IconName = 'sparkles-outline';
   let title = '';
   let body  = '';
   switch (myRole) {
     case 'winner':
-      emoji = '👑'; title = t('result.winner.title', { defaultValue: 'You won!' });
+      icon = 'ribbon-outline'; title = t('result.winner.title', { defaultValue: 'You won!' });
       body = t('result.winner.body', { defaultValue: 'Your photo took the challenge.' });
       break;
     case 'loser':
-      emoji = '📸'; title = t('result.loser.title', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won` });
+      icon = 'camera-outline'; title = t('result.loser.title', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won` });
       body = t('result.loser.body', { points: `+${myPoints}`, defaultValue: `Nice shot! You earned +${myPoints} for joining — take another shot next time 💪` });
       break;
     case 'present':
-      emoji = '✅'; title = t('result.present.title', { defaultValue: 'You showed up!' });
+      icon = 'checkmark-circle-outline'; title = t('result.present.title', { defaultValue: 'You showed up!' });
       body = t('result.present.body', { defaultValue: 'Validated present at the meet.' });
       break;
     case 'absent':
-      emoji = '👋'; title = t('result.absent.title', { defaultValue: 'You missed this one' });
+      icon = 'hand-left-outline'; title = t('result.absent.title', { defaultValue: 'You missed this one' });
       body = t('result.absent.body', { defaultValue: 'Catch the next meet — your spot is waiting.' });
       break;
     case 'host':
-      emoji = '🏆';
+      icon = 'trophy-outline';
       title = isPhoto
         ? t('result.host.titlePhoto', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won your challenge!` })
         : t('result.host.titleMeet', { defaultValue: 'Your meet is done!' });
@@ -145,17 +145,24 @@ export function ChallengeResultModal({
                 <Image source={{ uri: winnerPhotoUrl! }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
                 {winnerName ? (
                   <View style={styles.photoCaption}>
-                    <Text style={styles.photoCaptionText}>👑 {winnerName}</Text>
+                    <Ionicons name="ribbon-outline" size={14} color={colors.onGold} />
+                    <Text style={styles.photoCaptionText}>{winnerName}</Text>
                   </View>
                 ) : null}
               </View>
             ) : (
-              <Text style={styles.bigEmoji}>{emoji}</Text>
+              <Ionicons name={icon} size={64} color={colors.gold} style={styles.bigIcon} />
             )}
 
-            <Text style={styles.title}>{emoji} {title}</Text>
+            <View style={styles.titleRow}>
+              <Ionicons name={icon} size={20} color={colors.gold} />
+              <Text style={styles.title}>{title}</Text>
+            </View>
             {challengeTitle ? (
-              <Text style={styles.challengeName} numberOfLines={2}>📌 {challengeTitle}</Text>
+              <View style={styles.challengeNameRow}>
+                <Ionicons name="pin-outline" size={14} color={colors.muted} />
+                <Text style={styles.challengeName} numberOfLines={2}>{challengeTitle}</Text>
+              </View>
             ) : null}
             {body ? <Text style={styles.body}>{body}</Text> : null}
 
@@ -167,17 +174,23 @@ export function ChallengeResultModal({
                     {staggered ? (
                       <>
                         {Array.from({ length: revealedHeads }).map((_, i) => (
-                          <PopEmoji key={i} char="🙋" />
+                          <PopIcon key={i} name="person-outline" />
                         ))}
                         <Text style={styles.breakdown}> = +{hb.perHead * revealedHeads}</Text>
                         {revealedHeads >= headCount ? (
-                          <Text style={styles.breakdown}>   🏠 +{hb.base}</Text>
+                          <>
+                            <Ionicons name="home-outline" size={14} color={colors.mutedDim} style={styles.breakdownIconGap} />
+                            <Text style={styles.breakdown}> +{hb.base}</Text>
+                          </>
                         ) : null}
                       </>
                     ) : (
-                      <Text style={styles.breakdown}>
-                        {`🙋 ×${headCount} = +${hb.perHead * headCount}   🏠 +${hb.base}`}
-                      </Text>
+                      <>
+                        <Ionicons name="person-outline" size={14} color={colors.mutedDim} />
+                        <Text style={styles.breakdown}>{` ×${headCount} = +${hb.perHead * headCount}`}</Text>
+                        <Ionicons name="home-outline" size={14} color={colors.mutedDim} style={styles.breakdownIconGap} />
+                        <Text style={styles.breakdown}>{` +${hb.base}`}</Text>
+                      </>
                     )}
                   </View>
                 ) : null}
@@ -186,8 +199,8 @@ export function ChallengeResultModal({
                     style={[
                       styles.total,
                       {
-                        color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, GOLD] }),
-                        textShadowColor: GOLD,
+                        color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, colors.gold] }),
+                        textShadowColor: colors.gold,
                         textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
                         transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
                       },
@@ -208,13 +221,13 @@ export function ChallengeResultModal({
                   disabled={!onOpenLeaderboard}
                   onPress={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
                 >
-                  <Text style={styles.rankFlag}>📍</Text>
+                  <Ionicons name="location-outline" size={16} color={colors.muted} />
                   <Text style={styles.rankLabel} numberOfLines={1}>
                     {rankCity != null
                       ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
                       : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
                   </Text>
-                  {onOpenLeaderboard ? <Text style={styles.rankChevron}>›</Text> : null}
+                  {onOpenLeaderboard ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null}
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.rankRow}
@@ -222,13 +235,13 @@ export function ChallengeResultModal({
                   disabled={!onOpenLeaderboard}
                   onPress={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
                 >
-                  <Text style={styles.rankFlag}>🌐</Text>
+                  <Ionicons name="globe-outline" size={16} color={colors.muted} />
                   <Text style={styles.rankLabel} numberOfLines={1}>
                     {rankGlobal != null
                       ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
                       : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
                   </Text>
-                  {onOpenLeaderboard ? <Text style={styles.rankChevron}>›</Text> : null}
+                  {onOpenLeaderboard ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null}
                 </TouchableOpacity>
               </View>
             ) : null}
@@ -239,7 +252,7 @@ export function ChallengeResultModal({
                 <View style={styles.rateStars}>
                   {[1, 2, 3, 4, 5].map(n => (
                     <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 6, bottom: 6, left: 3, right: 3 }}>
-                      <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? GOLD : colors.border} />
+                      <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? colors.gold : colors.line} />
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -272,7 +285,7 @@ export function ChallengeResultModal({
               }}
             >
               {savingRating
-                ? <ActivityIndicator color="#1a1206" />
+                ? <ActivityIndicator color={colors.onGold} />
                 : <Text style={styles.ctaText}>{showRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' })}</Text>}
             </TouchableOpacity>
           </ScrollView>
@@ -282,17 +295,22 @@ export function ChallengeResultModal({
   );
 }
 
-/** A person emoji that pops in (scale spring) on mount - one per attendee. */
-function PopEmoji({ char }: { char: string }) {
+/** A person icon that pops in (scale spring) on mount - one per attendee. */
+function PopIcon({ name }: { name: IconName }) {
+  const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const s = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.spring(s, { toValue: 1, friction: 4, tension: 170, useNativeDriver: true }).start();
   }, [s]);
-  return <Animated.Text style={[styles.breakdown, { transform: [{ scale: s }] }]}>{char}</Animated.Text>;
+  return (
+    <Animated.View style={[styles.popIcon, { transform: [{ scale: s }] }]}>
+      <Ionicons name={name} size={14} color={colors.mutedDim} />
+    </Animated.View>
+  );
 }
 
-const GOLD = '#FFC93C';
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
@@ -300,45 +318,47 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     width: '100%', maxWidth: 420, maxHeight: '88%',
     backgroundColor: c.bg2, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: 'rgba(255,201,60,0.30)', overflow: 'hidden',
+    borderWidth: Border, borderColor: c.gold, overflow: 'hidden',
   },
   scroll: { padding: Spacing.lg, alignItems: 'center', gap: Spacing.sm },
 
-  photoWrap: { width: '100%', borderRadius: Radius.md, overflow: 'hidden', backgroundColor: '#000' },
+  photoWrap: { width: '100%', borderRadius: Radius.md, overflow: 'hidden', backgroundColor: c.photoScrim },
   photo:     { width: '100%', aspectRatio: 1 },
-  photoCaption: { position: 'absolute', left: 8, bottom: 8, backgroundColor: 'rgba(255,201,60,0.95)', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3 },
-  photoCaptionText: { fontSize: FontSizes.sm, fontWeight: '800', color: '#1a1206' },
+  photoCaption: { position: 'absolute', left: 8, bottom: 8, flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c.gold, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3 },
+  photoCaptionText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.onGold },
 
-  bigEmoji: { fontSize: 64, marginTop: Spacing.sm },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3, marginTop: Spacing.sm },
+  bigIcon: { marginTop: Spacing.sm },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: Spacing.sm },
+  title: { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3 },
   body:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
-  challengeName: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', marginTop: 2 },
+  challengeNameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 2 },
+  challengeName: { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center' },
 
   rankBlock: { alignSelf: 'stretch', marginTop: Spacing.md, gap: 8 },
-  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.overlayWeak, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
-  rankFlag:  { fontSize: FontSizes.md },
+  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.bg3, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
   rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
-  rankChevron: { fontSize: FontSizes.lg, color: c.muted, fontWeight: '700' },
 
   rateBlock: { alignSelf: 'stretch', alignItems: 'center', gap: 8, marginTop: Spacing.md },
   rateTitle: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   rateStars: { flexDirection: 'row', gap: 8 },
   noteInput: {
     alignSelf: 'stretch', minHeight: 44, maxHeight: 100, borderRadius: Radius.md,
-    backgroundColor: c.overlay, color: c.text,
+    backgroundColor: c.bg3, color: c.text,
     paddingHorizontal: 12, paddingVertical: 10, fontSize: FontSizes.sm, textAlignVertical: 'top',
   },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
-  points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },
-  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted2, marginTop: 2 },
+  points:    { fontSize: 44, fontWeight: '900', color: c.gold, letterSpacing: -1 },
+  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: c.mutedDim, marginTop: 2 },
+  breakdownIconGap: { marginLeft: 12 },
+  popIcon:   { marginTop: 2 },
   breakdownRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 },
   total:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, marginTop: 4 },
 
   cta: {
     marginTop: Spacing.md, alignSelf: 'stretch',
     paddingVertical: Spacing.md, borderRadius: Radius.full, alignItems: 'center',
-    backgroundColor: GOLD,
+    backgroundColor: c.gold,
   },
-  ctaText: { fontSize: FontSizes.md, fontWeight: '800', color: '#1a1206' },
+  ctaText: { fontSize: FontSizes.md, fontWeight: '800', color: c.onGold },
 });

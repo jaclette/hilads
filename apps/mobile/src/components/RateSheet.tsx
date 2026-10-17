@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { submitRating } from '@/api/challenges';
 import { ApiError } from '@/api/client';
 import { avatarColor } from '@/lib/avatarColors';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { RatePrompt } from '@/types';
 
@@ -91,7 +91,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
           <View style={styles.headerRow}>
             {/* Rate the CHALLENGE, not the person - a star, not an avatar. */}
             <View style={[styles.avatar, styles.avatarStar]}>
-              <Text style={styles.avatarStarText}>⭐</Text>
+              <Ionicons name="star-outline" size={24} color={colors.gold} />
             </View>
             <View style={styles.headerTextWrap}>
               <Text style={styles.title}>{t('ratePrompts.sheet.title')}</Text>
@@ -115,7 +115,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
                 <Ionicons
                   name={n <= stars ? 'star' : 'star-outline'}
                   size={38}
-                  color={n <= stars ? '#FFC93C' : colors.muted2}
+                  color={n <= stars ? colors.gold : colors.mutedDim}
                 />
               </TouchableOpacity>
             ))}
@@ -127,7 +127,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
               value={comment}
               onChangeText={(v) => setComment(v.slice(0, COMMENT_MAX))}
               placeholder={t('ratePrompts.sheet.commentPlaceholder')}
-              placeholderTextColor={colors.muted2}
+              placeholderTextColor={colors.mutedDim}
               multiline
               maxLength={COMMENT_MAX}
               editable={!busy}
@@ -170,18 +170,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.overlayStrong, marginBottom: Spacing.md,
+    backgroundColor: c.line, marginBottom: Spacing.md,
   },
 
   headerRow:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
   avatar:        { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLetter:  { color: '#fff', fontWeight: '700', fontSize: 18 },
-  avatarStar:    { backgroundColor: 'rgba(255,201,60,0.16)' },
-  avatarStarText:{ fontSize: 24 },
+  avatarLetter:  { color: c.white, fontWeight: '700', fontSize: 18 },
+  avatarStar:    { backgroundColor: c.goldTint },
   headerTextWrap:{ flex: 1, minWidth: 0 },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   subtitle:      { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
-  hint:          { fontSize: FontSizes.xs, color: c.muted2, marginBottom: Spacing.sm },
+  hint:          { fontSize: FontSizes.xs, color: c.mutedDim, marginBottom: Spacing.sm },
 
   starsRow:      { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm },
   starTap:       { padding: 4 },
@@ -189,17 +188,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   commentWrap:   { marginBottom: Spacing.md },
   comment: {
     minHeight: 80,
-    backgroundColor: c.overlayWeak,
-    borderWidth: 1, borderColor: c.overlay,
+    backgroundColor: c.bg3,
+    borderWidth: Border, borderColor: c.line,
     borderRadius: Radius.md,
     padding: Spacing.sm,
     color: c.text,
     fontSize: FontSizes.md,
   },
-  charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: c.muted2 },
+  charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: c.mutedDim },
 
   submit: {
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.primary,
     borderRadius: Radius.full,
     paddingVertical: Spacing.md,
     alignItems: 'center',

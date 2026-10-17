@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary } from '@/types';
 
@@ -209,13 +209,13 @@ function derive(
   };
 }
 
-const STEP_ICONS: Record<Step, string> = {
-  accept:  '🤝',
-  date:    '📅',
-  meet:    '👋',
-  wrap:    '✨',
-  proof:   '📸',
-  verdict: '⚖️',
+const STEP_ICONS: Record<Step, React.ComponentProps<typeof Ionicons>['name']> = {
+  accept:  'people-outline',
+  date:    'calendar-outline',
+  meet:    'hand-left-outline',
+  wrap:    'sparkles-outline',
+  proof:   'camera-outline',
+  verdict: 'shield-checkmark-outline',
 };
 
 export function ChallengePipeline({
@@ -283,7 +283,12 @@ export function ChallengePipeline({
               <View style={[styles.dot, dotStyle]}>
                 {isDone
                   ? <Ionicons name="checkmark" size={14} color={colors.white} />
-                  : <Text style={[styles.dotEmoji, !isActive && styles.dotEmojiIdle]}>{STEP_ICONS[step]}</Text>}
+                  : <Ionicons
+                      name={STEP_ICONS[step]}
+                      size={14}
+                      color={isActive ? colors.primaryText : colors.muted}
+                      style={!isActive && styles.dotEmojiIdle}
+                    />}
               </View>
               <Text style={[
                 styles.label,
@@ -309,7 +314,7 @@ export function ChallengePipeline({
               ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
             })}
           </Text>
-          {interactive && <Ionicons name="chevron-forward" size={14} color="#FF7A3C" />}
+          {interactive && <Ionicons name="chevron-forward" size={14} color={colors.primaryOnTint} />}
         </View>
       )}
     </TouchableOpacity>
@@ -346,10 +351,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     marginLeft:   DOT_SIZE / 2,
     marginRight:  DOT_SIZE / 2,
     height:       2,
-    backgroundColor: c.border,
+    backgroundColor: c.line,
   },
   connectorDone: {
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.primary,
   },
 
   dot: {
@@ -358,25 +363,24 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderRadius:    DOT_SIZE / 2,
     alignItems:      'center',
     justifyContent:  'center',
-    borderWidth:     1.5,
+    borderWidth:     Border,
   },
   dotIdle: {
     backgroundColor: c.bg2,
-    borderColor:     c.border,
+    borderColor:     c.line,
   },
   dotActive: {
-    backgroundColor: 'rgba(255,122,60,0.15)',
-    borderColor:     '#FF7A3C',
+    backgroundColor: c.primaryTint,
+    borderColor:     c.primary,
   },
   dotDone: {
-    backgroundColor: '#FF7A3C',
-    borderColor:     '#FF7A3C',
+    backgroundColor: c.primary,
+    borderColor:     c.primary,
   },
   dotRejected: {
     backgroundColor: c.bg2,
-    borderColor:     c.overlayStrong,
+    borderColor:     c.line,
   },
-  dotEmoji:     { fontSize: 14 },
   dotEmojiIdle: { opacity: 0.45 },
 
   label: {
@@ -386,9 +390,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     marginTop:  4,
     letterSpacing: 0.2,
   },
-  labelActive: { color: '#FF7A3C', fontWeight: '800' },
+  labelActive: { color: c.primaryText, fontWeight: '800' },
   labelDone:   { color: c.text, fontWeight: '700' },
-  labelReject: { color: c.muted2 },
+  labelReject: { color: c.mutedDim },
 
   subCtaRow: {
     flexDirection: 'row',
@@ -397,10 +401,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap: 4,
     paddingVertical:   6,
     paddingHorizontal: Spacing.sm,
-    backgroundColor:   'rgba(255,122,60,0.08)',
+    backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.20)',
+    borderWidth:       Border,
+    borderColor:       c.primaryTint,
   },
-  subCta: { color: '#FF7A3C', fontWeight: '700', fontSize: FontSizes.xs + 1 },
+  subCta: { color: c.primaryOnTint, fontWeight: '700', fontSize: FontSizes.xs + 1 },
 });

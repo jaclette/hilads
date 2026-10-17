@@ -5,10 +5,11 @@ import {
   StyleSheet, ActivityIndicator, Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchChannelParticipants, kickChallengeParticipant, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, UserDTO } from '@/types';
 
@@ -124,9 +125,12 @@ export function ChallengeChannelMembersSheet({
       <View style={styles.sheet}>
         <View style={styles.handle} />
         <View style={styles.header}>
-          <Text style={styles.title}>👥 {t('members.countIn', { count: rows.length || count })}</Text>
+          <View style={styles.titleRow}>
+            <Ionicons name="people-outline" size={20} color={colors.text} />
+            <Text style={styles.title}>{t('members.countIn', { count: rows.length || count })}</Text>
+          </View>
           <TouchableOpacity onPress={onClose} hitSlop={12}>
-            <Text style={styles.close}>✕</Text>
+            <Ionicons name="close" size={20} color={colors.muted} />
           </TouchableOpacity>
         </View>
 
@@ -215,10 +219,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginTop: 8, marginBottom: 4 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   title:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  close:  { fontSize: 18, color: c.muted, fontWeight: '700' },
   list:   { paddingHorizontal: Spacing.md },
   listContent: { paddingBottom: Spacing.md },
   empty:  { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg, fontStyle: 'italic' },
@@ -226,20 +230,20 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 },
   rowMain:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, minWidth: 0 },
   avatar:     { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.md },
+  avatarText: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
   rowInfo:    { flex: 1, minWidth: 0 },
   nameRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   name:       { fontSize: FontSizes.md, fontWeight: '600', color: c.text, flexShrink: 1 },
 
-  roleBadge:  { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
-  roleBadgeChallenger: { backgroundColor: 'rgba(255,122,60,0.14)', borderColor: 'rgba(255,122,60,0.30)' },
-  roleBadgeTaker:      { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.28)' },
-  roleBadgeSpectator:  { backgroundColor: 'rgba(148,163,184,0.10)', borderColor: 'rgba(148,163,184,0.24)' },
+  roleBadge:  { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: Border },
+  roleBadgeChallenger: { backgroundColor: c.primaryTint, borderColor: c.primary },
+  roleBadgeTaker:      { backgroundColor: c.localBg,     borderColor: c.localText },
+  roleBadgeSpectator:  { backgroundColor: c.bg3,         borderColor: c.line },
   roleBadgeText:       { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 },
-  roleBadgeTextChallenger: { color: '#FFB37A' },
-  roleBadgeTextTaker:      { color: '#4ADE80' },
-  roleBadgeTextSpectator:  { color: '#94A3B8' },
+  roleBadgeTextChallenger: { color: c.primaryOnTint },
+  roleBadgeTextTaker:      { color: c.localText },
+  roleBadgeTextSpectator:  { color: c.muted },
 
-  kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: c.overlayStrong },
+  kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: Border, borderColor: c.line },
   kickBtnText:{ fontSize: 12, fontWeight: '700', color: c.muted },
 });

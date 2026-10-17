@@ -146,6 +146,8 @@ export const Colors = {
   travelerBg:    '#17263A',   // Traveler label
   travelerText:  '#9DBDF0',
   gold:          '#D9AE52',   // Local Pass seal
+  goldTint:      '#3A2E14',   // gold-tinted ground (podium, crown badges)
+  onGold:        '#1A1206',   // text on a gold fill (both themes)
   // Fixed, theme-independent: text on the caramel own-bubble, and the black
   // photo viewer / camera with its translucent controls.
   onCaramelMuted: 'rgba(255,255,255,0.78)',
@@ -198,6 +200,8 @@ export const LightColors: ThemeColors = {
   travelerBg:    '#E4ECF7',
   travelerText:  '#2F5E9E',
   gold:          '#B98A2E',
+  goldTint:      '#F6EBCF',
+  onGold:        '#1A1206',
   // Fixed, theme-independent: text on the caramel own-bubble, and the black
   // photo viewer / camera with its translucent controls.
   onCaramelMuted: 'rgba(255,255,255,0.78)',

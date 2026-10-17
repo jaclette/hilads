@@ -53,15 +53,17 @@ import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { ShareToWorldPill } from '@/components/ShareToWorldPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 
-const TYPE_ICONS: Record<ChallengeType, string> = {
-  food:    '🍜',
-  place:   '📍',
-  culture: '🎭',
-  help:    '🤪',
+// Outline icon per challenge type (V3: no emoji as chrome).
+type IoniconName = keyof typeof Ionicons.glyphMap;
+const TYPE_ICONS: Record<ChallengeType, IoniconName> = {
+  food:    'restaurant-outline',
+  place:   'location-outline',
+  culture: 'color-palette-outline',
+  help:    'happy-outline',
 };
 
 // Campaign celebration fires once per challenge per app session (so re-opening
@@ -985,7 +987,7 @@ export default function ChallengeChatScreen() {
   if (challengeLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       </SafeAreaView>
     );
   }
@@ -1008,7 +1010,7 @@ export default function ChallengeChatScreen() {
     locals:    t('forLocals'),
     explorers: t('forExplorers'),
   };
-  const typeIcon = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
+  const typeIcon: IoniconName = TYPE_ICONS[challenge.challenge_type] ?? 'flame-outline';
   const isValidated = challenge.status === 'validated';
   // Ended = meet date / deadline passed and never validated. The creator gets a
   // Restart pill (reopens with the same countdown); others see "Ended".
@@ -1086,7 +1088,7 @@ export default function ChallengeChatScreen() {
             </View>
           ) : null}
         </View>
-        <Text style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no">{typeIcon}</Text>
+        <Ionicons name={typeIcon} size={28} color={colors.primaryText} style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no" />
       </View>
 
       {/* Collapsible region - badges, pipeline, owner actions, challenger row
@@ -1115,21 +1117,25 @@ export default function ChallengeChatScreen() {
               "This contest is done" line below, saving vertical space). */}
           {(isValidated || isClosed) ? (
             <View style={[styles.statusPill, styles.statusPillDone]}>
-              <Text style={[styles.statusPillText, styles.statusPillTextDone]}>✓ {t('status.done', { defaultValue: 'Done' })}</Text>
+              <Ionicons name="checkmark" size={11} color={colors.localText} />
+              <Text style={[styles.statusPillText, styles.statusPillTextDone]}>{t('status.done', { defaultValue: 'Done' })}</Text>
             </View>
           ) : isEnded ? (
             isOwner ? (
               <TouchableOpacity style={[styles.statusPill, styles.statusPillRestart]} onPress={handleRelaunch} activeOpacity={0.8}>
-                <Text style={[styles.statusPillText, styles.statusPillTextRestart]}>🔄 {t('relaunch.cta', { defaultValue: 'Restart' })}</Text>
+                <Ionicons name="refresh-outline" size={11} color={colors.white} />
+                <Text style={[styles.statusPillText, styles.statusPillTextRestart]}>{t('relaunch.cta', { defaultValue: 'Restart' })}</Text>
               </TouchableOpacity>
             ) : (
               <View style={[styles.statusPill, styles.statusPillEnded]}>
-                <Text style={[styles.statusPillText, styles.statusPillTextEnded]}>⌛ {t('status.ended', { defaultValue: 'Ended' })}</Text>
+                <Ionicons name="hourglass-outline" size={11} color={colors.mutedDim} />
+                <Text style={[styles.statusPillText, styles.statusPillTextEnded]}>{t('status.ended', { defaultValue: 'Ended' })}</Text>
               </View>
             )
           ) : (
             <View style={[styles.statusPill, styles.statusPillLive]}>
-              <Text style={[styles.statusPillText, styles.statusPillTextLive]}>🟢 {t('status.live', { defaultValue: 'Live' })}</Text>
+              <View style={styles.statusLiveDot} />
+              <Text style={[styles.statusPillText, styles.statusPillTextLive]}>{t('status.live', { defaultValue: 'Live' })}</Text>
             </View>
           )}
           {/* Audience / mode pill - Local rows get the audience target
@@ -1144,9 +1150,10 @@ export default function ChallengeChatScreen() {
             const cityTail = challengeTargetCityName ? `  ·  ${challengeTargetCityName}` : '';
             const label    = fromFlag
               ? `${fromFlag} → ${toFlag}${cityTail}`
-              : `🌐 ${t('mode.international')}${cityTail}`;
+              : `${t('mode.international')}${cityTail}`;
             return (
               <View style={styles.intlPill}>
+                {!fromFlag && <Ionicons name="globe-outline" size={12} color={colors.travelerText} />}
                 <Text style={styles.intlPillText} numberOfLines={1}>{label}</Text>
               </View>
             );
@@ -1160,7 +1167,7 @@ export default function ChallengeChatScreen() {
             activeOpacity={0.75}
             accessibilityLabel={t('shareCta')}
           >
-            <Ionicons name="share-social-outline" size={14} color="#c4b5fd" />
+            <Ionicons name="share-social-outline" size={14} color={colors.primaryText} />
             <Text style={[styles.sharePillInlineText, styles.sharePillInlineShareText]} numberOfLines={1}>
               {t('shareCta')}
             </Text>
@@ -1204,7 +1211,7 @@ export default function ChallengeChatScreen() {
               activeOpacity={0.75}
               accessibilityLabel={t('join.leaveCta')}
             >
-              <Ionicons name="exit-outline" size={14} color="#FF7A3C" />
+              <Ionicons name="exit-outline" size={14} color={colors.primaryText} />
               <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('join.leaveCta')}</Text>
             </TouchableOpacity>
           )}
@@ -1229,6 +1236,10 @@ export default function ChallengeChatScreen() {
               effective === 'friends' ? styles.visibilityPillTextFriends :
               effective === 'private' ? styles.visibilityPillTextPrivate :
               styles.visibilityPillTextPublic;
+            const caretColor =
+              effective === 'friends' ? colors.travelerText :
+              effective === 'private' ? colors.red :
+              colors.primaryOnTint;
             const busyAny = visBusy || closeBusy;
             return (
               <TouchableOpacity
@@ -1242,7 +1253,7 @@ export default function ChallengeChatScreen() {
                   {busyAny ? '…' : t(labelKey)}
                 </Text>
                 {tapable && (
-                  <Text style={[styles.sharePillInlineText, textTint, { fontSize: 9, marginLeft: 2 }]}>▾</Text>
+                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: 2 }} />
                 )}
               </TouchableOpacity>
             );
@@ -1258,7 +1269,7 @@ export default function ChallengeChatScreen() {
               activeOpacity={0.75}
               accessibilityLabel={t('leaveTakeon.pill')}
             >
-              <Text style={[styles.sharePillInlineText, { color: '#ff6b6b' }]} numberOfLines={1}>
+              <Text style={[styles.sharePillInlineText, { color: colors.red }]} numberOfLines={1}>
                 {t('leaveTakeon.pill')}
               </Text>
             </TouchableOpacity>
@@ -1272,7 +1283,7 @@ export default function ChallengeChatScreen() {
               activeOpacity={0.75}
               accessibilityLabel={t('manage.cta')}
             >
-              <Ionicons name="settings-outline" size={14} color="#FF7A3C" />
+              <Ionicons name="settings-outline" size={14} color={colors.primaryText} />
               <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('manage.cta')}</Text>
             </TouchableOpacity>
           )}
@@ -1292,8 +1303,13 @@ export default function ChallengeChatScreen() {
               <View style={styles.groupMeetCard}>
                 <Text style={styles.groupMeetLine} numberOfLines={2}>
                   {isGroupPhoto
-                    ? `⏳ ${t('group.deadlinePrefix', { defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
-                    : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
+                    ? <><Ionicons name="hourglass-outline" size={12} color={colors.muted} />{` ${t('group.deadlinePrefix', { defaultValue: 'Submit by' })} ${meetSummary ?? ''}`}</>
+                    : <>
+                        <Ionicons name="calendar-outline" size={12} color={colors.muted} />{` ${meetSummary ?? ''}`}
+                        {isGroupMeet && challenge.venue
+                          ? <>{'   ·   '}<Ionicons name="location-outline" size={12} color={colors.muted} />{` ${challenge.venue}`}</>
+                          : null}
+                      </>}
                 </Text>
               </View>
             ) : null}
@@ -1303,7 +1319,7 @@ export default function ChallengeChatScreen() {
               isGroupPhoto ? null : !meetStarted ? (
                 // Before the meet's start time there's nothing to validate yet.
                 <Text style={styles.groupStateText}>
-                  ⏳ {t('group.validateAfter', { time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
+                  <Ionicons name="hourglass-outline" size={14} color={colors.green} /> {t('group.validateAfter', { time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
                 </Text>
               ) : (
                 <TouchableOpacity style={styles.groupPrimaryBtn} activeOpacity={0.85} onPress={() => setValidateOpen(true)}>
@@ -1314,7 +1330,7 @@ export default function ChallengeChatScreen() {
               )
             ) : iAmJoined ? (
               <Text style={styles.groupStateText}>
-                ✓ {isGroupPhoto
+                <Ionicons name="checkmark" size={14} color={colors.green} /> {isGroupPhoto
                   ? t('group.youreInPhoto', { defaultValue: "You're in — submit your photo below." })
                   : t('group.youreIn', { defaultValue: "You're in — see you there!" })}
               </Text>
@@ -1328,9 +1344,12 @@ export default function ChallengeChatScreen() {
                 <Text style={styles.groupPrimaryBtnText}>
                   {challenge.closed_to_new_joins
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
-                    : `＋ ${isGroupPhoto
-                        ? t('group.joinContestCta', { defaultValue: 'Join the challenge (+2 pts)' })
-                        : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}`}
+                    : <>
+                        <Ionicons name="add" size={16} color={colors.white} />{' '}
+                        {isGroupPhoto
+                          ? t('group.joinContestCta', { defaultValue: 'Join the challenge (+2 pts)' })
+                          : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}
+                      </>}
                 </Text>
               </TouchableOpacity>
             )}
@@ -1505,7 +1524,7 @@ export default function ChallengeChatScreen() {
             </View>
             <View style={styles.challengerInfo}>
               <Text style={styles.challengerName} numberOfLines={1}>{creator.displayName}</Text>
-              <Text style={styles.challengerTag}>👑 {t('challengerTag')}</Text>
+              <Text style={styles.challengerTag}><Ionicons name="ribbon-outline" size={11} color={colors.primaryText} /> {t('challengerTag')}</Text>
             </View>
           </TouchableOpacity>
 
@@ -1575,9 +1594,9 @@ export default function ChallengeChatScreen() {
                 accessibilityLabel={t('acceptCta')}
               >
                 {acceptBusy
-                  ? <ActivityIndicator color="#FF7A3C" size="small" />
+                  ? <ActivityIndicator color={colors.primary} size="small" />
                   : <>
-                      <Ionicons name="add" size={20} color="#FF7A3C" />
+                      <Ionicons name="add" size={20} color={colors.primaryText} />
                       <Text style={styles.acceptCtaFullText}>{t('pipeline.subcta.tapToAccept')}</Text>
                     </>}
               </TouchableOpacity>
@@ -1606,7 +1625,7 @@ export default function ChallengeChatScreen() {
           activeOpacity={0.85}
           accessibilityRole="button"
         >
-          <Text style={styles.ownerInviteCtaIcon}>⚡</Text>
+          <Ionicons name="flash-outline" size={14} color={colors.travelerText} style={styles.ownerInviteCtaIcon} />
           <Text style={styles.ownerInviteCtaText} numberOfLines={1}>
             {t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
           </Text>
@@ -1714,7 +1733,7 @@ export default function ChallengeChatScreen() {
                   accessibilityLabel={i18n.t('close', { ns: 'common' })}
                   style={styles.guestWelcomeClose}
                 >
-                  <Ionicons name="close" size={16} color={colors.muted2} />
+                  <Ionicons name="close" size={16} color={colors.mutedDim} />
                 </TouchableOpacity>
               </View>
             ) : null}
@@ -1781,7 +1800,7 @@ export default function ChallengeChatScreen() {
               ) : null}
               ListEmptyComponent={!msgsLoading ? (
                 <View style={styles.emptyChat}>
-                  <Text style={styles.emptyChatEmoji}>👋</Text>
+                  <Ionicons name="hand-right-outline" size={36} color={colors.muted} style={styles.emptyChatEmoji} />
                   {/* PR61 - the local copy talks about agreeing on a meet-up
                       date; international challenges have no meet-up step
                       (the flow is submit photo → verdict), so the date hint
@@ -1864,7 +1883,7 @@ export default function ChallengeChatScreen() {
             if (!challengeIsPublic && iAmParticipant === false) {
               return (
                 <View style={styles.lockedWrap}>
-                  <Text style={styles.lockedEmoji}>🔒</Text>
+                  <Ionicons name="lock-closed-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>{t('lock.private.title')}</Text>
                   <Text style={styles.lockedBody}>{t('lock.private.body')}</Text>
                 </View>
@@ -1881,7 +1900,7 @@ export default function ChallengeChatScreen() {
               const acceptorName = myAcceptance.counterparty.displayName || '?';
               return (
                 <View style={styles.lockedWrap}>
-                  <Text style={styles.lockedEmoji}>🤝</Text>
+                  <Ionicons name="people-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>
                     {t('takeon.creator.pendingTitle', { name: acceptorName })}
                   </Text>
@@ -1919,7 +1938,7 @@ export default function ChallengeChatScreen() {
               const creatorName = myAcceptance?.counterparty.displayName || '?';
               return (
                 <View style={styles.lockedWrap}>
-                  <Text style={styles.lockedEmoji}>⏳</Text>
+                  <Ionicons name="hourglass-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>{t('takeon.acceptor.waitingTitle')}</Text>
                   <Text style={styles.lockedBody}>{t('takeon.acceptor.waitingBody', { name: creatorName })}</Text>
                 </View>
@@ -1929,7 +1948,7 @@ export default function ChallengeChatScreen() {
               const creatorName = myAcceptance?.counterparty.displayName || '?';
               return (
                 <View style={styles.lockedWrap}>
-                  <Text style={styles.lockedEmoji}>✕</Text>
+                  <Ionicons name="close" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>{t('takeon.acceptor.rejectedTitle')}</Text>
                   <Text style={styles.lockedBody}>{t('takeon.acceptor.rejectedBody', { name: creatorName })}</Text>
                 </View>
@@ -1942,7 +1961,7 @@ export default function ChallengeChatScreen() {
             if (!isOwner && inProgress) {
               return (
                 <View style={styles.lockedWrap}>
-                  <Text style={styles.lockedEmoji}>⏳</Text>
+                  <Ionicons name="hourglass-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>{t('locked.inProgress.title')}</Text>
                   <Text style={styles.lockedBody}>{t('locked.inProgress.body')}</Text>
                 </View>
@@ -1952,7 +1971,7 @@ export default function ChallengeChatScreen() {
             // Default - visitor (available) or empty-creator state.
             return (
               <View style={styles.lockedWrap}>
-                <Text style={styles.lockedEmoji}>🔒</Text>
+                <Ionicons name="lock-closed-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                 <Text style={styles.lockedTitle}>
                   {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
                 </Text>
@@ -2029,9 +2048,9 @@ export default function ChallengeChatScreen() {
               <Ionicons
                 name={isValidated ? 'checkmark-circle' : 'lock-closed-outline'}
                 size={18}
-                color={isValidated ? '#22c55e' : colors.text}
+                color={isValidated ? colors.localText : colors.text}
               />
-              <Text style={[styles.manageRowText, isValidated && { color: '#22c55e' }]}>
+              <Text style={[styles.manageRowText, isValidated && { color: colors.localText }]}>
                 {isValidated ? t('reopenCta') : t('closeCta')}
               </Text>
             </TouchableOpacity>
@@ -2042,8 +2061,8 @@ export default function ChallengeChatScreen() {
                 onPress={() => { setManageOpen(false); handleRestart(); }}
                 activeOpacity={0.75}
               >
-                <Ionicons name="refresh-outline" size={18} color="#FF7A3C" />
-                <Text style={[styles.manageRowText, { color: '#FF7A3C' }]}>{t('restart.cta')}</Text>
+                <Ionicons name="refresh-outline" size={18} color={colors.primaryText} />
+                <Text style={[styles.manageRowText, { color: colors.primaryText }]}>{t('restart.cta')}</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
@@ -2051,8 +2070,8 @@ export default function ChallengeChatScreen() {
               onPress={() => { setManageOpen(false); handleDelete(); }}
               activeOpacity={0.75}
             >
-              <Ionicons name="trash-outline" size={18} color="#fca5a5" />
-              <Text style={[styles.manageRowText, { color: '#fca5a5' }]}>{t('deleteConfirm')}</Text>
+              <Ionicons name="trash-outline" size={18} color={colors.red} />
+              <Text style={[styles.manageRowText, { color: colors.red }]}>{t('deleteConfirm')}</Text>
             </TouchableOpacity>
           </View>
         </Modal>
@@ -2102,7 +2121,7 @@ export default function ChallengeChatScreen() {
               onPress={() => setProofSpecOpen(false)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.manageRowText, { color: '#FF7A3C' }]}>OK</Text>
+              <Text style={[styles.manageRowText, { color: colors.primaryText }]}>OK</Text>
             </TouchableOpacity>
           </View>
         </Modal>
@@ -2130,7 +2149,7 @@ export default function ChallengeChatScreen() {
               return (
                 <TouchableOpacity
                   key={opt}
-                  style={[styles.manageRow, selected && { backgroundColor: 'rgba(255,122,60,0.10)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.40)' }]}
+                  style={[styles.manageRow, selected && { backgroundColor: colors.primaryTint, borderWidth: Border, borderColor: colors.primary }]}
                   onPress={() => handlePickVisibility(opt)}
                   disabled={visBusy || closeBusy}
                   activeOpacity={0.75}
@@ -2252,8 +2271,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor:   c.bg2,
     borderRadius:      Radius.md,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.30)',
+    borderWidth:       Border,
+    borderColor:       c.primary,
   },
   guestWelcomeBody: {
     flex: 1,
@@ -2265,7 +2284,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight: '600',
   },
   guestWelcomeCta: {
-    color:      c.accent,
+    color:      c.primaryText,
     fontSize:   FontSizes.sm,
     fontWeight: '700',
   },
@@ -2281,15 +2300,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: c.border,
+    borderBottomColor: c.line,
     gap:               Spacing.sm,
   },
   backPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 10, paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: c.overlay,
-    borderWidth: 1, borderColor: c.overlayStrong,
+    backgroundColor: c.bg3,
+    borderWidth: Border, borderColor: c.line,
   },
   backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
@@ -2308,69 +2327,73 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical:   Spacing.md,
     gap:               Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: c.border,
+    borderBottomColor: c.line,
   },
   badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
 
   kindBadge: {
-    backgroundColor:   'rgba(255,122,60,0.14)',
+    backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
     paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth:       1, borderColor: 'rgba(255,122,60,0.30)',
+    borderWidth:       Border, borderColor: c.primary,
   },
-  kindBadgeText: { fontSize: 10, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.5 },
+  kindBadgeText: { fontSize: 10, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
 
-  statusPill:          { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
-  statusPillDone:      { backgroundColor: 'rgba(34,197,94,0.14)',  borderColor: 'rgba(34,197,94,0.34)' },
-  statusPillLive:      { backgroundColor: 'rgba(255,201,60,0.14)', borderColor: 'rgba(255,201,60,0.34)' },
-  statusPillEnded:     { backgroundColor: c.overlay, borderColor: c.overlayStrong },
-  statusPillRestart:   { backgroundColor: c.accent, borderColor: 'transparent' },
+  // Row so the leading stroke icon (checkmark / refresh / hourglass / live
+  // dot) sits next to the label.
+  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: Border },
+  statusPillDone:      { backgroundColor: c.localBg,  borderColor: c.localText },
+  statusPillLive:      { backgroundColor: c.goldTint, borderColor: c.gold },
+  statusPillEnded:     { backgroundColor: c.bg3, borderColor: c.line },
+  statusPillRestart:   { backgroundColor: c.primary, borderColor: 'transparent' },
   statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
-  statusPillTextDone:  { color: '#22c55e' },
-  statusPillTextLive:  { color: '#FFC93C' },
-  statusPillTextEnded: { color: c.muted2 },
-  statusPillTextRestart: { color: '#fff' },
+  statusPillTextDone:  { color: c.localText },
+  statusPillTextLive:  { color: c.gold },
+  statusPillTextEnded: { color: c.mutedDim },
+  statusPillTextRestart: { color: c.white },
+  statusLiveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: c.green },
 
   // Violet tint - see ChallengeVersusCard for the rationale (distinct from
   // orange brand + green validated, the other pills on the same row).
   audiencePill: {
-    backgroundColor:   'rgba(139,92,246,0.12)',
+    backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
     paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth:       1, borderColor: 'rgba(139,92,246,0.32)',
+    borderWidth:       Border, borderColor: c.primary,
   },
-  audiencePillText: { fontSize: 11, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
+  audiencePillText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
   intlPill: {
-    backgroundColor:   'rgba(56,189,248,0.12)',
+    flexDirection:     'row', alignItems: 'center', gap: 4,
+    backgroundColor:   c.travelerBg,
     borderRadius:      Radius.full,
     paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth:       1, borderColor: 'rgba(56,189,248,0.36)',
+    borderWidth:       Border, borderColor: c.travelerText,
     flexShrink:        1,
   },
-  intlPillText: { fontSize: 11, fontWeight: '700', color: '#38bdf8', letterSpacing: 0.3 },
+  intlPillText: { fontSize: 11, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
 
   // Share inline pill - same height/padding as the kind + audience pills so
   // the three sit on a single row without alignment drift. Orange brand tint
   // because Share is the most user-facing growth lever on this screen.
   sharePillInline: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor:   'rgba(255,122,60,0.10)',
+    backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
     paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth:       1, borderColor: 'rgba(255,122,60,0.30)',
+    borderWidth:       Border, borderColor: c.primary,
   },
-  sharePillInlineText: { fontSize: 11, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.3 },
+  sharePillInlineText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
-  // Share gets its own violet tint - distinct from the orange admin
-  // pills (Manage / Leave / Visibility-public-default).
+  // Share - V3 drops the legacy violet: same primary tint as the other
+  // inline pills (kept as a separate style so it can diverge again).
   sharePillInlineShare: {
-    backgroundColor: 'rgba(167,139,250,0.10)',
-    borderColor:     'rgba(167,139,250,0.35)',
+    backgroundColor: c.primaryTint,
+    borderColor:     c.primary,
   },
-  sharePillInlineShareText: { color: '#c4b5fd' },
+  sharePillInlineShareText: { color: c.primaryText },
 
   // Collapse chevron at the far right of badgeRow - toggles the channel-
   // header details (second pill row + pipeline + proof + members strip).
@@ -2379,7 +2402,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   detailsToggle: {
     width: 26, height: 26, borderRadius: 13,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: c.overlayStrong,
+    borderWidth: Border, borderColor: c.line,
     marginLeft: 'auto',
   },
 
@@ -2391,7 +2414,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
   groupMeetCard:  {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: c.bg2, borderRadius: 10, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.bg2, borderRadius: 10, borderWidth: Border, borderColor: c.line,
     paddingHorizontal: Spacing.md, paddingVertical: 6,
   },
   groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: c.muted },
@@ -2400,27 +2423,26 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
     paddingVertical: 14, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#FF7A3C',
-    shadowColor: '#FF7A3C', shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    // V3: flat primary fill (no glow shadow).
+    backgroundColor: c.primary,
   },
-  groupPrimaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
+  groupPrimaryBtnText: { color: c.white, fontSize: 15, fontWeight: '800' },
 
   // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into
   // pill/text objects so the View vs Text types stay clean.
-  visibilityPillPublic:      { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.30)' },
-  visibilityPillFriends:     { backgroundColor: 'rgba(147,197,253,0.10)', borderColor: 'rgba(147,197,253,0.30)' },
-  visibilityPillPrivate:     { backgroundColor: 'rgba(252,165,165,0.10)', borderColor: 'rgba(252,165,165,0.30)' },
-  visibilityPillTextPublic:  { color: '#FFB37A' },
-  visibilityPillTextFriends: { color: '#93c5fd' },
-  visibilityPillTextPrivate: { color: '#fca5a5' },
+  visibilityPillPublic:      { backgroundColor: c.primaryTint, borderColor: c.primary },
+  visibilityPillFriends:     { backgroundColor: c.travelerBg, borderColor: c.travelerText },
+  visibilityPillPrivate:     { backgroundColor: 'transparent', borderColor: c.red },
+  visibilityPillTextPublic:  { color: c.primaryOnTint },
+  visibilityPillTextFriends: { color: c.travelerText },
+  visibilityPillTextPrivate: { color: c.red },
 
   // Close-to-new-joins pill - on-state retints to a deeper orange so the
   // creator can see at a glance whether the channel is locked.
   closedPillOn: {
-    backgroundColor: 'rgba(255,122,60,0.20)',
-    borderColor:     'rgba(255,122,60,0.55)',
+    backgroundColor: c.primaryTint,
+    borderColor:     c.primary,
   },
 
   // (Old status-pill styles removed - the ChallengePipeline component owns
@@ -2458,14 +2480,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical:   Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       'rgba(56,189,248,0.45)',
-    backgroundColor:   'rgba(56,189,248,0.10)',
+    borderWidth:       Border,
+    borderColor:       c.travelerText,
+    backgroundColor:   c.travelerBg,
     marginTop:         Spacing.sm,
     alignSelf:         'center',
   },
   ownerInviteCtaIcon: { fontSize: 14, lineHeight: 18 },
-  ownerInviteCtaText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#38bdf8', flexShrink: 1 },
+  ownerInviteCtaText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.travelerText, flexShrink: 1 },
 
   // Challenger row - the creator, distinguished from regular participants
   // with a 👑 pill in brand orange. Bigger avatar (44px) so the originating
@@ -2473,7 +2495,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   challengerRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: c.border,
+    borderBottomWidth: 1, borderBottomColor: c.line,
   },
   // Left half of the row stays tappable as a profile link; right half
   // hosts the inline quick actions.
@@ -2488,10 +2510,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     overflow: 'hidden',
   },
-  challengerAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 18 },
+  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: 18 },
   challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  challengerTag:  { fontSize: 11, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
+  challengerTag:  { fontSize: 11, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
 
   // Inline quick-action group - Share is a labeled pill (verb is the
   // social hook), Accept is the compact icon-only round next to it.
@@ -2503,25 +2525,25 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     height:           36,
     paddingHorizontal: 12,
     borderRadius:     18,
-    backgroundColor:  'rgba(255,122,60,0.10)',
-    borderWidth:      1,
-    borderColor:      'rgba(255,122,60,0.30)',
+    backgroundColor:  c.primaryTint,
+    borderWidth:      Border,
+    borderColor:      c.primary,
     maxWidth:         200,
   },
-  sharePillText: { color: '#FF7A3C', fontSize: 12, fontWeight: '800', letterSpacing: 0.1 },
+  sharePillText: { color: c.primaryText, fontSize: 12, fontWeight: '800', letterSpacing: 0.1 },
   quickBtn: {
     width:           36,
     height:          36,
     borderRadius:    18,
     alignItems:      'center',
     justifyContent:  'center',
-    backgroundColor: 'rgba(255,122,60,0.10)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,122,60,0.30)',
+    backgroundColor: c.primaryTint,
+    borderWidth:     Border,
+    borderColor:     c.primary,
   },
   quickBtnAcceptIn: {
-    backgroundColor: '#FF7A3C',
-    borderColor:     '#FF7A3C',
+    backgroundColor: c.primary,
+    borderColor:     c.primary,
   },
 
   // Participants row - always shown for non-owners so the Accept button
@@ -2529,7 +2551,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   participantsRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: c.border,
+    borderBottomWidth: 1, borderBottomColor: c.line,
   },
   participantsInfo: {
     flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
@@ -2546,28 +2568,28 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap: 6,
     paddingHorizontal: Spacing.md, paddingVertical: 10,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,122,60,0.10)',
-    borderWidth: 1, borderColor: 'rgba(255,122,60,0.35)',
+    backgroundColor: c.primaryTint,
+    borderWidth: Border, borderColor: c.primary,
   },
   acceptCtaFullText: {
-    color: '#FF7A3C', fontWeight: '800', fontSize: FontSizes.sm,
+    color: c.primaryText, fontWeight: '800', fontSize: FontSizes.sm,
   },
   acceptCompact: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 12, paddingVertical: 7,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,122,60,0.10)',
-    borderWidth: 1, borderColor: 'rgba(255,122,60,0.30)',
+    backgroundColor: c.primaryTint,
+    borderWidth: Border, borderColor: c.primary,
   },
   acceptCompactText: {
-    color: '#FF7A3C', fontWeight: '700', fontSize: FontSizes.xs ?? 12,
+    color: c.primaryText, fontWeight: '700', fontSize: FontSizes.xs ?? 12,
   },
 
   // Inline thread chat
   chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },
   loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
   emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
-  emptyChatEmoji:   { fontSize: 36 },
+  emptyChatEmoji:   { },
   emptyChatText:    { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 
   // Locked state - shown to visitors / creators with no acceptances yet.
@@ -2577,7 +2599,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flex: 1, alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: Spacing.xl, gap: 10,
   },
-  lockedEmoji: { fontSize: 40, opacity: 0.7 },
+  lockedEmoji: { opacity: 0.7 },
   lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
   lockedBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', maxWidth: 320 },
 
@@ -2587,10 +2609,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingVertical:   Spacing.sm + 2,
     borderRadius:      Radius.full,
-    backgroundColor:   '#FF7A3C',
+    backgroundColor:   c.primary,
   },
   joinCtaText: {
-    color:      '#1a0f00',
+    color:      c.white,
     fontSize:   FontSizes.md,
     fontWeight: '800',
   },
@@ -2616,16 +2638,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical: Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.md,
-    backgroundColor: c.overlayWeak,
+    backgroundColor: c.bg3,
   },
-  manageRowDanger: { backgroundColor: 'rgba(252,165,165,0.06)' },
+  // V3: red outline on a transparent ground instead of a red tint.
+  manageRowDanger: { backgroundColor: 'transparent', borderWidth: Border, borderColor: c.red },
   manageRowText:   { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   proofSpecBody:   {
     fontSize: FontSizes.sm, lineHeight: FontSizes.sm * 1.5,
     color: c.text,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 2,
-    backgroundColor:   c.overlayWeak,
+    backgroundColor:   c.bg3,
     borderRadius:      Radius.md,
   },
 
@@ -2640,18 +2663,18 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   10,
     borderRadius:      999,
-    backgroundColor:   c.overlay,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
+    backgroundColor:   c.bg3,
+    borderWidth:       Border,
+    borderColor:       c.line,
   },
   takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
   takeonAcceptBtn: {
     paddingHorizontal: 16,
     paddingVertical:   10,
     borderRadius:      999,
-    backgroundColor:   '#FF7A3C',
-    borderWidth:       1,
-    borderColor:       '#FF7A3C',
+    backgroundColor:   c.primary,
+    borderWidth:       Border,
+    borderColor:       c.primary,
   },
-  takeonAcceptText: { color: '#fff', fontSize: FontSizes.sm, fontWeight: '800' },
+  takeonAcceptText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
 });

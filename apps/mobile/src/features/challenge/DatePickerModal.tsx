@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
@@ -278,7 +278,7 @@ export function DatePickerModal({
                 <Ionicons
                   name="calendar-outline"
                   size={13}
-                  color={customDate !== null ? '#FF7A3C' : colors.muted}
+                  color={customDate !== null ? colors.primaryOnTint : colors.muted}
                   style={{ marginRight: 4 }}
                 />
                 <Text style={[styles.pillText, customDate !== null && styles.pillTextSelected]}>
@@ -312,7 +312,7 @@ export function DatePickerModal({
                 <Ionicons
                   name="time-outline"
                   size={13}
-                  color={customTime !== null ? '#FF7A3C' : colors.muted}
+                  color={customTime !== null ? colors.primaryOnTint : colors.muted}
                   style={{ marginRight: 4 }}
                 />
                 <Text style={[styles.pillText, customTime !== null && styles.pillTextSelected]}>
@@ -400,7 +400,7 @@ export function DatePickerModal({
                 <Ionicons
                   name="time-outline"
                   size={13}
-                  color={customEndTime !== null ? '#FF7A3C' : colors.muted}
+                  color={customEndTime !== null ? colors.primaryOnTint : colors.muted}
                   style={{ marginRight: 4 }}
                 />
                 <Text style={[styles.pillText, customEndTime !== null && styles.pillTextSelected]}>
@@ -445,7 +445,7 @@ export function DatePickerModal({
               value={venue}
               onChangeText={setVenue}
               placeholder={t('schedule.picker.wherePlaceholder')}
-              placeholderTextColor={colors.muted2}
+              placeholderTextColor={colors.mutedDim}
               maxLength={200}
               returnKeyType="done"
             />
@@ -476,13 +476,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   handle: {
     width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.muted2, opacity: 0.5,
+    backgroundColor: c.line,
     alignSelf: 'center', marginBottom: 12,
   },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.md, paddingBottom: 12,
-    borderBottomWidth: 1, borderBottomColor: c.border,
+    borderBottomWidth: 1, borderBottomColor: c.line,
   },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   scrollContent: { padding: Spacing.md, gap: Spacing.sm },
@@ -495,15 +495,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pill: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full,
-    backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line,
   },
   pillSelected: {
-    backgroundColor: 'rgba(255,122,60,0.14)', borderColor: '#FF7A3C',
+    backgroundColor: c.primaryTint, borderColor: c.primary,
   },
   pillText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
-  pillTextSelected: { color: '#FF7A3C', fontWeight: '800' },
+  pillTextSelected: { color: c.primaryOnTint, fontWeight: '800' },
   venueInput: {
-    backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line,
     borderRadius: Radius.md, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
     fontSize: FontSizes.md, color: c.text,
   },
@@ -512,7 +512,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // so it reads as another chip-grid section rather than a system overlay.
   nativePickerWrap: {
     backgroundColor: c.bg2,
-    borderWidth: 1, borderColor: c.border,
+    borderWidth: Border, borderColor: c.line,
     borderRadius: Radius.md,
     paddingVertical: Spacing.xs,
     marginTop: Spacing.xs,
@@ -522,7 +522,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
   },
   nativePickerDoneText: {
-    color: '#FF7A3C', fontWeight: '800', fontSize: FontSizes.sm, letterSpacing: 0.2,
+    color: c.primaryText, fontWeight: '800', fontSize: FontSizes.sm, letterSpacing: 0.2,
   },
   // Inline validation message shown under the END TIME chip grid when both
   // start and end are selected but end is not strictly after start.
@@ -531,7 +531,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   submit: {
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,
-    backgroundColor: '#FF7A3C', borderRadius: Radius.full,
+    backgroundColor: c.primary, borderRadius: Radius.full,
     paddingVertical: Spacing.md, alignItems: 'center',
   },
   submitDisabled: { opacity: 0.45 },

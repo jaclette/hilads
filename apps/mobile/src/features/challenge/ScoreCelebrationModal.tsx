@@ -3,7 +3,8 @@ import {
   Animated, Easing, Modal, Pressable, StyleSheet, Text, View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Ionicons } from '@expo/vector-icons';
+import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { countryToFlag } from '@/lib/countryFlag';
 import type { ScoreCelebration } from '@/api/challenges';
@@ -30,8 +31,8 @@ const KIND_KEYS: Record<string, string> = {
   meet_bonus:  'scoreCelebration.subtitle.meet_bonus',
 };
 
-// Per-kind short-label key + emoji used in the event rows. These are the
-// "what happened" chips (e.g. "🤝 Accepted") that sit next to each
+// Per-kind short-label key + icon used in the event rows. These are the
+// "what happened" chips (e.g. "[people] Accepted") that sit next to each
 // challenge title. Distinct from the subtitle keys above (which are full
 // sentences for the single-event lead).
 const KIND_SHORT_KEYS: Record<string, string> = {
@@ -43,14 +44,15 @@ const KIND_SHORT_KEYS: Record<string, string> = {
   ghost:       'scoreCelebration.kindShort.ghost',
   meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
 };
-const KIND_EMOJI: Record<string, string> = {
-  challenge_created: '🎯',
-  accepted:    '🤝',
-  date_locked: '🗓️',
-  meetup:      '🎉',
-  debrief:     '🎉',
-  ghost:       '👻',
-  meet_bonus:  '🤝',
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+const KIND_ICON: Record<string, IconName> = {
+  challenge_created: 'locate-outline',
+  accepted:    'people-outline',
+  date_locked: 'calendar-outline',
+  meetup:      'sparkles-outline',
+  debrief:     'sparkles-outline',
+  ghost:       'eye-off-outline',
+  meet_bonus:  'people-outline',
 };
 
 /**
@@ -58,7 +60,7 @@ const KIND_EMOJI: Record<string, string> = {
  * has unacknowledged score_events on the ledger. Friendly + animated:
  *   - Backdrop fades in
  *   - Card spring-scales from 0.85 → 1
- *   - Trophy emoji bounces in
+ *   - Trophy icon bounces in
  *   - Points headline counts up from 0 → total
  *   - Rank rows stagger-fade
  * The CTA closes; the parent's onClose acks the server watermark so the
@@ -194,9 +196,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
     ? t('scoreCelebration.rank.cities',       { rank: cityInCitiesRank, city: data.city_name ?? '' })
     : t('scoreCelebration.rank.citiesBeyond', { topN,                   city: data.city_name ?? '' });
 
-  const cityFlag  = countryToFlag(data.city_country ?? null) || '📍';
-  const worldFlag = '🌐';
-  const citiesFlag = '🏙️';
+  // Real country flag when known (content); otherwise a stroke icon.
+  const cityFlag  = countryToFlag(data.city_country ?? null);
 
   return (
     <Modal visible={visible} transparent statusBarTranslucent onRequestClose={onClose}>
@@ -217,9 +218,13 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
         >
           {/* Confetti gutter - purely decorative. Lives above the trophy so
               the eye lands on it first. */}
-          <Text style={styles.confetti}>✨   🎉   ✨</Text>
+          <View style={styles.confetti}>
+            <Ionicons name="sparkles-outline" size={14} color={colors.gold} />
+            <Ionicons name="sparkles" size={16} color={colors.gold} />
+            <Ionicons name="sparkles-outline" size={14} color={colors.gold} />
+          </View>
 
-          <Animated.Text
+          <Animated.View
             style={[
               styles.trophy,
               {
@@ -229,8 +234,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               },
             ]}
           >
-            🏆
-          </Animated.Text>
+            <Ionicons name="trophy-outline" size={38} color={colors.gold} />
+          </Animated.View>
 
           <Text style={styles.points}>
             +{displayPoints}
@@ -245,8 +250,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               style={[
                 styles.total,
                 {
-                  color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, '#FFC93C'] }),
-                  textShadowColor: '#FFC93C',
+                  color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, colors.gold] }),
+                  textShadowColor: colors.gold,
                   textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
                   transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
                 },
@@ -267,7 +272,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
           {data.events && data.events.length > 0 && (
             <View style={styles.events}>
               {data.events.map((ev) => {
-                const emoji   = KIND_EMOJI[ev.kind] ?? '🏆';
+                const icon    = KIND_ICON[ev.kind] ?? 'trophy-outline';
                 const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default';
                 const title   = ev.challenge_title
                   ?? t('scoreCelebration.event.deletedChallenge');
@@ -279,12 +284,15 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
                     </View>
                     <View style={styles.eventBody}>
                       <Text style={styles.eventTitle} numberOfLines={1}>{title}</Text>
-                      <Text
-                        style={[styles.eventKind, isBonus && styles.eventKindBonus]}
-                        numberOfLines={1}
-                      >
-                        {emoji} {t(kindKey)}
-                      </Text>
+                      <View style={styles.eventKindRow}>
+                        <Ionicons name={icon} size={12} color={isBonus ? colors.gold : colors.muted} />
+                        <Text
+                          style={[styles.eventKind, isBonus && styles.eventKindBonus]}
+                          numberOfLines={1}
+                        >
+                          {t(kindKey)}
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 );
@@ -316,10 +324,12 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               onPress={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
               accessibilityRole={onOpenLeaderboard ? 'button' : undefined}
             >
-              <Text style={styles.rowFlag}>{cityFlag}</Text>
+              {cityFlag
+                ? <Text style={styles.rowFlag}>{cityFlag}</Text>
+                : <Ionicons name="location-outline" size={20} color={colors.muted} style={styles.rowIcon} />}
               <Text style={styles.rowLabel} numberOfLines={1}>{cityRankCopy}</Text>
               {onOpenLeaderboard && (
-                <Text style={styles.rowChevron} aria-hidden>›</Text>
+                <Ionicons name="chevron-forward" size={18} color={colors.muted} />
               )}
             </Pressable>
           </Animated.View>
@@ -334,10 +344,10 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               onPress={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
               accessibilityRole={onOpenLeaderboard ? 'button' : undefined}
             >
-              <Text style={styles.rowFlag}>{worldFlag}</Text>
+              <Ionicons name="globe-outline" size={20} color={colors.muted} style={styles.rowIcon} />
               <Text style={styles.rowLabel} numberOfLines={1}>{worldRankCopy}</Text>
               {onOpenLeaderboard && (
-                <Text style={styles.rowChevron} aria-hidden>›</Text>
+                <Ionicons name="chevron-forward" size={18} color={colors.muted} />
               )}
             </Pressable>
           </Animated.View>
@@ -349,7 +359,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
           {data.city_id && (
             <Animated.View style={[{ opacity: row2, width: '100%' }]}>
               <View style={styles.row}>
-                <Text style={styles.rowFlag}>{citiesFlag}</Text>
+                <Ionicons name="business-outline" size={20} color={colors.muted} style={styles.rowIcon} />
                 <Text style={styles.rowLabel} numberOfLines={1}>{cityInCitiesCopy}</Text>
               </View>
             </Animated.View>
@@ -382,35 +392,41 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     maxWidth: 360,
     backgroundColor: c.bg2,
     borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255,122,60,0.32)',
+    borderWidth: Border,
+    borderColor: c.primary,
     paddingTop:    20,
     paddingBottom: 22,
     paddingHorizontal: 22,
     alignItems: 'center',
     // Warm-orange glow ring - the popin is the brand's "yay" moment, so we
     // lean into the accent here rather than the neutral surface chrome.
-    shadowColor:   '#FF7A3C',
+    shadowColor:   c.primary,
     shadowOpacity: 0.35,
     shadowRadius:  28,
     shadowOffset:  { width: 0, height: 0 },
     elevation:     12,
   },
   confetti: {
-    fontSize:     16,
-    letterSpacing: 4,
+    flexDirection: 'row',
+    alignItems:   'center',
+    gap:          16,
     marginBottom: 4,
     opacity:      0.85,
   },
+  // Round gold-tinted medallion; 72 px keeps the old emoji line height.
   trophy: {
-    fontSize:    64,
-    lineHeight:  72,
+    width:        72,
+    height:       72,
+    borderRadius: 36,
+    backgroundColor: c.goldTint,
+    alignItems:   'center',
+    justifyContent: 'center',
     marginBottom: 4,
   },
   points: {
     fontSize: 44,
     fontWeight: '900',
-    color: '#FF7A3C',
+    color: c.primaryText,
     letterSpacing: -0.5,
     textAlign: 'center',
     marginTop: 4,
@@ -450,23 +466,23 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap: 10,
     paddingVertical:   8,
     paddingHorizontal: 10,
-    backgroundColor: 'rgba(255,122,60,0.07)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,122,60,0.18)',
+    backgroundColor: c.bg3,
+    borderWidth: Border,
+    borderColor: c.line,
     borderRadius: Radius.md,
   },
   eventPoints: {
     minWidth: 44,
     paddingHorizontal: 8,
     paddingVertical:   4,
-    backgroundColor:   'rgba(255,122,60,0.18)',
+    backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
     alignItems:        'center',
   },
   eventPointsText: {
     fontSize:   FontSizes.sm,
     fontWeight: '900',
-    color:      '#FF7A3C',
+    color:      c.primaryOnTint,
     letterSpacing: 0.2,
   },
   eventBody: {
@@ -478,7 +494,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight: '700',
     color:      c.text,
   },
+  eventKindRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           4,
+  },
   eventKind: {
+    flexShrink: 1,
     fontSize:   FontSizes.xs,
     fontWeight: '600',
     color:      c.muted,
@@ -487,17 +509,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // "+50 Meet bonus" reads as a distinct extra reward rather than
   // another base-payout step. Background/border/pill all shift.
   eventRowBonus: {
-    backgroundColor: 'rgba(251,191,36,0.10)',
-    borderColor:     'rgba(251,191,36,0.34)',
+    backgroundColor: c.goldTint,
+    borderColor:     c.gold,
   },
   eventPointsBonus: {
-    backgroundColor: 'rgba(251,191,36,0.22)',
+    backgroundColor: c.gold,
   },
   eventPointsTextBonus: {
-    color: '#fbbf24',
+    color: c.onGold,
   },
   eventKindBonus: {
-    color: '#fbbf24',
+    color: c.gold,
   },
   eventsMore: {
     fontSize:   FontSizes.xs,
@@ -509,7 +531,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   divider: {
     width:   '60%',
     height:  1,
-    backgroundColor: c.overlay,
+    backgroundColor: c.line,
     marginBottom: 14,
   },
   row: {
@@ -523,15 +545,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   // PR38 - visual affordance for tappable rank rows.
   rowTappable: {
-    backgroundColor: c.overlayWeak,
+    backgroundColor: c.bg3,
   },
   rowPressed: {
-    backgroundColor: c.overlay,
+    backgroundColor: c.line,
     transform: [{ scale: 0.985 }],
   },
   rowFlag: {
     fontSize:   20,
     lineHeight: 24,
+  },
+  rowIcon: {
+    width: 24,
+    textAlign: 'center',
   },
   rowLabel: {
     flex: 1,
@@ -539,20 +565,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight: '700',
     color:      c.text,
   },
-  rowChevron: {
-    fontSize:   18,
-    lineHeight: 20,
-    color:      c.muted,
-  },
   cta: {
     marginTop: 16,
     paddingHorizontal: 24,
     paddingVertical:   14,
-    backgroundColor:   '#FF7A3C',
+    backgroundColor:   c.primary,
     borderRadius:      Radius.full,
     width: '100%',
     alignItems: 'center',
-    shadowColor:   '#FF7A3C',
+    shadowColor:   c.primary,
     shadowOpacity: 0.45,
     shadowRadius:  16,
     shadowOffset:  { width: 0, height: 6 },
@@ -561,7 +582,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ctaText: {
     fontSize:   FontSizes.md,
     fontWeight: '900',
-    color:      '#fff',
+    color:      c.white,
     letterSpacing: 0.3,
   },
 });
