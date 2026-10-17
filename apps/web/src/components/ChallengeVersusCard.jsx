@@ -7,6 +7,8 @@ import RankBadge from './RankBadge'
 import { countryToFlag } from '../lib/countryFlag'
 import { fetchChallengeParticipants } from '../api'
 import { avatarColors } from '../lib/avatarColors'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS } from '../lib/icons'
 
 /**
  * Versus-layout challenge card. Web mirror of the mobile
@@ -40,7 +42,7 @@ export default function ChallengeVersusCard({
   const { t } = useTranslation('challenge')
   const c = challenge
 
-  const typeIcon         = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[c.challenge_type] ?? '🔥'
+  const typeIcon         = CHALLENGE_TYPE_ICONS[c.challenge_type] ?? 'flame-outline'
   const audienceLabel    = c.audience === 'locals' ? t('forLocals') : t('forExplorers')
   // closed = completed (one-shot, no re-take) OR manually validated/archived;
   // both show the done badge instead of "available".
@@ -126,30 +128,30 @@ export default function ChallengeVersusCard({
         <div className="er-badges">
           <span className={`challenge-badge ${isGroupPhoto ? 'challenge-badge--photo' : 'challenge-badge--meet'}`}>
             {isGroupPhoto
-              ? `📸 ${t('card.photoBadge', { defaultValue: 'Photo proof' })}`
-              : `📍 ${t('card.meetBadge', { defaultValue: 'Meet' })}`}
+              ? <><Icon name="camera-outline" size={12} />{t('card.photoBadge', { defaultValue: 'Photo proof' })}</>
+              : <><Icon name="location-outline" size={12} />{t('card.meetBadge', { defaultValue: 'Meet' })}</>}
           </span>
           <span className="challenge-badge challenge-badge--kind">{t(`typeBadge.${c.challenge_type}`)}</span>
           {/* Photo-proof deadline lives up here with the status so the bottom
               row can carry the Join CTA. */}
           {!isValidated && !isEnded && isGroupPhoto && deadlineDaysLeft != null && (
             <span className="challenge-badge challenge-group-deadline" style={{ marginLeft: 'auto' }}>
-              ⏳ {deadlineDaysLeft >= 2
+              <Icon name="hourglass-outline" size={12} />{deadlineDaysLeft >= 2
                 ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
                 : t('card.lastDay', { defaultValue: 'Expires soon' })}
             </span>
           )}
           {isValidated ? (
             <span className="challenge-badge challenge-badge--validated" style={(!isGroupPhoto || deadlineDaysLeft == null) ? { marginLeft: 'auto' } : undefined}>
-              ✓ {t('validatedBadge')}
+              <Icon name="checkmark" size={12} />{t('validatedBadge')}
             </span>
           ) : isEnded ? (
             <span className="challenge-badge challenge-badge--ended" style={{ marginLeft: 'auto' }}>
-              ⌛ {t('card.ended', { defaultValue: 'Ended' })}
+              <Icon name="hourglass-outline" size={12} />{t('card.ended', { defaultValue: 'Ended' })}
             </span>
           ) : (
             <span className="challenge-badge challenge-badge--available" style={(!isGroupPhoto || deadlineDaysLeft == null) ? { marginLeft: 'auto' } : undefined}>
-              🟢 {t('card.available')}
+              <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: 3, background: 'currentColor' }} />{t('card.available')}
             </span>
           )}
         </div>
@@ -177,7 +179,7 @@ export default function ChallengeVersusCard({
           </span>
           <div className="challenge-group-headtext">
             <span className="er-title">
-              <span className="er-title-emoji">{typeIcon}</span>
+              <span className="er-title-emoji" aria-hidden="true"><Icon name={typeIcon} size={14} /></span>
               <span className="er-title-marquee">{c.title}</span>
             </span>
             {groupSubtitle ? <span className="challenge-group-subtitle">{groupSubtitle}</span> : null}
@@ -196,14 +198,14 @@ export default function ChallengeVersusCard({
                   {(!isGroupPhoto || submissionCount >= 1) && (
                     <span className="challenge-group-count">
                       {isGroupPhoto
-                        ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
+                        ? <><Icon name="camera-outline" size={13} /> {t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}</>
                         : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
                     </span>
                   )}
                 </span>
               ) : <span style={{ flex: 1 }} />}
               <span className="challenge-group-pill challenge-group-pill--ended">
-                ⌛ {t('card.awaitingResults', { defaultValue: 'Awaiting results' })}
+                <Icon name="hourglass-outline" size={13} />{t('card.awaitingResults', { defaultValue: 'Awaiting results' })}
               </span>
             </>
           ) : zeroParticipants ? (
@@ -224,7 +226,7 @@ export default function ChallengeVersusCard({
                 {(!isGroupPhoto || submissionCount >= 1) && (
                   <span className="challenge-group-count">
                     {isGroupPhoto
-                      ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
+                      ? <><Icon name="camera-outline" size={13} /> {t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}</>
                       : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
                   </span>
                 )}
@@ -232,7 +234,7 @@ export default function ChallengeVersusCard({
               {/* Join CTA - group challenges stay open, so always invite more
                   people in (meet AND photo). */}
               <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--join" onClick={acceptPill}>
-                {t('card.joinGroup', { defaultValue: 'Join the challenge' })} ⚡
+                {t('card.joinGroup', { defaultValue: 'Join the challenge' })}<Icon name="flash-outline" size={13} />
               </span>
             </>
           )}
@@ -244,8 +246,8 @@ export default function ChallengeVersusCard({
         <div className="gmp-backdrop" onClick={() => setPeek(null)}>
           <div className="gmp-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="gmp-head">
-              <span className="gmp-title">👥 {t('card.whoJoined', { count: participantCount, defaultValue: 'Who joined ({{count}})' })}</span>
-              <button type="button" className="gmp-close" onClick={() => setPeek(null)} aria-label="Close">✕</button>
+              <span className="gmp-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="people-outline" size={18} />{t('card.whoJoined', { count: participantCount, defaultValue: 'Who joined ({{count}})' })}</span>
+              <button type="button" className="gmp-close" onClick={() => setPeek(null)} aria-label="Close"><Icon name="close" size={18} /></button>
             </div>
             {peek.loading && peek.users.length === 0 ? (
               <p className="gmp-empty">…</p>
@@ -292,7 +294,7 @@ export default function ChallengeVersusCard({
       {/* Badge row - unchanged from the previous flat card. */}
       <div className="er-badges">
         {c.is_campaign && (
-          <span className="challenge-badge challenge-badge--campaign">⚡ {t('campaignBadge', { defaultValue: '2× points' })}</span>
+          <span className="challenge-badge challenge-badge--campaign"><Icon name="flash-outline" size={12} />{t('campaignBadge', { defaultValue: '2× points' })}</span>
         )}
         {isInternational
           ? (() => {
@@ -300,9 +302,9 @@ export default function ChallengeVersusCard({
               const toFlag   = countryToFlag(c.target_country) || '🌍'
               const label    = fromFlag
                 ? `${fromFlag} → ${toFlag}`
-                : `🌐 ${t('mode.international')}`
+                : t('mode.international')
               return (
-                <span className="challenge-badge challenge-badge--international">{label}</span>
+                <span className="challenge-badge challenge-badge--international">{!fromFlag && <Icon name="globe-outline" size={12} />}{label}</span>
               )
             })()
           : null /* Local = for everyone in the city; no audience pill. */}
@@ -319,12 +321,12 @@ export default function ChallengeVersusCard({
             reasoning. Meet stays unbadged because it's the default. */}
         {!isInternational && c.validation_method === 'photo_proof' && (
           <span className="challenge-badge challenge-badge--photo">
-            📸 {t('card.photoBadge', { defaultValue: 'Photo' })}
+            <Icon name="camera-outline" size={12} />{t('card.photoBadge', { defaultValue: 'Photo' })}
           </span>
         )}
         {isValidated ? (
           <span className="challenge-badge challenge-badge--validated">
-            ✓ {t('validatedBadge')}
+            <Icon name="checkmark" size={12} />{t('validatedBadge')}
           </span>
         ) : c.is_in_progress ? (
           // --in-progress (amber) instead of --status (brand orange).
@@ -333,11 +335,11 @@ export default function ChallengeVersusCard({
           // feed felt overstated - switched to a calmer amber that
           // still passes the visibility bar.
           <span className="challenge-badge challenge-badge--in-progress">
-            ⏳ {t('card.inProgress')}
+            <Icon name="hourglass-outline" size={12} />{t('card.inProgress')}
           </span>
         ) : (
           <span className="challenge-badge challenge-badge--available">
-            🟢 {t('card.available')}
+            <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: 3, background: 'currentColor' }} />{t('card.available')}
           </span>
         )}
       </div>
@@ -379,7 +381,7 @@ export default function ChallengeVersusCard({
         </span>
 
         <span className="challenge-versus-center" aria-hidden="true">
-          {isValidated ? '🏆' : '⚡'}
+          <Icon name={isValidated ? 'trophy-outline' : 'flash-outline'} size={26} />
         </span>
 
         {hasTaker ? (
@@ -428,7 +430,7 @@ export default function ChallengeVersusCard({
           render static with the usual CSS ellipsis fallback. */}
       <div className="er-header">
         <span className="er-title">
-          <span className="er-title-emoji">{typeIcon}</span>
+          <span className="er-title-emoji" aria-hidden="true"><Icon name={typeIcon} size={14} /></span>
           <span className="er-title-marquee">{c.title}</span>
         </span>
         <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`)}</span>

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import Icon from './Icon'
 
 /**
  * Web mirror of mobile's ChallengePipeline. Visualises the 4-step challenge
@@ -9,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 
 const STEPS_LOCAL         = ['accept', 'date',  'meet',    'wrap']
 const STEPS_INTERNATIONAL = ['accept', 'proof', 'verdict']
-const ICONS  = { accept: '🤝', date: '📅', meet: '👋', wrap: '✨', proof: '📸', verdict: '⚖️' }
+const ICONS  = { accept: 'people-outline', date: 'calendar-outline', meet: 'hand-left-outline', wrap: 'sparkles-outline', proof: 'camera-outline', verdict: 'shield-checkmark-outline' }
 
 // Compact "sam. 6 juin · 21:30" - locale-aware via Intl using the active
 // i18n language (NOT undefined, which falls back to the device locale and
@@ -180,7 +181,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
                 }),
                 position: 'relative', zIndex: 1, fontSize: 14,
               }}>
-                {isDone ? '✓' : <span style={{ opacity: isActive ? 1 : 0.45 }}>{ICONS[step]}</span>}
+                {isDone ? <Icon name="checkmark" size={14} /> : <Icon name={ICONS[step]} size={14} style={{ opacity: isActive ? 1 : 0.45 }} />}
               </div>
               <span style={{
                 fontSize: 10, fontWeight: isActive ? 800 : isDone ? 700 : 600,
@@ -210,7 +211,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
               ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
             })}
           </span>
-          {interactive && <span style={{ color: '#FF7A3C', fontSize: 12 }}>›</span>}
+          {interactive && <Icon name="chevron-forward" size={12} style={{ color: '#FF7A3C' }} />}
         </div>
       )}
     </div>

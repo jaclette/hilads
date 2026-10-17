@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchGroupSubmissions, pickWinner } from '../api'
 import { avatarColors } from '../lib/avatarColors'
+import Icon from './Icon'
 
 /**
  * GroupSubmissionsGallery (web) - a single CTA that opens a modal listing every
@@ -70,10 +71,10 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
           ))}
         </span>
         <span className="gsg-cta-label">
-          👀 {t('group.checkPhotos', { count: subs.length, defaultValue: 'Check out the {{count}} photos' })}
+          <Icon name="eye-outline" size={14} /> {t('group.checkPhotos', { count: subs.length, defaultValue: 'Check out the {{count}} photos' })}
           {winnerId ? '' : canPick ? `  ·  ${t('group.tapToPick', { defaultValue: 'pick the best one' })}` : ''}
         </span>
-        <span className="gsg-cta-chev" aria-hidden>›</span>
+        <span className="gsg-cta-chev" aria-hidden style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={16} /></span>
       </button>
 
       {open && (
@@ -81,9 +82,9 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
           <div className="gsg-modal" onClick={(e) => e.stopPropagation()}>
             <div className="gsg-modal-head">
               <span className="gsg-modal-title">
-                📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
+                <Icon name="camera-outline" size={18} /> {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
               </span>
-              <button type="button" className="gsg-modal-close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
+              <button type="button" className="gsg-modal-close" onClick={() => setOpen(false)} aria-label="Close"><Icon name="close" size={18} /></button>
             </div>
             {canPick && <p className="gsg-modal-hint">{t('group.winnerSub', { defaultValue: 'Choose the best photo. The winner earns the big reward.' })}</p>}
 
@@ -95,7 +96,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
                   <div key={s.id} className={`gsg-tile${isWin ? ' gsg-tile--win' : ''}`}>
                     <button type="button" className="gsg-photo-btn" onClick={() => setPreview(s)}>
                       <img className="gsg-photo" src={s.media_url} alt="" loading="lazy" />
-                      {isWin && <span className="gsg-win-badge">👑 {t('group.winnerTag', { defaultValue: 'Winner' })}</span>}
+                      {isWin && <span className="gsg-win-badge"><Icon name="ribbon-outline" size={12} /> {t('group.winnerTag', { defaultValue: 'Winner' })}</span>}
                       {picking === s.user_id && <span className="gsg-picking">…</span>}
                     </button>
                     <div className="gsg-footer">
@@ -106,7 +107,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
                     </div>
                     {canPick && (
                       <button type="button" className="gsg-pick-btn" disabled={!!picking} onClick={() => handlePick(s)}>
-                        👑 {t('group.pickThis', { defaultValue: 'Pick winner' })}
+                        <Icon name="ribbon-outline" size={14} /> {t('group.pickThis', { defaultValue: 'Pick winner' })}
                       </button>
                     )}
                   </div>
@@ -123,7 +124,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
           <div className="gsg-preview-name">{preview.display_name}</div>
           {canPick && (
             <button type="button" className="gsg-preview-pick" onClick={(e) => { e.stopPropagation(); handlePick(preview) }}>
-              👑 {t('group.pickThis', { defaultValue: 'Pick winner' })}
+              <Icon name="ribbon-outline" size={14} /> {t('group.pickThis', { defaultValue: 'Pick winner' })}
             </button>
           )}
         </div>

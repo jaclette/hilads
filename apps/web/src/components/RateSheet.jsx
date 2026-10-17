@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { submitRating } from '../api'
+import Icon from './Icon'
 
 const COMMENT_MAX = 500
 
@@ -91,8 +92,8 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
           <span style={{
             width: 48, height: 48, borderRadius: 24,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(255,201,60,0.16)', fontSize: 24, flexShrink: 0,
-          }}>⭐</span>
+            background: 'rgba(255,201,60,0.16)', color: '#FFC93C', flexShrink: 0,
+          }}><Icon name="star-outline" size={24} /></span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text, #fff)', letterSpacing: -0.3 }}>
               {t('ratePrompts.sheet.title')}
@@ -126,7 +127,7 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
                 color: n <= stars ? '#FFC93C' : 'rgba(255,255,255,0.25)',
               }}
             >
-              {n <= stars ? '★' : '☆'}
+              <Icon name={n <= stars ? 'star' : 'star-outline'} size={36} />
             </button>
           ))}
         </div>

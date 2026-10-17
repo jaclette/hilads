@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ChallengeExamplesModal from './ChallengeExamplesModal'
+import Icon from './Icon'
 
 /**
  * Web parity for the mobile ScoringInfoButton. Small round (i) button +
@@ -62,12 +63,12 @@ export default function ScoringInfoButton({ size = 22, className = '', labeled =
 function ScoringInfoModal({ onClose, t, onSeeExamples }) {
   // Group-model "ways to earn" (mirrors score_rules in migrate.php).
   const ways = [
-    { icon: '🙌', labelKey: 'scoringInfo.ways.join',    points: '+2'  },
-    { icon: '🎯', labelKey: 'scoringInfo.ways.create',  points: '+10' },
-    { icon: '✅', labelKey: 'scoringInfo.ways.present', points: '+40', highlight: true },
-    { icon: '👑', labelKey: 'scoringInfo.ways.host',    points: '+10 · 🙋 +5' },
-    { icon: '📸', labelKey: 'scoringInfo.ways.submit',  points: '+5'  },
-    { icon: '🏆', labelKey: 'scoringInfo.ways.win',     points: '+40', highlight: true },
+    { icon: 'person-add-outline',       labelKey: 'scoringInfo.ways.join',    points: '+2'  },
+    { icon: 'locate-outline',           labelKey: 'scoringInfo.ways.create',  points: '+10' },
+    { icon: 'checkmark-circle-outline', labelKey: 'scoringInfo.ways.present', points: '+40', highlight: true },
+    { icon: 'ribbon-outline',           labelKey: 'scoringInfo.ways.host',    points: <>+10 · <Icon name="person-outline" size={12} /> +5</> },
+    { icon: 'camera-outline',           labelKey: 'scoringInfo.ways.submit',  points: '+5'  },
+    { icon: 'trophy-outline',           labelKey: 'scoringInfo.ways.win',     points: '+40', highlight: true },
   ]
 
   return (
@@ -75,7 +76,7 @@ function ScoringInfoModal({ onClose, t, onSeeExamples }) {
       <div className="modal-panel scoring-info-panel" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <span className="modal-title">{t('scoringInfo.title')}</span>
-          <button className="going-modal-close" onClick={onClose} aria-label="Close">✕</button>
+          <button className="going-modal-close" onClick={onClose} aria-label="Close"><Icon name="close" size={18} /></button>
         </div>
         <div className="scoring-info-body">
           {/* 1 - Two flavours of challenge. Friendly + emoji-led so the
@@ -102,7 +103,7 @@ function ScoringInfoModal({ onClose, t, onSeeExamples }) {
 
           {ways.map((w) => (
             <div key={w.labelKey} className={`scoring-info-row${w.highlight ? ' scoring-info-row--highlight' : ''}`}>
-              <span className="scoring-info-icon">{w.icon}</span>
+              <span className="scoring-info-icon" aria-hidden="true"><Icon name={w.icon} size={18} /></span>
               <span className="scoring-info-label">{t(w.labelKey)}</span>
               <span className="scoring-info-points">{w.points}</span>
             </div>
@@ -118,7 +119,7 @@ function ScoringInfoModal({ onClose, t, onSeeExamples }) {
               className="scoring-info-examples-btn"
               onClick={() => { onClose(); onSeeExamples() }}
             >
-              ✨ {t('scoringInfo.seeExamples', { defaultValue: 'See 3 real examples' })} →
+              <Icon name="sparkles-outline" size={16} /> {t('scoringInfo.seeExamples', { defaultValue: 'See 3 real examples' })}
             </button>
           )}
         </div>

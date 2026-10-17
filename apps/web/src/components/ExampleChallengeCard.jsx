@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import AvatarWithFlag from './AvatarWithFlag'
 import { countryToFlag } from '../lib/countryFlag'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS } from '../lib/icons'
 
 /**
  * Example challenge card for the zero-challenge inspiration block. Web mirror of
@@ -11,7 +13,7 @@ import { countryToFlag } from '../lib/countryFlag'
  */
 export default function ExampleChallengeCard({ example, sourceCity, currentCity, onOpen, onCreate }) {
   const { t } = useTranslation('challenge')
-  const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[example.challenge_type] ?? '🔥'
+  const typeIcon = CHALLENGE_TYPE_ICONS[example.challenge_type] ?? 'flame-outline'
   const name     = example.creator_display_name || example.creator_username || '?'
   const isIntl   = example.mode === 'international'
   const fromFlag = countryToFlag(example.country)
@@ -31,7 +33,7 @@ export default function ExampleChallengeCard({ example, sourceCity, currentCity,
       {/* Title + creator - clicking opens the real challenge. */}
       <button type="button" className="ecc-open" onClick={onOpen}>
         <div className="ecc-title-row">
-          <span className="ecc-title-emoji">{typeIcon}</span>
+          <span className="ecc-title-emoji" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name={typeIcon} size={18} /></span>
           <span className="ecc-title">{example.title}</span>
         </div>
         <div className="ecc-by-row">

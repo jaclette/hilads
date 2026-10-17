@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchProofs, approveProof, rejectProof } from '../api'
+import Icon from './Icon'
 
 /**
  * Web mirror of mobile's ProofReviewModal. Opens from the lifecycle
@@ -85,7 +86,7 @@ export default function ProofReviewModal({ visible, onClose, acceptanceId, onVer
               ? t('intl.proof.reviewModalTitle', { defaultValue: 'Review the proof' })
               : t('intl.proof.rejectModalTitle')}
           </span>
-          <button className="going-modal-close" onClick={onClose} disabled={!!busy} aria-label="Close">✕</button>
+          <button className="going-modal-close" onClick={onClose} disabled={!!busy} aria-label="Close"><Icon name="close" size={18} /></button>
         </div>
 
         <div className="proof-review-body">
@@ -105,7 +106,7 @@ export default function ProofReviewModal({ visible, onClose, acceptanceId, onVer
                     onClick={() => { setError(null); setMode('reason') }}
                     disabled={!!busy}
                   >
-                    ✕ {t('intl.proof.rejectCta')}
+                    <Icon name="close" size={16} /> {t('intl.proof.rejectCta')}
                   </button>
                   <button
                     type="button"
@@ -113,7 +114,7 @@ export default function ProofReviewModal({ visible, onClose, acceptanceId, onVer
                     onClick={handleApprove}
                     disabled={!!busy}
                   >
-                    {busy === 'approve' ? '…' : `✓ ${t('intl.proof.approveCta')}`}
+                    {busy === 'approve' ? '…' : <><Icon name="checkmark" size={16} /> {t('intl.proof.approveCta')}</>}
                   </button>
                 </div>
               ) : (

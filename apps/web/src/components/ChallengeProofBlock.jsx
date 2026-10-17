@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   fetchProofs, submitProof, approveProof, rejectProof, uploadImage,
 } from '../api'
+import Icon from './Icon'
 
 /**
  * Web mirror of mobile's ChallengeProofBlock - proof submission +
@@ -124,7 +125,7 @@ export default function ChallengeProofBlock({
   }
 
   if (latest?.status === 'approved') {
-    return <div className="proof-block"><span className="proof-terminal">🎉 {t('intl.proof.approvedLine')}</span></div>
+    return <div className="proof-block"><span className="proof-terminal"><Icon name="checkmark-circle-outline" size={16} /> {t('intl.proof.approvedLine')}</span></div>
   }
   if (latest?.status === 'rejected' && isFinal) {
     return (
@@ -157,7 +158,7 @@ export default function ChallengeProofBlock({
               onClick={handleApprove}
               disabled={!!busy}
             >
-              {busy === 'approve' ? '…' : `✓ ${t('intl.proof.approveCta')}`}
+              {busy === 'approve' ? '…' : <><Icon name="checkmark" size={16} /> {t('intl.proof.approveCta')}</>}
             </button>
             <button
               type="button"
@@ -165,7 +166,7 @@ export default function ChallengeProofBlock({
               onClick={() => setRejectOpen(true)}
               disabled={!!busy}
             >
-              ✕ {t('intl.proof.rejectCta')}
+              <Icon name="close" size={16} /> {t('intl.proof.rejectCta')}
             </button>
           </div>
         ) : (

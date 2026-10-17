@@ -7,6 +7,7 @@ import { cityDemonym } from '../lib/cityDemonym'
 import { countryToFlag } from '../lib/countryFlag'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import BackButton from './BackButton'
+import Icon from './Icon'
 import { buildRankShareMessage, buildLeaderboardUrl } from '../lib/rankShare'
 
 /**
@@ -102,7 +103,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
         <span className="page-title">{(() => {
           const demonym = scope === 'city' ? cityDemonym(effectiveCityName) : null
           return demonym
-            ? t('leaderboard.titleCity', { demonym, defaultValue: `🏆 Most ${demonym}` })
+            ? t('leaderboard.titleCity', { demonym, defaultValue: `Most ${demonym}` })
             : t('leaderboard.title')
         })()}</span>
       </div>
@@ -124,7 +125,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           >
             {cityFlag && <span aria-hidden="true">{cityFlag} </span>}{cityLabel}
             {scope === 'city' && (
-              <span className="leaderboard-seg-chevron" aria-hidden="true">▾</span>
+              <span className="leaderboard-seg-chevron" aria-hidden="true"><Icon name="chevron-down" size={12} /></span>
             )}
           </button>
           <button
@@ -132,14 +133,14 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
             className={`leaderboard-seg-item${scope === 'cities' ? ' is-active' : ''}`}
             onClick={() => setScope('cities')}
           >
-            <span aria-hidden="true">🏙️ </span>{t('leaderboard.scope.cities')}
+            <Icon name="business-outline" size={14} style={{ marginRight: 4 }} />{t('leaderboard.scope.cities')}
           </button>
           <button
             type="button"
             className={`leaderboard-seg-item${scope === 'world' ? ' is-active' : ''}`}
             onClick={() => setScope('world')}
           >
-            <span aria-hidden="true">🌐 </span>{t('leaderboard.scope.world')}
+            <Icon name="globe-outline" size={14} style={{ marginRight: 4 }} />{t('leaderboard.scope.world')}
           </button>
         </div>
         <div className="leaderboard-seg">
@@ -167,7 +168,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
             className="share-to-city-pill"
             onClick={() => onShareRank(rankShare.text, rankShare.mentions, scope)}
           >
-            📣 {t('leaderboard.share.cta')}
+            <Icon name="megaphone-outline" size={14} />{t('leaderboard.share.cta')}
           </button>
         </div>
       )}
@@ -177,12 +178,12 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted, #b3b3b3)' }}>…</div>
         ) : error ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
-            <span style={{ fontSize: 48 }}>🤷</span>
+            <Icon name="cloud-offline-outline" size={32} style={{ color: 'var(--muted2)' }} />
             <p style={{ color: 'var(--muted, #b3b3b3)', margin: 0 }}>{error}</p>
           </div>
         ) : entries.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
-            <span style={{ fontSize: 48 }}>🥇</span>
+            <Icon name="trophy-outline" size={32} style={{ color: 'var(--primary-text)' }} />
             <h3 style={{ margin: 0 }}>{t('leaderboard.empty.title')}</h3>
             <p style={{ color: 'var(--muted, #b3b3b3)', margin: 0 }}>{t('leaderboard.empty.body')}</p>
           </div>
@@ -259,9 +260,9 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
               onClick={onCreateChallenge}
             >
               <span className="leaderboard-unranked-cta-label">
-                🔥 {t('leaderboard.me.unranked')}
+                <Icon name="flame-outline" size={16} style={{ marginRight: 6 }} />{t('leaderboard.me.unranked')}
               </span>
-              <span className="leaderboard-unranked-cta-arrow" aria-hidden="true">→</span>
+              <span className="leaderboard-unranked-cta-arrow" aria-hidden="true"><Icon name="chevron-forward" size={18} /></span>
             </button>
           )}
         </div>
@@ -283,6 +284,26 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   )
 }
 
+// A rank in a round seal: #1 on gold, #2-#3 on the primary tint, the rest a
+// plain "#n" (mobile RankMedal; replaces medal emoji as chrome).
+function RankDisc({ rank }) {
+  if (rank == null || rank > 3) return <>#{rank}</>
+  const isGold = rank === 1
+  return (
+    <span
+      aria-label={`#${rank}`}
+      style={{
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        width: 30, height: 30, borderRadius: '50%', fontSize: '0.8125rem', fontWeight: 800,
+        background: isGold ? 'var(--gold)' : 'var(--primary-tint)',
+        color: isGold ? 'var(--surface)' : 'var(--primary-on-tint)',
+      }}
+    >
+      {rank}
+    </span>
+  )
+}
+
 function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
   const [c1, c2] = avatarColors(entry.displayName)
   // PR40 - world-scope rows show a "🇫🇷 Paris" chip under the name so the
@@ -300,7 +321,7 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
       tabIndex={onPress ? 0 : undefined}
       onKeyDown={onPress ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPress() } } : undefined}
     >
-      <span className="leaderboard-rank">#{entry.rank}</span>
+      <span className="leaderboard-rank"><RankDisc rank={entry.rank} /></span>
       <span
         className="leaderboard-avatar"
         style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
@@ -333,8 +354,8 @@ function LeaderboardCityRow({ entry, isMe, t }) {
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-'
   return (
     <li className={`leaderboard-row${isMe ? ' is-me' : ''}`}>
-      <span className="leaderboard-rank">#{entry.rank}</span>
-      <span className="leaderboard-city-flag" aria-hidden="true">{flag || '🏳️'}</span>
+      <span className="leaderboard-rank"><RankDisc rank={entry.rank} /></span>
+      <span className="leaderboard-city-flag" aria-hidden="true">{flag || <Icon name="globe-outline" size={20} style={{ color: 'var(--muted2)' }} />}</span>
       <span className="leaderboard-name-block">
         <span className="leaderboard-name">{cityLabel}</span>
       </span>

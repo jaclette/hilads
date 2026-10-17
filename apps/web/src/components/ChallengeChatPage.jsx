@@ -45,6 +45,8 @@ import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
 import ThreadScheduleBlock from './ThreadScheduleBlock'
 import { Marquee } from './Marquee'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS } from '../lib/icons'
 
 // Slug builder - mirrors apps/web/api/sitemap.mjs:challengeSlug and
 // apps/mobile/src/lib/challengeSlug.ts. Kept inline since it's a single
@@ -70,7 +72,8 @@ function buildChallengeUrl(challenge) {
   return `${window.location.origin}${lp}/challenge/${challengeSlug(challenge)}`
 }
 
-const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
+// Large icon for ConfirmDialog (shown where the dialog used to show an emoji).
+const dlgIcon = name => <Icon name={name} size={36} />
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -541,7 +544,7 @@ export default function ChallengeChatPage({
     if (!myAcceptance) return
     const accId = myAcceptance.id
     setAlertModal({
-      emoji: '🚪',
+      emoji: dlgIcon('log-out-outline'),
       title: t('leaveTakeon.confirmTitle'),
       body:  t('leaveTakeon.confirmBody'),
       primary: {
@@ -554,7 +557,7 @@ export default function ChallengeChatPage({
             loadChallenge()
             loadParticipants()
           } catch {
-            setAlertModal({ emoji: '😬', title: t('leaveTakeon.failed'), body: '' })
+            setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('leaveTakeon.failed'), body: '' })
           }
         },
       },
@@ -579,7 +582,7 @@ export default function ChallengeChatPage({
       setChallenge(prev => prev ? { ...prev, visibility: next } : prev)
       loadChallenge()
     } catch (err) {
-      setAlertModal({ emoji: '😬', title: err?.message || t('privacy.errSave') })
+      setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: err?.message || t('privacy.errSave') })
     } finally {
       setVisBusy(false)
     }
@@ -616,7 +619,7 @@ export default function ChallengeChatPage({
       }
     } catch (err) {
       setVisBusy(false); setCloseBusy(false)
-      setAlertModal({ emoji: '😬', title: err?.message || t('privacy.errSave') })
+      setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: err?.message || t('privacy.errSave') })
     }
   }
 
@@ -630,7 +633,7 @@ export default function ChallengeChatPage({
       await setChallengeCloseToJoins(id, next)
       setChallenge(prev => prev ? { ...prev, closed_to_new_joins: next } : prev)
     } catch (err) {
-      setAlertModal({ emoji: '😬', title: err?.message || t('privacy.errSave') })
+      setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: err?.message || t('privacy.errSave') })
     } finally {
       setCloseBusy(false)
     }
@@ -776,7 +779,7 @@ export default function ChallengeChatPage({
         // local/exploring. Other codes are dead-end OKs.
         const isModeErr = err.code === 'mode_required' || err.code === 'mode_mismatch'
         setAlertModal({
-          emoji: isModeErr ? '🧭' : '🚫',
+          emoji: dlgIcon(isModeErr ? 'compass-outline' : 'ban-outline'),
           title: t(titleKey),
           body: t(bodyKey, { defaultValue: err.message }),
           primary: isModeErr && onOpenMyProfile
@@ -786,7 +789,7 @@ export default function ChallengeChatPage({
         })
       } else {
         setAlertModal({
-          emoji: '😬',
+          emoji: dlgIcon('alert-circle-outline'),
           title: t('accept.err.unknown.title'),
           body:  t('accept.err.unknown.body'),
         })
@@ -806,7 +809,7 @@ export default function ChallengeChatPage({
         : await validateChallenge(id, guest.guestId)
       setChallenge(updated)
     } catch (e) {
-      setAlertModal({ emoji: '😬', title: t('errSave'), body: '' })
+      setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('errSave'), body: '' })
     } finally {
       setBusy(null)
     }
@@ -817,7 +820,7 @@ export default function ChallengeChatPage({
   const handleDelete = useCallback(() => {
     if (!guest?.guestId || busy) return
     setAlertModal({
-      emoji: '🗑️',
+      emoji: dlgIcon('trash-outline'),
       title: t('deleteTitle'),
       body:  t('deleteBody'),
       primary: {
@@ -829,7 +832,7 @@ export default function ChallengeChatPage({
             await deleteChallenge(id, guest.guestId)
             onDeleted?.()
           } catch {
-            setAlertModal({ emoji: '😬', title: t('errSave'), body: '' })
+            setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('errSave'), body: '' })
           } finally {
             setBusy(null)
           }
@@ -844,7 +847,7 @@ export default function ChallengeChatPage({
   const handleRelaunch = useCallback(() => {
     if (busy) return
     setAlertModal({
-      emoji: '🔄',
+      emoji: dlgIcon('refresh-outline'),
       title: t('relaunch.confirmTitle', { ns: 'challenge', defaultValue: 'Restart this challenge?' }),
       body:  t('relaunch.confirmBody',  { ns: 'challenge', defaultValue: 'It reopens with the same countdown you set the first time.' }),
       primary: {
@@ -856,7 +859,7 @@ export default function ChallengeChatPage({
             if (res?.challenge) setChallenge(res.challenge)
             else loadChallenge()
           } catch {
-            setAlertModal({ emoji: '😬', title: t('relaunch.failed', { ns: 'challenge', defaultValue: 'Could not restart' }), body: '' })
+            setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('relaunch.failed', { ns: 'challenge', defaultValue: 'Could not restart' }), body: '' })
           } finally {
             setBusy(null)
           }
@@ -869,7 +872,7 @@ export default function ChallengeChatPage({
   const handleRestart = useCallback(() => {
     if (busy) return
     setAlertModal({
-      emoji: '🔄',
+      emoji: dlgIcon('refresh-outline'),
       title: t('restart.confirmTitle'),
       body:  t('restart.confirmBody'),
       primary: {
@@ -883,7 +886,7 @@ export default function ChallengeChatPage({
             loadParticipants()
             loadMyAcceptance()
           } catch {
-            setAlertModal({ emoji: '😬', title: t('restart.failed'), body: '' })
+            setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('restart.failed'), body: '' })
           } finally {
             setBusy(null)
           }
@@ -929,7 +932,7 @@ export default function ChallengeChatPage({
     )
   }
 
-  const typeIcon = TYPE_ICONS[challenge.challenge_type] || '🔥'
+  const typeIcon = CHALLENGE_TYPE_ICONS[challenge.challenge_type] || 'flame-outline'
   const audienceLabel = challenge.audience === 'locals' ? t('forLocals') : t('forExplorers')
 
   // Separate the creator from the other participants. Creator-match is by
@@ -1009,7 +1012,7 @@ export default function ChallengeChatPage({
             </span>
           )}
         </div>
-        <span className="challenge-header-emoji" aria-hidden="true">{typeIcon}</span>
+        <span className="challenge-header-emoji" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name={typeIcon} size={28} /></span>
       </div>
 
       {/* Collapsible region - badges + pipeline + owner actions + creator
@@ -1033,8 +1036,8 @@ export default function ChallengeChatPage({
             date passed, not validated) must NOT read "Live": the creator gets a
             tappable Restart pill (sets a new date + reopens), others see "Ended". */}
         {(isValidated || challenge.closed) ? (
-          <span className="challenge-status-pill challenge-status-pill--done">
-            ✓ {t('status.done', { ns: 'challenge', defaultValue: 'Done' })}
+          <span className="challenge-status-pill challenge-status-pill--done" style={{ gap: 4 }}>
+            <Icon name="checkmark" size={11} />{t('status.done', { ns: 'challenge', defaultValue: 'Done' })}
           </span>
         ) : isEnded ? (
           isOwner ? (
@@ -1043,17 +1046,18 @@ export default function ChallengeChatPage({
               className="challenge-status-pill challenge-status-pill--restart"
               onClick={handleRelaunch}
               disabled={busy !== null}
+              style={{ gap: 4 }}
             >
-              🔄 {busy === 'relaunch' ? '…' : t('relaunch.cta', { ns: 'challenge', defaultValue: 'Restart' })}
+              <Icon name="refresh-outline" size={11} />{busy === 'relaunch' ? '…' : t('relaunch.cta', { ns: 'challenge', defaultValue: 'Restart' })}
             </button>
           ) : (
-            <span className="challenge-status-pill challenge-status-pill--ended">
-              ⌛ {t('status.ended', { ns: 'challenge', defaultValue: 'Ended' })}
+            <span className="challenge-status-pill challenge-status-pill--ended" style={{ gap: 4 }}>
+              <Icon name="hourglass-outline" size={11} />{t('status.ended', { ns: 'challenge', defaultValue: 'Ended' })}
             </span>
           )
         ) : (
-          <span className="challenge-status-pill challenge-status-pill--live">
-            🟢 {t('status.live', { ns: 'challenge', defaultValue: 'Live' })}
+          <span className="challenge-status-pill challenge-status-pill--live" style={{ gap: 4 }}>
+            <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: 3, background: 'currentColor' }} />{t('status.live', { ns: 'challenge', defaultValue: 'Live' })}
           </span>
         )}
         {(challenge.mode ?? 'local') === 'international' ? (() => {
@@ -1063,9 +1067,9 @@ export default function ChallengeChatPage({
           const toFlag   = countryToFlag(challenge.target_country) || '🌍'
           const label    = fromFlag
             ? `${fromFlag} → ${toFlag}${targetCityNameOnly ? '  ·  ' + targetCityNameOnly : ''}`
-            : `🌐 ${targetCityNameOnly || t('mode.international')}`
+            : `${targetCityNameOnly || t('mode.international')}`
           return (
-            <span className="challenge-badge challenge-badge--international">{label}</span>
+            <span className="challenge-badge challenge-badge--international" style={{ gap: 4 }}>{!fromFlag && <Icon name="globe-outline" size={12} />}{label}</span>
           )
         })() : null /* Local = for everyone in the city; no audience pill. */}
         <button
@@ -1074,7 +1078,7 @@ export default function ChallengeChatPage({
           onClick={handleShare}
           aria-label={t('shareCta')}
         >
-          <span aria-hidden="true">↗</span>
+          <Icon name="share-social-outline" size={14} />
           <span className="challenge-share-pill-text">{t('shareCta')}</span>
         </button>
         {/* Collapse chevron - toggles all the channel-header detail (the
@@ -1087,7 +1091,7 @@ export default function ChallengeChatPage({
           aria-expanded={detailsOpen}
           aria-label={detailsOpen ? t('details.collapseAria') : t('details.expandAria')}
         >
-          <span aria-hidden="true" className={`challenge-details-toggle-chevron ${detailsOpen ? 'is-open' : ''}`}>▾</span>
+          <span aria-hidden="true" className={`challenge-details-toggle-chevron ${detailsOpen ? 'is-open' : ''}`}><Icon name="chevron-down" size={14} /></span>
         </button>
       </div>
 
@@ -1123,7 +1127,7 @@ export default function ChallengeChatPage({
               <span className="challenge-share-pill-text">
                 {(visBusy || closeBusy) ? '…' : label}
               </span>
-              <span aria-hidden="true" className="challenge-share-pill-chevron">▾</span>
+              <span aria-hidden="true" className="challenge-share-pill-chevron"><Icon name="chevron-down" size={10} /></span>
             </button>
           )
         })()}
@@ -1137,7 +1141,7 @@ export default function ChallengeChatPage({
             className="challenge-share-pill challenge-share-pill--inline challenge-leave-pill"
             onClick={handleLeaveTakeon}
           >
-            <span aria-hidden="true">🚪</span>
+            <Icon name="exit-outline" size={14} />
             <span className="challenge-share-pill-text">{t('leaveTakeon.pill')}</span>
           </button>
         )}
@@ -1148,7 +1152,7 @@ export default function ChallengeChatPage({
             onClick={() => setManageOpen(true)}
             title={t('manage.cta')}
           >
-            <span aria-hidden="true">⚙️</span>
+            <Icon name="settings-outline" size={14} />
             <span className="challenge-share-pill-text">{t('manage.cta')}</span>
           </button>
         )}
@@ -1158,7 +1162,7 @@ export default function ChallengeChatPage({
             className="challenge-share-pill challenge-share-pill--inline challenge-leave-pill"
             onClick={handleLeaveChannel}
           >
-            <span aria-hidden="true">↩</span>
+            <Icon name="arrow-undo-outline" size={14} />
             <span className="challenge-share-pill-text">{t('join.leaveCta')}</span>
           </button>
         )}
@@ -1182,8 +1186,13 @@ export default function ChallengeChatPage({
             <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 10, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600, color: 'var(--muted,#9a9088)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ flex: 1 }}>
                 {isGroupPhoto
-                  ? `⏳ ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
-                  : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
+                  ? <><Icon name="hourglass-outline" size={12} />{` ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ${meetSummary ?? ''}`}</>
+                  : <>
+                      <Icon name="calendar-outline" size={12} />{` ${meetSummary ?? ''}`}
+                      {isGroupMeet && challenge.venue
+                        ? <>{'   ·   '}<Icon name="location-outline" size={12} />{` ${challenge.venue}`}</>
+                        : null}
+                    </>}
               </span>
               <ScoringInfoButton />
             </div>
@@ -1193,16 +1202,16 @@ export default function ChallengeChatPage({
             // "N photos · pick the best one" card below (no extra hint).
             isGroupPhoto ? null : !meetStarted ? (
               <div style={{ textAlign: 'center', fontWeight: 700, color: 'var(--muted,#9a9088)', padding: '8px 0', fontSize: '0.86rem' }}>
-                ⏳ {t('group.validateAfter', { ns: 'challenge', time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
+                <Icon name="hourglass-outline" size={14} /> {t('group.validateAfter', { ns: 'challenge', time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
               </div>
             ) : (
               <button type="button" style={GROUP_BTN_STYLE} onClick={() => { setPresentRating(0); setValidateOpen(true) }}>
-                {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}  →
+                {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}
               </button>
             )
           ) : iAmJoined ? (
             <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>
-              ✓ {isGroupPhoto
+              <Icon name="checkmark" size={14} /> {isGroupPhoto
                 ? t('group.youreInPhoto', { ns: 'challenge', defaultValue: "You're in — submit your photo below." })
                 : t('group.youreIn', { ns: 'challenge', defaultValue: "You're in — see you there!" })}
             </div>
@@ -1210,9 +1219,9 @@ export default function ChallengeChatPage({
             <button type="button" style={{ ...GROUP_BTN_STYLE, opacity: (challenge.closed_to_new_joins || joining) ? 0.6 : 1 }} disabled={!!challenge.closed_to_new_joins || joining} onClick={handleGroupJoin}>
               {challenge.closed_to_new_joins
                 ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' })
-                : `＋ ${isGroupPhoto
+                : <><Icon name="add" size={16} />{' '}{isGroupPhoto
                     ? t('group.joinContestCta', { ns: 'challenge', defaultValue: 'Join the challenge (+2 pts)' })
-                    : t('group.joinCta', { ns: 'challenge', defaultValue: 'Join the challenge (+2 pts)' })}`}
+                    : t('group.joinCta', { ns: 'challenge', defaultValue: 'Join the challenge (+2 pts)' })}</>}
             </button>
           )}
         </div>
@@ -1341,7 +1350,7 @@ export default function ChallengeChatPage({
             className="challenge-owner-invite-cta"
             onClick={() => setInvitePeopleOpen(true)}
           >
-            <span aria-hidden="true">⚡</span>
+            <Icon name="flash-outline" size={14} />
             <span>{t('postCreate.ctaInvite', { city: cityNameForInvite ?? t('postCreate.thisCity') })}</span>
           </button>
         </div>
@@ -1362,7 +1371,7 @@ export default function ChallengeChatPage({
               onShareToCity(`${label}: ${challenge.title}\n${buildChallengeUrl(challenge)}`)
             }}
           >
-            📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
+            <Icon name="megaphone-outline" size={14} />{t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
           </button>
         </div>
       )}
@@ -1381,7 +1390,7 @@ export default function ChallengeChatPage({
               onShareToWorld(`${label}: ${challenge.title}\n${buildChallengeUrl(challenge)}`)
             }}
           >
-            🌍 {t('shareToWorld', { ns: 'common', defaultValue: 'Share on World' })}
+            <Icon name="globe-outline" size={14} />{t('shareToWorld', { ns: 'common', defaultValue: 'Share on World' })}
           </button>
         </div>
       )}
@@ -1406,7 +1415,7 @@ export default function ChallengeChatPage({
           </span>
           <div className="challenge-creator-info">
             <span className="challenge-creator-name">{creator.displayName}</span>
-            <span className="challenge-creator-tag">👑 {t('challengerTag')}</span>
+            <span className="challenge-creator-tag"><Icon name="ribbon-outline" size={11} /> {t('challengerTag')}</span>
           </div>
           {/* Share moved up to the badge row so it's visible at every
               lifecycle stage (not just when there's a creator-participant). */}
@@ -1501,7 +1510,7 @@ export default function ChallengeChatPage({
         if (isOwner && isPending && myAcceptance) {
           return (
             <div className="challenge-takeon-banner">
-              <span className="challenge-takeon-emoji">🤝</span>
+              <span className="challenge-takeon-emoji" aria-hidden="true"><Icon name="people-outline" size={24} /></span>
               <div className="challenge-takeon-text">
                 <h3>{t('takeon.creator.pendingTitle', { name: cpName })}</h3>
                 <p>{t('takeon.creator.pendingBody', { name: cpName })}</p>
@@ -1512,7 +1521,7 @@ export default function ChallengeChatPage({
                   className="challenge-alert-btn"
                   onClick={async () => {
                     try { await rejectTakeOn(myAcceptance.id); loadMyAcceptance() }
-                    catch { setAlertModal({ emoji: '😬', title: t('takeon.creator.rejectFailed') }) }
+                    catch { setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('takeon.creator.rejectFailed') }) }
                   }}
                 >
                   {t('takeon.creator.reject')}
@@ -1522,7 +1531,7 @@ export default function ChallengeChatPage({
                   className="challenge-alert-btn challenge-alert-btn--primary"
                   onClick={async () => {
                     try { await approveTakeOn(myAcceptance.id); loadMyAcceptance() }
-                    catch { setAlertModal({ emoji: '😬', title: t('takeon.creator.approveFailed') }) }
+                    catch { setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('takeon.creator.approveFailed') }) }
                   }}
                 >
                   {t('takeon.creator.approve')}
@@ -1534,7 +1543,7 @@ export default function ChallengeChatPage({
         if (!isOwner && isPending) {
           return (
             <div className="challenge-takeon-banner challenge-takeon-banner--muted">
-              <span className="challenge-takeon-emoji">⏳</span>
+              <span className="challenge-takeon-emoji" aria-hidden="true"><Icon name="hourglass-outline" size={24} /></span>
               <div className="challenge-takeon-text">
                 <h3>{t('takeon.acceptor.waitingTitle')}</h3>
                 <p>{t('takeon.acceptor.waitingBody', { name: cpName })}</p>
@@ -1545,7 +1554,7 @@ export default function ChallengeChatPage({
         if (!isOwner && isRej) {
           return (
             <div className="challenge-takeon-banner challenge-takeon-banner--muted">
-              <span className="challenge-takeon-emoji">✕</span>
+              <span className="challenge-takeon-emoji" aria-hidden="true"><Icon name="close" size={24} /></span>
               <div className="challenge-takeon-text">
                 <h3>{t('takeon.acceptor.rejectedTitle')}</h3>
                 <p>{t('takeon.acceptor.rejectedBody', { name: cpName })}</p>
@@ -1563,7 +1572,7 @@ export default function ChallengeChatPage({
           chat below mounts directly for anyone. */}
       {!challengeIsPublic && iAmParticipant === false && (
         <div className="challenge-join-gate">
-          <span className="challenge-join-gate-icon" aria-hidden="true">🔒</span>
+          <span className="challenge-join-gate-icon" aria-hidden="true" style={{ color: 'var(--muted2)' }}><Icon name="lock-closed-outline" size={32} /></span>
           <h3 className="challenge-join-gate-title">{t('lock.private.title')}</h3>
           <p className="challenge-join-gate-body">{t('lock.private.body')}</p>
         </div>
@@ -1603,7 +1612,7 @@ export default function ChallengeChatPage({
                 onClick={() => setShowGuestWelcome(false)}
                 aria-label="Close"
               >
-                ✕
+                <Icon name="close" size={16} />
               </button>
             </div>
           ) : null}
@@ -1635,7 +1644,7 @@ export default function ChallengeChatPage({
                   fadeColor="#161210"
                 />
                 <span className="challenge-intro-banner-cta">
-                  {t('prompt.challengeIntroCta', { ns: 'city' })} →
+                  {t('prompt.challengeIntroCta', { ns: 'city' })}
                 </span>
               </button>
               <button
@@ -1644,7 +1653,7 @@ export default function ChallengeChatPage({
                 onClick={() => setShowChallengeIntroBanner(false)}
                 aria-label="Close"
               >
-                ✕
+                <Icon name="close" size={16} />
               </button>
             </div>
           )}
@@ -1663,7 +1672,7 @@ export default function ChallengeChatPage({
           >
             {messages.length === 0 && (
               <div className="topic-chat-empty">
-                <span className="topic-chat-empty-icon">👋</span>
+                <span className="topic-chat-empty-icon" aria-hidden="true" style={{ color: 'var(--muted2)' }}><Icon name="hand-right-outline" size={32} /></span>
                 {/* PR61 - date hint is local-only; international flow is
                     photo → verdict, so pick the intl variant. */}
                 <span>{t((challenge?.mode ?? 'local') === 'international'
@@ -1730,7 +1739,7 @@ export default function ChallengeChatPage({
                         <div className="msg-reply-quote">
                           <span className="msg-reply-quote-name">{m.replyTo.nickname}</span>
                           <span className="msg-reply-quote-text">
-                            {m.replyTo.type === 'image' ? '📷 Photo' : (m.replyTo.content || '-')}
+                            {m.replyTo.type === 'image' ? <><Icon name="camera-outline" size={12} /> Photo</> : (m.replyTo.content || '-')}
                           </span>
                         </div>
                       )}
@@ -1750,7 +1759,7 @@ export default function ChallengeChatPage({
                                 renderMessageContent. */}
                             <span className="msg-text">{splitContentByMentions(m.content ?? '', m.mentions).map((seg, i) => {
                               if (seg.type === 'text') return <span key={i}>{linkifyText(seg.text, `c-${m.id ?? idx}-${i}-`)}</span>
-                              if (seg.guestId) return <span key={i} className="msg-mention msg-mention--guest">👻 @{seg.username}</span>
+                              if (seg.guestId) return <span key={i} className="msg-mention msg-mention--guest">@{seg.username}</span>
                               return <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); onOpenProfile?.(seg.userId, seg.username) }}>@{seg.username}</span>
                             })}</span>
                             {(() => {
@@ -1834,7 +1843,7 @@ export default function ChallengeChatPage({
           className="challenge-dm-creator"
           onClick={() => onSendDm?.(challenge.created_by)}
         >
-          💬 {t('messageCreator', { name: creator?.displayName ?? '-' })}
+          <Icon name="chatbubble-outline" size={14} /> {t('messageCreator', { name: creator?.displayName ?? '-' })}
         </button>
       )}
 
@@ -1847,7 +1856,7 @@ export default function ChallengeChatPage({
           onSubmit={async (startsAt, endsAt, venue) => {
             setPickerOpen(false)
             try { await proposeDate(myAcceptance.id, startsAt, endsAt, venue); loadMyAcceptance() }
-            catch { setAlertModal({ emoji: '😬', title: t('schedule.err.proposeFailed'), body: '' }) }
+            catch { setAlertModal({ emoji: dlgIcon('alert-circle-outline'), title: t('schedule.err.proposeFailed'), body: '' }) }
           }}
           submitLabel={t('schedule.proposeCta')}
         />
@@ -1877,7 +1886,7 @@ export default function ChallengeChatPage({
                 onClick={() => { setManageOpen(false); handleEdit() }}
                 disabled={busy !== null}
               >
-                ✏️ {t('editBtn')}
+                <Icon name="create-outline" size={16} /> {t('editBtn')}
               </button>
               <button
                 type="button"
@@ -1885,7 +1894,9 @@ export default function ChallengeChatPage({
                 onClick={() => { setManageOpen(false); handleToggleStatus() }}
                 disabled={busy !== null}
               >
-                {isValidated ? `✓ ${t('reopenCta')}` : `🔒 ${t('closeCta')}`}
+                {isValidated
+                  ? <><Icon name="lock-open-outline" size={16} /> {t('reopenCta')}</>
+                  : <><Icon name="lock-closed-outline" size={16} /> {t('closeCta')}</>}
               </button>
               {/* Restart - only when there's an active taker to remove. */}
               {challenge?.is_in_progress && (
@@ -1895,7 +1906,7 @@ export default function ChallengeChatPage({
                   onClick={() => { setManageOpen(false); handleRestart() }}
                   disabled={busy !== null}
                 >
-                  🔄 {busy === 'restart' ? '…' : t('restart.cta')}
+                  <Icon name="refresh-outline" size={16} /> {busy === 'restart' ? '…' : t('restart.cta')}
                 </button>
               )}
               <button
@@ -1904,7 +1915,7 @@ export default function ChallengeChatPage({
                 onClick={() => { setManageOpen(false); handleDelete() }}
                 disabled={busy !== null}
               >
-                🗑️ {busy === 'delete' ? '…' : t('deleteBtn')}
+                <Icon name="trash-outline" size={16} /> {busy === 'delete' ? '…' : t('deleteBtn')}
               </button>
             </div>
           </div>
@@ -1985,7 +1996,7 @@ export default function ChallengeChatPage({
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPresentRating(n) } }}
                     style={{ fontSize: 30, lineHeight: 1, cursor: 'pointer', color: n <= presentRating ? '#FFC93C' : 'var(--border,#444)' }}
                   >
-                    {n <= presentRating ? '★' : '☆'}
+                    <Icon name={n <= presentRating ? 'star' : 'star-outline'} size={30} />
                   </span>
                 ))}
               </div>

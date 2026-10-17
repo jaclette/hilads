@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchChannelParticipants, kickChallengeParticipant } from '../api'
 import { avatarColors } from '../lib/avatarColors'
 import AttendeeAvatars from './AttendeeAvatars'
+import Icon from './Icon'
 
 /**
  * Compact "who's in" bar + full-list modal, matching the topic/event member
@@ -126,8 +127,8 @@ export default function ChallengeChannelMembers({
         <div className="modal-overlay" onClick={() => setOpen(false)}>
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <span className="modal-title">👥 {t('members.countIn', { count: rows.length })}</span>
-              <button className="going-modal-close" onClick={() => setOpen(false)}>✕</button>
+              <span className="modal-title"><Icon name="people-outline" size={18} /> {t('members.countIn', { count: rows.length })}</span>
+              <button className="going-modal-close" onClick={() => setOpen(false)} aria-label="Close"><Icon name="close" size={18} /></button>
             </div>
             <div className="going-modal-body">
               {rows.map(r => {

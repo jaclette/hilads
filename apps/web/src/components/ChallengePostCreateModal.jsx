@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchCityMembers, inviteToChallenge } from '../api'
 import { avatarColors } from '../lib/avatarColors'
+import Icon from './Icon'
 
 /**
  * Two-step floating modal shown right after publishing a challenge.
@@ -66,20 +67,20 @@ function SeedView({ challenge, cityName, t, onPickPeople, onShare, onSkip }) {
     : (challenge.audience === 'locals' ? t('aud.locals') : t('aud.explorers'))
   return (
     <>
-      <div className="cpcm-title">{t('postCreate.title')} 🎯</div>
+      <div className="cpcm-title">{t('postCreate.title')}</div>
       <div className="cpcm-sub">{t('postCreate.subtitle')}</div>
 
       <button type="button" className="cpcm-cta-primary" onClick={onPickPeople}>
-        <span className="cpcm-cta-icon" aria-hidden>👥</span>
+        <span className="cpcm-cta-icon" aria-hidden><Icon name="people-outline" size={22} /></span>
         <span className="cpcm-cta-body">
           <span className="cpcm-cta-line">{t('postCreate.ctaInvite', { city })}</span>
           <span className="cpcm-cta-sub">{t('postCreate.ctaInviteSub', { audience: audienceLabel })}</span>
         </span>
-        <span className="cpcm-cta-arrow" aria-hidden>›</span>
+        <span className="cpcm-cta-arrow" aria-hidden style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={18} /></span>
       </button>
 
       <button type="button" className="cpcm-cta-secondary" onClick={onShare}>
-        <span aria-hidden>🔗</span>
+        <Icon name="link-outline" size={16} />
         <span>{t('postCreate.ctaShare')}</span>
       </button>
 
@@ -191,7 +192,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
   if (sentCount !== null) {
     return (
       <div className="cpcm-success">
-        <div className="cpcm-success-emoji" aria-hidden>🤝</div>
+        <div className="cpcm-success-emoji" aria-hidden style={{ color: 'var(--primary-text)', lineHeight: 0 }}><Icon name="people-outline" size={40} /></div>
         <div className="cpcm-title">{t('postCreate.sentTitle', { count: sentCount })}</div>
         <div className="cpcm-sub">{t('postCreate.sentSubtitle')}</div>
       </div>
@@ -201,7 +202,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
   return (
     <>
       <div className="cpcm-picker-head">
-        <button type="button" className="cpcm-back" onClick={onBack} aria-label="Back">‹</button>
+        <button type="button" className="cpcm-back" onClick={onBack} aria-label="Back"><Icon name="chevron-back" size={20} /></button>
         <div>
           <div className="cpcm-title">{t('postCreate.pickerTitle', { audience: audienceLabel, city })}</div>
           <div className="cpcm-sub">
@@ -240,7 +241,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
                   {m.username ? <span className="cpcm-row-handle">@{m.username}</span> : null}
                 </span>
                 <span className={`cpcm-check${isSel ? ' cpcm-check--on' : ''}`} aria-hidden>
-                  {isSel ? '✓' : ''}
+                  {isSel ? <Icon name="checkmark" size={14} /> : null}
                 </span>
               </button>
             )

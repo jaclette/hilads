@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
+import Icon from './Icon'
 
 // Per-kind subtitle key - same mapping as the native modal. Falls through
 // to `default` when top_kind is null or unknown (older / ghost events).
@@ -14,7 +15,7 @@ const KIND_KEYS = {
   meet_bonus:  'scoreCelebration.subtitle.meet_bonus',
 }
 
-// Short kind label + emoji for the per-event rows. Distinct keys from the
+// Short kind label + icon for the per-event rows. Distinct keys from the
 // subtitle copy above (which is a full sentence for the headline path).
 const KIND_SHORT_KEYS = {
   challenge_created: 'scoreCelebration.kindShort.challenge_created',
@@ -25,14 +26,14 @@ const KIND_SHORT_KEYS = {
   ghost:       'scoreCelebration.kindShort.ghost',
   meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
 }
-const KIND_EMOJI = {
-  challenge_created: '🎯',
-  accepted:    '🤝',
-  date_locked: '🗓️',
-  meetup:      '🎉',
-  debrief:     '🎉',
-  ghost:       '👻',
-  meet_bonus:  '🤝',
+const KIND_ICON = {
+  challenge_created: 'locate-outline',
+  accepted:    'people-outline',
+  date_locked: 'calendar-outline',
+  meetup:      'sparkles-outline',
+  debrief:     'sparkles-outline',
+  ghost:       'eye-off-outline',
+  meet_bonus:  'people-outline',
 }
 
 /**
@@ -107,9 +108,8 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
     ? t('scoreCelebration.rank.cities',       { rank: cityInCitiesRank, city: data.city_name ?? '' })
     : t('scoreCelebration.rank.citiesBeyond', { topN,                   city: data.city_name ?? '' })
 
-  const cityFlag   = countryToFlag(data.city_country) || '📍'
-  const worldFlag  = '🌐'
-  const citiesFlag = '🏙️'
+  const cityFlag   = countryToFlag(data.city_country)
+  const rowIconStyle = { color: 'var(--muted2)', lineHeight: 0 }
 
   return (
     <div className="score-celebration-backdrop" onClick={onClose}>
@@ -119,8 +119,22 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
         role="dialog"
         aria-modal="true"
       >
-        <div className="score-celebration-confetti">✨   🎉   ✨</div>
-        <div className="score-celebration-trophy">🏆</div>
+        <div className="score-celebration-confetti" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, color: 'var(--gold)', letterSpacing: 0 }}>
+          <Icon name="sparkles-outline" size={14} />
+          <Icon name="sparkles" size={16} />
+          <Icon name="sparkles-outline" size={14} />
+        </div>
+        <div
+          className="score-celebration-trophy"
+          aria-hidden="true"
+          style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 72, height: 72, borderRadius: '50%',
+            background: 'color-mix(in srgb, var(--gold) 16%, transparent)', color: 'var(--gold)',
+          }}
+        >
+          <Icon name="trophy-outline" size={38} />
+        </div>
 
         <div className="score-celebration-points">
           +{displayPoints}
@@ -143,7 +157,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
         {data.events && data.events.length > 0 && (
           <div className="score-celebration-events">
             {data.events.map(ev => {
-              const emoji   = KIND_EMOJI[ev.kind] ?? '🏆'
+              const icon    = KIND_ICON[ev.kind] ?? 'trophy-outline'
               const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default'
               const title   = ev.challenge_title ?? t('scoreCelebration.event.deletedChallenge')
               const isBonus = ev.kind === 'meet_bonus'
@@ -156,7 +170,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
                   <span className="score-celebration-event-body">
                     <span className="score-celebration-event-title">{title}</span>
                     <span className="score-celebration-event-kind">
-                      {emoji} {t(kindKey)}
+                      <Icon name={icon} size={12} /> {t(kindKey)}
                     </span>
                   </span>
                 </div>
@@ -190,9 +204,11 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
                 onClick={cityTappable ? () => onOpenLeaderboard('city') : undefined}
                 onKeyDown={cityTappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('city') } } : undefined}
               >
-                <span className="score-celebration-row-flag" aria-hidden="true">{cityFlag}</span>
+                {cityFlag
+                  ? <span className="score-celebration-row-flag" aria-hidden="true">{cityFlag}</span>
+                  : <span className="score-celebration-row-flag" aria-hidden="true" style={rowIconStyle}><Icon name="location-outline" size={20} /></span>}
                 <span className="score-celebration-row-label">{cityRankCopy}</span>
-                {cityTappable && <span className="score-celebration-row-chevron" aria-hidden="true">›</span>}
+                {cityTappable && <span className="score-celebration-row-chevron" aria-hidden="true" style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={18} /></span>}
               </div>
               <div
                 className={`score-celebration-row score-celebration-row--2${worldTappable ? ' score-celebration-row--tappable' : ''}`}
@@ -201,16 +217,16 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
                 onClick={worldTappable ? () => onOpenLeaderboard('world') : undefined}
                 onKeyDown={worldTappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('world') } } : undefined}
               >
-                <span className="score-celebration-row-flag" aria-hidden="true">{worldFlag}</span>
+                <span className="score-celebration-row-flag" aria-hidden="true" style={rowIconStyle}><Icon name="globe-outline" size={20} /></span>
                 <span className="score-celebration-row-label">{worldRankCopy}</span>
-                {worldTappable && <span className="score-celebration-row-chevron" aria-hidden="true">›</span>}
+                {worldTappable && <span className="score-celebration-row-chevron" aria-hidden="true" style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={18} /></span>}
               </div>
               {/* City-in-cities - where the user's home city ranks among
                   all cities. Rendered only when there's a current city
                   set; uses the same row chrome as the other two. */}
               {data.city_id && (
                 <div className="score-celebration-row score-celebration-row--2">
-                  <span className="score-celebration-row-flag" aria-hidden="true">{citiesFlag}</span>
+                  <span className="score-celebration-row-flag" aria-hidden="true" style={rowIconStyle}><Icon name="business-outline" size={20} /></span>
                   <span className="score-celebration-row-label">{cityInCitiesCopy}</span>
                 </div>
               )}

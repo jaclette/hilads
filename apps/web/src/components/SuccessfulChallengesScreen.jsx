@@ -5,6 +5,7 @@ import ShowcaseCard from './ShowcaseCard'
 import ShowcasePreviewModal from './ShowcasePreviewModal'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import { fetchChallengeShowcase } from '../api'
+import Icon from './Icon'
 
 const PAGE = 30
 
@@ -63,7 +64,7 @@ export default function SuccessfulChallengesScreen({ onBack, onTry, onOpenProfil
             className={`showcase-city-pill${cityId ? ' showcase-city-pill--active' : ''}`}
             onClick={() => setPickerOpen(true)}
           >
-            🌍 {cityName ?? t('showcase.allCities')} ▾
+            <Icon name="globe-outline" size={14} /> {cityName ?? t('showcase.allCities')} <Icon name="chevron-down" size={12} />
           </button>
           {cityId && (
             <button type="button" className="showcase-clear" onClick={() => { setCityId(null); setCityName(null) }}>
@@ -73,10 +74,10 @@ export default function SuccessfulChallengesScreen({ onBack, onTry, onOpenProfil
         </div>
 
         {loading ? (
-          <div className="showcase-empty"><div className="showcase-empty-emoji">✨</div></div>
+          <div className="showcase-empty"><div className="showcase-empty-emoji" aria-hidden="true" style={{ color: 'var(--muted2)' }}><Icon name="sparkles-outline" size={32} /></div></div>
         ) : items.length === 0 ? (
           <div className="showcase-empty">
-            <div className="showcase-empty-emoji">✨</div>
+            <div className="showcase-empty-emoji" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name="sparkles-outline" size={32} /></div>
             <div className="showcase-empty-title">{t('showcase.empty.title')}</div>
             <div className="showcase-empty-body">{t('showcase.empty.body')}</div>
           </div>

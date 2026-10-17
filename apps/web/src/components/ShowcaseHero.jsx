@@ -4,15 +4,16 @@ import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 import { fetchChallengeShowcase } from '../api'
 import ShowcasePreviewModal from './ShowcasePreviewModal'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS } from '../lib/icons'
 
-const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 const MAX = 3 // 3 success slides + 1 trailing How-it-works slide
 const EVERY = 3000
 
 function Slide({ item, onOpen }) {
   const { t } = useTranslation('challenge')
   const intl     = item.mode === 'international'
-  const icon     = TYPE_ICON[item.challenge_type] ?? '🔥'
+  const icon     = CHALLENGE_TYPE_ICONS[item.challenge_type] ?? 'flame-outline'
   const fromFlag = countryToFlag(item.country)
   const toFlag   = countryToFlag(item.target_country)
   const hasProof = item.proof_media_url && item.proof_media_type === 'image'
@@ -26,12 +27,14 @@ function Slide({ item, onOpen }) {
       <div className={`showcase-hero-overlay${hasProof ? '' : ' showcase-hero-overlay--flat'}`}>
         <div className="showcase-hero-top">
           <span className={`showcase-hero-pill ${intl ? 'showcase-hero-pill--intl' : 'showcase-hero-pill--local'}`}>
-            {intl ? `${fromFlag || '🌐'} → ${toFlag || '🌍'}` : `${fromFlag || '📍'} ${t('showcase.localTag')}`}
+            {intl
+              ? <>{fromFlag || <Icon name="globe-outline" size={12} />} → {toFlag || <Icon name="globe-outline" size={12} />}</>
+              : <>{fromFlag || <Icon name="location-outline" size={12} />} {t('showcase.localTag')}</>}
           </span>
-          {(item.rating_count ?? 0) > 0 && item.avg_stars != null && <span className="showcase-hero-star">★ {item.avg_stars.toFixed(1)}</span>}
+          {(item.rating_count ?? 0) > 0 && item.avg_stars != null && <span className="showcase-hero-star"><Icon name="star" size={13} /> {item.avg_stars.toFixed(1)}</span>}
         </div>
         <div>
-          <div className="showcase-hero-title">{icon} {item.title}</div>
+          <div className="showcase-hero-title"><Icon name={icon} size={16} /> {item.title}</div>
           <div className="showcase-hero-meta">
             {t('showcase.by', { name: item.creator_display_name ?? '?' })}{cityLabel ? ` · ${cityLabel}` : ''}
           </div>
@@ -46,10 +49,10 @@ function HowItWorksSlide({ onOpen }) {
   return (
     <button type="button" className="showcase-hero-slide showcase-hero-slide--howto" onClick={onOpen}>
       <div className="showcase-hero-howto">
-        <div className="showcase-hero-howto-emoji">💡</div>
+        <div className="showcase-hero-howto-emoji" aria-hidden="true" style={{ color: 'var(--primary-text)', lineHeight: 0 }}><Icon name="bulb-outline" size={28} /></div>
         <div className="showcase-hero-howto-title">{t('howItWorks')}</div>
         <div className="showcase-hero-howto-sub">{t('tabIntro')}</div>
-        <div className="showcase-hero-howto-cta">{t('howItWorks')} →</div>
+        <div className="showcase-hero-howto-cta">{t('howItWorks')}</div>
       </div>
     </button>
   )
@@ -112,8 +115,8 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll, onHowItWo
     <div className="showcase-hero">
       {items.length > 0 && (
         <div className="showcase-hero-head">
-          <span className="showcase-hero-head-title">✨ {t('showcase.cta')}</span>
-          <button type="button" className="showcase-hero-seeall" onClick={onSeeAll}>{t('seeAll')} ›</button>
+          <span className="showcase-hero-head-title"><Icon name="sparkles-outline" size={16} style={{ color: 'var(--gold)' }} /> {t('showcase.cta')}</span>
+          <button type="button" className="showcase-hero-seeall" onClick={onSeeAll} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>{t('seeAll')}<Icon name="chevron-forward" size={14} /></button>
         </div>
       )}
 

@@ -4,6 +4,7 @@ import {
   fetchMyChallengeParticipation,
   setChallengeNotificationPreference,
 } from '../api'
+import Icon from './Icon'
 
 /**
  * Compact "Notifications on/off" pill for the challenge channel. Visible
@@ -56,7 +57,7 @@ export default function ChallengeNotificationToggle({ challengeId, currentUserId
       disabled={busy}
       aria-pressed={isOn}
     >
-      <span className="challenge-notif-toggle-icon" aria-hidden="true">{isOn ? '🔔' : '🔕'}</span>
+      <span className="challenge-notif-toggle-icon" aria-hidden="true"><Icon name={isOn ? 'notifications-outline' : 'notifications-off-outline'} size={14} /></span>
       <span className="challenge-notif-toggle-label">
         {t(isOn ? 'notif.on' : 'notif.off')}
       </span>

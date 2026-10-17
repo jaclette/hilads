@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { proposeDate, withdrawProposal, approveDate } from '../api'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
+import Icon from './Icon'
+
+// Large icon for ConfirmDialog (shown where the dialog used to show an emoji).
+const dlgIcon = name => <Icon name={name} size={36} />
 
 /**
  * PR3 - schedule band that sits between the thread chat feed and composer.
@@ -34,13 +38,13 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   async function handleApprove() {
     setBusy('approve')
     try { await approveDate(thread.id); onChange?.() }
-    catch { setDialog({ emoji: '😬', title: t('schedule.err.approveFailed') }) }
+    catch { setDialog({ emoji: dlgIcon('alert-circle-outline'), title: t('schedule.err.approveFailed') }) }
     finally { setBusy(null) }
   }
 
   function handleWithdraw() {
     setDialog({
-      emoji: '↩️',
+      emoji: dlgIcon('arrow-undo-outline'),
       title: t('schedule.withdraw.title'),
       body:  t('schedule.withdraw.body'),
       primary: {
@@ -49,7 +53,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
         onPress: async () => {
           setBusy('withdraw')
           try { await withdrawProposal(thread.id); onChange?.() }
-          catch { setDialog({ emoji: '😬', title: t('schedule.err.withdrawFailed') }) }
+          catch { setDialog({ emoji: dlgIcon('alert-circle-outline'), title: t('schedule.err.withdrawFailed') }) }
           finally { setBusy(null) }
         },
       },
@@ -60,7 +64,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   async function handlePickerSubmit(startsAt, endsAt, venue) {
     setBusy('propose'); setPickerOpen(false)
     try { await proposeDate(thread.id, startsAt, endsAt, venue); onChange?.() }
-    catch { setDialog({ emoji: '😬', title: t('schedule.err.proposeFailed') }) }
+    catch { setDialog({ emoji: dlgIcon('alert-circle-outline'), title: t('schedule.err.proposeFailed') }) }
     finally { setBusy(null) }
   }
 
@@ -80,14 +84,14 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
           aria-label={t('schedule.editCta')}
           style={{ ...bandBase, ...bandScheduled, background: bandScheduled.background, border: 0, padding: bandBase.padding, cursor: 'pointer', textAlign: 'left', width: '100%' }}
         >
-          <span style={{ fontSize: 16 }}>✅</span>
+          <Icon name="checkmark-circle-outline" size={18} style={{ color: '#22c55e' }} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('schedule.scheduled.title')}</div>
             <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
               {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
             </div>
           </div>
-          <span style={{ ...iconBtnSecondary, pointerEvents: 'none' }} aria-hidden="true">✏️</span>
+          <span style={{ ...iconBtnSecondary, pointerEvents: 'none' }} aria-hidden="true"><Icon name="create-outline" size={16} /></span>
         </button>
         {pickerOpen && (
           <DatePickerModal
@@ -112,7 +116,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   if (phase === 'approved') {
     return (
       <div style={{ ...bandBase, ...bandScheduled }}>
-        <span style={{ fontSize: 18 }}>🎉</span>
+        <Icon name="sparkles-outline" size={18} style={{ color: '#22c55e' }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('debrief.approved.title')}</div>
           {thread.approved_at && (
@@ -128,7 +132,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   if (phase === 'rejected') {
     return (
       <div style={{ ...bandBase, ...bandRejected }}>
-        <span style={{ fontSize: 16 }}>✕</span>
+        <Icon name="close-circle-outline" size={18} style={{ color: 'var(--muted2)' }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.rejected.title')}</div>
           {thread.rejected_at && (
@@ -184,7 +188,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   return (
     <>
       <div style={{ ...bandBase, ...bandProposal }}>
-        <span style={{ fontSize: 16 }}>{iProposed ? '⏳' : '📅'}</span>
+        <Icon name={iProposed ? 'hourglass-outline' : 'calendar-outline'} size={18} style={{ color: 'var(--primary-text)' }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>
             {iProposed
@@ -209,7 +213,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
               title="Approve"
               style={iconBtnPrimary}
             >
-              {busy === 'approve' ? '…' : '✓'}
+              {busy === 'approve' ? '…' : <Icon name="checkmark" size={18} />}
             </button>
           )}
           <button
@@ -219,7 +223,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
             title={t('schedule.counterCta')}
             style={iconBtnSecondary}
           >
-            ✏️
+            <Icon name="create-outline" size={16} />
           </button>
           {iProposed && (
             <button
@@ -229,7 +233,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
               title={t('schedule.withdraw.title')}
               style={iconBtnSecondary}
             >
-              {busy === 'withdraw' ? '…' : '✕'}
+              {busy === 'withdraw' ? '…' : <Icon name="close" size={16} />}
             </button>
           )}
         </div>
@@ -295,11 +299,13 @@ const bandRejected = {
 
 const iconBtnPrimary = {
   width: 36, height: 36, borderRadius: 18, border: 'none',
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0,
   background: '#22c55e', color: '#fff', cursor: 'pointer',
   fontSize: 16, fontWeight: 800,
 }
 const iconBtnSecondary = {
   width: 32, height: 32, borderRadius: 16,
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0,
   background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)',
   color: 'var(--muted, #b3b3b3)', cursor: 'pointer', fontSize: 14,
 }

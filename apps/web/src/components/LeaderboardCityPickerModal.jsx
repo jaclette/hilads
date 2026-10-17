@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchChannels } from '../api'
 import { countryToFlag } from '../lib/countryFlag'
 import { localizeCityName } from '../i18n/cityName'
+import Icon from './Icon'
 
 const RESULT_CAP = 10
 
@@ -79,7 +80,7 @@ export default function LeaderboardCityPickerModal({
           <span className="modal-title">
             {t('leaderboard.cityPicker.title', { defaultValue: 'Pick a city' })}
           </span>
-          <button className="going-modal-close" onClick={onClose} aria-label={t('cancel', { ns: 'common', defaultValue: 'Close' })}>✕</button>
+          <button className="going-modal-close" onClick={onClose} aria-label={t('cancel', { ns: 'common', defaultValue: 'Close' })}><Icon name="close" size={18} /></button>
         </div>
 
         <div className="leaderboard-city-picker-search">
@@ -102,7 +103,7 @@ export default function LeaderboardCityPickerModal({
           ) : (
             filtered.map(item => {
               const isSelected = String(item.channelId) === String(selectedChannelId)
-              const flag = countryToFlag(item.country) || '🌍'
+              const flag = countryToFlag(item.country)
               return (
                 <button
                   key={item.channelId}
@@ -110,9 +111,9 @@ export default function LeaderboardCityPickerModal({
                   className={`leaderboard-city-picker-row${isSelected ? ' is-selected' : ''}`}
                   onClick={() => onSelect(item.channelId, item)}
                 >
-                  <span className="leaderboard-city-picker-flag" aria-hidden="true">{flag}</span>
+                  <span className="leaderboard-city-picker-flag" aria-hidden="true">{flag || <Icon name="globe-outline" size={18} style={{ color: 'var(--muted2)' }} />}</span>
                   <span className="leaderboard-city-picker-name">{localizeCityName(item.city ?? item.name)}</span>
-                  {isSelected && <span className="leaderboard-city-picker-check" aria-hidden="true">✓</span>}
+                  {isSelected && <span className="leaderboard-city-picker-check" aria-hidden="true"><Icon name="checkmark" size={16} /></span>}
                 </button>
               )
             })

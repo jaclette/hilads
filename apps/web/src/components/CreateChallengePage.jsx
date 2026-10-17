@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { createChallenge, updateChallenge, fetchChannels, dismissPublicOptin } from '../api'
 import DatePickerModal from './DatePickerModal'
 import BackButton from './BackButton'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS } from '../lib/icons'
 
 // max_participants retired (1:1 model). Constants removed; the stepper UI
 // went with them.
@@ -20,24 +22,24 @@ import BackButton from './BackButton'
  */
 
 const TYPES     = [
-  { value: 'food',    icon: '🍜' },
-  { value: 'place',   icon: '📍' },
-  { value: 'culture', icon: '🎭' },
-  { value: 'help',    icon: '🤪' },
+  { value: 'food',    icon: CHALLENGE_TYPE_ICONS.food },
+  { value: 'place',   icon: CHALLENGE_TYPE_ICONS.place },
+  { value: 'culture', icon: CHALLENGE_TYPE_ICONS.culture },
+  { value: 'help',    icon: CHALLENGE_TYPE_ICONS.help },
 ]
 const AUDIENCES = [
   // 'explorers' is kept as the technical key (DB value, API enum). The
   // user-visible label was renamed to Travelers / Voyageurs / etc.
-  { value: 'locals',    icon: '🏠' },
-  { value: 'explorers', icon: '🧳' },
+  { value: 'locals',    icon: 'home-outline' },
+  { value: 'explorers', icon: 'airplane-outline' },
 ]
 
 // Validation method - only relevant for local challenges. International
 // is locked to 'photo_proof' server-side. Meet earns +50 mutual-rating
 // bonus on top of the base points; Photo earns base only.
 const VALIDATION_METHODS = [
-  { value: 'meet',        icon: '🤝' },
-  { value: 'photo_proof', icon: '📸' },
+  { value: 'meet',        icon: 'people-outline' },
+  { value: 'photo_proof', icon: 'camera-outline' },
 ]
 const MEET_BONUS_POINTS = 50
 
@@ -329,7 +331,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                     onClick={() => !isEdit && setMode(m)}
                     disabled={locked}
                   >
-                    <span className="cef-audience-emoji" aria-hidden="true">{m === 'local' ? '🏙️' : '🌐'}</span>
+                    <span className="cef-audience-emoji" aria-hidden="true"><Icon name={m === 'local' ? 'business-outline' : 'globe-outline'} size={18} /></span>
                     <span>{t(`mode.${m}`, { ns: 'challenge' })}</span>
                   </button>
                 )
@@ -360,7 +362,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                     className={`cef-audience-btn${validationMethod === vm.value ? ' selected' : ''}`}
                     onClick={() => setValidationMethod(vm.value)}
                   >
-                    <span className="cef-audience-emoji" aria-hidden="true">{vm.icon}</span>
+                    <span className="cef-audience-emoji" aria-hidden="true"><Icon name={vm.icon} size={18} /></span>
                     <span>{t(`validation.${vm.value}.label`, { ns: 'challenge', defaultValue: vm.value === 'meet' ? 'Meet' : 'Photo proof' })}</span>
                     <span className="cef-audience-hint">
                       {t(`validation.${vm.value}.hint`, { ns: 'challenge', defaultValue: vm.value === 'meet' ? 'share the experience in person' : 'accept proof at a distance' })}
@@ -373,7 +375,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                   {t('validation.meet.bonusChip', {
                     ns: 'challenge',
                     points: MEET_BONUS_POINTS,
-                    defaultValue: `🏆 Meet bonus: +${MEET_BONUS_POINTS} pts on top of the base reward`,
+                    defaultValue: `+${MEET_BONUS_POINTS} Meet bonus when everyone shows up`,
                   })}
                 </div>
               )}
@@ -394,10 +396,13 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                   >
                     <span>
                       {meetAt
-                        ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}${meetVenue ? `  ·  📍 ${meetVenue}` : ''}`
+                        ? <>
+                            <Icon name="calendar-outline" size={14} />{` ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
+                            {meetVenue ? <>{'  ·  '}<Icon name="location-outline" size={14} />{` ${meetVenue}`}</> : null}
+                          </>
                         : t('group.meetCta', { ns: 'challenge', defaultValue: 'Set the meet date' })}
                     </span>
-                    <span aria-hidden style={{ opacity: 0.6 }}>›</span>
+                    <Icon name="chevron-forward" size={16} style={{ opacity: 0.6 }} />
                   </button>
                   <p className="cef-hint" style={meetError ? { color: '#FF6B5C' } : undefined}>
                     {meetError
@@ -421,7 +426,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                 <span>{targetCity?.name
                   ? `${targetCity.name}${targetCity.country ? ' · ' + targetCity.country : ''}`
                   : t('intl.targetCityAnywhere', { ns: 'challenge' })}</span>
-                <span aria-hidden="true">›</span>
+                <Icon name="chevron-forward" size={16} />
               </button>
               <p className="cef-hint">{t('intl.targetCityHint', { ns: 'challenge' })}</p>
             </div>
@@ -438,7 +443,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                   className={`cef-type-btn${type === tp.value ? ' selected' : ''}`}
                   onClick={() => setType(tp.value)}
                 >
-                  <span style={{ fontSize: 26 }}>{tp.icon}</span>
+                  <Icon name={tp.icon} size={26} />
                   <span className="cef-type-label">
                     {tp.value === 'food'    ? t('create.challengeTypeFood')
                      : tp.value === 'place' ? t('create.challengeTypePlace')
@@ -725,7 +730,7 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
       <div className="modal-panel cef-city-modal" onClick={e => e.stopPropagation()}>
         <div className="cef-city-modal-head">
           <span className="cef-city-modal-title">{t('intl.cityPicker.title')}</span>
-          <button type="button" className="cef-city-modal-close" onClick={onClose}>✕</button>
+          <button type="button" className="cef-city-modal-close" onClick={onClose} aria-label="Close"><Icon name="close" size={18} /></button>
         </div>
         <input
           type="text"
@@ -744,8 +749,8 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
                 className={`cef-city-modal-row${selected === null ? ' selected' : ''}`}
                 onClick={() => onSelect(null)}
               >
-                <span>🌍  {t('intl.cityPicker.anywhere')}</span>
-                {selected === null ? <span aria-hidden="true">✓</span> : null}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Icon name="globe-outline" size={16} />{t('intl.cityPicker.anywhere')}</span>
+                {selected === null ? <Icon name="checkmark" size={16} /> : null}
               </button>
               {filtered.map(c => {
                 const isSel    = selected?.channelId === String(c.channelId)
@@ -762,7 +767,7 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
                     })}
                   >
                     <span>{cityName}{c.country ? ` · ${c.country}` : ''}</span>
-                    {isSel ? <span aria-hidden="true">✓</span> : null}
+                    {isSel ? <Icon name="checkmark" size={16} /> : null}
                   </button>
                 )
               })}

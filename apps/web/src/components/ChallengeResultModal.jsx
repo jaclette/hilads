@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { submitHostRating, submitTakerRating } from '../api'
+import Icon from './Icon'
 
 /**
  * GROUP challenge result reveal modal (web). Role-specific, never-negative copy
@@ -18,7 +19,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
 
   useEffect(() => { if (!visible) { setHostStars(0); setHostNote(''); setSavingRating(false) } }, [visible])
 
-  // Host breakdown: reveal one 🙋 at a time, +points ticking up with each.
+  // Host breakdown: reveal one person icon at a time, +points ticking up with each.
   const hb        = reveal?.hostBreakdown ?? null
   const headCount = (reveal?.myRole === 'host' && hb && hb.heads > 0) ? hb.heads : 0
   const staggered = headCount > 0 && headCount <= 8
@@ -58,26 +59,26 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
   const isPhoto = format === 'photo'
   const showPhoto = isPhoto && !!winnerPhotoUrl
 
-  let emoji = '🎉', title = '', body = ''
+  let icon = 'sparkles-outline', title = '', body = ''
   switch (myRole) {
     case 'winner':
-      emoji = '👑'; title = t('result.winner.title', { defaultValue: 'You won!' })
+      icon = 'ribbon-outline'; title = t('result.winner.title', { defaultValue: 'You won!' })
       body = t('result.winner.body', { defaultValue: 'Your photo took the challenge.' })
       break
     case 'loser':
-      emoji = '📸'; title = t('result.loser.title', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won` })
-      body = t('result.loser.body', { points: `+${myPoints}`, defaultValue: `Nice shot! You earned +${myPoints} for joining — take another shot next time 💪` })
+      icon = 'camera-outline'; title = t('result.loser.title', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won` })
+      body = t('result.loser.body', { points: `+${myPoints}`, defaultValue: `Nice shot! You earned +${myPoints} for joining — take another shot next time` })
       break
     case 'present':
-      emoji = '✅'; title = t('result.present.title', { defaultValue: 'You showed up!' })
+      icon = 'checkmark-circle-outline'; title = t('result.present.title', { defaultValue: 'You showed up!' })
       body = t('result.present.body', { defaultValue: 'Validated present at the meet.' })
       break
     case 'absent':
-      emoji = '👋'; title = t('result.absent.title', { defaultValue: 'You missed this one' })
+      icon = 'hand-left-outline'; title = t('result.absent.title', { defaultValue: 'You missed this one' })
       body = t('result.absent.body', { defaultValue: 'Catch the next meet — your spot is waiting.' })
       break
     case 'host':
-      emoji = '🏆'
+      icon = 'trophy-outline'
       title = isPhoto
         ? t('result.host.titlePhoto', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won your challenge!` })
         : t('result.host.titleMeet', { defaultValue: 'Your meet is done!' })
@@ -98,14 +99,14 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
         {showPhoto ? (
           <div className="crm-photo-wrap">
             <img className="crm-photo" src={winnerPhotoUrl} alt="" />
-            {winnerName ? <span className="crm-photo-caption">👑 {winnerName}</span> : null}
+            {winnerName ? <span className="crm-photo-caption" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Icon name="ribbon-outline" size={14} />{winnerName}</span> : null}
           </div>
         ) : (
-          <div className="crm-big-emoji">{emoji}</div>
+          <div className="crm-big-emoji" aria-hidden="true" style={{ color: 'var(--gold)', lineHeight: 0 }}><Icon name={icon} size={64} /></div>
         )}
 
-        <div className="crm-title">{emoji} {title}</div>
-        {challengeTitle ? <div className="crm-challenge-name">📌 {challengeTitle}</div> : null}
+        <div className="crm-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><Icon name={icon} size={20} style={{ color: 'var(--gold)' }} />{title}</div>
+        {challengeTitle ? <div className="crm-challenge-name" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Icon name="pin-outline" size={14} style={{ color: 'var(--muted2)' }} />{challengeTitle}</div> : null}
         {body ? <div className="crm-body">{body}</div> : null}
 
         {showPoints ? (
@@ -116,13 +117,13 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
                 {staggered ? (
                   <>
                     {Array.from({ length: revealedHeads }).map((_, i) => (
-                      <span key={i} className="crm-pop-emoji">🙋</span>
+                      <span key={i} className="crm-pop-emoji"><Icon name="person-outline" size={14} /></span>
                     ))}
                     <span> = +{hb.perHead * revealedHeads}</span>
-                    {revealedHeads >= headCount ? <span>&nbsp;&nbsp;&nbsp;🏠 +{hb.base}</span> : null}
+                    {revealedHeads >= headCount ? <span style={{ marginLeft: 12 }}><Icon name="home-outline" size={14} /> +{hb.base}</span> : null}
                   </>
                 ) : (
-                  <span>{`🙋 ×${headCount} = +${hb.perHead * headCount}   🏠 +${hb.base}`}</span>
+                  <span><Icon name="person-outline" size={14} />{` ×${headCount} = +${hb.perHead * headCount}`}<Icon name="home-outline" size={14} style={{ marginLeft: 12 }} />{` +${hb.base}`}</span>
                 )}
               </div>
             ) : null}
@@ -143,13 +144,13 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
               onClick={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
               onKeyDown={onOpenLeaderboard ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('city') } } : undefined}
             >
-              <span className="crm-rank-flag">📍</span>
+              <span className="crm-rank-flag" aria-hidden="true" style={{ color: 'var(--muted2)', lineHeight: 0 }}><Icon name="location-outline" size={16} /></span>
               <span className="crm-rank-label">
                 {rankCity != null
                   ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
                   : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
               </span>
-              {onOpenLeaderboard ? <span className="crm-rank-chevron">›</span> : null}
+              {onOpenLeaderboard ? <span className="crm-rank-chevron" aria-hidden="true" style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={16} /></span> : null}
             </div>
             <div
               className={`crm-rank-row${onOpenLeaderboard ? ' crm-rank-row--tappable' : ''}`}
@@ -158,13 +159,13 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
               onClick={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
               onKeyDown={onOpenLeaderboard ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('world') } } : undefined}
             >
-              <span className="crm-rank-flag">🌐</span>
+              <span className="crm-rank-flag" aria-hidden="true" style={{ color: 'var(--muted2)', lineHeight: 0 }}><Icon name="globe-outline" size={16} /></span>
               <span className="crm-rank-label">
                 {rankGlobal != null
                   ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
                   : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
               </span>
-              {onOpenLeaderboard ? <span className="crm-rank-chevron">›</span> : null}
+              {onOpenLeaderboard ? <span className="crm-rank-chevron" aria-hidden="true" style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={16} /></span> : null}
             </div>
           </div>
         ) : null}
@@ -182,7 +183,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setHostStars(n) } }}
                   style={{ fontSize: 28, lineHeight: 1, cursor: 'pointer', color: n <= hostStars ? '#FFC93C' : 'var(--border,#444)' }}
                 >
-                  {n <= hostStars ? '★' : '☆'}
+                  <Icon name={n <= hostStars ? 'star' : 'star-outline'} size={28} />
                 </span>
               ))}
             </div>

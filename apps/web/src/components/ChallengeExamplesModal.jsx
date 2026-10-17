@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchChallengeExamples } from '../api'
+import Icon from './Icon'
 
-const LINE_ICON = { created: '🎯', winner: '🏆', present: '✅', submission: '📸', host: '👑' }
+const LINE_ICON = { created: 'locate-outline', winner: 'trophy-outline', present: 'checkmark-circle-outline', submission: 'camera-outline', host: 'ribbon-outline' }
 
 /**
  * "See 3 real examples" - real resolved challenges with a who-earned-what point
@@ -30,8 +31,8 @@ export default function ChallengeExamplesModal({ onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-panel point-examples-panel" onClick={(e) => e.stopPropagation()}>
         <div className="point-examples-head">
-          <h3 className="modal-title">✨ {t('pointExamples.title', { defaultValue: '3 real examples' })}</h3>
-          <button type="button" className="point-examples-close" onClick={onClose} aria-label="Close">✕</button>
+          <h3 className="modal-title"><Icon name="sparkles-outline" size={18} style={{ color: 'var(--gold)' }} /> {t('pointExamples.title', { defaultValue: '3 real examples' })}</h3>
+          <button type="button" className="point-examples-close" onClick={onClose} aria-label="Close"><Icon name="close" size={18} /></button>
         </div>
         <p className="point-examples-intro">{t('pointExamples.intro', { defaultValue: 'How real challenges paid out — who earned what.' })}</p>
         {examples === null ? (
@@ -44,13 +45,15 @@ export default function ChallengeExamplesModal({ onClose }) {
               <div key={ex.id} className="point-example-card">
                 <div className="point-example-cardhead">
                   <span className={`point-example-fmt point-example-fmt--${ex.format}`}>
-                    {ex.format === 'photo' ? `📸 ${t('card.photoBadge', { defaultValue: 'Photo proof' })}` : `📍 ${t('card.meetBadge', { defaultValue: 'Meet' })}`}
+                    {ex.format === 'photo'
+                      ? <><Icon name="camera-outline" size={12} /> {t('card.photoBadge', { defaultValue: 'Photo proof' })}</>
+                      : <><Icon name="location-outline" size={12} /> {t('card.meetBadge', { defaultValue: 'Meet' })}</>}
                   </span>
                   <span className="point-example-title">{ex.title}</span>
                 </div>
                 {ex.lines.map((l, i) => (
                   <div key={i} className="point-example-line">
-                    <span className="point-example-line-icon">{LINE_ICON[l.kind]}</span>
+                    <span className="point-example-line-icon" aria-hidden="true">{LINE_ICON[l.kind] ? <Icon name={LINE_ICON[l.kind]} size={16} /> : null}</span>
                     <span className="point-example-line-label">{lineLabel(l)}</span>
                     <span className="point-example-line-points">+{l.points}{l.per ? ` ${t('pointExamples.each', { defaultValue: 'each' })}` : ''}</span>
                   </div>
