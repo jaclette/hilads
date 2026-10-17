@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { EVENT_ICONS } from '../cityMeta'
+import Icon from './Icon'
+import { eventIcon, TOPIC_ICONS } from '../lib/icons'
 import { getEventStatus, getTimeLabel, getEventLocation, eventSlug } from '../eventUtils'
 import AttendeeAvatars from './AttendeeAvatars'
 
@@ -21,8 +22,6 @@ function filterAndSort(events, tz) {
       return a.starts_at - b.starts_at
     })
 }
-
-const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 
 export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick, account, guest, onShareToCity }) {
   const { t } = useTranslation('common')
@@ -47,18 +46,18 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
         onClick={() => onSelectEvent(event)}
       >
         <span className="event-row-title">
-          {EVENT_ICONS[event.event_type ?? event.type] ?? '📌'} {event.title}
+          <Icon name={eventIcon(event.event_type ?? event.type)} size="1em" /> {event.title}
         </span>
         <span className="event-row-location">
           {getTimeLabel(event.starts_at, tz)}
-          {eventPresence?.[event.id] > 0 && ` · 🔥 ${eventPresence[event.id]} here`}
-          {eventParticipants?.[event.id] > 0 && ` · 🙌 ${eventParticipants[event.id]} going`}
+          {eventPresence?.[event.id] > 0 && <> · <Icon name="flame-outline" size="1em" /> {eventPresence[event.id]} here</>}
+          {eventParticipants?.[event.id] > 0 && <> · <Icon name="people-outline" size="1em" /> {eventParticipants[event.id]} going</>}
           {event.recurrence_label && (
-            <span className="recur-badge">↻ {event.recurrence_label}</span>
+            <span className="recur-badge"><Icon name="repeat-outline" size="1em" /> {event.recurrence_label}</span>
           )}
         </span>
         {getEventLocation(event) && (
-          <span className="event-row-venue">📍 {getEventLocation(event)}</span>
+          <span className="event-row-venue"><Icon name="location-outline" size="1em" /> {getEventLocation(event)}</span>
         )}
         <AttendeeAvatars
           preview={event.participants_preview ?? []}
@@ -74,7 +73,7 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
             onClick={(e) => { e.stopPropagation(); onShareToCity(`🎉 Hi plan: ${event.title}\n${window.location.origin}/event/${eventSlug(event)}`) }}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onShareToCity(`🎉 Hi plan: ${event.title}\n${window.location.origin}/event/${eventSlug(event)}`) } }}
           >
-            📣 {t('shareToCity', { defaultValue: 'Share in my city' })}
+            <Icon name="megaphone-outline" size={14} />{t('shareToCity', { defaultValue: 'Share in my city' })}
           </span>
         )}
       </button>
@@ -82,7 +81,7 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
   }
 
   function renderTopicRow(topic) {
-    const icon    = CATEGORY_ICONS[topic.category] ?? '💬'
+    const icon    = TOPIC_ICONS[topic.category] ?? 'chatbubble-outline'
     const replies = topic.message_count ?? 0
     const isActive = activeTopicId === topic.id
     return (
@@ -92,9 +91,9 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
         style={{ borderColor: isActive ? 'rgba(96,165,250,0.4)' : 'rgba(96,165,250,0.18)', textAlign: 'left' }}
         onClick={() => onSelectTopic?.(topic)}
       >
-        <span className="event-row-title">{icon} {topic.title}</span>
+        <span className="event-row-title"><Icon name={icon} size="1em" /> {topic.title}</span>
         <span className="event-row-location" style={{ color: '#60a5fa' }}>
-          {replies > 0 ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}
+          {replies > 0 ? <><Icon name="chatbubble-outline" size="1em" /> {replies} {replies === 1 ? 'reply' : 'replies'}</> : 'No replies yet'}
         </span>
       </button>
     )
@@ -122,7 +121,7 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
         }
         {publicEvents.length > 0 && (
           <>
-            <p className="events-group-label events-group-label--city">🎫 City Events</p>
+            <p className="events-group-label events-group-label--city"><Icon name="ticket-outline" size="1em" /> City Events</p>
             {publicEvents.map(renderRow)}
           </>
         )}

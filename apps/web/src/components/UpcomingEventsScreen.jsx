@@ -2,15 +2,11 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import BackButton from './BackButton'
+import Icon from './Icon'
+import { eventIcon } from '../lib/icons'
 import AttendeeAvatars from './AttendeeAvatars'
 import { fetchUpcomingEvents, fetchCalendarSummary } from '../api'
 import { formatTime, getEventLocation } from '../eventUtils'
-
-const EVENT_ICONS = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-}
 
 // Strip reaches 90 days; modal calendar 180 - same asymmetry as native.
 const STRIP_DAYS = 90
@@ -185,7 +181,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
           className="upc-cal-btn"
           aria-label={t('openCalendar')}
           onClick={() => setShowMonth(true)}
-        >📅</button>
+        ><Icon name="calendar-outline" size={22} /></button>
       </div>
 
       {/* Day strip */}
@@ -238,7 +234,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
               const isLive = event.starts_at <= now && event.expires_at > now
               const isPublic = event.source === 'ticketmaster' || event.source_type === 'ticketmaster'
               const location = getEventLocation(event)
-              const icon = EVENT_ICONS[event.type ?? event.event_type] ?? '📌'
+              const icon = eventIcon(event.type ?? event.event_type)
               const going = event.participant_count ?? 0
 
               return (
@@ -248,21 +244,21 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
                   onClick={() => onSelectEvent(event)}
                 >
                   <div className="er-header">
-                    <span className="er-title">{icon} {event.title}</span>
+                    <span className="er-title"><Icon name={icon} size={16} /><span className="er-title-marquee">{event.title}</span></span>
                     {isPublic
                       ? <span className="er-going er-going--public">{t('public')}</span>
                       : going > 0 && <span className="er-going">{t('going', { count: going })}</span>}
                   </div>
                   <div className="er-badges">
                     <span className="city-row-current">
-                      {isLive ? t('liveNow') : `🕐 ${formatTime(event.starts_at, tz)}`}
-                      {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
+                      {isLive ? t('liveNow') : <><Icon name="time-outline" size="1em" /> {formatTime(event.starts_at, tz)}</>}
+                      {event.ends_at ? ` – ${formatTime(event.ends_at, tz)}` : ''}
                     </span>
                     {event.recurrence_label && (
-                      <span className="recur-badge">↻ {event.recurrence_label}</span>
+                      <span className="recur-badge"><Icon name="repeat-outline" size="1em" /> {event.recurrence_label}</span>
                     )}
                   </div>
-                  {location && <span className="er-location">📍 {location}</span>}
+                  {location && <span className="er-location"><Icon name="location-outline" size="1em" /> {location}</span>}
                   {!isPublic && (
                     <AttendeeAvatars
                       preview={event.participants_preview ?? []}

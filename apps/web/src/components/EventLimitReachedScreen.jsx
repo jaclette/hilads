@@ -12,7 +12,8 @@
 
 import { useEffect, useState } from 'react'
 import { fetchMyEvents } from '../api'
-import { EVENT_ICONS } from '../cityMeta'
+import Icon from './Icon'
+import { eventIcon } from '../lib/icons'
 import { getTimeLabel, getEventLocation } from '../eventUtils'
 
 export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, onSelectEvent }) {
@@ -58,7 +59,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
         </div>
 
         <div className="limit-hero">
-          <div className="limit-emoji" aria-hidden="true">🎉</div>
+          <div className="limit-emoji" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name="calendar-outline" size={56} /></div>
           <h1 className="limit-title">You've already created your event today!</h1>
           <p className="limit-body">
             At Hilads, we keep things fresh - one event per day so every plan
@@ -76,7 +77,8 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             >
               <div className="er-header">
                 <span className="er-title">
-                  {EVENT_ICONS[blockingEvent.event_type ?? blockingEvent.type] ?? '📌'} {blockingEvent.title}
+                  <Icon name={eventIcon(blockingEvent.event_type ?? blockingEvent.type)} size={16} />
+                  <span className="er-title-marquee">{blockingEvent.title}</span>
                 </span>
                 <span className="er-going er-going--event">Your event</span>
               </div>
@@ -86,7 +88,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
                 </span>
               </div>
               {getEventLocation(blockingEvent) && (
-                <span className="er-location">📍 {getEventLocation(blockingEvent)}</span>
+                <span className="er-location"><Icon name="location-outline" size="1em" /> {getEventLocation(blockingEvent)}</span>
               )}
             </button>
           )}
@@ -96,7 +98,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             className="limit-legend-link"
             onClick={() => setShowLegendInfo(true)}
           >
-            👑 Become a Legend to create unlimited events
+            <Icon name="ribbon-outline" size={16} style={{ marginRight: 6 }} />Become a Legend to create unlimited events
           </button>
         </div>
 
@@ -114,7 +116,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
       {showLegendInfo && (
         <div className="limit-legend-modal" role="dialog" aria-modal="true">
           <div className="limit-legend-modal-card">
-            <div className="limit-legend-modal-emoji" aria-hidden="true">👑</div>
+            <div className="limit-legend-modal-emoji" aria-hidden="true" style={{ color: 'var(--gold)' }}><Icon name="ribbon-outline" size={44} /></div>
             <h2 className="limit-legend-modal-title">Become a Legend</h2>
             <p className="limit-legend-modal-body">
               Legends are locals chosen to keep their city alive - they can

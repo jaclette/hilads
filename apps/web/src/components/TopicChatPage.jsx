@@ -8,6 +8,8 @@ import { badgeLabel } from '../badgeMeta'
 import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants, toggleTopicReaction } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
+import Icon from './Icon'
+import { TOPIC_ICONS } from '../lib/icons'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
@@ -18,9 +20,7 @@ import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
 import { formatExpiresIn } from '../expiry'
 
-const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
-const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
-const VIBE_META  = { party: { emoji: '🔥' }, board_games: { emoji: '🎲' }, coffee: { emoji: '☕' }, music: { emoji: '🎵' }, food: { emoji: '🍜' }, chill: { emoji: '🧘' } }
+const MODE_META  = { local: { icon: 'earth-outline', label: 'Local' }, exploring: { icon: 'compass-outline', label: 'Exploring' } }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -151,7 +151,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   const loadingOlderRef  = useRef(false)  // concurrency guard
   const skipAutoScrollRef = useRef(false) // suppress scroll-to-bottom when prepending older
 
-  const icon = CATEGORY_ICONS[topic.category] ?? '💬'
+  const icon = TOPIC_ICONS[topic.category] ?? 'chatbubble-outline'
 
   // ── Hangout request-to-join ──
   const [joinState, setJoinState] = useState('idle') // idle | requested | in
@@ -466,7 +466,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       <div className="page-header topic-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
-          <span className="topic-chat-header-icon">{icon}</span>
+          <span className="topic-chat-header-icon"><Icon name={icon} size={14} /></span>
           <CopyTranslateText value={topic.title} className="topic-chat-header-title" />
         </div>
         <button
@@ -476,7 +476,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
           title={t('shareTitle')}
         >
           {copied
-            ? <span className="topic-share-copied">✓</span>
+            ? <span className="topic-share-copied"><Icon name="checkmark" size={18} /></span>
             : (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
@@ -494,7 +494,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
 
       {/* Expiry - hangouts auto-expire 24h after creation. */}
       {formatExpiresIn(topic.expires_at) && (
-        <div className="topic-chat-expiry">⏱ {formatExpiresIn(topic.expires_at)}</div>
+        <div className="topic-chat-expiry" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="time-outline" size={14} /> {formatExpiresIn(topic.expires_at)}</div>
       )}
 
       {/* Members strip - same idea as an event's "going" strip. Members only. */}
@@ -516,8 +516,8 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       {/* Owner controls - edit / delete this hangout. */}
       {isOwner && (
         <div className="topic-owner-row">
-          <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}>{t('owner.edit')}</button>
-          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDeleteTopic}>{t('owner.delete')}</button>
+          <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}><Icon name="create-outline" size={14} />{t('owner.edit')}</button>
+          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDeleteTopic}><Icon name="trash-outline" size={14} />{t('owner.delete')}</button>
         </div>
       )}
 
@@ -527,14 +527,14 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
           className="share-to-city-pill"
           onClick={() => onShareToCity(`🗣️ Hi now: ${topic.title}\n${window.location.origin}/t/${topic.id}`)}
         >
-          📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
+          <Icon name="megaphone-outline" size={16} />{t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
         </button>
       )}
 
       {gated ? (
         /* Members-only gate - pending requesters cannot read or post. */
         <div className="topic-gated">
-          <span className="topic-gated-emoji">🔒</span>
+          <span className="topic-gated-emoji" style={{ color: 'var(--muted2)' }}><Icon name="lock-closed-outline" size={32} /></span>
           <strong className="topic-gated-title">{t('gated.title')}</strong>
           <span className="topic-gated-sub">
             {joinState === 'requested' ? t('gated.pending') : t('gated.prompt')}
@@ -555,13 +555,13 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         )}
         {loading && messages.length === 0 && (
           <div className="topic-chat-empty">
-            <span className="topic-chat-empty-icon">💬</span>
+            <span className="topic-chat-empty-icon" style={{ color: 'var(--muted2)' }}><Icon name="chatbubbles-outline" size={28} /></span>
             <span>{t('feed.loading')}</span>
           </div>
         )}
         {!loading && messages.length === 0 && (
           <div className="topic-chat-empty">
-            <span className="topic-chat-empty-icon">✨</span>
+            <span className="topic-chat-empty-icon" style={{ color: 'var(--primary-text)' }}><Icon name="sparkles-outline" size={28} /></span>
             <strong>{t('feed.emptyTitle')}</strong>
             <span>{t('feed.emptySub')}</span>
           </div>
@@ -623,7 +623,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                     </span>
                   )}
                   <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
-                  {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`modes.${m}`)}</span> : null; })()}
+                  {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}><Icon name={MODE_META[m].icon} size="1em" /> {t(`modes.${m}`)}</span> : null; })()}
                   {item.contextBadge?.key === 'host' && (
                     <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
                   )}
@@ -743,8 +743,8 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <div className="modal-overlay" onClick={() => setShowMembers(false)}>
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <span className="modal-title">👥 {t('members.countIn', { count: participants.length })}</span>
-              <button className="going-modal-close" onClick={() => setShowMembers(false)}>✕</button>
+              <span className="modal-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="people-outline" size={14} />{t('members.countIn', { count: participants.length })}</span>
+              <button className="going-modal-close" onClick={() => setShowMembers(false)} aria-label={t('locationPicker.close', { ns: 'common', defaultValue: 'Close' })}><Icon name="close" size={18} /></button>
             </div>
             <div className="going-modal-body">
               {participants.map(p => {

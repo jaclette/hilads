@@ -4,10 +4,11 @@ import i18n from '../i18n'
 import { fetchVenue } from '../api'
 import { cityFlag } from '../cityMeta'
 import BackButton from './BackButton'
+import Icon from './Icon'
 
 const CATEGORY_META = {
-  bar:  { emoji: '🍻' },
-  cafe: { emoji: '☕' },
+  bar:  { icon: 'beer-outline' },
+  cafe: { icon: 'cafe-outline' },
 }
 
 function venueSlug(name) {
@@ -97,7 +98,7 @@ export default function VenueScreen({ venueId, onBack, onOpenCity }) {
       </nav>
 
       <header className="venue-header">
-        <div className="venue-category" aria-hidden="true">{meta.emoji}</div>
+        <div className="venue-category" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name={meta.icon} size={40} /></div>
         <h1 className="venue-name">{venue.name}</h1>
         <p className="venue-type">{t('typeInCity', { category: t(`category.${categoryKey}`), city: venue.city.name })}</p>
       </header>

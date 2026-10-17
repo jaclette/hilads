@@ -3,16 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { createTopic, updateTopic, HangoutLimitError } from '../api'
 import { requestFeatureLocation } from '../lib/gpsFeature'
 import BackButton from './BackButton'
-
-// Labels are translated at render via t(`create.cat.${value}`); icons stay here.
-const CATEGORIES = [
-  { value: 'general', icon: '🗣️' },
-  { value: 'tips',    icon: '💡' },
-  { value: 'food',    icon: '🍴' },
-  { value: 'drinks',  icon: '🍺' },
-  { value: 'help',    icon: '🙋' },
-  { value: 'meetup',  icon: '👋' },
-]
+import Icon from './Icon'
 
 export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated, onBack, userLocation, editTopic, onGoToHangout }) {
   const { t } = useTranslation('hangout')
@@ -64,7 +55,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           <span className="page-title">{t('create.limitHeader')}</span>
         </div>
         <div className="topic-gated">
-          <span className="topic-gated-emoji">🗣️</span>
+          <span className="topic-gated-emoji" style={{ color: 'var(--primary-text)' }}><Icon name="chatbubbles-outline" size={32} /></span>
           <strong className="topic-gated-title">{t('create.limitTitle')}</strong>
           <span className="topic-gated-sub">
             {t('create.limitSub', { title: limitTopic.title })}
@@ -101,15 +92,15 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           {/* Expiry note */}
           {!isEdit && (
-            <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center' }}>
-              {t('create.expiry')}
+            <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <Icon name="time-outline" size={14} />{t('create.expiry')}
             </p>
           )}
 
           {/* Geo explainer - why turning on location matters (parity with native). */}
           {!isEdit && (
             <div className="topic-geohint">
-              {t('create.geoHint')}
+              <Icon name="location-outline" size={16} style={{ marginRight: 6 }} />{t('create.geoHint')}
             </div>
           )}
 

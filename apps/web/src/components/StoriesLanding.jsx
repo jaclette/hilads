@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { track } from '../lib/analytics'
 import Logo from './Logo'
-import { cityFlag, EVENT_ICONS } from '../cityMeta'
+import Icon from './Icon'
+import { cityFlag } from '../cityMeta'
+import { eventIcon, CHALLENGE_TYPE_ICONS } from '../lib/icons'
 import { formatTime } from '../eventUtils'
 import VideoHero from './VideoHero'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from '../config/featuredCity'
@@ -16,7 +18,6 @@ import { FEATURED_CITY, MIN_LIVE_COUNT } from '../config/featuredCity'
  *          · 4 conversion (repeat CTA + store badges + create/login).
  */
 
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 // The hero clips are cut from these tracks - the landing autoplays MUTED (browser
 // rule), so these links are the only way to actually hear them. Titles are proper
 // nouns and stay untranslated; only the "Full song" screen-reader prefix is i18n.
@@ -217,7 +218,7 @@ export default function StoriesLanding({
               aria-label={`${t('stories.fullSong')}: ${tr.title}`}
               onClick={() => track('full_song_clicked', { track: tr.slug })}
             >
-              🎧 {tr.title}
+              <Icon name="headset-outline" size={16} /> {tr.title}
             </a>
           ))}
         </div>
@@ -236,9 +237,9 @@ export default function StoriesLanding({
         {landingChallenge && (
           <button className="ob-event-row ob-challenge-row sl-row sl-row--hot" onClick={() => tapChallenge(landingChallenge)}>
             <span className="ob-event-title">
-              {CHALLENGE_TYPE_ICONS[landingChallenge.challenge_type] ?? '🔥'} {landingChallenge.title}
+              <Icon name={CHALLENGE_TYPE_ICONS[landingChallenge.challenge_type] ?? 'flame-outline'} size="1em" /> {landingChallenge.title}
             </span>
-            <span className="sl-row-cta">→</span>
+            <span className="sl-row-cta"><Icon name="chevron-forward" size={18} /></span>
           </button>
         )}
 
@@ -255,8 +256,8 @@ export default function StoriesLanding({
           <div className="ob-events-preview ob-challenges-preview">
             {previewChallenges.filter(ch => ch.id !== landingChallenge?.id).map((ch) => (
               <button key={ch.id} className="ob-event-row ob-challenge-row sl-row" onClick={() => tapChallenge(ch)}>
-                <span className="ob-event-title">{CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? '🔥'} {ch.title}</span>
-                <span className="sl-row-cta">→</span>
+                <span className="ob-event-title"><Icon name={CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? 'flame-outline'} size="1em" /> {ch.title}</span>
+                <span className="sl-row-cta"><Icon name="chevron-forward" size={18} /></span>
               </button>
             ))}
           </div>
@@ -266,7 +267,7 @@ export default function StoriesLanding({
           <div className="ob-events-preview">
             {previewEvents.map((e) => (
               <button key={e.id} className="ob-event-row sl-row" onClick={primary}>
-                <span className="ob-event-title">{EVENT_ICONS[e.event_type] ?? '📌'} {e.title}</span>
+                <span className="ob-event-title"><Icon name={eventIcon(e.event_type)} size="1em" /> {e.title}</span>
                 <span className="ob-event-time">{formatTime(e.starts_at, previewTimezone)}</span>
               </button>
             ))}
@@ -280,9 +281,9 @@ export default function StoriesLanding({
       <section className="sl-screen sl-screen--how" data-idx="2" ref={setRef(2)}>
         <h2 className="sl-headline">{t('stories.how.title')}</h2>
         <div className="sl-steps">
-          <div className="sl-step"><span className="sl-step-icon">🌍</span><span className="sl-step-text">{t('stories.how.step1')}</span></div>
-          <div className="sl-step"><span className="sl-step-icon">🔥</span><span className="sl-step-text">{t('stories.how.step2')}</span></div>
-          <div className="sl-step"><span className="sl-step-icon">👋</span><span className="sl-step-text">{t('stories.how.step3')}</span></div>
+          <div className="sl-step"><span className="sl-step-icon" style={{ color: 'var(--primary-text)' }}><Icon name="earth-outline" size={24} /></span><span className="sl-step-text">{t('stories.how.step1')}</span></div>
+          <div className="sl-step"><span className="sl-step-icon" style={{ color: 'var(--primary-text)' }}><Icon name="flame-outline" size={24} /></span><span className="sl-step-text">{t('stories.how.step2')}</span></div>
+          <div className="sl-step"><span className="sl-step-icon" style={{ color: 'var(--primary-text)' }}><Icon name="hand-right-outline" size={24} /></span><span className="sl-step-text">{t('stories.how.step3')}</span></div>
         </div>
         <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen3_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}

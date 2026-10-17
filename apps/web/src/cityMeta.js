@@ -11,14 +11,12 @@ export function cityFlag(countryCode) {
 }
 
 export const EVENT_TYPES = [
-  { value: 'drinks',  icon: '🍻', label: 'Drinks' },
-  { value: 'party',   icon: '🎉', label: 'Party' },
-  { value: 'music',   icon: '🎵', label: 'Music' },
-  { value: 'food',    icon: '🍽️', label: 'Food' },
-  { value: 'coffee',  icon: '☕', label: 'Coffee' },
-  { value: 'sport',   icon: '⚽', label: 'Sport' },
-  { value: 'meetup',  icon: '👥', label: 'Meetup' },
-  { value: 'other',   icon: '📌', label: 'Other' },
+  { value: 'drinks',  label: 'Drinks' },
+  { value: 'party',   label: 'Party' },
+  { value: 'music',   label: 'Music' },
+  { value: 'food',    label: 'Food' },
+  { value: 'coffee',  label: 'Coffee' },
+  { value: 'sport',   label: 'Sport' },
+  { value: 'meetup',  label: 'Meetup' },
+  { value: 'other',   label: 'Other' },
 ]
-
-export const EVENT_ICONS = Object.fromEntries(EVENT_TYPES.map(t => [t.value, t.icon]))

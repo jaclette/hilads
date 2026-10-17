@@ -2,7 +2,9 @@ import { useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { track } from '../lib/analytics'
 import Logo from './Logo'
-import { cityFlag, EVENT_ICONS } from '../cityMeta'
+import Icon from './Icon'
+import { cityFlag } from '../cityMeta'
+import { eventIcon, CHALLENGE_TYPE_ICONS } from '../lib/icons'
 import { formatTime } from '../eventUtils'
 
 // ── Avatar palette - same set as App.jsx ─────────────────────────────────────
@@ -31,17 +33,13 @@ function nl2br(text) {
 
 // Icon + number for the "How it works" steps - text (title/desc) comes from i18n.
 const HOW_META = [
-  { icon: '🌍', num: '01' },
-  { icon: '🔥', num: '02' },
-  { icon: '👋', num: '03' },
+  { icon: 'earth-outline', num: '01' },
+  { icon: 'flame-outline', num: '02' },
+  { icon: 'hand-right-outline', num: '03' },
 ]
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
-// Type-emoji map for challenge rows in the preview card. Mirrors the
-// detail-screen / NOW-screen mapping so the brand glyph stays consistent
-// across surfaces.
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewChallengeCount = 0, previewChallenges = [], previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false, variant = 'primary' }) {
   const { t } = useTranslation('landing')
@@ -85,7 +83,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 {previewChallenges.map(ch => (
                   <div key={ch.id} className="ob-event-row ob-challenge-row">
                     <span className="ob-event-title">
-                      {CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? '🔥'} {ch.title}
+                      <Icon name={CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? 'flame-outline'} size="1em" /> {ch.title}
                     </span>
                   </div>
                 ))}
@@ -96,7 +94,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 {previewEvents.map(e => (
                   <div key={e.id} className="ob-event-row">
                     <span className="ob-event-title">
-                      {EVENT_ICONS[e.event_type] ?? '📌'} {e.title}
+                      <Icon name={eventIcon(e.event_type)} size="1em" /> {e.title}
                     </span>
                     <span className="ob-event-time">
                       {formatTime(e.starts_at, previewTimezone)}
@@ -109,7 +107,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               <div className="ob-events-preview ob-topics-preview">
                 {previewTopics.map(topic => (
                   <div key={topic.id} className="ob-event-row ob-topic-row">
-                    <span className="ob-event-title">🗣️ {topic.title}</span>
+                    <span className="ob-event-title"><Icon name="chatbubbles-outline" size="1em" /> {topic.title}</span>
                     {(topic.message_count ?? 0) > 0 && (
                       <span className="ob-event-time">{t('join.replies', { count: topic.message_count })}</span>
                     )}
@@ -226,18 +224,18 @@ function LocalMockup() {
   return (
     <PhoneFrame>
       <div className="lp-app-header">
-        <span className="lp-app-back">←</span>
+        <span className="lp-app-back"><Icon name="chevron-back" size="1em" /></span>
         <span className="lp-app-title">Launch a challenge</span>
       </div>
       <div className="lp-phone-body">
         <div className="lp-mock-section-label">WHO'S IT FOR?</div>
         <div className="lp-mock-presets">
           <div className="lp-mock-preset">
-            <span className="lp-mock-preset-emoji">🏠</span>
+            <span className="lp-mock-preset-emoji"><Icon name="home-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Locals</span>
           </div>
           <div className="lp-mock-preset lp-mock-preset--on">
-            <span className="lp-mock-preset-emoji">🧳</span>
+            <span className="lp-mock-preset-emoji"><Icon name="airplane-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Travelers</span>
           </div>
         </div>
@@ -245,15 +243,15 @@ function LocalMockup() {
         <div className="lp-mock-section-label">TYPE</div>
         <div className="lp-mock-presets">
           <div className="lp-mock-preset lp-mock-preset--on">
-            <span className="lp-mock-preset-emoji">🍜</span>
+            <span className="lp-mock-preset-emoji"><Icon name="restaurant-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Food</span>
           </div>
           <div className="lp-mock-preset">
-            <span className="lp-mock-preset-emoji">🗺️</span>
+            <span className="lp-mock-preset-emoji"><Icon name="location-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Place</span>
           </div>
           <div className="lp-mock-preset">
-            <span className="lp-mock-preset-emoji">🎭</span>
+            <span className="lp-mock-preset-emoji"><Icon name="color-palette-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Culture</span>
           </div>
         </div>
@@ -270,16 +268,16 @@ function LocalMockup() {
         <div className="lp-mock-section-label">WHO CAN SEE THIS?</div>
         <div className="lp-mock-presets">
           <div className="lp-mock-preset lp-mock-preset--on">
-            <span className="lp-mock-preset-emoji">🌍</span>
+            <span className="lp-mock-preset-emoji"><Icon name="earth-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Public</span>
           </div>
           <div className="lp-mock-preset">
-            <span className="lp-mock-preset-emoji">👯</span>
+            <span className="lp-mock-preset-emoji"><Icon name="people-outline" size="1em" /></span>
             <span className="lp-mock-preset-label">Friends</span>
           </div>
         </div>
       </div>
-      <div className="lp-mock-submit lp-mock-submit--local">Launch challenge 🔥</div>
+      <div className="lp-mock-submit lp-mock-submit--local">Launch challenge</div>
     </PhoneFrame>
   )
 }
@@ -291,8 +289,8 @@ function ExploringMockup() {
   return (
     <PhoneFrame>
       <div className="lp-app-header lp-app-header--explore">
-        <span className="lp-app-city">🔥 Now · Barcelona 🇪🇸</span>
-        <span className="lp-app-count">● 14 online</span>
+        <span className="lp-app-city"><Icon name="flame-outline" size="1em" /> Now · Barcelona 🇪🇸</span>
+        <span className="lp-app-count"><Icon name="ellipse" size="0.6em" /> 14 online</span>
       </div>
       <div className="lp-phone-body">
 
@@ -301,7 +299,7 @@ function ExploringMockup() {
             <span className="lp-mock-badge lp-mock-badge--recur">FOOD CHALLENGE</span>
             <span className="lp-mock-badge lp-mock-badge--live">LIVE</span>
           </div>
-          <div className="lp-mock-card-title">🍜 Find me the best ramen in town</div>
+          <div className="lp-mock-card-title"><Icon name="restaurant-outline" size="1em" /> Find me the best ramen in town</div>
           <div className="lp-mock-card-meta">by Marta · for travelers</div>
           <div className="lp-mock-card-footer">
             <span className="lp-mock-going">2 / 3 taken on</span>
@@ -310,7 +308,7 @@ function ExploringMockup() {
         </div>
 
         <div className="lp-mock-card">
-          <div className="lp-mock-card-title">🗺️ Show me the best sunset spot</div>
+          <div className="lp-mock-card-title"><Icon name="location-outline" size="1em" /> Show me the best sunset spot</div>
           <div className="lp-mock-card-meta">by Luis · for travelers</div>
           <div className="lp-mock-card-footer">
             <span className="lp-mock-going">0 / 5 taken on</span>
@@ -319,7 +317,7 @@ function ExploringMockup() {
         </div>
 
         <div className="lp-mock-card">
-          <div className="lp-mock-card-title">🎭 A real local music night</div>
+          <div className="lp-mock-card-title"><Icon name="color-palette-outline" size="1em" /> A real local music night</div>
           <div className="lp-mock-card-meta">by Sofia · for travelers</div>
           <div className="lp-mock-card-footer">
             <span className="lp-mock-going">1 / 4 taken on</span>
@@ -333,7 +331,7 @@ function ExploringMockup() {
         </div>
 
       </div>
-      <div className="lp-mock-submit lp-mock-submit--exploring">See live challenges →</div>
+      <div className="lp-mock-submit lp-mock-submit--exploring">See live challenges</div>
     </PhoneFrame>
   )
 }
@@ -476,7 +474,7 @@ export default function LandingPage({
           />
         </div>
 
-        <div className="lp-scroll-hint" aria-hidden="true">↓</div>
+        <div className="lp-scroll-hint" aria-hidden="true"><Icon name="chevron-down" size={20} /></div>
       </section>
 
       {/* ── 2. SPLIT - Local vs Exploring ───────────────────────────────────── */}
@@ -566,7 +564,7 @@ export default function LandingPage({
         <div className="lp-steps">
           {HOW_META.map((m, i) => (
             <div key={m.num} className="lp-step">
-              <span className="lp-step-icon">{m.icon}</span>
+              <span className="lp-step-icon" style={{ color: 'var(--primary-text)' }}><Icon name={m.icon} size={32} /></span>
               <span className="lp-step-num">{m.num}</span>
               <h3 className="lp-step-title">{howSteps[i]?.title}</h3>
               <p className="lp-step-desc">{nl2br(howSteps[i]?.desc ?? '')}</p>

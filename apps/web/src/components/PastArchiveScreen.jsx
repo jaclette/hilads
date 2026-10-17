@@ -2,16 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import BackButton from './BackButton'
+import Icon from './Icon'
+import { eventIcon, TOPIC_ICONS, CHALLENGE_TYPE_ICONS } from '../lib/icons'
 import AttendeeAvatars from './AttendeeAvatars'
 import { fetchPastArchive } from '../api'
 import { getEventLocation } from '../eventUtils'
 
-const EVENT_ICONS = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-}
-const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 
 const MAX_SPAN_DAYS = 14
 const MONTHS_BACK    = 12
@@ -109,8 +105,6 @@ function RangeModal({ tz, initial, onApply, onClose }) {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
-
 export default function PastArchiveScreen({ channelId, timezone, cityName, onBack, onSelectEvent, onSelectTopic, onSelectChallenge }) {
   const { t } = useTranslation('archive')
   const tz = timezone || 'UTC'
@@ -170,32 +164,32 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
   function renderEventRow(event) {
     const isPublic = event.source === 'ticketmaster' || event.source_type === 'ticketmaster'
     const location = getEventLocation(event)
-    const icon     = EVENT_ICONS[event.type ?? event.event_type] ?? '📌'
+    const icon     = eventIcon(event.type ?? event.event_type)
     const going    = event.participant_count ?? 0
     const whenTs   = event.starts_at ?? event.expires_at
     return (
       <button key={`event-${event.id}`} className="city-row event-row-card" onClick={() => onSelectEvent(event)}>
         <div className="er-header">
-          <span className="er-title">{icon} {event.title}</span>
+          <span className="er-title"><Icon name={icon} size={16} /><span className="er-title-marquee">{event.title}</span></span>
           {isPublic ? <span className="er-going er-going--public">{t('public')}</span>
             : going > 0 && <span className="er-going">{t('went', { count: going })}</span>}
         </div>
         <div className="er-badges">
-          <span className="city-row-current">🕐 {pastWhen(whenTs, tz)}</span>
+          <span className="city-row-current"><Icon name="time-outline" size="1em" /> {pastWhen(whenTs, tz)}</span>
         </div>
-        {location && <span className="er-location">📍 {location}</span>}
+        {location && <span className="er-location"><Icon name="location-outline" size="1em" /> {location}</span>}
         {!isPublic && <AttendeeAvatars preview={event.participants_preview ?? []} total={going} />}
       </button>
     )
   }
 
   function renderChallengeRow(ch) {
-    const icon = CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? '🔥'
+    const icon = CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? 'flame-outline'
     return (
       <button key={`challenge-${ch.id}`} className="city-row event-row-card challenge-row-card"
         onClick={() => onSelectChallenge && onSelectChallenge(ch)}>
         <div className="er-header">
-          <span className="er-title">{icon} {ch.title}</span>
+          <span className="er-title"><Icon name={icon} size={16} /><span className="er-title-marquee">{ch.title}</span></span>
           {/* Reuse keys from the challenge namespace to avoid duplicating
               30+ strings across 19 archive.json files for things that
               already live in challenge.json. Type-specific label (DÉFI
@@ -209,7 +203,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
               : t('forExplorers', { ns: 'challenge' })}
           </span>
           <span className="challenge-badge challenge-badge--validated">
-            ✓ {t('validatedBadge', { ns: 'challenge' })}
+            <Icon name="checkmark" size="1em" /> {t('validatedBadge', { ns: 'challenge' })}
           </span>
         </div>
       </button>
@@ -217,13 +211,13 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
   }
 
   function renderTopicRow(topic) {
-    const icon    = CATEGORY_ICONS[topic.category] ?? '💬'
+    const icon    = TOPIC_ICONS[topic.category] ?? 'chatbubble-outline'
     const replies = topic.message_count ?? 0
     return (
       <button key={`topic-${topic.id}`} className="city-row event-row-card archive-pulse-row"
         onClick={() => onSelectTopic(topic)}>
         <div className="er-header">
-          <span className="er-title">{icon} {topic.title}</span>
+          <span className="er-title"><Icon name={icon} size={16} /><span className="er-title-marquee">{topic.title}</span></span>
           <span className="er-going archive-pulse-tag">{t('hangoutTag')}</span>
         </div>
         {topic.description && <span className="er-location">{topic.description}</span>}
@@ -260,7 +254,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
         <button type="button"
           className={`archive-range-chip${range.key === 'custom' ? ' active' : ''}`}
           onClick={() => setShowPicker(true)}>
-          📅 {range.key === 'custom' && range.from && range.to ? prettyRange(range.from, range.to) : t('range.custom')}
+          <Icon name="calendar-outline" size="1em" /> {range.key === 'custom' && range.from && range.to ? prettyRange(range.from, range.to) : t('range.custom')}
         </button>
       </div>
 

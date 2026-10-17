@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import AvatarWithFlag from './AvatarWithFlag'
+import Icon from './Icon'
 
 /**
  * Example hangout/event card for the zero-activity inspiration block. Web
@@ -11,14 +12,14 @@ import AvatarWithFlag from './AvatarWithFlag'
 export default function ExampleEventCard({ example, sourceCity, currentCity, onOpen, onCreate }) {
   const { t } = useTranslation('city')
   const isHangout = example.kind === 'hangout'
-  const typeIcon  = isHangout ? '🗣️' : '🎉'
+  const typeIcon  = isHangout ? 'chatbubbles-outline' : 'calendar-outline'
   const typeLabel = isHangout ? t('inspiration.hangout') : t('inspiration.event')
   const name      = example.host_name || '?'
 
   return (
     <div className="example-event-card">
       <div className="eec-badges">
-        <span className="eec-kind-badge">{typeIcon} {typeLabel}</span>
+        <span className="eec-kind-badge"><Icon name={typeIcon} size="1em" /> {typeLabel}</span>
       </div>
 
       {/* Title + host - clicking opens the real event/hangout. */}
