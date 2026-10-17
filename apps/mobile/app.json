@@ -823,6 +823,12 @@
         }
       ],
       "expo-asset",
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsVersion": "11.16.2"
+        }
+      ],
       "@sentry/react-native",
       "expo-localization"
     ],

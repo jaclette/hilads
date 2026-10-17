@@ -212,7 +212,27 @@
     "titleCity": "Địa điểm đã ghim ở {{city}}",
     "titleWorld": "Địa điểm đã ghim trên thế giới",
     "seeProof": "Xem bằng chứng",
-    "openChallenge": "Mở challenge"
+    "openChallenge": "Mở challenge",
+    "search": "Tìm món ăn, quán cà phê, con phố",
+    "searchA11y": "Tìm spot",
+    "clearSearch": "Xóa tìm kiếm",
+    "noResults": "Không có spot phù hợp",
+    "all": "Tất cả",
+    "today": "hôm nay",
+    "locate": "Đưa bản đồ về vị trí của tôi",
+    "locationDenied": "Hãy cho phép vị trí trong cài đặt để đưa bản đồ về chỗ bạn.",
+    "locationFailed": "Hiện chưa lấy được vị trí của bạn.",
+    "noToken": "Bản đồ không có trong phiên bản này.",
+    "openSpot": "Xem spot",
+    "directions": "Chỉ đường",
+    "validated": "Được người địa phương xác nhận",
+    "pricePaid": "Giá đã trả {{price}}",
+    "selected": "Đã chọn: {{name}}",
+    "closeSpot": "Đóng",
+    "emptyTitle": "Hãy là người đầu tiên đặt spot ở đây",
+    "planA11y": "Kế hoạch: {{title}}, {{time}}",
+    "proofs_one": "{{count}} bằng chứng",
+    "proofs_other": "{{count}} bằng chứng"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -347,5 +367,16 @@
       "later": "sắp tới",
       "none": "chưa có bằng chứng"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",
+    "rankWeek": "Hạng {{rank}} tuần này ở {{city}}",
+    "rankAlltimeFirst": "Spot được bình chọn nhiều nhất ở {{city}}",
+    "rankAlltime": "Hạng {{rank}} mọi thời đại ở {{city}}",
+    "photos": "Ảnh",
+    "captions": "Mọi người nói gì",
+    "seeOnMap": "Xem trên bản đồ",
+    "notFound": "Spot này không còn khả dụng.",
+    "local": "Người địa phương"
   }
 }

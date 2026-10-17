@@ -46,7 +46,7 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
   }, [cityId, scope, refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
-  const openMap = (spotId?: string) => router.push((spotId ? `/(tabs)/map?spot=${spotId}` : '/(tabs)/map') as never);
+  const openMap = (spotId?: string) => router.push((spotId ? `/(tabs)/map?spot=${spotId}&source=today` : '/(tabs)/map?source=today') as never);
 
   if (spots === null) return null;
   return (

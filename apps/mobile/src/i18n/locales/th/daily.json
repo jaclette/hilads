@@ -212,7 +212,27 @@
     "titleCity": "สถานที่ที่ปักหมุดใน {{city}}",
     "titleWorld": "สถานที่ที่ปักหมุดทั่วโลก",
     "seeProof": "ดูหลักฐาน",
-    "openChallenge": "เปิด challenge"
+    "openChallenge": "เปิด challenge",
+    "search": "ค้นหาอาหาร คาเฟ่ ถนน",
+    "searchA11y": "ค้นหาสปอต",
+    "clearSearch": "ล้างการค้นหา",
+    "noResults": "ไม่พบสปอตที่ตรงกัน",
+    "all": "ทั้งหมด",
+    "today": "วันนี้",
+    "locate": "ย้ายแผนที่มาที่ฉัน",
+    "locationDenied": "อนุญาตตำแหน่งในการตั้งค่าเพื่อย้ายแผนที่มาที่คุณ",
+    "locationFailed": "ตอนนี้ยังหาตำแหน่งของคุณไม่ได้",
+    "noToken": "เวอร์ชันนี้ใช้แผนที่ไม่ได้",
+    "openSpot": "เปิดสปอต",
+    "directions": "เส้นทาง",
+    "validated": "ยืนยันโดยคนท้องถิ่น",
+    "pricePaid": "ราคาที่จ่าย {{price}}",
+    "selected": "เลือกแล้ว: {{name}}",
+    "closeSpot": "ปิด",
+    "emptyTitle": "มาเป็นคนแรกที่ปักสปอตตรงนี้",
+    "planA11y": "แผน: {{title}}, {{time}}",
+    "proofs_one": "{{count}} หลักฐาน",
+    "proofs_other": "{{count}} หลักฐาน"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -347,5 +367,16 @@
       "later": "เร็วๆ นี้",
       "none": "ไม่มีหลักฐาน"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "ได้โหวตมากที่สุดสัปดาห์นี้ใน{{city}}",
+    "rankWeek": "อันดับ {{rank}} สัปดาห์นี้ใน{{city}}",
+    "rankAlltimeFirst": "สปอตที่ได้โหวตมากที่สุดใน{{city}}",
+    "rankAlltime": "อันดับ {{rank}} ตลอดกาลใน{{city}}",
+    "photos": "รูปภาพ",
+    "captions": "คนอื่นว่าอย่างไร",
+    "seeOnMap": "ดูบนแผนที่",
+    "notFound": "สปอตนี้ไม่พร้อมใช้งาน",
+    "local": "คนท้องถิ่น"
   }
 }

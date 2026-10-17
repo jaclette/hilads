@@ -214,7 +214,27 @@
     "titleCity": "Pinned places in {{city}}",
     "titleWorld": "Pinned places around the world",
     "seeProof": "See the proof",
-    "openChallenge": "Open the challenge"
+    "openChallenge": "Open the challenge",
+    "search": "Search a dish, a café, a street",
+    "searchA11y": "Search spots",
+    "clearSearch": "Clear the search",
+    "noResults": "No spot matches",
+    "all": "All",
+    "today": "today",
+    "locate": "Center the map on me",
+    "locationDenied": "Allow location in your settings to center the map on you.",
+    "locationFailed": "Your position isn't available right now.",
+    "noToken": "The map is not available in this version.",
+    "openSpot": "Open spot",
+    "directions": "Directions",
+    "validated": "Validated by a local",
+    "pricePaid": "Price paid {{price}}",
+    "selected": "Selected: {{name}}",
+    "closeSpot": "Close",
+    "emptyTitle": "Be the first to put a spot here",
+    "planA11y": "Plan: {{title}}, {{time}}",
+    "proofs_one": "{{count}} proof",
+    "proofs_other": "{{count}} proofs"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -349,5 +369,16 @@
       "later": "coming up",
       "none": "no proof"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "Top voted this week in {{city}}",
+    "rankWeek": "#{{rank}} this week in {{city}}",
+    "rankAlltimeFirst": "Most voted spot in {{city}}",
+    "rankAlltime": "#{{rank}} all time in {{city}}",
+    "photos": "Photos",
+    "captions": "What people say",
+    "seeOnMap": "See on the map",
+    "notFound": "This spot is not available.",
+    "local": "Local"
   }
 }

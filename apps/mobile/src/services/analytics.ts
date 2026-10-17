@@ -82,7 +82,11 @@ export type AnalyticsEvent =
   | 'daily_local_pass_earned'
   | 'daily_proposal_started'
   | 'daily_proposal_submitted'
-  | 'daily_link_opened';
+  | 'daily_link_opened'
+  // V3-07: the map of spots (SPEC 9.13)
+  | 'map_viewed'
+  | 'map_filter_used'
+  | 'spot_opened';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

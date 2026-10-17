@@ -214,7 +214,27 @@
     "titleCity": "Vastgezette plekken in {{city}}",
     "titleWorld": "Vastgezette plekken wereldwijd",
     "seeProof": "Bekijk het bewijs",
-    "openChallenge": "Open de challenge"
+    "openChallenge": "Open de challenge",
+    "search": "Zoek een gerecht, een café, een straat",
+    "searchA11y": "Spots zoeken",
+    "clearSearch": "Zoekopdracht wissen",
+    "noResults": "Geen spot gevonden",
+    "all": "Alle",
+    "today": "vandaag",
+    "locate": "Kaart op mij centreren",
+    "locationDenied": "Sta locatie toe in je instellingen om de kaart op jou te centreren.",
+    "locationFailed": "Je locatie is nu niet beschikbaar.",
+    "noToken": "De kaart is niet beschikbaar in deze versie.",
+    "openSpot": "Spot openen",
+    "directions": "Route",
+    "validated": "Bevestigd door een local",
+    "pricePaid": "Betaalde prijs {{price}}",
+    "selected": "Geselecteerd: {{name}}",
+    "closeSpot": "Sluiten",
+    "emptyTitle": "Zet hier als eerste een spot neer",
+    "planA11y": "Plan: {{title}}, {{time}}",
+    "proofs_one": "{{count}} bewijs",
+    "proofs_other": "{{count}} bewijzen"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -349,5 +369,16 @@
       "later": "binnenkort",
       "none": "geen bewijs"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "Meest gestemd deze week in {{city}}",
+    "rankWeek": "Nr. {{rank}} deze week in {{city}}",
+    "rankAlltimeFirst": "De meest gestemde spot van {{city}}",
+    "rankAlltime": "Nr. {{rank}} aller tijden in {{city}}",
+    "photos": "Foto's",
+    "captions": "Wat mensen zeggen",
+    "seeOnMap": "Bekijk op de kaart",
+    "notFound": "Deze spot is niet beschikbaar.",
+    "local": "Local"
   }
 }

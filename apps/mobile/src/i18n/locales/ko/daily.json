@@ -212,7 +212,27 @@
     "titleCity": "{{city}}의 고정된 장소",
     "titleWorld": "전 세계의 고정된 장소",
     "seeProof": "인증 보기",
-    "openChallenge": "challenge 열기"
+    "openChallenge": "challenge 열기",
+    "search": "음식, 카페, 거리 검색",
+    "searchA11y": "스팟 검색",
+    "clearSearch": "검색 지우기",
+    "noResults": "일치하는 스팟이 없어요",
+    "all": "전체",
+    "today": "오늘",
+    "locate": "내 위치로 지도 이동",
+    "locationDenied": "지도를 내 위치로 옮기려면 설정에서 위치를 허용하세요.",
+    "locationFailed": "지금은 위치를 가져올 수 없어요.",
+    "noToken": "이 버전에서는 지도를 쓸 수 없어요.",
+    "openSpot": "스팟 열기",
+    "directions": "길찾기",
+    "validated": "로컬 인증",
+    "pricePaid": "지불한 가격 {{price}}",
+    "selected": "선택됨: {{name}}",
+    "closeSpot": "닫기",
+    "emptyTitle": "여기에 첫 스팟을 올려 보세요",
+    "planA11y": "약속: {{title}}, {{time}}",
+    "proofs_one": "인증 {{count}}개",
+    "proofs_other": "인증 {{count}}개"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -347,5 +367,16 @@
       "later": "예정",
       "none": "인증 없음"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "이번 주 {{city}} 최다 득표",
+    "rankWeek": "이번 주 {{city}} {{rank}}위",
+    "rankAlltimeFirst": "{{city}}에서 가장 많이 득표한 스팟",
+    "rankAlltime": "{{city}} 역대 {{rank}}위",
+    "photos": "사진",
+    "captions": "사람들의 한마디",
+    "seeOnMap": "지도에서 보기",
+    "notFound": "이 스팟을 볼 수 없어요.",
+    "local": "로컬"
   }
 }

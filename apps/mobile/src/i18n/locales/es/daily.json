@@ -214,7 +214,27 @@
     "titleCity": "Lugares fijados en {{city}}",
     "titleWorld": "Lugares fijados en el mundo",
     "seeProof": "Ver la prueba",
-    "openChallenge": "Abrir el challenge"
+    "openChallenge": "Abrir el challenge",
+    "search": "Busca un plato, un café, una calle",
+    "searchA11y": "Buscar spots",
+    "clearSearch": "Borrar la búsqueda",
+    "noResults": "Ningún spot coincide",
+    "all": "Todos",
+    "today": "hoy",
+    "locate": "Centrar el mapa en mí",
+    "locationDenied": "Permite la ubicación en tus ajustes para centrar el mapa en ti.",
+    "locationFailed": "Tu ubicación no está disponible ahora.",
+    "noToken": "El mapa no está disponible en esta versión.",
+    "openSpot": "Ver el spot",
+    "directions": "Cómo llegar",
+    "validated": "Validado por un local",
+    "pricePaid": "Precio pagado {{price}}",
+    "selected": "Seleccionado: {{name}}",
+    "closeSpot": "Cerrar",
+    "emptyTitle": "Sé el primero en poner un spot aquí",
+    "planA11y": "Plan: {{title}}, {{time}}",
+    "proofs_one": "{{count}} prueba",
+    "proofs_other": "{{count}} pruebas"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -349,5 +369,16 @@
       "later": "próximamente",
       "none": "sin prueba"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "El más votado esta semana en {{city}}",
+    "rankWeek": "N.º {{rank}} esta semana en {{city}}",
+    "rankAlltimeFirst": "El spot más votado de {{city}}",
+    "rankAlltime": "N.º {{rank}} de todos los tiempos en {{city}}",
+    "photos": "Fotos",
+    "captions": "Lo que dice la gente",
+    "seeOnMap": "Ver en el mapa",
+    "notFound": "Este spot no está disponible.",
+    "local": "Local"
   }
 }

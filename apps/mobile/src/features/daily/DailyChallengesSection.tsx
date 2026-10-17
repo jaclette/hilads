@@ -64,7 +64,7 @@ export function DailyChallengesSection() {
           {archive.items.some(i => i.pinnedPlaces > 0) && (
             <TouchableOpacity
               style={styles.cityChip}
-              onPress={() => router.push(`/daily/places?cityId=${cityId ?? ''}&cityName=${encodeURIComponent(cityName)}&source=archive` as never)}
+              onPress={() => router.push('/(tabs)/map?source=archive' as never)}
               accessibilityRole="button"
             >
               <Text style={styles.cityChipText}>🗺️ {t('map.button')}</Text>

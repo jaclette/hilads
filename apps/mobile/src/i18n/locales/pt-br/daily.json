@@ -214,7 +214,27 @@
     "titleCity": "Lugares marcados em {{city}}",
     "titleWorld": "Lugares marcados pelo mundo",
     "seeProof": "Ver a prova",
-    "openChallenge": "Abrir o challenge"
+    "openChallenge": "Abrir o challenge",
+    "search": "Busque um prato, um café, uma rua",
+    "searchA11y": "Buscar spots",
+    "clearSearch": "Limpar a busca",
+    "noResults": "Nenhum spot encontrado",
+    "all": "Todos",
+    "today": "hoje",
+    "locate": "Centralizar o mapa em mim",
+    "locationDenied": "Permita a localização nos ajustes para centralizar o mapa em você.",
+    "locationFailed": "Sua localização não está disponível agora.",
+    "noToken": "O mapa não está disponível nesta versão.",
+    "openSpot": "Abrir o spot",
+    "directions": "Como chegar",
+    "validated": "Validado por um local",
+    "pricePaid": "Preço pago {{price}}",
+    "selected": "Selecionado: {{name}}",
+    "closeSpot": "Fechar",
+    "emptyTitle": "Seja o primeiro a colocar um spot aqui",
+    "planA11y": "Plano: {{title}}, {{time}}",
+    "proofs_one": "{{count}} prova",
+    "proofs_other": "{{count}} provas"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -349,5 +369,16 @@
       "later": "em breve",
       "none": "sem prova"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "O mais votado da semana em {{city}}",
+    "rankWeek": "Nº {{rank}} da semana em {{city}}",
+    "rankAlltimeFirst": "O spot mais votado de {{city}}",
+    "rankAlltime": "Nº {{rank}} de todos os tempos em {{city}}",
+    "photos": "Fotos",
+    "captions": "O que as pessoas dizem",
+    "seeOnMap": "Ver no mapa",
+    "notFound": "Este spot não está disponível.",
+    "local": "Local"
   }
 }

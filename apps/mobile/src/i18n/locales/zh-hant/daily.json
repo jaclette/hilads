@@ -212,7 +212,27 @@
     "titleCity": "{{city}}已標記的地點",
     "titleWorld": "全球已標記的地點",
     "seeProof": "查看證明",
-    "openChallenge": "打開 challenge"
+    "openChallenge": "打開 challenge",
+    "search": "搜尋菜餚、咖啡館、街道",
+    "searchA11y": "搜尋地點",
+    "clearSearch": "清除搜尋",
+    "noResults": "沒有符合的地點",
+    "all": "全部",
+    "today": "今天",
+    "locate": "將地圖定位到我",
+    "locationDenied": "請在設定中允許定位，以便將地圖定位到你。",
+    "locationFailed": "暫時無法取得你的位置。",
+    "noToken": "此版本無法使用地圖。",
+    "openSpot": "開啟地點",
+    "directions": "路線",
+    "validated": "已獲在地人認證",
+    "pricePaid": "實付價格 {{price}}",
+    "selected": "已選擇：{{name}}",
+    "closeSpot": "關閉",
+    "emptyTitle": "成為第一個在這裡放置地點的人",
+    "planA11y": "計畫：{{title}}，{{time}}",
+    "proofs_one": "{{count}} 個證明",
+    "proofs_other": "{{count}} 個證明"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -347,5 +367,16 @@
       "later": "即將到來",
       "none": "無證明"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "本週{{city}}得票最多",
+    "rankWeek": "本週{{city}}第 {{rank}} 名",
+    "rankAlltimeFirst": "{{city}}得票最多的地點",
+    "rankAlltime": "{{city}}歷來第 {{rank}} 名",
+    "photos": "照片",
+    "captions": "大家怎麼說",
+    "seeOnMap": "在地圖上查看",
+    "notFound": "此地點無法使用。",
+    "local": "在地人"
   }
 }

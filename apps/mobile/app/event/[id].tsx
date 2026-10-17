@@ -33,6 +33,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { BADGE_META } from '@/types';
 import type { Message, EventParticipant, ReplyRef } from '@/types';
+import { placeUrl, searchUrl } from '@/lib/directions';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -67,14 +68,15 @@ type MapsTarget = {
 function buildEventMapsUrl(event: MapsTarget): string | null {
   const lat = event.venue_lat;
   const lng = event.venue_lng;
+  // The phone's own maps app (SPEC 9.5: never Google Maps URLs).
   if (typeof lat === 'number' && typeof lng === 'number') {
-    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    return placeUrl(lat, lng, event.venue ?? event.location ?? null);
   }
   const address = event.location ?? event.venue ?? '';
   if (!address) return null;
   // Include the venue name when it's a distinct field (better match accuracy).
   const name = event.venue && event.venue !== address ? `${event.venue}, ` : '';
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + address)}`;
+  return searchUrl(name + address);
 }
 
 async function openEventMaps(event: MapsTarget): Promise<void> {

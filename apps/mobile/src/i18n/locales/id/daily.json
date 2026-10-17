@@ -214,7 +214,27 @@
     "titleCity": "Tempat yang disematkan di {{city}}",
     "titleWorld": "Tempat yang disematkan di seluruh dunia",
     "seeProof": "Lihat bukti",
-    "openChallenge": "Buka challenge"
+    "openChallenge": "Buka challenge",
+    "search": "Cari makanan, kafe, jalan",
+    "searchA11y": "Cari spot",
+    "clearSearch": "Hapus pencarian",
+    "noResults": "Tidak ada spot yang cocok",
+    "all": "Semua",
+    "today": "hari ini",
+    "locate": "Pusatkan peta ke saya",
+    "locationDenied": "Izinkan lokasi di pengaturan untuk memusatkan peta ke kamu.",
+    "locationFailed": "Lokasimu belum tersedia saat ini.",
+    "noToken": "Peta tidak tersedia di versi ini.",
+    "openSpot": "Buka spot",
+    "directions": "Rute",
+    "validated": "Divalidasi oleh warga lokal",
+    "pricePaid": "Harga dibayar {{price}}",
+    "selected": "Dipilih: {{name}}",
+    "closeSpot": "Tutup",
+    "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
+    "planA11y": "Rencana: {{title}}, {{time}}",
+    "proofs_one": "{{count}} bukti",
+    "proofs_other": "{{count}} bukti"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -349,5 +369,16 @@
       "later": "segera",
       "none": "tanpa bukti"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",
+    "rankWeek": "#{{rank}} minggu ini di {{city}}",
+    "rankAlltimeFirst": "Spot dengan suara terbanyak di {{city}}",
+    "rankAlltime": "#{{rank}} sepanjang masa di {{city}}",
+    "photos": "Foto",
+    "captions": "Kata orang-orang",
+    "seeOnMap": "Lihat di peta",
+    "notFound": "Spot ini tidak tersedia.",
+    "local": "Lokal"
   }
 }

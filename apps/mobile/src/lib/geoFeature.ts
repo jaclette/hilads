@@ -8,7 +8,8 @@ export type GpsFeature =
   | 'hi_now'
   | 'people_nearby'
   | 'challenge_proof'
-  | 'checkin';
+  | 'checkin'
+  | 'map_locate';
 
 export interface GpsResult {
   ok: boolean;

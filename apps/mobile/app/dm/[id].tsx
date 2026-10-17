@@ -131,7 +131,8 @@ function openMaps(lat: number, lng: number, label: string) {
     ? `maps://?ll=${lat},${lng}&q=${encoded}`
     : `geo:${lat},${lng}?q=${encoded}`;
   Linking.openURL(url).catch(() => {
-    Linking.openURL(`https://maps.google.com/?q=${lat},${lng}`);
+    // No maps app answered: OpenStreetMap in the browser (never Google, SPEC 9.5).
+    Linking.openURL(`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`);
   });
 }
 

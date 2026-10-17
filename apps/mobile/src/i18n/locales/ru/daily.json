@@ -226,7 +226,29 @@
     "titleCity": "Отмеченные места в {{city}}",
     "titleWorld": "Отмеченные места по всему миру",
     "seeProof": "Открыть доказательство",
-    "openChallenge": "Открыть challenge"
+    "openChallenge": "Открыть challenge",
+    "search": "Найди блюдо, кафе, улицу",
+    "searchA11y": "Искать места",
+    "clearSearch": "Очистить поиск",
+    "noResults": "Подходящих мест нет",
+    "all": "Все",
+    "today": "сегодня",
+    "locate": "Показать меня на карте",
+    "locationDenied": "Разреши доступ к геопозиции в настройках, чтобы показать тебя на карте.",
+    "locationFailed": "Твоё местоположение сейчас недоступно.",
+    "noToken": "Карта недоступна в этой версии.",
+    "openSpot": "Открыть место",
+    "directions": "Маршрут",
+    "validated": "Подтверждено местным",
+    "pricePaid": "Цена {{price}}",
+    "selected": "Выбрано: {{name}}",
+    "closeSpot": "Закрыть",
+    "emptyTitle": "Поставь здесь первое место",
+    "planA11y": "План: {{title}}, {{time}}",
+    "proofs_one": "{{count}} доказательство",
+    "proofs_few": "{{count}} доказательства",
+    "proofs_many": "{{count}} доказательств",
+    "proofs_other": "{{count}} доказательства"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -363,5 +385,16 @@
       "later": "скоро",
       "none": "нет доказательства"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "Больше всего голосов на этой неделе в {{city}}",
+    "rankWeek": "№{{rank}} на этой неделе в {{city}}",
+    "rankAlltimeFirst": "Самое популярное место в {{city}}",
+    "rankAlltime": "№{{rank}} за всё время в {{city}}",
+    "photos": "Фото",
+    "captions": "Что говорят люди",
+    "seeOnMap": "Показать на карте",
+    "notFound": "Это место недоступно.",
+    "local": "Местный"
   }
 }

@@ -238,7 +238,31 @@
     "titleCity": "الأماكن المثبّتة في {{city}}",
     "titleWorld": "الأماكن المثبّتة حول العالم",
     "seeProof": "عرض الدليل",
-    "openChallenge": "فتح الـ challenge"
+    "openChallenge": "فتح الـ challenge",
+    "search": "ابحث عن طبق أو مقهى أو شارع",
+    "searchA11y": "ابحث عن أماكن",
+    "clearSearch": "امسح البحث",
+    "noResults": "لا يوجد مكان مطابق",
+    "all": "الكل",
+    "today": "اليوم",
+    "locate": "ركّز الخريطة عليّ",
+    "locationDenied": "اسمح بالموقع في الإعدادات لتركيز الخريطة عليك.",
+    "locationFailed": "موقعك غير متاح الآن.",
+    "noToken": "الخريطة غير متاحة في هذا الإصدار.",
+    "openSpot": "افتح المكان",
+    "directions": "الاتجاهات",
+    "validated": "مؤكَّد من شخص محلي",
+    "pricePaid": "السعر المدفوع {{price}}",
+    "selected": "المحدد: {{name}}",
+    "closeSpot": "إغلاق",
+    "emptyTitle": "كن أول من يضع مكانًا هنا",
+    "planA11y": "خطة: {{title}}، {{time}}",
+    "proofs_zero": "لا إثباتات",
+    "proofs_one": "إثبات واحد",
+    "proofs_two": "إثباتان",
+    "proofs_few": "{{count}} إثباتات",
+    "proofs_many": "{{count}} إثباتًا",
+    "proofs_other": "{{count}} إثبات"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -377,5 +401,16 @@
       "later": "قريبًا",
       "none": "لا إثبات"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",
+    "rankWeek": "المرتبة {{rank}} هذا الأسبوع في {{city}}",
+    "rankAlltimeFirst": "المكان الأكثر تصويتًا في {{city}}",
+    "rankAlltime": "المرتبة {{rank}} على الإطلاق في {{city}}",
+    "photos": "الصور",
+    "captions": "ماذا يقول الناس",
+    "seeOnMap": "اعرض على الخريطة",
+    "notFound": "هذا المكان غير متاح.",
+    "local": "محلي"
   }
 }

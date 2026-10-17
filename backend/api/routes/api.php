@@ -14825,10 +14825,15 @@ $router->add('GET', '/api/v1/map', function () {
         $plans = array_values(array_filter($plans, static fn(array $p): bool =>
             $p['lat'] >= $minLat && $p['lat'] <= $maxLat && $p['lng'] >= $minLng && $p['lng'] <= $maxLng));
     }
+    $city = $cityId !== null ? CityRepository::findById((int) substr($cityId, 5)) : null;
     Response::json([
         'spots'     => array_slice($spots, 0, Spots::PIN_LIMIT),
         'truncated' => count($spots) > Spots::PIN_LIMIT,
         'plans'     => $plans,
+        // V3-07: where to centre the map for the city.
+        'city'      => $city !== null
+            ? ['id' => (int) $city['id'], 'name' => $city['name'], 'lat' => (float) $city['lat'], 'lng' => (float) $city['lng']]
+            : null,
     ]);
 });
 

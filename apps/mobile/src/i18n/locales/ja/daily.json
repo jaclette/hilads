@@ -214,7 +214,27 @@
     "titleCity": "{{city}} のピン留めされた場所",
     "titleWorld": "世界中のピン留めされた場所",
     "seeProof": "証明を見る",
-    "openChallenge": "challenge を開く"
+    "openChallenge": "challenge を開く",
+    "search": "料理、カフェ、通りを検索",
+    "searchA11y": "スポットを検索",
+    "clearSearch": "検索をクリア",
+    "noResults": "一致するスポットはありません",
+    "all": "すべて",
+    "today": "今日",
+    "locate": "地図を現在地に合わせる",
+    "locationDenied": "地図を現在地に合わせるには、設定で位置情報を許可してください。",
+    "locationFailed": "現在地を取得できません。",
+    "noToken": "このバージョンでは地図を利用できません。",
+    "openSpot": "スポットを開く",
+    "directions": "経路",
+    "validated": "ローカルが認定",
+    "pricePaid": "支払額 {{price}}",
+    "selected": "選択中：{{name}}",
+    "closeSpot": "閉じる",
+    "emptyTitle": "ここに最初のスポットを置こう",
+    "planA11y": "予定：{{title}}、{{time}}",
+    "proofs_one": "プルーフ {{count}} 件",
+    "proofs_other": "プルーフ {{count}} 件"
   },
   "leaderboard": {
     "tab": "Top 10",
@@ -349,5 +369,16 @@
       "later": "予定",
       "none": "プルーフなし"
     }
+  },
+  "spot": {
+    "rankWeekFirst": "今週{{city}}で最多得票",
+    "rankWeek": "今週{{city}}で {{rank}} 位",
+    "rankAlltimeFirst": "{{city}}で最も票を集めたスポット",
+    "rankAlltime": "{{city}}の歴代 {{rank}} 位",
+    "photos": "写真",
+    "captions": "みんなの声",
+    "seeOnMap": "地図で見る",
+    "notFound": "このスポットは利用できません。",
+    "local": "ローカル"
   }
 }

@@ -20,7 +20,6 @@ import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
-import { DailyPlacesMap } from '@/features/daily/DailyPlacesMap';
 import { themeLabel } from '@/features/daily/themes';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import type { DailyProof } from '@/types';
@@ -226,14 +225,12 @@ function Sheet({ date, openProofId, source, initialTab }: {
               <>
                 <Text style={styles.practicalLine}>📍 {t('places', { count: places.length })}</Text>
                 <TouchableOpacity
-                  style={styles.mapPreview}
-                  onPress={() => router.push(`/daily/places?date=${date}&scope=${scope}&source=sheet` as never)}
-                  activeOpacity={0.9}
+                  style={styles.mapCta}
+                  onPress={() => router.push('/(tabs)/map?source=sheet' as never)}
+                  activeOpacity={0.85}
                   accessibilityRole="button"
-                  accessibilityLabel={t('map.see')}
                 >
-                  <DailyPlacesMap key={`${scope}:${places.map(p => p.proofId).join(',')}`} pins={places} interactive={false} />
-                  <View style={styles.mapCta}><Text style={styles.mapCtaText}>🗺️ {t('map.see')}</Text></View>
+                  <Text style={styles.mapCtaText}>{t('map.see')}</Text>
                 </TouchableOpacity>
                 {places.slice(0, 5).map(p => (
                   <TouchableOpacity key={p.proofId} onPress={() => {
@@ -362,7 +359,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emptyTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   empty:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   more:        { marginVertical: 16 },
-  mapPreview:  { height: 150, borderRadius: Radius.md, overflow: 'hidden', marginVertical: 6, backgroundColor: c.bg3 },
-  mapCta:      { position: 'absolute', right: 8, bottom: 8, backgroundColor: c.bg2, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: c.border },
-  mapCtaText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  mapCta:      { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', marginVertical: 6, backgroundColor: c.bg2, borderRadius: Radius.full, paddingHorizontal: 16, borderWidth: 1.5, borderColor: c.line },
+  mapCtaText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });
