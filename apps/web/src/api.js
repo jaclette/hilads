@@ -2349,3 +2349,51 @@ export async function clearChallengePrivacyVote(challengeId) {
   return res.json()
 }
 
+
+// App config (GET /app/config): challengeCreationClosed follows the server's
+// CHALLENGE_CREATION_CLOSED flag (SPEC 9.10), so the web switches with it.
+export async function fetchAppConfig() {
+  const res = await fetch(`${BASE}/app/config`)
+  if (!res.ok) throw new Error('Failed to fetch app config')
+  return res.json() // { minVersion, latestVersion, storeUrls, challengeCreationClosed }
+}
+
+// ── Spots map (web map of spots, same API as the app's Map tab) ─────────────
+// cityId is the numeric city id ("city_12" is accepted and stripped).
+
+function cityNumber(cityId) {
+  if (cityId === null || cityId === undefined) return null
+  return String(cityId).replace(/^city_/, '')
+}
+
+function spotsQuery(params) {
+  const q = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') q.set(k, v) })
+  return q.toString()
+}
+
+/** GET /map: spots (most voted first) in the city or the area, and the city's Hi plans as dated pins. */
+export async function fetchMap({ cityId, bbox, theme }) {
+  const res = await fetch(`${BASE}/map?${spotsQuery({
+    cityId: cityNumber(cityId),
+    bbox:   bbox ? bbox.map(n => n.toFixed(5)).join(',') : null,
+    theme,
+  })}`)
+  if (!res.ok) throw new Error('Failed to fetch map')
+  return res.json() // { spots, truncated, plans, city }
+}
+
+/** GET /spots/search: spots whose name or dish tags match. */
+export async function searchSpots(q, { cityId }) {
+  const res = await fetch(`${BASE}/spots/search?${spotsQuery({ q, cityId: cityNumber(cityId) })}`)
+  if (!res.ok) throw new Error('Failed to search spots')
+  return (await res.json()).items ?? []
+}
+
+/** GET /spots/{id}: a spot, its city ranking, photos (paged) and latest captions. */
+export async function fetchSpot(id, offset = 0) {
+  const res = await fetch(`${BASE}/spots/${encodeURIComponent(id)}?${spotsQuery({ offset: offset || null })}`, { credentials: 'include' })
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch spot')
+  return res.json() // { spot, ranking, photos: { items, nextOffset }, captions }
+}

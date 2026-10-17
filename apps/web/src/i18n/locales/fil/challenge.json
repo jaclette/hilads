@@ -805,5 +805,43 @@
     "confirmBody": "Bubukas ulit ito gamit ang parehong countdown na itinakda mo noong una.",
     "confirmCta": "I-restart",
     "failed": "Hindi na-restart - subukan ulit."
+  },
+  "appMap": {
+    "title": "Tingnan ang mga spot sa mapa",
+    "titleCity": "Tingnan ang mga spot ng {{city}} sa mapa",
+    "body": "Kung saan nagpo-post ang mga local ng Daily Challenge proof. I-post ang sa iyo mula sa Hilads app."
+  },
+  "creationClosed": "Sarado na ang paggawa ng challenge. Gawin ang Daily Challenge sa Hilads app.",
+  "map": {
+    "see": "Tingnan ang mapa",
+    "button": "Mapa",
+    "search": "Maghanap ng pagkain, café, kalye",
+    "searchA11y": "Maghanap ng spot",
+    "clearSearch": "I-clear ang paghahanap",
+    "noResults": "Walang tugmang spot",
+    "all": "Lahat",
+    "openSpot": "Buksan ang spot",
+    "directions": "Direksyon",
+    "validated": "Kinumpirma ng isang local",
+    "pricePaid": "Binayarang presyo {{price}}",
+    "closeSpot": "Isara",
+    "emptyTitle": "Ikaw na ang unang maglagay ng spot dito",
+    "proofs_one": "{{count}} proof",
+    "proofs_other": "{{count}} proof",
+    "votes_one": "{{count}} boto",
+    "votes_other": "{{count}} boto",
+    "unavailable": "Hindi available ang mapa ngayon."
+  },
+  "spot": {
+    "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",
+    "rankWeek": "#{{rank}} ngayong linggo sa {{city}}",
+    "rankAlltimeFirst": "Pinakamaraming botong spot sa {{city}}",
+    "rankAlltime": "#{{rank}} sa lahat ng panahon sa {{city}}",
+    "photos": "Mga larawan",
+    "captions": "Sabi ng mga tao",
+    "notFound": "Hindi available ang spot na ito.",
+    "local": "Local",
+    "morePhotos": "Higit pang larawan",
+    "proofInApp": "I-post ang proof mo sa app"
   }
 }

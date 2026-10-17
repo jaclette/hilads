@@ -805,5 +805,43 @@
     "confirmBody": "Terbuka lagi dengan hitung mundur yang sama seperti yang kamu atur pertama kali.",
     "confirmCta": "Mulai ulang",
     "failed": "Gagal memulai ulang - coba lagi."
+  },
+  "appMap": {
+    "title": "Lihat spot di peta",
+    "titleCity": "Lihat spot di {{city}} di peta",
+    "body": "Tempat warga lokal memposting bukti Daily Challenge. Posting buktimu dari aplikasi Hilads."
+  },
+  "creationClosed": "Pembuatan challenge sudah ditutup. Ikuti Daily Challenge di aplikasi Hilads.",
+  "map": {
+    "see": "Lihat peta",
+    "button": "Peta",
+    "search": "Cari makanan, kafe, jalan",
+    "searchA11y": "Cari spot",
+    "clearSearch": "Hapus pencarian",
+    "noResults": "Tidak ada spot yang cocok",
+    "all": "Semua",
+    "openSpot": "Buka spot",
+    "directions": "Rute",
+    "validated": "Divalidasi oleh warga lokal",
+    "pricePaid": "Harga dibayar {{price}}",
+    "closeSpot": "Tutup",
+    "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
+    "proofs_one": "{{count}} bukti",
+    "proofs_other": "{{count}} bukti",
+    "votes_one": "{{count}} suara",
+    "votes_other": "{{count}} suara",
+    "unavailable": "Peta sedang tidak tersedia."
+  },
+  "spot": {
+    "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",
+    "rankWeek": "#{{rank}} minggu ini di {{city}}",
+    "rankAlltimeFirst": "Spot dengan suara terbanyak di {{city}}",
+    "rankAlltime": "#{{rank}} sepanjang masa di {{city}}",
+    "photos": "Foto",
+    "captions": "Kata orang-orang",
+    "notFound": "Spot ini tidak tersedia.",
+    "local": "Lokal",
+    "morePhotos": "Foto lainnya",
+    "proofInApp": "Posting buktimu di aplikasi"
   }
 }

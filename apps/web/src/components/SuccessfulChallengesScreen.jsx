@@ -102,7 +102,7 @@ export default function SuccessfulChallengesScreen({ onBack, onTry, onOpenProfil
       <ShowcasePreviewModal
         item={preview}
         onClose={() => setPreview(null)}
-        onTry={(it) => { setPreview(null); onTry(it) }}
+        onTry={onTry ? (it) => { setPreview(null); onTry(it) } : null}
         onAvatar={onOpenProfile}
       />
 

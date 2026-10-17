@@ -805,5 +805,43 @@
     "confirmBody": "将以你第一次设置的相同倒计时重新开放。",
     "confirmCta": "重新开始",
     "failed": "无法重新开始，请重试。"
+  },
+  "appMap": {
+    "title": "在地图上查看地点",
+    "titleCity": "在地图上查看{{city}}的地点",
+    "body": "本地人在这里发布 Daily Challenge 证明。用 Hilads 应用发布你的证明。"
+  },
+  "creationClosed": "创建 challenge 已关闭。请在 Hilads 应用里参加 Daily Challenge。",
+  "map": {
+    "see": "查看地图",
+    "button": "地图",
+    "search": "搜索菜品、咖啡馆、街道",
+    "searchA11y": "搜索地点",
+    "clearSearch": "清除搜索",
+    "noResults": "没有匹配的地点",
+    "all": "全部",
+    "openSpot": "打开地点",
+    "directions": "路线",
+    "validated": "已获本地人认证",
+    "pricePaid": "实付价格 {{price}}",
+    "closeSpot": "关闭",
+    "emptyTitle": "成为第一个在这里放置地点的人",
+    "proofs_one": "{{count}} 个证明",
+    "proofs_other": "{{count}} 个证明",
+    "votes_one": "{{count}} 票",
+    "votes_other": "{{count}} 票",
+    "unavailable": "地图暂时无法使用。"
+  },
+  "spot": {
+    "rankWeekFirst": "本周{{city}}得票最多",
+    "rankWeek": "本周{{city}}第 {{rank}} 名",
+    "rankAlltimeFirst": "{{city}}得票最多的地点",
+    "rankAlltime": "{{city}}历史第 {{rank}} 名",
+    "photos": "照片",
+    "captions": "大家怎么说",
+    "notFound": "此地点不可用。",
+    "local": "本地人",
+    "morePhotos": "更多照片",
+    "proofInApp": "在应用里发布你的证明"
   }
 }

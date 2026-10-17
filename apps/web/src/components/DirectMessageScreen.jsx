@@ -12,6 +12,7 @@ import MessageComposer from './MessageComposer'
 import Lightbox from './Lightbox'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
+import { osmPointUrl } from '../eventUtils'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -438,7 +439,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                           addr = parts.slice(1).join('\n')
                         }
                         const hasCoords = lat !== undefined && lng !== undefined
-                        const mapsUrl = hasCoords ? `https://maps.google.com/?q=${lat},${lng}` : null
+                        const mapsUrl = hasCoords ? osmPointUrl(lat, lng) : null
                         return (
                           <div
                             className={`loc-bubble${isMe ? ' loc-bubble--me' : ''}${hasCoords ? ' loc-bubble--tappable' : ''}`}

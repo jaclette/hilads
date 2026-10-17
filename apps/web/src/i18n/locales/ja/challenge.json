@@ -805,5 +805,43 @@
     "confirmBody": "最初に設定したのと同じカウントダウンで再開します。",
     "confirmCta": "再開",
     "failed": "再開できませんでした - もう一度お試しください。"
+  },
+  "appMap": {
+    "title": "マップでスポットを見る",
+    "titleCity": "{{city}}のスポットをマップで見る",
+    "body": "地元の人が Daily Challenge のプルーフを投稿する場所。Hilads アプリからあなたも投稿しよう。"
+  },
+  "creationClosed": "challenge の作成は終了しました。Hilads アプリで Daily Challenge に参加しよう。",
+  "map": {
+    "see": "地図を見る",
+    "button": "地図",
+    "search": "料理、カフェ、通りを検索",
+    "searchA11y": "スポットを検索",
+    "clearSearch": "検索をクリア",
+    "noResults": "一致するスポットはありません",
+    "all": "すべて",
+    "openSpot": "スポットを開く",
+    "directions": "経路",
+    "validated": "ローカルが認定",
+    "pricePaid": "支払額 {{price}}",
+    "closeSpot": "閉じる",
+    "emptyTitle": "ここに最初のスポットを置こう",
+    "proofs_one": "プルーフ {{count}} 件",
+    "proofs_other": "プルーフ {{count}} 件",
+    "votes_one": "{{count}} 票",
+    "votes_other": "{{count}} 票",
+    "unavailable": "マップは現在利用できません。"
+  },
+  "spot": {
+    "rankWeekFirst": "今週{{city}}で最多得票",
+    "rankWeek": "今週{{city}}で {{rank}} 位",
+    "rankAlltimeFirst": "{{city}}で最も票を集めたスポット",
+    "rankAlltime": "{{city}}の歴代 {{rank}} 位",
+    "photos": "写真",
+    "captions": "みんなの声",
+    "notFound": "このスポットは利用できません。",
+    "local": "ローカル",
+    "morePhotos": "写真をもっと見る",
+    "proofInApp": "アプリでプルーフを投稿"
   }
 }

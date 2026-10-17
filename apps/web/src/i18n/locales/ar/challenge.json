@@ -805,5 +805,51 @@
     "confirmBody": "يُفتح من جديد بنفس العدّ التنازلي الذي حدّدته أول مرة.",
     "confirmCta": "إعادة التشغيل",
     "failed": "تعذّرت إعادة التشغيل - حاول مرة أخرى."
+  },
+  "appMap": {
+    "title": "شاهد الأماكن على الخريطة",
+    "titleCity": "شاهد أماكن {{city}} على الخريطة",
+    "body": "حيث ينشر السكان المحليون إثباتات Daily Challenge. انشر إثباتك من تطبيق Hilads."
+  },
+  "creationClosed": "إنشاء الـ challenge مغلق. خُض Daily Challenge في تطبيق Hilads.",
+  "map": {
+    "see": "عرض الخريطة",
+    "button": "خريطة",
+    "search": "ابحث عن طبق أو مقهى أو شارع",
+    "searchA11y": "ابحث عن أماكن",
+    "clearSearch": "امسح البحث",
+    "noResults": "لا يوجد مكان مطابق",
+    "all": "الكل",
+    "openSpot": "افتح المكان",
+    "directions": "الاتجاهات",
+    "validated": "مؤكَّد من شخص محلي",
+    "pricePaid": "السعر المدفوع {{price}}",
+    "closeSpot": "إغلاق",
+    "emptyTitle": "كن أول من يضع مكانًا هنا",
+    "proofs_zero": "لا إثباتات",
+    "proofs_one": "إثبات واحد",
+    "proofs_two": "إثباتان",
+    "proofs_few": "{{count}} إثباتات",
+    "proofs_many": "{{count}} إثباتًا",
+    "proofs_other": "{{count}} إثبات",
+    "votes_zero": "لا أصوات",
+    "votes_one": "صوت واحد",
+    "votes_two": "صوتان",
+    "votes_few": "{{count}} أصوات",
+    "votes_many": "{{count}} صوتًا",
+    "votes_other": "{{count}} صوت",
+    "unavailable": "الخريطة غير متاحة الآن."
+  },
+  "spot": {
+    "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",
+    "rankWeek": "المرتبة {{rank}} هذا الأسبوع في {{city}}",
+    "rankAlltimeFirst": "المكان الأكثر تصويتًا في {{city}}",
+    "rankAlltime": "المرتبة {{rank}} على الإطلاق في {{city}}",
+    "photos": "الصور",
+    "captions": "ماذا يقول الناس",
+    "notFound": "هذا المكان غير متاح.",
+    "local": "محلي",
+    "morePhotos": "المزيد من الصور",
+    "proofInApp": "انشر إثباتك في التطبيق"
   }
 }

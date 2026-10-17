@@ -66,18 +66,20 @@ export function getEventLocation(event) {
   return null
 }
 
-// Returns a Google Maps universal URL to open the venue. Prefers precise
-// coordinates; falls back to a "venue name, address" text search. The universal
-// URL opens the Google Maps app on mobile (universal link / intent) and a new
-// tab on desktop.
+// OpenStreetMap link for a point (no Google in Hilads: Vietnam is outside
+// Google Maps Platform, SPEC 9.5).
+export function osmPointUrl(lat, lng) {
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`
+}
+
+// Returns an OpenStreetMap URL to open the venue. Prefers precise coordinates;
+// falls back to a "venue name, address" text search.
 export function getEventMapsUrl(event) {
-  if (event.venue_lat && event.venue_lng) {
-    return `https://www.google.com/maps/search/?api=1&query=${event.venue_lat},${event.venue_lng}`
-  }
+  if (event.venue_lat && event.venue_lng) return osmPointUrl(event.venue_lat, event.venue_lng)
   const q = event.venue
     ? (event.location ? `${event.venue}, ${event.location}` : event.venue)
     : (event.location || event.location_hint)
-  return q ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null
+  return q ? `https://www.openstreetmap.org/search?query=${encodeURIComponent(q)}` : null
 }
 
 // Day prefix for events outside today. Computed in the city's timezone so the

@@ -805,5 +805,47 @@
     "confirmBody": "Он откроется снова с тем же отсчётом, что вы задали в первый раз.",
     "confirmCta": "Перезапустить",
     "failed": "Не удалось перезапустить - попробуйте ещё раз."
+  },
+  "appMap": {
+    "title": "Смотреть места на карте",
+    "titleCity": "Смотреть места в {{city}} на карте",
+    "body": "Здесь местные публикуют доказательства Daily Challenge. Публикуй своё в приложении Hilads."
+  },
+  "creationClosed": "Создание challenge закрыто. Проходи Daily Challenge в приложении Hilads.",
+  "map": {
+    "see": "Открыть карту",
+    "button": "Карта",
+    "search": "Найди блюдо, кафе, улицу",
+    "searchA11y": "Искать места",
+    "clearSearch": "Очистить поиск",
+    "noResults": "Подходящих мест нет",
+    "all": "Все",
+    "openSpot": "Открыть место",
+    "directions": "Маршрут",
+    "validated": "Подтверждено местным",
+    "pricePaid": "Цена {{price}}",
+    "closeSpot": "Закрыть",
+    "emptyTitle": "Поставь здесь первое место",
+    "proofs_one": "{{count}} доказательство",
+    "proofs_few": "{{count}} доказательства",
+    "proofs_many": "{{count}} доказательств",
+    "proofs_other": "{{count}} доказательства",
+    "votes_one": "{{count}} голос",
+    "votes_few": "{{count}} голоса",
+    "votes_many": "{{count}} голосов",
+    "votes_other": "{{count}} голоса",
+    "unavailable": "Карта сейчас недоступна."
+  },
+  "spot": {
+    "rankWeekFirst": "Больше всего голосов на этой неделе в {{city}}",
+    "rankWeek": "№{{rank}} на этой неделе в {{city}}",
+    "rankAlltimeFirst": "Самое популярное место в {{city}}",
+    "rankAlltime": "№{{rank}} за всё время в {{city}}",
+    "photos": "Фото",
+    "captions": "Что говорят люди",
+    "notFound": "Это место недоступно.",
+    "local": "Местный",
+    "morePhotos": "Ещё фото",
+    "proofInApp": "Опубликуй доказательство в приложении"
   }
 }

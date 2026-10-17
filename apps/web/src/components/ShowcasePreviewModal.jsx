@@ -142,9 +142,12 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
           )}
         </div>
 
-        <button type="button" className="showcase-try-btn" onClick={() => onTry(item)}>
-          🔥 {t('showcase.tryCta')}
-        </button>
+        {/* No onTry once challenge creation is closed (SPEC 9.10). */}
+        {onTry && (
+          <button type="button" className="showcase-try-btn" onClick={() => onTry(item)}>
+            🔥 {t('showcase.tryCta')}
+          </button>
+        )}
       </div>
     </div>
   ), document.body)

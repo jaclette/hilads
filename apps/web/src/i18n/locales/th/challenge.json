@@ -805,5 +805,43 @@
     "confirmBody": "จะเปิดอีกครั้งด้วยเวลานับถอยหลังเท่าที่คุณตั้งไว้ครั้งแรก",
     "confirmCta": "เริ่มใหม่",
     "failed": "เริ่มใหม่ไม่สำเร็จ - ลองอีกครั้ง"
+  },
+  "appMap": {
+    "title": "ดูสปอตบนแผนที่",
+    "titleCity": "ดูสปอตใน{{city}}บนแผนที่",
+    "body": "ที่ที่คนท้องถิ่นโพสต์หลักฐาน Daily Challenge โพสต์ของคุณจากแอป Hilads"
+  },
+  "creationClosed": "ปิดการสร้าง challenge แล้ว ทำ Daily Challenge ในแอป Hilads ได้เลย",
+  "map": {
+    "see": "ดูแผนที่",
+    "button": "แผนที่",
+    "search": "ค้นหาอาหาร คาเฟ่ ถนน",
+    "searchA11y": "ค้นหาสปอต",
+    "clearSearch": "ล้างการค้นหา",
+    "noResults": "ไม่พบสปอตที่ตรงกัน",
+    "all": "ทั้งหมด",
+    "openSpot": "เปิดสปอต",
+    "directions": "เส้นทาง",
+    "validated": "ยืนยันโดยคนท้องถิ่น",
+    "pricePaid": "ราคาที่จ่าย {{price}}",
+    "closeSpot": "ปิด",
+    "emptyTitle": "มาเป็นคนแรกที่ปักสปอตตรงนี้",
+    "proofs_one": "{{count}} หลักฐาน",
+    "proofs_other": "{{count}} หลักฐาน",
+    "votes_one": "{{count}} โหวต",
+    "votes_other": "{{count}} โหวต",
+    "unavailable": "แผนที่ยังใช้งานไม่ได้ในตอนนี้"
+  },
+  "spot": {
+    "rankWeekFirst": "ได้โหวตมากที่สุดสัปดาห์นี้ใน{{city}}",
+    "rankWeek": "อันดับ {{rank}} สัปดาห์นี้ใน{{city}}",
+    "rankAlltimeFirst": "สปอตที่ได้โหวตมากที่สุดใน{{city}}",
+    "rankAlltime": "อันดับ {{rank}} ตลอดกาลใน{{city}}",
+    "photos": "รูปภาพ",
+    "captions": "คนอื่นว่าอย่างไร",
+    "notFound": "สปอตนี้ไม่พร้อมใช้งาน",
+    "local": "คนท้องถิ่น",
+    "morePhotos": "ดูรูปเพิ่ม",
+    "proofInApp": "โพสต์หลักฐานในแอป"
   }
 }

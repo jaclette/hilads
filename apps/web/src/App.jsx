@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext, fetchAppConfig } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -13,10 +13,12 @@ import ChallengeVersusCard from './components/ChallengeVersusCard'
 import ExampleChallengeCard from './components/ExampleChallengeCard'
 import ExampleEventCard from './components/ExampleEventCard'
 import EmptyCityChallenges from './components/EmptyCityChallenges'
+import AppMapCard from './components/AppMapCard'
+import MapScreen from './components/map/MapScreen'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
-import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
+import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug, osmPointUrl } from './eventUtils'
 import { haversineMeters, formatDistance } from './distance'
 import { formatExpiresIn } from './expiry'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
@@ -140,6 +142,7 @@ function parseDeepLink() {
     period: params.get('period') ?? 'month',
   }
   if (path === '/challenges')    return { type: 'challenges' }
+  if (path === '/map')           return { type: 'map' }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   if (path === '/friend-requests') return { type: 'friend-requests' }
@@ -163,7 +166,7 @@ function parseDeepLink() {
 function isPublicEntryLink(link) {
   return !!link && [
     'city', 'event', 'topic', 'challenge', 'venue', 'past',
-    'challenges', 'leaderboard',
+    'challenges', 'leaderboard', 'map',
   ].includes(link.type)
 }
 
@@ -429,6 +432,15 @@ function NavIconEvents() {
   return (
     <svg {...NAV_ICON_PROPS}>
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+    </svg>
+  )
+}
+
+function NavIconMap() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      <path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4z" />
+      <path d="M9 4v13.5M15 6.5V20" />
     </svg>
   )
 }
@@ -1018,6 +1030,15 @@ export default function App() {
   const [channelScope, setChannelScope] = useState('city') // 'city' | 'world'
   const [worldUnread,  setWorldUnread]  = useState(0)
   const [cityUnread,   setCityUnread]   = useState(0)
+  // Challenge creation retired (SPEC 9.10): follows the server's
+  // CHALLENGE_CREATION_CLOSED flag through /app/config; the "open the app for
+  // the map" card takes its place.
+  const [creationClosed, setCreationClosed] = useState(false)
+  // Web map of spots (SPEC 9.5): a full screen, from the Map tab or the map card.
+  const [showMap, setShowMap] = useState(false)
+  useEffect(() => {
+    fetchAppConfig().then(c => setCreationClosed(!!c.challengeCreationClosed)).catch(() => {})
+  }, [])
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
   const [worldChallenges, setWorldChallenges] = useState([]) // last 5 international challenges (hero carousel)
@@ -1512,6 +1533,7 @@ export default function App() {
     // Guests can still browse, accept and chat in challenge channels;
     // creation requires an account so we have a verified owner for
     // validate/edit/delete and a target for participant notifications.
+    if (creationClosed) return
     if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
     setShowCreateChallenge(true)
   }
@@ -1524,6 +1546,7 @@ export default function App() {
   // "Try this challenge" from the showcase - seed a fresh challenge from a
   // success story's title + type (registered-only; create overlays in place).
   const tryShowcaseChallenge = (item) => {
+    if (creationClosed) return
     setCreateChallengePrefill({ title: item.title, challenge_type: item.challenge_type })
     if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
     setShowCreateChallenge(true)
@@ -2136,6 +2159,7 @@ export default function App() {
       openScreenOnJoinRef.current = 'leaderboard'
     }
     if (link.type === 'challenges')      openScreenOnJoinRef.current = 'challenges'
+    if (link.type === 'map')             openScreenOnJoinRef.current = 'map'
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
@@ -3070,6 +3094,7 @@ export default function App() {
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
       if (openScreenOnJoinRef.current === 'challenges')    { setShowChallengesDrawer(true); openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'map')           { setShowMap(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'past')          { setShowPastArchive(true);  openScreenOnJoinRef.current = null }
@@ -3730,6 +3755,7 @@ export default function App() {
   // bottom-nav tabs actually swap screens instead of staying buried under
   // a stuck Topic/Challenge/Create page. Called from every goTo* handler.
   function dismissFullPageOverlays() {
+    setShowMap(false)
     setActiveTopic(null)
     setActiveChallenge(null)
     setShowCreateChallenge(false)
@@ -3840,6 +3866,18 @@ export default function App() {
     setViewingProfile(null)
     dismissFullPageOverlays()
     setShowEventDrawer(true)
+  }
+  function goToMapTab() {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowChallengesDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    dismissFullPageOverlays()
+    setShowMap(true)
   }
   // Back-compat alias - some call sites still reference goToNowTab.
   const goToNowTab = goToEventsTab
@@ -4907,10 +4945,9 @@ export default function App() {
     if (cityChallenges.length === 0) {
       return (
         <div className="ch-hero-empty-wrap">
-          <EmptyCityChallenges
-            city={localizeCityName(city)}
-            onCreate={openCreateChallenge}
-          />
+          {creationClosed
+            ? <AppMapCard onOpenMap={goToMapTab} city={localizeCityName(city)} placement="home" />
+            : <EmptyCityChallenges city={localizeCityName(city)} onCreate={openCreateChallenge} />}
         </div>
       )
     }
@@ -5275,6 +5312,8 @@ export default function App() {
                   <span className="ch-world-seeall-arrow" aria-hidden="true">→</span>
                 </button>
               </div>
+            ) : creationClosed ? (
+              <div className="ch-hero-empty-wrap"><AppMapCard onOpenMap={goToMapTab} placement="world" /></div>
             ) : (
               <button type="button" className="ch-world-hero ch-world-hero--empty" onClick={openCreateChallenge}>
                 <span className="ch-world-hero-emoji" aria-hidden="true">🔥</span>
@@ -5706,7 +5745,7 @@ export default function App() {
                           addr = parts.slice(1).join('\n')
                         }
                         const hasCoords = lat !== undefined && lng !== undefined
-                        const mapsUrl = hasCoords ? `https://maps.google.com/?q=${lat},${lng}` : null
+                        const mapsUrl = hasCoords ? osmPointUrl(lat, lng) : null
                         return (
                           <div
                             className={`loc-bubble${isMine ? ' loc-bubble--me' : ''}${hasCoords ? ' loc-bubble--tappable' : ''}`}
@@ -5906,7 +5945,7 @@ export default function App() {
             type="button"
             className={`bottom-nav-tab${
               !showEventDrawer && !showChallengesDrawer && !showCityPicker && !showPeopleDrawer &&
-              !showProfileDrawer && !showConversations && !showNotifications
+              !showProfileDrawer && !showConversations && !showNotifications && !showMap
                 ? ' active' : ''
             }`}
             onClick={goToCityChannel}
@@ -5922,6 +5961,15 @@ export default function App() {
             aria-label="Challenges"
           >
             <span className="bottom-nav-icon"><NavIconEvents /></span>
+          </button>
+          {/* MAP of spots */}
+          <button
+            type="button"
+            className={`bottom-nav-tab${showMap ? ' active' : ''}`}
+            onClick={goToMapTab}
+            aria-label="Map"
+          >
+            <span className="bottom-nav-icon"><NavIconMap /></span>
           </button>
           {/* EVENTS */}
           <button
@@ -5951,6 +5999,18 @@ export default function App() {
       </div>
 
       {/* ── Full-screen pages ─────────────────────────── */}
+
+      {showMap && (
+        <MapScreen
+          channelId={channelId}
+          cityName={city ? localizeCityName(city) : null}
+          onClose={() => setShowMap(false)}
+          onOpenPlan={(id) => {
+            setShowMap(false)
+            fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})
+          }}
+        />
+      )}
 
       {showWorldArrivals && (
         <div className="full-page">
@@ -6412,7 +6472,7 @@ export default function App() {
                 slide (the old intro block folded into the carousel to save space;
                 the explainer slide is always present, even with no successes). */}
             <ShowcaseHero
-              onTry={(item) => { setShowChallengesDrawer(false); tryShowcaseChallenge(item) }}
+              onTry={creationClosed ? null : (item) => { setShowChallengesDrawer(false); tryShowcaseChallenge(item) }}
               onOpenProfile={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
               onSeeAll={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
               onHowItWorks={() => setShowChallengeIntro(true)}
@@ -6446,16 +6506,20 @@ export default function App() {
               <div className="events-empty-state">
                 {/* Shared lead-with-action hero - identical to the home
                     screen's zero-challenge state. */}
-                <EmptyCityChallenges
-                  city={city ? localizeCityName(city) : ''}
-                  onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
-                />
+                {creationClosed ? (
+                  <AppMapCard onOpenMap={goToMapTab} city={city ? localizeCityName(city) : ''} placement="drawer" />
+                ) : (
+                  <EmptyCityChallenges
+                    city={city ? localizeCityName(city) : ''}
+                    onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
+                  />
+                )}
 
                 {/* Inspiration "idea book" - inert example cards from the
                     most-active other city. NOT takeable: each card's only
                     action routes back to LOCAL creation. Renders nothing
                     when no other city qualifies. */}
-                {challengeInspiration.length > 0 && (
+                {!creationClosed && challengeInspiration.length > 0 && (
                   <div className="challenge-inspiration-block">
                     <p className="challenge-inspiration-heading">{t('inspiration.heading', { ns: 'challenge' })}</p>
                     <p className="challenge-inspiration-sub">{t('inspiration.sub', { ns: 'challenge' })}</p>
@@ -6555,16 +6619,25 @@ export default function App() {
               )
             })()}
           </div>
-          {/* Bottom action bar - create a challenge. */}
-          <div className="now-actions-bar">
-            <button
-              className="upcoming-cta upcoming-cta--inline"
-              style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}
-              onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
-            >
-              🔥 {t('createCta', { ns: 'challenge' })}
-            </button>
-          </div>
+          {/* Bottom action bar - create a challenge, or (creation closed) the
+              compact map card; an empty city already shows the full card. */}
+          {creationClosed ? (
+            cityChallenges.length > 0 && (
+              <div className="now-actions-bar">
+                <AppMapCard onOpenMap={goToMapTab} compact city={city ? localizeCityName(city) : ''} placement="drawer_bar" />
+              </div>
+            )
+          ) : (
+            <div className="now-actions-bar">
+              <button
+                className="upcoming-cta upcoming-cta--inline"
+                style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}
+                onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
+              >
+                🔥 {t('createCta', { ns: 'challenge' })}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -6594,14 +6667,14 @@ export default function App() {
       <ShowcasePreviewModal
         item={wonPreview}
         onClose={() => setWonPreview(null)}
-        onTry={(item) => { setWonPreview(null); tryShowcaseChallenge(item) }}
+        onTry={creationClosed ? null : (item) => { setWonPreview(null); tryShowcaseChallenge(item) }}
         onAvatar={(uid) => { setWonPreview(null); openProfile(uid, '') }}
       />
 
       {showSuccessfulChallenges && (
         <SuccessfulChallengesScreen
           onBack={() => setShowSuccessfulChallenges(false)}
-          onTry={(item) => { setShowSuccessfulChallenges(false); tryShowcaseChallenge(item) }}
+          onTry={creationClosed ? null : (item) => { setShowSuccessfulChallenges(false); tryShowcaseChallenge(item) }}
           onOpenProfile={(uid) => { setShowSuccessfulChallenges(false); openProfile(uid, '') }}
         />
       )}

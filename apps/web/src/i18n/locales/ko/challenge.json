@@ -805,5 +805,43 @@
     "confirmBody": "처음 설정한 것과 같은 카운트다운으로 다시 열립니다.",
     "confirmCta": "다시 시작",
     "failed": "다시 시작하지 못했어요 - 다시 시도해 주세요."
+  },
+  "appMap": {
+    "title": "지도에서 스팟 보기",
+    "titleCity": "지도에서 {{city}} 스팟 보기",
+    "body": "현지인들이 Daily Challenge 인증을 올리는 곳이에요. Hilads 앱에서 올려 보세요."
+  },
+  "creationClosed": "challenge 만들기는 종료됐어요. Hilads 앱에서 Daily Challenge에 참여하세요.",
+  "map": {
+    "see": "지도 보기",
+    "button": "지도",
+    "search": "음식, 카페, 거리 검색",
+    "searchA11y": "스팟 검색",
+    "clearSearch": "검색 지우기",
+    "noResults": "일치하는 스팟이 없어요",
+    "all": "전체",
+    "openSpot": "스팟 열기",
+    "directions": "길찾기",
+    "validated": "로컬 인증",
+    "pricePaid": "지불한 가격 {{price}}",
+    "closeSpot": "닫기",
+    "emptyTitle": "여기에 첫 스팟을 올려 보세요",
+    "proofs_one": "인증 {{count}}개",
+    "proofs_other": "인증 {{count}}개",
+    "votes_one": "{{count}}표",
+    "votes_other": "{{count}}표",
+    "unavailable": "지금은 지도를 이용할 수 없어요."
+  },
+  "spot": {
+    "rankWeekFirst": "이번 주 {{city}} 최다 득표",
+    "rankWeek": "이번 주 {{city}} {{rank}}위",
+    "rankAlltimeFirst": "{{city}}에서 가장 많이 득표한 스팟",
+    "rankAlltime": "{{city}} 역대 {{rank}}위",
+    "photos": "사진",
+    "captions": "사람들의 한마디",
+    "notFound": "이 스팟을 볼 수 없어요.",
+    "local": "로컬",
+    "morePhotos": "사진 더 보기",
+    "proofInApp": "앱에서 인증 올리기"
   }
 }

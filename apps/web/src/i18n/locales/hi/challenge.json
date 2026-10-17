@@ -805,5 +805,43 @@
     "confirmBody": "यह उसी काउंटडाउन के साथ फिर खुलेगा जो आपने पहली बार सेट किया था।",
     "confirmCta": "फिर से शुरू करें",
     "failed": "फिर से शुरू नहीं हो सका - दोबारा कोशिश करें।"
+  },
+  "appMap": {
+    "title": "मैप पर स्पॉट देखो",
+    "titleCity": "{{city}} के स्पॉट मैप पर देखो",
+    "body": "जहाँ लोकल लोग Daily Challenge के सबूत पोस्ट करते हैं। अपना सबूत Hilads ऐप से पोस्ट करो।"
+  },
+  "creationClosed": "challenge बनाना बंद है। Hilads ऐप में Daily Challenge करो।",
+  "map": {
+    "see": "मैप देखें",
+    "button": "मैप",
+    "search": "कोई डिश, कैफ़े या गली खोजें",
+    "searchA11y": "स्पॉट खोजें",
+    "clearSearch": "खोज साफ़ करें",
+    "noResults": "कोई स्पॉट नहीं मिला",
+    "all": "सभी",
+    "openSpot": "स्पॉट खोलें",
+    "directions": "रास्ता",
+    "validated": "लोकल द्वारा पुष्टि",
+    "pricePaid": "चुकाई गई कीमत {{price}}",
+    "closeSpot": "बंद करें",
+    "emptyTitle": "यहाँ पहला स्पॉट लगाने वाले बनो",
+    "proofs_one": "{{count}} सबूत",
+    "proofs_other": "{{count}} सबूत",
+    "votes_one": "{{count}} वोट",
+    "votes_other": "{{count}} वोट",
+    "unavailable": "मैप अभी उपलब्ध नहीं है।"
+  },
+  "spot": {
+    "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",
+    "rankWeek": "इस हफ़्ते {{city}} में #{{rank}}",
+    "rankAlltimeFirst": "{{city}} का सबसे ज़्यादा वोट वाला स्पॉट",
+    "rankAlltime": "{{city}} में अब तक #{{rank}}",
+    "photos": "फ़ोटो",
+    "captions": "लोग क्या कहते हैं",
+    "notFound": "यह स्पॉट उपलब्ध नहीं है।",
+    "local": "लोकल",
+    "morePhotos": "और फ़ोटो",
+    "proofInApp": "ऐप में अपना सबूत पोस्ट करो"
   }
 }

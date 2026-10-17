@@ -805,5 +805,43 @@
     "confirmBody": "Hij opent opnieuw met dezelfde teller die je de eerste keer instelde.",
     "confirmCta": "Herstart",
     "failed": "Herstarten mislukt - probeer opnieuw."
+  },
+  "appMap": {
+    "title": "Bekijk de spots op de kaart",
+    "titleCity": "Bekijk de spots van {{city}} op de kaart",
+    "body": "Waar locals hun Daily Challenge-bewijzen posten. Post de jouwe vanuit de Hilads-app."
+  },
+  "creationClosed": "Challenges maken is gesloten. Doe de Daily Challenge in de Hilads-app.",
+  "map": {
+    "see": "Bekijk de kaart",
+    "button": "Kaart",
+    "search": "Zoek een gerecht, een café, een straat",
+    "searchA11y": "Spots zoeken",
+    "clearSearch": "Zoekopdracht wissen",
+    "noResults": "Geen spot gevonden",
+    "all": "Alle",
+    "openSpot": "Spot openen",
+    "directions": "Route",
+    "validated": "Bevestigd door een local",
+    "pricePaid": "Betaalde prijs {{price}}",
+    "closeSpot": "Sluiten",
+    "emptyTitle": "Zet hier als eerste een spot neer",
+    "proofs_one": "{{count}} bewijs",
+    "proofs_other": "{{count}} bewijzen",
+    "votes_one": "{{count}} stem",
+    "votes_other": "{{count}} stemmen",
+    "unavailable": "De kaart is nu niet beschikbaar."
+  },
+  "spot": {
+    "rankWeekFirst": "Meest gestemd deze week in {{city}}",
+    "rankWeek": "Nr. {{rank}} deze week in {{city}}",
+    "rankAlltimeFirst": "De meest gestemde spot van {{city}}",
+    "rankAlltime": "Nr. {{rank}} aller tijden in {{city}}",
+    "photos": "Foto's",
+    "captions": "Wat mensen zeggen",
+    "notFound": "Deze spot is niet beschikbaar.",
+    "local": "Local",
+    "morePhotos": "Meer foto's",
+    "proofInApp": "Post je bewijs in de app"
   }
 }

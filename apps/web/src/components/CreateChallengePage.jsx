@@ -239,6 +239,9 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
       // knows to rephrase (the server never tells us which word matched).
       if (err?.code === 'moderation_blocked') {
         setError(t('visibility.moderationBlocked', { ns: 'challenge' }))
+      } else if (err?.code === 'challenge_creation_closed') {
+        // Creation retired server-side (SPEC 9.10) while this page was open.
+        setError(t('creationClosed', { ns: 'challenge' }))
       } else {
         setError(err?.message || t('create.challengeErrStart'))
       }

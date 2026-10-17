@@ -805,5 +805,43 @@
     "confirmBody": "It reopens with the same countdown you set the first time.",
     "confirmCta": "Restart",
     "failed": "Could not restart - try again."
+  },
+  "appMap": {
+    "title": "See the spots on the map",
+    "titleCity": "See the spots of {{city}} on the map",
+    "body": "Where locals post their Daily Challenge proofs. Post yours from the Hilads app."
+  },
+  "creationClosed": "Creating challenges is closed. Take the Daily Challenge in the Hilads app.",
+  "map": {
+    "see": "See the map",
+    "button": "Map",
+    "search": "Search a dish, a café, a street",
+    "searchA11y": "Search spots",
+    "clearSearch": "Clear the search",
+    "noResults": "No spot matches",
+    "all": "All",
+    "openSpot": "Open spot",
+    "directions": "Directions",
+    "validated": "Validated by a local",
+    "pricePaid": "Price paid {{price}}",
+    "closeSpot": "Close",
+    "emptyTitle": "Be the first to put a spot here",
+    "proofs_one": "{{count}} proof",
+    "proofs_other": "{{count}} proofs",
+    "votes_one": "{{count}} vote",
+    "votes_other": "{{count}} votes",
+    "unavailable": "The map isn't available right now."
+  },
+  "spot": {
+    "rankWeekFirst": "Top voted this week in {{city}}",
+    "rankWeek": "#{{rank}} this week in {{city}}",
+    "rankAlltimeFirst": "Most voted spot in {{city}}",
+    "rankAlltime": "#{{rank}} all time in {{city}}",
+    "photos": "Photos",
+    "captions": "What people say",
+    "notFound": "This spot is not available.",
+    "local": "Local",
+    "morePhotos": "More photos",
+    "proofInApp": "Post your proof in the app"
   }
 }

@@ -805,5 +805,43 @@
     "confirmBody": "Se reabre con la misma cuenta atrás que fijaste la primera vez.",
     "confirmCta": "Reiniciar",
     "failed": "No se pudo reiniciar - inténtalo de nuevo."
+  },
+  "appMap": {
+    "title": "Ver los spots en el mapa",
+    "titleCity": "Ver los spots de {{city}} en el mapa",
+    "body": "Donde los locales publican sus pruebas del Daily Challenge. Publica la tuya desde la app Hilads."
+  },
+  "creationClosed": "La creación de challenges está cerrada. Haz el Daily Challenge en la app Hilads.",
+  "map": {
+    "see": "Ver el mapa",
+    "button": "Mapa",
+    "search": "Busca un plato, un café, una calle",
+    "searchA11y": "Buscar spots",
+    "clearSearch": "Borrar la búsqueda",
+    "noResults": "Ningún spot coincide",
+    "all": "Todos",
+    "openSpot": "Ver el spot",
+    "directions": "Cómo llegar",
+    "validated": "Validado por un local",
+    "pricePaid": "Precio pagado {{price}}",
+    "closeSpot": "Cerrar",
+    "emptyTitle": "Sé el primero en poner un spot aquí",
+    "proofs_one": "{{count}} prueba",
+    "proofs_other": "{{count}} pruebas",
+    "votes_one": "{{count}} voto",
+    "votes_other": "{{count}} votos",
+    "unavailable": "El mapa no está disponible ahora."
+  },
+  "spot": {
+    "rankWeekFirst": "El más votado esta semana en {{city}}",
+    "rankWeek": "N.º {{rank}} esta semana en {{city}}",
+    "rankAlltimeFirst": "El spot más votado de {{city}}",
+    "rankAlltime": "N.º {{rank}} de todos los tiempos en {{city}}",
+    "photos": "Fotos",
+    "captions": "Lo que dice la gente",
+    "notFound": "Este spot no está disponible.",
+    "local": "Local",
+    "morePhotos": "Más fotos",
+    "proofInApp": "Publica tu prueba en la app"
   }
 }

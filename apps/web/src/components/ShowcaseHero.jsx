@@ -140,7 +140,7 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll, onHowItWo
       <ShowcasePreviewModal
         item={preview}
         onClose={() => setPreview(null)}
-        onTry={(it) => { setPreview(null); onTry(it) }}
+        onTry={onTry ? (it) => { setPreview(null); onTry(it) } : null}
         onAvatar={onOpenProfile}
       />
     </div>

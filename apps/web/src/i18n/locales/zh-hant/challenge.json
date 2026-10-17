@@ -805,5 +805,43 @@
     "confirmBody": "將以你第一次設定的相同倒數計時重新開放。",
     "confirmCta": "重新開始",
     "failed": "無法重新開始，請重試。"
+  },
+  "appMap": {
+    "title": "在地圖上查看地點",
+    "titleCity": "在地圖上查看{{city}}的地點",
+    "body": "在地人在這裡發布 Daily Challenge 證明。用 Hilads 應用程式發布你的證明。"
+  },
+  "creationClosed": "建立 challenge 已關閉。請在 Hilads 應用程式裡參加 Daily Challenge。",
+  "map": {
+    "see": "查看地圖",
+    "button": "地圖",
+    "search": "搜尋菜餚、咖啡館、街道",
+    "searchA11y": "搜尋地點",
+    "clearSearch": "清除搜尋",
+    "noResults": "沒有符合的地點",
+    "all": "全部",
+    "openSpot": "開啟地點",
+    "directions": "路線",
+    "validated": "已獲在地人認證",
+    "pricePaid": "實付價格 {{price}}",
+    "closeSpot": "關閉",
+    "emptyTitle": "成為第一個在這裡放置地點的人",
+    "proofs_one": "{{count}} 個證明",
+    "proofs_other": "{{count}} 個證明",
+    "votes_one": "{{count}} 票",
+    "votes_other": "{{count}} 票",
+    "unavailable": "地圖暫時無法使用。"
+  },
+  "spot": {
+    "rankWeekFirst": "本週{{city}}得票最多",
+    "rankWeek": "本週{{city}}第 {{rank}} 名",
+    "rankAlltimeFirst": "{{city}}得票最多的地點",
+    "rankAlltime": "{{city}}歷來第 {{rank}} 名",
+    "photos": "照片",
+    "captions": "大家怎麼說",
+    "notFound": "此地點無法使用。",
+    "local": "在地人",
+    "morePhotos": "更多照片",
+    "proofInApp": "在應用程式裡發布你的證明"
   }
 }

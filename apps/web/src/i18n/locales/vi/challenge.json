@@ -805,5 +805,43 @@
     "confirmBody": "Nó mở lại với cùng bộ đếm ngược bạn đã đặt lần đầu.",
     "confirmCta": "Khởi động lại",
     "failed": "Không thể khởi động lại - hãy thử lại."
+  },
+  "appMap": {
+    "title": "Xem các spot trên bản đồ",
+    "titleCity": "Xem các spot ở {{city}} trên bản đồ",
+    "body": "Nơi người địa phương đăng bằng chứng Daily Challenge. Đăng của bạn từ app Hilads."
+  },
+  "creationClosed": "Đã đóng tạo challenge. Hãy làm Daily Challenge trong app Hilads.",
+  "map": {
+    "see": "Xem bản đồ",
+    "button": "Bản đồ",
+    "search": "Tìm món ăn, quán cà phê, con phố",
+    "searchA11y": "Tìm spot",
+    "clearSearch": "Xóa tìm kiếm",
+    "noResults": "Không có spot phù hợp",
+    "all": "Tất cả",
+    "openSpot": "Xem spot",
+    "directions": "Chỉ đường",
+    "validated": "Được người địa phương xác nhận",
+    "pricePaid": "Giá đã trả {{price}}",
+    "closeSpot": "Đóng",
+    "emptyTitle": "Hãy là người đầu tiên đặt spot ở đây",
+    "proofs_one": "{{count}} bằng chứng",
+    "proofs_other": "{{count}} bằng chứng",
+    "votes_one": "{{count}} phiếu",
+    "votes_other": "{{count}} phiếu",
+    "unavailable": "Bản đồ hiện không khả dụng."
+  },
+  "spot": {
+    "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",
+    "rankWeek": "Hạng {{rank}} tuần này ở {{city}}",
+    "rankAlltimeFirst": "Spot được bình chọn nhiều nhất ở {{city}}",
+    "rankAlltime": "Hạng {{rank}} mọi thời đại ở {{city}}",
+    "photos": "Ảnh",
+    "captions": "Mọi người nói gì",
+    "notFound": "Spot này không còn khả dụng.",
+    "local": "Người địa phương",
+    "morePhotos": "Thêm ảnh",
+    "proofInApp": "Đăng bằng chứng trong app"
   }
 }
