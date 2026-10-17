@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ScrollView,
-  ActivityIndicator, TouchableOpacity, RefreshControl,
+  ActivityIndicator, RefreshControl,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
@@ -18,75 +16,32 @@ import { ExampleEventCard } from '@/components/ExampleEventCard';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent, UserDTO } from '@/types';
-import { FontSizes, Spacing, Radius, Gradients, Shadows, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { AppHeader } from '@/features/shell/AppHeader';
+import { Button, EmptyState, Screen, ScreenHeader, SectionTitle } from '@/ui';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
 
 // ── Empty state ───────────────────────────────────────────────────────────────
+// Locals are invited to host a recurring spot; everyone else to start a plan.
 
-function EmptyState({ city }: { city?: string }) {
-  const styles = useThemedStyles(makeStyles);
+function FeedEmptyState({ city, userMode }: { city?: string; userMode?: string | null }) {
   const { t } = useTranslation('now');
-  return (
-    <View style={styles.empty}>
-      <Text style={styles.emptyEmoji}>✨</Text>
-      <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
-      <Text style={styles.emptySub}>
-        {city ? t('emptyBeFirst', { city }) : t('emptyStartNow')}
-        {'\n'}{t('emptyCreateLine')}
-      </Text>
-    </View>
-  );
-}
-
-function FilterEmptyState({
-  filter, city, userMode, onStartPulse,
-}: {
-  filter:        'all' | 'events' | 'topics';
-  city?:         string;
-  userMode?:     string | null;
-  onStartPulse?: () => void;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('now');
-  if (filter === 'all') return <EmptyState city={city} />;
-  if (filter === 'events' && userMode === 'local') {
+  if (userMode === 'local') {
     return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyEmoji}>🌍</Text>
-        <Text style={styles.emptyTitle}>{t('hostSpotTitle')}</Text>
-        <Text style={styles.emptySub}>
-          {city ? t('hostSpotCity', { city }) : t('hostSpotNoCity')}{'\n'}{t('hostSpotLine')}
-        </Text>
-      </View>
+      <EmptyState
+        icon="storefront-outline"
+        title={t('hostSpotTitle')}
+        body={`${city ? t('hostSpotCity', { city }) : t('hostSpotNoCity')}\n${t('hostSpotLine')}`}
+      />
     );
   }
   return (
-    <View style={styles.empty}>
-      <Text style={styles.emptyEmoji}>{filter === 'events' ? '🎉' : '🗣️'}</Text>
-      <Text style={styles.emptyTitle}>
-        {filter === 'events' ? t('noEvents') : t('noHangouts')}
-      </Text>
-      <Text style={styles.emptySub}>
-        {filter === 'events'
-          ? (city ? t('beFirstEventCity', { city }) : t('beFirstEvent'))
-          : t('hangoutTalk')}
-      </Text>
-
-      {/* Pulse-filter-only CTA - mirrors web's centered blue "Start a pulse 🗣️"
-          button in the empty state (apps/web App.jsx ~3884). */}
-      {filter === 'topics' && onStartPulse && (
-        <TouchableOpacity
-          style={styles.emptyPulseBtn}
-          onPress={onStartPulse}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.emptyPulseBtnText}>{t('startHangout')}</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+    <EmptyState
+      icon="calendar-outline"
+      title={t('noEvents')}
+      body={city ? t('beFirstEventCity', { city }) : t('beFirstEvent')}
+    />
   );
 }
 
@@ -112,11 +67,10 @@ export default function NowScreen() {
   const { colors } = useTheme();
 
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { t } = useTranslation('now');
   // Measured height of the sticky bottom CTA bar (Hi now / Hi plan). The list reserves exactly this much so the
   // last event never hides behind it. Sensible default until first layout.
-  const [bottomBarH, setBottomBarH] = useState(170);
+  const [bottomBarH, setBottomBarH] = useState(130);
   const { city, identity, account, booting, blockedSet } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
@@ -130,11 +84,6 @@ export default function NowScreen() {
   const [eventInspiration,     setEventInspiration]     = useState<EventInspirationExample[]>([]);
   const [eventInspirationCity, setEventInspirationCity] = useState<string | null>(null);
   const inspirationTriedRef = useRef(false);
-  // Always the events view: hangouts are dormant, so the memos below (which
-  // key off `filter`) yield events only, no topic rows. Held in (never-set)
-  // state so its type stays the wide union — a plain `const … = 'events'` would
-  // be narrowed to the literal and trip TS's no-overlap check in those guards.
-  const [filter] = useState<'all' | 'events' | 'topics'>('events');
   // Viewer coords for NOW distance display. Read ONCE from the OS cache on load /
   // pull-to-refresh (getLastKnownPositionAsync - no watcher, no permission prompt;
   // permission was already requested at boot). null → no usable location → cards
@@ -415,7 +364,7 @@ export default function NowScreen() {
       const bRecur = !!(b.series_id ?? b.recurrence_label) ? 1 : 0;
       return bRecur - aRecur;
     });
-  }, [items, filter, blockedSet, distanceById]);
+  }, [items, blockedSet, distanceById]);
 
   const listData = useMemo<Array<
     FeedItem
@@ -423,7 +372,7 @@ export default function NowScreen() {
     | (HiladsEvent & { kind: 'public_event' })
   >>(
     () => {
-      const showPublic = filter !== 'topics' && publicEvents.length > 0;
+      const showPublic = publicEvents.length > 0;
       // Public events are distance-sorted within their section too (nearest →
       // farthest; no-coord last), consistent with the main feed.
       const sortedPublic = [...publicEvents].sort((a, b) => {
@@ -445,7 +394,7 @@ export default function NowScreen() {
           : []),
       ];
     },
-    [filteredItems, publicEvents, filter, distanceById, t],
+    [filteredItems, publicEvents, distanceById, t],
   );
 
   // Inspiration "idea book" for the genuine zero-activity empty state. Re-armed
@@ -469,88 +418,74 @@ export default function NowScreen() {
     return () => { alive = false; };
   }, [loading, error, listData.length, city?.channelId]);
 
+  const header = (
+    <ScreenHeader
+      title={t('hiNow')}
+      onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chat' as never))}
+      right={city ? <Text style={styles.headerSub} numberOfLines={1}>{localizeCityName(city.name)}</Text> : undefined}
+    />
+  );
+
   // Still booting or waiting for city - keep showing spinner.
   if (!city && (booting || loading)) {
     return (
-      <SafeAreaView style={styles.container}>
+      <Screen>
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
-      </SafeAreaView>
+      </Screen>
     );
   }
 
   // Boot finished but user has no city.
   if (!city && !booting && !loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.appHeaderWrap}>
-          <AppHeader />
+      <Screen>
+        {header}
+        <View style={styles.center}>
+          <EmptyState
+            icon="globe-outline"
+            title={t('noCityTitle')}
+            body={t('noCitySub')}
+            action={<Button label={t('browseCities')} onPress={() => router.push('/switch-city' as never)} />}
+          />
         </View>
-        <View style={styles.header}>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>{t('nowTitle', { ns: 'common' })}</Text>
-          </View>
-        </View>
-        <View style={styles.empty}>
-          <Text style={styles.emptyEmoji}>🌍</Text>
-          <Text style={styles.emptyTitle}>{t('noCityTitle')}</Text>
-          <Text style={styles.emptySub}>{t('noCitySub')}</Text>
-          <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
-            <Text style={styles.emptyBtnText}>{t('browseCities')}</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      </Screen>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Persistent app header - bell / logo / DM across all tabs */}
-      <View style={styles.appHeaderWrap}>
-        <AppHeader />
-      </View>
-
-      {/* Tab-specific title (sub-header) */}
-      <View style={styles.header}>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('hiLocalTitle', { ns: 'common' })}</Text>
-          {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
-        </View>
-      </View>
+    <Screen>
+      {header}
 
       {loading && !refreshing ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => load()} activeOpacity={0.8}>
-            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
-          </TouchableOpacity>
+          <EmptyState
+            icon="cloud-offline-outline"
+            body={error}
+            action={<Button variant="secondary" size="sm" label={t('retry', { ns: 'common' })} onPress={() => load()} />}
+          />
         </View>
       ) : listData.length === 0 ? (
         <ScrollView
           contentContainerStyle={styles.emptyScroll}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={colors.accent} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={colors.primary} />
           }
         >
           {/* Local hero stays on top, dominant. */}
-          <FilterEmptyState
-            filter={filter}
-            city={localizeCityName(city?.name)}
-            userMode={userMode}
-            onStartPulse={handleStartPulse}
-          />
+          <FeedEmptyState city={localizeCityName(city?.name)} userMode={userMode} />
 
           {/* Inspiration "idea book" - inert example hangouts/events from the
               most-active other city. NOT joinable: each card's only action
               routes back to LOCAL creation. Renders nothing when empty. */}
           {eventInspiration.length > 0 && (
             <View style={styles.inspirationBlock}>
-              <Text style={styles.inspirationHeading}>{t('inspiration.heading')}</Text>
+              <SectionTitle title={t('inspiration.heading')} />
               <Text style={styles.inspirationSub}>{t('inspiration.sub')}</Text>
               {eventInspiration.map((ex, i) => (
                 <ExampleEventCard
@@ -574,7 +509,7 @@ export default function NowScreen() {
           windowSize={5}
           renderItem={({ item }) => {
             if (item.kind === 'section') {
-              return <Text style={styles.sectionLabel}>{item.label}</Text>;
+              return <SectionTitle title={item.label} style={styles.sectionLabel} />;
             }
             if (item.kind === 'topic') {
               const topicMeters = distanceById.get(item.id);
@@ -619,39 +554,16 @@ export default function NowScreen() {
           }}
           contentContainerStyle={[styles.list, { paddingBottom: bottomBarH + Spacing.sm }]}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={colors.accent} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={colors.primary} />
           }
         />
       )}
 
-      {/* Two create CTAs: "Hi now" (spontaneous hangout) and "Hi later" (planned event). */}
+      {/* Two create CTAs: "Hi now" (spontaneous hangout) and "Hi plan" (planned event). */}
       {city && (
-        <View
-          style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}
-          onLayout={(e) => setBottomBarH(e.nativeEvent.layout.height)}
-        >
-          {/* Line 1: Hi now, full width, alone. */}
-          <TouchableOpacity
-            style={[styles.hilocalCta, styles.hilocalCtaNow]}
-            activeOpacity={0.85}
-            onPress={handleStartPulse}
-            accessibilityRole="button"
-          >
-            <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🗣️ {t('hiNow')}</Text>
-            <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: 'rgba(255,122,60,0.75)' }]}>{t('hiNowHint', { defaultValue: 'hang out now' })}</Text>
-          </TouchableOpacity>
-          {/* Line 2: Hi later. */}
-          <View style={styles.hilocalRow}>
-            <TouchableOpacity
-              style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
-              activeOpacity={0.85}
-              onPress={handleHostSpot}
-              accessibilityRole="button"
-            >
-              <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🎉 {t('hiLater')}</Text>
-              <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: colors.muted2 }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.bottomActions} onLayout={(e) => setBottomBarH(e.nativeEvent.layout.height)}>
+          <Button icon="flash-outline" label={t('hiNow')} onPress={handleStartPulse} />
+          <Button variant="secondary" icon="calendar-outline" label={t('hiLater')} onPress={handleHostSpot} />
         </View>
       )}
 
@@ -664,235 +576,33 @@ export default function NowScreen() {
         onClose={() => setMembersOpen(false)}
         onSelect={(uid) => { setMembersOpen(false); router.push({ pathname: '/user/[id]', params: { id: uid } }); }}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
+  headerSub:    { maxWidth: 160, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  center:       { flex: 1, justifyContent: 'center', padding: Spacing.lg },
+  sectionLabel: { paddingTop: Spacing.md, paddingBottom: 4 },
+  list:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 10 },
 
-  // Header - web: BackButton left + "Now" centered (page-header layout)
-  // Title is absolutely centered so it stays centered regardless of side elements.
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    minHeight:         56,
-  },
-  // Wrapper that frames the shared AppHeader with consistent padding.
-  // No borderBottom - header flows directly into the tab sub-header, matching
-  // MY CITY's look. Background kept so the header area still reads as a
-  // surface strip (bg2), not against the raw screen bg.
-  appHeaderWrap: {
-    paddingHorizontal: Spacing.md,
-    paddingTop:        10,
-    paddingBottom:     12,
-    backgroundColor:   c.bg,
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
-  headerSub:    { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
+  emptyScroll:      { flexGrow: 1, paddingTop: Spacing.lg, paddingBottom: Spacing.xl },
+  inspirationBlock: { paddingHorizontal: Spacing.md, gap: Spacing.sm, marginTop: Spacing.md },
+  inspirationSub:   { fontSize: 12, fontWeight: '600', color: c.muted, marginBottom: 2 },
 
-  // ── Filter bar ─────────────────────────────────────────────────────────────
-  // ScrollView style. flexGrow:0 is critical - without it the ScrollView
-  // expands to fill the column and pushes the FlatList off-screen.
-  filterBar: {
-    flexGrow:          0,
-    flexShrink:        0,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  // Inner row - what was previously the filterBar's layout.
-  filterBarContent: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               8,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-  },
-  filterPill: {
-    paddingHorizontal: 14,
-    paddingVertical:   6,
-    borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
-  },
-  filterPillActive: {
-    backgroundColor: c.accent,
-    borderColor:     c.accent,
-  },
-  filterPillText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '500',
-    color:      c.muted,
-  },
-  filterPillTextActive: {
-    color:      c.white,
-    fontWeight: '600',
-  },
-
-  center:    { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  errorText: { fontSize: FontSizes.sm, color: c.red, marginBottom: Spacing.md, textAlign: 'center' },
-  retryBtn:  { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: c.bg3, borderRadius: Radius.full },
-  retryText: { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
-
-  sectionLabel: {
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.md,
-    paddingBottom:     Spacing.sm,
-    fontSize:          FontSizes.xs,
-    fontWeight:        '700',
-    letterSpacing:     1.0,
-    textTransform:     'uppercase',
-    color:             c.muted,
-  },
-  // paddingBottom reserves room for the sticky single-row bottomActions block
-  // (one row of ~56px + safe-area). Smaller than before since we collapsed
-  // the two-row layout into one.
-  list: { paddingBottom: 96, paddingHorizontal: Spacing.md, gap: 6 },
-
-  // ── Empty state ────────────────────────────────────────────────────────────
-  empty: {
-    flex: 1, justifyContent: 'center', alignItems: 'center',
-    padding: Spacing.xl, gap: Spacing.sm,
-  },
-  emptyScroll: { flexGrow: 1, paddingTop: Spacing.xl, paddingBottom: Spacing.xl },
-  inspirationBlock: {
-    width:             '100%',
-    paddingHorizontal: Spacing.md,
-    gap:               Spacing.sm,
-    marginTop:         Spacing.lg,
-  },
-  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'left' },
-  inspirationSub:     { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'left', marginBottom: 2 },
-  emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22 },
-  emptyBtn: {
-    marginTop: Spacing.md, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 2,
-    backgroundColor: c.accent, borderRadius: Radius.full,
-  },
-  emptyBtnText: { color: c.white, fontWeight: '700', fontSize: FontSizes.sm },
-
-  // ── Sticky bottom action block - single-row layout ─────────────────────────
-  // Absolute-positioned container pinned above the bottom tab bar. One row:
-  // [ See what's coming 🔮 ] flex-1, and [+] 48×48 circle on the right that
-  // opens the CreateSheet picker.
+  // Sticky bottom block, pinned above the tab bar: Hi now (primary) over Hi plan.
   bottomActions: {
     position:          'absolute',
     left:              0,
     right:             0,
     bottom:            0,
+    gap:               8,
     paddingHorizontal: Spacing.md,
-    paddingTop:        10,
-    backgroundColor:   c.bg2,
-    borderTopWidth:    1,
-    borderTopColor:    c.border,
-  },
-  bottomActionsRow: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           10,
-  },
-
-  // Primary "Create an event" CTA - orange-tinted, full width, opens event
-  // creation directly (no chooser). Mirrors the web events tab.
-  createEventCta: {
-    flexDirection:   'row',
-    alignItems:      'center',
-    justifyContent:  'center',
-    gap:             8,
-    paddingVertical: 14,
-    borderRadius:    14,
-    backgroundColor: 'rgba(255,122,60,0.16)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,122,60,0.35)',
-    marginBottom:    8,
-  },
-  createEventCtaText: {
-    color:      c.accent,
-    fontSize:   15,
-    fontWeight: '800',
-  },
-
-  // Hi Local → two create CTAs side by side: Now (coral) + Later (neutral).
-  hilocalRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginBottom: 8 },
-  hilocalCta: {
-    alignItems:      'center',
-    justifyContent:  'center',
-    paddingVertical: 14,
-    paddingHorizontal: 8,
-    borderRadius:    14,
-    borderWidth:     1,
-    marginBottom:    8,   // line-1 (Hi now) gap to the row below
-  },
-  hilocalCtaFlex: { flex: 1, marginBottom: 0 },   // row children: equal width, no extra gap
-  hilocalCtaNow:   { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.45)' },
-  hilocalCtaLater: { backgroundColor: 'transparent', borderColor: c.overlayStrong },
-  hilocalCtaText:      { fontSize: 15, fontWeight: '800' },
-  hilocalCtaSub:       { fontSize: 11, fontWeight: '600', fontStyle: 'italic', marginTop: 2 },
-  hilocalCtaTextNow:   { color: c.accent },
-  hilocalCtaTextLater: { color: c.text },
-
-  // Wide pill on the left - orange-tinted, mirrors web .upcoming-cta.
-  upcomingCta: {
-    flex:              1,
-    backgroundColor:   'rgba(255,122,60,0.07)',
-    borderRadius:      16,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.22)',
-    paddingVertical:   12,
-    paddingHorizontal: Spacing.md,
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               10,
-    minHeight:         48,  // ≥44 tap target
-  },
-  upcomingCtaEmoji: { fontSize: 18, lineHeight: 22 },
-  upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.accent },
-
-  // Discreet archive entry - muted, left-aligned under the upcoming pill.
-
-  // Circular + button on the right - opens CreateSheet picker. Background is a
-  // 135° orange gradient (LinearGradient absolute child); shadow uses the
-  // shared FAB token for the colored glow.
-  createFab: {
-    width:           48,
-    height:          48,
-    borderRadius:    24,
-    alignItems:      'center',
-    justifyContent:  'center',
-    overflow:        'hidden',
-    flexShrink:      0,
-    ...Shadows.fab,
-    shadowRadius:    12,   // smaller surface than the in-chat send FAB → tighter glow
-    shadowOpacity:   0.35,
-  },
-  createFabGradient: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 24,
-  },
-
-  // Centered CTA rendered inside the Pulses filter's empty state (web parity).
-  emptyPulseBtn: {
-    marginTop:         Spacing.md,
-    paddingHorizontal: 22,
-    height:            48,
-    borderRadius:      16,
-    borderWidth:       1,
-    borderColor:       'rgba(96,165,250,0.25)',
-    backgroundColor:   'rgba(96,165,250,0.10)',
-    alignItems:        'center',
-    justifyContent:    'center',
-  },
-  emptyPulseBtnText: {
-    color:      '#60a5fa',
-    fontSize:   FontSizes.md,
-    fontWeight: '700',
+    paddingVertical:   10,
+    backgroundColor:   c.bg,
+    borderTopWidth:    Border,
+    borderTopColor:    c.line,
   },
 });

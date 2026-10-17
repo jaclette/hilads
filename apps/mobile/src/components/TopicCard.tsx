@@ -1,9 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import type { FeedItem } from '@/types';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Card, Chip } from '@/ui';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { formatExpiresIn } from '@/lib/expiry';
 
@@ -13,8 +15,9 @@ import { formatExpiresIn } from '@/lib/expiry';
 // (expired pulses are never active) and surface the reply count without the
 // "be first" nudge.
 
-const CATEGORY_ICONS: Record<string, string> = {
-  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+const CATEGORY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
+  general: 'chatbubbles-outline', tips: 'bulb-outline', food: 'restaurant-outline',
+  drinks: 'wine-outline', help: 'help-buoy-outline', meetup: 'people-outline',
 };
 
 function timeAgo(ts: number): string {
@@ -39,104 +42,64 @@ export function TopicCard({
   isHost?: boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('common');
-  const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
+  const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? 'chatbubble-outline';
   const replies   = topic.message_count ?? 0;
   const lastAct   = topic.last_activity_at;
   const activeNow = !pastMode && topic.active_now === true;
   const expiresIn = pastMode ? null : formatExpiresIn(topic.expires_at);
 
   return (
-    <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
-      <View style={styles.cardKindRow}>
-        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>🔥 {t('nowTag', { ns: 'now' })}</Text></View>
-        {activeNow && (
-          <View style={styles.activeNowBadge}>
-            <Text style={styles.activeNowText}>{t('activeNow')}</Text>
+    <TouchableOpacity activeOpacity={0.75} onPress={onPress} accessibilityRole="button">
+      <Card style={styles.card}>
+        <View style={styles.chips}>
+          <Chip icon="flash-outline" label={t('nowTag', { ns: 'now' })} />
+          {activeNow && <Chip tone="local" label={t('activeNow')} />}
+          {expiresIn && <Chip variant="outline" label={expiresIn} />}
+        </View>
+        <View style={styles.titleRow}>
+          <View style={styles.icon}>
+            <Ionicons name={icon} size={18} color={colors.primaryOnTint} />
           </View>
-        )}
-        {expiresIn && (
-          <View style={styles.expiryBadge}>
-            <Text style={styles.expiryText}>⏱ {expiresIn}</Text>
+          <Text style={styles.title} numberOfLines={2}>{topic.title}</Text>
+        </View>
+        {topic.description ? (
+          <Text style={styles.desc} numberOfLines={2}>{topic.description}</Text>
+        ) : null}
+        {distanceLabel ? (
+          <View style={styles.metaRow}>
+            <Ionicons name="location-outline" size={15} color={colors.muted} />
+            <Text style={styles.location} numberOfLines={1}>{distanceLabel}</Text>
           </View>
-        )}
-      </View>
-      <View style={styles.cardTitleRow}>
-        <Text style={styles.cardIcon}>{icon}</Text>
-        <Text style={[styles.cardTitle, styles.topicTitle]} numberOfLines={2}>{topic.title}</Text>
-      </View>
-      {topic.description ? (
-        <Text style={styles.topicDesc} numberOfLines={2}>{topic.description}</Text>
-      ) : null}
-      {distanceLabel ? (
-        <Text style={styles.topicLocation} numberOfLines={1}>📍 {distanceLabel}</Text>
-      ) : null}
-      <Text style={styles.topicMeta}>
-        {replies > 0
-          ? `${t('replies', { count: replies })}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-          : pastMode ? t('noReplies')
-          : isHost ? t('hostWaiting')
-          : (topic.host_nickname ? t('sayHi', { name: topic.host_nickname }) : t('noRepliesFirst'))}
-      </Text>
-      {!pastMode ? (
-        <AttendeeAvatars
-          preview={topic.participants_preview ?? []}
-          total={topic.participant_count ?? 0}
-          onPress={onAvatarsPress}
-        />
-      ) : null}
+        ) : null}
+        <Text style={styles.meta}>
+          {replies > 0
+            ? `${t('replies', { count: replies })}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
+            : pastMode ? t('noReplies')
+            : isHost ? t('hostWaiting')
+            : (topic.host_nickname ? t('sayHi', { name: topic.host_nickname }) : t('noRepliesFirst'))}
+        </Text>
+        {!pastMode ? (
+          <AttendeeAvatars
+            preview={topic.participants_preview ?? []}
+            total={topic.participant_count ?? 0}
+            onPress={onAvatarsPress}
+          />
+        ) : null}
+      </Card>
     </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  cardKindRow: { flexDirection: 'row', alignItems: 'center', marginBottom: -2 },
-  kindBadgeTopic: {
-    backgroundColor:   'rgba(255,122,60,0.12)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 7,
-    paddingVertical:   1,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.22)',
-  },
-  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: c.accent, letterSpacing: 0.5 },
-
-  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cardIcon:     { fontSize: 16, lineHeight: 18 },
-  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 19 },
-
-  topicCard: {
-    backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     'rgba(96,165,250,0.15)',
-    padding:         Spacing.md,
-    gap:             8,
-  },
-  topicTitle:    { color: c.text },
-  topicDesc:     { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
-  topicLocation: { fontSize: FontSizes.sm, color: c.muted },
-  topicMeta:     { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
-
-  activeNowBadge: {
-    backgroundColor:   'rgba(34,197,94,0.10)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
-    borderWidth:       1,
-    borderColor:       'rgba(34,197,94,0.20)',
-    marginLeft:        6,
-  },
-  activeNowText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
-
-  expiryBadge: {
-    backgroundColor:   c.overlay,
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
-    marginLeft:        6,
-  },
-  expiryText: { fontSize: 10, fontWeight: '700', color: c.muted, letterSpacing: 0.3 },
+  card:     { padding: Spacing.md, gap: 8, borderColor: c.primary },
+  chips:    { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  icon:     { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  title:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  desc:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
+  metaRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  location: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
+  meta:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });

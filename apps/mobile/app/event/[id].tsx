@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
   Animated, Linking, ToastAndroid, Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -24,14 +23,14 @@ import * as Clipboard from 'expo-clipboard';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { FontSizes, Spacing, Radius, buildEventUrl, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, buildEventUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
 import { ShareToCityPill } from '@/components/ShareToCityPill';
+import { MembersSheet } from '@/components/MembersSheet';
+import { Banner, Button, EmptyState, IconButton, Screen, ScreenHeader } from '@/ui';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
-import { BADGE_META } from '@/types';
 import type { Message, EventParticipant, ReplyRef } from '@/types';
 import { placeUrl, searchUrl } from '@/lib/directions';
 
@@ -108,18 +107,18 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
   if (participants.length === 0) return null;
 
   return (
-    <TouchableOpacity style={stripStyles.row} onPress={onPress} activeOpacity={0.75}>
+    <TouchableOpacity style={stripStyles.row} onPress={onPress} activeOpacity={0.75} accessibilityRole="button">
       <AttendeeAvatars
         preview={participants.map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl }))}
         total={participants.length}
         borderColor={colors.bg}
       />
-      <Text style={stripStyles.label}>
+      <Text style={stripStyles.label} numberOfLines={1}>
         {participants.length === 1
           ? t('oneGoing', { name: participants[0].displayName })
           : t('manyGoing', { name: participants[0].displayName, count: participants.length - 1 })}
       </Text>
-      <Text style={stripStyles.seeAll}>{t('seeAll')}</Text>
+      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
     </TouchableOpacity>
   );
 }
@@ -127,7 +126,6 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function EventDetailScreen() {
-  const sheetStyles = useThemedStyles(makeSheetStyles);
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const router = useRouter();
@@ -363,40 +361,25 @@ export default function EventDetailScreen() {
   const cityName = eventCityName ?? city?.name ?? t('back', { ns: 'common' });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <Screen edges={['top', 'bottom']}>
+      <ScreenHeader
+        title={cityName}
+        compact
+        onBack={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
+        right={<IconButton icon="share-outline" onPress={handleShare} label={t('bringPeople')} />}
+      />
 
-      {/* ── Nav - web: back pill + share button ── */}
-      <View style={styles.nav}>
-        <TouchableOpacity
-          style={styles.backPill}
-          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
-          activeOpacity={0.75}
-        >
-          <Ionicons name="chevron-back" size={18} color={colors.text} />
-          <Text style={styles.backPillText} numberOfLines={1}>{cityName}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.75}>
-          <Ionicons name="share-outline" size={16} color={colors.accent} />
-          <Text style={styles.shareBtnText}>{t('bringPeople')}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* ── Event info block - web: sits at top, no card, just padding + border ── */}
+      {/* ── Event info block: title + action, then the details (collapse on scroll) ── */}
       {eventLoading ? (
         <View style={styles.eventBlockLoading}>
-          <ActivityIndicator color={colors.accent} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : eventRemoved ? (
         // 410 Gone - the event was deleted. Friendly message instead of the
-        // generic "not found"; the back pill above returns to the (now-refreshed) list.
-        <View style={styles.eventBlockLoading}>
-          <Text style={styles.errorText}>{t('detailRemoved')}</Text>
-        </View>
+        // generic "not found"; the back button above returns to the (now-refreshed) list.
+        <EmptyState icon="calendar-clear-outline" body={t('detailRemoved')} />
       ) : eventError || !event ? (
-        <View style={styles.eventBlockLoading}>
-          <Text style={styles.errorText}>{eventError ?? t('detailNotFound')}</Text>
-        </View>
+        <EmptyState icon="alert-circle-outline" body={eventError ?? t('detailNotFound')} />
       ) : (
         <Animated.View style={[styles.eventBlock, { paddingBottom: blockPaddingBottom }]}>
           {/* Title row + Join/Edit button - always visible */}
@@ -404,90 +387,78 @@ export default function EventDetailScreen() {
             <CopyTranslateText
               value={event.title}
               style={styles.eventTitle}
-              numberOfLines={1}
+              numberOfLines={2}
             />
             {isOwner ? (
-              <TouchableOpacity
-                style={[styles.joinBtn, styles.editBtn]}
+              <Button
+                variant="secondary"
+                size="sm"
+                label={t('edit')}
                 onPress={() => router.push(`/event/${event.id}/edit` as never)}
-                activeOpacity={0.8}
-                accessibilityRole="button"
                 accessibilityLabel={t('editEvent')}
-              >
-                <Text style={[styles.joinBtnText, styles.editBtnText]}>
-                  {t('edit')}
-                </Text>
-              </TouchableOpacity>
+              />
             ) : (
-              <TouchableOpacity
-                style={[styles.joinBtn, event.is_participating && styles.joinBtnActive]}
+              <Button
+                variant={event.is_participating ? 'secondary' : 'primary'}
+                size="sm"
+                label={event.is_participating ? t('joined') : t('join')}
                 onPress={handleToggle}
-                disabled={toggling}
-                activeOpacity={0.8}
-              >
-                {toggling ? (
-                  <ActivityIndicator size="small" color={colors.accent} />
-                ) : (
-                  <Text style={[styles.joinBtnText, event.is_participating && styles.joinBtnTextActive]}>
-                    {event.is_participating ? t('joined') : t('join')}
-                  </Text>
-                )}
-              </TouchableOpacity>
+                loading={toggling}
+                style={styles.joinBtn}
+              />
             )}
           </View>
 
           {isOwner && (
-            <ShareToCityPill url={buildEventUrl(event)} title={event.title} label="🎉 Hi plan" style={{ marginTop: 10, alignSelf: 'flex-start' }} />
+            <ShareToCityPill url={buildEventUrl(event)} title={event.title} label="🎉 Hi plan" style={styles.shareToCity} />
           )}
 
           {/* Secondary lines - collapse on scroll. maxHeight + opacity drive the
               transition; native driver is off because we're animating layout. */}
           <Animated.View
-            style={{ maxHeight: secondaryHeight, opacity: secondaryOpacity, overflow: 'hidden', gap: 4 }}
+            style={{ maxHeight: secondaryHeight, opacity: secondaryOpacity, overflow: 'hidden', gap: 2 }}
           >
-            {/* Time + here + going on a single muted line */}
-            <Text style={styles.eventMeta} numberOfLines={1}>
-              {'🕐 '}
-              {!(event.recurrence_label || event.series_id) ? `${formatEventDate(event.starts_at)} · ` : ''}
-              {formatTime(event.starts_at)}
-              {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
-              {presenceCount != null ? ` · ${t('here', { count: presenceCount })}` : ''}
-              {event.participant_count != null ? (
-                <>
-                  {' · '}
-                  <Text
-                    style={styles.goingLink}
-                    onPress={() => setShowGoingSheet(true)}
-                  >
-                    {t('going', { count: event.participant_count })}
-                  </Text>
-                </>
-              ) : null}
-            </Text>
+            {/* Time + here + going on one line */}
+            <View style={styles.infoRow}>
+              <Ionicons name="time-outline" size={16} color={colors.muted} />
+              <Text style={styles.eventMeta} numberOfLines={1}>
+                {!(event.recurrence_label || event.series_id) ? `${formatEventDate(event.starts_at)} · ` : ''}
+                {formatTime(event.starts_at)}
+                {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
+                {presenceCount != null ? ` · ${t('here', { count: presenceCount })}` : ''}
+                {event.participant_count != null ? (
+                  <>
+                    {' · '}
+                    <Text style={styles.goingLink} onPress={() => setShowGoingSheet(true)} accessibilityRole="button">
+                      {t('going', { count: event.participant_count })}
+                    </Text>
+                  </>
+                ) : null}
+              </Text>
+            </View>
 
-            {/* Location - orange accent, single-line ellipsis. Tappable → Google Maps. */}
+            {/* Location - tappable → the phone's maps app. */}
             {(event.location ?? event.venue) ? (
               <TouchableOpacity
                 onPress={() => openEventMaps(event)}
                 activeOpacity={0.6}
-                style={styles.eventLocationRow}
-                hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+                style={styles.infoRow}
+                hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                 accessibilityRole="link"
                 accessibilityLabel={t('mapsA11y', { address: event.location ?? event.venue })}
                 accessibilityHint={t('mapsHint')}
               >
-                <Text style={styles.eventLocation} numberOfLines={1}>
-                  {'📍 '}
-                  {event.location ?? event.venue}
-                </Text>
+                <Ionicons name="location-outline" size={16} color={colors.primaryText} />
+                <Text style={styles.eventLocation} numberOfLines={1}>{event.location ?? event.venue}</Text>
               </TouchableOpacity>
             ) : null}
 
             {/* Host name - suppressed for the host themselves */}
             {event.host_nickname && !isOwner ? (
-              <Text style={styles.eventHost} numberOfLines={1}>
-                {t('hostedBy', { name: event.host_nickname })}
-              </Text>
+              <View style={styles.infoRow}>
+                <Ionicons name="person-outline" size={16} color={colors.muted} />
+                <Text style={styles.eventHost} numberOfLines={1}>{t('hostedBy', { name: event.host_nickname })}</Text>
+              </View>
             ) : null}
           </Animated.View>
         </Animated.View>
@@ -498,9 +469,13 @@ export default function EventDetailScreen() {
 
       {/* Error banner */}
       {msgError && !eventRemoved && (
-        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error: msgError })}</Text>
-        </TouchableOpacity>
+        <Banner
+          icon="alert-circle-outline"
+          text={t('dismissHint', { ns: 'chat', error: msgError })}
+          onClose={clearError}
+          closeLabel={t('close', { ns: 'common' })}
+          style={styles.errorBanner}
+        />
       )}
 
       {/* ── Messages ── */}
@@ -586,8 +561,9 @@ export default function EventDetailScreen() {
             }
             ListEmptyComponent={
               msgsLoading ? null : (
+                // A View: the inverted list flips its empty component back through `style`.
                 <View style={styles.emptyWrap}>
-                  <Text style={styles.emptyText}>{t('noMessages')}</Text>
+                  <EmptyState icon="chatbubbles-outline" body={t('noMessages')} />
                 </View>
               )
             }
@@ -675,271 +651,64 @@ export default function EventDetailScreen() {
       />
 
       {/* ── Going list sheet ── */}
-      <Modal
+      <MembersSheet
         visible={showGoingSheet}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowGoingSheet(false)}
-      >
-        <TouchableOpacity
-          style={sheetStyles.backdrop}
-          activeOpacity={1}
-          onPress={() => setShowGoingSheet(false)}
-        />
-        <View style={sheetStyles.sheet}>
-          {/* Handle */}
-          <View style={sheetStyles.handle} />
+        loading={false}
+        participants={participants}
+        count={participants.length}
+        noun={t('goingTitle')}
+        title={participants.length > 0
+          ? t('going', { count: participants.length })
+          : event ? t('going', { count: event.participant_count ?? 0 }) : t('goingTitle')}
+        emptyText={t('goingEmpty')}
+        onClose={() => setShowGoingSheet(false)}
+        onSelect={(uid) => {
+          setShowGoingSheet(false);
+          if (!canAccessProfile(account)) {
+            router.push('/auth-gate');
+            return;
+          }
+          router.push({ pathname: '/user/[id]', params: { id: uid } });
+        }}
+      />
 
-          {/* Header */}
-          <View style={sheetStyles.header}>
-            <Text style={sheetStyles.title}>
-              {participants.length > 0
-                ? t('going', { count: participants.length })
-                : event ? t('going', { count: event.participant_count ?? 0 }) : t('goingTitle')}
-            </Text>
-            <TouchableOpacity onPress={() => setShowGoingSheet(false)} hitSlop={12}>
-              <Text style={sheetStyles.closeBtn}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* List */}
-          <ScrollView
-            style={sheetStyles.list}
-            contentContainerStyle={sheetStyles.listContent}
-            showsVerticalScrollIndicator={false}
-          >
-            {participants.length === 0 ? (
-              <Text style={sheetStyles.emptyText}>{t('goingEmpty')}</Text>
-            ) : (
-              participants.map(p => {
-                const isRegistered = p.accountType === 'registered';
-                const badgeKey = p.badges?.[0];
-                const badgeMeta = badgeKey ? BADGE_META[badgeKey] : null;
-                const initials  = (p.displayName ?? '?').slice(0, 2).toUpperCase();
-                const color     = avatarColor(p.id);
-                const canTap    = isRegistered;
-
-                const handleTap = () => {
-                  if (!isRegistered) return;
-                  setShowGoingSheet(false);
-                  if (!canAccessProfile(account)) {
-                    router.push('/auth-gate');
-                    return;
-                  }
-                  router.push({ pathname: '/user/[id]', params: { id: p.id } });
-                };
-
-                return (
-                  <TouchableOpacity
-                    key={p.id}
-                    style={sheetStyles.row}
-                    onPress={canTap ? handleTap : undefined}
-                    activeOpacity={canTap ? 0.7 : 1}
-                    disabled={!canTap}
-                  >
-                    <View style={[sheetStyles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
-                      <Text style={[sheetStyles.avatarText, { color }]}>{initials}</Text>
-                    </View>
-                    <View style={sheetStyles.rowInfo}>
-                      <Text style={sheetStyles.name}>{p.displayName}</Text>
-                      {badgeMeta && (
-                        <View style={[sheetStyles.badge, { backgroundColor: badgeMeta.bg, borderColor: badgeMeta.border }]}>
-                          <Text style={[sheetStyles.badgeText, { color: badgeMeta.color }]}>{t(`badge.${badgeKey}`, { ns: 'common', defaultValue: badgeMeta.label })}</Text>
-                        </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                );
-              })
-            )}
-          </ScrollView>
-        </View>
-      </Modal>
-
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-  flex:      { flex: 1 },
+  flex: { flex: 1 },
 
-  // ── Nav bar ───────────────────────────────────────────────────────────────
-  // Web: back pill (← City name) left, share icon right
-  nav: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
-  },
-
-  // Web: back button pill - rounded rect, dark bg, border
-  backPill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               6,
-    paddingHorizontal: 16,
-    paddingVertical:   11,
-    borderRadius:      14,
-    backgroundColor:   c.overlay,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
-    maxWidth:          220,
-  },
-  backPillText: {
-    fontSize:      FontSizes.md,
-    fontWeight:    '700',
-    color:         c.text,
-    letterSpacing: -0.2,
-  },
-
-  shareBtn: {
-    flexDirection:   'row',
-    alignItems:      'center',
-    gap:             6,
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius:    14,
-    backgroundColor: 'rgba(194,74,56,0.12)',
-    borderWidth:     1,
-    borderColor:     'rgba(194,74,56,0.30)',
-  },
-  shareBtnText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.accent,
-  },
-
-  // Web: share button - same dark pill style (kept for reference)
-  iconBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: c.overlay,
-    borderWidth:     1,
-    borderColor:     c.overlayStrong,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-
-  // ── Event info block - compact: glanceable summary above the chat ────────
+  // ── Event info block - glanceable summary above the chat ─────────────────
   // paddingBottom is animated when the secondary lines collapse (see
   // blockPaddingBottom interpolation in the screen component).
   eventBlock: {
     paddingHorizontal: Spacing.md,
-    paddingTop:        8,
+    paddingTop:        4,
     borderBottomWidth: 1,
-    borderBottomColor: c.border,
-    gap:               6,
+    borderBottomColor: c.line,
+    gap:               8,
   },
-  eventBlockLoading: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.lg,
-    alignItems:        'center',
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
+  eventBlockLoading: { paddingVertical: Spacing.lg, alignItems: 'center' },
+  titleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  eventTitle: { flex: 1, minWidth: 0, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3, lineHeight: 26 },
+  // Wide enough for "Joined" so the row doesn't shift when the label flips.
+  joinBtn:    { minWidth: 92 },
+  shareToCity: { alignSelf: 'flex-start' },
 
-  // Title row - title fills flex (single-line ellipsis), Join button on right
-  titleRow: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    justifyContent: 'space-between',
-    gap:            10,
-  },
+  infoRow:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 24 },
+  eventMeta:     { flex: 1, fontSize: 13, fontWeight: '500', color: c.muted },
+  goingLink:     { fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
+  eventLocation: { flex: 1, fontSize: 13, fontWeight: '700', color: c.primaryText },
+  eventHost:     { flex: 1, fontSize: 13, fontWeight: '500', color: c.muted },
 
-  // Compact title - was 40/800/lh46, now 20/700/lh26 (~–50% height).
-  eventTitle: {
-    flex:          1,
-    fontSize:      FontSizes.lg,   // 20
-    fontWeight:    '700',
-    color:         c.text,
-    letterSpacing: -0.3,
-    lineHeight:    26,
-    minWidth:      0,              // ensures ellipsis kicks in inside the row
-  },
+  errorBanner: { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
 
-  // Compact Join button - was 22×12 padding / fontSize 20, now 14×6 / 13.
-  joinBtn: {
-    paddingHorizontal: 14,
-    paddingVertical:   6,
-    borderRadius:      999,
-    borderWidth:       1.5,
-    borderColor:       c.accent,
-    backgroundColor:   'transparent',
-    minWidth:          74,         // wide enough for "Joined ✓" so layout doesn't shift
-    minHeight:         32,         // ≥32 tap target (touchable area extends)
-    alignItems:        'center',
-    justifyContent:    'center',
-    flexShrink:        0,
-  },
-  joinBtnActive: {
-    backgroundColor: c.accent,
-    borderColor:     c.accent,
-  },
-  joinBtnText: {
-    fontSize:   13,
-    fontWeight: '700',
-    color:      c.accent,
-    letterSpacing: 0.1,
-  },
-  joinBtnTextActive: {
-    color: c.white,
-  },
-  // Host-only "Edit event" CTA - violet to distinguish from the orange Join
-  // button (matches web .event-join-btn--edit).
-  editBtn: {
-    borderColor:     c.violet,
-  },
-  editBtnText: {
-    color:    c.violet,
-    fontSize: 13,
-  },
-
-  // Time + participants - single tight muted line
-  eventMeta: {
-    fontSize:   13,
-    color:      c.muted,
-    lineHeight: 18,
-  },
-
-  // "X going" - tappable inline span
-  goingLink: {
-    color:               c.text,
-    fontWeight:          '600',
-    textDecorationLine:  'underline',
-    textDecorationStyle: 'dashed',
-    textDecorationColor: c.overlayStrong,
-  },
-
-  // Address - orange accent, single-line ellipsis
-  eventLocationRow: {
-    paddingVertical: 4,   // full-width row; + hitSlop on the touchable → ≥44pt tap target
-  },
-  eventLocation: {
-    fontSize:   13,
-    fontWeight: '600',
-    color:      c.accent,
-    lineHeight: 18,
-  },
-  eventHost: {
-    fontSize:   12,
-    fontWeight: '500',
-    color:      c.muted,
-    lineHeight: 16,
-  },
-
-  errorBanner:     { backgroundColor: c.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorBannerText: { color: c.white, fontSize: FontSizes.xs, textAlign: 'center' },
-  errorText:       { color: c.red, fontSize: FontSizes.sm },
-
-  listContent: { paddingVertical: Spacing.sm },
-  msgsLoading: { paddingVertical: Spacing.md, alignItems: 'center' },
+  listContent:      { paddingVertical: Spacing.sm },
+  msgsLoading:      { paddingVertical: Spacing.md, alignItems: 'center' },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
-  emptyWrap:   { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
-  emptyText:   { color: c.muted, fontSize: FontSizes.sm, textAlign: 'center' },
+  beginningText:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
+  emptyWrap:        { paddingHorizontal: Spacing.lg },
 });
 
 // ── Participants strip styles ─────────────────────────────────────────────────
@@ -949,116 +718,11 @@ const makeStripStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     gap:               12,
+    minHeight:         56,
     paddingHorizontal: Spacing.md,
-    paddingVertical:   14,
+    paddingVertical:   10,
     borderBottomWidth: 1,
-    borderBottomColor: c.border,
+    borderBottomColor: c.line,
   },
-  label: {
-    fontSize:   FontSizes.sm,
-    color:      c.muted,
-    fontWeight: '500',
-    flex:       1,
-  },
-  seeAll: {
-    fontSize:   FontSizes.xs,
-    color:      c.accent,
-    fontWeight: '600',
-    flexShrink: 0,
-  },
-});
-
-// ── Going sheet styles ────────────────────────────────────────────────────────
-
-const makeSheetStyles = (c: ThemeColors) => StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: c.scrim,
-  },
-  sheet: {
-    position:        'absolute',
-    bottom:          0,
-    left:            0,
-    right:           0,
-    backgroundColor: c.bg2,
-    borderTopLeftRadius:  24,
-    borderTopRightRadius: 24,
-    borderTopWidth:  1,
-    borderTopColor:  c.overlay,
-    maxHeight:       '72%',
-  },
-  handle: {
-    width:           40,
-    height:          4,
-    borderRadius:    2,
-    backgroundColor: c.overlayStrong,
-    alignSelf:       'center',
-    marginTop:       10,
-    marginBottom:    2,
-  },
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   14,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  title: {
-    fontSize:      FontSizes.sm,
-    fontWeight:    '700',
-    color:         c.muted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  closeBtn: {
-    fontSize: FontSizes.md,
-    color:    c.muted,
-  },
-  list:        { flex: 1 },
-  listContent: { padding: Spacing.md, gap: 6 },
-  emptyText: {
-    color:      c.muted,
-    fontSize:   FontSizes.sm,
-    textAlign:  'center',
-    paddingVertical: Spacing.lg,
-  },
-  row: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            14,
-    padding:        14,
-    backgroundColor: c.overlayWeak,
-    borderWidth:    1,
-    borderColor:    c.overlayWeak,
-    borderRadius:   Radius.lg,
-  },
-  avatar: {
-    width:          40,
-    height:         40,
-    borderRadius:   20,
-    borderWidth:    1.5,
-    alignItems:     'center',
-    justifyContent: 'center',
-    flexShrink:     0,
-  },
-  avatarText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '700',
-  },
-  rowInfo: { flex: 1, gap: 4 },
-  name: {
-    fontSize:   FontSizes.md,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  badge: {
-    alignSelf:         'flex-start',
-    borderRadius:      999,
-    paddingHorizontal: 7,
-    paddingVertical:   3,
-    borderWidth:       1,
-  },
-  badgeText: { fontSize: 10, fontWeight: '700' },
+  label: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
 });

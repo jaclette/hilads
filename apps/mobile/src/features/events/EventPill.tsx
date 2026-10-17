@@ -6,7 +6,7 @@
  * Originally defined inline in app/user/[id].tsx; extracted here so other
  * screens don't re-implement the same visual.
  *
- * Renders: icon · title · [LIVE badge] · time · · location · chevron
+ * Renders: stroke icon · title · [LIVE badge] · time · · location · chevron
  *
  * Tap behavior is owned by the parent via `onPress` so the same pill can
  * route to different destinations (event detail, back-stack pop, etc.).
@@ -21,12 +21,19 @@ import type { HiladsEvent } from '@/types';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
-// Icon map - mirrors the web's EVENT_ICONS in apps/web/src/cityMeta.js
-const EVENT_ICONS: Record<string, string> = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+// Stroke icon per event type: the plan categories (same as the create form)
+// plus the imported-event types (nightlife, live music, culture, art).
+const EVENT_ICONS: Record<string, IconName> = {
+  drinks: 'wine-outline', party: 'sunny-outline', nightlife: 'moon-outline', music: 'musical-note-outline',
+  'live music': 'musical-notes-outline', culture: 'business-outline', art: 'color-palette-outline', food: 'restaurant-outline',
+  coffee: 'cafe-outline', sport: 'flash-outline', meetup: 'chatbubble-outline', other: 'grid-outline',
 };
+
+export function eventIcon(type: string | null | undefined): IconName {
+  return (type && EVENT_ICONS[type]) || 'calendar-outline';
+}
 
 export function formatEventTime(ts: number): string {
   const d        = new Date(ts * 1000);
@@ -49,12 +56,13 @@ export function EventPill({ event, onPress }: Props) {
   const { colors } = useTheme();
 
   const { t } = useTranslation('common');
-  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
   const now    = Date.now() / 1000;
   const isLive = event.starts_at <= now && event.expires_at > now;
   return (
-    <TouchableOpacity style={styles.eventPill} onPress={onPress} activeOpacity={0.7}>
-      <Text style={styles.eventIcon}>{icon}</Text>
+    <TouchableOpacity style={styles.eventPill} onPress={onPress} activeOpacity={0.7} accessibilityRole="button">
+      <View style={styles.eventIcon}>
+        <Ionicons name={eventIcon(event.event_type)} size={18} color={colors.primaryOnTint} />
+      </View>
       <View style={styles.eventInfo}>
         <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
         <View style={styles.eventMeta}>
@@ -79,10 +87,6 @@ export function EventPill({ event, onPress }: Props) {
   );
 }
 
-// Re-exported so any screen that needs the icon lookup (e.g. custom renders)
-// doesn't have to duplicate the map.
-export { EVENT_ICONS };
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   eventPill: {
     flexDirection:     'row',
@@ -95,7 +99,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     minHeight:         56,
     gap:               10,
   },
-  eventIcon:  { fontSize: 20 },
+  eventIcon:  { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   eventInfo:  { flex: 1, gap: 2 },
   eventTitle: {
     fontSize:   FontSizes.sm,
@@ -107,8 +111,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems:    'center',
     gap:           6,
   },
-  eventTime:     { fontSize: FontSizes.xs, color: c.muted },
-  eventLocation: { fontSize: FontSizes.xs, color: c.muted, flexShrink: 1 },
+  eventTime:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
+  eventLocation: { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, flexShrink: 1 },
   liveBadge: {
     backgroundColor:   c.localBg,
     borderRadius:      Radius.full,

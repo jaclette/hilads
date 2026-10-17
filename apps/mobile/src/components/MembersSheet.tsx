@@ -1,14 +1,14 @@
 import { thumbUrl } from '@/lib/imageThumb';
-import { Modal, View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { Image } from 'expo-image';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import type { UserDTO, BadgeKey } from '@/types';
 import { BADGE_META } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor } from '@/lib/avatarColors';
+import { Avatar, Chip, Sheet } from '@/ui';
 
-// Bottom-sheet list of members/attendees, opened by tapping the avatar row on a
-// NOW card (hangout or event). Tapping a registered member opens their profile.
+// Bottom-sheet list of members/attendees (a plan's "going", a hangout's
+// members). Tapping a registered member opens their profile; guests are inert.
 
 type Props = {
   visible:      boolean;
@@ -16,93 +16,67 @@ type Props = {
   participants: UserDTO[];
   count:        number;
   noun:         string;   // "going" (events) | "in this hangout" (hangouts)
+  /** Overrides the "{count} {noun}" title (a plural-aware string). */
+  title?:       string;
+  /** Shown when nobody is in the list. */
+  emptyText?:   string;
   onClose:      () => void;
   onSelect:     (userId: string) => void;
 };
 
-export function MembersSheet({ visible, loading, participants, count, noun, onClose, onSelect }: Props) {
+export function MembersSheet({ visible, loading, participants, count, noun, title, emptyText, onClose, onSelect }: Props) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
+  const { t } = useTranslation('common');
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
-      <View style={styles.sheet}>
-        <View style={styles.handle} />
-        <View style={styles.header}>
-          <Text style={styles.title}>{count} {noun}</Text>
-          <TouchableOpacity onPress={onClose} hitSlop={12}>
-            <Text style={styles.close}>✕</Text>
-          </TouchableOpacity>
-        </View>
+    <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
+      <Text style={styles.title} accessibilityRole="header">{title ?? `${count} ${noun}`}</Text>
 
-        <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-          {loading ? (
-            <ActivityIndicator color={colors.muted} style={{ marginVertical: Spacing.lg }} />
-          ) : participants.length === 0 ? (
-            <Text style={styles.empty}>No one yet 🙌</Text>
-          ) : (
-            participants.map(p => {
-              const isRegistered = p.accountType === 'registered';
-              const badgeKey: BadgeKey | undefined = p.badges?.[0];
-              const badgeMeta = badgeKey ? BADGE_META[badgeKey] : null;
-              const avatar = p.thumbAvatarUrl ?? p.avatarUrl ?? null;
-              return (
-                <TouchableOpacity
-                  key={p.id}
-                  style={styles.row}
-                  onPress={isRegistered ? () => onSelect(p.id) : undefined}
-                  activeOpacity={isRegistered ? 0.7 : 1}
-                  disabled={!isRegistered}
-                >
-                  <View style={[styles.avatar, { backgroundColor: avatarColor(p.id) }]}>
-                    {avatar ? (
-                      <Image source={{ uri: thumbUrl(avatar) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
-                    ) : (
-                      <Text style={styles.avatarText}>{(p.displayName?.[0] ?? '?').toUpperCase()}</Text>
-                    )}
-                  </View>
-                  <View style={styles.rowInfo}>
-                    <Text style={styles.name} numberOfLines={1}>{p.displayName}</Text>
-                    {p.username ? <Text style={styles.handleText} numberOfLines={1}>@{p.username}</Text> : null}
-                  </View>
-                  {badgeMeta && (
-                    <View style={[styles.badge, { backgroundColor: badgeMeta.bg, borderColor: badgeMeta.border }]}>
-                      <Text style={[styles.badgeText, { color: badgeMeta.color }]}>{badgeMeta.label}</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })
-          )}
-        </ScrollView>
-      </View>
-    </Modal>
+      <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+        {loading ? (
+          <ActivityIndicator color={colors.muted} style={styles.loading} />
+        ) : participants.length === 0 ? (
+          <Text style={styles.empty}>{emptyText ?? t('membersEmpty')}</Text>
+        ) : (
+          participants.map(p => {
+            const isRegistered = p.accountType === 'registered';
+            const badgeKey: BadgeKey | undefined = p.badges?.[0];
+            const badgeMeta = badgeKey ? BADGE_META[badgeKey] : null;
+            const avatar = p.thumbAvatarUrl ?? p.avatarUrl ?? null;
+            return (
+              <TouchableOpacity
+                key={p.id}
+                style={styles.row}
+                onPress={isRegistered ? () => onSelect(p.id) : undefined}
+                activeOpacity={isRegistered ? 0.7 : 1}
+                disabled={!isRegistered}
+                accessibilityRole={isRegistered ? 'button' : undefined}
+              >
+                <Avatar uri={avatar ? thumbUrl(avatar) : null} name={p.displayName ?? '?'} size={40} fallback="color" />
+                <View style={styles.rowInfo}>
+                  <Text style={styles.name} numberOfLines={1}>{p.displayName}</Text>
+                  {p.username ? <Text style={styles.handle} numberOfLines={1}>@{p.username}</Text> : null}
+                </View>
+                {badgeKey && badgeMeta && <Chip label={t(`badge.${badgeKey}`, { defaultValue: badgeMeta.label })} />}
+              </TouchableOpacity>
+            );
+          })
+        )}
+      </ScrollView>
+    </Sheet>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: c.scrim },
-  sheet: {
-    position: 'absolute', left: 0, right: 0, bottom: 0,
-    maxHeight: '70%',
-    backgroundColor: c.bg2,
-    borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
-    paddingBottom: Spacing.xl,
-  },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  close: { fontSize: 18, color: c.muted, fontWeight: '700' },
-  list: { paddingHorizontal: Spacing.md },
-  listContent: { paddingBottom: Spacing.md },
-  empty: { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
-  avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.md },
-  rowInfo: { flex: 1 },
-  name: { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
-  handleText: { fontSize: FontSizes.sm, color: c.muted },
-  badge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
-  badgeText: { fontSize: 10, fontWeight: '700' },
+  sheet:       { maxHeight: '72%' },
+  title:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: 4 },
+  list:        { flexGrow: 0 },
+  listContent: { paddingBottom: Spacing.sm },
+  loading:     { marginVertical: Spacing.lg },
+  empty:       { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingVertical: 6 },
+  rowInfo:     { flex: 1 },
+  name:        { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  handle:      { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted },
 });

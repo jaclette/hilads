@@ -1,15 +1,14 @@
 import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Image } from 'expo-image';
 import type { ParticipantPreview } from '@/types';
 import { type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { avatarColor } from '@/lib/avatarColors';
+import { Avatar } from '@/ui';
 
 // Horizontal row of overlapping circular attendee avatars for event cards.
-// Cached photo via expo-image when available, else a deterministic initial on a
-// warm color. Renders nothing when nobody has joined. Tapping is left to the
-// parent card (the row sits inside the card's touchable → opens the detail/list).
+// The photo when available, else the initial on the person's own color.
+// Renders nothing when nobody has joined. Tapping is left to the parent card
+// (the row sits inside the card's touchable → opens the detail/list).
 
 const DEFAULT_SIZE = 32;
 const OVERLAP      = 10;
@@ -35,7 +34,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
   if (total <= 0 || shown.length === 0) return null;
 
   const overflow = total - shown.length;
-  const dim      = { width: size, height: size, borderRadius: size / 2 };
+  const dim      = { width: size + 4, height: size + 4 };
 
   const Container: any = onPress ? TouchableOpacity : View;
   const containerProps = onPress ? { onPress, activeOpacity: 0.7 } : {};
@@ -43,27 +42,12 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
   return (
     <Container style={styles.row} {...containerProps}>
       {shown.map((p, i) => (
-        <View
-          key={p.id}
-          style={[styles.avatar, dim, { marginLeft: i > 0 ? -OVERLAP : 0, borderColor: bc, backgroundColor: avatarColor(p.id) }]}
-        >
-          {p.thumbAvatarUrl ? (
-            <Image
-              source={{ uri: thumbUrl(p.thumbAvatarUrl) }}
-              style={StyleSheet.absoluteFill}
-              cachePolicy="memory-disk"
-              contentFit="cover"
-              transition={120}
-            />
-          ) : (
-            <Text style={[styles.letter, { fontSize: Math.round(size * 0.42) }]}>
-              {(p.displayName[0] ?? '?').toUpperCase()}
-            </Text>
-          )}
+        <View key={p.id} style={[styles.ring, { borderRadius: size, borderColor: bc, marginLeft: i > 0 ? -OVERLAP : 0 }]}>
+          <Avatar uri={p.thumbAvatarUrl ? thumbUrl(p.thumbAvatarUrl) : null} name={p.displayName || '?'} size={size} fallback="color" />
         </View>
       ))}
       {overflow > 0 && (
-        <View style={[styles.avatar, styles.extra, dim, { marginLeft: -OVERLAP, borderColor: bc }]}>
+        <View style={[styles.ring, styles.extra, dim, { borderRadius: size, marginLeft: -OVERLAP, borderColor: bc }]}>
           <Text style={[styles.extraText, { fontSize: Math.round(size * 0.34) }]}>+{overflow}</Text>
         </View>
       )}
@@ -72,14 +56,8 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
-  avatar: {
-    alignItems:     'center',
-    justifyContent: 'center',
-    borderWidth:    2,
-    overflow:       'hidden',
-  },
-  letter:    { color: '#fff', fontWeight: '700' },
-  extra:     { backgroundColor: c.overlayStrong },
-  extraText: { color: c.text, fontWeight: '700' },
+  row:       { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+  ring:      { borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  extra:     { backgroundColor: c.bg3 },
+  extraText: { color: c.text, fontWeight: '800' },
 });

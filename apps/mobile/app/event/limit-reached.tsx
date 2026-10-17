@@ -9,21 +9,19 @@
  */
 
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchMyEvents } from '@/api/events';
 import { EventPill } from '@/features/events/EventPill';
 import type { HiladsEvent } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Spacing } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
+import { Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 
 export default function EventLimitReachedScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
 
   const router = useRouter();
   const { t } = useTranslation('event');
@@ -62,55 +60,28 @@ export default function EventLimitReachedScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <Screen edges={['top', 'bottom']}>
+      <ScreenHeader title="" onBack={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/events')} />
 
-      {/* Header: back pill only - no title, clean hero layout */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/events')}
-          activeOpacity={0.75}
-        >
-          <Ionicons name="chevron-back" size={20} color={colors.text} />
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.hero}>
+        <EmptyState
+          icon="calendar-outline"
+          title={t('limit.title')}
+          body={t('limit.body')}
+          action={
+            <View style={styles.actions}>
+              {/* Blocking event - tap to open, edit, or delete. */}
+              {blockingEvent && <EventPill event={blockingEvent} onPress={handleOpenEvent} />}
+              <Button variant="link" label={t('limit.legendLink')} onPress={handleLegendInfo} accessibilityLabel={t('limit.legendA11y')} />
+            </View>
+          }
+        />
+      </ScrollView>
 
-      {/* Centered hero */}
-      <View style={styles.hero}>
-        <Text style={styles.emoji}>🎉</Text>
-        <Text style={styles.title}>{t('limit.title')}</Text>
-        <Text style={styles.body}>{t('limit.body')}</Text>
-
-        {/* Blocking event - tap to open, edit, or delete. */}
-        {blockingEvent && (
-          <View style={styles.eventWrap}>
-            <EventPill event={blockingEvent} onPress={handleOpenEvent} />
-          </View>
-        )}
-
-        <TouchableOpacity
-          style={styles.legendLink}
-          onPress={handleLegendInfo}
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={t('limit.legendA11y')}
-        >
-          <Text style={styles.legendLinkText}>{t('limit.legendLink')}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Primary action */}
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.primaryBtn}
-          onPress={() => router.replace('/(tabs)/events')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.primaryBtnText}>{t('limit.backToNow')}</Text>
-        </TouchableOpacity>
+        <Button label={t('limit.backToNow')} onPress={() => router.replace('/(tabs)/events')} />
       </View>
-
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -136,89 +107,8 @@ function formatYmdInTz(d: Date, tz: string): string {
   return d.toLocaleDateString('en-CA', { timeZone: tz });
 }
 
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
-    minHeight:         56,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: c.overlay,
-    borderWidth:     1,
-    borderColor:     c.overlayStrong,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-
-  hero: {
-    flex:              1,
-    paddingHorizontal: Spacing.xl,
-    alignItems:        'center',
-    justifyContent:    'center',
-    gap:               18,
-  },
-  emoji: {
-    fontSize:  72,
-    lineHeight: 84,
-    marginBottom: 6,
-  },
-  title: {
-    fontSize:      FontSizes.xl,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.5,
-    textAlign:     'center',
-    paddingHorizontal: 12,
-  },
-  body: {
-    fontSize:      FontSizes.md,
-    lineHeight:    22,
-    color:         c.muted,
-    textAlign:     'center',
-    paddingHorizontal: 8,
-  },
-  // EventPill container - stretches across the hero's available width so the
-  // pill reads like a tappable card, not a narrow chip in the middle.
-  eventWrap: {
-    alignSelf: 'stretch',
-    marginTop: 4,
-  },
-  legendLink: {
-    marginTop:         6,
-    paddingHorizontal: 16,
-    paddingVertical:   10,
-  },
-  legendLinkText: {
-    fontSize:      FontSizes.sm,
-    color:         c.accent,
-    fontWeight:    '600',
-    textAlign:     'center',
-  },
-
-  footer: {
-    paddingHorizontal: Spacing.xl,
-    paddingBottom:     Spacing.xl,
-    paddingTop:        Spacing.md,
-  },
-  primaryBtn: {
-    backgroundColor: c.accent,
-    borderRadius:    Radius.lg,
-    paddingVertical: 17,
-    alignItems:      'center',
-    justifyContent:  'center',
-    minHeight:       54,
-  },
-  primaryBtnText: {
-    color:         c.white,
-    fontSize:      FontSizes.md,
-    fontWeight:    '700',
-    letterSpacing: -0.2,
-  },
+const makeStyles = () => StyleSheet.create({
+  hero:    { flexGrow: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
+  actions: { alignSelf: 'stretch', gap: Spacing.sm, marginTop: Spacing.sm },
+  footer:  { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm, paddingBottom: Spacing.md },
 });

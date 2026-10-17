@@ -3,7 +3,6 @@ import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState, Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,11 +28,13 @@ import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { formatExpiresIn } from '@/lib/expiry';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Banner, Button, Chip, EmptyState, IconButton, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Message, Topic, UserDTO } from '@/types';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+const CATEGORY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
+  general: 'chatbubbles-outline', tips: 'bulb-outline', food: 'restaurant-outline',
+  drinks: 'wine-outline', help: 'help-buoy-outline', meetup: 'people-outline',
 };
 
 export default function TopicChatScreen() {
@@ -276,103 +277,77 @@ export default function TopicChatScreen() {
   }, [gated, account]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <Screen edges={['top', 'bottom']}>
+      <ScreenHeader
+        title=""
+        right={<IconButton icon={shared ? 'checkmark' : 'share-outline'} onPress={handleShare} label={t('shareLabel', { ns: 'common' })} />}
+      />
 
-      {/* Header - back | [icon + title] | share */}
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={colors.text} />
-          <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
-        </TouchableOpacity>
-
-        <View style={styles.navCenter}>
-          {topic && (
-            <>
-              <Text style={styles.navIcon}>{CATEGORY_ICONS[topic.category] ?? '💬'}</Text>
-              <CopyTranslateText value={topic.title} style={styles.navTitle} numberOfLines={2} />
-            </>
-          )}
-        </View>
-
-        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-          {shared ? (
-            <Text style={styles.shareBtnCheck}>✓</Text>
-          ) : (
-            <Ionicons name="share-outline" size={20} color={colors.text} />
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* Topic info block - description + expiry only (title is in header) */}
+      {/* Hangout info block - icon + title, description, expiry, owner actions */}
       {topicLoading ? (
         <View style={styles.infoBlockLoading}>
-          <ActivityIndicator color={colors.accent} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : topic ? (
-        (topic.description || topic.message_count >= 0) ? (
-          <View style={styles.infoBlock}>
-            {topic.description ? (
-              <Text style={styles.infoDesc}>{topic.description}</Text>
-            ) : null}
-            <Text style={styles.infoExpiry}>⏱ {formatExpiresIn(topic.expires_at) ?? t('activeFor')}</Text>
-            {isOwner && (
-              <View style={styles.ownerRow}>
-                <TouchableOpacity style={styles.ownerBtn} onPress={handleEdit} activeOpacity={0.8}>
-                  <Ionicons name="create-outline" size={15} color={colors.text} />
-                  <Text style={styles.ownerBtnText}>{t('edit')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.ownerBtn, styles.ownerBtnDanger]} onPress={handleDelete} activeOpacity={0.8}>
-                  <Ionicons name="trash-outline" size={15} color={colors.red} />
-                  <Text style={[styles.ownerBtnText, { color: colors.red }]}>{t('delete')}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            {isOwner && (
-              <ShareToCityPill url={`https://hilads.live/t/${id}`} title={topic.title} label="🗣️ Hi now" style={{ marginTop: 8, alignSelf: 'flex-start' }} />
-            )}
+        <View style={styles.infoBlock}>
+          <View style={styles.titleRow}>
+            <View style={styles.titleIcon}>
+              <Ionicons name={CATEGORY_ICONS[topic.category] ?? 'chatbubble-outline'} size={20} color={colors.primaryOnTint} />
+            </View>
+            <CopyTranslateText value={topic.title} style={styles.title} numberOfLines={2} />
           </View>
-        ) : null
-      ) : (
-        <View style={styles.infoBlockLoading}>
-          <Text style={styles.errorText}>{t('notFound')}</Text>
+          {topic.description ? (
+            <Text style={styles.infoDesc}>{topic.description}</Text>
+          ) : null}
+          <Chip icon="time-outline" label={formatExpiresIn(topic.expires_at) ?? t('activeFor')} style={styles.expiry} />
+          {isOwner && (
+            <View style={styles.ownerRow}>
+              <Button variant="secondary" size="sm" icon="create-outline" label={t('edit')} onPress={handleEdit} />
+              <Button variant="danger" size="sm" icon="trash-outline" label={t('delete')} onPress={handleDelete} />
+              <ShareToCityPill url={`https://hilads.live/t/${id}`} title={topic.title} label="🗣️ Hi now" />
+            </View>
+          )}
         </View>
+      ) : (
+        <EmptyState icon="alert-circle-outline" body={t('notFound')} />
       )}
 
       {/* Members strip - same as an event's "going" strip. Members only. */}
       {!gated && participants.length > 0 && (
-        <TouchableOpacity style={styles.membersStrip} activeOpacity={0.75} onPress={() => setMembersOpen(true)}>
+        <TouchableOpacity style={styles.membersStrip} activeOpacity={0.75} onPress={() => setMembersOpen(true)} accessibilityRole="button">
           <AttendeeAvatars
             preview={participants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
             total={participants.length}
             borderColor={colors.bg}
           />
-          <Text style={styles.membersLabel}>
+          <Text style={styles.membersLabel} numberOfLines={1}>
             {participants.length === 1 ? t('oneIn', { name: participants[0].displayName }) : t('manyIn', { count: participants.length })}
           </Text>
-          <Text style={styles.membersSeeAll}>{t('seeAll')}</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.muted} />
         </TouchableOpacity>
       )}
 
-      {/* Error banner */}
       {msgError && (
-        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error: msgError })}</Text>
-        </TouchableOpacity>
+        <Banner
+          icon="alert-circle-outline"
+          text={t('dismissHint', { ns: 'chat', error: msgError })}
+          onClose={clearError}
+          closeLabel={t('close', { ns: 'common' })}
+          style={styles.errorBanner}
+        />
       )}
 
       {/* Members-only gate - pending requesters cannot read or post. */}
       {gated ? (
         <View style={styles.gatedWrap}>
-          <Text style={styles.gatedEmoji}>🔒</Text>
-          <Text style={styles.gatedTitle}>{t('gatedTitle')}</Text>
-          <Text style={styles.gatedSub}>
-            {joinState === 'requested' ? t('gatedPending') : t('gatedRequest')}
-          </Text>
-          {joinState !== 'requested' && (
-            <TouchableOpacity style={styles.gatedBtn} activeOpacity={0.85} onPress={handleRequestToJoin}>
-              <Text style={styles.joinBtnText}>{t('requestToJoin')}</Text>
-            </TouchableOpacity>
-          )}
+          <EmptyState
+            icon="lock-closed-outline"
+            title={t('gatedTitle')}
+            body={joinState === 'requested' ? t('gatedPending') : t('gatedRequest')}
+            action={joinState !== 'requested'
+              ? <Button label={t('requestToJoin')} onPress={handleRequestToJoin} style={styles.gatedBtn} />
+              : undefined}
+          />
         </View>
       ) : (
       /* Messages + Input */
@@ -442,8 +417,9 @@ export default function TopicChatScreen() {
           }
           ListEmptyComponent={
             msgsLoading ? null : (
+              // A View: the inverted list flips its empty component back through `style`.
               <View style={styles.emptyWrap}>
-                <Text style={styles.emptyText}>{t('emptyReplies')}</Text>
+                <EmptyState icon="chatbubbles-outline" body={t('emptyReplies')} />
               </View>
             )
           }
@@ -519,141 +495,44 @@ export default function TopicChatScreen() {
         onSelect={(uid) => { setMembersOpen(false); router.push({ pathname: '/user/[id]', params: { id: uid } }); }}
       />
 
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-  flex:      { flex: 1 },
-
-  nav: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
-    gap:               8,
-  },
-  backPill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               6,
-    paddingHorizontal: 16,
-    paddingVertical:   11,
-    borderRadius:      14,
-    backgroundColor:   c.overlay,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
-    flexShrink:        0,
-  },
-  backPillText: {
-    fontSize:   FontSizes.md,
-    fontWeight: '700',
-    color:      c.text,
-  },
-  navCenter: {
-    flex:           1,
-    flexDirection:  'row',
-    alignItems:     'flex-start',
-    justifyContent: 'center',
-    gap:            6,
-  },
-  navIcon:  { fontSize: 18, lineHeight: 24, marginTop: 1 },
-  navTitle: {
-    fontSize:   FontSizes.md,
-    fontWeight: '700',
-    color:      c.text,
-    flexShrink: 1,
-    textAlign:  'center',
-    lineHeight: 22,
-  },
-  shareBtn: {
-    width:           44,
-    height:          44,
-    flexShrink:      0,
-    alignItems:      'center',
-    justifyContent:  'center',
-    borderRadius:    22,
-    backgroundColor: c.overlay,
-    borderWidth:     1,
-    borderColor:     c.overlayStrong,
-  },
-  shareBtnCheck: {
-    fontSize:   18,
-    color:      '#4ade80',
-    fontWeight: '700',
-  },
+  flex: { flex: 1 },
 
   infoBlock: {
     paddingHorizontal: Spacing.md,
     paddingTop:        4,
-    paddingBottom:     16,
+    paddingBottom:     14,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(96,165,250,0.18)',
-    gap:               6,
+    borderBottomColor: c.line,
+    gap:               8,
   },
-  infoBlockLoading: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.lg,
-    alignItems:        'center',
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  infoDesc:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
-  infoExpiry: { fontSize: FontSizes.xs, color: '#60a5fa', fontWeight: '600' },
-  ownerRow:   { flexDirection: 'row', gap: 8, marginTop: 8 },
-  ownerBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    paddingHorizontal: 12, paddingVertical: 7, borderRadius: Radius.full,
-    backgroundColor: c.overlay, borderWidth: 1, borderColor: c.overlayStrong,
-  },
-  ownerBtnDanger:  { borderColor: 'rgba(248,113,113,0.3)', backgroundColor: 'rgba(248,113,113,0.08)' },
-  ownerBtnText:    { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  infoBlockLoading: { paddingVertical: Spacing.lg, alignItems: 'center' },
+  titleRow:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  titleIcon: { width: 40, height: 40, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  title:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3, lineHeight: 26 },
+  infoDesc:  { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
+  expiry:    { alignSelf: 'flex-start' },
+  ownerRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 
   membersStrip: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56,
     paddingHorizontal: Spacing.md, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: c.overlay,
+    borderBottomWidth: 1, borderBottomColor: c.line,
   },
-  membersLabel:  { flex: 1, fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
-  membersSeeAll: { fontSize: FontSizes.sm, color: c.accent, fontWeight: '700' },
-  joinBtn: {
-    marginTop:       10,
-    alignSelf:       'flex-start',
-    backgroundColor: c.accent,
-    borderRadius:    Radius.full,
-    paddingHorizontal: 16,
-    paddingVertical:   8,
-  },
-  joinBtnDone: { backgroundColor: c.overlay },
-  joinBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
+  membersLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
 
-  gatedWrap: {
-    flex:              1,
-    alignItems:        'center',
-    justifyContent:    'center',
-    paddingHorizontal: Spacing.xl,
-    gap:               10,
-  },
-  gatedEmoji: { fontSize: 44 },
-  gatedTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
-  gatedSub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
-  gatedBtn: {
-    marginTop:         8,
-    backgroundColor:   c.accent,
-    borderRadius:      Radius.full,
-    paddingHorizontal: 20,
-    paddingVertical:   11,
-  },
+  gatedWrap: { flex: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
+  gatedBtn:  { alignSelf: 'stretch', marginTop: Spacing.sm },
 
-  errorBanner:     { backgroundColor: c.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorBannerText: { color: c.white, fontSize: FontSizes.xs, textAlign: 'center' },
-  errorText:       { color: c.red, fontSize: FontSizes.sm, textAlign: 'center' },
+  errorBanner: { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
 
-  listContent: { paddingVertical: Spacing.sm },
-  msgsLoading: { paddingVertical: Spacing.md, alignItems: 'center' },
+  listContent:      { paddingVertical: Spacing.sm },
+  msgsLoading:      { paddingVertical: Spacing.md, alignItems: 'center' },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
-  emptyWrap:   { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
-  emptyText:   { color: c.muted, fontSize: FontSizes.sm, textAlign: 'center' },
+  beginningText:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
+  emptyWrap:        { paddingHorizontal: Spacing.lg },
 });

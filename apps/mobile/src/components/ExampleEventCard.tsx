@@ -1,9 +1,10 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { EventInspirationExample } from '@/api/events';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { thumbUrl } from '@/lib/imageThumb';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { AvatarWithFlag } from '@/components/AvatarWithFlag';
+import { Avatar, Button, Card, Chip } from '@/ui';
 
 /**
  * INERT example card for the zero-activity events empty state. Looks like a
@@ -38,29 +39,18 @@ export function ExampleEventCard({
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('now');
   const isHangout = example.kind === 'hangout';
-  const typeIcon  = isHangout ? '🗣️' : '🎉';
   const typeLabel = isHangout ? t('inspiration.hangout') : t('inspiration.event');
   const name      = example.host_name || '?';
 
   return (
-    <View style={styles.card}>
-      <View style={styles.kindRow}>
-        <View style={styles.kindBadge}>
-          <Text style={styles.kindBadgeText}>{typeIcon} {typeLabel.toUpperCase()}</Text>
-        </View>
-      </View>
+    <Card style={styles.card}>
+      <Chip icon={isHangout ? 'flash-outline' : 'calendar-outline'} label={typeLabel} style={styles.kind} />
 
       {/* Title + host - tapping opens the real event/hangout. */}
       <TouchableOpacity activeOpacity={0.7} onPress={onOpen} accessibilityRole="button">
         <Text style={styles.title} numberOfLines={2}>{example.title}</Text>
         <View style={styles.byRow}>
-          <AvatarWithFlag
-            userId={null}
-            displayName={name}
-            photoUrl={example.host_avatar ?? null}
-            countryCode={null}
-            size={24}
-          />
+          <Avatar uri={example.host_avatar ? thumbUrl(example.host_avatar) : null} name={name} size={24} fallback="color" />
           <Text style={styles.byText} numberOfLines={1}>
             {t('inspiration.by', { name, city: sourceCity })}
           </Text>
@@ -68,53 +58,15 @@ export function ExampleEventCard({
       </TouchableOpacity>
 
       {/* Create YOUR OWN locally - distinct action from opening. */}
-      <TouchableOpacity
-        style={styles.createBtn}
-        activeOpacity={0.85}
-        onPress={onCreate}
-        accessibilityRole="button"
-      >
-        <Text style={styles.createBtnText}>{t('inspiration.openYours', { city: currentCity })}</Text>
-      </TouchableOpacity>
-    </View>
+      <Button variant="secondary" size="sm" label={t('inspiration.openYours', { city: currentCity })} onPress={onCreate} />
+    </Card>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card: {
-    backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     c.overlay,
-    padding:         Spacing.md,
-    gap:             10,
-    width:           '100%',
-  },
-  kindRow: { flexDirection: 'row', alignItems: 'center' },
-  kindBadge: {
-    backgroundColor:   'rgba(96,165,250,0.12)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 7,
-    paddingVertical:   1,
-    borderWidth:       1,
-    borderColor:       'rgba(96,165,250,0.30)',
-  },
-  kindBadgeText: { fontSize: 9, fontWeight: '800', color: '#60a5fa', letterSpacing: 0.5 },
-
-  title: { fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 22, textAlign: 'left' },
-
+  card:   { padding: Spacing.md, gap: 10, width: '100%' },
+  kind:   { alignSelf: 'flex-start' },
+  title:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
   byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
   byText: { flex: 1, fontSize: 12, fontWeight: '600', color: c.muted },
-
-  createBtn: {
-    marginTop:        2,
-    paddingVertical:  11,
-    borderRadius:     12,
-    alignItems:       'center',
-    justifyContent:   'center',
-    backgroundColor:  'rgba(255,122,60,0.16)',
-    borderWidth:      1,
-    borderColor:      'rgba(255,122,60,0.35)',
-  },
-  createBtnText: { color: c.accent, fontSize: 14, fontWeight: '800' },
 });

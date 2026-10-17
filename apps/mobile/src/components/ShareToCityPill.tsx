@@ -1,15 +1,13 @@
 /**
- * ShareToCityPill - one-tap pill that posts this entity's deeplink into the
- * user's current city feed (see useShareToCity). Accent-styled because it's a
- * primary "spread the word" action. Renders nothing when there's no current
- * city channel to post to.
+ * ShareToCityPill - one-tap secondary button (megaphone) that posts this
+ * entity's deeplink into the user's current city feed (see useShareToCity).
+ * Renders nothing when there's no current city channel to post to.
  */
 
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Radius, FontSizes, type ThemeColors } from '@/constants';
-import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useShareToCity } from '@/lib/useShareToCity';
+import { Button } from '@/ui';
 
 interface Props {
   url: string;
@@ -17,13 +15,10 @@ interface Props {
   title?: string;
   /** Type prefix incl. emoji, e.g. "⚡ Challenge" / "🗣️ Hi now" / "🎉 Hi plan". */
   label?: string;
-  style?: object;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function ShareToCityPill({ url, title, label, style }: Props) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-
   const { t } = useTranslation('common');
   const { canShare, sharing, shareToCity } = useShareToCity();
   if (!canShare) return null;
@@ -33,26 +28,14 @@ export function ShareToCityPill({ url, title, label, style }: Props) {
   const head = [label?.trim(), title?.trim()].filter(Boolean).join(': ');
   const message = head ? `${head}\n${url}` : url;
   return (
-    <TouchableOpacity
-      style={[styles.pill, style]}
+    <Button
+      variant="secondary"
+      size="sm"
+      icon="megaphone-outline"
+      label={btnLabel}
       onPress={() => shareToCity(message)}
-      activeOpacity={0.8}
-      disabled={sharing}
-      accessibilityRole="button"
-      accessibilityLabel={btnLabel}
-    >
-      {sharing
-        ? <ActivityIndicator size="small" color={colors.accent} />
-        : <Text style={styles.text} numberOfLines={1}>📣 {btnLabel}</Text>}
-    </TouchableOpacity>
+      loading={sharing}
+      style={style}
+    />
   );
 }
-
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  pill: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
-    paddingHorizontal: 12, paddingVertical: 7, borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,122,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.5)',
-  },
-  text: { fontSize: FontSizes.sm, fontWeight: '700', color: c.accent },
-});

@@ -1,19 +1,17 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import type { FeedItem, HiladsEvent } from '@/types';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
+import { eventIcon } from '@/features/events/EventPill';
 import { formatRecurrence } from '@/lib/recurrence';
+import { Card, Chip } from '@/ui';
 
-// Compact event card for the Hi now list ((tabs)/events.tsx).
-
-const EVENT_ICONS: Record<string, string> = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-};
+// Plan card for the Hi now list ((tabs)/events.tsx). A recurring plan takes
+// the caramel border and a caramel repeat line (caramel = plans on the map).
 
 // `tz` is optional. The Now screen renders today-only so viewer-local is fine;
 // the Upcoming screen renders future days across city timezones and needs to
@@ -64,6 +62,7 @@ type Props = {
 
 export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, showDay = false }: Props) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
 
   const { t } = useTranslation('event');
   const recurLabel  = formatRecurrence(event);
@@ -76,99 +75,82 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
 
   // FeedItem uses event_type; HiladsEvent also has event_type - canonical field
   const eventType  = (event as FeedItem).event_type ?? (event as HiladsEvent).event_type ?? 'other';
-  const icon       = EVENT_ICONS[eventType] ?? '📌';
   const sourceType = (event as FeedItem).source_type ?? (event as HiladsEvent).source_type ?? 'hilads';
   const isPublic   = sourceType === 'ticketmaster';
   const host       = (event as HiladsEvent).host_nickname;
+  const place      = distanceLabel || event.location || event.venue;
+  const going      = event.participant_count ?? 0;
 
   return (
-    <TouchableOpacity
-      style={[styles.card, isRecurring && styles.cardRecurring]}
-      activeOpacity={0.7}
-      onPress={onPress}
-    >
-      <View style={styles.cardTitleRow}>
-        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>🎉 {t('laterTag', { ns: 'now' })}</Text></View>
-        {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>{t('public')}</Text></View>}
-        <Text style={styles.cardIcon}>{icon}</Text>
-        <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>
-        {!isPublic && (event.participant_count ?? 0) > 0 ? (
-          <Text style={styles.goingCount}>🙌 {event.participant_count}</Text>
+    <TouchableOpacity activeOpacity={0.75} onPress={onPress} accessibilityRole="button">
+      <Card style={[styles.card, isRecurring && styles.cardRecurring]}>
+        <View style={styles.titleRow}>
+          <View style={styles.icon}>
+            <Ionicons name={eventIcon(eventType)} size={18} color={colors.primaryOnTint} />
+          </View>
+          <Text style={styles.title} numberOfLines={2}>{event.title}</Text>
+          {!isPublic && going > 0 ? (
+            <View style={styles.going} accessibilityLabel={t('going', { count: going })}>
+              <Ionicons name="people-outline" size={16} color={colors.primaryText} />
+              <Text style={styles.goingText}>{going}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        <View style={styles.chips}>
+          <Chip icon="calendar-outline" label={t('laterTag', { ns: 'now' })} />
+          {isPublic && <Chip variant="outline" label={t('public')} />}
+          {recurLabel ? (
+            <View style={styles.recur}>
+              <Ionicons name="repeat-outline" size={14} color={colors.caramel} />
+              <Text style={styles.recurText} numberOfLines={1}>{recurLabel}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        <View style={styles.metaRow}>
+          <Ionicons name="time-outline" size={15} color={isLive ? colors.primaryText : colors.muted} />
+          <Text style={[styles.meta, isLive && styles.metaLive]} numberOfLines={1}>
+            {showDay ? dayPrefix(startsAt, tz) : ''}{formatTime(startsAt, tz)}{endsAt ? ` → ${formatTime(endsAt, tz)}` : ''}
+          </Text>
+        </View>
+
+        {place ? (
+          <View style={styles.metaRow}>
+            <Ionicons name="location-outline" size={15} color={colors.muted} />
+            <Text style={styles.meta} numberOfLines={1}>{place}</Text>
+          </View>
         ) : null}
-      </View>
 
-      <Text style={[styles.cardMetaLine, isLive && styles.cardMetaLineLive]} numberOfLines={1}>
-        🕐 {showDay ? dayPrefix(startsAt, tz) : ''}{formatTime(startsAt, tz)}{endsAt ? ` → ${formatTime(endsAt, tz)}` : ''}
-        {recurLabel ? `  ·  ↻ ${recurLabel}` : ''}
-      </Text>
+        {host ? (
+          <Text style={styles.host} numberOfLines={1}>{t('hostedBy', { name: host })}</Text>
+        ) : null}
 
-      {distanceLabel ? (
-        <Text style={styles.cardLocation} numberOfLines={1}>
-          📍 {distanceLabel}
-        </Text>
-      ) : (event.location ?? event.venue) ? (
-        <Text style={styles.cardLocation} numberOfLines={1}>
-          📍 {event.location ?? event.venue}
-        </Text>
-      ) : null}
-
-      {host ? (
-        <Text style={styles.cardHost} numberOfLines={1}>
-          {t('hostedBy', { name: host })}
-        </Text>
-      ) : null}
-
-      {!isPublic ? (
-        <AttendeeAvatars
-          preview={(event as HiladsEvent).participants_preview ?? []}
-          total={event.participant_count ?? 0}
-          onPress={onAvatarsPress}
-        />
-      ) : null}
+        {!isPublic ? (
+          <AttendeeAvatars
+            preview={(event as HiladsEvent).participants_preview ?? []}
+            total={going}
+            onPress={onAvatarsPress}
+          />
+        ) : null}
+      </Card>
     </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card: {
-    backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     c.border,
-    padding:         10,
-    gap:             4,
-  },
-  cardRecurring: {
-    borderColor:     'rgba(184,114,40,0.35)',
-    backgroundColor: 'rgba(184,114,40,0.04)',
-  },
-  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cardIcon:     { fontSize: 16, lineHeight: 18 },
-  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 19 },
-  goingCount:   { fontSize: FontSizes.xs, color: c.accent, fontWeight: '700', flexShrink: 0 },
-  cardMetaLine:     { fontSize: FontSizes.xs, color: c.muted, fontWeight: '600' },
-  cardMetaLineLive: { color: c.accent },
-  cardLocation:     { fontSize: FontSizes.xs, color: c.muted, lineHeight: 16 },
-  cardHost:         { fontSize: 11,           color: c.muted2, lineHeight: 14 },
-
-  kindBadgeEvent: {
-    backgroundColor:   c.overlay,
-    borderRadius:      Radius.full,
-    paddingHorizontal: 7,
-    paddingVertical:   1,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
-  },
-  kindBadgeText: { fontSize: 9, fontWeight: '700', color: c.muted, letterSpacing: 0.5 },
-
-  publicBadge: {
-    backgroundColor:   c.overlay,
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
-    borderWidth:       1,
-    borderColor:       c.overlayStrong,
-    marginLeft:        6,
-  },
-  publicBadgeText: { fontSize: 10, fontWeight: '700', color: c.muted, letterSpacing: 0.3 },
+  card:          { padding: 14, gap: 8 },
+  cardRecurring: { borderColor: c.caramel },
+  titleRow:      { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  icon:          { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  title:         { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  going:         { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
+  goingText:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText },
+  chips:         { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  recur:         { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1 },
+  recurText:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.caramel },
+  metaRow:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  meta:          { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
+  metaLive:      { color: c.primaryText },
+  host:          { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
 });

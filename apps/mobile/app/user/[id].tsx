@@ -79,7 +79,7 @@ const VIBE_META: Record<string, { emoji: string; label: string; caption: string 
   chill:       { emoji: '🧘', label: 'Chill',        caption: 'Easy vibes only 😌'             },
 };
 
-// EventPill + EVENT_ICONS + formatEventTime live in
+// EventPill + eventIcon + formatEventTime live in
 // src/features/events/EventPill.tsx - reused by the event-limit screen too.
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────

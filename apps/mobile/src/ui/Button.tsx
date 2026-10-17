@@ -7,12 +7,12 @@ type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 /**
  * V3 button (SPEC 9.11): primary = flat primary fill, secondary = card with a
- * line border, link = primary text. md is 48 high, sm 44; radius 16 (14 sm).
+ * line border, danger = red outline (delete), link = primary text. md is 48 high, sm 44; radius 16 (14 sm).
  */
 export function Button({ label, onPress, variant = 'primary', size = 'md', icon, loading = false, disabled = false, style, accessibilityLabel }: {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'link';
+  variant?: 'primary' | 'secondary' | 'danger' | 'link';
   size?: 'md' | 'sm';
   icon?: IconName;
   loading?: boolean;
@@ -22,7 +22,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const color = variant === 'primary' ? colors.white : variant === 'secondary' ? colors.text : colors.primaryText;
+  const color = variant === 'primary' ? colors.white : variant === 'secondary' ? colors.text : variant === 'danger' ? colors.red : colors.primaryText;
   return (
     <TouchableOpacity
       style={[styles.base, variant !== 'link' && (size === 'sm' ? styles.sm : styles.md), styles[variant], disabled && styles.disabled, style]}
@@ -49,6 +49,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sm:        { minHeight: 44, borderRadius: 14, paddingHorizontal: 14 },
   primary:   { backgroundColor: c.primary },
   secondary: { backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
+  danger:    { borderWidth: Border, borderColor: c.red },
   link:      {},
   disabled:  { opacity: 0.5 },
   label:     { fontSize: FontSizes.md, fontWeight: '700' },
