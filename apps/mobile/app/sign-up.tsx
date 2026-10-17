@@ -13,6 +13,7 @@ import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
+import { safeReturnTo, authQuery } from '@/lib/authReturn';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -23,21 +24,6 @@ const MODES = [
   { key: 'exploring', emoji: '🧭' },
 ] as const;
 
-// Allowlist of return-path prefixes accepted on the ?returnTo query
-// param. Keeping this tight prevents an attacker from crafting a
-// signup deeplink that bounces the user to an arbitrary internal
-// (or external) screen - only the surfaces we actually launch signup
-// from are honoured.
-const RETURN_TO_ALLOWLIST = ['/challenge/', '/event/', '/t/'];
-
-function safeReturnTo(raw: string | undefined): string | null {
-  if (!raw) return null;
-  let decoded: string;
-  try { decoded = decodeURIComponent(raw); } catch { return null; }
-  if (!decoded.startsWith('/')) return null;          // no external URLs
-  if (decoded.startsWith('//'))  return null;          // no protocol-relative
-  return RETURN_TO_ALLOWLIST.some(p => decoded.startsWith(p)) ? decoded : null;
-}
 
 export default function SignUpScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -45,7 +31,7 @@ export default function SignUpScreen() {
 
   const router = useRouter();
   const { t } = useTranslation('auth');
-  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const { returnTo, action } = useLocalSearchParams<{ returnTo?: string; action?: string }>();
   const safeReturn = safeReturnTo(typeof returnTo === 'string' ? returnTo : undefined);
   const {
     setAccount, setJoined, setCity, setIdentity, setShowAccountWelcome,
@@ -113,6 +99,8 @@ export default function SignUpScreen() {
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
       track('user_authenticated');
       track('auth_signup');
+      // Started from the sign-up sheet (V3-11): which gated action converted.
+      if (action) track('guest_signup_completed', { action, method: 'signup' });
 
       // ── Pre-join city restore ─────────────────────────────────────────────
       // If the user came from the landing screen (joined=false) and geo already
@@ -131,7 +119,7 @@ export default function SignUpScreen() {
           await saveIdentity(updated);
           setIdentity(updated);
           setJoined(true);
-          router.replace('/(tabs)/chat');
+          router.replace((safeReturn ?? '/(tabs)/today') as never);
         } catch {
           // Join failed - authenticate but let user pick a city
           setJoined(true);
@@ -145,7 +133,9 @@ export default function SignUpScreen() {
         // Otherwise the existing back() pops the modal in place.
         setJoined(true);
         if (safeReturn) {
-          router.replace(safeReturn as never);
+          // Pops back to returnTo when it's still in the stack (the sheet was
+          // opened over it), otherwise replaces this screen with it.
+          router.dismissTo(safeReturn as never);
         } else {
           router.back();
         }
@@ -292,7 +282,7 @@ export default function SignUpScreen() {
               }
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => router.replace('/sign-in')} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => router.replace(`/sign-in${authQuery(returnTo, action)}` as never)} activeOpacity={0.7}>
               <Text style={styles.switchText}>
                 {t('signUp.haveAccount')} <Text style={styles.switchLink}>{t('signUp.signInLink')}</Text>
               </Text>

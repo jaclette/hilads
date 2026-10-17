@@ -15,68 +15,6 @@
     "fc2": "🌍 Tantang kota lain di dunia",
     "cta": "Ayo mulai 🚀"
   },
-  "onboarding": {
-    "skip": "Lewati ✕",
-    "next": "Lanjut",
-    "fallbackCity": "kotamu",
-    "slide1": {
-      "title": "Become local. Anywhere.",
-      "body": "Hilads adalah app yang mengubah pelancong jadi orang lokal - dan membantu orang lokal berbagi apa yang membuat kotanya hidup."
-    },
-    "slide2": {
-      "title": "Tiga cara menghidupi kota",
-      "itemChallenges": "🤝 Tantangan - tantang atau ditantang buat menemukan tempat tersembunyi, mencicipi makanan asli, berbagi budaya, atau bantu.",
-      "itemHangouts": "🗣️ Hi now - ketemu seseorang dadakan",
-      "itemEvents": "🎉 Hi plan - atur waktu buat ketemuan"
-    },
-    "slide3": {
-      "title": "Raih tempatmu di kota",
-      "body": "Setiap tantangan yang kamu selesaikan, setiap pertemuan, setiap tempat yang kamu temukan kasih kamu poin. Poin mencerminkan seberapa lokal kamu sudah jadi di {{city}}. Naik ke puncak Most Local dan raih tempatmu di antara orang-orang yang menghidupkan kota."
-    },
-    "slide4": {
-      "title": "Siap mulai?",
-      "ctaChallenge": "📍 Ambil tantangan pertama di {{city}}",
-      "ctaMostLocal": "🤝 Lihat Most Local {{city}}",
-      "ctaLookAround": "👀 Lihat-lihat dulu aja",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Cara kerja tantangan",
-    "slide1": {
-      "title": "Tantangan mengubah perjalanan jadi cerita",
-      "body": "Lokal dan pelancong saling tantang buat berbagi kota apa adanya - makanan, tempat, budaya, bantuan. Hadiahnya? Ketemuan langsung - atau kirim bukti dari jauh."
-    },
-    "slide2": {
-      "title": "Luncurkan tantanganmu",
-      "body": "Makanan, tempat, budaya atau bantuan. Pilih buat siapa, berapa slot, dan cara nutupnya - ketemuan atau bukti foto."
-    },
-    "slide3": {
-      "title": "Ada yang menerima",
-      "body": "Mereka kirim permintaan. Kamu cek dan terima - thread privat kalian terbuka untuk ngobrol dan atur rencana."
-    },
-    "slide4": {
-      "title": "Ketemuan atau bukti foto",
-      "body": "Ketemu langsung atau kirim foto dari jauh - kamu yang nentuin. Apa pun caranya, tiap langkah tercatat."
-    },
-    "slide5": {
-      "title": "Tutup tantangannya",
-      "body": "Setelah ketemu (atau pas foto masuk), tandai selesai. Kotamu, dijalani beneran - satu tantangan tiap kali."
-    },
-    "next": "Lanjut",
-    "done": "Mengerti!",
-    "skip": "Lewati ✕",
-    "slide6": {
-      "title": "Di luar kotamu",
-      "body": "Tantang siapa pun, di mana pun. Orangnya kirim bukti - foto bergeotag - dan kamu validasi dari jauh. Alur foto yang sama juga jalan di lokal. Lokal atau global, tiap tantangan dihitung."
-    },
-    "slide7": {
-      "title": "Jadi Most Local",
-      "body": "Tiap tantangan dapat poin - di kotamu dan di dunia. Ketemuan langsung dapat +50 bonus tambahan. Lokal atau pelancong, yang penting adalah apa yang kamu bangun di sini. Papan peringkat baru tiap bulan."
-    },
-    "createCta": "🔥 Buat tantangan"
-  },
   "share": {
     "title": "Bagikan sesuatu 👀",
     "snap": "Ambil foto",
@@ -111,7 +49,6 @@
   "connectionHint": "Periksa koneksimu dan coba lagi.",
   "notifications": "Notifikasi",
   "messages": "Pesan",
-  "howItWorks": "Cara kerja Hilads",
   "someone": "Seseorang",
   "photoLabel": "📷 Foto",
   "openSettings": "Buka Pengaturan",
@@ -244,5 +181,7 @@
     "requiredTitle": "Perbarui Hilads",
     "requiredBody": "Versi ini sudah tidak didukung. Perbarui aplikasi untuk terus memakai Hilads."
   },
-  "mapSoon": "Peta spot segera hadir."
+  "mapSoon": "Peta spot segera hadir.",
+  "firstLaunch": "Satu challenge lokal setiap hari.",
+  "signUp": "Daftar"
 }

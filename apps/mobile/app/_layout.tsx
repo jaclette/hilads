@@ -191,6 +191,11 @@ function RootLayoutInner() {
               name="forgot-password"
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
+            {/* The sign-up sheet (SPEC 9.9): the screen behind stays visible. */}
+            <Stack.Screen
+              name="auth-gate"
+              options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
+            />
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />

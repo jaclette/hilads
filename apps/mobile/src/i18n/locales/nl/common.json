@@ -15,68 +15,6 @@
     "fc2": "🌍 Daag een andere stad wereldwijd uit",
     "cta": "Let's go 🚀"
   },
-  "onboarding": {
-    "skip": "Overslaan ✕",
-    "next": "Volgende",
-    "fallbackCity": "jouw stad",
-    "slide1": {
-      "title": "Become local. Anywhere.",
-      "body": "Hilads is de app die reizigers tot locals maakt - en locals helpt te delen wat hun stad tot leven brengt."
-    },
-    "slide2": {
-      "title": "Drie manieren om de stad te beleven",
-      "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
-      "itemHangouts": "🗣️ Hi now - ontmoet iemand spontaan",
-      "itemEvents": "🎉 Hi plan - plan een moment om af te spreken"
-    },
-    "slide3": {
-      "title": "Verdien je plek in de stad",
-      "body": "Elke challenge die je voltooit, elke afspraak, elke plek die je ontdekt levert je punten op. Punten laten zien hoe local je bent geworden in {{city}}. Bereik de top van Most Local en verdien je plek tussen wie de stad tot leven brengt."
-    },
-    "slide4": {
-      "title": "Klaar om te beginnen?",
-      "ctaChallenge": "📍 Start je eerste challenge in {{city}}",
-      "ctaMostLocal": "🤝 Ontdek Most Local van {{city}}",
-      "ctaLookAround": "👀 Eerst even rondkijken",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Zo werken challenges",
-    "slide1": {
-      "title": "Challenges maken van reizen verhalen",
-      "body": "Locals en reizigers dagen elkaar uit om de stad echt te beleven - eten, plekken, cultuur, hulp. De beloning? Elkaar in het echt zien - of bewijs vanop afstand sturen."
-    },
-    "slide2": {
-      "title": "Start je challenge",
-      "body": "Eten, plek, cultuur of hulp. Kies voor wie, hoeveel plekken en hoe jullie het afsluiten - in het echt of via foto."
-    },
-    "slide3": {
-      "title": "Iemand neemt 'm aan",
-      "body": "Ze sturen een verzoek. Jij bekijkt het en accepteert - jullie privéthread opent om te chatten en plannen."
-    },
-    "slide4": {
-      "title": "Afspreken of foto-bewijs",
-      "body": "Spreek persoonlijk af of stuur een foto vanop afstand - jij beslist. Hoe dan ook, elke stap wordt bijgehouden."
-    },
-    "slide5": {
-      "title": "Sluit 'm af",
-      "body": "Na de afspraak (of zodra de foto binnen is), zet je het op voltooid. Jouw stad, echt beleefd - één challenge per keer."
-    },
-    "next": "Volgende",
-    "done": "Begrepen!",
-    "skip": "Overslaan ✕",
-    "slide6": {
-      "title": "Buiten je stad",
-      "body": "Daag iedereen overal uit. Die persoon stuurt bewijs - een geotagged foto - en jij valideert vanop afstand. Dezelfde foto-flow werkt ook lokaal. Local of global, elke challenge telt."
-    },
-    "slide7": {
-      "title": "Word Most Local",
-      "body": "Elke challenge levert je punten op - in jouw stad EN wereldwijd. Spreek persoonlijk af voor een bonus van +50. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranking."
-    },
-    "createCta": "🔥 Maak een challenge"
-  },
   "share": {
     "title": "Deel iets 👀",
     "snap": "Maak een foto",
@@ -111,7 +49,6 @@
   "connectionHint": "Controleer je verbinding en probeer het opnieuw.",
   "notifications": "Meldingen",
   "messages": "Berichten",
-  "howItWorks": "Hoe Hilads werkt",
   "someone": "Iemand",
   "photoLabel": "📷 Foto",
   "openSettings": "Instellingen openen",
@@ -244,5 +181,7 @@
     "requiredTitle": "Update Hilads",
     "requiredBody": "Deze versie wordt niet meer ondersteund. Update de app om Hilads te blijven gebruiken."
   },
-  "mapSoon": "De kaart met spots komt binnenkort."
+  "mapSoon": "De kaart met spots komt binnenkort.",
+  "firstLaunch": "Eén lokale challenge per dag.",
+  "signUp": "Aanmelden"
 }

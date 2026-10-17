@@ -29,7 +29,7 @@ export default function DailyProposalsScreen() {
   const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
-    if (!account) { router.replace('/auth-gate?reason=create_challenge' as never); return; }
+    if (!account) { router.replace('/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fproposals' as never); return; }
     try {
       setItems((await fetchMyProposals()).items);
       setFailed(false);

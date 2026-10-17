@@ -52,8 +52,6 @@ import { FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/co
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
-import { hasSeenOnboarding } from '@/lib/onboarding';
-import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
 // ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
@@ -122,27 +120,8 @@ export default function ChatTab() {
     unreadDMs, setUnreadDMs,
     clearEventChatCounts,
     bootstrapData,
-    joined, setShowOnboarding,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
-
-  // First-time onboarding carousel - guests only, once, after the city channel
-  // is ready (joined). Runs after paint so it overlays a loaded screen instead
-  // of blocking/flashing first render. Registered users never trigger it; the
-  // AsyncStorage flag keeps it from re-appearing. The carousel is mounted in
-  // (tabs)/_layout.tsx and reads `showOnboarding` from AppContext.
-  const onboardingCheckedRef = useRef(false);
-  useEffect(() => {
-    if (onboardingCheckedRef.current) return;
-    if (!joined || account) return;
-    onboardingCheckedRef.current = true;
-    let cancelled = false;
-    (async () => {
-      if (await hasSeenOnboarding()) return;
-      if (!cancelled) setTimeout(() => setShowOnboarding(true), 400);
-    })();
-    return () => { cancelled = true; };
-  }, [joined, account, setShowOnboarding]);
 
   // Online count - fallback "live now" until presence data arrives.
   //   presenceSnapshot   → sent only to US when we (re)join the room (initial value)
@@ -477,8 +456,6 @@ export default function ChatTab() {
   // Injected locally after join; never sent to the server.
 
   const [promptItems,    setPromptItems]    = useState<Message[]>([]);
-  // "How challenges work" carousel - opened from the challenge-intro prompt.
-  const [showChallengeIntro, setShowChallengeIntro] = useState(false);
   const promptsShownRef  = useRef(new Set<string>());
   const isActiveRef      = useRef(false);
   const messagesRef      = useRef(messages);
@@ -587,23 +564,7 @@ export default function ChatTab() {
       }]);
     }, 60_000);
 
-    // challenge-intro: 8s, drops a "Learn how challenges work" pill once per
-    // channel session. Independent of message count - the goal is to surface
-    // the explainer for newcomers, even in a chatty city. Tapping it opens
-    // the ChallengeIntroCarousel.
-    const t4 = setTimeout(() => {
-      if (!isActiveRef.current || promptsShownRef.current.has('challenge-intro')) return;
-      promptsShownRef.current.add('challenge-intro');
-      setPromptItems(prev => [...prev, {
-        id: `prompt-challenge-intro-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'challenge-intro',
-        content: i18n.t('promptChallengeIntro', { ns: 'chat' }),
-        cta:     i18n.t('promptChallengeIntroCta', { ns: 'chat' }),
-        nickname: '', createdAt: Date.now() / 1000,
-      }]);
-    }, 8_000);
-
-    promptTimersRef.current.push(t1, t2, t3, t4);
+    promptTimersRef.current.push(t1, t2, t3);
   }
 
   // A reminder card finished fading (mount-guarded on the card) → drop it from
@@ -640,8 +601,6 @@ export default function ChatTab() {
       router.push('/event/create');
     } else if (subtype === 'explore') {
       router.push('/(tabs)/events');
-    } else if (subtype === 'challenge-intro') {
-      setShowChallengeIntro(true);
     }
   }, [city, identity?.guestId, router]);
 
@@ -1121,8 +1080,8 @@ export default function ChatTab() {
           onSubmitEdit={submitEdit}
           onCancelEdit={() => setEditingMsg(null)}
           // "+" menu (SPEC 9.6): creating a Hi plan / a Hi now lives here (city Chat).
-          onCreatePlan={channelScope === 'city' ? () => router.push((account ? '/event/create' : '/auth-gate?reason=create_event') as never) : undefined}
-          onHiNow={channelScope === 'city' ? () => router.push((account ? '/topic/create' : '/auth-gate?reason=create_hangout') as never) : undefined}
+          onCreatePlan={channelScope === 'city' ? () => router.push((account ? '/event/create' : '/auth-gate?reason=create_event&returnTo=%2Fevent%2Fcreate') as never) : undefined}
+          onHiNow={channelScope === 'city' ? () => router.push((account ? '/topic/create' : '/auth-gate?reason=create_hangout&returnTo=%2Ftopic%2Fcreate') as never) : undefined}
         />
       </KeyboardAvoidingView>
 
@@ -1139,20 +1098,6 @@ export default function ChatTab() {
         onDelete={actionSheetMsg && isOwnMessage(actionSheetMsg) && !actionSheetMsg.deletedAt && !isDailyCard(actionSheetMsg)
           ? () => handleDelete(actionSheetMsg) : undefined}
         onClose={() => setActionSheetMsg(null)}
-      />
-
-      {/* "How challenges work" carousel - opened from the challenge-intro
-          feed prompt. Stand-alone modal; doesn't interact with onboarding.
-          Last-slide CTA closes the carousel and routes to /challenge/create
-          so a user who just learned the rules can launch their first
-          challenge without backtracking through the city chat. */}
-      <ChallengeIntroCarousel
-        visible={showChallengeIntro}
-        onClose={() => setShowChallengeIntro(false)}
-        onCreateChallenge={() => {
-          setShowChallengeIntro(false);
-          router.push('/challenge/create' as never);
-        }}
       />
 
       <ArrivalsSheet

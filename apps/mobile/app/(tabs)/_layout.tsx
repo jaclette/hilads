@@ -6,12 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { useApp } from '@/context/AppContext';
 import { useTheme } from '@/context/ThemeContext';
 import { FontSizes } from '@/constants';
-import { OnboardingCarousel } from '@/features/onboarding/OnboardingCarousel';
-import { localizeCityName } from '@/i18n/cityName';
-import { markOnboardingSeen } from '@/lib/onboarding';
 
 // ── Tabs (V3, SPEC 9.1 and the mockups): stroke icons with a label; the
 // active tab sits on a primary-tint pill. ─────────────────────────────────────
@@ -119,8 +115,6 @@ const styles = StyleSheet.create({
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 export default function TabsLayout() {
-  const { city, showOnboarding, setShowOnboarding } = useApp();
-
   // ── Android hardware back - double-press to exit ───────────────────────────
   // useFocusEffect scopes this handler to when the tab group is focused.
   // It auto-cleans up when a root-stack screen (event, DM, etc.) gains focus,
@@ -144,32 +138,23 @@ export default function TabsLayout() {
 
   // V3 (SPEC 9.1): Today is the home for everyone.
   return (
-    <>
-      <Tabs
-        initialRouteName="today"
-        tabBar={props => <CustomTabBar {...props} />}
-        screenOptions={{ headerShown: false }}
-      >
-        {/* ── 4 tabs: TODAY · MAP · CHAT · PASSPORT ───────────────────────── */}
-        <Tabs.Screen name="today"    options={{ title: 'Today' }} />
-        <Tabs.Screen name="map"      options={{ title: 'Map' }} />
-        <Tabs.Screen name="chat"     options={{ title: 'Chat' }} />
-        <Tabs.Screen name="passport" options={{ title: 'Passport' }} />
-        {/* Off the bar, still routes so every push and link keeps working:
-            challenges → redirects to Today; events (Hi Local) until V3-09;
-            me (?tab=…) until V3-10; here from the Chat "nearby" pill. */}
-        <Tabs.Screen name="challenges" options={{ title: 'Challenges' }} />
-        <Tabs.Screen name="events"     options={{ title: 'Events' }} />
-        <Tabs.Screen name="me"         options={{ title: 'Me' }} />
-        <Tabs.Screen name="here"       options={{ title: 'Here' }} />
-      </Tabs>
-
-      {/* First-time guest onboarding (auto-shown from chat.tsx; "?" reopens it). */}
-      <OnboardingCarousel
-        visible={showOnboarding}
-        city={localizeCityName(city?.name)}
-        onClose={() => { markOnboardingSeen(); setShowOnboarding(false); }}
-      />
-    </>
+    <Tabs
+      initialRouteName="today"
+      tabBar={props => <CustomTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      {/* ── 4 tabs: TODAY · MAP · CHAT · PASSPORT ───────────────────────── */}
+      <Tabs.Screen name="today"    options={{ title: 'Today' }} />
+      <Tabs.Screen name="map"      options={{ title: 'Map' }} />
+      <Tabs.Screen name="chat"     options={{ title: 'Chat' }} />
+      <Tabs.Screen name="passport" options={{ title: 'Passport' }} />
+      {/* Off the bar, still routes so every push and link keeps working:
+          challenges → redirects to Today; events (Hi Local) until V3-09;
+          me (?tab=…) until V3-10; here from the Chat "nearby" pill. */}
+      <Tabs.Screen name="challenges" options={{ title: 'Challenges' }} />
+      <Tabs.Screen name="events"     options={{ title: 'Events' }} />
+      <Tabs.Screen name="me"         options={{ title: 'Me' }} />
+      <Tabs.Screen name="here"       options={{ title: 'Here' }} />
+    </Tabs>
   );
 }

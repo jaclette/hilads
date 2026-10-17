@@ -98,7 +98,7 @@ export default function CreateTopicScreen() {
 
   // ── Guest gate - hosting a hangout requires a registered account ─────────────
   if (!account) {
-    router.replace('/auth-gate?reason=create_hangout');
+    router.replace('/auth-gate?reason=create_hangout&returnTo=%2Ftopic%2Fcreate' as never);
     return null;
   }
 

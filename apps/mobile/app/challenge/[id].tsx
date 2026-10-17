@@ -42,8 +42,6 @@ import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChan
 import { countryToFlag } from '@/lib/countryFlag';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
-import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
-import { MarqueeText } from '@/components/MarqueeText';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -143,8 +141,6 @@ export default function ChallengeChatScreen() {
   // after entering the channel (matches city chat's t4 delay) and
   // sticks around until the user taps it or dismisses with ×; both
   // dispose it for the rest of this session.
-  const [showChallengeIntro,       setShowChallengeIntro]       = useState(false);
-  const [showChallengeIntroBanner, setShowChallengeIntroBanner] = useState(false);
   // Guest welcome banner - shown immediately (no 8 s delay) to anyone
   // landing on a public challenge without an account. Dismissed on ×
   // or after tapping into the auth-gate, per session. Replaces the
@@ -810,16 +806,6 @@ export default function ChallengeChatScreen() {
       participantRef.current = false;
     }
   }, [iAmParticipant, reload]);
-
-  // "Learn how challenges work" banner - show 8 s after the screen
-  // mounts for each new challenge id. Resets when the user moves to
-  // a different challenge so the prompt reappears in that new context.
-  useEffect(() => {
-    if (!id) return;
-    setShowChallengeIntroBanner(false);
-    const timer = setTimeout(() => setShowChallengeIntroBanner(true), 8_000);
-    return () => clearTimeout(timer);
-  }, [id]);
 
   // Join the challenge channel's WS room for live newMessage broadcasts.
   // Public channels are open - any viewer (guest included) joins the room
@@ -1778,47 +1764,6 @@ export default function ChallengeChatScreen() {
               </View>
             ) : null}
 
-            {/* "Learn how challenges work" banner - same primitive the city
-                chat surfaces from its delayed feed prompt. Sits above the
-                FlatList (not inside it) so the inverted message list keeps
-                its scroll behaviour intact and the banner stays anchored to
-                the top edge. Tap → opens the carousel; × → dismiss.
-                Hidden for guests - they get the welcome banner above
-                instead so the entry surface stays focused on one CTA. */}
-            {account?.id && showChallengeIntroBanner && (
-              <View style={styles.introBanner}>
-                <TouchableOpacity
-                  style={styles.introBannerBody}
-                  onPress={() => {
-                    setShowChallengeIntroBanner(false);
-                    setShowChallengeIntro(true);
-                  }}
-                  activeOpacity={0.75}
-                >
-                  {/* Long titles auto-scroll left through the same
-                      MarqueeText primitive the weather pill uses, so
-                      the full "🔥 New here? Learn how challenges work"
-                      string is reachable even when it overflows the
-                      row. Short strings render static. */}
-                  <MarqueeText
-                    text={i18n.t('promptChallengeIntro', { ns: 'chat' })}
-                    textStyle={styles.introBannerText}
-                    style={styles.introBannerMarquee}
-                    fadeColor={colors.bg2}
-                  />
-                  <Text style={styles.introBannerCta} numberOfLines={1}>
-                    {i18n.t('promptChallengeIntroCta', { ns: 'chat' })} →
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setShowChallengeIntroBanner(false)}
-                  hitSlop={10}
-                  accessibilityLabel={i18n.t('close', { ns: 'common' })}
-                >
-                  <Ionicons name="close" size={16} color={colors.muted2} />
-                </TouchableOpacity>
-              </View>
-            )}
             <FlatList
               /* Filter out type='event' messages - they were auto-injected by
                  the old approveDate flow as "🎉 New event" cards. The flow
@@ -2332,18 +2277,6 @@ export default function ChallengeChatScreen() {
         onClose={() => setActionSheetMsg(null)}
       />
 
-      {/* "How challenges work" carousel - shared primitive used by the
-          city-chat intro prompt. Last slide CTA routes to /challenge/
-          create so a newcomer who just learned the rules can launch
-          one without backtracking. */}
-      <ChallengeIntroCarousel
-        visible={showChallengeIntro}
-        onClose={() => setShowChallengeIntro(false)}
-        onCreateChallenge={() => {
-          setShowChallengeIntro(false);
-          router.push('/challenge/create' as never);
-        }}
-      />
       {showCampaignCelebration && (
         <CampaignCelebration onDone={() => setShowCampaignCelebration(false)} />
       )}
@@ -2356,47 +2289,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:      { flex: 1 },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { fontSize: FontSizes.md, color: c.red, padding: Spacing.md, textAlign: 'center' },
-
-  // "Learn how challenges work" banner - slim row above the chat
-  // list, mirroring the visual of the city-chat prompt pill so the
-  // two surfaces read as the same affordance.
-  introBanner: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               8,
-    marginHorizontal:  Spacing.md,
-    marginTop:         Spacing.xs,
-    marginBottom:      Spacing.xs,
-    paddingVertical:   8,
-    paddingHorizontal: 12,
-    backgroundColor:   c.bg2,
-    borderRadius:      Radius.md,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.30)',
-  },
-  introBannerBody: {
-    flex:           1,
-    flexDirection:  'row',
-    alignItems:     'center',
-    justifyContent: 'space-between',
-    gap:            8,
-  },
-  // Marquee clip window - claims the leftover row space between the
-  // banner padding and the "Show me →" CTA so long titles only scroll
-  // inside this region. Fixed height matches one line of the body
-  // font so the banner doesn't grow when a long string lands.
-  introBannerMarquee: { flex: 1, height: 18 },
-  introBannerText: {
-    color:      c.text,
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    lineHeight: 18,
-  },
-  introBannerCta: {
-    color:      c.accent,
-    fontSize:   FontSizes.sm,
-    fontWeight: '700',
-  },
 
   // Guest welcome - slightly taller than the intro banner because the
   // copy splits across two lines (welcome + sign-up CTA). Same warm-

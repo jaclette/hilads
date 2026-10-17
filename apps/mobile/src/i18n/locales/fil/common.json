@@ -15,68 +15,6 @@
     "fc2": "🌍 I-challenge ang ibang city sa mundo",
     "cta": "Tara na 🚀"
   },
-  "onboarding": {
-    "skip": "Laktawan ✕",
-    "next": "Next",
-    "fallbackCity": "iyong city",
-    "slide1": {
-      "title": "Become local. Anywhere.",
-      "body": "Ang Hilads ay ang app na nagpapasok sa mga biyahero bilang local - at tumutulong sa mga local na i-share kung ano ang nagpapabuhay sa kanilang city."
-    },
-    "slide2": {
-      "title": "Tatlong paraan para mabuhay sa city",
-      "itemChallenges": "🤝 Challenges - mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
-      "itemHangouts": "🗣️ Hi now - makilala ang isang tao agad-agad",
-      "itemEvents": "🎉 Hi plan - magplano ng oras para magkita"
-    },
-    "slide3": {
-      "title": "Kitain ang puwesto mo sa city",
-      "body": "Bawat challenge na natapos mo, bawat meet, bawat spot na natuklasan mo, may points. Pinapakita ng points kung gaano ka na ka-local sa {{city}}. Abutin ang top ng Most Local at kitain ang puwesto mo kasama ang mga taong nagpapabuhay sa city."
-    },
-    "slide4": {
-      "title": "Ready ka na bang mag-start?",
-      "ctaChallenge": "📍 Subukan ang first challenge mo sa {{city}}",
-      "ctaMostLocal": "🤝 Tuklasin ang Most Local ng {{city}}",
-      "ctaLookAround": "👀 Mag-tingin-tingin muna",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Paano gumagana ang challenges",
-    "slide1": {
-      "title": "Ang challenges, nagiging stories ang biyahe",
-      "body": "Magka-challenge ang local at biyahero para i-share kung ano talaga ang city - food, places, culture, help. Ano ang reward? Mag-meet in person - or magpadala ng proof remotely."
-    },
-    "slide2": {
-      "title": "I-launch ang challenge mo",
-      "body": "Food, place, culture o help. Pumili para kanino, ilang slot, at paano niyo i-wrap - meetup o photo proof."
-    },
-    "slide3": {
-      "title": "May tumanggap",
-      "body": "Magpapadala sila ng request. Tingnan mo at tanggapin - magbubukas ang private thread niyo para mag-chat at mag-plan."
-    },
-    "slide4": {
-      "title": "Mag-meet o magpa-photo proof",
-      "body": "Mag-meet in person o magpadala ng photo remotely - sa'yo ang choice. Anuman ang paraan, nata-track ang bawat hakbang."
-    },
-    "slide5": {
-      "title": "Tapusin ang challenge",
-      "body": "Pagkatapos ng meetup (o pagdating ng photo), markahan as accomplished. Ang city mo, tunay na nabuhay - one challenge at a time."
-    },
-    "next": "Sunod",
-    "done": "Gets!",
-    "skip": "Skip ✕",
-    "slide6": {
-      "title": "Lampas sa lungsod mo",
-      "body": "Mag-challenge ka kahit kanino, kahit saan. Magpapadala sila ng proof - geotagged photo - at i-validate mo remotely. Same photo flow gumagana din sa local. Local or global, bawat challenge bilang."
-    },
-    "slide7": {
-      "title": "Maging Most Local",
-      "body": "Bawat challenge may points - sa city mo at sa worldwide leaderboard. Magkita kayo in person para sa +50 bonus. Local o biyahero, ang mahalaga ay kung ano ang ginagawa mo dito. Bagong leaderboard kada buwan."
-    },
-    "createCta": "🔥 Gumawa ng challenge"
-  },
   "share": {
     "title": "Magbahagi ng kahit ano 👀",
     "snap": "Kumuha ng litrato",
@@ -111,7 +49,6 @@
   "connectionHint": "Tingnan ang iyong koneksyon at subukan ulit.",
   "notifications": "Mga notification",
   "messages": "Mga mensahe",
-  "howItWorks": "Paano gumagana ang Hilads",
   "someone": "May isang tao",
   "photoLabel": "📷 Larawan",
   "openSettings": "Buksan ang Mga setting",
@@ -244,5 +181,7 @@
     "requiredTitle": "I-update ang Hilads",
     "requiredBody": "Hindi na suportado ang bersyong ito. I-update ang app para patuloy na magamit ang Hilads."
   },
-  "mapSoon": "Malapit nang dumating ang mapa ng mga spot."
+  "mapSoon": "Malapit nang dumating ang mapa ng mga spot.",
+  "firstLaunch": "Isang local challenge bawat araw.",
+  "signUp": "Mag-sign up"
 }

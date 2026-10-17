@@ -47,6 +47,8 @@ export type AnalyticsEvent =
   | 'push_permission_granted'
   | 'push_permission_denied'
   | 'auth_signup'
+  | 'guest_signup_prompted'   // V3-11: the sign-up sheet opened, { action }
+  | 'guest_signup_completed'  // V3-11: auth finished from the sheet, { action, method }
   | 'auth_login'
   | 'auth_logout'
   | 'user_authenticated'

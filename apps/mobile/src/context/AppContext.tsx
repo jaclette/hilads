@@ -53,7 +53,6 @@ interface AppState {
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
   onlineUsers:          OnlineUser[];    // live presence list for the current city
   bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
-  showOnboarding:       boolean;         // first-time guest carousel visibility (auto-show + "?" reopen)
   showAccountWelcome:   boolean;         // one-time congrats screen shown right after signup
   // Monotonic counter bumped when a chat reminder card auto-dismisses; the tab
   // bar watches it to pulse the NOW icon once. Throttled so a burst = one pulse.
@@ -86,7 +85,6 @@ interface AppActions {
   setJoined:               (joined: boolean) => void;
   setOnlineUsers:          (users: OnlineUser[]) => void;
   setBootstrapData:        (data: BootstrapData | null) => void;
-  setShowOnboarding:       (show: boolean) => void;
   setShowAccountWelcome:   (show: boolean) => void;
   /** Signal the NOW tab to pulse once (e.g. a chat reminder faded). Throttled. */
   pulseNow:                () => void;
@@ -122,7 +120,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [joined,         setJoined]         = useState(false);
   const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
   const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAccountWelcome, setShowAccountWelcome] = useState(false);
   const [nowPulse,       setNowPulse]       = useState(0);
   const lastPulseAtRef   = useRef(0);
@@ -227,7 +224,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setJoinedCb             = useCallback((j: boolean) => setJoined(j), []);
   const setOnlineUsersCb        = useCallback((u: OnlineUser[]) => setOnlineUsers(u), []);
   const setBootstrapDataCb      = useCallback((d: BootstrapData | null) => setBootstrapData(d), []);
-  const setShowOnboardingCb     = useCallback((s: boolean) => setShowOnboarding(s), []);
   const setShowAccountWelcomeCb = useCallback((s: boolean) => setShowAccountWelcome(s), []);
 
   // Memoize the context value. Without this a NEW object was created on every
@@ -239,7 +235,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
+    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showAccountWelcome, nowPulse, blockedSet,
     setBooting, setBootError,
     setIdentity,
     setSessionId:            setSessionIdCb,
@@ -259,7 +255,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setJoined:               setJoinedCb,
     setOnlineUsers:          setOnlineUsersCb,
     setBootstrapData:        setBootstrapDataCb,
-    setShowOnboarding:       setShowOnboardingCb,
     setShowAccountWelcome:   setShowAccountWelcomeCb,
     pulseNow,
     setBlockedSet,
@@ -269,11 +264,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }), [
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
+    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showAccountWelcome, nowPulse, blockedSet,
     setIdentity, setSessionIdCb, setAccount, setCityCb, setEventChatPreview,
     removeEventChatPreview, clearEventChatCounts, setActiveEventIdCb, setActiveDmIdCb,
     setGeoStateCb, setDetectedCityCb, setJoinedCb, setOnlineUsersCb, setBootstrapDataCb,
-    setShowOnboardingCb, setShowAccountWelcomeCb, pulseNow, setBlockedSet, addBlocked,
+    setShowAccountWelcomeCb, pulseNow, setBlockedSet, addBlocked,
     removeBlocked, logout,
   ]);
 

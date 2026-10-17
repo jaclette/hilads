@@ -505,7 +505,7 @@ export default function CreateEventScreen() {
 
   // ── Guest gate - event creation requires a registered account ───────────────
   if (!account) {
-    router.replace('/auth-gate?reason=create_event');
+    router.replace('/auth-gate?reason=create_event&returnTo=%2Fevent%2Fcreate' as never);
     return null;
   }
 

@@ -236,8 +236,9 @@ export default function SwitchCityScreen() {
       setJoined(true);
       track('first_launch_city_selected', { chosen_city: item.name, method: 'manual_picker' });
     }
-    // replace (not push) - back from the City Channel shouldn't return here.
-    router.replace('/(tabs)/chat');
+    // replace (not push) - back shouldn't return here. First launch lands
+    // on Today, the home (V3-11); a later switch returns to the city chat.
+    router.replace((isFirstTime ? '/(tabs)/today' : '/(tabs)/chat') as never);
   }
 
   // Section label - "Top cities right now" when any city has activity, else "Cities"
@@ -285,7 +286,7 @@ export default function SwitchCityScreen() {
               if (router.canGoBack()) { router.back(); return; }
               if (!activeCity) {
                 setJoined(false);
-                router.replace('/(tabs)/events');
+                router.replace('/(tabs)/today' as never);
               } else {
                 router.replace('/(tabs)/chat');
               }

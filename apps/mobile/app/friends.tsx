@@ -30,7 +30,7 @@ export default function FriendsScreen() {
   const [vibes, setVibes]       = useState<{ items: UserVibe[]; score: number | null; count: number } | null>(null);
 
   useEffect(() => {
-    if (!account) { router.replace('/auth-gate?reason=view_profile' as never); return; }
+    if (!account) { router.replace('/auth-gate?reason=view_profile&returnTo=%2Ffriends' as never); return; }
     fetchUserFriends(account.id, 1, 100).then(d => setFriends(d.friends)).catch(() => setFriends([]));
     fetchIncomingFriendRequestCount().then(setRequests).catch(() => {});
     fetchUserVibes(account.id).then(d => setVibes({ items: d.vibes ?? [], score: d.score, count: d.count ?? 0 })).catch(() => setVibes({ items: [], score: null, count: 0 }));

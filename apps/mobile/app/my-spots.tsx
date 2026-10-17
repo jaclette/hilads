@@ -23,7 +23,7 @@ export default function MySpotsScreen() {
   const [spots, setSpots] = useState<Spot[] | null>(null);
 
   useEffect(() => {
-    if (!account) { router.replace('/auth-gate?reason=view_profile' as never); return; }
+    if (!account) { router.replace('/auth-gate?reason=view_profile&returnTo=%2Fmy-spots' as never); return; }
     fetchMySpots().then(setSpots).catch(() => setSpots([]));
   }, [account, router]);
 

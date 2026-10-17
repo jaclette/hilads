@@ -2,7 +2,7 @@
  * Shared app header (V3, SPEC 9.1 / mockups): the "Hi" mark, the app-wide
  * scope selector (current city or World, shared by every tab), then the
  * tab-specific extras, the private messages button where asked (Chat) and
- * the notification bell (members) - or "?" for guests, which reopens the intro.
+ * the notification bell (members) - or a Sign up button for guests (V3-11).
  *
  * Pulls unread counts + setters from AppContext to avoid prop drilling.
  */
@@ -31,7 +31,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
   const { colors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation('common');
-  const { account, city, unreadDMs, setUnreadDMs, unreadNotifications, clearEventChatCounts, setShowOnboarding } = useApp();
+  const { account, city, unreadDMs, setUnreadDMs, unreadNotifications, clearEventChatCounts } = useApp();
   const { scope, setScope } = useScope();
   const [sheet, setSheet] = useState(false);
 
@@ -88,12 +88,11 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          style={styles.round}
-          onPress={() => setShowOnboarding(true)}
+          style={styles.signUp}
+          onPress={() => router.push('/sign-up?action=header' as never)}
           accessibilityRole="button"
-          accessibilityLabel={t('howItWorks')}
         >
-          <Ionicons name="help-circle-outline" size={22} color={colors.muted} />
+          <Text style={styles.signUpText} numberOfLines={1}>{t('signUp')}</Text>
         </TouchableOpacity>
       )}
 
@@ -157,6 +156,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scope:          { flex: 1, height: 44, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14,
                     borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   scopeText:      { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
+  signUp:         { height: 44, paddingHorizontal: 16, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  signUpText:     { color: c.white, fontSize: 14, fontWeight: '700' },
   round:          { width: 44, height: 44, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2,
                     alignItems: 'center', justifyContent: 'center' },
   dot:            { position: 'absolute', top: 9, right: 10, width: 9, height: 9, borderRadius: Radius.full, backgroundColor: c.primary,

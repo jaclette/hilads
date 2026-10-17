@@ -16,68 +16,6 @@
     "fc2": "🌍 Challenge another city across the world",
     "cta": "Let's go 🚀"
   },
-  "onboarding": {
-    "skip": "Skip ✕",
-    "next": "Next",
-    "fallbackCity": "your city",
-    "slide1": {
-      "title": "Become local. Anywhere.",
-      "body": "Hilads is the app that turns travelers into locals - and helps locals share what makes their city alive."
-    },
-    "slide2": {
-      "title": "Three ways to live the city",
-      "itemChallenges": "🤝 Challenges - dare or be dared to discover hidden spots, taste real food, share culture, or help out.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
-    },
-    "slide3": {
-      "title": "Earn your place in the city",
-      "body": "Every challenge you complete, every meet you make, every spot you discover earns you points. Points reflect how local you've become in {{city}}. Reach the top of Most Local and earn your place among the people who make the city alive."
-    },
-    "slide4": {
-      "title": "Ready to start your journey?",
-      "ctaChallenge": "📍 Take on your first challenge in {{city}}",
-      "ctaMostLocal": "🤝 Discover Most Local of {{city}}",
-      "ctaLookAround": "👀 Just look around for now",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "How challenges work",
-    "slide1": {
-      "title": "Challenges turn trips into stories",
-      "body": "Locals and travelers dare each other to share what makes a city real - food, places, culture, help. The reward? Meet up in person - or send proof from afar."
-    },
-    "slide2": {
-      "title": "Launch your dare",
-      "body": "Food, place, culture or help. Pick who it's for, how many spots, and how you'll wrap it - meet up or photo proof."
-    },
-    "slide3": {
-      "title": "Someone takes it on",
-      "body": "They send a request. You review it and accept - your private thread unlocks so you can chat and plan."
-    },
-    "slide4": {
-      "title": "Meet or send proof",
-      "body": "Meet up in person or send a photo from afar - your call. Either way, the pipeline tracks every step."
-    },
-    "slide5": {
-      "title": "Wrap it up",
-      "body": "After the meet-up (or once the photo lands), mark it accomplished. Your city, lived for real - one challenge at a time."
-    },
-    "next": "Next",
-    "done": "Got it!",
-    "skip": "Skip ✕",
-    "slide6": {
-      "title": "Beyond your city",
-      "body": "Challenge anyone, anywhere. They send proof - a geotagged photo - and you validate from afar. Same photo flow works for local too. Local or global, every challenge counts."
-    },
-    "slide7": {
-      "title": "Become the Most Local",
-      "body": "Every challenge earns you points - in your city AND worldwide. Meet in person for a +50 bonus on top. Local or traveler, what matters is what you build here. Fresh boards every month."
-    },
-    "createCta": "🔥 Create a challenge"
-  },
   "share": {
     "title": "Share something 👀",
     "snap": "Snap a photo",
@@ -113,7 +51,6 @@
   "connectionHint": "Check your connection and try again.",
   "notifications": "Notifications",
   "messages": "Messages",
-  "howItWorks": "How Hilads works",
   "someone": "Someone",
   "photoLabel": "📷 Photo",
   "openSettings": "Open Settings",
@@ -244,5 +181,7 @@
     "requiredTitle": "Update Hilads",
     "requiredBody": "This version is no longer supported. Update the app to keep using Hilads."
   },
-  "mapSoon": "The map of spots is coming soon."
+  "mapSoon": "The map of spots is coming soon.",
+  "firstLaunch": "One local challenge a day.",
+  "signUp": "Sign up"
 }

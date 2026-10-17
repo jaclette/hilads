@@ -13,23 +13,11 @@ import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
+import { safeReturnTo, authQuery } from '@/lib/authReturn';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
-// Same allowlist as sign-up - returnTo accepted only on the surfaces
-// we launch auth from. Keeps a tampered deeplink from redirecting out
-// of the app or to a screen we didn't intend.
-const RETURN_TO_ALLOWLIST = ['/challenge/', '/event/', '/t/'];
-
-function safeReturnTo(raw: string | undefined): string | null {
-  if (!raw) return null;
-  let decoded: string;
-  try { decoded = decodeURIComponent(raw); } catch { return null; }
-  if (!decoded.startsWith('/')) return null;
-  if (decoded.startsWith('//'))  return null;
-  return RETURN_TO_ALLOWLIST.some(p => decoded.startsWith(p)) ? decoded : null;
-}
 
 export default function SignInScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -37,7 +25,7 @@ export default function SignInScreen() {
 
   const router = useRouter();
   const { t } = useTranslation('auth');
-  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const { returnTo, action } = useLocalSearchParams<{ returnTo?: string; action?: string }>();
   const safeReturn = safeReturnTo(typeof returnTo === 'string' ? returnTo : undefined);
   const {
     setAccount, setJoined, setCity, setIdentity,
@@ -65,6 +53,8 @@ export default function SignInScreen() {
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
       track('user_authenticated');
       track('auth_login');
+      // Started from the sign-up sheet (V3-11): which gated action converted.
+      if (action) track('guest_signup_completed', { action, method: 'signin' });
 
       // ── Pre-join city restore ─────────────────────────────────────────────
       // If the user came from the landing screen (joined=false) and geo already
@@ -83,7 +73,7 @@ export default function SignInScreen() {
           await saveIdentity(updated);
           setIdentity(updated);
           setJoined(true);
-          router.replace('/(tabs)/chat');
+          router.replace((safeReturn ?? '/(tabs)/today') as never);
         } catch {
           // Join failed - authenticate but let user pick a city
           setJoined(true);
@@ -96,7 +86,9 @@ export default function SignInScreen() {
         // otherwise pop the modal in place.
         setJoined(true);
         if (safeReturn) {
-          router.replace(safeReturn as never);
+          // Pops back to returnTo when it's still in the stack (the sheet was
+          // opened over it), otherwise replaces this screen with it.
+          router.dismissTo(safeReturn as never);
         } else {
           router.back();
         }
@@ -196,7 +188,7 @@ export default function SignInScreen() {
               <Text style={styles.forgotText}>{t('signIn.forgot')}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => router.replace('/sign-up')} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => router.replace(`/sign-up${authQuery(returnTo, action)}` as never)} activeOpacity={0.7}>
               <Text style={styles.switchText}>
                 {t('signIn.noAccount')} <Text style={styles.switchLink}>{t('signIn.createOne')}</Text>
               </Text>

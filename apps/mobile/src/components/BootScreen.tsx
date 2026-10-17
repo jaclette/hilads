@@ -15,6 +15,7 @@ export function BootScreen({ error, onRetry }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Hilads</Text>
+      <Text style={styles.tagline}>{t('firstLaunch')}</Text>
       {error ? (
         <>
           <Text style={styles.errorText}>{error}</Text>
@@ -45,7 +46,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight:    '800',
     color:         c.accentText,   // bright #FF7A3C fails as text on cream → accentText
     letterSpacing: -1,
-    marginBottom:  Spacing.xl,
+  },
+  // SPEC 9.9: the line under the logo on launch.
+  tagline: {
+    fontSize:     FontSizes.md,
+    fontWeight:   '600',
+    color:        c.muted,
+    textAlign:    'center',
+    marginTop:    6,
+    marginBottom: Spacing.xl,
   },
   spinner:   { marginTop: Spacing.md },
   errorText: {

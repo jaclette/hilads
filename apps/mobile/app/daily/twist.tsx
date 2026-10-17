@@ -42,7 +42,7 @@ export default function DailyTwistScreen() {
   const [showOriginal, toggleOriginal] = useOriginal();
 
   useEffect(() => {
-    if (!account) router.replace('/auth-gate?reason=daily_proof' as never);
+    if (!account) router.replace('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Ftwist' as never);
   }, [account, router]);
 
   const load = useCallback(async () => {

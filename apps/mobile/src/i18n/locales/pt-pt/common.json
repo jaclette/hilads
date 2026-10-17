@@ -15,68 +15,6 @@
     "fc2": "🌍 Desafia outra cidade pelo mundo",
     "cta": "Vamos lá 🚀"
   },
-  "onboarding": {
-    "skip": "Saltar ✕",
-    "next": "Seguinte",
-    "fallbackCity": "a tua cidade",
-    "slide1": {
-      "title": "Become local. Anywhere.",
-      "body": "Hilads é a app que transforma viajantes em locais - e ajuda os locais a partilhar o que faz a sua cidade ganhar vida."
-    },
-    "slide2": {
-      "title": "Três formas de viver a cidade",
-      "itemChallenges": "🤝 Desafios - desafia ou deixa-te desafiar para descobrir sítios escondidos, provar comida a sério, partilhar cultura ou dar uma mão.",
-      "itemHangouts": "🗣️ Hi now - conhece alguém de forma espontânea",
-      "itemEvents": "🎉 Hi plan - planeia um momento para se verem"
-    },
-    "slide3": {
-      "title": "Conquista o teu lugar na cidade",
-      "body": "Cada desafio que completas, cada encontro, cada sítio que descobres dá-te pontos. Os pontos refletem o quanto te tornaste local em {{city}}. Chega ao topo de Most Local e conquista o teu lugar entre quem faz a cidade ganhar vida."
-    },
-    "slide4": {
-      "title": "Pronto para começar?",
-      "ctaChallenge": "📍 Lança o teu primeiro desafio em {{city}}",
-      "ctaMostLocal": "🤝 Descobre Most Local de {{city}}",
-      "ctaLookAround": "👀 Só dar uma vista de olhos",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Como funcionam os desafios",
-    "slide1": {
-      "title": "Os desafios transformam viagens em histórias",
-      "body": "Locais e viajantes desafiam-se para dar vida à cidade a sério - comida, sítios, cultura, ajuda. A recompensa? Encontrarem-se pessoalmente - ou enviar prova à distância."
-    },
-    "slide2": {
-      "title": "Lança o teu desafio",
-      "body": "Comida, sítio, cultura ou ajuda. Escolhe para quem, quantas vagas e como vão fechar - encontrando-se ou por foto."
-    },
-    "slide3": {
-      "title": "Alguém aceita-o",
-      "body": "Enviam-te um pedido. Tu vês e aceitas - o vosso fio privado abre para conversar e combinar."
-    },
-    "slide4": {
-      "title": "Encontro ou prova por foto",
-      "body": "Encontrem-se pessoalmente ou enviem uma foto à distância - tu decides. De qualquer forma, cada passo é acompanhado."
-    },
-    "slide5": {
-      "title": "Fecha o desafio",
-      "body": "Depois do encontro (ou quando a foto chegar), marca como concluído. A tua cidade, vivida a sério - um desafio de cada vez."
-    },
-    "next": "Seguinte",
-    "done": "Percebi!",
-    "skip": "Saltar ✕",
-    "slide6": {
-      "title": "Para além da tua cidade",
-      "body": "Desafia qualquer pessoa, em qualquer lugar. A pessoa envia prova - uma foto geolocalizada - e tu validas à distância. O mesmo fluxo de foto também serve no local. Local ou global, cada desafio conta."
-    },
-    "slide7": {
-      "title": "Torna-te o Most Local",
-      "body": "Cada desafio dá-te pontos - na tua cidade E no mundo. Encontrem-se em pessoa para um bónus de +50. Local ou viajante, o que importa é o que constróis aqui. Tabela nova todos os meses."
-    },
-    "createCta": "🔥 Criar um desafio"
-  },
   "share": {
     "title": "Partilha algo 👀",
     "snap": "Tira uma foto",
@@ -111,7 +49,6 @@
   "connectionHint": "Verifica a tua ligação e tenta novamente.",
   "notifications": "Notificações",
   "messages": "Mensagens",
-  "howItWorks": "Como funciona o Hilads",
   "someone": "Alguém",
   "photoLabel": "📷 Foto",
   "openSettings": "Abrir definições",
@@ -244,5 +181,7 @@
     "requiredTitle": "Atualiza o Hilads",
     "requiredBody": "Esta versão já não é suportada. Atualiza a app para continuares a usar o Hilads."
   },
-  "mapSoon": "O mapa de spots chega em breve."
+  "mapSoon": "O mapa de spots chega em breve.",
+  "firstLaunch": "Um challenge local por dia.",
+  "signUp": "Registar"
 }
