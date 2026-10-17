@@ -74,7 +74,9 @@
     "permCameraBody": "Autorise l'appareil photo dans tes réglages pour prendre une photo.",
     "photoRequired": "Ajoute d'abord une photo.",
     "locationOff": "La localisation est coupée, ce lieu ne peut pas être épinglé.",
-    "editOnlyActive": "Tu peux modifier ta preuve jusqu'à la fin du challenge."
+    "editOnlyActive": "Tu peux modifier ta preuve jusqu'à la fin du challenge.",
+    "takeTitle": "Prends ta photo",
+    "retake": "Reprendre"
   },
   "errors": {
     "already_posted": "Tu as déjà posté une preuve pour le challenge du jour.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Cette photo ne peut pas être utilisée. Essaie une autre.",
     "invalid_caption": "La légende est trop longue.",
     "invalid_price": "Vérifie le montant et la devise.",
-    "invalid_place": "Ce lieu ne peut pas être épinglé.",
+    "invalid_place": "Choisis un seul lieu.",
     "rate_limited": "Trop d'essais - attends un peu.",
     "image_processing_failed": "Cette photo ne peut pas être traitée. Essaie une autre.",
-    "generic": "Un souci est survenu. Réessaie."
+    "generic": "Un souci est survenu. Réessaie.",
+    "place_required": "Choisis le lieu de ta preuve.",
+    "place_not_allowed": "Ce challenge n'a pas de lieu.",
+    "place_not_found": "Ce lieu n'est plus disponible. Choisis-en un autre.",
+    "invalid_place_name": "Le nom du lieu doit faire de 1 à 80 caractères.",
+    "place_name_blocked": "Ce nom de lieu a été signalé. Reformule-le.",
+    "invalid_position": "Ta position est nécessaire pour publier cette preuve.",
+    "too_far": "Tu es trop loin de ce lieu."
   },
   "push": {
     "bannerTitle": "Reçois le Daily Challenge chaque matin",
@@ -380,5 +389,42 @@
     "seeOnMap": "Voir sur la carte",
     "notFound": "Ce spot n'est pas disponible.",
     "local": "Local"
+  },
+  "place": {
+    "title": "Où es-tu ?",
+    "why": "Ta position sert une fois à lister les lieux autour de toi et à vérifier que tu y es. Elle n'est jamais enregistrée.",
+    "find": "Trouver les lieux autour de moi",
+    "locating": "On cherche où tu es…",
+    "deniedTitle": "La localisation est désactivée",
+    "deniedBody": "Ce challenge se passe dans un lieu : ta position sert à vérifier que tu y es.",
+    "failedTitle": "Ta position n'est pas disponible",
+    "failedBody": "Vérifie que la localisation est activée et réessaie, si possible dehors.",
+    "openSettings": "Ouvrir les réglages",
+    "retry": "Réessayer",
+    "approximate": "Ta position est approximative (±{{m}} m). Sors ou patiente un instant, puis actualise.",
+    "refresh": "Actualiser ma position",
+    "search": "Chercher parmi les lieux",
+    "inReview": "en validation",
+    "newTitle": "Nouveau lieu",
+    "notListed": "Pas dans la liste ? Ajoute-le.",
+    "noneNearby": "Pas encore de lieu Hilads ici : ajoute celui-ci.",
+    "nameLabel": "Nom du lieu",
+    "namePlaceholder": "ex. Cơm tấm Ba Ghiền",
+    "newHint": "Ta position devient sa position. Il apparaît sur la carte une fois vérifié.",
+    "useNew": "Choisir ce lieu",
+    "backToList": "Revenir aux lieux proches",
+    "at": "À {{name}}",
+    "none": "Pas encore de lieu",
+    "change": "Changer",
+    "tooFar": "Tu es à {{distance}} de {{name}}. Rapproche-toi à moins de {{radius}} m et réessaie.",
+    "tryAgain": "J'y suis, réessayer",
+    "pickAnother": "Choisir un autre lieu",
+    "newOnMapLater": "Ton nouveau lieu apparaîtra sur la carte une fois validé."
+  },
+  "stamp": {
+    "title": "Nouveau tampon : {{theme}}",
+    "body": "Ton passeport de {{city}} a un nouveau tampon.",
+    "ok": "Super",
+    "close": "Fermer"
   }
 }

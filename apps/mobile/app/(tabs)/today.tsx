@@ -11,6 +11,7 @@ import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
 import { TodayTop3 } from '@/features/today/TodayTop3';
 import { SpotsNear } from '@/features/today/SpotsNear';
+import { StampCelebration } from '@/features/today/StampCelebration';
 
 /**
  * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, the week
@@ -21,7 +22,7 @@ import { SpotsNear } from '@/features/today/SpotsNear';
 export default function TodayScreen() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { city } = useApp();
+  const { city, account } = useApp();
   const daily = useDailyToday(city?.channelId);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -46,6 +47,7 @@ export default function TodayScreen() {
         <TodayTop3 today={daily.data} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
       </ScrollView>
+      <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />
     </SafeAreaView>
   );
 }

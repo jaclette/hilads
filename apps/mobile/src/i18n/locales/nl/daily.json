@@ -74,7 +74,9 @@
     "permCameraBody": "Geef cameratoegang in je instellingen om een foto te maken.",
     "photoRequired": "Voeg eerst een foto toe.",
     "locationOff": "Locatie staat uit, dus deze plek kan niet worden vastgepind.",
-    "editOnlyActive": "Je kunt je bewijs bewerken tot de challenge afloopt."
+    "editOnlyActive": "Je kunt je bewijs bewerken tot de challenge afloopt.",
+    "takeTitle": "Maak je foto",
+    "retake": "Opnieuw"
   },
   "errors": {
     "already_posted": "Je hebt al een bewijs gepost voor de challenge van vandaag.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Deze foto kan niet worden gebruikt. Probeer een andere.",
     "invalid_caption": "Het bijschrift is te lang.",
     "invalid_price": "Check het bedrag en de valuta.",
-    "invalid_place": "Deze plek kan niet worden vastgepind.",
+    "invalid_place": "Kies één plek.",
     "rate_limited": "Te veel pogingen - wacht even.",
     "image_processing_failed": "Deze foto kan niet worden verwerkt. Probeer een andere.",
-    "generic": "Er ging iets mis. Probeer het opnieuw."
+    "generic": "Er ging iets mis. Probeer het opnieuw.",
+    "place_required": "Kies de plek van je bewijs.",
+    "place_not_allowed": "Deze challenge heeft geen plek.",
+    "place_not_found": "Die plek is niet meer beschikbaar. Kies een andere.",
+    "invalid_place_name": "De naam van de plek moet 1 tot 80 tekens zijn.",
+    "place_name_blocked": "Die plaatsnaam is gemarkeerd. Formuleer hem anders.",
+    "invalid_position": "Je locatie is nodig om dit bewijs te posten.",
+    "too_far": "Je bent te ver van deze plek."
   },
   "push": {
     "bannerTitle": "Krijg elke ochtend de Daily Challenge",
@@ -380,5 +389,42 @@
     "seeOnMap": "Bekijk op de kaart",
     "notFound": "Deze spot is niet beschikbaar.",
     "local": "Local"
+  },
+  "place": {
+    "title": "Waar ben je?",
+    "why": "Je locatie wordt één keer gebruikt om de plekken om je heen te tonen en te checken dat je er bent. Ze wordt nooit bewaard.",
+    "find": "Plekken om me heen zoeken",
+    "locating": "We zoeken waar je bent…",
+    "deniedTitle": "Locatie staat uit",
+    "deniedBody": "Deze challenge speelt zich af op een plek: je locatie is nodig om te checken dat je er bent.",
+    "failedTitle": "Je locatie is niet beschikbaar",
+    "failedBody": "Controleer of locatie aanstaat en probeer opnieuw, liefst buiten.",
+    "openSettings": "Instellingen openen",
+    "retry": "Opnieuw proberen",
+    "approximate": "Je locatie is onnauwkeurig (±{{m}} m). Ga naar buiten of wacht even en vernieuw.",
+    "refresh": "Mijn locatie vernieuwen",
+    "search": "Zoek in de plekken",
+    "inReview": "in controle",
+    "newTitle": "Nieuwe plek",
+    "notListed": "Staat hij niet in de lijst? Voeg hem toe.",
+    "noneNearby": "Hier is nog geen Hilads-plek: voeg deze toe.",
+    "nameLabel": "Naam van de plek",
+    "namePlaceholder": "bv. Cơm tấm Ba Ghiền",
+    "newHint": "Jouw locatie wordt zijn locatie. Hij staat op de kaart zodra hij gecontroleerd is.",
+    "useNew": "Deze plek gebruiken",
+    "backToList": "Terug naar plekken in de buurt",
+    "at": "Bij {{name}}",
+    "none": "Nog geen plek",
+    "change": "Wijzigen",
+    "tooFar": "Je bent {{distance}} van {{name}}. Kom binnen {{radius}} m en probeer opnieuw.",
+    "tryAgain": "Ik ben er, opnieuw",
+    "pickAnother": "Andere plek kiezen",
+    "newOnMapLater": "Je nieuwe plek verschijnt op de kaart zodra hij is goedgekeurd."
+  },
+  "stamp": {
+    "title": "Nieuwe stempel: {{theme}}",
+    "body": "Je paspoort van {{city}} heeft een nieuwe stempel.",
+    "ok": "Top",
+    "close": "Sluiten"
   }
 }

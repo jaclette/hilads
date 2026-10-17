@@ -14,6 +14,8 @@ export type GpsFeature =
 export interface GpsResult {
   ok: boolean;
   coords?: { lat: number; lng: number };
+  /** Horizontal accuracy in meters, when known (precise mode). */
+  accuracy?: number | null;
   reason?: 'denied' | 'services_off' | 'error';
   /** Permission permanently denied (canAskAgain=false) → offer a Settings deep link. */
   permanentlyDenied?: boolean;
@@ -27,7 +29,7 @@ export interface GpsResult {
  *  - Don't nag: a previously/permanently-denied user is not re-prompted.
  * The caller decides how to degrade (Hi now blocks + explains; others soft-fail).
  */
-export async function requestFeatureLocation(feature: GpsFeature): Promise<GpsResult> {
+export async function requestFeatureLocation(feature: GpsFeature, opts: { precise?: boolean } = {}): Promise<GpsResult> {
   try {
     const existing = await Location.getForegroundPermissionsAsync();
     let granted = existing.status === 'granted';
@@ -53,13 +55,20 @@ export async function requestFeatureLocation(feature: GpsFeature): Promise<GpsRe
     const servicesOn = await Location.hasServicesEnabledAsync().catch(() => true);
     if (!servicesOn) return { ok: false, reason: 'services_off' };
 
-    const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
-    const pos = last ?? (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
+    // precise: a fresh high-accuracy fix (the Daily proof's distance check, V3-08);
+    // otherwise a recent last-known position is enough.
+    const last = opts.precise ? null : await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
+    const pos = last ?? (opts.precise
+      ? await Promise.race([
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 15_000)),
+        ])
+      : await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
     const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     // Opportunistically fix a city that IP-geolocation placed wrong (no prompt -
     // we already have a real fix here). Fire-and-forget; never blocks the caller.
     runCityCorrection(coords);
-    return { ok: true, coords };
+    return { ok: true, coords, accuracy: pos.coords.accuracy ?? null };
   } catch {
     return { ok: false, reason: 'error' };
   }

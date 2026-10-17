@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
+  NearbyPlace,
   DailyArchive,
   DailyCalendar,
   DailyGuide,
@@ -91,6 +92,11 @@ export async function fetchDailyProof(id: string): Promise<DailyProof> {
 
 export async function createDailyProof(input: DailyProofInput): Promise<DailyProof> {
   return (await api.post<{ proof: DailyProof }>('/daily/proofs', input)).proof;
+}
+
+/** Hilads places within 100 m of the device, nearest first (the proof's place step). */
+export async function fetchNearbyPlaces(lat: number, lng: number): Promise<NearbyPlace[]> {
+  return (await api.get<{ items: NearbyPlace[] }>('/daily/places/nearby', { params: { lat: lat.toFixed(6), lng: lng.toFixed(6) } })).items;
 }
 
 export async function updateDailyProof(id: string, input: DailyProofInput): Promise<DailyProof> {

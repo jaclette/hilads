@@ -86,7 +86,12 @@ export type AnalyticsEvent =
   // V3-07: the map of spots (SPEC 9.13)
   | 'map_viewed'
   | 'map_filter_used'
-  | 'spot_opened';
+  | 'spot_opened'
+  // V3-08: the place-based proof (SPEC 9.13)
+  | 'place_picker_opened'
+  | 'place_picked'
+  | 'proof_too_far'
+  | 'stamp_earned';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

@@ -74,7 +74,9 @@
     "permCameraBody": "Cho phép truy cập máy ảnh trong cài đặt để chụp ảnh.",
     "photoRequired": "Hãy thêm ảnh trước.",
     "locationOff": "Vị trí đang tắt nên không thể ghim địa điểm này.",
-    "editOnlyActive": "Bạn có thể sửa bằng chứng cho đến khi challenge kết thúc."
+    "editOnlyActive": "Bạn có thể sửa bằng chứng cho đến khi challenge kết thúc.",
+    "takeTitle": "Chụp ảnh của bạn",
+    "retake": "Chụp lại"
   },
   "errors": {
     "already_posted": "Bạn đã đăng bằng chứng cho challenge hôm nay rồi.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Không dùng được ảnh này. Thử ảnh khác nhé.",
     "invalid_caption": "Chú thích quá dài.",
     "invalid_price": "Kiểm tra lại số tiền và đơn vị tiền tệ.",
-    "invalid_place": "Không thể ghim địa điểm này.",
+    "invalid_place": "Chỉ chọn một địa điểm.",
     "rate_limited": "Thử quá nhiều lần - đợi một chút nhé.",
     "image_processing_failed": "Không xử lý được ảnh này. Thử ảnh khác nhé.",
-    "generic": "Có lỗi xảy ra. Thử lại nhé."
+    "generic": "Có lỗi xảy ra. Thử lại nhé.",
+    "place_required": "Hãy chọn địa điểm cho bằng chứng.",
+    "place_not_allowed": "Challenge này không có địa điểm.",
+    "place_not_found": "Địa điểm này không còn nữa. Hãy chọn địa điểm khác.",
+    "invalid_place_name": "Tên địa điểm phải từ 1 đến 80 ký tự.",
+    "place_name_blocked": "Tên địa điểm này đã bị gắn cờ. Hãy viết lại.",
+    "invalid_position": "Cần vị trí của bạn để đăng bằng chứng này.",
+    "too_far": "Bạn đang ở quá xa địa điểm này."
   },
   "push": {
     "bannerTitle": "Nhận Daily Challenge mỗi sáng",
@@ -378,5 +387,42 @@
     "seeOnMap": "Xem trên bản đồ",
     "notFound": "Spot này không còn khả dụng.",
     "local": "Người địa phương"
+  },
+  "place": {
+    "title": "Bạn đang ở đâu?",
+    "why": "Vị trí của bạn chỉ được dùng một lần để liệt kê các địa điểm quanh bạn và xác nhận bạn đang ở đó. Vị trí không bao giờ được lưu.",
+    "find": "Tìm các địa điểm quanh tôi",
+    "locating": "Đang xác định vị trí của bạn…",
+    "deniedTitle": "Vị trí đang tắt",
+    "deniedBody": "Challenge này diễn ra tại một địa điểm: cần vị trí của bạn để xác nhận bạn đang ở đó.",
+    "failedTitle": "Chưa lấy được vị trí của bạn",
+    "failedBody": "Hãy kiểm tra vị trí đã bật và thử lại, tốt nhất là ở ngoài trời.",
+    "openSettings": "Mở cài đặt",
+    "retry": "Thử lại",
+    "approximate": "Vị trí của bạn chưa chính xác (±{{m}} m). Ra ngoài hoặc chờ một chút rồi làm mới.",
+    "refresh": "Làm mới vị trí",
+    "search": "Tìm trong các địa điểm",
+    "inReview": "đang duyệt",
+    "newTitle": "Địa điểm mới",
+    "notListed": "Không có trong danh sách? Thêm vào.",
+    "noneNearby": "Ở đây chưa có địa điểm Hilads nào: thêm địa điểm này.",
+    "nameLabel": "Tên địa điểm",
+    "namePlaceholder": "vd. Cơm tấm Ba Ghiền",
+    "newHint": "Vị trí của bạn sẽ là vị trí của nó. Địa điểm hiện trên bản đồ sau khi được duyệt.",
+    "useNew": "Chọn địa điểm này",
+    "backToList": "Quay lại các địa điểm gần đây",
+    "at": "Tại {{name}}",
+    "none": "Chưa có địa điểm",
+    "change": "Đổi",
+    "tooFar": "Bạn đang cách {{name}} {{distance}}. Hãy lại gần trong vòng {{radius}} m rồi thử lại.",
+    "tryAgain": "Tôi ở đây rồi, thử lại",
+    "pickAnother": "Chọn địa điểm khác",
+    "newOnMapLater": "Địa điểm mới của bạn sẽ hiện trên bản đồ sau khi được duyệt."
+  },
+  "stamp": {
+    "title": "Con dấu mới: {{theme}}",
+    "body": "Hộ chiếu {{city}} của bạn có thêm một con dấu.",
+    "ok": "Tuyệt",
+    "close": "Đóng"
   }
 }

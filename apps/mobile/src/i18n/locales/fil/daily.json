@@ -74,7 +74,9 @@
     "permCameraBody": "Payagan ang camera sa settings mo para makapag-picture.",
     "photoRequired": "Magdagdag muna ng photo.",
     "locationOff": "Naka-off ang location, kaya hindi ma-pin ang lugar na ito.",
-    "editOnlyActive": "Puwede mong i-edit ang proof mo hanggang matapos ang challenge."
+    "editOnlyActive": "Puwede mong i-edit ang proof mo hanggang matapos ang challenge.",
+    "takeTitle": "Kunan ang litrato mo",
+    "retake": "Kumuha ulit"
   },
   "errors": {
     "already_posted": "Nakapag-post ka na ng proof para sa challenge ngayong araw.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Hindi magagamit ang photo na 'yan. Subukan ang iba.",
     "invalid_caption": "Masyadong mahaba ang caption.",
     "invalid_price": "I-check ang halaga at currency.",
-    "invalid_place": "Hindi ma-pin ang lugar na 'yan.",
+    "invalid_place": "Isang lugar lang ang piliin.",
     "rate_limited": "Sobrang daming try - maghintay sandali.",
     "image_processing_failed": "Hindi ma-process ang photo na 'yan. Subukan ang iba.",
-    "generic": "May nangyaring mali. Subukan ulit."
+    "generic": "May nangyaring mali. Subukan ulit.",
+    "place_required": "Piliin ang lugar ng proof mo.",
+    "place_not_allowed": "Walang lugar ang challenge na ito.",
+    "place_not_found": "Hindi na available ang lugar na iyan. Pumili ng iba.",
+    "invalid_place_name": "Dapat 1 hanggang 80 character ang pangalan ng lugar.",
+    "place_name_blocked": "Na-flag ang pangalang iyan. Pakipalitan.",
+    "invalid_position": "Kailangan ang lokasyon mo para i-post ang proof na ito.",
+    "too_far": "Masyado kang malayo sa lugar na ito."
   },
   "push": {
     "bannerTitle": "Makuha ang Daily Challenge tuwing umaga",
@@ -380,5 +389,42 @@
     "seeOnMap": "Tingnan sa mapa",
     "notFound": "Hindi available ang spot na ito.",
     "local": "Local"
+  },
+  "place": {
+    "title": "Nasaan ka?",
+    "why": "Isang beses lang gagamitin ang lokasyon mo para ilista ang mga lugar sa paligid at tiyaking nandoon ka. Hindi ito sine-save.",
+    "find": "Hanapin ang mga lugar sa paligid ko",
+    "locating": "Hinahanap kung nasaan ka…",
+    "deniedTitle": "Naka-off ang location",
+    "deniedBody": "Sa isang lugar nangyayari ang challenge na ito: kailangan ang lokasyon mo para tiyaking nandoon ka.",
+    "failedTitle": "Hindi available ang lokasyon mo",
+    "failedBody": "Tiyaking naka-on ang location at subukan ulit, mas mabuti kung nasa labas.",
+    "openSettings": "Buksan ang settings",
+    "retry": "Subukan ulit",
+    "approximate": "Tantiya lang ang lokasyon mo (±{{m}} m). Lumabas o maghintay sandali, saka i-refresh.",
+    "refresh": "I-refresh ang lokasyon ko",
+    "search": "Maghanap sa mga lugar",
+    "inReview": "sinusuri",
+    "newTitle": "Bagong lugar",
+    "notListed": "Wala sa listahan? Idagdag ito.",
+    "noneNearby": "Wala pang Hilads na lugar dito: idagdag ito.",
+    "nameLabel": "Pangalan ng lugar",
+    "namePlaceholder": "hal. Cơm tấm Ba Ghiền",
+    "newHint": "Ang lokasyon mo ang magiging lokasyon nito. Lalabas ito sa mapa kapag nasuri na.",
+    "useNew": "Gamitin ang lugar na ito",
+    "backToList": "Bumalik sa mga kalapit na lugar",
+    "at": "Sa {{name}}",
+    "none": "Wala pang lugar",
+    "change": "Palitan",
+    "tooFar": "{{distance}} ang layo mo sa {{name}}. Lumapit hanggang {{radius}} m at subukan ulit.",
+    "tryAgain": "Nandito na ako, subukan ulit",
+    "pickAnother": "Pumili ng ibang lugar",
+    "newOnMapLater": "Lalabas sa mapa ang bago mong lugar kapag naaprubahan na."
+  },
+  "stamp": {
+    "title": "Bagong tatak: {{theme}}",
+    "body": "May bagong tatak ang pasaporte mo sa {{city}}.",
+    "ok": "Ayos",
+    "close": "Isara"
   }
 }

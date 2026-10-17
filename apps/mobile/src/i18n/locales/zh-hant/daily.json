@@ -74,7 +74,9 @@
     "permCameraBody": "請在設定中允許存取相機，才能拍照。",
     "photoRequired": "請先新增一張照片。",
     "locationOff": "定位已關閉，無法標記這個地點。",
-    "editOnlyActive": "在 challenge 結束前，你都可以編輯你的證明。"
+    "editOnlyActive": "在 challenge 結束前，你都可以編輯你的證明。",
+    "takeTitle": "拍下你的照片",
+    "retake": "重拍"
   },
   "errors": {
     "already_posted": "你已經為今天的 challenge 發布過證明了。",
@@ -85,10 +87,17 @@
     "invalid_photo": "這張照片無法使用。換一張試試。",
     "invalid_caption": "說明太長了。",
     "invalid_price": "請檢查金額和幣別。",
-    "invalid_place": "這個地點無法標記。",
+    "invalid_place": "只能選擇一個地點。",
     "rate_limited": "嘗試次數太多 - 請稍等一下。",
     "image_processing_failed": "這張照片無法處理。換一張試試。",
-    "generic": "發生錯誤。請再試一次。"
+    "generic": "發生錯誤。請再試一次。",
+    "place_required": "請選擇證明的地點。",
+    "place_not_allowed": "這個 challenge 沒有地點。",
+    "place_not_found": "該地點已無法使用，請選擇其他地點。",
+    "invalid_place_name": "地點名稱需為 1 到 80 個字元。",
+    "place_name_blocked": "該地點名稱被標記，請換個說法。",
+    "invalid_position": "發布此證明需要你的位置。",
+    "too_far": "你離這個地點太遠了。"
   },
   "push": {
     "bannerTitle": "每天早上收到 Daily Challenge",
@@ -378,5 +387,42 @@
     "seeOnMap": "在地圖上查看",
     "notFound": "此地點無法使用。",
     "local": "在地人"
+  },
+  "place": {
+    "title": "你在哪裡？",
+    "why": "你的位置只會使用一次：列出你周圍的地點，並確認你就在那裡。位置永遠不會被儲存。",
+    "find": "尋找我周圍的地點",
+    "locating": "正在定位…",
+    "deniedTitle": "定位已關閉",
+    "deniedBody": "這個 challenge 發生在某個地點：需要你的位置來確認你就在那裡。",
+    "failedTitle": "無法取得你的位置",
+    "failedBody": "請確認定位已開啟並重試，最好在戶外。",
+    "openSettings": "開啟設定",
+    "retry": "重試",
+    "approximate": "你的位置不夠精確（±{{m}} 公尺）。到戶外或稍等片刻，然後重新整理。",
+    "refresh": "重新整理我的位置",
+    "search": "搜尋附近地點",
+    "inReview": "審核中",
+    "newTitle": "新地點",
+    "notListed": "清單裡沒有？新增它。",
+    "noneNearby": "這裡還沒有 Hilads 地點：新增這個吧。",
+    "nameLabel": "地點名稱",
+    "namePlaceholder": "例如 Cơm tấm Ba Ghiền",
+    "newHint": "你的位置就是它的位置。審核通過後會出現在地圖上。",
+    "useNew": "使用這個地點",
+    "backToList": "返回附近地點",
+    "at": "在 {{name}}",
+    "none": "還沒有地點",
+    "change": "更改",
+    "tooFar": "你距離{{name}}{{distance}}。請走到 {{radius}} 公尺以內再試。",
+    "tryAgain": "我到了，再試一次",
+    "pickAnother": "選擇其他地點",
+    "newOnMapLater": "你的新地點審核通過後會出現在地圖上。"
+  },
+  "stamp": {
+    "title": "新印章：{{theme}}",
+    "body": "你的{{city}}護照多了一枚新印章。",
+    "ok": "太好了",
+    "close": "關閉"
   }
 }

@@ -74,7 +74,9 @@
     "permCameraBody": "写真を撮るには、設定でカメラへのアクセスを許可してください。",
     "photoRequired": "先に写真を追加してください。",
     "locationOff": "位置情報がオフなので、この場所はピン留めできません。",
-    "editOnlyActive": "challenge が終わるまで証明を編集できます。"
+    "editOnlyActive": "challenge が終わるまで証明を編集できます。",
+    "takeTitle": "写真を撮ろう",
+    "retake": "撮り直す"
   },
   "errors": {
     "already_posted": "今日の challenge にはもう証明を投稿済みです。",
@@ -85,10 +87,17 @@
     "invalid_photo": "この写真は使えません。別の写真を試してください。",
     "invalid_caption": "キャプションが長すぎます。",
     "invalid_price": "金額と通貨を確認してください。",
-    "invalid_place": "この場所はピン留めできません。",
+    "invalid_place": "場所は1つだけ選んでください。",
     "rate_limited": "試行回数が多すぎます - 少し待ってください。",
     "image_processing_failed": "この写真は処理できません。別の写真を試してください。",
-    "generic": "問題が発生しました。もう一度試してください。"
+    "generic": "問題が発生しました。もう一度試してください。",
+    "place_required": "プルーフの場所を選んでください。",
+    "place_not_allowed": "この challenge には場所がありません。",
+    "place_not_found": "その場所は利用できなくなりました。別の場所を選んでください。",
+    "invalid_place_name": "場所の名前は1〜80文字にしてください。",
+    "place_name_blocked": "その場所の名前は報告されました。言い換えてください。",
+    "invalid_position": "このプルーフを投稿するには位置情報が必要です。",
+    "too_far": "この場所から遠すぎます。"
   },
   "push": {
     "bannerTitle": "毎朝 Daily Challenge を受け取ろう",
@@ -380,5 +389,42 @@
     "seeOnMap": "地図で見る",
     "notFound": "このスポットは利用できません。",
     "local": "ローカル"
+  },
+  "place": {
+    "title": "どこにいますか？",
+    "why": "位置情報は一度だけ使われ、周辺の場所を表示し、あなたがそこにいるかを確認します。保存されることはありません。",
+    "find": "周りの場所を探す",
+    "locating": "現在地を確認中…",
+    "deniedTitle": "位置情報がオフです",
+    "deniedBody": "この challenge は特定の場所で行います。そこにいることを確認するために位置情報が必要です。",
+    "failedTitle": "現在地を取得できません",
+    "failedBody": "位置情報がオンになっているか確認して、できれば屋外でもう一度試してください。",
+    "openSettings": "設定を開く",
+    "retry": "もう一度",
+    "approximate": "位置が大まかです（±{{m}} m）。屋外に出るか少し待ってから更新してください。",
+    "refresh": "現在地を更新",
+    "search": "場所を検索",
+    "inReview": "確認中",
+    "newTitle": "新しい場所",
+    "notListed": "リストにない？追加しよう。",
+    "noneNearby": "ここにはまだ Hilads の場所がありません。この場所を追加しよう。",
+    "nameLabel": "場所の名前",
+    "namePlaceholder": "例：Cơm tấm Ba Ghiền",
+    "newHint": "あなたの位置がこの場所の位置になります。確認後にマップに表示されます。",
+    "useNew": "この場所にする",
+    "backToList": "近くの場所に戻る",
+    "at": "{{name}}にて",
+    "none": "場所はまだありません",
+    "change": "変更",
+    "tooFar": "{{name}}まで{{distance}}あります。{{radius}} m 以内に近づいてもう一度試してください。",
+    "tryAgain": "着いた、もう一度",
+    "pickAnother": "別の場所を選ぶ",
+    "newOnMapLater": "新しい場所は承認後にマップに表示されます。"
+  },
+  "stamp": {
+    "title": "新しいスタンプ：{{theme}}",
+    "body": "{{city}}のパスポートに新しいスタンプが押されました。",
+    "ok": "やった",
+    "close": "閉じる"
   }
 }

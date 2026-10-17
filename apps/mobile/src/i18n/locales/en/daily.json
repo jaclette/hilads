@@ -74,7 +74,9 @@
     "permCameraBody": "Allow camera access in your settings to take a photo.",
     "photoRequired": "Add a photo first.",
     "locationOff": "Location is off, so this place can't be pinned.",
-    "editOnlyActive": "You can edit your proof until the challenge ends."
+    "editOnlyActive": "You can edit your proof until the challenge ends.",
+    "takeTitle": "Take your photo",
+    "retake": "Retake"
   },
   "errors": {
     "already_posted": "You already posted a proof for today's challenge.",
@@ -85,10 +87,17 @@
     "invalid_photo": "That photo can't be used. Try another one.",
     "invalid_caption": "The caption is too long.",
     "invalid_price": "Check the amount and the currency.",
-    "invalid_place": "That place can't be pinned.",
+    "invalid_place": "Pick one place.",
     "rate_limited": "Too many tries - wait a moment.",
     "image_processing_failed": "That photo can't be processed. Try another one.",
-    "generic": "Something went wrong. Try again."
+    "generic": "Something went wrong. Try again.",
+    "place_required": "Pick the place of your proof.",
+    "place_not_allowed": "This challenge has no place.",
+    "place_not_found": "That place is no longer available. Pick another one.",
+    "invalid_place_name": "The place name must be 1 to 80 characters.",
+    "place_name_blocked": "That place name was flagged. Please rephrase it.",
+    "invalid_position": "Your position is needed to post this proof.",
+    "too_far": "You're too far from this place."
   },
   "push": {
     "bannerTitle": "Get the Daily Challenge every morning",
@@ -380,5 +389,42 @@
     "seeOnMap": "See on the map",
     "notFound": "This spot is not available.",
     "local": "Local"
+  },
+  "place": {
+    "title": "Where are you?",
+    "why": "Your position is used once to list the places around you and check you're there. It's never stored.",
+    "find": "Find the places around me",
+    "locating": "Finding where you are…",
+    "deniedTitle": "Location is off",
+    "deniedBody": "This challenge happens at a place: your position is needed to check you're there.",
+    "failedTitle": "Your position isn't available",
+    "failedBody": "Check that location is on and try again, ideally outside.",
+    "openSettings": "Open settings",
+    "retry": "Try again",
+    "approximate": "Your position is approximate (±{{m}} m). Step outside or wait a moment, then refresh.",
+    "refresh": "Refresh my position",
+    "search": "Search the places here",
+    "inReview": "in review",
+    "newTitle": "New place",
+    "notListed": "Not in the list? Add it.",
+    "noneNearby": "No Hilads place here yet: add this one.",
+    "nameLabel": "Name of the place",
+    "namePlaceholder": "e.g. Cơm tấm Ba Ghiền",
+    "newHint": "Your position becomes its position. It shows on the map once it's checked.",
+    "useNew": "Use this place",
+    "backToList": "Back to the places nearby",
+    "at": "At {{name}}",
+    "none": "No place yet",
+    "change": "Change",
+    "tooFar": "You're {{distance}} from {{name}}. Get within {{radius}} m and try again.",
+    "tryAgain": "I'm here, try again",
+    "pickAnother": "Pick another place",
+    "newOnMapLater": "Your new place will show on the map once it's approved."
+  },
+  "stamp": {
+    "title": "New stamp: {{theme}}",
+    "body": "Your {{city}} passport has a new stamp.",
+    "ok": "Nice",
+    "close": "Close"
   }
 }

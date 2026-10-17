@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, Switch,
+  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView,
   Text, TextInput, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,12 +17,17 @@ import { track } from '@/services/analytics';
 import { askDailyPush } from '@/services/push';
 import { uploadFile } from '@/api/uploads';
 import { createDailyProof, dailyErrorCode, fetchDailyProof, fetchDailyToday, updateDailyProof } from '@/api/daily';
+import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
-import { LocationPicker } from '@/features/chat/LocationPicker';
+import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/PlaceStep';
+import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import type { DailyProof, DailyProofInput, DailyToday } from '@/types';
+
+/** A position older than this is refreshed before posting (the distance check). */
+const POSITION_MAX_AGE_MS = 2 * 60 * 1000;
 
 const CAPTION_MAX = 140;
 
@@ -41,18 +46,21 @@ const PROPOSE_NUDGE_KEY = 'hilads_daily_propose_nudge_at';
 const PROPOSE_NUDGE_EVERY_MS = 7 * 24 * 3600 * 1000;
 
 type Photo = { uri: string; mime: string | null; remoteUrl: string | null };
-type Pin = { lat: number; lng: number; name: string | null };
+type Step = 'place' | 'photo' | 'details';
+type TooFar = { distanceM: number; radiusM: number };
 
 /**
- * Daily Challenge proof: photo (camera or gallery, AUDIT Q5), optional caption
- * (one sentence, 140 max), optional price, optional pinned place (off by
- * default). /daily/proof creates, /daily/proof?edit=<id> edits. Every new or
- * edited proof goes to review before it is visible to others.
+ * Daily Challenge proof (SPEC 9.4, V3-08), in steps: for place themes, the
+ * place (an existing Hilads spot within 100 m, or a new place at my position),
+ * then the photo (camera only), then the caption and price. Language proofs
+ * skip the place. The backend checks I'm within 150 m of the spot; "too far"
+ * lets me retry from where I am or pick another place. /daily/proof creates,
+ * /daily/proof?edit=<id> edits. Every proof goes to review.
  */
 export default function DailyProofScreen() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const { account, city, identity } = useApp();
@@ -60,20 +68,25 @@ export default function DailyProofScreen() {
   const [today, setToday]       = useState<DailyToday | null>(null);
   const [original, setOriginal] = useState<DailyProof | null>(null);
   const [loading, setLoading]   = useState(true);
+  const [step, setStep]         = useState<Step>('photo');
+  const [place, setPlace]       = useState<PlaceChoice | null>(null);
+  const [position, setPosition] = useState<Position | null>(null);
   const [photo, setPhoto]       = useState<Photo | null>(null);
   const [caption, setCaption]   = useState('');
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
-  const [pin, setPin]           = useState<Pin | null>(null);
-  const [pickerCenter, setPickerCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [androidCamera, setAndroidCamera] = useState(false);
   const [sending, setSending]   = useState(false);
+  const [tooFar, setTooFar]     = useState<TooFar | null>(null);
   const started = useRef(false);
 
   // Proofs need an account (AUDIT Q4).
   useEffect(() => {
     if (!account) router.replace('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never);
   }, [account, router]);
+
+  const themeKey = today?.challenge?.theme?.key ?? null;
+  const needsPlace = themeKey !== null && themeKey !== 'language';
 
   useEffect(() => {
     let alive = true;
@@ -87,12 +100,15 @@ export default function DailyProofScreen() {
         setToday(d);
         // Already posted today: "new proof" edits that one instead.
         if (!p && d.myProof && d.myProof.status !== 'removed') p = d.myProof;
+        const placeTheme = !!d.challenge?.theme && d.challenge.theme.key !== 'language';
         if (p) {
           setOriginal(p);
           setPhoto({ uri: p.photoUrl, mime: null, remoteUrl: p.photoUrl });
           setCaption(p.caption ?? '');
           if (p.price) { setAmount(String(p.price.amount)); setCurrency(p.price.currency); }
-          if (p.place) setPin({ lat: p.place.lat, lng: p.place.lng, name: p.place.name });
+          setStep('details');
+        } else {
+          setStep(placeTheme ? 'place' : 'photo');
         }
       } catch {
         if (alive) Alert.alert(t('errors.generic'));
@@ -109,76 +125,105 @@ export default function DailyProofScreen() {
     track('daily_proof_started', dailyTrackProps(today, account?.mode));
   }, [edit, today, account?.mode]);
 
-  // ── Photo ────────────────────────────────────────────────────────────────
+  // ── Photo: camera only (SPEC 9.4) ────────────────────────────────────────
   const takePhoto = async () => {
     // Android: in-app camera (launchCameraAsync hangs on Android 14 + singleTask).
     if (Platform.OS === 'android') { setAndroidCamera(true); return; }
     const cam = await ImagePicker.requestCameraPermissionsAsync();
     if (cam.status !== 'granted') { Alert.alert(t('proof.permCameraTitle'), t('proof.permCameraBody')); return; }
     const pick = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, cameraType: ImagePicker.CameraType.back });
-    if (!pick.canceled && pick.assets?.[0]) setPhoto({ uri: pick.assets[0].uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+    if (!pick.canceled && pick.assets?.[0]) gotPhoto({ uri: pick.assets[0].uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+  };
+  const gotPhoto = (p: Photo) => {
+    setPhoto(p);
+    setStep('details');
   };
 
-  const pickFromGallery = async () => {
-    const lib = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (lib.status !== 'granted') { Alert.alert(t('proof.permPhotoTitle'), t('proof.permPhotoBody')); return; }
-    const pick = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85 });
-    if (!pick.canceled && pick.assets?.[0]) setPhoto({ uri: pick.assets[0].uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+  const onPlace = (choice: PlaceChoice, pos: Position) => {
+    setPlace(choice);
+    setPosition(pos);
+    setTooFar(null);
+    setStep(photo ? 'details' : 'photo');
   };
 
-  // ── Place (explicit opt-in, off by default) ──────────────────────────────
-  const onPinToggle = async (on: boolean) => {
-    if (!on) { setPin(null); return; }
-    const geo = await requestFeatureLocation('challenge_proof');
-    if (!geo.ok || !geo.coords) { Alert.alert(t('proof.locationOff')); return; }
-    setPickerCenter(geo.coords);
+  /** The position to send: the place step's, refreshed when it is old. */
+  const freshPosition = async (force = false): Promise<Position | null> => {
+    if (!force && position && Date.now() - position.at < POSITION_MAX_AGE_MS) return position;
+    const geo = await requestFeatureLocation('challenge_proof', { precise: true });
+    if (!geo.ok || !geo.coords) return null;
+    const pos = { ...geo.coords, accuracy: geo.accuracy ?? null, at: Date.now() };
+    setPosition(pos);
+    return pos;
   };
 
   // ── Submit ───────────────────────────────────────────────────────────────
-  const submit = async () => {
+  const submit = async (forcePosition = false) => {
     if (sending) return;
     if (!photo) { Alert.alert(t('proof.photoRequired')); return; }
+    if (needsPlace && !place && !original) { setStep('place'); return; }
     const parsedAmount = parseAmount(amount);
     if (parsedAmount !== null && (!Number.isFinite(parsedAmount) || parsedAmount < 0 || !/^[A-Z]{3}$/.test(currency))) {
       Alert.alert(t('errors.invalid_price')); return;
     }
 
     setSending(true);
+    setTooFar(null);
     try {
-      const photoUrl = photo.remoteUrl ?? (await uploadFile(photo.uri, photo.mime)).url;
       const input: DailyProofInput = {
         caption: caption.trim() === '' ? null : caption.trim(),
         price:   parsedAmount === null ? null : { amount: parsedAmount, currency },
-        place:   pin ? { lat: pin.lat, lng: pin.lng, name: pin.name } : null,
       };
+      // The place, in the V3 format (V3-02). An edit that keeps its place sends none.
+      if (needsPlace && place) {
+        const pos = await freshPosition(forcePosition);
+        if (!pos) { Alert.alert(t('place.failedTitle'), t('place.failedBody')); return; }
+        input.position = { lat: pos.lat, lng: pos.lng };
+        if (place.kind === 'spot') input.spotId = place.spot.id;
+        else input.newPlace = { name: place.name };
+      }
+      const photoUrl = photo.remoteUrl ?? (await uploadFile(photo.uri, photo.mime)).url;
       if (!original || photoUrl !== original.photoUrl) input.photoUrl = photoUrl;
+      // The upload is done: keep it if a retry is needed.
+      if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
 
       const saved = original ? await updateDailyProof(original.id, input) : await createDailyProof(input);
       track('daily_proof_posted', {
         ...dailyTrackProps({ challenge: today?.challenge ?? null, city: today?.city ?? null, myProof: saved }, account?.mode),
-        edit: !!original, has_caption: !!input.caption, has_price: !!input.price, has_place: !!input.place,
+        edit: !!original, has_caption: !!input.caption, has_price: !!input.price,
+        has_place: !!saved.spot, new_place: input.newPlace !== undefined,
       });
 
-      if (original) { router.back(); return; }
+      // An existing spot shows on the map at once; a new place after review.
+      const spot = saved.spot ?? null;
+      const next = spot && !spot.inReview ? `/(tabs)/map?spot=${spot.id}&source=proof` : '/(tabs)/today';
+      if (original) { router.replace(next as never); return; }
       // In-context push ask after the first proof (AUDIT Q9), once, then go on.
-      const afterProof = async (next: string) => {
+      const afterProof = async (to: string) => {
         const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
         if (!done) {
           await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
           await askDailyPush('first_proof', identity?.guestId);
         }
-        router.replace(next as never);
+        router.replace(to as never);
       };
       // "Propose a challenge" nudge (V2-06), at most once a week.
       const lastNudge = Number(await AsyncStorage.getItem(PROPOSE_NUDGE_KEY).catch(() => null)) || 0;
       const nudge = Date.now() - lastNudge > PROPOSE_NUDGE_EVERY_MS;
       if (nudge) AsyncStorage.setItem(PROPOSE_NUDGE_KEY, String(Date.now())).catch(() => {});
-      Alert.alert(t('proof.sentTitle'), t('proof.sentBody'), [
-        ...(nudge ? [{ text: `💡 ${t('propose.cta')}`, onPress: () => afterProof('/daily/propose?source=after_proof') }] : []),
-        { text: t('proof.ok'), onPress: () => afterProof('/daily/today') },
+      const body = spot?.inReview ? `${t('proof.sentBody')}\n\n${t('place.newOnMapLater')}` : t('proof.sentBody');
+      Alert.alert(t('proof.sentTitle'), body, [
+        ...(nudge ? [{ text: t('propose.cta'), onPress: () => afterProof('/daily/propose?source=after_proof') }] : []),
+        { text: t('proof.ok'), onPress: () => afterProof(next) },
       ]);
     } catch (err) {
       const code = dailyErrorCode(err);
+      if (code === 'too_far' && err instanceof ApiError) {
+        const far = { distanceM: Number(err.body?.distanceM ?? 0), radiusM: Number(err.body?.radiusM ?? 150) };
+        setTooFar(far);
+        track('proof_too_far', { distance_m: far.distanceM, radius_m: far.radiusM, theme: themeKey });
+        return;
+      }
+      if (code === 'place_not_found' || code === 'place_required') { setPlace(null); setStep('place'); }
       Alert.alert(code ? t(`errors.${code}`, { defaultValue: t('errors.generic') }) : t('errors.generic'));
     } finally {
       setSending(false);
@@ -187,44 +232,73 @@ export default function DailyProofScreen() {
 
   const challenge = today?.challenge ?? null;
   const closed = !loading && (!challenge || (original !== null && !challenge.isActive));
+  const placeName = place ? (place.kind === 'spot' ? place.spot.name : place.name) : original?.spot?.name ?? null;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="chevron-back" size={20} color={colors.text} />
+        <TouchableOpacity
+          style={styles.back}
+          onPress={() => (step === 'details' && !original && needsPlace ? setStep('place') : router.back())}
+          accessibilityRole="button"
+          accessibilityLabel={t('back')}
+        >
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.navTitle}>{original ? t('proof.titleEdit') : t('proof.titleNew')}</Text>
       </View>
+      {challenge && !loading && !closed && <Text style={styles.challenge} numberOfLines={3}>{challenge.text}</Text>}
 
       {loading ? (
-        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : closed ? (
         <View style={styles.center}><Text style={styles.muted}>{challenge ? t('proof.editOnlyActive') : t('errors.no_active_challenge')}</Text></View>
+      ) : step === 'place' ? (
+        <PlaceStep theme={themeKey} onPicked={onPlace} />
+      ) : step === 'photo' ? (
+        <View style={styles.center}>
+          <View style={styles.icon}><Ionicons name="camera-outline" size={32} color={colors.primaryOnTint} /></View>
+          <Text style={styles.stepTitle}>{t('proof.takeTitle')}</Text>
+          {placeName && <Text style={styles.muted}>{t('place.at', { name: placeName })}</Text>}
+          <TouchableOpacity style={styles.cta} onPress={takePhoto} accessibilityRole="button">
+            <Ionicons name="camera" size={20} color={colors.white} />
+            <Text style={styles.ctaText}>{t('proof.camera')}</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-            {challenge && <Text style={styles.challenge}>🔥 {challenge.text}</Text>}
-
-            {photo ? (
+            {photo && (
               <View style={styles.photoWrap}>
                 <Image source={{ uri: photo.uri }} style={styles.photo} contentFit="cover" />
-                <View style={styles.photoActions}>
-                  <TouchableOpacity style={styles.smallBtn} onPress={takePhoto}><Text style={styles.smallBtnText}>📷 {t('proof.camera')}</Text></TouchableOpacity>
-                  <TouchableOpacity style={styles.smallBtn} onPress={pickFromGallery}><Text style={styles.smallBtnText}>🖼️ {t('proof.gallery')}</Text></TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.retake} onPress={takePhoto} accessibilityRole="button">
+                  <Ionicons name="camera-outline" size={18} color={colors.text} />
+                  <Text style={styles.retakeText}>{t('proof.retake')}</Text>
+                </TouchableOpacity>
               </View>
-            ) : (
-              <View style={styles.photoEmpty}>
-                <Text style={styles.photoEmptyText}>{t('proof.addPhoto')}</Text>
-                <View style={styles.photoChoices}>
-                  <TouchableOpacity style={styles.bigBtn} onPress={takePhoto} accessibilityRole="button">
-                    <Ionicons name="camera" size={26} color={colors.accentText} />
-                    <Text style={styles.bigBtnText}>{t('proof.camera')}</Text>
+            )}
+
+            {needsPlace && (
+              <View style={styles.placeRow}>
+                <Ionicons name="location-outline" size={20} color={colors.primaryText} />
+                <Text style={styles.placeName} numberOfLines={1}>{placeName ?? t('place.none')}</Text>
+                <TouchableOpacity onPress={() => setStep('place')} accessibilityRole="button" hitSlop={8}>
+                  <Text style={styles.link}>{t('place.change')}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {tooFar && (
+              <View style={styles.tooFar} accessibilityRole="alert">
+                <Text style={styles.tooFarText}>
+                  {t('place.tooFar', { distance: distance(tooFar.distanceM, i18n.language), name: placeName ?? '', radius: tooFar.radiusM })}
+                </Text>
+                <View style={styles.tooFarActions}>
+                  <TouchableOpacity style={[styles.smallBtn, styles.smallPrimary]} onPress={() => submit(true)} accessibilityRole="button">
+                    <Text style={styles.smallPrimaryText}>{t('place.tryAgain')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.bigBtn} onPress={pickFromGallery} accessibilityRole="button">
-                    <Ionicons name="images" size={26} color={colors.accentText} />
-                    <Text style={styles.bigBtnText}>{t('proof.gallery')}</Text>
+                  <TouchableOpacity style={styles.smallBtn} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} accessibilityRole="button">
+                    <Text style={styles.smallBtnText}>{t('place.pickAnother')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -262,28 +336,10 @@ export default function DailyProofScreen() {
                 accessibilityLabel="Currency"
               />
             </View>
-
-            <View style={styles.pinRow}>
-              <View style={styles.flex}>
-                <Text style={styles.pinTitle}>📍 {t('proof.pin')}</Text>
-                <Text style={styles.muted}>{pin ? (pin.name || t('unnamedPlace')) : t('proof.pinHint')}</Text>
-              </View>
-              {pin && (
-                <TouchableOpacity onPress={() => setPickerCenter({ lat: pin.lat, lng: pin.lng })}>
-                  <Text style={styles.link}>{t('proof.pinChange')}</Text>
-                </TouchableOpacity>
-              )}
-              <Switch
-                value={!!pin}
-                onValueChange={onPinToggle}
-                trackColor={{ true: colors.accent, false: colors.border }}
-                accessibilityLabel={t('proof.pin')}
-              />
-            </View>
           </ScrollView>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={[styles.submit, (!photo || sending) && styles.submitOff]} onPress={submit} disabled={sending} accessibilityRole="button">
+            <TouchableOpacity style={[styles.submit, (!photo || sending) && styles.submitOff]} onPress={() => submit()} disabled={sending} accessibilityRole="button">
               {sending ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitText}>{original ? t('proof.save') : t('proof.submit')}</Text>}
             </TouchableOpacity>
           </View>
@@ -292,18 +348,9 @@ export default function DailyProofScreen() {
 
       <AndroidCameraCapture
         visible={androidCamera}
-        onCapture={uri => { setAndroidCamera(false); setPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); }}
+        onCapture={uri => { setAndroidCamera(false); gotPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); }}
         onClose={() => setAndroidCamera(false)}
       />
-      {pickerCenter && (
-        <LocationPicker
-          visible
-          initialLat={pickerCenter.lat}
-          initialLng={pickerCenter.lng}
-          onConfirm={r => { setPin({ lat: r.lat, lng: r.lng, name: r.place || null }); setPickerCenter(null); }}
-          onClose={() => setPickerCenter(null)}
-        />
-      )}
     </SafeAreaView>
   );
 }
@@ -311,34 +358,39 @@ export default function DailyProofScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:   { flex: 1, backgroundColor: c.bg },
   flex:        { flex: 1 },
-  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.md },
-  nav:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  back:        { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
+  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: 12 },
+  nav:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  back:        { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
   navTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  challenge:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingHorizontal: Spacing.md, paddingBottom: 6 },
+  icon:        { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  stepTitle:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
+  cta:         { alignSelf: 'stretch', flexDirection: 'row', gap: 8, minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
   body:        { padding: Spacing.md, gap: 8, paddingBottom: 30 },
-  challenge:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 8 },
-  photoEmpty:  { borderRadius: Radius.lg, borderWidth: 1, borderStyle: 'dashed', borderColor: c.accent, backgroundColor: c.bg2, padding: 18, gap: 14, alignItems: 'center' },
-  photoEmptyText: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
-  photoChoices:{ flexDirection: 'row', gap: 12 },
-  bigBtn:      { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 16, borderRadius: Radius.md, backgroundColor: c.bg3 },
-  bigBtnText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   photoWrap:   { gap: 8 },
-  photo:       { width: '100%', aspectRatio: 1, borderRadius: Radius.lg, backgroundColor: c.bg3 },
-  photoActions:{ flexDirection: 'row', gap: 8 },
-  smallBtn:    { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg2 },
-  smallBtnText:{ fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
-  label:       { fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 10 },
-  input:       { backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 12, fontSize: FontSizes.sm, color: c.text },
+  photo:       { width: '100%', aspectRatio: 1, borderRadius: 18, backgroundColor: c.bg3 },
+  retake:      { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  retakeText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  placeName:   { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  tooFar:      { gap: 10, padding: 14, borderRadius: 16, backgroundColor: c.primaryTint },
+  tooFarText:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.primaryOnTint },
+  tooFarActions: { flexDirection: 'row', gap: 8 },
+  smallBtn:    { flex: 1, minHeight: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, paddingHorizontal: 8 },
+  smallBtnText:{ fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  smallPrimary:{ backgroundColor: c.primary, borderColor: c.primary },
+  smallPrimaryText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
+  label:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 10 },
+  input:       { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, fontSize: FontSizes.sm, color: c.text },
   counter:     { alignSelf: 'flex-end', fontSize: 12, color: c.muted },
-  counterNear: { color: c.accentText, fontWeight: '700' },
+  counterNear: { color: c.primaryText, fontWeight: '700' },
   priceRow:    { flexDirection: 'row', gap: 8 },
   currency:    { width: 84, textAlign: 'center', fontWeight: '700' },
-  pinRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14, padding: 12, borderRadius: Radius.md, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border },
-  pinTitle:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  muted:       { fontSize: 12, color: c.muted },
-  link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.accentText },
-  footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.border, backgroundColor: c.bg },
-  submit:      { backgroundColor: c.accent, borderRadius: Radius.full, paddingVertical: 15, alignItems: 'center' },
+  muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
+  link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
+  footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  submit:      { backgroundColor: c.primary, borderRadius: 16, minHeight: 52, alignItems: 'center', justifyContent: 'center' },
   submitOff:   { opacity: 0.5 },
-  submitText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  submitText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
 });

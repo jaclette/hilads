@@ -74,7 +74,9 @@
     "permCameraBody": "Permita o acesso à câmera nas configurações para tirar uma foto.",
     "photoRequired": "Adicione uma foto primeiro.",
     "locationOff": "A localização está desativada, então não dá para marcar este lugar.",
-    "editOnlyActive": "Você pode editar sua prova até o fim do challenge."
+    "editOnlyActive": "Você pode editar sua prova até o fim do challenge.",
+    "takeTitle": "Tire sua foto",
+    "retake": "Tirar de novo"
   },
   "errors": {
     "already_posted": "Você já postou uma prova para o challenge de hoje.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Essa foto não pode ser usada. Tente outra.",
     "invalid_caption": "A legenda está longa demais.",
     "invalid_price": "Confira o valor e a moeda.",
-    "invalid_place": "Esse lugar não pode ser marcado.",
+    "invalid_place": "Escolha um só lugar.",
     "rate_limited": "Muitas tentativas - espere um pouco.",
     "image_processing_failed": "Não foi possível processar essa foto. Tente outra.",
-    "generic": "Algo deu errado. Tente de novo."
+    "generic": "Algo deu errado. Tente de novo.",
+    "place_required": "Escolha o lugar da sua prova.",
+    "place_not_allowed": "Este challenge não tem lugar.",
+    "place_not_found": "Esse lugar não está mais disponível. Escolha outro.",
+    "invalid_place_name": "O nome do lugar deve ter de 1 a 80 caracteres.",
+    "place_name_blocked": "Esse nome de lugar foi sinalizado. Reescreva.",
+    "invalid_position": "Precisamos da sua localização para publicar esta prova.",
+    "too_far": "Você está longe demais deste lugar."
   },
   "push": {
     "bannerTitle": "Receba o Daily Challenge toda manhã",
@@ -380,5 +389,42 @@
     "seeOnMap": "Ver no mapa",
     "notFound": "Este spot não está disponível.",
     "local": "Local"
+  },
+  "place": {
+    "title": "Onde você está?",
+    "why": "Sua localização é usada uma vez para listar os lugares ao seu redor e conferir que você está lá. Ela nunca é salva.",
+    "find": "Encontrar os lugares ao meu redor",
+    "locating": "Procurando onde você está…",
+    "deniedTitle": "A localização está desativada",
+    "deniedBody": "Este challenge acontece em um lugar: precisamos da sua localização para conferir que você está lá.",
+    "failedTitle": "Sua localização não está disponível",
+    "failedBody": "Confira se a localização está ativada e tente de novo, de preferência ao ar livre.",
+    "openSettings": "Abrir ajustes",
+    "retry": "Tentar de novo",
+    "approximate": "Sua localização é aproximada (±{{m}} m). Vá para fora ou espere um pouco e atualize.",
+    "refresh": "Atualizar minha localização",
+    "search": "Buscar entre os lugares",
+    "inReview": "em análise",
+    "newTitle": "Novo lugar",
+    "notListed": "Não está na lista? Adicione.",
+    "noneNearby": "Ainda não há lugar do Hilads aqui: adicione este.",
+    "nameLabel": "Nome do lugar",
+    "namePlaceholder": "ex.: Cơm tấm Ba Ghiền",
+    "newHint": "Sua localização vira a localização dele. Ele aparece no mapa depois de verificado.",
+    "useNew": "Usar este lugar",
+    "backToList": "Voltar aos lugares próximos",
+    "at": "Em {{name}}",
+    "none": "Ainda sem lugar",
+    "change": "Trocar",
+    "tooFar": "Você está a {{distance}} de {{name}}. Chegue a menos de {{radius}} m e tente de novo.",
+    "tryAgain": "Estou aqui, tentar de novo",
+    "pickAnother": "Escolher outro lugar",
+    "newOnMapLater": "Seu novo lugar vai aparecer no mapa depois de aprovado."
+  },
+  "stamp": {
+    "title": "Novo carimbo: {{theme}}",
+    "body": "Seu passaporte de {{city}} ganhou um novo carimbo.",
+    "ok": "Boa",
+    "close": "Fechar"
   }
 }

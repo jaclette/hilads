@@ -74,7 +74,9 @@
     "permCameraBody": "Izinkan akses kamera di pengaturan untuk mengambil foto.",
     "photoRequired": "Tambahkan foto dulu.",
     "locationOff": "Lokasi mati, jadi tempat ini tidak bisa ditandai.",
-    "editOnlyActive": "Kamu bisa edit buktimu sampai challenge berakhir."
+    "editOnlyActive": "Kamu bisa edit buktimu sampai challenge berakhir.",
+    "takeTitle": "Ambil fotomu",
+    "retake": "Ulangi"
   },
   "errors": {
     "already_posted": "Kamu sudah posting bukti untuk challenge hari ini.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Foto itu tidak bisa dipakai. Coba yang lain.",
     "invalid_caption": "Keterangannya terlalu panjang.",
     "invalid_price": "Cek lagi jumlah dan mata uangnya.",
-    "invalid_place": "Tempat itu tidak bisa ditandai.",
+    "invalid_place": "Pilih satu tempat saja.",
     "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
     "image_processing_failed": "Foto itu tidak bisa diproses. Coba yang lain.",
-    "generic": "Ada yang salah. Coba lagi."
+    "generic": "Ada yang salah. Coba lagi.",
+    "place_required": "Pilih tempat buktimu.",
+    "place_not_allowed": "Challenge ini tidak punya tempat.",
+    "place_not_found": "Tempat itu sudah tidak tersedia. Pilih yang lain.",
+    "invalid_place_name": "Nama tempat harus 1 sampai 80 karakter.",
+    "place_name_blocked": "Nama tempat itu ditandai. Tulis ulang.",
+    "invalid_position": "Lokasimu dibutuhkan untuk mengirim bukti ini.",
+    "too_far": "Kamu terlalu jauh dari tempat ini."
   },
   "push": {
     "bannerTitle": "Dapatkan Daily Challenge setiap pagi",
@@ -380,5 +389,42 @@
     "seeOnMap": "Lihat di peta",
     "notFound": "Spot ini tidak tersedia.",
     "local": "Lokal"
+  },
+  "place": {
+    "title": "Kamu di mana?",
+    "why": "Lokasimu dipakai sekali untuk menampilkan tempat di sekitarmu dan memastikan kamu ada di sana. Lokasi tidak pernah disimpan.",
+    "find": "Cari tempat di sekitarku",
+    "locating": "Mencari lokasimu…",
+    "deniedTitle": "Lokasi nonaktif",
+    "deniedBody": "Challenge ini terjadi di sebuah tempat: lokasimu dibutuhkan untuk memastikan kamu ada di sana.",
+    "failedTitle": "Lokasimu tidak tersedia",
+    "failedBody": "Pastikan lokasi aktif lalu coba lagi, sebaiknya di luar ruangan.",
+    "openSettings": "Buka pengaturan",
+    "retry": "Coba lagi",
+    "approximate": "Lokasimu belum akurat (±{{m}} m). Keluar ruangan atau tunggu sebentar, lalu muat ulang.",
+    "refresh": "Muat ulang lokasiku",
+    "search": "Cari di antara tempat",
+    "inReview": "sedang ditinjau",
+    "newTitle": "Tempat baru",
+    "notListed": "Tidak ada di daftar? Tambahkan.",
+    "noneNearby": "Belum ada tempat Hilads di sini: tambahkan yang ini.",
+    "nameLabel": "Nama tempat",
+    "namePlaceholder": "mis. Cơm tấm Ba Ghiền",
+    "newHint": "Lokasimu menjadi lokasinya. Tempat ini muncul di peta setelah dicek.",
+    "useNew": "Pakai tempat ini",
+    "backToList": "Kembali ke tempat terdekat",
+    "at": "Di {{name}}",
+    "none": "Belum ada tempat",
+    "change": "Ganti",
+    "tooFar": "Kamu berjarak {{distance}} dari {{name}}. Mendekatlah dalam {{radius}} m lalu coba lagi.",
+    "tryAgain": "Aku sudah di sini, coba lagi",
+    "pickAnother": "Pilih tempat lain",
+    "newOnMapLater": "Tempat barumu akan muncul di peta setelah disetujui."
+  },
+  "stamp": {
+    "title": "Stempel baru: {{theme}}",
+    "body": "Paspor {{city}}-mu dapat stempel baru.",
+    "ok": "Mantap",
+    "close": "Tutup"
   }
 }

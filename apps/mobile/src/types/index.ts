@@ -841,6 +841,8 @@ export interface DailyProof {
   caption:          string | null;
   price:            { amount: number; currency: string } | null;
   place:            { lat: number; lng: number; name: string | null } | null;
+  /** The Hilads place (spot) the proof is attached to (V3-02). */
+  spot?:            { id: string; name: string; inReview: boolean } | null;
   status:           DailyProofStatus;
   rejectionReason:  string | null;
   voteCount:        number;
@@ -1020,4 +1022,18 @@ export interface DailyProofInput {
   caption?:  string | null;
   price?:    { amount: number; currency: string } | null;
   place?:    { lat: number; lng: number; name?: string | null } | null;
+  /** V3 place format (V3-02): an existing spot or a new place, plus the device position. */
+  spotId?:   string;
+  newPlace?: { name: string };
+  position?: { lat: number; lng: number };
+}
+
+/** A Hilads place near the device, for the proof's place step (GET /daily/places/nearby). */
+export interface NearbyPlace {
+  id:         string;
+  name:       string;
+  distanceM:  number;
+  proofCount: number;
+  themes:     DailyThemeKey[];
+  inReview:   boolean;
 }

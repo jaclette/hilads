@@ -74,7 +74,9 @@
     "permCameraBody": "사진을 찍으려면 설정에서 카메라 접근을 허용해 주세요.",
     "photoRequired": "먼저 사진을 추가해 주세요.",
     "locationOff": "위치가 꺼져 있어서 이 장소를 핀 고정할 수 없어요.",
-    "editOnlyActive": "challenge가 끝날 때까지 인증을 수정할 수 있어요."
+    "editOnlyActive": "challenge가 끝날 때까지 인증을 수정할 수 있어요.",
+    "takeTitle": "사진 찍기",
+    "retake": "다시 찍기"
   },
   "errors": {
     "already_posted": "오늘의 challenge에 이미 인증을 올렸어요.",
@@ -85,10 +87,17 @@
     "invalid_photo": "이 사진은 사용할 수 없어요. 다른 사진을 써 보세요.",
     "invalid_caption": "캡션이 너무 길어요.",
     "invalid_price": "금액과 통화를 확인해 주세요.",
-    "invalid_place": "이 장소는 핀 고정할 수 없어요.",
+    "invalid_place": "장소를 하나만 선택하세요.",
     "rate_limited": "시도가 너무 많아요 - 잠시 기다려 주세요.",
     "image_processing_failed": "이 사진은 처리할 수 없어요. 다른 사진을 써 보세요.",
-    "generic": "문제가 생겼어요. 다시 시도해 주세요."
+    "generic": "문제가 생겼어요. 다시 시도해 주세요.",
+    "place_required": "인증할 장소를 선택하세요.",
+    "place_not_allowed": "이 challenge에는 장소가 없어요.",
+    "place_not_found": "그 장소는 더 이상 이용할 수 없어요. 다른 장소를 선택하세요.",
+    "invalid_place_name": "장소 이름은 1~80자여야 해요.",
+    "place_name_blocked": "그 장소 이름이 신고되었어요. 다르게 써 주세요.",
+    "invalid_position": "이 인증을 올리려면 위치가 필요해요.",
+    "too_far": "이 장소에서 너무 멀리 있어요."
   },
   "push": {
     "bannerTitle": "매일 아침 Daily Challenge 받기",
@@ -378,5 +387,42 @@
     "seeOnMap": "지도에서 보기",
     "notFound": "이 스팟을 볼 수 없어요.",
     "local": "로컬"
+  },
+  "place": {
+    "title": "어디에 있나요?",
+    "why": "위치는 한 번만 사용돼 주변 장소를 보여 주고 거기 있는지 확인해요. 절대 저장되지 않아요.",
+    "find": "내 주변 장소 찾기",
+    "locating": "위치를 찾는 중…",
+    "deniedTitle": "위치가 꺼져 있어요",
+    "deniedBody": "이 challenge는 특정 장소에서 해요. 거기 있는지 확인하려면 위치가 필요해요.",
+    "failedTitle": "위치를 가져올 수 없어요",
+    "failedBody": "위치가 켜져 있는지 확인하고, 가능하면 야외에서 다시 시도하세요.",
+    "openSettings": "설정 열기",
+    "retry": "다시 시도",
+    "approximate": "위치가 정확하지 않아요(±{{m}} m). 밖으로 나가거나 잠시 기다린 뒤 새로고침하세요.",
+    "refresh": "내 위치 새로고침",
+    "search": "장소 검색",
+    "inReview": "검토 중",
+    "newTitle": "새 장소",
+    "notListed": "목록에 없나요? 추가하세요.",
+    "noneNearby": "아직 여기에 Hilads 장소가 없어요. 이곳을 추가하세요.",
+    "nameLabel": "장소 이름",
+    "namePlaceholder": "예: Cơm tấm Ba Ghiền",
+    "newHint": "내 위치가 이 장소의 위치가 돼요. 확인 후 지도에 표시돼요.",
+    "useNew": "이 장소 사용",
+    "backToList": "주변 장소로 돌아가기",
+    "at": "{{name}}에서",
+    "none": "아직 장소 없음",
+    "change": "변경",
+    "tooFar": "{{name}}까지 {{distance}} 떨어져 있어요. {{radius}} m 안으로 가서 다시 시도하세요.",
+    "tryAgain": "도착했어요, 다시 시도",
+    "pickAnother": "다른 장소 선택",
+    "newOnMapLater": "새 장소는 승인되면 지도에 표시돼요."
+  },
+  "stamp": {
+    "title": "새 스탬프: {{theme}}",
+    "body": "{{city}} 여권에 새 스탬프가 찍혔어요.",
+    "ok": "좋아요",
+    "close": "닫기"
   }
 }

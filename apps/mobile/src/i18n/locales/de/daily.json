@@ -74,7 +74,9 @@
     "permCameraBody": "Erlaube den Kamera-Zugriff in deinen Einstellungen, um ein Foto aufzunehmen.",
     "photoRequired": "Füge zuerst ein Foto hinzu.",
     "locationOff": "Standort ist aus, daher kann dieser Ort nicht markiert werden.",
-    "editOnlyActive": "Du kannst deinen Beweis bearbeiten, bis die Challenge endet."
+    "editOnlyActive": "Du kannst deinen Beweis bearbeiten, bis die Challenge endet.",
+    "takeTitle": "Mach dein Foto",
+    "retake": "Neu aufnehmen"
   },
   "errors": {
     "already_posted": "Du hast schon einen Beweis für die heutige Challenge gepostet.",
@@ -85,10 +87,17 @@
     "invalid_photo": "Dieses Foto kann nicht verwendet werden. Versuch ein anderes.",
     "invalid_caption": "Die Bildunterschrift ist zu lang.",
     "invalid_price": "Prüfe den Betrag und die Währung.",
-    "invalid_place": "Dieser Ort kann nicht markiert werden.",
+    "invalid_place": "Wähle nur einen Ort.",
     "rate_limited": "Zu viele Versuche - warte kurz.",
     "image_processing_failed": "Dieses Foto kann nicht verarbeitet werden. Versuch ein anderes.",
-    "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
+    "generic": "Etwas ist schiefgelaufen. Versuch es nochmal.",
+    "place_required": "Wähle den Ort deines Beweises.",
+    "place_not_allowed": "Diese Challenge hat keinen Ort.",
+    "place_not_found": "Dieser Ort ist nicht mehr verfügbar. Wähle einen anderen.",
+    "invalid_place_name": "Der Ortsname muss 1 bis 80 Zeichen lang sein.",
+    "place_name_blocked": "Dieser Ortsname wurde markiert. Formuliere ihn um.",
+    "invalid_position": "Dein Standort wird gebraucht, um diesen Beweis zu posten.",
+    "too_far": "Du bist zu weit von diesem Ort entfernt."
   },
   "push": {
     "bannerTitle": "Hol dir jeden Morgen die Daily Challenge",
@@ -380,5 +389,42 @@
     "seeOnMap": "Auf der Karte ansehen",
     "notFound": "Dieser Spot ist nicht verfügbar.",
     "local": "Local"
+  },
+  "place": {
+    "title": "Wo bist du?",
+    "why": "Dein Standort wird einmal genutzt, um die Orte um dich herum zu zeigen und zu prüfen, dass du dort bist. Er wird nie gespeichert.",
+    "find": "Orte in meiner Nähe finden",
+    "locating": "Wir suchen, wo du bist…",
+    "deniedTitle": "Standort ist aus",
+    "deniedBody": "Diese Challenge findet an einem Ort statt: Dein Standort wird gebraucht, um zu prüfen, dass du dort bist.",
+    "failedTitle": "Dein Standort ist nicht verfügbar",
+    "failedBody": "Prüfe, ob der Standort an ist, und versuch es noch einmal, am besten draußen.",
+    "openSettings": "Einstellungen öffnen",
+    "retry": "Nochmal versuchen",
+    "approximate": "Dein Standort ist ungenau (±{{m}} m). Geh nach draußen oder warte kurz, dann aktualisiere.",
+    "refresh": "Standort aktualisieren",
+    "search": "Orte durchsuchen",
+    "inReview": "in Prüfung",
+    "newTitle": "Neuer Ort",
+    "notListed": "Nicht in der Liste? Füge ihn hinzu.",
+    "noneNearby": "Hier gibt es noch keinen Hilads-Ort: füge diesen hinzu.",
+    "nameLabel": "Name des Orts",
+    "namePlaceholder": "z. B. Cơm tấm Ba Ghiền",
+    "newHint": "Dein Standort wird seine Position. Er erscheint auf der Karte, sobald er geprüft ist.",
+    "useNew": "Diesen Ort nehmen",
+    "backToList": "Zurück zu den Orten in der Nähe",
+    "at": "Bei {{name}}",
+    "none": "Noch kein Ort",
+    "change": "Ändern",
+    "tooFar": "Du bist {{distance}} von {{name}} entfernt. Komm auf {{radius}} m heran und versuch es nochmal.",
+    "tryAgain": "Ich bin da, nochmal",
+    "pickAnother": "Anderen Ort wählen",
+    "newOnMapLater": "Dein neuer Ort erscheint auf der Karte, sobald er bestätigt ist."
+  },
+  "stamp": {
+    "title": "Neuer Stempel: {{theme}}",
+    "body": "Dein {{city}}-Pass hat einen neuen Stempel.",
+    "ok": "Super",
+    "close": "Schließen"
   }
 }
