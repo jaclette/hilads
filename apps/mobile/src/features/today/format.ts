@@ -53,3 +53,11 @@ export function pinLabel(name: string, price: { min: number; max: number; median
   const median = price ? (price.median ?? (price.min === price.max ? price.min : null)) : null;
   return median !== null && price ? `${short} · ${compactPrice(median, price.currency, locale)}` : short;
 }
+
+/** Great-circle distance in meters between two [lng, lat] points. */
+export function meters(a: [number, number], b: [number, number]): number {
+  const r = 6371000, rad = Math.PI / 180;
+  const dLat = (b[1] - a[1]) * rad, dLng = (b[0] - a[0]) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dLng / 2) ** 2;
+  return Math.round(2 * r * Math.asin(Math.min(1, Math.sqrt(h))));
+}

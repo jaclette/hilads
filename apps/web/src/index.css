@@ -17107,3 +17107,29 @@ body.has-app-promo-banner .page-header {
 .wm-sheet--empty { font: inherit; text-align: left; color: var(--text); text-decoration: none; cursor: pointer; }
 .wm-sheet--empty:disabled { cursor: default; }
 .wm-sheet--empty .wm-empty-text, .wm-sheet--empty .wm-empty-tomorrow { display: block; }
+
+/* ── Map list view (like the app): the List / Map switch, the list over the
+   map (same area, search and filter), rows with photo, theme, distance, price,
+   votes and the local badge; 44 px+ targets. ── */
+.wm-bottom { position: absolute; left: 0.75rem; right: 0.75rem; bottom: max(0.75rem, env(safe-area-inset-bottom)); z-index: 1100;
+  display: flex; flex-direction: column; gap: 0.625rem; pointer-events: none; }
+.wm-bottom > * { pointer-events: auto; }
+.wm-bottom .wm-sheet { position: relative; left: auto; right: auto; bottom: auto; width: auto; }
+.wm-toggle { align-self: center; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: none; border-radius: 999px;
+  background: var(--text); color: var(--bg); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(36, 26, 18, 0.25); }
+.wm-list { position: absolute; inset: 0; z-index: 1000; overflow-y: auto; background: var(--bg); padding: 8px 0 140px; }
+.wm-list-sorts { display: flex; gap: 8px; padding: 0 1rem 10px; flex-wrap: wrap; }
+.wm-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 76px; padding: 10px 1rem; border: none; border-bottom: 1px solid var(--line);
+  background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.wm-row-photo { width: 64px; height: 64px; flex-shrink: 0; border-radius: 12px; object-fit: cover; background: var(--surface2); }
+.wm-row-photo--empty { display: flex; align-items: center; justify-content: center; color: var(--primary-text); }
+.wm-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.wm-row-name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wm-row-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.wm-row-theme, .wm-row-local { gap: 4px !important; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.wm-row-theme { background: var(--primary-tint); color: var(--primary-on-tint); }
+.wm-row-local { background: var(--local-bg); color: var(--local-text); }
+.wm-row-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--muted2); }
+@media (min-width: 768px) {
+  .wm-bottom { left: auto; right: 1rem; width: 380px; }
+}

@@ -7,12 +7,14 @@ import BackButton from '../BackButton'
 import SpotPage from './SpotPage'
 import { fetchMap, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore } from './spotsShared'
+import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
 import Icon, { iconHtml } from '../Icon'
 import { THEME_ICON } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
 
 const IDLE_MS = 350
+// The last view (map or list), remembered on this device.
+const VIEW_KEY = 'hilads_map_view'
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 // The camera stays around the city (like the app): about 110 km each way.
 const CITY_SPAN = 1
@@ -128,7 +130,9 @@ function Pins({ spots, zoom, selected, onSpot, onCluster }) {
       text.set(s.id, label)
       pins.push({ id: s.id, x: p.x, y: p.y, w: labelWidth(label), selected: isSelected, rank: -(s.proofCount * 1000 + s.votes) })
     })
-    const sides = placeLabels(pins.filter(p => !p.off), [...obstacles, ...pins.filter(p => p.off).map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))])
+    const vb = map.getPixelBounds()
+    const sides = placeLabels(pins.filter(p => !p.off), [...obstacles, ...pins.filter(p => p.off).map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))],
+                              { view: { x1: vb.min.x, y1: vb.min.y, x2: vb.max.x, y2: vb.max.y } })
     return { text, sides }
   }, [groups, zoom, map, selected?.id, i18n.language])
   return groups.map(g => g.items.length === 1 ? (
@@ -139,6 +143,53 @@ function Pins({ spots, zoom, selected, onSpot, onCluster }) {
     <Marker key={`c:${g.items.map(s => s.id).join(',')}`} position={[g.lat, g.lng]} icon={clusterIcon(g.items.length)}
             eventHandlers={{ click: () => onCluster(g) }} />
   ))
+}
+
+/**
+ * The list view (like the app's): the area's spots with the map's search and
+ * theme filter, by distance or this week's votes. A row: proof photo, name,
+ * theme, distance (when my position is known), median price, votes,
+ * "validated by a local". Tapping opens the spot sheet.
+ */
+function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
+  const { i18n } = useTranslation()
+  const data = sortSpots(spots, sort, origin, km)
+  return (
+    <div className="wm-list">
+      <div className="wm-list-sorts">
+        <button type="button" className={`wm-chip${sort === 'near' ? ' wm-chip--on' : ''}`} onClick={() => onSort('near')}>{t('map.sortNearest')}</button>
+        <button type="button" className={`wm-chip${sort === 'week' ? ' wm-chip--on' : ''}`} onClick={() => onSort('week')}>{t('map.sortWeek')}</button>
+      </div>
+      {data.length === 0 && empty && <p className="wm-empty">{t('map.noResults')}</p>}
+      {data.map(s => {
+        const th = s.themes?.[0] ?? null
+        const p = s.priceRange
+        const median = p ? (p.median ?? (p.min === p.max ? p.min : null)) : null
+        const meta = [
+          me ? formatDistance(km(me, [s.lat, s.lng]) * 1000, i18n.language) : null,
+          median != null ? compactPrice(median, p.currency, i18n.language) : null,
+        ].filter(Boolean).join(' · ')
+        return (
+          <button key={s.id} type="button" className="wm-row" onClick={() => onPick(s)}>
+            {s.cover?.thumbUrl || s.cover?.photoUrl
+              ? <img className="wm-row-photo" src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" />
+              : <span className="wm-row-photo wm-row-photo--empty"><Icon name={THEME_ICON[th] || 'location-outline'} size={22} /></span>}
+            <span className="wm-row-body">
+              <span className="wm-row-name">{s.name}</span>
+              <span className="wm-row-chips">
+                {th && <span className="wm-row-theme" style={ROW}><Icon name={THEME_ICON[th]} size={12} />{themeName(th)}</span>}
+                {s.validatedByLocal && <span className="wm-row-local" style={ROW}><Icon name="checkmark" size={12} />{t('map.validated')}</span>}
+              </span>
+              <span className="wm-row-meta">
+                {meta && <span>{meta}</span>}
+                <span style={ROW}><Icon name="heart" size={12} />{sort === 'week' ? s.votesWeek : s.votes}</span>
+              </span>
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 /**
@@ -200,6 +251,8 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
   const [me, setMe]           = useState(null)      // my position, once the browser gives it
   const [nearMe, setNearMe]   = useState(false)     // far from the city: the map is around me
   const [notice, setNotice]   = useState(null)
+  const [view, setView]       = useState(() => { try { return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'map' } catch { return 'map' } })
+  const [sort, setSort]       = useState('near')
   const [cityEmpty, setCityEmpty] = useState(false)  // the city really has no spot (not just the visible area)
   const [today, setToday]     = useState(null)
   const areaRef = useRef(null)
@@ -295,6 +348,17 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
     setCamera({ lat: s.lat, lng: s.lng, zoom: Math.max(zoom, 16) })
   }
 
+  const toggleView = () => {
+    const next = view === 'map' ? 'list' : 'map'
+    setView(next); setSelected(null)
+    track('web_map_view_switched', { view: next })
+    try { localStorage.setItem(VIEW_KEY, next) } catch { /* private mode */ }
+  }
+  // The list shares the map's state: the search hits (in the theme) or the area's spots.
+  const listSpots = results !== null ? results.filter(s => theme === null || s.themes.includes(theme)) : spots
+  const areaCentre = areaRef.current ? [(areaRef.current[1] + areaRef.current[3]) / 2, (areaRef.current[0] + areaRef.current[2]) / 2] : center
+  const showEmpty = center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty)
+
   if (openSpotId) {
     return <SpotPage spotId={openSpotId} onBack={() => setOpenSpotId(null)} />
   }
@@ -318,7 +382,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
           />
           {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
         </div>
-        {results === null ? (
+        {results === null || view === 'list' ? (
           <div className="wm-chips" role="toolbar">
             <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
             {THEME_KEYS.map(k => (
@@ -358,7 +422,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
         ) : (
           <div className="wm-loading">{failed ? t('map.unavailable') : <span className="wm-spinner" aria-hidden="true" />}</div>
         )}
-        {center && (
+        {center && view === 'map' && (
           <button type="button" className="wm-locate" onClick={() => locate(true)} aria-label={t('map.locate')} title={t('map.locate')}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               <circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
@@ -369,30 +433,42 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
         {tiles.mapbox && (
           <a className="wm-mapbox-logo" href="https://www.mapbox.com/" target="_blank" rel="noopener noreferrer" aria-label="Mapbox">mapbox</a>
         )}
-        {center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty) && (
-          <EmptyCard today={today} t={t} />
+        {view === 'list' && center && (
+          <SpotListView spots={listSpots} sort={sort} onSort={k => { setSort(k); track('web_map_list_sorted', { sort: k }) }}
+                        me={me} origin={me ?? areaCentre} onPick={setSelected} empty={!showEmpty} t={t} />
         )}
-        {selected && (
-          <div className="wm-sheet">
-            <button type="button" className="wm-sheet-close" onClick={() => setSelected(null)} aria-label={t('map.closeSpot')}><Icon name="close" size={20} /></button>
-            <button type="button" className="wm-sheet-body" onClick={() => setOpenSpotId(selected.id)}>
-              {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={selected.cover.thumbUrl} alt="" /> : <span className="wm-sheet-photo" />}
-              <span className="wm-sheet-info">
-                <span className="wm-sheet-title">{selected.name}</span>
-                <span className="wm-sheet-meta">
-                  {selected.themes.map((k, i) => (
-                    <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={13} />{themeName(k)}</span>
-                  ))}
-                </span>
-                <span className="wm-sheet-meta">
-                  {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
-                  {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
-                </span>
-              </span>
+        {/* Bottom: the List / Map switch, then the selected spot or the empty city. */}
+        <div className="wm-bottom">
+          {center && (
+            <button type="button" className="wm-toggle" onClick={toggleView}>
+              <Icon name={view === 'map' ? 'list-outline' : 'map-outline'} size={18} />{view === 'map' ? t('map.list') : t('map.mapView')}
             </button>
-            <button type="button" className="wm-sheet-cta" onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
-          </div>
-        )}
+          )}
+          {showEmpty && (
+            <EmptyCard today={today} t={t} />
+          )}
+          {selected && (
+            <div className="wm-sheet">
+              <button type="button" className="wm-sheet-close" onClick={() => setSelected(null)} aria-label={t('map.closeSpot')}><Icon name="close" size={20} /></button>
+              <button type="button" className="wm-sheet-body" onClick={() => setOpenSpotId(selected.id)}>
+                {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={selected.cover.thumbUrl} alt="" /> : <span className="wm-sheet-photo" />}
+                <span className="wm-sheet-info">
+                  <span className="wm-sheet-title">{selected.name}</span>
+                  <span className="wm-sheet-meta">
+                    {selected.themes.map((k, i) => (
+                      <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={13} />{themeName(k)}</span>
+                    ))}
+                  </span>
+                  <span className="wm-sheet-meta">
+                    {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
+                    {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
+                  </span>
+                </span>
+              </button>
+              <button type="button" className="wm-sheet-cta" onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

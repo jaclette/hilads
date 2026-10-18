@@ -42,6 +42,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
     if (date === current) return 'today';
     if (date === addDays(current, 1)) return 'tomorrow';
     if (date > current) return 'later';
+    if (!account) return 'none';   // statuses only signed in; the themes show for everyone
     if (d?.myStatus === 'approved') return 'done';
     if (d?.myStatus === 'pending') return 'pending';
     return d?.published && cal.data?.streak ? 'missed' : 'none';

@@ -179,10 +179,11 @@ function Week({ today }) {
   const { account, openDaily, needAccount } = useDaily()
   const [cal, setCal] = useState(null)
   const now = ymd(new Date())
+  // The week's themes are public (the challenges' themes, else the weekday
+  // defaults): loaded for everyone; my statuses and streak only come signed in.
   useEffect(() => {
-    if (!account) return
     fetchDailyCalendar(addDays(now, -8), addDays(now, 8)).then(setCal).catch(() => {})
-  }, [account, now])
+  }, [account?.id, now]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const current = cal?.today ?? today?.challenge?.date ?? null
   if (!current) return null
@@ -197,6 +198,7 @@ function Week({ today }) {
     if (date === current) return 'today'
     if (date === addDays(current, 1)) return 'tomorrow'
     if (date > current) return 'later'
+    if (!account) return 'none'
     if (d?.myStatus === 'approved') return 'done'
     if (d?.myStatus === 'pending') return 'pending'
     return d?.published && cal?.streak ? 'missed' : 'none'

@@ -97,24 +97,43 @@ export function pinLabel(name, price, locale) {
  * the others by proofs and votes, each on the right of its pin (or the left)
  * where it overlaps no pin, cluster or label already placed; the rest keep
  * their pin only. `pins` = [{ id, x, y, w, selected, rank }] in pixels, `w` the
- * label width; `obstacles` = boxes of clusters. Returns Map id → 'right'|'left'.
+ * label width; `obstacles` = boxes of clusters; `view` = the visible box: a
+ * label that would leave it goes on the other side of its pin (or hides).
+ * Returns Map id → 'right'|'left'.
  */
-export function placeLabels(pins, obstacles = [], { pin = 22, gap = 4, h = 22 } = {}) {
+export function placeLabels(pins, obstacles = [], { pin = 22, gap = 4, h = 22, view = null } = {}) {
   const taken = [
     ...obstacles,
     ...pins.map(p => ({ x1: p.x - pin, y1: p.y - pin, x2: p.x + pin, y2: p.y + pin, id: p.id })),
   ]
-  const hits = (b, id) => taken.some(o => o.id !== id && b.x1 < o.x2 && b.x2 > o.x1 && b.y1 < o.y2 && b.y2 > o.y1)
+  const outside = (b) => !!view && (b.x1 < view.x1 + 4 || b.x2 > view.x2 - 4)
+  const hits = (b, id) => outside(b) || taken.some(o => o.id !== id && b.x1 < o.x2 && b.x2 > o.x1 && b.y1 < o.y2 && b.y2 > o.y1)
   const out = new Map()
   const order = [...pins].sort((a, b) => (b.selected - a.selected) || (a.rank - b.rank))
   for (const p of order) {
     const right = { x1: p.x + pin + gap, y1: p.y - h / 2, x2: p.x + pin + gap + p.w, y2: p.y + h / 2 }
     const left  = { x1: p.x - pin - gap - p.w, y1: p.y - h / 2, x2: p.x - pin - gap, y2: p.y + h / 2 }
-    const side = !hits(right, p.id) ? 'right' : !hits(left, p.id) ? 'left' : p.selected ? 'right' : null
+    const side = !hits(right, p.id) ? 'right' : !hits(left, p.id) ? 'left'
+      : p.selected ? (outside(right) && !outside(left) ? 'left' : 'right') : null
     if (!side) continue
     out.set(p.id, side)
     taken.push({ ...(side === 'right' ? right : left), id: `label:${p.id}` })
   }
+  return out
+}
+
+/** 350 → "350 m", 1234 → "1.2 km", 25400 → "25 km" (like the app). */
+export function formatDistance(m, locale) {
+  if (m < 1000) return `${Math.round(m / 10) * 10 || m} m`
+  const km = m / 1000
+  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: km < 10 ? 1 : 0 }).format(km)} km`
+}
+
+/** Spots sorted by distance from `origin` ([lat, lng]) or by this week's votes (like the app). */
+export function sortSpots(spots, sort, origin, distanceKm) {
+  const out = [...spots]
+  if (sort === 'week') out.sort((a, b) => b.votesWeek - a.votesWeek || b.votes - a.votes || b.proofCount - a.proofCount)
+  else if (origin) out.sort((a, b) => distanceKm(origin, [a.lat, a.lng]) - distanceKm(origin, [b.lat, b.lng]))
   return out
 }
 

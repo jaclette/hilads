@@ -17,9 +17,11 @@ import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, setupMapbox } from '@/lib/mapbox';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchMap, fetchSpot, searchSpots, type Bbox, type PlanPin, type Spot } from '@/api/spots';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
-import { THEME_ICON, pinLabel } from '@/features/today/format';
+import { THEME_ICON, meters, pinLabel } from '@/features/today/format';
 import { SpotSheet } from '@/features/map/SpotSheet';
 import { EmptyCity } from '@/features/map/EmptyCity';
+import { SpotList, type SpotSort } from '@/features/map/SpotList';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { DailyThemeKey } from '@/types';
 import { Chip, IconButton, TextField } from '@/ui';
 
@@ -30,6 +32,8 @@ const IDLE_DEBOUNCE_MS = 400;
 const LABEL_MIN_ZOOM = 13.5;
 // Tap target around a pin, in points (SPEC: 44 minimum).
 const PIN_HITBOX = { width: 44, height: 44 };
+// The last view (map or list), remembered on the device.
+const VIEW_KEY = 'hilads_map_view';
 
 /** [sw, ne] around some spots, or null without any. */
 function spotsFrame(spots: Spot[]): [[number, number], [number, number]] | null {
@@ -38,13 +42,6 @@ function spotsFrame(spots: Spot[]): [[number, number], [number, number]] | null 
   return [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]];
 }
 
-/** Great-circle distance in meters (for the selected spot's sheet). */
-function meters(a: [number, number], b: [number, number]): number {
-  const r = 6371000, rad = Math.PI / 180;
-  const dLat = (b[1] - a[1]) * rad, dLng = (b[0] - a[0]) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dLng / 2) ** 2;
-  return Math.round(2 * r * Math.asin(Math.min(1, Math.sqrt(h))));
-}
 
 /**
  * MAP (SPEC 9.5, map.html): the spots locals chose, never a third-party
@@ -84,9 +81,23 @@ export default function MapScreen() {
   const [query, setQuery]       = useState('');
   const [results, setResults]   = useState<Spot[] | null>(null);
   const [notice, setNotice]     = useState<string | null>(null);
+  const [view, setView]         = useState<'map' | 'list'>('map');
+  const [sort, setSort]         = useState<SpotSort>('near');
+  const [topH, setTopH]         = useState(0);
 
   const cityId = city?.channelId ?? null;
   const todayTheme = today.data?.challenge?.theme?.key ?? null;
+
+  useEffect(() => {
+    AsyncStorage.getItem(VIEW_KEY).then(v => { if (v === 'list' || v === 'map') setView(v); }).catch(() => {});
+  }, []);
+  const toggleView = () => {
+    const next = view === 'map' ? 'list' : 'map';
+    setView(next);
+    setSelected(null);
+    track('map_view_switched', { view: next });
+    AsyncStorage.setItem(VIEW_KEY, next).catch(() => {});
+  };
 
   // map_viewed once per focus, with where it was opened from.
   useFocusEffect(useCallback(() => {
@@ -229,6 +240,10 @@ export default function MapScreen() {
   }
 
   const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0;
+  // The list shares the map's state: the search hits (in the theme) or the area's spots.
+  const listSpots = results !== null ? results.filter(s => themeFilter === null || s.themes.includes(themeFilter)) : spots;
+  const bboxCentre: [number, number] | null = lastBbox.current
+    ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
 
   return (
     <View style={styles.container}>
@@ -276,8 +291,24 @@ export default function MapScreen() {
         )}
       </MapView>
 
+      {/* List view: over the map, which stays mounted (same area, same state). */}
+      {view === 'list' && (
+        <SpotList
+          spots={listSpots}
+          sort={sort}
+          onSort={k => { setSort(k); track('map_list_sorted', { sort: k }); }}
+          me={me}
+          origin={bboxCentre}
+          onPick={s => select(s, 'map_list')}
+          topInset={topH + 8}
+          bottomInset={selected ? 320 : 96}
+          empty={showEmpty ? null : <Text style={styles.listEmpty}>{t('map.noResults')}</Text>}
+        />
+      )}
+
       {/* Top overlay: search + theme chips. */}
-      <View style={[styles.top, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
+      <View style={[styles.top, { paddingTop: insets.top + 10 }, view === 'list' && styles.topList]} pointerEvents="box-none"
+            onLayout={e => setTopH(e.nativeEvent.layout.height)}>
         <TextField
           variant="search"
           value={query}
@@ -288,7 +319,7 @@ export default function MapScreen() {
           onClear={() => setQuery('')}
           clearLabel={t('map.clearSearch')}
         />
-        {results !== null && (
+        {results !== null && view === 'map' && (
           <View style={styles.results}>
             {results.length === 0 ? <Text style={styles.resultEmpty}>{t('map.noResults')}</Text> : results.slice(0, 6).map(s => (
               <TouchableOpacity key={s.id} style={styles.result} accessibilityRole="button"
@@ -315,7 +346,11 @@ export default function MapScreen() {
       {/* Bottom: notice, locate-me, then the selected spot or the empty city. */}
       <View style={styles.bottom} pointerEvents="box-none">
         {notice && <Text style={styles.notice}>{notice}</Text>}
-        <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />
+        {view === 'map' && <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />}
+        <TouchableOpacity style={styles.toggle} onPress={toggleView} activeOpacity={0.85} accessibilityRole="button">
+          <Ionicons name={view === 'map' ? 'list-outline' : 'map-outline'} size={18} color={colors.bg} />
+          <Text style={styles.toggleText}>{view === 'map' ? t('map.list') : t('map.mapView')}</Text>
+        </TouchableOpacity>
         {selected ? (
           <SpotSheet
             spot={selected}
@@ -366,6 +401,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   loading:       { position: 'absolute', alignSelf: 'center' },
   bottom:        { position: 'absolute', left: 8, right: 8, bottom: 12, gap: 10 },
   locate:        { alignSelf: 'flex-end', marginRight: 8 },
+  topList:       { backgroundColor: c.bg, paddingBottom: 10 },
+  listEmpty:     { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', padding: Spacing.lg },
+  toggle:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18,
+                   borderRadius: Radius.full, backgroundColor: c.text },
+  toggleText:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
   notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: Radius.full,
                    paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
   selectedWrap:  { alignItems: 'center', gap: 6 },
