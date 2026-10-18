@@ -50,7 +50,7 @@
     "hangouts": "아직 모임이 없어요",
     "events": "아직 이벤트가 없어요",
     "friends": "아직 친구가 없어요",
-    "challenges": "아직 챌린지가 없어요 - 하나 시작하세요"
+    "challenges": "아직 챌린지가 없어요"
   },
   "vibesTab": {
     "score": "vibe 점수 {{score}}",

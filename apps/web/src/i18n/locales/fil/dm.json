@@ -37,5 +37,6 @@
     "imageType": "Pumili ng JPEG, PNG, o WebP na larawan.",
     "imageTooLarge": "Masyadong malaki ang larawan. Max na laki: 10 MB.",
     "imageSend": "Hindi naipadala ang larawan. Subukan ulit."
-  }
+  },
+  "directMessage": "Pribadong mensahe"
 }

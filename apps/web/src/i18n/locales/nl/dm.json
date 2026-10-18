@@ -37,5 +37,6 @@
     "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",
     "imageTooLarge": "Afbeelding te groot. Max. grootte: 10 MB.",
     "imageSend": "Afbeelding versturen mislukt. Probeer opnieuw."
-  }
+  },
+  "directMessage": "Privébericht"
 }

@@ -37,5 +37,6 @@
     "imageType": "JPEG, PNG 또는 WebP 이미지를 선택해 주세요.",
     "imageTooLarge": "이미지가 너무 커요. 최대 크기: 10MB.",
     "imageSend": "이미지를 보내지 못했어요. 다시 시도해 주세요."
-  }
+  },
+  "directMessage": "다이렉트 메시지"
 }

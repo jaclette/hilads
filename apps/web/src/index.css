@@ -17077,3 +17077,5 @@ body.has-app-promo-banner .page-header {
 .challenge-owner-invite-cta, .challenge-owner-invite-cta:hover { background: var(--surface); color: var(--traveler-text); border: 1.5px solid var(--traveler-text); border-radius: 999px; }
 /* Composer "+": the app's flat primary circle (no glow). */
 .dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled) { background: var(--primary); box-shadow: none; }
+.dm-header-text { display: flex; flex-direction: column; min-width: 0; text-align: left; }
+.dm-header-sub { font-size: 12px; font-weight: 500; color: var(--muted2); }

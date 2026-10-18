@@ -37,5 +37,6 @@
     "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",
     "imageTooLarge": "Gambar terlalu besar. Ukuran maks: 10 MB.",
     "imageSend": "Tidak bisa mengirim gambar. Silakan coba lagi."
-  }
+  },
+  "directMessage": "Pesan langsung"
 }

@@ -32,7 +32,6 @@ import LinkPreviewCard from './LinkPreviewCard'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
-import ScoringInfoButton from './ScoringInfoButton'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import GroupSubmissionsGallery from './GroupSubmissionsGallery'
 import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './MessageActions'
@@ -1167,14 +1166,6 @@ export default function ChallengeChatPage({
         )}
       </div>
 
-      {/* Scoring info (i) button. GROUP rows inline it in the deadline card
-          below; legacy rows keep it here. */}
-      {!isGroup && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 12px 4px' }}>
-          <ScoringInfoButton />
-        </div>
-      )}
-
       {/* ── GROUP CHALLENGE (Phase 4): meet/contest info + join / resolve ──
           MEET → date + place + "validate who showed up".
           PHOTO-PROOF → submission deadline + "pick the winner"; joined takers
@@ -1193,7 +1184,6 @@ export default function ChallengeChatPage({
                         : null}
                     </>}
               </span>
-              <ScoringInfoButton />
             </div>
           ) : null}
           {isValidated ? null /* status now shown as a pill in the header */ : isOwner ? (

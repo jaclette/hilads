@@ -37,5 +37,6 @@
     "imageType": "请选择 JPEG、PNG 或 WebP 图片。",
     "imageTooLarge": "图片太大。最大尺寸：10 MB。",
     "imageSend": "无法发送图片。请重试。"
-  }
+  },
+  "directMessage": "私信"
 }

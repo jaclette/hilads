@@ -37,5 +37,6 @@
     "imageType": "Elige una imagen JPEG, PNG o WebP.",
     "imageTooLarge": "Imagen demasiado grande. Tamaño máx.: 10 MB.",
     "imageSend": "No se pudo enviar la imagen. Inténtalo de nuevo."
-  }
+  },
+  "directMessage": "Mensaje privado"
 }

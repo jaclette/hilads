@@ -381,7 +381,10 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                 {otherName[0].toUpperCase()}
               </span>
           }
-          <span className="dm-header-name">{otherName}</span>
+          <span className="dm-header-text">
+            <span className="dm-header-name">{otherName}</span>
+            <span className="dm-header-sub">{t('directMessage')}</span>
+          </span>
         </button>
       </div>
 

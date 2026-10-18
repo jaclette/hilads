@@ -5,14 +5,11 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext, fetchAppConfig, fetchDailyProofStates } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
-import ChallengeVersusCard from './components/ChallengeVersusCard'
-import ExampleChallengeCard from './components/ExampleChallengeCard'
 import ExampleEventCard from './components/ExampleEventCard'
-import EmptyCityChallenges from './components/EmptyCityChallenges'
 import AppMapCard from './components/AppMapCard'
 import MapScreen from './components/map/MapScreen'
 import { APP_STORE, PLAY_STORE, deviceStore } from './components/map/spotsShared'
@@ -40,7 +37,6 @@ import { updateProfile } from './api'
 import LandingPage from './components/LandingPage'
 import StoriesLanding from './components/StoriesLanding'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from './config/featuredCity'
-import EventsSidebar from './components/EventsSidebar'
 import AttendeeAvatars from './components/AttendeeAvatars'
 import useMentions from './hooks/useMentions'
 import { splitContentByMentions } from './lib/mentions'
@@ -51,16 +47,12 @@ import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
-import ChallengePostCreateModal from './components/ChallengePostCreateModal'
-import ThreadsListPage    from './components/ThreadsListPage'
 import LeaderboardPage    from './components/LeaderboardPage'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
 import ThumbImg from './components/ThumbImg'
 import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './components/MessageActions'
-import ScoringInfoButton    from './components/ScoringInfoButton'
-import CreateChallengePage from './components/CreateChallengePage'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
 import SignUpSheet from './components/SignUpSheet'
@@ -72,12 +64,7 @@ import PublicProfileScreen from './components/PublicProfileScreen'
 import VenueScreen from './components/VenueScreen'
 import GuestProfileCard from './components/GuestProfileCard'
 import AppearanceLanguageCard from './components/AppearanceLanguageCard'
-import MostLocalCard from './components/MostLocalCard'
 import ConversationsScreen from './components/ConversationsScreen'
-import UpcomingEventsScreen from './components/UpcomingEventsScreen'
-import PastArchiveScreen from './components/PastArchiveScreen'
-import SuccessfulChallengesScreen from './components/SuccessfulChallengesScreen'
-import ShowcaseHero from './components/ShowcaseHero'
 import ShowcasePreviewModal from './components/ShowcasePreviewModal'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
@@ -951,10 +938,6 @@ export default function App() {
   const [channelScope, setChannelScope] = useState('city') // 'city' | 'world'
   const [worldUnread,  setWorldUnread]  = useState(0)
   const [cityUnread,   setCityUnread]   = useState(0)
-  // Challenge creation retired (SPEC 9.10): follows the server's
-  // CHALLENGE_CREATION_CLOSED flag through /app/config; the "open the app for
-  // the map" card takes its place.
-  const [creationClosed, setCreationClosed] = useState(false)
   // Web map of spots (SPEC 9.5): a full screen, from the Map tab or the map card.
   const [showMap, setShowMap] = useState(false)
   // Today, the home (W1, web = the app's 4 tabs): shown on entry unless the
@@ -970,12 +953,8 @@ export default function App() {
   // Passport (W4): Settings behind the gear, and the screens behind its rows.
   const [showSettings, setShowSettings] = useState(false)
   const [passportSub, setPassportSub] = useState(null) // 'spots' | 'friends' | null
-  useEffect(() => {
-    fetchAppConfig().then(c => setCreationClosed(!!c.challengeCreationClosed)).catch(() => {})
-  }, [])
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
-  const [worldChallengesAll, setWorldChallengesAll] = useState([]) // all international worldwide ("See all" / 🌍 Worldwide filter)
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
   const [quietCardOpen, setQuietCardOpen] = useState(false) // quiet-city → World nudge
   const channelScopeRef = useRef('city')
@@ -1119,10 +1098,6 @@ export default function App() {
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
-  const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
-  const [showPastArchive, setShowPastArchive] = useState(false)
-  const [showSuccessfulChallenges, setShowSuccessfulChallenges] = useState(false)
-  const [createChallengePrefill, setCreateChallengePrefill] = useState(null)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [showArrivalsSheet, setShowArrivalsSheet] = useState(false)
   const [legends,      setLegends]      = useState([])  // city ambassadors (Local legends section)
@@ -1246,7 +1221,6 @@ export default function App() {
   // here; see TODO in ProfileScreen.jsx if that becomes important.
   const tabScrollTops = useRef({ now: 0, here: 0, meGuest: 0 })
   const nowBodyRef        = useRef(null)
-  const challengesBodyRef = useRef(null)
   const hereBodyRef       = useRef(null)
   const meGuestBodyRef    = useRef(null)
 
@@ -1288,38 +1262,13 @@ export default function App() {
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
-  const [showCreateChooser,  setShowCreateChooser]  = useState(false)
-  // CHALLENGES tab - its own drawer (split out of the old NOW drawer).
-  const [showChallengesDrawer, setShowChallengesDrawer] = useState(false)
-  // Sub-filter chips inside the Challenges filter - food / place / culture /
-  // help. Reset to 'all' whenever the parent filter leaves 'challenges'.
-  const [challengeTypeFilter, setChallengeTypeFilter] = useState('all')
-  // Mode sub-filter inside the Challenges filter - Local/International/All.
-  // Asymmetric per spec: Local is the hero (default exists, but the badge is
-  // suppressed on cards), International is the "always alive" growth lane.
-  const [challengeModeFilter, setChallengeModeFilter] = useState('all')
-  // Visible-cap for the Challenges feed. Starts at 5; scroll-to-bottom on
-  // the .page-body bumps it by 5 until we've shown every loaded challenge.
-  const NOW_CHALLENGES_CAP = 5
-  const [challengesShownCount, setChallengesShownCount] = useState(NOW_CHALLENGES_CAP)
   const [cityChallenges,     setCityChallenges]     = useState([])
-  // Inspiration "idea book" for the zero-challenge empty state. Read-only
-  // examples from the most-active OTHER city; fetched lazily only when the
-  // challenges tab is open AND empty, so populated cities never pay for it.
-  const [challengeInspiration,     setChallengeInspiration]     = useState([])
-  const [challengeInspirationCity, setChallengeInspirationCity] = useState(null)
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object - opens ChallengeChatPage
-  const [showCreateChallenge, setShowCreateChallenge] = useState(false)
-  const [editChallengeObj,    setEditChallengeObj]    = useState(null)  // challenge being edited (owner)
-  // Floating "seed it" modal shown immediately after a challenge is created.
-  // Carries the new challenge so the modal can fetch city members + invite.
-  const [postCreateChallenge, setPostCreateChallenge] = useState(null)
   // PR2 - per-acceptance threads
   // Thread chat retired in step D - the 1:1 surface moved into the
   // unified public challenge channel. State + setter kept off the tree
   // to avoid a dead handle lingering elsewhere.
-  const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
   const [leaderboardPeriod,     setLeaderboardPeriod]     = useState('month') // initial period (for share deeplink)
@@ -1331,80 +1280,6 @@ export default function App() {
   // above the current screen, so the guest is back where they were. { tab, action }
   const [gateAuth, setGateAuth] = useState(null)
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
-
-  // ── Challenges feed pagination + type sub-filter ─────────────────────────
-  // Lives next to the state it depends on (cityChallenges + the filter
-  // state above) so the reads happen AFTER their declarations - placing
-  // these effects earlier in the function triggers a TDZ ReferenceError
-  // at module bundle minification because `const` reads above the
-  // declaration line are not hoisted.
-
-  // Reset the paginator + sub-filter whenever the parent filter leaves /
-  // enters 'challenges'. Without this, switching back to Challenges would
-  // leak whatever cap the user paginated to last time.
-  useEffect(() => {
-    setChallengesShownCount(NOW_CHALLENGES_CAP)
-    if (!showChallengesDrawer) {
-      setChallengeTypeFilter('all')
-      setChallengeModeFilter('all')
-    }
-  }, [showChallengesDrawer])
-
-  // Reset the visible-count when either sub-filter changes - switching from
-  // "food" to "place" (or Local→Intl) should land the user at the top of
-  // that bucket.
-  useEffect(() => {
-    setChallengesShownCount(NOW_CHALLENGES_CAP)
-  }, [challengeTypeFilter, challengeModeFilter])
-
-  // Filtered-by-type-AND-mode challenges. Shared by the JSX render and the
-  // scroll guard so they can't drift. Outside the Challenges filter the list
-  // is passed through unchanged (the NOW "all" view caps at 5 anyway).
-  const filteredChallenges = useMemo(() => {
-    let pool = cityChallenges
-    // The Challenges drawer is the only consumer now - always apply the
-    // mode + type sub-filters.
-    if (challengeModeFilter === 'special') {
-      // ⚡ Special = Hilads campaign challenges only (2× points).
-      pool = pool.filter(c => c.is_campaign)
-    } else if (challengeModeFilter !== 'all') {
-      pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
-    }
-    if (challengeTypeFilter !== 'all') {
-      pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
-    }
-    // Campaigns first (this pool is already scoped to the current city, so any
-    // campaign here is "related to my city"), then local, international last.
-    // Stable within each bucket so the backend ordering (recent first)
-    // survives. Applied in both views so the NOW "All" challenge strip and the
-    // dedicated Challenges sub-tab share the same priority signal.
-    return [...pool].sort((a, b) => {
-      const ac = a.is_campaign ? 1 : 0
-      const bc = b.is_campaign ? 1 : 0
-      if (ac !== bc) return bc - ac
-      const am = (a.mode ?? 'local') === 'international' ? 1 : 0
-      const bm = (b.mode ?? 'local') === 'international' ? 1 : 0
-      return am - bm
-    })
-  }, [cityChallenges, challengeTypeFilter, challengeModeFilter])
-
-  // Lazy inspiration fetch: only when the challenges tab is open AND the city
-  // has zero challenges. Re-runs on city change (channelId in deps). Bounded
-  // server-side (up to 3); empty result → the block renders nothing.
-  useEffect(() => {
-    if (!showChallengesDrawer || cityChallenges.length > 0 || !channelId) {
-      setChallengeInspiration([])
-      setChallengeInspirationCity(null)
-      return
-    }
-    let alive = true
-    fetchChallengeInspiration(channelId).then(r => {
-      if (!alive) return
-      setChallengeInspiration(r.examples ?? [])
-      setChallengeInspirationCity(r.city ?? null)
-    })
-    return () => { alive = false }
-  }, [showChallengesDrawer, cityChallenges.length, channelId])
 
   // Lazy inspiration fetch for the events drawer: only when it's open AND the
   // city has zero events (matches the empty-state condition). Re-runs on city
@@ -1424,33 +1299,6 @@ export default function App() {
     return () => { alive = false }
   }, [showEventDrawer, events.length, cityEvents.length, channelId])
 
-  // Scroll-to-load-more - three gates so we never spam the rendering loop
-  // (and, when backend pagination lands, the API):
-  //   1. Throttle (BUMP_THROTTLE_MS) - at most one bump per ~3 frames.
-  //   2. Cap guard - bail when shownCount already covers the filter.
-  //   3. Distance threshold - only fire within ~240px of the bottom.
-  const BUMP_THROTTLE_MS = 400
-  const lastBumpAtRef = useRef(0)
-  const filteredChallengesLengthRef = useRef(0)
-  useEffect(() => {
-    filteredChallengesLengthRef.current = filteredChallenges.length
-  }, [filteredChallenges])
-  useEffect(() => {
-    if (!showChallengesDrawer) return
-    const el = challengesBodyRef.current
-    if (!el) return
-    const onScroll = () => {
-      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
-      if (remaining >= 240) return
-      if (challengesShownCount >= filteredChallengesLengthRef.current) return
-      const now = Date.now()
-      if (now - lastBumpAtRef.current < BUMP_THROTTLE_MS) return
-      lastBumpAtRef.current = now
-      setChallengesShownCount(c => c + NOW_CHALLENGES_CAP)
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [showChallengesDrawer, challengesShownCount])
 
   // Hangouts are members-only - gate guests to signup, otherwise open the channel.
   const openHangout = (topic) => {
@@ -1462,38 +1310,13 @@ export default function App() {
     if (!account) { setGuestGate({ reason: 'create_hangout' }); return }
     setShowCreateTopic(true)
   }
-  // Challenges allow guests (mirrors events, not hangouts). No auth gate.
-  const openCreateChallenge = () => {
-    // Registered-only - same gate as openCreateEvent / openCreateTopic.
-    // Guests can still browse, accept and chat in challenge channels;
-    // creation requires an account so we have a verified owner for
-    // validate/edit/delete and a target for participant notifications.
-    if (creationClosed) return
-    if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
-    setShowCreateChallenge(true)
-  }
-  // Open an international challenge from the World hero carousel. The carousel
-  // rows are a lean projection, so fetch the full object before opening its chat.
-  const openWorldChallenge = (ch) => {
-    if (!ch?.id) return
-    fetchChallengeById(ch.id).then(d => { if (d?.challenge) setActiveChallenge(d.challenge) }).catch(() => {})
-  }
-  // "Try this challenge" from the showcase - seed a fresh challenge from a
-  // success story's title + type (registered-only; create overlays in place).
-  const tryShowcaseChallenge = (item) => {
-    if (creationClosed) return
-    setCreateChallengePrefill({ title: item.title, challenge_type: item.challenge_type })
-    if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
-    setShowCreateChallenge(true)
-  }
   // World "🏆 X won the challenge Y" line → the same success preview the
   // challenges carousel opens. Falls back to the challenge itself when the win
   // isn't showcase-eligible (private, or no approved proof yet), so the row is
   // never a dead tap.
   const [wonPreview, setWonPreview] = useState(null)
   // Plain function, not useCallback - this file doesn't import it, and the
-  // handler isn't a dependency of anything memoized (matches
-  // tryShowcaseChallenge right above).
+  // handler isn't a dependency of anything memoized.
   const openWonChallenge = async (challengeId) => {
     if (!challengeId) return
     const item = await fetchShowcaseItem(challengeId)
@@ -3018,7 +2841,6 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'map')           { setShowMap(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
-      if (openScreenOnJoinRef.current === 'past')          { setShowPastArchive(true);  openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'leaderboard')   { setShowLeaderboard(true);  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
@@ -3684,17 +3506,13 @@ export default function App() {
     setMapSpotId(null)
     setActiveTopic(null)
     setActiveChallenge(null)
-    setShowCreateChallenge(false)
-    setEditChallengeObj(null)
     setShowCreateEvent(false)
     setShowCreateTopic(false)
-    setShowCreateChooser(false)
   }
 
   function goToCityChannel() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
-    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
@@ -3784,7 +3602,6 @@ export default function App() {
   // one reveals the one underneath instead of returning to the City Channel.
   function goToEventsTab() {
     setShowCityPicker(false)
-    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
@@ -3796,7 +3613,6 @@ export default function App() {
   function goToTodayTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
-    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
@@ -3808,7 +3624,6 @@ export default function App() {
   function goToMapTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
-    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
@@ -3819,29 +3634,9 @@ export default function App() {
   }
   // Back-compat alias - some call sites still reference goToNowTab.
   const goToNowTab = goToEventsTab
-  function goToChallengesTab() {
-    setShowCityPicker(false)
-    setShowEventDrawer(false)
-    setShowPeopleDrawer(false)
-    setShowProfileDrawer(false)
-    setShowConversations(false)
-    setShowNotifications(false)
-    setViewingProfile(null)
-    dismissFullPageOverlays()
-    setShowChallengesDrawer(true)
-  }
-  // "See all" from the World hero carousel: open the challenges browser with the
-  // 🌍 Worldwide filter pre-selected (all international challenges globally).
-  function goToWorldChallenges() {
-    fetchWorldChallengesAll(60).then(setWorldChallengesAll).catch(() => {})
-    setChallengeTypeFilter('all')
-    setChallengeModeFilter('worldwide')
-    goToChallengesTab()
-  }
   function goToHereTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
-    setShowChallengesDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
     setShowNotifications(false)
@@ -3852,7 +3647,6 @@ export default function App() {
   function goToMeTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
-    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowConversations(false)
     setShowNotifications(false)
@@ -4966,25 +4760,6 @@ export default function App() {
       <AppPromoBanner />
       <AppPromoInterstitial />
 
-      {/* Events sidebar - desktop only */}
-      <EventsSidebar
-        events={events}
-        cityEvents={cityEvents}
-        topics={topics}
-        activeEventId={activeEventId}
-        cityTimezone={cityTimezone}
-        eventPresence={eventPresence}
-        eventParticipants={eventParticipants}
-        onSelectEvent={handleSelectEvent}
-        onSelectTopic={topic => openHangout(topic)}
-        activeTopicId={activeTopic?.id}
-        onCreateClick={() => setShowCreateChooser(true)}
-        account={account}
-        guest={guest}
-        onShareToCity={shareToMyCity}
-        onShareToWorld={shareToWorld}
-      />
-
       <div className="screen chat">
         <header className="chat-header">
           {activeEvent ? (
@@ -5737,7 +5512,7 @@ export default function App() {
         <nav className="bottom-nav" aria-label="Primary">
           {(() => {
             const onPassport = showProfileDrawer
-            const onChat = !showToday && !showMap && !onPassport && !showEventDrawer && !showChallengesDrawer &&
+            const onChat = !showToday && !showMap && !onPassport && !showEventDrawer &&
               !showCityPicker && !showPeopleDrawer && !showConversations && !showNotifications
             const tabs = [
               { key: 'today',    active: showToday && !showMap && !onPassport, onClick: goToTodayTab,    Icon: NavIconToday },
@@ -6204,227 +5979,18 @@ export default function App() {
         </div>
       )}
 
-      {/* ── CHALLENGES tab ── split out of the old NOW drawer. Always renders
-          its mode + type sub-filters; pagination via challengesBodyRef. */}
-      {showChallengesDrawer && (
-        <div className="full-page full-page--tab">
-          <div className="tab-app-header">
-            {renderAppHeader()}
-          </div>
-          <div className="page-header">
-            <span className="page-title">{t('noun', { ns: 'challenge' })}</span>
-          </div>
-          <div className="page-body" ref={challengesBodyRef}>
-            {/* Hero carousel of recent success challenges - auto-rotating
-                discovery, global proof-first - with a trailing "How it works"
-                slide (the old intro block folded into the carousel to save space;
-                the explainer slide is always present, even with no successes). */}
-            <ShowcaseHero
-              onTry={creationClosed ? null : (item) => { setShowChallengesDrawer(false); tryShowcaseChallenge(item) }}
-              onOpenProfile={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
-              onSeeAll={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
-            />
-            {/* "How to earn points" helper - the challenges browser had no
-                scoring affordance (only the channel did). Labeled pill. */}
-            <div className="challenge-tab-scoring">
-              <ScoringInfoButton labeled onSeeExamples={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }} />
-            </div>
-            {/* My challenges - prominent entry to the creator/taker list
-                (members only). Opens the user's profile on its challenges tab,
-                which lists every challenge they created or took on. */}
-            {account && (
-              <button
-                type="button"
-                className="challenge-my-cta"
-                onClick={() => { setShowChallengesDrawer(false); openProfile(account.id, '') }}
-              >
-                <Icon name="trophy-outline" size={18} /> {t('myChallenges.cta', { ns: 'challenge' })} <Icon name="chevron-forward" size={16} />
-              </button>
-            )}
-            {/* (The standalone "Success challenges" button was removed - the hero
-                carousel above already has a "See all ›" link to the showcase.) */}
-            {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
-            <MostLocalCard
-              channelId={channelId}
-              onSeeAll={() => { setLeaderboardScope('city'); setShowLeaderboard(true) }}
-              onAvatarClick={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
-            />
-            {cityChallenges.length === 0 ? (
-              <div className="events-empty-state">
-                {/* Shared lead-with-action hero - identical to the home
-                    screen's zero-challenge state. */}
-                {creationClosed ? (
-                  <AppMapCard onOpenMap={goToMapTab} city={city ? localizeCityName(city) : ''} placement="drawer" />
-                ) : (
-                  <EmptyCityChallenges
-                    city={city ? localizeCityName(city) : ''}
-                    onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
-                  />
-                )}
 
-                {/* Inspiration "idea book" - inert example cards from the
-                    most-active other city. NOT takeable: each card's only
-                    action routes back to LOCAL creation. Renders nothing
-                    when no other city qualifies. */}
-                {!creationClosed && challengeInspiration.length > 0 && (
-                  <div className="challenge-inspiration-block">
-                    <p className="challenge-inspiration-heading">{t('inspiration.heading', { ns: 'challenge' })}</p>
-                    <p className="challenge-inspiration-sub">{t('inspiration.sub', { ns: 'challenge' })}</p>
-                    {challengeInspiration.map((ex, i) => (
-                      <ExampleChallengeCard
-                        key={`${ex.id}-${i}`}
-                        example={ex}
-                        sourceCity={challengeInspirationCity ?? ''}
-                        currentCity={city ? localizeCityName(city) : ''}
-                        onOpen={() => { fetchChallengeById(ex.id).then(d => { if (d?.challenge) { setShowChallengesDrawer(false); setActiveChallenge(d.challenge) } }).catch(() => {}) }}
-                        onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (() => {
-              // 🌍 Worldwide = ALL international challenges globally (separate feed
-              // from the city-scoped 'international' filter). Type sub-filter still applies.
-              const worldMode = challengeModeFilter === 'worldwide'
-              const sourcePool = worldMode
-                ? (challengeTypeFilter === 'all' ? worldChallengesAll : worldChallengesAll.filter(c => c.challenge_type === challengeTypeFilter))
-                : filteredChallenges
-              const visibleChallenges = sourcePool.slice(0, challengesShownCount)
-              const hasMoreInFilter   = sourcePool.length > visibleChallenges.length
-              return (
-              <div className="now-challenges-section">
-                {/* Mode sub-filter - All / Local / International */}
-                <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
-                  {[
-                    { key: 'all',           icon: 'sparkles-outline' },
-                    { key: 'special',       icon: 'flash-outline' },
-                    { key: 'local',         icon: 'business-outline' },
-                    { key: 'international', icon: 'airplane-outline' },
-                    { key: 'worldwide',     icon: 'globe-outline' },
-                  ].map(({ key, icon }) => (
-                    <button
-                      key={key}
-                      type="button"
-                      role="tab"
-                      aria-selected={challengeModeFilter === key}
-                      className={`challenge-type-chip${challengeModeFilter === key ? ' challenge-type-chip--active' : ''}`}
-                      onClick={() => {
-                        setChallengeModeFilter(key)
-                        if (key === 'worldwide') fetchWorldChallengesAll(60).then(setWorldChallengesAll).catch(() => {})
-                      }}
-                    >
-                      <Icon name={icon} size={14} />
-                      <span>{key === 'all'
-                        ? t('modeFilter.all', { ns: 'challenge' })
-                        : t(`mode.${key}`, { ns: 'challenge', defaultValue: key === 'worldwide' ? 'Worldwide' : key === 'special' ? 'Special' : key })}</span>
-                    </button>
-                  ))}
-                </div>
-                {/* Type sub-filter - Food / Place / Culture / Help */}
-                <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
-                  {[
-                    { key: 'all',     icon: 'sparkles-outline' },
-                    { key: 'food',    icon: CHALLENGE_TYPE_ICONS.food },
-                    { key: 'place',   icon: CHALLENGE_TYPE_ICONS.place },
-                    { key: 'culture', icon: CHALLENGE_TYPE_ICONS.culture },
-                    { key: 'help',    icon: CHALLENGE_TYPE_ICONS.help },
-                  ].map(({ key, icon }) => (
-                    <button
-                      key={key}
-                      type="button"
-                      role="tab"
-                      aria-selected={challengeTypeFilter === key}
-                      className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
-                      onClick={() => setChallengeTypeFilter(key)}
-                    >
-                      <Icon name={icon} size={14} />
-                      <span>{key === 'all'
-                        ? t('typeFilter.all', { ns: 'challenge' })
-                        : t(`tp.${key}`, { ns: 'challenge' })}</span>
-                    </button>
-                  ))}
-                </div>
-                {visibleChallenges.map(c => (
-                  <ChallengeVersusCard
-                    key={c.id}
-                    challenge={c}
-                    onClick={() => { setShowChallengesDrawer(false); setActiveChallenge(c) }}
-                    onAcceptClick={() => { setShowChallengesDrawer(false); setActiveChallenge(c) }}
-                    onAvatarClick={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
-                  />
-                ))}
-                {sourcePool.length === 0 && (
-                  <div className="challenge-type-empty">
-                    {t('typeFilter.empty', { ns: 'challenge', defaultValue: 'Nothing in this category right now.' })}
-                  </div>
-                )}
-                {hasMoreInFilter && (
-                  <div className="challenge-load-more-hint">…</div>
-                )}
-              </div>
-              )
-            })()}
-          </div>
-          {/* Bottom action bar - create a challenge, or (creation closed) the
-              compact map card; an empty city already shows the full card. */}
-          {creationClosed ? (
-            cityChallenges.length > 0 && (
-              <div className="now-actions-bar">
-                <AppMapCard onOpenMap={goToMapTab} compact city={city ? localizeCityName(city) : ''} placement="drawer_bar" />
-              </div>
-            )
-          ) : (
-            <div className="now-actions-bar">
-              <button
-                className="upcoming-cta upcoming-cta--inline"
-                style={{ background: 'var(--primary-tint)', color: 'var(--primary-text)', borderColor: 'var(--line)' }}
-                onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
-              >
-                <Icon name="flame-outline" size={18} /> {t('createCta', { ns: 'challenge' })}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
-      {showUpcomingEvents && (
-        <UpcomingEventsScreen
-          channelId={channelId}
-          timezone={cityTimezone}
-          onBack={() => setShowUpcomingEvents(false)}
-          onSelectEvent={(event) => { setShowUpcomingEvents(false); handleSelectEvent(event) }}
-        />
-      )}
-
-      {showPastArchive && (
-        <PastArchiveScreen
-          channelId={channelId}
-          timezone={cityTimezone}
-          cityName={city}
-          onBack={() => { setShowPastArchive(false); if (city) pushUrl(`/city/${cityToSlug(city)}`) }}
-          onSelectEvent={(event) => { setShowPastArchive(false); handleSelectEvent(event) }}
-          onSelectTopic={(topic) => { setShowPastArchive(false); setActiveTopic(topic) }}
-          onSelectChallenge={(challenge) => { setShowPastArchive(false); setActiveChallenge(challenge) }}
-        />
-      )}
 
       {/* Success preview opened from the World "won the challenge" line.
           Same component the challenges carousel uses. */}
       <ShowcasePreviewModal
         item={wonPreview}
         onClose={() => setWonPreview(null)}
-        onTry={creationClosed ? null : (item) => { setWonPreview(null); tryShowcaseChallenge(item) }}
+        onTry={null}
         onAvatar={(uid) => { setWonPreview(null); openProfile(uid, '') }}
       />
 
-      {showSuccessfulChallenges && (
-        <SuccessfulChallengesScreen
-          onBack={() => setShowSuccessfulChallenges(false)}
-          onTry={creationClosed ? null : (item) => { setShowSuccessfulChallenges(false); tryShowcaseChallenge(item) }}
-          onOpenProfile={(uid) => { setShowSuccessfulChallenges(false); openProfile(uid, '') }}
-        />
-      )}
 
       {showPeopleDrawer && !viewingProfile && (() => {
         // ── helpers scoped to this render ──────────────────────────────────────
@@ -7223,63 +6789,7 @@ export default function App() {
       {/* Challenge create / edit - orange-brand full-page modal. Same
           component handles both modes via the editChallenge prop. On create
           success, lands on the new challenge's detail page. On edit success,
-          reopens the same detail page with the updated data. */}
-      {(showCreateChallenge || editChallengeObj) && (
-        <CreateChallengePage
-          channelId={channelId}
-          guest={guest}
-          account={account}
-          editChallenge={editChallengeObj}
-          prefill={createChallengePrefill}
-          onPublicOptinDismissed={() => {
-            // Optimistically flip the local account state so the user
-            // doesn't see the modal again this session even before their
-            // next /me refresh.
-            setAccount(prev => prev ? { ...prev, has_seen_public_optin: true } : prev)
-          }}
-          onCreated={(ch) => {
-            setShowCreateChallenge(false)
-            setCreateChallengePrefill(null)
-            setActiveChallenge(ch)
-            // Fire the post-create "seed it" modal so the creator is nudged
-            // to invite city members or share externally right away.
-            setPostCreateChallenge(ch)
-          }}
-          onUpdated={(ch) => { setEditChallengeObj(null); setActiveChallenge(ch) }}
-          onBack={() => { setShowCreateChallenge(false); setEditChallengeObj(null); setCreateChallengePrefill(null) }}
-        />
-      )}
 
-      {/* Post-create "seed it" floating modal. Two CTAs: invite city members
-          to take it on (with push) OR share externally. Fires once per create. */}
-      {postCreateChallenge && (
-        <ChallengePostCreateModal
-          challenge={postCreateChallenge}
-          // International with a target city: invite people in the TARGET city
-          // (where we want a taker), not the origin we created from. Local and
-          // "anywhere" intl (no target_city_id) fall through to the origin.
-          cityChannelId={postCreateChallenge.target_city_id
-            ? String(postCreateChallenge.target_city_id).replace(/^city_/, '')
-            : channelId}
-          cityName={postCreateChallenge.target_city_id
-            ? (postCreateChallenge.target_city_name ?? city)
-            : city}
-          currentUserId={account?.id ?? null}
-          onClose={() => setPostCreateChallenge(null)}
-          onShare={async () => {
-            try {
-              await navigator.share?.({
-                title: postCreateChallenge.title,
-                text:  postCreateChallenge.title,
-                url:   `${window.location.origin}/challenge/${postCreateChallenge.id}`,
-              })
-            } catch {
-              // Fallback: copy URL to clipboard.
-              try { await navigator.clipboard?.writeText(`${window.location.origin}/challenge/${postCreateChallenge.id}`) } catch {}
-            }
-          }}
-        />
-      )}
 
       {/* Event limit reached - friendly full-page over the feed/drawer. */}
       {showEventLimitReached && (
@@ -7293,56 +6803,6 @@ export default function App() {
 
       {/* Creation chooser bottom sheet - challenge (the new primary CTA) on
           top per the product spec, hangout (instant) in the middle, event
-          (planned) at the bottom. Mirrors the mobile CreateSheet ordering. */}
-      {showCreateChooser && (
-        <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
-          <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
-            <div className="create-chooser-handle" />
-            <p className="create-chooser-title">{t('create.title')}</p>
-            <button
-              className="create-chooser-option create-chooser-option--challenge"
-              onClick={() => {
-                setShowCreateChooser(false)
-                openCreateChallenge()
-              }}
-            >
-              <span className="create-chooser-icon" style={{ color: 'var(--primary-text)' }}><Icon name="flame-outline" size={26} /></span>
-              <span className="create-chooser-label">
-                <strong>{t('create.challengeTitle')}</strong>
-                <span>{t('create.challengeSub')}</span>
-              </span>
-              <span className="create-chooser-arrow"><Icon name="chevron-forward" size={18} /></span>
-            </button>
-            {HANGOUTS_ENABLED && (
-            <button
-              className="create-chooser-option"
-              onClick={() => {
-                setShowCreateChooser(false)
-                openCreateHangout()
-              }}
-            >
-              <span className="create-chooser-icon" style={{ color: 'var(--primary-text)' }}><Icon name="hand-left-outline" size={26} /></span>
-              <span className="create-chooser-label">
-                <strong>{t('create.hangoutTitle')}</strong>
-                <span>{t('create.hangoutSub')}</span>
-              </span>
-              <span className="create-chooser-arrow"><Icon name="chevron-forward" size={18} /></span>
-            </button>
-            )}
-            <button
-              className="create-chooser-option"
-              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
-            >
-              <span className="create-chooser-icon" style={{ color: 'var(--primary-text)' }}><Icon name="calendar-outline" size={26} /></span>
-              <span className="create-chooser-label">
-                <strong>{t('create.eventTitle')}</strong>
-                <span>{t('create.eventSub')}</span>
-              </span>
-              <span className="create-chooser-arrow"><Icon name="chevron-forward" size={18} /></span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Topic chat - full-screen page */}
       {activeTopic && (
@@ -7376,7 +6836,6 @@ export default function App() {
             // browser is retired, as in the app).
             setActiveChallenge(null)
           }}
-          onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
           onShareToCity={shareToMyCity}
           onShareToWorld={shareToWorld}
@@ -7425,15 +6884,6 @@ export default function App() {
 
       {/* PR2 - "My challenge threads" index. Taps now route to the challenge
           channel (where the inline thread chat lives) - single surface, no
-          intermediate /thread step. */}
-      {showThreadsList && (
-        <ThreadsListPage
-          account={account}
-          socket={socketRef.current}
-          onBack={() => setShowThreadsList(false)}
-          onOpenChallenge={(c) => { setShowThreadsList(false); setActiveChallenge(c) }}
-        />
-      )}
 
       {/* PR7 - Leaderboard screen. Opened from the 🏆 chip in renderCityHero. */}
       {showLeaderboard && (
