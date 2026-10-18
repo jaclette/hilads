@@ -202,5 +202,19 @@
         "desc": "Je bent hem aan het ontdekken"
       }
     }
+  },
+  "friendReq": {
+    "title": "Vriendverzoeken",
+    "incoming": "Ontvangen",
+    "sent": "Verzonden",
+    "wantsToBeFriend": "wil je vriend zijn",
+    "requestSent": "verzoek verstuurd",
+    "decline": "Weigeren",
+    "accept": "Accepteren",
+    "cancel": "Annuleren",
+    "emptyIncomingTitle": "Nog geen vriendverzoeken",
+    "emptySentTitle": "Je hebt er nog geen verstuurd",
+    "emptyIncomingSub": "Wanneer iemand je als vriend wil toevoegen, zie je het hier.",
+    "emptySentSub": "Openstaande vriendverzoeken die je hebt verstuurd verschijnen hier."
   }
 }

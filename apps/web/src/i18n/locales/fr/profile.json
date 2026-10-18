@@ -202,5 +202,19 @@
         "desc": "Tu la découvres"
       }
     }
+  },
+  "friendReq": {
+    "title": "Demandes d'ami",
+    "incoming": "Reçues",
+    "sent": "Envoyées",
+    "wantsToBeFriend": "veut devenir ton ami",
+    "requestSent": "demande envoyée",
+    "decline": "Refuser",
+    "accept": "Accepter",
+    "cancel": "Annuler",
+    "emptyIncomingTitle": "Pas encore de demandes d'ami",
+    "emptySentTitle": "Tu n'en as envoyé aucune",
+    "emptyIncomingSub": "Quand quelqu'un te demande en ami, tu le verras ici.",
+    "emptySentSub": "Les demandes d'ami en attente que tu as envoyées apparaîtront ici."
   }
 }

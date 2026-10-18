@@ -6625,11 +6625,9 @@ export default function App() {
         }
 
         return (
-          <div className="full-page full-page--tab">
-            <div className="tab-app-header">
-              {renderAppHeader()}
-            </div>
+          <div className="full-page">
             <div className="page-header">
+              <BackButton onClick={() => setShowPeopleDrawer(false)} />
               <span className="page-title">{t('here.title')}</span>
             </div>
 

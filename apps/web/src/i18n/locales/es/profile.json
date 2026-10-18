@@ -202,5 +202,19 @@
         "desc": "La estás descubriendo"
       }
     }
+  },
+  "friendReq": {
+    "title": "Solicitudes de amistad",
+    "incoming": "Recibidas",
+    "sent": "Enviadas",
+    "wantsToBeFriend": "quiere ser tu amigo",
+    "requestSent": "solicitud enviada",
+    "decline": "Rechazar",
+    "accept": "Aceptar",
+    "cancel": "Cancelar",
+    "emptyIncomingTitle": "Aún no hay solicitudes de amistad",
+    "emptySentTitle": "No has enviado ninguna",
+    "emptyIncomingSub": "Cuando alguien te pida amistad, lo verás aquí.",
+    "emptySentSub": "Las solicitudes de amistad pendientes que has enviado aparecerán aquí."
   }
 }

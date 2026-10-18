@@ -202,5 +202,19 @@
         "desc": "你正在发现它"
       }
     }
+  },
+  "friendReq": {
+    "title": "好友请求",
+    "incoming": "收到的",
+    "sent": "已发送",
+    "wantsToBeFriend": "想成为你的好友",
+    "requestSent": "请求已发送",
+    "decline": "拒绝",
+    "accept": "接受",
+    "cancel": "取消",
+    "emptyIncomingTitle": "还没有好友请求",
+    "emptySentTitle": "你还没有发送任何请求",
+    "emptyIncomingSub": "当有人请求成为你的好友时，你会在这里看到。",
+    "emptySentSub": "你发送的待处理好友请求会显示在这里。"
   }
 }

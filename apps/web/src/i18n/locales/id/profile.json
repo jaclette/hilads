@@ -202,5 +202,19 @@
         "desc": "Kamu sedang menjelajahinya"
       }
     }
+  },
+  "friendReq": {
+    "title": "Permintaan pertemanan",
+    "incoming": "Masuk",
+    "sent": "Terkirim",
+    "wantsToBeFriend": "ingin berteman denganmu",
+    "requestSent": "permintaan terkirim",
+    "decline": "Tolak",
+    "accept": "Terima",
+    "cancel": "Batal",
+    "emptyIncomingTitle": "Belum ada permintaan pertemanan",
+    "emptySentTitle": "Kamu belum mengirim satu pun",
+    "emptyIncomingSub": "Saat seseorang ingin berteman denganmu, kamu akan melihatnya di sini.",
+    "emptySentSub": "Permintaan pertemanan tertunda yang kamu kirim akan muncul di sini."
   }
 }

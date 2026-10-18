@@ -202,5 +202,19 @@
         "desc": "Bạn đang khám phá nó"
       }
     }
+  },
+  "friendReq": {
+    "title": "Lời mời kết bạn",
+    "incoming": "Đến",
+    "sent": "Đã gửi",
+    "wantsToBeFriend": "muốn kết bạn với bạn",
+    "requestSent": "đã gửi lời mời",
+    "decline": "Từ chối",
+    "accept": "Chấp nhận",
+    "cancel": "Hủy",
+    "emptyIncomingTitle": "Chưa có lời mời kết bạn",
+    "emptySentTitle": "Bạn chưa gửi lời mời nào",
+    "emptyIncomingSub": "Khi có người muốn kết bạn, bạn sẽ thấy ở đây.",
+    "emptySentSub": "Các lời mời kết bạn đang chờ bạn đã gửi sẽ hiển thị ở đây."
   }
 }

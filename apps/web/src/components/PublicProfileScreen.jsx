@@ -700,7 +700,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
         <div className="pub-profile-sticky-bar">
           {onSendDm && (
             <button className="pub-profile-dm-btn" onClick={handleSendDm} disabled={dmBusy}>
-              {dmBusy ? t('actions.opening') : t('actions.message')}
+              {!dmBusy && <Icon name="chatbubble-outline" size={20} />}{dmBusy ? t('actions.opening') : t('actions.message')}
             </button>
           )}
           {account && !confirmUnfriend && !confirmCancelReq && (
@@ -709,6 +709,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
               onClick={handleFriendToggle}
               disabled={friendBusy}
             >
+              {!friendBusy && <Icon name={friendState === 'friend' ? 'people-outline' : friendState === 'pending_out' ? 'time-outline' : 'person-add-outline'} size={20} />}
               {friendBusy ? '…' :
                friendState === 'friend'      ? t('actions.friend')        :
                friendState === 'pending_out' ? t('actions.requestSent')   :

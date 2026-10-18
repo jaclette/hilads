@@ -202,5 +202,19 @@
         "desc": "도시를 알아가는 중이에요"
       }
     }
+  },
+  "friendReq": {
+    "title": "친구 요청",
+    "incoming": "받은 요청",
+    "sent": "보낸 요청",
+    "wantsToBeFriend": "님이 친구가 되고 싶어 해요",
+    "requestSent": "요청 보냄",
+    "decline": "거절",
+    "accept": "수락",
+    "cancel": "취소",
+    "emptyIncomingTitle": "아직 친구 요청이 없어요",
+    "emptySentTitle": "보낸 요청이 없어요",
+    "emptyIncomingSub": "누군가 친구가 되자고 요청하면 여기에 표시돼요.",
+    "emptySentSub": "보낸 대기 중인 친구 요청이 여기에 표시돼요."
   }
 }

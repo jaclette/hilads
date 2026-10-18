@@ -202,5 +202,19 @@
         "desc": "You're discovering it"
       }
     }
+  },
+  "friendReq": {
+    "title": "Friend requests",
+    "incoming": "Incoming",
+    "sent": "Sent",
+    "wantsToBeFriend": "wants to be your friend",
+    "requestSent": "request sent",
+    "decline": "Decline",
+    "accept": "Accept",
+    "cancel": "Cancel",
+    "emptyIncomingTitle": "No friend requests yet",
+    "emptySentTitle": "You haven't sent any",
+    "emptyIncomingSub": "When someone asks to be your friend, you'll see it here.",
+    "emptySentSub": "Pending friend requests you sent will show up here."
   }
 }

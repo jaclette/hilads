@@ -202,5 +202,19 @@
         "desc": "Nadiskubre mo pa lang ito"
       }
     }
+  },
+  "friendReq": {
+    "title": "Mga friend request",
+    "incoming": "Papasok",
+    "sent": "Naipadala",
+    "wantsToBeFriend": "gustong maging kaibigan mo",
+    "requestSent": "naipadala ang request",
+    "decline": "Tanggihan",
+    "accept": "Tanggapin",
+    "cancel": "Kanselahin",
+    "emptyIncomingTitle": "Wala pang friend request",
+    "emptySentTitle": "Wala ka pang naipadala",
+    "emptyIncomingSub": "Kapag may humiling maging kaibigan mo, makikita mo ito dito.",
+    "emptySentSub": "Lalabas dito ang mga naka-pending na friend request na ipinadala mo."
   }
 }

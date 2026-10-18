@@ -202,5 +202,19 @@
         "desc": "Du entdeckst sie gerade"
       }
     }
+  },
+  "friendReq": {
+    "title": "Freundschaftsanfragen",
+    "incoming": "Erhalten",
+    "sent": "Gesendet",
+    "wantsToBeFriend": "möchte dein Freund sein",
+    "requestSent": "Anfrage gesendet",
+    "decline": "Ablehnen",
+    "accept": "Annehmen",
+    "cancel": "Abbrechen",
+    "emptyIncomingTitle": "Noch keine Freundschaftsanfragen",
+    "emptySentTitle": "Du hast noch keine gesendet",
+    "emptyIncomingSub": "Wenn dich jemand als Freund anfragt, siehst du es hier.",
+    "emptySentSub": "Ausstehende Freundschaftsanfragen, die du gesendet hast, erscheinen hier."
   }
 }

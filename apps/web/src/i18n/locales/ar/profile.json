@@ -222,5 +222,19 @@
         "desc": "أنت تكتشفها"
       }
     }
+  },
+  "friendReq": {
+    "title": "طلبات الصداقة",
+    "incoming": "الواردة",
+    "sent": "المرسلة",
+    "wantsToBeFriend": "يريد أن يكون صديقك",
+    "requestSent": "تم إرسال الطلب",
+    "decline": "رفض",
+    "accept": "قبول",
+    "cancel": "إلغاء",
+    "emptyIncomingTitle": "لا توجد طلبات صداقة بعد",
+    "emptySentTitle": "لم ترسل أي طلب",
+    "emptyIncomingSub": "عندما يطلب أحدهم صداقتك، ستراه هنا.",
+    "emptySentSub": "ستظهر هنا طلبات الصداقة المعلّقة التي أرسلتها."
   }
 }

@@ -5,6 +5,7 @@ import {
 } from '../api'
 import BackButton from './BackButton'
 import Icon from './Icon'
+import { useTranslation } from 'react-i18next'
 
 const AVATAR_BG = ['#7c6aff', '#ff6a9f', '#22d3ee', '#4ade80', '#fb923c', '#f472b6', '#818cf8', '#2dd4bf']
 function avatarBg(name) {
@@ -18,6 +19,7 @@ function avatarBg(name) {
  * live when the other party acts (mirrors the mobile useFriendRequests hook).
  */
 export default function FriendRequestsScreen({ onBack, onViewProfile, wsClient }) {
+  const { t } = useTranslation('profile')
   const [tab, setTab]           = useState('incoming')
   const [incoming, setIncoming] = useState([])
   const [outgoing, setOutgoing] = useState([])
@@ -38,7 +40,7 @@ export default function FriendRequestsScreen({ onBack, onViewProfile, wsClient }
       setIncoming(inc)
       setOutgoing(out)
     } catch (e) {
-      setError('Could not load friend requests.')
+      setError(t('errors.generic'))
     } finally {
       setLoading(false)
     }
@@ -73,60 +75,57 @@ export default function FriendRequestsScreen({ onBack, onViewProfile, wsClient }
     const prev = incomingRef.current
     setIncoming(prev.filter(r => r.id !== id))
     try { await acceptFriendRequest(id) }
-    catch { setIncoming(prev); setError('Could not accept request.') }
+    catch { setIncoming(prev); setError(t('errors.generic')) }
   }
   async function handleDecline(id) {
     const prev = incomingRef.current
     setIncoming(prev.filter(r => r.id !== id))
     try { await declineFriendRequest(id) }
-    catch { setIncoming(prev); setError('Could not decline request.') }
+    catch { setIncoming(prev); setError(t('errors.generic')) }
   }
   async function handleCancel(id) {
     const prev = outgoingRef.current
     setOutgoing(prev.filter(r => r.id !== id))
     try { await cancelFriendRequest(id) }
-    catch { setOutgoing(prev); setError('Could not cancel request.') }
+    catch { setOutgoing(prev); setError(t('errors.generic')) }
   }
 
   const list = tab === 'incoming' ? incoming : outgoing
 
   return (
-    <div className="friend-req-screen">
-      <header className="friend-req-header">
+    <div className="full-page friend-req-screen">
+      <div className="page-header">
         <BackButton onClick={onBack} />
-        <h1 className="friend-req-title">Friend requests</h1>
-        <div style={{ width: 36 }} />
-      </header>
+        <span className="page-title">{t('friendReq.title')}</span>
+      </div>
 
       <div className="friend-req-tabs">
         <button
           className={`friend-req-tab${tab === 'incoming' ? ' friend-req-tab--active' : ''}`}
           onClick={() => setTab('incoming')}
         >
-          Incoming{incoming.length > 0 ? ` · ${incoming.length}` : ''}
+          {t('friendReq.incoming')}{incoming.length > 0 ? ` · ${incoming.length}` : ''}
         </button>
         <button
           className={`friend-req-tab${tab === 'sent' ? ' friend-req-tab--active' : ''}`}
           onClick={() => setTab('sent')}
         >
-          Sent{outgoing.length > 0 ? ` · ${outgoing.length}` : ''}
+          {t('friendReq.sent')}{outgoing.length > 0 ? ` · ${outgoing.length}` : ''}
         </button>
       </div>
 
-      {error && <div className="friend-req-error" onClick={() => setError(null)}>{error} · tap to dismiss</div>}
+      {error && <div className="friend-req-error" onClick={() => setError(null)}>{error}</div>}
 
       {loading ? (
-        <div className="friend-req-empty">Loading…</div>
+        <div className="friend-req-empty">{t('loading', { ns: 'common' })}</div>
       ) : list.length === 0 ? (
         <div className="friend-req-empty">
           <div className="friend-req-empty-emoji" style={{ color: 'var(--muted2)' }}><Icon name={tab === 'incoming' ? 'person-add-outline' : 'paper-plane-outline'} size={32} /></div>
           <div className="friend-req-empty-title">
-            {tab === 'incoming' ? 'No friend requests yet' : "You haven't sent any"}
+            {tab === 'incoming' ? t('friendReq.emptyIncomingTitle') : t('friendReq.emptySentTitle')}
           </div>
           <div className="friend-req-empty-sub">
-            {tab === 'incoming'
-              ? "When someone asks to be your friend, you'll see it here."
-              : 'Pending friend requests you sent will show up here.'}
+            {tab === 'incoming' ? t('friendReq.emptyIncomingSub') : t('friendReq.emptySentSub')}
           </div>
         </div>
       ) : (
@@ -147,17 +146,17 @@ export default function FriendRequestsScreen({ onBack, onViewProfile, wsClient }
                   <div className="friend-req-row-text">
                     <div className="friend-req-row-name">{name}</div>
                     <div className="friend-req-row-sub">
-                      {tab === 'incoming' ? 'wants to be your friend' : 'request sent'}
+                      {tab === 'incoming' ? t('friendReq.wantsToBeFriend') : t('friendReq.requestSent')}
                     </div>
                   </div>
                 </button>
                 {tab === 'incoming' ? (
                   <div className="friend-req-actions">
-                    <button className="friend-req-decline" onClick={() => handleDecline(req.id)}>Decline</button>
-                    <button className="friend-req-accept"  onClick={() => handleAccept(req.id)}>Accept</button>
+                    <button className="friend-req-decline" onClick={() => handleDecline(req.id)}>{t('friendReq.decline')}</button>
+                    <button className="friend-req-accept"  onClick={() => handleAccept(req.id)}>{t('friendReq.accept')}</button>
                   </div>
                 ) : (
-                  <button className="friend-req-cancel" onClick={() => handleCancel(req.id)}>Cancel</button>
+                  <button className="friend-req-cancel" onClick={() => handleCancel(req.id)}>{t('friendReq.cancel')}</button>
                 )}
               </li>
             )

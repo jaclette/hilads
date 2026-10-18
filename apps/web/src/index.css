@@ -16876,3 +16876,73 @@ body.has-app-promo-banner .page-header {
 .share-to-city-pill { min-height: 40px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 700; }
 .share-to-city-pill:hover { background: var(--surface2); }
 .share-to-city-pill--row { min-height: 34px; padding: 0 12px; font-size: 13px; }
+
+/* ── People (web pass 2): profile, DM, friend requests, nearby, like the app's B4 ── */
+.pub-profile-sticky-identity { align-items: stretch; padding: 4px 16px 0; border-bottom: 1px solid var(--line); }
+.pub-profile-body { align-items: stretch; padding: 12px 16px 16px; }
+.pub-profile-avatar { border: 3px solid var(--primary); }
+.pub-profile-avatar--initials { display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; }
+.pub-profile-name { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+.pub-profile-meta-city { font-size: 13px; color: var(--muted2); }
+.pub-profile-badge-micro { font-size: 12px; color: var(--muted2); }
+.badge-pill { font-size: 12px; padding: 3px 9px; border: none; background: var(--primary-tint); color: var(--primary-on-tint); }
+.badge-pill--ghost { background: var(--surface2); color: var(--muted2); }
+.badge-pill--local, .badge-pill--fresh { background: var(--local-bg); color: var(--local-text); }
+.badge-pill--regular { background: var(--primary-tint); color: var(--primary-on-tint); }
+.badge-pill--host { background: var(--primary-tint); color: var(--primary-on-tint); }
+/* Rank lines: one card of rows, like the app's RowGroup. */
+.profile-rank-row { margin: 4px 0 0; padding: 0; gap: 0; background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; overflow: hidden; }
+.profile-rank-row-line { min-height: 50px; padding: 0 14px; }
+.profile-rank-row-line + .profile-rank-row-line { border-top: 1px solid var(--line); }
+.profile-rank-row-line--tappable { margin: 0; border-radius: 0; }
+.profile-rank-row-line--tappable:hover { background: var(--surface2); }
+.profile-rank-row-text { font-size: 14px; font-weight: 700; }
+.pub-profile-about { font-size: 14px; line-height: 1.45; color: var(--text); }
+.pub-profile-identity-card, .pub-profile-info-rows, .pub-profile-pick-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: none; }
+.pub-profile-identity-card-title { font-size: 15px; font-weight: 800; color: var(--text); }
+.pub-profile-identity-card-sub, .pub-profile-info-label { font-size: 13px; color: var(--muted2); }
+.pub-profile-info-row { border-bottom-color: var(--line); }
+.pub-profile-info-value { font-size: 14px; font-weight: 700; color: var(--text); }
+/* Tabs: the app's filter chips. */
+.profile-tab-pill { min-height: 38px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; }
+.profile-tab-pill--active { border-color: var(--primary); background: var(--primary); color: #fff; }
+.pub-profile-tabs-bar { max-width: none; padding: 10px 0 12px; }
+.pub-profile-tab-empty { font-size: 14px; color: var(--muted2); }
+.pub-profile-event-row, .pub-profile-friend-row, .pub-profile-vibe-row { border-color: var(--line); }
+/* Bottom bar: Message = primary Button, Friend = secondary, report = round icon button. */
+.pub-profile-sticky-bar { gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); box-shadow: none; }
+.pub-profile-dm-btn, .pub-profile-friend-btn, .pub-profile-unfriend-btn, .pub-profile-unfriend-cancel { min-height: 48px; border-radius: 16px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: none; }
+.pub-profile-dm-btn { background: var(--primary); color: #fff; border: none; }
+.pub-profile-friend-btn, .pub-profile-friend-btn--active, .pub-profile-unfriend-cancel { background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
+.pub-profile-unfriend-btn { background: var(--surface); color: #C0392B; border: 1.5px solid #C0392B; }
+.pub-profile-report-btn { border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted2); opacity: 1; }
+.pub-profile-report-btn:hover { background: var(--surface2); border-color: var(--line); color: #C0392B; }
+/* Friend requests: the app's Segmented tabs and small Buttons. */
+.friend-req-tabs { gap: 4px; margin: 4px 16px 4px; padding: 4px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); }
+.friend-req-tab { flex: 1; min-height: 40px; border: none; border-radius: 999px; background: transparent; color: var(--text); font-size: 14px; font-weight: 600; }
+.friend-req-tab--active { background: var(--primary); color: #fff; font-weight: 700; }
+.friend-req-error { margin: 8px 16px; border-radius: 14px; border: 1.5px solid #C0392B; background: var(--surface); color: var(--text); }
+.friend-req-row { padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.friend-req-avatar { width: 44px; height: 44px; }
+.friend-req-row-name { font-size: 15px; }
+.friend-req-row-sub, .friend-req-empty-sub { color: var(--muted2); font-size: 13px; }
+.friend-req-empty-title { font-size: 16px; font-weight: 800; }
+.friend-req-decline, .friend-req-cancel, .friend-req-accept { min-height: 44px; padding: 0 14px; border-radius: 14px; font-size: 14px; font-weight: 700; }
+.friend-req-decline, .friend-req-cancel { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+.friend-req-accept { border: none; background: var(--primary); color: #fff; }
+/* DM header: avatar + name + "Direct message", like the app. */
+.dm-header-name { font-size: 16px; font-weight: 800; }
+/* People here: filter chips like the app's, rows as cards, sentence-case labels. */
+.here-filters { gap: 8px; padding: 4px 16px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.here-filter-label { width: auto; min-width: 44px; text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 700; color: var(--muted2); }
+.here-filter-chips { gap: 6px; }
+.here-chip { min-height: 34px; padding: 0 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.here-chip--on, .here-chip--on-local, .here-chip--on-exploring { border-color: var(--primary); background: var(--primary); color: #fff; }
+.here-section-header { text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 800; color: var(--text); }
+.people-drawer-row { padding: 12px 14px; background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: none; }
+.people-drawer-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.vibe-badge--local { color: var(--local-text) !important; }
+.vibe-badge--exploring { color: var(--traveler-text) !important; }
+/* Small filter chips (profile challenge filter). */
+.challenge-type-chip { min-height: 34px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-weight: 600; }
+.challenge-type-chip--active { border-color: var(--primary); background: var(--primary); color: #fff; }
