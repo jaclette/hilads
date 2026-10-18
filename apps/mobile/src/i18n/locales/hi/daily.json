@@ -241,6 +241,7 @@
     "selected": "चुना गया: {{name}}",
     "closeSpot": "बंद करें",
     "emptyTitle": "यहाँ पहला स्पॉट लगाने वाले बनो",
+    "spotsTomorrow": "स्पॉट कल के challenge से आएँगे: {{theme}}",
     "planA11y": "प्लान: {{title}}, {{time}}",
     "proofs_one": "{{count}} सबूत",
     "proofs_other": "{{count}} सबूत"

@@ -826,6 +826,7 @@
     "pricePaid": "实付价格 {{price}}",
     "closeSpot": "关闭",
     "emptyTitle": "成为第一个在这里放置地点的人",
+    "spotsTomorrow": "地点来自明天的 challenge：{{theme}}",
     "proofs_one": "{{count}} 个证明",
     "proofs_other": "{{count}} 个证明",
     "votes_one": "{{count}} 票",

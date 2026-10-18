@@ -265,6 +265,7 @@
     "selected": "المحدد: {{name}}",
     "closeSpot": "إغلاق",
     "emptyTitle": "كن أول من يضع مكانًا هنا",
+    "spotsTomorrow": "تأتي الأماكن من challenge الغد: {{theme}}",
     "planA11y": "خطة: {{title}}، {{time}}",
     "proofs_zero": "لا إثباتات",
     "proofs_one": "إثبات واحد",

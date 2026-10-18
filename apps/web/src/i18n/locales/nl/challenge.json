@@ -826,6 +826,7 @@
     "pricePaid": "Betaalde prijs {{price}}",
     "closeSpot": "Sluiten",
     "emptyTitle": "Zet hier als eerste een spot neer",
+    "spotsTomorrow": "Spots komen met de challenge van morgen: {{theme}}",
     "proofs_one": "{{count}} bewijs",
     "proofs_other": "{{count}} bewijzen",
     "votes_one": "{{count}} stem",

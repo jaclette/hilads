@@ -826,6 +826,7 @@
     "pricePaid": "支払額 {{price}}",
     "closeSpot": "閉じる",
     "emptyTitle": "ここに最初のスポットを置こう",
+    "spotsTomorrow": "スポットは明日の challenge から：{{theme}}",
     "proofs_one": "プルーフ {{count}} 件",
     "proofs_other": "プルーフ {{count}} 件",
     "votes_one": "{{count}} 票",

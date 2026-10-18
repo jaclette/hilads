@@ -24,6 +24,12 @@ export const THEME_WEEKDAY: Record<DailyThemeKey, number> = {
 
 export const THEME_KEYS = Object.keys(THEME_WEEKDAY) as DailyThemeKey[];
 
+/** The theme a date gets by default (its weekday's), for when the API gives none. */
+export function defaultThemeFor(date: string): DailyThemeKey {
+  const iso = new Date(`${date}T12:00:00Z`).getUTCDay() || 7;
+  return THEME_KEYS.find(k => THEME_WEEKDAY[k] === iso) ?? 'language';
+}
+
 /** The next date (after `today`, Y-m-d) on the theme's weekday, as a localized weekday name. */
 export function nextThemeDay(key: DailyThemeKey, today: string, locale: string): string {
   const d = new Date(`${today}T12:00:00Z`);

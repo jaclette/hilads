@@ -826,6 +826,7 @@
     "pricePaid": "지불한 가격 {{price}}",
     "closeSpot": "닫기",
     "emptyTitle": "여기에 첫 스팟을 올려 보세요",
+    "spotsTomorrow": "스팟은 내일의 challenge에서 나와요: {{theme}}",
     "proofs_one": "인증 {{count}}개",
     "proofs_other": "인증 {{count}}개",
     "votes_one": "{{count}}표",

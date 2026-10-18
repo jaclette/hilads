@@ -31,6 +31,13 @@ const LABEL_MIN_ZOOM = 13.5;
 // Tap target around a pin, in points (SPEC: 44 minimum).
 const PIN_HITBOX = { width: 44, height: 44 };
 
+/** [sw, ne] around some spots, or null without any. */
+function spotsFrame(spots: Spot[]): [[number, number], [number, number]] | null {
+  if (spots.length === 0) return null;
+  const lngs = spots.map(s => s.lng), lats = spots.map(s => s.lat);
+  return [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]];
+}
+
 /** Great-circle distance in meters (for the selected spot's sheet). */
 function meters(a: [number, number], b: [number, number]): number {
   const r = 6371000, rad = Math.PI / 180;
@@ -68,6 +75,8 @@ export default function MapScreen() {
   const [spots, setSpots]       = useState<Spot[]>([]);
   const [plans, setPlans]       = useState<PlanPin[]>([]);
   const [center, setCenter]     = useState<[number, number] | null>(null);
+  // The city's spots as [sw, ne] (first load): where to look without my position.
+  const [cityFrame, setCityFrame] = useState<[[number, number], [number, number]] | null>(null);
   const [loaded, setLoaded]     = useState(false);
   const [cityEmpty, setCityEmpty] = useState(false);
   const [selected, setSelected] = useState<Spot | null>(null);
@@ -100,6 +109,7 @@ export default function MapScreen() {
     fetchMap({ cityId, theme: themeFilter }).then(d => {
       if (!alive) return;
       if (d.city) setCenter([d.city.lng, d.city.lat]);
+      if (themeFilter === null) setCityFrame(spotsFrame(d.spots));
       setCityEmpty(themeFilter === null && d.spots.length === 0);
       if (!lastBbox.current) { setSpots(d.spots); setPlans(scope === 'city' ? d.plans : []); }
       setLoaded(true);
@@ -107,14 +117,23 @@ export default function MapScreen() {
     return () => { alive = false; };
   }, [cityId, themeFilter, scope]);
 
-  // Centre once: on me when known, else on the city.
+  // Centre once: on me when known, else on the city's spots (a city's stored
+  // centre can be kilometres from them), else on the city.
   useEffect(() => {
     if (centered.current || !cameraRef.current) return;
-    const target = me ?? center;
-    if (!target) return;
+    if (!me && !center) return;
     centered.current = true;
-    cameraRef.current.setCamera({ centerCoordinate: target, zoomLevel: CITY_ZOOM, animationDuration: 0 });
-  }, [me, center]);
+    if (!me && cityFrame) {
+      const [sw, ne] = cityFrame;
+      if (sw[0] === ne[0] && sw[1] === ne[1]) {
+        cameraRef.current.setCamera({ centerCoordinate: sw, zoomLevel: CITY_ZOOM + 1, animationDuration: 0 });
+      } else {
+        cameraRef.current.fitBounds(ne, sw, [insets.top + 150, 48, 220, 48], 0);
+      }
+      return;
+    }
+    cameraRef.current.setCamera({ centerCoordinate: (me ?? center)!, zoomLevel: CITY_ZOOM, animationDuration: 0 });
+  }, [me, center, cityFrame, insets.top]);
 
   const loadArea = useCallback((bbox: Bbox) => {
     fetchMap({ bbox, cityId: scope === 'city' ? cityId : null, theme: themeFilter })

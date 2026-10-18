@@ -17098,3 +17098,9 @@ body.has-app-promo-banner .page-header {
 .wm-pin-label--right { left: 48px; }
 .wm-pin-label--left { right: 48px; }
 .wm-pin-label--on { border-color: var(--primary); }
+/* Empty city card: today's challenge, then "Take it" (place theme) or tomorrow's theme (Language day). */
+.wm-sheet--empty { align-items: stretch; }
+.wm-sheet--empty .wm-sheet-title { margin: 0; }
+.wm-empty-text { margin: 0; font-size: 14px; color: var(--muted2); }
+.wm-empty-tomorrow { margin: 0; font-size: 14px; font-weight: 700; color: var(--primary-text); }
+.wm-sheet--empty .wm-sheet-cta { background: var(--primary); }

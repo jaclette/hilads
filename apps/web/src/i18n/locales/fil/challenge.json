@@ -826,6 +826,7 @@
     "pricePaid": "Binayarang presyo {{price}}",
     "closeSpot": "Isara",
     "emptyTitle": "Ikaw na ang unang maglagay ng spot dito",
+    "spotsTomorrow": "Galing ang mga spot sa challenge bukas: {{theme}}",
     "proofs_one": "{{count}} proof",
     "proofs_other": "{{count}} proof",
     "votes_one": "{{count}} boto",

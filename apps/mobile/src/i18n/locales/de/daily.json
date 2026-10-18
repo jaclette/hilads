@@ -241,6 +241,7 @@
     "selected": "Ausgewählt: {{name}}",
     "closeSpot": "Schließen",
     "emptyTitle": "Setz hier als Erste:r einen Spot",
+    "spotsTomorrow": "Spots kommen mit der Challenge von morgen: {{theme}}",
     "planA11y": "Plan: {{title}}, {{time}}",
     "proofs_one": "{{count}} Beweis",
     "proofs_other": "{{count}} Beweise"

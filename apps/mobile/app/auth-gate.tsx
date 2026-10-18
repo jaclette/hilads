@@ -18,7 +18,7 @@ import { BrandMark, Button } from '@/ui';
 
 const REASONS = [
   'view_profile', 'create_event', 'send_dm', 'join_hangout', 'create_hangout',
-  'create_challenge', 'accept_challenge', 'join_challenge', 'daily_proof', 'daily_vote',
+  'create_challenge', 'accept_challenge', 'join_challenge', 'daily_proof', 'daily_vote', 'first_spot',
 ] as const;
 type GateReason = typeof REASONS[number];
 

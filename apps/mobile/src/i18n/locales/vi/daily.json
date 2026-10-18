@@ -239,6 +239,7 @@
     "selected": "Đã chọn: {{name}}",
     "closeSpot": "Đóng",
     "emptyTitle": "Hãy là người đầu tiên đặt spot ở đây",
+    "spotsTomorrow": "Spot sẽ đến từ challenge ngày mai: {{theme}}",
     "planA11y": "Kế hoạch: {{title}}, {{time}}",
     "proofs_one": "{{count}} bằng chứng",
     "proofs_other": "{{count}} bằng chứng"

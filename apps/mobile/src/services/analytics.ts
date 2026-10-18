@@ -88,6 +88,7 @@ export type AnalyticsEvent =
   // V3-07: the map of spots (SPEC 9.13)
   | 'map_viewed'
   | 'map_filter_used'
+  | 'map_first_spot_tapped'
   | 'spot_opened'
   // V3-08: the place-based proof (SPEC 9.13)
   | 'place_picker_opened'

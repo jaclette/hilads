@@ -826,6 +826,7 @@
     "pricePaid": "Prix payé {{price}}",
     "closeSpot": "Fermer",
     "emptyTitle": "Sois le premier à poser un spot ici",
+    "spotsTomorrow": "Les spots arrivent avec le challenge de demain : {{theme}}",
     "proofs_one": "{{count}} preuve",
     "proofs_other": "{{count}} preuves",
     "votes_one": "{{count}} vote",

@@ -241,6 +241,7 @@
     "selected": "Selected: {{name}}",
     "closeSpot": "Close",
     "emptyTitle": "Be the first to put a spot here",
+    "spotsTomorrow": "Spots come from tomorrow's challenge: {{theme}}",
     "planA11y": "Plan: {{title}}, {{time}}",
     "proofs_one": "{{count}} proof",
     "proofs_other": "{{count}} proofs"

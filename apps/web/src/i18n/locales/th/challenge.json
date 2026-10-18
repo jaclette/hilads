@@ -826,6 +826,7 @@
     "pricePaid": "ราคาที่จ่าย {{price}}",
     "closeSpot": "ปิด",
     "emptyTitle": "มาเป็นคนแรกที่ปักสปอตตรงนี้",
+    "spotsTomorrow": "สปอตมาจาก challenge พรุ่งนี้: {{theme}}",
     "proofs_one": "{{count}} หลักฐาน",
     "proofs_other": "{{count}} หลักฐาน",
     "votes_one": "{{count}} โหวต",

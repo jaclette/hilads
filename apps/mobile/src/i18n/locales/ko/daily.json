@@ -239,6 +239,7 @@
     "selected": "선택됨: {{name}}",
     "closeSpot": "닫기",
     "emptyTitle": "여기에 첫 스팟을 올려 보세요",
+    "spotsTomorrow": "스팟은 내일의 challenge에서 나와요: {{theme}}",
     "planA11y": "약속: {{title}}, {{time}}",
     "proofs_one": "인증 {{count}}개",
     "proofs_other": "인증 {{count}}개"

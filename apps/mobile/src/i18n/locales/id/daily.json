@@ -241,6 +241,7 @@
     "selected": "Dipilih: {{name}}",
     "closeSpot": "Tutup",
     "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
+    "spotsTomorrow": "Spot datang dari challenge besok: {{theme}}",
     "planA11y": "Rencana: {{title}}, {{time}}",
     "proofs_one": "{{count}} bukti",
     "proofs_other": "{{count}} bukti"

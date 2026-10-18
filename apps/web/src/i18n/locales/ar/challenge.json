@@ -826,6 +826,7 @@
     "pricePaid": "السعر المدفوع {{price}}",
     "closeSpot": "إغلاق",
     "emptyTitle": "كن أول من يضع مكانًا هنا",
+    "spotsTomorrow": "تأتي الأماكن من challenge الغد: {{theme}}",
     "proofs_zero": "لا إثباتات",
     "proofs_one": "إثبات واحد",
     "proofs_two": "إثباتان",

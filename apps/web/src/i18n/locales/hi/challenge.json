@@ -826,6 +826,7 @@
     "pricePaid": "चुकाई गई कीमत {{price}}",
     "closeSpot": "बंद करें",
     "emptyTitle": "यहाँ पहला स्पॉट लगाने वाले बनो",
+    "spotsTomorrow": "स्पॉट कल के challenge से आएँगे: {{theme}}",
     "proofs_one": "{{count}} सबूत",
     "proofs_other": "{{count}} सबूत",
     "votes_one": "{{count}} वोट",

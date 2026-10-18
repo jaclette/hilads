@@ -253,6 +253,7 @@
     "selected": "Выбрано: {{name}}",
     "closeSpot": "Закрыть",
     "emptyTitle": "Поставь здесь первое место",
+    "spotsTomorrow": "Места появятся с завтрашним challenge: {{theme}}",
     "planA11y": "План: {{title}}, {{time}}",
     "proofs_one": "{{count}} доказательство",
     "proofs_few": "{{count}} доказательства",

@@ -5,9 +5,9 @@ import 'leaflet/dist/leaflet.css'
 import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
 import SpotPage from './SpotPage'
-import { fetchMap, searchSpots } from '../../api'
+import { fetchMap, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels } from './spotsShared'
+import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore } from './spotsShared'
 import Icon, { iconHtml } from '../Icon'
 import { THEME_ICON } from '../../lib/icons'
 
@@ -86,13 +86,20 @@ function MapWatcher({ onArea, onZoom }) {
   return null
 }
 
-/** Moves the camera when the parent asks (search pick, cluster tap). */
+/** Moves the camera when the parent asks (search pick, cluster tap, the city's spots). */
 function CameraTo({ target }) {
   const map = useMap()
   useEffect(() => {
-    if (target) map.setView([target.lat, target.lng], target.zoom, { animate: true })
+    if (target?.bounds) map.fitBounds(target.bounds, { padding: [48, 48], maxZoom: CITY_ZOOM + 1, animate: false })
+    else if (target) map.setView([target.lat, target.lng], target.zoom, { animate: true })
   }, [target, map])
   return null
+}
+
+/** The theme a date gets by default (its weekday's; THEME_KEYS is Monday first). */
+function defaultThemeFor(date) {
+  const iso = new Date(`${date}T12:00:00Z`).getUTCDay() || 7
+  return THEME_KEYS[iso - 1]
 }
 
 /**
@@ -134,11 +141,36 @@ function Pins({ spots, zoom, selected, onSpot, onCluster }) {
 }
 
 /**
+ * A city without spots: "Be the first to put a spot here" with today's
+ * challenge. On a place theme, "Take it" opens the store (proofs are posted
+ * from the app); on a Language day, a line names tomorrow's theme.
+ */
+function EmptyCard({ today, t }) {
+  const challenge = today?.challenge ?? null
+  const placeTheme = !!challenge?.theme && challenge.theme.key !== 'language'
+  const tomorrowKey = today?.tomorrow?.theme?.key
+    ?? (challenge ? defaultThemeFor(new Date(Date.parse(`${challenge.date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10)) : null)
+  const store = deviceStore()
+  return (
+    <div className="wm-sheet wm-sheet--empty">
+      <p className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{t('map.emptyTitle')}</p>
+      {challenge && <p className="wm-empty-text">{challenge.text}</p>}
+      {challenge?.isActive && !today?.myProof && (placeTheme ? (
+        <a className="wm-sheet-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
+           onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'map_empty' })}>
+          {t('dc.takeIt')}
+        </a>
+      ) : tomorrowKey && <p className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</p>)}
+    </div>
+  )
+}
+
+/**
  * The web map of spots (SPEC 9.5, same API as the app's Map tab): the current
  * city's spots and Hi plans, theme chips, search, and a spot page. Full screen.
  */
 export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, initialSpotId = null }) {
-  const { t } = useTranslation('challenge')
+  const { t, i18n } = useTranslation('challenge')
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
   const [plans, setPlans]     = useState([])
@@ -153,6 +185,8 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
   const [me, setMe]           = useState(null)      // my position, once the browser gives it
   const [nearMe, setNearMe]   = useState(false)     // far from the city: the map is around me
   const [notice, setNotice]   = useState(null)
+  const [cityEmpty, setCityEmpty] = useState(false)  // the city really has no spot (not just the visible area)
+  const [today, setToday]     = useState(null)
   const areaRef = useRef(null)
   const cityCenterRef = useRef(null)
   const dark = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark'
@@ -169,6 +203,11 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
         cityCenterRef.current = c
         setCenter(c)
         setSpots(d.spots); setPlans(d.plans)
+        setCityEmpty(d.spots.length === 0)
+        // A city's stored centre can be kilometres from its spots: without my
+        // position (asked below), frame the spots.
+        if (d.spots.length > 1) setCamera({ bounds: d.spots.map(s => [s.lat, s.lng]) })
+        else if (d.spots.length === 1) setCamera({ lat: d.spots[0].lat, lng: d.spots[0].lng, zoom: CITY_ZOOM + 1 })
         if (!c) setFailed(true)
         // Location already allowed for this site: use it without asking.
         navigator.permissions?.query({ name: 'geolocation' })
@@ -198,6 +237,12 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
       if (asked) setNotice(err.code === 1 ? t('map.locationDenied') : t('map.locationFailed'))
     }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 })
   }
+
+  // Today's challenge, for the empty city card.
+  useEffect(() => {
+    if (!channelId) return
+    fetchDailyToday(channelId, i18n.language).then(setToday).catch(() => {})
+  }, [channelId, i18n.language])
 
   useEffect(() => {
     if (!notice) return
@@ -309,10 +354,8 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
         {tiles.mapbox && (
           <a className="wm-mapbox-logo" href="https://www.mapbox.com/" target="_blank" rel="noopener noreferrer" aria-label="Mapbox">mapbox</a>
         )}
-        {center && spots.length === 0 && plans.length === 0 && !selected && (
-          <div className="wm-sheet wm-sheet--empty">
-            <p className="wm-sheet-title">{t('map.emptyTitle')}</p>
-          </div>
+        {center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty) && (
+          <EmptyCard today={today} t={t} />
         )}
         {selected && (
           <div className="wm-sheet">

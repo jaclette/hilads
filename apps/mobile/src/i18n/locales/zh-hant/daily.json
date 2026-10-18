@@ -239,6 +239,7 @@
     "selected": "已選擇：{{name}}",
     "closeSpot": "關閉",
     "emptyTitle": "成為第一個在這裡放置地點的人",
+    "spotsTomorrow": "地點來自明天的 challenge：{{theme}}",
     "planA11y": "計畫：{{title}}，{{time}}",
     "proofs_one": "{{count}} 個證明",
     "proofs_other": "{{count}} 個證明"

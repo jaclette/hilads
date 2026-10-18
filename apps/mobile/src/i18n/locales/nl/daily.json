@@ -241,6 +241,7 @@
     "selected": "Geselecteerd: {{name}}",
     "closeSpot": "Sluiten",
     "emptyTitle": "Zet hier als eerste een spot neer",
+    "spotsTomorrow": "Spots komen met de challenge van morgen: {{theme}}",
     "planA11y": "Plan: {{title}}, {{time}}",
     "proofs_one": "{{count}} bewijs",
     "proofs_other": "{{count}} bewijzen"

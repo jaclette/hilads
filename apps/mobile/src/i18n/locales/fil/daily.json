@@ -241,6 +241,7 @@
     "selected": "Napili: {{name}}",
     "closeSpot": "Isara",
     "emptyTitle": "Ikaw na ang unang maglagay ng spot dito",
+    "spotsTomorrow": "Galing ang mga spot sa challenge bukas: {{theme}}",
     "planA11y": "Plano: {{title}}, {{time}}",
     "proofs_one": "{{count}} proof",
     "proofs_other": "{{count}} proof"

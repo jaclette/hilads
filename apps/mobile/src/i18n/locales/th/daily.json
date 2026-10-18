@@ -239,6 +239,7 @@
     "selected": "เลือกแล้ว: {{name}}",
     "closeSpot": "ปิด",
     "emptyTitle": "มาเป็นคนแรกที่ปักสปอตตรงนี้",
+    "spotsTomorrow": "สปอตมาจาก challenge พรุ่งนี้: {{theme}}",
     "planA11y": "แผน: {{title}}, {{time}}",
     "proofs_one": "{{count}} หลักฐาน",
     "proofs_other": "{{count}} หลักฐาน"

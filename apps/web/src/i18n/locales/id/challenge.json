@@ -826,6 +826,7 @@
     "pricePaid": "Harga dibayar {{price}}",
     "closeSpot": "Tutup",
     "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
+    "spotsTomorrow": "Spot datang dari challenge besok: {{theme}}",
     "proofs_one": "{{count}} bukti",
     "proofs_other": "{{count}} bukti",
     "votes_one": "{{count}} suara",
