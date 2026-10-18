@@ -240,6 +240,36 @@ final class DailyProofRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Today's proof strip (SPEC 9.3): a scope's approved proofs, most voted
+     * first then newest, with the scope's proof and country counts ($cityId
+     * null = World). Viewer-independent, cached 15 s per scope.
+     */
+    public static function strip(string $challengeId, ?string $cityId, int $limit): array
+    {
+        $key = "daily_strip_v1_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}";
+        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit): array {
+            $pdo        = Database::pdo();
+            $cityFilter = $cityId !== null ? " AND p.city_id = ?" : "";
+            $args       = $cityId !== null ? [$challengeId, $cityId] : [$challengeId];
+
+            $stmt = $pdo->prepare("
+                SELECT count(*) AS total, count(DISTINCT c.country) AS countries
+                FROM daily_proofs p
+                LEFT JOIN cities c ON c.channel_id = p.city_id
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved'{$cityFilter}
+            ");
+            $stmt->execute($args);
+            $counts = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $stmt = $pdo->prepare(self::SELECT . " WHERE p.challenge_id = ? AND p.moderation_status = 'approved'{$cityFilter}
+                ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC LIMIT ?");
+            $stmt->execute([...$args, $limit]);
+
+            return ['total' => (int) $counts['total'], 'countries' => (int) $counts['countries'], 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        });
+    }
+
     /** Moderation queue: pending proofs, oldest first (the longest wait is reviewed first). */
     public static function listPending(int $limit): array
     {

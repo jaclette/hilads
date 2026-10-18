@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyCalendar, fetchDailySheet, fetchDailyToday, fetchSpotsNear } from '../../api'
+import { fetchDailyCalendar, fetchDailyToday, fetchDailyTodayProofs, fetchSpotsNear } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
 import {
-  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, personName, seedProofs, seedVotesLeft,
-  StatusChip, OriginalToggle, useOriginal, ProposedBy,
+  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
+  StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal,
 } from '../daily/dailyShared'
-import { useLeaderboard } from '../daily/ChallengeScreen'
 import { ymd } from '../daily/CalendarScreen'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
@@ -26,8 +25,7 @@ function distance(m, lang) {
 
 /**
  * TODAY, the web home (W2, the app's Today tab, SPEC 9.3): the Daily Challenge
- * ticket, the week strip, the live top 3 (or today's latest proofs) and Spots
- * near you. Proofs are posted from the app: "Take the challenge" opens the store.
+ * ticket, the week strip, today's proofs and Spots near you. Proofs are posted from the app: "Take the challenge" opens the store.
  */
 export default function TodayScreen({ header }) {
   const { i18n } = useDc()
@@ -56,7 +54,7 @@ export default function TodayScreen({ header }) {
         <FirstLaunchLine />
         <Ticket data={data} loading={loading} />
         <Week today={data} />
-        <Top3 today={data} />
+        <TodayProofs today={data} />
         <SpotsNear />
       </div>
     </div>
@@ -85,7 +83,7 @@ function FirstLaunchLine() {
 
 function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
-  const { openDaily } = useDaily()
+  const { scope, openDaily } = useDaily()
   const [showOriginal, toggleOriginal] = useOriginal()
   const secondsLeft = useCountdown(data?.challenge ? data.nextDropAt : null)
   const tracked = useRef(null)
@@ -114,6 +112,8 @@ function Ticket({ data, loading }) {
   const earlyUntil = !myProof && data.early && data.early.until * 1000 > Date.now() ? data.early.until : null
   const store = deviceStore()
   const open = () => openDaily('challenge', { date: 'today', source: 'today' })
+  // People who took it: the city's count in city scope once it has proofs, else World's.
+  const took = (scope === 'city' && data.counts?.city ? data.counts.city : data.counts?.world) ?? 0
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   return (
@@ -152,6 +152,11 @@ function Ticket({ data, loading }) {
              onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
             {t('cta')}
           </a>
+        )}
+        {took > 0 && (
+          <button type="button" className="today-took" onClick={(e) => { e.stopPropagation(); open() }}>
+            {t('today.tookIt', { count: took })} · <span className="today-took-link">{t('today.seePhotos', { count: took })}</span>
+          </button>
         )}
         {data.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
           <button type="button" className="today-propose" onClick={(e) => {
@@ -244,76 +249,64 @@ function Week({ today }) {
   )
 }
 
-/** Today's live top 3 (city when it has one, else World), or today's latest proofs before ranking. */
-function Top3({ today }) {
-  const { t } = useDc()
+/**
+ * Today's proofs (SPEC 9.3): the scope's approved proofs as a photo strip, most
+ * voted first then newest, each with its city and votes, and a 1/2/3 seal on
+ * the top three once the leaderboard ranks. A city with none shows World's.
+ * Hidden when nobody has posted.
+ */
+function TodayProofs({ today }) {
+  const { t, i18n } = useDc()
   const { scope, openDaily } = useDaily()
-  const active = !!today?.challenge?.isActive
-  const lb = useLeaderboard(active)
-  const ranked = !!lb && lb.date === today?.challenge?.date && lb.ranked
-  const cityNum = today?.city?.id ?? null
-  const cityEntries = scope === 'city' && cityNum !== null ? lb?.cities.find(c => c.city.id === cityNum)?.entries ?? [] : []
-  const top = !ranked ? [] : (cityEntries.length > 0 ? cityEntries : lb.world).slice(0, 3)
+  const [strip, setStrip] = useState(null)
+  const date = today?.challenge?.date ?? null
+  const cityNum = scope === 'city' ? today?.city?.id ?? null : null
 
-  if (!today?.challenge) return null
-  if (top.length === 0) return <Latest today={today} />
+  useEffect(() => {
+    if (!date) { setStrip(null); return }
+    let alive = true
+    fetchDailyTodayProofs({ scope: cityNum ? 'city' : 'world', cityId: cityNum, locale: i18n.language })
+      .then(s => { if (!alive) return; setStrip(s); seedProofs(s.proofs, true) })
+      .catch(() => { /* keep what we have */ })
+    return () => { alive = false }
+  }, [date, cityNum, i18n.language])
+
+  if (!strip || strip.proofs.length === 0) return null
+  const world = strip.scope === 'world'
+  const proofs = t('today.proofs', { count: strip.total })
   return (
     <div className="today-card">
       <div className="today-card-head">
-        <span className="today-card-title">{t('today.top3')}</span>
-        <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: 'today', tab: 'top10' })}>{t('today.seeTop10')}</button>
+        <span className="today-card-title">{world ? t('today.aroundWorld') : t('today.inCity', { city: localizeCityName(strip.city?.name ?? '') })}</span>
+        <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: 'today', source: 'today' })}>{t('today.seeAll')}</button>
       </div>
-      <div className="top3-row">
-        {top.map(e => (
-          <button key={e.proofId} type="button" className="top3-entry" onClick={() => openDaily('challenge', { date: 'today', proofId: e.proofId })}>
-            {e.user.photoUrl ? <img className="top3-avatar" src={e.user.photoUrl} alt="" /> : <span className="top3-avatar">{(personName(e.user) || '?')[0].toUpperCase()}</span>}
-            <span className="top3-text">
-              <span className="top3-name">{e.user.username ?? personName(e.user)}</span>
-              <span className="dc-muted">{t('today.votes', { count: e.voteCount })}</span>
-            </span>
-          </button>
+      <span className="dc-muted today-proofs-stats">
+        {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}
+      </span>
+      <div className="proof-strip">
+        {strip.proofs.map(p => (
+          <StripProof key={p.id} proof={p} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />
         ))}
       </div>
     </div>
   )
 }
 
-function Latest({ today }) {
-  const { t, i18n } = useDc()
-  const { scope, openDaily } = useDaily()
-  const [proofs, setProofs] = useState([])
-  const date = today.challenge?.date ?? null
-  const cityNum = scope === 'city' ? today.city?.id ?? null : null
-
-  useEffect(() => {
-    if (!date) return
-    let alive = true
-    ;(async () => {
-      try {
-        let sheet = await fetchDailySheet(date, { scope: cityNum ? 'city' : 'world', cityId: cityNum, limit: 10, locale: i18n.language })
-        if (cityNum && sheet.proofs.length === 0) sheet = await fetchDailySheet(date, { scope: 'world', limit: 10, locale: i18n.language })
-        if (alive) setProofs(sheet.proofs)
-      } catch { /* keep what we have */ }
-    })()
-    return () => { alive = false }
-  }, [date, cityNum, i18n.language])
-
-  if (proofs.length === 0) return null
+function StripProof({ proof, onOpen }) {
+  const { t } = useDc()
+  const voteCount = useVoteCount(proof)
+  const city = proof.city ? localizeCityName(proof.city.name ?? '') : ''
+  const votes = t('today.votes', { count: voteCount })
   return (
-    <div className="today-card">
-      <div className="today-card-head">
-        <span className="today-card-title">{t('today.latest')}</span>
-        <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: 'today', source: 'today' })}>{t('today.seeAll')}</button>
-      </div>
-      <div className="latest-row">
-        {proofs.map(p => (
-          <button key={p.id} type="button" className="latest-thumb" onClick={() => openDaily('challenge', { date: 'today', proofId: p.id })}
-                  aria-label={p.caption ?? p.user.username ?? ''}>
-            <img src={p.thumbUrl || p.photoUrl} alt="" loading="lazy" />
-          </button>
-        ))}
-      </div>
-    </div>
+    <button type="button" className="proof-strip-item" onClick={onOpen}
+            aria-label={[proof.rank ? `#${proof.rank}` : null, city, votes].filter(Boolean).join(', ')}>
+      <span className="proof-strip-photo">
+        <img src={proof.thumbUrl || proof.photoUrl} alt="" loading="lazy" />
+        {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
+      </span>
+      {city && <span className="proof-strip-city">{city}</span>}
+      <span className="dc-muted proof-strip-votes">{votes}</span>
+    </button>
   )
 }
 

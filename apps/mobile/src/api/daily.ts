@@ -11,6 +11,7 @@ import type {
   DailyProof,
   DailyProofInput,
   DailySheet,
+  DailyTodayProofs,
   DailyToday,
   DailyTwistProposal,
   DailyTwistProposalScreen,
@@ -34,6 +35,21 @@ function cityParam(cityId?: string | number | null): number | undefined {
 
 export async function fetchDailyToday(cityId?: string | number | null): Promise<DailyToday> {
   return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId), locale: locale() } });
+}
+
+/** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. */
+export async function fetchDailyTodayProofs(
+  opts: { scope?: 'world' | 'city'; cityId?: string | number | null; limit?: number; guestId?: string | null } = {},
+): Promise<DailyTodayProofs> {
+  return api.get<DailyTodayProofs>('/daily/today/proofs', {
+    params: {
+      scope:   opts.scope ?? 'world',
+      cityId:  cityParam(opts.cityId),
+      limit:   opts.limit ?? 12,
+      guestId: opts.guestId ?? undefined,
+      locale:  locale(),
+    },
+  });
 }
 
 export async function fetchDailySheet(

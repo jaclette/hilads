@@ -16605,7 +16605,7 @@ body.has-app-promo-banner .page-header {
 .dc-legend { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .dc-legend-dot { width: 14px; height: 14px; }
 
-/* Today (W2): ticket extras, week strip, top 3 / latest, spots near you */
+/* Today (W2): ticket extras, week strip, today's proofs, spots near you */
 .today-mine { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .today-propose { display: flex; align-items: center; gap: 8px; min-height: 40px; border: none; background: none; padding: 0; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary-text); text-align: left; cursor: pointer; }
 .today-propose-text { flex: 1; }
@@ -16630,15 +16630,18 @@ body.has-app-promo-banner .page-header {
 .today-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
 .today-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .today-card-title { font-size: 15px; font-weight: 800; color: var(--text); }
-.top3-row { display: flex; flex-direction: column; gap: 4px; }
-.top3-entry { display: flex; align-items: center; gap: 10px; min-height: 48px; border: none; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
-.top3-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--primary-tint); color: var(--primary-on-tint); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
-.top3-text { display: flex; flex-direction: column; min-width: 0; }
-.top3-name { font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.latest-row, .spots-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.latest-row::-webkit-scrollbar, .spots-row::-webkit-scrollbar { display: none; }
-.latest-thumb { flex-shrink: 0; width: 76px; height: 76px; border-radius: 12px; overflow: hidden; border: none; padding: 0; cursor: pointer; background: var(--surface2); }
-.latest-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.today-proofs-stats { font-size: 13px; margin-top: -4px; }
+.today-took { align-self: center; min-height: 44px; border: none; background: none; padding: 0 4px; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted2); cursor: pointer; text-align: center; }
+.today-took-link { font-weight: 700; color: var(--primary-text); }
+.proof-strip, .spots-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.proof-strip::-webkit-scrollbar, .spots-row::-webkit-scrollbar { display: none; }
+.proof-strip { gap: 10px; }
+.proof-strip-item { flex-shrink: 0; width: 112px; display: flex; flex-direction: column; gap: 2px; border: none; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
+.proof-strip-photo { position: relative; width: 112px; height: 140px; margin-bottom: 4px; border-radius: 14px; overflow: hidden; background: var(--surface2); }
+.proof-strip-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.proof-strip-rank { position: absolute; top: 6px; left: 6px; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
+.proof-strip-city { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proof-strip-votes { font-size: 12px; }
 .spots { display: flex; flex-direction: column; gap: 8px; }
 .spots-empty { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 0 14px; border-radius: 16px; border: 1.5px dashed var(--line); background: var(--surface); font: inherit; font-size: 14px; color: var(--text); cursor: pointer; text-align: left; }
 .spot-card { flex-shrink: 0; width: 180px; border-radius: 16px; overflow: hidden; border: 1.5px solid var(--line); background: var(--surface); padding: 0; font: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column; }

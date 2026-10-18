@@ -14379,6 +14379,50 @@ $router->add('GET', '/api/v1/daily/today', function () {
     Response::json($out);
 });
 
+// GET /api/v1/daily/today/proofs?scope=world|city&cityId=&limit= - Today's proof
+// strip (SPEC 9.3): the scope's approved proofs, most voted then newest, with
+// its proof and country counts. A city with no proof yet falls back to World.
+// rank 1-3 marks the first three voted proofs once the leaderboard ranks
+// (MIN_PROOFS); blocked authors are hidden without renumbering.
+$router->add('GET', '/api/v1/daily/today/proofs', function () {
+    $user      = AuthService::currentUser();
+    $date      = DailyClock::currentDate();
+    $challenge = DailyChallengeRepository::findPublishedByDate($date);
+    $out = ['date' => $date, 'scope' => 'world', 'city' => null, 'total' => 0, 'countries' => 0, 'ranked' => false, 'proofs' => []];
+    if ($challenge === null) {
+        Response::json($out);
+    }
+    $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 12)));
+    $cityId = ($_GET['scope'] ?? 'world') === 'city' ? dailyCityParam($user) : null;
+    $strip  = $cityId !== null ? DailyProofRepository::strip($challenge['id'], $cityId, $limit) : null;
+    if ($strip === null || $strip['total'] === 0) {
+        $cityId = null;
+        $strip  = DailyProofRepository::strip($challenge['id'], null, $limit);
+    }
+
+    $ranked = $strip['total'] >= DailyLeaderboard::MIN_PROOFS;
+    $rows   = $strip['rows'];
+    foreach ($rows as $i => &$r) {
+        $r['strip_rank'] = $ranked && $i < 3 && (int) $r['vote_count'] > 0 ? $i + 1 : null;
+    }
+    unset($r);
+    $viewerId = $user['id'] ?? null;
+    $visible  = DailyVotes::annotate(filterByBlocks($rows, dailyBlocks($user), 'user_id', 'guest_id'), $viewerId);
+
+    $out['scope']     = $cityId !== null ? 'city' : 'world';
+    $out['city']      = $cityId !== null
+        ? ['id' => (int) substr($cityId, 5), 'name' => CityRepository::findById((int) substr($cityId, 5))['name'] ?? null]
+        : null;
+    $out['total']     = $strip['total'];
+    $out['countries'] = $strip['countries'];
+    $out['ranked']    = $ranked;
+    $out['proofs']    = array_map(
+        static fn(array $r): array => DailyProofRepository::format($r, $viewerId) + ['rank' => $r['strip_rank']],
+        $visible,
+    );
+    Response::json($out);
+});
+
 // GET /api/v1/daily/challenges/{date}?scope=world|city&cityId=&before=&limit=
 // Challenge sheet: header + approved proofs (paged) + practical info.
 $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) {

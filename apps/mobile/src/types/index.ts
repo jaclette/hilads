@@ -909,6 +909,17 @@ export interface DailyPriceRange {
   count?:   number;
 }
 
+/** GET /daily/today/proofs: Today's proof strip (SPEC 9.3). */
+export interface DailyTodayProofs {
+  date:      string;
+  scope:     'world' | 'city';             // 'world' when the city had no proof yet
+  city:      { id: number; name: string | null } | null;
+  total:     number;
+  countries: number;
+  ranked:    boolean;                      // the leaderboard threshold is reached
+  proofs:    (DailyProof & { rank: number | null })[];
+}
+
 export interface DailySheet extends DailyToday {
   scope:      'world' | 'city';
   proofs:     DailyProof[];

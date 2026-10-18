@@ -9,14 +9,14 @@ import { AppHeader } from '@/features/shell/AppHeader';
 import { DailyPushBanner } from '@/features/daily/DailyPushBanner';
 import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
-import { TodayTop3 } from '@/features/today/TodayTop3';
+import { TodayProofs } from '@/features/today/TodayProofs';
 import { SpotsNear } from '@/features/today/SpotsNear';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { FirstLaunchLine } from '@/features/today/FirstLaunchLine';
 
 /**
  * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, the week
- * strip, the live top 3 (or today's latest proofs) and Spots near you. Never
+ * strip, today's proofs and Spots near you. Never
  * empty: without local activity it still shows the challenge, World proofs and
  * the nearest spots anywhere.
  */
@@ -46,7 +46,7 @@ export default function TodayScreen() {
         <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} />
         <DailyPushBanner />
         <TodayWeek today={daily.data} />
-        <TodayTop3 today={daily.data} />
+        <TodayProofs today={daily.data} refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />

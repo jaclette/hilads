@@ -167,6 +167,12 @@ export function seedStates(items, myVotes) {
 
 function useVotes() { useSyncExternalStore(subscribe, () => version) }
 
+/** A proof's live vote count (the shared store's once seeded, else its own). */
+export function useVoteCount(proof) {
+  useVotes()
+  return votes.get(proof.id)?.voteCount ?? proof.voteCount
+}
+
 /**
  * Vote for a proof: heart + count, my votes left while voting is open; tap
  * again to withdraw. Disabled on my own proof and once the challenge closed.

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
+import { useScope } from '@/context/ScopeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { isFinalHours } from '@/hooks/useDaily';
@@ -23,7 +24,8 @@ import { themeName } from '@/features/daily/themes';
  * Today's Daily Challenge as a ticket (SPEC 9.3, today.html): kicker and theme
  * chip, the challenge (with its "Proposed by" credit), the time left and the early-bonus hint, a perforated
  * divider, the Local Twist in live cities, and "Take the challenge" (or my
- * proof's status), then tomorrow's Local Twist proposal for locals. Tapping the card opens the challenge sheet.
+ * proof's status) with how many people took it, then tomorrow's Local Twist
+ * proposal for locals. Tapping the card opens the challenge sheet.
  */
 export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday | null; loading: boolean; secondsLeft: number | null }) {
   const styles = useThemedStyles(makeStyles);
@@ -31,6 +33,7 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { account } = useApp();
+  const { scope } = useScope();
   const [showOriginal, toggleOriginal] = useOriginal();
   const tracked = useRef<string | null>(null);
 
@@ -60,6 +63,8 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
   const twist = data?.twist && city?.isLive ? data.twist : null;
   const earlyUntil = !myProof && data?.early && data.early.until * 1000 > Date.now() ? data.early.until : null;
   const openSheet = () => router.push('/daily/today?source=today' as never);
+  // People who took it: the city's count in city scope once it has proofs, else World's.
+  const took = (scope === 'city' && data?.counts?.city ? data.counts.city : data?.counts?.world) ?? 0;
   const onCta = () => {
     if (myProof) { openSheet(); return; }
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
@@ -110,6 +115,13 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
           </View>
         ) : (
           <Button label={t('cta')} onPress={onCta} />
+        )}
+        {took > 0 && (
+          <TouchableOpacity style={styles.took} onPress={openSheet} accessibilityRole="button">
+            <Text style={styles.tookText}>
+              {t('today.tookIt', { count: took })} · <Text style={styles.link}>{t('today.seePhotos', { count: took })}</Text>
+            </Text>
+          </TouchableOpacity>
         )}
         {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6). */}
         {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
@@ -191,4 +203,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   twistText:   { fontSize: 15, lineHeight: 22, fontWeight: '500', color: c.text },
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
+  took:        { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  tookText:    { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });
