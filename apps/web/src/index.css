@@ -17079,3 +17079,11 @@ body.has-app-promo-banner .page-header {
 .dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled) { background: var(--primary); box-shadow: none; }
 .dm-header-text { display: flex; flex-direction: column; min-width: 0; text-align: left; }
 .dm-header-sub { font-size: 12px; font-weight: 500; color: var(--muted2); }
+
+/* ── Daily card fixes: the CTA on the primary token like the pin bar; a soft
+   fade under the pin bar so a bubble cut by the scroll (only its timestamp
+   left) reads as "more above" instead of an orphan line. ── */
+.feed-daily-cta { background: var(--primary); color: #fff; }
+.feed-daily-cta--ghost { background: transparent; color: var(--primary-text); border-color: var(--primary); }
+.pin-bar { position: relative; }
+.pin-bar::after { content: ''; position: absolute; left: -16px; right: -16px; top: calc(100% + 2px); height: 18px; background: linear-gradient(var(--bg), transparent); pointer-events: none; z-index: 1; }

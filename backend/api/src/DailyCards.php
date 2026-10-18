@@ -217,17 +217,7 @@ final class DailyCards
     public static function challengePayload(array $challenge, ?array $twist, ?array $yesterday = null, array $twistI18n = []): array
     {
         $c = DailyChallengeRepository::formatChallenge($challenge, null, 'en');
-        $text    = json_decode((string) $challenge['text_i18n'], true) ?: [];
-        $context = json_decode((string) ($challenge['context_i18n'] ?? '{}'), true) ?: [];
-        $translations = [];
-        foreach (DailyI18n::others() as $l) {
-            $t  = DailyI18n::pick($text, $l);
-            $cx = $c['context'] !== null ? DailyI18n::pick($context, $l) : null;
-            $tw = $twist !== null ? DailyI18n::pick($twistI18n, $l) : null;
-            if ($t !== null || $tw !== null) {
-                $translations[$l] = array_filter(['text' => $t, 'context' => $cx, 'twist' => $tw], static fn($v) => $v !== null);
-            }
-        }
+        $translations = self::translations($challenge, $twist !== null ? $twistI18n : null);
         return [
             'challengeId'   => $c['id'],
             'date'          => $c['date'],
@@ -241,6 +231,81 @@ final class DailyCards
             'yesterdayTop3' => $yesterday['top3'] ?? [],
             'translations'  => (object) $translations,
         ];
+    }
+
+    /**
+     * {locale: {text, context, twist}} from a challenge row's i18n maps and,
+     * when the card has a twist, the twist's text_i18n. Pure.
+     */
+    public static function translations(array $challenge, ?array $twistI18n): array
+    {
+        $text    = json_decode((string) $challenge['text_i18n'], true) ?: [];
+        $context = json_decode((string) ($challenge['context_i18n'] ?? '{}'), true) ?: [];
+        $hasContext = trim((string) ($context['en'] ?? '')) !== '';
+        $out = [];
+        foreach (DailyI18n::others() as $l) {
+            $t  = DailyI18n::pick($text, $l);
+            $cx = $hasContext ? DailyI18n::pick($context, $l) : null;
+            $tw = $twistI18n !== null ? DailyI18n::pick($twistI18n, $l) : null;
+            if ($t !== null || $tw !== null) {
+                $out[$l] = array_filter(['text' => $t, 'context' => $cx, 'twist' => $tw], static fn($v) => $v !== null);
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * daily_challenge cards keep the text of drop time in their payload. On
+     * read, refresh the English text and the translations from the challenge
+     * and its twist, so cards posted before a translation was written (or
+     * edited) show the reader's language. Two small queries per page, only
+     * when the page holds a card.
+     */
+    public static function refreshChallengeCards(array &$messages): void
+    {
+        $ids = $twistIds = [];
+        foreach ($messages as $m) {
+            if (($m['event'] ?? null) === 'daily_challenge' && !empty($m['payload']['challengeId'])) {
+                $ids[] = (string) $m['payload']['challengeId'];
+                if (!empty($m['payload']['twist']['id'])) {
+                    $twistIds[] = (string) $m['payload']['twist']['id'];
+                }
+            }
+        }
+        if ($ids === []) {
+            return;
+        }
+        $pdo  = Database::pdo();
+        $stmt = $pdo->prepare("SELECT id, text_i18n, context_i18n FROM daily_challenges WHERE id = ANY (string_to_array(?, ','))");
+        $stmt->execute([implode(',', array_unique($ids))]);
+        $challenges = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $challenges[$r['id']] = $r;
+        }
+        $twists = [];
+        if ($twistIds !== []) {
+            $stmt = $pdo->prepare("SELECT id, text_i18n FROM daily_twists WHERE id = ANY (string_to_array(?, ','))");
+            $stmt->execute([implode(',', array_unique($twistIds))]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $twists[$r['id']] = json_decode((string) $r['text_i18n'], true) ?: [];
+            }
+        }
+
+        foreach ($messages as &$m) {
+            $c = ($m['event'] ?? null) === 'daily_challenge' ? ($challenges[$m['payload']['challengeId'] ?? ''] ?? null) : null;
+            if ($c === null) {
+                continue;
+            }
+            $text    = json_decode((string) $c['text_i18n'], true) ?: [];
+            $context = json_decode((string) ($c['context_i18n'] ?? '{}'), true) ?: [];
+            if (trim((string) ($text['en'] ?? '')) !== '') {
+                $m['payload']['text'] = $text['en'];
+            }
+            $m['payload']['context'] = trim((string) ($context['en'] ?? '')) !== '' ? $context['en'] : null;
+            $twistId = $m['payload']['twist']['id'] ?? null;
+            $m['payload']['translations'] = (object) self::translations($c, $twistId !== null ? ($twists[$twistId] ?? []) : null);
+        }
+        unset($m);
     }
 
     /** Yesterday's challenge and its World top 3 (empty before results), for the World card. */

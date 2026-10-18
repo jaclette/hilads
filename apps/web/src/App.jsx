@@ -19,7 +19,7 @@ import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScree
 import ChallengeScreen from './components/daily/ChallengeScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
-import { DailyContext, VoteButton, LocalPassBadge, seedStates } from './components/daily/dailyShared'
+import { DailyContext, VoteButton, LocalPassBadge, seedStates, useOriginal, OriginalToggle } from './components/daily/dailyShared'
 import PeopleRow from './components/chat/PeopleRow'
 import DailyPinBar from './components/chat/DailyPinBar'
 import { createSocket } from './socket'
@@ -637,6 +637,7 @@ const SELF_IDENTITY = { guestId: null, userId: null }
 function DailyFeedCard({ item, t, onOpen }) {
   const p = item.payload || {}
   const time = item.createdAt ? formatMsgTime(item.createdAt) : null
+  const [showOriginal, toggleOriginal] = useOriginal()
   if (item.subtype === 'daily_proof_group') {
     const proofs = Array.isArray(p.proofs) ? p.proofs : []
     if (proofs.length === 0) return null
@@ -667,18 +668,22 @@ function DailyFeedCard({ item, t, onOpen }) {
     if (!p.text) return null
     const by = p.proposedBy?.user ? (p.proposedBy.user.displayName || p.proposedBy.user.username || '') : null
     const store = deviceStore()
+    // The reader's language from the challenge's translations (refreshed by the API), English as fallback.
+    const translated = !!p.translations?.[i18n.language]
+    const tr = showOriginal ? null : p.translations?.[i18n.language]
     return (
       <div className="feed-daily feed-daily--clickable" role="button" tabIndex={0} onClick={() => onOpen({ date: p.date ?? 'today' })}>
         <div className="feed-daily-kicker"><Icon name="flame-outline" size={13} /> {t('daily.kicker')}</div>
         {p.theme?.name && <span className="feed-daily-theme">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={13} />} {p.theme.name}</span>}
-        <div className="feed-daily-text">{p.text}</div>
-        {p.context && <div className="feed-daily-context">{p.context}</div>}
+        <div className="feed-daily-text">{tr?.text ?? p.text}</div>
+        {p.context && <div className="feed-daily-context">{tr?.context ?? p.context}</div>}
+        <OriginalToggle translated={translated} showingOriginal={showOriginal} onClick={toggleOriginal} />
         {by && (
           <div className="feed-daily-by"><Icon name="bulb-outline" size={14} /> {p.proposedBy.city?.name
             ? t('daily.proposedByCity', { name: by, city: localizeCityName(p.proposedBy.city.name) })
             : t('daily.proposedBy', { name: by })}</div>
         )}
-        {p.twist?.text && <div className="feed-daily-twist"><Icon name="location-outline" size={14} /> {t('daily.localTwist')}: {p.twist.text}</div>}
+        {p.twist?.text && <div className="feed-daily-twist"><Icon name="location-outline" size={14} /> {t('daily.localTwist')}: {tr?.twist ?? p.twist.text}</div>}
         {/* Proofs are posted from the app (W2 decision): "Take it" opens the store. */}
         <a className="feed-daily-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
            onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }) }}>

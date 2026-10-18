@@ -936,6 +936,7 @@ export default function ChatTab() {
             <ActivityIndicator color={colors.primary} />
           </View>
         ) : (
+          <View style={styles.flex}>
           <FlatList
             ref={flatListRef}
             data={allMessages}
@@ -974,6 +975,12 @@ export default function ChatTab() {
               </View>
             }
           />
+          {/* Soft fade at the list's top edge, so a bubble cut by the scroll
+              (only its timestamp left) reads as "more above". */}
+          <View pointerEvents="none" style={styles.topFade}>
+            {TOP_FADE.map(o => <View key={o} style={[styles.topFadeStrip, { opacity: o }]} />)}
+          </View>
+          </View>
         )}
 
         {/* ── Ephemeral event banners - slide in above input, auto-dismissed ── */}
@@ -1087,9 +1094,13 @@ export default function ChatTab() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
+const TOP_FADE = [1, 0.8, 0.6, 0.4, 0.25, 0.1];
+
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:      { flex: 1, backgroundColor: c.bg },
   flex:           { flex: 1 },
+  topFade:        { position: 'absolute', top: 0, left: 0, right: 0 },
+  topFadeStrip:   { height: 3, backgroundColor: c.bg },
   header:         { gap: 10, paddingBottom: 8, backgroundColor: c.bg },
   headerButtons:  { flexDirection: 'row', gap: 8 },
   inset:          { paddingHorizontal: Spacing.md },

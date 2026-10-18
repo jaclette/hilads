@@ -271,6 +271,7 @@ class MessageRepository
 
         $messages = array_map([self::class, 'format'], $rows);
         MentionService::resolveForMessages($messages); // raw mentions → current @usernames
+        DailyCards::refreshChallengeCards($messages);  // Daily cards in the challenge's current translations
         return [
             'messages' => $messages,
             'hasMore'  => $hasMore,
