@@ -451,8 +451,9 @@
   },
   "takeIt": "Aceitar",
   "proofHint": {
-    "place": "Prove com uma foto. Ela vai pro mapa.",
-    "noPlace": "Prove com uma foto."
+    "title": "Prove com uma foto",
+    "place": "A mais votada vira a foto do spot.",
+    "noPlace": "A mais votada sobe ao pódio."
   },
   "howItWorks": {
     "title": "Como funciona",

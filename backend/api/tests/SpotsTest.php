@@ -78,7 +78,7 @@ final class SpotsTest extends TestCase
             'id' => 'abc', 'name' => 'Cà phê Bệt', 'lat' => '10.77', 'lng' => '106.70', 'city_id' => 'city_20',
             'city_name' => 'Ho Chi Minh City', 'city_country' => 'VN', 'themes' => 'coffee,neighborhood', 'proof_count' => '3', 'votes' => '12',
             'votes_week' => '4', 'validated' => 't', 'last_date' => '2026-10-17',
-            'prices' => '[[25000, "VND"], [30000, "VND"]]', 'cover_photo' => null, 'cover_caption' => 'Sit on the curb',
+            'prices' => '[[25000, "VND"], [30000, "VND"]]', 'cover_photo' => null, 'cover_caption' => 'Sit on the curb', 'cover_proof_id' => 'p9', 'cover_username' => 'linh',
         ], ['cà phê sữa đá']);
         $this->assertSame(['id' => 20, 'name' => 'Ho Chi Minh City', 'country' => 'VN'], $spot['city']);
         $this->assertSame(['coffee', 'neighborhood'], $spot['themes']);
@@ -88,6 +88,8 @@ final class SpotsTest extends TestCase
         $this->assertSame(['min' => 25000.0, 'max' => 30000.0, 'median' => 27500.0, 'currency' => 'VND'], $spot['priceRange']);
         $this->assertSame('2026-10-17', $spot['lastProofDate']);
         $this->assertSame('Sit on the curb', $spot['cover']['caption']);
+        $this->assertSame('linh', $spot['cover']['by']);
+        $this->assertSame('p9', $spot['cover']['proofId']);
     }
 
     public function testPhotoCarriesADateNeverATime(): void

@@ -205,5 +205,6 @@
     "map": "Spots, die Locals wirklich ausgewählt haben.",
     "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
     "passport": "Deine Stempel und Spots, Stadt für Stadt."
-  }
+  },
+  "photoBy": "Foto von @{{username}}"
 }

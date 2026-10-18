@@ -176,8 +176,12 @@ function Ticket({ data, loading }) {
           </div>
         )}
         {!myProof && (
-          <span className="today-hint" style={ROW}>
-            <Icon name="camera-outline" size={15} />{theme && theme !== 'language' ? t('proofHint.place') : t('proofHint.noPlace')}
+          <span className="today-hint">
+            <Icon name="camera-outline" size={15} />
+            <span className="today-hint-body">
+              <span className="today-hint-title">{t('proofHint.title')}</span>
+              <span>{theme && theme !== 'language' ? t('proofHint.place') : t('proofHint.noPlace')}</span>
+            </span>
           </span>
         )}
         {myProof ? (
@@ -464,7 +468,10 @@ function SpotsNear() {
         <div className="spots-row">
           {spots.map(s => (
             <button key={s.id} type="button" className="spot-card" onClick={() => openSpot(s.id)} aria-label={s.name}>
-              {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" /> : <span className="spot-card-img" />}
+              <span className="spot-card-photo">
+                {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" /> : <span className="spot-card-img" />}
+                {s.cover?.by && <span className="photo-credit">{i18n.t('photoBy', { ns: 'common', username: s.cover.by })}</span>}
+              </span>
               <span className="spot-card-body">
                 <span className="spot-card-name">{s.name}</span>
                 <span className="dc-muted" style={ROW}>

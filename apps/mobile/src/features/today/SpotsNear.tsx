@@ -12,6 +12,7 @@ import { fetchSpotsNear, type Spot } from '@/api/spots';
 import { compactPrice, distance } from './format';
 import { CityFlag, SectionTitle } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
+import { PhotoCredit } from '@/features/map/PhotoCredit';
 
 /**
  * Spots near you (SPEC 9.3): the 2-3 nearest spots, linking to the Map. Uses
@@ -79,9 +80,12 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
           {spots.map(s => (
             <TouchableOpacity key={s.id} style={styles.card} onPress={() => openMap(s.id)} activeOpacity={0.85}
                               accessibilityRole="button" accessibilityLabel={s.name}>
-              {s.cover.thumbUrl || s.cover.photoUrl
-                ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
-                : <View style={styles.photo} />}
+              <View>
+                {s.cover.thumbUrl || s.cover.photoUrl
+                  ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
+                  : <View style={styles.photo} />}
+                <PhotoCredit by={s.cover.by} overlay />
+              </View>
               <View style={styles.body}>
                 <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
                 <View style={styles.meta}>

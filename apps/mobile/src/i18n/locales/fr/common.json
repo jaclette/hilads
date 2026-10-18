@@ -223,5 +223,6 @@
     "map": "Les spots choisis par les locaux.",
     "hi": "Dis bonjour à ta ville. Rejoins un plan.",
     "passport": "Tes tampons et tes spots, ville par ville."
-  }
+  },
+  "photoBy": "Photo de @{{username}}"
 }

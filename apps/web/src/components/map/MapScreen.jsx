@@ -467,6 +467,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                     {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
                     {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
                   </span>
+                  {selected.cover?.by && <span className="wm-sheet-meta">{t('photoBy', { ns: 'common', username: selected.cover.by })}</span>}
                 </span>
               </button>
               <button type="button" className="wm-sheet-cta" onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>

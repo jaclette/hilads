@@ -451,8 +451,9 @@
   },
   "takeIt": "Doe mee",
   "proofHint": {
-    "place": "Bewijs het met een foto. Die komt op de kaart.",
-    "noPlace": "Bewijs het met een foto."
+    "title": "Bewijs het met een foto",
+    "place": "De meest gestemde wordt de foto van de spot.",
+    "noPlace": "De meest gestemde komt op het podium."
   },
   "howItWorks": {
     "title": "Zo werkt het",

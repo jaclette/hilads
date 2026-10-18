@@ -205,5 +205,6 @@
     "map": "Spots die locals echt kozen.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
     "passport": "Je stempels en spots, stad voor stad."
-  }
+  },
+  "photoBy": "Foto van @{{username}}"
 }

@@ -451,8 +451,9 @@
   },
   "takeIt": "Ikuti",
   "proofHint": {
-    "place": "Buktikan dengan foto. Fotonya muncul di peta.",
-    "noPlace": "Buktikan dengan foto."
+    "title": "Buktikan dengan foto",
+    "place": "Yang paling banyak vote jadi foto spot-nya.",
+    "noPlace": "Yang paling banyak vote naik podium."
   },
   "howItWorks": {
     "title": "Cara kerjanya",

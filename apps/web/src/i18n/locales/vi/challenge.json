@@ -1299,8 +1299,9 @@
     },
     "takeIt": "Nhận",
     "proofHint": {
-      "place": "Chứng minh bằng một tấm ảnh. Ảnh sẽ lên bản đồ.",
-      "noPlace": "Chứng minh bằng một tấm ảnh."
+      "title": "Chứng minh bằng một tấm ảnh",
+      "place": "Ảnh được bình chọn nhiều nhất thành ảnh của spot.",
+      "noPlace": "Ảnh được bình chọn nhiều nhất lên bục vinh quang."
     }
   }
 }

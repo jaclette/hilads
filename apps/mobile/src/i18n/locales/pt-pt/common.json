@@ -223,5 +223,6 @@
     "map": "Os spots escolhidos pelos locais.",
     "hi": "Diz olá à tua cidade. Junta-te a um plano.",
     "passport": "Os teus carimbos e spots, cidade a cidade."
-  }
+  },
+  "photoBy": "Foto de @{{username}}"
 }

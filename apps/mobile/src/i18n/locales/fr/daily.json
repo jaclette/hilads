@@ -451,8 +451,9 @@
   },
   "takeIt": "Je le relève",
   "proofHint": {
-    "place": "Prouve-le en photo : elle rejoint la carte.",
-    "noPlace": "Prouve-le en photo."
+    "title": "Prouve-le en photo",
+    "place": "La plus votée devient la photo du spot.",
+    "noPlace": "La plus votée monte sur le podium."
   },
   "howItWorks": {
     "title": "Comment ça marche",

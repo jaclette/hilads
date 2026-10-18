@@ -1,6 +1,7 @@
 import { api } from './client';
 import type { DailyThemeKey } from '@/types';
 
+
 /** A spot (V3-03): a Hilads place with approved proofs. */
 export interface Spot {
   id:               string;
@@ -16,7 +17,8 @@ export interface Spot {
   validatedByLocal: boolean;
   priceRange:       { min: number; max: number; median?: number; currency: string } | null;
   lastProofDate:    string | null;
-  cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null };
+  /** The most voted approved proof (ties: the most recent), credited to `by` (its author's username). */
+  cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null; proofId?: string | null; by?: string | null };
   /** GET /spots/near only. */
   distanceM?:       number;
 }

@@ -205,5 +205,6 @@
     "map": "Gli spot scelti dai locali.",
     "hi": "Saluta la tua città. Unisciti a un piano.",
     "passport": "I tuoi timbri e spot, città per città."
-  }
+  },
+  "photoBy": "Foto di @{{username}}"
 }

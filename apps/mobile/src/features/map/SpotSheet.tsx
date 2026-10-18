@@ -8,6 +8,7 @@ import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice, distance } from '@/features/today/format';
 import type { Spot } from '@/api/spots';
 import { Button } from '@/ui';
+import { PhotoCredit } from './PhotoCredit';
 
 /**
  * The selected spot's card at the bottom of the map (map.html): photo, name,
@@ -58,6 +59,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onClose }: {
         </View>
       </TouchableOpacity>
       {!!spot.cover.caption && <Text style={styles.caption} numberOfLines={2}>“{spot.cover.caption}”</Text>}
+      <PhotoCredit by={spot.cover.by} style={styles.credit} />
       <View style={styles.actions}>
         <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} />
         <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />
@@ -80,6 +82,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   badge:        { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: Radius.full, backgroundColor: c.localBg },
   badgeText:    { fontSize: 12, fontWeight: '700', color: c.localText },
   caption:      { fontSize: FontSizes.sm, fontStyle: 'italic', color: c.text },
+  credit:       { marginTop: -4 },
   actions:      { flexDirection: 'row', gap: 10 },
   btn:          { flex: 1 },
 });

@@ -223,5 +223,6 @@
     "map": "Mga spot na pinili mismo ng mga lokal.",
     "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
     "passport": "Ang mga stamp at spot mo, bawat lungsod."
-  }
+  },
+  "photoBy": "Larawan ni @{{username}}"
 }

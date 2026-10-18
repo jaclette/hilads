@@ -1301,8 +1301,9 @@
     },
     "takeIt": "Gawin",
     "proofHint": {
-      "place": "Patunayan sa isang litrato. Lalabas ito sa mapa.",
-      "noPlace": "Patunayan sa isang litrato."
+      "title": "Patunayan sa isang litrato",
+      "place": "Ang may pinakamaraming boto ang magiging litrato ng spot.",
+      "noPlace": "Ang may pinakamaraming boto ang aakyat sa podium."
     }
   }
 }

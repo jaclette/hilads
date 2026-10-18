@@ -14,6 +14,7 @@ import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice } from '@/features/today/format';
 import { Button, Chip, CityName, ScreenHeader, SectionTitle } from '@/ui';
+import { PhotoCredit } from '@/features/map/PhotoCredit';
 
 /**
  * A spot (SPEC 9.5): its proofs' photos, themes, price range paid, proof
@@ -77,7 +78,12 @@ export default function SpotScreen() {
 
   const header = (
     <View style={styles.header}>
-      {!!spot.cover.photoUrl && <Image source={{ uri: spot.cover.photoUrl }} style={styles.cover} contentFit="cover" />}
+      {!!spot.cover.photoUrl && (
+        <View>
+          <Image source={{ uri: spot.cover.photoUrl }} style={styles.cover} contentFit="cover" />
+          <PhotoCredit by={spot.cover.by} overlay style={styles.coverCredit} />
+        </View>
+      )}
       <Text style={styles.name}>{spot.name}</Text>
       {!!spot.city?.name && <CityName name={spot.city.name} country={spot.city.country} style={styles.muted} />}
       {rankLine && (
@@ -168,6 +174,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   list:          { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
   header:        { gap: 10, paddingBottom: 10 },
   cover:         { height: 200, borderRadius: 22, backgroundColor: c.primaryTint },
+  coverCredit:   { left: 10, bottom: 10 },
   name:          { fontSize: FontSizes.xl, fontWeight: '800', color: c.text },
   muted:         { fontSize: FontSizes.sm, color: c.muted },
   rank:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 6 },

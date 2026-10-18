@@ -1301,8 +1301,9 @@
     },
     "takeIt": "Accetta",
     "proofHint": {
-      "place": "Dimostralo con una foto. Finisce sulla mappa.",
-      "noPlace": "Dimostralo con una foto."
+      "title": "Dimostralo con una foto",
+      "place": "La più votata diventa la foto dello spot.",
+      "noPlace": "La più votata sale sul podio."
     }
   }
 }

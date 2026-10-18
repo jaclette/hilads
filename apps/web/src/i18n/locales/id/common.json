@@ -205,5 +205,6 @@
     "map": "Spot pilihan warga lokal.",
     "hi": "Sapa kotamu. Ikut sebuah rencana.",
     "passport": "Stempel dan spot kamu, kota demi kota."
-  }
+  },
+  "photoBy": "Foto oleh @{{username}}"
 }

@@ -451,8 +451,9 @@
   },
   "takeIt": "Annehmen",
   "proofHint": {
-    "place": "Beweis es mit einem Foto. Es landet auf der Karte.",
-    "noPlace": "Beweis es mit einem Foto."
+    "title": "Beweis es mit einem Foto",
+    "place": "Das meistgewählte wird zum Foto des Spots.",
+    "noPlace": "Das meistgewählte kommt aufs Podium."
   },
   "howItWorks": {
     "title": "So geht's",

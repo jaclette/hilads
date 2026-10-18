@@ -6,6 +6,9 @@ declare(strict_types=1);
  * Spots and the map (V3-03, SPEC 9.5). A spot is a Hilads place (Places) that
  * is approved, not hidden, not merged, with at least one approved proof.
  *
+ * Its cover is its most voted approved proof (ties: the most recent), credited
+ * to the proof's author ("Photo by @username").
+ *
  * Its stats are computed from daily_proofs by one aggregate query, cached for
  * CACHE_TTL seconds: a proof changes state in many places (approve, reject,
  * remove, report-hide, edit, delete, votes), and a computed answer is never
@@ -161,6 +164,9 @@ final class Spots
                 'photoUrl' => $r['cover_photo'],
                 'thumbUrl' => R2Uploader::thumbProxy($r['cover_photo']),
                 'caption'  => $r['cover_caption'],
+                // "Photo by @username": the proof's author.
+                'proofId'  => $r['cover_proof_id'] ?? null,
+                'by'       => ($r['cover_username'] ?? null) ?: null,
             ],
         ];
     }
@@ -218,7 +224,7 @@ final class Spots
      */
     public static function find(array $scope): array
     {
-        $key = 'spots_v1_' . md5(json_encode($scope) . '|' . DailyClock::currentDate());
+        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate());
         return Cache::remember($key, self::CACHE_TTL, static fn(): array => self::query($scope)) ?? [];
     }
 
@@ -367,10 +373,14 @@ final class Spots
                    max(dc.challenge_date)::text               AS last_date,
                    json_agg(json_build_array(p.price_amount, p.price_currency))
                        FILTER (WHERE p.price_amount IS NOT NULL) AS prices,
-                   (array_agg(p.photo_url ORDER BY p.vote_count DESC, p.approved_at DESC))[1] AS cover_photo,
-                   (array_agg(p.caption   ORDER BY p.vote_count DESC, p.approved_at DESC))[1] AS cover_caption
+                   -- The cover (SPEC 9.5): the most voted approved proof, ties to the most recent.
+                   (array_agg(p.photo_url ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_photo,
+                   (array_agg(p.caption   ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_caption,
+                   (array_agg(p.id        ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_proof_id,
+                   (array_agg(cu.username ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_username
             FROM places pl
             JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved'
+            JOIN users cu            ON cu.id = p.user_id
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             LEFT JOIN channels ch    ON ch.id = pl.city_id
             LEFT JOIN cities cc      ON cc.channel_id = pl.city_id
