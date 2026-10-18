@@ -1,20 +1,36 @@
 import i18n from '../../i18n'
+import { shortCityName } from '../../i18n/cityName'
 
 // Shared bits of the web map of spots (SPEC 9.5): theme names and icons, the
 // map tiles, and links. Theme names show in the reader's language (common.json
 // themes.*), English as fallback.
 
-export const THEME_KEYS = ['language', 'street_food', 'coffee', 'market', 'night_out', 'neighborhood', 'traditions']
+// Themes v2 (SPEC 8.2), Monday first.
+export const THEME_KEYS = ['hidden_gem', 'taste', 'ask_local', 'local_find', 'night_out', 'sip', 'only_here']
 
 export const THEME_NAMES = {
-  language: 'Language', street_food: 'Street food', coffee: 'Coffee', market: 'Market',
-  night_out: 'Night out', neighborhood: 'Neighborhood', traditions: 'Traditions',
+  hidden_gem: 'Hidden gem', taste: 'Taste', ask_local: 'Ask a local', local_find: 'Local find',
+  night_out: 'Night out', sip: 'Sip', only_here: 'Only here',
 }
 
-/** A theme's name in the reader's language ('' without a key). */
-export function themeName(key) {
+/**
+ * A theme's name in the reader's language ('' without a key). A special day
+ * shows its own name; Only here with a city reads "Only in Saigon" (the card
+ * and the Passport stamp; World scope passes no city).
+ */
+export function themeName(key, opts) {
   if (!key) return ''
+  if (key === 'special') return opts?.special?.name ?? i18n.t('themes.special', { ns: 'common', defaultValue: 'Special' })
+  if (key === 'only_here' && opts?.city) {
+    const city = shortCityName(opts.city)
+    return i18n.t('themes.onlyIn', { ns: 'common', city, defaultValue: `Only in ${city}` })
+  }
   return i18n.t(`themes.${key}`, { ns: 'common', defaultValue: THEME_NAMES[key] ?? key })
+}
+
+/** Every weekly theme but Ask a local is about a place; a special day is not. */
+export function isPlaceTheme(key) {
+  return !!key && key !== 'ask_local' && key !== 'special'
 }
 
 export const CITY_ZOOM = 14

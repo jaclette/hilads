@@ -12,7 +12,7 @@ import { shortCityName } from '@/i18n/cityName';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
-import { THEME_ICON, compactPrice } from '@/features/today/format';
+import { compactPrice } from '@/features/today/format';
 import { Button, Chip, CityName, IconButton, ScreenHeader, SectionTitle } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
@@ -96,7 +96,7 @@ export default function SpotScreen() {
         </View>
       )}
       <View style={styles.chips}>
-        {spot.themes.map(k => <Chip key={k} icon={THEME_ICON[k]} label={themeName(k)} />)}
+        {spot.themes.map(k => <Chip key={k} theme={k} label={themeName(k)} />)}
         {spot.validatedByLocal && <Chip tone="local" icon="checkmark-circle-outline" label={t('map.validated')} />}
       </View>
       <Text style={styles.stats}>

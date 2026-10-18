@@ -46,9 +46,13 @@ function daily_state_badge(string $state): string
  * handler a one-liner and post/redirect/get.
  */
 /** Theme label for a stored theme (or the date's weekday theme). */
-function daily_theme_label(?string $theme, ?string $date): string
+function daily_theme_label(?string $theme, ?string $date, ?string $specialId = null): string
 {
     $t = DailyThemes::format($theme, $date);
+    if ($t !== null && $t['key'] === DailyThemes::SPECIAL) {
+        $sp = DailySpecials::find($specialId);
+        return $sp !== null ? DailySpecials::emoji($specialId) . ' ' . DailySpecials::nameOf($sp, 'en') : 'Special';
+    }
     return $t === null ? '' : $t['name'];
 }
 
@@ -58,9 +62,12 @@ function daily_theme_label(?string $theme, ?string $date): string
  * date field until the admin picks a theme by hand. An empty value = the
  * weekday default.
  */
-function daily_theme_select(?string $theme, ?string $date, bool $followDate = false): string
+function daily_theme_select(?string $theme, ?string $date, bool $followDate = false, ?string $specialId = null): string
 {
     $selected = DailyThemes::effective($theme, $date !== '' ? $date : null);
+    if ($selected === DailyThemes::SPECIAL) {
+        $selected = 'special:' . $specialId;
+    }
     $days     = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
     $html     = '<select name="theme" id="dc-theme"' . ($followDate && $theme === null ? ' data-follow-date="1"' : '') . '>';
     $html    .= '<option value=""' . ($selected === null ? ' selected' : '') . '>Weekday default</option>';
@@ -68,6 +75,22 @@ function daily_theme_select(?string $theme, ?string $date, bool $followDate = fa
         $html .= '<option value="' . dh($t['key']) . '" data-weekday="' . $t['weekday'] . '"'
                . ($selected === $t['key'] ? ' selected' : '') . '>'
                . dh($t['name']) . ' (' . $days[$t['weekday']] . ')</option>';
+    }
+    // World special days replace the weekly theme (Special days page).
+    $specials = array_filter(DailySpecials::listFrom(DailyClock::currentDate()), static fn(array $s): bool => $s['scope'] === 'world');
+    if ($specials !== [] || str_starts_with((string) $selected, 'special:')) {
+        $html .= '<optgroup label="Special days">';
+        $listed = false;
+        foreach ($specials as $s) {
+            $v       = 'special:' . $s['id'];
+            $listed  = $listed || $selected === $v;
+            $html   .= '<option value="' . dh($v) . '"' . ($selected === $v ? ' selected' : '') . '>'
+                     . dh(($s['emoji'] ?: '✨') . ' ' . DailySpecials::nameOf($s, 'en') . ' (' . $s['date'] . ')') . '</option>';
+        }
+        if (!$listed && str_starts_with((string) $selected, 'special:')) {
+            $html .= '<option value="' . dh($selected) . '" selected>' . dh(daily_theme_label(DailyThemes::SPECIAL, $date, $specialId)) . '</option>';
+        }
+        $html .= '</optgroup>';
     }
     return $html . '</select>';
 }
@@ -135,6 +158,7 @@ function daily_subnav(string $current): void
         '/admin/daily/reserve' => '🧺 Reserve',
         '/admin/daily/proposals' => '💡 Proposals',
         '/admin/daily/spots'   => '📍 Spots',
+        '/admin/daily/specials' => '✨ Special days',
         '/admin/daily/import'  => '⬆️ Import',
         '/admin/daily/log'     => '📜 Log',
     ];

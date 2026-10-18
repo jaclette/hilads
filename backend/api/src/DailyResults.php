@@ -317,6 +317,7 @@ final class DailyResults
             ),
             'localPasses'       => $passes['passes'],
             'localPassProgress' => $passes['progress'],
+            'specialStamps'     => $passes['specials'],
         ];
     }
 }

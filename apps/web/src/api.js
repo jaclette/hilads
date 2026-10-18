@@ -2366,8 +2366,12 @@ function cityNumber(cityId) {
   return String(cityId).replace(/^city_/, '')
 }
 
+// Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys.
+// A query parameter, not a header, so GETs stay simple requests (no CORS preflight).
+const THEMES_V2 = { themes: '2' }
+
 function spotsQuery(params) {
-  const q = new URLSearchParams()
+  const q = new URLSearchParams(THEMES_V2)
   Object.entries(params).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') q.set(k, v) })
   return q.toString()
 }
@@ -2403,7 +2407,7 @@ export async function fetchSpot(id, offset = 0) {
 // language; errors carry the API's status and machine code (err.status/.code).
 
 async function daily(method, path, { params, body } = {}) {
-  const q = new URLSearchParams()
+  const q = new URLSearchParams(THEMES_V2)
   Object.entries(params || {}).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') q.set(k, v) })
   const res = await fetch(`${BASE}${path}${q.toString() ? `?${q}` : ''}`, {
     method,

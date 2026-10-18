@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Lingua",
-    "street_food": "Cibo di strada",
-    "coffee": "Caffè",
-    "market": "Mercato",
-    "night_out": "Serata fuori",
-    "neighborhood": "Quartiere",
-    "traditions": "Tradizioni"
+    "hidden_gem": "Chicca",
+    "taste": "Sapore",
+    "ask_local": "Chiedi a un local",
+    "local_find": "Scoperta",
+    "night_out": "Serata",
+    "sip": "Un sorso",
+    "only_here": "Solo qui",
+    "special": "Speciale",
+    "onlyIn": "Solo a {{city}}"
   },
   "meta": {
     "cityTitle": "Diventa locale a {{city}} - Hilads",

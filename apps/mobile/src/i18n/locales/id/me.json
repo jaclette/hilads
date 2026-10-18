@@ -122,7 +122,9 @@
     "stamps_one": "{{count}} dari 7 stempel",
     "stamps_other": "{{count}} dari 7 stempel",
     "inReview_one": "{{count}} ditinjau",
-    "inReview_other": "{{count}} ditinjau"
+    "inReview_other": "{{count}} ditinjau",
+    "specialTitle": "Stempel spesial",
+    "specialSub": "Edisi terbatas, satu untuk setiap hari spesial. Tidak dihitung untuk Local Pass."
   },
   "points": {
     "title": "Cara dapat poin",

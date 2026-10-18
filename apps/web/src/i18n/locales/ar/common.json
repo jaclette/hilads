@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "اللغة",
-    "street_food": "طعام الشارع",
-    "coffee": "القهوة",
-    "market": "السوق",
+    "hidden_gem": "جوهرة مخفية",
+    "taste": "مذاق",
+    "ask_local": "اسأل أهل البلد",
+    "local_find": "اكتشاف",
     "night_out": "سهرة",
-    "neighborhood": "الحي",
-    "traditions": "التقاليد"
+    "sip": "مشروب",
+    "only_here": "هنا فقط",
+    "special": "مميز",
+    "onlyIn": "في {{city}} فقط"
   },
   "meta": {
     "cityTitle": "كن محليًا في {{city}} - Hilads",

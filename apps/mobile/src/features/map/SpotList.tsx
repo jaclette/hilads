@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { themeName } from '@/features/daily/themes';
-import { THEME_ICON, compactPrice, distance, meters } from '@/features/today/format';
+import { compactPrice, distance, meters } from '@/features/today/format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
 import { Chip } from '@/ui';
 
@@ -71,13 +72,13 @@ export function SpotList({ spots, sort, onSort, me, origin, onPick, topInset, bo
           <TouchableOpacity style={styles.row} onPress={() => onPick(s)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={s.name}>
             {s.cover.thumbUrl || s.cover.photoUrl
               ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
-              : <View style={[styles.photo, styles.photoEmpty]}><Ionicons name={theme ? THEME_ICON[theme] : 'location-outline'} size={22} color={colors.primaryText} /></View>}
+              : <View style={[styles.photo, styles.photoEmpty]}><ThemeIcon theme={theme ?? 'only_here'} size={22} color={colors.primaryText} /></View>}
             <View style={styles.body}>
               <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
               <View style={styles.chips}>
                 {theme && (
                   <View style={styles.theme}>
-                    <Ionicons name={THEME_ICON[theme]} size={12} color={colors.primaryOnTint} />
+                    <ThemeIcon theme={theme} size={12} color={colors.primaryOnTint} />
                     <Text style={styles.themeText} numberOfLines={1}>{themeName(theme)}</Text>
                   </View>
                 )}

@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Language",
-    "street_food": "Street food",
-    "coffee": "Coffee",
-    "market": "Market",
+    "hidden_gem": "Hidden gem",
+    "taste": "Taste",
+    "ask_local": "Ask a local",
+    "local_find": "Local find",
     "night_out": "Night out",
-    "neighborhood": "Neighborhood",
-    "traditions": "Traditions"
+    "sip": "Sip",
+    "only_here": "Only here",
+    "special": "Special",
+    "onlyIn": "Only in {{city}}"
   },
   "meta": {
     "cityTitle": "Become local in {{city}} - Hilads",

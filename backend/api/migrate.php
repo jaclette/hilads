@@ -3151,6 +3151,54 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_places_demo ON places (id) WHERE is_de
 // office for one challenge; NULL = the theme's default image (bundled in the apps).
 run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS cover_url TEXT", 'daily_challenges.cover_url');
 
+// Themes v2 (SPEC 3, 8.2, 9.15, 2026-10-19): the 7 weekly themes are renamed
+// and redefined (DailyThemes::LEGACY). Stored keys move with their theme, so
+// stamps and Local Pass progress (computed from the challenges' themes) move
+// too. "special" = a special day of world scope (daily_specials, special_id).
+// daily_theme_covers: a theme's default cover uploaded in the back office
+// (no row = the image bundled in the apps).
+// Reversal: run the CASE below the other way round; DROP TABLE daily_theme_covers;
+// ALTER TABLE daily_challenges DROP COLUMN special_id; DROP TABLE daily_specials.
+foreach (['daily_challenges', 'daily_proposals'] as $t) {
+    run($pdo, "
+        UPDATE {$t} SET theme = CASE theme
+            WHEN 'neighborhood' THEN 'hidden_gem' WHEN 'street_food' THEN 'taste' WHEN 'language' THEN 'ask_local'
+            WHEN 'market' THEN 'local_find' WHEN 'coffee' THEN 'sip' WHEN 'traditions' THEN 'only_here' END
+        WHERE theme IN ('neighborhood', 'street_food', 'language', 'market', 'coffee', 'traditions')
+    ", "{$t}.theme v2");
+}
+run($pdo, "
+    UPDATE daily_challenges SET text_i18n = jsonb_build_object('en', 'Seed spots: ' || CASE theme
+        WHEN 'hidden_gem' THEN 'Hidden gem' WHEN 'taste' THEN 'Taste' WHEN 'ask_local' THEN 'Ask a local'
+        WHEN 'local_find' THEN 'Local find' WHEN 'night_out' THEN 'Night out' WHEN 'sip' THEN 'Sip' ELSE 'Only here' END)
+    WHERE status = 'seed' AND text_i18n->>'en' LIKE 'Seed spots: %'
+", 'seed challenges theme names v2');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_specials (
+        id         TEXT        PRIMARY KEY,
+        date       DATE        NOT NULL,
+        name_i18n  JSONB       NOT NULL DEFAULT '{}'::jsonb,
+        emoji      TEXT,
+        icon       TEXT,
+        cover_url  TEXT,
+        scope      TEXT        NOT NULL DEFAULT 'world' CHECK (scope IN ('world', 'country', 'city')),
+        country    TEXT,
+        city_id    TEXT        REFERENCES channels(id) ON DELETE SET NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_specials');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_specials_date ON daily_specials (date)", 'idx_daily_specials_date');
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS special_id TEXT REFERENCES daily_specials(id) ON DELETE SET NULL",
+    'daily_challenges.special_id');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_theme_covers (
+        theme      TEXT        PRIMARY KEY,
+        cover_url  TEXT        NOT NULL,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_theme_covers');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

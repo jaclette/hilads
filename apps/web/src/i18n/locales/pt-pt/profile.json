@@ -165,7 +165,9 @@
       "stamps_one": "{{count}} de 7 carimbos",
       "stamps_other": "{{count}} de 7 carimbos",
       "inReview_one": "{{count}} em revisão",
-      "inReview_other": "{{count}} em revisão"
+      "inReview_other": "{{count}} em revisão",
+      "specialTitle": "Carimbos especiais",
+      "specialSub": "Edição limitada, um por cada dia especial. Não conta para o Local Pass."
     },
     "points": {
       "title": "Como ganhar pontos",

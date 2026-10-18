@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import BackButton from '../BackButton'
 import { fetchDailyCalendar } from '../../api'
 import Icon from '../Icon'
-import { THEME_ICON } from '../../lib/icons'
+import { themeIcon } from '../../lib/icons'
 import { useDaily, useDc } from './dailyShared'
 
 /** YYYY-MM-DD of a Date in UTC. */
@@ -69,7 +69,7 @@ export default function CalendarScreen({ onBack }) {
                 <span className={`dc-cal-dot${done ? ' dc-cal-dot--done' : ''}${pending ? ' dc-cal-dot--pending' : ''}${d.date === today ? ' dc-cal-dot--today' : ''}${off ? ' dc-cal-dot--off' : ''}`}>
                   {Number(d.date.slice(8))}
                 </span>
-                <span className={`dc-cal-emoji${off ? ' dc-cal-emoji--off' : ''}`}>{d.theme && THEME_ICON[d.theme.key] ? <Icon name={THEME_ICON[d.theme.key]} size={13} /> : null}</span>
+                <span className={`dc-cal-emoji${off ? ' dc-cal-emoji--off' : ''}`}>{d.theme ? <Icon name={themeIcon(d.theme.key, d.special)} size={13} /> : null}</span>
               </button>
             )
           })}

@@ -9,7 +9,6 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
 import { fetchMyProposals, withdrawProposal } from '@/api/daily';
-import { THEME_ICON } from '@/features/today/format';
 import type { DailyProposal } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
@@ -119,7 +118,7 @@ function ProposalRow({ item, onWithdraw }: { item: DailyProposal; onWithdraw: ()
         <Text style={styles.text}>{item.text}</Text>
         {(item.theme || item.city) && (
           <View style={styles.iconRow}>
-            {item.theme && <Chip icon={THEME_ICON[item.theme.key] ?? 'pricetag-outline'} label={themeName(item.theme.key)} />}
+            {item.theme && <Chip theme={item.theme.key} label={themeName(item.theme.key)} />}
             {item.city && <Text style={styles.meta} numberOfLines={1}>{shortCityName(item.city.name ?? '')}</Text>}
           </View>
         )}

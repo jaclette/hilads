@@ -1,16 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import type { DailyThemeKey } from '@/types';
-
-/** Stroke icon of each weekly theme (SPEC 9.11: no emoji in the interface chrome). */
-export const THEME_ICON: Record<DailyThemeKey, React.ComponentProps<typeof Ionicons>['name']> = {
-  language:     'chatbubbles-outline',
-  street_food:  'fast-food-outline',
-  coffee:       'cafe-outline',
-  market:       'basket-outline',
-  night_out:    'moon-outline',
-  neighborhood: 'storefront-outline',
-  traditions:   'flower-outline',
-};
+// Theme icons live with ThemeIcon (src/ui): Taste and Only here are drawn.
+export { THEME_ICON } from '@/ui/ThemeIcon';
 
 /** 83560 → "23:12:40" (the ticket's countdown). */
 export function clock(seconds: number): string {

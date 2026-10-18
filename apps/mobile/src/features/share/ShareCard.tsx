@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { appFont } from '@/scaling';
 import { localizeCityName } from '@/i18n/cityName';
 import { themeName } from '@/features/daily/themes';
-import { THEME_COVERS } from '@/features/today/covers';
+import { THEME_COVERS, themeCover } from '@/features/today/covers';
 import { FLAGS } from '@/ui/flags';
 import type { ShareContent } from './content';
 
@@ -49,9 +49,11 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
     return () => clearTimeout(timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const theme = content.theme ? themeName(content.theme) : '';
+  const theme = content.type !== 'spot' && content.themeLabel ? content.themeLabel
+    : content.theme ? themeName(content.theme, { city: content.city?.name }) : '';
   const kicker = content.type === 'spot' ? theme : [DAILY_CHALLENGE, theme].filter(Boolean).join(' · ');
-  const cover = content.photoUrl ? { uri: content.photoUrl } : THEME_COVERS[content.theme ?? 'neighborhood'];
+  const cover = content.photoUrl ? { uri: content.photoUrl }
+    : themeCover(content.theme ?? 'only_here', content.type === 'today' ? content.date : null) ?? THEME_COVERS.only_here;
   const flag = content.city?.country ? FLAGS[content.city.country.toUpperCase()] : undefined;
   const city = content.city?.name ? localizeCityName(content.city.name) : null;
   const badge = content.type === 'proof' && content.rank

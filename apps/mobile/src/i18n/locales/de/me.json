@@ -122,7 +122,9 @@
     "stamps_one": "{{count}} von 7 Stempeln",
     "stamps_other": "{{count}} von 7 Stempeln",
     "inReview_one": "{{count}} in Prüfung",
-    "inReview_other": "{{count}} in Prüfung"
+    "inReview_other": "{{count}} in Prüfung",
+    "specialTitle": "Sonderstempel",
+    "specialSub": "Limitierte Edition, einer pro Sondertag. Zählt nicht für den Local Pass."
   },
   "points": {
     "title": "So sammelst du Punkte",

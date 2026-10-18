@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
-import { THEME_ICON } from '@/features/today/format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyTheme, DailyThemeKey } from '@/types';
 import { CityFlag } from '@/ui';
 
@@ -31,8 +31,8 @@ export function CityPage({ cityName, country, themes, earned, todayTheme, tomorr
   const have = new Set(themes);
   const todayMissing = todayTheme !== null && !have.has(todayTheme);
   const hint = earned || have.size >= 7 ? t('passport.hintPass')
-    : todayMissing ? t('passport.hintToday', { theme: themeName(todayTheme!) })
-    : tomorrowTheme ? t('passport.hintTomorrow', { theme: themeName(tomorrowTheme.key) })
+    : todayMissing ? t('passport.hintToday', { theme: themeName(todayTheme!, { city: cityName }) })
+    : tomorrowTheme && tomorrowTheme.key !== 'special' ? t('passport.hintTomorrow', { theme: themeName(tomorrowTheme.key, { city: cityName }) })
     : null;
 
   return (
@@ -53,14 +53,14 @@ export function CityPage({ cityName, country, themes, earned, todayTheme, tomorr
             <View key={k} style={styles.cell}>
               {stamped ? (
                 <View style={[styles.stamp, { transform: [{ rotate: `${ROTATION[i]}deg` }] }]}>
-                  <View style={styles.stampInner}><Ionicons name={THEME_ICON[k]} size={22} color={colors.primary} /></View>
+                  <View style={styles.stampInner}><ThemeIcon theme={k} size={22} color={colors.primary} /></View>
                 </View>
               ) : (
                 <View style={[styles.empty, next && styles.next]}>
-                  <Ionicons name={THEME_ICON[k]} size={22} color={next ? colors.primary : colors.mutedDim} />
+                  <ThemeIcon theme={k} size={22} color={next ? colors.primary : colors.mutedDim} />
                 </View>
               )}
-              <Text style={[styles.label, !stamped && !next && styles.labelOff, next && styles.labelNext]} numberOfLines={2}>{themeName(k)}</Text>
+              <Text style={[styles.label, !stamped && !next && styles.labelOff, next && styles.labelNext]} numberOfLines={2}>{themeName(k, { city: cityName })}</Text>
             </View>
           );
         })}

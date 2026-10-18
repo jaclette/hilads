@@ -24,6 +24,7 @@ import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/Pla
 import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
+import { isPlaceTheme } from '@/features/daily/themes';
 import { SharePanel } from '@/features/share/SharePanel';
 import { proofShare } from '@/features/share/content';
 import { Button } from '@/ui';
@@ -92,7 +93,7 @@ export default function DailyProofScreen() {
   }, [account, router]);
 
   const themeKey = today?.challenge?.theme?.key ?? null;
-  const needsPlace = themeKey !== null && themeKey !== 'language';
+  const needsPlace = isPlaceTheme(themeKey);
 
   useEffect(() => {
     let alive = true;
@@ -287,7 +288,7 @@ export default function DailyProofScreen() {
       ) : closed ? (
         <View style={styles.center}><Text style={styles.muted}>{challenge ? t('proof.editOnlyActive') : t('errors.no_active_challenge')}</Text></View>
       ) : step === 'place' ? (
-        <PlaceStep theme={themeKey} onPicked={onPlace} />
+        <PlaceStep theme={themeKey === 'special' ? null : themeKey} onPicked={onPlace} />
       ) : step === 'photo' ? (
         <View style={styles.center}>
           <View style={styles.icon}><Ionicons name="camera-outline" size={32} color={colors.primaryOnTint} /></View>

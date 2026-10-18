@@ -122,7 +122,9 @@
     "stamps_one": "7 枚中的 {{count}} 枚",
     "stamps_other": "7 枚中的 {{count}} 枚",
     "inReview_one": "{{count}} 个审核中",
-    "inReview_other": "{{count}} 个审核中"
+    "inReview_other": "{{count}} 个审核中",
+    "specialTitle": "特别印章",
+    "specialSub": "限量版，每个特别日一枚。不计入 Local Pass。"
   },
   "points": {
     "title": "如何获得积分",

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import BackButton from '../BackButton'
 import Icon from '../Icon'
 import { fetchDailyArchive } from '../../api'
-import { THEME_ICON } from '../../lib/icons'
+import { themeIcon } from '../../lib/icons'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { useDaily, useDc } from './dailyShared'
 
@@ -53,7 +53,7 @@ export default function ArchiveScreen({ onBack }) {
           <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => setTheme(null)}>{t('today.archiveAll')}</button>
           {THEME_KEYS.map(k => (
             <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => setTheme(k)}>
-              {THEME_ICON[k] && <Icon name={THEME_ICON[k]} size={15} />}{themeName(k)}
+              <Icon name={themeIcon(k)} size={15} />{themeName(k)}
             </button>
           ))}
         </div>
@@ -71,7 +71,7 @@ export default function ArchiveScreen({ onBack }) {
                 <button key={c.id} type="button" className="archive-card" onClick={() => openDaily('challenge', { date: c.date, source: 'archive' })}>
                   <span className="archive-head">
                     <span className="dc-muted">{dateOf(c.date)}</span>
-                    {c.theme && <span className="today-chip" style={ROW}><Icon name={THEME_ICON[c.theme.key] ?? 'pricetag-outline'} size={14} />{themeName(c.theme.key)}</span>}
+                    {c.theme && <span className="today-chip" style={ROW}><Icon name={themeIcon(c.theme.key, c.special)} size={14} />{themeName(c.theme.key, { special: c.special })}</span>}
                   </span>
                   <span className="archive-text">{c.text}</span>
                   {item.photos?.length > 0 && (

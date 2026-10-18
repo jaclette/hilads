@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next'
 import SpotPage from './SpotPage'
 import { fetchMap, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
+import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
 import Icon, { iconHtml } from '../Icon'
-import { THEME_ICON } from '../../lib/icons'
+import { themeIcon } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
 import HeaderArt from '../HeaderArt'
 
@@ -49,7 +49,7 @@ function labelWidth(text) {
 // 44 px: the tap target (the label, when shown, is tappable too).
 const spotIcon = (spot, label, side, selected) => L.divIcon({
   className: 'wm-pin-wrap',
-  html: `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(THEME_ICON[spot.themes?.[0]] || 'location-outline', 20)}</span>`
+  html: `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(spot.themes?.[0] ? themeIcon(spot.themes[0]) : 'location-outline', 20)}</span>`
     + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}">${escapeHtml(label)}</span>` : ''),
   iconSize: [44, 44], iconAnchor: [22, 22],
 })
@@ -174,11 +174,11 @@ function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
           <button key={s.id} type="button" className="wm-row" onClick={() => onPick(s)}>
             {s.cover?.thumbUrl || s.cover?.photoUrl
               ? <img className="wm-row-photo" src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" />
-              : <span className="wm-row-photo wm-row-photo--empty"><Icon name={THEME_ICON[th] || 'location-outline'} size={22} /></span>}
+              : <span className="wm-row-photo wm-row-photo--empty"><Icon name={th ? themeIcon(th) : 'location-outline'} size={22} /></span>}
             <span className="wm-row-body">
               <span className="wm-row-name">{s.name}</span>
               <span className="wm-row-chips">
-                {th && <span className="wm-row-theme" style={ROW}><Icon name={THEME_ICON[th]} size={12} />{themeName(th)}</span>}
+                {th && <span className="wm-row-theme" style={ROW}><Icon name={themeIcon(th)} size={12} />{themeName(th)}</span>}
                 {s.validatedByLocal && <span className="wm-row-local" style={ROW}><Icon name="checkmark" size={12} />{t('map.validated')}</span>}
               </span>
               <span className="wm-row-meta">
@@ -201,7 +201,7 @@ function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
 function EmptyCard({ today, t }) {
   const { openDaily } = useDaily()
   const challenge = today?.challenge ?? null
-  const placeTheme = !!challenge?.theme && challenge.theme.key !== 'language'
+  const placeTheme = isPlaceTheme(challenge?.theme?.key)
   const tomorrowKey = today?.tomorrow?.theme?.key
     ?? (challenge ? defaultThemeFor(new Date(Date.parse(`${challenge.date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10)) : null)
   const store = deviceStore()
@@ -389,9 +389,9 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         {results === null || view === 'list' ? (
           <div className="wm-chips" role="toolbar">
             <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
-            {THEME_KEYS.map(k => (
+            {THEME_KEYS.filter(isPlaceTheme).map(k => (
               <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => pickTheme(k)}>
-                <Icon name={THEME_ICON[k]} size={15} />{themeName(k)}
+                <Icon name={themeIcon(k)} size={15} />{themeName(k)}
               </button>
             ))}
           </div>
@@ -460,7 +460,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                   <span className="wm-sheet-title">{selected.name}</span>
                   <span className="wm-sheet-meta">
                     {selected.themes.map((k, i) => (
-                      <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={13} />{themeName(k)}</span>
+                      <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={themeIcon(k)} size={13} />{themeName(k)}</span>
                     ))}
                   </span>
                   <span className="wm-sheet-meta">

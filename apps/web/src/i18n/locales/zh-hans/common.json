@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "语言",
-    "street_food": "街头小吃",
-    "coffee": "咖啡",
-    "market": "市场",
+    "hidden_gem": "宝藏地",
+    "taste": "风味",
+    "ask_local": "问问本地人",
+    "local_find": "好物",
     "night_out": "夜生活",
-    "neighborhood": "街区",
-    "traditions": "传统"
+    "sip": "来一杯",
+    "only_here": "此地独有",
+    "special": "特别篇",
+    "onlyIn": "{{city}}独有"
   },
   "meta": {
     "cityTitle": "在 {{city}} 成为本地人 - Hilads",

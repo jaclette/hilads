@@ -165,7 +165,9 @@
       "stamps_one": "{{count}} timbro su 7",
       "stamps_other": "{{count}} timbri su 7",
       "inReview_one": "{{count}} in revisione",
-      "inReview_other": "{{count}} in revisione"
+      "inReview_other": "{{count}} in revisione",
+      "specialTitle": "Timbri speciali",
+      "specialSub": "Edizione limitata, uno per ogni giorno speciale. Non conta per il Local Pass."
     },
     "points": {
       "title": "Come guadagnare punti",

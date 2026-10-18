@@ -165,7 +165,9 @@
       "stamps_one": "{{count}} of 7 stamps",
       "stamps_other": "{{count}} of 7 stamps",
       "inReview_one": "{{count}} in review",
-      "inReview_other": "{{count}} in review"
+      "inReview_other": "{{count}} in review",
+      "specialTitle": "Special stamps",
+      "specialSub": "Limited edition, one per special day. Not counted for the Local Pass."
     },
     "points": {
       "title": "How to earn points",

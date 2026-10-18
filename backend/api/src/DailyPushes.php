@@ -229,14 +229,14 @@ final class DailyPushes
 
     /** Theme emojis: in pushes only, never in the app's interface. */
     public const THEME_EMOJI = [
-        'language' => '💬', 'street_food' => '🍜', 'coffee' => '☕', 'market' => '🧺',
-        'night_out' => '🌙', 'neighborhood' => '🏪', 'traditions' => '🌸',
+        'hidden_gem' => '💎', 'taste' => '🍜', 'ask_local' => '💬', 'local_find' => '🛍️',
+        'night_out' => '🌙', 'sip' => '🍹', 'only_here' => '📍',
     ];
     /** A push body stays under this many characters: a longer one drops its extra line. */
     public const BODY_MAX = 150;
 
     /**
-     * The morning push: "🌸 Today: Traditions" over the challenge text, then
+     * The morning push: "💎 Today: Hidden gem" over the challenge text, then
      * yesterday's outcome when it fits in BODY_MAX. $locale must come from
      * morningLocale() (the challenge is translated into it, else English).
      */
@@ -244,8 +244,8 @@ final class DailyPushes
     {
         $theme = self::themeOf($challenge);
         $title = $theme !== null
-            ? self::THEME_EMOJI[$theme] . ' ' . (DailyPushText::render('title_today', $locale, ['theme' => self::themeName($theme, $locale)])
-                                               ?? 'Today: ' . self::themeName($theme, $locale))
+            ? self::emoji($theme, $challenge) . ' ' . (DailyPushText::render('title_today', $locale, ['theme' => self::themeName($theme, $locale, $challenge)])
+                                                       ?? 'Today: ' . self::themeName($theme, $locale, $challenge))
             : 'Daily Challenge';
         return [
             'title' => $title,
@@ -257,7 +257,7 @@ final class DailyPushes
     }
 
     /**
-     * The reminder: "🌸 Traditions · 6h left" (hours left at send time, to the
+     * The reminder: "💎 Hidden gem · 6h left" (hours left at send time, to the
      * nearest hour, at least 1) over the challenge text, then who already did
      * it when it fits in BODY_MAX: a friend ($friend, their name) and the number
      * of others, else the number of people ($took). $locale as for the morning.
@@ -266,8 +266,8 @@ final class DailyPushes
     {
         $hours  = max(1, (int) round($secondsLeft / 3600));
         $theme  = self::themeOf($challenge);
-        $name   = $theme !== null ? self::themeName($theme, $locale) : 'Daily Challenge';
-        $title  = ($theme !== null ? self::THEME_EMOJI[$theme] . ' ' : '')
+        $name   = $theme !== null ? self::themeName($theme, $locale, $challenge) : 'Daily Challenge';
+        $title  = ($theme !== null ? self::emoji($theme, $challenge) . ' ' : '')
                 . (DailyPushText::render('title_reminder', $locale, ['theme' => $name, 'h' => $hours]) ?? "{$name} · {$hours}h left");
         $others = max(0, $took - 1);
         $social = null;
@@ -307,11 +307,22 @@ final class DailyPushes
     private static function themeOf(array $challenge): ?string
     {
         $key = DailyThemes::effective($challenge['theme'] ?? null, isset($challenge['challenge_date']) ? (string) $challenge['challenge_date'] : null);
-        return $key !== null && isset(self::THEME_EMOJI[$key]) ? $key : null;
+        return $key !== null && (isset(self::THEME_EMOJI[$key]) || $key === DailyThemes::SPECIAL) ? $key : null;
     }
 
-    private static function themeName(string $key, string $locale): string
+    /** A theme's emoji; a special day's own (🎃 for Halloween). */
+    private static function emoji(string $key, array $challenge): string
     {
+        return $key === DailyThemes::SPECIAL ? DailySpecials::emoji($challenge['special_id'] ?? null) : self::THEME_EMOJI[$key];
+    }
+
+    /** A theme's name in $locale; a special day's name ("Halloween"). */
+    private static function themeName(string $key, string $locale, array $challenge = []): string
+    {
+        if ($key === DailyThemes::SPECIAL) {
+            $row = DailySpecials::find($challenge['special_id'] ?? null);
+            return $row !== null ? DailySpecials::nameOf($row, $locale) : (DailyPushText::render('theme_special', $locale) ?? 'Special');
+        }
         return DailyPushText::render('theme_' . $key, $locale) ?? DailyThemes::name($key);
     }
 

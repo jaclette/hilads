@@ -122,7 +122,9 @@
     "stamps_one": "스탬프 {{count}}/7",
     "stamps_other": "스탬프 {{count}}/7",
     "inReview_one": "{{count}}개 검토 중",
-    "inReview_other": "{{count}}개 검토 중"
+    "inReview_other": "{{count}}개 검토 중",
+    "specialTitle": "스페셜 스탬프",
+    "specialSub": "한정판, 특별한 날마다 하나씩. Local Pass에는 포함되지 않아요."
   },
   "points": {
     "title": "포인트 받는 법",

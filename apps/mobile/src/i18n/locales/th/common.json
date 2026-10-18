@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "ภาษา",
-    "street_food": "สตรีทฟู้ด",
-    "coffee": "กาแฟ",
-    "market": "ตลาด",
+    "hidden_gem": "มุมลับ",
+    "taste": "รสชาติ",
+    "ask_local": "ถามคนท้องถิ่น",
+    "local_find": "ของดี",
     "night_out": "เที่ยวกลางคืน",
-    "neighborhood": "ย่านชุมชน",
-    "traditions": "ประเพณี"
+    "sip": "เครื่องดื่ม",
+    "only_here": "ที่นี่ที่เดียว",
+    "special": "พิเศษ",
+    "onlyIn": "ที่{{city}}ที่เดียว"
   },
   "nowTitle": "ตอนนี้",
   "filterEvents": "อีเวนต์ในพื้นที่",

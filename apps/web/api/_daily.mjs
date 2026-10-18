@@ -39,7 +39,8 @@ function trim(j) {
 
 /** Today's challenge (cityId = numeric city id, optional). null when the API fails. */
 export async function fetchDailyToday(cityId, ms = 2500) {
-  const qs = cityId ? `?cityId=${encodeURIComponent(cityId)}` : ''
+  // themes=2: the themes v2 keys (hidden_gem, taste...), not the v1 ones old apps get.
+  const qs = `?themes=2${cityId ? `&cityId=${encodeURIComponent(cityId)}` : ''}`
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), ms)
   try {

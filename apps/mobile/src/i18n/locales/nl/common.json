@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Taal",
-    "street_food": "Streetfood",
-    "coffee": "Koffie",
-    "market": "Markt",
+    "hidden_gem": "Pareltje",
+    "taste": "Smaak",
+    "ask_local": "Vraag een local",
+    "local_find": "Vondst",
     "night_out": "Avondje uit",
-    "neighborhood": "Buurt",
-    "traditions": "Tradities"
+    "sip": "Drankje",
+    "only_here": "Alleen hier",
+    "special": "Speciaal",
+    "onlyIn": "Alleen in {{city}}"
   },
   "nowTitle": "Nu",
   "filterEvents": "Lokale evenementen",

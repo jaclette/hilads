@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Wika",
-    "street_food": "Street food",
-    "coffee": "Kape",
-    "market": "Palengke",
+    "hidden_gem": "Hidden gem",
+    "taste": "Lasa",
+    "ask_local": "Tanong sa lokal",
+    "local_find": "Nahanap",
     "night_out": "Gimik",
-    "neighborhood": "Kapitbahayan",
-    "traditions": "Tradisyon"
+    "sip": "Inom",
+    "only_here": "Dito lang",
+    "special": "Espesyal",
+    "onlyIn": "Sa {{city}} lang"
   },
   "nowTitle": "Ngayon",
   "filterEvents": "Local Events",

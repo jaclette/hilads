@@ -9,7 +9,6 @@ import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
 import { useDailyArchive } from '@/hooks/useDaily';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
-import { THEME_ICON } from '@/features/today/format';
 import type { DailyArchiveItem, DailyThemeKey } from '@/types';
 import { Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
 
@@ -34,7 +33,7 @@ export default function DailyArchiveScreen() {
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
       <Chip variant="filter" label={t('today.archiveAll')} selected={theme === null} onPress={() => setTheme(null)} />
       {THEME_KEYS.map(k => (
-        <Chip key={k} variant="filter" icon={THEME_ICON[k]} label={themeName(k)} selected={theme === k} onPress={() => setTheme(k)} />
+        <Chip key={k} variant="filter" label={themeName(k)} selected={theme === k} onPress={() => setTheme(k)} />
       ))}
     </ScrollView>
   );
@@ -74,7 +73,7 @@ function ArchiveCard({ item, world, onPress }: { item: DailyArchiveItem; world: 
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${date}: ${c.text}`}>
       <View style={styles.head}>
         <Text style={styles.muted}>{date}</Text>
-        {!!c.theme && <Chip icon={THEME_ICON[c.theme.key] ?? 'pricetag-outline'} label={themeName(c.theme.key)} />}
+        {!!c.theme && <Chip theme={c.theme.key} special={c.special?.icon} label={themeName(c.theme.key, { special: c.special })} />}
       </View>
       <Text style={styles.text}>{c.text}</Text>
       {photos.length > 0 && (

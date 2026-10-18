@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Bahasa",
-    "street_food": "Jajanan kaki lima",
-    "coffee": "Kopi",
-    "market": "Pasar",
-    "night_out": "Malam keluar",
-    "neighborhood": "Lingkungan",
-    "traditions": "Tradisi"
+    "hidden_gem": "Harta karun",
+    "taste": "Rasa",
+    "ask_local": "Tanya warga lokal",
+    "local_find": "Temuan",
+    "night_out": "Nongkrong malam",
+    "sip": "Minum",
+    "only_here": "Cuma di sini",
+    "special": "Spesial",
+    "onlyIn": "Cuma di {{city}}"
   },
   "nowTitle": "Sekarang",
   "filterEvents": "Acara lokal",

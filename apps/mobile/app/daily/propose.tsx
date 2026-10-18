@@ -12,7 +12,6 @@ import { track } from '@/services/analytics';
 import { dailyErrorCode, proposeChallenge } from '@/api/daily';
 import { useDailyToday } from '@/hooks/useDaily';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
-import { THEME_ICON } from '@/features/today/format';
 import type { DailyThemeKey } from '@/types';
 
 const TEXT_MAX  = 120;

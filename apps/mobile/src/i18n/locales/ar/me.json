@@ -138,7 +138,9 @@
     "inReview_two": "اثنان قيد المراجعة",
     "inReview_few": "{{count}} قيد المراجعة",
     "inReview_many": "{{count}} قيد المراجعة",
-    "inReview_other": "{{count}} قيد المراجعة"
+    "inReview_other": "{{count}} قيد المراجعة",
+    "specialTitle": "أختام مميزة",
+    "specialSub": "إصدار محدود، ختم لكل يوم مميز. لا يُحتسب ضمن Local Pass."
   },
   "points": {
     "title": "كيف تكسب النقاط",

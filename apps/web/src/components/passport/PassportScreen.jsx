@@ -5,7 +5,7 @@ import { shortCityName } from '../../i18n/cityName'
 import { CityFlag } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
-import { THEME_ICON } from '../../lib/icons'
+import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import HeaderArt from '../HeaderArt'
 
@@ -94,7 +94,9 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
     progress.unshift({ city: { id: cityNum, name: cityName ?? null, country: cityCountry ?? null }, done: 0, total: 7, themes: [], earned: false })
   }
   progress.sort((a, b) => (a.city.id === cityNum ? -1 : b.city.id === cityNum ? 1 : b.done - a.done))
-  const todayTheme = today?.challenge?.theme?.key ?? null
+  // A special day earns its own stamp, not one of the 7.
+  const todayKey = today?.challenge?.theme?.key ?? null
+  const todayTheme = todayKey === 'special' ? null : todayKey
   const tomorrow = today?.tomorrow?.theme ?? null
   const streak = stats?.currentStreak ?? today?.streak ?? 0
 
@@ -124,6 +126,8 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
             ))}
           </div>
         )}
+
+        {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats.specialStamps} />}
 
         <div className="pp-rows">
           <Row label={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onClick={() => onOpen('spots')} />
@@ -166,8 +170,8 @@ function CityPage({ cityName, country, themes, earned, todayTheme, tomorrowTheme
   const have = new Set(themes)
   const todayMissing = todayTheme !== null && !have.has(todayTheme)
   const hint = earned || have.size >= 7 ? t('passport.hintPass')
-    : todayMissing ? t('passport.hintToday', { theme: themeName(todayTheme) })
-    : tomorrowTheme ? t('passport.hintTomorrow', { theme: themeName(tomorrowTheme.key) })
+    : todayMissing ? t('passport.hintToday', { theme: themeName(todayTheme, { city: cityName }) })
+    : tomorrowTheme && tomorrowTheme.key !== 'special' ? t('passport.hintTomorrow', { theme: themeName(tomorrowTheme.key, { city: cityName }) })
     : null
   return (
     <div className="pp-cpage" aria-label={t('passport.pageA11y', { city: cityName, count: have.size })}>
@@ -183,11 +187,11 @@ function CityPage({ cityName, country, themes, earned, todayTheme, tomorrowTheme
           return (
             <div key={k} className="pp-cell">
               {stamped ? (
-                <span className="pp-stamp" style={{ transform: `rotate(${ROTATION[i]}deg)` }}><span className="pp-stamp-inner" style={{ color: 'var(--primary)' }}><Icon name={THEME_ICON[k]} size={22} /></span></span>
+                <span className="pp-stamp" style={{ transform: `rotate(${ROTATION[i]}deg)` }}><span className="pp-stamp-inner" style={{ color: 'var(--primary)' }}><Icon name={themeIcon(k)} size={22} /></span></span>
               ) : (
-                <span className={`pp-empty${next ? ' pp-empty--next' : ''}`} style={{ color: next ? 'var(--primary)' : 'var(--muted2)' }}><Icon name={THEME_ICON[k]} size={22} /></span>
+                <span className={`pp-empty${next ? ' pp-empty--next' : ''}`} style={{ color: next ? 'var(--primary)' : 'var(--muted2)' }}><Icon name={themeIcon(k)} size={22} /></span>
               )}
-              <span className={`pp-label${!stamped && !next ? ' pp-label--off' : ''}${next ? ' pp-label--next' : ''}`}>{themeName(k)}</span>
+              <span className={`pp-label${!stamped && !next ? ' pp-label--off' : ''}${next ? ' pp-label--next' : ''}`}>{themeName(k, { city: cityName })}</span>
             </div>
           )
         })}
@@ -195,6 +199,34 @@ function CityPage({ cityName, country, themes, earned, todayTheme, tomorrowTheme
           <span className={`pp-seal${earned ? ' pp-seal--on' : ''}`} style={{ color: 'var(--gold)' }}><Icon name={earned ? 'ribbon' : 'ribbon-outline'} size={24} /></span>
           <span className="pp-label pp-label--seal">{t('passport.localPass')}</span>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * "Special stamps" (SPEC 9.15): one limited-edition stamp per special day with
+ * an approved proof, apart from the city pages and never counted for the Local Pass.
+ */
+function SpecialStamps({ stamps }) {
+  const { t, i18n } = usePp()
+  return (
+    <div className="pp-cpage">
+      <div className="pp-cpage-head"><span className="pp-cpage-city">{t('passport.specialTitle')}</span></div>
+      <p className="dc-line pp-hint">{t('passport.specialSub')}</p>
+      <div className="pp-grid">
+        {stamps.map((s, i) => {
+          const date = new Date(`${s.date}T12:00:00Z`).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+          return (
+            <div key={s.id} className="pp-cell" aria-label={`${s.name}, ${date}`}>
+              <span className="pp-stamp pp-stamp--special" style={{ transform: `rotate(${ROTATION[(i + 3) % ROTATION.length]}deg)` }}>
+                <span className="pp-stamp-inner" style={{ color: 'var(--gold)' }}><Icon name={themeIcon('special', s)} size={22} /></span>
+              </span>
+              <span className="pp-label">{s.name}</span>
+              <span className="dc-muted pp-date">{date}</span>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

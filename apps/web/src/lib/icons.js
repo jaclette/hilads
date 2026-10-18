@@ -1,15 +1,24 @@
+import { ICON_NAMES } from '../components/Icon'
+
 // Icon names (see components/Icon.jsx) per product concept, the same ones
 // the mobile app uses so both clients show the same stroke icons.
 
-/** Daily Challenge themes (mobile: features/today/format THEME_ICON). */
+/** Daily Challenge themes v2 (mobile: ui/ThemeIcon). Taste and Only here are drawn (Icon.jsx theme-*). */
 export const THEME_ICON = {
-  language:     'chatbubbles-outline',
-  street_food:  'fast-food-outline',
-  coffee:       'cafe-outline',
-  market:       'basket-outline',
-  night_out:    'moon-outline',
-  neighborhood: 'storefront-outline',
-  traditions:   'flower-outline',
+  hidden_gem: 'diamond-outline',
+  taste:      'theme-taste',
+  ask_local:  'chatbubbles-outline',
+  local_find: 'bag-handle-outline',
+  night_out:  'moon-outline',
+  sip:        'cafe-outline',
+  only_here:  'theme-only-here',
+  special:    'sparkles-outline',
+}
+
+/** A theme's icon name; a special day's own icon when the web has it (Icon.jsx), else sparkles. */
+export function themeIcon(key, special) {
+  if (key === 'special') return special?.icon && ICON_NAMES.has(special.icon) ? special.icon : 'sparkles-outline'
+  return THEME_ICON[key] || 'pricetag-outline'
 }
 
 /** Plan categories plus imported-event types (mobile: EventPill eventIcon). */

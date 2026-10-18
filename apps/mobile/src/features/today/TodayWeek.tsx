@@ -9,7 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { useDailyCalendar } from '@/hooks/useDaily';
 import { addDays, ymd, themeName } from '@/features/daily/themes';
-import { THEME_ICON } from './format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyCalendar, DailyToday } from '@/types';
 import { RowGroup } from '@/ui';
 
@@ -40,6 +40,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const week = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
   const streak = today?.streak ?? cal.data?.streak?.current ?? null;
   const tomorrowTheme = today?.tomorrow?.theme ?? byDate.get(addDays(current, 1))?.theme ?? null;
+  const tomorrowSpecial = today?.tomorrow?.special ?? byDate.get(addDays(current, 1))?.special ?? null;
 
   const stateOf = (date: string, d: Day | undefined): State => {
     if (date === current) return 'today';
@@ -66,15 +67,14 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           <Ionicons name="flame-outline" size={18} color={colors.text} />
           <Text style={styles.streakText}>{streak ? t('streak', { count: streak }) : t('week.title')}</Text>
         </TouchableOpacity>
-        {!!tomorrowTheme && <Text style={styles.tomorrowText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</Text>}
+        {!!tomorrowTheme && <Text style={styles.tomorrowText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</Text>}
       </View>
       <View style={styles.row}>
         {week.map(date => {
           const d = byDate.get(date);
           const state = stateOf(date, d);
           const weekday = new Date(`${date}T12:00:00Z`).toLocaleDateString(i18n.language, { weekday: 'short', timeZone: 'UTC' });
-          const themeIcon = d?.theme ? THEME_ICON[d.theme.key] : null;
-          const label = `${weekday}: ${themeName(d?.theme?.key)}, ${t(`today.day.${state}`)}`;
+          const label = `${weekday}: ${themeName(d?.theme?.key, { special: d?.special })}, ${t(`today.day.${state}`)}`;
           return (
             <TouchableOpacity key={date} style={styles.day} onPress={() => open(date, state)}
                               disabled={state === 'later'} accessibilityRole="button" accessibilityLabel={label}
@@ -84,8 +84,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
                 {state === 'done' && <Ionicons name="checkmark" size={20} color={colors.white} />}
                 {state === 'pending' && <Ionicons name="time-outline" size={18} color={colors.primaryOnTint} />}
                 {state === 'missed' && <Ionicons name="close" size={18} color={colors.mutedDim} />}
-                {(state === 'today' || state === 'tomorrow' || state === 'none' || state === 'later') && themeIcon && (
-                  <Ionicons name={themeIcon} size={18} color={state === 'today' ? colors.primaryText : colors.mutedDim} />
+                {(state === 'today' || state === 'tomorrow' || state === 'none' || state === 'later') && !!d?.theme && (
+                  <ThemeIcon theme={d.theme.key} special={d.special?.icon} size={18} color={state === 'today' ? colors.primaryText : colors.mutedDim} />
                 )}
               </View>
             </TouchableOpacity>
@@ -94,8 +94,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
       </View>
       {peek && !!tomorrowTheme && (
         <View style={styles.peek} accessibilityLiveRegion="polite">
-          <Ionicons name={THEME_ICON[tomorrowTheme.key] ?? 'pricetag-outline'} size={16} color={colors.text} />
-          <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</Text>
+          <ThemeIcon theme={tomorrowTheme.key} special={tomorrowSpecial?.icon} size={16} color={colors.text} />
+          <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</Text>
         </View>
       )}
       {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}

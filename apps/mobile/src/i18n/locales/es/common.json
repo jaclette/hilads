@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Idioma",
-    "street_food": "Comida callejera",
-    "coffee": "Café",
-    "market": "Mercado",
+    "hidden_gem": "Joya escondida",
+    "taste": "Sabor",
+    "ask_local": "Pregunta a un local",
+    "local_find": "Hallazgo",
     "night_out": "Salir de noche",
-    "neighborhood": "Barrio",
-    "traditions": "Tradiciones"
+    "sip": "Un trago",
+    "only_here": "Solo aquí",
+    "special": "Especial",
+    "onlyIn": "Solo en {{city}}"
   },
   "nowTitle": "Ahora",
   "filterEvents": "Eventos locales",

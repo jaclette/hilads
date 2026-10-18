@@ -4,6 +4,8 @@
  *
  *   php scripts/daily_import.php path/to/challenges.json --dry   # validate + report, write nothing
  *   php scripts/daily_import.php path/to/challenges.json         # apply
+ *   ... --replace   the file replaces what is scheduled between its first and
+ *                   last date, and the unused reserve (see DailyAdminService::import)
  *
  * File format: docs/daily-challenge/daily-challenges.example.json. Twist cities
  * are city slugs ("ho-chi-minh-city"). Nothing is written if any entry is
@@ -15,10 +17,11 @@
 declare(strict_types=1);
 
 $args   = array_slice($argv, 1);
-$dryRun = in_array('--dry', $args, true);
-$files  = array_values(array_filter($args, fn($a) => $a !== '--dry'));
+$dryRun  = in_array('--dry', $args, true);
+$replace = in_array('--replace', $args, true);
+$files   = array_values(array_filter($args, fn($a) => $a !== '--dry' && $a !== '--replace'));
 if (count($files) !== 1) {
-    fwrite(STDERR, "Usage: php scripts/daily_import.php <file.json> [--dry]\n");
+    fwrite(STDERR, "Usage: php scripts/daily_import.php <file.json> [--dry] [--replace]\n");
     exit(1);
 }
 
@@ -43,6 +46,7 @@ require_once __DIR__ . '/../src/ModerationService.php';
 require_once __DIR__ . '/../src/DailyAdminService.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
 require_once __DIR__ . '/../src/DailyThemes.php';
+require_once __DIR__ . '/../src/DailySpecials.php';
 
 $raw = @file_get_contents($files[0]);
 if ($raw === false) {
@@ -56,9 +60,9 @@ if (!is_array($doc)) {
 }
 
 DailyAdminService::$actor = 'cli';
-$result = DailyAdminService::import($doc, $dryRun);
+$result = DailyAdminService::import($doc, $dryRun, $replace);
 
-echo $dryRun ? "DRY RUN - nothing written\n\n" : "APPLIED\n\n";
+echo ($dryRun ? "DRY RUN - nothing written" : "APPLIED") . ($replace ? " (replace)" : '') . "\n\n";
 if (!$result['ok']) {
     echo "Invalid file, nothing imported:\n";
     foreach ($result['errors'] as $err) echo "  ERR {$err}\n";
@@ -70,7 +74,21 @@ foreach ($result['report'] as $line) {
         $detail .= $line['missingLocales'] === [] ? '  translations 18/18'
             : '  translations ' . (18 - count($line['missingLocales'])) . '/18 (missing ' . implode(', ', $line['missingLocales']) . ')';
     }
+    if (isset($line['theme'])) {
+        $detail .= '  [' . DailyThemes::name($line['theme']) . ']';
+    }
     printf("  %-6s %-15s %s\n", $line['entry'], $line['action'], $detail);
+    $short = static fn(string $t): string => mb_strlen($t) > 90 ? mb_substr($t, 0, 89) . '…' : $t;
+    if (isset($line['was'])) {
+        $w = $line['was'];
+        printf("         was: %s%s\n", $short((string) $w['text']), $w['theme'] ? '  [' . DailyThemes::name(DailyThemes::effective($w['theme'], null) ?? $w['theme']) . ']' : '');
+    }
+    if (isset($line['text']) && ($line['action'] ?? '') !== 'skip') {
+        printf("         new: %s\n", $short((string) $line['text']));
+    }
+    if (!empty($line['twistsRemoved'])) {
+        printf("         twists removed: %d\n", $line['twistsRemoved']);
+    }
 }
 $counts = array_count_values(array_column($result['report'], 'action'));
 echo "\n" . json_encode($counts) . "\n";

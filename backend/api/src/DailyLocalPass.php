@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 /**
- * The Local Pass (SPEC 8.3): an approved proof in all 7 themes in the same
+ * The Local Pass (SPEC 8.3): an approved proof in all 7 weekly themes in the same
  * city earns that city's pass, once (daily_local_passes, unique per user and
  * city), with points through score_events (kind local_pass, score_rules).
  * Locals and travelers alike. Never taken back: deleting or removing a proof
  * later leaves the pass and its points.
  *
  * A proof's theme is its challenge's theme (DailyThemes::effective). Proofs
- * without a city never count.
+ * without a city never count, nor special days (their own stamps: DailySpecials).
  */
 final class DailyLocalPass
 {
@@ -94,7 +94,7 @@ final class DailyLocalPass
             'city'     => ['id' => $n, 'name' => CityRepository::findById($n)['name'] ?? null, 'country' => CityRepository::countryOf($n)],
             'done'     => count($themes),
             'total'    => count(DailyThemes::THEMES),
-            'themes'   => $themes,
+            'themes'   => array_map([DailyThemes::class, 'client'], $themes),
             'earned'   => $earnedAt !== false,
             'earnedAt' => $earnedAt !== false ? strtotime((string) $earnedAt) : null,
         ];
@@ -145,12 +145,13 @@ final class DailyLocalPass
                 'city'   => self::city($cityId, $names[$cityId]),
                 'done'   => count($themes),
                 'total'  => count(DailyThemes::THEMES),
-                'themes' => $themes,
+                'themes' => array_map([DailyThemes::class, 'client'], $themes),
                 'earned' => isset($earned[$cityId]),
             ];
         }
         usort($progress, static fn(array $a, array $b): int => $b['done'] <=> $a['done']);
-        return ['passes' => $passes, 'progress' => $progress];
+        // Special days: limited-edition stamps, apart from the 7 (never a Local Pass stamp).
+        return ['passes' => $passes, 'progress' => $progress, 'specials' => DailySpecials::stampsFor($userId)];
     }
 
     /**

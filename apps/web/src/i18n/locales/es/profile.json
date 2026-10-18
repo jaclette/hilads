@@ -165,7 +165,9 @@
       "stamps_one": "{{count}} de 7 sellos",
       "stamps_other": "{{count}} de 7 sellos",
       "inReview_one": "{{count}} en revisión",
-      "inReview_other": "{{count}} en revisión"
+      "inReview_other": "{{count}} en revisión",
+      "specialTitle": "Sellos especiales",
+      "specialSub": "Edición limitada, uno por día especial. No cuenta para el Local Pass."
     },
     "points": {
       "title": "Cómo ganar puntos",

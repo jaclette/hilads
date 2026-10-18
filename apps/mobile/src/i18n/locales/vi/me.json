@@ -122,7 +122,9 @@
     "stamps_one": "{{count}}/7 con dấu",
     "stamps_other": "{{count}}/7 con dấu",
     "inReview_one": "{{count}} đang duyệt",
-    "inReview_other": "{{count}} đang duyệt"
+    "inReview_other": "{{count}} đang duyệt",
+    "specialTitle": "Con dấu đặc biệt",
+    "specialSub": "Phiên bản giới hạn, mỗi ngày đặc biệt một con dấu. Không tính vào Local Pass."
   },
   "points": {
     "title": "Cách kiếm điểm",

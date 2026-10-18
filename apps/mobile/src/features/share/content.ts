@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import { BASE_URL, sharePrefix } from '@/constants';
 import { localizeCityName } from '@/i18n/cityName';
+import { themeName } from '@/features/daily/themes';
 import type { Spot } from '@/api/spots';
 import type { DailyChallenge, DailyProof, DailyThemeKey } from '@/types';
 
@@ -11,11 +12,13 @@ type City = { name: string | null; country?: string | null } | null;
  * proof = my proof (hilads.live/p/{id}), spot = a place (/s/{id}),
  * today = today's challenge, "Challenge a friend" (/today).
  */
+type ThemeKey = DailyThemeKey | 'special';
+
 export type ShareContent =
-  | { type: 'proof'; id: string; photoUrl: string; theme: DailyThemeKey | null; text: string; city: City; username: string | null;
+  | { type: 'proof'; id: string; photoUrl: string; theme: ThemeKey | null; themeLabel?: string | null; text: string; city: City; username: string | null;
       rank: { rank: number; city: string | null } | null }
-  | { type: 'spot'; id: string; photoUrl: string | null; theme: DailyThemeKey | null; name: string; city: City; by: string | null }
-  | { type: 'today'; photoUrl: string | null; theme: DailyThemeKey | null; text: string; city: City };
+  | { type: 'spot'; id: string; photoUrl: string | null; theme: ThemeKey | null; name: string; city: City; by: string | null }
+  | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City };
 
 /** My proof: its photo, the challenge, its city, my username and its podium rank (world first, else city). */
 export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareContent {
@@ -23,6 +26,7 @@ export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareC
   const city = proof.cityRank !== null && proof.cityRank <= 3 ? proof.cityRank : null;
   return {
     type: 'proof', id: proof.id, photoUrl: proof.photoUrl, theme: challenge.theme?.key ?? null, text: challenge.text,
+    themeLabel: challenge.theme ? themeName(challenge.theme.key, { special: challenge.special, city: proof.city?.name }) : null,
     city: proof.city, username: proof.user.username ?? null,
     rank: world ? { rank: world, city: null } : city && proof.city?.name ? { rank: city, city: proof.city.name } : null,
   };
@@ -36,7 +40,10 @@ export function spotShare(spot: Spot): ShareContent {
 }
 
 export function todayShare(challenge: DailyChallenge, city: City): ShareContent {
-  return { type: 'today', photoUrl: challenge.coverUrl ?? null, theme: challenge.theme?.key ?? null, text: challenge.text, city };
+  return {
+    type: 'today', photoUrl: challenge.coverUrl ?? null, theme: challenge.theme?.key ?? null, date: challenge.date, text: challenge.text, city,
+    themeLabel: challenge.theme ? themeName(challenge.theme.key, { special: challenge.special, city: city?.name }) : null,
+  };
 }
 
 /** The link, in the sharer's language (/fr/p/..., English unprefixed). */

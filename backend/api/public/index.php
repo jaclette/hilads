@@ -111,6 +111,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DailyPushes.php';
     require_once __DIR__ . '/../src/DailyLeaderboard.php';
     require_once __DIR__ . '/../src/DailyThemes.php';
+    require_once __DIR__ . '/../src/DailySpecials.php';
     require_once __DIR__ . '/../src/DailyLocalPass.php';
     require_once __DIR__ . '/../src/DailyProposals.php';
     require_once __DIR__ . '/../src/DailyDrop.php';
@@ -146,7 +147,7 @@ if ($origin !== null && in_array($origin, $allowedOrigins, true)) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-header('Access-Control-Allow-Headers: Content-Type, X-Platform');
+header('Access-Control-Allow-Headers: Content-Type, X-Platform, X-Themes');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 if ($method === 'OPTIONS') {
@@ -263,6 +264,7 @@ require_once __DIR__ . '/../src/DailyPushText.php';
 require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/DailyLeaderboard.php';
 require_once __DIR__ . '/../src/DailyThemes.php';
+require_once __DIR__ . '/../src/DailySpecials.php';
 require_once __DIR__ . '/../src/DailyLocalPass.php';
 require_once __DIR__ . '/../src/DailyProposals.php';
 require_once __DIR__ . '/../src/DailyDrop.php';

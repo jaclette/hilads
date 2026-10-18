@@ -165,7 +165,9 @@
       "stamps_one": "{{count}} sa 7 tatak",
       "stamps_other": "{{count}} sa 7 tatak",
       "inReview_one": "{{count}} sinusuri",
-      "inReview_other": "{{count}} sinusuri"
+      "inReview_other": "{{count}} sinusuri",
+      "specialTitle": "Espesyal na stamp",
+      "specialSub": "Limited edition, isa bawat espesyal na araw. Hindi kasama sa Local Pass."
     },
     "points": {
       "title": "Paano kumita ng points",

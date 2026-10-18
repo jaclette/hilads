@@ -3,7 +3,7 @@ import { fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
 import Icon from '../Icon'
-import { THEME_ICON } from '../../lib/icons'
+import { themeIcon } from '../../lib/icons'
 import { useDaily, useDc, StatusChip } from '../daily/dailyShared'
 
 /**
@@ -34,7 +34,7 @@ export default function DailyPinBar() {
   return (
     <div className="pin-bar" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
          aria-label={`${t('kicker')}: ${challenge.text}`}>
-      <span className="pin-bar-icon" aria-hidden="true" style={{ color: 'var(--primary-on-tint)' }}><Icon name={(challenge.theme && THEME_ICON[challenge.theme.key]) || 'flame-outline'} size={20} /></span>
+      <span className="pin-bar-icon" aria-hidden="true" style={{ color: 'var(--primary-on-tint)' }}><Icon name={challenge.theme ? themeIcon(challenge.theme.key, challenge.special) : 'flame-outline'} size={20} /></span>
       <span className="pin-bar-body">
         <span className="pin-bar-kicker">{t('kicker')}</span>
         <span className="pin-bar-text">{challenge.text}</span>

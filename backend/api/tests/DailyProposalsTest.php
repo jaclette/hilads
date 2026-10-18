@@ -9,17 +9,17 @@ final class DailyProposalsTest extends TestCase
 {
     public function testValidate(): void
     {
-        [$f, $err] = DailyProposals::validate(['text' => "  Eat   breakfast\nlike a local ", 'theme' => 'Street food', 'why' => ' ', 'twistText' => '']);
+        [$f, $err] = DailyProposals::validate(['text' => "  Eat   breakfast\nlike a local ", 'theme' => 'Taste', 'why' => ' ', 'twistText' => '']);
         $this->assertNull($err);
-        $this->assertSame(['text' => 'Eat breakfast like a local', 'theme' => 'street_food', 'why' => null, 'twist_text' => null], $f);
+        $this->assertSame(['text' => 'Eat breakfast like a local', 'theme' => 'taste', 'why' => null, 'twist_text' => null], $f);
 
-        $this->assertSame('invalid_text', DailyProposals::validate(['text' => '', 'theme' => 'coffee'])[1]);
-        $this->assertSame('invalid_text', DailyProposals::validate(['text' => str_repeat('a', 121), 'theme' => 'coffee'])[1]);
-        $this->assertNull(DailyProposals::validate(['text' => str_repeat('é', 120), 'theme' => 'coffee'])[1]);
+        $this->assertSame('invalid_text', DailyProposals::validate(['text' => '', 'theme' => 'sip'])[1]);
+        $this->assertSame('invalid_text', DailyProposals::validate(['text' => str_repeat('a', 121), 'theme' => 'sip'])[1]);
+        $this->assertNull(DailyProposals::validate(['text' => str_repeat('é', 120), 'theme' => 'sip'])[1]);
         $this->assertSame('invalid_theme', DailyProposals::validate(['text' => 'A', 'theme' => 'brunch'])[1]);
         $this->assertSame('invalid_theme', DailyProposals::validate(['text' => 'A'])[1]);
-        $this->assertSame('invalid_why', DailyProposals::validate(['text' => 'A', 'theme' => 'coffee', 'why' => str_repeat('a', 201)])[1]);
-        $this->assertSame('invalid_twist', DailyProposals::validate(['text' => 'A', 'theme' => 'coffee', 'twistText' => str_repeat('a', 281)])[1]);
+        $this->assertSame('invalid_why', DailyProposals::validate(['text' => 'A', 'theme' => 'sip', 'why' => str_repeat('a', 201)])[1]);
+        $this->assertSame('invalid_twist', DailyProposals::validate(['text' => 'A', 'theme' => 'sip', 'twistText' => str_repeat('a', 281)])[1]);
     }
 
     public function testStatusOf(): void
@@ -36,11 +36,11 @@ final class DailyProposalsTest extends TestCase
 
     public function testNextFreeDayOfTheTheme(): void
     {
-        // 2026-11-04 is a Wednesday; coffee = Wednesday.
-        $this->assertSame('2026-11-11', DailyProposals::nextFreeDay('coffee', '2026-11-04', []));
-        $this->assertSame('2026-11-18', DailyProposals::nextFreeDay('coffee', '2026-11-04', ['2026-11-11' => true]));
-        $this->assertSame('2026-11-05', DailyProposals::nextFreeDay('market', '2026-11-04', []));
-        $this->assertSame('2026-11-09', DailyProposals::nextFreeDay('language', '2026-11-04', []));
+        // 2026-11-04 is a Wednesday; Ask a local = Wednesday.
+        $this->assertSame('2026-11-11', DailyProposals::nextFreeDay('ask_local', '2026-11-04', []));
+        $this->assertSame('2026-11-18', DailyProposals::nextFreeDay('ask_local', '2026-11-04', ['2026-11-11' => true]));
+        $this->assertSame('2026-11-05', DailyProposals::nextFreeDay('local_find', '2026-11-04', []));
+        $this->assertSame('2026-11-09', DailyProposals::nextFreeDay('hidden_gem', '2026-11-04', []));
     }
 
     public function testAuthorPushTexts(): void

@@ -143,7 +143,9 @@ $text    = $isNew ? (string) ($posted['text'] ?? '') : daily_text($challenge['te
 $context = $isNew ? (string) ($posted['context'] ?? '') : daily_text($challenge['context_i18n']);
 $date    = $isNew ? (string) ($posted['date'] ?? $_GET['date'] ?? '') : (string) ($challenge['challenge_date'] ?? '');
 $status  = $isNew ? (string) ($posted['status'] ?? 'scheduled') : $challenge['status'];
-$theme   = $isNew ? (DailyThemes::normalize($posted['theme'] ?? null)) : ($challenge['theme'] ?? null);
+$postedTheme = (string) ($posted['theme'] ?? '');
+$theme   = $isNew ? (str_starts_with($postedTheme, 'special:') ? DailyThemes::SPECIAL : DailyThemes::normalize($postedTheme)) : ($challenge['theme'] ?? null);
+$specialId = $isNew ? (str_starts_with($postedTheme, 'special:') ? substr($postedTheme, 8) : null) : ($challenge['special_id'] ?? null);
 $lastDuplicate = $_SESSION['daily_last_duplicate'] ?? null;
 unset($_SESSION['daily_last_duplicate']);
 
@@ -193,8 +195,8 @@ daily_styles();
                 <?php endif; ?>
                 <div class="form-group">
                     <label>Theme</label>
-                    <?= daily_theme_select($theme, $date, !$isReserve && !$isPublished) ?>
-                    <div class="hint"><?= $isReserve ? 'Weekday default: the theme of the day it is used.' : 'Defaults to the theme of the date\'s weekday.' ?></div>
+                    <?= daily_theme_select($theme, $date, !$isReserve && !$isPublished, $specialId) ?>
+                    <div class="hint"><?= $isReserve ? 'Weekday default: the theme of the day it is used.' : 'Defaults to the theme of the date\'s weekday. A world special day (<a href="/admin/daily/specials">Special days</a>) replaces it.' ?></div>
                 </div>
                 <div class="form-group">
                     <label>Challenge (English)</label>

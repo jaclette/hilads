@@ -17,16 +17,17 @@ import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
-import { THEME_ICON, clock } from './format';
-import { THEME_COVERS } from './covers';
+import { clock } from './format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
+import { themeCover } from './covers';
 import { PulseButton } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
 import { askDailyPush } from '@/services/push';
 import { isFinalHours } from '@/hooks/useDaily';
 import { Button, CityFlag } from '@/ui';
-import type { DailyThemeKey, DailyToday } from '@/types';
-import { themeName } from '@/features/daily/themes';
+import type { DailySpecial, DailyTheme, DailyToday } from '@/types';
+import { isPlaceTheme, themeName } from '@/features/daily/themes';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
 
@@ -103,7 +104,11 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
     router.push('/daily/proof' as never);
   };
-  const placeTheme = !!challenge.theme && challenge.theme.key !== 'language';
+  const placeTheme = isPlaceTheme(challenge.theme?.key);
+  // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
+  const themeLabel = challenge.theme
+    ? themeName(challenge.theme.key, { special: challenge.special, city: scope === 'city' ? city?.name : null })
+    : '';
   const props = { ...dailyTrackProps(data, account?.mode), place_theme: placeTheme };
   // The first tap shows How it works instead of the camera (never again after).
   const firstTap = () => {
@@ -129,8 +134,9 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
 
   return (
     <TouchableOpacity style={styles.ticket} onPress={openSheet} activeOpacity={0.92} accessibilityRole="button"
-                      accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeName(challenge.theme.key)}` : ''}: ${challenge.text}`}>
-      <Cover coverUrl={challenge.coverUrl ?? null} themeKey={challenge.theme?.key ?? null} secondsLeft={secondsLeft} />
+                      accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
+      <Cover coverUrl={challenge.coverUrl ?? null} themeKey={challenge.theme?.key ?? null} label={themeLabel}
+             special={challenge.special ?? null} date={challenge.date} secondsLeft={secondsLeft} />
       <View style={styles.top}>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
@@ -200,13 +206,15 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
 /**
  * The card's image band: the challenge's cover (back office) or its theme's
  * default, with a dark gradient at the bottom so the white label stays
- * readable (4.5:1): "Daily Challenge" small above the theme with its icon, and
- * the time left. Decorative image.
+ * readable (4.5:1): "Daily Challenge" small above the theme with its icon
+ * (a special day: its own name and icon), and the time left. Decorative image.
  */
-function Cover({ coverUrl, themeKey, secondsLeft }: { coverUrl: string | null; themeKey: DailyThemeKey | null; secondsLeft: number | null }) {
+function Cover({ coverUrl, themeKey, label, special, date, secondsLeft }: {
+  coverUrl: string | null; themeKey: DailyTheme['key'] | null; label: string; special: DailySpecial | null; date: string; secondsLeft: number | null;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
-  const source = coverUrl ? { uri: coverUrl } : themeKey ? THEME_COVERS[themeKey] : null;
+  const source = coverUrl ? { uri: coverUrl } : themeCover(themeKey, date);
   return (
     <View style={styles.cover}>
       {source !== null && (
@@ -219,8 +227,8 @@ function Cover({ coverUrl, themeKey, secondsLeft }: { coverUrl: string | null; t
           <Text style={styles.coverKicker}>{DAILY_CHALLENGE}</Text>
           {themeKey !== null && (
             <View style={styles.coverThemeRow}>
-              <Ionicons name={THEME_ICON[themeKey] ?? 'pricetag-outline'} size={22} color={COVER_TEXT} />
-              <Text style={styles.coverTheme} numberOfLines={1}>{themeName(themeKey)}</Text>
+              <ThemeIcon theme={themeKey} special={special?.icon} size={22} color={COVER_TEXT} />
+              <Text style={styles.coverTheme} numberOfLines={1}>{label}</Text>
             </View>
           )}
         </View>

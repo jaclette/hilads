@@ -174,6 +174,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $spotId = $m[1];
     require __DIR__ . '/daily_spot.php';
 
+} elseif ($uri === '/admin/daily/specials') {
+    require __DIR__ . '/daily_specials.php';
+
 } elseif ($uri === '/admin/daily/import') {
     require __DIR__ . '/daily_import.php';
 

@@ -8,7 +8,7 @@ import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
 import Icon from '../Icon'
-import { THEME_ICON } from '../../lib/icons'
+import { themeIcon } from '../../lib/icons'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
@@ -81,7 +81,7 @@ export default function SpotPage({ spotId, onBack }) {
             <p className="wm-spot-meta">
               {spot.city?.name ? <CityName name={spot.city.name} country={spot.city.country} /> : null}
               {spot.themes.map((k, i) => (
-                <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={14} />{themeName(k)}</span>
+                <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={themeIcon(k)} size={14} />{themeName(k)}</span>
               ))}
             </p>
             {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{rank}</p>}

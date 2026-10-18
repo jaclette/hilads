@@ -122,7 +122,9 @@
     "stamps_one": "7 में से {{count}} मुहर",
     "stamps_other": "7 में से {{count}} मुहरें",
     "inReview_one": "{{count}} जाँच में",
-    "inReview_other": "{{count}} जाँच में"
+    "inReview_other": "{{count}} जाँच में",
+    "specialTitle": "स्पेशल स्टैम्प",
+    "specialSub": "लिमिटेड एडिशन, हर खास दिन का एक। Local Pass में नहीं गिना जाता।"
   },
   "points": {
     "title": "पॉइंट कैसे कमाएँ",

@@ -6,7 +6,7 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
-import { addDays, defaultThemeFor, themeName } from '@/features/daily/themes';
+import { addDays, defaultThemeFor, isPlaceTheme, themeName } from '@/features/daily/themes';
 import type { DailyToday } from '@/types';
 import { Button, Card } from '@/ui';
 
@@ -23,7 +23,7 @@ export function EmptyCity({ today }: { today: DailyToday | null }) {
   const router = useRouter();
   const { account } = useApp();
   const challenge = today?.challenge ?? null;
-  const placeTheme = !!challenge?.theme && challenge.theme.key !== 'language';
+  const placeTheme = isPlaceTheme(challenge?.theme?.key);
   const tomorrowKey = today?.tomorrow?.theme?.key
     ?? (challenge ? defaultThemeFor(addDays(challenge.date, 1)) : null);
   const canTake = !!challenge?.isActive && !today?.myProof && placeTheme;

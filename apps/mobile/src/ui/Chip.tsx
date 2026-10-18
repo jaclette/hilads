@@ -2,18 +2,23 @@ import { Text, TouchableOpacity, View, StyleSheet, type StyleProp, type ViewStyl
 import { Ionicons } from '@expo/vector-icons';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { ThemeIcon } from './ThemeIcon';
 
 /**
  * Chip, always full radius.
  * - tint: a label on a tinted ground (theme, rank; `tone="local"` for "Validated by a local").
  * - filter: a tappable choice (map themes), `selected` fills it; `badge` adds a small tag ("Today").
  * - outline: a tag with a line border (dish tags).
+ * `theme` shows a theme's icon (ThemeIcon) instead of `icon`.
  */
-export function Chip({ label, variant = 'tint', tone = 'primary', icon, selected = false, badge, onPress, style }: {
+export function Chip({ label, variant = 'tint', tone = 'primary', icon, theme, special, selected = false, badge, onPress, style }: {
   label: string;
   variant?: 'tint' | 'filter' | 'outline';
   tone?: 'primary' | 'local';
   icon?: React.ComponentProps<typeof Ionicons>['name'];
+  theme?: string | null;
+  /** A special day's icon (with theme "special"). */
+  special?: string | null;
   selected?: boolean;
   badge?: string | null;
   onPress?: () => void;
@@ -38,7 +43,7 @@ export function Chip({ label, variant = 'tint', tone = 'primary', icon, selected
   const color = local ? colors.localText : colors.primaryOnTint;
   return (
     <View style={[styles.tint, local && styles.tintLocal, style]}>
-      {icon && <Ionicons name={icon} size={14} color={color} />}
+      {theme ? <ThemeIcon theme={theme} special={special} size={14} color={color} /> : icon && <Ionicons name={icon} size={14} color={color} />}
       <Text style={[styles.tintText, { color }]}>{label}</Text>
     </View>
   );

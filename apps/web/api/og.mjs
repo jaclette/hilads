@@ -59,7 +59,8 @@ async function fetchJson(url, ms = 1500) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
-    const r = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } });
+    // themes=2: the themes v2 keys (the API answers v1 keys without it).
+    const r = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2', { signal: ctrl.signal, headers: { Accept: 'application/json' } });
     if (!r.ok) return null;
     return await r.json();
   } catch {
@@ -317,8 +318,14 @@ function ShareCard({ photo, kicker, title, lines, badge, path }) {
   );
 }
 
-function themeKicker(theme) {
-  return theme && theme.name ? `Daily Challenge · ${theme.name}` : 'Daily Challenge';
+function themeKicker(theme, special) {
+  const name = theme && theme.key === 'special' && special && special.name ? special.name : theme && theme.name;
+  return name ? `Daily Challenge · ${name}` : 'Daily Challenge';
+}
+
+/** The bundled cover of a theme (a special day without a cover: Only here's). */
+function themeCoverUrl(theme) {
+  return theme ? `${SITE_BASE}/covers/${theme.key === 'special' ? 'only_here' : theme.key}.jpg` : null;
 }
 
 // ── Fallback (homepage / unknown surface) ─────────────────────────────────────
@@ -415,8 +422,8 @@ export default async function handler(req, res) {
           : p && p.cityRank && p.cityRank <= 3 && p.city ? `#${p.cityRank} in ${p.city.name}` : null;
         element = ShareCard({
           // A proof in review never shows its photo: the challenge's cover instead.
-          photo: p ? p.photoUrl : (data.challenge.coverUrl || (data.challenge.theme ? `${SITE_BASE}/covers/${data.challenge.theme.key}.jpg` : null)),
-          kicker: themeKicker(data.challenge.theme),
+          photo: p ? p.photoUrl : (data.challenge.coverUrl || themeCoverUrl(data.challenge.theme)),
+          kicker: themeKicker(data.challenge.theme, data.challenge.special),
           title: data.challenge.text,
           lines: p ? [p.city ? `${cityFlag(p.city.country)} ${p.city.name}` : null, p.user?.username ? `@${p.user.username} · ♥ ${p.voteCount}` : null] : [],
           badge: rank, path: `/p/${id}`,
@@ -439,8 +446,8 @@ export default async function handler(req, res) {
       if (data?.challenge?.text) {
         const best = (data.proofs || []).slice().sort((a, b) => b.voteCount - a.voteCount)[0];
         element = ShareCard({
-          photo: best?.photoUrl || data.challenge.coverUrl || (data.challenge.theme ? `${SITE_BASE}/covers/${data.challenge.theme.key}.jpg` : null),
-          kicker: themeKicker(data.challenge.theme), title: data.challenge.text,
+          photo: best?.photoUrl || data.challenge.coverUrl || themeCoverUrl(data.challenge.theme),
+          kicker: themeKicker(data.challenge.theme, data.challenge.special), title: data.challenge.text,
           lines: [new Date(`${data.challenge.date}T12:00:00Z`).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })],
           badge: null, path: `/d/${id}`,
         });

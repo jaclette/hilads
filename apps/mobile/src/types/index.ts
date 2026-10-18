@@ -773,7 +773,9 @@ export interface DailyChallenge {
   startsAt: number;          // unix seconds
   endsAt:   number;
   isActive: boolean;
-  theme?:   DailyTheme | null; // one of the 7 weekly themes (English name)
+  theme?:   DailyTheme | null; // one of the 7 weekly themes (English name), or "special"
+  /** A special day (theme "special"). */
+  special?: DailySpecial | null;
   /** The card's cover image (back office upload); null = the theme's default (features/today/covers). */
   coverUrl?: string | null;
   /** The user whose proposal became this challenge (V2-05), with their city then. */
@@ -797,11 +799,33 @@ export interface DailyProposal {
 
 /** A weekly theme (V2-03). Names are English content. */
 export interface DailyTheme {
-  key:  DailyThemeKey;
+  /** A weekly theme, or "special" (a special day of world scope: see DailyChallenge.special). */
+  key:  DailyThemeKey | 'special';
   name: string;
 }
 
-export type DailyThemeKey = 'language' | 'street_food' | 'coffee' | 'market' | 'night_out' | 'neighborhood' | 'traditions';
+/** The 7 weekly themes (v2, 2026-10-19). */
+export type DailyThemeKey = 'hidden_gem' | 'taste' | 'ask_local' | 'local_find' | 'night_out' | 'sip' | 'only_here';
+
+/** A special day (SPEC 9.15): its name in the viewer's language, emoji (pushes), icon (an Ionicons name). */
+export interface DailySpecial {
+  id:       string;
+  name:     string;
+  emoji:    string;
+  icon:     string;
+  coverUrl: string | null;
+  scope:    'world' | 'country' | 'city';
+}
+
+/** A limited-edition stamp: an approved proof on a special day. */
+export interface DailySpecialStamp {
+  id:    string;
+  name:  string;
+  emoji: string;
+  icon:  string;
+  date:  string;
+  city:  { id: number; name: string | null; country?: string | null } | null;
+}
 
 /** My Local Pass progress in a city. */
 export interface DailyLocalPassProgress {
@@ -878,7 +902,7 @@ export interface DailyToday {
   /** Signed in and ever posted a proof (Today's brand line hides then). */
   hasProof?: boolean;
   /** Tomorrow's theme as a teaser (never its text). */
-  tomorrow?:  { date: string; theme: DailyTheme | null } | null;
+  tomorrow?:  { date: string; theme: DailyTheme | null; special?: DailySpecial | null } | null;
   /** My Local Pass progress in this city (signed in, with a city). */
   localPass?: DailyLocalPassProgress | null;
   /** Speed bonus window (signed in, no proof yet, still open): post before `until` for the bonus. */
@@ -1007,12 +1031,14 @@ export interface DailyUserStats {
   bestProofs:    DailyProof[];
   localPasses?:       { city: { id: number; name: string | null; country?: string | null }; earnedAt: number }[];
   localPassProgress?: DailyLocalPassProgress[];
+  /** Limited-edition stamps of special days (Passport "Special stamps"). */
+  specialStamps?:     DailySpecialStamp[];
 }
 
 /** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */
 export interface DailyCalendar {
   today:  string;
-  days:   { date: string; theme: DailyTheme | null; published: boolean; myStatus: DailyProofStatus | null }[];
+  days:   { date: string; theme: DailyTheme | null; special?: DailySpecial | null; published: boolean; myStatus: DailyProofStatus | null }[];
   streak: { current: number; best: number } | null;
 }
 

@@ -20,7 +20,7 @@ import { RankMedal } from './RankMedal';
 import { CityFlag, CityName } from '@/ui';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
-import { THEME_ICON } from '@/features/today/format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyPerson, DailyThemeKey, DailyTwist, Message } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
@@ -292,7 +292,7 @@ function ProofCard({ message, reactions, time, longPress }: {
         <View style={styles.voteRow}>
           {p.theme ? (
             <View style={styles.themeChip}>
-              <Ionicons name={THEME_ICON[p.theme.key] ?? 'pricetag-outline'} size={13} color={colors.primaryOnTint} />
+              <ThemeIcon theme={p.theme.key} size={13} color={colors.primaryOnTint} />
               <Text style={styles.themeText}>{themeName(p.theme.key)}</Text>
             </View>
           ) : <View />}

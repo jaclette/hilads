@@ -21,7 +21,11 @@ final class DailyImportValidationTest extends TestCase
         $this->assertSame([], $r['errors']);
         $this->assertCount(4, $r['entries']);
         $this->assertSame('2026-11-03', $r['entries'][0]['date']);
-        $this->assertSame('street_food', $r['entries'][0]['theme']);
+        $this->assertSame('taste', $r['entries'][0]['theme']);
+        $this->assertSame('special', $r['entries'][2]['theme']);
+        $this->assertSame('halloween', $r['entries'][2]['special']['id']);
+        $this->assertSame('Halloween', $r['entries'][2]['special']['names']['en']);
+        $this->assertSame('hidden_gem', $r['entries'][3]['theme']);
         $this->assertSame('city_20', $r['entries'][0]['twists'][0]['cityId']);
         $this->assertTrue($r['entries'][3]['reserve']);
         $this->assertNull($r['entries'][3]['date']);

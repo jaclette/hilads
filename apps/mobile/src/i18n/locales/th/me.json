@@ -122,7 +122,9 @@
     "stamps_one": "ตราประทับ {{count}}/7",
     "stamps_other": "ตราประทับ {{count}}/7",
     "inReview_one": "รอตรวจ {{count}}",
-    "inReview_other": "รอตรวจ {{count}}"
+    "inReview_other": "รอตรวจ {{count}}",
+    "specialTitle": "แสตมป์พิเศษ",
+    "specialSub": "รุ่นลิมิเต็ด หนึ่งดวงต่อวันพิเศษ ไม่นับรวมใน Local Pass"
   },
   "points": {
     "title": "วิธีรับคะแนน",

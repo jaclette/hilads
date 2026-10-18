@@ -16,6 +16,7 @@ import { fetchUserFriends } from '@/api/users';
 import { fetchLeaderboard } from '@/api/leaderboard';
 import { fetchMySpots, fetchWeeklyRank } from '@/api/passport';
 import { CityPage } from '@/features/passport/CityPage';
+import { SpecialStamps } from '@/features/passport/SpecialStamps';
 import { PointsHelpSheet } from '@/features/passport/PointsHelpSheet';
 import type { DailyLocalPassProgress, DailyUserStats } from '@/types';
 
@@ -87,7 +88,9 @@ export default function PassportScreen() {
   }
   progress.sort((a, b) => (a.city.id === cityNum ? -1 : b.city.id === cityNum ? 1 : b.done - a.done));
   const pageWidth = width - Spacing.md * 2;
-  const todayTheme = today.data?.challenge?.theme?.key ?? null;
+  // A special day earns its own stamp, not one of the 7.
+  const todayKey = today.data?.challenge?.theme?.key ?? null;
+  const todayTheme = todayKey === 'special' ? null : todayKey;
   const tomorrow = today.data?.tomorrow?.theme ?? null;
   const streak = stats?.currentStreak ?? today.data?.streak ?? 0;
 
@@ -132,6 +135,8 @@ export default function PassportScreen() {
           <CityPage cityName={shortCityName(progress[0].city.name ?? '')} country={progress[0].city.country} themes={progress[0].themes} earned={progress[0].earned}
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
+
+        {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
 
         <RowGroup>
           <ListRow title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />

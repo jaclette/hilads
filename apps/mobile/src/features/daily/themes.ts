@@ -1,25 +1,41 @@
 import i18n from '@/i18n';
+import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
 
-// Weekly themes (V2-03). Names are shown in the app's language (common.json
-// themes.*, English as fallback); the app adds the weekday each one falls on
-// by default (icons: features/today/format).
+// Weekly themes (v2, SPEC 8.2). Names are shown in the app's language
+// (common.json themes.*, English as fallback); the app adds the weekday each
+// one falls on by default (icons: ui/ThemeIcon). "special" = a special day of
+// world scope: it shows the day's own name (Halloween).
 
 /** English names (the API's DailyThemes), for screens that pick a theme before any payload. */
 export const THEME_NAMES: Record<DailyThemeKey, string> = {
-  language: 'Language', street_food: 'Street food', coffee: 'Coffee', market: 'Market',
-  night_out: 'Night out', neighborhood: 'Neighborhood', traditions: 'Traditions',
+  hidden_gem: 'Hidden gem', taste: 'Taste', ask_local: 'Ask a local', local_find: 'Local find',
+  night_out: 'Night out', sip: 'Sip', only_here: 'Only here',
 };
 
-/** A theme's name in the app's language ('' without a key). */
-export function themeName(key?: string | null): string {
+/**
+ * A theme's name in the app's language ('' without a key). A special day
+ * shows its own name; Only here with a city reads "Only in Saigon" (the
+ * city's short name: the challenge card and the Passport stamp; World scope
+ * passes no city).
+ */
+export function themeName(key?: string | null, opts?: { special?: { name: string } | null; city?: string | null }): string {
   if (!key) return '';
+  if (key === 'special') return opts?.special?.name ?? i18n.t('themes.special', { ns: 'common', defaultValue: 'Special' });
+  if (key === 'only_here' && opts?.city) {
+    return i18n.t('themes.onlyIn', { ns: 'common', city: shortCityName(opts.city), defaultValue: `Only in ${shortCityName(opts.city)}` });
+  }
   return i18n.t(`themes.${key}`, { ns: 'common', defaultValue: THEME_NAMES[key as DailyThemeKey] ?? key });
+}
+
+/** Every weekly theme but Ask a local is about a place (the proof's spot); a special day is not. */
+export function isPlaceTheme(key?: string | null): boolean {
+  return !!key && key !== 'ask_local' && key !== 'special';
 }
 
 /** ISO weekday (1 = Monday) of each theme's default day, in weekly order. */
 export const THEME_WEEKDAY: Record<DailyThemeKey, number> = {
-  language: 1, street_food: 2, coffee: 3, market: 4, night_out: 5, neighborhood: 6, traditions: 7,
+  hidden_gem: 1, taste: 2, ask_local: 3, local_find: 4, night_out: 5, sip: 6, only_here: 7,
 };
 
 export const THEME_KEYS = Object.keys(THEME_WEEKDAY) as DailyThemeKey[];
@@ -27,7 +43,7 @@ export const THEME_KEYS = Object.keys(THEME_WEEKDAY) as DailyThemeKey[];
 /** The theme a date gets by default (its weekday's), for when the API gives none. */
 export function defaultThemeFor(date: string): DailyThemeKey {
   const iso = new Date(`${date}T12:00:00Z`).getUTCDay() || 7;
-  return THEME_KEYS.find(k => THEME_WEEKDAY[k] === iso) ?? 'language';
+  return THEME_KEYS.find(k => THEME_WEEKDAY[k] === iso) ?? 'hidden_gem';
 }
 
 /** The next date (after `today`, Y-m-d) on the theme's weekday, as a localized weekday name. */

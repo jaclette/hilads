@@ -55,6 +55,8 @@ async function request<T = unknown>(
     'X-Platform': Platform.OS,
     // V3-04: the app version, for GET /app/config's update prompts and server-side gating.
     'X-App-Version': APP_BUILD_VERSION,
+    // Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys.
+    'X-Themes': '2',
     ...(extraHeaders as Record<string, string>),
   };
 

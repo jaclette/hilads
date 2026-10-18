@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "Ngôn ngữ",
-    "street_food": "Ẩm thực đường phố",
-    "coffee": "Cà phê",
-    "market": "Chợ",
-    "night_out": "Đi chơi đêm",
-    "neighborhood": "Khu phố",
-    "traditions": "Truyền thống"
+    "hidden_gem": "Góc ẩn",
+    "taste": "Hương vị",
+    "ask_local": "Hỏi người địa phương",
+    "local_find": "Phát hiện",
+    "night_out": "Đêm phố",
+    "sip": "Nhâm nhi",
+    "only_here": "Chỉ có ở đây",
+    "special": "Đặc biệt",
+    "onlyIn": "Chỉ có ở {{city}}"
   },
   "meta": {
     "cityTitle": "Trở thành người địa phương ở {{city}} - Hilads",

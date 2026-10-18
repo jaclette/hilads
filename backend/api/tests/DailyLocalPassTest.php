@@ -15,12 +15,13 @@ final class DailyLocalPassTest extends TestCase
     public function testThemesAreDistinctInWeeklyOrder(): void
     {
         $themes = DailyLocalPass::themesOf([
-            self::row('coffee', '2026-11-04'),
-            self::row('language', '2026-11-02'),
-            self::row('coffee', '2026-11-11'),
+            self::row('sip', '2026-11-04'),
+            self::row('hidden_gem', '2026-11-02'),
+            self::row('coffee', '2026-11-11'),    // a v1 key: its v2 theme (sip)
             self::row(null, '2026-11-06'),        // no stored theme: its weekday's (Friday, night out)
+            self::row('special', '2026-10-31'),   // a special day: its own stamp, never a Local Pass one
         ]);
-        $this->assertSame(['language', 'coffee', 'night_out'], $themes);
+        $this->assertSame(['hidden_gem', 'night_out', 'sip'], $themes);
         $this->assertFalse(DailyLocalPass::isComplete($themes));
     }
 
@@ -37,7 +38,7 @@ final class DailyLocalPassTest extends TestCase
 
     public function testThemeOnAnotherWeekdayCounts(): void
     {
-        // A street food challenge on a Monday counts as street food, not language.
-        $this->assertSame(['street_food'], DailyLocalPass::themesOf([self::row('street_food', '2026-11-02')]));
+        // A Taste challenge on a Monday counts as Taste, not Hidden gem.
+        $this->assertSame(['taste'], DailyLocalPass::themesOf([self::row('taste', '2026-11-02')]));
     }
 }

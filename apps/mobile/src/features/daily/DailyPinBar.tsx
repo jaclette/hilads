@@ -6,7 +6,7 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
-import { THEME_ICON } from '@/features/today/format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import { DailyStatusChip } from './DailyStatusChip';
 import type { DailyToday } from '@/types';
 
@@ -32,7 +32,9 @@ export function DailyPinBar({ data, source = 'pin' }: { data: DailyToday | null;
   return (
     <TouchableOpacity style={styles.bar} onPress={open} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${t('kicker')}: ${challenge.text}`}>
       <View style={styles.icon}>
-        <Ionicons name={challenge.theme ? THEME_ICON[challenge.theme.key] : 'flame-outline'} size={20} color={colors.primary} />
+        {challenge.theme
+          ? <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={20} color={colors.primary} />
+          : <Ionicons name="flame-outline" size={20} color={colors.primary} />}
       </View>
       <View style={styles.body}>
         <Text style={styles.kicker}>{t('kicker')}</Text>

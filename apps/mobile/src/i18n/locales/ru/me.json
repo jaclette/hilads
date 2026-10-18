@@ -130,7 +130,9 @@
     "inReview_one": "{{count}} на проверке",
     "inReview_few": "{{count}} на проверке",
     "inReview_many": "{{count}} на проверке",
-    "inReview_other": "{{count}} на проверке"
+    "inReview_other": "{{count}} на проверке",
+    "specialTitle": "Особые штампы",
+    "specialSub": "Ограниченная серия, по одному за каждый особый день. Не засчитываются в Local Pass."
   },
   "points": {
     "title": "Как заработать очки",

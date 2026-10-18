@@ -40,6 +40,11 @@ final class Cache
         @file_put_contents(self::path($key), serialize(['e' => time() + $ttl, 'v' => $value]), LOCK_EX);
     }
 
+    public static function forget(string $key): void
+    {
+        @unlink(self::path($key));
+    }
+
     /**
      * Return the cached value for $key, or run $producer, store, and return it.
      * Degrades gracefully to just running $producer on any cache I/O failure.

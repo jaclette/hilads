@@ -9,11 +9,12 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { themeName } from '@/features/daily/themes';
-import { THEME_ICON } from './format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyLocalPassProgress, DailyThemeKey } from '@/types';
 import { Button } from '@/ui';
 
-const KEY = (userId: string, cityId: number) => `hilads_stamps_v1_${userId}_${cityId}`;
+// v2: themes v2 renamed every key, so the v1 record would read as all new stamps.
+const KEY = (userId: string, cityId: number) => `hilads_stamps_v2_${userId}_${cityId}`;
 
 /**
  * The stamp animation (SPEC 9.7): when a newly approved proof adds a theme
@@ -64,15 +65,15 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
   return (
     <Modal visible transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.scrim} onPress={close} accessibilityRole="button" accessibilityLabel={t('stamp.close')}>
-        <View style={styles.card} accessibilityRole="alert" accessibilityLabel={t('stamp.title', { theme: themeName(stamp.theme) })}>
+        <View style={styles.card} accessibilityRole="alert" accessibilityLabel={t('stamp.title', { theme: themeName(stamp.theme, { city: stamp.city }) })}>
           <Animated.View style={[styles.stamp, { opacity: anim, transform: [{ scale }, { rotate }] }]}>
             <View style={styles.inner}>
-              <Ionicons name={THEME_ICON[stamp.theme]} size={36} color={colors.primary} />
-              <Text style={styles.stampTheme} numberOfLines={1}>{themeName(stamp.theme)}</Text>
+              <ThemeIcon theme={stamp.theme} size={36} color={colors.primary} />
+              <Text style={styles.stampTheme} numberOfLines={1}>{themeName(stamp.theme, { city: stamp.city })}</Text>
               <Text style={styles.stampCity} numberOfLines={1}>{stamp.city}</Text>
             </View>
           </Animated.View>
-          <Text style={styles.title}>{t('stamp.title', { theme: themeName(stamp.theme) })}</Text>
+          <Text style={styles.title}>{t('stamp.title', { theme: themeName(stamp.theme, { city: stamp.city }) })}</Text>
           <Text style={styles.body}>{t('stamp.body', { city: stamp.city })}</Text>
           <Button label={t('stamp.ok')} onPress={close} style={styles.cta} />
         </View>

@@ -19,7 +19,6 @@ import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
-import { THEME_ICON } from '@/features/today/format';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import type { DailyProof } from '@/types';
@@ -170,7 +169,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
               </Text>
             </View>
           </View>
-          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={themeName(challenge.theme.key)} style={styles.theme} />}
+          {!!challenge.theme && <Chip theme={challenge.theme.key} special={challenge.special?.icon} label={themeName(challenge.theme.key, { special: challenge.special })} style={styles.theme} />}
           <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
           {!!challenge.context && (
             <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>

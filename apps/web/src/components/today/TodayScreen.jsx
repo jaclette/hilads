@@ -4,8 +4,8 @@ import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayP
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
-import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
-import { THEME_ICON } from '../../lib/icons'
+import { APP_STORE, PLAY_STORE, deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
+import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { CityFlag, CityName } from '../CityName'
 import {
@@ -160,18 +160,21 @@ function Ticket({ data, loading }) {
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
-  const cover = challenge.coverUrl || (theme ? `/covers/${theme}.jpg` : null)
+  // A special day without a cover shows Only here's; the API sends uploaded covers.
+  const cover = challenge.coverUrl || (theme ? `/covers/${theme === 'special' ? 'only_here' : theme}.jpg` : null)
+  // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
+  const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
 
   return (
     <div className="today-ticket dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
-         aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeName(theme)}` : ''}: ${challenge.text}`}>
+         aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
       {/* Image band (SPEC 9.3): the challenge's cover, else its theme's; decorative. */}
       <div className="today-cover">
         {cover && <img src={cover} alt="" />}
         <div className="today-cover-row">
           <span className="today-cover-label">
             <span className="today-cover-kicker">{DAILY_CHALLENGE}</span>
-            {theme && <span className="today-cover-theme"><Icon name={THEME_ICON[theme] ?? 'pricetag-outline'} size={22} />{themeName(theme)}</span>}
+            {theme && <span className="today-cover-theme"><Icon name={themeIcon(theme, challenge.special)} size={22} />{themeLabel}</span>}
           </span>
           {secondsLeft !== null && (
             <span className="today-cover-time" style={ROW}><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>
@@ -197,7 +200,7 @@ function Ticket({ data, loading }) {
             <span className="today-hint-icon"><Icon name="camera-outline" size={20} /></span>
             <span className="today-hint-body">
               <span className="today-hint-title">{t('proofHint.title')}</span>
-              <span>{theme && theme !== 'language' ? t('proofHint.place') : t('proofHint.noPlace')}</span>
+              <span>{isPlaceTheme(theme) ? t('proofHint.place') : t('proofHint.noPlace')}</span>
             </span>
           </span>
         )}
@@ -252,6 +255,7 @@ function Week({ today }) {
   const week = Array.from({ length: 7 }, (_, i) => addDays(monday, i))
   const streak = today?.streak ?? cal?.streak?.current ?? null
   const tomorrowTheme = today?.tomorrow?.theme ?? byDate.get(addDays(current, 1))?.theme ?? null
+  const tomorrowSpecial = today?.tomorrow?.special ?? byDate.get(addDays(current, 1))?.special ?? null
 
   const stateOf = (date, d) => {
     if (date === current) return 'today'
@@ -278,7 +282,7 @@ function Week({ today }) {
           <Icon name="flame-outline" size={17} style={{ color: 'var(--primary-text)' }} />
           {streak ? t('streak', { count: streak }) : t('week.title')}
         </button>
-        {tomorrowTheme && <span className="week-tomorrow">{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</span>}
+        {tomorrowTheme && <span className="week-tomorrow">{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</span>}
       </div>
       <div className="week-row">
         {week.map(date => {
@@ -286,6 +290,7 @@ function Week({ today }) {
           const state = stateOf(date, d)
           const weekday = new Date(`${date}T12:00:00Z`).toLocaleDateString(i18n.language, { weekday: 'short', timeZone: 'UTC' })
           const theme = d?.theme?.key ?? (date === current ? today?.challenge?.theme?.key : null)
+          const special = d?.special ?? (date === current ? today?.challenge?.special : null)
           return (
             <button key={date} type="button" className="week-day" onClick={() => openDay(date, state)}
                     disabled={state === 'later'} aria-expanded={state === 'tomorrow' ? peek : undefined}
@@ -295,7 +300,7 @@ function Week({ today }) {
                 {state === 'done' ? <Icon name="checkmark" size={18} />
                   : state === 'pending' ? <Icon name="hourglass-outline" size={17} />
                   : state === 'missed' ? <Icon name="close" size={17} />
-                  : theme && THEME_ICON[theme] ? <Icon name={THEME_ICON[theme]} size={17} /> : null}
+                  : theme ? <Icon name={themeIcon(theme, special)} size={17} /> : null}
               </span>
             </button>
           )
@@ -303,7 +308,7 @@ function Week({ today }) {
       </div>
       {peek && tomorrowTheme && (
         <p className="week-peek" style={ROW} role="status">
-          <Icon name={THEME_ICON[tomorrowTheme.key] ?? 'pricetag-outline'} size={16} />{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}
+          <Icon name={themeIcon(tomorrowTheme.key, tomorrowSpecial)} size={16} />{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}
         </p>
       )}
       {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}
@@ -508,7 +513,7 @@ function SpotsNear() {
                 <span className="spot-card-name">{s.name}</span>
                 <span className="dc-muted" style={ROW}>
                   {s.distanceM !== undefined && <><Icon name="location-outline" size={13} />{distance(s.distanceM, i18n.language)}</>}
-                  {s.themes?.[0] && THEME_ICON[s.themes[0]] ? <Icon name={THEME_ICON[s.themes[0]]} size={13} /> : null}
+                  {s.themes?.[0] ? <Icon name={themeIcon(s.themes[0])} size={13} /> : null}
                 </span>
               </span>
             </button>

@@ -15,6 +15,7 @@ $to    = (new DateTimeImmutable($today, $utc))->modify('+30 days')->format('Y-m-
 $soon  = (new DateTimeImmutable($today, $utc))->modify('+7 days')->format('Y-m-d');
 
 $days = DailyAdminService::calendar($from, $to);
+$specialsByDate = DailySpecials::byDate($from, $to);
 
 $runs = [];
 $stmt = Database::pdo()->prepare("SELECT * FROM daily_drop_runs WHERE challenge_date BETWEEN ? AND ?");
@@ -62,7 +63,11 @@ daily_styles();
                     <td class="td-mono"><?= dh($day['date']) ?><?= $isToday ? ' <span class="badge badge-live">today</span>' : '' ?></td>
                     <td class="daily-muted"><?= dh(daily_window_label($day['date'])) ?></td>
                     <td><?= daily_state_badge($day['state']) ?></td>
-                    <td class="daily-muted"><?= dh(daily_theme_label($c['theme'] ?? null, $day['date'])) ?><?= $c === null ? ' <span style="opacity:.6">(default)</span>' : '' ?></td>
+                    <td class="daily-muted"><?= dh(daily_theme_label($c['theme'] ?? null, $day['date'], $c['special_id'] ?? null)) ?><?= $c === null ? ' <span style="opacity:.6">(default)</span>' : '' ?>
+                        <?php foreach ($specialsByDate[$day['date']] ?? [] as $sp): if ($sp['scope'] === 'world' && ($c['special_id'] ?? null) === $sp['id']) continue; ?>
+                            <br><span class="badge" style="background:#4a3410;color:#fcd34d" title="<?= $sp['scope'] === 'world' ? 'World special: pick it as the theme' : 'Bring it in through the Local Twist' ?>">
+                                <?= dh(($sp['emoji'] ?: '✨') . ' ' . DailySpecials::nameOf($sp, 'en')) ?> · <?= dh($sp['scope'] === 'country' ? $sp['country'] : ($sp['scope'] === 'city' ? 'city' : 'world')) ?></span>
+                        <?php endforeach; ?></td>
                     <td class="td-clip" style="max-width:420px"><?= $c ? dh(mb_strimwidth(daily_text($c['text_i18n']), 0, 90, '…')) : '<span class="daily-muted">-</span>' ?></td>
                     <td><?php if ($c):
                             $tr = DailyI18n::translated(json_decode((string) $c['text_i18n'], true) ?: []); ?>

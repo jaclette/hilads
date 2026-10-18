@@ -152,7 +152,7 @@ final class Spots
             'lat'              => (float) $r['lat'],
             'lng'              => (float) $r['lng'],
             'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $r['city_name'], 'country' => $r['city_country'] ?? null] : null,
-            'themes'           => $r['themes'] !== null ? array_values(array_filter(explode(',', (string) $r['themes']))) : [],
+            'themes'           => $r['themes'] !== null ? DailyThemes::clientList(explode(',', (string) $r['themes'])) : [],
             'tags'             => $tags,
             'proofCount'       => (int) $r['proof_count'],
             'votes'            => (int) $r['votes'],
@@ -183,7 +183,7 @@ final class Spots
             'price'            => $r['price_amount'] !== null
                 ? ['amount' => (float) $r['price_amount'], 'currency' => $r['price_currency']] : null,
             'date'             => $r['challenge_date'],
-            'theme'            => $r['theme'],
+            'theme'            => $r['theme'] !== null ? DailyThemes::client((string) $r['theme'], $r['challenge_date'] ?? null) : null,
             'user'             => [
                 'id'          => $r['user_id'],
                 'username'    => $r['username'],
@@ -224,7 +224,8 @@ final class Spots
      */
     public static function find(array $scope): array
     {
-        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate());
+        // Payloads carry the client's theme keys (DailyThemes::legacyClient): cached apart.
+        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate() . (DailyThemes::legacyClient() ? '|v1' : ''));
         return Cache::remember($key, self::CACHE_TTL, static fn(): array => self::query($scope)) ?? [];
     }
 

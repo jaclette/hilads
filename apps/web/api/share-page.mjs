@@ -39,7 +39,8 @@ async function fetchJson(url, ms = 2500) {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), ms)
   try {
-    const r = await fetch(url, { headers: { accept: 'application/json' }, signal: ctrl.signal })
+    // themes=2: the themes v2 keys (the API answers v1 keys without it).
+    const r = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2', { headers: { accept: 'application/json' }, signal: ctrl.signal })
     return r.ok ? await r.json() : null
   } catch {
     return null
@@ -74,7 +75,9 @@ async function load(type, id, locale) {
   return null
 }
 
-function themeLabel(theme, SS) {
+/** A theme in the page's language; a special day: its own name (Halloween). */
+function themeLabel(theme, SS, special) {
+  if (theme && theme.key === 'special') return special && special.name ? special.name : (SS.themes.special || 'Special')
   return theme && theme.key ? (SS.themes[theme.key] || theme.name) : null
 }
 
@@ -93,7 +96,7 @@ function body(data, S, SS, locale) {
   }
   const c = data.challenge
   const challenge = c ? `
-      ${themeLabel(c.theme, SS) ? `<div class="theme">${esc(themeLabel(c.theme, SS))}</div>` : ''}
+      ${themeLabel(c.theme, SS, c.special) ? `<div class="theme">${esc(themeLabel(c.theme, SS, c.special))}</div>` : ''}
       <h1>${esc(c.text)}</h1>` : ''
 
   if (data.kind === 'proof' && data.state === 'review') {

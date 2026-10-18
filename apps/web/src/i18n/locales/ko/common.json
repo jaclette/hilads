@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "언어",
-    "street_food": "길거리 음식",
-    "coffee": "커피",
-    "market": "시장",
+    "hidden_gem": "숨은 명소",
+    "taste": "맛",
+    "ask_local": "현지인에게 묻기",
+    "local_find": "발견",
     "night_out": "밤 나들이",
-    "neighborhood": "동네",
-    "traditions": "전통"
+    "sip": "한 잔",
+    "only_here": "여기만",
+    "special": "스페셜",
+    "onlyIn": "{{city}}에만"
   },
   "meta": {
     "cityTitle": "{{city}}에서 로컬이 되어요 - Hilads",

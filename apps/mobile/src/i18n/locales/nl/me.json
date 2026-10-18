@@ -122,7 +122,9 @@
     "stamps_one": "{{count}} van 7 stempels",
     "stamps_other": "{{count}} van 7 stempels",
     "inReview_one": "{{count}} in controle",
-    "inReview_other": "{{count}} in controle"
+    "inReview_other": "{{count}} in controle",
+    "specialTitle": "Speciale stempels",
+    "specialSub": "Beperkte oplage, één per speciale dag. Telt niet mee voor de Local Pass."
   },
   "points": {
     "title": "Zo verdien je punten",

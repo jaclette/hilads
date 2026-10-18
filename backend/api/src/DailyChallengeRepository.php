@@ -224,14 +224,17 @@ final class DailyChallengeRepository
     public static function tomorrow(string $today): array
     {
         $date = (new DateTimeImmutable($today, new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d');
-        $row  = Cache::remember('daily_tomorrow_theme_v1_' . $date, 60, function () use ($date): array {
+        $row  = Cache::remember('daily_tomorrow_theme_v2_' . $date, 60, function () use ($date): array {
             $stmt = Database::pdo()->prepare("
-                SELECT theme FROM daily_challenges WHERE challenge_date = ? AND status IN ('scheduled', 'published')
+                SELECT * FROM daily_challenges WHERE challenge_date = ? AND status IN ('scheduled', 'published')
             ");
             $stmt->execute([$date]);
-            return ['theme' => $stmt->fetchColumn() ?: null];
+            $r = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+            return ['theme' => $r['theme'] ?? null, 'special_id' => $r['special_id'] ?? null];
         });
-        return ['date' => $date, 'theme' => DailyThemes::format($row['theme'] ?? null, $date)];
+        $theme = DailyThemes::format($row['theme'] ?? null, $date);
+        return ['date' => $date, 'theme' => $theme,
+                'special' => DailyThemes::effective($row['theme'] ?? null, $date) === DailyThemes::SPECIAL ? DailySpecials::payload($row['special_id'] ?? null) : null];
     }
 
     /**
@@ -295,7 +298,7 @@ final class DailyChallengeRepository
         // In World scope the proof filters below compare city_id to NULL,
         // which the "? IS NULL OR ..." guard turns into "every city".
         $stmt = Database::pdo()->prepare("
-            SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n, dc.theme, dc.proposed_by_user_id,
+            SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n, dc.theme, dc.special_id, dc.cover_url, dc.proposed_by_user_id,
                    best.id AS best_proof_id,
                    tw.text AS twist_text, tw.text_i18n AS twist_i18n, tw.author_credit AS twist_credit,
                    tu.id AS twist_user_id, tu.username AS twist_username,
@@ -501,6 +504,8 @@ final class DailyChallengeRepository
             $days[] = [
                 'date'      => $key,
                 'theme'     => DailyThemes::format($r['theme'] ?? null, $key),
+                'special'   => DailyThemes::effective($r['theme'] ?? null, $key) === DailyThemes::SPECIAL
+                    ? DailySpecials::payload($r['special_id'] ?? null) : null,
                 'published' => $r !== null && $r['status'] === 'published',
                 'myStatus'  => $r !== null && $r['status'] === 'published' ? ($r['my_status'] ?? null) : null,
             ];
@@ -512,7 +517,7 @@ final class DailyChallengeRepository
     public static function calendar(string $from, string $to, ?string $viewerId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT dc.challenge_date, dc.theme, dc.status, p.moderation_status AS my_status
+            SELECT dc.challenge_date, dc.theme, dc.special_id, dc.status, p.moderation_status AS my_status
             FROM daily_challenges dc
             LEFT JOIN daily_proofs p ON p.challenge_id = dc.id AND p.user_id = ?
             WHERE dc.challenge_date BETWEEN ? AND ? AND dc.status IN ('scheduled', 'published')
@@ -543,6 +548,8 @@ final class DailyChallengeRepository
         $tText   = DailyI18n::pick($text, $locale);
         $tCtx    = $enCtx !== null ? DailyI18n::pick($context, $locale) : null;
         $isTranslated = $tText !== null;
+        $themeKey = DailyThemes::effective($row['theme'] ?? null, $date);
+        $special  = $themeKey === DailyThemes::SPECIAL ? DailySpecials::payload($row['special_id'] ?? null, $locale) : null;
         return [
             'id'       => $row['id'],
             'date'     => $date,
@@ -554,8 +561,11 @@ final class DailyChallengeRepository
             'endsAt'   => $end->getTimestamp(),
             'isActive' => DailyClock::isActive($date, $now),
             'theme'    => DailyThemes::format($row['theme'] ?? null, $date),
-            // The card's cover (back office upload); null = the theme's default image in the apps.
-            'coverUrl' => ($row['cover_url'] ?? null) ?: null,
+            // A special day (theme "special"): {id, name, emoji, icon, coverUrl, scope}.
+            'special'  => $special,
+            // The card's cover: the challenge's own (back office upload), else the
+            // special's, else the theme's uploaded default; null = the image bundled in the apps.
+            'coverUrl' => ($row['cover_url'] ?? null) ?: ($special['coverUrl'] ?? null) ?: (DailyThemes::covers()[$themeKey] ?? null),
             'proposedBy' => self::credit($row['id'], $row['proposed_by_user_id'] ?? null),
         ];
     }

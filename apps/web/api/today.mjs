@@ -28,7 +28,7 @@ import { TODAY_STRINGS } from './_today-i18n.mjs'
 
 const SITE = 'https://hilads.live'
 const THEME_EMOJI = {
-  language: '🗣️', street_food: '🍜', coffee: '☕', market: '🧺', night_out: '🌙', neighborhood: '🏘️', traditions: '🏮',
+  hidden_gem: '💎', taste: '🍜', ask_local: '💬', local_find: '🛍️', night_out: '🌙', sip: '🍹', only_here: '📍',
 }
 const LOCALES = Object.keys(TODAY_STRINGS)
 
@@ -185,7 +185,9 @@ export function renderToday(data, locale, prefixed) {
 
     <section class="card">
       <div class="kicker">🔥 Daily Challenge</div>
-      ${c && c.theme ? `<div class="theme">${THEME_EMOJI[c.theme.key] || '•'} ${esc(c.theme.name)}</div>` : ''}
+      ${c && c.theme ? (c.special
+        ? `<div class="theme">${esc(c.special.emoji || '✨')} ${esc(c.special.name)}</div>`
+        : `<div class="theme">${THEME_EMOJI[c.theme.key] || '•'} ${esc(c.theme.name)}</div>`) : ''}
       ${c
         ? `<h1>${esc(c.text)}</h1>${c.context ? `\n      <p class="ctx">${esc(c.context)}</p>` : ''}`
         : `<h1 data-k="nothingLive">${esc(S.nothingLive)}</h1>`}
@@ -342,7 +344,8 @@ export function renderToday(data, locale, prefixed) {
       $('by').hidden = false;
     }
     if (B.tomorrow && B.tomorrow.theme) {
-      $('tomorrow').textContent = fmt(S.tomorrow, { theme: (B.themeEmoji[B.tomorrow.theme.key] || '') + ' ' + B.tomorrow.theme.name });
+      var sp = B.tomorrow.special;
+      $('tomorrow').textContent = fmt(S.tomorrow, { theme: sp ? (sp.emoji || '') + ' ' + sp.name : (B.themeEmoji[B.tomorrow.theme.key] || '') + ' ' + B.tomorrow.theme.name });
       $('tomorrow').hidden = false;
     }
     var MEDALS = ['🥇', '🥈', '🥉'];

@@ -16,8 +16,9 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, setupMapbox } from '@/lib/mapbox';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchMap, fetchSpot, searchSpots, type Bbox, type PlanPin, type Spot } from '@/api/spots';
-import { THEME_KEYS, themeName } from '@/features/daily/themes';
-import { THEME_ICON, meters, pinLabel } from '@/features/today/format';
+import { THEME_KEYS, isPlaceTheme, themeName } from '@/features/daily/themes';
+import { meters, pinLabel } from '@/features/today/format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import { SpotSheet } from '@/features/map/SpotSheet';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
@@ -27,7 +28,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { DailyThemeKey } from '@/types';
 import { Chip, IconButton, TextField } from '@/ui';
 
-const PLACE_THEMES = THEME_KEYS.filter(k => k !== 'language');
+const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
 const IDLE_DEBOUNCE_MS = 400;
 // Pin labels from this zoom (the city view), where they stay readable; Mapbox
 // hides the ones that would collide, the pins stay.
@@ -287,7 +288,7 @@ export default function MapScreen() {
             <View style={styles.selectedWrap} pointerEvents="none">
               <Text style={styles.selectedLabel} numberOfLines={1}>{pinLabel(selected.name, selected.priceRange, i18n.language)}</Text>
               <View style={styles.selectedPin}>
-                <Ionicons name={THEME_ICON[selected.themes[0] ?? 'street_food']} size={22} color="#FFFFFF" />
+                <ThemeIcon theme={selected.themes[0] ?? 'taste'} size={22} color="#FFFFFF" />
               </View>
             </View>
           </MarkerView>
@@ -328,7 +329,7 @@ export default function MapScreen() {
             {results.length === 0 ? <Text style={styles.resultEmpty}>{t('map.noResults')}</Text> : results.slice(0, 6).map(s => (
               <TouchableOpacity key={s.id} style={styles.result} accessibilityRole="button"
                                 onPress={() => { Keyboard.dismiss(); setQuery(''); setResults(null); select(s, 'search', true); }}>
-                <Ionicons name={THEME_ICON[s.themes[0] ?? 'street_food']} size={18} color={colors.primaryText} />
+                <ThemeIcon theme={s.themes[0] ?? 'taste'} size={18} color={colors.primaryText} />
                 <View style={styles.resultBody}>
                   <Text style={styles.resultName} numberOfLines={1}>{s.name}</Text>
                   {s.tags.length > 0 && <Text style={styles.resultTags} numberOfLines={1}>{s.tags.join(' · ')}</Text>}

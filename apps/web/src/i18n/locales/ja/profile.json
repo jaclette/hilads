@@ -165,7 +165,9 @@
       "stamps_one": "スタンプ {{count}}/7",
       "stamps_other": "スタンプ {{count}}/7",
       "inReview_one": "{{count}} 件確認中",
-      "inReview_other": "{{count}} 件確認中"
+      "inReview_other": "{{count}} 件確認中",
+      "specialTitle": "スペシャルスタンプ",
+      "specialSub": "限定版。特別な日ごとに1つ。Local Passにはカウントされません。"
     },
     "points": {
       "title": "ポイントのもらい方",

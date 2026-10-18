@@ -1,12 +1,14 @@
 {
   "themes": {
-    "language": "भाषा",
-    "street_food": "स्ट्रीट फ़ूड",
-    "coffee": "कॉफ़ी",
-    "market": "बाज़ार",
+    "hidden_gem": "छुपा ख़ज़ाना",
+    "taste": "स्वाद",
+    "ask_local": "लोकल से पूछो",
+    "local_find": "खोज",
     "night_out": "रात की सैर",
-    "neighborhood": "मोहल्ला",
-    "traditions": "परंपराएँ"
+    "sip": "चुस्की",
+    "only_here": "सिर्फ़ यहाँ",
+    "special": "स्पेशल",
+    "onlyIn": "सिर्फ़ {{city}} में"
   },
   "nowTitle": "अभी",
   "filterEvents": "लोकल इवेंट",

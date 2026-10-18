@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { themeName } from '@/features/daily/themes';
-import { THEME_ICON, compactPrice, distance } from '@/features/today/format';
+import { compactPrice, distance } from '@/features/today/format';
+import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
 import { Button, IconButton } from '@/ui';
 import { PhotoCredit } from './PhotoCredit';
@@ -42,7 +43,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
           <View style={styles.line}>
             {theme && (
               <View style={styles.inline}>
-                <Ionicons name={THEME_ICON[theme]} size={14} color={colors.muted} />
+                <ThemeIcon theme={theme} size={14} color={colors.muted} />
                 <Text style={styles.meta}>{themeName(theme)}</Text>
               </View>
             )}

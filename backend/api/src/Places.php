@@ -68,10 +68,11 @@ final class Places
         return trim($s);
     }
 
-    /** Every theme but Language is about a place. */
+    /** Every weekly theme but Ask a local (v1: Language) is about a place; a special day is not. */
     public static function isPlaceTheme(?string $theme): bool
     {
-        return $theme !== null && $theme !== 'language';
+        $key = $theme !== null ? DailyThemes::effective($theme, null) : null;
+        return $key !== null && $key !== 'ask_local' && $key !== DailyThemes::SPECIAL;
     }
 
     /** True when the body uses the V3 place format (sent by the app from 1.8.0). */
@@ -226,7 +227,7 @@ final class Places
                 'name'       => $r['name'],
                 'distanceM'  => $d,
                 'proofCount' => (int) $r['proof_count'],
-                'themes'     => $r['themes'] !== null ? explode(',', $r['themes']) : [],
+                'themes'     => $r['themes'] !== null ? DailyThemes::clientList(explode(',', $r['themes'])) : [],
                 'inReview'   => $r['status'] === 'pending',
             ];
         }
