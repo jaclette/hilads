@@ -13,6 +13,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
+import '../lib/leafletGuard'
 import { useTranslation } from 'react-i18next'
 import Icon from './Icon'
 import 'leaflet/dist/leaflet.css'
