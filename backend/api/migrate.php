@@ -3199,6 +3199,33 @@ run($pdo, "
     )
 ", 'daily_theme_covers');
 
+// Represent your city (SPEC 9.16): the Pioneer of a city = the author of its
+// first approved proof ever (badge only, no points, permanent: a deleted
+// account keeps the city claimed). Backfilled from history, real players only
+// (no demo or seed proof, no demo or hidden_from_rankings account).
+// Reversal: DROP TABLE daily_pioneers.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_pioneers (
+        city_id    TEXT        PRIMARY KEY REFERENCES channels(id) ON DELETE CASCADE,
+        user_id    TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        proof_id   TEXT        REFERENCES daily_proofs(id) ON DELETE SET NULL,
+        awarded_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_pioneers');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_pioneers_user ON daily_pioneers (user_id)", 'idx_daily_pioneers_user');
+run($pdo, "
+    INSERT INTO daily_pioneers (city_id, user_id, proof_id, awarded_at)
+    SELECT DISTINCT ON (p.city_id) p.city_id, p.user_id, p.id, COALESCE(p.approved_at, p.created_at)
+    FROM daily_proofs p
+    JOIN users u ON u.id = p.user_id
+    WHERE p.city_id IS NOT NULL AND p.moderation_status = 'approved'
+      AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND NOT u.hidden_from_rankings
+    ORDER BY p.city_id, COALESCE(p.approved_at, p.created_at), p.id
+    ON CONFLICT (city_id) DO NOTHING
+", 'daily_pioneers backfill');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_city_approved ON daily_proofs (city_id, challenge_id) WHERE moderation_status = 'approved'",
+    'idx_daily_proofs_city_approved');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

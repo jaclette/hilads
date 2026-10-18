@@ -489,5 +489,21 @@
     "textSpot": "{{name}} on Hilads",
     "textSpotCity": "{{name}}, {{city}}, on Hilads",
     "textToday": "Today's Daily Challenge on Hilads: {{challenge}} Are you in?"
+  },
+  "represent": {
+    "empty": "No one has represented {{city}} today. Be the first.",
+    "button": "Represent {{city}}",
+    "firstPosted": "You put {{city}} on the world map today.",
+    "pioneer": "Pioneer of {{city}}",
+    "spotOne": "Spot #1 in {{city}}",
+    "streak_one": "{{city}}, represented {{count}} day in a row",
+    "streak_other": "{{city}}, represented {{count}} days in a row",
+    "board_one": "{{count}} city is on today's board. {{city}} isn't yet.",
+    "board_other": "{{count}} cities are on today's board. {{city}} isn't yet.",
+    "mapEmpty": "Be the first to put {{city}} on the map.",
+    "invite": "Invite a friend",
+    "share": "Help me represent {{city}} on Hilads.",
+    "pioneerTitle": "Pioneer badges",
+    "pioneerSub": "The first approved proof ever in a city. Yours forever."
   }
 }

@@ -97,6 +97,7 @@ export default function SpotScreen() {
       )}
       <View style={styles.chips}>
         {spot.themes.map(k => <Chip key={k} theme={k} label={themeName(k)} />)}
+        {!!spot.pioneerCity && <Chip icon="flag" label={t('represent.spotOne', { city: shortCityName(spot.pioneerCity) })} />}
         {spot.validatedByLocal && <Chip tone="local" icon="checkmark-circle-outline" label={t('map.validated')} />}
       </View>
       <Text style={styles.stats}>

@@ -71,6 +71,12 @@ final class DailyModerationService
             error_log("[daily] local pass for proof {$proofId} failed: " . $e->getMessage());
         }
         $after = DailyProofRepository::findById($proofId);
+        // Represent your city (SPEC 9.16): presence, first-of-the-day tracking, the city's Pioneer.
+        try {
+            DailyPresence::afterApproval($after);
+        } catch (\Throwable $e) {
+            error_log("[daily] presence for proof {$proofId} failed: " . $e->getMessage());
+        }
         DailyCards::postProof($after);
         // The city's Local Twist author: a live bell row (prompt 12).
         DailyNotify::onApproved($after);
@@ -123,6 +129,7 @@ final class DailyModerationService
         }
 
         DailyCards::hideProof($proofId, $before['city_id']);
+        DailyPresence::forget($before['city_id'] ?? null, $before['challenge_id'] ?? null);
         Places::rejectIfOrphan($before['place_id'] ?? null);
         $after = DailyProofRepository::findById($proofId);
         DailyAdminService::audit('daily_proof.reject', 'daily_proof', $proofId, $before, $after);

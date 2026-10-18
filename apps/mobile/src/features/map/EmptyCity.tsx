@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +8,9 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { addDays, defaultThemeFor, isPlaceTheme, themeName } from '@/features/daily/themes';
+import { shortCityName } from '@/i18n/cityName';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { representShare, type ShareContent } from '@/features/share/content';
 import type { DailyToday } from '@/types';
 import { Button, Card } from '@/ui';
 
@@ -23,6 +27,8 @@ export function EmptyCity({ today }: { today: DailyToday | null }) {
   const router = useRouter();
   const { account } = useApp();
   const challenge = today?.challenge ?? null;
+  const cityShort = today?.city?.name ? shortCityName(today.city.name) : null;
+  const [invite, setInvite] = useState<ShareContent | null>(null);
   const placeTheme = isPlaceTheme(challenge?.theme?.key);
   const tomorrowKey = today?.tomorrow?.theme?.key
     ?? (challenge ? defaultThemeFor(addDays(challenge.date, 1)) : null);
@@ -41,13 +47,18 @@ export function EmptyCity({ today }: { today: DailyToday | null }) {
     <Card variant="ticket" style={styles.card}>
       <View style={styles.head}>
         <Ionicons name="location-outline" size={22} color={colors.primaryText} />
-        <Text style={styles.title}>{t('map.emptyTitle')}</Text>
+        {/* Represent your city (SPEC 9.16): "Be the first to put Saigon on the map." */}
+        <Text style={styles.title}>{cityShort ? t('represent.mapEmpty', { city: cityShort }) : t('map.emptyTitle')}</Text>
       </View>
       {challenge && <Text style={styles.text} numberOfLines={3}>{challenge.text}</Text>}
       {canTake && <Button label={t('cta')} onPress={take} />}
       {!!challenge?.isActive && !placeTheme && !!tomorrowKey && (
         <Text style={styles.tomorrow}>{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</Text>
       )}
+      {!!challenge?.isActive && !!today?.city && (
+        <Button variant="link" icon="paper-plane-outline" label={t('represent.invite')} onPress={() => setInvite(representShare(challenge, today.city!))} />
+      )}
+      <ShareSheet content={invite} source="represent_map" onClose={() => setInvite(null)} />
     </Card>
     </TouchableOpacity>
   );

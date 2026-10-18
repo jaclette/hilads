@@ -262,7 +262,8 @@ final class DailyPushes
      * it when it fits in BODY_MAX: a friend ($friend, their name) and the number
      * of others, else the number of people ($took). $locale as for the morning.
      */
-    public static function reminderMessage(array $challenge, int $secondsLeft, string $locale = 'en', ?string $friend = null, int $took = 0): array
+    public static function reminderMessage(array $challenge, int $secondsLeft, string $locale = 'en', ?string $friend = null, int $took = 0,
+                                           ?array $cityStreak = null): array
     {
         $hours  = max(1, (int) round($secondsLeft / 3600));
         $theme  = self::themeOf($challenge);
@@ -280,11 +281,35 @@ final class DailyPushes
             $social = DailyPushText::render('did_count', $locale, ['n' => $took])
                       ?? self::plural($took, 'person', 'people') . ' already did it.';
         }
+        // A city streak of 2 days or more with no proof yet today (SPEC 9.16) replaces the social line.
+        if ($cityStreak !== null && $cityStreak['n'] >= 2) {
+            $city   = CityNames::short($cityStreak['name'], $locale);
+            $social = DailyPushText::render('city_streak', $locale, ['city' => $city, 'n' => $cityStreak['n']])
+                      ?? "{$city}'s {$cityStreak['n']}-day streak ends tonight. Will you represent it?";
+        }
         return [
             'title' => $title,
             'body'  => self::withLine(self::challengeText($challenge, $locale), $social),
             'data'  => self::data((string) $challenge['challenge_date']),
         ];
+    }
+
+    /**
+     * The recipient's city streak when it ends tonight: {name, n} when the
+     * city has no approved proof yet for $date and was represented 2 days or
+     * more in a row before it, else null.
+     */
+    private static function cityStreakAtRisk(?array $city, string $date): ?array
+    {
+        if ($city === null || $city['id'] === '') {
+            return null;
+        }
+        try {
+            $p = DailyPresence::forCity($city['id'], $date);
+        } catch (\Throwable $e) {
+            return null;
+        }
+        return !$p['represented'] && $p['streak'] >= 2 ? ['name' => $city['name'], 'n' => $p['streak']] : null;
     }
 
     /** The challenge text in $locale (its translation), else English. */
@@ -725,7 +750,8 @@ final class DailyPushes
                         // Like the morning: the user's language when the challenge is translated into it, else English.
                         $loc = self::morningLocale($challenge, (string) ($msg['locale'] ?? 'en'));
                         $msg = self::reminderMessage($challenge, DailyClock::secondsLeft($now), $loc,
-                                                     $facts['friend'][$fk] ?? null, $facts['took'][(string) $row['challenge_date']] ?? 0)
+                                                     $facts['friend'][$fk] ?? null, $facts['took'][(string) $row['challenge_date']] ?? 0,
+                                                     self::cityStreakAtRisk($facts['city'][$row['user_id']] ?? null, (string) $row['challenge_date']))
                                + ['locale' => $msg['locale'] ?? 'en'];
                     }
                 }
@@ -820,7 +846,7 @@ final class DailyPushes
      */
     private static function sendFacts(array $rows): array
     {
-        $facts = ['posted' => [], 'votes' => [], 'twist' => [], 'friend' => [], 'took' => []];
+        $facts = ['posted' => [], 'votes' => [], 'twist' => [], 'friend' => [], 'took' => [], 'city' => []];
         $users = [];
         $dates = [];
         foreach ($rows as $r) {
@@ -896,6 +922,15 @@ final class DailyPushes
             if (trim((string) $t['name']) !== '') {
                 $facts['friend'][$t['user_id'] . '|' . $t['challenge_date']] = (string) $t['name'];
             }
+        }
+        // Represent your city (SPEC 9.16): the recipient's current city, for the streak line.
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.current_city_id, ch.name FROM users u JOIN channels ch ON ch.id = u.current_city_id
+            WHERE u.id = ANY (string_to_array(?, ','))
+        ");
+        $stmt->execute([$args[0]]);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            $facts['city'][$t['id']] = ['id' => (string) $t['current_city_id'], 'name' => (string) $t['name']];
         }
         return $facts;
     }

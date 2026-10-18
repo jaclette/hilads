@@ -194,6 +194,8 @@ final class DailyChallengeRepository
             'early'       => null,
             // My Local Pass progress in this city (signed in, with a city).
             'localPass'   => $viewer !== null && $cityId !== null ? DailyLocalPass::progressIn($viewer['id'], $cityId) : null,
+            // Represent your city (SPEC 9.16): {represented, streak, citiesToday, pioneer}, with a city.
+            'presence'    => null,
         ];
         if ($challenge === null) {
             return $out;
@@ -203,8 +205,15 @@ final class DailyChallengeRepository
             $out['twist'] = self::twistFor($challenge['id'], $cityId);
         }
         $out['counts'] = self::counts($challenge['id'], $cityId);
+        $mine = $viewer !== null ? DailyProofRepository::findMine($challenge['id'], $viewer['id']) : null;
+        if ($cityId !== null) {
+            try {
+                $out['presence'] = DailyPresence::payload($cityId, $challenge['id'], $mine ?: null);
+            } catch (\Throwable $e) {
+                error_log('[daily] presence failed: ' . $e->getMessage());   // before the migration
+            }
+        }
         if ($viewer !== null) {
-            $mine = DailyProofRepository::findMine($challenge['id'], $viewer['id']);
             $out['myProof'] = $mine ? DailyProofRepository::format($mine, $viewer['id']) : null;
             $votes = DailyVotes::mine($challenge['id'], $viewer['id']);
             $out['myVotes'] = ['used' => $votes['used'], 'left' => $votes['left']];

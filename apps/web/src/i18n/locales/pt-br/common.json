@@ -216,5 +216,23 @@
     "textToday": "O Daily Challenge de hoje no Hilads: {{challenge}} Topa?",
     "textSpot": "{{name}} no Hilads",
     "textSpotCity": "{{name}}, {{city}}, no Hilads"
+  },
+  "represent": {
+    "empty": "Ninguém representou {{city}} hoje. Seja o primeiro.",
+    "button": "Represente {{city}}",
+    "firstPosted": "Você colocou {{city}} no mapa do mundo hoje.",
+    "pioneer": "Pioneiro de {{city}}",
+    "spotOne": "Spot nº 1 em {{city}}",
+    "streak_one": "{{city}}, representada {{count}} dia seguido",
+    "streak_many": "{{city}}, representada {{count}} dias seguidos",
+    "streak_other": "{{city}}, representada {{count}} dias seguidos",
+    "board_one": "{{count}} cidade está no placar de hoje. {{city}} ainda não.",
+    "board_many": "{{count}} cidades estão no placar de hoje. {{city}} ainda não.",
+    "board_other": "{{count}} cidades estão no placar de hoje. {{city}} ainda não.",
+    "mapEmpty": "Seja o primeiro a colocar {{city}} no mapa.",
+    "invite": "Convide um amigo",
+    "share": "Me ajuda a representar {{city}} no Hilads.",
+    "pioneerTitle": "Selos de pioneiro",
+    "pioneerSub": "A primeira prova aprovada numa cidade. Sua para sempre."
   }
 }

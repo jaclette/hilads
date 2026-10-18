@@ -15,6 +15,8 @@ export interface Spot {
   votes:            number;
   votesWeek:        number;
   validatedByLocal: boolean;
+  /** The spot of its city's first approved proof ever: "Spot #1 in Saigon" (the city's name). */
+  pioneerCity?:     string | null;
   priceRange:       { min: number; max: number; median?: number; currency: string } | null;
   lastProofDate:    string | null;
   /** The most voted approved proof (ties: the most recent), credited to `by` (its author's username). */

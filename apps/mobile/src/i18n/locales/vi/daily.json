@@ -487,5 +487,19 @@
     "textSpot": "{{name}} trên Hilads",
     "textSpotCity": "{{name}}, {{city}}, trên Hilads",
     "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?"
+  },
+  "represent": {
+    "empty": "Hôm nay chưa ai đại diện cho {{city}}. Hãy là người đầu tiên.",
+    "button": "Đại diện {{city}}",
+    "firstPosted": "Hôm nay bạn đã đưa {{city}} lên bản đồ thế giới.",
+    "pioneer": "Người tiên phong của {{city}}",
+    "spotOne": "Spot #1 ở {{city}}",
+    "streak_other": "{{city}}, được đại diện {{count}} ngày liên tiếp",
+    "board_other": "{{count}} thành phố đã có mặt hôm nay. {{city}} thì chưa.",
+    "mapEmpty": "Hãy là người đầu tiên đưa {{city}} lên bản đồ.",
+    "invite": "Mời bạn bè",
+    "share": "Giúp mình đại diện cho {{city}} trên Hilads nhé.",
+    "pioneerTitle": "Huy hiệu tiên phong",
+    "pioneerSub": "Bằng chứng được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi."
   }
 }

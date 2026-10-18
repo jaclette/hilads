@@ -127,6 +127,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
           </div>
         )}
 
+        {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats.pioneerOf} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats.specialStamps} />}
 
         <div className="pp-rows">
@@ -227,6 +228,25 @@ function SpecialStamps({ stamps }) {
             </div>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+/** Pioneer badges (SPEC 9.16): "Pioneer of Saigon" for each city whose first approved proof ever is mine. */
+function PioneerBadges({ pioneers }) {
+  const { t } = useTranslation('common')
+  return (
+    <div className="pp-cpage">
+      <div className="pp-cpage-head"><span className="pp-cpage-city">{t('represent.pioneerTitle')}</span></div>
+      <p className="dc-line pp-hint">{t('represent.pioneerSub')}</p>
+      <div className="pp-pioneers">
+        {pioneers.map(p => (
+          <span key={p.city.id} className="pp-pioneer" style={ROW}>
+            <Icon name="flag-outline" size={15} style={{ color: 'var(--gold)' }} /><CityFlag country={p.city.country} />
+            {t('represent.pioneer', { city: shortCityName(p.city.name ?? '') })}
+          </span>
+        ))}
       </div>
     </div>
   )

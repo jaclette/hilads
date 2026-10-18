@@ -216,5 +216,23 @@
     "textToday": "El Daily Challenge de hoy en Hilads: {{challenge}} ¿Te apuntas?",
     "textSpot": "{{name}} en Hilads",
     "textSpotCity": "{{name}}, {{city}}, en Hilads"
+  },
+  "represent": {
+    "empty": "Nadie ha representado a {{city}} hoy. Sé el primero.",
+    "button": "Representa a {{city}}",
+    "firstPosted": "Hoy pusiste a {{city}} en el mapa del mundo.",
+    "pioneer": "Pionero de {{city}}",
+    "spotOne": "Spot n.º 1 en {{city}}",
+    "streak_one": "{{city}}, representada {{count}} día seguido",
+    "streak_many": "{{city}}, representada {{count}} días seguidos",
+    "streak_other": "{{city}}, representada {{count}} días seguidos",
+    "board_one": "{{count}} ciudad está en el marcador de hoy. {{city}} todavía no.",
+    "board_many": "{{count}} ciudades están en el marcador de hoy. {{city}} todavía no.",
+    "board_other": "{{count}} ciudades están en el marcador de hoy. {{city}} todavía no.",
+    "mapEmpty": "Sé el primero en poner {{city}} en el mapa.",
+    "invite": "Invita a un amigo",
+    "share": "Ayúdame a representar a {{city}} en Hilads.",
+    "pioneerTitle": "Insignias de pionero",
+    "pioneerSub": "La primera prueba aprobada en una ciudad. Tuya para siempre."
   }
 }

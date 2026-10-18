@@ -216,5 +216,21 @@
     "textToday": "De Daily Challenge van vandaag op Hilads: {{challenge}} Doe je mee?",
     "textSpot": "{{name}} op Hilads",
     "textSpotCity": "{{name}}, {{city}}, op Hilads"
+  },
+  "represent": {
+    "empty": "Niemand heeft {{city}} vandaag vertegenwoordigd. Wees de eerste.",
+    "button": "Vertegenwoordig {{city}}",
+    "firstPosted": "Je hebt {{city}} vandaag op de wereldkaart gezet.",
+    "pioneer": "Pionier van {{city}}",
+    "spotOne": "Spot #1 in {{city}}",
+    "streak_one": "{{city}}, {{count}} dag op rij vertegenwoordigd",
+    "streak_other": "{{city}}, {{count}} dagen op rij vertegenwoordigd",
+    "board_one": "{{count}} stad staat vandaag op het bord. {{city}} nog niet.",
+    "board_other": "{{count}} steden staan vandaag op het bord. {{city}} nog niet.",
+    "mapEmpty": "Zet {{city}} als eerste op de kaart.",
+    "invite": "Nodig een vriend uit",
+    "share": "Help me {{city}} te vertegenwoordigen op Hilads.",
+    "pioneerTitle": "Pioniersbadges",
+    "pioneerSub": "Het allereerste goedgekeurde bewijs in een stad. Voor altijd van jou."
   }
 }

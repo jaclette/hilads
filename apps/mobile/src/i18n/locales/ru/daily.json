@@ -513,5 +513,25 @@
     "textSpot": "{{name}} в Hilads",
     "textSpotCity": "{{name}}, {{city}}, в Hilads",
     "textToday": "Сегодняшний Daily Challenge в Hilads: {{challenge}} Ты в деле?"
+  },
+  "represent": {
+    "empty": "Сегодня {{city}} ещё никто не представил. Стань первым.",
+    "button": "Представь {{city}}",
+    "firstPosted": "Сегодня ты отметил {{city}} на карте мира.",
+    "pioneer": "Первопроходец: {{city}}",
+    "spotOne": "Место №1: {{city}}",
+    "streak_one": "{{city}}: представлен {{count}} день подряд",
+    "streak_few": "{{city}}: представлен {{count}} дня подряд",
+    "streak_many": "{{city}}: представлен {{count}} дней подряд",
+    "streak_other": "{{city}}: представлен {{count}} дня подряд",
+    "board_one": "Сегодня на доске {{count}} город. {{city}} ещё нет.",
+    "board_few": "Сегодня на доске {{count}} города. {{city}} ещё нет.",
+    "board_many": "Сегодня на доске {{count}} городов. {{city}} ещё нет.",
+    "board_other": "Сегодня на доске {{count}} города. {{city}} ещё нет.",
+    "mapEmpty": "Отметь {{city}} на карте первым.",
+    "invite": "Пригласи друга",
+    "share": "Помоги мне представить {{city}} в Hilads.",
+    "pioneerTitle": "Значки первопроходца",
+    "pioneerSub": "Самое первое одобренное доказательство в городе. Твоё навсегда."
   }
 }

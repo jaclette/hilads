@@ -905,6 +905,12 @@ export interface DailyToday {
   tomorrow?:  { date: string; theme: DailyTheme | null; special?: DailySpecial | null } | null;
   /** My Local Pass progress in this city (signed in, with a city). */
   localPass?: DailyLocalPassProgress | null;
+  /**
+   * Represent your city (SPEC 9.16), with a city: represented today (my own
+   * pending proof posted there counts for me), the city's run of represented
+   * days, how many cities are on today's board, and its Pioneer.
+   */
+  presence?: { represented: boolean; streak: number; citiesToday: number; pioneer: { username: string | null } | null } | null;
   /** Speed bonus window (signed in, no proof yet, still open): post before `until` for the bonus. */
   early?: { startsAt: number; until: number } | null;
 }
@@ -1033,6 +1039,8 @@ export interface DailyUserStats {
   localPassProgress?: DailyLocalPassProgress[];
   /** Limited-edition stamps of special days (Passport "Special stamps"). */
   specialStamps?:     DailySpecialStamp[];
+  /** Cities this user is the Pioneer of (the first approved proof ever there). */
+  pioneerOf?:         { city: { id: number; name: string | null; country?: string | null }; since: number }[];
 }
 
 /** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */

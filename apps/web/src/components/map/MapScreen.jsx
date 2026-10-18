@@ -12,6 +12,7 @@ import Icon, { iconHtml } from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
 import HeaderArt from '../HeaderArt'
+import { shortCityName } from '../../i18n/cityName'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -200,7 +201,10 @@ function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
  */
 function EmptyCard({ today, t }) {
   const { openDaily } = useDaily()
+  const { t: tc } = useTranslation('common')
   const challenge = today?.challenge ?? null
+  // Represent your city (SPEC 9.16): "Be the first to put Saigon on the map."
+  const cityShort = today?.city?.name ? shortCityName(today.city.name) : null
   const placeTheme = isPlaceTheme(challenge?.theme?.key)
   const tomorrowKey = today?.tomorrow?.theme?.key
     ?? (challenge ? defaultThemeFor(new Date(Date.parse(`${challenge.date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10)) : null)
@@ -208,7 +212,7 @@ function EmptyCard({ today, t }) {
   const canTake = challenge?.isActive && !today?.myProof && placeTheme
   const body = (
     <>
-      <span className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{t('map.emptyTitle')}</span>
+      <span className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{cityShort ? tc('represent.mapEmpty', { city: cityShort }) : t('map.emptyTitle')}</span>
       {challenge && <span className="wm-empty-text">{challenge.text}</span>}
       {canTake && <span className="wm-sheet-cta">{t('dc.takeIt')}</span>}
       {challenge?.isActive && !placeTheme && tomorrowKey && <span className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</span>}

@@ -122,8 +122,10 @@ export async function fetchDailyProof(id: string): Promise<DailyProof> {
   return (await api.get<{ proof: DailyProof }>(`/daily/proofs/${id}`, { params: { locale: locale() } })).proof;
 }
 
-export async function createDailyProof(input: DailyProofInput): Promise<DailyProof> {
-  return (await api.post<{ proof: DailyProof }>('/daily/proofs', input)).proof;
+/** cityFirstToday: no other proof from its city today yet ("You put Saigon on the world map today."). */
+export async function createDailyProof(input: DailyProofInput): Promise<{ proof: DailyProof; cityFirstToday: boolean }> {
+  const r = await api.post<{ proof: DailyProof; cityFirstToday?: boolean }>('/daily/proofs', input);
+  return { proof: r.proof, cityFirstToday: !!r.cityFirstToday };
 }
 
 /** Hilads places within 100 m of the device, nearest first (the proof's place step). */

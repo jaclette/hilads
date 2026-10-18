@@ -68,17 +68,21 @@ export default function TodayScreen({ header }) {
 }
 
 /** "Challenge a friend" (SPEC 9.14): shares hilads.live/today (its preview = today's card). */
-function ChallengeFriend({ challenge }) {
+function ChallengeFriend({ challenge, representCity = null, source = 'today_card' }) {
   const { t } = useTranslation('common')
   const [copied, setCopied] = useState(false)
   const go = async (e) => {
     e.stopPropagation()
-    const res = await shareLink({ type: 'today', path: '/today', text: t('shareLink.textToday', { challenge: challenge.text }), source: 'today_card' })
+    // An unrepresented city (SPEC 9.16): "Help me represent Saigon on Hilads."
+    const res = representCity
+      ? await shareLink({ type: 'represent', path: '/today', text: t('represent.share', { city: representCity }), source: `represent_${source}` })
+      : await shareLink({ type: 'today', path: '/today', text: t('shareLink.textToday', { challenge: challenge.text }), source })
     if (res === 'copied') { setCopied(true); setTimeout(() => setCopied(false), 1800) }
   }
   return (
     <button type="button" className="today-took today-friend" onClick={go}>
-      <Icon name="paper-plane-outline" size={16} /><span className="today-took-link">{copied ? t('shareLink.copied') : t('shareLink.challengeFriend')}</span>
+      <Icon name="paper-plane-outline" size={16} />
+      <span className="today-took-link">{copied ? t('shareLink.copied') : representCity ? t('represent.invite') : t('shareLink.challengeFriend')}</span>
     </button>
   )
 }
@@ -131,6 +135,7 @@ function usePulseVisible(el) {
  */
 function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
+  const { t: tc } = useTranslation('common')
   const { scope, openDaily } = useDaily()
   const [showOriginal, toggleOriginal] = useOriginal()
   const secondsLeft = useCountdown(data?.challenge ? data.nextDropAt : null)
@@ -169,6 +174,12 @@ function Ticket({ data, loading }) {
   const theme = challenge.theme?.key ?? null
   // A special day without a cover: its bundled one (Halloween), else Only here's; the API sends uploaded covers.
   const cover = challenge.coverUrl || (theme ? `/covers/${theme === 'special' ? specialCover(challenge.special) : theme}.jpg` : null)
+  // Represent your city (SPEC 9.16), city scope only: nobody has represented it today
+  // (my own pending proof counts for me), and its run of represented days.
+  const presence = scope === 'city' ? data.presence ?? null : null
+  const cityShort = city?.name ? shortCityName(city.name) : null
+  const emptyCity = !!presence && !presence.represented && !!cityShort && challenge.isActive
+  const cityStreak = presence && cityShort && presence.streak >= 2 ? presence.streak : 0
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
 
@@ -202,6 +213,9 @@ function Ticket({ data, loading }) {
             <span className="today-twist-text">{showOriginal && twist.originalText ? twist.originalText : twist.text}</span>
           </div>
         )}
+        {emptyCity && (
+          <span className="today-empty-city"><CityFlag country={city?.country} size={18} />{tc('represent.empty', { city: cityShort })}</span>
+        )}
         {!myProof && (
           <span className="today-hint">
             <span className="today-hint-icon"><Icon name="camera-outline" size={20} /></span>
@@ -226,7 +240,7 @@ function Ticket({ data, loading }) {
           <span ref={setPulseEl} className={`today-cta-pulse${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
             <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
-              <Icon name="camera-outline" size={20} />{t('ctaIn')}
+              <Icon name="camera-outline" size={20} />{emptyCity ? tc('represent.button', { city: cityShort }) : t('ctaIn')}
             </a>
           </span>
         )}
@@ -235,7 +249,10 @@ function Ticket({ data, loading }) {
             {t('today.tookIt', { count: took })} · <span className="today-took-link">{t('today.seePhotos', { count: took })}</span>
           </button>
         )}
-        {challenge.isActive && <ChallengeFriend challenge={challenge} />}
+        {cityStreak > 0 && (
+          <span className="today-city-streak" style={ROW}><Icon name="flame-outline" size={16} />{tc('represent.streak', { count: cityStreak, city: cityShort })}</span>
+        )}
+        {challenge.isActive && <ChallengeFriend challenge={challenge} representCity={emptyCity ? cityShort : null} />}
       </div>
     </div>
   )
@@ -360,6 +377,7 @@ function LinkRow({ icon, title, sub, onClick }) {
  */
 function TodayProofs({ today }) {
   const { t, i18n } = useDc()
+  const { t: tc } = useTranslation('common')
   const { scope, openDaily } = useDaily()
   const [strip, setStrip] = useState(null)
   const date = today?.challenge?.date ?? null
@@ -377,6 +395,10 @@ function TodayProofs({ today }) {
   if (!strip || strip.proofs.length === 0) return null
   const world = strip.scope === 'world'
   const proofs = t('today.proofs', { count: strip.total })
+  // Represent your city (SPEC 9.16), World scope: never a zero count; my own pending proof counts for me.
+  const presence = scope === 'world' ? today?.presence ?? null : null
+  const myCity = today?.city?.name ? shortCityName(today.city.name) : null
+  const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && !!today?.challenge?.isActive
   return (
     <div className="today-card">
       <div className="today-card-head">
@@ -386,6 +408,12 @@ function TodayProofs({ today }) {
       <span className="dc-muted today-proofs-stats">
         {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}
       </span>
+      {boardLine && (
+        <div className="today-board">
+          <span>{tc('represent.board', { count: presence.citiesToday, city: myCity })}</span>
+          <ChallengeFriend challenge={today.challenge} representCity={myCity} source="world_strip" />
+        </div>
+      )}
       <div className="proof-strip">
         {strip.proofs.map(p => (
           <StripProof key={p.id} proof={p} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />

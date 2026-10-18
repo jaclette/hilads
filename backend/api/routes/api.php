@@ -15074,7 +15074,14 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
     }
     $proof = dailyAfterProofWrite($proof['id']);
     apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
-    Response::json(['proof' => DailyProofRepository::format($proof, $user['id'])], 201);
+    // Represent your city (SPEC 9.16): the city's first proof of the day ("You put Saigon on the world map today.").
+    $cityFirst = false;
+    try {
+        $cityFirst = DailyPresence::isFirstOfDay($proof, true);
+    } catch (\Throwable $e) {
+        error_log('[daily] first of day failed: ' . $e->getMessage());
+    }
+    Response::json(['proof' => DailyProofRepository::format($proof, $user['id']), 'cityFirstToday' => $cityFirst], 201);
 });
 
 // PATCH /api/v1/daily/proofs/{id} - edit my proof while its challenge is active.

@@ -16696,6 +16696,11 @@ body.has-app-promo-banner .page-header {
 .today-took { align-self: center; min-height: 44px; border: none; background: none; padding: 0 4px; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted2); cursor: pointer; text-align: center; }
 .today-took-link { font-weight: 700; color: var(--primary-text); }
 .today-friend { display: inline-flex; align-items: center; gap: 6px; margin-top: -6px; color: var(--text); }
+.today-empty-city { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 14px; font-weight: 700; line-height: 1.35; }
+.today-city-streak { align-self: center; gap: 6px; margin-top: -4px; font-size: 13px; font-weight: 700; color: var(--text); }
+.today-city-streak .icon { color: var(--primary-text); }
+.today-board { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 13px; font-weight: 700; line-height: 1.35; }
+.today-board .today-friend { margin-top: 0; align-self: flex-start; min-height: 32px; padding: 0; }
 .proof-strip, .spots-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .proof-strip::-webkit-scrollbar, .spots-row::-webkit-scrollbar { display: none; }
 .proof-strip { gap: 10px; }
@@ -16796,6 +16801,8 @@ body.has-app-promo-banner .page-header {
 .pp-stamp--special { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, transparent); }
 .pp-stamp--special .pp-stamp-inner { border-color: var(--gold); }
 .pp-date { font-size: 10px; text-align: center; }
+.pp-pioneers { display: flex; flex-wrap: wrap; gap: 8px; }
+.pp-pioneer { gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--gold); background: color-mix(in srgb, var(--gold) 14%, transparent); font-size: 12px; font-weight: 800; color: var(--text); }
 .pp-label--off { font-weight: 600; color: var(--muted2); }
 .pp-label--next { color: var(--primary-on-tint); }
 .pp-label--seal { color: var(--gold); }

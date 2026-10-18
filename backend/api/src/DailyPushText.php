@@ -19,7 +19,7 @@ final class DailyPushText
         'bell_twist', 'proposal_approved', 'proposal_reserve', 'proposal_day', 'proposal_result', 'proposal_result_one',
         'title_today', 'title_reminder', 'did_count', 'did_count_one', 'did_friend', 'did_friend_others',
         'did_friend_others_one', 'theme_hidden_gem', 'theme_taste', 'theme_ask_local', 'theme_local_find', 'theme_night_out',
-        'theme_sip', 'theme_only_here', 'theme_special',
+        'theme_sip', 'theme_only_here', 'theme_special', 'city_streak',
     ];
 
     private const T = [
@@ -58,6 +58,7 @@ final class DailyPushText
             'theme_sip' => "Boisson",
             'theme_only_here' => "Seulement ici",
             'theme_special' => "Spécial",
+            'city_streak' => "La série de {city} s'arrête ce soir. Tu la représentes ?",
         ],
         'vi' => [
             'world' => "Hôm qua bằng chứng của bạn đứng #{rank} thế giới.",
@@ -94,6 +95,7 @@ final class DailyPushText
             'theme_sip' => "Nhâm nhi",
             'theme_only_here' => "Chỉ có ở đây",
             'theme_special' => "Đặc biệt",
+            'city_streak' => "Chuỗi ngày của {city} kết thúc tối nay. Bạn sẽ đại diện chứ?",
         ],
         'es' => [
             'world' => "Ayer tu prueba quedó #{rank} en el mundo.",
@@ -130,6 +132,7 @@ final class DailyPushText
             'theme_sip' => "Un trago",
             'theme_only_here' => "Solo aquí",
             'theme_special' => "Especial",
+            'city_streak' => "La racha de {city} termina esta noche. ¿La representas?",
         ],
         'it' => [
             'world' => "Ieri la tua prova era #{rank} nel mondo.",
@@ -166,6 +169,7 @@ final class DailyPushText
             'theme_sip' => "Un sorso",
             'theme_only_here' => "Solo qui",
             'theme_special' => "Speciale",
+            'city_streak' => "La serie di {city} finisce stasera. La rappresenti tu?",
         ],
         'pt-br' => [
             'world' => "Ontem sua prova ficou em #{rank} no mundo.",
@@ -202,6 +206,7 @@ final class DailyPushText
             'theme_sip' => "Um gole",
             'theme_only_here' => "Só aqui",
             'theme_special' => "Especial",
+            'city_streak' => "A sequência de {city} acaba hoje à noite. Você representa?",
         ],
         'pt-pt' => [
             'world' => "Ontem a tua prova ficou em #{rank} no mundo.",
@@ -238,6 +243,7 @@ final class DailyPushText
             'theme_sip' => "Bebida",
             'theme_only_here' => "Só aqui",
             'theme_special' => "Especial",
+            'city_streak' => "A série de {city} acaba esta noite. Representas tu?",
         ],
         'de' => [
             'world' => "Gestern war dein Beweis #{rank} weltweit.",
@@ -274,6 +280,7 @@ final class DailyPushText
             'theme_sip' => "Drink",
             'theme_only_here' => "Nur hier",
             'theme_special' => "Spezial",
+            'city_streak' => "Die Serie von {city} endet heute Abend. Vertrittst du die Stadt?",
         ],
         'nl' => [
             'world' => "Gisteren stond je bewijs #{rank} wereldwijd.",
@@ -310,6 +317,7 @@ final class DailyPushText
             'theme_sip' => "Drankje",
             'theme_only_here' => "Alleen hier",
             'theme_special' => "Speciaal",
+            'city_streak' => "De reeks van {city} stopt vanavond. Vertegenwoordig jij de stad?",
         ],
         'zh-hans' => [
             'world' => "昨天你的证明位列全球第 {rank}。",
@@ -346,6 +354,7 @@ final class DailyPushText
             'theme_sip' => "来一杯",
             'theme_only_here' => "此地独有",
             'theme_special' => "特别篇",
+            'city_streak' => "{city}的连续纪录今晚就要中断了。你来代表它吗？",
         ],
         'zh-hant' => [
             'world' => "昨天你的證明位列全球第 {rank}。",
@@ -382,6 +391,7 @@ final class DailyPushText
             'theme_sip' => "來一杯",
             'theme_only_here' => "此地獨有",
             'theme_special' => "特別篇",
+            'city_streak' => "{city}的連續紀錄今晚就要中斷了。你來代表它嗎？",
         ],
         'ja' => [
             'world' => "昨日のあなたの証明は世界 #{rank}。",
@@ -418,6 +428,7 @@ final class DailyPushText
             'theme_sip' => "一杯",
             'theme_only_here' => "ここだけ",
             'theme_special' => "スペシャル",
+            'city_streak' => "{city}の連続記録が今夜途切れます。あなたが代表しますか？",
         ],
         'ko' => [
             'world' => "어제 내 인증이 세계 #{rank}였어요.",
@@ -454,6 +465,7 @@ final class DailyPushText
             'theme_sip' => "한 잔",
             'theme_only_here' => "여기만",
             'theme_special' => "스페셜",
+            'city_streak' => "{city}의 연속 기록이 오늘 밤 끊겨요. 당신이 대표할래요?",
         ],
         'fil' => [
             'world' => "Kahapon, #{rank} sa mundo ang proof mo.",
@@ -490,6 +502,7 @@ final class DailyPushText
             'theme_sip' => "Inom",
             'theme_only_here' => "Dito lang",
             'theme_special' => "Espesyal",
+            'city_streak' => "Matatapos ngayong gabi ang streak ng {city}. Ikaw ba ang kakatawan dito?",
         ],
         'th' => [
             'world' => "เมื่อวานหลักฐานของคุณอยู่อันดับ #{rank} ของโลก",
@@ -526,6 +539,7 @@ final class DailyPushText
             'theme_sip' => "เครื่องดื่ม",
             'theme_only_here' => "ที่นี่ที่เดียว",
             'theme_special' => "พิเศษ",
+            'city_streak' => "สถิติต่อเนื่องของ{city}จะจบคืนนี้ คุณจะเป็นตัวแทนไหม?",
         ],
         'id' => [
             'world' => "Kemarin buktimu peringkat #{rank} di dunia.",
@@ -562,6 +576,7 @@ final class DailyPushText
             'theme_sip' => "Minum",
             'theme_only_here' => "Cuma di sini",
             'theme_special' => "Spesial",
+            'city_streak' => "Rentetan {city} berakhir malam ini. Kamu mau mewakilinya?",
         ],
         'hi' => [
             'world' => "कल आपका प्रूफ दुनिया में #{rank} रहा।",
@@ -598,6 +613,7 @@ final class DailyPushText
             'theme_sip' => "चुस्की",
             'theme_only_here' => "सिर्फ़ यहाँ",
             'theme_special' => "स्पेशल",
+            'city_streak' => "{city} की स्ट्रीक आज रात टूट जाएगी। क्या आप उसका प्रतिनिधित्व करेंगे?",
         ],
         'ru' => [
             'world' => "Вчера твоё доказательство заняло #{rank} в мире.",
@@ -634,6 +650,7 @@ final class DailyPushText
             'theme_sip' => "Глоток",
             'theme_only_here' => "Только здесь",
             'theme_special' => "Особый день",
+            'city_streak' => "Серия города {city} прервётся сегодня вечером. Представишь его?",
         ],
         'ar' => [
             'world' => "أمس كان دليلك #{rank} في العالم.",
@@ -670,6 +687,7 @@ final class DailyPushText
             'theme_sip' => "مشروب",
             'theme_only_here' => "هنا فقط",
             'theme_special' => "مميز",
+            'city_streak' => "سلسلة {city} تنتهي الليلة. هل ستمثّلها؟",
         ],
     ];
 

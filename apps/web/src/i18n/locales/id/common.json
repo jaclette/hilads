@@ -216,5 +216,19 @@
     "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Ikut?",
     "textSpot": "{{name}} di Hilads",
     "textSpotCity": "{{name}}, {{city}}, di Hilads"
+  },
+  "represent": {
+    "empty": "Belum ada yang mewakili {{city}} hari ini. Jadilah yang pertama.",
+    "button": "Wakili {{city}}",
+    "firstPosted": "Kamu menaruh {{city}} di peta dunia hari ini.",
+    "pioneer": "Pelopor {{city}}",
+    "spotOne": "Spot #1 di {{city}}",
+    "streak_other": "{{city}}, terwakili {{count}} hari berturut-turut",
+    "board_other": "{{count}} kota sudah ada di papan hari ini. {{city}} belum.",
+    "mapEmpty": "Jadilah yang pertama menaruh {{city}} di peta.",
+    "invite": "Ajak teman",
+    "share": "Bantu aku mewakili {{city}} di Hilads.",
+    "pioneerTitle": "Lencana pelopor",
+    "pioneerSub": "Bukti pertama yang disetujui di sebuah kota. Milikmu selamanya."
   }
 }

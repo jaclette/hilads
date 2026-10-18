@@ -17,6 +17,7 @@ import { fetchLeaderboard } from '@/api/leaderboard';
 import { fetchMySpots, fetchWeeklyRank } from '@/api/passport';
 import { CityPage } from '@/features/passport/CityPage';
 import { SpecialStamps } from '@/features/passport/SpecialStamps';
+import { PioneerBadges } from '@/features/passport/PioneerBadges';
 import { PointsHelpSheet } from '@/features/passport/PointsHelpSheet';
 import type { DailyLocalPassProgress, DailyUserStats } from '@/types';
 
@@ -136,6 +137,7 @@ export default function PassportScreen() {
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
 
+        {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats!.pioneerOf!} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
 
         <RowGroup>

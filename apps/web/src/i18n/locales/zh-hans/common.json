@@ -216,5 +216,19 @@
     "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你来吗？",
     "textSpot": "Hilads 上的 {{name}}",
     "textSpotCity": "Hilads 上的 {{name}}（{{city}}）"
+  },
+  "represent": {
+    "empty": "今天还没有人代表{{city}}。来做第一个吧。",
+    "button": "代表{{city}}",
+    "firstPosted": "今天你把{{city}}放上了世界地图。",
+    "pioneer": "{{city}}先锋",
+    "spotOne": "{{city}}第 1 号地点",
+    "streak_other": "{{city}}，已连续 {{count}} 天有人代表",
+    "board_other": "今天已有 {{count}} 座城市上榜。{{city}}还没有。",
+    "mapEmpty": "成为第一个把{{city}}放上地图的人。",
+    "invite": "邀请朋友",
+    "share": "帮我在 Hilads 上代表{{city}}。",
+    "pioneerTitle": "先锋徽章",
+    "pioneerSub": "一座城市里第一条通过审核的证明。永远属于你。"
   }
 }

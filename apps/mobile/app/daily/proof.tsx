@@ -26,8 +26,10 @@ import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { isPlaceTheme } from '@/features/daily/themes';
 import { SharePanel } from '@/features/share/SharePanel';
-import { proofShare } from '@/features/share/content';
-import { Button } from '@/ui';
+import { proofShare, representShare, type ShareContent } from '@/features/share/content';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { shortCityName } from '@/i18n/cityName';
+import { Button, CityFlag } from '@/ui';
 import type { DailyProof, DailyProofInput, DailyToday } from '@/types';
 
 /** A position older than this is refreshed before posting (the distance check). */
@@ -77,7 +79,8 @@ export default function DailyProofScreen() {
   const [place, setPlace]       = useState<PlaceChoice | null>(null);
   const [position, setPosition] = useState<Position | null>(null);
   const [photo, setPhoto]       = useState<Photo | null>(null);
-  const [sent, setSent]         = useState<{ proof: DailyProof; body: string; next: string; nudge: boolean } | null>(null);
+  const [invite, setInvite]     = useState<ShareContent | null>(null);
+  const [sent, setSent]         = useState<{ proof: DailyProof; body: string; next: string; nudge: boolean; cityFirst: boolean } | null>(null);
   const [caption, setCaption]   = useState('');
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
@@ -201,7 +204,15 @@ export default function DailyProofScreen() {
       // The upload is done: keep it if a retry is needed.
       if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
 
-      const saved = original ? await updateDailyProof(original.id, input) : await createDailyProof(input);
+      let cityFirst = false;
+      let saved: DailyProof;
+      if (original) {
+        saved = await updateDailyProof(original.id, input);
+      } else {
+        const created = await createDailyProof(input);
+        saved = created.proof;
+        cityFirst = created.cityFirstToday;
+      }
       track('daily_proof_posted', {
         ...dailyTrackProps({ challenge: today?.challenge ?? null, city: today?.city ?? null, myProof: saved }, account?.mode),
         edit: !!original, has_caption: !!input.caption, has_price: !!input.price,
@@ -217,7 +228,7 @@ export default function DailyProofScreen() {
       const nudge = Date.now() - lastNudge > PROPOSE_NUDGE_EVERY_MS;
       if (nudge) AsyncStorage.setItem(PROPOSE_NUDGE_KEY, String(Date.now())).catch(() => {});
       const body = spot?.inReview ? `${t('proof.sentBody')}\n\n${t('place.newOnMapLater')}` : t('proof.sentBody');
-      setSent({ proof: saved, body, next, nudge });
+      setSent({ proof: saved, body, next, nudge, cityFirst });
     } catch (err) {
       const code = dailyErrorCode(err);
       if (code === 'too_far' && err instanceof ApiError) {
@@ -253,9 +264,21 @@ export default function DailyProofScreen() {
           <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>
           <Text style={styles.stepTitle} accessibilityRole="header">{t('proof.sentTitle')}</Text>
           <Text style={styles.muted}>{sent.body}</Text>
+          {/* Represent your city (SPEC 9.16): the city's first proof of the day. */}
+          {sent.cityFirst && !!sent.proof.city?.name && (
+            <View style={styles.firstCity}>
+              <CityFlag country={sent.proof.city.country} size={18} />
+              <Text style={styles.firstCityText}>{t('represent.firstPosted', { city: shortCityName(sent.proof.city.name) })}</Text>
+            </View>
+          )}
           <Text style={styles.sentShare}>{t('share.afterProof')}</Text>
           <SharePanel content={proofShare(sent.proof, challenge)} source="after_proof" previewHeight={320} />
+          {sent.cityFirst && !!sent.proof.city?.name && (
+            <Button variant="link" icon="paper-plane-outline" label={t('represent.invite')}
+                    onPress={() => setInvite(representShare(challenge, sent.proof.city!))} />
+          )}
         </ScrollView>
+        <ShareSheet content={invite} source="represent_after_proof" onClose={() => setInvite(null)} />
         <View style={styles.footer}>
           <Button label={t('proof.ok')} onPress={() => afterProof(sent.next)} />
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
@@ -423,6 +446,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   currency:    { width: 84, textAlign: 'center', fontWeight: '700' },
   muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   sent:        { alignItems: 'center', padding: Spacing.lg, gap: 12 },
+  firstCity:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
+  firstCityText: { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryOnTint },
   sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 12 },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },

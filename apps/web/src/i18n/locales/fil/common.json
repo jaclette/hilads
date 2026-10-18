@@ -216,5 +216,21 @@
     "textToday": "Ang Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?",
     "textSpot": "{{name}} sa Hilads",
     "textSpotCity": "{{name}}, {{city}}, sa Hilads"
+  },
+  "represent": {
+    "empty": "Wala pang kumatawan sa {{city}} ngayon. Ikaw na ang mauna.",
+    "button": "Katawanin ang {{city}}",
+    "firstPosted": "Inilagay mo ang {{city}} sa mapa ng mundo ngayon.",
+    "pioneer": "Pioneer ng {{city}}",
+    "spotOne": "Spot #1 sa {{city}}",
+    "streak_one": "{{city}}, {{count}} araw nang sunod-sunod na may kinatawan",
+    "streak_other": "{{city}}, {{count}} araw nang sunod-sunod na may kinatawan",
+    "board_one": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
+    "board_other": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
+    "mapEmpty": "Ikaw ang maunang maglagay ng {{city}} sa mapa.",
+    "invite": "Mag-imbita ng kaibigan",
+    "share": "Tulungan mo akong katawanin ang {{city}} sa Hilads.",
+    "pioneerTitle": "Mga pioneer badge",
+    "pioneerSub": "Ang kauna-unahang naaprubahang proof sa isang lungsod. Sa iyo habambuhay."
   }
 }

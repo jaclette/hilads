@@ -318,6 +318,8 @@ final class DailyResults
             'localPasses'       => $passes['passes'],
             'localPassProgress' => $passes['progress'],
             'specialStamps'     => $passes['specials'],
+            // Represent your city (SPEC 9.16): "Pioneer of Saigon", one per city, permanent.
+            'pioneerOf'         => DailyPresence::citiesOf($userId),
         ];
     }
 }

@@ -489,5 +489,19 @@
     "textSpot": "Hilads の {{name}}",
     "textSpotCity": "Hilads の {{name}}（{{city}}）",
     "textToday": "Hilads の今日の Daily Challenge：{{challenge}} やってみる？"
+  },
+  "represent": {
+    "empty": "今日はまだ誰も{{city}}を代表していません。最初の一人になろう。",
+    "button": "{{city}}を代表する",
+    "firstPosted": "今日、あなたが{{city}}を世界地図に載せました。",
+    "pioneer": "{{city}}のパイオニア",
+    "spotOne": "{{city}}のスポット第1号",
+    "streak_other": "{{city}}、{{count}}日連続で代表されています",
+    "board_other": "今日は{{count}}都市がボードに載っています。{{city}}はまだです。",
+    "mapEmpty": "{{city}}を最初に地図に載せよう。",
+    "invite": "友だちを招待",
+    "share": "Hiladsで{{city}}を代表するのを手伝って。",
+    "pioneerTitle": "パイオニアバッジ",
+    "pioneerSub": "その都市で最初に承認されたプルーフ。ずっとあなたのもの。"
   }
 }

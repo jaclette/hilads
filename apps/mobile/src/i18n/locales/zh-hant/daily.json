@@ -487,5 +487,19 @@
     "textSpot": "Hilads 上的 {{name}}",
     "textSpotCity": "Hilads 上的 {{name}}（{{city}}）",
     "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你要參加嗎？"
+  },
+  "represent": {
+    "empty": "今天還沒有人代表{{city}}。來做第一個吧。",
+    "button": "代表{{city}}",
+    "firstPosted": "今天你把{{city}}放上了世界地圖。",
+    "pioneer": "{{city}}先鋒",
+    "spotOne": "{{city}}第 1 號地點",
+    "streak_other": "{{city}}，已連續 {{count}} 天有人代表",
+    "board_other": "今天已有 {{count}} 座城市上榜。{{city}}還沒有。",
+    "mapEmpty": "成為第一個把{{city}}放上地圖的人。",
+    "invite": "邀請朋友",
+    "share": "幫我在 Hilads 上代表{{city}}。",
+    "pioneerTitle": "先鋒徽章",
+    "pioneerSub": "一座城市裡第一條通過審核的證明。永遠屬於你。"
   }
 }

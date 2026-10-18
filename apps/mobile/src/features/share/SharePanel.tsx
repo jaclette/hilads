@@ -35,7 +35,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   const [failed, setFailed] = useState(false);
   const [channels, setChannels] = useState<ShareChannel[]>([]);
   const [copied, setCopied] = useState(false);
-  const props = { content_type: content.type, source };
+  const props = { content_type: content.type === 'today' && content.represent ? 'represent' : content.type, source };
 
   useEffect(() => {
     track('share_started', props);

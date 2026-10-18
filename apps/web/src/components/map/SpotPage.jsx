@@ -89,6 +89,10 @@ export default function SpotPage({ spotId, onBack }) {
               {t('map.proofs', { count: spot.proofCount })} · {t('map.votes', { count: spot.votes })}
               {price ? ` · ${t('map.pricePaid', { price })}` : ''}
             </p>
+            {/* Represent your city (SPEC 9.16): the spot of its city's first approved proof ever. */}
+            {spot.pioneerCity && (
+              <div className="wm-spot-tags"><span className="wm-tag" style={ROW}><Icon name="flag-outline" size={14} />{tc('represent.spotOne', { city: shortCityName(spot.pioneerCity) })}</span></div>
+            )}
             {(spot.validatedByLocal || spot.tags.length > 0) && (
               <div className="wm-spot-tags">
                 {spot.validatedByLocal && <span className="wm-tag wm-tag--local" style={ROW}><Icon name="checkmark" size={14} />{t('map.validated')}</span>}

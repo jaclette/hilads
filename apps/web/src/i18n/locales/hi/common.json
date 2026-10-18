@@ -216,5 +216,21 @@
     "textToday": "Hilads पर आज का Daily Challenge: {{challenge}} क्या आप तैयार हैं?",
     "textSpot": "Hilads पर {{name}}",
     "textSpotCity": "Hilads पर {{name}}, {{city}}"
+  },
+  "represent": {
+    "empty": "आज अभी तक किसी ने {{city}} को रिप्रेज़ेंट नहीं किया। पहले बनो।",
+    "button": "{{city}} को रिप्रेज़ेंट करो",
+    "firstPosted": "आज तुमने {{city}} को दुनिया के नक्शे पर रख दिया।",
+    "pioneer": "{{city}} के पायनियर",
+    "spotOne": "{{city}} का स्पॉट #1",
+    "streak_one": "{{city}}, लगातार {{count}} दिन रिप्रेज़ेंट हुआ",
+    "streak_other": "{{city}}, लगातार {{count}} दिन रिप्रेज़ेंट हुआ",
+    "board_one": "आज {{count}} शहर बोर्ड पर है। {{city}} अभी नहीं।",
+    "board_other": "आज {{count}} शहर बोर्ड पर हैं। {{city}} अभी नहीं।",
+    "mapEmpty": "{{city}} को नक्शे पर लाने वाले पहले बनो।",
+    "invite": "दोस्त को बुलाओ",
+    "share": "Hilads पर {{city}} को रिप्रेज़ेंट करने में मेरी मदद करो।",
+    "pioneerTitle": "पायनियर बैज",
+    "pioneerSub": "किसी शहर में पहला मंज़ूर हुआ सबूत। हमेशा के लिए तुम्हारा।"
   }
 }

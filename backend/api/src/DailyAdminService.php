@@ -473,6 +473,7 @@ final class DailyAdminService
             throw $e;
         }
         DailyCards::hideProof($proofId, $before['city_id']);
+        DailyPresence::forget($before['city_id'] ?? null, $before['challenge_id'] ?? null);
         self::audit('daily_proof.remove', 'daily_proof', $proofId, $before, DailyProofRepository::findById($proofId));
     }
 

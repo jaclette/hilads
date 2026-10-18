@@ -216,5 +216,19 @@
     "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?",
     "textSpot": "{{name}} บน Hilads",
     "textSpotCity": "{{name}}, {{city}} บน Hilads"
+  },
+  "represent": {
+    "empty": "วันนี้ยังไม่มีใครเป็นตัวแทนของ{{city}} มาเป็นคนแรกกัน",
+    "button": "เป็นตัวแทน{{city}}",
+    "firstPosted": "วันนี้คุณพา{{city}}ขึ้นแผนที่โลกแล้ว",
+    "pioneer": "ผู้บุกเบิก{{city}}",
+    "spotOne": "สปอตอันดับ 1 ใน{{city}}",
+    "streak_other": "{{city}} มีตัวแทนติดต่อกัน {{count}} วัน",
+    "board_other": "วันนี้มี {{count}} เมืองบนบอร์ดแล้ว {{city}} ยังไม่มี",
+    "mapEmpty": "เป็นคนแรกที่พา{{city}}ขึ้นแผนที่",
+    "invite": "ชวนเพื่อน",
+    "share": "ช่วยฉันเป็นตัวแทน{{city}}บน Hilads หน่อย",
+    "pioneerTitle": "เหรียญผู้บุกเบิก",
+    "pioneerSub": "หลักฐานแรกที่ได้รับการอนุมัติในเมือง เป็นของคุณตลอดไป"
   }
 }

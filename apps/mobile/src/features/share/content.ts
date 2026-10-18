@@ -1,6 +1,6 @@
 import i18n from '@/i18n';
 import { BASE_URL, sharePrefix } from '@/constants';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { themeName } from '@/features/daily/themes';
 import type { Spot } from '@/api/spots';
 import type { DailyChallenge, DailyProof, DailyThemeKey } from '@/types';
@@ -18,7 +18,9 @@ export type ShareContent =
   | { type: 'proof'; id: string; photoUrl: string; theme: ThemeKey | null; themeLabel?: string | null; text: string; city: City; username: string | null;
       rank: { rank: number; city: string | null } | null }
   | { type: 'spot'; id: string; photoUrl: string | null; theme: ThemeKey | null; name: string; city: City; by: string | null }
-  | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City };
+  | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City;
+      /** "Help me represent Saigon on Hilads." (SPEC 9.16) instead of the challenge line. */
+      represent?: boolean };
 
 /** My proof: its photo, the challenge, its city, my username and its podium rank (world first, else city). */
 export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareContent {
@@ -46,6 +48,11 @@ export function todayShare(challenge: DailyChallenge, city: City): ShareContent 
   };
 }
 
+/** Invite to represent a city (SPEC 9.16): today's card and link, "Help me represent Saigon on Hilads." */
+export function representShare(challenge: DailyChallenge, city: NonNullable<City>): ShareContent {
+  return { ...todayShare(challenge, city), represent: true } as ShareContent;
+}
+
 /** The link, in the sharer's language (/fr/p/..., English unprefixed). */
 export function shareUrl(c: ShareContent): string {
   const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : '/today';
@@ -58,6 +65,9 @@ export function shareText(c: ShareContent): string {
   if (c.type === 'proof') return t('textProof', { challenge: c.text });
   if (c.type === 'spot') {
     return c.city?.name ? t('textSpotCity', { name: c.name, city: localizeCityName(c.city.name) }) : t('textSpot', { name: c.name });
+  }
+  if (c.represent && c.city?.name) {
+    return i18n.t('represent.share', { ns: 'daily', city: shortCityName(c.city.name) });
   }
   return t('textToday', { challenge: c.text });
 }

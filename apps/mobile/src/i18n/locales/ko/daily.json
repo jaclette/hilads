@@ -487,5 +487,19 @@
     "textSpot": "Hilads의 {{name}}",
     "textSpotCity": "Hilads의 {{name}}, {{city}}",
     "textToday": "Hilads 오늘의 Daily Challenge: {{challenge}} 함께할래요?"
+  },
+  "represent": {
+    "empty": "오늘 아직 {{city}} 대표가 없어요. 첫 번째가 되어 보세요.",
+    "button": "{{city}} 대표하기",
+    "firstPosted": "오늘 {{city}}의 첫 인증을 올렸어요. 세계 지도에 등장!",
+    "pioneer": "{{city}} 개척자",
+    "spotOne": "{{city}} 1호 스팟",
+    "streak_other": "{{city}}, {{count}}일 연속 대표",
+    "board_other": "오늘 {{count}}개 도시가 보드에 올랐어요. 아직 {{city}} 차례가 남았어요.",
+    "mapEmpty": "{{city}} 첫 스팟의 주인공이 되어 보세요.",
+    "invite": "친구 초대하기",
+    "share": "Hilads에서 {{city}} 대표하는 거 도와줘.",
+    "pioneerTitle": "개척자 배지",
+    "pioneerSub": "도시에서 처음으로 승인된 인증. 영원히 당신의 것."
   }
 }

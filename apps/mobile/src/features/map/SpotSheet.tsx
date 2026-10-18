@@ -8,7 +8,8 @@ import { themeName } from '@/features/daily/themes';
 import { compactPrice, distance } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
-import { Button, IconButton } from '@/ui';
+import { Button, Chip, IconButton } from '@/ui';
+import { shortCityName } from '@/i18n/cityName';
 import { PhotoCredit } from './PhotoCredit';
 
 /**
@@ -50,6 +51,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
             {distanceM !== null && <Text style={styles.meta}>{distance(distanceM, i18n.language)}</Text>}
           </View>
           {price && <Text style={styles.meta}>{t('map.pricePaid', { price })}</Text>}
+          {!!spot.pioneerCity && <Chip icon="flag" label={t('represent.spotOne', { city: shortCityName(spot.pioneerCity) })} style={styles.pioneer} />}
           {spot.validatedByLocal && (
             <View style={styles.badge}>
               <Ionicons name="checkmark-circle-outline" size={14} color={colors.localText} />
@@ -88,4 +90,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   actions:      { flexDirection: 'row', gap: 10 },
   btn:          { flex: 1 },
   share:        { alignSelf: 'center' },
+  pioneer:      { alignSelf: 'flex-start' },
 });

@@ -158,6 +158,8 @@ final class Spots
             'votes'            => (int) $r['votes'],
             'votesWeek'        => (int) $r['votes_week'],
             'validatedByLocal' => DailyProofRepository::bool($r['validated']),
+            // The spot of its city's first approved proof ever: "Spot #1 in Saigon" (SPEC 9.16).
+            'pioneerCity'      => DailyPresence::pioneerSpots()[$r['id']] ?? null,
             'priceRange'       => self::priceRange($prices),
             'lastProofDate'    => $r['last_date'],
             'cover'            => [

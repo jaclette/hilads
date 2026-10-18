@@ -12,7 +12,7 @@ export function ShareSheet({ content, source, onClose }: { content: ShareContent
   const { t } = useTranslation('daily');
   return (
     <Sheet visible={!!content} onClose={onClose} closeLabel={t('back')}>
-      <Text style={styles.title} accessibilityRole="header">{t(content?.type === 'today' ? 'share.challengeFriend' : 'share.title')}</Text>
+      <Text style={styles.title} accessibilityRole="header">{t(content?.type === 'today' ? (content.represent ? 'represent.invite' : 'share.challengeFriend') : 'share.title')}</Text>
       {content && <SharePanel content={content} source={source} />}
     </Sheet>
   );

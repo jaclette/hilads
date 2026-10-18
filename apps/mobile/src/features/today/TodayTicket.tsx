@@ -29,7 +29,7 @@ import { Button, CityFlag } from '@/ui';
 import type { DailySpecial, DailyTheme, DailyToday } from '@/types';
 import { isPlaceTheme, themeName } from '@/features/daily/themes';
 import { ShareSheet } from '@/features/share/ShareSheet';
-import { todayShare, type ShareContent } from '@/features/share/content';
+import { representShare, todayShare, type ShareContent } from '@/features/share/content';
 
 /** Brand term: English in every locale (SPEC 9.11). */
 const DAILY_CHALLENGE = 'Daily Challenge';
@@ -105,6 +105,12 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
     router.push('/daily/proof' as never);
   };
   const placeTheme = isPlaceTheme(challenge.theme?.key);
+  // Represent your city (SPEC 9.16), city scope only: nobody has represented it today
+  // (my own pending proof counts for me), and its run of represented days.
+  const presence = scope === 'city' ? data?.presence ?? null : null;
+  const cityShort = city?.name ? shortCityName(city.name) : null;
+  const emptyCity = !!presence && !presence.represented && !!cityShort && challenge.isActive;
+  const cityStreak = presence && cityShort && presence.streak >= 2 ? presence.streak : 0;
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = challenge.theme
     ? themeName(challenge.theme.key, { special: challenge.special, city: scope === 'city' ? city?.name : null })
@@ -160,6 +166,12 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
             <Text style={styles.twistText}>{showOriginal && twist.originalText ? twist.originalText : twist.text}</Text>
           </View>
         )}
+        {emptyCity && (
+          <View style={styles.emptyCity} accessibilityRole="text">
+            <CityFlag country={city?.country} size={18} />
+            <Text style={styles.emptyCityText}>{t('represent.empty', { city: cityShort })}</Text>
+          </View>
+        )}
         {!myProof && (
           <View style={styles.hint}>
             <View style={styles.hintIcon}><Ionicons name="camera-outline" size={20} color={colors.primaryOnTint} /></View>
@@ -177,7 +189,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           </>
         ) : (
           // The card's only orange element, pulsing; straight to the camera (SPEC 9.3).
-          <PulseButton label={t('ctaIn')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
+          <PulseButton label={emptyCity ? t('represent.button', { city: cityShort }) : t('ctaIn')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
         {took > 0 && (
@@ -187,18 +199,25 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
             </Text>
           </TouchableOpacity>
         )}
-        {/* Challenge a friend (SPEC 9.14): hilads.live/today with the card. */}
+        {cityStreak > 0 && (
+          <View style={styles.streak}>
+            <Ionicons name="flame-outline" size={16} color={colors.primaryText} />
+            <Text style={styles.streakText}>{t('represent.streak', { count: cityStreak, city: cityShort })}</Text>
+          </View>
+        )}
+        {/* Challenge a friend (SPEC 9.14): hilads.live/today with the card; an empty city: "Help me represent Saigon". */}
         {challenge.isActive && (
-          <TouchableOpacity style={styles.friend} onPress={() => setShare(todayShare(challenge, city ?? null))}
-                            accessibilityRole="button" accessibilityLabel={t('share.challengeFriend')}>
+          <TouchableOpacity style={styles.friend}
+                            onPress={() => setShare(emptyCity && city ? representShare(challenge, city) : todayShare(challenge, city ?? null))}
+                            accessibilityRole="button" accessibilityLabel={emptyCity ? t('represent.invite') : t('share.challengeFriend')}>
             <Ionicons name="paper-plane-outline" size={16} color={colors.text} />
-            <Text style={styles.link}>{t('share.challengeFriend')}</Text>
+            <Text style={styles.link}>{emptyCity ? t('represent.invite') : t('share.challengeFriend')}</Text>
           </TouchableOpacity>
         )}
       </View>
       <HowItWorksSheet visible={howOpen} placeTheme={placeTheme}
                        onCamera={() => { howDone('camera'); onCta(); }} onLater={remindLater} onClose={() => howDone('dismissed')} />
-      <ShareSheet content={share} source="today_card" onClose={() => setShare(null)} />
+      <ShareSheet content={share} source={share?.type === 'today' && share.represent ? 'represent_today_card' : 'today_card'} onClose={() => setShare(null)} />
     </TouchableOpacity>
   );
 }
@@ -312,6 +331,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Secondary links in ink: the button is the card's only orange element.
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
   took:        { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  emptyCity:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
+  emptyCityText: { flex: 1, fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.primaryOnTint },
+  streak:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -4 },
+  streakText:  { fontSize: 13, fontWeight: '700', color: c.text },
   friend:      { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -6 },
   tookText:    { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

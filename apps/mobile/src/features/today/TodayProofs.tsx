@@ -9,6 +9,8 @@ import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { fetchDailyTodayProofs } from '@/api/daily';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { representShare, type ShareContent } from '@/features/share/content';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { RankMedal } from '@/features/daily/RankMedal';
 import type { DailyToday, DailyTodayProofs } from '@/types';
@@ -30,6 +32,7 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   const { scope } = useScope();
   const guestId = account ? null : identity?.guestId ?? null;
   const [strip, setStrip] = useState<DailyTodayProofs | null>(null);
+  const [invite, setInvite] = useState<ShareContent | null>(null);
   const date = today?.challenge?.date ?? null;
   const cityId = scope === 'city' ? today?.city?.id ?? null : null;
 
@@ -46,6 +49,11 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
 
   if (!strip || strip.proofs.length === 0) return null;
   const world = strip.scope === 'world';
+  // Represent your city (SPEC 9.16), World scope: "12 cities are on today's board. Saigon isn't yet."
+  // Never a zero count; my own pending proof counts for me.
+  const presence = scope === 'world' ? today?.presence ?? null : null;
+  const myCity = today?.city?.name ? shortCityName(today.city.name) : null;
+  const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && !!today?.challenge?.isActive;
   const proofs = t('today.proofs', { count: strip.total });
   return (
     <Card style={styles.card}>
@@ -54,11 +62,20 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
       <Text style={styles.stats}>
         {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}
       </Text>
+      {boardLine && (
+        <View style={styles.board}>
+          <Text style={styles.boardText}>{t('represent.board', { count: presence!.citiesToday, city: myCity })}</Text>
+          <TouchableOpacity onPress={() => setInvite(representShare(today!.challenge!, today!.city!))} accessibilityRole="button" hitSlop={8}>
+            <Text style={styles.boardLink}>{t('represent.invite')}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         {strip.proofs.map(p => (
           <StripItem key={p.id} proof={p} guestId={guestId} onPress={() => router.push(`/daily/today?proof=${p.id}` as never)} />
         ))}
       </ScrollView>
+      <ShareSheet content={invite} source="represent_world_strip" onClose={() => setInvite(null)} />
     </Card>
   );
 }
@@ -91,4 +108,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rank:  { position: 'absolute', top: 6, left: 6, borderWidth: 2, borderColor: c.bg2 },
   city:  { fontSize: 13, fontWeight: '700', color: c.text },
   votes: { fontSize: 12, fontWeight: '500', color: c.muted },
+  board: { gap: 4, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
+  boardText: { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.primaryOnTint },
+  boardLink: { fontSize: 13, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
 });
