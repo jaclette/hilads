@@ -16476,7 +16476,8 @@ body.has-app-promo-banner .page-header {
 /* ── The app's header (W1): "Hi" mark, city / World selector, DM + bell or
    Sign up. Used by Today, Chat and the tab screens. ─────────────────────── */
 .v3-header { display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 16px 10px; background: var(--bg); }
-.v3-mark { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; letter-spacing: -0.3px; }
+/* The Hilads logo (public/logo/icon.svg): its own gradient and corner radius, exempt from the flat tokens. */
+.v3-mark { width: 40px; height: 40px; flex-shrink: 0; display: block; }
 .v3-scope { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; position: relative; }
 .v3-scope-label { flex: 1; min-width: 0; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v3-round { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
@@ -16772,7 +16773,7 @@ body.has-app-promo-banner .page-header {
 /* ── The sign-up sheet (W5, like the app) ─────────────────────────────── */
 .su-wrap { z-index: 1100; }
 .su-sheet { align-items: center; text-align: center; gap: 12px; padding-left: 20px; padding-right: 20px; }
-.su-mark { width: 52px; height: 52px; border-radius: 16px; font-size: 22px; }
+.su-mark { width: 52px; height: 52px; }
 .su-title { margin: 0; font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
 .su-sub { margin-bottom: 4px; }
 .su-secondary { width: 100%; min-height: 54px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 1rem; font-weight: 700; color: var(--text); cursor: pointer; }

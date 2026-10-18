@@ -3692,7 +3692,7 @@ export default function App() {
     const label = channelScope === 'city' && city ? shortCityName(city) : fullLabel
     return (
       <div className="v3-header">
-        <span className="v3-mark" aria-hidden="true">Hi</span>
+        <img className="v3-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
         <button
           type="button"
           className="v3-scope"

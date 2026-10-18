@@ -1,21 +1,14 @@
-import { Text, View, StyleSheet } from 'react-native';
-import { type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Image } from 'expo-image';
 
-/** The orange "Hi" square: md in the app header, lg on the sign-up sheet, auth screens and boot. */
+// The original Hilads logo (the app icon's artwork, with its own gradient and
+// 15/64 corner radius), as an image: never redrawn with text or theme tokens.
+const LOGO = require('../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
+
+/** The Hilads logo: md (40) in the app header, lg (52) on the sign-up sheet, auth screens and boot. */
 export function BrandMark({ size = 'md' }: { size?: 'md' | 'lg' }) {
-  const styles = useThemedStyles(makeStyles);
-  const lg = size === 'lg';
+  const px = size === 'lg' ? 52 : 40;
   return (
-    <View style={[styles.mark, lg && styles.markLg]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Text style={[styles.text, lg && styles.textLg]}>Hi</Text>
-    </View>
+    <Image source={LOGO} style={{ width: px, height: px }} contentFit="contain"
+           accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
   );
 }
-
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  mark:   { width: 40, height: 40, borderRadius: 12, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  markLg: { width: 52, height: 52, borderRadius: 16 },
-  text:   { color: c.white, fontSize: 17, fontWeight: '800' },
-  textLg: { fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
-});

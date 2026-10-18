@@ -24,7 +24,7 @@ export default function SignUpSheet({ reason, onAuth, onClose }) {
       <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('sheet.notNow')} />
       <div className="v3-sheet su-sheet">
         <span className="v3-sheet-grabber" aria-hidden="true" />
-        <span className="v3-mark su-mark" aria-hidden="true">Hi</span>
+        <img className="v3-mark su-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
         <h2 className="su-title">{t(`sheet.reason.${r}`)}</h2>
         <p className="dc-muted su-sub">{t('sheet.comeBack')}</p>
         <button type="button" className="today-cta dc-full" onClick={() => onAuth('signup', r)}>{t('sheet.signUp')}</button>
