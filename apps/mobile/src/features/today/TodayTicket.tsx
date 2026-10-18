@@ -16,7 +16,7 @@ import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { THEME_ICON, clock } from './format';
-import { Button, Chip } from '@/ui';
+import { Button, Chip, CityFlag } from '@/ui';
 import type { DailyToday } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
@@ -102,7 +102,10 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
       <View style={styles.bottom}>
         {twist && (
           <View style={styles.twist}>
-            <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+            <View style={styles.twistHead}>
+              <CityFlag country={city?.country} />
+              <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+            </View>
             <Text style={styles.twistText}>{showOriginal && twist.originalText ? twist.originalText : twist.text}</Text>
           </View>
         )}
@@ -197,6 +200,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   notchRight:  { right: -NOTCH / 2 - 1.5 },
   bottom:      { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 16, gap: 10 },
   twist:       { gap: 4 },
+  twistHead:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
   propose:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40 },
   proposeText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   twistLabel:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },

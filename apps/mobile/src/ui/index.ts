@@ -6,6 +6,7 @@ export { BrandMark } from './BrandMark';
 export { Button } from './Button';
 export { Card } from './Card';
 export { Chip } from './Chip';
+export { CityFlag, CityName } from './CityName';
 export { EmptyState } from './EmptyState';
 export { IconButton } from './IconButton';
 export { ListRow, RowGroup } from './ListRow';

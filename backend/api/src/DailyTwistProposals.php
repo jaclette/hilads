@@ -320,7 +320,7 @@ final class DailyTwistProposals
 
         return [
             'cityId'    => $cityId,
-            'city'      => $cityName !== null ? ['id' => (int) substr($cityId, 5), 'name' => $cityName] : null,
+            'city'      => $cityName !== null ? ['id' => (int) substr($cityId, 5), 'name' => $cityName, 'country' => CityRepository::countryOf($cityId)] : null,
             'challenge' => $challenge,
             'reason'    => self::ineligibility($user['mode'] ?? null, $user['home_city'] ?? null, $cityName,
                                                DailyRules::isLive($cityId), $challenge !== null),

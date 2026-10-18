@@ -140,6 +140,7 @@ export const Colors = {
   primaryOnTint: '#FFB48A',   // text on primaryTint
   line:          '#272018',   // borders
   ticketLine:    '#4A3426',   // Daily Challenge ticket border + perforation
+  flagLine:      'rgba(255, 255, 255, 0.28)', // hairline around a city flag (white flags stay visible)
   caramel:       '#C98A45',   // own messages, plan pins
   localBg:       '#12301F',   // "validated by a local" badge
   localText:     '#7FD9A4',
@@ -194,6 +195,7 @@ export const LightColors: ThemeColors = {
   primaryOnTint: '#8A3A12',
   line:          '#EADCCD',
   ticketLine:    '#E8CDB8',
+  flagLine:      'rgba(42, 28, 19, 0.22)',
   caramel:       '#9C5F22',
   localBg:       '#E3F0E8',
   localText:     '#23603F',

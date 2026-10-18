@@ -147,7 +147,7 @@ final class Spots
             'name'             => $r['name'],
             'lat'              => (float) $r['lat'],
             'lng'              => (float) $r['lng'],
-            'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $r['city_name']] : null,
+            'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $r['city_name'], 'country' => $r['city_country'] ?? null] : null,
             'themes'           => $r['themes'] !== null ? array_values(array_filter(explode(',', (string) $r['themes']))) : [],
             'tags'             => $tags,
             'proofCount'       => (int) $r['proof_count'],
@@ -250,6 +250,7 @@ final class Spots
             'week'     => $week !== null && $week <= 3 ? $week : null,
             'alltime'  => $alltime !== null && $alltime <= 3 ? $alltime : null,
             'cityName' => $spot['city']['name'],
+            'cityCountry' => $spot['city']['country'] ?? null,
         ];
     }
 
@@ -356,7 +357,7 @@ final class Spots
         $args[] = (int) ($scope['limit'] ?? self::PIN_LIMIT + 1);
 
         $stmt = Database::pdo()->prepare("
-            SELECT pl.id, pl.name, pl.lat, pl.lng, pl.city_id, ch.name AS city_name,
+            SELECT pl.id, pl.name, pl.lat, pl.lng, pl.city_id, ch.name AS city_name, cc.country AS city_country,
                    count(*)                                   AS proof_count,
                    string_agg(DISTINCT dc.theme, ',')         AS themes,
                    COALESCE(sum(p.vote_count), 0)             AS votes,
@@ -371,8 +372,9 @@ final class Spots
             JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved'
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             LEFT JOIN channels ch    ON ch.id = pl.city_id
+            LEFT JOIN cities cc      ON cc.channel_id = pl.city_id
             WHERE " . implode(' AND ', $where) . "
-            GROUP BY pl.id, ch.name
+            GROUP BY pl.id, ch.name, cc.country
             {$having}
             ORDER BY {$order}
             LIMIT ?

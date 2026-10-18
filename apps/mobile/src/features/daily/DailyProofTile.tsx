@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { CityName } from '@/ui';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
@@ -29,7 +29,7 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
           <ModeLabel mode={proof.isLocal ? 'local' : 'traveler'} label={proof.isLocal ? t('local') : t('traveler')} />
           {proof.isEarly && <EarlyBadge />}
         </View>
-        {proof.city && <Text style={styles.sub} numberOfLines={1}>{localizeCityName(proof.city.name)}</Text>}
+        {proof.city && <CityName name={proof.city.name} country={proof.city.country} short style={styles.sub} />}
         {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} style={styles.badge} />}
         {!!proof.caption && <Text style={styles.caption} numberOfLines={2}>{proof.caption}</Text>}
         <View style={styles.voteRow}>

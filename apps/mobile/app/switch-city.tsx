@@ -28,16 +28,7 @@ import { track } from '@/services/analytics';
 import type { City } from '@/types';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, Card, Chip, ListRow, RowGroup, Screen, ScreenHeader, TextField } from '@/ui';
-
-// ── Flag emoji - mirrors web cityFlag() ──────────────────────────────────────
-
-function cityFlag(countryCode?: string): string {
-  if (!countryCode || countryCode.length !== 2) return '';
-  return [...countryCode.toUpperCase()]
-    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
-    .join('');
-}
+import { Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, TextField } from '@/ui';
 
 // ── Live activity dot - mirrors web .activity-dot.live pulse animation ───────
 
@@ -71,7 +62,6 @@ function ActivityDot({ live }: { live: boolean }) {
 function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('cities');
-  const flag = cityFlag(city.country);
   // Active city always counts as live - user is there, at least 1 person online
   const live = isActive || (city.onlineCount ?? 0) > 0;
 
@@ -81,7 +71,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
       <Card style={[styles.card, isActive && styles.cardActive]}>
         <View style={styles.cardTop}>
           <ActivityDot live={live} />
-          {!!flag && <Text style={styles.flag}>{flag}</Text>}
+          <CityFlag country={city.country} />
           <Text style={styles.cityName} numberOfLines={2}>{localizeCityName(city.name)}</Text>
           {isActive && <Chip label={t('youreHere')} />}
         </View>
@@ -332,7 +322,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card:           { paddingHorizontal: 14, paddingVertical: 12, gap: 6 },
   cardActive:     { borderColor: c.primary },
   cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  flag:           { fontSize: 18 },
   cityName:       { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
   statsRow:       { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 2, paddingLeft: 16 },
   stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },

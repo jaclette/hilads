@@ -272,6 +272,7 @@ class MessageRepository
         $messages = array_map([self::class, 'format'], $rows);
         MentionService::resolveForMessages($messages); // raw mentions → current @usernames
         DailyCards::refreshChallengeCards($messages);  // Daily cards in the challenge's current translations
+        DailyCards::addCityCountries($messages);       // the city's flag on cards stored before they carried it
         return [
             'messages' => $messages,
             'hasMore'  => $hasMore,

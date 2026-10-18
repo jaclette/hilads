@@ -11,7 +11,7 @@ final class DailyModerationTest extends TestCase
         return $over + [
             'id' => 'p1', 'challenge_id' => 'c1', 'challenge_date' => '2026-11-02',
             'user_id' => 'u1', 'username' => 'anh', 'display_name' => 'Anh', 'profile_photo_url' => null,
-            'is_local' => 't', 'city_id' => 'city_20', 'city_name' => 'Ho Chi Minh City',
+            'is_local' => 't', 'city_id' => 'city_20', 'city_name' => 'Ho Chi Minh City', 'city_country' => 'VN',
             'photo_url' => 'https://media.test/0123456789abcdef0123456789abcdef.jpg', 'caption' => 'Cơm tấm',
         ];
     }
@@ -21,7 +21,7 @@ final class DailyModerationTest extends TestCase
         $p = DailyCards::proofPayload(self::proofRow(), 'Eat what locals eat');
         $this->assertSame('p1', $p['proofId']);
         $this->assertSame('Eat what locals eat', $p['challengeText']);
-        $this->assertSame(['id' => 20, 'name' => 'Ho Chi Minh City'], $p['city']);
+        $this->assertSame(['id' => 20, 'name' => 'Ho Chi Minh City', 'country' => 'VN'], $p['city']);
         $this->assertTrue($p['isLocal']);
         $this->assertSame('Cơm tấm', $p['caption']);
         $this->assertSame('anh', $p['user']['username']);

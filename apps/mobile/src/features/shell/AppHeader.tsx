@@ -14,10 +14,10 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useScope, type Scope } from '@/context/ScopeContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { BrandMark, IconButton, Sheet } from '@/ui';
+import { BrandMark, CityFlag, IconButton, Sheet } from '@/ui';
 
 interface Props {
   /** Optional nodes injected before the messages / bell buttons. */
@@ -36,7 +36,8 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
   const [sheet, setSheet] = useState(false);
 
   const cityName = city?.name ? localizeCityName(city.name) : t('scope.pickCity');
-  const label = scope === 'world' ? t('scope.world') : cityName;
+  // The pill is tight: the city's short name ("Saigon") after its flag.
+  const label = scope === 'world' ? t('scope.world') : city?.name ? shortCityName(city.name) : cityName;
 
   const pick = (s: Scope) => {
     setSheet(false);
@@ -53,9 +54,9 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
         onPress={() => setSheet(true)}
         activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel={t('scope.a11y', { scope: label })}
+        accessibilityLabel={t('scope.a11y', { scope: scope === 'world' ? label : cityName })}
       >
-        {scope === 'world' && <Ionicons name="globe-outline" size={17} color={colors.text} />}
+        {scope === 'world' ? <Ionicons name="globe-outline" size={17} color={colors.text} /> : <CityFlag country={city?.country} />}
         <Text style={styles.scopeText} numberOfLines={1}>{label}</Text>
         <Ionicons name="chevron-down" size={18} color={colors.text} />
       </TouchableOpacity>
@@ -85,6 +86,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
         visible={sheet}
         scope={scope}
         cityName={city?.name ? cityName : null}
+        cityCountry={city?.country ?? null}
         onPick={pick}
         onChangeCity={() => { setSheet(false); router.push('/switch-city' as never); }}
         onClose={() => setSheet(false)}
@@ -94,22 +96,25 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 }
 
 /** Bottom sheet of the scope selector: my city, World, change city. */
-function ScopeSheet({ visible, scope, cityName, onPick, onChangeCity, onClose }: {
-  visible: boolean; scope: Scope; cityName: string | null;
+function ScopeSheet({ visible, scope, cityName, cityCountry, onPick, onChangeCity, onClose }: {
+  visible: boolean; scope: Scope; cityName: string | null; cityCountry: string | null;
   onPick: (s: Scope) => void; onChangeCity: () => void; onClose: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('common');
 
-  const Row = ({ icon, title, sub, active, onPress }: {
-    icon: React.ComponentProps<typeof Ionicons>['name']; title: string; sub?: string; active?: boolean; onPress: () => void;
+  const Row = ({ icon, title, flag, sub, active, onPress }: {
+    icon: React.ComponentProps<typeof Ionicons>['name']; title: string; flag?: string | null; sub?: string; active?: boolean; onPress: () => void;
   }) => (
     <TouchableOpacity style={[styles.row, active && styles.rowActive]} onPress={onPress} accessibilityRole="button"
                       accessibilityState={{ selected: !!active }}>
       <Ionicons name={icon} size={22} color={active ? colors.primaryOnTint : colors.text} />
       <View style={styles.rowBody}>
-        <Text style={[styles.rowTitle, active && styles.rowTitleActive]} numberOfLines={1}>{title}</Text>
+        <View style={styles.rowTitleLine}>
+          {!!flag && <CityFlag country={flag} />}
+          <Text style={[styles.rowTitle, active && styles.rowTitleActive]} numberOfLines={1}>{title}</Text>
+        </View>
         {!!sub && <Text style={styles.rowSub} numberOfLines={2}>{sub}</Text>}
       </View>
       {active && <Ionicons name="checkmark" size={20} color={colors.primaryOnTint} />}
@@ -119,7 +124,7 @@ function ScopeSheet({ visible, scope, cityName, onPick, onChangeCity, onClose }:
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
       <Text style={styles.sheetTitle}>{t('scope.title')}</Text>
-      <Row icon="location-outline" title={cityName ?? t('scope.pickCity')} sub={t('scope.citySub')}
+      <Row icon="location-outline" title={cityName ?? t('scope.pickCity')} flag={cityName ? cityCountry : null} sub={t('scope.citySub')}
            active={scope === 'city' && !!cityName} onPress={() => onPick('city')} />
       <Row icon="globe-outline" title={t('scope.world')} sub={t('scope.worldSub')}
            active={scope === 'world'} onPress={() => onPick('world')} />
@@ -141,7 +146,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row:            { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 16 },
   rowActive:      { backgroundColor: c.primaryTint },
   rowBody:        { flex: 1 },
-  rowTitle:       { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  rowTitleLine:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rowTitle:       { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   rowTitleActive: { color: c.primaryOnTint },
   rowSub:         { fontSize: FontSizes.xs, color: c.muted, marginTop: 2 },
 });

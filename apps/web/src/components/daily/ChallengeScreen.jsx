@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import BackButton from '../BackButton'
 import { fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToday } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
+import { CityFlag, CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import {
@@ -164,7 +165,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
 
               {sheet.twist && isLive && (
                 <div className="dc-twist">
-                  <span className="dc-twist-label" style={ROW}><Icon name="location-outline" size={14} />{t('twistIn', { city: cityName })}</span>
+                  <span className="dc-twist-label" style={ROW}>{sheet.city?.country ? <CityFlag country={sheet.city.country} /> : <Icon name="location-outline" size={14} />}{t('twistIn', { city: cityName })}</span>
                   <span className="dc-twist-text">{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</span>
                   {sheet.twist.author ? (
                     <button type="button" className="dc-author" onClick={() => goProfile(sheet.twist.author.id, personName(sheet.twist.author))}>
@@ -198,7 +199,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
             <div className="dc-tabs" role="tablist">
               {(isLive ? ['world', 'city', 'top10'] : ['world', 'top10']).map(k => (
                 <button key={k} type="button" role="tab" aria-selected={tab === k} className={`dc-tab${tab === k ? ' dc-tab--on' : ''}`} onClick={() => selectTab(k)}>
-                  {k === 'world' ? t('tabWorld') : k === 'city' ? cityName : t('leaderboard.tab')}
+                  {k === 'world' ? t('tabWorld') : k === 'city' ? <CityName name={sheet.city?.name} country={sheet.city?.country} short /> : t('leaderboard.tab')}
                 </button>
               ))}
             </div>
@@ -311,7 +312,7 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
           {board.world.map(e => <EntryRow key={e.proofId} entry={e} mine={e.proofId === board.me?.proofId} onOpen={() => onOpenProof(e.proofId)} />)}
           {board.cities.map(c => (
             <div key={c.city.id}>
-              <p className="dc-section" style={LINE}><Icon name="location-outline" size={16} />{t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })}</p>
+              <p className="dc-section" style={LINE}>{c.city.country ? <CityFlag country={c.city.country} /> : <Icon name="location-outline" size={16} />}{t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })}</p>
               {c.entries.map(e => <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onOpen={() => onOpenProof(e.proofId)} />)}
             </div>
           ))}
@@ -330,7 +331,7 @@ function EntryRow({ entry, mine, hideCity = false, onOpen }) {
         <span className="dc-row-name">{personName(entry.user)} {entry.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">
           <RoleLabel isLocal={entry.isLocal} />
-          {!hideCity && entry.city ? ` · ${localizeCityName(entry.city.name)}` : ''}
+          {!hideCity && entry.city && <> · <CityName name={entry.city.name} country={entry.city.country} short /></>}
         </span>
       </span>
       <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{entry.voteCount}</span>
@@ -347,7 +348,7 @@ function ResultRow({ proof, label, onOpen }) {
         <span className="dc-row-name">{personName(proof.user)} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">
           <RoleLabel isLocal={proof.isLocal} />
-          {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
+          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
         </span>
       </span>
       <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{proof.voteCount}</span>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends, fetchWeeklyRank } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
+import { CityFlag } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
@@ -27,7 +28,7 @@ const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
  * and Most Local all time. Settings behind the gear; "How points work" as a
  * sheet. Guests get an invitation to start theirs.
  */
-export default function PassportScreen({ account, guestName, guestMode, cityId, cityName, onSettings, onSignUp, onSignIn, onOpen }) {
+export default function PassportScreen({ account, guestName, guestMode, cityId, cityName, cityCountry, onSettings, onSignUp, onSignIn, onOpen }) {
   const { t, i18n } = usePp()
   const { t: tc } = useTranslation('challenge')
   const [stats, setStats] = useState(null)
@@ -70,7 +71,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
       <div className="full-page full-page--tab pp-page">
         {header}
         <div className="page-body pp-body">
-          <Identity name={guestName || '-'} photo={null} mode={guestMode} city={city} />
+          <Identity name={guestName || '-'} photo={null} mode={guestMode} city={city} country={cityCountry} />
           <div className="pp-guest">
             <p className="pp-guest-title">{t('passport.guestTitle')}</p>
             <p className="dc-muted">{t('passport.guestBody')}</p>
@@ -85,7 +86,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
   // City pages: every city with stamps, the current city first (even with none).
   const progress = [...(stats?.localPassProgress ?? [])]
   if (cityNum !== null && !progress.some(p => p.city.id === cityNum)) {
-    progress.unshift({ city: { id: cityNum, name: cityName ?? null }, done: 0, total: 7, themes: [], earned: false })
+    progress.unshift({ city: { id: cityNum, name: cityName ?? null, country: cityCountry ?? null }, done: 0, total: 7, themes: [], earned: false })
   }
   progress.sort((a, b) => (a.city.id === cityNum ? -1 : b.city.id === cityNum ? 1 : b.done - a.done))
   const todayTheme = today?.challenge?.theme?.key ?? null
@@ -97,7 +98,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
       {header}
       <div className="page-body pp-body">
         <Identity name={account.username ? `@${account.username}` : account.display_name}
-                  photo={account.thumbAvatarUrl ?? account.profile_photo_url ?? null} mode={account.mode ?? null} city={city} />
+                  photo={account.thumbAvatarUrl ?? account.profile_photo_url ?? null} mode={account.mode ?? null} city={city} country={cityCountry} />
 
         <div className="pp-cards">
           <div className="pp-card">
@@ -113,7 +114,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         {progress.length > 0 && (
           <div className={`pp-pages${progress.length > 1 ? ' pp-pages--scroll' : ''}`}>
             {progress.map(p => (
-              <CityPage key={p.city.id} cityName={localizeCityName(p.city.name ?? '')} themes={p.themes} earned={p.earned}
+              <CityPage key={p.city.id} cityName={localizeCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
                         todayTheme={p.city.id === cityNum ? todayTheme : null} tomorrowTheme={p.city.id === cityNum ? tomorrow : null} />
             ))}
           </div>
@@ -135,7 +136,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
   )
 }
 
-function Identity({ name, photo, mode, city }) {
+function Identity({ name, photo, mode, city, country }) {
   const { t } = usePp()
   const local = mode === 'local'
   return (
@@ -147,7 +148,7 @@ function Identity({ name, photo, mode, city }) {
         <span className="pp-name">{name}</span>
         <div className="pp-chips">
           {mode && <span className={`pp-chip ${local ? 'pp-chip--local' : 'pp-chip--traveler'}`}>{t(`mode.${local ? 'local' : 'exploring'}.label`)}</span>}
-          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 4 }}><Icon name="location-outline" size={13} />{city}</span>}
+          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 4 }}>{country ? <CityFlag country={country} size={14} /> : <Icon name="location-outline" size={13} />}{city}</span>}
         </div>
       </div>
     </div>
@@ -155,7 +156,7 @@ function Identity({ name, photo, mode, city }) {
 }
 
 /** One city page: the 7 theme stamps (round ink stamps, slightly rotated) and the Local Pass seal. */
-function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme }) {
+function CityPage({ cityName, country, themes, earned, todayTheme, tomorrowTheme }) {
   const { t } = usePp()
   const have = new Set(themes)
   const todayMissing = todayTheme !== null && !have.has(todayTheme)
@@ -166,7 +167,7 @@ function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme }) {
   return (
     <div className="pp-cpage" aria-label={t('passport.pageA11y', { city: cityName, count: have.size })}>
       <div className="pp-cpage-head">
-        <span className="pp-cpage-city">{cityName}</span>
+        <span className="pp-cpage-city"><CityFlag country={country} />{cityName}</span>
         <span className="dc-muted">{t('passport.stamps', { count: have.size })}</span>
       </div>
       {hint && <p className="dc-line pp-hint">{hint}</p>}

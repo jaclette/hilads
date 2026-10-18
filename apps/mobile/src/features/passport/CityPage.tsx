@@ -6,6 +6,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import { THEME_ICON } from '@/features/today/format';
 import type { DailyTheme, DailyThemeKey } from '@/types';
+import { CityFlag } from '@/ui';
 
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7];
@@ -15,8 +16,9 @@ const ROTATION = [-6, 5, -3, 7, -5, 4, -7];
  * stamps, slightly rotated) and the Local Pass seal, with a hint linking the
  * next missing stamp to today's theme.
  */
-export function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme, width }: {
+export function CityPage({ cityName, country, themes, earned, todayTheme, tomorrowTheme, width }: {
   cityName: string;
+  country?: string | null;
   themes: DailyThemeKey[];
   earned: boolean;
   todayTheme: DailyThemeKey | null;
@@ -36,7 +38,10 @@ export function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme, 
   return (
     <View style={[styles.page, width ? { width } : null]} accessibilityLabel={t('passport.pageA11y', { city: cityName, count: have.size })}>
       <View style={styles.head}>
-        <Text style={styles.city} numberOfLines={1}>{cityName}</Text>
+        <View style={styles.cityRow}>
+          <CityFlag country={country} />
+          <Text style={styles.city} numberOfLines={1}>{cityName}</Text>
+        </View>
         <Text style={styles.count}>{t('passport.stamps', { count: have.size })}</Text>
       </View>
       {hint && <Text style={styles.hint}>{hint}</Text>}
@@ -75,7 +80,8 @@ const SIZE = 58;
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   page:      { padding: 16, gap: 12, borderRadius: 20, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
   head:      { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 },
-  city:      { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  cityRow:   { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 0 },
+  city:      { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   count:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   hint:      { fontSize: FontSizes.xs, color: c.text, lineHeight: 18 },
   grid:      { flexDirection: 'row', flexWrap: 'wrap', rowGap: 10 },

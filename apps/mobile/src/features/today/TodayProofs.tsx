@@ -12,7 +12,7 @@ import { fetchDailyTodayProofs } from '@/api/daily';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { RankMedal } from '@/features/daily/RankMedal';
 import type { DailyToday, DailyTodayProofs } from '@/types';
-import { Card, SectionTitle } from '@/ui';
+import { Card, CityName, SectionTitle } from '@/ui';
 
 type StripProof = DailyTodayProofs['proofs'][number];
 
@@ -67,7 +67,7 @@ function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: st
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   const state = useVoteState(proof.id, guestId);
-  const city = proof.city ? localizeCityName(proof.city.name ?? '') : '';
+  const city = proof.city?.name ? localizeCityName(proof.city.name) : '';
   const votes = t('today.votes', { count: state?.voteCount ?? proof.voteCount });
   return (
     <TouchableOpacity style={styles.item} onPress={onPress} accessibilityRole="button"
@@ -76,7 +76,7 @@ function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: st
         <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
         {proof.rank !== null && <RankMedal rank={proof.rank} size={24} style={styles.rank} />}
       </View>
-      {!!city && <Text style={styles.city} numberOfLines={1}>{city}</Text>}
+      {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
       <Text style={styles.votes} numberOfLines={1}>{votes}</Text>
     </TouchableOpacity>
   );

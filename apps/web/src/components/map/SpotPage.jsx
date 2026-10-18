@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
 import { fetchSpot } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
+import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
 import Icon from '../Icon'
@@ -67,7 +68,7 @@ export default function SpotPage({ spotId, onBack }) {
           <>
             <h1 className="wm-spot-name">{spot.name}</h1>
             <p className="wm-spot-meta">
-              {spot.city?.name ? localizeCityName(spot.city.name) : null}
+              {spot.city?.name ? <CityName name={spot.city.name} country={spot.city.country} /> : null}
               {spot.themes.map((k, i) => (
                 <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={14} />{themeName(k)}</span>
               ))}

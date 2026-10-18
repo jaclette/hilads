@@ -9,13 +9,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchLeaderboard } from '@/api/leaderboard';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { cityDemonym } from '@/lib/cityDemonym';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { Border, FontSizes, Spacing, Radius, buildLeaderboardUrl, type ThemeColors } from '@/constants';
 import { RankMedal } from '@/features/daily/RankMedal';
-import { Avatar, Button, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
+import { Avatar, Button, CityFlag, CityName, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useShareToCity } from '@/lib/useShareToCity';
 import { useShareToWorld } from '@/lib/useShareToWorld';
@@ -279,7 +278,6 @@ function Selectors({
 }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
-  const cityFlag = cityCountry ? countryToFlag(cityCountry) : '';
   return (
     <View style={styles.selectorsWrap}>
       {/* Scope: My city ⇄ Cities ⇄ World. Tapping "My city" again opens the picker. */}
@@ -296,7 +294,7 @@ function Selectors({
       {/* The city being shown (My city scope): tap to pick another one. */}
       {onCityTap && (
         <TouchableOpacity style={styles.cityPick} onPress={onCityTap} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={cityLabel}>
-          {cityFlag ? <Text style={styles.cityFlag}>{cityFlag}</Text> : <Ionicons name="location-outline" size={16} color={colors.muted} />}
+          {cityCountry ? <CityFlag country={cityCountry} /> : <Ionicons name="location-outline" size={16} color={colors.muted} />}
           <Text style={styles.cityPickText} numberOfLines={1}>{cityLabel}</Text>
           <Ionicons name="chevron-down" size={16} color={colors.muted} />
         </TouchableOpacity>
@@ -331,8 +329,6 @@ function Row({
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
   const styles = useThemedStyles(makeStyles);
-  const flag = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
-  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : null;
   return (
     <TouchableOpacity
       style={[styles.row, isMe && styles.rowMe]}
@@ -348,10 +344,8 @@ function Row({
         <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
           {entry.displayName}
         </Text>
-        {showCity && cityLabel && (
-          <Text style={styles.citySub} numberOfLines={1}>
-            {flag ? `${flag} ` : ''}{cityLabel}
-          </Text>
+        {showCity && !!entry.cityName && (
+          <CityName name={entry.cityName} country={entry.cityCountry} short style={styles.citySub} size={14} />
         )}
       </View>
       <Text style={[styles.points, isMe && styles.pointsMe]}>
@@ -375,13 +369,12 @@ function CityRow({
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-';
   return (
     <View style={[styles.row, isMe && styles.rowMe]}>
       <RankMedal rank={entry.rank} size={30} style={styles.rank} />
       <View style={styles.cityFlagBox}>
-        {flag ? <Text style={styles.cityFlagText}>{flag}</Text> : <Ionicons name="globe-outline" size={20} color={colors.muted} />}
+        {entry.cityCountry ? <CityFlag country={entry.cityCountry} size={24} /> : <Ionicons name="globe-outline" size={20} color={colors.muted} />}
       </View>
       <View style={styles.nameWrap}>
         <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
@@ -405,7 +398,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   selectorsWrap: { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, paddingBottom: Spacing.sm, gap: Spacing.sm },
   cityPick:      { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, maxWidth: '100%',
                    paddingHorizontal: 14, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  cityFlag:      { fontSize: 16 },
   cityPickText:  { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
 
   // List
@@ -417,7 +409,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // footprint so the row geometry doesn't drift between scopes.
   cityFlagBox:  { width: 40, height: 40, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg2,
                   borderWidth: Border, borderColor: c.line },
-  cityFlagText: { fontSize: 22, lineHeight: 26 },
   // PR13 - wrapper allowing the city subtitle to stack under the displayName.
   nameWrap: { flex: 1, minWidth: 0, gap: 1 },
   name:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },

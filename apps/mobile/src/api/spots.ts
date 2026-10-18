@@ -7,7 +7,7 @@ export interface Spot {
   name:             string;
   lat:              number;
   lng:              number;
-  city:             { id: number; name: string | null } | null;
+  city:             { id: number; name: string | null; country?: string | null } | null;
   themes:           DailyThemeKey[];
   tags:             string[];
   proofCount:       number;
@@ -93,7 +93,7 @@ export interface SpotPhoto {
 
 export interface SpotDetail {
   spot:     Spot;
-  ranking:  { week: number | null; alltime: number | null; cityName: string | null } | null;
+  ranking:  { week: number | null; alltime: number | null; cityName: string | null; cityCountry?: string | null } | null;
   photos:   { items: SpotPhoto[]; nextOffset: number | null };
   captions: { text: string; date: string | null; username: string | null }[];
 }

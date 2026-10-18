@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { CityName } from '@/ui';
 import { formatAmount } from './currency';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
@@ -33,7 +33,7 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
             {proof.user.localPass && <LocalPassBadge label onDark />}
             {proof.isEarly && <EarlyBadge onDark />}
           </View>
-          {proof.city && <Text style={styles.extra}>{localizeCityName(proof.city.name)}</Text>}
+          {proof.city && <CityName name={proof.city.name} country={proof.city.country} style={styles.extra} />}
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
             <View style={styles.nameRow}>
               {proof.worldRank !== null && proof.worldRank <= 3 && (

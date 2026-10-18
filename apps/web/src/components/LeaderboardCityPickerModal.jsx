@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchChannels } from '../api'
-import { countryToFlag } from '../lib/countryFlag'
+import { CityFlag } from './CityName'
 import { localizeCityName } from '../i18n/cityName'
 import Icon from './Icon'
 
@@ -103,7 +103,6 @@ export default function LeaderboardCityPickerModal({
           ) : (
             filtered.map(item => {
               const isSelected = String(item.channelId) === String(selectedChannelId)
-              const flag = countryToFlag(item.country)
               return (
                 <button
                   key={item.channelId}
@@ -111,7 +110,7 @@ export default function LeaderboardCityPickerModal({
                   className={`leaderboard-city-picker-row${isSelected ? ' is-selected' : ''}`}
                   onClick={() => onSelect(item.channelId, item)}
                 >
-                  <span className="leaderboard-city-picker-flag" aria-hidden="true">{flag || <Icon name="globe-outline" size={18} style={{ color: 'var(--muted2)' }} />}</span>
+                  <span className="leaderboard-city-picker-flag" aria-hidden="true">{item.country ? <CityFlag country={item.country} size={22} /> : <Icon name="globe-outline" size={18} style={{ color: 'var(--muted2)' }} />}</span>
                   <span className="leaderboard-city-picker-name">{localizeCityName(item.city ?? item.name)}</span>
                   {isSelected && <span className="leaderboard-city-picker-check" aria-hidden="true"><Icon name="checkmark" size={16} /></span>}
                 </button>

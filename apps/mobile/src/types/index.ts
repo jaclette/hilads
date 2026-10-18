@@ -772,7 +772,7 @@ export interface DailyChallenge {
   isActive: boolean;
   theme?:   DailyTheme | null; // one of the 7 weekly themes (English name)
   /** The user whose proposal became this challenge (V2-05), with their city then. */
-  proposedBy?: { user: DailyPerson; city: { id: number; name: string | null } | null } | null;
+  proposedBy?: { user: DailyPerson; city: { id: number; name: string | null; country?: string | null } | null } | null;
 }
 
 /** One of my proposals (GET /daily/proposals/mine): a challenge or tomorrow's Local Twist. */
@@ -783,7 +783,7 @@ export interface DailyProposal {
   theme:           DailyTheme | null;
   why:             string | null;
   twistText:       string | null;
-  city:            { id: number; name: string | null } | null;
+  city:            { id: number; name: string | null; country?: string | null } | null;
   status:          'pending' | 'scheduled' | 'published' | 'reserve' | 'rejected' | 'approved' | 'picked' | 'not_picked';
   date:            string | null;
   rejectionReason: string | null;
@@ -800,7 +800,7 @@ export type DailyThemeKey = 'language' | 'street_food' | 'coffee' | 'market' | '
 
 /** My Local Pass progress in a city. */
 export interface DailyLocalPassProgress {
-  city:      { id: number; name: string | null };
+  city:      { id: number; name: string | null; country?: string | null };
   done:      number;
   total:     number;
   themes:    DailyThemeKey[];
@@ -833,7 +833,7 @@ export interface DailyProof {
   challengeId:      string;
   date:             string;
   user:             DailyPerson;
-  city:             { id: number; name: string } | null;
+  city:             { id: number; name: string; country?: string | null } | null;
   isLocal:          boolean;
   isEarly?:         boolean;          // posted within 3h of the author's start time (speed bonus)
   photoUrl:         string;
@@ -862,7 +862,7 @@ export interface DailyToday {
   nextDropAt:  number;
   secondsLeft: number;
   serverTime:  number;
-  city:        { id: number; name: string | null; isLive: boolean } | null;
+  city:        { id: number; name: string | null; country?: string | null; isLive: boolean } | null;
   twist:       DailyTwist | null;
   counts:      { world: number; city: number | null };
   myProof:     DailyProof | null;
@@ -894,7 +894,7 @@ export interface DailyTwistProposalScreen {
   opensAt:   number;
   closesAt:  number;
   open:      boolean;
-  city:      { id: number; name: string } | null;
+  city:      { id: number; name: string; country?: string | null } | null;
   /** Why I can't propose now: no_city, city_not_live, not_local, no_challenge, closed. */
   reason:    string | null;
   challenge: { text: string; context: string | null; original?: { text: string; context: string | null } | null } | null;
@@ -913,7 +913,7 @@ export interface DailyPriceRange {
 export interface DailyTodayProofs {
   date:      string;
   scope:     'world' | 'city';             // 'world' when the city had no proof yet
-  city:      { id: number; name: string | null } | null;
+  city:      { id: number; name: string | null; country?: string | null } | null;
   total:     number;
   countries: number;
   ranked:    boolean;                      // the leaderboard threshold is reached
@@ -957,7 +957,7 @@ export interface DailyLeaderboardEntry {
   voteCount: number;
   isLocal:   boolean;
   user:      DailyPerson;
-  city:      { id: number; name: string } | null;
+  city:      { id: number; name: string; country?: string | null } | null;
   thumbUrl:  string | null;
 }
 
@@ -970,7 +970,7 @@ export interface DailyLeaderboard {
   minProofs:     number;
   ranked:        boolean;     // false below minProofs approved proofs
   world:         DailyLeaderboardEntry[];
-  cities:        { city: { id: number; name: string }; entries: DailyLeaderboardEntry[] }[];
+  cities:        { city: { id: number; name: string; country?: string | null }; entries: DailyLeaderboardEntry[] }[];
   me:            { proofId: string; rank: number; cityRank: number | null; voteCount: number } | null;
 }
 
@@ -988,7 +988,7 @@ export interface DailyUserStats {
   bestStreak:    number;
   completed:     number;
   bestProofs:    DailyProof[];
-  localPasses?:       { city: { id: number; name: string | null }; earnedAt: number }[];
+  localPasses?:       { city: { id: number; name: string | null; country?: string | null }; earnedAt: number }[];
   localPassProgress?: DailyLocalPassProgress[];
 }
 

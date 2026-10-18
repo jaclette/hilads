@@ -3,10 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator }
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchChannels } from '@/api/channels';
-import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
-import { EmptyState, Sheet, TextField } from '@/ui';
+import { CityFlag, EmptyState, Sheet, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { City } from '@/types';
 
@@ -93,7 +92,6 @@ export function LeaderboardCityPickerSheet({
           style={styles.list}
           renderItem={({ item }) => {
             const isSelected = item.channelId === selectedChannelId;
-            const flag = countryToFlag(item.country);
             return (
               <TouchableOpacity
                 style={styles.row}
@@ -102,7 +100,7 @@ export function LeaderboardCityPickerSheet({
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
               >
-                {flag ? <Text style={styles.flag}>{flag}</Text> : <Ionicons name="globe-outline" size={20} color={colors.muted} />}
+                {item.country ? <CityFlag country={item.country} size={22} /> : <Ionicons name="globe-outline" size={20} color={colors.muted} />}
                 <Text style={[styles.cityName, isSelected && styles.cityNameSelected]} numberOfLines={1}>
                   {localizeCityName(item.name)}
                 </Text>
@@ -122,7 +120,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   list:             { flexGrow: 0 },
   empty:            { padding: Spacing.lg, alignItems: 'center' },
   row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
-  flag:             { fontSize: 22 },
   cityName:         { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   cityNameSelected: { color: c.primaryText },
   sep:              { height: 1, backgroundColor: c.line, marginLeft: 34 },

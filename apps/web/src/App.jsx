@@ -2,7 +2,8 @@ import { thumbUrl } from './lib/imageThumb'
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
-import { localizeCityName } from './i18n/cityName'
+import { localizeCityName, shortCityName } from './i18n/cityName'
+import { CityFlag, CityName } from './components/CityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates } from './api'
@@ -651,7 +652,7 @@ function DailyFeedCard({ item, t, onOpen }) {
     return (
       <div className="feed-daily feed-daily--proof">
         <div className="feed-daily-kicker"><Icon name="camera-outline" size={13} /> {t('daily.groupTitle', { n: count })}</div>
-        {where && <div className="feed-daily-sub">{where}</div>}
+        {where && <div className="feed-daily-sub feed-daily-where">{(p.countries || []).slice(0, named.length).map((cc, i) => <CityFlag key={i} country={cc} size={14} />)}<span>{where}</span></div>}
         <div className="feed-daily-strip">
           {shown.map((e, i) => (
             <div key={e.proofId} className="feed-daily-strip-cell">
@@ -712,7 +713,7 @@ function DailyFeedCard({ item, t, onOpen }) {
       <div className="feed-daily-tags">
         {p.spot && <span className="feed-daily-tag"><Icon name="location-outline" size={12} /> {p.spot.name}</span>}
         {themeName(p.theme?.key) && <span className="feed-daily-tag">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={12} />} {themeName(p.theme.key)}</span>}
-        {p.city?.name && <span className="feed-daily-tag">{localizeCityName(p.city.name)}</span>}
+        {p.city?.name && <CityName name={p.city.name} country={p.city.country} className="feed-daily-tag" />}
       </div>
       {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" />}
       {time && <span className="feed-join-time">{time}</span>}
@@ -3676,7 +3677,9 @@ export default function App() {
   // members, or "Sign up" for guests.
   function renderAppHeader() {
     const otherUnread = channelScope === 'world' ? cityUnread > 0 : worldUnread > 0
-    const label = channelScope === 'world' ? t('scope.world', { ns: 'common' }) : (city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' }))
+    const fullLabel = channelScope === 'world' ? t('scope.world', { ns: 'common' }) : (city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' }))
+    // The pill is tight: the city's short name ("Saigon") after its flag.
+    const label = channelScope === 'city' && city ? shortCityName(city) : fullLabel
     return (
       <div className="v3-header">
         <span className="v3-mark" aria-hidden="true">Hi</span>
@@ -3684,9 +3687,9 @@ export default function App() {
           type="button"
           className="v3-scope"
           onClick={() => setShowScopeSheet(true)}
-          aria-label={t('scope.a11y', { ns: 'common', scope: label })}
+          aria-label={t('scope.a11y', { ns: 'common', scope: fullLabel })}
         >
-          {channelScope === 'world' && <Icon name="globe-outline" size={18} />}
+          {channelScope === 'world' ? <Icon name="globe-outline" size={18} /> : <CityFlag country={cityCountry} />}
           <span className="v3-scope-label">{label}</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9" />
@@ -3729,11 +3732,11 @@ export default function App() {
       if (scope === 'city' && !city) { openCityPicker(); return }
       switchScope(scope)
     }
-    const Row = ({ icon, title, sub, active, onClick }) => (
+    const Row = ({ icon, title, flag, sub, active, onClick }) => (
       <button type="button" className={`v3-scope-row${active ? ' v3-scope-row--on' : ''}`} onClick={onClick} aria-pressed={!!active}>
         <span className="v3-scope-row-icon" aria-hidden="true"><Icon name={icon} size={20} /></span>
         <span className="v3-scope-row-body">
-          <span className="v3-scope-row-title">{title}</span>
+          <span className="v3-scope-row-title">{flag && <CityFlag country={flag} />}{title}</span>
           {sub && <span className="v3-scope-row-sub">{sub}</span>}
         </span>
         {active && <Icon name="checkmark" size={18} />}
@@ -3745,7 +3748,7 @@ export default function App() {
         <div className="v3-sheet">
           <span className="v3-sheet-grabber" aria-hidden="true" />
           <p className="v3-sheet-title">{t('scope.title', { ns: 'common' })}</p>
-          <Row icon="location-outline" title={city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' })} sub={t('scope.citySub', { ns: 'common' })}
+          <Row icon="location-outline" title={city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' })} flag={city ? cityCountry : null} sub={t('scope.citySub', { ns: 'common' })}
                active={channelScope === 'city'} onClick={() => pick('city')} />
           <Row icon="globe-outline" title={t('scope.world', { ns: 'common' })} sub={t('scope.worldSub', { ns: 'common' })}
                active={channelScope === 'world'} onClick={() => pick('world')} />
@@ -4435,7 +4438,7 @@ export default function App() {
         <div className="city-row-top">
           <div className="city-row-left">
             <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
-            <span className="city-row-flag" aria-hidden="true">{cityFlag(ch.country)}</span>
+            <CityFlag country={ch.country} />
             <span className="city-row-name">{localizeCityName(ch.city)}</span>
           </div>
           {isActive && <span className="city-row-current">{t('picker.youreHere')}</span>}
@@ -4922,7 +4925,8 @@ export default function App() {
                     <button type="button" role="tab" aria-selected={channelScope === 'city'}
                             className={`chat-scope-btn${channelScope === 'city' ? ' chat-scope-btn--on' : ''}`}
                             onClick={() => (channelScope === 'world' ? switchScope('city') : openCityPicker())}>
-                      <span className="chat-scope-label">{localizeCityName(city)}</span>
+                      <CityFlag country={cityCountry} />
+                      <span className="chat-scope-label">{shortCityName(city)}</span>
                       {channelScope === 'world' && cityUnread > 0 && <span className="chat-scope-badge">{cityUnread > 99 ? '99+' : cityUnread}</span>}
                     </button>
                     <button type="button" role="tab" aria-selected={channelScope === 'world'}
@@ -5599,7 +5603,7 @@ export default function App() {
                   )}
                   <span className="wa-name">{a.nickname}</span>
                   <span className="wa-meta">
-                    <span className="wa-city">{cityFlag(a.country)} {a.city}</span>
+                    <span className="wa-city"><CityFlag country={a.country} /> {localizeCityName(a.city)}</span>
                     <span className="wa-time">{formatMsgTime(a.createdAt)}</span>
                   </span>
                 </div>
@@ -6374,6 +6378,7 @@ export default function App() {
           guestMode={loadIdentity()?.mode ?? null}
           cityId={channelId}
           cityName={city}
+          cityCountry={cityCountry}
           onSettings={() => setShowSettings(true)}
           onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
           onSignIn={() => setGateAuth({ tab: 'login', action: 'passport' })}

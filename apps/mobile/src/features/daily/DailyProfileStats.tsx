@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button } from '@/ui';
+import { Button, CityFlag } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
 import { DailyProofViewer } from './DailyProofViewer';
 import { RankMedal } from './RankMedal';
@@ -66,11 +66,13 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
                 {stats.localPasses?.map(p => (
                   <View key={`p${p.city.id}`} style={[styles.pass, styles.passEarned]}>
                     <Ionicons name="checkmark-circle" size={14} color={colors.gold} />
+                    <CityFlag country={p.city.country} size={14} />
                     <Text style={[styles.passText, styles.passTextEarned]}>{localizeCityName(p.city.name ?? '')} · {t('localPass.earned')}</Text>
                   </View>
                 ))}
                 {isMe && inProgress.map(p => (
                   <View key={`g${p.city.id}`} style={styles.pass}>
+                    <CityFlag country={p.city.country} size={14} />
                     <Text style={styles.passText}>{localizeCityName(p.city.name ?? '')} · {t('localPass.progress', { done: p.done, total: p.total })}</Text>
                   </View>
                 ))}

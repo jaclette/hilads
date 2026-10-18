@@ -145,7 +145,7 @@ final class DailyLeaderboard
             'ranked'        => $board['ranked'],
             'world'         => array_map([self::class, 'entry'], $board['world']),
             'cities'        => array_map(static fn(array $c): array => [
-                'city'    => ['id' => (int) substr((string) $c[0], 5), 'name' => $c[1][0]['city_name']],
+                'city'    => ['id' => (int) substr((string) $c[0], 5), 'name' => $c[1][0]['city_name'], 'country' => CityRepository::countryOf($c[0])],
                 'entries' => array_map([self::class, 'entry'], $c[1]),
             ], $board['cities']),
             'me'            => $board['me'],
@@ -241,7 +241,7 @@ final class DailyLeaderboard
                 'localPass'   => DailyProofRepository::bool($r['author_local_pass'] ?? false),
             ],
             'city'      => $r['city_id'] !== null
-                ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name']]
+                ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name'], 'country' => CityRepository::countryOf($r['city_id'])]
                 : null,
             'thumbUrl'  => R2Uploader::thumbProxy($r['photo_url']),
         ];

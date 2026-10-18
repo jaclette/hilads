@@ -173,7 +173,7 @@ final class DailyChallengeRepository
         $city      = null;
         if ($cityId !== null) {
             $n    = (int) substr($cityId, 5);
-            $city = ['id' => $n, 'name' => CityRepository::findById($n)['name'] ?? null, 'isLive' => $isLive];
+            $city = ['id' => $n, 'name' => CityRepository::findById($n)['name'] ?? null, 'country' => CityRepository::countryOf($n), 'isLive' => $isLive];
         }
 
         $out = [
@@ -536,7 +536,7 @@ final class DailyChallengeRepository
             self::$credits[$challengeId] = $r ? [
                 'user' => ['id' => $r['id'], 'username' => $r['username'], 'displayName' => $r['display_name'],
                            'photoUrl' => R2Uploader::thumbProxy($r['profile_photo_url'])],
-                'city' => $r['city_id'] !== null ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name']] : null,
+                'city' => $r['city_id'] !== null ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name'], 'country' => CityRepository::countryOf($r['city_id'])] : null,
             ] : null;
         }
         return self::$credits[$challengeId];

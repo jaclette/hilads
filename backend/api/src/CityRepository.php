@@ -89,6 +89,16 @@ class CityRepository
         return null;
     }
 
+    /** ISO-2 country code of a city ("city_5" or 5), or null. Uses the cached city list. */
+    public static function countryOf(int|string|null $cityId): ?string
+    {
+        if ($cityId === null) {
+            return null;
+        }
+        $n = is_int($cityId) ? $cityId : (int) preg_replace('/^city_/', '', $cityId);
+        return $n > 0 ? (self::findById($n)['country'] ?? null) : null;
+    }
+
     /**
      * Map a city display name to its channel id ("city_<int>"). Case-
      * insensitive, trims whitespace. Returns null when no exact match.

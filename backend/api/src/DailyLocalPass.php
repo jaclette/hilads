@@ -91,7 +91,7 @@ final class DailyLocalPass
         $earnedAt = $stmt->fetchColumn();
         $n = (int) substr($cityId, 5);
         return [
-            'city'     => ['id' => $n, 'name' => CityRepository::findById($n)['name'] ?? null],
+            'city'     => ['id' => $n, 'name' => CityRepository::findById($n)['name'] ?? null, 'country' => CityRepository::countryOf($n)],
             'done'     => count($themes),
             'total'    => count(DailyThemes::THEMES),
             'themes'   => $themes,
@@ -177,6 +177,6 @@ final class DailyLocalPass
 
     private static function city(string $cityId, ?string $name): array
     {
-        return ['id' => (int) substr($cityId, 5), 'name' => $name];
+        return ['id' => (int) substr($cityId, 5), 'name' => $name, 'country' => CityRepository::countryOf($cityId)];
     }
 }

@@ -18,7 +18,7 @@ final class DailyProofRepository
         SELECT p.*,
                dc.challenge_date, dc.theme AS challenge_theme,
                u.username, u.display_name, u.profile_photo_url,
-               ch.name AS city_name,
+               ch.name AS city_name, cc.country AS city_country,
                wr.rank AS world_rank, cr.rank AS city_rank,
                (lp.user_id IS NOT NULL) AS author_local_pass,
                pl.name AS spot_name, pl.status AS spot_status
@@ -26,6 +26,7 @@ final class DailyProofRepository
         JOIN daily_challenges dc ON dc.id = p.challenge_id
         JOIN users u             ON u.id  = p.user_id
         LEFT JOIN channels ch    ON ch.id = p.city_id
+        LEFT JOIN cities cc      ON cc.channel_id = p.city_id
         LEFT JOIN daily_results wr
                ON wr.challenge_id = p.challenge_id AND wr.scope = 'world' AND wr.proof_id = p.id
         LEFT JOIN daily_results cr
@@ -320,7 +321,7 @@ final class DailyProofRepository
                 // Holds the Local Pass of the proof's city (V2-03).
                 'localPass'   => self::bool($row['author_local_pass'] ?? false),
             ],
-            'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $row['city_name']] : null,
+            'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $row['city_name'], 'country' => $row['city_country'] ?? null] : null,
             'isLocal'          => self::bool($row['is_local']),
             'isEarly'          => self::bool($row['is_early'] ?? false),
             'photoUrl'         => $row['photo_url'],

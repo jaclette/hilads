@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { voteDailyProof, unvoteDailyProof, reportDailyProof } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
+import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 
@@ -242,7 +243,7 @@ export function ProofTile({ proof, onOpen }) {
         <span className="dc-tile-name">{name} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-tile-sub">
           <RoleLabel isLocal={proof.isLocal} />
-          {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
+          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
         </span>
         {proof.validatedByLocal && <span className="dc-tile-badge" style={INLINE}><Icon name="checkmark" size={12} />{t('validatedByLocal')}</span>}
         {proof.isEarly && <EarlyBadge />}
@@ -283,7 +284,7 @@ export function ProofViewer({ proof, onClose }) {
       <div className="dc-viewer-meta">
         <div className="dc-viewer-name">
           {name} · <RoleLabel isLocal={proof.isLocal} />
-          {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
+          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} /></>}
           {proof.user.localPass && <LocalPassBadge label onDark />}
           {proof.isEarly && <EarlyBadge onDark />}
         </div>

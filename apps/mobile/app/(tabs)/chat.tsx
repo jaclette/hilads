@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
 import { fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, type WorldArrival } from '@/api/world';
@@ -877,7 +877,7 @@ export default function ChatTab() {
         <View style={styles.inset}>
           <Segmented
             options={[
-              { key: 'city' as const, label: localizeCityName(city.name), badge: cityUnread },
+              { key: 'city' as const, label: shortCityName(city.name), flag: city.country, badge: cityUnread },
               { key: 'world' as const, label: t('world.tab'), badge: worldUnread },
             ]}
             value={channelScope === 'world' ? 'world' : 'city'}

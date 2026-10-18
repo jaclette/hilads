@@ -5,7 +5,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
-import { Avatar, Button, Card, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
+import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
@@ -68,7 +68,7 @@ export default function PassportScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         {header}
         <ScrollView contentContainerStyle={styles.body}>
-          <Identity name={identity?.nickname ?? '-'} photo={null} mode={identity?.mode ?? null} cityName={cityName} />
+          <Identity name={identity?.nickname ?? '-'} photo={null} mode={identity?.mode ?? null} cityName={cityName} cityCountry={city?.country ?? null} />
           <Card variant="ticket" style={styles.guest}>
             <Text style={styles.guestTitle}>{t('passport.guestTitle')}</Text>
             <Text style={styles.guestBody}>{t('passport.guestBody')}</Text>
@@ -83,7 +83,7 @@ export default function PassportScreen() {
   // City pages: every city with stamps, the current city first (even with none).
   const progress: DailyLocalPassProgress[] = [...(stats?.localPassProgress ?? [])];
   if (cityNum !== null && !progress.some(p => p.city.id === cityNum)) {
-    progress.unshift({ city: { id: cityNum, name: city?.name ?? null }, done: 0, total: 7, themes: [], earned: false });
+    progress.unshift({ city: { id: cityNum, name: city?.name ?? null, country: city?.country ?? null }, done: 0, total: 7, themes: [], earned: false });
   }
   progress.sort((a, b) => (a.city.id === cityNum ? -1 : b.city.id === cityNum ? 1 : b.done - a.done));
   const pageWidth = width - Spacing.md * 2;
@@ -100,6 +100,7 @@ export default function PassportScreen() {
           photo={account.thumbAvatarUrl ?? account.profile_photo_url ?? null}
           mode={account.mode ?? null}
           cityName={cityName}
+          cityCountry={city?.country ?? null}
         />
 
         <View style={styles.cards}>
@@ -123,12 +124,12 @@ export default function PassportScreen() {
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} snapToInterval={pageWidth + 10} decelerationRate="fast"
                       contentContainerStyle={styles.pages}>
             {progress.map(p => (
-              <CityPage key={p.city.id} width={pageWidth} cityName={localizeCityName(p.city.name ?? '')} themes={p.themes} earned={p.earned}
+              <CityPage key={p.city.id} width={pageWidth} cityName={localizeCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
                         todayTheme={p.city.id === cityNum ? todayTheme : null} tomorrowTheme={p.city.id === cityNum ? tomorrow : null} />
             ))}
           </ScrollView>
         ) : progress.length === 1 ? (
-          <CityPage cityName={localizeCityName(progress[0].city.name ?? '')} themes={progress[0].themes} earned={progress[0].earned}
+          <CityPage cityName={localizeCityName(progress[0].city.name ?? '')} country={progress[0].city.country} themes={progress[0].themes} earned={progress[0].earned}
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
 
@@ -148,7 +149,9 @@ export default function PassportScreen() {
   );
 }
 
-function Identity({ name, photo, mode, cityName }: { name: string; photo: string | null; mode: string | null; cityName: string | null }) {
+function Identity({ name, photo, mode, cityName, cityCountry }: {
+  name: string; photo: string | null; mode: string | null; cityName: string | null; cityCountry: string | null;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('common');
@@ -162,7 +165,7 @@ function Identity({ name, photo, mode, cityName }: { name: string; photo: string
           {mode && <ModeLabel mode={local ? 'local' : 'traveler'} label={t(`mode.${local ? 'local' : 'exploring'}.label`)} />}
           {cityName && (
             <View style={[styles.chip, styles.chipCity]}>
-              <Ionicons name="location-outline" size={13} color={colors.muted} />
+              {cityCountry ? <CityFlag country={cityCountry} size={14} /> : <Ionicons name="location-outline" size={13} color={colors.muted} />}
               <Text style={styles.chipCityText} numberOfLines={1}>{cityName}</Text>
             </View>
           )}

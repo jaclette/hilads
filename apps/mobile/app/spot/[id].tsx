@@ -13,7 +13,7 @@ import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice } from '@/features/today/format';
-import { Button, Chip, ScreenHeader, SectionTitle } from '@/ui';
+import { Button, Chip, CityName, ScreenHeader, SectionTitle } from '@/ui';
 
 /**
  * A spot (SPEC 9.5): its proofs' photos, themes, price range paid, proof
@@ -79,7 +79,7 @@ export default function SpotScreen() {
     <View style={styles.header}>
       {!!spot.cover.photoUrl && <Image source={{ uri: spot.cover.photoUrl }} style={styles.cover} contentFit="cover" />}
       <Text style={styles.name}>{spot.name}</Text>
-      {!!cityName && <Text style={styles.muted}>{cityName}</Text>}
+      {!!spot.city?.name && <CityName name={spot.city.name} country={spot.city.country} style={styles.muted} />}
       {rankLine && (
         <View style={styles.rank}>
           <Ionicons name="trophy-outline" size={16} color={colors.primaryOnTint} />

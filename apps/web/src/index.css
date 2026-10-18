@@ -37,6 +37,7 @@
   --primary-tint: #FFE6D8;
   --primary-on-tint: #8A3A12;
   --line: #EADCCD;
+  --flag-line: rgba(42, 28, 19, 0.2);
   --local-bg: #E3F0E8;
   --local-text: #23603F;
   --traveler-bg: #E4ECF7;
@@ -81,6 +82,7 @@
   --primary-tint: #3A2216;
   --primary-on-tint: #FFB48A;
   --line: #272018;
+  --flag-line: rgba(255, 255, 255, 0.28);
   --local-bg: #12301F;
   --local-text: #7FD9A4;
   --traveler-bg: #17263A;
@@ -7404,7 +7406,7 @@ img.pub-profile-avatar {
 .wa-avatar--photo { object-fit: cover; }
 .wa-name { font-weight: 700; color: var(--text); }
 .wa-meta { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.wa-city { color: var(--muted2); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.wa-city { display: inline-flex; align-items: center; gap: 4px; color: var(--muted2); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
 .wa-time { color: var(--muted2); font-size: 0.72rem; opacity: 0.8; white-space: nowrap; }
 .wa-empty { padding: 2rem 1rem; text-align: center; color: var(--muted2); }
 /* World cross-city system messages - distinct centered info row in the feed. */
@@ -16463,7 +16465,7 @@ body.has-app-promo-banner .page-header {
 .today-perforation { height: 0; border-top: 2px dashed var(--line); margin: 0 14px; position: relative; }
 .today-bottom { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
 .today-twist { display: flex; flex-direction: column; gap: 4px; }
-.today-twist-label { font-size: 0.78rem; font-weight: 700; color: var(--muted2); }
+.today-twist-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: var(--muted2); }
 .today-twist-text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
 .today-cta { min-height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; }
 
@@ -16487,7 +16489,7 @@ body.has-app-promo-banner .page-header {
 .v3-scope-row--on { background: var(--primary-tint); border-color: var(--primary-tint); color: var(--primary-on-tint); }
 .v3-scope-row-icon { font-size: 20px; }
 .v3-scope-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.v3-scope-row-title { font-size: 15px; font-weight: 700; }
+.v3-scope-row-title { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
 .v3-scope-row-sub { font-size: 13px; color: var(--muted2); }
 .v3-scope-row--on .v3-scope-row-sub { color: inherit; opacity: 0.85; }
 
@@ -16640,7 +16642,7 @@ body.has-app-promo-banner .page-header {
 .proof-strip-photo { position: relative; width: 112px; height: 140px; margin-bottom: 4px; border-radius: 14px; overflow: hidden; background: var(--surface2); }
 .proof-strip-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .proof-strip-rank { position: absolute; top: 6px; left: 6px; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
-.proof-strip-city { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proof-strip-city { font-size: 13px; font-weight: 700; }
 .proof-strip-votes { font-size: 12px; }
 .spots { display: flex; flex-direction: column; gap: 8px; }
 .spots-empty { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 0 14px; border-radius: 16px; border: 1.5px dashed var(--line); background: var(--surface); font: inherit; font-size: 14px; color: var(--text); cursor: pointer; text-align: left; }
@@ -16681,6 +16683,7 @@ body.has-app-promo-banner .page-header {
 .feed-daily-chip--traveler { background: var(--traveler-bg); color: var(--traveler-text); }
 .feed-daily-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
 .feed-daily-tag { font-size: 12px; font-weight: 600; color: var(--text); background: var(--surface2); border-radius: 999px; padding: 2px 9px; }
+.feed-daily-where { display: flex; align-items: center; gap: 4px; }
 .feed-daily .dc-vote-wrap { margin-top: 4px; }
 
 /* The install banner on the V3 colors (it kept a hard-coded dark card). */
@@ -16718,7 +16721,7 @@ body.has-app-promo-banner .page-header {
 .pp-pages--scroll .pp-cpage { flex: 0 0 100%; scroll-snap-align: start; }
 .pp-cpage { box-sizing: border-box; padding: 16px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--surface); display: flex; flex-direction: column; gap: 12px; }
 .pp-cpage-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.pp-cpage-city { font-size: 18px; font-weight: 800; color: var(--text); }
+.pp-cpage-city { display: inline-flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; color: var(--text); }
 .pp-hint { font-size: 13px; }
 .pp-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 10px; }
 .pp-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
@@ -17136,3 +17139,9 @@ body.has-app-promo-banner .page-header {
 @media (min-width: 768px) {
   .wm-bottom { left: auto; right: 1rem; width: 380px; }
 }
+
+/* City flag + name (CityName.jsx): the place's flag, hairline-bordered, about 16 px. */
+.city-name { display: inline-flex; align-items: center; gap: 5px; min-width: 0; max-width: 100%; vertical-align: bottom; }
+.city-name-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.city-flag { flex-shrink: 0; display: inline-block; border-radius: 2px; box-shadow: 0 0 0 1px var(--flag-line); object-fit: cover; }
+@media (min-resolution: 2dppx) { .city-flag { box-shadow: 0 0 0 0.5px var(--flag-line); } }

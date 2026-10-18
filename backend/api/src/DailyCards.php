@@ -46,7 +46,7 @@ final class DailyCards
             ],
             'isLocal'       => DailyProofRepository::bool($proof['is_local']),
             'isEarly'       => DailyProofRepository::bool($proof['is_early'] ?? false),
-            'city'          => $cityId !== null ? ['id' => $cityId, 'name' => $proof['city_name']] : null,
+            'city'          => $cityId !== null ? ['id' => $cityId, 'name' => $proof['city_name'], 'country' => $proof['city_country'] ?? null] : null,
             'photoUrl'      => $proof['photo_url'],
             'thumbUrl'      => R2Uploader::thumbProxy($proof['photo_url']),
             'caption'       => $proof['caption'],
@@ -81,7 +81,7 @@ final class DailyCards
             'date'     => $proof['challenge_date'],
             'thumbUrl' => R2Uploader::thumbProxy($proof['photo_url']),
             'user'     => ['id' => $proof['user_id'], 'username' => $proof['username'], 'displayName' => $proof['display_name']],
-            'city'     => $cityId !== null ? ['id' => $cityId, 'name' => $proof['city_name']] : null,
+            'city'     => $cityId !== null ? ['id' => $cityId, 'name' => $proof['city_name'], 'country' => $proof['city_country'] ?? null] : null,
             'isLocal'  => DailyProofRepository::bool($proof['is_local']),
         ];
     }
@@ -89,18 +89,20 @@ final class DailyCards
     /** Group card payload from its entries (oldest first): proof ids, count, distinct cities. Pure. */
     public static function groupPayload(string $hour, array $entries): array
     {
-        $cities = [];
+        $cities = $countries = [];
         foreach ($entries as $e) {
             if ($e['city'] !== null && !in_array($e['city']['name'], $cities, true)) {
-                $cities[] = $e['city']['name'];
+                $cities[]    = $e['city']['name'];
+                $countries[] = $e['city']['country'] ?? null;
             }
         }
         return [
-            'hour'     => $hour,
-            'proofIds' => array_column($entries, 'proofId'),
-            'proofs'   => array_values($entries),
-            'count'    => count($entries),
-            'cities'   => $cities,
+            'hour'      => $hour,
+            'proofIds'  => array_column($entries, 'proofId'),
+            'proofs'    => array_values($entries),
+            'count'     => count($entries),
+            'cities'    => $cities,
+            'countries' => $countries,   // same order as cities
         ];
     }
 
@@ -261,6 +263,50 @@ final class DailyCards
      * edited) show the reader's language. Two small queries per page, only
      * when the page holds a card.
      */
+    /**
+     * Fill in the country of the cities on Daily cards stored before cards
+     * carried it (proof and group cards, the challenge's "Proposed by"), so
+     * every card can show the city's flag. Cached city list, no query.
+     */
+    public static function addCityCountries(array &$messages): void
+    {
+        $fill = static function (?array &$city): void {
+            if (is_array($city) && !array_key_exists('country', $city) && isset($city['id'])) {
+                $city['country'] = CityRepository::countryOf((int) $city['id']);
+            }
+        };
+        foreach ($messages as &$m) {
+            $event = $m['event'] ?? null;
+            if (!isset($m['payload']) || !is_array($m['payload'])) {
+                continue;
+            }
+            if ($event === self::EVENT_PROOF) {
+                $fill($m['payload']['city']);
+            } elseif ($event === self::EVENT_GROUP) {
+                foreach ($m['payload']['proofs'] ?? [] as $i => $e) {
+                    $fill($m['payload']['proofs'][$i]['city']);
+                }
+                if (!isset($m['payload']['countries'])) {
+                    $byName = [];
+                    foreach ($m['payload']['proofs'] ?? [] as $e) {
+                        if (isset($e['city']['name'])) {
+                            $byName[$e['city']['name']] = $e['city']['country'] ?? null;
+                        }
+                    }
+                    $m['payload']['countries'] = array_map(static fn($n) => $byName[$n] ?? null, $m['payload']['cities'] ?? []);
+                }
+            } elseif ($event === 'daily_challenge') {
+                if (isset($m['payload']['proposedBy']['city'])) {
+                    $fill($m['payload']['proposedBy']['city']);
+                }
+                foreach ($m['payload']['yesterdayTop3'] ?? [] as $i => $r) {
+                    $fill($m['payload']['yesterdayTop3'][$i]['city']);
+                }
+            }
+        }
+        unset($m);
+    }
+
     public static function refreshChallengeCards(array &$messages): void
     {
         $ids = $twistIds = [];

@@ -6,6 +6,7 @@ import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
+import { CityFlag, CityName } from '../CityName'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
   StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal,
@@ -138,7 +139,7 @@ function Ticket({ data, loading }) {
       <div className="today-bottom">
         {twist && (
           <div className="today-twist">
-            <span className="today-twist-label">{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</span>
+            <span className="today-twist-label"><CityFlag country={city?.country} />{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</span>
             <span className="today-twist-text">{showOriginal && twist.originalText ? twist.originalText : twist.text}</span>
           </div>
         )}
@@ -304,7 +305,7 @@ function StripProof({ proof, onOpen }) {
         <img src={proof.thumbUrl || proof.photoUrl} alt="" loading="lazy" />
         {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
       </span>
-      {city && <span className="proof-strip-city">{city}</span>}
+      {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
       <span className="dc-muted proof-strip-votes">{votes}</span>
     </button>
   )

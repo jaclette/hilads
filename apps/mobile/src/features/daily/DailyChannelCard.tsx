@@ -17,6 +17,7 @@ import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
+import { CityFlag, CityName } from '@/ui';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { THEME_ICON } from '@/features/today/format';
@@ -25,7 +26,7 @@ import { themeName } from '@/features/daily/themes';
 
 type TopProof = {
   rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
-  city: { id: number; name: string } | null; isLocal: boolean; voteCount: number;
+  city: { id: number; name: string; country?: string | null } | null; isLocal: boolean; voteCount: number;
 };
 type ChallengePayload = {
   challengeId: string; date: string; text: string; context: string | null;
@@ -39,7 +40,7 @@ type ChallengePayload = {
 };
 type ProofPayload = {
   proofId: string; challengeId: string; date: string; challengeText: string;
-  user: DailyPerson; isLocal: boolean; city: { id: number; name: string } | null;
+  user: DailyPerson; isLocal: boolean; city: { id: number; name: string; country?: string | null } | null;
   photoUrl: string; thumbUrl: string | null; caption: string | null;
   isEarly?: boolean;
   /** V3-09 (absent on older cards). */
@@ -102,7 +103,10 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
           {p.proposedBy && <ProposedBy credit={p.proposedBy} />}
           {isLive && p.twist && (
             <View style={styles.twist}>
-              <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+              <View style={styles.twistHead}>
+                <CityFlag country={city?.country} />
+                <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+              </View>
               <Text style={styles.twistText}>{tr?.twist ?? p.twist.text}</Text>
             </View>
           )}
@@ -117,10 +121,10 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
                 <TouchableOpacity key={r.proofId} style={styles.topRow} onPress={() => router.push(`/daily/${p.yesterday!.date}?proof=${r.proofId}` as never)} accessibilityRole="button">
                   <RankMedal rank={r.rank} size={24} />
                   {r.thumbUrl ? <Image source={{ uri: r.thumbUrl }} style={styles.topThumb} contentFit="cover" /> : <View style={[styles.topThumb, styles.avatarEmpty]} />}
-                  <Text style={styles.topName} numberOfLines={1}>
-                    {r.user.displayName || r.user.username}
-                    {r.city ? <Text style={styles.sub}> · {localizeCityName(r.city.name)}</Text> : null}
-                  </Text>
+                  <View style={styles.topWho}>
+                    <Text style={styles.topName} numberOfLines={1}>{r.user.displayName || r.user.username}</Text>
+                    {r.city && <CityName name={r.city.name} country={r.city.country} short style={styles.sub} size={14} />}
+                  </View>
                   <View style={styles.topVotesRow}>
                     <Ionicons name="heart" size={12} color={colors.muted} />
                     <Text style={styles.topVotes}>{r.voteCount}</Text>
@@ -145,6 +149,7 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
 
 type GroupPayload = {
   hour: string; proofIds: string[]; count: number; cities: string[];
+  countries?: (string | null)[];   // same order as cities
   proofs: { proofId: string; date: string; thumbUrl: string | null; city: { id: number; name: string } | null }[];
 };
 
@@ -174,7 +179,12 @@ function GroupCard({ message, reactions, time, longPress }: {
           <Ionicons name="images-outline" size={15} color={colors.primaryText} />
           <Text style={styles.kicker}>{t('group.title', { n: count })}</Text>
         </View>
-        {!!where && <Text style={styles.sub} numberOfLines={1}>{where}</Text>}
+        {!!where && (
+          <View style={styles.whereRow}>
+            {(p.countries ?? []).slice(0, named.length).map((cc, i) => <CityFlag key={i} country={cc} size={14} />)}
+            <Text style={[styles.sub, styles.flexShrink]} numberOfLines={1}>{where}</Text>
+          </View>
+        )}
         <View style={styles.strip}>
           {shown.map((e, i) => (
             <View key={e.proofId} style={styles.stripCell}>
@@ -264,7 +274,7 @@ function ProofCard({ message, reactions, time, longPress }: {
                 </View>
                 {p.user?.localPass && <LocalPassBadge />}
               </View>
-              {!!p.city && <Text style={styles.sub} numberOfLines={1}>{localizeCityName(p.city.name)}</Text>}
+              {!!p.city && <CityName name={p.city.name} country={p.city.country} style={styles.sub} size={14} />}
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.more} onPress={report} accessibilityRole="button" accessibilityLabel={t('report.title')}>
@@ -310,6 +320,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   challengeText: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
   context:       { fontSize: FontSizes.xs, color: c.muted },
   twist:         { backgroundColor: c.bg3, borderRadius: Radius.md, padding: 8, gap: 2 },
+  twistHead:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
   twistLabel:    { fontSize: 12, fontWeight: '700', color: c.muted },
   twistText:     { fontSize: FontSizes.sm, color: c.text },
   cta:           { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', backgroundColor: c.primary, borderRadius: 14, paddingHorizontal: 16 },
@@ -353,6 +364,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   top3Title:     { fontSize: 11, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   topRow:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
   topThumb:      { width: 32, height: 32, borderRadius: Radius.sm, backgroundColor: c.bg3 },
-  topName:       { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  topWho:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 0 },
+  topName:       { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  whereRow:      { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  flexShrink:    { flexShrink: 1 },
   topVotes:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });

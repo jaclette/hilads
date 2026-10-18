@@ -10,7 +10,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { formatCountdown } from '@/hooks/useDaily';
 import { RankMedal } from './RankMedal';
-import { Chip, EmptyState, ModeLabel } from '@/ui';
+import { Chip, CityFlag, CityName, EmptyState, ModeLabel } from '@/ui';
 import { dailyTrackProps } from './track';
 import { useDailyLeaderboard } from './leaderboard';
 import { LocalPassBadge } from './LocalPassBadge';
@@ -103,7 +103,7 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
           ))}
           {board.cities.map(c => (
             <View key={c.city.id} style={styles.city}>
-              <Title icon="location-outline" text={t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })} sub />
+              <Title icon="location-outline" flag={c.city.country} text={t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })} sub />
               {c.entries.map(e => (
                 <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onPress={() => onOpenProof(e.proofId)} />
               ))}
@@ -116,12 +116,12 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
 }
 
 /** A section title with its stroke icon. */
-function Title({ icon, text, sub = false }: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string; sub?: boolean }) {
+function Title({ icon, flag, text, sub = false }: { icon: React.ComponentProps<typeof Ionicons>['name']; flag?: string | null; text: string; sub?: boolean }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   return (
     <View style={[styles.titleRow, sub && styles.sub]}>
-      <Ionicons name={icon} size={16} color={colors.primaryText} />
+      {flag ? <CityFlag country={flag} /> : <Ionicons name={icon} size={16} color={colors.primaryText} />}
       <Text style={styles.title} accessibilityRole="header">{text}</Text>
     </View>
   );
@@ -159,7 +159,7 @@ function EntryRow({ entry, mine, hideCity = false, onPress }: {
         </View>
         <View style={styles.labels}>
           <ModeLabel mode={entry.isLocal ? 'local' : 'traveler'} label={entry.isLocal ? t('local') : t('traveler')} />
-          {!hideCity && entry.city && <Text style={styles.rowSub} numberOfLines={1}>{localizeCityName(entry.city.name)}</Text>}
+          {!hideCity && entry.city && <CityName name={entry.city.name} country={entry.city.country} short style={styles.rowSub} size={14} />}
         </View>
       </View>
       <Votes count={entry.voteCount} />
@@ -178,12 +178,13 @@ function ResultRow({ proof, rank, city = false, onPress }: { proof: DailyProof; 
     <TouchableOpacity style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={rank ? `#${rank} ${name}` : name}>
       {rank
         ? <RankMedal rank={rank} size={28} style={styles.rank} />
-        : <View style={styles.rank}><Ionicons name="location-outline" size={18} color={colors.primaryText} /></View>}
+        : <View style={styles.rank}>{proof.city?.country ? <CityFlag country={proof.city.country} size={20} /> : <Ionicons name="location-outline" size={18} color={colors.primaryText} />}</View>}
       <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.thumb} contentFit="cover" />
       <View style={styles.body}>
         <Text style={styles.name} numberOfLines={1}>{city ? t('results.bestIn', { city: cityName }) : name}</Text>
         <View style={styles.labels}>
-          <Text style={styles.rowSub} numberOfLines={1}>{city ? name : cityName}</Text>
+          {city || !proof.city ? <Text style={styles.rowSub} numberOfLines={1}>{city ? name : cityName}</Text>
+            : <CityName name={proof.city.name} country={proof.city.country} short style={styles.rowSub} size={14} />}
           {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} />}
         </View>
       </View>

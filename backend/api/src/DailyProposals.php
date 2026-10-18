@@ -382,7 +382,7 @@ final class DailyProposals
 
     private static function city(?string $cityId, ?string $name): ?array
     {
-        return $cityId !== null ? ['id' => (int) substr($cityId, 5), 'name' => $name] : null;
+        return $cityId !== null ? ['id' => (int) substr($cityId, 5), 'name' => $name, 'country' => CityRepository::countryOf($cityId)] : null;
     }
 
     /** Push the admin (ADMIN_TEST_USER_ID) that proposals are waiting, at most once every 30 minutes. Best effort. */

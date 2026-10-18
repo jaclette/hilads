@@ -1,12 +1,13 @@
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
+import { CityFlag } from './CityName';
 
-type Option<K extends string> = { key: K; label: string; badge?: number };
+type Option<K extends string> = { key: K; label: string; badge?: number; flag?: string | null };
 
 /**
  * Two or more segments in a pill (the Chat City / World switch): the chosen one
- * is filled with primary; a segment can carry an unread badge. onChange fires
+ * is filled with primary; a segment can carry an unread badge and a city flag. onChange fires
  * on every tap, the chosen segment included (Chat uses it to change city).
  */
 export function Segmented<K extends string>({ options, value, onChange }: { options: Option<K>[]; value: K; onChange: (key: K) => void }) {
@@ -18,6 +19,7 @@ export function Segmented<K extends string>({ options, value, onChange }: { opti
         return (
           <TouchableOpacity key={o.key} style={[styles.segment, on && styles.segmentOn]} onPress={() => onChange(o.key)} activeOpacity={0.8}
                             accessibilityRole="tab" accessibilityState={{ selected: on }}>
+            {!!o.flag && <CityFlag country={o.flag} />}
             <Text style={[styles.label, on && styles.labelOn]} numberOfLines={1}>{o.label}</Text>
             {!on && !!o.badge && o.badge > 0 && <Text style={styles.badge}>{o.badge > 99 ? '99+' : o.badge}</Text>}
           </TouchableOpacity>

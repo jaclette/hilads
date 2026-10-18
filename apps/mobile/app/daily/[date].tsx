@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
@@ -21,7 +21,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { THEME_ICON } from '@/features/today/format';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
-import { Avatar, Button, Card, Chip, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
+import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import type { DailyProof } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
@@ -179,7 +179,10 @@ function Sheet({ date, openProofId, source, initialTab }: {
             <View style={styles.twist}>
               <View style={styles.iconRow}>
                 <Ionicons name="location-outline" size={14} color={colors.primaryText} />
-                <Text style={styles.twistLabel}>{t('twistIn', { city: cityName })}</Text>
+                <View style={styles.twistHead}>
+                  <CityFlag country={sheet?.city?.country} />
+                  <Text style={styles.twistLabel}>{t('twistIn', { city: cityName })}</Text>
+                </View>
               </View>
               <Text style={styles.twistText}>{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</Text>
               {sheet.twist.author ? (
@@ -255,7 +258,8 @@ function Sheet({ date, openProofId, source, initialTab }: {
 
         <Segmented<Tab>
           options={(isLive ? ['world', 'city', 'top10'] as const : ['world', 'top10'] as const).map(k => ({
-            key: k, label: k === 'world' ? t('tabWorld') : k === 'city' ? cityName : t('leaderboard.tab'),
+            key: k, label: k === 'world' ? t('tabWorld') : k === 'city' ? (sheet?.city?.name ? shortCityName(sheet.city.name) : cityName) : t('leaderboard.tab'),
+            flag: k === 'city' ? sheet?.city?.country : null,
           }))}
           value={tab}
           onChange={selectTab}
@@ -324,6 +328,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   theme:        { alignSelf: 'flex-start' },
   context:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
   twist:        { backgroundColor: c.primaryTint, borderRadius: Radius.button, padding: 12, gap: 6 },
+  twistHead:    { flexDirection: 'row', alignItems: 'center', gap: 6 },
   twistLabel:   { fontSize: 12, fontWeight: '800', color: c.primaryOnTint },
   twistText:    { fontSize: FontSizes.sm, fontWeight: '500', color: c.text },
   author:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 32 },

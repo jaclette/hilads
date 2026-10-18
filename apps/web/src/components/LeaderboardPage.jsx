@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
 import { localizeCityName } from '../i18n/cityName'
 import { cityDemonym } from '../lib/cityDemonym'
-import { countryToFlag } from '../lib/countryFlag'
+import { CityFlag } from './CityName'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import BackButton from './BackButton'
 import Icon from './Icon'
@@ -84,7 +84,6 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   const meInPage = !!me && me.rank !== null && entries.some(e => e.user_id === me.user_id)
 
   const cityLabel = localizeCityName(effectiveCityName) || t('leaderboard.scope.city')
-  const cityFlag  = effectiveCityCountry ? countryToFlag(effectiveCityCountry) : ''
 
   // "Share my rank": fun message + neighbour @mentions (users only), posted to
   // the right channel (city/cities → my city; world → World). Null → CTA hidden.
@@ -123,7 +122,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
             }}
             aria-haspopup={scope === 'city' ? 'dialog' : undefined}
           >
-            {cityFlag && <span aria-hidden="true">{cityFlag} </span>}{cityLabel}
+            <CityFlag country={effectiveCityCountry} />{cityLabel}
             {scope === 'city' && (
               <span className="leaderboard-seg-chevron" aria-hidden="true"><Icon name="chevron-down" size={12} /></span>
             )}
@@ -306,11 +305,10 @@ function RankDisc({ rank }) {
 
 function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
   const [c1, c2] = avatarColors(entry.displayName)
-  // PR40 - world-scope rows show a "🇫🇷 Paris" chip under the name so the
-  // user can see where each scorer is from. Matches the native row layout
-  // (apps/mobile/app/leaderboard.tsx) - uses countryToFlag + the same
-  // city-name localization helper.
-  const flag      = showCity && entry.cityCountry ? countryToFlag(entry.cityCountry) : ''
+  // PR40 - world-scope rows show a flag + "Paris" chip under the name: the
+  // scorer's current city. Matches the native row layout
+  // (apps/mobile/app/leaderboard.tsx).
+  const flag      = showCity ? entry.cityCountry : null
   const cityLabel = showCity && entry.cityName    ? localizeCityName(entry.cityName) : null
   const hasCityChip = !!(flag || cityLabel)
   return (
@@ -334,7 +332,7 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
         <span className="leaderboard-name">{entry.displayName}</span>
         {hasCityChip && (
           <span className="leaderboard-city">
-            {flag && <span aria-hidden="true">{flag}</span>}
+            <CityFlag country={flag} />
             {cityLabel && <span className="leaderboard-city-name">{cityLabel}</span>}
           </span>
         )}
@@ -350,12 +348,11 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
 // No avatar (cities don't have one); the flag fills the avatar slot at
 // the same 40px footprint so the row geometry matches the user rows.
 function LeaderboardCityRow({ entry, isMe, t }) {
-  const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : ''
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-'
   return (
     <li className={`leaderboard-row${isMe ? ' is-me' : ''}`}>
       <span className="leaderboard-rank"><RankDisc rank={entry.rank} /></span>
-      <span className="leaderboard-city-flag" aria-hidden="true">{flag || <Icon name="globe-outline" size={20} style={{ color: 'var(--muted2)' }} />}</span>
+      <span className="leaderboard-city-flag" aria-hidden="true">{entry.cityCountry ? <CityFlag country={entry.cityCountry} size={28} /> : <Icon name="globe-outline" size={20} style={{ color: 'var(--muted2)' }} />}</span>
       <span className="leaderboard-name-block">
         <span className="leaderboard-name">{cityLabel}</span>
       </span>

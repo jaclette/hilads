@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
 import { fetchIncomingFriendRequestCount, fetchMySpots, fetchUserFriends, fetchUserVibes } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { CityName } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { themeName } from '../map/spotsShared'
 import Icon from '../Icon'
@@ -117,7 +117,7 @@ export function MySpotsScreen({ onBack, onOpenSpot }) {
             {s.cover?.thumbUrl ? <img src={s.cover.thumbUrl} alt="" /> : <span className="pp-spot-img" />}
             <span className="pp-spot-body">
               <span className="pp-person-name">{s.name}</span>
-              <span className="dc-muted">{[s.city?.name ? localizeCityName(s.city.name) : null, s.themes.map(k => themeName(k)).join(', ')].filter(Boolean).join(' · ')}</span>
+              <span className="dc-muted">{s.city?.name && <><CityName name={s.city.name} country={s.city.country} short />{' · '}</>}{s.themes.map(k => themeName(k)).join(', ')}</span>
             </span>
             <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
           </button>

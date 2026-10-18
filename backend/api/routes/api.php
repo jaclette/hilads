@@ -14411,7 +14411,7 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
 
     $out['scope']     = $cityId !== null ? 'city' : 'world';
     $out['city']      = $cityId !== null
-        ? ['id' => (int) substr($cityId, 5), 'name' => CityRepository::findById((int) substr($cityId, 5))['name'] ?? null]
+        ? ['id' => (int) substr($cityId, 5), 'name' => CityRepository::findById((int) substr($cityId, 5))['name'] ?? null, 'country' => CityRepository::countryOf($cityId)]
         : null;
     $out['total']     = $strip['total'];
     $out['countries'] = $strip['countries'];
