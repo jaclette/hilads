@@ -279,8 +279,8 @@ function composeCityShare(cityName) {
   // keep Copy clean - see share() below), so the title is the one text field
   // the recipient sees in the share dialog. Lead with the brand name so the
   // app is recommendable by name. The OG preview still supplies the city +
-  // live-activity description from the page itself.
-  const title = `Become local in ${cityName} with Hilads 🔥`
+  // live-activity description from the page itself. The tagline, localized.
+  const title = `${cityName} · Hilads 🔥 ${i18n.t('firstLaunch', { ns: 'common' })}`
   return { title, url }
 }
 
@@ -4708,7 +4708,7 @@ export default function App() {
           <Logo variant="icon" size="lg" />
           <span className="header-brand-text">
             <span className="header-brand-name">Hilads</span>
-            <span className="header-tagline">Become local. Anywhere.</span>
+            <span className="header-tagline">One local thing. Every day.</span>
           </span>
         </div>
         <div className="header-hero-city">

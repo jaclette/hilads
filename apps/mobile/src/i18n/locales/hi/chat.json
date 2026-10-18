@@ -2,7 +2,7 @@
   "changeCity": "शहर बदलें",
   "shareCity": "शहर शेयर करें",
   "shareTitle": "{{city}} में अभी क्या हो रहा है",
-  "shareMessage": "Hilads पर देखें अभी {{city}} में आसपास कौन है। रियल-टाइम सिटी ऐक्टिविटी, कोई साइन-अप नहीं।",
+  "shareMessage": "एक लोकल चीज़। हर दिन। Hilads पर देखो {{city}} में अभी कौन है 🔥",
   "currentWeather": "अभी का मौसम: {{label}}",
   "weatherAlert": "मौसम",
   "online": "{{count}} आसपास",

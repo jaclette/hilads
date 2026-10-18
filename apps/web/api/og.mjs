@@ -297,7 +297,7 @@ function FallbackCard() {
           backgroundClip: 'text', color: 'transparent',
         },
       }, 'Hilads'),
-      h('div', { style: { display: 'flex', fontSize: 46, color: TEXT, fontWeight: 600 } }, 'Become local. Anywhere.'),
+      h('div', { style: { display: 'flex', fontSize: 46, color: TEXT, fontWeight: 600 } }, 'One local thing. Every day.'),
       h('div', { style: { display: 'flex', fontSize: 30, color: MUTED, fontWeight: 500 } }, "See who's around. Join what's happening now."),
     ),
     URLFooter(''),

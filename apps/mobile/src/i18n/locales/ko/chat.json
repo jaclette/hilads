@@ -2,7 +2,7 @@
   "changeCity": "도시 변경",
   "shareCity": "도시 공유",
   "shareTitle": "지금 {{city}}에서 일어나는 일",
-  "shareMessage": "지금 {{city}}에 누가 있는지 Hilads에서 확인하세요. 실시간 도시 활동, 가입 없이.",
+  "shareMessage": "로컬 하나. 매일. Hilads에서 지금 {{city}}에 누가 있는지 봐요 🔥",
   "currentWeather": "현재 날씨: {{label}}",
   "weatherAlert": "날씨",
   "online": "근처 {{count}}명",

@@ -2,7 +2,7 @@
   "changeCity": "Palitan ang lungsod",
   "shareCity": "Ibahagi ang lungsod",
   "shareTitle": "Ang nangyayari sa {{city}} ngayon mismo",
-  "shareMessage": "Tingnan kung sino ang nasa paligid ng {{city}} ngayon sa Hilads. Real-time na aktibidad ng lungsod, walang sign-up.",
+  "shareMessage": "Isang lokal na bagay. Araw-araw. Tingnan kung sino ang nasa {{city}} sa Hilads 🔥",
   "currentWeather": "Kasalukuyang panahon: {{label}}",
   "weatherAlert": "Panahon",
   "online": "{{count}} malapit",

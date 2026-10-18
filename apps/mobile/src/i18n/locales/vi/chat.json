@@ -2,7 +2,7 @@
   "changeCity": "Đổi thành phố",
   "shareCity": "Chia sẻ thành phố",
   "shareTitle": "Điều đang diễn ra ở {{city}} ngay bây giờ",
-  "shareMessage": "Xem ai đang ở quanh {{city}} ngay bây giờ trên Hilads. Hoạt động thành phố theo thời gian thực, không cần đăng ký.",
+  "shareMessage": "Một điều địa phương. Mỗi ngày. Xem ai đang ở {{city}} trên Hilads 🔥",
   "currentWeather": "Thời tiết hiện tại: {{label}}",
   "weatherAlert": "Thời tiết",
   "online": "{{count}} ở gần",
