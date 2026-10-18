@@ -4,6 +4,9 @@
  *   GET /api/og?type=event&id=<16-hex>
  *   GET /api/og?type=city&slug=<kebab>
  *   GET /api/og?type=today&d=<YYYY-MM-DD>   (the /today page's Daily Challenge)
+ *   GET /api/og?type=proof&id=<16-hex>      (hilads.live/p/{id}: the share card)
+ *   GET /api/og?type=spot&id=<16-hex>       (hilads.live/s/{id})
+ *   GET /api/og?type=day&id=<YYYY-MM-DD>    (hilads.live/d/{date})
  *   GET /api/og?ping=1     -> returns the build marker (deploy verification)
  *   GET /api/og?...&debug=1 -> returns the real error+stack on failure (not a 302)
  *
@@ -31,7 +34,7 @@ const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live';  // 
 const SITE_BASE = 'https://hilads.live';
 
 // Bump on each deploy so `?ping=1` confirms which build is actually live.
-const OG_BUILD = 'og-v6-mjs';
+const OG_BUILD = 'og-v7-share';
 
 // Brand tokens - kept in sync with apps/web/src/index.css :root vars.
 const BG     = '#0d0b09';
@@ -279,6 +282,45 @@ function TodayCard({ challenge }) {
   );
 }
 
+// ── Sharing V1: proof / spot / day cards (the landscape share card) ───────────
+// Photo full-height on the left, the text on the right, and the Hilads footer
+// (logo, tagline, hilads.live/<path>) - the 1200x630 sibling of the app's
+// 1080x1920 story card.
+const PHOTO_W = 520;
+
+function ShareCard({ photo, kicker, title, lines, badge, path }) {
+  return h('div', { style: { width: W, height: H, display: 'flex', background: BG, color: TEXT } },
+    h('div', { style: { width: PHOTO_W, height: H, display: 'flex', position: 'relative', background: '#1e1812' } },
+      photo ? h('img', { src: photo, width: PHOTO_W, height: H, style: { width: PHOTO_W, height: H, objectFit: 'cover' } }) : null,
+      badge ? h('div', {
+        style: { position: 'absolute', top: 28, left: 28, display: 'flex', padding: '8px 18px', borderRadius: 999,
+                 background: '#B98A2E', color: '#fff', fontSize: 26, fontWeight: 800 },
+      }, badge) : null,
+    ),
+    h('div', { style: { flex: 1, height: H, display: 'flex', flexDirection: 'column', padding: '48px 50px 40px' } },
+      kicker ? h('div', {
+        style: { alignSelf: 'flex-start', display: 'flex', background: 'rgba(255,122,60,0.15)', border: `1.5px solid ${ACCENT}`,
+                 borderRadius: 999, padding: '6px 18px', fontSize: 22, fontWeight: 800, color: ACCENT },
+      }, kicker) : null,
+      h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 18 } },
+        h('div', { style: { display: 'flex', fontSize: title.length > 70 ? 38 : 46, lineHeight: 1.12, fontWeight: 800, letterSpacing: -1, maxHeight: 270, overflow: 'hidden' } }, title),
+        ...lines.filter(Boolean).map(l => h('div', { style: { display: 'flex', fontSize: 26, color: MUTED, fontWeight: 600 } }, l)),
+      ),
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 14 } },
+        HiladsMark(48),
+        h('div', { style: { display: 'flex', flexDirection: 'column' } },
+          h('div', { style: { display: 'flex', fontSize: 22, color: TEXT, fontWeight: 700 } }, 'One local thing. Every day.'),
+          h('div', { style: { display: 'flex', fontSize: 20, color: MUTED2, fontWeight: 600 } }, `hilads.live${path}`),
+        ),
+      ),
+    ),
+  );
+}
+
+function themeKicker(theme) {
+  return theme && theme.name ? `Daily Challenge · ${theme.name}` : 'Daily Challenge';
+}
+
 // ── Fallback (homepage / unknown surface) ─────────────────────────────────────
 function FallbackCard() {
   return h('div', {
@@ -364,6 +406,45 @@ export default async function handler(req, res) {
       if (data?.challenge?.text) {
         element = TodayCard({ challenge: data.challenge });
         cacheMaxAge = d ? 86400 : 300;
+      }
+    } else if (type === 'proof' && id && /^[a-f0-9]{16}$/.test(id)) {
+      const data = await fetchJson(`${API_BASE}/api/v1/daily/proofs/${id}/share`);
+      if (data?.challenge) {
+        const p = data.proof;
+        const rank = p && p.worldRank && p.worldRank <= 3 ? `#${p.worldRank} in the world`
+          : p && p.cityRank && p.cityRank <= 3 && p.city ? `#${p.cityRank} in ${p.city.name}` : null;
+        element = ShareCard({
+          // A proof in review never shows its photo: the challenge's cover instead.
+          photo: p ? p.photoUrl : (data.challenge.coverUrl || (data.challenge.theme ? `${SITE_BASE}/covers/${data.challenge.theme.key}.jpg` : null)),
+          kicker: themeKicker(data.challenge.theme),
+          title: data.challenge.text,
+          lines: p ? [p.city ? `${cityFlag(p.city.country)} ${p.city.name}` : null, p.user?.username ? `@${p.user.username} · ♥ ${p.voteCount}` : null] : [],
+          badge: rank, path: `/p/${id}`,
+        });
+        cacheMaxAge = p ? 300 : 60;
+      }
+    } else if (type === 'spot' && id && /^[a-f0-9]{16}$/.test(id)) {
+      const data = await fetchJson(`${API_BASE}/api/v1/spots/${id}`);
+      if (data?.spot) {
+        const sp = data.spot;
+        element = ShareCard({
+          photo: sp.cover?.photoUrl || null, kicker: 'Hilads spot', title: sp.name,
+          lines: [sp.city ? `${cityFlag(sp.city.country)} ${sp.city.name}` : null, `♥ ${sp.votes}`, sp.cover?.by ? `Photo by @${sp.cover.by}` : null],
+          badge: null, path: `/s/${id}`,
+        });
+        cacheMaxAge = 300;
+      }
+    } else if (type === 'day' && id && /^\d{4}-\d{2}-\d{2}$/.test(id)) {
+      const data = await fetchJson(`${API_BASE}/api/v1/daily/challenges/${id}?scope=world&limit=30`);
+      if (data?.challenge?.text) {
+        const best = (data.proofs || []).slice().sort((a, b) => b.voteCount - a.voteCount)[0];
+        element = ShareCard({
+          photo: best?.photoUrl || data.challenge.coverUrl || (data.challenge.theme ? `${SITE_BASE}/covers/${data.challenge.theme.key}.jpg` : null),
+          kicker: themeKicker(data.challenge.theme), title: data.challenge.text,
+          lines: [new Date(`${data.challenge.date}T12:00:00Z`).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })],
+          badge: null, path: `/d/${id}`,
+        });
+        cacheMaxAge = data.challenge.isActive ? 300 : 3600;
       }
     } else if (type === 'city' && slug && /^[a-z0-9-]{1,80}$/.test(slug)) {
       const cityData = await fetchJson(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`);

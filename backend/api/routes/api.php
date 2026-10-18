@@ -14647,6 +14647,25 @@ $router->add('GET', '/api/v1/daily/proofs/{id}', function (array $params) {
     Response::json(['proof' => DailyProofRepository::format($proof, $user['id'] ?? null)]);
 });
 
+// GET /api/v1/daily/proofs/{id}/share?locale= - a shared proof link's public
+// page (hilads.live/p/{id}): state 'live' with the proof once approved, or
+// 'review' while it waits for moderation (no photo, only its date), always
+// with its day's challenge. Rejected, removed or unknown: 404.
+$router->add('GET', '/api/v1/daily/proofs/{id}/share', function (array $params) {
+    $proof = preg_match('/^[a-f0-9]{16}$/', $params['id']) ? DailyProofRepository::findById($params['id']) : null;
+    $state = match ($proof['moderation_status'] ?? null) { 'approved' => 'live', 'pending' => 'review', default => null };
+    $challenge = $state !== null ? DailyChallengeRepository::findPublishedByDate((string) $proof['challenge_date']) : null;
+    if ($state === null || $challenge === null) {
+        Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
+    }
+    Response::json([
+        'state'     => $state,
+        'date'      => (string) $proof['challenge_date'],
+        'challenge' => DailyChallengeRepository::formatChallenge($challenge),
+        'proof'     => $state === 'live' ? DailyProofRepository::format($proof) : null,
+    ]);
+});
+
 const DAILY_VOTE_ERRORS = [
     'not_found'     => [404, 'Proof not found'],
     'own_proof'     => [403, 'You cannot vote for your own proof.'],
