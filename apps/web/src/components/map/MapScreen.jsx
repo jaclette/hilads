@@ -368,7 +368,10 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
     <div className="full-page full-page--tab wm-page">
       <div className="page-header">
         <BackButton onClick={onClose} />
-        <span className="page-title">{nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
+        <div className="tab-heading">
+          <span className="page-title">{nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
+          <p className="tab-subtitle">{t('subtitles.map', { ns: 'common' })}</p>
+        </div>
       </div>
 
       <div className="wm-top">

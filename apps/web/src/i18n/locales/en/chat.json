@@ -21,7 +21,7 @@
   "photoSavePermBody": "Allow photo access to save images.",
   "photoSavePermSettings": "Allow photo access in Settings to save images.",
   "actionTranslate": "Translate",
-  "tabTitle": "Chat",
+  "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
     "hiNowA11y": "{{count}} people up for something now",

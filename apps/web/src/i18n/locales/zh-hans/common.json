@@ -186,7 +186,7 @@
   "tabs": {
     "today": "今天",
     "map": "地图",
-    "chat": "聊天",
+    "chat": "Hi",
     "passport": "护照"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "注册",
   "settings": "设置",
-  "firstLaunch": "一件本地事。每一天。"
+  "firstLaunch": "一件本地事。每一天。",
+  "subtitles": {
+    "map": "本地人真正挑选的地点。",
+    "hi": "向你的城市打个招呼。加入一个计划。",
+    "passport": "你的印章和地点，一城一城。"
+  }
 }

@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Hari ini",
     "map": "Peta",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Paspor"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Daftar",
   "settings": "Pengaturan",
-  "firstLaunch": "Satu hal lokal. Setiap hari."
+  "firstLaunch": "Satu hal lokal. Setiap hari.",
+  "subtitles": {
+    "map": "Spot pilihan warga lokal.",
+    "hi": "Sapa kotamu. Ikut sebuah rencana.",
+    "passport": "Stempel dan spot kamu, kota demi kota."
+  }
 }

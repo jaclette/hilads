@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Today",
     "map": "Map",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Passport"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "You reported this user on {{date}}. Your report is being reviewed.",
     "errorTitle": "Error",
     "errorBody": "Could not send the report. Try again."
+  },
+  "subtitles": {
+    "map": "Spots locals actually picked.",
+    "hi": "Say hi to your city. Join a plan.",
+    "passport": "Your stamps and spots, city by city."
   }
 }

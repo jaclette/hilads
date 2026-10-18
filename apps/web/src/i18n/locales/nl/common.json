@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Vandaag",
     "map": "Kaart",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Paspoort"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Aanmelden",
   "settings": "Instellingen",
-  "firstLaunch": "Iets lokaals. Elke dag."
+  "firstLaunch": "Iets lokaals. Elke dag.",
+  "subtitles": {
+    "map": "Spots die locals echt kozen.",
+    "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
+    "passport": "Je stempels en spots, stad voor stad."
+  }
 }

@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Hari ini",
     "map": "Peta",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Paspor"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Kamu melaporkan pengguna ini pada {{date}}. Laporanmu sedang ditinjau.",
     "errorTitle": "Kesalahan",
     "errorBody": "Laporan gagal dikirim. Coba lagi."
+  },
+  "subtitles": {
+    "map": "Spot pilihan warga lokal.",
+    "hi": "Sapa kotamu. Ikut sebuah rencana.",
+    "passport": "Stempel dan spot kamu, kota demi kota."
   }
 }

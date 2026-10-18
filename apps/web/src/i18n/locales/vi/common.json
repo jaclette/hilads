@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Hôm nay",
     "map": "Bản đồ",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Hộ chiếu"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Đăng ký",
   "settings": "Cài đặt",
-  "firstLaunch": "Một điều địa phương. Mỗi ngày."
+  "firstLaunch": "Một điều địa phương. Mỗi ngày.",
+  "subtitles": {
+    "map": "Những spot người địa phương thật sự chọn.",
+    "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
+    "passport": "Tem và spot của bạn, từng thành phố."
+  }
 }

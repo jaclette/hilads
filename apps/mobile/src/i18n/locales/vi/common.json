@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Hôm nay",
     "map": "Bản đồ",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Hộ chiếu"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Bạn đã báo cáo người dùng này vào {{date}}. Báo cáo đang được xem xét.",
     "errorTitle": "Lỗi",
     "errorBody": "Không gửi được báo cáo. Thử lại nhé."
+  },
+  "subtitles": {
+    "map": "Những spot người địa phương thật sự chọn.",
+    "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
+    "passport": "Tem và spot của bạn, từng thành phố."
   }
 }

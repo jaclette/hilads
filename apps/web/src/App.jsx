@@ -4913,7 +4913,10 @@ export default function App() {
                     Tapping the active city changes city; unread counts on the
                     other side. */}
                 <div className="chat-top">
-                  <h1 className="chat-title">{t('tabTitle', { ns: 'chat' })}</h1>
+                  <div className="tab-heading">
+                    <h1 className="chat-title">{t('tabTitle', { ns: 'chat' })}</h1>
+                    <p className="tab-subtitle">{t('subtitles.hi', { ns: 'common' })}</p>
+                  </div>
                   {city && (
                     <button type="button" className="v3-round" onClick={() => share(composeCityShare(city))} aria-label={t('shareCity', { ns: 'chat' })}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

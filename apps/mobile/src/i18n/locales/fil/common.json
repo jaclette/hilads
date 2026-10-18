@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Ngayon",
     "map": "Mapa",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Pasaporte"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Na-report mo ang user na ito noong {{date}}. Sinusuri na ang report mo.",
     "errorTitle": "Error",
     "errorBody": "Hindi naipadala ang report. Subukan ulit."
+  },
+  "subtitles": {
+    "map": "Mga spot na pinili mismo ng mga lokal.",
+    "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
+    "passport": "Ang mga stamp at spot mo, bawat lungsod."
   }
 }

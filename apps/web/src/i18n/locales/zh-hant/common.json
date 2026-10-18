@@ -186,7 +186,7 @@
   "tabs": {
     "today": "今天",
     "map": "地圖",
-    "chat": "聊天",
+    "chat": "Hi",
     "passport": "護照"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "註冊",
   "settings": "設定",
-  "firstLaunch": "一件在地事。每一天。"
+  "firstLaunch": "一件在地事。每一天。",
+  "subtitles": {
+    "map": "在地人真正挑選的地點。",
+    "hi": "向你的城市打聲招呼。加入一個計畫。",
+    "passport": "你的印章和地點，一城一城。"
+  }
 }

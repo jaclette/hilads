@@ -17214,3 +17214,8 @@ body.has-app-promo-banner .page-header {
 .archive-mosaic--3 img:first-child { grid-row: span 2; }
 .archive-mosaic--4 { grid-template-columns: repeat(4, 1fr); }
 .archive-more { align-self: center; min-height: 44px; }
+
+/* Main screens' one-line subtitle under the title (SPEC 9.1): muted, 14 px, two lines at most. */
+.tab-heading { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tab-subtitle { margin: 0; font-size: 14px; line-height: 19px; font-weight: 500; color: var(--muted2);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

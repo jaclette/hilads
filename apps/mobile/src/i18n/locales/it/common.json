@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Oggi",
     "map": "Mappa",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Passaporto"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Hai segnalato questo utente il {{date}}. La tua segnalazione è in revisione.",
     "errorTitle": "Errore",
     "errorBody": "Impossibile inviare la segnalazione. Riprova."
+  },
+  "subtitles": {
+    "map": "Gli spot scelti dai locali.",
+    "hi": "Saluta la tua città. Unisciti a un piano.",
+    "passport": "I tuoi timbri e spot, città per città."
   }
 }

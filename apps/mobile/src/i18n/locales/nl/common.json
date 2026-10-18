@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Vandaag",
     "map": "Kaart",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Paspoort"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Je hebt deze gebruiker op {{date}} gemeld. Je melding wordt bekeken.",
     "errorTitle": "Fout",
     "errorBody": "Melding versturen mislukt. Probeer het opnieuw."
+  },
+  "subtitles": {
+    "map": "Spots die locals echt kozen.",
+    "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
+    "passport": "Je stempels en spots, stad voor stad."
   }
 }

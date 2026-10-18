@@ -10,9 +10,12 @@ import { IconButton } from './IconButton';
  * Screen header. "back" (pushed screens): round back button and the title.
  * "tab" (a tab's own header): the large title, no back. `right` holds the
  * header's buttons. `compact` uses the smaller title (long names, a spot).
+ * `subtitle` (tab only): a one-line muted line under the title, two lines at
+ * most on small screens (SPEC 9.1).
  */
-export function ScreenHeader({ title, variant = 'back', right, onBack, compact = false }: {
+export function ScreenHeader({ title, subtitle, variant = 'back', right, onBack, compact = false }: {
   title: string;
+  subtitle?: string;
   variant?: 'back' | 'tab';
   right?: ReactNode;
   onBack?: () => void;
@@ -24,7 +27,10 @@ export function ScreenHeader({ title, variant = 'back', right, onBack, compact =
   if (variant === 'tab') {
     return (
       <View style={styles.tab}>
-        <Text style={styles.tabTitle} accessibilityRole="header">{title}</Text>
+        <View style={styles.tabText}>
+          <Text style={styles.tabTitle} accessibilityRole="header">{title}</Text>
+          {!!subtitle && <Text style={styles.subtitle} numberOfLines={2}>{subtitle}</Text>}
+        </View>
         {right}
       </View>
     );
@@ -45,5 +51,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   titleCompact: { fontSize: FontSizes.md, fontWeight: '800' },
   spacer:       { flex: 1 },
   tab:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 6 },
+  tabText:      { flexShrink: 1, gap: 2 },
   tabTitle:     { fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  subtitle:     { fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted },
 });

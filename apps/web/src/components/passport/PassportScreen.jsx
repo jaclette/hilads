@@ -56,7 +56,10 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
 
   const header = (
     <div className="pp-header">
-      <h1 className="pp-title">{t('passport.title')}</h1>
+      <div className="tab-heading">
+        <h1 className="pp-title">{t('passport.title')}</h1>
+        <p className="tab-subtitle">{i18n.t('subtitles.passport', { ns: 'common' })}</p>
+      </div>
       <button type="button" className="v3-round" onClick={onSettings} aria-label={t('settings')}>
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="3" />

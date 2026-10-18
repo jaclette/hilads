@@ -186,7 +186,7 @@
   "tabs": {
     "today": "오늘",
     "map": "지도",
-    "chat": "채팅",
+    "chat": "Hi",
     "passport": "여권"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "가입하기",
   "settings": "설정",
-  "firstLaunch": "로컬 하나. 매일."
+  "firstLaunch": "로컬 하나. 매일.",
+  "subtitles": {
+    "map": "현지인이 직접 고른 장소.",
+    "hi": "도시에 인사하고 플랜에 참여해요.",
+    "passport": "도시별 스탬프와 장소."
+  }
 }

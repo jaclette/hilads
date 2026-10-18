@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Hoje",
     "map": "Mapa",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Passaporte"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Cadastrar",
   "settings": "Configurações",
-  "firstLaunch": "Uma coisa local. Todo dia."
+  "firstLaunch": "Uma coisa local. Todo dia.",
+  "subtitles": {
+    "map": "Os spots que os locais escolheram.",
+    "hi": "Dá um oi pra sua cidade. Entra num plano.",
+    "passport": "Seus carimbos e spots, cidade por cidade."
+  }
 }

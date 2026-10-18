@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Today",
     "map": "Map",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Passport"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Sign up",
   "settings": "Settings",
-  "firstLaunch": "One local thing. Every day."
+  "firstLaunch": "One local thing. Every day.",
+  "subtitles": {
+    "map": "Spots locals actually picked.",
+    "hi": "Say hi to your city. Join a plan.",
+    "passport": "Your stamps and spots, city by city."
+  }
 }

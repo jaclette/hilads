@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Aujourd'hui",
     "map": "Carte",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Passeport"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Tu as signalé cette personne le {{date}}. Ton signalement est en cours d’examen.",
     "errorTitle": "Erreur",
     "errorBody": "Impossible d’envoyer le signalement. Réessaie."
+  },
+  "subtitles": {
+    "map": "Les spots choisis par les locaux.",
+    "hi": "Dis bonjour à ta ville. Rejoins un plan.",
+    "passport": "Tes tampons et tes spots, ville par ville."
   }
 }

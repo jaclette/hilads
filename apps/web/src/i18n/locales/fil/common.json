@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Ngayon",
     "map": "Mapa",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Pasaporte"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Mag-sign up",
   "settings": "Mga setting",
-  "firstLaunch": "Isang lokal na bagay. Araw-araw."
+  "firstLaunch": "Isang lokal na bagay. Araw-araw.",
+  "subtitles": {
+    "map": "Mga spot na pinili mismo ng mga lokal.",
+    "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
+    "passport": "Ang mga stamp at spot mo, bawat lungsod."
+  }
 }

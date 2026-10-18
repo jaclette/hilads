@@ -186,7 +186,7 @@
   "tabs": {
     "today": "Heute",
     "map": "Karte",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Pass"
   },
   "scope": {
@@ -200,5 +200,10 @@
   },
   "signUp": "Registrieren",
   "settings": "Einstellungen",
-  "firstLaunch": "Etwas Lokales. Jeden Tag."
+  "firstLaunch": "Etwas Lokales. Jeden Tag.",
+  "subtitles": {
+    "map": "Spots, die Locals wirklich ausgewählt haben.",
+    "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
+    "passport": "Deine Stempel und Spots, Stadt für Stadt."
+  }
 }

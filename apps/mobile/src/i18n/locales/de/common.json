@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Heute",
     "map": "Karte",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Pass"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Du hast diese Person am {{date}} gemeldet. Deine Meldung wird geprüft.",
     "errorTitle": "Fehler",
     "errorBody": "Die Meldung konnte nicht gesendet werden. Versuch es noch mal."
+  },
+  "subtitles": {
+    "map": "Spots, die Locals wirklich ausgewählt haben.",
+    "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
+    "passport": "Deine Stempel und Spots, Stadt für Stadt."
   }
 }

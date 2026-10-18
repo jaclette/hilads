@@ -21,7 +21,7 @@
   "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
   "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요.",
   "actionTranslate": "번역",
-  "tabTitle": "채팅",
+  "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
     "hiNowA11y": "지금 뭔가 하고 싶은 사람 {{count}}명",

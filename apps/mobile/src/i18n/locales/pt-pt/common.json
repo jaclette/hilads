@@ -174,7 +174,7 @@
   "tabs": {
     "today": "Hoje",
     "map": "Mapa",
-    "chat": "Chat",
+    "chat": "Hi",
     "passport": "Passaporte"
   },
   "scope": {
@@ -218,5 +218,10 @@
     "dupBody": "Denunciaste este utilizador a {{date}}. A tua denúncia está em análise.",
     "errorTitle": "Erro",
     "errorBody": "Não foi possível enviar a denúncia. Tenta de novo."
+  },
+  "subtitles": {
+    "map": "Os spots escolhidos pelos locais.",
+    "hi": "Diz olá à tua cidade. Junta-te a um plano.",
+    "passport": "Os teus carimbos e spots, cidade a cidade."
   }
 }

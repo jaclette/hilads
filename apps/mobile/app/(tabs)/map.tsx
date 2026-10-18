@@ -306,9 +306,10 @@ export default function MapScreen() {
         />
       )}
 
-      {/* Top overlay: search + theme chips. */}
+      {/* Top overlay: the Map's subtitle (no title bar over the map), search + theme chips. */}
       <View style={[styles.top, { paddingTop: insets.top + 10 }, view === 'list' && styles.topList]} pointerEvents="box-none"
             onLayout={e => setTopH(e.nativeEvent.layout.height)}>
+        <Text style={styles.subtitle} numberOfLines={2}>{t('subtitles.map', { ns: 'common' })}</Text>
         <TextField
           variant="search"
           value={query}
@@ -402,6 +403,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bottom:        { position: 'absolute', left: 8, right: 8, bottom: 12, gap: 10 },
   locate:        { alignSelf: 'flex-end', marginRight: 8 },
   topList:       { backgroundColor: c.bg, paddingBottom: 10 },
+  // A pill so the muted line stays readable over the map tiles.
+  subtitle:      { alignSelf: 'flex-start', maxWidth: '100%', fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted, backgroundColor: c.bg, paddingHorizontal: 10, paddingVertical: 3, borderRadius: Radius.full, overflow: 'hidden' },
   listEmpty:     { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', padding: Spacing.lg },
   toggle:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18,
                    borderRadius: Radius.full, backgroundColor: c.text },
