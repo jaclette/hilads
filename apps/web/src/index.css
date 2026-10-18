@@ -16322,18 +16322,7 @@ body.has-app-promo-banner .page-header {
 /* ── Auth sheet (sign-up / sign-in) daylight theme, scoped to .auth-page so the
    shared page-/modal-/profile-mode-/back-button classes stay dark inside the app.
    Same scoped-token pattern as .sl; folds into the global tokens in phase 3. ── */
-.auth-page {
-  --bg: #FBF6F0;
-  --surface: #FFFFFF;
-  --surface2: #F3EAE0;
-  --border: #EADDD0;
-  --text: #241A12;
-  --muted: #6E5D4E;
-  --muted2: #6E5D4E;
-  --accent2: #9C5A1C;   /* deepened from #B87228 so it stays AA as text on white */
-  color-scheme: light;
-  color: var(--text);   /* anchor: `color` inherits computed, don't leak the dark off-white */
-}
+.auth-page { color: var(--text); } /* the global V3 tokens apply here, in both themes */
 /* White form fields pop on the cream page (base sets them to var(--bg)). */
 .auth-page .modal-input,
 .auth-page .username-input-row { background: var(--surface); }
@@ -17017,3 +17006,49 @@ body.has-app-promo-banner .page-header {
 .city-row-current--reply { color: var(--primary-text); background: none; padding: 2px 0; }
 .now-active-badge { color: var(--local-text); background: var(--local-bg); }
 .er-location { font-size: 13px; color: var(--muted2); }
+
+/* ── Auth, account and settings (web pass 4, like the app's B2 / B6) ───── */
+.modal-label, .me-section-label, .profile-mode-label, .city-list-label { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 700; color: var(--text); }
+.modal-label-muted { font-weight: 500; color: var(--muted2); }
+.modal-input, .username-input-row, .auth-page .modal-input, .auth-page .username-input-row { min-height: 48px; box-sizing: border-box; background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; font-size: 15px; }
+.modal-textarea { min-height: 96px; }
+.modal-input:focus, .username-input-row:focus-within { border-color: var(--primary); }
+.modal-input--muted { color: var(--muted2); background: var(--surface2); }
+.modal-submit { min-height: 52px; padding: 0 16px; background: var(--primary); border-radius: 16px; font-size: 16px; font-weight: 700; box-shadow: none; }
+.auth-tabs { padding: 4px; gap: 4px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); }
+.auth-tab { min-height: 40px; border-radius: 999px; color: var(--text); font-weight: 600; }
+.auth-tab--active, .auth-page .auth-tab--active { background: var(--primary); color: #fff; font-weight: 700; }
+.profile-mode-btn, .auth-page .profile-mode-btn { border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); }
+.profile-mode-btn--on, .auth-page .profile-mode-btn--on { border-color: var(--primary); background: var(--primary-tint); }
+.profile-mode-btn--on .profile-mode-btn-name, .auth-page .profile-mode-btn--on .profile-mode-btn-name { color: var(--primary-on-tint); }
+.auth-page .profile-mode-label { color: var(--text); }
+.auth-eula-warning { border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); }
+.auth-forgot-btn { color: var(--primary-text); font-weight: 700; }
+/* Settings: fields straight on the page (no card), the app's chips. */
+.profile-card.profile-fields { background: transparent; border: none; box-shadow: none; padding: 0; }
+.vibe-chip, .interest-chip { min-height: 38px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; }
+.vibe-chip--on, .interest-chip--on { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+.profile-sticky-signout { min-height: 44px; color: var(--primary-text); font-size: 14px; font-weight: 700; }
+.profile-sticky-delete { min-height: 44px; color: #C0392B; font-size: 14px; font-weight: 700; }
+.profile-sticky-signout:hover { color: var(--primary-text); }
+.profile-sticky-delete:hover { color: #C0392B; }
+.profile-lang-trigger { min-height: 48px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); }
+/* Switch city: search field, filter chips, row cards. */
+.city-search-wrap { padding: 4px 16px 8px; border-bottom: none; }
+.city-search-input { min-height: 48px; border: 1.5px solid var(--line); border-radius: 999px; font-size: 15px; }
+.city-search-input:focus { border-color: var(--primary); }
+.city-filter-tab { min-height: 38px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; }
+.city-filter-tab.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+.profile-sticky-cta { background: var(--bg); border-top: 1px solid var(--line); -webkit-backdrop-filter: none; backdrop-filter: none; }
+/* Delete account sheet: the app's Sheet (was a hard-coded dark panel). */
+.delete-account-sheet { background: var(--surface); border-top: none; border-radius: 22px 22px 0 0; }
+.delete-account-icon { color: #C0392B; }
+.delete-account-title { color: var(--text); font-size: 18px; font-weight: 800; }
+.delete-account-body { color: var(--muted2); font-size: 14px; }
+.delete-account-error { color: #C0392B; }
+.delete-account-confirm, .delete-account-confirm:hover:not(:disabled) { min-height: 52px; border-radius: 16px; border: none; background: #C0392B; color: #fff; font-size: 16px; }
+.delete-account-cancel, .delete-account-cancel:hover:not(:disabled) { min-height: 44px; color: var(--text); font-weight: 700; }
+.username-input-row .modal-input, .auth-page .username-input-row .modal-input { min-height: 44px; border: none; background: transparent; border-radius: 0; padding-left: 0; }
+/* The sheet lives inside a full page, so it can't stack above the tab bar: lift it. */
+.delete-account-overlay { padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom)); }
+.auth-form .profile-mode-section { padding: 0; }
