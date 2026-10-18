@@ -17,8 +17,16 @@ export const THEME_COVERS: Record<DailyThemeKey, number> = {
   only_here:  require('../../../assets/covers/only_here.jpg'),
 };
 
-/** The bundled cover of a theme key; a special day without a cover shows its weekday's. */
-export function themeCover(key: string | null | undefined, date?: string | null): number | null {
-  if (key === 'special') return date ? THEME_COVERS[defaultThemeFor(date)] : THEME_COVERS.only_here;
+/** Bundled covers of known special days (by id), until one is uploaded on the special. */
+export const SPECIAL_COVERS: Record<string, number> = {
+  halloween: require('../../../assets/covers/halloween.jpg'),
+};
+
+/** The bundled cover of a theme key; a special day: its own when bundled, else its weekday's. */
+export function themeCover(key: string | null | undefined, date?: string | null, specialId?: string | null): number | null {
+  if (key === 'special') {
+    const own = specialId ? SPECIAL_COVERS[specialId.replace(/-\d{4}$/, '')] : undefined;
+    return own ?? (date ? THEME_COVERS[defaultThemeFor(date)] : THEME_COVERS.only_here);
+  }
   return key && key in THEME_COVERS ? THEME_COVERS[key as DailyThemeKey] : null;
 }

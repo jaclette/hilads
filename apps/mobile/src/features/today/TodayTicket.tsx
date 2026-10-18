@@ -214,7 +214,7 @@ function Cover({ coverUrl, themeKey, label, special, date, secondsLeft }: {
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
-  const source = coverUrl ? { uri: coverUrl } : themeCover(themeKey, date);
+  const source = coverUrl ? { uri: coverUrl } : themeCover(themeKey, date, special?.id);
   return (
     <View style={styles.cover}>
       {source !== null && (

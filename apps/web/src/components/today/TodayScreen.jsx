@@ -83,6 +83,13 @@ function ChallengeFriend({ challenge }) {
   )
 }
 
+/** Bundled covers of known special days (public/covers), by id ("halloween-2027" too). */
+const SPECIAL_COVERS = ['halloween']
+function specialCover(special) {
+  const id = special?.id?.replace(/-\d{4}$/, '')
+  return id && SPECIAL_COVERS.includes(id) ? id : 'only_here'
+}
+
 /**
  * Today's brand line (SPEC 9.3 / 9.9): "Hilads" in the wordmark weight, then
  * the tagline in muted text, one line that wraps on small screens. At the top
@@ -160,8 +167,8 @@ function Ticket({ data, loading }) {
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
-  // A special day without a cover shows Only here's; the API sends uploaded covers.
-  const cover = challenge.coverUrl || (theme ? `/covers/${theme === 'special' ? 'only_here' : theme}.jpg` : null)
+  // A special day without a cover: its bundled one (Halloween), else Only here's; the API sends uploaded covers.
+  const cover = challenge.coverUrl || (theme ? `/covers/${theme === 'special' ? specialCover(challenge.special) : theme}.jpg` : null)
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
 

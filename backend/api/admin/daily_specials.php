@@ -162,7 +162,7 @@ daily_styles();
                 <?= csrf_input() ?>
                 <input type="hidden" name="theme" value="<?= dh($key) ?>">
                 <h3 style="margin-bottom:6px"><?= dh(DailyThemes::name($key)) ?><?= $key === DailyThemes::SPECIAL ? ' <span class="daily-muted" style="font-size:12px">(a special without its own cover)</span>' : '' ?></h3>
-                <img src="<?= dh($url ?? ('https://hilads.live/covers/' . $key . '.jpg')) ?>" alt=""
+                <img src="<?= dh($url ?? ('https://hilads.live/covers/' . ($key === DailyThemes::SPECIAL ? 'only_here' : $key) . '.jpg')) ?>" alt=""
                      style="width:100%;aspect-ratio:5/2;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px">
                 <div class="hint" style="margin-bottom:6px"><?= $url ? 'Uploaded.' : 'Bundled default.' ?></div>
                 <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
