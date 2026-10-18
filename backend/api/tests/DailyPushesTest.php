@@ -69,8 +69,9 @@ final class DailyPushesTest extends TestCase
 
     public function testMorningMessageIsEnglishAndHasNoChallengeId(): void
     {
-        $m = DailyPushes::morningMessage(['text_i18n' => '{"en":"Eat what locals eat"}', 'challenge_date' => '2026-11-02']);
-        $this->assertSame("Today's Daily Challenge: Eat what locals eat", $m['body']);
+        $m = DailyPushes::morningMessage(['text_i18n' => '{"en":"Eat what locals eat"}', 'challenge_date' => '2026-11-02', 'theme' => 'street_food']);
+        $this->assertSame('🍜 Today: Street food', $m['title']);
+        $this->assertSame('Eat what locals eat', $m['body']);
         $this->assertSame('https://hilads.live/today', $m['data']['deepLink']);
         $this->assertArrayNotHasKey('challengeId', $m['data']);
     }
@@ -180,36 +181,44 @@ final class DailyPushesTest extends TestCase
     {
         $m = DailyPushes::morningMessage(['text_i18n' => '{"en":"Eat what locals eat"}', 'challenge_date' => '2026-11-02'],
                                          "Yesterday's winner: Anh, 14 votes.");
-        $this->assertSame("Yesterday's winner: Anh, 14 votes. Today's Daily Challenge: Eat what locals eat", $m['body']);
+        $this->assertSame("Eat what locals eat Yesterday's winner: Anh, 14 votes.", $m['body']);
+        // No theme stored: the date's weekday theme (2026-11-02 is a Monday: Language).
+        $this->assertSame('💬 Today: Language', $m['title']);
     }
+
+    private const SHRINE = ['challenge_date' => '2026-11-02', 'theme' => 'traditions',
+                            'text_i18n' => '{"en":"Find a shrine and ask a local what it means.","fr":"Trouve un autel et demande à un local ce qu\u2019il signifie."}'];
 
     public function testReminderMessage(): void
     {
-        $m = DailyPushes::reminderMessage('2026-11-02', 6 * 3600 + 59 * 60);
-        $this->assertSame("Only 6h left for today's Daily Challenge.", $m['body']);
+        // Hours to the nearest hour: 21:00 with 11h59m left reads 12h, not 11h.
+        $m = DailyPushes::reminderMessage(self::SHRINE, 11 * 3600 + 59 * 60);
+        $this->assertSame('🌸 Traditions · 12h left', $m['title']);
+        $this->assertSame('Find a shrine and ask a local what it means.', $m['body']);
         $this->assertSame(['date' => '2026-11-02', 'deepLink' => 'https://hilads.live/today'], $m['data']);
-        $this->assertSame("Only 1h left for today's Daily Challenge.", DailyPushes::reminderMessage('2026-11-02', 600)['body']);
+        $this->assertSame('🌸 Traditions · 1h left', DailyPushes::reminderMessage(self::SHRINE, 600)['title']);
     }
 
     public function testReminderNamesAFriendOrCountsPeople(): void
     {
-        $d = '2026-11-02';
-        $this->assertSame("Linh and 11 others took today's challenge. 6h left.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'en', 'Linh', 12)['body']);
-        $this->assertSame("Linh and 1 other took today's challenge. 6h left.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'en', 'Linh', 2)['body']);
-        $this->assertSame("Linh took today's challenge. 6h left.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'en', 'Linh', 1)['body']);
-        $this->assertSame("12 people already took today's challenge. 6h left.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'en', null, 12)['body']);
-        $this->assertSame("1 person already took today's challenge. 6h left.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'en', null, 1)['body']);
-        $this->assertSame("Only 6h left for today's Daily Challenge.", DailyPushes::reminderMessage($d, 6 * 3600)['body']);
-        $this->assertSame("Linh et 11 autres ont relevé le Daily Challenge du jour. Encore 6 h.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'fr', 'Linh', 12)['body']);
-        // {n} = 1 picks the singular phrase.
-        $this->assertSame("1 personne a déjà relevé le Daily Challenge du jour. Encore 6 h.",
-            DailyPushes::reminderMessage($d, 6 * 3600, 'fr', null, 1)['body']);
+        $t = 'Find a shrine and ask a local what it means.';
+        $this->assertSame("{$t} Linh and 11 others already did it.", DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'en', 'Linh', 12)['body']);
+        $this->assertSame("{$t} Linh and 1 other already did it.", DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'en', 'Linh', 2)['body']);
+        $this->assertSame("{$t} Linh already did it.", DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'en', 'Linh', 1)['body']);
+        $this->assertSame("{$t} 6 people already did it.", DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'en', null, 6)['body']);
+        $this->assertSame("{$t} 1 person already did it.", DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'en', null, 1)['body']);
+        $fr = DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'fr', null, 6);
+        $this->assertSame('🌸 Traditions · plus que 6 h', $fr['title']);
+        $this->assertSame("Trouve un autel et demande à un local ce qu’il signifie. 6 personnes l'ont déjà relevé.", $fr['body']);
+    }
+
+    public function testALongBodyDropsItsExtraLine(): void
+    {
+        $long = str_repeat('word ', 26) . 'end.';   // 134 characters
+        $c = ['challenge_date' => '2026-11-02', 'theme' => 'coffee', 'text_i18n' => json_encode(['en' => $long])];
+        $this->assertSame($long, DailyPushes::reminderMessage($c, 6 * 3600, 'en', null, 12)['body']);
+        $this->assertSame($long, DailyPushes::morningMessage($c, "Yesterday's winner: Anh in Saigon, 14 votes.")['body']);
+        $this->assertSame('Hi 12 people already did it.', DailyPushes::withLine('Hi', '12 people already did it.'));
     }
 
     public function testFirstVoteMessageOpensTheProof(): void

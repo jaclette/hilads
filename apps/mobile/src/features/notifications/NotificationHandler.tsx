@@ -205,10 +205,10 @@ function trackOpened(data: NotifData, coldStart: boolean) {
   }
 }
 
-/** The route a push opens; a Daily sheet also gets the push type, for daily_challenge_viewed. */
+/** The route a push opens; Today and a Daily sheet also get the push type, for analytics. */
 function resolveRoute(data: NotifData): string | null {
   const route = resolvePushRoute(data);
-  if (route && route.startsWith('/daily/') && route.includes('?source=push') && typeof data.type === 'string') {
+  if (route && (route.startsWith('/daily/') || route.startsWith('/(tabs)/today')) && route.includes('?source=push') && typeof data.type === 'string') {
     return `${route}&push_type=${encodeURIComponent(data.type)}`;
   }
   return route;
@@ -343,8 +343,8 @@ function resolvePushRoute(data: NotifData): string | null {
 
     case 'daily_morning':
     case 'daily_reminder':
-      // Daily Challenge pushes (no challengeId on purpose) → today's sheet.
-      return '/daily/today?source=push';
+      // Daily Challenge pushes (no challengeId on purpose) → Today, its card.
+      return '/(tabs)/today?source=push';
 
     case 'daily_top10':
       // My proof entered today's top 10 → the sheet's Top 10 tab.
@@ -355,8 +355,8 @@ function resolvePushRoute(data: NotifData): string | null {
       return '/daily/proposals';
 
     case 'daily_proposal_day':
-      // Today is my challenge → today's sheet.
-      return '/daily/today?source=push';
+      // Today is my challenge → Today, its card.
+      return '/(tabs)/today?source=push';
 
     case 'daily_proposal_result': {
       // How many completed my challenge → that day's sheet.

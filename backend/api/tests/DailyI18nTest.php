@@ -119,14 +119,17 @@ final class DailyI18nTest extends TestCase
     public function testPushCatalogIsComplete(): void
     {
         $expected = [
-            'frame' => ['{text}'], 'world' => ['{rank}'], 'city_best' => ['{city}'], 'city_rank' => ['{city}', '{rank}'],
+            'world' => ['{rank}'], 'city_best' => ['{city}'], 'city_rank' => ['{city}', '{rank}'],
             'votes' => ['{n}'], 'winner' => ['{city}', '{name}', '{n}'], 'winner_nocity' => ['{name}', '{n}'],
-            'reminder' => ['{h}'], 'digest_votes' => ['{n}'], 'digest_twist' => ['{n}'],
+            'digest_votes' => ['{n}'], 'digest_twist' => ['{n}'],
             'picked_tomorrow' => ['{city}'], 'picked_today' => ['{city}'], 'top10' => ['{rank}'],
-            'first_vote' => [], 'reminder_friend' => ['{h}', '{name}', '{n}'], 'reminder_friend_one' => ['{h}', '{name}'],
-            'reminder_friend_only' => ['{h}', '{name}'], 'reminder_count' => ['{h}', '{n}'], 'reminder_count_one' => ['{h}'],
+            'first_vote' => [],
             'bell_vote' => ['{name}'], 'bell_twist' => ['{city}', '{name}'], 'proposal_approved' => ['{date}'],
             'proposal_reserve' => [], 'proposal_day' => [], 'proposal_result' => ['{n}'], 'proposal_result_one' => [],
+            'title_today' => ['{theme}'], 'title_reminder' => ['{h}', '{theme}'], 'did_count' => ['{n}'], 'did_count_one' => [],
+            'did_friend' => ['{name}'], 'did_friend_others' => ['{name}', '{n}'], 'did_friend_others_one' => ['{name}'],
+            'theme_language' => [], 'theme_street_food' => [], 'theme_coffee' => [], 'theme_market' => [],
+            'theme_night_out' => [], 'theme_neighborhood' => [], 'theme_traditions' => [],
         ];
         $catalog = DailyPushText::catalog();
         $this->assertSame(DailyI18n::others(), array_keys($catalog));
@@ -138,7 +141,6 @@ final class DailyI18nTest extends TestCase
                 sort($found);
                 $this->assertSame($expected[$key], $found, "{$locale}.{$key}");
             }
-            $this->assertStringContainsString('Daily Challenge', $phrases['frame'], $locale);
             $this->assertStringContainsString('Local Twist', $phrases['digest_twist'], $locale);
         }
     }
@@ -150,16 +152,20 @@ final class DailyI18nTest extends TestCase
         $this->assertSame('en', DailyPushes::morningLocale($c, 'vi'));   // not translated: all English, no mix
         $line = DailyPushes::outcomeLine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9, 'cityName' => 'Paris'], null, 'fr');
         $this->assertSame('Hier, ta preuve était #2 dans le monde.', $line);
-        $this->assertSame('Hier, ta preuve était #2 dans le monde. Daily Challenge du jour : Mange',
-                          DailyPushes::morningMessage($c, $line, 'fr')['body']);
-        $this->assertSame("Today's Daily Challenge: Eat", DailyPushes::morningMessage($c, null, 'en')['body']);
+        $fr = DailyPushes::morningMessage($c + ['theme' => 'street_food'], $line, 'fr');
+        $this->assertSame("🍜 Aujourd'hui : Street food", $fr['title']);
+        $this->assertSame('Mange Hier, ta preuve était #2 dans le monde.', $fr['body']);
+        $this->assertSame('Eat', DailyPushes::morningMessage($c, null, 'en')['body']);
         $this->assertSame("Gagnant d'hier : Anh · ♥ 1.",
                           DailyPushes::outcomeLine(null, ['name' => 'Anh', 'cityName' => null, 'votes' => 1], 'fr'));
     }
 
     public function testReminderAndDigestInTheRecipientLanguage(): void
     {
-        $this->assertSame('Chỉ còn 6 giờ cho Daily Challenge hôm nay.', DailyPushes::reminderMessage('2026-11-02', 6 * 3600 + 5, 'vi')['body']);
+        $vi = DailyPushes::reminderMessage(['challenge_date' => '2026-11-02', 'theme' => 'coffee', 'text_i18n' => '{"en":"Order a coffee","vi":"Gọi một ly cà phê"}'],
+                                           6 * 3600 + 5, 'vi', null, 6);
+        $this->assertSame('☕ Cà phê · còn 6 giờ', $vi['title']);
+        $this->assertSame('Gọi một ly cà phê 6 người đã làm rồi.', $vi['body']);
         $this->assertSame('Votes pour ta preuve : 3. Ont relevé ton Local Twist : 1.', DailyPushes::digestMessage('2026-11-02', 3, 1, 'fr')['body']);
         $this->assertSame('1 person voted for your proof.', DailyPushes::digestMessage('2026-11-02', 1, 0, 'en')['body']);
         $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0, 'fr'));

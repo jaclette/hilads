@@ -22,8 +22,11 @@ declare(strict_types=1);
  *   (prompt 12); later votes are told by the digest;
  * - top10, proposal_approved, proposal_day, proposal_result.
  *
- * The reminder names a friend who took the challenge, else how many people
- * did ("Linh and 11 others took today's challenge. 6h left.").
+ * Every push says what the challenge is: the morning "🌸 Today: Traditions"
+ * and the reminder "🌸 Traditions · 6h left" carry the challenge text as
+ * their body, then yesterday's outcome (morning) or who already did it
+ * (reminder: a friend's name, else a count) when the body stays under
+ * BODY_MAX characters. Theme emojis appear in pushes only.
  *
  * Language (prompt 15): the recipient's (users.locale, a guest token's
  * locale). Fixed phrases come from DailyPushText; the morning push carries the
@@ -224,51 +227,92 @@ final class DailyPushes
         return DailyI18n::pick($i18n, $locale) !== null ? $locale : 'en';
     }
 
+    /** Theme emojis: in pushes only, never in the app's interface. */
+    public const THEME_EMOJI = [
+        'language' => '💬', 'street_food' => '🍜', 'coffee' => '☕', 'market' => '🧺',
+        'night_out' => '🌙', 'neighborhood' => '🏪', 'traditions' => '🌸',
+    ];
+    /** A push body stays under this many characters: a longer one drops its extra line. */
+    public const BODY_MAX = 150;
+
     /**
-     * The morning push message for a challenge, with an optional outcome
-     * sentence first. $locale must come from morningLocale() (translated text exists).
+     * The morning push: "🌸 Today: Traditions" over the challenge text, then
+     * yesterday's outcome when it fits in BODY_MAX. $locale must come from
+     * morningLocale() (the challenge is translated into it, else English).
      */
     public static function morningMessage(array $challenge, ?string $outcome = null, string $locale = 'en'): array
     {
-        $i18n = json_decode((string) $challenge['text_i18n'], true) ?: [];
-        $text = $i18n['en'] ?? '';
-        $body = "Today's Daily Challenge: {$text}";
-        $translated = $locale !== 'en' ? DailyI18n::pick($i18n, $locale) : null;
-        if ($translated !== null && DailyPushText::has($locale)) {
-            $body = (string) DailyPushText::render('frame', $locale, ['text' => $translated]);
-        }
+        $theme = self::themeOf($challenge);
+        $title = $theme !== null
+            ? self::THEME_EMOJI[$theme] . ' ' . (DailyPushText::render('title_today', $locale, ['theme' => self::themeName($theme, $locale)])
+                                               ?? 'Today: ' . self::themeName($theme, $locale))
+            : 'Daily Challenge';
         return [
-            'title' => 'Daily Challenge',
-            'body'  => $outcome !== null ? "{$outcome} {$body}" : $body,
+            'title' => $title,
+            'body'  => self::withLine(self::challengeText($challenge, $locale), $outcome),
             // No challengeId on purpose: the app's tap fallback would open the
-            // legacy challenge screen with it. deepLink = the sheet of today.
+            // legacy challenge screen with it. deepLink = today's card.
             'data'  => self::data((string) $challenge['challenge_date']),
         ];
     }
 
     /**
-     * The reminder, with the hours left at send time (rounded down, at least 1)
-     * and who already took it: a friend ($friend, their name) with the number of
-     * others, else the number of people ($took), else the plain reminder.
+     * The reminder: "🌸 Traditions · 6h left" (hours left at send time, to the
+     * nearest hour, at least 1) over the challenge text, then who already did
+     * it when it fits in BODY_MAX: a friend ($friend, their name) and the number
+     * of others, else the number of people ($took). $locale as for the morning.
      */
-    public static function reminderMessage(string $date, int $secondsLeft, string $locale = 'en', ?string $friend = null, int $took = 0): array
+    public static function reminderMessage(array $challenge, int $secondsLeft, string $locale = 'en', ?string $friend = null, int $took = 0): array
     {
-        $hours  = max(1, intdiv($secondsLeft, 3600));
+        $hours  = max(1, (int) round($secondsLeft / 3600));
+        $theme  = self::themeOf($challenge);
+        $name   = $theme !== null ? self::themeName($theme, $locale) : 'Daily Challenge';
+        $title  = ($theme !== null ? self::THEME_EMOJI[$theme] . ' ' : '')
+                . (DailyPushText::render('title_reminder', $locale, ['theme' => $name, 'h' => $hours]) ?? "{$name} · {$hours}h left");
         $others = max(0, $took - 1);
+        $social = null;
         if ($friend !== null && $others > 0) {
-            $body = DailyPushText::render('reminder_friend', $locale, ['name' => $friend, 'n' => $others, 'h' => $hours])
-                    ?? "{$friend} and " . ($others === 1 ? '1 other' : "{$others} others") . " took today's challenge. {$hours}h left.";
+            $social = DailyPushText::render('did_friend_others', $locale, ['name' => $friend, 'n' => $others])
+                      ?? "{$friend} and " . ($others === 1 ? '1 other' : "{$others} others") . ' already did it.';
         } elseif ($friend !== null) {
-            $body = DailyPushText::render('reminder_friend_only', $locale, ['name' => $friend, 'h' => $hours])
-                    ?? "{$friend} took today's challenge. {$hours}h left.";
+            $social = DailyPushText::render('did_friend', $locale, ['name' => $friend]) ?? "{$friend} already did it.";
         } elseif ($took > 0) {
-            $body = DailyPushText::render('reminder_count', $locale, ['n' => $took, 'h' => $hours])
-                    ?? self::plural($took, 'person', 'people') . " already took today's challenge. {$hours}h left.";
-        } else {
-            $body = DailyPushText::render('reminder', $locale, ['h' => $hours])
-                    ?? "Only {$hours}h left for today's Daily Challenge.";
+            $social = DailyPushText::render('did_count', $locale, ['n' => $took])
+                      ?? self::plural($took, 'person', 'people') . ' already did it.';
         }
-        return ['title' => 'Daily Challenge', 'body' => $body, 'data' => self::data($date)];
+        return [
+            'title' => $title,
+            'body'  => self::withLine(self::challengeText($challenge, $locale), $social),
+            'data'  => self::data((string) $challenge['challenge_date']),
+        ];
+    }
+
+    /** The challenge text in $locale (its translation), else English. */
+    private static function challengeText(array $challenge, string $locale): string
+    {
+        $i18n = json_decode((string) $challenge['text_i18n'], true) ?: [];
+        return ($locale !== 'en' ? DailyI18n::pick($i18n, $locale) : null) ?? (string) ($i18n['en'] ?? '');
+    }
+
+    /** $text, then $line when the two fit in BODY_MAX characters; else $text alone. */
+    public static function withLine(string $text, ?string $line): string
+    {
+        if ($line === null || $line === '') {
+            return $text;
+        }
+        $both = "{$text} {$line}";
+        return mb_strlen($both) <= self::BODY_MAX ? $both : $text;
+    }
+
+    private static function themeOf(array $challenge): ?string
+    {
+        $key = DailyThemes::effective($challenge['theme'] ?? null, isset($challenge['challenge_date']) ? (string) $challenge['challenge_date'] : null);
+        return $key !== null && isset(self::THEME_EMOJI[$key]) ? $key : null;
+    }
+
+    private static function themeName(string $key, string $locale): string
+    {
+        return DailyPushText::render('theme_' . $key, $locale) ?? DailyThemes::name($key);
     }
 
     /** The first vote on a proof (prompt 12): opens that proof. */
@@ -663,10 +707,16 @@ final class DailyPushes
                 } elseif (isset($facts['posted'][$fk])) {
                     $reason = 'done';
                 } else {
-                    $msg = self::reminderMessage((string) $row['challenge_date'], DailyClock::secondsLeft($now),
-                                                 (string) ($msg['locale'] ?? 'en'), $facts['friend'][$fk] ?? null,
-                                                 $facts['took'][(string) $row['challenge_date']] ?? 0)
-                           + ['locale' => $msg['locale'] ?? 'en'];
+                    $challenge = DailyChallengeRepository::findPublishedByDate((string) $row['challenge_date']);
+                    if ($challenge === null) {
+                        $reason = 'expired';
+                    } else {
+                        // Like the morning: the user's language when the challenge is translated into it, else English.
+                        $loc = self::morningLocale($challenge, (string) ($msg['locale'] ?? 'en'));
+                        $msg = self::reminderMessage($challenge, DailyClock::secondsLeft($now), $loc,
+                                                     $facts['friend'][$fk] ?? null, $facts['took'][(string) $row['challenge_date']] ?? 0)
+                               + ['locale' => $msg['locale'] ?? 'en'];
+                    }
                 }
             } elseif ($row['type'] === 'digest') {
                 $digest = self::digestMessage((string) $row['challenge_date'],
