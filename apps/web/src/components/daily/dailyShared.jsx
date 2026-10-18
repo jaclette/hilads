@@ -30,12 +30,14 @@ const INLINE = { display: 'inline-flex', alignItems: 'center', gap: 4 }
 
 /**
  * A rank in a round seal: #1 on gold, #2 and #3 on the primary tint, the rest
- * as a plain "#n" (the app's RankMedal; replaces the medal emoji).
+ * as a plain "#n" (the app's RankMedal; replaces the medal emoji). podium:
+ * gold, silver and bronze (yesterday's podium).
  */
-export function RankMedal({ rank, size = 26 }) {
+export function RankMedal({ rank, size = 26, podium = false }) {
   if (rank > 3) return <span>#{rank}</span>
+  const tone = rank === 1 ? ' dc-medal--gold' : podium ? (rank === 2 ? ' dc-medal--silver' : ' dc-medal--bronze') : ''
   return (
-    <span className={`dc-medal${rank === 1 ? ' dc-medal--gold' : ''}`} style={{ width: size, height: size }} aria-label={`#${rank}`}>
+    <span className={`dc-medal${tone}`} style={{ width: size, height: size }} aria-label={`#${rank}`}>
       {rank}
     </span>
   )

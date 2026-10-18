@@ -25,7 +25,11 @@ export interface Spot {
  * The nearest spots (Today's "Spots near you"): around a position when given,
  * else the city centre. fallback: the city has none, these are the nearest anywhere.
  */
-export function fetchSpotsNear(opts: { lat?: number; lng?: number; cityId?: string | number | null }): Promise<{ items: Spot[]; fallback: boolean }> {
+/** center 'city': around the chosen city's centre because I'm not in it ("Spots in <city>"). */
+export function fetchSpotsNear(opts: { lat?: number; lng?: number; cityId?: string | number | null }): Promise<{
+  items: Spot[]; fallback: boolean; center?: 'me' | 'city' | 'unknown';
+  city?: { id: number; name: string; country: string | null } | null;
+}> {
   return api.get('/spots/near', {
     params: {
       lat:    opts.lat !== undefined ? opts.lat.toFixed(4) : undefined,

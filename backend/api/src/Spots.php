@@ -19,6 +19,7 @@ final class Spots
 {
     public const PIN_LIMIT    = 300;
     public const NEAR_LIMIT   = 3;
+    public const AWAY_M       = 30000;   // a position farther than this from the city's centre is not "in" it (Today: "Spots in <city>")
     public const SEARCH_LIMIT = 20;
     public const PHOTOS_PAGE  = 24;
     public const CAPTIONS     = 3;

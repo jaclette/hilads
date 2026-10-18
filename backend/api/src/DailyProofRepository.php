@@ -244,12 +244,16 @@ final class DailyProofRepository
     /**
      * Today's proof strip (SPEC 9.3): a scope's approved proofs, most voted
      * first then newest, with the scope's proof and country counts ($cityId
-     * null = World). Viewer-independent, cached 15 s per scope.
+     * null = World). $podium: the official results order instead (votes, local
+     * votes, earliest approval), for yesterday's podium. Viewer-independent,
+     * cached 15 s per scope.
      */
-    public static function strip(string $challengeId, ?string $cityId, int $limit): array
+    public static function strip(string $challengeId, ?string $cityId, int $limit, bool $podium = false): array
     {
-        $key = "daily_strip_v1_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}";
-        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit): array {
+        $key   = "daily_strip_v1_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}" . ($podium ? '_podium' : '');
+        $order = $podium ? 'p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id'
+                         : 'p.vote_count DESC, p.approved_at DESC, p.id DESC';
+        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit, $order): array {
             $pdo        = Database::pdo();
             $cityFilter = $cityId !== null ? " AND p.city_id = ?" : "";
             $args       = $cityId !== null ? [$challengeId, $cityId] : [$challengeId];
@@ -264,7 +268,7 @@ final class DailyProofRepository
             $counts = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $stmt = $pdo->prepare(self::SELECT . " WHERE p.challenge_id = ? AND p.moderation_status = 'approved'{$cityFilter}
-                ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC LIMIT ?");
+                ORDER BY {$order} LIMIT ?");
             $stmt->execute([...$args, $limit]);
 
             return ['total' => (int) $counts['total'], 'countries' => (int) $counts['countries'], 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];

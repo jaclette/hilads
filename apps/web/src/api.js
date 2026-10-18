@@ -2433,6 +2433,16 @@ export function fetchDailySheet(date, { scope = 'world', cityId, before, limit =
   return daily('GET', `/daily/challenges/${date}`, { params: { scope, cityId: cityNum(cityId), before, limit, locale } })
 }
 
+/** Yesterday's podium: the scope's top 3 proofs of yesterday, total and countries. A city with none falls back to World. */
+export function fetchDailyPodium({ scope = 'world', cityId, locale } = {}) {
+  return daily('GET', '/daily/podium', { params: { scope, cityId: cityNum(cityId), locale } })
+}
+
+/** Past challenges, newest first (scope world or city), paged by date, optionally one theme. */
+export function fetchDailyArchive({ scope = 'world', cityId, before, theme, limit = 10, locale } = {}) {
+  return daily('GET', '/daily/archive', { params: { scope, cityId: cityNum(cityId), before, theme, limit, locale } })
+}
+
 /** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. */
 export function fetchDailyTodayProofs({ scope = 'world', cityId, limit = 12, locale } = {}) {
   return daily('GET', '/daily/today/proofs', { params: { scope, cityId: cityNum(cityId), limit, locale } })

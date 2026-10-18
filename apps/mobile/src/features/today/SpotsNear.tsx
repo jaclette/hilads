@@ -10,13 +10,15 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useScope } from '@/context/ScopeContext';
 import { fetchSpotsNear, type Spot } from '@/api/spots';
 import { compactPrice, distance } from './format';
-import { SectionTitle } from '@/ui';
+import { CityFlag, SectionTitle } from '@/ui';
+import { localizeCityName } from '@/i18n/cityName';
 
 /**
  * Spots near you (SPEC 9.3): the 2-3 nearest spots, linking to the Map. Uses
  * the phone's position only when location is already allowed (Today never
  * asks), else the city centre; World scope uses the city centre too. When the
- * city has no spot yet, the nearest ones anywhere show with a note.
+ * city has no spot yet, the nearest ones anywhere show with a note. In a city
+ * I'm not in, the list is centred on it: "Spots in <city>".
  */
 export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refreshKey: number }) {
   const styles = useThemedStyles(makeStyles);
@@ -26,6 +28,8 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
   const { scope } = useScope();
   const [spots, setSpots] = useState<Spot[] | null>(null);
   const [fallback, setFallback] = useState(false);
+  // Centred on the chosen city when I'm not in it: "Spots in <city>".
+  const [away, setAway] = useState<{ name: string; country: string | null } | null>(null);
 
   const load = useCallback(async () => {
     let pos: { lat: number; lng: number } | null = null;
@@ -41,6 +45,7 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
       const res = await fetchSpotsNear({ ...(pos ?? {}), cityId: pos ? (scope === 'city' ? cityId : null) : cityId });
       setSpots(res.items);
       setFallback(res.fallback);
+      setAway(scope === 'city' && res.center === 'city' && res.city ? res.city : null);
     } catch {
       setSpots(s => s ?? []);
     }
@@ -52,7 +57,17 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
   if (spots === null) return null;
   return (
     <View style={styles.wrap}>
-      <SectionTitle title={t('today.spotsTitle')} action={{ label: t('today.openMap'), onPress: () => openMap() }} />
+      {away ? (
+        <View style={styles.head}>
+          <CityFlag country={away.country} />
+          <View style={styles.headTitle}>
+            <SectionTitle title={t('today.spotsIn', { city: localizeCityName(away.name) })}
+                          action={{ label: t('today.openMap'), onPress: () => openMap() }} />
+          </View>
+        </View>
+      ) : (
+        <SectionTitle title={t('today.spotsTitle')} action={{ label: t('today.openMap'), onPress: () => openMap() }} />
+      )}
       {fallback && spots.length > 0 && <Text style={styles.note}>{t('today.spotsFallback')}</Text>}
       {spots.length === 0 ? (
         <TouchableOpacity style={styles.empty} onPress={() => openMap()} accessibilityRole="button">
@@ -89,6 +104,8 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { gap: 8 },
+  head:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  headTitle: { flex: 1 },
   note:      { fontSize: 12, color: c.muted },
   cards:     { gap: 10 },
   card:      { width: 150, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 16, overflow: 'hidden' },

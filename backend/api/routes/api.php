@@ -14423,6 +14423,45 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
     Response::json($out);
 });
 
+// GET /api/v1/daily/podium?scope=world|city&cityId= - Today's "Yesterday's
+// podium" (SPEC 9.3): yesterday's top 3 approved proofs of the scope in the
+// official results order, with its proof and country counts. A city with no
+// proof yesterday falls back to World; no proofs at all = empty list.
+$router->add('GET', '/api/v1/daily/podium', function () {
+    $user      = AuthService::currentUser();
+    $date      = (new DateTimeImmutable(DailyClock::currentDate(), new DateTimeZone('UTC')))->modify('-1 day')->format('Y-m-d');
+    $challenge = DailyChallengeRepository::findPublishedByDate($date);
+    $out = ['date' => $date, 'scope' => 'world', 'city' => null, 'total' => 0, 'countries' => 0, 'proofs' => []];
+    if ($challenge === null) {
+        Response::json($out);
+    }
+    $cityId = ($_GET['scope'] ?? 'world') === 'city' ? dailyCityParam($user) : null;
+    $strip  = $cityId !== null ? DailyProofRepository::strip($challenge['id'], $cityId, 3, true) : null;
+    if ($strip === null || $strip['total'] === 0) {
+        $cityId = null;
+        $strip  = DailyProofRepository::strip($challenge['id'], null, 3, true);
+    }
+    $viewerId = $user['id'] ?? null;
+    $rows     = $strip['rows'];
+    foreach ($rows as $i => &$r) {
+        $r['podium_rank'] = $i + 1;
+    }
+    unset($r);
+    $visible = DailyVotes::annotate(filterByBlocks($rows, dailyBlocks($user), 'user_id', 'guest_id'), $viewerId);
+
+    $out['scope']     = $cityId !== null ? 'city' : 'world';
+    $out['city']      = $cityId !== null
+        ? ['id' => (int) substr($cityId, 5), 'name' => CityRepository::findById((int) substr($cityId, 5))['name'] ?? null, 'country' => CityRepository::countryOf($cityId)]
+        : null;
+    $out['total']     = $strip['total'];
+    $out['countries'] = $strip['countries'];
+    $out['proofs']    = array_map(
+        static fn(array $r): array => DailyProofRepository::format($r, $viewerId) + ['rank' => $r['podium_rank']],
+        $visible,
+    );
+    Response::json($out);
+});
+
 // GET /api/v1/daily/challenges/{date}?scope=world|city&cityId=&before=&limit=
 // Challenge sheet: header + approved proofs (paged) + practical info.
 $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) {
@@ -14457,7 +14496,8 @@ $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) 
     Response::json($out);
 });
 
-// GET /api/v1/daily/archive?cityId=&before=YYYY-MM-DD&limit= - "Already done".
+// GET /api/v1/daily/archive?scope=world|city&cityId=&before=YYYY-MM-DD&limit=&theme= - past
+// challenges, newest first: the "All past challenges" archive. Public.
 $router->add('GET', '/api/v1/daily/archive', function () {
     $user   = AuthService::currentUser();
     $before = $_GET['before'] ?? null;
@@ -14472,7 +14512,9 @@ $router->add('GET', '/api/v1/daily/archive', function () {
             Response::json(['error' => 'Unknown theme', 'code' => 'invalid_theme'], 400);
         }
     }
-    $out   = DailyChallengeRepository::archive(dailyCityParam($user), $before, $limit, $theme);
+    // scope=world: every city's proofs (Today's "All past challenges" in World scope).
+    $cityId = ($_GET['scope'] ?? null) === 'world' ? null : dailyCityParam($user);
+    $out    = DailyChallengeRepository::archive($cityId, $before, $limit, $theme);
     $blocked = array_flip(dailyBlocks($user)['user_ids'] ?? []);
     foreach ($out['items'] as &$item) {
         if ($item['bestProof'] !== null && isset($blocked[$item['bestProof']['user']['id']])) {
@@ -14912,18 +14954,32 @@ $router->add('GET', '/api/v1/spots/search', function () {
 // GET /api/v1/spots/near?lat=&lng=&cityId= - the nearest spots (Today's "Spots
 // near you"). Without a position, the city centre is used. When the city has
 // none, the nearest spots anywhere come back with fallback: true.
+// center: 'me' around the given position; 'city' around the city's centre
+// when the viewer is not in that city (the position is over AWAY_M from it, or
+// without one, the signed-in user's current city is another): "Spots in
+// <city>"); 'unknown' with no position and nobody signed in to compare with.
 $router->add('GET', '/api/v1/spots/near', function () {
     spotsRateLimit();
     $cityId = isset($_GET['cityId']) ? dailyCityParam(null) : null;
+    $city   = $cityId !== null ? CityRepository::findById((int) substr($cityId, 5)) : null;
+    $center = 'unknown';
     if (isset($_GET['lat']) || isset($_GET['lng'])) {
         [$in, $err] = Places::parseProofInput(['position' => ['lat' => $_GET['lat'] ?? null, 'lng' => $_GET['lng'] ?? null]]);
         if ($err !== null) {
             Response::json(['error' => 'lat and lng must be valid coordinates', 'code' => 'invalid_position'], 400);
         }
         [$lat, $lng] = [$in['lat'], $in['lng']];
-    } elseif ($cityId !== null) {
-        $city = CityRepository::findById((int) substr($cityId, 5));
+        $center = 'me';
+        if ($city !== null && Places::distanceM($lat, $lng, (float) $city['lat'], (float) $city['lng']) > Spots::AWAY_M) {
+            [$lat, $lng] = [(float) $city['lat'], (float) $city['lng']];
+            $center = 'city';
+        }
+    } elseif ($city !== null) {
         [$lat, $lng] = [(float) $city['lat'], (float) $city['lng']];
+        $user = AuthService::currentUser();
+        if ($user !== null && ($user['current_city_id'] ?? null) !== null && $user['current_city_id'] !== $cityId) {
+            $center = 'city';
+        }
     } else {
         Response::json(['error' => 'Give lat and lng, or a cityId', 'code' => 'invalid_scope'], 400);
     }
@@ -14939,7 +14995,8 @@ $router->add('GET', '/api/v1/spots/near', function () {
         $s['distanceM'] = Places::distanceM($lat, $lng, $s['lat'], $s['lng']);
     }
     unset($s);
-    Response::json(['items' => $spots, 'fallback' => $fallback]);
+    Response::json(['items' => $spots, 'fallback' => $fallback, 'center' => $center,
+                    'city' => $city !== null ? ['id' => $city['id'], 'name' => $city['name'], 'country' => $city['country']] : null]);
 });
 
 // GET /api/v1/spots/{id}?offset= - a spot: stats, tags, its city ranking (top 3,

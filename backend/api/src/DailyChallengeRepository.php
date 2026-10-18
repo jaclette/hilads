@@ -239,6 +239,47 @@ final class DailyChallengeRepository
      * anywhere, no twist. Best proof = stored result rank 1 once results exist
      * (phase 2), else most votes, then latest approval. $theme filters by theme key.
      */
+    public const ARCHIVE_PHOTOS = 4;
+
+    /** Per challenge: its best photos [{proofId, thumbUrl}] and its countries, in a city or World ($cityId null). */
+    private static function archiveExtras(array $challengeIds, ?string $cityId): array
+    {
+        if ($challengeIds === []) {
+            return [[], []];
+        }
+        $pdo        = Database::pdo();
+        $ids        = implode(',', $challengeIds);
+        $cityFilter = $cityId !== null ? ' AND p.city_id = ?' : '';
+        $args       = $cityId !== null ? [$ids, $cityId] : [$ids];
+
+        $stmt = $pdo->prepare("
+            SELECT challenge_id, id, photo_url FROM (
+                SELECT p.challenge_id, p.id, p.photo_url,
+                       row_number() OVER (PARTITION BY p.challenge_id ORDER BY p.vote_count DESC, p.approved_at DESC) AS rn
+                FROM daily_proofs p
+                WHERE p.challenge_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'{$cityFilter}
+            ) x WHERE rn <= " . self::ARCHIVE_PHOTOS . " ORDER BY challenge_id, rn
+        ");
+        $stmt->execute($args);
+        $photos = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $photos[$r['challenge_id']][] = ['proofId' => $r['id'], 'thumbUrl' => R2Uploader::thumbProxy($r['photo_url'])];
+        }
+
+        $stmt = $pdo->prepare("
+            SELECT p.challenge_id, count(DISTINCT c.country) AS n
+            FROM daily_proofs p LEFT JOIN cities c ON c.channel_id = p.city_id
+            WHERE p.challenge_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'{$cityFilter}
+            GROUP BY p.challenge_id
+        ");
+        $stmt->execute($args);
+        $countries = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $countries[$r['challenge_id']] = (int) $r['n'];
+        }
+        return [$photos, $countries];
+    }
+
     public static function archive(?string $cityId, ?string $beforeDate, int $limit, ?string $theme = null): array
     {
         $isLive = DailyRules::isLive($cityId);
@@ -309,6 +350,7 @@ final class DailyChallengeRepository
             'lim'    => $limit,
         ]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        [$photos, $countries] = self::archiveExtras(array_column($rows, 'id'), $cityArg);
 
         $items = [];
         foreach ($rows as $r) {
@@ -327,10 +369,14 @@ final class DailyChallengeRepository
                     'max'      => (float) $r['max_amount'],
                 ] : null,
                 'counts'       => [
-                    'world' => (int) $r['world_count'],
-                    'city'  => $isLive ? (int) $r['city_count'] : null,
+                    'world'     => (int) $r['world_count'],
+                    'city'      => $isLive ? (int) $r['city_count'] : null,
+                    // Countries of the scope's proofs (the archive's "N proofs in M countries").
+                    'countries' => $countries[$r['id']] ?? 0,
                 ],
                 'pinnedPlaces' => (int) $r['pinned_count'],
+                // The mosaic: the scope's best photos (up to ARCHIVE_PHOTOS), most voted first.
+                'photos'       => $photos[$r['id']] ?? [],
             ];
         }
 

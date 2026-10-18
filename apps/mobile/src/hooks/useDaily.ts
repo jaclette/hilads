@@ -151,8 +151,11 @@ function seedSheet(s: DailySheet) {
   if (open) seedVotesLeft(s.myVotes?.left ?? null);
 }
 
-/** "Already done" archive of a city (World selection for a dead city), paged by date; `theme` filters. */
-export function useDailyArchive(cityId: string | null | undefined, theme: string | null = null) {
+/**
+ * Past challenges, newest first, paged by date: a live city's (World for a
+ * dead city) or, with want = 'world', every city's; `theme` filters.
+ */
+export function useDailyArchive(cityId: string | null | undefined, theme: string | null = null, want: 'world' | 'city' = 'city') {
   const { identity, account } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
   const [items, setItems]     = useState<DailyArchiveItem[]>([]);
@@ -163,7 +166,7 @@ export function useDailyArchive(cityId: string | null | undefined, theme: string
 
   const load = useCallback(async () => {
     try {
-      const a = await fetchDailyArchive({ cityId, guestId, theme, limit: 10 });
+      const a = await fetchDailyArchive({ scope: want, cityId: want === 'city' ? cityId : null, guestId, theme, limit: 10 });
       setItems(a.items);
       setScope(a.scope);
       setHasMore(a.hasMore);
@@ -172,7 +175,7 @@ export function useDailyArchive(cityId: string | null | undefined, theme: string
     } finally {
       setLoading(false);
     }
-  }, [cityId, guestId, theme]);
+  }, [cityId, guestId, theme, want]);
 
   useEffect(() => { setLoading(true); setItems([]); load(); }, [load]);
 
@@ -181,7 +184,7 @@ export function useDailyArchive(cityId: string | null | undefined, theme: string
     if (!hasMore || loadingMore || !last) return;
     setLoadingMore(true);
     try {
-      const a = await fetchDailyArchive({ cityId, guestId, theme, limit: 10, before: last.challenge.date });
+      const a = await fetchDailyArchive({ scope: want, cityId: want === 'city' ? cityId : null, guestId, theme, limit: 10, before: last.challenge.date });
       setItems(prev => [...prev, ...a.items.filter(i => !prev.some(p => p.challenge.id === i.challenge.id))]);
       setHasMore(a.hasMore);
     } catch (err) {
@@ -189,7 +192,7 @@ export function useDailyArchive(cityId: string | null | undefined, theme: string
     } finally {
       setLoadingMore(false);
     }
-  }, [items, hasMore, loadingMore, cityId, guestId, theme]);
+  }, [items, hasMore, loadingMore, cityId, guestId, theme, want]);
 
   return { items, scope, hasMore, loading, loadingMore, loadMore, reload: load };
 }

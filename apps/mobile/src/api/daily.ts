@@ -12,6 +12,7 @@ import type {
   DailyProofInput,
   DailySheet,
   DailyTodayProofs,
+  DailyPodium,
   DailyToday,
   DailyTwistProposal,
   DailyTwistProposalScreen,
@@ -35,6 +36,15 @@ function cityParam(cityId?: string | number | null): number | undefined {
 
 export async function fetchDailyToday(cityId?: string | number | null): Promise<DailyToday> {
   return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId), locale: locale() } });
+}
+
+/** Yesterday's podium: the scope's top 3 proofs of yesterday, total and countries. A city with none falls back to World. */
+export async function fetchDailyPodium(
+  opts: { scope?: 'world' | 'city'; cityId?: string | number | null; guestId?: string | null } = {},
+): Promise<DailyPodium> {
+  return api.get<DailyPodium>('/daily/podium', {
+    params: { scope: opts.scope ?? 'world', cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, locale: locale() },
+  });
 }
 
 /** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. */
@@ -69,10 +79,11 @@ export async function fetchDailySheet(
 }
 
 export async function fetchDailyArchive(
-  opts: { cityId?: string | number | null; before?: string | null; limit?: number; guestId?: string | null; theme?: string | null } = {},
+  opts: { scope?: 'world' | 'city'; cityId?: string | number | null; before?: string | null; limit?: number; guestId?: string | null; theme?: string | null } = {},
 ): Promise<DailyArchive> {
   return api.get<DailyArchive>('/daily/archive', {
     params: {
+      scope:   opts.scope ?? undefined,
       cityId:  cityParam(opts.cityId),
       theme:   opts.theme ?? undefined,
       before:  opts.before ?? undefined,

@@ -923,6 +923,16 @@ export interface DailyTodayProofs {
   proofs:    (DailyProof & { rank: number | null })[];
 }
 
+/** GET /daily/podium: Today's "Yesterday's podium" (SPEC 9.3). */
+export interface DailyPodium {
+  date:      string;                       // yesterday
+  scope:     'world' | 'city';             // 'world' when the city had no proof yesterday
+  city:      { id: number; name: string | null; country?: string | null } | null;
+  total:     number;
+  countries: number;
+  proofs:    (DailyProof & { rank: number })[];   // the top 3, rank 1 first
+}
+
 export interface DailySheet extends DailyToday {
   scope:      'world' | 'city';
   proofs:     DailyProof[];
@@ -1021,8 +1031,10 @@ export interface DailyArchiveItem {
   bestProof:    DailyProof | null;
   twist:        DailyTwist | null;
   priceRange:   DailyPriceRange | null;
-  counts:       { world: number; city: number | null };
+  counts:       { world: number; city: number | null; countries?: number };
   pinnedPlaces: number;
+  /** The scope's best photos, most voted first (the archive's mosaic). */
+  photos?:      { proofId: string; thumbUrl: string | null }[];
 }
 
 export interface DailyArchive {

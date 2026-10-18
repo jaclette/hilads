@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyCalendar, fetchDailyToday, fetchDailyTodayProofs, fetchSpotsNear } from '../../api'
+import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchSpotsNear } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
@@ -26,7 +26,8 @@ function distance(m, lang) {
 
 /**
  * TODAY, the web home (W2, the app's Today tab, SPEC 9.3): the Daily Challenge
- * ticket, the week strip, today's proofs and Spots near you. Proofs are posted from the app: "Take the challenge" opens the store.
+ * ticket, the week strip, today's proofs, yesterday's podium and Spots near
+ * you (or in the chosen city). Proofs are posted from the app: "Take the challenge" opens the store.
  */
 export default function TodayScreen({ header }) {
   const { i18n } = useDc()
@@ -56,6 +57,7 @@ export default function TodayScreen({ header }) {
         <Ticket data={data} loading={loading} />
         <Week today={data} />
         <TodayProofs today={data} />
+        <Podium today={data} />
         <SpotsNear />
       </div>
     </div>
@@ -184,6 +186,7 @@ function Week({ today }) {
   const { t, i18n } = useDc()
   const { account, openDaily, needAccount } = useDaily()
   const [cal, setCal] = useState(null)
+  const [peek, setPeek] = useState(false)
   const now = ymd(new Date())
   // The week's themes are public (the challenges' themes, else the weekday
   // defaults): loaded for everyone; my statuses and streak only come signed in.
@@ -209,8 +212,10 @@ function Week({ today }) {
     if (d?.myStatus === 'pending') return 'pending'
     return d?.published && cal?.streak ? 'missed' : 'none'
   }
+  // A past day opens its sheet (read-only once closed); tomorrow only shows its theme.
   const openDay = (date, state) => {
-    if (state === 'tomorrow' || state === 'later') return
+    if (state === 'tomorrow') { setPeek(p => !p); return }
+    if (state === 'later' || (date < current && !byDate.get(date)?.published)) return
     track('daily_week_strip_used', { action: 'day', date, status: state, platform_surface: 'web' })
     openDaily('challenge', state === 'today' ? { date: 'today', source: 'week' } : { date })
   }
@@ -233,7 +238,8 @@ function Week({ today }) {
           const theme = d?.theme?.key ?? (date === current ? today?.challenge?.theme?.key : null)
           return (
             <button key={date} type="button" className="week-day" onClick={() => openDay(date, state)}
-                    disabled={state === 'tomorrow' || state === 'later'} aria-label={`${weekday}: ${t(`today.day.${state}`)}`}>
+                    disabled={state === 'later'} aria-expanded={state === 'tomorrow' ? peek : undefined}
+                    aria-label={`${weekday}: ${t(`today.day.${state}`)}`}>
               <span className={`week-weekday${state === 'today' ? ' week-weekday--today' : ''}`}>{weekday}</span>
               <span className={`week-dot week-dot--${state}`}>
                 {state === 'done' ? <Icon name="checkmark" size={18} />
@@ -245,7 +251,15 @@ function Week({ today }) {
           )
         })}
       </div>
-      <button type="button" className="week-propose" style={ROW} onClick={propose}><Icon name="bulb-outline" size={16} />{t('propose.cta')}</button>
+      {peek && tomorrowTheme && (
+        <p className="week-peek" style={ROW} role="status">
+          <Icon name={THEME_ICON[tomorrowTheme.key] ?? 'pricetag-outline'} size={16} />{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}
+        </p>
+      )}
+      <div className="week-links">
+        <button type="button" className="week-propose" style={ROW} onClick={propose}><Icon name="bulb-outline" size={16} />{t('propose.cta')}</button>
+        <button type="button" className="week-propose" style={ROW} onClick={() => openDaily('archive')}><Icon name="calendar-outline" size={16} />{t('today.allPast')}</button>
+      </div>
     </div>
   )
 }
@@ -311,19 +325,75 @@ function StripProof({ proof, onOpen }) {
   )
 }
 
-/** Spots near you: the nearest 2-3 spots (position only if already allowed, else the city centre). */
+/**
+ * Yesterday's podium (SPEC 9.3): yesterday's top 3 proofs of the scope with
+ * gold, silver and bronze seals, author, city and votes, and "N proofs in M
+ * countries". A photo opens it in yesterday's sheet; "See all" opens the sheet.
+ * A city with no proof yesterday shows World's; hidden when there were none.
+ */
+function Podium({ today }) {
+  const { t, i18n } = useDc()
+  const { scope, openDaily } = useDaily()
+  const [podium, setPodium] = useState(null)
+  const cityNum = scope === 'city' ? today?.city?.id ?? null : null
+  const loaded = !!today
+
+  useEffect(() => {
+    if (!loaded) return
+    let alive = true
+    fetchDailyPodium({ scope: cityNum ? 'city' : 'world', cityId: cityNum, locale: i18n.language })
+      .then(p => { if (alive) { setPodium(p); seedProofs(p.proofs, false) } })
+      .catch(() => { /* keep what we have */ })
+    return () => { alive = false }
+  }, [loaded, cityNum, i18n.language])
+
+  if (!podium || podium.proofs.length === 0) return null
+  const proofs = t('today.proofs', { count: podium.total })
+  return (
+    <div className="today-card">
+      <div className="today-card-head">
+        <span className="today-card-title">{t('today.podiumTitle')}</span>
+        <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: podium.date, source: 'today' })}>{t('today.seeAll')}</button>
+      </div>
+      <span className="dc-muted today-proofs-stats">
+        {podium.scope === 'world' ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: podium.countries }) }) : proofs}
+      </span>
+      <div className="podium-row">
+        {podium.proofs.map(p => (
+          <button key={p.id} type="button" className="podium-item" onClick={() => openDaily('challenge', { date: podium.date, proofId: p.id })}
+                  aria-label={[`#${p.rank}`, p.user.username ?? p.user.displayName, p.city ? localizeCityName(p.city.name) : null, t('today.votes', { count: p.voteCount })].filter(Boolean).join(', ')}>
+            <span className="proof-strip-photo podium-photo">
+              <img src={p.thumbUrl || p.photoUrl} alt="" loading="lazy" />
+              <span className="proof-strip-rank"><RankMedal rank={p.rank} size={24} podium /></span>
+            </span>
+            <span className="podium-name">{p.user.displayName || p.user.username}</span>
+            {p.city?.name && <CityName name={p.city.name} country={p.city.country} short className="podium-city" />}
+            <span className="dc-muted proof-strip-votes">{t('today.votes', { count: p.voteCount })}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Spots near you: the nearest 2-3 spots (position only if already allowed, else
+ * the city centre). In a city I'm not in: "Spots in <city>", around its centre.
+ */
 function SpotsNear() {
   const { t, i18n } = useDc()
   const { cityId, scope, openSpot } = useDaily()
   const [spots, setSpots] = useState(null)
   const [fallback, setFallback] = useState(false)
+  // Centred on the chosen city when I'm not in it: "Spots in <city>".
+  const [away, setAway] = useState(null)
 
   useEffect(() => {
     let alive = true
     const load = (pos) => {
       if (!pos && !cityId) { setSpots([]); return }
       fetchSpotsNear({ ...(pos ?? {}), cityId: pos ? (scope === 'city' ? cityId : null) : cityId })
-        .then(r => { if (alive) { setSpots(r.items); setFallback(r.fallback) } })
+        .then(r => { if (alive) { setSpots(r.items); setFallback(r.fallback); setAway(scope === 'city' && r.center === 'city' ? r.city : null) } })
         .catch(() => { if (alive) setSpots(s => s ?? []) })
     }
     const granted = scope === 'city' && navigator.permissions
@@ -344,7 +414,7 @@ function SpotsNear() {
   return (
     <div className="spots">
       <div className="today-card-head">
-        <span className="today-card-title">{t('today.spotsTitle')}</span>
+        <span className="today-card-title">{away ? <span style={ROW}><CityFlag country={away.country} />{t('today.spotsIn', { city: localizeCityName(away.name) })}</span> : t('today.spotsTitle')}</span>
         <button type="button" className="dc-link" onClick={() => openSpot(null)}>{t('today.openMap')}</button>
       </div>
       {fallback && spots.length > 0 && <p className="dc-muted">{t('today.spotsFallback')}</p>}

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,6 +29,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const router = useRouter();
   const now = ymd(new Date());
   const cal = useDailyCalendar(addDays(now, -8), addDays(now, 8));
+  const [peek, setPeek] = useState(false);
   const current = cal.data?.today ?? today?.challenge?.date ?? null;
   if (!current) return null;
 
@@ -48,8 +50,10 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
     return d?.published && cal.data?.streak ? 'missed' : 'none';
   };
 
+  // A past day opens its sheet (read-only once closed); tomorrow only shows its theme.
   const open = (date: string, state: State) => {
-    if (state === 'tomorrow' || state === 'later') return;
+    if (state === 'tomorrow') { setPeek(p => !p); return; }
+    if (state === 'later' || (date < current && !byDate.get(date)?.published)) return;
     track('daily_week_strip_used', { action: 'day', date, status: state });
     router.push((state === 'today' ? '/daily/today?source=week' : `/daily/${date}`) as never);
   };
@@ -72,7 +76,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           const label = `${weekday}: ${themeName(d?.theme?.key)}, ${t(`today.day.${state}`)}`;
           return (
             <TouchableOpacity key={date} style={styles.day} onPress={() => open(date, state)}
-                              disabled={state === 'tomorrow' || state === 'later'} accessibilityRole="button" accessibilityLabel={label}>
+                              disabled={state === 'later'} accessibilityRole="button" accessibilityLabel={label}
+                              accessibilityState={state === 'tomorrow' ? { expanded: peek } : undefined}>
               <Text style={[styles.weekday, state === 'today' && styles.weekdayToday]} numberOfLines={1}>{weekday}</Text>
               <View style={[styles.dot, styles[state]]}>
                 {state === 'done' && <Ionicons name="checkmark" size={20} color={colors.white} />}
@@ -86,17 +91,30 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           );
         })}
       </View>
-      {/* Propose a challenge (SPEC 8.6): guests get the sign-up sheet, then the form. */}
-      <TouchableOpacity
-        style={styles.propose}
-        onPress={() => router.push((account ? '/daily/propose?source=week_strip'
-          : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)}
-        accessibilityRole="button"
-        hitSlop={6}
-      >
-        <Ionicons name="bulb-outline" size={16} color={colors.primaryText} />
-        <Text style={styles.proposeText}>{t('propose.cta')}</Text>
-      </TouchableOpacity>
+      {peek && !!tomorrowTheme && (
+        <View style={styles.peek} accessibilityLiveRegion="polite">
+          <Ionicons name={THEME_ICON[tomorrowTheme.key] ?? 'pricetag-outline'} size={16} color={colors.text} />
+          <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</Text>
+        </View>
+      )}
+      <View style={styles.links}>
+        {/* Propose a challenge (SPEC 8.6): guests get the sign-up sheet, then the form. */}
+        <TouchableOpacity
+          style={styles.propose}
+          onPress={() => router.push((account ? '/daily/propose?source=week_strip'
+            : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)}
+          accessibilityRole="button"
+          hitSlop={6}
+        >
+          <Ionicons name="bulb-outline" size={16} color={colors.primaryText} />
+          <Text style={styles.proposeText}>{t('propose.cta')}</Text>
+        </TouchableOpacity>
+        {/* Every past challenge, readable without an account. */}
+        <TouchableOpacity style={styles.propose} onPress={() => router.push('/daily/archive' as never)} accessibilityRole="button" hitSlop={6}>
+          <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />
+          <Text style={styles.proposeText}>{t('today.allPast')}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -105,6 +123,9 @@ const DOT = 40;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:         { gap: 8 },
+  links:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', columnGap: 12 },
+  peek:         { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  peekText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   head:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   streak:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 },
   streakText:   { fontSize: 15, fontWeight: '800', color: c.text },
