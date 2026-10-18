@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchDailyCalendar, fetchDailySheet, fetchDailyToday, fetchSpotsNear } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
+import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
 import {
@@ -122,7 +122,7 @@ function Ticket({ data, loading }) {
       <div className="today-top">
         <div className="today-head">
           <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('kicker')}</span>
-          {challenge.theme && <span className="today-chip" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{challenge.theme.name}</span>}
+          {challenge.theme && <span className="today-chip" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{themeName(challenge.theme.key)}</span>}
         </div>
         <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
@@ -215,7 +215,7 @@ function Week({ today }) {
           <Icon name="flame-outline" size={17} style={{ color: 'var(--primary-text)' }} />
           {streak ? t('streak', { count: streak }) : t('week.title')}
         </button>
-        {tomorrowTheme && <span className="week-tomorrow">{t('today.tomorrow', { theme: tomorrowTheme.name })}</span>}
+        {tomorrowTheme && <span className="week-tomorrow">{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</span>}
       </div>
       <div className="week-row">
         {week.map(date => {

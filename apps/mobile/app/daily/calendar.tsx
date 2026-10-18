@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useDailyCalendar } from '@/hooks/useDaily';
-import { ymd } from '@/features/daily/themes';
+import { ymd, themeName } from '@/features/daily/themes';
 import { THEME_ICON } from '@/features/today/format';
 import { Card, IconButton, Screen, ScreenHeader } from '@/ui';
 
@@ -76,7 +76,7 @@ export default function DailyCalendarScreen() {
                 onPress={() => router.push(`/daily/${d.date}` as never)}
                 disabled={!d.published}
                 accessibilityRole="button"
-                accessibilityLabel={`${d.date}${d.theme ? `, ${d.theme.name}` : ''}${done ? `, ${t('calendar.legendDone')}` : pending ? `, ${t('calendar.legendPending')}` : ''}`}
+                accessibilityLabel={`${d.date}${d.theme ? `, ${themeName(d.theme.key)}` : ''}${done ? `, ${t('calendar.legendDone')}` : pending ? `, ${t('calendar.legendPending')}` : ''}`}
               >
                 <View style={[styles.dot, done && styles.dotDone, pending && styles.dotPending, d.date === today && styles.dotToday, (future || !d.published) && styles.dotOff]}>
                   <Text style={[styles.dayNum, done && styles.dayNumDone]}>{Number(d.date.slice(8))}</Text>

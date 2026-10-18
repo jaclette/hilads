@@ -10,7 +10,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { fetchMySpots } from '@/api/passport';
-import { THEME_NAMES } from '@/features/daily/themes';
+import { themeName } from '@/features/daily/themes';
 import type { Spot } from '@/api/spots';
 import { Card, EmptyState, ScreenHeader } from '@/ui';
 
@@ -46,7 +46,7 @@ export default function MySpotsScreen() {
               <View style={styles.info}>
                 <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
                 <Text style={styles.meta} numberOfLines={1}>
-                  {[s.city?.name ? localizeCityName(s.city.name) : null, s.themes.map(k => THEME_NAMES[k]).join(', ')].filter(Boolean).join(' · ')}
+                  {[s.city?.name ? localizeCityName(s.city.name) : null, s.themes.map(k => themeName(k)).join(', ')].filter(Boolean).join(' · ')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={colors.muted} />

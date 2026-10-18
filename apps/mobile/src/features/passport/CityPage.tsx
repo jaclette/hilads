@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { THEME_KEYS, THEME_NAMES } from '@/features/daily/themes';
+import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import { THEME_ICON } from '@/features/today/format';
 import type { DailyTheme, DailyThemeKey } from '@/types';
 
@@ -29,8 +29,8 @@ export function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme, 
   const have = new Set(themes);
   const todayMissing = todayTheme !== null && !have.has(todayTheme);
   const hint = earned || have.size >= 7 ? t('passport.hintPass')
-    : todayMissing ? t('passport.hintToday', { theme: THEME_NAMES[todayTheme!] })
-    : tomorrowTheme ? t('passport.hintTomorrow', { theme: tomorrowTheme.name })
+    : todayMissing ? t('passport.hintToday', { theme: themeName(todayTheme!) })
+    : tomorrowTheme ? t('passport.hintTomorrow', { theme: themeName(tomorrowTheme.key) })
     : null;
 
   return (
@@ -55,7 +55,7 @@ export function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme, 
                   <Ionicons name={THEME_ICON[k]} size={22} color={next ? colors.primary : colors.mutedDim} />
                 </View>
               )}
-              <Text style={[styles.label, !stamped && !next && styles.labelOff, next && styles.labelNext]} numberOfLines={2}>{THEME_NAMES[k]}</Text>
+              <Text style={[styles.label, !stamped && !next && styles.labelOff, next && styles.labelNext]} numberOfLines={2}>{themeName(k)}</Text>
             </View>
           );
         })}

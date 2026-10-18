@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Wika", "street_food": "Street food", "coffee": "Kape", "market": "Palengke", "night_out": "Gimik", "neighborhood": "Kapitbahayan", "traditions": "Tradisyon" },
   "nowTitle": "Ngayon",
   "filterEvents": "Local Events",
   "filterHangouts": "🗣️ Tambayan",

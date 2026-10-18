@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Ngôn ngữ", "street_food": "Ẩm thực đường phố", "coffee": "Cà phê", "market": "Chợ", "night_out": "Đi chơi đêm", "neighborhood": "Khu phố", "traditions": "Truyền thống" },
   "meta": {
     "cityTitle": "Trở thành người địa phương ở {{city}} - Hilads",
     "cityDesc": "Trở thành người địa phương ở {{city}}: tham gia thử thách, gặp gỡ ở meetup, tham gia hangout, khám phá Local Events. Chat trực tiếp với người đang online.",

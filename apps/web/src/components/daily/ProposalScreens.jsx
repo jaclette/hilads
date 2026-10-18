@@ -6,7 +6,7 @@ import {
 } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, THEME_NAMES } from '../map/spotsShared'
+import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
 import { useDaily, useDc, useCountdown, formatCountdown, useOriginal, OriginalToggle } from './dailyShared'
@@ -103,7 +103,7 @@ export function ProposeScreen({ source = null, onBack }) {
       <div className="dc-chips">
         {THEME_KEYS.map(k => (
           <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => setTheme(k)} aria-pressed={theme === k}>
-            <Icon name={THEME_ICON[k]} size={15} />{THEME_NAMES[k]}
+            <Icon name={THEME_ICON[k]} size={15} />{themeName(k)}
           </button>
         ))}
       </div>
@@ -297,7 +297,7 @@ export function ProposalsScreen({ onBack }) {
               <span className={`dc-status dc-status--${tone}`}>{t(`propose.status.${item.status}`, { date })}</span>
             </div>
             <p className="dc-line">{item.text}</p>
-            <p className="dc-muted">{[item.theme?.name, item.city ? localizeCityName(item.city.name ?? '') : ''].filter(Boolean).join(' · ')}</p>
+            <p className="dc-muted">{[themeName(item.theme?.key), item.city ? localizeCityName(item.city.name ?? '') : ''].filter(Boolean).join(' · ')}</p>
             {item.twistText && <p className="dc-line" style={LINE}><Icon name="location-outline" size={15} style={{ marginTop: 3 }} /><span>{item.twistText}</span></p>}
             {item.rejectionReason && <p className="dc-reason">{t('propose.reason', { reason: item.rejectionReason })}</p>}
             {item.type === 'challenge' && item.status === 'pending' && (

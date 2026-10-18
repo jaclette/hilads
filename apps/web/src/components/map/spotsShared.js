@@ -1,11 +1,20 @@
+import i18n from '../../i18n'
+
 // Shared bits of the web map of spots (SPEC 9.5): theme names and icons, the
-// map tiles, and links. Theme names are Daily Challenge content: English.
+// map tiles, and links. Theme names show in the reader's language (common.json
+// themes.*), English as fallback.
 
 export const THEME_KEYS = ['language', 'street_food', 'coffee', 'market', 'night_out', 'neighborhood', 'traditions']
 
 export const THEME_NAMES = {
   language: 'Language', street_food: 'Street food', coffee: 'Coffee', market: 'Market',
   night_out: 'Night out', neighborhood: 'Neighborhood', traditions: 'Traditions',
+}
+
+/** A theme's name in the reader's language ('' without a key). */
+export function themeName(key) {
+  if (!key) return ''
+  return i18n.t(`themes.${key}`, { ns: 'common', defaultValue: THEME_NAMES[key] ?? key })
 }
 
 export const CITY_ZOOM = 14
@@ -60,6 +69,53 @@ export function formatPriceRange(range, lang) {
     catch { return `${n} ${range.currency}` }
   }
   return range.min === range.max ? fmt(range.min) : `${fmt(range.min)}–${fmt(range.max)}`
+}
+
+/** A compact price, like the app: 35000 VND → "35k", 1200000 → "1.2M", 4.5 EUR → "€4.50". */
+export function compactPrice(amount, currency, locale) {
+  if (amount >= 1000) {
+    const n = amount >= 1_000_000 ? amount / 1_000_000 : amount / 1000
+    const f = new Intl.NumberFormat(locale, { maximumFractionDigits: n < 10 && !Number.isInteger(n) ? 1 : 0 }).format(n)
+    return `${f}${amount >= 1_000_000 ? 'M' : 'k'}`
+  }
+  try { return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount) }
+  catch { return `${amount} ${currency}` }
+}
+
+export const PIN_LABEL_MAX = 18
+
+/** A pin's label, like the app: the name cut at about 18 characters, then the median price paid ("Cơm Tấm Ba Ghiền · 35k"). */
+export function pinLabel(name, price, locale) {
+  const chars = [...String(name ?? '').trim()]
+  const short = chars.length > PIN_LABEL_MAX ? `${chars.slice(0, PIN_LABEL_MAX - 1).join('').trimEnd()}…` : chars.join('')
+  const median = price ? (price.median ?? (price.min === price.max ? price.min : null)) : null
+  return median != null ? `${short} · ${compactPrice(median, price.currency, locale)}` : short
+}
+
+/**
+ * Which single pins get a label at this zoom: the selected spot always, then
+ * the others by proofs and votes, each on the right of its pin (or the left)
+ * where it overlaps no pin, cluster or label already placed; the rest keep
+ * their pin only. `pins` = [{ id, x, y, w, selected, rank }] in pixels, `w` the
+ * label width; `obstacles` = boxes of clusters. Returns Map id → 'right'|'left'.
+ */
+export function placeLabels(pins, obstacles = [], { pin = 22, gap = 4, h = 22 } = {}) {
+  const taken = [
+    ...obstacles,
+    ...pins.map(p => ({ x1: p.x - pin, y1: p.y - pin, x2: p.x + pin, y2: p.y + pin, id: p.id })),
+  ]
+  const hits = (b, id) => taken.some(o => o.id !== id && b.x1 < o.x2 && b.x2 > o.x1 && b.y1 < o.y2 && b.y2 > o.y1)
+  const out = new Map()
+  const order = [...pins].sort((a, b) => (b.selected - a.selected) || (a.rank - b.rank))
+  for (const p of order) {
+    const right = { x1: p.x + pin + gap, y1: p.y - h / 2, x2: p.x + pin + gap + p.w, y2: p.y + h / 2 }
+    const left  = { x1: p.x - pin - gap - p.w, y1: p.y - h / 2, x2: p.x - pin - gap, y2: p.y + h / 2 }
+    const side = !hits(right, p.id) ? 'right' : !hits(left, p.id) ? 'left' : p.selected ? 'right' : null
+    if (!side) continue
+    out.set(p.id, side)
+    taken.push({ ...(side === 'right' ? right : left), id: `label:${p.id}` })
+  }
+  return out
 }
 
 /**

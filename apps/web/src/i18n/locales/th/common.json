@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "ภาษา", "street_food": "สตรีทฟู้ด", "coffee": "กาแฟ", "market": "ตลาด", "night_out": "เที่ยวกลางคืน", "neighborhood": "ย่านชุมชน", "traditions": "ประเพณี" },
   "meta": {
     "cityTitle": "มาเป็นคนท้องถิ่นใน {{city}} - Hilads",
     "cityDesc": "มาเป็นคนท้องถิ่นใน {{city}}: รับชาเลนจ์ เข้าร่วม meetup เข้า hangout ค้นพบ Local Events แชทสดกับคนออนไลน์",

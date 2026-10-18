@@ -83,7 +83,7 @@ final class Spots
         return array_values($out);
     }
 
-    /** Price range paid, in the most used currency: {min, max, currency}, or null. */
+    /** Price range and median paid, in the most used currency: {min, max, median, currency}, or null. */
     public static function priceRange(array $prices): ?array
     {
         $byCurrency = [];
@@ -98,7 +98,11 @@ final class Spots
         uksort($byCurrency, static fn($a, $b): int =>
             [count($byCurrency[$b]), $a] <=> [count($byCurrency[$a]), $b]);
         $currency = array_key_first($byCurrency);
-        return ['min' => min($byCurrency[$currency]), 'max' => max($byCurrency[$currency]), 'currency' => (string) $currency];
+        $amounts  = $byCurrency[$currency];
+        sort($amounts);
+        $mid    = intdiv(count($amounts), 2);
+        $median = count($amounts) % 2 ? $amounts[$mid] : ($amounts[$mid - 1] + $amounts[$mid]) / 2;
+        return ['min' => $amounts[0], 'max' => end($amounts), 'median' => (float) $median, 'currency' => (string) $currency];
     }
 
     /**

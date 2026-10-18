@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Language", "street_food": "Street food", "coffee": "Coffee", "market": "Market", "night_out": "Night out", "neighborhood": "Neighborhood", "traditions": "Traditions" },
   "nowTitle": "Now",
   "filterEvents": "Local Events",
   "hiLocalTitle": "👋 Hi Local",

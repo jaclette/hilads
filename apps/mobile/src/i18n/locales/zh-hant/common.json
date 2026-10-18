@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "語言", "street_food": "街頭小吃", "coffee": "咖啡", "market": "市場", "night_out": "夜生活", "neighborhood": "街區", "traditions": "傳統" },
   "nowTitle": "現在",
   "filterEvents": "在地活動",
   "filterHangouts": "🗣️ 聚會",

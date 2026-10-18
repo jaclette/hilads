@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "भाषा", "street_food": "स्ट्रीट फ़ूड", "coffee": "कॉफ़ी", "market": "बाज़ार", "night_out": "रात की सैर", "neighborhood": "मोहल्ला", "traditions": "परंपराएँ" },
   "nowTitle": "अभी",
   "filterEvents": "लोकल इवेंट",
   "filterHangouts": "🗣️ मुलाक़ात",

@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Lingua", "street_food": "Cibo di strada", "coffee": "Caffè", "market": "Mercato", "night_out": "Serata fuori", "neighborhood": "Quartiere", "traditions": "Tradizioni" },
   "nowTitle": "Adesso",
   "filterEvents": "Eventi locali",
   "filterHangouts": "🗣️ Ritrovi",

@@ -11,7 +11,7 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
-import { THEME_NAMES } from '@/features/daily/themes';
+import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice } from '@/features/today/format';
 import { Button, Chip, ScreenHeader, SectionTitle } from '@/ui';
 
@@ -87,7 +87,7 @@ export default function SpotScreen() {
         </View>
       )}
       <View style={styles.chips}>
-        {spot.themes.map(k => <Chip key={k} icon={THEME_ICON[k]} label={THEME_NAMES[k]} />)}
+        {spot.themes.map(k => <Chip key={k} icon={THEME_ICON[k]} label={themeName(k)} />)}
         {spot.validatedByLocal && <Chip tone="local" icon="checkmark-circle-outline" label={t('map.validated')} />}
       </View>
       <Text style={styles.stats}>

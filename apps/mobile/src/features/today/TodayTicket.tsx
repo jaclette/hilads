@@ -17,6 +17,7 @@ import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { THEME_ICON, clock } from './format';
 import { Button, Chip } from '@/ui';
 import type { DailyToday } from '@/types';
+import { themeName } from '@/features/daily/themes';
 
 /**
  * Today's Daily Challenge as a ticket (SPEC 9.3, today.html): kicker and theme
@@ -71,7 +72,7 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
       <View style={styles.top}>
         <View style={styles.headRow}>
           <Kicker />
-          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={challenge.theme.name} />}
+          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={themeName(challenge.theme.key)} />}
         </View>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />

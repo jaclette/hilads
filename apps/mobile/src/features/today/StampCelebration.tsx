@@ -8,7 +8,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
-import { THEME_NAMES } from '@/features/daily/themes';
+import { themeName } from '@/features/daily/themes';
 import { THEME_ICON } from './format';
 import type { DailyLocalPassProgress, DailyThemeKey } from '@/types';
 import { Button } from '@/ui';
@@ -64,15 +64,15 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
   return (
     <Modal visible transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.scrim} onPress={close} accessibilityRole="button" accessibilityLabel={t('stamp.close')}>
-        <View style={styles.card} accessibilityRole="alert" accessibilityLabel={t('stamp.title', { theme: THEME_NAMES[stamp.theme] })}>
+        <View style={styles.card} accessibilityRole="alert" accessibilityLabel={t('stamp.title', { theme: themeName(stamp.theme) })}>
           <Animated.View style={[styles.stamp, { opacity: anim, transform: [{ scale }, { rotate }] }]}>
             <View style={styles.inner}>
               <Ionicons name={THEME_ICON[stamp.theme]} size={36} color={colors.primary} />
-              <Text style={styles.stampTheme} numberOfLines={1}>{THEME_NAMES[stamp.theme]}</Text>
+              <Text style={styles.stampTheme} numberOfLines={1}>{themeName(stamp.theme)}</Text>
               <Text style={styles.stampCity} numberOfLines={1}>{stamp.city}</Text>
             </View>
           </Animated.View>
-          <Text style={styles.title}>{t('stamp.title', { theme: THEME_NAMES[stamp.theme] })}</Text>
+          <Text style={styles.title}>{t('stamp.title', { theme: themeName(stamp.theme) })}</Text>
           <Text style={styles.body}>{t('stamp.body', { city: stamp.city })}</Text>
           <Button label={t('stamp.ok')} onPress={close} style={styles.cta} />
         </View>

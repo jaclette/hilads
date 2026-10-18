@@ -4,7 +4,7 @@ import BackButton from '../BackButton'
 import { fetchSpot } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { THEME_NAMES, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
+import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
 import Icon from '../Icon'
 import { THEME_ICON } from '../../lib/icons'
 
@@ -69,7 +69,7 @@ export default function SpotPage({ spotId, onBack }) {
             <p className="wm-spot-meta">
               {spot.city?.name ? localizeCityName(spot.city.name) : null}
               {spot.themes.map((k, i) => (
-                <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={14} />{THEME_NAMES[k]}</span>
+                <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={14} />{themeName(k)}</span>
               ))}
             </p>
             {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{rank}</p>}

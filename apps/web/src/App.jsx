@@ -82,6 +82,7 @@ import ShareActionSheet from './components/ShareActionSheet'
 import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
 import { registerPush, unregisterPush } from './push'
+import { themeName } from './components/map/spotsShared'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -674,7 +675,7 @@ function DailyFeedCard({ item, t, onOpen }) {
     return (
       <div className="feed-daily feed-daily--clickable" role="button" tabIndex={0} onClick={() => onOpen({ date: p.date ?? 'today' })}>
         <div className="feed-daily-kicker"><Icon name="flame-outline" size={13} /> {t('daily.kicker')}</div>
-        {p.theme?.name && <span className="feed-daily-theme">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={13} />} {p.theme.name}</span>}
+        {themeName(p.theme?.key) && <span className="feed-daily-theme">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={13} />} {themeName(p.theme.key)}</span>}
         <div className="feed-daily-text">{tr?.text ?? p.text}</div>
         {p.context && <div className="feed-daily-context">{tr?.context ?? p.context}</div>}
         <OriginalToggle translated={translated} showingOriginal={showOriginal} onClick={toggleOriginal} />
@@ -710,7 +711,7 @@ function DailyFeedCard({ item, t, onOpen }) {
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-tags">
         {p.spot && <span className="feed-daily-tag"><Icon name="location-outline" size={12} /> {p.spot.name}</span>}
-        {p.theme?.name && <span className="feed-daily-tag">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={12} />} {p.theme.name}</span>}
+        {themeName(p.theme?.key) && <span className="feed-daily-tag">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={12} />} {themeName(p.theme.key)}</span>}
         {p.city?.name && <span className="feed-daily-tag">{localizeCityName(p.city.name)}</span>}
       </div>
       {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" />}

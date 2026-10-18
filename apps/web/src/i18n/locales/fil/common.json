@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Wika", "street_food": "Street food", "coffee": "Kape", "market": "Palengke", "night_out": "Gimik", "neighborhood": "Kapitbahayan", "traditions": "Tradisyon" },
   "meta": {
     "cityTitle": "Maging local sa {{city}} - Hilads",
     "cityDesc": "Maging local sa {{city}}: sumali sa challenges, mag-meetup, mag-hangout, tuklasin ang Local Events. Live chat sa mga online ngayon.",

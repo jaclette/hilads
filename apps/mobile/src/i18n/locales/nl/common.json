@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Taal", "street_food": "Streetfood", "coffee": "Koffie", "market": "Markt", "night_out": "Avondje uit", "neighborhood": "Buurt", "traditions": "Tradities" },
   "nowTitle": "Nu",
   "filterEvents": "Lokale evenementen",
   "filterHangouts": "🗣️ Meetups",

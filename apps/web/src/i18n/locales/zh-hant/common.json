@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "語言", "street_food": "街頭小吃", "coffee": "咖啡", "market": "市場", "night_out": "夜生活", "neighborhood": "街區", "traditions": "傳統" },
   "meta": {
     "cityTitle": "在 {{city}} 成為在地人 - Hilads",
     "cityDesc": "在 {{city}} 成為在地人：參與 challenge、加入 meetup、進入 hangout、發現 Local Events。和正線上的人即時聊天。",

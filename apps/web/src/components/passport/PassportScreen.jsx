@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends, fetchWeeklyRank } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { thumbUrl } from '../../lib/imageThumb'
-import { THEME_KEYS, THEME_NAMES } from '../map/spotsShared'
+import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
 
@@ -160,8 +160,8 @@ function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme }) {
   const have = new Set(themes)
   const todayMissing = todayTheme !== null && !have.has(todayTheme)
   const hint = earned || have.size >= 7 ? t('passport.hintPass')
-    : todayMissing ? t('passport.hintToday', { theme: THEME_NAMES[todayTheme] })
-    : tomorrowTheme ? t('passport.hintTomorrow', { theme: tomorrowTheme.name })
+    : todayMissing ? t('passport.hintToday', { theme: themeName(todayTheme) })
+    : tomorrowTheme ? t('passport.hintTomorrow', { theme: themeName(tomorrowTheme.key) })
     : null
   return (
     <div className="pp-cpage" aria-label={t('passport.pageA11y', { city: cityName, count: have.size })}>
@@ -181,7 +181,7 @@ function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme }) {
               ) : (
                 <span className={`pp-empty${next ? ' pp-empty--next' : ''}`} style={{ color: next ? 'var(--primary)' : 'var(--muted2)' }}><Icon name={THEME_ICON[k]} size={22} /></span>
               )}
-              <span className={`pp-label${!stamped && !next ? ' pp-label--off' : ''}${next ? ' pp-label--next' : ''}`}>{THEME_NAMES[k]}</span>
+              <span className={`pp-label${!stamped && !next ? ' pp-label--off' : ''}${next ? ' pp-label--next' : ''}`}>{themeName(k)}</span>
             </div>
           )
         })}

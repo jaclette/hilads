@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "언어", "street_food": "길거리 음식", "coffee": "커피", "market": "시장", "night_out": "밤 나들이", "neighborhood": "동네", "traditions": "전통" },
   "meta": {
     "cityTitle": "{{city}}에서 로컬이 되어요 - Hilads",
     "cityDesc": "{{city}}에서 로컬이 되어요: 챌린지 도전, 모임 참여, 행아웃 진입, Local Events 발견. 지금 온라인인 사람과 실시간 채팅.",

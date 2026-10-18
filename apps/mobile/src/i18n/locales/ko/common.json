@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "언어", "street_food": "길거리 음식", "coffee": "커피", "market": "시장", "night_out": "밤 나들이", "neighborhood": "동네", "traditions": "전통" },
   "nowTitle": "지금",
   "filterEvents": "로컬 이벤트",
   "filterHangouts": "🗣️ 모임",

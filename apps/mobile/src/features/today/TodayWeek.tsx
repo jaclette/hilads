@@ -7,7 +7,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { useDailyCalendar } from '@/hooks/useDaily';
-import { addDays, ymd } from '@/features/daily/themes';
+import { addDays, ymd, themeName } from '@/features/daily/themes';
 import { THEME_ICON } from './format';
 import type { DailyCalendar, DailyToday } from '@/types';
 
@@ -60,7 +60,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           <Ionicons name="flame-outline" size={18} color={colors.text} />
           <Text style={styles.streakText}>{streak ? t('streak', { count: streak }) : t('week.title')}</Text>
         </TouchableOpacity>
-        {!!tomorrowTheme && <Text style={styles.tomorrowText}>{t('today.tomorrow', { theme: tomorrowTheme.name })}</Text>}
+        {!!tomorrowTheme && <Text style={styles.tomorrowText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</Text>}
       </View>
       <View style={styles.row}>
         {week.map(date => {
@@ -68,7 +68,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           const state = stateOf(date, d);
           const weekday = new Date(`${date}T12:00:00Z`).toLocaleDateString(i18n.language, { weekday: 'short', timeZone: 'UTC' });
           const themeIcon = d?.theme ? THEME_ICON[d.theme.key] : null;
-          const label = `${weekday}: ${d?.theme?.name ?? ''}, ${t(`today.day.${state}`)}`;
+          const label = `${weekday}: ${themeName(d?.theme?.key)}, ${t(`today.day.${state}`)}`;
           return (
             <TouchableOpacity key={date} style={styles.day} onPress={() => open(date, state)}
                               disabled={state === 'tomorrow' || state === 'later'} accessibilityRole="button" accessibilityLabel={label}>

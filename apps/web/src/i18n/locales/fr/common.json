@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Langue", "street_food": "Street food", "coffee": "Café", "market": "Marché", "night_out": "Soirée", "neighborhood": "Quartier", "traditions": "Traditions" },
   "meta": {
     "cityTitle": "Deviens local à {{city}} - Hilads",
     "cityDesc": "Deviens local à {{city}} : lance un challenge, rejoins un meetup, plonge dans un hangout, trouve des Local Events. Chat live avec les gens en ligne.",

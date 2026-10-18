@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Язык", "street_food": "Уличная еда", "coffee": "Кофе", "market": "Рынок", "night_out": "Вечер в городе", "neighborhood": "Район", "traditions": "Традиции" },
   "nowTitle": "Сейчас",
   "filterEvents": "Местные события",
   "filterHangouts": "🗣️ Тусовки",

@@ -21,6 +21,7 @@ import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { THEME_ICON } from '@/features/today/format';
 import type { DailyPerson, DailyThemeKey, DailyTwist, Message } from '@/types';
+import { themeName } from '@/features/daily/themes';
 
 type TopProof = {
   rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
@@ -282,7 +283,7 @@ function ProofCard({ message, reactions, time, longPress }: {
           {p.theme ? (
             <View style={styles.themeChip}>
               <Ionicons name={THEME_ICON[p.theme.key] ?? 'pricetag-outline'} size={13} color={colors.primaryOnTint} />
-              <Text style={styles.themeText}>{p.theme.name}</Text>
+              <Text style={styles.themeText}>{themeName(p.theme.key)}</Text>
             </View>
           ) : <View />}
           <View style={styles.voteRight}>

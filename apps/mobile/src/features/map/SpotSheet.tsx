@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { THEME_NAMES } from '@/features/daily/themes';
+import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice, distance } from '@/features/today/format';
 import type { Spot } from '@/api/spots';
 import { Button } from '@/ui';
@@ -42,7 +42,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onClose }: {
             {theme && (
               <View style={styles.inline}>
                 <Ionicons name={THEME_ICON[theme]} size={14} color={colors.muted} />
-                <Text style={styles.meta}>{THEME_NAMES[theme]}</Text>
+                <Text style={styles.meta}>{themeName(theme)}</Text>
               </View>
             )}
             {distanceM !== null && <Text style={styles.meta}>{distance(distanceM, i18n.language)}</Text>}

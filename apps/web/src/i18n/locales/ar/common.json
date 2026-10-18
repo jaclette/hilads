@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "اللغة", "street_food": "طعام الشارع", "coffee": "القهوة", "market": "السوق", "night_out": "سهرة", "neighborhood": "الحي", "traditions": "التقاليد" },
   "meta": {
     "cityTitle": "كن محليًا في {{city}} - Hilads",
     "cityDesc": "كن محليًا في {{city}}: أطلق تحدّيًا، انضم إلى meetup، ادخل hangout، اكتشف Local Events. دردشة حية مع المتصلين الآن.",

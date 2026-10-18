@@ -3,7 +3,7 @@ import BackButton from '../BackButton'
 import { fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToday } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
+import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
   RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer,
@@ -156,7 +156,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
                   {challenge.isActive && secondsLeft !== null ? t('timeLeft', { time: formatCountdown(secondsLeft) }) : t('closed')}
                 </span>
               </div>
-              {challenge.theme && <span className="today-chip dc-theme" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{challenge.theme.name}</span>}
+              {challenge.theme && <span className="today-chip dc-theme" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{themeName(challenge.theme.key)}</span>}
               <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
               {challenge.context && <p className="dc-context">{showOriginal && challenge.original ? challenge.original.context : challenge.context}</p>}
               <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />

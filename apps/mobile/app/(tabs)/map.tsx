@@ -16,8 +16,8 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, setupMapbox } from '@/lib/mapbox';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchMap, fetchSpot, searchSpots, type Bbox, type PlanPin, type Spot } from '@/api/spots';
-import { THEME_KEYS, THEME_NAMES } from '@/features/daily/themes';
-import { THEME_ICON } from '@/features/today/format';
+import { THEME_KEYS, themeName } from '@/features/daily/themes';
+import { THEME_ICON, pinLabel } from '@/features/today/format';
 import { SpotSheet } from '@/features/map/SpotSheet';
 import { EmptyCity } from '@/features/map/EmptyCity';
 import type { DailyThemeKey } from '@/types';
@@ -25,6 +25,11 @@ import { Chip, IconButton, TextField } from '@/ui';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => k !== 'language');
 const IDLE_DEBOUNCE_MS = 400;
+// Pin labels from this zoom (the city view), where they stay readable; Mapbox
+// hides the ones that would collide, the pins stay.
+const LABEL_MIN_ZOOM = 13.5;
+// Tap target around a pin, in points (SPEC: 44 minimum).
+const PIN_HITBOX = { width: 44, height: 44 };
 
 /** Great-circle distance in meters (for the selected spot's sheet). */
 function meters(a: [number, number], b: [number, number]): number {
@@ -44,7 +49,7 @@ function meters(a: [number, number], b: [number, number]): number {
 export default function MapScreen() {
   const styles = useThemedStyles(makeStyles);
   const { colors, theme: uiTheme } = useTheme();
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ spot?: string; source?: string }>();
@@ -193,10 +198,12 @@ export default function MapScreen() {
   const shape = useMemo<GeoJSON.FeatureCollection>(() => ({
     type: 'FeatureCollection',
     features: spots.filter(s => s.id !== selected?.id).map(s => ({
-      type: 'Feature', id: s.id, properties: { id: s.id },
+      type: 'Feature', id: s.id,
+      // rank: lower is placed first when labels collide (most proofs, then votes).
+      properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes) },
       geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
     })),
-  }), [spots, selected?.id]);
+  }), [spots, selected?.id, i18n.language]);
 
   if (!hasToken) {
     return <View style={[styles.container, styles.center]}><Text style={styles.muted}>{t('map.noToken')}</Text></View>;
@@ -219,7 +226,7 @@ export default function MapScreen() {
         <Camera ref={cameraRef} minZoomLevel={MIN_ZOOM} defaultSettings={{ centerCoordinate: center ?? [106.7009, 10.7769], zoomLevel: CITY_ZOOM }} />
         {me && <LocationPuck visible puckBearingEnabled={false} pulsing={{ isEnabled: false }} />}
 
-        <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} onPress={onSourcePress}>
+        <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} hitbox={PIN_HITBOX} onPress={onSourcePress}>
           <CircleLayer id="spot-clusters" filter={['has', 'point_count']} style={{
             circleColor: colors.primaryOnTint, circleRadius: 20, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
           }} />
@@ -229,6 +236,11 @@ export default function MapScreen() {
           <CircleLayer id="spot-pins" filter={['!', ['has', 'point_count']]} style={{
             circleColor: colors.primary, circleRadius: 11, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
           }} />
+          <SymbolLayer id="spot-labels" filter={['!', ['has', 'point_count']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
+            textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
+            textVariableAnchor: ['left', 'right'], textRadialOffset: 1.3, textJustify: 'auto', textMaxWidth: 20,
+            textAllowOverlap: false, textIgnorePlacement: false, symbolSortKey: ['get', 'rank'],
+          }} />
         </ShapeSource>
 
         {plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} />)}
@@ -236,7 +248,7 @@ export default function MapScreen() {
         {selected && (
           <MarkerView coordinate={[selected.lng, selected.lat]} anchor={{ x: 0.5, y: 1 }} allowOverlap>
             <View style={styles.selectedWrap} pointerEvents="none">
-              <Text style={styles.selectedLabel} numberOfLines={1}>{selected.name}</Text>
+              <Text style={styles.selectedLabel} numberOfLines={1}>{pinLabel(selected.name, selected.priceRange, i18n.language)}</Text>
               <View style={styles.selectedPin}>
                 <Ionicons name={THEME_ICON[selected.themes[0] ?? 'street_food']} size={22} color="#FFFFFF" />
               </View>
@@ -274,7 +286,7 @@ export default function MapScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
           <Chip variant="filter" label={t('map.all')} selected={themeFilter === null} onPress={() => pickTheme(null)} />
           {PLACE_THEMES.map(k => (
-            <Chip key={k} variant="filter" label={THEME_NAMES[k]} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
+            <Chip key={k} variant="filter" label={themeName(k)} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
           ))}
         </ScrollView>
       </View>

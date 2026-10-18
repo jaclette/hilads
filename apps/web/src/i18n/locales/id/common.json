@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Bahasa", "street_food": "Jajanan kaki lima", "coffee": "Kopi", "market": "Pasar", "night_out": "Malam keluar", "neighborhood": "Lingkungan", "traditions": "Tradisi" },
   "meta": {
     "cityTitle": "Jadi orang lokal di {{city}} - Hilads",
     "cityDesc": "Jadi orang lokal di {{city}}: ikut tantangan, gabung meetup, masuk hangout, temukan Local Events. Chat langsung dengan yang sedang online.",

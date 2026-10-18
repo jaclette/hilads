@@ -7,7 +7,7 @@ import BackButton from '../BackButton'
 import SpotPage from './SpotPage'
 import { fetchMap, searchSpots } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, THEME_NAMES, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins } from './spotsShared'
+import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels } from './spotsShared'
 import Icon, { iconHtml } from '../Icon'
 import { THEME_ICON } from '../../lib/icons'
 
@@ -26,10 +26,28 @@ function km(a, b) {
   return Math.sqrt(x * x + y * y) * 6371
 }
 
-const spotIcon = (spot) => L.divIcon({
+// Pin labels from this zoom (the city view), where they stay readable.
+const LABEL_MIN_ZOOM = 14
+const LABEL_FONT = '700 12px'
+
+const escapeHtml = (v) => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+
+let measureCtx = null
+/** Rendered width of a label (the text plus its padding), in pixels. */
+function labelWidth(text) {
+  if (!measureCtx) {
+    measureCtx = document.createElement('canvas').getContext('2d')
+    measureCtx.font = `${LABEL_FONT} ${getComputedStyle(document.body).fontFamily}`
+  }
+  return Math.ceil(measureCtx.measureText(text).width) + 16
+}
+
+// 44 px: the tap target (the label, when shown, is tappable too).
+const spotIcon = (spot, label, side, selected) => L.divIcon({
   className: 'wm-pin-wrap',
-  html: `<span class="wm-pin" style="color: var(--primary)">${iconHtml(THEME_ICON[spot.themes?.[0]] || 'location-outline', 20)}</span>`,
-  iconSize: [40, 40], iconAnchor: [20, 20],
+  html: `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(THEME_ICON[spot.themes?.[0]] || 'location-outline', 20)}</span>`
+    + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}">${escapeHtml(label)}</span>` : ''),
+  iconSize: [44, 44], iconAnchor: [22, 22],
 })
 const clusterIcon = (n) => L.divIcon({
   className: 'wm-pin-wrap',
@@ -77,15 +95,37 @@ function CameraTo({ target }) {
   return null
 }
 
-/** Pins grouped by screen distance at the current zoom. */
-function Pins({ spots, zoom, onSpot, onCluster }) {
+/**
+ * Pins grouped by screen distance at the current zoom (the selected spot
+ * stays out of the groups), with labels where they fit: see placeLabels.
+ */
+function Pins({ spots, zoom, selected, onSpot, onCluster }) {
   const map = useMap()
-  const groups = useMemo(
-    () => clusterPins(spots, (lat, lng) => map.project([lat, lng], zoom)),
-    [spots, zoom, map],
-  )
+  const { i18n } = useTranslation()
+  const groups = useMemo(() => {
+    const others = clusterPins(spots.filter(s => s.id !== selected?.id), (lat, lng) => map.project([lat, lng], zoom))
+    return selected ? [...others, { items: [selected], lat: selected.lat, lng: selected.lng }] : others
+  }, [spots, selected, zoom, map])
+  const labels = useMemo(() => {
+    const text = new Map()
+    const pins = []
+    const obstacles = []
+    groups.forEach(g => {
+      const p = map.project([g.lat, g.lng], zoom)
+      if (g.items.length > 1) { obstacles.push({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: 'c' }); return }
+      const s = g.items[0]
+      const isSelected = s.id === selected?.id
+      if (zoom < LABEL_MIN_ZOOM && !isSelected) { pins.push({ id: s.id, x: p.x, y: p.y, w: 0, selected: false, rank: 0, off: true }); return }
+      const label = pinLabel(s.name, s.priceRange, i18n.language)
+      text.set(s.id, label)
+      pins.push({ id: s.id, x: p.x, y: p.y, w: labelWidth(label), selected: isSelected, rank: -(s.proofCount * 1000 + s.votes) })
+    })
+    const sides = placeLabels(pins.filter(p => !p.off), [...obstacles, ...pins.filter(p => p.off).map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))])
+    return { text, sides }
+  }, [groups, zoom, map, selected?.id, i18n.language])
   return groups.map(g => g.items.length === 1 ? (
-    <Marker key={g.items[0].id} position={[g.lat, g.lng]} icon={spotIcon(g.items[0])}
+    <Marker key={g.items[0].id} position={[g.lat, g.lng]} zIndexOffset={g.items[0].id === selected?.id ? 1000 : 0}
+            icon={spotIcon(g.items[0], labels.text.get(g.items[0].id), labels.sides.get(g.items[0].id), g.items[0].id === selected?.id)}
             eventHandlers={{ click: () => onSpot(g.items[0]) }} title={g.items[0].name} />
   ) : (
     <Marker key={`c:${g.items.map(s => s.id).join(',')}`} position={[g.lat, g.lng]} icon={clusterIcon(g.items.length)}
@@ -223,7 +263,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
             <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
             {THEME_KEYS.map(k => (
               <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => pickTheme(k)}>
-                <Icon name={THEME_ICON[k]} size={15} />{THEME_NAMES[k]}
+                <Icon name={THEME_ICON[k]} size={15} />{themeName(k)}
               </button>
             ))}
           </div>
@@ -247,7 +287,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
             <TileLayer url={tiles.url} attribution={tiles.attribution} tileSize={tiles.tileSize} zoomOffset={tiles.zoomOffset} maxZoom={19} />
             <MapWatcher onArea={bbox => loadArea(bbox)} onZoom={setZoom} />
             <CameraTo target={camera} />
-            <Pins spots={spots} zoom={zoom} onSpot={setSelected}
+            <Pins spots={spots} zoom={zoom} selected={selected} onSpot={setSelected}
                   onCluster={g => setCamera({ lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })} />
             {me && <Marker position={me} icon={meIcon} interactive={false} />}
             {plans.map(p => (
@@ -283,7 +323,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
                 <span className="wm-sheet-title">{selected.name}</span>
                 <span className="wm-sheet-meta">
                   {selected.themes.map((k, i) => (
-                    <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={13} />{THEME_NAMES[k]}</span>
+                    <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={13} />{themeName(k)}</span>
                   ))}
                 </span>
                 <span className="wm-sheet-meta">

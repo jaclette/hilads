@@ -23,6 +23,7 @@ import { THEME_ICON } from '@/features/today/format';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { Avatar, Button, Card, Chip, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import type { DailyProof } from '@/types';
+import { themeName } from '@/features/daily/themes';
 
 /**
  * Daily Challenge sheet (/daily/today or /daily/YYYY-MM-DD). Challenge,
@@ -166,7 +167,7 @@ function Sheet({ date, openProofId, source, initialTab }: {
               </Text>
             </View>
           </View>
-          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={challenge.theme.name} style={styles.theme} />}
+          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={themeName(challenge.theme.key)} style={styles.theme} />}
           <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
           {!!challenge.context && (
             <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>

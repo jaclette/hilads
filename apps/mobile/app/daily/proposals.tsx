@@ -11,6 +11,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { fetchMyProposals, withdrawProposal } from '@/api/daily';
 import { THEME_ICON } from '@/features/today/format';
 import type { DailyProposal } from '@/types';
+import { themeName } from '@/features/daily/themes';
 
 /**
  * My proposals (V2-06, from MY PROFILE and the "approved" push): my challenge
@@ -118,7 +119,7 @@ function ProposalRow({ item, onWithdraw }: { item: DailyProposal; onWithdraw: ()
         <Text style={styles.text}>{item.text}</Text>
         {(item.theme || item.city) && (
           <View style={styles.iconRow}>
-            {item.theme && <Chip icon={THEME_ICON[item.theme.key] ?? 'pricetag-outline'} label={item.theme.name} />}
+            {item.theme && <Chip icon={THEME_ICON[item.theme.key] ?? 'pricetag-outline'} label={themeName(item.theme.key)} />}
             {item.city && <Text style={styles.meta} numberOfLines={1}>{localizeCityName(item.city.name ?? '')}</Text>}
           </View>
         )}

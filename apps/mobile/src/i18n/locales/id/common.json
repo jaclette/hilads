@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Bahasa", "street_food": "Jajanan kaki lima", "coffee": "Kopi", "market": "Pasar", "night_out": "Malam keluar", "neighborhood": "Lingkungan", "traditions": "Tradisi" },
   "nowTitle": "Sekarang",
   "filterEvents": "Acara lokal",
   "filterHangouts": "🗣️ Nongkrong",

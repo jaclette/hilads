@@ -40,3 +40,16 @@ export function compactPrice(amount: number, currency: string, locale?: string):
     return `${amount} ${currency}`;
   }
 }
+
+export const PIN_LABEL_MAX = 18;
+
+/**
+ * A map pin's label: the spot name cut at about 18 characters, then the
+ * median price paid when there is one ("Cơm Tấm Ba Ghiền · 35k").
+ */
+export function pinLabel(name: string, price: { min: number; max: number; median?: number; currency: string } | null, locale?: string): string {
+  const chars = [...name.trim()];
+  const short = chars.length > PIN_LABEL_MAX ? `${chars.slice(0, PIN_LABEL_MAX - 1).join('').trimEnd()}…` : chars.join('');
+  const median = price ? (price.median ?? (price.min === price.max ? price.min : null)) : null;
+  return median !== null && price ? `${short} · ${compactPrice(median, price.currency, locale)}` : short;
+}

@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "Idioma", "street_food": "Comida de rua", "coffee": "Café", "market": "Mercado", "night_out": "Noitada", "neighborhood": "Bairro", "traditions": "Tradições" },
   "nowTitle": "Agora",
   "filterEvents": "Eventos locais",
   "filterHangouts": "🗣️ Rolês",

@@ -14,7 +14,7 @@ export interface Spot {
   votes:            number;
   votesWeek:        number;
   validatedByLocal: boolean;
-  priceRange:       { min: number; max: number; currency: string } | null;
+  priceRange:       { min: number; max: number; median?: number; currency: string } | null;
   lastProofDate:    string | null;
   cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null };
   /** GET /spots/near only. */

@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "言葉", "street_food": "屋台グルメ", "coffee": "コーヒー", "market": "市場", "night_out": "夜遊び", "neighborhood": "ご近所", "traditions": "伝統" },
   "meta": {
     "cityTitle": "{{city}}でローカルになろう - Hilads",
     "cityDesc": "{{city}}でローカルになろう：チャレンジに挑む、ミートアップに参加、ハングアウトに入る、Local Eventsを見つける。今オンラインの人とライブチャット。",

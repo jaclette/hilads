@@ -11,7 +11,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { dailyErrorCode, proposeChallenge } from '@/api/daily';
 import { useDailyToday } from '@/hooks/useDaily';
-import { THEME_KEYS, THEME_NAMES } from '@/features/daily/themes';
+import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import { THEME_ICON } from '@/features/today/format';
 import type { DailyThemeKey } from '@/types';
 
@@ -116,7 +116,7 @@ export default function DailyProposeScreen() {
           <Text style={styles.label}>{t('propose.themeLabel')}</Text>
           <View style={styles.themes}>
             {THEME_KEYS.map(k => (
-              <Chip key={k} variant="filter" label={THEME_NAMES[k]} selected={theme === k} onPress={() => setTheme(k)} />
+              <Chip key={k} variant="filter" label={themeName(k)} selected={theme === k} onPress={() => setTheme(k)} />
             ))}
           </View>
 

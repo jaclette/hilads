@@ -17087,3 +17087,14 @@ body.has-app-promo-banner .page-header {
 .feed-daily-cta--ghost { background: transparent; color: var(--primary-text); border-color: var(--primary); }
 .pin-bar { position: relative; }
 .pin-bar::after { content: ''; position: absolute; left: -16px; right: -16px; top: calc(100% + 2px); height: 18px; background: linear-gradient(var(--bg), transparent); pointer-events: none; z-index: 1; }
+
+/* ── Map pin labels (like the app): the spot name and median price beside the
+   pin, only where they fit (placeLabels); the selected spot's always. ── */
+.wm-pin { width: 44px; height: 44px; }
+.wm-pin--on { border-width: 3.5px; transform: scale(1.08); }
+.wm-pin-label { position: absolute; top: 50%; transform: translateY(-50%); height: 22px; line-height: 22px; padding: 0 8px; white-space: nowrap;
+  font-size: 12px; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+  box-shadow: 0 1px 4px rgba(36, 26, 18, 0.18); }
+.wm-pin-label--right { left: 48px; }
+.wm-pin-label--left { right: 48px; }
+.wm-pin-label--on { border-color: var(--primary); }

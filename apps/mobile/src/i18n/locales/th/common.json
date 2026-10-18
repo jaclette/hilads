@@ -1,4 +1,5 @@
 {
+  "themes": { "language": "ภาษา", "street_food": "สตรีทฟู้ด", "coffee": "กาแฟ", "market": "ตลาด", "night_out": "เที่ยวกลางคืน", "neighborhood": "ย่านชุมชน", "traditions": "ประเพณี" },
   "nowTitle": "ตอนนี้",
   "filterEvents": "อีเวนต์ในพื้นที่",
   "filterHangouts": "🗣️ นัดเจอ",

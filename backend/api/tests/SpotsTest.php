@@ -41,8 +41,9 @@ final class SpotsTest extends TestCase
     public function testPriceRangeUsesTheMostUsedCurrency(): void
     {
         $this->assertNull(Spots::priceRange([]));
-        $this->assertSame(['min' => 35000.0, 'max' => 45000.0, 'currency' => 'VND'],
+        $this->assertSame(['min' => 35000.0, 'max' => 45000.0, 'median' => 40000.0, 'currency' => 'VND'],
             Spots::priceRange([[45000, 'VND'], [3, 'EUR'], [35000, 'VND'], [null, null]]));
+        $this->assertSame(30000.0, Spots::priceRange([[90000, 'VND'], [25000, 'VND'], [30000, 'VND']])['median']);
         // A tie goes to the alphabetically first currency (stable answer).
         $this->assertSame('EUR', Spots::priceRange([[3, 'EUR'], [40000, 'VND']])['currency']);
     }
@@ -84,7 +85,7 @@ final class SpotsTest extends TestCase
         $this->assertSame(3, $spot['proofCount']);
         $this->assertSame(4, $spot['votesWeek']);
         $this->assertTrue($spot['validatedByLocal']);
-        $this->assertSame(['min' => 25000.0, 'max' => 30000.0, 'currency' => 'VND'], $spot['priceRange']);
+        $this->assertSame(['min' => 25000.0, 'max' => 30000.0, 'median' => 27500.0, 'currency' => 'VND'], $spot['priceRange']);
         $this->assertSame('2026-10-17', $spot['lastProofDate']);
         $this->assertSame('Sit on the curb', $spot['cover']['caption']);
     }

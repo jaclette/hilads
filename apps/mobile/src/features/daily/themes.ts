@@ -1,13 +1,21 @@
+import i18n from '@/i18n';
 import type { DailyThemeKey } from '@/types';
 
-// Weekly themes (V2-03). Names come from the API (English content); the app
-// adds the weekday each one falls on by default (icons: features/today/format).
+// Weekly themes (V2-03). Names are shown in the app's language (common.json
+// themes.*, English as fallback); the app adds the weekday each one falls on
+// by default (icons: features/today/format).
 
 /** English names (the API's DailyThemes), for screens that pick a theme before any payload. */
 export const THEME_NAMES: Record<DailyThemeKey, string> = {
   language: 'Language', street_food: 'Street food', coffee: 'Coffee', market: 'Market',
   night_out: 'Night out', neighborhood: 'Neighborhood', traditions: 'Traditions',
 };
+
+/** A theme's name in the app's language ('' without a key). */
+export function themeName(key?: string | null): string {
+  if (!key) return '';
+  return i18n.t(`themes.${key}`, { ns: 'common', defaultValue: THEME_NAMES[key as DailyThemeKey] ?? key });
+}
 
 /** ISO weekday (1 = Monday) of each theme's default day, in weekly order. */
 export const THEME_WEEKDAY: Record<DailyThemeKey, number> = {
