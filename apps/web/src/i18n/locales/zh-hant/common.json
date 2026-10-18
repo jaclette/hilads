@@ -206,5 +206,13 @@
     "hi": "向你的城市打聲招呼。加入一個計畫。",
     "passport": "你的印章和地點，一城一城。"
   },
-  "photoBy": "照片：@{{username}}"
+  "photoBy": "照片：@{{username}}",
+  "shareLink": {
+    "share": "分享",
+    "challengeFriend": "挑戰一位朋友",
+    "copied": "已複製",
+    "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你要參加嗎？",
+    "textSpot": "Hilads 上的 {{name}}",
+    "textSpotCity": "Hilads 上的 {{name}}（{{city}}）"
+  }
 }

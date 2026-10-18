@@ -621,25 +621,101 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fr/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/vi/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/es/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/it/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/pt-br/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/pt-pt/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/de/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/nl/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/zh-hans/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/zh-hant/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ja/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ko/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fil/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/th/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/id/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/hi/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ru/challenges" },
-            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ar/challenges" }
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fr/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/vi/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/es/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/it/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-br/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-pt/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/de/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/nl/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hans/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hant/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ja/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/th/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/id/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/hi/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ru/challenges"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ar/challenges"
+            }
           ],
           "category": [
             "BROWSABLE",
@@ -750,6 +826,301 @@
             "BROWSABLE",
             "DEFAULT"
           ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fr/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/vi/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/es/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/it/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-br/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-pt/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/de/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/nl/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hans/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hant/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ja/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/th/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/id/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/hi/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ru/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ar/p/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fr/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/vi/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/es/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/it/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-br/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-pt/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/de/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/nl/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hans/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hant/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ja/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/th/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/id/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/hi/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ru/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ar/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fr/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/vi/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/es/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/it/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-br/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/pt-pt/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/de/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/nl/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hans/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/zh-hant/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ja/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/th/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/id/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/hi/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ru/d/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ar/d/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -801,7 +1172,9 @@
           "icon": "./assets/notification-icon.png",
           "color": "#FF7A3C",
           "defaultChannel": "default",
-          "sounds": ["./assets/sounds/daily_signature.wav"]
+          "sounds": [
+            "./assets/sounds/daily_signature.wav"
+          ]
         }
       ],
       [
@@ -830,7 +1203,26 @@
         }
       ],
       "@sentry/react-native",
-      "expo-localization"
+      "expo-localization",
+      [
+        "react-native-share",
+        {
+          "ios": [
+            "instagram-stories",
+            "facebook-stories",
+            "whatsapp",
+            "fb-messenger",
+            "tg"
+          ],
+          "android": [
+            "com.instagram.android",
+            "com.facebook.katana",
+            "com.whatsapp",
+            "com.facebook.orca",
+            "org.telegram.messenger"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

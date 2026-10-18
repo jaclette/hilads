@@ -468,5 +468,24 @@
     "camera": "Mở camera",
     "later": "Nhắc tôi sau",
     "laterDone": "Tối nay mình sẽ nhắc bạn."
+  },
+  "share": {
+    "title": "Chia sẻ",
+    "shareProof": "Chia sẻ ảnh của mình",
+    "shareRank": "Chia sẻ hạng #{{rank}} của bạn",
+    "challengeFriend": "Thách bạn bè",
+    "afterProof": "Khoe với bạn bè",
+    "copyLink": "Sao chép liên kết",
+    "copied": "Đã sao chép",
+    "more": "Thêm",
+    "failed": "Không chia sẻ được. Thử lại nhé.",
+    "rankWorld": "Hạng #{{rank}} thế giới",
+    "rankCity": "Hạng #{{rank}} tại {{city}}",
+    "photoBy": "Ảnh của @{{user}}",
+    "areYouIn": "Bạn tham gia chứ?",
+    "textProof": "Ảnh của mình cho Daily Challenge hôm nay trên Hilads: {{challenge}}",
+    "textSpot": "{{name}} trên Hilads",
+    "textSpotCity": "{{name}}, {{city}}, trên Hilads",
+    "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?"
   }
 }

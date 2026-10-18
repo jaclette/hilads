@@ -470,5 +470,24 @@
     "camera": "Abrir a câmara",
     "later": "Lembra-me mais tarde",
     "laterDone": "Lembramos-te esta noite."
+  },
+  "share": {
+    "title": "Partilhar",
+    "shareProof": "Partilhar a minha prova",
+    "shareRank": "Partilha o teu #{{rank}}",
+    "challengeFriend": "Desafia um amigo",
+    "afterProof": "Mostra aos teus amigos",
+    "copyLink": "Copiar ligação",
+    "copied": "Copiado",
+    "more": "Mais",
+    "failed": "Não foi possível partilhar. Tenta outra vez.",
+    "rankWorld": "#{{rank}} no mundo",
+    "rankCity": "#{{rank}} em {{city}}",
+    "photoBy": "Foto de @{{user}}",
+    "areYouIn": "Alinhas?",
+    "textProof": "A minha foto do Daily Challenge de hoje no Hilads: {{challenge}}",
+    "textSpot": "{{name}} no Hilads",
+    "textSpotCity": "{{name}}, {{city}}, no Hilads",
+    "textToday": "O Daily Challenge de hoje no Hilads: {{challenge}} Alinhas?"
   }
 }

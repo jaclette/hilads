@@ -19,6 +19,8 @@ import { fetchMap, fetchSpot, searchSpots, type Bbox, type PlanPin, type Spot } 
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import { THEME_ICON, meters, pinLabel } from '@/features/today/format';
 import { SpotSheet } from '@/features/map/SpotSheet';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { spotShare, type ShareContent } from '@/features/share/content';
 import { EmptyCity } from '@/features/map/EmptyCity';
 import { SpotList, type SpotSort } from '@/features/map/SpotList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -77,6 +79,7 @@ export default function MapScreen() {
   const [loaded, setLoaded]     = useState(false);
   const [cityEmpty, setCityEmpty] = useState(false);
   const [selected, setSelected] = useState<Spot | null>(null);
+  const [share, setShare]       = useState<ShareContent | null>(null);
   const [me, setMe]             = useState<[number, number] | null>(null);
   const [query, setQuery]       = useState('');
   const [results, setResults]   = useState<Spot[] | null>(null);
@@ -358,12 +361,14 @@ export default function MapScreen() {
             distanceM={me ? meters(me, [selected.lng, selected.lat]) : null}
             onOpen={() => { track('spot_opened', { source: 'map_sheet', spot: selected.id, view: 'screen' }); router.push(`/spot/${selected.id}` as never); }}
             onDirections={() => openMapsUrl(directionsUrl(selected.lat, selected.lng, selected.name))}
+            onShare={() => setShare(spotShare(selected))}
             onClose={() => setSelected(null)}
           />
         ) : showEmpty ? (
           <EmptyCity today={today.data} />
         ) : null}
       </View>
+      <ShareSheet content={share} source="spot_sheet" onClose={() => setShare(null)} />
     </View>
   );
 }

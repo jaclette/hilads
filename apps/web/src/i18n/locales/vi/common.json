@@ -206,5 +206,13 @@
     "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
     "passport": "Tem và spot của bạn, từng thành phố."
   },
-  "photoBy": "Ảnh của @{{username}}"
+  "photoBy": "Ảnh của @{{username}}",
+  "shareLink": {
+    "share": "Chia sẻ",
+    "challengeFriend": "Thách bạn bè",
+    "copied": "Đã sao chép",
+    "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?",
+    "textSpot": "{{name}} trên Hilads",
+    "textSpotCity": "{{name}}, {{city}}, trên Hilads"
+  }
 }

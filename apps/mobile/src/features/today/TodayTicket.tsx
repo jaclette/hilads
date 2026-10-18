@@ -27,6 +27,8 @@ import { isFinalHours } from '@/hooks/useDaily';
 import { Button, CityFlag } from '@/ui';
 import type { DailyThemeKey, DailyToday } from '@/types';
 import { themeName } from '@/features/daily/themes';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { todayShare, type ShareContent } from '@/features/share/content';
 
 /** Brand term: English in every locale (SPEC 9.11). */
 const DAILY_CHALLENGE = 'Daily Challenge';
@@ -62,6 +64,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   // How it works: the first "I'm in" only (device), then straight to the camera.
   const [howSeen, setHowSeen] = useState<boolean | null>(null);
   const [howOpen, setHowOpen] = useState(false);
+  const [share, setShare] = useState<ShareContent | null>(null);
   useEffect(() => {
     AsyncStorage.getItem(HOW_IT_WORKS_KEY).then(v => setHowSeen(v === '1')).catch(() => setHowSeen(true));
   }, []);
@@ -178,9 +181,18 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
             </Text>
           </TouchableOpacity>
         )}
+        {/* Challenge a friend (SPEC 9.14): hilads.live/today with the card. */}
+        {challenge.isActive && (
+          <TouchableOpacity style={styles.friend} onPress={() => setShare(todayShare(challenge, city ?? null))}
+                            accessibilityRole="button" accessibilityLabel={t('share.challengeFriend')}>
+            <Ionicons name="paper-plane-outline" size={16} color={colors.text} />
+            <Text style={styles.link}>{t('share.challengeFriend')}</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <HowItWorksSheet visible={howOpen} placeTheme={placeTheme}
                        onCamera={() => { howDone('camera'); onCta(); }} onLater={remindLater} onClose={() => howDone('dismissed')} />
+      <ShareSheet content={share} source="today_card" onClose={() => setShare(null)} />
     </TouchableOpacity>
   );
 }
@@ -292,5 +304,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Secondary links in ink: the button is the card's only orange element.
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
   took:        { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  friend:      { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -6 },
   tookText:    { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

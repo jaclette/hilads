@@ -468,5 +468,24 @@
     "camera": "打開相機",
     "later": "稍後提醒我",
     "laterDone": "今晚我們會提醒你。"
+  },
+  "share": {
+    "title": "分享",
+    "shareProof": "分享我的打卡",
+    "shareRank": "分享你的第 {{rank}} 名",
+    "challengeFriend": "挑戰一位朋友",
+    "afterProof": "給朋友看看",
+    "copyLink": "複製連結",
+    "copied": "已複製",
+    "more": "更多",
+    "failed": "分享失敗，請再試一次。",
+    "rankWorld": "全球第 {{rank}} 名",
+    "rankCity": "{{city}}第 {{rank}} 名",
+    "photoBy": "照片：@{{user}}",
+    "areYouIn": "你要參加嗎？",
+    "textProof": "我在 Hilads 今日 Daily Challenge 的照片：{{challenge}}",
+    "textSpot": "Hilads 上的 {{name}}",
+    "textSpotCity": "Hilads 上的 {{name}}（{{city}}）",
+    "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你要參加嗎？"
   }
 }

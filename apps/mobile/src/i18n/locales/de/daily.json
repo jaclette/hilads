@@ -470,5 +470,24 @@
     "camera": "Kamera öffnen",
     "later": "Später erinnern",
     "laterDone": "Wir erinnern dich heute Abend."
+  },
+  "share": {
+    "title": "Teilen",
+    "shareProof": "Meinen Beweis teilen",
+    "shareRank": "Teile deinen #{{rank}}",
+    "challengeFriend": "Fordere einen Freund heraus",
+    "afterProof": "Zeig es deinen Freunden",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert",
+    "more": "Mehr",
+    "failed": "Teilen hat nicht geklappt. Versuch es noch mal.",
+    "rankWorld": "#{{rank}} weltweit",
+    "rankCity": "#{{rank}} in {{city}}",
+    "photoBy": "Foto von @{{user}}",
+    "areYouIn": "Bist du dabei?",
+    "textProof": "Mein Foto für die heutige Daily Challenge auf Hilads: {{challenge}}",
+    "textSpot": "{{name}} auf Hilads",
+    "textSpotCity": "{{name}}, {{city}}, auf Hilads",
+    "textToday": "Die heutige Daily Challenge auf Hilads: {{challenge}} Bist du dabei?"
   }
 }

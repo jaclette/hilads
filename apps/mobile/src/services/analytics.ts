@@ -78,6 +78,10 @@ export type AnalyticsEvent =
   | 'daily_push_permission'
   | 'daily_notification_opened'
   | 'daily_vote_cast'
+  // Sharing (SPEC 9.14): { content_type, source } + share_completed { channel, activity? }; link_opened { content_type, utm_source }.
+  | 'share_started'
+  | 'share_completed'
+  | 'link_opened'
   | 'daily_twist_proposed'
   | 'daily_map_opened'
   | 'daily_leaderboard_viewed'

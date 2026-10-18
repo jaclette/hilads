@@ -206,5 +206,13 @@
     "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
     "passport": "Deine Stempel und Spots, Stadt für Stadt."
   },
-  "photoBy": "Foto von @{{username}}"
+  "photoBy": "Foto von @{{username}}",
+  "shareLink": {
+    "share": "Teilen",
+    "challengeFriend": "Fordere einen Freund heraus",
+    "copied": "Kopiert",
+    "textToday": "Die heutige Daily Challenge auf Hilads: {{challenge}} Bist du dabei?",
+    "textSpot": "{{name}} auf Hilads",
+    "textSpotCity": "{{name}}, {{city}}, auf Hilads"
+  }
 }

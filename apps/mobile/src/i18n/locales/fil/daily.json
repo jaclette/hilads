@@ -470,5 +470,24 @@
     "camera": "Buksan ang camera",
     "later": "Paalalahanan mo ako mamaya",
     "laterDone": "Ipapaalala namin mamayang gabi."
+  },
+  "share": {
+    "title": "I-share",
+    "shareProof": "I-share ang proof ko",
+    "shareRank": "I-share ang #{{rank}} mo",
+    "challengeFriend": "Hamunin ang kaibigan",
+    "afterProof": "Ipakita sa mga kaibigan mo",
+    "copyLink": "Kopyahin ang link",
+    "copied": "Nakopya",
+    "more": "Iba pa",
+    "failed": "Hindi na-share. Subukan ulit.",
+    "rankWorld": "#{{rank}} sa mundo",
+    "rankCity": "#{{rank}} sa {{city}}",
+    "photoBy": "Larawan ni @{{user}}",
+    "areYouIn": "G ka ba?",
+    "textProof": "Ang photo ko para sa Daily Challenge ngayon sa Hilads: {{challenge}}",
+    "textSpot": "{{name}} sa Hilads",
+    "textSpotCity": "{{name}}, {{city}}, sa Hilads",
+    "textToday": "Ang Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?"
   }
 }

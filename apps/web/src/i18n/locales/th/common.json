@@ -206,5 +206,13 @@
     "hi": "ทักทายเมืองของคุณ เข้าร่วมแพลน",
     "passport": "แสตมป์และสถานที่ของคุณ ทีละเมือง"
   },
-  "photoBy": "ภาพโดย @{{username}}"
+  "photoBy": "ภาพโดย @{{username}}",
+  "shareLink": {
+    "share": "แชร์",
+    "challengeFriend": "ท้าเพื่อน",
+    "copied": "คัดลอกแล้ว",
+    "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?",
+    "textSpot": "{{name}} บน Hilads",
+    "textSpotCity": "{{name}}, {{city}} บน Hilads"
+  }
 }

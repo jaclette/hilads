@@ -206,5 +206,13 @@
     "hi": "도시에 인사하고 플랜에 참여해요.",
     "passport": "도시별 스탬프와 장소."
   },
-  "photoBy": "사진: @{{username}}"
+  "photoBy": "사진: @{{username}}",
+  "shareLink": {
+    "share": "공유",
+    "challengeFriend": "친구에게 도전하기",
+    "copied": "복사됨",
+    "textToday": "Hilads 오늘의 Daily Challenge: {{challenge}} 함께할래요?",
+    "textSpot": "Hilads의 {{name}}",
+    "textSpotCity": "Hilads의 {{name}}, {{city}}"
+  }
 }

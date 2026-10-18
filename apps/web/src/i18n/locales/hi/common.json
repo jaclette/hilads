@@ -206,5 +206,13 @@
     "hi": "अपने शहर को हाय कहो। किसी प्लान में जुड़ो।",
     "passport": "तुम्हारे स्टैम्प और जगहें, शहर दर शहर।"
   },
-  "photoBy": "फ़ोटो: @{{username}}"
+  "photoBy": "फ़ोटो: @{{username}}",
+  "shareLink": {
+    "share": "शेयर करें",
+    "challengeFriend": "किसी दोस्त को चुनौती दें",
+    "copied": "कॉपी हो गया",
+    "textToday": "Hilads पर आज का Daily Challenge: {{challenge}} क्या आप तैयार हैं?",
+    "textSpot": "Hilads पर {{name}}",
+    "textSpotCity": "Hilads पर {{name}}, {{city}}"
+  }
 }

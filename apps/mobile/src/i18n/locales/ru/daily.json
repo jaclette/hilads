@@ -494,5 +494,24 @@
     "camera": "Открыть камеру",
     "later": "Напомнить позже",
     "laterDone": "Напомним тебе вечером."
+  },
+  "share": {
+    "title": "Поделиться",
+    "shareProof": "Поделиться моим фото",
+    "shareRank": "Поделись своим #{{rank}}",
+    "challengeFriend": "Брось вызов другу",
+    "afterProof": "Покажи друзьям",
+    "copyLink": "Скопировать ссылку",
+    "copied": "Скопировано",
+    "more": "Ещё",
+    "failed": "Не удалось поделиться. Попробуй ещё раз.",
+    "rankWorld": "#{{rank}} в мире",
+    "rankCity": "#{{rank}} в городе {{city}}",
+    "photoBy": "Фото: @{{user}}",
+    "areYouIn": "Ты в деле?",
+    "textProof": "Моё фото для сегодняшнего Daily Challenge в Hilads: {{challenge}}",
+    "textSpot": "{{name}} в Hilads",
+    "textSpotCity": "{{name}}, {{city}}, в Hilads",
+    "textToday": "Сегодняшний Daily Challenge в Hilads: {{challenge}} Ты в деле?"
   }
 }

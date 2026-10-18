@@ -206,5 +206,13 @@
     "hi": "街にあいさつ。プランに参加しよう。",
     "passport": "スタンプとスポットを街ごとに。"
   },
-  "photoBy": "写真: @{{username}}"
+  "photoBy": "写真: @{{username}}",
+  "shareLink": {
+    "share": "シェア",
+    "challengeFriend": "友だちに挑戦",
+    "copied": "コピーしました",
+    "textToday": "Hilads の今日の Daily Challenge：{{challenge}} やってみる？",
+    "textSpot": "Hilads の {{name}}",
+    "textSpotCity": "Hilads の {{name}}（{{city}}）"
+  }
 }

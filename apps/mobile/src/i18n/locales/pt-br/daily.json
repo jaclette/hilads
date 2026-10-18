@@ -470,5 +470,24 @@
     "camera": "Abrir a câmera",
     "later": "Me lembre depois",
     "laterDone": "A gente te lembra hoje à noite."
+  },
+  "share": {
+    "title": "Compartilhar",
+    "shareProof": "Compartilhar minha prova",
+    "shareRank": "Compartilhe seu #{{rank}}",
+    "challengeFriend": "Desafie um amigo",
+    "afterProof": "Mostre pros seus amigos",
+    "copyLink": "Copiar link",
+    "copied": "Copiado",
+    "more": "Mais",
+    "failed": "Não deu para compartilhar. Tente de novo.",
+    "rankWorld": "#{{rank}} no mundo",
+    "rankCity": "#{{rank}} em {{city}}",
+    "photoBy": "Foto de @{{user}}",
+    "areYouIn": "Topa?",
+    "textProof": "Minha foto do Daily Challenge de hoje no Hilads: {{challenge}}",
+    "textSpot": "{{name}} no Hilads",
+    "textSpotCity": "{{name}}, {{city}}, no Hilads",
+    "textToday": "O Daily Challenge de hoje no Hilads: {{challenge}} Topa?"
   }
 }

@@ -15,7 +15,11 @@
           "/challenges", "/??/challenges",
           "/pt-br/challenges", "/pt-pt/challenges", "/zh-hans/challenges", "/zh-hant/challenges", "/fil/challenges",
           "/today", "/??/today",
-          "/pt-br/today", "/pt-pt/today", "/zh-hans/today", "/zh-hant/today", "/fil/today"
+          "/pt-br/today", "/pt-pt/today", "/zh-hans/today", "/zh-hant/today", "/fil/today",
+          "/p/*", "/s/*", "/d/*", "/??/p/*", "/??/s/*", "/??/d/*",
+          "/pt-br/p/*", "/pt-pt/p/*", "/zh-hans/p/*", "/zh-hant/p/*", "/fil/p/*",
+          "/pt-br/s/*", "/pt-pt/s/*", "/zh-hans/s/*", "/zh-hant/s/*", "/fil/s/*",
+          "/pt-br/d/*", "/pt-pt/d/*", "/zh-hans/d/*", "/zh-hant/d/*", "/fil/d/*"
         ]
       }
     ]

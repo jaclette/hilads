@@ -468,5 +468,24 @@
     "camera": "카메라 열기",
     "later": "나중에 알려줘",
     "laterDone": "오늘 저녁에 알려드릴게요."
+  },
+  "share": {
+    "title": "공유",
+    "shareProof": "내 인증 공유하기",
+    "shareRank": "#{{rank}} 공유하기",
+    "challengeFriend": "친구에게 도전하기",
+    "afterProof": "친구들에게 보여 주세요",
+    "copyLink": "링크 복사",
+    "copied": "복사됨",
+    "more": "더보기",
+    "failed": "공유하지 못했어요. 다시 시도해 주세요.",
+    "rankWorld": "세계 #{{rank}}",
+    "rankCity": "{{city}} #{{rank}}",
+    "photoBy": "사진: @{{user}}",
+    "areYouIn": "함께할래요?",
+    "textProof": "Hilads 오늘의 Daily Challenge 내 사진: {{challenge}}",
+    "textSpot": "Hilads의 {{name}}",
+    "textSpotCity": "Hilads의 {{name}}, {{city}}",
+    "textToday": "Hilads 오늘의 Daily Challenge: {{challenge}} 함께할래요?"
   }
 }

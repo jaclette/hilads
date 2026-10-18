@@ -206,5 +206,13 @@
     "hi": "Say hi to your city. Join a plan.",
     "passport": "Your stamps and spots, city by city."
   },
-  "photoBy": "Photo by @{{username}}"
+  "photoBy": "Photo by @{{username}}",
+  "shareLink": {
+    "share": "Share",
+    "challengeFriend": "Challenge a friend",
+    "copied": "Copied",
+    "textToday": "Today's Daily Challenge on Hilads: {{challenge}} Are you in?",
+    "textSpot": "{{name}} on Hilads",
+    "textSpotCity": "{{name}}, {{city}}, on Hilads"
+  }
 }

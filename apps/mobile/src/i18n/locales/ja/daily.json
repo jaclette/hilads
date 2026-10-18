@@ -470,5 +470,24 @@
     "camera": "カメラを開く",
     "later": "あとで知らせて",
     "laterDone": "今夜お知らせします。"
+  },
+  "share": {
+    "title": "シェア",
+    "shareProof": "自分の投稿をシェア",
+    "shareRank": "{{rank}}位をシェア",
+    "challengeFriend": "友だちに挑戦",
+    "afterProof": "友だちに見せよう",
+    "copyLink": "リンクをコピー",
+    "copied": "コピーしました",
+    "more": "その他",
+    "failed": "シェアできませんでした。もう一度お試しください。",
+    "rankWorld": "世界で{{rank}}位",
+    "rankCity": "{{city}}で{{rank}}位",
+    "photoBy": "写真：@{{user}}",
+    "areYouIn": "やってみる？",
+    "textProof": "Hilads の今日の Daily Challenge に投稿した写真：{{challenge}}",
+    "textSpot": "Hilads の {{name}}",
+    "textSpotCity": "Hilads の {{name}}（{{city}}）",
+    "textToday": "Hilads の今日の Daily Challenge：{{challenge}} やってみる？"
   }
 }

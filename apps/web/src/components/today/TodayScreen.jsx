@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchSpotsNear } from '../../api'
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
+import { shareLink } from '../../lib/shareLink'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
@@ -63,6 +64,22 @@ export default function TodayScreen({ header }) {
         <SpotsNear />
       </div>
     </div>
+  )
+}
+
+/** "Challenge a friend" (SPEC 9.14): shares hilads.live/today (its preview = today's card). */
+function ChallengeFriend({ challenge }) {
+  const { t } = useTranslation('common')
+  const [copied, setCopied] = useState(false)
+  const go = async (e) => {
+    e.stopPropagation()
+    const res = await shareLink({ type: 'today', path: '/today', text: t('shareLink.textToday', { challenge: challenge.text }), source: 'today_card' })
+    if (res === 'copied') { setCopied(true); setTimeout(() => setCopied(false), 1800) }
+  }
+  return (
+    <button type="button" className="today-took today-friend" onClick={go}>
+      <Icon name="paper-plane-outline" size={16} /><span className="today-took-link">{copied ? t('shareLink.copied') : t('shareLink.challengeFriend')}</span>
+    </button>
   )
 }
 
@@ -208,6 +225,7 @@ function Ticket({ data, loading }) {
             {t('today.tookIt', { count: took })} · <span className="today-took-link">{t('today.seePhotos', { count: took })}</span>
           </button>
         )}
+        {challenge.isActive && <ChallengeFriend challenge={challenge} />}
       </div>
     </div>
   )

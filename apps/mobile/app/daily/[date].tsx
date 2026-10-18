@@ -34,7 +34,7 @@ import { themeName } from '@/features/daily/themes';
  * ?tab=top10 opens the Top 10 tab (top 10 push, hero card's top 3).
  */
 export default function DailySheetScreen() {
-  const { date: dateParam, proof: proofParam, source, tab, push_type: pushType } = useLocalSearchParams<{ date: string; proof?: string; source?: string; tab?: string; push_type?: string }>();
+  const { date: dateParam, proof: proofParam, source, tab, push_type: pushType, share } = useLocalSearchParams<{ date: string; proof?: string; source?: string; tab?: string; push_type?: string; share?: string }>();
   const { city } = useApp();
   const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : null);
 
@@ -47,7 +47,7 @@ export default function DailySheetScreen() {
   }, [date, city?.channelId]);
 
   if (!date) return <Loading />;
-  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} initialTab={tab === 'top10' ? 'top10' : null} pushType={pushType ?? null} />;
+  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} initialTab={tab === 'top10' ? 'top10' : null} pushType={pushType ?? null} shareProof={share === '1'} />;
 }
 
 function Loading() {
@@ -58,8 +58,10 @@ function Loading() {
 
 type Tab = 'world' | 'city' | 'top10';
 
-function Sheet({ date, openProofId, source, initialTab, pushType }: {
+function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: {
   date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | null; pushType: string | null;
+  /** ?share=1: open the share sheet on the ?proof= one (mine, from yesterday's podium). */
+  shareProof: boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -69,6 +71,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType }: {
   const [scope, setScope] = useState<'world' | 'city'>('world');   // proofs shown by the World / City tabs
   const [tab, setTab] = useState<Tab>(initialTab ?? 'world');
   const [viewing, setViewing] = useState<DailyProof | null>(null);
+  const [autoShare, setAutoShare] = useState(shareProof);
   const { sheet, loading, loadingMore, error, reload, loadMore, setMyProof } = useDailySheet(date, scope, city?.channelId);
   const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null, sheet?.serverTime);
   const tracked = useRef(false);
@@ -307,7 +310,8 @@ function Sheet({ date, openProofId, source, initialTab, pushType }: {
         />
       )}
 
-      <DailyProofViewer proof={viewing} onClose={() => setViewing(null)} />
+      <DailyProofViewer proof={viewing} challenge={sheet?.challenge ?? null} autoShare={autoShare && viewing?.id === openProofId}
+                        onClose={() => { setViewing(null); setAutoShare(false); }} />
     </Screen>
   );
 }

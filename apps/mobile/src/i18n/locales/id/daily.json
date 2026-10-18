@@ -470,5 +470,24 @@
     "camera": "Buka kamera",
     "later": "Ingatkan nanti",
     "laterDone": "Kami ingatkan nanti malam."
+  },
+  "share": {
+    "title": "Bagikan",
+    "shareProof": "Bagikan bukti saya",
+    "shareRank": "Bagikan #{{rank}} kamu",
+    "challengeFriend": "Tantang teman",
+    "afterProof": "Tunjukkan ke temanmu",
+    "copyLink": "Salin tautan",
+    "copied": "Disalin",
+    "more": "Lainnya",
+    "failed": "Gagal membagikan. Coba lagi.",
+    "rankWorld": "#{{rank}} di dunia",
+    "rankCity": "#{{rank}} di {{city}}",
+    "photoBy": "Foto oleh @{{user}}",
+    "areYouIn": "Ikut?",
+    "textProof": "Fotoku untuk Daily Challenge hari ini di Hilads: {{challenge}}",
+    "textSpot": "{{name}} di Hilads",
+    "textSpotCity": "{{name}}, {{city}}, di Hilads",
+    "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Ikut?"
   }
 }

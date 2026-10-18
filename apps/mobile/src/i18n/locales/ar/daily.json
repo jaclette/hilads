@@ -518,5 +518,24 @@
     "camera": "افتح الكاميرا",
     "later": "ذكّرني لاحقًا",
     "laterDone": "سنذكّرك هذا المساء."
+  },
+  "share": {
+    "title": "مشاركة",
+    "shareProof": "شارك إثباتي",
+    "shareRank": "شارك مركزك #{{rank}}",
+    "challengeFriend": "تحدَّ صديقًا",
+    "afterProof": "أرِها لأصدقائك",
+    "copyLink": "نسخ الرابط",
+    "copied": "تم النسخ",
+    "more": "المزيد",
+    "failed": "تعذّرت المشاركة. حاول مرة أخرى.",
+    "rankWorld": "#{{rank}} في العالم",
+    "rankCity": "#{{rank}} في {{city}}",
+    "photoBy": "صورة @{{user}}",
+    "areYouIn": "هل أنت معنا؟",
+    "textProof": "صورتي لـ Daily Challenge اليوم على Hilads: {{challenge}}",
+    "textSpot": "{{name}} على Hilads",
+    "textSpotCity": "{{name}}، {{city}}، على Hilads",
+    "textToday": "Daily Challenge اليوم على Hilads: {{challenge}} هل أنت معنا؟"
   }
 }

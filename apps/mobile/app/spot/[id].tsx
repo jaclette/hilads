@@ -13,7 +13,9 @@ import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice } from '@/features/today/format';
-import { Button, Chip, CityName, ScreenHeader, SectionTitle } from '@/ui';
+import { Button, Chip, CityName, IconButton, ScreenHeader, SectionTitle } from '@/ui';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { spotShare, type ShareContent } from '@/features/share/content';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
 
 /**
@@ -36,6 +38,7 @@ export default function SpotScreen() {
   const [next, setNext]       = useState<number | null>(null);
   const [failed, setFailed]   = useState(false);
   const [viewing, setViewing] = useState<SpotPhoto | null>(null);
+  const [share, setShare]     = useState<ShareContent | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -107,6 +110,7 @@ export default function SpotScreen() {
       <View style={styles.actions}>
         <Button icon="navigate-outline" label={t('map.directions')} onPress={() => openMapsUrl(directionsUrl(spot.lat, spot.lng, spot.name))} style={styles.btn} />
         <Button variant="secondary" icon="map-outline" label={t('spot.seeOnMap')} onPress={() => router.push(`/(tabs)/map?spot=${spot.id}&source=spot` as never)} style={styles.btn} />
+        <IconButton icon="share-social-outline" label={t('share.title')} onPress={() => setShare(spotShare(spot))} style={styles.share} />
       </View>
       {captions.length > 0 && (
         <View style={styles.captions}>
@@ -139,6 +143,7 @@ export default function SpotScreen() {
         )}
       />
       <PhotoViewer photo={viewing} onClose={() => setViewing(null)} />
+      <ShareSheet content={share} source="spot_screen" onClose={() => setShare(null)} />
     </SafeAreaView>
   );
 }
@@ -182,6 +187,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chips:         { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   stats:         { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   actions:       { flexDirection: 'row', gap: 10, marginTop: 4 },
+  share:         { alignSelf: 'center' },
   btn:           { flex: 1 },
   captions:      { gap: 6, marginTop: 4 },
   section:       { marginTop: 6 },

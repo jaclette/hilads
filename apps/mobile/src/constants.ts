@@ -25,7 +25,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
 // Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
 // otherwise - so a recipient lands on the localized (translated) page. The SSR
 // layer renders /fr and /vi event pages in-language.
-function sharePrefix(): string {
+export function sharePrefix(): string {
   const lang = i18n.language;
   return lang && lang !== DEFAULT_LOCALE && (SUPPORTED as readonly string[]).includes(lang) ? `/${lang}` : '';
 }

@@ -206,5 +206,13 @@
     "hi": "Dá um oi pra sua cidade. Entra num plano.",
     "passport": "Seus carimbos e spots, cidade por cidade."
   },
-  "photoBy": "Foto de @{{username}}"
+  "photoBy": "Foto de @{{username}}",
+  "shareLink": {
+    "share": "Compartilhar",
+    "challengeFriend": "Desafie um amigo",
+    "copied": "Copiado",
+    "textToday": "O Daily Challenge de hoje no Hilads: {{challenge}} Topa?",
+    "textSpot": "{{name}} no Hilads",
+    "textSpotCity": "{{name}}, {{city}}, no Hilads"
+  }
 }

@@ -24,6 +24,9 @@ import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/Pla
 import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
+import { SharePanel } from '@/features/share/SharePanel';
+import { proofShare } from '@/features/share/content';
+import { Button } from '@/ui';
 import type { DailyProof, DailyProofInput, DailyToday } from '@/types';
 
 /** A position older than this is refreshed before posting (the distance check). */
@@ -73,6 +76,7 @@ export default function DailyProofScreen() {
   const [place, setPlace]       = useState<PlaceChoice | null>(null);
   const [position, setPosition] = useState<Position | null>(null);
   const [photo, setPhoto]       = useState<Photo | null>(null);
+  const [sent, setSent]         = useState<{ proof: DailyProof; body: string; next: string; nudge: boolean } | null>(null);
   const [caption, setCaption]   = useState('');
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
@@ -207,24 +211,12 @@ export default function DailyProofScreen() {
       const spot = saved.spot ?? null;
       const next = spot && !spot.inReview ? `/(tabs)/map?spot=${spot.id}&source=proof` : '/(tabs)/today';
       if (original) { router.replace(next as never); return; }
-      // In-context push ask after the first proof (AUDIT Q9), once, then go on.
-      const afterProof = async (to: string) => {
-        const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
-        if (!done) {
-          await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
-          await askDailyPush('first_proof', identity?.guestId);
-        }
-        router.replace(to as never);
-      };
       // "Propose a challenge" nudge (V2-06), at most once a week.
       const lastNudge = Number(await AsyncStorage.getItem(PROPOSE_NUDGE_KEY).catch(() => null)) || 0;
       const nudge = Date.now() - lastNudge > PROPOSE_NUDGE_EVERY_MS;
       if (nudge) AsyncStorage.setItem(PROPOSE_NUDGE_KEY, String(Date.now())).catch(() => {});
       const body = spot?.inReview ? `${t('proof.sentBody')}\n\n${t('place.newOnMapLater')}` : t('proof.sentBody');
-      Alert.alert(t('proof.sentTitle'), body, [
-        ...(nudge ? [{ text: t('propose.cta'), onPress: () => afterProof('/daily/propose?source=after_proof') }] : []),
-        { text: t('proof.ok'), onPress: () => afterProof(next) },
-      ]);
+      setSent({ proof: saved, body, next, nudge });
     } catch (err) {
       const code = dailyErrorCode(err);
       if (code === 'too_far' && err instanceof ApiError) {
@@ -240,7 +232,37 @@ export default function DailyProofScreen() {
     }
   };
 
+  // In-context push ask after the first proof (AUDIT Q9), once, then go on.
+  const afterProof = async (to: string) => {
+    const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
+    if (!done) {
+      await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
+      await askDailyPush('first_proof', identity?.guestId);
+    }
+    router.replace(to as never);
+  };
+
   const challenge = today?.challenge ?? null;
+
+  // Sent (SPEC 9.14): the confirmation, then the share card and where to share it.
+  if (sent && challenge) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <ScrollView contentContainerStyle={styles.sent}>
+          <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>
+          <Text style={styles.stepTitle} accessibilityRole="header">{t('proof.sentTitle')}</Text>
+          <Text style={styles.muted}>{sent.body}</Text>
+          <Text style={styles.sentShare}>{t('share.afterProof')}</Text>
+          <SharePanel content={proofShare(sent.proof, challenge)} source="after_proof" previewHeight={320} />
+        </ScrollView>
+        <View style={styles.footer}>
+          <Button label={t('proof.ok')} onPress={() => afterProof(sent.next)} />
+          {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const closed = !loading && (!challenge || (original !== null && !challenge.isActive));
   const placeName = place ? (place.kind === 'spot' ? place.spot.name : place.name) : original?.spot?.name ?? null;
 
@@ -399,6 +421,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   priceRow:    { flexDirection: 'row', gap: 8 },
   currency:    { width: 84, textAlign: 'center', fontWeight: '700' },
   muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
+  sent:        { alignItems: 'center', padding: Spacing.lg, gap: 12 },
+  sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 12 },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   submit:      { backgroundColor: c.primary, borderRadius: 16, minHeight: 52, alignItems: 'center', justifyContent: 'center' },

@@ -12,12 +12,13 @@ import { fetchDailyPodium } from '@/api/daily';
 import { seedProofs } from '@/features/daily/votes';
 import { RankMedal } from '@/features/daily/RankMedal';
 import type { DailyPodium, DailyToday } from '@/types';
-import { Card, CityName, SectionTitle } from '@/ui';
+import { Button, Card, CityName, SectionTitle } from '@/ui';
 
 /**
  * Yesterday's podium (SPEC 9.3): yesterday's top 3 proofs of the scope with
  * gold, silver and bronze seals, author, city and votes, and "N proofs in M
  * countries". A photo opens it in yesterday's sheet; "See all" opens the sheet.
+ * When one of them is mine: "Share your #N" (SPEC 9.14).
  * A city with no proof yesterday shows World's; hidden when there were none.
  */
 export function TodayPodium({ today, refreshKey }: { today: DailyToday | null; refreshKey: number }) {
@@ -44,6 +45,7 @@ export function TodayPodium({ today, refreshKey }: { today: DailyToday | null; r
 
   if (!podium || podium.proofs.length === 0) return null;
   const proofs = t('today.proofs', { count: podium.total });
+  const mine = podium.proofs.find(p => p.isMine);
   return (
     <Card style={styles.card}>
       <SectionTitle small title={t('today.podiumTitle')}
@@ -70,6 +72,10 @@ export function TodayPodium({ today, refreshKey }: { today: DailyToday | null; r
           );
         })}
       </View>
+      {mine && (
+        <Button variant="secondary" size="sm" icon="share-social-outline" label={t('share.shareRank', { rank: mine.rank })}
+                onPress={() => router.push(`/daily/${podium.date}?proof=${mine.id}&share=1&source=podium` as never)} />
+      )}
     </Card>
   );
 }

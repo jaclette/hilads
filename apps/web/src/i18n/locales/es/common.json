@@ -206,5 +206,13 @@
     "hi": "Saluda a tu ciudad. Únete a un plan.",
     "passport": "Tus sellos y spots, ciudad por ciudad."
   },
-  "photoBy": "Foto de @{{username}}"
+  "photoBy": "Foto de @{{username}}",
+  "shareLink": {
+    "share": "Compartir",
+    "challengeFriend": "Reta a un amigo",
+    "copied": "Copiado",
+    "textToday": "El Daily Challenge de hoy en Hilads: {{challenge}} ¿Te apuntas?",
+    "textSpot": "{{name}} en Hilads",
+    "textSpotCity": "{{name}}, {{city}}, en Hilads"
+  }
 }

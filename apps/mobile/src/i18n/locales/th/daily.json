@@ -468,5 +468,24 @@
     "camera": "เปิดกล้อง",
     "later": "เตือนฉันทีหลัง",
     "laterDone": "เราจะเตือนคุณตอนเย็นนี้"
+  },
+  "share": {
+    "title": "แชร์",
+    "shareProof": "แชร์หลักฐานของฉัน",
+    "shareRank": "แชร์อันดับ #{{rank}} ของคุณ",
+    "challengeFriend": "ท้าเพื่อน",
+    "afterProof": "อวดเพื่อน ๆ",
+    "copyLink": "คัดลอกลิงก์",
+    "copied": "คัดลอกแล้ว",
+    "more": "เพิ่มเติม",
+    "failed": "แชร์ไม่สำเร็จ ลองอีกครั้ง",
+    "rankWorld": "อันดับ #{{rank}} ของโลก",
+    "rankCity": "อันดับ #{{rank}} ใน{{city}}",
+    "photoBy": "ภาพโดย @{{user}}",
+    "areYouIn": "มาเล่นไหม?",
+    "textProof": "รูปของฉันสำหรับ Daily Challenge วันนี้บน Hilads: {{challenge}}",
+    "textSpot": "{{name}} บน Hilads",
+    "textSpotCity": "{{name}}, {{city}} บน Hilads",
+    "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?"
   }
 }

@@ -206,5 +206,13 @@
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
     "passport": "Je stempels en spots, stad voor stad."
   },
-  "photoBy": "Foto van @{{username}}"
+  "photoBy": "Foto van @{{username}}",
+  "shareLink": {
+    "share": "Delen",
+    "challengeFriend": "Daag een vriend uit",
+    "copied": "Gekopieerd",
+    "textToday": "De Daily Challenge van vandaag op Hilads: {{challenge}} Doe je mee?",
+    "textSpot": "{{name}} op Hilads",
+    "textSpotCity": "{{name}}, {{city}}, op Hilads"
+  }
 }

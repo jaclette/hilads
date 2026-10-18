@@ -7,16 +7,16 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { themeName } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice, distance } from '@/features/today/format';
 import type { Spot } from '@/api/spots';
-import { Button } from '@/ui';
+import { Button, IconButton } from '@/ui';
 import { PhotoCredit } from './PhotoCredit';
 
 /**
  * The selected spot's card at the bottom of the map (map.html): photo, name,
  * theme, distance, price paid, "Validated by a local", proofs and votes, the
- * cover caption, then Open spot and Directions.
+ * cover caption, then Open spot, Directions and Share (SPEC 9.14).
  */
-export function SpotSheet({ spot, distanceM, onOpen, onDirections, onClose }: {
-  spot: Spot; distanceM: number | null; onOpen: () => void; onDirections: () => void; onClose: () => void;
+export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onClose }: {
+  spot: Spot; distanceM: number | null; onOpen: () => void; onDirections: () => void; onShare: () => void; onClose: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -63,6 +63,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onClose }: {
       <View style={styles.actions}>
         <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} />
         <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />
+        <IconButton icon="share-social-outline" label={t('share.title')} onPress={onShare} style={styles.share} />
       </View>
     </View>
   );
@@ -85,4 +86,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   credit:       { marginTop: -4 },
   actions:      { flexDirection: 'row', gap: 10 },
   btn:          { flex: 1 },
+  share:        { alignSelf: 'center' },
 });

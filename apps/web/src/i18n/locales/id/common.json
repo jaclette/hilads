@@ -206,5 +206,13 @@
     "hi": "Sapa kotamu. Ikut sebuah rencana.",
     "passport": "Stempel dan spot kamu, kota demi kota."
   },
-  "photoBy": "Foto oleh @{{username}}"
+  "photoBy": "Foto oleh @{{username}}",
+  "shareLink": {
+    "share": "Bagikan",
+    "challengeFriend": "Tantang teman",
+    "copied": "Disalin",
+    "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Ikut?",
+    "textSpot": "{{name}} di Hilads",
+    "textSpotCity": "{{name}}, {{city}}, di Hilads"
+  }
 }

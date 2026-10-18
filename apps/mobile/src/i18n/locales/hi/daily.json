@@ -470,5 +470,24 @@
     "camera": "कैमरा खोलो",
     "later": "बाद में याद दिलाना",
     "laterDone": "हम आज शाम याद दिलाएँगे।"
+  },
+  "share": {
+    "title": "शेयर करें",
+    "shareProof": "मेरा प्रूफ़ शेयर करें",
+    "shareRank": "अपना #{{rank}} शेयर करें",
+    "challengeFriend": "किसी दोस्त को चुनौती दें",
+    "afterProof": "दोस्तों को दिखाएँ",
+    "copyLink": "लिंक कॉपी करें",
+    "copied": "कॉपी हो गया",
+    "more": "और",
+    "failed": "शेयर नहीं हो सका। फिर से कोशिश करें।",
+    "rankWorld": "दुनिया में #{{rank}}",
+    "rankCity": "{{city}} में #{{rank}}",
+    "photoBy": "फ़ोटो: @{{user}}",
+    "areYouIn": "क्या आप तैयार हैं?",
+    "textProof": "Hilads पर आज के Daily Challenge के लिए मेरी फ़ोटो: {{challenge}}",
+    "textSpot": "Hilads पर {{name}}",
+    "textSpotCity": "Hilads पर {{name}}, {{city}}",
+    "textToday": "Hilads पर आज का Daily Challenge: {{challenge}} क्या आप तैयार हैं?"
   }
 }

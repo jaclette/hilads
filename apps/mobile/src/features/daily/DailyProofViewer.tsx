@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Modal, Text, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,14 +12,28 @@ import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
-import { Chip, IconButton, ModeLabel } from '@/ui';
-import type { DailyProof } from '@/types';
+import { Button, Chip, IconButton, ModeLabel } from '@/ui';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { proofShare, type ShareContent } from '@/features/share/content';
+import type { DailyChallenge, DailyProof } from '@/types';
 
-/** Full-screen photo of one proof with its author, caption, price, place, local badge and vote. */
-export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null; onClose: () => void }) {
+/**
+ * Full-screen photo of one proof with its author, caption, price, place, local
+ * badge and vote. My own proof (with its `challenge`) gets Share (SPEC 9.14);
+ * `autoShare` opens the share sheet at once (yesterday's podium, "Share").
+ */
+export function DailyProofViewer({ proof, challenge, autoShare = false, onClose }: {
+  proof: DailyProof | null; challenge?: DailyChallenge | null; autoShare?: boolean; onClose: () => void;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
+  const [share, setShare] = useState<ShareContent | null>(null);
+  const shareable = !!proof && proof.isMine && !!challenge && proof.challengeId === challenge.id
+    && (proof.status === 'approved' || proof.status === 'pending');
+  useEffect(() => {
+    if (autoShare && shareable && proof && challenge) setShare(proofShare(proof, challenge));
+  }, [autoShare, shareable, proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!proof) return null;
   const name = proof.user.displayName || proof.user.username || '';
   return (
@@ -65,7 +80,11 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
           {proof.status === 'approved' && (
             <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="viewer" />
           )}
+          {shareable && challenge && (
+            <Button icon="share-social-outline" label={t('share.shareProof')} onPress={() => setShare(proofShare(proof, challenge))} />
+          )}
         </View>
+        <ShareSheet content={share} source={autoShare ? 'podium' : 'viewer'} onClose={() => setShare(null)} />
       </SafeAreaView>
     </Modal>
   );

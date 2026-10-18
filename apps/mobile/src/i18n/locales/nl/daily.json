@@ -470,5 +470,24 @@
     "camera": "Camera openen",
     "later": "Herinner me later",
     "laterDone": "We herinneren je vanavond."
+  },
+  "share": {
+    "title": "Delen",
+    "shareProof": "Mijn bewijs delen",
+    "shareRank": "Deel je #{{rank}}",
+    "challengeFriend": "Daag een vriend uit",
+    "afterProof": "Laat het je vrienden zien",
+    "copyLink": "Link kopiëren",
+    "copied": "Gekopieerd",
+    "more": "Meer",
+    "failed": "Delen lukte niet. Probeer het opnieuw.",
+    "rankWorld": "#{{rank}} ter wereld",
+    "rankCity": "#{{rank}} in {{city}}",
+    "photoBy": "Foto van @{{user}}",
+    "areYouIn": "Doe je mee?",
+    "textProof": "Mijn foto voor de Daily Challenge van vandaag op Hilads: {{challenge}}",
+    "textSpot": "{{name}} op Hilads",
+    "textSpotCity": "{{name}}, {{city}}, op Hilads",
+    "textToday": "De Daily Challenge van vandaag op Hilads: {{challenge}} Doe je mee?"
   }
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import { shareLink } from '../../lib/shareLink'
 import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
 import { fetchSpot } from '../../api'
-import { shortCityName } from '../../i18n/cityName'
+import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
@@ -31,6 +32,8 @@ export default function SpotPage({ spotId, onBack }) {
   const [photos, setPhotos]   = useState([])
   const [next, setNext]       = useState(null)
   const [missing, setMissing] = useState(false)
+  const [copied, setCopied]   = useState(false)
+  const { t: tc } = useTranslation('common')
   const store = deviceStore()
 
   useEffect(() => {
@@ -52,6 +55,14 @@ export default function SpotPage({ spotId, onBack }) {
   }
 
   const spot  = data?.spot
+  // Share (SPEC 9.14): hilads.live/s/{id}, whose preview is the spot's card.
+  const share = async () => {
+    if (!spot) return
+    const city = spot.city?.name ? localizeCityName(spot.city.name) : null
+    const text = city ? tc('shareLink.textSpotCity', { name: spot.name, city }) : tc('shareLink.textSpot', { name: spot.name })
+    const res = await shareLink({ type: 'spot', path: `/s/${spot.id}`, text, source: 'spot_screen' })
+    if (res === 'copied') { setCopied(true); setTimeout(() => setCopied(false), 1800) }
+  }
   const price = spot ? formatPriceRange(spot.priceRange, i18n.language) : null
   const rank  = data ? rankingLine(t, data.ranking) : null
 
@@ -94,6 +105,9 @@ export default function SpotPage({ spotId, onBack }) {
                  onClick={() => track('web_app_map_card_clicked', { store: store ?? 'ios', placement: 'spot' })}>
                 <Icon name="camera-outline" size={18} />{t('spot.proofInApp')}
               </a>
+              <button type="button" className="wm-btn wm-btn--ghost wm-spot-share" onClick={share}>
+                <Icon name="share-social-outline" size={18} />{copied ? tc('shareLink.copied') : tc('shareLink.share')}
+              </button>
             </div>
             {!store && (
               <a className="wm-store-alt" href={PLAY_STORE} target="_blank" rel="noopener noreferrer"

@@ -178,6 +178,9 @@ function RootLayoutInner() {
             <Stack.Screen name="event/limit-reached" />
             <Stack.Screen name="e/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="t/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="p/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="s/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="d/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="city/[slug]" options={{ headerShown: false }} />
             <Stack.Screen
               name="sign-in"
