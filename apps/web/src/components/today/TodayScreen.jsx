@@ -8,7 +8,7 @@ import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
 import { CityFlag, CityName } from '../CityName'
 import {
-  useDaily, useDc, useCountdown, formatCountdown, seedProofs, seedVotesLeft, useVoteCount,
+  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
   StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
@@ -80,6 +80,24 @@ function BrandLine({ today }) {
   return <p className="brand-line"><span className="brand-line-name">Hilads</span> {t('firstLaunch')}</p>
 }
 
+/** True while the element is on screen and the tab visible: the "I'm in" pulse runs only then. */
+function usePulseVisible(el) {
+  const [onScreen, setOnScreen] = useState(true)
+  const [tabVisible, setTabVisible] = useState(() => typeof document === 'undefined' || document.visibilityState !== 'hidden')
+  useEffect(() => {
+    const onVis = () => setTabVisible(document.visibilityState !== 'hidden')
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+  useEffect(() => {
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [el])
+  return onScreen && tabVisible
+}
+
 /**
  * Today's Daily Challenge as a ticket (SPEC 9.3): an image band (the
  * challenge's cover, else its theme's) with "Daily Challenge" over the theme
@@ -92,8 +110,10 @@ function Ticket({ data, loading }) {
   const { scope, openDaily } = useDaily()
   const [showOriginal, toggleOriginal] = useOriginal()
   const secondsLeft = useCountdown(data?.challenge ? data.nextDropAt : null)
+  const [pulseEl, setPulseEl] = useState(null)
   const tracked = useRef(null)
   const challenge = data?.challenge ?? null
+  const pulseOn = usePulseVisible(pulseEl)
 
   useEffect(() => {
     if (!challenge || tracked.current === challenge.id) return
@@ -156,16 +176,23 @@ function Ticket({ data, loading }) {
           </div>
         )}
         {myProof ? (
-          <div className="today-mine">
-            <StatusChip status={myProof.status} />
-            <button type="button" className="dc-link" onClick={(e) => { e.stopPropagation(); open() }}>{t('today.seeMine')}</button>
-          </div>
+          <>
+            {myProof.status !== 'approved' && <StatusChip status={myProof.status} />}
+            {/* Posted: no pulse; the button opens my proof. */}
+            <button type="button" className="today-cta today-cta--taken"
+                    onClick={(e) => { e.stopPropagation(); openDaily('challenge', { date: 'today', proofId: myProof.id }) }}>
+              <Icon name="checkmark-circle-outline" size={20} />{t('ctaTaken')}
+            </button>
+          </>
         ) : (
-          // The card's only orange element. Proofs are posted from the app: the store.
-          <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-             onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
-            <Icon name="camera-outline" size={20} />{t('ctaIn')}
-          </a>
+          // The card's only orange element, pulsing (CSS; paused off screen and
+          // in a hidden tab; none with reduced motion). The web opens the store.
+          <span ref={setPulseEl} className={`today-cta-pulse${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
+            <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
+               onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
+              <Icon name="camera-outline" size={20} />{t('ctaIn')}
+            </a>
+          </span>
         )}
         {took > 0 && (
           <button type="button" className="today-took" onClick={(e) => { e.stopPropagation(); open() }}>

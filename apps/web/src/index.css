@@ -16472,7 +16472,30 @@ body.has-app-promo-banner .page-header {
 .today-twist { display: flex; flex-direction: column; gap: 4px; }
 .today-twist-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: var(--muted2); }
 .today-twist-text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
-.today-cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; }
+.today-cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; border: none; font-family: inherit; cursor: pointer; transition: transform 0.12s ease; }
+.today-cta:active { transform: scale(0.97); }
+.today-cta--taken { width: 100%; background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
+/* "I'm in" pulse (SPEC 9.3): two primary rings in relay, from the button's edge
+   outward while fading (8% wider, 50% taller), 1.6 s, the second 0.8 s later;
+   1.2 s in the last 3 hours. Paused off screen / hidden tab; none with reduced motion. */
+.today-cta-pulse { position: relative; display: block; }
+.today-cta-pulse > .today-cta { position: relative; z-index: 1; }
+.today-cta-pulse::before, .today-cta-pulse::after {
+  content: ''; position: absolute; inset: 0; border: 2px solid var(--primary); border-radius: 16px; opacity: 0; pointer-events: none;
+  animation: today-ring 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+.today-cta-pulse::after { animation-delay: 0.8s; }
+.today-cta-pulse--fast::before, .today-cta-pulse--fast::after { animation-duration: 1.2s; }
+.today-cta-pulse--fast::after { animation-delay: 0.6s; }
+.today-cta-pulse--paused::before, .today-cta-pulse--paused::after { animation-play-state: paused; }
+@keyframes today-ring {
+  0%   { opacity: 1; transform: scale(1, 1); }
+  100% { opacity: 0; transform: scale(1.08, 1.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .today-cta-pulse::before, .today-cta-pulse::after { animation: none; display: none; }
+  .today-cta, .today-cta:active { transition: none; transform: none; }
+}
 /* The card's image band: white text on a dark shade (4.5:1), same in both themes. */
 .today-cover { position: relative; height: 160px; background: var(--surface2); display: flex; align-items: flex-end; }
 .today-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }

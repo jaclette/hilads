@@ -864,6 +864,7 @@
     "nothingLive": "Следующий Daily Challenge уже в пути",
     "cta": "Принять challenge",
     "ctaIn": "Я в деле",
+    "ctaTaken": "Challenge выполнен · Моё доказательство",
     "seeProofs": "Смотреть доказательства за сегодня",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist: {{city}}",

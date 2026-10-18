@@ -18,6 +18,8 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { THEME_ICON, clock } from './format';
 import { THEME_COVERS } from './covers';
+import { PulseButton } from './PulseButton';
+import { isFinalHours } from '@/hooks/useDaily';
 import { Button, CityFlag } from '@/ui';
 import type { DailyThemeKey, DailyToday } from '@/types';
 import { themeName } from '@/features/daily/themes';
@@ -39,7 +41,11 @@ const COVER_SHADE = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.86)', 'rg
  * card opens the challenge sheet. Tomorrow's Local Twist proposal sits under
  * the week strip.
  */
-export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday | null; loading: boolean; secondsLeft: number | null }) {
+export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
+  data: DailyToday | null; loading: boolean; secondsLeft: number | null;
+  /** The card is on screen (Today's scroll): the button's pulse runs only then. */
+  visible?: boolean;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
@@ -75,6 +81,7 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
   const twist = data?.twist && city?.isLive ? data.twist : null;
   const earlyUntil = !myProof && data?.early && data.early.until * 1000 > Date.now() ? data.early.until : null;
   const openSheet = () => router.push('/daily/today?source=today' as never);
+  const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
   // People who took it: the city's count in city scope once it has proofs, else World's.
   const took = (scope === 'city' && data?.counts?.city ? data.counts.city : data?.counts?.world) ?? 0;
   const onCta = () => {
@@ -111,15 +118,14 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
           </View>
         )}
         {myProof ? (
-          <View style={styles.mine}>
-            <DailyStatusChip status={myProof.status} />
-            <TouchableOpacity onPress={openSheet} accessibilityRole="button" hitSlop={8}>
-              <Text style={styles.link}>{t('today.seeMine')}</Text>
-            </TouchableOpacity>
-          </View>
+          <>
+            {myProof.status !== 'approved' && <DailyStatusChip status={myProof.status} />}
+            {/* Posted: no pulse; the button opens my proof. */}
+            <Button variant="secondary" icon="checkmark-circle-outline" label={t('ctaTaken')} onPress={openMine} style={styles.cta} />
+          </>
         ) : (
-          // The card's only orange element: straight to the camera (SPEC 9.3).
-          <Button label={t('ctaIn')} icon="camera-outline" onPress={onCta} style={styles.cta} />
+          // The card's only orange element, pulsing; straight to the camera (SPEC 9.3).
+          <PulseButton label={t('ctaIn')} onPress={onCta} visible={visible} fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
         {took > 0 && (
           <TouchableOpacity style={styles.took} onPress={openSheet} accessibilityRole="button">

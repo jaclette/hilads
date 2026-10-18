@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, View, StyleSheet } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { RefreshControl, ScrollView, View, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -29,6 +29,13 @@ export default function TodayScreen() {
   const daily = useDailyToday(city?.channelId);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  // The card's "I'm in" pulses only while the card is on screen.
+  const [ticketVisible, setTicketVisible] = useState(true);
+  const ticketBottom = useRef(Number.POSITIVE_INFINITY);
+  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const next = e.nativeEvent.contentOffset.y < ticketBottom.current - 24;
+    setTicketVisible(v => (v === next ? v : next));
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -42,10 +49,14 @@ export default function TodayScreen() {
       <View style={styles.header}><AppHeader /></View>
       <ScrollView
         contentContainerStyle={styles.content}
+        onScroll={onScroll}
+        scrollEventThrottle={100}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         <BrandLine today={daily.data} guest={!account} />
-        <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} />
+        <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
+          <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} />
+        </View>
         <DailyPushBanner />
         <TodayWeek today={daily.data} />
         <TodayProofs today={daily.data} refreshKey={refreshKey} />
