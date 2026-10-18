@@ -5576,7 +5576,6 @@ export default function App() {
           initialSpotId={mapSpotId}
           channelId={channelId}
           cityName={city ? shortCityName(city) : null}
-          onClose={() => setShowMap(false)}
           onOpenPlan={(id) => {
             setShowMap(false)
             fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})

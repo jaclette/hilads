@@ -4,7 +4,6 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import '../../lib/leafletGuard'
 import { useTranslation } from 'react-i18next'
-import BackButton from '../BackButton'
 import SpotPage from './SpotPage'
 import { fetchMap, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
@@ -237,7 +236,7 @@ function EmptyCard({ today, t }) {
  * The web map of spots (SPEC 9.5, same API as the app's Map tab): the current
  * city's spots and Hi plans, theme chips, search, and a spot page. Full screen.
  */
-export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, initialSpotId = null }) {
+export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null }) {
   const { t, i18n } = useTranslation('challenge')
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
@@ -369,7 +368,6 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
     <div className="full-page full-page--tab wm-page">
       <div className="page-header has-art">
         <HeaderArt kind="map" />
-        <BackButton onClick={onClose} />
         <div className="tab-heading">
           <span className="page-title">{nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
           <p className="tab-subtitle">{t('subtitles.map', { ns: 'common' })}</p>
