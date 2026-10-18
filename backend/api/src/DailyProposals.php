@@ -330,7 +330,7 @@ final class DailyProposals
             return 0;
         }
         $stmt = Database::pdo()->prepare("
-            SELECT count(*) FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved' AND user_id <> ?
+            SELECT count(*) FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved' AND user_id <> ? AND NOT is_demo
         ");
         $stmt->execute([$challenge['id'], $authorId]);
         $n = (int) $stmt->fetchColumn();

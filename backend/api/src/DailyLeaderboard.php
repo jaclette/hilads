@@ -162,8 +162,8 @@ final class DailyLeaderboard
         if ($challenge === null) {
             return ['queued' => 0];
         }
-        $snap      = self::snapshot($challenge['id']);
-        $entrants  = self::pushEntrants($snap['approvedCount'], $snap['rows']);
+        [$count, $rows] = self::realOnly(self::snapshot($challenge['id']));
+        $entrants  = self::pushEntrants($count, $rows);
         return ['queued' => DailyPushes::queueTop10($date, array_column($entrants, 'user_id'), $now)];
     }
 
@@ -174,8 +174,8 @@ final class DailyLeaderboard
         if ($challenge === null) {
             return null;
         }
-        $snap = self::snapshot($challenge['id']);
-        foreach (self::pushEntrants($snap['approvedCount'], $snap['rows']) as $r) {
+        [$count, $rows] = self::realOnly(self::snapshot($challenge['id']));
+        foreach (self::pushEntrants($count, $rows) as $r) {
             if ($r['user_id'] === $userId) {
                 return (int) $r['rank'];
             }
@@ -186,19 +186,33 @@ final class DailyLeaderboard
     // ── Internals ────────────────────────────────────────────────────────────
 
     /**
+     * The snapshot without demo proofs (DailyDemo), for the top 10 push: demo
+     * content shows in the Top 10 but never pushes or bumps anyone. Pure.
+     */
+    public static function realOnly(array $snap): array
+    {
+        $rows = array_values(array_filter($snap['rows'], static fn(array $r): bool => !DailyProofRepository::bool($r['is_demo'] ?? false)));
+        return [$snap['approvedCount'] - ($snap['demoCount'] ?? 0), $rows];
+    }
+
+    /**
      * The approved count and every approved proof with a vote (with what an
      * entry shows), cached CACHE_TTL seconds and shared by every viewer.
      */
     private static function snapshot(string $challengeId): array
     {
-        return Cache::remember('daily_leaderboard_v2_' . $challengeId, self::CACHE_TTL, function () use ($challengeId): array {
+        return Cache::remember('daily_leaderboard_v3_' . $challengeId, self::CACHE_TTL, function () use ($challengeId): array {
             $pdo  = Database::pdo();
-            $stmt = $pdo->prepare("SELECT count(*) FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved'");
+            $stmt = $pdo->prepare("
+                SELECT count(*) AS n, count(*) FILTER (WHERE is_demo) AS demo
+                FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved'
+            ");
             $stmt->execute([$challengeId]);
-            $count = (int) $stmt->fetchColumn();
+            $counts = $stmt->fetch(PDO::FETCH_ASSOC);
+            $count  = (int) $counts['n'];
 
             $stmt = $pdo->prepare("
-                SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.is_local,
+                SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.is_local, p.is_demo,
                        p.photo_url, u.username, u.display_name, u.profile_photo_url, ch.name AS city_name,
                        (lp.user_id IS NOT NULL) AS author_local_pass
                 FROM daily_proofs p
@@ -208,8 +222,8 @@ final class DailyLeaderboard
                 WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.vote_count >= 1
             ");
             $stmt->execute([$challengeId]);
-            return ['approvedCount' => $count, 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
-        }) ?? ['approvedCount' => 0, 'rows' => []];
+            return ['approvedCount' => $count, 'demoCount' => (int) $counts['demo'], 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        }) ?? ['approvedCount' => 0, 'demoCount' => 0, 'rows' => []];
     }
 
     private static function entry(array $r): array

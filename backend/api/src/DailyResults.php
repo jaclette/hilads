@@ -103,7 +103,7 @@ final class DailyResults
         $stmt = $pdo->prepare("
             SELECT id, user_id, city_id, vote_count, local_vote_count, approved_at
             FROM daily_proofs
-            WHERE challenge_id = ? AND moderation_status = 'approved'
+            WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_demo
         ");
         $stmt->execute([$challengeId]);
         DailyRules::forgetLiveCities();
@@ -243,7 +243,7 @@ final class DailyResults
             SELECT dc.challenge_date::text AS d, (p.id IS NOT NULL) AS done
             FROM daily_challenges dc
             LEFT JOIN daily_proofs p
-                   ON p.challenge_id = dc.id AND p.user_id = ? AND p.moderation_status = 'approved'
+                   ON p.challenge_id = dc.id AND p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo
             WHERE dc.status = 'published' AND dc.challenge_date <= ?
             ORDER BY dc.challenge_date
         ");
@@ -294,7 +294,7 @@ final class DailyResults
             FROM daily_proofs p
             LEFT JOIN daily_results wr ON wr.challenge_id = p.challenge_id AND wr.scope = 'world' AND wr.proof_id = p.id
             LEFT JOIN daily_results cr ON cr.challenge_id = p.challenge_id AND cr.scope = p.city_id AND cr.proof_id = p.id
-            WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed
+            WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
             ORDER BY wr.rank NULLS LAST,
                      (cr.rank = 1 AND p.vote_count >= ?) DESC NULLS LAST,
                      p.vote_count DESC, p.approved_at DESC

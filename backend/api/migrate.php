@@ -3135,6 +3135,18 @@ run($pdo, "
     WHERE is_admin AND NOT EXISTS (SELECT 1 FROM users WHERE hidden_from_rankings)
 ", 'users.hidden_from_rankings seed');
 
+// ── Daily Challenge demo content (scripts/daily_demo.php) ─────────────────
+// Demo accounts, their proofs and the spots they create carry is_demo: they
+// show in the app for testing, never earn anything, and DailyDemo::cleanup()
+// deletes them (by hand, or at the start of the next drop).
+// Reversal: run the cleanup, then drop the three columns.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo BOOLEAN NOT NULL DEFAULT false", 'users.is_demo');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_demo BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_demo');
+run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS is_demo BOOLEAN NOT NULL DEFAULT false", 'places.is_demo');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_demo ON users (id) WHERE is_demo", 'idx_users_demo');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_demo ON daily_proofs (id) WHERE is_demo", 'idx_daily_proofs_demo');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_places_demo ON places (id) WHERE is_demo", 'idx_places_demo');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

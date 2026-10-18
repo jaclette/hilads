@@ -691,7 +691,7 @@ final class DailyPushes
             FROM daily_twists t
             JOIN daily_challenges c ON c.id = t.challenge_id
             JOIN daily_proofs p ON p.challenge_id = t.challenge_id AND p.city_id = t.city_id
-                               AND p.moderation_status = 'approved' AND p.user_id <> t.author_user_id
+                               AND p.moderation_status = 'approved' AND p.user_id <> t.author_user_id AND NOT p.is_demo
             WHERE t.status = 'selected' AND t.moderation_status = 'approved'
               AND t.author_user_id = ANY (string_to_array(?, ','))
               AND c.challenge_date = ANY (string_to_array(?, ',')::date[])
@@ -727,7 +727,7 @@ final class DailyPushes
             LEFT JOIN channels ch ON ch.id = p.city_id
             LEFT JOIN daily_results wr ON wr.challenge_id = p.challenge_id AND wr.scope = 'world' AND wr.proof_id = p.id
             LEFT JOIN daily_results cr ON cr.challenge_id = p.challenge_id AND cr.scope = p.city_id AND cr.proof_id = p.id
-            WHERE p.challenge_id = ? AND p.moderation_status = 'approved'
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo
         ");
         $stmt->execute([$prev['id']]);
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $p) {

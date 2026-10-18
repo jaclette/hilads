@@ -117,4 +117,16 @@ final class DailyLeaderboardTest extends TestCase
 
         $this->assertSame([], DailyLeaderboard::pushEntrants(DailyLeaderboard::MIN_PROOFS - 1, $rows));
     }
+
+    public function testDemoProofsNeverCountForTheTop10Push(): void
+    {
+        $snap = ['approvedCount' => 7, 'demoCount' => 6, 'rows' => [
+            ['id' => 'd1', 'user_id' => 'demo', 'vote_count' => 3, 'is_demo' => true],
+            ['id' => 'r1', 'user_id' => 'real', 'vote_count' => 2, 'is_demo' => false],
+        ]];
+        [$count, $rows] = DailyLeaderboard::realOnly($snap);
+        $this->assertSame(1, $count);
+        $this->assertSame(['r1'], array_column($rows, 'id'));
+        $this->assertSame([], DailyLeaderboard::pushEntrants($count, $rows));   // 1 real proof: below the minimum
+    }
 }

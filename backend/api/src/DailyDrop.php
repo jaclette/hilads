@@ -65,6 +65,14 @@ final class DailyDrop
         $steps = [];
         try {
             $yesterday     = (new DateTimeImmutable($date, new DateTimeZone('UTC')))->modify('-1 day')->format('Y-m-d');
+            // Demo content (DailyDemo) never outlives its day: removed before
+            // results and points are computed. Never blocks the drop.
+            try {
+                $steps['demoCleanup'] = DailyDemo::cleanup();
+            } catch (\Throwable $e) {
+                $steps['demoCleanup'] = ['status' => 'failed', 'error' => $e->getMessage()];
+                error_log("[daily-drop] demo cleanup failed: " . $e->getMessage());
+            }
             // Never blocks today's publish: a failed close is logged, alerted
             // and re-run by hand (scripts/daily_close.php).
             try {

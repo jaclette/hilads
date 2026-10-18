@@ -93,7 +93,7 @@ final class DailyPoints
         // Safety pass: approved proofs without their approval award.
         $stmt = $pdo->prepare("
             SELECT p.id FROM daily_proofs p
-            WHERE p.challenge_id = ? AND p.moderation_status = 'approved'
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo
               AND NOT EXISTS (SELECT 1 FROM score_events se WHERE se.daily_proof_id = p.id AND se.kind = 'daily_proof')
         ");
         $stmt->execute([$challengeId]);
@@ -111,8 +111,11 @@ final class DailyPoints
                 INSERT INTO score_events (id, user_id, role, kind, points, city_id, month_ref, daily_challenge_id)
                 SELECT encode(gen_random_bytes(8), 'hex'), v.voter_user_id, 'daily', 'daily_vote', ?,
                        (SELECT c.id FROM channels c WHERE c.id = u.current_city_id), ?, ?
-                FROM (SELECT DISTINCT voter_user_id FROM daily_votes WHERE challenge_id = ?) v
-                JOIN users u ON u.id = v.voter_user_id
+                -- Demo proofs and demo voters never count (DailyDemo).
+                FROM (SELECT DISTINCT dv.voter_user_id FROM daily_votes dv
+                      JOIN daily_proofs dp ON dp.id = dv.proof_id AND NOT dp.is_demo
+                      WHERE dv.challenge_id = ?) v
+                JOIN users u ON u.id = v.voter_user_id AND NOT u.is_demo
                 ON CONFLICT DO NOTHING
             ");
             $stmt->execute([$votePts, gmdate('Y-m'), $challengeId, $challengeId]);
