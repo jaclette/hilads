@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -26,21 +26,30 @@ export function EmptyCity({ today }: { today: DailyToday | null }) {
   const placeTheme = !!challenge?.theme && challenge.theme.key !== 'language';
   const tomorrowKey = today?.tomorrow?.theme?.key
     ?? (challenge ? defaultThemeFor(addDays(challenge.date, 1)) : null);
+  const canTake = !!challenge?.isActive && !today?.myProof && placeTheme;
   const take = () => {
     track('map_first_spot_tapped', { signed_in: !!account, theme: challenge?.theme?.key ?? null });
     router.push((account ? '/daily/proof' : '/auth-gate?reason=first_spot&returnTo=%2Fdaily%2Fproof') as never);
   };
+  // The whole card is the tap target: the proof flow on a place theme, else today's challenge.
+  const open = () => {
+    if (canTake) take();
+    else if (challenge) router.push(`/daily/${challenge.date}` as never);
+  };
   return (
+    <TouchableOpacity activeOpacity={0.85} onPress={open} disabled={!challenge} accessibilityRole="button">
     <Card variant="ticket" style={styles.card}>
       <View style={styles.head}>
         <Ionicons name="location-outline" size={22} color={colors.primaryText} />
         <Text style={styles.title}>{t('map.emptyTitle')}</Text>
       </View>
       {challenge && <Text style={styles.text} numberOfLines={3}>{challenge.text}</Text>}
-      {challenge?.isActive && !today?.myProof && (placeTheme
-        ? <Button label={t('cta')} onPress={take} />
-        : tomorrowKey && <Text style={styles.tomorrow}>{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</Text>)}
+      {canTake && <Button label={t('cta')} onPress={take} />}
+      {!!challenge?.isActive && !placeTheme && !!tomorrowKey && (
+        <Text style={styles.tomorrow}>{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</Text>
+      )}
     </Card>
+    </TouchableOpacity>
   );
 }
 

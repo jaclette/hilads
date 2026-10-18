@@ -10,6 +10,7 @@ import { track } from '../../lib/analytics'
 import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore } from './spotsShared'
 import Icon, { iconHtml } from '../Icon'
 import { THEME_ICON } from '../../lib/icons'
+import { useDaily } from '../daily/dailyShared'
 
 const IDLE_MS = 350
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
@@ -146,22 +147,36 @@ function Pins({ spots, zoom, selected, onSpot, onCluster }) {
  * from the app); on a Language day, a line names tomorrow's theme.
  */
 function EmptyCard({ today, t }) {
+  const { openDaily } = useDaily()
   const challenge = today?.challenge ?? null
   const placeTheme = !!challenge?.theme && challenge.theme.key !== 'language'
   const tomorrowKey = today?.tomorrow?.theme?.key
     ?? (challenge ? defaultThemeFor(new Date(Date.parse(`${challenge.date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10)) : null)
   const store = deviceStore()
+  const canTake = challenge?.isActive && !today?.myProof && placeTheme
+  const body = (
+    <>
+      <span className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{t('map.emptyTitle')}</span>
+      {challenge && <span className="wm-empty-text">{challenge.text}</span>}
+      {canTake && <span className="wm-sheet-cta">{t('dc.takeIt')}</span>}
+      {challenge?.isActive && !placeTheme && tomorrowKey && <span className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</span>}
+    </>
+  )
+  // The whole card is the tap target: the store on a place theme (proofs are
+  // posted from the app), else today's challenge.
+  if (canTake) {
+    return (
+      <a className="wm-sheet wm-sheet--empty" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
+         onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'map_empty' })}>
+        {body}
+      </a>
+    )
+  }
   return (
-    <div className="wm-sheet wm-sheet--empty">
-      <p className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{t('map.emptyTitle')}</p>
-      {challenge && <p className="wm-empty-text">{challenge.text}</p>}
-      {challenge?.isActive && !today?.myProof && (placeTheme ? (
-        <a className="wm-sheet-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-           onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'map_empty' })}>
-          {t('dc.takeIt')}
-        </a>
-      ) : tomorrowKey && <p className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</p>)}
-    </div>
+    <button type="button" className="wm-sheet wm-sheet--empty" disabled={!challenge}
+            onClick={() => challenge && openDaily('challenge', { date: challenge.date, source: 'map_empty' })}>
+      {body}
+    </button>
   )
 }
 

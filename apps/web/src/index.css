@@ -17104,3 +17104,6 @@ body.has-app-promo-banner .page-header {
 .wm-empty-text { margin: 0; font-size: 14px; color: var(--muted2); }
 .wm-empty-tomorrow { margin: 0; font-size: 14px; font-weight: 700; color: var(--primary-text); }
 .wm-sheet--empty .wm-sheet-cta { background: var(--primary); }
+.wm-sheet--empty { font: inherit; text-align: left; color: var(--text); text-decoration: none; cursor: pointer; }
+.wm-sheet--empty:disabled { cursor: default; }
+.wm-sheet--empty .wm-empty-text, .wm-sheet--empty .wm-empty-tomorrow { display: block; }

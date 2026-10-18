@@ -5543,17 +5543,6 @@ export default function App() {
         {showToday && !showMap && !showProfileDrawer && (
           <TodayScreen header={renderAppHeader()} />
         )}
-        {(() => {
-          const top = dailyStack[dailyStack.length - 1]
-          if (!top) return null
-          const key = `${dailyStack.length}:${top.name}`
-          if (top.name === 'challenge') return <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
-          if (top.name === 'propose')   return <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
-          if (top.name === 'twist')     return <TwistScreen key={key} onBack={closeDaily} />
-          if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
-          if (top.name === 'calendar')  return <CalendarScreen key={key} onBack={closeDaily} />
-          return null
-        })()}
       </>
 
       {renderScopeSheet()}
@@ -5571,6 +5560,18 @@ export default function App() {
           }}
         />
       )}
+      {/* Daily screens sit above the map (its empty card and spot pages open them). */}
+      {(() => {
+        const top = dailyStack[dailyStack.length - 1]
+        if (!top) return null
+        const key = `${dailyStack.length}:${top.name}`
+        if (top.name === 'challenge') return <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
+        if (top.name === 'propose')   return <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
+        if (top.name === 'twist')     return <TwistScreen key={key} onBack={closeDaily} />
+        if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
+        if (top.name === 'calendar')  return <CalendarScreen key={key} onBack={closeDaily} />
+        return null
+      })()}
 
       {showWorldArrivals && (
         <div className="full-page">
