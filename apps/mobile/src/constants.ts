@@ -138,6 +138,7 @@ export const Colors = {
   primaryText:   '#FF8A50',   // primary as text / links on the dark ground
   primaryTint:   '#3A2216',   // chip / active tab ground
   primaryOnTint: '#FFB48A',   // text on primaryTint
+  stepBg:        '#1e1812',   // a soft block inside a card (Today's photo step): the sand inset, a shade off the card
   line:          '#272018',   // borders
   ticketLine:    '#4A3426',   // Daily Challenge ticket border + perforation
   flagLine:      'rgba(255, 255, 255, 0.28)', // hairline around a city flag (white flags stay visible)
@@ -195,6 +196,7 @@ export const LightColors: ThemeColors = {
   primaryText:   '#C9501A',
   primaryTint:   '#FFE6D8',
   primaryOnTint: '#8A3A12',
+  stepBg:        '#FBF5EE',   // the ground colour
   line:          '#EADCCD',
   ticketLine:    '#E8CDB8',
   flagLine:      'rgba(42, 28, 19, 0.22)',

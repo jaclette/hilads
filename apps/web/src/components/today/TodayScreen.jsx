@@ -177,7 +177,7 @@ function Ticket({ data, loading }) {
         )}
         {!myProof && (
           <span className="today-hint">
-            <Icon name="camera-outline" size={15} />
+            <span className="today-hint-icon"><Icon name="camera-outline" size={20} /></span>
             <span className="today-hint-body">
               <span className="today-hint-title">{t('proofHint.title')}</span>
               <span>{theme && theme !== 'language' ? t('proofHint.place') : t('proofHint.noPlace')}</span>

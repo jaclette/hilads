@@ -36,6 +36,7 @@
   --primary-text: #C9501A;
   --primary-tint: #FFE6D8;
   --primary-on-tint: #8A3A12;
+  --step-bg: #FBF5EE;   /* a soft block inside a card: the ground colour */
   --line: #EADCCD;
   --flag-line: rgba(42, 28, 19, 0.2);
   --header-art: var(--primary);
@@ -86,6 +87,7 @@
   --primary-text: #FF8A50;
   --primary-tint: #3A2216;
   --primary-on-tint: #FFB48A;
+  --step-bg: #1e1812;   /* the sand inset, a shade off the dark card */
   --line: #272018;
   --flag-line: rgba(255, 255, 255, 0.28);
   /* Header line art in dark: the light orange, a touch heavier, for contrast on the dark ground. */
@@ -16481,10 +16483,13 @@ body.has-app-promo-banner .page-header {
 .today-twist-text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
 .today-cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; border: none; font-family: inherit; cursor: pointer; transition: transform 0.12s ease; }
 .today-cta:active { transform: scale(0.97); }
-.today-hint { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--muted2); margin-bottom: -4px; }
-.today-hint > svg { flex-shrink: 0; margin-top: 1px; }
-.today-hint-body { display: flex; flex-direction: column; }
-.today-hint-title { font-weight: 700; }
+/* The photo step: its own soft block (12 px from the Local Twist and the button via .today-bottom's gap). */
+.today-hint { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: var(--step-bg);
+  font-size: 13px; line-height: 18px; font-weight: 500; color: var(--muted2); }
+.today-hint-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--primary-tint); color: var(--primary-on-tint);
+  display: flex; align-items: center; justify-content: center; }
+.today-hint-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.today-hint-title { font-size: 16px; line-height: 21px; font-weight: 800; color: var(--text); }
 .today-cta--taken { width: 100%; background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
 /* "I'm in" pulse (SPEC 9.3): two primary rings in relay, from the button's edge
    outward while fading (8% wider, 50% taller), 1.6 s, the second 0.8 s later;

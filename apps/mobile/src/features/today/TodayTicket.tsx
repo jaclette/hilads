@@ -153,7 +153,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
         )}
         {!myProof && (
           <View style={styles.hint}>
-            <Ionicons name="camera-outline" size={15} color={colors.muted} style={styles.hintIcon} />
+            <View style={styles.hintIcon}><Ionicons name="camera-outline" size={20} color={colors.primaryOnTint} /></View>
             <View style={styles.hintBody}>
               <Text style={styles.hintTitle}>{t('proofHint.title')}</Text>
               <Text style={styles.hintText}>{placeTheme ? t('proofHint.place') : t('proofHint.noPlace')}</Text>
@@ -282,10 +282,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   twistLabel:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   twistText:   { fontSize: 15, lineHeight: 22, fontWeight: '500', color: c.text },
   cta:         { minHeight: 56 },
-  hint:        { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
-  hintIcon:    { marginTop: 1 },
-  hintBody:    { flex: 1 },
-  hintTitle:   { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.muted },
+  // The photo step: its own soft block, 12 px from the Local Twist above and the button below.
+  hint:        { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, backgroundColor: c.stepBg, marginTop: 2, marginBottom: 6 },
+  hintIcon:    { width: 40, height: 40, borderRadius: 20, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  hintBody:    { flex: 1, gap: 2 },
+  hintTitle:   { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
   hintText:    { fontSize: 13, lineHeight: 18, fontWeight: '500', color: c.muted },
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
   // Secondary links in ink: the button is the card's only orange element.
