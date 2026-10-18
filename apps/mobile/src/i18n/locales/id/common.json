@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Bahasa", "street_food": "Jajanan kaki lima", "coffee": "Kopi", "market": "Pasar", "night_out": "Malam keluar", "neighborhood": "Lingkungan", "traditions": "Tradisi" },
+  "themes": {
+    "language": "Bahasa",
+    "street_food": "Jajanan kaki lima",
+    "coffee": "Kopi",
+    "market": "Pasar",
+    "night_out": "Malam keluar",
+    "neighborhood": "Lingkungan",
+    "traditions": "Tradisi"
+  },
   "nowTitle": "Sekarang",
   "filterEvents": "Acara lokal",
   "filterHangouts": "🗣️ Nongkrong",
@@ -188,7 +196,7 @@
     "requiredBody": "Versi ini sudah tidak didukung. Perbarui aplikasi untuk terus memakai Hilads."
   },
   "mapSoon": "Peta spot segera hadir.",
-  "firstLaunch": "Satu challenge lokal setiap hari.",
+  "firstLaunch": "Satu hal lokal. Setiap hari.",
   "signUp": "Daftar",
   "open": "Buka",
   "camera": {

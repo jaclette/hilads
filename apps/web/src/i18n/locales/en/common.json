@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Language", "street_food": "Street food", "coffee": "Coffee", "market": "Market", "night_out": "Night out", "neighborhood": "Neighborhood", "traditions": "Traditions" },
+  "themes": {
+    "language": "Language",
+    "street_food": "Street food",
+    "coffee": "Coffee",
+    "market": "Market",
+    "night_out": "Night out",
+    "neighborhood": "Neighborhood",
+    "traditions": "Traditions"
+  },
   "meta": {
     "cityTitle": "Become local in {{city}} - Hilads",
     "cityDesc": "Become local in {{city}}: take on a challenge, join a meetup, drop into a hangout, find Local Events. Live chat with people online now.",
@@ -192,5 +200,5 @@
   },
   "signUp": "Sign up",
   "settings": "Settings",
-  "firstLaunch": "One local challenge a day."
+  "firstLaunch": "One local thing. Every day."
 }

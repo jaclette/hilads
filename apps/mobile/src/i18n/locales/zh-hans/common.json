@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "语言", "street_food": "街头小吃", "coffee": "咖啡", "market": "市场", "night_out": "夜生活", "neighborhood": "街区", "traditions": "传统" },
+  "themes": {
+    "language": "语言",
+    "street_food": "街头小吃",
+    "coffee": "咖啡",
+    "market": "市场",
+    "night_out": "夜生活",
+    "neighborhood": "街区",
+    "traditions": "传统"
+  },
   "nowTitle": "现在",
   "filterEvents": "本地活动",
   "filterHangouts": "🗣️ 聚会",
@@ -188,7 +196,7 @@
     "requiredBody": "此版本已不再支持。请更新应用以继续使用 Hilads。"
   },
   "mapSoon": "地点地图即将推出。",
-  "firstLaunch": "每天一个本地 challenge。",
+  "firstLaunch": "一件本地事。每一天。",
   "signUp": "注册",
   "open": "打开",
   "camera": {

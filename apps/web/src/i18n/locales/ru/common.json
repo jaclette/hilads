@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Язык", "street_food": "Уличная еда", "coffee": "Кофе", "market": "Рынок", "night_out": "Вечер в городе", "neighborhood": "Район", "traditions": "Традиции" },
+  "themes": {
+    "language": "Язык",
+    "street_food": "Уличная еда",
+    "coffee": "Кофе",
+    "market": "Рынок",
+    "night_out": "Вечер в городе",
+    "neighborhood": "Район",
+    "traditions": "Традиции"
+  },
   "meta": {
     "cityTitle": "Стань местным в {{city}} - Hilads",
     "cityDesc": "Стань местным в {{city}}: бросай челлендж, иди на meetup, заходи в hangout, открывай Local Events. Живой чат с теми, кто онлайн.",
@@ -192,5 +200,5 @@
   },
   "signUp": "Зарегистрироваться",
   "settings": "Настройки",
-  "firstLaunch": "Один локальный challenge в день."
+  "firstLaunch": "Что-то местное. Каждый день."
 }

@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "语言", "street_food": "街头小吃", "coffee": "咖啡", "market": "市场", "night_out": "夜生活", "neighborhood": "街区", "traditions": "传统" },
+  "themes": {
+    "language": "语言",
+    "street_food": "街头小吃",
+    "coffee": "咖啡",
+    "market": "市场",
+    "night_out": "夜生活",
+    "neighborhood": "街区",
+    "traditions": "传统"
+  },
   "meta": {
     "cityTitle": "在 {{city}} 成为本地人 - Hilads",
     "cityDesc": "在 {{city}} 成为本地人：参与 challenge、加入 meetup、进入 hangout、发现 Local Events。和正在线的人实时聊天。",
@@ -192,5 +200,5 @@
   },
   "signUp": "注册",
   "settings": "设置",
-  "firstLaunch": "每天一个本地 challenge。"
+  "firstLaunch": "一件本地事。每一天。"
 }

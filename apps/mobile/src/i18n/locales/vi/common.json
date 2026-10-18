@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Ngôn ngữ", "street_food": "Ẩm thực đường phố", "coffee": "Cà phê", "market": "Chợ", "night_out": "Đi chơi đêm", "neighborhood": "Khu phố", "traditions": "Truyền thống" },
+  "themes": {
+    "language": "Ngôn ngữ",
+    "street_food": "Ẩm thực đường phố",
+    "coffee": "Cà phê",
+    "market": "Chợ",
+    "night_out": "Đi chơi đêm",
+    "neighborhood": "Khu phố",
+    "traditions": "Truyền thống"
+  },
   "nowTitle": "Bây giờ",
   "filterEvents": "Sự kiện địa phương",
   "filterHangouts": "🗣️ Tụ tập",
@@ -188,7 +196,7 @@
     "requiredBody": "Phiên bản này không còn được hỗ trợ. Hãy cập nhật ứng dụng để tiếp tục dùng Hilads."
   },
   "mapSoon": "Bản đồ các spot sắp ra mắt.",
-  "firstLaunch": "Mỗi ngày một challenge địa phương.",
+  "firstLaunch": "Một điều địa phương. Mỗi ngày.",
   "signUp": "Đăng ký",
   "open": "Mở",
   "camera": {

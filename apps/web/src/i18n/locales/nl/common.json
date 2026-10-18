@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Taal", "street_food": "Streetfood", "coffee": "Koffie", "market": "Markt", "night_out": "Avondje uit", "neighborhood": "Buurt", "traditions": "Tradities" },
+  "themes": {
+    "language": "Taal",
+    "street_food": "Streetfood",
+    "coffee": "Koffie",
+    "market": "Markt",
+    "night_out": "Avondje uit",
+    "neighborhood": "Buurt",
+    "traditions": "Tradities"
+  },
   "meta": {
     "cityTitle": "Word local in {{city}} - Hilads",
     "cityDesc": "Word local in {{city}}: start een challenge, sluit aan bij een meetup, duik een hangout in, ontdek Local Events. Live chat met mensen online.",
@@ -192,5 +200,5 @@
   },
   "signUp": "Aanmelden",
   "settings": "Instellingen",
-  "firstLaunch": "Eén lokale challenge per dag."
+  "firstLaunch": "Iets lokaals. Elke dag."
 }

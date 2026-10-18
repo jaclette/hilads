@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "ภาษา", "street_food": "สตรีทฟู้ด", "coffee": "กาแฟ", "market": "ตลาด", "night_out": "เที่ยวกลางคืน", "neighborhood": "ย่านชุมชน", "traditions": "ประเพณี" },
+  "themes": {
+    "language": "ภาษา",
+    "street_food": "สตรีทฟู้ด",
+    "coffee": "กาแฟ",
+    "market": "ตลาด",
+    "night_out": "เที่ยวกลางคืน",
+    "neighborhood": "ย่านชุมชน",
+    "traditions": "ประเพณี"
+  },
   "nowTitle": "ตอนนี้",
   "filterEvents": "อีเวนต์ในพื้นที่",
   "filterHangouts": "🗣️ นัดเจอ",
@@ -188,7 +196,7 @@
     "requiredBody": "เวอร์ชันนี้ไม่รองรับแล้ว อัปเดตแอปเพื่อใช้ Hilads ต่อ"
   },
   "mapSoon": "แผนที่สปอตกำลังจะมาเร็วๆ นี้",
-  "firstLaunch": "วันละหนึ่ง challenge ท้องถิ่น",
+  "firstLaunch": "ท้องถิ่นหนึ่งอย่าง ทุกวัน",
   "signUp": "สมัคร",
   "open": "เปิด",
   "camera": {

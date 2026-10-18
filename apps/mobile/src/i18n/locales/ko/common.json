@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "언어", "street_food": "길거리 음식", "coffee": "커피", "market": "시장", "night_out": "밤 나들이", "neighborhood": "동네", "traditions": "전통" },
+  "themes": {
+    "language": "언어",
+    "street_food": "길거리 음식",
+    "coffee": "커피",
+    "market": "시장",
+    "night_out": "밤 나들이",
+    "neighborhood": "동네",
+    "traditions": "전통"
+  },
   "nowTitle": "지금",
   "filterEvents": "로컬 이벤트",
   "filterHangouts": "🗣️ 모임",
@@ -188,7 +196,7 @@
     "requiredBody": "이 버전은 더 이상 지원되지 않아요. Hilads를 계속 쓰려면 앱을 업데이트하세요."
   },
   "mapSoon": "스팟 지도가 곧 나와요.",
-  "firstLaunch": "하루에 하나, 로컬 challenge.",
+  "firstLaunch": "로컬 하나. 매일.",
   "signUp": "가입하기",
   "open": "열기",
   "camera": {

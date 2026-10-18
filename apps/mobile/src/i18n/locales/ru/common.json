@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Язык", "street_food": "Уличная еда", "coffee": "Кофе", "market": "Рынок", "night_out": "Вечер в городе", "neighborhood": "Район", "traditions": "Традиции" },
+  "themes": {
+    "language": "Язык",
+    "street_food": "Уличная еда",
+    "coffee": "Кофе",
+    "market": "Рынок",
+    "night_out": "Вечер в городе",
+    "neighborhood": "Район",
+    "traditions": "Традиции"
+  },
   "nowTitle": "Сейчас",
   "filterEvents": "Местные события",
   "filterHangouts": "🗣️ Тусовки",
@@ -192,7 +200,7 @@
     "requiredBody": "Эта версия больше не поддерживается. Обнови приложение, чтобы продолжать пользоваться Hilads."
   },
   "mapSoon": "Карта мест скоро появится.",
-  "firstLaunch": "Один локальный challenge в день.",
+  "firstLaunch": "Что-то местное. Каждый день.",
   "signUp": "Зарегистрироваться",
   "open": "Открыть",
   "camera": {

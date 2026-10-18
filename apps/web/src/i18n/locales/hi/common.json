@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "भाषा", "street_food": "स्ट्रीट फ़ूड", "coffee": "कॉफ़ी", "market": "बाज़ार", "night_out": "रात की सैर", "neighborhood": "मोहल्ला", "traditions": "परंपराएँ" },
+  "themes": {
+    "language": "भाषा",
+    "street_food": "स्ट्रीट फ़ूड",
+    "coffee": "कॉफ़ी",
+    "market": "बाज़ार",
+    "night_out": "रात की सैर",
+    "neighborhood": "मोहल्ला",
+    "traditions": "परंपराएँ"
+  },
   "meta": {
     "cityTitle": "{{city}} में लोकल बनिए - Hilads",
     "cityDesc": "{{city}} में लोकल बनिए: चैलेंज लीजिए, मुलाक़ातों में जुड़िए, hangouts में पहुँचिए, Local Events खोजिए। ऑनलाइन लोगों के साथ लाइव चैट।",
@@ -192,5 +200,5 @@
   },
   "signUp": "साइन अप",
   "settings": "सेटिंग्स",
-  "firstLaunch": "हर दिन एक लोकल challenge."
+  "firstLaunch": "एक लोकल चीज़। हर दिन।"
 }

@@ -8,7 +8,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 const KEY = 'first_launch_line_seen';
 
 /**
- * First launch (SPEC 9.9): "One local challenge a day." under the logo, no
+ * First launch (SPEC 9.9): "One local thing. Every day." under the logo, no
  * tutorial. Shown to a guest for the whole first session, never again.
  */
 export function FirstLaunchLine({ guest }: { guest: boolean }) {

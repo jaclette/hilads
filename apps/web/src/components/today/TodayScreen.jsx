@@ -69,7 +69,7 @@ export default function TodayScreen({ header }) {
 const FIRST_LAUNCH_KEY = 'hilads_first_launch_line_seen'
 
 /**
- * First launch (W5, SPEC 9.9): "One local challenge a day." on top of Today
+ * First launch (W5, SPEC 9.9): "One local thing. Every day." on top of Today
  * for a guest's first visit, never again. No tutorial.
  */
 function FirstLaunchLine() {

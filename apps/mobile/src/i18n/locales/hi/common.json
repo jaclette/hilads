@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "भाषा", "street_food": "स्ट्रीट फ़ूड", "coffee": "कॉफ़ी", "market": "बाज़ार", "night_out": "रात की सैर", "neighborhood": "मोहल्ला", "traditions": "परंपराएँ" },
+  "themes": {
+    "language": "भाषा",
+    "street_food": "स्ट्रीट फ़ूड",
+    "coffee": "कॉफ़ी",
+    "market": "बाज़ार",
+    "night_out": "रात की सैर",
+    "neighborhood": "मोहल्ला",
+    "traditions": "परंपराएँ"
+  },
   "nowTitle": "अभी",
   "filterEvents": "लोकल इवेंट",
   "filterHangouts": "🗣️ मुलाक़ात",
@@ -188,7 +196,7 @@
     "requiredBody": "यह वर्ज़न अब सपोर्टेड नहीं है। Hilads इस्तेमाल करते रहने के लिए ऐप अपडेट करें।"
   },
   "mapSoon": "स्पॉट्स का मैप जल्द आ रहा है।",
-  "firstLaunch": "हर दिन एक लोकल challenge.",
+  "firstLaunch": "एक लोकल चीज़। हर दिन।",
   "signUp": "साइन अप",
   "open": "खोलो",
   "camera": {

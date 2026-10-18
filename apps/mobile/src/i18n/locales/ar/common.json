@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "اللغة", "street_food": "طعام الشارع", "coffee": "القهوة", "market": "السوق", "night_out": "سهرة", "neighborhood": "الحي", "traditions": "التقاليد" },
+  "themes": {
+    "language": "اللغة",
+    "street_food": "طعام الشارع",
+    "coffee": "القهوة",
+    "market": "السوق",
+    "night_out": "سهرة",
+    "neighborhood": "الحي",
+    "traditions": "التقاليد"
+  },
   "nowTitle": "الآن",
   "filterEvents": "فعاليات محلية",
   "filterHangouts": "🗣️ لقاءات",
@@ -196,7 +204,7 @@
     "requiredBody": "لم يعد هذا الإصدار مدعومًا. حدّث التطبيق لمواصلة استخدام Hilads."
   },
   "mapSoon": "خريطة الأماكن قادمة قريبًا.",
-  "firstLaunch": "challenge محلي واحد كل يوم.",
+  "firstLaunch": "شيء محلي. كل يوم.",
   "signUp": "سجّل",
   "open": "فتح",
   "camera": {

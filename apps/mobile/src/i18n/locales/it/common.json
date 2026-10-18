@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Lingua", "street_food": "Cibo di strada", "coffee": "Caffè", "market": "Mercato", "night_out": "Serata fuori", "neighborhood": "Quartiere", "traditions": "Tradizioni" },
+  "themes": {
+    "language": "Lingua",
+    "street_food": "Cibo di strada",
+    "coffee": "Caffè",
+    "market": "Mercato",
+    "night_out": "Serata fuori",
+    "neighborhood": "Quartiere",
+    "traditions": "Tradizioni"
+  },
   "nowTitle": "Adesso",
   "filterEvents": "Eventi locali",
   "filterHangouts": "🗣️ Ritrovi",
@@ -188,7 +196,7 @@
     "requiredBody": "Questa versione non è più supportata. Aggiorna l'app per continuare a usare Hilads."
   },
   "mapSoon": "La mappa degli spot arriva presto.",
-  "firstLaunch": "Un challenge locale al giorno.",
+  "firstLaunch": "Una cosa locale. Ogni giorno.",
   "signUp": "Registrati",
   "open": "Apri",
   "camera": {

@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Taal", "street_food": "Streetfood", "coffee": "Koffie", "market": "Markt", "night_out": "Avondje uit", "neighborhood": "Buurt", "traditions": "Tradities" },
+  "themes": {
+    "language": "Taal",
+    "street_food": "Streetfood",
+    "coffee": "Koffie",
+    "market": "Markt",
+    "night_out": "Avondje uit",
+    "neighborhood": "Buurt",
+    "traditions": "Tradities"
+  },
   "nowTitle": "Nu",
   "filterEvents": "Lokale evenementen",
   "filterHangouts": "🗣️ Meetups",
@@ -188,7 +196,7 @@
     "requiredBody": "Deze versie wordt niet meer ondersteund. Update de app om Hilads te blijven gebruiken."
   },
   "mapSoon": "De kaart met spots komt binnenkort.",
-  "firstLaunch": "Eén lokale challenge per dag.",
+  "firstLaunch": "Iets lokaals. Elke dag.",
   "signUp": "Aanmelden",
   "open": "Openen",
   "camera": {

@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Language", "street_food": "Street food", "coffee": "Coffee", "market": "Market", "night_out": "Night out", "neighborhood": "Neighborhood", "traditions": "Traditions" },
+  "themes": {
+    "language": "Language",
+    "street_food": "Street food",
+    "coffee": "Coffee",
+    "market": "Market",
+    "night_out": "Night out",
+    "neighborhood": "Neighborhood",
+    "traditions": "Traditions"
+  },
   "nowTitle": "Now",
   "filterEvents": "Local Events",
   "hiLocalTitle": "👋 Hi Local",
@@ -188,7 +196,7 @@
     "requiredBody": "This version is no longer supported. Update the app to keep using Hilads."
   },
   "mapSoon": "The map of spots is coming soon.",
-  "firstLaunch": "One local challenge a day.",
+  "firstLaunch": "One local thing. Every day.",
   "signUp": "Sign up",
   "open": "Open",
   "camera": {

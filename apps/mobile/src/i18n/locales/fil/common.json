@@ -1,5 +1,13 @@
 {
-  "themes": { "language": "Wika", "street_food": "Street food", "coffee": "Kape", "market": "Palengke", "night_out": "Gimik", "neighborhood": "Kapitbahayan", "traditions": "Tradisyon" },
+  "themes": {
+    "language": "Wika",
+    "street_food": "Street food",
+    "coffee": "Kape",
+    "market": "Palengke",
+    "night_out": "Gimik",
+    "neighborhood": "Kapitbahayan",
+    "traditions": "Tradisyon"
+  },
   "nowTitle": "Ngayon",
   "filterEvents": "Local Events",
   "filterHangouts": "🗣️ Tambayan",
@@ -188,7 +196,7 @@
     "requiredBody": "Hindi na suportado ang bersyong ito. I-update ang app para patuloy na magamit ang Hilads."
   },
   "mapSoon": "Malapit nang dumating ang mapa ng mga spot.",
-  "firstLaunch": "Isang local challenge bawat araw.",
+  "firstLaunch": "Isang lokal na bagay. Araw-araw.",
   "signUp": "Mag-sign up",
   "open": "Buksan",
   "camera": {
