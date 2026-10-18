@@ -163,7 +163,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
                 <div style={{
                   position: 'absolute', top: 14, left: '-50%', right: '50%', height: 2,
                   marginLeft: 15, marginRight: 15,
-                  background: connectorLit ? '#FF7A3C' : 'var(--border)',
+                  background: connectorLit ? 'var(--primary)' : 'var(--border)',
                 }} />
               )}
               <div style={{
@@ -173,9 +173,9 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
                 ...(isReject ? {
                   background: 'var(--surface2, #1f1a17)', borderColor: 'var(--overlay-strong)', color: 'var(--muted, #b3b3b3)',
                 } : isDone ? {
-                  background: '#FF7A3C', borderColor: '#FF7A3C', color: '#fff',
+                  background: 'var(--primary)', borderColor: 'var(--primary)', color: '#fff',
                 } : isActive ? {
-                  background: 'rgba(255,122,60,0.15)', borderColor: '#FF7A3C', color: '#FF7A3C',
+                  background: 'var(--primary-tint)', borderColor: 'var(--primary)', color: 'var(--primary-text)',
                 } : {
                   background: 'var(--surface2, #1f1a17)', borderColor: 'var(--border)', color: 'var(--muted, #b3b3b3)',
                 }),
@@ -185,7 +185,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
               </div>
               <span style={{
                 fontSize: 10, fontWeight: isActive ? 800 : isDone ? 700 : 600,
-                color: isActive ? '#FF7A3C' : isDone ? 'var(--text, #fff)' : 'var(--muted, #b3b3b3)',
+                color: isActive ? 'var(--primary-text)' : isDone ? 'var(--text, #fff)' : 'var(--muted, #b3b3b3)',
                 marginTop: 4, letterSpacing: 0.2,
               }}>
                 {t(`pipeline.step.${step}`)}
@@ -202,16 +202,16 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
           alignSelf: 'center',
           display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '6px 12px', borderRadius: 999,
-          background: 'rgba(255,122,60,0.08)',
-          border: '1px solid rgba(255,122,60,0.20)',
+          background: 'var(--primary-tint)',
+          border: '1px solid var(--line)',
         }}>
-          <span style={{ color: '#FF7A3C', fontWeight: 700, fontSize: 12 }}>
+          <span style={{ color: 'var(--primary-text)', fontWeight: 700, fontSize: 12 }}>
             {t(state.subCtaKey, {
               ...(state.subCtaName ? { name: state.subCtaName } : {}),
               ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
             })}
           </span>
-          {interactive && <Icon name="chevron-forward" size={12} style={{ color: '#FF7A3C' }} />}
+          {interactive && <Icon name="chevron-forward" size={12} style={{ color: 'var(--primary-text)' }} />}
         </div>
       )}
     </div>

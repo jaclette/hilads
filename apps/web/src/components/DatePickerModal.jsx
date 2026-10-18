@@ -206,7 +206,7 @@ export default function DatePickerModal({
             type="button" onClick={submit}
             style={{
               width: '100%',
-              background: '#FF7A3C', color: '#fff', border: 'none',
+              background: 'var(--primary)', color: '#fff', border: 'none',
               borderRadius: 999, padding: '13px', fontSize: 15, fontWeight: 800, cursor: 'pointer',
             }}
           >{submitLabel}</button>
@@ -231,9 +231,9 @@ const pill = {
 }
 const pillSelected = {
   ...pill,
-  background: 'rgba(255,122,60,0.14)',
-  borderColor: '#FF7A3C',
-  color: '#FF7A3C', fontWeight: 800,
+  background: 'var(--primary-tint)',
+  borderColor: 'var(--primary)',
+  color: 'var(--primary-text)', fontWeight: 800,
 }
 // Free-form date / time inputs - sit below their chip rows and act as
 // an escape hatch when none of the chips match. Visually tertiary

@@ -65,7 +65,7 @@ const styles = {
   logoMark: {
     width: '36px',
     height: '36px',
-    background: 'linear-gradient(135deg, #FF7A3C, #C24A38)',
+    background: 'var(--primary)',
     borderRadius: '10px',
     display: 'flex',
     alignItems: 'center',
@@ -94,7 +94,7 @@ const styles = {
   email: {
     fontSize: '17px',
     fontWeight: '600',
-    color: '#FF7A3C',
+    color: 'var(--primary-text)',
     textDecoration: 'none',
     wordBreak: 'break-all',
   },

@@ -169,7 +169,7 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
           disabled={!canSubmit}
           style={{
             width: '100%',
-            background: '#FF7A3C',
+            background: 'var(--primary)',
             border: 'none', borderRadius: 999,
             padding: '13px 16px',
             color: '#fff', fontWeight: 800, fontSize: 15,

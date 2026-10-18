@@ -99,9 +99,8 @@ function formatTime(ts) {
 // Solid fill = unmistakably tappable. The old translucent/outlined style read
 // as an already-done state ("✓ validated") rather than a primary CTA.
 const GROUP_BTN_STYLE = {
-  width: '100%', padding: '14px', borderRadius: 14, textAlign: 'center',
-  background: '#FF7A3C', border: 'none',
-  boxShadow: '0 3px 12px rgba(255,122,60,0.35)',
+  width: '100%', padding: '14px', borderRadius: 16, textAlign: 'center',
+  background: 'var(--primary)', border: 'none',
   color: '#fff', fontSize: 15, fontWeight: 800, cursor: 'pointer',
 }
 
@@ -1030,7 +1029,7 @@ export default function ChallengeChatPage({
           pills, pipeline, proof, members strip) folds behind the chevron. */}
       <div className="topic-chat-desc challenge-meta-row">
         <span className="challenge-badge challenge-badge--kind">
-          {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
+          {t(`typeBadge.${challenge.challenge_type}`)}
         </span>
         {/* Status pill - state at a glance. An ENDED challenge (deadline/meet
             date passed, not validated) must NOT read "Live": the creator gets a

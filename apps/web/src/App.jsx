@@ -3014,7 +3014,7 @@ export default function App() {
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
-      if (openScreenOnJoinRef.current === 'challenges')    { setShowChallengesDrawer(true); openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'challenges')    { goToTodayTab(); openScreenOnJoinRef.current = null } // retired browser (as in the app): /challenges opens Today
       if (openScreenOnJoinRef.current === 'map')           { setShowMap(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
@@ -6378,7 +6378,7 @@ export default function App() {
             <div className="now-actions-bar">
               <button
                 className="upcoming-cta upcoming-cta--inline"
-                style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}
+                style={{ background: 'var(--primary-tint)', color: 'var(--primary-text)', borderColor: 'var(--line)' }}
                 onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
               >
                 <Icon name="flame-outline" size={18} /> {t('createCta', { ns: 'challenge' })}
@@ -7372,11 +7372,9 @@ export default function App() {
           nickname={activeNickname}
           account={account}
           onBack={() => {
-            // Back returns to the Challenges browser the user came from -
-            // "I was browsing challenges, take me back to browsing" (was
-            // wrongly opening the Now/events drawer).
+            // Back returns to where the user came from (the challenges
+            // browser is retired, as in the app).
             setActiveChallenge(null)
-            setShowChallengesDrawer(true)
           }}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
@@ -7460,11 +7458,10 @@ export default function App() {
             openProfile(userId, displayName ?? '')
           }}
           onCreateChallenge={() => {
-            // Close the leaderboard so the create modal renders on the
-            // clean app shell, then open it through the existing entry
-            // (guest gate + permission flow already live there).
+            // Challenge creation is retired (as in the app): the unranked
+            // CTA sends to Today, where the Daily Challenge earns points.
             setShowLeaderboard(false)
-            openCreateChallenge()
+            goToTodayTab()
           }}
         />
       )}

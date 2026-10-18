@@ -17052,3 +17052,28 @@ body.has-app-promo-banner .page-header {
 /* The sheet lives inside a full page, so it can't stack above the tab bar: lift it. */
 .delete-account-overlay { padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom)); }
 .auth-form .profile-mode-section { padding: 0; }
+
+/* ── Legacy challenges (web pass 5): token pass only, like the app's B7.
+   Kept for open challenges and history; no layout work. ───────────────── */
+.challenge-badge { text-transform: none; letter-spacing: 0; border: none; border-radius: 999px; background: var(--primary-tint); color: var(--primary-on-tint); font-weight: 700; }
+.challenge-badge--validated, .challenge-badge--available, .challenge-status-pill--done { background: var(--local-bg); color: var(--local-text); border: none; }
+.challenge-badge--ended, .challenge-status-pill--ended { background: var(--surface2); color: var(--muted2); border: none; }
+.challenge-badge--international { background: var(--traveler-bg); color: var(--traveler-text); }
+.challenge-status-pill { text-transform: none; letter-spacing: 0; border-radius: 999px; }
+.challenge-status-pill--live, .challenge-status-pill--restart { background: var(--primary-tint); color: var(--primary-on-tint); border: none; }
+.challenge-share-pill, .challenge-share-pill--share, .challenge-share-pill:hover, .challenge-share-pill--share:hover,
+.challenge-visibility-pill--friends, .challenge-visibility-pill--private { min-height: 32px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); box-shadow: none; }
+.challenge-share-pill--share .challenge-share-pill-text, .challenge-visibility-pill--friends .challenge-share-pill-text, .challenge-visibility-pill--private .challenge-share-pill-text { color: var(--text); }
+.challenge-notif-toggle { border: 1.5px solid var(--line); background: var(--surface); color: var(--muted2); }
+.challenge-notif-toggle--on { border-color: var(--primary-tint); background: var(--primary-tint); color: var(--primary-on-tint); }
+.challenge-validate-btn, .challenge-validate-btn-inline, .challenge-owner-invite-cta, .challenge-owner-invite-cta:hover, .challenge-join-gate-cta, .modal-btn--primary { background: var(--primary); color: #fff; border: none; border-radius: 16px; box-shadow: none; text-shadow: none; }
+.modal-btn--danger, .modal-btn--danger:hover { background: #C0392B; color: #fff; border: none; }
+.challenge-role-badge--challenger, .challenge-role-badge--taker { background: var(--primary-tint); color: var(--primary-on-tint); border: none; }
+.challenge-role-badge--spectator { background: var(--surface2); color: var(--muted2); border: none; }
+.challenge-takeon-banner { background: var(--surface); border: 1.5px solid var(--line); color: var(--text); }
+.challenge-visibility-opt.is-selected { border-color: var(--primary); background: var(--primary-tint); }
+.challenge-join-gate-error { color: #C0392B; }
+.challenge-share-btn, .challenge-share-btn:hover { background: var(--surface); border: 1.5px solid var(--line); color: var(--text); box-shadow: none; }
+.challenge-owner-invite-cta, .challenge-owner-invite-cta:hover { background: var(--surface); color: var(--traveler-text); border: 1.5px solid var(--traveler-text); border-radius: 999px; }
+/* Composer "+": the app's flat primary circle (no glow). */
+.dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled) { background: var(--primary); box-shadow: none; }

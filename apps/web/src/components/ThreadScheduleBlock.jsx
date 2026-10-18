@@ -163,9 +163,9 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
             style={{
               flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               padding: '10px 14px', borderRadius: 999,
-              background: 'rgba(255,122,60,0.14)',
-              border: '1px solid rgba(255,122,60,0.30)',
-              color: '#FF7A3C', fontWeight: 800, fontSize: 13, letterSpacing: 0.2,
+              background: 'var(--primary-tint)',
+              border: '1px solid var(--line)',
+              color: 'var(--primary-text)', fontWeight: 800, fontSize: 13, letterSpacing: 0.2,
               cursor: 'pointer',
             }}
           >
@@ -281,11 +281,11 @@ function formatDateLine(startsAt, endsAt, venue, locale, t) {
 const bandBase = {
   display: 'flex', alignItems: 'center', gap: 10,
   padding: '10px 16px',
-  background: 'rgba(255,122,60,0.06)',
-  borderTop:    '1px solid rgba(255,122,60,0.18)',
-  borderBottom: '1px solid rgba(255,122,60,0.18)',
+  background: 'var(--primary-tint)',
+  borderTop:    '1px solid var(--line)',
+  borderBottom: '1px solid var(--line)',
 }
-const bandProposal  = { background: 'rgba(255,122,60,0.10)' }
+const bandProposal  = { background: 'var(--primary-tint)' }
 const bandScheduled = {
   background:   'rgba(34,197,94,0.08)',
   borderTop:    '1px solid rgba(34,197,94,0.20)',
