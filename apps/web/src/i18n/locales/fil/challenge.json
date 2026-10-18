@@ -1249,6 +1249,12 @@
         "tomorrow": "bukas",
         "later": "paparating",
         "none": "walang proof"
+      },
+      "links": {
+        "pastSub": "Mga litrato ng mga nakaraang araw",
+        "proposeSub": "Puwedeng maging challenge ng lahat ang ideya mo",
+        "twistTitle": "Magmungkahi ng Local Twist bukas",
+        "twistSub": "Para sa mga lokal, hanggang {{time}}"
       }
     },
     "spot": {

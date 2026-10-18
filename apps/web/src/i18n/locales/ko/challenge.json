@@ -1247,6 +1247,12 @@
         "tomorrow": "내일",
         "later": "예정",
         "none": "인증 없음"
+      },
+      "links": {
+        "pastSub": "지난 날들의 사진",
+        "proposeSub": "내 아이디어가 모두의 챌린지가 될 수 있어요",
+        "twistTitle": "내일의 Local Twist 제안하기",
+        "twistSub": "현지인 전용, {{time}}까지"
       }
     },
     "spot": {

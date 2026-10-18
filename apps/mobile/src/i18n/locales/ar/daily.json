@@ -447,6 +447,12 @@
       "tomorrow": "غدًا",
       "later": "قريبًا",
       "none": "لا إثبات"
+    },
+    "links": {
+      "pastSub": "صور الأيام السابقة",
+      "proposeSub": "قد تصبح فكرتك تحدي الجميع",
+      "twistTitle": "اقترح Local Twist الغد",
+      "twistSub": "للسكان المحليين، حتى {{time}}"
     }
   },
   "spot": {

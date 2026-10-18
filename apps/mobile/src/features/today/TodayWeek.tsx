@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { useState, type ComponentProps } from 'react';
+import { Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { useDailyCalendar } from '@/hooks/useDaily';
 import { addDays, ymd, themeName } from '@/features/daily/themes';
 import { THEME_ICON } from './format';
 import type { DailyCalendar, DailyToday } from '@/types';
+import { RowGroup } from '@/ui';
 
 type Day = DailyCalendar['days'][number];
 type State = 'done' | 'pending' | 'missed' | 'today' | 'tomorrow' | 'later' | 'none';
@@ -97,44 +98,46 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}</Text>
         </View>
       )}
-      <View style={styles.links}>
+      {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}
+      <RowGroup style={styles.links}>
+        <LinkRow icon="calendar-outline" title={t('today.allPast')} sub={t('today.links.pastSub')}
+                 onPress={() => router.push('/daily/archive' as never)} />
         {/* Propose a challenge (SPEC 8.6): guests get the sign-up sheet, then the form. */}
-        <TouchableOpacity
-          style={styles.propose}
-          onPress={() => router.push((account ? '/daily/propose?source=week_strip'
-            : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)}
-          accessibilityRole="button"
-          hitSlop={6}
-        >
-          <Ionicons name="bulb-outline" size={16} color={colors.primaryText} />
-          <Text style={styles.proposeText}>{t('propose.cta')}</Text>
-        </TouchableOpacity>
-        {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6), moved here from the card. */}
+        <LinkRow divider icon="bulb-outline" title={t('propose.cta')} sub={t('today.links.proposeSub')}
+                 onPress={() => router.push((account ? '/daily/propose?source=week_strip'
+                   : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)} />
+        {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
         {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
-          <TouchableOpacity
-            style={styles.propose}
-            onPress={() => {
-              track('daily_proposal_started', { entry: 'twist_week', type: 'twist', city: today.city?.name ?? null });
-              router.push('/daily/twist' as never);
-            }}
-            accessibilityRole="button"
-            hitSlop={6}
-          >
-            <Ionicons name="leaf-outline" size={16} color={colors.primaryText} />
-            <Text style={styles.proposeText}>
-              {today.twistProposal.status
-                ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
-                : t('twist.heroCta', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
-            </Text>
-          </TouchableOpacity>
+          <LinkRow divider icon="leaf-outline" title={t('today.links.twistTitle')}
+                   sub={today.twistProposal.status
+                     ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
+                     : t('today.links.twistSub', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+                   onPress={() => {
+                     track('daily_proposal_started', { entry: 'twist_week', type: 'twist', city: today.city?.name ?? null });
+                     router.push('/daily/twist' as never);
+                   }} />
         )}
-        {/* Every past challenge, readable without an account. */}
-        <TouchableOpacity style={styles.propose} onPress={() => router.push('/daily/archive' as never)} accessibilityRole="button" hitSlop={6}>
-          <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />
-          <Text style={styles.proposeText}>{t('today.allPast')}</Text>
-        </TouchableOpacity>
-      </View>
+      </RowGroup>
     </View>
+  );
+}
+
+/** A Today link row: a ground-colour circle with the icon in ink, a bold title, a muted line, a chevron. */
+function LinkRow({ icon, title, sub, onPress, divider = false }: {
+  icon: ComponentProps<typeof Ionicons>['name']; title: string; sub: string; onPress: () => void; divider?: boolean;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`${title}. ${sub}`}
+               style={({ pressed }) => [styles.linkRow, divider && styles.rowDivider, pressed && styles.rowPressed]}>
+      <View style={styles.rowIcon}><Ionicons name={icon} size={19} color={colors.text} /></View>
+      <View style={styles.rowBody}>
+        <Text style={styles.rowTitle} numberOfLines={1}>{title}</Text>
+        <Text style={styles.rowSub} numberOfLines={2}>{sub}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+    </Pressable>
   );
 }
 
@@ -142,15 +145,20 @@ const DOT = 40;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:         { gap: 8 },
-  links:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', columnGap: 12 },
+  links:        { marginTop: 6 },
+  linkRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingHorizontal: 14, paddingVertical: 10 },
+  rowDivider:   { borderTopWidth: 1, borderTopColor: c.line },
+  rowPressed:   { backgroundColor: c.bg3 },
+  rowIcon:      { width: 38, height: 38, borderRadius: 19, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' },
+  rowBody:      { flex: 1, gap: 1 },
+  rowTitle:     { fontSize: 15, fontWeight: '700', color: c.text },
+  rowSub:       { fontSize: 13, lineHeight: 17, fontWeight: '500', color: c.muted },
   peek:         { flexDirection: 'row', alignItems: 'center', gap: 6 },
   peekText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   head:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   streak:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 },
   streakText:   { fontSize: 15, fontWeight: '800', color: c.text },
   tomorrowText: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'right' },
-  propose:      { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 },
-  proposeText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   row:          { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
   day:          { flex: 1, alignItems: 'center', gap: 6, minHeight: 44 },
   weekday:      { fontSize: 12, fontWeight: '600', color: c.muted },

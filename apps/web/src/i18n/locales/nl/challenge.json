@@ -1249,6 +1249,12 @@
         "tomorrow": "morgen",
         "later": "binnenkort",
         "none": "geen bewijs"
+      },
+      "links": {
+        "pastSub": "Foto's van de vorige dagen",
+        "proposeSub": "Jouw idee kan ieders challenge worden",
+        "twistTitle": "Local Twist van morgen voorstellen",
+        "twistSub": "Voor locals, tot {{time}}"
       }
     },
     "spot": {

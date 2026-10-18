@@ -399,6 +399,12 @@
       "tomorrow": "domani",
       "later": "in arrivo",
       "none": "nessuna prova"
+    },
+    "links": {
+      "pastSub": "Le foto dei giorni precedenti",
+      "proposeSub": "La tua idea potrebbe diventare la challenge di tutti",
+      "twistTitle": "Proponi il Local Twist di domani",
+      "twistSub": "Per i locali, fino alle {{time}}"
     }
   },
   "spot": {

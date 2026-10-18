@@ -399,6 +399,12 @@
       "tomorrow": "कल",
       "later": "जल्द",
       "none": "कोई सबूत नहीं"
+    },
+    "links": {
+      "pastSub": "पिछले दिनों की फ़ोटो",
+      "proposeSub": "तुम्हारा आइडिया सबका चैलेंज बन सकता है",
+      "twistTitle": "कल का Local Twist सुझाओ",
+      "twistSub": "लोकल्स के लिए, {{time}} तक"
     }
   },
   "spot": {

@@ -423,6 +423,12 @@
       "tomorrow": "завтра",
       "later": "скоро",
       "none": "нет доказательства"
+    },
+    "links": {
+      "pastSub": "Фото прошлых дней",
+      "proposeSub": "Твоя идея может стать challenge для всех",
+      "twistTitle": "Предложить Local Twist на завтра",
+      "twistSub": "Для местных, до {{time}}"
     }
   },
   "spot": {

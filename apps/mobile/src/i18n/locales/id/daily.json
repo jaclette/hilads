@@ -399,6 +399,12 @@
       "tomorrow": "besok",
       "later": "segera",
       "none": "tanpa bukti"
+    },
+    "links": {
+      "pastSub": "Foto dari hari-hari sebelumnya",
+      "proposeSub": "Idemu bisa jadi challenge semua orang",
+      "twistTitle": "Usulkan Local Twist besok",
+      "twistSub": "Untuk warga lokal, sampai {{time}}"
     }
   },
   "spot": {

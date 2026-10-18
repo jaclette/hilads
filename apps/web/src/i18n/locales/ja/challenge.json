@@ -1249,6 +1249,12 @@
         "tomorrow": "明日",
         "later": "予定",
         "none": "プルーフなし"
+      },
+      "links": {
+        "pastSub": "これまでの日の写真",
+        "proposeSub": "あなたのアイデアがみんなのチャレンジになるかも",
+        "twistTitle": "明日の Local Twist を提案",
+        "twistSub": "地元の人向け・{{time}}まで"
       }
     },
     "spot": {

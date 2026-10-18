@@ -288,23 +288,37 @@ function Week({ today }) {
           <Icon name={THEME_ICON[tomorrowTheme.key] ?? 'pricetag-outline'} size={16} />{t('today.tomorrow', { theme: themeName(tomorrowTheme.key) })}
         </p>
       )}
-      <div className="week-links">
-        <button type="button" className="week-propose" style={ROW} onClick={propose}><Icon name="bulb-outline" size={16} />{t('propose.cta')}</button>
-        {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6), moved here from the card. */}
+      {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}
+      <div className="link-rows">
+        <LinkRow icon="calendar-outline" title={t('today.allPast')} sub={t('today.links.pastSub')} onClick={() => openDaily('archive')} />
+        <LinkRow icon="bulb-outline" title={t('propose.cta')} sub={t('today.links.proposeSub')} onClick={propose} />
+        {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
         {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
-          <button type="button" className="week-propose" style={ROW} onClick={() => {
-            track('daily_proposal_started', { entry: 'twist_week', type: 'twist', platform_surface: 'web' })
-            openDaily('twist')
-          }}>
-            <Icon name="leaf-outline" size={16} />
-            {today.twistProposal.status
-              ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
-              : t('twist.heroCta', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
-          </button>
+          <LinkRow icon="leaf-outline" title={t('today.links.twistTitle')}
+                   sub={today.twistProposal.status
+                     ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
+                     : t('today.links.twistSub', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+                   onClick={() => {
+                     track('daily_proposal_started', { entry: 'twist_week', type: 'twist', platform_surface: 'web' })
+                     openDaily('twist')
+                   }} />
         )}
-        <button type="button" className="week-propose" style={ROW} onClick={() => openDaily('archive')}><Icon name="calendar-outline" size={16} />{t('today.allPast')}</button>
       </div>
     </div>
+  )
+}
+
+/** A Today link row: a ground-colour circle with the icon in ink, a bold title, a muted line, a chevron. */
+function LinkRow({ icon, title, sub, onClick }) {
+  return (
+    <button type="button" className="link-row" onClick={onClick}>
+      <span className="link-row-icon"><Icon name={icon} size={19} /></span>
+      <span className="link-row-body">
+        <span className="link-row-title">{title}</span>
+        <span className="link-row-sub">{sub}</span>
+      </span>
+      <Icon name="chevron-forward" size={18} className="link-row-chevron" />
+    </button>
   )
 }
 

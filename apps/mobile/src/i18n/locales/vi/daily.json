@@ -397,6 +397,12 @@
       "tomorrow": "ngày mai",
       "later": "sắp tới",
       "none": "chưa có bằng chứng"
+    },
+    "links": {
+      "pastSub": "Ảnh của những ngày trước",
+      "proposeSub": "Ý tưởng của bạn có thể thành thử thách của mọi người",
+      "twistTitle": "Đề xuất Local Twist cho ngày mai",
+      "twistSub": "Dành cho người địa phương, đến {{time}}"
     }
   },
   "spot": {

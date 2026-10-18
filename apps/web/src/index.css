@@ -16683,7 +16683,6 @@ body.has-app-promo-banner .page-header {
 .week-dot--tomorrow { border: 1.5px dashed var(--muted2); opacity: 0.8; }
 .week-dot--later { border: 1.5px dashed var(--line); opacity: 0.7; }
 .week-dot--none { background: var(--surface); border: 1.5px solid var(--line); }
-.week-propose { align-self: flex-start; min-height: 40px; border: none; background: none; padding: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--primary-text); cursor: pointer; }
 .today-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
 .today-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .today-card-title { font-size: 15px; font-weight: 800; color: var(--text); }
@@ -17203,7 +17202,6 @@ body.has-app-promo-banner .page-header {
 @media (min-resolution: 2dppx) { .city-flag { box-shadow: 0 0 0 0.5px var(--flag-line); } }
 
 /* Today: yesterday's podium, week strip links, the past challenges archive (SPEC 9.3). */
-.week-links { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .week-peek { margin: 0; font-size: 13px; font-weight: 700; color: var(--text); }
 .podium-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .podium-item { min-width: 0; display: flex; flex-direction: column; gap: 2px; border: none; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
@@ -17240,3 +17238,14 @@ body.has-app-promo-banner .page-header {
 .spot-card-photo { position: relative; display: block; }
 .photo-credit { position: absolute; left: 6px; bottom: 6px; max-width: 90%; padding: 2px 7px; border-radius: 999px; background: rgba(0, 0, 0, 0.58);
   color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Today's secondary links (SPEC 9.3): rows in one bordered card, no orange. */
+.link-rows { margin-top: 6px; display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 18px; background: var(--surface); overflow: hidden; }
+.link-row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; border: none; background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer; }
+.link-row + .link-row { border-top: 1px solid var(--line); }
+.link-row:active, .link-row:hover { background: var(--surface2); }
+.link-row-icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; }
+.link-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.link-row-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.link-row-sub { font-size: 13px; line-height: 17px; font-weight: 500; color: var(--muted2); }
+.link-row-chevron { flex-shrink: 0; color: var(--muted2); }

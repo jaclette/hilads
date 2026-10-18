@@ -1247,6 +1247,12 @@
         "tomorrow": "明天",
         "later": "即將到來",
         "none": "無證明"
+      },
+      "links": {
+        "pastSub": "往日的照片",
+        "proposeSub": "你的點子可能成為大家的挑戰",
+        "twistTitle": "提議明天的 Local Twist",
+        "twistSub": "限在地人，截至 {{time}}"
       }
     },
     "spot": {
