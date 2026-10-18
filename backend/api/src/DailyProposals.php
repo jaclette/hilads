@@ -262,7 +262,7 @@ final class DailyProposals
         try {
             $now = new DateTimeImmutable('now');
             DailyPushes::queueFor('proposal_approved', $p['user_id'], $date ?? DailyClock::currentDate($now),
-                                  DailyPushes::proposalApprovedMessage($date), $now);
+                                  static fn(string $locale): array => DailyPushes::proposalApprovedMessage($date, $locale), $now);
         } catch (\Throwable $e) {
             error_log("[daily] proposal approved push failed for {$id}: " . $e->getMessage());
         }
@@ -334,7 +334,8 @@ final class DailyProposals
         ");
         $stmt->execute([$challenge['id'], $authorId]);
         $n = (int) $stmt->fetchColumn();
-        return $n > 0 ? DailyPushes::queueFor('proposal_result', $authorId, $date, DailyPushes::proposalResultMessage($date, $n), $now) : 0;
+        return $n > 0 ? DailyPushes::queueFor('proposal_result', $authorId, $date,
+                                              static fn(string $locale): array => DailyPushes::proposalResultMessage($date, $n, $locale), $now) : 0;
     }
 
     /** The user who proposed a challenge, or null. */

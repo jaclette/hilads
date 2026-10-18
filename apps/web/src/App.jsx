@@ -1192,6 +1192,7 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
+  const [liveNotif, setLiveNotif] = useState(null)  // the last notification pushed live (WS newNotification)
   const [friendReqCount, setFriendReqCount] = useState(0)
 
   // Event limit reached - shown when a non-Legend user has already created
@@ -3094,6 +3095,14 @@ export default function App() {
           message_count:    0,
         }
         setTopics(prev => prev.some(p => String(p.id) === String(t.id)) ? prev : [...prev, t])
+      })
+
+      // A bell row written live (Daily votes and Local Twist completions, prompt 12):
+      // bump the badge, and the open notifications list prepends it.
+      socket.on('newNotification', (notif) => {
+        if (!notif?.id || notif.type === 'dm_message') return
+        setNotifUnreadCount(c => c + 1)
+        setLiveNotif(notif)
       })
 
       // Reaction updates - PHP sends "city_N" for city channels, plain eventId for events.
@@ -6619,6 +6628,7 @@ export default function App() {
           account={account}
           onBack={() => setShowNotifications(false)}
           onUnreadChange={setNotifUnreadCount}
+          incoming={liveNotif}
           onNavigate={(notif) => {
             setShowNotifications(false)
             const d = notif.data ?? {}
@@ -6657,6 +6667,11 @@ export default function App() {
               setShowProfileDrawer(true)
             } else if (notif.type === 'profile_view' && d.viewerId) {
               openProfile(d.viewerId, d.viewerName ?? '')
+            } else if ((notif.type === 'daily_vote' || notif.type === 'daily_twist_completed') && d.proofId) {
+              // A vote on my proof / a completion of my Local Twist → that proof in its sheet.
+              openDaily('challenge', { date: d.date ?? 'today', proofId: d.proofId })
+            } else if (notif.type === 'daily_twist_picked') {
+              openDaily('twist')
             }
           }}
         />

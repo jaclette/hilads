@@ -50,7 +50,9 @@ async function consumeColdStart(): Promise<string | null> {
   if (actionId === 'accept' || actionId === 'decline' || actionId === 'join' || actionId === 'ignore') {
     return handleNotificationAction(data, actionId);
   }
-  return resolveRoute(data);
+  const route = resolveRoute(data);
+  if (route) trackOpened(data, true);
+  return route;
 }
 
 /**
@@ -195,7 +197,24 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
   return null;
 }
 
+/** Analytics for a push that opened the app, with its type (cold start included). */
+function trackOpened(data: NotifData, coldStart: boolean) {
+  track('notification_opened', { type: data.type ?? 'unknown', cold_start: coldStart });
+  if (typeof data.type === 'string' && data.type.startsWith('daily_')) {
+    track('daily_notification_opened', { type: data.type, challenge_date: (data as { date?: string }).date ?? null, cold_start: coldStart });
+  }
+}
+
+/** The route a push opens; a Daily sheet also gets the push type, for daily_challenge_viewed. */
 function resolveRoute(data: NotifData): string | null {
+  const route = resolvePushRoute(data);
+  if (route && route.startsWith('/daily/') && route.includes('?source=push') && typeof data.type === 'string') {
+    return `${route}&push_type=${encodeURIComponent(data.type)}`;
+  }
+  return route;
+}
+
+function resolvePushRoute(data: NotifData): string | null {
   switch (data.type) {
     case 'dm_message':
       if (data.conversationId) {
@@ -349,6 +368,13 @@ function resolveRoute(data: NotifData): string | null {
       // My Local Twist proposal was picked → its status screen.
       return '/daily/twist';
 
+    case 'daily_first_vote': {
+      // My proof got its first vote (prompt 12) → that proof in its sheet.
+      const { date, proofId } = data as { date?: string; proofId?: string };
+      const day = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : 'today';
+      return proofId ? `/daily/${day}?source=push&proof=${encodeURIComponent(proofId)}` : `/daily/${day}?source=push`;
+    }
+
     case 'daily_digest': {
       // The digest can arrive the day after (cap reached) → its own date.
       const date = (data as { date?: string }).date;
@@ -435,10 +461,7 @@ export function NotificationHandler() {
       const route = resolveRoute(data);
       console.log('[push-nav] resolved route:', route ?? 'none - ignoring');
       if (!route) return;
-      track('notification_opened', { type: data.type ?? 'unknown' });
-      if (typeof data.type === 'string' && data.type.startsWith('daily_')) {
-        track('daily_notification_opened', { type: data.type, challenge_date: (data as { date?: string }).date ?? null });
-      }
+      trackOpened(data, false);
       if (bootingRef.current) {
         console.log('[push-nav] app still booting - storing route for deferred navigation:', route);
         pendingRoute.current = route;

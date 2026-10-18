@@ -42,6 +42,8 @@ export function NotifIcon({ type, unread }: { type: Notification['type']; unread
     type === 'friend_added'    ? 'person-add-outline'   :
     type === 'vibe_received'   ? 'star-outline'         :
     type === 'profile_view'    ? 'eye-outline'          :
+    type === 'daily_vote'      ? 'heart-outline'        :
+    type === 'daily_twist_completed' ? 'leaf-outline'   :
     /* fallback */               'notifications-outline';
 
   return (

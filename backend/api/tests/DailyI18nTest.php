@@ -123,6 +123,10 @@ final class DailyI18nTest extends TestCase
             'votes' => ['{n}'], 'winner' => ['{city}', '{name}', '{n}'], 'winner_nocity' => ['{name}', '{n}'],
             'reminder' => ['{h}'], 'digest_votes' => ['{n}'], 'digest_twist' => ['{n}'],
             'picked_tomorrow' => ['{city}'], 'picked_today' => ['{city}'], 'top10' => ['{rank}'],
+            'first_vote' => [], 'reminder_friend' => ['{h}', '{name}', '{n}'], 'reminder_friend_one' => ['{h}', '{name}'],
+            'reminder_friend_only' => ['{h}', '{name}'], 'reminder_count' => ['{h}', '{n}'], 'reminder_count_one' => ['{h}'],
+            'bell_vote' => ['{name}'], 'bell_twist' => ['{city}', '{name}'], 'proposal_approved' => ['{date}'],
+            'proposal_reserve' => [], 'proposal_day' => [], 'proposal_result' => ['{n}'], 'proposal_result_one' => [],
         ];
         $catalog = DailyPushText::catalog();
         $this->assertSame(DailyI18n::others(), array_keys($catalog));

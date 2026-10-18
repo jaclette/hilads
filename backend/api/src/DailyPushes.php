@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 /**
  * Daily Challenge pushes: queued with a send time in each recipient's local
- * time, sent by the tick in bounded batches. English only in V1.
+ * time, sent by the tick in bounded batches. Every push carries its type
+ * (data.type = daily_<type>) and a link to its screen.
  *
  * daily_push_log is both the queue and the log. A recipient is a registered
  * user ('u:<id>') or a guest device ('g:<guestId>'). One row per (recipient,
@@ -16,7 +17,13 @@ declare(strict_types=1);
  *   posted meanwhile;
  * - digest: queued when a proof is approved (its author) and at the drop
  *   (Local Twist authors); votes received and twist completions, computed at
- *   send time, skipped when there is no news.
+ *   send time, skipped when there is no news;
+ * - first_vote: queued and sent right away when a proof gets its first vote
+ *   (prompt 12); later votes are told by the digest;
+ * - top10, proposal_approved, proposal_day, proposal_result.
+ *
+ * The reminder names a friend who took the challenge, else how many people
+ * did ("Linh and 11 others took today's challenge. 6h left.").
  *
  * Language (prompt 15): the recipient's (users.locale, a guest token's
  * locale). Fixed phrases come from DailyPushText; the morning push carries the
@@ -239,15 +246,38 @@ final class DailyPushes
         ];
     }
 
-    /** The reminder, with the hours left at send time (rounded down, at least 1). */
-    public static function reminderMessage(string $date, int $secondsLeft, string $locale = 'en'): array
+    /**
+     * The reminder, with the hours left at send time (rounded down, at least 1)
+     * and who already took it: a friend ($friend, their name) with the number of
+     * others, else the number of people ($took), else the plain reminder.
+     */
+    public static function reminderMessage(string $date, int $secondsLeft, string $locale = 'en', ?string $friend = null, int $took = 0): array
     {
-        $hours = max(1, intdiv($secondsLeft, 3600));
+        $hours  = max(1, intdiv($secondsLeft, 3600));
+        $others = max(0, $took - 1);
+        if ($friend !== null && $others > 0) {
+            $body = DailyPushText::render('reminder_friend', $locale, ['name' => $friend, 'n' => $others, 'h' => $hours])
+                    ?? "{$friend} and " . ($others === 1 ? '1 other' : "{$others} others") . " took today's challenge. {$hours}h left.";
+        } elseif ($friend !== null) {
+            $body = DailyPushText::render('reminder_friend_only', $locale, ['name' => $friend, 'h' => $hours])
+                    ?? "{$friend} took today's challenge. {$hours}h left.";
+        } elseif ($took > 0) {
+            $body = DailyPushText::render('reminder_count', $locale, ['n' => $took, 'h' => $hours])
+                    ?? self::plural($took, 'person', 'people') . " already took today's challenge. {$hours}h left.";
+        } else {
+            $body = DailyPushText::render('reminder', $locale, ['h' => $hours])
+                    ?? "Only {$hours}h left for today's Daily Challenge.";
+        }
+        return ['title' => 'Daily Challenge', 'body' => $body, 'data' => self::data($date)];
+    }
+
+    /** The first vote on a proof (prompt 12): opens that proof. */
+    public static function firstVoteMessage(string $date, string $proofId, string $locale = 'en'): array
+    {
         return [
             'title' => 'Daily Challenge',
-            'body'  => DailyPushText::render('reminder', $locale, ['h' => $hours])
-                       ?? "Only {$hours}h left for today's Daily Challenge.",
-            'data'  => self::data($date),
+            'body'  => DailyPushText::render('first_vote', $locale) ?? 'Your proof got its first vote!',
+            'data'  => self::data($date) + ['proofId' => $proofId],
         ];
     }
 
@@ -269,26 +299,34 @@ final class DailyPushes
         return ['title' => 'Daily Challenge', 'body' => implode(' ', $parts), 'data' => self::data($date)];
     }
 
-    /** Proposal approved (V2-05, English): its date, or the reserve. */
-    public static function proposalApprovedMessage(?string $date): array
+    /**
+     * Proposal approved (V2-05): its date, or the reserve. The server has no
+     * intl, so other languages get the date as YYYY-MM-DD.
+     */
+    public static function proposalApprovedMessage(?string $date, string $locale = 'en'): array
     {
         $body = $date !== null
-            ? 'Your challenge goes live on ' . (new DateTimeImmutable($date, new DateTimeZone('UTC')))->format('l, F j') . '.'
-            : 'Your challenge is in the reserve: it goes live on a day with nothing planned.';
+            ? (DailyPushText::render('proposal_approved', $locale, ['date' => $date])
+               ?? 'Your challenge goes live on ' . (new DateTimeImmutable($date, new DateTimeZone('UTC')))->format('l, F j') . '.')
+            : (DailyPushText::render('proposal_reserve', $locale)
+               ?? 'Your challenge is in the reserve: it goes live on a day with nothing planned.');
         return ['title' => 'Daily Challenge', 'body' => $body, 'data' => self::data($date ?? DailyClock::currentDate())];
     }
 
-    /** The author's morning push on the day of their challenge (V2-05, English). */
-    public static function proposalDayMessage(string $date): array
-    {
-        return ['title' => 'Daily Challenge', 'body' => 'Today, everyone is doing your challenge.', 'data' => self::data($date)];
-    }
-
-    /** The morning after (V2-05, English): how many completed it. */
-    public static function proposalResultMessage(string $date, int $completed): array
+    /** The author's morning push on the day of their challenge (V2-05). */
+    public static function proposalDayMessage(string $date, string $locale = 'en'): array
     {
         return ['title' => 'Daily Challenge',
-                'body'  => self::plural($completed, 'person', 'people') . ' completed your challenge.',
+                'body'  => DailyPushText::render('proposal_day', $locale) ?? 'Today, everyone is doing your challenge.',
+                'data'  => self::data($date)];
+    }
+
+    /** The morning after (V2-05): how many completed it. */
+    public static function proposalResultMessage(string $date, int $completed, string $locale = 'en'): array
+    {
+        return ['title' => 'Daily Challenge',
+                'body'  => DailyPushText::render('proposal_result', $locale, ['n' => $completed])
+                           ?? self::plural($completed, 'person', 'people') . ' completed your challenge.',
                 'data'  => self::data($date)];
     }
 
@@ -346,7 +384,7 @@ final class DailyPushes
             if ($u['id'] === $author) {
                 // V2-05: the author of today's challenge gets this instead of the usual morning push.
                 $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'proposal_day',
-                           self::morningSendAt($now, $u['tz']), $u['tz'], self::proposalDayMessage($date) + ['locale' => 'en']];
+                           self::morningSendAt($now, $u['tz']), $u['tz'], self::proposalDayMessage($date, $u['locale']) + ['locale' => $u['locale']]];
                 continue;
             }
             $loc          = self::morningLocale($challenge, $u['locale']);
@@ -426,15 +464,36 @@ final class DailyPushes
 
     /**
      * One push to one registered user (V2-05 proposal pushes): right away in
-     * their daytime, else at 09:00 local. $message is sent as stored. Once per
-     * (user, date, type). Returns rows queued (0 without a device or the toggle).
+     * their daytime, else at 09:00 local. $message(locale) builds it in the
+     * user's language; it is sent as stored. Once per (user, date, type).
+     * Returns rows queued (0 without a device or the toggle).
      */
-    public static function queueFor(string $type, string $userId, string $date, array $message, DateTimeImmutable $now): int
+    public static function queueFor(string $type, string $userId, string $date, callable $message, DateTimeImmutable $now): int
     {
         $rows = [];
         foreach (self::userRecipients([$userId]) as $u) {
             $rows[] = ['u:' . $u['id'], $u['id'], null, $date, $type, self::morningSendAt($now, $u['tz']), $u['tz'],
-                       $message + ['locale' => 'en']];
+                       $message($u['locale']) + ['locale' => $u['locale']]];
+        }
+        return self::insert($rows);
+    }
+
+    /**
+     * The first vote on a proof (prompt 12): queued for its author right away
+     * in their daytime, else at 09:00 local, never after the end; once per
+     * author and challenge (unique key), so a withdrawn then recast first vote
+     * sends nothing new. Returns rows queued.
+     */
+    public static function queueFirstVote(string $userId, string $date, string $proofId, DateTimeImmutable $now): int
+    {
+        [, $end] = DailyClock::window($date);
+        $rows = [];
+        foreach (self::userRecipients([$userId]) as $u) {
+            $at = self::morningSendAt($now, $u['tz']);
+            if ($at < $end) {
+                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'first_vote', $at, $u['tz'],
+                           ['data' => self::data($date) + ['proofId' => $proofId], 'locale' => $u['locale']]];
+            }
         }
         return self::insert($rows);
     }
@@ -482,21 +541,27 @@ final class DailyPushes
      * toggle, the device, the content (reminder already done, digest without
      * news, challenge over) and the cap just before sending. Returns counts.
      */
-    public static function sendDue(DateTimeImmutable $now, int $limit = self::BATCH): array
+    public static function sendDue(DateTimeImmutable $now, int $limit = self::BATCH, ?string $onlyKey = null, ?string $onlyType = null): array
     {
-        $pdo   = Database::pdo();
-        $claim = $pdo->prepare("
+        $pdo    = Database::pdo();
+        // $onlyKey / $onlyType: send one recipient's push of one type now (the first vote).
+        $filter = ($onlyKey !== null ? ' AND recipient_key = ?' : '') . ($onlyType !== null ? ' AND type = ?' : '');
+        $claim  = $pdo->prepare("
             UPDATE daily_push_log SET status = 'sending'
             WHERE id IN (
                 SELECT id FROM daily_push_log
-                WHERE status = 'queued' AND send_at <= ?
+                WHERE status = 'queued' AND send_at <= ?{$filter}
                 ORDER BY send_at
                 LIMIT ?
                 FOR UPDATE SKIP LOCKED
             )
             RETURNING id, recipient_key, user_id, guest_id, challenge_date, type, payload, timezone
         ");
-        $claim->execute([$now->format('Y-m-d H:i:sP'), $limit]);
+        $claimArgs = [$now->format('Y-m-d H:i:sP')];
+        if ($onlyKey !== null)  $claimArgs[] = $onlyKey;
+        if ($onlyType !== null) $claimArgs[] = $onlyType;
+        $claimArgs[] = $limit;
+        $claim->execute($claimArgs);
         $rows = $claim->fetchAll(PDO::FETCH_ASSOC);
         if ($rows === []) {
             return ['claimed' => 0, 'sent' => 0, 'skipped' => 0];
@@ -569,7 +634,9 @@ final class DailyPushes
                     $reason = 'done';
                 } else {
                     $msg = self::reminderMessage((string) $row['challenge_date'], DailyClock::secondsLeft($now),
-                                                 (string) ($msg['locale'] ?? 'en')) + ['locale' => $msg['locale'] ?? 'en'];
+                                                 (string) ($msg['locale'] ?? 'en'), $facts['friend'][$fk] ?? null,
+                                                 $facts['took'][(string) $row['challenge_date']] ?? 0)
+                           + ['locale' => $msg['locale'] ?? 'en'];
                 }
             } elseif ($row['type'] === 'digest') {
                 $digest = self::digestMessage((string) $row['challenge_date'],
@@ -578,6 +645,13 @@ final class DailyPushes
                     $reason = 'no_news';
                 } else {
                     $msg = $digest + ['deferred' => !empty($msg['deferred']), 'locale' => $msg['locale'] ?? 'en'];
+                }
+            } elseif ($row['type'] === 'first_vote') {
+                if (!DailyClock::isActive((string) $row['challenge_date'], $now)) {
+                    $reason = 'expired';
+                } else {
+                    $msg = self::firstVoteMessage((string) $row['challenge_date'], (string) ($msg['data']['proofId'] ?? ''),
+                                                  (string) ($msg['locale'] ?? 'en')) + ['locale' => $msg['locale'] ?? 'en'];
                 }
             } elseif ($row['type'] === 'top10') {
                 if (!DailyClock::isActive((string) $row['challenge_date'], $now)) {
@@ -655,7 +729,7 @@ final class DailyPushes
      */
     private static function sendFacts(array $rows): array
     {
-        $facts = ['posted' => [], 'votes' => [], 'twist' => []];
+        $facts = ['posted' => [], 'votes' => [], 'twist' => [], 'friend' => [], 'took' => []];
         $users = [];
         $dates = [];
         foreach ($rows as $r) {
@@ -700,6 +774,37 @@ final class DailyPushes
         $stmt->execute($args);
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
             $facts['twist'][$t['author_user_id'] . '|' . $t['challenge_date']] = (int) $t['n'];
+        }
+
+        // The reminder's social line: how many took it (approved, real), and
+        // the friend who posted last for each recipient.
+        $stmt = $pdo->prepare("
+            SELECT c.challenge_date, count(*) AS n
+            FROM daily_proofs p JOIN daily_challenges c ON c.id = p.challenge_id
+            WHERE c.challenge_date = ANY (string_to_array(?, ',')::date[])
+              AND p.moderation_status = 'approved' AND NOT p.is_demo
+            GROUP BY c.challenge_date
+        ");
+        $stmt->execute([$args[1]]);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            $facts['took'][$t['challenge_date']] = (int) $t['n'];
+        }
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT ON (f.user_id, c.challenge_date) f.user_id, c.challenge_date,
+                   COALESCE(NULLIF(u.display_name, ''), u.username) AS name
+            FROM user_friends f
+            JOIN daily_proofs p     ON p.user_id = f.friend_id AND p.moderation_status = 'approved' AND NOT p.is_demo
+            JOIN daily_challenges c ON c.id = p.challenge_id
+            JOIN users u            ON u.id = f.friend_id AND u.deleted_at IS NULL
+            WHERE f.user_id = ANY (string_to_array(?, ','))
+              AND c.challenge_date = ANY (string_to_array(?, ',')::date[])
+            ORDER BY f.user_id, c.challenge_date, p.approved_at DESC
+        ");
+        $stmt->execute($args);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            if (trim((string) $t['name']) !== '') {
+                $facts['friend'][$t['user_id'] . '|' . $t['challenge_date']] = (string) $t['name'];
+            }
         }
         return $facts;
     }

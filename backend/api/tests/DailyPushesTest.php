@@ -191,6 +191,45 @@ final class DailyPushesTest extends TestCase
         $this->assertSame("Only 1h left for today's Daily Challenge.", DailyPushes::reminderMessage('2026-11-02', 600)['body']);
     }
 
+    public function testReminderNamesAFriendOrCountsPeople(): void
+    {
+        $d = '2026-11-02';
+        $this->assertSame("Linh and 11 others took today's challenge. 6h left.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'en', 'Linh', 12)['body']);
+        $this->assertSame("Linh and 1 other took today's challenge. 6h left.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'en', 'Linh', 2)['body']);
+        $this->assertSame("Linh took today's challenge. 6h left.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'en', 'Linh', 1)['body']);
+        $this->assertSame("12 people already took today's challenge. 6h left.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'en', null, 12)['body']);
+        $this->assertSame("1 person already took today's challenge. 6h left.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'en', null, 1)['body']);
+        $this->assertSame("Only 6h left for today's Daily Challenge.", DailyPushes::reminderMessage($d, 6 * 3600)['body']);
+        $this->assertSame("Linh et 11 autres ont relevé le Daily Challenge du jour. Encore 6 h.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'fr', 'Linh', 12)['body']);
+        // {n} = 1 picks the singular phrase.
+        $this->assertSame("1 personne a déjà relevé le Daily Challenge du jour. Encore 6 h.",
+            DailyPushes::reminderMessage($d, 6 * 3600, 'fr', null, 1)['body']);
+    }
+
+    public function testFirstVoteMessageOpensTheProof(): void
+    {
+        $m = DailyPushes::firstVoteMessage('2026-11-02', 'p1');
+        $this->assertSame('Your proof got its first vote!', $m['body']);
+        $this->assertSame('p1', $m['data']['proofId']);
+        $this->assertSame('2026-11-02', $m['data']['date']);
+        $this->assertSame('Ta preuve a reçu son premier vote !', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr')['body']);
+    }
+
+    public function testProposalPushesInTheAuthorsLanguage(): void
+    {
+        $this->assertSame('Your challenge goes live on Monday, November 2.', DailyPushes::proposalApprovedMessage('2026-11-02')['body']);
+        $this->assertSame('Ton challenge sera en ligne le 2026-11-02.', DailyPushes::proposalApprovedMessage('2026-11-02', 'fr')['body']);
+        $this->assertSame('1 person completed your challenge.', DailyPushes::proposalResultMessage('2026-11-02', 1)['body']);
+        $this->assertSame('1 personne a relevé ton challenge.', DailyPushes::proposalResultMessage('2026-11-02', 1, 'fr')['body']);
+        $this->assertSame('4 personnes ont relevé ton challenge.', DailyPushes::proposalResultMessage('2026-11-02', 4, 'fr')['body']);
+    }
+
     public function testDigestMessage(): void
     {
         $this->assertSame('3 people voted for your proof. 5 people completed your Local Twist.',

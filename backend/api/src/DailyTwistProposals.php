@@ -282,6 +282,15 @@ final class DailyTwistProposals
                 error_log("[daily] twist picked notification failed for {$twistId}: " . $e->getMessage());
             }
         }
+        // Picked after the drop (today's challenge): queue the author's evening
+        // digest of completions, which the drop queued only for earlier picks.
+        if ($after['author_user_id'] !== null && DailyClock::isActive((string) $after['challenge_date'])) {
+            try {
+                DailyPushes::queueDigests((string) $after['challenge_date'], [$after['author_user_id']], new DateTimeImmutable('now'));
+            } catch (\Throwable $e) {
+                error_log("[daily] twist digest failed for {$twistId}: " . $e->getMessage());
+            }
+        }
         return $after;
     }
 

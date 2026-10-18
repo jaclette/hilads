@@ -34,7 +34,7 @@ import { themeName } from '@/features/daily/themes';
  * ?tab=top10 opens the Top 10 tab (top 10 push, hero card's top 3).
  */
 export default function DailySheetScreen() {
-  const { date: dateParam, proof: proofParam, source, tab } = useLocalSearchParams<{ date: string; proof?: string; source?: string; tab?: string }>();
+  const { date: dateParam, proof: proofParam, source, tab, push_type: pushType } = useLocalSearchParams<{ date: string; proof?: string; source?: string; tab?: string; push_type?: string }>();
   const { city } = useApp();
   const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : null);
 
@@ -47,7 +47,7 @@ export default function DailySheetScreen() {
   }, [date, city?.channelId]);
 
   if (!date) return <Loading />;
-  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} initialTab={tab === 'top10' ? 'top10' : null} />;
+  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} initialTab={tab === 'top10' ? 'top10' : null} pushType={pushType ?? null} />;
 }
 
 function Loading() {
@@ -58,8 +58,8 @@ function Loading() {
 
 type Tab = 'world' | 'city' | 'top10';
 
-function Sheet({ date, openProofId, source, initialTab }: {
-  date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | null;
+function Sheet({ date, openProofId, source, initialTab, pushType }: {
+  date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | null; pushType: string | null;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -78,9 +78,9 @@ function Sheet({ date, openProofId, source, initialTab }: {
     if (!sheet?.challenge || tracked.current) return;
     tracked.current = true;
     const props = dailyTrackProps(sheet, account?.mode);
-    track('daily_challenge_viewed', { source: source ?? (openProofId ? 'proof_link' : 'sheet'), ...props });
+    track('daily_challenge_viewed', { source: source ?? (openProofId ? 'proof_link' : 'sheet'), ...(pushType ? { push_type: pushType } : {}), ...props });
     if (source === 'link') track('daily_link_opened', props);
-  }, [sheet, openProofId, source, account?.mode]);
+  }, [sheet, openProofId, source, pushType, account?.mode]);
 
   // ?proof=<id>: open it once (from the list, or fetched if not on this page).
   const opened = useRef(false);

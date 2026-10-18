@@ -72,6 +72,8 @@ final class DailyModerationService
         }
         $after = DailyProofRepository::findById($proofId);
         DailyCards::postProof($after);
+        // The city's Local Twist author: a live bell row (prompt 12).
+        DailyNotify::onApproved($after);
         DailyAdminService::audit('daily_proof.approve', 'daily_proof', $proofId, $before, $after);
         // Proof + streak points (idempotent; an edit re-approved earns nothing new).
         // Best effort: the close's safety pass catches a failure here.

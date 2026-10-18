@@ -165,6 +165,9 @@ export default function NotificationsScreen() {
       // Personal challenge invitation + take-on request both carry challengeId
       // in data; tap the bell row → land on the challenge detail.
       router.push(`/challenge/${notif.data.challengeId}` as never);
+    } else if ((notif.type === 'daily_vote' || notif.type === 'daily_twist_completed') && notif.data?.proofId) {
+      // A vote on my proof / a completion of my Local Twist → that proof in its sheet.
+      router.push(`/daily/${notif.data.date ?? 'today'}?proof=${notif.data.proofId}` as never);
     } else if (notif.type === 'daily_twist_picked') {
       router.push('/daily/twist' as never);
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {

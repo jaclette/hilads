@@ -36,6 +36,9 @@ const TYPE_ICONS = {
   profile_view:            'eye-outline',
   challenge_invitation:    'flame-outline',
   challenge_takeon_request:'flame-outline',
+  daily_vote:              'heart-outline',
+  daily_twist_completed:   'leaf-outline',
+  daily_twist_picked:      'leaf-outline',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -56,7 +59,7 @@ function Toggle({ checked, onChange, disabled }) {
 
 const PREVIEW_LIMIT = 5
 
-export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange, account }) {
+export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange, account, incoming }) {
   const { t } = useTranslation('notifications')
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading]             = useState(true)
@@ -65,6 +68,13 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
   const [unreadCount, setUnreadCount]     = useState(0)
   const [prefs, setPrefs]                 = useState(null)
   const [prefsSaving, setPrefsSaving]     = useState(false)
+
+  // A notification pushed live over the WebSocket while this screen is open (prompt 12).
+  useEffect(() => {
+    if (!incoming?.id) return
+    setNotifications(prev => prev.some(n => n.id === incoming.id) ? prev : [incoming, ...prev])
+    setUnreadCount(c => c + 1)
+  }, [incoming])
 
   useEffect(() => {
     if (!account) return  // preferences require a registered account

@@ -14639,6 +14639,8 @@ $router->add('POST', '/api/v1/daily/proofs/{id}/vote', function (array $params) 
     try {
         if (DailyVotes::cast($proof, $user) === 'voted') {
             apiLog('daily', 'vote', ['proof' => $proof['id'], 'user' => $user['id']]);
+            // The author's bell, live; the first vote's push (prompt 12).
+            DailyNotify::onVote($proof, $user);
         }
     } catch (InvalidArgumentException $e) {
         [$status, $msg] = DAILY_VOTE_ERRORS[$e->getMessage()] ?? [400, 'Invalid vote'];

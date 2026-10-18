@@ -726,7 +726,8 @@ export interface Notification {
     | 'dm_message' | 'event_message' | 'event_join' | 'new_event'
     | 'channel_message' | 'city_join'
     | 'friend_request_received' | 'friend_request_accepted' | 'friend_added' // friend_added kept for legacy rows
-    | 'vibe_received' | 'profile_view' | 'daily_twist_picked';
+    | 'vibe_received' | 'profile_view' | 'daily_twist_picked'
+    | 'daily_vote' | 'daily_twist_completed';
   title: string;
   body: string;
   data: {
@@ -743,6 +744,8 @@ export interface Notification {
     vibeId?: number;
     viewerId?: string;
     viewerName?: string;
+    proofId?: string;   // daily_vote, daily_twist_completed
+    date?: string;
   };
   is_read: boolean;
   created_at: string;
