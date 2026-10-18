@@ -202,8 +202,8 @@ function GroupCard({ message, reactions, time, longPress }: {
   );
 }
 
-/** "Proposed by <name> · <city>" (V2-05); the name opens the author's profile. */
-export function ProposedBy({ credit }: { credit: NonNullable<ChallengePayload['proposedBy']> }) {
+/** "Proposed by <name> · <city>" (V2-05); the name opens the author's profile. ink: in the text colour (Today's card keeps orange for its button only). */
+export function ProposedBy({ credit, ink = false }: { credit: NonNullable<ChallengePayload['proposedBy']>; ink?: boolean }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
@@ -216,8 +216,8 @@ export function ProposedBy({ credit }: { credit: NonNullable<ChallengePayload['p
   };
   return (
     <TouchableOpacity onPress={open} hitSlop={{ top: 14, bottom: 14, left: 6, right: 6 }} accessibilityRole="button" style={styles.proposedBy}>
-      <Ionicons name="bulb-outline" size={14} color={colors.primaryText} />
-      <Text style={styles.proposedByText} numberOfLines={1}>
+      <Ionicons name="bulb-outline" size={14} color={ink ? colors.text : colors.primaryText} />
+      <Text style={[styles.proposedByText, ink && { color: colors.text }]} numberOfLines={1}>
         {credit.city?.name
           ? t('propose.proposedByCity', { name, city: localizeCityName(credit.city.name) })
           : t('propose.proposedBy', { name })}

@@ -863,6 +863,7 @@
     "nextIn": "Следующий Daily Challenge через {{time}}",
     "nothingLive": "Следующий Daily Challenge уже в пути",
     "cta": "Принять challenge",
+    "ctaIn": "Я в деле",
     "seeProofs": "Смотреть доказательства за сегодня",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist: {{city}}",

@@ -50,9 +50,10 @@ type Step = 'place' | 'photo' | 'details';
 type TooFar = { distanceM: number; radiusM: number };
 
 /**
- * Daily Challenge proof (SPEC 9.4, V3-08), in steps: for place themes, the
- * place (an existing Hilads spot within 100 m, or a new place at my position),
- * then the photo (camera only), then the caption and price. Language proofs
+ * Daily Challenge proof (SPEC 9.4, V3-08), in steps: the photo first (camera
+ * only, opened right away from "I'm in"), then for place themes the place
+ * suggested from my GPS position (an existing Hilads spot within 100 m, or a
+ * new place at my position), then the caption and price. Language proofs
  * skip the place. The backend checks I'm within 150 m of the spot; "too far"
  * lets me retry from where I am or pick another place. /daily/proof creates,
  * /daily/proof?edit=<id> edits. Every proof goes to review.
@@ -79,6 +80,7 @@ export default function DailyProofScreen() {
   const [sending, setSending]   = useState(false);
   const [tooFar, setTooFar]     = useState<TooFar | null>(null);
   const started = useRef(false);
+  const autoCamera = useRef(false);   // open the camera once the challenge is loaded (new proof)
 
   // Proofs need an account (AUDIT Q4).
   useEffect(() => {
@@ -100,7 +102,6 @@ export default function DailyProofScreen() {
         setToday(d);
         // Already posted today: "new proof" edits that one instead.
         if (!p && d.myProof && d.myProof.status !== 'removed') p = d.myProof;
-        const placeTheme = !!d.challenge?.theme && d.challenge.theme.key !== 'language';
         if (p) {
           setOriginal(p);
           setPhoto({ uri: p.photoUrl, mime: null, remoteUrl: p.photoUrl });
@@ -108,7 +109,9 @@ export default function DailyProofScreen() {
           if (p.price) { setAmount(String(p.price.amount)); setCurrency(p.price.currency); }
           setStep('details');
         } else {
-          setStep(placeTheme ? 'place' : 'photo');
+          // Camera first (SPEC 9.3: the button opens it right away); the place comes after.
+          setStep('photo');
+          autoCamera.current = true;
         }
       } catch {
         if (alive) Alert.alert(t('errors.generic'));
@@ -136,7 +139,8 @@ export default function DailyProofScreen() {
   };
   const gotPhoto = (p: Photo) => {
     setPhoto(p);
-    setStep('details');
+    // Place themes: the place, suggested from where I am, comes right after the photo.
+    setStep(needsPlace && !place && !original ? 'place' : 'details');
   };
 
   const onPlace = (choice: PlaceChoice, pos: Position) => {
@@ -145,6 +149,12 @@ export default function DailyProofScreen() {
     setTooFar(null);
     setStep(photo ? 'details' : 'photo');
   };
+
+  useEffect(() => {
+    if (loading || !autoCamera.current || !today?.challenge?.isActive) return;
+    autoCamera.current = false;
+    takePhoto();
+  }, [loading, today]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** The position to send: the place step's, refreshed when it is old. */
   const freshPosition = async (force = false): Promise<Position | null> => {
@@ -239,7 +249,8 @@ export default function DailyProofScreen() {
       <View style={styles.nav}>
         <TouchableOpacity
           style={styles.back}
-          onPress={() => (step === 'details' && !original && needsPlace ? setStep('place') : router.back())}
+          onPress={() => (step === 'details' && !original && needsPlace ? setStep('place')
+            : step === 'place' && photo ? setStep('photo') : router.back())}
           accessibilityRole="button"
           accessibilityLabel={t('back')}
         >

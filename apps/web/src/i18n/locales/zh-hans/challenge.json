@@ -859,6 +859,7 @@
     "nextIn": "下一个 Daily Challenge 还有 {{time}}",
     "nothingLive": "下一个 Daily Challenge 马上就来",
     "cta": "接受 challenge",
+    "ctaIn": "我来挑战",
     "seeProofs": "看看今天的证明",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} Local Twist",

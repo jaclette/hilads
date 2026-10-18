@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -9,23 +11,33 @@ import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
-import { isFinalHours } from '@/hooks/useDaily';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { THEME_ICON, clock } from './format';
-import { Button, Chip, CityFlag } from '@/ui';
-import type { DailyToday } from '@/types';
+import { THEME_COVERS } from './covers';
+import { Button, CityFlag } from '@/ui';
+import type { DailyThemeKey, DailyToday } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
+/** Brand term: English in every locale (SPEC 9.11). */
+const DAILY_CHALLENGE = 'Daily Challenge';
+/** The cover's white text and its shade: fixed in both themes (the image is the same). */
+const COVER_TEXT  = '#FFFFFF';
+// Measured on the covers: white text >= 5.6:1 even over a pure white image.
+const COVER_SHADE = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.86)', 'rgba(0,0,0,0.9)'] as const;
+
 /**
- * Today's Daily Challenge as a ticket (SPEC 9.3, today.html): kicker and theme
- * chip, the challenge (with its "Proposed by" credit), the time left and the early-bonus hint, a perforated
- * divider, the Local Twist in live cities, and "Take the challenge" (or my
- * proof's status) with how many people took it, then tomorrow's Local Twist
- * proposal for locals. Tapping the card opens the challenge sheet.
+ * Today's Daily Challenge as a ticket (SPEC 9.3): an image band (the
+ * challenge's cover, else its theme's) with "Daily Challenge" over the theme
+ * and the time left; the challenge (with its "Proposed by" credit) and the
+ * early-bonus hint on the light background; a perforated divider, the Local
+ * Twist in live cities, "I'm in" (the card's only orange element, straight to
+ * the camera) or my proof's status, and how many people took it. Tapping the
+ * card opens the challenge sheet. Tomorrow's Local Twist proposal sits under
+ * the week strip.
  */
 export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday | null; loading: boolean; secondsLeft: number | null }) {
   const styles = useThemedStyles(makeStyles);
@@ -73,28 +85,17 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
 
   return (
     <TouchableOpacity style={styles.ticket} onPress={openSheet} activeOpacity={0.92} accessibilityRole="button"
-                      accessibilityLabel={`${t('kicker')}: ${challenge.text}`}>
+                      accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeName(challenge.theme.key)}` : ''}: ${challenge.text}`}>
+      <Cover coverUrl={challenge.coverUrl ?? null} themeKey={challenge.theme?.key ?? null} secondsLeft={secondsLeft} />
       <View style={styles.top}>
-        <View style={styles.headRow}>
-          <Kicker />
-          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={themeName(challenge.theme.key)} />}
-        </View>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
-        <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
-        {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
-        <View style={styles.metaRow}>
-          {secondsLeft !== null && (
-            <View style={styles.metaItem}>
-              <Ionicons name="time-outline" size={15} color={isFinalHours(secondsLeft) ? colors.warning : colors.muted} />
-              <Text style={[styles.meta, isFinalHours(secondsLeft) && styles.metaWarn]}>{t('timeLeft', { time: clock(secondsLeft) })}</Text>
-            </View>
-          )}
-          {earlyUntil !== null && (
-            <Text style={styles.early}>
-              {t('today.early', { time: new Date(earlyUntil * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
-            </Text>
-          )}
-        </View>
+        <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
+        {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} ink />}
+        {earlyUntil !== null && (
+          <Text style={styles.early}>
+            {t('today.early', { time: new Date(earlyUntil * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+          </Text>
+        )}
       </View>
 
       <Perforation />
@@ -117,7 +118,8 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
             </TouchableOpacity>
           </View>
         ) : (
-          <Button label={t('cta')} onPress={onCta} />
+          // The card's only orange element: straight to the camera (SPEC 9.3).
+          <Button label={t('ctaIn')} icon="camera-outline" onPress={onCta} style={styles.cta} />
         )}
         {took > 0 && (
           <TouchableOpacity style={styles.took} onPress={openSheet} accessibilityRole="button">
@@ -126,27 +128,46 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
             </Text>
           </TouchableOpacity>
         )}
-        {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6). */}
-        {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
-          <TouchableOpacity
-            style={styles.propose}
-            onPress={() => {
-              track('daily_proposal_started', { entry: 'twist_hero', type: 'twist', city: city?.name ?? null });
-              router.push('/daily/twist' as never);
-            }}
-            accessibilityRole="button"
-          >
-            <Ionicons name="leaf-outline" size={16} color={colors.primaryText} />
-            <Text style={styles.proposeText} numberOfLines={2}>
-              {data.twistProposal.status
-                ? t('twist.heroStatus', { status: t(`twist.status.${data.twistProposal.status}`) })
-                : t('twist.heroCta', { time: new Date(data.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
-            </Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
-          </TouchableOpacity>
-        )}
       </View>
     </TouchableOpacity>
+  );
+}
+
+/**
+ * The card's image band: the challenge's cover (back office) or its theme's
+ * default, with a dark gradient at the bottom so the white label stays
+ * readable (4.5:1): "Daily Challenge" small above the theme with its icon, and
+ * the time left. Decorative image.
+ */
+function Cover({ coverUrl, themeKey, secondsLeft }: { coverUrl: string | null; themeKey: DailyThemeKey | null; secondsLeft: number | null }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  const source = coverUrl ? { uri: coverUrl } : themeKey ? THEME_COVERS[themeKey] : null;
+  return (
+    <View style={styles.cover}>
+      {source !== null && (
+        <Image source={source} style={StyleSheet.absoluteFill} contentFit="cover" transition={150}
+               accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+      )}
+      <LinearGradient colors={COVER_SHADE} locations={[0, 0.28, 0.55, 1]} style={StyleSheet.absoluteFill} />
+      <View style={styles.coverRow}>
+        <View style={styles.coverLabel}>
+          <Text style={styles.coverKicker}>{DAILY_CHALLENGE}</Text>
+          {themeKey !== null && (
+            <View style={styles.coverThemeRow}>
+              <Ionicons name={THEME_ICON[themeKey] ?? 'pricetag-outline'} size={22} color={COVER_TEXT} />
+              <Text style={styles.coverTheme} numberOfLines={1}>{themeName(themeKey)}</Text>
+            </View>
+          )}
+        </View>
+        {secondsLeft !== null && (
+          <View style={styles.coverTime}>
+            <Ionicons name="time-outline" size={15} color={COVER_TEXT} />
+            <Text style={styles.coverTimeText}>{t('timeLeft', { time: clock(secondsLeft) })}</Text>
+          </View>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -181,15 +202,20 @@ const NOTCH = 20;
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: 22 },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
+  // Image band: the ticket's top corners (radius 22 minus the 1.5 border).
+  cover:       { height: 160, borderTopLeftRadius: 20.5, borderTopRightRadius: 20.5, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'flex-end' },
+  coverRow:    { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, paddingHorizontal: 18, paddingBottom: 12 },
+  coverLabel:  { flexShrink: 1, gap: 1 },
+  coverKicker: { fontSize: 13, fontWeight: '700', color: COVER_TEXT },
+  coverThemeRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  coverTheme:  { flexShrink: 1, fontSize: 24, lineHeight: 30, fontWeight: '800', color: COVER_TEXT, letterSpacing: -0.3 },
+  coverTime:   { flexDirection: 'row', alignItems: 'center', gap: 4, paddingBottom: 4 },
+  coverTimeText: { fontSize: FontSizes.xs, fontWeight: '700', color: COVER_TEXT, fontVariant: ['tabular-nums'] },
   top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8 },
-  headRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   kicker:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
   kickerText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   text:        { fontSize: FontSizes.lg, lineHeight: 25, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
-  metaRow:     { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 14, rowGap: 4 },
-  metaItem:    { flexDirection: 'row', alignItems: 'center', gap: 5 },
   meta:        { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
-  metaWarn:    { color: c.warning },
   early:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.localText },
   perf:        { height: NOTCH, justifyContent: 'center', paddingHorizontal: 18 },
   // Dashes drawn as views: a dashed top border isn't reliable on Android.
@@ -198,15 +224,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   notch:       { position: 'absolute', top: 0, width: NOTCH, height: NOTCH, borderRadius: NOTCH / 2, backgroundColor: c.bg },
   notchLeft:   { left: -NOTCH / 2 - 1.5 },
   notchRight:  { right: -NOTCH / 2 - 1.5 },
-  bottom:      { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 16, gap: 10 },
-  twist:       { gap: 4 },
+  bottom:      { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 10, gap: 6 },
+  twist:       { gap: 4, marginBottom: 4 },
   twistHead:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  propose:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40 },
-  proposeText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   twistLabel:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   twistText:   { fontSize: 15, lineHeight: 22, fontWeight: '500', color: c.text },
+  cta:         { minHeight: 56 },
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
-  link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
+  // Secondary links in ink: the button is the card's only orange element.
+  link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
   took:        { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   tookText:    { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

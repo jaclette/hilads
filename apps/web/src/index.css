@@ -16471,7 +16471,20 @@ body.has-app-promo-banner .page-header {
 .today-twist { display: flex; flex-direction: column; gap: 4px; }
 .today-twist-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: var(--muted2); }
 .today-twist-text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
-.today-cta { min-height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; }
+.today-cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; }
+/* The card's image band: white text on a dark shade (4.5:1), same in both themes. */
+.today-cover { position: relative; height: 160px; background: var(--surface2); display: flex; align-items: flex-end; }
+.today-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Shade measured on the covers: white text >= 5.6:1 even over a pure white image. */
+.today-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 28%, rgba(0,0,0,0.86) 55%, rgba(0,0,0,0.9) 100%); }
+.today-cover-row { position: relative; z-index: 1; flex: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 0 18px 12px; color: #fff; }
+.today-cover-label { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.today-cover-kicker { font-size: 13px; font-weight: 700; }
+.today-cover-theme { display: inline-flex; align-items: center; gap: 7px; font-size: 24px; line-height: 30px; font-weight: 800; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.today-cover-time { font-size: 13px; font-weight: 700; padding-bottom: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* Secondary links in ink: the button is the card's only orange element. */
+.today-ticket .dc-original, .today-ticket .dc-proposed, .today-ticket .dc-link, .today-ticket .today-took-link { color: var(--text); }
+.today-ticket .dc-link, .today-ticket .today-took-link { text-decoration: underline; }
 
 /* ── The app's header (W1): "Hi" mark, city / World selector, DM + bell or
    Sign up. Used by Today, Chat and the tab screens. ─────────────────────── */

@@ -113,6 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
 
         'delete' => daily_action(fn() => DailyAdminService::deleteChallenge($id), 'Deleted.', '/admin/daily'),
 
+        'cover_upload' => daily_action(fn() => DailyAdminService::setCover($id, daily_cover_upload($_FILES['cover'] ?? null)),
+            'Cover saved.', $self . '#cover'),
+
+        'cover_remove' => daily_action(fn() => DailyAdminService::setCover($id, null),
+            'Cover removed: the theme\'s default image shows.', $self . '#cover'),
+
         'test_push' => daily_action(function () use ($challenge) {
             $adminId = trim((string) getenv('ADMIN_TEST_USER_ID'));
             if ($adminId === '') {
@@ -210,6 +216,26 @@ daily_styles();
                 <?php endif; ?>
                 <div class="form-actions"><button class="btn btn-primary" type="submit">Save</button></div>
             </form>
+
+            <?php if (!$isNew):
+                $coverTheme = DailyThemes::format($theme, $date !== '' ? $date : DailyClock::currentDate())['key'] ?? 'traditions';
+                $coverUrl   = $challenge['cover_url'] ?? null; ?>
+                <form method="POST" action="<?= dh($self) ?>" enctype="multipart/form-data" class="form-card" id="cover" style="margin-top:16px">
+                    <?= csrf_input() ?>
+                    <h3 style="margin-bottom:4px">Cover image</h3>
+                    <p class="daily-muted">The image band at the top of the Daily Challenge card (about 400×160 shown, upload at least 1200×480). Without one, the theme's default image shows.</p>
+                    <img src="<?= dh($coverUrl ?? ('https://hilads.live/covers/' . $coverTheme . '.jpg')) ?>" alt=""
+                         style="width:100%;max-width:480px;aspect-ratio:5/2;object-fit:cover;border-radius:10px;display:block;margin:10px 0">
+                    <div class="hint" style="margin-bottom:10px"><?= $coverUrl ? 'Custom cover for this challenge.' : 'Default image of the theme (' . dh($coverTheme) . ').' ?></div>
+                    <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
+                    <div class="form-actions" style="gap:8px">
+                        <button class="btn btn-primary btn-sm" type="submit" name="action" value="cover_upload">Upload cover</button>
+                        <?php if ($coverUrl): ?>
+                            <button class="btn btn-secondary btn-sm" type="submit" name="action" value="cover_remove" formnovalidate>Use the theme's default</button>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            <?php endif; ?>
 
             <?php if (!$isNew):
                 $trText = json_decode((string) $challenge['text_i18n'], true) ?: [];

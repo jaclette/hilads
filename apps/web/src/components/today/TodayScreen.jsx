@@ -8,12 +8,14 @@ import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
 import { CityFlag, CityName } from '../CityName'
 import {
-  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
+  useDaily, useDc, useCountdown, formatCountdown, seedProofs, seedVotesLeft, useVoteCount,
   StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+/** Brand term: English in every locale. */
+const DAILY_CHALLENGE = 'Daily Challenge'
 
 const addDays = (date, n) => ymd(new Date(Date.parse(`${date}T12:00:00Z`) + n * 86400000))
 
@@ -84,6 +86,13 @@ function FirstLaunchLine() {
   return <p className="first-launch">{t('firstLaunch')}</p>
 }
 
+/**
+ * Today's Daily Challenge as a ticket (SPEC 9.3): an image band (the
+ * challenge's cover, else its theme's) with "Daily Challenge" over the theme
+ * and the time left; the challenge on the light background; the Local Twist,
+ * "I'm in" (the card's only orange element) or my proof's status, and how many
+ * took it. Tomorrow's Local Twist proposal sits under the week strip.
+ */
 function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
   const { scope, openDaily } = useDaily()
@@ -119,23 +128,30 @@ function Ticket({ data, loading }) {
   const took = (scope === 'city' && data.counts?.city ? data.counts.city : data.counts?.world) ?? 0
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
+  const theme = challenge.theme?.key ?? null
+  const cover = challenge.coverUrl || (theme ? `/covers/${theme}.jpg` : null)
+
   return (
     <div className="today-ticket dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
-         aria-label={`${t('kicker')}: ${challenge.text}`}>
-      <div className="today-top">
-        <div className="today-head">
-          <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('kicker')}</span>
-          {challenge.theme && <span className="today-chip" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{themeName(challenge.theme.key)}</span>}
+         aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeName(theme)}` : ''}: ${challenge.text}`}>
+      {/* Image band (SPEC 9.3): the challenge's cover, else its theme's; decorative. */}
+      <div className="today-cover">
+        {cover && <img src={cover} alt="" />}
+        <div className="today-cover-row">
+          <span className="today-cover-label">
+            <span className="today-cover-kicker">{DAILY_CHALLENGE}</span>
+            {theme && <span className="today-cover-theme"><Icon name={THEME_ICON[theme] ?? 'pricetag-outline'} size={22} />{themeName(theme)}</span>}
+          </span>
+          {secondsLeft !== null && (
+            <span className="today-cover-time" style={ROW}><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>
+          )}
         </div>
+      </div>
+      <div className="today-top">
         <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
-        <div className="today-meta-row">
-          {secondsLeft !== null && (
-            <span className={`today-meta${isFinalHours(secondsLeft) ? ' dc-countdown--warn' : ''}`} style={ROW}><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>
-          )}
-          {earlyUntil && <span className="today-early">{t('today.early', { time: timeOf(earlyUntil) })}</span>}
-        </div>
+        {earlyUntil && <span className="today-early">{t('today.early', { time: timeOf(earlyUntil) })}</span>}
       </div>
       <div className="today-perforation" aria-hidden="true" />
       <div className="today-bottom">
@@ -151,29 +167,15 @@ function Ticket({ data, loading }) {
             <button type="button" className="dc-link" onClick={(e) => { e.stopPropagation(); open() }}>{t('today.seeMine')}</button>
           </div>
         ) : (
+          // The card's only orange element. Proofs are posted from the app: the store.
           <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
              onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
-            {t('cta')}
+            <Icon name="camera-outline" size={20} />{t('ctaIn')}
           </a>
         )}
         {took > 0 && (
           <button type="button" className="today-took" onClick={(e) => { e.stopPropagation(); open() }}>
             {t('today.tookIt', { count: took })} · <span className="today-took-link">{t('today.seePhotos', { count: took })}</span>
-          </button>
-        )}
-        {data.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
-          <button type="button" className="today-propose" onClick={(e) => {
-            e.stopPropagation()
-            track('daily_proposal_started', { entry: 'twist_hero', type: 'twist', platform_surface: 'web' })
-            openDaily('twist')
-          }}>
-            <Icon name="leaf-outline" size={18} />
-            <span className="today-propose-text">
-              {data.twistProposal.status
-                ? t('twist.heroStatus', { status: t(`twist.status.${data.twistProposal.status}`) })
-                : t('twist.heroCta', { time: timeOf(data.twistProposal.closesAt) })}
-            </span>
-            <Icon name="chevron-forward" size={16} />
           </button>
         )}
       </div>
@@ -258,6 +260,18 @@ function Week({ today }) {
       )}
       <div className="week-links">
         <button type="button" className="week-propose" style={ROW} onClick={propose}><Icon name="bulb-outline" size={16} />{t('propose.cta')}</button>
+        {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6), moved here from the card. */}
+        {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
+          <button type="button" className="week-propose" style={ROW} onClick={() => {
+            track('daily_proposal_started', { entry: 'twist_week', type: 'twist', platform_surface: 'web' })
+            openDaily('twist')
+          }}>
+            <Icon name="leaf-outline" size={16} />
+            {today.twistProposal.status
+              ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
+              : t('twist.heroCta', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+          </button>
+        )}
         <button type="button" className="week-propose" style={ROW} onClick={() => openDaily('archive')}><Icon name="calendar-outline" size={16} />{t('today.allPast')}</button>
       </div>
     </div>

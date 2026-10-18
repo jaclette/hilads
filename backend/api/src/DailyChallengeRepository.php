@@ -12,9 +12,9 @@ final class DailyChallengeRepository
     /** Published challenge of a date, or null. Cached 60 s (one row per date). */
     public static function findPublishedByDate(string $date): ?array
     {
-        return Cache::remember('daily_challenge_v1_' . $date, 60, function () use ($date): ?array {
+        return Cache::remember('daily_challenge_v2_' . $date, 60, function () use ($date): ?array {
             $stmt = Database::pdo()->prepare("
-                SELECT id, challenge_date, text_i18n, context_i18n, theme, proposed_by_user_id, published_at
+                SELECT id, challenge_date, text_i18n, context_i18n, theme, proposed_by_user_id, published_at, cover_url
                 FROM daily_challenges
                 WHERE challenge_date = ? AND status = 'published'
             ");
@@ -553,6 +553,8 @@ final class DailyChallengeRepository
             'endsAt'   => $end->getTimestamp(),
             'isActive' => DailyClock::isActive($date, $now),
             'theme'    => DailyThemes::format($row['theme'] ?? null, $date),
+            // The card's cover (back office upload); null = the theme's default image in the apps.
+            'coverUrl' => ($row['cover_url'] ?? null) ?: null,
             'proposedBy' => self::credit($row['id'], $row['proposed_by_user_id'] ?? null),
         ];
     }

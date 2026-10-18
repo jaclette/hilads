@@ -191,3 +191,29 @@ function daily_styles(): void
 }
 </style>';
 }
+
+/**
+ * Upload a challenge's cover image (the Daily Challenge card's image band):
+ * JPEG, PNG or WebP under 10 MB, metadata stripped. Returns its URL.
+ */
+function daily_cover_upload(?array $file): string
+{
+    if ($file === null || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
+        throw new InvalidArgumentException('Choose an image to upload.');
+    }
+    $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    $mime    = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $info    = @getimagesize($file['tmp_name']);
+    if (!isset($allowed[$mime]) || $info === false || $info[0] > 6000 || $info[1] > 6000 || $file['size'] > 10 * 1024 * 1024) {
+        throw new InvalidArgumentException('The cover must be a JPEG, PNG or WebP under 10 MB and 6000 px.');
+    }
+    $clean = ImageProcessor::stripMetadata($file['tmp_name'], $mime);
+    if ($clean === null) {
+        throw new InvalidArgumentException('Could not read the image (' . ImageProcessor::$lastError . ').');
+    }
+    try {
+        return R2Uploader::put($clean, bin2hex(random_bytes(16)) . '.' . $allowed[$mime], $mime);
+    } finally {
+        @unlink($clean);
+    }
+}

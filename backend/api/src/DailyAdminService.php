@@ -797,6 +797,20 @@ final class DailyAdminService
         return $row;
     }
 
+    /** Set or clear ($url null) a challenge's cover image (an own upload). Audited. */
+    public static function setCover(string $id, ?string $url): array
+    {
+        $before = self::mustFind($id);
+        if ($url !== null && R2Uploader::ownUploadFilename($url) === null) {
+            throw new InvalidArgumentException('The cover must be an uploaded image.');
+        }
+        Database::pdo()->prepare("UPDATE daily_challenges SET cover_url = ?, updated_at = now(), updated_by = ? WHERE id = ?")
+            ->execute([$url, self::actorName(), $id]);
+        $after = self::mustFind($id);
+        self::audit('daily_challenge.cover', 'daily_challenge', $id, ['cover_url' => $before['cover_url'] ?? null], ['cover_url' => $url]);
+        return $after;
+    }
+
     private static function mustFind(string $id): array
     {
         $row = self::find($id);

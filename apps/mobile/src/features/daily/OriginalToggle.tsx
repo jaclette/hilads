@@ -15,15 +15,15 @@ export function useOriginal(): [boolean, () => void] {
   return [showOriginal, () => setShowOriginal(v => !v)];
 }
 
-export function OriginalToggle({ translated, showingOriginal, onPress }: {
-  translated: boolean; showingOriginal: boolean; onPress: () => void;
+export function OriginalToggle({ translated, showingOriginal, onPress, ink = false }: {
+  translated: boolean; showingOriginal: boolean; onPress: () => void; ink?: boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   if (!translated) return null;
   return (
     <TouchableOpacity onPress={onPress} hitSlop={8} accessibilityRole="button" style={styles.wrap}>
-      <Text style={styles.link}>{showingOriginal ? t('translation.seeTranslation') : t('translation.seeOriginal')}</Text>
+      <Text style={[styles.link, ink && styles.ink]}>{showingOriginal ? t('translation.seeTranslation') : t('translation.seeOriginal')}</Text>
     </TouchableOpacity>
   );
 }
@@ -31,4 +31,5 @@ export function OriginalToggle({ translated, showingOriginal, onPress }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { alignSelf: 'flex-start' },
   link: { fontSize: 12, fontWeight: '600', color: c.muted, textDecorationLine: 'underline' },
+  ink:  { color: c.text },
 });

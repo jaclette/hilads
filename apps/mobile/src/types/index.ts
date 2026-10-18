@@ -774,6 +774,8 @@ export interface DailyChallenge {
   endsAt:   number;
   isActive: boolean;
   theme?:   DailyTheme | null; // one of the 7 weekly themes (English name)
+  /** The card's cover image (back office upload); null = the theme's default (features/today/covers). */
+  coverUrl?: string | null;
   /** The user whose proposal became this challenge (V2-05), with their city then. */
   proposedBy?: { user: DailyPerson; city: { id: number; name: string | null; country?: string | null } | null } | null;
 }

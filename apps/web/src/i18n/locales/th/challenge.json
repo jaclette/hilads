@@ -859,6 +859,7 @@
     "nextIn": "Daily Challenge ถัดไปในอีก {{time}}",
     "nothingLive": "Daily Challenge ถัดไปกำลังมา",
     "cta": "รับ challenge",
+    "ctaIn": "ฉันขอเล่นด้วย",
     "seeProofs": "ดูหลักฐานของวันนี้",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist ของ {{city}}",

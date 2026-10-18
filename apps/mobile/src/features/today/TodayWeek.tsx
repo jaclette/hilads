@@ -109,6 +109,25 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           <Ionicons name="bulb-outline" size={16} color={colors.primaryText} />
           <Text style={styles.proposeText}>{t('propose.cta')}</Text>
         </TouchableOpacity>
+        {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6), moved here from the card. */}
+        {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
+          <TouchableOpacity
+            style={styles.propose}
+            onPress={() => {
+              track('daily_proposal_started', { entry: 'twist_week', type: 'twist', city: today.city?.name ?? null });
+              router.push('/daily/twist' as never);
+            }}
+            accessibilityRole="button"
+            hitSlop={6}
+          >
+            <Ionicons name="leaf-outline" size={16} color={colors.primaryText} />
+            <Text style={styles.proposeText}>
+              {today.twistProposal.status
+                ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
+                : t('twist.heroCta', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+            </Text>
+          </TouchableOpacity>
+        )}
         {/* Every past challenge, readable without an account. */}
         <TouchableOpacity style={styles.propose} onPress={() => router.push('/daily/archive' as never)} accessibilityRole="button" hitSlop={6}>
           <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />

@@ -3147,6 +3147,10 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_demo ON users (id) WHERE is_demo
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_demo ON daily_proofs (id) WHERE is_demo", 'idx_daily_proofs_demo');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_places_demo ON places (id) WHERE is_demo", 'idx_places_demo');
 
+// The Daily Challenge card's cover image (SPEC 9.3): uploaded in the back
+// office for one challenge; NULL = the theme's default image (bundled in the apps).
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS cover_url TEXT", 'daily_challenges.cover_url');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
