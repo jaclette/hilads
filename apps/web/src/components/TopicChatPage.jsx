@@ -465,26 +465,20 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       {/* Header - topic-specific: back | title (wraps) | share */}
       <div className="page-header topic-chat-header">
         <BackButton onClick={onBack} />
-        <div className="topic-chat-header-center">
-          <span className="topic-chat-header-icon"><Icon name={icon} size={14} /></span>
-          <CopyTranslateText value={topic.title} className="topic-chat-header-title" />
-        </div>
+        <span className="topic-chat-header-spacer" />
         <button
-          className="topic-share-btn"
+          className="v3-round"
           onClick={handleShare}
           aria-label={t('shareAria')}
           title={t('shareTitle')}
         >
-          {copied
-            ? <span className="topic-share-copied"><Icon name="checkmark" size={18} /></span>
-            : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-              </svg>
-            )
-          }
+          <Icon name={copied ? 'checkmark' : 'share-outline'} size={22} />
         </button>
+      </div>
+
+      <div className="topic-chat-title-row">
+        <span className="topic-chat-header-icon"><Icon name={icon} size={20} /></span>
+        <CopyTranslateText value={topic.title} className="topic-chat-header-title" />
       </div>
 
       {/* Description band */}
@@ -494,7 +488,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
 
       {/* Expiry - hangouts auto-expire 24h after creation. */}
       {formatExpiresIn(topic.expires_at) && (
-        <div className="topic-chat-expiry" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="time-outline" size={14} /> {formatExpiresIn(topic.expires_at)}</div>
+        <div className="topic-chat-expiry-row"><span className="topic-chat-expiry"><Icon name="time-outline" size={14} /> {formatExpiresIn(topic.expires_at)}</span></div>
       )}
 
       {/* Members strip - same idea as an event's "going" strip. Members only. */}

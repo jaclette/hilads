@@ -16946,3 +16946,74 @@ body.has-app-promo-banner .page-header {
 /* Small filter chips (profile challenge filter). */
 .challenge-type-chip { min-height: 34px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-weight: 600; }
 .challenge-type-chip--active { border-color: var(--primary); background: var(--primary); color: #fff; }
+
+/* ── Plans and Hi now (web pass 3, like the app's B5) ─────────────────────── */
+.event-header { gap: 10px; padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: 12px; }
+.event-header-top { align-items: center; gap: 10px; }
+.event-header-city { flex: 1; min-width: 0; font-size: 17px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-header-body { gap: 6px; }
+.event-header-title-row { align-items: center; gap: 12px; }
+.event-header-title { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+.event-join-btn { min-height: 44px; min-width: 0; padding: 0 18px; border-radius: 14px; border: none; background: var(--primary); color: #fff; font-size: 14px; font-weight: 700; box-shadow: none; display: inline-flex; align-items: center; gap: 6px; }
+.event-join-btn:hover { background: var(--primary); opacity: 0.92; }
+.event-join-btn--active, .event-join-btn--active:hover, .event-join-btn--edit, .event-join-btn--edit:hover { background: var(--surface); border: 1.5px solid var(--line); color: var(--text); box-shadow: none; }
+.event-join-btn--pulse { animation: none; }
+.event-meta-label, .event-location, .event-host { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--muted2); margin: 0; }
+.event-meta-label .icon, .event-host .icon { color: var(--muted2); }
+.event-location { color: var(--primary-text); font-weight: 600; }
+.going-count-btn { color: var(--text); font-weight: 700; text-decoration: underline; }
+/* Hangout: back + share header, then icon + title, expiry chip (the app's topic/[id]). */
+.topic-chat-header { align-items: center; padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: 6px; }
+.topic-chat-header-spacer { flex: 1; }
+.topic-chat-title-row { display: flex; align-items: center; gap: 10px; padding: 2px 16px 6px; flex-shrink: 0; }
+.topic-chat-title-row .topic-chat-header-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: var(--primary-tint); color: var(--primary-on-tint); display: flex; align-items: center; justify-content: center; }
+.topic-chat-title-row .topic-chat-header-title { flex: 1; min-width: 0; font-size: 20px; font-weight: 800; line-height: 1.25; letter-spacing: -0.3px; }
+.topic-chat-desc { padding: 0 16px 8px; font-size: 14px; font-style: normal; color: var(--muted2); border-bottom: none; }
+.topic-chat-expiry-row { padding: 0 16px 10px; flex-shrink: 0; border-bottom: 1px solid var(--line); }
+.topic-chat-expiry { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 12px; font-weight: 700; }
+.topic-members-strip { padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.topic-members-label { font-size: 14px; font-weight: 600; color: var(--text); }
+.topic-members-see { color: var(--primary-text); }
+.topic-gated-title { font-size: 16px; font-weight: 800; }
+.topic-gated-sub { font-size: 14px; color: var(--muted2); }
+.topic-join-btn { align-self: stretch; margin: 8px 0 0; min-height: 48px; border-radius: 16px; background: var(--primary); font-size: 15px; font-weight: 700; }
+.topic-owner-btn { min-height: 40px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+.topic-owner-btn--danger { color: #C0392B; border-color: var(--line); background: var(--surface); }
+.profile-host-tag { border: none; background: var(--primary-tint); color: var(--primary-on-tint); }
+/* Plan / Hi now forms: the app's labels, chips, tiles and primary Button. */
+.cef-label { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 700; color: var(--text); }
+.cef-input, .cef-loc-field { border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); min-height: 48px; }
+.cef-input:focus { border-color: var(--primary); outline: none; }
+.cef-cat-btn, .cef-preset-btn { border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); }
+.cef-cat-btn.selected, .cef-preset-btn.selected { border-color: var(--primary); background: var(--primary-tint); }
+.cef-cat-label { text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 700; color: var(--text); }
+.cef-cat-btn.selected .cef-cat-label, .cef-preset-btn.selected .cef-preset-label { color: var(--primary-on-tint); }
+.cef-preset-label { font-size: 13px; color: var(--text); }
+.cef-preset-desc { font-size: 12px; color: var(--muted2); }
+.cef-date-chip, .cef-date-input, .cef-recur-btn, .cef-day-btn { min-height: 40px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; color-scheme: light; }
+[data-theme="dark"] .cef-date-input { color-scheme: dark; }
+.cef-date-chip.selected, .cef-date-input.selected, .cef-recur-btn.selected, .cef-day-btn.selected { border-color: var(--primary); background: var(--primary); color: #fff; }
+.cef-submit, .cef-submit:hover { min-height: 52px; padding: 0 16px; border-radius: 16px; background: var(--primary); box-shadow: none; transform: none; font-size: 16px; font-weight: 700; }
+.cef-submit:disabled { opacity: 0.45; }
+.topic-geohint, [data-theme="light"] .topic-geohint { border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; text-align: left; }
+.cef-cat-btn.selected { color: var(--primary-on-tint); box-shadow: none; }
+/* Hi now list (the app's stripped events screen): cards, two create buttons. */
+.page-header-sub { flex-shrink: 0; max-width: 40%; font-size: 13px; color: var(--muted2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.city-row, .city-row:hover { border: 1.5px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: none; }
+.event-row-card { padding: 12px 14px; gap: 4px; margin-bottom: 8px; }
+.now-actions-bar--hilocal { gap: 8px; padding: 10px 16px 14px; background: var(--bg); border-top: 1px solid var(--line); }
+.hilocal-cta { min-height: 48px; border-radius: 16px; font-size: 15px; gap: 8px; }
+.hilocal-cta--now { border: none; background: var(--primary); color: #fff; }
+.hilocal-cta--later { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+/* Empty states (the app's EmptyState): stroke icon, title, body, primary Button. */
+.events-empty-icon { color: var(--primary-text); display: flex; justify-content: center; }
+.events-empty-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.events-empty-sub { font-size: 14px; color: var(--muted2); }
+.events-empty-cta, .events-empty-cta:hover { min-height: 48px; padding: 0 20px; border: none; border-radius: 16px; background: var(--primary); color: #fff; font-size: 15px; font-weight: 700; box-shadow: none; transform: none; }
+/* Hi now / plan cards: V3 chips (tint), link-style reply, readable title. */
+.er-title { font-size: 15px; font-weight: 800; color: var(--text); }
+.er-going, .er-going--now, .er-going--later, .er-going--public, .er-going--event, .er-going--topic { font-size: 12px; font-weight: 700; color: var(--primary-on-tint); background: var(--primary-tint); border: none; border-radius: 999px; padding: 2px 8px; }
+.city-row-current, .recur-badge, .now-active-badge { font-size: 12px; font-weight: 700; color: var(--primary-on-tint); background: var(--primary-tint); border: none; border-radius: 999px; padding: 2px 8px; box-shadow: none; }
+.city-row-current--reply { color: var(--primary-text); background: none; padding: 2px 0; }
+.now-active-badge { color: var(--local-text); background: var(--local-bg); }
+.er-location { font-size: 13px; color: var(--muted2); }

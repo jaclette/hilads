@@ -372,12 +372,12 @@ function ShareVibeBtn({ eventId, title, city }) {
   }
   return (
     <button
-      className={`share-vibe-btn${copied ? ' share-vibe-btn--copied' : ''}`}
+      className="v3-round"
       onClick={handleShare}
-      title={t('share.vibeTitle')}
+      title={copied ? t('share.linkCopied') : t('share.vibeTitle')}
       aria-label={t('share.eventAria')}
     >
-      {copied ? t('share.linkCopied') : t('share.bringPeople')}
+      <Icon name={copied ? 'checkmark' : 'share-outline'} size={22} />
     </button>
   )
 }
@@ -4992,50 +4992,14 @@ export default function App() {
             <div className={`event-header${eventHeaderCollapsed ? ' event-header--collapsed' : ''}`}>
               <div className="event-header-top">
                 <BackButton onClick={handleBackToCity} className="event-back-btn" ariaLabel={`Back to ${city}`} />
-                <div className="event-header-actions">
-                  <ShareVibeBtn
-                    eventId={activeEvent.id}
-                    title={activeEvent.title}
-                    city={city}
-                  />
-                  {/* Edit entry point moved to title row for better visibility */}
-                  {account && (
-                    <button
-                      className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
-                      onClick={() => setShowNotifications(true)}
-                      title={t('header.notifications')}
-                      aria-label={t('header.notifications')}
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                      </svg>
-                      {notifUnreadCount > 0 && (
-                        <span className="header-icon-badge">
-                          {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
-                        </span>
-                      )}
-                    </button>
-                  )}
-                  {account && (
-                    <button
-                      className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
-                      onClick={() => setShowConversations(true)}
-                      title={t('header.messages')}
-                      aria-label={t('header.messages')}
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                      </svg>
-                      {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
-                    </button>
-                  )}
-                </div>
+                <span className="event-header-city">{city}</span>
+                <ShareVibeBtn
+                  eventId={activeEvent.id}
+                  title={activeEvent.title}
+                  city={city}
+                />
               </div>
               <div className="event-header-body">
-                {isMyEvent && (
-                  <span className="event-creator-badge"><Icon name="ribbon-outline" size={12} /> {t('eventHeader.yourEvent')}</span>
-                )}
                 <div className="event-header-title-row">
                   <CopyTranslateText as="h1" value={activeEvent.title} className="event-header-title" />
                   {isMyEvent ? (
@@ -5056,6 +5020,7 @@ export default function App() {
                   )}
                 </div>
                 <span className="event-meta-label">
+                  <Icon name="time-outline" size={15} />{' '}
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC', { withDate: !(activeEvent.recurrence_label || activeEvent.series_id) })}
                   {activeEvent.ends_at ? ` – ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
                   {` · ${t('eventHeader.here', { count: eventPresence[activeEvent.id] ?? 0 })} · `}
@@ -5068,13 +5033,13 @@ export default function App() {
                   const url = getEventMapsUrl(activeEvent)
                   if (url) return (
                     <a href={url} target="_blank" rel="noopener noreferrer" className="event-location">
-                      <Icon name="location-outline" size={13} /> {loc}
+                      <Icon name="location-outline" size={15} /> {loc}
                     </a>
                   )
-                  return <span className="event-location event-location--muted"><Icon name="location-outline" size={13} /> {loc ?? t('eventHeader.locationPending')}</span>
+                  return <span className="event-location event-location--muted"><Icon name="location-outline" size={15} /> {loc ?? t('eventHeader.locationPending')}</span>
                 })()}
                 {activeEvent.host_nickname && !isMyEvent && (
-                  <span className="event-host">{t('eventHeader.hostedBy', { name: activeEvent.host_nickname })}</span>
+                  <span className="event-host"><Icon name="person-outline" size={15} /> {t('eventHeader.hostedBy', { name: activeEvent.host_nickname })}</span>
                 )}
               </div>
             </div>
@@ -5196,7 +5161,7 @@ export default function App() {
         {/* ── The app's Chat (W3, SPEC 9.6): the people row (only above the
             threshold; World shows its arrivals from 3 on), then today's Daily
             Challenge pinned in both scopes. ── */}
-        {city && channelScope === 'city' && channelId && (
+        {city && !activeEvent && channelScope === 'city' && channelId && (
           <PeopleRow
             cityId={channelId}
             onHiNow={goToEventsTab}
@@ -5960,12 +5925,11 @@ export default function App() {
       )}
 
       {showEventDrawer && (
-        <div className="full-page full-page--tab">
-          <div className="tab-app-header">
-            {renderAppHeader()}
-          </div>
+        <div className="full-page">
           <div className="page-header">
-            <span className="page-title">{t('hiLocalTitle', { ns: 'common' })}</span>
+            <BackButton onClick={() => setShowEventDrawer(false)} />
+            <span className="page-title">{t('feed.hiNow')}</span>
+            {city && <span className="page-header-sub">{city}</span>}
           </div>
           <div className="page-body" ref={nowBodyRef}>
             {(() => {
@@ -5983,7 +5947,7 @@ export default function App() {
                 if (aHas && bHas && aDist !== bDist) return aDist - bDist
                 return a.starts_at - b.starts_at
               })
-              const totalVisibleEvents = hiladsEvents.length + publicEvents.length
+              const totalVisibleEvents = hiladsEvents.length + publicEvents.length + (HANGOUTS_ENABLED ? topics.length : 0)
               const renderTopicRow = (topic) => {
                 const icon = TOPIC_ICONS[topic.category] ?? TOPIC_ICONS.general
                 const replies = topic.message_count ?? 0
@@ -6066,7 +6030,7 @@ export default function App() {
                       const meters = distanceByEventId.get(event.id)
                       if (meters !== undefined) return <span className="er-location"><Icon name="location-outline" size={13} /> {formatDistance(meters)}</span>
                       const loc = getEventLocation(event)
-                      return loc ? <span className="er-location"><Icon name="location-outline" size={13} /> {loc}</span> : null
+                      return loc ? <span className="er-location"><Icon name="location-outline" size={15} /> {loc}</span> : null
                     })()}
                     {event.host_nickname && (
                       <span className="er-host">{t('feed.hostedBy', { name: event.host_nickname })}</span>
@@ -6120,16 +6084,11 @@ export default function App() {
                 const isLocalUser = account?.mode === 'local'
                 return (
                   <div className="events-empty-state">
+                    <span className="events-empty-icon"><Icon name="flash-outline" size={30} /></span>
                     <p className="events-empty-title">{isLocalUser ? t('feed.emptyLocalTitle') : t('feed.emptyTitle')}</p>
                     <p className="events-empty-sub">
                       {isLocalUser ? t('feed.emptyLocalSub', { city }) : t('feed.emptySub', { city })}
                     </p>
-                    <button className="events-empty-cta" onClick={openCreate}>
-                      {isLocalUser ? t('feed.openPlace') : t('feed.createEvent')}
-                    </button>
-                    {HANGOUTS_ENABLED && (
-                      <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
-                    )}
 
                     {/* Inspiration "idea book" - inert example hangouts/events
                         from the most-active other city. NOT joinable: each
@@ -6229,43 +6188,19 @@ export default function App() {
           {/* Hi Local → two create CTAs side by side: "Hi now" (spontaneous
               hangout) + "Hi later" (planned event). "See what's coming" below. */}
           <div className="now-actions-bar now-actions-bar--hilocal">
-            {/* Line 1: Hi now, full width, alone. */}
             <button
-              className="hilocal-cta hilocal-cta--now hilocal-cta--stack"
+              className="hilocal-cta hilocal-cta--now"
               onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
             >
-              <span className="hilocal-cta-main"><Icon name="hand-left-outline" size={18} /> {t('feed.hiNow')}</span>
-              <span className="hilocal-cta-sub">{t('feed.hiNowHint')}</span>
+              <Icon name="flash-outline" size={18} /> {t('feed.hiNow')}
             </button>
-            {/* Line 2: Hi later + See what's coming, side by side. */}
-            <div className="hilocal-cta-row">
-              <button
-                className="hilocal-cta hilocal-cta--later hilocal-cta--stack"
-                onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
-              >
-                <span className="hilocal-cta-main"><Icon name="calendar-outline" size={18} /> {t('feed.hiLater')}</span>
-                <span className="hilocal-cta-sub">{t('feed.hiLaterHint')}</span>
-              </button>
-              <button
-                className="hilocal-cta hilocal-cta--coming"
-                onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
-              >
-                {t('feed.seeComing')}
-              </button>
-            </div>
+            <button
+              className="hilocal-cta hilocal-cta--later"
+              onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
+            >
+              <Icon name="calendar-outline" size={18} /> {t('feed.hiLater')}
+            </button>
           </div>
-          {/* Discreet archive entry - muted text link under the upcoming pill. */}
-          <button
-            className="past-archive-link"
-            onClick={() => {
-              setShowEventDrawer(false)
-              if (city) pushUrl(`/city/${cityToSlug(city)}/past`)
-              if (typeof window !== 'undefined' && window.posthog) window.posthog.capture('past_archive_opened')
-              setShowPastArchive(true)
-            }}
-          >
-            {t('feed.seeHappened')}
-          </button>
         </div>
       )}
 
