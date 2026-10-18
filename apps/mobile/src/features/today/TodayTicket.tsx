@@ -9,7 +9,7 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
@@ -112,7 +112,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           <View style={styles.twist}>
             <View style={styles.twistHead}>
               <CityFlag country={city?.country} />
-              <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+              <Text style={styles.twistLabel}>{t('twistIn', { city: shortCityName(city?.name ?? '') })}</Text>
             </View>
             <Text style={styles.twistText}>{showOriginal && twist.originalText ? twist.originalText : twist.text}</Text>
           </View>

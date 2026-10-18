@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { formatSmartTime } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
@@ -105,7 +105,7 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
             <View style={styles.twist}>
               <View style={styles.twistHead}>
                 <CityFlag country={city?.country} />
-                <Text style={styles.twistLabel}>{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
+                <Text style={styles.twistLabel}>{t('twistIn', { city: shortCityName(city?.name ?? '') })}</Text>
               </View>
               <Text style={styles.twistText}>{tr?.twist ?? p.twist.text}</Text>
             </View>
@@ -164,7 +164,7 @@ function GroupCard({ message, reactions, time, longPress }: {
   const p = (message.payload ?? {}) as Partial<GroupPayload>;
   if (!p.proofIds?.length || !p.proofs?.length) return null;
   const count  = p.count ?? p.proofIds.length;
-  const cities = (p.cities ?? []).map(c => localizeCityName(c));
+  const cities = (p.cities ?? []).map(c => shortCityName(c));
   // Same rule as the server's fallback line: two cities, then "and N more" proofs.
   const named  = cities.slice(0, 2);
   const more   = count - named.length;
@@ -219,7 +219,7 @@ export function ProposedBy({ credit, ink = false }: { credit: NonNullable<Challe
       <Ionicons name="bulb-outline" size={14} color={ink ? colors.text : colors.primaryText} />
       <Text style={[styles.proposedByText, ink && { color: colors.text }]} numberOfLines={1}>
         {credit.city?.name
-          ? t('propose.proposedByCity', { name, city: localizeCityName(credit.city.name) })
+          ? t('propose.proposedByCity', { name, city: shortCityName(credit.city.name) })
           : t('propose.proposedBy', { name })}
       </Text>
     </TouchableOpacity>

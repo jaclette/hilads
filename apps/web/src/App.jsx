@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName, shortCityName } from './i18n/cityName'
 import { CityFlag, CityName } from './components/CityName'
+import HeaderArt from './components/HeaderArt'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates } from './api'
@@ -4912,7 +4913,8 @@ export default function App() {
                     city, private messages; then the City / World switch.
                     Tapping the active city changes city; unread counts on the
                     other side. */}
-                <div className="chat-top">
+                <div className="chat-top has-art">
+                  <HeaderArt kind="hi" />
                   <div className="tab-heading">
                     <h1 className="chat-title">{t('tabTitle', { ns: 'chat' })}</h1>
                     <p className="tab-subtitle">{t('subtitles.hi', { ns: 'common' })}</p>
@@ -5573,7 +5575,7 @@ export default function App() {
           key={mapSpotId ?? 'map'}
           initialSpotId={mapSpotId}
           channelId={channelId}
-          cityName={city ? localizeCityName(city) : null}
+          cityName={city ? shortCityName(city) : null}
           onClose={() => setShowMap(false)}
           onOpenPlan={(id) => {
             setShowMap(false)

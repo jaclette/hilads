@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useSyncExternalStore } 
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { voteDailyProof, unvoteDailyProof, reportDailyProof } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
@@ -133,7 +133,7 @@ export function ProposedBy({ credit }) {
     <button type="button" className="dc-proposed" onClick={open} style={INLINE}>
       <Icon name="bulb-outline" size={14} />
       {credit.city?.name
-        ? t('propose.proposedByCity', { name, city: localizeCityName(credit.city.name) })
+        ? t('propose.proposedByCity', { name, city: shortCityName(credit.city.name) })
         : t('propose.proposedBy', { name })}
     </button>
   )

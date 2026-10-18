@@ -7,7 +7,7 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { fetchDailyTodayProofs } from '@/api/daily';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { RankMedal } from '@/features/daily/RankMedal';
@@ -49,7 +49,7 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   const proofs = t('today.proofs', { count: strip.total });
   return (
     <Card style={styles.card}>
-      <SectionTitle small title={world ? t('today.aroundWorld') : t('today.inCity', { city: localizeCityName(strip.city?.name ?? '') })}
+      <SectionTitle small title={world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}
                     action={{ label: t('today.seeAll'), onPress: () => router.push('/daily/today?source=today' as never) }} />
       <Text style={styles.stats}>
         {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}

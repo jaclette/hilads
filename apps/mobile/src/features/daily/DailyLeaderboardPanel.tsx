@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { formatCountdown } from '@/hooks/useDaily';
 import { RankMedal } from './RankMedal';
@@ -83,7 +83,7 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
         <View style={styles.me}>
           <Text style={styles.meText}>{t('leaderboard.me', { rank: board.me.rank, votes: board.me.voteCount })}</Text>
           {board.me.cityRank !== null && myProof?.city && (
-            <Text style={styles.meSub}>{t('leaderboard.meCity', { rank: board.me.cityRank, city: localizeCityName(myProof.city.name) })}</Text>
+            <Text style={styles.meSub}>{t('leaderboard.meCity', { rank: board.me.cityRank, city: shortCityName(myProof.city.name) })}</Text>
           )}
         </View>
       ) : (
@@ -103,7 +103,7 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
           ))}
           {board.cities.map(c => (
             <View key={c.city.id} style={styles.city}>
-              <Title icon="location-outline" flag={c.city.country} text={t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })} sub />
+              <Title icon="location-outline" flag={c.city.country} text={t('leaderboard.cityTop', { city: shortCityName(c.city.name) })} sub />
               {c.entries.map(e => (
                 <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onPress={() => onOpenProof(e.proofId)} />
               ))}
@@ -173,7 +173,7 @@ function ResultRow({ proof, rank, city = false, onPress }: { proof: DailyProof; 
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const name = proof.user.displayName || proof.user.username || '';
-  const cityName = proof.city ? localizeCityName(proof.city.name) : '';
+  const cityName = proof.city ? shortCityName(proof.city.name) : '';
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={rank ? `#${rank} ${name}` : name}>
       {rank

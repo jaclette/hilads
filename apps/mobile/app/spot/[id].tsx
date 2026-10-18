@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
@@ -63,7 +63,7 @@ export default function SpotScreen() {
   }
 
   const { spot, ranking, captions } = data;
-  const cityName = ranking?.cityName ? localizeCityName(ranking.cityName) : spot.city?.name ? localizeCityName(spot.city.name) : '';
+  const cityName = ranking?.cityName ? shortCityName(ranking.cityName) : spot.city?.name ? shortCityName(spot.city.name) : '';
   const rankLine = ranking?.week === 1 ? t('spot.rankWeekFirst', { city: cityName })
     : ranking?.week ? t('spot.rankWeek', { rank: ranking.week, city: cityName })
     : ranking?.alltime === 1 ? t('spot.rankAlltimeFirst', { city: cityName })

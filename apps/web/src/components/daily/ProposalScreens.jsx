@@ -4,7 +4,7 @@ import {
   editTwistProposal, fetchDailyToday, fetchMyProposals, fetchTwistProposal, proposeChallenge, proposeTwist,
   withdrawDailyProposal, withdrawTwistProposal,
 } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
@@ -57,7 +57,7 @@ export function ProposeScreen({ source = null, onBack }) {
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const canTwist = account?.mode === 'local' && !!today?.city?.isLive
-  const cityName = today?.city?.name ? localizeCityName(today.city.name) : ''
+  const cityName = today?.city?.name ? shortCityName(today.city.name) : ''
   const length = [...text.trim()].length
   const canSend = length > 0 && length <= TEXT_MAX && theme !== null && !sending
 
@@ -162,7 +162,7 @@ export function TwistScreen({ onBack }) {
   }, [account, load]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (left === 0) load() }, [left, load])
 
-  const cityName = data?.city ? localizeCityName(data.city.name) : ''
+  const cityName = data?.city ? shortCityName(data.city.name) : ''
   const showError = (err) => {
     const code = err.code ?? 'generic'
     setError(t(`twist.errors.${code}`, { city: cityName, defaultValue: t('errors.generic') }))
@@ -297,7 +297,7 @@ export function ProposalsScreen({ onBack }) {
               <span className={`dc-status dc-status--${tone}`}>{t(`propose.status.${item.status}`, { date })}</span>
             </div>
             <p className="dc-line">{item.text}</p>
-            <p className="dc-muted">{[themeName(item.theme?.key), item.city ? localizeCityName(item.city.name ?? '') : ''].filter(Boolean).join(' · ')}</p>
+            <p className="dc-muted">{[themeName(item.theme?.key), item.city ? shortCityName(item.city.name ?? '') : ''].filter(Boolean).join(' · ')}</p>
             {item.twistText && <p className="dc-line" style={LINE}><Icon name="location-outline" size={15} style={{ marginTop: 3 }} /><span>{item.twistText}</span></p>}
             {item.rejectionReason && <p className="dc-reason">{t('propose.reason', { reason: item.rejectionReason })}</p>}
             {item.type === 'challenge' && item.status === 'pending' && (

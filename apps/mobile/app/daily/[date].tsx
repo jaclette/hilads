@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName, shortCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
@@ -113,7 +113,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType }: {
   }, [sheet]);
 
   const isLive = !!sheet?.city?.isLive;
-  const cityName = sheet?.city?.name ? localizeCityName(sheet.city.name) : '';
+  const cityName = sheet?.city?.name ? shortCityName(sheet.city.name) : '';
   const challenge = sheet?.challenge ?? null;
   const myProof = sheet?.myProof ?? null;
 

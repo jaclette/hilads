@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import BackButton from '../BackButton'
 import { fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToday } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { shortCityName } from '../../i18n/cityName'
 import { CityFlag, CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
@@ -131,7 +131,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
   const challenge = sheet?.challenge ?? null
   const myProof = sheet?.myProof ?? null
   const isLive = !!sheet?.city?.isLive
-  const cityName = sheet?.city?.name ? localizeCityName(sheet.city.name) : ''
+  const cityName = sheet?.city?.name ? shortCityName(sheet.city.name) : ''
   const store = deviceStore()
 
   return (
@@ -298,7 +298,7 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
         <div className="dc-me">
           <span>{t('leaderboard.me', { rank: board.me.rank, votes: board.me.voteCount })}</span>
           {board.me.cityRank !== null && myProof?.city && (
-            <span className="dc-muted">{t('leaderboard.meCity', { rank: board.me.cityRank, city: localizeCityName(myProof.city.name) })}</span>
+            <span className="dc-muted">{t('leaderboard.meCity', { rank: board.me.cityRank, city: shortCityName(myProof.city.name) })}</span>
           )}
         </div>
       ) : (
@@ -312,7 +312,7 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
           {board.world.map(e => <EntryRow key={e.proofId} entry={e} mine={e.proofId === board.me?.proofId} onOpen={() => onOpenProof(e.proofId)} />)}
           {board.cities.map(c => (
             <div key={c.city.id}>
-              <p className="dc-section" style={LINE}>{c.city.country ? <CityFlag country={c.city.country} /> : <Icon name="location-outline" size={16} />}{t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })}</p>
+              <p className="dc-section" style={LINE}>{c.city.country ? <CityFlag country={c.city.country} /> : <Icon name="location-outline" size={16} />}{t('leaderboard.cityTop', { city: shortCityName(c.city.name) })}</p>
               {c.entries.map(e => <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onOpen={() => onOpenProof(e.proofId)} />)}
             </div>
           ))}

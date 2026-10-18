@@ -12,6 +12,7 @@ import { THEME_KEYS, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinL
 import Icon, { iconHtml } from '../Icon'
 import { THEME_ICON } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
+import HeaderArt from '../HeaderArt'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -366,7 +367,8 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
 
   return (
     <div className="full-page full-page--tab wm-page">
-      <div className="page-header">
+      <div className="page-header has-art">
+        <HeaderArt kind="map" />
         <BackButton onClick={onClose} />
         <div className="tab-heading">
           <span className="page-title">{nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>

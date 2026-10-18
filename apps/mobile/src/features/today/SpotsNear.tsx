@@ -11,7 +11,7 @@ import { useScope } from '@/context/ScopeContext';
 import { fetchSpotsNear, type Spot } from '@/api/spots';
 import { compactPrice, distance } from './format';
 import { CityFlag, SectionTitle } from '@/ui';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 
 /**
  * Spots near you (SPEC 9.3): the 2-3 nearest spots, linking to the Map. Uses
@@ -61,7 +61,7 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
         <View style={styles.head}>
           <CityFlag country={away.country} />
           <View style={styles.headTitle}>
-            <SectionTitle title={t('today.spotsIn', { city: localizeCityName(away.name) })}
+            <SectionTitle title={t('today.spotsIn', { city: shortCityName(away.name) })}
                           action={{ label: t('today.openMap'), onPress: () => openMap() }} />
           </View>
         </View>

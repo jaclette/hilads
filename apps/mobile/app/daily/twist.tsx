@@ -10,7 +10,7 @@ import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constant
 import { Button, Card, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import {
   dailyErrorCode, editTwistProposal, fetchTwistProposal, proposeTwist, withdrawTwistProposal,
@@ -103,7 +103,7 @@ export default function DailyTwistScreen() {
     ]);
   };
 
-  const cityName = data?.city ? localizeCityName(data.city.name) : '';
+  const cityName = data?.city ? shortCityName(data.city.name) : '';
   const proposal = data?.proposal ?? null;
   const canChange = !!data?.open && proposal?.status === 'pending';
   const showForm = !!data?.open && (!proposal || editing);

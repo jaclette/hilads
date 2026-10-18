@@ -8,6 +8,7 @@ export { Card } from './Card';
 export { Chip } from './Chip';
 export { CityFlag, CityName } from './CityName';
 export { EmptyState } from './EmptyState';
+export { HeaderArt } from './HeaderArt';
 export { IconButton } from './IconButton';
 export { ListRow, RowGroup } from './ListRow';
 export { ModeLabel } from './ModeLabel';

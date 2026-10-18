@@ -7,7 +7,7 @@ import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Button, Card, Chip, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { dailyErrorCode, proposeChallenge } from '@/api/daily';
 import { useDailyToday } from '@/hooks/useDaily';
@@ -44,7 +44,7 @@ export default function DailyProposeScreen() {
 
   // The server checks it again (home city must match).
   const canTwist = account?.mode === 'local' && !!today.data?.city?.isLive;
-  const cityName = today.data?.city?.name ? localizeCityName(today.data.city.name) : '';
+  const cityName = today.data?.city?.name ? shortCityName(today.data.city.name) : '';
 
   const tracked = useRef(false);
   useEffect(() => {

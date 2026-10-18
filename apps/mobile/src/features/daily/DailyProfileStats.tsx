@@ -10,7 +10,7 @@ import { Button, CityFlag } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
 import { DailyProofViewer } from './DailyProofViewer';
 import { RankMedal } from './RankMedal';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import type { DailyProof, DailyUserStats } from '@/types';
 
 /**
@@ -67,13 +67,13 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
                   <View key={`p${p.city.id}`} style={[styles.pass, styles.passEarned]}>
                     <Ionicons name="checkmark-circle" size={14} color={colors.gold} />
                     <CityFlag country={p.city.country} size={14} />
-                    <Text style={[styles.passText, styles.passTextEarned]}>{localizeCityName(p.city.name ?? '')} · {t('localPass.earned')}</Text>
+                    <Text style={[styles.passText, styles.passTextEarned]}>{shortCityName(p.city.name ?? '')} · {t('localPass.earned')}</Text>
                   </View>
                 ))}
                 {isMe && inProgress.map(p => (
                   <View key={`g${p.city.id}`} style={styles.pass}>
                     <CityFlag country={p.city.country} size={14} />
-                    <Text style={styles.passText}>{localizeCityName(p.city.name ?? '')} · {t('localPass.progress', { done: p.done, total: p.total })}</Text>
+                    <Text style={styles.passText}>{shortCityName(p.city.name ?? '')} · {t('localPass.progress', { done: p.done, total: p.total })}</Text>
                   </View>
                 ))}
               </View>

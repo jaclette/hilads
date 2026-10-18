@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { themeName } from '@/features/daily/themes';
 import { THEME_ICON } from './format';
@@ -42,7 +42,7 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
       const seen = new Set<string>(JSON.parse(prev) as string[]);
       const fresh = progress.themes.find(th => !seen.has(th));
       if (!fresh) return;
-      setStamp({ theme: fresh, city: localizeCityName(progress.city.name ?? '') });
+      setStamp({ theme: fresh, city: shortCityName(progress.city.name ?? '') });
       track('stamp_earned', { theme: fresh, city: progress.city.name ?? null, stamps: progress.done });
     }).catch(() => {});
     return () => { alive = false; };

@@ -8,7 +8,7 @@ import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
 import { useDailyToday } from '@/hooks/useDaily';
 import { fetchMyProposals, fetchUserDaily } from '@/api/daily';
@@ -42,7 +42,7 @@ export default function PassportScreen() {
 
   const cityKey = city?.channelId ? (String(city.channelId).startsWith('city_') ? String(city.channelId) : `city_${city.channelId}`) : null;
   const cityNum = cityKey ? Number(cityKey.slice(5)) : null;
-  const cityName = city?.name ? localizeCityName(city.name) : null;
+  const cityName = city?.name ? shortCityName(city.name) : null;
 
   useFocusEffect(useCallback(() => {
     if (!account) return;
@@ -59,7 +59,7 @@ export default function PassportScreen() {
   }, [account, cityKey]));
 
   const header = (
-    <ScreenHeader variant="tab" title={t('passport.title')} subtitle={t('subtitles.passport', { ns: 'common' })}
+    <ScreenHeader variant="tab" title={t('passport.title')} subtitle={t('subtitles.passport', { ns: 'common' })} art="passport"
                   right={<IconButton icon="settings-outline" iconSize={21} label={t('settings')} onPress={() => router.push('/settings' as never)} />} />
   );
 
@@ -124,12 +124,12 @@ export default function PassportScreen() {
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} snapToInterval={pageWidth + 10} decelerationRate="fast"
                       contentContainerStyle={styles.pages}>
             {progress.map(p => (
-              <CityPage key={p.city.id} width={pageWidth} cityName={localizeCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
+              <CityPage key={p.city.id} width={pageWidth} cityName={shortCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
                         todayTheme={p.city.id === cityNum ? todayTheme : null} tomorrowTheme={p.city.id === cityNum ? tomorrow : null} />
             ))}
           </ScrollView>
         ) : progress.length === 1 ? (
-          <CityPage cityName={localizeCityName(progress[0].city.name ?? '')} country={progress[0].city.country} themes={progress[0].themes} earned={progress[0].earned}
+          <CityPage cityName={shortCityName(progress[0].city.name ?? '')} country={progress[0].city.country} themes={progress[0].themes} earned={progress[0].earned}
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
 

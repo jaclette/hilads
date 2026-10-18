@@ -7,7 +7,7 @@ import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { Button, Card, Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { localizeCityName } from '@/i18n/cityName';
+import { shortCityName } from '@/i18n/cityName';
 import { fetchMyProposals, withdrawProposal } from '@/api/daily';
 import { THEME_ICON } from '@/features/today/format';
 import type { DailyProposal } from '@/types';
@@ -120,7 +120,7 @@ function ProposalRow({ item, onWithdraw }: { item: DailyProposal; onWithdraw: ()
         {(item.theme || item.city) && (
           <View style={styles.iconRow}>
             {item.theme && <Chip icon={THEME_ICON[item.theme.key] ?? 'pricetag-outline'} label={themeName(item.theme.key)} />}
-            {item.city && <Text style={styles.meta} numberOfLines={1}>{localizeCityName(item.city.name ?? '')}</Text>}
+            {item.city && <Text style={styles.meta} numberOfLines={1}>{shortCityName(item.city.name ?? '')}</Text>}
           </View>
         )}
         {!!item.twistText && (

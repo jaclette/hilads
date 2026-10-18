@@ -38,6 +38,9 @@
   --primary-on-tint: #8A3A12;
   --line: #EADCCD;
   --flag-line: rgba(42, 28, 19, 0.2);
+  --header-art: var(--primary);
+  --header-art-opacity: 0.2;
+  --header-art-stroke: 1.5;
   --local-bg: #E3F0E8;
   --local-text: #23603F;
   --traveler-bg: #E4ECF7;
@@ -85,6 +88,10 @@
   --primary-on-tint: #FFB48A;
   --line: #272018;
   --flag-line: rgba(255, 255, 255, 0.28);
+  /* Header line art in dark: the light orange, a touch heavier, for contrast on the dark ground. */
+  --header-art: #FFB48A;
+  --header-art-opacity: 0.22;
+  --header-art-stroke: 1.75;
   --local-bg: #12301F;
   --local-text: #7FD9A4;
   --traveler-bg: #17263A;
@@ -17219,3 +17226,8 @@ body.has-app-promo-banner .page-header {
 .tab-heading { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .tab-subtitle { margin: 0; font-size: 14px; line-height: 19px; font-weight: 500; color: var(--muted2);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Line art behind the Hi, Map and Passport headers (HeaderArt.jsx): right side, decorative. */
+.has-art { position: relative; overflow: hidden; isolation: isolate; }
+.header-art { position: absolute; top: 0; right: 0; height: 100%; max-height: 112px; width: auto; aspect-ratio: 160 / 96;
+  color: var(--header-art); opacity: var(--header-art-opacity); stroke-width: var(--header-art-stroke); pointer-events: none; z-index: -1; }

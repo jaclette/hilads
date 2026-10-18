@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends, fetchWeeklyRank } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { shortCityName } from '../../i18n/cityName'
 import { CityFlag } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
 import Icon from '../Icon'
+import HeaderArt from '../HeaderArt'
 
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
@@ -37,7 +38,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
   const [help, setHelp] = useState(false)
   const cityKey = cityId ? (String(cityId).startsWith('city_') ? String(cityId) : `city_${cityId}`) : null
   const cityNum = cityKey ? Number(cityKey.slice(5)) : null
-  const city = cityName ? localizeCityName(cityName) : null
+  const city = cityName ? shortCityName(cityName) : null
 
   useEffect(() => {
     if (!account) return
@@ -55,7 +56,8 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
   }, [account, cityKey, i18n.language])
 
   const header = (
-    <div className="pp-header">
+    <div className="pp-header has-art">
+      <HeaderArt kind="passport" />
       <div className="tab-heading">
         <h1 className="pp-title">{t('passport.title')}</h1>
         <p className="tab-subtitle">{i18n.t('subtitles.passport', { ns: 'common' })}</p>
@@ -117,7 +119,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         {progress.length > 0 && (
           <div className={`pp-pages${progress.length > 1 ? ' pp-pages--scroll' : ''}`}>
             {progress.map(p => (
-              <CityPage key={p.city.id} cityName={localizeCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
+              <CityPage key={p.city.id} cityName={shortCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
                         todayTheme={p.city.id === cityNum ? todayTheme : null} tomorrowTheme={p.city.id === cityNum ? tomorrow : null} />
             ))}
           </div>

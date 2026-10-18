@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchSpotsNear } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import { THEME_ICON } from '../../lib/icons'
@@ -171,7 +171,7 @@ function Ticket({ data, loading }) {
       <div className="today-bottom">
         {twist && (
           <div className="today-twist">
-            <span className="today-twist-label"><CityFlag country={city?.country} />{t('twistIn', { city: localizeCityName(city?.name ?? '') })}</span>
+            <span className="today-twist-label"><CityFlag country={city?.country} />{t('twistIn', { city: shortCityName(city?.name ?? '') })}</span>
             <span className="today-twist-text">{showOriginal && twist.originalText ? twist.originalText : twist.text}</span>
           </div>
         )}
@@ -327,7 +327,7 @@ function TodayProofs({ today }) {
   return (
     <div className="today-card">
       <div className="today-card-head">
-        <span className="today-card-title">{world ? t('today.aroundWorld') : t('today.inCity', { city: localizeCityName(strip.city?.name ?? '') })}</span>
+        <span className="today-card-title">{world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}</span>
         <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: 'today', source: 'today' })}>{t('today.seeAll')}</button>
       </div>
       <span className="dc-muted today-proofs-stats">
@@ -449,7 +449,7 @@ function SpotsNear() {
   return (
     <div className="spots">
       <div className="today-card-head">
-        <span className="today-card-title">{away ? <span style={ROW}><CityFlag country={away.country} />{t('today.spotsIn', { city: localizeCityName(away.name) })}</span> : t('today.spotsTitle')}</span>
+        <span className="today-card-title">{away ? <span style={ROW}><CityFlag country={away.country} />{t('today.spotsIn', { city: shortCityName(away.name) })}</span> : t('today.spotsTitle')}</span>
         <button type="button" className="dc-link" onClick={() => openSpot(null)}>{t('today.openMap')}</button>
       </div>
       {fallback && spots.length > 0 && <p className="dc-muted">{t('today.spotsFallback')}</p>}

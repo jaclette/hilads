@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
 import { fetchSpot } from '../../api'
-import { localizeCityName } from '../../i18n/cityName'
+import { shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
@@ -14,7 +14,7 @@ const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** The ranking line ("Top voted this week in Saigon"), week first. */
 function rankingLine(t, ranking) {
   if (!ranking?.cityName) return null
-  const city = localizeCityName(ranking.cityName)
+  const city = shortCityName(ranking.cityName)
   if (ranking.week)    return ranking.week === 1 ? t('spot.rankWeekFirst', { city }) : t('spot.rankWeek', { rank: ranking.week, city })
   if (ranking.alltime) return ranking.alltime === 1 ? t('spot.rankAlltimeFirst', { city }) : t('spot.rankAlltime', { rank: ranking.alltime, city })
   return null
