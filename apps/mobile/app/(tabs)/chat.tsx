@@ -641,6 +641,9 @@ export default function ChatTab() {
       // 'new_user' = World "X from City just joined" arrivals; the arrivals pill
       // already surfaces these, so keep them out of the conversation.
       !(m.type === 'system' && (m.event === 'weather' || m.event === 'join' || m.event === 'new_user'))
+      // Deleted messages disappear from city and World (no "Message deleted"
+      // placeholder; private conversations keep it).
+      && !m.deletedAt
     );
     return [...chat, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
@@ -878,7 +881,7 @@ export default function ChatTab() {
           <Segmented
             options={[
               { key: 'city' as const, label: shortCityName(city.name), flag: city.country, badge: cityUnread },
-              { key: 'world' as const, label: t('world.tab'), badge: worldUnread },
+              { key: 'world' as const, label: t('world.tab'), icon: 'globe-outline', badge: worldUnread },
             ]}
             value={channelScope === 'world' ? 'world' : 'city'}
             onChange={k => (k === 'world' ? switchScope('world') : channelScope === 'world' ? switchScope('city') : router.push('/switch-city' as never))}

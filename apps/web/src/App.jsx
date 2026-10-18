@@ -4942,6 +4942,7 @@ export default function App() {
                     <button type="button" role="tab" aria-selected={channelScope === 'world'}
                             className={`chat-scope-btn${channelScope === 'world' ? ' chat-scope-btn--on' : ''}`}
                             onClick={() => switchScope('world')}>
+                      <Icon name="globe-outline" size={17} />
                       <span className="chat-scope-label">{t('world.tab')}</span>
                       {channelScope === 'city' && worldUnread > 0 && <span className="chat-scope-badge">{worldUnread > 99 ? '99+' : worldUnread}</span>}
                     </button>
@@ -5012,6 +5013,9 @@ export default function App() {
             </div>
           )}
           {feed.map((item, i) => {
+            // Deleted messages disappear from city and World (no "Message deleted"
+            // placeholder; private conversations keep it).
+            if (item.deletedAt && !activeEvent) return null
             if (item.type === 'daily') {
               return <DailyFeedCard key={item.id} item={item} t={t} onOpen={(params) => openDaily('challenge', { source: 'chat', ...params })} />
             }
