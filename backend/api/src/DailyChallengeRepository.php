@@ -14,7 +14,8 @@ final class DailyChallengeRepository
     {
         return Cache::remember('daily_challenge_v2_' . $date, 60, function () use ($date): ?array {
             $stmt = Database::pdo()->prepare("
-                SELECT id, challenge_date, text_i18n, context_i18n, theme, proposed_by_user_id, published_at, cover_url
+                -- * (not a column list): works before and after the cover_url migration.
+                SELECT *
                 FROM daily_challenges
                 WHERE challenge_date = ? AND status = 'published'
             ");
