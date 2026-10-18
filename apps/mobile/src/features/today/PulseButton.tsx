@@ -24,8 +24,10 @@ const GROW_Y = 0.5;           // ... and 50% taller than the button
  * and grows a primary disc from it before `onPress` opens the camera. The OS
  * "reduce motion" setting turns all of it off: a static button.
  */
-export function PulseButton({ label, onPress, fast, visible }: {
+export function PulseButton({ label, onPress, fast, visible, intercept }: {
   label: string; onPress: () => void; fast: boolean; visible: boolean;
+  /** Called on press first: true = handled elsewhere (the how-it-works sheet), no transition. */
+  intercept?: () => boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -70,6 +72,7 @@ export function PulseButton({ label, onPress, fast, visible }: {
 
   const go = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    if (intercept?.()) return;
     if (reduceMotion) { onPress(); return; }
     // The camera opens "from the button": a primary disc grows out of it first.
     reveal.value = withTiming(1, { duration: 240, easing: Easing.in(Easing.quad) }, done => { if (done) runOnJS(onPress)(); });

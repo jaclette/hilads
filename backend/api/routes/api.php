@@ -14381,6 +14381,14 @@ $router->add('GET', '/api/v1/daily/today', function () {
     Response::json($out);
 });
 
+// POST /api/v1/daily/remind-me - "Remind me later" on Today's how-it-works
+// sheet: today's evening reminder for me (within the push cap). → {queued}
+// (false: no device, Daily pushes off, or the reminder time has passed).
+$router->add('POST', '/api/v1/daily/remind-me', function () {
+    $user = AuthService::requireAuth();
+    Response::json(['queued' => DailyPushes::queueReminderFor($user['id'], new DateTimeImmutable('now'))]);
+});
+
 // GET /api/v1/daily/today/proofs?scope=world|city&cityId=&limit= - Today's proof
 // strip (SPEC 9.3): the scope's approved proofs, most voted then newest, with
 // its proof and country counts. A city with no proof yet falls back to World.

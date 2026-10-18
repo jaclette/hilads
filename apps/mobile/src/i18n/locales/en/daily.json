@@ -449,5 +449,19 @@
     "ok": "Nice",
     "close": "Close"
   },
-  "takeIt": "Take it"
+  "takeIt": "Take it",
+  "proofHint": {
+    "place": "Prove it with a photo. It lands on the map.",
+    "noPlace": "Prove it with a photo."
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "step1": "Do it where you are.",
+    "step2": "Snap a photo.",
+    "step3": "It goes on the map and gets votes.",
+    "step3NoPlace": "It shows in today's proofs and gets votes.",
+    "camera": "Open the camera",
+    "later": "Remind me later",
+    "laterDone": "We'll remind you this evening."
+  }
 }

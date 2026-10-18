@@ -1299,6 +1299,10 @@
       "ok": "Super",
       "close": "Schließen"
     },
-    "takeIt": "Annehmen"
+    "takeIt": "Annehmen",
+    "proofHint": {
+      "place": "Beweis es mit einem Foto. Es landet auf der Karte.",
+      "noPlace": "Beweis es mit einem Foto."
+    }
   }
 }

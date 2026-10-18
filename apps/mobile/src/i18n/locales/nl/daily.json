@@ -449,5 +449,19 @@
     "ok": "Top",
     "close": "Sluiten"
   },
-  "takeIt": "Doe mee"
+  "takeIt": "Doe mee",
+  "proofHint": {
+    "place": "Bewijs het met een foto. Die komt op de kaart.",
+    "noPlace": "Bewijs het met een foto."
+  },
+  "howItWorks": {
+    "title": "Zo werkt het",
+    "step1": "Doe het waar je bent.",
+    "step2": "Maak een foto.",
+    "step3": "Die komt op de kaart en krijgt stemmen.",
+    "step3NoPlace": "Die verschijnt bij de bewijzen van vandaag en krijgt stemmen.",
+    "camera": "Camera openen",
+    "later": "Herinner me later",
+    "laterDone": "We herinneren je vanavond."
+  }
 }

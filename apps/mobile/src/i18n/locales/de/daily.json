@@ -449,5 +449,19 @@
     "ok": "Super",
     "close": "Schließen"
   },
-  "takeIt": "Annehmen"
+  "takeIt": "Annehmen",
+  "proofHint": {
+    "place": "Beweis es mit einem Foto. Es landet auf der Karte.",
+    "noPlace": "Beweis es mit einem Foto."
+  },
+  "howItWorks": {
+    "title": "So geht's",
+    "step1": "Mach es da, wo du bist.",
+    "step2": "Mach ein Foto.",
+    "step3": "Es kommt auf die Karte und bekommt Stimmen.",
+    "step3NoPlace": "Es erscheint bei den Beweisen von heute und bekommt Stimmen.",
+    "camera": "Kamera öffnen",
+    "later": "Später erinnern",
+    "laterDone": "Wir erinnern dich heute Abend."
+  }
 }

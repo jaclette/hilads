@@ -449,5 +449,19 @@
     "ok": "Genial",
     "close": "Cerrar"
   },
-  "takeIt": "Acéptalo"
+  "takeIt": "Acéptalo",
+  "proofHint": {
+    "place": "Demuéstralo con una foto. Llega al mapa.",
+    "noPlace": "Demuéstralo con una foto."
+  },
+  "howItWorks": {
+    "title": "Cómo funciona",
+    "step1": "Hazlo donde estés.",
+    "step2": "Saca una foto.",
+    "step3": "Va al mapa y recibe votos.",
+    "step3NoPlace": "Aparece en las pruebas de hoy y recibe votos.",
+    "camera": "Abrir la cámara",
+    "later": "Recuérdamelo luego",
+    "laterDone": "Te lo recordamos esta tarde."
+  }
 }

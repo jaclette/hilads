@@ -437,6 +437,36 @@ final class DailyPushes
     }
 
     /**
+     * "Remind me later" (Today's how-it-works sheet): queue today's evening
+     * reminder for one user, at the usual reminder time in their timezone,
+     * whatever their activity. Needs a device and the Daily toggle; skipped
+     * when that time has passed. Already queued counts as queued. Sent through
+     * the log like any reminder: within the cap, skipped if they post first.
+     */
+    public static function queueReminderFor(string $userId, DateTimeImmutable $now): bool
+    {
+        $date = DailyClock::currentDate($now);
+        if (DailyChallengeRepository::findPublishedByDate($date) === null || !DailyClock::isActive($date, $now)) {
+            return false;
+        }
+        [$start, $end] = DailyClock::window($date);
+        foreach (self::userRecipients([$userId]) as $u) {
+            $at = self::reminderSendAt($start, $end, $u['tz']);
+            if ($at === null || $at <= $now) {
+                return false;
+            }
+            self::insert([['u:' . $u['id'], $u['id'], null, $date, 'reminder', $at, $u['tz'],
+                           ['data' => self::data($date), 'locale' => $u['locale']]]]);
+            $stmt = Database::pdo()->prepare("
+                SELECT 1 FROM daily_push_log WHERE recipient_key = ? AND challenge_date = ? AND type = 'reminder' AND status = 'queued'
+            ");
+            $stmt->execute(['u:' . $u['id'], $date]);
+            return $stmt->fetchColumn() !== false;
+        }
+        return false;
+    }
+
+    /**
      * Queue the digest of $date for these users (proof or twist authors).
      * Past its time: the next daytime moment, unless the challenge is over by
      * then. Idempotent. Returns rows queued.

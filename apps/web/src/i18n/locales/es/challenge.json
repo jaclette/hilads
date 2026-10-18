@@ -1299,6 +1299,10 @@
       "ok": "Genial",
       "close": "Cerrar"
     },
-    "takeIt": "Acéptalo"
+    "takeIt": "Acéptalo",
+    "proofHint": {
+      "place": "Demuéstralo con una foto. Llega al mapa.",
+      "noPlace": "Demuéstralo con una foto."
+    }
   }
 }

@@ -16481,6 +16481,7 @@ body.has-app-promo-banner .page-header {
 .today-twist-text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
 .today-cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; border: none; font-family: inherit; cursor: pointer; transition: transform 0.12s ease; }
 .today-cta:active { transform: scale(0.97); }
+.today-hint { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--muted2); margin-bottom: -4px; }
 .today-cta--taken { width: 100%; background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
 /* "I'm in" pulse (SPEC 9.3): two primary rings in relay, from the button's edge
    outward while fading (8% wider, 50% taller), 1.6 s, the second 0.8 s later;

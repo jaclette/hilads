@@ -1297,6 +1297,10 @@
       "ok": "Tuyệt",
       "close": "Đóng"
     },
-    "takeIt": "Nhận"
+    "takeIt": "Nhận",
+    "proofHint": {
+      "place": "Chứng minh bằng một tấm ảnh. Ảnh sẽ lên bản đồ.",
+      "noPlace": "Chứng minh bằng một tấm ảnh."
+    }
   }
 }

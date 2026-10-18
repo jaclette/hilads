@@ -447,5 +447,19 @@
     "ok": "Tuyệt",
     "close": "Đóng"
   },
-  "takeIt": "Nhận"
+  "takeIt": "Nhận",
+  "proofHint": {
+    "place": "Chứng minh bằng một tấm ảnh. Ảnh sẽ lên bản đồ.",
+    "noPlace": "Chứng minh bằng một tấm ảnh."
+  },
+  "howItWorks": {
+    "title": "Cách chơi",
+    "step1": "Làm ngay nơi bạn đang ở.",
+    "step2": "Chụp một tấm ảnh.",
+    "step3": "Ảnh lên bản đồ và nhận bình chọn.",
+    "step3NoPlace": "Ảnh hiện trong bằng chứng hôm nay và nhận bình chọn.",
+    "camera": "Mở camera",
+    "later": "Nhắc tôi sau",
+    "laterDone": "Tối nay mình sẽ nhắc bạn."
+  }
 }

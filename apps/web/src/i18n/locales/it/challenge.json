@@ -1299,6 +1299,10 @@
       "ok": "Grande",
       "close": "Chiudi"
     },
-    "takeIt": "Accetta"
+    "takeIt": "Accetta",
+    "proofHint": {
+      "place": "Dimostralo con una foto. Finisce sulla mappa.",
+      "noPlace": "Dimostralo con una foto."
+    }
   }
 }

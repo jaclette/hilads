@@ -72,6 +72,8 @@ export type AnalyticsEvent =
   // Daily Challenge (props: challenge_date, city, is_local + per-event fields).
   | 'daily_challenge_viewed'
   | 'daily_proof_started'
+  | 'how_it_works_shown'
+  | 'how_it_works_choice'
   | 'daily_proof_posted'
   | 'daily_push_permission'
   | 'daily_notification_opened'

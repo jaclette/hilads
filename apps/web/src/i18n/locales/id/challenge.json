@@ -1299,6 +1299,10 @@
       "ok": "Mantap",
       "close": "Tutup"
     },
-    "takeIt": "Ikuti"
+    "takeIt": "Ikuti",
+    "proofHint": {
+      "place": "Buktikan dengan foto. Fotonya muncul di peta.",
+      "noPlace": "Buktikan dengan foto."
+    }
   }
 }

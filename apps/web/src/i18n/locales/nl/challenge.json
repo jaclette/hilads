@@ -1299,6 +1299,10 @@
       "ok": "Top",
       "close": "Sluiten"
     },
-    "takeIt": "Doe mee"
+    "takeIt": "Doe mee",
+    "proofHint": {
+      "place": "Bewijs het met een foto. Die komt op de kaart.",
+      "noPlace": "Bewijs het met een foto."
+    }
   }
 }

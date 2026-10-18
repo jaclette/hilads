@@ -1299,6 +1299,10 @@
       "ok": "Boa",
       "close": "Fechar"
     },
-    "takeIt": "Aceitar"
+    "takeIt": "Aceitar",
+    "proofHint": {
+      "place": "Prova com uma foto. Ela vai para o mapa.",
+      "noPlace": "Prova com uma foto."
+    }
   }
 }

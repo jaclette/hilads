@@ -1299,6 +1299,10 @@
       "ok": "Ayos",
       "close": "Isara"
     },
-    "takeIt": "Gawin"
+    "takeIt": "Gawin",
+    "proofHint": {
+      "place": "Patunayan sa isang litrato. Lalabas ito sa mapa.",
+      "noPlace": "Patunayan sa isang litrato."
+    }
   }
 }

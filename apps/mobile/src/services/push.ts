@@ -313,7 +313,7 @@ export type DailyPushResult = 'granted' | 'denied' | 'dismissed' | 'already';
  * refused at the system level, offer the phone settings instead.
  * Tracks daily_push_permission { result, source }.
  */
-export async function askDailyPush(source: 'first_proof' | 'banner', guestId?: string | null): Promise<DailyPushResult> {
+export async function askDailyPush(source: 'first_proof' | 'banner' | 'remind_me', guestId?: string | null): Promise<DailyPushResult> {
   const t = (key: string) => i18n.t(key, { ns: 'daily' });
   if (await hasPushPermission()) {
     await requestAndRegisterPush(guestId, { prompt: false }).catch(() => null);

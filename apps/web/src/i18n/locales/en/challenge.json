@@ -1299,6 +1299,10 @@
       "ok": "Nice",
       "close": "Close"
     },
-    "takeIt": "Take it"
+    "takeIt": "Take it",
+    "proofHint": {
+      "place": "Prove it with a photo. It lands on the map.",
+      "noPlace": "Prove it with a photo."
+    }
   }
 }

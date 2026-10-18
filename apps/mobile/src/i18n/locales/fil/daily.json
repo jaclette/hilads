@@ -449,5 +449,19 @@
     "ok": "Ayos",
     "close": "Isara"
   },
-  "takeIt": "Gawin"
+  "takeIt": "Gawin",
+  "proofHint": {
+    "place": "Patunayan sa isang litrato. Lalabas ito sa mapa.",
+    "noPlace": "Patunayan sa isang litrato."
+  },
+  "howItWorks": {
+    "title": "Paano ito gumagana",
+    "step1": "Gawin kung nasaan ka.",
+    "step2": "Kumuha ng litrato.",
+    "step3": "Lalabas ito sa mapa at makakakuha ng boto.",
+    "step3NoPlace": "Lalabas ito sa mga proof ngayong araw at makakakuha ng boto.",
+    "camera": "Buksan ang camera",
+    "later": "Paalalahanan mo ako mamaya",
+    "laterDone": "Ipapaalala namin mamayang gabi."
+  }
 }

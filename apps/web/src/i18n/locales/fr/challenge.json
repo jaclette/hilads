@@ -1299,6 +1299,10 @@
       "ok": "Super",
       "close": "Fermer"
     },
-    "takeIt": "Je le relève"
+    "takeIt": "Je le relève",
+    "proofHint": {
+      "place": "Prouve-le en photo : elle rejoint la carte.",
+      "noPlace": "Prouve-le en photo."
+    }
   }
 }

@@ -449,5 +449,19 @@
     "ok": "Grande",
     "close": "Chiudi"
   },
-  "takeIt": "Accetta"
+  "takeIt": "Accetta",
+  "proofHint": {
+    "place": "Dimostralo con una foto. Finisce sulla mappa.",
+    "noPlace": "Dimostralo con una foto."
+  },
+  "howItWorks": {
+    "title": "Come funziona",
+    "step1": "Fallo dove sei.",
+    "step2": "Scatta una foto.",
+    "step3": "Finisce sulla mappa e riceve voti.",
+    "step3NoPlace": "Compare tra le prove di oggi e riceve voti.",
+    "camera": "Apri la fotocamera",
+    "later": "Ricordamelo dopo",
+    "laterDone": "Te lo ricordiamo stasera."
+  }
 }

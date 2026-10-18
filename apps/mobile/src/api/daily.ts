@@ -38,6 +38,11 @@ export async function fetchDailyToday(cityId?: string | number | null): Promise<
   return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId), locale: locale() } });
 }
 
+/** "Remind me later" (Today's how-it-works sheet): today's evening reminder for me, within the push cap. */
+export async function remindMeLater(): Promise<{ queued: boolean }> {
+  return api.post<{ queued: boolean }>('/daily/remind-me', {});
+}
+
 /** Yesterday's podium: the scope's top 3 proofs of yesterday, total and countries. A city with none falls back to World. */
 export async function fetchDailyPodium(
   opts: { scope?: 'world' | 'city'; cityId?: string | number | null; guestId?: string | null } = {},

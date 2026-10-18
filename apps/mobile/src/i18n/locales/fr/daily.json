@@ -449,5 +449,19 @@
     "ok": "Super",
     "close": "Fermer"
   },
-  "takeIt": "Je le relève"
+  "takeIt": "Je le relève",
+  "proofHint": {
+    "place": "Prouve-le en photo : elle rejoint la carte.",
+    "noPlace": "Prouve-le en photo."
+  },
+  "howItWorks": {
+    "title": "Comment ça marche",
+    "step1": "Fais-le là où tu es.",
+    "step2": "Prends une photo.",
+    "step3": "Elle rejoint la carte et reçoit des votes.",
+    "step3NoPlace": "Elle rejoint les preuves du jour et reçoit des votes.",
+    "camera": "Ouvrir l'appareil photo",
+    "later": "Me le rappeler plus tard",
+    "laterDone": "On te le rappelle ce soir."
+  }
 }

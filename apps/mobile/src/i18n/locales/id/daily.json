@@ -449,5 +449,19 @@
     "ok": "Mantap",
     "close": "Tutup"
   },
-  "takeIt": "Ikuti"
+  "takeIt": "Ikuti",
+  "proofHint": {
+    "place": "Buktikan dengan foto. Fotonya muncul di peta.",
+    "noPlace": "Buktikan dengan foto."
+  },
+  "howItWorks": {
+    "title": "Cara kerjanya",
+    "step1": "Lakukan di tempatmu sekarang.",
+    "step2": "Ambil foto.",
+    "step3": "Fotonya masuk peta dan dapat vote.",
+    "step3NoPlace": "Fotonya muncul di bukti hari ini dan dapat vote.",
+    "camera": "Buka kamera",
+    "later": "Ingatkan nanti",
+    "laterDone": "Kami ingatkan nanti malam."
+  }
 }

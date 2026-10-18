@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -19,6 +20,9 @@ import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { THEME_ICON, clock } from './format';
 import { THEME_COVERS } from './covers';
 import { PulseButton } from './PulseButton';
+import { HowItWorksSheet } from './HowItWorksSheet';
+import { remindMeLater } from '@/api/daily';
+import { askDailyPush } from '@/services/push';
 import { isFinalHours } from '@/hooks/useDaily';
 import { Button, CityFlag } from '@/ui';
 import type { DailyThemeKey, DailyToday } from '@/types';
@@ -26,6 +30,7 @@ import { themeName } from '@/features/daily/themes';
 
 /** Brand term: English in every locale (SPEC 9.11). */
 const DAILY_CHALLENGE = 'Daily Challenge';
+const HOW_IT_WORKS_KEY = 'hilads_how_it_works_seen';
 /** The cover's white text and its shade: fixed in both themes (the image is the same). */
 const COVER_TEXT  = '#FFFFFF';
 // Measured on the covers: white text >= 5.6:1 even over a pure white image.
@@ -50,10 +55,16 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
-  const { account } = useApp();
+  const { account, identity } = useApp();
   const { scope } = useScope();
   const [showOriginal, toggleOriginal] = useOriginal();
   const tracked = useRef<string | null>(null);
+  // How it works: the first "I'm in" only (device), then straight to the camera.
+  const [howSeen, setHowSeen] = useState<boolean | null>(null);
+  const [howOpen, setHowOpen] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem(HOW_IT_WORKS_KEY).then(v => setHowSeen(v === '1')).catch(() => setHowSeen(true));
+  }, []);
 
   const challenge = data?.challenge ?? null;
   useEffect(() => {
@@ -89,6 +100,29 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
     router.push('/daily/proof' as never);
   };
+  const placeTheme = !!challenge.theme && challenge.theme.key !== 'language';
+  const props = { ...dailyTrackProps(data, account?.mode), place_theme: placeTheme };
+  // The first tap shows How it works instead of the camera (never again after).
+  const firstTap = () => {
+    if (howSeen !== false) return false;
+    setHowOpen(true);
+    track('how_it_works_shown', props);
+    return true;
+  };
+  const howDone = (choice: 'camera' | 'later' | 'dismissed') => {
+    setHowOpen(false);
+    setHowSeen(true);
+    AsyncStorage.setItem(HOW_IT_WORKS_KEY, '1').catch(() => {});
+    track('how_it_works_choice', { ...props, choice });
+  };
+  const remindLater = async () => {
+    howDone('later');
+    if (!account) return;   // a guest has no reminder to schedule
+    // The reminder is a push: ask for permission in context first.
+    await askDailyPush('remind_me', identity?.guestId);
+    const r = await remindMeLater().catch(() => null);
+    if (r?.queued) Alert.alert(t('howItWorks.laterDone'));
+  };
 
   return (
     <TouchableOpacity style={styles.ticket} onPress={openSheet} activeOpacity={0.92} accessibilityRole="button"
@@ -117,6 +151,12 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
             <Text style={styles.twistText}>{showOriginal && twist.originalText ? twist.originalText : twist.text}</Text>
           </View>
         )}
+        {!myProof && (
+          <View style={styles.hint}>
+            <Ionicons name="camera-outline" size={15} color={colors.muted} />
+            <Text style={styles.hintText}>{placeTheme ? t('proofHint.place') : t('proofHint.noPlace')}</Text>
+          </View>
+        )}
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <DailyStatusChip status={myProof.status} />}
@@ -125,7 +165,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           </>
         ) : (
           // The card's only orange element, pulsing; straight to the camera (SPEC 9.3).
-          <PulseButton label={t('ctaIn')} onPress={onCta} visible={visible} fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
+          <PulseButton label={t('ctaIn')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
+                       fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
         {took > 0 && (
           <TouchableOpacity style={styles.took} onPress={openSheet} accessibilityRole="button">
@@ -135,6 +176,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           </TouchableOpacity>
         )}
       </View>
+      <HowItWorksSheet visible={howOpen} placeTheme={placeTheme}
+                       onCamera={() => { howDone('camera'); onCta(); }} onLater={remindLater} onClose={() => howDone('dismissed')} />
     </TouchableOpacity>
   );
 }
@@ -236,6 +279,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   twistLabel:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   twistText:   { fontSize: 15, lineHeight: 22, fontWeight: '500', color: c.text },
   cta:         { minHeight: 56 },
+  hint:        { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  hintText:    { flex: 1, fontSize: 13, lineHeight: 18, fontWeight: '600', color: c.muted },
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
   // Secondary links in ink: the button is the card's only orange element.
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },

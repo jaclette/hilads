@@ -175,6 +175,11 @@ function Ticket({ data, loading }) {
             <span className="today-twist-text">{showOriginal && twist.originalText ? twist.originalText : twist.text}</span>
           </div>
         )}
+        {!myProof && (
+          <span className="today-hint" style={ROW}>
+            <Icon name="camera-outline" size={15} />{theme && theme !== 'language' ? t('proofHint.place') : t('proofHint.noPlace')}
+          </span>
+        )}
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <StatusChip status={myProof.status} />}

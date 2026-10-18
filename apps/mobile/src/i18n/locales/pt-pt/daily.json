@@ -449,5 +449,19 @@
     "ok": "Boa",
     "close": "Fechar"
   },
-  "takeIt": "Aceitar"
+  "takeIt": "Aceitar",
+  "proofHint": {
+    "place": "Prova com uma foto. Ela vai para o mapa.",
+    "noPlace": "Prova com uma foto."
+  },
+  "howItWorks": {
+    "title": "Como funciona",
+    "step1": "Faz onde estás.",
+    "step2": "Tira uma foto.",
+    "step3": "Vai para o mapa e recebe votos.",
+    "step3NoPlace": "Aparece nas provas de hoje e recebe votos.",
+    "camera": "Abrir a câmara",
+    "later": "Lembra-me mais tarde",
+    "laterDone": "Lembramos-te esta noite."
+  }
 }
