@@ -14376,6 +14376,8 @@ $router->add('GET', '/api/v1/daily/today', function () {
     $out  = DailyChallengeRepository::header(DailyClock::currentDate(), dailyCityParam($user), $user);
     // Locals of a live city: tomorrow's Local Twist proposal (entry point on the hero card).
     $out['twistProposal'] = $user !== null ? DailyTwistProposals::summaryFor($user) : null;
+    // Ever posted a proof: Today's brand line shows until the first one (SPEC 9.3).
+    $out['hasProof'] = $user !== null && DailyProofRepository::hasAny($user['id']);
     Response::json($out);
 });
 

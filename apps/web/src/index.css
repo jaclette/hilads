@@ -16792,7 +16792,8 @@ body.has-app-promo-banner .page-header {
 .su-sub { margin-bottom: 4px; }
 .su-secondary { width: 100%; min-height: 54px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 1rem; font-weight: 700; color: var(--text); cursor: pointer; }
 .su-notnow { align-self: center; min-height: 44px; color: var(--muted2); }
-.first-launch { margin: 2px 0 0; font-size: 1.15rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.brand-line { margin: 2px 0 0; font-size: 15px; line-height: 22px; font-weight: 600; color: var(--muted2); }
+.brand-line-name { margin-right: 4px; font-size: 1.15rem; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
 .su-auth { position: fixed; inset: 0; z-index: 1150; }
 
 /* Stroke icons (components/Icon.jsx): sit on the text baseline, never shrink in a flex row. */

@@ -13,7 +13,7 @@ import { TodayProofs } from '@/features/today/TodayProofs';
 import { TodayPodium } from '@/features/today/TodayPodium';
 import { SpotsNear } from '@/features/today/SpotsNear';
 import { StampCelebration } from '@/features/today/StampCelebration';
-import { FirstLaunchLine } from '@/features/today/FirstLaunchLine';
+import { BrandLine } from '@/features/today/BrandLine';
 
 /**
  * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, the week
@@ -44,7 +44,7 @@ export default function TodayScreen() {
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
-        <FirstLaunchLine guest={!account} />
+        <BrandLine today={daily.data} guest={!account} />
         <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} />
         <DailyPushBanner />
         <TodayWeek today={daily.data} />

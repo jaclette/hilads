@@ -275,6 +275,14 @@ final class DailyProofRepository
         });
     }
 
+    /** True once the user posted a proof, any day (pending or approved; removed ones don't count). */
+    public static function hasAny(string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("SELECT 1 FROM daily_proofs WHERE user_id = ? AND moderation_status <> 'removed' LIMIT 1");
+        $stmt->execute([$userId]);
+        return $stmt->fetchColumn() !== false;
+    }
+
     /** Moderation queue: pending proofs, oldest first (the longest wait is reviewed first). */
     public static function listPending(int $limit): array
     {

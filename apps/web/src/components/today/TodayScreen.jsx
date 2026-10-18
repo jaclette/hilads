@@ -55,7 +55,7 @@ export default function TodayScreen({ header }) {
     <div className="full-page full-page--tab today-page">
       <div className="tab-app-header">{header}</div>
       <div className="page-body today-body">
-        <FirstLaunchLine />
+        <BrandLine today={data} />
         <Ticket data={data} loading={loading} />
         <Week today={data} />
         <TodayProofs today={data} />
@@ -66,24 +66,18 @@ export default function TodayScreen({ header }) {
   )
 }
 
-const FIRST_LAUNCH_KEY = 'hilads_first_launch_line_seen'
-
 /**
- * First launch (W5, SPEC 9.9): "One local thing. Every day." on top of Today
- * for a guest's first visit, never again. No tutorial.
+ * Today's brand line (SPEC 9.3 / 9.9): "Hilads" in the wordmark weight, then
+ * the tagline in muted text, one line that wraps on small screens. At the top
+ * of the scrolling content, so it scrolls away. For guests, and for signed-in
+ * users until their first proof; then hidden so the card sits higher.
  */
-function FirstLaunchLine() {
+function BrandLine({ today }) {
   const { t } = useTranslation('common')
   const { account } = useDaily()
-  const [show, setShow] = useState(false)
-  useEffect(() => {
-    if (account) return
-    try {
-      if (localStorage.getItem(FIRST_LAUNCH_KEY) !== '1') { setShow(true); localStorage.setItem(FIRST_LAUNCH_KEY, '1') }
-    } catch { /* storage blocked: skip the line */ }
-  }, [account])
-  if (!show || account) return null
-  return <p className="first-launch">{t('firstLaunch')}</p>
+  // Signed in: wait for Today to know, so it never flashes for users who posted.
+  if (account && (!today || today.hasProof)) return null
+  return <p className="brand-line"><span className="brand-line-name">Hilads</span> {t('firstLaunch')}</p>
 }
 
 /**

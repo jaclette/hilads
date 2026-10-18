@@ -875,6 +875,8 @@ export interface DailyToday {
   streak:      number | null;                           // signed in
   /** Locals of a live city with a challenge tomorrow: proposing tomorrow's Local Twist. */
   twistProposal?: { date: string; open: boolean; closesAt: number; status: DailyTwistProposalStatus | null } | null;
+  /** Signed in and ever posted a proof (Today's brand line hides then). */
+  hasProof?: boolean;
   /** Tomorrow's theme as a teaser (never its text). */
   tomorrow?:  { date: string; theme: DailyTheme | null } | null;
   /** My Local Pass progress in this city (signed in, with a city). */
