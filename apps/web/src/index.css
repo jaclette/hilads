@@ -16781,3 +16781,98 @@ body.has-app-promo-banner .page-header {
 
 /* Stroke icons (components/Icon.jsx): sit on the text baseline, never shrink in a flex row. */
 .icon { flex-shrink: 0; vertical-align: -0.15em; }
+
+/* ── Secondary screens, shared pieces (web pass 1, like the app's src/ui) ───
+   Screen header = the app's ScreenHeader: 44 round back button, title on the
+   left, page background, no rule. Filter pills, grouped rows and switches
+   follow the app's Chip / RowGroup / Switch. */
+.page-header { gap: 10px; min-height: 0; padding: max(10px, env(safe-area-inset-top)) 16px 8px; background: var(--bg); border-bottom: none; }
+.page-title { position: static; left: auto; transform: none; flex: 1; min-width: 0; max-width: none; text-align: left; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.3px; }
+.notif-page .page-title { text-align: left; }
+.back-button,
+[data-theme="light"] .back-button,
+.auth-page .back-button { min-width: 44px; min-height: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.back-button:hover { background: var(--surface2); border-color: var(--line); box-shadow: none; }
+.back-button:active { transform: scale(0.96); background: var(--surface2); border-color: var(--line); }
+.back-button--with-label { width: auto; max-width: min(220px, 48vw); padding: 0 14px 0 10px; border-radius: 999px; gap: 6px; }
+.page-action-btn,
+.notif-mark-all { min-height: 44px; padding: 0 4px; border: none; border-radius: 0; background: none; color: var(--primary-text); font-size: 14px; font-weight: 700; }
+.page-action-btn:active { background: none; opacity: 0.7; }
+
+/* Filter pills (inbox): the app's filter Chip. */
+.conv-filters { gap: 8px; padding: 4px 16px 10px; border-bottom: none; overflow-x: auto; scrollbar-width: none; }
+.conv-filters::-webkit-scrollbar { display: none; }
+.conv-filter-pill { min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; }
+.conv-filter-pill--active { border-color: var(--primary); background: var(--primary); color: #fff; }
+
+/* Section titles in sentence case (copy pass: no ALL-CAPS). */
+.conv-section-label,
+.notif-prefs-title { text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 800; color: var(--text); }
+.conv-section-label { padding: 8px 16px 4px; }
+
+/* Inbox rows */
+.conv-body { padding: 0 0 1.5rem; }
+.conv-row { min-height: 64px; padding: 10px 16px; gap: 12px; }
+.conv-row-name { font-size: 15px; font-weight: 700; }
+.conv-row-preview { font-size: 14px; color: var(--muted2); }
+.conv-row--unread .conv-row-time { color: var(--primary-text); font-weight: 700; }
+.conv-unread-dot { width: 10px; height: 10px; background: var(--primary); }
+.conv-event-icon { border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); }
+.conv-empty-title { font-size: 16px; font-weight: 800; }
+.conv-empty-sub { color: var(--muted2); }
+
+/* Notification rows: the app's NotifRow (icon in a ring, tint when unread). */
+.notif-row { gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.notif-row:not(.read) { border-left: none; padding-left: 16px; background: var(--surface); }
+.notif-row.read { opacity: 1; }
+.notif-icon { width: 44px; height: 44px; margin: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); display: flex; align-items: center; justify-content: center; }
+.notif-row:not(.read) .notif-icon { border-color: var(--primary-tint); background: var(--primary-tint); }
+.notif-row:not(.read) .notif-icon .icon { color: var(--primary-on-tint); }
+.notif-title { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.notif-row.read .notif-title { color: var(--muted2); font-weight: 500; }
+.notif-body-text { font-size: 14px; color: var(--text); }
+.notif-row.read .notif-body-text { color: var(--muted2); }
+.notif-time { font-size: 12px; font-weight: 500; color: var(--muted2); }
+.notif-unread-dot { width: 10px; height: 10px; background: var(--primary); }
+.notif-see-all { width: calc(100% - 32px); min-height: 48px; margin: 12px 16px 4px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-size: 15px; font-weight: 700; }
+.notif-empty-title { font-size: 16px; font-weight: 800; }
+.notif-empty-sub { font-size: 14px; color: var(--muted2); }
+
+/* Preferences: one card of rows (the app's RowGroup) with the app's switch. */
+.notif-prefs { padding: 18px 16px 40px; border-top: none; margin-top: 0; }
+.notif-prefs-title { margin-bottom: 10px; }
+.notif-pref-row { padding: 12px 14px; background: var(--surface); border: 1.5px solid var(--line); border-top: none; border-bottom: 1px solid var(--line); }
+.notif-prefs-title + .notif-pref-row { border-top: 1.5px solid var(--line); border-radius: 20px 20px 0 0; }
+.notif-pref-row:last-child { border-bottom: 1.5px solid var(--line); border-radius: 0 0 20px 20px; }
+.notif-prefs-title + .notif-pref-row:last-child { border-radius: 20px; }
+.notif-pref-name { font-size: 15px; font-weight: 700; }
+.notif-pref-desc { font-size: 13px; color: var(--muted2); }
+.notif-toggle { width: 51px; height: 31px; border-radius: 999px; background: var(--line); }
+.notif-toggle::after { top: 2px; left: 2px; width: 27px; height: 27px; box-shadow: 0 1px 3px rgba(28, 20, 14, 0.25); }
+.notif-toggle.on { background: var(--primary); }
+.notif-toggle.on::after { transform: translateX(20px); }
+
+/* Leaderboard: the app's segmented tabs (primary fill), plain rows. */
+.leaderboard-selectors { gap: 8px; padding: 4px 16px 4px; }
+.leaderboard-seg { gap: 4px; padding: 4px; border: 1.5px solid var(--line); background: var(--surface); }
+.leaderboard-seg-item { min-height: 40px; padding: 0 10px; color: var(--text); font-size: 14px; font-weight: 600; display: block; text-align: center; line-height: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.leaderboard-seg-item.is-active,
+.leaderboard-seg--primary .leaderboard-seg-item.is-active { background: var(--primary); color: #fff; font-weight: 700; }
+.leaderboard-row { min-height: 60px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+.leaderboard-row.is-me { background: var(--primary-tint); }
+.leaderboard-row--tappable:hover { background: var(--surface2); }
+.leaderboard-row--tappable.is-me:hover { background: var(--primary-tint); }
+.leaderboard-rank { color: var(--muted2); }
+.leaderboard-row.is-me .leaderboard-rank,
+.leaderboard-row.is-me .leaderboard-points { color: var(--primary-on-tint); }
+.leaderboard-name { font-size: 15px; }
+.leaderboard-points { font-size: 14px; color: var(--muted2); }
+.leaderboard-city-flag { background: var(--surface2); }
+.leaderboard-pinned { border-top: 1px solid var(--line); background: var(--bg); }
+.leaderboard-unranked-cta { min-height: 48px; border-radius: 16px; background: var(--primary); box-shadow: none; font-size: 15px; font-weight: 700; }
+.leaderboard-unranked-cta:hover { transform: none; box-shadow: none; }
+
+/* Secondary pill (Share my rank, Share in my city): the app's secondary Button, small. */
+.share-to-city-pill { min-height: 40px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 700; }
+.share-to-city-pill:hover { background: var(--surface2); }
+.share-to-city-pill--row { min-height: 34px; padding: 0 12px; font-size: 13px; }
