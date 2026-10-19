@@ -59,7 +59,7 @@ export function SpotList({ spots, sort, onSort, me, origin, onPick, topInset, bo
           <Chip variant="filter" label={t('map.sortWeek')} selected={sort === 'week'} onPress={() => onSort('week')} />
         </View>
       }
-      ListEmptyComponent={<>{empty}</>}
+      ListEmptyComponent={<View>{empty}</View>}
       ItemSeparatorComponent={() => <View style={styles.sep} />}
       renderItem={({ item: s }) => {
         const theme = s.themes[0] ?? null;
