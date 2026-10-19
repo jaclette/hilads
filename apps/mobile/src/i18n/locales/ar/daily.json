@@ -419,18 +419,6 @@
     "countries_many": "{{count}} دولة",
     "countries_other": "{{count}} دولة",
     "proofsIn": "{{proofs}} في {{countries}}",
-    "tookIt_zero": "لم يشارك أحد اليوم",
-    "tookIt_one": "شارك شخص واحد اليوم",
-    "tookIt_two": "شارك شخصان اليوم",
-    "tookIt_few": "شارك {{count}} أشخاص اليوم",
-    "tookIt_many": "شارك {{count}} شخصًا اليوم",
-    "tookIt_other": "شارك {{count}} شخص اليوم",
-    "seePhotos_zero": "شاهد الصور",
-    "seePhotos_one": "شاهد الصورة",
-    "seePhotos_two": "شاهد الصور",
-    "seePhotos_few": "شاهد الصور",
-    "seePhotos_many": "شاهد الصور",
-    "seePhotos_other": "شاهد الصور",
     "podiumTitle": "منصة الأمس",
     "spotsIn": "أماكن في {{city}}",
     "allPast": "كل التحديات السابقة",
@@ -599,18 +587,16 @@
     "proofs_few": "{{count}} إجابات",
     "proofs_many": "{{count}} إجابة",
     "proofs_other": "{{count}} إجابة",
-    "seeAll": "عرض الكل",
-    "teaser_zero": "أجاب {{count}} بلد:",
-    "teaser_one": "أجاب بلد واحد:",
-    "teaser_two": "أجاب بلدان:",
-    "teaser_few": "أجابت {{count}} بلدان:",
-    "teaser_many": "أجاب {{count}} بلدًا:",
-    "teaser_other": "أجاب {{count}} بلد:",
-    "firstAnswers": "أولى الإجابات تصل. أي مدينة التالية؟",
     "boardTitle": "هكذا أجاب العالم",
     "cheapest": "الأرخص: {{city}} {{price}}",
     "priciest": "الأغلى: {{city}} {{price}}",
-    "funFact": "السعر في {{city}} أعلى بـ {{ratio}} مرات من {{other}}."
+    "funFact": "السعر في {{city}} أعلى بـ {{ratio}} مرات من {{other}}.",
+    "answeredRow_zero": "أجاب {{count}} بلد",
+    "answeredRow_one": "أجاب بلد واحد",
+    "answeredRow_two": "أجاب بلدان",
+    "answeredRow_few": "أجابت {{count}} بلدان",
+    "answeredRow_many": "أجاب {{count}} بلدًا",
+    "answeredRow_other": "أجاب {{count}} بلد"
   },
   "backHome": {
     "title": "وفي مدينتك، كيف الحال؟",
@@ -670,5 +656,9 @@
     "footnote": "بناءً على المدن التي لديها 3 إجابات أو أكثر"
   },
   "ctaAnswer": "أجب باسم {{city}}",
-  "ctaAnswerNoCity": "أجب باسم مدينتك"
+  "ctaAnswerNoCity": "أجب باسم مدينتك",
+  "countdown": {
+    "hm": "{{h}} س {{m}} د",
+    "ms": "{{m}} د {{s}} ث"
+  }
 }

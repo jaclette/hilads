@@ -377,10 +377,6 @@
     "countries_one": "{{count}}개국",
     "countries_other": "{{count}}개국",
     "proofsIn": "{{countries}}에서 {{proofs}}",
-    "tookIt_one": "오늘 {{count}}명이 참여했어요",
-    "tookIt_other": "오늘 {{count}}명이 참여했어요",
-    "seePhotos_one": "사진 보기",
-    "seePhotos_other": "사진 보기",
     "podiumTitle": "어제의 시상대",
     "spotsIn": "{{city}}의 장소",
     "allPast": "지난 챌린지 모두 보기",
@@ -532,14 +528,12 @@
     "median": "중앙값 {{price}}",
     "proofs_one": "답변 {{count}}개",
     "proofs_other": "답변 {{count}}개",
-    "seeAll": "모두 보기",
-    "teaser_one": "벌써 {{count}}개국이 답했어요:",
-    "teaser_other": "벌써 {{count}}개국이 답했어요:",
-    "firstAnswers": "첫 답변들이 도착하고 있어요. 다음 도시는?",
     "boardTitle": "세계는 이렇게 답했어요",
     "cheapest": "가장 싼 곳: {{city}} {{price}}",
     "priciest": "가장 비싼 곳: {{city}} {{price}}",
-    "funFact": "{{city}}는 {{other}}보다 {{ratio}}배 비싸요."
+    "funFact": "{{city}}는 {{other}}보다 {{ratio}}배 비싸요.",
+    "answeredRow_one": "벌써 {{count}}개국이 답했어요",
+    "answeredRow_other": "벌써 {{count}}개국이 답했어요"
   },
   "backHome": {
     "title": "고향에서는 어때요?",
@@ -595,5 +589,9 @@
     "footnote": "답변 3개 이상인 도시 기준"
   },
   "ctaAnswer": "{{city}} 대표로 답하기",
-  "ctaAnswerNoCity": "내 도시 대표로 답하기"
+  "ctaAnswerNoCity": "내 도시 대표로 답하기",
+  "countdown": {
+    "hm": "{{h}}시간 {{m}}분",
+    "ms": "{{m}}분 {{s}}초"
+  }
 }

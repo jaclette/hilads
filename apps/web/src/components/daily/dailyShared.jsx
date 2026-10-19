@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
+import i18n from '../../i18n'
 import { voteDailyProof, unvoteDailyProof, reportDailyProof } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
@@ -60,14 +61,16 @@ export function RoleLabel({ isLocal }) {
 export const COUNTDOWN_WARNING_SECONDS = 3 * 3600
 export const isFinalHours = (s) => s !== null && s <= COUNTDOWN_WARNING_SECONDS
 
-/** "6h 12m" / "12m" / "45s". */
+/** A countdown in the viewer's language: "20h 43m" (FR "20 h 43"), "42m 07s" in the last hour. */
 export function formatCountdown(seconds) {
   if (seconds === null || seconds === undefined) return ''
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`
-  if (m > 0) return `${m}m`
-  return `${seconds}s`
+  const s = Math.max(0, Math.floor(seconds))
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const pad = (n) => String(n).padStart(2, '0')
+  return h > 0
+    ? i18n.t('dc.countdown.hm', { ns: 'challenge', h, m: pad(m) })
+    : i18n.t('dc.countdown.ms', { ns: 'challenge', m, s: pad(s % 60) })
 }
 
 /** Seconds left until `endsAt` (unix s), ticking every second; null when no end. */

@@ -36,7 +36,7 @@ export function useLeaderboard(active) {
 /**
  * A Daily Challenge (the app's /daily/[date]): challenge, context, Local Twist
  * and its author, "Proposed by", my proof, practical info, then World / City /
- * Top 10. `proofId` opens that proof on arrival; `tab: 'top10'` opens the Top 10.
+ * Top 10. `proofId` opens that proof on arrival; `tab` ('top10', 'compare', 'world', 'city') opens that tab.
  * Proofs are posted from the app, so the CTA opens the store.
  */
 export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) {
@@ -61,8 +61,8 @@ export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) 
 function Sheet({ date, proofId = null, tab: initialTab = null, source = null, onBack }) {
   const { t, i18n } = useDc()
   const { cityId, account, openProfile, needAccount, openSpot } = useDaily()
-  const [scope, setScope] = useState('world')
-  const [tab, setTab] = useState(initialTab === 'top10' || initialTab === 'compare' ? initialTab : 'world')
+  const [scope, setScope] = useState(initialTab === 'city' ? 'city' : 'world')
+  const [tab, setTab] = useState(['top10', 'compare', 'world', 'city'].includes(initialTab) ? initialTab : 'world')
   const [sheet, setSheet] = useState(null)
   const [error, setError] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)

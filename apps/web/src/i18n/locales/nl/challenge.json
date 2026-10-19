@@ -1224,10 +1224,6 @@
       "countries_one": "{{count}} land",
       "countries_other": "{{count}} landen",
       "proofsIn": "{{proofs}} in {{countries}}",
-      "tookIt_one": "{{count}} persoon deed vandaag mee",
-      "tookIt_other": "{{count}} mensen deden vandaag mee",
-      "seePhotos_one": "Bekijk de foto",
-      "seePhotos_other": "Bekijk hun foto's",
       "podiumTitle": "Het podium van gisteren",
       "spotsIn": "Spots in {{city}}",
       "allPast": "Alle eerdere challenges",
@@ -1328,14 +1324,12 @@
       "median": "Mediaan {{price}}",
       "proofs_one": "{{count}} antwoord",
       "proofs_other": "{{count}} antwoorden",
-      "teaser_one": "Al {{count}} land heeft geantwoord:",
-      "teaser_other": "Al {{count}} landen hebben geantwoord:",
-      "seeAll": "Alles zien",
-      "firstAnswers": "De eerste antwoorden komen binnen. Welke stad is de volgende?",
       "boardTitle": "Zo antwoordde de wereld",
       "cheapest": "Goedkoopst: {{city}} {{price}}",
       "priciest": "Duurst: {{city}} {{price}}",
-      "funFact": "{{ratio}}× zo duur in {{city}} als in {{other}}."
+      "funFact": "{{ratio}}× zo duur in {{city}} als in {{other}}.",
+      "answeredRow_one": "Al {{count}} land heeft geantwoord",
+      "answeredRow_other": "Al {{count}} landen hebben geantwoord"
     },
     "backHome": {
       "hereIn": "Hier in {{city}}",
@@ -1373,6 +1367,10 @@
     "ctaAnswerNoCity": "Antwoord voor je stad",
     "represent": {
       "button": "Antwoord voor {{city}}"
+    },
+    "countdown": {
+      "hm": "{{h}}u {{m}}m",
+      "ms": "{{m}}m {{s}}s"
     }
   }
 }

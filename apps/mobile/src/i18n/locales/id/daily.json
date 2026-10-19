@@ -379,10 +379,6 @@
     "countries_one": "{{count}} negara",
     "countries_other": "{{count}} negara",
     "proofsIn": "{{proofs}} di {{countries}}",
-    "tookIt_one": "{{count}} orang ikut hari ini",
-    "tookIt_other": "{{count}} orang ikut hari ini",
-    "seePhotos_one": "Lihat fotonya",
-    "seePhotos_other": "Lihat foto mereka",
     "podiumTitle": "Podium kemarin",
     "spotsIn": "Spot di {{city}}",
     "allPast": "Semua challenge sebelumnya",
@@ -534,14 +530,12 @@
     "median": "Median {{price}}",
     "proofs_one": "{{count}} jawaban",
     "proofs_other": "{{count}} jawaban",
-    "seeAll": "Lihat semua",
-    "teaser_one": "Sudah {{count}} negara menjawab:",
-    "teaser_other": "Sudah {{count}} negara menjawab:",
-    "firstAnswers": "Jawaban pertama mulai masuk. Kota mana berikutnya?",
     "boardTitle": "Begini dunia menjawab",
     "cheapest": "Termurah: {{city}} {{price}}",
     "priciest": "Termahal: {{city}} {{price}}",
-    "funFact": "{{ratio}}× lebih mahal di {{city}} daripada di {{other}}."
+    "funFact": "{{ratio}}× lebih mahal di {{city}} daripada di {{other}}.",
+    "answeredRow_one": "Sudah {{count}} negara menjawab",
+    "answeredRow_other": "Sudah {{count}} negara menjawab"
   },
   "backHome": {
     "title": "Kalau di kotamu, bagaimana?",
@@ -597,5 +591,9 @@
     "footnote": "Berdasarkan kota dengan 3 jawaban atau lebih"
   },
   "ctaAnswer": "Jawab untuk {{city}}",
-  "ctaAnswerNoCity": "Jawab untuk kotamu"
+  "ctaAnswerNoCity": "Jawab untuk kotamu",
+  "countdown": {
+    "hm": "{{h}} j {{m}} m",
+    "ms": "{{m}} m {{s}} d"
+  }
 }

@@ -377,10 +377,6 @@
     "countries_one": "{{count}} 個國家",
     "countries_other": "{{count}} 個國家",
     "proofsIn": "來自{{countries}}的{{proofs}}",
-    "tookIt_one": "今天有 {{count}} 人參與",
-    "tookIt_other": "今天有 {{count}} 人參與",
-    "seePhotos_one": "查看照片",
-    "seePhotos_other": "查看照片",
     "podiumTitle": "昨日頒獎台",
     "spotsIn": "{{city}}的地點",
     "allPast": "所有往期挑戰",
@@ -532,14 +528,12 @@
     "median": "中位數 {{price}}",
     "proofs_one": "{{count}} 個回答",
     "proofs_other": "{{count}} 個回答",
-    "seeAll": "查看全部",
-    "teaser_one": "已有 {{count}} 個國家/地區回答：",
-    "teaser_other": "已有 {{count}} 個國家/地區回答：",
-    "firstAnswers": "第一批回答來了。下一個是哪座城市？",
     "boardTitle": "全世界是這樣回答的",
     "cheapest": "最便宜：{{city}} {{price}}",
     "priciest": "最貴：{{city}} {{price}}",
-    "funFact": "{{city}}的價格是{{other}}的 {{ratio}} 倍。"
+    "funFact": "{{city}}的價格是{{other}}的 {{ratio}} 倍。",
+    "answeredRow_one": "已有 {{count}} 個國家/地區回答",
+    "answeredRow_other": "已有 {{count}} 個國家/地區回答"
   },
   "backHome": {
     "title": "那你家鄉呢，是怎樣的？",
@@ -595,5 +589,9 @@
     "footnote": "基於至少有 3 個回答的城市"
   },
   "ctaAnswer": "為{{city}}作答",
-  "ctaAnswerNoCity": "為你的城市作答"
+  "ctaAnswerNoCity": "為你的城市作答",
+  "countdown": {
+    "hm": "{{h}}小時{{m}}分",
+    "ms": "{{m}}分{{s}}秒"
+  }
 }

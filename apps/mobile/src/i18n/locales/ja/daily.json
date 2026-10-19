@@ -379,10 +379,6 @@
     "countries_one": "{{count}}か国",
     "countries_other": "{{count}}か国",
     "proofsIn": "{{countries}}から{{proofs}}",
-    "tookIt_one": "今日{{count}}人が挑戦",
-    "tookIt_other": "今日{{count}}人が挑戦",
-    "seePhotos_one": "写真を見る",
-    "seePhotos_other": "写真を見る",
     "podiumTitle": "昨日の表彰台",
     "spotsIn": "{{city}}のスポット",
     "allPast": "過去のチャレンジをすべて見る",
@@ -534,14 +530,12 @@
     "median": "中央値 {{price}}",
     "proofs_one": "{{count}}件の回答",
     "proofs_other": "{{count}}件の回答",
-    "seeAll": "すべて見る",
-    "teaser_one": "すでに{{count}}か国が回答：",
-    "teaser_other": "すでに{{count}}か国が回答：",
-    "firstAnswers": "最初の回答が届き始めました。次はどの街？",
     "boardTitle": "世界の答え",
     "cheapest": "いちばん安い：{{city}} {{price}}",
     "priciest": "いちばん高い：{{city}} {{price}}",
-    "funFact": "{{city}}は{{other}}の{{ratio}}倍の値段。"
+    "funFact": "{{city}}は{{other}}の{{ratio}}倍の値段。",
+    "answeredRow_one": "すでに{{count}}か国が回答",
+    "answeredRow_other": "すでに{{count}}か国が回答"
   },
   "backHome": {
     "title": "あなたの地元では、どう？",
@@ -597,5 +591,9 @@
     "footnote": "回答が3件以上の街に基づく"
   },
   "ctaAnswer": "{{city}}代表で答える",
-  "ctaAnswerNoCity": "あなたの街の代表で答える"
+  "ctaAnswerNoCity": "あなたの街の代表で答える",
+  "countdown": {
+    "hm": "{{h}}時間{{m}}分",
+    "ms": "{{m}}分{{s}}秒"
+  }
 }

@@ -379,10 +379,6 @@
     "countries_one": "{{count}} bansa",
     "countries_other": "{{count}} bansa",
     "proofsIn": "{{proofs}} sa {{countries}}",
-    "tookIt_one": "{{count}} tao ang sumali ngayon",
-    "tookIt_other": "{{count}} tao ang sumali ngayon",
-    "seePhotos_one": "Tingnan ang litrato",
-    "seePhotos_other": "Tingnan ang mga litrato",
     "podiumTitle": "Podium kahapon",
     "spotsIn": "Mga spot sa {{city}}",
     "allPast": "Lahat ng nakaraang challenge",
@@ -535,14 +531,12 @@
     "median": "Median {{price}}",
     "proofs_one": "{{count}} sagot",
     "proofs_other": "{{count}} sagot",
-    "seeAll": "Tingnan lahat",
-    "teaser_one": "Sumagot na ang {{count}} bansa:",
-    "teaser_other": "Sumagot na ang {{count}} bansa:",
-    "firstAnswers": "Dumarating na ang mga unang sagot. Aling lungsod ang susunod?",
     "boardTitle": "Ganito sumagot ang mundo",
     "cheapest": "Pinakamura: {{city}} {{price}}",
     "priciest": "Pinakamahal: {{city}} {{price}}",
-    "funFact": "{{ratio}}× ang presyo sa {{city}} kaysa sa {{other}}."
+    "funFact": "{{ratio}}× ang presyo sa {{city}} kaysa sa {{other}}.",
+    "answeredRow_one": "Sumagot na ang {{count}} bansa",
+    "answeredRow_other": "Sumagot na ang {{count}} bansa"
   },
   "backHome": {
     "title": "E sa inyo, kumusta?",
@@ -598,5 +592,9 @@
     "footnote": "Batay sa mga lungsod na may 3 sagot o higit pa"
   },
   "ctaAnswer": "Sumagot para sa {{city}}",
-  "ctaAnswerNoCity": "Sumagot para sa lungsod mo"
+  "ctaAnswerNoCity": "Sumagot para sa lungsod mo",
+  "countdown": {
+    "hm": "{{h}}h {{m}}m",
+    "ms": "{{m}}m {{s}}s"
+  }
 }

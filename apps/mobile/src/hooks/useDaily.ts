@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import i18n from '@/i18n';
 import { useFocusEffect } from 'expo-router';
 import { fetchDailyArchive, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
@@ -40,13 +41,19 @@ export function isFinalHours(seconds: number | null): boolean {
 }
 
 /** "6h 12m" / "12m" / "45s" - compact, locale-neutral. */
+/**
+ * A countdown in the app's language: hours and minutes ("20h 43m", FR
+ * "20 h 43"), minutes and seconds in the last hour ("42m 07s").
+ */
 export function formatCountdown(seconds: number | null): string {
   if (seconds === null) return '';
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`;
-  if (m > 0) return `${m}m`;
-  return `${seconds}s`;
+  const s = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return h > 0
+    ? i18n.t('countdown.hm', { ns: 'daily', h, m: pad(m) })
+    : i18n.t('countdown.ms', { ns: 'daily', m, s: pad(s % 60) });
 }
 
 export function useDailyToday(cityId: string | null | undefined) {

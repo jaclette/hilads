@@ -175,8 +175,7 @@ function Ticket({ data, loading }) {
   const store = deviceStore()
   const open = () => openDaily('challenge', { date: 'today', source: 'today' })
   const world = data?.world ?? null
-  // People who took it: the city's count in city scope once it has proofs, else World's.
-  const took = (scope === 'city' && data.counts?.city ? data.counts.city : data.counts?.world) ?? 0
+  const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer, i18n.language))
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
@@ -259,28 +258,32 @@ function Ticket({ data, loading }) {
             </a>
           </span>
         )}
-        {/* The live world teaser (SPEC 10.6) replaces the social line: the first answers, then the countries. */}
-        {world && world.countries < 2 ? (
-          <button type="button" className="today-took" onClick={(e) => {
+        {/* The live world teaser (SPEC 10.6), a row inside the card: from 2 countries, their flags,
+            "Already 5 countries answered" and the first answers, to the Compare tab; before, "See
+            today's answers", to the sheet's World tab. */}
+        {world && world.countries >= 2 ? (
+          <button type="button" className="today-teaser" onClick={(e) => {
             e.stopPropagation()
             track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
             openDaily('challenge', { date: 'today', source: 'teaser', tab: 'compare' })
           }}>
-            {t('compare.firstAnswers')}
+            <span className="today-teaser-flags" aria-hidden="true">
+              {[...new Set(world.flags ?? world.answers.map(a => a.city.country))].filter(Boolean).slice(0, 5).map(c => <CityFlag key={c} country={c} size={20} />)}
+            </span>
+            <span className="today-teaser-body">
+              <span className="today-teaser-title">{t('compare.answeredRow', { count: world.countries })}</span>
+              {answers.length > 0 && <span className="today-teaser-answers">{answers.join(' · ')}</span>}
+            </span>
+            <Icon name="chevron-forward" size={18} />
           </button>
-        ) : world ? (
-          <button type="button" className="today-took" onClick={(e) => {
+        ) : (
+          <button type="button" className="today-teaser" onClick={(e) => {
             e.stopPropagation()
-            track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
-            openDaily('challenge', { date: 'today', source: 'teaser', tab: 'compare' })
+            openDaily('challenge', { date: 'today', source: 'today_row', tab: 'world' })
           }}>
-            {t('compare.teaser', { count: world.countries })}{' '}
-            <strong>{world.answers.filter(a => a.answer).map(a => answerText(a.answer, i18n.language)).join(' · ')}</strong>
-            {' · '}<span className="today-took-link">{t('compare.seeAll')}</span>
-          </button>
-        ) : took > 0 && (
-          <button type="button" className="today-took" onClick={(e) => { e.stopPropagation(); open() }}>
-            {t('today.tookIt', { count: took })} · <span className="today-took-link">{t('today.seePhotos', { count: took })}</span>
+            <Icon name="earth-outline" size={20} />
+            <span className="today-teaser-body"><span className="today-teaser-title">{t('seeProofs')}</span></span>
+            <Icon name="chevron-forward" size={18} />
           </button>
         )}
         {cityStreak > 0 && (
@@ -433,6 +436,7 @@ function TodayProofs({ today }) {
   if (!strip || items.length === 0) return null
   const world = strip.scope === 'world'
   const proofs = t('today.proofs', { count: strip.total })
+  const openSheet = () => openDaily('challenge', { date: 'today', source: 'today_strip', tab: world ? 'world' : 'city' })
   // Represent your city (SPEC 9.16), World scope: never a zero count; my own pending proof counts for me.
   const presence = scope === 'world' ? today?.presence ?? null : null
   const myCity = today?.city?.name ? shortCityName(today.city.name) : null
@@ -440,8 +444,11 @@ function TodayProofs({ today }) {
   return (
     <div className="today-card">
       <div className="today-card-head">
-        <span className="today-card-title">{world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}</span>
-        <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: 'today', source: 'today' })}>{t('today.seeAll')}</button>
+        {/* The title and "See all" open the challenge sheet on the strip's tab. */}
+        <button type="button" className="today-card-title today-card-title--link" onClick={openSheet}>
+          {world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}<Icon name="chevron-forward" size={16} />
+        </button>
+        <button type="button" className="dc-link" onClick={openSheet}>{t('today.seeAll')}</button>
       </div>
       <span className="dc-muted today-proofs-stats">
         {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}

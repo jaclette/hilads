@@ -379,10 +379,6 @@
     "countries_one": "{{count}} pays",
     "countries_other": "{{count}} pays",
     "proofsIn": "{{proofs}} dans {{countries}}",
-    "tookIt_one": "{{count}} personne l'a relevé aujourd'hui",
-    "tookIt_other": "{{count}} personnes l'ont relevé aujourd'hui",
-    "seePhotos_one": "Voir sa photo",
-    "seePhotos_other": "Voir leurs photos",
     "podiumTitle": "Le podium d'hier",
     "spotsIn": "Spots à {{city}}",
     "allPast": "Tous les challenges passés",
@@ -536,14 +532,12 @@
     "median": "Médiane {{price}}",
     "proofs_one": "{{count}} réponse",
     "proofs_other": "{{count}} réponses",
-    "seeAll": "Tout voir",
-    "teaser_one": "Déjà {{count}} pays a répondu :",
-    "teaser_other": "Déjà {{count}} pays ont répondu :",
-    "firstAnswers": "Les premières réponses arrivent. Quelle ville est la suivante ?",
     "boardTitle": "Ce que le monde a répondu",
     "cheapest": "Le moins cher : {{city}} {{price}}",
     "priciest": "Le plus cher : {{city}} {{price}}",
-    "funFact": "{{ratio}} fois plus cher à {{city}} qu'à {{other}}."
+    "funFact": "{{ratio}} fois plus cher à {{city}} qu'à {{other}}.",
+    "answeredRow_one": "Déjà {{count}} pays a répondu",
+    "answeredRow_other": "Déjà {{count}} pays ont répondu"
   },
   "backHome": {
     "title": "Et chez toi, ça se passe comment ?",
@@ -599,5 +593,9 @@
     "footnote": "Basé sur les villes avec 3 réponses ou plus"
   },
   "ctaAnswer": "Réponds pour {{city}}",
-  "ctaAnswerNoCity": "Réponds pour ta ville"
+  "ctaAnswerNoCity": "Réponds pour ta ville",
+  "countdown": {
+    "hm": "{{h}} h {{m}}",
+    "ms": "{{m}} min {{s}} s"
+  }
 }

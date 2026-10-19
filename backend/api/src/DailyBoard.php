@@ -224,10 +224,11 @@ final class DailyBoard
     }
 
     /**
-     * Today's live teaser (SPEC 10.6): {cities, countries, answers: [{city,
-     * answer}]} once a city answered, else null. Other cities first. The apps
-     * show "Already N countries answered: ..." from 2 countries, "First answers
-     * coming in. Which city is next?" with 1 country.
+     * Today's live teaser (SPEC 10.6): {cities, countries, flags (up to 5
+     * country codes), answers: [{city, answer}]} once a city answered, else
+     * null. Other cities first. The card's row shows the flags, "Already N
+     * countries answered" and the answers from 2 countries, "See today's
+     * answers" before.
      */
     public static function teaser(array $challenge, ?string $viewerCityId, array $blockedUserIds = [], ?string $locale = null): ?array
     {
@@ -243,6 +244,8 @@ final class DailyBoard
         return [
             'cities'    => count($answered),
             'countries' => count(array_unique(array_filter(array_column($answered, 'country')))),
+            // The card's flag stack: up to 5 countries that answered, most answers first.
+            'flags'     => array_slice(array_values(array_unique(array_filter(array_column($answered, 'country')))), 0, 5),
             'answers'   => array_map(static fn(array $r) => ['city' => self::city($r), 'answer' => self::answer($r, $challenge, $locale)],
                                      self::teaserPick($rows, $viewerCityId)),
         ];

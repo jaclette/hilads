@@ -379,10 +379,6 @@
     "countries_one": "{{count}} Land",
     "countries_other": "{{count}} Ländern",
     "proofsIn": "{{proofs}} in {{countries}}",
-    "tookIt_one": "Heute hat {{count}} Person mitgemacht",
-    "tookIt_other": "Heute haben {{count}} Personen mitgemacht",
-    "seePhotos_one": "Foto ansehen",
-    "seePhotos_other": "Fotos ansehen",
     "podiumTitle": "Das Podium von gestern",
     "spotsIn": "Spots in {{city}}",
     "allPast": "Alle vergangenen Challenges",
@@ -535,14 +531,12 @@
     "median": "Median {{price}}",
     "proofs_one": "{{count}} Antwort",
     "proofs_other": "{{count}} Antworten",
-    "seeAll": "Alle ansehen",
-    "teaser_one": "Schon {{count}} Land hat geantwortet:",
-    "teaser_other": "Schon {{count}} Länder haben geantwortet:",
-    "firstAnswers": "Die ersten Antworten kommen rein. Welche Stadt ist die nächste?",
     "boardTitle": "So hat die Welt geantwortet",
     "cheapest": "Am günstigsten: {{city}} {{price}}",
     "priciest": "Am teuersten: {{city}} {{price}}",
-    "funFact": "In {{city}} {{ratio}}-mal so teuer wie in {{other}}."
+    "funFact": "In {{city}} {{ratio}}-mal so teuer wie in {{other}}.",
+    "answeredRow_one": "Schon {{count}} Land hat geantwortet",
+    "answeredRow_other": "Schon {{count}} Länder haben geantwortet"
   },
   "backHome": {
     "title": "Und bei dir zu Hause, wie ist es?",
@@ -598,5 +592,9 @@
     "footnote": "Basierend auf Städten mit 3 Antworten oder mehr"
   },
   "ctaAnswer": "Antworte für {{city}}",
-  "ctaAnswerNoCity": "Antworte für deine Stadt"
+  "ctaAnswerNoCity": "Antworte für deine Stadt",
+  "countdown": {
+    "hm": "{{h}} Std. {{m}} Min.",
+    "ms": "{{m}} Min. {{s}} Sek."
+  }
 }

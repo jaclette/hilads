@@ -47,7 +47,7 @@ export default function DailySheetScreen() {
 
   if (!date) return <Loading />;
   return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null}
-                initialTab={tab === 'top10' || tab === 'compare' ? tab : null} pushType={pushType ?? null} shareProof={share === '1'} />;
+                initialTab={tab === 'top10' || tab === 'compare' || tab === 'world' || tab === 'city' ? tab : null} pushType={pushType ?? null} shareProof={share === '1'} />;
 }
 
 function Loading() {
@@ -59,7 +59,7 @@ function Loading() {
 type Tab = 'world' | 'city' | 'compare' | 'top10';
 
 function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: {
-  date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | 'compare' | null; pushType: string | null;
+  date: string; openProofId: string | null; source: string | null; initialTab: Tab | null; pushType: string | null;
   /** ?share=1: open the share sheet on the ?proof= one (mine, from yesterday's podium). */
   shareProof: boolean;
 }) {
@@ -68,7 +68,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { city, account } = useApp();
-  const [scope, setScope] = useState<'world' | 'city'>('world');   // proofs shown by the World / City tabs
+  const [scope, setScope] = useState<'world' | 'city'>(initialTab === 'city' ? 'city' : 'world');   // proofs shown by the World / City tabs
   const [tab, setTab] = useState<Tab>(initialTab ?? 'world');
   const [viewing, setViewing] = useState<DailyProof | null>(null);
   const [autoShare, setAutoShare] = useState(shareProof);

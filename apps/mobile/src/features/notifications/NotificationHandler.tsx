@@ -98,6 +98,7 @@ type NotifData = {
   invitationId?:    string; // challenge_invitation - id of the invitation row
   inviterName?:     string;
   deepLink?:        string; // admin push broadcast - a raw in-app path to open on tap
+  tab?:             string; // daily_morning / daily_reminder: "compare" once 2 countries answered
 };
 
 // Admin push broadcasts carry a raw path in data.deepLink (e.g. the "Deep link"
@@ -343,8 +344,9 @@ function resolvePushRoute(data: NotifData): string | null {
 
     case 'daily_morning':
     case 'daily_reminder':
-      // Daily Challenge pushes (no challengeId on purpose) → Today, its card.
-      return '/(tabs)/today?source=push';
+      // Daily Challenge pushes (no challengeId on purpose) → the challenge sheet,
+      // its Compare tab once 2 countries answered (data.tab, set at send time).
+      return data.tab === 'compare' ? '/daily/today?source=push&tab=compare' : '/daily/today?source=push';
 
     case 'daily_top10':
       // My proof entered today's top 10 → the sheet's Top 10 tab.

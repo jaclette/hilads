@@ -379,10 +379,6 @@
     "countries_one": "{{count}} país",
     "countries_other": "{{count}} países",
     "proofsIn": "{{proofs}} en {{countries}}",
-    "tookIt_one": "{{count}} persona lo hizo hoy",
-    "tookIt_other": "{{count}} personas lo hicieron hoy",
-    "seePhotos_one": "Ver su foto",
-    "seePhotos_other": "Ver sus fotos",
     "podiumTitle": "El podio de ayer",
     "spotsIn": "Spots en {{city}}",
     "allPast": "Todos los challenges pasados",
@@ -536,14 +532,12 @@
     "median": "Mediana {{price}}",
     "proofs_one": "{{count}} respuesta",
     "proofs_other": "{{count}} respuestas",
-    "seeAll": "Ver todo",
-    "teaser_one": "Ya respondió {{count}} país:",
-    "teaser_other": "Ya respondieron {{count}} países:",
-    "firstAnswers": "Llegan las primeras respuestas. ¿Qué ciudad sigue?",
     "boardTitle": "Cómo respondió el mundo",
     "cheapest": "Lo más barato: {{city}} {{price}}",
     "priciest": "Lo más caro: {{city}} {{price}}",
-    "funFact": "{{ratio}} veces más caro en {{city}} que en {{other}}."
+    "funFact": "{{ratio}} veces más caro en {{city}} que en {{other}}.",
+    "answeredRow_one": "Ya respondió {{count}} país",
+    "answeredRow_other": "Ya respondieron {{count}} países"
   },
   "backHome": {
     "title": "¿Y en tu ciudad, cómo es?",
@@ -599,5 +593,9 @@
     "footnote": "Basado en ciudades con 3 respuestas o más"
   },
   "ctaAnswer": "Responde por {{city}}",
-  "ctaAnswerNoCity": "Responde por tu ciudad"
+  "ctaAnswerNoCity": "Responde por tu ciudad",
+  "countdown": {
+    "hm": "{{h}} h {{m}} min",
+    "ms": "{{m}} min {{s}} s"
+  }
 }

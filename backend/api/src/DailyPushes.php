@@ -265,7 +265,8 @@ final class DailyPushes
             // SPEC 10.7: "Your answer represents Saigon in the world tour 🌍" first, then yesterday's outcome, each when it fits.
             'body'  => self::withLine(self::withLine($text, self::tourLine($tourCity, $locale)), $outcome),
             // No challengeId on purpose: the app's tap fallback would open the
-            // legacy challenge screen with it. deepLink = today's card.
+            // legacy challenge screen with it. The app opens the challenge sheet
+            // (its Compare tab with data.tab = compare, added at send time).
             'data'  => self::data((string) $challenge['challenge_date']),
         ];
     }
@@ -339,6 +340,22 @@ final class DailyPushes
      * {n: countries that answered, city: my city's name} when 2 or more
      * countries answered today and my city has no approved proof yet, else null.
      */
+    /** ['tab' => 'compare'] once 2 countries answered the day's question, else []. Counted once per challenge and run. */
+    private static function sheetTab(string $date): array
+    {
+        try {
+            $challenge = DailyChallengeRepository::findPublishedByDate($date);
+            if ($challenge === null || ($challenge['compare_type'] ?? null) === null) {
+                return [];
+            }
+            $id = (string) $challenge['id'];
+            self::$answered[$id] ??= (int) (DailyBoard::teaser($challenge, null)['countries'] ?? 0);
+            return self::$answered[$id] >= 2 ? ['tab' => 'compare'] : [];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
     private static function worldAnswered(array $challenge, ?array $city, string $date): ?array
     {
         if ($city === null || $city['id'] === '' || ($challenge['compare_type'] ?? null) === null) {
@@ -848,6 +865,10 @@ final class DailyPushes
                     $msg = self::top10Message((string) $row['challenge_date'], $rank, (string) ($msg['locale'] ?? 'en'))
                            + ['locale' => $msg['locale'] ?? 'en'];
                 }
+            }
+            // The morning and the evening open the challenge sheet, on its Compare tab once 2 countries answered.
+            if ($reason === null && ($row['type'] === 'morning' || $row['type'] === 'reminder')) {
+                $msg['data'] = self::sheetTab((string) $row['challenge_date']) + ($msg['data'] ?? []);
             }
             if ($reason === null && ($alreadySent[$capKey] ?? 0) >= self::CAP_PER_DAY) {
                 $reason = 'cap';

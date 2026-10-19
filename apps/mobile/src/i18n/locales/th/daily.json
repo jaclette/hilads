@@ -377,10 +377,6 @@
     "countries_one": "{{count}} ประเทศ",
     "countries_other": "{{count}} ประเทศ",
     "proofsIn": "{{proofs}} จาก {{countries}}",
-    "tookIt_one": "วันนี้มี {{count}} คนร่วมแล้ว",
-    "tookIt_other": "วันนี้มี {{count}} คนร่วมแล้ว",
-    "seePhotos_one": "ดูรูป",
-    "seePhotos_other": "ดูรูป",
     "podiumTitle": "โพเดียมของเมื่อวาน",
     "spotsIn": "สถานที่ใน{{city}}",
     "allPast": "ชาเลนจ์ที่ผ่านมาทั้งหมด",
@@ -532,14 +528,12 @@
     "median": "ค่ามัธยฐาน {{price}}",
     "proofs_one": "คำตอบ {{count}} รายการ",
     "proofs_other": "คำตอบ {{count}} รายการ",
-    "seeAll": "ดูทั้งหมด",
-    "teaser_one": "ตอบแล้ว {{count}} ประเทศ:",
-    "teaser_other": "ตอบแล้ว {{count}} ประเทศ:",
-    "firstAnswers": "คำตอบแรกๆ เริ่มมาแล้ว เมืองไหนต่อ?",
     "boardTitle": "ทั่วโลกตอบว่าอะไร",
     "cheapest": "ถูกที่สุด: {{city}} {{price}}",
     "priciest": "แพงที่สุด: {{city}} {{price}}",
-    "funFact": "ที่{{city}}แพงกว่า{{other}} {{ratio}} เท่า"
+    "funFact": "ที่{{city}}แพงกว่า{{other}} {{ratio}} เท่า",
+    "answeredRow_one": "ตอบแล้ว {{count}} ประเทศ",
+    "answeredRow_other": "ตอบแล้ว {{count}} ประเทศ"
   },
   "backHome": {
     "title": "แล้วที่บ้านคุณล่ะ เป็นยังไง?",
@@ -595,5 +589,9 @@
     "footnote": "อิงจากเมืองที่มีคำตอบ 3 รายการขึ้นไป"
   },
   "ctaAnswer": "ตอบแทน{{city}}",
-  "ctaAnswerNoCity": "ตอบแทนเมืองของคุณ"
+  "ctaAnswerNoCity": "ตอบแทนเมืองของคุณ",
+  "countdown": {
+    "hm": "{{h}} ชม. {{m}} นาที",
+    "ms": "{{m}} นาที {{s}} วิ"
+  }
 }

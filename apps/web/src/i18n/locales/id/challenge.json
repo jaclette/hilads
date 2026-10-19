@@ -1224,10 +1224,6 @@
       "countries_one": "{{count}} negara",
       "countries_other": "{{count}} negara",
       "proofsIn": "{{proofs}} di {{countries}}",
-      "tookIt_one": "{{count}} orang ikut hari ini",
-      "tookIt_other": "{{count}} orang ikut hari ini",
-      "seePhotos_one": "Lihat fotonya",
-      "seePhotos_other": "Lihat foto mereka",
       "podiumTitle": "Podium kemarin",
       "spotsIn": "Spot di {{city}}",
       "allPast": "Semua challenge sebelumnya",
@@ -1328,14 +1324,12 @@
       "median": "Median {{price}}",
       "proofs_one": "{{count}} jawaban",
       "proofs_other": "{{count}} jawaban",
-      "teaser_one": "Sudah {{count}} negara menjawab:",
-      "teaser_other": "Sudah {{count}} negara menjawab:",
-      "seeAll": "Lihat semua",
-      "firstAnswers": "Jawaban pertama mulai masuk. Kota mana berikutnya?",
       "boardTitle": "Begini dunia menjawab",
       "cheapest": "Termurah: {{city}} {{price}}",
       "priciest": "Termahal: {{city}} {{price}}",
-      "funFact": "{{ratio}}× lebih mahal di {{city}} daripada di {{other}}."
+      "funFact": "{{ratio}}× lebih mahal di {{city}} daripada di {{other}}.",
+      "answeredRow_one": "Sudah {{count}} negara menjawab",
+      "answeredRow_other": "Sudah {{count}} negara menjawab"
     },
     "backHome": {
       "hereIn": "Di sini, {{city}}",
@@ -1373,6 +1367,10 @@
     "ctaAnswerNoCity": "Jawab untuk kotamu",
     "represent": {
       "button": "Jawab untuk {{city}}"
+    },
+    "countdown": {
+      "hm": "{{h}} j {{m}} m",
+      "ms": "{{m}} m {{s}} d"
     }
   }
 }

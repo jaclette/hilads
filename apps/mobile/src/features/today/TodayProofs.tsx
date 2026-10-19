@@ -63,10 +63,12 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   const myCity = today?.city?.name ? shortCityName(today.city.name) : null;
   const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && !!today?.challenge?.isActive;
   const proofs = t('today.proofs', { count: strip.total });
+  const openSheet = () => router.push(`/daily/today?tab=${world ? 'world' : 'city'}&source=today_strip` as never);
   return (
     <Card style={styles.card}>
+      {/* The title and "See all" open the challenge sheet on the strip's tab. */}
       <SectionTitle small title={world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}
-                    action={{ label: t('today.seeAll'), onPress: () => router.push('/daily/today?source=today' as never) }} />
+                    onPress={openSheet} action={{ label: t('today.seeAll'), onPress: openSheet }} />
       <Text style={styles.stats}>
         {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}
       </Text>

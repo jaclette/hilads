@@ -1,13 +1,6 @@
 // Theme icons live with ThemeIcon (src/ui): Taste and Only here are drawn.
 export { THEME_ICON } from '@/ui/ThemeIcon';
 
-/** 83560 → "23:12:40" (the ticket's countdown). */
-export function clock(seconds: number): string {
-  const s = Math.max(0, seconds);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
-}
-
 /** 350 → "350 m", 1234 → "1.2 km", 25400 → "25 km". */
 export function distance(m: number, locale?: string): string {
   if (m < 1000) return `${Math.round(m / 10) * 10 || m} m`;

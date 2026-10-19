@@ -972,6 +972,8 @@ export interface DailyCityRef { id: number; name: string; country: string | null
 export interface DailyWorldTeaser {
   cities:    number;
   countries: number;
+  /** Up to 5 country codes that answered, most answers first (the card's flag stack). */
+  flags?:    string[];
   answers:   { city: DailyCityRef; answer: DailyAnswer | null }[];   // other cities first
 }
 

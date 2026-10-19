@@ -1224,10 +1224,6 @@
       "countries_one": "{{count}} país",
       "countries_other": "{{count}} países",
       "proofsIn": "{{proofs}} en {{countries}}",
-      "tookIt_one": "{{count}} persona lo hizo hoy",
-      "tookIt_other": "{{count}} personas lo hicieron hoy",
-      "seePhotos_one": "Ver su foto",
-      "seePhotos_other": "Ver sus fotos",
       "podiumTitle": "El podio de ayer",
       "spotsIn": "Spots en {{city}}",
       "allPast": "Todos los challenges pasados",
@@ -1328,14 +1324,12 @@
       "median": "Mediana {{price}}",
       "proofs_one": "{{count}} respuesta",
       "proofs_other": "{{count}} respuestas",
-      "teaser_one": "Ya respondió {{count}} país:",
-      "teaser_other": "Ya respondieron {{count}} países:",
-      "seeAll": "Ver todo",
-      "firstAnswers": "Llegan las primeras respuestas. ¿Qué ciudad sigue?",
       "boardTitle": "Cómo respondió el mundo",
       "cheapest": "Lo más barato: {{city}} {{price}}",
       "priciest": "Lo más caro: {{city}} {{price}}",
-      "funFact": "{{ratio}} veces más caro en {{city}} que en {{other}}."
+      "funFact": "{{ratio}} veces más caro en {{city}} que en {{other}}.",
+      "answeredRow_one": "Ya respondió {{count}} país",
+      "answeredRow_other": "Ya respondieron {{count}} países"
     },
     "backHome": {
       "hereIn": "Aquí en {{city}}",
@@ -1373,6 +1367,10 @@
     "ctaAnswerNoCity": "Responde por tu ciudad",
     "represent": {
       "button": "Responde por {{city}}"
+    },
+    "countdown": {
+      "hm": "{{h}} h {{m}} min",
+      "ms": "{{m}} min {{s}} s"
     }
   }
 }

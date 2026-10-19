@@ -1224,10 +1224,6 @@
       "countries_one": "{{count}} देश",
       "countries_other": "{{count}} देशों",
       "proofsIn": "{{countries}} में {{proofs}}",
-      "tookIt_one": "आज {{count}} व्यक्ति ने इसे किया",
-      "tookIt_other": "आज {{count}} लोगों ने इसे किया",
-      "seePhotos_one": "फ़ोटो देखें",
-      "seePhotos_other": "फ़ोटो देखें",
       "podiumTitle": "कल का पोडियम",
       "spotsIn": "{{city}} में जगहें",
       "allPast": "सभी पिछले चैलेंज",
@@ -1328,14 +1324,12 @@
       "median": "माध्यिका {{price}}",
       "proofs_one": "{{count}} जवाब",
       "proofs_other": "{{count}} जवाब",
-      "teaser_one": "{{count}} देश जवाब दे चुका है:",
-      "teaser_other": "{{count}} देश जवाब दे चुके हैं:",
-      "seeAll": "सब देखें",
-      "firstAnswers": "पहले जवाब आ रहे हैं। अगला शहर कौन?",
       "boardTitle": "दुनिया ने ऐसे जवाब दिया",
       "cheapest": "सबसे सस्ता: {{city}} {{price}}",
       "priciest": "सबसे महँगा: {{city}} {{price}}",
-      "funFact": "{{city}} में {{other}} से {{ratio}} गुना महँगा।"
+      "funFact": "{{city}} में {{other}} से {{ratio}} गुना महँगा।",
+      "answeredRow_one": "{{count}} देश जवाब दे चुका है",
+      "answeredRow_other": "{{count}} देश जवाब दे चुके हैं"
     },
     "backHome": {
       "hereIn": "यहाँ, {{city}}",
@@ -1373,6 +1367,10 @@
     "ctaAnswerNoCity": "अपने शहर के लिए जवाब दें",
     "represent": {
       "button": "{{city}} के लिए जवाब दें"
+    },
+    "countdown": {
+      "hm": "{{h}} घं {{m}} मि",
+      "ms": "{{m}} मि {{s}} से"
     }
   }
 }

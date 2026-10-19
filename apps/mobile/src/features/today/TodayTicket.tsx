@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,7 +17,6 @@ import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
-import { clock } from './format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
@@ -25,7 +24,7 @@ import { PulseButton } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
 import { askDailyPush } from '@/services/push';
-import { isFinalHours } from '@/hooks/useDaily';
+import { formatCountdown, isFinalHours } from '@/hooks/useDaily';
 import { Button, CityFlag } from '@/ui';
 import type { DailySpecial, DailyTheme, DailyToday } from '@/types';
 import { isPlaceTheme, themeName } from '@/features/daily/themes';
@@ -87,7 +86,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
       <View style={[styles.ticket, styles.top]}>
         <Kicker />
         <Text style={styles.text}>{t('nothingLive')}</Text>
-        {secondsLeft !== null && <Text style={styles.meta}>{t('nextIn', { time: clock(secondsLeft) })}</Text>}
+        {secondsLeft !== null && <Text style={styles.meta}>{t('nextIn', { time: formatCountdown(secondsLeft) })}</Text>}
       </View>
     );
   }
@@ -102,9 +101,9 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
     track('world_teaser_tapped', { countries: world?.countries ?? 0, cities: world?.cities ?? 0 });
     router.push('/daily/today?tab=compare&source=teaser' as never);
   };
+  const openWorld = () => router.push('/daily/today?tab=world&source=today_row' as never);
+  const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer!, i18n.language));
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
-  // People who took it: the city's count in city scope once it has proofs, else World's.
-  const took = (scope === 'city' && data?.counts?.city ? data.counts.city : data?.counts?.world) ?? 0;
   const onCta = () => {
     if (myProof) { openSheet(); return; }
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
@@ -209,27 +208,25 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           <PulseButton label={cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
-        {/* The live world teaser (SPEC 10.6) replaces the social line: the first answers, then the countries. */}
-        {world && world.countries < 2 ? (
-          <TouchableOpacity style={styles.took} onPress={openCompare} accessibilityRole="button">
-            <Text style={styles.tookText}>{t('compare.firstAnswers')}</Text>
-          </TouchableOpacity>
-        ) : world ? (
-          <TouchableOpacity style={styles.took} onPress={openCompare} accessibilityRole="button">
-            <Text style={styles.tookText} numberOfLines={2}>
-              {t('compare.teaser', { count: world.countries })}{' '}
-              <Text style={styles.teaserAnswers}>
-                {world.answers.filter(a => a.answer).map(a => answerText(a.answer!, i18n.language)).join(' · ')}
-              </Text>
-              {' · '}<Text style={styles.link}>{t('compare.seeAll')}</Text>
-            </Text>
-          </TouchableOpacity>
-        ) : took > 0 && (
-          <TouchableOpacity style={styles.took} onPress={openSheet} accessibilityRole="button">
-            <Text style={styles.tookText}>
-              {t('today.tookIt', { count: took })} · <Text style={styles.link}>{t('today.seePhotos', { count: took })}</Text>
-            </Text>
-          </TouchableOpacity>
+        {/* The live world teaser (SPEC 10.6), a row inside the card: from 2 countries, their flags,
+            "Already 5 countries answered" and the first answers, to the Compare tab; before, "See
+            today's answers", to the sheet's World tab. */}
+        {world && world.countries >= 2 ? (
+          <Pressable style={({ pressed }) => [styles.teaser, pressed && styles.teaserPressed]} onPress={openCompare} accessibilityRole="button"
+                     accessibilityLabel={t('compare.answeredRow', { count: world.countries })}>
+            <FlagStack flags={world.flags ?? world.answers.map(a => a.city.country ?? '')} />
+            <View style={styles.teaserBody}>
+              <Text style={styles.teaserTitle} numberOfLines={1}>{t('compare.answeredRow', { count: world.countries })}</Text>
+              {answers.length > 0 && <Text style={styles.teaserAnswers} numberOfLines={1}>{answers.join(' · ')}</Text>}
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+          </Pressable>
+        ) : (
+          <Pressable style={({ pressed }) => [styles.teaser, pressed && styles.teaserPressed]} onPress={openWorld} accessibilityRole="button">
+            <Ionicons name="earth-outline" size={20} color={colors.text} />
+            <View style={styles.teaserBody}><Text style={styles.teaserTitle} numberOfLines={1}>{t('seeProofs')}</Text></View>
+            <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+          </Pressable>
         )}
         {cityStreak > 0 && (
           <View style={styles.streak}>
@@ -251,6 +248,17 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
                        onCamera={() => { howDone('camera'); onCta(); }} onLater={remindLater} onClose={() => howDone('dismissed')} />
       <ShareSheet content={share} source={share?.type === 'today' && share.represent ? 'represent_today_card' : 'today_card'} onClose={() => setShare(null)} />
     </TouchableOpacity>
+  );
+}
+
+/** Up to 5 overlapping flags of the countries that answered (decorative). */
+function FlagStack({ flags }: { flags: string[] }) {
+  const styles = useThemedStyles(makeStyles);
+  const list = [...new Set(flags.filter(Boolean))].slice(0, 5);
+  return (
+    <View style={styles.flags} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      {list.map((c, i) => <View key={c} style={[styles.flagRing, i > 0 && styles.flagOverlap, { zIndex: 5 - i }]}><CityFlag country={c} size={20} /></View>)}
+    </View>
   );
 }
 
@@ -286,7 +294,7 @@ function Cover({ coverUrl, themeKey, label, special, date, secondsLeft }: {
         {secondsLeft !== null && (
           <View style={styles.coverTime}>
             <Ionicons name="time-outline" size={15} color={COVER_TEXT} />
-            <Text style={styles.coverTimeText}>{t('timeLeft', { time: clock(secondsLeft) })}</Text>
+            <Text style={styles.coverTimeText}>{t('timeLeft', { time: formatCountdown(secondsLeft) })}</Text>
           </View>
         )}
       </View>
@@ -364,12 +372,18 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
   // Secondary links in ink: the button is the card's only orange element.
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
-  took:        { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  teaser:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, paddingHorizontal: 12, paddingVertical: 8,
+                 borderRadius: 14, backgroundColor: c.stepBg },
+  teaserPressed: { opacity: 0.7 },
+  teaserBody:  { flex: 1, gap: 1 },
+  teaserTitle: { fontSize: 14, fontWeight: '700', color: c.text },
+  teaserAnswers: { fontSize: 12, fontWeight: '600', color: c.muted },
+  flags:       { flexDirection: 'row', alignItems: 'center' },
+  flagRing:    { borderRadius: 4, borderWidth: 1.5, borderColor: c.stepBg, overflow: 'hidden' },
+  flagOverlap: { marginLeft: -7 },
   emptyCity:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
   emptyCityText: { flex: 1, fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.primaryOnTint },
   streak:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -4 },
   streakText:  { fontSize: 13, fontWeight: '700', color: c.text },
   friend:      { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -6 },
-  teaserAnswers: { fontWeight: '800', color: c.text },
-  tookText:    { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });
