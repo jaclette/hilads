@@ -10,6 +10,13 @@
  *   php scripts/daily_demo.php seed --photo-urls=URL1,URL2,...       # already hosted photos (local testing)
  *   php scripts/daily_demo.php cleanup --dry                         # what would be deleted
  *   php scripts/daily_demo.php cleanup                               # delete everything demo
+ *   php scripts/daily_demo.php plan --file=week.json --photos=<folder> --dry   # check a week ahead
+ *   php scripts/daily_demo.php plan --file=week.json --photos=<folder>         # upload and store it
+ *
+ * A plan (week.json): {"days": [{"date": "2026-10-19", "players": {"linh":
+ * {"caption", "answer", "price": [45000, "VND"] | null, "spot" | null, "lat",
+ * "lng"}, ...}}]}; photos in <folder>/<date>/<player>.jpg (png, webp). Each
+ * drop seeds its day; today's is seeded at once when nothing demo is there.
  *
  * The folder needs one JPEG/PNG/WebP per demo player (DailyDemo::PLAYERS),
  * taken in name order. Uploads strip all metadata. The cleanup also runs by
@@ -30,8 +37,8 @@ $opt     = static function (string $name) use ($args): ?string {
     }
     return null;
 };
-if (!in_array($command, ['status', 'seed', 'cleanup'], true)) {
-    fwrite(STDERR, "Usage: php scripts/daily_demo.php status | seed --photos=<folder> [--dry] | seed --photo-urls=<a,b,...> | cleanup [--dry]\n");
+if (!in_array($command, ['status', 'seed', 'cleanup', 'plan'], true)) {
+    fwrite(STDERR, "Usage: php scripts/daily_demo.php status | seed --photos=<folder> [--dry] | seed --photo-urls=<a,b,...> | cleanup [--dry] | plan --file=<week.json> --photos=<folder> [--dry]\n");
     exit(1);
 }
 
@@ -62,7 +69,47 @@ fwrite(STDERR, "Database host: {$host}\n");
 
 try {
     if ($command === 'status') {
-        $print(DailyDemo::status());
+        $print(DailyDemo::status() + ['plannedDays' => DailyDemo::plannedDays()]);
+        exit(0);
+    }
+
+    if ($command === 'plan') {
+        $file   = $opt('file');
+        $folder = $opt('photos');
+        if ($file === null || $folder === null || !is_file($file) || !is_dir($folder)) {
+            throw new InvalidArgumentException('Give --file=<week.json> and --photos=<folder> (<folder>/<date>/<player>.jpg).');
+        }
+        $days  = DailyDemo::cleanPlan((json_decode((string) file_get_contents($file), true) ?: [])['days'] ?? []);
+        $photo = static function (string $date, string $key) use ($folder): string {
+            foreach (['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG'] as $ext) {
+                if (is_file($f = rtrim($folder, '/') . "/{$date}/{$key}.{$ext}")) {
+                    return $f;
+                }
+            }
+            throw new InvalidArgumentException("Missing photo {$folder}/{$date}/{$key}.jpg");
+        };
+        $report = [];
+        foreach ($days as $date => $players) {
+            $files = [];
+            foreach (array_keys($players) as $key) {
+                $files[$key] = $photo($date, (string) $key);
+            }
+            $report[$date] = array_map('basename', $files);
+        }
+        if ($dry) {
+            $print(['dryRun' => true, 'days' => $report]);
+            exit(0);
+        }
+        foreach ($days as $date => $players) {
+            $urls = [];
+            foreach (array_keys($players) as $key) {
+                fwrite(STDERR, "Uploading {$date}/{$key}...\n");
+                $urls[$key] = DailyDemo::uploadPhoto($photo($date, (string) $key));
+            }
+            DailyDemo::storeDay($date, $players, $urls);
+        }
+        // Today's day goes live at once; the next ones at their drop.
+        $print(['stored' => array_keys($days), 'today' => DailyDemo::seedPlanned(DailyClock::currentDate())]);
         exit(0);
     }
 

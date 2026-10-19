@@ -111,6 +111,13 @@ final class DailyDrop
                 }
                 DailyRules::forgetLiveCities();
                 $steps['cards']  = ['posted' => DailyCards::postChallenge($challenge), 'liveCities' => count(DailyRules::liveCityIds())];
+                // The day's planned demo content (DailyDemo::plan), if any. Never blocks the drop.
+                try {
+                    $steps['demoSeed'] = DailyDemo::seedPlanned((string) $challenge['challenge_date']);
+                } catch (\Throwable $e) {
+                    $steps['demoSeed'] = ['status' => 'failed', 'error' => $e->getMessage()];
+                    error_log("[daily-drop] demo seed failed: " . $e->getMessage());
+                }
                 $steps['pushes'] = DailyPushes::queueMorning($challenge, $now);
                 $steps['reminders'] = DailyPushes::queueReminders((string) $challenge['challenge_date'], $now);
                 $steps['twistDigests'] = DailyPushes::queueTwistDigests($challenge, $now);

@@ -17,6 +17,11 @@ declare(strict_types=1);
  *    digests and proposal results skip is_demo proofs (safety net);
  *  - cleanup() deletes everything and runs at the start of the next drop
  *    (DailyDrop), before results and points.
+ *
+ * A week ahead (daily_demo_days): plan() stores, per date, each player's
+ * uploaded photo, caption, answer to the day's question, price and spot; each
+ * drop then seeds that day's plan right after publishing (seedPlanned), so
+ * the demo content follows the challenge every day.
  */
 final class DailyDemo
 {
@@ -119,8 +124,9 @@ final class DailyDemo
      * left, the cities, one photo per player. Returns [challenge, cityIds] or
      * throws with the reason.
      */
-    public static function prepare(int $photoCount): array
+    public static function prepare(int $photoCount, ?array $players = null): array
     {
+        $players ??= array_values(self::PLAYERS);
         $challenge = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
         if ($challenge === null) {
             throw new RuntimeException('No published challenge right now: run the drop first.');
@@ -131,34 +137,59 @@ final class DailyDemo
         }
         $cityIds = [];
         $missing = [];
-        foreach (self::PLAYERS as $p) {
+        foreach ($players as $p) {
             $id = CityRepository::findChannelIdByName($p['city']);
             $id === null ? $missing[] = $p['city'] : $cityIds[$p['key']] = $id;
         }
         if ($missing !== []) {
             throw new RuntimeException('Unknown cities: ' . implode(', ', $missing));
         }
-        if ($photoCount < count(self::PLAYERS)) {
-            throw new RuntimeException('Need ' . count(self::PLAYERS) . " photos, got {$photoCount}.");
+        if ($photoCount < count($players)) {
+            throw new RuntimeException('Need ' . count($players) . " photos, got {$photoCount}.");
         }
         return [$challenge, $cityIds];
     }
 
     /**
-     * Seed today's demo content with these photo URLs (one per player, in
-     * order). Returns what was created. Chat cards are posted after the
-     * commit (best effort, like any approval).
+     * The players of a day: PLAYERS with a plan's overrides by key (caption,
+     * answer, price [amount, currency] or null, spot or null for no place,
+     * lat, lng). Unknown keys throw. Pure.
      */
-    public static function seed(array $photoUrls): array
+    public static function playersFor(?array $day): array
     {
-        [$challenge, $cityIds] = self::prepare(count($photoUrls));
+        if ($day === null) {
+            return array_values(self::PLAYERS);
+        }
+        $out = [];
+        foreach ($day as $key => $o) {
+            $p = self::player((string) $key);
+            foreach (['caption', 'answer', 'price', 'spot', 'lat', 'lng'] as $f) {
+                if (array_key_exists($f, $o)) {
+                    $p[$f] = $o[$f];
+                }
+            }
+            $out[] = $p;
+        }
+        return $out;
+    }
+
+    /**
+     * Seed today's demo content with these photo URLs (one per player, in
+     * order) and, from a plan, each player's caption, answer, price and spot
+     * ($day: player key => overrides). Returns what was created. Chat cards
+     * are posted after the commit (best effort, like any approval).
+     */
+    public static function seed(array $photoUrls, ?array $day = null): array
+    {
+        $players = self::playersFor($day);
+        [$challenge, $cityIds] = self::prepare(count($photoUrls), $players);
         $pdo   = Database::pdo();
         $now   = time();
         $users = $proofs = [];
 
         $pdo->beginTransaction();
         try {
-            foreach (array_values(self::PLAYERS) as $i => $p) {
+            foreach ($players as $i => $p) {
                 $userId = bin2hex(random_bytes(16));
                 $cityId = $cityIds[$p['key']];
                 $pdo->prepare("
@@ -169,27 +200,41 @@ final class DailyDemo
                              $p['local'] ? 'local' : 'traveler', $p['local'] ? $p['city'] : null, $cityId, $now, $now]);
                 $users[$p['key']] = $userId;
 
-                $placeId = bin2hex(random_bytes(8));
-                $pdo->prepare("
-                    INSERT INTO places (id, city_id, name, lat, lng, created_by, status, is_demo)
-                    VALUES (?, ?, ?, ?, ?, ?, 'approved', true)
-                ")->execute([$placeId, $cityId, $p['spot'], $p['lat'], $p['lng'], $userId]);
+                // No spot on a day without a place (Ask a local).
+                $placeId = null;
+                if (($p['spot'] ?? null) !== null) {
+                    $placeId = bin2hex(random_bytes(8));
+                    $pdo->prepare("
+                        INSERT INTO places (id, city_id, name, lat, lng, created_by, status, is_demo)
+                        VALUES (?, ?, ?, ?, ?, ?, 'approved', true)
+                    ")->execute([$placeId, $cityId, $p['spot'], $p['lat'], $p['lng'], $userId]);
+                }
+                // The answer to the day's question, in its type (SPEC 10.2).
+                [$aText, $aNumber, $aMinutes] = isset($p['answer']) && ($challenge['compare_type'] ?? null) !== null
+                    ? (DailyCompare::cleanAnswer((string) $challenge['compare_type'], $p['answer']) ?? [null, null, null])
+                    : [null, null, null];
 
                 $proofId = bin2hex(random_bytes(8));
                 $pdo->prepare("
                     INSERT INTO daily_proofs (id, challenge_id, user_id, city_id, photo_url, caption,
                                               price_amount, price_currency, place_lat, place_lng, place_name, place_id, distance_m,
+                                              answer_text, answer_number, answer_minutes,
                                               is_local, is_early, moderation_status, approved_at, moderated_at, is_demo)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, false, 'approved',
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false, 'approved',
                             now() - make_interval(mins => ?), now(), true)
                 ")->execute([$proofId, $challenge['id'], $userId, $cityId, $photoUrls[$i], $p['caption'],
-                             $p['price'][0] ?? null, $p['price'][1] ?? null, $p['lat'], $p['lng'], $p['spot'], $placeId,
-                             $p['local'] ? 'true' : 'false', (count(self::PLAYERS) - $i) * 7]);
+                             $p['price'][0] ?? null, $p['price'][1] ?? null,
+                             $placeId !== null ? $p['lat'] : null, $placeId !== null ? $p['lng'] : null, $placeId !== null ? $p['spot'] : null,
+                             $placeId, $placeId !== null ? 0 : null, $aText, $aNumber, $aMinutes,
+                             $p['local'] ? 'true' : 'false', (count($players) - $i) * 7]);
                 $proofs[$p['key']] = $proofId;
             }
 
             $slots = [];
             foreach (self::VOTES as [$voter, $author]) {
+                if (!isset($proofs[$author], $users[$voter])) {
+                    continue;   // a plan without that player
+                }
                 $slot = ($slots[$voter] ?? 0) + 1;
                 $slots[$voter] = $slot;
                 $pdo->prepare("
@@ -282,6 +327,84 @@ final class DailyDemo
             }
         }
         return $count;
+    }
+
+    // ── A week ahead ─────────────────────────────────────────────────────────
+
+    /**
+     * Validate a plan file's days: [{date, players: {key: {caption, answer,
+     * price, spot, lat, lng}}}]. Returns [date => players] or throws. Pure.
+     */
+    public static function cleanPlan(array $days): array
+    {
+        $out = [];
+        foreach ($days as $i => $d) {
+            $date = (string) ($d['date'] ?? '');
+            if (!DailyClock::isValidDate($date)) {
+                throw new InvalidArgumentException("Day #" . ($i + 1) . ": date is YYYY-MM-DD.");
+            }
+            $players = is_array($d['players'] ?? null) ? $d['players'] : [];
+            if ($players === []) {
+                throw new InvalidArgumentException("{$date}: no players.");
+            }
+            foreach ($players as $key => $o) {
+                self::player((string) $key);
+                if (!is_string($o['caption'] ?? null) || trim($o['caption']) === '' || mb_strlen($o['caption']) > 140) {
+                    throw new InvalidArgumentException("{$date} {$key}: caption is 1 to 140 characters.");
+                }
+            }
+            $out[$date] = $players;
+        }
+        return $out;
+    }
+
+    /** Store a day's plan with its uploaded photos (player key => URL). Replaces that date's plan. */
+    public static function storeDay(string $date, array $players, array $photoUrls): void
+    {
+        foreach ($players as $key => &$o) {
+            $o['photoUrl'] = $photoUrls[$key] ?? throw new InvalidArgumentException("{$date} {$key}: no photo.");
+        }
+        unset($o);
+        Database::pdo()->prepare("
+            INSERT INTO daily_demo_days (challenge_date, players) VALUES (?, ?::jsonb)
+            ON CONFLICT (challenge_date) DO UPDATE SET players = EXCLUDED.players, created_at = now()
+        ")->execute([$date, json_encode($players, JSON_UNESCAPED_UNICODE)]);
+    }
+
+    /** The planned dates from today on: [date => player count]. */
+    public static function plannedDays(): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT challenge_date::text AS date, players FROM daily_demo_days WHERE challenge_date >= ?::date ORDER BY challenge_date
+        ");
+        $stmt->execute([DailyClock::currentDate()]);
+        $out = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $out[$r['date']] = count(json_decode((string) $r['players'], true) ?: []);
+        }
+        return $out;
+    }
+
+    /**
+     * Seed $date's planned demo content (the drop, right after publishing; or
+     * the plan command for today). Null without a plan for that date, or when
+     * demo content is already there. Never throws for a missing plan.
+     */
+    public static function seedPlanned(string $date): ?array
+    {
+        $stmt = Database::pdo()->prepare("SELECT players FROM daily_demo_days WHERE challenge_date = ?::date");
+        $stmt->execute([$date]);
+        $raw = $stmt->fetchColumn();
+        if ($raw === false || DailyClock::currentDate() !== $date) {
+            return null;
+        }
+        $left = self::status();
+        if ($left['proofs'] > 0 || $left['accounts'] > 0) {
+            return null;
+        }
+        $players = json_decode((string) $raw, true) ?: [];
+        $urls = array_values(array_map(static fn(array $o): string => (string) $o['photoUrl'], $players));
+        return self::seed($urls, $players);
     }
 
     private static function player(string $key): array

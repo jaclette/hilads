@@ -97,5 +97,6 @@ require_once __DIR__ . '/../src/DailyBoard.php';
 require_once __DIR__ . '/../src/DailyTour.php';
 require_once __DIR__ . '/../src/DailyIndex.php';
 require_once __DIR__ . '/../src/DailyComparisons.php';
+require_once __DIR__ . '/../src/DailyDemo.php';
 require_once __DIR__ . '/../src/DailyLocalPass.php';
 require_once __DIR__ . '/../src/DailyProposals.php';

@@ -3302,6 +3302,16 @@ run($pdo, "
 ", 'daily_challenges compare_key / price_key');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_challenges_compare_key ON daily_challenges (compare_key) WHERE compare_key IS NOT NULL", 'idx_daily_challenges_compare_key');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_challenges_price_key ON daily_challenges (price_key) WHERE price_key IS NOT NULL", 'idx_daily_challenges_price_key');
+// Demo content a week ahead (DailyDemo::plan): per date, each demo player's
+// uploaded photo, caption, answer, price and spot; the drop seeds that day's.
+// Reversal: DROP TABLE daily_demo_days.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_demo_days (
+        challenge_date DATE        PRIMARY KEY,
+        players        JSONB       NOT NULL,
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_demo_days');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,
