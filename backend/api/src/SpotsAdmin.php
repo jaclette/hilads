@@ -554,10 +554,11 @@ final class SpotsAdmin
     /**
      * A pick from an import entry with an already hosted photo: {name, lat, lng,
      * theme, caption, credit, note: {en, fr, ...}, photoUrl, status (default
-     * draft)}. Skipped (null) when the place already has a pick photo, so a
-     * re-run never duplicates. $dry: validate only. Returns the place id.
+     * draft)}. An existing pick at the place is kept as is (a re-run never
+     * duplicates). $dry: validate only. Returns {place: id|null, action:
+     * created|exists|would_create}.
      */
-    public static function pickImport(array $e, bool $dry = false): ?string
+    public static function pickImport(array $e, bool $dry = false): array
     {
         $in = ['name' => $e['name'] ?? '', 'position' => ($e['lat'] ?? '') . ', ' . ($e['lng'] ?? ''), 'theme' => $e['theme'] ?? '',
                'caption' => $e['caption'] ?? '', 'username' => $e['username'] ?? self::SEED_USERNAME];
@@ -575,17 +576,26 @@ final class SpotsAdmin
             $stmt = Database::pdo()->prepare("SELECT 1 FROM daily_proofs WHERE place_id = ? AND is_pick LIMIT 1");
             $stmt->execute([$twin['id']]);
             if ($stmt->fetchColumn() !== false) {
-                return null;
+                return ['place' => $twin['id'], 'action' => 'exists'];
             }
         }
         if ($dry) {
-            return $twin['id'] ?? 'new';
+            return ['place' => $twin['id'] ?? null, 'action' => 'would_create'];
         }
         $placeId = self::seedCommit($plan, $photo, true, $credit);
         Database::pdo()->prepare("UPDATE places SET pick_note_i18n = ?::jsonb, pick_status = ?, updated_at = now() WHERE id = ?")
             ->execute([$noteJs, $status, $placeId]);
         DailyAdminService::audit('place.pick', 'place', $placeId, null, ['status' => $status, 'credit' => $credit, 'import' => true]);
-        return $placeId;
+        return ['place' => $placeId, 'action' => 'created'];
+    }
+
+    /** A pick's place id by its exact name (the newest when several), or null. */
+    public static function pickIdByName(string $name): ?string
+    {
+        $stmt = Database::pdo()->prepare("SELECT id FROM places WHERE pick_status IS NOT NULL AND name = ? ORDER BY updated_at DESC LIMIT 1");
+        $stmt->execute([$name]);
+        $id = $stmt->fetchColumn();
+        return $id !== false ? (string) $id : null;
     }
 
     /** Edit a pick: note, status, caption, credit, and optionally a new photo. */
