@@ -544,7 +544,8 @@
     "firstIn": "Jawaban pertama mulai masuk",
     "tip": "Ketuk untuk membandingkan kotamu dengan dunia.",
     "nCountries_one": "{{count}} negara",
-    "nCountries_other": "{{count}} negara"
+    "nCountries_other": "{{count}} negara",
+    "youAnswered": "Jawabanmu sudah masuk. Lihat perbandingannya dengan dunia."
   },
   "backHome": {
     "title": "Kalau di kotamu, bagaimana?",

@@ -545,7 +545,8 @@
     "firstIn": "पहले जवाब आ रहे हैं",
     "tip": "अपने शहर की दुनिया से तुलना करने के लिए टैप करें।",
     "nCountries_one": "{{count}} देश",
-    "nCountries_other": "{{count}} देश"
+    "nCountries_other": "{{count}} देश",
+    "youAnswered": "आपका जवाब भेज दिया गया। देखें दुनिया से तुलना कैसी है।"
   },
   "backHome": {
     "title": "और आपके शहर में, कैसा है?",

@@ -543,7 +543,8 @@
     "firstIn": "第一批回答来了",
     "tip": "点一下，把你的城市和世界比一比。",
     "nCountries_one": "{{count}} 个国家/地区",
-    "nCountries_other": "{{count}} 个国家/地区"
+    "nCountries_other": "{{count}} 个国家/地区",
+    "youAnswered": "你的回答已发送。看看世界怎么比。"
   },
   "backHome": {
     "title": "那你家乡呢，是怎样的？",

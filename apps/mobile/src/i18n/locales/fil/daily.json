@@ -545,7 +545,8 @@
     "firstIn": "Dumarating na ang mga unang sagot",
     "tip": "I-tap para ikumpara ang lungsod mo sa mundo.",
     "nCountries_one": "{{count}} bansa",
-    "nCountries_other": "{{count}} bansa"
+    "nCountries_other": "{{count}} bansa",
+    "youAnswered": "Naipadala na ang sagot mo. Tingnan kung paano ito ikinukumpara ng mundo."
   },
   "backHome": {
     "title": "E sa inyo, kumusta?",

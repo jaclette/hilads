@@ -575,7 +575,8 @@
     "nCountries_one": "{{count}} страна",
     "nCountries_few": "{{count}} страны",
     "nCountries_many": "{{count}} стран",
-    "nCountries_other": "{{count}} страны"
+    "nCountries_other": "{{count}} страны",
+    "youAnswered": "Твой ответ отправлен. Посмотри, как ответил мир."
   },
   "backHome": {
     "title": "А у тебя дома как?",

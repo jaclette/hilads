@@ -1336,7 +1336,8 @@
       "firstIn": "คำตอบแรกๆ เริ่มมาแล้ว",
       "tip": "แตะเพื่อเทียบเมืองของคุณกับทั่วโลก",
       "nCountries_one": "{{count}} ประเทศ",
-      "nCountries_other": "{{count}} ประเทศ"
+      "nCountries_other": "{{count}} ประเทศ",
+      "youAnswered": "ส่งคำตอบแล้ว ดูว่าทั่วโลกเทียบกันอย่างไร"
     },
     "backHome": {
       "hereIn": "ที่นี่ {{city}}",

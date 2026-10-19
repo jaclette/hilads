@@ -21,6 +21,7 @@ import { ThemeIcon } from '@/ui/ThemeIcon';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
 import { PulseButton } from './PulseButton';
+import { LiveDot, WorldTicker, useLiveMotion, type TickerEntry } from './WorldLive';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
 import { askDailyPush } from '@/services/push';
@@ -89,6 +90,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
     const id = setTimeout(() => setTip(false), Math.max(0, tipUntil - Date.now()));
     return () => clearTimeout(id);
   }, [tip]);
+  // The world block moves only on screen, in the foreground, without reduce motion.
+  const motion = useLiveMotion(visible);
   useEffect(() => {
     AsyncStorage.getItem(HOW_IT_WORKS_KEY).then(v => setHowSeen(v === '1')).catch(() => setHowSeen(true));
   }, []);
@@ -127,6 +130,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   const openWorld = () => router.push('/daily/today?tab=world&source=today_block' as never);
   const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer!, i18n.language));
   const compared = !!world && world.countries >= 2;
+  const ticker: TickerEntry[] = (world?.answers ?? []).filter(a => a.answer && a.city.name)
+    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: answerText(a.answer!, i18n.language) }));
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
   const onCta = () => {
     if (myProof) { openSheet(); return; }
@@ -181,17 +186,20 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
             <Pressable style={({ pressed }) => [styles.world, pressed && styles.worldPressed]} accessibilityRole="button"
                        onPress={() => { hideTip(); (compared ? openCompare : openWorld)(); }}>
               <View style={styles.worldKicker}>
-                <Ionicons name="earth-outline" size={14} color={colors.muted} />
+                <LiveDot live={motion.live} />
                 <Text style={styles.worldKickerText}>{t('compare.worldAnswers')}</Text>
               </View>
               <Text style={styles.worldQuestion}>
                 {showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}
               </Text>
+              {/* Answered: the world block is the focus now. */}
+              {myProof && <Text style={styles.worldMine}>{t('compare.youAnswered')}</Text>}
               <View style={styles.worldLine}>
-                {compared && <FlagStack flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')} />}
-                <Text style={styles.worldAnswers} numberOfLines={1}>
-                  {compared ? [t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ') : t('compare.firstIn')}
-                </Text>
+                {compared ? (
+                  <WorldTicker entries={ticker} flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')}
+                               live={motion.live} reduced={motion.reduced}
+                               staticLine={[t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ')} />
+                ) : <Text style={styles.worldAnswers} numberOfLines={1}>{t('compare.firstIn')}</Text>}
                 <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
                 <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
               </View>
@@ -272,17 +280,6 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
                        onCamera={() => { howDone('camera'); onCta(); }} onLater={remindLater} onClose={() => howDone('dismissed')} />
       <ShareSheet content={share} source={share?.type === 'today' && share.represent ? 'represent_today_card' : 'today_card'} onClose={() => setShare(null)} />
     </TouchableOpacity>
-  );
-}
-
-/** Up to 5 overlapping flags of the countries that answered (decorative). */
-function FlagStack({ flags }: { flags: string[] }) {
-  const styles = useThemedStyles(makeStyles);
-  const list = [...new Set(flags.filter(Boolean))].slice(0, 5);
-  return (
-    <View style={styles.flags} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      {list.map((c, i) => <View key={c} style={[styles.flagRing, i > 0 && styles.flagOverlap, { zIndex: 5 - i }]}><CityFlag country={c} size={20} /></View>)}
-    </View>
   );
 }
 
@@ -402,14 +399,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   worldQuestion: { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
   worldLine:   { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
   worldAnswers: { flex: 1, fontSize: 13, fontWeight: '600', color: c.muted },
+  worldMine:   { fontSize: 13, fontWeight: '700', color: c.primaryText },
   worldSee:    { fontSize: 13, fontWeight: '800', color: c.primaryText },
   tip:         { position: 'absolute', top: '100%', left: 12, right: 12, marginTop: 10, zIndex: 10, paddingHorizontal: 14, paddingVertical: 10,
                  borderRadius: 14, backgroundColor: c.text },
   tipArrow:    { position: 'absolute', top: -6, left: 24, width: 12, height: 12, backgroundColor: c.text, transform: [{ rotate: '45deg' }] },
   tipText:     { fontSize: 14, fontWeight: '700', color: c.bg },
-  flags:       { flexDirection: 'row', alignItems: 'center' },
-  flagRing:    { borderRadius: 4, borderWidth: 1.5, borderColor: c.stepBg, overflow: 'hidden' },
-  flagOverlap: { marginLeft: -7 },
   emptyCity:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
   emptyCityText: { flex: 1, fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.primaryOnTint },
   streak:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -4 },

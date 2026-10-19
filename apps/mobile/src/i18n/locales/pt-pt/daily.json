@@ -546,7 +546,8 @@
     "firstIn": "Estão a chegar as primeiras respostas",
     "tip": "Toca para comparar a tua cidade com o mundo.",
     "nCountries_one": "{{count}} país",
-    "nCountries_other": "{{count}} países"
+    "nCountries_other": "{{count}} países",
+    "youAnswered": "A tua resposta foi enviada. Vê como o mundo se compara."
   },
   "backHome": {
     "title": "E na tua terra, como é?",

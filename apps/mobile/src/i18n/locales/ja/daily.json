@@ -544,7 +544,8 @@
     "firstIn": "最初の回答が届き始めました",
     "tip": "タップして、あなたの街を世界とくらべよう。",
     "nCountries_one": "{{count}}か国",
-    "nCountries_other": "{{count}}か国"
+    "nCountries_other": "{{count}}か国",
+    "youAnswered": "回答を送りました。世界とくらべてみよう。"
   },
   "backHome": {
     "title": "あなたの地元では、どう？",

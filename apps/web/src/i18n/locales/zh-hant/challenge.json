@@ -1336,7 +1336,8 @@
       "firstIn": "第一批回答來了",
       "tip": "點一下，把你的城市和世界比一比。",
       "nCountries_one": "{{count}} 個國家/地區",
-      "nCountries_other": "{{count}} 個國家/地區"
+      "nCountries_other": "{{count}} 個國家/地區",
+      "youAnswered": "你的回答已送出。看看世界怎麼比。"
     },
     "backHome": {
       "hereIn": "這裡：{{city}}",

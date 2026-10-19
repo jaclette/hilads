@@ -1397,7 +1397,8 @@
       "nCountries_two": "بلدان",
       "nCountries_few": "{{count}} بلدان",
       "nCountries_many": "{{count}} بلدًا",
-      "nCountries_other": "{{count}} بلد"
+      "nCountries_other": "{{count}} بلد",
+      "youAnswered": "أُرسلت إجابتك. شاهد كيف يقارن العالم."
     },
     "backHome": {
       "hereIn": "هنا في {{city}}",

@@ -1336,7 +1336,8 @@
       "firstIn": "Những câu trả lời đầu tiên đang đến",
       "tip": "Chạm để so sánh thành phố của bạn với thế giới.",
       "nCountries_one": "{{count}} quốc gia",
-      "nCountries_other": "{{count}} quốc gia"
+      "nCountries_other": "{{count}} quốc gia",
+      "youAnswered": "Câu trả lời của bạn đã gửi. Xem thế giới so sánh thế nào."
     },
     "backHome": {
       "hereIn": "Ở đây, {{city}}",

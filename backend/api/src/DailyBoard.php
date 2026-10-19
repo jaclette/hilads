@@ -19,6 +19,8 @@ declare(strict_types=1);
 final class DailyBoard
 {
     private const CACHE_TTL = 30;
+    /** The card's live ticker cycles through this many cities' answers (other cities first). */
+    public const TEASER_ANSWERS = 12;
 
     public static function cacheKey(string $challengeId): string
     {
@@ -225,7 +227,8 @@ final class DailyBoard
 
     /**
      * Today's live teaser (SPEC 10.6): {cities, countries, flags (up to 5
-     * country codes), answers: [{city, answer}]} once a city answered, else
+     * country codes), answers: [{city, answer}] (up to TEASER_ANSWERS, the
+     * card's ticker)} once a city answered, else
      * null. Other cities first. The card's row shows the flags, "Already N
      * countries answered" and the answers from 2 countries, "See today's
      * answers" before.
@@ -247,7 +250,7 @@ final class DailyBoard
             // The card's flag stack: up to 5 countries that answered, most answers first.
             'flags'     => array_slice(array_values(array_unique(array_filter(array_column($answered, 'country')))), 0, 5),
             'answers'   => array_map(static fn(array $r) => ['city' => self::city($r), 'answer' => self::answer($r, $challenge, $locale)],
-                                     self::teaserPick($rows, $viewerCityId)),
+                                     self::teaserPick($rows, $viewerCityId, self::TEASER_ANSWERS)),
         ];
     }
 

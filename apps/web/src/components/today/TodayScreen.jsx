@@ -11,6 +11,7 @@ import { answerText } from '../daily/compareShared'
 import WorldTourViewer from '../daily/WorldTour'
 import { IndexCarousel } from '../daily/Comparisons'
 import { CityFlag, CityName } from '../CityName'
+import { LiveDot, WorldTicker, useLiveMotion } from './WorldLive'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount, useVotesLeft,
   StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal, VoteButton,
@@ -159,6 +160,9 @@ function Ticket({ data, loading }) {
   const [tip, setTip] = useState(() => Date.now() < tipUntil)
   const hideTip = () => { tipUntil = 0; setTip(false) }
   const hasCompare = !!challenge?.compare
+  // The world block moves only on screen, in a visible tab, without reduce motion.
+  const [worldEl, setWorldEl] = useState(null)
+  const motion = useLiveMotion(worldEl)
   useEffect(() => {
     if (!hasCompare) return
     try {
@@ -200,6 +204,8 @@ function Ticket({ data, loading }) {
   const world = data?.world ?? null
   const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer, i18n.language))
   const compared = !!world && world.countries >= 2
+  const ticker = (world?.answers ?? []).filter(a => a.answer && a.city?.name)
+    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: answerText(a.answer, i18n.language) }))
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
@@ -236,21 +242,21 @@ function Ticket({ data, loading }) {
             countries it opens the Compare tab, before the sheet's World tab. */}
         {challenge.compare && (
           <div className="today-world-wrap">
-            <button type="button" className="today-world" onClick={(e) => {
+            <button type="button" className="today-world" ref={setWorldEl} onClick={(e) => {
               e.stopPropagation()
               hideTip()
               if (compared) track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
               openDaily('challenge', compared ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
             }}>
-              <span className="today-world-kicker"><Icon name="earth-outline" size={14} />{t('compare.worldAnswers')}</span>
+              <span className="today-world-kicker"><LiveDot live={motion.live} />{t('compare.worldAnswers')}</span>
               <span className="today-world-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</span>
+              {/* Answered: the world block is the focus now. */}
+              {myProof && <span className="today-world-mine">{t('compare.youAnswered')}</span>}
               <span className="today-world-line">
-                {compared && (
-                  <span className="today-teaser-flags" aria-hidden="true">
-                    {[...new Set(world.flags ?? world.answers.map(a => a.city.country))].filter(Boolean).slice(0, 5).map(c => <CityFlag key={c} country={c} size={20} />)}
-                  </span>
-                )}
-                <span className="today-world-answers">{compared ? [t('compare.nCountries', { count: world.countries }), ...answers].join(' · ') : t('compare.firstIn')}</span>
+                {compared ? (
+                  <WorldTicker entries={ticker} flags={world.flags ?? world.answers.map(a => a.city.country)} live={motion.live} reduced={motion.reduced}
+                               staticLine={[t('compare.nCountries', { count: world.countries }), ...answers].join(' · ')} />
+                ) : <span className="today-world-answers">{t('compare.firstIn')}</span>}
                 <span className="today-world-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={16} /></span>
               </span>
             </button>

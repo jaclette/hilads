@@ -545,7 +545,8 @@
     "firstIn": "De eerste antwoorden komen binnen",
     "tip": "Tik om je stad met de wereld te vergelijken.",
     "nCountries_one": "{{count}} land",
-    "nCountries_other": "{{count}} landen"
+    "nCountries_other": "{{count}} landen",
+    "youAnswered": "Je antwoord is binnen. Zie hoe de wereld zich verhoudt."
   },
   "backHome": {
     "title": "En bij jou thuis, hoe is het daar?",

@@ -1337,7 +1337,8 @@
       "firstIn": "Llegan las primeras respuestas",
       "tip": "Toca para comparar tu ciudad con el mundo.",
       "nCountries_one": "{{count}} país",
-      "nCountries_other": "{{count}} países"
+      "nCountries_other": "{{count}} países",
+      "youAnswered": "Tu respuesta ya está. Mira cómo se compara el mundo."
     },
     "backHome": {
       "hereIn": "Aquí en {{city}}",

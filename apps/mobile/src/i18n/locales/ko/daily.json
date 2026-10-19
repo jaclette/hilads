@@ -543,7 +543,8 @@
     "firstIn": "첫 답변들이 도착하고 있어요",
     "tip": "탭해서 내 도시를 세계와 비교해 보세요.",
     "nCountries_one": "{{count}}개국",
-    "nCountries_other": "{{count}}개국"
+    "nCountries_other": "{{count}}개국",
+    "youAnswered": "답변을 보냈어요. 세계와 어떻게 다른지 보세요."
   },
   "backHome": {
     "title": "고향에서는 어때요?",
