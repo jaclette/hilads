@@ -551,6 +551,43 @@ final class SpotsAdmin
         return $placeId;
     }
 
+    /**
+     * A pick from an import entry with an already hosted photo: {name, lat, lng,
+     * theme, caption, credit, note: {en, fr, ...}, photoUrl, status (default
+     * draft)}. Skipped (null) when the place already has a pick photo, so a
+     * re-run never duplicates. $dry: validate only. Returns the place id.
+     */
+    public static function pickImport(array $e, bool $dry = false): ?string
+    {
+        $in = ['name' => $e['name'] ?? '', 'position' => ($e['lat'] ?? '') . ', ' . ($e['lng'] ?? ''), 'theme' => $e['theme'] ?? '',
+               'caption' => $e['caption'] ?? '', 'username' => $e['username'] ?? self::SEED_USERNAME];
+        $plan   = self::seedPlan($in);
+        $credit = self::pickCredit($e['credit'] ?? '');
+        $note   = is_array($e['note'] ?? null) ? $e['note'] : [];
+        $noteJs = self::pickNote((string) ($note['en'] ?? ''), json_encode(array_diff_key($note, ['en' => true]), JSON_UNESCAPED_UNICODE));
+        $status = self::pickStatus($e['status'] ?? 'draft');
+        $photo  = (string) ($e['photoUrl'] ?? '');
+        if (!str_starts_with($photo, 'https://')) {
+            throw new InvalidArgumentException("{$in['name']}: photoUrl must be an https URL.");
+        }
+        $twin = Places::findTwin($plan['name'], $plan['pos'][0], $plan['pos'][1], $plan['userId']);
+        if ($twin !== null) {
+            $stmt = Database::pdo()->prepare("SELECT 1 FROM daily_proofs WHERE place_id = ? AND is_pick LIMIT 1");
+            $stmt->execute([$twin['id']]);
+            if ($stmt->fetchColumn() !== false) {
+                return null;
+            }
+        }
+        if ($dry) {
+            return $twin['id'] ?? 'new';
+        }
+        $placeId = self::seedCommit($plan, $photo, true, $credit);
+        Database::pdo()->prepare("UPDATE places SET pick_note_i18n = ?::jsonb, pick_status = ?, updated_at = now() WHERE id = ?")
+            ->execute([$noteJs, $status, $placeId]);
+        DailyAdminService::audit('place.pick', 'place', $placeId, null, ['status' => $status, 'credit' => $credit, 'import' => true]);
+        return $placeId;
+    }
+
     /** Edit a pick: note, status, caption, credit, and optionally a new photo. */
     public static function pickUpdate(string $placeId, array $in, ?array $file): void
     {
