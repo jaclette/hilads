@@ -5,15 +5,18 @@ import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
  * "Photo by @username" for a spot's cover (SPEC 9.5: the most voted approved
- * proof). overlay: a small label on the photo; else a muted line.
+ * proof), or a Hilads pick's credit ("Photo: Jane Doe / Unsplash"). overlay: a
+ * small label on the photo; else a muted line.
  */
-export function PhotoCredit({ by, overlay = false, style }: { by: string | null | undefined; overlay?: boolean; style?: StyleProp<TextStyle> }) {
+export function PhotoCredit({ by, credit, overlay = false, style }: {
+  by: string | null | undefined; credit?: string | null; overlay?: boolean; style?: StyleProp<TextStyle>;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('common');
-  if (!by) return null;
+  if (!by && !credit) return null;
   return (
     <Text style={[overlay ? styles.overlay : styles.line, style]} numberOfLines={1}>
-      {t('photoBy', { username: by })}
+      {credit ? t('pick.credit', { credit }) : t('photoBy', { username: by })}
     </Text>
   );
 }

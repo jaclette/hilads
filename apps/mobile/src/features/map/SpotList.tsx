@@ -8,6 +8,7 @@ import { themeName } from '@/features/daily/themes';
 import { compactPrice, distance, meters } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
+import { PickBadge } from './PickBadge';
 import { Chip } from '@/ui';
 
 export type SpotSort = 'near' | 'week';
@@ -76,6 +77,7 @@ export function SpotList({ spots, sort, onSort, me, origin, onPick, topInset, bo
             <View style={styles.body}>
               <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
               <View style={styles.chips}>
+                {!!s.pick && <PickBadge />}
                 {theme && (
                   <View style={styles.theme}>
                     <ThemeIcon theme={theme} size={12} color={colors.primaryOnTint} />

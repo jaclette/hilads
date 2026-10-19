@@ -17,6 +17,7 @@ import { Button, Chip, CityName, IconButton, Photo, ScreenHeader, SectionTitle }
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
+import { GoodToKnow, PickBadge } from '@/features/map/PickBadge';
 
 /**
  * A spot (SPEC 9.5): its proofs' photos, themes, price range paid, proof
@@ -84,7 +85,7 @@ export default function SpotScreen() {
       {!!spot.cover.photoUrl && (
         <View>
           <Image source={{ uri: spot.cover.photoUrl }} style={styles.cover} contentFit="cover" />
-          <PhotoCredit by={spot.cover.by} overlay style={styles.coverCredit} />
+          <PhotoCredit by={spot.cover.by} credit={spot.cover.credit} overlay style={styles.coverCredit} />
         </View>
       )}
       <Text style={styles.name}>{spot.name}</Text>
@@ -95,14 +96,20 @@ export default function SpotScreen() {
           <Text style={styles.rankText}>{rankLine}</Text>
         </View>
       )}
+      {!!spot.pick && <PickBadge />}
       <View style={styles.chips}>
         {spot.themes.map(k => <Chip key={k} theme={k} label={themeName(k)} />)}
         {!!spot.pioneerCity && <Chip icon="flag" label={t('represent.spotOne', { city: shortCityName(spot.pioneerCity) })} />}
         {spot.validatedByLocal && <Chip tone="local" icon="checkmark-circle-outline" label={t('map.validated')} />}
       </View>
-      <Text style={styles.stats}>
-        {t('map.proofs', { count: spot.proofCount })} · {t('today.votes', { count: spot.votes })}{price ? ` · ${t('map.pricePaid', { price })}` : ''}
-      </Text>
+      {/* A pick alone has no answers to count. */}
+      {(spot.proofCount > 0 || !!price) && (
+        <Text style={styles.stats}>
+          {[spot.proofCount > 0 ? `${t('map.proofs', { count: spot.proofCount })} · ${t('today.votes', { count: spot.votes })}` : null,
+            price ? t('map.pricePaid', { price }) : null].filter(Boolean).join(' · ')}
+        </Text>
+      )}
+      <GoodToKnow note={spot.pick?.note} />
       {spot.tags.length > 0 && (
         <View style={styles.chips}>
           {spot.tags.map(tag => <Chip key={tag} variant="outline" label={tag} />)}
@@ -153,6 +160,7 @@ export default function SpotScreen() {
 function PhotoViewer({ photo, onClose }: { photo: SpotPhoto | null; onClose: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('daily');
+  const { t: tc } = useTranslation('common');
   const insets = useSafeAreaInsets();
   if (!photo) return null;
   const date = photo.date
@@ -163,10 +171,15 @@ function PhotoViewer({ photo, onClose }: { photo: SpotPhoto | null; onClose: () 
       <Pressable style={styles.viewer} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('map.closeSpot')}>
         <Image source={{ uri: photo.photoUrl }} style={styles.viewerImage} contentFit="contain" />
         <View style={[styles.viewerInfo, { paddingBottom: insets.bottom + 16 }]}>
-          <Text style={styles.viewerUser}>@{photo.user.username ?? photo.user.displayName ?? ''}{photo.isLocal ? ` · ${t('spot.local')}` : ''}</Text>
+          {/* A Hilads pick's photo: its credit, never votes. */}
+          <Text style={styles.viewerUser}>
+            {photo.pick ? tc('pick.credit', { credit: photo.credit ?? 'Hilads' })
+              : `@${photo.user.username ?? photo.user.displayName ?? ''}${photo.isLocal ? ` · ${t('spot.local')}` : ''}`}
+          </Text>
           {!!photo.caption && <Text style={styles.viewerCaption}>{photo.caption}</Text>}
           <Text style={styles.viewerMeta}>
-            {[date, photo.price ? compactPrice(photo.price.amount, photo.price.currency, i18n.language) : null, t('today.votes', { count: photo.voteCount })].filter(Boolean).join(' · ')}
+            {[photo.pick ? null : date, photo.price ? compactPrice(photo.price.amount, photo.price.currency, i18n.language) : null,
+              photo.pick ? null : t('today.votes', { count: photo.voteCount })].filter(Boolean).join(' · ')}
           </Text>
         </View>
       </Pressable>

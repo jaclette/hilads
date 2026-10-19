@@ -210,6 +210,11 @@
     "passport": "Твои города, ответы и штампы."
   },
   "photoBy": "Фото @{{username}}",
+  "pick": {
+    "badge": "Выбор Hilads",
+    "goodToKnow": "Полезно знать",
+    "credit": "Фото: {{credit}}"
+  },
   "shareLink": {
     "share": "Поделиться",
     "challengeFriend": "Брось вызов другу",

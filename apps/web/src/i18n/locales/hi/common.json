@@ -210,6 +210,11 @@
     "passport": "आपके शहर, आपके जवाब, आपके स्टैम्प।"
   },
   "photoBy": "फ़ोटो: @{{username}}",
+  "pick": {
+    "badge": "Hilads की पसंद",
+    "goodToKnow": "जानने लायक",
+    "credit": "फ़ोटो: {{credit}}"
+  },
   "shareLink": {
     "share": "शेयर करें",
     "challengeFriend": "किसी दोस्त को चुनौती दें",

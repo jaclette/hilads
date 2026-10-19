@@ -18,6 +18,7 @@ import {
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { PhotoCredit, PickBadge } from '../map/Pick'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -743,10 +744,11 @@ function SpotsNear() {
             <button key={s.id} type="button" className="spot-card" onClick={() => openSpot(s.id)} aria-label={s.name}>
               <span className="spot-card-photo">
                 {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" /> : <span className="spot-card-img" />}
-                {s.cover?.by && <span className="photo-credit">{i18n.t('photoBy', { ns: 'common', username: s.cover.by })}</span>}
+                <PhotoCredit cover={s.cover} className="photo-credit" />
               </span>
               <span className="spot-card-body">
                 <span className="spot-card-name">{s.name}</span>
+                {s.pick && <PickBadge />}
                 <span className="dc-muted" style={ROW}>
                   {s.distanceM !== undefined && <><Icon name="location-outline" size={13} />{distance(s.distanceM, i18n.language)}</>}
                   {s.themes?.[0] ? <Icon name={themeIcon(s.themes[0])} size={13} /> : null}

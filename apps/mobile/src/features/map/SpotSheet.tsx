@@ -11,6 +11,7 @@ import type { Spot } from '@/api/spots';
 import { Button, Chip, IconButton } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
 import { PhotoCredit } from './PhotoCredit';
+import { PickBadge } from './PickBadge';
 
 /**
  * The selected spot's card at the bottom of the map (map.html): photo, name,
@@ -41,6 +42,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
           : <View style={styles.photo} />}
         <View style={styles.info}>
           <Text style={styles.name} numberOfLines={2}>{spot.name}</Text>
+          {!!spot.pick && <PickBadge />}
           <View style={styles.line}>
             {theme && (
               <View style={styles.inline}>
@@ -58,11 +60,12 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
               <Text style={styles.badgeText}>{t('map.validated')}</Text>
             </View>
           )}
-          <Text style={styles.meta}>{t('map.proofs', { count: spot.proofCount })} · {t('today.votes', { count: spot.votes })}</Text>
+          {/* A pick alone has no answers to count. */}
+          {spot.proofCount > 0 && <Text style={styles.meta}>{t('map.proofs', { count: spot.proofCount })} · {t('today.votes', { count: spot.votes })}</Text>}
         </View>
       </TouchableOpacity>
       {!!spot.cover.caption && <Text style={styles.caption} numberOfLines={2}>“{spot.cover.caption}”</Text>}
-      <PhotoCredit by={spot.cover.by} style={styles.credit} />
+      <PhotoCredit by={spot.cover.by} credit={spot.cover.credit} style={styles.credit} />
       <View style={styles.actions}>
         <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} />
         <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />

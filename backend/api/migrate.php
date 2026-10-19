@@ -3320,6 +3320,17 @@ run($pdo, "
 // guess at once, and Today offers "Not in [city]? Change" on a guess.
 // Reversal: ALTER TABLE users DROP COLUMN current_city_source.
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS current_city_source TEXT", 'users.current_city_source');
+
+// Hilads picks: editorial spots. A pick is a place with a "Good to know" text
+// (pick_note_i18n {en, fr, ...}) and a status (draft, published, hidden); its
+// photo is an approved seed proof by an official account marked is_pick, with
+// its photo_credit. Picks never count as answers (seed rules: no votes, ranks,
+// tour, Index, presence, streak or pioneer); a player's proof at the place
+// takes the cover. Reversal: DROP the four columns.
+run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS pick_note_i18n JSONB", 'places.pick_note_i18n');
+run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS pick_status TEXT CHECK (pick_status IN ('draft', 'published', 'hidden'))", 'places.pick_status');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_pick BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_pick');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS photo_credit TEXT", 'daily_proofs.photo_credit');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

@@ -210,6 +210,11 @@
     "passport": "مدنك وإجاباتك وأختامك."
   },
   "photoBy": "صورة من @{{username}}",
+  "pick": {
+    "badge": "اختيار Hilads",
+    "goodToKnow": "معلومة مفيدة",
+    "credit": "الصورة: {{credit}}"
+  },
   "shareLink": {
     "share": "مشاركة",
     "challengeFriend": "تحدَّ صديقًا",

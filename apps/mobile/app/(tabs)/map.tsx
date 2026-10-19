@@ -302,7 +302,8 @@ export default function MapScreen() {
     features: worldView ? [] : spots.filter(s => s.id !== selected?.id).map(s => ({
       type: 'Feature', id: s.id,
       // rank: lower is placed first when labels collide (most proofs, then votes).
-      properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes) },
+      // pick: a Hilads pick (editorial) gets its own pin: gold with a star.
+      properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes), pick: !!s.pick },
       geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
     })),
   }), [spots, selected?.id, i18n.language, worldView]);
@@ -340,7 +341,10 @@ export default function MapScreen() {
             textField: ['get', 'point_count_abbreviated'], textColor: '#FFFFFF', textSize: 15, textAllowOverlap: true, textIgnorePlacement: true,
           }} />
           <CircleLayer id="spot-pins" filter={['!', ['has', 'point_count']]} style={{
-            circleColor: colors.primary, circleRadius: 11, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
+            circleColor: ['case', ['get', 'pick'], colors.gold, colors.primary], circleRadius: 11, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
+          }} />
+          <SymbolLayer id="spot-pick-stars" filter={['all', ['!', ['has', 'point_count']], ['get', 'pick']]} style={{
+            textField: '★', textColor: '#FFFFFF', textSize: 13, textAllowOverlap: true, textIgnorePlacement: true,
           }} />
           <SymbolLayer id="spot-labels" filter={['!', ['has', 'point_count']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
             textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,

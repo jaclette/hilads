@@ -575,6 +575,7 @@
     "worldAnswers": "Сегодня отвечает мир",
     "seeAnswers": "Смотреть ответы",
     "firstIn": "Первые ответы уже идут",
+    "picksTitle": "А пока — наш выбор",
     "answeredRow_one": "Уже ответила {{count}} страна",
     "answeredRow_few": "Уже ответили {{count}} страны",
     "answeredRow_many": "Уже ответили {{count}} стран",

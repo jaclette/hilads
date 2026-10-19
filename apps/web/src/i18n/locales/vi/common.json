@@ -210,6 +210,11 @@
     "passport": "Thành phố, câu trả lời và con dấu của bạn."
   },
   "photoBy": "Ảnh của @{{username}}",
+  "pick": {
+    "badge": "Hilads chọn",
+    "goodToKnow": "Điều nên biết",
+    "credit": "Ảnh: {{credit}}"
+  },
   "shareLink": {
     "share": "Chia sẻ",
     "challengeFriend": "Thách bạn bè",

@@ -227,5 +227,10 @@
     "hi": "Say hi to your city. Join a plan.",
     "passport": "Your cities, your answers, your stamps."
   },
-  "photoBy": "Photo by @{{username}}"
+  "photoBy": "Photo by @{{username}}",
+  "pick": {
+    "badge": "Hilads pick",
+    "goodToKnow": "Good to know",
+    "credit": "Photo: {{credit}}"
+  }
 }

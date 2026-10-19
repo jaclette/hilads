@@ -227,5 +227,10 @@
     "hi": "向你的城市打聲招呼。加入一個計畫。",
     "passport": "你的城市、你的回答、你的印章。"
   },
-  "photoBy": "照片：@{{username}}"
+  "photoBy": "照片：@{{username}}",
+  "pick": {
+    "badge": "Hilads 精選",
+    "goodToKnow": "小提醒",
+    "credit": "圖片：{{credit}}"
+  }
 }

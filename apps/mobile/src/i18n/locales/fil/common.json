@@ -227,5 +227,10 @@
     "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
     "passport": "Mga lungsod, sagot at tatak mo."
   },
-  "photoBy": "Larawan ni @{{username}}"
+  "photoBy": "Larawan ni @{{username}}",
+  "pick": {
+    "badge": "Pili ng Hilads",
+    "goodToKnow": "Dapat malaman",
+    "credit": "Larawan: {{credit}}"
+  }
 }

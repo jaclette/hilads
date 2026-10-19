@@ -210,6 +210,11 @@
     "passport": "เมือง คำตอบ และตราประทับของคุณ"
   },
   "photoBy": "ภาพโดย @{{username}}",
+  "pick": {
+    "badge": "Hilads แนะนำ",
+    "goodToKnow": "น่ารู้",
+    "credit": "ภาพ: {{credit}}"
+  },
   "shareLink": {
     "share": "แชร์",
     "challengeFriend": "ท้าเพื่อน",

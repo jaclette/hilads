@@ -210,6 +210,11 @@
     "passport": "Kotamu, jawabanmu, capmu."
   },
   "photoBy": "Foto oleh @{{username}}",
+  "pick": {
+    "badge": "Pilihan Hilads",
+    "goodToKnow": "Perlu diketahui",
+    "credit": "Foto: {{credit}}"
+  },
   "shareLink": {
     "share": "Bagikan",
     "challengeFriend": "Tantang teman",

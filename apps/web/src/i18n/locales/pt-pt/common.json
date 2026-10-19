@@ -210,6 +210,11 @@
     "passport": "As tuas cidades, as tuas respostas, os teus carimbos."
   },
   "photoBy": "Foto de @{{username}}",
+  "pick": {
+    "badge": "Seleção Hilads",
+    "goodToKnow": "Bom saber",
+    "credit": "Foto: {{credit}}"
+  },
   "shareLink": {
     "share": "Partilhar",
     "challengeFriend": "Desafia um amigo",

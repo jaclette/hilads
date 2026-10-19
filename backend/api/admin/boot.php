@@ -164,6 +164,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/daily/spots/new') {
     require __DIR__ . '/daily_spot_new.php';
 
+} elseif ($uri === '/admin/daily/picks') {
+    require __DIR__ . '/daily_picks.php';
+
 } elseif ($uri === '/admin/daily/spots/geocode') {
     require __DIR__ . '/daily_spots_geocode.php';
 

@@ -210,6 +210,11 @@
     "passport": "Mga lungsod, sagot at tatak mo."
   },
   "photoBy": "Larawan ni @{{username}}",
+  "pick": {
+    "badge": "Pili ng Hilads",
+    "goodToKnow": "Dapat malaman",
+    "credit": "Larawan: {{credit}}"
+  },
   "shareLink": {
     "share": "I-share",
     "challengeFriend": "Hamunin ang kaibigan",

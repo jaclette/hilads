@@ -210,6 +210,11 @@
     "passport": "你的城市、你的回答、你的印章。"
   },
   "photoBy": "照片：@{{username}}",
+  "pick": {
+    "badge": "Hilads 精选",
+    "goodToKnow": "小贴士",
+    "credit": "图片：{{credit}}"
+  },
   "shareLink": {
     "share": "分享",
     "challengeFriend": "挑战一位朋友",

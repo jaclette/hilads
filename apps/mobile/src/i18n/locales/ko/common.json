@@ -227,5 +227,10 @@
     "hi": "도시에 인사하고 플랜에 참여해요.",
     "passport": "나의 도시, 나의 답변, 나의 스탬프."
   },
-  "photoBy": "사진: @{{username}}"
+  "photoBy": "사진: @{{username}}",
+  "pick": {
+    "badge": "Hilads 추천",
+    "goodToKnow": "알아두면 좋아요",
+    "credit": "사진: {{credit}}"
+  }
 }

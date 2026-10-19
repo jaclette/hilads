@@ -17453,3 +17453,12 @@ body.has-app-promo-banner .page-header {
 .index-value { font-size: 14px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
 .proof-strip-answer { min-width: 0; font-size: 13px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .proof-strip-pending { position: absolute; left: 6px; bottom: 6px; }
+
+/* Hilads picks (editorial spots): gold pin with a star, badge, "Good to know". */
+.wm-pin.wm-pin--pick { background: var(--gold); border-color: #fff; color: #fff; }
+.pick-badge { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; width: fit-content; padding: 3px 9px; border-radius: 999px;
+              background: color-mix(in srgb, var(--gold) 22%, transparent); color: var(--text); font-size: 12px; font-weight: 800; }
+.pick-badge .icon { color: var(--gold); }
+.good-to-know { margin: 10px 0; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--gold) 16%, transparent); }
+.good-to-know-title { display: block; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.good-to-know p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--text); }

@@ -20,7 +20,11 @@ export interface Spot {
   priceRange:       { min: number; max: number; median?: number; currency: string } | null;
   lastProofDate:    string | null;
   /** The most voted approved proof (ties: the most recent), credited to `by` (its author's username). */
-  cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null; proofId?: string | null; by?: string | null };
+  cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null; proofId?: string | null; by?: string | null;
+                      /** A Hilads pick's photo credit ("Jane Doe / Unsplash"), instead of `by`. */
+                      credit?: string | null };
+  /** A Hilads pick (editorial spot): its "Good to know"; pickOnly while no player answered there. Never an answer. */
+  pick?:            { note: string | null; pickOnly: boolean } | null;
   /** GET /spots/near only. */
   distanceM?:       number;
 }
@@ -108,6 +112,9 @@ export interface SpotPhoto {
   isLocal:          boolean;
   voteCount:        number;
   validatedByLocal: boolean;
+  /** A Hilads pick's photo: its credit instead of the author, no votes. */
+  pick?:            boolean;
+  credit?:          string | null;
 }
 
 export interface SpotDetail {

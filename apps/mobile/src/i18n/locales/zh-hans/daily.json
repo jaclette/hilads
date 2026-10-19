@@ -545,6 +545,7 @@
     "worldAnswers": "今天，全世界来回答",
     "seeAnswers": "查看回答",
     "firstIn": "第一批回答来了",
+    "picksTitle": "在此之前，看看我们的精选",
     "answeredRow_one": "已有 {{count}} 个国家/地区回答",
     "answeredRow_other": "已有 {{count}} 个国家/地区回答",
     "tip": "点一下，把你的城市和世界比一比。",

@@ -13,6 +13,7 @@ import { compactPrice, distance } from './format';
 import { CityFlag, SectionTitle } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
+import { PickBadge } from '@/features/map/PickBadge';
 
 /**
  * Spots near you (SPEC 9.3): the 2-3 nearest spots, linking to the Map. Uses
@@ -84,10 +85,11 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
                 {s.cover.thumbUrl || s.cover.photoUrl
                   ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
                   : <View style={styles.photo} />}
-                <PhotoCredit by={s.cover.by} overlay />
+                <PhotoCredit by={s.cover.by} credit={s.cover.credit} overlay />
               </View>
               <View style={styles.body}>
                 <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
+                {!!s.pick && <PickBadge />}
                 <View style={styles.meta}>
                   {s.distanceM !== undefined && (
                     <View style={styles.metaItem}>

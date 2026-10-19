@@ -166,11 +166,24 @@ final class Spots
                 'photoUrl' => $r['cover_photo'],
                 'thumbUrl' => R2Uploader::thumbProxy($r['cover_photo']),
                 'caption'  => $r['cover_caption'],
-                // "Photo by @username": the proof's author.
+                // "Photo by @username": the proof's author; a pick's photo carries its credit instead.
                 'proofId'  => $r['cover_proof_id'] ?? null,
-                'by'       => ($r['cover_username'] ?? null) ?: null,
+                'by'       => ($r['cover_credit'] ?? null) ? null : (($r['cover_username'] ?? null) ?: null),
+                'credit'   => ($r['cover_credit'] ?? null) ?: null,
             ],
+            // A Hilads pick (editorial): its "Good to know" text in the viewer's language. pickOnly: no player answered there yet.
+            'pick'             => ($r['pick_status'] ?? null) === 'published' && ($r['pick_note_i18n'] ?? null) !== null
+                ? ['note' => self::pickNote((string) $r['pick_note_i18n']), 'pickOnly' => DailyProofRepository::bool($r['pick_only'] ?? false)]
+                : null,
         ];
+    }
+
+    /** A pick's "Good to know" in the request's language, else English. */
+    public static function pickNote(string $json): ?string
+    {
+        $all = json_decode($json, true) ?: [];
+        $loc = DailyI18n::current();
+        return ($all[$loc] ?? null) ?: (($all['en'] ?? null) ?: null);
     }
 
     /** A spot photo (an approved proof): its challenge date, never a time of day. */
@@ -195,6 +208,9 @@ final class Spots
             'isLocal'          => DailyProofRepository::bool($r['is_local']),
             'voteCount'        => (int) $r['vote_count'],
             'validatedByLocal' => $local > 0,
+            // A Hilads pick's photo: no votes, its credit instead of "Photo by @username".
+            'pick'             => DailyProofRepository::bool($r['is_pick'] ?? false),
+            'credit'           => ($r['photo_credit'] ?? null) ?: null,
         ];
     }
 
@@ -227,7 +243,8 @@ final class Spots
     public static function find(array $scope): array
     {
         // Payloads carry the client's theme keys (DailyThemes::legacyClient): cached apart.
-        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate() . (DailyThemes::legacyClient() ? '|v1' : ''));
+        // Payloads carry a pick's "Good to know" in the request's language: cached apart too.
+        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate() . (DailyThemes::legacyClient() ? '|v1' : '') . '|' . DailyI18n::current());
         return Cache::remember($key, self::CACHE_TTL, static fn(): array => self::query($scope)) ?? [];
     }
 
@@ -244,6 +261,7 @@ final class Spots
                 SELECT pl.city_id, count(DISTINCT pl.id) AS spots
                 FROM places pl
                 JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved' AND NOT p.is_demo
+                                            " . (self::picksReady() ? "AND (NOT p.is_pick OR pl.pick_status = 'published')" : '') . "
                 JOIN users cu            ON cu.id = p.user_id AND NOT cu.is_demo
                 JOIN daily_challenges dc ON dc.id = p.challenge_id
                 WHERE pl.status = 'approved' AND NOT pl.hidden AND pl.merged_into IS NULL AND pl.city_id IS NOT NULL
@@ -290,7 +308,11 @@ final class Spots
         if ($spot['city'] === null) {
             return null;
         }
-        $all     = self::find(['cityId' => 'city_' . $spot['city']['id']]);
+        // Picks never rank: only spots with players' answers compete.
+        if ($spot['proofCount'] === 0) {
+            return ['week' => null, 'alltime' => null, 'cityName' => $spot['city']['name'], 'cityCountry' => $spot['city']['country'] ?? null];
+        }
+        $all     = array_values(array_filter(self::find(['cityId' => 'city_' . $spot['city']['id']]), static fn(array $s): bool => $s['proofCount'] > 0));
         $week    = self::rankOf($all, $spot['id'], 'votesWeek');
         $alltime = self::rankOf($all, $spot['id'], 'votes');
         return [
@@ -308,12 +330,15 @@ final class Spots
             SELECT p.id, p.photo_url, p.caption, p.price_amount, p.price_currency, p.user_id, p.is_local,
                    p.vote_count, p.local_vote_count, dc.challenge_date, dc.theme,
                    u.username, u.display_name, u.profile_photo_url
+                   " . (self::picksReady() ? ', p.is_pick, p.photo_credit' : '') . "
             FROM daily_proofs p
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN users u             ON u.id  = p.user_id
+            JOIN places pl           ON pl.id = p.place_id
             WHERE p.place_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT u.is_demo
               AND NOT (p.user_id = ANY (string_to_array(?, ',')))
-            ORDER BY p.vote_count DESC, dc.challenge_date DESC, p.id
+              " . (self::picksReady() ? "AND (NOT p.is_pick OR pl.pick_status = 'published')" : '') . "
+            ORDER BY " . (self::picksReady() ? 'p.is_pick, ' : '') . "p.vote_count DESC, dc.challenge_date DESC, p.id
             LIMIT ? OFFSET ?
         ");
         $stmt->execute([$placeId, implode(',', $blockedUserIds), self::PHOTOS_PAGE + 1, $offset]);
@@ -333,6 +358,7 @@ final class Spots
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN users u             ON u.id  = p.user_id
             WHERE p.place_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT u.is_demo AND p.caption IS NOT NULL
+              " . (self::picksReady() ? 'AND NOT p.is_pick' : '') . "
               AND NOT (p.user_id = ANY (string_to_array(?, ',')))
             ORDER BY dc.challenge_date DESC, p.approved_at DESC
             LIMIT ?
@@ -370,9 +396,31 @@ final class Spots
         }) ?? [];
     }
 
+    /** Whether migrate.php added the Hilads picks columns (checked once per process). */
+    public static function picksReady(): bool
+    {
+        static $ready = null;
+        if ($ready === null) {
+            try {
+                $stmt  = Database::pdo()->query("
+                    SELECT 1 FROM information_schema.columns WHERE table_name = 'daily_proofs' AND column_name = 'is_pick'
+                ");
+                $ready = $stmt !== false && $stmt->fetchColumn() !== false;
+            } catch (\Throwable $e) {
+                $ready = false;
+            }
+        }
+        return $ready;
+    }
+
     private static function query(array $scope): array
     {
         [$weekStart, $weekEnd] = self::week(DailyClock::currentDate());
+        // Hilads picks (editorial): their photo backs the spot only once published, never
+        // counts as an answer (proofs, local validation) and gives way to a player's photo as cover.
+        $pk     = self::picksReady();
+        $player = $pk ? 'NOT p.is_pick' : 'true';
+        $cover  = ($pk ? 'p.is_pick, ' : '') . 'p.vote_count DESC, p.approved_at DESC, p.id DESC';
         $where = ["pl.status = 'approved'", 'NOT pl.hidden', 'pl.merged_into IS NULL'];
         $args  = [$weekStart, $weekEnd];
 
@@ -405,22 +453,27 @@ final class Spots
 
         $stmt = Database::pdo()->prepare("
             SELECT pl.id, pl.name, pl.lat, pl.lng, pl.city_id, ch.name AS city_name, cc.country AS city_country,
-                   count(*)                                   AS proof_count,
+                   count(*) FILTER (WHERE {$player})          AS proof_count,
                    string_agg(DISTINCT dc.theme, ',')         AS themes,
                    COALESCE(sum(p.vote_count), 0)             AS votes,
                    COALESCE(sum(p.vote_count) FILTER (WHERE dc.challenge_date BETWEEN ?::date AND ?::date), 0) AS votes_week,
-                   bool_or(p.is_local OR p.local_vote_count > 0) AS validated,
+                   bool_or(p.is_local OR p.local_vote_count > 0) FILTER (WHERE {$player}) AS validated,
                    max(dc.challenge_date)::text               AS last_date,
                    json_agg(json_build_array(p.price_amount, p.price_currency))
                        FILTER (WHERE p.price_amount IS NOT NULL) AS prices,
-                   -- The cover (SPEC 9.5): the most voted approved proof, ties to the most recent.
-                   (array_agg(p.photo_url ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_photo,
-                   (array_agg(p.caption   ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_caption,
-                   (array_agg(p.id        ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_proof_id,
-                   (array_agg(cu.username ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_username
+                   -- The cover (SPEC 9.5): the most voted approved proof, ties to the most recent; a player's before a pick's.
+                   (array_agg(p.photo_url ORDER BY {$cover}))[1] AS cover_photo,
+                   (array_agg(p.caption   ORDER BY {$cover}))[1] AS cover_caption,
+                   (array_agg(p.id        ORDER BY {$cover}))[1] AS cover_proof_id,
+                   (array_agg(cu.username ORDER BY {$cover}))[1] AS cover_username,
+                   " . ($pk ? "(array_agg(p.photo_credit ORDER BY {$cover}))[1] AS cover_credit,
+                   bool_or(p.is_pick) AS cover_pick_any, bool_and(p.is_pick) AS pick_only,
+                   pl.pick_note_i18n, pl.pick_status"
+                          : "NULL AS cover_credit, false AS cover_pick_any, false AS pick_only, NULL AS pick_note_i18n, NULL AS pick_status") . "
             FROM places pl
             -- A spot exists with an approved proof: a player's or a back office seed (never a demo one), and its cover is its most voted one.
             JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved' AND NOT p.is_demo
+                                        " . ($pk ? "AND (NOT p.is_pick OR pl.pick_status = 'published')" : '') . "
             JOIN users cu            ON cu.id = p.user_id AND NOT cu.is_demo
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             LEFT JOIN channels ch    ON ch.id = pl.city_id

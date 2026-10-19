@@ -14,6 +14,7 @@ import { useDaily } from '../daily/dailyShared'
 import HeaderArt from '../HeaderArt'
 import { shortCityName } from '../../i18n/cityName'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { PickBadge, PhotoCredit } from './Pick'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -53,7 +54,10 @@ function labelWidth(text) {
 // 44 px: the tap target (the label, when shown, is tappable too).
 const spotIcon = (spot, label, side, selected) => L.divIcon({
   className: 'wm-pin-wrap',
-  html: `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(spot.themes?.[0] ? themeIcon(spot.themes[0]) : 'location-outline', 20)}</span>`
+  // A Hilads pick (editorial): its own gold pin with a star.
+  html: (spot.pick
+    ? `<span class="wm-pin wm-pin--pick${selected ? ' wm-pin--on' : ''}">${iconHtml('star', 20)}</span>`
+    : `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(spot.themes?.[0] ? themeIcon(spot.themes[0]) : 'location-outline', 20)}</span>`)
     + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}">${escapeHtml(label)}</span>` : ''),
   iconSize: [44, 44], iconAnchor: [22, 22],
 })
@@ -441,7 +445,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             {results.length === 0 ? <p className="wm-empty">{t('map.noResults')}</p> : results.map(s => (
               <button key={s.id} type="button" className="wm-result" onClick={() => focusSpot(s)}>
                 <span className="wm-result-name">{s.name}</span>
-                <span className="wm-result-meta">{t('map.proofs', { count: s.proofCount })}</span>
+                <span className="wm-result-meta">{s.pick && !s.proofCount ? t('pick.badge', { ns: 'common' }) : t('map.proofs', { count: s.proofCount })}</span>
               </button>
             ))}
           </div>
@@ -506,16 +510,20 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                 {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={selected.cover.thumbUrl} alt="" /> : <span className="wm-sheet-photo" />}
                 <span className="wm-sheet-info">
                   <span className="wm-sheet-title">{selected.name}</span>
+                  {selected.pick && <PickBadge />}
                   <span className="wm-sheet-meta">
                     {selected.themes.map((k, i) => (
                       <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={themeIcon(k)} size={13} />{themeName(k)}</span>
                     ))}
                   </span>
-                  <span className="wm-sheet-meta">
-                    {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
-                    {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
-                  </span>
-                  {selected.cover?.by && <span className="wm-sheet-meta">{t('photoBy', { ns: 'common', username: selected.cover.by })}</span>}
+                  {/* A pick alone has no answers to count. */}
+                  {selected.proofCount > 0 && (
+                    <span className="wm-sheet-meta">
+                      {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
+                      {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
+                    </span>
+                  )}
+                  <PhotoCredit cover={selected.cover} className="wm-sheet-meta" />
                 </span>
               </button>
               <button type="button" className="wm-sheet-cta" onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>

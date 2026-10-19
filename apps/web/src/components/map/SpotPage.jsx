@@ -10,6 +10,7 @@ import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPri
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { PickBadge, GoodToKnow } from './Pick'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
@@ -86,10 +87,15 @@ export default function SpotPage({ spotId, onBack }) {
               ))}
             </p>
             {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{rank}</p>}
-            <p className="wm-spot-meta">
-              {t('map.proofs', { count: spot.proofCount })} · {t('map.votes', { count: spot.votes })}
-              {price ? ` · ${t('map.pricePaid', { price })}` : ''}
-            </p>
+            {spot.pick && <PickBadge />}
+            {/* A pick alone has no answers to count. */}
+            {(spot.proofCount > 0 || price) && (
+              <p className="wm-spot-meta">
+                {[spot.proofCount > 0 ? `${t('map.proofs', { count: spot.proofCount })} · ${t('map.votes', { count: spot.votes })}` : null,
+                  price ? t('map.pricePaid', { price }) : null].filter(Boolean).join(' · ')}
+              </p>
+            )}
+            <GoodToKnow note={spot.pick?.note} />
             {/* Represent your city (SPEC 9.16): the spot of its city's first approved proof ever. */}
             {spot.pioneerCity && (
               <div className="wm-spot-tags"><span className="wm-tag" style={ROW}><Icon name="flag-outline" size={14} />{tc('represent.spotOne', { city: shortCityName(spot.pioneerCity) })}</span></div>
@@ -126,9 +132,14 @@ export default function SpotPage({ spotId, onBack }) {
                   {photos.map(p => (
                     <figure key={p.id} className="wm-photo">
                       <img src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt={p.caption || ''} loading="lazy" />
+                      {/* A Hilads pick's photo: its credit, never votes. */}
                       <figcaption>
-                        <span>{p.user.displayName || p.user.username}{p.isLocal ? ` · ${t('spot.local')}` : ''}</span>
-                        <span style={ROW}><Icon name="heart" size={12} />{p.voteCount}</span>
+                        {p.pick
+                          ? <span>{tc('pick.credit', { credit: p.credit || 'Hilads' })}</span>
+                          : <>
+                              <span>{p.user.displayName || p.user.username}{p.isLocal ? ` · ${t('spot.local')}` : ''}</span>
+                              <span style={ROW}><Icon name="heart" size={12} />{p.voteCount}</span>
+                            </>}
                       </figcaption>
                     </figure>
                   ))}

@@ -235,5 +235,10 @@
     "hi": "قل مرحبًا لمدينتك. انضم إلى خطة.",
     "passport": "مدنك وإجاباتك وأختامك."
   },
-  "photoBy": "صورة من @{{username}}"
+  "photoBy": "صورة من @{{username}}",
+  "pick": {
+    "badge": "اختيار Hilads",
+    "goodToKnow": "معلومة مفيدة",
+    "credit": "الصورة: {{credit}}"
+  }
 }

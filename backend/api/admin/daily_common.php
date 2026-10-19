@@ -158,6 +158,7 @@ function daily_subnav(string $current): void
         '/admin/daily/reserve' => '🧺 Reserve',
         '/admin/daily/proposals' => '💡 Proposals',
         '/admin/daily/spots'   => '📍 Spots',
+        '/admin/daily/picks'   => '⭐ Picks',
         '/admin/daily/specials' => '✨ Special days',
         '/admin/daily/import'  => '⬆️ Import',
         '/admin/daily/log'     => '📜 Log',
@@ -240,4 +241,77 @@ function daily_cover_upload(?array $file): string
     } finally {
         @unlink($clean);
     }
+}
+
+/** A new place's address search, position field and draggable pin (seed and pick forms). */
+function daily_place_picker(): void
+{
+?>
+            <div class="form-group"><label>Find the address</label>
+                <div class="daily-inline">
+                    <input type="text" id="geo-q" placeholder="27 Ngô Đức Kế, Quận 1, Hồ Chí Minh - or a place name" style="flex:1;min-width:240px">
+                    <button type="button" class="btn btn-secondary" id="geo-find">Find</button>
+                </div>
+                <div id="geo-results" class="hint"></div>
+                <div class="hint">OpenStreetMap search. House numbers are not always known in Vietnam: pick the closest match, then drag the pin onto the entrance.</div></div>
+            <div class="form-group"><label>Position</label>
+                <input type="text" name="position" id="geo-pos" placeholder="10.7769, 106.7009 - or a map link with the coordinates" required>
+                <div id="geo-map" style="height:280px;border-radius:8px;margin-top:8px;display:none"></div>
+                <div class="hint">The city is the nearest Hilads city. A place with the same name within <?= Places::DEDUP_RADIUS_M ?> m is reused. Proofs must be posted within about 150 m of this point.</div></div>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script>
+            // Address search → Position, with a draggable pin to fix the exact entrance.
+            (function () {
+                const q = document.getElementById('geo-q'), find = document.getElementById('geo-find');
+                const out = document.getElementById('geo-results'), pos = document.getElementById('geo-pos');
+                const box = document.getElementById('geo-map');
+                let map = null, pin = null;
+                const fmt = (n) => Number(n).toFixed(6);
+                function place(lat, lng) {
+                    pos.value = fmt(lat) + ', ' + fmt(lng);
+                    box.style.display = 'block';
+                    if (!map) {
+                        map = L.map(box).setView([lat, lng], 18);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19, attribution: '&copy; OpenStreetMap contributors',
+                        }).addTo(map);
+                        pin = L.marker([lat, lng], { draggable: true }).addTo(map);
+                        pin.on('dragend', () => { const p = pin.getLatLng(); pos.value = fmt(p.lat) + ', ' + fmt(p.lng); });
+                        map.on('click', (e) => { pin.setLatLng(e.latlng); pos.value = fmt(e.latlng.lat) + ', ' + fmt(e.latlng.lng); });
+                    } else {
+                        map.setView([lat, lng], 18);
+                        pin.setLatLng([lat, lng]);
+                    }
+                }
+                async function search() {
+                    const text = q.value.trim();
+                    if (text.length < 3) return;
+                    out.textContent = 'Searching…';
+                    try {
+                        const res = await fetch('/admin/daily/spots/geocode?q=' + encodeURIComponent(text), { credentials: 'same-origin' });
+                        const items = (await res.json()).items || [];
+                        out.textContent = '';
+                        if (items.length === 0) { out.textContent = 'No match. Try the street and district only, or a nearby landmark.'; return; }
+                        items.forEach((it, i) => {
+                            const b = document.createElement('button');
+                            b.type = 'button'; b.className = 'btn btn-secondary btn-sm';
+                            b.style.cssText = 'display:block;margin:4px 0;text-align:left;white-space:normal';
+                            b.textContent = it.label;
+                            b.onclick = () => place(it.lat, it.lng);
+                            out.appendChild(b);
+                            if (i === 0) place(it.lat, it.lng);
+                        });
+                    } catch (e) { out.textContent = 'Search failed. Paste the coordinates instead.'; }
+                }
+                find.addEventListener('click', search);
+                q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); search(); } });
+                // Coordinates typed or pasted by hand move the pin too.
+                pos.addEventListener('change', () => {
+                    const m = pos.value.match(/(-?\d{1,3}\.\d+)\s*[,; ]\s*(-?\d{1,3}\.\d+)/);
+                    if (m) place(parseFloat(m[1]), parseFloat(m[2]));
+                });
+            })();
+            </script>
+<?php
 }

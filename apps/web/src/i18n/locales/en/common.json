@@ -210,6 +210,11 @@
     "passport": "Your cities, your answers, your stamps."
   },
   "photoBy": "Photo by @{{username}}",
+  "pick": {
+    "badge": "Hilads pick",
+    "goodToKnow": "Good to know",
+    "credit": "Photo: {{credit}}"
+  },
   "shareLink": {
     "share": "Share",
     "challengeFriend": "Challenge a friend",

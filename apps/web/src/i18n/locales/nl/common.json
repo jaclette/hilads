@@ -210,6 +210,11 @@
     "passport": "Je steden, je antwoorden, je stempels."
   },
   "photoBy": "Foto van @{{username}}",
+  "pick": {
+    "badge": "Hilads-tip",
+    "goodToKnow": "Goed om te weten",
+    "credit": "Foto: {{credit}}"
+  },
   "shareLink": {
     "share": "Delen",
     "challengeFriend": "Daag een vriend uit",

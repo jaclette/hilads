@@ -227,5 +227,10 @@
     "hi": "ทักทายเมืองของคุณ เข้าร่วมแพลน",
     "passport": "เมือง คำตอบ และตราประทับของคุณ"
   },
-  "photoBy": "ภาพโดย @{{username}}"
+  "photoBy": "ภาพโดย @{{username}}",
+  "pick": {
+    "badge": "Hilads แนะนำ",
+    "goodToKnow": "น่ารู้",
+    "credit": "ภาพ: {{credit}}"
+  }
 }

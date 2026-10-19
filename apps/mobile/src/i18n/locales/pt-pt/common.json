@@ -227,5 +227,10 @@
     "hi": "Diz olá à tua cidade. Junta-te a um plano.",
     "passport": "As tuas cidades, as tuas respostas, os teus carimbos."
   },
-  "photoBy": "Foto de @{{username}}"
+  "photoBy": "Foto de @{{username}}",
+  "pick": {
+    "badge": "Seleção Hilads",
+    "goodToKnow": "Bom saber",
+    "credit": "Foto: {{credit}}"
+  }
 }

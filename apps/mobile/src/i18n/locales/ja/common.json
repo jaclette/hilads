@@ -227,5 +227,10 @@
     "hi": "街にあいさつ。プランに参加しよう。",
     "passport": "あなたの街、回答、スタンプ。"
   },
-  "photoBy": "写真: @{{username}}"
+  "photoBy": "写真: @{{username}}",
+  "pick": {
+    "badge": "Hiladsのおすすめ",
+    "goodToKnow": "知っておきたいこと",
+    "credit": "写真: {{credit}}"
+  }
 }

@@ -399,8 +399,11 @@ final class SpotsAdmin
                 'name' => $name ?? null, 'pos' => $pos ?? null];
     }
 
-    /** Write a planned seed with its uploaded photo URL: the place if new, then the approved seed proof. */
-    public static function seedCommit(array $plan, string $photoUrl): string
+    /**
+     * Write a planned seed with its uploaded photo URL: the place if new, then
+     * the approved seed proof. $pick: a Hilads pick's photo (is_pick) with its credit.
+     */
+    public static function seedCommit(array $plan, string $photoUrl, bool $pick = false, ?string $credit = null): string
     {
         ['theme' => $theme, 'username' => $username, 'userId' => $userId, 'caption' => $caption,
          'amount' => $amount, 'currency' => $currency, 'place' => $place, 'name' => $name, 'pos' => $pos] = $plan;
@@ -430,6 +433,9 @@ final class SpotsAdmin
                 $amount, $currency, $place['id'], $place['lat'], $place['lng'], $place['name'],
                 DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName) ? 'true' : 'false',
             ]);
+            if ($pick) {
+                $pdo->prepare("UPDATE daily_proofs SET is_pick = true, photo_credit = ? WHERE id = ?")->execute([$credit, $proofId]);
+            }
             $pdo->prepare("UPDATE places SET status = 'approved', updated_at = now() WHERE id = ? AND status = 'pending'")
                 ->execute([$place['id']]);
             $pdo->commit();
@@ -439,6 +445,139 @@ final class SpotsAdmin
         }
         DailyAdminService::audit('place.seed', 'place', $place['id'], null, ['proof' => $proofId, 'theme' => $theme, 'user' => $username]);
         return $place['id'];
+    }
+
+    // ── Hilads picks (editorial spots) ───────────────────────────────────────
+
+    public const PICK_STATUSES   = ['draft', 'published', 'hidden'];
+    public const PICK_NOTE_MAX   = 280;
+    public const PICK_CREDIT_MAX = 120;
+
+    /** The back office's picks, newest first: place, status, note, the pick photo and credit, players' answers there. */
+    public static function picks(): array
+    {
+        return Database::pdo()->query("
+            SELECT pl.id, pl.name, pl.lat, pl.lng, pl.status, pl.hidden, pl.pick_status, pl.pick_note_i18n, ch.name AS city_name,
+                   pp.id AS pick_proof_id, pp.photo_url, pp.photo_credit, pp.caption, dc.theme,
+                   (SELECT count(*) FROM daily_proofs x WHERE x.place_id = pl.id AND x.moderation_status = 'approved'
+                                                         AND NOT x.is_seed AND NOT x.is_demo) AS answers
+            FROM places pl
+            LEFT JOIN channels ch ON ch.id = pl.city_id
+            LEFT JOIN LATERAL (SELECT * FROM daily_proofs p WHERE p.place_id = pl.id AND p.is_pick
+                               ORDER BY p.created_at DESC LIMIT 1) pp ON true
+            LEFT JOIN daily_challenges dc ON dc.id = pp.challenge_id
+            WHERE pl.pick_status IS NOT NULL
+            ORDER BY pl.updated_at DESC
+        ")->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** One pick (or null): picks()'s row for a place. */
+    public static function pick(string $placeId): ?array
+    {
+        foreach (self::picks() as $p) {
+            if ($p['id'] === $placeId) {
+                return $p;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The "Good to know" text: en (required) plus any app locale from a JSON
+     * object of translations. Returns the stored JSON. Throws on bad input.
+     */
+    public static function pickNote(string $en, string $translationsJson): string
+    {
+        $en = trim((string) preg_replace('/\s+/u', ' ', $en));
+        if ($en === '' || mb_strlen($en) > self::PICK_NOTE_MAX) {
+            throw new InvalidArgumentException('Write the "Good to know" text in English (1 to ' . self::PICK_NOTE_MAX . ' characters).');
+        }
+        $all = ['en' => $en];
+        if (trim($translationsJson) !== '') {
+            $tr = json_decode($translationsJson, true);
+            if (!is_array($tr)) {
+                throw new InvalidArgumentException('Translations must be a JSON object: {"fr": "...", "vi": "..."}.');
+            }
+            foreach ($tr as $loc => $text) {
+                $loc  = DailyI18n::normalize((string) $loc);
+                $text = trim((string) preg_replace('/\s+/u', ' ', (string) $text));
+                if ($loc === 'en' || $text === '' || !in_array($loc, DailyI18n::LOCALES, true)) {
+                    continue;
+                }
+                if (mb_strlen($text) > self::PICK_NOTE_MAX) {
+                    throw new InvalidArgumentException("The {$loc} text is longer than " . self::PICK_NOTE_MAX . ' characters.');
+                }
+                $all[$loc] = $text;
+            }
+        }
+        return json_encode($all, JSON_UNESCAPED_UNICODE);
+    }
+
+    private static function pickCredit(mixed $v): string
+    {
+        $credit = trim((string) preg_replace('/\s+/u', ' ', (string) $v));
+        if ($credit === '' || mb_strlen($credit) > self::PICK_CREDIT_MAX) {
+            throw new InvalidArgumentException('Credit the photo (1 to ' . self::PICK_CREDIT_MAX . ' characters), e.g. "Jane Doe / Unsplash" or "Hilads".');
+        }
+        return $credit;
+    }
+
+    private static function pickStatus(mixed $v): string
+    {
+        $status = (string) $v;
+        if (!in_array($status, self::PICK_STATUSES, true)) {
+            throw new InvalidArgumentException('Pick status is draft, published or hidden.');
+        }
+        return $status;
+    }
+
+    /**
+     * Create a Hilads pick: the place (existing spot or new), its photo as an
+     * approved pick proof by the official account with its credit, and the
+     * "Good to know" text. $in: seedPlan's fields + credit, note_en,
+     * note_translations, pick_status. Returns the place id.
+     */
+    public static function pickCreate(array $in, ?array $file): string
+    {
+        $plan   = self::seedPlan($in);
+        $credit = self::pickCredit($in['credit'] ?? '');
+        $note   = self::pickNote((string) ($in['note_en'] ?? ''), (string) ($in['note_translations'] ?? ''));
+        $status = self::pickStatus($in['pick_status'] ?? 'draft');
+        $placeId = self::seedCommit($plan, self::storePhoto($file), true, $credit);
+        Database::pdo()->prepare("UPDATE places SET pick_note_i18n = ?::jsonb, pick_status = ?, updated_at = now() WHERE id = ?")
+            ->execute([$note, $status, $placeId]);
+        DailyAdminService::audit('place.pick', 'place', $placeId, null, ['status' => $status, 'credit' => $credit]);
+        self::forgetSpots();
+        return $placeId;
+    }
+
+    /** Edit a pick: note, status, caption, credit, and optionally a new photo. */
+    public static function pickUpdate(string $placeId, array $in, ?array $file): void
+    {
+        $pick = self::pick($placeId) ?? throw new InvalidArgumentException('That pick does not exist.');
+        $note    = self::pickNote((string) ($in['note_en'] ?? ''), (string) ($in['note_translations'] ?? ''));
+        $status  = self::pickStatus($in['pick_status'] ?? 'draft');
+        $credit  = self::pickCredit($in['credit'] ?? '');
+        $caption = trim((string) preg_replace('/\s+/u', ' ', (string) ($in['caption'] ?? '')));
+        if (mb_strlen($caption) > DailyProofRepository::CAPTION_MAX) {
+            throw new InvalidArgumentException('The caption is longer than ' . DailyProofRepository::CAPTION_MAX . ' characters.');
+        }
+        $photo = $file !== null && ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE ? self::storePhoto($file) : null;
+        $pdo   = Database::pdo();
+        $pdo->prepare("UPDATE places SET pick_note_i18n = ?::jsonb, pick_status = ?, updated_at = now() WHERE id = ?")
+            ->execute([$note, $status, $placeId]);
+        if ($pick['pick_proof_id'] !== null) {
+            $pdo->prepare("UPDATE daily_proofs SET photo_credit = ?, caption = ?, photo_url = COALESCE(?, photo_url), updated_at = now() WHERE id = ?")
+                ->execute([$credit, $caption === '' ? null : $caption, $photo, $pick['pick_proof_id']]);
+        }
+        DailyAdminService::audit('place.pick', 'place', $placeId, ['status' => $pick['pick_status']], ['status' => $status, 'credit' => $credit]);
+        self::forgetSpots();
+    }
+
+    /** Map caches are short (Spots::CACHE_TTL); the back office's own process forgets what it can. */
+    private static function forgetSpots(): void
+    {
+        Cache::forget('spots_cities_v1_all');
     }
 
     /** The hidden 'seed' challenge of a theme (created on first use). */

@@ -227,5 +227,10 @@
     "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
     "passport": "Thành phố, câu trả lời và con dấu của bạn."
   },
-  "photoBy": "Ảnh của @{{username}}"
+  "photoBy": "Ảnh của @{{username}}",
+  "pick": {
+    "badge": "Hilads chọn",
+    "goodToKnow": "Điều nên biết",
+    "credit": "Ảnh: {{credit}}"
+  }
 }
