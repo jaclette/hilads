@@ -99,7 +99,10 @@
     "invalid_place_name": "The place name must be 1 to 80 characters.",
     "place_name_blocked": "That place name was flagged. Please rephrase it.",
     "invalid_position": "Your position is needed to post this proof.",
-    "too_far": "You're too far from this place."
+    "too_far": "You're too far from this place.",
+    "answer_required": "Answer today's question to post your proof.",
+    "invalid_answer": "That answer doesn't fit the question. Check it and try again.",
+    "invalid_back_home": "Back home needs a city and an answer, a price or a line."
   },
   "push": {
     "bannerTitle": "Get the Daily Challenge every morning",
@@ -505,5 +508,38 @@
     "share": "Help me represent {{city}} on Hilads.",
     "pioneerTitle": "Pioneer badges",
     "pioneerSub": "The first approved proof ever in a city. Yours forever."
+  },
+  "compare": {
+    "todayQuestion": "Today's question: {{question}}",
+    "kicker": "Today's question",
+    "sub": "Keep it short: it's what the world will compare.",
+    "next": "Next",
+    "wordPlaceholder": "A word or a short phrase",
+    "textPlaceholder": "One short line",
+    "numberPlaceholder": "A number"
+  },
+  "backHome": {
+    "title": "And back home?",
+    "pickCity": "Where's home?",
+    "choose": "Choose",
+    "homeIn": "Back home in {{city}}",
+    "answerPlaceholder": "In {{city}}",
+    "price": "Price in {{city}} (optional)",
+    "line": "One line about it (optional)",
+    "linePlaceholder": "How is it in {{city}}?",
+    "skip": "Skip",
+    "askTitle": "Where's home?",
+    "askSub": "Your city back home. Asked once, you can change it in Settings.",
+    "searchPlaceholder": "Search cities…",
+    "noMatch": "No city matches. Try \"My city isn't listed\".",
+    "notListed": "My city isn't listed",
+    "otherTitle": "Your home city",
+    "otherName": "City",
+    "otherNamePlaceholder": "e.g. Lyon",
+    "otherCountry": "Country",
+    "countrySearch": "Search countries…",
+    "otherSave": "Save",
+    "otherBack": "Back to the list",
+    "clear": "Remove my home city"
   }
 }

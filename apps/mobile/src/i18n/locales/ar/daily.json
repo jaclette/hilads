@@ -111,7 +111,10 @@
     "invalid_place_name": "يجب أن يكون اسم المكان من 1 إلى 80 حرفًا.",
     "place_name_blocked": "تم الإبلاغ عن اسم المكان هذا. أعد صياغته.",
     "invalid_position": "نحتاج موقعك لنشر هذا الإثبات.",
-    "too_far": "أنت بعيد جدًا عن هذا المكان."
+    "too_far": "أنت بعيد جدًا عن هذا المكان.",
+    "answer_required": "أجب عن سؤال اليوم لنشر إثباتك.",
+    "invalid_answer": "هذه الإجابة لا تناسب السؤال. تحقّق منها وحاول مجددًا.",
+    "invalid_back_home": "\"وفي مدينتك؟\" يحتاج إلى مدينة وإجابة أو سعر أو سطر."
   },
   "push": {
     "bannerTitle": "احصل على Daily Challenge كل صباح",
@@ -561,5 +564,38 @@
     "share": "ساعدني في تمثيل {{city}} على Hilads.",
     "pioneerTitle": "شارات الرواد",
     "pioneerSub": "أول إثبات معتمد في مدينة. لك إلى الأبد."
+  },
+  "compare": {
+    "todayQuestion": "سؤال اليوم: {{question}}",
+    "kicker": "سؤال اليوم",
+    "sub": "أجب باختصار: هذا ما سيقارنه العالم.",
+    "next": "التالي",
+    "wordPlaceholder": "كلمة أو عبارة قصيرة",
+    "textPlaceholder": "سطر قصير واحد",
+    "numberPlaceholder": "رقم"
+  },
+  "backHome": {
+    "title": "وفي مدينتك؟",
+    "pickCity": "من أين أنت؟",
+    "choose": "اختر",
+    "homeIn": "في مدينتك: {{city}}",
+    "answerPlaceholder": "في {{city}}",
+    "price": "السعر في {{city}} (اختياري)",
+    "line": "سطر واحد عن ذلك (اختياري)",
+    "linePlaceholder": "وكيف الحال في {{city}}؟",
+    "skip": "تخطٍّ",
+    "askTitle": "من أين أنت؟",
+    "askSub": "مدينتك الأصلية. نسأل مرة واحدة، ويمكنك تغييرها من الإعدادات.",
+    "searchPlaceholder": "ابحث عن مدينة…",
+    "noMatch": "لا توجد مدينة مطابقة. جرّب \"مدينتي ليست في القائمة\".",
+    "notListed": "مدينتي ليست في القائمة",
+    "otherTitle": "مدينتك الأصلية",
+    "otherName": "المدينة",
+    "otherNamePlaceholder": "مثلًا ليون",
+    "otherCountry": "البلد",
+    "countrySearch": "ابحث عن بلد…",
+    "otherSave": "حفظ",
+    "otherBack": "العودة إلى القائمة",
+    "clear": "إزالة مدينتي"
   }
 }

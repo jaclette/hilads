@@ -24,10 +24,13 @@ import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCity
 import { localizeCityName } from '@/i18n/cityName';
 import { Border, FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Avatar, Button, Card, Chip, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
+import { Avatar, Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { VIBE_ICONS } from '@/features/profile/vibes';
+import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
+import { shortCityName } from '@/i18n/cityName';
+import type { HomeCityRef } from '@/types';
 
 // ── Constants - must match backend allowed lists ──────────────────────────────
 
@@ -72,6 +75,17 @@ export default function SettingsScreen() {
   // city-context-scoped, not global).
   const isLegend = accountIsLegend(account);
   const [cityPickerOpen, setCityPickerOpen] = useState(false);
+  const [homePickerOpen, setHomePickerOpen] = useState(false);
+  // Back home's home city (SPEC 10.4): saved at once, apart from the form's Save.
+  const saveHomeCity = async (ref: HomeCityRef | null) => {
+    setHomePickerOpen(false);
+    try {
+      const { user } = await updateProfile({ home_city_ref: ref });
+      setAccount(user);
+    } catch {
+      Alert.alert(t('saveError', { defaultValue: 'Something went wrong.' }));
+    }
+  };
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
   const [selectedVibe,       setSelectedVibe]        = useState<string>(account?.vibe ?? 'chill');
   const [selectedMode,       setSelectedMode]        = useState<string | null>(account?.mode ?? identity?.mode ?? null);
@@ -394,6 +408,21 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
 
+            {/* BACK HOME - the home city of the Daily Challenge's "And back home?" (SPEC 10.4). */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>{t('fieldBackHome')}</Text>
+              <TouchableOpacity style={styles.readField} onPress={() => setHomePickerOpen(true)} activeOpacity={0.7} accessibilityRole="button">
+                {account?.home_city_ref
+                  ? <CityFlag country={account.home_city_ref.country} size={18} />
+                  : <Ionicons name="home-outline" size={18} color={colors.muted} />}
+                <Text style={[styles.readFieldText, !account?.home_city_ref && styles.readFieldPlaceholder]} numberOfLines={1}>
+                  {account?.home_city_ref ? shortCityName(account.home_city_ref.name) : t('backHomePlaceholder')}
+                </Text>
+                <Ionicons name="chevron-down" size={18} color={colors.muted} />
+              </TouchableOpacity>
+              <Text style={styles.fieldHint}>{t('backHomeHint')}</Text>
+            </View>
+
             <TextField
               label={t('fieldAge')}
               value={ageStr}
@@ -479,6 +508,8 @@ export default function SettingsScreen() {
       {/* PR48 - Legend city picker. Selects a channel, posts /me/city,
           updates the local account so the field re-renders with the
           new city name without a screen bounce. */}
+      <HomeCityPicker visible={homePickerOpen} selected={account?.home_city_ref ?? null}
+                      onPick={saveHomeCity} onClear={() => saveHomeCity(null)} onClose={() => setHomePickerOpen(false)} />
       {isLegend && (
         <LeaderboardCityPickerSheet
           visible={cityPickerOpen}

@@ -99,7 +99,10 @@
     "invalid_place_name": "場所の名前は1〜80文字にしてください。",
     "place_name_blocked": "その場所の名前は報告されました。言い換えてください。",
     "invalid_position": "このプルーフを投稿するには位置情報が必要です。",
-    "too_far": "この場所から遠すぎます。"
+    "too_far": "この場所から遠すぎます。",
+    "answer_required": "投稿するには今日の質問に答えてね。",
+    "invalid_answer": "その答えは質問に合っていません。確認してもう一度。",
+    "invalid_back_home": "「あなたの地元では？」には街と、答え・値段・ひとことのどれかが必要です。"
   },
   "push": {
     "bannerTitle": "毎朝 Daily Challenge を受け取ろう",
@@ -503,5 +506,38 @@
     "share": "Hiladsで{{city}}を代表するのを手伝って。",
     "pioneerTitle": "パイオニアバッジ",
     "pioneerSub": "その都市で最初に承認されたプルーフ。ずっとあなたのもの。"
+  },
+  "compare": {
+    "todayQuestion": "今日の質問：{{question}}",
+    "kicker": "今日の質問",
+    "sub": "短く答えよう。世界中で比べられるのはここ。",
+    "next": "次へ",
+    "wordPlaceholder": "ひとことか短いフレーズ",
+    "textPlaceholder": "短い一文",
+    "numberPlaceholder": "数字"
+  },
+  "backHome": {
+    "title": "あなたの地元では？",
+    "pickCity": "地元はどこ？",
+    "choose": "選ぶ",
+    "homeIn": "地元：{{city}}",
+    "answerPlaceholder": "{{city}}では",
+    "price": "{{city}}での値段（任意）",
+    "line": "ひとこと（任意）",
+    "linePlaceholder": "{{city}}ではどう？",
+    "skip": "スキップ",
+    "askTitle": "地元はどこ？",
+    "askSub": "あなたの地元の街。聞くのは一度だけ、設定で変えられます。",
+    "searchPlaceholder": "街を検索…",
+    "noMatch": "該当する街がありません。「リストにない」を試してね。",
+    "notListed": "リストにない",
+    "otherTitle": "あなたの地元",
+    "otherName": "街",
+    "otherNamePlaceholder": "例：リヨン",
+    "otherCountry": "国・地域",
+    "countrySearch": "国・地域を検索…",
+    "otherSave": "保存",
+    "otherBack": "リストに戻る",
+    "clear": "地元を削除"
   }
 }

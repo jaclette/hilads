@@ -139,5 +139,8 @@
     "proposal": "Dein Challenge-Vorschlag gewählt",
     "localPass": "Local Pass (alle 7 Stempel einer Stadt)",
     "weekly": "Das wöchentliche Most Local startet jeden Montag neu."
-  }
+  },
+  "fieldBackHome": "Heimatstadt (Und bei dir zu Hause?)",
+  "backHomePlaceholder": "Nicht festgelegt",
+  "backHomeHint": "Für „Und bei dir zu Hause?“ in der Daily Challenge, zum Vergleich mit dem Ort, an dem du bist."
 }

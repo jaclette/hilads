@@ -139,5 +139,8 @@
     "proposal": "Your challenge proposal picked",
     "localPass": "Local Pass (all 7 stamps in a city)",
     "weekly": "The weekly Most Local resets every Monday."
-  }
+  },
+  "fieldBackHome": "Home city (Back home)",
+  "backHomePlaceholder": "Not set",
+  "backHomeHint": "Used by \"And back home?\" in the Daily Challenge, to compare with where you are."
 }

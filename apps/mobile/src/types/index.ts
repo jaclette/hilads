@@ -615,6 +615,8 @@ export interface User {
   /** Camel-case thumbnail URL - surfaced by UserResource DTOs (lists). */
   thumbAvatarUrl?: string | null;
   home_city?: string;
+  /** Back home's home city (V4): one of ours, or a city we don't have. */
+  home_city_ref?: HomeCityRef | null;
   about_me?: string | null;
   interests?: string[];
   age?: number;
@@ -780,6 +782,47 @@ export interface DailyChallenge {
   coverUrl?: string | null;
   /** The user whose proposal became this challenge (V2-05), with their city then. */
   proposedBy?: { user: DailyPerson; city: { id: number; name: string | null; country?: string | null } | null } | null;
+  /** The comparison question (SPEC 10.2), in the viewer's language; null = none. */
+  compare?: DailyCompare | null;
+}
+
+export type DailyCompareType = 'word' | 'text' | 'number' | 'time';
+
+export interface DailyCompare {
+  type:      DailyCompareType;
+  question:  string;
+  unit:      string | null;     // numbers only ("years")
+  original:  string | null;     // the English question when a translation is shown
+  maxLength: number | null;     // 30 (word) / 80 (text)
+}
+
+/** An answer to the comparison question. value: "Prost!" (word, text), 37 (number), "19:30" (time). */
+export interface DailyAnswer {
+  type:  DailyCompareType;
+  value: string | number;
+  unit:  string | null;
+}
+
+/** A home city: one of ours (id) or a city we don't have (id null). */
+export interface HomeCityRef {
+  id:      number | null;
+  name:    string;
+  country: string;
+}
+
+/** Back home (SPEC 10.4): the same question for the author's home city. */
+export interface DailyBackHome {
+  city:   HomeCityRef;
+  answer: DailyAnswer | null;
+  price:  DailyPrice | null;
+  line:   string | null;
+}
+
+/** A price; eur = the amount in EUR (null before the first rates). */
+export interface DailyPrice {
+  amount:   number;
+  currency: string;
+  eur?:     number | null;
 }
 
 /** One of my proposals (GET /daily/proposals/mine): a challenge or tomorrow's Local Twist. */
@@ -868,8 +911,13 @@ export interface DailyProof {
   photoUrl:         string;
   thumbUrl:         string | null;
   caption:          string | null;
-  price:            { amount: number; currency: string } | null;
+  price:            DailyPrice | null;
+  /** The proof's currency, with or without a price (its city's by default). */
+  currency?:        string | null;
   place:            { lat: number; lng: number; name: string | null } | null;
+  /** The answer to the challenge's question (SPEC 10.2), and Back home (10.4). */
+  answer?:          DailyAnswer | null;
+  backHome?:        DailyBackHome | null;
   /** The Hilads place (spot) the proof is attached to (V3-02). */
   spot?:            { id: string; name: string; inReview: boolean } | null;
   status:           DailyProofStatus;
@@ -1090,6 +1138,14 @@ export interface DailyProofInput {
   spotId?:   string;
   newPlace?: { name: string };
   position?: { lat: number; lng: number };
+  /** V4: the answer ("Prost!", 37, "19:30") and Back home; null clears on an edit. */
+  answer?:   string | number | null;
+  backHome?: {
+    city:    { id: number } | { name: string; country: string };
+    answer?: string | number | null;
+    price?:  { amount: number; currency: string } | null;
+    line?:   string | null;
+  } | null;
 }
 
 /** A Hilads place near the device, for the proof's place step (GET /daily/places/nearby). */

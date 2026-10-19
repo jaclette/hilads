@@ -99,7 +99,10 @@
     "invalid_place_name": "장소 이름은 1~80자여야 해요.",
     "place_name_blocked": "그 장소 이름이 신고되었어요. 다르게 써 주세요.",
     "invalid_position": "이 인증을 올리려면 위치가 필요해요.",
-    "too_far": "이 장소에서 너무 멀리 있어요."
+    "too_far": "이 장소에서 너무 멀리 있어요.",
+    "answer_required": "인증을 올리려면 오늘의 질문에 답해 주세요.",
+    "invalid_answer": "답이 질문과 맞지 않아요. 확인하고 다시 시도해 주세요.",
+    "invalid_back_home": "\"고향에서는요?\"에는 도시와 함께 답, 가격 또는 한 줄이 필요해요."
   },
   "push": {
     "bannerTitle": "매일 아침 Daily Challenge 받기",
@@ -501,5 +504,38 @@
     "share": "Hilads에서 {{city}} 대표하는 거 도와줘.",
     "pioneerTitle": "개척자 배지",
     "pioneerSub": "도시에서 처음으로 승인된 인증. 영원히 당신의 것."
+  },
+  "compare": {
+    "todayQuestion": "오늘의 질문: {{question}}",
+    "kicker": "오늘의 질문",
+    "sub": "짧게 답해 주세요. 전 세계가 이걸로 비교해요.",
+    "next": "다음",
+    "wordPlaceholder": "한 단어나 짧은 표현",
+    "textPlaceholder": "짧은 한 줄",
+    "numberPlaceholder": "숫자"
+  },
+  "backHome": {
+    "title": "고향에서는요?",
+    "pickCity": "고향이 어디예요?",
+    "choose": "선택",
+    "homeIn": "고향: {{city}}",
+    "answerPlaceholder": "{{city}}에서는",
+    "price": "{{city}}의 가격 (선택)",
+    "line": "한 줄 남기기 (선택)",
+    "linePlaceholder": "{{city}}에서는 어때요?",
+    "skip": "건너뛰기",
+    "askTitle": "고향이 어디예요?",
+    "askSub": "당신의 고향 도시. 한 번만 물어보며, 설정에서 바꿀 수 있어요.",
+    "searchPlaceholder": "도시 검색…",
+    "noMatch": "일치하는 도시가 없어요. \"목록에 내 도시가 없어요\"를 눌러 보세요.",
+    "notListed": "목록에 내 도시가 없어요",
+    "otherTitle": "내 고향",
+    "otherName": "도시",
+    "otherNamePlaceholder": "예: 리옹",
+    "otherCountry": "국가",
+    "countrySearch": "국가 검색…",
+    "otherSave": "저장",
+    "otherBack": "목록으로 돌아가기",
+    "clear": "고향 삭제"
   }
 }

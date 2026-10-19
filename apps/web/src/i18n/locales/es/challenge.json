@@ -1310,6 +1310,9 @@
       "title": "Demuéstralo con una foto",
       "place": "La más votada se convierte en la foto del spot.",
       "noPlace": "La más votada sube al podio."
+    },
+    "compare": {
+      "todayQuestion": "La pregunta de hoy: {{question}}"
     }
   }
 }

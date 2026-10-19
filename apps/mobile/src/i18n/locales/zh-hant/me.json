@@ -139,5 +139,8 @@
     "proposal": "你的 challenge 提議被選中",
     "localPass": "Local Pass（集滿一個城市的 7 枚印章）",
     "weekly": "每週 Most Local 每週一重設。"
-  }
+  },
+  "fieldBackHome": "家鄉（你家鄉呢？）",
+  "backHomePlaceholder": "未設定",
+  "backHomeHint": "用於 Daily Challenge 中的「你家鄉呢？」，與你所在的地方作比較。"
 }

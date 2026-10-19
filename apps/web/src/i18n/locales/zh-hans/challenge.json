@@ -1308,6 +1308,9 @@
       "title": "用照片证明",
       "place": "得票最多的照片会成为地点的封面。",
       "noPlace": "得票最多的照片登上领奖台。"
+    },
+    "compare": {
+      "todayQuestion": "今日问题：{{question}}"
     }
   }
 }

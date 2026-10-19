@@ -139,5 +139,8 @@
     "proposal": "Usulan challenge-mu terpilih",
     "localPass": "Local Pass (7 stempel di satu kota)",
     "weekly": "Most Local mingguan diulang setiap Senin."
-  }
+  },
+  "fieldBackHome": "Kota asal (Kalau di kotamu?)",
+  "backHomePlaceholder": "Belum diatur",
+  "backHomeHint": "Dipakai oleh \"Kalau di kotamu?\" di Daily Challenge, untuk dibandingkan dengan tempatmu sekarang."
 }

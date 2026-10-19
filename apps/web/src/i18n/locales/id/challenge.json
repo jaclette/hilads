@@ -1310,6 +1310,9 @@
       "title": "Buktikan dengan foto",
       "place": "Yang paling banyak vote jadi foto spot-nya.",
       "noPlace": "Yang paling banyak vote naik podium."
+    },
+    "compare": {
+      "todayQuestion": "Pertanyaan hari ini: {{question}}"
     }
   }
 }

@@ -1310,6 +1310,9 @@
       "title": "Beweis es mit einem Foto",
       "place": "Das meistgewählte wird zum Foto des Spots.",
       "noPlace": "Das meistgewählte kommt aufs Podium."
+    },
+    "compare": {
+      "todayQuestion": "Die Frage des Tages: {{question}}"
     }
   }
 }

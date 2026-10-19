@@ -99,7 +99,10 @@
     "invalid_place_name": "Dapat 1 hanggang 80 character ang pangalan ng lugar.",
     "place_name_blocked": "Na-flag ang pangalang iyan. Pakipalitan.",
     "invalid_position": "Kailangan ang lokasyon mo para i-post ang proof na ito.",
-    "too_far": "Masyado kang malayo sa lugar na ito."
+    "too_far": "Masyado kang malayo sa lugar na ito.",
+    "answer_required": "Sagutin ang tanong ngayong araw para mai-post ang proof mo.",
+    "invalid_answer": "Hindi tugma ang sagot sa tanong. Suriin at subukan ulit.",
+    "invalid_back_home": "Ang \"E sa inyo?\" ay kailangan ng lungsod at isang sagot, presyo o linya."
   },
   "push": {
     "bannerTitle": "Makuha ang Daily Challenge tuwing umaga",
@@ -505,5 +508,38 @@
     "share": "Tulungan mo akong katawanin ang {{city}} sa Hilads.",
     "pioneerTitle": "Mga pioneer badge",
     "pioneerSub": "Ang kauna-unahang naaprubahang proof sa isang lungsod. Sa iyo habambuhay."
+  },
+  "compare": {
+    "todayQuestion": "Tanong ngayong araw: {{question}}",
+    "kicker": "Tanong ngayong araw",
+    "sub": "Paikliin ang sagot: ito ang ikukumpara ng mundo.",
+    "next": "Susunod",
+    "wordPlaceholder": "Isang salita o maikling parirala",
+    "textPlaceholder": "Isang maikling linya",
+    "numberPlaceholder": "Isang numero"
+  },
+  "backHome": {
+    "title": "E sa inyo?",
+    "pickCity": "Taga-saan ka?",
+    "choose": "Pumili",
+    "homeIn": "Sa inyo, {{city}}",
+    "answerPlaceholder": "Sa {{city}}",
+    "price": "Presyo sa {{city}} (opsyonal)",
+    "line": "Isang linya tungkol dito (opsyonal)",
+    "linePlaceholder": "Kumusta ito sa {{city}}?",
+    "skip": "Laktawan",
+    "askTitle": "Taga-saan ka?",
+    "askSub": "Ang lungsod na pinagmulan mo. Isang beses lang itatanong; mababago mo sa Settings.",
+    "searchPlaceholder": "Maghanap ng lungsod…",
+    "noMatch": "Walang tugmang lungsod. Subukan ang \"Wala sa listahan ang lungsod ko\".",
+    "notListed": "Wala sa listahan ang lungsod ko",
+    "otherTitle": "Ang lungsod mo",
+    "otherName": "Lungsod",
+    "otherNamePlaceholder": "hal. Lyon",
+    "otherCountry": "Bansa",
+    "countrySearch": "Maghanap ng bansa…",
+    "otherSave": "I-save",
+    "otherBack": "Bumalik sa listahan",
+    "clear": "Alisin ang lungsod ko"
   }
 }

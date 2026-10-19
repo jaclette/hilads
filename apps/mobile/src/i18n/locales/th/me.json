@@ -139,5 +139,8 @@
     "proposal": "ข้อเสนอ challenge ของคุณถูกเลือก",
     "localPass": "Local Pass (ครบ 7 ตราในเมืองเดียว)",
     "weekly": "Most Local รายสัปดาห์เริ่มใหม่ทุกวันจันทร์"
-  }
+  },
+  "fieldBackHome": "เมืองบ้านเกิด (แล้วที่บ้านคุณล่ะ?)",
+  "backHomePlaceholder": "ยังไม่ได้ตั้ง",
+  "backHomeHint": "ใช้ใน \"แล้วที่บ้านคุณล่ะ?\" ของ Daily Challenge เพื่อเทียบกับที่ที่คุณอยู่"
 }

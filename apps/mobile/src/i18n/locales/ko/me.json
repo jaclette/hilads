@@ -139,5 +139,8 @@
     "proposal": "내 challenge 제안 선정",
     "localPass": "Local Pass(한 도시 스탬프 7개)",
     "weekly": "주간 Most Local은 매주 월요일에 초기화돼요."
-  }
+  },
+  "fieldBackHome": "고향 (고향에서는요?)",
+  "backHomePlaceholder": "설정 안 됨",
+  "backHomeHint": "Daily Challenge의 \"고향에서는요?\"에서 지금 있는 곳과 비교할 때 쓰여요."
 }

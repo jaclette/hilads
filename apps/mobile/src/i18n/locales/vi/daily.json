@@ -99,7 +99,10 @@
     "invalid_place_name": "Tên địa điểm phải từ 1 đến 80 ký tự.",
     "place_name_blocked": "Tên địa điểm này đã bị gắn cờ. Hãy viết lại.",
     "invalid_position": "Cần vị trí của bạn để đăng bằng chứng này.",
-    "too_far": "Bạn đang ở quá xa địa điểm này."
+    "too_far": "Bạn đang ở quá xa địa điểm này.",
+    "answer_required": "Hãy trả lời câu hỏi hôm nay để đăng bằng chứng.",
+    "invalid_answer": "Câu trả lời không khớp với câu hỏi. Kiểm tra lại rồi thử nữa.",
+    "invalid_back_home": "Phần quê nhà cần một thành phố và một câu trả lời, giá hoặc một câu."
   },
   "push": {
     "bannerTitle": "Nhận Daily Challenge mỗi sáng",
@@ -501,5 +504,38 @@
     "share": "Giúp mình đại diện cho {{city}} trên Hilads nhé.",
     "pioneerTitle": "Huy hiệu tiên phong",
     "pioneerSub": "Bằng chứng được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi."
+  },
+  "compare": {
+    "todayQuestion": "Câu hỏi hôm nay: {{question}}",
+    "kicker": "Câu hỏi hôm nay",
+    "sub": "Trả lời ngắn thôi: cả thế giới sẽ so sánh câu này.",
+    "next": "Tiếp",
+    "wordPlaceholder": "Một từ hoặc một cụm ngắn",
+    "textPlaceholder": "Một câu ngắn",
+    "numberPlaceholder": "Một con số"
+  },
+  "backHome": {
+    "title": "Còn ở quê bạn thì sao?",
+    "pickCity": "Quê bạn ở đâu?",
+    "choose": "Chọn",
+    "homeIn": "Ở quê bạn, {{city}}",
+    "answerPlaceholder": "Ở {{city}}",
+    "price": "Giá ở {{city}} (không bắt buộc)",
+    "line": "Một câu về chuyện này (không bắt buộc)",
+    "linePlaceholder": "Ở {{city}} thì thế nào?",
+    "skip": "Bỏ qua",
+    "askTitle": "Quê bạn ở đâu?",
+    "askSub": "Thành phố quê nhà của bạn. Chỉ hỏi một lần, bạn có thể đổi trong Cài đặt.",
+    "searchPlaceholder": "Tìm thành phố…",
+    "noMatch": "Không tìm thấy thành phố. Thử \"Thành phố của tôi không có trong danh sách\".",
+    "notListed": "Thành phố của tôi không có trong danh sách",
+    "otherTitle": "Thành phố quê bạn",
+    "otherName": "Thành phố",
+    "otherNamePlaceholder": "vd. Lyon",
+    "otherCountry": "Quốc gia",
+    "countrySearch": "Tìm quốc gia…",
+    "otherSave": "Lưu",
+    "otherBack": "Quay lại danh sách",
+    "clear": "Xóa thành phố quê tôi"
   }
 }

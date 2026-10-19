@@ -57,6 +57,8 @@ async function request<T = unknown>(
     'X-App-Version': APP_BUILD_VERSION,
     // Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys.
     'X-Themes': '2',
+    // V4: this build asks the comparison question, so the API requires the answer on new proofs.
+    'X-Compare': '1',
     ...(extraHeaders as Record<string, string>),
   };
 

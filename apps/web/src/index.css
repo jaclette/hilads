@@ -16477,6 +16477,8 @@ body.has-app-promo-banner .page-header {
 .today-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
 .today-meta { font-size: 0.85rem; color: var(--muted2); margin: 0; }
 .today-early { font-size: 0.8rem; font-weight: 700; color: var(--warning); }
+.today-question { display: flex; align-items: flex-start; gap: 6px; font-size: 0.95rem; line-height: 1.4; font-weight: 600; color: var(--muted); margin: 0; }
+.today-question svg { flex-shrink: 0; margin-top: 2px; }
 .today-perforation { height: 0; border-top: 2px dashed var(--line); margin: 0 14px; position: relative; }
 .today-bottom { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
 .today-twist { display: flex; flex-direction: column; gap: 4px; }

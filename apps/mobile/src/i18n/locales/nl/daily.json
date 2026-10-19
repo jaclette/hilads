@@ -99,7 +99,10 @@
     "invalid_place_name": "De naam van de plek moet 1 tot 80 tekens zijn.",
     "place_name_blocked": "Die plaatsnaam is gemarkeerd. Formuleer hem anders.",
     "invalid_position": "Je locatie is nodig om dit bewijs te posten.",
-    "too_far": "Je bent te ver van deze plek."
+    "too_far": "Je bent te ver van deze plek.",
+    "answer_required": "Beantwoord de vraag van vandaag om je bewijs te posten.",
+    "invalid_answer": "Dat antwoord past niet bij de vraag. Controleer het en probeer opnieuw.",
+    "invalid_back_home": "\"En bij jou thuis?\" heeft een stad nodig en een antwoord, een prijs of een regel."
   },
   "push": {
     "bannerTitle": "Krijg elke ochtend de Daily Challenge",
@@ -505,5 +508,38 @@
     "share": "Help me {{city}} te vertegenwoordigen op Hilads.",
     "pioneerTitle": "Pioniersbadges",
     "pioneerSub": "Het allereerste goedgekeurde bewijs in een stad. Voor altijd van jou."
+  },
+  "compare": {
+    "todayQuestion": "De vraag van vandaag: {{question}}",
+    "kicker": "De vraag van vandaag",
+    "sub": "Hou het kort: dit vergelijkt de wereld.",
+    "next": "Volgende",
+    "wordPlaceholder": "Een woord of korte zin",
+    "textPlaceholder": "Eén korte regel",
+    "numberPlaceholder": "Een getal"
+  },
+  "backHome": {
+    "title": "En bij jou thuis?",
+    "pickCity": "Waar is je thuis?",
+    "choose": "Kiezen",
+    "homeIn": "Thuis in {{city}}",
+    "answerPlaceholder": "In {{city}}",
+    "price": "Prijs in {{city}} (optioneel)",
+    "line": "Eén regel erover (optioneel)",
+    "linePlaceholder": "Hoe is het in {{city}}?",
+    "skip": "Overslaan",
+    "askTitle": "Waar is je thuis?",
+    "askSub": "Je thuisstad. We vragen het één keer; je kunt het wijzigen in Instellingen.",
+    "searchPlaceholder": "Steden zoeken…",
+    "noMatch": "Geen stad gevonden. Probeer \"Mijn stad staat er niet bij\".",
+    "notListed": "Mijn stad staat er niet bij",
+    "otherTitle": "Je thuisstad",
+    "otherName": "Stad",
+    "otherNamePlaceholder": "bijv. Lyon",
+    "otherCountry": "Land",
+    "countrySearch": "Landen zoeken…",
+    "otherSave": "Opslaan",
+    "otherBack": "Terug naar de lijst",
+    "clear": "Mijn thuisstad verwijderen"
   }
 }

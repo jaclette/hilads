@@ -139,5 +139,8 @@
     "proposal": "你的 challenge 提议被选中",
     "localPass": "Local Pass（集齐一个城市的 7 枚印章）",
     "weekly": "每周 Most Local 每周一重置。"
-  }
+  },
+  "fieldBackHome": "家乡（你家乡呢？）",
+  "backHomePlaceholder": "未设置",
+  "backHomeHint": "用于 Daily Challenge 中的“你家乡呢？”，与你所在的地方作比较。"
 }

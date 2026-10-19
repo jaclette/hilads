@@ -201,7 +201,14 @@ function Ticket({ data, loading }) {
       </div>
       <div className="today-top">
         <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
-        <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
+        {/* The comparison question (SPEC 10.2), under the challenge. */}
+        {challenge.compare && (
+          <p className="today-question">
+            <Icon name="earth-outline" size={16} />
+            {t('compare.todayQuestion', { question: showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question })}
+          </p>
+        )}
+        <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onClick={toggleOriginal} />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
         {earlyUntil && <span className="today-early">{t('today.early', { time: timeOf(earlyUntil) })}</span>}
       </div>

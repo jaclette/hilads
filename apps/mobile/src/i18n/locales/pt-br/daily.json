@@ -99,7 +99,10 @@
     "invalid_place_name": "O nome do lugar deve ter de 1 a 80 caracteres.",
     "place_name_blocked": "Esse nome de lugar foi sinalizado. Reescreva.",
     "invalid_position": "Precisamos da sua localização para publicar esta prova.",
-    "too_far": "Você está longe demais deste lugar."
+    "too_far": "Você está longe demais deste lugar.",
+    "answer_required": "Responda à pergunta de hoje para publicar sua prova.",
+    "invalid_answer": "Essa resposta não combina com a pergunta. Confira e tente de novo.",
+    "invalid_back_home": "\"E na sua cidade?\" precisa de uma cidade e uma resposta, um preço ou uma linha."
   },
   "push": {
     "bannerTitle": "Receba o Daily Challenge toda manhã",
@@ -507,5 +510,38 @@
     "share": "Me ajuda a representar {{city}} no Hilads.",
     "pioneerTitle": "Selos de pioneiro",
     "pioneerSub": "A primeira prova aprovada numa cidade. Sua para sempre."
+  },
+  "compare": {
+    "todayQuestion": "A pergunta de hoje: {{question}}",
+    "kicker": "A pergunta de hoje",
+    "sub": "Responda curto: é isso que o mundo vai comparar.",
+    "next": "Próximo",
+    "wordPlaceholder": "Uma palavra ou frase curta",
+    "textPlaceholder": "Uma linha curta",
+    "numberPlaceholder": "Um número"
+  },
+  "backHome": {
+    "title": "E na sua cidade?",
+    "pickCity": "De onde você é?",
+    "choose": "Escolher",
+    "homeIn": "Na sua cidade, {{city}}",
+    "answerPlaceholder": "Em {{city}}",
+    "price": "Preço em {{city}} (opcional)",
+    "line": "Uma linha sobre isso (opcional)",
+    "linePlaceholder": "E como é em {{city}}?",
+    "skip": "Pular",
+    "askTitle": "De onde você é?",
+    "askSub": "Sua cidade de origem. Perguntamos uma vez; dá para mudar em Configurações.",
+    "searchPlaceholder": "Buscar cidades…",
+    "noMatch": "Nenhuma cidade encontrada. Tente \"Minha cidade não está na lista\".",
+    "notListed": "Minha cidade não está na lista",
+    "otherTitle": "Sua cidade",
+    "otherName": "Cidade",
+    "otherNamePlaceholder": "ex.: Lyon",
+    "otherCountry": "País",
+    "countrySearch": "Buscar países…",
+    "otherSave": "Salvar",
+    "otherBack": "Voltar para a lista",
+    "clear": "Remover minha cidade"
   }
 }

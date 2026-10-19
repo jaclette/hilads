@@ -1310,6 +1310,9 @@
       "title": "Patunayan sa isang litrato",
       "place": "Ang may pinakamaraming boto ang magiging litrato ng spot.",
       "noPlace": "Ang may pinakamaraming boto ang aakyat sa podium."
+    },
+    "compare": {
+      "todayQuestion": "Tanong ngayong araw: {{question}}"
     }
   }
 }

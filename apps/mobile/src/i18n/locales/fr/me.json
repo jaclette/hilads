@@ -139,5 +139,8 @@
     "proposal": "Ta proposition de challenge choisie",
     "localPass": "Local Pass (les 7 tampons d'une ville)",
     "weekly": "Le Most Local de la semaine repart à zéro chaque lundi."
-  }
+  },
+  "fieldBackHome": "Ville d'origine (Et chez toi ?)",
+  "backHomePlaceholder": "Non renseignée",
+  "backHomeHint": "Utilisée par « Et chez toi ? » dans le Daily Challenge, pour comparer avec là où tu es."
 }

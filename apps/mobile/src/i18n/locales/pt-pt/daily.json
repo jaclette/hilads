@@ -99,7 +99,10 @@
     "invalid_place_name": "O nome do local deve ter de 1 a 80 caracteres.",
     "place_name_blocked": "Esse nome de local foi assinalado. Reformula-o.",
     "invalid_position": "Precisamos da tua localização para publicar esta prova.",
-    "too_far": "Estás demasiado longe deste local."
+    "too_far": "Estás demasiado longe deste local.",
+    "answer_required": "Responde à pergunta de hoje para publicar a tua prova.",
+    "invalid_answer": "Essa resposta não condiz com a pergunta. Verifica e tenta outra vez.",
+    "invalid_back_home": "\"E na tua terra?\" precisa de uma cidade e de uma resposta, um preço ou uma linha."
   },
   "push": {
     "bannerTitle": "Recebe o Daily Challenge todas as manhãs",
@@ -507,5 +510,38 @@
     "share": "Ajuda-me a representar {{city}} no Hilads.",
     "pioneerTitle": "Distintivos de pioneiro",
     "pioneerSub": "A primeira prova aprovada numa cidade. Tua para sempre."
+  },
+  "compare": {
+    "todayQuestion": "A pergunta de hoje: {{question}}",
+    "kicker": "A pergunta de hoje",
+    "sub": "Responde curto: é isto que o mundo vai comparar.",
+    "next": "Seguinte",
+    "wordPlaceholder": "Uma palavra ou expressão curta",
+    "textPlaceholder": "Uma linha curta",
+    "numberPlaceholder": "Um número"
+  },
+  "backHome": {
+    "title": "E na tua terra?",
+    "pickCity": "De onde és?",
+    "choose": "Escolher",
+    "homeIn": "Na tua terra, {{city}}",
+    "answerPlaceholder": "Em {{city}}",
+    "price": "Preço em {{city}} (opcional)",
+    "line": "Uma linha sobre isto (opcional)",
+    "linePlaceholder": "E como é em {{city}}?",
+    "skip": "Saltar",
+    "askTitle": "De onde és?",
+    "askSub": "A tua cidade de origem. Perguntamos uma vez; podes mudá-la nas Definições.",
+    "searchPlaceholder": "Procurar cidades…",
+    "noMatch": "Nenhuma cidade encontrada. Experimenta \"A minha cidade não está na lista\".",
+    "notListed": "A minha cidade não está na lista",
+    "otherTitle": "A tua cidade",
+    "otherName": "Cidade",
+    "otherNamePlaceholder": "ex.: Lyon",
+    "otherCountry": "País",
+    "countrySearch": "Procurar países…",
+    "otherSave": "Guardar",
+    "otherBack": "Voltar à lista",
+    "clear": "Remover a minha cidade"
   }
 }

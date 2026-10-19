@@ -99,7 +99,10 @@
     "invalid_place_name": "Nama tempat harus 1 sampai 80 karakter.",
     "place_name_blocked": "Nama tempat itu ditandai. Tulis ulang.",
     "invalid_position": "Lokasimu dibutuhkan untuk mengirim bukti ini.",
-    "too_far": "Kamu terlalu jauh dari tempat ini."
+    "too_far": "Kamu terlalu jauh dari tempat ini.",
+    "answer_required": "Jawab pertanyaan hari ini untuk mengunggah buktimu.",
+    "invalid_answer": "Jawaban itu tidak cocok dengan pertanyaannya. Periksa lalu coba lagi.",
+    "invalid_back_home": "\"Kalau di kotamu?\" butuh kota dan satu jawaban, harga, atau kalimat."
   },
   "push": {
     "bannerTitle": "Dapatkan Daily Challenge setiap pagi",
@@ -503,5 +506,38 @@
     "share": "Bantu aku mewakili {{city}} di Hilads.",
     "pioneerTitle": "Lencana pelopor",
     "pioneerSub": "Bukti pertama yang disetujui di sebuah kota. Milikmu selamanya."
+  },
+  "compare": {
+    "todayQuestion": "Pertanyaan hari ini: {{question}}",
+    "kicker": "Pertanyaan hari ini",
+    "sub": "Jawab singkat: inilah yang akan dibandingkan dunia.",
+    "next": "Lanjut",
+    "wordPlaceholder": "Satu kata atau frasa pendek",
+    "textPlaceholder": "Satu kalimat pendek",
+    "numberPlaceholder": "Sebuah angka"
+  },
+  "backHome": {
+    "title": "Kalau di kotamu?",
+    "pickCity": "Kamu dari mana?",
+    "choose": "Pilih",
+    "homeIn": "Di kotamu, {{city}}",
+    "answerPlaceholder": "Di {{city}}",
+    "price": "Harga di {{city}} (opsional)",
+    "line": "Satu kalimat tentang ini (opsional)",
+    "linePlaceholder": "Kalau di {{city}} bagaimana?",
+    "skip": "Lewati",
+    "askTitle": "Kamu dari mana?",
+    "askSub": "Kota asalmu. Kami tanya sekali; kamu bisa mengubahnya di Pengaturan.",
+    "searchPlaceholder": "Cari kota…",
+    "noMatch": "Kota tidak ditemukan. Coba \"Kotaku tidak ada di daftar\".",
+    "notListed": "Kotaku tidak ada di daftar",
+    "otherTitle": "Kota asalmu",
+    "otherName": "Kota",
+    "otherNamePlaceholder": "mis. Lyon",
+    "otherCountry": "Negara",
+    "countrySearch": "Cari negara…",
+    "otherSave": "Simpan",
+    "otherBack": "Kembali ke daftar",
+    "clear": "Hapus kota asalku"
   }
 }

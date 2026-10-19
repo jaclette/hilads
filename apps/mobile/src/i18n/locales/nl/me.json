@@ -139,5 +139,8 @@
     "proposal": "Je challenge-voorstel gekozen",
     "localPass": "Local Pass (alle 7 stempels van een stad)",
     "weekly": "De wekelijkse Most Local begint elke maandag opnieuw."
-  }
+  },
+  "fieldBackHome": "Thuisstad (En bij jou thuis?)",
+  "backHomePlaceholder": "Niet ingesteld",
+  "backHomeHint": "Gebruikt door \"En bij jou thuis?\" in de Daily Challenge, om te vergelijken met waar je bent."
 }

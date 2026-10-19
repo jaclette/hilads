@@ -139,5 +139,8 @@
     "proposal": "A tua proposta de challenge escolhida",
     "localPass": "Local Pass (os 7 carimbos de uma cidade)",
     "weekly": "O Most Local da semana recomeça todas as segundas."
-  }
+  },
+  "fieldBackHome": "Cidade de origem (E na tua terra?)",
+  "backHomePlaceholder": "Não definida",
+  "backHomeHint": "Usada por \"E na tua terra?\" no Daily Challenge, para comparar com onde estás."
 }

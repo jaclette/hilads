@@ -99,7 +99,10 @@
     "invalid_place_name": "Der Ortsname muss 1 bis 80 Zeichen lang sein.",
     "place_name_blocked": "Dieser Ortsname wurde markiert. Formuliere ihn um.",
     "invalid_position": "Dein Standort wird gebraucht, um diesen Beweis zu posten.",
-    "too_far": "Du bist zu weit von diesem Ort entfernt."
+    "too_far": "Du bist zu weit von diesem Ort entfernt.",
+    "answer_required": "Beantworte die Frage des Tages, um deinen Beweis zu posten.",
+    "invalid_answer": "Diese Antwort passt nicht zur Frage. Prüf sie und versuch es noch mal.",
+    "invalid_back_home": "„Und bei dir zu Hause?“ braucht eine Stadt und eine Antwort, einen Preis oder eine Zeile."
   },
   "push": {
     "bannerTitle": "Hol dir jeden Morgen die Daily Challenge",
@@ -505,5 +508,38 @@
     "share": "Hilf mir, {{city}} auf Hilads zu vertreten.",
     "pioneerTitle": "Pionier-Abzeichen",
     "pioneerSub": "Der allererste freigegebene Beweis in einer Stadt. Für immer deiner."
+  },
+  "compare": {
+    "todayQuestion": "Die Frage des Tages: {{question}}",
+    "kicker": "Die Frage des Tages",
+    "sub": "Halte dich kurz: genau das vergleicht die Welt.",
+    "next": "Weiter",
+    "wordPlaceholder": "Ein Wort oder eine kurze Wendung",
+    "textPlaceholder": "Eine kurze Zeile",
+    "numberPlaceholder": "Eine Zahl"
+  },
+  "backHome": {
+    "title": "Und bei dir zu Hause?",
+    "pickCity": "Wo ist dein Zuhause?",
+    "choose": "Auswählen",
+    "homeIn": "Zu Hause in {{city}}",
+    "answerPlaceholder": "In {{city}}",
+    "price": "Preis in {{city}} (optional)",
+    "line": "Eine Zeile dazu (optional)",
+    "linePlaceholder": "Wie ist es in {{city}}?",
+    "skip": "Überspringen",
+    "askTitle": "Wo ist dein Zuhause?",
+    "askSub": "Deine Heimatstadt. Wir fragen einmal, du kannst sie in den Einstellungen ändern.",
+    "searchPlaceholder": "Städte suchen…",
+    "noMatch": "Keine Stadt gefunden. Versuch „Meine Stadt fehlt“.",
+    "notListed": "Meine Stadt fehlt",
+    "otherTitle": "Deine Heimatstadt",
+    "otherName": "Stadt",
+    "otherNamePlaceholder": "z. B. Lyon",
+    "otherCountry": "Land",
+    "countrySearch": "Länder suchen…",
+    "otherSave": "Speichern",
+    "otherBack": "Zurück zur Liste",
+    "clear": "Meine Heimatstadt entfernen"
   }
 }

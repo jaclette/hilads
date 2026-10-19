@@ -139,5 +139,8 @@
     "proposal": "La tua proposta di challenge scelta",
     "localPass": "Local Pass (tutti i 7 timbri di una città)",
     "weekly": "Il Most Local della settimana riparte ogni lunedì."
-  }
+  },
+  "fieldBackHome": "Città d'origine (E a casa tua?)",
+  "backHomePlaceholder": "Non impostata",
+  "backHomeHint": "Usata da \"E a casa tua?\" nel Daily Challenge, per confrontare con dove sei."
 }

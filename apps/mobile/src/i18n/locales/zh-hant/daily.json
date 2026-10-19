@@ -99,7 +99,10 @@
     "invalid_place_name": "地點名稱需為 1 到 80 個字元。",
     "place_name_blocked": "該地點名稱被標記，請換個說法。",
     "invalid_position": "發布此證明需要你的位置。",
-    "too_far": "你離這個地點太遠了。"
+    "too_far": "你離這個地點太遠了。",
+    "answer_required": "回答今日問題才能發布你的打卡。",
+    "invalid_answer": "這個回答和問題不符，請檢查後再試。",
+    "invalid_back_home": "「你家鄉呢？」需要一個城市，以及一個回答、價格或一句話。"
   },
   "push": {
     "bannerTitle": "每天早上收到 Daily Challenge",
@@ -501,5 +504,38 @@
     "share": "幫我在 Hilads 上代表{{city}}。",
     "pioneerTitle": "先鋒徽章",
     "pioneerSub": "一座城市裡第一條通過審核的證明。永遠屬於你。"
+  },
+  "compare": {
+    "todayQuestion": "今日問題：{{question}}",
+    "kicker": "今日問題",
+    "sub": "簡短回答：全世界會拿它來比較。",
+    "next": "下一步",
+    "wordPlaceholder": "一個詞或短語",
+    "textPlaceholder": "一句簡短的話",
+    "numberPlaceholder": "一個數字"
+  },
+  "backHome": {
+    "title": "你家鄉呢？",
+    "pickCity": "你的家鄉在哪裡？",
+    "choose": "選擇",
+    "homeIn": "家鄉：{{city}}",
+    "answerPlaceholder": "在{{city}}",
+    "price": "{{city}}的價格（選填）",
+    "line": "說一句（選填）",
+    "linePlaceholder": "在{{city}}是怎樣的？",
+    "skip": "略過",
+    "askTitle": "你的家鄉在哪裡？",
+    "askSub": "你的家鄉城市。只問一次，可在設定中更改。",
+    "searchPlaceholder": "搜尋城市…",
+    "noMatch": "找不到城市。試試「我的城市不在清單中」。",
+    "notListed": "我的城市不在清單中",
+    "otherTitle": "你的家鄉",
+    "otherName": "城市",
+    "otherNamePlaceholder": "例如：里昂",
+    "otherCountry": "國家/地區",
+    "countrySearch": "搜尋國家/地區…",
+    "otherSave": "儲存",
+    "otherBack": "返回清單",
+    "clear": "移除我的家鄉"
   }
 }

@@ -139,5 +139,8 @@
     "proposal": "Tu propuesta de challenge elegida",
     "localPass": "Local Pass (los 7 sellos de una ciudad)",
     "weekly": "El Most Local semanal se reinicia cada lunes."
-  }
+  },
+  "fieldBackHome": "Ciudad de origen (¿Y en tu ciudad?)",
+  "backHomePlaceholder": "Sin definir",
+  "backHomeHint": "La usa \"¿Y en tu ciudad?\" en el Daily Challenge, para comparar con donde estás."
 }

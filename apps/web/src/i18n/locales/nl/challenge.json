@@ -1310,6 +1310,9 @@
       "title": "Bewijs het met een foto",
       "place": "De meest gestemde wordt de foto van de spot.",
       "noPlace": "De meest gestemde komt op het podium."
+    },
+    "compare": {
+      "todayQuestion": "De vraag van vandaag: {{question}}"
     }
   }
 }

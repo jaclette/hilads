@@ -99,7 +99,10 @@
     "invalid_place_name": "地点名称需为 1 到 80 个字符。",
     "place_name_blocked": "该地点名称被标记，请换个说法。",
     "invalid_position": "发布此证明需要你的位置。",
-    "too_far": "你离这个地点太远了。"
+    "too_far": "你离这个地点太远了。",
+    "answer_required": "回答今日问题才能发布你的打卡。",
+    "invalid_answer": "这个回答和问题不符，请检查后重试。",
+    "invalid_back_home": "“你家乡呢？”需要一个城市，以及一个回答、价格或一句话。"
   },
   "push": {
     "bannerTitle": "每天早上收到 Daily Challenge",
@@ -501,5 +504,38 @@
     "share": "帮我在 Hilads 上代表{{city}}。",
     "pioneerTitle": "先锋徽章",
     "pioneerSub": "一座城市里第一条通过审核的证明。永远属于你。"
+  },
+  "compare": {
+    "todayQuestion": "今日问题：{{question}}",
+    "kicker": "今日问题",
+    "sub": "简短回答：全世界会拿它来比较。",
+    "next": "下一步",
+    "wordPlaceholder": "一个词或短语",
+    "textPlaceholder": "一句简短的话",
+    "numberPlaceholder": "一个数字"
+  },
+  "backHome": {
+    "title": "你家乡呢？",
+    "pickCity": "你的家乡在哪里？",
+    "choose": "选择",
+    "homeIn": "家乡：{{city}}",
+    "answerPlaceholder": "在{{city}}",
+    "price": "{{city}}的价格（可选）",
+    "line": "说一句（可选）",
+    "linePlaceholder": "在{{city}}是怎样的？",
+    "skip": "跳过",
+    "askTitle": "你的家乡在哪里？",
+    "askSub": "你的家乡城市。只问一次，可在设置中更改。",
+    "searchPlaceholder": "搜索城市…",
+    "noMatch": "没有找到城市。试试“我的城市不在列表中”。",
+    "notListed": "我的城市不在列表中",
+    "otherTitle": "你的家乡",
+    "otherName": "城市",
+    "otherNamePlaceholder": "例如：里昂",
+    "otherCountry": "国家/地区",
+    "countrySearch": "搜索国家/地区…",
+    "otherSave": "保存",
+    "otherBack": "返回列表",
+    "clear": "移除我的家乡"
   }
 }

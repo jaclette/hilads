@@ -99,7 +99,10 @@
     "invalid_place_name": "Il nome del luogo deve avere da 1 a 80 caratteri.",
     "place_name_blocked": "Questo nome di luogo è stato segnalato. Riformulalo.",
     "invalid_position": "Serve la tua posizione per pubblicare questa prova.",
-    "too_far": "Sei troppo lontano da questo luogo."
+    "too_far": "Sei troppo lontano da questo luogo.",
+    "answer_required": "Rispondi alla domanda di oggi per pubblicare la tua prova.",
+    "invalid_answer": "Questa risposta non va bene per la domanda. Controlla e riprova.",
+    "invalid_back_home": "\"E a casa tua?\" richiede una città e una risposta, un prezzo o una riga."
   },
   "push": {
     "bannerTitle": "Ricevi la Daily Challenge ogni mattina",
@@ -507,5 +510,38 @@
     "share": "Aiutami a rappresentare {{city}} su Hilads.",
     "pioneerTitle": "Badge da pioniere",
     "pioneerSub": "La prima prova approvata in una città. Tua per sempre."
+  },
+  "compare": {
+    "todayQuestion": "La domanda di oggi: {{question}}",
+    "kicker": "La domanda di oggi",
+    "sub": "Rispondi in breve: è quello che il mondo confronterà.",
+    "next": "Avanti",
+    "wordPlaceholder": "Una parola o una frase breve",
+    "textPlaceholder": "Una riga breve",
+    "numberPlaceholder": "Un numero"
+  },
+  "backHome": {
+    "title": "E a casa tua?",
+    "pickCity": "Dov'è casa tua?",
+    "choose": "Scegli",
+    "homeIn": "A casa, a {{city}}",
+    "answerPlaceholder": "A {{city}}",
+    "price": "Prezzo a {{city}} (facoltativo)",
+    "line": "Una riga su questo (facoltativo)",
+    "linePlaceholder": "E a {{city}} com'è?",
+    "skip": "Salta",
+    "askTitle": "Dov'è casa tua?",
+    "askSub": "La tua città d'origine. Te lo chiediamo una volta, puoi cambiarla nelle Impostazioni.",
+    "searchPlaceholder": "Cerca città…",
+    "noMatch": "Nessuna città trovata. Prova \"La mia città non è nella lista\".",
+    "notListed": "La mia città non è nella lista",
+    "otherTitle": "La tua città",
+    "otherName": "Città",
+    "otherNamePlaceholder": "es. Lione",
+    "otherCountry": "Paese",
+    "countrySearch": "Cerca paesi…",
+    "otherSave": "Salva",
+    "otherBack": "Torna alla lista",
+    "clear": "Rimuovi la mia città"
   }
 }

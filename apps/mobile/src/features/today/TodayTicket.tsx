@@ -145,7 +145,18 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
              special={challenge.special ?? null} date={challenge.date} secondsLeft={secondsLeft} />
       <View style={styles.top}>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
-        <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
+        {/* The comparison question (SPEC 10.2), under the challenge. */}
+        {challenge.compare && (
+          <View style={styles.question}>
+            <Ionicons name="earth-outline" size={16} color={colors.muted} />
+            <Text style={styles.questionText}>
+              {t('compare.todayQuestion', {
+                question: showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question,
+              })}
+            </Text>
+          </View>
+        )}
+        <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} ink />}
         {earlyUntil !== null && (
           <Text style={styles.early}>
@@ -308,6 +319,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:        { fontSize: FontSizes.lg, lineHeight: 25, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
   meta:        { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
   early:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.localText },
+  question:    { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
+  questionText: { flex: 1, fontSize: 15, lineHeight: 21, fontWeight: '600', color: c.muted },
   perf:        { height: NOTCH, justifyContent: 'center', paddingHorizontal: 18 },
   // Dashes drawn as views: a dashed top border isn't reliable on Android.
   perfLine:    { flexDirection: 'row', gap: 5, height: 2, overflow: 'hidden' },

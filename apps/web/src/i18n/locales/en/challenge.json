@@ -1310,6 +1310,9 @@
       "title": "Prove it with a photo",
       "place": "The most voted becomes the spot's photo.",
       "noPlace": "The most voted makes the podium."
+    },
+    "compare": {
+      "todayQuestion": "Today's question: {{question}}"
     }
   }
 }

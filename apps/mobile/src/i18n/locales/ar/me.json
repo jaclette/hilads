@@ -155,5 +155,8 @@
     "proposal": "اختيار اقتراح challenge الخاص بك",
     "localPass": "Local Pass (الأختام السبعة في مدينة)",
     "weekly": "يبدأ Most Local الأسبوعي من جديد كل يوم اثنين."
-  }
+  },
+  "fieldBackHome": "مدينتك الأصلية (وفي مدينتك؟)",
+  "backHomePlaceholder": "غير محددة",
+  "backHomeHint": "تُستخدم في \"وفي مدينتك؟\" ضمن Daily Challenge للمقارنة مع المكان الذي أنت فيه."
 }

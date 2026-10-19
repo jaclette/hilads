@@ -139,5 +139,8 @@
     "proposal": "तुम्हारा challenge प्रस्ताव चुना गया",
     "localPass": "Local Pass (एक शहर की सभी 7 मुहरें)",
     "weekly": "हफ़्ते का Most Local हर सोमवार नए सिरे से शुरू होता है।"
-  }
+  },
+  "fieldBackHome": "अपना शहर (और आपके शहर में?)",
+  "backHomePlaceholder": "सेट नहीं",
+  "backHomeHint": "Daily Challenge के \"और आपके शहर में?\" में, जहाँ आप हैं उससे तुलना के लिए।"
 }

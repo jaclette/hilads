@@ -139,5 +139,8 @@
     "proposal": "Napiling challenge na mungkahi mo",
     "localPass": "Local Pass (lahat ng 7 tatak sa isang lungsod)",
     "weekly": "Nagsisimula ulit ang lingguhang Most Local tuwing Lunes."
-  }
+  },
+  "fieldBackHome": "Lungsod na pinagmulan (E sa inyo?)",
+  "backHomePlaceholder": "Hindi nakatakda",
+  "backHomeHint": "Ginagamit ng \"E sa inyo?\" sa Daily Challenge, para ikumpara sa kinaroroonan mo."
 }

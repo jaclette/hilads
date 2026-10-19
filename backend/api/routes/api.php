@@ -15149,6 +15149,7 @@ $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
     // The approved card (if any) keeps its last approved content until the
     // edit is approved, then it is updated in place.
     DailyProofRepository::update($proof['id'], $fields);
+    DailyCompare::rememberHomeCity($user['id'], $fields);
     if (array_key_exists('place_id', $fields) && $fields['place_id'] !== $proof['place_id']) {
         Places::rejectIfOrphan($proof['place_id']);   // a new place left behind in review
     }
