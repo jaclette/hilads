@@ -68,7 +68,8 @@ daily_styles();
                             <br><span class="badge" style="background:#4a3410;color:#fcd34d" title="<?= $sp['scope'] === 'world' ? 'World special: pick it as the theme' : 'Bring it in through the Local Twist' ?>">
                                 <?= dh(($sp['emoji'] ?: '✨') . ' ' . DailySpecials::nameOf($sp, 'en')) ?> · <?= dh($sp['scope'] === 'country' ? $sp['country'] : ($sp['scope'] === 'city' ? 'city' : 'world')) ?></span>
                         <?php endforeach; ?></td>
-                    <td class="td-clip" style="max-width:420px"><?= $c ? dh(mb_strimwidth(daily_text($c['text_i18n']), 0, 90, '…')) : '<span class="daily-muted">-</span>' ?></td>
+                    <td class="td-clip" style="max-width:420px"><?= $c ? dh(mb_strimwidth(daily_text($c['text_i18n']), 0, 90, '…')) : '<span class="daily-muted">-</span>' ?>
+                        <?php if ($c && ($c['compare_type'] ?? null) === null): ?><br><span class="badge" style="background:#4a1d1d;color:#f87171">no question</span><?php endif; ?></td>
                     <td><?php if ($c):
                             $tr = DailyI18n::translated(json_decode((string) $c['text_i18n'], true) ?: []); ?>
                             <span style="color:<?= count($tr) === 18 ? '#86efac' : (count($tr) === 0 ? '#f87171' : '#fcd34d') ?>"><?= count($tr) ?>/18</span>

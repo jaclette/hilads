@@ -45,6 +45,8 @@ final class DailyDrop
             error_log('[daily-push] tick top10 failed: ' . $e->getMessage());
             $out['top10'] = ['status' => 'error', 'error' => $e->getMessage()];
         }
+        // Daily reference exchange rates (SPEC 10.5): once a day, never blocks the tick.
+        $out['rates'] = Currencies::refreshIfStale($now);
         try {
             $out['pushes'] = DailyPushes::sendDue($now);
         } catch (\Throwable $e) {

@@ -308,6 +308,7 @@ final class DailyChallengeRepository
         // which the "? IS NULL OR ..." guard turns into "every city".
         $stmt = Database::pdo()->prepare("
             SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n, dc.theme, dc.special_id, dc.cover_url, dc.proposed_by_user_id,
+                   dc.compare_type, dc.compare_question_i18n, dc.compare_unit_i18n,
                    best.id AS best_proof_id,
                    tw.text AS twist_text, tw.text_i18n AS twist_i18n, tw.author_credit AS twist_credit,
                    tu.id AS twist_user_id, tu.username AS twist_username,
@@ -576,6 +577,8 @@ final class DailyChallengeRepository
             // special's, else the theme's uploaded default; null = the image bundled in the apps.
             'coverUrl' => ($row['cover_url'] ?? null) ?: ($special['coverUrl'] ?? null) ?: (DailyThemes::covers()[$themeKey] ?? null),
             'proposedBy' => self::credit($row['id'], $row['proposed_by_user_id'] ?? null),
+            // SPEC 10.2: the comparison question {type, question, unit, original, maxLength}, or null.
+            'compare'  => DailyCompare::payload($row, $locale),
         ];
     }
 

@@ -14282,7 +14282,34 @@ const DAILY_ERRORS = [
     'invalid_caption' => 'The caption must be one sentence of at most 140 characters.',
     'invalid_price'   => 'The price needs an amount and a 3-letter currency code.',
     'invalid_place'   => 'The place needs a valid latitude and longitude.',
+    // SPEC 10: the answer to the challenge's question, and Back home.
+    'invalid_answer'    => 'The answer does not match the question: a word (30 characters), a line (80), a whole number or a time.',
+    'invalid_back_home' => 'Back home needs a city and an answer, a price or a line (80 characters).',
+    'answer_required'   => "Answer today's question to post your proof.",
 ];
+
+/**
+ * The answer and Back home columns of a proof write (SPEC 10.2, 10.4), for
+ * $challenge. On a create from an app that asks the question (X-Compare: 1),
+ * the answer is required. Free text goes through the caption filter.
+ */
+function dailyCompareFields(array $challenge, array $body, bool $create): array
+{
+    $type = $challenge['compare_type'] ?? null;
+    [$fields, $err] = DailyCompare::validateProofInput($body, $type, static fn(int $id): ?array => CityRepository::findById($id));
+    if ($err !== null) {
+        Response::json(['error' => DAILY_ERRORS[$err], 'code' => $err], 422);
+    }
+    if ($create && $type !== null && DailyCompare::clientSupports() && !DailyCompare::hasAnswer($fields)) {
+        Response::json(['error' => DAILY_ERRORS['answer_required'], 'code' => 'answer_required'], 422);
+    }
+    foreach (['answer_text', 'home_answer_text', 'home_line'] as $col) {
+        if (($fields[$col] ?? null) !== null && ModerationService::check($fields[$col]) !== null) {
+            Response::json(['error' => 'Your answer was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
+        }
+    }
+    return $fields;
+}
 
 // V3-02 place errors: [status, message].
 const DAILY_PLACE_ERRORS = [
@@ -14576,6 +14603,14 @@ $router->add('GET', '/api/v1/daily/live-cities', function () {
         }
     }
     Response::json(['items' => $items]);
+});
+
+// GET /api/v1/daily/rates - the day's reference exchange rates (SPEC 10.5),
+// EUR base: {base, date, rates: {code: units per 1 EUR}}, null before the first
+// fetch. The apps convert prices to the viewer's currency with them. Public.
+$router->add('GET', '/api/v1/daily/rates', function () {
+    header('Cache-Control: public, max-age=3600');
+    Response::json(Currencies::rates() ?? ['base' => Currencies::BASE, 'date' => null, 'rates' => (object) []]);
 });
 
 // GET /api/v1/daily/proofs/state?ids=a,b,c - live vote state of up to 50
@@ -15063,6 +15098,7 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
         Response::json(['error' => 'There is no active challenge right now.', 'code' => 'no_active_challenge'], 409);
     }
     $fields = dailyPlaceFields($user, $challenge, Request::json() ?? [], $fields);
+    $fields += dailyCompareFields($challenge, Request::json() ?? [], true);
     // Checked before a new place is written, so a refused proof leaves no place behind.
     if (DailyProofRepository::findMine($challenge['id'], $user['id']) !== null) {
         Response::json(['error' => 'You already posted a proof for this challenge.', 'code' => 'already_posted'], 409);
@@ -15072,6 +15108,7 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
     if ($proof === null) {
         Response::json(['error' => 'You already posted a proof for this challenge.', 'code' => 'already_posted'], 409);
     }
+    DailyCompare::rememberHomeCity($user['id'], $fields);
     $proof = dailyAfterProofWrite($proof['id']);
     apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
     // Represent your city (SPEC 9.16): the city's first proof of the day ("You put Saigon on the world map today.").
@@ -15107,6 +15144,7 @@ $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
     if ($challenge === null) {
         Response::json(['error' => 'This challenge is closed.', 'code' => 'challenge_closed'], 409);
     }
+    $fields += dailyCompareFields($challenge, Request::json() ?? [], false);
     $fields = dailyCommitPlace($user, dailyPlaceFields($user, $challenge, Request::json() ?? [], $fields));
     // The approved card (if any) keeps its last approved content until the
     // edit is approved, then it is updated in place.

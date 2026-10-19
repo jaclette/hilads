@@ -63,6 +63,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             DailyAdminService::updateChallenge($challenge['id'], $fields);
         }, 'Saved.', $self),
 
+        // SPEC 10.2: the comparison question. No type = no question.
+        'save_compare' => daily_action(function () use ($p, $id) {
+            $type = (string) ($p['compare_type'] ?? '');
+            if ($type === '') {
+                DailyAdminService::setChallengeCompare($id, null);
+                return 'Question removed.';
+            }
+            $question = ['en' => (string) ($p['q_en'] ?? '')] + (is_array($p['q_tr'] ?? null) ? $p['q_tr'] : []);
+            $unit     = ['en' => (string) ($p['unit_en'] ?? '')] + (is_array($p['unit_tr'] ?? null) ? $p['unit_tr'] : []);
+            DailyAdminService::setChallengeCompare($id, ['type' => $type, 'question' => $question, 'unit' => $unit]);
+        }, 'Question saved.', $self . '#compare'),
+
         'set_twist' => daily_action(function () use ($p, $id) {
             $username = trim((string) ($p['author_username'] ?? ''));
             $authorId = null;
@@ -240,6 +252,57 @@ daily_styles();
             <?php endif; ?>
 
             <?php if (!$isNew):
+                $cmpType = $challenge['compare_type'] ?? null;
+                $cmpQ    = json_decode((string) ($challenge['compare_question_i18n'] ?? ''), true) ?: [];
+                $cmpU    = json_decode((string) ($challenge['compare_unit_i18n'] ?? ''), true) ?: []; ?>
+                <form method="POST" action="<?= dh($self) ?>" class="form-card" id="compare" style="margin-top:16px">
+                    <?= csrf_input() ?>
+                    <input type="hidden" name="action" value="save_compare">
+                    <h3 style="margin-bottom:4px">Comparison question <span class="daily-muted">(<?= count(DailyI18n::translated($cmpQ)) ?>/18 translated)</span></h3>
+                    <p class="daily-muted" style="margin-bottom:8px">One question whose short answer changes from city to city: a name, a price, a time, a gesture, a word.
+                        Answered after the photo (required in the new apps), and again for the poster's home city in Back home.</p>
+                    <?php if ($cmpType === null): ?><div class="warning-box" style="margin-bottom:8px">No question yet: every challenge should carry one.</div><?php endif; ?>
+                    <div class="form-group">
+                        <label>Answer type</label>
+                        <select name="compare_type" id="cq-type">
+                            <option value="">No question</option>
+                            <?php foreach (['word' => 'Word (30 characters): How do locals say cheers?', 'text' => 'Text (80 characters): What\'s the one rule visitors should follow?',
+                                            'number' => 'Number with a unit: How many years has it been open?', 'time' => 'Time of day, rounded to 30 min: What time do locals have dinner?'] as $v => $l): ?>
+                                <option value="<?= $v ?>"<?= $cmpType === $v ? ' selected' : '' ?>><?= dh($l) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Question (English)</label>
+                        <input type="text" name="q_en" id="cq-q" maxlength="<?= DailyCompare::QUESTION_MAX ?>" value="<?= dh((string) ($cmpQ['en'] ?? '')) ?>" placeholder="How do locals say cheers?">
+                        <div class="daily-counter" id="cq-counter"></div>
+                    </div>
+                    <div class="form-group" id="cq-unit-group">
+                        <label>Unit (English, numbers only)</label>
+                        <input type="text" name="unit_en" id="cq-unit" maxlength="<?= DailyCompare::UNIT_MAX ?>" value="<?= dh((string) ($cmpU['en'] ?? '')) ?>" placeholder="years">
+                    </div>
+                    <?php if (DailyI18n::isStale($cmpQ, (string) ($cmpQ['en'] ?? ''))): ?>
+                        <div class="warning-box" style="margin-bottom:8px">The English question changed since these translations were saved: review them.</div>
+                    <?php endif; ?>
+                    <details style="margin-bottom:8px"><summary class="daily-muted" style="cursor:pointer;margin-bottom:8px">Question in the 18 other languages</summary>
+                        <table class="daily-tr">
+                            <?php foreach (daily_locale_names() as $loc => $name): ?>
+                                <tr>
+                                    <td class="lang"><?= dh($name) ?><br><span class="td-mono"><?= dh($loc) ?></span>
+                                        <?= DailyI18n::pick($cmpQ, $loc) === null ? '<br><span class="missing">missing</span>' : '' ?></td>
+                                    <td>
+                                        <input type="text" name="q_tr[<?= dh($loc) ?>]" maxlength="<?= DailyCompare::QUESTION_TR_MAX ?>" value="<?= dh((string) ($cmpQ[$loc] ?? '')) ?>" placeholder="Question">
+                                        <input type="text" name="unit_tr[<?= dh($loc) ?>]" class="cq-unit-tr" maxlength="<?= DailyCompare::UNIT_TR_MAX ?>" value="<?= dh((string) ($cmpU[$loc] ?? '')) ?>" placeholder="Unit" style="margin-top:4px">
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </details>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Save question</button></div>
+                </form>
+            <?php endif; ?>
+
+            <?php if (!$isNew):
                 $trText = json_decode((string) $challenge['text_i18n'], true) ?: [];
                 $trCtx  = json_decode((string) $challenge['context_i18n'], true) ?: [];
                 $trDone = DailyI18n::translated($trText);
@@ -383,14 +446,14 @@ daily_styles();
             <div class="form-card daily-checklist">
                 <h3 style="margin-bottom:6px">Editorial checklist</h3>
                 <?php foreach ([
-                    'Doable anywhere in a city',
-                    'Takes under an hour',
-                    'Costs at most the price of a local meal',
-                    'Safe',
-                    'Respectful of residents',
+                    // SPEC 10.3: every challenge, scheduled or proposed.
+                    'Universal: doable in any city, attached to a moment people live anyway (a meal, a coffee, a walk, an evening)',
+                    'The photo shows the difference',
+                    'The comparison question has a short answer that changes from city to city: a name, a price, a time, a gesture, a word',
+                    'The Local Twist shows what makes this city unique',
+                    'Inclusive and respectful: alcohol always optional, people asked before being photographed, no stereotypes, nothing that mocks a culture',
+                    'Challenge text of 120 characters max, question of 60 characters max',
                     'Phrased as "find a…", never a precise address',
-                    'Teaches something (a name, a gesture, a habit)',
-                    'Under 120 characters, so the push shows it whole',
                 ] as $item): ?>
                     <label><input type="checkbox"> <?= dh($item) ?></label>
                 <?php endforeach; ?>
@@ -402,8 +465,16 @@ daily_styles();
                     <div class="kicker">🔥 Daily Challenge</div>
                     <div class="text" id="pv-text"></div>
                     <div class="context" id="pv-context"></div>
+                    <div class="context" id="pv-question" hidden></div>
                     <div class="twist" id="pv-twist" hidden></div>
                     <div class="cta">Take the challenge</div>
+                </div>
+                <div id="pv-answer-wrap" hidden>
+                    <div class="daily-muted" style="margin-bottom:6px">Answer step in the app</div>
+                    <div class="daily-preview-card" style="margin-bottom:12px">
+                        <div class="text" id="pv-answer-q"></div>
+                        <div class="context" id="pv-answer-input"></div>
+                    </div>
                 </div>
                 <div class="daily-muted" style="margin-bottom:6px">Morning push</div>
                 <div class="daily-preview-push">
@@ -433,6 +504,31 @@ daily_styles();
     }
     [text, ctx, twist].forEach(function (el) { if (el) el.addEventListener('input', render); });
     render();
+
+    // Comparison question: counter, unit field for numbers, and the card line and answer step previews.
+    var cqType = document.getElementById('cq-type'), cqQ = document.getElementById('cq-q'), cqUnit = document.getElementById('cq-unit');
+    function renderCompare() {
+        if (!cqType) return;
+        var type = cqType.value, q = cqQ.value.trim(), n = [...q].length, unit = cqUnit.value.trim();
+        var cc = document.getElementById('cq-counter');
+        cc.textContent = n + ' / 60';
+        cc.className = 'daily-counter' + (n > 60 ? ' over' : n > 50 ? ' near' : '');
+        document.getElementById('cq-unit-group').hidden = type !== 'number';
+        document.querySelectorAll('.cq-unit-tr').forEach(function (el) { el.hidden = type !== 'number'; });
+        var line = document.getElementById('pv-question');
+        line.hidden = !type;
+        line.textContent = "Today's question: " + (q || '…');
+        document.getElementById('pv-answer-wrap').hidden = !type;
+        document.getElementById('pv-answer-q').textContent = q || 'Your question';
+        document.getElementById('pv-answer-input').textContent = {
+            word: '[ text field ]  0 / 30', text: '[ text field ]  0 / 80',
+            number: '[ number pad ]  ' + (unit || '(no unit)'), time: '[ time wheel ]  19:00 · 19:30 · 20:00'
+        }[type] || '';
+    }
+    if (cqType) {
+        [cqType, cqQ, cqUnit].forEach(function (el) { el.addEventListener('input', renderCompare); });
+        renderCompare();
+    }
 
     // Theme follows the date's weekday until picked by hand.
     var theme = document.getElementById('dc-theme'), date = document.querySelector('input[name="date"]');

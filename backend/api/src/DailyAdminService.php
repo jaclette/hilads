@@ -219,8 +219,10 @@ final class DailyAdminService
         $pdo->beginTransaction();
         try {
             $pdo->prepare("
-                INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, theme, created_by, updated_by)
-                SELECT ?, ?, text_i18n, context_i18n, 'draft', theme, ?, ? FROM daily_challenges WHERE id = ?
+                INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, theme,
+                                              compare_type, compare_question_i18n, compare_unit_i18n, created_by, updated_by)
+                SELECT ?, ?, text_i18n, context_i18n, 'draft', theme,
+                       compare_type, compare_question_i18n, compare_unit_i18n, ?, ? FROM daily_challenges WHERE id = ?
             ")->execute([$newId, $date, self::actorName(), self::actorName(), $id]);
             $pdo->prepare("
                 INSERT INTO daily_twists (id, challenge_id, city_id, text, text_i18n, author_user_id, author_credit,
@@ -561,6 +563,17 @@ final class DailyAdminService
                 $errors[] = $e->getMessage();
             }
 
+            // SPEC 10.2: every challenge carries a comparison question.
+            $compare = null;
+            try {
+                $compare = DailyCompare::cleanQuestion($c['compare'] ?? null, "{$label}: compare");
+                if ($compare === null) {
+                    $errors[] = "{$label}: compare is required (type and question).";
+                }
+            } catch (InvalidArgumentException $e) {
+                $errors[] = $e->getMessage();
+            }
+
             $twists = [];
             foreach (is_array($c['twists'] ?? null) ? $c['twists'] : [] as $j => $t) {
                 $tLabel = "{$label} twist " . ($j + 1);
@@ -609,6 +622,9 @@ final class DailyAdminService
                 'textTranslations'    => $textTr,
                 'contextTranslations' => $ctxTr,
                 'missingLocales'      => array_values(array_diff(DailyI18n::others(), array_keys($textTr))),
+                'compare'             => $compare,
+                'compareMissingLocales' => $compare !== null
+                    ? array_values(array_diff(DailyI18n::others(), DailyI18n::translated($compare['question']))) : [],
             ];
         }
 
@@ -694,15 +710,29 @@ final class DailyAdminService
                         VALUES (?, true, ?, ?, 'scheduled', ?, ?, ?)
                     ")->execute([$id, self::importI18n($e['text'], $e['textTranslations']),
                                  self::importI18n($e['context'], $e['contextTranslations']), $e['theme'], self::actorName(), self::actorName()]);
-                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id, 'theme' => $e['theme'], 'text' => $e['text'], 'missingLocales' => $e['missingLocales']];
+                    self::setCompare($id, $e['compare']);
+                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id, 'theme' => $e['theme'], 'text' => $e['text'], 'missingLocales' => $e['missingLocales'],
+                                     'compare' => $e['compare']['question']['en'] ?? null, 'compareMissingLocales' => $e['compareMissingLocales']];
                 } else {
+                    $stmt = $pdo->prepare("SELECT id, status, text_i18n, theme, compare_type FROM daily_challenges WHERE challenge_date = ? FOR UPDATE");
+                    $stmt->execute([$e['date']]);
+                    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+                    // Today's and published challenges keep their text; they only
+                    // get the file's comparison question when they have none (SPEC 10.2).
+                    if ($existing && $e['date'] >= $today && ($existing['status'] === 'published' || $e['date'] === $today)) {
+                        if ($existing['compare_type'] === null && $e['compare'] !== null) {
+                            self::setCompare($existing['id'], $e['compare']);
+                            $report[] = ['entry' => $e['label'], 'action' => 'compare_added', 'id' => $existing['id'], 'date' => $e['date'],
+                                         'compare' => $e['compare']['question']['en'], 'compareMissingLocales' => $e['compareMissingLocales']];
+                        } else {
+                            $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is already published"];
+                        }
+                        continue;
+                    }
                     if ($e['date'] <= $today) {
                         $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
                         continue;
                     }
-                    $stmt = $pdo->prepare("SELECT id, status, text_i18n, theme FROM daily_challenges WHERE challenge_date = ? FOR UPDATE");
-                    $stmt->execute([$e['date']]);
-                    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
                     if ($existing && $existing['status'] === 'published') {
                         $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is already published"];
                         continue;
@@ -726,9 +756,11 @@ final class DailyAdminService
                             WHERE challenge_id = ? AND proposed_at IS NULL AND NOT (city_id = ANY (string_to_array(?, ',')))
                         ");
                         $stmt->execute([$id, implode(',', $keep)]);
+                        self::setCompare($id, $e['compare']);
                         $report[] = ['entry' => $e['label'], 'action' => 'replace', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'],
                                      'text' => $e['text'], 'was' => $was($existing), 'twistsRemoved' => $stmt->rowCount(),
-                                     'missingLocales' => $e['missingLocales']];
+                                     'missingLocales' => $e['missingLocales'],
+                                     'compare' => $e['compare']['question']['en'] ?? null, 'compareMissingLocales' => $e['compareMissingLocales']];
                     } elseif ($existing) {
                         $id = $existing['id'];
                         // Without translations in the file, the stored ones are kept.
@@ -747,7 +779,9 @@ final class DailyAdminService
                             $e['themeGiven'] ? 'true' : 'false', $e['theme'], $e['theme'], $specialId,
                             self::actorName(), $id,
                         ]);
-                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'], 'text' => $e['text'], 'was' => $was($existing), 'missingLocales' => $e['missingLocales']];
+                        self::setCompare($id, $e['compare']);
+                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'], 'text' => $e['text'], 'was' => $was($existing), 'missingLocales' => $e['missingLocales'],
+                                     'compare' => $e['compare']['question']['en'] ?? null, 'compareMissingLocales' => $e['compareMissingLocales']];
                     } else {
                         $id = bin2hex(random_bytes(8));
                         $pdo->prepare("
@@ -755,7 +789,9 @@ final class DailyAdminService
                             VALUES (?, ?, ?, ?, 'scheduled', ?, ?, ?, ?)
                         ")->execute([$id, $e['date'], self::importI18n($e['text'], $e['textTranslations']),
                                      self::importI18n($e['context'], $e['contextTranslations']), $e['theme'], $specialId, self::actorName(), self::actorName()]);
-                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'], 'text' => $e['text'], 'missingLocales' => $e['missingLocales']];
+                        self::setCompare($id, $e['compare']);
+                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'], 'text' => $e['text'], 'missingLocales' => $e['missingLocales'],
+                                     'compare' => $e['compare']['question']['en'] ?? null, 'compareMissingLocales' => $e['compareMissingLocales']];
                     }
                 }
 
@@ -789,6 +825,34 @@ final class DailyAdminService
         }
 
         return ['ok' => true, 'dryRun' => $dryRun, 'errors' => [], 'report' => $report];
+    }
+
+    /**
+     * Back office: set or clear ($in null) a challenge's comparison question.
+     * $in = {type, question: {en, ...}, unit: {en, ...}} (DailyCompare::cleanQuestion). Audited.
+     */
+    public static function setChallengeCompare(string $id, ?array $in): array
+    {
+        $before = self::mustFind($id);
+        $q      = DailyCompare::cleanQuestion($in, 'Question');
+        self::setCompare($id, $q);
+        $after = self::find($id);
+        if (PHP_SAPI !== 'cli' && $after['challenge_date'] !== null) {
+            Cache::forget('daily_challenge_v2_' . $after['challenge_date']);
+        }
+        self::audit('daily_challenge.compare', 'daily_challenge', $id,
+            ['compare_type' => $before['compare_type'] ?? null, 'compare_question_i18n' => $before['compare_question_i18n'] ?? null],
+            ['compare_type' => $after['compare_type'] ?? null, 'compare_question_i18n' => $after['compare_question_i18n'] ?? null]);
+        return $after;
+    }
+
+    /** Store a challenge's comparison question (null clears it). */
+    public static function setCompare(string $id, ?array $compare): void
+    {
+        $c = DailyCompare::columns($compare);
+        Database::pdo()->prepare("
+            UPDATE daily_challenges SET compare_type = ?, compare_question_i18n = ?::jsonb, compare_unit_i18n = ?::jsonb WHERE id = ?
+        ")->execute([$c['compare_type'], $c['compare_question_i18n'], $c['compare_unit_i18n'], $id]);
     }
 
     public static function cityIdForSlug(string $slug): ?string

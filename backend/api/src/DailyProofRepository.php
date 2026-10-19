@@ -14,9 +14,16 @@ final class DailyProofRepository
     public const CAPTION_MAX    = 140;
     public const PLACE_NAME_MAX = 80;
 
+    /** Answer and Back home columns (DailyCompare::validateProofInput). */
+    public const COMPARE_COLUMNS = [
+        'answer_text', 'answer_number', 'answer_minutes',
+        'home_city_id', 'home_city_name', 'home_country', 'home_answer_text', 'home_answer_number', 'home_answer_minutes',
+        'home_price_amount', 'home_price_currency', 'home_line',
+    ];
+
     private const SELECT = "
         SELECT p.*,
-               dc.challenge_date, dc.theme AS challenge_theme,
+               dc.challenge_date, dc.theme AS challenge_theme, dc.compare_type, dc.compare_unit_i18n,
                u.username, u.display_name, u.profile_photo_url,
                ch.name AS city_name, cc.country AS city_country,
                wr.rank AS world_rank, cr.rank AS city_rank,
@@ -121,13 +128,18 @@ final class DailyProofRepository
         if ($cityName === null) {
             $cityId = null;
         }
+        // Every proof carries a currency (SPEC 10.5): the price's, else its city's.
+        $currency = $fields['price_currency'] ?? ($cityId !== null ? Currencies::forCity($cityId) : null);
 
         $stmt = Database::pdo()->prepare("
             INSERT INTO daily_proofs (
                 id, challenge_id, user_id, city_id, photo_url, caption,
                 price_amount, price_currency, place_lat, place_lng, place_name, is_local, is_early,
-                place_id, distance_m
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                place_id, distance_m,
+                answer_text, answer_number, answer_minutes,
+                home_city_id, home_city_name, home_country, home_answer_text, home_answer_number, home_answer_minutes,
+                home_price_amount, home_price_currency, home_line
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (challenge_id, user_id) WHERE NOT is_seed DO NOTHING
             RETURNING id
         ");
@@ -139,7 +151,7 @@ final class DailyProofRepository
             $fields['photo_url'],
             $fields['caption'] ?? null,
             $fields['price_amount'] ?? null,
-            $fields['price_currency'] ?? null,
+            $currency,
             $fields['place_lat'] ?? null,
             $fields['place_lng'] ?? null,
             $fields['place_name'] ?? null,
@@ -149,6 +161,7 @@ final class DailyProofRepository
                                  new DateTimeImmutable('now')) ? 'true' : 'false',
             $fields['place_id'] ?? null,
             $fields['distance_m'] ?? null,
+            ...array_map(static fn(string $c) => $fields[$c] ?? null, self::COMPARE_COLUMNS),
         ]);
         $id = $stmt->fetchColumn();
         return $id === false ? null : self::findById((string) $id);
@@ -158,12 +171,13 @@ final class DailyProofRepository
     public static function update(string $id, array $fields): ?array
     {
         $allowed = ['photo_url', 'caption', 'price_amount', 'price_currency', 'place_lat', 'place_lng', 'place_name',
-                    'place_id', 'distance_m'];
+                    'place_id', 'distance_m', ...self::COMPARE_COLUMNS];
         $sets = [];
         $args = [];
         foreach ($allowed as $col) {
             if (array_key_exists($col, $fields)) {
-                $sets[] = "$col = ?";
+                // A cleared price keeps the proof's currency (every proof has one).
+                $sets[] = $col === 'price_currency' ? "$col = COALESCE(?, $col)" : "$col = ?";
                 $args[] = $fields[$col];
             }
         }
@@ -339,9 +353,12 @@ final class DailyProofRepository
             'photoUrl'         => $row['photo_url'],
             'thumbUrl'         => R2Uploader::thumbProxy($row['photo_url']),
             'caption'          => $row['caption'],
+            // amount and currency, plus eur: the amount in EUR (SPEC 10.5; null before the first rates).
             'price'            => $row['price_amount'] !== null
-                ? ['amount' => (float) $row['price_amount'], 'currency' => $row['price_currency']]
+                ? DailyCompare::price((float) $row['price_amount'], (string) $row['price_currency'])
                 : null,
+            // The proof's currency, with or without a price (its city's by default).
+            'currency'         => $row['price_currency'] !== null ? trim((string) $row['price_currency']) : null,
             'place'            => $row['place_lat'] !== null
                 ? ['lat' => (float) $row['place_lat'], 'lng' => (float) $row['place_lng'], 'name' => $row['place_name']]
                 : null,
@@ -361,7 +378,8 @@ final class DailyProofRepository
             'approvedAt'       => self::ts($row['approved_at']),
             'editedAt'         => self::ts($row['edited_at']),
             'createdAt'        => self::ts($row['created_at']),
-        ];
+            // SPEC 10: the answer to the challenge's question {type, value, unit}, and Back home.
+        ] + DailyCompare::proofPayload($row, DailyI18n::current());
     }
 
     public static function bool(mixed $v): bool

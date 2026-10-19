@@ -100,9 +100,11 @@ final class DailyI18nTest extends TestCase
                 ['city' => 'saigon', 'text' => ['en' => 'Pho', 'fr' => 'Un phở']],
                 ['city' => 'saigon', 'text' => 'Plain'],
             ],
+            'compare' => ['type' => 'word', 'question' => 'Q?'],
         ], [
             'date' => '2099-01-02',
             'text' => ['en' => 'Eat', 'fr' => str_repeat('a', DailyAdminService::TEXT_MAX + 1)],
+            'compare' => ['type' => 'word', 'question' => 'Q?'],
         ]]];
         $r = DailyAdminService::validateImport($doc, fn(string $s) => 'city_5');
         $this->assertSame(['#2: text (fr) is longer than ' . DailyAdminService::TEXT_MAX . ' characters.'], $r['errors']);

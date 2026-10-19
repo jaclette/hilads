@@ -52,7 +52,7 @@ daily_styles();
             <?php else: ?>
                 <h3 style="margin-bottom:8px">Dry run - nothing written yet<?= $replace ? ' · replace' : '' ?></h3>
                 <div class="table-wrapper"><table>
-                    <thead><tr><th>Entry</th><th>Action</th><th>Detail</th><th>Theme</th><th>Text (was → new)</th><th>Translations</th></tr></thead>
+                    <thead><tr><th>Entry</th><th>Action</th><th>Detail</th><th>Theme</th><th>Text (was → new)</th><th>Question</th><th>Translations</th></tr></thead>
                     <tbody>
                     <?php foreach ($result['report'] as $line): ?>
                         <tr><td><?= dh($line['entry']) ?></td><td><?= dh($line['action']) ?></td>
@@ -61,6 +61,8 @@ daily_styles();
                             <td class="daily-muted" style="max-width:420px">
                                 <?php if (isset($line['was'])): ?><s><?= dh($line['was']['text']) ?></s><?= $line['was']['theme'] ? ' [' . dh(DailyThemes::name(DailyThemes::effective($line['was']['theme'], null) ?? '')) . ']' : '' ?><br><?php endif; ?>
                                 <?= dh($line['text'] ?? '') ?><?= !empty($line['twistsRemoved']) ? ' · ' . (int) $line['twistsRemoved'] . ' twist(s) removed' : '' ?></td>
+                            <td class="daily-muted" style="max-width:260px"><?php $cmiss = $line['compareMissingLocales'] ?? null; ?>
+                                <?= dh($line['compare'] ?? '') ?><?= $cmiss === null || ($line['compare'] ?? null) === null ? '' : '<br>' . ($cmiss === [] ? '18/18' : dh((18 - count($cmiss)) . '/18')) ?></td>
                             <td class="daily-muted"><?php $miss = $line['missingLocales'] ?? null; ?>
                                 <?= $miss === null ? '' : ($miss === [] ? '18/18' : dh((18 - count($miss)) . '/18 · missing ' . implode(', ', $miss))) ?></td></tr>
                     <?php endforeach; ?>

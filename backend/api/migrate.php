@@ -3226,6 +3226,58 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_city_approved ON daily_proofs (city_id, challenge_id) WHERE moderation_status = 'approved'",
     'idx_daily_proofs_city_approved');
 
+// V4 "Same challenge. Different worlds." (SPEC 10): the comparison question of
+// a challenge, the answer of a proof and its Back home block, the user's home
+// city as a real city, and the daily reference exchange rates.
+// Reversal: drop the columns below and DROP TABLE daily_rates.
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS compare_type TEXT
+    CHECK (compare_type IS NULL OR compare_type IN ('word', 'text', 'number', 'time'))", 'daily_challenges.compare_type');
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS compare_question_i18n JSONB", 'daily_challenges.compare_question_i18n');
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS compare_unit_i18n JSONB", 'daily_challenges.compare_unit_i18n');
+run($pdo, "
+    ALTER TABLE daily_proofs
+        ADD COLUMN IF NOT EXISTS answer_text         TEXT CHECK (answer_text IS NULL OR char_length(answer_text) <= 80),
+        ADD COLUMN IF NOT EXISTS answer_number       BIGINT,
+        ADD COLUMN IF NOT EXISTS answer_minutes      SMALLINT CHECK (answer_minutes IS NULL OR answer_minutes BETWEEN 0 AND 1410),
+        ADD COLUMN IF NOT EXISTS home_city_id        TEXT REFERENCES channels(id) ON DELETE SET NULL,
+        ADD COLUMN IF NOT EXISTS home_city_name      TEXT,
+        ADD COLUMN IF NOT EXISTS home_country        CHAR(2),
+        ADD COLUMN IF NOT EXISTS home_answer_text    TEXT CHECK (home_answer_text IS NULL OR char_length(home_answer_text) <= 80),
+        ADD COLUMN IF NOT EXISTS home_answer_number  BIGINT,
+        ADD COLUMN IF NOT EXISTS home_answer_minutes SMALLINT CHECK (home_answer_minutes IS NULL OR home_answer_minutes BETWEEN 0 AND 1410),
+        ADD COLUMN IF NOT EXISTS home_price_amount   NUMERIC(14,2) CHECK (home_price_amount IS NULL OR home_price_amount >= 0),
+        ADD COLUMN IF NOT EXISTS home_price_currency CHAR(3),
+        ADD COLUMN IF NOT EXISTS home_line           TEXT CHECK (home_line IS NULL OR char_length(home_line) <= 80)
+", 'daily_proofs answer and back home');
+// Every proof carries a currency (the city's by default), with or without a price:
+// the pair check becomes "an amount needs a currency".
+run($pdo, "ALTER TABLE daily_proofs DROP CONSTRAINT IF EXISTS daily_proofs_price_pair_check", 'daily_proofs_price_pair_check dropped');
+run($pdo, "
+    DO \$\$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'daily_proofs_price_currency_check') THEN
+            ALTER TABLE daily_proofs ADD CONSTRAINT daily_proofs_price_currency_check
+                CHECK (price_amount IS NULL OR price_currency IS NOT NULL);
+            ALTER TABLE daily_proofs ADD CONSTRAINT daily_proofs_home_price_currency_check
+                CHECK (home_price_amount IS NULL OR home_price_currency IS NOT NULL);
+        END IF;
+    END \$\$
+", 'daily_proofs price currency checks');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS home_city_id TEXT REFERENCES channels(id) ON DELETE SET NULL", 'users.home_city_id');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS home_country CHAR(2)", 'users.home_country');
+// The structured home city (Back home): one of our cities (home_city_id), or
+// a city we don't have (home_city_name + home_country). users.home_city stays
+// the free-text profile field it was (local status, badges).
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS home_city_name TEXT", 'users.home_city_name');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_rates (
+        date       DATE        PRIMARY KEY,
+        base       CHAR(3)     NOT NULL,
+        rates      JSONB       NOT NULL,
+        source     TEXT        NOT NULL,
+        fetched_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_rates');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

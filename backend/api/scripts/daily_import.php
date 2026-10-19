@@ -47,6 +47,8 @@ require_once __DIR__ . '/../src/DailyAdminService.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
 require_once __DIR__ . '/../src/DailyThemes.php';
 require_once __DIR__ . '/../src/DailySpecials.php';
+require_once __DIR__ . '/../src/Currencies.php';
+require_once __DIR__ . '/../src/DailyCompare.php';
 
 $raw = @file_get_contents($files[0]);
 if ($raw === false) {
@@ -85,6 +87,10 @@ foreach ($result['report'] as $line) {
     }
     if (isset($line['text']) && ($line['action'] ?? '') !== 'skip') {
         printf("         new: %s\n", $short((string) $line['text']));
+    }
+    if (isset($line['compare'])) {
+        $cm = $line['compareMissingLocales'] ?? [];
+        printf("         question: %s  (%d/18)\n", $line['compare'], 18 - count($cm));
     }
     if (!empty($line['twistsRemoved'])) {
         printf("         twists removed: %d\n", $line['twistsRemoved']);

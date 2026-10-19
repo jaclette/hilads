@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 /** Weekly themes (v2, 2026-10-19): weekday defaults, names, v1 keys, specials, payload fallback. */
 final class DailyThemesTest extends TestCase
 {
+    private const CMP = ['type' => 'word', 'question' => 'Q?'];
+
     protected function tearDown(): void
     {
         unset($_SERVER['REQUEST_METHOD'], $_SERVER['HTTP_X_THEMES']);
@@ -66,13 +68,13 @@ final class DailyThemesTest extends TestCase
     public function testImportThemes(): void
     {
         $doc = ['challenges' => [
-            ['date' => '2026-11-03', 'theme' => 'Sip', 'text' => ['en' => 'A']],
-            ['date' => '2026-11-04', 'text' => ['en' => 'B']],
-            ['date' => null, 'reserve' => true, 'text' => ['en' => 'C']],
-            ['date' => '2026-11-05', 'theme' => 'Brunch', 'text' => ['en' => 'D']],
-            ['date' => '2026-10-31', 'theme' => 'Special', 'special' => ['id' => 'halloween', 'name' => ['en' => 'Halloween', 'zh-CN' => '万圣节']], 'text' => ['en' => 'E']],
-            ['date' => '2026-11-06', 'theme' => 'Special', 'text' => ['en' => 'F']],
-            ['date' => '2026-11-07', 'theme' => 'Sip', 'special' => ['id' => 'x', 'name' => 'X'], 'text' => ['en' => 'G']],
+            ['date' => '2026-11-03', 'theme' => 'Sip', 'text' => ['en' => 'A'], 'compare' => self::CMP],
+            ['date' => '2026-11-04', 'text' => ['en' => 'B'], 'compare' => self::CMP],
+            ['date' => null, 'reserve' => true, 'text' => ['en' => 'C'], 'compare' => self::CMP],
+            ['date' => '2026-11-05', 'theme' => 'Brunch', 'text' => ['en' => 'D'], 'compare' => self::CMP],
+            ['date' => '2026-10-31', 'theme' => 'Special', 'special' => ['id' => 'halloween', 'name' => ['en' => 'Halloween', 'zh-CN' => '万圣节']], 'text' => ['en' => 'E'], 'compare' => self::CMP],
+            ['date' => '2026-11-06', 'theme' => 'Special', 'text' => ['en' => 'F'], 'compare' => self::CMP],
+            ['date' => '2026-11-07', 'theme' => 'Sip', 'special' => ['id' => 'x', 'name' => 'X'], 'text' => ['en' => 'G'], 'compare' => self::CMP],
         ]];
         $r = DailyAdminService::validateImport($doc, fn(string $slug): ?string => null);
         $this->assertSame('sip', $r['entries'][0]['theme']);         // given (a name), even off its weekday

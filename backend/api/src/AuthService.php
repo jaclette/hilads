@@ -522,6 +522,22 @@ class AuthService
             $fields['home_city'] = $city ?: null;
         }
 
+        // Back home's structured home city (SPEC 10.4): {id} (one of our cities),
+        // {name, country} (a city we don't have), or null to clear. home_city
+        // above stays the free-text field.
+        if (array_key_exists('home_city_ref', $body)) {
+            $ref = $body['home_city_ref'];
+            if ($ref === null) {
+                $fields += ['home_city_id' => null, 'home_city_name' => null, 'home_country' => null];
+            } else {
+                $c = DailyCompare::cleanCity($ref, static fn(int $id): ?array => CityRepository::findById($id));
+                if ($c === null) {
+                    Response::json(['error' => 'home_city_ref must be {id} or {name, country}'], 422);
+                }
+                $fields += ['home_city_id' => $c[0], 'home_city_name' => $c[1], 'home_country' => $c[2]];
+            }
+        }
+
         if (array_key_exists('profile_photo_url', $body)) {
             $url = $body['profile_photo_url'];
             if ($url !== null) {
@@ -613,6 +629,8 @@ class AuthService
             'age'               => self::computeAge($user['birth_year'] ?? null),
             'profile_photo_url' => $user['profile_photo_url'],
             'home_city'         => $user['home_city'],
+            // Back home's home city: {id, name, country} (id null for a city we don't have), or null.
+            'home_city_ref'     => self::homeCityRef($user),
             'about_me'          => $user['about_me'] ?? null,
             'interests'         => json_decode($user['interests'] ?? '[]', true),
             'vibe'              => $user['vibe'] ?? 'chill',
@@ -666,6 +684,15 @@ class AuthService
             // The client reconciles this against its local cache on login.
             'theme'             => $user['theme'] ?? null,
         ]);
+    }
+
+    private static function homeCityRef(array $user): ?array
+    {
+        if (($user['home_country'] ?? null) === null) {
+            return null;
+        }
+        $id = ($user['home_city_id'] ?? null) !== null ? (int) substr((string) $user['home_city_id'], 5) : null;
+        return ['id' => $id, 'name' => $user['home_city_name'] ?? null, 'country' => trim((string) $user['home_country'])];
     }
 
     private static function computeAge(?int $birthYear): ?int

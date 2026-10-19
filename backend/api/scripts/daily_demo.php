@@ -51,7 +51,7 @@ foreach ([
     'NotificationI18n', 'BotAccountService', 'NotificationPreferencesRepository', 'PushService', 'MobilePushService',
     'NotificationRepository', 'DailyClock', 'DailyRules', 'DailyProofRepository', 'DailyChallengeRepository',
     'DailyAdminService', 'DailyCards', 'DailyPushes', 'DailyDrop', 'DailyVotes', 'DailyResults', 'DailyPoints',
-    'MonthlyRankService', 'DailyTwistProposals', 'DailyI18n', 'DailyPushText', 'DailyLeaderboard', 'DailyThemes', 'DailySpecials', 'DailyPresence', 'AnalyticsService', 'CityNames', 'DailyLocalPass', 'DailyProposals', 'DailyDemo', 'DailyNotify',
+    'MonthlyRankService', 'DailyTwistProposals', 'DailyI18n', 'DailyPushText', 'DailyLeaderboard', 'DailyThemes', 'DailySpecials', 'DailyPresence', 'AnalyticsService', 'CityNames', 'Currencies', 'DailyCompare', 'DailyLocalPass', 'DailyProposals', 'DailyDemo', 'DailyNotify',
 ] as $class) {
     require_once __DIR__ . "/../src/{$class}.php";
 }
