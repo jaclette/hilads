@@ -37,7 +37,7 @@
     "next": "Next",
     "fallbackCity": "iyong city",
     "slide1": {
-      "title": "Isang lokal na bagay. Araw-araw.",
+      "title": "Laro lokal. Kumpara global.",
       "body": "Ang Hilads ay ang app na nagpapasok sa mga biyahero bilang local - at tumutulong sa mga local na i-share kung ano ang nagpapabuhay sa kanilang city."
     },
     "slide2": {
@@ -202,7 +202,7 @@
   },
   "signUp": "Mag-sign up",
   "settings": "Mga setting",
-  "firstLaunch": "Isang lokal na bagay. Araw-araw.",
+  "firstLaunch": "Laro lokal. Kumpara global.",
   "subtitles": {
     "map": "Mga spot na pinili mismo ng mga lokal.",
     "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",

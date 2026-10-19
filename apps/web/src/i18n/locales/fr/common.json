@@ -37,7 +37,7 @@
     "next": "Suivant",
     "fallbackCity": "ta ville",
     "slide1": {
-      "title": "Un truc local. Chaque jour.",
+      "title": "Joue local. Compare global.",
       "body": "Hilads, l'app qui transforme les voyageurs en locaux - et qui aide les locaux à partager ce qui fait vibrer leur ville."
     },
     "slide2": {
@@ -202,7 +202,7 @@
   },
   "signUp": "S'inscrire",
   "settings": "Réglages",
-  "firstLaunch": "Un truc local. Chaque jour.",
+  "firstLaunch": "Joue local. Compare global.",
   "subtitles": {
     "map": "Les spots choisis par les locaux.",
     "hi": "Dis bonjour à ta ville. Rejoins un plan.",

@@ -26,7 +26,7 @@ export default function AppPromoInterstitial() {
         </button>
 
         <img className="app-promo-interstitial-icon" src="/logo/icon.svg" alt="" aria-hidden="true" />
-        <h1 className="app-promo-interstitial-title">One local thing. Every day.</h1>
+        <h1 className="app-promo-interstitial-title">Play local. Compare global.</h1>
 
         <ul className="app-promo-interstitial-pitch">
           <li style={PITCH_ROW}><Icon name="notifications-outline" size={18} style={PITCH_ICON} />Real-time push notifications</li>

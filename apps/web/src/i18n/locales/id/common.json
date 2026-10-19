@@ -37,7 +37,7 @@
     "next": "Lanjut",
     "fallbackCity": "kotamu",
     "slide1": {
-      "title": "Satu hal lokal. Setiap hari.",
+      "title": "Main lokal. Bandingkan global.",
       "body": "Hilads adalah app yang mengubah pelancong jadi orang lokal - dan membantu orang lokal berbagi apa yang membuat kotanya hidup."
     },
     "slide2": {
@@ -202,7 +202,7 @@
   },
   "signUp": "Daftar",
   "settings": "Pengaturan",
-  "firstLaunch": "Satu hal lokal. Setiap hari.",
+  "firstLaunch": "Main lokal. Bandingkan global.",
   "subtitles": {
     "map": "Spot pilihan warga lokal.",
     "hi": "Sapa kotamu. Ikut sebuah rencana.",

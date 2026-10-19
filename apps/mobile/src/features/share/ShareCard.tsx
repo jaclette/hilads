@@ -58,7 +58,7 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
   const badge = content.type === 'proof' && content.rank
     ? (content.rank.city ? t('share.rankCity', { rank: content.rank.rank, city: localizeCityName(content.rank.city) }) : t('share.rankWorld', { rank: content.rank.rank }))
     : null;
-  // SPEC 10.1: share cards say why Hilads is unique (the app and stores keep "One local thing. Every day.").
+  // SPEC 10.1: share cards say why Hilads is unique (the app and stores keep "Play local. Compare global.").
   const tagline = t('worlds.tagline', { defaultValue: TAGLINE_EN });
 
   return (

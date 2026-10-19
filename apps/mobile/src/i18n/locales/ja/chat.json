@@ -2,7 +2,7 @@
   "changeCity": "街を変更",
   "shareCity": "街をシェア",
   "shareTitle": "今{{city}}で起きていること",
-  "shareMessage": "ローカルをひとつ。毎日。 Hiladsで今{{city}}にいる人を見てみよう 🔥",
+  "shareMessage": "地元で遊ぶ。世界と比べる。 Hiladsで今{{city}}にいる人を見てみよう 🔥",
   "currentWeather": "現在の天気：{{label}}",
   "weatherAlert": "天気",
   "online": "近くに{{count}}人",

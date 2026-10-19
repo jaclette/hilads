@@ -21,7 +21,7 @@
   "changeCity": "Changer de ville",
   "shareCity": "Partager la ville",
   "shareTitle": "Ce qui se passe à {{city}} en ce moment",
-  "shareMessage": "Un truc local. Chaque jour. Vois qui est dans le coin à {{city}} sur Hilads 🔥",
+  "shareMessage": "Joue local. Compare global. Vois qui est dans le coin à {{city}} sur Hilads 🔥",
   "currentWeather": "Météo actuelle : {{label}}",
   "weatherAlert": "Météo",
   "online": "{{count}} près de toi",

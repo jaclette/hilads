@@ -37,7 +37,7 @@
     "next": "Avanti",
     "fallbackCity": "la tua città",
     "slide1": {
-      "title": "Una cosa locale. Ogni giorno.",
+      "title": "Gioca locale. Confronta globale.",
       "body": "Hilads è l'app che trasforma i viaggiatori in locali - e aiuta i locali a condividere ciò che rende viva la loro città."
     },
     "slide2": {
@@ -202,7 +202,7 @@
   },
   "signUp": "Registrati",
   "settings": "Impostazioni",
-  "firstLaunch": "Una cosa locale. Ogni giorno.",
+  "firstLaunch": "Gioca locale. Confronta globale.",
   "subtitles": {
     "map": "Gli spot scelti dai locali.",
     "hi": "Saluta la tua città. Unisciti a un piano.",

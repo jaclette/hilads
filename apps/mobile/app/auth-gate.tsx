@@ -42,6 +42,7 @@ export default function AuthGateScreen() {
       <SafeAreaView edges={['bottom']} style={styles.sheet}>
         <View style={styles.handle} />
         <BrandMark size="lg" />
+        <Text style={styles.tagline}>{t('firstLaunch', { ns: 'common' })}</Text>
         <Text style={styles.title} accessibilityRole="header">{t(`sheet.reason.${gateReason}`)}</Text>
         <Text style={styles.subtitle}>{t('sheet.comeBack')}</Text>
 
@@ -61,6 +62,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:         { backgroundColor: c.bg, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: Spacing.md, alignItems: 'center', gap: 12 },
   handle:        { width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
   title:         { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3 },
+  tagline:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, textAlign: 'center', marginTop: -4 },
   subtitle:      { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginBottom: 4 },
   stretch:       { alignSelf: 'stretch' },
   notNow:        { minHeight: 44, justifyContent: 'center', paddingHorizontal: 16 },

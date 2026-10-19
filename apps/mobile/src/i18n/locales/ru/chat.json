@@ -2,7 +2,7 @@
   "changeCity": "Сменить город",
   "shareCity": "Поделиться городом",
   "shareTitle": "Что происходит в {{city}} прямо сейчас",
-  "shareMessage": "Что-то местное. Каждый день. Смотри в Hilads, кто сейчас в {{city}} 🔥",
+  "shareMessage": "Играй локально. Сравнивай глобально. Смотри в Hilads, кто сейчас в {{city}} 🔥",
   "currentWeather": "Сейчас погода: {{label}}",
   "weatherAlert": "Погода",
   "online": "{{count}} рядом",

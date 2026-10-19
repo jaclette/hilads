@@ -2,7 +2,7 @@
   "changeCity": "切换城市",
   "shareCity": "分享城市",
   "shareTitle": "{{city}} 此刻正在发生的事",
-  "shareMessage": "一件本地事。每一天。 在 Hilads 上看看谁正在{{city}} 🔥",
+  "shareMessage": "本地玩，全球比。 在 Hilads 上看看谁正在{{city}} 🔥",
   "currentWeather": "当前天气：{{label}}",
   "weatherAlert": "天气",
   "online": "附近 {{count}} 人",

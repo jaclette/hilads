@@ -660,7 +660,7 @@ export default function LandingPage({
       <footer className="lp-footer">
         <Logo variant="icon" size="sm" />
         {/* Brand tagline - fixed English. */}
-        <span className="lp-footer-tagline">One local thing. Every day.</span>
+        <span className="lp-footer-tagline">{t('stories.tagline')}</span>
       </footer>
 
     </div>

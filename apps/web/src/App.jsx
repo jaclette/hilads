@@ -4709,7 +4709,7 @@ export default function App() {
           <Logo variant="icon" size="lg" />
           <span className="header-brand-text">
             <span className="header-brand-name">Hilads</span>
-            <span className="header-tagline">One local thing. Every day.</span>
+            <span className="header-tagline">{i18n.t('firstLaunch', { ns: 'common' })}</span>
           </span>
         </div>
         <div className="header-hero-city">

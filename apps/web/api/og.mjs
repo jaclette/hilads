@@ -351,7 +351,7 @@ function FallbackCard() {
         },
       }, 'Hilads'),
       h('div', { style: { display: 'flex', fontSize: 46, color: TEXT, fontWeight: 600 } }, 'Same challenge. Different worlds.'),
-      h('div', { style: { display: 'flex', fontSize: 30, color: MUTED, fontWeight: 500 } }, 'One local thing. Every day.'),
+      h('div', { style: { display: 'flex', fontSize: 30, color: MUTED, fontWeight: 500 } }, 'Play local. Compare global.'),
     ),
     URLFooter(''),
   );

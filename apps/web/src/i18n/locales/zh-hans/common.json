@@ -37,7 +37,7 @@
     "next": "下一步",
     "fallbackCity": "你的城市",
     "slide1": {
-      "title": "一件本地事。每一天。",
+      "title": "本地玩，全球比。",
       "body": "Hilads 是把旅行者变成本地人的 app - 也帮本地人分享让自己城市鲜活的一切。"
     },
     "slide2": {
@@ -202,7 +202,7 @@
   },
   "signUp": "注册",
   "settings": "设置",
-  "firstLaunch": "一件本地事。每一天。",
+  "firstLaunch": "本地玩，全球比。",
   "subtitles": {
     "map": "本地人真正挑选的地点。",
     "hi": "向你的城市打个招呼。加入一个计划。",

@@ -38,7 +38,7 @@
     "next": "Next",
     "fallbackCity": "your city",
     "slide1": {
-      "title": "One local thing. Every day.",
+      "title": "Play local. Compare global.",
       "body": "Hilads is the app that turns travelers into locals - and helps locals share what makes their city alive."
     },
     "slide2": {
@@ -202,7 +202,7 @@
   },
   "signUp": "Sign up",
   "settings": "Settings",
-  "firstLaunch": "One local thing. Every day.",
+  "firstLaunch": "Play local. Compare global.",
   "subtitles": {
     "map": "Spots locals actually picked.",
     "hi": "Say hi to your city. Join a plan.",
