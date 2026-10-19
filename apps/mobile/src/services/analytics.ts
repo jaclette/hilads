@@ -95,6 +95,10 @@ export type AnalyticsEvent =
   // The Hilads Index (SPEC 10.9): viewed { source, week }, shared { card }.
   | 'index_viewed'
   | 'index_shared'
+  | 'index_carousel_swiped'
+  | 'index_opened'
+  | 'index_search_used'
+  | 'two_cities_compared'
   | 'daily_twist_proposed'
   | 'daily_map_opened'
   | 'daily_leaderboard_viewed'

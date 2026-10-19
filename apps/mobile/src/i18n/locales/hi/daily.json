@@ -80,7 +80,8 @@
     "takeTitle": "अपनी फ़ोटो लो",
     "retake": "दोबारा लो",
     "sentTitleNoCity": "आपका जवाब भेज दिया गया!",
-    "compare": "तुलना करें"
+    "compare": "तुलना करें",
+    "priceFor": "चुकाई गई कीमत: {{label}}"
   },
   "errors": {
     "already_posted": "आप आज के challenge के लिए जवाब पोस्ट कर चुके हैं।",
@@ -585,11 +586,29 @@
     "tagline": "एक ही चैलेंज। अलग-अलग दुनिया।"
   },
   "index": {
-    "title": "पिछले हफ़्ते दुनिया ने कितना चुकाया",
-    "pricePaid": "चुकाई गई माध्यिका कीमत",
     "share": "शेयर करें",
-    "shareText": "Hilads Index: {{lines}}",
-    "footnote": "3 या ज़्यादा जवाब वाले शहरों पर आधारित"
+    "carouselTitle": "दुनिया की तुलना",
+    "carouselSub": "पिछले हफ़्ते Hilads पर",
+    "seeAllComparisons": "सभी तुलनाएँ देखें",
+    "screenTitle": "Hilads इंडेक्स",
+    "screenSub": "दुनिया ने Hilads पर जो कुछ भी तुलना की।",
+    "sections": {
+      "price": "कीमतें",
+      "time": "समय",
+      "word": "शब्द"
+    },
+    "search": "सवाल, शहर या जवाब खोजें",
+    "clearSearch": "खोज साफ़ करें",
+    "twoCities": "दो शहर",
+    "closeTwoCities": "दो शहर बंद करें",
+    "pickCity": "शहर चुनें",
+    "and": "{{a}} और {{b}}",
+    "twoCitiesEmpty": "इन दो शहरों की अभी कोई तुलना नहीं है।",
+    "noResults": "कोई तुलना मेल नहीं खाती।",
+    "empty": "शहरों के 3 जवाब होते ही पहली तुलनाएँ यहाँ दिखेंगी।",
+    "priceTitle": "{{label}} कितने का है?",
+    "moreCities_one": "+{{count}} और शहर",
+    "moreCities_other": "+{{count}} और शहर"
   },
   "ctaAnswer": "{{city}} के लिए जवाब दें",
   "ctaAnswerNoCity": "अपने शहर के लिए जवाब दें",

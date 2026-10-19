@@ -9,7 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
 import { useDailyArchive } from '@/hooks/useDaily';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
-import { IndexCards } from '@/features/index/IndexCards';
+import { IndexCarousel } from '@/features/index/IndexCarousel';
 import type { DailyArchiveItem, DailyThemeKey } from '@/types';
 import { Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
 
@@ -32,8 +32,8 @@ export default function DailyArchiveScreen() {
 
   const chips = (
     <View style={styles.header}>
-    {/* The Hilads Index of last week (SPEC 10.9), above the past challenges. */}
-    <IndexCards source="archive" />
+    {/* The world, compared (SPEC 10.9), above the past challenges. */}
+    <IndexCarousel />
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
       <Chip variant="filter" label={t('today.archiveAll')} selected={theme === null} onPress={() => setTheme(null)} />
       {THEME_KEYS.map(k => (

@@ -220,9 +220,11 @@ final class DailyAdminService
         try {
             $pdo->prepare("
                 INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, theme,
-                                              compare_type, compare_question_i18n, compare_unit_i18n, created_by, updated_by)
+                                              compare_type, compare_question_i18n, compare_unit_i18n,
+                                              compare_key, compare_title_i18n, price_key, price_label_i18n, created_by, updated_by)
                 SELECT ?, ?, text_i18n, context_i18n, 'draft', theme,
-                       compare_type, compare_question_i18n, compare_unit_i18n, ?, ? FROM daily_challenges WHERE id = ?
+                       compare_type, compare_question_i18n, compare_unit_i18n,
+                       compare_key, compare_title_i18n, price_key, price_label_i18n, ?, ? FROM daily_challenges WHERE id = ?
             ")->execute([$newId, $date, self::actorName(), self::actorName(), $id]);
             $pdo->prepare("
                 INSERT INTO daily_twists (id, challenge_id, city_id, text, text_i18n, author_user_id, author_credit,
@@ -698,10 +700,12 @@ final class DailyAdminService
                 $specialId = $e['special']['id'] ?? null;
 
                 if ($e['reserve']) {
-                    $stmt = $pdo->prepare("SELECT id FROM daily_challenges WHERE is_reserve AND text_i18n->>'en' = ?");
+                    $stmt = $pdo->prepare("SELECT id, compare_type, compare_key, price_key FROM daily_challenges WHERE is_reserve AND text_i18n->>'en' = ?");
                     $stmt->execute([$e['text']]);
-                    if ($stmt->fetchColumn() !== false) {
-                        $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => 'reserve already exists'];
+                    if (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
+                        $report[] = self::fillIndexKeys($row, $e['compare'])
+                            ? ['entry' => $e['label'], 'action' => 'keys_added', 'id' => $row['id'], 'key' => $e['compare']['key'] ?? null, 'priceKey' => $e['compare']['price']['key'] ?? null]
+                            : ['entry' => $e['label'], 'action' => 'skip', 'reason' => 'reserve already exists'];
                         continue;
                     }
                     $id = bin2hex(random_bytes(8));
@@ -714,7 +718,7 @@ final class DailyAdminService
                     $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id, 'theme' => $e['theme'], 'text' => $e['text'], 'missingLocales' => $e['missingLocales'],
                                      'compare' => $e['compare']['question']['en'] ?? null, 'compareMissingLocales' => $e['compareMissingLocales']];
                 } else {
-                    $stmt = $pdo->prepare("SELECT id, status, text_i18n, theme, compare_type FROM daily_challenges WHERE challenge_date = ? FOR UPDATE");
+                    $stmt = $pdo->prepare("SELECT id, status, text_i18n, theme, compare_type, compare_key, price_key FROM daily_challenges WHERE challenge_date = ? FOR UPDATE");
                     $stmt->execute([$e['date']]);
                     $existing = $stmt->fetch(PDO::FETCH_ASSOC);
                     // Today's and published challenges keep their text; they only
@@ -724,13 +728,20 @@ final class DailyAdminService
                             self::setCompare($existing['id'], $e['compare']);
                             $report[] = ['entry' => $e['label'], 'action' => 'compare_added', 'id' => $existing['id'], 'date' => $e['date'],
                                          'compare' => $e['compare']['question']['en'], 'compareMissingLocales' => $e['compareMissingLocales']];
+                        } elseif (self::fillIndexKeys($existing, $e['compare'])) {
+                            $report[] = ['entry' => $e['label'], 'action' => 'keys_added', 'id' => $existing['id'], 'date' => $e['date'],
+                                         'key' => $e['compare']['key'] ?? null, 'priceKey' => $e['compare']['price']['key'] ?? null];
                         } else {
                             $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is already published"];
                         }
                         continue;
                     }
                     if ($e['date'] <= $today) {
-                        $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
+                        // A past day keeps everything, but gets the Index keys it lacks (its answers then count).
+                        $report[] = $existing && self::fillIndexKeys($existing, $e['compare'])
+                            ? ['entry' => $e['label'], 'action' => 'keys_added', 'id' => $existing['id'], 'date' => $e['date'],
+                               'key' => $e['compare']['key'] ?? null, 'priceKey' => $e['compare']['price']['key'] ?? null]
+                            : ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
                         continue;
                     }
                     if ($existing && $existing['status'] === 'published') {
@@ -829,7 +840,7 @@ final class DailyAdminService
 
     /**
      * Back office: set or clear ($in null) a challenge's comparison question.
-     * $in = {type, question: {en, ...}, unit: {en, ...}} (DailyCompare::cleanQuestion). Audited.
+     * $in = {type, question: {en, ...}, unit: {en, ...}, key, title, price: {key, label}} (DailyCompare::cleanQuestion). Audited.
      */
     public static function setChallengeCompare(string $id, ?array $in): array
     {
@@ -846,13 +857,44 @@ final class DailyAdminService
         return $after;
     }
 
+    /**
+     * The Index keys of a file entry (compare key and title, price key and
+     * label) on a stored challenge that has a question but lacks them: never
+     * overwrites a key, never touches the question. True when written.
+     */
+    private static function fillIndexKeys(array $row, ?array $compare): bool
+    {
+        if ($compare === null || $row['compare_type'] === null) {
+            return false;
+        }
+        $c = DailyCompare::columns($compare);
+        $setKey   = $row['compare_key'] === null && $c['compare_key'] !== null;
+        $setPrice = $row['price_key'] === null && $c['price_key'] !== null;
+        if (!$setKey && !$setPrice) {
+            return false;
+        }
+        Database::pdo()->prepare("
+            UPDATE daily_challenges
+            SET compare_key = CASE WHEN ? THEN ? ELSE compare_key END,
+                compare_title_i18n = CASE WHEN ? THEN ?::jsonb ELSE compare_title_i18n END,
+                price_key = CASE WHEN ? THEN ? ELSE price_key END,
+                price_label_i18n = CASE WHEN ? THEN ?::jsonb ELSE price_label_i18n END
+            WHERE id = ?
+        ")->execute([$setKey ? 'true' : 'false', $c['compare_key'], $setKey ? 'true' : 'false', $c['compare_title_i18n'],
+                     $setPrice ? 'true' : 'false', $c['price_key'], $setPrice ? 'true' : 'false', $c['price_label_i18n'], $row['id']]);
+        return true;
+    }
+
     /** Store a challenge's comparison question (null clears it). */
     public static function setCompare(string $id, ?array $compare): void
     {
         $c = DailyCompare::columns($compare);
         Database::pdo()->prepare("
-            UPDATE daily_challenges SET compare_type = ?, compare_question_i18n = ?::jsonb, compare_unit_i18n = ?::jsonb WHERE id = ?
-        ")->execute([$c['compare_type'], $c['compare_question_i18n'], $c['compare_unit_i18n'], $id]);
+            UPDATE daily_challenges SET compare_type = ?, compare_question_i18n = ?::jsonb, compare_unit_i18n = ?::jsonb,
+                   compare_key = ?, compare_title_i18n = ?::jsonb, price_key = ?, price_label_i18n = ?::jsonb
+            WHERE id = ?
+        ")->execute([$c['compare_type'], $c['compare_question_i18n'], $c['compare_unit_i18n'],
+                     $c['compare_key'], $c['compare_title_i18n'], $c['price_key'], $c['price_label_i18n'], $id]);
     }
 
     public static function cityIdForSlug(string $slug): ?string

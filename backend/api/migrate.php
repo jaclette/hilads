@@ -3288,6 +3288,20 @@ run($pdo, "
         built_at   TIMESTAMPTZ NOT NULL DEFAULT now()
     )
 ", 'daily_index_weeks');
+// The Hilads Index by comparison: a shared key per comparison question (answers
+// from different challenges and dates add up), its card title, and what the
+// price of a challenge is for ("a coffee") with its own shared key.
+// Reversal: ALTER TABLE daily_challenges DROP COLUMN compare_key, DROP COLUMN compare_title_i18n,
+//           DROP COLUMN price_key, DROP COLUMN price_label_i18n.
+run($pdo, "
+    ALTER TABLE daily_challenges
+        ADD COLUMN IF NOT EXISTS compare_key        TEXT,
+        ADD COLUMN IF NOT EXISTS compare_title_i18n JSONB,
+        ADD COLUMN IF NOT EXISTS price_key          TEXT,
+        ADD COLUMN IF NOT EXISTS price_label_i18n   JSONB
+", 'daily_challenges compare_key / price_key');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_challenges_compare_key ON daily_challenges (compare_key) WHERE compare_key IS NOT NULL", 'idx_daily_challenges_compare_key');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_challenges_price_key ON daily_challenges (price_key) WHERE price_key IS NOT NULL", 'idx_daily_challenges_price_key');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

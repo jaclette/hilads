@@ -72,7 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             }
             $question = ['en' => (string) ($p['q_en'] ?? '')] + (is_array($p['q_tr'] ?? null) ? $p['q_tr'] : []);
             $unit     = ['en' => (string) ($p['unit_en'] ?? '')] + (is_array($p['unit_tr'] ?? null) ? $p['unit_tr'] : []);
-            DailyAdminService::setChallengeCompare($id, ['type' => $type, 'question' => $question, 'unit' => $unit]);
+            $title    = ['en' => (string) ($p['title_en'] ?? '')] + (is_array($p['title_tr'] ?? null) ? $p['title_tr'] : []);
+            $label    = ['en' => (string) ($p['price_label_en'] ?? '')] + (is_array($p['price_label_tr'] ?? null) ? $p['price_label_tr'] : []);
+            DailyAdminService::setChallengeCompare($id, ['type' => $type, 'question' => $question, 'unit' => $unit,
+                'key' => (string) ($p['compare_key'] ?? ''), 'title' => $title,
+                'price' => ['key' => (string) ($p['price_key'] ?? ''), 'label' => $label]]);
         }, 'Question saved.', $self . '#compare'),
 
         'set_twist' => daily_action(function () use ($p, $id) {
@@ -254,7 +258,9 @@ daily_styles();
             <?php if (!$isNew):
                 $cmpType = $challenge['compare_type'] ?? null;
                 $cmpQ    = json_decode((string) ($challenge['compare_question_i18n'] ?? ''), true) ?: [];
-                $cmpU    = json_decode((string) ($challenge['compare_unit_i18n'] ?? ''), true) ?: []; ?>
+                $cmpU    = json_decode((string) ($challenge['compare_unit_i18n'] ?? ''), true) ?: [];
+                $cmpT    = json_decode((string) ($challenge['compare_title_i18n'] ?? ''), true) ?: [];
+                $cmpL    = json_decode((string) ($challenge['price_label_i18n'] ?? ''), true) ?: []; ?>
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="compare" style="margin-top:16px">
                     <?= csrf_input() ?>
                     <input type="hidden" name="action" value="save_compare">
@@ -281,6 +287,21 @@ daily_styles();
                         <label>Unit (English, numbers only)</label>
                         <input type="text" name="unit_en" id="cq-unit" maxlength="<?= DailyCompare::UNIT_MAX ?>" value="<?= dh((string) ($cmpU['en'] ?? '')) ?>" placeholder="years">
                     </div>
+                    <div class="form-group">
+                        <label>Index key <span class="daily-muted">(shared by every question that asks the same thing, so answers add up across days: dinner_time, cheers_word)</span></label>
+                        <input type="text" name="compare_key" maxlength="40" pattern="[a-z][a-z0-9_]{1,39}" value="<?= dh((string) ($challenge['compare_key'] ?? '')) ?>" placeholder="dinner_time">
+                    </div>
+                    <div class="form-group">
+                        <label>Index card title (English, optional) <span class="daily-muted">(else the question)</span></label>
+                        <input type="text" name="title_en" maxlength="<?= DailyCompare::QUESTION_MAX ?>" value="<?= dh((string) ($cmpT['en'] ?? '')) ?>" placeholder="What time is dinner?">
+                    </div>
+                    <div class="form-group">
+                        <label>Price: what it is for <span class="daily-muted">(optional: the price posters give, shared key and English label)</span></label>
+                        <div style="display:flex;gap:8px">
+                            <input type="text" name="price_key" maxlength="40" pattern="[a-z][a-z0-9_]{1,39}" value="<?= dh((string) ($challenge['price_key'] ?? '')) ?>" placeholder="coffee_price" style="max-width:200px">
+                            <input type="text" name="price_label_en" maxlength="<?= DailyCompare::LABEL_MAX ?>" value="<?= dh((string) ($cmpL['en'] ?? '')) ?>" placeholder="a coffee">
+                        </div>
+                    </div>
                     <?php if (DailyI18n::isStale($cmpQ, (string) ($cmpQ['en'] ?? ''))): ?>
                         <div class="warning-box" style="margin-bottom:8px">The English question changed since these translations were saved: review them.</div>
                     <?php endif; ?>
@@ -293,6 +314,8 @@ daily_styles();
                                     <td>
                                         <input type="text" name="q_tr[<?= dh($loc) ?>]" maxlength="<?= DailyCompare::QUESTION_TR_MAX ?>" value="<?= dh((string) ($cmpQ[$loc] ?? '')) ?>" placeholder="Question">
                                         <input type="text" name="unit_tr[<?= dh($loc) ?>]" class="cq-unit-tr" maxlength="<?= DailyCompare::UNIT_TR_MAX ?>" value="<?= dh((string) ($cmpU[$loc] ?? '')) ?>" placeholder="Unit" style="margin-top:4px">
+                                        <input type="text" name="title_tr[<?= dh($loc) ?>]" maxlength="<?= DailyCompare::QUESTION_TR_MAX ?>" value="<?= dh((string) ($cmpT[$loc] ?? '')) ?>" placeholder="Index card title" style="margin-top:4px">
+                                        <input type="text" name="price_label_tr[<?= dh($loc) ?>]" maxlength="<?= DailyCompare::LABEL_TR_MAX ?>" value="<?= dh((string) ($cmpL[$loc] ?? '')) ?>" placeholder="Price label (with its article: une bière)" style="margin-top:4px">
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

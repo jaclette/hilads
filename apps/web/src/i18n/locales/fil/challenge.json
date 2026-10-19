@@ -1357,11 +1357,29 @@
       "tagline": "Iisang challenge. Iba-ibang mundo."
     },
     "index": {
-      "title": "Magkano ang ibinayad ng mundo noong nakaraang linggo",
-      "pricePaid": "Median na presyong ibinayad",
       "share": "Ibahagi",
-      "shareText": "Ang Hilads Index: {{lines}}",
-      "footnote": "Batay sa mga lungsod na may 3 sagot o higit pa"
+      "carouselTitle": "Ang mundo, ikinumpara",
+      "carouselSub": "Noong nakaraang linggo sa Hilads",
+      "seeAllComparisons": "Tingnan lahat ng paghahambing",
+      "screenTitle": "Ang Hilads Index",
+      "screenSub": "Lahat ng ikinumpara ng mundo sa Hilads.",
+      "sections": {
+        "price": "Presyo",
+        "time": "Oras",
+        "word": "Salita"
+      },
+      "search": "Maghanap ng tanong, lungsod, sagot",
+      "clearSearch": "I-clear ang paghahanap",
+      "twoCities": "Dalawang lungsod",
+      "closeTwoCities": "Isara ang Dalawang lungsod",
+      "pickCity": "Pumili ng lungsod",
+      "and": "{{a}} at {{b}}",
+      "twoCitiesEmpty": "Wala pang paghahambing para sa dalawang lungsod na ito.",
+      "noResults": "Walang tugmang paghahambing.",
+      "empty": "Lalabas ang unang mga paghahambing kapag may 3 sagot na ang mga lungsod.",
+      "priceTitle": "Magkano ang {{label}}?",
+      "moreCities_one": "+{{count}} pang lungsod",
+      "moreCities_other": "+{{count}} pang lungsod"
     },
     "ctaAnswer": "Sumagot para sa {{city}}",
     "ctaAnswerNoCity": "Sumagot para sa lungsod mo",

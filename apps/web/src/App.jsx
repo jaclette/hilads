@@ -21,6 +21,7 @@ import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScree
 import ChallengeScreen from './components/daily/ChallengeScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import ArchiveScreen from './components/daily/ArchiveScreen'
+import IndexScreen from './components/daily/IndexScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useOriginal, OriginalToggle } from './components/daily/dailyShared'
 import PeopleRow from './components/chat/PeopleRow'
@@ -5606,6 +5607,7 @@ export default function App() {
         if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
         if (top.name === 'calendar')  return <CalendarScreen key={key} onBack={closeDaily} />
         if (top.name === 'archive')   return <ArchiveScreen key={key} onBack={closeDaily} />
+        if (top.name === 'index')     return <IndexScreen key={key} focus={top.params.focus ?? null} onBack={closeDaily} />
         return null
       })()}
 

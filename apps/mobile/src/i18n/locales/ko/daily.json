@@ -80,7 +80,8 @@
     "takeTitle": "사진 찍기",
     "retake": "다시 찍기",
     "sentTitleNoCity": "답변을 보냈어요!",
-    "compare": "비교하기"
+    "compare": "비교하기",
+    "priceFor": "지불한 가격: {{label}}"
   },
   "errors": {
     "already_posted": "오늘의 challenge에 이미 답변을 올렸어요.",
@@ -582,11 +583,29 @@
     "tagline": "같은 챌린지, 다른 세상."
   },
   "index": {
-    "title": "지난주 전 세계가 낸 가격",
-    "pricePaid": "지불 가격 중앙값",
     "share": "공유",
-    "shareText": "Hilads Index: {{lines}}",
-    "footnote": "답변 3개 이상인 도시 기준"
+    "carouselTitle": "세계를 비교하다",
+    "carouselSub": "지난주 Hilads",
+    "seeAllComparisons": "모든 비교 보기",
+    "screenTitle": "Hilads 지수",
+    "screenSub": "세계가 Hilads에서 비교한 모든 것.",
+    "sections": {
+      "price": "가격",
+      "time": "시간",
+      "word": "단어"
+    },
+    "search": "질문, 도시, 답변 검색",
+    "clearSearch": "검색 지우기",
+    "twoCities": "두 도시",
+    "closeTwoCities": "두 도시 닫기",
+    "pickCity": "도시 선택",
+    "and": "{{a}}와(과) {{b}}",
+    "twoCitiesEmpty": "아직 두 도시가 함께 있는 비교가 없어요.",
+    "noResults": "일치하는 비교가 없어요.",
+    "empty": "도시마다 답변이 3개 모이면 첫 비교가 나타나요.",
+    "priceTitle": "{{label}}은(는) 얼마인가요?",
+    "moreCities_one": "+{{count}}개 도시 더",
+    "moreCities_other": "+{{count}}개 도시 더"
   },
   "ctaAnswer": "{{city}} 대표로 답하기",
   "ctaAnswerNoCity": "내 도시 대표로 답하기",

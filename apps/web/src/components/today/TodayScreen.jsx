@@ -9,7 +9,7 @@ import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { answerText } from '../daily/compareShared'
 import WorldTourViewer from '../daily/WorldTour'
-import IndexCards from '../daily/IndexCards'
+import { IndexCarousel } from '../daily/Comparisons'
 import { CityFlag, CityName } from '../CityName'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
@@ -66,8 +66,8 @@ export default function TodayScreen({ header }) {
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TourRow today={data} />
         <TodayProofs today={data} />
-        {/* The Hilads Index (SPEC 10.9): last week's cards, on Mondays. */}
-        {data?.challenge?.date && new Date(`${data.challenge.date}T00:00:00Z`).getUTCDay() === 1 && <IndexCards source="today" />}
+        {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
+        <IndexCarousel />
         <SpotsNear />
       </div>
     </div>

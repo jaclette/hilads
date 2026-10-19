@@ -1355,11 +1355,29 @@
       "tagline": "同一個挑戰，不同的世界。"
     },
     "index": {
-      "title": "上週全世界花了多少錢",
-      "pricePaid": "支付價格中位數",
       "share": "分享",
-      "shareText": "Hilads Index：{{lines}}",
-      "footnote": "基於至少有 3 個回答的城市"
+      "carouselTitle": "世界，比一比",
+      "carouselSub": "上週在 Hilads",
+      "seeAllComparisons": "查看全部比較",
+      "screenTitle": "Hilads 指數",
+      "screenSub": "全世界在 Hilads 上比較過的一切。",
+      "sections": {
+        "price": "價格",
+        "time": "時間",
+        "word": "詞語"
+      },
+      "search": "搜尋問題、城市或回答",
+      "clearSearch": "清除搜尋",
+      "twoCities": "兩座城市",
+      "closeTwoCities": "關閉兩座城市",
+      "pickCity": "選擇一座城市",
+      "and": "{{a}}和{{b}}",
+      "twoCitiesEmpty": "這兩座城市還沒有共同的比較。",
+      "noResults": "沒有符合的比較。",
+      "empty": "城市有 3 個回答後，第一批比較就會出現。",
+      "priceTitle": "{{label}}多少錢？",
+      "moreCities_one": "+另外 {{count}} 座城市",
+      "moreCities_other": "+另外 {{count}} 座城市"
     },
     "ctaAnswer": "為{{city}}作答",
     "ctaAnswerNoCity": "為你的城市作答",

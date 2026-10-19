@@ -80,7 +80,8 @@
     "takeTitle": "Prends ta photo",
     "retake": "Reprendre",
     "sentTitleNoCity": "Ta réponse est partie !",
-    "compare": "Comparer"
+    "compare": "Comparer",
+    "priceFor": "Prix payé : {{label}}"
   },
   "errors": {
     "already_posted": "Tu as déjà répondu au défi du jour.",
@@ -586,11 +587,29 @@
     "tagline": "Même défi. Des mondes différents."
   },
   "index": {
-    "title": "Ce que le monde a payé la semaine dernière",
-    "pricePaid": "Prix médian payé",
     "share": "Partager",
-    "shareText": "Le Hilads Index : {{lines}}",
-    "footnote": "Basé sur les villes avec 3 réponses ou plus"
+    "carouselTitle": "Le monde, comparé",
+    "carouselSub": "La semaine dernière sur Hilads",
+    "seeAllComparisons": "Voir toutes les comparaisons",
+    "screenTitle": "L'indice Hilads",
+    "screenSub": "Tout ce que le monde a comparé sur Hilads.",
+    "sections": {
+      "price": "Prix",
+      "time": "Horaires",
+      "word": "Mots"
+    },
+    "search": "Chercher une question, une ville, une réponse",
+    "clearSearch": "Effacer la recherche",
+    "twoCities": "Deux villes",
+    "closeTwoCities": "Fermer Deux villes",
+    "pickCity": "Choisis une ville",
+    "and": "{{a}} et {{b}}",
+    "twoCitiesEmpty": "Pas encore de comparaison avec ces deux villes.",
+    "noResults": "Aucune comparaison ne correspond.",
+    "empty": "Les premières comparaisons arrivent dès que des villes ont 3 réponses.",
+    "priceTitle": "Combien coûte {{label}} ?",
+    "moreCities_one": "+{{count}} autre ville",
+    "moreCities_other": "+{{count}} autres villes"
   },
   "ctaAnswer": "Réponds pour {{city}}",
   "ctaAnswerNoCity": "Réponds pour ta ville",

@@ -138,7 +138,10 @@ final class DailyCompareTest extends TestCase
         $row = ['compare_type' => 'number', 'compare_question_i18n' => json_encode(['en' => 'How many years?', 'fr' => "Combien d'années ?"]),
                 'compare_unit_i18n' => json_encode(['en' => 'years', 'fr' => 'ans'])];
         $p = DailyCompare::payload($row, 'fr');
-        $this->assertSame(['type' => 'number', 'question' => "Combien d'années ?", 'unit' => 'ans', 'original' => 'How many years?', 'maxLength' => null], $p);
+        $this->assertSame(['type' => 'number', 'question' => "Combien d'années ?", 'unit' => 'ans', 'original' => 'How many years?', 'maxLength' => null,
+                           'key' => null, 'priceLabel' => null], $p);
+        $p = DailyCompare::payload($row + ['compare_key' => 'years_open', 'price_label_i18n' => json_encode(['en' => 'a coffee', 'fr' => 'un café'])], 'fr');
+        $this->assertSame(['years_open', 'un café'], [$p['key'], $p['priceLabel']]);
         $this->assertNull(DailyCompare::payload(['compare_type' => null], 'en'));
 
         $this->assertSame(['type' => 'number', 'value' => 37, 'unit' => 'years'],

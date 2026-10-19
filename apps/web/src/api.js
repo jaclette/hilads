@@ -2454,9 +2454,9 @@ export function fetchDailyTour(cityId, locale) {
   return daily('GET', '/daily/tour', { params: { cityId: cityNum(cityId), locale } })
 }
 
-/** The Hilads Index (SPEC 10.9): last week's price and time cards, or a given week's. Public. */
-export function fetchDailyIndex(week, locale) {
-  return daily('GET', '/daily/index', { params: { week, locale } })
+/** The world, compared (SPEC 10.9): comparisons by shared key, last week (Today's carousel) or all time (the Index screen). */
+export function fetchCompared(scope, locale) {
+  return daily('GET', '/daily/compared', { params: { scope, locale } })
 }
 
 /** The day's reference exchange rates, EUR base (SPEC 10.5). */

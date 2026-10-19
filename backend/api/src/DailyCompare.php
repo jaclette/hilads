@@ -15,6 +15,12 @@ declare(strict_types=1);
  * of a challenge with a question, but only from apps that send "X-Compare: 1":
  * the store builds from before V4 keep posting without one.
  *
+ * The Hilads Index (SPEC 10.9) adds up answers by comparison, not by
+ * challenge: compare_key is the question's shared key ("dinner_time",
+ * "cheers_word"), compare_title_i18n its optional card title ("What time is
+ * dinner?", else the question), and a challenge that collects a price says what
+ * it is for: price_key ("coffee_price") and price_label_i18n ("a coffee").
+ *
  * Back home: the same question for the poster's home city, with an optional
  * price in the home currency and one optional line (home_* columns, the city
  * copied at posting time). Answers are never translated: that is the point.
@@ -27,6 +33,9 @@ final class DailyCompare
     public const QUESTION_MAX    = 60;   // English
     public const QUESTION_TR_MAX = 90;   // other locales
     public const UNIT_MAX        = 20;
+    public const KEY_PATTERN     = '/^[a-z][a-z0-9_]{1,39}$/';
+    public const LABEL_MAX       = 30;   // English price label ("a coffee")
+    public const LABEL_TR_MAX    = 45;
     public const UNIT_TR_MAX     = 30;
     public const HOME_LINE_MAX   = 80;
     public const NUMBER_MAX      = 1_000_000_000;
@@ -35,11 +44,12 @@ final class DailyCompare
     // ── The question (back office, import) ───────────────────────────────────
 
     /**
-     * Validated question from a form or an import: {"type", "unit", "question"}
-     * where question and unit are a string (English) or {locale: text}, "en"
-     * required. Returns null for an absent question, else
-     * {type, question: {en, ...}, unit: {en, ...}|null}. Throws
-     * InvalidArgumentException ("<label>: ...").
+     * Validated question from a form or an import: {"type", "unit", "question",
+     * "key", "title", "price": {"key", "label"}} where question, unit, title and
+     * label are a string (English) or {locale: text}, "en" required. key and
+     * price are optional (the Index only counts keyed questions). Returns null
+     * for an absent question, else {type, question, unit, key, title, price:
+     * {key, label}|null}. Throws InvalidArgumentException ("<label>: ...").
      */
     public static function cleanQuestion(mixed $in, string $label = 'compare'): ?array
     {
@@ -60,7 +70,31 @@ final class DailyCompare
         $unit = $type === 'number'
             ? self::i18nField($in['unit'] ?? null, self::UNIT_MAX, self::UNIT_TR_MAX, "{$label}: unit")
             : null;
-        return ['type' => $type, 'question' => $question, 'unit' => $unit];
+        $key   = self::cleanKey($in['key'] ?? null, "{$label}: key");
+        $title = self::i18nField($in['title'] ?? null, self::QUESTION_MAX, self::QUESTION_TR_MAX, "{$label}: title");
+        $price = null;
+        if (is_array($in['price'] ?? null) && (($in['price']['key'] ?? '') !== '' || ($in['price']['label'] ?? '') !== '')) {
+            $pKey   = self::cleanKey($in['price']['key'] ?? null, "{$label}: price.key");
+            $pLabel = self::i18nField($in['price']['label'] ?? null, self::LABEL_MAX, self::LABEL_TR_MAX, "{$label}: price.label");
+            if ($pKey === null || $pLabel === null) {
+                throw new InvalidArgumentException("{$label}: price needs a key and an English label (\"a coffee\").");
+            }
+            $price = ['key' => $pKey, 'label' => $pLabel];
+        }
+        return ['type' => $type, 'question' => $question, 'unit' => $unit, 'key' => $key, 'title' => $title, 'price' => $price];
+    }
+
+    /** A shared comparison key ("coffee_price"): lowercase letters, digits and _, or null when empty. */
+    private static function cleanKey(mixed $v, string $label): ?string
+    {
+        $k = is_string($v) ? strtolower(trim($v)) : '';
+        if ($k === '') {
+            return null;
+        }
+        if (!preg_match(self::KEY_PATTERN, $k)) {
+            throw new InvalidArgumentException("{$label} is 2 to 40 lowercase letters, digits or _ (\"coffee_price\").");
+        }
+        return $k;
     }
 
     /** A string (English) or {locale: text} as a stored i18n map, or null when there is no English. */
@@ -83,10 +117,15 @@ final class DailyCompare
     /** Columns of a cleaned question (null = no question). */
     public static function columns(?array $q): array
     {
+        $json = static fn(?array $v): ?string => $v !== null ? json_encode($v, JSON_UNESCAPED_UNICODE) : null;
         return [
             'compare_type'          => $q['type'] ?? null,
-            'compare_question_i18n' => $q !== null ? json_encode($q['question'], JSON_UNESCAPED_UNICODE) : null,
-            'compare_unit_i18n'     => ($q['unit'] ?? null) !== null ? json_encode($q['unit'], JSON_UNESCAPED_UNICODE) : null,
+            'compare_question_i18n' => $json($q['question'] ?? null),
+            'compare_unit_i18n'     => $json($q['unit'] ?? null),
+            'compare_key'           => $q['key'] ?? null,
+            'compare_title_i18n'    => $json($q['title'] ?? null),
+            'price_key'             => $q['price']['key'] ?? null,
+            'price_label_i18n'      => $json($q['price']['label'] ?? null),
         ];
     }
 
@@ -113,6 +152,9 @@ final class DailyCompare
             'unit'     => self::unitIn($row['compare_unit_i18n'] ?? null, $locale),
             'original' => $original,
             'maxLength' => self::TYPES[$type],
+            'key'      => $row['compare_key'] ?? null,
+            // What the challenge's price is for ("a coffee"), in $locale: the apps' price field says it.
+            'priceLabel' => self::labelIn($row['price_label_i18n'] ?? null, $locale),
         ];
     }
 
@@ -361,6 +403,12 @@ final class DailyCompare
         $u  = self::decode($i18n);
         $en = (string) ($u['en'] ?? '');
         return $en === '' ? null : (DailyI18n::pick($u, $locale) ?? $en);
+    }
+
+    /** A stored i18n map ({"en", ...}) in $locale, English fallback, or null. Public: the Index titles. */
+    public static function labelIn(mixed $i18n, string $locale): ?string
+    {
+        return self::unitIn($i18n, $locale);
     }
 
     private static function decode(mixed $v): array

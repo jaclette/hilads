@@ -1357,11 +1357,29 @@
       "tagline": "Mesmo desafio. Mundos diferentes."
     },
     "index": {
-      "title": "O que o mundo pagou na semana passada",
-      "pricePaid": "Preço mediano pago",
       "share": "Compartilhar",
-      "shareText": "O Hilads Index: {{lines}}",
-      "footnote": "Com base em cidades com 3 respostas ou mais"
+      "carouselTitle": "O mundo, comparado",
+      "carouselSub": "Semana passada no Hilads",
+      "seeAllComparisons": "Ver todas as comparações",
+      "screenTitle": "O índice Hilads",
+      "screenSub": "Tudo o que o mundo comparou no Hilads.",
+      "sections": {
+        "price": "Preços",
+        "time": "Horários",
+        "word": "Palavras"
+      },
+      "search": "Busque uma pergunta, uma cidade, uma resposta",
+      "clearSearch": "Limpar a busca",
+      "twoCities": "Duas cidades",
+      "closeTwoCities": "Fechar Duas cidades",
+      "pickCity": "Escolha uma cidade",
+      "and": "{{a}} e {{b}}",
+      "twoCitiesEmpty": "Ainda não há comparação com essas duas cidades.",
+      "noResults": "Nenhuma comparação corresponde.",
+      "empty": "As primeiras comparações aparecem quando as cidades têm 3 respostas.",
+      "priceTitle": "Quanto custa {{label}}?",
+      "moreCities_one": "+{{count}} cidade",
+      "moreCities_other": "+{{count}} cidades"
     },
     "ctaAnswer": "Responda por {{city}}",
     "ctaAnswerNoCity": "Responda pela sua cidade",

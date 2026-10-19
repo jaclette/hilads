@@ -24,7 +24,7 @@ export type ShareContent =
   | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City;
       /** "Answer for Saigon with me on Hilads." (SPEC 9.16) instead of the challenge line. */
       represent?: boolean }
-  /** A Hilads Index card (SPEC 10.9): its challenge, then one line per city ("Saigon · €1.20"); links to that day. */
+  /** A comparison of the Hilads Index (SPEC 10.9): its question, then one line per city ("Saigon · €1.20"); links to its latest day. */
   | { type: 'index'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date: string; text: string; city: null;
       lines: { country: string | null; city: string; value: string }[] };
 
@@ -80,7 +80,8 @@ export function shareText(c: ShareContent): string {
     return c.city?.name ? t('textSpotCity', { name: c.name, city: localizeCityName(c.city.name) }) : t('textSpot', { name: c.name });
   }
   if (c.type === 'index') {
-    return i18n.t('index.shareText', { ns: 'daily', lines: c.lines.map(l => `${l.city} ${l.value}`).join(' · ') });
+    // "How much is a drink? Saigon ₫30,000 · Lisbon ₫49,400"
+    return `${c.text} ${c.lines.map(l => `${l.city} ${l.value}`).join(' · ')}`;
   }
   if (c.represent && c.city?.name) {
     return i18n.t('represent.share', { ns: 'daily', city: shortCityName(c.city.name) });

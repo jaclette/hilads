@@ -1355,11 +1355,29 @@
       "tagline": "ชาเลนจ์เดียวกัน ต่างโลก"
     },
     "index": {
-      "title": "สัปดาห์ที่แล้วทั่วโลกจ่ายเท่าไร",
-      "pricePaid": "ราคาที่จ่ายค่ามัธยฐาน",
       "share": "แชร์",
-      "shareText": "Hilads Index: {{lines}}",
-      "footnote": "อิงจากเมืองที่มีคำตอบ 3 รายการขึ้นไป"
+      "carouselTitle": "โลกเทียบกัน",
+      "carouselSub": "สัปดาห์ที่แล้วบน Hilads",
+      "seeAllComparisons": "ดูการเปรียบเทียบทั้งหมด",
+      "screenTitle": "ดัชนี Hilads",
+      "screenSub": "ทุกอย่างที่โลกเปรียบเทียบบน Hilads",
+      "sections": {
+        "price": "ราคา",
+        "time": "เวลา",
+        "word": "คำ"
+      },
+      "search": "ค้นหาคำถาม เมือง หรือคำตอบ",
+      "clearSearch": "ล้างการค้นหา",
+      "twoCities": "สองเมือง",
+      "closeTwoCities": "ปิดสองเมือง",
+      "pickCity": "เลือกเมือง",
+      "and": "{{a}} และ {{b}}",
+      "twoCitiesEmpty": "ยังไม่มีการเปรียบเทียบของสองเมืองนี้",
+      "noResults": "ไม่มีการเปรียบเทียบที่ตรงกัน",
+      "empty": "การเปรียบเทียบแรกจะแสดงเมื่อแต่ละเมืองมีคำตอบครบ 3 รายการ",
+      "priceTitle": "{{label}}ราคาเท่าไร?",
+      "moreCities_one": "+อีก {{count}} เมือง",
+      "moreCities_other": "+อีก {{count}} เมือง"
     },
     "ctaAnswer": "ตอบแทน{{city}}",
     "ctaAnswerNoCity": "ตอบแทนเมืองของคุณ",

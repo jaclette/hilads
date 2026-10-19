@@ -1355,11 +1355,29 @@
       "tagline": "Cùng một thử thách. Những thế giới khác nhau."
     },
     "index": {
-      "title": "Cả thế giới đã trả bao nhiêu tuần trước",
-      "pricePaid": "Giá trung vị đã trả",
       "share": "Chia sẻ",
-      "shareText": "Hilads Index: {{lines}}",
-      "footnote": "Dựa trên các thành phố có từ 3 câu trả lời"
+      "carouselTitle": "Thế giới, so sánh",
+      "carouselSub": "Tuần trước trên Hilads",
+      "seeAllComparisons": "Xem tất cả so sánh",
+      "screenTitle": "Chỉ số Hilads",
+      "screenSub": "Mọi điều thế giới đã so sánh trên Hilads.",
+      "sections": {
+        "price": "Giá",
+        "time": "Giờ giấc",
+        "word": "Từ ngữ"
+      },
+      "search": "Tìm câu hỏi, thành phố, câu trả lời",
+      "clearSearch": "Xóa tìm kiếm",
+      "twoCities": "Hai thành phố",
+      "closeTwoCities": "Đóng Hai thành phố",
+      "pickCity": "Chọn một thành phố",
+      "and": "{{a}} và {{b}}",
+      "twoCitiesEmpty": "Chưa có so sánh nào cho hai thành phố này.",
+      "noResults": "Không có so sánh phù hợp.",
+      "empty": "Những so sánh đầu tiên sẽ hiện khi các thành phố có 3 câu trả lời.",
+      "priceTitle": "{{label}} giá bao nhiêu?",
+      "moreCities_one": "+{{count}} thành phố khác",
+      "moreCities_other": "+{{count}} thành phố khác"
     },
     "ctaAnswer": "Trả lời cho {{city}}",
     "ctaAnswerNoCity": "Trả lời cho thành phố của bạn",

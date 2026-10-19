@@ -1357,11 +1357,29 @@
       "tagline": "Stessa sfida. Mondi diversi."
     },
     "index": {
-      "title": "Quanto ha pagato il mondo la settimana scorsa",
-      "pricePaid": "Prezzo mediano pagato",
       "share": "Condividi",
-      "shareText": "L'Hilads Index: {{lines}}",
-      "footnote": "Basato sulle città con 3 risposte o più"
+      "carouselTitle": "Il mondo, a confronto",
+      "carouselSub": "La settimana scorsa su Hilads",
+      "seeAllComparisons": "Vedi tutti i confronti",
+      "screenTitle": "L'indice Hilads",
+      "screenSub": "Tutto ciò che il mondo ha confrontato su Hilads.",
+      "sections": {
+        "price": "Prezzi",
+        "time": "Orari",
+        "word": "Parole"
+      },
+      "search": "Cerca una domanda, una città, una risposta",
+      "clearSearch": "Cancella la ricerca",
+      "twoCities": "Due città",
+      "closeTwoCities": "Chiudi Due città",
+      "pickCity": "Scegli una città",
+      "and": "{{a}} e {{b}}",
+      "twoCitiesEmpty": "Ancora nessun confronto con queste due città.",
+      "noResults": "Nessun confronto corrisponde.",
+      "empty": "I primi confronti arrivano quando le città hanno 3 risposte.",
+      "priceTitle": "Quanto costa {{label}}?",
+      "moreCities_one": "+{{count}} altra città",
+      "moreCities_other": "+{{count}} altre città"
     },
     "ctaAnswer": "Rispondi per {{city}}",
     "ctaAnswerNoCity": "Rispondi per la tua città",

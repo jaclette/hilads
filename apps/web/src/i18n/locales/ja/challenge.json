@@ -1357,11 +1357,29 @@
       "tagline": "同じチャレンジ、違う世界。"
     },
     "index": {
-      "title": "先週、世界がいくら払ったか",
-      "pricePaid": "支払額の中央値",
       "share": "シェア",
-      "shareText": "Hilads Index：{{lines}}",
-      "footnote": "回答が3件以上の街に基づく"
+      "carouselTitle": "世界をくらべる",
+      "carouselSub": "先週の Hilads",
+      "seeAllComparisons": "すべての比較を見る",
+      "screenTitle": "Hilads インデックス",
+      "screenSub": "世界が Hilads でくらべたすべて。",
+      "sections": {
+        "price": "値段",
+        "time": "時間",
+        "word": "ことば"
+      },
+      "search": "質問・都市・回答を検索",
+      "clearSearch": "検索をクリア",
+      "twoCities": "2つの都市",
+      "closeTwoCities": "2つの都市を閉じる",
+      "pickCity": "都市を選ぶ",
+      "and": "{{a}}と{{b}}",
+      "twoCitiesEmpty": "この2都市の比較はまだありません。",
+      "noResults": "該当する比較はありません。",
+      "empty": "回答が3件そろった都市から比較が表示されます。",
+      "priceTitle": "{{label}}はいくら？",
+      "moreCities_one": "ほか{{count}}都市",
+      "moreCities_other": "ほか{{count}}都市"
     },
     "ctaAnswer": "{{city}}代表で答える",
     "ctaAnswerNoCity": "あなたの街の代表で答える",

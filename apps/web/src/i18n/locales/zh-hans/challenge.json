@@ -1355,11 +1355,29 @@
       "tagline": "同一个挑战，不同的世界。"
     },
     "index": {
-      "title": "上周全世界花了多少钱",
-      "pricePaid": "支付价格中位数",
       "share": "分享",
-      "shareText": "Hilads Index：{{lines}}",
-      "footnote": "基于至少有 3 个回答的城市"
+      "carouselTitle": "世界，比一比",
+      "carouselSub": "上周在 Hilads",
+      "seeAllComparisons": "查看全部比较",
+      "screenTitle": "Hilads 指数",
+      "screenSub": "全世界在 Hilads 上比较过的一切。",
+      "sections": {
+        "price": "价格",
+        "time": "时间",
+        "word": "词语"
+      },
+      "search": "搜索问题、城市或回答",
+      "clearSearch": "清除搜索",
+      "twoCities": "两座城市",
+      "closeTwoCities": "关闭两座城市",
+      "pickCity": "选择一座城市",
+      "and": "{{a}}和{{b}}",
+      "twoCitiesEmpty": "这两座城市还没有共同的比较。",
+      "noResults": "没有匹配的比较。",
+      "empty": "城市有 3 个回答后，第一批比较就会出现。",
+      "priceTitle": "{{label}}多少钱？",
+      "moreCities_one": "+另外 {{count}} 座城市",
+      "moreCities_other": "+另外 {{count}} 座城市"
     },
     "ctaAnswer": "为{{city}}作答",
     "ctaAnswerNoCity": "为你的城市作答",

@@ -1389,11 +1389,31 @@
       "tagline": "Один челлендж. Разные миры."
     },
     "index": {
-      "title": "Сколько платил мир на прошлой неделе",
-      "pricePaid": "Медианная цена",
       "share": "Поделиться",
-      "shareText": "Hilads Index: {{lines}}",
-      "footnote": "По городам с 3 ответами и больше"
+      "carouselTitle": "Мир в сравнении",
+      "carouselSub": "Прошлая неделя на Hilads",
+      "seeAllComparisons": "Все сравнения",
+      "screenTitle": "Индекс Hilads",
+      "screenSub": "Всё, что мир сравнил на Hilads.",
+      "sections": {
+        "price": "Цены",
+        "time": "Время",
+        "word": "Слова"
+      },
+      "search": "Найти вопрос, город, ответ",
+      "clearSearch": "Очистить поиск",
+      "twoCities": "Два города",
+      "closeTwoCities": "Закрыть «Два города»",
+      "pickCity": "Выбери город",
+      "and": "{{a}} и {{b}}",
+      "twoCitiesEmpty": "Пока нет сравнений с обоими городами.",
+      "noResults": "Нет подходящих сравнений.",
+      "empty": "Первые сравнения появятся, когда в городах будет по 3 ответа.",
+      "priceTitle": "Сколько стоит {{label}}?",
+      "moreCities_one": "+ещё {{count}} город",
+      "moreCities_few": "+ещё {{count}} города",
+      "moreCities_many": "+ещё {{count}} городов",
+      "moreCities_other": "+ещё {{count}} города"
     },
     "ctaAnswer": "Ответь за {{city}}",
     "ctaAnswerNoCity": "Ответь за свой город",

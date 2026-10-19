@@ -545,7 +545,7 @@ export default function DailyProofScreen() {
             />
             <Text style={[styles.counter, caption.length > CAPTION_MAX - 15 && styles.counterNear]}>{caption.length} / {CAPTION_MAX}</Text>
 
-            <Text style={styles.label}>{t('proof.price')}</Text>
+            <Text style={styles.label}>{compare?.priceLabel ? t('proof.priceFor', { label: compare.priceLabel }) : t('proof.price')}</Text>
             <View style={styles.priceRow}>
               <TextInput
                 style={[styles.input, styles.flex]}

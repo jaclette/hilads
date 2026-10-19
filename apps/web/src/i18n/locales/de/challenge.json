@@ -1357,11 +1357,29 @@
       "tagline": "Dieselbe Challenge. Andere Welten."
     },
     "index": {
-      "title": "Was die Welt letzte Woche bezahlt hat",
-      "pricePaid": "Mittlerer bezahlter Preis",
       "share": "Teilen",
-      "shareText": "Der Hilads Index: {{lines}}",
-      "footnote": "Basierend auf Städten mit 3 Antworten oder mehr"
+      "carouselTitle": "Die Welt im Vergleich",
+      "carouselSub": "Letzte Woche auf Hilads",
+      "seeAllComparisons": "Alle Vergleiche ansehen",
+      "screenTitle": "Der Hilads-Index",
+      "screenSub": "Alles, was die Welt auf Hilads verglichen hat.",
+      "sections": {
+        "price": "Preise",
+        "time": "Uhrzeiten",
+        "word": "Wörter"
+      },
+      "search": "Frage, Stadt oder Antwort suchen",
+      "clearSearch": "Suche löschen",
+      "twoCities": "Zwei Städte",
+      "closeTwoCities": "Zwei Städte schließen",
+      "pickCity": "Wähle eine Stadt",
+      "and": "{{a}} und {{b}}",
+      "twoCitiesEmpty": "Noch kein Vergleich mit beiden Städten.",
+      "noResults": "Kein Vergleich passt.",
+      "empty": "Die ersten Vergleiche erscheinen, sobald Städte 3 Antworten haben.",
+      "priceTitle": "Was kostet {{label}}?",
+      "moreCities_one": "+{{count}} weitere Stadt",
+      "moreCities_other": "+{{count}} weitere Städte"
     },
     "ctaAnswer": "Antworte für {{city}}",
     "ctaAnswerNoCity": "Antworte für deine Stadt",

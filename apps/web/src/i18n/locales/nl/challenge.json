@@ -1357,11 +1357,29 @@
       "tagline": "Zelfde challenge. Andere werelden."
     },
     "index": {
-      "title": "Wat de wereld vorige week betaalde",
-      "pricePaid": "Mediane betaalde prijs",
       "share": "Delen",
-      "shareText": "De Hilads Index: {{lines}}",
-      "footnote": "Gebaseerd op steden met 3 antwoorden of meer"
+      "carouselTitle": "De wereld vergeleken",
+      "carouselSub": "Vorige week op Hilads",
+      "seeAllComparisons": "Alle vergelijkingen bekijken",
+      "screenTitle": "De Hilads-index",
+      "screenSub": "Alles wat de wereld op Hilads vergeleek.",
+      "sections": {
+        "price": "Prijzen",
+        "time": "Tijden",
+        "word": "Woorden"
+      },
+      "search": "Zoek een vraag, een stad, een antwoord",
+      "clearSearch": "Zoekopdracht wissen",
+      "twoCities": "Twee steden",
+      "closeTwoCities": "Twee steden sluiten",
+      "pickCity": "Kies een stad",
+      "and": "{{a}} en {{b}}",
+      "twoCitiesEmpty": "Nog geen vergelijking met beide steden.",
+      "noResults": "Geen vergelijking gevonden.",
+      "empty": "De eerste vergelijkingen verschijnen zodra steden 3 antwoorden hebben.",
+      "priceTitle": "Wat kost {{label}}?",
+      "moreCities_one": "+{{count}} andere stad",
+      "moreCities_other": "+{{count}} andere steden"
     },
     "ctaAnswer": "Antwoord voor {{city}}",
     "ctaAnswerNoCity": "Antwoord voor je stad",

@@ -794,6 +794,10 @@ export interface DailyCompare {
   unit:      string | null;     // numbers only ("years")
   original:  string | null;     // the English question when a translation is shown
   maxLength: number | null;     // 30 (word) / 80 (text)
+  /** The Index key shared by every question asking the same thing (SPEC 10.9). */
+  key?:        string | null;
+  /** What the price posters give is for ("a coffee"), in my language. */
+  priceLabel?: string | null;
 }
 
 /** An answer to the comparison question. value: "Prost!" (word, text), 37 (number), "19:30" (time). */
@@ -997,6 +1001,29 @@ export interface DailyBoard {
   prices?: { cheapest: { city: DailyCityRef; eur: number }; priciest: { city: DailyCityRef; eur: number }; ratio: number | null } | null;
 }
 
+/** One comparison of the world (SPEC 10.9): a shared key, its usual value per city (3 answers or more). */
+export interface DailyComparison {
+  key:        string;
+  kind:       'price' | 'time' | 'number' | 'word';
+  /** The card's question (null for a price card: "How much is {priceLabel}?"). */
+  title:      string | null;
+  priceLabel: string | null;
+  unit:       string | null;
+  /** Its latest challenge (the shared link). */
+  date:       string | null;
+  /** price: EUR; time: minutes since midnight; number; word: the usual answer. */
+  rows:       { city: DailyCityRef; value: number | string; count: number }[];
+  funFact:    { ratio: number; priciest: DailyCityRef; cheapest: DailyCityRef } | null;
+}
+
+/** GET /daily/compared: last week (from, to) or all time (null). */
+export interface DailyCompared {
+  scope: 'week' | 'all';
+  from:  string | null;
+  to:    string | null;
+  cards: DailyComparison[];
+}
+
 /** Yesterday around the world (GET /daily/tour, SPEC 10.7): one slide per city, in the viewer's order. */
 export interface DailyTour {
   date:      string;
@@ -1010,20 +1037,6 @@ export interface DailyTour {
   }[];
   /** Today's challenge, for the last slide ("Your turn"). */
   today:     DailyChallenge | null;
-}
-
-/** The Hilads Index of a week (GET /daily/index, SPEC 10.9). */
-export interface DailyIndex {
-  weekStart: string;
-  weekEnd:   string;
-  cards: {
-    id:        string;
-    kind:      'price' | 'time';
-    date:      string;
-    challenge: DailyChallenge;
-    /** Lowest first: a median price in EUR, or a time in minutes since midnight. */
-    rows:      { city: DailyCityRef; value: number; count: number }[];
-  }[];
 }
 
 /** Daily reference exchange rates, EUR base (GET /daily/rates). */

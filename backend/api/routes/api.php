@@ -14584,6 +14584,14 @@ $router->add('GET', '/api/v1/daily/index', function () {
     Response::json(DailyIndex::forWeek($week));
 });
 
+// GET /api/v1/daily/compared?scope=week|all&locale= - the world, compared (SPEC
+// 10.9): the comparisons by shared key, last week (Today's carousel) or all
+// time (the Index screen). Public.
+$router->add('GET', '/api/v1/daily/compared', function () {
+    $scope = ($_GET['scope'] ?? 'all') === 'week' ? 'week' : 'all';
+    Response::json(DailyComparisons::forScope($scope, DailyI18n::current()));
+});
+
 // GET /api/v1/daily/archive?scope=world|city&cityId=&before=YYYY-MM-DD&limit=&theme= - past
 // challenges, newest first: the "All past challenges" archive. Public.
 $router->add('GET', '/api/v1/daily/archive', function () {

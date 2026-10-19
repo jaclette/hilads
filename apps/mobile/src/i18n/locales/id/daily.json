@@ -80,7 +80,8 @@
     "takeTitle": "Ambil fotomu",
     "retake": "Ulangi",
     "sentTitleNoCity": "Jawabanmu terkirim!",
-    "compare": "Bandingkan"
+    "compare": "Bandingkan",
+    "priceFor": "Harga dibayar: {{label}}"
   },
   "errors": {
     "already_posted": "Kamu sudah posting jawaban untuk challenge hari ini.",
@@ -584,11 +585,29 @@
     "tagline": "Tantangan sama. Dunia berbeda."
   },
   "index": {
-    "title": "Berapa yang dibayar dunia minggu lalu",
-    "pricePaid": "Harga median yang dibayar",
     "share": "Bagikan",
-    "shareText": "Hilads Index: {{lines}}",
-    "footnote": "Berdasarkan kota dengan 3 jawaban atau lebih"
+    "carouselTitle": "Dunia, dibandingkan",
+    "carouselSub": "Minggu lalu di Hilads",
+    "seeAllComparisons": "Lihat semua perbandingan",
+    "screenTitle": "Indeks Hilads",
+    "screenSub": "Semua yang dibandingkan dunia di Hilads.",
+    "sections": {
+      "price": "Harga",
+      "time": "Waktu",
+      "word": "Kata"
+    },
+    "search": "Cari pertanyaan, kota, jawaban",
+    "clearSearch": "Hapus pencarian",
+    "twoCities": "Dua kota",
+    "closeTwoCities": "Tutup Dua kota",
+    "pickCity": "Pilih kota",
+    "and": "{{a}} dan {{b}}",
+    "twoCitiesEmpty": "Belum ada perbandingan untuk kedua kota ini.",
+    "noResults": "Tidak ada perbandingan yang cocok.",
+    "empty": "Perbandingan pertama muncul setelah kota punya 3 jawaban.",
+    "priceTitle": "Berapa harga {{label}}?",
+    "moreCities_one": "+{{count}} kota lagi",
+    "moreCities_other": "+{{count}} kota lagi"
   },
   "ctaAnswer": "Jawab untuk {{city}}",
   "ctaAnswerNoCity": "Jawab untuk kotamu",

@@ -1421,11 +1421,33 @@
       "tagline": "التحدي نفسه. عوالم مختلفة."
     },
     "index": {
-      "title": "ما دفعه العالم الأسبوع الماضي",
-      "pricePaid": "السعر الوسيط المدفوع",
       "share": "مشاركة",
-      "shareText": "Hilads Index: {{lines}}",
-      "footnote": "بناءً على المدن التي لديها 3 إجابات أو أكثر"
+      "carouselTitle": "العالم في مقارنة",
+      "carouselSub": "الأسبوع الماضي على Hilads",
+      "seeAllComparisons": "عرض كل المقارنات",
+      "screenTitle": "مؤشر Hilads",
+      "screenSub": "كل ما قارنه العالم على Hilads.",
+      "sections": {
+        "price": "الأسعار",
+        "time": "الأوقات",
+        "word": "الكلمات"
+      },
+      "search": "ابحث عن سؤال أو مدينة أو إجابة",
+      "clearSearch": "مسح البحث",
+      "twoCities": "مدينتان",
+      "closeTwoCities": "إغلاق مدينتان",
+      "pickCity": "اختر مدينة",
+      "and": "{{a}} و{{b}}",
+      "twoCitiesEmpty": "لا توجد مقارنة للمدينتين بعد.",
+      "noResults": "لا توجد مقارنة مطابقة.",
+      "empty": "تظهر أولى المقارنات عندما يكون لدى المدن 3 إجابات.",
+      "priceTitle": "كم سعر {{label}}؟",
+      "moreCities_zero": "+{{count}} مدينة أخرى",
+      "moreCities_one": "+مدينة أخرى",
+      "moreCities_two": "+مدينتان أخريان",
+      "moreCities_few": "+{{count}} مدن أخرى",
+      "moreCities_many": "+{{count}} مدينة أخرى",
+      "moreCities_other": "+{{count}} مدينة أخرى"
     },
     "ctaAnswer": "أجب باسم {{city}}",
     "ctaAnswerNoCity": "أجب باسم مدينتك",

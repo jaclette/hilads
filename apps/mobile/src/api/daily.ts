@@ -1,7 +1,7 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
-  DailyBoard, DailyIndex, DailyRates, DailyTour,
+  DailyBoard, DailyCompared, DailyRates, DailyTour,
   NearbyPlace,
   DailyArchive,
   DailyCalendar,
@@ -51,9 +51,9 @@ export async function fetchDailyTour(opts: { cityId?: string | number | null; gu
   });
 }
 
-/** The Hilads Index (SPEC 10.9): last week's price and time cards, or a given week's. Public. */
-export async function fetchDailyIndex(week?: string): Promise<DailyIndex> {
-  return api.get<DailyIndex>('/daily/index', { params: { week, locale: locale() } });
+/** The world, compared (SPEC 10.9): comparisons by shared key, last week (Today's carousel) or all time (the Index screen). */
+export async function fetchCompared(scope: 'week' | 'all'): Promise<DailyCompared> {
+  return api.get<DailyCompared>('/daily/compared', { params: { scope, locale: locale() } });
 }
 
 /** The day's reference exchange rates, EUR base (SPEC 10.5). */
