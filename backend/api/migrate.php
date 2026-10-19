@@ -3278,6 +3278,16 @@ run($pdo, "
         built_at     TIMESTAMPTZ NOT NULL DEFAULT now()
     )
 ", 'daily_world_tours');
+// V4-07 (SPEC 10.9): the Hilads Index of a week (its Monday), built at
+// Monday's drop: [{id, kind (price|time), challengeId, date, rows: [{cityId, value, count}]}].
+// Reversal: DROP TABLE daily_index_weeks.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_index_weeks (
+        week_start DATE        PRIMARY KEY,
+        cards      JSONB       NOT NULL,
+        built_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_index_weeks');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

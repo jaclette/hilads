@@ -579,5 +579,12 @@
   },
   "worlds": {
     "tagline": "Iisang challenge. Iba-ibang mundo."
+  },
+  "index": {
+    "title": "Ang Hilads Index noong nakaraang linggo",
+    "sub": "Magkano ang ibinayad ng mundo, at anong oras, noong nakaraang linggo. Mga lungsod na may 3 proof o higit pa.",
+    "pricePaid": "Median na presyong ibinayad",
+    "share": "Ibahagi",
+    "shareText": "Ang Hilads Index: {{lines}}"
   }
 }

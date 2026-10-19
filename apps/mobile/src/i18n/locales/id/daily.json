@@ -577,5 +577,12 @@
   },
   "worlds": {
     "tagline": "Tantangan sama. Dunia berbeda."
+  },
+  "index": {
+    "title": "Hilads Index minggu lalu",
+    "sub": "Berapa yang dibayar dunia, dan jam berapa, minggu lalu. Kota dengan 3 bukti atau lebih.",
+    "pricePaid": "Harga median yang dibayar",
+    "share": "Bagikan",
+    "shareText": "Hilads Index: {{lines}}"
   }
 }

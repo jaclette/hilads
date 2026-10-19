@@ -20,7 +20,10 @@ export type ShareContent =
   | { type: 'spot'; id: string; photoUrl: string | null; theme: ThemeKey | null; name: string; city: City; by: string | null }
   | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City;
       /** "Help me represent Saigon on Hilads." (SPEC 9.16) instead of the challenge line. */
-      represent?: boolean };
+      represent?: boolean }
+  /** A Hilads Index card (SPEC 10.9): its challenge, then one line per city ("Saigon · €1.20"); links to that day. */
+  | { type: 'index'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date: string; text: string; city: null;
+      lines: { country: string | null; city: string; value: string }[] };
 
 /** My proof: its photo, the challenge, its city, my username and its podium rank (world first, else city). */
 export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareContent {
@@ -55,7 +58,7 @@ export function representShare(challenge: DailyChallenge, city: NonNullable<City
 
 /** The link, in the sharer's language (/fr/p/..., English unprefixed). */
 export function shareUrl(c: ShareContent): string {
-  const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : '/today';
+  const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : c.type === 'index' ? `/d/${c.date}` : '/today';
   return `${BASE_URL}${sharePrefix()}${path}`;
 }
 
@@ -65,6 +68,9 @@ export function shareText(c: ShareContent): string {
   if (c.type === 'proof') return t('textProof', { challenge: c.text });
   if (c.type === 'spot') {
     return c.city?.name ? t('textSpotCity', { name: c.name, city: localizeCityName(c.city.name) }) : t('textSpot', { name: c.name });
+  }
+  if (c.type === 'index') {
+    return i18n.t('index.shareText', { ns: 'daily', lines: c.lines.map(l => `${l.city} ${l.value}`).join(' · ') });
   }
   if (c.represent && c.city?.name) {
     return i18n.t('represent.share', { ns: 'daily', city: shortCityName(c.city.name) });

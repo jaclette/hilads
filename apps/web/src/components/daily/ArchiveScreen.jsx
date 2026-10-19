@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import BackButton from '../BackButton'
 import Icon from '../Icon'
+import IndexCards from './IndexCards'
 import { fetchDailyArchive } from '../../api'
 import { themeIcon } from '../../lib/icons'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
@@ -49,6 +50,8 @@ export default function ArchiveScreen({ onBack }) {
         <span className="page-title">{t('today.archiveTitle')}</span>
       </div>
       <div className="page-body dc-body">
+        {/* The Hilads Index of last week (SPEC 10.9), above the past challenges. */}
+        <IndexCards source="archive" />
         <div className="wm-chips archive-chips" role="toolbar">
           <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => setTheme(null)}>{t('today.archiveAll')}</button>
           {THEME_KEYS.map(k => (

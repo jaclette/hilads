@@ -9,6 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
 import { useDailyArchive } from '@/hooks/useDaily';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
+import { IndexCards } from '@/features/index/IndexCards';
 import type { DailyArchiveItem, DailyThemeKey } from '@/types';
 import { Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
 
@@ -30,12 +31,16 @@ export default function DailyArchiveScreen() {
   const archive = useDailyArchive(city?.channelId ?? null, theme, scope === 'city' && city ? 'city' : 'world');
 
   const chips = (
+    <View style={styles.header}>
+    {/* The Hilads Index of last week (SPEC 10.9), above the past challenges. */}
+    <IndexCards source="archive" />
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
       <Chip variant="filter" label={t('today.archiveAll')} selected={theme === null} onPress={() => setTheme(null)} />
       {THEME_KEYS.map(k => (
         <Chip key={k} variant="filter" label={themeName(k)} selected={theme === k} onPress={() => setTheme(k)} />
       ))}
     </ScrollView>
+    </View>
   );
 
   return (
@@ -90,6 +95,7 @@ function ArchiveCard({ item, world, onPress }: { item: DailyArchiveItem; world: 
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   list:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: 12 },
+  header:  { gap: 14 },
   chips:   { gap: 8, paddingBottom: 4 },
   loading: { marginVertical: 24 },
   card:    { gap: 8, padding: 14, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },

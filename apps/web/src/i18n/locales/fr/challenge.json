@@ -1354,6 +1354,13 @@
     },
     "worlds": {
       "tagline": "Même défi. Des mondes différents."
+    },
+    "index": {
+      "title": "Le Hilads Index de la semaine dernière",
+      "sub": "Ce que le monde a payé, et à quelle heure, la semaine dernière. Villes avec 3 preuves ou plus.",
+      "pricePaid": "Prix médian payé",
+      "share": "Partager",
+      "shareText": "Le Hilads Index : {{lines}}"
     }
   }
 }

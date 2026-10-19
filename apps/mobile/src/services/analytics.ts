@@ -92,6 +92,9 @@ export type AnalyticsEvent =
   | 'world_tour_slide_viewed'
   | 'world_tour_completed'
   | 'world_tour_shared'
+  // The Hilads Index (SPEC 10.9): viewed { source, week }, shared { card }.
+  | 'index_viewed'
+  | 'index_shared'
   | 'daily_twist_proposed'
   | 'daily_map_opened'
   | 'daily_leaderboard_viewed'

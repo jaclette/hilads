@@ -17339,3 +17339,16 @@ body.has-app-promo-banner .page-header {
 .tour-turn-text { margin: 0 0 12px; font-size: 1.2rem; line-height: 1.4; font-weight: 700; }
 .tour-link { align-self: center; min-height: 44px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--primary-text); cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .tour-bar-fill--run { animation: none; width: 100%; } }
+
+/* ── The Hilads Index (SPEC 10.9) ── */
+.index-row { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; }
+.index-row::-webkit-scrollbar { display: none; }
+.index-card { flex: 0 0 260px; display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1.5px solid var(--line); border-radius: 18px; background: var(--bg2); }
+.index-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.index-kicker { font-size: 11px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.index-share { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.index-title { margin: 0; font-size: 15px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.index-label { margin: 0 0 2px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.index-line { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.index-city { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.index-value { font-size: 14px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }

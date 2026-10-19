@@ -14573,6 +14573,17 @@ $router->add('GET', '/api/v1/daily/tour', function () {
     Response::json(DailyTour::forViewer($challenge, dailyCityParam($user), $user['id'] ?? null, dailyBlocks($user)['user_ids'] ?? []));
 });
 
+// GET /api/v1/daily/index?week=YYYY-MM-DD - the Hilads Index (SPEC 10.9): the
+// price and time cards of a week (its Monday; default: last week). Public.
+$router->add('GET', '/api/v1/daily/index', function () {
+    $week = isset($_GET['week']) && DailyClock::isValidDate((string) $_GET['week'])
+        ? DailyIndex::weekStart((string) $_GET['week']) : DailyIndex::lastWeek(DailyClock::currentDate());
+    if ($week > DailyIndex::lastWeek(DailyClock::currentDate())) {
+        Response::json(['error' => 'This week is not over yet', 'code' => 'not_found'], 404);
+    }
+    Response::json(DailyIndex::forWeek($week));
+});
+
 // GET /api/v1/daily/archive?scope=world|city&cityId=&before=YYYY-MM-DD&limit=&theme= - past
 // challenges, newest first: the "All past challenges" archive. Public.
 $router->add('GET', '/api/v1/daily/archive', function () {

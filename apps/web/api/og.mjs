@@ -310,7 +310,8 @@ function ShareCard({ photo, kicker, title, lines, badge, path }) {
       h('div', { style: { display: 'flex', alignItems: 'center', gap: 14 } },
         HiladsMark(48),
         h('div', { style: { display: 'flex', flexDirection: 'column' } },
-          h('div', { style: { display: 'flex', fontSize: 22, color: TEXT, fontWeight: 700 } }, 'One local thing. Every day.'),
+          // SPEC 10.1: share cards say why Hilads is unique.
+          h('div', { style: { display: 'flex', fontSize: 22, color: TEXT, fontWeight: 700 } }, 'Same challenge. Different worlds.'),
           h('div', { style: { display: 'flex', fontSize: 20, color: MUTED2, fontWeight: 600 } }, `hilads.live${path}`),
         ),
       ),
@@ -349,8 +350,8 @@ function FallbackCard() {
           backgroundClip: 'text', color: 'transparent',
         },
       }, 'Hilads'),
-      h('div', { style: { display: 'flex', fontSize: 46, color: TEXT, fontWeight: 600 } }, 'One local thing. Every day.'),
-      h('div', { style: { display: 'flex', fontSize: 30, color: MUTED, fontWeight: 500 } }, "See who's around. Join what's happening now."),
+      h('div', { style: { display: 'flex', fontSize: 46, color: TEXT, fontWeight: 600 } }, 'Same challenge. Different worlds.'),
+      h('div', { style: { display: 'flex', fontSize: 30, color: MUTED, fontWeight: 500 } }, 'One local thing. Every day.'),
     ),
     URLFooter(''),
   );

@@ -50,7 +50,7 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
 
   const theme = content.type !== 'spot' && content.themeLabel ? content.themeLabel
     : content.theme ? themeName(content.theme, { city: content.city?.name }) : '';
-  const kicker = content.type === 'spot' ? theme : [DAILY_CHALLENGE, theme].filter(Boolean).join(' · ');
+  const kicker = content.type === 'spot' ? theme : [content.type === 'index' ? HILADS_INDEX : DAILY_CHALLENGE, theme].filter(Boolean).join(' · ');
   const cover = content.photoUrl ? { uri: content.photoUrl }
     : themeCover(content.theme ?? 'only_here', content.type === 'today' ? content.date : null) ?? THEME_COVERS.only_here;
   const flag = content.city?.country ? FLAGS[content.city.country.toUpperCase()] : undefined;
@@ -101,12 +101,23 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
         )}
         {content.type === 'spot' && content.by && <Text style={s.credit}>{t('share.photoBy', { user: content.by })}</Text>}
         {content.type === 'today' && <Text style={s.cta}>{t('share.areYouIn')}</Text>}
+        {content.type === 'index' && (
+          <View style={s.lines}>
+            {content.lines.slice(0, 6).map(l => (
+              <View key={l.city} style={s.metaRow}>
+                {l.country && FLAGS[l.country.toUpperCase()] && <Image source={FLAGS[l.country.toUpperCase()]} style={s.flag} contentFit="cover" />}
+                <Text style={s.lineCity} numberOfLines={1}>{l.city}</Text>
+                <Text style={s.lineValue}>{l.value}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <View style={s.footer}>
           <Image source={LOGO} style={s.logo} contentFit="contain" onLoad={loadedOne} onError={loadedOne} />
           <View style={s.brand}>
             <Text style={s.brandName}>Hilads</Text>
-            <Text style={s.tagline} numberOfLines={1}>{tagline}</Text>
+            <Text style={s.tagline} numberOfLines={2}>{tagline}</Text>
           </View>
           <Text style={s.site}>hilads.live</Text>
         </View>
@@ -116,12 +127,17 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
 });
 
 const white = '#FFFFFF';
+/** Brand term: English in every locale. */
+const HILADS_INDEX = 'Hilads Index';
 const s = {
   card:      { width: W, height: u(640), backgroundColor: '#1A1410', overflow: 'hidden' },
   fill:      { position: 'absolute', top: 0, left: 0, width: W, height: u(640) },
   badge:     { position: 'absolute', top: u(84), left: u(24), paddingHorizontal: u(14), paddingVertical: u(7), borderRadius: u(999), backgroundColor: '#D9AE52' },
   badgeText: { fontFamily: appFont('800'), fontSize: u(15), color: '#1A1206' },
   bottom:    { position: 'absolute', left: u(24), right: u(24), bottom: u(96) },
+  lines:     { gap: u(6), marginTop: u(10) },
+  lineCity:  { flex: 1, fontFamily: appFont('700'), fontSize: u(17), color: white },
+  lineValue: { fontFamily: appFont('800'), fontSize: u(17), color: white },
   kicker:    { fontFamily: appFont('800'), fontSize: u(12), letterSpacing: u(1.4), color: '#FFB48A', marginBottom: u(8) },
   title:     { fontFamily: appFont('800'), fontSize: u(26), lineHeight: u(32), color: white, letterSpacing: u(-0.3) },
   name:      { fontFamily: appFont('800'), fontSize: u(32), lineHeight: u(38), color: white, letterSpacing: u(-0.4) },

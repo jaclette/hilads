@@ -1006,6 +1006,20 @@ export interface DailyTour {
   today:     DailyChallenge | null;
 }
 
+/** The Hilads Index of a week (GET /daily/index, SPEC 10.9). */
+export interface DailyIndex {
+  weekStart: string;
+  weekEnd:   string;
+  cards: {
+    id:        string;
+    kind:      'price' | 'time';
+    date:      string;
+    challenge: DailyChallenge;
+    /** Lowest first: a median price in EUR, or a time in minutes since midnight. */
+    rows:      { city: DailyCityRef; value: number; count: number }[];
+  }[];
+}
+
 /** Daily reference exchange rates, EUR base (GET /daily/rates). */
 export interface DailyRates { base: string; date: string | null; rates: Record<string, number> }
 

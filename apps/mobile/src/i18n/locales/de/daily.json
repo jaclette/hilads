@@ -579,5 +579,12 @@
   },
   "worlds": {
     "tagline": "Dieselbe Challenge. Andere Welten."
+  },
+  "index": {
+    "title": "Der Hilads Index der letzten Woche",
+    "sub": "Was die Welt letzte Woche bezahlt hat, und wann. Städte mit 3 Beweisen oder mehr.",
+    "pricePaid": "Mittlerer bezahlter Preis",
+    "share": "Teilen",
+    "shareText": "Der Hilads Index: {{lines}}"
   }
 }

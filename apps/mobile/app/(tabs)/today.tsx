@@ -10,6 +10,7 @@ import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
 import { TodayProofs } from '@/features/today/TodayProofs';
 import { TodayTour } from '@/features/tour/TodayTour';
+import { IndexCards } from '@/features/index/IndexCards';
 import { SpotsNear } from '@/features/today/SpotsNear';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
@@ -59,6 +60,8 @@ export default function TodayScreen() {
         <TodayWeek today={daily.data} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TodayTour today={daily.data} refreshKey={refreshKey} />
+        {/* The Hilads Index (SPEC 10.9): last week's cards, on Mondays. */}
+        {isMonday(daily.data?.challenge?.date) && <IndexCards source="today" refreshKey={refreshKey} />}
         <TodayProofs today={daily.data} refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
       </ScrollView>
@@ -66,6 +69,9 @@ export default function TodayScreen() {
     </SafeAreaView>
   );
 }
+
+/** The challenge date (UTC, YYYY-MM-DD) is a Monday. */
+const isMonday = (date?: string | null) => !!date && new Date(`${date}T00:00:00Z`).getUTCDay() === 1;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },

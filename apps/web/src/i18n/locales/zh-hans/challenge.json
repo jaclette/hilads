@@ -1352,6 +1352,13 @@
     },
     "worlds": {
       "tagline": "同一个挑战，不同的世界。"
+    },
+    "index": {
+      "title": "上周的 Hilads Index",
+      "sub": "上周全世界花了多少钱、在几点。至少有 3 个证明的城市。",
+      "pricePaid": "支付价格中位数",
+      "share": "分享",
+      "shareText": "Hilads Index：{{lines}}"
     }
   }
 }

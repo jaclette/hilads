@@ -1354,6 +1354,13 @@
     },
     "worlds": {
       "tagline": "Zelfde challenge. Andere werelden."
+    },
+    "index": {
+      "title": "De Hilads Index van vorige week",
+      "sub": "Wat de wereld vorige week betaalde, en hoe laat. Steden met 3 bewijzen of meer.",
+      "pricePaid": "Mediane betaalde prijs",
+      "share": "Delen",
+      "shareText": "De Hilads Index: {{lines}}"
     }
   }
 }

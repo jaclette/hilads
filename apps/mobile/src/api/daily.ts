@@ -1,7 +1,7 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
-  DailyBoard, DailyRates, DailyTour,
+  DailyBoard, DailyIndex, DailyRates, DailyTour,
   NearbyPlace,
   DailyArchive,
   DailyCalendar,
@@ -49,6 +49,11 @@ export async function fetchDailyTour(opts: { cityId?: string | number | null; gu
   return api.get<DailyTour>('/daily/tour', {
     params: { cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, date: opts.date, locale: locale() },
   });
+}
+
+/** The Hilads Index (SPEC 10.9): last week's price and time cards, or a given week's. Public. */
+export async function fetchDailyIndex(week?: string): Promise<DailyIndex> {
+  return api.get<DailyIndex>('/daily/index', { params: { week, locale: locale() } });
 }
 
 /** The day's reference exchange rates, EUR base (SPEC 10.5). */

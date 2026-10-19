@@ -118,6 +118,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DailyCompare.php';
     require_once __DIR__ . '/../src/DailyBoard.php';
     require_once __DIR__ . '/../src/DailyTour.php';
+    require_once __DIR__ . '/../src/DailyIndex.php';
     require_once __DIR__ . '/../src/AnalyticsService.php';
     require_once __DIR__ . '/../src/DailyLocalPass.php';
     require_once __DIR__ . '/../src/DailyProposals.php';
@@ -278,6 +279,7 @@ require_once __DIR__ . '/../src/Currencies.php';
 require_once __DIR__ . '/../src/DailyCompare.php';
 require_once __DIR__ . '/../src/DailyBoard.php';
 require_once __DIR__ . '/../src/DailyTour.php';
+require_once __DIR__ . '/../src/DailyIndex.php';
 require_once __DIR__ . '/../src/DailyLocalPass.php';
 require_once __DIR__ . '/../src/DailyProposals.php';
 require_once __DIR__ . '/../src/DailyDrop.php';

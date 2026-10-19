@@ -86,6 +86,16 @@ final class DailyDrop
                     "Results and points of {$yesterday} failed: " . $e->getMessage() . " - re-run scripts/daily_close.php --date={$yesterday}");
             }
 
+            // The Hilads Index (SPEC 10.9): Monday's drop builds last week's cards. Never blocks the drop.
+            if ((new DateTimeImmutable($date, new DateTimeZone('UTC')))->format('N') === '1') {
+                try {
+                    $steps['index'] = DailyIndex::build(DailyIndex::lastWeek($date));
+                } catch (\Throwable $e) {
+                    $steps['index'] = ['status' => 'failed', 'error' => $e->getMessage()];
+                    error_log("[daily-drop] index of the week before {$date} failed: " . $e->getMessage());
+                }
+            }
+
             [$challenge, $source, $publishNote] = self::publish($date);
             $steps['publish'] = ['source' => $source, 'challengeId' => $challenge['id'] ?? null] + $publishNote;
             Database::pdo()->prepare("

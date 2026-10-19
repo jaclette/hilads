@@ -575,5 +575,12 @@
   },
   "worlds": {
     "tagline": "Cùng một thử thách. Những thế giới khác nhau."
+  },
+  "index": {
+    "title": "Hilads Index tuần trước",
+    "sub": "Cả thế giới đã trả bao nhiêu, và lúc mấy giờ, tuần trước. Các thành phố có từ 3 bằng chứng.",
+    "pricePaid": "Giá trung vị đã trả",
+    "share": "Chia sẻ",
+    "shareText": "Hilads Index: {{lines}}"
   }
 }

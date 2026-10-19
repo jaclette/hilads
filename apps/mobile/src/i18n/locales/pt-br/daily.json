@@ -581,5 +581,12 @@
   },
   "worlds": {
     "tagline": "Mesmo desafio. Mundos diferentes."
+  },
+  "index": {
+    "title": "O Hilads Index da semana passada",
+    "sub": "O que o mundo pagou, e a que horas, na semana passada. Cidades com 3 provas ou mais.",
+    "pricePaid": "Preço mediano pago",
+    "share": "Compartilhar",
+    "shareText": "O Hilads Index: {{lines}}"
   }
 }
