@@ -10,6 +10,7 @@ import { RankMedal } from './RankMedal';
 import { Chip, ModeLabel } from '@/ui';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import type { DailyProof } from '@/types';
+import { PickBadge } from '@/features/map/PickBadge';
 
 /** One proof in the sheet grid: photo (rank seal if World top 3), author with Local/Traveler, city, caption, vote. */
 export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress: () => void }) {
@@ -26,7 +27,8 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
           {proof.user.localPass && <LocalPassBadge />}
         </View>
         <View style={styles.labels}>
-          <ModeLabel mode={proof.isLocal ? 'local' : 'traveler'} label={proof.isLocal ? t('local') : t('traveler')} />
+          {proof.suggestion ? <PickBadge />
+            : <ModeLabel mode={proof.isLocal ? 'local' : 'traveler'} label={proof.isLocal ? t('local') : t('traveler')} />}
           {proof.isEarly && <EarlyBadge />}
         </View>
         {proof.city && <CityName name={proof.city.name} country={proof.city.country} short style={styles.sub} />}

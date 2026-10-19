@@ -912,6 +912,9 @@ export interface DailyProof {
   city:             { id: number; name: string; country?: string | null } | null;
   isLocal:          boolean;
   isEarly?:         boolean;          // posted within 3h of the author's start time (speed bonus)
+  /** A Hilads suggestion (the official account's answer): its badge and photo credit instead of a person. */
+  suggestion?:      boolean;
+  credit?:          string | null;
   photoUrl:         string;
   thumbUrl:         string | null;
   caption:          string | null;

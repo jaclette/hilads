@@ -591,6 +591,7 @@ function StripProof({ proof, source, onOpen }) {
       {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
       {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
       {proof.answer && <span className="proof-strip-answer">{answerText(proof.answer, i18n.language)}</span>}
+      {proof.suggestion && <PickBadge />}
     </button>
     {proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
     </div>

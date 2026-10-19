@@ -59,9 +59,10 @@ export function RankMedal({ rank, size = 26, podium = false }) {
   )
 }
 
-/** "Local" / "Traveler" with its icon (location / compass, as in the app). */
-export function RoleLabel({ isLocal }) {
+/** "Local" / "Traveler" with its icon (location / compass, as in the app); a Hilads suggestion gets its badge instead. */
+export function RoleLabel({ isLocal, suggestion = false }) {
   const { t } = useDc()
+  if (suggestion) return <span className="pick-badge"><Icon name="star" size={12} />{i18n.t('pick.badge', { ns: 'common' })}</span>
   return (
     <span style={INLINE}>
       <Icon name={isLocal ? 'location-outline' : 'compass-outline'} size={13} />
@@ -273,7 +274,7 @@ export function ProofTile({ proof, onOpen }) {
       <div className="dc-tile-meta">
         <span className="dc-tile-name">{name} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-tile-sub">
-          <RoleLabel isLocal={proof.isLocal} />
+          <RoleLabel isLocal={proof.isLocal} suggestion={proof.suggestion} />
           {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
         </span>
         {proof.validatedByLocal && <span className="dc-tile-badge" style={INLINE}><Icon name="checkmark" size={12} />{t('validatedByLocal')}</span>}
@@ -319,7 +320,7 @@ export function ProofViewer({ proof, onClose }) {
       <img className="dc-viewer-photo" src={proof.photoUrl} alt={proof.caption || ''} />
       <div className="dc-viewer-meta">
         <div className="dc-viewer-name">
-          {name} · <RoleLabel isLocal={proof.isLocal} />
+          {name} · <RoleLabel isLocal={proof.isLocal} suggestion={proof.suggestion} />
           {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
           {proof.user.localPass && <LocalPassBadge label onDark />}
           {proof.isEarly && <EarlyBadge onDark />}

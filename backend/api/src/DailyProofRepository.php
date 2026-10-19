@@ -426,6 +426,9 @@ final class DailyProofRepository
             'approvedAt'       => self::ts($row['approved_at']),
             'editedAt'         => self::ts($row['edited_at']),
             'createdAt'        => self::ts($row['created_at']),
+            // A Hilads suggestion (the official account's answer): its badge and photo credit instead of a person.
+            'suggestion'       => self::bool($row['is_suggestion'] ?? false),
+            'credit'           => self::bool($row['is_suggestion'] ?? false) ? ($row['photo_credit'] ?? null) : null,
             // SPEC 10: the answer to the challenge's question {type, value, unit}, and Back home.
         ] + DailyCompare::proofPayload($row, DailyI18n::current()) + ['context' => self::context($row)];
     }

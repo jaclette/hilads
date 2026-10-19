@@ -200,6 +200,8 @@ final class Spots
                 LEFT JOIN channels ch   ON ch.id = pl.city_id
                 LEFT JOIN cities cc     ON cc.channel_id = pl.city_id
                 WHERE a.challenge_id = ?
+                  -- Already an answer of the challenge (a Hilads suggestion): shown with the answers, not here.
+                  AND NOT EXISTS (SELECT 1 FROM daily_proofs s WHERE s.challenge_id = a.challenge_id AND s.place_id = pl.id AND s.is_suggestion)
                 ORDER BY ch.name, pl.name
             ");
             $stmt->execute([$challenge['id']]);
@@ -220,6 +222,75 @@ final class Spots
         // Most loved first; ties keep the city order.
         usort($out, static fn(array $a, array $b): int => $b['voteCount'] <=> $a['voteCount']);
         return $out;
+    }
+
+    /**
+     * Hilads suggestions as answers: each published pick attached to a
+     * challenge gets an approved answer of that challenge by the pick's
+     * official account (its photo, caption, credit and checked answer);
+     * detached or unpublished picks lose theirs (with its votes). Returns
+     * {created, updated, removed}. No-op before migrate.php.
+     */
+    public static function syncSuggestions(string $challengeId): array
+    {
+        $out = ['created' => 0, 'updated' => 0, 'removed' => 0];
+        $pdo = Database::pdo();
+        try {
+            $pdo->query("SELECT is_suggestion FROM daily_proofs LIMIT 0");
+        } catch (\Throwable $e) {
+            return $out;
+        }
+        $stmt = $pdo->prepare("
+            SELECT pl.id AS place_id, pl.city_id, pl.lat, pl.lng, pl.name,
+                   a.answer_text, a.answer_number, a.answer_minutes,
+                   pp.user_id, pp.photo_url, pp.caption, pp.photo_credit
+            FROM daily_pick_answers a
+            JOIN places pl ON pl.id = a.place_id AND pl.pick_status = 'published' AND NOT pl.hidden AND pl.merged_into IS NULL
+            JOIN LATERAL (SELECT * FROM daily_proofs p WHERE p.place_id = pl.id AND p.is_pick ORDER BY p.created_at DESC LIMIT 1) pp ON true
+            WHERE a.challenge_id = ?
+        ");
+        $stmt->execute([$challengeId]);
+        $keep = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $keep[] = $r['place_id'];
+            $cols = [$r['photo_url'], $r['caption'], $r['photo_credit'], $r['answer_text'], $r['answer_number'], $r['answer_minutes']];
+            $upd  = $pdo->prepare("
+                UPDATE daily_proofs SET photo_url = ?, caption = ?, photo_credit = ?, answer_text = ?, answer_number = ?, answer_minutes = ?, updated_at = now()
+                WHERE challenge_id = ? AND place_id = ? AND is_suggestion
+            ");
+            $upd->execute(array_merge($cols, [$challengeId, $r['place_id']]));
+            if ($upd->rowCount() > 0) {
+                $out['updated']++;
+                continue;
+            }
+            $pdo->prepare("
+                INSERT INTO daily_proofs (id, challenge_id, user_id, city_id, photo_url, caption, photo_credit,
+                                          answer_text, answer_number, answer_minutes,
+                                          place_id, place_lat, place_lng, place_name, is_local, is_suggestion,
+                                          moderation_status, approved_at, moderated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false, true, 'approved', now(), now())
+            ")->execute([bin2hex(random_bytes(8)), $challengeId, $r['user_id'], $r['city_id'], $r['photo_url'], $r['caption'], $r['photo_credit'],
+                         $r['answer_text'], $r['answer_number'], $r['answer_minutes'],
+                         $r['place_id'], $r['lat'], $r['lng'], $r['name']]);
+            $out['created']++;
+        }
+        $del = $pdo->prepare("
+            DELETE FROM daily_proofs WHERE challenge_id = ? AND is_suggestion
+              AND NOT (place_id = ANY (string_to_array(?, ',')))
+        ");
+        $del->execute([$challengeId, implode(',', $keep)]);
+        $out['removed'] = $del->rowCount();
+        return $out;
+    }
+
+    /** syncSuggestions() for every challenge a place is attached to (after a pick's edit). */
+    public static function syncSuggestionsOfPlace(string $placeId): void
+    {
+        $stmt = Database::pdo()->prepare("SELECT challenge_id FROM daily_pick_answers WHERE place_id = ?");
+        $stmt->execute([$placeId]);
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $cid) {
+            self::syncSuggestions((string) $cid);
+        }
     }
 
     /** Votes on a challenge's picks: [placeId => {n, mine}]. Live (not cached): a vote shows at once. */

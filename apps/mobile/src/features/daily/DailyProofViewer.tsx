@@ -19,6 +19,8 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, type ShareContent } from '@/features/share/content';
 import { themeName } from './themes';
 import type { DailyChallenge, DailyProof } from '@/types';
+import { PickBadge } from '@/features/map/PickBadge';
+import { PhotoCredit } from '@/features/map/PhotoCredit';
 
 /** The photo takes at most this share of the screen height; the information block follows right under it. */
 const PHOTO_MAX_HEIGHT = 0.62;
@@ -62,11 +64,13 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
         <View style={styles.meta}>
           <View style={styles.nameRow}>
             <Text style={styles.name}>{name}</Text>
-            <ModeLabel mode={proof.isLocal ? 'local' : 'traveler'} label={proof.isLocal ? t('local') : t('traveler')} />
+            {proof.suggestion ? <PickBadge />
+              : <ModeLabel mode={proof.isLocal ? 'local' : 'traveler'} label={proof.isLocal ? t('local') : t('traveler')} />}
             {proof.user.localPass && <LocalPassBadge label onDark />}
             {proof.isEarly && <EarlyBadge onDark />}
           </View>
           {proof.city && <CityName name={proof.city.name} country={proof.city.country} short style={styles.extra} />}
+          {proof.suggestion && !!proof.credit && <PhotoCredit by={null} credit={proof.credit} style={styles.extra} />}
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
             <View style={styles.nameRow}>
               {proof.worldRank !== null && proof.worldRank <= 3 && (

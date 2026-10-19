@@ -7,6 +7,7 @@
  *
  *   php scripts/picks_import.php --file=picks.json --dry     # check, write nothing
  *   php scripts/picks_import.php --file=https://.../picks.json
+ *   php scripts/picks_import.php --sync    # every attached pick becomes (or stays) an answer of its challenge
  *
  * File: {"picks": [{"name", "lat", "lng", "theme", "caption", "credit",
  * "note": {"en", "fr", ...}, "photoUrl", "status": "draft" | "published",
@@ -27,7 +28,8 @@ foreach ($args as $a) {
         $file = substr($a, 7);
     }
 }
-if ($file === null) {
+$sync = in_array('--sync', $args, true);
+if ($file === null && !$sync) {
     fwrite(STDERR, "Usage: php scripts/picks_import.php --file=<picks.json | https URL> [--dry]\n");
     exit(1);
 }
@@ -54,6 +56,16 @@ $host = parse_url((string) getenv('DATABASE_URL'), PHP_URL_HOST) ?: '(no DATABAS
 fwrite(STDERR, "Database host: {$host}\n");
 
 try {
+    if ($sync) {
+        // Hilads suggestions as answers, for picks attached before that existed.
+        $ids = Database::pdo()->query("SELECT DISTINCT challenge_id FROM daily_pick_answers")->fetchAll(PDO::FETCH_COLUMN);
+        $all = [];
+        foreach ($ids as $cid) {
+            $all[$cid] = Spots::syncSuggestions((string) $cid);
+        }
+        echo json_encode(['synced' => $all], JSON_PRETTY_PRINT), "\n";
+        exit(0);
+    }
     $doc    = json_decode((string) file_get_contents($file), true) ?: [];
     $picks  = is_array($doc['picks'] ?? null) ? $doc['picks'] : [];
     $extra  = is_array($doc['attach'] ?? null) ? $doc['attach'] : [];

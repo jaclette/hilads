@@ -18,6 +18,7 @@ import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { answerText } from '@/features/compare/format';
 import type { DailyToday, DailyTodayProofs } from '@/types';
 import { Card, CityName, Photo, SectionTitle } from '@/ui';
+import { PickBadge } from '@/features/map/PickBadge';
 
 type StripProof = DailyTodayProofs['proofs'][number];
 
@@ -169,6 +170,7 @@ function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; gue
       {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
       {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
       {proof.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(proof.answer, i18n.language)}</Text>}
+      {proof.suggestion && <PickBadge />}
       <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null}
                        source={source} variant="strip" />
     </TouchableOpacity>

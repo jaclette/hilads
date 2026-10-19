@@ -3111,8 +3111,14 @@ run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS dish_tags TEXT", 'd
 // Reversal: DELETE FROM daily_proofs WHERE is_seed; DELETE FROM daily_challenges WHERE status = 'seed';
 // then restore the two checks and UNIQUE (challenge_id, user_id), and drop is_seed.
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_seed BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_seed');
-run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proofs_challenge_user ON daily_proofs (challenge_id, user_id) WHERE NOT is_seed",
-    'uq_daily_proofs_challenge_user');
+// Replaced by uq_daily_proofs_challenge_user_v2 (Hilads suggestions, below): not re-created once that exists.
+run($pdo, "
+    DO \$\$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'uq_daily_proofs_challenge_user_v2') THEN
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proofs_challenge_user ON daily_proofs (challenge_id, user_id) WHERE NOT is_seed;
+        END IF;
+    END \$\$
+", 'uq_daily_proofs_challenge_user');
 run($pdo, "ALTER TABLE daily_proofs DROP CONSTRAINT IF EXISTS daily_proofs_challenge_id_user_id_key", 'daily_proofs unique -> partial');
 run($pdo, "ALTER TABLE daily_challenges DROP CONSTRAINT IF EXISTS daily_challenges_status_check", 'daily_challenges status check drop');
 run($pdo, "ALTER TABLE daily_challenges ADD CONSTRAINT daily_challenges_status_check
@@ -3382,6 +3388,17 @@ run($pdo, "
         PRIMARY KEY (challenge_id, place_id, voter_user_id)
     )
 ", 'daily_pick_votes');
+
+// Hilads suggestions as answers (2026-10-19, the founder's call): a pick attached
+// to a challenge becomes an approved answer of that challenge by the official
+// account (is_suggestion, labeled "Hilads suggestion" with its photo credit). It
+// counts like an answer (strips, board, votes, results, tour, Index, presence);
+// several per challenge, so the one-answer-per-user index skips them.
+// Reversal: DELETE FROM daily_proofs WHERE is_suggestion; restore the index; DROP COLUMN.
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_suggestion BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_suggestion');
+run($pdo, "DROP INDEX IF EXISTS uq_daily_proofs_challenge_user", 'drop uq_daily_proofs_challenge_user');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proofs_challenge_user_v2 ON daily_proofs (challenge_id, user_id) WHERE NOT is_seed AND NOT is_suggestion",
+    'uq_daily_proofs_challenge_user_v2');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

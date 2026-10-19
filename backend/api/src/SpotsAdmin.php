@@ -618,6 +618,7 @@ final class SpotsAdmin
                 ->execute([$credit, $caption === '' ? null : $caption, $photo, $pick['pick_proof_id']]);
         }
         DailyAdminService::audit('place.pick', 'place', $placeId, ['status' => $pick['pick_status']], ['status' => $status, 'credit' => $credit]);
+        Spots::syncSuggestionsOfPlace($placeId);   // published, hidden, new photo: its answers follow
         self::forgetSpots();
     }
 
@@ -656,11 +657,13 @@ final class SpotsAdmin
             SET answer_text = EXCLUDED.answer_text, answer_number = EXCLUDED.answer_number, answer_minutes = EXCLUDED.answer_minutes
         ")->execute([$challenge['id'], $placeId, $text, $number, $minutes]);
         DailyAdminService::audit('place.pick_attach', 'place', $placeId, null, ['date' => $date, 'answer' => $text ?? $number ?? $minutes]);
+        Spots::syncSuggestions((string) $challenge['id']);   // the suggestion becomes an answer of that day
     }
 
     public static function pickDetach(string $placeId, string $challengeId): void
     {
         Database::pdo()->prepare("DELETE FROM daily_pick_answers WHERE place_id = ? AND challenge_id = ?")->execute([$placeId, $challengeId]);
+        Spots::syncSuggestions($challengeId);
         DailyAdminService::audit('place.pick_detach', 'place', $placeId, ['challenge' => $challengeId], null);
     }
 

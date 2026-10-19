@@ -356,7 +356,7 @@ function ResultRow({ proof, label, onOpen }) {
       <span className="dc-row-body">
         <span className="dc-row-name">{personName(proof.user)} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">
-          <RoleLabel isLocal={proof.isLocal} />
+          <RoleLabel isLocal={proof.isLocal} suggestion={proof.suggestion} />
           {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
         </span>
       </span>
