@@ -703,6 +703,13 @@ final class DailyAdminService
                     $stmt = $pdo->prepare("SELECT id, compare_type, compare_key, price_key FROM daily_challenges WHERE is_reserve AND text_i18n->>'en' = ?");
                     $stmt->execute([$e['text']]);
                     if (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
+                        // A stored reserve keeps its text; it gets the file's question when it has none.
+                        if ($row['compare_type'] === null && $e['compare'] !== null) {
+                            self::setCompare($row['id'], $e['compare']);
+                            $report[] = ['entry' => $e['label'], 'action' => 'compare_added', 'id' => $row['id'],
+                                         'compare' => $e['compare']['question']['en'], 'compareMissingLocales' => $e['compareMissingLocales']];
+                            continue;
+                        }
                         $report[] = self::fillIndexKeys($row, $e['compare'])
                             ? ['entry' => $e['label'], 'action' => 'keys_added', 'id' => $row['id'], 'key' => $e['compare']['key'] ?? null, 'priceKey' => $e['compare']['price']['key'] ?? null]
                             : ['entry' => $e['label'], 'action' => 'skip', 'reason' => 'reserve already exists'];

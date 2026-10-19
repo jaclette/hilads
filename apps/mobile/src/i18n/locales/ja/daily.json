@@ -542,6 +542,8 @@
     "worldAnswers": "今日、世界が答える",
     "seeAnswers": "回答を見る",
     "firstIn": "最初の回答が届き始めました",
+    "answeredRow_one": "すでに{{count}}か国が回答",
+    "answeredRow_other": "すでに{{count}}か国が回答",
     "tip": "タップして、あなたの街を世界とくらべよう。",
     "nCountries_one": "{{count}}か国",
     "nCountries_other": "{{count}}か国",

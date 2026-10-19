@@ -1335,6 +1335,8 @@
       "worldAnswers": "Vandaag antwoordt de wereld",
       "seeAnswers": "Antwoorden bekijken",
       "firstIn": "De eerste antwoorden komen binnen",
+      "answeredRow_one": "Al {{count}} land heeft geantwoord",
+      "answeredRow_other": "Al {{count}} landen hebben geantwoord",
       "tip": "Tik om je stad met de wereld te vergelijken.",
       "nCountries_one": "{{count}} land",
       "nCountries_other": "{{count}} landen",

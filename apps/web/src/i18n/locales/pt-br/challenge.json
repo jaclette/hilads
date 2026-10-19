@@ -1335,6 +1335,8 @@
       "worldAnswers": "Hoje o mundo responde",
       "seeAnswers": "Ver respostas",
       "firstIn": "As primeiras respostas estão chegando",
+      "answeredRow_one": "Já respondeu {{count}} país",
+      "answeredRow_other": "Já responderam {{count}} países",
       "tip": "Toque para comparar sua cidade com o mundo.",
       "nCountries_one": "{{count}} país",
       "nCountries_other": "{{count}} países",

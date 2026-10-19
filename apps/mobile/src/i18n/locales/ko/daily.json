@@ -541,6 +541,8 @@
     "worldAnswers": "오늘, 세계가 답해요",
     "seeAnswers": "답변 보기",
     "firstIn": "첫 답변들이 도착하고 있어요",
+    "answeredRow_one": "벌써 {{count}}개국이 답했어요",
+    "answeredRow_other": "벌써 {{count}}개국이 답했어요",
     "tip": "탭해서 내 도시를 세계와 비교해 보세요.",
     "nCountries_one": "{{count}}개국",
     "nCountries_other": "{{count}}개국",

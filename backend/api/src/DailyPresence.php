@@ -81,9 +81,29 @@ final class DailyPresence
     }
 
     /**
+     * What Today shows, the strips' rule: approved answers for everyone (demo
+     * content included, it is on screen), never other users' pending ones.
+     * {cities: cities with one today, city: whether $cityId has one}. Cached.
+     */
+    public static function shown(string $challengeId, ?string $cityId): array
+    {
+        $rows = Cache::remember('daily_shown_v1_' . $challengeId, 15, static function () use ($challengeId): array {
+            $stmt = Database::pdo()->prepare("
+                SELECT DISTINCT city_id FROM daily_proofs
+                WHERE challenge_id = ? AND moderation_status = 'approved' AND city_id IS NOT NULL
+            ");
+            $stmt->execute([$challengeId]);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        }) ?? [];
+        return ['cities' => count($rows), 'city' => $cityId !== null && in_array($cityId, $rows, true)];
+    }
+
+    /**
      * Today's presence block for a city: {represented, streak, citiesToday,
-     * pioneer}. represented is the viewer's: their own pending or approved
-     * proof posted in this city counts for them (a rejected one doesn't).
+     * pioneer}. represented and citiesToday follow what Today shows (shown():
+     * approved answers, demo included), plus the viewer's own pending or
+     * approved proof in this city (a rejected one doesn't). The streak and
+     * the Pioneer count real answers only.
      */
     public static function payload(string $cityId, string $challengeId, ?array $myProof = null): array
     {
@@ -91,11 +111,12 @@ final class DailyPresence
         $mine = $myProof !== null && ($myProof['city_id'] ?? null) === $cityId
             && in_array($myProof['moderation_status'] ?? null, ['pending', 'approved'], true);
         $pioneer = self::pioneerOf($cityId);
+        $shown   = self::shown($challengeId, $cityId);
         return [
-            'represented' => $p['represented'] || $mine,
+            'represented' => $p['represented'] || $mine || $shown['city'],
             // The city's run of represented days (ending today when represented, else yesterday).
             'streak'      => $p['streak'],
-            'citiesToday' => self::citiesOn($challengeId),
+            'citiesToday' => max($shown['cities'], self::citiesOn($challengeId)),
             'pioneer'     => $pioneer !== null ? ['username' => $pioneer['username']] : null,
         ];
     }
@@ -128,6 +149,7 @@ final class DailyPresence
         }
         if ($challengeId !== null) {
             Cache::forget('daily_cities_on_v1_' . $challengeId);
+            Cache::forget('daily_shown_v1_' . $challengeId);
             Cache::forget(DailyBoard::cacheKey($challengeId));   // SPEC 10.6
         }
     }

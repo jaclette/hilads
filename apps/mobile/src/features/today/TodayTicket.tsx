@@ -180,39 +180,43 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
       <View style={styles.top}>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
         {/* The comparison question and the world's answers, one block (SPEC 10.2, 10.6): from 2
-            countries it opens the Compare tab, before the sheet's World tab. */}
-        {challenge.compare && (
-          <View>
-            <Pressable style={({ pressed }) => [styles.world, pressed && styles.worldPressed]} accessibilityRole="button"
-                       onPress={() => { hideTip(); (compared ? openCompare : openWorld)(); }}>
-              <View style={styles.worldKicker}>
-                <LiveDot live={motion.live} />
-                <Text style={styles.worldKickerText}>{t('compare.worldAnswers')}</Text>
-              </View>
+            countries it opens the Compare tab, before the sheet's World tab. Without a question it
+            stays: flags, "Already 5 countries answered", the World tab. */}
+        <View>
+          <Pressable style={({ pressed }) => [styles.world, pressed && styles.worldPressed]} accessibilityRole="button"
+                     onPress={() => { hideTip(); (compared && challenge.compare ? openCompare : openWorld)(); }}>
+            <View style={styles.worldKicker}>
+              <LiveDot live={motion.live} />
+              <Text style={styles.worldKickerText}>{t('compare.worldAnswers')}</Text>
+            </View>
+            {challenge.compare && (
               <Text style={styles.worldQuestion}>
                 {showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}
               </Text>
-              {/* Answered: the world block is the focus now. */}
-              {myProof && <Text style={styles.worldMine}>{t('compare.youAnswered')}</Text>}
-              <View style={styles.worldLine}>
-                {compared ? (
-                  <WorldTicker entries={ticker} flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')}
-                               live={motion.live} reduced={motion.reduced}
-                               staticLine={[t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ')} />
-                ) : <Text style={styles.worldAnswers} numberOfLines={1}>{t('compare.firstIn')}</Text>}
-                <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
-                <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
-              </View>
-            </Pressable>
-            {/* Once per device: what the block does. Any tap or 6 seconds closes it. */}
-            {tip && (
-              <Pressable style={styles.tip} onPress={hideTip} accessibilityRole="button">
-                <View style={styles.tipArrow} />
-                <Text style={styles.tipText}>{t('compare.tip')}</Text>
-              </Pressable>
             )}
-          </View>
-        )}
+            {/* Answered: the world block is the focus now. */}
+            {myProof && <Text style={styles.worldMine}>{t('compare.youAnswered')}</Text>}
+            <View style={styles.worldLine}>
+              {compared && !challenge.compare ? (
+                <WorldTicker entries={[]} flags={world!.flags ?? []} live={false} reduced
+                             staticLine={t('compare.answeredRow', { count: world!.countries })} />
+              ) : compared ? (
+                <WorldTicker entries={ticker} flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')}
+                             live={motion.live} reduced={motion.reduced}
+                             staticLine={[t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ')} />
+              ) : <Text style={styles.worldAnswers} numberOfLines={1}>{t('compare.firstIn')}</Text>}
+              <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
+              <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
+            </View>
+          </Pressable>
+          {/* Once per device: what the block does. Any tap or 6 seconds closes it. */}
+          {tip && (
+            <Pressable style={styles.tip} onPress={hideTip} accessibilityRole="button">
+              <View style={styles.tipArrow} />
+              <Text style={styles.tipText}>{t('compare.tip')}</Text>
+            </Pressable>
+          )}
+        </View>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} ink />}
         {earlyUntil !== null && (

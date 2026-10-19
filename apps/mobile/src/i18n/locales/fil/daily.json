@@ -543,6 +543,8 @@
     "worldAnswers": "Ngayon, sumasagot ang mundo",
     "seeAnswers": "Tingnan ang mga sagot",
     "firstIn": "Dumarating na ang mga unang sagot",
+    "answeredRow_one": "Sumagot na ang {{count}} bansa",
+    "answeredRow_other": "Sumagot na ang {{count}} bansa",
     "tip": "I-tap para ikumpara ang lungsod mo sa mundo.",
     "nCountries_one": "{{count}} bansa",
     "nCountries_other": "{{count}} bansa",

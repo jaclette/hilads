@@ -235,12 +235,11 @@ final class DailyBoard
      */
     public static function teaser(array $challenge, ?string $viewerCityId, array $blockedUserIds = [], ?string $locale = null): ?array
     {
-        if (($challenge['compare_type'] ?? null) === null) {
-            return null;
-        }
         $locale   = $locale ?? DailyI18n::current();
         $rows     = self::rows($challenge, $blockedUserIds);
-        $answered = array_values(array_filter($rows, static fn(array $r) => self::hasAnswer($r['best'])));
+        // No question: every city with an approved answer counts (flags and countries, no answer lines).
+        $asked    = ($challenge['compare_type'] ?? null) !== null;
+        $answered = $asked ? array_values(array_filter($rows, static fn(array $r) => self::hasAnswer($r['best']))) : $rows;
         if ($answered === []) {
             return null;
         }
@@ -249,8 +248,8 @@ final class DailyBoard
             'countries' => count(array_unique(array_filter(array_column($answered, 'country')))),
             // The card's flag stack: up to 5 countries that answered, most answers first.
             'flags'     => array_slice(array_values(array_unique(array_filter(array_column($answered, 'country')))), 0, 5),
-            'answers'   => array_map(static fn(array $r) => ['city' => self::city($r), 'answer' => self::answer($r, $challenge, $locale)],
-                                     self::teaserPick($rows, $viewerCityId, self::TEASER_ANSWERS)),
+            'answers'   => $asked ? array_map(static fn(array $r) => ['city' => self::city($r), 'answer' => self::answer($r, $challenge, $locale)],
+                                              self::teaserPick($rows, $viewerCityId, self::TEASER_ANSWERS)) : [],
         ];
     }
 

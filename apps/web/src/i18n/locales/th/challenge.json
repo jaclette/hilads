@@ -1334,6 +1334,8 @@
       "worldAnswers": "วันนี้ ทั่วโลกร่วมตอบ",
       "seeAnswers": "ดูคำตอบ",
       "firstIn": "คำตอบแรกๆ เริ่มมาแล้ว",
+      "answeredRow_one": "ตอบแล้ว {{count}} ประเทศ",
+      "answeredRow_other": "ตอบแล้ว {{count}} ประเทศ",
       "tip": "แตะเพื่อเทียบเมืองของคุณกับทั่วโลก",
       "nCountries_one": "{{count}} ประเทศ",
       "nCountries_other": "{{count}} ประเทศ",

@@ -239,31 +239,36 @@ function Ticket({ data, loading }) {
       <div className="today-top">
         <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
         {/* The comparison question and the world's answers, one block (SPEC 10.2, 10.6): from 2
-            countries it opens the Compare tab, before the sheet's World tab. */}
-        {challenge.compare && (
-          <div className="today-world-wrap">
-            <button type="button" className="today-world" ref={setWorldEl} onClick={(e) => {
-              e.stopPropagation()
-              hideTip()
-              if (compared) track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
-              openDaily('challenge', compared ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
-            }}>
-              <span className="today-world-kicker"><LiveDot live={motion.live} />{t('compare.worldAnswers')}</span>
+            countries it opens the Compare tab, before the sheet's World tab. Without a question it
+            stays: flags, "Already 5 countries answered", the World tab. */}
+        <div className="today-world-wrap">
+          <button type="button" className="today-world" ref={setWorldEl} onClick={(e) => {
+            e.stopPropagation()
+            hideTip()
+            const toCompare = compared && !!challenge.compare
+            if (toCompare) track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
+            openDaily('challenge', toCompare ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
+          }}>
+            <span className="today-world-kicker"><LiveDot live={motion.live} />{t('compare.worldAnswers')}</span>
+            {challenge.compare && (
               <span className="today-world-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</span>
-              {/* Answered: the world block is the focus now. */}
-              {myProof && <span className="today-world-mine">{t('compare.youAnswered')}</span>}
-              <span className="today-world-line">
-                {compared ? (
-                  <WorldTicker entries={ticker} flags={world.flags ?? world.answers.map(a => a.city.country)} live={motion.live} reduced={motion.reduced}
-                               staticLine={[t('compare.nCountries', { count: world.countries }), ...answers].join(' · ')} />
-                ) : <span className="today-world-answers">{t('compare.firstIn')}</span>}
-                <span className="today-world-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={16} /></span>
-              </span>
-            </button>
-            {/* Once per browser: what the block does. Any tap or 6 seconds closes it. */}
-            {tip && <button type="button" className="today-world-tip" onClick={(e) => { e.stopPropagation(); hideTip() }}>{t('compare.tip')}</button>}
-          </div>
-        )}
+            )}
+            {/* Answered: the world block is the focus now. */}
+            {myProof && <span className="today-world-mine">{t('compare.youAnswered')}</span>}
+            <span className="today-world-line">
+              {compared && !challenge.compare ? (
+                <WorldTicker entries={[]} flags={world.flags ?? []} live={false} reduced
+                             staticLine={t('compare.answeredRow', { count: world.countries })} />
+              ) : compared ? (
+                <WorldTicker entries={ticker} flags={world.flags ?? world.answers.map(a => a.city.country)} live={motion.live} reduced={motion.reduced}
+                             staticLine={[t('compare.nCountries', { count: world.countries }), ...answers].join(' · ')} />
+              ) : <span className="today-world-answers">{t('compare.firstIn')}</span>}
+              <span className="today-world-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={16} /></span>
+            </span>
+          </button>
+          {/* Once per browser: what the block does. Any tap or 6 seconds closes it. */}
+          {tip && <button type="button" className="today-world-tip" onClick={(e) => { e.stopPropagation(); hideTip() }}>{t('compare.tip')}</button>}
+        </div>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onClick={toggleOriginal} />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
         {earlyUntil && <span className="today-early">{t('today.early', { time: timeOf(earlyUntil) })}</span>}
