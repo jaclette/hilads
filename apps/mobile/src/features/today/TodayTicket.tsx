@@ -63,7 +63,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   const { scope } = useScope();
   const [showOriginal, toggleOriginal] = useOriginal();
   const tracked = useRef<string | null>(null);
-  // How it works: the first "I'm in" only (device), then straight to the camera.
+  // How it works: the first "Answer for [city]" only (device), then straight to the camera.
   const [howSeen, setHowSeen] = useState<boolean | null>(null);
   const [howOpen, setHowOpen] = useState(false);
   const [share, setShare] = useState<ShareContent | null>(null);
@@ -206,11 +206,15 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           </>
         ) : (
           // The card's only orange element, pulsing; straight to the camera (SPEC 9.3).
-          <PulseButton label={emptyCity ? t('represent.button', { city: cityShort }) : t('ctaIn')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
+          <PulseButton label={cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
-        {/* The live world teaser (SPEC 10.6) replaces the social line once 2 cities answered. */}
-        {world ? (
+        {/* The live world teaser (SPEC 10.6) replaces the social line: the first answers, then the countries. */}
+        {world && world.countries < 2 ? (
+          <TouchableOpacity style={styles.took} onPress={openCompare} accessibilityRole="button">
+            <Text style={styles.tookText}>{t('compare.firstAnswers')}</Text>
+          </TouchableOpacity>
+        ) : world ? (
           <TouchableOpacity style={styles.took} onPress={openCompare} accessibilityRole="button">
             <Text style={styles.tookText} numberOfLines={2}>
               {t('compare.teaser', { count: world.countries })}{' '}

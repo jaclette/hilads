@@ -34,12 +34,15 @@ final class DailyNotify
             if (!self::alreadyTold($p['user_id'], self::TYPE_VOTE, $data, 'voterId')) {
                 $name = self::name($voter);
                 $body = DailyPushText::render('bell_vote', self::locale($p['user_id']), ['name' => $name])
-                        ?? "{$name} voted for your proof.";
+                        ?? "{$name} voted for your answer.";
                 self::bell($p['user_id'], self::TYPE_VOTE, $body, $data);
             }
             if ((int) $p['vote_count'] === 1 && DailyClock::isActive($date)) {
                 $now = new DateTimeImmutable('now');
-                if (DailyPushes::queueFirstVote($p['user_id'], $date, $p['id'], $now) > 0) {
+                // COPY.md 6: "Someone in Lisbon voted for your answer." (the voter's city, never their name).
+                $voterCity = ($voter['current_city_id'] ?? null) !== null
+                    ? (CityRepository::findById((int) substr((string) $voter['current_city_id'], 5))['name'] ?? null) : null;
+                if (DailyPushes::queueFirstVote($p['user_id'], $date, $p['id'], $now, $voterCity) > 0) {
                     DailyPushes::sendDue($now, 1, 'u:' . $p['user_id'], 'first_vote');
                 }
             }

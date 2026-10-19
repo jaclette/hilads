@@ -90,7 +90,8 @@
     "endedEvent": "Dit event is afgelopen",
     "closedChallenge": "Deze challenge is gesloten",
     "send": "Versturen",
-    "emoji": "Emoji’s"
+    "emoji": "Emoji’s",
+    "placeholderWorld": "Vraag de wereld hoe zij het doen"
   },
   "modeHeading": "Modus",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "Tonen",
     "world": "Wereld",
     "pickCity": "Kies een stad",
-    "citySub": "De challenge, bewijzen en spots van jouw stad",
-    "worldSub": "Bewijzen en spots uit alle steden",
+    "citySub": "De challenge, antwoorden en spots van jouw stad",
+    "worldSub": "Antwoorden en spots uit alle steden",
     "changeCity": "Stad wijzigen",
     "a11y": "Toont {{scope}}. Tik om te wijzigen"
   },
@@ -222,9 +223,9 @@
     "errorBody": "Melding versturen mislukt. Probeer het opnieuw."
   },
   "subtitles": {
-    "map": "Spots die locals echt kozen.",
+    "map": "Spots uit de antwoorden van de wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
-    "passport": "Je stempels en spots, stad voor stad."
+    "passport": "Je steden, je antwoorden, je stempels."
   },
   "photoBy": "Foto van @{{username}}"
 }

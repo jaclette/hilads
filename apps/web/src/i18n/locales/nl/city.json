@@ -320,7 +320,7 @@
     "early": "Vroeg",
     "proposedBy": "Voorgesteld door {{name}}",
     "proposedByCity": "Voorgesteld door {{name}} · {{city}}",
-    "groupTitle": "Nieuwe bewijzen: {{n}}",
+    "groupTitle": "Nieuwe antwoorden: {{n}}",
     "groupCitiesMore": "{{cities}} en nog {{n}}"
   }
 }

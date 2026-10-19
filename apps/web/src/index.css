@@ -16788,6 +16788,7 @@ body.has-app-promo-banner .page-header {
 .pp-chip--traveler { background: var(--traveler-bg); color: var(--traveler-text); }
 .pp-chip--city { background: var(--surface); border: 1px solid var(--line); color: var(--muted2); }
 .pp-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pp-compared { font-size: 14px; font-weight: 600; }
 .pp-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .pp-card-title { font-size: 15px; font-weight: 800; color: var(--text); }
 .pp-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -17293,8 +17294,10 @@ body.has-app-promo-banner .page-header {
 .dc-home-price small { margin-left: 6px; font-weight: 500; color: #ccc; }
 .dc-home-line { margin: 0; font-size: 12px; font-style: italic; color: #ccc; }
 .cmp { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+.cmp-title { margin: 0; font-size: 14px; font-weight: 800; color: var(--muted); }
 .cmp-question { margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text); }
 .cmp-range { margin: 0; padding: 10px; border-radius: 12px; background: var(--step-bg); font-size: 13px; font-weight: 700; color: var(--text); }
+.cmp-fun { margin: 0; font-size: 14px; font-weight: 700; color: var(--primary-text); }
 .cmp-table { display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 18px; background: var(--bg2); overflow: hidden; }
 .cmp-row { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 8px 12px; border: 0; background: none; text-align: left; cursor: pointer; color: var(--muted); font: inherit; }
 .cmp-row + .cmp-row { border-top: 1px solid var(--line); }

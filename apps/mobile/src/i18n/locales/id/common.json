@@ -90,7 +90,8 @@
     "endedEvent": "Acara ini sudah berakhir",
     "closedChallenge": "Tantangan ini sudah ditutup",
     "send": "Kirim",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderWorld": "Tanya dunia bagaimana mereka melakukannya"
   },
   "modeHeading": "Mode",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "Tampilkan",
     "world": "Dunia",
     "pickCity": "Pilih kota",
-    "citySub": "Challenge, bukti, dan spot di kotamu",
-    "worldSub": "Bukti dan spot dari semua kota",
+    "citySub": "Challenge, jawaban, dan spot di kotamu",
+    "worldSub": "Jawaban dan spot dari semua kota",
     "changeCity": "Ganti kota",
     "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
   },
@@ -222,9 +223,9 @@
     "errorBody": "Laporan gagal dikirim. Coba lagi."
   },
   "subtitles": {
-    "map": "Spot pilihan warga lokal.",
+    "map": "Spot dari jawaban dunia.",
     "hi": "Sapa kotamu. Ikut sebuah rencana.",
-    "passport": "Stempel dan spot kamu, kota demi kota."
+    "passport": "Kotamu, jawabanmu, capmu."
   },
   "photoBy": "Foto oleh @{{username}}"
 }

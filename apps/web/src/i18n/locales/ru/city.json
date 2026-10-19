@@ -334,7 +334,7 @@
     "early": "Рано",
     "proposedBy": "Предложил(а) {{name}}",
     "proposedByCity": "Предложил(а) {{name}} · {{city}}",
-    "groupTitle": "Новые доказательства: {{n}}",
+    "groupTitle": "Новые ответы: {{n}}",
     "groupCitiesMore": "{{cities}} и ещё {{n}}"
   }
 }

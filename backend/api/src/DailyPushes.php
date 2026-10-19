@@ -173,16 +173,16 @@ final class DailyPushes
         }
         if ($mine !== null) {
             if ($mine['worldRank'] !== null) {
-                return 'Yesterday your proof ranked ' . self::ordinal((int) $mine['worldRank']) . ' in the world.';
+                return 'Yesterday your answer ranked ' . self::ordinal((int) $mine['worldRank']) . ' in the world.';
             }
             if ($mine['cityBest'] && $mine['cityName'] !== null) {
-                return "Yesterday your proof was the best in {$mine['cityName']}.";
+                return "Yesterday your answer was the best in {$mine['cityName']}.";
             }
             if ($mine['cityRank'] !== null && $mine['cityName'] !== null) {
-                return 'Yesterday your proof ranked ' . self::ordinal((int) $mine['cityRank']) . " in {$mine['cityName']}.";
+                return 'Yesterday your answer ranked ' . self::ordinal((int) $mine['cityRank']) . " in {$mine['cityName']}.";
             }
             $votes = (int) $mine['votes'];
-            return $votes > 0 ? 'Yesterday your proof got ' . self::plural($votes, 'vote') . '.' : null;
+            return $votes > 0 ? 'Yesterday your answer got ' . self::plural($votes, 'vote') . '.' : null;
         }
         if ($winner !== null) {
             $where = $winner['cityName'] !== null ? " in {$winner['cityName']}" : '';
@@ -240,17 +240,30 @@ final class DailyPushes
      * yesterday's outcome when it fits in BODY_MAX. $locale must come from
      * morningLocale() (the challenge is translated into it, else English).
      */
-    public static function morningMessage(array $challenge, ?string $outcome = null, string $locale = 'en', ?string $tourCity = null): array
+    public static function morningMessage(array $challenge, ?string $outcome = null, string $locale = 'en', ?string $tourCity = null,
+                                          ?string $userCity = null): array
     {
         $theme = self::themeOf($challenge);
-        $title = $theme !== null
-            ? self::emoji($theme, $challenge) . ' ' . (DailyPushText::render('title_today', $locale, ['theme' => self::themeName($theme, $locale, $challenge)])
-                                                       ?? 'Today: ' . self::themeName($theme, $locale, $challenge))
-            : 'Daily Challenge';
+        // COPY.md 6: "💎 Today the world answers" over "[question] Add Saigon's answer."; without a question or
+        // a city, the theme title over the challenge text.
+        $question = DailyCompare::payload($challenge, $locale)['question'] ?? null;
+        $city     = $userCity !== null && $userCity !== '' ? CityNames::short($userCity, $locale) : null;
+        if ($question !== null && $city !== null) {
+            $title = ($theme !== null ? self::emoji($theme, $challenge) . ' ' : '')
+                   . (DailyPushText::render('title_world', $locale) ?? 'Today the world answers');
+            $text  = DailyPushText::render('morning_add', $locale, ['question' => $question, 'city' => $city])
+                   ?? "{$question} Add {$city}'s answer.";
+        } else {
+            $title = $theme !== null
+                ? self::emoji($theme, $challenge) . ' ' . (DailyPushText::render('title_today', $locale, ['theme' => self::themeName($theme, $locale, $challenge)])
+                                                           ?? 'Today: ' . self::themeName($theme, $locale, $challenge))
+                : 'Daily Challenge';
+            $text  = self::challengeText($challenge, $locale);
+        }
         return [
             'title' => $title,
-            // SPEC 10.7: "Your photo represents Saigon in the world tour." first, then yesterday's outcome, each when it fits.
-            'body'  => self::withLine(self::withLine(self::challengeText($challenge, $locale), self::tourLine($tourCity, $locale)), $outcome),
+            // SPEC 10.7: "Your answer represents Saigon in the world tour 🌍" first, then yesterday's outcome, each when it fits.
+            'body'  => self::withLine(self::withLine($text, self::tourLine($tourCity, $locale)), $outcome),
             // No challengeId on purpose: the app's tap fallback would open the
             // legacy challenge screen with it. deepLink = today's card.
             'data'  => self::data((string) $challenge['challenge_date']),
@@ -286,13 +299,13 @@ final class DailyPushes
         if ($world !== null && $world['n'] >= 2) {
             $city   = CityNames::short($world['city'], $locale);
             $social = DailyPushText::render('answered_countries', $locale, ['n' => $world['n'], 'city' => $city])
-                      ?? "Answered in {$world['n']} countries already. Add {$city}.";
+                      ?? "Already {$world['n']} countries answered. {$city}, your move.";
         }
         // A city streak of 2 days or more with no proof yet today (SPEC 9.16) replaces the social line.
         if ($cityStreak !== null && $cityStreak['n'] >= 2) {
             $city   = CityNames::short($cityStreak['name'], $locale);
             $social = DailyPushText::render('city_streak', $locale, ['city' => $city, 'n' => $cityStreak['n']])
-                      ?? "{$city}'s {$cityStreak['n']}-day streak ends tonight. Will you represent it?";
+                      ?? "{$city} has answered {$cityStreak['n']} days in a row. Keep it going tonight?";
         }
         return [
             'title' => $title,
@@ -357,7 +370,7 @@ final class DailyPushes
             return null;
         }
         $city = CityNames::short($cityName, $locale);
-        return DailyPushText::render('tour', $locale, ['city' => $city]) ?? "Your photo represents {$city} in the world tour.";
+        return DailyPushText::render('tour', $locale, ['city' => $city]) ?? "Your answer represents {$city} in the world tour 🌍";
     }
 
     /** $text, then $line when the two fit in BODY_MAX characters; else $text alone. */
@@ -393,11 +406,15 @@ final class DailyPushes
     }
 
     /** The first vote on a proof (prompt 12): opens that proof. */
-    public static function firstVoteMessage(string $date, string $proofId, string $locale = 'en'): array
+    /** The first vote: "Someone in Lisbon voted for your answer." (the voter's city, never their name). */
+    public static function firstVoteMessage(string $date, string $proofId, string $locale = 'en', ?string $voterCity = null): array
     {
+        $city = $voterCity !== null && $voterCity !== '' ? CityNames::short($voterCity, $locale) : null;
         return [
             'title' => 'Daily Challenge',
-            'body'  => DailyPushText::render('first_vote', $locale) ?? 'Your proof got its first vote!',
+            'body'  => $city !== null
+                ? (DailyPushText::render('first_vote_city', $locale, ['city' => $city]) ?? "Someone in {$city} voted for your answer.")
+                : (DailyPushText::render('first_vote', $locale) ?? 'Your answer got its first vote!'),
             'data'  => self::data($date) + ['proofId' => $proofId],
         ];
     }
@@ -408,7 +425,7 @@ final class DailyPushes
         $parts = [];
         if ($votes > 0) {
             $parts[] = DailyPushText::render('digest_votes', $locale, ['n' => $votes])
-                       ?? self::plural($votes, 'person', 'people') . ' voted for your proof.';
+                       ?? self::plural($votes, 'person', 'people') . ' voted for your answer.';
         }
         if ($twistCompletions > 0) {
             $parts[] = DailyPushText::render('digest_twist', $locale, ['n' => $twistCompletions])
@@ -457,7 +474,7 @@ final class DailyPushes
         return [
             'title' => 'Daily Challenge',
             'body'  => DailyPushText::render('top10', $locale, ['rank' => $rank])
-                       ?? "You're in today's top 10! Your proof is #{$rank} in the world right now.",
+                       ?? "You're in today's top 10! Your answer is #{$rank} in the world right now.",
             'data'  => self::data($date),
         ];
     }
@@ -521,7 +538,8 @@ final class DailyPushes
             $line         = $o !== null ? self::outcomeLine($o['mine'], $o['winner'], $loc) : null;
             $withOutcome += $line !== null ? 1 : 0;
             $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'morning',
-                       self::morningSendAt($now, $u['tz']), $u['tz'], self::morningMessage($challenge, $line, $loc, $tourCity[$u['id']] ?? null)];
+                       self::morningSendAt($now, $u['tz']), $u['tz'],
+                       self::morningMessage($challenge, $line, $loc, $tourCity[$u['id']] ?? null, $u['cityName'] ?? null)];
         }
 
         // Guest devices: tokens without an account, unless that guest id
@@ -643,7 +661,7 @@ final class DailyPushes
      * author and challenge (unique key), so a withdrawn then recast first vote
      * sends nothing new. Returns rows queued.
      */
-    public static function queueFirstVote(string $userId, string $date, string $proofId, DateTimeImmutable $now): int
+    public static function queueFirstVote(string $userId, string $date, string $proofId, DateTimeImmutable $now, ?string $voterCity = null): int
     {
         [, $end] = DailyClock::window($date);
         $rows = [];
@@ -651,7 +669,7 @@ final class DailyPushes
             $at = self::morningSendAt($now, $u['tz']);
             if ($at < $end) {
                 $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'first_vote', $at, $u['tz'],
-                           ['data' => self::data($date) + ['proofId' => $proofId], 'locale' => $u['locale']]];
+                           ['data' => self::data($date) + ['proofId' => $proofId], 'locale' => $u['locale'], 'voterCity' => $voterCity]];
             }
         }
         return self::insert($rows);
@@ -819,7 +837,7 @@ final class DailyPushes
                     $reason = 'expired';
                 } else {
                     $msg = self::firstVoteMessage((string) $row['challenge_date'], (string) ($msg['data']['proofId'] ?? ''),
-                                                  (string) ($msg['locale'] ?? 'en')) + ['locale' => $msg['locale'] ?? 'en'];
+                                                  (string) ($msg['locale'] ?? 'en'), $msg['voterCity'] ?? null) + ['locale' => $msg['locale'] ?? 'en'];
                 }
             } elseif ($row['type'] === 'top10') {
                 if (!DailyClock::isActive((string) $row['challenge_date'], $now)) {
@@ -1111,10 +1129,11 @@ final class DailyPushes
                 FROM mobile_push_tokens WHERE {$where}
                 GROUP BY user_id {$having}
             )
-            SELECT u.id, u.timezone AS user_tz, u.locale, ut.token_tz, ci.timezone AS city_tz
+            SELECT u.id, u.timezone AS user_tz, u.locale, ut.token_tz, ci.timezone AS city_tz, ch.name AS city_name
             FROM ut
             JOIN users u ON u.id = ut.user_id AND u.deleted_at IS NULL
             LEFT JOIN cities ci ON ci.channel_id = u.current_city_id
+            LEFT JOIN channels ch ON ch.id = u.current_city_id
             LEFT JOIN notification_preferences np ON np.user_id = u.id
             WHERE COALESCE(np.daily_challenge_push, true)
         ");
@@ -1122,7 +1141,7 @@ final class DailyPushes
         $out = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $u) {
             $out[] = ['id' => $u['id'], 'tz' => self::pickTimezone($u['user_tz'], $u['token_tz'], $u['city_tz']),
-                      'locale' => DailyI18n::normalize($u['locale'])];
+                      'locale' => DailyI18n::normalize($u['locale']), 'cityName' => $u['city_name']];
         }
         return $out;
     }

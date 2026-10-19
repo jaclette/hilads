@@ -320,7 +320,7 @@
     "early": "Early",
     "proposedBy": "Proposed by {{name}}",
     "proposedByCity": "Proposed by {{name}} · {{city}}",
-    "groupTitle": "New proofs: {{n}}",
+    "groupTitle": "New answers: {{n}}",
     "groupCitiesMore": "{{cities}} and {{n}} more"
   }
 }

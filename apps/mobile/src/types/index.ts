@@ -963,7 +963,7 @@ export interface DailyToday {
   presence?: { represented: boolean; streak: number; citiesToday: number; pioneer: { username: string | null } | null } | null;
   /** Speed bonus window (signed in, no proof yet, still open): post before `until` for the bonus. */
   early?: { startsAt: number; until: number } | null;
-  /** SPEC 10.6: the live world teaser once 2 cities answered ("Answered in 5 countries: ..."). /daily/today only. */
+  /** SPEC 10.6: the live world teaser once a city answered ("Already 5 countries answered: ..." from 2 countries, else "First answers coming in"). /daily/today only. */
   world?: DailyWorldTeaser | null;
 }
 
@@ -991,6 +991,8 @@ export interface DailyBoard {
   }[];
   /** Number and time questions: the lowest and highest answer across cities. */
   range: { min: { city: DailyCityRef; answer: DailyAnswer | null }; max: { city: DailyCityRef; answer: DailyAnswer | null } } | null;
+  /** Cheapest and priciest median price (EUR) among cities with 3 priced answers or more, and their ratio. */
+  prices?: { cheapest: { city: DailyCityRef; eur: number }; priciest: { city: DailyCityRef; eur: number }; ratio: number | null } | null;
 }
 
 /** Yesterday around the world (GET /daily/tour, SPEC 10.7): one slide per city, in the viewer's order. */
@@ -1151,6 +1153,8 @@ export interface DailyUserStats {
   specialStamps?:     DailySpecialStamp[];
   /** Cities this user is the Pioneer of (the first approved proof ever there). */
   pioneerOf?:         { city: { id: number; name: string | null; country?: string | null }; since: number }[];
+  /** "Compared with N countries": the other countries that answered the challenges this user answered. */
+  comparedCountries?: number;
 }
 
 /** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */

@@ -190,7 +190,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
               ) : challenge.isActive && (
                 <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                    onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })}>
-                  {t('cta')}
+                  {cityName ? t('ctaAnswer', { city: cityName }) : t('ctaAnswerNoCity')}
                 </a>
               )}
             </div>

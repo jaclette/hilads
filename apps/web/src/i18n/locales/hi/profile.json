@@ -167,7 +167,9 @@
       "inReview_one": "{{count}} जाँच में",
       "inReview_other": "{{count}} जाँच में",
       "specialTitle": "स्पेशल स्टैम्प",
-      "specialSub": "लिमिटेड एडिशन, हर खास दिन का एक। Local Pass में नहीं गिना जाता।"
+      "specialSub": "लिमिटेड एडिशन, हर खास दिन का एक। Local Pass में नहीं गिना जाता।",
+      "compared_one": "{{count}} देश से तुलना की",
+      "compared_other": "{{count}} देशों से तुलना की"
     },
     "points": {
       "title": "पॉइंट कैसे कमाएँ",

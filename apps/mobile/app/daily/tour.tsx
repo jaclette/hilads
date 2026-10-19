@@ -177,8 +177,10 @@ export default function TourScreen() {
         // The last slide: today's challenge.
         <View style={[styles.bottom, styles.turn, { paddingBottom: insets.bottom + 24 }]} pointerEvents="box-none">
           <Text style={styles.turnTitle}>{t('tour.yourTurn')}</Text>
-          {todayChallenge && <Text style={styles.turnText}>{t('tour.todayIs', { text: todayChallenge.text })}</Text>}
-          {todayChallenge?.isActive && <Button icon="camera-outline" label={t('ctaIn')} onPress={takeIt} />}
+          {todayChallenge && <Text style={styles.turnText}>{t('tour.todayIs', { question: todayChallenge.compare?.question ?? todayChallenge.text })}</Text>}
+          {todayChallenge?.isActive && (
+            <Button icon="camera-outline" label={city?.name ? t('ctaAnswer', { city: shortCityName(city.name) }) : t('ctaAnswerNoCity')} onPress={takeIt} />
+          )}
           <Button variant="link" label={t('tour.close')} onPress={close} />
         </View>
       )}

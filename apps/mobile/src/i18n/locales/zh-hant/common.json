@@ -90,7 +90,8 @@
     "endedEvent": "此活動已結束",
     "closedChallenge": "此挑戰已關閉",
     "send": "傳送",
-    "emoji": "表情"
+    "emoji": "表情",
+    "placeholderWorld": "問問全世界是怎麼做的"
   },
   "modeHeading": "模式",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "顯示",
     "world": "世界",
     "pickCity": "選擇城市",
-    "citySub": "你所在城市的 challenge、證明和地點",
-    "worldSub": "所有城市的證明和地點",
+    "citySub": "你所在城市的 challenge、回答和地點",
+    "worldSub": "所有城市的回答和地點",
     "changeCity": "更換城市",
     "a11y": "正在顯示{{scope}}。點按以更換"
   },
@@ -222,9 +223,9 @@
     "errorBody": "檢舉送出失敗，請重試。"
   },
   "subtitles": {
-    "map": "在地人真正挑選的地點。",
+    "map": "來自全世界回答的地點。",
     "hi": "向你的城市打聲招呼。加入一個計畫。",
-    "passport": "你的印章和地點，一城一城。"
+    "passport": "你的城市、你的回答、你的印章。"
   },
   "photoBy": "照片：@{{username}}"
 }

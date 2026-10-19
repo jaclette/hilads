@@ -134,7 +134,8 @@
     "placeholderCity": "Chào thành phố của bạn",
     "placeholderHangout": "Báo với mọi người bạn tham gia",
     "placeholderEvent": "Trò chuyện với người tham dự",
-    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn"
+    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn",
+    "placeholderWorld": "Hỏi thế giới họ làm thế nào"
   },
   "vibe": {
     "party": "Tiệc tùng",
@@ -195,8 +196,8 @@
     "title": "Hiển thị",
     "world": "Thế giới",
     "pickCity": "Chọn thành phố",
-    "citySub": "Challenge, bằng chứng và spot của thành phố bạn",
-    "worldSub": "Bằng chứng và spot từ mọi thành phố",
+    "citySub": "Challenge, câu trả lời và spot của thành phố bạn",
+    "worldSub": "Câu trả lời và spot từ mọi thành phố",
     "changeCity": "Đổi thành phố",
     "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
   },
@@ -204,9 +205,9 @@
   "settings": "Cài đặt",
   "firstLaunch": "Chơi địa phương. So toàn cầu.",
   "subtitles": {
-    "map": "Những spot người địa phương thật sự chọn.",
+    "map": "Các spot từ câu trả lời của thế giới.",
     "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
-    "passport": "Tem và spot của bạn, từng thành phố."
+    "passport": "Thành phố, câu trả lời và con dấu của bạn."
   },
   "photoBy": "Ảnh của @{{username}}",
   "shareLink": {
@@ -218,17 +219,18 @@
     "textSpotCity": "{{name}}, {{city}}, trên Hilads"
   },
   "represent": {
-    "empty": "Hôm nay chưa ai đại diện cho {{city}}. Hãy là người đầu tiên.",
-    "button": "Đại diện {{city}}",
-    "firstPosted": "Hôm nay bạn đã đưa {{city}} lên bản đồ thế giới.",
+    "empty": "{{city}} chưa trả lời hôm nay. Hãy là người đầu tiên.",
+    "button": "Trả lời cho {{city}}",
+    "firstPosted": "Bạn đã đưa {{city}} lên bản đồ thế giới hôm nay.",
     "pioneer": "Người tiên phong của {{city}}",
     "spotOne": "Spot #1 ở {{city}}",
-    "streak_other": "{{city}}, được đại diện {{count}} ngày liên tiếp",
+    "streak_other": "{{city}} đã trả lời {{count}} ngày liên tiếp",
     "board_other": "{{count}} thành phố đã có mặt hôm nay. {{city}} thì chưa.",
-    "mapEmpty": "Hãy là người đầu tiên đưa {{city}} lên bản đồ.",
+    "mapEmpty": "{{city}} chưa có trên bản đồ thế giới. Hãy đưa lên.",
     "invite": "Mời bạn bè",
-    "share": "Giúp mình đại diện cho {{city}} trên Hilads nhé.",
+    "share": "Cùng mình trả lời cho {{city}} trên Hilads.",
     "pioneerTitle": "Huy hiệu tiên phong",
-    "pioneerSub": "Bằng chứng được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi."
+    "pioneerSub": "Câu trả lời được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi.",
+    "streak_one": "{{city}} đã trả lời {{count}} ngày liên tiếp"
   }
 }

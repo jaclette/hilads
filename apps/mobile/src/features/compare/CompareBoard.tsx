@@ -15,8 +15,9 @@ import { answerText } from './format';
 import { useMoney } from './money';
 
 /**
- * The Compare tab of the challenge sheet (SPEC 10.6): the question, the range
- * for number and time questions, and one row per city (flag, short name, the
+ * The Compare tab of the challenge sheet (SPEC 10.6): "How the world answered",
+ * the question, the range for number and time questions, the cheapest and
+ * priciest city with the price fun fact, and one row per city (flag, short name, the
  * answer of its best proof, median price in my currency, proof count).
  * Tapping a row shows that city's proofs. Readable without an account.
  */
@@ -93,9 +94,13 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
 
   const type = board.compare?.type;
   const range = board.range;
+  const prices = board.prices ?? null;
+  const cheapest = prices ? money.fromEur(prices.cheapest.eur) : null;
+  const priciest = prices ? money.fromEur(prices.priciest.eur) : null;
   const rangeKeys = type === 'time' ? ['compare.earliest', 'compare.latest'] : ['compare.lowest', 'compare.highest'];
   return (
     <View style={styles.wrap}>
+      <Text style={styles.title} accessibilityRole="header">{t('compare.boardTitle')}</Text>
       {board.compare && <Text style={styles.question}>{board.compare.question}</Text>}
       <Text style={styles.count}>{t('compare.boardCount', { count: board.cities, countries: board.countries })}</Text>
       {range && (
@@ -105,9 +110,25 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
           {t(rangeKeys[1], { city: shortCityName(range.max.city.name), answer: range.max.answer ? answerText(range.max.answer, i18n.language) : '-' })}
         </Text>
       )}
+      {prices && cheapest && priciest && (
+        <Text style={styles.range}>
+          {t('compare.cheapest', { city: shortCityName(prices.cheapest.city.name), price: cheapest })}
+          {'  ·  '}
+          {t('compare.priciest', { city: shortCityName(prices.priciest.city.name), price: priciest })}
+        </Text>
+      )}
+      {/* The fun fact, only from twice the price (COPY.md): surprise, never a ranking. */}
+      {prices && prices.ratio !== null && prices.ratio >= 2 && (
+        <Text style={styles.funFact}>
+          {t('compare.funFact', {
+            ratio: prices.ratio.toLocaleString(i18n.language, { maximumFractionDigits: prices.ratio >= 10 ? 0 : 1 }),
+            city: shortCityName(prices.priciest.city.name), other: shortCityName(prices.cheapest.city.name),
+          })}
+        </Text>
+      )}
       {board.rows.length === 0 ? (
         <EmptyState icon="earth-outline" title={t('compare.emptyTitle')} body={t('compare.emptyBody')}
-                    action={onAnswer ? <Button size="sm" icon="camera-outline" label={t('ctaIn')} onPress={onAnswer} /> : undefined} />
+                    action={onAnswer ? <Button size="sm" icon="camera-outline" label={t('ctaAnswerNoCity')} onPress={onAnswer} /> : undefined} />
       ) : (
         <View style={styles.table}>
           {board.rows.map((r, i) => {
@@ -139,9 +160,11 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:       { gap: 10, paddingTop: 4 },
   loading:    { marginVertical: Spacing.lg },
+  title:      { fontSize: FontSizes.sm, fontWeight: '800', color: c.muted },
   question:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   count:      { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   range:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, backgroundColor: c.stepBg, borderRadius: 12, padding: 10, overflow: 'hidden' },
+  funFact:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   table:      { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, overflow: 'hidden' },
   row:        { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 60, paddingHorizontal: 12, paddingVertical: 8 },
   rowLine:    { borderTopWidth: 1, borderTopColor: c.line },

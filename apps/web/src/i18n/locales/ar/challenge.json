@@ -868,8 +868,8 @@
     "nothingLive": "Daily Challenge التالي في الطريق",
     "cta": "خُض الـ challenge",
     "ctaIn": "أنا مشارك",
-    "ctaTaken": "تم التحدي · عرض دليلي",
-    "seeProofs": "شاهد أدلة اليوم",
+    "ctaTaken": "تمت الإجابة · عرض إجابتي",
+    "seeProofs": "شاهد إجابات اليوم",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist في {{city}}",
     "twistBy": "بواسطة {{name}}",
@@ -882,20 +882,20 @@
     "countCity": "{{count}} في {{city}}",
     "countZero": "لا أحد بعد - كن الأول",
     "beFirst": "كن الأول اليوم",
-    "beFirstSub": "لا يوجد دليل بعد. انشر دليلك وألهِم المدينة.",
-    "yourProof": "دليلك",
+    "beFirstSub": "لا توجد إجابة بعد. كن الأول، العالم ينتظر.",
+    "yourProof": "إجابتك",
     "status": {
       "pending": "قيد الانتظار",
       "approved": "منشور",
       "rejected": "غير منشور",
       "removed": "محذوف"
     },
-    "pendingHint": "تتم مراجعة كل دليل قبل نشره.",
+    "pendingHint": "تتم مراجعة كل إجابة قبل نشرها.",
     "reasonLabel": "السبب: {{reason}}",
     "fixIt": "أصلِحه",
     "edit": "تعديل",
     "delete": "حذف",
-    "deleteTitle": "حذف دليلك؟",
+    "deleteTitle": "حذف إجابتك؟",
     "deleteBody": "سيختفي من الـ challenge ومن القنوات.",
     "cancel": "إلغاء",
     "closed": "مغلق",
@@ -903,12 +903,12 @@
     "practicalTitle": "معلومات مفيدة",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_zero": "حسب {{count}} دليل",
-    "priceFrom_one": "حسب {{count}} دليل",
-    "priceFrom_two": "حسب {{count}} دليلين",
-    "priceFrom_few": "حسب {{count}} أدلة",
-    "priceFrom_many": "حسب {{count}} دليلًا",
-    "priceFrom_other": "حسب {{count}} دليل",
+    "priceFrom_zero": "حسب {{count}} إجابة",
+    "priceFrom_one": "حسب إجابة واحدة",
+    "priceFrom_two": "حسب إجابتين",
+    "priceFrom_few": "حسب {{count}} إجابات",
+    "priceFrom_many": "حسب {{count}} إجابة",
+    "priceFrom_other": "حسب {{count}} إجابة",
     "places_zero": "{{count}} مكان على الخريطة",
     "places_one": "{{count}} مكان على الخريطة",
     "places_two": "{{count}} مكانان على الخريطة",
@@ -925,8 +925,8 @@
     "notFound": "هذا الـ Daily Challenge غير موجود.",
     "cityRowEmpty": "كن أول من يُنشئ challenge في {{city}}",
     "proof": {
-      "titleNew": "دليلك",
-      "titleEdit": "عدّل دليلك",
+      "titleNew": "إجابتك",
+      "titleEdit": "عدّل إجابتك",
       "camera": "الكاميرا",
       "gallery": "المعرض",
       "changePhoto": "تغيير الصورة",
@@ -939,11 +939,11 @@
       "pinHint": "فقط إن أردت أن يجده الآخرون.",
       "pinChange": "تغيير",
       "pinRemove": "إزالة",
-      "submit": "انشر دليلي",
+      "submit": "انشر إجابتي",
       "save": "حفظ التغييرات",
       "sending": "جارٍ الإرسال…",
-      "sentTitle": "أُرسل للمراجعة",
-      "sentBody": "ستراه في الـ challenge بعد الموافقة عليه.",
+      "sentTitle": "أجابت {{city}}!",
+      "sentBody": "شاهد ما قاله العالم. تظهر صورتك بعد الموافقة عليها.",
       "ok": "حسنًا",
       "permPhotoTitle": "مطلوب الوصول إلى الصور",
       "permPhotoBody": "اسمح بالوصول من الإعدادات لإضافة صورة.",
@@ -951,12 +951,12 @@
       "permCameraBody": "اسمح بالوصول إلى الكاميرا من الإعدادات لالتقاط صورة.",
       "photoRequired": "أضف صورة أولًا.",
       "locationOff": "الموقع متوقف، لذا لا يمكن تحديد هذا المكان.",
-      "editOnlyActive": "يمكنك تعديل دليلك حتى ينتهي الـ challenge.",
+      "editOnlyActive": "يمكنك تعديل إجابتك حتى ينتهي الـ challenge.",
       "takeTitle": "التقط صورتك",
       "retake": "أعد الالتقاط"
     },
     "errors": {
-      "already_posted": "لقد نشرت دليلًا لـ challenge اليوم بالفعل.",
+      "already_posted": "لقد أجبت عن challenge اليوم بالفعل.",
       "challenge_closed": "هذا الـ challenge مغلق.",
       "no_active_challenge": "لا يوجد Daily Challenge حاليًا.",
       "moderation_blocked": "تم الإبلاغ عن تعليقك - يُرجى إعادة صياغته.",
@@ -968,12 +968,12 @@
       "rate_limited": "محاولات كثيرة جدًا - انتظر قليلًا.",
       "image_processing_failed": "تعذّرت معالجة هذه الصورة. جرّب صورة أخرى.",
       "generic": "حدث خطأ ما. حاول مرة أخرى.",
-      "place_required": "اختر مكان إثباتك.",
+      "place_required": "اختر مكان إجابتك.",
       "place_not_allowed": "هذا الـ challenge بلا مكان.",
       "place_not_found": "هذا المكان لم يعد متاحًا. اختر مكانًا آخر.",
       "invalid_place_name": "يجب أن يكون اسم المكان من 1 إلى 80 حرفًا.",
       "place_name_blocked": "تم الإبلاغ عن اسم المكان هذا. أعد صياغته.",
-      "invalid_position": "نحتاج موقعك لنشر هذا الإثبات.",
+      "invalid_position": "نحتاج موقعك لنشر هذه الإجابة.",
       "too_far": "أنت بعيد جدًا عن هذا المكان."
     },
     "push": {
@@ -991,15 +991,15 @@
       "pickCity": "اختر مدينة",
       "worldSelection": "مختارات العالم: هذه المدينة ليست مباشرة بعد",
       "empty": "أول Daily Challenge في الطريق إليك.",
-      "proofs_zero": "{{count}} دليل",
-      "proofs_one": "{{count}} دليل",
-      "proofs_two": "{{count}} دليلان",
-      "proofs_few": "{{count}} أدلة",
-      "proofs_many": "{{count}} دليلًا",
-      "proofs_other": "{{count}} دليل"
+      "proofs_zero": "لا إجابات",
+      "proofs_one": "إجابة واحدة",
+      "proofs_two": "إجابتان",
+      "proofs_few": "{{count}} إجابات",
+      "proofs_many": "{{count}} إجابة",
+      "proofs_other": "{{count}} إجابة"
     },
     "report": {
-      "title": "الإبلاغ عن هذا الدليل",
+      "title": "الإبلاغ عن هذه الإجابة",
       "body": "ما المشكلة فيه؟",
       "reasons": {
         "inappropriate": "غير لائق",
@@ -1009,14 +1009,14 @@
         "other": "سبب آخر"
       },
       "thanks": "شكرًا - سنراجعه.",
-      "already": "لقد أبلغت عن هذا الدليل من قبل."
+      "already": "لقد أبلغت عن هذه الإجابة من قبل."
     },
     "vote": {
       "vote": "صوّت",
       "withdraw": "اسحب صوتي",
-      "yours": "دليلك",
+      "yours": "إجابتك",
       "noneLeftTitle": "لم تبقَ أصوات",
-      "noneLeft": "استخدمت أصواتك الثلاثة اليوم. اسحب واحدًا لتصوّت لهذا الدليل.",
+      "noneLeft": "استخدمت أصواتك الثلاثة اليوم. اسحب واحدًا لتصوّت لهذه الإجابة.",
       "left_zero": "لم يبقَ أي صوت",
       "left_one": "بقي صوت واحد",
       "left_two": "بقي صوتان",
@@ -1027,8 +1027,8 @@
         "vote_limit": "استخدمت أصواتك الثلاثة اليوم بالفعل.",
         "voting_closed": "أُغلق التصويت مع انتهاء الـ challenge.",
         "rate_limited": "محاولات كثيرة - انتظر قليلًا.",
-        "own_proof": "لا يمكنك التصويت لدليلك.",
-        "not_found": "هذا الدليل لم يعد متاحًا.",
+        "own_proof": "لا يمكنك التصويت لإجابتك.",
+        "not_found": "هذه الإجابة لم تعد متاحة.",
         "generic": "حدث خطأ ما. حاول مجددًا."
       }
     },
@@ -1044,7 +1044,7 @@
       "streak": "السلسلة الحالية",
       "bestStreak": "أفضل سلسلة",
       "completed": "المنجزة",
-      "bestProofs": "أفضل الأدلة",
+      "bestProofs": "أفضل الإجابات",
       "emptyMine": "تبدأ سلسلتك مع challenge اليوم."
     },
     "streak_zero": "{{count}} يوم متتالٍ",
@@ -1111,7 +1111,7 @@
       "titleChallenge": "الأماكن المثبّتة",
       "titleCity": "الأماكن المثبّتة في {{city}}",
       "titleWorld": "الأماكن المثبّتة حول العالم",
-      "seeProof": "عرض الدليل",
+      "seeProof": "عرض الإجابة",
       "openChallenge": "فتح الـ challenge",
       "search": "ابحث عن طبق أو مقهى أو شارع",
       "searchA11y": "ابحث عن أماكن",
@@ -1131,24 +1131,24 @@
       "closeSpot": "إغلاق",
       "emptyTitle": "كن أول من يضع مكانًا هنا",
       "planA11y": "خطة: {{title}}، {{time}}",
-      "proofs_zero": "لا إثباتات",
-      "proofs_one": "إثبات واحد",
-      "proofs_two": "إثباتان",
-      "proofs_few": "{{count}} إثباتات",
-      "proofs_many": "{{count}} إثباتًا",
-      "proofs_other": "{{count}} إثبات"
+      "proofs_zero": "لا إجابات",
+      "proofs_one": "إجابة واحدة",
+      "proofs_two": "إجابتان",
+      "proofs_few": "{{count}} إجابات",
+      "proofs_many": "{{count}} إجابة",
+      "proofs_other": "{{count}} إجابة"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "مؤقت حتى الـ drop القادم",
       "finalIn": "نهائي خلال {{time}}",
       "official": "منصة التتويج الرسمية",
-      "minProofs": "يُفتح Top 10 عند {{min}} أدلة. حتى الآن: {{n}}.",
-      "noVotes": "لا أصوات بعد. صوّت لأدلتك المفضلة!",
+      "minProofs": "يُفتح Top 10 عند {{min}} إجابات. حتى الآن: {{n}}.",
+      "noVotes": "لا أصوات بعد. صوّت لإجاباتك المفضلة!",
       "me": "أنت: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} في {{city}}",
-      "noProof": "انشر دليلك لتدخل الترتيب.",
-      "pending": "سيدخل دليلك الترتيب بعد الموافقة عليه.",
+      "noProof": "أجب لتدخل الترتيب.",
+      "pending": "ستدخل إجابتك الترتيب بعد الموافقة عليها.",
       "cityTop": "Top 3 في {{city}}",
       "compactTitle": "Top 3 الآن",
       "seeAll": "Top 10 ›"
@@ -1244,21 +1244,21 @@
       "hint": "مكافأة السرعة: انشر قبل {{time}}"
     },
     "group": {
-      "title": "أدلة جديدة: {{n}}",
+      "title": "إجابات جديدة: {{n}}",
       "citiesMore": "{{cities}} و{{n}} أخرى",
-      "galleryTitle": "أدلة جديدة"
+      "galleryTitle": "إجابات جديدة"
     },
     "today": {
       "early": "مكافأة السرعة حتى {{time}}",
       "tomorrow": "غدًا: {{theme}}",
       "aroundWorld": "اليوم حول العالم",
       "inCity": "اليوم في {{city}}",
-      "proofs_zero": "لا إثباتات",
-      "proofs_one": "إثبات واحد",
-      "proofs_two": "إثباتان",
-      "proofs_few": "{{count}} إثباتات",
-      "proofs_many": "{{count}} إثباتًا",
-      "proofs_other": "{{count}} إثبات",
+      "proofs_zero": "لا إجابات",
+      "proofs_one": "إجابة واحدة",
+      "proofs_two": "إجابتان",
+      "proofs_few": "{{count}} إجابات",
+      "proofs_many": "{{count}} إجابة",
+      "proofs_other": "{{count}} إجابة",
       "countries_zero": "لا دول",
       "countries_one": "دولة واحدة",
       "countries_two": "دولتين",
@@ -1290,7 +1290,7 @@
       "openMap": "افتح الخريطة",
       "spotsFallback": "لا توجد أماكن في مدينتك بعد. الأقرب:",
       "spotsEmpty": "لا يوجد مكان هنا بعد. خُض الـ challenge اليوم لتضع أول مكان على الخريطة.",
-      "seeMine": "عرض إثباتك",
+      "seeMine": "عرض إجابتك",
       "votes_zero": "لا أصوات",
       "votes_one": "صوت واحد",
       "votes_two": "صوتان",
@@ -1304,7 +1304,7 @@
         "today": "اليوم",
         "tomorrow": "غدًا",
         "later": "قريبًا",
-        "none": "لا إثبات"
+        "none": "لا إجابة"
       },
       "links": {
         "pastSub": "صور الأيام السابقة",
@@ -1363,12 +1363,12 @@
     },
     "takeIt": "خُضه",
     "proofHint": {
-      "title": "أثبت ذلك بصورة",
-      "place": "الأكثر تصويتًا تصبح صورة المكان.",
-      "noPlace": "الأكثر تصويتًا تصعد إلى المنصة."
+      "title": "صوّر إجابتك",
+      "place": "الصورة الأكثر تصويتًا تصبح صورة المكان.",
+      "noPlace": "الصورة الأكثر تصويتًا تصعد إلى المنصة."
     },
     "compare": {
-      "todayQuestion": "سؤال اليوم: {{question}}",
+      "todayQuestion": "اليوم يجيب العالم: {{question}}",
       "tab": "قارن",
       "allCities": "كل المدن",
       "boardCount": "المدن: {{count}} · البلدان: {{countries}}",
@@ -1380,23 +1380,28 @@
       "emptyBody": "كن أول مدينة على اللوحة.",
       "noAnswer": "لا إجابة بعد",
       "median": "الوسيط {{price}}",
-      "proofs_zero": "لا إثباتات",
-      "proofs_one": "إثبات واحد",
-      "proofs_two": "إثباتان",
-      "proofs_few": "{{count}} إثباتات",
-      "proofs_many": "{{count}} إثباتًا",
-      "proofs_other": "{{count}} إثبات",
+      "proofs_zero": "لا إجابات",
+      "proofs_one": "إجابة واحدة",
+      "proofs_two": "إجابتان",
+      "proofs_few": "{{count}} إجابات",
+      "proofs_many": "{{count}} إجابة",
+      "proofs_other": "{{count}} إجابة",
       "teaser_zero": "أجاب {{count}} بلد:",
       "teaser_one": "أجاب بلد واحد:",
       "teaser_two": "أجاب بلدان:",
       "teaser_few": "أجابت {{count}} بلدان:",
       "teaser_many": "أجاب {{count}} بلدًا:",
       "teaser_other": "أجاب {{count}} بلد:",
-      "seeAll": "عرض الكل"
+      "seeAll": "عرض الكل",
+      "firstAnswers": "أولى الإجابات تصل. أي مدينة التالية؟",
+      "boardTitle": "هكذا أجاب العالم",
+      "cheapest": "الأرخص: {{city}} {{price}}",
+      "priciest": "الأغلى: {{city}} {{price}}",
+      "funFact": "السعر في {{city}} أعلى بـ {{ratio}} مرات من {{other}}."
     },
     "backHome": {
       "hereIn": "هنا في {{city}}",
-      "homeIn": "في مدينتك: {{city}}"
+      "homeIn": "في الوطن، {{city}}"
     },
     "tour": {
       "title": "جولة الأمس حول العالم",
@@ -1411,7 +1416,7 @@
         "night": "في الليل"
       },
       "yourTurn": "دورك الآن.",
-      "todayIs": "تحدي اليوم: {{text}}",
+      "todayIs": "اليوم يجيب العالم: {{question}}",
       "close": "إغلاق",
       "sub_zero": "لا مدن",
       "sub_one": "مدينة واحدة، التحدي نفسه",
@@ -1424,12 +1429,16 @@
       "tagline": "التحدي نفسه. عوالم مختلفة."
     },
     "index": {
-      "title": "مؤشر Hilads Index للأسبوع الماضي",
-      "sub": "ما دفعه العالم الأسبوع الماضي",
+      "title": "ما دفعه العالم الأسبوع الماضي",
       "pricePaid": "السعر الوسيط المدفوع",
       "share": "مشاركة",
       "shareText": "Hilads Index: {{lines}}",
-      "footnote": "بناءً على المدن التي لديها 3 إثباتات أو أكثر"
+      "footnote": "بناءً على المدن التي لديها 3 إجابات أو أكثر"
+    },
+    "ctaAnswer": "أجب باسم {{city}}",
+    "ctaAnswerNoCity": "أجب باسم مدينتك",
+    "represent": {
+      "button": "أجب باسم {{city}}"
     }
   }
 }

@@ -5,8 +5,8 @@
   "nothingLive": "La prossima Daily Challenge sta arrivando",
   "cta": "Accetta la challenge",
   "ctaIn": "Ci sto",
-  "ctaTaken": "Challenge fatta · Vedi la mia prova",
-  "seeProofs": "Vedi le prove di oggi",
+  "ctaTaken": "Risposto · Vedi la mia risposta",
+  "seeProofs": "Vedi le risposte di oggi",
   "localTwist": "Local Twist",
   "twistIn": "Local Twist di {{city}}",
   "twistBy": "di {{name}}",
@@ -15,20 +15,20 @@
   "countCity": "{{count}} a {{city}}",
   "countZero": "Ancora nessuno - sii il primo",
   "beFirst": "Sii il primo oggi",
-  "beFirstSub": "Ancora nessuna prova. Pubblica la tua e ispira la città.",
-  "yourProof": "La tua prova",
+  "beFirstSub": "Ancora nessuna risposta. Pubblica la tua e ispira la città.",
+  "yourProof": "La tua risposta",
   "status": {
     "pending": "In attesa",
     "approved": "Pubblicata",
     "rejected": "Non pubblicata",
     "removed": "Rimossa"
   },
-  "pendingHint": "Ogni prova viene controllata prima di essere pubblicata.",
+  "pendingHint": "Ogni risposta viene controllata prima di essere pubblicata.",
   "reasonLabel": "Motivo: {{reason}}",
   "fixIt": "Correggila",
   "edit": "Modifica",
   "delete": "Elimina",
-  "deleteTitle": "Eliminare la tua prova?",
+  "deleteTitle": "Eliminare la tua risposta?",
   "deleteBody": "Sparirà dalla challenge e dai canali.",
   "cancel": "Annulla",
   "closed": "Chiusa",
@@ -36,8 +36,8 @@
   "practicalTitle": "Buono a sapersi",
   "priceRange": "{{min}}-{{max}} {{currency}}",
   "priceOne": "{{amount}} {{currency}}",
-  "priceFrom_one": "da {{count}} prova",
-  "priceFrom_other": "da {{count}} prove",
+  "priceFrom_one": "da {{count}} risposta",
+  "priceFrom_other": "da {{count}} risposte",
   "places_one": "{{count}} luogo segnato",
   "places_other": "{{count}} luoghi segnati",
   "unnamedPlace": "Luogo segnato",
@@ -50,8 +50,8 @@
   "notFound": "Questa Daily Challenge non esiste.",
   "cityRowEmpty": "Sii il primo a creare una challenge a {{city}}",
   "proof": {
-    "titleNew": "La tua prova",
-    "titleEdit": "Modifica la tua prova",
+    "titleNew": "La tua risposta",
+    "titleEdit": "Modifica la tua risposta",
     "camera": "Fotocamera",
     "gallery": "Galleria",
     "changePhoto": "Cambia foto",
@@ -64,11 +64,11 @@
     "pinHint": "Solo se vuoi che altri lo trovino.",
     "pinChange": "Cambia",
     "pinRemove": "Rimuovi",
-    "submit": "Pubblica la mia prova",
+    "submit": "Pubblica la mia risposta",
     "save": "Salva modifiche",
     "sending": "Invio…",
-    "sentTitle": "Inviata per la revisione",
-    "sentBody": "La vedrai nella challenge appena viene approvata.",
+    "sentTitle": "{{city}} ha risposto!",
+    "sentBody": "Guarda cosa ha detto il mondo. La tua foto appare una volta approvata.",
     "ok": "OK",
     "permPhotoTitle": "Serve l'accesso alle foto",
     "permPhotoBody": "Consenti l'accesso nelle impostazioni per aggiungere una foto.",
@@ -76,12 +76,14 @@
     "permCameraBody": "Consenti l'accesso alla fotocamera nelle impostazioni per scattare una foto.",
     "photoRequired": "Prima aggiungi una foto.",
     "locationOff": "La posizione è disattivata, quindi non puoi segnare questo luogo.",
-    "editOnlyActive": "Puoi modificare la tua prova fino alla fine della challenge.",
+    "editOnlyActive": "Puoi modificare la tua risposta fino alla fine della challenge.",
     "takeTitle": "Scatta la tua foto",
-    "retake": "Rifai"
+    "retake": "Rifai",
+    "sentTitleNoCity": "La tua risposta è partita!",
+    "compare": "Confronta"
   },
   "errors": {
-    "already_posted": "Hai già pubblicato una prova per la challenge di oggi.",
+    "already_posted": "Hai già pubblicato una risposta per la challenge di oggi.",
     "challenge_closed": "Questa challenge è chiusa.",
     "no_active_challenge": "Al momento non c'è nessuna Daily Challenge.",
     "moderation_blocked": "La tua didascalia è stata segnalata - riformulala.",
@@ -93,14 +95,14 @@
     "rate_limited": "Troppi tentativi - aspetta un attimo.",
     "image_processing_failed": "Impossibile elaborare questa foto. Provane un'altra.",
     "generic": "Qualcosa è andato storto. Riprova.",
-    "place_required": "Scegli il luogo della tua prova.",
+    "place_required": "Scegli il luogo della tua risposta.",
     "place_not_allowed": "Questo challenge non ha un luogo.",
     "place_not_found": "Questo luogo non è più disponibile. Scegline un altro.",
     "invalid_place_name": "Il nome del luogo deve avere da 1 a 80 caratteri.",
     "place_name_blocked": "Questo nome di luogo è stato segnalato. Riformulalo.",
-    "invalid_position": "Serve la tua posizione per pubblicare questa prova.",
+    "invalid_position": "Serve la tua posizione per pubblicare questa risposta.",
     "too_far": "Sei troppo lontano da questo luogo.",
-    "answer_required": "Rispondi alla domanda di oggi per pubblicare la tua prova.",
+    "answer_required": "Rispondi alla domanda di oggi per pubblicare la tua risposta.",
     "invalid_answer": "Questa risposta non va bene per la domanda. Controlla e riprova.",
     "invalid_back_home": "\"E a casa tua?\" richiede una città e una risposta, un prezzo o una riga."
   },
@@ -119,11 +121,11 @@
     "pickCity": "Scegli una città",
     "worldSelection": "Selezione Mondo: questa città non è ancora attiva",
     "empty": "Le prime Daily Challenge stanno arrivando.",
-    "proofs_one": "{{count}} prova",
-    "proofs_other": "{{count}} prove"
+    "proofs_one": "{{count}} risposta",
+    "proofs_other": "{{count}} risposte"
   },
   "report": {
-    "title": "Segnala questa prova",
+    "title": "Segnala questa risposta",
     "body": "Qual è il problema?",
     "reasons": {
       "inappropriate": "Inappropriata",
@@ -133,22 +135,22 @@
       "other": "Altro"
     },
     "thanks": "Grazie - la controlleremo.",
-    "already": "Hai già segnalato questa prova."
+    "already": "Hai già segnalato questa risposta."
   },
   "vote": {
     "vote": "Vota",
     "withdraw": "Togli il mio voto",
-    "yours": "La tua prova",
+    "yours": "La tua risposta",
     "noneLeftTitle": "Voti finiti",
-    "noneLeft": "Hai usato i tuoi 3 voti di oggi. Togline uno per votare questa prova.",
+    "noneLeft": "Hai usato i tuoi 3 voti di oggi. Togline uno per votare questa risposta.",
     "left_one": "Ti resta {{count}} voto",
     "left_other": "Ti restano {{count}} voti",
     "errors": {
       "vote_limit": "Hai già usato i tuoi 3 voti di oggi.",
       "voting_closed": "Le votazioni si sono chiuse con il challenge.",
       "rate_limited": "Troppi tentativi - aspetta un attimo.",
-      "own_proof": "Non puoi votare la tua prova.",
-      "not_found": "Questa prova non è più disponibile.",
+      "own_proof": "Non puoi votare la tua risposta.",
+      "not_found": "Questa risposta non è più disponibile.",
       "generic": "Qualcosa è andato storto. Riprova."
     }
   },
@@ -164,7 +166,7 @@
     "streak": "Serie attuale",
     "bestStreak": "Serie migliore",
     "completed": "Completate",
-    "bestProofs": "Prove migliori",
+    "bestProofs": "Risposte migliori",
     "emptyMine": "La tua serie inizia con il challenge di oggi."
   },
   "streak_one": "{{count}} giorno di fila",
@@ -227,7 +229,7 @@
     "titleChallenge": "Luoghi segnati",
     "titleCity": "Luoghi segnati a {{city}}",
     "titleWorld": "Luoghi segnati nel mondo",
-    "seeProof": "Vedi la prova",
+    "seeProof": "Vedi la risposta",
     "openChallenge": "Apri il challenge",
     "search": "Cerca un piatto, un caffè, una via",
     "searchA11y": "Cerca spot",
@@ -252,20 +254,20 @@
     "sortWeek": "Più votati questa settimana",
     "spotsTomorrow": "Gli spot arrivano con il challenge di domani: {{theme}}",
     "planA11y": "Piano: {{title}}, {{time}}",
-    "proofs_one": "{{count}} prova",
-    "proofs_other": "{{count}} prove"
+    "proofs_one": "{{count}} risposta",
+    "proofs_other": "{{count}} risposte"
   },
   "leaderboard": {
     "tab": "Top 10",
     "provisional": "Provvisoria fino al drop",
     "finalIn": "Definitiva tra {{time}}",
     "official": "Podio ufficiale",
-    "minProofs": "La Top 10 si apre a {{min}} prove. Finora: {{n}}.",
-    "noVotes": "Ancora nessun voto. Vota le tue prove preferite!",
+    "minProofs": "La Top 10 si apre a {{min}} risposte. Finora: {{n}}.",
+    "noVotes": "Ancora nessun voto. Vota le tue risposte preferite!",
     "me": "Tu: #{{rank}} · ♥ {{votes}}",
     "meCity": "#{{rank}} a {{city}}",
-    "noProof": "Pubblica la tua prova per entrare in classifica.",
-    "pending": "La tua prova entra in classifica una volta approvata.",
+    "noProof": "Pubblica la tua risposta per entrare in classifica.",
+    "pending": "La tua risposta entra in classifica una volta approvata.",
     "cityTop": "Top 3 a {{city}}",
     "compactTitle": "Top 3 in questo momento",
     "seeAll": "Top 10 ›"
@@ -361,17 +363,17 @@
     "hint": "Bonus velocità: pubblica prima delle {{time}}"
   },
   "group": {
-    "title": "Nuove prove: {{n}}",
+    "title": "Nuove risposte: {{n}}",
     "citiesMore": "{{cities}} e altre {{n}}",
-    "galleryTitle": "Nuove prove"
+    "galleryTitle": "Nuove risposte"
   },
   "today": {
     "early": "Bonus velocità fino alle {{time}}",
     "tomorrow": "Domani: {{theme}}",
     "aroundWorld": "Oggi nel mondo",
     "inCity": "Oggi a {{city}}",
-    "proofs_one": "{{count}} prova",
-    "proofs_other": "{{count}} prove",
+    "proofs_one": "{{count}} risposta",
+    "proofs_other": "{{count}} risposte",
     "countries_one": "{{count}} paese",
     "countries_other": "{{count}} paesi",
     "proofsIn": "{{proofs}} in {{countries}}",
@@ -391,7 +393,7 @@
     "openMap": "Apri la mappa",
     "spotsFallback": "Ancora nessuno spot nella tua città. I più vicini:",
     "spotsEmpty": "Ancora nessuno spot qui. Accetta il challenge di oggi per mettere il primo sulla mappa.",
-    "seeMine": "Vedi la tua prova",
+    "seeMine": "Vedi la tua risposta",
     "votes_one": "{{count}} voto",
     "votes_other": "{{count}} voti",
     "day": {
@@ -401,7 +403,7 @@
       "today": "oggi",
       "tomorrow": "domani",
       "later": "in arrivo",
-      "none": "nessuna prova"
+      "none": "nessuna risposta"
     },
     "links": {
       "pastSub": "Le foto dei giorni precedenti",
@@ -460,26 +462,26 @@
   },
   "takeIt": "Accetta",
   "proofHint": {
-    "title": "Dimostralo con una foto",
-    "place": "La più votata diventa la foto dello spot.",
-    "noPlace": "La più votata sale sul podio."
+    "title": "La tua risposta, in foto",
+    "place": "La foto più votata diventa la foto dello spot.",
+    "noPlace": "La foto più votata sale sul podio."
   },
   "howItWorks": {
     "title": "Come funziona",
     "step1": "Fallo dove sei.",
     "step2": "Scatta una foto.",
     "step3": "Finisce sulla mappa e riceve voti.",
-    "step3NoPlace": "Compare tra le prove di oggi e riceve voti.",
+    "step3NoPlace": "Compare tra le risposte di oggi e riceve voti.",
     "camera": "Apri la fotocamera",
     "later": "Ricordamelo dopo",
     "laterDone": "Te lo ricordiamo stasera."
   },
   "share": {
     "title": "Condividi",
-    "shareProof": "Condividi la mia prova",
+    "shareProof": "Condividi la mia risposta",
     "shareRank": "Condividi il tuo #{{rank}}",
     "challengeFriend": "Sfida un amico",
-    "afterProof": "Fallo vedere ai tuoi amici",
+    "afterProof": "Condividi la mia risposta",
     "copyLink": "Copia link",
     "copied": "Copiato",
     "more": "Altro",
@@ -488,32 +490,32 @@
     "rankCity": "#{{rank}} a {{city}}",
     "photoBy": "Foto di @{{user}}",
     "areYouIn": "Ci stai?",
-    "textProof": "La mia foto per il Daily Challenge di oggi su Hilads: {{challenge}}",
+    "textProof": "{{question}} A {{city}}: {{answer}}. E nella tua città? Gioca locale. Confronta globale.",
     "textSpot": "{{name}} su Hilads",
     "textSpotCity": "{{name}}, {{city}}, su Hilads",
-    "textToday": "Il Daily Challenge di oggi su Hilads: {{challenge}} Ci stai?"
+    "textToday": "Il Daily Challenge di oggi su Hilads: {{challenge}} Ci stai?",
+    "textProofNoAnswer": "{{challenge}} A {{city}}. E nella tua città? Gioca locale. Confronta globale."
   },
   "represent": {
-    "empty": "Nessuno ha ancora rappresentato {{city}} oggi. Sii il primo.",
-    "button": "Rappresenta {{city}}",
-    "firstPosted": "Oggi hai messo {{city}} sulla mappa del mondo.",
+    "empty": "{{city}} non ha ancora risposto oggi. Sii il primo.",
+    "button": "Rispondi per {{city}}",
+    "firstPosted": "Hai messo {{city}} sulla mappa del mondo di oggi.",
     "pioneer": "Pioniere di {{city}}",
     "spotOne": "Spot n. 1 a {{city}}",
-    "streak_one": "{{city}}, rappresentata {{count}} giorno di fila",
-    "streak_many": "{{city}}, rappresentata {{count}} giorni di fila",
-    "streak_other": "{{city}}, rappresentata {{count}} giorni di fila",
     "board_one": "{{count}} città è nella classifica di oggi. {{city}} non ancora.",
     "board_many": "{{count}} città sono nella classifica di oggi. {{city}} non ancora.",
     "board_other": "{{count}} città sono nella classifica di oggi. {{city}} non ancora.",
-    "mapEmpty": "Sii il primo a mettere {{city}} sulla mappa.",
+    "mapEmpty": "{{city}} non è ancora sulla mappa del mondo. Mettila tu.",
     "invite": "Invita un amico",
-    "share": "Aiutami a rappresentare {{city}} su Hilads.",
+    "share": "Rispondi per {{city}} con me su Hilads.",
     "pioneerTitle": "Badge da pioniere",
-    "pioneerSub": "La prima prova approvata in una città. Tua per sempre."
+    "pioneerSub": "La prima risposta approvata in una città. Tua per sempre.",
+    "streak_one": "{{city}} risponde da {{count}} giorno",
+    "streak_other": "{{city}} risponde da {{count}} giorni di fila"
   },
   "compare": {
-    "todayQuestion": "La domanda di oggi: {{question}}",
-    "kicker": "La domanda di oggi",
+    "todayQuestion": "Oggi risponde il mondo: {{question}}",
+    "kicker": "Oggi risponde il mondo:",
     "sub": "Rispondi in breve: è quello che il mondo confronterà.",
     "next": "Avanti",
     "wordPlaceholder": "Una parola o una frase breve",
@@ -530,21 +532,26 @@
     "emptyBody": "Sii la prima città sul tabellone.",
     "noAnswer": "Ancora nessuna risposta",
     "median": "Mediana {{price}}",
-    "proofs_one": "{{count}} prova",
-    "proofs_other": "{{count}} prove",
-    "teaser_one": "Già {{count}} paese:",
-    "teaser_other": "Già {{count}} paesi:",
-    "seeAll": "Vedi tutto"
+    "proofs_one": "{{count}} risposta",
+    "proofs_other": "{{count}} risposte",
+    "seeAll": "Vedi tutto",
+    "teaser_one": "Ha già risposto {{count}} paese:",
+    "teaser_other": "Hanno già risposto {{count}} paesi:",
+    "firstAnswers": "Arrivano le prime risposte. Quale città è la prossima?",
+    "boardTitle": "Come ha risposto il mondo",
+    "cheapest": "Il più economico: {{city}} {{price}}",
+    "priciest": "Il più caro: {{city}} {{price}}",
+    "funFact": "{{ratio}} volte più caro a {{city}} che a {{other}}."
   },
   "backHome": {
-    "title": "E a casa tua?",
+    "title": "E a casa tua, com'è?",
     "pickCity": "Dov'è casa tua?",
     "choose": "Scegli",
     "homeIn": "A casa, a {{city}}",
     "answerPlaceholder": "A {{city}}",
     "price": "Prezzo a {{city}} (facoltativo)",
     "line": "Una riga su questo (facoltativo)",
-    "linePlaceholder": "E a {{city}} com'è?",
+    "linePlaceholder": "Per esempio: a Parigi, una birra costa 7 €.",
     "skip": "Salta",
     "askTitle": "Dov'è casa tua?",
     "askSub": "La tua città d'origine. Te lo chiediamo una volta, puoi cambiarla nelle Impostazioni.",
@@ -574,7 +581,7 @@
       "night": "Di notte"
     },
     "yourTurn": "Tocca a te.",
-    "todayIs": "La sfida di oggi: {{text}}",
+    "todayIs": "Oggi risponde il mondo: {{question}}",
     "close": "Chiudi",
     "sub_one": "{{count}} città, la stessa sfida",
     "sub_other": "{{count}} città, la stessa sfida"
@@ -583,11 +590,12 @@
     "tagline": "Stessa sfida. Mondi diversi."
   },
   "index": {
-    "title": "L'Hilads Index della settimana scorsa",
-    "sub": "Quanto ha pagato il mondo la settimana scorsa",
+    "title": "Quanto ha pagato il mondo la settimana scorsa",
     "pricePaid": "Prezzo mediano pagato",
     "share": "Condividi",
     "shareText": "L'Hilads Index: {{lines}}",
-    "footnote": "Basato sulle città con 3 prove o più"
-  }
+    "footnote": "Basato sulle città con 3 risposte o più"
+  },
+  "ctaAnswer": "Rispondi per {{city}}",
+  "ctaAnswerNoCity": "Rispondi per la tua città"
 }

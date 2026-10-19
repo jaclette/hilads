@@ -71,4 +71,18 @@ final class DailyBoardTest extends TestCase
         $this->assertNotContains('city_5', $pick);
         $this->assertSame('city_1', DailyBoard::teaserPick($rows, 'city_1', 5)[3]['cityId']);
     }
+
+    public function testPriceSpreadNeedsThreePricedAnswers(): void
+    {
+        $rows = DailyBoard::group([
+            self::p('a1', 'city_1', 0, ['price_eur' => 1.0]), self::p('a2', 'city_1', 0, ['price_eur' => 1.2]), self::p('a3', 'city_1', 0, ['price_eur' => 0.8]),
+            self::p('b1', 'city_2', 0, ['price_eur' => 3.0]), self::p('b2', 'city_2', 0, ['price_eur' => 2.8]), self::p('b3', 'city_2', 0, ['price_eur' => 3.2]),
+            self::p('c1', 'city_3', 0, ['price_eur' => 9.0]), self::p('c2', 'city_3', 0, ['price_eur' => 9.5]),   // 2 prices: left out
+        ], null);
+        [$lo, $hi, $loM, $hiM, $ratio] = DailyBoard::priceSpread($rows);
+        $this->assertSame(['city_1', 'city_2'], [$lo['cityId'], $hi['cityId']]);
+        $this->assertSame([1.0, 3.0], [$loM, $hiM]);
+        $this->assertSame(3.0, $ratio);
+        $this->assertNull(DailyBoard::priceSpread(array_slice($rows, 0, 1)));
+    }
 }

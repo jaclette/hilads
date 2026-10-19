@@ -47,7 +47,6 @@ export default function IndexCards({ source }) {
   return (
     <div className="today-card index">
       <div className="today-card-head"><span className="today-card-title">{t('index.title')}</span></div>
-      <span className="dc-muted today-proofs-stats">{t('index.sub')}</span>
       <div className="index-row">
         {index.cards.map(card => {
           const theme = card.challenge.theme ? themeName(card.challenge.theme.key, { special: card.challenge.special }) : ''

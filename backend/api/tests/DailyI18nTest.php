@@ -131,8 +131,9 @@ final class DailyI18nTest extends TestCase
             'title_today' => ['{theme}'], 'title_reminder' => ['{h}', '{theme}'], 'did_count' => ['{n}'], 'did_count_one' => [],
             'did_friend' => ['{name}'], 'did_friend_others' => ['{name}', '{n}'], 'did_friend_others_one' => ['{name}'],
             'theme_hidden_gem' => [], 'theme_taste' => [], 'theme_ask_local' => [], 'theme_local_find' => [],
-            'theme_night_out' => [], 'theme_sip' => [], 'theme_only_here' => [], 'theme_special' => [], 'city_streak' => ['{city}'],
+            'theme_night_out' => [], 'theme_sip' => [], 'theme_only_here' => [], 'theme_special' => [], 'city_streak' => ['{city}', '{n}'],
             'tour' => ['{city}'], 'answered_countries' => ['{city}', '{n}'],
+            'first_vote_city' => ['{city}'], 'title_world' => [], 'morning_add' => ['{city}', '{question}'],
         ];
         $catalog = DailyPushText::catalog();
         $this->assertSame(DailyI18n::others(), array_keys($catalog));
@@ -154,10 +155,10 @@ final class DailyI18nTest extends TestCase
         $this->assertSame('fr', DailyPushes::morningLocale($c, 'fr'));
         $this->assertSame('en', DailyPushes::morningLocale($c, 'vi'));   // not translated: all English, no mix
         $line = DailyPushes::outcomeLine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9, 'cityName' => 'Paris'], null, 'fr');
-        $this->assertSame('Hier, ta preuve était #2 dans le monde.', $line);
+        $this->assertSame('Hier, ta réponse était #2 dans le monde.', $line);
         $fr = DailyPushes::morningMessage($c + ['theme' => 'taste'], $line, 'fr');
         $this->assertSame("🍜 Aujourd'hui : Saveur", $fr['title']);
-        $this->assertSame('Mange Hier, ta preuve était #2 dans le monde.', $fr['body']);
+        $this->assertSame('Mange Hier, ta réponse était #2 dans le monde.', $fr['body']);
         $this->assertSame('Eat', DailyPushes::morningMessage($c, null, 'en')['body']);
         $this->assertSame("Gagnant d'hier : Anh · ♥ 1.",
                           DailyPushes::outcomeLine(null, ['name' => 'Anh', 'cityName' => null, 'votes' => 1], 'fr'));
@@ -169,8 +170,8 @@ final class DailyI18nTest extends TestCase
                                            6 * 3600 + 5, 'vi', null, 6);
         $this->assertSame('🍹 Nhâm nhi · còn 6 giờ', $vi['title']);
         $this->assertSame('Gọi một ly cà phê 6 người đã làm rồi.', $vi['body']);
-        $this->assertSame('Votes pour ta preuve : 3. Ont relevé ton Local Twist : 1.', DailyPushes::digestMessage('2026-11-02', 3, 1, 'fr')['body']);
-        $this->assertSame('1 person voted for your proof.', DailyPushes::digestMessage('2026-11-02', 1, 0, 'en')['body']);
+        $this->assertSame('Votes pour ta réponse : 3. Ont relevé ton Local Twist : 1.', DailyPushes::digestMessage('2026-11-02', 3, 1, 'fr')['body']);
+        $this->assertSame('1 person voted for your answer.', DailyPushes::digestMessage('2026-11-02', 1, 0, 'en')['body']);
         $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0, 'fr'));
     }
 

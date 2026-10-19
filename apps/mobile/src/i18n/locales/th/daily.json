@@ -5,8 +5,8 @@
   "nothingLive": "Daily Challenge ถัดไปกำลังมา",
   "cta": "รับ challenge",
   "ctaIn": "ฉันขอเล่นด้วย",
-  "ctaTaken": "ทำชาเลนจ์แล้ว · ดูหลักฐานของฉัน",
-  "seeProofs": "ดูหลักฐานของวันนี้",
+  "ctaTaken": "ตอบแล้ว · ดูคำตอบของฉัน",
+  "seeProofs": "ดูคำตอบของวันนี้",
   "localTwist": "Local Twist",
   "twistIn": "Local Twist ของ {{city}}",
   "twistBy": "โดย {{name}}",
@@ -15,20 +15,20 @@
   "countCity": "{{count}} คนใน {{city}}",
   "countZero": "ยังไม่มีใครทำ - มาเป็นคนแรกสิ",
   "beFirst": "เป็นคนแรกของวันนี้",
-  "beFirstSub": "ยังไม่มีหลักฐาน โพสต์ของคุณแล้วสร้างแรงบันดาลใจให้ทั้งเมือง",
-  "yourProof": "หลักฐานของคุณ",
+  "beFirstSub": "ยังไม่มีคำตอบ โพสต์ของคุณแล้วสร้างแรงบันดาลใจให้ทั้งเมือง",
+  "yourProof": "คำตอบของคุณ",
   "status": {
     "pending": "รอดำเนินการ",
     "approved": "เผยแพร่แล้ว",
     "rejected": "ไม่ได้เผยแพร่",
     "removed": "ถูกลบแล้ว"
   },
-  "pendingHint": "หลักฐานทุกชิ้นจะถูกตรวจสอบก่อนขึ้นแสดง",
+  "pendingHint": "คำตอบทุกชิ้นจะถูกตรวจสอบก่อนขึ้นแสดง",
   "reasonLabel": "เหตุผล: {{reason}}",
   "fixIt": "แก้ไขเลย",
   "edit": "แก้ไข",
   "delete": "ลบ",
-  "deleteTitle": "ลบหลักฐานของคุณ?",
+  "deleteTitle": "ลบคำตอบของคุณ?",
   "deleteBody": "หลักฐานจะหายไปจาก challenge และทุกช่องแชท",
   "cancel": "ยกเลิก",
   "closed": "ปิดแล้ว",
@@ -36,8 +36,8 @@
   "practicalTitle": "ข้อมูลน่ารู้",
   "priceRange": "{{min}}-{{max}} {{currency}}",
   "priceOne": "{{amount}} {{currency}}",
-  "priceFrom_one": "จากหลักฐาน {{count}} ชิ้น",
-  "priceFrom_other": "จากหลักฐาน {{count}} ชิ้น",
+  "priceFrom_one": "จากคำตอบ {{count}} ชิ้น",
+  "priceFrom_other": "จากคำตอบ {{count}} ชิ้น",
   "places_one": "ปักหมุดแล้ว {{count}} แห่ง",
   "places_other": "ปักหมุดแล้ว {{count}} แห่ง",
   "unnamedPlace": "สถานที่ที่ปักหมุด",
@@ -50,8 +50,8 @@
   "notFound": "ไม่มี Daily Challenge นี้",
   "cityRowEmpty": "มาเป็นคนแรกที่สร้าง challenge ใน {{city}}",
   "proof": {
-    "titleNew": "หลักฐานของคุณ",
-    "titleEdit": "แก้ไขหลักฐานของคุณ",
+    "titleNew": "คำตอบของคุณ",
+    "titleEdit": "แก้ไขคำตอบของคุณ",
     "camera": "กล้อง",
     "gallery": "คลังภาพ",
     "changePhoto": "เปลี่ยนรูป",
@@ -64,11 +64,11 @@
     "pinHint": "เฉพาะถ้าอยากให้คนอื่นตามไปเจอ",
     "pinChange": "เปลี่ยน",
     "pinRemove": "เอาออก",
-    "submit": "โพสต์หลักฐานของฉัน",
+    "submit": "โพสต์คำตอบของฉัน",
     "save": "บันทึกการแก้ไข",
     "sending": "กำลังส่ง…",
-    "sentTitle": "ส่งไปตรวจสอบแล้ว",
-    "sentBody": "คุณจะเห็นหลักฐานใน challenge เมื่อได้รับการอนุมัติ",
+    "sentTitle": "{{city}}ตอบแล้ว!",
+    "sentBody": "ดูว่าทั่วโลกตอบว่าอะไร รูปของคุณจะแสดงเมื่อได้รับการอนุมัติ",
     "ok": "ตกลง",
     "permPhotoTitle": "ต้องการสิทธิ์เข้าถึงรูปภาพ",
     "permPhotoBody": "อนุญาตการเข้าถึงในการตั้งค่าเพื่อเพิ่มรูป",
@@ -76,12 +76,14 @@
     "permCameraBody": "อนุญาตการเข้าถึงกล้องในการตั้งค่าเพื่อถ่ายรูป",
     "photoRequired": "เพิ่มรูปก่อนนะ",
     "locationOff": "ตำแหน่งปิดอยู่ เลยปักหมุดสถานที่นี้ไม่ได้",
-    "editOnlyActive": "คุณแก้ไขหลักฐานได้จนกว่า challenge จะจบ",
+    "editOnlyActive": "คุณแก้ไขคำตอบได้จนกว่า challenge จะจบ",
     "takeTitle": "ถ่ายรูปของคุณ",
-    "retake": "ถ่ายใหม่"
+    "retake": "ถ่ายใหม่",
+    "sentTitleNoCity": "ส่งคำตอบแล้ว!",
+    "compare": "เปรียบเทียบ"
   },
   "errors": {
-    "already_posted": "คุณโพสต์หลักฐานสำหรับ challenge วันนี้ไปแล้ว",
+    "already_posted": "คุณโพสต์คำตอบสำหรับ challenge วันนี้ไปแล้ว",
     "challenge_closed": "challenge นี้ปิดแล้ว",
     "no_active_challenge": "ตอนนี้ยังไม่มี Daily Challenge",
     "moderation_blocked": "คำบรรยายของคุณถูกตั้งค่าสถานะ - ลองเขียนใหม่นะ",
@@ -93,14 +95,14 @@
     "rate_limited": "ลองหลายครั้งเกินไป - รอสักครู่นะ",
     "image_processing_failed": "ประมวลผลรูปนี้ไม่ได้ ลองรูปอื่นนะ",
     "generic": "มีบางอย่างผิดพลาด ลองอีกครั้ง",
-    "place_required": "เลือกสถานที่ของหลักฐาน",
+    "place_required": "เลือกสถานที่ของคำตอบ",
     "place_not_allowed": "challenge นี้ไม่มีสถานที่",
     "place_not_found": "สถานที่นี้ไม่พร้อมใช้งานแล้ว เลือกที่อื่น",
     "invalid_place_name": "ชื่อสถานที่ต้องมี 1 ถึง 80 ตัวอักษร",
     "place_name_blocked": "ชื่อสถานที่นี้ถูกแจ้ง โปรดเขียนใหม่",
-    "invalid_position": "ต้องใช้ตำแหน่งของคุณเพื่อโพสต์หลักฐานนี้",
+    "invalid_position": "ต้องใช้ตำแหน่งของคุณเพื่อโพสต์คำตอบนี้",
     "too_far": "คุณอยู่ไกลจากสถานที่นี้เกินไป",
-    "answer_required": "ตอบคำถามวันนี้ก่อนโพสต์หลักฐานของคุณ",
+    "answer_required": "ตอบคำถามวันนี้ก่อนโพสต์คำตอบของคุณ",
     "invalid_answer": "คำตอบไม่ตรงกับคำถาม ลองตรวจสอบแล้วลองใหม่",
     "invalid_back_home": "\"แล้วที่บ้านคุณล่ะ?\" ต้องมีเมือง และคำตอบ ราคา หรือหนึ่งประโยค"
   },
@@ -119,11 +121,11 @@
     "pickCity": "เลือกเมือง",
     "worldSelection": "คัดสรรจากโลก: เมืองนี้ยังไม่เปิด",
     "empty": "Daily Challenge แรกกำลังจะมาเร็วๆนี้",
-    "proofs_one": "หลักฐาน {{count}} รายการ",
-    "proofs_other": "หลักฐาน {{count}} รายการ"
+    "proofs_one": "คำตอบ {{count}} รายการ",
+    "proofs_other": "คำตอบ {{count}} รายการ"
   },
   "report": {
-    "title": "รายงานหลักฐานนี้",
+    "title": "รายงานคำตอบนี้",
     "body": "มีปัญหาอะไร?",
     "reasons": {
       "inappropriate": "ไม่เหมาะสม",
@@ -133,21 +135,21 @@
       "other": "อื่นๆ"
     },
     "thanks": "ขอบคุณ - เราจะตรวจสอบให้",
-    "already": "คุณรายงานหลักฐานนี้ไปแล้ว"
+    "already": "คุณรายงานคำตอบนี้ไปแล้ว"
   },
   "vote": {
     "vote": "โหวต",
     "withdraw": "ถอนโหวต",
-    "yours": "หลักฐานของคุณ",
+    "yours": "คำตอบของคุณ",
     "noneLeftTitle": "โหวตหมดแล้ว",
-    "noneLeft": "คุณใช้ 3 โหวตของวันนี้ไปแล้ว ถอนหนึ่งโหวตเพื่อโหวตหลักฐานนี้",
+    "noneLeft": "คุณใช้ 3 โหวตของวันนี้ไปแล้ว ถอนหนึ่งโหวตเพื่อโหวตคำตอบนี้",
     "left_other": "เหลือ {{count}} โหวต",
     "errors": {
       "vote_limit": "คุณใช้ 3 โหวตของวันนี้ไปแล้ว",
       "voting_closed": "การโหวตปิดพร้อม challenge แล้ว",
       "rate_limited": "ลองบ่อยเกินไป - รอสักครู่",
-      "own_proof": "คุณโหวตหลักฐานของตัวเองไม่ได้",
-      "not_found": "หลักฐานนี้ไม่มีแล้ว",
+      "own_proof": "คุณโหวตคำตอบของตัวเองไม่ได้",
+      "not_found": "คำตอบนี้ไม่มีแล้ว",
       "generic": "มีบางอย่างผิดพลาด ลองอีกครั้ง"
     }
   },
@@ -163,7 +165,7 @@
     "streak": "สตรีคปัจจุบัน",
     "bestStreak": "สตรีคที่ดีที่สุด",
     "completed": "ทำสำเร็จ",
-    "bestProofs": "หลักฐานที่ดีที่สุด",
+    "bestProofs": "คำตอบที่ดีที่สุด",
     "emptyMine": "สตรีคของคุณเริ่มจาก challenge วันนี้"
   },
   "streak_other": "สตรีค {{count}} วัน",
@@ -225,7 +227,7 @@
     "titleChallenge": "สถานที่ที่ปักหมุด",
     "titleCity": "สถานที่ที่ปักหมุดใน {{city}}",
     "titleWorld": "สถานที่ที่ปักหมุดทั่วโลก",
-    "seeProof": "ดูหลักฐาน",
+    "seeProof": "ดูคำตอบ",
     "openChallenge": "เปิด challenge",
     "search": "ค้นหาอาหาร คาเฟ่ ถนน",
     "searchA11y": "ค้นหาสปอต",
@@ -250,20 +252,20 @@
     "sortWeek": "โหวตมากสุดสัปดาห์นี้",
     "spotsTomorrow": "สปอตมาจาก challenge พรุ่งนี้: {{theme}}",
     "planA11y": "แผน: {{title}}, {{time}}",
-    "proofs_one": "{{count}} หลักฐาน",
-    "proofs_other": "{{count}} หลักฐาน"
+    "proofs_one": "{{count}} คำตอบ",
+    "proofs_other": "{{count}} คำตอบ"
   },
   "leaderboard": {
     "tab": "Top 10",
     "provisional": "ผลชั่วคราวจนถึงรอบ drop",
     "finalIn": "สรุปผลใน {{time}}",
     "official": "โพเดียมอย่างเป็นทางการ",
-    "minProofs": "Top 10 จะเปิดเมื่อมีหลักฐาน {{min}} รายการ ตอนนี้: {{n}}",
-    "noVotes": "ยังไม่มีโหวต โหวตให้หลักฐานที่คุณชอบเลย!",
+    "minProofs": "Top 10 จะเปิดเมื่อมีคำตอบ {{min}} รายการ ตอนนี้: {{n}}",
+    "noVotes": "ยังไม่มีโหวต โหวตให้คำตอบที่คุณชอบเลย!",
     "me": "คุณ: #{{rank}} · ♥ {{votes}}",
     "meCity": "#{{rank}} ใน {{city}}",
-    "noProof": "โพสต์หลักฐานของคุณเพื่อติดอันดับ",
-    "pending": "หลักฐานของคุณจะติดอันดับเมื่อได้รับอนุมัติ",
+    "noProof": "โพสต์คำตอบของคุณเพื่อติดอันดับ",
+    "pending": "คำตอบของคุณจะติดอันดับเมื่อได้รับอนุมัติ",
     "cityTop": "Top 3 ใน {{city}}",
     "compactTitle": "Top 3 ตอนนี้",
     "seeAll": "Top 10 ›"
@@ -359,17 +361,17 @@
     "hint": "โบนัสความเร็ว: โพสต์ก่อน {{time}}"
   },
   "group": {
-    "title": "หลักฐานใหม่: {{n}}",
+    "title": "คำตอบใหม่: {{n}}",
     "citiesMore": "{{cities}} และอีก {{n}}",
-    "galleryTitle": "หลักฐานใหม่"
+    "galleryTitle": "คำตอบใหม่"
   },
   "today": {
     "early": "โบนัสความเร็วถึง {{time}}",
     "tomorrow": "พรุ่งนี้: {{theme}}",
     "aroundWorld": "วันนี้ทั่วโลก",
     "inCity": "วันนี้ที่{{city}}",
-    "proofs_one": "{{count}} หลักฐาน",
-    "proofs_other": "{{count}} หลักฐาน",
+    "proofs_one": "{{count}} คำตอบ",
+    "proofs_other": "{{count}} คำตอบ",
     "countries_one": "{{count}} ประเทศ",
     "countries_other": "{{count}} ประเทศ",
     "proofsIn": "{{proofs}} จาก {{countries}}",
@@ -389,7 +391,7 @@
     "openMap": "เปิดแผนที่",
     "spotsFallback": "เมืองของคุณยังไม่มีสปอต ที่ใกล้ที่สุด:",
     "spotsEmpty": "ที่นี่ยังไม่มีสปอต รับ challenge วันนี้เพื่อปักสปอตแรกบนแผนที่",
-    "seeMine": "ดูหลักฐานของคุณ",
+    "seeMine": "ดูคำตอบของคุณ",
     "votes_one": "{{count}} โหวต",
     "votes_other": "{{count}} โหวต",
     "day": {
@@ -399,7 +401,7 @@
       "today": "วันนี้",
       "tomorrow": "พรุ่งนี้",
       "later": "เร็วๆ นี้",
-      "none": "ไม่มีหลักฐาน"
+      "none": "ไม่มีคำตอบ"
     },
     "links": {
       "pastSub": "รูปจากวันก่อนๆ",
@@ -458,26 +460,26 @@
   },
   "takeIt": "รับเลย",
   "proofHint": {
-    "title": "พิสูจน์ด้วยรูปถ่าย",
-    "place": "รูปที่ได้โหวตมากที่สุดจะเป็นรูปของสถานที่",
-    "noPlace": "รูปที่ได้โหวตมากที่สุดจะขึ้นโพเดียม"
+    "title": "ถ่ายคำตอบของคุณ",
+    "place": "รูปที่ได้โหวตมากที่สุดจะเป็นรูปของสปอต",
+    "noPlace": "รูปที่ได้โหวตมากที่สุดได้ขึ้นโพเดียม"
   },
   "howItWorks": {
     "title": "วิธีเล่น",
     "step1": "ทำตรงที่คุณอยู่",
     "step2": "ถ่ายรูป",
     "step3": "รูปจะขึ้นแผนที่และได้รับโหวต",
-    "step3NoPlace": "รูปจะขึ้นในหลักฐานวันนี้และได้รับโหวต",
+    "step3NoPlace": "รูปจะขึ้นในคำตอบวันนี้และได้รับโหวต",
     "camera": "เปิดกล้อง",
     "later": "เตือนฉันทีหลัง",
     "laterDone": "เราจะเตือนคุณตอนเย็นนี้"
   },
   "share": {
     "title": "แชร์",
-    "shareProof": "แชร์หลักฐานของฉัน",
+    "shareProof": "แชร์คำตอบของฉัน",
     "shareRank": "แชร์อันดับ #{{rank}} ของคุณ",
     "challengeFriend": "ท้าเพื่อน",
-    "afterProof": "อวดเพื่อน ๆ",
+    "afterProof": "แชร์คำตอบของฉัน",
     "copyLink": "คัดลอกลิงก์",
     "copied": "คัดลอกแล้ว",
     "more": "เพิ่มเติม",
@@ -486,28 +488,30 @@
     "rankCity": "อันดับ #{{rank}} ใน{{city}}",
     "photoBy": "ภาพโดย @{{user}}",
     "areYouIn": "มาเล่นไหม?",
-    "textProof": "รูปของฉันสำหรับ Daily Challenge วันนี้บน Hilads: {{challenge}}",
+    "textProof": "{{question}} ที่{{city}}: {{answer}} แล้วเมืองของคุณล่ะ? เล่นแบบโลคอล เทียบทั่วโลก",
     "textSpot": "{{name}} บน Hilads",
     "textSpotCity": "{{name}}, {{city}} บน Hilads",
-    "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?"
+    "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?",
+    "textProofNoAnswer": "{{challenge}} ที่{{city}} แล้วเมืองของคุณล่ะ? เล่นแบบโลคอล เทียบทั่วโลก"
   },
   "represent": {
-    "empty": "วันนี้ยังไม่มีใครเป็นตัวแทนของ{{city}} มาเป็นคนแรกกัน",
-    "button": "เป็นตัวแทน{{city}}",
-    "firstPosted": "วันนี้คุณพา{{city}}ขึ้นแผนที่โลกแล้ว",
+    "empty": "{{city}}ยังไม่ได้ตอบวันนี้ มาเป็นคนแรกกัน",
+    "button": "ตอบแทน{{city}}",
+    "firstPosted": "คุณพา{{city}}ขึ้นแผนที่โลกวันนี้",
     "pioneer": "ผู้บุกเบิก{{city}}",
     "spotOne": "สปอตอันดับ 1 ใน{{city}}",
-    "streak_other": "{{city}} มีตัวแทนติดต่อกัน {{count}} วัน",
     "board_other": "วันนี้มี {{count}} เมืองบนบอร์ดแล้ว {{city}} ยังไม่มี",
-    "mapEmpty": "เป็นคนแรกที่พา{{city}}ขึ้นแผนที่",
+    "mapEmpty": "{{city}}ยังไม่อยู่บนแผนที่โลก พามันขึ้นไปเลย",
     "invite": "ชวนเพื่อน",
-    "share": "ช่วยฉันเป็นตัวแทน{{city}}บน Hilads หน่อย",
+    "share": "มาตอบแทน{{city}}กับฉันบน Hilads",
     "pioneerTitle": "เหรียญผู้บุกเบิก",
-    "pioneerSub": "หลักฐานแรกที่ได้รับการอนุมัติในเมือง เป็นของคุณตลอดไป"
+    "pioneerSub": "คำตอบแรกที่ได้รับการอนุมัติในเมือง เป็นของคุณตลอดไป",
+    "streak_one": "{{city}}ตอบติดต่อกัน {{count}} วัน",
+    "streak_other": "{{city}}ตอบติดต่อกัน {{count}} วัน"
   },
   "compare": {
-    "todayQuestion": "คำถามวันนี้: {{question}}",
-    "kicker": "คำถามวันนี้",
+    "todayQuestion": "วันนี้ ทั่วโลกร่วมตอบ: {{question}}",
+    "kicker": "วันนี้ ทั่วโลกร่วมตอบ:",
     "sub": "ตอบสั้น ๆ นี่คือสิ่งที่ทั่วโลกจะเอามาเทียบกัน",
     "next": "ถัดไป",
     "wordPlaceholder": "คำเดียวหรือวลีสั้น ๆ",
@@ -524,21 +528,26 @@
     "emptyBody": "มาเป็นเมืองแรกบนกระดาน",
     "noAnswer": "ยังไม่มีคำตอบ",
     "median": "ค่ามัธยฐาน {{price}}",
-    "proofs_one": "หลักฐาน {{count}} รายการ",
-    "proofs_other": "หลักฐาน {{count}} รายการ",
+    "proofs_one": "คำตอบ {{count}} รายการ",
+    "proofs_other": "คำตอบ {{count}} รายการ",
+    "seeAll": "ดูทั้งหมด",
     "teaser_one": "ตอบแล้ว {{count}} ประเทศ:",
     "teaser_other": "ตอบแล้ว {{count}} ประเทศ:",
-    "seeAll": "ดูทั้งหมด"
+    "firstAnswers": "คำตอบแรกๆ เริ่มมาแล้ว เมืองไหนต่อ?",
+    "boardTitle": "ทั่วโลกตอบว่าอะไร",
+    "cheapest": "ถูกที่สุด: {{city}} {{price}}",
+    "priciest": "แพงที่สุด: {{city}} {{price}}",
+    "funFact": "ที่{{city}}แพงกว่า{{other}} {{ratio}} เท่า"
   },
   "backHome": {
-    "title": "แล้วที่บ้านคุณล่ะ?",
+    "title": "แล้วที่บ้านคุณล่ะ เป็นยังไง?",
     "pickCity": "บ้านคุณอยู่ที่ไหน?",
     "choose": "เลือก",
     "homeIn": "ที่บ้าน: {{city}}",
     "answerPlaceholder": "ที่{{city}}",
     "price": "ราคาที่{{city}} (ไม่บังคับ)",
     "line": "เล่าสักประโยค (ไม่บังคับ)",
-    "linePlaceholder": "ที่{{city}}เป็นยังไง?",
+    "linePlaceholder": "ตัวอย่าง: ที่ปารีส เบียร์แก้วละ 7 €",
     "skip": "ข้าม",
     "askTitle": "บ้านคุณอยู่ที่ไหน?",
     "askSub": "เมืองบ้านเกิดของคุณ ถามแค่ครั้งเดียว เปลี่ยนได้ในการตั้งค่า",
@@ -568,7 +577,7 @@
       "night": "ตอนกลางคืน"
     },
     "yourTurn": "ตาคุณแล้ว",
-    "todayIs": "ชาเลนจ์วันนี้: {{text}}",
+    "todayIs": "วันนี้ ทั่วโลกร่วมตอบ: {{question}}",
     "close": "ปิด",
     "sub_one": "{{count}} เมือง ชาเลนจ์เดียวกัน",
     "sub_other": "{{count}} เมือง ชาเลนจ์เดียวกัน"
@@ -577,11 +586,12 @@
     "tagline": "ชาเลนจ์เดียวกัน ต่างโลก"
   },
   "index": {
-    "title": "Hilads Index สัปดาห์ที่แล้ว",
-    "sub": "สัปดาห์ที่แล้วทั่วโลกจ่ายเท่าไร",
+    "title": "สัปดาห์ที่แล้วทั่วโลกจ่ายเท่าไร",
     "pricePaid": "ราคาที่จ่ายค่ามัธยฐาน",
     "share": "แชร์",
     "shareText": "Hilads Index: {{lines}}",
-    "footnote": "อิงจากเมืองที่มีหลักฐาน 3 รายการขึ้นไป"
-  }
+    "footnote": "อิงจากเมืองที่มีคำตอบ 3 รายการขึ้นไป"
+  },
+  "ctaAnswer": "ตอบแทน{{city}}",
+  "ctaAnswerNoCity": "ตอบแทนเมืองของคุณ"
 }

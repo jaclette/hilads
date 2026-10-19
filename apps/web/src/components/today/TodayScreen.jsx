@@ -254,12 +254,20 @@ function Ticket({ data, loading }) {
           <span ref={setPulseEl} className={`today-cta-pulse${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
             <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
-              <Icon name="camera-outline" size={20} />{emptyCity ? tc('represent.button', { city: cityShort }) : t('ctaIn')}
+              <Icon name="camera-outline" size={20} />{cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')}
             </a>
           </span>
         )}
-        {/* The live world teaser (SPEC 10.6) replaces the social line once 2 cities answered. */}
-        {world ? (
+        {/* The live world teaser (SPEC 10.6) replaces the social line: the first answers, then the countries. */}
+        {world && world.countries < 2 ? (
+          <button type="button" className="today-took" onClick={(e) => {
+            e.stopPropagation()
+            track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
+            openDaily('challenge', { date: 'today', source: 'teaser', tab: 'compare' })
+          }}>
+            {t('compare.firstAnswers')}
+          </button>
+        ) : world ? (
           <button type="button" className="today-took" onClick={(e) => {
             e.stopPropagation()
             track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })

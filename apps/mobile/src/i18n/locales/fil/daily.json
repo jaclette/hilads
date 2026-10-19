@@ -5,8 +5,8 @@
   "nothingLive": "Parating na ang susunod na Daily Challenge",
   "cta": "Gawin ang challenge",
   "ctaIn": "G ako",
-  "ctaTaken": "Tapos na ang challenge · Tingnan ang proof ko",
-  "seeProofs": "Tingnan ang mga proof ngayong araw",
+  "ctaTaken": "Nasagot na · Tingnan ang sagot ko",
+  "seeProofs": "Tingnan ang mga sagot ngayong araw",
   "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "ni {{name}}",
@@ -15,20 +15,20 @@
   "countCity": "{{count}} sa {{city}}",
   "countZero": "Wala pa - maging una ka",
   "beFirst": "Maging una ngayong araw",
-  "beFirstSub": "Wala pang proof. I-post ang sa'yo at i-inspire ang siyudad.",
-  "yourProof": "Ang proof mo",
+  "beFirstSub": "Wala pang sagot. I-post ang sa'yo at i-inspire ang siyudad.",
+  "yourProof": "Ang sagot mo",
   "status": {
     "pending": "Nakabinbin",
     "approved": "Na-publish",
     "rejected": "Hindi na-publish",
     "removed": "Tinanggal"
   },
-  "pendingHint": "Chine-check ang bawat proof bago ito mag-live.",
+  "pendingHint": "Chine-check ang bawat sagot bago ito mag-live.",
   "reasonLabel": "Dahilan: {{reason}}",
   "fixIt": "Ayusin",
   "edit": "I-edit",
   "delete": "Burahin",
-  "deleteTitle": "Burahin ang proof mo?",
+  "deleteTitle": "Burahin ang sagot mo?",
   "deleteBody": "Mawawala ito sa challenge at sa mga channel.",
   "cancel": "Kanselahin",
   "closed": "Sarado na",
@@ -36,8 +36,8 @@
   "practicalTitle": "Good to know",
   "priceRange": "{{min}}-{{max}} {{currency}}",
   "priceOne": "{{amount}} {{currency}}",
-  "priceFrom_one": "mula sa {{count}} proof",
-  "priceFrom_other": "mula sa {{count}} proof",
+  "priceFrom_one": "mula sa {{count}} sagot",
+  "priceFrom_other": "mula sa {{count}} sagot",
   "places_one": "{{count}} lugar na naka-pin",
   "places_other": "{{count}} lugar na naka-pin",
   "unnamedPlace": "Naka-pin na lugar",
@@ -50,8 +50,8 @@
   "notFound": "Wala ang Daily Challenge na ito.",
   "cityRowEmpty": "Maging unang gumawa ng challenge sa {{city}}",
   "proof": {
-    "titleNew": "Ang proof mo",
-    "titleEdit": "I-edit ang proof mo",
+    "titleNew": "Ang sagot mo",
+    "titleEdit": "I-edit ang sagot mo",
     "camera": "Camera",
     "gallery": "Gallery",
     "changePhoto": "Palitan ang photo",
@@ -64,11 +64,11 @@
     "pinHint": "Kung gusto mo lang na mahanap ito ng iba.",
     "pinChange": "Palitan",
     "pinRemove": "Tanggalin",
-    "submit": "I-post ang proof ko",
+    "submit": "I-post ang sagot ko",
     "save": "I-save ang changes",
     "sending": "Sine-send…",
-    "sentTitle": "Naipadala para sa review",
-    "sentBody": "Makikita mo ito sa challenge kapag na-approve na.",
+    "sentTitle": "Sumagot na ang {{city}}!",
+    "sentBody": "Tingnan ang sinabi ng mundo. Lalabas ang litrato mo kapag naaprubahan.",
     "ok": "OK",
     "permPhotoTitle": "Kailangan ng access sa photos",
     "permPhotoBody": "Payagan ang access sa settings mo para makapagdagdag ng photo.",
@@ -76,12 +76,14 @@
     "permCameraBody": "Payagan ang camera sa settings mo para makapag-picture.",
     "photoRequired": "Magdagdag muna ng photo.",
     "locationOff": "Naka-off ang location, kaya hindi ma-pin ang lugar na ito.",
-    "editOnlyActive": "Puwede mong i-edit ang proof mo hanggang matapos ang challenge.",
+    "editOnlyActive": "Puwede mong i-edit ang sagot mo hanggang matapos ang challenge.",
     "takeTitle": "Kunan ang litrato mo",
-    "retake": "Kumuha ulit"
+    "retake": "Kumuha ulit",
+    "sentTitleNoCity": "Naipadala na ang sagot mo!",
+    "compare": "Ikumpara"
   },
   "errors": {
-    "already_posted": "Nakapag-post ka na ng proof para sa challenge ngayong araw.",
+    "already_posted": "Nakapag-post ka na ng sagot para sa challenge ngayong araw.",
     "challenge_closed": "Sarado na ang challenge na ito.",
     "no_active_challenge": "Walang Daily Challenge ngayon.",
     "moderation_blocked": "Na-flag ang caption mo - paki-rephrase.",
@@ -93,14 +95,14 @@
     "rate_limited": "Sobrang daming try - maghintay sandali.",
     "image_processing_failed": "Hindi ma-process ang photo na 'yan. Subukan ang iba.",
     "generic": "May nangyaring mali. Subukan ulit.",
-    "place_required": "Piliin ang lugar ng proof mo.",
+    "place_required": "Piliin ang lugar ng sagot mo.",
     "place_not_allowed": "Walang lugar ang challenge na ito.",
     "place_not_found": "Hindi na available ang lugar na iyan. Pumili ng iba.",
     "invalid_place_name": "Dapat 1 hanggang 80 character ang pangalan ng lugar.",
     "place_name_blocked": "Na-flag ang pangalang iyan. Pakipalitan.",
-    "invalid_position": "Kailangan ang lokasyon mo para i-post ang proof na ito.",
+    "invalid_position": "Kailangan ang lokasyon mo para i-post ang sagot na ito.",
     "too_far": "Masyado kang malayo sa lugar na ito.",
-    "answer_required": "Sagutin ang tanong ngayong araw para mai-post ang proof mo.",
+    "answer_required": "Sagutin ang tanong ngayong araw para mai-post ang sagot mo.",
     "invalid_answer": "Hindi tugma ang sagot sa tanong. Suriin at subukan ulit.",
     "invalid_back_home": "Ang \"E sa inyo?\" ay kailangan ng lungsod at isang sagot, presyo o linya."
   },
@@ -119,11 +121,11 @@
     "pickCity": "Pumili ng city",
     "worldSelection": "Mundo selection: hindi pa live ang city na ito",
     "empty": "Parating na ang mga unang Daily Challenge.",
-    "proofs_one": "{{count}} proof",
-    "proofs_other": "{{count}} proof"
+    "proofs_one": "{{count}} sagot",
+    "proofs_other": "{{count}} sagot"
   },
   "report": {
-    "title": "I-report ang proof na ito",
+    "title": "I-report ang sagot na ito",
     "body": "Ano'ng problema dito?",
     "reasons": {
       "inappropriate": "Hindi angkop",
@@ -133,22 +135,22 @@
       "other": "Iba pa"
     },
     "thanks": "Salamat - titingnan namin ito.",
-    "already": "Na-report mo na ang proof na ito."
+    "already": "Na-report mo na ang sagot na ito."
   },
   "vote": {
     "vote": "Bumoto",
     "withdraw": "Bawiin ang boto ko",
-    "yours": "Proof mo",
+    "yours": "Sagot mo",
     "noneLeftTitle": "Wala ka nang boto",
-    "noneLeft": "Nagamit mo na ang 3 boto mo ngayon. Bawiin ang isa para iboto ang proof na ito.",
+    "noneLeft": "Nagamit mo na ang 3 boto mo ngayon. Bawiin ang isa para iboto ang sagot na ito.",
     "left_one": "{{count}} boto na lang",
     "left_other": "{{count}} boto na lang",
     "errors": {
       "vote_limit": "Nagamit mo na ang 3 boto mo ngayon.",
       "voting_closed": "Sarado na ang botohan kasabay ng challenge.",
       "rate_limited": "Masyadong maraming subok - maghintay sandali.",
-      "own_proof": "Hindi mo puwedeng iboto ang sarili mong proof.",
-      "not_found": "Wala na ang proof na ito.",
+      "own_proof": "Hindi mo puwedeng iboto ang sarili mong sagot.",
+      "not_found": "Wala na ang sagot na ito.",
       "generic": "May nagkamali. Subukan ulit."
     }
   },
@@ -164,7 +166,7 @@
     "streak": "Kasalukuyang streak",
     "bestStreak": "Pinakamahabang streak",
     "completed": "Natapos",
-    "bestProofs": "Pinakamahuhusay na proof",
+    "bestProofs": "Pinakamahuhusay na sagot",
     "emptyMine": "Nagsisimula ang streak mo sa challenge ngayon."
   },
   "streak_one": "{{count}} araw na sunod",
@@ -227,7 +229,7 @@
     "titleChallenge": "Mga naka-pin na lugar",
     "titleCity": "Mga naka-pin na lugar sa {{city}}",
     "titleWorld": "Mga naka-pin na lugar sa mundo",
-    "seeProof": "Tingnan ang proof",
+    "seeProof": "Tingnan ang sagot",
     "openChallenge": "Buksan ang challenge",
     "search": "Maghanap ng pagkain, café, kalye",
     "searchA11y": "Maghanap ng spot",
@@ -252,20 +254,20 @@
     "sortWeek": "Pinakamaraming boto ngayong linggo",
     "spotsTomorrow": "Galing ang mga spot sa challenge bukas: {{theme}}",
     "planA11y": "Plano: {{title}}, {{time}}",
-    "proofs_one": "{{count}} proof",
-    "proofs_other": "{{count}} proof"
+    "proofs_one": "{{count}} sagot",
+    "proofs_other": "{{count}} sagot"
   },
   "leaderboard": {
     "tab": "Top 10",
     "provisional": "Pansamantala hanggang sa drop",
     "finalIn": "Pinal sa loob ng {{time}}",
     "official": "Opisyal na podium",
-    "minProofs": "Magbubukas ang Top 10 sa {{min}} proof. Sa ngayon: {{n}}.",
-    "noVotes": "Wala pang boto. Bumoto sa mga paborito mong proof!",
+    "minProofs": "Magbubukas ang Top 10 sa {{min}} sagot. Sa ngayon: {{n}}.",
+    "noVotes": "Wala pang boto. Bumoto sa mga paborito mong sagot!",
     "me": "Ikaw: #{{rank}} · ♥ {{votes}}",
     "meCity": "#{{rank}} sa {{city}}",
-    "noProof": "I-post ang proof mo para ma-rank.",
-    "pending": "Mara-rank ang proof mo kapag naaprubahan na.",
+    "noProof": "I-post ang sagot mo para ma-rank.",
+    "pending": "Mara-rank ang sagot mo kapag naaprubahan na.",
     "cityTop": "Top 3 sa {{city}}",
     "compactTitle": "Top 3 ngayon",
     "seeAll": "Top 10 ›"
@@ -361,17 +363,17 @@
     "hint": "Bonus sa pagiging maaga: mag-post bago mag-{{time}}"
   },
   "group": {
-    "title": "Mga bagong proof: {{n}}",
+    "title": "Mga bagong sagot: {{n}}",
     "citiesMore": "{{cities}} at {{n}} pa",
-    "galleryTitle": "Mga bagong proof"
+    "galleryTitle": "Mga bagong sagot"
   },
   "today": {
     "early": "Early bonus hanggang {{time}}",
     "tomorrow": "Bukas: {{theme}}",
     "aroundWorld": "Ngayon sa buong mundo",
     "inCity": "Ngayon sa {{city}}",
-    "proofs_one": "{{count}} proof",
-    "proofs_other": "{{count}} proof",
+    "proofs_one": "{{count}} sagot",
+    "proofs_other": "{{count}} sagot",
     "countries_one": "{{count}} bansa",
     "countries_other": "{{count}} bansa",
     "proofsIn": "{{proofs}} sa {{countries}}",
@@ -391,7 +393,7 @@
     "openMap": "Buksan ang mapa",
     "spotsFallback": "Wala pang spot sa lungsod mo. Ang pinakamalapit:",
     "spotsEmpty": "Wala pang spot dito. Gawin ang challenge ngayon para mailagay ang una sa mapa.",
-    "seeMine": "Tingnan ang proof mo",
+    "seeMine": "Tingnan ang sagot mo",
     "votes_one": "{{count}} boto",
     "votes_other": "{{count}} boto",
     "day": {
@@ -401,7 +403,7 @@
       "today": "ngayon",
       "tomorrow": "bukas",
       "later": "paparating",
-      "none": "walang proof"
+      "none": "walang sagot"
     },
     "links": {
       "pastSub": "Mga litrato ng mga nakaraang araw",
@@ -460,26 +462,26 @@
   },
   "takeIt": "Gawin",
   "proofHint": {
-    "title": "Patunayan sa isang litrato",
-    "place": "Ang may pinakamaraming boto ang magiging litrato ng spot.",
-    "noPlace": "Ang may pinakamaraming boto ang aakyat sa podium."
+    "title": "Kunan ang sagot mo",
+    "place": "Ang litratong may pinakamaraming boto ang magiging litrato ng spot.",
+    "noPlace": "Ang litratong may pinakamaraming boto ang aakyat sa podium."
   },
   "howItWorks": {
     "title": "Paano ito gumagana",
     "step1": "Gawin kung nasaan ka.",
     "step2": "Kumuha ng litrato.",
     "step3": "Lalabas ito sa mapa at makakakuha ng boto.",
-    "step3NoPlace": "Lalabas ito sa mga proof ngayong araw at makakakuha ng boto.",
+    "step3NoPlace": "Lalabas ito sa mga sagot ngayong araw at makakakuha ng boto.",
     "camera": "Buksan ang camera",
     "later": "Paalalahanan mo ako mamaya",
     "laterDone": "Ipapaalala namin mamayang gabi."
   },
   "share": {
     "title": "I-share",
-    "shareProof": "I-share ang proof ko",
+    "shareProof": "I-share ang sagot ko",
     "shareRank": "I-share ang #{{rank}} mo",
     "challengeFriend": "Hamunin ang kaibigan",
-    "afterProof": "Ipakita sa mga kaibigan mo",
+    "afterProof": "Ibahagi ang sagot ko",
     "copyLink": "Kopyahin ang link",
     "copied": "Nakopya",
     "more": "Iba pa",
@@ -488,30 +490,31 @@
     "rankCity": "#{{rank}} sa {{city}}",
     "photoBy": "Larawan ni @{{user}}",
     "areYouIn": "G ka ba?",
-    "textProof": "Ang photo ko para sa Daily Challenge ngayon sa Hilads: {{challenge}}",
+    "textProof": "{{question}} Sa {{city}}: {{answer}}. E sa lungsod mo? Laro lokal. Kumpara global.",
     "textSpot": "{{name}} sa Hilads",
     "textSpotCity": "{{name}}, {{city}}, sa Hilads",
-    "textToday": "Ang Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?"
+    "textToday": "Ang Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?",
+    "textProofNoAnswer": "{{challenge}} Sa {{city}}. E sa lungsod mo? Laro lokal. Kumpara global."
   },
   "represent": {
-    "empty": "Wala pang kumatawan sa {{city}} ngayon. Ikaw na ang mauna.",
-    "button": "Katawanin ang {{city}}",
-    "firstPosted": "Inilagay mo ang {{city}} sa mapa ng mundo ngayon.",
+    "empty": "Hindi pa sumasagot ang {{city}} ngayon. Ikaw na ang mauna.",
+    "button": "Sumagot para sa {{city}}",
+    "firstPosted": "Inilagay mo ang {{city}} sa world map ngayon.",
     "pioneer": "Pioneer ng {{city}}",
     "spotOne": "Spot #1 sa {{city}}",
-    "streak_one": "{{city}}, {{count}} araw nang sunod-sunod na may kinatawan",
-    "streak_other": "{{city}}, {{count}} araw nang sunod-sunod na may kinatawan",
     "board_one": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
     "board_other": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
-    "mapEmpty": "Ikaw ang maunang maglagay ng {{city}} sa mapa.",
+    "mapEmpty": "Wala pa sa world map ang {{city}}. Ilagay mo.",
     "invite": "Mag-imbita ng kaibigan",
-    "share": "Tulungan mo akong katawanin ang {{city}} sa Hilads.",
+    "share": "Sumagot tayo para sa {{city}} sa Hilads.",
     "pioneerTitle": "Mga pioneer badge",
-    "pioneerSub": "Ang kauna-unahang naaprubahang proof sa isang lungsod. Sa iyo habambuhay."
+    "pioneerSub": "Ang kauna-unahang naaprubahang sagot sa isang lungsod. Sa iyo habambuhay.",
+    "streak_one": "{{count}} araw nang sumasagot ang {{city}}",
+    "streak_other": "{{count}} araw nang sunod-sunod sumasagot ang {{city}}"
   },
   "compare": {
-    "todayQuestion": "Tanong ngayong araw: {{question}}",
-    "kicker": "Tanong ngayong araw",
+    "todayQuestion": "Ngayon, sumasagot ang mundo: {{question}}",
+    "kicker": "Ngayon, sumasagot ang mundo:",
     "sub": "Paikliin ang sagot: ito ang ikukumpara ng mundo.",
     "next": "Susunod",
     "wordPlaceholder": "Isang salita o maikling parirala",
@@ -528,21 +531,26 @@
     "emptyBody": "Maging unang lungsod sa board.",
     "noAnswer": "Wala pang sagot",
     "median": "Median {{price}}",
-    "proofs_one": "{{count}} proof",
-    "proofs_other": "{{count}} proof",
+    "proofs_one": "{{count}} sagot",
+    "proofs_other": "{{count}} sagot",
+    "seeAll": "Tingnan lahat",
     "teaser_one": "Sumagot na ang {{count}} bansa:",
     "teaser_other": "Sumagot na ang {{count}} bansa:",
-    "seeAll": "Tingnan lahat"
+    "firstAnswers": "Dumarating na ang mga unang sagot. Aling lungsod ang susunod?",
+    "boardTitle": "Ganito sumagot ang mundo",
+    "cheapest": "Pinakamura: {{city}} {{price}}",
+    "priciest": "Pinakamahal: {{city}} {{price}}",
+    "funFact": "{{ratio}}× ang presyo sa {{city}} kaysa sa {{other}}."
   },
   "backHome": {
-    "title": "E sa inyo?",
+    "title": "E sa inyo, kumusta?",
     "pickCity": "Taga-saan ka?",
     "choose": "Pumili",
     "homeIn": "Sa inyo, {{city}}",
     "answerPlaceholder": "Sa {{city}}",
     "price": "Presyo sa {{city}} (opsyonal)",
     "line": "Isang linya tungkol dito (opsyonal)",
-    "linePlaceholder": "Kumusta ito sa {{city}}?",
+    "linePlaceholder": "Halimbawa: sa Paris, 7 € ang isang beer.",
     "skip": "Laktawan",
     "askTitle": "Taga-saan ka?",
     "askSub": "Ang lungsod na pinagmulan mo. Isang beses lang itatanong; mababago mo sa Settings.",
@@ -572,7 +580,7 @@
       "night": "Sa hatinggabi"
     },
     "yourTurn": "Ikaw na.",
-    "todayIs": "Ang challenge ngayong araw: {{text}}",
+    "todayIs": "Ngayon, sumasagot ang mundo: {{question}}",
     "close": "Isara",
     "sub_one": "{{count}} lungsod, iisang challenge",
     "sub_other": "{{count}} lungsod, iisang challenge"
@@ -581,11 +589,12 @@
     "tagline": "Iisang challenge. Iba-ibang mundo."
   },
   "index": {
-    "title": "Ang Hilads Index noong nakaraang linggo",
-    "sub": "Magkano ang ibinayad ng mundo noong nakaraang linggo",
+    "title": "Magkano ang ibinayad ng mundo noong nakaraang linggo",
     "pricePaid": "Median na presyong ibinayad",
     "share": "Ibahagi",
     "shareText": "Ang Hilads Index: {{lines}}",
-    "footnote": "Batay sa mga lungsod na may 3 proof o higit pa"
-  }
+    "footnote": "Batay sa mga lungsod na may 3 sagot o higit pa"
+  },
+  "ctaAnswer": "Sumagot para sa {{city}}",
+  "ctaAnswerNoCity": "Sumagot para sa lungsod mo"
 }

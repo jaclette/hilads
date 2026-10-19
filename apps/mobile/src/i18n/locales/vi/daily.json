@@ -5,8 +5,8 @@
   "nothingLive": "Daily Challenge tiếp theo sắp tới rồi",
   "cta": "Nhận challenge",
   "ctaIn": "Mình tham gia",
-  "ctaTaken": "Đã làm thử thách · Xem bằng chứng của mình",
-  "seeProofs": "Xem bằng chứng hôm nay",
+  "ctaTaken": "Đã trả lời · Xem câu trả lời",
+  "seeProofs": "Xem câu trả lời hôm nay",
   "localTwist": "Local Twist",
   "twistIn": "Local Twist ở {{city}}",
   "twistBy": "bởi {{name}}",
@@ -15,20 +15,20 @@
   "countCity": "{{count}} ở {{city}}",
   "countZero": "Chưa có ai - hãy là người đầu tiên",
   "beFirst": "Hãy là người đầu tiên hôm nay",
-  "beFirstSub": "Chưa có bằng chứng nào. Đăng của bạn và truyền cảm hứng cho cả thành phố.",
-  "yourProof": "Bằng chứng của bạn",
+  "beFirstSub": "Chưa có câu trả lời nào. Đăng của bạn và truyền cảm hứng cho cả thành phố.",
+  "yourProof": "Câu trả lời của bạn",
   "status": {
     "pending": "Đang chờ duyệt",
     "approved": "Đã đăng",
     "rejected": "Không được đăng",
     "removed": "Đã gỡ"
   },
-  "pendingHint": "Mỗi bằng chứng đều được kiểm tra trước khi hiển thị.",
+  "pendingHint": "Mỗi câu trả lời đều được kiểm tra trước khi hiển thị.",
   "reasonLabel": "Lý do: {{reason}}",
   "fixIt": "Sửa lại",
   "edit": "Sửa",
   "delete": "Xóa",
-  "deleteTitle": "Xóa bằng chứng của bạn?",
+  "deleteTitle": "Xóa câu trả lời của bạn?",
   "deleteBody": "Bằng chứng sẽ biến mất khỏi challenge và các kênh.",
   "cancel": "Hủy",
   "closed": "Đã kết thúc",
@@ -36,8 +36,8 @@
   "practicalTitle": "Nên biết",
   "priceRange": "{{min}}-{{max}} {{currency}}",
   "priceOne": "{{amount}} {{currency}}",
-  "priceFrom_one": "theo {{count}} bằng chứng",
-  "priceFrom_other": "theo {{count}} bằng chứng",
+  "priceFrom_one": "theo {{count}} câu trả lời",
+  "priceFrom_other": "theo {{count}} câu trả lời",
   "places_one": "{{count}} địa điểm được ghim",
   "places_other": "{{count}} địa điểm được ghim",
   "unnamedPlace": "Địa điểm đã ghim",
@@ -50,8 +50,8 @@
   "notFound": "Daily Challenge này không tồn tại.",
   "cityRowEmpty": "Hãy là người đầu tiên tạo challenge ở {{city}}",
   "proof": {
-    "titleNew": "Bằng chứng của bạn",
-    "titleEdit": "Sửa bằng chứng",
+    "titleNew": "Câu trả lời của bạn",
+    "titleEdit": "Sửa câu trả lời",
     "camera": "Máy ảnh",
     "gallery": "Thư viện",
     "changePhoto": "Đổi ảnh",
@@ -64,11 +64,11 @@
     "pinHint": "Chỉ khi bạn muốn người khác tìm thấy.",
     "pinChange": "Đổi",
     "pinRemove": "Gỡ",
-    "submit": "Đăng bằng chứng",
+    "submit": "Đăng câu trả lời",
     "save": "Lưu thay đổi",
     "sending": "Đang gửi…",
-    "sentTitle": "Đã gửi để duyệt",
-    "sentBody": "Bạn sẽ thấy nó trong challenge khi được duyệt.",
+    "sentTitle": "{{city}} đã trả lời!",
+    "sentBody": "Xem cả thế giới đã nói gì. Ảnh của bạn hiện ra khi được duyệt.",
     "ok": "OK",
     "permPhotoTitle": "Cần quyền truy cập ảnh",
     "permPhotoBody": "Cho phép truy cập trong cài đặt để thêm ảnh.",
@@ -76,12 +76,14 @@
     "permCameraBody": "Cho phép truy cập máy ảnh trong cài đặt để chụp ảnh.",
     "photoRequired": "Hãy thêm ảnh trước.",
     "locationOff": "Vị trí đang tắt nên không thể ghim địa điểm này.",
-    "editOnlyActive": "Bạn có thể sửa bằng chứng cho đến khi challenge kết thúc.",
+    "editOnlyActive": "Bạn có thể sửa câu trả lời cho đến khi challenge kết thúc.",
     "takeTitle": "Chụp ảnh của bạn",
-    "retake": "Chụp lại"
+    "retake": "Chụp lại",
+    "sentTitleNoCity": "Câu trả lời của bạn đã gửi!",
+    "compare": "So sánh"
   },
   "errors": {
-    "already_posted": "Bạn đã đăng bằng chứng cho challenge hôm nay rồi.",
+    "already_posted": "Bạn đã đăng câu trả lời cho challenge hôm nay rồi.",
     "challenge_closed": "Challenge này đã kết thúc.",
     "no_active_challenge": "Hiện chưa có Daily Challenge nào.",
     "moderation_blocked": "Chú thích của bạn bị gắn cờ - hãy viết lại nhé.",
@@ -93,14 +95,14 @@
     "rate_limited": "Thử quá nhiều lần - đợi một chút nhé.",
     "image_processing_failed": "Không xử lý được ảnh này. Thử ảnh khác nhé.",
     "generic": "Có lỗi xảy ra. Thử lại nhé.",
-    "place_required": "Hãy chọn địa điểm cho bằng chứng.",
+    "place_required": "Hãy chọn địa điểm cho câu trả lời.",
     "place_not_allowed": "Challenge này không có địa điểm.",
     "place_not_found": "Địa điểm này không còn nữa. Hãy chọn địa điểm khác.",
     "invalid_place_name": "Tên địa điểm phải từ 1 đến 80 ký tự.",
     "place_name_blocked": "Tên địa điểm này đã bị gắn cờ. Hãy viết lại.",
-    "invalid_position": "Cần vị trí của bạn để đăng bằng chứng này.",
+    "invalid_position": "Cần vị trí của bạn để đăng câu trả lời này.",
     "too_far": "Bạn đang ở quá xa địa điểm này.",
-    "answer_required": "Hãy trả lời câu hỏi hôm nay để đăng bằng chứng.",
+    "answer_required": "Hãy trả lời câu hỏi hôm nay để đăng câu trả lời.",
     "invalid_answer": "Câu trả lời không khớp với câu hỏi. Kiểm tra lại rồi thử nữa.",
     "invalid_back_home": "Phần quê nhà cần một thành phố và một câu trả lời, giá hoặc một câu."
   },
@@ -119,11 +121,11 @@
     "pickCity": "Chọn thành phố",
     "worldSelection": "Lựa chọn Thế giới: thành phố này chưa hoạt động",
     "empty": "Những Daily Challenge đầu tiên sắp tới rồi.",
-    "proofs_one": "{{count}} bằng chứng",
-    "proofs_other": "{{count}} bằng chứng"
+    "proofs_one": "{{count}} câu trả lời",
+    "proofs_other": "{{count}} câu trả lời"
   },
   "report": {
-    "title": "Báo cáo bằng chứng này",
+    "title": "Báo cáo câu trả lời này",
     "body": "Có vấn đề gì vậy?",
     "reasons": {
       "inappropriate": "Không phù hợp",
@@ -133,21 +135,21 @@
       "other": "Lý do khác"
     },
     "thanks": "Cảm ơn - bọn mình sẽ kiểm tra.",
-    "already": "Bạn đã báo cáo bằng chứng này rồi."
+    "already": "Bạn đã báo cáo câu trả lời này rồi."
   },
   "vote": {
     "vote": "Bình chọn",
     "withdraw": "Rút bình chọn",
-    "yours": "Bằng chứng của bạn",
+    "yours": "Câu trả lời của bạn",
     "noneLeftTitle": "Hết lượt bình chọn",
-    "noneLeft": "Bạn đã dùng hết 3 lượt bình chọn hôm nay. Rút một lượt để bình chọn cho bằng chứng này.",
+    "noneLeft": "Bạn đã dùng hết 3 lượt bình chọn hôm nay. Rút một lượt để bình chọn cho câu trả lời này.",
     "left_other": "Còn {{count}} lượt",
     "errors": {
       "vote_limit": "Bạn đã dùng hết 3 lượt bình chọn hôm nay.",
       "voting_closed": "Bình chọn đã đóng cùng challenge.",
       "rate_limited": "Thử quá nhiều lần - đợi một chút.",
-      "own_proof": "Bạn không thể bình chọn cho bằng chứng của mình.",
-      "not_found": "Bằng chứng này không còn nữa.",
+      "own_proof": "Bạn không thể bình chọn cho câu trả lời của mình.",
+      "not_found": "Câu trả lời này không còn nữa.",
       "generic": "Đã có lỗi. Thử lại nhé."
     }
   },
@@ -163,7 +165,7 @@
     "streak": "Chuỗi hiện tại",
     "bestStreak": "Chuỗi dài nhất",
     "completed": "Đã hoàn thành",
-    "bestProofs": "Bằng chứng hay nhất",
+    "bestProofs": "Câu trả lời hay nhất",
     "emptyMine": "Chuỗi của bạn bắt đầu với challenge hôm nay."
   },
   "streak_other": "Chuỗi {{count}} ngày",
@@ -225,7 +227,7 @@
     "titleChallenge": "Địa điểm đã ghim",
     "titleCity": "Địa điểm đã ghim ở {{city}}",
     "titleWorld": "Địa điểm đã ghim trên thế giới",
-    "seeProof": "Xem bằng chứng",
+    "seeProof": "Xem câu trả lời",
     "openChallenge": "Mở challenge",
     "search": "Tìm món ăn, quán cà phê, con phố",
     "searchA11y": "Tìm spot",
@@ -250,20 +252,20 @@
     "sortWeek": "Bình chọn nhiều nhất tuần này",
     "spotsTomorrow": "Spot sẽ đến từ challenge ngày mai: {{theme}}",
     "planA11y": "Kế hoạch: {{title}}, {{time}}",
-    "proofs_one": "{{count}} bằng chứng",
-    "proofs_other": "{{count}} bằng chứng"
+    "proofs_one": "{{count}} câu trả lời",
+    "proofs_other": "{{count}} câu trả lời"
   },
   "leaderboard": {
     "tab": "Top 10",
     "provisional": "Tạm thời cho đến lượt drop",
     "finalIn": "Chốt sau {{time}}",
     "official": "Bục vinh quang chính thức",
-    "minProofs": "Top 10 mở khi có {{min}} bằng chứng. Hiện có: {{n}}.",
-    "noVotes": "Chưa có bình chọn. Hãy bình chọn cho bằng chứng bạn thích!",
+    "minProofs": "Top 10 mở khi có {{min}} câu trả lời. Hiện có: {{n}}.",
+    "noVotes": "Chưa có bình chọn. Hãy bình chọn cho câu trả lời bạn thích!",
     "me": "Bạn: #{{rank}} · ♥ {{votes}}",
     "meCity": "#{{rank}} ở {{city}}",
-    "noProof": "Đăng bằng chứng để được xếp hạng.",
-    "pending": "Bằng chứng của bạn sẽ được xếp hạng sau khi duyệt.",
+    "noProof": "Đăng câu trả lời để được xếp hạng.",
+    "pending": "Câu trả lời của bạn sẽ được xếp hạng sau khi duyệt.",
     "cityTop": "Top 3 ở {{city}}",
     "compactTitle": "Top 3 lúc này",
     "seeAll": "Top 10 ›"
@@ -359,17 +361,17 @@
     "hint": "Thưởng nhanh tay: đăng trước {{time}}"
   },
   "group": {
-    "title": "Bằng chứng mới: {{n}}",
+    "title": "Câu trả lời mới: {{n}}",
     "citiesMore": "{{cities}} và {{n}} nữa",
-    "galleryTitle": "Bằng chứng mới"
+    "galleryTitle": "Câu trả lời mới"
   },
   "today": {
     "early": "Thưởng sớm đến {{time}}",
     "tomorrow": "Ngày mai: {{theme}}",
     "aroundWorld": "Hôm nay trên thế giới",
     "inCity": "Hôm nay ở {{city}}",
-    "proofs_one": "{{count}} bằng chứng",
-    "proofs_other": "{{count}} bằng chứng",
+    "proofs_one": "{{count}} câu trả lời",
+    "proofs_other": "{{count}} câu trả lời",
     "countries_one": "{{count}} quốc gia",
     "countries_other": "{{count}} quốc gia",
     "proofsIn": "{{proofs}} ở {{countries}}",
@@ -389,7 +391,7 @@
     "openMap": "Mở bản đồ",
     "spotsFallback": "Thành phố của bạn chưa có spot. Gần nhất:",
     "spotsEmpty": "Ở đây chưa có spot. Nhận challenge hôm nay để đặt spot đầu tiên lên bản đồ.",
-    "seeMine": "Xem bằng chứng của bạn",
+    "seeMine": "Xem câu trả lời của bạn",
     "votes_one": "{{count}} phiếu",
     "votes_other": "{{count}} phiếu",
     "day": {
@@ -399,7 +401,7 @@
       "today": "hôm nay",
       "tomorrow": "ngày mai",
       "later": "sắp tới",
-      "none": "chưa có bằng chứng"
+      "none": "chưa có câu trả lời"
     },
     "links": {
       "pastSub": "Ảnh của những ngày trước",
@@ -458,8 +460,8 @@
   },
   "takeIt": "Nhận",
   "proofHint": {
-    "title": "Chứng minh bằng một tấm ảnh",
-    "place": "Ảnh được bình chọn nhiều nhất thành ảnh của spot.",
+    "title": "Chụp câu trả lời của bạn",
+    "place": "Ảnh được bình chọn nhiều nhất sẽ thành ảnh của spot.",
     "noPlace": "Ảnh được bình chọn nhiều nhất lên bục vinh quang."
   },
   "howItWorks": {
@@ -467,7 +469,7 @@
     "step1": "Làm ngay nơi bạn đang ở.",
     "step2": "Chụp một tấm ảnh.",
     "step3": "Ảnh lên bản đồ và nhận bình chọn.",
-    "step3NoPlace": "Ảnh hiện trong bằng chứng hôm nay và nhận bình chọn.",
+    "step3NoPlace": "Ảnh hiện trong câu trả lời hôm nay và nhận bình chọn.",
     "camera": "Mở camera",
     "later": "Nhắc tôi sau",
     "laterDone": "Tối nay mình sẽ nhắc bạn."
@@ -477,7 +479,7 @@
     "shareProof": "Chia sẻ ảnh của mình",
     "shareRank": "Chia sẻ hạng #{{rank}} của bạn",
     "challengeFriend": "Thách bạn bè",
-    "afterProof": "Khoe với bạn bè",
+    "afterProof": "Chia sẻ câu trả lời",
     "copyLink": "Sao chép liên kết",
     "copied": "Đã sao chép",
     "more": "Thêm",
@@ -486,28 +488,30 @@
     "rankCity": "Hạng #{{rank}} tại {{city}}",
     "photoBy": "Ảnh của @{{user}}",
     "areYouIn": "Bạn tham gia chứ?",
-    "textProof": "Ảnh của mình cho Daily Challenge hôm nay trên Hilads: {{challenge}}",
+    "textProof": "{{question}} Ở {{city}}: {{answer}}. Còn ở thành phố bạn? Chơi địa phương. So toàn cầu.",
     "textSpot": "{{name}} trên Hilads",
     "textSpotCity": "{{name}}, {{city}}, trên Hilads",
-    "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?"
+    "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?",
+    "textProofNoAnswer": "{{challenge}} Ở {{city}}. Còn ở thành phố bạn? Chơi địa phương. So toàn cầu."
   },
   "represent": {
-    "empty": "Hôm nay chưa ai đại diện cho {{city}}. Hãy là người đầu tiên.",
-    "button": "Đại diện {{city}}",
-    "firstPosted": "Hôm nay bạn đã đưa {{city}} lên bản đồ thế giới.",
+    "empty": "{{city}} chưa trả lời hôm nay. Hãy là người đầu tiên.",
+    "button": "Trả lời cho {{city}}",
+    "firstPosted": "Bạn đã đưa {{city}} lên bản đồ thế giới hôm nay.",
     "pioneer": "Người tiên phong của {{city}}",
     "spotOne": "Spot #1 ở {{city}}",
-    "streak_other": "{{city}}, được đại diện {{count}} ngày liên tiếp",
     "board_other": "{{count}} thành phố đã có mặt hôm nay. {{city}} thì chưa.",
-    "mapEmpty": "Hãy là người đầu tiên đưa {{city}} lên bản đồ.",
+    "mapEmpty": "{{city}} chưa có trên bản đồ thế giới. Hãy đưa lên.",
     "invite": "Mời bạn bè",
-    "share": "Giúp mình đại diện cho {{city}} trên Hilads nhé.",
+    "share": "Cùng mình trả lời cho {{city}} trên Hilads.",
     "pioneerTitle": "Huy hiệu tiên phong",
-    "pioneerSub": "Bằng chứng được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi."
+    "pioneerSub": "Câu trả lời được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi.",
+    "streak_one": "{{city}} đã trả lời {{count}} ngày liên tiếp",
+    "streak_other": "{{city}} đã trả lời {{count}} ngày liên tiếp"
   },
   "compare": {
-    "todayQuestion": "Câu hỏi hôm nay: {{question}}",
-    "kicker": "Câu hỏi hôm nay",
+    "todayQuestion": "Hôm nay, cả thế giới trả lời: {{question}}",
+    "kicker": "Hôm nay, cả thế giới trả lời:",
     "sub": "Trả lời ngắn thôi: cả thế giới sẽ so sánh câu này.",
     "next": "Tiếp",
     "wordPlaceholder": "Một từ hoặc một cụm ngắn",
@@ -524,21 +528,26 @@
     "emptyBody": "Hãy là thành phố đầu tiên trên bảng.",
     "noAnswer": "Chưa có câu trả lời",
     "median": "Trung vị {{price}}",
-    "proofs_one": "{{count}} bằng chứng",
-    "proofs_other": "{{count}} bằng chứng",
+    "proofs_one": "{{count}} câu trả lời",
+    "proofs_other": "{{count}} câu trả lời",
+    "seeAll": "Xem tất cả",
     "teaser_one": "Đã có {{count}} quốc gia trả lời:",
     "teaser_other": "Đã có {{count}} quốc gia trả lời:",
-    "seeAll": "Xem tất cả"
+    "firstAnswers": "Những câu trả lời đầu tiên đang đến. Thành phố nào tiếp theo?",
+    "boardTitle": "Cả thế giới đã trả lời thế nào",
+    "cheapest": "Rẻ nhất: {{city}} {{price}}",
+    "priciest": "Đắt nhất: {{city}} {{price}}",
+    "funFact": "Ở {{city}} đắt gấp {{ratio}} lần so với {{other}}."
   },
   "backHome": {
-    "title": "Còn ở quê bạn thì sao?",
+    "title": "Còn ở quê bạn, thế nào?",
     "pickCity": "Quê bạn ở đâu?",
     "choose": "Chọn",
-    "homeIn": "Ở quê bạn, {{city}}",
+    "homeIn": "Ở quê, {{city}}",
     "answerPlaceholder": "Ở {{city}}",
     "price": "Giá ở {{city}} (không bắt buộc)",
     "line": "Một câu về chuyện này (không bắt buộc)",
-    "linePlaceholder": "Ở {{city}} thì thế nào?",
+    "linePlaceholder": "Ví dụ: ở Paris, một ly bia giá 7 €.",
     "skip": "Bỏ qua",
     "askTitle": "Quê bạn ở đâu?",
     "askSub": "Thành phố quê nhà của bạn. Chỉ hỏi một lần, bạn có thể đổi trong Cài đặt.",
@@ -568,7 +577,7 @@
       "night": "Ban đêm"
     },
     "yourTurn": "Đến lượt bạn.",
-    "todayIs": "Thử thách hôm nay: {{text}}",
+    "todayIs": "Hôm nay, cả thế giới trả lời: {{question}}",
     "close": "Đóng",
     "sub_one": "{{count}} thành phố, cùng một thử thách",
     "sub_other": "{{count}} thành phố, cùng một thử thách"
@@ -577,11 +586,12 @@
     "tagline": "Cùng một thử thách. Những thế giới khác nhau."
   },
   "index": {
-    "title": "Hilads Index tuần trước",
-    "sub": "Cả thế giới đã trả bao nhiêu tuần trước",
+    "title": "Cả thế giới đã trả bao nhiêu tuần trước",
     "pricePaid": "Giá trung vị đã trả",
     "share": "Chia sẻ",
     "shareText": "Hilads Index: {{lines}}",
-    "footnote": "Dựa trên các thành phố có từ 3 bằng chứng"
-  }
+    "footnote": "Dựa trên các thành phố có từ 3 câu trả lời"
+  },
+  "ctaAnswer": "Trả lời cho {{city}}",
+  "ctaAnswerNoCity": "Trả lời cho thành phố của bạn"
 }

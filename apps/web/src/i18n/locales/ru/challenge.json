@@ -864,8 +864,8 @@
     "nothingLive": "Следующий Daily Challenge уже в пути",
     "cta": "Принять challenge",
     "ctaIn": "Я в деле",
-    "ctaTaken": "Challenge выполнен · Моё доказательство",
-    "seeProofs": "Смотреть доказательства за сегодня",
+    "ctaTaken": "Ответ дан · Мой ответ",
+    "seeProofs": "Смотреть ответы за сегодня",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist: {{city}}",
     "twistBy": "от {{name}}",
@@ -876,20 +876,20 @@
     "countCity": "{{count}} в {{city}}",
     "countZero": "Пока никого - будь первым",
     "beFirst": "Будь первым сегодня",
-    "beFirstSub": "Доказательств пока нет. Опубликуй своё и вдохнови город.",
-    "yourProof": "Твоё доказательство",
+    "beFirstSub": "Ответов пока нет. Будь первым, мир ждёт.",
+    "yourProof": "Твой ответ",
     "status": {
       "pending": "На проверке",
       "approved": "Опубликовано",
       "rejected": "Не опубликовано",
       "removed": "Удалено"
     },
-    "pendingHint": "Каждое доказательство проверяется перед публикацией.",
+    "pendingHint": "Каждый ответ проверяется перед публикацией.",
     "reasonLabel": "Причина: {{reason}}",
     "fixIt": "Исправить",
     "edit": "Изменить",
     "delete": "Удалить",
-    "deleteTitle": "Удалить доказательство?",
+    "deleteTitle": "Удалить ответ?",
     "deleteBody": "Оно исчезнет из challenge и из каналов.",
     "cancel": "Отмена",
     "closed": "Закрыт",
@@ -897,10 +897,10 @@
     "practicalTitle": "Полезно знать",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "по {{count}} доказательству",
-    "priceFrom_few": "по {{count}} доказательствам",
-    "priceFrom_many": "по {{count}} доказательствам",
-    "priceFrom_other": "по {{count}} доказательствам",
+    "priceFrom_one": "по {{count}} ответу",
+    "priceFrom_few": "по {{count}} ответам",
+    "priceFrom_many": "по {{count}} ответам",
+    "priceFrom_other": "по {{count}} ответам",
     "places_one": "{{count}} место на карте",
     "places_few": "{{count}} места на карте",
     "places_many": "{{count}} мест на карте",
@@ -915,8 +915,8 @@
     "notFound": "Такого Daily Challenge не существует.",
     "cityRowEmpty": "Создай первый challenge в {{city}}",
     "proof": {
-      "titleNew": "Твоё доказательство",
-      "titleEdit": "Изменить доказательство",
+      "titleNew": "Твой ответ",
+      "titleEdit": "Изменить ответ",
       "camera": "Камера",
       "gallery": "Галерея",
       "changePhoto": "Сменить фото",
@@ -929,11 +929,11 @@
       "pinHint": "Только если хочешь, чтобы другие его нашли.",
       "pinChange": "Изменить",
       "pinRemove": "Убрать",
-      "submit": "Опубликовать доказательство",
+      "submit": "Опубликовать ответ",
       "save": "Сохранить изменения",
       "sending": "Отправка…",
-      "sentTitle": "Отправлено на проверку",
-      "sentBody": "Ты увидишь его в challenge после одобрения.",
+      "sentTitle": "{{city}} ответил!",
+      "sentBody": "Посмотри, что сказал мир. Фото появится после проверки.",
       "ok": "OK",
       "permPhotoTitle": "Нужен доступ к фото",
       "permPhotoBody": "Разреши доступ в настройках, чтобы добавить фото.",
@@ -941,12 +941,12 @@
       "permCameraBody": "Разреши доступ к камере в настройках, чтобы сделать фото.",
       "photoRequired": "Сначала добавь фото.",
       "locationOff": "Геолокация выключена, поэтому это место нельзя отметить.",
-      "editOnlyActive": "Ты можешь изменить доказательство, пока challenge не закончится.",
+      "editOnlyActive": "Ты можешь изменить ответ, пока challenge не закончится.",
       "takeTitle": "Сделай фото",
       "retake": "Переснять"
     },
     "errors": {
-      "already_posted": "Ты уже опубликовал доказательство для сегодняшнего challenge.",
+      "already_posted": "Ты уже ответил на сегодняшний challenge.",
       "challenge_closed": "Этот challenge закрыт.",
       "no_active_challenge": "Сейчас нет Daily Challenge.",
       "moderation_blocked": "Твоя подпись не прошла модерацию - переформулируй её.",
@@ -958,12 +958,12 @@
       "rate_limited": "Слишком много попыток - подожди немного.",
       "image_processing_failed": "Не удалось обработать это фото. Попробуй другое.",
       "generic": "Что-то пошло не так. Попробуй ещё раз.",
-      "place_required": "Выбери место для доказательства.",
+      "place_required": "Выбери место для ответа.",
       "place_not_allowed": "У этого challenge нет места.",
       "place_not_found": "Это место больше недоступно. Выбери другое.",
       "invalid_place_name": "Название места должно быть от 1 до 80 символов.",
       "place_name_blocked": "Это название отмечено. Перефразируй.",
-      "invalid_position": "Чтобы опубликовать доказательство, нужно твоё местоположение.",
+      "invalid_position": "Чтобы опубликовать ответ, нужно твоё местоположение.",
       "too_far": "Ты слишком далеко от этого места."
     },
     "push": {
@@ -981,13 +981,13 @@
       "pickCity": "Выбери город",
       "worldSelection": "Выбор Мира: этот город ещё не запущен",
       "empty": "Первые Daily Challenge уже на подходе.",
-      "proofs_one": "{{count}} доказательство",
-      "proofs_few": "{{count}} доказательства",
-      "proofs_many": "{{count}} доказательств",
-      "proofs_other": "{{count}} доказательства"
+      "proofs_one": "{{count}} ответ",
+      "proofs_few": "{{count}} ответа",
+      "proofs_many": "{{count}} ответов",
+      "proofs_other": "{{count}} ответа"
     },
     "report": {
-      "title": "Пожаловаться на доказательство",
+      "title": "Пожаловаться на ответ",
       "body": "Что с ним не так?",
       "reasons": {
         "inappropriate": "Неприемлемо",
@@ -997,14 +997,14 @@
         "other": "Другое"
       },
       "thanks": "Спасибо - мы проверим.",
-      "already": "Ты уже пожаловался на это доказательство."
+      "already": "Ты уже пожаловался на этот ответ."
     },
     "vote": {
       "vote": "Голосовать",
       "withdraw": "Убрать мой голос",
-      "yours": "Твоё доказательство",
+      "yours": "Твой ответ",
       "noneLeftTitle": "Голосов не осталось",
-      "noneLeft": "Ты использовал свои 3 голоса сегодня. Убери один, чтобы проголосовать за это доказательство.",
+      "noneLeft": "Ты использовал свои 3 голоса сегодня. Убери один, чтобы проголосовать за этот ответ.",
       "left_one": "Остался {{count}} голос",
       "left_few": "Осталось {{count}} голоса",
       "left_many": "Осталось {{count}} голосов",
@@ -1013,8 +1013,8 @@
         "vote_limit": "Ты уже использовал свои 3 голоса сегодня.",
         "voting_closed": "Голосование закрылось вместе с challenge.",
         "rate_limited": "Слишком много попыток - подожди немного.",
-        "own_proof": "Нельзя голосовать за своё доказательство.",
-        "not_found": "Это доказательство больше недоступно.",
+        "own_proof": "Нельзя голосовать за свой ответ.",
+        "not_found": "Этот ответ больше недоступен.",
         "generic": "Что-то пошло не так. Попробуй ещё раз."
       }
     },
@@ -1030,7 +1030,7 @@
       "streak": "Текущая серия",
       "bestStreak": "Лучшая серия",
       "completed": "Выполнено",
-      "bestProofs": "Лучшие доказательства",
+      "bestProofs": "Лучшие ответы",
       "emptyMine": "Твоя серия начинается с сегодняшнего challenge."
     },
     "streak_one": "{{count}} день подряд",
@@ -1095,7 +1095,7 @@
       "titleChallenge": "Отмеченные места",
       "titleCity": "Отмеченные места в {{city}}",
       "titleWorld": "Отмеченные места по всему миру",
-      "seeProof": "Открыть доказательство",
+      "seeProof": "Открыть ответ",
       "openChallenge": "Открыть challenge",
       "search": "Найди блюдо, кафе, улицу",
       "searchA11y": "Искать места",
@@ -1115,22 +1115,22 @@
       "closeSpot": "Закрыть",
       "emptyTitle": "Поставь здесь первое место",
       "planA11y": "План: {{title}}, {{time}}",
-      "proofs_one": "{{count}} доказательство",
-      "proofs_few": "{{count}} доказательства",
-      "proofs_many": "{{count}} доказательств",
-      "proofs_other": "{{count}} доказательства"
+      "proofs_one": "{{count}} ответ",
+      "proofs_few": "{{count}} ответа",
+      "proofs_many": "{{count}} ответов",
+      "proofs_other": "{{count}} ответа"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Предварительно до следующего drop",
       "finalIn": "Итог через {{time}}",
       "official": "Официальный пьедестал",
-      "minProofs": "Top 10 откроется на {{min}} доказательствах. Пока: {{n}}.",
-      "noVotes": "Голосов пока нет. Голосуй за любимые доказательства!",
+      "minProofs": "Top 10 откроется на {{min}} ответах. Пока: {{n}}.",
+      "noVotes": "Голосов пока нет. Голосуй за любимые ответы!",
       "me": "Ты: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} в {{city}}",
-      "noProof": "Опубликуй доказательство, чтобы попасть в рейтинг.",
-      "pending": "Твоё доказательство попадёт в рейтинг после одобрения.",
+      "noProof": "Ответь, чтобы попасть в рейтинг.",
+      "pending": "Твой ответ попадёт в рейтинг после одобрения.",
       "cityTop": "Top 3 в {{city}}",
       "compactTitle": "Top 3 сейчас",
       "seeAll": "Top 10 ›"
@@ -1226,19 +1226,19 @@
       "hint": "Бонус за скорость: опубликуй до {{time}}"
     },
     "group": {
-      "title": "Новые доказательства: {{n}}",
+      "title": "Новые ответы: {{n}}",
       "citiesMore": "{{cities}} и ещё {{n}}",
-      "galleryTitle": "Новые доказательства"
+      "galleryTitle": "Новые ответы"
     },
     "today": {
       "early": "Бонус за скорость до {{time}}",
       "tomorrow": "Завтра: {{theme}}",
       "aroundWorld": "Сегодня по всему миру",
       "inCity": "Сегодня: {{city}}",
-      "proofs_one": "{{count}} доказательство",
-      "proofs_few": "{{count}} доказательства",
-      "proofs_many": "{{count}} доказательств",
-      "proofs_other": "{{count}} доказательства",
+      "proofs_one": "{{count}} ответ",
+      "proofs_few": "{{count}} ответа",
+      "proofs_many": "{{count}} ответов",
+      "proofs_other": "{{count}} ответа",
       "countries_one": "{{count}} стране",
       "countries_few": "{{count}} странах",
       "countries_many": "{{count}} странах",
@@ -1264,7 +1264,7 @@
       "openMap": "Открыть карту",
       "spotsFallback": "В твоём городе пока нет мест. Ближайшие:",
       "spotsEmpty": "Здесь пока нет мест. Прими сегодняшний challenge и поставь первое место на карту.",
-      "seeMine": "Смотреть своё доказательство",
+      "seeMine": "Смотреть свой ответ",
       "votes_one": "{{count}} голос",
       "votes_few": "{{count}} голоса",
       "votes_many": "{{count}} голосов",
@@ -1276,7 +1276,7 @@
         "today": "сегодня",
         "tomorrow": "завтра",
         "later": "скоро",
-        "none": "нет доказательства"
+        "none": "нет ответа"
       },
       "links": {
         "pastSub": "Фото прошлых дней",
@@ -1335,12 +1335,12 @@
     },
     "takeIt": "Принять",
     "proofHint": {
-      "title": "Докажи фото",
-      "place": "Самое популярное фото станет фото места.",
-      "noPlace": "Самое популярное попадёт на пьедестал."
+      "title": "Твой ответ на фото",
+      "place": "Фото с наибольшим числом голосов станет фото места.",
+      "noPlace": "Фото с наибольшим числом голосов попадёт на пьедестал."
     },
     "compare": {
-      "todayQuestion": "Вопрос дня: {{question}}",
+      "todayQuestion": "Сегодня отвечает мир: {{question}}",
       "tab": "Сравнить",
       "allCities": "Все города",
       "boardCount": "Городов: {{count}} · Стран: {{countries}}",
@@ -1352,19 +1352,24 @@
       "emptyBody": "Стань первым городом на доске.",
       "noAnswer": "Пока без ответа",
       "median": "Медиана {{price}}",
-      "proofs_one": "{{count}} доказательство",
-      "proofs_few": "{{count}} доказательства",
-      "proofs_many": "{{count}} доказательств",
-      "proofs_other": "{{count}} доказательства",
-      "teaser_one": "Уже {{count}} страна:",
-      "teaser_few": "Уже {{count}} страны:",
-      "teaser_many": "Уже {{count}} стран:",
-      "teaser_other": "Уже {{count}} страны:",
-      "seeAll": "Смотреть все"
+      "proofs_one": "{{count}} ответ",
+      "proofs_few": "{{count}} ответа",
+      "proofs_many": "{{count}} ответов",
+      "proofs_other": "{{count}} ответа",
+      "teaser_one": "Уже ответила {{count}} страна:",
+      "teaser_few": "Уже ответили {{count}} страны:",
+      "teaser_many": "Уже ответили {{count}} стран:",
+      "teaser_other": "Уже ответили {{count}} страны:",
+      "seeAll": "Смотреть все",
+      "firstAnswers": "Первые ответы уже идут. Какой город следующий?",
+      "boardTitle": "Как ответил мир",
+      "cheapest": "Дешевле всего: {{city}} {{price}}",
+      "priciest": "Дороже всего: {{city}} {{price}}",
+      "funFact": "В {{ratio}} раза дороже: {{city}}, чем {{other}}."
     },
     "backHome": {
       "hereIn": "Здесь, {{city}}",
-      "homeIn": "Дома, в {{city}}"
+      "homeIn": "Дома, {{city}}"
     },
     "tour": {
       "title": "Вчерашняя кругосветка",
@@ -1379,7 +1384,7 @@
         "night": "Ночью"
       },
       "yourTurn": "Твоя очередь.",
-      "todayIs": "Челлендж дня: {{text}}",
+      "todayIs": "Сегодня отвечает мир: {{question}}",
       "close": "Закрыть",
       "sub_one": "{{count}} город, один челлендж",
       "sub_few": "{{count}} города, один челлендж",
@@ -1390,12 +1395,16 @@
       "tagline": "Один челлендж. Разные миры."
     },
     "index": {
-      "title": "Hilads Index прошлой недели",
-      "sub": "Сколько платил мир на прошлой неделе",
+      "title": "Сколько платил мир на прошлой неделе",
       "pricePaid": "Медианная цена",
       "share": "Поделиться",
       "shareText": "Hilads Index: {{lines}}",
-      "footnote": "По городам с 3 доказательствами и больше"
+      "footnote": "По городам с 3 ответами и больше"
+    },
+    "ctaAnswer": "Ответь за {{city}}",
+    "ctaAnswerNoCity": "Ответь за свой город",
+    "represent": {
+      "button": "Ответь за {{city}}"
     }
   }
 }

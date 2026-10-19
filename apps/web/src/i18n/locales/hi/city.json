@@ -320,7 +320,7 @@
     "early": "जल्दी",
     "proposedBy": "{{name}} का सुझाव",
     "proposedByCity": "{{name}} · {{city}} का सुझाव",
-    "groupTitle": "नए प्रूफ: {{n}}",
+    "groupTitle": "नए जवाब: {{n}}",
     "groupCitiesMore": "{{cities}} और {{n}} और"
   }
 }

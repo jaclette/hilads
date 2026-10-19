@@ -50,7 +50,6 @@ export function IndexCards({ source, refreshKey = 0 }: { source: 'today' | 'arch
   return (
     <View style={styles.wrap}>
       <SectionTitle small title={t('index.title')} />
-      <Text style={styles.sub}>{t('index.sub')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         {index.cards.map(card => {
           const theme = card.challenge.theme ? themeName(card.challenge.theme.key, { special: card.challenge.special }) : '';
@@ -89,7 +88,6 @@ export function IndexCards({ source, refreshKey = 0 }: { source: 'today' | 'arch
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:   { gap: 6 },
-  sub:    { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, marginTop: -4 },
   row:    { gap: 10, paddingTop: 4, paddingRight: 4 },
   card:   { width: 260, padding: 14, gap: 6, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   head:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },

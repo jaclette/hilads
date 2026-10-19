@@ -345,7 +345,9 @@ export default function DailyProofScreen() {
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <ScrollView contentContainerStyle={styles.sent}>
           <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>
-          <Text style={styles.stepTitle} accessibilityRole="header">{t('proof.sentTitle')}</Text>
+          <Text style={styles.stepTitle} accessibilityRole="header">
+            {sent.proof.city?.name ? t('proof.sentTitle', { city: shortCityName(sent.proof.city.name) }) : t('proof.sentTitleNoCity')}
+          </Text>
           <Text style={styles.muted}>{sent.body}</Text>
           {/* Represent your city (SPEC 9.16): the city's first proof of the day. */}
           {sent.cityFirst && !!sent.proof.city?.name && (
@@ -363,7 +365,10 @@ export default function DailyProofScreen() {
         </ScrollView>
         <ShareSheet content={invite} source="represent_after_proof" onClose={() => setInvite(null)} />
         <View style={styles.footer}>
-          <Button label={t('proof.ok')} onPress={() => afterProof(sent.next)} />
+          {/* A question to compare: straight to how the world answered (COPY.md). */}
+          {challenge.compare
+            ? <Button icon="earth-outline" label={t('proof.compare')} onPress={() => afterProof('/daily/today?tab=compare&source=after_proof')} />
+            : <Button label={t('proof.ok')} onPress={() => afterProof(sent.next)} />}
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
         </View>
       </SafeAreaView>
@@ -464,7 +469,7 @@ export default function DailyProofScreen() {
                 <TextField
                   value={homeDraft.line}
                   onChangeText={v => setHomeDraft(d => ({ ...d, line: v.replace(/\n/g, ' ').slice(0, HOME_LINE_MAX) }))}
-                  placeholder={t('backHome.linePlaceholder', { city: shortCityName(home.name) })}
+                  placeholder={t('backHome.linePlaceholder')}
                   maxLength={HOME_LINE_MAX}
                   returnKeyType="done"
                   blurOnSubmit

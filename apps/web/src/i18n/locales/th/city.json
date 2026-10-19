@@ -320,7 +320,7 @@
     "early": "เร็ว",
     "proposedBy": "เสนอโดย {{name}}",
     "proposedByCity": "เสนอโดย {{name}} · {{city}}",
-    "groupTitle": "หลักฐานใหม่: {{n}}",
+    "groupTitle": "คำตอบใหม่: {{n}}",
     "groupCitiesMore": "{{cities}} และอีก {{n}}"
   }
 }

@@ -860,8 +860,8 @@
     "nothingLive": "अगला Daily Challenge आने वाला है",
     "cta": "challenge लें",
     "ctaIn": "मैं तैयार हूँ",
-    "ctaTaken": "चैलेंज पूरा · मेरा सबूत देखें",
-    "seeProofs": "आज के प्रूफ देखें",
+    "ctaTaken": "जवाब दिया · मेरा जवाब देखें",
+    "seeProofs": "आज के जवाब देखें",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} का Local Twist",
     "twistBy": "{{name}} द्वारा",
@@ -870,20 +870,20 @@
     "countCity": "{{city}} में {{count}}",
     "countZero": "अभी तक कोई नहीं - पहले बनें",
     "beFirst": "आज पहले बनें",
-    "beFirstSub": "अभी तक कोई प्रूफ नहीं। अपना पोस्ट करें और शहर को प्रेरित करें।",
-    "yourProof": "आपका प्रूफ",
+    "beFirstSub": "अभी तक कोई जवाब नहीं। अपना पोस्ट करें और शहर को प्रेरित करें।",
+    "yourProof": "आपका जवाब",
     "status": {
       "pending": "लंबित",
       "approved": "पब्लिश हुआ",
       "rejected": "पब्लिश नहीं हुआ",
       "removed": "हटाया गया"
     },
-    "pendingHint": "हर प्रूफ लाइव होने से पहले चेक किया जाता है।",
+    "pendingHint": "हर जवाब लाइव होने से पहले चेक किया जाता है।",
     "reasonLabel": "वजह: {{reason}}",
     "fixIt": "ठीक करें",
     "edit": "एडिट करें",
     "delete": "डिलीट करें",
-    "deleteTitle": "अपना प्रूफ डिलीट करें?",
+    "deleteTitle": "अपना जवाब डिलीट करें?",
     "deleteBody": "यह challenge और चैनलों से हट जाएगा।",
     "cancel": "रद्द करें",
     "closed": "बंद",
@@ -891,8 +891,8 @@
     "practicalTitle": "काम की बातें",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "{{count}} प्रूफ के आधार पर",
-    "priceFrom_other": "{{count}} प्रूफ के आधार पर",
+    "priceFrom_one": "{{count}} जवाब के आधार पर",
+    "priceFrom_other": "{{count}} जवाब के आधार पर",
     "places_one": "{{count}} जगह पिन की गई",
     "places_other": "{{count}} जगहें पिन की गईं",
     "unnamedPlace": "पिन की गई जगह",
@@ -905,8 +905,8 @@
     "notFound": "यह Daily Challenge मौजूद नहीं है।",
     "cityRowEmpty": "{{city}} में पहला challenge बनाने वाले बनें",
     "proof": {
-      "titleNew": "आपका प्रूफ",
-      "titleEdit": "अपना प्रूफ एडिट करें",
+      "titleNew": "आपका जवाब",
+      "titleEdit": "अपना जवाब एडिट करें",
       "camera": "कैमरा",
       "gallery": "गैलरी",
       "changePhoto": "फ़ोटो बदलें",
@@ -919,11 +919,11 @@
       "pinHint": "सिर्फ़ तभी, जब आप चाहते हैं कि दूसरे इसे ढूँढ सकें।",
       "pinChange": "बदलें",
       "pinRemove": "हटाएँ",
-      "submit": "मेरा प्रूफ पोस्ट करें",
+      "submit": "मेरा जवाब पोस्ट करें",
       "save": "बदलाव सेव करें",
       "sending": "भेज रहे हैं…",
-      "sentTitle": "रिव्यू के लिए भेजा गया",
-      "sentBody": "मंज़ूरी मिलते ही आप इसे challenge में देखेंगे।",
+      "sentTitle": "{{city}} ने जवाब दिया!",
+      "sentBody": "देखें दुनिया ने क्या कहा। मंज़ूरी के बाद आपकी फ़ोटो दिखेगी।",
       "ok": "ठीक है",
       "permPhotoTitle": "फ़ोटो एक्सेस चाहिए",
       "permPhotoBody": "फ़ोटो जोड़ने के लिए सेटिंग्स में एक्सेस की अनुमति दें।",
@@ -931,12 +931,12 @@
       "permCameraBody": "फ़ोटो लेने के लिए सेटिंग्स में कैमरा एक्सेस की अनुमति दें।",
       "photoRequired": "पहले एक फ़ोटो जोड़ें।",
       "locationOff": "लोकेशन बंद है, इसलिए यह जगह पिन नहीं हो सकती।",
-      "editOnlyActive": "challenge ख़त्म होने तक आप अपना प्रूफ एडिट कर सकते हैं।",
+      "editOnlyActive": "challenge ख़त्म होने तक आप अपना जवाब एडिट कर सकते हैं।",
       "takeTitle": "अपनी फ़ोटो लो",
       "retake": "दोबारा लो"
     },
     "errors": {
-      "already_posted": "आप आज के challenge के लिए प्रूफ पोस्ट कर चुके हैं।",
+      "already_posted": "आप आज के challenge के लिए जवाब पोस्ट कर चुके हैं।",
       "challenge_closed": "यह challenge बंद हो चुका है।",
       "no_active_challenge": "अभी कोई Daily Challenge नहीं है।",
       "moderation_blocked": "आपका कैप्शन फ़्लैग हुआ है - कृपया इसे दोबारा लिखें।",
@@ -971,11 +971,11 @@
       "pickCity": "शहर चुनें",
       "worldSelection": "दुनिया की पसंद: यह शहर अभी लाइव नहीं है",
       "empty": "पहले Daily Challenge जल्द आ रहे हैं।",
-      "proofs_one": "{{count}} प्रूफ",
-      "proofs_other": "{{count}} प्रूफ"
+      "proofs_one": "{{count}} जवाब",
+      "proofs_other": "{{count}} जवाब"
     },
     "report": {
-      "title": "इस प्रूफ की रिपोर्ट करें",
+      "title": "इस जवाब की रिपोर्ट करें",
       "body": "इसमें क्या गलत है?",
       "reasons": {
         "inappropriate": "अनुचित",
@@ -985,22 +985,22 @@
         "other": "कुछ और"
       },
       "thanks": "धन्यवाद - हम इसे जाँचेंगे।",
-      "already": "आप इस प्रूफ की रिपोर्ट पहले ही कर चुके हैं।"
+      "already": "आप इस जवाब की रिपोर्ट पहले ही कर चुके हैं।"
     },
     "vote": {
       "vote": "वोट करें",
       "withdraw": "मेरा वोट हटाएं",
-      "yours": "आपका प्रूफ",
+      "yours": "आपका जवाब",
       "noneLeftTitle": "कोई वोट नहीं बचा",
-      "noneLeft": "आपने आज अपने 3 वोट इस्तेमाल कर लिए। इस प्रूफ को वोट देने के लिए एक हटाएं।",
+      "noneLeft": "आपने आज अपने 3 वोट इस्तेमाल कर लिए। इस जवाब को वोट देने के लिए एक हटाएं।",
       "left_one": "{{count}} वोट बचा",
       "left_other": "{{count}} वोट बचे",
       "errors": {
         "vote_limit": "आप आज अपने 3 वोट पहले ही इस्तेमाल कर चुके हैं।",
         "voting_closed": "challenge के साथ वोटिंग बंद हो गई।",
         "rate_limited": "बहुत ज़्यादा कोशिशें - थोड़ा रुकें।",
-        "own_proof": "आप अपने प्रूफ को वोट नहीं दे सकते।",
-        "not_found": "यह प्रूफ अब उपलब्ध नहीं है।",
+        "own_proof": "आप अपने जवाब को वोट नहीं दे सकते।",
+        "not_found": "यह जवाब अब उपलब्ध नहीं है।",
         "generic": "कुछ गड़बड़ हो गई। फिर से कोशिश करें।"
       }
     },
@@ -1016,7 +1016,7 @@
       "streak": "मौजूदा स्ट्रीक",
       "bestStreak": "सबसे लंबी स्ट्रीक",
       "completed": "पूरे किए",
-      "bestProofs": "सबसे अच्छे प्रूफ",
+      "bestProofs": "सबसे अच्छे जवाब",
       "emptyMine": "आपकी स्ट्रीक आज के challenge से शुरू होती है।"
     },
     "streak_one": "{{count}} दिन की स्ट्रीक",
@@ -1079,7 +1079,7 @@
       "titleChallenge": "पिन की गई जगहें",
       "titleCity": "{{city}} में पिन की गई जगहें",
       "titleWorld": "दुनिया भर में पिन की गई जगहें",
-      "seeProof": "प्रूफ देखें",
+      "seeProof": "जवाब देखें",
       "openChallenge": "challenge खोलें",
       "search": "कोई डिश, कैफ़े या गली खोजें",
       "searchA11y": "स्पॉट खोजें",
@@ -1107,12 +1107,12 @@
       "provisional": "अगले drop तक अस्थायी",
       "finalIn": "{{time}} में फ़ाइनल",
       "official": "आधिकारिक पोडियम",
-      "minProofs": "{{min}} प्रूफ होने पर Top 10 खुलेगा। अभी तक: {{n}}।",
-      "noVotes": "अभी कोई वोट नहीं। अपने पसंदीदा प्रूफ को वोट करें!",
+      "minProofs": "{{min}} जवाब होने पर Top 10 खुलेगा। अभी तक: {{n}}।",
+      "noVotes": "अभी कोई वोट नहीं। अपने पसंदीदा जवाब को वोट करें!",
       "me": "आप: #{{rank}} · ♥ {{votes}}",
       "meCity": "{{city}} में #{{rank}}",
-      "noProof": "रैंक पाने के लिए अपना प्रूफ पोस्ट करें।",
-      "pending": "मंज़ूरी के बाद आपका प्रूफ रैंक होगा।",
+      "noProof": "रैंक पाने के लिए अपना जवाब पोस्ट करें।",
+      "pending": "मंज़ूरी के बाद आपका जवाब रैंक होगा।",
       "cityTop": "{{city}} के Top 3",
       "compactTitle": "अभी के Top 3",
       "seeAll": "Top 10 ›"
@@ -1208,9 +1208,9 @@
       "hint": "जल्दी बोनस: {{time}} से पहले पोस्ट करें"
     },
     "group": {
-      "title": "नए प्रूफ: {{n}}",
+      "title": "नए जवाब: {{n}}",
       "citiesMore": "{{cities}} और {{n}} और",
-      "galleryTitle": "नए प्रूफ"
+      "galleryTitle": "नए जवाब"
     },
     "today": {
       "early": "{{time}} तक अर्ली बोनस",
@@ -1307,12 +1307,12 @@
     },
     "takeIt": "लो",
     "proofHint": {
-      "title": "फ़ोटो से साबित करो",
-      "place": "सबसे ज़्यादा वोट वाली फ़ोटो जगह की फ़ोटो बनती है।",
-      "noPlace": "सबसे ज़्यादा वोट वाली पोडियम पर पहुँचती है।"
+      "title": "अपना जवाब फ़ोटो में",
+      "place": "सबसे ज़्यादा वोट वाली फ़ोटो स्पॉट की फ़ोटो बनती है।",
+      "noPlace": "सबसे ज़्यादा वोट वाली फ़ोटो पोडियम पर पहुँचती है।"
     },
     "compare": {
-      "todayQuestion": "आज का सवाल: {{question}}",
+      "todayQuestion": "आज दुनिया जवाब देती है: {{question}}",
       "tab": "तुलना",
       "allCities": "सभी शहर",
       "boardCount": "शहर: {{count}} · देश: {{countries}}",
@@ -1324,15 +1324,20 @@
       "emptyBody": "बोर्ड पर पहला शहर बनें।",
       "noAnswer": "अभी जवाब नहीं",
       "median": "माध्यिका {{price}}",
-      "proofs_one": "{{count}} प्रूफ़",
-      "proofs_other": "{{count}} प्रूफ़",
+      "proofs_one": "{{count}} जवाब",
+      "proofs_other": "{{count}} जवाब",
       "teaser_one": "{{count}} देश जवाब दे चुका है:",
       "teaser_other": "{{count}} देश जवाब दे चुके हैं:",
-      "seeAll": "सब देखें"
+      "seeAll": "सब देखें",
+      "firstAnswers": "पहले जवाब आ रहे हैं। अगला शहर कौन?",
+      "boardTitle": "दुनिया ने ऐसे जवाब दिया",
+      "cheapest": "सबसे सस्ता: {{city}} {{price}}",
+      "priciest": "सबसे महँगा: {{city}} {{price}}",
+      "funFact": "{{city}} में {{other}} से {{ratio}} गुना महँगा।"
     },
     "backHome": {
       "hereIn": "यहाँ, {{city}}",
-      "homeIn": "आपका शहर: {{city}}"
+      "homeIn": "अपने शहर {{city}} में"
     },
     "tour": {
       "title": "कल की विश्व यात्रा",
@@ -1347,7 +1352,7 @@
         "night": "रात"
       },
       "yourTurn": "अब आपकी बारी।",
-      "todayIs": "आज का चैलेंज: {{text}}",
+      "todayIs": "आज दुनिया जवाब देती है: {{question}}",
       "close": "बंद करें",
       "sub_one": "{{count}} शहर, एक ही चैलेंज",
       "sub_other": "{{count}} शहर, एक ही चैलेंज"
@@ -1356,12 +1361,16 @@
       "tagline": "एक ही चैलेंज। अलग-अलग दुनिया।"
     },
     "index": {
-      "title": "पिछले हफ़्ते का Hilads Index",
-      "sub": "पिछले हफ़्ते दुनिया ने कितना चुकाया",
+      "title": "पिछले हफ़्ते दुनिया ने कितना चुकाया",
       "pricePaid": "चुकाई गई माध्यिका कीमत",
       "share": "शेयर करें",
       "shareText": "Hilads Index: {{lines}}",
-      "footnote": "3 या ज़्यादा प्रूफ़ वाले शहरों पर आधारित"
+      "footnote": "3 या ज़्यादा जवाब वाले शहरों पर आधारित"
+    },
+    "ctaAnswer": "{{city}} के लिए जवाब दें",
+    "ctaAnswerNoCity": "अपने शहर के लिए जवाब दें",
+    "represent": {
+      "button": "{{city}} के लिए जवाब दें"
     }
   }
 }

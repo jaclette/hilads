@@ -167,7 +167,9 @@
       "inReview_one": "{{count}} 件確認中",
       "inReview_other": "{{count}} 件確認中",
       "specialTitle": "スペシャルスタンプ",
-      "specialSub": "限定版。特別な日ごとに1つ。Local Passにはカウントされません。"
+      "specialSub": "限定版。特別な日ごとに1つ。Local Passにはカウントされません。",
+      "compared_one": "{{count}}か国と比べた",
+      "compared_other": "{{count}}か国と比べた"
     },
     "points": {
       "title": "ポイントのもらい方",

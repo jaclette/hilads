@@ -117,6 +117,9 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
             <span className="dc-muted pp-ellipsis">{city ? t('passport.mostLocalIn', { city }) : t('passport.mostLocalWorld')}</span>
           </div>
         </div>
+        {stats?.comparedCountries > 0 && (
+          <span className="dc-muted pp-compared" style={ROW}><Icon name="earth-outline" size={16} />{t('passport.compared', { count: stats.comparedCountries })}</span>
+        )}
 
         {progress.length > 0 && (
           <div className={`pp-pages${progress.length > 1 ? ' pp-pages--scroll' : ''}`}>

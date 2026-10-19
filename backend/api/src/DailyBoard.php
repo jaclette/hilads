@@ -113,6 +113,31 @@ final class DailyBoard
         return $min !== null && self::numeric($min['best'], $type) !== self::numeric($max['best'], $type) ? [$min, $max] : null;
     }
 
+    /** Cities need this many priced answers for the price range and the fun fact (COPY.md 5). */
+    public const MIN_PRICED = 3;
+
+    /**
+     * Cheapest and priciest median price among cities with at least
+     * MIN_PRICED priced answers: [cheapestRow, priciestRow, median, median, ratio],
+     * or null with fewer than 2 such cities. Pure.
+     */
+    public static function priceSpread(array $rows): ?array
+    {
+        $priced = [];
+        foreach ($rows as $r) {
+            if (count($r['prices']) >= self::MIN_PRICED) {
+                $priced[] = [$r, self::median($r['prices'])];
+            }
+        }
+        if (count($priced) < 2) {
+            return null;
+        }
+        usort($priced, static fn(array $a, array $b): int => $a[1] <=> $b[1]);
+        [$lo, $loM] = $priced[0];
+        [$hi, $hiM] = $priced[count($priced) - 1];
+        return [$lo, $hi, $loM, $hiM, $loM > 0 ? $hiM / $loM : null];
+    }
+
     /** Up to $n answered rows for the teaser: other cities first, then the viewer's. Pure. */
     public static function teaserPick(array $rows, ?string $viewerCityId, int $n = 3): array
     {
@@ -177,7 +202,8 @@ final class DailyBoard
             'priceMedianEur' => ($m = self::median($r['prices'])) !== null ? round($m, 4) : null,
             'priceCount'     => count($r['prices']),
         ], $rows);
-        $range = self::range($rows, $type);
+        $range  = self::range($rows, $type);
+        $spread = self::priceSpread($rows);
         return [
             'compare'   => DailyCompare::payload($challenge, $locale),
             'cities'    => count($rows),
@@ -187,12 +213,21 @@ final class DailyBoard
                 'min' => ['city' => self::city($range[0]), 'answer' => self::answer($range[0], $challenge, $locale)],
                 'max' => ['city' => self::city($range[1]), 'answer' => self::answer($range[1], $challenge, $locale)],
             ],
+            // Cheapest / priciest median (EUR) among cities with 3 priced answers or more, and their ratio
+            // (the apps show "3× the price in Oslo than in Saigon." only from 2).
+            'prices'    => $spread === null ? null : [
+                'cheapest' => ['city' => self::city($spread[0]), 'eur' => round($spread[2], 4)],
+                'priciest' => ['city' => self::city($spread[1]), 'eur' => round($spread[3], 4)],
+                'ratio'    => $spread[4] !== null ? round($spread[4], 1) : null,
+            ],
         ];
     }
 
     /**
      * Today's live teaser (SPEC 10.6): {cities, countries, answers: [{city,
-     * answer}]} once at least 2 cities answered, else null. Other cities first.
+     * answer}]} once a city answered, else null. Other cities first. The apps
+     * show "Already N countries answered: ..." from 2 countries, "First answers
+     * coming in. Which city is next?" with 1 country.
      */
     public static function teaser(array $challenge, ?string $viewerCityId, array $blockedUserIds = [], ?string $locale = null): ?array
     {
@@ -202,7 +237,7 @@ final class DailyBoard
         $locale   = $locale ?? DailyI18n::current();
         $rows     = self::rows($challenge, $blockedUserIds);
         $answered = array_values(array_filter($rows, static fn(array $r) => self::hasAnswer($r['best'])));
-        if (count($answered) < 2) {
+        if ($answered === []) {
             return null;
         }
         return [

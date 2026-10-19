@@ -134,7 +134,8 @@
     "placeholderCity": "街にあいさつしよう",
     "placeholderHangout": "参加するって伝えよう",
     "placeholderEvent": "参加者と話そう",
-    "placeholderChallenge": "応援したり、コツを共有しよう"
+    "placeholderChallenge": "応援したり、コツを共有しよう",
+    "placeholderWorld": "世界にやり方を聞いてみよう"
   },
   "vibe": {
     "party": "パーティー",
@@ -204,9 +205,9 @@
   "settings": "設定",
   "firstLaunch": "地元で遊ぶ。世界と比べる。",
   "subtitles": {
-    "map": "地元の人が本当に選んだスポット。",
+    "map": "世界の回答から生まれたスポット。",
     "hi": "街にあいさつ。プランに参加しよう。",
-    "passport": "スタンプとスポットを街ごとに。"
+    "passport": "あなたの街、回答、スタンプ。"
   },
   "photoBy": "写真: @{{username}}",
   "shareLink": {
@@ -218,17 +219,18 @@
     "textSpotCity": "Hilads の {{name}}（{{city}}）"
   },
   "represent": {
-    "empty": "今日はまだ誰も{{city}}を代表していません。最初の一人になろう。",
-    "button": "{{city}}を代表する",
-    "firstPosted": "今日、あなたが{{city}}を世界地図に載せました。",
+    "empty": "{{city}}は今日まだ答えていません。最初の一人になろう。",
+    "button": "{{city}}代表で答える",
+    "firstPosted": "今日、{{city}}を世界地図にのせました。",
     "pioneer": "{{city}}のパイオニア",
     "spotOne": "{{city}}のスポット第1号",
-    "streak_other": "{{city}}、{{count}}日連続で代表されています",
+    "streak_other": "{{city}}は{{count}}日連続で回答中",
     "board_other": "今日は{{count}}都市がボードに載っています。{{city}}はまだです。",
-    "mapEmpty": "{{city}}を最初に地図に載せよう。",
+    "mapEmpty": "{{city}}はまだ世界地図にありません。のせよう。",
     "invite": "友だちを招待",
-    "share": "Hiladsで{{city}}を代表するのを手伝って。",
+    "share": "Hilads で一緒に{{city}}代表で答えよう。",
     "pioneerTitle": "パイオニアバッジ",
-    "pioneerSub": "その都市で最初に承認されたプルーフ。ずっとあなたのもの。"
+    "pioneerSub": "その都市で最初に承認されたプルーフ。ずっとあなたのもの。",
+    "streak_one": "{{city}}は{{count}}日連続で回答中"
   }
 }

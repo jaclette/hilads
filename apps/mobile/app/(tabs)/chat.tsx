@@ -1022,7 +1022,7 @@ export default function ChatTab() {
           dismissOnSend
           onSendText={handleSendText}
           onSendImage={sendImage}
-          placeholder={i18n.t('composer.placeholderCity', { ns: 'common' })}
+          placeholder={i18n.t(channelScope === 'world' ? 'composer.placeholderWorld' : 'composer.placeholderCity', { ns: 'common' })}
           pickImageRef={pickImageRef}
           onTypingStart={handleTypingStart}
           onTypingStop={handleTypingStop}

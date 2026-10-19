@@ -8,8 +8,9 @@ import { useDc, ProofTile } from './dailyShared'
 import { answerText, useMoney } from './compareShared'
 
 /**
- * The Compare tab of the challenge sheet (SPEC 10.6): the question, the range
- * for number and time questions, and one row per city (flag, short name, the
+ * The Compare tab of the challenge sheet (SPEC 10.6): "How the world answered",
+ * the question, the range for number and time questions, the cheapest and
+ * priciest city with the price fun fact, and one row per city (flag, short name, the
  * answer of its best proof, median price in my currency, proof count). A row
  * opens that city's proofs. Readable without an account.
  */
@@ -62,10 +63,14 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
   }
 
   const range = board.range
+  const prices = board.prices ?? null
+  const cheapest = prices ? money.fromEur(prices.cheapest.eur) : null
+  const priciest = prices ? money.fromEur(prices.priciest.eur) : null
   const keys = board.compare?.type === 'time' ? ['compare.earliest', 'compare.latest'] : ['compare.lowest', 'compare.highest']
   const ans = (a) => (a ? answerText(a, i18n.language) : '-')
   return (
     <div className="cmp">
+      <p className="cmp-title">{t('compare.boardTitle')}</p>
       {board.compare && <p className="cmp-question">{board.compare.question}</p>}
       <p className="dc-muted">{t('compare.boardCount', { count: board.cities, countries: board.countries })}</p>
       {range && (
@@ -73,6 +78,22 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
           {t(keys[0], { city: shortCityName(range.min.city.name), answer: ans(range.min.answer) })}
           {'  ·  '}
           {t(keys[1], { city: shortCityName(range.max.city.name), answer: ans(range.max.answer) })}
+        </p>
+      )}
+      {prices && cheapest && priciest && (
+        <p className="cmp-range">
+          {t('compare.cheapest', { city: shortCityName(prices.cheapest.city.name), price: cheapest })}
+          {'  ·  '}
+          {t('compare.priciest', { city: shortCityName(prices.priciest.city.name), price: priciest })}
+        </p>
+      )}
+      {/* The fun fact, only from twice the price (COPY.md): surprise, never a ranking. */}
+      {prices && prices.ratio != null && prices.ratio >= 2 && (
+        <p className="cmp-fun">
+          {t('compare.funFact', {
+            ratio: prices.ratio.toLocaleString(i18n.language, { maximumFractionDigits: prices.ratio >= 10 ? 0 : 1 }),
+            city: shortCityName(prices.priciest.city.name), other: shortCityName(prices.cheapest.city.name),
+          })}
         </p>
       )}
       {board.rows.length === 0 ? (

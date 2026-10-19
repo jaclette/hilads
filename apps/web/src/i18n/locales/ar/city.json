@@ -345,7 +345,7 @@
     "early": "مبكر",
     "proposedBy": "اقترحه {{name}}",
     "proposedByCity": "اقترحه {{name}} · {{city}}",
-    "groupTitle": "أدلة جديدة: {{n}}",
+    "groupTitle": "إجابات جديدة: {{n}}",
     "groupCitiesMore": "{{cities}} و{{n}} أخرى"
   }
 }

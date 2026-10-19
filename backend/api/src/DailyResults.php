@@ -321,6 +321,36 @@ final class DailyResults
             'specialStamps'     => $passes['specials'],
             // Represent your city (SPEC 9.16): "Pioneer of Saigon", one per city, permanent.
             'pioneerOf'         => DailyPresence::citiesOf($userId),
+            // COPY.md 7: "Compared with N countries".
+            'comparedCountries' => self::comparedCountries($userId),
         ];
+    }
+
+    /**
+     * The countries (other than the ones the user answered from) whose real
+     * answers share a challenge with one of the user's approved answers, all time.
+     */
+    public static function comparedCountries(string $userId): int
+    {
+        try {
+            $stmt = Database::pdo()->prepare("
+                WITH mine AS (
+                    SELECT p.challenge_id, cc.country
+                    FROM daily_proofs p LEFT JOIN cities cc ON cc.channel_id = p.city_id
+                    WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                )
+                SELECT count(DISTINCT cc.country)
+                FROM daily_proofs o
+                JOIN mine m          ON m.challenge_id = o.challenge_id
+                JOIN users u         ON u.id = o.user_id AND NOT u.is_demo
+                JOIN cities cc       ON cc.channel_id = o.city_id
+                WHERE o.user_id <> ? AND o.moderation_status = 'approved' AND NOT o.is_seed AND NOT o.is_demo
+                  AND cc.country NOT IN (SELECT country FROM mine WHERE country IS NOT NULL)
+            ");
+            $stmt->execute([$userId, $userId]);
+            return (int) $stmt->fetchColumn();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 }

@@ -90,7 +90,8 @@
     "placeholderEvent": "Trò chuyện với người tham dự",
     "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn",
     "send": "Gửi",
-    "emoji": "Biểu tượng cảm xúc"
+    "emoji": "Biểu tượng cảm xúc",
+    "placeholderWorld": "Hỏi thế giới họ làm thế nào"
   },
   "modeHeading": "Chế độ",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "Hiển thị",
     "world": "Thế giới",
     "pickCity": "Chọn thành phố",
-    "citySub": "Challenge, bằng chứng và spot của thành phố bạn",
-    "worldSub": "Bằng chứng và spot từ mọi thành phố",
+    "citySub": "Challenge, câu trả lời và spot của thành phố bạn",
+    "worldSub": "Câu trả lời và spot từ mọi thành phố",
     "changeCity": "Đổi thành phố",
     "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
   },
@@ -222,9 +223,9 @@
     "errorBody": "Không gửi được báo cáo. Thử lại nhé."
   },
   "subtitles": {
-    "map": "Những spot người địa phương thật sự chọn.",
+    "map": "Các spot từ câu trả lời của thế giới.",
     "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
-    "passport": "Tem và spot của bạn, từng thành phố."
+    "passport": "Thành phố, câu trả lời và con dấu của bạn."
   },
   "photoBy": "Ảnh của @{{username}}"
 }

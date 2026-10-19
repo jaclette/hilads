@@ -320,7 +320,7 @@
     "early": "Sớm",
     "proposedBy": "Đề xuất bởi {{name}}",
     "proposedByCity": "Đề xuất bởi {{name}} · {{city}}",
-    "groupTitle": "Bằng chứng mới: {{n}}",
+    "groupTitle": "Câu trả lời mới: {{n}}",
     "groupCitiesMore": "{{cities}} và {{n}} nữa"
   }
 }

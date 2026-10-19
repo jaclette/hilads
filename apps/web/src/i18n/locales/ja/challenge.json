@@ -860,8 +860,8 @@
     "nothingLive": "次の Daily Challenge はもうすぐです",
     "cta": "challenge に参加する",
     "ctaIn": "やってみる",
-    "ctaTaken": "チャレンジ達成 · 自分のプルーフを見る",
-    "seeProofs": "今日の証明を見る",
+    "ctaTaken": "回答済み · 自分の回答を見る",
+    "seeProofs": "今日の回答を見る",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} の Local Twist",
     "twistBy": "by {{name}}",
@@ -870,20 +870,20 @@
     "countCity": "{{city}} で {{count}} 人",
     "countZero": "まだ誰もいません - 一番乗りしよう",
     "beFirst": "今日の一番乗りになろう",
-    "beFirstSub": "まだ証明がありません。投稿して街を盛り上げよう。",
-    "yourProof": "あなたの証明",
+    "beFirstSub": "まだ回答がありません。投稿して街を盛り上げよう。",
+    "yourProof": "あなたの回答",
     "status": {
       "pending": "保留中",
       "approved": "公開中",
       "rejected": "非公開",
       "removed": "削除済み"
     },
-    "pendingHint": "すべての証明は公開前に確認されます。",
+    "pendingHint": "すべての回答は公開前に確認されます。",
     "reasonLabel": "理由: {{reason}}",
     "fixIt": "修正する",
     "edit": "編集",
     "delete": "削除",
-    "deleteTitle": "証明を削除しますか?",
+    "deleteTitle": "回答を削除しますか?",
     "deleteBody": "challenge とチャンネルから消えます。",
     "cancel": "キャンセル",
     "closed": "終了",
@@ -891,8 +891,8 @@
     "practicalTitle": "知っておきたいこと",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "{{count}} 件の証明より",
-    "priceFrom_other": "{{count}} 件の証明より",
+    "priceFrom_one": "{{count}} 件の回答より",
+    "priceFrom_other": "{{count}} 件の回答より",
     "places_one": "{{count}} か所をピン留め",
     "places_other": "{{count}} か所をピン留め",
     "unnamedPlace": "ピン留めした場所",
@@ -905,8 +905,8 @@
     "notFound": "この Daily Challenge は存在しません。",
     "cityRowEmpty": "{{city}} で最初に challenge を作ろう",
     "proof": {
-      "titleNew": "あなたの証明",
-      "titleEdit": "証明を編集",
+      "titleNew": "あなたの回答",
+      "titleEdit": "回答を編集",
       "camera": "カメラ",
       "gallery": "ギャラリー",
       "changePhoto": "写真を変更",
@@ -919,11 +919,11 @@
       "pinHint": "ほかの人に見つけてほしい場合だけ。",
       "pinChange": "変更",
       "pinRemove": "削除",
-      "submit": "証明を投稿",
+      "submit": "回答を投稿",
       "save": "変更を保存",
       "sending": "送信中…",
-      "sentTitle": "確認のため送信しました",
-      "sentBody": "承認されると challenge に表示されます。",
+      "sentTitle": "{{city}}が答えました！",
+      "sentBody": "世界の答えを見てみよう。写真は承認後に表示されます。",
       "ok": "OK",
       "permPhotoTitle": "写真へのアクセスが必要です",
       "permPhotoBody": "写真を追加するには、設定でアクセスを許可してください。",
@@ -931,12 +931,12 @@
       "permCameraBody": "写真を撮るには、設定でカメラへのアクセスを許可してください。",
       "photoRequired": "先に写真を追加してください。",
       "locationOff": "位置情報がオフなので、この場所はピン留めできません。",
-      "editOnlyActive": "challenge が終わるまで証明を編集できます。",
+      "editOnlyActive": "challenge が終わるまで回答を編集できます。",
       "takeTitle": "写真を撮ろう",
       "retake": "撮り直す"
     },
     "errors": {
-      "already_posted": "今日の challenge にはもう証明を投稿済みです。",
+      "already_posted": "今日の challenge にはもう回答を投稿済みです。",
       "challenge_closed": "この challenge は終了しました。",
       "no_active_challenge": "今は Daily Challenge がありません。",
       "moderation_blocked": "キャプションが報告されました - 言い換えてください。",
@@ -971,11 +971,11 @@
       "pickCity": "都市を選ぶ",
       "worldSelection": "世界セレクション: この都市はまだ公開されていません",
       "empty": "最初の Daily Challenge がもうすぐ届きます。",
-      "proofs_one": "{{count}} 件の証明",
-      "proofs_other": "{{count}} 件の証明"
+      "proofs_one": "{{count}} 件の回答",
+      "proofs_other": "{{count}} 件の回答"
     },
     "report": {
-      "title": "この証明を報告",
+      "title": "この回答を報告",
       "body": "どんな問題がありますか?",
       "reasons": {
         "inappropriate": "不適切",
@@ -985,22 +985,22 @@
         "other": "その他"
       },
       "thanks": "ありがとうございます - 確認します。",
-      "already": "この証明はすでに報告済みです。"
+      "already": "この回答はすでに報告済みです。"
     },
     "vote": {
       "vote": "投票する",
       "withdraw": "投票を取り消す",
-      "yours": "あなたの証明",
+      "yours": "あなたの回答",
       "noneLeftTitle": "投票が残っていません",
-      "noneLeft": "今日の3票を使い切りました。この証明に投票するには1票取り消してください。",
+      "noneLeft": "今日の3票を使い切りました。この回答に投票するには1票取り消してください。",
       "left_one": "残り{{count}}票",
       "left_other": "残り{{count}}票",
       "errors": {
         "vote_limit": "今日の3票はもう使い切りました。",
         "voting_closed": "challenge の終了とともに投票は締め切られました。",
         "rate_limited": "試行が多すぎます - 少し待ってください。",
-        "own_proof": "自分の証明には投票できません。",
-        "not_found": "この証明はもう表示できません。",
+        "own_proof": "自分の回答には投票できません。",
+        "not_found": "この回答はもう表示できません。",
         "generic": "問題が発生しました。もう一度お試しください。"
       }
     },
@@ -1016,7 +1016,7 @@
       "streak": "現在の連続記録",
       "bestStreak": "最長記録",
       "completed": "達成数",
-      "bestProofs": "ベスト証明",
+      "bestProofs": "ベスト回答",
       "emptyMine": "今日のchallenge から連続記録が始まります。"
     },
     "streak_one": "{{count}}日連続",
@@ -1079,7 +1079,7 @@
       "titleChallenge": "ピン留めされた場所",
       "titleCity": "{{city}} のピン留めされた場所",
       "titleWorld": "世界中のピン留めされた場所",
-      "seeProof": "証明を見る",
+      "seeProof": "回答を見る",
       "openChallenge": "challenge を開く",
       "search": "料理、カフェ、通りを検索",
       "searchA11y": "スポットを検索",
@@ -1107,12 +1107,12 @@
       "provisional": "次のドロップまでは暫定",
       "finalIn": "確定まで {{time}}",
       "official": "公式表彰台",
-      "minProofs": "Top 10 は証明が {{min}} 件で公開。現在：{{n}} 件。",
-      "noVotes": "まだ投票がありません。好きな証明に投票しよう！",
+      "minProofs": "Top 10 は回答が {{min}} 件で公開。現在：{{n}} 件。",
+      "noVotes": "まだ投票がありません。好きな回答に投票しよう！",
       "me": "あなた：#{{rank}} · ♥ {{votes}}",
       "meCity": "{{city}}で #{{rank}}",
-      "noProof": "証明を投稿してランキングに参加しよう。",
-      "pending": "証明は承認後にランキングに入ります。",
+      "noProof": "回答を投稿してランキングに参加しよう。",
+      "pending": "回答は承認後にランキングに入ります。",
       "cityTop": "{{city}}の Top 3",
       "compactTitle": "今の Top 3",
       "seeAll": "Top 10 ›"
@@ -1208,9 +1208,9 @@
       "hint": "早めボーナス：{{time}} までに投稿"
     },
     "group": {
-      "title": "新しい証明：{{n}}",
+      "title": "新しい回答：{{n}}",
       "citiesMore": "{{cities}} ほか {{n}} 件",
-      "galleryTitle": "新しい証明"
+      "galleryTitle": "新しい回答"
     },
     "today": {
       "early": "早割ボーナスは {{time}} まで",
@@ -1307,12 +1307,12 @@
     },
     "takeIt": "参加する",
     "proofHint": {
-      "title": "写真で証明しよう",
-      "place": "いちばん票を集めた写真がスポットの写真になります。",
+      "title": "答えを写真で",
+      "place": "いちばん票を集めた写真がスポットの写真に。",
       "noPlace": "いちばん票を集めた写真が表彰台へ。"
     },
     "compare": {
-      "todayQuestion": "今日の質問：{{question}}",
+      "todayQuestion": "今日、世界が答える：{{question}}",
       "tab": "比べる",
       "allCities": "すべての街",
       "boardCount": "街：{{count}} · 国・地域：{{countries}}",
@@ -1324,11 +1324,16 @@
       "emptyBody": "ボードの最初の街になろう。",
       "noAnswer": "まだ回答なし",
       "median": "中央値 {{price}}",
-      "proofs_one": "{{count}}件の証明",
-      "proofs_other": "{{count}}件の証明",
+      "proofs_one": "{{count}}件の回答",
+      "proofs_other": "{{count}}件の回答",
       "teaser_one": "すでに{{count}}か国が回答：",
       "teaser_other": "すでに{{count}}か国が回答：",
-      "seeAll": "すべて見る"
+      "seeAll": "すべて見る",
+      "firstAnswers": "最初の回答が届き始めました。次はどの街？",
+      "boardTitle": "世界の答え",
+      "cheapest": "いちばん安い：{{city}} {{price}}",
+      "priciest": "いちばん高い：{{city}} {{price}}",
+      "funFact": "{{city}}は{{other}}の{{ratio}}倍の値段。"
     },
     "backHome": {
       "hereIn": "ここ：{{city}}",
@@ -1347,7 +1352,7 @@
         "night": "夜"
       },
       "yourTurn": "あなたの番。",
-      "todayIs": "今日のチャレンジ：{{text}}",
+      "todayIs": "今日、世界が答える：{{question}}",
       "close": "閉じる",
       "sub_one": "{{count}}都市、同じチャレンジ",
       "sub_other": "{{count}}都市、同じチャレンジ"
@@ -1356,12 +1361,16 @@
       "tagline": "同じチャレンジ、違う世界。"
     },
     "index": {
-      "title": "先週の Hilads Index",
-      "sub": "先週、世界がいくら払ったか",
+      "title": "先週、世界がいくら払ったか",
       "pricePaid": "支払額の中央値",
       "share": "シェア",
       "shareText": "Hilads Index：{{lines}}",
-      "footnote": "証明が3件以上の街に基づく"
+      "footnote": "回答が3件以上の街に基づく"
+    },
+    "ctaAnswer": "{{city}}代表で答える",
+    "ctaAnswerNoCity": "あなたの街の代表で答える",
+    "represent": {
+      "button": "{{city}}代表で答える"
     }
   }
 }

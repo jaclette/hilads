@@ -90,7 +90,8 @@
     "endedEvent": "이 이벤트는 종료되었어요",
     "closedChallenge": "이 챌린지는 종료되었어요",
     "send": "보내기",
-    "emoji": "이모지"
+    "emoji": "이모지",
+    "placeholderWorld": "세계에 어떻게 하는지 물어보세요"
   },
   "modeHeading": "모드",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "보기",
     "world": "전 세계",
     "pickCity": "도시 선택",
-    "citySub": "내 도시의 challenge, 인증, 스팟",
-    "worldSub": "모든 도시의 인증과 스팟",
+    "citySub": "내 도시의 challenge, 답변, 스팟",
+    "worldSub": "모든 도시의 답변과 스팟",
     "changeCity": "도시 변경",
     "a11y": "{{scope}} 보는 중. 눌러서 변경"
   },
@@ -222,9 +223,9 @@
     "errorBody": "신고를 보내지 못했어. 다시 시도해 줘."
   },
   "subtitles": {
-    "map": "현지인이 직접 고른 장소.",
+    "map": "세계의 답변에서 나온 스팟.",
     "hi": "도시에 인사하고 플랜에 참여해요.",
-    "passport": "도시별 스탬프와 장소."
+    "passport": "나의 도시, 나의 답변, 나의 스탬프."
   },
   "photoBy": "사진: @{{username}}"
 }

@@ -90,7 +90,8 @@
     "endedEvent": "このイベントは終了しました",
     "closedChallenge": "このチャレンジは終了しました",
     "send": "送信",
-    "emoji": "絵文字"
+    "emoji": "絵文字",
+    "placeholderWorld": "世界にやり方を聞いてみよう"
   },
   "modeHeading": "モード",
   "mode": {
@@ -222,9 +223,9 @@
     "errorBody": "報告を送信できませんでした。もう一度お試しください。"
   },
   "subtitles": {
-    "map": "地元の人が本当に選んだスポット。",
+    "map": "世界の回答から生まれたスポット。",
     "hi": "街にあいさつ。プランに参加しよう。",
-    "passport": "スタンプとスポットを街ごとに。"
+    "passport": "あなたの街、回答、スタンプ。"
   },
   "photoBy": "写真: @{{username}}"
 }

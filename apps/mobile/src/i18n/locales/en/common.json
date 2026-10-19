@@ -92,7 +92,8 @@
     "placeholderEvent": "Chat with attendees",
     "placeholderChallenge": "Cheer them on, or share your tip",
     "send": "Send",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderWorld": "Ask the world how they do it"
   },
   "modeHeading": "Mode",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "Show",
     "world": "World",
     "pickCity": "Pick a city",
-    "citySub": "Your city's challenge, proofs and spots",
-    "worldSub": "Proofs and spots from every city",
+    "citySub": "Your city's challenge, answers and spots",
+    "worldSub": "Answers and spots from every city",
     "changeCity": "Change city",
     "a11y": "Showing {{scope}}. Tap to change"
   },
@@ -222,9 +223,9 @@
     "errorBody": "Could not send the report. Try again."
   },
   "subtitles": {
-    "map": "Spots locals actually picked.",
+    "map": "Spots from the world's answers.",
     "hi": "Say hi to your city. Join a plan.",
-    "passport": "Your stamps and spots, city by city."
+    "passport": "Your cities, your answers, your stamps."
   },
   "photoBy": "Photo by @{{username}}"
 }

@@ -90,7 +90,8 @@
     "endedEvent": "Tapos na ang event na ito",
     "closedChallenge": "Sarado na ang challenge na ito",
     "send": "Ipadala",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderWorld": "Tanungin ang mundo kung paano nila ito ginagawa"
   },
   "modeHeading": "Mode",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "Ipakita",
     "world": "Mundo",
     "pickCity": "Pumili ng lungsod",
-    "citySub": "Ang challenge, mga proof at spot ng lungsod mo",
-    "worldSub": "Mga proof at spot mula sa lahat ng lungsod",
+    "citySub": "Ang challenge, mga sagot at spot ng lungsod mo",
+    "worldSub": "Mga sagot at spot mula sa lahat ng lungsod",
     "changeCity": "Palitan ang lungsod",
     "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
   },
@@ -222,9 +223,9 @@
     "errorBody": "Hindi naipadala ang report. Subukan ulit."
   },
   "subtitles": {
-    "map": "Mga spot na pinili mismo ng mga lokal.",
+    "map": "Mga spot mula sa sagot ng mundo.",
     "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
-    "passport": "Ang mga stamp at spot mo, bawat lungsod."
+    "passport": "Mga lungsod, sagot at tatak mo."
   },
   "photoBy": "Larawan ni @{{username}}"
 }

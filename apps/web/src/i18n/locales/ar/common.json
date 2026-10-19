@@ -134,7 +134,8 @@
     "placeholderCity": "ألقِ التحيّة على مدينتك",
     "placeholderHangout": "أخبرهم أنك معهم",
     "placeholderEvent": "تحدّث مع الحاضرين",
-    "placeholderChallenge": "شجّعهم أو شارك نصيحتك"
+    "placeholderChallenge": "شجّعهم أو شارك نصيحتك",
+    "placeholderWorld": "اسأل العالم كيف يفعلونها"
   },
   "vibe": {
     "party": "حفلة",
@@ -195,8 +196,8 @@
     "title": "عرض",
     "world": "العالم",
     "pickCity": "اختر مدينة",
-    "citySub": "الـ challenge والإثباتات والأماكن في مدينتك",
-    "worldSub": "الإثباتات والأماكن من كل المدن",
+    "citySub": "الـ challenge والإجابات والأماكن في مدينتك",
+    "worldSub": "الإجابات والأماكن من كل المدن",
     "changeCity": "غيّر المدينة",
     "a11y": "يُعرض {{scope}}. اضغط للتغيير"
   },
@@ -204,9 +205,9 @@
   "settings": "الإعدادات",
   "firstLaunch": "العب محليًا. قارن عالميًا.",
   "subtitles": {
-    "map": "أماكن اختارها السكان المحليون.",
+    "map": "أماكن من إجابات العالم.",
     "hi": "قل مرحبًا لمدينتك. انضم إلى خطة.",
-    "passport": "أختامك وأماكنك، مدينة بعد مدينة."
+    "passport": "مدنك وإجاباتك وأختامك."
   },
   "photoBy": "صورة من @{{username}}",
   "shareLink": {
@@ -218,27 +219,27 @@
     "textSpotCity": "{{name}}، {{city}}، على Hilads"
   },
   "represent": {
-    "empty": "لم يمثّل أحد {{city}} اليوم بعد. كن الأول.",
-    "button": "مثّل {{city}}",
+    "empty": "لم تُجب {{city}} اليوم بعد. كن الأول.",
+    "button": "أجب باسم {{city}}",
     "firstPosted": "وضعت {{city}} على خريطة العالم اليوم.",
     "pioneer": "رائد {{city}}",
     "spotOne": "المكان رقم 1 في {{city}}",
-    "streak_zero": "{{city}}، ممثَّلة {{count}} يوم متتالٍ",
-    "streak_one": "{{city}}، ممثَّلة يومًا واحدًا",
-    "streak_two": "{{city}}، ممثَّلة يومين متتاليين",
-    "streak_few": "{{city}}، ممثَّلة {{count}} أيام متتالية",
-    "streak_many": "{{city}}، ممثَّلة {{count}} يومًا متتاليًا",
-    "streak_other": "{{city}}، ممثَّلة {{count}} يوم متتالٍ",
+    "streak_zero": "أجابت {{city}} {{count}} يوم",
+    "streak_one": "أجابت {{city}} يومًا واحدًا",
+    "streak_two": "أجابت {{city}} يومين متتاليين",
+    "streak_few": "أجابت {{city}} {{count}} أيام متتالية",
+    "streak_many": "أجابت {{city}} {{count}} يومًا متتاليًا",
+    "streak_other": "أجابت {{city}} {{count}} يوم متتالٍ",
     "board_zero": "لا مدن على لوحة اليوم.",
     "board_one": "مدينة واحدة على لوحة اليوم. {{city}} ليست بعد.",
     "board_two": "مدينتان على لوحة اليوم. {{city}} ليست بعد.",
     "board_few": "{{count}} مدن على لوحة اليوم. {{city}} ليست بعد.",
     "board_many": "{{count}} مدينة على لوحة اليوم. {{city}} ليست بعد.",
     "board_other": "{{count}} مدينة على لوحة اليوم. {{city}} ليست بعد.",
-    "mapEmpty": "كن أول من يضع {{city}} على الخريطة.",
+    "mapEmpty": "{{city}} ليست على خريطة العالم بعد. ضعها هناك.",
     "invite": "ادعُ صديقًا",
-    "share": "ساعدني في تمثيل {{city}} على Hilads.",
+    "share": "أجب باسم {{city}} معي على Hilads.",
     "pioneerTitle": "شارات الرواد",
-    "pioneerSub": "أول إثبات معتمد في مدينة. لك إلى الأبد."
+    "pioneerSub": "أول إجابة معتمدة في مدينة. لك إلى الأبد."
   }
 }

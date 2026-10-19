@@ -320,7 +320,7 @@
     "early": "早い",
     "proposedBy": "{{name}} の提案",
     "proposedByCity": "{{name}} · {{city}} の提案",
-    "groupTitle": "新しい証明：{{n}}",
+    "groupTitle": "新しい回答：{{n}}",
     "groupCitiesMore": "{{cities}} ほか {{n}} 件"
   }
 }

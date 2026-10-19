@@ -860,8 +860,8 @@
     "nothingLive": "下一個 Daily Challenge 馬上就來",
     "cta": "接受 challenge",
     "ctaIn": "我來挑戰",
-    "ctaTaken": "已完成挑戰 · 查看我的證明",
-    "seeProofs": "看看今天的證明",
+    "ctaTaken": "已作答 · 查看我的回答",
+    "seeProofs": "看看今天的回答",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} Local Twist",
     "twistBy": "來自 {{name}}",
@@ -870,20 +870,20 @@
     "countCity": "{{city}} {{count}} 人",
     "countZero": "還沒有人完成 - 來當第一個",
     "beFirst": "成為今天的第一個",
-    "beFirstSub": "還沒有證明。發布你的，激勵整座城市。",
-    "yourProof": "你的證明",
+    "beFirstSub": "還沒有回答。發布你的，激勵整座城市。",
+    "yourProof": "你的回答",
     "status": {
       "pending": "待審核",
       "approved": "已發布",
       "rejected": "未發布",
       "removed": "已移除"
     },
-    "pendingHint": "每個證明上線前都會經過審核。",
+    "pendingHint": "每個回答上線前都會經過審核。",
     "reasonLabel": "原因：{{reason}}",
     "fixIt": "去修改",
     "edit": "編輯",
     "delete": "刪除",
-    "deleteTitle": "刪除你的證明？",
+    "deleteTitle": "刪除你的回答？",
     "deleteBody": "它會從 challenge 和頻道中消失。",
     "cancel": "取消",
     "closed": "已結束",
@@ -891,8 +891,8 @@
     "practicalTitle": "實用資訊",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "根據 {{count}} 個證明",
-    "priceFrom_other": "根據 {{count}} 個證明",
+    "priceFrom_one": "根據 {{count}} 個回答",
+    "priceFrom_other": "根據 {{count}} 個回答",
     "places_one": "已標記 {{count}} 個地點",
     "places_other": "已標記 {{count}} 個地點",
     "unnamedPlace": "已標記地點",
@@ -905,8 +905,8 @@
     "notFound": "這個 Daily Challenge 不存在。",
     "cityRowEmpty": "成為第一個在 {{city}} 建立 challenge 的人",
     "proof": {
-      "titleNew": "你的證明",
-      "titleEdit": "編輯你的證明",
+      "titleNew": "你的回答",
+      "titleEdit": "編輯你的回答",
       "camera": "相機",
       "gallery": "相簿",
       "changePhoto": "更換照片",
@@ -919,11 +919,11 @@
       "pinHint": "只在你想讓別人找到它時。",
       "pinChange": "更改",
       "pinRemove": "移除",
-      "submit": "發布我的證明",
+      "submit": "發布我的回答",
       "save": "儲存變更",
       "sending": "傳送中…",
-      "sentTitle": "已送出審核",
-      "sentBody": "審核通過後，你就能在 challenge 裡看到它。",
+      "sentTitle": "{{city}}已作答！",
+      "sentBody": "看看全世界怎麼說。你的照片審核通過後顯示。",
       "ok": "好",
       "permPhotoTitle": "需要照片權限",
       "permPhotoBody": "請在設定中允許存取，才能新增照片。",
@@ -931,12 +931,12 @@
       "permCameraBody": "請在設定中允許存取相機，才能拍照。",
       "photoRequired": "請先新增一張照片。",
       "locationOff": "定位已關閉，無法標記這個地點。",
-      "editOnlyActive": "在 challenge 結束前，你都可以編輯你的證明。",
+      "editOnlyActive": "在 challenge 結束前，你都可以編輯你的回答。",
       "takeTitle": "拍下你的照片",
       "retake": "重拍"
     },
     "errors": {
-      "already_posted": "你已經為今天的 challenge 發布過證明了。",
+      "already_posted": "你已經為今天的 challenge 發布過回答了。",
       "challenge_closed": "這個 challenge 已結束。",
       "no_active_challenge": "現在沒有 Daily Challenge。",
       "moderation_blocked": "你的說明被標記了 - 請換個說法。",
@@ -948,12 +948,12 @@
       "rate_limited": "嘗試次數太多 - 請稍等一下。",
       "image_processing_failed": "這張照片無法處理。換一張試試。",
       "generic": "發生錯誤。請再試一次。",
-      "place_required": "請選擇證明的地點。",
+      "place_required": "請選擇回答的地點。",
       "place_not_allowed": "這個 challenge 沒有地點。",
       "place_not_found": "該地點已無法使用，請選擇其他地點。",
       "invalid_place_name": "地點名稱需為 1 到 80 個字元。",
       "place_name_blocked": "該地點名稱被標記，請換個說法。",
-      "invalid_position": "發布此證明需要你的位置。",
+      "invalid_position": "發布此回答需要你的位置。",
       "too_far": "你離這個地點太遠了。"
     },
     "push": {
@@ -971,11 +971,11 @@
       "pickCity": "選擇城市",
       "worldSelection": "世界精選：這座城市還沒上線",
       "empty": "第一批 Daily Challenge 馬上就來。",
-      "proofs_one": "{{count}} 個證明",
-      "proofs_other": "{{count}} 個證明"
+      "proofs_one": "{{count}} 個回答",
+      "proofs_other": "{{count}} 個回答"
     },
     "report": {
-      "title": "檢舉這個證明",
+      "title": "檢舉這個回答",
       "body": "有什麼問題？",
       "reasons": {
         "inappropriate": "不當內容",
@@ -985,21 +985,21 @@
         "other": "其他原因"
       },
       "thanks": "謝謝 - 我們會查看。",
-      "already": "你已經檢舉過這個證明了。"
+      "already": "你已經檢舉過這個回答了。"
     },
     "vote": {
       "vote": "投票",
       "withdraw": "撤回投票",
-      "yours": "你的證明",
+      "yours": "你的回答",
       "noneLeftTitle": "沒有票了",
-      "noneLeft": "你今天的 3 票已用完。撤回一票即可為這則證明投票。",
+      "noneLeft": "你今天的 3 票已用完。撤回一票即可為這則回答投票。",
       "left_other": "還剩 {{count}} 票",
       "errors": {
         "vote_limit": "你今天的 3 票已經用完了。",
         "voting_closed": "challenge 結束，投票已關閉。",
         "rate_limited": "嘗試次數太多 - 請稍等。",
-        "own_proof": "不能為自己的證明投票。",
-        "not_found": "這則證明已無法查看。",
+        "own_proof": "不能為自己的回答投票。",
+        "not_found": "這則回答已無法查看。",
         "generic": "出錯了，請再試一次。"
       }
     },
@@ -1015,7 +1015,7 @@
       "streak": "目前連續",
       "bestStreak": "最長連續",
       "completed": "已完成",
-      "bestProofs": "最佳證明",
+      "bestProofs": "最佳回答",
       "emptyMine": "從今天的 challenge 開始你的連續紀錄。"
     },
     "streak_other": "連續 {{count}} 天",
@@ -1077,7 +1077,7 @@
       "titleChallenge": "已標記的地點",
       "titleCity": "{{city}}已標記的地點",
       "titleWorld": "全球已標記的地點",
-      "seeProof": "查看證明",
+      "seeProof": "查看回答",
       "openChallenge": "打開 challenge",
       "search": "搜尋菜餚、咖啡館、街道",
       "searchA11y": "搜尋地點",
@@ -1097,20 +1097,20 @@
       "closeSpot": "關閉",
       "emptyTitle": "成為第一個在這裡放置地點的人",
       "planA11y": "計畫：{{title}}，{{time}}",
-      "proofs_one": "{{count}} 個證明",
-      "proofs_other": "{{count}} 個證明"
+      "proofs_one": "{{count}} 個回答",
+      "proofs_other": "{{count}} 個回答"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "在下次發布前為暫時排名",
       "finalIn": "{{time}} 後定榜",
       "official": "官方頒獎台",
-      "minProofs": "滿 {{min}} 個證明後開放 Top 10。目前：{{n}}。",
-      "noVotes": "還沒有投票。為你喜歡的證明投票吧！",
+      "minProofs": "滿 {{min}} 個回答後開放 Top 10。目前：{{n}}。",
+      "noVotes": "還沒有投票。為你喜歡的回答投票吧！",
       "me": "你：#{{rank}} · ♥ {{votes}}",
       "meCity": "{{city}} #{{rank}}",
-      "noProof": "發布你的證明即可參與排名。",
-      "pending": "你的證明通過審核後會參與排名。",
+      "noProof": "發布你的回答即可參與排名。",
+      "pending": "你的回答通過審核後會參與排名。",
       "cityTop": "{{city}} Top 3",
       "compactTitle": "目前 Top 3",
       "seeAll": "Top 10 ›"
@@ -1206,17 +1206,17 @@
       "hint": "搶先獎勵：{{time}} 前發布"
     },
     "group": {
-      "title": "新的證明：{{n}}",
+      "title": "新的回答：{{n}}",
       "citiesMore": "{{cities}} 等另外 {{n}} 個",
-      "galleryTitle": "新的證明"
+      "galleryTitle": "新的回答"
     },
     "today": {
       "early": "早鳥獎勵至 {{time}}",
       "tomorrow": "明天：{{theme}}",
       "aroundWorld": "今日全球",
       "inCity": "今日{{city}}",
-      "proofs_one": "{{count}} 個證明",
-      "proofs_other": "{{count}} 個證明",
+      "proofs_one": "{{count}} 個回答",
+      "proofs_other": "{{count}} 個回答",
       "countries_one": "{{count}} 個國家",
       "countries_other": "{{count}} 個國家",
       "proofsIn": "來自{{countries}}的{{proofs}}",
@@ -1236,7 +1236,7 @@
       "openMap": "打開地圖",
       "spotsFallback": "你的城市還沒有地點。最近的是：",
       "spotsEmpty": "這裡還沒有地點。參加今天的 challenge，把第一個地點放到地圖上。",
-      "seeMine": "查看你的證明",
+      "seeMine": "查看你的回答",
       "votes_one": "{{count}} 票",
       "votes_other": "{{count}} 票",
       "day": {
@@ -1246,7 +1246,7 @@
         "today": "今天",
         "tomorrow": "明天",
         "later": "即將到來",
-        "none": "無證明"
+        "none": "無回答"
       },
       "links": {
         "pastSub": "往日的照片",
@@ -1305,12 +1305,12 @@
     },
     "takeIt": "參加",
     "proofHint": {
-      "title": "用照片證明",
-      "place": "得票最多的照片會成為地點的封面。",
-      "noPlace": "得票最多的照片登上頒獎台。"
+      "title": "拍下你的回答",
+      "place": "票數最多的照片會成為這個地點的照片。",
+      "noPlace": "票數最多的照片登上頒獎台。"
     },
     "compare": {
-      "todayQuestion": "今日問題：{{question}}",
+      "todayQuestion": "今天，全世界來回答：{{question}}",
       "tab": "比較",
       "allCities": "所有城市",
       "boardCount": "城市：{{count}} · 國家/地區：{{countries}}",
@@ -1322,11 +1322,16 @@
       "emptyBody": "成為榜上的第一個城市。",
       "noAnswer": "還沒有回答",
       "median": "中位數 {{price}}",
-      "proofs_one": "{{count}} 個證明",
-      "proofs_other": "{{count}} 個證明",
+      "proofs_one": "{{count}} 個回答",
+      "proofs_other": "{{count}} 個回答",
       "teaser_one": "已有 {{count}} 個國家/地區回答：",
       "teaser_other": "已有 {{count}} 個國家/地區回答：",
-      "seeAll": "查看全部"
+      "seeAll": "查看全部",
+      "firstAnswers": "第一批回答來了。下一個是哪座城市？",
+      "boardTitle": "全世界是這樣回答的",
+      "cheapest": "最便宜：{{city}} {{price}}",
+      "priciest": "最貴：{{city}} {{price}}",
+      "funFact": "{{city}}的價格是{{other}}的 {{ratio}} 倍。"
     },
     "backHome": {
       "hereIn": "這裡：{{city}}",
@@ -1345,7 +1350,7 @@
         "night": "夜裡"
       },
       "yourTurn": "輪到你了。",
-      "todayIs": "今天的挑戰：{{text}}",
+      "todayIs": "今天，全世界來回答：{{question}}",
       "close": "關閉",
       "sub_one": "{{count}} 個城市，同一個挑戰",
       "sub_other": "{{count}} 個城市，同一個挑戰"
@@ -1354,12 +1359,16 @@
       "tagline": "同一個挑戰，不同的世界。"
     },
     "index": {
-      "title": "上週的 Hilads Index",
-      "sub": "上週全世界花了多少錢",
+      "title": "上週全世界花了多少錢",
       "pricePaid": "支付價格中位數",
       "share": "分享",
       "shareText": "Hilads Index：{{lines}}",
-      "footnote": "基於至少有 3 個證明的城市"
+      "footnote": "基於至少有 3 個回答的城市"
+    },
+    "ctaAnswer": "為{{city}}作答",
+    "ctaAnswerNoCity": "為你的城市作答",
+    "represent": {
+      "button": "為{{city}}作答"
     }
   }
 }

@@ -123,6 +123,12 @@ export default function PassportScreen() {
             <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
           </Card>
         </View>
+        {(stats?.comparedCountries ?? 0) > 0 && (
+          <View style={styles.compared}>
+            <Ionicons name="earth-outline" size={16} color={colors.muted} />
+            <Text style={styles.comparedText}>{t('passport.compared', { count: stats!.comparedCountries })}</Text>
+          </View>
+        )}
 
         {progress.length > 1 ? (
           <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} snapToInterval={pageWidth + 10} decelerationRate="fast"
@@ -197,6 +203,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardHead:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },
+  compared:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  comparedText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   pages:          { gap: 10 },
   center:         { alignSelf: 'center' },
   guest:          { gap: 10, padding: 16, borderRadius: 20 },

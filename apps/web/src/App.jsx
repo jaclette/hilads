@@ -5530,6 +5530,7 @@ export default function App() {
           onEmojiClose={() => setShowEmoji(false)}
           placeholder={activeEvent
             ? t('composer.placeholderEvent', { ns: 'common' })
+            : channelScope === 'world' ? t('composer.placeholderWorld', { ns: 'common' })
             : city ? cityComposerPlaceholder : ''
           }
           uploading={uploading}

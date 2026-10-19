@@ -135,7 +135,8 @@
     "placeholderCity": "Say hi to your city",
     "placeholderHangout": "Let them know you're in",
     "placeholderEvent": "Chat with attendees",
-    "placeholderChallenge": "Cheer them on, or share your tip"
+    "placeholderChallenge": "Cheer them on, or share your tip",
+    "placeholderWorld": "Ask the world how they do it"
   },
   "vibe": {
     "party": "Party",
@@ -195,8 +196,8 @@
     "title": "Show",
     "world": "World",
     "pickCity": "Pick a city",
-    "citySub": "Your city's challenge, proofs and spots",
-    "worldSub": "Proofs and spots from every city",
+    "citySub": "Your city's challenge, answers and spots",
+    "worldSub": "Answers and spots from every city",
     "changeCity": "Change city",
     "a11y": "Showing {{scope}}. Tap to change"
   },
@@ -204,9 +205,9 @@
   "settings": "Settings",
   "firstLaunch": "Play local. Compare global.",
   "subtitles": {
-    "map": "Spots locals actually picked.",
+    "map": "Spots from the world's answers.",
     "hi": "Say hi to your city. Join a plan.",
-    "passport": "Your stamps and spots, city by city."
+    "passport": "Your cities, your answers, your stamps."
   },
   "photoBy": "Photo by @{{username}}",
   "shareLink": {
@@ -218,19 +219,19 @@
     "textSpotCity": "{{name}}, {{city}}, on Hilads"
   },
   "represent": {
-    "empty": "No one has represented {{city}} today. Be the first.",
-    "button": "Represent {{city}}",
-    "firstPosted": "You put {{city}} on the world map today.",
+    "empty": "{{city}} hasn't answered yet today. Be the first.",
+    "button": "Answer for {{city}}",
+    "firstPosted": "You put {{city}} on today's world map.",
     "pioneer": "Pioneer of {{city}}",
     "spotOne": "Spot #1 in {{city}}",
-    "streak_one": "{{city}}, represented {{count}} day in a row",
-    "streak_other": "{{city}}, represented {{count}} days in a row",
+    "streak_one": "{{city}} has answered {{count}} day in a row",
+    "streak_other": "{{city}} has answered {{count}} days in a row",
     "board_one": "{{count}} city is on today's board. {{city}} isn't yet.",
     "board_other": "{{count}} cities are on today's board. {{city}} isn't yet.",
-    "mapEmpty": "Be the first to put {{city}} on the map.",
+    "mapEmpty": "{{city}} isn't on the world map yet. Put it there.",
     "invite": "Invite a friend",
-    "share": "Help me represent {{city}} on Hilads.",
+    "share": "Answer for {{city}} with me on Hilads.",
     "pioneerTitle": "Pioneer badges",
-    "pioneerSub": "The first approved proof ever in a city. Yours forever."
+    "pioneerSub": "The first approved answer ever in a city. Yours forever."
   }
 }

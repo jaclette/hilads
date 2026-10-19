@@ -90,7 +90,8 @@
     "endedEvent": "Dieses Event ist vorbei",
     "closedChallenge": "Diese Challenge ist geschlossen",
     "send": "Senden",
-    "emoji": "Emojis"
+    "emoji": "Emojis",
+    "placeholderWorld": "Frag die Welt, wie sie es macht"
   },
   "modeHeading": "Modus",
   "mode": {
@@ -183,8 +184,8 @@
     "title": "Anzeigen",
     "world": "Welt",
     "pickCity": "Stadt wählen",
-    "citySub": "Challenge, Beweise und Spots deiner Stadt",
-    "worldSub": "Beweise und Spots aus allen Städten",
+    "citySub": "Challenge, Antworten und Spots deiner Stadt",
+    "worldSub": "Antworten und Spots aus allen Städten",
     "changeCity": "Stadt wechseln",
     "a11y": "Zeigt {{scope}}. Tippen zum Wechseln"
   },
@@ -222,9 +223,9 @@
     "errorBody": "Die Meldung konnte nicht gesendet werden. Versuch es noch mal."
   },
   "subtitles": {
-    "map": "Spots, die Locals wirklich ausgewählt haben.",
+    "map": "Spots aus den Antworten der Welt.",
     "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
-    "passport": "Deine Stempel und Spots, Stadt für Stadt."
+    "passport": "Deine Städte, deine Antworten, deine Stempel."
   },
   "photoBy": "Foto von @{{username}}"
 }

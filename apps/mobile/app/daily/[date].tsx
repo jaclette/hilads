@@ -220,7 +220,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
               </View>
             </View>
           ) : challenge.isActive && (
-            <Button icon="camera-outline" label={t('cta')} onPress={onCta} />
+            <Button icon="camera-outline" label={cityName ? t('ctaAnswer', { city: cityName }) : t('ctaAnswerNoCity')} onPress={onCta} />
           )}
         </Card>
 

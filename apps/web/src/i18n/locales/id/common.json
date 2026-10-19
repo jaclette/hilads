@@ -134,7 +134,8 @@
     "placeholderCity": "Sapa kotamu",
     "placeholderHangout": "Kasih tahu kamu ikutan",
     "placeholderEvent": "Ngobrol sama yang datang",
-    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu"
+    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu",
+    "placeholderWorld": "Tanya dunia bagaimana mereka melakukannya"
   },
   "vibe": {
     "party": "Pesta",
@@ -195,8 +196,8 @@
     "title": "Tampilkan",
     "world": "Dunia",
     "pickCity": "Pilih kota",
-    "citySub": "Challenge, bukti, dan spot di kotamu",
-    "worldSub": "Bukti dan spot dari semua kota",
+    "citySub": "Challenge, jawaban, dan spot di kotamu",
+    "worldSub": "Jawaban dan spot dari semua kota",
     "changeCity": "Ganti kota",
     "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
   },
@@ -204,9 +205,9 @@
   "settings": "Pengaturan",
   "firstLaunch": "Main lokal. Bandingkan global.",
   "subtitles": {
-    "map": "Spot pilihan warga lokal.",
+    "map": "Spot dari jawaban dunia.",
     "hi": "Sapa kotamu. Ikut sebuah rencana.",
-    "passport": "Stempel dan spot kamu, kota demi kota."
+    "passport": "Kotamu, jawabanmu, capmu."
   },
   "photoBy": "Foto oleh @{{username}}",
   "shareLink": {
@@ -218,17 +219,18 @@
     "textSpotCity": "{{name}}, {{city}}, di Hilads"
   },
   "represent": {
-    "empty": "Belum ada yang mewakili {{city}} hari ini. Jadilah yang pertama.",
-    "button": "Wakili {{city}}",
+    "empty": "{{city}} belum menjawab hari ini. Jadilah yang pertama.",
+    "button": "Jawab untuk {{city}}",
     "firstPosted": "Kamu menaruh {{city}} di peta dunia hari ini.",
     "pioneer": "Pelopor {{city}}",
     "spotOne": "Spot #1 di {{city}}",
-    "streak_other": "{{city}}, terwakili {{count}} hari berturut-turut",
+    "streak_other": "{{city}} sudah menjawab {{count}} hari berturut-turut",
     "board_other": "{{count}} kota sudah ada di papan hari ini. {{city}} belum.",
-    "mapEmpty": "Jadilah yang pertama menaruh {{city}} di peta.",
+    "mapEmpty": "{{city}} belum ada di peta dunia. Taruh di sana.",
     "invite": "Ajak teman",
-    "share": "Bantu aku mewakili {{city}} di Hilads.",
+    "share": "Jawab untuk {{city}} bareng aku di Hilads.",
     "pioneerTitle": "Lencana pelopor",
-    "pioneerSub": "Bukti pertama yang disetujui di sebuah kota. Milikmu selamanya."
+    "pioneerSub": "Jawaban pertama yang disetujui di sebuah kota. Milikmu selamanya.",
+    "streak_one": "{{city}} sudah menjawab {{count}} hari berturut-turut"
   }
 }

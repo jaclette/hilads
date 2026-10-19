@@ -118,11 +118,11 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
       ) : (
         <div className="tour-bottom tour-turn">
           <p className="tour-turn-title">{t('tour.yourTurn')}</p>
-          {today && <p className="tour-turn-text">{t('tour.todayIs', { text: today.text })}</p>}
+          {today && <p className="tour-turn-text">{t('tour.todayIs', { question: today.compare?.question ?? today.text })}</p>}
           {today?.isActive && (
             <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'world_tour' })}>
-              <Icon name="camera-outline" size={20} />{t('ctaIn')}
+              <Icon name="camera-outline" size={20} />{t('ctaAnswerNoCity')}
             </a>
           )}
           <button type="button" className="tour-link" onClick={onClose}>{t('tour.close')}</button>
