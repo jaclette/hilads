@@ -1742,6 +1742,16 @@ export default function App() {
     }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Once a city is joined, the header names that channel: an entry lookup (IP, featured
+  // city) that lands later must not rename it, or the header says Saigon over Berlin's content.
+  const joinedCityRef = useRef(false)
+  function showEntryCity(name, country, timezone) {
+    if (joinedCityRef.current) return
+    setCity(name)
+    setCityCountry(country)
+    setCityTimezone(timezone)
+  }
+
   // Resolve the FEATURED city (Ho Chi Minh City) for the stories ad-landing with
   // NO geolocation prompt. Sets the header city + preview channel (drives the
   // Screen-2 live widget) + real people-online count (channel activeUsers), and
@@ -1751,9 +1761,7 @@ export default function App() {
     featuredEntryRef.current = true
     return fetchCityBySlug(FEATURED_CITY.slug).then(data => {
       if (!data) return null
-      setCity(data.city)
-      setCityCountry(data.country)
-      setCityTimezone(data.timezone)
+      showEntryCity(data.city, data.country, data.timezone)
       setPreviewChannelId(data.channelId)
       setPreviewTimezone(data.timezone ?? 'UTC')
       // Real live count for the featured city - best effort, non-blocking.
@@ -1786,9 +1794,7 @@ export default function App() {
     ])
     return geoRace.then(geo => {
       if (geo && geo.state === 'city_matched' && geo.channelId) {
-        setCity(geo.city)
-        setCityCountry(geo.country)
-        setCityTimezone(geo.timezone)
+        showEntryCity(geo.city, geo.country, geo.timezone)
         setPreviewChannelId(geo.channelId)
         setPreviewTimezone(geo.timezone ?? 'UTC')
         setLandingState('city_join')
@@ -1894,9 +1900,7 @@ export default function App() {
         const loc = (geo && geo.state === 'city_matched' && geo.channelId)
           ? { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
           : origin
-        setCity(loc.city)
-        setCityCountry(loc.country ?? null)
-        setCityTimezone(loc.timezone ?? 'UTC')
+        showEntryCity(loc.city, loc.country ?? null, loc.timezone ?? 'UTC')
         return loc
       })
     }
@@ -2717,6 +2721,17 @@ export default function App() {
         return
       }
       if (rejoinData?.city) setCity(rejoinData.city)
+      // The header names the channel being joined, flag included (a saved city has no
+      // country: the channels list has it) - never an entry lookup that lands later.
+      joinedCityRef.current = true
+      if (location?.city) setCity(location.city)
+      setCityCountry(location?.country ?? null)
+      if (location?.channelId && !location.country) {
+        fetchChannels().then(list => {
+          const ch = (list?.channels ?? []).find(c => String(c.channelId) === String(location.channelId))
+          if (ch?.country && String(activeChannelRef.current) === String(location.channelId)) setCityCountry(ch.country)
+        }).catch(() => {})
+      }
 
       const session = await sessionPromise
       console.debug('[hilads:join] session-ready → bootstrap ms=' + Math.round(performance.now() - _t0))
