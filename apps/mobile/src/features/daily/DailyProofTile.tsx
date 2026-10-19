@@ -34,7 +34,7 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
         {proof.answer && <AnswerChip answer={proof.answer} />}
         {!!proof.caption && <Text style={styles.caption} numberOfLines={2}>{proof.caption}</Text>}
         <View style={styles.voteRow}>
-          <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="tile" />
+          <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="sheet_tile" variant="tile" />
         </View>
       </View>
     </TouchableOpacity>

@@ -12,8 +12,8 @@ import WorldTourViewer from '../daily/WorldTour'
 import { IndexCarousel } from '../daily/Comparisons'
 import { CityFlag, CityName } from '../CityName'
 import {
-  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
-  StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal,
+  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount, useVotesLeft,
+  StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal, VoteButton,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
@@ -406,26 +406,37 @@ function LinkRow({ icon, title, sub, onClick }) {
   )
 }
 
+/** Votes per user and day (DailyVotes::MAX). */
+const DAILY_VOTES = 3
+
 /**
- * Today's proofs (SPEC 9.3): the scope's approved proofs as a photo strip, most
- * voted first then newest, each with its city and votes, and a 1/2/3 seal on
- * the top three once the leaderboard ranks. A city with none shows World's.
- * Hidden when nobody has posted.
+ * Today's proofs (SPEC 9.3) and Today around the world (V4 votes). City
+ * scope: "Today in Saigon", then, once 2 countries answered, "Today around
+ * the world": one card per city with its most voted answer, the cities with
+ * the most answers first. World scope: "Today around the world" is the main
+ * strip (all of World's proofs before 2 countries). Under each title, while
+ * voting is open: "Who gets your 3 votes today?" with my votes left; each
+ * card has its vote button; under the strips, what the votes do.
  */
 function TodayProofs({ today }) {
   const { t, i18n } = useDc()
   const { t: tc } = useTranslation('common')
   const { scope, openDaily } = useDaily()
   const [strip, setStrip] = useState(null)
+  const [cities, setCities] = useState(null)
   const date = today?.challenge?.date ?? null
   const cityNum = scope === 'city' ? today?.city?.id ?? null : null
 
   useEffect(() => {
-    if (!date) { setStrip(null); return }
+    if (!date) { setStrip(null); setCities(null); return }
     let alive = true
-    fetchDailyTodayProofs({ scope: cityNum ? 'city' : 'world', cityId: cityNum, locale: i18n.language })
-      .then(s => { if (!alive) return; setStrip(s); seedProofs(s.proofs, true) })
-      .catch(() => { /* keep what we have */ })
+    Promise.all([
+      fetchDailyTodayProofs({ scope: cityNum ? 'city' : 'world', cityId: cityNum, locale: i18n.language }),
+      fetchDailyTodayProofs({ scope: 'cities', locale: i18n.language }),
+    ]).then(([s, c]) => {
+      if (!alive) return
+      setStrip(s); setCities(c); seedProofs([...s.proofs, ...c.proofs], true)
+    }).catch(() => { /* keep what we have */ })
     return () => { alive = false }
   }, [date, cityNum, i18n.language])
 
@@ -433,48 +444,87 @@ function TodayProofs({ today }) {
   const mine = today?.myProof?.status === 'pending'
     && (strip?.scope === 'world' || today.myProof.city?.id === strip?.city?.id) ? today.myProof : null
   const items = [...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []), ...(strip?.proofs ?? [])]
-  if (!strip || items.length === 0) return null
-  const world = strip.scope === 'world'
-  const proofs = t('today.proofs', { count: strip.total })
-  const openSheet = () => openDaily('challenge', { date: 'today', source: 'today_strip', tab: world ? 'world' : 'city' })
+  const around = cities && cities.countries >= 2 && cities.proofs.length > 0 ? cities : null
+  const cityStrip = strip?.scope === 'city' && items.length > 0 ? strip : null
+  // World's strip only while fewer than 2 countries answered (else Today around the world).
+  const worldStrip = !cityStrip && !around && strip && items.length > 0 ? strip : null
+  if (!cityStrip && !around && !worldStrip) return null
+
+  const voting = !!today?.challenge?.isActive
   // Represent your city (SPEC 9.16), World scope: never a zero count; my own pending proof counts for me.
   const presence = scope === 'world' ? today?.presence ?? null : null
   const myCity = today?.city?.name ? shortCityName(today.city.name) : null
-  const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && !!today?.challenge?.isActive
+  const board = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && voting ? (
+    <div className="today-board">
+      <span>{tc('represent.board', { count: presence.citiesToday, city: myCity })}</span>
+      <ChallengeFriend challenge={today.challenge} representCity={myCity} source="world_strip" />
+    </div>
+  ) : null
+  const aroundData = around ?? worldStrip
+  return (
+    <>
+      {cityStrip && (
+        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={t('today.proofs', { count: cityStrip.total })}
+               onOpen={() => openDaily('challenge', { date: 'today', source: 'today_strip', tab: 'city' })}
+               items={items} voting={voting} source="strip_city" footer={!around && voting} />
+      )}
+      {aroundData && (
+        <Strip title={t('today.aroundWorld')}
+               stats={t('today.proofsIn', { proofs: t('today.proofs', { count: aroundData.total }), countries: t('today.countries', { count: aroundData.countries }) })}
+               onOpen={() => openDaily('challenge', around ? { date: 'today', source: 'world_strip', tab: 'compare' } : { date: 'today', source: 'today_strip', tab: 'world' })}
+               items={around ? around.proofs : items} voting={voting} source="strip_world" footer={voting} board={board} />
+      )}
+    </>
+  )
+}
+
+/** One strip: title and "See all" (the sheet), the vote prompt while voting is open, the cards, what the votes do. */
+function Strip({ title, stats, onOpen, items, voting, source, footer, board = null }) {
+  const { t } = useDc()
+  const { account, openDaily } = useDaily()
+  const left = useVotesLeft()
+  const votesLeft = account ? left : DAILY_VOTES
+  const prompted = useRef(false)
+  useEffect(() => {
+    if (!voting || prompted.current) return
+    prompted.current = true
+    track('vote_prompt_shown', { source, votes_left: votesLeft ?? null, guest: !account, platform_surface: 'web' })
+  }, [voting]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="today-card">
       <div className="today-card-head">
         {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-        <button type="button" className="today-card-title today-card-title--link" onClick={openSheet}>
-          {world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}<Icon name="chevron-forward" size={16} />
+        <button type="button" className="today-card-title today-card-title--link" onClick={onOpen}>
+          {title}<Icon name="chevron-forward" size={16} />
         </button>
-        <button type="button" className="dc-link" onClick={openSheet}>{t('today.seeAll')}</button>
+        <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
       </div>
-      <span className="dc-muted today-proofs-stats">
-        {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}
-      </span>
-      {boardLine && (
-        <div className="today-board">
-          <span>{tc('represent.board', { count: presence.citiesToday, city: myCity })}</span>
-          <ChallengeFriend challenge={today.challenge} representCity={myCity} source="world_strip" />
+      <span className="dc-muted today-proofs-stats">{stats}</span>
+      {voting && votesLeft !== null && (votesLeft > 0 ? (
+        <div className="vote-prompt">
+          <span className="vote-prompt-text">{t('vote.prompt', { count: DAILY_VOTES })}</span>
+          <span className="vote-prompt-chip">{t('vote.left', { count: votesLeft })}</span>
         </div>
-      )}
+      ) : <span className="vote-prompt-done">{t('vote.allIn')}</span>)}
+      {board}
       <div className="proof-strip">
         {items.map(p => (
-          <StripProof key={p.id} proof={p} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />
+          <StripProof key={p.id} proof={p} source={source} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />
         ))}
       </div>
+      {footer && <p className="dc-muted vote-tour-note">{t('vote.tourNote')}</p>}
     </div>
   )
 }
 
-function StripProof({ proof, onOpen }) {
+function StripProof({ proof, source, onOpen }) {
   const { t, i18n } = useDc()
   const voteCount = useVoteCount(proof)
   const city = proof.city ? localizeCityName(proof.city.name ?? '') : ''
   const votes = t('today.votes', { count: voteCount })
   return (
-    <button type="button" className="proof-strip-item" onClick={onOpen}
+    <div className="proof-strip-item">
+    <button type="button" className="proof-strip-open" onClick={onOpen}
             aria-label={[proof.rank ? `#${proof.rank}` : null, city, votes].filter(Boolean).join(', ')}>
       <span className="proof-strip-photo">
         <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
@@ -484,8 +534,9 @@ function StripProof({ proof, onOpen }) {
       {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
       {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
       {proof.answer && <span className="proof-strip-answer">{answerText(proof.answer, i18n.language)}</span>}
-      <span className="dc-muted proof-strip-votes">{votes}</span>
     </button>
+    {proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
+    </div>
   )
 }
 

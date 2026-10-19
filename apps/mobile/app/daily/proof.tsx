@@ -365,10 +365,11 @@ export default function DailyProofScreen() {
         </ScrollView>
         <ShareSheet content={invite} source="represent_after_proof" onClose={() => setInvite(null)} />
         <View style={styles.footer}>
-          {/* A question to compare: straight to how the world answered (COPY.md). */}
+          {/* Votes go to the other cities: straight to how the world answered (COPY.md). */}
+          <Text style={styles.votesNext}>{t('vote.afterPost', { count: 3 })}</Text>
           {challenge.compare
             ? <Button icon="earth-outline" label={t('proof.compare')} onPress={() => afterProof('/daily/today?tab=compare&source=after_proof')} />
-            : <Button label={t('proof.ok')} onPress={() => afterProof(sent.next)} />}
+            : <Button icon="earth-outline" label={t('seeProofs')} onPress={() => afterProof('/daily/today?tab=world&source=after_proof')} />}
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
         </View>
       </SafeAreaView>
@@ -625,6 +626,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 12 },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  votesNext:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: 10 },
   footerRow:   { flexDirection: 'row', gap: 10 },
   kicker:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 8 },
   question:    { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.text, letterSpacing: -0.3 },

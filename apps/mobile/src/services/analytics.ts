@@ -99,6 +99,8 @@ export type AnalyticsEvent =
   | 'index_opened'
   | 'index_search_used'
   | 'two_cities_compared'
+  | 'vote_cast'
+  | 'vote_prompt_shown'
   | 'daily_twist_proposed'
   | 'daily_map_opened'
   | 'daily_leaderboard_viewed'

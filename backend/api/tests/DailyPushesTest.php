@@ -213,6 +213,21 @@ final class DailyPushesTest extends TestCase
         $this->assertSame('Find a bar', DailyPushes::morningMessage($c)['body']);
     }
 
+    public function testVoteReminderNamesTwoOtherCities(): void
+    {
+        $c = ['text_i18n' => '{"en":"Find a bar"}', 'challenge_date' => '2026-11-02', 'theme' => 'sip'];
+        $m = DailyPushes::voteReminderMessage($c, 6 * 3600, 'Lisbon', 'Mexico City');
+        $this->assertSame('🍹 Drinks · 6h left', $m['title']);
+        $this->assertSame('You still have 3 votes. Lisbon and Mexico City are waiting.', $m['body']);
+        $this->assertSame(['compare', 'vote_reminder'], [$m['data']['tab'], $m['pushType']]);
+        $this->assertSame("Il te reste 3 votes. Lisbonne et Mexico t'attendent.", DailyPushes::voteReminderMessage($c, 3600, 'Lisbon', 'Mexico City', 'fr')['body']);
+
+        $cities = [['id' => 'city_5', 'name' => 'Saigon'], ['id' => 'city_62', 'name' => 'Lisbon'], ['id' => 'city_4', 'name' => 'Tokyo']];
+        $this->assertSame(['Lisbon', 'Tokyo'], DailyPushes::waitingCities($cities, 'city_5'));
+        $this->assertSame(['Saigon', 'Lisbon'], DailyPushes::waitingCities($cities, null));
+        $this->assertNull(DailyPushes::waitingCities(array_slice($cities, 0, 2), 'city_5'));
+    }
+
     public function testFirstVoteNamesTheVotersCity(): void
     {
         $this->assertSame('Someone in Lisbon voted for your answer.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'en', 'Lisbon')['body']);

@@ -144,8 +144,6 @@
     "yours": "Sagot mo",
     "noneLeftTitle": "Wala ka nang boto",
     "noneLeft": "Nagamit mo na ang 3 boto mo ngayon. Bawiin ang isa para iboto ang sagot na ito.",
-    "left_one": "{{count}} boto na lang",
-    "left_other": "{{count}} boto na lang",
     "errors": {
       "vote_limit": "Nagamit mo na ang 3 boto mo ngayon.",
       "voting_closed": "Sarado na ang botohan kasabay ng challenge.",
@@ -153,7 +151,14 @@
       "own_proof": "Hindi mo puwedeng iboto ang sarili mong sagot.",
       "not_found": "Wala na ang sagot na ito.",
       "generic": "May nagkamali. Subukan ulit."
-    }
+    },
+    "voteFor": "Iboto ang {{city}}",
+    "prompt": "Kanino mo ibibigay ang {{count}} boto mo ngayon?",
+    "allIn": "Naibigay mo na lahat ng boto mo. Kita tayo bukas!",
+    "tourNote": "Ang may pinakamaraming boto na sagot ng bawat lungsod ay sasama sa world tour bukas.",
+    "afterPost": "Ngayon, ibigay ang {{count}} boto mo sa ibang lungsod.",
+    "left_one": "{{count}} boto na lang",
+    "left_other": "{{count}} boto na lang"
   },
   "results": {
     "title": "Resulta",

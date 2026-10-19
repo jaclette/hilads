@@ -995,7 +995,6 @@
       "yours": "你的回答",
       "noneLeftTitle": "没有票了",
       "noneLeft": "你今天的 3 票已用完。撤回一票即可为这条回答投票。",
-      "left_other": "还剩 {{count}} 票",
       "errors": {
         "vote_limit": "你今天的 3 票已经用完了。",
         "voting_closed": "challenge 结束，投票已关闭。",
@@ -1003,7 +1002,14 @@
         "own_proof": "不能给自己的回答投票。",
         "not_found": "这条回答已不可用。",
         "generic": "出错了，请重试。"
-      }
+      },
+      "voteFor": "投给{{city}}",
+      "prompt": "今天你的 {{count}} 票投给谁？",
+      "allIn": "你的票都投完了。明天见！",
+      "tourNote": "每座城市票数最多的回答将进入明天的环球之旅。",
+      "afterPost": "现在把你的 {{count}} 票投给其他城市吧。",
+      "left_one": "还剩 {{count}} 票",
+      "left_other": "还剩 {{count}} 票"
     },
     "results": {
       "title": "结果",

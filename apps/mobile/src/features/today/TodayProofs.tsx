@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,9 @@ import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { fetchDailyTodayProofs } from '@/api/daily';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { representShare, type ShareContent } from '@/features/share/content';
-import { seedProofs, useVoteState } from '@/features/daily/votes';
+import { seedProofs, useVoteState, useVotesLeft } from '@/features/daily/votes';
+import { DailyVoteButton } from '@/features/daily/DailyVoteButton';
+import { track } from '@/services/analytics';
 import { RankMedal } from '@/features/daily/RankMedal';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { answerText } from '@/features/compare/format';
@@ -19,11 +21,18 @@ import { Card, CityName, Photo, SectionTitle } from '@/ui';
 
 type StripProof = DailyTodayProofs['proofs'][number];
 
+/** Votes per user and day (DailyVotes::MAX). */
+const DAILY_VOTES = 3;
+
 /**
- * Today's proofs (SPEC 9.3): the scope's approved proofs as a photo strip, most
- * voted first then newest, each with its city and votes, and a 1/2/3 seal on
- * the top three once the leaderboard ranks. A city with none shows World's.
- * Hidden when nobody has posted.
+ * Today's proofs (SPEC 9.3) and Today around the world (V4 votes).
+ * City scope: "Today in Saigon" (the city's approved proofs, most voted first),
+ * then, once 2 countries answered, "Today around the world": one card per city
+ * with its most voted answer, the cities with the most answers first. World
+ * scope: "Today around the world" is the main strip (all of World's proofs
+ * before 2 countries). Under each title, while voting is open: "Who gets your
+ * 3 votes today?" with my votes left; each card has its vote button ("Vote
+ * for Lisbon"); under the strips, what the votes do. Hidden when nobody posted.
  */
 export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; refreshKey: number }) {
   const styles = useThemedStyles(makeStyles);
@@ -33,16 +42,21 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   const { scope } = useScope();
   const guestId = account ? null : identity?.guestId ?? null;
   const [strip, setStrip] = useState<DailyTodayProofs | null>(null);
+  const [cities, setCities] = useState<DailyTodayProofs | null>(null);
   const [invite, setInvite] = useState<ShareContent | null>(null);
   const date = today?.challenge?.date ?? null;
   const cityId = scope === 'city' ? today?.city?.id ?? null : null;
 
   const load = useCallback(async () => {
-    if (!date) { setStrip(null); return; }
+    if (!date) { setStrip(null); setCities(null); return; }
     try {
-      const next = await fetchDailyTodayProofs({ scope: cityId ? 'city' : 'world', cityId, guestId });
-      seedProofs(next.proofs, true);
+      const [next, around] = await Promise.all([
+        fetchDailyTodayProofs({ scope: cityId ? 'city' : 'world', cityId, guestId }),
+        fetchDailyTodayProofs({ scope: 'cities', guestId }),
+      ]);
+      seedProofs([...next.proofs, ...around.proofs], true);
       setStrip(next);
+      setCities(around);
     } catch { /* keep what we have */ }
   }, [date, cityId, guestId]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
@@ -55,42 +69,95 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
     ...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []),
     ...(strip?.proofs ?? []),
   ];
-  if (!strip || items.length === 0) return null;
-  const world = strip.scope === 'world';
+  const around = cities && cities.countries >= 2 && cities.proofs.length > 0 ? cities : null;
+  const cityStrip = strip?.scope === 'city' && items.length > 0 ? strip : null;
+  // World's strip only while fewer than 2 countries answered (else Today around the world).
+  const worldStrip = !cityStrip && !around && strip && items.length > 0 ? strip : null;
+  if (!cityStrip && !around && !worldStrip) return null;
+
+  const voting = !!today?.challenge?.isActive;
   // Represent your city (SPEC 9.16), World scope: "12 cities are on today's board. Saigon isn't yet."
   // Never a zero count; my own pending proof counts for me.
   const presence = scope === 'world' ? today?.presence ?? null : null;
   const myCity = today?.city?.name ? shortCityName(today.city.name) : null;
-  const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && !!today?.challenge?.isActive;
-  const proofs = t('today.proofs', { count: strip.total });
-  const openSheet = () => router.push(`/daily/today?tab=${world ? 'world' : 'city'}&source=today_strip` as never);
+  const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && voting;
+  const board = boardLine ? (
+    <View style={styles.board}>
+      <Text style={styles.boardText}>{t('represent.board', { count: presence!.citiesToday, city: myCity })}</Text>
+      <TouchableOpacity onPress={() => setInvite(representShare(today!.challenge!, today!.city!))} accessibilityRole="button" hitSlop={8}>
+        <Text style={styles.boardLink}>{t('represent.invite')}</Text>
+      </TouchableOpacity>
+    </View>
+  ) : null;
+  const open = (path: string) => () => router.push(path as never);
+  const openProof = (p: StripProof) => router.push(`/daily/today?proof=${p.id}` as never);
+
+  return (
+    <View style={styles.wrap}>
+      {cityStrip && (
+        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={t('today.proofs', { count: cityStrip.total })}
+               onOpen={open('/daily/today?tab=city&source=today_strip')} items={items} guestId={guestId} voting={voting}
+               source="strip_city" onProof={openProof} footer={!around && voting} />
+      )}
+      {(around || worldStrip) && (
+        <Strip title={t('today.aroundWorld')}
+               stats={t('today.proofsIn', { proofs: t('today.proofs', { count: (around ?? worldStrip)!.total }),
+                                            countries: t('today.countries', { count: (around ?? worldStrip)!.countries }) })}
+               onOpen={around ? open('/daily/today?tab=compare&source=world_strip') : open('/daily/today?tab=world&source=today_strip')}
+               items={around ? around.proofs : items} guestId={guestId} voting={voting} source="strip_world"
+               onProof={openProof} footer={voting} board={board} />
+      )}
+      <ShareSheet content={invite} source="represent_world_strip" onClose={() => setInvite(null)} />
+    </View>
+  );
+}
+
+/**
+ * One strip: its title and "See all" (the sheet), the vote prompt while voting
+ * is open ("Who gets your 3 votes today?", my votes left, or "All your votes
+ * are in"), the cards with their vote button, and what the votes do (footer).
+ */
+function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, footer, board = null }: {
+  title: string; stats: string; onOpen: () => void; items: StripProof[]; guestId: string | null; voting: boolean;
+  source: 'strip_city' | 'strip_world'; onProof: (p: StripProof) => void; footer: boolean; board?: ReactNode;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  const { account } = useApp();
+  const left = useVotesLeft();
+  const votesLeft = account ? left : DAILY_VOTES;
+  const prompted = useRef(false);
+  useEffect(() => {
+    if (!voting || prompted.current) return;
+    prompted.current = true;
+    track('vote_prompt_shown', { source, votes_left: votesLeft ?? null, guest: !account });
+  }, [voting]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Card style={styles.card}>
       {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-      <SectionTitle small title={world ? t('today.aroundWorld') : t('today.inCity', { city: shortCityName(strip.city?.name ?? '') })}
-                    onPress={openSheet} action={{ label: t('today.seeAll'), onPress: openSheet }} />
-      <Text style={styles.stats}>
-        {world ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: strip.countries }) }) : proofs}
-      </Text>
-      {boardLine && (
-        <View style={styles.board}>
-          <Text style={styles.boardText}>{t('represent.board', { count: presence!.citiesToday, city: myCity })}</Text>
-          <TouchableOpacity onPress={() => setInvite(representShare(today!.challenge!, today!.city!))} accessibilityRole="button" hitSlop={8}>
-            <Text style={styles.boardLink}>{t('represent.invite')}</Text>
-          </TouchableOpacity>
-        </View>
+      <SectionTitle small title={title} onPress={onOpen} action={{ label: t('today.seeAll'), onPress: onOpen }} />
+      <Text style={styles.stats}>{stats}</Text>
+      {voting && votesLeft !== null && (
+        votesLeft > 0 ? (
+          <View style={styles.prompt}>
+            <Text style={styles.promptText}>{t('vote.prompt', { count: DAILY_VOTES })}</Text>
+            <Text style={styles.chip}>{t('vote.left', { count: votesLeft })}</Text>
+          </View>
+        ) : <Text style={styles.promptDone}>{t('vote.allIn')}</Text>
       )}
+      {board}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         {items.map(p => (
-          <StripItem key={p.id} proof={p} guestId={guestId} onPress={() => router.push(`/daily/today?proof=${p.id}` as never)} />
+          <StripItem key={p.id} proof={p} guestId={guestId} source={source} onPress={() => onProof(p)} />
         ))}
       </ScrollView>
-      <ShareSheet content={invite} source="represent_world_strip" onClose={() => setInvite(null)} />
+      {footer && <Text style={styles.footer}>{t('vote.tourNote')}</Text>}
     </Card>
   );
 }
 
-function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: string | null; onPress: () => void }) {
+function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; guestId: string | null; source: string; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('daily');
   const state = useVoteState(proof.id, guestId);
@@ -107,7 +174,8 @@ function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: st
       {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
       {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
       {proof.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(proof.answer, i18n.language)}</Text>}
-      <Text style={styles.votes} numberOfLines={1}>{votes}</Text>
+      <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null}
+                       source={source} variant="strip" />
     </TouchableOpacity>
   );
 }
@@ -122,7 +190,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   city:  { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: '100%' },
   answer: { fontSize: 13, fontWeight: '800', color: c.text },
   pending: { position: 'absolute', left: 6, bottom: 6 },
-  votes: { fontSize: 12, fontWeight: '500', color: c.muted },
+  wrap:  { gap: 12 },
+  prompt: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
+  promptText: { fontSize: 14, fontWeight: '700', color: c.text },
+  // A fixed radius: iOS draws no Text with a radius over half its height.
+  chip:  { fontSize: 12, fontWeight: '800', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 10,
+           paddingHorizontal: 9, paddingVertical: 3, overflow: 'hidden' },
+  promptDone: { fontSize: 14, fontWeight: '700', color: c.muted },
+  footer: { fontSize: 12, lineHeight: 17, fontWeight: '500', color: c.muted },
   board: { gap: 4, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
   boardText: { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.primaryOnTint },
   boardLink: { fontSize: 13, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },

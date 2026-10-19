@@ -182,24 +182,34 @@ export function useVoteCount(proof) {
   return votes.get(proof.id)?.voteCount ?? proof.voteCount
 }
 
+/** My votes left today (null before the first read). */
+export function useVotesLeft() {
+  useVotes()
+  return votesLeft
+}
+
 /**
- * Vote for a proof: heart + count, my votes left while voting is open; tap
- * again to withdraw. Disabled on my own proof and once the challenge closed.
- * Guests get the sign-up gate.
+ * Vote for a proof: heart, "Vote for Lisbon" on another city's answer ("Vote"
+ * on my own city's), the count, my votes left while voting is open; tap again
+ * to withdraw. Disabled on my own proof and once the challenge closed. Guests
+ * get the sign-up gate ("Sign up to vote for Lisbon"). `source`: vote_cast.
  */
-export function VoteButton({ proof, variant = 'tile' }) {
+export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
   const { t } = useDc()
-  const { account, needAccount } = useDaily()
+  const { account, cityId, needAccount } = useDaily()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   useVotes()
   const state = votes.get(proof.id) ?? null
   const canVote = !!state && state.votingOpen && !state.isMine
+  const ownCity = !!proof.city && cityId != null && Number(String(cityId).replace(/^city_/, '')) === proof.city.id
+  const short = proof.city?.name ? shortCityName(proof.city.name) : null
+  const voteLabel = !ownCity && short ? t('vote.voteFor', { city: short }) : t('vote.vote')
 
   const click = async (e) => {
     e.stopPropagation()
     if (!state || busy) return
-    if (!account) { needAccount('daily_vote'); return }
+    if (!account) { needAccount('daily_vote', { city: short }); return }
     if (!canVote) return
     if (!state.myVote && votesLeft === 0) { setError(t('vote.noneLeft')); return }
     setBusy(true); setError(null)
@@ -210,6 +220,7 @@ export function VoteButton({ proof, variant = 'tile' }) {
       votesLeft = r.votesLeft
       emit()
       track('daily_vote_cast', { action, challenge_date: proof.date, city: proof.city?.name ?? null, is_local: account.mode === 'local', platform_surface: 'web' })
+      track('vote_cast', { action, source, challenge_date: proof.date, city: proof.city?.name ?? null, own_city: ownCity, platform_surface: 'web' })
     } catch (err) {
       setError(t(`vote.errors.${err.code}`, { defaultValue: t('vote.errors.generic') }))
     } finally {
@@ -227,10 +238,15 @@ export function VoteButton({ proof, variant = 'tile' }) {
     <span className="dc-vote-wrap">
       <button type="button" onClick={click} disabled={!state || (!!account && !canVote)}
               className={`dc-vote dc-vote--${variant}${state?.myVote ? ' dc-vote--on' : ''}`}
-              aria-pressed={!!state?.myVote} aria-label={state?.myVote ? t('vote.withdraw') : t('vote.vote')}>
+              aria-pressed={!!state?.myVote} aria-label={state?.myVote ? t('vote.withdraw') : voteLabel}>
         <Icon name={state?.myVote ? 'heart' : 'heart-outline'} size={variant === 'tile' ? 14 : 16} />
-        {state && <span className="dc-vote-count">{state.voteCount}</span>}
-        {sub && variant !== 'tile' && <span className="dc-vote-sub">{sub}</span>}
+        {state && (
+          <span className="dc-vote-count">
+            {variant !== 'tile' && !state.myVote && !state.isMine && state.votingOpen
+              ? (variant === 'strip' ? voteLabel : `${voteLabel} · ${state.voteCount}`) : state.voteCount}
+          </span>
+        )}
+        {sub && variant !== 'tile' && variant !== 'strip' && <span className="dc-vote-sub">{sub}</span>}
       </button>
       {error && <span className="dc-vote-error" role="status">{error}</span>}
     </span>
@@ -334,7 +350,7 @@ export function ProofViewer({ proof, onClose }) {
           </p>
         )}
         <div className="dc-viewer-actions">
-          {proof.status === 'approved' && <VoteButton proof={proof} variant="viewer" />}
+          {proof.status === 'approved' && <VoteButton proof={proof} variant="viewer" source="viewer" />}
           {!proof.isMine && (
             <button type="button" className="dc-viewer-report" onClick={() => (account ? setReporting(true) : needAccount('view_profile'))}>
               {t('report.title')}

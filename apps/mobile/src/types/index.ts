@@ -1076,12 +1076,13 @@ export interface DailyPriceRange {
 /** GET /daily/today/proofs: Today's proof strip (SPEC 9.3). */
 export interface DailyTodayProofs {
   date:      string;
-  scope:     'world' | 'city';             // 'world' when the city had no proof yet
+  scope:     'world' | 'city' | 'cities';  // 'world' when the city had no proof yet; 'cities': one per city
   city:      { id: number; name: string | null; country?: string | null } | null;
   total:     number;
   countries: number;
   ranked:    boolean;                      // the leaderboard threshold is reached
-  proofs:    (DailyProof & { rank: number | null })[];
+  /** scope cities: each proof's city answer count (the order). */
+  proofs:    (DailyProof & { rank: number | null; cityCount?: number })[];
 }
 
 /** GET /daily/podium: Today's "Yesterday's podium" (SPEC 9.3). */

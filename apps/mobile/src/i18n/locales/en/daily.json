@@ -144,8 +144,6 @@
     "yours": "Your answer",
     "noneLeftTitle": "No votes left",
     "noneLeft": "You used your 3 votes today. Remove one to vote for this answer.",
-    "left_one": "{{count}} vote left",
-    "left_other": "{{count}} votes left",
     "errors": {
       "vote_limit": "You already used your 3 votes today.",
       "voting_closed": "Voting closed with the challenge.",
@@ -153,7 +151,14 @@
       "own_proof": "You can't vote for your own answer.",
       "not_found": "This answer is no longer available.",
       "generic": "Something went wrong. Try again."
-    }
+    },
+    "voteFor": "Vote for {{city}}",
+    "prompt": "Who gets your {{count}} votes today?",
+    "allIn": "All your votes are in. See you tomorrow!",
+    "tourNote": "The most voted answer of each city makes tomorrow's world tour.",
+    "afterPost": "Now give your {{count}} votes to other cities.",
+    "left_one": "{{count}} vote left",
+    "left_other": "{{count}} votes left"
   },
   "results": {
     "title": "Results",

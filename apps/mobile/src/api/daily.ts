@@ -77,7 +77,7 @@ export async function fetchDailyPodium(
 
 /** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. */
 export async function fetchDailyTodayProofs(
-  opts: { scope?: 'world' | 'city'; cityId?: string | number | null; limit?: number; guestId?: string | null } = {},
+  opts: { scope?: 'world' | 'city' | 'cities'; cityId?: string | number | null; limit?: number; guestId?: string | null } = {},
 ): Promise<DailyTodayProofs> {
   return api.get<DailyTodayProofs>('/daily/today/proofs', {
     params: {

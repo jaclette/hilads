@@ -316,6 +316,37 @@ final class DailyPushes
     }
 
     /**
+     * The evening for someone who posted but hasn't voted (V4 votes): the
+     * reminder's title, then "You still have 3 votes. Lisbon and Tokyo are
+     * waiting." ($a, $b: two other cities that answered today). Opens the
+     * Compare tab (push type daily_vote_reminder).
+     */
+    public static function voteReminderMessage(array $challenge, int $secondsLeft, string $a, string $b, string $locale = 'en'): array
+    {
+        $hours = max(1, (int) round($secondsLeft / 3600));
+        $theme = self::themeOf($challenge);
+        $name  = $theme !== null ? self::themeName($theme, $locale, $challenge) : 'Daily Challenge';
+        $a     = CityNames::short($a, $locale);
+        $b     = CityNames::short($b, $locale);
+        $n     = DailyVotes::MAX;
+        return [
+            'title'    => ($theme !== null ? self::emoji($theme, $challenge) . ' ' : '')
+                          . (DailyPushText::render('title_reminder', $locale, ['theme' => $name, 'h' => $hours]) ?? "{$name} · {$hours}h left"),
+            'body'     => DailyPushText::render('vote_reminder', $locale, ['n' => $n, 'a' => $a, 'b' => $b])
+                          ?? "You still have {$n} votes. {$a} and {$b} are waiting.",
+            'data'     => ['tab' => 'compare'] + self::data((string) $challenge['challenge_date']),
+            'pushType' => 'vote_reminder',
+        ];
+    }
+
+    /** Two cities that answered $date, other than $myCityId (most answers first), or null. Pure. */
+    public static function waitingCities(array $cities, ?string $myCityId): ?array
+    {
+        $others = array_values(array_filter($cities, static fn(array $c): bool => $c['id'] !== $myCityId));
+        return count($others) >= 2 ? [$others[0]['name'], $others[1]['name']] : null;
+    }
+
+    /**
      * The recipient's city streak when it ends tonight: {name, n} when the
      * city has no approved proof yet for $date and was represented 2 days or
      * more in a row before it, else null.
@@ -825,7 +856,18 @@ final class DailyPushes
                 if (!DailyClock::isActive((string) $row['challenge_date'], $now)) {
                     $reason = 'expired';
                 } elseif (isset($facts['posted'][$fk])) {
-                    $reason = 'done';
+                    // Posted: the evening becomes the vote reminder when no vote was cast yet and 2 other cities answered.
+                    $challenge = empty($facts['voted'][$fk]) ? DailyChallengeRepository::findPublishedByDate((string) $row['challenge_date']) : null;
+                    $pair = $challenge !== null
+                        ? self::waitingCities($facts['cities'][(string) $row['challenge_date']] ?? [], $facts['city'][$row['user_id']]['id'] ?? null)
+                        : null;
+                    if ($pair === null) {
+                        $reason = 'done';
+                    } else {
+                        $loc = self::morningLocale($challenge, (string) ($msg['locale'] ?? 'en'));
+                        $msg = self::voteReminderMessage($challenge, DailyClock::secondsLeft($now), $pair[0], $pair[1], $loc)
+                               + ['locale' => $msg['locale'] ?? 'en'];
+                    }
                 } else {
                     $challenge = DailyChallengeRepository::findPublishedByDate((string) $row['challenge_date']);
                     if ($challenge === null) {
@@ -867,7 +909,7 @@ final class DailyPushes
                 }
             }
             // The morning and the evening open the challenge sheet, on its Compare tab once 2 countries answered.
-            if ($reason === null && ($row['type'] === 'morning' || $row['type'] === 'reminder')) {
+            if ($reason === null && ($row['type'] === 'morning' || ($row['type'] === 'reminder' && !isset($msg['pushType'])))) {
                 $msg['data'] = self::sheetTab((string) $row['challenge_date']) + ($msg['data'] ?? []);
             }
             if ($reason === null && ($alreadySent[$capKey] ?? 0) >= self::CAP_PER_DAY) {
@@ -886,7 +928,7 @@ final class DailyPushes
             }
             $data = ($msg['data'] ?? self::data((string) $row['challenge_date'])) + ['dailyPushId' => (int) $row['id']];
             self::sendToDevices($tokensByKey[$row['recipient_key']], (string) ($msg['title'] ?? 'Daily Challenge'),
-                                (string) ($msg['body'] ?? ''), $data, 'daily_' . $row['type']);
+                                (string) ($msg['body'] ?? ''), $data, 'daily_' . ($msg['pushType'] ?? $row['type']));
             $alreadySent[$capKey] = ($alreadySent[$capKey] ?? 0) + 1;
             $sent[] = [$row['id'], $day, $msg];
         }
@@ -936,7 +978,7 @@ final class DailyPushes
      */
     private static function sendFacts(array $rows): array
     {
-        $facts = ['posted' => [], 'votes' => [], 'twist' => [], 'friend' => [], 'took' => [], 'city' => []];
+        $facts = ['posted' => [], 'votes' => [], 'twist' => [], 'friend' => [], 'took' => [], 'city' => [], 'voted' => [], 'cities' => []];
         $users = [];
         $dates = [];
         foreach ($rows as $r) {
@@ -1012,6 +1054,30 @@ final class DailyPushes
             if (trim((string) $t['name']) !== '') {
                 $facts['friend'][$t['user_id'] . '|' . $t['challenge_date']] = (string) $t['name'];
             }
+        }
+        // The vote reminder: who already voted, and the cities that answered (most answers first).
+        $stmt = $pdo->prepare("
+            SELECT v.voter_user_id, c.challenge_date FROM daily_votes v JOIN daily_challenges c ON c.id = v.challenge_id
+            WHERE v.voter_user_id = ANY (string_to_array(?, ',')) AND c.challenge_date = ANY (string_to_array(?, ',')::date[])
+            GROUP BY v.voter_user_id, c.challenge_date
+        ");
+        $stmt->execute($args);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            $facts['voted'][$t['voter_user_id'] . '|' . $t['challenge_date']] = true;
+        }
+        $stmt = $pdo->prepare("
+            SELECT c.challenge_date, p.city_id, ch.name, count(*) AS n
+            FROM daily_proofs p
+            JOIN daily_challenges c ON c.id = p.challenge_id
+            JOIN channels ch        ON ch.id = p.city_id
+            WHERE c.challenge_date = ANY (string_to_array(?, ',')::date[])
+              AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed
+            GROUP BY c.challenge_date, p.city_id, ch.name
+            ORDER BY c.challenge_date, n DESC, p.city_id
+        ");
+        $stmt->execute([$args[1]]);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            $facts['cities'][$t['challenge_date']][] = ['id' => (string) $t['city_id'], 'name' => (string) $t['name']];
         }
         // Represent your city (SPEC 9.16): the recipient's current city, for the streak line.
         $stmt = $pdo->prepare("

@@ -718,7 +718,7 @@ function DailyFeedCard({ item, t, onOpen }) {
         {themeName(p.theme?.key) && <span className="feed-daily-tag">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={12} />} {themeName(p.theme.key)}</span>}
         {p.city?.name && <CityName name={p.city.name} country={p.city.country} className="feed-daily-tag" />}
       </div>
-      {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" />}
+      {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" source="hi_card" />}
       {time && <span className="feed-join-time">{time}</span>}
     </div>
   )
@@ -4779,7 +4779,7 @@ export default function App() {
     openProfile: (id, name) => openProfile(id, name ?? ''),
     // A spot (or the map) from Today / a proof: the Map tab, on that spot.
     openSpot: (id) => { goToMapTab(); setMapSpotId(id ?? null) },
-    needAccount: (reason) => setGuestGate({ reason }),
+    needAccount: (reason, extra = {}) => setGuestGate({ reason, ...extra }),
   }
 
   return (
@@ -6774,6 +6774,7 @@ export default function App() {
       {guestGate && (
         <SignUpSheet
           reason={guestGate.reason}
+          city={guestGate.city ?? null}
           onClose={() => setGuestGate(null)}
           onAuth={(tab, action) => { setGuestGate(null); setGateAuth({ tab, action }) }}
         />

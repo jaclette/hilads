@@ -26,7 +26,7 @@ export default function AuthGateScreen() {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('auth');
-  const { reason, returnTo } = useLocalSearchParams<{ reason?: string; returnTo?: string }>();
+  const { reason, returnTo, city } = useLocalSearchParams<{ reason?: string; returnTo?: string; city?: string }>();
   const gateReason: GateReason = (REASONS as readonly string[]).includes(reason ?? '') ? reason as GateReason : 'view_profile';
 
   useEffect(() => { track('guest_signup_prompted', { action: gateReason }); }, [gateReason]);
@@ -43,7 +43,10 @@ export default function AuthGateScreen() {
         <View style={styles.handle} />
         <BrandMark size="lg" />
         <Text style={styles.tagline}>{t('firstLaunch', { ns: 'common' })}</Text>
-        <Text style={styles.title} accessibilityRole="header">{t(`sheet.reason.${gateReason}`)}</Text>
+        {/* A vote names its city: "Sign up to vote for Lisbon". */}
+        <Text style={styles.title} accessibilityRole="header">
+          {gateReason === 'daily_vote' && city ? t('sheet.reason.daily_vote_city', { city }) : t(`sheet.reason.${gateReason}`)}
+        </Text>
         <Text style={styles.subtitle}>{t('sheet.comeBack')}</Text>
 
         <Button label={t('sheet.signUp')} onPress={() => go('/sign-up')} style={styles.stretch} />

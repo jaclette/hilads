@@ -15,17 +15,19 @@ const REASONS = [
  * I have an account / Not now. Auth opens above the current screen, so the
  * guest is back where they were afterwards.
  */
-export default function SignUpSheet({ reason, onAuth, onClose }) {
+export default function SignUpSheet({ reason, city = null, onAuth, onClose }) {
   const { t } = useTranslation('auth')
   const r = REASONS.includes(reason) ? reason : 'view_profile'
   useEffect(() => { track('guest_signup_prompted', { action: r }) }, [r])
+  // A vote names its city: "Sign up to vote for Lisbon".
+  const title = r === 'daily_vote' && city ? t('sheet.reason.daily_vote_city', { city }) : t(`sheet.reason.${r}`)
   return (
-    <div className="v3-sheet-wrap su-wrap" role="dialog" aria-modal="true" aria-label={t(`sheet.reason.${r}`)}>
+    <div className="v3-sheet-wrap su-wrap" role="dialog" aria-modal="true" aria-label={title}>
       <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('sheet.notNow')} />
       <div className="v3-sheet su-sheet">
         <span className="v3-sheet-grabber" aria-hidden="true" />
         <img className="v3-mark su-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
-        <h2 className="su-title">{t(`sheet.reason.${r}`)}</h2>
+        <h2 className="su-title">{title}</h2>
         <p className="dc-muted su-sub">{t('sheet.comeBack')}</p>
         <button type="button" className="today-cta dc-full" onClick={() => onAuth('signup', r)}>{t('sheet.signUp')}</button>
         <button type="button" className="su-secondary" onClick={() => onAuth('login', r)}>{t('sheet.haveAccount')}</button>

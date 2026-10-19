@@ -14427,9 +14427,10 @@ $router->add('POST', '/api/v1/daily/remind-me', function () {
     Response::json(['queued' => DailyPushes::queueReminderFor($user['id'], new DateTimeImmutable('now'))]);
 });
 
-// GET /api/v1/daily/today/proofs?scope=world|city&cityId=&limit= - Today's proof
+// GET /api/v1/daily/today/proofs?scope=world|city|cities&cityId=&limit= - Today's proof
 // strip (SPEC 9.3): the scope's approved proofs, most voted then newest, with
-// its proof and country counts. A city with no proof yet falls back to World.
+// its proof and country counts; scope=cities: one proof per city, its most
+// voted, the cities with the most answers first (cityCount). A city with no proof yet falls back to World.
 // rank 1-3 marks the first three voted proofs once the leaderboard ranks
 // (MIN_PROOFS); blocked authors are hidden without renumbering.
 $router->add('GET', '/api/v1/daily/today/proofs', function () {
@@ -14441,6 +14442,16 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
         Response::json($out);
     }
     $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 12)));
+    // Today around the world: one card per city, its most voted answer (V4 votes).
+    if (($_GET['scope'] ?? 'world') === 'cities') {
+        $strip = DailyProofRepository::perCity($challenge['id'], $limit);
+        $viewerId = $user['id'] ?? null;
+        $visible  = DailyVotes::annotate(filterByBlocks($strip['rows'], dailyBlocks($user), 'user_id', 'guest_id'), $viewerId);
+        Response::json(['date' => $date, 'scope' => 'cities', 'city' => null, 'total' => $strip['total'], 'countries' => $strip['countries'],
+                        'ranked' => false, 'proofs' => array_map(
+                            static fn(array $r): array => DailyProofRepository::format($r, $viewerId) + ['rank' => null, 'cityCount' => (int) $r['city_count']],
+                            $visible)]);
+    }
     $cityId = ($_GET['scope'] ?? 'world') === 'city' ? dailyCityParam($user) : null;
     $strip  = $cityId !== null ? DailyProofRepository::strip($challenge['id'], $cityId, $limit) : null;
     if ($strip === null || $strip['total'] === 0) {

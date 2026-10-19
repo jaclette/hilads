@@ -299,7 +299,7 @@ function ProofCard({ message, reactions, time, longPress }: {
           <View style={styles.voteRight}>
             {vote?.validatedByLocal && <Ionicons name="checkmark-circle" size={18} color={colors.localText} accessibilityLabel={t('validatedByLocal')} />}
             {p.isEarly && <EarlyBadge />}
-            <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} />
+            <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} cityId={p.city?.id ?? null} source="hi_card" />
           </View>
         </View>
         <Text style={styles.proofOf} numberOfLines={1}>{t('kicker')} · {p.challengeText}</Text>

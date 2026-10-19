@@ -144,8 +144,6 @@
     "yours": "Deine Antwort",
     "noneLeftTitle": "Keine Stimmen mehr",
     "noneLeft": "Du hast heute deine 3 Stimmen genutzt. Zieh eine zurück, um für diese Antwort zu stimmen.",
-    "left_one": "Noch {{count}} Stimme",
-    "left_other": "Noch {{count}} Stimmen",
     "errors": {
       "vote_limit": "Du hast heute schon deine 3 Stimmen genutzt.",
       "voting_closed": "Die Abstimmung endete mit der Challenge.",
@@ -153,7 +151,14 @@
       "own_proof": "Du kannst nicht für deine eigene Antwort stimmen.",
       "not_found": "Diese Antwort ist nicht mehr verfügbar.",
       "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
-    }
+    },
+    "voteFor": "Für {{city}} stimmen",
+    "prompt": "Wer bekommt heute deine {{count}} Stimmen?",
+    "allIn": "Alle deine Stimmen sind vergeben. Bis morgen!",
+    "tourNote": "Die meistgewählte Antwort jeder Stadt kommt in die Weltreise von morgen.",
+    "afterPost": "Jetzt gib deine {{count}} Stimmen anderen Städten.",
+    "left_one": "Noch {{count}} Stimme",
+    "left_other": "Noch {{count}} Stimmen"
   },
   "results": {
     "title": "Ergebnisse",

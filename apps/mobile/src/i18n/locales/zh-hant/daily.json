@@ -144,7 +144,6 @@
     "yours": "你的回答",
     "noneLeftTitle": "沒有票了",
     "noneLeft": "你今天的 3 票已用完。撤回一票即可為這則回答投票。",
-    "left_other": "還剩 {{count}} 票",
     "errors": {
       "vote_limit": "你今天的 3 票已經用完了。",
       "voting_closed": "challenge 結束，投票已關閉。",
@@ -152,7 +151,14 @@
       "own_proof": "不能為自己的回答投票。",
       "not_found": "這則回答已無法查看。",
       "generic": "出錯了，請再試一次。"
-    }
+    },
+    "voteFor": "投給{{city}}",
+    "prompt": "今天你的 {{count}} 票要投給誰？",
+    "allIn": "你的票都投完了。明天見！",
+    "tourNote": "每座城市票數最多的回答將進入明天的環球之旅。",
+    "afterPost": "現在把你的 {{count}} 票投給其他城市吧。",
+    "left_one": "還剩 {{count}} 票",
+    "left_other": "還剩 {{count}} 票"
   },
   "results": {
     "title": "結果",

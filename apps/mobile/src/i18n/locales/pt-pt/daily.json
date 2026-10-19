@@ -144,8 +144,6 @@
     "yours": "A tua resposta",
     "noneLeftTitle": "Sem votos",
     "noneLeft": "Já usaste os teus 3 votos hoje. Retira um para votar nesta resposta.",
-    "left_one": "Resta {{count}} voto",
-    "left_other": "Restam {{count}} votos",
     "errors": {
       "vote_limit": "Já usaste os teus 3 votos hoje.",
       "voting_closed": "A votação fechou com o challenge.",
@@ -153,7 +151,14 @@
       "own_proof": "Não podes votar na tua própria resposta.",
       "not_found": "Esta resposta já não está disponível.",
       "generic": "Algo correu mal. Tenta outra vez."
-    }
+    },
+    "voteFor": "Vota em {{city}}",
+    "prompt": "A quem dás os teus {{count}} votos hoje?",
+    "allIn": "Já deste todos os teus votos. Até amanhã!",
+    "tourNote": "A resposta mais votada de cada cidade entra na volta ao mundo de amanhã.",
+    "afterPost": "Agora dá os teus {{count}} votos a outras cidades.",
+    "left_one": "{{count}} voto restante",
+    "left_other": "{{count}} votos restantes"
   },
   "results": {
     "title": "Resultados",

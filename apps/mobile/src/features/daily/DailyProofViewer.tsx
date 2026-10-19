@@ -110,7 +110,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             </View>
           )}
           {proof.status === 'approved' && (
-            <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="viewer" />
+            <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="viewer" variant="viewer" />
           )}
           {shareable && challenge && (
             <Button icon="share-social-outline" label={t('share.shareProof')} onPress={() => setShare(proofShare(proof, challenge))} />

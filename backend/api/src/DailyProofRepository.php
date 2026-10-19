@@ -290,6 +290,53 @@ final class DailyProofRepository
         });
     }
 
+    /**
+     * Today around the world (V4 votes): one proof per city, its most voted
+     * (the results ranking: votes, local votes, earliest approval), the cities
+     * with the most answers first: {total, countries, rows (+ city_count)}.
+     * Approved proofs only, like the strip. Cached 15 s.
+     */
+    public static function perCity(string $challengeId, int $limit): array
+    {
+        return Cache::remember("daily_percity_v1_{$challengeId}_{$limit}", 15, static function () use ($challengeId, $limit): array {
+            $pdo  = Database::pdo();
+            $stmt = $pdo->prepare("
+                SELECT id, city_count FROM (
+                    SELECT p.id, count(*) OVER (PARTITION BY p.city_id) AS city_count,
+                           row_number() OVER (PARTITION BY p.city_id
+                                              ORDER BY p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id) AS rn
+                    FROM daily_proofs p
+                    WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.city_id IS NOT NULL
+                ) x
+                WHERE rn = 1
+                ORDER BY city_count DESC, id
+                LIMIT ?
+            ");
+            $stmt->execute([$challengeId, $limit]);
+            $top = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            $rows = [];
+            if ($top !== []) {
+                $stmt = $pdo->prepare(self::SELECT . " WHERE p.id = ANY (string_to_array(?, ','))");
+                $stmt->execute([implode(',', array_keys($top))]);
+                $byId = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), null, 'id');
+                foreach ($top as $id => $n) {
+                    if (isset($byId[$id])) {
+                        $rows[] = $byId[$id] + ['city_count' => (int) $n];
+                    }
+                }
+            }
+            $stmt = $pdo->prepare("
+                SELECT count(*) AS total, count(DISTINCT c.country) AS countries
+                FROM daily_proofs p
+                LEFT JOIN cities c ON c.channel_id = p.city_id
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved'
+            ");
+            $stmt->execute([$challengeId]);
+            $counts = $stmt->fetch(PDO::FETCH_ASSOC);
+            return ['total' => (int) $counts['total'], 'countries' => (int) $counts['countries'], 'rows' => $rows];
+        }) ?? ['total' => 0, 'countries' => 0, 'rows' => []];
+    }
+
     /** True once the user posted a proof, any day (pending or approved; removed ones don't count). */
     public static function hasAny(string $userId): bool
     {
