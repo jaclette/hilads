@@ -17464,3 +17464,12 @@ body.has-app-promo-banner .page-header {
 .good-to-know p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--text); }
 .cmp-picks { margin-top: 16px; }
 .cmp-picks-title { margin: 0 0 8px; font-size: 14px; font-weight: 800; color: var(--muted); }
+/* Votes on Hilads picks: their own heart and count. */
+.pick-vote { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; min-height: 32px; padding: 0 10px; border-radius: 999px;
+             border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.pick-vote .icon { color: var(--muted); }
+.pick-vote--on { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 14%, transparent); }
+.pick-vote--on .icon { color: var(--primary-text); }
+.cmp-pick-photo { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.today-pick-answer { font-size: 13px; font-weight: 800; color: var(--primary-text); }
+.spot-card[role="button"] { cursor: pointer; }

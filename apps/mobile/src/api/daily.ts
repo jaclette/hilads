@@ -209,6 +209,11 @@ export async function unvoteDailyProof(proofId: string): Promise<DailyVoteResult
   return api.delete<DailyVoteResult>(`/daily/proofs/${proofId}/vote`);
 }
 
+/** Vote for a Hilads pick of today's challenge, or withdraw (own count: never rankings, tour, Index or points). */
+export async function votePick(placeId: string, on: boolean): Promise<{ voted: boolean; voteCount: number }> {
+  return on ? api.post(`/daily/picks/${placeId}/vote`, {}) : api.delete(`/daily/picks/${placeId}/vote`);
+}
+
 /** Up to 50 approved proofs in the order given (a group card's gallery). */
 export async function fetchDailyProofsByIds(ids: string[], guestId?: string | null): Promise<DailyProof[]> {
   return (await api.get<{ items: DailyProof[] }>('/daily/proofs', {

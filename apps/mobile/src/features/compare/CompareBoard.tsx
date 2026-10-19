@@ -14,6 +14,8 @@ import type { DailyBoard, DailyCityRef, DailyProof } from '@/types';
 import { answerText } from './format';
 import { useRouter } from 'expo-router';
 import { PickBadge } from '@/features/map/PickBadge';
+import { PickVoteButton } from './PickVote';
+import { Image } from 'expo-image';
 import { useMoney } from './money';
 
 /**
@@ -179,13 +181,14 @@ function PicksMeanwhile({ picks }: { picks: NonNullable<DailyBoard['picks']> }) 
         {picks.map((p, i) => (
           <TouchableOpacity key={p.place.id} style={[styles.row, i > 0 && styles.rowLine]} onPress={() => router.push(`/spot/${p.place.id}` as never)}
                             accessibilityRole="button" activeOpacity={0.7}>
-            <CityFlag country={p.city?.country} size={20} />
+            {p.photo ? <Image source={{ uri: p.photo.thumbUrl ?? p.photo.url }} style={styles.pickPhoto} contentFit="cover" />
+              : <CityFlag country={p.city?.country} size={20} />}
             <View style={styles.rowBody}>
               <Text style={styles.cityName} numberOfLines={1}>{p.city?.name ? `${shortCityName(p.city.name)} · ${p.place.name}` : p.place.name}</Text>
               {p.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(p.answer, i18n.language)}</Text>}
               <PickBadge />
             </View>
-            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+            <PickVoteButton pick={p} />
           </TouchableOpacity>
         ))}
       </View>
@@ -218,4 +221,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   grid:       { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   cell:       { width: '48%' },
   picks:      { gap: 8, marginTop: 6 },
+  pickPhoto:  { width: 52, height: 52, borderRadius: 10, backgroundColor: c.primaryTint },
 });

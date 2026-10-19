@@ -9,6 +9,7 @@ import { AppHeader } from '@/features/shell/AppHeader';
 import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
 import { TodayProofs } from '@/features/today/TodayProofs';
+import { TodayPicks } from '@/features/today/TodayPicks';
 import { TodayTour } from '@/features/tour/TodayTour';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { SpotsNear } from '@/features/today/SpotsNear';
@@ -61,6 +62,8 @@ export default function TodayScreen() {
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TodayTour today={daily.data} refreshKey={refreshKey} />
         <TodayProofs today={daily.data} refreshKey={refreshKey} />
+        {/* Hilads picks of today's challenge, votable on their own (never player answers). */}
+        <TodayPicks today={daily.data} refreshKey={refreshKey} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />

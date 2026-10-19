@@ -5,7 +5,7 @@ import { track } from '../../lib/analytics'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
 import { useDaily, useDc, ProofTile } from './dailyShared'
-import { PickBadge } from '../map/Pick'
+import { PickBadge, PickVoteButton } from '../map/Pick'
 import { answerText, useMoney } from './compareShared'
 
 /**
@@ -144,15 +144,16 @@ function PicksMeanwhile({ picks, ans }) {
       <h3 className="cmp-picks-title">{t('compare.picksTitle')}</h3>
       <div className="cmp-table">
         {picks.map(p => (
-          <button key={p.place.id} type="button" className="cmp-row" onClick={() => openSpot(p.place.id)}>
-            <CityFlag country={p.city?.country} size={20} />
+          <div key={p.place.id} className="cmp-row" role="button" tabIndex={0} onClick={() => openSpot(p.place.id)}
+               onKeyDown={(e) => { if (e.key === 'Enter') openSpot(p.place.id) }}>
+            {p.photo ? <img className="cmp-pick-photo" src={p.photo.thumbUrl || p.photo.url} alt="" loading="lazy" /> : <CityFlag country={p.city?.country} size={20} />}
             <span className="cmp-row-body">
               <span className="cmp-row-city">{p.city?.name ? `${shortCityName(p.city.name)} · ${p.place.name}` : p.place.name}</span>
               {p.answer && <span className="cmp-row-answer">{ans(p.answer)}</span>}
               <PickBadge />
             </span>
-            <Icon name="chevron-forward" size={16} />
-          </button>
+            <PickVoteButton pick={p} />
+          </div>
         ))}
       </div>
     </div>

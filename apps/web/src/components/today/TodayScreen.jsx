@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchDailyTour, fetchSpotsNear } from '../../api'
+import { fetchDailyBoard, fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchDailyTour, fetchSpotsNear } from '../../api'
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
@@ -18,7 +18,7 @@ import {
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { PhotoCredit, PickBadge } from '../map/Pick'
+import { PhotoCredit, PickBadge, PickVoteButton } from '../map/Pick'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -70,6 +70,8 @@ export default function TodayScreen({ header }) {
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TourRow today={data} />
         <TodayProofs today={data} />
+        {/* Hilads picks of today's challenge, votable on their own (never player answers). */}
+        <TodayPicks today={data} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel />
         <SpotsNear />
@@ -695,6 +697,48 @@ function Podium({ today }) {
  * Spots near you: the nearest 2-3 spots (position only if already allowed, else
  * the city centre). In a city I'm not in: "Spots in <city>", around its centre.
  */
+/**
+ * "Meanwhile, from our picks" on Today: the Hilads picks attached to today's
+ * challenge (photo, city, place, the pick's checked answer), each votable on
+ * its own. Hidden when the day has none.
+ */
+function TodayPicks({ today }) {
+  const { t, i18n } = useDc()
+  const { openSpot } = useDaily()
+  const [picks, setPicks] = useState([])
+  const date = today?.challenge?.isActive ? today.challenge.date : null
+  useEffect(() => {
+    if (!date) { setPicks([]); return }
+    let alive = true
+    fetchDailyBoard(date, i18n.language).then(b => { if (alive) setPicks(b.picks ?? []) }).catch(() => {})
+    return () => { alive = false }
+  }, [date, i18n.language])
+  if (picks.length === 0) return null
+  return (
+    <div className="spots">
+      <div className="today-card-head"><span className="today-card-title">{t('compare.picksTitle')}</span></div>
+      <div className="spots-row">
+        {picks.map(p => (
+          <div key={p.place.id} className="spot-card" role="button" tabIndex={0} onClick={() => openSpot(p.place.id)}
+               onKeyDown={(e) => { if (e.key === 'Enter') openSpot(p.place.id) }} aria-label={p.place.name}>
+            <span className="spot-card-photo">
+              {p.photo ? <img src={p.photo.thumbUrl || p.photo.url} onError={thumbFallback(p.photo.url)} alt="" loading="lazy" /> : <span className="spot-card-img" />}
+              <PhotoCredit cover={{ credit: p.photo?.credit }} className="photo-credit" />
+            </span>
+            <span className="spot-card-body">
+              <span className="dc-muted" style={ROW}><CityFlag country={p.city?.country} size={14} />{p.city?.name ? shortCityName(p.city.name) : ''}</span>
+              <span className="spot-card-name">{p.place.name}</span>
+              {p.answer && <span className="today-pick-answer">{answerText(p.answer, i18n.language)}</span>}
+              <PickBadge />
+              <PickVoteButton pick={p} />
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function SpotsNear() {
   const { t, i18n } = useDc()
   const { cityId, scope, openSpot } = useDaily()

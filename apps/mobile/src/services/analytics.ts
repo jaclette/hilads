@@ -101,6 +101,7 @@ export type AnalyticsEvent =
   | 'index_search_used'
   | 'two_cities_compared'
   | 'vote_cast'
+  | 'pick_vote_cast'              // a vote on a Hilads pick (own count, never the game's)
   | 'vote_prompt_shown'
   | 'daily_twist_proposed'
   | 'daily_map_opened'

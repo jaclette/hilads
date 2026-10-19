@@ -989,11 +989,22 @@ export interface DailyWorldTeaser {
 }
 
 /** How the world answered (GET /daily/challenges/{date}/compare, SPEC 10.6). */
+/** A Hilads pick attached to a challenge: votable on its own (never a player answer). */
+export interface DailyPick {
+  city:      DailyCityRef | null;
+  place:     { id: string; name: string };
+  answer:    DailyAnswer | null;
+  note:      string | null;
+  photo?:    { url: string; thumbUrl: string | null; credit: string | null } | null;
+  voteCount?: number;
+  myVote?:   boolean;
+}
+
 export interface DailyBoard {
   date:      string;
   compare:   DailyCompare | null;
   /** "Meanwhile, from our picks": editorial picks attached to the challenge, with their own checked answer. Never in the board. */
-  picks?:    { city: DailyCityRef | null; place: { id: string; name: string }; answer: DailyAnswer | null; note: string | null }[];
+  picks?:    DailyPick[];
   cities:    number;
   countries: number;
   rows: {

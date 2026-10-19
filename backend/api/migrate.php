@@ -3368,6 +3368,20 @@ run($pdo, "
         PRIMARY KEY (challenge_id, user_id, city_id)
     )
 ", 'daily_vote_flags');
+
+// Votes on Hilads picks attached to a challenge (the Compare tab and Today's
+// picks strip): one per pick per voter while the challenge is open. Kept apart
+// from daily_votes: never in rankings, podiums, the world tour, the Index or points.
+// Reversal: DROP TABLE daily_pick_votes.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_pick_votes (
+        challenge_id  TEXT        NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        place_id      TEXT        NOT NULL REFERENCES places(id) ON DELETE CASCADE,
+        voter_user_id TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (challenge_id, place_id, voter_user_id)
+    )
+", 'daily_pick_votes');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

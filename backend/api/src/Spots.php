@@ -183,7 +183,7 @@ final class Spots
      * published picks attached to a challenge, [{city, place: {id, name}, answer,
      * note}], with the pick's own answer to the question when one was checked.
      */
-    public static function picksFor(array $challenge, ?string $locale = null): array
+    public static function picksFor(array $challenge, ?string $locale = null, ?string $viewerId = null): array
     {
         if (!self::picksReady()) {
             return [];
@@ -192,7 +192,9 @@ final class Spots
         $rows = Cache::remember('daily_picks_for_v1_' . $challenge['id'], self::CACHE_TTL, static function () use ($challenge): array {
             $stmt = Database::pdo()->prepare("
                 SELECT pl.id, pl.name, pl.city_id, ch.name AS city_name, cc.country, pl.pick_note_i18n,
-                       a.answer_text, a.answer_number, a.answer_minutes
+                       a.answer_text, a.answer_number, a.answer_minutes,
+                       (SELECT p.photo_url FROM daily_proofs p WHERE p.place_id = pl.id AND p.is_pick ORDER BY p.created_at DESC LIMIT 1) AS photo_url,
+                       (SELECT p.photo_credit FROM daily_proofs p WHERE p.place_id = pl.id AND p.is_pick ORDER BY p.created_at DESC LIMIT 1) AS photo_credit
                 FROM daily_pick_answers a
                 JOIN places pl          ON pl.id = a.place_id AND pl.pick_status = 'published' AND NOT pl.hidden AND pl.merged_into IS NULL
                 LEFT JOIN channels ch   ON ch.id = pl.city_id
@@ -203,13 +205,70 @@ final class Spots
             $stmt->execute([$challenge['id']]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }) ?? [];
-        return array_map(static fn(array $r): array => [
+        $votes = self::pickVotes((string) $challenge['id'], $viewerId);
+        $out = array_map(static fn(array $r): array => [
             'city'   => $r['city_id'] !== null ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name'], 'country' => $r['country']] : null,
             'place'  => ['id' => $r['id'], 'name' => $r['name']],
+            'photo'  => $r['photo_url'] !== null ? ['url' => $r['photo_url'], 'thumbUrl' => R2Uploader::thumbProxy($r['photo_url']), 'credit' => $r['photo_credit']] : null,
+            // Pick votes: their own count, never a player answer's (no ranking, tour, Index or points).
+            'voteCount' => $votes[$r['id']]['n'] ?? 0,
+            'myVote'    => $votes[$r['id']]['mine'] ?? false,
             'answer' => DailyCompare::answerPayload($challenge['compare_type'] ?? null, $r['answer_text'], $r['answer_number'] !== null ? (int) $r['answer_number'] : null,
                                                     $r['answer_minutes'] !== null ? (int) $r['answer_minutes'] : null, $challenge['compare_unit_i18n'] ?? null, $locale),
             'note'   => $r['pick_note_i18n'] !== null ? self::pickNote((string) $r['pick_note_i18n']) : null,
         ], $rows);
+        // Most loved first; ties keep the city order.
+        usort($out, static fn(array $a, array $b): int => $b['voteCount'] <=> $a['voteCount']);
+        return $out;
+    }
+
+    /** Votes on a challenge's picks: [placeId => {n, mine}]. Live (not cached): a vote shows at once. */
+    public static function pickVotes(string $challengeId, ?string $viewerId): array
+    {
+        try {
+            $stmt = Database::pdo()->prepare("
+                SELECT place_id, count(*) AS n, bool_or(voter_user_id = ?) AS mine
+                FROM daily_pick_votes WHERE challenge_id = ? GROUP BY place_id
+            ");
+            $stmt->execute([$viewerId ?? '', $challengeId]);
+        } catch (\Throwable $e) {
+            return [];   // before migrate.php
+        }
+        $out = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $out[$r['place_id']] = ['n' => (int) $r['n'], 'mine' => DailyProofRepository::bool($r['mine'])];
+        }
+        return $out;
+    }
+
+    /**
+     * Vote for (or withdraw from) a pick attached to today's open challenge.
+     * Returns {voted, voteCount}; throws InvalidArgumentException not_found or voting_closed.
+     */
+    public static function pickVote(string $placeId, string $userId, bool $on): array
+    {
+        $challenge = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
+        if ($challenge === null || !DailyClock::isActive((string) $challenge['challenge_date'])) {
+            throw new InvalidArgumentException('voting_closed');
+        }
+        $pdo  = Database::pdo();
+        $stmt = $pdo->prepare("
+            SELECT 1 FROM daily_pick_answers a JOIN places pl ON pl.id = a.place_id AND pl.pick_status = 'published' AND NOT pl.hidden
+            WHERE a.challenge_id = ? AND a.place_id = ?
+        ");
+        $stmt->execute([$challenge['id'], $placeId]);
+        if ($stmt->fetchColumn() === false) {
+            throw new InvalidArgumentException('not_found');
+        }
+        if ($on) {
+            $pdo->prepare("INSERT INTO daily_pick_votes (challenge_id, place_id, voter_user_id) VALUES (?, ?, ?) ON CONFLICT DO NOTHING")
+                ->execute([$challenge['id'], $placeId, $userId]);
+        } else {
+            $pdo->prepare("DELETE FROM daily_pick_votes WHERE challenge_id = ? AND place_id = ? AND voter_user_id = ?")
+                ->execute([$challenge['id'], $placeId, $userId]);
+        }
+        $v = self::pickVotes((string) $challenge['id'], $userId)[$placeId] ?? ['n' => 0, 'mine' => false];
+        return ['voted' => $v['mine'], 'voteCount' => $v['n']];
     }
 
     /** A pick's "Good to know" in the request's language, else English. */

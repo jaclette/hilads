@@ -14633,7 +14633,7 @@ $router->add('GET', '/api/v1/daily/challenges/{date}/compare', function (array $
     }
     $user = AuthService::currentUser();
     // "Meanwhile, from our picks": editorial context next to the board, never in it.
-    Response::json(['date' => $date] + DailyBoard::board($challenge, dailyBlocks($user)['user_ids'] ?? []) + ['picks' => Spots::picksFor($challenge)]);
+    Response::json(['date' => $date] + DailyBoard::board($challenge, dailyBlocks($user)['user_ids'] ?? []) + ['picks' => Spots::picksFor($challenge, null, $user['id'] ?? null)]);
 });
 
 // GET /api/v1/daily/tour?date=YYYY-MM-DD&cityId= - Yesterday around the world
@@ -14873,6 +14873,27 @@ function dailyVoteResponse(array $proof, array $user): void
         'voteCount'        => (int) $fresh['vote_count'],
         'validatedByLocal' => (int) $fresh['local_vote_count'] > 0,
     ]);
+}
+
+// POST / DELETE /api/v1/daily/picks/{placeId}/vote - vote for a Hilads pick of today's challenge
+// (its own count: never rankings, podiums, the world tour, the Index or points).
+foreach (['POST' => true, 'DELETE' => false] as $pickVoteMethod => $pickVoteOn) {
+    $router->add($pickVoteMethod, '/api/v1/daily/picks/{id}/vote', function (array $params) use ($pickVoteOn) {
+        $on = $pickVoteOn;
+        $user = AuthService::requireAuth('vote');
+        if (!DbRateLimiter::allow('daily_vote|' . $user['id'], 30, 600)) {
+            Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+        }
+        if (!preg_match('/^[a-f0-9]{16}$/', $params['id'])) {
+            Response::json(['error' => 'Pick not found', 'code' => 'not_found'], 404);
+        }
+        try {
+            Response::json(Spots::pickVote($params['id'], $user['id'], $on));
+        } catch (InvalidArgumentException $e) {
+            [$status, $msg] = DAILY_VOTE_ERRORS[$e->getMessage()] ?? [409, 'Vote refused'];
+            Response::json(['error' => $msg, 'code' => $e->getMessage()], $status);
+        }
+    });
 }
 
 // POST /api/v1/daily/proofs/{id}/vote - vote for a proof (one per proof, no limit per challenge).
