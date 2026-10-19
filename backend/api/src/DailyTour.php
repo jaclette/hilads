@@ -81,7 +81,8 @@ final class DailyTour
             SELECT p.id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at
             FROM daily_proofs p
             JOIN channels ch ON ch.id = p.city_id
-            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+            JOIN users u     ON u.id = p.user_id
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
         ");
         $stmt->execute([$challenge['id']]);
         $top3   = array_column(DailyResults::worldTop3((string) $challenge['id']), 'id');

@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "Der Hilads Index der letzten Woche",
-      "sub": "Was die Welt letzte Woche bezahlt hat, und wann. Städte mit 3 Beweisen oder mehr.",
+      "sub": "Was die Welt letzte Woche bezahlt hat",
       "pricePaid": "Mittlerer bezahlter Preis",
       "share": "Teilen",
-      "shareText": "Der Hilads Index: {{lines}}"
+      "shareText": "Der Hilads Index: {{lines}}",
+      "footnote": "Basierend auf Städten mit 3 Beweisen oder mehr"
     }
   }
 }

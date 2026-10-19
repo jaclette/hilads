@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "Hilads Index minggu lalu",
-      "sub": "Berapa yang dibayar dunia, dan jam berapa, minggu lalu. Kota dengan 3 bukti atau lebih.",
+      "sub": "Berapa yang dibayar dunia minggu lalu",
       "pricePaid": "Harga median yang dibayar",
       "share": "Bagikan",
-      "shareText": "Hilads Index: {{lines}}"
+      "shareText": "Hilads Index: {{lines}}",
+      "footnote": "Berdasarkan kota dengan 3 bukti atau lebih"
     }
   }
 }

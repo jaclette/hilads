@@ -77,6 +77,7 @@ export function IndexCards({ source, refreshKey = 0 }: { source: 'today' | 'arch
                   <Text style={styles.value}>{value(card.kind, r.value)}</Text>
                 </View>
               ))}
+              <Text style={styles.foot}>{t('index.footnote')}</Text>
             </View>
           );
         })}
@@ -97,5 +98,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   label:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, marginBottom: 2 },
   line:   { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 28 },
   city:   { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  foot:   { fontSize: 11, fontWeight: '500', color: c.muted, marginTop: 4 },
   value:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.text, fontVariant: ['tabular-nums'] },
 });

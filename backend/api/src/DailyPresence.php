@@ -56,7 +56,8 @@ final class DailyPresence
                 SELECT DISTINCT dc.challenge_date::text
                 FROM daily_proofs p
                 JOIN daily_challenges dc ON dc.id = p.challenge_id
-                WHERE p.city_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                JOIN users u             ON u.id = p.user_id
+                WHERE p.city_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
                   AND dc.status = 'published' AND dc.challenge_date BETWEEN ?::date - " . self::STREAK_DAYS . " AND ?::date
             ");
             $stmt->execute([$cityId, $today, $today]);
@@ -69,8 +70,9 @@ final class DailyPresence
     {
         $row = Cache::remember('daily_cities_on_v1_' . $challengeId, self::CACHE_TTL, static function () use ($challengeId): array {
             $stmt = Database::pdo()->prepare("
-                SELECT count(DISTINCT city_id) FROM daily_proofs
-                WHERE challenge_id = ? AND moderation_status = 'approved' AND city_id IS NOT NULL AND NOT is_seed AND NOT is_demo
+                SELECT count(DISTINCT p.city_id) FROM daily_proofs p JOIN users u ON u.id = p.user_id
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.city_id IS NOT NULL
+                  AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
             ");
             $stmt->execute([$challengeId]);
             return ['n' => (int) $stmt->fetchColumn()];
@@ -109,9 +111,9 @@ final class DailyPresence
         }
         $statuses = $countPending ? "('approved', 'pending')" : "('approved')";
         $stmt = Database::pdo()->prepare("
-            SELECT 1 FROM daily_proofs
-            WHERE challenge_id = ? AND city_id = ? AND id <> ? AND moderation_status IN {$statuses}
-              AND NOT is_seed AND NOT is_demo
+            SELECT 1 FROM daily_proofs p JOIN users u ON u.id = p.user_id
+            WHERE p.challenge_id = ? AND p.city_id = ? AND p.id <> ? AND p.moderation_status IN {$statuses}
+              AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
             LIMIT 1
         ");
         $stmt->execute([$proof['challenge_id'], $proof['city_id'], $proof['id']]);

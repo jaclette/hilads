@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "L'Hilads Index della settimana scorsa",
-      "sub": "Quanto ha pagato il mondo, e a che ora, la settimana scorsa. Città con 3 prove o più.",
+      "sub": "Quanto ha pagato il mondo la settimana scorsa",
       "pricePaid": "Prezzo mediano pagato",
       "share": "Condividi",
-      "shareText": "L'Hilads Index: {{lines}}"
+      "shareText": "L'Hilads Index: {{lines}}",
+      "footnote": "Basato sulle città con 3 prove o più"
     }
   }
 }

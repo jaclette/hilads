@@ -60,9 +60,9 @@ export default function TodayScreen() {
         <TodayWeek today={daily.data} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TodayTour today={daily.data} refreshKey={refreshKey} />
+        <TodayProofs today={daily.data} refreshKey={refreshKey} />
         {/* The Hilads Index (SPEC 10.9): last week's cards, on Mondays. */}
         {isMonday(daily.data?.challenge?.date) && <IndexCards source="today" refreshKey={refreshKey} />}
-        <TodayProofs today={daily.data} refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />

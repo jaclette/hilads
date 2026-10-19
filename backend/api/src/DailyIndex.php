@@ -72,8 +72,9 @@ final class DailyIndex
             FROM daily_challenges dc
             JOIN daily_proofs p ON p.challenge_id = dc.id
             JOIN channels ch    ON ch.id = p.city_id
+            JOIN users u        ON u.id = p.user_id
             WHERE dc.status = 'published' AND dc.challenge_date BETWEEN ? AND ?
-              AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+              AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
             ORDER BY dc.challenge_date
         ");
         $stmt->execute([$weekStart, $weekEnd]);

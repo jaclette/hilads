@@ -134,8 +134,10 @@ final class DailyBoard
                        p.answer_text, p.answer_number, p.answer_minutes, p.price_amount, p.price_currency
                 FROM daily_proofs p
                 JOIN channels ch    ON ch.id = p.city_id
+                JOIN users u        ON u.id = p.user_id
                 LEFT JOIN cities cc ON cc.channel_id = p.city_id
-                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                -- Demo and seed proofs never count, nor any proof of a demo account (a second guard).
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
             ");
             $stmt->execute([$challengeId]);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

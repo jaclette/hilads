@@ -17352,3 +17352,7 @@ body.has-app-promo-banner .page-header {
 .index-line { display: flex; align-items: center; gap: 8px; min-height: 28px; }
 .index-city { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .index-value { font-size: 14px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.proof-strip-cityrow { display: flex; flex-wrap: wrap; align-items: center; column-gap: 3px; min-width: 0; }
+.proof-strip-answer { min-width: 0; font-size: 13px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.proof-strip-pending { position: absolute; left: 6px; bottom: 6px; }
+.index-foot { margin-top: 4px; font-size: 11px; font-weight: 500; color: var(--muted); }

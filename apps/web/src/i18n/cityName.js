@@ -14,32 +14,20 @@ export function localizeCityName(name) {
   return i18n.t(citySlug(name), { ns: 'cityNames', defaultValue: name })
 }
 
-// Short names for cities known by one (Saigon, Rio, CDMX), used where space is
-// tight so a flag doesn't push the name into truncation. Latin-script locales
-// use the common short form; a non-Latin locale only gets one listed for it,
-// else its localized full name.
+// Short names for cities known worldwide by one (Saigon, Rio), used where space
+// is tight so a flag doesn't push the name into truncation. Never a local
+// abbreviation (CDMX, LA, KL...): a short name must read the same everywhere.
+// Latin-script locales use the common short form; a non-Latin locale only gets
+// one listed for it, else its localized full name.
 const SHORT_NAMES = {
   'ho-chi-minh-city':   { '*': 'Saigon', vi: 'Sài Gòn' },
   'saint-petersburg':   { '*': 'St. Petersburg', ru: 'Петербург' },
   'rio-de-janeiro':     { '*': 'Rio' },
-  'mexico-city':        { '*': 'CDMX' },
-  'los-angeles':        { '*': 'LA' },
-  'san-francisco':      { '*': 'SF' },
-  'kuala-lumpur':       { '*': 'KL' },
-  'new-orleans':        { '*': 'NOLA' },
-  'philadelphia':       { '*': 'Philly' },
-  'indianapolis':       { '*': 'Indy' },
-  'oklahoma-city':      { '*': 'OKC' },
-  'salt-lake-city':     { '*': 'Salt Lake' },
-  'johannesburg':       { '*': 'Joburg' },
   'thiruvananthapuram': { '*': 'Trivandrum' },
   'guatemala-city':     { '*': 'Guatemala' },
   'quebec-city':        { '*': 'Québec' },
   'panama-city':        { '*': 'Panamá' },
   'kuwait-city':        { '*': 'Kuwait' },
-  'dar-es-salaam':      { '*': 'Dar' },
-  'addis-ababa':        { '*': 'Addis' },
-  'ouagadougou':        { '*': 'Ouaga' },
 }
 const NON_LATIN = new Set(['ar', 'hi', 'ja', 'ko', 'ru', 'th', 'zh-hans', 'zh-hant'])
 

@@ -101,9 +101,10 @@ final class DailyResults
     {
         $pdo  = Database::pdo();
         $stmt = $pdo->prepare("
-            SELECT id, user_id, city_id, vote_count, local_vote_count, approved_at
-            FROM daily_proofs
-            WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_demo
+            SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at
+            FROM daily_proofs p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT u.is_demo
         ");
         $stmt->execute([$challengeId]);
         DailyRules::forgetLiveCities();

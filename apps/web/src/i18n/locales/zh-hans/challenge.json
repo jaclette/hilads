@@ -1355,10 +1355,11 @@
     },
     "index": {
       "title": "上周的 Hilads Index",
-      "sub": "上周全世界花了多少钱、在几点。至少有 3 个证明的城市。",
+      "sub": "上周全世界花了多少钱",
       "pricePaid": "支付价格中位数",
       "share": "分享",
-      "shareText": "Hilads Index：{{lines}}"
+      "shareText": "Hilads Index：{{lines}}",
+      "footnote": "基于至少有 3 个证明的城市"
     }
   }
 }

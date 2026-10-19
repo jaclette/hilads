@@ -274,7 +274,7 @@ final class Spots
             FROM daily_proofs p
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN users u             ON u.id  = p.user_id
-            WHERE p.place_id = ? AND p.moderation_status = 'approved'
+            WHERE p.place_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
               AND NOT (p.user_id = ANY (string_to_array(?, ',')))
             ORDER BY p.vote_count DESC, dc.challenge_date DESC, p.id
             LIMIT ? OFFSET ?
@@ -295,7 +295,7 @@ final class Spots
             FROM daily_proofs p
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN users u             ON u.id  = p.user_id
-            WHERE p.place_id = ? AND p.moderation_status = 'approved' AND p.caption IS NOT NULL
+            WHERE p.place_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND p.caption IS NOT NULL
               AND NOT (p.user_id = ANY (string_to_array(?, ',')))
             ORDER BY dc.challenge_date DESC, p.approved_at DESC
             LIMIT ?
@@ -382,8 +382,9 @@ final class Spots
                    (array_agg(p.id        ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_proof_id,
                    (array_agg(cu.username ORDER BY p.vote_count DESC, p.approved_at DESC, p.id DESC))[1] AS cover_username
             FROM places pl
-            JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved'
-            JOIN users cu            ON cu.id = p.user_id
+            -- A spot exists only with a real approved proof (no seed or demo proof), and its cover is its most voted one.
+            JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+            JOIN users cu            ON cu.id = p.user_id AND NOT cu.is_demo
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             LEFT JOIN channels ch    ON ch.id = pl.city_id
             LEFT JOIN cities cc      ON cc.channel_id = pl.city_id
@@ -414,7 +415,7 @@ final class Spots
             FROM daily_proofs p
             JOIN daily_twists t ON t.challenge_id = p.challenge_id AND t.city_id = p.city_id
                                AND t.status = 'selected' AND t.moderation_status = 'approved'
-            WHERE p.place_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'
+            WHERE p.place_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
               AND t.dish_tags IS NOT NULL
         ");
         $twist->execute([$ids]);

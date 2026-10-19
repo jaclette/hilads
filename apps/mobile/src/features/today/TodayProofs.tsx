@@ -13,6 +13,8 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { representShare, type ShareContent } from '@/features/share/content';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { RankMedal } from '@/features/daily/RankMedal';
+import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
+import { answerText } from '@/features/compare/format';
 import type { DailyToday, DailyTodayProofs } from '@/types';
 import { Card, CityName, SectionTitle } from '@/ui';
 
@@ -47,7 +49,14 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!strip || strip.proofs.length === 0) return null;
+  // My own proof in review leads the strip, with its badge (only mine: others' never show before approval).
+  const mine = today?.myProof && today.myProof.status === 'pending'
+    && (strip?.scope === 'world' || today.myProof.city?.id === strip?.city?.id) ? today.myProof : null;
+  const items: StripProof[] = [
+    ...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []),
+    ...(strip?.proofs ?? []),
+  ];
+  if (!strip || items.length === 0) return null;
   const world = strip.scope === 'world';
   // Represent your city (SPEC 9.16), World scope: "12 cities are on today's board. Saigon isn't yet."
   // Never a zero count; my own pending proof counts for me.
@@ -71,7 +80,7 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
         </View>
       )}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
-        {strip.proofs.map(p => (
+        {items.map(p => (
           <StripItem key={p.id} proof={p} guestId={guestId} onPress={() => router.push(`/daily/today?proof=${p.id}` as never)} />
         ))}
       </ScrollView>
@@ -82,7 +91,7 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
 
 function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: string | null; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const state = useVoteState(proof.id, guestId);
   const city = proof.city?.name ? localizeCityName(proof.city.name) : '';
   const votes = t('today.votes', { count: state?.voteCount ?? proof.voteCount });
@@ -92,8 +101,15 @@ function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: st
       <View style={styles.photo}>
         <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
         {proof.rank !== null && <RankMedal rank={proof.rank} size={24} style={styles.rank} />}
+        {proof.status === 'pending' && <View style={styles.pending}><DailyStatusChip status="pending" /></View>}
       </View>
-      {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
+      {/* The city, and the answer to the day's question next to it (SPEC 10.2). */}
+      {!!proof.city?.name && (
+        <View style={styles.cityRow}>
+          <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />
+          {proof.answer && <Text style={styles.answer} numberOfLines={2}>{`· ${answerText(proof.answer, i18n.language)}`}</Text>}
+        </View>
+      )}
       <Text style={styles.votes} numberOfLines={1}>{votes}</Text>
     </TouchableOpacity>
   );
@@ -106,7 +122,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   item:  { width: 112, gap: 2 },
   photo: { width: 112, height: 140, marginBottom: 4, borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg3 },
   rank:  { position: 'absolute', top: 6, left: 6, borderWidth: 2, borderColor: c.bg2 },
-  city:  { fontSize: 13, fontWeight: '700', color: c.text },
+  city:  { fontSize: 13, fontWeight: '700', color: c.text, flexShrink: 0, maxWidth: '100%' },
+  cityRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 3 },
+  answer: { fontSize: 13, fontWeight: '800', color: c.text },
+  pending: { position: 'absolute', left: 6, bottom: 6 },
   votes: { fontSize: 12, fontWeight: '500', color: c.muted },
   board: { gap: 4, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
   boardText: { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.primaryOnTint },

@@ -582,9 +582,10 @@
   },
   "index": {
     "title": "Ang Hilads Index noong nakaraang linggo",
-    "sub": "Magkano ang ibinayad ng mundo, at anong oras, noong nakaraang linggo. Mga lungsod na may 3 proof o higit pa.",
+    "sub": "Magkano ang ibinayad ng mundo noong nakaraang linggo",
     "pricePaid": "Median na presyong ibinayad",
     "share": "Ibahagi",
-    "shareText": "Ang Hilads Index: {{lines}}"
+    "shareText": "Ang Hilads Index: {{lines}}",
+    "footnote": "Batay sa mga lungsod na may 3 proof o higit pa"
   }
 }

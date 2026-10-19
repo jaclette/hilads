@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "O Hilads Index da semana passada",
-      "sub": "O que o mundo pagou, e a que horas, na semana passada. Cidades com 3 provas ou mais.",
+      "sub": "O que o mundo pagou na semana passada",
       "pricePaid": "Preço mediano pago",
       "share": "Partilhar",
-      "shareText": "O Hilads Index: {{lines}}"
+      "shareText": "O Hilads Index: {{lines}}",
+      "footnote": "Com base em cidades com 3 provas ou mais"
     }
   }
 }

@@ -1355,10 +1355,11 @@
     },
     "index": {
       "title": "Hilads Index tuần trước",
-      "sub": "Cả thế giới đã trả bao nhiêu, và lúc mấy giờ, tuần trước. Các thành phố có từ 3 bằng chứng.",
+      "sub": "Cả thế giới đã trả bao nhiêu tuần trước",
       "pricePaid": "Giá trung vị đã trả",
       "share": "Chia sẻ",
-      "shareText": "Hilads Index: {{lines}}"
+      "shareText": "Hilads Index: {{lines}}",
+      "footnote": "Dựa trên các thành phố có từ 3 bằng chứng"
     }
   }
 }

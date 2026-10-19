@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "De Hilads Index van vorige week",
-      "sub": "Wat de wereld vorige week betaalde, en hoe laat. Steden met 3 bewijzen of meer.",
+      "sub": "Wat de wereld vorige week betaalde",
       "pricePaid": "Mediane betaalde prijs",
       "share": "Delen",
-      "shareText": "De Hilads Index: {{lines}}"
+      "shareText": "De Hilads Index: {{lines}}",
+      "footnote": "Gebaseerd op steden met 3 bewijzen of meer"
     }
   }
 }

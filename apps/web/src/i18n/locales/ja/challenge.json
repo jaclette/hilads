@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "先週の Hilads Index",
-      "sub": "先週、世界がいくら払い、何時だったか。証明が3件以上の街。",
+      "sub": "先週、世界がいくら払ったか",
       "pricePaid": "支払額の中央値",
       "share": "シェア",
-      "shareText": "Hilads Index：{{lines}}"
+      "shareText": "Hilads Index：{{lines}}",
+      "footnote": "証明が3件以上の街に基づく"
     }
   }
 }

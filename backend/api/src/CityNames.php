@@ -24,36 +24,6 @@ final class CityNames
         "rio-de-janeiro" => [
             "*" => 'Rio',
         ],
-        "mexico-city" => [
-            "*" => 'CDMX',
-        ],
-        "los-angeles" => [
-            "*" => 'LA',
-        ],
-        "san-francisco" => [
-            "*" => 'SF',
-        ],
-        "kuala-lumpur" => [
-            "*" => 'KL',
-        ],
-        "new-orleans" => [
-            "*" => 'NOLA',
-        ],
-        "philadelphia" => [
-            "*" => 'Philly',
-        ],
-        "indianapolis" => [
-            "*" => 'Indy',
-        ],
-        "oklahoma-city" => [
-            "*" => 'OKC',
-        ],
-        "salt-lake-city" => [
-            "*" => 'Salt Lake',
-        ],
-        "johannesburg" => [
-            "*" => 'Joburg',
-        ],
         "thiruvananthapuram" => [
             "*" => 'Trivandrum',
         ],
@@ -68,15 +38,6 @@ final class CityNames
         ],
         "kuwait-city" => [
             "*" => 'Kuwait',
-        ],
-        "dar-es-salaam" => [
-            "*" => 'Dar',
-        ],
-        "addis-ababa" => [
-            "*" => 'Addis',
-        ],
-        "ouagadougou" => [
-            "*" => 'Ouaga',
         ],
     ];
 

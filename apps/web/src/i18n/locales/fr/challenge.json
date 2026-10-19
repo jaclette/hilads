@@ -1357,10 +1357,11 @@
     },
     "index": {
       "title": "Le Hilads Index de la semaine dernière",
-      "sub": "Ce que le monde a payé, et à quelle heure, la semaine dernière. Villes avec 3 preuves ou plus.",
+      "sub": "Ce que le monde a payé la semaine dernière",
       "pricePaid": "Prix médian payé",
       "share": "Partager",
-      "shareText": "Le Hilads Index : {{lines}}"
+      "shareText": "Le Hilads Index : {{lines}}",
+      "footnote": "Basé sur les villes avec 3 preuves ou plus"
     }
   }
 }

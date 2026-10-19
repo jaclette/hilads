@@ -71,6 +71,7 @@ export default function IndexCards({ source }) {
                   <span className="index-value">{value(card.kind, r.value)}</span>
                 </div>
               ))}
+              <span className="index-foot">{t('index.footnote')}</span>
             </div>
           )
         })}

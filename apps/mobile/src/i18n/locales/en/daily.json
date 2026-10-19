@@ -582,9 +582,10 @@
   },
   "index": {
     "title": "Last week's Hilads Index",
-    "sub": "What the world paid, and when, last week. Cities with 3 proofs or more.",
+    "sub": "What the world paid last week",
     "pricePaid": "Median price paid",
     "share": "Share",
-    "shareText": "The Hilads Index: {{lines}}"
+    "shareText": "The Hilads Index: {{lines}}",
+    "footnote": "Based on cities with 3 proofs or more"
   }
 }

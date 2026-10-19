@@ -64,9 +64,9 @@ export default function TodayScreen({ header }) {
         <Week today={data} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TourRow today={data} />
+        <TodayProofs today={data} />
         {/* The Hilads Index (SPEC 10.9): last week's cards, on Mondays. */}
         {data?.challenge?.date && new Date(`${data.challenge.date}T00:00:00Z`).getUTCDay() === 1 && <IndexCards source="today" />}
-        <TodayProofs today={data} />
         <SpotsNear />
       </div>
     </div>
@@ -417,7 +417,11 @@ function TodayProofs({ today }) {
     return () => { alive = false }
   }, [date, cityNum, i18n.language])
 
-  if (!strip || strip.proofs.length === 0) return null
+  // My own proof in review leads the strip, with its badge (only mine: others' never show before approval).
+  const mine = today?.myProof?.status === 'pending'
+    && (strip?.scope === 'world' || today.myProof.city?.id === strip?.city?.id) ? today.myProof : null
+  const items = [...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []), ...(strip?.proofs ?? [])]
+  if (!strip || items.length === 0) return null
   const world = strip.scope === 'world'
   const proofs = t('today.proofs', { count: strip.total })
   // Represent your city (SPEC 9.16), World scope: never a zero count; my own pending proof counts for me.
@@ -440,7 +444,7 @@ function TodayProofs({ today }) {
         </div>
       )}
       <div className="proof-strip">
-        {strip.proofs.map(p => (
+        {items.map(p => (
           <StripProof key={p.id} proof={p} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />
         ))}
       </div>
@@ -449,7 +453,7 @@ function TodayProofs({ today }) {
 }
 
 function StripProof({ proof, onOpen }) {
-  const { t } = useDc()
+  const { t, i18n } = useDc()
   const voteCount = useVoteCount(proof)
   const city = proof.city ? localizeCityName(proof.city.name ?? '') : ''
   const votes = t('today.votes', { count: voteCount })
@@ -459,8 +463,15 @@ function StripProof({ proof, onOpen }) {
       <span className="proof-strip-photo">
         <img src={proof.thumbUrl || proof.photoUrl} alt="" loading="lazy" />
         {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
+        {proof.status === 'pending' && <span className="proof-strip-pending"><StatusChip status="pending" /></span>}
       </span>
-      {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
+      {/* The city, and the answer to the day's question next to it (SPEC 10.2). */}
+      {proof.city?.name && (
+        <span className="proof-strip-cityrow">
+          <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />
+          {proof.answer && <span className="proof-strip-answer">· {answerText(proof.answer, i18n.language)}</span>}
+        </span>
+      )}
       <span className="dc-muted proof-strip-votes">{votes}</span>
     </button>
   )

@@ -578,9 +578,10 @@
   },
   "index": {
     "title": "지난주 Hilads Index",
-    "sub": "지난주 전 세계가 얼마를, 몇 시에 썼는지. 인증 3개 이상인 도시.",
+    "sub": "지난주 전 세계가 낸 가격",
     "pricePaid": "지불 가격 중앙값",
     "share": "공유",
-    "shareText": "Hilads Index: {{lines}}"
+    "shareText": "Hilads Index: {{lines}}",
+    "footnote": "인증 3개 이상인 도시 기준"
   }
 }
