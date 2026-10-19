@@ -245,111 +245,68 @@ function Ticket({ data, loading }) {
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
 
+  // The hero's photo (SPEC 9.3): the day's most voted answer in my scope (the city, else the
+  // world), with its credit; before any answer, the challenge's or the theme's cover.
+  const hero = (scope === 'city' ? data.heroCover?.city : null) ?? data.heroCover?.world ?? null
+  const photo = hero ? hero.photoUrl : cover
+  const heroCredit = hero
+    ? [hero.suggestion && hero.credit ? hero.credit : hero.username ? `@${hero.username}` : null,
+       hero.city?.name ? shortCityName(hero.city.name) : null].filter(Boolean).join(' · ')
+    : null
+  const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text)
+  // Nobody has answered for my city yet: "Be Saigon's first answer".
+  const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
+    : presence && !presence.represented ? tc('represent.beFirst', { city: cityShort })
+    : t('ctaAnswer', { city: cityShort })
+
   return (
-    <div className="today-ticket dc-clickable" role="button" tabIndex={0} onClick={() => { hideTip(); open() }} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
+    <div className="today-hero dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
          aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
-      {/* Image band (SPEC 9.3): the challenge's cover, else its theme's; decorative. */}
-      <div className="today-cover">
-        {cover && <img src={cover} alt="" />}
-        <div className="today-cover-row">
-          <span className="today-cover-label">
-            <span className="today-cover-kicker">{DAILY_CHALLENGE}</span>
-            {theme && <span className="today-cover-theme"><Icon name={themeIcon(theme, challenge.special)} size={22} />{themeLabel}</span>}
-          </span>
-          {secondsLeft !== null && (
-            <span className="today-cover-time" style={ROW}><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>
-          )}
-        </div>
+      {photo && <img className="today-hero-photo" src={photo} alt="" />}
+      <div className="today-hero-top">
+        <span className="today-hero-chip">{theme && <Icon name={themeIcon(theme, challenge.special)} size={15} />}{DAILY_CHALLENGE}{themeLabel ? ` · ${themeLabel}` : ''}</span>
+        <span className="today-hero-topright">
+          {secondsLeft !== null && <span className="today-hero-chip"><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>}
+          {heroCredit && <span className="today-hero-credit">📸 {heroCredit}</span>}
+        </span>
       </div>
-      <div className="today-top">
-        <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
-        {/* The comparison question and the world's answers, one block (SPEC 10.2, 10.6): from 2
-            countries it opens the Compare tab, before the sheet's World tab. Without a question it
-            stays: flags, "Already 5 countries answered", the World tab. */}
-        <div className="today-world-wrap">
-          <button type="button" className="today-world" ref={setWorldEl} onClick={(e) => {
-            e.stopPropagation()
-            hideTip()
-            const toCompare = compared && !!challenge.compare
-            if (toCompare) track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
-            openDaily('challenge', toCompare ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
-          }}>
-            <span className="today-world-kicker"><LiveDot live={motion.live} />{suggested ? t('compare.picksTitle') : t('compare.worldAnswers')}</span>
-            {challenge.compare && (
-              <span className="today-world-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</span>
-            )}
-            {/* Answered: the world block is the focus now. */}
-            {myProof && <span className="today-world-mine">{t('compare.youAnswered')}</span>}
-            <span className="today-world-line">
-              {compared && !challenge.compare ? (
-                <WorldTicker entries={[]} flags={world.flags ?? []} live={false} reduced
-                             staticLine={t('compare.answeredRow', { count: world.countries })} />
-              ) : compared ? (
-                <WorldTicker entries={ticker} flags={world.flags ?? world.answers.map(a => a.city.country)} live={motion.live} reduced={motion.reduced}
-                             staticLine={[t('compare.nCountries', { count: world.countries }), ...answers].join(' · ')} />
-              ) : <span className="today-world-answers">{t('compare.firstIn')}</span>}
-              <span className="today-world-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={16} /></span>
-            </span>
-          </button>
-          {/* Once per browser: what the block does. Any tap or 6 seconds closes it. */}
-          {tip && <button type="button" className="today-world-tip" onClick={(e) => { e.stopPropagation(); hideTip() }}>{t('compare.tip')}</button>}
-        </div>
-        <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onClick={toggleOriginal} />
-        {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
-        {earlyUntil && <span className="today-early">{t('today.early', { time: timeOf(earlyUntil) })}</span>}
-      </div>
-      <div className="today-perforation" aria-hidden="true" />
-      <div className="today-bottom">
-        {twist && (
-          <div className="today-twist">
-            <span className="today-twist-label"><CityFlag country={city?.country} />{t('twistIn', { city: shortCityName(city?.name ?? '') })}</span>
-            <span className="today-twist-text">{showOriginal && twist.originalText ? twist.originalText : twist.text}</span>
-          </div>
-        )}
-        {emptyCity && (
-          <span className="today-empty-city"><CityFlag country={here?.country} size={18} />{tc('represent.empty', { city: cityShort })}</span>
-        )}
-        {emptyThere && (
-          <span className="today-empty-city"><CityFlag country={city?.country} size={18} />{tc('represent.emptyThere', { city: shortCityName(city.name) })}</span>
-        )}
-        {!myProof && (
-          <span className="today-hint">
-            <span className="today-hint-icon"><Icon name="camera-outline" size={20} /></span>
-            <span className="today-hint-body">
-              <span className="today-hint-title">{t('proofHint.title')}</span>
-              <span>{isPlaceTheme(theme) ? t('proofHint.place') : t('proofHint.noPlace')}</span>
-            </span>
-          </span>
-        )}
+      <div className="today-hero-bottom">
+        <p className="today-hero-headline">{headline}</p>
+        {/* The world line: flags, the latest answers, "See answers" (the Compare tab). */}
+        <button type="button" className="today-hero-world" ref={setWorldEl} onClick={(e) => {
+          e.stopPropagation()
+          openDaily('challenge', challenge.compare ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
+        }}>
+          <LiveDot live={motion.live} />
+          {compared ? (
+            <WorldTicker entries={ticker} flags={world.flags ?? world.answers.map(a => a.city.country)} live={motion.live} reduced={motion.reduced}
+                         staticLine={[t('compare.nCountries', { count: world.countries }), ...answers].join(' · ')} />
+          ) : <span className="today-hero-first">{t('compare.firstIn')}</span>}
+          <span className="today-hero-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={15} /></span>
+        </button>
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <StatusChip status={myProof.status} />}
-            {/* Posted: no pulse; the button opens my proof. */}
             <button type="button" className="today-cta today-cta--taken"
                     onClick={(e) => { e.stopPropagation(); openDaily('challenge', { date: 'today', proofId: myProof.id }) }}>
               <Icon name="checkmark-circle-outline" size={20} />{t('ctaTaken')}
             </button>
           </>
         ) : (
-          // The card's only orange element, pulsing (CSS; paused off screen and
-          // in a hidden tab; none with reduced motion). The web opens the store.
+          // Solid primary, pulsing (paused off screen, in a hidden tab, with reduced motion). The web opens the store.
           <span ref={setPulseEl} className={`today-cta-pulse${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
             <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
-              <Icon name="camera-outline" size={20} />{cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')}
+              <Icon name="camera-outline" size={20} />{ctaLabel}
             </a>
           </span>
         )}
         {!myProof && here?.source === 'ip' && !!cityShort && (
-          <button type="button" className="today-not-here" onClick={changeHere} disabled={locating}>
+          <button type="button" className="today-not-here today-not-here--hero" onClick={changeHere} disabled={locating}>
             {tc('represent.notIn', { city: cityShort })} <span className="today-not-here-link">{tc('represent.change')}</span>
           </button>
         )}
-        {locateFailed && <span className="today-not-here today-not-here--error">{tc('represent.locationNeeded')}</span>}
-        {cityStreak > 0 && (
-          <span className="today-city-streak" style={ROW}><Icon name="flame-outline" size={16} />{tc('represent.streak', { count: cityStreak, city: cityShort })}</span>
-        )}
-        {challenge.isActive && <ChallengeFriend challenge={challenge} representCity={emptyCity ? cityShort : null} />}
+        {locateFailed && <span className="today-not-here today-not-here--hero">{tc('represent.locationNeeded')}</span>}
       </div>
     </div>
   )

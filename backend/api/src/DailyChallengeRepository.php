@@ -564,6 +564,8 @@ final class DailyChallengeRepository
             'id'       => $row['id'],
             'date'     => $date,
             'text'     => $tText ?? $enText,
+            // The Today hero's short headline (SPEC 9.3) in the viewer's language, else English; null = show the text.
+            'headline' => self::headline($row['headline_i18n'] ?? null, $locale),
             'context'  => $isTranslated ? ($tCtx ?? $enCtx) : $enCtx,
             'original' => $isTranslated ? ['text' => $enText, 'context' => $enCtx] : null,
             'lang'     => $isTranslated ? $locale : null,
@@ -580,6 +582,12 @@ final class DailyChallengeRepository
             // SPEC 10.2: the comparison question {type, question, unit, original, maxLength}, or null.
             'compare'  => DailyCompare::payload($row, $locale),
         ];
+    }
+
+    private static function headline(mixed $json, string $locale): ?string
+    {
+        $all = is_string($json) ? (json_decode($json, true) ?: []) : [];
+        return ($all[$locale] ?? null) ?: (($all['en'] ?? null) ?: null);
     }
 
     /** @var array<string, ?array> challenge id => credit, per request */

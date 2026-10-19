@@ -60,11 +60,13 @@ export function LiveDot({ live }: { live: boolean }) {
  * dimmed. A city that newly answered (a refresh) joins the stack with a small
  * bounce and comes next. Static with reduce motion: the first three answers.
  */
-export function WorldTicker({ entries, flags, live, reduced, staticLine }: {
+export function WorldTicker({ entries, flags, live, reduced, staticLine, onDark = false }: {
   entries: TickerEntry[];
   flags: string[];
   live: boolean;
   reduced: boolean;
+  /** On a photo (the Today hero): white text with a soft shadow. */
+  onDark?: boolean;
   /** Reduce motion: "5 countries · Salud! · Prost! · Kanpai!" */
   staticLine: string;
 }) {
@@ -123,14 +125,14 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine }: {
       </View>
       <View style={styles.lineBox}>
         {showTicker ? (
-          <Animated.Text key={`${current!.cityId}:${index}`} numberOfLines={1} style={[styles.line, {
+          <Animated.Text key={`${current!.cityId}:${index}`} numberOfLines={1} style={[styles.line, onDark && styles.onDarkMuted, {
             opacity: slide,
             transform: [{ translateY: slide.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }],
           }]}>
-            <Text style={styles.city}>{shortCityName(current!.city)}</Text>{` · ${current!.answer}`}
+            <Text style={[styles.city, onDark && styles.onDark]}>{shortCityName(current!.city)}</Text>{` · ${current!.answer}`}
           </Animated.Text>
         ) : (
-          <Text style={styles.line} numberOfLines={1}>{staticLine}</Text>
+          <Text style={[styles.line, onDark && styles.onDarkMuted]} numberOfLines={1}>{staticLine}</Text>
         )}
       </View>
     </View>
@@ -149,4 +151,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   lineBox:     { flex: 1, minWidth: 0, height: 20, justifyContent: 'center', overflow: 'hidden' },
   line:        { fontSize: 13, fontWeight: '600', color: c.muted },
   city:        { fontSize: 13, fontWeight: '800', color: c.text },
+  onDark:      { color: '#FFFFFF', textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
+  onDarkMuted: { color: 'rgba(255,255,255,0.92)', textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
 });

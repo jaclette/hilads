@@ -495,6 +495,7 @@
   },
   "represent": {
     "empty": "{{city}} chưa trả lời hôm nay. Hãy là người đầu tiên.",
+    "beFirst": "Hãy là câu trả lời đầu tiên của {{city}}",
     "emptyThere": "{{city}} chưa trả lời hôm nay.",
     "notIn": "Không ở {{city}}?",
     "change": "Đổi",

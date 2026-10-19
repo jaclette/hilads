@@ -225,6 +225,7 @@
   },
   "represent": {
     "empty": "لم تُجب {{city}} اليوم بعد. كن الأول.",
+    "beFirst": "كن أول إجابة من {{city}}",
     "emptyThere": "لم تُجب {{city}} اليوم بعد.",
     "notIn": "لست في {{city}}؟",
     "change": "غيّر",

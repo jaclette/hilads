@@ -23,6 +23,9 @@ import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Photo, Screen, Screen
 import { CompareBoard, SuggestionsWhenEmpty } from '@/features/compare/CompareBoard';
 import type { DailyProof } from '@/types';
 import { themeName } from '@/features/daily/themes';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { todayShare, type ShareContent } from '@/features/share/content';
+import { isPlaceTheme } from '@/features/daily/themes';
 
 /**
  * Daily Challenge sheet (/daily/today or /daily/YYYY-MM-DD). Challenge,
@@ -118,6 +121,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
   const isLive = !!sheet?.city?.isLive;
   const cityName = sheet?.city?.name ? shortCityName(sheet.city.name) : '';
   const here = useHere();   // "Answer for [city]": where I am, not the browsed city
+  const [inviteShare, setInviteShare] = useState<ShareContent | null>(null);
   const challenge = sheet?.challenge ?? null;
   const myProof = sheet?.myProof ?? null;
 
@@ -176,6 +180,10 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
           {!!challenge.context && (
             <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>
           )}
+          {/* The full question (moved here from the Today hero, SPEC 9.3). */}
+          {!!challenge.compare && (
+            <Text style={styles.question}>{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</Text>
+          )}
           <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
           {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
 
@@ -220,9 +228,25 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
               </View>
             </View>
           ) : challenge.isActive && (
-            <Button icon="camera-outline" label={here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')} onPress={onCta} />
+            <>
+              {/* The photo rule, next to the answer step (moved from the Today hero). */}
+              <View style={styles.photoRule}>
+                <Ionicons name="camera-outline" size={18} color={colors.primaryText} />
+                <Text style={styles.photoRuleText}>
+                  <Text style={styles.photoRuleTitle}>{t('proofHint.title')}</Text>{'  '}
+                  {isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}
+                </Text>
+              </View>
+              <Button icon="camera-outline" label={here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')} onPress={onCta} />
+            </>
+          )}
+          {/* After answering: share the challenge (moved from the Today hero). */}
+          {myProof && challenge.isActive && (
+            <Button variant="link" icon="paper-plane-outline" label={t('share.challengeFriend')}
+                    onPress={() => setInviteShare(todayShare(challenge, here ?? sheet.city ?? null))} />
           )}
         </Card>
+        <ShareSheet content={inviteShare} source="sheet_after_answer" onClose={() => setInviteShare(null)} />
 
         {(priceRange || places.length > 0) && (
           <Card style={styles.practical}>
@@ -339,6 +363,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 26 },
   theme:        { alignSelf: 'flex-start' },
   context:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
+  question:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
+  photoRule:    { flexDirection: 'row', alignItems: 'flex-start', gap: 8, padding: 10, borderRadius: 12, backgroundColor: c.primaryTint },
+  photoRuleText: { flex: 1, fontSize: FontSizes.sm, color: c.text, lineHeight: 19 },
+  photoRuleTitle: { fontWeight: '800' },
   twist:        { backgroundColor: c.primaryTint, borderRadius: Radius.button, padding: 12, gap: 6 },
   twistHead:    { flexDirection: 'row', alignItems: 'center', gap: 6 },
   twistLabel:   { fontSize: 12, fontWeight: '800', color: c.primaryOnTint },

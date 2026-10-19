@@ -225,6 +225,7 @@
   },
   "represent": {
     "empty": "{{city}} hat heute noch nicht geantwortet. Sei die erste Antwort.",
+    "beFirst": "Sei die erste Antwort aus {{city}}",
     "emptyThere": "{{city}} hat heute noch nicht geantwortet.",
     "notIn": "Nicht in {{city}}?",
     "change": "Ändern",

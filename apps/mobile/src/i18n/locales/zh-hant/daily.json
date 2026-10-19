@@ -495,6 +495,7 @@
   },
   "represent": {
     "empty": "{{city}}今天還沒有回答。來當第一個吧。",
+    "beFirst": "成為{{city}}的第一個回答",
     "emptyThere": "{{city}}今天還沒有回答。",
     "notIn": "不在{{city}}？",
     "change": "更改",

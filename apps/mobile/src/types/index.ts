@@ -768,6 +768,8 @@ export interface DailyChallenge {
   id:       string;
   date:     string;          // YYYY-MM-DD, the UTC date of its drop
   text:     string;
+  /** The Today hero's short headline (45 characters), localized; null = show the text. */
+  headline?: string | null;
   context:  string | null;
   /** Set when text/context are the founder's translation in the viewer's language. */
   original?: { text: string; context: string | null } | null;
@@ -943,6 +945,17 @@ export interface DailyProof {
   createdAt:        number | null;
 }
 
+/** The Today hero's photo: the day's most voted answer (SPEC 9.3). */
+export interface DailyHeroCover {
+  proofId:    string;
+  photoUrl:   string;
+  thumbUrl:   string | null;
+  username:   string | null;
+  city:       { name: string | null; country: string | null } | null;
+  suggestion: boolean;
+  credit:     string | null;
+}
+
 export interface DailyToday {
   challenge:   DailyChallenge | null;
   nextDropAt:  number;
@@ -979,6 +992,8 @@ export interface DailyToday {
   early?: { startsAt: number; until: number } | null;
   /** SPEC 10.6: the live world teaser once a city answered ("Already 5 countries answered: ..." from 2 countries, else "First answers coming in"). /daily/today only. */
   world?: DailyWorldTeaser | null;
+  /** The hero's photo in my city and in the world (the card picks by scope); null before any answer. */
+  heroCover?: { city: DailyHeroCover | null; world: DailyHeroCover | null } | null;
 }
 
 export interface DailyCityRef { id: number; name: string; country: string | null }

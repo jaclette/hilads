@@ -4,7 +4,7 @@ import { fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToda
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag, CityName } from '../CityName'
 import { track } from '../../lib/analytics'
-import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
+import { APP_STORE, PLAY_STORE, deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
   RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer, useHere,
@@ -163,6 +163,8 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
               {challenge.theme && <span className="today-chip dc-theme" style={ROW}><Icon name={themeIcon(challenge.theme.key, challenge.special)} size={14} />{themeName(challenge.theme.key, { special: challenge.special })}</span>}
               <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
               {challenge.context && <p className="dc-context">{showOriginal && challenge.original ? challenge.original.context : challenge.context}</p>}
+              {/* The full question (moved here from the Today hero, SPEC 9.3). */}
+              {challenge.compare && <p className="dc-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</p>}
               <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
               {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
 
@@ -190,10 +192,14 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
                   </div>
                 </div>
               ) : challenge.isActive && (
-                <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-                   onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })}>
-                  {here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
-                </a>
+                <>
+                  {/* The photo rule, next to the answer step (moved from the Today hero). */}
+                  <p className="dc-photo-rule"><Icon name="camera-outline" size={18} /><span><strong>{t('proofHint.title')}</strong> {isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}</span></p>
+                  <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
+                     onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })}>
+                    {here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
+                  </a>
+                </>
               )}
             </div>
 

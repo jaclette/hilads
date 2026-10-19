@@ -496,6 +496,7 @@
   },
   "represent": {
     "empty": "{{city}}は今日まだ答えていません。最初の一人になろう。",
+    "beFirst": "{{city}}の最初の答えになろう",
     "emptyThere": "{{city}}は今日まだ答えていません。",
     "notIn": "{{city}}にいない？",
     "change": "変更",

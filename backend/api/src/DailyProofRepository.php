@@ -377,6 +377,40 @@ final class DailyProofRepository
      * myVote comes from DailyVotes::annotate; the ranks exist once the
      * challenge closed (worldRank: top 3 only).
      */
+    /**
+     * The Today hero's photo (SPEC 9.3): the most voted approved answer of a
+     * challenge in a city (or the world when $cityId is null), ties to the
+     * most recent: {proofId, photoUrl, thumbUrl, username, city: {name,
+     * country}, suggestion, credit}, or null before any answer. Cached 30 s.
+     */
+    public static function heroCover(string $challengeId, ?string $cityId): ?array
+    {
+        return Cache::remember('daily_hero_cover_v1_' . $challengeId . '_' . ($cityId ?? 'world'), 30, static function () use ($challengeId, $cityId): array {
+            $stmt = Database::pdo()->prepare("
+                SELECT p.id, p.photo_url, p.photo_credit, p.is_suggestion, u.username, ch.name AS city_name, cc.country AS city_country
+                FROM daily_proofs p
+                JOIN users u          ON u.id = p.user_id AND NOT u.is_demo
+                LEFT JOIN channels ch ON ch.id = p.city_id
+                LEFT JOIN cities cc   ON cc.channel_id = p.city_id
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                  AND (?::text IS NULL OR p.city_id = ?)
+                ORDER BY p.vote_count DESC, p.approved_at DESC, p.id
+                LIMIT 1
+            ");
+            $stmt->execute([$challengeId, $cityId, $cityId]);
+            $r = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $r === false ? [] : [
+                'proofId'    => $r['id'],
+                'photoUrl'   => $r['photo_url'],
+                'thumbUrl'   => R2Uploader::thumbProxy($r['photo_url']),
+                'username'   => $r['username'],
+                'city'       => $r['city_name'] !== null ? ['name' => $r['city_name'], 'country' => $r['city_country']] : null,
+                'suggestion' => self::bool($r['is_suggestion'] ?? false),
+                'credit'     => self::bool($r['is_suggestion'] ?? false) ? $r['photo_credit'] : null,
+            ];
+        }) ?: null;
+    }
+
     public static function format(array $row, ?string $viewerId = null): array
     {
         $isMine = $viewerId !== null && $viewerId === $row['user_id'];

@@ -496,6 +496,7 @@
   },
   "represent": {
     "empty": "Hindi pa sumasagot ang {{city}} ngayon. Ikaw na ang mauna.",
+    "beFirst": "Maging unang sagot ng {{city}}",
     "emptyThere": "Hindi pa sumasagot ang {{city}} ngayon.",
     "notIn": "Wala ka sa {{city}}?",
     "change": "Palitan",

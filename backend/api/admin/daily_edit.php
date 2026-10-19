@@ -95,6 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
         'remove_twist' => daily_action(fn() => DailyAdminService::removeTwist((string) ($p['twist_id'] ?? '')),
             'Twist removed.', $self . '#twists'),
 
+        'save_headline' => daily_action(function () use ($p, $id) {
+            $tr = trim((string) ($p['headline_tr'] ?? '')) !== '' ? json_decode((string) $p['headline_tr'], true) : [];
+            if (!is_array($tr)) {
+                throw new InvalidArgumentException('Translations must be a JSON object: {"fr": "...", "vi": "..."}.');
+            }
+            DailyAdminService::setChallengeHeadline($id, (string) ($p['headline_en'] ?? ''), $tr);
+            return 'Headline saved.';
+        }, 'Headline saved.', $self . '#headline'),
+
         'save_translations' => daily_action(function () use ($p, $id) {
             $row  = DailyAdminService::setChallengeTranslations($id, (array) ($p['tr_text'] ?? []), (array) ($p['tr_context'] ?? []));
             $text = json_decode((string) $row['text_i18n'], true) ?: [];
@@ -238,6 +247,17 @@ daily_styles();
             <?php if (!$isNew):
                 $coverTheme = DailyThemes::format($theme, $date !== '' ? $date : DailyClock::currentDate())['key'] ?? 'traditions';
                 $coverUrl   = $challenge['cover_url'] ?? null; ?>
+                <?php $hl = json_decode((string) ($challenge['headline_i18n'] ?? ''), true) ?: []; $hlTr = array_diff_key($hl, ['en' => true]); ?>
+                <form method="POST" action="<?= dh($self) ?>" class="form-card" id="headline" style="margin-top:16px">
+                    <?= csrf_input() ?><input type="hidden" name="action" value="save_headline">
+                    <h3 style="margin-bottom:4px">Headline <span class="daily-muted">(Today hero, <?= DailyAdminService::HEADLINE_MAX ?> characters max, <?= count($hlTr) ?>/18 translated)</span></h3>
+                    <div class="form-group"><input type="text" name="headline_en" maxlength="<?= DailyAdminService::HEADLINE_MAX ?>" value="<?= dh($hl['en'] ?? '') ?>" placeholder="Find the oldest shop on your street.">
+                        <div class="hint">Empty: the hero shows the challenge text.</div></div>
+                    <div class="form-group"><label>Translations (optional JSON)</label>
+                        <textarea name="headline_tr" rows="3" style="font-family:monospace" placeholder='{"fr": "Trouve la plus vieille boutique de ta rue."}'><?= dh($hlTr ? json_encode($hlTr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '') ?></textarea></div>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Save headline</button></div>
+                </form>
+
                 <form method="POST" action="<?= dh($self) ?>" enctype="multipart/form-data" class="form-card" id="cover" style="margin-top:16px">
                     <?= csrf_input() ?>
                     <h3 style="margin-bottom:4px">Cover image</h3>

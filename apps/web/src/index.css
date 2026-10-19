@@ -17473,3 +17473,34 @@ body.has-app-promo-banner .page-header {
 .cmp-pick-photo { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .today-pick-answer { font-size: 13px; font-weight: 800; color: var(--primary-text); }
 .spot-card[role="button"] { cursor: pointer; }
+
+/* Today hero (SPEC 9.3): the photo fills the card (4:5, radius 24), gradients top and bottom,
+   white text with a soft shadow (4.5:1 over the gradient), the button in solid primary. */
+.today-hero { position: relative; aspect-ratio: 4 / 5; border-radius: 24px; overflow: hidden; background: var(--surface2);
+              display: flex; flex-direction: column; justify-content: space-between; color: #fff; cursor: pointer; }
+.today-hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.today-hero::before, .today-hero::after { content: ''; position: absolute; left: 0; right: 0; pointer-events: none; }
+.today-hero::before { top: 0; height: 32%; background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,0)); }
+.today-hero::after { bottom: 0; height: 68%; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.55) 40%, rgba(0,0,0,.88)); }
+.today-hero-top, .today-hero-bottom { position: relative; z-index: 1; }
+.today-hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 14px; }
+.today-hero-topright { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; min-width: 0; }
+.today-hero-chip { display: inline-flex; align-items: center; gap: 6px; min-width: 0; padding: 6px 10px; border-radius: 14px;
+                   background: rgba(0,0,0,.42); font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today-hero-credit { max-width: 200px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5);
+                     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today-hero-bottom { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.today-hero-headline { margin: 0; font-size: 24px; line-height: 29px; font-weight: 800; letter-spacing: -.3px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5);
+                       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.today-hero-world { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 0; border: 0; background: none; font: inherit; color: #fff; text-align: left; cursor: pointer; }
+.today-hero-world .world-ticker-line, .today-hero-first { color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.today-hero-world .world-ticker-line strong { color: #fff; }
+.today-hero-first { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today-hero-see { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 800; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); white-space: nowrap; }
+.today-hero .today-cta { background: var(--primary); color: #fff; }
+.today-not-here--hero { color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.today-not-here--hero .today-not-here-link { color: #fff; }
+.dc-question { margin: 4px 0 0; font-size: 16px; font-weight: 800; color: var(--text); }
+.dc-photo-rule { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0; padding: 10px 12px; border-radius: 12px;
+                 background: color-mix(in srgb, var(--primary) 12%, transparent); font-size: 14px; line-height: 1.4; color: var(--text); }
+.dc-photo-rule .icon { flex-shrink: 0; color: var(--primary-text); }

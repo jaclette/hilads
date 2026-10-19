@@ -135,6 +135,50 @@ final class DailyAdminService
         return $after;
     }
 
+    public const HEADLINE_MAX = 45;
+
+    /**
+     * The headline of a challenge as stored: en (required unless all empty)
+     * plus {locale: text} translations, each at most HEADLINE_MAX characters.
+     * Null when en is empty (the hero shows the challenge text). Throws.
+     */
+    public static function headlineJson(?string $en, array $translations, string $label = 'Headline'): ?string
+    {
+        $en = trim((string) preg_replace('/\s+/u', ' ', (string) $en));
+        if ($en === '') {
+            return null;
+        }
+        if (mb_strlen($en) > self::HEADLINE_MAX) {
+            throw new InvalidArgumentException("{$label} is longer than " . self::HEADLINE_MAX . " characters: \"{$en}\".");
+        }
+        $all = ['en' => $en];
+        foreach ($translations as $loc => $text) {
+            $loc  = DailyI18n::normalize((string) $loc);
+            $text = trim((string) preg_replace('/\s+/u', ' ', (string) $text));
+            if ($loc === 'en' || $text === '' || !in_array($loc, DailyI18n::LOCALES, true)) {
+                continue;
+            }
+            if (mb_strlen($text) > self::HEADLINE_MAX) {
+                throw new InvalidArgumentException("{$label} ({$loc}) is longer than " . self::HEADLINE_MAX . ' characters.');
+            }
+            $all[$loc] = $text;
+        }
+        return json_encode($all, JSON_UNESCAPED_UNICODE);
+    }
+
+    /** Back office: set (or clear, en empty) a challenge's headline. Audited. */
+    public static function setChallengeHeadline(string $id, ?string $en, array $translations): array
+    {
+        $before = self::mustFind($id);
+        $json   = self::headlineJson($en, $translations);
+        Database::pdo()->prepare("UPDATE daily_challenges SET headline_i18n = ?::jsonb, updated_at = now(), updated_by = ? WHERE id = ?")
+            ->execute([$json, self::actorName(), $id]);
+        $after = self::find($id);
+        self::forgetCachedDate($after['challenge_date']);
+        self::audit('daily_challenge.headline', 'daily_challenge', $id, ['headline_i18n' => $before['headline_i18n'] ?? null], ['headline_i18n' => $json]);
+        return $after;
+    }
+
     /** Save the hand-written translations of a twist ({locale: string}; empty removes). */
     public static function setTwistTranslations(string $twistId, array $text): array
     {
@@ -610,7 +654,19 @@ final class DailyAdminService
                 $twists[] = ['cityId' => $cityId, 'text' => $tText, 'credit' => $credit, 'translations' => $tTr];
             }
 
+            // The Today hero's headline (SPEC 9.3): {en, fr, ...}, 45 characters each, optional.
+            $headline = null;
+            if (isset($c['headline'])) {
+                try {
+                    $hl = is_array($c['headline']) ? $c['headline'] : ['en' => (string) $c['headline']];
+                    $headline = self::headlineJson((string) ($hl['en'] ?? ''), array_diff_key($hl, ['en' => true]), "{$label}: headline");
+                } catch (InvalidArgumentException $e) {
+                    $errors[] = $e->getMessage();
+                }
+            }
+
             $entries[] = [
+                'headline' => $headline,
                 'label'   => $label,
                 'date'    => $reserve ? null : $date,
                 'reserve' => $reserve,
@@ -827,6 +883,20 @@ final class DailyAdminService
                             VALUES (?, ?, ?, ?, ?::jsonb, ?, 'selected', 'approved', ?)
                         ")->execute([bin2hex(random_bytes(8)), $id, $t['cityId'], $t['text'], $tI18n ?? '{}', $t['credit'], self::actorName()]);
                     }
+                }
+            }
+
+            // Headlines last, on whatever row each entry maps to (published days too): the file wins.
+            foreach ($check['entries'] as $e) {
+                if ($e['headline'] === null) {
+                    continue;
+                }
+                $stmt = $e['reserve']
+                    ? $pdo->prepare("UPDATE daily_challenges SET headline_i18n = ?::jsonb WHERE is_reserve AND text_i18n->>'en' = ? AND headline_i18n IS DISTINCT FROM ?::jsonb")
+                    : $pdo->prepare("UPDATE daily_challenges SET headline_i18n = ?::jsonb WHERE challenge_date = ? AND headline_i18n IS DISTINCT FROM ?::jsonb");
+                $stmt->execute([$e['headline'], $e['reserve'] ? $e['text'] : $e['date'], $e['headline']]);
+                if ($stmt->rowCount() > 0) {
+                    $report[] = ['entry' => $e['label'], 'action' => 'headline_set', 'date' => $e['date'], 'headline' => json_decode($e['headline'], true)['en']];
                 }
             }
 

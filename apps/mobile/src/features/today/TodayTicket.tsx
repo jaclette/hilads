@@ -210,102 +210,68 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
     if (r?.queued) Alert.alert(t('howItWorks.laterDone'));
   };
 
+  // The hero's photo (SPEC 9.3): the day's most voted answer in my scope (the city, else the
+  // world), with its credit; before any answer, the challenge's or the theme's cover.
+  const hero = (scope === 'city' ? data?.heroCover?.city : null) ?? data?.heroCover?.world ?? null;
+  const photo = hero ? { uri: hero.photoUrl } : challenge.coverUrl ? { uri: challenge.coverUrl } : themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
+  const heroCredit = hero
+    ? [hero.suggestion && hero.credit ? hero.credit : hero.username ? `@${hero.username}` : null,
+       hero.city?.name ? shortCityName(hero.city.name) : null].filter(Boolean).join(' · ')
+    : null;
+  const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text);
+  // Nobody has answered for my city yet: "Be Saigon's first answer".
+  const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
+    : presence && !presence.represented ? t('represent.beFirst', { city: cityShort })
+    : t('ctaAnswer', { city: cityShort });
+
   return (
-    <TouchableOpacity style={styles.ticket} onPress={() => { hideTip(); openSheet(); }} activeOpacity={0.85} accessibilityRole="button"
-                      accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
-      <Cover coverUrl={challenge.coverUrl ?? null} themeKey={challenge.theme?.key ?? null} label={themeLabel}
-             special={challenge.special ?? null} date={challenge.date} secondsLeft={secondsLeft} />
-      <View style={styles.top}>
-        <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
-        {/* The comparison question and the world's answers, one block (SPEC 10.2, 10.6): from 2
-            countries it opens the Compare tab, before the sheet's World tab. Without a question it
-            stays: flags, "Already 5 countries answered", the World tab. */}
-        <View>
-          <Pressable style={({ pressed }) => [styles.world, pressed && styles.worldPressed]} accessibilityRole="button"
-                     onPress={() => { hideTip(); (compared && challenge.compare ? openCompare : openWorld)(); }}>
-            <View style={styles.worldKicker}>
-              <LiveDot live={motion.live} />
-              <Text style={styles.worldKickerText}>{suggested ? t('compare.picksTitle') : t('compare.worldAnswers')}</Text>
-            </View>
-            {challenge.compare && (
-              <Text style={styles.worldQuestion}>
-                {showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}
-              </Text>
-            )}
-            {/* Answered: the world block is the focus now. */}
-            {myProof && <Text style={styles.worldMine}>{t('compare.youAnswered')}</Text>}
-            <View style={styles.worldLine}>
-              {compared && !challenge.compare ? (
-                <WorldTicker entries={[]} flags={world!.flags ?? []} live={false} reduced
-                             staticLine={t('compare.answeredRow', { count: world!.countries })} />
-              ) : compared ? (
-                <WorldTicker entries={ticker} flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')}
-                             live={motion.live} reduced={motion.reduced}
-                             staticLine={[t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ')} />
-              ) : <Text style={styles.worldAnswers} numberOfLines={1}>{t('compare.firstIn')}</Text>}
-              <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
-            </View>
-          </Pressable>
-          {/* Once per device: what the block does. Any tap or 6 seconds closes it. */}
-          {tip && (
-            <Pressable style={styles.tip} onPress={hideTip} accessibilityRole="button">
-              <View style={styles.tipArrow} />
-              <Text style={styles.tipText}>{t('compare.tip')}</Text>
-            </Pressable>
-          )}
+    <View style={styles.hero}>
+      {/* The whole photo opens the challenge sheet (twist, full question, answers). */}
+      <Pressable style={StyleSheet.absoluteFill} onPress={openSheet} accessibilityRole="button"
+                 accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
+        {photo !== null && <Image source={photo} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
+        <LinearGradient colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']} style={styles.shadeTop} />
+        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)']} locations={[0, 0.4, 1]} style={styles.shadeBottom} />
+      </Pressable>
+
+      <View style={styles.heroTop} pointerEvents="box-none">
+        <View style={styles.chip}>
+          {challenge.theme && <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={15} color="#FFFFFF" />}
+          <Text style={styles.chipText} numberOfLines={1}>{DAILY_CHALLENGE}{themeLabel ? ` · ${themeLabel}` : ''}</Text>
         </View>
-        <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
-        {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} ink />}
-        {earlyUntil !== null && (
-          <Text style={styles.early}>
-            {t('today.early', { time: new Date(earlyUntil * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
-          </Text>
-        )}
+        <View style={styles.heroTopRight}>
+          {secondsLeft !== null && (
+            <View style={styles.chip}>
+              <Ionicons name="time-outline" size={14} color="#FFFFFF" />
+              <Text style={styles.chipText}>{t('timeLeft', { time: formatCountdown(secondsLeft) })}</Text>
+            </View>
+          )}
+          {!!heroCredit && <Text style={styles.credit} numberOfLines={1}>📸 {heroCredit}</Text>}
+        </View>
       </View>
 
-      <Perforation />
-
-      <View style={styles.bottom}>
-        {twist && (
-          <View style={styles.twist}>
-            <View style={styles.twistHead}>
-              <CityFlag country={city?.country} />
-              <Text style={styles.twistLabel}>{t('twistIn', { city: shortCityName(city?.name ?? '') })}</Text>
-            </View>
-            <Text style={styles.twistText}>{showOriginal && twist.originalText ? twist.originalText : twist.text}</Text>
-          </View>
-        )}
-        {emptyCity && (
-          <View style={styles.emptyCity} accessibilityRole="text">
-            <CityFlag country={here?.country} size={18} />
-            <Text style={styles.emptyCityText}>{t('represent.empty', { city: cityShort })}</Text>
-          </View>
-        )}
-        {emptyThere && (
-          <View style={styles.emptyCity} accessibilityRole="text">
-            <CityFlag country={city?.country} size={18} />
-            <Text style={styles.emptyCityText}>{t('represent.emptyThere', { city: shortCityName(city!.name!) })}</Text>
-          </View>
-        )}
-        {!myProof && (
-          <View style={styles.hint}>
-            <View style={styles.hintIcon}><Ionicons name="camera-outline" size={20} color={colors.primaryOnTint} /></View>
-            <View style={styles.hintBody}>
-              <Text style={styles.hintTitle}>{t('proofHint.title')}</Text>
-              <Text style={styles.hintText}>{placeTheme ? t('proofHint.place') : t('proofHint.noPlace')}</Text>
-            </View>
-          </View>
-        )}
+      <View style={styles.heroBottom} pointerEvents="box-none">
+        <Text style={styles.headline} numberOfLines={3}>{headline}</Text>
+        {/* The world line: flags, the latest answers, "See answers" (the Compare tab). */}
+        <Pressable style={styles.worldRow} onPress={() => (challenge.compare ? openCompare : openWorld)()} accessibilityRole="button" hitSlop={6}>
+          <LiveDot live={motion.live} />
+          {compared ? (
+            <WorldTicker entries={ticker} flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')}
+                         live={motion.live} reduced={motion.reduced} onDark
+                         staticLine={[t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ')} />
+          ) : <Text style={styles.worldFirst} numberOfLines={1}>{t('compare.firstIn')}</Text>}
+          <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
+          <Ionicons name="chevron-forward" size={15} color="#FFFFFF" />
+        </Pressable>
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <DailyStatusChip status={myProof.status} />}
-            {/* Posted: no pulse; the button opens my proof. */}
+            {/* Posted: no pulse; the button opens my answer. */}
             <Button variant="secondary" icon="checkmark-circle-outline" label={t('ctaTaken')} onPress={openMine} style={styles.cta} />
           </>
         ) : (
-          // The card's only orange element, pulsing; straight to the camera (SPEC 9.3).
-          <PulseButton label={cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
+          // Solid primary, pulsing; straight to the camera (SPEC 9.3).
+          <PulseButton label={ctaLabel} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
         {/* My city is an IP guess (a VPN gets it wrong): "Not in Saigon? Change" asks for the location. */}
@@ -314,29 +280,13 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
             <Text style={styles.notHereText}>
               {t('represent.notIn', { city: cityShort })} <Text style={styles.notHereLink}>{t('represent.change')}</Text>
             </Text>
-            {locating && <ActivityIndicator size="small" color={colors.muted} />}
-          </TouchableOpacity>
-        )}
-        {cityStreak > 0 && (
-          <View style={styles.streak}>
-            <Ionicons name="flame-outline" size={16} color={colors.primaryText} />
-            <Text style={styles.streakText}>{t('represent.streak', { count: cityStreak, city: cityShort })}</Text>
-          </View>
-        )}
-        {/* Challenge a friend (SPEC 9.14): hilads.live/today with the card; an empty city: "Help me represent Saigon". */}
-        {challenge.isActive && (
-          <TouchableOpacity style={styles.friend}
-                            onPress={() => setShare(emptyCity && here ? representShare(challenge, here) : todayShare(challenge, here ?? city ?? null))}
-                            accessibilityRole="button" accessibilityLabel={emptyCity ? t('represent.invite') : t('share.challengeFriend')}>
-            <Ionicons name="paper-plane-outline" size={16} color={colors.text} />
-            <Text style={styles.link}>{emptyCity ? t('represent.invite') : t('share.challengeFriend')}</Text>
+            {locating && <ActivityIndicator size="small" color="#FFFFFF" />}
           </TouchableOpacity>
         )}
       </View>
       <HowItWorksSheet visible={howOpen} placeTheme={placeTheme}
                        onCamera={() => { howDone('camera'); onCta(); }} onLater={remindLater} onClose={() => howDone('dismissed')} />
-      <ShareSheet content={share} source={share?.type === 'today' && share.represent ? 'represent_today_card' : 'today_card'} onClose={() => setShare(null)} />
-    </TouchableOpacity>
+    </View>
   );
 }
 
@@ -408,7 +358,24 @@ export function Perforation() {
 
 const NOTCH = 20;
 
+// White on the photo: a soft shadow keeps 4.5:1 over the gradients (SPEC 9.3).
+const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 };
+
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  hero:        { aspectRatio: 4 / 5, borderRadius: 24, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
+  shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: '32%' },
+  shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '68%' },
+  heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, padding: 14 },
+  heroTopRight: { alignItems: 'flex-end', gap: 6, flexShrink: 1 },
+  chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1, paddingHorizontal: 10, paddingVertical: 6,
+                 borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.42)' },
+  chipText:    { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
+  credit:      { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.92)', maxWidth: 200, ...ON_PHOTO_SHADOW },
+  heroBottom:  { gap: 12, padding: 16 },
+  headline:    { fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3, ...ON_PHOTO_SHADOW },
+  worldRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 32 },
+  worldFirst:  { flex: 1, fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
+  worldSee:    { fontSize: 13, fontWeight: '800', color: '#FFFFFF', ...ON_PHOTO_SHADOW },
   ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: 22 },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
   // Image band: the ticket's top corners (radius 22 minus the 1.5 border).
@@ -457,7 +424,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   worldLine:   { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
   worldAnswers: { flex: 1, fontSize: 13, fontWeight: '600', color: c.muted },
   worldMine:   { fontSize: 13, fontWeight: '700', color: c.primaryText },
-  worldSee:    { fontSize: 13, fontWeight: '800', color: c.primaryText },
   tip:         { position: 'absolute', top: '100%', left: 12, right: 12, marginTop: 10, zIndex: 10, paddingHorizontal: 14, paddingVertical: 10,
                  borderRadius: 14, backgroundColor: c.text },
   tipArrow:    { position: 'absolute', top: -6, left: 24, width: 12, height: 12, backgroundColor: c.text, transform: [{ rotate: '45deg' }] },
@@ -467,7 +433,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   streak:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -4 },
   streakText:  { fontSize: 13, fontWeight: '700', color: c.text },
   notHere:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 32, marginTop: -4 },
-  notHereText: { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
-  notHereLink: { fontSize: 13, fontWeight: '800', color: c.primaryText },
+  notHereText: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.92)', textAlign: 'center', ...ON_PHOTO_SHADOW },
+  notHereLink: { fontSize: 13, fontWeight: '800', color: '#FFFFFF' },
   friend:      { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -6 },
 });

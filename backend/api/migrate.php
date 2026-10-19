@@ -3399,6 +3399,10 @@ run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_suggestion BOOLE
 run($pdo, "DROP INDEX IF EXISTS uq_daily_proofs_challenge_user", 'drop uq_daily_proofs_challenge_user');
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proofs_challenge_user_v2 ON daily_proofs (challenge_id, user_id) WHERE NOT is_seed AND NOT is_suggestion",
     'uq_daily_proofs_challenge_user_v2');
+
+// The Today hero's short headline (SPEC 9.3, 45 characters): {en, fr, ...}; the
+// challenge text is shown when absent. Reversal: DROP COLUMN headline_i18n.
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS headline_i18n JSONB", 'daily_challenges.headline_i18n');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,
