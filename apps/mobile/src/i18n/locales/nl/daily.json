@@ -516,7 +516,23 @@
     "next": "Volgende",
     "wordPlaceholder": "Een woord of korte zin",
     "textPlaceholder": "Eén korte regel",
-    "numberPlaceholder": "Een getal"
+    "numberPlaceholder": "Een getal",
+    "tab": "Vergelijken",
+    "allCities": "Alle steden",
+    "boardCount": "Steden: {{count}} · Landen: {{countries}}",
+    "earliest": "Vroegst: {{city}} {{answer}}",
+    "latest": "Laatst: {{city}} {{answer}}",
+    "lowest": "Laagst: {{city}} {{answer}}",
+    "highest": "Hoogst: {{city}} {{answer}}",
+    "emptyTitle": "Nog geen antwoorden",
+    "emptyBody": "Wees de eerste stad op het bord.",
+    "noAnswer": "Nog geen antwoord",
+    "median": "Mediaan {{price}}",
+    "proofs_one": "{{count}} bewijs",
+    "proofs_other": "{{count}} bewijzen",
+    "teaser_one": "Al in {{count}} land:",
+    "teaser_other": "Al in {{count}} landen:",
+    "seeAll": "Alles zien"
   },
   "backHome": {
     "title": "En bij jou thuis?",
@@ -540,6 +556,7 @@
     "countrySearch": "Landen zoeken…",
     "otherSave": "Opslaan",
     "otherBack": "Terug naar de lijst",
-    "clear": "Mijn thuisstad verwijderen"
+    "clear": "Mijn thuisstad verwijderen",
+    "hereIn": "Hier in {{city}}"
   }
 }

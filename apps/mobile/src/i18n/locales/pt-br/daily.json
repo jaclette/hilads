@@ -518,7 +518,23 @@
     "next": "Próximo",
     "wordPlaceholder": "Uma palavra ou frase curta",
     "textPlaceholder": "Uma linha curta",
-    "numberPlaceholder": "Um número"
+    "numberPlaceholder": "Um número",
+    "tab": "Comparar",
+    "allCities": "Todas as cidades",
+    "boardCount": "Cidades: {{count}} · Países: {{countries}}",
+    "earliest": "Mais cedo: {{city}} {{answer}}",
+    "latest": "Mais tarde: {{city}} {{answer}}",
+    "lowest": "Mais baixo: {{city}} {{answer}}",
+    "highest": "Mais alto: {{city}} {{answer}}",
+    "emptyTitle": "Ainda sem respostas",
+    "emptyBody": "Seja a primeira cidade do quadro.",
+    "noAnswer": "Ainda sem resposta",
+    "median": "Mediana {{price}}",
+    "proofs_one": "{{count}} prova",
+    "proofs_other": "{{count}} provas",
+    "teaser_one": "Já em {{count}} país:",
+    "teaser_other": "Já em {{count}} países:",
+    "seeAll": "Ver tudo"
   },
   "backHome": {
     "title": "E na sua cidade?",
@@ -542,6 +558,7 @@
     "countrySearch": "Buscar países…",
     "otherSave": "Salvar",
     "otherBack": "Voltar para a lista",
-    "clear": "Remover minha cidade"
+    "clear": "Remover minha cidade",
+    "hereIn": "Aqui em {{city}}"
   }
 }

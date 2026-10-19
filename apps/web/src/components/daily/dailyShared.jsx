@@ -6,6 +6,7 @@ import { shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
+import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
 // features/daily): the screens' context, the app's strings (challenge.json →
@@ -249,6 +250,7 @@ export function ProofTile({ proof, onOpen }) {
         </span>
         {proof.validatedByLocal && <span className="dc-tile-badge" style={INLINE}><Icon name="checkmark" size={12} />{t('validatedByLocal')}</span>}
         {proof.isEarly && <EarlyBadge />}
+        {proof.answer && <AnswerChip answer={proof.answer} />}
         {proof.caption && <span className="dc-tile-caption">{proof.caption}</span>}
         <VoteButton proof={proof} variant="tile" />
       </div>
@@ -260,10 +262,11 @@ const REPORT_REASONS = ['inappropriate', 'person_without_consent', 'dangerous', 
 
 /** Full-screen photo of one proof: author, badges, caption, price, place, vote, report. */
 export function ProofViewer({ proof, onClose }) {
-  const { t, i18n } = useDc()
+  const { t } = useDc()
   const { account, needAccount, openSpot } = useDaily()
   const [reporting, setReporting] = useState(false)
   const [notice, setNotice] = useState(null)
+  const money = useMoney()
   if (!proof) return null
   const name = personName(proof.user)
 
@@ -299,10 +302,16 @@ export function ProofViewer({ proof, onClose }) {
             {proof.validatedByLocal && <span style={INLINE}><Icon name="checkmark" size={13} />{t('validatedByLocal')}</span>}
           </div>
         )}
+        {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
         {proof.caption && <p className="dc-viewer-caption">{proof.caption}</p>}
-        {(proof.price || proof.place || proof.spot) && (
+        {proof.backHome && <BackHomeBlock proof={proof} />}
+        {((proof.price && !proof.backHome) || proof.place || proof.spot) && (
           <p className="dc-viewer-extra">
-            {proof.price && <span style={{ ...INLINE, marginRight: 12 }}><Icon name="cash-outline" size={13} />{formatAmount(proof.price.amount, i18n.language)} {proof.price.currency}</span>}
+            {proof.price && !proof.backHome && (
+              // Converted to my currency, the original after it (SPEC 10.5).
+              <span style={{ ...INLINE, marginRight: 12 }}><Icon name="cash-outline" size={13} />{money.price(proof.price).main}
+                {money.price(proof.price).original && <small className="dc-price-original">{money.price(proof.price).original}</small>}</span>
+            )}
             {proof.spot ? (
               <button type="button" className="dc-viewer-spot" style={INLINE} onClick={() => { onClose(); openSpot(proof.spot.id) }}><Icon name="location-outline" size={13} />{proof.spot.name}</button>
             ) : proof.place ? <span style={INLINE}><Icon name="location-outline" size={13} />{proof.place.name || t('unnamedPlace')}</span> : ''}

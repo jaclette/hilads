@@ -512,7 +512,23 @@
     "next": "ถัดไป",
     "wordPlaceholder": "คำเดียวหรือวลีสั้น ๆ",
     "textPlaceholder": "หนึ่งประโยคสั้น ๆ",
-    "numberPlaceholder": "ตัวเลข"
+    "numberPlaceholder": "ตัวเลข",
+    "tab": "เปรียบเทียบ",
+    "allCities": "ทุกเมือง",
+    "boardCount": "เมือง: {{count}} · ประเทศ: {{countries}}",
+    "earliest": "เร็วที่สุด: {{city}} {{answer}}",
+    "latest": "ช้าที่สุด: {{city}} {{answer}}",
+    "lowest": "ต่ำที่สุด: {{city}} {{answer}}",
+    "highest": "สูงที่สุด: {{city}} {{answer}}",
+    "emptyTitle": "ยังไม่มีคำตอบ",
+    "emptyBody": "มาเป็นเมืองแรกบนกระดาน",
+    "noAnswer": "ยังไม่มีคำตอบ",
+    "median": "ค่ามัธยฐาน {{price}}",
+    "proofs_one": "หลักฐาน {{count}} รายการ",
+    "proofs_other": "หลักฐาน {{count}} รายการ",
+    "teaser_one": "ตอบแล้ว {{count}} ประเทศ:",
+    "teaser_other": "ตอบแล้ว {{count}} ประเทศ:",
+    "seeAll": "ดูทั้งหมด"
   },
   "backHome": {
     "title": "แล้วที่บ้านคุณล่ะ?",
@@ -536,6 +552,7 @@
     "countrySearch": "ค้นหาประเทศ…",
     "otherSave": "บันทึก",
     "otherBack": "กลับไปที่รายการ",
-    "clear": "ลบเมืองบ้านเกิด"
+    "clear": "ลบเมืองบ้านเกิด",
+    "hereIn": "ที่นี่ {{city}}"
   }
 }

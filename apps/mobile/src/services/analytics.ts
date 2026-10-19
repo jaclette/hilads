@@ -85,6 +85,8 @@ export type AnalyticsEvent =
   // Same challenge. Different worlds (SPEC 10.11): compare_answer_posted { type }, back_home_added { has_answer, has_price, has_line }.
   | 'compare_answer_posted'
   | 'back_home_added'
+  | 'world_board_viewed'
+  | 'world_teaser_tapped'
   | 'daily_twist_proposed'
   | 'daily_map_opened'
   | 'daily_leaderboard_viewed'

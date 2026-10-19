@@ -1368,7 +1368,35 @@
       "noPlace": "الأكثر تصويتًا تصعد إلى المنصة."
     },
     "compare": {
-      "todayQuestion": "سؤال اليوم: {{question}}"
+      "todayQuestion": "سؤال اليوم: {{question}}",
+      "tab": "قارن",
+      "allCities": "كل المدن",
+      "boardCount": "المدن: {{count}} · البلدان: {{countries}}",
+      "earliest": "الأبكر: {{city}} {{answer}}",
+      "latest": "الأخير: {{city}} {{answer}}",
+      "lowest": "الأدنى: {{city}} {{answer}}",
+      "highest": "الأعلى: {{city}} {{answer}}",
+      "emptyTitle": "لا إجابات بعد",
+      "emptyBody": "كن أول مدينة على اللوحة.",
+      "noAnswer": "لا إجابة بعد",
+      "median": "الوسيط {{price}}",
+      "proofs_zero": "لا إثباتات",
+      "proofs_one": "إثبات واحد",
+      "proofs_two": "إثباتان",
+      "proofs_few": "{{count}} إثباتات",
+      "proofs_many": "{{count}} إثباتًا",
+      "proofs_other": "{{count}} إثبات",
+      "teaser_zero": "أجاب {{count}} بلد:",
+      "teaser_one": "أجاب بلد واحد:",
+      "teaser_two": "أجاب بلدان:",
+      "teaser_few": "أجابت {{count}} بلدان:",
+      "teaser_many": "أجاب {{count}} بلدًا:",
+      "teaser_other": "أجاب {{count}} بلد:",
+      "seeAll": "عرض الكل"
+    },
+    "backHome": {
+      "hereIn": "هنا في {{city}}",
+      "homeIn": "في مدينتك: {{city}}"
     }
   }
 }

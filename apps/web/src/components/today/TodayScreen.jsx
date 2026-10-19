@@ -7,6 +7,7 @@ import { shareLink } from '../../lib/shareLink'
 import { APP_STORE, PLAY_STORE, deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
+import { answerText } from '../daily/compareShared'
 import { CityFlag, CityName } from '../CityName'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
@@ -167,6 +168,7 @@ function Ticket({ data, loading }) {
   const earlyUntil = !myProof && data.early && data.early.until * 1000 > Date.now() ? data.early.until : null
   const store = deviceStore()
   const open = () => openDaily('challenge', { date: 'today', source: 'today' })
+  const world = data?.world ?? null
   // People who took it: the city's count in city scope once it has proofs, else World's.
   const took = (scope === 'city' && data.counts?.city ? data.counts.city : data.counts?.world) ?? 0
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
@@ -251,7 +253,18 @@ function Ticket({ data, loading }) {
             </a>
           </span>
         )}
-        {took > 0 && (
+        {/* The live world teaser (SPEC 10.6) replaces the social line once 2 cities answered. */}
+        {world ? (
+          <button type="button" className="today-took" onClick={(e) => {
+            e.stopPropagation()
+            track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
+            openDaily('challenge', { date: 'today', source: 'teaser', tab: 'compare' })
+          }}>
+            {t('compare.teaser', { count: world.countries })}{' '}
+            <strong>{world.answers.filter(a => a.answer).map(a => answerText(a.answer, i18n.language)).join(' · ')}</strong>
+            {' · '}<span className="today-took-link">{t('compare.seeAll')}</span>
+          </button>
+        ) : took > 0 && (
           <button type="button" className="today-took" onClick={(e) => { e.stopPropagation(); open() }}>
             {t('today.tookIt', { count: took })} · <span className="today-took-link">{t('today.seePhotos', { count: took })}</span>
           </button>

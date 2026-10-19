@@ -518,7 +518,23 @@
     "next": "Avanti",
     "wordPlaceholder": "Una parola o una frase breve",
     "textPlaceholder": "Una riga breve",
-    "numberPlaceholder": "Un numero"
+    "numberPlaceholder": "Un numero",
+    "tab": "Confronta",
+    "allCities": "Tutte le città",
+    "boardCount": "Città: {{count}} · Paesi: {{countries}}",
+    "earliest": "Più presto: {{city}} {{answer}}",
+    "latest": "Più tardi: {{city}} {{answer}}",
+    "lowest": "Più basso: {{city}} {{answer}}",
+    "highest": "Più alto: {{city}} {{answer}}",
+    "emptyTitle": "Ancora nessuna risposta",
+    "emptyBody": "Sii la prima città sul tabellone.",
+    "noAnswer": "Ancora nessuna risposta",
+    "median": "Mediana {{price}}",
+    "proofs_one": "{{count}} prova",
+    "proofs_other": "{{count}} prove",
+    "teaser_one": "Già {{count}} paese:",
+    "teaser_other": "Già {{count}} paesi:",
+    "seeAll": "Vedi tutto"
   },
   "backHome": {
     "title": "E a casa tua?",
@@ -542,6 +558,7 @@
     "countrySearch": "Cerca paesi…",
     "otherSave": "Salva",
     "otherBack": "Torna alla lista",
-    "clear": "Rimuovi la mia città"
+    "clear": "Rimuovi la mia città",
+    "hereIn": "Qui a {{city}}"
   }
 }

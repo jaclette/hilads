@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
+  DailyBoard, DailyRates,
   NearbyPlace,
   DailyArchive,
   DailyCalendar,
@@ -36,6 +37,16 @@ function cityParam(cityId?: string | number | null): number | undefined {
 
 export async function fetchDailyToday(cityId?: string | number | null): Promise<DailyToday> {
   return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId), locale: locale() } });
+}
+
+/** How the world answered: one row per city (SPEC 10.6). Public. */
+export async function fetchDailyBoard(date: string, guestId?: string | null): Promise<DailyBoard> {
+  return api.get<DailyBoard>(`/daily/challenges/${date}/compare`, { params: { locale: locale(), guestId: guestId ?? undefined } });
+}
+
+/** The day's reference exchange rates, EUR base (SPEC 10.5). */
+export async function fetchDailyRates(): Promise<DailyRates> {
+  return api.get<DailyRates>('/daily/rates');
 }
 
 /** "Remind me later" (Today's how-it-works sheet): today's evening reminder for me, within the push cap. */

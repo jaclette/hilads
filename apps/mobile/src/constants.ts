@@ -156,6 +156,9 @@ export const Colors = {
   // photo viewer / camera with its translucent controls.
   onCaramelMuted: 'rgba(255,255,255,0.78)',
   photoScrim:     'rgba(0,0,0,0.94)',
+  // Fills and lines over a photo / the photo viewer's dark ground (same in both themes).
+  onPhotoFill:    'rgba(255,255,255,0.12)',
+  onPhotoLine:    'rgba(255,255,255,0.22)',
   photoControl:   'rgba(255,255,255,0.16)',
 } as const;
 
@@ -214,6 +217,9 @@ export const LightColors: ThemeColors = {
   // photo viewer / camera with its translucent controls.
   onCaramelMuted: 'rgba(255,255,255,0.78)',
   photoScrim:     'rgba(0,0,0,0.94)',
+  // Fills and lines over a photo / the photo viewer's dark ground (same in both themes).
+  onPhotoFill:    'rgba(255,255,255,0.12)',
+  onPhotoLine:    'rgba(255,255,255,0.22)',
   photoControl:   'rgba(255,255,255,0.16)',
 };
 

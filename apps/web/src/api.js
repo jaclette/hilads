@@ -2437,6 +2437,16 @@ export function fetchDailySheet(date, { scope = 'world', cityId, before, limit =
   return daily('GET', `/daily/challenges/${date}`, { params: { scope, cityId: cityNum(cityId), before, limit, locale } })
 }
 
+/** How the world answered: one row per city (SPEC 10.6). Public. */
+export function fetchDailyBoard(date, locale) {
+  return daily('GET', `/daily/challenges/${date}/compare`, { params: { locale } })
+}
+
+/** The day's reference exchange rates, EUR base (SPEC 10.5). */
+export function fetchDailyRates() {
+  return daily('GET', '/daily/rates')
+}
+
 /** Yesterday's podium: the scope's top 3 proofs of yesterday, total and countries. A city with none falls back to World. */
 export function fetchDailyPodium({ scope = 'world', cityId, locale } = {}) {
   return daily('GET', '/daily/podium', { params: { scope, cityId: cityNum(cityId), locale } })

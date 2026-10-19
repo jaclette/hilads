@@ -1312,7 +1312,27 @@
       "noPlace": "Yang paling banyak vote naik podium."
     },
     "compare": {
-      "todayQuestion": "Pertanyaan hari ini: {{question}}"
+      "todayQuestion": "Pertanyaan hari ini: {{question}}",
+      "tab": "Bandingkan",
+      "allCities": "Semua kota",
+      "boardCount": "Kota: {{count}} · Negara: {{countries}}",
+      "earliest": "Paling awal: {{city}} {{answer}}",
+      "latest": "Paling akhir: {{city}} {{answer}}",
+      "lowest": "Paling rendah: {{city}} {{answer}}",
+      "highest": "Paling tinggi: {{city}} {{answer}}",
+      "emptyTitle": "Belum ada jawaban",
+      "emptyBody": "Jadilah kota pertama di papan.",
+      "noAnswer": "Belum ada jawaban",
+      "median": "Median {{price}}",
+      "proofs_one": "{{count}} bukti",
+      "proofs_other": "{{count}} bukti",
+      "teaser_one": "Sudah {{count}} negara menjawab:",
+      "teaser_other": "Sudah {{count}} negara menjawab:",
+      "seeAll": "Lihat semua"
+    },
+    "backHome": {
+      "hereIn": "Di sini, {{city}}",
+      "homeIn": "Di kotamu, {{city}}"
     }
   }
 }

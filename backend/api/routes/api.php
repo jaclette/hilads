@@ -14405,6 +14405,17 @@ $router->add('GET', '/api/v1/daily/today', function () {
     $out['twistProposal'] = $user !== null ? DailyTwistProposals::summaryFor($user) : null;
     // Ever posted a proof: Today's brand line shows until the first one (SPEC 9.3).
     $out['hasProof'] = $user !== null && DailyProofRepository::hasAny($user['id']);
+    // SPEC 10.6: the live world teaser ("Answered in 5 countries: ..."), once 2 cities answered.
+    $out['world'] = null;
+    if ($out['challenge'] !== null) {
+        try {
+            $challenge    = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
+            $out['world'] = $challenge !== null
+                ? DailyBoard::teaser($challenge, dailyCityParam($user), dailyBlocks($user)['user_ids'] ?? []) : null;
+        } catch (\Throwable $e) {
+            error_log('[daily] world teaser failed: ' . $e->getMessage());
+        }
+    }
     Response::json($out);
 });
 
@@ -14531,6 +14542,20 @@ $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) 
     // Once closed: World top 3, the city's best proof, every live city's best (null before the results).
     $out['results']   = DailyResults::forSheet($id, $cityId, $user['id'] ?? null, $blocks['user_ids'] ?? []);
     Response::json($out);
+});
+
+// GET /api/v1/daily/challenges/{date}/compare - how the world answered (SPEC 10.6):
+// one row per city with the answer of its best proof, its median price (EUR)
+// and its proof count, plus the range for number and time questions. Public.
+$router->add('GET', '/api/v1/daily/challenges/{date}/compare', function (array $params) {
+    $date      = $params['date'];
+    $challenge = DailyClock::isValidDate($date) && $date <= DailyClock::currentDate()
+        ? DailyChallengeRepository::findPublishedByDate($date) : null;
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found', 'code' => 'not_found'], 404);
+    }
+    $user = AuthService::currentUser();
+    Response::json(['date' => $date] + DailyBoard::board($challenge, dailyBlocks($user)['user_ids'] ?? []));
 });
 
 // GET /api/v1/daily/archive?scope=world|city&cityId=&before=YYYY-MM-DD&limit=&theme= - past

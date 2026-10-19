@@ -514,7 +514,23 @@
     "next": "Lanjut",
     "wordPlaceholder": "Satu kata atau frasa pendek",
     "textPlaceholder": "Satu kalimat pendek",
-    "numberPlaceholder": "Sebuah angka"
+    "numberPlaceholder": "Sebuah angka",
+    "tab": "Bandingkan",
+    "allCities": "Semua kota",
+    "boardCount": "Kota: {{count}} · Negara: {{countries}}",
+    "earliest": "Paling awal: {{city}} {{answer}}",
+    "latest": "Paling akhir: {{city}} {{answer}}",
+    "lowest": "Paling rendah: {{city}} {{answer}}",
+    "highest": "Paling tinggi: {{city}} {{answer}}",
+    "emptyTitle": "Belum ada jawaban",
+    "emptyBody": "Jadilah kota pertama di papan.",
+    "noAnswer": "Belum ada jawaban",
+    "median": "Median {{price}}",
+    "proofs_one": "{{count}} bukti",
+    "proofs_other": "{{count}} bukti",
+    "teaser_one": "Sudah {{count}} negara menjawab:",
+    "teaser_other": "Sudah {{count}} negara menjawab:",
+    "seeAll": "Lihat semua"
   },
   "backHome": {
     "title": "Kalau di kotamu?",
@@ -538,6 +554,7 @@
     "countrySearch": "Cari negara…",
     "otherSave": "Simpan",
     "otherBack": "Kembali ke daftar",
-    "clear": "Hapus kota asalku"
+    "clear": "Hapus kota asalku",
+    "hereIn": "Di sini, {{city}}"
   }
 }

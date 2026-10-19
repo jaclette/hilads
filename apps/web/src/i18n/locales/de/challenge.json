@@ -1312,7 +1312,27 @@
       "noPlace": "Das meistgewählte kommt aufs Podium."
     },
     "compare": {
-      "todayQuestion": "Die Frage des Tages: {{question}}"
+      "todayQuestion": "Die Frage des Tages: {{question}}",
+      "tab": "Vergleichen",
+      "allCities": "Alle Städte",
+      "boardCount": "Städte: {{count}} · Länder: {{countries}}",
+      "earliest": "Am frühesten: {{city}} {{answer}}",
+      "latest": "Am spätesten: {{city}} {{answer}}",
+      "lowest": "Am niedrigsten: {{city}} {{answer}}",
+      "highest": "Am höchsten: {{city}} {{answer}}",
+      "emptyTitle": "Noch keine Antworten",
+      "emptyBody": "Sei die erste Stadt auf der Tafel.",
+      "noAnswer": "Noch keine Antwort",
+      "median": "Median {{price}}",
+      "proofs_one": "{{count}} Beweis",
+      "proofs_other": "{{count}} Beweise",
+      "teaser_one": "Schon in {{count}} Land:",
+      "teaser_other": "Schon in {{count}} Ländern:",
+      "seeAll": "Alle ansehen"
+    },
+    "backHome": {
+      "hereIn": "Hier in {{city}}",
+      "homeIn": "Zu Hause in {{city}}"
     }
   }
 }

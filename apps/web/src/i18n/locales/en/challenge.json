@@ -1312,7 +1312,27 @@
       "noPlace": "The most voted makes the podium."
     },
     "compare": {
-      "todayQuestion": "Today's question: {{question}}"
+      "todayQuestion": "Today's question: {{question}}",
+      "tab": "Compare",
+      "allCities": "All cities",
+      "boardCount": "Cities: {{count}} · Countries: {{countries}}",
+      "earliest": "Earliest: {{city}} {{answer}}",
+      "latest": "Latest: {{city}} {{answer}}",
+      "lowest": "Lowest: {{city}} {{answer}}",
+      "highest": "Highest: {{city}} {{answer}}",
+      "emptyTitle": "No answers yet",
+      "emptyBody": "Be the first city on the board.",
+      "noAnswer": "No answer yet",
+      "median": "Median {{price}}",
+      "proofs_one": "{{count}} proof",
+      "proofs_other": "{{count}} proofs",
+      "teaser_one": "Answered in {{count}} country:",
+      "teaser_other": "Answered in {{count}} countries:",
+      "seeAll": "See all"
+    },
+    "backHome": {
+      "hereIn": "Here in {{city}}",
+      "homeIn": "Back home in {{city}}"
     }
   }
 }

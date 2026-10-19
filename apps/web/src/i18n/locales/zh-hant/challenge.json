@@ -1310,7 +1310,27 @@
       "noPlace": "得票最多的照片登上頒獎台。"
     },
     "compare": {
-      "todayQuestion": "今日問題：{{question}}"
+      "todayQuestion": "今日問題：{{question}}",
+      "tab": "比較",
+      "allCities": "所有城市",
+      "boardCount": "城市：{{count}} · 國家/地區：{{countries}}",
+      "earliest": "最早：{{city}} {{answer}}",
+      "latest": "最晚：{{city}} {{answer}}",
+      "lowest": "最低：{{city}} {{answer}}",
+      "highest": "最高：{{city}} {{answer}}",
+      "emptyTitle": "還沒有回答",
+      "emptyBody": "成為榜上的第一個城市。",
+      "noAnswer": "還沒有回答",
+      "median": "中位數 {{price}}",
+      "proofs_one": "{{count}} 個證明",
+      "proofs_other": "{{count}} 個證明",
+      "teaser_one": "已有 {{count}} 個國家/地區回答：",
+      "teaser_other": "已有 {{count}} 個國家/地區回答：",
+      "seeAll": "查看全部"
+    },
+    "backHome": {
+      "hereIn": "這裡：{{city}}",
+      "homeIn": "家鄉：{{city}}"
     }
   }
 }

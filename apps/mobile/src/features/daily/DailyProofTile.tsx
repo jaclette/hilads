@@ -9,6 +9,7 @@ import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
 import { Chip, ModeLabel } from '@/ui';
+import { AnswerChip } from '@/features/compare/AnswerChip';
 import type { DailyProof } from '@/types';
 
 /** One proof in the sheet grid: photo (rank seal if World top 3), author with Local/Traveler, city, caption, vote. */
@@ -31,6 +32,7 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
         </View>
         {proof.city && <CityName name={proof.city.name} country={proof.city.country} short style={styles.sub} />}
         {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} style={styles.badge} />}
+        {proof.answer && <AnswerChip answer={proof.answer} />}
         {!!proof.caption && <Text style={styles.caption} numberOfLines={2}>{proof.caption}</Text>}
         <View style={styles.voteRow}>
           <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="tile" />

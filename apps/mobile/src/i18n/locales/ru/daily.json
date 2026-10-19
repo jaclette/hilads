@@ -544,7 +544,27 @@
     "next": "Далее",
     "wordPlaceholder": "Слово или короткая фраза",
     "textPlaceholder": "Одна короткая строка",
-    "numberPlaceholder": "Число"
+    "numberPlaceholder": "Число",
+    "tab": "Сравнить",
+    "allCities": "Все города",
+    "boardCount": "Городов: {{count}} · Стран: {{countries}}",
+    "earliest": "Раньше всех: {{city}} {{answer}}",
+    "latest": "Позже всех: {{city}} {{answer}}",
+    "lowest": "Меньше всего: {{city}} {{answer}}",
+    "highest": "Больше всего: {{city}} {{answer}}",
+    "emptyTitle": "Ответов пока нет",
+    "emptyBody": "Стань первым городом на доске.",
+    "noAnswer": "Пока без ответа",
+    "median": "Медиана {{price}}",
+    "proofs_one": "{{count}} доказательство",
+    "proofs_few": "{{count}} доказательства",
+    "proofs_many": "{{count}} доказательств",
+    "proofs_other": "{{count}} доказательства",
+    "teaser_one": "Уже {{count}} страна:",
+    "teaser_few": "Уже {{count}} страны:",
+    "teaser_many": "Уже {{count}} стран:",
+    "teaser_other": "Уже {{count}} страны:",
+    "seeAll": "Смотреть все"
   },
   "backHome": {
     "title": "А у тебя дома?",
@@ -568,6 +588,7 @@
     "countrySearch": "Поиск стран…",
     "otherSave": "Сохранить",
     "otherBack": "Назад к списку",
-    "clear": "Удалить мой город"
+    "clear": "Удалить мой город",
+    "hereIn": "Здесь, {{city}}"
   }
 }

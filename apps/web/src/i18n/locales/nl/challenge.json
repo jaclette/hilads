@@ -1312,7 +1312,27 @@
       "noPlace": "De meest gestemde komt op het podium."
     },
     "compare": {
-      "todayQuestion": "De vraag van vandaag: {{question}}"
+      "todayQuestion": "De vraag van vandaag: {{question}}",
+      "tab": "Vergelijken",
+      "allCities": "Alle steden",
+      "boardCount": "Steden: {{count}} · Landen: {{countries}}",
+      "earliest": "Vroegst: {{city}} {{answer}}",
+      "latest": "Laatst: {{city}} {{answer}}",
+      "lowest": "Laagst: {{city}} {{answer}}",
+      "highest": "Hoogst: {{city}} {{answer}}",
+      "emptyTitle": "Nog geen antwoorden",
+      "emptyBody": "Wees de eerste stad op het bord.",
+      "noAnswer": "Nog geen antwoord",
+      "median": "Mediaan {{price}}",
+      "proofs_one": "{{count}} bewijs",
+      "proofs_other": "{{count}} bewijzen",
+      "teaser_one": "Al in {{count}} land:",
+      "teaser_other": "Al in {{count}} landen:",
+      "seeAll": "Alles zien"
+    },
+    "backHome": {
+      "hereIn": "Hier in {{city}}",
+      "homeIn": "Thuis in {{city}}"
     }
   }
 }

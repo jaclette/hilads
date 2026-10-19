@@ -1312,7 +1312,27 @@
       "noPlace": "सबसे ज़्यादा वोट वाली पोडियम पर पहुँचती है।"
     },
     "compare": {
-      "todayQuestion": "आज का सवाल: {{question}}"
+      "todayQuestion": "आज का सवाल: {{question}}",
+      "tab": "तुलना",
+      "allCities": "सभी शहर",
+      "boardCount": "शहर: {{count}} · देश: {{countries}}",
+      "earliest": "सबसे जल्दी: {{city}} {{answer}}",
+      "latest": "सबसे देर: {{city}} {{answer}}",
+      "lowest": "सबसे कम: {{city}} {{answer}}",
+      "highest": "सबसे ज़्यादा: {{city}} {{answer}}",
+      "emptyTitle": "अभी कोई जवाब नहीं",
+      "emptyBody": "बोर्ड पर पहला शहर बनें।",
+      "noAnswer": "अभी जवाब नहीं",
+      "median": "माध्यिका {{price}}",
+      "proofs_one": "{{count}} प्रूफ़",
+      "proofs_other": "{{count}} प्रूफ़",
+      "teaser_one": "{{count}} देश जवाब दे चुका है:",
+      "teaser_other": "{{count}} देश जवाब दे चुके हैं:",
+      "seeAll": "सब देखें"
+    },
+    "backHome": {
+      "hereIn": "यहाँ, {{city}}",
+      "homeIn": "आपका शहर: {{city}}"
     }
   }
 }

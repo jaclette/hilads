@@ -4765,6 +4765,8 @@ export default function App() {
   // What the Daily screens, the chat's pinned challenge and its Daily cards need.
   const dailyCtx = {
     account, cityId: channelId, scope: channelScope,
+    // The current city's country: prices are shown in its currency (SPEC 10.5).
+    cityCountry,
     openDaily,
     openProfile: (id, name) => openProfile(id, name ?? ''),
     // A spot (or the map) from Today / a proof: the Map tab, on that spot.

@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityName } from '@/ui';
-import { formatAmount } from './currency';
+import { AnswerChip } from '@/features/compare/AnswerChip';
+import { BackHomeBlock } from '@/features/compare/BackHomeBlock';
+import { useMoney } from '@/features/compare/money';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
@@ -27,8 +29,9 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t, i18n } = useTranslation('daily');
+  const { t } = useTranslation('daily');
   const [share, setShare] = useState<ShareContent | null>(null);
+  const money = useMoney();
   const shareable = !!proof && proof.isMine && !!challenge && proof.challengeId === challenge.id
     && (proof.status === 'approved' || proof.status === 'pending');
   useEffect(() => {
@@ -60,13 +63,17 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
               {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} />}
             </View>
           )}
+          {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
           {!!proof.caption && <Text style={styles.caption}>{proof.caption}</Text>}
-          {(proof.price || proof.place) && (
+          {proof.backHome && <BackHomeBlock proof={proof} />}
+          {((proof.price && !proof.backHome) || proof.place) && (
             <View style={styles.nameRow}>
-              {proof.price && (
+              {proof.price && !proof.backHome && (
                 <View style={styles.extraRow}>
                   <Ionicons name="cash-outline" size={15} color={colors.onCaramelMuted} />
-                  <Text style={styles.extra}>{formatAmount(proof.price.amount, i18n.language)} {proof.price.currency}</Text>
+                  {/* Converted to my currency, the original after it (SPEC 10.5). */}
+                  <Text style={styles.extra}>{money.price(proof.price).main}
+                    {money.price(proof.price).original ? <Text style={styles.original}>{`  ${money.price(proof.price).original}`}</Text> : null}</Text>
                 </View>
               )}
               {proof.place && (
@@ -103,4 +110,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   caption:  { color: c.white, fontSize: FontSizes.sm, fontWeight: '400' },
   extraRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   extra:    { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
+  original: { color: c.onCaramelMuted, fontSize: 11, fontWeight: '400' },
 });

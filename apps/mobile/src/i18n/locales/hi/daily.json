@@ -516,7 +516,23 @@
     "next": "आगे",
     "wordPlaceholder": "एक शब्द या छोटा वाक्यांश",
     "textPlaceholder": "एक छोटी पंक्ति",
-    "numberPlaceholder": "एक संख्या"
+    "numberPlaceholder": "एक संख्या",
+    "tab": "तुलना",
+    "allCities": "सभी शहर",
+    "boardCount": "शहर: {{count}} · देश: {{countries}}",
+    "earliest": "सबसे जल्दी: {{city}} {{answer}}",
+    "latest": "सबसे देर: {{city}} {{answer}}",
+    "lowest": "सबसे कम: {{city}} {{answer}}",
+    "highest": "सबसे ज़्यादा: {{city}} {{answer}}",
+    "emptyTitle": "अभी कोई जवाब नहीं",
+    "emptyBody": "बोर्ड पर पहला शहर बनें।",
+    "noAnswer": "अभी जवाब नहीं",
+    "median": "माध्यिका {{price}}",
+    "proofs_one": "{{count}} प्रूफ़",
+    "proofs_other": "{{count}} प्रूफ़",
+    "teaser_one": "{{count}} देश जवाब दे चुका है:",
+    "teaser_other": "{{count}} देश जवाब दे चुके हैं:",
+    "seeAll": "सब देखें"
   },
   "backHome": {
     "title": "और आपके शहर में?",
@@ -540,6 +556,7 @@
     "countrySearch": "देश खोजें…",
     "otherSave": "सहेजें",
     "otherBack": "सूची पर वापस",
-    "clear": "मेरा शहर हटाएँ"
+    "clear": "मेरा शहर हटाएँ",
+    "hereIn": "यहाँ, {{city}}"
   }
 }

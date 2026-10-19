@@ -19,6 +19,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { clock } from './format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
 import { PulseButton } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
@@ -96,6 +97,11 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   const twist = data?.twist && city?.isLive ? data.twist : null;
   const earlyUntil = !myProof && data?.early && data.early.until * 1000 > Date.now() ? data.early.until : null;
   const openSheet = () => router.push('/daily/today?source=today' as never);
+  const world = data?.world ?? null;
+  const openCompare = () => {
+    track('world_teaser_tapped', { countries: world?.countries ?? 0, cities: world?.cities ?? 0 });
+    router.push('/daily/today?tab=compare&source=teaser' as never);
+  };
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
   // People who took it: the city's count in city scope once it has proofs, else World's.
   const took = (scope === 'city' && data?.counts?.city ? data.counts.city : data?.counts?.world) ?? 0;
@@ -203,7 +209,18 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           <PulseButton label={emptyCity ? t('represent.button', { city: cityShort }) : t('ctaIn')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
-        {took > 0 && (
+        {/* The live world teaser (SPEC 10.6) replaces the social line once 2 cities answered. */}
+        {world ? (
+          <TouchableOpacity style={styles.took} onPress={openCompare} accessibilityRole="button">
+            <Text style={styles.tookText} numberOfLines={2}>
+              {t('compare.teaser', { count: world.countries })}{' '}
+              <Text style={styles.teaserAnswers}>
+                {world.answers.filter(a => a.answer).map(a => answerText(a.answer!, i18n.language)).join(' · ')}
+              </Text>
+              {' · '}<Text style={styles.link}>{t('compare.seeAll')}</Text>
+            </Text>
+          </TouchableOpacity>
+        ) : took > 0 && (
           <TouchableOpacity style={styles.took} onPress={openSheet} accessibilityRole="button">
             <Text style={styles.tookText}>
               {t('today.tookIt', { count: took })} · <Text style={styles.link}>{t('today.seePhotos', { count: took })}</Text>
@@ -349,5 +366,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   streak:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -4 },
   streakText:  { fontSize: 13, fontWeight: '700', color: c.text },
   friend:      { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -6 },
+  teaserAnswers: { fontWeight: '800', color: c.text },
   tookText:    { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

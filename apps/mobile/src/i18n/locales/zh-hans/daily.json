@@ -100,7 +100,7 @@
     "place_name_blocked": "该地点名称被标记，请换个说法。",
     "invalid_position": "发布此证明需要你的位置。",
     "too_far": "你离这个地点太远了。",
-    "answer_required": "回答今日问题才能发布你的打卡。",
+    "answer_required": "回答今日问题才能发布你的证明。",
     "invalid_answer": "这个回答和问题不符，请检查后重试。",
     "invalid_back_home": "“你家乡呢？”需要一个城市，以及一个回答、价格或一句话。"
   },
@@ -512,7 +512,23 @@
     "next": "下一步",
     "wordPlaceholder": "一个词或短语",
     "textPlaceholder": "一句简短的话",
-    "numberPlaceholder": "一个数字"
+    "numberPlaceholder": "一个数字",
+    "tab": "比较",
+    "allCities": "所有城市",
+    "boardCount": "城市：{{count}} · 国家/地区：{{countries}}",
+    "earliest": "最早：{{city}} {{answer}}",
+    "latest": "最晚：{{city}} {{answer}}",
+    "lowest": "最低：{{city}} {{answer}}",
+    "highest": "最高：{{city}} {{answer}}",
+    "emptyTitle": "还没有回答",
+    "emptyBody": "成为榜上的第一个城市。",
+    "noAnswer": "还没有回答",
+    "median": "中位数 {{price}}",
+    "proofs_one": "{{count}} 个证明",
+    "proofs_other": "{{count}} 个证明",
+    "teaser_one": "已有 {{count}} 个国家/地区回答：",
+    "teaser_other": "已有 {{count}} 个国家/地区回答：",
+    "seeAll": "查看全部"
   },
   "backHome": {
     "title": "你家乡呢？",
@@ -536,6 +552,7 @@
     "countrySearch": "搜索国家/地区…",
     "otherSave": "保存",
     "otherBack": "返回列表",
-    "clear": "移除我的家乡"
+    "clear": "移除我的家乡",
+    "hereIn": "这里：{{city}}"
   }
 }

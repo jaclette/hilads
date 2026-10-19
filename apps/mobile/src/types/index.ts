@@ -961,7 +961,38 @@ export interface DailyToday {
   presence?: { represented: boolean; streak: number; citiesToday: number; pioneer: { username: string | null } | null } | null;
   /** Speed bonus window (signed in, no proof yet, still open): post before `until` for the bonus. */
   early?: { startsAt: number; until: number } | null;
+  /** SPEC 10.6: the live world teaser once 2 cities answered ("Answered in 5 countries: ..."). /daily/today only. */
+  world?: DailyWorldTeaser | null;
 }
+
+export interface DailyCityRef { id: number; name: string; country: string | null }
+
+export interface DailyWorldTeaser {
+  cities:    number;
+  countries: number;
+  answers:   { city: DailyCityRef; answer: DailyAnswer | null }[];   // other cities first
+}
+
+/** How the world answered (GET /daily/challenges/{date}/compare, SPEC 10.6). */
+export interface DailyBoard {
+  date:      string;
+  compare:   DailyCompare | null;
+  cities:    number;
+  countries: number;
+  rows: {
+    city:           DailyCityRef;
+    answer:         DailyAnswer | null;
+    bestProofId:    string;
+    count:          number;
+    priceMedianEur: number | null;
+    priceCount:     number;
+  }[];
+  /** Number and time questions: the lowest and highest answer across cities. */
+  range: { min: { city: DailyCityRef; answer: DailyAnswer | null }; max: { city: DailyCityRef; answer: DailyAnswer | null } } | null;
+}
+
+/** Daily reference exchange rates, EUR base (GET /daily/rates). */
+export interface DailyRates { base: string; date: string | null; rates: Record<string, number> }
 
 export type DailyTwistProposalStatus = 'pending' | 'picked' | 'not_picked';
 

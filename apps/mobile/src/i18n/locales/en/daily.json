@@ -516,7 +516,23 @@
     "next": "Next",
     "wordPlaceholder": "A word or a short phrase",
     "textPlaceholder": "One short line",
-    "numberPlaceholder": "A number"
+    "numberPlaceholder": "A number",
+    "tab": "Compare",
+    "allCities": "All cities",
+    "boardCount": "Cities: {{count}} · Countries: {{countries}}",
+    "earliest": "Earliest: {{city}} {{answer}}",
+    "latest": "Latest: {{city}} {{answer}}",
+    "lowest": "Lowest: {{city}} {{answer}}",
+    "highest": "Highest: {{city}} {{answer}}",
+    "emptyTitle": "No answers yet",
+    "emptyBody": "Be the first city on the board.",
+    "noAnswer": "No answer yet",
+    "median": "Median {{price}}",
+    "proofs_one": "{{count}} proof",
+    "proofs_other": "{{count}} proofs",
+    "teaser_one": "Answered in {{count}} country:",
+    "teaser_other": "Answered in {{count}} countries:",
+    "seeAll": "See all"
   },
   "backHome": {
     "title": "And back home?",
@@ -540,6 +556,7 @@
     "countrySearch": "Search countries…",
     "otherSave": "Save",
     "otherBack": "Back to the list",
-    "clear": "Remove my home city"
+    "clear": "Remove my home city",
+    "hereIn": "Here in {{city}}"
   }
 }

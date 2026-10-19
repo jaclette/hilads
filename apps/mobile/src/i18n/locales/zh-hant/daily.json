@@ -100,7 +100,7 @@
     "place_name_blocked": "該地點名稱被標記，請換個說法。",
     "invalid_position": "發布此證明需要你的位置。",
     "too_far": "你離這個地點太遠了。",
-    "answer_required": "回答今日問題才能發布你的打卡。",
+    "answer_required": "回答今日問題才能發布你的證明。",
     "invalid_answer": "這個回答和問題不符，請檢查後再試。",
     "invalid_back_home": "「你家鄉呢？」需要一個城市，以及一個回答、價格或一句話。"
   },
@@ -512,7 +512,23 @@
     "next": "下一步",
     "wordPlaceholder": "一個詞或短語",
     "textPlaceholder": "一句簡短的話",
-    "numberPlaceholder": "一個數字"
+    "numberPlaceholder": "一個數字",
+    "tab": "比較",
+    "allCities": "所有城市",
+    "boardCount": "城市：{{count}} · 國家/地區：{{countries}}",
+    "earliest": "最早：{{city}} {{answer}}",
+    "latest": "最晚：{{city}} {{answer}}",
+    "lowest": "最低：{{city}} {{answer}}",
+    "highest": "最高：{{city}} {{answer}}",
+    "emptyTitle": "還沒有回答",
+    "emptyBody": "成為榜上的第一個城市。",
+    "noAnswer": "還沒有回答",
+    "median": "中位數 {{price}}",
+    "proofs_one": "{{count}} 個證明",
+    "proofs_other": "{{count}} 個證明",
+    "teaser_one": "已有 {{count}} 個國家/地區回答：",
+    "teaser_other": "已有 {{count}} 個國家/地區回答：",
+    "seeAll": "查看全部"
   },
   "backHome": {
     "title": "你家鄉呢？",
@@ -536,6 +552,7 @@
     "countrySearch": "搜尋國家/地區…",
     "otherSave": "儲存",
     "otherBack": "返回清單",
-    "clear": "移除我的家鄉"
+    "clear": "移除我的家鄉",
+    "hereIn": "這裡：{{city}}"
   }
 }

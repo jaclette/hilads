@@ -17268,3 +17268,35 @@ body.has-app-promo-banner .page-header {
 .link-row-title { font-size: 15px; font-weight: 700; color: var(--text); }
 .link-row-sub { font-size: 13px; line-height: 17px; font-weight: 500; color: var(--muted2); }
 .link-row-chevron { flex-shrink: 0; color: var(--muted2); }
+
+/* ── Same challenge. Different worlds. (SPEC 10): answers, Back home, the Compare board ── */
+.dc-answer { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; max-width: 100%; padding: 3px 9px; border-radius: 999px;
+             background: var(--primary-tint); color: var(--primary-on-tint); font-size: 12px; font-weight: 700; }
+.dc-answer svg { flex-shrink: 0; }
+.dc-answer--dark { background: rgba(255,255,255,0.12); color: #fff; }
+.dc-price-original { margin-left: 8px; font-size: 11px; opacity: 0.8; }
+.dc-home { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.12); margin: 6px 0; }
+.dc-home-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dc-home-side { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dc-home-side + .dc-home-side { border-left: 1px solid rgba(255,255,255,0.22); padding-left: 12px; }
+.dc-home-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #fff; }
+.dc-home-none { font-size: 12px; color: #ccc; }
+.dc-home-price { font-size: 12px; font-weight: 700; color: #fff; }
+.dc-home-price small { margin-left: 6px; font-weight: 500; color: #ccc; }
+.dc-home-line { margin: 0; font-size: 12px; font-style: italic; color: #ccc; }
+.cmp { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+.cmp-question { margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text); }
+.cmp-range { margin: 0; padding: 10px; border-radius: 12px; background: var(--step-bg); font-size: 13px; font-weight: 700; color: var(--text); }
+.cmp-table { display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 18px; background: var(--bg2); overflow: hidden; }
+.cmp-row { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 8px 12px; border: 0; background: none; text-align: left; cursor: pointer; color: var(--muted); font: inherit; }
+.cmp-row + .cmp-row { border-top: 1px solid var(--line); }
+.cmp-row:hover { background: var(--step-bg); }
+.cmp-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cmp-row-city { font-size: 13px; font-weight: 700; color: var(--muted); }
+.cmp-row-answer { font-size: 1rem; font-weight: 800; color: var(--text); overflow-wrap: anywhere; }
+.cmp-row-answer--none { color: var(--muted2); font-weight: 500; }
+.cmp-row-side { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.cmp-row-price { font-size: 13px; font-weight: 700; color: var(--text); }
+.cmp-row-count { font-size: 12px; color: var(--muted); }
+.cmp-back { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; min-height: 44px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--text); cursor: pointer; }
+.cmp-city-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text); }

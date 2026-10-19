@@ -1310,7 +1310,27 @@
       "noPlace": "가장 많이 투표받은 사진이 시상대에 올라요."
     },
     "compare": {
-      "todayQuestion": "오늘의 질문: {{question}}"
+      "todayQuestion": "오늘의 질문: {{question}}",
+      "tab": "비교",
+      "allCities": "모든 도시",
+      "boardCount": "도시: {{count}} · 국가: {{countries}}",
+      "earliest": "가장 이른: {{city}} {{answer}}",
+      "latest": "가장 늦은: {{city}} {{answer}}",
+      "lowest": "가장 낮은: {{city}} {{answer}}",
+      "highest": "가장 높은: {{city}} {{answer}}",
+      "emptyTitle": "아직 답이 없어요",
+      "emptyBody": "보드의 첫 번째 도시가 되어 보세요.",
+      "noAnswer": "아직 답 없음",
+      "median": "중앙값 {{price}}",
+      "proofs_one": "인증 {{count}}개",
+      "proofs_other": "인증 {{count}}개",
+      "teaser_one": "벌써 {{count}}개국이 답했어요:",
+      "teaser_other": "벌써 {{count}}개국이 답했어요:",
+      "seeAll": "모두 보기"
+    },
+    "backHome": {
+      "hereIn": "여기, {{city}}",
+      "homeIn": "고향: {{city}}"
     }
   }
 }

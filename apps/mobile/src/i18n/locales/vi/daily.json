@@ -512,7 +512,23 @@
     "next": "Tiếp",
     "wordPlaceholder": "Một từ hoặc một cụm ngắn",
     "textPlaceholder": "Một câu ngắn",
-    "numberPlaceholder": "Một con số"
+    "numberPlaceholder": "Một con số",
+    "tab": "So sánh",
+    "allCities": "Tất cả thành phố",
+    "boardCount": "Thành phố: {{count}} · Quốc gia: {{countries}}",
+    "earliest": "Sớm nhất: {{city}} {{answer}}",
+    "latest": "Muộn nhất: {{city}} {{answer}}",
+    "lowest": "Thấp nhất: {{city}} {{answer}}",
+    "highest": "Cao nhất: {{city}} {{answer}}",
+    "emptyTitle": "Chưa có câu trả lời",
+    "emptyBody": "Hãy là thành phố đầu tiên trên bảng.",
+    "noAnswer": "Chưa có câu trả lời",
+    "median": "Trung vị {{price}}",
+    "proofs_one": "{{count}} bằng chứng",
+    "proofs_other": "{{count}} bằng chứng",
+    "teaser_one": "Đã có {{count}} quốc gia trả lời:",
+    "teaser_other": "Đã có {{count}} quốc gia trả lời:",
+    "seeAll": "Xem tất cả"
   },
   "backHome": {
     "title": "Còn ở quê bạn thì sao?",
@@ -536,6 +552,7 @@
     "countrySearch": "Tìm quốc gia…",
     "otherSave": "Lưu",
     "otherBack": "Quay lại danh sách",
-    "clear": "Xóa thành phố quê tôi"
+    "clear": "Xóa thành phố quê tôi",
+    "hereIn": "Ở đây, {{city}}"
   }
 }

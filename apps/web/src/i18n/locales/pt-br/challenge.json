@@ -1312,7 +1312,27 @@
       "noPlace": "A mais votada sobe ao pódio."
     },
     "compare": {
-      "todayQuestion": "A pergunta de hoje: {{question}}"
+      "todayQuestion": "A pergunta de hoje: {{question}}",
+      "tab": "Comparar",
+      "allCities": "Todas as cidades",
+      "boardCount": "Cidades: {{count}} · Países: {{countries}}",
+      "earliest": "Mais cedo: {{city}} {{answer}}",
+      "latest": "Mais tarde: {{city}} {{answer}}",
+      "lowest": "Mais baixo: {{city}} {{answer}}",
+      "highest": "Mais alto: {{city}} {{answer}}",
+      "emptyTitle": "Ainda sem respostas",
+      "emptyBody": "Seja a primeira cidade do quadro.",
+      "noAnswer": "Ainda sem resposta",
+      "median": "Mediana {{price}}",
+      "proofs_one": "{{count}} prova",
+      "proofs_other": "{{count}} provas",
+      "teaser_one": "Já em {{count}} país:",
+      "teaser_other": "Já em {{count}} países:",
+      "seeAll": "Ver tudo"
+    },
+    "backHome": {
+      "hereIn": "Aqui em {{city}}",
+      "homeIn": "Na sua cidade, {{city}}"
     }
   }
 }

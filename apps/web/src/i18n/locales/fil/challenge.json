@@ -1312,7 +1312,27 @@
       "noPlace": "Ang may pinakamaraming boto ang aakyat sa podium."
     },
     "compare": {
-      "todayQuestion": "Tanong ngayong araw: {{question}}"
+      "todayQuestion": "Tanong ngayong araw: {{question}}",
+      "tab": "Ikumpara",
+      "allCities": "Lahat ng lungsod",
+      "boardCount": "Lungsod: {{count}} · Bansa: {{countries}}",
+      "earliest": "Pinakamaaga: {{city}} {{answer}}",
+      "latest": "Pinakahuli: {{city}} {{answer}}",
+      "lowest": "Pinakamababa: {{city}} {{answer}}",
+      "highest": "Pinakamataas: {{city}} {{answer}}",
+      "emptyTitle": "Wala pang sagot",
+      "emptyBody": "Maging unang lungsod sa board.",
+      "noAnswer": "Wala pang sagot",
+      "median": "Median {{price}}",
+      "proofs_one": "{{count}} proof",
+      "proofs_other": "{{count}} proof",
+      "teaser_one": "Sumagot na ang {{count}} bansa:",
+      "teaser_other": "Sumagot na ang {{count}} bansa:",
+      "seeAll": "Tingnan lahat"
+    },
+    "backHome": {
+      "hereIn": "Dito sa {{city}}",
+      "homeIn": "Sa inyo, {{city}}"
     }
   }
 }

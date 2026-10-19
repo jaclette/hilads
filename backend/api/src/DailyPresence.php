@@ -126,6 +126,7 @@ final class DailyPresence
         }
         if ($challengeId !== null) {
             Cache::forget('daily_cities_on_v1_' . $challengeId);
+            Cache::forget(DailyBoard::cacheKey($challengeId));   // SPEC 10.6
         }
     }
 

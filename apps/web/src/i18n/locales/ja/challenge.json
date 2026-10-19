@@ -1312,7 +1312,27 @@
       "noPlace": "いちばん票を集めた写真が表彰台へ。"
     },
     "compare": {
-      "todayQuestion": "今日の質問：{{question}}"
+      "todayQuestion": "今日の質問：{{question}}",
+      "tab": "比べる",
+      "allCities": "すべての街",
+      "boardCount": "街：{{count}} · 国・地域：{{countries}}",
+      "earliest": "いちばん早い：{{city}} {{answer}}",
+      "latest": "いちばん遅い：{{city}} {{answer}}",
+      "lowest": "いちばん少ない：{{city}} {{answer}}",
+      "highest": "いちばん多い：{{city}} {{answer}}",
+      "emptyTitle": "まだ回答がありません",
+      "emptyBody": "ボードの最初の街になろう。",
+      "noAnswer": "まだ回答なし",
+      "median": "中央値 {{price}}",
+      "proofs_one": "{{count}}件の証明",
+      "proofs_other": "{{count}}件の証明",
+      "teaser_one": "すでに{{count}}か国が回答：",
+      "teaser_other": "すでに{{count}}か国が回答：",
+      "seeAll": "すべて見る"
+    },
+    "backHome": {
+      "hereIn": "ここ：{{city}}",
+      "homeIn": "地元：{{city}}"
     }
   }
 }

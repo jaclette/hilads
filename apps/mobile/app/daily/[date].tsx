@@ -21,6 +21,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
+import { CompareBoard } from '@/features/compare/CompareBoard';
 import type { DailyProof } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
@@ -46,7 +47,8 @@ export default function DailySheetScreen() {
   }, [date, city?.channelId]);
 
   if (!date) return <Loading />;
-  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} initialTab={tab === 'top10' ? 'top10' : null} pushType={pushType ?? null} shareProof={share === '1'} />;
+  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null}
+                initialTab={tab === 'top10' || tab === 'compare' ? tab : null} pushType={pushType ?? null} shareProof={share === '1'} />;
 }
 
 function Loading() {
@@ -55,10 +57,10 @@ function Loading() {
   return <Screen><View style={styles.center}><ActivityIndicator color={colors.primary} /></View></Screen>;
 }
 
-type Tab = 'world' | 'city' | 'top10';
+type Tab = 'world' | 'city' | 'compare' | 'top10';
 
 function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: {
-  date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | null; pushType: string | null;
+  date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | 'compare' | null; pushType: string | null;
   /** ?share=1: open the share sheet on the ?proof= one (mine, from yesterday's podium). */
   shareProof: boolean;
 }) {
@@ -104,7 +106,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
 
   const selectTab = (next: Tab) => {
     setTab(next);
-    if (next !== 'top10') setScope(next);
+    if (next === 'world' || next === 'city') setScope(next);
   };
 
   const openProofById = useCallback((proofId: string) => {
@@ -259,8 +261,10 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
         )}
 
         <Segmented<Tab>
-          options={(isLive ? ['world', 'city', 'top10'] as const : ['world', 'top10'] as const).map(k => ({
-            key: k, label: k === 'world' ? t('tabWorld') : k === 'city' ? (sheet?.city?.name ? shortCityName(sheet.city.name) : cityName) : t('leaderboard.tab'),
+          options={(['world', ...(isLive ? ['city'] : []), ...(challenge?.compare ? ['compare'] : []), 'top10'] as Tab[]).map(k => ({
+            key: k,
+            label: k === 'world' ? t('tabWorld') : k === 'city' ? (sheet?.city?.name ? shortCityName(sheet.city.name) : cityName)
+              : k === 'compare' ? t('compare.tab') : t('leaderboard.tab'),
             flag: k === 'city' ? sheet?.city?.country : null,
           }))}
           value={tab}
@@ -286,17 +290,21 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
         </View>
       ) : (
         <FlatList
-          data={tab === 'top10' ? [] : sheet!.proofs}
+          data={tab === 'top10' || tab === 'compare' ? [] : sheet!.proofs}
           keyExtractor={p => p.id}
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.list}
           ListHeaderComponent={header}
           renderItem={({ item }) => <DailyProofTile proof={item} onPress={() => setViewing(item)} />}
-          onEndReached={tab === 'top10' ? undefined : loadMore}
+          onEndReached={tab === 'top10' || tab === 'compare' ? undefined : loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.primary} style={styles.more} /> : null}
-          ListEmptyComponent={tab === 'top10' ? (
+          ListEmptyComponent={tab === 'compare' ? (
+            // How the world answered (SPEC 10.6).
+            <CompareBoard date={challenge.date} source={source === 'teaser' ? 'teaser' : source === 'link' ? 'link' : 'tab'}
+                          onOpenProof={setViewing} onAnswer={challenge.isActive && !myProof ? onCta : undefined} />
+          ) : tab === 'top10' ? (
             <DailyLeaderboardPanel
               sheet={sheet!}
               secondsLeft={secondsLeft}

@@ -127,11 +127,11 @@ final class Currencies
         return $rates !== null ? self::convertWith($rates['rates'], $amount, $from, $to) : null;
     }
 
-    /** $amount in EUR (the base of medians), rounded to the cent, or null. */
+    /** $amount in EUR (the base of medians), 4 decimals (VND and IDR need them to convert back), or null. */
     public static function toBase(float $amount, string $from): ?float
     {
         $v = self::convert($amount, $from, self::BASE);
-        return $v === null ? null : round($v, 2);
+        return $v === null ? null : round($v, 4);
     }
 
     // ── The daily fetch ──────────────────────────────────────────────────────

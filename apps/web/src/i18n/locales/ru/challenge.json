@@ -1340,7 +1340,31 @@
       "noPlace": "Самое популярное попадёт на пьедестал."
     },
     "compare": {
-      "todayQuestion": "Вопрос дня: {{question}}"
+      "todayQuestion": "Вопрос дня: {{question}}",
+      "tab": "Сравнить",
+      "allCities": "Все города",
+      "boardCount": "Городов: {{count}} · Стран: {{countries}}",
+      "earliest": "Раньше всех: {{city}} {{answer}}",
+      "latest": "Позже всех: {{city}} {{answer}}",
+      "lowest": "Меньше всего: {{city}} {{answer}}",
+      "highest": "Больше всего: {{city}} {{answer}}",
+      "emptyTitle": "Ответов пока нет",
+      "emptyBody": "Стань первым городом на доске.",
+      "noAnswer": "Пока без ответа",
+      "median": "Медиана {{price}}",
+      "proofs_one": "{{count}} доказательство",
+      "proofs_few": "{{count}} доказательства",
+      "proofs_many": "{{count}} доказательств",
+      "proofs_other": "{{count}} доказательства",
+      "teaser_one": "Уже {{count}} страна:",
+      "teaser_few": "Уже {{count}} страны:",
+      "teaser_many": "Уже {{count}} стран:",
+      "teaser_other": "Уже {{count}} страны:",
+      "seeAll": "Смотреть все"
+    },
+    "backHome": {
+      "hereIn": "Здесь, {{city}}",
+      "homeIn": "Дома, в {{city}}"
     }
   }
 }

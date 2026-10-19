@@ -516,7 +516,23 @@
     "next": "Weiter",
     "wordPlaceholder": "Ein Wort oder eine kurze Wendung",
     "textPlaceholder": "Eine kurze Zeile",
-    "numberPlaceholder": "Eine Zahl"
+    "numberPlaceholder": "Eine Zahl",
+    "tab": "Vergleichen",
+    "allCities": "Alle Städte",
+    "boardCount": "Städte: {{count}} · Länder: {{countries}}",
+    "earliest": "Am frühesten: {{city}} {{answer}}",
+    "latest": "Am spätesten: {{city}} {{answer}}",
+    "lowest": "Am niedrigsten: {{city}} {{answer}}",
+    "highest": "Am höchsten: {{city}} {{answer}}",
+    "emptyTitle": "Noch keine Antworten",
+    "emptyBody": "Sei die erste Stadt auf der Tafel.",
+    "noAnswer": "Noch keine Antwort",
+    "median": "Median {{price}}",
+    "proofs_one": "{{count}} Beweis",
+    "proofs_other": "{{count}} Beweise",
+    "teaser_one": "Schon in {{count}} Land:",
+    "teaser_other": "Schon in {{count}} Ländern:",
+    "seeAll": "Alle ansehen"
   },
   "backHome": {
     "title": "Und bei dir zu Hause?",
@@ -540,6 +556,7 @@
     "countrySearch": "Länder suchen…",
     "otherSave": "Speichern",
     "otherBack": "Zurück zur Liste",
-    "clear": "Meine Heimatstadt entfernen"
+    "clear": "Meine Heimatstadt entfernen",
+    "hereIn": "Hier in {{city}}"
   }
 }

@@ -10,6 +10,7 @@ import {
   RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer,
 } from './dailyShared'
 import Icon from '../Icon'
+import CompareBoard from './CompareBoard'
 import { themeIcon } from '../../lib/icons'
 
 const POLL_MS = 30_000
@@ -60,7 +61,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
   const { t, i18n } = useDc()
   const { cityId, account, openProfile, needAccount, openSpot } = useDaily()
   const [scope, setScope] = useState('world')
-  const [tab, setTab] = useState(initialTab === 'top10' ? 'top10' : 'world')
+  const [tab, setTab] = useState(initialTab === 'top10' || initialTab === 'compare' ? initialTab : 'world')
   const [sheet, setSheet] = useState(null)
   const [error, setError] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -125,7 +126,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
     } catch { /* keep what we have */ } finally { setLoadingMore(false) }
   }
 
-  const selectTab = (next) => { setTab(next); if (next !== 'top10') setScope(next) }
+  const selectTab = (next) => { setTab(next); if (next === 'world' || next === 'city') setScope(next) }
   const goProfile = (id, name) => { if (!account) { needAccount('view_profile'); return } openProfile(id, name) }
 
   const challenge = sheet?.challenge ?? null
@@ -197,14 +198,17 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
             <Practical sheet={sheet} onOpenProof={openProof} onOpenSpot={openSpot} />
 
             <div className="dc-tabs" role="tablist">
-              {(isLive ? ['world', 'city', 'top10'] : ['world', 'top10']).map(k => (
+              {['world', ...(isLive ? ['city'] : []), ...(sheet.challenge?.compare ? ['compare'] : []), 'top10'].map(k => (
                 <button key={k} type="button" role="tab" aria-selected={tab === k} className={`dc-tab${tab === k ? ' dc-tab--on' : ''}`} onClick={() => selectTab(k)}>
-                  {k === 'world' ? t('tabWorld') : k === 'city' ? <CityName name={sheet.city?.name} country={sheet.city?.country} short /> : t('leaderboard.tab')}
+                  {k === 'world' ? t('tabWorld') : k === 'city' ? <CityName name={sheet.city?.name} country={sheet.city?.country} short />
+                    : k === 'compare' ? t('compare.tab') : t('leaderboard.tab')}
                 </button>
               ))}
             </div>
 
-            {tab === 'top10' ? (
+            {tab === 'compare' ? (
+              <CompareBoard date={sheet.challenge.date} source={source === 'teaser' ? 'teaser' : 'tab'} onOpenProof={setViewing} />
+            ) : tab === 'top10' ? (
               <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} onOpenProof={openProof} />
             ) : sheet.proofs.length === 0 ? (
               <div className="dc-center">
