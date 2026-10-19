@@ -620,7 +620,7 @@
     "moreCities_other": "+另外 {{count}} 座城市"
   },
   "ctaAnswer": "为{{city}}作答",
-  "ctaAnswerNoCity": "为我的城市作答",
+  "ctaAnswerNoCity": "用照片作答",
   "countdown": {
     "hm": "{{h}}小时{{m}}分",
     "ms": "{{m}}分{{s}}秒"

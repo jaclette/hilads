@@ -20,7 +20,7 @@ import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
-import { PulseButton } from './PulseButton';
+import { PulseButton, type PulseTone } from './PulseButton';
 import { LiveDot, WorldTicker, useLiveMotion, type TickerEntry } from './WorldLive';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
@@ -260,8 +260,11 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
                          live={motion.live} reduced={motion.reduced} onDark
                          staticLine={[t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ')} />
           ) : <Text style={styles.worldFirst} numberOfLines={1}>{t('compare.firstIn')}</Text>}
-          <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
-          <Ionicons name="chevron-forward" size={15} color="#FFFFFF" />
+          {/* Primary on a dark pill: 4.5:1 even over a bright photo. */}
+          <View style={styles.seeChip}>
+            <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
+            <Ionicons name="chevron-forward" size={15} color={HERO_ACCENT} />
+          </View>
         </Pressable>
         {myProof ? (
           <>
@@ -270,8 +273,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
             <Button variant="secondary" icon="checkmark-circle-outline" label={t('ctaTaken')} onPress={openMine} style={styles.cta} />
           </>
         ) : (
-          // Solid primary, pulsing; straight to the camera (SPEC 9.3).
-          <PulseButton label={ctaLabel} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
+          // White on the photo, pulsing; straight to the camera (SPEC 9.3).
+          <PulseButton tone={HERO_CTA_TONE} label={ctaLabel} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
         {/* My city is an IP guess (a VPN gets it wrong): "Not in Saigon? Change" asks for the location. */}
@@ -359,6 +362,9 @@ export function Perforation() {
 const NOTCH = 20;
 
 // White on the photo: a soft shadow keeps 4.5:1 over the gradients (SPEC 9.3).
+// On the photo the button is white (or "sun orange"); the primary stays for small accents.
+const HERO_CTA_TONE: PulseTone = 'white';
+const HERO_ACCENT = '#D9622A';   // the primary as on dark surfaces, in both themes: the hero is always dark
 const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 };
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
@@ -375,7 +381,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   headline:    { fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3, ...ON_PHOTO_SHADOW },
   worldRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 32 },
   worldFirst:  { flex: 1, fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
-  worldSee:    { fontSize: 13, fontWeight: '800', color: '#FFFFFF', ...ON_PHOTO_SHADOW },
+  seeChip:     { flexDirection: 'row', alignItems: 'center', gap: 2, paddingLeft: 9, paddingRight: 5, paddingVertical: 4, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.6)' },
+  worldSee:    { fontSize: 13, fontWeight: '800', color: HERO_ACCENT },
   ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: 22 },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
   // Image band: the ticket's top corners (radius 22 minus the 1.5 border).

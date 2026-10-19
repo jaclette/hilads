@@ -690,7 +690,7 @@
     "moreCities_other": "+{{count}} مدينة أخرى"
   },
   "ctaAnswer": "أجب باسم {{city}}",
-  "ctaAnswerNoCity": "أجب باسم مدينتي",
+  "ctaAnswerNoCity": "أجيب بصورة",
   "countdown": {
     "hm": "{{h}} س {{m}} د",
     "ms": "{{m}} د {{s}} ث"

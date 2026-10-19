@@ -1422,7 +1422,7 @@
       "moreCities_other": "+ещё {{count}} города"
     },
     "ctaAnswer": "Ответь за {{city}}",
-    "ctaAnswerNoCity": "Ответь за мой город",
+    "ctaAnswerNoCity": "Отвечаю фото",
     "represent": {
       "button": "Ответь за {{city}}"
     },

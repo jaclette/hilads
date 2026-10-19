@@ -623,7 +623,7 @@
     "moreCities_other": "+{{count}} cidades"
   },
   "ctaAnswer": "Responde por {{city}}",
-  "ctaAnswerNoCity": "Responde pela minha cidade",
+  "ctaAnswerNoCity": "Respondo com uma foto",
   "countdown": {
     "hm": "{{h}} h {{m}} min",
     "ms": "{{m}} min {{s}} s"

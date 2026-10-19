@@ -17496,8 +17496,18 @@ body.has-app-promo-banner .page-header {
 .today-hero-world .world-ticker-line, .today-hero-first { color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
 .today-hero-world .world-ticker-line strong { color: #fff; }
 .today-hero-first { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.today-hero-see { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 800; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); white-space: nowrap; }
-.today-hero .today-cta { background: var(--primary); color: #fff; }
+/* Primary on a dark pill: 4.5:1 even over a bright photo. */
+.today-hero-see { display: inline-flex; align-items: center; gap: 2px; padding: 4px 5px 4px 9px; border-radius: 12px; background: rgba(0,0,0,.6);
+                  font-size: 13px; font-weight: 800; color: #D9622A; white-space: nowrap; }
+/* The button on the photo: white, ink label, primary camera icon, white rings (75%); the primary
+   (#D9622A, as on dark surfaces: the hero is always dark) stays for small accents. */
+.today-hero .today-cta { min-height: 52px; border-radius: 16px; background: #fff; color: #2A1C13; }
+.today-hero .today-cta .icon { color: #D9622A; }
+.today-hero .today-cta-pulse::before, .today-hero .today-cta-pulse::after { border-color: rgba(255,255,255,.75); }
+/* The "sun orange" option: TodayScreen's HERO_CTA_TONE = 'sun'. */
+.today-hero .today-cta-pulse--sun .today-cta { background: #FF7A3D; }
+.today-hero .today-cta-pulse--sun .today-cta .icon { color: #2A1C13; }
+.today-hero .today-cta-pulse--sun::before, .today-hero .today-cta-pulse--sun::after { border-color: #FF7A3D; }
 .today-not-here--hero { color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
 .today-not-here--hero .today-not-here-link { color: #fff; }
 .dc-question { margin: 4px 0 0; font-size: 16px; font-weight: 800; color: var(--text); }

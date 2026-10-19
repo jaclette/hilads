@@ -1456,7 +1456,7 @@
       "moreCities_other": "+{{count}} مدينة أخرى"
     },
     "ctaAnswer": "أجب باسم {{city}}",
-    "ctaAnswerNoCity": "أجب باسم مدينتي",
+    "ctaAnswerNoCity": "أجيب بصورة",
     "represent": {
       "button": "أجب باسم {{city}}"
     },

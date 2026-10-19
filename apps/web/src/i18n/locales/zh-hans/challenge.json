@@ -1387,7 +1387,7 @@
       "moreCities_other": "+另外 {{count}} 座城市"
     },
     "ctaAnswer": "为{{city}}作答",
-    "ctaAnswerNoCity": "为我的城市作答",
+    "ctaAnswerNoCity": "用照片作答",
     "represent": {
       "button": "为{{city}}作答"
     },

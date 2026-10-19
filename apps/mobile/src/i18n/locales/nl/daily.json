@@ -622,7 +622,7 @@
     "moreCities_other": "+{{count}} andere steden"
   },
   "ctaAnswer": "Antwoord voor {{city}}",
-  "ctaAnswerNoCity": "Antwoord voor mijn stad",
+  "ctaAnswerNoCity": "Ik antwoord met een foto",
   "countdown": {
     "hm": "{{h}}u {{m}}m",
     "ms": "{{m}}m {{s}}s"

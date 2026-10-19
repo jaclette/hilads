@@ -622,7 +622,7 @@
     "moreCities_other": "+{{count}} pang lungsod"
   },
   "ctaAnswer": "Sumagot para sa {{city}}",
-  "ctaAnswerNoCity": "Sumagot para sa lungsod ko",
+  "ctaAnswerNoCity": "Sumagot gamit ang litrato",
   "countdown": {
     "hm": "{{h}}h {{m}}m",
     "ms": "{{m}}m {{s}}s"

@@ -656,7 +656,7 @@
     "moreCities_other": "+ещё {{count}} города"
   },
   "ctaAnswer": "Ответь за {{city}}",
-  "ctaAnswerNoCity": "Ответь за мой город",
+  "ctaAnswerNoCity": "Отвечаю фото",
   "countdown": {
     "hm": "{{h}} ч {{m}} мин",
     "ms": "{{m}} мин {{s}} с"

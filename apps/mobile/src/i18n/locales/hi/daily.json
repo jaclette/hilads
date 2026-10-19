@@ -622,7 +622,7 @@
     "moreCities_other": "+{{count}} और शहर"
   },
   "ctaAnswer": "{{city}} के लिए जवाब दें",
-  "ctaAnswerNoCity": "मेरे शहर के लिए जवाब दें",
+  "ctaAnswerNoCity": "फ़ोटो से जवाब दूँ",
   "countdown": {
     "hm": "{{h}} घं {{m}} मि",
     "ms": "{{m}} मि {{s}} से"

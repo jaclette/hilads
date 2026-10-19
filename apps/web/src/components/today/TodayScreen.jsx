@@ -23,6 +23,8 @@ import { PhotoCredit, PickBadge, PickVoteButton } from '../map/Pick'
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
 const DAILY_CHALLENGE = 'Daily Challenge'
+// The button on the hero's photo (SPEC 9.3): 'white', or the "sun orange" option ('sun').
+const HERO_CTA_TONE = 'white'
 
 const addDays = (date, n) => ymd(new Date(Date.parse(`${date}T12:00:00Z`) + n * 86400000))
 
@@ -293,8 +295,8 @@ function Ticket({ data, loading }) {
             </button>
           </>
         ) : (
-          // Solid primary, pulsing (paused off screen, in a hidden tab, with reduced motion). The web opens the store.
-          <span ref={setPulseEl} className={`today-cta-pulse${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
+          // White on the photo, pulsing (paused off screen, in a hidden tab, with reduced motion). The web opens the store.
+          <span ref={setPulseEl} className={`today-cta-pulse${HERO_CTA_TONE === 'sun' ? ' today-cta-pulse--sun' : ''}${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
             <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
               <Icon name="camera-outline" size={20} />{ctaLabel}

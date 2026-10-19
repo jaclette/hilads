@@ -620,7 +620,7 @@
     "moreCities_other": "+{{count}}개 도시 더"
   },
   "ctaAnswer": "{{city}} 대표로 답하기",
-  "ctaAnswerNoCity": "내 도시 대표로 답하기",
+  "ctaAnswerNoCity": "사진으로 답하기",
   "countdown": {
     "hm": "{{h}}시간 {{m}}분",
     "ms": "{{m}}분 {{s}}초"

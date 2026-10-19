@@ -1388,7 +1388,7 @@
       "moreCities_other": "+{{count}} pang lungsod"
     },
     "ctaAnswer": "Sumagot para sa {{city}}",
-    "ctaAnswerNoCity": "Sumagot para sa lungsod ko",
+    "ctaAnswerNoCity": "Sumagot gamit ang litrato",
     "represent": {
       "button": "Sumagot para sa {{city}}"
     },

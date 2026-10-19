@@ -7,30 +7,39 @@ import Animated, {
 import { useIsFocused } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { FontSizes } from '@/constants';
+import { useTheme } from '@/context/ThemeContext';
 
 const CYCLE_MS      = 1600;   // one ring's expansion
 const FAST_CYCLE_MS = 1200;   // the last 3 hours before the next drop
 const GROW_X = 0.08;          // the ring ends 8% wider ...
 const GROW_Y = 0.5;           // ... and 50% taller than the button
 
+/** The button on the hero's photo (SPEC 9.3): white, or the "sun orange" option. */
+const TONES = {
+  white: { bg: '#FFFFFF', ring: 'rgba(255,255,255,0.75)' },
+  sun:   { bg: '#FF7A3D', ring: '#FF7A3D' },
+} as const;
+export type PulseTone = keyof typeof TONES;
+const INK = '#2A1C13';
+
 /**
- * Today's "I'm in" (SPEC 9.3): the card's camera button with a continuous
- * pulse, two primary rings in relay expanding from its edge while fading
+ * Today's "I'm in" (SPEC 9.3): the hero's camera button (white, ink label,
+ * primary camera icon) with a continuous pulse, two white rings (75%) in relay
+ * expanding from its edge while fading
  * (1.6 s, the second 0.8 s later; 1.2 s in the last 3 hours). The pulse runs
  * only while `visible` (the card on screen), the tab is focused and the app is
  * in the foreground. A press gives light haptics, scales the button to 0.97
  * and grows a primary disc from it before `onPress` opens the camera. The OS
  * "reduce motion" setting turns all of it off: a static button.
  */
-export function PulseButton({ label, onPress, fast, visible, intercept }: {
-  label: string; onPress: () => void; fast: boolean; visible: boolean;
+export function PulseButton({ label, onPress, fast, visible, intercept, tone = 'white' }: {
+  label: string; onPress: () => void; fast: boolean; visible: boolean; tone?: PulseTone;
   /** Called on press first: true = handled elsewhere (the how-it-works sheet), no transition. */
   intercept?: () => boolean;
 }) {
-  const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
+  const { bg, ring } = TONES[tone];
   const reduceMotion = useReducedMotion();
   const focused = useIsFocused();
   const [foreground, setForeground] = useState(AppState.currentState === 'active');
@@ -80,18 +89,18 @@ export function PulseButton({ label, onPress, fast, visible, intercept }: {
 
   return (
     <View style={styles.wrap}>
-      {!reduceMotion && <Animated.View pointerEvents="none" style={[styles.ring, { borderColor: colors.primary }, ring1Style]} />}
-      {!reduceMotion && <Animated.View pointerEvents="none" style={[styles.ring, { borderColor: colors.primary }, ring2Style]} />}
+      {!reduceMotion && <Animated.View pointerEvents="none" style={[styles.ring, { borderColor: ring }, ring1Style]} />}
+      {!reduceMotion && <Animated.View pointerEvents="none" style={[styles.ring, { borderColor: ring }, ring2Style]} />}
       <Animated.View style={buttonStyle}>
         <Pressable
           onPressIn={() => { if (!reduceMotion) press.value = withTiming(0.97, { duration: 90 }); }}
           onPressOut={() => { if (!reduceMotion) press.value = withTiming(1, { duration: 140 }); }}
           onPress={go}
-          style={styles.button}
+          style={[styles.button, { backgroundColor: bg }]}
           accessibilityRole="button"
           accessibilityLabel={label}
         >
-          <Ionicons name="camera-outline" size={20} color={colors.white} />
+          <Ionicons name="camera-outline" size={20} color={tone === 'white' ? colors.primary : INK} />
           <Text style={styles.label} numberOfLines={1}>{label}</Text>
         </Pressable>
       </Animated.View>
@@ -109,13 +118,14 @@ function ringFrame(p: SharedValue<number>) {
   };
 }
 
-const HEIGHT = 56;
+const HEIGHT = 52;
+const RADIUS = 16;
 
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
+const styles = StyleSheet.create({
   wrap:   { height: HEIGHT, justifyContent: 'center' },
-  ring:   { ...StyleSheet.absoluteFillObject, borderWidth: 2, borderRadius: Radius.button },
-  button: { height: HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: Radius.button, backgroundColor: c.primary, paddingHorizontal: 16 },
-  label:  { fontSize: FontSizes.md, fontWeight: '700', color: c.white },
+  ring:   { ...StyleSheet.absoluteFillObject, borderWidth: 2, borderRadius: RADIUS },
+  button: { height: HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: RADIUS, paddingHorizontal: 16 },
+  label:  { fontSize: FontSizes.md, fontWeight: '700', color: INK },
   // The disc the camera "opens from": centred on the button, grown by scale.
   reveal: { position: 'absolute', alignSelf: 'center', width: HEIGHT, height: HEIGHT, borderRadius: HEIGHT / 2, zIndex: 2 },
 });

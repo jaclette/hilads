@@ -620,7 +620,7 @@
     "moreCities_other": "+อีก {{count}} เมือง"
   },
   "ctaAnswer": "ตอบแทน{{city}}",
-  "ctaAnswerNoCity": "ตอบแทนเมืองของฉัน",
+  "ctaAnswerNoCity": "ตอบด้วยรูปถ่าย",
   "countdown": {
     "hm": "{{h}} ชม. {{m}} นาที",
     "ms": "{{m}} นาที {{s}} วิ"

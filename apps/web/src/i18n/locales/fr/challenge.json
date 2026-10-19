@@ -1388,7 +1388,7 @@
       "moreCities_other": "+{{count}} autres villes"
     },
     "ctaAnswer": "Réponds pour {{city}}",
-    "ctaAnswerNoCity": "Réponds pour ma ville",
+    "ctaAnswerNoCity": "Je réponds en photo",
     "represent": {
       "button": "Réponds pour {{city}}"
     },

@@ -622,7 +622,7 @@
     "moreCities_other": "+{{count}} more cities"
   },
   "ctaAnswer": "Answer for {{city}}",
-  "ctaAnswerNoCity": "Answer for my city",
+  "ctaAnswerNoCity": "Snap my answer",
   "countdown": {
     "hm": "{{h}}h {{m}}m",
     "ms": "{{m}}m {{s}}s"

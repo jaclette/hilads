@@ -1387,7 +1387,7 @@
       "moreCities_other": "+{{count}}개 도시 더"
     },
     "ctaAnswer": "{{city}} 대표로 답하기",
-    "ctaAnswerNoCity": "내 도시 대표로 답하기",
+    "ctaAnswerNoCity": "사진으로 답하기",
     "represent": {
       "button": "{{city}} 대표로 답하기"
     },

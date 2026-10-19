@@ -1388,7 +1388,7 @@
       "moreCities_other": "ほか{{count}}都市"
     },
     "ctaAnswer": "{{city}}代表で答える",
-    "ctaAnswerNoCity": "私の街の代表で答える",
+    "ctaAnswerNoCity": "写真で答える",
     "represent": {
       "button": "{{city}}代表で答える"
     },
