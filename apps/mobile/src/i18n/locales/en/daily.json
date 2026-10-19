@@ -18,7 +18,7 @@
   "beFirstSub": "No proof yet. Post yours and inspire the city.",
   "yourProof": "Your proof",
   "status": {
-    "pending": "In review",
+    "pending": "Pending",
     "approved": "Published",
     "rejected": "Not published",
     "removed": "Removed"

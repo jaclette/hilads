@@ -873,7 +873,7 @@
     "beFirstSub": "Noch kein Beweis. Poste deinen und inspiriere die Stadt.",
     "yourProof": "Dein Beweis",
     "status": {
-      "pending": "Wird geprüft",
+      "pending": "Ausstehend",
       "approved": "Veröffentlicht",
       "rejected": "Nicht veröffentlicht",
       "removed": "Entfernt"

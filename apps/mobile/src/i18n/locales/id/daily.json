@@ -18,7 +18,7 @@
   "beFirstSub": "Belum ada bukti. Posting punyamu dan inspirasi kotamu.",
   "yourProof": "Buktimu",
   "status": {
-    "pending": "Sedang ditinjau",
+    "pending": "Tertunda",
     "approved": "Dipublikasikan",
     "rejected": "Tidak dipublikasikan",
     "removed": "Dihapus"

@@ -18,7 +18,7 @@
   "beFirstSub": "Nog geen bewijs. Post het jouwe en inspireer de stad.",
   "yourProof": "Jouw bewijs",
   "status": {
-    "pending": "Wordt gecheckt",
+    "pending": "In afwachting",
     "approved": "Gepubliceerd",
     "rejected": "Niet gepubliceerd",
     "removed": "Verwijderd"

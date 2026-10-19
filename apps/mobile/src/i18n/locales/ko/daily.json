@@ -18,7 +18,7 @@
   "beFirstSub": "아직 인증이 없어요. 내 인증을 올리고 도시에 영감을 주세요.",
   "yourProof": "내 인증",
   "status": {
-    "pending": "검토 중",
+    "pending": "대기 중",
     "approved": "게시됨",
     "rejected": "게시 안 됨",
     "removed": "삭제됨"

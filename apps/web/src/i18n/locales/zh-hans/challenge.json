@@ -873,7 +873,7 @@
     "beFirstSub": "还没有证明。发布你的，激励整座城市。",
     "yourProof": "你的证明",
     "status": {
-      "pending": "审核中",
+      "pending": "待审核",
       "approved": "已发布",
       "rejected": "未发布",
       "removed": "已移除"

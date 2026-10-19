@@ -873,7 +873,7 @@
     "beFirstSub": "Ainda não há provas. Publica a tua e inspira a cidade.",
     "yourProof": "A tua prova",
     "status": {
-      "pending": "Em revisão",
+      "pending": "Pendente",
       "approved": "Publicada",
       "rejected": "Não publicada",
       "removed": "Removida"

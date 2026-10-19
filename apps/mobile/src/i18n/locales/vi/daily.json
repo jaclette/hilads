@@ -18,7 +18,7 @@
   "beFirstSub": "Chưa có bằng chứng nào. Đăng của bạn và truyền cảm hứng cho cả thành phố.",
   "yourProof": "Bằng chứng của bạn",
   "status": {
-    "pending": "Đang duyệt",
+    "pending": "Đang chờ duyệt",
     "approved": "Đã đăng",
     "rejected": "Không được đăng",
     "removed": "Đã gỡ"

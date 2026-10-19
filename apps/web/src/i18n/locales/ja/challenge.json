@@ -873,7 +873,7 @@
     "beFirstSub": "まだ証明がありません。投稿して街を盛り上げよう。",
     "yourProof": "あなたの証明",
     "status": {
-      "pending": "確認中",
+      "pending": "保留中",
       "approved": "公開中",
       "rejected": "非公開",
       "removed": "削除済み"

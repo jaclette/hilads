@@ -18,7 +18,7 @@
   "beFirstSub": "Pas encore de preuve. Poste la tienne et inspire la ville.",
   "yourProof": "Ta preuve",
   "status": {
-    "pending": "En vérification",
+    "pending": "En attente",
     "approved": "Publiée",
     "rejected": "Non publiée",
     "removed": "Retirée"

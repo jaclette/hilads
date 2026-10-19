@@ -18,7 +18,7 @@
   "beFirstSub": "Aún no hay pruebas. Publica la tuya e inspira a la ciudad.",
   "yourProof": "Tu prueba",
   "status": {
-    "pending": "En revisión",
+    "pending": "Pendiente",
     "approved": "Publicada",
     "rejected": "No publicada",
     "removed": "Eliminada"

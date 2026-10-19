@@ -22,7 +22,7 @@
   "beFirstSub": "لا يوجد دليل بعد. انشر دليلك وألهِم المدينة.",
   "yourProof": "دليلك",
   "status": {
-    "pending": "قيد المراجعة",
+    "pending": "قيد الانتظار",
     "approved": "منشور",
     "rejected": "غير منشور",
     "removed": "محذوف"
