@@ -312,10 +312,12 @@ final class DailyDemo
         }
 
         // Photos uploaded by the seed, and their thumbnails (best effort: the
-        // rows are already gone). Only demo proofs ever used them.
+        // rows are already gone). Only demo proofs ever used them, but a week
+        // plan's photos stay: a reseed of the day (cleanup, then plan) uses them again.
+        $planned = self::plannedPhotoUrls();
         foreach ($proofs as $p) {
             $key = R2Uploader::ownUploadFilename((string) $p['photo_url']);
-            if ($key === null) {
+            if ($key === null || isset($planned[(string) $p['photo_url']])) {
                 continue;
             }
             foreach ([$key, 'thumb_' . pathinfo($key, PATHINFO_FILENAME) . '.jpg'] as $k) {
@@ -327,6 +329,24 @@ final class DailyDemo
             }
         }
         return $count;
+    }
+
+    /** The photo URLs of the stored week plan (daily_demo_days), as a set. */
+    private static function plannedPhotoUrls(): array
+    {
+        $urls = [];
+        try {
+            foreach (Database::pdo()->query("SELECT players FROM daily_demo_days")->fetchAll(PDO::FETCH_COLUMN) as $json) {
+                foreach (json_decode((string) $json, true) ?: [] as $player) {
+                    if (is_string($player['photoUrl'] ?? null)) {
+                        $urls[$player['photoUrl']] = true;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[daily-demo] planned photos failed: ' . $e->getMessage());
+        }
+        return $urls;
     }
 
     // ── A week ahead ─────────────────────────────────────────────────────────
