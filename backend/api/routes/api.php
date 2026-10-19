@@ -14318,12 +14318,14 @@ function dailyGateProofWrite(array $user, array $fields): void
 
 /**
  * After a proof is written it waits for review: alert the admin, or approve
- * at once when DAILY_AUTO_APPROVE is on (local development). Returns the row.
+ * at once when DAILY_AUTO_APPROVE is on (local development) or the author is
+ * trusted (moderated after publication: reports and the back office can still
+ * remove it). Returns the row.
  */
-function dailyAfterProofWrite(string $proofId): array
+function dailyAfterProofWrite(string $proofId, array $user): array
 {
-    if (DailyModerationService::autoApproveEnabled()) {
-        DailyAdminService::$actor = 'auto-approve';
+    if (DailyModerationService::autoApproveEnabled() || DailyModerationService::isTrusted($user)) {
+        DailyAdminService::$actor = DailyModerationService::autoApproveEnabled() ? 'auto-approve' : 'trusted';
         return DailyModerationService::approveProof($proofId);
     }
     DailyModerationService::alertAdminQueue();
@@ -15250,7 +15252,7 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
         Response::json(['error' => 'You already posted a proof for this challenge.', 'code' => 'already_posted'], 409);
     }
     DailyCompare::rememberHomeCity($user['id'], $fields);
-    $proof = dailyAfterProofWrite($proof['id']);
+    $proof = dailyAfterProofWrite($proof['id'], $user);
     apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
     // Represent your city (SPEC 9.16): the city's first proof of the day ("You put Saigon on the world map today.").
     $cityFirst = false;
@@ -15294,7 +15296,7 @@ $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
     if (array_key_exists('place_id', $fields) && $fields['place_id'] !== $proof['place_id']) {
         Places::rejectIfOrphan($proof['place_id']);   // a new place left behind in review
     }
-    $updated = dailyAfterProofWrite($proof['id']);
+    $updated = dailyAfterProofWrite($proof['id'], $user);
     if (isset($fields['photo_url']) && $fields['photo_url'] !== $proof['photo_url']) {
         dailyDeletePhoto($proof['photo_url']);
     }

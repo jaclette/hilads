@@ -25,6 +25,33 @@ final class DailyModerationService
         return in_array($v, ['1', 'true', 'on', 'yes'], true);
     }
 
+    /** Approved proofs a player needs, none ever rejected or removed, before their answers skip the queue. */
+    public const TRUSTED_MIN_APPROVED = 3;
+
+    /**
+     * A trusted author's proofs are approved on submit and moderated after
+     * publication: an admin, or a player with TRUSTED_MIN_APPROVED approved
+     * proofs and none rejected or removed. Demo accounts never.
+     */
+    public static function isTrusted(array $user): bool
+    {
+        if (!empty($user['is_demo'])) {
+            return false;
+        }
+        if (!empty($user['is_admin'])) {
+            return true;
+        }
+        $stmt = Database::pdo()->prepare("
+            SELECT count(*) FILTER (WHERE moderation_status = 'approved')               AS approved,
+                   count(*) FILTER (WHERE moderation_status IN ('rejected', 'removed')) AS refused
+            FROM daily_proofs
+            WHERE user_id = ? AND NOT is_seed AND NOT is_demo
+        ");
+        $stmt->execute([$user['id']]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['approved' => 0, 'refused' => 0];
+        return (int) $r['refused'] === 0 && (int) $r['approved'] >= self::TRUSTED_MIN_APPROVED;
+    }
+
     /** Back office queue: pending proofs (oldest first) and approved proofs with open reports. */
     public static function queue(int $limit = 50): array
     {
