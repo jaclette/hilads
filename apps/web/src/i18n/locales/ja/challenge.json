@@ -993,10 +993,7 @@
       "vote": "投票する",
       "withdraw": "投票を取り消す",
       "yours": "あなたの回答",
-      "noneLeftTitle": "投票が残っていません",
-      "noneLeft": "今日の3票を使い切りました。この回答に投票するには1票取り消してください。",
       "errors": {
-        "vote_limit": "今日の3票はもう使い切りました。",
         "voting_closed": "challenge の終了とともに投票は締め切られました。",
         "rate_limited": "試行が多すぎます - 少し待ってください。",
         "own_proof": "自分の回答には投票できません。",
@@ -1004,12 +1001,9 @@
         "generic": "問題が発生しました。もう一度お試しください。"
       },
       "voteFor": "{{city}}に投票",
-      "prompt": "今日の{{count}}票、だれに入れる？",
-      "allIn": "投票はすべて完了。また明日！",
+      "prompt": "好きな答えに投票しよう",
       "tourNote": "各都市でいちばん票を集めた回答が、明日の世界一周に登場します。",
-      "afterPost": "次は{{count}}票をほかの都市へ。",
-      "left_one": "残り{{count}}票",
-      "left_other": "残り{{count}}票"
+      "afterPost": "好きな答えに投票しよう"
     },
     "results": {
       "title": "結果",

@@ -366,7 +366,7 @@ export default function DailyProofScreen() {
         <ShareSheet content={invite} source="represent_after_proof" onClose={() => setInvite(null)} />
         <View style={styles.footer}>
           {/* Votes go to the other cities: straight to how the world answered (COPY.md). */}
-          <Text style={styles.votesNext}>{t('vote.afterPost', { count: 3 })}</Text>
+          <Text style={styles.votesNext}>{t('vote.afterPost')}</Text>
           {challenge.compare
             ? <Button icon="earth-outline" label={t('proof.compare')} onPress={() => afterProof('/daily/today?tab=compare&source=after_proof')} />
             : <Button icon="earth-outline" label={t('seeProofs')} onPress={() => afterProof('/daily/today?tab=world&source=after_proof')} />}

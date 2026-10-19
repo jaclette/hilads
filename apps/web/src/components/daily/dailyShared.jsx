@@ -223,7 +223,6 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
     if (!state || busy) return
     if (!account) { needAccount('daily_vote', { city: short }); return }
     if (!canVote) return
-    if (!state.myVote && votesLeft === 0) { setError(t('vote.noneLeft')); return }
     setBusy(true); setError(null)
     const action = state.myVote ? 'unvote' : 'vote'
     try {
@@ -240,11 +239,7 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
     }
   }
 
-  const sub = !state ? null
-    : state.isMine ? t('vote.yours')
-    : !state.votingOpen ? null
-    : account && votesLeft !== null ? t('vote.left', { count: votesLeft })
-    : null
+  const sub = state?.isMine ? t('vote.yours') : null
 
   return (
     <span className="dc-vote-wrap">

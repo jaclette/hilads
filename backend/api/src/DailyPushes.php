@@ -317,8 +317,8 @@ final class DailyPushes
 
     /**
      * The evening for someone who posted but hasn't voted (V4 votes): the
-     * reminder's title, then "You still have 3 votes. Lisbon and Tokyo are
-     * waiting." ($a, $b: two other cities that answered today). Opens the
+     * reminder's title, then "Lisbon and Tokyo answered today. Go see what
+     * they said." ($a, $b: two other cities that answered today). Opens the
      * Compare tab (push type daily_vote_reminder).
      */
     public static function voteReminderMessage(array $challenge, int $secondsLeft, string $a, string $b, string $locale = 'en'): array
@@ -328,12 +328,11 @@ final class DailyPushes
         $name  = $theme !== null ? self::themeName($theme, $locale, $challenge) : 'Daily Challenge';
         $a     = CityNames::short($a, $locale);
         $b     = CityNames::short($b, $locale);
-        $n     = DailyVotes::MAX;
         return [
             'title'    => ($theme !== null ? self::emoji($theme, $challenge) . ' ' : '')
                           . (DailyPushText::render('title_reminder', $locale, ['theme' => $name, 'h' => $hours]) ?? "{$name} · {$hours}h left"),
-            'body'     => DailyPushText::render('vote_reminder', $locale, ['n' => $n, 'a' => $a, 'b' => $b])
-                          ?? "You still have {$n} votes. {$a} and {$b} are waiting.",
+            'body'     => DailyPushText::render('vote_reminder', $locale, ['a' => $a, 'b' => $b])
+                          ?? "{$a} and {$b} answered today. Go see what they said.",
             'data'     => ['tab' => 'compare'] + self::data((string) $challenge['challenge_date']),
             'pushType' => 'vote_reminder',
         ];

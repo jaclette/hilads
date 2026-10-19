@@ -993,10 +993,7 @@
       "vote": "Stemmen",
       "withdraw": "Mijn stem intrekken",
       "yours": "Jouw antwoord",
-      "noneLeftTitle": "Geen stemmen meer",
-      "noneLeft": "Je hebt je 3 stemmen van vandaag gebruikt. Trek er een in om op dit antwoord te stemmen.",
       "errors": {
-        "vote_limit": "Je hebt je 3 stemmen van vandaag al gebruikt.",
         "voting_closed": "Stemmen is gesloten met de challenge.",
         "rate_limited": "Te veel pogingen - wacht even.",
         "own_proof": "Je kunt niet op je eigen antwoord stemmen.",
@@ -1004,12 +1001,9 @@
         "generic": "Er ging iets mis. Probeer opnieuw."
       },
       "voteFor": "Stem op {{city}}",
-      "prompt": "Wie krijgt vandaag je {{count}} stemmen?",
-      "allIn": "Al je stemmen zijn uitgebracht. Tot morgen!",
+      "prompt": "Stem op de antwoorden die je mooi vindt",
       "tourNote": "Het meest gestemde antwoord van elke stad gaat mee in de wereldtour van morgen.",
-      "afterPost": "Geef nu je {{count}} stemmen aan andere steden.",
-      "left_one": "Nog {{count}} stem",
-      "left_other": "Nog {{count}} stemmen"
+      "afterPost": "Stem op de antwoorden die je mooi vindt"
     },
     "results": {
       "title": "Resultaten",

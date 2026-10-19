@@ -133,7 +133,7 @@ final class DailyI18nTest extends TestCase
             'theme_hidden_gem' => [], 'theme_taste' => [], 'theme_ask_local' => [], 'theme_local_find' => [],
             'theme_night_out' => [], 'theme_sip' => [], 'theme_only_here' => [], 'theme_special' => [], 'city_streak' => ['{city}', '{n}'],
             'tour' => ['{city}'], 'answered_countries' => ['{city}', '{n}'],
-            'first_vote_city' => ['{city}'], 'title_world' => [], 'morning_add' => ['{city}', '{question}'], 'vote_reminder' => ['{a}', '{b}', '{n}'],
+            'first_vote_city' => ['{city}'], 'title_world' => [], 'morning_add' => ['{city}', '{question}'], 'vote_reminder' => ['{a}', '{b}'],
         ];
         $catalog = DailyPushText::catalog();
         $this->assertSame(DailyI18n::others(), array_keys($catalog));

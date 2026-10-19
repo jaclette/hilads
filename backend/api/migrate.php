@@ -3347,6 +3347,27 @@ run($pdo, "
         PRIMARY KEY (challenge_id, place_id)
     )
 ", 'daily_pick_answers');
+
+// Unlimited votes (one per answer, never one's own): the 3-slot limit goes.
+// vote_slot stays as the vote's rank for its voter. Reversal: re-add both
+// constraints once no voter has more than 3 votes on a challenge.
+run($pdo, "ALTER TABLE daily_votes DROP CONSTRAINT IF EXISTS daily_votes_vote_slot_check", 'daily_votes: drop slot check');
+run($pdo, "ALTER TABLE daily_votes DROP CONSTRAINT IF EXISTS daily_votes_challenge_id_voter_user_id_vote_slot_key", 'daily_votes: drop slot unique');
+
+// Heavy voters, flagged at each close for review, never blocked: a voter who
+// voted for most of a city's answers that day (DailyVotes::flagHeavyVoters).
+// Reversal: DROP TABLE daily_vote_flags.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_vote_flags (
+        challenge_id TEXT        NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        user_id      TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        city_id      TEXT        NOT NULL,
+        votes        INT         NOT NULL,
+        answers      INT         NOT NULL,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (challenge_id, user_id, city_id)
+    )
+", 'daily_vote_flags');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

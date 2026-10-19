@@ -13,7 +13,7 @@ import { IndexCarousel } from '../daily/Comparisons'
 import { CityFlag, CityName } from '../CityName'
 import { LiveDot, WorldTicker, useLiveMotion } from './WorldLive'
 import {
-  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount, useVotesLeft,
+  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
   StatusChip, OriginalToggle, setLastHere, useOriginal, ProposedBy, RankMedal, VoteButton,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
@@ -462,7 +462,6 @@ function LinkRow({ icon, title, sub, onClick }) {
 }
 
 /** Votes per user and day (DailyVotes::MAX). */
-const DAILY_VOTES = 3
 
 /**
  * Today's proofs (SPEC 9.3) and Today around the world (V4 votes). City
@@ -537,13 +536,11 @@ function TodayProofs({ today }) {
 function Strip({ title, stats, onOpen, items, voting, source, footer, board = null }) {
   const { t } = useDc()
   const { account, openDaily } = useDaily()
-  const left = useVotesLeft()
-  const votesLeft = account ? left : DAILY_VOTES
   const prompted = useRef(false)
   useEffect(() => {
     if (!voting || prompted.current) return
     prompted.current = true
-    track('vote_prompt_shown', { source, votes_left: votesLeft ?? null, guest: !account, platform_surface: 'web' })
+    track('vote_prompt_shown', { source, guest: !account, platform_surface: 'web' })
   }, [voting]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="today-card">
@@ -555,12 +552,12 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, board = nu
         <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
       </div>
       <span className="dc-muted today-proofs-stats">{stats}</span>
-      {voting && votesLeft !== null && (votesLeft > 0 ? (
+      {/* No vote limit: one vote per answer, as many answers as I like. */}
+      {voting && (
         <div className="vote-prompt">
-          <span className="vote-prompt-text">{t('vote.prompt', { count: DAILY_VOTES })}</span>
-          <span className="vote-prompt-chip">{t('vote.left', { count: votesLeft })}</span>
+          <span className="vote-prompt-text">{t('vote.prompt')}</span>
         </div>
-      ) : <span className="vote-prompt-done">{t('vote.allIn')}</span>)}
+      )}
       {board}
       <div className="proof-strip">
         {items.map(p => (

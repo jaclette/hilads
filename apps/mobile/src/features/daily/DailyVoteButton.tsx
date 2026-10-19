@@ -9,7 +9,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
-import { setVoteViewer, toggleVote, useVoteState, useVotesLeft } from './votes';
+import { setVoteViewer, toggleVote, useVoteState } from './votes';
 
 interface Props {
   proofId:   string;
@@ -38,7 +38,6 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
 
   useEffect(() => { setVoteViewer(account?.id ?? (guestId ? `g:${guestId}` : null)); }, [account?.id, guestId]);
   const state = useVoteState(proofId, guestId);
-  const left = useVotesLeft();
   const [busy, setBusy] = useState(false);
 
   const onDark = variant === 'viewer';
@@ -57,7 +56,6 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
       return;
     }
     if (!canVote) return;
-    if (!state.myVote && left === 0) { Alert.alert(t('vote.noneLeftTitle'), t('vote.noneLeft')); return; }
     setBusy(true);
     const action = state.myVote ? 'unvote' : 'vote';
     const res = await toggleVote(proofId);
@@ -72,11 +70,7 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
   };
 
   const count = state ? state.voteCount : null;
-  const sub = !state ? null
-    : state.isMine ? t('vote.yours')
-    : !state.votingOpen ? null
-    : account && left !== null ? t('vote.left', { count: left })
-    : null;
+  const sub = state?.isMine ? t('vote.yours') : null;
 
   return (
     <TouchableOpacity

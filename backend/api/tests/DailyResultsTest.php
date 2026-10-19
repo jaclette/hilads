@@ -79,12 +79,12 @@ final class DailyResultsTest extends TestCase
         $this->assertSame(0, DailyPoints::streakBonus(0, 2));
     }
 
-    public function testFreeVoteSlot(): void
+    public function testNextVoteSlot(): void
     {
-        $this->assertSame(1, DailyVotes::freeSlot([]));
-        $this->assertSame(2, DailyVotes::freeSlot([1, 3]));
-        $this->assertSame(1, DailyVotes::freeSlot([2, 3]));   // a withdrawn vote frees its slot
-        $this->assertNull(DailyVotes::freeSlot([1, 2, 3]));
+        // No limit: the next vote ranks after the highest one (a withdrawn vote leaves a gap).
+        $this->assertSame(1, DailyVotes::nextSlot([]));
+        $this->assertSame(4, DailyVotes::nextSlot([1, 3]));
+        $this->assertSame(12, DailyVotes::nextSlot([1, 2, 11]));
     }
 
     public function testVoteState(): void

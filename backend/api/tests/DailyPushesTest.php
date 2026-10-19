@@ -218,9 +218,9 @@ final class DailyPushesTest extends TestCase
         $c = ['text_i18n' => '{"en":"Find a bar"}', 'challenge_date' => '2026-11-02', 'theme' => 'sip'];
         $m = DailyPushes::voteReminderMessage($c, 6 * 3600, 'Lisbon', 'Mexico City');
         $this->assertSame('🍹 Drinks · 6h left', $m['title']);
-        $this->assertSame('You still have 3 votes. Lisbon and Mexico City are waiting.', $m['body']);
+        $this->assertSame('Lisbon and Mexico City answered today. Go see what they said.', $m['body']);
         $this->assertSame(['compare', 'vote_reminder'], [$m['data']['tab'], $m['pushType']]);
-        $this->assertSame("Il te reste 3 votes. Lisbonne et Mexico t'attendent.", DailyPushes::voteReminderMessage($c, 3600, 'Lisbon', 'Mexico City', 'fr')['body']);
+        $this->assertSame("Lisbonne et Mexico ont répondu aujourd'hui. Va voir ce qu'ils ont dit.", DailyPushes::voteReminderMessage($c, 3600, 'Lisbon', 'Mexico City', 'fr')['body']);
 
         $cities = [['id' => 'city_5', 'name' => 'Saigon'], ['id' => 'city_62', 'name' => 'Lisbon'], ['id' => 'city_4', 'name' => 'Tokyo']];
         $this->assertSame(['Lisbon', 'Tokyo'], DailyPushes::waitingCities($cities, 'city_5'));

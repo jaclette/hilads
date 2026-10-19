@@ -142,10 +142,7 @@
     "vote": "Bình chọn",
     "withdraw": "Rút bình chọn",
     "yours": "Câu trả lời của bạn",
-    "noneLeftTitle": "Hết lượt bình chọn",
-    "noneLeft": "Bạn đã dùng hết 3 lượt bình chọn hôm nay. Rút một lượt để bình chọn cho câu trả lời này.",
     "errors": {
-      "vote_limit": "Bạn đã dùng hết 3 lượt bình chọn hôm nay.",
       "voting_closed": "Bình chọn đã đóng cùng challenge.",
       "rate_limited": "Thử quá nhiều lần - đợi một chút.",
       "own_proof": "Bạn không thể bình chọn cho câu trả lời của mình.",
@@ -153,12 +150,9 @@
       "generic": "Đã có lỗi. Thử lại nhé."
     },
     "voteFor": "Bầu cho {{city}}",
-    "prompt": "Hôm nay bạn trao {{count}} phiếu cho ai?",
-    "allIn": "Bạn đã bầu hết. Hẹn mai nhé!",
+    "prompt": "Bình chọn cho những câu trả lời bạn thích",
     "tourNote": "Câu trả lời được bầu nhiều nhất của mỗi thành phố sẽ vào vòng quanh thế giới ngày mai.",
-    "afterPost": "Giờ hãy trao {{count}} phiếu cho các thành phố khác.",
-    "left_one": "Còn {{count}} phiếu",
-    "left_other": "Còn {{count}} phiếu"
+    "afterPost": "Bình chọn cho những câu trả lời bạn thích"
   },
   "results": {
     "title": "Kết quả",

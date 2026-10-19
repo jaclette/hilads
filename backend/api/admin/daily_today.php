@@ -169,6 +169,19 @@ daily_styles();
     <?php if ($twists === []): ?><tr><td class="no-results">No twist today.</td></tr><?php endif; ?>
     </tbody></table></div>
 
+    <?php try { $flagged = DailyVotes::flaggedVoters(); } catch (\Throwable $e) { $flagged = []; } ?>
+    <h3 style="margin:18px 0 8px">Heavy voters (last 14 days)</h3>
+    <div class="form-card">
+        <p class="daily-muted">Voted for <?= (int) round(DailyVotes::FLAG_SHARE * 100) ?>% or more of a city's answers (<?= DailyVotes::FLAG_MIN_ANSWERS ?>+ answers) on a day. Flagged at each close, never blocked: check before acting.</p>
+        <?php if ($flagged === []): ?><p class="daily-muted">Nobody flagged.</p><?php else: ?>
+        <table class="table"><tr><th>Account</th><th>Days flagged</th><th>Highest share</th><th>Last</th></tr>
+            <?php foreach ($flagged as $f): ?>
+                <tr><td>@<?= dh((string) $f['username']) ?></td><td><?= (int) $f['days'] ?></td><td><?= (int) $f['max_share'] ?>%</td><td><?= dh((string) $f['last_date']) ?></td></tr>
+            <?php endforeach; ?>
+        </table>
+        <?php endif; ?>
+    </div>
+
     <h3 id="cities" style="margin:18px 0 8px">Live cities</h3>
     <div class="form-card">
         <?php foreach (DailyRules::liveCityIds() as $cid): ?>

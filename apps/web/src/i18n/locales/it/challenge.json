@@ -993,10 +993,7 @@
       "vote": "Vota",
       "withdraw": "Togli il mio voto",
       "yours": "La tua risposta",
-      "noneLeftTitle": "Voti finiti",
-      "noneLeft": "Hai usato i tuoi 3 voti di oggi. Togline uno per votare questa risposta.",
       "errors": {
-        "vote_limit": "Hai già usato i tuoi 3 voti di oggi.",
         "voting_closed": "Le votazioni si sono chiuse con il challenge.",
         "rate_limited": "Troppi tentativi - aspetta un attimo.",
         "own_proof": "Non puoi votare la tua risposta.",
@@ -1004,12 +1001,9 @@
         "generic": "Qualcosa è andato storto. Riprova."
       },
       "voteFor": "Vota {{city}}",
-      "prompt": "A chi dai i tuoi {{count}} voti oggi?",
-      "allIn": "Hai dato tutti i tuoi voti. A domani!",
+      "prompt": "Vota le risposte che ami",
       "tourNote": "La risposta più votata di ogni città va nel giro del mondo di domani.",
-      "afterPost": "Ora dai i tuoi {{count}} voti ad altre città.",
-      "left_one": "{{count}} voto rimasto",
-      "left_other": "{{count}} voti rimasti"
+      "afterPost": "Vota le risposte che ami"
     },
     "results": {
       "title": "Risultati",

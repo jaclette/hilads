@@ -14875,7 +14875,7 @@ function dailyVoteResponse(array $proof, array $user): void
     ]);
 }
 
-// POST /api/v1/daily/proofs/{id}/vote - vote for a proof (3 per challenge).
+// POST /api/v1/daily/proofs/{id}/vote - vote for a proof (one per proof, no limit per challenge).
 // Voting twice for the same proof is a no-op.
 $router->add('POST', '/api/v1/daily/proofs/{id}/vote', function (array $params) {
     [$user, $proof] = dailyVoteTarget($params);

@@ -142,10 +142,7 @@
     "vote": "Pilih",
     "withdraw": "Tarik pilihanku",
     "yours": "Jawabanmu",
-    "noneLeftTitle": "Suara habis",
-    "noneLeft": "Kamu sudah memakai 3 suaramu hari ini. Tarik satu untuk memilih jawaban ini.",
     "errors": {
-      "vote_limit": "Kamu sudah memakai 3 suaramu hari ini.",
       "voting_closed": "Pemungutan suara ditutup bersama challenge-nya.",
       "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
       "own_proof": "Kamu tidak bisa memilih jawabanmu sendiri.",
@@ -153,12 +150,9 @@
       "generic": "Ada yang salah. Coba lagi."
     },
     "voteFor": "Pilih {{city}}",
-    "prompt": "Siapa yang dapat {{count}} suaramu hari ini?",
-    "allIn": "Semua suaramu sudah diberikan. Sampai besok!",
+    "prompt": "Pilih jawaban yang kamu suka",
     "tourNote": "Jawaban dengan suara terbanyak tiap kota masuk tur dunia besok.",
-    "afterPost": "Sekarang berikan {{count}} suaramu ke kota lain.",
-    "left_one": "Sisa {{count}} suara",
-    "left_other": "Sisa {{count}} suara"
+    "afterPost": "Pilih jawaban yang kamu suka"
   },
   "results": {
     "title": "Hasil",

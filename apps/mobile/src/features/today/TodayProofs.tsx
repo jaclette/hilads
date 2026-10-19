@@ -10,7 +10,7 @@ import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { fetchDailyTodayProofs } from '@/api/daily';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { representShare, type ShareContent } from '@/features/share/content';
-import { seedProofs, useVoteState, useVotesLeft } from '@/features/daily/votes';
+import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { DailyVoteButton } from '@/features/daily/DailyVoteButton';
 import { track } from '@/services/analytics';
 import { RankMedal } from '@/features/daily/RankMedal';
@@ -22,7 +22,6 @@ import { Card, CityName, Photo, SectionTitle } from '@/ui';
 type StripProof = DailyTodayProofs['proofs'][number];
 
 /** Votes per user and day (DailyVotes::MAX). */
-const DAILY_VOTES = 3;
 
 /**
  * Today's proofs (SPEC 9.3) and Today around the world (V4 votes).
@@ -124,13 +123,11 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   const { account } = useApp();
-  const left = useVotesLeft();
-  const votesLeft = account ? left : DAILY_VOTES;
   const prompted = useRef(false);
   useEffect(() => {
     if (!voting || prompted.current) return;
     prompted.current = true;
-    track('vote_prompt_shown', { source, votes_left: votesLeft ?? null, guest: !account });
+    track('vote_prompt_shown', { source, guest: !account });
   }, [voting]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -138,13 +135,11 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
       {/* The title and "See all" open the challenge sheet on the strip's tab. */}
       <SectionTitle small title={title} onPress={onOpen} action={{ label: t('today.seeAll'), onPress: onOpen }} />
       <Text style={styles.stats}>{stats}</Text>
-      {voting && votesLeft !== null && (
-        votesLeft > 0 ? (
-          <View style={styles.prompt}>
-            <Text style={styles.promptText}>{t('vote.prompt', { count: DAILY_VOTES })}</Text>
-            <Text style={styles.chip}>{t('vote.left', { count: votesLeft })}</Text>
-          </View>
-        ) : <Text style={styles.promptDone}>{t('vote.allIn')}</Text>
+      {/* No vote limit: one vote per answer, as many answers as I like. */}
+      {voting && (
+        <View style={styles.prompt}>
+          <Text style={styles.promptText}>{t('vote.prompt')}</Text>
+        </View>
       )}
       {board}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
@@ -193,10 +188,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:  { gap: 12 },
   prompt: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
   promptText: { fontSize: 14, fontWeight: '700', color: c.text },
-  // A fixed radius: iOS draws no Text with a radius over half its height.
-  chip:  { fontSize: 12, fontWeight: '800', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 10,
-           paddingHorizontal: 9, paddingVertical: 3, overflow: 'hidden' },
-  promptDone: { fontSize: 14, fontWeight: '700', color: c.muted },
   footer: { fontSize: 12, lineHeight: 17, fontWeight: '500', color: c.muted },
   board: { gap: 4, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
   boardText: { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.primaryOnTint },

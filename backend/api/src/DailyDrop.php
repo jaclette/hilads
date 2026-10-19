@@ -85,6 +85,13 @@ final class DailyDrop
                 self::alertAdmin('Daily Challenge: results failed',
                     "Results and points of {$yesterday} failed: " . $e->getMessage() . " - re-run scripts/daily_close.php --date={$yesterday}");
             }
+            // Heavy voters of yesterday, flagged for review (never blocked).
+            try {
+                $closed = DailyChallengeRepository::findPublishedByDate($yesterday);
+                $steps['voteFlags'] = $closed !== null ? DailyVotes::flagHeavyVoters((string) $closed['id']) : 0;
+            } catch (\Throwable $e) {
+                $steps['voteFlags'] = ['status' => 'failed', 'error' => $e->getMessage()];
+            }
 
             // The Hilads Index (SPEC 10.9): Monday's drop builds last week's cards. Never blocks the drop.
             if ((new DateTimeImmutable($date, new DateTimeZone('UTC')))->format('N') === '1') {

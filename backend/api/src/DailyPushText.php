@@ -65,7 +65,7 @@ final class DailyPushText
             'first_vote_city' => "Quelqu'un à {city} a voté pour ta réponse.",
             'title_world' => "Aujourd'hui, le monde répond",
             'morning_add' => "{question} Ajoute la réponse de {city}.",
-            'vote_reminder' => "Il te reste {n} votes. {a} et {b} t'attendent.",
+            'vote_reminder' => "{a} et {b} ont répondu aujourd'hui. Va voir ce qu'ils ont dit.",
         ],
         'vi' => [
             'world' => "Hôm qua câu trả lời của bạn đứng #{rank} thế giới.",
@@ -108,7 +108,7 @@ final class DailyPushText
             'first_vote_city' => "Một người ở {city} vừa bình chọn cho câu trả lời của bạn.",
             'title_world' => "Hôm nay, cả thế giới trả lời",
             'morning_add' => "{question} Thêm câu trả lời của {city}.",
-            'vote_reminder' => "Bạn còn {n} phiếu bầu. {a} và {b} đang chờ.",
+            'vote_reminder' => "{a} và {b} đã trả lời hôm nay. Xem họ nói gì nhé.",
         ],
         'es' => [
             'world' => "Ayer tu respuesta quedó #{rank} en el mundo.",
@@ -151,7 +151,7 @@ final class DailyPushText
             'first_vote_city' => "Alguien en {city} votó por tu respuesta.",
             'title_world' => "Hoy responde el mundo",
             'morning_add' => "{question} Suma la respuesta de {city}.",
-            'vote_reminder' => "Te quedan {n} votos. {a} y {b} te esperan.",
+            'vote_reminder' => "{a} y {b} respondieron hoy. Ve a ver lo que dijeron.",
         ],
         'it' => [
             'world' => "Ieri la tua risposta era #{rank} nel mondo.",
@@ -194,7 +194,7 @@ final class DailyPushText
             'first_vote_city' => "Qualcuno a {city} ha votato la tua risposta.",
             'title_world' => "Oggi risponde il mondo",
             'morning_add' => "{question} Aggiungi la risposta di {city}.",
-            'vote_reminder' => "Ti restano {n} voti. {a} e {b} ti aspettano.",
+            'vote_reminder' => "{a} e {b} hanno risposto oggi. Vai a vedere cosa hanno detto.",
         ],
         'pt-br' => [
             'world' => "Ontem sua resposta ficou em #{rank} no mundo.",
@@ -237,7 +237,7 @@ final class DailyPushText
             'first_vote_city' => "Alguém em {city} votou na sua resposta.",
             'title_world' => "Hoje o mundo responde",
             'morning_add' => "{question} Coloque a resposta de {city}.",
-            'vote_reminder' => "Você ainda tem {n} votos. {a} e {b} estão esperando.",
+            'vote_reminder' => "{a} e {b} responderam hoje. Vá ver o que disseram.",
         ],
         'pt-pt' => [
             'world' => "Ontem a tua resposta ficou em #{rank} no mundo.",
@@ -280,7 +280,7 @@ final class DailyPushText
             'first_vote_city' => "Alguém em {city} votou na tua resposta.",
             'title_world' => "Hoje o mundo responde",
             'morning_add' => "{question} Junta a resposta de {city}.",
-            'vote_reminder' => "Ainda tens {n} votos. {a} e {b} estão à tua espera.",
+            'vote_reminder' => "{a} e {b} responderam hoje. Vai ver o que disseram.",
         ],
         'de' => [
             'world' => "Gestern war deine Antwort #{rank} weltweit.",
@@ -323,7 +323,7 @@ final class DailyPushText
             'first_vote_city' => "Jemand in {city} hat für deine Antwort gestimmt.",
             'title_world' => "Heute antwortet die Welt",
             'morning_add' => "{question} Füg die Antwort von {city} hinzu.",
-            'vote_reminder' => "Du hast noch {n} Stimmen. {a} und {b} warten.",
+            'vote_reminder' => "{a} und {b} haben heute geantwortet. Schau, was sie gesagt haben.",
         ],
         'nl' => [
             'world' => "Gisteren was je antwoord #{rank} wereldwijd.",
@@ -366,7 +366,7 @@ final class DailyPushText
             'first_vote_city' => "Iemand in {city} stemde op je antwoord.",
             'title_world' => "Vandaag antwoordt de wereld",
             'morning_add' => "{question} Voeg het antwoord van {city} toe.",
-            'vote_reminder' => "Je hebt nog {n} stemmen. {a} en {b} wachten.",
+            'vote_reminder' => "{a} en {b} hebben vandaag geantwoord. Ga kijken wat ze zeiden.",
         ],
         'zh-hans' => [
             'world' => "昨天你的回答在全球排名第 {rank}。",
@@ -409,7 +409,7 @@ final class DailyPushText
             'first_vote_city' => "{city}有人给你的回答投了票。",
             'title_world' => "今天，全世界来回答",
             'morning_add' => "{question} 加上{city}的回答。",
-            'vote_reminder' => "你还有 {n} 票。{a}和{b}在等你。",
+            'vote_reminder' => "{a}和{b}今天已经回答了。去看看他们说了什么。",
         ],
         'zh-hant' => [
             'world' => "昨天你的回答在全球排名第 {rank}。",
@@ -452,7 +452,7 @@ final class DailyPushText
             'first_vote_city' => "{city}有人給你的回答投了票。",
             'title_world' => "今天，全世界來回答",
             'morning_add' => "{question} 加上{city}的回答。",
-            'vote_reminder' => "你還有 {n} 票。{a}和{b}在等你。",
+            'vote_reminder' => "{a}和{b}今天已經回答了。去看看他們說了什麼。",
         ],
         'ja' => [
             'world' => "昨日のあなたの回答は世界で{rank}位でした。",
@@ -495,7 +495,7 @@ final class DailyPushText
             'first_vote_city' => "{city}の誰かがあなたの回答に投票しました。",
             'title_world' => "今日、世界が答える",
             'morning_add' => "{question} {city}の答えを加えよう。",
-            'vote_reminder' => "まだ{n}票あります。{a}と{b}が待っています。",
+            'vote_reminder' => "{a}と{b}が今日答えました。どんな答えか見てみよう。",
         ],
         'ko' => [
             'world' => "어제 당신의 답변은 세계 {rank}위였어요.",
@@ -538,7 +538,7 @@ final class DailyPushText
             'first_vote_city' => "{city}의 누군가가 당신의 답변에 투표했어요.",
             'title_world' => "오늘, 세계가 답해요",
             'morning_add' => "{question} {city}의 답을 더해 주세요.",
-            'vote_reminder' => "아직 {n}표가 남았어요. {a}와(과) {b}가 기다려요.",
+            'vote_reminder' => "{a}와(과) {b}가 오늘 답했어요. 뭐라고 했는지 보러 가요.",
         ],
         'fil' => [
             'world' => "Kahapon, #{rank} sa mundo ang sagot mo.",
@@ -581,7 +581,7 @@ final class DailyPushText
             'first_vote_city' => "May isang taga-{city} na bumoto sa sagot mo.",
             'title_world' => "Ngayon, sumasagot ang mundo",
             'morning_add' => "{question} Idagdag ang sagot ng {city}.",
-            'vote_reminder' => "May {n} boto ka pa. Naghihintay ang {a} at {b}.",
+            'vote_reminder' => "Sumagot ngayon ang {a} at {b}. Tingnan kung ano ang sinabi nila.",
         ],
         'th' => [
             'world' => "เมื่อวานคำตอบของคุณอยู่อันดับ #{rank} ของโลก",
@@ -624,7 +624,7 @@ final class DailyPushText
             'first_vote_city' => "มีคนใน{city}โหวตให้คำตอบของคุณ",
             'title_world' => "วันนี้ ทั่วโลกร่วมตอบ",
             'morning_add' => "{question} เพิ่มคำตอบของ{city}",
-            'vote_reminder' => "คุณยังมีอีก {n} โหวต {a} และ {b} รออยู่",
+            'vote_reminder' => "{a} และ {b} ตอบแล้ววันนี้ ไปดูกันว่าพวกเขาตอบว่าอะไร",
         ],
         'id' => [
             'world' => "Kemarin jawabanmu peringkat #{rank} di dunia.",
@@ -667,7 +667,7 @@ final class DailyPushText
             'first_vote_city' => "Seseorang di {city} memilih jawabanmu.",
             'title_world' => "Hari ini dunia menjawab",
             'morning_add' => "{question} Tambahkan jawaban {city}.",
-            'vote_reminder' => "Kamu masih punya {n} suara. {a} dan {b} menunggu.",
+            'vote_reminder' => "{a} dan {b} sudah menjawab hari ini. Lihat apa kata mereka.",
         ],
         'hi' => [
             'world' => "कल आपका जवाब दुनिया में #{rank} पर था।",
@@ -710,7 +710,7 @@ final class DailyPushText
             'first_vote_city' => "{city} में किसी ने आपके जवाब को वोट दिया।",
             'title_world' => "आज दुनिया जवाब देती है",
             'morning_add' => "{question} {city} का जवाब जोड़ें।",
-            'vote_reminder' => "आपके पास अभी {n} वोट हैं। {a} और {b} इंतज़ार कर रहे हैं।",
+            'vote_reminder' => "{a} और {b} ने आज जवाब दिया। देखो उन्होंने क्या कहा।",
         ],
         'ru' => [
             'world' => "Вчера твой ответ был #{rank} в мире.",
@@ -753,7 +753,7 @@ final class DailyPushText
             'first_vote_city' => "Кто-то в городе {city} проголосовал за твой ответ.",
             'title_world' => "Сегодня отвечает мир",
             'morning_add' => "{question} Добавь ответ из города {city}.",
-            'vote_reminder' => "У тебя ещё {n} голоса. {a} и {b} ждут.",
+            'vote_reminder' => "{a} и {b} сегодня ответили. Посмотри, что они сказали.",
         ],
         'ar' => [
             'world' => "أمس كانت إجابتك #{rank} في العالم.",
@@ -796,7 +796,7 @@ final class DailyPushText
             'first_vote_city' => "شخص في {city} صوّت لإجابتك.",
             'title_world' => "اليوم يجيب العالم",
             'morning_add' => "{question} أضِف إجابة {city}.",
-            'vote_reminder' => "ما زال لديك {n} أصوات. {a} و{b} بانتظارك.",
+            'vote_reminder' => "أجابت {a} و{b} اليوم. اذهب لترى ما قالوه.",
         ],
     ];
 
