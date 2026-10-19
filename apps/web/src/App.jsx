@@ -5008,6 +5008,8 @@ export default function App() {
                             onClick={() => (channelScope === 'world' ? switchScope('city') : openCityPicker())}>
                       <CityFlag country={cityCountry} />
                       <span className="chat-scope-label">{shortCityName(city)}</span>
+                      {/* Chosen: tapping it again changes city. */}
+                      {channelScope === 'city' && <Icon name="chevron-down" size={16} />}
                       {channelScope === 'world' && cityUnread > 0 && <span className="chat-scope-badge">{cityUnread > 99 ? '99+' : cityUnread}</span>}
                     </button>
                     <button type="button" role="tab" aria-selected={channelScope === 'world'}

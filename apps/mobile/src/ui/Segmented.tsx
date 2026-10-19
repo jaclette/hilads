@@ -5,7 +5,9 @@ import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityFlag } from './CityName';
 
-type Option<K extends string> = { key: K; label: string; badge?: number; flag?: string | null; icon?: ComponentProps<typeof Ionicons>['name'] };
+type Option<K extends string> = { key: K; label: string; badge?: number; flag?: string | null; icon?: ComponentProps<typeof Ionicons>['name'];
+  /** A ▾ after the label while chosen: tapping it again opens a picker (Chat's city). */
+  picker?: boolean };
 
 /**
  * Two or more segments in a pill (the Chat City / World switch): the chosen one
@@ -25,6 +27,7 @@ export function Segmented<K extends string>({ options, value, onChange }: { opti
             {!!o.flag && <CityFlag country={o.flag} />}
             {!!o.icon && <Ionicons name={o.icon} size={17} color={on ? colors.white : colors.text} />}
             <Text style={[styles.label, on && styles.labelOn]} numberOfLines={1}>{o.label}</Text>
+            {on && o.picker && <Ionicons name="chevron-down" size={16} color={colors.white} />}
             {!on && !!o.badge && o.badge > 0 && <Text style={styles.badge}>{o.badge > 99 ? '99+' : o.badge}</Text>}
           </TouchableOpacity>
         );

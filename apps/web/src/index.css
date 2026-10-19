@@ -16540,6 +16540,7 @@ body.has-app-promo-banner .page-header {
 /* The Hilads logo (public/logo/icon.svg): its own gradient and corner radius, exempt from the flat tokens. */
 .v3-mark { width: 40px; height: 40px; flex-shrink: 0; display: block; }
 .v3-scope { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; position: relative; }
+.v3-scope > svg { flex-shrink: 0; }
 .v3-scope-label { flex: 1; min-width: 0; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v3-round { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
 .v3-dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); border: 2px solid var(--surface); }
@@ -16551,12 +16552,10 @@ body.has-app-promo-banner .page-header {
   .v3-scope { padding: 0 10px; gap: 5px; }
   .v3-signup { padding: 0 12px; font-size: 13px; }
 }
-@media (max-width: 370px) {
-  .v3-scope > svg { display: none; }
-}
 @media (max-width: 340px) {
   .v3-header { gap: 6px; }
-  .v3-scope { padding: 0 8px; }
+  .v3-scope { padding: 0 8px; gap: 4px; }
+  .v3-scope > svg { width: 15px; height: 15px; }
   .v3-round { width: 40px; height: 40px; }
   .v3-signup { padding: 0 10px; font-size: 12px; }
 }

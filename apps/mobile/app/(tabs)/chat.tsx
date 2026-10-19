@@ -882,7 +882,7 @@ export default function ChatTab() {
         <View style={styles.inset}>
           <Segmented
             options={[
-              { key: 'city' as const, label: shortCityName(city.name), flag: city.country, badge: cityUnread },
+              { key: 'city' as const, label: shortCityName(city.name), flag: city.country, badge: cityUnread, picker: true },
               { key: 'world' as const, label: t('world.tab'), icon: 'globe-outline', badge: worldUnread },
             ]}
             value={channelScope === 'world' ? 'world' : 'city'}
