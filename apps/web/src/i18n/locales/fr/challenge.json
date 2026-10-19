@@ -1315,7 +1315,6 @@
       "noPlace": "La photo la plus votée monte sur le podium."
     },
     "compare": {
-      "todayQuestion": "Aujourd'hui, le monde répond : {{question}}",
       "tab": "Comparer",
       "allCities": "Toutes les villes",
       "boardCount": "Villes : {{count}} · Pays : {{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "Le moins cher : {{city}} {{price}}",
       "priciest": "Le plus cher : {{city}} {{price}}",
       "funFact": "{{ratio}} fois plus cher à {{city}} qu'à {{other}}.",
-      "answeredRow_one": "Déjà {{count}} pays a répondu",
-      "answeredRow_other": "Déjà {{count}} pays ont répondu"
+      "worldAnswers": "Aujourd'hui, le monde répond",
+      "seeAnswers": "Voir les réponses",
+      "firstIn": "Les premières réponses arrivent",
+      "tip": "Touche pour comparer ta ville avec le monde.",
+      "nCountries_one": "{{count}} pays",
+      "nCountries_other": "{{count}} pays"
     },
     "backHome": {
       "hereIn": "Ici à {{city}}",

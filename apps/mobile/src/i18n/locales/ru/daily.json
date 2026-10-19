@@ -543,7 +543,6 @@
     "streak_other": "{{city}}: ответы {{count}} дня подряд"
   },
   "compare": {
-    "todayQuestion": "Сегодня отвечает мир: {{question}}",
     "kicker": "Сегодня отвечает мир:",
     "sub": "Отвечай коротко: именно это будет сравнивать весь мир.",
     "next": "Далее",
@@ -569,10 +568,14 @@
     "cheapest": "Дешевле всего: {{city}} {{price}}",
     "priciest": "Дороже всего: {{city}} {{price}}",
     "funFact": "В {{ratio}} раза дороже: {{city}}, чем {{other}}.",
-    "answeredRow_one": "Уже ответила {{count}} страна",
-    "answeredRow_few": "Уже ответили {{count}} страны",
-    "answeredRow_many": "Уже ответили {{count}} стран",
-    "answeredRow_other": "Уже ответили {{count}} страны"
+    "worldAnswers": "Сегодня отвечает мир",
+    "seeAnswers": "Смотреть ответы",
+    "firstIn": "Первые ответы уже идут",
+    "tip": "Нажми, чтобы сравнить свой город с миром.",
+    "nCountries_one": "{{count}} страна",
+    "nCountries_few": "{{count}} страны",
+    "nCountries_many": "{{count}} стран",
+    "nCountries_other": "{{count}} страны"
   },
   "backHome": {
     "title": "А у тебя дома как?",

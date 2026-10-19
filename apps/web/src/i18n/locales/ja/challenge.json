@@ -1315,7 +1315,6 @@
       "noPlace": "いちばん票を集めた写真が表彰台へ。"
     },
     "compare": {
-      "todayQuestion": "今日、世界が答える：{{question}}",
       "tab": "比べる",
       "allCities": "すべての街",
       "boardCount": "街：{{count}} · 国・地域：{{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "いちばん安い：{{city}} {{price}}",
       "priciest": "いちばん高い：{{city}} {{price}}",
       "funFact": "{{city}}は{{other}}の{{ratio}}倍の値段。",
-      "answeredRow_one": "すでに{{count}}か国が回答",
-      "answeredRow_other": "すでに{{count}}か国が回答"
+      "worldAnswers": "今日、世界が答える",
+      "seeAnswers": "回答を見る",
+      "firstIn": "最初の回答が届き始めました",
+      "tip": "タップして、あなたの街を世界とくらべよう。",
+      "nCountries_one": "{{count}}か国",
+      "nCountries_other": "{{count}}か国"
     },
     "backHome": {
       "hereIn": "ここ：{{city}}",

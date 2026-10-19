@@ -518,7 +518,6 @@
     "streak_other": "{{city}} risponde da {{count}} giorni di fila"
   },
   "compare": {
-    "todayQuestion": "Oggi risponde il mondo: {{question}}",
     "kicker": "Oggi risponde il mondo:",
     "sub": "Rispondi in breve: è quello che il mondo confronterà.",
     "next": "Avanti",
@@ -542,8 +541,12 @@
     "cheapest": "Il più economico: {{city}} {{price}}",
     "priciest": "Il più caro: {{city}} {{price}}",
     "funFact": "{{ratio}} volte più caro a {{city}} che a {{other}}.",
-    "answeredRow_one": "Ha già risposto {{count}} paese",
-    "answeredRow_other": "Hanno già risposto {{count}} paesi"
+    "worldAnswers": "Oggi risponde il mondo",
+    "seeAnswers": "Vedi le risposte",
+    "firstIn": "Arrivano le prime risposte",
+    "tip": "Tocca per confrontare la tua città con il mondo.",
+    "nCountries_one": "{{count}} paese",
+    "nCountries_other": "{{count}} paesi"
   },
   "backHome": {
     "title": "E a casa tua, com'è?",

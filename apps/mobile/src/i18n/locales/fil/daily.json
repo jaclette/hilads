@@ -517,7 +517,6 @@
     "streak_other": "{{count}} araw nang sunod-sunod sumasagot ang {{city}}"
   },
   "compare": {
-    "todayQuestion": "Ngayon, sumasagot ang mundo: {{question}}",
     "kicker": "Ngayon, sumasagot ang mundo:",
     "sub": "Paikliin ang sagot: ito ang ikukumpara ng mundo.",
     "next": "Susunod",
@@ -541,8 +540,12 @@
     "cheapest": "Pinakamura: {{city}} {{price}}",
     "priciest": "Pinakamahal: {{city}} {{price}}",
     "funFact": "{{ratio}}× ang presyo sa {{city}} kaysa sa {{other}}.",
-    "answeredRow_one": "Sumagot na ang {{count}} bansa",
-    "answeredRow_other": "Sumagot na ang {{count}} bansa"
+    "worldAnswers": "Ngayon, sumasagot ang mundo",
+    "seeAnswers": "Tingnan ang mga sagot",
+    "firstIn": "Dumarating na ang mga unang sagot",
+    "tip": "I-tap para ikumpara ang lungsod mo sa mundo.",
+    "nCountries_one": "{{count}} bansa",
+    "nCountries_other": "{{count}} bansa"
   },
   "backHome": {
     "title": "E sa inyo, kumusta?",

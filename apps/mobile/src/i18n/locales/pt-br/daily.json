@@ -518,7 +518,6 @@
     "streak_other": "{{city}} respondeu {{count}} dias seguidos"
   },
   "compare": {
-    "todayQuestion": "Hoje o mundo responde: {{question}}",
     "kicker": "Hoje o mundo responde:",
     "sub": "Responda curto: é isso que o mundo vai comparar.",
     "next": "Próximo",
@@ -542,8 +541,12 @@
     "cheapest": "Mais barato: {{city}} {{price}}",
     "priciest": "Mais caro: {{city}} {{price}}",
     "funFact": "{{ratio}} vezes mais caro em {{city}} do que em {{other}}.",
-    "answeredRow_one": "Já respondeu {{count}} país",
-    "answeredRow_other": "Já responderam {{count}} países"
+    "worldAnswers": "Hoje o mundo responde",
+    "seeAnswers": "Ver respostas",
+    "firstIn": "As primeiras respostas estão chegando",
+    "tip": "Toque para comparar sua cidade com o mundo.",
+    "nCountries_one": "{{count}} país",
+    "nCountries_other": "{{count}} países"
   },
   "backHome": {
     "title": "E na sua cidade, como é?",

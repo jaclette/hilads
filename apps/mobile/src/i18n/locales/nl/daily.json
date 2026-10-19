@@ -517,7 +517,6 @@
     "streak_other": "{{city}} antwoordt al {{count}} dagen op rij"
   },
   "compare": {
-    "todayQuestion": "Vandaag antwoordt de wereld: {{question}}",
     "kicker": "Vandaag antwoordt de wereld:",
     "sub": "Hou het kort: dit vergelijkt de wereld.",
     "next": "Volgende",
@@ -541,8 +540,12 @@
     "cheapest": "Goedkoopst: {{city}} {{price}}",
     "priciest": "Duurst: {{city}} {{price}}",
     "funFact": "{{ratio}}× zo duur in {{city}} als in {{other}}.",
-    "answeredRow_one": "Al {{count}} land heeft geantwoord",
-    "answeredRow_other": "Al {{count}} landen hebben geantwoord"
+    "worldAnswers": "Vandaag antwoordt de wereld",
+    "seeAnswers": "Antwoorden bekijken",
+    "firstIn": "De eerste antwoorden komen binnen",
+    "tip": "Tik om je stad met de wereld te vergelijken.",
+    "nCountries_one": "{{count}} land",
+    "nCountries_other": "{{count}} landen"
   },
   "backHome": {
     "title": "En bij jou thuis, hoe is het daar?",

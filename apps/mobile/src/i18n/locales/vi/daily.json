@@ -515,7 +515,6 @@
     "streak_other": "{{city}} đã trả lời {{count}} ngày liên tiếp"
   },
   "compare": {
-    "todayQuestion": "Hôm nay, cả thế giới trả lời: {{question}}",
     "kicker": "Hôm nay, cả thế giới trả lời:",
     "sub": "Trả lời ngắn thôi: cả thế giới sẽ so sánh câu này.",
     "next": "Tiếp",
@@ -539,8 +538,12 @@
     "cheapest": "Rẻ nhất: {{city}} {{price}}",
     "priciest": "Đắt nhất: {{city}} {{price}}",
     "funFact": "Ở {{city}} đắt gấp {{ratio}} lần so với {{other}}.",
-    "answeredRow_one": "Đã có {{count}} quốc gia trả lời",
-    "answeredRow_other": "Đã có {{count}} quốc gia trả lời"
+    "worldAnswers": "Hôm nay, cả thế giới trả lời",
+    "seeAnswers": "Xem câu trả lời",
+    "firstIn": "Những câu trả lời đầu tiên đang đến",
+    "tip": "Chạm để so sánh thành phố của bạn với thế giới.",
+    "nCountries_one": "{{count}} quốc gia",
+    "nCountries_other": "{{count}} quốc gia"
   },
   "backHome": {
     "title": "Còn ở quê bạn, thế nào?",

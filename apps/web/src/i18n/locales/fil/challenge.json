@@ -1315,7 +1315,6 @@
       "noPlace": "Ang litratong may pinakamaraming boto ang aakyat sa podium."
     },
     "compare": {
-      "todayQuestion": "Ngayon, sumasagot ang mundo: {{question}}",
       "tab": "Ikumpara",
       "allCities": "Lahat ng lungsod",
       "boardCount": "Lungsod: {{count}} · Bansa: {{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "Pinakamura: {{city}} {{price}}",
       "priciest": "Pinakamahal: {{city}} {{price}}",
       "funFact": "{{ratio}}× ang presyo sa {{city}} kaysa sa {{other}}.",
-      "answeredRow_one": "Sumagot na ang {{count}} bansa",
-      "answeredRow_other": "Sumagot na ang {{count}} bansa"
+      "worldAnswers": "Ngayon, sumasagot ang mundo",
+      "seeAnswers": "Tingnan ang mga sagot",
+      "firstIn": "Dumarating na ang mga unang sagot",
+      "tip": "I-tap para ikumpara ang lungsod mo sa mundo.",
+      "nCountries_one": "{{count}} bansa",
+      "nCountries_other": "{{count}} bansa"
     },
     "backHome": {
       "hereIn": "Dito sa {{city}}",

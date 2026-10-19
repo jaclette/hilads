@@ -1315,7 +1315,6 @@
       "noPlace": "Foto dengan suara terbanyak naik podium."
     },
     "compare": {
-      "todayQuestion": "Hari ini dunia menjawab: {{question}}",
       "tab": "Bandingkan",
       "allCities": "Semua kota",
       "boardCount": "Kota: {{count}} · Negara: {{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "Termurah: {{city}} {{price}}",
       "priciest": "Termahal: {{city}} {{price}}",
       "funFact": "{{ratio}}× lebih mahal di {{city}} daripada di {{other}}.",
-      "answeredRow_one": "Sudah {{count}} negara menjawab",
-      "answeredRow_other": "Sudah {{count}} negara menjawab"
+      "worldAnswers": "Hari ini dunia menjawab",
+      "seeAnswers": "Lihat jawaban",
+      "firstIn": "Jawaban pertama mulai masuk",
+      "tip": "Ketuk untuk membandingkan kotamu dengan dunia.",
+      "nCountries_one": "{{count}} negara",
+      "nCountries_other": "{{count}} negara"
     },
     "backHome": {
       "hereIn": "Di sini, {{city}}",

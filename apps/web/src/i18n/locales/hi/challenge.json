@@ -1315,7 +1315,6 @@
       "noPlace": "सबसे ज़्यादा वोट वाली फ़ोटो पोडियम पर पहुँचती है।"
     },
     "compare": {
-      "todayQuestion": "आज दुनिया जवाब देती है: {{question}}",
       "tab": "तुलना",
       "allCities": "सभी शहर",
       "boardCount": "शहर: {{count}} · देश: {{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "सबसे सस्ता: {{city}} {{price}}",
       "priciest": "सबसे महँगा: {{city}} {{price}}",
       "funFact": "{{city}} में {{other}} से {{ratio}} गुना महँगा।",
-      "answeredRow_one": "{{count}} देश जवाब दे चुका है",
-      "answeredRow_other": "{{count}} देश जवाब दे चुके हैं"
+      "worldAnswers": "आज दुनिया जवाब देती है",
+      "seeAnswers": "जवाब देखें",
+      "firstIn": "पहले जवाब आ रहे हैं",
+      "tip": "अपने शहर की दुनिया से तुलना करने के लिए टैप करें।",
+      "nCountries_one": "{{count}} देश",
+      "nCountries_other": "{{count}} देश"
     },
     "backHome": {
       "hereIn": "यहाँ, {{city}}",

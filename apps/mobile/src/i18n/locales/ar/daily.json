@@ -569,7 +569,6 @@
     "streak_other": "أجابت {{city}} {{count}} يوم متتالٍ"
   },
   "compare": {
-    "todayQuestion": "اليوم يجيب العالم: {{question}}",
     "kicker": "اليوم يجيب العالم:",
     "sub": "أجب باختصار: هذا ما سيقارنه العالم.",
     "next": "التالي",
@@ -597,12 +596,16 @@
     "cheapest": "الأرخص: {{city}} {{price}}",
     "priciest": "الأغلى: {{city}} {{price}}",
     "funFact": "السعر في {{city}} أعلى بـ {{ratio}} مرات من {{other}}.",
-    "answeredRow_zero": "أجاب {{count}} بلد",
-    "answeredRow_one": "أجاب بلد واحد",
-    "answeredRow_two": "أجاب بلدان",
-    "answeredRow_few": "أجابت {{count}} بلدان",
-    "answeredRow_many": "أجاب {{count}} بلدًا",
-    "answeredRow_other": "أجاب {{count}} بلد"
+    "worldAnswers": "اليوم يجيب العالم",
+    "seeAnswers": "عرض الإجابات",
+    "firstIn": "أولى الإجابات تصل",
+    "tip": "اضغط لمقارنة مدينتك بالعالم.",
+    "nCountries_zero": "{{count}} بلد",
+    "nCountries_one": "بلد واحد",
+    "nCountries_two": "بلدان",
+    "nCountries_few": "{{count}} بلدان",
+    "nCountries_many": "{{count}} بلدًا",
+    "nCountries_other": "{{count}} بلد"
   },
   "backHome": {
     "title": "وفي مدينتك، كيف الحال؟",

@@ -1314,7 +1314,6 @@
       "noPlace": "รูปที่ได้โหวตมากที่สุดได้ขึ้นโพเดียม"
     },
     "compare": {
-      "todayQuestion": "วันนี้ ทั่วโลกร่วมตอบ: {{question}}",
       "tab": "เปรียบเทียบ",
       "allCities": "ทุกเมือง",
       "boardCount": "เมือง: {{count}} · ประเทศ: {{countries}}",
@@ -1332,8 +1331,12 @@
       "cheapest": "ถูกที่สุด: {{city}} {{price}}",
       "priciest": "แพงที่สุด: {{city}} {{price}}",
       "funFact": "ที่{{city}}แพงกว่า{{other}} {{ratio}} เท่า",
-      "answeredRow_one": "ตอบแล้ว {{count}} ประเทศ",
-      "answeredRow_other": "ตอบแล้ว {{count}} ประเทศ"
+      "worldAnswers": "วันนี้ ทั่วโลกร่วมตอบ",
+      "seeAnswers": "ดูคำตอบ",
+      "firstIn": "คำตอบแรกๆ เริ่มมาแล้ว",
+      "tip": "แตะเพื่อเทียบเมืองของคุณกับทั่วโลก",
+      "nCountries_one": "{{count}} ประเทศ",
+      "nCountries_other": "{{count}} ประเทศ"
     },
     "backHome": {
       "hereIn": "ที่นี่ {{city}}",

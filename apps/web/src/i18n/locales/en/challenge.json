@@ -1315,7 +1315,6 @@
       "noPlace": "The most voted photo makes the podium."
     },
     "compare": {
-      "todayQuestion": "Today, the world answers: {{question}}",
       "tab": "Compare",
       "allCities": "All cities",
       "boardCount": "Cities: {{count}} · Countries: {{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "Cheapest: {{city}} {{price}}",
       "priciest": "Priciest: {{city}} {{price}}",
       "funFact": "{{ratio}}× the price in {{city}} than in {{other}}.",
-      "answeredRow_one": "Already {{count}} country answered",
-      "answeredRow_other": "Already {{count}} countries answered"
+      "worldAnswers": "Today, the world answers",
+      "seeAnswers": "See answers",
+      "firstIn": "First answers coming in",
+      "tip": "Tap to compare your city with the world.",
+      "nCountries_one": "{{count}} country",
+      "nCountries_other": "{{count}} countries"
     },
     "backHome": {
       "hereIn": "Here in {{city}}",

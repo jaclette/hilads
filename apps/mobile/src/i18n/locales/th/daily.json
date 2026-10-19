@@ -515,7 +515,6 @@
     "streak_other": "{{city}}ตอบติดต่อกัน {{count}} วัน"
   },
   "compare": {
-    "todayQuestion": "วันนี้ ทั่วโลกร่วมตอบ: {{question}}",
     "kicker": "วันนี้ ทั่วโลกร่วมตอบ:",
     "sub": "ตอบสั้น ๆ นี่คือสิ่งที่ทั่วโลกจะเอามาเทียบกัน",
     "next": "ถัดไป",
@@ -539,8 +538,12 @@
     "cheapest": "ถูกที่สุด: {{city}} {{price}}",
     "priciest": "แพงที่สุด: {{city}} {{price}}",
     "funFact": "ที่{{city}}แพงกว่า{{other}} {{ratio}} เท่า",
-    "answeredRow_one": "ตอบแล้ว {{count}} ประเทศ",
-    "answeredRow_other": "ตอบแล้ว {{count}} ประเทศ"
+    "worldAnswers": "วันนี้ ทั่วโลกร่วมตอบ",
+    "seeAnswers": "ดูคำตอบ",
+    "firstIn": "คำตอบแรกๆ เริ่มมาแล้ว",
+    "tip": "แตะเพื่อเทียบเมืองของคุณกับทั่วโลก",
+    "nCountries_one": "{{count}} ประเทศ",
+    "nCountries_other": "{{count}} ประเทศ"
   },
   "backHome": {
     "title": "แล้วที่บ้านคุณล่ะ เป็นยังไง?",

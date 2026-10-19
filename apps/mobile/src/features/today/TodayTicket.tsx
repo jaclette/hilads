@@ -34,6 +34,10 @@ import { representShare, todayShare, type ShareContent } from '@/features/share/
 /** Brand term: English in every locale (SPEC 9.11). */
 const DAILY_CHALLENGE = 'Daily Challenge';
 const HOW_IT_WORKS_KEY = 'hilads_how_it_works_seen';
+const COMPARE_TIP_KEY = 'hilads_compare_tip_seen';
+const TIP_MS = 6000;
+/** Until when the world block's tip shows (epoch ms; 0 = hidden). */
+let tipUntil = 0;
 /** The cover's white text and its shade: fixed in both themes (the image is the same). */
 const COVER_TEXT  = '#FFFFFF';
 // Measured on the covers: white text >= 5.6:1 even over a pure white image.
@@ -66,6 +70,25 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   const [howSeen, setHowSeen] = useState<boolean | null>(null);
   const [howOpen, setHowOpen] = useState(false);
   const [share, setShare] = useState<ShareContent | null>(null);
+  // The world block's one-time tip (per device): "Tap to compare your city with the world."
+  // Its deadline lives outside the card, which can remount while it shows.
+  const [tip, setTip] = useState(() => Date.now() < tipUntil);
+  const hideTip = () => { tipUntil = 0; setTip(false); };
+  const hasCompare = !!data?.challenge?.compare;
+  useEffect(() => {
+    if (!hasCompare) return;
+    AsyncStorage.getItem(COMPARE_TIP_KEY).then(v => {
+      if (v === '1') return;
+      tipUntil = Date.now() + TIP_MS;
+      setTip(true);
+      AsyncStorage.setItem(COMPARE_TIP_KEY, '1').catch(() => {});
+    }).catch(() => {});
+  }, [hasCompare]);
+  useEffect(() => {
+    if (!tip) return;
+    const id = setTimeout(() => setTip(false), Math.max(0, tipUntil - Date.now()));
+    return () => clearTimeout(id);
+  }, [tip]);
   useEffect(() => {
     AsyncStorage.getItem(HOW_IT_WORKS_KEY).then(v => setHowSeen(v === '1')).catch(() => setHowSeen(true));
   }, []);
@@ -101,8 +124,9 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
     track('world_teaser_tapped', { countries: world?.countries ?? 0, cities: world?.cities ?? 0 });
     router.push('/daily/today?tab=compare&source=teaser' as never);
   };
-  const openWorld = () => router.push('/daily/today?tab=world&source=today_row' as never);
+  const openWorld = () => router.push('/daily/today?tab=world&source=today_block' as never);
   const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer!, i18n.language));
+  const compared = !!world && world.countries >= 2;
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
   const onCta = () => {
     if (myProof) { openSheet(); return; }
@@ -144,21 +168,41 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   };
 
   return (
-    <TouchableOpacity style={styles.ticket} onPress={openSheet} activeOpacity={0.92} accessibilityRole="button"
+    <TouchableOpacity style={styles.ticket} onPress={() => { hideTip(); openSheet(); }} activeOpacity={0.85} accessibilityRole="button"
                       accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
       <Cover coverUrl={challenge.coverUrl ?? null} themeKey={challenge.theme?.key ?? null} label={themeLabel}
              special={challenge.special ?? null} date={challenge.date} secondsLeft={secondsLeft} />
       <View style={styles.top}>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
-        {/* The comparison question (SPEC 10.2), under the challenge. */}
+        {/* The comparison question and the world's answers, one block (SPEC 10.2, 10.6): from 2
+            countries it opens the Compare tab, before the sheet's World tab. */}
         {challenge.compare && (
-          <View style={styles.question}>
-            <Ionicons name="earth-outline" size={16} color={colors.muted} />
-            <Text style={styles.questionText}>
-              {t('compare.todayQuestion', {
-                question: showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question,
-              })}
-            </Text>
+          <View>
+            <Pressable style={({ pressed }) => [styles.world, pressed && styles.worldPressed]} accessibilityRole="button"
+                       onPress={() => { hideTip(); (compared ? openCompare : openWorld)(); }}>
+              <View style={styles.worldKicker}>
+                <Ionicons name="earth-outline" size={14} color={colors.muted} />
+                <Text style={styles.worldKickerText}>{t('compare.worldAnswers')}</Text>
+              </View>
+              <Text style={styles.worldQuestion}>
+                {showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}
+              </Text>
+              <View style={styles.worldLine}>
+                {compared && <FlagStack flags={world!.flags ?? world!.answers.map(a => a.city.country ?? '')} />}
+                <Text style={styles.worldAnswers} numberOfLines={1}>
+                  {compared ? [t('compare.nCountries', { count: world!.countries }), ...answers].join(' · ') : t('compare.firstIn')}
+                </Text>
+                <Text style={styles.worldSee}>{t('compare.seeAnswers')}</Text>
+                <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
+              </View>
+            </Pressable>
+            {/* Once per device: what the block does. Any tap or 6 seconds closes it. */}
+            {tip && (
+              <Pressable style={styles.tip} onPress={hideTip} accessibilityRole="button">
+                <View style={styles.tipArrow} />
+                <Text style={styles.tipText}>{t('compare.tip')}</Text>
+              </Pressable>
+            )}
           </View>
         )}
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onPress={toggleOriginal} ink />
@@ -207,26 +251,6 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           // The card's only orange element, pulsing; straight to the camera (SPEC 9.3).
           <PulseButton label={cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
-        )}
-        {/* The live world teaser (SPEC 10.6), a row inside the card: from 2 countries, their flags,
-            "Already 5 countries answered" and the first answers, to the Compare tab; before, "See
-            today's answers", to the sheet's World tab. */}
-        {world && world.countries >= 2 ? (
-          <Pressable style={({ pressed }) => [styles.teaser, pressed && styles.teaserPressed]} onPress={openCompare} accessibilityRole="button"
-                     accessibilityLabel={t('compare.answeredRow', { count: world.countries })}>
-            <FlagStack flags={world.flags ?? world.answers.map(a => a.city.country ?? '')} />
-            <View style={styles.teaserBody}>
-              <Text style={styles.teaserTitle} numberOfLines={1}>{t('compare.answeredRow', { count: world.countries })}</Text>
-              {answers.length > 0 && <Text style={styles.teaserAnswers} numberOfLines={1}>{answers.join(' · ')}</Text>}
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.muted} />
-          </Pressable>
-        ) : (
-          <Pressable style={({ pressed }) => [styles.teaser, pressed && styles.teaserPressed]} onPress={openWorld} accessibilityRole="button">
-            <Ionicons name="earth-outline" size={20} color={colors.text} />
-            <View style={styles.teaserBody}><Text style={styles.teaserTitle} numberOfLines={1}>{t('seeProofs')}</Text></View>
-            <Ionicons name="chevron-forward" size={18} color={colors.muted} />
-          </Pressable>
         )}
         {cityStreak > 0 && (
           <View style={styles.streak}>
@@ -342,14 +366,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   coverTheme:  { flexShrink: 1, fontSize: 24, lineHeight: 30, fontWeight: '800', color: COVER_TEXT, letterSpacing: -0.3 },
   coverTime:   { flexDirection: 'row', alignItems: 'center', gap: 4, paddingBottom: 4 },
   coverTimeText: { fontSize: FontSizes.xs, fontWeight: '700', color: COVER_TEXT, fontVariant: ['tabular-nums'] },
-  top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8 },
+  top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8, zIndex: 2 },
   kicker:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
   kickerText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   text:        { fontSize: FontSizes.lg, lineHeight: 25, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
   meta:        { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
   early:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.localText },
-  question:    { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
-  questionText: { flex: 1, fontSize: 15, lineHeight: 21, fontWeight: '600', color: c.muted },
   perf:        { height: NOTCH, justifyContent: 'center', paddingHorizontal: 18 },
   // Dashes drawn as views: a dashed top border isn't reliable on Android.
   perfLine:    { flexDirection: 'row', gap: 5, height: 2, overflow: 'hidden' },
@@ -372,12 +394,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
   // Secondary links in ink: the button is the card's only orange element.
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
-  teaser:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, paddingHorizontal: 12, paddingVertical: 8,
-                 borderRadius: 14, backgroundColor: c.stepBg },
-  teaserPressed: { opacity: 0.7 },
-  teaserBody:  { flex: 1, gap: 1 },
-  teaserTitle: { fontSize: 14, fontWeight: '700', color: c.text },
-  teaserAnswers: { fontSize: 12, fontWeight: '600', color: c.muted },
+  world:       { gap: 4, minHeight: 44, paddingHorizontal: 14, paddingVertical: 12, borderRadius: 16, borderWidth: 1,
+                 borderColor: c.line, backgroundColor: c.stepBg },
+  worldPressed: { opacity: 0.7 },
+  worldKicker: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  worldKickerText: { fontSize: 12, fontWeight: '600', color: c.muted },
+  worldQuestion: { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
+  worldLine:   { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
+  worldAnswers: { flex: 1, fontSize: 13, fontWeight: '600', color: c.muted },
+  worldSee:    { fontSize: 13, fontWeight: '800', color: c.primaryText },
+  tip:         { position: 'absolute', top: '100%', left: 12, right: 12, marginTop: 10, zIndex: 10, paddingHorizontal: 14, paddingVertical: 10,
+                 borderRadius: 14, backgroundColor: c.text },
+  tipArrow:    { position: 'absolute', top: -6, left: 24, width: 12, height: 12, backgroundColor: c.text, transform: [{ rotate: '45deg' }] },
+  tipText:     { fontSize: 14, fontWeight: '700', color: c.bg },
   flags:       { flexDirection: 'row', alignItems: 'center' },
   flagRing:    { borderRadius: 4, borderWidth: 1.5, borderColor: c.stepBg, overflow: 'hidden' },
   flagOverlap: { marginLeft: -7 },

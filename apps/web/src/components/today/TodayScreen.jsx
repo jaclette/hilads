@@ -140,6 +140,11 @@ function usePulseVisible(el) {
  * "I'm in" (the card's only orange element) or my proof's status, and how many
  * took it. Tomorrow's Local Twist proposal sits under the week strip.
  */
+const COMPARE_TIP_KEY = 'hilads_compare_tip_seen'
+const TIP_MS = 6000
+/** Until when the world block's tip shows (epoch ms; 0 = hidden): the card can remount while it shows. */
+let tipUntil = 0
+
 function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
   const { t: tc } = useTranslation('common')
@@ -150,6 +155,24 @@ function Ticket({ data, loading }) {
   const tracked = useRef(null)
   const challenge = data?.challenge ?? null
   const pulseOn = usePulseVisible(pulseEl)
+  // The world block's one-time tip (per browser): "Tap to compare your city with the world."
+  const [tip, setTip] = useState(() => Date.now() < tipUntil)
+  const hideTip = () => { tipUntil = 0; setTip(false) }
+  const hasCompare = !!challenge?.compare
+  useEffect(() => {
+    if (!hasCompare) return
+    try {
+      if (localStorage.getItem(COMPARE_TIP_KEY) === '1') return
+      localStorage.setItem(COMPARE_TIP_KEY, '1')
+    } catch { return }
+    tipUntil = Date.now() + TIP_MS
+    setTip(true)
+  }, [hasCompare])
+  useEffect(() => {
+    if (!tip) return
+    const id = setTimeout(() => setTip(false), Math.max(0, tipUntil - Date.now()))
+    return () => clearTimeout(id)
+  }, [tip])
 
   useEffect(() => {
     if (!challenge || tracked.current === challenge.id) return
@@ -176,6 +199,7 @@ function Ticket({ data, loading }) {
   const open = () => openDaily('challenge', { date: 'today', source: 'today' })
   const world = data?.world ?? null
   const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer, i18n.language))
+  const compared = !!world && world.countries >= 2
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
@@ -191,7 +215,7 @@ function Ticket({ data, loading }) {
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
 
   return (
-    <div className="today-ticket dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
+    <div className="today-ticket dc-clickable" role="button" tabIndex={0} onClick={() => { hideTip(); open() }} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
          aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
       {/* Image band (SPEC 9.3): the challenge's cover, else its theme's; decorative. */}
       <div className="today-cover">
@@ -208,12 +232,31 @@ function Ticket({ data, loading }) {
       </div>
       <div className="today-top">
         <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
-        {/* The comparison question (SPEC 10.2), under the challenge. */}
+        {/* The comparison question and the world's answers, one block (SPEC 10.2, 10.6): from 2
+            countries it opens the Compare tab, before the sheet's World tab. */}
         {challenge.compare && (
-          <p className="today-question">
-            <Icon name="earth-outline" size={16} />
-            {t('compare.todayQuestion', { question: showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question })}
-          </p>
+          <div className="today-world-wrap">
+            <button type="button" className="today-world" onClick={(e) => {
+              e.stopPropagation()
+              hideTip()
+              if (compared) track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
+              openDaily('challenge', compared ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
+            }}>
+              <span className="today-world-kicker"><Icon name="earth-outline" size={14} />{t('compare.worldAnswers')}</span>
+              <span className="today-world-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</span>
+              <span className="today-world-line">
+                {compared && (
+                  <span className="today-teaser-flags" aria-hidden="true">
+                    {[...new Set(world.flags ?? world.answers.map(a => a.city.country))].filter(Boolean).slice(0, 5).map(c => <CityFlag key={c} country={c} size={20} />)}
+                  </span>
+                )}
+                <span className="today-world-answers">{compared ? [t('compare.nCountries', { count: world.countries }), ...answers].join(' · ') : t('compare.firstIn')}</span>
+                <span className="today-world-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={16} /></span>
+              </span>
+            </button>
+            {/* Once per browser: what the block does. Any tap or 6 seconds closes it. */}
+            {tip && <button type="button" className="today-world-tip" onClick={(e) => { e.stopPropagation(); hideTip() }}>{t('compare.tip')}</button>}
+          </div>
         )}
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText || !!challenge.compare?.original} showingOriginal={showOriginal} onClick={toggleOriginal} />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
@@ -257,34 +300,6 @@ function Ticket({ data, loading }) {
               <Icon name="camera-outline" size={20} />{cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')}
             </a>
           </span>
-        )}
-        {/* The live world teaser (SPEC 10.6), a row inside the card: from 2 countries, their flags,
-            "Already 5 countries answered" and the first answers, to the Compare tab; before, "See
-            today's answers", to the sheet's World tab. */}
-        {world && world.countries >= 2 ? (
-          <button type="button" className="today-teaser" onClick={(e) => {
-            e.stopPropagation()
-            track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
-            openDaily('challenge', { date: 'today', source: 'teaser', tab: 'compare' })
-          }}>
-            <span className="today-teaser-flags" aria-hidden="true">
-              {[...new Set(world.flags ?? world.answers.map(a => a.city.country))].filter(Boolean).slice(0, 5).map(c => <CityFlag key={c} country={c} size={20} />)}
-            </span>
-            <span className="today-teaser-body">
-              <span className="today-teaser-title">{t('compare.answeredRow', { count: world.countries })}</span>
-              {answers.length > 0 && <span className="today-teaser-answers">{answers.join(' · ')}</span>}
-            </span>
-            <Icon name="chevron-forward" size={18} />
-          </button>
-        ) : (
-          <button type="button" className="today-teaser" onClick={(e) => {
-            e.stopPropagation()
-            openDaily('challenge', { date: 'today', source: 'today_row', tab: 'world' })
-          }}>
-            <Icon name="earth-outline" size={20} />
-            <span className="today-teaser-body"><span className="today-teaser-title">{t('seeProofs')}</span></span>
-            <Icon name="chevron-forward" size={18} />
-          </button>
         )}
         {cityStreak > 0 && (
           <span className="today-city-streak" style={ROW}><Icon name="flame-outline" size={16} />{tc('represent.streak', { count: cityStreak, city: cityShort })}</span>

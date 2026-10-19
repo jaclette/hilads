@@ -516,7 +516,6 @@
     "streak_other": "{{city}}は{{count}}日連続で回答中"
   },
   "compare": {
-    "todayQuestion": "今日、世界が答える：{{question}}",
     "kicker": "今日、世界が答える：",
     "sub": "短く答えよう。世界中で比べられるのはここ。",
     "next": "次へ",
@@ -540,8 +539,12 @@
     "cheapest": "いちばん安い：{{city}} {{price}}",
     "priciest": "いちばん高い：{{city}} {{price}}",
     "funFact": "{{city}}は{{other}}の{{ratio}}倍の値段。",
-    "answeredRow_one": "すでに{{count}}か国が回答",
-    "answeredRow_other": "すでに{{count}}か国が回答"
+    "worldAnswers": "今日、世界が答える",
+    "seeAnswers": "回答を見る",
+    "firstIn": "最初の回答が届き始めました",
+    "tip": "タップして、あなたの街を世界とくらべよう。",
+    "nCountries_one": "{{count}}か国",
+    "nCountries_other": "{{count}}か国"
   },
   "backHome": {
     "title": "あなたの地元では、どう？",

@@ -517,7 +517,6 @@
     "streak_other": "{{city}} ने लगातार {{count}} दिन जवाब दिया"
   },
   "compare": {
-    "todayQuestion": "आज दुनिया जवाब देती है: {{question}}",
     "kicker": "आज दुनिया जवाब देती है:",
     "sub": "छोटा जवाब दें: दुनिया इसी की तुलना करेगी।",
     "next": "आगे",
@@ -541,8 +540,12 @@
     "cheapest": "सबसे सस्ता: {{city}} {{price}}",
     "priciest": "सबसे महँगा: {{city}} {{price}}",
     "funFact": "{{city}} में {{other}} से {{ratio}} गुना महँगा।",
-    "answeredRow_one": "{{count}} देश जवाब दे चुका है",
-    "answeredRow_other": "{{count}} देश जवाब दे चुके हैं"
+    "worldAnswers": "आज दुनिया जवाब देती है",
+    "seeAnswers": "जवाब देखें",
+    "firstIn": "पहले जवाब आ रहे हैं",
+    "tip": "अपने शहर की दुनिया से तुलना करने के लिए टैप करें।",
+    "nCountries_one": "{{count}} देश",
+    "nCountries_other": "{{count}} देश"
   },
   "backHome": {
     "title": "और आपके शहर में, कैसा है?",

@@ -515,7 +515,6 @@
     "streak_other": "{{city}}已连续 {{count}} 天作答"
   },
   "compare": {
-    "todayQuestion": "今天，全世界来回答：{{question}}",
     "kicker": "今天，全世界来回答：",
     "sub": "简短回答：全世界会拿它来比较。",
     "next": "下一步",
@@ -539,8 +538,12 @@
     "cheapest": "最便宜：{{city}} {{price}}",
     "priciest": "最贵：{{city}} {{price}}",
     "funFact": "{{city}}的价格是{{other}}的 {{ratio}} 倍。",
-    "answeredRow_one": "已有 {{count}} 个国家/地区回答",
-    "answeredRow_other": "已有 {{count}} 个国家/地区回答"
+    "worldAnswers": "今天，全世界来回答",
+    "seeAnswers": "查看回答",
+    "firstIn": "第一批回答来了",
+    "tip": "点一下，把你的城市和世界比一比。",
+    "nCountries_one": "{{count}} 个国家/地区",
+    "nCountries_other": "{{count}} 个国家/地区"
   },
   "backHome": {
     "title": "那你家乡呢，是怎样的？",

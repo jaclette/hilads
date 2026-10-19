@@ -1314,7 +1314,6 @@
       "noPlace": "Ảnh được bình chọn nhiều nhất lên bục vinh quang."
     },
     "compare": {
-      "todayQuestion": "Hôm nay, cả thế giới trả lời: {{question}}",
       "tab": "So sánh",
       "allCities": "Tất cả thành phố",
       "boardCount": "Thành phố: {{count}} · Quốc gia: {{countries}}",
@@ -1332,8 +1331,12 @@
       "cheapest": "Rẻ nhất: {{city}} {{price}}",
       "priciest": "Đắt nhất: {{city}} {{price}}",
       "funFact": "Ở {{city}} đắt gấp {{ratio}} lần so với {{other}}.",
-      "answeredRow_one": "Đã có {{count}} quốc gia trả lời",
-      "answeredRow_other": "Đã có {{count}} quốc gia trả lời"
+      "worldAnswers": "Hôm nay, cả thế giới trả lời",
+      "seeAnswers": "Xem câu trả lời",
+      "firstIn": "Những câu trả lời đầu tiên đang đến",
+      "tip": "Chạm để so sánh thành phố của bạn với thế giới.",
+      "nCountries_one": "{{count}} quốc gia",
+      "nCountries_other": "{{count}} quốc gia"
     },
     "backHome": {
       "hereIn": "Ở đây, {{city}}",

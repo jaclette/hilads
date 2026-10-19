@@ -1315,7 +1315,6 @@
       "noPlace": "De meest gestemde foto komt op het podium."
     },
     "compare": {
-      "todayQuestion": "Vandaag antwoordt de wereld: {{question}}",
       "tab": "Vergelijken",
       "allCities": "Alle steden",
       "boardCount": "Steden: {{count}} · Landen: {{countries}}",
@@ -1333,8 +1332,12 @@
       "cheapest": "Goedkoopst: {{city}} {{price}}",
       "priciest": "Duurst: {{city}} {{price}}",
       "funFact": "{{ratio}}× zo duur in {{city}} als in {{other}}.",
-      "answeredRow_one": "Al {{count}} land heeft geantwoord",
-      "answeredRow_other": "Al {{count}} landen hebben geantwoord"
+      "worldAnswers": "Vandaag antwoordt de wereld",
+      "seeAnswers": "Antwoorden bekijken",
+      "firstIn": "De eerste antwoorden komen binnen",
+      "tip": "Tik om je stad met de wereld te vergelijken.",
+      "nCountries_one": "{{count}} land",
+      "nCountries_other": "{{count}} landen"
     },
     "backHome": {
       "hereIn": "Hier in {{city}}",
