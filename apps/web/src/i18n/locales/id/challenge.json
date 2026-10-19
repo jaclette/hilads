@@ -839,7 +839,9 @@
     "nearYou": "Di dekatmu",
     "locationDenied": "Izinkan lokasi untuk hilads.live di browser agar peta berpusat padamu.",
     "locate": "Pusatkan peta ke saya",
-    "locationFailed": "Lokasimu belum tersedia saat ini."
+    "locationFailed": "Lokasimu belum tersedia saat ini.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "spot": {
     "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",

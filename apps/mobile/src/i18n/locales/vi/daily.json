@@ -253,7 +253,9 @@
     "spotsTomorrow": "Spot sẽ đến từ challenge ngày mai: {{theme}}",
     "planA11y": "Kế hoạch: {{title}}, {{time}}",
     "proofs_one": "{{count}} câu trả lời",
-    "proofs_other": "{{count}} câu trả lời"
+    "proofs_other": "{{count}} câu trả lời",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "leaderboard": {
     "tab": "Top 10",

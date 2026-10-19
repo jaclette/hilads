@@ -428,7 +428,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pinWrap:  { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', marginBottom: 44 },
   hintWrap: { position: 'absolute', bottom: 16, left: 0, right: 0, alignItems: 'center' },
   hint:     { fontSize: 12, fontWeight: '600', color: c.text, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line,
-              paddingHorizontal: 14, paddingVertical: 6, borderRadius: Radius.full, overflow: 'hidden' },
+              paddingHorizontal: 14, paddingVertical: 6, borderRadius: 14, overflow: 'hidden' },
   footer:       { paddingHorizontal: Spacing.md, paddingTop: 14, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg, gap: 10 },
   addressCard:  { minHeight: 60, justifyContent: 'center', padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   geocodingRow:  { flexDirection: 'row', alignItems: 'center', gap: 10 },

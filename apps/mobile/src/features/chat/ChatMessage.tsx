@@ -1108,7 +1108,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   meta:   { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   author: { fontSize: 13, fontWeight: '700', color: c.text },
-  modeLabel:          { fontSize: 11, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: Radius.full, overflow: 'hidden' },
+  modeLabel:          { fontSize: 11, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 9, overflow: 'hidden' },
   modeLabelLocal:     { color: c.primaryOnTint, backgroundColor: c.primaryTint },
   modeLabelExploring: { color: c.travelerText, backgroundColor: c.travelerBg },
   modeFlag:           { fontSize: FontSizes.xs },

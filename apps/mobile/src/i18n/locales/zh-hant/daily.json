@@ -253,7 +253,9 @@
     "spotsTomorrow": "地點來自明天的 challenge：{{theme}}",
     "planA11y": "計畫：{{title}}，{{time}}",
     "proofs_one": "{{count}} 個回答",
-    "proofs_other": "{{count}} 個回答"
+    "proofs_other": "{{count}} 個回答",
+    "cityBubbleA11y_one": "{{city}}，{{count}} 個地點",
+    "cityBubbleA11y_other": "{{city}}，{{count}} 個地點"
   },
   "leaderboard": {
     "tab": "Top 10",

@@ -839,7 +839,9 @@
     "nearYou": "내 주변",
     "locationDenied": "지도를 내 위치에 맞추려면 브라우저에서 hilads.live의 위치 접근을 허용하세요.",
     "locate": "내 위치로 지도 이동",
-    "locationFailed": "지금은 위치를 가져올 수 없어요."
+    "locationFailed": "지금은 위치를 가져올 수 없어요.",
+    "cityBubbleA11y_one": "{{city}}, 스팟 {{count}}곳",
+    "cityBubbleA11y_other": "{{city}}, 스팟 {{count}}곳"
   },
   "spot": {
     "rankWeekFirst": "이번 주 {{city}} 최다 득표",

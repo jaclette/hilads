@@ -14,8 +14,22 @@ export const MAP_STYLE = {
   dark:  process.env.EXPO_PUBLIC_MAPBOX_STYLE_DARK  || 'mapbox://styles/mapbox/dark-v11',
 };
 
-/** Never below this zoom: the map stays at city level (Vietnam's islands are never drawn at a world scale). */
+/** In city scope, never below this zoom: the map stays at city level. */
 export const MIN_ZOOM = 9;
+/**
+ * World scope (V4 test fixes): the whole world with one bubble per city. Below
+ * MIN_ZOOM the base style's labels and borders are hidden (WORLD_HIDDEN_LAYERS):
+ * the bubbles carry the names, and no disputed border or island name is drawn
+ * at a world scale.
+ */
+export const WORLD_ZOOM = 1.6;
+export const WORLD_MIN_ZOOM = 1;
+export const WORLD_HIDDEN_LAYERS = [
+  'continent-label', 'country-label', 'state-label', 'settlement-major-label', 'settlement-minor-label',
+  'settlement-subdivision-label', 'airport-label', 'poi-label', 'water-point-label', 'water-line-label',
+  'natural-point-label', 'natural-line-label', 'waterway-label', 'road-label',
+  'admin-0-boundary', 'admin-0-boundary-bg', 'admin-0-boundary-disputed', 'admin-1-boundary', 'admin-1-boundary-bg',
+];
 export const CITY_ZOOM = 13.5;
 
 let ready = false;

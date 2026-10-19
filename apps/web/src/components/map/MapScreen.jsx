@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import '../../lib/leafletGuard'
 import { useTranslation } from 'react-i18next'
 import SpotPage from './SpotPage'
-import { fetchMap, searchSpots, fetchDailyToday } from '../../api'
+import { fetchMap, fetchMapCities, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
 import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
 import Icon, { iconHtml } from '../Icon'
@@ -13,6 +13,7 @@ import { themeIcon } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
 import HeaderArt from '../HeaderArt'
 import { shortCityName } from '../../i18n/cityName'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -23,6 +24,8 @@ const CITY_SPAN = 1
 // Within this distance of the city centre, "where I am" just moves the camera;
 // further away, the map re-centres on me and shows the spots around me.
 const NEAR_CITY_KM = 50
+// World scope: the whole world, one bubble per city below the city zoom.
+const WORLD_ZOOM = 2
 
 function km(a, b) {
   const r = Math.PI / 180
@@ -53,6 +56,12 @@ const spotIcon = (spot, label, side, selected) => L.divIcon({
   html: `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(spot.themes?.[0] ? themeIcon(spot.themes[0]) : 'location-outline', 20)}</span>`
     + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}">${escapeHtml(label)}</span>` : ''),
   iconSize: [44, 44], iconAnchor: [22, 22],
+})
+// A World bubble: the city's flag and its spot count.
+const bubbleIcon = (b) => L.divIcon({
+  className: 'wm-pin-wrap',
+  html: `<span class="wm-bubble">${/^[A-Z]{2}$/.test(b.city.country ?? '') ? `<img src="/flags/${b.city.country.toLowerCase()}.svg" alt="" width="18" height="14" />` : ''}${b.spots}</span>`,
+  iconSize: [64, 36], iconAnchor: [32, 18],
 })
 const clusterIcon = (n) => L.divIcon({
   className: 'wm-pin-wrap',
@@ -174,7 +183,7 @@ function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
         return (
           <button key={s.id} type="button" className="wm-row" onClick={() => onPick(s)}>
             {s.cover?.thumbUrl || s.cover?.photoUrl
-              ? <img className="wm-row-photo" src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" />
+              ? <img className="wm-row-photo" src={s.cover.thumbUrl || s.cover.photoUrl} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" />
               : <span className="wm-row-photo wm-row-photo--empty"><Icon name={th ? themeIcon(th) : 'location-outline'} size={22} /></span>}
             <span className="wm-row-body">
               <span className="wm-row-name">{s.name}</span>
@@ -237,10 +246,13 @@ function EmptyCard({ today, t }) {
 }
 
 /**
- * The web map of spots (SPEC 9.5, same API as the app's Map tab): the current
- * city's spots and Hi plans, theme chips, search, and a spot page. Full screen.
+ * The web map of spots (SPEC 9.5, same API as the app's Map tab): the scope
+ * selector next to the search (the app-wide one: a city centres the map on it,
+ * World zooms out to one bubble per city, flag and spot count, a bubble opens
+ * its city), the current city's spots and Hi plans, theme chips, search, and a
+ * spot page. Locate-me goes back to my position and my city. Full screen.
  */
-export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null }) {
+export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null, scope = 'city', scopePill = null, onScopeCity }) {
   const { t, i18n } = useTranslation('challenge')
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
@@ -260,6 +272,11 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [sort, setSort]       = useState('near')
   const [cityEmpty, setCityEmpty] = useState(false)  // the city really has no spot (not just the visible area)
   const [today, setToday]     = useState(null)
+  const [bubbles, setBubbles] = useState([])
+  const world = scope === 'world'
+  const worldView = world && zoom < MIN_ZOOM
+  // The map remounts on a scope change: start at its zoom.
+  useEffect(() => { setZoom(world ? WORLD_ZOOM : CITY_ZOOM) }, [world])
   const areaRef = useRef(null)
   const cityCenterRef = useRef(null)
   const dark = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark'
@@ -279,8 +296,8 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         setCityEmpty(d.spots.length === 0)
         // A city's stored centre can be kilometres from its spots: without my
         // position (asked below), frame the spots.
-        if (d.spots.length > 1) setCamera({ bounds: d.spots.map(s => [s.lat, s.lng]) })
-        else if (d.spots.length === 1) setCamera({ lat: d.spots[0].lat, lng: d.spots[0].lng, zoom: CITY_ZOOM + 1 })
+        if (d.spots.length > 1) setCamera({ scope: 'city', bounds: d.spots.map(s => [s.lat, s.lng]) })
+        else if (d.spots.length === 1) setCamera({ scope: 'city', lat: d.spots[0].lat, lng: d.spots[0].lng, zoom: CITY_ZOOM + 1 })
         if (!c) setFailed(true)
         // Location already allowed for this site: use it without asking.
         navigator.permissions?.query({ name: 'geolocation' })
@@ -301,7 +318,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
       setMe(here)
       track('web_map_located', { auto: !asked, near_city: near })
       if (near) {
-        setCamera({ lat: here[0], lng: here[1], zoom: Math.max(zoom, 15) })
+        setCamera({ scope: 'city', lat: here[0], lng: here[1], zoom: Math.max(zoom, 15) })
       } else {
         setNearMe(true); setSelected(null); setSpots([]); setPlans([])
         setCenter(here)
@@ -323,12 +340,29 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
     return () => clearTimeout(id)
   }, [notice])
 
+  // World: one bubble per city with spots (in the theme).
+  useEffect(() => {
+    if (!world) return
+    fetchMapCities(theme).then(setBubbles).catch(() => {})
+  }, [world, theme])
+
+  // A bubble opens its city, framed on its spots.
+  const openBubble = (b) => {
+    track('web_map_city_bubble_tapped', { city: b.city.name, spots: b.spots })
+    fetchMap({ cityId: b.city.id, theme }).then(d => {
+      if (d.spots.length > 1) setCamera({ scope: 'world', bounds: d.spots.map(x => [x.lat, x.lng]) })
+      else setCamera({ scope: 'world', lat: d.spots[0]?.lat ?? b.city.lat, lng: d.spots[0]?.lng ?? b.city.lng, zoom: CITY_ZOOM })
+    }).catch(() => setCamera({ scope: 'world', lat: b.city.lat, lng: b.city.lng, zoom: CITY_ZOOM }))
+  }
+
   const loadArea = useCallback((bbox, th = theme) => {
     areaRef.current = bbox
-    fetchMap({ cityId: nearMe ? null : channelId, bbox, theme: th })
-      .then(d => { setSpots(d.spots); setPlans(d.plans) })
+    // The whole world: the bubbles say it, no pins to load.
+    if (world && bbox[2] - bbox[0] > 40) { setSpots([]); setPlans([]); return }
+    fetchMap({ cityId: nearMe || world ? null : channelId, bbox, theme: th })
+      .then(d => { setSpots(d.spots); setPlans(world ? [] : d.plans) })
       .catch(() => {})
-  }, [channelId, theme, nearMe])
+  }, [channelId, theme, nearMe, world])
 
   const pickTheme = (k) => {
     const next = theme === k ? null : k
@@ -350,7 +384,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const focusSpot = (s) => {
     setQuery(''); setResults(null)
     setSelected(s)
-    setCamera({ lat: s.lat, lng: s.lng, zoom: Math.max(zoom, 16) })
+    setCamera({ scope, lat: s.lat, lng: s.lng, zoom: Math.max(zoom, 16) })
   }
 
   const toggleView = () => {
@@ -373,12 +407,14 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
       <div className="page-header has-art">
         <HeaderArt kind="map" />
         <div className="tab-heading">
-          <span className="page-title">{nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
+          <span className="page-title">{world ? t('scope.world', { ns: 'common' }) : nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
           <p className="tab-subtitle">{t('subtitles.map', { ns: 'common' })}</p>
         </div>
       </div>
 
       <div className="wm-top">
+        <div className="wm-search-row">
+        {scopePill}
         <div className="wm-search">
           <Icon name="search-outline" size={18} style={{ color: 'var(--muted2)' }} />
           <input
@@ -389,6 +425,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             aria-label={t('map.searchA11y')}
           />
           {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
+        </div>
         </div>
         {results === null || view === 'list' ? (
           <div className="wm-chips" role="toolbar">
@@ -413,14 +450,21 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
 
       <div className="wm-map">
         {center ? (
-          <MapContainer key={center.join(',')} center={center} zoom={CITY_ZOOM} minZoom={MIN_ZOOM} zoomControl={false} className="wm-leaflet"
-                        maxBounds={[[center[0] - CITY_SPAN, center[1] - CITY_SPAN], [center[0] + CITY_SPAN, center[1] + CITY_SPAN]]}
-                        maxBoundsViscosity={1}>
+          <MapContainer key={`${scope}:${center.join(',')}`} center={world ? [20, center[1]] : center} zoom={world ? WORLD_ZOOM : CITY_ZOOM}
+                        minZoom={world ? WORLD_ZOOM : MIN_ZOOM} zoomControl={false} className="wm-leaflet"
+                        maxBounds={world ? undefined : [[center[0] - CITY_SPAN, center[1] - CITY_SPAN], [center[0] + CITY_SPAN, center[1] + CITY_SPAN]]}
+                        maxBoundsViscosity={world ? undefined : 1}>
             <TileLayer url={tiles.url} attribution={tiles.attribution} tileSize={tiles.tileSize} zoomOffset={tiles.zoomOffset} maxZoom={19} />
             <MapWatcher onArea={bbox => loadArea(bbox)} onZoom={setZoom} />
-            <CameraTo target={camera} />
-            <Pins spots={spots} zoom={zoom} selected={selected} onSpot={setSelected}
-                  onCluster={g => setCamera({ lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })} />
+            {/* A move made in the other scope (the city's frame, a bubble) never replays after the map remounts. */}
+            <CameraTo target={camera?.scope === scope ? camera : null} />
+            {worldView && bubbles.slice(0, 150).map(b => (
+              <Marker key={`c:${b.city.id}`} position={[b.city.lat, b.city.lng]} icon={bubbleIcon(b)}
+                      title={t('map.cityBubbleA11y', { city: shortCityName(b.city.name), count: b.spots })}
+                      eventHandlers={{ click: () => openBubble(b) }} />
+            ))}
+            <Pins spots={worldView ? [] : spots} zoom={zoom} selected={selected} onSpot={setSelected}
+                  onCluster={g => setCamera({ scope, lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })} />
             {me && <Marker position={me} icon={meIcon} interactive={false} />}
             {plans.map(p => (
               <Marker key={`p:${p.id}`} position={[p.lat, p.lng]} icon={planIcon()} title={p.title}
@@ -431,7 +475,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
           <div className="wm-loading">{failed ? t('map.unavailable') : <span className="wm-spinner" aria-hidden="true" />}</div>
         )}
         {center && view === 'map' && (
-          <button type="button" className="wm-locate" onClick={() => locate(true)} aria-label={t('map.locate')} title={t('map.locate')}>
+          <button type="button" className="wm-locate" onClick={() => { if (world) onScopeCity?.(); locate(true) }} aria-label={t('map.locate')} title={t('map.locate')}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               <circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
             </svg>

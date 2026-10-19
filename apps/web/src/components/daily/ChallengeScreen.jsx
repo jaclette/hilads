@@ -12,6 +12,7 @@ import {
 import Icon from '../Icon'
 import CompareBoard from './CompareBoard'
 import { themeIcon } from '../../lib/icons'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 const POLL_MS = 30_000
 
@@ -179,7 +180,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
 
               {myProof ? (
                 <div className="dc-mine" role="button" tabIndex={0} onClick={() => setViewing(myProof)}>
-                  <img src={myProof.thumbUrl || myProof.photoUrl} alt="" />
+                  <img src={myProof.thumbUrl || myProof.photoUrl} onError={thumbFallback(myProof.photoUrl)} alt="" />
                   <div className="dc-mine-body">
                     <span className="dc-mine-title">{t('yourProof')}</span>
                     <StatusChip status={myProof.status} />
@@ -347,7 +348,7 @@ function ResultRow({ proof, label, onOpen }) {
   return (
     <button type="button" className="dc-row" onClick={onOpen}>
       <span className="dc-rank">{label}</span>
-      <img className="dc-row-thumb" src={proof.thumbUrl || proof.photoUrl} alt="" />
+      <img className="dc-row-thumb" src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" />
       <span className="dc-row-body">
         <span className="dc-row-name">{personName(proof.user)} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">

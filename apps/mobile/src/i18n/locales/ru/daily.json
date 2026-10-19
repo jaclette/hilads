@@ -269,7 +269,11 @@
     "proofs_one": "{{count}} ответ",
     "proofs_few": "{{count}} ответа",
     "proofs_many": "{{count}} ответов",
-    "proofs_other": "{{count}} ответа"
+    "proofs_other": "{{count}} ответа",
+    "cityBubbleA11y_one": "{{city}}: {{count}} место",
+    "cityBubbleA11y_few": "{{city}}: {{count}} места",
+    "cityBubbleA11y_many": "{{city}}: {{count}} мест",
+    "cityBubbleA11y_other": "{{city}}: {{count}} места"
   },
   "leaderboard": {
     "tab": "Top 10",

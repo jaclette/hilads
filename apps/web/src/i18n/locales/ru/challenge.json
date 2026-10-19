@@ -843,7 +843,11 @@
     "nearYou": "Рядом с тобой",
     "locationDenied": "Разреши hilads.live доступ к геопозиции в браузере, чтобы центрировать карту на тебе.",
     "locate": "Показать меня на карте",
-    "locationFailed": "Твоё местоположение сейчас недоступно."
+    "locationFailed": "Твоё местоположение сейчас недоступно.",
+    "cityBubbleA11y_one": "{{city}}: {{count}} место",
+    "cityBubbleA11y_few": "{{city}}: {{count}} места",
+    "cityBubbleA11y_many": "{{city}}: {{count}} мест",
+    "cityBubbleA11y_other": "{{city}}: {{count}} места"
   },
   "spot": {
     "rankWeekFirst": "Больше всего голосов на этой неделе в {{city}}",

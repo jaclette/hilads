@@ -13,7 +13,7 @@ import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
 import { compactPrice } from '@/features/today/format';
-import { Button, Chip, CityName, IconButton, ScreenHeader, SectionTitle } from '@/ui';
+import { Button, Chip, CityName, IconButton, Photo, ScreenHeader, SectionTitle } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
@@ -139,7 +139,7 @@ export default function SpotScreen() {
         onEndReachedThreshold={0.5}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => setViewing(item)} accessibilityRole="button" accessibilityLabel={item.caption ?? item.user.username ?? ''}>
-            <Image source={{ uri: item.thumbUrl ?? item.photoUrl }} style={[styles.tile, { width: tile, height: tile }]} contentFit="cover" />
+            <Photo thumb={item.thumbUrl} full={item.photoUrl} style={[styles.tile, { width: tile, height: tile }]} contentFit="cover" />
           </TouchableOpacity>
         )}
       />

@@ -39,6 +39,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   segmentOn: { backgroundColor: c.primary },
   label:     { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   labelOn:   { fontWeight: '700', color: c.white },
-  badge:     { minWidth: 18, paddingHorizontal: 5, borderRadius: Radius.full, overflow: 'hidden', backgroundColor: c.primary,
+  badge:     { minWidth: 18, paddingHorizontal: 5, borderRadius: 9, overflow: 'hidden', backgroundColor: c.primary,
                color: c.white, fontSize: 11, fontWeight: '800', textAlign: 'center' },
 });

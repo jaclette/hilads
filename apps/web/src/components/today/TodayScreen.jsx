@@ -16,6 +16,7 @@ import {
   StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -469,17 +470,13 @@ function StripProof({ proof, onOpen }) {
     <button type="button" className="proof-strip-item" onClick={onOpen}
             aria-label={[proof.rank ? `#${proof.rank}` : null, city, votes].filter(Boolean).join(', ')}>
       <span className="proof-strip-photo">
-        <img src={proof.thumbUrl || proof.photoUrl} alt="" loading="lazy" />
+        <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
         {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
         {proof.status === 'pending' && <span className="proof-strip-pending"><StatusChip status="pending" /></span>}
       </span>
-      {/* The city, and the answer to the day's question next to it (SPEC 10.2). */}
-      {proof.city?.name && (
-        <span className="proof-strip-cityrow">
-          <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />
-          {proof.answer && <span className="proof-strip-answer">· {answerText(proof.answer, i18n.language)}</span>}
-        </span>
-      )}
+      {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
+      {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
+      {proof.answer && <span className="proof-strip-answer">{answerText(proof.answer, i18n.language)}</span>}
       <span className="dc-muted proof-strip-votes">{votes}</span>
     </button>
   )
@@ -527,7 +524,7 @@ function TourRow({ today }) {
           <button key={s.city.id} type="button" className="tour-circle" onClick={() => setOpen(i)}
                   aria-label={t('tour.openCity', { city: shortCityName(s.city.name) })}>
             <span className="tour-circle-ring">
-              <img src={s.proof.thumbUrl || s.proof.photoUrl} alt="" loading="lazy" />
+              <img src={s.proof.thumbUrl || s.proof.photoUrl} onError={thumbFallback(s.proof.photoUrl)} alt="" loading="lazy" />
               <span className="tour-circle-flag"><CityFlag country={s.city.country} size={20} /></span>
             </span>
             <span className="tour-circle-name">{shortCityName(s.city.name)}</span>
@@ -571,7 +568,7 @@ function Podium({ today }) {
           <button key={p.id} type="button" className="podium-item" onClick={() => openDaily('challenge', { date: podium.date, proofId: p.id })}
                   aria-label={[`#${p.rank}`, p.user.username ?? p.user.displayName, p.city ? localizeCityName(p.city.name) : null, t('today.votes', { count: p.voteCount })].filter(Boolean).join(', ')}>
             <span className="proof-strip-photo podium-photo">
-              <img src={p.thumbUrl || p.photoUrl} alt="" loading="lazy" />
+              <img src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" />
               <span className="proof-strip-rank"><RankMedal rank={p.rank} size={24} podium /></span>
             </span>
             <span className="podium-name">{p.user.displayName || p.user.username}</span>
@@ -633,7 +630,7 @@ function SpotsNear() {
           {spots.map(s => (
             <button key={s.id} type="button" className="spot-card" onClick={() => openSpot(s.id)} aria-label={s.name}>
               <span className="spot-card-photo">
-                {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" /> : <span className="spot-card-img" />}
+                {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" /> : <span className="spot-card-img" />}
                 {s.cover?.by && <span className="photo-credit">{i18n.t('photoBy', { ns: 'common', username: s.cover.by })}</span>}
               </span>
               <span className="spot-card-body">

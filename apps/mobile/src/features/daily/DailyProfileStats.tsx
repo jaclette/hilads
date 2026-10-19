@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, CityFlag } from '@/ui';
+import { Button, CityFlag, Photo } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
 import { DailyProofViewer } from './DailyProofViewer';
 import { RankMedal } from './RankMedal';
@@ -85,7 +84,7 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thumbs}>
                 {stats.bestProofs.map(p => (
                   <TouchableOpacity key={p.id} onPress={() => setViewing(p)} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
-                    <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={styles.thumb} contentFit="cover" />
+                    <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.thumb} contentFit="cover" />
                     {p.worldRank !== null && p.worldRank <= 3 && <RankMedal rank={p.worldRank} size={22} style={styles.medal} />}
                   </TouchableOpacity>
                 ))}

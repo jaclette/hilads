@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
@@ -8,7 +7,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
-import { Card, CityFlag, SectionTitle } from '@/ui';
+import { Card, CityFlag, Photo, SectionTitle } from '@/ui';
 import { TodayPodium } from '@/features/today/TodayPodium';
 import type { DailyToday, DailyTour } from '@/types';
 import { rememberTour } from './store';
@@ -59,7 +58,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
           <TouchableOpacity key={s.city.id} style={styles.item} onPress={() => open(i)} accessibilityRole="button"
                             accessibilityLabel={t('tour.openCity', { city: shortCityName(s.city.name) })}>
             <View style={styles.ring}>
-              <Image source={{ uri: s.proof.thumbUrl ?? s.proof.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
+              <Photo thumb={s.proof.thumbUrl} full={s.proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />
               <View style={styles.flag}><CityFlag country={s.city.country} size={20} /></View>
             </View>
             <Text style={styles.name} numberOfLines={1}>{shortCityName(s.city.name)}</Text>

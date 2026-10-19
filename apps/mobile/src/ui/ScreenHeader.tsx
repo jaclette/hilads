@@ -13,7 +13,7 @@ import { HeaderArt, type HeaderArtKind } from './HeaderArt';
  * header's buttons. `compact` uses the smaller title (long names, a spot).
  * `subtitle` (tab only): a one-line muted line under the title, two lines at
  * most on small screens (SPEC 9.1). `art` (tab only): the screen's line
- * drawing on the header's right, behind it (decorative).
+ * drawing on the header's right, left of its buttons (decorative).
  */
 export function ScreenHeader({ title, subtitle, art, variant = 'back', right, onBack, compact = false }: {
   title: string;
@@ -30,11 +30,12 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
   if (variant === 'tab') {
     return (
       <View style={styles.tab}>
-        {art && <HeaderArt kind={art} />}
         <View style={styles.tabText}>
           <Text style={styles.tabTitle} accessibilityRole="header">{title}</Text>
           {!!subtitle && <Text style={styles.subtitle} numberOfLines={2}>{subtitle}</Text>}
         </View>
+        {/* The drawing ends where the buttons start: never behind them. */}
+        <View style={styles.artSlot} pointerEvents="none">{art && <HeaderArt kind={art} />}</View>
         {right}
       </View>
     );
@@ -55,7 +56,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   titleCompact: { fontSize: FontSizes.md, fontWeight: '800' },
   spacer:       { flex: 1 },
   tab:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 6, overflow: 'hidden' },
-  tabText:      { flexShrink: 1, gap: 2 },
+  tabText:      { flexShrink: 1, gap: 2, zIndex: 1 },
+  artSlot:      { alignSelf: 'stretch', flexGrow: 1, flexShrink: 0, minWidth: 0, marginVertical: -10 },
   tabTitle:     { fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   subtitle:     { fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted },
 });

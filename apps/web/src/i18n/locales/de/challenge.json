@@ -839,7 +839,9 @@
     "nearYou": "In deiner Nähe",
     "locationDenied": "Erlaube hilads.live im Browser den Standortzugriff, um die Karte auf dich zu zentrieren.",
     "locate": "Karte auf mich zentrieren",
-    "locationFailed": "Dein Standort ist gerade nicht verfügbar."
+    "locationFailed": "Dein Standort ist gerade nicht verfügbar.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} Spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} Spots"
   },
   "spot": {
     "rankWeekFirst": "Diese Woche am meisten gewählt in {{city}}",

@@ -80,6 +80,17 @@ export function fetchMap(opts: { cityId?: string | number | null; bbox?: Bbox | 
   });
 }
 
+/** A city bubble of the World map: its centre and spot count. */
+export interface MapCity {
+  city:  { id: number; name: string; country: string | null; lat: number; lng: number };
+  spots: number;
+}
+
+/** GET /map/cities: every city with spots (in the theme), most spots first. */
+export function fetchMapCities(theme?: string | null): Promise<{ items: MapCity[] }> {
+  return api.get('/map/cities', { params: { theme: theme ?? undefined } });
+}
+
 /** GET /spots/search: spots whose name or dish tags match, in the city or the area. */
 export function searchSpots(q: string, opts: { cityId?: string | number | null; bbox?: Bbox | null }): Promise<{ items: Spot[] }> {
   return api.get('/spots/search', { params: { q, cityId: opts.bbox ? undefined : cityNumber(opts.cityId), bbox: bboxParam(opts.bbox) } });

@@ -10,7 +10,7 @@ import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { formatCountdown } from '@/hooks/useDaily';
 import { RankMedal } from './RankMedal';
-import { Chip, CityFlag, CityName, EmptyState, ModeLabel } from '@/ui';
+import { Chip, CityFlag, CityName, EmptyState, ModeLabel, Photo } from '@/ui';
 import { dailyTrackProps } from './track';
 import { useDailyLeaderboard } from './leaderboard';
 import { LocalPassBadge } from './LocalPassBadge';
@@ -179,7 +179,7 @@ function ResultRow({ proof, rank, city = false, onPress }: { proof: DailyProof; 
       {rank
         ? <RankMedal rank={rank} size={28} style={styles.rank} />
         : <View style={styles.rank}>{proof.city?.country ? <CityFlag country={proof.city.country} size={20} /> : <Ionicons name="location-outline" size={18} color={colors.primaryText} />}</View>}
-      <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.thumb} contentFit="cover" />
+      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.thumb} contentFit="cover" />
       <View style={styles.body}>
         <Text style={styles.name} numberOfLines={1}>{city ? t('results.bestIn', { city: cityName }) : name}</Text>
         <View style={styles.labels}>

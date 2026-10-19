@@ -231,6 +231,43 @@ final class Spots
         return Cache::remember($key, self::CACHE_TTL, static fn(): array => self::query($scope)) ?? [];
     }
 
+    /**
+     * The World map's city bubbles: every city with at least one spot (in a
+     * theme), with its spot count, most spots first:
+     * [{city: {id, name, country, lat, lng}, spots}]. Cached CACHE_TTL seconds.
+     */
+    public static function cities(?string $theme = null): array
+    {
+        $key = 'spots_cities_v1_' . ($theme ?? 'all');
+        return Cache::remember($key, self::CACHE_TTL, static function () use ($theme): array {
+            $stmt = Database::pdo()->prepare("
+                SELECT pl.city_id, count(DISTINCT pl.id) AS spots
+                FROM places pl
+                JOIN daily_proofs p      ON p.place_id = pl.id AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                JOIN users cu            ON cu.id = p.user_id AND NOT cu.is_demo
+                JOIN daily_challenges dc ON dc.id = p.challenge_id
+                WHERE pl.status = 'approved' AND NOT pl.hidden AND pl.merged_into IS NULL AND pl.city_id IS NOT NULL
+                  AND (?::text IS NULL OR dc.theme = ?)
+                GROUP BY pl.city_id
+                ORDER BY spots DESC, pl.city_id
+            ");
+            $stmt->execute([$theme, $theme]);
+            $out = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $city = CityRepository::findById((int) substr((string) $r['city_id'], 5));
+                if ($city === null || $city['lat'] === null || $city['lng'] === null) {
+                    continue;
+                }
+                $out[] = [
+                    'city'  => ['id' => (int) $city['id'], 'name' => $city['name'], 'country' => $city['country'] ?? null,
+                                'lat' => (float) $city['lat'], 'lng' => (float) $city['lng']],
+                    'spots' => (int) $r['spots'],
+                ];
+            }
+            return $out;
+        }) ?? [];
+    }
+
     /** One spot (following merges), or null. */
     public static function findOne(string $id): ?array
     {

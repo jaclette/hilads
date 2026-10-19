@@ -839,7 +839,9 @@
     "nearYou": "ใกล้คุณ",
     "locationDenied": "อนุญาตตำแหน่งสำหรับ hilads.live ในเบราว์เซอร์ เพื่อให้แผนที่อยู่ที่ตำแหน่งของคุณ",
     "locate": "ย้ายแผนที่มาที่ฉัน",
-    "locationFailed": "ตอนนี้ยังหาตำแหน่งของคุณไม่ได้"
+    "locationFailed": "ตอนนี้ยังหาตำแหน่งของคุณไม่ได้",
+    "cityBubbleA11y_one": "{{city}} · {{count}} สปอต",
+    "cityBubbleA11y_other": "{{city}} · {{count}} สปอต"
   },
   "spot": {
     "rankWeekFirst": "ได้โหวตมากที่สุดสัปดาห์นี้ใน{{city}}",

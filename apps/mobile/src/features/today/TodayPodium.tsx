@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
@@ -12,7 +11,7 @@ import { fetchDailyPodium } from '@/api/daily';
 import { seedProofs } from '@/features/daily/votes';
 import { RankMedal } from '@/features/daily/RankMedal';
 import type { DailyPodium, DailyToday } from '@/types';
-import { Button, Card, CityName, SectionTitle } from '@/ui';
+import { Button, Card, CityName, Photo, SectionTitle } from '@/ui';
 
 /**
  * Yesterday's podium (SPEC 9.3): yesterday's top 3 proofs of the scope with
@@ -62,7 +61,7 @@ export function TodayPodium({ today, refreshKey }: { today: DailyToday | null; r
                               accessibilityRole="button"
                               accessibilityLabel={[`#${p.rank}`, name, p.city?.name ? localizeCityName(p.city.name) : null, votes].filter(Boolean).join(', ')}>
               <View style={styles.photo}>
-                <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
+                <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" />
                 <RankMedal rank={p.rank} size={24} podium style={styles.rank} />
               </View>
               <Text style={styles.name} numberOfLines={1}>{name}</Text>

@@ -99,6 +99,23 @@ class R2Uploader
      * `thumb_<base>.jpg` names, external avatars, and nulls pass through
      * unchanged. Returns null/'' unchanged so "no photo → initial" still works.
      */
+    /**
+     * The scheme the client used: https behind Render's proxy (X-Forwarded-Proto)
+     * or with HTTPS on; http only for a plain local host (php -S), where an
+     * https link would never load.
+     */
+    public static function requestScheme(string $host): string
+    {
+        $proto = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+        if ($proto === 'https' || $proto === 'http') {
+            return $proto;
+        }
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            return 'https';
+        }
+        return preg_match('/^(localhost|127\.0\.0\.1|\[::1\]|10\.|192\.168\.)/', $host) ? 'http' : 'https';
+    }
+
     public static function thumbProxy(?string $url): ?string
     {
         if ($url === null || $url === '') {
@@ -113,7 +130,7 @@ class R2Uploader
         // public API host for non-HTTP contexts (cron/CLI).
         $host = $_SERVER['HTTP_HOST'] ?? '';
         $apiBase = $host !== ''
-            ? 'https://' . $host
+            ? self::requestScheme($host) . '://' . $host
             : rtrim(getenv('API_PUBLIC_URL') ?: 'https://api.hilads.live', '/');
         return $apiBase . '/api/v1/img-thumb?f=' . strtolower($base);
     }

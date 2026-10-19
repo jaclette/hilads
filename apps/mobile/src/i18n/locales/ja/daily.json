@@ -255,7 +255,9 @@
     "spotsTomorrow": "スポットは明日の challenge から：{{theme}}",
     "planA11y": "予定：{{title}}、{{time}}",
     "proofs_one": "プルーフ {{count}} 件",
-    "proofs_other": "プルーフ {{count}} 件"
+    "proofs_other": "プルーフ {{count}} 件",
+    "cityBubbleA11y_one": "{{city}}、スポット{{count}}件",
+    "cityBubbleA11y_other": "{{city}}、スポット{{count}}件"
   },
   "leaderboard": {
     "tab": "Top 10",

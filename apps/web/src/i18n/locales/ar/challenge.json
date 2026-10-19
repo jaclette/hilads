@@ -847,7 +847,13 @@
     "nearYou": "بالقرب منك",
     "locationDenied": "اسمح لموقع hilads.live بالوصول إلى موقعك في المتصفح لتتمركز الخريطة عليك.",
     "locate": "ركّز الخريطة عليّ",
-    "locationFailed": "موقعك غير متاح الآن."
+    "locationFailed": "موقعك غير متاح الآن.",
+    "cityBubbleA11y_zero": "{{city}}: {{count}} مكان",
+    "cityBubbleA11y_one": "{{city}}: مكان واحد",
+    "cityBubbleA11y_two": "{{city}}: مكانان",
+    "cityBubbleA11y_few": "{{city}}: {{count}} أماكن",
+    "cityBubbleA11y_many": "{{city}}: {{count}} مكانًا",
+    "cityBubbleA11y_other": "{{city}}: {{count}} مكان"
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +19,7 @@ import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
-import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
+import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Photo, Screen, ScreenHeader, Segmented } from '@/ui';
 import { CompareBoard } from '@/features/compare/CompareBoard';
 import type { DailyProof } from '@/types';
 import { themeName } from '@/features/daily/themes';
@@ -202,7 +201,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
 
           {myProof ? (
             <View style={styles.mine}>
-              <Image source={{ uri: myProof.thumbUrl ?? myProof.photoUrl }} style={styles.mineThumb} contentFit="cover" />
+              <Photo thumb={myProof.thumbUrl} full={myProof.photoUrl} style={styles.mineThumb} contentFit="cover" />
               <View style={styles.mineBody}>
                 <Text style={styles.mineTitle}>{t('yourProof')}</Text>
                 <DailyStatusChip status={myProof.status} />

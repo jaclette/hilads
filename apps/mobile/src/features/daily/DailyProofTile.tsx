@@ -1,9 +1,8 @@
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { CityName } from '@/ui';
+import { CityName, Photo } from '@/ui';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
@@ -19,7 +18,7 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
   const name = proof.user.displayName || proof.user.username || '';
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
-      <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
+      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />
       {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
       <View style={styles.meta}>
         <View style={styles.nameRow}>

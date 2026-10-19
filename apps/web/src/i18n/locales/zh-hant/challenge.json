@@ -839,7 +839,9 @@
     "nearYou": "你附近",
     "locationDenied": "在瀏覽器中允許 hilads.live 使用位置，地圖才能以你為中心。",
     "locate": "將地圖定位到我",
-    "locationFailed": "暫時無法取得你的位置。"
+    "locationFailed": "暫時無法取得你的位置。",
+    "cityBubbleA11y_one": "{{city}}，{{count}} 個地點",
+    "cityBubbleA11y_other": "{{city}}，{{count}} 個地點"
   },
   "spot": {
     "rankWeekFirst": "本週{{city}}得票最多",

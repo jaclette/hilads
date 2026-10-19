@@ -255,7 +255,9 @@
     "spotsTomorrow": "Spots come from tomorrow's challenge: {{theme}}",
     "planA11y": "Plan: {{title}}, {{time}}",
     "proofs_one": "{{count}} answer",
-    "proofs_other": "{{count}} answers"
+    "proofs_other": "{{count}} answers",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
   },
   "leaderboard": {
     "tab": "Top 10",

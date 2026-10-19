@@ -7,7 +7,7 @@ import { ThemeIcon } from './ThemeIcon';
 /**
  * Chip, always full radius.
  * - tint: a label on a tinted ground (theme, rank; `tone="local"` for "Validated by a local").
- * - filter: a tappable choice (map themes), `selected` fills it; `badge` adds a small tag ("Today").
+ * - filter: a tappable choice (map themes), as wide as its label, `selected` fills it; `badge` adds a small tag ("Today").
  * - outline: a tag with a line border (dish tags).
  * `theme` shows a theme's icon (ThemeIcon) instead of `icon`.
  */
@@ -31,6 +31,7 @@ export function Chip({ label, variant = 'tint', tone = 'primary', icon, theme, s
     return (
       <TouchableOpacity style={[styles.filter, selected && styles.filterOn, style]} onPress={onPress} accessibilityRole="button"
                         accessibilityState={{ selected }}>
+        {!!theme && <ThemeIcon theme={theme} special={special} size={16} color={selected ? colors.white : colors.primaryText} />}
         <Text style={[styles.filterText, selected && styles.filterTextOn]}>{label}</Text>
         {!!badge && <Text style={[styles.badge, selected && styles.badgeOn]}>{badge}</Text>}
       </TouchableOpacity>
@@ -58,7 +59,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   filterOn:     { backgroundColor: c.primary, borderColor: c.primary },
   filterText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   filterTextOn: { fontWeight: '700', color: c.white },
-  badge:        { fontSize: 11, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: Radius.full,
+  // iOS draws no Text at all with a radius over half its height and overflow hidden: a fixed radius.
+  badge:        { fontSize: 11, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 9,
                   paddingHorizontal: 7, paddingVertical: 2, overflow: 'hidden' },
   badgeOn:      { color: c.primary, backgroundColor: c.white },
   outline:      { borderWidth: Border, borderColor: c.line, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4 },

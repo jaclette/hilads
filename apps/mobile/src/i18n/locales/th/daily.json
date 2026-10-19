@@ -253,7 +253,9 @@
     "spotsTomorrow": "สปอตมาจาก challenge พรุ่งนี้: {{theme}}",
     "planA11y": "แผน: {{title}}, {{time}}",
     "proofs_one": "{{count}} คำตอบ",
-    "proofs_other": "{{count}} คำตอบ"
+    "proofs_other": "{{count}} คำตอบ",
+    "cityBubbleA11y_one": "{{city}} · {{count}} สปอต",
+    "cityBubbleA11y_other": "{{city}} · {{count}} สปอต"
   },
   "leaderboard": {
     "tab": "Top 10",

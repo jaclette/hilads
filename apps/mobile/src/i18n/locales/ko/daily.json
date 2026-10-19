@@ -253,7 +253,9 @@
     "spotsTomorrow": "스팟은 내일의 challenge에서 나와요: {{theme}}",
     "planA11y": "약속: {{title}}, {{time}}",
     "proofs_one": "답변 {{count}}개",
-    "proofs_other": "답변 {{count}}개"
+    "proofs_other": "답변 {{count}}개",
+    "cityBubbleA11y_one": "{{city}}, 스팟 {{count}}곳",
+    "cityBubbleA11y_other": "{{city}}, 스팟 {{count}}곳"
   },
   "leaderboard": {
     "tab": "Top 10",

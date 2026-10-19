@@ -839,7 +839,9 @@
     "nearYou": "Bij jou in de buurt",
     "locationDenied": "Sta locatie toe voor hilads.live in je browser om de kaart op jou te centreren.",
     "locate": "Kaart op mij centreren",
-    "locationFailed": "Je locatie is nu niet beschikbaar."
+    "locationFailed": "Je locatie is nu niet beschikbaar.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
   },
   "spot": {
     "rankWeekFirst": "Meest gestemd deze week in {{city}}",

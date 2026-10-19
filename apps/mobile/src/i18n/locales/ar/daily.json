@@ -283,7 +283,13 @@
     "proofs_two": "إجابتان",
     "proofs_few": "{{count}} إجابات",
     "proofs_many": "{{count}} إجابة",
-    "proofs_other": "{{count}} إجابة"
+    "proofs_other": "{{count}} إجابة",
+    "cityBubbleA11y_zero": "{{city}}: {{count}} مكان",
+    "cityBubbleA11y_one": "{{city}}: مكان واحد",
+    "cityBubbleA11y_two": "{{city}}: مكانان",
+    "cityBubbleA11y_few": "{{city}}: {{count}} أماكن",
+    "cityBubbleA11y_many": "{{city}}: {{count}} مكانًا",
+    "cityBubbleA11y_other": "{{city}}: {{count}} مكان"
   },
   "leaderboard": {
     "tab": "Top 10",

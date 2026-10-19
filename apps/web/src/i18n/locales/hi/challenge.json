@@ -839,7 +839,9 @@
     "nearYou": "तुम्हारे पास",
     "locationDenied": "मैप को अपनी जगह पर लाने के लिए ब्राउज़र में hilads.live को लोकेशन की अनुमति दो।",
     "locate": "मैप को मेरी जगह पर लाएँ",
-    "locationFailed": "अभी तुम्हारी लोकेशन उपलब्ध नहीं है।"
+    "locationFailed": "अभी तुम्हारी लोकेशन उपलब्ध नहीं है।",
+    "cityBubbleA11y_one": "{{city}}, {{count}} स्पॉट",
+    "cityBubbleA11y_other": "{{city}}, {{count}} स्पॉट"
   },
   "spot": {
     "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",

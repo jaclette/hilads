@@ -19,7 +19,7 @@ export function PhotoCredit({ by, overlay = false, style }: { by: string | null 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  overlay: { position: 'absolute', left: 6, bottom: 6, maxWidth: '90%', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999,
+  overlay: { position: 'absolute', left: 6, bottom: 6, maxWidth: '90%', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 9,
              overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.58)', color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
   line:    { fontSize: 12, fontWeight: '600', color: c.muted },
 });

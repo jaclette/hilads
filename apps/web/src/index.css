@@ -16368,6 +16368,11 @@ body.has-app-promo-banner .page-header {
 /* ── Web map of spots (components/map, SPEC 9.5) ─────────────────────────── */
 .wm-page { overflow: hidden; }
 .wm-top { flex-shrink: 0; padding: 0.625rem 0.75rem 0.5rem; background: var(--surface); border-bottom: 1px solid var(--separator); display: flex; flex-direction: column; gap: 0.5rem; }
+.wm-search-row { display: flex; align-items: center; gap: 8px; }
+.wm-search-row .wm-search { flex: 1; min-width: 0; }
+.v3-scope.v3-scope--map { flex: 0 0 auto; max-width: 150px; height: 46px; }
+.wm-bubble { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 10px; border-radius: 16px; border: 2px solid var(--primary); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 800; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.25); cursor: pointer; }
+.wm-bubble img { border-radius: 2px; }
 .wm-search { display: flex; align-items: center; gap: 0.5rem; min-height: 46px; padding: 0 0.875rem; border-radius: 999px; border: 1.5px solid var(--border); background: var(--bg); }
 .wm-search input { flex: 1; min-width: 0; border: none; background: transparent; color: var(--text); font-size: 1rem; outline: none; }
 .wm-search-clear { border: none; background: transparent; color: var(--muted2); font-size: 1rem; min-width: 32px; min-height: 32px; cursor: pointer; }
@@ -17361,7 +17366,6 @@ body.has-app-promo-banner .page-header {
 .index-line { display: flex; align-items: center; gap: 8px; min-height: 28px; }
 .index-city { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .index-value { font-size: 14px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
-.proof-strip-cityrow { display: flex; flex-wrap: wrap; align-items: center; column-gap: 3px; min-width: 0; }
 .proof-strip-answer { min-width: 0; font-size: 13px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .proof-strip-pending { position: absolute; left: 6px; bottom: 6px; }
 .index-foot { margin-top: 4px; font-size: 11px; font-weight: 500; color: var(--muted); }

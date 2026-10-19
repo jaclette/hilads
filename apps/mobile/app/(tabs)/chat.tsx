@@ -868,10 +868,12 @@ export default function ChatTab() {
               const message = t('shareMessage', { city: localizeCityName(city.name) });
               await shareLink({ title, message, url });
             }} />
-            {account && (
-              <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={unreadDMs > 0}
-                          onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }} />
-            )}
+            {/* Private messages, with the unread dot; a guest is asked to sign up. */}
+            <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={!!account && unreadDMs > 0}
+                        onPress={() => {
+                          if (!account) { router.push('/auth-gate?reason=send_dm&returnTo=%2Fmessages' as never); return; }
+                          setUnreadDMs(0); clearEventChatCounts(); router.push('/messages');
+                        }} />
           </View>
         } />
 

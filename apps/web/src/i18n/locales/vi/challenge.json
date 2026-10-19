@@ -839,7 +839,9 @@
     "nearYou": "Gần bạn",
     "locationDenied": "Cho phép hilads.live truy cập vị trí trong trình duyệt để căn bản đồ theo bạn.",
     "locate": "Đưa bản đồ về vị trí của tôi",
-    "locationFailed": "Hiện chưa lấy được vị trí của bạn."
+    "locationFailed": "Hiện chưa lấy được vị trí của bạn.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "spot": {
     "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

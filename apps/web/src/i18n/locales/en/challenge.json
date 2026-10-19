@@ -839,7 +839,9 @@
     "nearYou": "Near you",
     "locationDenied": "Allow location for hilads.live in your browser to center the map on you.",
     "locate": "Center the map on me",
-    "locationFailed": "Your position isn't available right now."
+    "locationFailed": "Your position isn't available right now.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
   },
   "spot": {
     "rankWeekFirst": "Top voted this week in {{city}}",

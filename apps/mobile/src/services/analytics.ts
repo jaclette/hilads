@@ -109,6 +109,7 @@ export type AnalyticsEvent =
   | 'map_filter_used'
   | 'map_first_spot_tapped'
   | 'map_view_switched'
+  | 'map_city_bubble_tapped'
   | 'map_list_sorted'
   | 'spot_opened'
   // V3-08: the place-based proof (SPEC 9.13)

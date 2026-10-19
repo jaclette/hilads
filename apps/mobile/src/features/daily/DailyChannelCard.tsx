@@ -17,7 +17,7 @@ import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
-import { CityFlag, CityName } from '@/ui';
+import { CityFlag, CityName, Photo } from '@/ui';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { ThemeIcon } from '@/ui/ThemeIcon';
@@ -281,7 +281,7 @@ function ProofCard({ message, reactions, time, longPress }: {
             <Ionicons name="ellipsis-horizontal" size={18} color={colors.muted} />
           </TouchableOpacity>
         </View>
-        <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
+        <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.photo} contentFit="cover" transition={150} />
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (
           <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>

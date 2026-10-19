@@ -839,7 +839,9 @@
     "nearYou": "Autour de toi",
     "locationDenied": "Autorise la localisation pour hilads.live dans ton navigateur pour centrer la carte sur toi.",
     "locate": "Centrer la carte sur moi",
-    "locationFailed": "Ta position n'est pas disponible pour le moment."
+    "locationFailed": "Ta position n'est pas disponible pour le moment.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
   },
   "spot": {
     "rankWeekFirst": "Le plus voté cette semaine à {{city}}",

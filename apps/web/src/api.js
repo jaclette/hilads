@@ -2377,6 +2377,13 @@ function spotsQuery(params) {
 }
 
 /** GET /map: spots (most voted first) in the city or the area, and the city's Hi plans as dated pins. */
+/** GET /map/cities: the World map's city bubbles, {city: {id, name, country, lat, lng}, spots}, most spots first. */
+export async function fetchMapCities(theme) {
+  const res = await fetch(`${BASE}/map/cities?${spotsQuery({ theme })}`)
+  if (!res.ok) throw new Error('Failed to fetch map cities')
+  return (await res.json()).items ?? []
+}
+
 export async function fetchMap({ cityId, bbox, theme }) {
   const res = await fetch(`${BASE}/map?${spotsQuery({
     cityId: cityNumber(cityId),

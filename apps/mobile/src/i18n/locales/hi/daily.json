@@ -255,7 +255,9 @@
     "spotsTomorrow": "स्पॉट कल के challenge से आएँगे: {{theme}}",
     "planA11y": "प्लान: {{title}}, {{time}}",
     "proofs_one": "{{count}} सबूत",
-    "proofs_other": "{{count}} सबूत"
+    "proofs_other": "{{count}} सबूत",
+    "cityBubbleA11y_one": "{{city}}, {{count}} स्पॉट",
+    "cityBubbleA11y_other": "{{city}}, {{count}} स्पॉट"
   },
   "leaderboard": {
     "tab": "Top 10",

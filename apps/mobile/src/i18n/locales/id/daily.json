@@ -255,7 +255,9 @@
     "spotsTomorrow": "Spot datang dari challenge besok: {{theme}}",
     "planA11y": "Rencana: {{title}}, {{time}}",
     "proofs_one": "{{count}} jawaban",
-    "proofs_other": "{{count}} jawaban"
+    "proofs_other": "{{count}} jawaban",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "leaderboard": {
     "tab": "Top 10",

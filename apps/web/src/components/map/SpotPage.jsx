@@ -9,6 +9,7 @@ import { track } from '../../lib/analytics'
 import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
@@ -124,7 +125,7 @@ export default function SpotPage({ spotId, onBack }) {
                 <div className="wm-photos">
                   {photos.map(p => (
                     <figure key={p.id} className="wm-photo">
-                      <img src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
+                      <img src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt={p.caption || ''} loading="lazy" />
                       <figcaption>
                         <span>{p.user.displayName || p.user.username}{p.isLocal ? ` · ${t('spot.local')}` : ''}</span>
                         <span style={ROW}><Icon name="heart" size={12} />{p.voteCount}</span>

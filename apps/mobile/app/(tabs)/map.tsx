@@ -5,17 +5,17 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Camera, CircleLayer, LocationPuck, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
+import { Camera, CircleLayer, LineLayer, LocationPuck, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { useScope } from '@/context/ScopeContext';
+import { useScope, type Scope } from '@/context/ScopeContext';
 import { track } from '@/services/analytics';
 import { useDailyToday } from '@/hooks/useDaily';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, setupMapbox } from '@/lib/mapbox';
+import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, WORLD_HIDDEN_LAYERS, WORLD_MIN_ZOOM, WORLD_ZOOM, setupMapbox } from '@/lib/mapbox';
 import { directionsUrl, openMapsUrl } from '@/lib/directions';
-import { fetchMap, fetchSpot, searchSpots, type Bbox, type PlanPin, type Spot } from '@/api/spots';
+import { fetchMap, fetchMapCities, fetchSpot, searchSpots, type Bbox, type MapCity, type PlanPin, type Spot } from '@/api/spots';
 import { THEME_KEYS, isPlaceTheme, themeName } from '@/features/daily/themes';
 import { meters, pinLabel } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
@@ -24,12 +24,16 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
 import { EmptyCity } from '@/features/map/EmptyCity';
 import { SpotList, type SpotSort } from '@/features/map/SpotList';
+import { ScopeSelector } from '@/features/shell/ScopeSelector';
+import { shortCityName } from '@/i18n/cityName';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { DailyThemeKey } from '@/types';
-import { Chip, IconButton, TextField } from '@/ui';
+import { Chip, CityFlag, IconButton, TextField } from '@/ui';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
 const IDLE_DEBOUNCE_MS = 400;
+// Farther than this from the city's centre, my position is not "in" the city (Spots::AWAY_M).
+const CITY_RADIUS_M = 30_000;
 // Pin labels from this zoom (the city view), where they stay readable; Mapbox
 // hides the ones that would collide, the pins stay.
 const LABEL_MIN_ZOOM = 13.5;
@@ -48,10 +52,13 @@ function spotsFrame(spots: Spot[]): [[number, number], [number, number]] | null 
 
 /**
  * MAP (SPEC 9.5, map.html): the spots locals chose, never a third-party
- * catalog. Clustered spot pins, Hi plans as dated pins (city scope), my
- * position when location is allowed, a search over spot names and dish tags,
- * theme chips (today's flagged), the selected spot's card, locate-me, and an
- * empty-city card. Readable without an account. ?spot=<id> selects a spot.
+ * catalog. The scope selector next to the search (the same as Today's: a city
+ * centres the map on it, World zooms out to one bubble per city, flag and spot
+ * count, a bubble opens its city), clustered spot pins, Hi plans as dated pins
+ * (city scope), my position when location is allowed, a search over spot
+ * names and dish tags, theme chips (today's flagged), the selected spot's
+ * card, locate-me (back to my position and my city), and an empty-city card.
+ * Readable without an account. ?spot=<id> selects a spot.
  */
 export default function MapScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -61,7 +68,7 @@ export default function MapScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ spot?: string; source?: string }>();
   const { city } = useApp();
-  const { scope } = useScope();
+  const { scope, setScope } = useScope();
   const today = useDailyToday(city?.channelId);
   const hasToken = useMemo(() => setupMapbox(), []);
 
@@ -88,6 +95,12 @@ export default function MapScreen() {
   const [view, setView]         = useState<'map' | 'list'>('map');
   const [sort, setSort]         = useState<SpotSort>('near');
   const [topH, setTopH]         = useState(0);
+  const [zoom, setZoom]         = useState(CITY_ZOOM);
+  const [bubbles, setBubbles]   = useState<MapCity[]>([]);
+  // A scope change made by locate-me: the camera goes to me, not to the city.
+  const scopeByLocate = useRef(false);
+  // World scope zoomed out: city bubbles instead of pins, no base labels or borders.
+  const worldView = scope === 'world' && zoom < MIN_ZOOM;
 
   const cityId = city?.channelId ?? null;
   const todayTheme = today.data?.challenge?.theme?.key ?? null;
@@ -132,25 +145,76 @@ export default function MapScreen() {
     return () => { alive = false; };
   }, [cityId, themeFilter, scope]);
 
-  // Centre once: on me when known, else on the city's spots (a city's stored
-  // centre can be kilometres from them), else on the city.
+  // The city on the map: its spots, else its centre.
+  const flyToCity = useCallback((duration = 800) => {
+    if (cityFrame && !(cityFrame[0][0] === cityFrame[1][0] && cityFrame[0][1] === cityFrame[1][1])) {
+      cameraRef.current?.fitBounds(cityFrame[1], cityFrame[0], [insets.top + 150, 48, 220, 48], duration);
+    } else if (cityFrame || center) {
+      cameraRef.current?.setCamera({ centerCoordinate: cityFrame ? cityFrame[0] : center!, zoomLevel: CITY_ZOOM, animationDuration: duration });
+    }
+  }, [cityFrame, center, insets.top]);
+
+  // Centre once: on me when I am in the city, else on the city's spots (a
+  // city's stored centre can be kilometres from them), else on the city.
   useEffect(() => {
     if (centered.current || !cameraRef.current) return;
-    if (!me && !center) return;
-    centered.current = true;
-    if (!me && cityFrame) {
-      const [sw, ne] = cityFrame;
-      if (sw[0] === ne[0] && sw[1] === ne[1]) {
-        cameraRef.current.setCamera({ centerCoordinate: sw, zoomLevel: CITY_ZOOM + 1, animationDuration: 0 });
-      } else {
-        cameraRef.current.fitBounds(ne, sw, [insets.top + 150, 48, 220, 48], 0);
-      }
+    if (scope === 'world') {
+      centered.current = true;
+      cameraRef.current.setCamera({ centerCoordinate: [(center ?? me ?? [106.7, 10.8])[0], 20], zoomLevel: WORLD_ZOOM, animationDuration: 0 });
       return;
     }
-    cameraRef.current.setCamera({ centerCoordinate: (me ?? center)!, zoomLevel: CITY_ZOOM, animationDuration: 0 });
-  }, [me, center, cityFrame, insets.top]);
+    if (!me && !center) return;
+    if (cityId && !loaded) return;   // wait for the city (centre and spots): am I in it?
+    const meHere = me && center && meters(me, center) <= CITY_RADIUS_M ? me : null;
+    centered.current = true;
+    if (meHere) {
+      cameraRef.current.setCamera({ centerCoordinate: meHere, zoomLevel: CITY_ZOOM, animationDuration: 0 });
+      return;
+    }
+    // A short animation: a 0 ms fitBounds before the map's first layout is dropped.
+    flyToCity(300);
+  }, [me, center, insets.top, scope, cityId, loaded, flyToCity]);
+
+
+  // A scope change (here or in another tab): a city centres the map on it, World zooms out.
+  const lastScope = useRef<Scope>(scope);
+  useEffect(() => {
+    if (lastScope.current === scope) return;
+    lastScope.current = scope;
+    setSelected(null);
+    if (scopeByLocate.current) { scopeByLocate.current = false; return; }
+    if (scope === 'world') {
+      // Around my city's longitude, where its bubble and its neighbours are.
+      cameraRef.current?.setCamera({ centerCoordinate: [center?.[0] ?? 0, 20], zoomLevel: WORLD_ZOOM, animationDuration: 900 });
+    } else {
+      flyToCity();
+    }
+  }, [scope, center, flyToCity]);
+
+  // World: one bubble per city with spots (in the theme).
+  useEffect(() => {
+    if (scope !== 'world') return;
+    let alive = true;
+    fetchMapCities(themeFilter).then(r => { if (alive) setBubbles(r.items); }).catch(() => {});
+    return () => { alive = false; };
+  }, [scope, themeFilter]);
+
+  // A bubble opens its city: framed on its spots (its stored centre can be kilometres away).
+  const openBubble = (b: MapCity) => {
+    track('map_city_bubble_tapped', { city: b.city.name, spots: b.spots });
+    fetchMap({ cityId: b.city.id, theme: themeFilter }).then(d => {
+      const frame = spotsFrame(d.spots);
+      if (frame && !(frame[0][0] === frame[1][0] && frame[0][1] === frame[1][1])) {
+        cameraRef.current?.fitBounds(frame[1], frame[0], [insets.top + 150, 48, 220, 48], 1200);
+      } else {
+        cameraRef.current?.setCamera({ centerCoordinate: frame ? frame[0] : [b.city.lng, b.city.lat], zoomLevel: CITY_ZOOM + (frame ? 1 : 0), animationDuration: 1200 });
+      }
+    }).catch(() => cameraRef.current?.setCamera({ centerCoordinate: [b.city.lng, b.city.lat], zoomLevel: CITY_ZOOM, animationDuration: 1200 }));
+  };
 
   const loadArea = useCallback((bbox: Bbox) => {
+    // The whole world: the bubbles say it, no pins to load.
+    if (scope === 'world' && bbox[2] - bbox[0] > 40) return;
     fetchMap({ bbox, cityId: scope === 'city' ? cityId : null, theme: themeFilter })
       .then(d => { setSpots(d.spots); setPlans(scope === 'city' ? d.plans : []); })
       .catch(() => {});
@@ -163,6 +227,7 @@ export default function MapScreen() {
     const { ne, sw } = state.properties.bounds;
     const bbox: Bbox = [sw[0], sw[1], ne[0], ne[1]];
     lastBbox.current = bbox;
+    setZoom(state.properties.zoom);
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleTimer.current = setTimeout(() => loadArea(bbox), IDLE_DEBOUNCE_MS);
   }, [loadArea]);
@@ -202,15 +267,18 @@ export default function MapScreen() {
     track('map_filter_used', { theme: k ?? 'all', is_today: k !== null && k === todayTheme });
   };
 
+  // Back to my position and my city (World scope switches to the city).
   const locate = async () => {
     const res = await requestFeatureLocation('map_locate');
     if (!res.ok || !res.coords) {
       setNotice(res.permanentlyDenied || res.reason === 'denied' ? t('map.locationDenied') : t('map.locationFailed'));
       setTimeout(() => setNotice(null), 4000);
+      if (scope === 'world' && city) setScope('city');
       return;
     }
     const pos: [number, number] = [res.coords.lng, res.coords.lat];
     setMe(pos);
+    if (scope === 'world' && city) { scopeByLocate.current = true; setScope('city'); }
     cameraRef.current?.setCamera({ centerCoordinate: pos, zoomLevel: Math.max(CITY_ZOOM, 14), animationDuration: 600 });
   };
 
@@ -231,13 +299,13 @@ export default function MapScreen() {
 
   const shape = useMemo<GeoJSON.FeatureCollection>(() => ({
     type: 'FeatureCollection',
-    features: spots.filter(s => s.id !== selected?.id).map(s => ({
+    features: worldView ? [] : spots.filter(s => s.id !== selected?.id).map(s => ({
       type: 'Feature', id: s.id,
       // rank: lower is placed first when labels collide (most proofs, then votes).
       properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes) },
       geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
     })),
-  }), [spots, selected?.id, i18n.language]);
+  }), [spots, selected?.id, i18n.language, worldView]);
 
   if (!hasToken) {
     return <View style={[styles.container, styles.center]}><Text style={styles.muted}>{t('map.noToken')}</Text></View>;
@@ -261,7 +329,7 @@ export default function MapScreen() {
         onMapIdle={onIdle}
         onPress={() => { Keyboard.dismiss(); setSelected(null); }}
       >
-        <Camera ref={cameraRef} minZoomLevel={MIN_ZOOM} defaultSettings={{ centerCoordinate: center ?? [106.7009, 10.7769], zoomLevel: CITY_ZOOM }} />
+        <Camera ref={cameraRef} minZoomLevel={scope === 'world' ? WORLD_MIN_ZOOM : MIN_ZOOM} defaultSettings={{ centerCoordinate: center ?? [106.7009, 10.7769], zoomLevel: CITY_ZOOM }} />
         {me && <LocationPuck visible puckBearingEnabled={false} pulsing={{ isEnabled: false }} />}
 
         <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} hitbox={PIN_HITBOX} onPress={onSourcePress}>
@@ -282,6 +350,20 @@ export default function MapScreen() {
         </ShapeSource>
 
         {plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} />)}
+
+        {/* World view: the base style's labels and borders hidden, one bubble per city. */}
+        {WORLD_HIDDEN_LAYERS.map(id => id.includes('boundary')
+          ? <LineLayer key={id} id={id} existing style={{ visibility: worldView ? 'none' : 'visible' }} />
+          : <SymbolLayer key={id} id={id} existing style={{ visibility: worldView ? 'none' : 'visible' }} />)}
+        {worldView && bubbles.slice(0, 150).map(b => (
+          <MarkerView key={b.city.id} coordinate={[b.city.lng, b.city.lat]} anchor={{ x: 0.5, y: 0.5 }} allowOverlap>
+            <TouchableOpacity style={styles.bubble} onPress={() => openBubble(b)} accessibilityRole="button"
+                              accessibilityLabel={t('map.cityBubbleA11y', { city: shortCityName(b.city.name), count: b.spots })}>
+              <CityFlag country={b.city.country} size={16} />
+              <Text style={styles.bubbleText}>{b.spots}</Text>
+            </TouchableOpacity>
+          </MarkerView>
+        ))}
 
         {selected && (
           <MarkerView coordinate={[selected.lng, selected.lat]} anchor={{ x: 0.5, y: 1 }} allowOverlap>
@@ -314,16 +396,21 @@ export default function MapScreen() {
       <View style={[styles.top, { paddingTop: insets.top + 10 }, view === 'list' && styles.topList]} pointerEvents="box-none"
             onLayout={e => setTopH(e.nativeEvent.layout.height)}>
         <Text style={styles.subtitle} numberOfLines={2}>{t('subtitles.map', { ns: 'common' })}</Text>
-        <TextField
-          variant="search"
-          value={query}
-          onChangeText={setQuery}
-          placeholder={t('map.search')}
-          returnKeyType="search"
-          accessibilityLabel={t('map.searchA11y')}
-          onClear={() => setQuery('')}
-          clearLabel={t('map.clearSearch')}
-        />
+        <View style={styles.searchRow}>
+          <ScopeSelector style={styles.scope} />
+          <View style={styles.search}>
+            <TextField
+              variant="search"
+              value={query}
+              onChangeText={setQuery}
+              placeholder={t('map.search')}
+              returnKeyType="search"
+              accessibilityLabel={t('map.searchA11y')}
+              onClear={() => setQuery('')}
+              clearLabel={t('map.clearSearch')}
+            />
+          </View>
+        </View>
         {results !== null && view === 'map' && (
           <View style={styles.results}>
             {results.length === 0 ? <Text style={styles.resultEmpty}>{t('map.noResults')}</Text> : results.slice(0, 6).map(s => (
@@ -341,7 +428,7 @@ export default function MapScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
           <Chip variant="filter" label={t('map.all')} selected={themeFilter === null} onPress={() => pickTheme(null)} />
           {PLACE_THEMES.map(k => (
-            <Chip key={k} variant="filter" label={themeName(k)} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
+            <Chip key={k} variant="filter" theme={k} label={themeName(k)} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
           ))}
         </ScrollView>
       </View>
@@ -405,17 +492,23 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   resultTags:    { fontSize: 12, color: c.muted },
   resultEmpty:   { fontSize: FontSizes.sm, color: c.muted, padding: 14 },
   chips:         { gap: 8, paddingRight: Spacing.md },
+  searchRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  scope:         { flex: 0, maxWidth: 150, height: 48 },
+  search:        { flex: 1 },
+  bubble:        { flexDirection: 'row', alignItems: 'center', gap: 5, height: 34, paddingHorizontal: 10, borderRadius: Radius.full,
+                   backgroundColor: c.bg2, borderWidth: 2, borderColor: c.primary },
+  bubbleText:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   loading:       { position: 'absolute', alignSelf: 'center' },
   bottom:        { position: 'absolute', left: 8, right: 8, bottom: 12, gap: 10 },
   locate:        { alignSelf: 'flex-end', marginRight: 8 },
   topList:       { backgroundColor: c.bg, paddingBottom: 10 },
   // A pill so the muted line stays readable over the map tiles.
-  subtitle:      { alignSelf: 'flex-start', maxWidth: '100%', fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted, backgroundColor: c.bg, paddingHorizontal: 10, paddingVertical: 3, borderRadius: Radius.full, overflow: 'hidden' },
+  subtitle:      { alignSelf: 'flex-start', maxWidth: '100%', fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted, backgroundColor: c.bg, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12, overflow: 'hidden' },
   listEmpty:     { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', padding: Spacing.lg },
   toggle:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18,
                    borderRadius: Radius.full, backgroundColor: c.text },
   toggleText:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
-  notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: Radius.full,
+  notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: 16,
                    paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
   selectedWrap:  { alignItems: 'center', gap: 6 },
   selectedLabel: { maxWidth: 220, fontSize: FontSizes.xs, fontWeight: '700', color: c.text, backgroundColor: c.bg2, borderRadius: 12,

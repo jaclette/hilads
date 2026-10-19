@@ -255,7 +255,9 @@
     "spotsTomorrow": "Les spots arrivent avec le challenge de demain : {{theme}}",
     "planA11y": "Plan : {{title}}, {{time}}",
     "proofs_one": "{{count}} réponse",
-    "proofs_other": "{{count}} réponses"
+    "proofs_other": "{{count}} réponses",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
   },
   "leaderboard": {
     "tab": "Top 10",

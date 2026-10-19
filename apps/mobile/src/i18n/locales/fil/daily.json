@@ -255,7 +255,9 @@
     "spotsTomorrow": "Galing ang mga spot sa challenge bukas: {{theme}}",
     "planA11y": "Plano: {{title}}, {{time}}",
     "proofs_one": "{{count}} sagot",
-    "proofs_other": "{{count}} sagot"
+    "proofs_other": "{{count}} sagot",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "leaderboard": {
     "tab": "Top 10",

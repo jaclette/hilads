@@ -8,6 +8,7 @@ import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 import { themeName } from '../map/spotsShared'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
 // features/daily): the screens' context, the app's strings (challenge.json →
@@ -240,7 +241,7 @@ export function ProofTile({ proof, onOpen }) {
   return (
     <div className="dc-tile" role="button" tabIndex={0} onClick={onOpen} onKeyDown={(e) => { if (e.key === 'Enter') onOpen() }}>
       <div className="dc-tile-photo">
-        <img src={proof.thumbUrl || proof.photoUrl} alt={proof.caption || ''} loading="lazy" />
+        <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt={proof.caption || ''} loading="lazy" />
         {proof.worldRank !== null && proof.worldRank <= 3 && <span className="dc-tile-medal"><RankMedal rank={proof.worldRank} /></span>}
       </div>
       <div className="dc-tile-meta">

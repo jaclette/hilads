@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
@@ -16,7 +15,7 @@ import { RankMedal } from '@/features/daily/RankMedal';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { answerText } from '@/features/compare/format';
 import type { DailyToday, DailyTodayProofs } from '@/types';
-import { Card, CityName, SectionTitle } from '@/ui';
+import { Card, CityName, Photo, SectionTitle } from '@/ui';
 
 type StripProof = DailyTodayProofs['proofs'][number];
 
@@ -99,17 +98,13 @@ function StripItem({ proof, guestId, onPress }: { proof: StripProof; guestId: st
     <TouchableOpacity style={styles.item} onPress={onPress} accessibilityRole="button"
                       accessibilityLabel={[proof.rank ? `#${proof.rank}` : null, city, votes].filter(Boolean).join(', ')}>
       <View style={styles.photo}>
-        <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
+        <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" />
         {proof.rank !== null && <RankMedal rank={proof.rank} size={24} style={styles.rank} />}
         {proof.status === 'pending' && <View style={styles.pending}><DailyStatusChip status="pending" /></View>}
       </View>
-      {/* The city, and the answer to the day's question next to it (SPEC 10.2). */}
-      {!!proof.city?.name && (
-        <View style={styles.cityRow}>
-          <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />
-          {proof.answer && <Text style={styles.answer} numberOfLines={2}>{`· ${answerText(proof.answer, i18n.language)}`}</Text>}
-        </View>
-      )}
+      {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
+      {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
+      {proof.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(proof.answer, i18n.language)}</Text>}
       <Text style={styles.votes} numberOfLines={1}>{votes}</Text>
     </TouchableOpacity>
   );
@@ -122,8 +117,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   item:  { width: 112, gap: 2 },
   photo: { width: 112, height: 140, marginBottom: 4, borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg3 },
   rank:  { position: 'absolute', top: 6, left: 6, borderWidth: 2, borderColor: c.bg2 },
-  city:  { fontSize: 13, fontWeight: '700', color: c.text, flexShrink: 0, maxWidth: '100%' },
-  cityRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 3 },
+  city:  { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: '100%' },
   answer: { fontSize: 13, fontWeight: '800', color: c.text },
   pending: { position: 'absolute', left: 6, bottom: 6 },
   votes: { fontSize: 12, fontWeight: '500', color: c.muted },

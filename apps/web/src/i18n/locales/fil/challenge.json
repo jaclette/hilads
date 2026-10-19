@@ -839,7 +839,9 @@
     "nearYou": "Malapit sa iyo",
     "locationDenied": "Payagan ang location para sa hilads.live sa browser mo para ma-center ang mapa sa iyo.",
     "locate": "Igitna ang mapa sa akin",
-    "locationFailed": "Hindi available ang lokasyon mo ngayon."
+    "locationFailed": "Hindi available ang lokasyon mo ngayon.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "spot": {
     "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",

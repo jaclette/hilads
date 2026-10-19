@@ -839,7 +839,9 @@
     "nearYou": "Vicino a te",
     "locationDenied": "Consenti la posizione per hilads.live nel browser per centrare la mappa su di te.",
     "locate": "Centra la mappa su di me",
-    "locationFailed": "La tua posizione non è disponibile ora."
+    "locationFailed": "La tua posizione non è disponibile ora.",
+    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
   },
   "spot": {
     "rankWeekFirst": "Il più votato questa settimana a {{city}}",

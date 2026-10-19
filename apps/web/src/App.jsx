@@ -3686,27 +3686,34 @@ export default function App() {
   // The app's header (W1, SPEC 9.1): the "Hi" mark, the city / World selector
   // (one choice for every tab), then private messages and the bell for
   // members, or "Sign up" for guests.
-  function renderAppHeader() {
+  // The scope pill (city / World), opening the scope sheet: in the header and next to the Map's search.
+  function renderScopePill(extraClass = '') {
     const otherUnread = channelScope === 'world' ? cityUnread > 0 : worldUnread > 0
     const fullLabel = channelScope === 'world' ? t('scope.world', { ns: 'common' }) : (city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' }))
     // The pill is tight: the city's short name ("Saigon") after its flag.
     const label = channelScope === 'city' && city ? shortCityName(city) : fullLabel
     return (
+      <button
+        type="button"
+        className={`v3-scope ${extraClass}`.trim()}
+        onClick={() => setShowScopeSheet(true)}
+        aria-label={t('scope.a11y', { ns: 'common', scope: fullLabel })}
+      >
+        {channelScope === 'world' ? <Icon name="globe-outline" size={18} /> : <CityFlag country={cityCountry} />}
+        <span className="v3-scope-label">{label}</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+        {otherUnread && <span className="v3-dot" aria-hidden="true" />}
+      </button>
+    )
+  }
+
+  function renderAppHeader() {
+    return (
       <div className="v3-header">
         <img className="v3-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
-        <button
-          type="button"
-          className="v3-scope"
-          onClick={() => setShowScopeSheet(true)}
-          aria-label={t('scope.a11y', { ns: 'common', scope: fullLabel })}
-        >
-          {channelScope === 'world' ? <Icon name="globe-outline" size={18} /> : <CityFlag country={cityCountry} />}
-          <span className="v3-scope-label">{label}</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-          {otherUnread && <span className="v3-dot" aria-hidden="true" />}
-        </button>
+        {renderScopePill()}
         {account && (
           <button type="button" className="v3-round" onClick={() => setShowConversations(true)} aria-label={t('header.messages')}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -5579,6 +5586,9 @@ export default function App() {
           initialSpotId={mapSpotId}
           channelId={channelId}
           cityName={city ? shortCityName(city) : null}
+          scope={channelScope}
+          scopePill={renderScopePill('v3-scope--map')}
+          onScopeCity={() => { if (city) switchScope('city') }}
           onOpenPlan={(id) => {
             setShowMap(false)
             fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})

@@ -15040,6 +15040,13 @@ $router->add('GET', '/api/v1/map', function () {
     ]);
 });
 
+// GET /api/v1/map/cities?theme= - the World map's city bubbles: each city with
+// spots (in the theme), its centre and spot count, most spots first.
+$router->add('GET', '/api/v1/map/cities', function () {
+    spotsRateLimit();
+    Response::json(['items' => Spots::cities(spotsTheme())]);
+});
+
 // GET /api/v1/me/spots - the spots where I have an approved proof (Passport's
 // "My spots", V3-10), most voted first. Signed in.
 $router->add('GET', '/api/v1/me/spots', function () {

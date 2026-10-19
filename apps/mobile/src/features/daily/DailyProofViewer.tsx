@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { CityName } from '@/ui';
+import { CityName, Photo } from '@/ui';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { BackHomeBlock } from '@/features/compare/BackHomeBlock';
 import { useMoney } from '@/features/compare/money';
@@ -51,7 +51,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
     <Modal visible animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen">
       <View style={styles.wrap}>
       {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
-      <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
+      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
       <View style={[StyleSheet.absoluteFill, styles.shade]} />
       <SafeAreaView style={styles.flex}>
         <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={styles.close} />

@@ -147,7 +147,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardHead:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   iconRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 },
   type:        { fontSize: 12, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
-  status:      { fontSize: 12, fontWeight: '800', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
+  status:      { fontSize: 12, fontWeight: '800', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
   statusOk:    { color: c.localText, backgroundColor: c.localBg },
   statusWait:  { color: c.primaryOnTint, backgroundColor: c.primaryTint },
   statusOff:   { color: c.muted, backgroundColor: c.bg3 },
