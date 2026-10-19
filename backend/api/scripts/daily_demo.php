@@ -10,6 +10,8 @@
  *   php scripts/daily_demo.php seed --photo-urls=URL1,URL2,...       # already hosted photos (local testing)
  *   php scripts/daily_demo.php cleanup --dry                         # what would be deleted
  *   php scripts/daily_demo.php cleanup                               # delete everything demo
+ *   php scripts/daily_demo.php stop --dry                            # what stopping would remove
+ *   php scripts/daily_demo.php stop                                  # drop the week plan + delete everything demo, for good
  *   php scripts/daily_demo.php plan --file=week.json --photos=<folder> --dry   # check a week ahead
  *   php scripts/daily_demo.php plan --file=week.json --photos=<folder>         # upload and store it
  *
@@ -40,8 +42,8 @@ $opt     = static function (string $name) use ($args): ?string {
     }
     return null;
 };
-if (!in_array($command, ['status', 'seed', 'cleanup', 'plan'], true)) {
-    fwrite(STDERR, "Usage: php scripts/daily_demo.php status | seed --photos=<folder> [--dry] | seed --photo-urls=<a,b,...> | cleanup [--dry] | plan --file=<week.json> --photos=<folder> [--dry]\n");
+if (!in_array($command, ['status', 'seed', 'cleanup', 'plan', 'stop'], true)) {
+    fwrite(STDERR, "Usage: php scripts/daily_demo.php status | stop [--dry] | seed --photos=<folder> [--dry] | seed --photo-urls=<a,b,...> | cleanup [--dry] | plan --file=<week.json> --photos=<folder> [--dry]\n");
     exit(1);
 }
 
@@ -71,6 +73,11 @@ $host  = parse_url((string) getenv('DATABASE_URL'), PHP_URL_HOST) ?: '(no DATABA
 fwrite(STDERR, "Database host: {$host}\n");
 
 try {
+    if ($command === 'stop') {
+        $print(['dryRun' => $dry] + DailyDemo::stop($dry));
+        exit(0);
+    }
+
     if ($command === 'status') {
         $print(DailyDemo::status() + ['plannedDays' => DailyDemo::plannedDays()]);
         exit(0);

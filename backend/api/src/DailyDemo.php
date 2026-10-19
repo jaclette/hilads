@@ -391,6 +391,40 @@ final class DailyDemo
         ")->execute([$date, json_encode($players, JSON_UNESCAPED_UNICODE)]);
     }
 
+    /**
+     * Stop the demo for good: drop the week plan (no drop seeds a day again),
+     * then cleanup() everything demo (accounts, proofs, votes, cards, spots,
+     * results, notifications, messages, photos). The plan's photos are deleted
+     * too, except one a non-demo proof uses. With $dry, only reports.
+     */
+    public static function stop(bool $dry = false): array
+    {
+        $pdo  = Database::pdo();
+        $urls = array_keys(self::plannedPhotoUrls());
+        $out  = ['plannedDays' => (int) $pdo->query("SELECT count(*) FROM daily_demo_days")->fetchColumn(), 'planPhotos' => count($urls)];
+        if ($dry) {
+            return $out + self::status();
+        }
+        $pdo->exec("DELETE FROM daily_demo_days");
+        $out += self::cleanup();
+        $used = $pdo->prepare("SELECT 1 FROM daily_proofs WHERE photo_url = ? AND NOT is_demo LIMIT 1");
+        foreach ($urls as $url) {
+            $key = R2Uploader::ownUploadFilename($url);
+            $used->execute([$url]);
+            if ($key === null || $used->fetchColumn() !== false) {
+                continue;
+            }
+            foreach ([$key, 'thumb_' . pathinfo($key, PATHINFO_FILENAME) . '.jpg'] as $k) {
+                try {
+                    R2Uploader::delete($k);
+                } catch (\Throwable $e) {
+                    error_log('[daily-demo] plan photo delete failed: ' . $e->getMessage());
+                }
+            }
+        }
+        return $out;
+    }
+
     /** The planned dates from today on: [date => player count]. */
     public static function plannedDays(): array
     {
