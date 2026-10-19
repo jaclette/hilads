@@ -18,6 +18,17 @@ $ready  = Spots::picksReady();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $ready) {
     csrf_verify();
     try {
+        // Attach to a challenge (with the pick's checked answer) or detach.
+        if ($editId !== null && ($_POST['action'] ?? '') === 'attach') {
+            SpotsAdmin::pickAttach($editId, (string) ($_POST['date'] ?? ''), (string) ($_POST['answer'] ?? ''));
+            flash_set('success', 'Attached.');
+            admin_redirect('/admin/daily/picks?id=' . $editId);
+        }
+        if ($editId !== null && ($_POST['action'] ?? '') === 'detach') {
+            SpotsAdmin::pickDetach($editId, (string) ($_POST['challenge_id'] ?? ''));
+            flash_set('success', 'Detached.');
+            admin_redirect('/admin/daily/picks?id=' . $editId);
+        }
         if ($editId !== null) {
             SpotsAdmin::pickUpdate($editId, $_POST, $_FILES['photo'] ?? null);
             flash_set('success', 'Pick saved.');
@@ -99,6 +110,35 @@ daily_styles();
             <div class="hint">Only published picks show on the map. Hiding a pick never hides the players' answers at the place.</div></div>
         <div class="form-actions"><button class="btn btn-primary" type="submit"><?= $edit ? 'Save' : 'Create' ?></button></div>
     </form>
+
+    <?php if ($edit): $attached = SpotsAdmin::pickAttachments($edit['id']); ?>
+    <div class="form-card">
+        <h2 style="margin-top:0">Challenges</h2>
+        <p class="daily-muted">Attached to a challenge, the pick shows in its Compare tab under "Meanwhile, from our picks", with its answer when you give one. Never in the board, the world tour or the Index.</p>
+        <table class="table">
+            <?php foreach ($attached as $a): ?>
+                <tr>
+                    <td><?= dh($a['date'] ?? '') ?></td>
+                    <td><?= dh($a['question'] ?? '(no question)') ?></td>
+                    <td><strong><?= dh((string) ($a['answer_text'] ?? $a['answer_number']
+                        ?? ($a['answer_minutes'] !== null ? sprintf('%02d:%02d', intdiv((int) $a['answer_minutes'], 60), (int) $a['answer_minutes'] % 60) : '-'))) ?></strong></td>
+                    <td><form method="POST" action="/admin/daily/picks"><?= csrf_input() ?>
+                        <input type="hidden" name="id" value="<?= dh($edit['id']) ?>"><input type="hidden" name="action" value="detach">
+                        <input type="hidden" name="challenge_id" value="<?= dh($a['challenge_id']) ?>">
+                        <button class="btn btn-secondary btn-sm" type="submit">Detach</button></form></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <form method="POST" action="/admin/daily/picks" class="daily-inline">
+            <?= csrf_input() ?>
+            <input type="hidden" name="id" value="<?= dh($edit['id']) ?>"><input type="hidden" name="action" value="attach">
+            <input type="date" name="date" required value="<?= dh(DailyClock::currentDate()) ?>">
+            <input type="text" name="answer" placeholder="Answer, checked (e.g. 1886, 18:30, a word)" style="flex:1;min-width:220px">
+            <button class="btn btn-primary" type="submit">Attach</button>
+        </form>
+        <div class="hint">Only verified facts. A number question takes a whole number, a time question HH:MM. Leave it empty to show the pick without an answer.</div>
+    </div>
+    <?php endif; ?>
 
     <div class="form-card">
         <h2 style="margin-top:0">All picks (<?= count($picks) ?>)</h2>

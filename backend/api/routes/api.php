@@ -14632,7 +14632,8 @@ $router->add('GET', '/api/v1/daily/challenges/{date}/compare', function (array $
         Response::json(['error' => 'Challenge not found', 'code' => 'not_found'], 404);
     }
     $user = AuthService::currentUser();
-    Response::json(['date' => $date] + DailyBoard::board($challenge, dailyBlocks($user)['user_ids'] ?? []));
+    // "Meanwhile, from our picks": editorial context next to the board, never in it.
+    Response::json(['date' => $date] + DailyBoard::board($challenge, dailyBlocks($user)['user_ids'] ?? []) + ['picks' => Spots::picksFor($challenge)]);
 });
 
 // GET /api/v1/daily/tour?date=YYYY-MM-DD&cityId= - Yesterday around the world

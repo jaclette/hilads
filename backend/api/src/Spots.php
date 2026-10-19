@@ -178,6 +178,40 @@ final class Spots
         ];
     }
 
+    /**
+     * The Compare tab's "Meanwhile, from our picks" (never the board): the
+     * published picks attached to a challenge, [{city, place: {id, name}, answer,
+     * note}], with the pick's own answer to the question when one was checked.
+     */
+    public static function picksFor(array $challenge, ?string $locale = null): array
+    {
+        if (!self::picksReady()) {
+            return [];
+        }
+        $locale = $locale ?? DailyI18n::current();
+        $rows = Cache::remember('daily_picks_for_v1_' . $challenge['id'], self::CACHE_TTL, static function () use ($challenge): array {
+            $stmt = Database::pdo()->prepare("
+                SELECT pl.id, pl.name, pl.city_id, ch.name AS city_name, cc.country, pl.pick_note_i18n,
+                       a.answer_text, a.answer_number, a.answer_minutes
+                FROM daily_pick_answers a
+                JOIN places pl          ON pl.id = a.place_id AND pl.pick_status = 'published' AND NOT pl.hidden AND pl.merged_into IS NULL
+                LEFT JOIN channels ch   ON ch.id = pl.city_id
+                LEFT JOIN cities cc     ON cc.channel_id = pl.city_id
+                WHERE a.challenge_id = ?
+                ORDER BY ch.name, pl.name
+            ");
+            $stmt->execute([$challenge['id']]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }) ?? [];
+        return array_map(static fn(array $r): array => [
+            'city'   => $r['city_id'] !== null ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name'], 'country' => $r['country']] : null,
+            'place'  => ['id' => $r['id'], 'name' => $r['name']],
+            'answer' => DailyCompare::answerPayload($challenge['compare_type'] ?? null, $r['answer_text'], $r['answer_number'] !== null ? (int) $r['answer_number'] : null,
+                                                    $r['answer_minutes'] !== null ? (int) $r['answer_minutes'] : null, $challenge['compare_unit_i18n'] ?? null, $locale),
+            'note'   => $r['pick_note_i18n'] !== null ? self::pickNote((string) $r['pick_note_i18n']) : null,
+        ], $rows);
+    }
+
     /** A pick's "Good to know" in the request's language, else English. */
     public static function pickNote(string $json): ?string
     {

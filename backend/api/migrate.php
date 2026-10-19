@@ -3331,6 +3331,22 @@ run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS pick_note_i18n JSONB", 'p
 run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS pick_status TEXT CHECK (pick_status IN ('draft', 'published', 'hidden'))", 'places.pick_status');
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_pick BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_pick');
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS photo_credit TEXT", 'daily_proofs.photo_credit');
+
+// A pick attached to a challenge: the Compare tab's "Meanwhile, from our picks",
+// with the pick's answer to the challenge's question when we have one (checked
+// in the back office). Never in the board, the world tour or the Index.
+// Reversal: DROP TABLE daily_pick_answers.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_pick_answers (
+        challenge_id   TEXT        NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        place_id       TEXT        NOT NULL REFERENCES places(id) ON DELETE CASCADE,
+        answer_text    TEXT,
+        answer_number  INT,
+        answer_minutes INT,
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (challenge_id, place_id)
+    )
+", 'daily_pick_answers');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

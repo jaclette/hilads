@@ -12,6 +12,8 @@ import { Button, CityFlag, EmptyState } from '@/ui';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import type { DailyBoard, DailyCityRef, DailyProof } from '@/types';
 import { answerText } from './format';
+import { useRouter } from 'expo-router';
+import { PickBadge } from '@/features/map/PickBadge';
 import { useMoney } from './money';
 
 /**
@@ -102,7 +104,8 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
     <View style={styles.wrap}>
       <Text style={styles.title} accessibilityRole="header">{t('compare.boardTitle')}</Text>
       {board.compare && <Text style={styles.question}>{board.compare.question}</Text>}
-      <Text style={styles.count}>{t('compare.boardCount', { count: board.cities, countries: board.countries })}</Text>
+      {/* The empty board has nothing to count (COPY.md: "Already 5 countries answered"). */}
+      {board.rows.length > 0 && <Text style={styles.count}>{t('compare.answeredRow', { count: board.countries })}</Text>}
       {range && (
         <Text style={styles.range}>
           {t(rangeKeys[0], { city: shortCityName(range.min.city.name), answer: range.min.answer ? answerText(range.min.answer, i18n.language) : '-' })}
@@ -153,6 +156,39 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
           })}
         </View>
       )}
+      {/* Below the empty state, then below the board once players answered. */}
+      <PicksMeanwhile picks={board.picks ?? []} />
+    </View>
+  );
+}
+
+/**
+ * "Meanwhile, from our picks": the Hilads picks attached to the challenge, with
+ * the pick's own checked answer. Editorial context, never a row of the board.
+ */
+function PicksMeanwhile({ picks }: { picks: NonNullable<DailyBoard['picks']> }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const { t, i18n } = useTranslation('daily');
+  const router = useRouter();
+  if (picks.length === 0) return null;
+  return (
+    <View style={styles.picks}>
+      <Text style={styles.title} accessibilityRole="header">{t('compare.picksTitle')}</Text>
+      <View style={styles.table}>
+        {picks.map((p, i) => (
+          <TouchableOpacity key={p.place.id} style={[styles.row, i > 0 && styles.rowLine]} onPress={() => router.push(`/spot/${p.place.id}` as never)}
+                            accessibilityRole="button" activeOpacity={0.7}>
+            <CityFlag country={p.city?.country} size={20} />
+            <View style={styles.rowBody}>
+              <Text style={styles.cityName} numberOfLines={1}>{p.city?.name ? `${shortCityName(p.city.name)} · ${p.place.name}` : p.place.name}</Text>
+              {p.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(p.answer, i18n.language)}</Text>}
+              <PickBadge />
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 }
@@ -181,4 +217,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cityTitle:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   grid:       { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   cell:       { width: '48%' },
+  picks:      { gap: 8, marginTop: 6 },
 });

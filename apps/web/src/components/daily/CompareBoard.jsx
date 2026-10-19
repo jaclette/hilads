@@ -4,7 +4,8 @@ import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
-import { useDc, ProofTile } from './dailyShared'
+import { useDaily, useDc, ProofTile } from './dailyShared'
+import { PickBadge } from '../map/Pick'
 import { answerText, useMoney } from './compareShared'
 
 /**
@@ -72,7 +73,8 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
     <div className="cmp">
       <p className="cmp-title">{t('compare.boardTitle')}</p>
       {board.compare && <p className="cmp-question">{board.compare.question}</p>}
-      <p className="dc-muted">{t('compare.boardCount', { count: board.cities, countries: board.countries })}</p>
+      {/* The empty board has nothing to count (COPY.md: "Already 5 countries answered"). */}
+      {board.rows.length > 0 && <p className="dc-muted">{t('compare.answeredRow', { count: board.countries })}</p>}
       {range && (
         <p className="cmp-range">
           {t(keys[0], { city: shortCityName(range.min.city.name), answer: ans(range.min.answer) })}
@@ -123,6 +125,36 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
           })}
         </div>
       )}
+      {/* Below the empty state, then below the board once players answered. */}
+      <PicksMeanwhile picks={board.picks ?? []} ans={ans} />
+    </div>
+  )
+}
+
+/**
+ * "Meanwhile, from our picks": the Hilads picks attached to the challenge, with
+ * the pick's own checked answer. Editorial context, never a row of the board.
+ */
+function PicksMeanwhile({ picks, ans }) {
+  const { t } = useDc()
+  const { openSpot } = useDaily()
+  if (picks.length === 0) return null
+  return (
+    <div className="cmp-picks">
+      <h3 className="cmp-picks-title">{t('compare.picksTitle')}</h3>
+      <div className="cmp-table">
+        {picks.map(p => (
+          <button key={p.place.id} type="button" className="cmp-row" onClick={() => openSpot(p.place.id)}>
+            <CityFlag country={p.city?.country} size={20} />
+            <span className="cmp-row-body">
+              <span className="cmp-row-city">{p.city?.name ? `${shortCityName(p.city.name)} · ${p.place.name}` : p.place.name}</span>
+              {p.answer && <span className="cmp-row-answer">{ans(p.answer)}</span>}
+              <PickBadge />
+            </span>
+            <Icon name="chevron-forward" size={16} />
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

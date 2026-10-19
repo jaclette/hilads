@@ -992,6 +992,8 @@ export interface DailyWorldTeaser {
 export interface DailyBoard {
   date:      string;
   compare:   DailyCompare | null;
+  /** "Meanwhile, from our picks": editorial picks attached to the challenge, with their own checked answer. Never in the board. */
+  picks?:    { city: DailyCityRef | null; place: { id: string; name: string }; answer: DailyAnswer | null; note: string | null }[];
   cities:    number;
   countries: number;
   rows: {

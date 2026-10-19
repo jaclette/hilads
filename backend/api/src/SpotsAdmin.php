@@ -574,6 +574,63 @@ final class SpotsAdmin
         self::forgetSpots();
     }
 
+    /**
+     * Attach a pick to a dated challenge (the Compare tab's "Meanwhile, from our
+     * picks"), with an optional answer to its question in the question's type
+     * ("1886", "18:30", a word or a short text). Re-attaching replaces the answer.
+     */
+    public static function pickAttach(string $placeId, string $date, string $answerRaw): void
+    {
+        self::pick($placeId) ?? throw new InvalidArgumentException('That pick does not exist.');
+        $challenge = null;
+        if (DailyClock::isValidDate($date)) {
+            $stmt = Database::pdo()->prepare("SELECT id, compare_type FROM daily_challenges WHERE challenge_date = ?");
+            $stmt->execute([$date]);
+            $challenge = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+        if ($challenge === null) {
+            throw new InvalidArgumentException("No challenge on {$date}.");
+        }
+        [$text, $number, $minutes] = [null, null, null];
+        if (trim($answerRaw) !== '') {
+            $type = $challenge['compare_type'] ?? null;
+            if ($type === null) {
+                throw new InvalidArgumentException("The {$date} challenge has no comparison question: leave the answer empty.");
+            }
+            $clean = DailyCompare::cleanAnswer((string) $type, trim($answerRaw));
+            if ($clean === null) {
+                throw new InvalidArgumentException("That answer doesn't fit the question's type ({$type}).");
+            }
+            [$text, $number, $minutes] = $clean;
+        }
+        Database::pdo()->prepare("
+            INSERT INTO daily_pick_answers (challenge_id, place_id, answer_text, answer_number, answer_minutes) VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT (challenge_id, place_id) DO UPDATE
+            SET answer_text = EXCLUDED.answer_text, answer_number = EXCLUDED.answer_number, answer_minutes = EXCLUDED.answer_minutes
+        ")->execute([$challenge['id'], $placeId, $text, $number, $minutes]);
+        DailyAdminService::audit('place.pick_attach', 'place', $placeId, null, ['date' => $date, 'answer' => $text ?? $number ?? $minutes]);
+    }
+
+    public static function pickDetach(string $placeId, string $challengeId): void
+    {
+        Database::pdo()->prepare("DELETE FROM daily_pick_answers WHERE place_id = ? AND challenge_id = ?")->execute([$placeId, $challengeId]);
+        DailyAdminService::audit('place.pick_detach', 'place', $placeId, ['challenge' => $challengeId], null);
+    }
+
+    /** A pick's challenges: [{challenge_id, date, question, type, answer_text, answer_number, answer_minutes}], newest first. */
+    public static function pickAttachments(string $placeId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT a.challenge_id, dc.challenge_date::text AS date, dc.compare_question_i18n->>'en' AS question, dc.compare_type AS type,
+                   a.answer_text, a.answer_number, a.answer_minutes
+            FROM daily_pick_answers a JOIN daily_challenges dc ON dc.id = a.challenge_id
+            WHERE a.place_id = ?
+            ORDER BY dc.challenge_date DESC NULLS LAST
+        ");
+        $stmt->execute([$placeId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /** Map caches are short (Spots::CACHE_TTL); the back office's own process forgets what it can. */
     private static function forgetSpots(): void
     {

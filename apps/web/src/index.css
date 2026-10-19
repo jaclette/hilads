@@ -17462,3 +17462,5 @@ body.has-app-promo-banner .page-header {
 .good-to-know { margin: 10px 0; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--gold) 16%, transparent); }
 .good-to-know-title { display: block; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
 .good-to-know p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--text); }
+.cmp-picks { margin-top: 16px; }
+.cmp-picks-title { margin: 0 0 8px; font-size: 14px; font-weight: 800; color: var(--muted); }
