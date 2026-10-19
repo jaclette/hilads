@@ -10,7 +10,7 @@ import type { DailyThemeKey } from '@/types';
 /** English names (the API's DailyThemes), for screens that pick a theme before any payload. */
 export const THEME_NAMES: Record<DailyThemeKey, string> = {
   hidden_gem: 'Hidden gem', taste: 'Taste', ask_local: 'Ask a local', local_find: 'Local find',
-  night_out: 'Night out', sip: 'Sip', only_here: 'Only here',
+  night_out: 'Night out', sip: 'Drinks', only_here: 'Only here',
 };
 
 /**

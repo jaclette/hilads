@@ -26,7 +26,7 @@ final class DailyThemes
         'ask_local'  => ['Ask a local', 3],
         'local_find' => ['Local find', 4],
         'night_out'  => ['Night out', 5],
-        'sip'        => ['Sip', 6],
+        'sip'        => ['Drinks', 6],
         'only_here'  => ['Only here', 7],
     ];
 

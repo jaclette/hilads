@@ -78,7 +78,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
               {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} />}
             </View>
           )}
-          {/* The proof's challenge: "Sip · How do locals say cheers?", then its text (a shared link lands here). */}
+          {/* The proof's challenge: "Drinks · How do locals say cheers?", then its text (a shared link lands here). */}
           {proof.context && (
             <View style={styles.context}>
               <Text style={styles.contextHead}>

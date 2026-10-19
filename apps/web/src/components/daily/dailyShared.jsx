@@ -310,7 +310,7 @@ export function ProofViewer({ proof, onClose }) {
             {proof.validatedByLocal && <span style={INLINE}><Icon name="checkmark" size={13} />{t('validatedByLocal')}</span>}
           </div>
         )}
-        {/* The proof's challenge: "Sip · How do locals say cheers?", then its text (a shared link lands here). */}
+        {/* The proof's challenge: "Drinks · How do locals say cheers?", then its text (a shared link lands here). */}
         {proof.context && (
           <div className="dc-viewer-context">
             <strong>{[proof.context.theme ? themeName(proof.context.theme.key, { special: proof.context.special, city: proof.city?.name }) : null,

@@ -43,8 +43,8 @@ final class DailyThemesTest extends TestCase
 
     public function testFormatFallsBackToTheWeekday(): void
     {
-        $this->assertSame(['key' => 'sip', 'name' => 'Sip'], DailyThemes::format('sip', '2026-11-02'));
-        $this->assertSame(['key' => 'sip', 'name' => 'Sip'], DailyThemes::format('coffee', '2026-11-02'));   // unmigrated row
+        $this->assertSame(['key' => 'sip', 'name' => 'Drinks'], DailyThemes::format('sip', '2026-11-02'));
+        $this->assertSame(['key' => 'sip', 'name' => 'Drinks'], DailyThemes::format('coffee', '2026-11-02'));   // unmigrated row
         $this->assertSame(['key' => 'hidden_gem', 'name' => 'Hidden gem'], DailyThemes::format(null, '2026-11-02'));
         $this->assertSame(['key' => 'hidden_gem', 'name' => 'Hidden gem'], DailyThemes::format('gone', '2026-11-02'));
         $this->assertSame(['key' => 'special', 'name' => 'Special'], DailyThemes::format('special', '2026-10-31'));
@@ -57,18 +57,18 @@ final class DailyThemesTest extends TestCase
         $this->assertTrue(DailyThemes::legacyClient());
         $this->assertSame(['key' => 'coffee', 'name' => 'Coffee'], DailyThemes::format('sip', '2026-11-02'));
         $this->assertSame(['key' => 'language', 'name' => 'Language'], DailyThemes::format('ask_local', null));
-        // A special: the v1 key of its weekday's theme (2026-10-31 is a Saturday: Sip, v1 coffee).
+        // A special: the v1 key of its weekday's theme (2026-10-31 is a Saturday: Drinks, v1 coffee).
         $this->assertSame('coffee', DailyThemes::format('special', '2026-10-31')['key']);
         $this->assertSame(['coffee', 'neighborhood'], DailyThemes::clientList(['sip', 'hidden_gem', 'special']));
         $_SERVER['HTTP_X_THEMES'] = '2';
         $this->assertFalse(DailyThemes::legacyClient());
-        $this->assertSame(['key' => 'sip', 'name' => 'Sip'], DailyThemes::format('sip', '2026-11-02'));
+        $this->assertSame(['key' => 'sip', 'name' => 'Drinks'], DailyThemes::format('sip', '2026-11-02'));
     }
 
     public function testImportThemes(): void
     {
         $doc = ['challenges' => [
-            ['date' => '2026-11-03', 'theme' => 'Sip', 'text' => ['en' => 'A'], 'compare' => self::CMP],
+            ['date' => '2026-11-03', 'theme' => 'Drinks', 'text' => ['en' => 'A'], 'compare' => self::CMP],
             ['date' => '2026-11-04', 'text' => ['en' => 'B'], 'compare' => self::CMP],
             ['date' => null, 'reserve' => true, 'text' => ['en' => 'C'], 'compare' => self::CMP],
             ['date' => '2026-11-05', 'theme' => 'Brunch', 'text' => ['en' => 'D'], 'compare' => self::CMP],
@@ -96,7 +96,7 @@ final class DailyThemesTest extends TestCase
             ['challenge_date' => '2026-11-05', 'theme' => 'local_find', 'status' => 'scheduled', 'my_status' => null],
         ]);
         $this->assertCount(4, $days);
-        $this->assertSame(['date' => '2026-11-02', 'theme' => ['key' => 'sip', 'name' => 'Sip'], 'special' => null,
+        $this->assertSame(['date' => '2026-11-02', 'theme' => ['key' => 'sip', 'name' => 'Drinks'], 'special' => null,
                            'published' => true, 'myStatus' => 'approved'], $days[0]);
         $this->assertSame('taste', $days[1]['theme']['key']);   // Tuesday default
         $this->assertFalse($days[2]['published']);              // nothing that day

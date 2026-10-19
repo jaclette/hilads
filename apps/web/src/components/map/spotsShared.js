@@ -10,7 +10,7 @@ export const THEME_KEYS = ['hidden_gem', 'taste', 'ask_local', 'local_find', 'ni
 
 export const THEME_NAMES = {
   hidden_gem: 'Hidden gem', taste: 'Taste', ask_local: 'Ask a local', local_find: 'Local find',
-  night_out: 'Night out', sip: 'Sip', only_here: 'Only here',
+  night_out: 'Night out', sip: 'Drinks', only_here: 'Only here',
 }
 
 /**

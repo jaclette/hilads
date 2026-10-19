@@ -168,7 +168,7 @@ final class DailyI18nTest extends TestCase
     {
         $vi = DailyPushes::reminderMessage(['challenge_date' => '2026-11-02', 'theme' => 'sip', 'text_i18n' => '{"en":"Order a coffee","vi":"Gọi một ly cà phê"}'],
                                            6 * 3600 + 5, 'vi', null, 6);
-        $this->assertSame('🍹 Nhâm nhi · còn 6 giờ', $vi['title']);
+        $this->assertSame('🍹 Đồ uống · còn 6 giờ', $vi['title']);
         $this->assertSame('Gọi một ly cà phê 6 người đã làm rồi.', $vi['body']);
         $this->assertSame('Votes pour ta réponse : 3. Ont relevé ton Local Twist : 1.', DailyPushes::digestMessage('2026-11-02', 3, 1, 'fr')['body']);
         $this->assertSame('1 person voted for your answer.', DailyPushes::digestMessage('2026-11-02', 1, 0, 'en')['body']);
