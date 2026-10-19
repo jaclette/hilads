@@ -20,6 +20,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
+import { useScope } from '@/context/ScopeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { fetchChannels, joinChannel } from '@/api/channels';
 import { socket } from '@/lib/socket';
@@ -105,6 +106,7 @@ export default function SwitchCityScreen() {
   const { firstTime } = useLocalSearchParams<{ firstTime?: string }>();
   const isFirstTime = firstTime === '1';
   const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setJoined } = useApp();
+  const { setScope } = useScope();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   // Guards a double-tap / rapid re-pick from firing the switch sequence twice
   // (setCity + joinChannel + WS join + navigate) before navigation settles.
@@ -152,6 +154,8 @@ export default function SwitchCityScreen() {
     if (switchingRef.current) return; // ignore rapid double-taps
     switchingRef.current = true;
     setCity(item);
+    // Picking a city from World shows that city.
+    setScope('city');
     if (identity) {
       const updated = { ...identity, channelId: item.channelId };
       saveIdentity(updated).catch(() => {});

@@ -3940,9 +3940,18 @@ export default function App() {
   async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry, opts = {}) {
     if (newChannelId === channelId) {
       setShowCityPicker(false)
+      // Picking my city from World shows it.
+      if (channelScopeRef.current === 'world') switchScope('city')
       return
     }
     setShowCityPicker(false)
+    // Picking a city from World shows that city: the scope turns to the city
+    // before the switch below loads its feed.
+    if (channelScopeRef.current === 'world') {
+      channelScopeRef.current = 'city'
+      setChannelScope('city')
+      setCityUnread(0)
+    }
     setCityCountry(newCityCountry ?? null)
 
     // Switch-city is a browse surface - NEVER overwrites the home city,
