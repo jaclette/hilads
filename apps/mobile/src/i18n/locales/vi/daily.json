@@ -501,6 +501,10 @@
   },
   "represent": {
     "empty": "{{city}} chưa trả lời hôm nay. Hãy là người đầu tiên.",
+    "emptyThere": "{{city}} chưa trả lời hôm nay.",
+    "notIn": "Không ở {{city}}?",
+    "change": "Đổi",
+    "locationNeeded": "Cho phép vị trí để trả lời cho nơi bạn đang ở.",
     "button": "Trả lời cho {{city}}",
     "firstPosted": "Bạn đã đưa {{city}} lên bản đồ thế giới hôm nay.",
     "pioneer": "Người tiên phong của {{city}}",
@@ -620,7 +624,7 @@
     "moreCities_other": "+{{count}} thành phố khác"
   },
   "ctaAnswer": "Trả lời cho {{city}}",
-  "ctaAnswerNoCity": "Trả lời cho thành phố của bạn",
+  "ctaAnswerNoCity": "Trả lời cho thành phố của tôi",
   "countdown": {
     "hm": "{{h}} giờ {{m}} phút",
     "ms": "{{m}} phút {{s}} giây"

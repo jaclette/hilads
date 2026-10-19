@@ -1392,7 +1392,7 @@
       "moreCities_other": "+{{count}} thành phố khác"
     },
     "ctaAnswer": "Trả lời cho {{city}}",
-    "ctaAnswerNoCity": "Trả lời cho thành phố của bạn",
+    "ctaAnswerNoCity": "Trả lời cho thành phố của tôi",
     "represent": {
       "button": "Trả lời cho {{city}}"
     },

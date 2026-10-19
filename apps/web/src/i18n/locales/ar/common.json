@@ -220,6 +220,10 @@
   },
   "represent": {
     "empty": "لم تُجب {{city}} اليوم بعد. كن الأول.",
+    "emptyThere": "لم تُجب {{city}} اليوم بعد.",
+    "notIn": "لست في {{city}}؟",
+    "change": "غيّر",
+    "locationNeeded": "اسمح بالموقع لتجيب باسم المكان الذي أنت فيه.",
     "button": "أجب باسم {{city}}",
     "firstPosted": "وضعت {{city}} على خريطة العالم اليوم.",
     "pioneer": "رائد {{city}}",

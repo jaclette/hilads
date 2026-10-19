@@ -220,6 +220,10 @@
   },
   "represent": {
     "empty": "{{city}} heeft vandaag nog niet geantwoord. Wees de eerste.",
+    "emptyThere": "{{city}} heeft vandaag nog niet geantwoord.",
+    "notIn": "Niet in {{city}}?",
+    "change": "Wijzigen",
+    "locationNeeded": "Sta locatie toe om te antwoorden voor waar je bent.",
     "button": "Antwoord voor {{city}}",
     "firstPosted": "Je zette {{city}} vandaag op de wereldkaart.",
     "pioneer": "Pionier van {{city}}",

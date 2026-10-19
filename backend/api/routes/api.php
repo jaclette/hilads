@@ -1681,6 +1681,7 @@ $router->add('PUT', '/api/v1/profile', function () {
                        current_city_set_at            = COALESCE(current_city_set_at, now()),
                        current_city_last_confirmed_at = COALESCE(current_city_last_confirmed_at, now()),
                        updated_at                     = :now
+                       " . citySourceSql('profile') . "
                  WHERE id = :id
             ")->execute([
                 'city' => $derivedCityId,
@@ -2453,37 +2454,38 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         $stmtOld = Database::pdo()->prepare("SELECT current_city_id FROM users WHERE id = ?");
         $stmtOld->execute([$authUserForCity['id']]);
         $oldCityIdForRank = $stmtOld->fetchColumn() ?: null;
+        // A city that was only guessed (an IP-placed first join, a profile's home
+        // city, or set before current_city_source existed) gives way to GPS at
+        // once; a GPS or manual city keeps the two-signal rule. Any GPS commit
+        // or confirmation marks the city 'gps'.
+        $hasSource = citySourceSql('gps') !== '';
+        $guess = $hasSource ? "(current_city_id IS NULL OR COALESCE(current_city_source, '') NOT IN ('gps', 'manual'))" : "(current_city_id IS NULL)";
+        $two   = "(pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes')";
+        $hit   = "(current_city_id = :geo OR {$guess} OR {$two})";
         Database::pdo()->prepare("
             UPDATE users SET
               current_city_id = CASE
-                WHEN current_city_id IS NULL THEN :geo
                 WHEN current_city_id = :geo THEN current_city_id
-                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN :geo
+                WHEN {$guess} OR {$two} THEN :geo
                 ELSE current_city_id
               END,
               current_city_set_at = CASE
-                WHEN current_city_id IS NULL THEN now()
                 WHEN current_city_id = :geo THEN current_city_set_at
-                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN now()
+                WHEN {$guess} OR {$two} THEN now()
                 ELSE current_city_set_at
               END,
               current_city_last_confirmed_at = CASE
-                WHEN current_city_id IS NULL THEN now()
-                WHEN current_city_id = :geo THEN now()
-                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN now()
+                WHEN {$hit} THEN now()
                 ELSE current_city_last_confirmed_at
               END,
+              " . ($hasSource ? "current_city_source = CASE WHEN {$hit} THEN 'gps' ELSE current_city_source END," : '') . "
               pending_city_id = CASE
-                WHEN current_city_id IS NULL THEN NULL
-                WHEN current_city_id = :geo THEN NULL
-                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN NULL
+                WHEN {$hit} THEN NULL
                 WHEN pending_city_id = :geo THEN pending_city_id
                 ELSE :geo
               END,
               pending_city_first_seen_at = CASE
-                WHEN current_city_id IS NULL THEN NULL
-                WHEN current_city_id = :geo THEN NULL
-                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN NULL
+                WHEN {$hit} THEN NULL
                 WHEN pending_city_id = :geo THEN pending_city_first_seen_at
                 ELSE now()
               END
@@ -2570,6 +2572,7 @@ $router->add('POST', '/api/v1/me/city', function () {
           current_city_last_confirmed_at = now(),
           pending_city_id                = NULL,
           pending_city_first_seen_at     = NULL
+          " . citySourceSql('manual') . "
         WHERE id = :user_id
     ")->execute([
         'city'    => $channelId,
@@ -3470,6 +3473,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
                   current_city_id                = :city,
                   current_city_set_at            = now(),
                   current_city_last_confirmed_at = now()
+                  " . citySourceSql('join') . "
                 WHERE id = :uid AND current_city_id IS NULL
             ");
             $seedStmt->execute(['city' => $seedCityId, 'uid' => $joinUserId]);
@@ -3653,6 +3657,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                               current_city_id                = :city,
                               current_city_set_at            = now(),
                               current_city_last_confirmed_at = now()
+                              " . citySourceSql('join') . "
                             WHERE id = :uid AND current_city_id IS NULL
                         ");
                         $seedStmt->execute(['city' => $deferChannel, 'uid' => $uid]);
@@ -14229,6 +14234,61 @@ function dailyCityParam(?array $user): ?string
     return is_string($current) && preg_match('/^city_\d+$/', $current) ? $current : null;
 }
 
+/**
+ * ", current_city_source = '<source>'" for a users.current_city_id write, or
+ * "" until migrate.php added the column (so a deploy before the migration
+ * keeps placing users). Checked once per process.
+ */
+function citySourceSql(string $source): string
+{
+    static $has = null;
+    if ($has === null) {
+        try {
+            $stmt = Database::pdo()->query("
+                SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'current_city_source'
+            ");
+            $has = $stmt !== false && $stmt->fetchColumn() !== false;
+        } catch (\Throwable $e) {
+            $has = false;
+        }
+    }
+    return $has ? ", current_city_source = '{$source}'" : '';
+}
+
+/**
+ * Where the viewer is (Today's "Answer for [city]", Represent your city): the
+ * account's current city, else a guest's ?hereId= (&hereSource=gps|ip). Not
+ * the browsed scope (?cityId=). {id, name, country, source: gps | set | ip,
+ * presence} or null when unknown. source ip = a guess (an IP-placed first
+ * join, a profile's home city): Today offers "Not in [city]? Change".
+ */
+function dailyHere(?array $user, ?array $challenge, ?string $scopeCityId, ?array $scopePresence): ?array
+{
+    if ($user !== null) {
+        $cityId = $user['current_city_id'] ?? null;
+        $source = match ($user['current_city_source'] ?? null) { 'gps' => 'gps', 'manual' => 'set', default => 'ip' };
+    } else {
+        $n      = filter_var($_GET['hereId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $cityId = $n !== false && $n !== null ? 'city_' . $n : null;
+        $source = ($_GET['hereSource'] ?? null) === 'gps' ? 'gps' : 'ip';
+    }
+    if (!is_string($cityId) || !preg_match('/^city_(\d+)$/', $cityId, $m) || ($row = CityRepository::findById((int) $m[1])) === null) {
+        return null;
+    }
+    $presence = null;
+    if ($challenge !== null) {
+        try {
+            $presence = $cityId === $scopeCityId && $scopePresence !== null ? $scopePresence
+                : DailyPresence::payload($cityId, (string) $challenge['id'],
+                                         $user !== null ? (DailyProofRepository::findMine($challenge['id'], $user['id']) ?: null) : null);
+        } catch (\Throwable $e) {
+            error_log('[daily] here presence failed: ' . $e->getMessage());
+        }
+    }
+    return ['id' => (int) $m[1], 'name' => $row['name'] ?? null, 'country' => CityRepository::countryOf((int) $m[1]),
+            'source' => $source, 'presence' => $presence];
+}
+
 /** Load a proof the viewer owns, or answer 404/403. */
 function dailyOwnProof(string $proofId, array $user): array
 {
@@ -14400,7 +14460,11 @@ function dailyCommitPlace(array $user, array $fields): array
 // GET /api/v1/daily/today?cityId= - today's challenge for the home card.
 $router->add('GET', '/api/v1/daily/today', function () {
     $user = AuthService::currentUser();
-    $out  = DailyChallengeRepository::header(DailyClock::currentDate(), dailyCityParam($user), $user);
+    $scopeCityId = dailyCityParam($user);
+    $out  = DailyChallengeRepository::header(DailyClock::currentDate(), $scopeCityId, $user);
+    // Where the viewer is, apart from the browsed city: the answer button and Represent your city use it.
+    $out['here'] = dailyHere($user, $out['challenge'] !== null ? DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate()) : null,
+                             $scopeCityId, $out['presence'] ?? null);
     // Locals of a live city: tomorrow's Local Twist proposal (entry point on the hero card).
     $out['twistProposal'] = $user !== null ? DailyTwistProposals::summaryFor($user) : null;
     // Ever posted a proof: Today's brand line shows until the first one (SPEC 9.3).

@@ -1392,7 +1392,7 @@
       "moreCities_other": "+อีก {{count}} เมือง"
     },
     "ctaAnswer": "ตอบแทน{{city}}",
-    "ctaAnswerNoCity": "ตอบแทนเมืองของคุณ",
+    "ctaAnswerNoCity": "ตอบแทนเมืองของฉัน",
     "represent": {
       "button": "ตอบแทน{{city}}"
     },

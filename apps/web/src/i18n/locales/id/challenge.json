@@ -1393,7 +1393,7 @@
       "moreCities_other": "+{{count}} kota lagi"
     },
     "ctaAnswer": "Jawab untuk {{city}}",
-    "ctaAnswerNoCity": "Jawab untuk kotamu",
+    "ctaAnswerNoCity": "Jawab untuk kotaku",
     "represent": {
       "button": "Jawab untuk {{city}}"
     },

@@ -16742,6 +16742,11 @@ body.has-app-promo-banner .page-header {
 .today-empty-city { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 14px; font-weight: 700; line-height: 1.35; }
 .today-city-streak { align-self: center; gap: 6px; margin-top: -4px; font-size: 13px; font-weight: 700; color: var(--text); }
 .today-city-streak .icon { color: var(--primary-text); }
+/* My city is an IP guess: "Not in Berlin? Change" under the button. */
+.today-not-here { align-self: center; min-height: 32px; margin-top: -4px; padding: 4px 8px; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); text-align: center; cursor: pointer; }
+.today-not-here:disabled { opacity: .6; cursor: default; }
+.today-not-here-link { font-weight: 800; color: var(--primary-text); }
+.today-not-here--error { cursor: default; color: var(--text); }
 .today-board { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 13px; font-weight: 700; line-height: 1.35; }
 .today-board .today-friend { margin-top: 0; align-self: flex-start; min-height: 32px; padding: 0; }
 .proof-strip, .spots-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }

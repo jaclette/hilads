@@ -1393,7 +1393,7 @@
       "moreCities_other": "+{{count}} pang lungsod"
     },
     "ctaAnswer": "Sumagot para sa {{city}}",
-    "ctaAnswerNoCity": "Sumagot para sa lungsod mo",
+    "ctaAnswerNoCity": "Sumagot para sa lungsod ko",
     "represent": {
       "button": "Sumagot para sa {{city}}"
     },

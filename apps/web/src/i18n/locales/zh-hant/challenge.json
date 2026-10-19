@@ -1392,7 +1392,7 @@
       "moreCities_other": "+另外 {{count}} 座城市"
     },
     "ctaAnswer": "為{{city}}作答",
-    "ctaAnswerNoCity": "為你的城市作答",
+    "ctaAnswerNoCity": "為我的城市作答",
     "represent": {
       "button": "為{{city}}作答"
     },

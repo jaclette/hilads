@@ -502,6 +502,10 @@
   },
   "represent": {
     "empty": "{{city}} non ha ancora risposto oggi. Sii il primo.",
+    "emptyThere": "{{city}} non ha ancora risposto oggi.",
+    "notIn": "Non sei a {{city}}?",
+    "change": "Cambia",
+    "locationNeeded": "Consenti la posizione per rispondere per dove sei.",
     "button": "Rispondi per {{city}}",
     "firstPosted": "Hai messo {{city}} sulla mappa del mondo di oggi.",
     "pioneer": "Pioniere di {{city}}",
@@ -623,7 +627,7 @@
     "moreCities_other": "+{{count}} altre città"
   },
   "ctaAnswer": "Rispondi per {{city}}",
-  "ctaAnswerNoCity": "Rispondi per la tua città",
+  "ctaAnswerNoCity": "Rispondi per la mia città",
   "countdown": {
     "hm": "{{h}} h {{m}} min",
     "ms": "{{m}} min {{s}} s"

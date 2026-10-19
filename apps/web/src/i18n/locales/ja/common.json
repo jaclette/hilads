@@ -220,6 +220,10 @@
   },
   "represent": {
     "empty": "{{city}}は今日まだ答えていません。最初の一人になろう。",
+    "emptyThere": "{{city}}は今日まだ答えていません。",
+    "notIn": "{{city}}にいない？",
+    "change": "変更",
+    "locationNeeded": "今いる場所の代表で答えるには位置情報を許可してください。",
     "button": "{{city}}代表で答える",
     "firstPosted": "今日、{{city}}を世界地図にのせました。",
     "pioneer": "{{city}}のパイオニア",

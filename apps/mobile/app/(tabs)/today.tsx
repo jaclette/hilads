@@ -55,7 +55,7 @@ export default function TodayScreen() {
       >
         <BrandLine today={daily.data} guest={!account} />
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
-          <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} />
+          <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
         <TodayWeek today={daily.data} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}

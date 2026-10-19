@@ -13,6 +13,11 @@ type Corrector = (coords: { lat: number; lng: number }) => void;
 
 let corrector: Corrector | null = null;
 
+/** The city a GPS fix placed this session (a guest's Today says "Answer for" it without "Not in…? Change"). */
+let gpsCity: string | null = null;
+export function markGpsCity(channelId: string | null): void { gpsCity = channelId; }
+export function isGpsCity(channelId: string | null | undefined): boolean { return !!channelId && channelId === gpsCity; }
+
 /** AppContext-aware corrector; registered by useGpsCityCorrection on mount. */
 export function setCityCorrector(fn: Corrector | null): void {
   corrector = fn;

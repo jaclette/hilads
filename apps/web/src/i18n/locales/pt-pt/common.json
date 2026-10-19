@@ -220,6 +220,10 @@
   },
   "represent": {
     "empty": "{{city}} ainda não respondeu hoje. Sê o primeiro.",
+    "emptyThere": "{{city}} ainda não respondeu hoje.",
+    "notIn": "Não estás em {{city}}?",
+    "change": "Mudar",
+    "locationNeeded": "Permite a localização para responder por onde estás.",
     "button": "Responde por {{city}}",
     "firstPosted": "Puseste {{city}} no mapa do mundo de hoje.",
     "pioneer": "Pioneiro de {{city}}",

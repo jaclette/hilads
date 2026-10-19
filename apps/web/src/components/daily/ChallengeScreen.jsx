@@ -7,7 +7,7 @@ import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
-  RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer,
+  RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer, useHere,
 } from './dailyShared'
 import Icon from '../Icon'
 import CompareBoard from './CompareBoard'
@@ -134,6 +134,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
   const myProof = sheet?.myProof ?? null
   const isLive = !!sheet?.city?.isLive
   const cityName = sheet?.city?.name ? shortCityName(sheet.city.name) : ''
+  const here = useHere()   // "Answer for [city]": where I am, not the browsed city
   const store = deviceStore()
 
   return (
@@ -191,7 +192,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
               ) : challenge.isActive && (
                 <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                    onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })}>
-                  {cityName ? t('ctaAnswer', { city: cityName }) : t('ctaAnswerNoCity')}
+                  {here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
                 </a>
               )}
             </div>

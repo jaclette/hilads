@@ -502,6 +502,10 @@
   },
   "represent": {
     "empty": "Hindi pa sumasagot ang {{city}} ngayon. Ikaw na ang mauna.",
+    "emptyThere": "Hindi pa sumasagot ang {{city}} ngayon.",
+    "notIn": "Wala ka sa {{city}}?",
+    "change": "Palitan",
+    "locationNeeded": "Payagan ang lokasyon para sumagot para sa kinaroroonan mo.",
     "button": "Sumagot para sa {{city}}",
     "firstPosted": "Inilagay mo ang {{city}} sa world map ngayon.",
     "pioneer": "Pioneer ng {{city}}",
@@ -622,7 +626,7 @@
     "moreCities_other": "+{{count}} pang lungsod"
   },
   "ctaAnswer": "Sumagot para sa {{city}}",
-  "ctaAnswerNoCity": "Sumagot para sa lungsod mo",
+  "ctaAnswerNoCity": "Sumagot para sa lungsod ko",
   "countdown": {
     "hm": "{{h}}h {{m}}m",
     "ms": "{{m}}m {{s}}s"

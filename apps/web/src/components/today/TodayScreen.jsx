@@ -14,7 +14,7 @@ import { CityFlag, CityName } from '../CityName'
 import { LiveDot, WorldTicker, useLiveMotion } from './WorldLive'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount, useVotesLeft,
-  StatusChip, OriginalToggle, useOriginal, ProposedBy, RankMedal, VoteButton,
+  StatusChip, OriginalToggle, setLastHere, useOriginal, ProposedBy, RankMedal, VoteButton,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
@@ -39,23 +39,25 @@ function distance(m, lang) {
  */
 export default function TodayScreen({ header }) {
   const { i18n } = useDc()
-  const { cityId } = useDaily()
+  const { cityId, here, hereVersion } = useDaily()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const hereKey = here ? `${here.cityId}:${here.gps}` : ''
 
   useEffect(() => {
     let alive = true
     setLoading(true)
-    fetchDailyToday(cityId, i18n.language)
+    fetchDailyToday(cityId, i18n.language, here)
       .then(d => {
         if (!alive) return
         setData(d)
+        setLastHere(d.here)
         if (d.challenge?.isActive) { seedProofs([d.myProof], true); seedVotesLeft(d.myVotes?.left ?? null) }
       })
       .catch(() => {})
       .finally(() => { if (alive) setLoading(false) })
     return () => { alive = false }
-  }, [cityId, i18n.language])
+  }, [cityId, i18n.language, hereKey, hereVersion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="full-page full-page--tab today-page">
@@ -149,8 +151,10 @@ let tipUntil = 0
 function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
   const { t: tc } = useTranslation('common')
-  const { scope, openDaily } = useDaily()
+  const { scope, openDaily, locateHere } = useDaily()
   const [showOriginal, toggleOriginal] = useOriginal()
+  const [locating, setLocating] = useState(false)
+  const [locateFailed, setLocateFailed] = useState(false)
   const secondsLeft = useCountdown(data?.challenge ? data.nextDropAt : null)
   const [pulseEl, setPulseEl] = useState(null)
   const tracked = useRef(null)
@@ -211,12 +215,27 @@ function Ticket({ data, loading }) {
   const theme = challenge.theme?.key ?? null
   // A special day without a cover: its bundled one (Halloween), else Only here's; the API sends uploaded covers.
   const cover = challenge.coverUrl || (theme ? `/covers/${theme === 'special' ? specialCover(challenge.special) : theme}.jpg` : null)
-  // Represent your city (SPEC 9.16), city scope only: nobody has represented it today
-  // (my own pending proof counts for me), and its run of represented days.
-  const presence = scope === 'city' ? data.presence ?? null : null
-  const cityShort = city?.name ? shortCityName(city.name) : null
+  // Represent your city (SPEC 9.16), city scope only, for where I am (never the browsed city):
+  // nobody has represented it today (my own pending proof counts for me), and its run of
+  // represented days. Browsing another city: that city's state, as information only.
+  const here = data.here ?? null
+  const presence = scope === 'city' ? here?.presence ?? null : null
+  const cityShort = here?.name ? shortCityName(here.name) : null
   const emptyCity = !!presence && !presence.represented && !!cityShort && challenge.isActive
   const cityStreak = presence && cityShort && presence.streak >= 2 ? presence.streak : 0
+  const elsewhere = scope === 'city' && !!city?.name && city.id !== here?.id
+  const emptyThere = !emptyCity && elsewhere && !!data.presence && !data.presence.represented && challenge.isActive
+  // My city is an IP guess (a VPN gets it wrong): "Not in Berlin? Change" asks for the location.
+  const changeHere = async (e) => {
+    e.stopPropagation()
+    if (locating) return
+    setLocating(true)
+    setLocateFailed(false)
+    const ok = await locateHere()
+    setLocating(false)
+    setLocateFailed(!ok)
+    track('here_change', { ok, from: here?.name ?? null, platform_surface: 'web' })
+  }
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
 
@@ -282,7 +301,10 @@ function Ticket({ data, loading }) {
           </div>
         )}
         {emptyCity && (
-          <span className="today-empty-city"><CityFlag country={city?.country} size={18} />{tc('represent.empty', { city: cityShort })}</span>
+          <span className="today-empty-city"><CityFlag country={here?.country} size={18} />{tc('represent.empty', { city: cityShort })}</span>
+        )}
+        {emptyThere && (
+          <span className="today-empty-city"><CityFlag country={city?.country} size={18} />{tc('represent.emptyThere', { city: shortCityName(city.name) })}</span>
         )}
         {!myProof && (
           <span className="today-hint">
@@ -312,6 +334,12 @@ function Ticket({ data, loading }) {
             </a>
           </span>
         )}
+        {!myProof && here?.source === 'ip' && !!cityShort && (
+          <button type="button" className="today-not-here" onClick={changeHere} disabled={locating}>
+            {tc('represent.notIn', { city: cityShort })} <span className="today-not-here-link">{tc('represent.change')}</span>
+          </button>
+        )}
+        {locateFailed && <span className="today-not-here today-not-here--error">{tc('represent.locationNeeded')}</span>}
         {cityStreak > 0 && (
           <span className="today-city-streak" style={ROW}><Icon name="flame-outline" size={16} />{tc('represent.streak', { count: cityStreak, city: cityShort })}</span>
         )}
@@ -478,8 +506,8 @@ function TodayProofs({ today }) {
 
   const voting = !!today?.challenge?.isActive
   // Represent your city (SPEC 9.16), World scope: never a zero count; my own pending proof counts for me.
-  const presence = scope === 'world' ? today?.presence ?? null : null
-  const myCity = today?.city?.name ? shortCityName(today.city.name) : null
+  const presence = scope === 'world' ? today?.here?.presence ?? null : null
+  const myCity = today?.here?.name ? shortCityName(today.here.name) : null
   const board = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && voting ? (
     <div className="today-board">
       <span>{tc('represent.board', { count: presence.citiesToday, city: myCity })}</span>

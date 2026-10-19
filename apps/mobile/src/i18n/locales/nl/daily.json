@@ -502,6 +502,10 @@
   },
   "represent": {
     "empty": "{{city}} heeft vandaag nog niet geantwoord. Wees de eerste.",
+    "emptyThere": "{{city}} heeft vandaag nog niet geantwoord.",
+    "notIn": "Niet in {{city}}?",
+    "change": "Wijzigen",
+    "locationNeeded": "Sta locatie toe om te antwoorden voor waar je bent.",
     "button": "Antwoord voor {{city}}",
     "firstPosted": "Je zette {{city}} vandaag op de wereldkaart.",
     "pioneer": "Pionier van {{city}}",
@@ -622,7 +626,7 @@
     "moreCities_other": "+{{count}} andere steden"
   },
   "ctaAnswer": "Antwoord voor {{city}}",
-  "ctaAnswerNoCity": "Antwoord voor je stad",
+  "ctaAnswerNoCity": "Antwoord voor mijn stad",
   "countdown": {
     "hm": "{{h}}u {{m}}m",
     "ms": "{{m}}m {{s}}s"

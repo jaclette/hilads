@@ -24,6 +24,10 @@ import { PulseButton } from './PulseButton';
 import { LiveDot, WorldTicker, useLiveMotion, type TickerEntry } from './WorldLive';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
+import { resolveLocation } from '@/api/channels';
+import * as Location from 'expo-location';
+import { requestFeatureLocation } from '@/lib/geoFeature';
+import { markGpsCity } from '@/lib/gpsCityCorrection';
 import { askDailyPush } from '@/services/push';
 import { formatCountdown, isFinalHours } from '@/hooks/useDaily';
 import { Button, CityFlag } from '@/ui';
@@ -54,16 +58,19 @@ const COVER_SHADE = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.86)', 'rg
  * card opens the challenge sheet. Tomorrow's Local Twist proposal sits under
  * the week strip.
  */
-export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
+export function TodayTicket({ data, loading, secondsLeft, visible = true, onReload }: {
   data: DailyToday | null; loading: boolean; secondsLeft: number | null;
   /** The card is on screen (Today's scroll): the button's pulse runs only then. */
   visible?: boolean;
+  /** Refetch Today (after "Not in Saigon? Change" placed me). */
+  onReload?: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
-  const { account, identity } = useApp();
+  const { account, identity, setDetectedCity } = useApp();
+  const [locating, setLocating] = useState(false);
   const { scope } = useScope();
   const [showOriginal, toggleOriginal] = useOriginal();
   const tracked = useRef<string | null>(null);
@@ -133,18 +140,45 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
   const ticker: TickerEntry[] = (world?.answers ?? []).filter(a => a.answer && a.city.name)
     .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: answerText(a.answer!, i18n.language) }));
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
-  const onCta = () => {
+  // Where I am (not the browsed city): "Not in Saigon? Change" and an unknown city ask for
+  // the location; the server then answers for it (an account's city, a guest's here).
+  const here = data?.here ?? null;
+  const locateHere = async (): Promise<boolean> => {
+    const r = await requestFeatureLocation('challenge_proof');
+    if (!r.ok || !r.coords) return false;
+    const geo = await Location.reverseGeocodeAsync({ latitude: r.coords.lat, longitude: r.coords.lng }).catch(() => null);
+    const c = await resolveLocation(r.coords.lat, r.coords.lng, geo?.[0]?.isoCountryCode ?? null).catch(() => null);
+    if (!c?.channelId) return false;
+    markGpsCity(c.channelId);
+    setDetectedCity(c);
+    onReload?.();
+    return true;
+  };
+  const changeHere = async () => {
+    if (locating) return;
+    setLocating(true);
+    const ok = await locateHere();
+    setLocating(false);
+    track('here_change', { ok, from: here?.name ?? null });
+    if (!ok) Alert.alert(t('represent.locationNeeded'));
+  };
+  const onCta = async () => {
     if (myProof) { openSheet(); return; }
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
+    // My city unknown: ask for the location first (the place step asks again where it needs a fix).
+    if (!here) await locateHere();
     router.push('/daily/proof' as never);
   };
   const placeTheme = isPlaceTheme(challenge.theme?.key);
-  // Represent your city (SPEC 9.16), city scope only: nobody has represented it today
-  // (my own pending proof counts for me), and its run of represented days.
-  const presence = scope === 'city' ? data?.presence ?? null : null;
-  const cityShort = city?.name ? shortCityName(city.name) : null;
+  // Represent your city (SPEC 9.16), city scope only, for where I am (never the browsed city):
+  // nobody has represented it today (my own pending proof counts for me), and its run of
+  // represented days. Browsing another city: that city's state, as information only.
+  const presence = scope === 'city' ? here?.presence ?? null : null;
+  const cityShort = here?.name ? shortCityName(here.name) : null;
   const emptyCity = !!presence && !presence.represented && !!cityShort && challenge.isActive;
   const cityStreak = presence && cityShort && presence.streak >= 2 ? presence.streak : 0;
+  const elsewhere = scope === 'city' && !!city?.name && city.id !== here?.id;
+  const emptyThere = !emptyCity && elsewhere && !!data?.presence && !data.presence.represented && challenge.isActive;
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = challenge.theme
     ? themeName(challenge.theme.key, { special: challenge.special, city: scope === 'city' ? city?.name : null })
@@ -240,8 +274,14 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
         )}
         {emptyCity && (
           <View style={styles.emptyCity} accessibilityRole="text">
-            <CityFlag country={city?.country} size={18} />
+            <CityFlag country={here?.country} size={18} />
             <Text style={styles.emptyCityText}>{t('represent.empty', { city: cityShort })}</Text>
+          </View>
+        )}
+        {emptyThere && (
+          <View style={styles.emptyCity} accessibilityRole="text">
+            <CityFlag country={city?.country} size={18} />
+            <Text style={styles.emptyCityText}>{t('represent.emptyThere', { city: shortCityName(city!.name!) })}</Text>
           </View>
         )}
         {!myProof && (
@@ -264,6 +304,15 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
           <PulseButton label={cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
+        {/* My city is an IP guess (a VPN gets it wrong): "Not in Saigon? Change" asks for the location. */}
+        {!myProof && here?.source === 'ip' && !!cityShort && (
+          <TouchableOpacity style={styles.notHere} onPress={changeHere} disabled={locating} hitSlop={8} accessibilityRole="button">
+            <Text style={styles.notHereText}>
+              {t('represent.notIn', { city: cityShort })} <Text style={styles.notHereLink}>{t('represent.change')}</Text>
+            </Text>
+            {locating && <ActivityIndicator size="small" color={colors.muted} />}
+          </TouchableOpacity>
+        )}
         {cityStreak > 0 && (
           <View style={styles.streak}>
             <Ionicons name="flame-outline" size={16} color={colors.primaryText} />
@@ -273,7 +322,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true }: {
         {/* Challenge a friend (SPEC 9.14): hilads.live/today with the card; an empty city: "Help me represent Saigon". */}
         {challenge.isActive && (
           <TouchableOpacity style={styles.friend}
-                            onPress={() => setShare(emptyCity && city ? representShare(challenge, city) : todayShare(challenge, city ?? null))}
+                            onPress={() => setShare(emptyCity && here ? representShare(challenge, here) : todayShare(challenge, here ?? city ?? null))}
                             accessibilityRole="button" accessibilityLabel={emptyCity ? t('represent.invite') : t('share.challengeFriend')}>
             <Ionicons name="paper-plane-outline" size={16} color={colors.text} />
             <Text style={styles.link}>{emptyCity ? t('represent.invite') : t('share.challengeFriend')}</Text>
@@ -413,5 +462,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emptyCityText: { flex: 1, fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.primaryOnTint },
   streak:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -4 },
   streakText:  { fontSize: 13, fontWeight: '700', color: c.text },
+  notHere:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 32, marginTop: -4 },
+  notHereText: { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  notHereLink: { fontSize: 13, fontWeight: '800', color: c.primaryText },
   friend:      { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: -6 },
 });

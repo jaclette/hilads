@@ -112,7 +112,7 @@ export default function DailyProofScreen() {
   const compare = today?.challenge?.compare ?? null;
   // Back home (SPEC 10.4): my home city differs from the proof's city, or I'm
   // exploring without one yet. An edit that already has one shows it too.
-  const proofCityId = original?.city?.id ?? today?.city?.id ?? null;
+  const proofCityId = original?.city?.id ?? today?.here?.id ?? null;   // a new proof is posted for where I am
   const showHome = !!original?.backHome
     || (home ? home.id === null || home.id !== proofCityId : account?.mode === 'exploring');
 

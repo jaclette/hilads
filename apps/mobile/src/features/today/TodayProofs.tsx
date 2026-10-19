@@ -78,13 +78,13 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   const voting = !!today?.challenge?.isActive;
   // Represent your city (SPEC 9.16), World scope: "12 cities are on today's board. Saigon isn't yet."
   // Never a zero count; my own pending proof counts for me.
-  const presence = scope === 'world' ? today?.presence ?? null : null;
-  const myCity = today?.city?.name ? shortCityName(today.city.name) : null;
+  const presence = scope === 'world' ? today?.here?.presence ?? null : null;
+  const myCity = today?.here?.name ? shortCityName(today.here.name) : null;
   const boardLine = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && voting;
   const board = boardLine ? (
     <View style={styles.board}>
       <Text style={styles.boardText}>{t('represent.board', { count: presence!.citiesToday, city: myCity })}</Text>
-      <TouchableOpacity onPress={() => setInvite(representShare(today!.challenge!, today!.city!))} accessibilityRole="button" hitSlop={8}>
+      <TouchableOpacity onPress={() => setInvite(representShare(today!.challenge!, today!.here!))} accessibilityRole="button" hitSlop={8}>
         <Text style={styles.boardLink}>{t('represent.invite')}</Text>
       </TouchableOpacity>
     </View>

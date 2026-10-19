@@ -35,8 +35,13 @@ function cityParam(cityId?: string | number | null): number | undefined {
   return Number.isInteger(n) && n > 0 ? n : undefined;
 }
 
-export async function fetchDailyToday(cityId?: string | number | null): Promise<DailyToday> {
-  return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId), locale: locale() } });
+/** `here`: a guest's own city (an account's comes from the server), from GPS or an IP guess. */
+export async function fetchDailyToday(cityId?: string | number | null,
+                                      here?: { cityId: string | number | null; gps: boolean } | null): Promise<DailyToday> {
+  return api.get<DailyToday>('/daily/today', { params: {
+    cityId: cityParam(cityId), locale: locale(),
+    hereId: here ? cityParam(here.cityId) : undefined, hereSource: here ? (here.gps ? 'gps' : 'ip') : undefined,
+  } });
 }
 
 /** How the world answered: one row per city (SPEC 10.6). Public. */

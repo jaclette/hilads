@@ -1084,6 +1084,10 @@ export default function App() {
   // aggregate analytics only - never the raw IP.
   const [landingState, setLandingState] = useState('city_join')
   const [detectedCity, setDetectedCity] = useState(null)
+  // The IP-detected city's channel: a guest's own city for Today until GPS knows better.
+  const [ipChannelId, setIpChannelId] = useState(null)
+  // Bumped when GPS placed me (Today refetches its "Answer for [city]").
+  const [hereVersion, setHereVersion] = useState(0)
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
@@ -1789,6 +1793,7 @@ export default function App() {
         setPreviewTimezone(geo.timezone ?? 'UTC')
         setLandingState('city_join')
         setDetectedCity(geo.city)
+        setIpChannelId(geo.channelId)
         fetchChannels().then(list => {
           const ch = (list?.channels ?? []).find(c => c.channelId === geo.channelId)
           const n = Number(ch?.activeUsers ?? 0)
@@ -2339,11 +2344,41 @@ export default function App() {
       const st = await navigator.permissions.query({ name: 'geolocation' })
       if (st.state !== 'granted') return
       navigator.geolocation.getCurrentPosition(
-        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (pos) => {
+          setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+          // Where I am, for the Daily Challenge: GPS replaces an IP guess (never moves the browsed city).
+          placeHere(pos.coords.latitude, pos.coords.longitude).catch(() => {})
+        },
         () => {},
         { timeout: 8000, maximumAge: 600000 },
       )
     } catch { /* Permissions API unavailable → skip silently (never prompt) */ }
+  }
+
+  // Where I am (the Daily Challenge's "Answer for [city]"), apart from the browsed city:
+  // /location/resolve makes it the account's current city; a guest keeps it as the geo city.
+  async function placeHere(lat, lng) {
+    const country = await reverseGeocodeCountry(lat, lng)
+    const location = await resolveLocation(lat, lng, country)
+    if (!location?.channelId) return null
+    setGeoChannelId(location.channelId)
+    setGeoCity(location.city ?? null)
+    setGeoCountry(location.country ?? null)
+    setGeoTimezone(location.timezone ?? null)
+    saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone })
+    setHereVersion(v => v + 1)
+    return location
+  }
+
+  // "Not in Berlin? Change" / an unknown city: ask for the location now. True when placed.
+  async function locateHere() {
+    try {
+      const pos = await getPosition()
+      setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+      return !!(await placeHere(pos.coords.latitude, pos.coords.longitude))
+    } catch {
+      return false
+    }
   }
 
   // Fetch landing page preview: events + topics for the pre-join activity block.
@@ -4772,7 +4807,12 @@ export default function App() {
 
   // What the Daily screens, the chat's pinned challenge and its Daily cards need.
   const dailyCtx = {
-    account, cityId: channelId, scope: channelScope,
+    // The browsed city (the header's), before joining too.
+    account, cityId: channelId ?? previewChannelId, scope: channelScope,
+    // Where I am, apart from the browsed city: a guest's GPS city, else the IP guess (an
+    // account's comes from the server). hereVersion bumps once GPS placed me.
+    here: account ? null : geoChannelId ? { cityId: geoChannelId, gps: true } : ipChannelId ? { cityId: ipChannelId, gps: false } : null,
+    hereVersion, locateHere,
     // The current city's country: prices are shown in its currency (SPEC 10.5).
     cityCountry,
     openDaily,

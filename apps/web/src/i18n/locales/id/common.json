@@ -220,6 +220,10 @@
   },
   "represent": {
     "empty": "{{city}} belum menjawab hari ini. Jadilah yang pertama.",
+    "emptyThere": "{{city}} belum menjawab hari ini.",
+    "notIn": "Tidak di {{city}}?",
+    "change": "Ubah",
+    "locationNeeded": "Izinkan lokasi untuk menjawab dari tempatmu berada.",
     "button": "Jawab untuk {{city}}",
     "firstPosted": "Kamu menaruh {{city}} di peta dunia hari ini.",
     "pioneer": "Pelopor {{city}}",

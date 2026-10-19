@@ -18,7 +18,7 @@ import { resolveLocation, joinChannel } from '@/api/channels';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
-import { setCityCorrector } from '@/lib/gpsCityCorrection';
+import { markGpsCity, setCityCorrector } from '@/lib/gpsCityCorrection';
 
 export function useGpsCityCorrection(): void {
   const {
@@ -49,6 +49,7 @@ export function useGpsCityCorrection(): void {
 
           // Always refresh the "your real location" reference.
           setDetectedCity(accurate);
+          markGpsCity(accurate.channelId);
 
           // Auto-switch only when the user is still on the auto-placed city.
           const onAutoCity = s.city != null && s.detectedCity != null

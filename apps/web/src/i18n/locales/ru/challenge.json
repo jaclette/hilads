@@ -1429,7 +1429,7 @@
       "moreCities_other": "+ещё {{count}} города"
     },
     "ctaAnswer": "Ответь за {{city}}",
-    "ctaAnswerNoCity": "Ответь за свой город",
+    "ctaAnswerNoCity": "Ответь за мой город",
     "represent": {
       "button": "Ответь за {{city}}"
     },

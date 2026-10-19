@@ -2435,8 +2435,12 @@ async function daily(method, path, { params, body } = {}) {
 const cityNum = (cityId) => (cityId ? String(cityId).replace(/^city_/, '') : null)
 
 /** GET /daily/today: today's challenge, the city's Local Twist, my proof, streak… */
-export function fetchDailyToday(cityId, locale) {
-  return daily('GET', '/daily/today', { params: { cityId: cityNum(cityId), locale } })
+/** `here`: a guest's own city ({cityId, gps}); an account's comes from the server. */
+export function fetchDailyToday(cityId, locale, here = null) {
+  return daily('GET', '/daily/today', { params: {
+    cityId: cityNum(cityId), locale,
+    hereId: here ? cityNum(here.cityId) : undefined, hereSource: here ? (here.gps ? 'gps' : 'ip') : undefined,
+  } })
 }
 
 /** GET /daily/challenges/{date}: the sheet (proofs paged by `before`, results once closed). */

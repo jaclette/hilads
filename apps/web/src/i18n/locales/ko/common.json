@@ -220,6 +220,10 @@
   },
   "represent": {
     "empty": "{{city}}는 오늘 아직 답하지 않았어요. 첫 번째가 되어 보세요.",
+    "emptyThere": "{{city}}는 오늘 아직 답하지 않았어요.",
+    "notIn": "{{city}}에 있지 않나요?",
+    "change": "변경",
+    "locationNeeded": "지금 있는 곳을 대표해 답하려면 위치를 허용하세요.",
     "button": "{{city}} 대표로 답하기",
     "firstPosted": "오늘 {{city}}를 세계 지도에 올렸어요.",
     "pioneer": "{{city}} 개척자",

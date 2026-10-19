@@ -10,7 +10,7 @@ import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
-import { formatCountdown, isFinalHours, useCountdown, useDailySheet } from '@/hooks/useDaily';
+import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere } from '@/hooks/useDaily';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import { DailyLeaderboardPanel } from '@/features/daily/DailyLeaderboardPanel';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
@@ -117,6 +117,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
 
   const isLive = !!sheet?.city?.isLive;
   const cityName = sheet?.city?.name ? shortCityName(sheet.city.name) : '';
+  const here = useHere();   // "Answer for [city]": where I am, not the browsed city
   const challenge = sheet?.challenge ?? null;
   const myProof = sheet?.myProof ?? null;
 
@@ -219,7 +220,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
               </View>
             </View>
           ) : challenge.isActive && (
-            <Button icon="camera-outline" label={cityName ? t('ctaAnswer', { city: cityName }) : t('ctaAnswerNoCity')} onPress={onCta} />
+            <Button icon="camera-outline" label={here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')} onPress={onCta} />
           )}
         </Card>
 

@@ -502,6 +502,10 @@
   },
   "represent": {
     "empty": "{{city}}は今日まだ答えていません。最初の一人になろう。",
+    "emptyThere": "{{city}}は今日まだ答えていません。",
+    "notIn": "{{city}}にいない？",
+    "change": "変更",
+    "locationNeeded": "今いる場所の代表で答えるには位置情報を許可してください。",
     "button": "{{city}}代表で答える",
     "firstPosted": "今日、{{city}}を世界地図にのせました。",
     "pioneer": "{{city}}のパイオニア",
@@ -621,7 +625,7 @@
     "moreCities_other": "ほか{{count}}都市"
   },
   "ctaAnswer": "{{city}}代表で答える",
-  "ctaAnswerNoCity": "あなたの街の代表で答える",
+  "ctaAnswerNoCity": "私の街の代表で答える",
   "countdown": {
     "hm": "{{h}}時間{{m}}分",
     "ms": "{{m}}分{{s}}秒"

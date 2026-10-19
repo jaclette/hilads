@@ -1393,7 +1393,7 @@
       "moreCities_other": "+{{count}} andere steden"
     },
     "ctaAnswer": "Antwoord voor {{city}}",
-    "ctaAnswerNoCity": "Antwoord voor je stad",
+    "ctaAnswerNoCity": "Antwoord voor mijn stad",
     "represent": {
       "button": "Antwoord voor {{city}}"
     },

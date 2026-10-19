@@ -965,6 +965,13 @@ export interface DailyToday {
    * days, how many cities are on today's board, and its Pioneer.
    */
   presence?: { represented: boolean; streak: number; citiesToday: number; pioneer: { username: string | null } | null } | null;
+  /**
+   * Where I am, apart from the browsed city (`city`): the answer button and
+   * Represent your city use it. source ip = a guess ("Not in Saigon? Change"),
+   * gps, or set by hand. Null when unknown ("Answer for my city").
+   */
+  here?: { id: number; name: string | null; country?: string | null; source: 'gps' | 'set' | 'ip';
+           presence: { represented: boolean; streak: number; citiesToday: number; pioneer: { username: string | null } | null } | null } | null;
   /** Speed bonus window (signed in, no proof yet, still open): post before `until` for the bonus. */
   early?: { startsAt: number; until: number } | null;
   /** SPEC 10.6: the live world teaser once a city answered ("Already 5 countries answered: ..." from 2 countries, else "First answers coming in"). /daily/today only. */

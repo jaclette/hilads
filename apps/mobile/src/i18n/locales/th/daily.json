@@ -501,6 +501,10 @@
   },
   "represent": {
     "empty": "{{city}}ยังไม่ได้ตอบวันนี้ มาเป็นคนแรกกัน",
+    "emptyThere": "{{city}}ยังไม่ได้ตอบวันนี้",
+    "notIn": "ไม่ได้อยู่ที่{{city}}ใช่ไหม?",
+    "change": "เปลี่ยน",
+    "locationNeeded": "อนุญาตตำแหน่งเพื่อตอบแทนที่ที่คุณอยู่",
     "button": "ตอบแทน{{city}}",
     "firstPosted": "คุณพา{{city}}ขึ้นแผนที่โลกวันนี้",
     "pioneer": "ผู้บุกเบิก{{city}}",
@@ -620,7 +624,7 @@
     "moreCities_other": "+อีก {{count}} เมือง"
   },
   "ctaAnswer": "ตอบแทน{{city}}",
-  "ctaAnswerNoCity": "ตอบแทนเมืองของคุณ",
+  "ctaAnswerNoCity": "ตอบแทนเมืองของฉัน",
   "countdown": {
     "hm": "{{h}} ชม. {{m}} นาที",
     "ms": "{{m}} นาที {{s}} วิ"

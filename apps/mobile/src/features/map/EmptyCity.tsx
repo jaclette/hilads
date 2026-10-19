@@ -51,7 +51,8 @@ export function EmptyCity({ today }: { today: DailyToday | null }) {
         <Text style={styles.title}>{cityShort ? t('represent.mapEmpty', { city: cityShort }) : t('map.emptyTitle')}</Text>
       </View>
       {challenge && <Text style={styles.text} numberOfLines={3}>{challenge.text}</Text>}
-      {canTake && <Button label={cityShort ? t('ctaAnswer', { city: cityShort }) : t('ctaAnswerNoCity')} onPress={take} />}
+      {/* The map's city is information; the button answers for where I am. */}
+      {canTake && <Button label={today?.here?.name ? t('ctaAnswer', { city: shortCityName(today.here.name) }) : t('ctaAnswerNoCity')} onPress={take} />}
       {!!challenge?.isActive && !placeTheme && !!tomorrowKey && (
         <Text style={styles.tomorrow}>{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</Text>
       )}

@@ -501,6 +501,10 @@
   },
   "represent": {
     "empty": "{{city}}今天還沒有回答。來當第一個吧。",
+    "emptyThere": "{{city}}今天還沒有回答。",
+    "notIn": "不在{{city}}？",
+    "change": "更改",
+    "locationNeeded": "允許定位，為你所在的地方作答。",
     "button": "為{{city}}作答",
     "firstPosted": "你把{{city}}放上了今天的世界地圖。",
     "pioneer": "{{city}}先鋒",
@@ -620,7 +624,7 @@
     "moreCities_other": "+另外 {{count}} 座城市"
   },
   "ctaAnswer": "為{{city}}作答",
-  "ctaAnswerNoCity": "為你的城市作答",
+  "ctaAnswerNoCity": "為我的城市作答",
   "countdown": {
     "hm": "{{h}}小時{{m}}分",
     "ms": "{{m}}分{{s}}秒"

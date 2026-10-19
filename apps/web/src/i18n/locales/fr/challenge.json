@@ -1393,7 +1393,7 @@
       "moreCities_other": "+{{count}} autres villes"
     },
     "ctaAnswer": "Réponds pour {{city}}",
-    "ctaAnswerNoCity": "Réponds pour ta ville",
+    "ctaAnswerNoCity": "Réponds pour ma ville",
     "represent": {
       "button": "Réponds pour {{city}}"
     },

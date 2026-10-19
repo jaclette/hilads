@@ -524,6 +524,10 @@
   },
   "represent": {
     "empty": "{{city}} сегодня ещё не ответил. Будь первым.",
+    "emptyThere": "{{city}} сегодня ещё не ответил.",
+    "notIn": "Не в {{city}}?",
+    "change": "Изменить",
+    "locationNeeded": "Разреши геолокацию, чтобы отвечать за место, где ты сейчас.",
     "button": "Ответь за {{city}}",
     "firstPosted": "Ты отметил {{city}} на сегодняшней карте мира.",
     "pioneer": "Первопроходец: {{city}}",
@@ -658,7 +662,7 @@
     "moreCities_other": "+ещё {{count}} города"
   },
   "ctaAnswer": "Ответь за {{city}}",
-  "ctaAnswerNoCity": "Ответь за свой город",
+  "ctaAnswerNoCity": "Ответь за мой город",
   "countdown": {
     "hm": "{{h}} ч {{m}} мин",
     "ms": "{{m}} мин {{s}} с"

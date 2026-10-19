@@ -3312,6 +3312,14 @@ run($pdo, "
         created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
     )
 ", 'daily_demo_days');
+
+// Where users.current_city_id came from: 'gps' (/location/resolve), 'manual'
+// (a Legend's /me/city), 'profile' (derived from home_city) or 'join' (the
+// first city chat joined: an IP guess or a link). NULL = before this column,
+// treated as a guess. Only 'gps' and 'manual' are trusted: GPS replaces a
+// guess at once, and Today offers "Not in [city]? Change" on a guess.
+// Reversal: ALTER TABLE users DROP COLUMN current_city_source.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS current_city_source TEXT", 'users.current_city_source');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

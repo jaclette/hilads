@@ -23,6 +23,7 @@ import { lastTour } from '@/features/tour/store';
 import { proofShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { themeCover } from '@/features/today/covers';
+import { useHere } from '@/hooks/useDaily';
 import type { DailyTour } from '@/types';
 
 /** How long a slide stays before the next one (no auto-advance with reduce motion). */
@@ -113,6 +114,7 @@ export default function TourScreen() {
     ? themeName(tour.challenge.theme.key, { special: tour.challenge.special, city: slide?.city.name }) : '';
   const price = proof?.price && !proof.backHome ? money.price(proof.price) : null;
   const todayChallenge = tour.today;
+  const here = useHere();   // "Answer for [city]": where I am, not the browsed city
   const cover = last && todayChallenge
     ? (todayChallenge.coverUrl ? { uri: todayChallenge.coverUrl } : themeCover(todayChallenge.theme?.key ?? 'only_here', todayChallenge.date))
     : proof ? { uri: proof.photoUrl } : null;
@@ -179,7 +181,7 @@ export default function TourScreen() {
           <Text style={styles.turnTitle}>{t('tour.yourTurn')}</Text>
           {todayChallenge && <Text style={styles.turnText}>{t('tour.todayIs', { question: todayChallenge.compare?.question ?? todayChallenge.text })}</Text>}
           {todayChallenge?.isActive && (
-            <Button icon="camera-outline" label={city?.name ? t('ctaAnswer', { city: shortCityName(city.name) }) : t('ctaAnswerNoCity')} onPress={takeIt} />
+            <Button icon="camera-outline" label={here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')} onPress={takeIt} />
           )}
           <Button variant="link" label={t('tour.close')} onPress={close} />
         </View>

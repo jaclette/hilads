@@ -5,6 +5,7 @@ import { useFocusEffect } from 'expo-router';
 import { fetchDailyArchive, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
+import { isGpsCity } from '@/lib/gpsCityCorrection';
 import { seedProofs, seedVotesLeft } from '@/features/daily/votes';
 import type { DailyArchiveItem, DailyCalendar, DailyGuide, DailyProof, DailySheet, DailyToday } from '@/types';
 
@@ -56,15 +57,39 @@ export function formatCountdown(seconds: number | null): string {
     : i18n.t('countdown.ms', { ns: 'daily', m, s: pad(s % 60) });
 }
 
+// Where I am, as Today last said: the sheet and the world tour's "Answer for [city]" use it.
+let lastHere: DailyToday['here'] = null;
+const hereListeners = new Set<() => void>();
+function setLastHere(here: DailyToday['here']) {
+  lastHere = here ?? null;
+  hereListeners.forEach(l => l());
+}
+/** My own city (not the browsed one), from Today's last fetch: null when unknown. */
+export function useHere(): DailyToday['here'] {
+  const [here, setHere] = useState(lastHere);
+  useEffect(() => {
+    const l = () => setHere(lastHere);
+    hereListeners.add(l);
+    l();
+    return () => { hereListeners.delete(l); };
+  }, []);
+  return here;
+}
+
 export function useDailyToday(cityId: string | null | undefined) {
+  const { account, detectedCity } = useApp();
   const [data, setData]       = useState<DailyToday | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
+  // A guest's own city: where the app placed them (GPS, else the IP guess). An account's comes from the server.
+  const hereId  = account ? null : detectedCity?.channelId ?? null;
+  const hereGps = isGpsCity(hereId);
 
   const load = useCallback(async () => {
     try {
-      const d = await fetchDailyToday(cityId);
+      const d = await fetchDailyToday(cityId, hereId ? { cityId: hereId, gps: hereGps } : null);
       setData(d);
+      setLastHere(d.here);
       if (d.challenge?.isActive) seedVotesLeft(d.myVotes?.left ?? null);
       setError(false);
     } catch (err) {
@@ -73,7 +98,7 @@ export function useDailyToday(cityId: string | null | undefined) {
     } finally {
       setLoading(false);
     }
-  }, [cityId]);
+  }, [cityId, hereId, hereGps]);
 
   useEffect(() => { setLoading(true); load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));

@@ -8,6 +8,18 @@ import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
+
+// Where I am, as Today last said ({id, name, country, source, presence} | null):
+// the sheet's "Answer for [city]" uses it, never the browsed city.
+let lastHere = null
+const hereListeners = new Set()
+export function setLastHere(here) {
+  lastHere = here ?? null
+  hereListeners.forEach(l => l())
+}
+export function useHere() {
+  return useSyncExternalStore(l => { hereListeners.add(l); return () => hereListeners.delete(l) }, () => lastHere)
+}
 import { themeName } from '../map/spotsShared'
 import { thumbFallback } from '../../lib/thumbFallback'
 
