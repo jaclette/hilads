@@ -3715,14 +3715,14 @@ export default function App() {
       <div className="v3-header">
         <img className="v3-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
         {renderScopePill()}
-        {account && (
-          <button type="button" className="v3-round" onClick={() => setShowConversations(true)} aria-label={t('header.messages')}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
-            </svg>
-            {hasAnyUnread && <span className="v3-dot" />}
-          </button>
-        )}
+        {/* Private messages, with the unread dot; a guest is asked to sign up (like the app). */}
+        <button type="button" className="v3-round" aria-label={t('header.messages')}
+                onClick={() => (account ? setShowConversations(true) : setGuestGate({ reason: 'send_dm' }))}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
+          </svg>
+          {account && hasAnyUnread && <span className="v3-dot" />}
+        </button>
         {account ? (
           <button type="button" className="v3-round" onClick={() => setShowNotifications(true)} aria-label={t('header.notifications')}>
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -17,6 +17,9 @@
  * {"caption", "answer", "price": [45000, "VND"] | null, "spot" | null, "lat",
  * "lng"}, ...}}]}; photos in <folder>/<date>/<player>.jpg (png, webp). Each
  * drop seeds its day; today's is seeded at once when nothing demo is there.
+ * Photos already uploaded: each player carries its "photoUrl" and --photos is
+ * not needed; --file can then be an https URL (the Render shell):
+ *   php scripts/daily_demo.php plan --file=https://.../demo-week.json
  *
  * The folder needs one JPEG/PNG/WebP per demo player (DailyDemo::PLAYERS),
  * taken in name order. Uploads strip all metadata. The cleanup also runs by
@@ -76,10 +79,28 @@ try {
     if ($command === 'plan') {
         $file   = $opt('file');
         $folder = $opt('photos');
-        if ($file === null || $folder === null || !is_file($file) || !is_dir($folder)) {
-            throw new InvalidArgumentException('Give --file=<week.json> and --photos=<folder> (<folder>/<date>/<player>.jpg).');
+        $remote = $file !== null && preg_match('#^https://#', $file) === 1;
+        if ($file === null || (!$remote && !is_file($file))) {
+            throw new InvalidArgumentException('Give --file=<week.json> (or an https URL) and, unless it has photoUrls, --photos=<folder> (<folder>/<date>/<player>.jpg).');
         }
-        $days  = DailyDemo::cleanPlan((json_decode((string) file_get_contents($file), true) ?: [])['days'] ?? []);
+        $days = DailyDemo::cleanPlan((json_decode((string) file_get_contents($file), true) ?: [])['days'] ?? []);
+        // Photos already uploaded: store as is.
+        $hosted = array_reduce($days, static fn(bool $ok, array $players): bool =>
+            $ok && array_reduce($players, static fn(bool $o, array $p): bool => $o && is_string($p['photoUrl'] ?? null) && str_starts_with($p['photoUrl'], 'https://'), true), true);
+        if ($hosted) {
+            if ($dry) {
+                $print(['dryRun' => true, 'days' => array_map(static fn(array $p): array => array_keys($p), $days)]);
+                exit(0);
+            }
+            foreach ($days as $date => $players) {
+                DailyDemo::storeDay($date, $players, array_map(static fn(array $p): string => $p['photoUrl'], $players));
+            }
+            $print(['stored' => array_keys($days), 'today' => DailyDemo::seedPlanned(DailyClock::currentDate())]);
+            exit(0);
+        }
+        if ($folder === null || !is_dir($folder)) {
+            throw new InvalidArgumentException('Give --photos=<folder> (<folder>/<date>/<player>.jpg), or photoUrls in the plan.');
+        }
         $photo = static function (string $date, string $key) use ($folder): string {
             foreach (['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG'] as $ext) {
                 if (is_file($f = rtrim($folder, '/') . "/{$date}/{$key}.{$ext}")) {
