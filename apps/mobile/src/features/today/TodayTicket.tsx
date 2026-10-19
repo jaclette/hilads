@@ -135,10 +135,14 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
     router.push('/daily/today?tab=compare&source=teaser' as never);
   };
   const openWorld = () => router.push('/daily/today?tab=world&source=today_block' as never);
-  const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer!, i18n.language));
+  // Hilads suggestions (no player answer yet): the place's name goes with its answer.
+  const suggested = !!world?.suggested;
+  const line = (a: NonNullable<typeof world>['answers'][number]) =>
+    [a.place, a.answer ? answerText(a.answer, i18n.language) : null].filter(Boolean).join(' · ');
+  const answers = (world?.answers ?? []).filter(a => a.answer || a.place).slice(0, 3).map(line);
   const compared = !!world && world.countries >= 2;
-  const ticker: TickerEntry[] = (world?.answers ?? []).filter(a => a.answer && a.city.name)
-    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: answerText(a.answer!, i18n.language) }));
+  const ticker: TickerEntry[] = (world?.answers ?? []).filter(a => (a.answer || a.place) && a.city.name)
+    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: line(a) }));
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
   // Where I am (not the browsed city): "Not in Saigon? Change" and an unknown city ask for
   // the location; the server then answers for it (an account's city, a guest's here).
@@ -221,7 +225,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
                      onPress={() => { hideTip(); (compared && challenge.compare ? openCompare : openWorld)(); }}>
             <View style={styles.worldKicker}>
               <LiveDot live={motion.live} />
-              <Text style={styles.worldKickerText}>{t('compare.worldAnswers')}</Text>
+              <Text style={styles.worldKickerText}>{suggested ? t('compare.picksTitle') : t('compare.worldAnswers')}</Text>
             </View>
             {challenge.compare && (
               <Text style={styles.worldQuestion}>

@@ -229,7 +229,7 @@
   },
   "photoBy": "照片：@{{username}}",
   "pick": {
-    "badge": "Hilads 精選",
+    "badge": "Hilads 推薦",
     "goodToKnow": "小提醒",
     "credit": "圖片：{{credit}}"
   }

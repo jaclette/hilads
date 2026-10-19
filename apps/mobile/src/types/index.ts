@@ -985,7 +985,9 @@ export interface DailyWorldTeaser {
   countries: number;
   /** Up to 5 country codes that answered, most answers first (the card's flag stack). */
   flags?:    string[];
-  answers:   { city: DailyCityRef; answer: DailyAnswer | null }[];   // other cities first
+  answers:   { city: DailyCityRef; answer: DailyAnswer | null; place?: string }[];   // other cities first
+  /** No player answered yet: these are the Hilads suggestions attached to the challenge (place = their name). */
+  suggested?: boolean;
 }
 
 /** How the world answered (GET /daily/challenges/{date}/compare, SPEC 10.6). */

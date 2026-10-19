@@ -209,10 +209,13 @@ function Ticket({ data, loading }) {
   const store = deviceStore()
   const open = () => openDaily('challenge', { date: 'today', source: 'today' })
   const world = data?.world ?? null
-  const answers = (world?.answers ?? []).filter(a => a.answer).slice(0, 3).map(a => answerText(a.answer, i18n.language))
+  // Hilads suggestions (no player answer yet): the place's name goes with its answer.
+  const suggested = !!world?.suggested
+  const line = (a) => [a.place, a.answer ? answerText(a.answer, i18n.language) : null].filter(Boolean).join(' · ')
+  const answers = (world?.answers ?? []).filter(a => a.answer || a.place).slice(0, 3).map(line)
   const compared = !!world && world.countries >= 2
-  const ticker = (world?.answers ?? []).filter(a => a.answer && a.city?.name)
-    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: answerText(a.answer, i18n.language) }))
+  const ticker = (world?.answers ?? []).filter(a => (a.answer || a.place) && a.city?.name)
+    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: line(a) }))
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
@@ -271,7 +274,7 @@ function Ticket({ data, loading }) {
             if (toCompare) track('world_teaser_tapped', { countries: world.countries, cities: world.cities, platform_surface: 'web' })
             openDaily('challenge', toCompare ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
           }}>
-            <span className="today-world-kicker"><LiveDot live={motion.live} />{t('compare.worldAnswers')}</span>
+            <span className="today-world-kicker"><LiveDot live={motion.live} />{suggested ? t('compare.picksTitle') : t('compare.worldAnswers')}</span>
             {challenge.compare && (
               <span className="today-world-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</span>
             )}

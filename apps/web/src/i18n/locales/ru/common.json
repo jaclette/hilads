@@ -211,7 +211,7 @@
   },
   "photoBy": "Фото @{{username}}",
   "pick": {
-    "badge": "Выбор Hilads",
+    "badge": "Совет Hilads",
     "goodToKnow": "Полезно знать",
     "credit": "Фото: {{credit}}"
   },

@@ -211,7 +211,7 @@
   },
   "photoBy": "Foto oleh @{{username}}",
   "pick": {
-    "badge": "Pilihan Hilads",
+    "badge": "Saran Hilads",
     "goodToKnow": "Perlu diketahui",
     "credit": "Foto: {{credit}}"
   },

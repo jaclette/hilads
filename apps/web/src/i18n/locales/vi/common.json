@@ -211,7 +211,7 @@
   },
   "photoBy": "Ảnh của @{{username}}",
   "pick": {
-    "badge": "Hilads chọn",
+    "badge": "Gợi ý Hilads",
     "goodToKnow": "Điều nên biết",
     "credit": "Ảnh: {{credit}}"
   },

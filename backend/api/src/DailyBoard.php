@@ -241,7 +241,7 @@ final class DailyBoard
         $asked    = ($challenge['compare_type'] ?? null) !== null;
         $answered = $asked ? array_values(array_filter($rows, static fn(array $r) => self::hasAnswer($r['best']))) : $rows;
         if ($answered === []) {
-            return null;
+            return self::suggestedTeaser($challenge, $locale);
         }
         return [
             'cities'    => count($answered),
@@ -250,6 +250,33 @@ final class DailyBoard
             'flags'     => array_slice(array_values(array_unique(array_filter(array_column($answered, 'country')))), 0, 5),
             'answers'   => $asked ? array_map(static fn(array $r) => ['city' => self::city($r), 'answer' => self::answer($r, $challenge, $locale)],
                                               self::teaserPick($rows, $viewerCityId, self::TEASER_ANSWERS)) : [],
+        ];
+    }
+
+    /**
+     * No player answered yet: the world block shows the Hilads suggestions
+     * attached to the challenge instead (flagged suggested, never counted as
+     * answers: pushes and presence read real answers only). Null when none.
+     */
+    private static function suggestedTeaser(array $challenge, string $locale): ?array
+    {
+        try {
+            $picks = Spots::picksFor($challenge, $locale);
+        } catch (\Throwable $e) {
+            return null;
+        }
+        $picks = array_values(array_filter($picks, static fn(array $p): bool => $p['city'] !== null));
+        if ($picks === []) {
+            return null;
+        }
+        $countries = array_values(array_unique(array_filter(array_map(static fn(array $p) => $p['city']['country'] ?? null, $picks))));
+        return [
+            'suggested' => true,
+            'cities'    => count(array_unique(array_map(static fn(array $p) => $p['city']['id'], $picks))),
+            'countries' => count($countries),
+            'flags'     => array_slice($countries, 0, 5),
+            'answers'   => array_map(static fn(array $p): array => ['city' => $p['city'], 'answer' => $p['answer'], 'place' => $p['place']['name']],
+                                     array_slice($picks, 0, self::TEASER_ANSWERS)),
         ];
     }
 

@@ -363,6 +363,13 @@ final class DailyPushes
         return !$p['represented'] && $p['streak'] >= 2 ? ['name' => $city['name'], 'n' => $p['streak']] : null;
     }
 
+    /** Countries with a real answer (never the Hilads suggestions the world block shows meanwhile). */
+    private static function realCountries(array $challenge): int
+    {
+        $t = DailyBoard::teaser($challenge, null);
+        return $t !== null && empty($t['suggested']) ? (int) $t['countries'] : 0;
+    }
+
     /** @var array<string, int> challenge id => countries that answered, per run */
     private static array $answered = [];
 
@@ -379,7 +386,7 @@ final class DailyPushes
                 return [];
             }
             $id = (string) $challenge['id'];
-            self::$answered[$id] ??= (int) (DailyBoard::teaser($challenge, null)['countries'] ?? 0);
+            self::$answered[$id] ??= self::realCountries($challenge);
             return self::$answered[$id] >= 2 ? ['tab' => 'compare'] : [];
         } catch (\Throwable $e) {
             return [];
@@ -393,7 +400,7 @@ final class DailyPushes
         }
         try {
             $id = (string) $challenge['id'];
-            self::$answered[$id] ??= (int) (DailyBoard::teaser($challenge, null)['countries'] ?? 0);
+            self::$answered[$id] ??= self::realCountries($challenge);
             if (self::$answered[$id] < 2 || DailyPresence::forCity($city['id'], $date)['represented']) {
                 return null;
             }

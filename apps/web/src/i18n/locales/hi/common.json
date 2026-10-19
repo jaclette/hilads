@@ -211,7 +211,7 @@
   },
   "photoBy": "फ़ोटो: @{{username}}",
   "pick": {
-    "badge": "Hilads की पसंद",
+    "badge": "Hilads का सुझाव",
     "goodToKnow": "जानने लायक",
     "credit": "फ़ोटो: {{credit}}"
   },

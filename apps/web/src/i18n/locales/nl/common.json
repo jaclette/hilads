@@ -211,7 +211,7 @@
   },
   "photoBy": "Foto van @{{username}}",
   "pick": {
-    "badge": "Hilads-tip",
+    "badge": "Hilads-suggestie",
     "goodToKnow": "Goed om te weten",
     "credit": "Foto: {{credit}}"
   },
