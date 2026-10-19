@@ -3802,7 +3802,8 @@ export default function App() {
         <div className="v3-sheet">
           <span className="v3-sheet-grabber" aria-hidden="true" />
           <p className="v3-sheet-title">{t('scope.title', { ns: 'common' })}</p>
-          <Row icon="location-outline" title={city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' })} flag={city ? cityCountry : null} sub={t('scope.citySub', { ns: 'common' })}
+          {/* The pill's name ("Saigon"), so the sheet reads like the header. */}
+          <Row icon="location-outline" title={city ? shortCityName(city) : t('scope.pickCity', { ns: 'common' })} flag={city ? cityCountry : null} sub={t('scope.citySub', { ns: 'common' })}
                active={channelScope === 'city'} onClick={() => pick('city')} />
           <Row icon="globe-outline" title={t('scope.world', { ns: 'common' })} sub={t('scope.worldSub', { ns: 'common' })}
                active={channelScope === 'world'} onClick={() => pick('world')} />

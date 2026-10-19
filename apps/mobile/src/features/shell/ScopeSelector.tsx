@@ -57,7 +57,7 @@ export function ScopeSelector({ style, onPicked }: {
       <ScopeSheet
         visible={sheet}
         scope={scope}
-        cityName={city?.name ? cityName : null}
+        cityName={city?.name ? shortCityName(city.name) : null}
         cityCountry={city?.country ?? null}
         onPick={pick}
         onChangeCity={() => { setSheet(false); router.push('/switch-city' as never); }}
@@ -96,6 +96,7 @@ function ScopeSheet({ visible, scope, cityName, cityCountry, onPick, onChangeCit
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
       <Text style={styles.sheetTitle}>{t('scope.title')}</Text>
+      {/* The pill's name ("Saigon"), so the sheet reads like the header. */}
       <Row icon="location-outline" title={cityName ?? t('scope.pickCity')} flag={cityName ? cityCountry : null} sub={t('scope.citySub')}
            active={scope === 'city' && !!cityName} onPress={() => onPick('city')} />
       <Row icon="globe-outline" title={t('scope.world')} sub={t('scope.worldSub')}
