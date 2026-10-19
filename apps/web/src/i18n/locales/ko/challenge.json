@@ -1331,6 +1331,27 @@
     "backHome": {
       "hereIn": "여기, {{city}}",
       "homeIn": "고향: {{city}}"
+    },
+    "tour": {
+      "title": "어제의 세계 일주",
+      "watch": "보기",
+      "openCity": "{{city}} 열기",
+      "next": "다음",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "아침",
+        "afternoon": "오후",
+        "evening": "저녁",
+        "night": "밤"
+      },
+      "yourTurn": "이제 당신 차례예요.",
+      "todayIs": "오늘의 챌린지: {{text}}",
+      "close": "닫기",
+      "sub_one": "{{count}}개 도시, 같은 챌린지",
+      "sub_other": "{{count}}개 도시, 같은 챌린지"
+    },
+    "worlds": {
+      "tagline": "같은 챌린지, 다른 세상."
     }
   }
 }

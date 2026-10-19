@@ -13,7 +13,7 @@ import type { ShareContent } from './content';
 const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 const DAILY_CHALLENGE = 'Daily Challenge';
-const TAGLINE_EN = 'One local thing. Every day.';
+const TAGLINE_EN = 'Same challenge. Different worlds.';
 /** The card is 1080 x 1920 px: laid out at that many pixels on this screen. */
 export const CARD_PX = { width: 1080, height: 1920 };
 const W = CARD_PX.width / PixelRatio.get();
@@ -34,7 +34,6 @@ const READY_TIMEOUT_MS = 6000;
  */
 export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () => void }>(function ShareCard({ content, onReady }, ref) {
   const { t } = useTranslation('daily');
-  const { t: tc } = useTranslation('common');
   const loaded = useRef(0);
   const done = useRef(false);
   const ready = () => {
@@ -59,7 +58,8 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
   const badge = content.type === 'proof' && content.rank
     ? (content.rank.city ? t('share.rankCity', { rank: content.rank.rank, city: localizeCityName(content.rank.city) }) : t('share.rankWorld', { rank: content.rank.rank }))
     : null;
-  const tagline = tc('firstLaunch', { defaultValue: TAGLINE_EN });
+  // SPEC 10.1: share cards say why Hilads is unique (the app and stores keep "One local thing. Every day.").
+  const tagline = t('worlds.tagline', { defaultValue: TAGLINE_EN });
 
   return (
     <View ref={ref} collapsable={false} style={s.card}>

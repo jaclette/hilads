@@ -14558,6 +14558,21 @@ $router->add('GET', '/api/v1/daily/challenges/{date}/compare', function (array $
     Response::json(['date' => $date] + DailyBoard::board($challenge, dailyBlocks($user)['user_ids'] ?? []));
 });
 
+// GET /api/v1/daily/tour?date=YYYY-MM-DD&cityId= - Yesterday around the world
+// (SPEC 10.7): one slide per city of a closed challenge (default: yesterday's),
+// in the viewer's order, and today's challenge for the last slide. Public.
+$router->add('GET', '/api/v1/daily/tour', function () {
+    $date = isset($_GET['date']) ? (string) $_GET['date']
+        : (new DateTimeImmutable(DailyClock::currentDate(), new DateTimeZone('UTC')))->modify('-1 day')->format('Y-m-d');
+    $challenge = DailyClock::isValidDate($date) && $date < DailyClock::currentDate()
+        ? DailyChallengeRepository::findPublishedByDate($date) : null;
+    if ($challenge === null) {
+        Response::json(['error' => 'No tour for this date', 'code' => 'not_found'], 404);
+    }
+    $user = AuthService::currentUser();
+    Response::json(DailyTour::forViewer($challenge, dailyCityParam($user), $user['id'] ?? null, dailyBlocks($user)['user_ids'] ?? []));
+});
+
 // GET /api/v1/daily/archive?scope=world|city&cityId=&before=YYYY-MM-DD&limit=&theme= - past
 // challenges, newest first: the "All past challenges" archive. Public.
 $router->add('GET', '/api/v1/daily/archive', function () {

@@ -560,5 +560,26 @@
     "otherBack": "Torna alla lista",
     "clear": "Rimuovi la mia città",
     "hereIn": "Qui a {{city}}"
+  },
+  "tour": {
+    "title": "Il giro del mondo di ieri",
+    "watch": "Guarda",
+    "openCity": "Apri {{city}}",
+    "next": "Avanti",
+    "kicker": "Daily Challenge · {{theme}}",
+    "moment": {
+      "morning": "Di mattina",
+      "afternoon": "Di pomeriggio",
+      "evening": "Di sera",
+      "night": "Di notte"
+    },
+    "yourTurn": "Tocca a te.",
+    "todayIs": "La sfida di oggi: {{text}}",
+    "close": "Chiudi",
+    "sub_one": "{{count}} città, la stessa sfida",
+    "sub_other": "{{count}} città, la stessa sfida"
+  },
+  "worlds": {
+    "tagline": "Stessa sfida. Mondi diversi."
   }
 }

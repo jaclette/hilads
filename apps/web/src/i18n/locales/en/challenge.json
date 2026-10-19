@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "Here in {{city}}",
       "homeIn": "Back home in {{city}}"
+    },
+    "tour": {
+      "title": "Yesterday around the world",
+      "watch": "Watch",
+      "openCity": "Open {{city}}",
+      "next": "Next",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "In the morning",
+        "afternoon": "In the afternoon",
+        "evening": "In the evening",
+        "night": "At night"
+      },
+      "yourTurn": "Your turn.",
+      "todayIs": "Today's challenge: {{text}}",
+      "close": "Close",
+      "sub_one": "{{count}} city, same challenge",
+      "sub_other": "{{count}} cities, same challenge"
+    },
+    "worlds": {
+      "tagline": "Same challenge. Different worlds."
     }
   }
 }

@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "Hier in {{city}}",
       "homeIn": "Thuis in {{city}}"
+    },
+    "tour": {
+      "title": "De wereldreis van gisteren",
+      "watch": "Bekijken",
+      "openCity": "{{city}} openen",
+      "next": "Volgende",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "'s Ochtends",
+        "afternoon": "'s Middags",
+        "evening": "'s Avonds",
+        "night": "'s Nachts"
+      },
+      "yourTurn": "Jouw beurt.",
+      "todayIs": "De challenge van vandaag: {{text}}",
+      "close": "Sluiten",
+      "sub_one": "{{count}} stad, dezelfde challenge",
+      "sub_other": "{{count}} steden, dezelfde challenge"
+    },
+    "worlds": {
+      "tagline": "Zelfde challenge. Andere werelden."
     }
   }
 }

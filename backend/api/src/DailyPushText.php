@@ -19,7 +19,7 @@ final class DailyPushText
         'bell_twist', 'proposal_approved', 'proposal_reserve', 'proposal_day', 'proposal_result', 'proposal_result_one',
         'title_today', 'title_reminder', 'did_count', 'did_count_one', 'did_friend', 'did_friend_others',
         'did_friend_others_one', 'theme_hidden_gem', 'theme_taste', 'theme_ask_local', 'theme_local_find', 'theme_night_out',
-        'theme_sip', 'theme_only_here', 'theme_special', 'city_streak',
+        'theme_sip', 'theme_only_here', 'theme_special', 'city_streak', 'tour', 'answered_countries',
     ];
 
     private const T = [
@@ -59,6 +59,8 @@ final class DailyPushText
             'theme_only_here' => "Seulement ici",
             'theme_special' => "Spécial",
             'city_streak' => "La série de {city} s'arrête ce soir. Tu la représentes ?",
+            'tour' => "Ta photo représente {city} dans le tour du monde.",
+            'answered_countries' => "Déjà {n} pays ont répondu. Ajoute {city}.",
         ],
         'vi' => [
             'world' => "Hôm qua bằng chứng của bạn đứng #{rank} thế giới.",
@@ -96,6 +98,8 @@ final class DailyPushText
             'theme_only_here' => "Chỉ có ở đây",
             'theme_special' => "Đặc biệt",
             'city_streak' => "Chuỗi ngày của {city} kết thúc tối nay. Bạn sẽ đại diện chứ?",
+            'tour' => "Ảnh của bạn đại diện cho {city} trong vòng quanh thế giới.",
+            'answered_countries' => "Đã có {n} quốc gia trả lời. Thêm {city} nào.",
         ],
         'es' => [
             'world' => "Ayer tu prueba quedó #{rank} en el mundo.",
@@ -133,6 +137,8 @@ final class DailyPushText
             'theme_only_here' => "Solo aquí",
             'theme_special' => "Especial",
             'city_streak' => "La racha de {city} termina esta noche. ¿La representas?",
+            'tour' => "Tu foto representa a {city} en la vuelta al mundo.",
+            'answered_countries' => "Ya han respondido {n} países. Suma {city}.",
         ],
         'it' => [
             'world' => "Ieri la tua prova era #{rank} nel mondo.",
@@ -170,6 +176,8 @@ final class DailyPushText
             'theme_only_here' => "Solo qui",
             'theme_special' => "Speciale",
             'city_streak' => "La serie di {city} finisce stasera. La rappresenti tu?",
+            'tour' => "La tua foto rappresenta {city} nel giro del mondo.",
+            'answered_countries' => "Hanno già risposto {n} paesi. Aggiungi {city}.",
         ],
         'pt-br' => [
             'world' => "Ontem sua prova ficou em #{rank} no mundo.",
@@ -207,6 +215,8 @@ final class DailyPushText
             'theme_only_here' => "Só aqui",
             'theme_special' => "Especial",
             'city_streak' => "A sequência de {city} acaba hoje à noite. Você representa?",
+            'tour' => "Sua foto representa {city} na volta ao mundo.",
+            'answered_countries' => "Já responderam {n} países. Coloque {city} também.",
         ],
         'pt-pt' => [
             'world' => "Ontem a tua prova ficou em #{rank} no mundo.",
@@ -244,6 +254,8 @@ final class DailyPushText
             'theme_only_here' => "Só aqui",
             'theme_special' => "Especial",
             'city_streak' => "A série de {city} acaba esta noite. Representas tu?",
+            'tour' => "A tua foto representa {city} na volta ao mundo.",
+            'answered_countries' => "Já responderam {n} países. Junta {city}.",
         ],
         'de' => [
             'world' => "Gestern war dein Beweis #{rank} weltweit.",
@@ -281,6 +293,8 @@ final class DailyPushText
             'theme_only_here' => "Nur hier",
             'theme_special' => "Spezial",
             'city_streak' => "Die Serie von {city} endet heute Abend. Vertrittst du die Stadt?",
+            'tour' => "Dein Foto vertritt {city} auf der Weltreise.",
+            'answered_countries' => "Schon {n} Länder haben geantwortet. Füg {city} hinzu.",
         ],
         'nl' => [
             'world' => "Gisteren stond je bewijs #{rank} wereldwijd.",
@@ -318,6 +332,8 @@ final class DailyPushText
             'theme_only_here' => "Alleen hier",
             'theme_special' => "Speciaal",
             'city_streak' => "De reeks van {city} stopt vanavond. Vertegenwoordig jij de stad?",
+            'tour' => "Jouw foto vertegenwoordigt {city} in de wereldreis.",
+            'answered_countries' => "Al {n} landen hebben geantwoord. Voeg {city} toe.",
         ],
         'zh-hans' => [
             'world' => "昨天你的证明位列全球第 {rank}。",
@@ -355,6 +371,8 @@ final class DailyPushText
             'theme_only_here' => "此地独有",
             'theme_special' => "特别篇",
             'city_streak' => "{city}的连续纪录今晚就要中断了。你来代表它吗？",
+            'tour' => "你的照片在环球之旅中代表{city}。",
+            'answered_countries' => "已有 {n} 个国家/地区回答。加上{city}吧。",
         ],
         'zh-hant' => [
             'world' => "昨天你的證明位列全球第 {rank}。",
@@ -392,6 +410,8 @@ final class DailyPushText
             'theme_only_here' => "此地獨有",
             'theme_special' => "特別篇",
             'city_streak' => "{city}的連續紀錄今晚就要中斷了。你來代表它嗎？",
+            'tour' => "你的照片在環球之旅中代表{city}。",
+            'answered_countries' => "已有 {n} 個國家/地區回答。加上{city}吧。",
         ],
         'ja' => [
             'world' => "昨日のあなたの証明は世界 #{rank}。",
@@ -429,6 +449,8 @@ final class DailyPushText
             'theme_only_here' => "ここだけ",
             'theme_special' => "スペシャル",
             'city_streak' => "{city}の連続記録が今夜途切れます。あなたが代表しますか？",
+            'tour' => "あなたの写真が世界一周で{city}を代表しています。",
+            'answered_countries' => "すでに{n}か国が回答。{city}も加えよう。",
         ],
         'ko' => [
             'world' => "어제 내 인증이 세계 #{rank}였어요.",
@@ -466,6 +488,8 @@ final class DailyPushText
             'theme_only_here' => "여기만",
             'theme_special' => "스페셜",
             'city_streak' => "{city}의 연속 기록이 오늘 밤 끊겨요. 당신이 대표할래요?",
+            'tour' => "당신의 사진이 세계 일주에서 {city}을(를) 대표해요.",
+            'answered_countries' => "벌써 {n}개국이 답했어요. {city}도 더해 주세요.",
         ],
         'fil' => [
             'world' => "Kahapon, #{rank} sa mundo ang proof mo.",
@@ -503,6 +527,8 @@ final class DailyPushText
             'theme_only_here' => "Dito lang",
             'theme_special' => "Espesyal",
             'city_streak' => "Matatapos ngayong gabi ang streak ng {city}. Ikaw ba ang kakatawan dito?",
+            'tour' => "Ang litrato mo ang kumakatawan sa {city} sa world tour.",
+            'answered_countries' => "Sumagot na ang {n} bansa. Idagdag ang {city}.",
         ],
         'th' => [
             'world' => "เมื่อวานหลักฐานของคุณอยู่อันดับ #{rank} ของโลก",
@@ -540,6 +566,8 @@ final class DailyPushText
             'theme_only_here' => "ที่นี่ที่เดียว",
             'theme_special' => "พิเศษ",
             'city_streak' => "สถิติต่อเนื่องของ{city}จะจบคืนนี้ คุณจะเป็นตัวแทนไหม?",
+            'tour' => "รูปของคุณเป็นตัวแทนของ{city}ในทัวร์รอบโลก",
+            'answered_countries' => "ตอบแล้ว {n} ประเทศ เพิ่ม{city}เข้าไปด้วย",
         ],
         'id' => [
             'world' => "Kemarin buktimu peringkat #{rank} di dunia.",
@@ -577,6 +605,8 @@ final class DailyPushText
             'theme_only_here' => "Cuma di sini",
             'theme_special' => "Spesial",
             'city_streak' => "Rentetan {city} berakhir malam ini. Kamu mau mewakilinya?",
+            'tour' => "Fotomu mewakili {city} dalam tur keliling dunia.",
+            'answered_countries' => "Sudah {n} negara menjawab. Tambahkan {city}.",
         ],
         'hi' => [
             'world' => "कल आपका प्रूफ दुनिया में #{rank} रहा।",
@@ -614,6 +644,8 @@ final class DailyPushText
             'theme_only_here' => "सिर्फ़ यहाँ",
             'theme_special' => "स्पेशल",
             'city_streak' => "{city} की स्ट्रीक आज रात टूट जाएगी। क्या आप उसका प्रतिनिधित्व करेंगे?",
+            'tour' => "विश्व यात्रा में आपकी फ़ोटो {city} का प्रतिनिधित्व करती है।",
+            'answered_countries' => "{n} देश जवाब दे चुके हैं। {city} को भी जोड़ें।",
         ],
         'ru' => [
             'world' => "Вчера твоё доказательство заняло #{rank} в мире.",
@@ -651,6 +683,8 @@ final class DailyPushText
             'theme_only_here' => "Только здесь",
             'theme_special' => "Особый день",
             'city_streak' => "Серия города {city} прервётся сегодня вечером. Представишь его?",
+            'tour' => "Твоё фото представляет {city} в кругосветке.",
+            'answered_countries' => "Уже ответили страны: {n}. Добавь {city}.",
         ],
         'ar' => [
             'world' => "أمس كان دليلك #{rank} في العالم.",
@@ -688,6 +722,8 @@ final class DailyPushText
             'theme_only_here' => "هنا فقط",
             'theme_special' => "مميز",
             'city_streak' => "سلسلة {city} تنتهي الليلة. هل ستمثّلها؟",
+            'tour' => "صورتك تمثّل {city} في الجولة حول العالم.",
+            'answered_countries' => "أجابت {n} بلدان حتى الآن. أضِف {city}.",
         ],
     ];
 

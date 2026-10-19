@@ -2442,6 +2442,11 @@ export function fetchDailyBoard(date, locale) {
   return daily('GET', `/daily/challenges/${date}/compare`, { params: { locale } })
 }
 
+/** Yesterday around the world (SPEC 10.7): one slide per city of yesterday's challenge. Public. */
+export function fetchDailyTour(cityId, locale) {
+  return daily('GET', '/daily/tour', { params: { cityId: cityNum(cityId), locale } })
+}
+
 /** The day's reference exchange rates, EUR base (SPEC 10.5). */
 export function fetchDailyRates() {
   return daily('GET', '/daily/rates')

@@ -152,7 +152,14 @@ final class DailyDrop
         }
         $plan   = DailyResults::compute($challenge['id']);
         $points = DailyPoints::awardClose($challenge['id'], $plan);
-        return ['status' => 'closed', 'results' => $plan['counts'], 'points' => $points];
+        // Yesterday around the world (SPEC 10.7), after the results (the podium leads it). Never fails the close.
+        try {
+            $tour = DailyTour::build($challenge);
+        } catch (\Throwable $e) {
+            $tour = 'failed: ' . $e->getMessage();
+            error_log("[daily-drop] world tour of {$date} failed: " . $e->getMessage());
+        }
+        return ['status' => 'closed', 'results' => $plan['counts'], 'points' => $points, 'tourCities' => $tour];
     }
 
     /**

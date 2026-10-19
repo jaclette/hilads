@@ -199,6 +199,8 @@ function RootLayoutInner() {
               name="auth-gate"
               options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
             />
+            {/* Yesterday around the world (SPEC 10.7): a full-screen story viewer; it handles swipe down itself. */}
+            <Stack.Screen name="daily/tour" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />

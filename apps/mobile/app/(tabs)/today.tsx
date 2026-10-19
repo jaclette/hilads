@@ -10,7 +10,7 @@ import { DailyPushBanner } from '@/features/daily/DailyPushBanner';
 import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
 import { TodayProofs } from '@/features/today/TodayProofs';
-import { TodayPodium } from '@/features/today/TodayPodium';
+import { TodayTour } from '@/features/tour/TodayTour';
 import { SpotsNear } from '@/features/today/SpotsNear';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
@@ -60,7 +60,8 @@ export default function TodayScreen() {
         <DailyPushBanner />
         <TodayWeek today={daily.data} />
         <TodayProofs today={daily.data} refreshKey={refreshKey} />
-        <TodayPodium today={daily.data} refreshKey={refreshKey} />
+        {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
+        <TodayTour today={daily.data} refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />

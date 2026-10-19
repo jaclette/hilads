@@ -991,6 +991,21 @@ export interface DailyBoard {
   range: { min: { city: DailyCityRef; answer: DailyAnswer | null }; max: { city: DailyCityRef; answer: DailyAnswer | null } } | null;
 }
 
+/** Yesterday around the world (GET /daily/tour, SPEC 10.7): one slide per city, in the viewer's order. */
+export interface DailyTour {
+  date:      string;
+  challenge: DailyChallenge;
+  slides: {
+    city:   DailyCityRef;
+    proof:  DailyProof;
+    moment: 'morning' | 'afternoon' | 'evening' | 'night';
+    podium: number | null;    // 1-3: the global podium
+    count:  number;           // the city's proofs
+  }[];
+  /** Today's challenge, for the last slide ("Your turn"). */
+  today:     DailyChallenge | null;
+}
+
 /** Daily reference exchange rates, EUR base (GET /daily/rates). */
 export interface DailyRates { base: string; date: string | null; rates: Record<string, number> }
 

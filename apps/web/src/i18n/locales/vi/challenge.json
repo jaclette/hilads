@@ -1331,6 +1331,27 @@
     "backHome": {
       "hereIn": "Ở đây, {{city}}",
       "homeIn": "Ở quê bạn, {{city}}"
+    },
+    "tour": {
+      "title": "Vòng quanh thế giới hôm qua",
+      "watch": "Xem",
+      "openCity": "Mở {{city}}",
+      "next": "Tiếp",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "Buổi sáng",
+        "afternoon": "Buổi chiều",
+        "evening": "Buổi tối",
+        "night": "Ban đêm"
+      },
+      "yourTurn": "Đến lượt bạn.",
+      "todayIs": "Thử thách hôm nay: {{text}}",
+      "close": "Đóng",
+      "sub_one": "{{count}} thành phố, cùng một thử thách",
+      "sub_other": "{{count}} thành phố, cùng một thử thách"
+    },
+    "worlds": {
+      "tagline": "Cùng một thử thách. Những thế giới khác nhau."
     }
   }
 }

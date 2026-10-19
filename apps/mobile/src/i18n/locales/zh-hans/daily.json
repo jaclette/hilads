@@ -554,5 +554,26 @@
     "otherBack": "返回列表",
     "clear": "移除我的家乡",
     "hereIn": "这里：{{city}}"
+  },
+  "tour": {
+    "title": "昨天的环球之旅",
+    "watch": "观看",
+    "openCity": "打开{{city}}",
+    "next": "下一个",
+    "kicker": "Daily Challenge · {{theme}}",
+    "moment": {
+      "morning": "早上",
+      "afternoon": "下午",
+      "evening": "傍晚",
+      "night": "夜里"
+    },
+    "yourTurn": "轮到你了。",
+    "todayIs": "今天的挑战：{{text}}",
+    "close": "关闭",
+    "sub_one": "{{count}} 个城市，同一个挑战",
+    "sub_other": "{{count}} 个城市，同一个挑战"
+  },
+  "worlds": {
+    "tagline": "同一个挑战，不同的世界。"
   }
 }

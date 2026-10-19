@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchSpotsNear } from '../../api'
+import { fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchDailyTour, fetchSpotsNear } from '../../api'
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
@@ -8,6 +8,7 @@ import { APP_STORE, PLAY_STORE, deviceStore, isPlaceTheme, themeName } from '../
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { answerText } from '../daily/compareShared'
+import WorldTourViewer from '../daily/WorldTour'
 import { CityFlag, CityName } from '../CityName'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
@@ -61,7 +62,8 @@ export default function TodayScreen({ header }) {
         <Ticket data={data} loading={loading} />
         <Week today={data} />
         <TodayProofs today={data} />
-        <Podium today={data} />
+        {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
+        <TourRow today={data} />
         <SpotsNear />
       </div>
     </div>
@@ -467,6 +469,54 @@ function StripProof({ proof, onOpen }) {
  * countries". A photo opens it in yesterday's sheet; "See all" opens the sheet.
  * A city with no proof yesterday shows World's; hidden when there were none.
  */
+/**
+ * Yesterday around the world (SPEC 10.7): "[N] cities, same challenge" and
+ * one story circle per city, opening the tour at that city. Fewer than 2
+ * cities (or no tour): yesterday's podium stays.
+ */
+function TourRow({ today }) {
+  const { t, i18n } = useDc()
+  const [tour, setTour] = useState(null)
+  const [failed, setFailed] = useState(false)
+  const [open, setOpen] = useState(null)
+  const cityId = today?.city?.id ?? null
+  const loaded = !!today
+
+  useEffect(() => {
+    if (!loaded) return
+    let alive = true
+    fetchDailyTour(cityId, i18n.language)
+      .then(r => { if (alive) { setTour(r); setFailed(false) } })
+      .catch(() => { if (alive) setFailed(true) })
+    return () => { alive = false }
+  }, [loaded, cityId, i18n.language])
+
+  if (!tour && !failed) return null
+  if (!tour || tour.slides.length < 2) return <Podium today={today} />
+  return (
+    <div className="today-card">
+      <div className="today-card-head">
+        <span className="today-card-title">{t('tour.title')}</span>
+        <button type="button" className="dc-link" onClick={() => setOpen(0)}>{t('tour.watch')}</button>
+      </div>
+      <span className="dc-muted today-proofs-stats">{t('tour.sub', { count: tour.slides.length })}</span>
+      <div className="tour-circles">
+        {tour.slides.map((s, i) => (
+          <button key={s.city.id} type="button" className="tour-circle" onClick={() => setOpen(i)}
+                  aria-label={t('tour.openCity', { city: shortCityName(s.city.name) })}>
+            <span className="tour-circle-ring">
+              <img src={s.proof.thumbUrl || s.proof.photoUrl} alt="" loading="lazy" />
+              <span className="tour-circle-flag"><CityFlag country={s.city.country} size={20} /></span>
+            </span>
+            <span className="tour-circle-name">{shortCityName(s.city.name)}</span>
+          </button>
+        ))}
+      </div>
+      {open !== null && <WorldTourViewer tour={tour} start={open} onClose={() => setOpen(null)} />}
+    </div>
+  )
+}
+
 function Podium({ today }) {
   const { t, i18n } = useDc()
   const { scope, openDaily } = useDaily()

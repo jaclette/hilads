@@ -560,5 +560,26 @@
     "otherBack": "Retour à la liste",
     "clear": "Supprimer ma ville",
     "hereIn": "Ici à {{city}}"
+  },
+  "tour": {
+    "title": "Le tour du monde d'hier",
+    "watch": "Regarder",
+    "openCity": "Ouvrir {{city}}",
+    "next": "Suivant",
+    "kicker": "Daily Challenge · {{theme}}",
+    "moment": {
+      "morning": "Le matin",
+      "afternoon": "L'après-midi",
+      "evening": "Le soir",
+      "night": "La nuit"
+    },
+    "yourTurn": "À toi.",
+    "todayIs": "Le défi du jour : {{text}}",
+    "close": "Fermer",
+    "sub_one": "{{count}} ville, le même défi",
+    "sub_other": "{{count}} villes, le même défi"
+  },
+  "worlds": {
+    "tagline": "Même défi. Des mondes différents."
   }
 }

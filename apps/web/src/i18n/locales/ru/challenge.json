@@ -1365,6 +1365,29 @@
     "backHome": {
       "hereIn": "Здесь, {{city}}",
       "homeIn": "Дома, в {{city}}"
+    },
+    "tour": {
+      "title": "Вчерашняя кругосветка",
+      "watch": "Смотреть",
+      "openCity": "Открыть {{city}}",
+      "next": "Далее",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "Утром",
+        "afternoon": "Днём",
+        "evening": "Вечером",
+        "night": "Ночью"
+      },
+      "yourTurn": "Твоя очередь.",
+      "todayIs": "Челлендж дня: {{text}}",
+      "close": "Закрыть",
+      "sub_one": "{{count}} город, один челлендж",
+      "sub_few": "{{count}} города, один челлендж",
+      "sub_many": "{{count}} городов, один челлендж",
+      "sub_other": "{{count}} города, один челлендж"
+    },
+    "worlds": {
+      "tagline": "Один челлендж. Разные миры."
     }
   }
 }

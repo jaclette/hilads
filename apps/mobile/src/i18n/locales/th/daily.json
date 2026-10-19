@@ -554,5 +554,26 @@
     "otherBack": "กลับไปที่รายการ",
     "clear": "ลบเมืองบ้านเกิด",
     "hereIn": "ที่นี่ {{city}}"
+  },
+  "tour": {
+    "title": "ทัวร์รอบโลกเมื่อวาน",
+    "watch": "ดู",
+    "openCity": "เปิด{{city}}",
+    "next": "ถัดไป",
+    "kicker": "Daily Challenge · {{theme}}",
+    "moment": {
+      "morning": "ตอนเช้า",
+      "afternoon": "ตอนบ่าย",
+      "evening": "ตอนเย็น",
+      "night": "ตอนกลางคืน"
+    },
+    "yourTurn": "ตาคุณแล้ว",
+    "todayIs": "ชาเลนจ์วันนี้: {{text}}",
+    "close": "ปิด",
+    "sub_one": "{{count}} เมือง ชาเลนจ์เดียวกัน",
+    "sub_other": "{{count}} เมือง ชาเลนจ์เดียวกัน"
+  },
+  "worlds": {
+    "tagline": "ชาเลนจ์เดียวกัน ต่างโลก"
   }
 }

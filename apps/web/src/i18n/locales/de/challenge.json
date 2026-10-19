@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "Hier in {{city}}",
       "homeIn": "Zu Hause in {{city}}"
+    },
+    "tour": {
+      "title": "Die Weltreise von gestern",
+      "watch": "Ansehen",
+      "openCity": "{{city}} öffnen",
+      "next": "Weiter",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "Am Morgen",
+        "afternoon": "Am Nachmittag",
+        "evening": "Am Abend",
+        "night": "In der Nacht"
+      },
+      "yourTurn": "Du bist dran.",
+      "todayIs": "Die Challenge von heute: {{text}}",
+      "close": "Schließen",
+      "sub_one": "{{count}} Stadt, dieselbe Challenge",
+      "sub_other": "{{count}} Städte, dieselbe Challenge"
+    },
+    "worlds": {
+      "tagline": "Dieselbe Challenge. Andere Welten."
     }
   }
 }

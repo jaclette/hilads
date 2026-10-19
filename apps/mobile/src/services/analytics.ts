@@ -87,6 +87,11 @@ export type AnalyticsEvent =
   | 'back_home_added'
   | 'world_board_viewed'
   | 'world_teaser_tapped'
+  // Yesterday around the world (SPEC 10.7): opened { source }, slide_viewed { city }, completed, shared.
+  | 'world_tour_opened'
+  | 'world_tour_slide_viewed'
+  | 'world_tour_completed'
+  | 'world_tour_shared'
   | 'daily_twist_proposed'
   | 'daily_map_opened'
   | 'daily_leaderboard_viewed'

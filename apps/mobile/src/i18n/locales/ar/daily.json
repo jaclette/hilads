@@ -622,5 +622,30 @@
     "otherBack": "العودة إلى القائمة",
     "clear": "إزالة مدينتي",
     "hereIn": "هنا في {{city}}"
+  },
+  "tour": {
+    "title": "جولة الأمس حول العالم",
+    "watch": "شاهد",
+    "openCity": "افتح {{city}}",
+    "next": "التالي",
+    "kicker": "Daily Challenge · {{theme}}",
+    "moment": {
+      "morning": "في الصباح",
+      "afternoon": "بعد الظهر",
+      "evening": "في المساء",
+      "night": "في الليل"
+    },
+    "yourTurn": "دورك الآن.",
+    "todayIs": "تحدي اليوم: {{text}}",
+    "close": "إغلاق",
+    "sub_zero": "لا مدن",
+    "sub_one": "مدينة واحدة، التحدي نفسه",
+    "sub_two": "مدينتان، التحدي نفسه",
+    "sub_few": "{{count}} مدن، التحدي نفسه",
+    "sub_many": "{{count}} مدينة، التحدي نفسه",
+    "sub_other": "{{count}} مدينة، التحدي نفسه"
+  },
+  "worlds": {
+    "tagline": "التحدي نفسه. عوالم مختلفة."
   }
 }

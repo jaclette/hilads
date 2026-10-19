@@ -1,7 +1,7 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
-  DailyBoard, DailyRates,
+  DailyBoard, DailyRates, DailyTour,
   NearbyPlace,
   DailyArchive,
   DailyCalendar,
@@ -42,6 +42,13 @@ export async function fetchDailyToday(cityId?: string | number | null): Promise<
 /** How the world answered: one row per city (SPEC 10.6). Public. */
 export async function fetchDailyBoard(date: string, guestId?: string | null): Promise<DailyBoard> {
   return api.get<DailyBoard>(`/daily/challenges/${date}/compare`, { params: { locale: locale(), guestId: guestId ?? undefined } });
+}
+
+/** Yesterday around the world (SPEC 10.7): one slide per city of yesterday's challenge. Public. */
+export async function fetchDailyTour(opts: { cityId?: string | number | null; guestId?: string | null; date?: string } = {}): Promise<DailyTour> {
+  return api.get<DailyTour>('/daily/tour', {
+    params: { cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, date: opts.date, locale: locale() },
+  });
 }
 
 /** The day's reference exchange rates, EUR base (SPEC 10.5). */

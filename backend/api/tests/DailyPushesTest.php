@@ -186,6 +186,30 @@ final class DailyPushesTest extends TestCase
         $this->assertSame('💎 Today: Hidden gem', $m['title']);
     }
 
+    public function testMorningTourLine(): void
+    {
+        $c = ['text_i18n' => '{"en":"Eat what locals eat","fr":"Mange ce que mangent les locaux"}', 'challenge_date' => '2026-11-02'];
+        $m = DailyPushes::morningMessage($c, "Yesterday's winner: Anh, 14 votes.", 'en', 'Ho Chi Minh City');
+        $this->assertSame("Eat what locals eat Your photo represents Saigon in the world tour. Yesterday's winner: Anh, 14 votes.", $m['body']);
+        $fr = DailyPushes::morningMessage($c, null, 'fr', 'Paris');
+        $this->assertSame('Mange ce que mangent les locaux Ta photo représente Paris dans le tour du monde.', $fr['body']);
+        $this->assertNull(DailyPushes::tourLine(null));
+        // Too long for the 150-character body: the challenge alone.
+        $long = ['text_i18n' => json_encode(['en' => str_repeat('a', 120)]), 'challenge_date' => '2026-11-02'];
+        $this->assertSame(str_repeat('a', 120), DailyPushes::morningMessage($long, null, 'en', 'Paris')['body']);
+    }
+
+    public function testReminderWorldLine(): void
+    {
+        $m = DailyPushes::reminderMessage(self::SHRINE, 3600, 'en', null, 9, null, ['n' => 5, 'city' => 'Ho Chi Minh City']);
+        $this->assertSame('Find a shrine and ask a local what it means. Answered in 5 countries already. Add Saigon.', $m['body']);
+        $fr = DailyPushes::reminderMessage(self::SHRINE, 3600, 'fr', null, 9, null, ['n' => 5, 'city' => 'Paris']);
+        $this->assertStringEndsWith('Déjà 5 pays ont répondu. Ajoute Paris.', $fr['body']);
+        // A city streak to save keeps the Represent your city line.
+        $streak = DailyPushes::reminderMessage(self::SHRINE, 3600, 'en', null, 9, ['name' => 'Paris', 'n' => 4], ['n' => 5, 'city' => 'Paris']);
+        $this->assertStringContainsString("Paris's 4-day streak ends tonight", $streak['body']);
+    }
+
     private const SHRINE = ['challenge_date' => '2026-11-02', 'theme' => 'only_here',
                             'text_i18n' => '{"en":"Find a shrine and ask a local what it means.","fr":"Trouve un autel et demande à un local ce qu\u2019il signifie."}'];
 

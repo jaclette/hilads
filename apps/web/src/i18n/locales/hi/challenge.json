@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "यहाँ, {{city}}",
       "homeIn": "आपका शहर: {{city}}"
+    },
+    "tour": {
+      "title": "कल की विश्व यात्रा",
+      "watch": "देखें",
+      "openCity": "{{city}} खोलें",
+      "next": "आगे",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "सुबह",
+        "afternoon": "दोपहर",
+        "evening": "शाम",
+        "night": "रात"
+      },
+      "yourTurn": "अब आपकी बारी।",
+      "todayIs": "आज का चैलेंज: {{text}}",
+      "close": "बंद करें",
+      "sub_one": "{{count}} शहर, एक ही चैलेंज",
+      "sub_other": "{{count}} शहर, एक ही चैलेंज"
+    },
+    "worlds": {
+      "tagline": "एक ही चैलेंज। अलग-अलग दुनिया।"
     }
   }
 }

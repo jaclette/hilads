@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "ここ：{{city}}",
       "homeIn": "地元：{{city}}"
+    },
+    "tour": {
+      "title": "きのうの世界一周",
+      "watch": "見る",
+      "openCity": "{{city}}を開く",
+      "next": "次へ",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "朝",
+        "afternoon": "昼",
+        "evening": "夕方",
+        "night": "夜"
+      },
+      "yourTurn": "あなたの番。",
+      "todayIs": "今日のチャレンジ：{{text}}",
+      "close": "閉じる",
+      "sub_one": "{{count}}都市、同じチャレンジ",
+      "sub_other": "{{count}}都市、同じチャレンジ"
+    },
+    "worlds": {
+      "tagline": "同じチャレンジ、違う世界。"
     }
   }
 }

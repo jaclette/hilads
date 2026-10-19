@@ -3268,6 +3268,16 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS home_country CHAR(2)", 'us
 // a city we don't have (home_city_name + home_country). users.home_city stays
 // the free-text profile field it was (local status, badges).
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS home_city_name TEXT", 'users.home_city_name');
+// V4-05 (SPEC 10.7): the world tour of a closed challenge, built at the drop's
+// closing step: [{cityId, proofId, count, podium}], proofs resolved on read.
+// Reversal: DROP TABLE daily_world_tours.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_world_tours (
+        challenge_id TEXT        PRIMARY KEY REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        slides       JSONB       NOT NULL,
+        built_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_world_tours');
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_rates (
         date       DATE        PRIMARY KEY,

@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "Dito sa {{city}}",
       "homeIn": "Sa inyo, {{city}}"
+    },
+    "tour": {
+      "title": "Ang world tour kahapon",
+      "watch": "Panoorin",
+      "openCity": "Buksan ang {{city}}",
+      "next": "Susunod",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "Sa umaga",
+        "afternoon": "Sa hapon",
+        "evening": "Sa gabi",
+        "night": "Sa hatinggabi"
+      },
+      "yourTurn": "Ikaw na.",
+      "todayIs": "Ang challenge ngayong araw: {{text}}",
+      "close": "Isara",
+      "sub_one": "{{count}} lungsod, iisang challenge",
+      "sub_other": "{{count}} lungsod, iisang challenge"
+    },
+    "worlds": {
+      "tagline": "Iisang challenge. Iba-ibang mundo."
     }
   }
 }

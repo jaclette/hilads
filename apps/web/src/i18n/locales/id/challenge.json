@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "Di sini, {{city}}",
       "homeIn": "Di kotamu, {{city}}"
+    },
+    "tour": {
+      "title": "Keliling dunia kemarin",
+      "watch": "Tonton",
+      "openCity": "Buka {{city}}",
+      "next": "Berikutnya",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "Pagi hari",
+        "afternoon": "Siang hari",
+        "evening": "Sore hari",
+        "night": "Malam hari"
+      },
+      "yourTurn": "Giliranmu.",
+      "todayIs": "Tantangan hari ini: {{text}}",
+      "close": "Tutup",
+      "sub_one": "{{count}} kota, tantangan yang sama",
+      "sub_other": "{{count}} kota, tantangan yang sama"
+    },
+    "worlds": {
+      "tagline": "Tantangan sama. Dunia berbeda."
     }
   }
 }

@@ -1333,6 +1333,27 @@
     "backHome": {
       "hereIn": "Aquí en {{city}}",
       "homeIn": "En tu ciudad, {{city}}"
+    },
+    "tour": {
+      "title": "La vuelta al mundo de ayer",
+      "watch": "Ver",
+      "openCity": "Abrir {{city}}",
+      "next": "Siguiente",
+      "kicker": "Daily Challenge · {{theme}}",
+      "moment": {
+        "morning": "Por la mañana",
+        "afternoon": "Por la tarde",
+        "evening": "Al atardecer",
+        "night": "De noche"
+      },
+      "yourTurn": "Te toca.",
+      "todayIs": "El reto de hoy: {{text}}",
+      "close": "Cerrar",
+      "sub_one": "{{count}} ciudad, el mismo reto",
+      "sub_other": "{{count}} ciudades, el mismo reto"
+    },
+    "worlds": {
+      "tagline": "Mismo reto. Mundos distintos."
     }
   }
 }
