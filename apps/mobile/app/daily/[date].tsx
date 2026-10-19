@@ -20,7 +20,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Photo, Screen, ScreenHeader, Segmented } from '@/ui';
-import { CompareBoard } from '@/features/compare/CompareBoard';
+import { CompareBoard, SuggestionsWhenEmpty } from '@/features/compare/CompareBoard';
 import type { DailyProof } from '@/types';
 import { themeName } from '@/features/daily/themes';
 
@@ -312,7 +312,8 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
               onOpenProof={openProofById}
             />
           ) : (
-            <EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />
+            // No answer yet: the day's Hilads suggestions, else the usual "be the first".
+            <SuggestionsWhenEmpty date={challenge.date} empty={<EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />} />
           )}
         />
       )}

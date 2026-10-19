@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -131,7 +131,10 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
           })}
         </Text>
       )}
-      {board.rows.length === 0 ? (
+      {board.rows.length === 0 && (board.picks ?? []).length > 0 ? (
+        // No player answer yet: the Hilads suggestions fill the tab (one line says the board is open).
+        <Text style={styles.emptyLine}>{t('compare.emptyTitle')}. {t('compare.emptyBody')}</Text>
+      ) : board.rows.length === 0 ? (
         <EmptyState icon="earth-outline" title={t('compare.emptyTitle')} body={t('compare.emptyBody')}
                     action={onAnswer ? <Button size="sm" icon="camera-outline" label={t('ctaAnswerNoCity')} onPress={onAnswer} /> : undefined} />
       ) : (
@@ -160,6 +163,30 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
       )}
       {/* Below the empty state, then below the board once players answered. */}
       <PicksMeanwhile picks={board.picks ?? []} />
+    </View>
+  );
+}
+
+/**
+ * A sheet tab with no answer yet (World, my city): the day's Hilads suggestions
+ * under a one-line "be the first", else the usual empty state.
+ */
+export function SuggestionsWhenEmpty({ date, empty }: { date: string; empty: ReactNode }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  const { identity, account } = useApp();
+  const [picks, setPicks] = useState<NonNullable<DailyBoard['picks']> | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetchDailyBoard(date, account ? null : identity?.guestId).then(b => { if (alive) setPicks(b.picks ?? []); }).catch(() => { if (alive) setPicks([]); });
+    return () => { alive = false; };
+  }, [date, account, identity?.guestId]);
+  if (picks === null) return null;
+  if (picks.length === 0) return <>{empty}</>;
+  return (
+    <View style={styles.wrap}>
+      <Text style={styles.emptyLine}>{t('beFirstSub')}</Text>
+      <PicksMeanwhile picks={picks} />
     </View>
   );
 }
@@ -221,5 +248,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   grid:       { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   cell:       { width: '48%' },
   picks:      { gap: 8, marginTop: 6 },
+  emptyLine:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   pickPhoto:  { width: 52, height: 52, borderRadius: 10, backgroundColor: c.primaryTint },
 });

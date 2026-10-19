@@ -98,7 +98,10 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
           })}
         </p>
       )}
-      {board.rows.length === 0 ? (
+      {board.rows.length === 0 && (board.picks ?? []).length > 0 ? (
+        // No player answer yet: the Hilads suggestions fill the tab (one line says the board is open).
+        <p className="dc-muted">{t('compare.emptyTitle')}. {t('compare.emptyBody')}</p>
+      ) : board.rows.length === 0 ? (
         <div className="dc-center">
           <Icon name="earth-outline" size={30} style={{ color: 'var(--muted2)' }} />
           <p className="dc-empty-title">{t('compare.emptyTitle')}</p>
@@ -127,6 +130,29 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
       )}
       {/* Below the empty state, then below the board once players answered. */}
       <PicksMeanwhile picks={board.picks ?? []} ans={ans} />
+    </div>
+  )
+}
+
+/**
+ * A sheet tab with no answer yet (World, my city): the day's Hilads suggestions
+ * under a one-line "be the first", else the usual empty state.
+ */
+export function SuggestionsWhenEmpty({ date, empty }) {
+  const { t, i18n } = useDc()
+  const [picks, setPicks] = useState(null)
+  useEffect(() => {
+    let alive = true
+    fetchDailyBoard(date, i18n.language).then(b => { if (alive) setPicks(b.picks ?? []) }).catch(() => { if (alive) setPicks([]) })
+    return () => { alive = false }
+  }, [date, i18n.language])
+  if (picks === null) return null
+  if (picks.length === 0) return empty
+  const ans = (a) => (a ? answerText(a, i18n.language) : '-')
+  return (
+    <div>
+      <p className="dc-muted">{t('beFirstSub')}</p>
+      <PicksMeanwhile picks={picks} ans={ans} />
     </div>
   )
 }
