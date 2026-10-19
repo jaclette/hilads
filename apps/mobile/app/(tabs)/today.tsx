@@ -6,7 +6,6 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useDailyToday } from '@/hooks/useDaily';
 import { AppHeader } from '@/features/shell/AppHeader';
-import { DailyPushBanner } from '@/features/daily/DailyPushBanner';
 import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
 import { TodayProofs } from '@/features/today/TodayProofs';
@@ -57,11 +56,10 @@ export default function TodayScreen() {
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} />
         </View>
-        <DailyPushBanner />
         <TodayWeek today={daily.data} />
-        <TodayProofs today={daily.data} refreshKey={refreshKey} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TodayTour today={daily.data} refreshKey={refreshKey} />
+        <TodayProofs today={daily.data} refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />

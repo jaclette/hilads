@@ -61,9 +61,9 @@ export default function TodayScreen({ header }) {
         <BrandLine today={data} />
         <Ticket data={data} loading={loading} />
         <Week today={data} />
-        <TodayProofs today={data} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TourRow today={data} />
+        <TodayProofs today={data} />
         <SpotsNear />
       </div>
     </div>

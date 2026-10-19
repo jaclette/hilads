@@ -2,12 +2,12 @@
   "home": {
     "title": "Hilads - Thử thách giữa người địa phương & du khách",
     "description": "Người địa phương thách du khách, du khách thách người địa phương - nhận một thử thách ở bất kỳ thành phố nào rồi gặp nhau ngoài đời. Cùng sự kiện, tụ tập & chat. Không cần đăng ký.",
-    "h1": "Một điều địa phương. Mỗi ngày.",
+    "h1": "Cùng một thử thách. Những thế giới khác nhau.",
     "intro": "Hilads biến bất cứ thành phố nào thành nơi bạn có thể trở thành người địa phương. Tham gia challenge, gặp gỡ ở meetup, tìm hangout, khám phá Local Events - mỗi bước đều giúp bạn có chỗ đứng. Thời gian thực, không cần đăng ký.",
     "aboutHeading": "Hilads hoạt động thế nào",
     "aboutBody": "Chọn thành phố của bạn. Khởi xướng một challenge cho người địa phương hoặc du khách, tham gia meetup, tìm hangout, hoặc khám phá Local Events. Càng xây dựng ở đây nhiều, bạn càng trở thành người địa phương - và càng lên cao trên Thổ địa.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads",
-    "subhead": "Trở thành người địa phương ở bất cứ thành phố nào bạn ghé thăm."
+    "subhead": "Một điều địa phương. Mỗi ngày."
   },
   "_note": "Vietnamese SSR strings are DRAFTS - pending native review.",
   "brand": "Hilads",

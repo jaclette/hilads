@@ -390,6 +390,7 @@ export default function LandingPage({
   onSignUp, onSignIn, onOpenCityPicker, retryGeo,
 }) {
   const { t } = useTranslation('landing')
+  const { t: tw } = useTranslation('challenge')
   const heroJoinRef = useRef(null)
 
   useEffect(() => {
@@ -429,10 +430,9 @@ export default function LandingPage({
           <Logo variant="wordmark" size="lg" />
         </div>
 
-        {/* Brand tagline - fixed English, never translated. */}
-        <h1 className="lp-hero-h1">
-          One local thing. Every day.
-        </h1>
+        {/* SPEC 10.1: the hero says why Hilads is unique, the tagline under it what you do. */}
+        <h1 className="lp-hero-h1">{tw('dc.worlds.tagline')}</h1>
+        <p className="lp-hero-tagline">{t('stories.tagline')}</p>
 
         <p className="lp-hero-sub">
           {nl2br(t('hero.sub'))}

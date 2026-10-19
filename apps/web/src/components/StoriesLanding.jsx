@@ -67,6 +67,7 @@ export default function StoriesLanding({
   onPrimaryCta, onChooseCity, onChallengeRow, onSignUp, onSignIn, onStoreClick,
 }) {
   const { t } = useTranslation('landing')
+  const { t: tw } = useTranslation('challenge')
   const screenRefs = useRef([])
   const seenRef = useRef(new Set())
   const rootRef = useRef(null)
@@ -198,14 +199,15 @@ export default function StoriesLanding({
           Purely a brand anchor: not tappable, not a home link (pointer-events:none). */}
       <header className="sl-header" aria-hidden="true">
         <Logo variant="wordmark" size="sm" />
-        <span className="sl-header-baseline">{t('stories.tagline')}</span>
       </header>
 
       {/* ── S1 Hook ─────────────────────────────────────────────── */}
       <section className="sl-screen sl-screen--hook" data-idx="0" ref={setRef(0)}>
         {/* Concept in one glance for cold Reel traffic (replaces the old brand
             block, which now lives in the sticky header above). */}
-        <p className="sl-concept-tagline">{t('stories.concept_tagline')}</p>
+        {/* SPEC 10.1: why Hilads is unique, then what you do. */}
+        <h1 className="sl-concept-tagline">{tw('dc.worlds.tagline')}</h1>
+        <p className="sl-concept-sub">{t('stories.tagline')}</p>
         <VideoHero onVisible={() => track('video_visible')} onPlay={() => track('video_played')} />
         <div className="sl-songs">
           {TRACKS.map((tr) => (

@@ -11185,6 +11185,8 @@ img.dm-header-avatar {
   opacity: 0.92;
 }
 
+.lp-hero-tagline { margin: 0.5rem 0 0; font-size: 1.15rem; font-weight: 700; color: rgba(255,255,255,0.82); }
+.sl-concept-sub { margin: -4px 0 0; font-size: 0.95rem; font-weight: 600; color: var(--muted); text-align: center; }
 .lp-hero-h1 {
   font-size: clamp(2.6rem, 9vw, 4.4rem);
   font-weight: 900;
@@ -16151,8 +16153,8 @@ body.has-app-promo-banner .page-header {
 .sl-concept-tagline {
   margin: 0;
   max-width: 17rem;
-  font-size: 1.12rem;
-  font-weight: 600;
+  font-size: 1.4rem;
+  font-weight: 800;
   line-height: 1.32;
   letter-spacing: -0.2px;
   color: var(--text);
