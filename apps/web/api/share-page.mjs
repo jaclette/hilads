@@ -95,8 +95,10 @@ function body(data, S, SS, locale) {
     return `<section class="card"><h1>${esc(SS.notFound)}</h1><a class="link" href="/today">${esc(SS.seeToday)}</a></section>`
   }
   const c = data.challenge
+  // The theme and the comparison question ("Sip · How do locals say cheers?"), then the challenge.
+  const head = c ? [themeLabel(c.theme, SS, c.special), c.compare && c.compare.question].filter(Boolean).join(' · ') : ''
   const challenge = c ? `
-      ${themeLabel(c.theme, SS, c.special) ? `<div class="theme">${esc(themeLabel(c.theme, SS, c.special))}</div>` : ''}
+      ${head ? `<div class="theme">${esc(head)}</div>` : ''}
       <h1>${esc(c.text)}</h1>` : ''
 
   if (data.kind === 'proof' && data.state === 'review') {

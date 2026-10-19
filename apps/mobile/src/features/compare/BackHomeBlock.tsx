@@ -11,7 +11,7 @@ import { useMoney } from './money';
 /**
  * Back home's split block (SPEC 10.4), on the photo viewer's dark ground:
  * "Here in Saigon" / "Back home in Paris", each with its flag, answer and
- * converted price, then the author's line.
+ * converted price; the author's line goes under the Back home side.
  */
 export function BackHomeBlock({ proof }: { proof: DailyProof }) {
   const styles = useThemedStyles(makeStyles);
@@ -19,7 +19,7 @@ export function BackHomeBlock({ proof }: { proof: DailyProof }) {
   const money = useMoney();
   const home = proof.backHome;
   if (!home) return null;
-  const side = (label: string, country: string | null | undefined, answer: DailyProof['answer'], price: DailyProof['price']) => {
+  const side = (label: string, country: string | null | undefined, answer: DailyProof['answer'], price: DailyProof['price'], line?: string | null) => {
     const p = price ? money.price(price) : null;
     return (
       <View style={styles.side}>
@@ -29,6 +29,7 @@ export function BackHomeBlock({ proof }: { proof: DailyProof }) {
         </View>
         {answer ? <AnswerChip answer={answer} onDark /> : <Text style={styles.none}>-</Text>}
         {p && <Text style={styles.price}>{p.main}{p.original ? <Text style={styles.original}>{`  ${p.original}`}</Text> : null}</Text>}
+        {!!line && <Text style={styles.line}>{line}</Text>}
       </View>
     );
   };
@@ -37,9 +38,8 @@ export function BackHomeBlock({ proof }: { proof: DailyProof }) {
       <View style={styles.row}>
         {side(t('backHome.hereIn', { city: shortCityName(proof.city?.name ?? '') }), proof.city?.country, proof.answer ?? null, proof.price)}
         <View style={styles.divider} />
-        {side(t('backHome.homeIn', { city: shortCityName(home.city.name) }), home.city.country, home.answer, home.price)}
+        {side(t('backHome.homeIn', { city: shortCityName(home.city.name) }), home.city.country, home.answer, home.price, home.line)}
       </View>
-      {!!home.line && <Text style={styles.line}>{home.line}</Text>}
     </View>
   );
 }

@@ -113,13 +113,14 @@ export function BackHomeBlock({ proof }) {
   const money = useMoney()
   const home = proof.backHome
   if (!home) return null
-  const side = (label, country, answer, price) => {
+  const side = (label, country, answer, price, line) => {
     const p = price ? money.price(price) : null
     return (
       <div className="dc-home-side">
         <span className="dc-home-label"><CityFlag country={country} />{label}</span>
         {answer ? <AnswerChip answer={answer} onDark /> : <span className="dc-home-none">-</span>}
         {p && <span className="dc-home-price">{p.main}{p.original && <small>{p.original}</small>}</span>}
+        {line && <p className="dc-home-line">{line}</p>}
       </div>
     )
   }
@@ -127,9 +128,8 @@ export function BackHomeBlock({ proof }) {
     <div className="dc-home">
       <div className="dc-home-row">
         {side(t('backHome.hereIn', { city: shortCityName(proof.city?.name ?? '') }), proof.city?.country, proof.answer, proof.price)}
-        {side(t('backHome.homeIn', { city: shortCityName(home.city.name) }), home.city.country, home.answer, home.price)}
+        {side(t('backHome.homeIn', { city: shortCityName(home.city.name) }), home.city.country, home.answer, home.price, home.line)}
       </div>
-      {home.line && <p className="dc-home-line">{home.line}</p>}
     </div>
   )
 }

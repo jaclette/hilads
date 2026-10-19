@@ -7,6 +7,7 @@ import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
+import { themeName } from '../map/spotsShared'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
 // features/daily): the screens' context, the app's strings (challenge.json →
@@ -285,11 +286,14 @@ export function ProofViewer({ proof, onClose }) {
   return createPortal(
     <div className="dc-viewer" role="dialog" aria-modal="true">
       <button type="button" className="dc-viewer-close" onClick={onClose} aria-label={t('back')}><Icon name="close" size={22} /></button>
+      {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
+      <div className="dc-viewer-blur" style={{ backgroundImage: `url("${proof.thumbUrl || proof.photoUrl}")` }} aria-hidden="true" />
+      <div className="dc-viewer-scroll">
       <img className="dc-viewer-photo" src={proof.photoUrl} alt={proof.caption || ''} />
       <div className="dc-viewer-meta">
         <div className="dc-viewer-name">
           {name} · <RoleLabel isLocal={proof.isLocal} />
-          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} /></>}
+          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
           {proof.user.localPass && <LocalPassBadge label onDark />}
           {proof.isEarly && <EarlyBadge onDark />}
         </div>
@@ -300,6 +304,14 @@ export function ProofViewer({ proof, onClose }) {
             )}
             {proof.worldRank !== null && proof.worldRank <= 3 && proof.validatedByLocal ? '  ·  ' : ''}
             {proof.validatedByLocal && <span style={INLINE}><Icon name="checkmark" size={13} />{t('validatedByLocal')}</span>}
+          </div>
+        )}
+        {/* The proof's challenge: "Sip · How do locals say cheers?", then its text (a shared link lands here). */}
+        {proof.context && (
+          <div className="dc-viewer-context">
+            <strong>{[proof.context.theme ? themeName(proof.context.theme.key, { special: proof.context.special, city: proof.city?.name }) : null,
+              proof.context.question].filter(Boolean).join(' · ')}</strong>
+            {proof.context.text && <span>{proof.context.text}</span>}
           </div>
         )}
         {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
@@ -326,6 +338,7 @@ export function ProofViewer({ proof, onClose }) {
           )}
         </div>
         {notice && <p className="dc-viewer-notice" role="status">{notice}</p>}
+      </div>
       </div>
       {reporting && (
         <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('report.title')}>

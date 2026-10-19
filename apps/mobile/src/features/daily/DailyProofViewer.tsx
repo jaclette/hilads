@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Modal, Text, View, StyleSheet } from 'react-native';
+import { Modal, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,7 +17,11 @@ import { RankMedal } from './RankMedal';
 import { Button, Chip, IconButton, ModeLabel } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, type ShareContent } from '@/features/share/content';
+import { themeName } from './themes';
 import type { DailyChallenge, DailyProof } from '@/types';
+
+/** The photo takes at most this share of the screen height; the information block follows right under it. */
+const PHOTO_MAX_HEIGHT = 0.62;
 
 /**
  * Full-screen photo of one proof with its author, caption, price, place, local
@@ -32,6 +36,10 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const { t } = useTranslation('daily');
   const [share, setShare] = useState<ShareContent | null>(null);
   const money = useMoney();
+  const { width, height } = useWindowDimensions();
+  // The photo's width / height once loaded (square until then): its box hugs it.
+  const [ratio, setRatio] = useState(1);
+  useEffect(() => { setRatio(1); }, [proof?.id]);
   const shareable = !!proof && proof.isMine && !!challenge && proof.challengeId === challenge.id
     && (proof.status === 'approved' || proof.status === 'pending');
   useEffect(() => {
@@ -41,9 +49,16 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const name = proof.user.displayName || proof.user.username || '';
   return (
     <Modal visible animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen">
-      <SafeAreaView style={styles.wrap}>
+      <View style={styles.wrap}>
+      {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
+      <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
+      <View style={[StyleSheet.absoluteFill, styles.shade]} />
+      <SafeAreaView style={styles.flex}>
         <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={styles.close} />
-        <Image source={{ uri: proof.photoUrl }} style={styles.photo} contentFit="contain" />
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Image source={{ uri: proof.photoUrl }} contentFit="contain"
+               style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
+               onLoad={e => { if (e.source.width && e.source.height) setRatio(e.source.width / e.source.height); }} />
         <View style={styles.meta}>
           <View style={styles.nameRow}>
             <Text style={styles.name}>{name}</Text>
@@ -51,7 +66,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             {proof.user.localPass && <LocalPassBadge label onDark />}
             {proof.isEarly && <EarlyBadge onDark />}
           </View>
-          {proof.city && <CityName name={proof.city.name} country={proof.city.country} style={styles.extra} />}
+          {proof.city && <CityName name={proof.city.name} country={proof.city.country} short style={styles.extra} />}
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
             <View style={styles.nameRow}>
               {proof.worldRank !== null && proof.worldRank <= 3 && (
@@ -61,6 +76,16 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
                 </View>
               )}
               {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} />}
+            </View>
+          )}
+          {/* The proof's challenge: "Sip · How do locals say cheers?", then its text (a shared link lands here). */}
+          {proof.context && (
+            <View style={styles.context}>
+              <Text style={styles.contextHead}>
+                {[proof.context.theme ? themeName(proof.context.theme.key, { special: proof.context.special, city: proof.city?.name }) : null,
+                  proof.context.question].filter(Boolean).join(' · ')}
+              </Text>
+              {!!proof.context.text && <Text style={styles.contextText}>{proof.context.text}</Text>}
             </View>
           )}
           {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
@@ -91,8 +116,10 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             <Button icon="share-social-outline" label={t('share.shareProof')} onPress={() => setShare(proofShare(proof, challenge))} />
           )}
         </View>
+        </ScrollView>
         <ShareSheet content={share} source={autoShare ? 'podium' : 'viewer'} onClose={() => setShare(null)} />
       </SafeAreaView>
+      </View>
     </Modal>
   );
 }
@@ -100,8 +127,14 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
 // A photo viewer is dark in both themes, like every photo lightbox (fixed photo tokens).
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:     { flex: 1, backgroundColor: c.photoScrim },
+  flex:     { flex: 1 },
+  shade:    { backgroundColor: c.photoBlurShade },
+  // The photo and its information block stay together, centred when they fit.
+  scroll:   { flexGrow: 1, justifyContent: 'center', paddingTop: 56 },
   close:    { position: 'absolute', top: 54, right: 16, zIndex: 2 },
-  photo:    { flex: 1 },
+  context:  { gap: 2 },
+  contextHead: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
+  contextText: { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
   meta:     { padding: 16, gap: 8 },
   nameRow:  { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
   name:     { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },

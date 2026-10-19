@@ -24,6 +24,7 @@ final class DailyProofRepository
     private const SELECT = "
         SELECT p.*,
                dc.challenge_date, dc.theme AS challenge_theme, dc.compare_type, dc.compare_unit_i18n,
+               dc.text_i18n AS challenge_text_i18n, dc.compare_question_i18n, dc.special_id AS challenge_special_id,
                u.username, u.display_name, u.profile_photo_url,
                ch.name AS city_name, cc.country AS city_country,
                wr.rank AS world_rank, cr.rank AS city_rank,
@@ -379,7 +380,30 @@ final class DailyProofRepository
             'editedAt'         => self::ts($row['edited_at']),
             'createdAt'        => self::ts($row['created_at']),
             // SPEC 10: the answer to the challenge's question {type, value, unit}, and Back home.
-        ] + DailyCompare::proofPayload($row, DailyI18n::current());
+        ] + DailyCompare::proofPayload($row, DailyI18n::current()) + ['context' => self::context($row)];
+    }
+
+    /**
+     * The proof's challenge in the viewer's language, for a proof seen on its
+     * own (a shared link, the viewer): {theme, special, question, text}, or
+     * null when the row has no challenge columns.
+     */
+    private static function context(array $row): ?array
+    {
+        if (!array_key_exists('challenge_text_i18n', $row)) {
+            return null;
+        }
+        $locale = DailyI18n::current();
+        $text   = json_decode((string) $row['challenge_text_i18n'], true) ?: [];
+        $date   = (string) $row['challenge_date'];
+        $q      = DailyCompare::payload($row, $locale);
+        $theme  = DailyThemes::format($row['challenge_theme'] ?? null, $date);
+        return [
+            'theme'    => $theme,
+            'special'  => ($theme['key'] ?? null) === DailyThemes::SPECIAL ? DailySpecials::payload($row['challenge_special_id'] ?? null, $locale) : null,
+            'question' => $q['question'] ?? null,
+            'text'     => DailyI18n::pick($text, $locale) ?? (string) ($text['en'] ?? ''),
+        ];
     }
 
     public static function bool(mixed $v): bool

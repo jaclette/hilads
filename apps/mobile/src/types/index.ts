@@ -915,6 +915,8 @@ export interface DailyProof {
   /** The proof's currency, with or without a price (its city's by default). */
   currency?:        string | null;
   place:            { lat: number; lng: number; name: string | null } | null;
+  /** The proof's challenge in the viewer's language, for a proof seen on its own (shared link, viewer). */
+  context?:         { theme: DailyTheme | null; special?: DailySpecial | null; question: string | null; text: string } | null;
   /** The answer to the challenge's question (SPEC 10.2), and Back home (10.4). */
   answer?:          DailyAnswer | null;
   backHome?:        DailyBackHome | null;
