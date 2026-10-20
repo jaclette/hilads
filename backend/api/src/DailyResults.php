@@ -104,7 +104,7 @@ final class DailyResults
             SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at
             FROM daily_proofs p
             JOIN users u ON u.id = p.user_id
-            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT u.is_demo
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT u.is_demo AND NOT p.is_suggestion
         ");
         $stmt->execute([$challengeId]);
         DailyRules::forgetLiveCities();

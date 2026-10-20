@@ -65,10 +65,11 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   // My own proof in review leads the strip, with its badge (only mine: others' never show before approval).
   const mine = today?.myProof && today.myProof.status === 'pending'
     && (strip?.scope === 'world' || today.myProof.city?.id === strip?.city?.id) ? today.myProof : null;
-  const items: StripProof[] = [
+  // Players' photos first, then the Hilads suggestions (badge only, never voted on or counted).
+  const items: StripProof[] = playersFirst([
     ...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []),
     ...(strip?.proofs ?? []),
-  ];
+  ]);
   const around = cities && cities.countries >= 2 && cities.proofs.length > 0 ? cities : null;
   const cityStrip = strip?.scope === 'city' && items.length > 0 ? strip : null;
   // World's strip only while fewer than 2 countries answered (else Today around the world).
@@ -95,16 +96,18 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
   return (
     <View style={styles.wrap}>
       {cityStrip && (
-        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={t('today.proofs', { count: cityStrip.total })}
+        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={cityStrip.total > 0 ? t('today.proofs', { count: cityStrip.total }) : null}
                onOpen={open('/daily/today?tab=city&source=today_strip')} items={items} guestId={guestId} voting={voting}
                source="strip_city" onProof={openProof} footer={!around && voting} />
       )}
       {(around || worldStrip) && (
         <Strip title={t('today.aroundWorld')}
-               stats={t('today.proofsIn', { proofs: t('today.proofs', { count: (around ?? worldStrip)!.total }),
-                                            countries: t('today.countries', { count: (around ?? worldStrip)!.countries }) })}
+               stats={(around ?? worldStrip)!.total > 0
+                 ? t('today.proofsIn', { proofs: t('today.proofs', { count: (around ?? worldStrip)!.total }),
+                                         countries: t('today.countries', { count: (around ?? worldStrip)!.countries }) })
+                 : null}
                onOpen={around ? open('/daily/today?tab=compare&source=world_strip') : open('/daily/today?tab=world&source=today_strip')}
-               items={around ? around.proofs : items} guestId={guestId} voting={voting} source="strip_world"
+               items={around ? playersFirst(around.proofs) : items} guestId={guestId} voting={voting} source="strip_world"
                onProof={openProof} footer={voting} board={board} />
       )}
       <ShareSheet content={invite} source="represent_world_strip" onClose={() => setInvite(null)} />
@@ -118,26 +121,28 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
  * are in"), the cards with their vote button, and what the votes do (footer).
  */
 function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, footer, board = null }: {
-  title: string; stats: string; onOpen: () => void; items: StripProof[]; guestId: string | null; voting: boolean;
+  title: string; stats: string | null; onOpen: () => void; items: StripProof[]; guestId: string | null; voting: boolean;
   source: 'strip_city' | 'strip_world'; onProof: (p: StripProof) => void; footer: boolean; board?: ReactNode;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   const { account } = useApp();
   const prompted = useRef(false);
+  // Nothing to vote on when the strip only holds Hilads suggestions: no prompt, no note.
+  const votable = voting && items.some(p => !p.suggestion);
   useEffect(() => {
-    if (!voting || prompted.current) return;
+    if (!votable || prompted.current) return;
     prompted.current = true;
     track('vote_prompt_shown', { source, guest: !account });
-  }, [voting]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [votable]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Card style={styles.card}>
       {/* The title and "See all" open the challenge sheet on the strip's tab. */}
       <SectionTitle small title={title} onPress={onOpen} action={{ label: t('today.seeAll'), onPress: onOpen }} />
-      <Text style={styles.stats}>{stats}</Text>
+      {!!stats && <Text style={styles.stats}>{stats}</Text>}
       {/* No vote limit: one vote per answer, as many answers as I like. */}
-      {voting && (
+      {votable && (
         <View style={styles.prompt}>
           <Text style={styles.promptText}>{t('vote.prompt')}</Text>
         </View>
@@ -148,44 +153,71 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
           <StripItem key={p.id} proof={p} guestId={guestId} source={source} onPress={() => onProof(p)} />
         ))}
       </ScrollView>
-      {footer && <Text style={styles.footer}>{t('vote.tourNote')}</Text>}
+      {footer && votable && <Text style={styles.footer}>{t('vote.tourNote')}</Text>}
     </Card>
   );
 }
 
+/**
+ * One card, the same structure everywhere: the photo, then a fixed-height
+ * info block: the flag and city on one line, the answer (else the place or
+ * the caption) on 2 reserved lines, then the badge row and the vote button
+ * pinned to the bottom, so badges and buttons line up whatever the text.
+ * A Hilads suggestion has its badge and no vote button.
+ */
 function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; guestId: string | null; source: string; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('daily');
   const state = useVoteState(proof.id, guestId);
   const city = proof.city?.name ? localizeCityName(proof.city.name) : '';
-  const votes = t('today.votes', { count: state?.voteCount ?? proof.voteCount });
+  const votes = proof.suggestion ? null : t('today.votes', { count: state?.voteCount ?? proof.voteCount });
+  const title = proof.answer ? answerText(proof.answer, i18n.language) : proof.spot?.name ?? proof.place?.name ?? proof.caption ?? '';
   return (
     <TouchableOpacity style={styles.item} onPress={onPress} accessibilityRole="button"
-                      accessibilityLabel={[proof.rank ? `#${proof.rank}` : null, city, votes].filter(Boolean).join(', ')}>
+                      accessibilityLabel={[proof.rank ? `#${proof.rank}` : null, city, title, votes].filter(Boolean).join(', ')}>
       <View style={styles.photo}>
         <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" />
         {proof.rank !== null && <RankMedal rank={proof.rank} size={24} style={styles.rank} />}
         {proof.status === 'pending' && <View style={styles.pending}><DailyStatusChip status="pending" /></View>}
       </View>
-      {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
-      {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
-      {proof.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(proof.answer, i18n.language)}</Text>}
-      {proof.suggestion && <PickBadge />}
-      <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null}
-                       source={source} variant="strip" />
+      <View style={styles.info}>
+        <View style={styles.cityRow}>
+          {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
+        </View>
+        <Text style={styles.answer} numberOfLines={2}>{title}</Text>
+        <View style={styles.bottom}>
+          {proof.suggestion ? <PickBadge style={styles.badge} /> : proof.status === 'approved' && (
+            <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null}
+                             source={source} variant="strip" />
+          )}
+        </View>
+      </View>
     </TouchableOpacity>
   );
 }
+
+/** Players' photos first, the Hilads suggestions after (stable). */
+function playersFirst<T extends { suggestion?: boolean }>(list: T[]): T[] {
+  return [...list.filter(p => !p.suggestion), ...list.filter(p => p.suggestion)];
+}
+
+const CARD_W = 112;
+const INFO_H = 108;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card:  { paddingHorizontal: 14, paddingVertical: 10, gap: 8 },
   stats: { fontSize: 13, fontWeight: '500', color: c.muted, marginTop: -4 },
   row:   { gap: 10 },
-  item:  { width: 112, gap: 2 },
-  photo: { width: 112, height: 140, marginBottom: 4, borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg3 },
+  item:  { width: CARD_W },
+  photo: { width: CARD_W, height: 140, borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg3 },
+  // Fixed height: city line (18) + 2 answer lines (2 x 17) + the bottom row (the vote button, 2 lines at most, or the badge).
+  info:  { height: INFO_H, paddingTop: 6 },
+  cityRow: { height: 18, flexDirection: 'row', alignItems: 'center' },
   rank:  { position: 'absolute', top: 6, left: 6, borderWidth: 2, borderColor: c.bg2 },
   city:  { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: '100%' },
-  answer: { fontSize: 13, fontWeight: '800', color: c.text },
+  answer: { height: 34, fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text },
+  bottom: { marginTop: 'auto', alignItems: 'stretch' },
+  badge:  { alignSelf: 'flex-start', maxWidth: '100%', marginBottom: 2 },
   pending: { position: 'absolute', left: 6, bottom: 6 },
   wrap:  { gap: 12 },
   prompt: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },

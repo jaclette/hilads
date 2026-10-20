@@ -14,7 +14,6 @@ import type { DailyBoard, DailyCityRef, DailyProof } from '@/types';
 import { answerText } from './format';
 import { useRouter } from 'expo-router';
 import { PickBadge } from '@/features/map/PickBadge';
-import { PickVoteButton } from './PickVote';
 import { Image } from 'expo-image';
 import { useMoney } from './money';
 
@@ -215,7 +214,6 @@ function PicksMeanwhile({ picks }: { picks: NonNullable<DailyBoard['picks']> }) 
               {p.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(p.answer, i18n.language)}</Text>}
               <PickBadge />
             </View>
-            <PickVoteButton pick={p} />
           </TouchableOpacity>
         ))}
       </View>

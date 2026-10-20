@@ -281,7 +281,8 @@ export function ProofTile({ proof, onOpen }) {
         {proof.isEarly && <EarlyBadge />}
         {proof.answer && <AnswerChip answer={proof.answer} />}
         {proof.caption && <span className="dc-tile-caption">{proof.caption}</span>}
-        <VoteButton proof={proof} variant="tile" />
+        {/* A Hilads suggestion is never voted on. */}
+        {!proof.suggestion && <VoteButton proof={proof} variant="tile" />}
       </div>
     </div>
   )
@@ -358,7 +359,7 @@ export function ProofViewer({ proof, onClose }) {
           </p>
         )}
         <div className="dc-viewer-actions">
-          {proof.status === 'approved' && <VoteButton proof={proof} variant="viewer" source="viewer" />}
+          {proof.status === 'approved' && !proof.suggestion && <VoteButton proof={proof} variant="viewer" source="viewer" />}
           {!proof.isMine && (
             <button type="button" className="dc-viewer-report" onClick={() => (account ? setReporting(true) : needAccount('view_profile'))}>
               {t('report.title')}

@@ -201,11 +201,11 @@ final class DailyLeaderboard
      */
     private static function snapshot(string $challengeId): array
     {
-        return Cache::remember('daily_leaderboard_v3_' . $challengeId, self::CACHE_TTL, function () use ($challengeId): array {
+        return Cache::remember('daily_leaderboard_v4_' . $challengeId, self::CACHE_TTL, function () use ($challengeId): array {
             $pdo  = Database::pdo();
             $stmt = $pdo->prepare("
                 SELECT count(*) AS n, count(*) FILTER (WHERE is_demo) AS demo
-                FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved'
+                FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_suggestion
             ");
             $stmt->execute([$challengeId]);
             $counts = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -219,7 +219,7 @@ final class DailyLeaderboard
                 JOIN users u          ON u.id  = p.user_id
                 LEFT JOIN channels ch ON ch.id = p.city_id
                 LEFT JOIN daily_local_passes lp ON lp.user_id = p.user_id AND lp.city_id = p.city_id
-                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.vote_count >= 1
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion AND p.vote_count >= 1
             ");
             $stmt->execute([$challengeId]);
             return ['approvedCount' => $count, 'demoCount' => (int) $counts['demo'], 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];

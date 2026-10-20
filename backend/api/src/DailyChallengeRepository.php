@@ -56,7 +56,7 @@ final class DailyChallengeRepository
             SELECT count(*) AS world,
                    count(*) FILTER (WHERE city_id = ?) AS city
             FROM daily_proofs
-            WHERE challenge_id = ? AND moderation_status = 'approved'
+            WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_suggestion
         ");
         $stmt->execute([$cityId ?? '', $challengeId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -268,7 +268,7 @@ final class DailyChallengeRepository
         $stmt = $pdo->prepare("
             SELECT challenge_id, id, photo_url FROM (
                 SELECT p.challenge_id, p.id, p.photo_url,
-                       row_number() OVER (PARTITION BY p.challenge_id ORDER BY p.vote_count DESC, p.approved_at DESC) AS rn
+                       row_number() OVER (PARTITION BY p.challenge_id ORDER BY p.is_suggestion, p.vote_count DESC, p.approved_at DESC) AS rn
                 FROM daily_proofs p
                 WHERE p.challenge_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'{$cityFilter}
             ) x WHERE rn <= " . self::ARCHIVE_PHOTOS . " ORDER BY challenge_id, rn
@@ -282,7 +282,7 @@ final class DailyChallengeRepository
         $stmt = $pdo->prepare("
             SELECT p.challenge_id, count(DISTINCT c.country) AS n
             FROM daily_proofs p LEFT JOIN cities c ON c.channel_id = p.city_id
-            WHERE p.challenge_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'{$cityFilter}
+            WHERE p.challenge_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved' AND NOT p.is_suggestion{$cityFilter}
             GROUP BY p.challenge_id
         ");
         $stmt->execute($args);
@@ -323,7 +323,7 @@ final class DailyChallengeRepository
                        ON r.proof_id = p.id AND r.challenge_id = dc.id AND r.scope = :scope
                 WHERE p.challenge_id = dc.id AND p.moderation_status = 'approved'
                   AND (CAST(:city1 AS TEXT) IS NULL OR p.city_id = :city2)
-                ORDER BY r.rank NULLS LAST, p.vote_count DESC, p.approved_at DESC
+                ORDER BY p.is_suggestion, r.rank NULLS LAST, p.vote_count DESC, p.approved_at DESC
                 LIMIT 1
             ) best ON true
             LEFT JOIN daily_twists tw
@@ -347,7 +347,7 @@ final class DailyChallengeRepository
                        count(*) FILTER (WHERE p.place_lat IS NOT NULL
                                         AND (CAST(:city7 AS TEXT) IS NULL OR p.city_id = :city8)) AS pinned_count
                 FROM daily_proofs p
-                WHERE p.challenge_id = dc.id AND p.moderation_status = 'approved'
+                WHERE p.challenge_id = dc.id AND p.moderation_status = 'approved' AND NOT p.is_suggestion
             ) stats ON true
             WHERE dc.status = 'published' AND dc.challenge_date < :before
               AND (CAST(:theme1 AS TEXT) IS NULL OR dc.theme = :theme2)

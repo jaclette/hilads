@@ -33,7 +33,7 @@ export function GoodToKnow({ note }: { note: string | null | undefined }) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   badge:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3,
                borderRadius: 999, backgroundColor: c.goldTint },
-  text:      { fontSize: 12, fontWeight: '800', color: c.text },
+  text:      { flexShrink: 1, fontSize: 12, fontWeight: '800', color: c.text },
   note:      { gap: 4, padding: 12, borderRadius: 14, backgroundColor: c.goldTint },
   noteTitle: { fontSize: 13, fontWeight: '800', color: c.text },
   noteText:  { fontSize: 14, lineHeight: 20, color: c.text },

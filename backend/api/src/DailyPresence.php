@@ -57,7 +57,7 @@ final class DailyPresence
                 FROM daily_proofs p
                 JOIN daily_challenges dc ON dc.id = p.challenge_id
                 JOIN users u             ON u.id = p.user_id
-                WHERE p.city_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
+                WHERE p.city_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion AND NOT u.is_demo
                   AND dc.status = 'published' AND dc.challenge_date BETWEEN ?::date - " . self::STREAK_DAYS . " AND ?::date
             ");
             $stmt->execute([$cityId, $today, $today]);
@@ -72,7 +72,7 @@ final class DailyPresence
             $stmt = Database::pdo()->prepare("
                 SELECT count(DISTINCT p.city_id) FROM daily_proofs p JOIN users u ON u.id = p.user_id
                 WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.city_id IS NOT NULL
-                  AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
+                  AND NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion AND NOT u.is_demo
             ");
             $stmt->execute([$challengeId]);
             return ['n' => (int) $stmt->fetchColumn()];
@@ -134,7 +134,7 @@ final class DailyPresence
         $stmt = Database::pdo()->prepare("
             SELECT 1 FROM daily_proofs p JOIN users u ON u.id = p.user_id
             WHERE p.challenge_id = ? AND p.city_id = ? AND p.id <> ? AND p.moderation_status IN {$statuses}
-              AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
+              AND NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion AND NOT u.is_demo
             LIMIT 1
         ");
         $stmt->execute([$proof['challenge_id'], $proof['city_id'], $proof['id']]);
@@ -164,7 +164,7 @@ final class DailyPresence
     public static function afterApproval(?array $proof): void
     {
         if ($proof === null || $proof['moderation_status'] !== 'approved' || ($proof['city_id'] ?? null) === null
-            || DailyProofRepository::bool($proof['is_seed'] ?? false) || DailyProofRepository::bool($proof['is_demo'] ?? false)) {
+            || DailyProofRepository::bool($proof['is_seed'] ?? false) || DailyProofRepository::bool($proof['is_demo'] ?? false) || DailyProofRepository::bool($proof['is_suggestion'] ?? false)) {
             return;
         }
         $cityId = (string) $proof['city_id'];
@@ -190,7 +190,7 @@ final class DailyPresence
             FROM daily_proofs p
             JOIN users u ON u.id = p.user_id
             WHERE p.id = ? AND p.moderation_status = 'approved' AND p.city_id IS NOT NULL
-              AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND NOT u.hidden_from_rankings
+              AND NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion AND NOT u.is_demo AND NOT u.hidden_from_rankings
             ON CONFLICT (city_id) DO NOTHING
             RETURNING city_id
         ");

@@ -10,7 +10,6 @@ import { useApp } from '@/context/AppContext';
 import { CityFlag, SectionTitle } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
 import { answerText } from '@/features/compare/format';
-import { PickVoteButton } from '@/features/compare/PickVote';
 import { PickBadge } from '@/features/map/PickBadge';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
 import type { DailyPick, DailyToday } from '@/types';
@@ -60,7 +59,6 @@ export function TodayPicks({ today, refreshKey }: { today: DailyToday | null; re
                 <PickBadge />
               </View>
             </TouchableOpacity>
-            <View style={styles.vote}><PickVoteButton pick={p} /></View>
           </View>
         ))}
       </ScrollView>
@@ -73,10 +71,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cards:    { gap: 10 },
   card:     { width: 170, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 16, overflow: 'hidden' },
   photo:    { height: 110, backgroundColor: c.primaryTint },
-  body:     { paddingHorizontal: 10, paddingTop: 8, gap: 4 },
+  body:     { paddingHorizontal: 10, paddingTop: 8, paddingBottom: 10, gap: 4 },
   city:     { flexDirection: 'row', alignItems: 'center', gap: 5 },
   cityText: { flex: 1, fontSize: 12, fontWeight: '700', color: c.muted },
   name:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   answer:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  vote:     { paddingHorizontal: 10, paddingTop: 6, paddingBottom: 10 },
 });

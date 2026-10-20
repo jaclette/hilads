@@ -139,7 +139,7 @@ final class DailyComparisons
                 JOIN users u        ON u.id = p.user_id
                 WHERE dc.status = 'published' AND (dc.compare_key IS NOT NULL OR dc.price_key IS NOT NULL)
                   AND (?::date IS NULL OR dc.challenge_date >= ?::date) AND (?::date IS NULL OR dc.challenge_date <= ?::date)
-                  AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
+                  AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND NOT p.is_suggestion
             ");
             $stmt->execute([$from, $from, $to, $to]);
             $groups = [];   // "kind|key" => [city_id => [values]]

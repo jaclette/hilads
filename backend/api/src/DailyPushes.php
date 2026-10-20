@@ -1077,7 +1077,7 @@ final class DailyPushes
             JOIN daily_challenges c ON c.id = p.challenge_id
             JOIN channels ch        ON ch.id = p.city_id
             WHERE c.challenge_date = ANY (string_to_array(?, ',')::date[])
-              AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed
+              AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion
             GROUP BY c.challenge_date, p.city_id, ch.name
             ORDER BY c.challenge_date, n DESC, p.city_id
         ");

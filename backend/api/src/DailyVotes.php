@@ -94,7 +94,7 @@ final class DailyVotes
             FROM daily_votes v
             JOIN daily_proofs p ON p.id = v.proof_id AND p.city_id IS NOT NULL
             JOIN (SELECT city_id, count(*) AS answers FROM daily_proofs
-                  WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_seed AND NOT is_demo AND city_id IS NOT NULL
+                  WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_seed AND NOT is_demo AND NOT is_suggestion AND city_id IS NOT NULL
                   GROUP BY city_id) c ON c.city_id = p.city_id
             WHERE v.challenge_id = ? AND c.answers >= ?::int
             GROUP BY v.voter_user_id, p.city_id, c.answers
@@ -203,7 +203,8 @@ final class DailyVotes
 
     private static function guard(array $proof, array $user): void
     {
-        if ($proof['moderation_status'] !== 'approved') {
+        // Hilads suggestions are never voted on: they are not players' photos.
+        if ($proof['moderation_status'] !== 'approved' || DailyProofRepository::bool($proof['is_suggestion'] ?? false)) {
             throw new InvalidArgumentException('not_found');
         }
         if ($proof['user_id'] === $user['id']) {

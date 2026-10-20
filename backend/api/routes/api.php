@@ -14541,7 +14541,7 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
     $ranked = $strip['total'] >= DailyLeaderboard::MIN_PROOFS;
     $rows   = $strip['rows'];
     foreach ($rows as $i => &$r) {
-        $r['strip_rank'] = $ranked && $i < 3 && (int) $r['vote_count'] > 0 ? $i + 1 : null;
+        $r['strip_rank'] = $ranked && $i < 3 && (int) $r['vote_count'] > 0 && !DailyProofRepository::bool($r['is_suggestion'] ?? false) ? $i + 1 : null;
     }
     unset($r);
     $viewerId = $user['id'] ?? null;

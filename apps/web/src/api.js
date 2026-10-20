@@ -2453,8 +2453,6 @@ export function fetchDailyBoard(date, locale) {
   return daily('GET', `/daily/challenges/${date}/compare`, { params: { locale } })
 }
 
-/** Vote for a Hilads pick of today's challenge, or withdraw (own count: never rankings, tour, Index or points). → { voted, voteCount } */
-export function votePick(placeId, on) { return daily(on ? 'POST' : 'DELETE', `/daily/picks/${placeId}/vote`) }
 
 /** Yesterday around the world (SPEC 10.7): one slide per city of yesterday's challenge. Public. */
 export function fetchDailyTour(cityId, locale) {

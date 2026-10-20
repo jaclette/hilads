@@ -5,7 +5,7 @@ import { track } from '../../lib/analytics'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
 import { useDaily, useDc, ProofTile } from './dailyShared'
-import { PickBadge, PickVoteButton } from '../map/Pick'
+import { PickBadge } from '../map/Pick'
 import { answerText, useMoney } from './compareShared'
 
 /**
@@ -178,7 +178,6 @@ function PicksMeanwhile({ picks, ans }) {
               {p.answer && <span className="cmp-row-answer">{ans(p.answer)}</span>}
               <PickBadge />
             </span>
-            <PickVoteButton pick={p} />
           </div>
         ))}
       </div>

@@ -113,7 +113,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
               )}
             </View>
           )}
-          {proof.status === 'approved' && (
+          {proof.status === 'approved' && !proof.suggestion && (
             <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="viewer" variant="viewer" />
           )}
           {shareable && challenge && (

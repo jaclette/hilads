@@ -19,7 +19,7 @@ import {
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { PhotoCredit, PickBadge, PickVoteButton } from '../map/Pick'
+import { PhotoCredit, PickBadge } from '../map/Pick'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -459,7 +459,8 @@ function TodayProofs({ today }) {
   // My own proof in review leads the strip, with its badge (only mine: others' never show before approval).
   const mine = today?.myProof?.status === 'pending'
     && (strip?.scope === 'world' || today.myProof.city?.id === strip?.city?.id) ? today.myProof : null
-  const items = [...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []), ...(strip?.proofs ?? [])]
+  // Players' photos first, then the Hilads suggestions (badge only, never voted on or counted).
+  const items = playersFirst([...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []), ...(strip?.proofs ?? [])])
   const around = cities && cities.countries >= 2 && cities.proofs.length > 0 ? cities : null
   const cityStrip = strip?.scope === 'city' && items.length > 0 ? strip : null
   // World's strip only while fewer than 2 countries answered (else Today around the world).
@@ -480,15 +481,15 @@ function TodayProofs({ today }) {
   return (
     <>
       {cityStrip && (
-        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={t('today.proofs', { count: cityStrip.total })}
+        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={cityStrip.total > 0 ? t('today.proofs', { count: cityStrip.total }) : null}
                onOpen={() => openDaily('challenge', { date: 'today', source: 'today_strip', tab: 'city' })}
                items={items} voting={voting} source="strip_city" footer={!around && voting} />
       )}
       {aroundData && (
         <Strip title={t('today.aroundWorld')}
-               stats={t('today.proofsIn', { proofs: t('today.proofs', { count: aroundData.total }), countries: t('today.countries', { count: aroundData.countries }) })}
+               stats={aroundData.total > 0 ? t('today.proofsIn', { proofs: t('today.proofs', { count: aroundData.total }), countries: t('today.countries', { count: aroundData.countries }) }) : null}
                onOpen={() => openDaily('challenge', around ? { date: 'today', source: 'world_strip', tab: 'compare' } : { date: 'today', source: 'today_strip', tab: 'world' })}
-               items={around ? around.proofs : items} voting={voting} source="strip_world" footer={voting} board={board} />
+               items={around ? playersFirst(around.proofs) : items} voting={voting} source="strip_world" footer={voting} board={board} />
       )}
     </>
   )
@@ -499,11 +500,13 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, board = nu
   const { t } = useDc()
   const { account, openDaily } = useDaily()
   const prompted = useRef(false)
+  // Nothing to vote on when the strip only holds Hilads suggestions: no prompt, no note.
+  const votable = voting && items.some(p => !p.suggestion)
   useEffect(() => {
-    if (!voting || prompted.current) return
+    if (!votable || prompted.current) return
     prompted.current = true
     track('vote_prompt_shown', { source, guest: !account, platform_surface: 'web' })
-  }, [voting]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [votable]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="today-card">
       <div className="today-card-head">
@@ -513,9 +516,9 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, board = nu
         </button>
         <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
       </div>
-      <span className="dc-muted today-proofs-stats">{stats}</span>
-      {/* No vote limit: one vote per answer, as many answers as I like. */}
-      {voting && (
+      {stats && <span className="dc-muted today-proofs-stats">{stats}</span>}
+      {/* No vote limit: one vote per photo, as many photos as I like. */}
+      {votable && (
         <div className="vote-prompt">
           <span className="vote-prompt-text">{t('vote.prompt')}</span>
         </div>
@@ -526,33 +529,48 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, board = nu
           <StripProof key={p.id} proof={p} source={source} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />
         ))}
       </div>
-      {footer && <p className="dc-muted vote-tour-note">{t('vote.tourNote')}</p>}
+      {footer && votable && <p className="dc-muted vote-tour-note">{t('vote.tourNote')}</p>}
     </div>
   )
 }
 
+/**
+ * One card, the same structure everywhere: the photo, then a fixed-height
+ * info block: the flag and city on one line, the answer (else the place or
+ * the caption) on 2 reserved lines, then the badge or the vote button pinned
+ * to the bottom, so they line up whatever the text. A Hilads suggestion has
+ * its badge and no vote button.
+ */
 function StripProof({ proof, source, onOpen }) {
   const { t, i18n } = useDc()
   const voteCount = useVoteCount(proof)
   const city = proof.city ? localizeCityName(proof.city.name ?? '') : ''
-  const votes = t('today.votes', { count: voteCount })
+  const votes = proof.suggestion ? null : t('today.votes', { count: voteCount })
+  const title = proof.answer ? answerText(proof.answer, i18n.language) : proof.spot?.name ?? proof.place?.name ?? proof.caption ?? ''
   return (
     <div className="proof-strip-item">
-    <button type="button" className="proof-strip-open" onClick={onOpen}
-            aria-label={[proof.rank ? `#${proof.rank}` : null, city, votes].filter(Boolean).join(', ')}>
-      <span className="proof-strip-photo">
-        <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
-        {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
-        {proof.status === 'pending' && <span className="proof-strip-pending"><StatusChip status="pending" /></span>}
-      </span>
-      {/* The city, then the answer to the day's question on its own line (SPEC 10.2). */}
-      {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
-      {proof.answer && <span className="proof-strip-answer">{answerText(proof.answer, i18n.language)}</span>}
-      {proof.suggestion && <PickBadge />}
-    </button>
-    {proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
+      <button type="button" className="proof-strip-open" onClick={onOpen}
+              aria-label={[proof.rank ? `#${proof.rank}` : null, city, title, votes].filter(Boolean).join(', ')}>
+        <span className="proof-strip-photo">
+          <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
+          {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
+          {proof.status === 'pending' && <span className="proof-strip-pending"><StatusChip status="pending" /></span>}
+        </span>
+        <span className="proof-strip-cityrow">
+          {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
+        </span>
+        <span className="proof-strip-answer">{title}</span>
+      </button>
+      <div className="proof-strip-bottom">
+        {proof.suggestion ? <PickBadge /> : proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
+      </div>
     </div>
   )
+}
+
+/** Players' photos first, the Hilads suggestions after (stable). */
+function playersFirst(list) {
+  return [...list.filter(p => !p.suggestion), ...list.filter(p => p.suggestion)]
 }
 
 /**
@@ -691,7 +709,6 @@ function TodayPicks({ today }) {
               <span className="spot-card-name">{p.place.name}</span>
               {p.answer && <span className="today-pick-answer">{answerText(p.answer, i18n.language)}</span>}
               <PickBadge />
-              <PickVoteButton pick={p} />
             </span>
           </div>
         ))}

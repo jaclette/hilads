@@ -74,7 +74,7 @@ final class DailyIndex
             JOIN channels ch    ON ch.id = p.city_id
             JOIN users u        ON u.id = p.user_id
             WHERE dc.status = 'published' AND dc.challenge_date BETWEEN ? AND ?
-              AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
+              AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND NOT p.is_suggestion
             ORDER BY dc.challenge_date
         ");
         $stmt->execute([$weekStart, $weekEnd]);

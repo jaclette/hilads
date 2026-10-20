@@ -164,7 +164,7 @@ final class DailyBoard
                 JOIN users u        ON u.id = p.user_id
                 LEFT JOIN cities cc ON cc.channel_id = p.city_id
                 -- Demo and seed proofs never count, nor any proof of a demo account (a second guard).
-                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND NOT p.is_suggestion
             ");
             $stmt->execute([$challengeId]);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -265,25 +265,27 @@ final class DailyProofRepository
      */
     public static function strip(string $challengeId, ?string $cityId, int $limit, bool $podium = false): array
     {
-        $key   = "daily_strip_v1_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}" . ($podium ? '_podium' : '');
+        $key   = "daily_strip_v2_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}" . ($podium ? '_podium' : '');
         $order = $podium ? 'p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id'
                          : 'p.vote_count DESC, p.approved_at DESC, p.id DESC';
-        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit, $order): array {
+        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit, $order, $podium): array {
             $pdo        = Database::pdo();
             $cityFilter = $cityId !== null ? " AND p.city_id = ?" : "";
             $args       = $cityId !== null ? [$challengeId, $cityId] : [$challengeId];
+            // Hilads suggestions are never counted, never on the podium; in the strip they come after the players' photos.
+            $listFilter = $podium ? " AND NOT p.is_suggestion" : "";
 
             $stmt = $pdo->prepare("
                 SELECT count(*) AS total, count(DISTINCT c.country) AS countries
                 FROM daily_proofs p
                 LEFT JOIN cities c ON c.channel_id = p.city_id
-                WHERE p.challenge_id = ? AND p.moderation_status = 'approved'{$cityFilter}
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion{$cityFilter}
             ");
             $stmt->execute($args);
             $counts = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $stmt = $pdo->prepare(self::SELECT . " WHERE p.challenge_id = ? AND p.moderation_status = 'approved'{$cityFilter}
-                ORDER BY {$order} LIMIT ?");
+            $stmt = $pdo->prepare(self::SELECT . " WHERE p.challenge_id = ? AND p.moderation_status = 'approved'{$cityFilter}{$listFilter}
+                ORDER BY p.is_suggestion, {$order} LIMIT ?");
             $stmt->execute([...$args, $limit]);
 
             return ['total' => (int) $counts['total'], 'countries' => (int) $counts['countries'], 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
@@ -298,18 +300,19 @@ final class DailyProofRepository
      */
     public static function perCity(string $challengeId, int $limit): array
     {
-        return Cache::remember("daily_percity_v1_{$challengeId}_{$limit}", 15, static function () use ($challengeId, $limit): array {
+        return Cache::remember("daily_percity_v2_{$challengeId}_{$limit}", 15, static function () use ($challengeId, $limit): array {
             $pdo  = Database::pdo();
             $stmt = $pdo->prepare("
                 SELECT id, city_count FROM (
-                    SELECT p.id, count(*) OVER (PARTITION BY p.city_id) AS city_count,
+                    SELECT p.id, count(*) FILTER (WHERE NOT p.is_suggestion) OVER (PARTITION BY p.city_id) AS city_count,
+                           bool_and(p.is_suggestion) OVER (PARTITION BY p.city_id) AS only_suggestions,
                            row_number() OVER (PARTITION BY p.city_id
-                                              ORDER BY p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id) AS rn
+                                              ORDER BY p.is_suggestion, p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id) AS rn
                     FROM daily_proofs p
                     WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.city_id IS NOT NULL
                 ) x
                 WHERE rn = 1
-                ORDER BY city_count DESC, id
+                ORDER BY only_suggestions, city_count DESC, id
                 LIMIT ?
             ");
             $stmt->execute([$challengeId, $limit]);
@@ -329,7 +332,7 @@ final class DailyProofRepository
                 SELECT count(*) AS total, count(DISTINCT c.country) AS countries
                 FROM daily_proofs p
                 LEFT JOIN cities c ON c.channel_id = p.city_id
-                WHERE p.challenge_id = ? AND p.moderation_status = 'approved'
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion
             ");
             $stmt->execute([$challengeId]);
             $counts = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -394,7 +397,7 @@ final class DailyProofRepository
                 LEFT JOIN cities cc   ON cc.channel_id = p.city_id
                 WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
                   AND (?::text IS NULL OR p.city_id = ?)
-                ORDER BY p.vote_count DESC, p.approved_at DESC, p.id
+                ORDER BY p.is_suggestion, p.vote_count DESC, p.approved_at DESC, p.id
                 LIMIT 1
             ");
             $stmt->execute([$challengeId, $cityId, $cityId]);
