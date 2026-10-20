@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import * as Sentry from '@sentry/react'
 import './index.css'
@@ -121,8 +122,21 @@ async function bootstrap() {
         <>
             <App />
             <OpenInAppBanner />
+            <BootShellDone />
         </>,
     )
+}
+
+/** The app is on screen: the branded boot shell (index.html) fades out. */
+function BootShellDone() {
+    useEffect(() => {
+        const el = document.getElementById('boot-shell')
+        if (!el) return
+        el.style.transition = 'opacity .18s ease'
+        el.style.opacity = '0'
+        setTimeout(() => el.remove(), 200)
+    }, [])
+    return null
 }
 
 bootstrap()

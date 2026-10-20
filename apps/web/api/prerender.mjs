@@ -1096,19 +1096,10 @@ function freshnessLine(events) {
   return ''  // older than a week - don't advertise stale freshness
 }
 
-// Minimal inline CSS so the SSR body doesn't look broken during the brief
-// window before React mounts. Scoped under `.ssr-main` so it can't bleed into
-// SPA styles. The SPA's own stylesheet renders the real interactive UI.
-const SSR_CITY_STYLES = `
-  .ssr-main { max-width: 720px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, sans-serif; color: #e0e0e0; background: #161210; line-height: 1.5; }
-  .ssr-main h1 { font-size: 1.6rem; margin: 0 0 0.5rem; color: #fff; }
-  .ssr-main h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; color: #fff; }
-  .ssr-main p  { margin: 0 0 0.75rem; }
-  .ssr-main ul { padding-left: 1.25rem; margin: 0 0 1rem; }
-  .ssr-main li { margin: 0.25rem 0; }
-  .ssr-main a  { color: #FF7A3C; text-decoration: none; }
-  .ssr-intro   { font-size: 1.05rem; }
-`.replace(/\s+/g, ' ').trim()
+// The SSR body's styles live in index.html's <head> (brand palette, light and
+// dark), with the branded boot shell that covers it until React mounts. Only
+// the page-specific extras are added here.
+const SSR_CITY_STYLES = ''
 
 function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challenges = []) {
   const city  = payload.city || ''
