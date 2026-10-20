@@ -421,7 +421,9 @@ export default function DailyProofScreen() {
                 <View style={styles.qText}>
                   <Text style={styles.qKicker}>{t('compare.kicker')}</Text>
                   <Text style={styles.qQuestion} accessibilityRole="header">{compare.question}</Text>
-                  {!!draftLabel(answer, compare.type) && <Text style={styles.qAnswer} numberOfLines={1}>{draftLabel(answer, compare.type)}</Text>}
+                  {!!draftLabel(answer, compare.type) && (
+                    <View style={styles.qAnswer}><Text style={styles.qAnswerText} numberOfLines={1}>{draftLabel(answer, compare.type)}</Text></View>
+                  )}
                 </View>
               </View>
             ) : (
@@ -652,8 +654,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   qText:       { padding: 16, gap: 4 },
   qKicker:     { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 0.6, opacity: 0.9 },
   qQuestion:   { fontSize: 22, lineHeight: 27, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
-  qAnswer:     { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, overflow: 'hidden',
-                 backgroundColor: '#FFFFFF', color: '#2A1C13', fontSize: FontSizes.md, fontWeight: '800' },
+  qAnswer:     { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#FFFFFF' },
+  qAnswerText: { color: '#2A1C13', fontSize: FontSizes.md, fontWeight: '800' },
   submit:      { backgroundColor: c.primary, borderRadius: 16, minHeight: 52, alignItems: 'center', justifyContent: 'center' },
   submitOff:   { opacity: 0.5 },
   submitText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
