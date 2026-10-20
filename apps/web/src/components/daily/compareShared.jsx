@@ -39,12 +39,20 @@ export function approx(v) {
   return Math.round(v / step) * step
 }
 
+/** A bare "$" for another dollar than the US one reads as USD: "NT$ 38", "MX$ 90", except where it is the local money (MXN in es-MX). */
+function disambiguate(out, currency, locale) {
+  if (currency === 'USD' || !/(^|[^A-Za-z])\$/.test(out) || (currency === 'MXN' && /-MX$/i.test(locale ?? ''))) return out
+  const prefix = currency === 'TWD' ? 'NT$' : new Intl.NumberFormat('en-US', { style: 'currency', currency, currencyDisplay: 'symbol' })
+    .formatToParts(0).find(p => p.type === 'currency')?.value ?? currency
+  return out.replace(/(^|[^A-Za-z])\$/, `$1${prefix}`)
+}
+
 export function formatMoney(amount, currency, locale) {
   try {
-    return new Intl.NumberFormat(locale, {
+    return disambiguate(new Intl.NumberFormat(locale, {
       style: 'currency', currency, currencyDisplay: 'narrowSymbol',
       maximumFractionDigits: amount >= 100 || Number.isInteger(amount) ? 0 : 2,
-    }).format(amount)
+    }).format(amount), currency, locale)
   } catch {
     return `${amount} ${currency}`
   }
