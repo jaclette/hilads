@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Scelta Hilads",
     "goodToKnow": "Buono a sapersi",
-    "credit": "Foto: {{credit}}"
+    "credit": "Foto: {{credit}}",
+    "source": "Fonte"
   },
   "shareLink": {
     "share": "Condividi",

@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Hilads のおすすめ",
     "goodToKnow": "知っておきたいこと",
-    "credit": "写真: {{credit}}"
+    "credit": "写真: {{credit}}",
+    "source": "出典"
   },
   "shareLink": {
     "share": "シェア",

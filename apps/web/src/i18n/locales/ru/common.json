@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Выбор Hilads",
     "goodToKnow": "Полезно знать",
-    "credit": "Фото: {{credit}}"
+    "credit": "Фото: {{credit}}",
+    "source": "Источник"
   },
   "shareLink": {
     "share": "Поделиться",

@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Hilads की पसंद",
     "goodToKnow": "जानने लायक",
-    "credit": "फ़ोटो: {{credit}}"
+    "credit": "फ़ोटो: {{credit}}",
+    "source": "स्रोत"
   },
   "shareLink": {
     "share": "शेयर करें",

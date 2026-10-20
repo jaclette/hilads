@@ -231,7 +231,8 @@
   "pick": {
     "badge": "Hilads 精选",
     "goodToKnow": "小贴士",
-    "credit": "图片：{{credit}}"
+    "credit": "图片：{{credit}}",
+    "source": "来源"
   },
   "directions": {
     "chooseTitle": "用以下应用打开路线",

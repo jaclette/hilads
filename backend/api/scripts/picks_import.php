@@ -8,9 +8,10 @@
  *   php scripts/picks_import.php --file=picks.json --dry     # check, write nothing
  *   php scripts/picks_import.php --file=https://.../picks.json
  *   php scripts/picks_import.php --sync    # every attached pick becomes (or stays) an answer of its challenge
+ *   php scripts/picks_import.php --sources=<file | https URL>   # {"<photoUrl>": "<source page>"}: fills photo_source_url of picks and suggestions
  *
  * File: {"picks": [{"name", "lat", "lng", "theme", "caption", "credit",
- * "note": {"en", "fr", ...}, "photoUrl", "status": "draft" | "published",
+ * "note": {"en", "fr", ...}, "photoUrl", "source" (the photo's page), "status": "draft" | "published",
  * "attach": [{"date", "answer"}]}], "attach": [{"name", "date", "answer"}]}.
  * "attach" puts a pick in that day's Compare tab ("Meanwhile, from our
  * picks") with its checked answer (null: none); the top-level "attach" is for
@@ -29,7 +30,13 @@ foreach ($args as $a) {
     }
 }
 $sync = in_array('--sync', $args, true);
-if ($file === null && !$sync) {
+$sources = null;
+foreach ($args as $a) {
+    if (str_starts_with($a, '--sources=')) {
+        $sources = substr($a, 10);
+    }
+}
+if ($file === null && !$sync && $sources === null) {
     fwrite(STDERR, "Usage: php scripts/picks_import.php --file=<picks.json | https URL> [--dry]\n");
     exit(1);
 }
@@ -56,6 +63,23 @@ $host = parse_url((string) getenv('DATABASE_URL'), PHP_URL_HOST) ?: '(no DATABAS
 fwrite(STDERR, "Database host: {$host}\n");
 
 try {
+    if ($sources !== null) {
+        // Backfill: each pick / suggestion photo's source page (CC attribution link in the sheet).
+        $map = json_decode((string) file_get_contents($sources), true) ?: [];
+        $upd = Database::pdo()->prepare("UPDATE daily_proofs SET photo_source_url = ? WHERE photo_url = ? AND (is_pick OR is_suggestion) AND photo_source_url IS DISTINCT FROM ?");
+        $n = 0;
+        foreach ($map as $photo => $page) {
+            if (!is_string($page) || !str_starts_with($page, 'https://')) {
+                continue;
+            }
+            if (!$dry) {
+                $upd->execute([$page, $photo, $page]);
+                $n += $upd->rowCount();
+            }
+        }
+        echo json_encode(['dryRun' => $dry, 'photos' => count($map), 'updated' => $n]), "\n";
+        exit(0);
+    }
     if ($sync) {
         // Hilads suggestions as answers, for picks attached before that existed.
         $ids = Database::pdo()->query("SELECT DISTINCT challenge_id FROM daily_pick_answers")->fetchAll(PDO::FETCH_COLUMN);

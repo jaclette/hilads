@@ -93,6 +93,9 @@ daily_styles();
         <div class="form-group"><label>Photo credit</label>
             <input type="text" name="credit" maxlength="<?= SpotsAdmin::PICK_CREDIT_MAX ?>" required value="<?= dh($edit['photo_credit'] ?? '') ?>" placeholder="Chinh Le Duc / Unsplash · or Hilads">
             <div class="hint">Shown under the photo instead of "Photo by @username". For CC BY / BY-SA photos, include the license: "P. Hughes, CC BY 4.0, Wikimedia Commons".</div></div>
+        <div class="form-group"><label>Photo source page (https, linked next to the credit in the app; required by CC BY / BY-SA)</label>
+            <input type="url" name="source_url" maxlength="500" value="<?= dh($edit['photo_source_url'] ?? '') ?>" placeholder="https://commons.wikimedia.org/wiki/File:...">
+        </div>
         <div class="form-group"><label>Caption (optional, one sentence)</label>
             <input type="text" name="caption" maxlength="<?= DailyProofRepository::CAPTION_MAX ?>" value="<?= dh($edit['caption'] ?? '') ?>"></div>
         <div class="form-group"><label>Good to know (English)</label>

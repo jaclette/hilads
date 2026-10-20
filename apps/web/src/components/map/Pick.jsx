@@ -30,8 +30,19 @@ export function GoodToKnow({ note }) {
 }
 
 /** A cover's credit: "Photo by @username", or a pick's "Photo: Jane Doe / Unsplash". */
-export function PhotoCredit({ cover, className }) {
+export function PhotoCredit({ cover, className, url = null }) {
   const { t } = useTranslation('common')
   if (!cover?.by && !cover?.credit) return null
-  return <span className={className}>{cover.credit ? t('pick.credit', { credit: cover.credit }) : t('photoBy', { username: cover.by })}</span>
+  return (
+    <span className={className}>
+      {cover.credit ? t('pick.credit', { credit: cover.credit }) : t('photoBy', { username: cover.by })}
+      {/* The photo's page: what CC BY / BY-SA attribution asks for. */}
+      {url && <> · <a href={url} target="_blank" rel="noopener noreferrer" className="photo-credit-source">{t('pick.source')}</a></>}
+    </span>
+  )
+}
+
+/** The author alone from a credit ("Chivista, CC0, Wikimedia Commons" → "Chivista"; "Jane Doe / Unsplash" → "Jane Doe"). */
+export function creditAuthor(credit) {
+  return credit.split(',')[0].split(' / ')[0].trim() || credit
 }

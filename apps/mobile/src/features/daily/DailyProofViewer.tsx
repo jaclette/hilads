@@ -70,7 +70,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             {proof.isEarly && <EarlyBadge onDark />}
           </View>
           {proof.city && <CityName name={proof.city.name} country={proof.city.country} short style={styles.extra} />}
-          {proof.suggestion && !!proof.credit && <PhotoCredit by={null} credit={proof.credit} style={styles.extra} />}
+          {proof.suggestion && !!proof.credit && <PhotoCredit by={null} credit={proof.credit} url={proof.creditUrl} style={styles.extra} />}
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
             <View style={styles.nameRow}>
               {proof.worldRank !== null && proof.worldRank <= 3 && (

@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { SheetSkeleton } from '@/features/daily/SheetSkeleton';
+import { PhotoCredit } from '@/features/map/PhotoCredit';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
+import { useScope } from '@/context/ScopeContext';
 import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
-import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere } from '@/hooks/useDaily';
+import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere, getLastToday } from '@/hooks/useDaily';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import { DailyLeaderboardPanel } from '@/features/daily/DailyLeaderboardPanel';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
@@ -21,7 +24,7 @@ import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { Avatar, Button, Card, Chip, ChipTabs, CityFlag, EmptyState, Photo, Screen, ScreenHeader } from '@/ui';
 import { CompareBoard, SuggestionsWhenEmpty } from '@/features/compare/CompareBoard';
-import type { DailyProof } from '@/types';
+import type { DailyProof, DailySheet } from '@/types';
 import { themeName } from '@/features/daily/themes';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
@@ -38,7 +41,8 @@ import { isPlaceTheme } from '@/features/daily/themes';
 export default function DailySheetScreen() {
   const { date: dateParam, proof: proofParam, source, tab, push_type: pushType, share } = useLocalSearchParams<{ date: string; proof?: string; source?: string; tab?: string; push_type?: string; share?: string }>();
   const { city } = useApp();
-  const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : null);
+  // /daily/today from the hero: today's date is already known (no loader).
+  const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : getLastToday()?.challenge?.date ?? null);
 
   // /daily/today: resolve today's date first (the sheet API is by date).
   useEffect(() => {
@@ -48,15 +52,20 @@ export default function DailySheetScreen() {
       .catch(() => setDate('none'));
   }, [date, city?.channelId]);
 
-  if (!date) return <Loading />;
+  if (!date) return <Loading />;   // a cold deep link only: the sheet's frame with placeholders
   return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null}
                 initialTab={tab === 'top10' || tab === 'compare' || tab === 'world' || tab === 'city' ? tab : null} pushType={pushType ?? null} shareProof={share === '1'} />;
 }
 
 function Loading() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  return <Screen><View style={styles.center}><ActivityIndicator color={colors.primary} /></View></Screen>;
+  const { t } = useTranslation('daily');
+  return (
+    <Screen>
+      <ScreenHeader title={t('kicker')} />
+      <View style={styles.list}><SheetSkeleton /></View>
+    </Screen>
+  );
 }
 
 type Tab = 'world' | 'city' | 'compare' | 'top10';
@@ -75,7 +84,22 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
   const [tab, setTab] = useState<Tab>(initialTab ?? 'world');
   const [viewing, setViewing] = useState<DailyProof | null>(null);
   const [autoShare, setAutoShare] = useState(shareProof);
-  const { sheet, loading, loadingMore, error, reload, loadMore, setMyProof } = useDailySheet(date, scope, city?.channelId);
+  const { sheet: loaded, loading, loadingMore, error, reload, loadMore, setMyProof } = useDailySheet(date, scope, city?.channelId);
+  // Until the sheet arrives (prefetched by Today, so usually already there): its top from Today's
+  // challenge, the photos as placeholders. Never a full-screen loader.
+  const sheet = useMemo<DailySheet | null>(() => {
+    if (loaded) return loaded;
+    const today = getLastToday();
+    if (!today?.challenge || today.challenge.date !== date) return null;
+    return { ...today, scope: 'world', proofs: [], hasMore: false, nextBefore: null, practical: { priceRanges: [], places: [] }, results: null };
+  }, [loaded, date]);
+  const pending = !loaded;
+  // The Today hero's photo for this day (same choice as the hero: my city's in city scope, else the world's).
+  const { scope: todayScope } = useScope();
+  const lastToday = getLastToday();
+  const heroCover = lastToday?.challenge?.date === date
+    ? (todayScope === 'city' ? lastToday.heroCover?.city : null) ?? lastToday.heroCover?.world ?? null
+    : null;
   const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null, sheet?.serverTime);
   const tracked = useRef(false);
   const [showOriginal, toggleOriginal] = useOriginal();
@@ -187,6 +211,10 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
             <Text style={styles.question}>{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</Text>
           )}
           <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
+          {/* The hero's photo when it is a Hilads pick's: its full credit, license and source link (CC attribution). */}
+          {!!heroCover?.suggestion && !!heroCover.credit && (
+            <PhotoCredit by={null} credit={heroCover.credit} url={heroCover.creditUrl} />
+          )}
           {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
 
           {sheet.twist && isLive && (
@@ -303,15 +331,15 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
         />
       </View>
     );
-  }, [sheet, challenge, myProof, isLive, cityName, scope, tab, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal, date]);
+  }, [sheet, challenge, myProof, isLive, cityName, scope, tab, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal, date, heroCover]);
 
   return (
     <Screen>
       <ScreenHeader title={t('kicker')} right={<Text style={styles.navDate}>{challenge?.date ?? ''}</Text>} />
 
       {loading && !sheet ? (
-        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
-      ) : error || !challenge ? (
+        <View style={styles.list}><SheetSkeleton /></View>
+      ) : (error && !pending) || !challenge ? (
         <View style={styles.center}>
           <EmptyState
             icon={error === 'failed' ? 'cloud-offline-outline' : 'calendar-clear-outline'}
@@ -335,6 +363,8 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
             // How the world answered (SPEC 10.6).
             <CompareBoard date={challenge.date} source={source === 'teaser' ? 'teaser' : source === 'link' ? 'link' : 'tab'}
                           onOpenProof={setViewing} onAnswer={challenge.isActive && !myProof ? onCta : undefined} />
+          ) : pending ? (
+            <SheetSkeleton rows={tab === 'top10'} />
           ) : tab === 'top10' ? (
             <DailyLeaderboardPanel
               sheet={sheet!}

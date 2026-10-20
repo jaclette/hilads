@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import i18n from '@/i18n';
 import { useFocusEffect } from 'expo-router';
-import { fetchDailyArchive, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
+import { fetchDailyArchive, fetchDailyBoard, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
 import { isGpsCity } from '@/lib/gpsCityCorrection';
@@ -76,8 +76,31 @@ export function useHere(): DailyToday['here'] {
   return here;
 }
 
+// Today's last answer and the sheets already loaded (Today prefetches today's), so the
+// challenge sheet opens instantly from the hero: its top from Today, the rest from the
+// cache, refreshed in the background.
+let lastToday: DailyToday | null = null;
+export function getLastToday(): DailyToday | null { return lastToday; }
+const sheetCache = new Map<string, DailySheet>();
+const sheetKey = (date: string, scope: string, cityId: string | null | undefined) => `${date}|${scope}|${cityId ?? ''}|${i18n.language}`;
+export function cachedSheet(date: string, scope: 'world' | 'city', cityId: string | null | undefined): DailySheet | null {
+  return sheetCache.get(sheetKey(date, scope, cityId)) ?? null;
+}
+const prefetchedAt = new Map<string, number>();
+/** Load a sheet into the cache (Today, once its challenge is known), at most once a minute. Errors are silent. */
+export function prefetchSheet(date: string, scope: 'world' | 'city', cityId: string | null | undefined, guestId: string | null): void {
+  const key = sheetKey(date, scope, cityId);
+  if (Date.now() - (prefetchedAt.get(key) ?? 0) < 60_000) return;
+  prefetchedAt.set(key, Date.now());
+  fetchDailySheet(date, { scope, cityId, guestId })
+    .then(s => { sheetCache.set(sheetKey(date, scope, cityId), s); })
+    .catch(() => {});
+}
+
 export function useDailyToday(cityId: string | null | undefined) {
-  const { account, detectedCity } = useApp();
+  const { account, detectedCity, identity } = useApp();
+  const guestIdRef = useRef<string | null>(null);
+  guestIdRef.current = identity?.guestId ?? null;
   const [data, setData]       = useState<DailyToday | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
@@ -89,7 +112,17 @@ export function useDailyToday(cityId: string | null | undefined) {
     try {
       const d = await fetchDailyToday(cityId, hereId ? { cityId: hereId, gps: hereGps } : null);
       setData(d);
+      lastToday = d;
       setLastHere(d.here);
+      // The sheet's photos and the Compare board, so the hero's tap opens them ready.
+      if (d.challenge) {
+        prefetchSheet(d.challenge.date, 'world', cityId, account ? null : guestIdRef.current);
+        const boardKey = `board|${d.challenge.date}`;
+        if (d.challenge.compare && Date.now() - (prefetchedAt.get(boardKey) ?? 0) > 60_000) {
+          prefetchedAt.set(boardKey, Date.now());
+          fetchDailyBoard(d.challenge.date, account ? null : guestIdRef.current).catch(() => {});
+        }
+      }
       if (d.challenge?.isActive) seedVotesLeft(d.myVotes?.left ?? null);
       setError(false);
     } catch (err) {
@@ -128,7 +161,8 @@ export function useDailyToday(cityId: string | null | undefined) {
 export function useDailySheet(date: string, scope: 'world' | 'city', cityId: string | null | undefined) {
   const { identity, account } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
-  const [sheet, setSheet]           = useState<DailySheet | null>(null);
+  // Instant: the cached sheet (Today prefetched it), refreshed below.
+  const [sheet, setSheet]           = useState<DailySheet | null>(() => cachedSheet(date, scope, cityId));
   const [loading, setLoading]       = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError]           = useState<'not_found' | 'failed' | null>(null);
@@ -137,6 +171,7 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
     try {
       const s = await fetchDailySheet(date, { scope, cityId, guestId });
       seedSheet(s);
+      sheetCache.set(sheetKey(date, scope, cityId), s);
       setSheet(s);
       setError(null);
     } catch (err) {
@@ -147,7 +182,12 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
     }
   }, [date, scope, cityId, guestId]);
 
-  useEffect(() => { setLoading(true); load(); }, [load]);
+  useEffect(() => {
+    const cached = cachedSheet(date, scope, cityId);
+    if (cached) { seedSheet(cached); setSheet(cached); }
+    setLoading(true);
+    load();
+  }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const loadMore = useCallback(async () => {

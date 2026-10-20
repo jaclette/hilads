@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Hilads 精選",
     "goodToKnow": "小提醒",
-    "credit": "圖片：{{credit}}"
+    "credit": "圖片：{{credit}}",
+    "source": "來源"
   },
   "shareLink": {
     "share": "分享",

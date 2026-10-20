@@ -46,7 +46,15 @@ export async function fetchDailyToday(cityId?: string | number | null,
 
 /** How the world answered: one row per city (SPEC 10.6). Public. */
 export async function fetchDailyBoard(date: string, guestId?: string | null): Promise<DailyBoard> {
-  return api.get<DailyBoard>(`/daily/challenges/${date}/compare`, { params: { locale: locale(), guestId: guestId ?? undefined } });
+  const b = await api.get<DailyBoard>(`/daily/challenges/${date}/compare`, { params: { locale: locale(), guestId: guestId ?? undefined } });
+  boardCache.set(`${date}|${locale()}`, b);
+  return b;
+}
+
+// The last Compare board per date (Today prefetches it): the sheet shows it at once, then refreshes.
+const boardCache = new Map<string, DailyBoard>();
+export function cachedDailyBoard(date: string): DailyBoard | null {
+  return boardCache.get(`${date}|${locale()}`) ?? null;
 }
 
 /** Yesterday around the world (SPEC 10.7): one slide per city of yesterday's challenge. Public. */

@@ -213,7 +213,8 @@
   "pick": {
     "badge": "اختيار Hilads",
     "goodToKnow": "معلومة مفيدة",
-    "credit": "الصورة: {{credit}}"
+    "credit": "الصورة: {{credit}}",
+    "source": "المصدر"
   },
   "shareLink": {
     "share": "مشاركة",

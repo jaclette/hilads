@@ -13,6 +13,11 @@ import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 // the sheet's "Answer for [city]" uses it, never the browsed city.
 let lastHere = null
 const hereListeners = new Set()
+// Today's last answer: the challenge sheet opens from it at once (its top), before its own data.
+let lastToday = null
+export const getLastToday = () => lastToday
+export function setLastToday(today) { lastToday = today ?? null }
+
 export function setLastHere(here) {
   lastHere = here ?? null
   hereListeners.forEach(l => l())
@@ -386,5 +391,31 @@ export function ProofViewer({ proof, onClose }) {
       )}
     </div>,
     document.getElementById('root') ?? document.body,
+  )
+}
+
+/**
+ * Placeholders inside the challenge sheet while its photos or the Compare
+ * board load (the sheet itself opens at once): a 2 x 2 grid of photo tiles,
+ * or board rows. Never a full-page loader.
+ */
+export function SheetSkeleton({ rows = false }) {
+  if (rows) {
+    return (
+      <div className="dc-skel-rows" aria-busy="true">
+        {[60, 52, 44, 36].map(w => <div key={w} className="dc-skel-row"><span className="dc-skel dc-skel-flag" /><span className="dc-skel dc-skel-line" style={{ width: `${w}%` }} /></div>)}
+      </div>
+    )
+  }
+  return (
+    <div className="dc-skel-grid" aria-busy="true">
+      {[0, 1, 2, 3].map(i => (
+        <div key={i} className="dc-skel-tile">
+          <span className="dc-skel dc-skel-photo" />
+          <span className="dc-skel dc-skel-line" style={{ width: '70%' }} />
+          <span className="dc-skel dc-skel-line" style={{ width: '45%' }} />
+        </div>
+      ))}
+    </div>
   )
 }

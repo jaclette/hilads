@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Hilads-tip",
     "goodToKnow": "Goed om te weten",
-    "credit": "Foto: {{credit}}"
+    "credit": "Foto: {{credit}}",
+    "source": "Bron"
   },
   "shareLink": {
     "share": "Delen",

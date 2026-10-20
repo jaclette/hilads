@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Hilads chọn",
     "goodToKnow": "Điều nên biết",
-    "credit": "Ảnh: {{credit}}"
+    "credit": "Ảnh: {{credit}}",
+    "source": "Nguồn"
   },
   "shareLink": {
     "share": "Chia sẻ",

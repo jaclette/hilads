@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyBoard, fetchDailyCalendar, fetchDailyPodium, fetchDailyToday, fetchDailyTodayProofs, fetchDailyTour, fetchSpotsNear } from '../../api'
+import { fetchDailyBoard, fetchDailyCalendar, fetchDailyPodium, fetchDailySheet, fetchDailyToday, fetchDailyTodayProofs, fetchDailyTour, fetchSpotsNear } from '../../api'
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
@@ -15,11 +15,11 @@ import { CityFlag, CityName } from '../CityName'
 import { LiveDot, WorldTicker, useLiveMotion } from './WorldLive'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
-  StatusChip, OriginalToggle, setLastHere, useOriginal, ProposedBy, RankMedal, VoteButton,
+  StatusChip, OriginalToggle, setLastHere, setLastToday, useOriginal, ProposedBy, RankMedal, VoteButton,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { PhotoCredit, PickBadge, PickPill } from '../map/Pick'
+import { PhotoCredit, PickBadge, PickPill, creditAuthor } from '../map/Pick'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -56,6 +56,12 @@ export default function TodayScreen({ header }) {
         if (!alive) return
         setData(d)
         setLastHere(d.here)
+        setLastToday(d)
+        // The sheet's photos and the Compare board, so the hero's tap opens them ready.
+        if (d.challenge) {
+          fetchDailySheet(d.challenge.date, { scope: 'world', cityId, locale: i18n.language }).catch(() => {})
+          if (d.challenge.compare) fetchDailyBoard(d.challenge.date, i18n.language).catch(() => {})
+        }
         if (d.challenge?.isActive) { seedProofs([d.myProof], true); seedVotesLeft(d.myVotes?.left ?? null) }
       })
       .catch(() => {})
@@ -248,10 +254,8 @@ function Ticket({ data, loading }) {
   // world), with its credit; before any answer, the challenge's or the theme's cover.
   const hero = (scope === 'city' ? data.heroCover?.city : null) ?? data.heroCover?.world ?? null
   const photo = hero ? hero.photoUrl : cover
-  const heroCredit = hero
-    ? [hero.suggestion && hero.credit ? hero.credit : hero.username ? `@${hero.username}` : null,
-       hero.city?.name ? shortCityName(hero.city.name) : null].filter(Boolean).join(' · ')
-    : null
+  // On the photo: "📸 [author]" only (a pick's full credit, license and source link are in the sheet).
+  const heroCredit = hero ? (hero.suggestion && hero.credit ? creditAuthor(hero.credit) : hero.username ? `@${hero.username}` : null) : null
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text)
   // Nobody has answered for my city yet: "Be Saigon's first answer".
   const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
@@ -263,7 +267,8 @@ function Ticket({ data, loading }) {
          aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
       {photo && <img className="today-hero-photo" src={photo} alt="" />}
       <div className="today-hero-top">
-        <span className="today-hero-chip">{theme && <Icon name={themeIcon(theme, challenge.special)} size={15} />}{DAILY_CHALLENGE}{themeLabel ? ` · ${themeLabel}` : ''}</span>
+        {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
+        <span className="today-hero-chip">{theme && <Icon name={themeIcon(theme, challenge.special)} size={15} />}{themeLabel || DAILY_CHALLENGE}</span>
         <span className="today-hero-topright">
           {secondsLeft !== null && <span className="today-hero-chip"><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>}
           {heroCredit && <span className="today-hero-credit">📸 {heroCredit}</span>}

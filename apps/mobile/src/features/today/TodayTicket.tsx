@@ -21,6 +21,7 @@ import { ThemeIcon } from '@/ui/ThemeIcon';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
+import { creditAuthor } from '@/features/map/PhotoCredit';
 import { LiveDot, WorldTicker, useLiveMotion, type TickerEntry } from './WorldLive';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
@@ -214,10 +215,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   // world), with its credit; before any answer, the challenge's or the theme's cover.
   const hero = (scope === 'city' ? data?.heroCover?.city : null) ?? data?.heroCover?.world ?? null;
   const photo = hero ? { uri: hero.photoUrl } : challenge.coverUrl ? { uri: challenge.coverUrl } : themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
-  const heroCredit = hero
-    ? [hero.suggestion && hero.credit ? hero.credit : hero.username ? `@${hero.username}` : null,
-       hero.city?.name ? shortCityName(hero.city.name) : null].filter(Boolean).join(' · ')
-    : null;
+  // On the photo: "📸 [author]" only (a pick's full credit, license and source link are in the sheet).
+  const heroCredit = hero ? (hero.suggestion && hero.credit ? creditAuthor(hero.credit) : hero.username ? `@${hero.username}` : null) : null;
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text);
   // Nobody has answered for my city yet: "Be Saigon's first answer".
   const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
@@ -237,7 +236,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
       <View style={styles.heroTop} pointerEvents="box-none">
         <View style={styles.chip}>
           {challenge.theme && <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={15} color="#FFFFFF" />}
-          <Text style={styles.chipText} numberOfLines={1}>{DAILY_CHALLENGE}{themeLabel ? ` · ${themeLabel}` : ''}</Text>
+          {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
+          <Text style={styles.chipText} numberOfLines={1}>{themeLabel || DAILY_CHALLENGE}</Text>
         </View>
         <View style={styles.heroTopRight}>
           {secondsLeft !== null && (

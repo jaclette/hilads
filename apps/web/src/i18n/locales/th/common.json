@@ -213,7 +213,8 @@
   "pick": {
     "badge": "Hilads แนะนำ",
     "goodToKnow": "น่ารู้",
-    "credit": "ภาพ: {{credit}}"
+    "credit": "ภาพ: {{credit}}",
+    "source": "ที่มา"
   },
   "shareLink": {
     "share": "แชร์",

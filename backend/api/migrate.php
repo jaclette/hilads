@@ -3337,6 +3337,10 @@ run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS pick_note_i18n JSONB", 'p
 run($pdo, "ALTER TABLE places ADD COLUMN IF NOT EXISTS pick_status TEXT CHECK (pick_status IN ('draft', 'published', 'hidden'))", 'places.pick_status');
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_pick BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_pick');
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS photo_credit TEXT", 'daily_proofs.photo_credit');
+// The licensed photo's source page (Wikimedia Commons file page, Unsplash photo
+// page): the sheet links it next to the full credit (CC BY / BY-SA attribution).
+// Reversal: DROP COLUMN photo_source_url.
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS photo_source_url TEXT", 'daily_proofs.photo_source_url');
 
 // A pick attached to a challenge: the Compare tab's "Meanwhile, from our picks",
 // with the pick's answer to the challenge's question when we have one (checked

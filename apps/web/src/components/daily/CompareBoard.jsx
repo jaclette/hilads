@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { fetchDailyBoard, fetchDailySheet } from '../../api'
+import { cachedDailyBoard, fetchDailyBoard, fetchDailySheet } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
-import { useDaily, useDc, ProofTile } from './dailyShared'
+import { useDaily, useDc, ProofTile, SheetSkeleton } from './dailyShared'
 import { PickBadge } from '../map/Pick'
 import { answerText, useMoney } from './compareShared'
 
@@ -18,7 +18,7 @@ import { answerText, useMoney } from './compareShared'
 export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
   const { t, i18n } = useDc()
   const money = useMoney()
-  const [board, setBoard] = useState(null)
+  const [board, setBoard] = useState(() => cachedDailyBoard(date, i18n.language))   // prefetched by Today: instant, then refreshed
   const [failed, setFailed] = useState(false)
   const [city, setCity] = useState(null)
   const [cityProofs, setCityProofs] = useState(null)
@@ -49,7 +49,7 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
   }, [city, date, i18n.language])
 
   if (failed) return <p className="dc-muted dc-center">{t('loadFailed')}</p>
-  if (!board) return <p className="dc-muted dc-center">…</p>
+  if (!board) return <SheetSkeleton rows />
 
   if (city) {
     return (

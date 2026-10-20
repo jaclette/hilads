@@ -2444,14 +2444,23 @@ export function fetchDailyToday(cityId, locale, here = null) {
 }
 
 /** GET /daily/challenges/{date}: the sheet (proofs paged by `before`, results once closed). */
-export function fetchDailySheet(date, { scope = 'world', cityId, before, limit = 20, locale } = {}) {
-  return daily('GET', `/daily/challenges/${date}`, { params: { scope, cityId: cityNum(cityId), before, limit, locale } })
+export async function fetchDailySheet(date, { scope = 'world', cityId, before, limit = 20, locale } = {}) {
+  const s = await daily('GET', `/daily/challenges/${date}`, { params: { scope, cityId: cityNum(cityId), before, limit, locale } })
+  if (!before) dailyCache.set(`sheet|${date}|${scope}|${cityNum(cityId) ?? ''}|${locale}`, s)
+  return s
 }
 
-/** How the world answered: one row per city (SPEC 10.6). Public. */
-export function fetchDailyBoard(date, locale) {
-  return daily('GET', `/daily/challenges/${date}/compare`, { params: { locale } })
+/** What the world said: one row per city (SPEC 10.6). Public. */
+export async function fetchDailyBoard(date, locale) {
+  const b = await daily('GET', `/daily/challenges/${date}/compare`, { params: { locale } })
+  dailyCache.set(`board|${date}|${locale}`, b)
+  return b
 }
+
+// The last sheet and board per date (Today prefetches today's): the challenge sheet shows them at once, then refreshes.
+const dailyCache = new Map()
+export const cachedDailySheet = (date, { scope = 'world', cityId, locale } = {}) => dailyCache.get(`sheet|${date}|${scope}|${cityNum(cityId) ?? ''}|${locale}`) ?? null
+export const cachedDailyBoard = (date, locale) => dailyCache.get(`board|${date}|${locale}`) ?? null
 
 
 /** Yesterday around the world (SPEC 10.7): one slide per city of yesterday's challenge. Public. */

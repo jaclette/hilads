@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import BackButton from '../BackButton'
-import { fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToday } from '../../api'
+import { cachedDailySheet, fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToday } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag, CityName } from '../CityName'
 import { track } from '../../lib/analytics'
@@ -9,9 +9,11 @@ import { openAppModal } from '../AppModal'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
   RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer, useHere,
+  getLastToday, SheetSkeleton,
 } from './dailyShared'
 import Icon from '../Icon'
 import CompareBoard, { SuggestionsWhenEmpty } from './CompareBoard'
+import { PhotoCredit } from '../map/Pick'
 import { themeIcon } from '../../lib/icons'
 import { thumbFallback } from '../../lib/thumbFallback'
 
@@ -43,7 +45,8 @@ export function useLeaderboard(active) {
 export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) {
   const { i18n } = useDc()
   const { cityId } = useDaily()
-  const [date, setDate] = useState(dateParam !== 'today' ? dateParam : null)
+  // From the hero, today's date is already known (no loader).
+  const [date, setDate] = useState(dateParam !== 'today' ? dateParam : getLastToday()?.challenge?.date ?? null)
   // 'today': resolve today's date first (the sheet API is by date).
   useEffect(() => {
     if (date) return
@@ -52,7 +55,7 @@ export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) 
   if (!date) {
     return (
       <div className="full-page dc-page">
-        <div className="page-body dc-body"><div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div></div>
+        <div className="page-body dc-body"><SheetSkeleton /></div>
       </div>
     )
   }
@@ -64,7 +67,21 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
   const { cityId, account, openProfile, needAccount, openSpot } = useDaily()
   const [scope, setScope] = useState(initialTab === 'city' ? 'city' : 'world')
   const [tab, setTab] = useState(['top10', 'compare', 'world', 'city'].includes(initialTab) ? initialTab : 'world')
-  const [sheet, setSheet] = useState(null)
+  // Instant: the sheet Today prefetched, else its top from Today's challenge with placeholders below. Refreshed right away.
+  const [loaded, setSheet] = useState(() => cachedDailySheet(date, { scope: initialTab === 'city' ? 'city' : 'world', cityId, locale: i18n.language }))
+  const sheet = useMemo(() => {
+    if (loaded) return loaded
+    const today = getLastToday()
+    if (!today?.challenge || today.challenge.date !== date) return null
+    return { ...today, scope: 'world', proofs: [], hasMore: false, nextBefore: null, practical: { priceRanges: [], places: [] }, results: null }
+  }, [loaded, date])
+  const pending = !loaded
+  // The Today hero's photo for this day (same choice as the hero: my city's in city scope, else the world's).
+  const { scope: todayScope } = useDaily()
+  const lastToday = getLastToday()
+  const heroCover = lastToday?.challenge?.date === date
+    ? (todayScope === 'city' ? lastToday.heroCover?.city : null) ?? lastToday.heroCover?.world ?? null
+    : null
   const [error, setError] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [viewing, setViewing] = useState(null)
@@ -147,8 +164,8 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
         <span className="page-title">{t('kicker')}</span>
       </div>
       <div className="page-body dc-body">
-        {!sheet && !error ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
-        : error || !challenge ? (
+        {!sheet && !error ? <SheetSkeleton />
+        : (error && pending && !sheet) || !challenge ? (
           <div className="dc-center">
             <p className="dc-muted">{error === 'failed' ? t('loadFailed') : t('notFound')}</p>
             {error === 'failed' && <button type="button" className="dc-link" onClick={load}>{t('retry')}</button>}
@@ -169,6 +186,10 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
               {/* The full question (moved here from the Today hero, SPEC 9.3). */}
               {challenge.compare && <p className="dc-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</p>}
               <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
+              {/* The hero's photo when it is a Hilads pick's: its full credit, license and source link (CC attribution). */}
+              {heroCover?.suggestion && heroCover.credit && (
+                <PhotoCredit cover={{ credit: heroCover.credit }} url={heroCover.creditUrl} className="dc-muted dc-cover-credit" />
+              )}
               {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
 
               {sheet.twist && isLive && (
@@ -221,6 +242,8 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
 
             {tab === 'compare' ? (
               <CompareBoard date={sheet.challenge.date} source={source === 'teaser' ? 'teaser' : 'tab'} onOpenProof={setViewing} />
+            ) : pending ? (
+              <SheetSkeleton rows={tab === 'top10'} />
             ) : tab === 'top10' ? (
               <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} onOpenProof={openProof} />
             ) : sheet.proofs.length === 0 ? (
@@ -329,7 +352,7 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
       ) : (
         <p className="dc-muted">{myProof?.status === 'pending' ? t('leaderboard.pending') : !myProof ? t('leaderboard.noProof') : ''}</p>
       )}
-      {!board ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
+      {!board ? <SheetSkeleton rows />
       : !board.ranked ? <p className="dc-empty-title" style={LINE}><Icon name="flame-outline" size={18} />{t('leaderboard.minProofs', { min: board.minProofs, n: board.approvedCount })}</p>
       : board.world.length === 0 ? <p className="dc-empty-title" style={LINE}><Icon name="heart-outline" size={18} />{t('leaderboard.noVotes')}</p>
       : (

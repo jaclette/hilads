@@ -403,7 +403,7 @@ final class SpotsAdmin
      * Write a planned seed with its uploaded photo URL: the place if new, then
      * the approved seed proof. $pick: a Hilads pick's photo (is_pick) with its credit.
      */
-    public static function seedCommit(array $plan, string $photoUrl, bool $pick = false, ?string $credit = null): string
+    public static function seedCommit(array $plan, string $photoUrl, bool $pick = false, ?string $credit = null, ?string $source = null): string
     {
         ['theme' => $theme, 'username' => $username, 'userId' => $userId, 'caption' => $caption,
          'amount' => $amount, 'currency' => $currency, 'place' => $place, 'name' => $name, 'pos' => $pos] = $plan;
@@ -435,6 +435,9 @@ final class SpotsAdmin
             ]);
             if ($pick) {
                 $pdo->prepare("UPDATE daily_proofs SET is_pick = true, photo_credit = ? WHERE id = ?")->execute([$credit, $proofId]);
+                if ($source !== null && Spots::sourceReady()) {
+                    $pdo->prepare("UPDATE daily_proofs SET photo_source_url = ? WHERE id = ?")->execute([$source, $proofId]);
+                }
             }
             $pdo->prepare("UPDATE places SET status = 'approved', updated_at = now() WHERE id = ? AND status = 'pending'")
                 ->execute([$place['id']]);
@@ -458,7 +461,7 @@ final class SpotsAdmin
     {
         return Database::pdo()->query("
             SELECT pl.id, pl.name, pl.lat, pl.lng, pl.status, pl.hidden, pl.pick_status, pl.pick_note_i18n, ch.name AS city_name,
-                   pp.id AS pick_proof_id, pp.photo_url, pp.photo_credit, pp.caption, dc.theme,
+                   pp.id AS pick_proof_id, pp.photo_url, pp.photo_credit, to_jsonb(pp)->>'photo_source_url' AS photo_source_url, pp.caption, dc.theme,
                    (SELECT count(*) FROM daily_proofs x WHERE x.place_id = pl.id AND x.moderation_status = 'approved'
                                                          AND NOT x.is_seed AND NOT x.is_demo) AS answers
             FROM places pl
@@ -511,6 +514,13 @@ final class SpotsAdmin
             }
         }
         return json_encode($all, JSON_UNESCAPED_UNICODE);
+    }
+
+    /** A photo's source page (https), or null. */
+    private static function pickSource(mixed $v): ?string
+    {
+        $url = trim((string) $v);
+        return preg_match('#^https://\S{4,500}$#', $url) ? $url : null;
     }
 
     private static function pickCredit(mixed $v): string
@@ -582,7 +592,8 @@ final class SpotsAdmin
         if ($dry) {
             return ['place' => $twin['id'] ?? null, 'action' => 'would_create'];
         }
-        $placeId = self::seedCommit($plan, $photo, true, $credit);
+        $source  = self::pickSource($e['source'] ?? '');
+        $placeId = self::seedCommit($plan, $photo, true, $credit, $source);
         Database::pdo()->prepare("UPDATE places SET pick_note_i18n = ?::jsonb, pick_status = ?, updated_at = now() WHERE id = ?")
             ->execute([$noteJs, $status, $placeId]);
         DailyAdminService::audit('place.pick', 'place', $placeId, null, ['status' => $status, 'credit' => $credit, 'import' => true]);
@@ -616,6 +627,10 @@ final class SpotsAdmin
         if ($pick['pick_proof_id'] !== null) {
             $pdo->prepare("UPDATE daily_proofs SET photo_credit = ?, caption = ?, photo_url = COALESCE(?, photo_url), updated_at = now() WHERE id = ?")
                 ->execute([$credit, $caption === '' ? null : $caption, $photo, $pick['pick_proof_id']]);
+            if (Spots::sourceReady()) {
+                $pdo->prepare("UPDATE daily_proofs SET photo_source_url = ? WHERE id = ?")
+                    ->execute([self::pickSource($in['source_url'] ?? ''), $pick['pick_proof_id']]);
+            }
         }
         DailyAdminService::audit('place.pick', 'place', $placeId, ['status' => $pick['pick_status']], ['status' => $status, 'credit' => $credit]);
         Spots::syncSuggestionsOfPlace($placeId);   // published, hidden, new photo: its answers follow

@@ -231,7 +231,8 @@
   "pick": {
     "badge": "Hilads pick",
     "goodToKnow": "Good to know",
-    "credit": "Photo: {{credit}}"
+    "credit": "Photo: {{credit}}",
+    "source": "Source"
   },
   "directions": {
     "chooseTitle": "Open directions in",

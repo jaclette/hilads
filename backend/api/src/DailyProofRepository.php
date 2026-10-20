@@ -390,7 +390,8 @@ final class DailyProofRepository
     {
         return Cache::remember('daily_hero_cover_v1_' . $challengeId . '_' . ($cityId ?? 'world'), 30, static function () use ($challengeId, $cityId): array {
             $stmt = Database::pdo()->prepare("
-                SELECT p.id, p.photo_url, p.photo_credit, p.is_suggestion, u.username, ch.name AS city_name, cc.country AS city_country
+                SELECT p.id, p.photo_url, p.photo_credit, to_jsonb(p)->>'photo_source_url' AS photo_source_url, p.is_suggestion,
+                       u.username, ch.name AS city_name, cc.country AS city_country
                 FROM daily_proofs p
                 JOIN users u          ON u.id = p.user_id AND NOT u.is_demo
                 LEFT JOIN channels ch ON ch.id = p.city_id
@@ -410,6 +411,7 @@ final class DailyProofRepository
                 'city'       => $r['city_name'] !== null ? ['name' => $r['city_name'], 'country' => $r['city_country']] : null,
                 'suggestion' => self::bool($r['is_suggestion'] ?? false),
                 'credit'     => self::bool($r['is_suggestion'] ?? false) ? $r['photo_credit'] : null,
+                'creditUrl'  => self::bool($r['is_suggestion'] ?? false) ? $r['photo_source_url'] : null,
             ];
         }) ?: null;
     }
@@ -466,6 +468,8 @@ final class DailyProofRepository
             // A Hilads suggestion (the official account's answer): its badge and photo credit instead of a person.
             'suggestion'       => self::bool($row['is_suggestion'] ?? false),
             'credit'           => self::bool($row['is_suggestion'] ?? false) ? ($row['photo_credit'] ?? null) : null,
+            // The licensed photo's source page, linked next to the full credit in the sheet.
+            'creditUrl'        => self::bool($row['is_suggestion'] ?? false) ? ($row['photo_source_url'] ?? null) : null,
             // SPEC 10: the answer to the challenge's question {type, value, unit}, and Back home.
         ] + DailyCompare::proofPayload($row, DailyI18n::current()) + ['context' => self::context($row)];
     }

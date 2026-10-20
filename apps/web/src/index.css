@@ -17555,3 +17555,15 @@ body.has-app-promo-banner .page-header {
 /* Store links that became app-modal buttons keep their link look. */
 button.today-cta, button.feed-daily-cta, button.pin-bar-take, button.wm-btn, button.amc-store { font-family: inherit; cursor: pointer; border: none; }
 button.today-cta { width: 100%; }
+
+/* Challenge sheet placeholders (the sheet opens at once; photos and board fill in). */
+.dc-skel { display: block; border-radius: 6px; background: var(--surface2); }
+.dc-skel-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dc-skel-tile { display: flex; flex-direction: column; gap: 6px; }
+.dc-skel-photo { aspect-ratio: 1; border-radius: 16px; }
+.dc-skel-line { height: 12px; }
+.dc-skel-rows { display: flex; flex-direction: column; gap: 12px; padding: 12px 0; }
+.dc-skel-row { display: flex; align-items: center; gap: 10px; }
+.dc-skel-flag { width: 24px; height: 16px; border-radius: 3px; }
+.dc-cover-credit { margin: 0; font-size: 12px; line-height: 1.4; }
+.photo-credit-source { color: var(--text); text-decoration: underline; }

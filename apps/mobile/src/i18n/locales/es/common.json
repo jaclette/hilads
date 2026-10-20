@@ -231,7 +231,8 @@
   "pick": {
     "badge": "Selección Hilads",
     "goodToKnow": "Bueno saberlo",
-    "credit": "Foto: {{credit}}"
+    "credit": "Foto: {{credit}}",
+    "source": "Fuente"
   },
   "directions": {
     "chooseTitle": "Abrir la ruta en",

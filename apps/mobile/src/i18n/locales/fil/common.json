@@ -231,7 +231,8 @@
   "pick": {
     "badge": "Pinili ng Hilads",
     "goodToKnow": "Dapat malaman",
-    "credit": "Larawan: {{credit}}"
+    "credit": "Larawan: {{credit}}",
+    "source": "Pinagmulan"
   },
   "directions": {
     "chooseTitle": "Buksan ang direksyon sa",

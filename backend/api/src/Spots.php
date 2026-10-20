@@ -231,6 +231,21 @@ final class Spots
      * detached or unpublished picks lose theirs (with its votes). Returns
      * {created, updated, removed}. No-op before migrate.php.
      */
+    /** True once migrate.php added daily_proofs.photo_source_url. */
+    public static function sourceReady(): bool
+    {
+        static $ready = null;
+        if ($ready === null) {
+            try {
+                Database::pdo()->query("SELECT photo_source_url FROM daily_proofs LIMIT 0");
+                $ready = true;
+            } catch (\Throwable $e) {
+                $ready = false;
+            }
+        }
+        return $ready;
+    }
+
     public static function syncSuggestions(string $challengeId): array
     {
         $out = ['created' => 0, 'updated' => 0, 'removed' => 0];
@@ -273,6 +288,15 @@ final class Spots
                          $r['answer_text'], $r['answer_number'], $r['answer_minutes'],
                          $r['place_id'], $r['lat'], $r['lng'], $r['name']]);
             $out['created']++;
+        }
+        // The photo's source page follows the pick (the sheet's attribution link).
+        if (self::sourceReady()) {
+            $pdo->prepare("
+                UPDATE daily_proofs s SET photo_source_url = pp.photo_source_url
+                FROM daily_proofs pp
+                WHERE s.challenge_id = ? AND s.is_suggestion AND pp.place_id = s.place_id AND pp.is_pick
+                  AND pp.photo_source_url IS DISTINCT FROM s.photo_source_url
+            ")->execute([$challengeId]);
         }
         $del = $pdo->prepare("
             DELETE FROM daily_proofs WHERE challenge_id = ? AND is_suggestion

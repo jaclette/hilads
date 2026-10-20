@@ -917,6 +917,8 @@ export interface DailyProof {
   /** A Hilads suggestion (the official account's answer): its badge and photo credit instead of a person. */
   suggestion?:      boolean;
   credit?:          string | null;
+  /** The licensed photo's source page (CC attribution link). */
+  creditUrl?:       string | null;
   photoUrl:         string;
   thumbUrl:         string | null;
   caption:          string | null;
@@ -954,6 +956,7 @@ export interface DailyHeroCover {
   city:       { name: string | null; country: string | null } | null;
   suggestion: boolean;
   credit:     string | null;
+  creditUrl?: string | null;
 }
 
 export interface DailyToday {

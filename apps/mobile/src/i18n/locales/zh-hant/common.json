@@ -231,7 +231,8 @@
   "pick": {
     "badge": "Hilads 精選",
     "goodToKnow": "小提醒",
-    "credit": "圖片：{{credit}}"
+    "credit": "圖片：{{credit}}",
+    "source": "來源"
   },
   "directions": {
     "chooseTitle": "用以下應用程式開啟路線",

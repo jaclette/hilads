@@ -231,7 +231,8 @@
   "pick": {
     "badge": "Pilihan Hilads",
     "goodToKnow": "Perlu diketahui",
-    "credit": "Foto: {{credit}}"
+    "credit": "Foto: {{credit}}",
+    "source": "Sumber"
   },
   "directions": {
     "chooseTitle": "Buka rute di",

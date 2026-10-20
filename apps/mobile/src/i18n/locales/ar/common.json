@@ -239,7 +239,8 @@
   "pick": {
     "badge": "اختيار Hilads",
     "goodToKnow": "معلومة مفيدة",
-    "credit": "الصورة: {{credit}}"
+    "credit": "الصورة: {{credit}}",
+    "source": "المصدر"
   },
   "directions": {
     "chooseTitle": "افتح الاتجاهات في",

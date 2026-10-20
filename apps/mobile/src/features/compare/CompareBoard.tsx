@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { fetchDailyBoard, fetchDailySheet } from '@/api/daily';
+import { cachedDailyBoard, fetchDailyBoard, fetchDailySheet } from '@/api/daily';
+import { SheetSkeleton } from '@/features/daily/SheetSkeleton';
 import { track } from '@/services/analytics';
 import { shortCityName } from '@/i18n/cityName';
 import { Button, CityFlag, EmptyState } from '@/ui';
@@ -37,7 +38,7 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
   const { t, i18n } = useTranslation('daily');
   const { identity } = useApp();
   const money = useMoney();
-  const [board, setBoard] = useState<DailyBoard | null>(null);
+  const [board, setBoard] = useState<DailyBoard | null>(() => cachedDailyBoard(date));   // prefetched by Today: instant, then refreshed
   const [failed, setFailed] = useState(false);
   const [city, setCity] = useState<DailyCityRef | null>(null);
   const [cityProofs, setCityProofs] = useState<DailyProof[] | null>(null);
@@ -70,7 +71,7 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
   }, [city, date, identity?.guestId]);
 
   if (failed) return <EmptyState icon="cloud-offline-outline" body={t('loadFailed')} />;
-  if (!board) return <ActivityIndicator color={colors.primary} style={styles.loading} />;
+  if (!board) return <SheetSkeleton rows />;
 
   // One city's proofs, with the way back to every city.
   if (city) {
