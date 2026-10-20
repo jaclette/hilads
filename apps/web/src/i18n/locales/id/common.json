@@ -256,5 +256,10 @@
     "download": "Unduh aplikasinya",
     "keepExploring": "Lanjut menjelajah",
     "scan": "Pindai dengan ponselmu"
+  },
+  "directions": {
+    "chooseTitle": "Buka rute di",
+    "ask": "Tanya setiap kali",
+    "setting": "Petunjuk arah"
   }
 }

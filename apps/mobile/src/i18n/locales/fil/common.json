@@ -232,5 +232,10 @@
     "badge": "Mungkahi ng Hilads",
     "goodToKnow": "Dapat malaman",
     "credit": "Larawan: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "Buksan ang direksyon sa",
+    "ask": "Itanong palagi",
+    "setting": "Direksyon"
   }
 }

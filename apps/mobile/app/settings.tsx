@@ -26,6 +26,7 @@ import { Border, FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } fro
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LanguageRow } from '@/features/settings/LanguageRow';
+import { DirectionsRow } from '@/features/settings/DirectionsRow';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { VIBE_ICONS } from '@/features/profile/vibes';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
@@ -462,7 +463,7 @@ export default function SettingsScreen() {
           </>
         )}
 
-        {/* ── Settings rows - everyone (Appearance, Language); Blocked users is
+        {/* ── Settings rows - everyone (Appearance, Language, Directions); Blocked users is
             registered-only (Apple G1.2 requires reachable Block management). ── */}
         <SectionTitle title={t('settings')} style={styles.settingsTitle} />
         <RowGroup>
@@ -474,6 +475,7 @@ export default function SettingsScreen() {
             onPress={onToggleTheme}
           />
           <LanguageRow divider />
+          <DirectionsRow divider />
           {!isGuest && (
             <ListRow icon="ban-outline" title={t('blockedUsers')} divider onPress={() => router.push('/blocked-users' as never)} />
           )}

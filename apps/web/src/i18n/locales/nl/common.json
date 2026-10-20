@@ -257,5 +257,10 @@
     "download": "Download de app",
     "keepExploring": "Verder ontdekken",
     "scan": "Scan met je telefoon"
+  },
+  "directions": {
+    "chooseTitle": "Route openen in",
+    "ask": "Elke keer vragen",
+    "setting": "Route"
   }
 }

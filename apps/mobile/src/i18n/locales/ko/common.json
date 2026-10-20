@@ -232,5 +232,10 @@
     "badge": "Hilads 추천",
     "goodToKnow": "알아두면 좋아요",
     "credit": "사진: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "길찾기 열기",
+    "ask": "매번 묻기",
+    "setting": "길찾기"
   }
 }

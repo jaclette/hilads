@@ -257,5 +257,10 @@
     "download": "Download the app",
     "keepExploring": "Keep exploring",
     "scan": "Scan with your phone"
+  },
+  "directions": {
+    "chooseTitle": "Open directions in",
+    "ask": "Ask every time",
+    "setting": "Directions"
   }
 }

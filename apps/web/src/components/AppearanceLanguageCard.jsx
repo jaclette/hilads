@@ -4,6 +4,7 @@ import { setLocale } from '../i18n'
 import { setTheme } from '../lib/theme'
 import { updateProfile } from '../api'
 import Icon from './Icon'
+import { MAPS_APP_NAMES, getMapsApp, mapsApps, setMapsApp } from '../lib/directions'
 
 // Language list (19 locales), shared by the Me screen for members + guests.
 const LANGS = [
@@ -39,6 +40,8 @@ export default function AppearanceLanguageCard({ account = null }) {
     () => (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme')) || 'light',
   )
   const [langOpen, setLangOpen] = useState(false)
+  const [mapsApp, setMapsChoice] = useState(getMapsApp)
+  const pickMaps = (app) => { setMapsApp(app); setMapsChoice(app) }
 
   const pickTheme = (tv) => {
     setTheme(tv)
@@ -74,6 +77,21 @@ export default function AppearanceLanguageCard({ account = null }) {
           </button>
         </div>
       </div>
+
+      {/* Directions (iOS browsers, where Apple Maps is offered): the remembered maps app, or ask every time. */}
+      {mapsApps().length > 1 && (
+        <div className="profile-mode-section">
+          <span className="profile-mode-label">{t('common:directions.setting')}</span>
+          <div className="profile-mode-btns" role="group" aria-label={t('common:directions.setting')}>
+            {[...mapsApps(), null].map(app => (
+              <button key={app ?? 'ask'} type="button" className={`profile-mode-btn${mapsApp === app ? ' profile-mode-btn--on' : ''}`}
+                      aria-pressed={mapsApp === app} onClick={() => pickMaps(app)}>
+                <span className="profile-mode-btn-name">{app ? MAPS_APP_NAMES[app] : t('common:directions.ask')}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Language — collapsed to the current language; tap to pick from the list. */}
       <div className="profile-mode-section">

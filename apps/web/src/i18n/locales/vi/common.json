@@ -256,5 +256,10 @@
     "download": "Tải app",
     "keepExploring": "Tiếp tục khám phá",
     "scan": "Quét bằng điện thoại"
+  },
+  "directions": {
+    "chooseTitle": "Mở chỉ đường bằng",
+    "ask": "Luôn hỏi",
+    "setting": "Chỉ đường"
   }
 }

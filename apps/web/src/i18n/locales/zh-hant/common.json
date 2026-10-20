@@ -256,5 +256,10 @@
     "download": "下載 App",
     "keepExploring": "繼續逛逛",
     "scan": "用手機掃一掃"
+  },
+  "directions": {
+    "chooseTitle": "用以下應用程式開啟路線",
+    "ask": "每次都詢問",
+    "setting": "路線"
   }
 }

@@ -256,5 +256,10 @@
     "download": "下载 App",
     "keepExploring": "继续逛逛",
     "scan": "用手机扫一扫"
+  },
+  "directions": {
+    "chooseTitle": "用以下应用打开路线",
+    "ask": "每次都询问",
+    "setting": "路线"
   }
 }

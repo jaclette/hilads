@@ -257,5 +257,10 @@
     "download": "App laden",
     "keepExploring": "Weiter entdecken",
     "scan": "Mit dem Handy scannen"
+  },
+  "directions": {
+    "chooseTitle": "Route öffnen in",
+    "ask": "Jedes Mal fragen",
+    "setting": "Route"
   }
 }

@@ -259,5 +259,10 @@
     "download": "Télécharger l'app",
     "keepExploring": "Continuer à explorer",
     "scan": "Scanne avec ton téléphone"
+  },
+  "directions": {
+    "chooseTitle": "Ouvrir l'itinéraire dans",
+    "ask": "Demander à chaque fois",
+    "setting": "Itinéraire"
   }
 }

@@ -256,5 +256,10 @@
     "download": "アプリをダウンロード",
     "keepExploring": "このまま見る",
     "scan": "スマホでスキャン"
+  },
+  "directions": {
+    "chooseTitle": "経路を開くアプリ",
+    "ask": "毎回確認する",
+    "setting": "経路"
   }
 }

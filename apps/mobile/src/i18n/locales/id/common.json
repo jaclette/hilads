@@ -232,5 +232,10 @@
     "badge": "Saran Hilads",
     "goodToKnow": "Perlu diketahui",
     "credit": "Foto: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "Buka rute di",
+    "ask": "Tanya setiap kali",
+    "setting": "Petunjuk arah"
   }
 }

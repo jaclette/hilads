@@ -240,5 +240,10 @@
     "badge": "اقتراح Hilads",
     "goodToKnow": "معلومة مفيدة",
     "credit": "الصورة: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "افتح الاتجاهات في",
+    "ask": "اسأل كل مرة",
+    "setting": "الاتجاهات"
   }
 }

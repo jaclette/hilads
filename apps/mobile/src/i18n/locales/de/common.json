@@ -232,5 +232,10 @@
     "badge": "Hilads-Vorschlag",
     "goodToKnow": "Gut zu wissen",
     "credit": "Foto: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "Route öffnen in",
+    "ask": "Jedes Mal fragen",
+    "setting": "Route"
   }
 }

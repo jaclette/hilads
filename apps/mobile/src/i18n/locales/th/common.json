@@ -232,5 +232,10 @@
     "badge": "Hilads แนะนำ",
     "goodToKnow": "น่ารู้",
     "credit": "ภาพ: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "เปิดเส้นทางใน",
+    "ask": "ถามทุกครั้ง",
+    "setting": "เส้นทาง"
   }
 }

@@ -256,5 +256,10 @@
     "download": "앱 다운로드",
     "keepExploring": "계속 둘러보기",
     "scan": "휴대폰으로 스캔하세요"
+  },
+  "directions": {
+    "chooseTitle": "길찾기 열기",
+    "ask": "매번 묻기",
+    "setting": "길찾기"
   }
 }

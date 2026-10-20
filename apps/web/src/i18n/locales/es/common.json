@@ -259,5 +259,10 @@
     "download": "Descargar la app",
     "keepExploring": "Seguir explorando",
     "scan": "Escanea con tu móvil"
+  },
+  "directions": {
+    "chooseTitle": "Abrir la ruta en",
+    "ask": "Preguntar siempre",
+    "setting": "Cómo llegar"
   }
 }

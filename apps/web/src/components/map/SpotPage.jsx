@@ -6,7 +6,8 @@ import { fetchSpot } from '../../api'
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
-import { themeName, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
+import { themeName, deviceStore, formatPriceRange } from './spotsShared'
+import { MAPS_APP_NAMES, directionsLink, getMapsApp, mapsApps, setMapsApp, travelMode } from '../../lib/directions'
 import { openAppModal } from '../AppModal'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
@@ -36,6 +37,8 @@ export default function SpotPage({ spotId, onBack }) {
   const [next, setNext]       = useState(null)
   const [missing, setMissing] = useState(false)
   const [copied, setCopied]   = useState(false)
+  const [mode, setMode]       = useState(null)   // walking / driving, once known (SPEC 9.5)
+  const [chooser, setChooser] = useState(false)
   const { t: tc } = useTranslation('common')
   const store = deviceStore()
 
@@ -58,6 +61,23 @@ export default function SpotPage({ spotId, onBack }) {
   }
 
   const spot  = data?.spot
+  // Walking under 2 km, driving beyond (only with a position already allowed).
+  useEffect(() => {
+    if (!spot) return
+    let alive = true
+    travelMode(spot.lat, spot.lng).then(m => { if (alive) setMode(m) })
+    return () => { alive = false }
+  }, [spot?.lat, spot?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Directions: Google Maps; iOS browsers pick Google or Apple Maps once (remembered, Me > Directions).
+  const directions = (e) => {
+    track('web_spot_directions', { spot: spot.id })
+    if (mapsApps().length > 1 && !getMapsApp()) { e.preventDefault(); setChooser(true) }
+  }
+  const pickMaps = (app) => {
+    setMapsApp(app)
+    setChooser(false)
+    window.open(directionsLink(app, spot.lat, spot.lng, mode), '_blank', 'noopener,noreferrer')
+  }
   // Share (SPEC 9.14): hilads.live/s/{id}, whose preview is the spot's card.
   const share = async () => {
     if (!spot) return
@@ -109,8 +129,8 @@ export default function SpotPage({ spotId, onBack }) {
             )}
 
             <div className="wm-spot-actions">
-              <a className="wm-btn wm-btn--ghost" href={directionsUrl(spot.lat, spot.lng)} target="_blank" rel="noopener noreferrer"
-                 onClick={() => track('web_spot_directions', { spot: spot.id })}>
+              <a className="wm-btn wm-btn--ghost" href={directionsLink(getMapsApp() ?? 'google', spot.lat, spot.lng, mode)} target="_blank" rel="noopener noreferrer"
+                 onClick={directions}>
                 <Icon name="navigate-outline" size={18} />{t('map.directions')}
               </a>
               <button type="button" className="wm-btn"
@@ -158,6 +178,21 @@ export default function SpotPage({ spotId, onBack }) {
           </>
         )}
       </div>
+      {chooser && (
+        <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={tc('directions.chooseTitle')}>
+          <button type="button" className="v3-sheet-scrim" onClick={() => setChooser(false)} aria-label={tc('cancel')} />
+          <div className="v3-sheet">
+            <span className="v3-sheet-grabber" aria-hidden="true" />
+            <p className="v3-sheet-title">{tc('directions.chooseTitle')}</p>
+            {mapsApps().map(app => (
+              <button key={app} type="button" className="v3-scope-row" onClick={() => pickMaps(app)}>
+                <span className="v3-scope-row-icon" aria-hidden="true"><Icon name="navigate-outline" size={20} /></span>
+                <span className="v3-scope-row-body"><span className="v3-scope-row-title">{MAPS_APP_NAMES[app]}</span></span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

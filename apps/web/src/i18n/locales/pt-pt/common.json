@@ -259,5 +259,10 @@
     "download": "Descarregar a app",
     "keepExploring": "Continuar a explorar",
     "scan": "Lê com o telemóvel"
+  },
+  "directions": {
+    "chooseTitle": "Abrir o percurso no",
+    "ask": "Perguntar sempre",
+    "setting": "Direções"
   }
 }

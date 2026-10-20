@@ -232,5 +232,10 @@
     "badge": "Hiladsのおすすめ",
     "goodToKnow": "知っておきたいこと",
     "credit": "写真: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "経路を開くアプリ",
+    "ask": "毎回確認する",
+    "setting": "経路"
   }
 }

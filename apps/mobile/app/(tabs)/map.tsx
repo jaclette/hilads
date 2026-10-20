@@ -14,7 +14,7 @@ import { track } from '@/services/analytics';
 import { useDailyToday } from '@/hooks/useDaily';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, WORLD_HIDDEN_LAYERS, WORLD_MIN_ZOOM, WORLD_ZOOM, setupMapbox } from '@/lib/mapbox';
-import { directionsUrl, openMapsUrl } from '@/lib/directions';
+import { openDirections } from '@/lib/directions';
 import { fetchMap, fetchMapCities, fetchSpot, searchSpots, type Bbox, type MapCity, type PlanPin, type Spot } from '@/api/spots';
 import { THEME_KEYS, isPlaceTheme, themeName } from '@/features/daily/themes';
 import { meters, pinLabel } from '@/features/today/format';
@@ -452,7 +452,7 @@ export default function MapScreen() {
             spot={selected}
             distanceM={me ? meters(me, [selected.lng, selected.lat]) : null}
             onOpen={() => { track('spot_opened', { source: 'map_sheet', spot: selected.id, view: 'screen' }); router.push(`/spot/${selected.id}` as never); }}
-            onDirections={() => openMapsUrl(directionsUrl(selected.lat, selected.lng, selected.name))}
+            onDirections={() => openDirections(selected.lat, selected.lng)}
             onShare={() => setShare(spotShare(selected))}
             onClose={() => setSelected(null)}
           />

@@ -232,5 +232,10 @@
     "badge": "Hilads 推薦",
     "goodToKnow": "小提醒",
     "credit": "圖片：{{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "用以下應用程式開啟路線",
+    "ask": "每次都詢問",
+    "setting": "路線"
   }
 }

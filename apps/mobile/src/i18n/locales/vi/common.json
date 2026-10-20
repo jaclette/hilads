@@ -232,5 +232,10 @@
     "badge": "Gợi ý Hilads",
     "goodToKnow": "Điều nên biết",
     "credit": "Ảnh: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "Mở chỉ đường bằng",
+    "ask": "Luôn hỏi",
+    "setting": "Chỉ đường"
   }
 }

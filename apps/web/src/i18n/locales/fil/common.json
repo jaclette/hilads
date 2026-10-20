@@ -257,5 +257,10 @@
     "download": "I-download ang app",
     "keepExploring": "Mag-explore pa",
     "scan": "I-scan gamit ang phone mo"
+  },
+  "directions": {
+    "chooseTitle": "Buksan ang direksyon sa",
+    "ask": "Itanong palagi",
+    "setting": "Direksyon"
   }
 }

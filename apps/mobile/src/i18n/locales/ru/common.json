@@ -236,5 +236,10 @@
     "badge": "Совет Hilads",
     "goodToKnow": "Полезно знать",
     "credit": "Фото: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "Открыть маршрут в",
+    "ask": "Спрашивать каждый раз",
+    "setting": "Маршрут"
   }
 }

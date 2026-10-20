@@ -9,7 +9,7 @@ import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
-import { directionsUrl, openMapsUrl } from '@/lib/directions';
+import { openDirections } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { themeName } from '@/features/daily/themes';
 import { compactPrice } from '@/features/today/format';
@@ -116,7 +116,7 @@ export default function SpotScreen() {
         </View>
       )}
       <View style={styles.actions}>
-        <Button icon="navigate-outline" label={t('map.directions')} onPress={() => openMapsUrl(directionsUrl(spot.lat, spot.lng, spot.name))} style={styles.btn} />
+        <Button icon="navigate-outline" label={t('map.directions')} onPress={() => openDirections(spot.lat, spot.lng)} style={styles.btn} />
         <Button variant="secondary" icon="map-outline" label={t('spot.seeOnMap')} onPress={() => router.push(`/(tabs)/map?spot=${spot.id}&source=spot` as never)} style={styles.btn} />
         <IconButton icon="share-social-outline" label={t('share.title')} onPress={() => setShare(spotShare(spot))} style={styles.share} />
       </View>

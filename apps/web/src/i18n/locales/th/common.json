@@ -256,5 +256,10 @@
     "download": "ดาวน์โหลดแอป",
     "keepExploring": "สำรวจต่อ",
     "scan": "สแกนด้วยมือถือ"
+  },
+  "directions": {
+    "chooseTitle": "เปิดเส้นทางใน",
+    "ask": "ถามทุกครั้ง",
+    "setting": "เส้นทาง"
   }
 }

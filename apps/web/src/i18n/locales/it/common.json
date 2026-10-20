@@ -259,5 +259,10 @@
     "download": "Scarica l'app",
     "keepExploring": "Continua a esplorare",
     "scan": "Inquadra con il telefono"
+  },
+  "directions": {
+    "chooseTitle": "Apri il percorso in",
+    "ask": "Chiedi ogni volta",
+    "setting": "Indicazioni"
   }
 }

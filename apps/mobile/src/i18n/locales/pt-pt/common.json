@@ -232,5 +232,10 @@
     "badge": "Sugestão Hilads",
     "goodToKnow": "Bom saber",
     "credit": "Foto: {{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "Abrir o percurso no",
+    "ask": "Perguntar sempre",
+    "setting": "Direções"
   }
 }

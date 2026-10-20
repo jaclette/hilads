@@ -232,5 +232,10 @@
     "badge": "Hilads 推荐",
     "goodToKnow": "小贴士",
     "credit": "图片：{{credit}}"
+  },
+  "directions": {
+    "chooseTitle": "用以下应用打开路线",
+    "ask": "每次都询问",
+    "setting": "路线"
   }
 }

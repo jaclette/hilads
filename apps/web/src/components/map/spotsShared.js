@@ -72,11 +72,6 @@ export function mapTiles(dark) {
   }
 }
 
-/** Directions to a point, on OpenStreetMap (no Google, SPEC 9.5). */
-export function directionsUrl(lat, lng) {
-  return `https://www.openstreetmap.org/directions?to=${lat}%2C${lng}#map=16/${lat}/${lng}`
-}
-
 /** "₫35,000–60,000" style price range, in the viewer's language. */
 export function formatPriceRange(range, lang) {
   if (!range) return null
