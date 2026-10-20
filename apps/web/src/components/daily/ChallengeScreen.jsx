@@ -99,12 +99,14 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
     openProof(proofId)
   }, [proofId, sheet]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // A closed challenge opens on its podium, once.
+  // Without a tab asked: a closed challenge opens on its podium (Top 10), an open one on
+  // Compare once 2 countries played (and the day has a question); else World. Once.
   const defaulted = useRef(initialTab !== null)
   useEffect(() => {
     if (!sheet?.challenge || defaulted.current) return
     defaulted.current = true
     if (!sheet.challenge.isActive) setTab('top10')
+    else if (sheet.challenge.compare && (sheet.counts?.countries ?? 0) >= 2) setTab('compare')
   }, [sheet])
 
   const openProof = (id) => {
@@ -207,14 +209,15 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
 
             <Practical sheet={sheet} onOpenProof={openProof} onOpenSpot={openSpot} />
 
-            <div className="dc-tabs" role="tablist">
-              {['world', ...(isLive ? ['city'] : []), ...(sheet.challenge?.compare ? ['compare'] : []), 'top10'].map(k => (
+            {/* Content-sized chips, never cut: Compare first, then World, the city, Top 10. */}
+            <ScrollTabs>
+              {[...(sheet.challenge?.compare ? ['compare'] : []), 'world', ...(isLive ? ['city'] : []), 'top10'].map(k => (
                 <button key={k} type="button" role="tab" aria-selected={tab === k} className={`dc-tab${tab === k ? ' dc-tab--on' : ''}`} onClick={() => selectTab(k)}>
                   {k === 'world' ? t('tabWorld') : k === 'city' ? <CityName name={sheet.city?.name} country={sheet.city?.country} short />
                     : k === 'compare' ? t('compare.tab') : t('leaderboard.tab')}
                 </button>
               ))}
-            </div>
+            </ScrollTabs>
 
             {tab === 'compare' ? (
               <CompareBoard date={sheet.challenge.date} source={source === 'teaser' ? 'teaser' : 'tab'} onOpenProof={setViewing} />
@@ -272,7 +275,12 @@ function Practical({ sheet, onOpenProof, onOpenSpot }) {
           <p className="dc-line" style={LINE}><Icon name="location-outline" size={16} style={{ color: 'var(--muted2)' }} />{t('places', { count: places.length })}</p>
           <button type="button" className="dc-pill-btn" onClick={() => onOpenSpot(null)}>{t('map.see')}</button>
           {places.slice(0, 5).map(p => (
-            <button key={p.proofId} type="button" className="dc-place" onClick={() => onOpenProof(p.proofId)}>· {p.name || t('unnamedPlace')}</button>
+            <button key={p.proofId} type="button" className="dc-place" onClick={() => onOpenProof(p.proofId)}>
+              {/* "🇲🇽 Churrería El Moro · Mexico City" */}
+              {p.city?.country ? <CityFlag country={p.city.country} size={14} /> : '· '}
+              <span className="dc-place-name">{p.name || t('unnamedPlace')}</span>
+              {p.city?.name && <span className="dc-place-city"> · {shortCityName(p.city.name)}</span>}
+            </button>
           ))}
         </>
       )}
@@ -370,5 +378,30 @@ function ResultRow({ proof, label, onOpen }) {
       </span>
       <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{proof.voteCount}</span>
     </button>
+  )
+}
+
+/**
+ * The sheet's tabs: content-sized chips in a horizontal scroll, never cut in
+ * any locale; a soft fade at an edge while more tabs follow on that side.
+ */
+function ScrollTabs({ children }) {
+  const ref = useRef(null)
+  const [edges, setEdges] = useState({ left: false, right: false })
+  const measure = useCallback(() => {
+    const el = ref.current
+    if (!el) return
+    setEdges({ left: el.scrollLeft > 4, right: el.scrollWidth - el.clientWidth - el.scrollLeft > 4 })
+  }, [])
+  useEffect(() => {
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [measure, children])
+  return (
+    <div ref={ref} role="tablist" onScroll={measure}
+         className={`dc-tabs${edges.left ? ' dc-tabs--fade-left' : ''}${edges.right ? ' dc-tabs--fade-right' : ''}`}>
+      {children}
+    </div>
   )
 }

@@ -49,18 +49,20 @@ final class DailyChallengeRepository
         return json_decode((string) ($stmt->fetchColumn() ?: '{}'), true) ?: [];
     }
 
-    /** Approved proof counts, World and (when given) city. */
+    /** Approved players' photo counts, World and (when given) city, and the countries that played (the sheet opens on Compare from 2). */
     public static function counts(string $challengeId, ?string $cityId): array
     {
         $stmt = Database::pdo()->prepare("
             SELECT count(*) AS world,
-                   count(*) FILTER (WHERE city_id = ?) AS city
-            FROM daily_proofs
-            WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_suggestion
+                   count(*) FILTER (WHERE p.city_id = ?) AS city,
+                   count(DISTINCT c.country) AS countries
+            FROM daily_proofs p
+            LEFT JOIN cities c ON c.channel_id = p.city_id
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion
         ");
         $stmt->execute([$cityId ?? '', $challengeId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return ['world' => (int) $row['world'], 'city' => $cityId !== null ? (int) $row['city'] : null];
+        return ['world' => (int) $row['world'], 'city' => $cityId !== null ? (int) $row['city'] : null, 'countries' => (int) $row['countries']];
     }
 
     /**
@@ -91,9 +93,11 @@ final class DailyChallengeRepository
         // Places users explicitly pinned on their proof (never derived from photo metadata).
         $stmt = $pdo->prepare("
             SELECT p.id, p.user_id, p.place_lat, p.place_lng, p.place_name, p.photo_url,
-                   u.username, u.display_name
+                   u.username, u.display_name, ch.name AS city_name, cc.country AS city_country
             FROM daily_proofs p
-            JOIN users u ON u.id = p.user_id
+            JOIN users u          ON u.id = p.user_id
+            LEFT JOIN channels ch ON ch.id = p.city_id
+            LEFT JOIN cities cc   ON cc.channel_id = p.city_id
             WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.place_lat IS NOT NULL"
             . str_replace('city_id', 'p.city_id', $cityFilter) . "
             ORDER BY p.approved_at DESC
@@ -157,6 +161,8 @@ final class DailyChallengeRepository
             'name'     => $r['place_name'],
             'thumbUrl' => R2Uploader::thumbProxy($r['photo_url']),
             'user'     => ['id' => $r['user_id'], 'username' => $r['username'], 'displayName' => $r['display_name']],
+            // The place's city ("🇲🇽 Churrería El Moro · Mexico City"), when the query has it.
+            'city'     => ($r['city_name'] ?? null) !== null ? ['name' => $r['city_name'], 'country' => $r['city_country'] ?? null] : null,
         ];
     }
 
@@ -184,7 +190,7 @@ final class DailyChallengeRepository
             'serverTime'  => $now->getTimestamp(),
             'city'        => $city,
             'twist'       => null,
-            'counts'      => ['world' => 0, 'city' => $cityId !== null ? 0 : null],
+            'counts'      => ['world' => 0, 'city' => $cityId !== null ? 0 : null, 'countries' => 0],
             'myProof'     => null,
             'myVotes'     => null,
             'streak'      => $viewer !== null ? DailyResults::currentStreak($viewer['id']) : null,

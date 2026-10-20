@@ -16613,9 +16613,16 @@ body.has-app-promo-banner .page-header {
 .dc-status--wait { border-color: var(--primary); }
 .dc-status--bad { border-color: #C0392B; }
 .dc-pill-btn { align-self: flex-start; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 14px; font-weight: 700; color: var(--primary-text); cursor: pointer; }
-.dc-place { border: none; background: none; padding: 2px 0 2px 18px; font: inherit; font-size: 12px; color: var(--muted2); text-align: left; cursor: pointer; }
-.dc-tabs { display: flex; gap: 8px; }
-.dc-tab { flex: 1; min-height: 42px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 14px; font-weight: 700; color: var(--text); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 8px; }
+.dc-place { display: flex; align-items: center; gap: 6px; border: none; background: none; padding: 2px 0 2px 18px; font: inherit; font-size: 12px; color: var(--muted2); text-align: left; cursor: pointer; min-width: 0; }
+.dc-place-name { font-weight: 700; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-place-city { flex-shrink: 0; }
+.dc-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 1px 0; }
+.dc-tabs::-webkit-scrollbar { display: none; }
+/* Content-sized chips, never cut; a soft fade at the edge while more tabs follow. */
+.dc-tab { flex: 0 0 auto; min-height: 42px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 14px; font-weight: 700; color: var(--text); cursor: pointer; white-space: nowrap; padding: 0 16px; display: inline-flex; align-items: center; gap: 6px; }
+.dc-tabs--fade-right { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+.dc-tabs--fade-left { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); }
+.dc-tabs--fade-left.dc-tabs--fade-right { -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); }
 .dc-tab--on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .dc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .dc-tile { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }

@@ -19,7 +19,7 @@ import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
-import { Avatar, Button, Card, Chip, CityFlag, EmptyState, Photo, Screen, ScreenHeader, Segmented } from '@/ui';
+import { Avatar, Button, Card, Chip, ChipTabs, CityFlag, EmptyState, Photo, Screen, ScreenHeader } from '@/ui';
 import { CompareBoard, SuggestionsWhenEmpty } from '@/features/compare/CompareBoard';
 import type { DailyProof } from '@/types';
 import { themeName } from '@/features/daily/themes';
@@ -98,12 +98,14 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
     fetchDailyProof(openProofId).then(setViewing).catch(() => {});
   }, [openProofId, sheet]);
 
-  // A closed challenge opens on its podium (Top 10 tab), once.
+  // Without a tab asked: a closed challenge opens on its podium (Top 10), an open one on
+  // Compare once 2 countries played (and the day has a question); else World. Once.
   const tabDefaulted = useRef(initialTab !== null);
   useEffect(() => {
     if (!sheet?.challenge || tabDefaulted.current) return;
     tabDefaulted.current = true;
     if (!sheet.challenge.isActive) setTab('top10');
+    else if (sheet.challenge.compare && (sheet.counts.countries ?? 0) >= 2) setTab('compare');
   }, [sheet]);
 
   const selectTab = (next: Tab) => {
@@ -275,7 +277,11 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
                     const proof = sheet.proofs.find(x => x.id === p.proofId);
                     if (proof) setViewing(proof); else fetchDailyProof(p.proofId).then(setViewing).catch(() => {});
                   }} style={styles.placeRow} accessibilityRole="button">
-                    <Text style={styles.place} numberOfLines={1}>{p.name || t('unnamedPlace')}</Text>
+                    {/* "🇲🇽 Churrería El Moro · Mexico City" */}
+                    {!!p.city?.country && <CityFlag country={p.city.country} />}
+                    <Text style={styles.place} numberOfLines={1}>
+                      {p.name || t('unnamedPlace')}{p.city?.name ? <Text style={styles.placeCity}>{` · ${shortCityName(p.city.name)}`}</Text> : null}
+                    </Text>
                     <Ionicons name="chevron-forward" size={14} color={colors.muted} />
                   </TouchableOpacity>
                 ))}
@@ -284,8 +290,9 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
           </Card>
         )}
 
-        <Segmented<Tab>
-          options={(['world', ...(isLive ? ['city'] : []), ...(challenge?.compare ? ['compare'] : []), 'top10'] as Tab[]).map(k => ({
+        {/* Content-sized chips, never cut: Compare first, then World, the city, Top 10. */}
+        <ChipTabs<Tab>
+          options={([...(challenge?.compare ? ['compare'] : []), 'world', ...(isLive ? ['city'] : []), 'top10'] as Tab[]).map(k => ({
             key: k,
             label: k === 'world' ? t('tabWorld') : k === 'city' ? (sheet?.city?.name ? shortCityName(sheet.city.name) : cityName)
               : k === 'compare' ? t('compare.tab') : t('leaderboard.tab'),
@@ -387,6 +394,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   practicalLine:{ flex: 1, fontSize: FontSizes.sm, fontWeight: '500', color: c.text },
   mapCta:       { alignSelf: 'flex-start', marginVertical: 4 },
   placeRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingLeft: 22 },
-  place:        { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  place:        { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  placeCity:    { fontWeight: '600', color: c.muted },
   more:         { marginVertical: 16 },
 });

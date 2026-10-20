@@ -16,6 +16,7 @@ export { Screen } from './Screen';
 export { ScreenHeader } from './ScreenHeader';
 export { SectionTitle } from './SectionTitle';
 export { Segmented } from './Segmented';
+export { ChipTabs } from './ChipTabs';
 export { Photo } from './Photo';
 export { Sheet } from './Sheet';
 export { TextField } from './TextField';

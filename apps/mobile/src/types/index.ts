@@ -963,7 +963,7 @@ export interface DailyToday {
   serverTime:  number;
   city:        { id: number; name: string | null; country?: string | null; isLive: boolean } | null;
   twist:       DailyTwist | null;
-  counts:      { world: number; city: number | null };
+  counts:      { world: number; city: number | null; countries?: number };
   myProof:     DailyProof | null;
   myVotes:     { used: number; left: number } | null;   // signed in, with a challenge
   streak:      number | null;                           // signed in
@@ -1160,6 +1160,8 @@ export interface DailyPlacePin {
   name:     string | null;
   thumbUrl: string | null;
   user:     { id: string; username: string | null; displayName: string | null };
+  /** The place's city (the sheet's "Good to know"), when known. */
+  city?:    { name: string; country: string | null } | null;
   /** "Already done" map only: the challenge it was posted for. */
   date?:          string;
   challengeText?: string;
