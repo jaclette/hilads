@@ -10,8 +10,12 @@ declare(strict_types=1);
  *
  * Built once at the drop's closing step (DailyDrop::closeChallenge) and stored
  * in daily_world_tours (the city slides with their proof ids); a past day
- * without a stored tour is built on first read. Proofs are resolved on read,
- * so a proof removed after the close drops its slide.
+ * without a stored tour is built on first read. Only real players' photos:
+ * never demo, seed or Hilads suggestion proofs, and never a photo that is gone
+ * from storage (checked at the build). Proofs are resolved on read: a stored
+ * slide whose proof no longer qualifies (removed, moderated, a suggestion from
+ * an older build) rebuilds the tour, so the city shows its next best photo or
+ * leaves the tour.
  *
  * Order (per viewer): the cities of the global podium first (rank 1 to 3),
  * then the viewer's city, then the other cities, most proofs first.
@@ -78,15 +82,26 @@ final class DailyTour
     public static function build(array $challenge): int
     {
         $stmt = Database::pdo()->prepare("
-            SELECT p.id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at
+            SELECT p.id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.photo_url
             FROM daily_proofs p
             JOIN channels ch ON ch.id = p.city_id
             JOIN users u     ON u.id = p.user_id
             WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT u.is_demo AND NOT p.is_suggestion
+              AND coalesce(p.photo_url, '') <> ''
         ");
         $stmt->execute([$challenge['id']]);
         $top3   = array_column(DailyResults::worldTop3((string) $challenge['id']), 'id');
-        $slides = self::slides($stmt->fetchAll(PDO::FETCH_ASSOC), $top3);
+        $rows   = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // A chosen photo gone from storage (e.g. a cleanup): drop that proof, the city takes its next best.
+        $photos = array_column($rows, 'photo_url', 'id');
+        for ($round = 0; $round < 10; $round++) {
+            $slides  = self::slides($rows, $top3);
+            $missing = array_values(array_filter(array_column($slides, 'proofId'), static fn($id) => !self::photoExists((string) ($photos[$id] ?? ''))));
+            if ($missing === []) {
+                break;
+            }
+            $rows = array_values(array_filter($rows, static fn(array $r) => !in_array($r['id'], $missing, true)));
+        }
         Database::pdo()->prepare("
             INSERT INTO daily_world_tours (challenge_id, slides, built_at) VALUES (?, ?::jsonb, now())
             ON CONFLICT (challenge_id) DO UPDATE SET slides = EXCLUDED.slides, built_at = now()
@@ -110,8 +125,40 @@ final class DailyTour
                 $stmt->execute([$challenge['id']]);
                 $raw = $stmt->fetchColumn();
             }
-            return $raw === false ? [] : (json_decode((string) $raw, true) ?: []);
+            $slides = $raw === false ? [] : (json_decode((string) $raw, true) ?: []);
+            // A slide whose proof no longer qualifies (an older build, a removal): rebuild once.
+            foreach ($slides as $s) {
+                if (!self::qualifies(DailyProofRepository::findById((string) $s['proofId']))) {
+                    self::build($challenge);
+                    $stmt->execute([$challenge['id']]);
+                    $raw = $stmt->fetchColumn();
+                    return $raw === false ? [] : (json_decode((string) $raw, true) ?: []);
+                }
+            }
+            return $slides;
         }) ?? [];
+    }
+
+    /** A real player's approved photo: not demo, seed or a Hilads suggestion, with a photo. */
+    private static function qualifies(?array $row): bool
+    {
+        return $row !== null && $row['moderation_status'] === 'approved'
+            && !DailyProofRepository::bool($row['is_seed'] ?? false) && !DailyProofRepository::bool($row['is_demo'] ?? false)
+            && !DailyProofRepository::bool($row['is_suggestion'] ?? false) && trim((string) ($row['photo_url'] ?? '')) !== '';
+    }
+
+    /** False only when the storage answers that the photo is gone (404/410); any doubt keeps it. */
+    private static function photoExists(string $url): bool
+    {
+        if (!preg_match('#^https?://#', $url)) {
+            return $url !== '';
+        }
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [CURLOPT_NOBODY => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 3, CURLOPT_CONNECTTIMEOUT => 2, CURLOPT_FOLLOWLOCATION => true]);
+        curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+        return $code !== 404 && $code !== 410;
     }
 
     /**
@@ -125,7 +172,7 @@ final class DailyTour
         $slides  = [];
         foreach (self::order(self::stored($challenge), $viewerCityId) as $s) {
             $row = DailyProofRepository::findById((string) $s['proofId']);
-            if ($row === null || $row['moderation_status'] !== 'approved' || isset($blocked[$row['user_id']])) {
+            if (!self::qualifies($row) || isset($blocked[$row['user_id']])) {
                 continue;
             }
             $city   = CityRepository::findById((int) substr((string) $s['cityId'], 5));
@@ -153,7 +200,7 @@ final class DailyTour
         $out = [];
         foreach (self::stored($challenge) as $s) {
             $row = DailyProofRepository::findById((string) $s['proofId']);
-            if ($row !== null && $row['moderation_status'] === 'approved') {
+            if (self::qualifies($row)) {
                 $out[(string) $row['user_id']] = (string) ($row['city_name'] ?? '');
             }
         }
@@ -172,6 +219,6 @@ final class DailyTour
 
     private static function key(string $challengeId): string
     {
-        return 'daily_tour_v1_' . $challengeId;
+        return 'daily_tour_v2_' . $challengeId;
     }
 }

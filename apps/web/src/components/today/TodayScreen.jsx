@@ -589,6 +589,7 @@ function TourRow({ today }) {
   const [tour, setTour] = useState(null)
   const [failed, setFailed] = useState(false)
   const [open, setOpen] = useState(null)
+  const [broken, setBroken] = useState([])   // proof ids whose photo didn't load: never a flag-only circle
   const cityId = today?.city?.id ?? null
   const loaded = !!today
 
@@ -602,20 +603,25 @@ function TourRow({ today }) {
   }, [loaded, cityId, i18n.language])
 
   if (!tour && !failed) return null
-  if (!tour || tour.slides.length < 2) return <Podium today={today} />
+  const slides = (tour?.slides ?? []).map((s, i) => ({ s, i })).filter(({ s }) => (s.proof.thumbUrl || s.proof.photoUrl) && !broken.includes(s.proof.id))
+  if (!tour || slides.length < 2) return <Podium today={today} />
   return (
     <div className="today-card">
       <div className="today-card-head">
         <span className="today-card-title">{t('tour.title')}</span>
         <button type="button" className="dc-link" onClick={() => setOpen(0)}>{t('tour.watch')}</button>
       </div>
-      <span className="dc-muted today-proofs-stats">{t('tour.sub', { count: tour.slides.length })}</span>
+      <span className="dc-muted today-proofs-stats">{t('tour.sub', { count: slides.length })}</span>
       <div className="tour-circles">
-        {tour.slides.map((s, i) => (
+        {slides.map(({ s, i }) => (
           <button key={s.city.id} type="button" className="tour-circle" onClick={() => setOpen(i)}
                   aria-label={t('tour.openCity', { city: shortCityName(s.city.name) })}>
             <span className="tour-circle-ring">
-              <img src={s.proof.thumbUrl || s.proof.photoUrl} onError={thumbFallback(s.proof.photoUrl)} alt="" loading="lazy" />
+              <img src={s.proof.thumbUrl || s.proof.photoUrl} alt="" loading="lazy" onError={(e) => {
+                // The thumbnail, then the full photo; both gone: the city leaves the row.
+                if (s.proof.photoUrl && e.currentTarget.src !== s.proof.photoUrl) e.currentTarget.src = s.proof.photoUrl
+                else setBroken(b => (b.includes(s.proof.id) ? b : [...b, s.proof.id]))
+              }} />
               <span className="tour-circle-flag"><CityFlag country={s.city.country} size={20} /></span>
             </span>
             <span className="tour-circle-name">{shortCityName(s.city.name)}</span>
