@@ -82,8 +82,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           const iconColor = mode === 'dark' ? tc.textDark : tc.textLight;
           const dotColor = state === 'done' ? { backgroundColor: tc.fill }
             : state === 'pending' ? { backgroundColor: tint(tc.fill, 0.24) }
-            : state === 'today' ? { borderColor: tc.fill, backgroundColor: tint(tc.fill, 0.14) }
-            : state === 'tomorrow' ? { borderColor: tc.fill } : null;
+            : state === 'today' ? { borderColor: tc.line ?? tc.fill, backgroundColor: tint(tc.fill, 0.14) }
+            : state === 'tomorrow' ? { borderColor: tc.line ?? tc.fill } : null;
           return (
             <TouchableOpacity key={date} style={styles.day} onPress={() => open(date, state)}
                               disabled={state === 'later'} accessibilityRole="button" accessibilityLabel={label}

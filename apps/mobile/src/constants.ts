@@ -141,6 +141,9 @@ export const Colors = {
   // The joyful primary action (DESIGN.md): tangerine with ink text, same in both themes (7.6:1).
   cta:           '#FF7A3D',
   onCta:         '#2A1C13',
+  // The peach highlight (key words, the Taste pill): same in both themes, see `Highlight`.
+  highlightBg:   '#FFD2C2',
+  highlightText: '#8A3418',
   stepBg:        '#1e1812',   // a soft block inside a card (Today's photo step): the sand inset, a shade off the card
   line:          '#272018',   // borders
   ticketLine:    '#4A3426',   // Daily Challenge ticket border + perforation
@@ -168,6 +171,14 @@ export const Colors = {
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
+/**
+ * The peach highlight (DESIGN.md): the block behind a highlighted key word and
+ * the Taste theme's pill. Dark brown-orange text on peach, 5.9:1 (WCAG AA); the
+ * same in both themes (a fill, 12.8:1 against the dark card). Theme-independent
+ * code (src/ui/joy.tsx) reads it here; themed styles use colors.highlightBg/Text.
+ */
+export const Highlight = { bg: '#FFD2C2', text: '#8A3418' } as const;
+
 export type ThemeColors = Record<keyof typeof Colors, string>;
 
 // ── Light palette (daylight) — same keys as Colors, light values. The
@@ -206,6 +217,8 @@ export const LightColors: ThemeColors = {
   primaryOnTint: '#8A3A12',
   cta:           '#FF7A3D',   // tangerine, ink text on it (6.4:1)
   onCta:         '#2A1C13',
+  highlightBg:   '#FFD2C2',
+  highlightText: '#8A3418',
   stepBg:        '#FBF5EE',   // the ground colour
   line:          '#EADCCD',
   ticketLine:    '#E8CDB8',

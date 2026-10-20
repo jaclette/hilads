@@ -5,6 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
+import { Highlight } from '@/constants';
 import { FLAGS } from './flags';
 import { ThemeIcon } from './ThemeIcon';
 
@@ -21,10 +22,11 @@ export const INK = '#2A1C13';
 export const TANGERINE = '#FF7A3D';
 export const TANGERINE_TEXT = '#B2552A';   // tangerine as text on cream (4.6:1)
 
-type ThemeColor = { fill: string; onFill: string; textLight: string; textDark: string };
+/** `line`: a ring or border color when the fill is too pale to see on cream (the peach Taste); else the fill. */
+type ThemeColor = { fill: string; onFill: string; textLight: string; textDark: string; line?: string };
 export const THEME_COLORS: Record<string, ThemeColor> = {
   hidden_gem: { fill: '#1FB5A8', onFill: INK, textLight: '#157E75', textDark: '#1FB5A8' },
-  taste:      { fill: '#FF6F61', onFill: INK, textLight: '#B74F45', textDark: '#FF6F61' },
+  taste:      { fill: Highlight.bg, onFill: Highlight.text, textLight: '#B74F45', textDark: '#FF6F61', line: '#B74F45' },   // the peach pill
   ask_local:  { fill: '#3D9BF0', onFill: INK, textLight: '#2E75B6', textDark: '#3D9BF0' },
   local_find: { fill: '#FF7EB0', onFill: INK, textLight: '#AD5577', textDark: '#FF7EB0' },
   night_out:  { fill: '#5B5BD6', onFill: '#FFFFFF', textLight: '#5B5BD6', textDark: '#9A9AF5' },
@@ -36,6 +38,12 @@ export const ACCENTS = ['#FFC93C', '#FF6F61', '#1FB5A8', '#3D9BF0', '#FF7EB0', '
 
 export function themeColor(key: string | null | undefined): ThemeColor {
   return THEME_COLORS[key ?? ''] ?? THEME_COLORS.special;
+}
+
+/** The text color on a highlight or theme fill: the theme's own (white on indigo, brown on peach), else ink. */
+export function onFillOf(fill: string): string {
+  if (fill === Highlight.bg) return Highlight.text;
+  return Object.values(THEME_COLORS).find(c => c.fill === fill)?.onFill ?? INK;
 }
 
 /** A 16% tint of a fill, for a chip or highlight ground (ink text on it). */
@@ -80,13 +88,14 @@ export function AnswerBubble({ text, tail = 'left', onPhoto = false, size = 'md'
 
 /**
  * A title whose key word (marked "*word*" in the copy) sits on a colored
- * block, as on the store captions. No mark: plain text.
+ * block (the peach highlight by default, else a theme's fill with its own text
+ * color), as on the store captions. No mark: plain text.
  */
-export function HighlightText({ text, color = TANGERINE, style, accessibilityLabel }: {
+export function HighlightText({ text, color = Highlight.bg, style, accessibilityLabel }: {
   text: string; color?: string; style?: StyleProp<TextStyle>; accessibilityLabel?: string;
 }) {
   const parts = text.split('*');
-  const onColor = color === THEME_COLORS.night_out.fill ? '#FFFFFF' : INK;
+  const onColor = onFillOf(color);
   return (
     <Text style={style} accessibilityRole="header" accessibilityLabel={accessibilityLabel ?? plain(text)}>
       {parts.map((p, i) => (i % 2 === 1
@@ -129,7 +138,7 @@ export function ThemeChipJoy({ theme, label }: { theme: string; label: string })
 export function Stamp({ theme, label, earned = true, size = 72 }: { theme: string; label?: string; earned?: boolean; size?: number }) {
   const { theme: mode } = useTheme();
   const c = themeColor(theme);
-  const line = earned ? c.fill : mode === 'dark' ? '#4A3E34' : '#D9CBBD';
+  const line = earned ? c.line ?? c.fill : mode === 'dark' ? '#4A3E34' : '#D9CBBD';
   return (
     <View style={{ alignItems: 'center', gap: 4, width: size + 8 }}>
       <View style={[styles.stamp, { width: size, height: size, borderRadius: size / 2, borderColor: line, backgroundColor: earned ? tint(c.fill, 0.18) : 'transparent',

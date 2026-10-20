@@ -8,7 +8,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
 import { SectionTitle } from '@/ui';
-import { TANGERINE, THEME_COLORS } from '@/ui/joy';
+import { THEME_COLORS } from '@/ui/joy';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
 import type { DailyCompared } from '@/types';
@@ -47,7 +47,7 @@ export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
 
   return (
     <View style={styles.wrap}>
-      <SectionTitle small title={t('index.carouselTitle')} highlight={TANGERINE} />
+      <SectionTitle small title={t('index.carouselTitle')} />
       <Text style={styles.sub}>{t('index.carouselSub')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}
                   snapToInterval={CARD_W + 10} decelerationRate="fast"

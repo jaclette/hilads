@@ -39,6 +39,9 @@
   /* The joyful primary action (DESIGN.md): tangerine, ink text on it (6.4:1). */
   --cta: #FF7A3D;
   --on-cta: #2A1C13;
+  /* The peach highlight (key words, the Taste pill): brown-orange on peach, 5.9:1. Twin of HIGHLIGHT in joy/Joy.jsx. */
+  --highlight-bg: #FFD2C2;
+  --highlight-text: #8A3418;
   --step-bg: #FBF5EE;   /* a soft block inside a card: the ground colour */
   --line: #EADCCD;
   --flag-line: rgba(42, 28, 19, 0.2);
@@ -92,6 +95,8 @@
   --primary-on-tint: #FFB48A;
   --cta: #FF7A3D;   /* same in both themes, ink text (7.6:1) */
   --on-cta: #2A1C13;
+  --highlight-bg: #FFD2C2;   /* same in both themes: a fill */
+  --highlight-text: #8A3418;
   --step-bg: #1e1812;   /* the sand inset, a shade off the dark card */
   --line: #272018;
   --flag-line: rgba(255, 255, 255, 0.28);
@@ -17589,7 +17594,7 @@ button.today-cta { width: 100%; }
 .joy-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; font-size: 13px; font-weight: 800; }
 .joy-colored { font-weight: 800; color: var(--ct); } [data-theme="dark"] .joy-colored { color: var(--ctd); }
 .joy-stamp { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; width: 72px; }
-.joy-stamp-ring { width: 60px; height: 60px; border-radius: 50%; border: 2.5px dashed var(--c); background: color-mix(in srgb, var(--c) 18%, transparent);
+.joy-stamp-ring { width: 60px; height: 60px; border-radius: 50%; border: 2.5px dashed var(--cl, var(--c)); background: color-mix(in srgb, var(--c) 18%, transparent);
                   display: flex; align-items: center; justify-content: center; color: var(--ct); transform: rotate(-8deg); }
 [data-theme="dark"] .joy-stamp-ring { color: var(--ctd); }
 .joy-stamp--off .joy-stamp-ring { border-color: var(--line); background: none; color: var(--line); transform: none; }
@@ -17636,8 +17641,8 @@ button.today-cta { width: 100%; }
 .live-dot, .live-dot--on::after { background: var(--cta); }
 .week-dot--done { background: var(--c); color: var(--on); }
 .week-dot--pending { background: color-mix(in srgb, var(--c) 24%, transparent); color: var(--text); }
-.week-dot--today { border: 2.5px solid var(--c); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ct); }
-.week-dot--tomorrow { border: 2px dashed var(--c); opacity: 1; color: var(--ct); }
+.week-dot--today { border: 2.5px solid var(--cl, var(--c)); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ct); }
+.week-dot--tomorrow { border: 2px dashed var(--cl, var(--c)); opacity: 1; color: var(--ct); }
 .week-dot--none { color: var(--ct); }
 [data-theme="dark"] .week-dot--today, [data-theme="dark"] .week-dot--tomorrow, [data-theme="dark"] .week-dot--none { color: var(--ctd); }
 .link-row-icon { background: color-mix(in srgb, var(--a, transparent) 22%, transparent); }

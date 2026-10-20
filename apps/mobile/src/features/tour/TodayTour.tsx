@@ -8,7 +8,7 @@ import { useApp } from '@/context/AppContext';
 import { fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
 import { Card, Photo, SectionTitle } from '@/ui';
-import { ACCENTS, DashedRoute, FlagSticker, TANGERINE } from '@/ui/joy';
+import { ACCENTS, DashedRoute, FlagSticker } from '@/ui/joy';
 import { TodayPodium } from '@/features/today/TodayPodium';
 import type { DailyToday, DailyTour } from '@/types';
 import { rememberTour } from './store';
@@ -56,7 +56,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
   const open = (start: number) => router.push(`/daily/tour?start=${start}&source=today` as never);
   return (
     <Card style={styles.card}>
-      <SectionTitle small title={t('tour.title')} highlight={TANGERINE} action={{ label: t('tour.watch'), onPress: () => open(0) }} />
+      <SectionTitle small title={t('tour.title')} action={{ label: t('tour.watch'), onPress: () => open(0) }} />
       <Text style={styles.sub}>{t('tour.sub', { count: slides.length })}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         <DashedRoute width={slides.length * (CIRCLE + 20)} height={CIRCLE * 0.6} style={styles.route} />

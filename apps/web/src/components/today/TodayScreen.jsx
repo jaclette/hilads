@@ -395,7 +395,7 @@ function Week({ today }) {
                     disabled={state === 'later'} aria-expanded={state === 'tomorrow' ? peek : undefined}
                     aria-label={`${weekday}: ${t(`today.day.${state}`)}`}>
               <span className={`week-weekday${state === 'today' ? ' week-weekday--today' : ''}`}>{weekday}</span>
-              <span className={`week-dot week-dot--${state}`} style={{ '--c': c.fill, '--on': c.onFill, '--ct': c.light, '--ctd': c.dark }}>
+              <span className={`week-dot week-dot--${state}`} style={{ '--c': c.fill, '--cl': c.line ?? c.fill, '--on': c.onFill, '--ct': c.light, '--ctd': c.dark }}>
                 {state === 'done' ? <Icon name="checkmark" size={18} />
                   : state === 'pending' ? <Icon name="hourglass-outline" size={17} />
                   : state === 'missed' ? <Icon name="close" size={17} />

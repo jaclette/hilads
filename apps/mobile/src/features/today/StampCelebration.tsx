@@ -70,8 +70,8 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
     <Modal visible transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.scrim} onPress={close} accessibilityRole="button" accessibilityLabel={t('stamp.close')}>
         <View style={styles.card} accessibilityRole="alert" accessibilityLabel={t('stamp.title', { theme: themeName(stamp.theme, { city: stamp.city }) })}>
-          <Animated.View style={[styles.stamp, { borderColor: tc.fill, backgroundColor: tint(tc.fill, 0.14), opacity: anim, transform: [{ scale }, { rotate }] }]}>
-            <View style={[styles.inner, { borderColor: tc.fill }]}>
+          <Animated.View style={[styles.stamp, { borderColor: tc.line ?? tc.fill, backgroundColor: tint(tc.fill, 0.14), opacity: anim, transform: [{ scale }, { rotate }] }]}>
+            <View style={[styles.inner, { borderColor: tc.line ?? tc.fill }]}>
               <ThemeIcon theme={stamp.theme} size={36} color={ink} />
               <Text style={[styles.stampTheme, { color: ink }]} numberOfLines={1}>{themeName(stamp.theme, { city: stamp.city })}</Text>
               <Text style={[styles.stampCity, { color: ink }]} numberOfLines={1}>{stamp.city}</Text>

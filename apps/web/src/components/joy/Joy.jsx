@@ -7,9 +7,12 @@ import { themeIcon } from '../../lib/icons'
  * highlighted key words, the tangerine button, stamps, the dashed route and
  * the official wordmark. Styles in index.css (.joy-*).
  */
+
+/** The peach highlight: key words and the Taste pill (5.9:1). The CSS twin is --highlight-bg / --highlight-text. */
+export const HIGHLIGHT = { bg: '#FFD2C2', text: '#8A3418' }
 export const THEME_COLORS = {
   hidden_gem: { fill: '#1FB5A8', onFill: '#2A1C13', light: '#157E75', dark: '#1FB5A8' },
-  taste:      { fill: '#FF6F61', onFill: '#2A1C13', light: '#B74F45', dark: '#FF6F61' },
+  taste:      { fill: HIGHLIGHT.bg, onFill: HIGHLIGHT.text, light: '#B74F45', dark: '#FF6F61', line: '#B74F45' },   // the peach pill (line: its rings)
   ask_local:  { fill: '#3D9BF0', onFill: '#2A1C13', light: '#2E75B6', dark: '#3D9BF0' },
   local_find: { fill: '#FF7EB0', onFill: '#2A1C13', light: '#AD5577', dark: '#FF7EB0' },
   night_out:  { fill: '#5B5BD6', onFill: '#FFFFFF', light: '#5B5BD6', dark: '#9A9AF5' },
@@ -19,6 +22,8 @@ export const THEME_COLORS = {
 }
 export const ACCENTS = ['#FFC93C', '#FF6F61', '#1FB5A8', '#3D9BF0', '#FF7EB0', '#FF7A3D']
 export const themeColor = (key) => THEME_COLORS[key] ?? THEME_COLORS.special
+/** The text color on a highlight or theme fill: the theme's own (white on indigo, brown on peach), else ink. */
+export const onFillOf = (fill) => (fill === HIGHLIGHT.bg ? HIGHLIGHT.text : Object.values(THEME_COLORS).find(c => c.fill === fill)?.onFill ?? '#2A1C13')
 
 export function FlagSticker({ country, size = 28 }) {
   if (!country) return null
@@ -38,8 +43,8 @@ export function AnswerBubble({ text, tail = 'left', onPhoto = false, size = 'md'
 export const plain = (text) => text.replace(/\*/g, '')
 
 /** A title whose key word ("*word*" in the copy) sits on a colored block. */
-export function HighlightText({ text, color = '#FF7A3D', as: Tag = 'span', className }) {
-  const on = color === THEME_COLORS.night_out.fill ? '#FFFFFF' : '#2A1C13'
+export function HighlightText({ text, color = HIGHLIGHT.bg, as: Tag = 'span', className }) {
+  const on = onFillOf(color)
   if (!text.includes('*')) return <Tag className={className}>{text}</Tag>
   return (
     <Tag className={className}>
@@ -64,7 +69,7 @@ export function ThemeChipJoy({ theme, label }) {
 export function Stamp({ theme, label, earned = true }) {
   const c = themeColor(theme)
   return (
-    <span className={`joy-stamp${earned ? '' : ' joy-stamp--off'}`} style={{ '--c': c.fill, '--ct': c.light, '--ctd': c.dark }}>
+    <span className={`joy-stamp${earned ? '' : ' joy-stamp--off'}`} style={{ '--c': c.fill, '--cl': c.line ?? c.fill, '--ct': c.light, '--ctd': c.dark }}>
       <span className="joy-stamp-ring"><Icon name={themeIcon(theme)} size={26} /></span>
       {label && <span className="joy-stamp-label">{label}</span>}
     </span>
