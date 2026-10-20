@@ -20,6 +20,7 @@ import {
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PhotoCredit, PickBadge, PickPill, creditAuthor } from '../map/Pick'
+import { ACCENTS, DashedRoute, FlagSticker, HighlightText, Wordmark, plain, themeColor } from '../joy/Joy'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -117,13 +118,18 @@ function specialCover(special) {
 }
 
 /**
- * Today's brand line (SPEC 9.3 / 9.9): "Hilads" in the wordmark weight, then
- * " · " and the tagline, in the header under the logo row, so it stays on screen
- * while the content scrolls. For everyone. 13 px, muted, one line (ellipsis).
+ * Today's brand line (SPEC 9.3 / 9.9, DESIGN.md): the official "hilads"
+ * wordmark (the mark is the header's logo just above), then the tagline in
+ * muted Medium, in the header under the logo row, so it stays on screen while
+ * the content scrolls. For everyone. One line (the tagline cut with an ellipsis).
  */
 function BrandLine() {
   const { t } = useTranslation('common')
-  return <p className="brand-line"><span className="brand-line-name">Hilads</span> · {t('firstLaunch')}</p>
+  return (
+    <p className="brand-line brand-line--joy" aria-label={`Hilads. ${t('firstLaunch')}`}>
+      <Wordmark height={16} mark={false} /><span className="brand-line-tag">{t('firstLaunch')}</span>
+    </p>
+  )
 }
 
 /** True while the element is on screen and the tab visible: the "I'm in" pulse runs only then. */
@@ -219,8 +225,12 @@ function Ticket({ data, loading }) {
   const line = (a) => [a.place, a.answer ? answerText(a.answer, i18n.language) : null].filter(Boolean).join(' · ')
   const answers = (world?.answers ?? []).filter(a => a.answer || a.place).slice(0, 3).map(line)
   const compared = !!world && world.countries >= 2
+  // A player's answer to the question goes in a speech bubble; a place (or a Hilads suggestion) stays a line.
   const ticker = (world?.answers ?? []).filter(a => (a.answer || a.place) && a.city?.name)
-    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: line(a) }))
+    .map(a => {
+      const bubble = !suggested && !!a.answer
+      return { cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, bubble, answer: bubble ? answerText(a.answer, i18n.language) : line(a) }
+    })
   const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
   const theme = challenge.theme?.key ?? null
@@ -249,6 +259,8 @@ function Ticket({ data, loading }) {
   }
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
+  // The theme's own color (DESIGN.md): the chip's fill and its text color.
+  const hue = themeColor(challenge.special ? 'special' : theme)
 
   // The hero's photo (SPEC 9.3): the day's most voted answer in my scope (the city, else the
   // world), with its credit; before any answer, the challenge's or the theme's cover.
@@ -268,7 +280,9 @@ function Ticket({ data, loading }) {
       {photo && <img className="today-hero-photo" src={photo} alt="" />}
       <div className="today-hero-top">
         {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
-        <span className="today-hero-chip">{theme && <Icon name={themeIcon(theme, challenge.special)} size={15} />}{themeLabel || DAILY_CHALLENGE}</span>
+        <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>
+          {theme && <Icon name={themeIcon(theme, challenge.special)} size={15} />}{themeLabel || DAILY_CHALLENGE}
+        </span>
         <span className="today-hero-topright">
           {secondsLeft !== null && <span className="today-hero-chip"><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>}
           {heroCredit && <span className="today-hero-credit">📸 {heroCredit}</span>}
@@ -374,12 +388,14 @@ function Week({ today }) {
           const weekday = new Date(`${date}T12:00:00Z`).toLocaleDateString(i18n.language, { weekday: 'short', timeZone: 'UTC' })
           const theme = d?.theme?.key ?? (date === current ? today?.challenge?.theme?.key : null)
           const special = d?.special ?? (date === current ? today?.challenge?.special : null)
+          // The day's theme color: a fill (done), a ring (today, tomorrow), a tint (in review), the icon's color.
+          const c = themeColor(special ? 'special' : theme)
           return (
             <button key={date} type="button" className="week-day" onClick={() => openDay(date, state)}
                     disabled={state === 'later'} aria-expanded={state === 'tomorrow' ? peek : undefined}
                     aria-label={`${weekday}: ${t(`today.day.${state}`)}`}>
               <span className={`week-weekday${state === 'today' ? ' week-weekday--today' : ''}`}>{weekday}</span>
-              <span className={`week-dot week-dot--${state}`}>
+              <span className={`week-dot week-dot--${state}`} style={{ '--c': c.fill, '--on': c.onFill, '--ct': c.light, '--ctd': c.dark }}>
                 {state === 'done' ? <Icon name="checkmark" size={18} />
                   : state === 'pending' ? <Icon name="hourglass-outline" size={17} />
                   : state === 'missed' ? <Icon name="close" size={17} />
@@ -396,11 +412,11 @@ function Week({ today }) {
       )}
       {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}
       <div className="link-rows">
-        <LinkRow icon="calendar-outline" title={t('today.allPast')} sub={t('today.links.pastSub')} onClick={() => openDaily('archive')} />
-        <LinkRow icon="bulb-outline" title={t('propose.cta')} sub={t('today.links.proposeSub')} onClick={propose} />
+        <LinkRow icon="calendar-outline" accent="#3D9BF0" title={t('today.allPast')} sub={t('today.links.pastSub')} onClick={() => openDaily('archive')} />
+        <LinkRow icon="bulb-outline" accent="#FFC93C" title={t('propose.cta')} sub={t('today.links.proposeSub')} onClick={propose} />
         {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
         {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
-          <LinkRow icon="leaf-outline" title={t('today.links.twistTitle')}
+          <LinkRow icon="leaf-outline" accent="#1FB5A8" title={t('today.links.twistTitle')}
                    sub={today.twistProposal.status
                      ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
                      : t('today.links.twistSub', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
@@ -414,11 +430,11 @@ function Week({ today }) {
   )
 }
 
-/** A Today link row: a ground-colour circle with the icon in ink, a bold title, a muted line, a chevron. */
-function LinkRow({ icon, title, sub, onClick }) {
+/** A Today link row: a circle tinted with its accent and the icon in ink, a bold title, a muted line, a chevron. */
+function LinkRow({ icon, title, sub, onClick, accent }) {
   return (
     <button type="button" className="link-row" onClick={onClick}>
-      <span className="link-row-icon"><Icon name={icon} size={19} /></span>
+      <span className="link-row-icon" style={{ '--a': accent }}><Icon name={icon} size={19} /></span>
       <span className="link-row-body">
         <span className="link-row-title">{title}</span>
         <span className="link-row-sub">{sub}</span>
@@ -483,25 +499,27 @@ function TodayProofs({ today }) {
     </div>
   ) : null
   const aroundData = around ?? worldStrip
+  // The titles' key word ("Today in *Saigon*") sits on today's theme color.
+  const highlight = themeColor(today?.challenge?.special ? 'special' : today?.challenge?.theme?.key).fill
   return (
     <>
       {cityStrip && (
         <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={cityStrip.total > 0 ? t('today.proofs', { count: cityStrip.total }) : null}
                onOpen={() => openDaily('challenge', { date: 'today', source: 'today_strip', tab: 'city' })}
-               items={items} voting={voting} source="strip_city" footer={!around && voting} />
+               items={items} voting={voting} source="strip_city" footer={!around && voting} highlight={highlight} />
       )}
       {aroundData && (
         <Strip title={t('today.aroundWorld')}
                stats={aroundData.total > 0 ? t('today.proofsIn', { proofs: t('today.proofs', { count: aroundData.total }), countries: t('today.countries', { count: aroundData.countries }) }) : null}
                onOpen={() => openDaily('challenge', around ? { date: 'today', source: 'world_strip', tab: 'compare' } : { date: 'today', source: 'today_strip', tab: 'world' })}
-               items={around ? playersFirst(around.proofs) : items} voting={voting} source="strip_world" footer={voting} board={board} />
+               items={around ? playersFirst(around.proofs) : items} voting={voting} source="strip_world" footer={voting} board={board} highlight={highlight} />
       )}
     </>
   )
 }
 
 /** One strip: title and "See all" (the sheet), the vote prompt while voting is open, the cards, what the votes do. */
-function Strip({ title, stats, onOpen, items, voting, source, footer, board = null }) {
+function Strip({ title, stats, onOpen, items, voting, source, footer, highlight, board = null }) {
   const { t } = useDc()
   const { account, openDaily } = useDaily()
   const prompted = useRef(false)
@@ -516,8 +534,8 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, board = nu
     <div className="today-card">
       <div className="today-card-head">
         {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-        <button type="button" className="today-card-title today-card-title--link" onClick={onOpen}>
-          {title}<Icon name="chevron-forward" size={16} />
+        <button type="button" className="today-card-title today-card-title--link" onClick={onOpen} aria-label={plain(title)}>
+          <HighlightText text={title} color={highlight} /><Icon name="chevron-forward" size={16} />
         </button>
         <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
       </div>
@@ -563,7 +581,7 @@ function StripProof({ proof, source, onOpen }) {
           {proof.suggestion && <PickPill />}
         </span>
         <span className="proof-strip-cityrow">
-          {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
+          {proof.city?.name && <><FlagSticker country={proof.city.country} size={18} /><span className="proof-strip-city">{shortCityName(proof.city.name)}</span></>}
         </span>
         <span className="proof-strip-answer">{title}</span>
       </button>
@@ -614,21 +632,22 @@ function TourRow({ today }) {
   return (
     <div className="today-card">
       <div className="today-card-head">
-        <span className="today-card-title">{t('tour.title')}</span>
+        <HighlightText className="today-card-title" text={t('tour.title')} />
         <button type="button" className="dc-link" onClick={() => setOpen(0)}>{t('tour.watch')}</button>
       </div>
       <span className="dc-muted today-proofs-stats">{t('tour.sub', { count: slides.length })}</span>
       <div className="tour-circles">
-        {slides.map(({ s, i }) => (
+        <DashedRoute />
+        {slides.map(({ s, i }, n) => (
           <button key={s.city.id} type="button" className="tour-circle" onClick={() => setOpen(i)}
                   aria-label={t('tour.openCity', { city: shortCityName(s.city.name) })}>
-            <span className="tour-circle-ring">
+            <span className="tour-circle-ring" style={{ '--a': ACCENTS[n % ACCENTS.length] }}>
               <img src={s.proof.thumbUrl || s.proof.photoUrl} alt="" loading="lazy" onError={(e) => {
                 // The thumbnail, then the full photo; both gone: the city leaves the row.
                 if (s.proof.photoUrl && e.currentTarget.src !== s.proof.photoUrl) e.currentTarget.src = s.proof.photoUrl
                 else setBroken(b => (b.includes(s.proof.id) ? b : [...b, s.proof.id]))
               }} />
-              <span className="tour-circle-flag"><CityFlag country={s.city.country} size={20} /></span>
+              <span className="tour-circle-flag"><FlagSticker country={s.city.country} size={24} /></span>
             </span>
             <span className="tour-circle-name">{shortCityName(s.city.name)}</span>
           </button>

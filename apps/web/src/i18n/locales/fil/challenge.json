@@ -1216,8 +1216,8 @@
     "today": {
       "early": "Early bonus hanggang {{time}}",
       "tomorrow": "Bukas: {{theme}}",
-      "aroundWorld": "Ngayon sa buong mundo",
-      "inCity": "Ngayon sa {{city}}",
+      "aroundWorld": "Ngayon sa buong *mundo*",
+      "inCity": "Ngayon sa *{{city}}*",
       "proofs_one": "{{count}} litrato",
       "proofs_other": "{{count}} litrato",
       "countries_one": "{{count}} bansa",
@@ -1342,7 +1342,7 @@
       "homeIn": "Sa inyo, {{city}}"
     },
     "tour": {
-      "title": "Ang world tour kahapon",
+      "title": "Ang world tour *kahapon*",
       "watch": "Panoorin",
       "openCity": "Buksan ang {{city}}",
       "next": "Susunod",
@@ -1364,7 +1364,7 @@
     },
     "index": {
       "share": "Ibahagi",
-      "carouselTitle": "Ang mundo, ikinumpara",
+      "carouselTitle": "Ang mundo, *ikinumpara*",
       "carouselSub": "Noong nakaraang linggo sa Hilads",
       "seeAllComparisons": "Tingnan lahat ng paghahambing",
       "screenTitle": "Ang Hilads Index",

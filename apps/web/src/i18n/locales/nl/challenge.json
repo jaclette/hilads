@@ -1216,8 +1216,8 @@
     "today": {
       "early": "Vroegbonus tot {{time}}",
       "tomorrow": "Morgen: {{theme}}",
-      "aroundWorld": "Vandaag over de hele wereld",
-      "inCity": "Vandaag in {{city}}",
+      "aroundWorld": "Vandaag over de hele *wereld*",
+      "inCity": "Vandaag in *{{city}}*",
       "proofs_one": "{{count}} foto",
       "proofs_other": "{{count}} foto's",
       "countries_one": "{{count}} land",
@@ -1342,7 +1342,7 @@
       "homeIn": "Thuis in {{city}}"
     },
     "tour": {
-      "title": "De wereldreis van gisteren",
+      "title": "De wereldreis van *gisteren*",
       "watch": "Bekijken",
       "openCity": "{{city}} openen",
       "next": "Volgende",
@@ -1364,7 +1364,7 @@
     },
     "index": {
       "share": "Delen",
-      "carouselTitle": "De wereld vergeleken",
+      "carouselTitle": "De wereld *vergeleken*",
       "carouselSub": "Vorige week op Hilads",
       "seeAllComparisons": "Alle vergelijkingen bekijken",
       "screenTitle": "De Hilads-index",

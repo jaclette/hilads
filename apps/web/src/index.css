@@ -36,6 +36,9 @@
   --primary-text: #C9501A;
   --primary-tint: #FFE6D8;
   --primary-on-tint: #8A3A12;
+  /* The joyful primary action (DESIGN.md): tangerine, ink text on it (6.4:1). */
+  --cta: #FF7A3D;
+  --on-cta: #2A1C13;
   --step-bg: #FBF5EE;   /* a soft block inside a card: the ground colour */
   --line: #EADCCD;
   --flag-line: rgba(42, 28, 19, 0.2);
@@ -87,6 +90,8 @@
   --primary-text: #FF8A50;
   --primary-tint: #3A2216;
   --primary-on-tint: #FFB48A;
+  --cta: #FF7A3D;   /* same in both themes, ink text (7.6:1) */
+  --on-cta: #2A1C13;
   --step-bg: #1e1812;   /* the sand inset, a shade off the dark card */
   --line: #272018;
   --flag-line: rgba(255, 255, 255, 0.28);
@@ -17388,7 +17393,7 @@ body.has-app-promo-banner .page-header {
 .tour-circles::-webkit-scrollbar { display: none; }
 .tour-circle { flex: 0 0 auto; width: 76px; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
 .tour-circle-ring { position: relative; width: 76px; height: 76px; border-radius: 50%; border: 2.5px solid var(--primary); display: flex; align-items: center; justify-content: center; }
-.tour-circle-ring img { width: 66px; height: 66px; border-radius: 50%; object-fit: cover; background: var(--bg2); }
+.tour-circle-ring > img { width: 66px; height: 66px; border-radius: 50%; object-fit: cover; background: var(--bg2); }
 .tour-circle-flag { position: absolute; right: -2px; bottom: -2px; display: flex; border-radius: 4px; overflow: hidden; border: 2px solid var(--surface); }
 .tour-circle-name { font-size: 12px; font-weight: 700; color: var(--text); max-width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tour { position: fixed; inset: 0; z-index: 1000; background: #0b0908; color: #fff; overflow: hidden; }
@@ -17610,3 +17615,44 @@ button.today-cta { width: 100%; }
 .joy-city { font-size: 12px; font-weight: 700; color: var(--muted2); } .joy-price { font-size: 12px; font-weight: 700; }
 .joy-header { position: relative; height: 70px; display: flex; align-items: center; }
 .joy-screen-title { font-size: 28px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ── The joyful pass (DESIGN.md) ───────────────────────────────────────────
+   Every primary button: tangerine with ink text, the same in both themes
+   (the app's Button "primary"). The hero's white button on the photo keeps
+   its own, more specific rule. */
+.today-cta, .v3-signup, .pin-bar-take, .install-banner-add, .leaderboard-unranked-cta, .pub-profile-dm-btn, .friend-req-accept,
+.event-join-btn, .event-join-btn:hover, .topic-join-btn, .cef-submit, .cef-submit:hover, .hilocal-cta--now, .events-empty-cta, .events-empty-cta:hover,
+.modal-submit, .challenge-validate-btn, .challenge-validate-btn-inline, .challenge-owner-invite-cta, .challenge-owner-invite-cta:hover,
+.challenge-join-gate-cta, .modal-btn--primary, .dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled),
+.feed-daily-cta, .wm-sheet--empty .wm-sheet-cta, .app-modal-cta { background: var(--cta); color: var(--on-cta); font-weight: 800; }
+
+/* Today */
+.brand-line--joy { display: flex; align-items: center; gap: 8px; margin: 2px 0 8px; min-width: 0; }
+.brand-line--joy .joy-lockup { flex-shrink: 0; }
+.brand-line--joy .brand-line-tag { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today-hero-chip--theme { border-radius: 999px; padding: 6px 11px; background: var(--c); color: var(--on); }
+.today-hero-see { color: #FF7A3D; }
+.today-hero .today-cta .icon { color: #B2552A; }
+.live-dot, .live-dot--on::after { background: var(--cta); }
+.week-dot--done { background: var(--c); color: var(--on); }
+.week-dot--pending { background: color-mix(in srgb, var(--c) 24%, transparent); color: var(--text); }
+.week-dot--today { border: 2.5px solid var(--c); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ct); }
+.week-dot--tomorrow { border: 2px dashed var(--c); opacity: 1; color: var(--ct); }
+.week-dot--none { color: var(--ct); }
+[data-theme="dark"] .week-dot--today, [data-theme="dark"] .week-dot--tomorrow, [data-theme="dark"] .week-dot--none { color: var(--ctd); }
+.link-row-icon { background: color-mix(in srgb, var(--a, transparent) 22%, transparent); }
+.today-card-title, .today-card-title--link { font-size: 17px; line-height: 22px; letter-spacing: -.3px; }
+.tour-circles { position: relative; }
+.tour-circles > .joy-route { position: absolute; left: 38px; top: 18px; width: calc(100% - 76px); height: 44px; color: var(--text); pointer-events: none; }
+.tour-circle-ring { border: 3px solid var(--a); background: var(--surface); }
+.tour-circle-flag { right: -3px; bottom: -3px; border: 0; border-radius: 50%; overflow: visible; }
+.proof-strip-cityrow { gap: 5px; height: 20px; }
+.proof-strip-cityrow .joy-flag { flex-shrink: 0; }
+.today-hero-world .world-ticker-box { height: 34px; }
+.world-ticker-entry { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.world-ticker-entry > strong { flex-shrink: 0; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 800; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.world-ticker-entry .joy-bubble { align-self: center; margin-bottom: 3px; }
+.world-flag .joy-flag { display: block; }
+.world-ticker-line:has(.world-ticker-entry) { overflow: visible; padding-bottom: 3px; }
+.today-teaser-flags .world-flag + .world-flag { margin-left: -6px; }
+.world-flag--dim { opacity: .7; }

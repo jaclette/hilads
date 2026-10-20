@@ -7,6 +7,7 @@ import { deviceStore, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
+import { plain } from '../joy/Joy'
 import { RankMedal, useDc } from './dailyShared'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 
@@ -71,7 +72,7 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
   }
 
   return createPortal(
-    <div className="tour" role="dialog" aria-modal="true" aria-label={t('tour.title')}
+    <div className="tour" role="dialog" aria-modal="true" aria-label={plain(t('tour.title'))}
          onTouchStart={(e) => { touch.current = e.touches[0].clientY; setPaused(true) }}
          onTouchEnd={(e) => { setPaused(false); if (touch.current !== null && e.changedTouches[0].clientY - touch.current > 80) onClose(); touch.current = null }}>
       {slide ? <img className="tour-photo" src={proof.photoUrl} alt={proof.caption || ''} />

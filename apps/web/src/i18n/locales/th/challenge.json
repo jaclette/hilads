@@ -1215,8 +1215,8 @@
     "today": {
       "early": "โบนัสความเร็วถึง {{time}}",
       "tomorrow": "พรุ่งนี้: {{theme}}",
-      "aroundWorld": "วันนี้ทั่วโลก",
-      "inCity": "วันนี้ที่{{city}}",
+      "aroundWorld": "วันนี้*ทั่วโลก*",
+      "inCity": "วันนี้ที่*{{city}}*",
       "proofs_one": "{{count}} รูป",
       "proofs_other": "{{count}} รูป",
       "countries_one": "{{count}} ประเทศ",
@@ -1341,7 +1341,7 @@
       "homeIn": "ที่บ้าน: {{city}}"
     },
     "tour": {
-      "title": "ทัวร์รอบโลกเมื่อวาน",
+      "title": "ทัวร์รอบโลก*เมื่อวาน*",
       "watch": "ดู",
       "openCity": "เปิด{{city}}",
       "next": "ถัดไป",
@@ -1363,7 +1363,7 @@
     },
     "index": {
       "share": "แชร์",
-      "carouselTitle": "โลกเทียบกัน",
+      "carouselTitle": "โลก*เทียบกัน*",
       "carouselSub": "สัปดาห์ที่แล้วบน Hilads",
       "seeAllComparisons": "ดูการเปรียบเทียบทั้งหมด",
       "screenTitle": "ดัชนี Hilads",

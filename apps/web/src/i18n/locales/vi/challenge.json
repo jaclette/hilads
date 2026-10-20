@@ -1215,8 +1215,8 @@
     "today": {
       "early": "Thưởng sớm đến {{time}}",
       "tomorrow": "Ngày mai: {{theme}}",
-      "aroundWorld": "Hôm nay trên thế giới",
-      "inCity": "Hôm nay ở {{city}}",
+      "aroundWorld": "Hôm nay trên *thế giới*",
+      "inCity": "Hôm nay ở *{{city}}*",
       "proofs_one": "{{count}} ảnh",
       "proofs_other": "{{count}} ảnh",
       "countries_one": "{{count}} quốc gia",
@@ -1341,7 +1341,7 @@
       "homeIn": "Ở quê, {{city}}"
     },
     "tour": {
-      "title": "Vòng quanh thế giới hôm qua",
+      "title": "Vòng quanh thế giới *hôm qua*",
       "watch": "Xem",
       "openCity": "Mở {{city}}",
       "next": "Tiếp",
@@ -1363,7 +1363,7 @@
     },
     "index": {
       "share": "Chia sẻ",
-      "carouselTitle": "Thế giới, so sánh",
+      "carouselTitle": "Thế giới, *so sánh*",
       "carouselSub": "Tuần trước trên Hilads",
       "seeAllComparisons": "Xem tất cả so sánh",
       "screenTitle": "Chỉ số Hilads",

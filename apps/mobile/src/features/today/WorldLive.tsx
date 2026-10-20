@@ -3,12 +3,13 @@ import { AccessibilityInfo, Animated, AppState, Easing, Text, View, StyleSheet }
 import { type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
-import { CityFlag } from '@/ui';
+import { AnswerBubble, FlagSticker } from '@/ui/joy';
 
 const RING_MS = 1800;
 const TICK_MS = 2200;
 
-export type TickerEntry = { cityId: number; city: string; country: string | null; answer: string };
+/** `bubble`: `answer` is the value given to the day's question (a speech bubble); else a plain line (a place). */
+export type TickerEntry = { cityId: number; city: string; country: string | null; answer: string; bubble?: boolean };
 
 /**
  * True while the world block may move: the card is on screen, the app is in
@@ -54,8 +55,8 @@ export function LiveDot({ live }: { live: boolean }) {
 }
 
 /**
- * The world's answers as a live feed: the flags of up to 5 countries, and
- * "[city] · [answer]" sliding up every 2.2 s through the cities that answered
+ * The world's answers as a live feed: the flag stickers of up to 3 countries,
+ * and "[city] [answer in a speech bubble]" sliding up every 2.2 s through the cities that answered
  * (other cities first), the current city's flag scaled up and the others
  * dimmed. A city that newly answered (a refresh) joins the stack with a small
  * bounce and comes next. Static with reduce motion: the first three answers.
@@ -76,7 +77,10 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine, onDark 
   const seen = useRef<Set<number> | null>(null);
   const [fresh, setFresh] = useState<string | null>(null);   // the country that just joined (bounce)
   const bounce = useRef(new Animated.Value(1)).current;
-  const stack = [...new Set(flags.filter(Boolean))].slice(0, 5);
+  // Up to 3 stickers (the current city's among them), so the answer's bubble has room.
+  const all = [...new Set(flags.filter(Boolean))];
+  const cur = current0(entries, index)?.country ?? null;
+  const stack = (cur && all.indexOf(cur) >= 3 ? [...all.slice(0, 2), cur] : all.slice(0, 3));
 
   // A city that newly answered: its flag bounces in, and it comes next in the ticker.
   useEffect(() => {
@@ -106,7 +110,7 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine, onDark 
     return () => clearInterval(id);
   }, [live, entries.length, slide]);
 
-  const current = entries.length > 0 ? entries[index % entries.length] : null;
+  const current = current0(entries, index);
   const showTicker = !reduced && !!current;
 
   return (
@@ -118,19 +122,28 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine, onDark 
             <Animated.View key={c} style={[styles.flagRing, i > 0 && styles.flagOverlap, { zIndex: on ? 9 : 5 - i },
                                            showTicker && !on && styles.flagDim,
                                            { transform: [{ scale: fresh === c ? bounce : on ? 1.15 : 1 }] }]}>
-              <CityFlag country={c} size={20} />
+              <FlagSticker country={c} size={22} />
             </Animated.View>
           );
         })}
       </View>
       <View style={styles.lineBox}>
         {showTicker ? (
-          <Animated.Text key={`${current!.cityId}:${index}`} numberOfLines={1} style={[styles.line, onDark && styles.onDarkMuted, {
+          <Animated.View key={`${current!.cityId}:${index}`} style={[styles.entry, {
             opacity: slide,
             transform: [{ translateY: slide.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }],
           }]}>
-            <Text style={[styles.city, onDark && styles.onDark]}>{shortCityName(current!.city)}</Text>{` · ${current!.answer}`}
-          </Animated.Text>
+            {current!.bubble ? (
+              <>
+                <Text style={[styles.city, onDark && styles.onDark]} numberOfLines={1}>{shortCityName(current!.city)}</Text>
+                <AnswerBubble text={current!.answer} size="sm" tail="left" onPhoto={onDark} style={styles.bubble} />
+              </>
+            ) : (
+              <Text numberOfLines={1} style={[styles.line, onDark && styles.onDarkMuted]}>
+                <Text style={[styles.city, onDark && styles.onDark]}>{shortCityName(current!.city)}</Text>{` · ${current!.answer}`}
+              </Text>
+            )}
+          </Animated.View>
         ) : (
           <Text style={[styles.line, onDark && styles.onDarkMuted]} numberOfLines={1}>{staticLine}</Text>
         )}
@@ -139,18 +152,25 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine, onDark 
   );
 }
 
+function current0(entries: TickerEntry[], index: number): TickerEntry | null {
+  return entries.length > 0 ? entries[index % entries.length] : null;
+}
+
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   dotWrap:     { width: 14, height: 14, alignItems: 'center', justifyContent: 'center' },
-  dot:         { width: 7, height: 7, borderRadius: 4, backgroundColor: c.primary },
-  ring:        { position: 'absolute', width: 7, height: 7, borderRadius: 4, backgroundColor: c.primary },
+  dot:         { width: 7, height: 7, borderRadius: 4, backgroundColor: c.cta },
+  ring:        { position: 'absolute', width: 7, height: 7, borderRadius: 4, backgroundColor: c.cta },
   row:         { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 0 },
   flags:       { flexDirection: 'row', alignItems: 'center' },
-  flagRing:    { borderRadius: 4, borderWidth: 1.5, borderColor: c.stepBg, overflow: 'hidden' },
-  flagOverlap: { marginLeft: -7 },
-  flagDim:     { opacity: 0.45 },
-  lineBox:     { flex: 1, minWidth: 0, height: 20, justifyContent: 'center', overflow: 'hidden' },
+  flagRing:    { borderRadius: 11 },
+  flagOverlap: { marginLeft: -6 },
+  flagDim:     { opacity: 0.7 },
+  // Tall enough for a small bubble and its tail.
+  lineBox:     { flex: 1, minWidth: 0, height: 34, justifyContent: 'center', overflow: 'hidden' },
+  entry:       { flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 0 },
+  bubble:      { flexShrink: 1, alignSelf: 'center', marginBottom: 3 },
   line:        { fontSize: 13, fontWeight: '600', color: c.muted },
-  city:        { fontSize: 13, fontWeight: '800', color: c.text },
+  city:        { flexShrink: 0, maxWidth: '45%', fontSize: 13, fontWeight: '800', color: c.text },
   onDark:      { color: '#FFFFFF', textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   onDarkMuted: { color: 'rgba(255,255,255,0.92)', textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
 });

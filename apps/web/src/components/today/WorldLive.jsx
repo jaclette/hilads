@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { shortCityName } from '../../i18n/cityName'
-import { CityFlag } from '../CityName'
+import { AnswerBubble, FlagSticker } from '../joy/Joy'
 
 const TICK_MS = 2200
 
@@ -36,8 +36,8 @@ export function LiveDot({ live }) {
 }
 
 /**
- * The world's answers as a live feed: the flags of up to 5 countries, and
- * "[city] · [answer]" sliding up every 2.2 s through the cities that answered
+ * The world's answers as a live feed: the flag stickers of up to 3 countries,
+ * and "[city] [answer in a speech bubble]" (`bubble`; else "[city] · [place]") sliding up every 2.2 s through the cities that answered
  * (other cities first), the current city's flag scaled up and the others
  * dimmed. A city that newly answered joins with a bounce and comes next.
  * Reduce motion: `staticLine` (the first three answers).
@@ -46,7 +46,10 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine }) {
   const [index, setIndex] = useState(0)
   const [fresh, setFresh] = useState(null)
   const seen = useRef(null)
-  const stack = [...new Set(flags.filter(Boolean))].slice(0, 5)
+  // Up to 3 stickers (the current city's among them), so the answer's bubble has room.
+  const all = [...new Set(flags.filter(Boolean))]
+  const cur = entries.length > 0 ? entries[index % entries.length].country : null
+  const stack = cur && all.indexOf(cur) >= 3 ? [...all.slice(0, 2), cur] : all.slice(0, 3)
 
   useEffect(() => {
     const ids = new Set(entries.map(e => e.cityId))
@@ -76,14 +79,16 @@ export function WorldTicker({ entries, flags, live, reduced, staticLine }) {
       <span className="today-teaser-flags" aria-hidden="true">
         {stack.map(c => (
           <span key={c} className={`world-flag${ticker && current.country === c ? ' world-flag--on' : ticker ? ' world-flag--dim' : ''}${fresh === c ? ' world-flag--new' : ''}`}>
-            <CityFlag country={c} size={20} />
+            <FlagSticker country={c} size={22} />
           </span>
         ))}
       </span>
       <span className="world-ticker-box">
         {ticker
           ? <span key={`${current.cityId}:${index}`} className={`world-ticker-line${live ? ' world-ticker-line--in' : ''}`}>
-              <strong>{shortCityName(current.city)}</strong>{` · ${current.answer}`}
+              {current.bubble
+                ? <span className="world-ticker-entry"><strong>{shortCityName(current.city)}</strong><AnswerBubble text={current.answer} size="sm" onPhoto /></span>
+                : <><strong>{shortCityName(current.city)}</strong>{` · ${current.answer}`}</>}
             </span>
           : <span className="world-ticker-line">{staticLine}</span>}
       </span>

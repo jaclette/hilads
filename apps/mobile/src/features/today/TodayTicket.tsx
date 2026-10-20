@@ -18,6 +18,7 @@ import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { TANGERINE, themeColor } from '@/ui/joy';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
@@ -142,8 +143,13 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
     [a.place, a.answer ? answerText(a.answer, i18n.language) : null].filter(Boolean).join(' · ');
   const answers = (world?.answers ?? []).filter(a => a.answer || a.place).slice(0, 3).map(line);
   const compared = !!world && world.countries >= 2;
+  // A player's answer to the question goes in a speech bubble; a place (or a Hilads suggestion) stays a line.
   const ticker: TickerEntry[] = (world?.answers ?? []).filter(a => (a.answer || a.place) && a.city.name)
-    .map(a => ({ cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, answer: line(a) }));
+    .map(a => {
+      const bubble = !suggested && !!a.answer;
+      return { cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, bubble,
+               answer: bubble ? answerText(a.answer!, i18n.language) : line(a) };
+    });
   const openMine = () => router.push((myProof ? `/daily/today?proof=${myProof.id}` : '/daily/today?source=today') as never);
   // Where I am (not the browsed city): "Not in Saigon? Change" and an unknown city ask for
   // the location; the server then answers for it (an account's city, a guest's here).
@@ -219,6 +225,8 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   const heroCredit = hero ? (hero.suggestion && hero.credit ? creditAuthor(hero.credit) : hero.username ? `@${hero.username}` : null) : null;
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text);
   // Nobody has answered for my city yet: "Be Saigon's first answer".
+  // The theme's own color (DESIGN.md): the chip's fill and its text color.
+  const tc = themeColor(challenge.special ? 'special' : challenge.theme?.key);
   const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
     : presence && !presence.represented ? t('represent.beFirst', { city: cityShort })
     : t('ctaAnswer', { city: cityShort });
@@ -234,10 +242,10 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
       </Pressable>
 
       <View style={styles.heroTop} pointerEvents="box-none">
-        <View style={styles.chip}>
-          {challenge.theme && <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={15} color="#FFFFFF" />}
+        <View style={[styles.chip, styles.themeChip, { backgroundColor: tc.fill }]}>
+          {challenge.theme && <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={15} color={tc.onFill} />}
           {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
-          <Text style={styles.chipText} numberOfLines={1}>{themeLabel || DAILY_CHALLENGE}</Text>
+          <Text style={[styles.chipText, { color: tc.onFill }]} numberOfLines={1}>{themeLabel || DAILY_CHALLENGE}</Text>
         </View>
         <View style={styles.heroTopRight}>
           {secondsLeft !== null && (
@@ -364,7 +372,7 @@ const NOTCH = 20;
 // White on the photo: a soft shadow keeps 4.5:1 over the gradients (SPEC 9.3).
 // On the photo the button is white (or "sun orange"); the primary stays for small accents.
 const HERO_CTA_TONE: PulseTone = 'white';
-const HERO_ACCENT = '#D9622A';   // the primary as on dark surfaces, in both themes: the hero is always dark
+const HERO_ACCENT = TANGERINE;   // on the dark pill, in both themes: the hero is always dark
 const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 };
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
@@ -376,6 +384,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1, paddingHorizontal: 10, paddingVertical: 6,
                  borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.42)' },
   chipText:    { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
+  themeChip:   { borderRadius: 999, paddingHorizontal: 11 },
   credit:      { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.92)', maxWidth: 200, ...ON_PHOTO_SHADOW },
   heroBottom:  { gap: 12, padding: 16 },
   headline:    { fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3, ...ON_PHOTO_SHADOW },

@@ -8,6 +8,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
 import { SectionTitle } from '@/ui';
+import { TANGERINE, THEME_COLORS } from '@/ui/joy';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
 import type { DailyCompared } from '@/types';
@@ -24,7 +25,7 @@ const CARD_ROWS = 5;
  */
 export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const value = useComparisonValue();
@@ -46,7 +47,7 @@ export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
 
   return (
     <View style={styles.wrap}>
-      <SectionTitle small title={t('index.carouselTitle')} />
+      <SectionTitle small title={t('index.carouselTitle')} highlight={TANGERINE} />
       <Text style={styles.sub}>{t('index.carouselSub')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}
                   snapToInterval={CARD_W + 10} decelerationRate="fast"
@@ -64,7 +65,7 @@ export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
                           }} />
         ))}
         <TouchableOpacity style={[styles.card, styles.all]} onPress={() => open(null, 'carousel_all')} accessibilityRole="button">
-          <Ionicons name="earth-outline" size={28} color={colors.primaryText} />
+          <Ionicons name="earth-outline" size={28} color={theme === 'dark' ? THEME_COLORS.hidden_gem.textDark : THEME_COLORS.hidden_gem.textLight} />
           <Text style={styles.allText}>{t('index.seeAllComparisons')}</Text>
           <Ionicons name="arrow-forward" size={20} color={colors.text} />
         </TouchableOpacity>

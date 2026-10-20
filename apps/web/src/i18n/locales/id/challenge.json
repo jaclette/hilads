@@ -1216,8 +1216,8 @@
     "today": {
       "early": "Bonus cepat sampai {{time}}",
       "tomorrow": "Besok: {{theme}}",
-      "aroundWorld": "Hari ini di seluruh dunia",
-      "inCity": "Hari ini di {{city}}",
+      "aroundWorld": "Hari ini di seluruh *dunia*",
+      "inCity": "Hari ini di *{{city}}*",
       "proofs_one": "{{count}} foto",
       "proofs_other": "{{count}} foto",
       "countries_one": "{{count}} negara",
@@ -1342,7 +1342,7 @@
       "homeIn": "Di rumah, {{city}}"
     },
     "tour": {
-      "title": "Keliling dunia kemarin",
+      "title": "Keliling dunia *kemarin*",
       "watch": "Tonton",
       "openCity": "Buka {{city}}",
       "next": "Berikutnya",
@@ -1364,7 +1364,7 @@
     },
     "index": {
       "share": "Bagikan",
-      "carouselTitle": "Dunia, dibandingkan",
+      "carouselTitle": "Dunia, *dibandingkan*",
       "carouselSub": "Minggu lalu di Hilads",
       "seeAllComparisons": "Lihat semua perbandingan",
       "screenTitle": "Indeks Hilads",

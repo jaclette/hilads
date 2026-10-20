@@ -17,8 +17,9 @@ import { RankMedal } from '@/features/daily/RankMedal';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { answerText } from '@/features/compare/format';
 import type { DailyToday, DailyTodayProofs } from '@/types';
-import { Card, CityName, Photo, SectionTitle } from '@/ui';
+import { Card, Photo, SectionTitle } from '@/ui';
 import { PickPill } from '@/features/map/PickBadge';
+import { FlagSticker, themeColor } from '@/ui/joy';
 
 type StripProof = DailyTodayProofs['proofs'][number];
 
@@ -91,6 +92,8 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
     </View>
   ) : null;
   const open = (path: string) => () => router.push(path as never);
+  // The titles' key word ("Today in *Saigon*") sits on today's theme color.
+  const highlight = themeColor(today?.challenge?.special ? 'special' : today?.challenge?.theme?.key).fill;
   const openProof = (p: StripProof) => router.push(`/daily/today?proof=${p.id}` as never);
 
   return (
@@ -98,7 +101,7 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
       {cityStrip && (
         <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={cityStrip.total > 0 ? t('today.proofs', { count: cityStrip.total }) : null}
                onOpen={open('/daily/today?tab=city&source=today_strip')} items={items} guestId={guestId} voting={voting}
-               source="strip_city" onProof={openProof} footer={!around && voting} />
+               source="strip_city" onProof={openProof} footer={!around && voting} highlight={highlight} />
       )}
       {(around || worldStrip) && (
         <Strip title={t('today.aroundWorld')}
@@ -108,7 +111,7 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
                  : null}
                onOpen={around ? open('/daily/today?tab=compare&source=world_strip') : open('/daily/today?tab=world&source=today_strip')}
                items={around ? playersFirst(around.proofs) : items} guestId={guestId} voting={voting} source="strip_world"
-               onProof={openProof} footer={voting} board={board} />
+               onProof={openProof} footer={voting} board={board} highlight={highlight} />
       )}
       <ShareSheet content={invite} source="represent_world_strip" onClose={() => setInvite(null)} />
     </View>
@@ -120,9 +123,9 @@ export function TodayProofs({ today, refreshKey }: { today: DailyToday | null; r
  * is open ("Who gets your 3 votes today?", my votes left, or "All your votes
  * are in"), the cards with their vote button, and what the votes do (footer).
  */
-function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, footer, board = null }: {
+function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, footer, highlight, board = null }: {
   title: string; stats: string | null; onOpen: () => void; items: StripProof[]; guestId: string | null; voting: boolean;
-  source: 'strip_city' | 'strip_world'; onProof: (p: StripProof) => void; footer: boolean; board?: ReactNode;
+  source: 'strip_city' | 'strip_world'; onProof: (p: StripProof) => void; footer: boolean; highlight: string; board?: ReactNode;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
@@ -139,7 +142,7 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
   return (
     <Card style={styles.card}>
       {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-      <SectionTitle small title={title} onPress={onOpen} action={{ label: t('today.seeAll'), onPress: onOpen }} />
+      <SectionTitle small title={title} highlight={highlight} onPress={onOpen} action={{ label: t('today.seeAll'), onPress: onOpen }} />
       {!!stats && <Text style={styles.stats}>{stats}</Text>}
       {/* No vote limit: one vote per answer, as many answers as I like. */}
       {votable && (
@@ -183,7 +186,12 @@ function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; gue
       </View>
       <View style={styles.info}>
         <View style={styles.cityRow}>
-          {!!proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short style={styles.city} />}
+          {!!proof.city?.name && (
+            <>
+              <FlagSticker country={proof.city.country} size={18} />
+              <Text style={styles.city} numberOfLines={1}>{shortCityName(proof.city.name)}</Text>
+            </>
+          )}
         </View>
         <Text style={styles.answer} numberOfLines={2}>{title}</Text>
         <View style={styles.bottom}>
@@ -203,7 +211,7 @@ function playersFirst<T extends { suggestion?: boolean }>(list: T[]): T[] {
 }
 
 const CARD_W = 112;
-const INFO_H = 108;
+const INFO_H = 110;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card:  { paddingHorizontal: 14, paddingVertical: 10, gap: 8 },
@@ -211,11 +219,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row:   { gap: 10 },
   item:  { width: CARD_W },
   photo: { width: CARD_W, height: 140, borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg3 },
-  // Fixed height: city line (18) + 2 answer lines (2 x 17) + the bottom row (the vote button, 2 lines at most, or the badge).
+  // Fixed height: city line (20, the flag sticker) + 2 answer lines (2 x 17) + the bottom row (the vote button, 2 lines at most, or the badge).
   info:  { height: INFO_H, paddingTop: 6 },
-  cityRow: { height: 18, flexDirection: 'row', alignItems: 'center' },
+  cityRow: { height: 20, flexDirection: 'row', alignItems: 'center', gap: 5 },
   rank:  { position: 'absolute', top: 6, left: 6, borderWidth: 2, borderColor: c.bg2 },
-  city:  { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: '100%' },
+  city:  { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.text },
   answer: { height: 34, fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text },
   bottom: { marginTop: 'auto', alignItems: 'stretch' },
   pending: { position: 'absolute', left: 6, bottom: 6 },

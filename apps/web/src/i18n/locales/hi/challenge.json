@@ -1216,8 +1216,8 @@
     "today": {
       "early": "{{time}} तक अर्ली बोनस",
       "tomorrow": "कल: {{theme}}",
-      "aroundWorld": "आज दुनिया भर में",
-      "inCity": "आज {{city}} में",
+      "aroundWorld": "आज *दुनिया* भर में",
+      "inCity": "आज *{{city}}* में",
       "proofs_one": "{{count}} फ़ोटो",
       "proofs_other": "{{count}} फ़ोटो",
       "countries_one": "{{count}} देश",
@@ -1342,7 +1342,7 @@
       "homeIn": "अपने शहर {{city}} में"
     },
     "tour": {
-      "title": "कल की विश्व यात्रा",
+      "title": "*कल* की विश्व यात्रा",
       "watch": "देखें",
       "openCity": "{{city}} खोलें",
       "next": "आगे",
@@ -1364,7 +1364,7 @@
     },
     "index": {
       "share": "शेयर करें",
-      "carouselTitle": "दुनिया की तुलना",
+      "carouselTitle": "दुनिया की *तुलना*",
       "carouselSub": "पिछले हफ़्ते Hilads पर",
       "seeAllComparisons": "सभी तुलनाएँ देखें",
       "screenTitle": "Hilads इंडेक्स",

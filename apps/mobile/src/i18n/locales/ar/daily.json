@@ -400,8 +400,8 @@
   "today": {
     "early": "مكافأة السرعة حتى {{time}}",
     "tomorrow": "غدًا: {{theme}}",
-    "aroundWorld": "اليوم حول العالم",
-    "inCity": "اليوم في {{city}}",
+    "aroundWorld": "اليوم حول *العالم*",
+    "inCity": "اليوم في *{{city}}*",
     "proofs_zero": "لا صور",
     "proofs_one": "صورة واحدة",
     "proofs_two": "صورتان",
@@ -636,7 +636,7 @@
     "hereIn": "هنا في {{city}}"
   },
   "tour": {
-    "title": "جولة الأمس حول العالم",
+    "title": "جولة *الأمس* حول العالم",
     "watch": "شاهد",
     "openCity": "افتح {{city}}",
     "next": "التالي",
@@ -662,7 +662,7 @@
   },
   "index": {
     "share": "مشاركة",
-    "carouselTitle": "العالم في مقارنة",
+    "carouselTitle": "العالم في *مقارنة*",
     "carouselSub": "الأسبوع الماضي على Hilads",
     "seeAllComparisons": "عرض كل المقارنات",
     "screenTitle": "مؤشر Hilads",

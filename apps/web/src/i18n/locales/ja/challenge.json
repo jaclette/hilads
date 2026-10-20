@@ -1216,8 +1216,8 @@
     "today": {
       "early": "早割ボーナスは {{time}} まで",
       "tomorrow": "明日：{{theme}}",
-      "aroundWorld": "今日の世界",
-      "inCity": "今日の{{city}}",
+      "aroundWorld": "今日の*世界*",
+      "inCity": "今日の*{{city}}*",
       "proofs_one": "写真{{count}}枚",
       "proofs_other": "写真{{count}}枚",
       "countries_one": "{{count}}か国",
@@ -1342,7 +1342,7 @@
       "homeIn": "地元：{{city}}"
     },
     "tour": {
-      "title": "きのうの世界一周",
+      "title": "*きのう*の世界一周",
       "watch": "見る",
       "openCity": "{{city}}を開く",
       "next": "次へ",
@@ -1364,7 +1364,7 @@
     },
     "index": {
       "share": "シェア",
-      "carouselTitle": "世界をくらべる",
+      "carouselTitle": "世界を*くらべる*",
       "carouselSub": "先週の Hilads",
       "seeAllComparisons": "すべての比較を見る",
       "screenTitle": "Hilads インデックス",

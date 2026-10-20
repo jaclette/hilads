@@ -82,16 +82,23 @@ export function AnswerBubble({ text, tail = 'left', onPhoto = false, size = 'md'
  * A title whose key word (marked "*word*" in the copy) sits on a colored
  * block, as on the store captions. No mark: plain text.
  */
-export function HighlightText({ text, color = TANGERINE, style }: { text: string; color?: string; style?: StyleProp<TextStyle> }) {
+export function HighlightText({ text, color = TANGERINE, style, accessibilityLabel }: {
+  text: string; color?: string; style?: StyleProp<TextStyle>; accessibilityLabel?: string;
+}) {
   const parts = text.split('*');
   const onColor = color === THEME_COLORS.night_out.fill ? '#FFFFFF' : INK;
   return (
-    <Text style={style}>
+    <Text style={style} accessibilityRole="header" accessibilityLabel={accessibilityLabel ?? plain(text)}>
       {parts.map((p, i) => (i % 2 === 1
-        ? <Text key={i} style={[styles.hl, { backgroundColor: color, color: onColor }]}>{` ${p} `}</Text>
+        ? <Text key={i} style={[styles.hl, { backgroundColor: color, color: onColor }]}>{`\u2009${p}\u2009`}</Text>
         : p))}
     </Text>
   );
+}
+
+/** A marked title without its marks ("Today around the *world*" -> "Today around the world"), for labels and plain text. */
+export function plain(text: string): string {
+  return text.replace(/\*/g, '');
 }
 
 /** The primary action (DESIGN.md proposal): tangerine with ink text; `onPhoto`: solid white. 52 px, radius 16. */
@@ -146,11 +153,11 @@ export function DashedRoute({ width, height, color, style }: { width: number; he
 }
 
 /** The official lockup: the app icon mark and the "hilads" wordmark (ExtraBold, the logo's orange; white on dark grounds), never plain UI text. */
-export function Wordmark({ height = 28, onDark = false }: { height?: number; onDark?: boolean }) {
+export function Wordmark({ height = 28, onDark = false, mark = true }: { height?: number; onDark?: boolean; mark?: boolean }) {
   const { theme } = useTheme();
   return (
     <View style={styles.lockup} accessibilityRole="header" accessibilityLabel="Hilads">
-      <Image source={LOGO} style={{ width: height, height }} contentFit="contain" />
+      {mark && <Image source={LOGO} style={{ width: height, height }} contentFit="contain" />}
       <Text style={[styles.word, { fontSize: height * 1.02, lineHeight: height * 1.1, color: onDark ? '#FFFFFF' : theme === 'dark' ? '#FF8A50' : '#BF4E34' }]}>hilads</Text>
     </View>
   );

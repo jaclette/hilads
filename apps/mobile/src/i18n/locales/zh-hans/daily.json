@@ -371,8 +371,8 @@
   "today": {
     "early": "早鸟奖励截至 {{time}}",
     "tomorrow": "明天：{{theme}}",
-    "aroundWorld": "今日全球",
-    "inCity": "今日{{city}}",
+    "aroundWorld": "今日*全球*",
+    "inCity": "今日*{{city}}*",
     "proofs_one": "{{count}} 张照片",
     "proofs_other": "{{count}} 张照片",
     "countries_one": "{{count}} 个国家",
@@ -574,7 +574,7 @@
     "hereIn": "这里：{{city}}"
   },
   "tour": {
-    "title": "昨天的环球之旅",
+    "title": "*昨天*的环球之旅",
     "watch": "观看",
     "openCity": "打开{{city}}",
     "next": "下一个",
@@ -596,7 +596,7 @@
   },
   "index": {
     "share": "分享",
-    "carouselTitle": "世界，比一比",
+    "carouselTitle": "世界，*比一比*",
     "carouselSub": "上周在 Hilads",
     "seeAllComparisons": "查看全部比较",
     "screenTitle": "Hilads 指数",

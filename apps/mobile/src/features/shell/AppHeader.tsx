@@ -63,6 +63,6 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // No horizontal padding: each tab's header container sets it.
   bar:            { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 10, paddingBottom: 6 },
-  signUp:         { height: 44, paddingHorizontal: 16, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  signUpText:     { color: c.white, fontSize: 14, fontWeight: '700' },
+  signUp:         { height: 44, paddingHorizontal: 16, borderRadius: Radius.full, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
+  signUpText:     { color: c.onCta, fontSize: 14, fontWeight: '800' },
 });

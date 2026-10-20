@@ -1234,8 +1234,8 @@
     "today": {
       "early": "Бонус за скорость до {{time}}",
       "tomorrow": "Завтра: {{theme}}",
-      "aroundWorld": "Сегодня по всему миру",
-      "inCity": "Сегодня: {{city}}",
+      "aroundWorld": "Сегодня по всему *миру*",
+      "inCity": "Сегодня: *{{city}}*",
       "proofs_one": "{{count}} фото",
       "proofs_few": "{{count}} фото",
       "proofs_many": "{{count}} фото",
@@ -1372,7 +1372,7 @@
       "homeIn": "Дома, {{city}}"
     },
     "tour": {
-      "title": "Вчерашняя кругосветка",
+      "title": "*Вчерашняя* кругосветка",
       "watch": "Смотреть",
       "openCity": "Открыть {{city}}",
       "next": "Далее",
@@ -1396,7 +1396,7 @@
     },
     "index": {
       "share": "Поделиться",
-      "carouselTitle": "Мир в сравнении",
+      "carouselTitle": "Мир в *сравнении*",
       "carouselSub": "Прошлая неделя на Hilads",
       "seeAllComparisons": "Все сравнения",
       "screenTitle": "Индекс Hilads",

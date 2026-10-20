@@ -30,12 +30,17 @@ export function FlagSticker({ country, size = 28 }) {
 }
 
 export function AnswerBubble({ text, tail = 'left', onPhoto = false, size = 'md' }) {
-  return <span className={`joy-bubble joy-bubble--${size} joy-bubble--tail-${tail}${onPhoto ? ' joy-bubble--photo' : ''}`}>{text}</span>
+  // dir="auto": a Latin answer ("Prost!") keeps its own direction inside an Arabic page.
+  return <span dir="auto" className={`joy-bubble joy-bubble--${size} joy-bubble--tail-${tail}${onPhoto ? ' joy-bubble--photo' : ''}`}>{text}</span>
 }
+
+/** A marked title without its marks, for labels and plain text. */
+export const plain = (text) => text.replace(/\*/g, '')
 
 /** A title whose key word ("*word*" in the copy) sits on a colored block. */
 export function HighlightText({ text, color = '#FF7A3D', as: Tag = 'span', className }) {
   const on = color === THEME_COLORS.night_out.fill ? '#FFFFFF' : '#2A1C13'
+  if (!text.includes('*')) return <Tag className={className}>{text}</Tag>
   return (
     <Tag className={className}>
       {text.split('*').map((p, i) => (i % 2 ? <mark key={i} className="joy-hl" style={{ background: color, color: on }}>{p}</mark> : p))}
@@ -75,10 +80,10 @@ export function DashedRoute() {
 }
 
 /** The official lockup: the app icon mark and the "hilads" wordmark (never plain UI text). */
-export function Wordmark({ height = 28 }) {
+export function Wordmark({ height = 28, mark = true }) {
   return (
     <span className="joy-lockup" role="img" aria-label="Hilads" style={{ '--h': `${height}px` }}>
-      <img src="/logo/icon.svg" alt="" /><span className="joy-word">hilads</span>
+      {mark && <img src="/logo/icon.svg" alt="" />}<span className="joy-word">hilads</span>
     </span>
   )
 }

@@ -372,8 +372,8 @@
   "today": {
     "early": "Bónus de rapidez até às {{time}}",
     "tomorrow": "Amanhã: {{theme}}",
-    "aroundWorld": "Hoje pelo mundo",
-    "inCity": "Hoje em {{city}}",
+    "aroundWorld": "Hoje pelo *mundo*",
+    "inCity": "Hoje em *{{city}}*",
     "proofs_one": "{{count}} foto",
     "proofs_other": "{{count}} fotos",
     "countries_one": "{{count}} país",
@@ -577,7 +577,7 @@
     "hereIn": "Aqui em {{city}}"
   },
   "tour": {
-    "title": "A volta ao mundo de ontem",
+    "title": "A volta ao mundo de *ontem*",
     "watch": "Ver",
     "openCity": "Abrir {{city}}",
     "next": "Seguinte",
@@ -599,7 +599,7 @@
   },
   "index": {
     "share": "Partilhar",
-    "carouselTitle": "O mundo, comparado",
+    "carouselTitle": "O mundo, *comparado*",
     "carouselSub": "A semana passada no Hilads",
     "seeAllComparisons": "Ver todas as comparações",
     "screenTitle": "O índice Hilads",

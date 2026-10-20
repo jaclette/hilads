@@ -138,6 +138,9 @@ export const Colors = {
   primaryText:   '#FF8A50',   // primary as text / links on the dark ground
   primaryTint:   '#3A2216',   // chip / active tab ground
   primaryOnTint: '#FFB48A',   // text on primaryTint
+  // The joyful primary action (DESIGN.md): tangerine with ink text, same in both themes (7.6:1).
+  cta:           '#FF7A3D',
+  onCta:         '#2A1C13',
   stepBg:        '#1e1812',   // a soft block inside a card (Today's photo step): the sand inset, a shade off the card
   line:          '#272018',   // borders
   ticketLine:    '#4A3426',   // Daily Challenge ticket border + perforation
@@ -201,6 +204,8 @@ export const LightColors: ThemeColors = {
   primaryText:   '#C9501A',
   primaryTint:   '#FFE6D8',
   primaryOnTint: '#8A3A12',
+  cta:           '#FF7A3D',   // tangerine, ink text on it (6.4:1)
+  onCta:         '#2A1C13',
   stepBg:        '#FBF5EE',   // the ground colour
   line:          '#EADCCD',
   ticketLine:    '#E8CDB8',

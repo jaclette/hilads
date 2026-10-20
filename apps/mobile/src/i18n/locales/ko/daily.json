@@ -371,8 +371,8 @@
   "today": {
     "early": "{{time}}까지 얼리 보너스",
     "tomorrow": "내일: {{theme}}",
-    "aroundWorld": "오늘 전 세계",
-    "inCity": "오늘 {{city}}",
+    "aroundWorld": "오늘 전 *세계*",
+    "inCity": "오늘 *{{city}}*",
     "proofs_one": "사진 {{count}}장",
     "proofs_other": "사진 {{count}}장",
     "countries_one": "{{count}}개국",
@@ -574,7 +574,7 @@
     "hereIn": "여기, {{city}}"
   },
   "tour": {
-    "title": "어제의 세계 일주",
+    "title": "*어제*의 세계 일주",
     "watch": "보기",
     "openCity": "{{city}} 열기",
     "next": "다음",
@@ -596,7 +596,7 @@
   },
   "index": {
     "share": "공유",
-    "carouselTitle": "세계를 비교하다",
+    "carouselTitle": "세계를 *비교하다*",
     "carouselSub": "지난주 Hilads",
     "seeAllComparisons": "모든 비교 보기",
     "screenTitle": "Hilads 지수",

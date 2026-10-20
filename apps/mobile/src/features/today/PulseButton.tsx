@@ -8,7 +8,7 @@ import { useIsFocused } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { FontSizes } from '@/constants';
-import { useTheme } from '@/context/ThemeContext';
+import { TANGERINE, TANGERINE_TEXT } from '@/ui/joy';
 
 const CYCLE_MS      = 1600;   // one ring's expansion
 const FAST_CYCLE_MS = 1200;   // the last 3 hours before the next drop
@@ -25,12 +25,12 @@ const INK = '#2A1C13';
 
 /**
  * Today's "I'm in" (SPEC 9.3): the hero's camera button (white, ink label,
- * primary camera icon) with a continuous pulse, two white rings (75%) in relay
+ * tangerine camera icon) with a continuous pulse, two white rings (75%) in relay
  * expanding from its edge while fading
  * (1.6 s, the second 0.8 s later; 1.2 s in the last 3 hours). The pulse runs
  * only while `visible` (the card on screen), the tab is focused and the app is
  * in the foreground. A press gives light haptics, scales the button to 0.97
- * and grows a primary disc from it before `onPress` opens the camera. The OS
+ * and grows a tangerine disc from it before `onPress` opens the camera. The OS
  * "reduce motion" setting turns all of it off: a static button.
  */
 export function PulseButton({ label, onPress, fast, visible, intercept, tone = 'white' }: {
@@ -38,7 +38,6 @@ export function PulseButton({ label, onPress, fast, visible, intercept, tone = '
   /** Called on press first: true = handled elsewhere (the how-it-works sheet), no transition. */
   intercept?: () => boolean;
 }) {
-  const { colors } = useTheme();
   const { bg, ring } = TONES[tone];
   const reduceMotion = useReducedMotion();
   const focused = useIsFocused();
@@ -83,7 +82,7 @@ export function PulseButton({ label, onPress, fast, visible, intercept, tone = '
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     if (intercept?.()) return;
     if (reduceMotion) { onPress(); return; }
-    // The camera opens "from the button": a primary disc grows out of it first.
+    // The camera opens "from the button": a tangerine disc grows out of it first.
     reveal.value = withTiming(1, { duration: 240, easing: Easing.in(Easing.quad) }, done => { if (done) runOnJS(onPress)(); });
   };
 
@@ -100,11 +99,11 @@ export function PulseButton({ label, onPress, fast, visible, intercept, tone = '
           accessibilityRole="button"
           accessibilityLabel={label}
         >
-          <Ionicons name="camera-outline" size={20} color={tone === 'white' ? colors.primary : INK} />
+          <Ionicons name="camera-outline" size={20} color={tone === 'white' ? TANGERINE_TEXT : INK} />
           <Text style={styles.label} numberOfLines={1}>{label}</Text>
         </Pressable>
       </Animated.View>
-      {!reduceMotion && <Animated.View pointerEvents="none" style={[styles.reveal, { backgroundColor: colors.primary }, revealStyle]} />}
+      {!reduceMotion && <Animated.View pointerEvents="none" style={[styles.reveal, { backgroundColor: TANGERINE }, revealStyle]} />}
     </View>
   );
 }
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
   wrap:   { height: HEIGHT, justifyContent: 'center' },
   ring:   { ...StyleSheet.absoluteFillObject, borderWidth: 2, borderRadius: RADIUS },
   button: { height: HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: RADIUS, paddingHorizontal: 16 },
-  label:  { fontSize: FontSizes.md, fontWeight: '700', color: INK },
+  label:  { fontSize: FontSizes.md, fontWeight: '800', color: INK },
   // The disc the camera "opens from": centred on the button, grown by scale.
   reveal: { position: 'absolute', alignSelf: 'center', width: HEIGHT, height: HEIGHT, borderRadius: HEIGHT / 2, zIndex: 2 },
 });

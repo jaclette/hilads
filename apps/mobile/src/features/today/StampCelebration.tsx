@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Pressable, Text, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -12,20 +12,21 @@ import { themeName } from '@/features/daily/themes';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyLocalPassProgress, DailyThemeKey } from '@/types';
 import { Button } from '@/ui';
+import { Confetti, themeColor, tint } from '@/ui/joy';
 
 // v2: themes v2 renamed every key, so the v1 record would read as all new stamps.
 const KEY = (userId: string, cityId: number) => `hilads_stamps_v2_${userId}_${cityId}`;
 
 /**
  * The stamp animation (SPEC 9.7): when a newly approved proof adds a theme
- * stamp to the city's page, a round ink stamp lands on Today. The themes last
- * seen are kept per user and city on the phone; the first time, they are only
- * recorded. The one decorative motion in the app; with Reduce Motion the stamp
- * just appears.
+ * stamp to the city's page, a round stamp in the theme's color lands on Today
+ * with a confetti burst and one light haptic (a victory, DESIGN.md). The themes
+ * last seen are kept per user and city on the phone; the first time, they are
+ * only recorded. With Reduce Motion the stamp just appears, no confetti.
  */
 export function StampCelebration({ progress, userId }: { progress: DailyLocalPassProgress | null | undefined; userId: string | null }) {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
+  const { theme: mode } = useTheme();
   const { t } = useTranslation('daily');
   const reduceMotion = useReducedMotion();
   const [stamp, setStamp] = useState<{ theme: DailyThemeKey; city: string } | null>(null);
@@ -51,6 +52,7 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
 
   useEffect(() => {
     if (!stamp) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     anim.setValue(reduceMotion ? 1 : 0);
     if (!reduceMotion) {
       Animated.timing(anim, { toValue: 1, duration: 420, easing: Easing.out(Easing.back(1.6)), useNativeDriver: true }).start();
@@ -61,21 +63,24 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
   const scale  = anim.interpolate({ inputRange: [0, 1], outputRange: [1.8, 1] });
   const rotate = anim.interpolate({ inputRange: [0, 1], outputRange: ['-24deg', '-8deg'] });
   const close = () => setStamp(null);
+  const tc = themeColor(stamp.theme);
+  const ink = mode === 'dark' ? tc.textDark : tc.textLight;
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.scrim} onPress={close} accessibilityRole="button" accessibilityLabel={t('stamp.close')}>
         <View style={styles.card} accessibilityRole="alert" accessibilityLabel={t('stamp.title', { theme: themeName(stamp.theme, { city: stamp.city }) })}>
-          <Animated.View style={[styles.stamp, { opacity: anim, transform: [{ scale }, { rotate }] }]}>
-            <View style={styles.inner}>
-              <ThemeIcon theme={stamp.theme} size={36} color={colors.primary} />
-              <Text style={styles.stampTheme} numberOfLines={1}>{themeName(stamp.theme, { city: stamp.city })}</Text>
-              <Text style={styles.stampCity} numberOfLines={1}>{stamp.city}</Text>
+          <Animated.View style={[styles.stamp, { borderColor: tc.fill, backgroundColor: tint(tc.fill, 0.14), opacity: anim, transform: [{ scale }, { rotate }] }]}>
+            <View style={[styles.inner, { borderColor: tc.fill }]}>
+              <ThemeIcon theme={stamp.theme} size={36} color={ink} />
+              <Text style={[styles.stampTheme, { color: ink }]} numberOfLines={1}>{themeName(stamp.theme, { city: stamp.city })}</Text>
+              <Text style={[styles.stampCity, { color: ink }]} numberOfLines={1}>{stamp.city}</Text>
             </View>
           </Animated.View>
           <Text style={styles.title}>{t('stamp.title', { theme: themeName(stamp.theme, { city: stamp.city }) })}</Text>
           <Text style={styles.body}>{t('stamp.body', { city: stamp.city })}</Text>
           <Button label={t('stamp.ok')} onPress={close} style={styles.cta} />
+          <Confetti run />
         </View>
       </Pressable>
     </Modal>
@@ -86,12 +91,12 @@ const SIZE = 168;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scrim:      { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
-  card:       { alignSelf: 'stretch', backgroundColor: c.bg2, borderRadius: 24, padding: Spacing.lg, alignItems: 'center', gap: 10 },
-  stamp:      { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 4, borderColor: c.primary, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  inner:      { width: SIZE - 20, height: SIZE - 20, borderRadius: (SIZE - 20) / 2, borderWidth: 1.5, borderColor: c.primary,
+  card:       { alignSelf: 'stretch', backgroundColor: c.bg2, borderRadius: 24, padding: Spacing.lg, alignItems: 'center', gap: 10, overflow: 'hidden' },
+  stamp:      { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 4, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  inner:      { width: SIZE - 20, height: SIZE - 20, borderRadius: (SIZE - 20) / 2, borderWidth: 2,
                 borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 10 },
-  stampTheme: { fontSize: FontSizes.sm, fontWeight: '800', color: c.primary, textTransform: 'uppercase', letterSpacing: 1 },
-  stampCity:  { fontSize: 12, fontWeight: '600', color: c.primary },
+  stampTheme: { fontSize: FontSizes.sm, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
+  stampCity:  { fontSize: 12, fontWeight: '700' },
   title:      { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   cta:        { alignSelf: 'stretch', marginTop: 6 },

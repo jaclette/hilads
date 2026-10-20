@@ -6,7 +6,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 /**
- * V3 button (SPEC 9.11): primary = flat primary fill, secondary = card with a
+ * V3 button (SPEC 9.11): primary = tangerine with ink text (DESIGN.md), secondary = card with a
  * line border, danger = red outline (delete), link = primary text. md is 48 high, sm 44; radius 16 (14 sm).
  */
 export function Button({ label, onPress, variant = 'primary', size = 'md', icon, loading = false, disabled = false, style, accessibilityLabel }: {
@@ -22,7 +22,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const color = variant === 'primary' ? colors.white : variant === 'secondary' ? colors.text : variant === 'danger' ? colors.red : colors.primaryText;
+  const color = variant === 'primary' ? colors.onCta : variant === 'secondary' ? colors.text : variant === 'danger' ? colors.red : colors.primaryText;
   return (
     <TouchableOpacity
       style={[styles.base, variant !== 'link' && (size === 'sm' ? styles.sm : styles.md), styles[variant], disabled && styles.disabled, style]}
@@ -47,11 +47,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   base:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44 },
   md:        { minHeight: 48, borderRadius: Radius.button, paddingHorizontal: 16 },
   sm:        { minHeight: 44, borderRadius: 14, paddingHorizontal: 14 },
-  primary:   { backgroundColor: c.primary },
+  primary:   { backgroundColor: c.cta },
   secondary: { backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
   danger:    { borderWidth: Border, borderColor: c.red },
   link:      {},
   disabled:  { opacity: 0.5 },
-  label:     { fontSize: FontSizes.md, fontWeight: '700' },
-  labelSm:   { fontSize: FontSizes.sm, fontWeight: '700' },
+  label:     { fontSize: FontSizes.md, fontWeight: '800' },
+  labelSm:   { fontSize: FontSizes.sm, fontWeight: '800' },
 });

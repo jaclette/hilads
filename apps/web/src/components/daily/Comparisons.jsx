@@ -5,6 +5,7 @@ import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
+import { HighlightText } from '../joy/Joy'
 import { useDaily, useDc } from './dailyShared'
 import { useMoney } from './compareShared'
 
@@ -107,7 +108,7 @@ export function IndexCarousel() {
   }
   return (
     <div className="today-card index">
-      <div className="today-card-head"><span className="today-card-title">{t('index.carouselTitle')}</span></div>
+      <div className="today-card-head"><HighlightText className="today-card-title" text={t('index.carouselTitle')} /></div>
       <span className="dc-muted today-proofs-stats">{t('index.carouselSub')}</span>
       <div className="index-row" onScroll={() => {
         if (swiped.current) return

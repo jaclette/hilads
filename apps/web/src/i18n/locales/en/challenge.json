@@ -1216,8 +1216,8 @@
     "today": {
       "early": "Early bonus until {{time}}",
       "tomorrow": "Tomorrow: {{theme}}",
-      "aroundWorld": "Today around the world",
-      "inCity": "Today in {{city}}",
+      "aroundWorld": "Today around the *world*",
+      "inCity": "Today in *{{city}}*",
       "proofs_one": "{{count}} photo",
       "proofs_other": "{{count}} photos",
       "countries_one": "{{count}} country",
@@ -1342,7 +1342,7 @@
       "homeIn": "Back home in {{city}}"
     },
     "tour": {
-      "title": "Yesterday around the world",
+      "title": "*Yesterday* around the world",
       "watch": "Watch",
       "openCity": "Open {{city}}",
       "next": "Next",
@@ -1364,7 +1364,7 @@
     },
     "index": {
       "share": "Share",
-      "carouselTitle": "The world, compared",
+      "carouselTitle": "The world, *compared*",
       "carouselSub": "Last week on Hilads",
       "seeAllComparisons": "See all comparisons",
       "screenTitle": "The Hilads Index",
