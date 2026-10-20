@@ -65,9 +65,9 @@ export default function TodayScreen({ header }) {
 
   return (
     <div className="full-page full-page--tab today-page">
-      <div className="tab-app-header">{header}</div>
+      {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
+      <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
-        <BrandLine today={data} />
         <Ticket data={data} loading={loading} />
         <Week today={data} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
@@ -112,16 +112,12 @@ function specialCover(special) {
 
 /**
  * Today's brand line (SPEC 9.3 / 9.9): "Hilads" in the wordmark weight, then
- * the tagline in muted text, one line that wraps on small screens. At the top
- * of the scrolling content, so it scrolls away. For guests, and for signed-in
- * users until their first proof; then hidden so the card sits higher.
+ * " · " and the tagline, in the header under the logo row, so it stays on screen
+ * while the content scrolls. For everyone. 13 px, muted, one line (ellipsis).
  */
-function BrandLine({ today }) {
+function BrandLine() {
   const { t } = useTranslation('common')
-  const { account } = useDaily()
-  // Signed in: wait for Today to know, so it never flashes for users who posted.
-  if (account && (!today || today.hasProof)) return null
-  return <p className="brand-line"><span className="brand-line-name">Hilads</span> {t('firstLaunch')}</p>
+  return <p className="brand-line"><span className="brand-line-name">Hilads</span> · {t('firstLaunch')}</p>
 }
 
 /** True while the element is on screen and the tab visible: the "I'm in" pulse runs only then. */

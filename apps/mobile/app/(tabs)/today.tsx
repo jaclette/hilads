@@ -47,14 +47,14 @@ export default function TodayScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <View style={styles.header}><AppHeader /></View>
+      {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
+      <View style={styles.header}><AppHeader /><BrandLine /></View>
       <ScrollView
         contentContainerStyle={styles.content}
         onScroll={onScroll}
         scrollEventThrottle={100}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
-        <BrandLine today={daily.data} guest={!account} />
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>

@@ -1,28 +1,25 @@
 import { Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import type { DailyToday } from '@/types';
 
 /**
- * Today's brand line (SPEC 9.3 / 9.9): "Hilads" in the wordmark weight, then
- * the tagline in muted text, one line that wraps on small screens. At the top
- * of the scrolling content, so it scrolls away. For guests, and for signed-in
- * users until their first proof; then hidden so the card sits higher.
+ * Today's brand line (SPEC 9.3 / 9.9): "Hilads · Play local. Compare global."
+ * in the header, under the logo row, so it stays on screen while the content
+ * scrolls. For everyone, guests and signed in. Compact: 13 px, muted, one line
+ * with an ellipsis on small screens.
  */
-export function BrandLine({ today, guest }: { today: DailyToday | null; guest: boolean }) {
+export function BrandLine() {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('common');
-  // Signed in: wait for Today to know, so it never flashes for users who posted.
-  if (!guest && (!today || today.hasProof)) return null;
   return (
-    <Text style={styles.line} accessibilityRole="header">
-      <Text style={styles.brand}>Hilads</Text>{'  '}{t('firstLaunch')}
+    <Text style={styles.line} numberOfLines={1} accessibilityRole="header">
+      <Text style={styles.brand}>Hilads</Text> · {t('firstLaunch')}
     </Text>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  line:  { fontSize: FontSizes.md, lineHeight: 22, fontWeight: '600', color: c.muted },
-  brand: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
+  line:  { fontSize: 13, lineHeight: 18, fontWeight: '500', color: c.muted, marginTop: 2, marginBottom: 6 },
+  brand: { fontSize: 13, fontWeight: '800', color: c.muted },
 });
