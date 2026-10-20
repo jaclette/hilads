@@ -86,10 +86,10 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
       <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={variant === 'tile' ? 15 : 18} color={iconColor} />
       {count !== null && (
         <Text style={[styles.count, variant === 'tile' && styles.countTile, variant === 'strip' && styles.countStrip, onDark && styles.white]}
-              numberOfLines={variant === 'strip' ? 2 : 1}>
-          {/* The strip's narrow card: the label alone ("Vote for Mexico City"), the count once voted. */}
+              numberOfLines={1} adjustsFontSizeToFit={variant === 'strip'} minimumFontScale={0.8}>
+          {/* The strip's narrow card shows its city above: "Vote" alone (never cut in any locale), the count once voted. */}
           {variant !== 'tile' && !state?.myVote && !state?.isMine && state?.votingOpen
-            ? (variant === 'strip' ? voteLabel : `${voteLabel} · ${count}`) : count}
+            ? (variant === 'strip' ? t('vote.vote') : `${voteLabel} · ${count}`) : count}
         </Text>
       )}
       {!!sub && variant !== 'tile' && variant !== 'strip' && (

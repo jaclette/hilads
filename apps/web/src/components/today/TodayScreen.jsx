@@ -19,7 +19,7 @@ import {
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { PhotoCredit, PickBadge } from '../map/Pick'
+import { PhotoCredit, PickBadge, PickPill } from '../map/Pick'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -537,9 +537,9 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, board = nu
 /**
  * One card, the same structure everywhere: the photo, then a fixed-height
  * info block: the flag and city on one line, the answer (else the place or
- * the caption) on 2 reserved lines, then the badge or the vote button pinned
- * to the bottom, so they line up whatever the text. A Hilads suggestion has
- * its badge and no vote button.
+ * the caption) on 2 reserved lines, then the vote button pinned to the
+ * bottom, so buttons line up whatever the text. A Hilads pick has the
+ * "★ Hilads" pill on its photo and no vote button.
  */
 function StripProof({ proof, source, onOpen }) {
   const { t, i18n } = useDc()
@@ -555,6 +555,7 @@ function StripProof({ proof, source, onOpen }) {
           <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
           {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
           {proof.status === 'pending' && <span className="proof-strip-pending"><StatusChip status="pending" /></span>}
+          {proof.suggestion && <PickPill />}
         </span>
         <span className="proof-strip-cityrow">
           {proof.city?.name && <CityName name={proof.city.name} country={proof.city.country} short className="proof-strip-city" />}
@@ -562,7 +563,7 @@ function StripProof({ proof, source, onOpen }) {
         <span className="proof-strip-answer">{title}</span>
       </button>
       <div className="proof-strip-bottom">
-        {proof.suggestion ? <PickBadge /> : proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
+        {!proof.suggestion && proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
       </div>
     </div>
   )
@@ -709,12 +710,12 @@ function TodayPicks({ today }) {
             <span className="spot-card-photo">
               {p.photo ? <img src={p.photo.thumbUrl || p.photo.url} onError={thumbFallback(p.photo.url)} alt="" loading="lazy" /> : <span className="spot-card-img" />}
               <PhotoCredit cover={{ credit: p.photo?.credit }} className="photo-credit" />
+              <PickPill />
             </span>
             <span className="spot-card-body">
               <span className="dc-muted" style={ROW}><CityFlag country={p.city?.country} size={14} />{p.city?.name ? shortCityName(p.city.name) : ''}</span>
               <span className="spot-card-name">{p.place.name}</span>
               {p.answer && <span className="today-pick-answer">{answerText(p.answer, i18n.language)}</span>}
-              <PickBadge />
             </span>
           </div>
         ))}

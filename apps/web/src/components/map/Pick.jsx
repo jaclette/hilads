@@ -1,10 +1,20 @@
 import { useTranslation } from 'react-i18next'
 import Icon from '../Icon'
 
-/** "Hilads pick": an editorial spot (never a player's photo). */
+/** "Hilads pick" (full label: detail page, sheet, Compare): an editorial spot, never a player's photo. */
 export function PickBadge() {
   const { t } = useTranslation('common')
   return <span className="pick-badge"><Icon name="star" size={12} />{t('pick.badge')}</span>
+}
+
+/**
+ * The compact pick mark on a photo (Today strips): a small dark pill in the
+ * top-left corner, a gold star and "Hilads" (a brand name: the same in every
+ * locale), so it never truncates. Its parent photo box is position: relative.
+ */
+export function PickPill() {
+  const { t } = useTranslation('common')
+  return <span className="pick-pill" aria-label={t('pick.badge')}><Icon name="star" size={10} />Hilads</span>
 }
 
 /** A pick's "Good to know": context that stays when players' photos take the cover. */

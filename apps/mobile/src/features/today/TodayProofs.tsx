@@ -18,7 +18,7 @@ import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { answerText } from '@/features/compare/format';
 import type { DailyToday, DailyTodayProofs } from '@/types';
 import { Card, CityName, Photo, SectionTitle } from '@/ui';
-import { PickBadge } from '@/features/map/PickBadge';
+import { PickPill } from '@/features/map/PickBadge';
 
 type StripProof = DailyTodayProofs['proofs'][number];
 
@@ -161,9 +161,9 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
 /**
  * One card, the same structure everywhere: the photo, then a fixed-height
  * info block: the flag and city on one line, the answer (else the place or
- * the caption) on 2 reserved lines, then the badge row and the vote button
- * pinned to the bottom, so badges and buttons line up whatever the text.
- * A Hilads suggestion has its badge and no vote button.
+ * the caption) on 2 reserved lines, then the vote button pinned to the
+ * bottom, so buttons line up whatever the text. A Hilads pick has the
+ * "★ Hilads" pill on its photo and no vote button.
  */
 function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; guestId: string | null; source: string; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
@@ -179,6 +179,7 @@ function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; gue
         <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" />
         {proof.rank !== null && <RankMedal rank={proof.rank} size={24} style={styles.rank} />}
         {proof.status === 'pending' && <View style={styles.pending}><DailyStatusChip status="pending" /></View>}
+        {proof.suggestion && <PickPill />}
       </View>
       <View style={styles.info}>
         <View style={styles.cityRow}>
@@ -186,7 +187,7 @@ function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; gue
         </View>
         <Text style={styles.answer} numberOfLines={2}>{title}</Text>
         <View style={styles.bottom}>
-          {proof.suggestion ? <PickBadge style={styles.badge} /> : proof.status === 'approved' && (
+          {!proof.suggestion && proof.status === 'approved' && (
             <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null}
                              source={source} variant="strip" />
           )}
@@ -217,7 +218,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   city:  { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: '100%' },
   answer: { height: 34, fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text },
   bottom: { marginTop: 'auto', alignItems: 'stretch' },
-  badge:  { alignSelf: 'flex-start', maxWidth: '100%', marginBottom: 2 },
   pending: { position: 'absolute', left: 6, bottom: 6 },
   wrap:  { gap: 12 },
   prompt: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },

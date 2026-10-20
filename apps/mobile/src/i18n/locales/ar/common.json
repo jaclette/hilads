@@ -237,7 +237,7 @@
   },
   "photoBy": "صورة من @{{username}}",
   "pick": {
-    "badge": "اقتراح Hilads",
+    "badge": "اختيار Hilads",
     "goodToKnow": "معلومة مفيدة",
     "credit": "الصورة: {{credit}}"
   },

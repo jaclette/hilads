@@ -211,7 +211,7 @@
   },
   "photoBy": "写真: @{{username}}",
   "pick": {
-    "badge": "Hiladsのおすすめ",
+    "badge": "Hilads のおすすめ",
     "goodToKnow": "知っておきたいこと",
     "credit": "写真: {{credit}}"
   },

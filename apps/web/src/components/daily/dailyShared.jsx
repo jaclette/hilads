@@ -251,7 +251,7 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
         {state && (
           <span className="dc-vote-count">
             {variant !== 'tile' && !state.myVote && !state.isMine && state.votingOpen
-              ? (variant === 'strip' ? voteLabel : `${voteLabel} · ${state.voteCount}`) : state.voteCount}
+              ? (variant === 'strip' ? t('vote.vote') : `${voteLabel} · ${state.voteCount}`) : state.voteCount}
           </span>
         )}
         {sub && variant !== 'tile' && variant !== 'strip' && <span className="dc-vote-sub">{sub}</span>}

@@ -229,7 +229,7 @@
   },
   "photoBy": "Foto von @{{username}}",
   "pick": {
-    "badge": "Hilads-Vorschlag",
+    "badge": "Hilads-Tipp",
     "goodToKnow": "Gut zu wissen",
     "credit": "Foto: {{credit}}"
   },

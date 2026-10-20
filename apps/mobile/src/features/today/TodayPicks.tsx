@@ -10,7 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { CityFlag, SectionTitle } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
 import { answerText } from '@/features/compare/format';
-import { PickBadge } from '@/features/map/PickBadge';
+import { PickPill } from '@/features/map/PickBadge';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
 import type { DailyPick, DailyToday } from '@/types';
 
@@ -48,6 +48,7 @@ export function TodayPicks({ today, refreshKey }: { today: DailyToday | null; re
               <View>
                 {p.photo ? <Image source={{ uri: p.photo.thumbUrl ?? p.photo.url }} style={styles.photo} contentFit="cover" /> : <View style={styles.photo} />}
                 <PhotoCredit by={null} credit={p.photo?.credit} overlay />
+                <PickPill />
               </View>
               <View style={styles.body}>
                 <View style={styles.city}>
@@ -56,7 +57,6 @@ export function TodayPicks({ today, refreshKey }: { today: DailyToday | null; re
                 </View>
                 <Text style={styles.name} numberOfLines={2}>{p.place.name}</Text>
                 {p.answer && <Text style={styles.answer} numberOfLines={1}>{answerText(p.answer, i18n.language)}</Text>}
-                <PickBadge />
               </View>
             </TouchableOpacity>
           </View>
