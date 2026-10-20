@@ -31,8 +31,8 @@ export const THEME_COLORS: Record<string, ThemeColor> = {
   local_find: { fill: '#FF7EB0', onFill: INK, textLight: '#AD5577', textDark: '#FF7EB0' },
   night_out:  { fill: '#5B5BD6', onFill: '#FFFFFF', textLight: '#5B5BD6', textDark: '#9A9AF5' },
   sip:        { fill: '#FFC93C', onFill: INK, textLight: '#896C20', textDark: '#FFC93C' },
-  only_here:  { fill: '#FF8A3D', onFill: INK, textLight: '#A85B28', textDark: '#FF8A3D' },
-  special:    { fill: '#FF7A3D', onFill: INK, textLight: '#B2552A', textDark: '#FF7A3D' },
+  only_here:  { fill: Highlight.bg, onFill: Highlight.text, textLight: '#A85B28', textDark: '#FF8A3D', line: '#A85B28' },   // peach
+  special:    { fill: Highlight.bg, onFill: Highlight.text, textLight: '#B2552A', textDark: '#FF7A3D', line: '#B2552A' },   // peach
 };
 export const ACCENTS = ['#FFC93C', '#FF6F61', '#1FB5A8', '#3D9BF0', '#FF7EB0', '#FF7A3D'];
 

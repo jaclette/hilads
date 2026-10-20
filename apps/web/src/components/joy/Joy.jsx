@@ -17,8 +17,8 @@ export const THEME_COLORS = {
   local_find: { fill: '#FF7EB0', onFill: '#2A1C13', light: '#AD5577', dark: '#FF7EB0' },
   night_out:  { fill: '#5B5BD6', onFill: '#FFFFFF', light: '#5B5BD6', dark: '#9A9AF5' },
   sip:        { fill: '#FFC93C', onFill: '#2A1C13', light: '#896C20', dark: '#FFC93C' },
-  only_here:  { fill: '#FF8A3D', onFill: '#2A1C13', light: '#A85B28', dark: '#FF8A3D' },
-  special:    { fill: '#FF7A3D', onFill: '#2A1C13', light: '#B2552A', dark: '#FF7A3D' },
+  only_here:  { fill: HIGHLIGHT.bg, onFill: HIGHLIGHT.text, light: '#A85B28', dark: '#FF8A3D', line: '#A85B28' },   // peach
+  special:    { fill: HIGHLIGHT.bg, onFill: HIGHLIGHT.text, light: '#B2552A', dark: '#FF7A3D', line: '#B2552A' },   // peach
 }
 export const ACCENTS = ['#FFC93C', '#FF6F61', '#1FB5A8', '#3D9BF0', '#FF7EB0', '#FF7A3D']
 export const themeColor = (key) => THEME_COLORS[key] ?? THEME_COLORS.special
