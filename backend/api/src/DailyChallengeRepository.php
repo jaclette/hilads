@@ -175,7 +175,7 @@ final class DailyChallengeRepository
     public static function header(string $date, ?string $cityId, ?array $viewer): array
     {
         $challenge = self::findPublishedByDate($date);
-        $now       = new DateTimeImmutable('now');
+        $now       = DailyClock::now();
         $isLive    = DailyRules::isLive($cityId);
         $city      = null;
         if ($cityId !== null) {

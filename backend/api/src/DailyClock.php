@@ -80,6 +80,23 @@ final class DailyClock
 
     private static function utc(?DateTimeImmutable $now): DateTimeImmutable
     {
-        return ($now ?? new DateTimeImmutable('now'))->setTimezone(new DateTimeZone('UTC'));
+        return ($now ?? self::now())->setTimezone(new DateTimeZone('UTC'));
+    }
+
+    /**
+     * Now. DAILY_FAKE_NOW (an ISO date-time) freezes the Daily clock for local
+     * store screenshots (a coherent demo day); never set it in production.
+     */
+    public static function now(): DateTimeImmutable
+    {
+        $fake = trim((string) getenv('DAILY_FAKE_NOW'));
+        if ($fake !== '') {
+            try {
+                return new DateTimeImmutable($fake);
+            } catch (\Throwable $e) {
+                // an invalid value: the real clock
+            }
+        }
+        return new DateTimeImmutable('now');
     }
 }
