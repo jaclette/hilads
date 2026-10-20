@@ -1319,7 +1319,7 @@
       "emptyTitle": "Belum ada foto",
       "emptyBody": "Jadilah kota pertama di papan.",
       "noAnswer": "Belum ada jawaban",
-      "median": "Median {{price}}",
+      "median": "Harga biasa {{price}}",
       "proofs_one": "{{count}} foto",
       "proofs_other": "{{count}} foto",
       "boardTitle": "Kata dunia",

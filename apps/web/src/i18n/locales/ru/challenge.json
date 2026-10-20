@@ -1343,7 +1343,7 @@
       "emptyTitle": "Фото пока нет",
       "emptyBody": "Стань первым городом на доске.",
       "noAnswer": "Пока без ответа",
-      "median": "Медиана {{price}}",
+      "median": "Обычная цена {{price}}",
       "proofs_one": "{{count}} фото",
       "proofs_few": "{{count}} фото",
       "proofs_many": "{{count}} фото",

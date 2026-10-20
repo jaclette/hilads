@@ -1318,7 +1318,7 @@
       "emptyTitle": "아직 사진이 없어요",
       "emptyBody": "보드의 첫 번째 도시가 되어 보세요.",
       "noAnswer": "아직 답 없음",
-      "median": "중앙값 {{price}}",
+      "median": "보통 가격 {{price}}",
       "proofs_one": "사진 {{count}}장",
       "proofs_other": "사진 {{count}}장",
       "boardTitle": "세계는 이렇게 말했어요",

@@ -78,7 +78,7 @@ final class DailyChallengeRepository
         $stmt = $pdo->prepare("
             SELECT price_currency AS currency, min(price_amount) AS min, max(price_amount) AS max, count(*) AS n
             FROM daily_proofs
-            WHERE challenge_id = ? AND moderation_status = 'approved' AND price_amount IS NOT NULL{$cityFilter}
+            WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_suggestion AND price_amount IS NOT NULL{$cityFilter}
             GROUP BY price_currency
             ORDER BY n DESC, price_currency
         ");
@@ -98,7 +98,7 @@ final class DailyChallengeRepository
             JOIN users u          ON u.id = p.user_id
             LEFT JOIN channels ch ON ch.id = p.city_id
             LEFT JOIN cities cc   ON cc.channel_id = p.city_id
-            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.place_lat IS NOT NULL"
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion AND p.place_lat IS NOT NULL"
             . str_replace('city_id', 'p.city_id', $cityFilter) . "
             ORDER BY p.approved_at DESC
             LIMIT 50

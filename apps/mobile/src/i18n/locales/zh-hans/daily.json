@@ -530,7 +530,7 @@
     "emptyTitle": "还没有照片",
     "emptyBody": "成为榜上的第一个城市。",
     "noAnswer": "还没有回答",
-    "median": "中位数 {{price}}",
+    "median": "常见价格 {{price}}",
     "proofs_one": "{{count}} 张照片",
     "proofs_other": "{{count}} 张照片",
     "boardTitle": "全世界是这样说的",

@@ -1319,7 +1319,7 @@
       "emptyTitle": "Noch keine Fotos",
       "emptyBody": "Sei die erste Stadt auf der Tafel.",
       "noAnswer": "Noch keine Antwort",
-      "median": "Median {{price}}",
+      "median": "Üblicher Preis {{price}}",
       "proofs_one": "{{count}} Foto",
       "proofs_other": "{{count}} Fotos",
       "boardTitle": "Das sagt die Welt",

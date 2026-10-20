@@ -12,7 +12,7 @@ import {
   getLastToday, SheetSkeleton,
 } from './dailyShared'
 import Icon from '../Icon'
-import CompareBoard, { SuggestionsWhenEmpty } from './CompareBoard'
+import CompareBoard from './CompareBoard'
 import { PhotoCredit } from '../map/Pick'
 import { themeIcon } from '../../lib/icons'
 import { thumbFallback } from '../../lib/thumbFallback'
@@ -247,14 +247,11 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
             ) : tab === 'top10' ? (
               <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} onOpenProof={openProof} />
             ) : sheet.proofs.length === 0 ? (
-              // No answer yet: the day's Hilads suggestions, else the usual "be the first".
-              <SuggestionsWhenEmpty date={sheet.challenge.date} empty={(
-                <div className="dc-center">
-                  <Icon name="camera-outline" size={30} style={{ color: 'var(--muted2)' }} />
-                  <p className="dc-empty-title">{t('beFirst')}</p>
-                  <p className="dc-muted">{t('beFirstSub')}</p>
-                </div>
-              )} />
+              <div className="dc-center">
+                <Icon name="camera-outline" size={30} style={{ color: 'var(--muted2)' }} />
+                <p className="dc-empty-title">{t('beFirst')}</p>
+                <p className="dc-muted">{t('beFirstSub')}</p>
+              </div>
             ) : (
               <>
                 <div className="dc-grid">

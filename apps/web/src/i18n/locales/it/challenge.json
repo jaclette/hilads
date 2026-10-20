@@ -1319,7 +1319,7 @@
       "emptyTitle": "Ancora nessuna foto",
       "emptyBody": "Sii la prima città sul tabellone.",
       "noAnswer": "Ancora nessuna risposta",
-      "median": "Mediana {{price}}",
+      "median": "Prezzo abituale {{price}}",
       "proofs_one": "{{count}} foto",
       "proofs_other": "{{count}} foto",
       "boardTitle": "Cosa ha detto il mondo",

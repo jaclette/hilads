@@ -23,7 +23,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { Avatar, Button, Card, Chip, ChipTabs, CityFlag, EmptyState, Photo, Screen, ScreenHeader } from '@/ui';
-import { CompareBoard, SuggestionsWhenEmpty } from '@/features/compare/CompareBoard';
+import { CompareBoard } from '@/features/compare/CompareBoard';
 import type { DailyProof, DailySheet } from '@/types';
 import { themeName } from '@/features/daily/themes';
 import { ShareSheet } from '@/features/share/ShareSheet';
@@ -335,7 +335,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
 
   return (
     <Screen>
-      <ScreenHeader title={t('kicker')} right={<Text style={styles.navDate}>{challenge?.date ?? ''}</Text>} />
+      <ScreenHeader title={t('kicker')} right={<Text style={styles.navDate}>{challenge?.date ? shortDate(challenge.date, i18n.language) : ''}</Text>} />
 
       {loading && !sheet ? (
         <View style={styles.list}><SheetSkeleton /></View>
@@ -374,7 +374,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
             />
           ) : (
             // No answer yet: the day's Hilads suggestions, else the usual "be the first".
-            <SuggestionsWhenEmpty date={challenge.date} empty={<EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />} />
+            <EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />
           )}
         />
       )}
@@ -428,3 +428,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   placeCity:    { fontWeight: '600', color: c.muted },
   more:         { marginVertical: 16 },
 });
+
+/** "Sat, Oct 24" in the app's language (never the raw ISO date). */
+function shortDate(date: string, locale: string): string {
+  try {
+    return new Date(`${date}T12:00:00Z`).toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  } catch {
+    return date;
+  }
+}

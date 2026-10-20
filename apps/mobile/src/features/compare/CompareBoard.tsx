@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +13,6 @@ import { Button, CityFlag, EmptyState } from '@/ui';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import type { DailyBoard, DailyCityRef, DailyProof } from '@/types';
 import { answerText } from './format';
-import { useRouter } from 'expo-router';
-import { PickBadge } from '@/features/map/PickBadge';
-import { Image } from 'expo-image';
 import { useMoney } from './money';
 
 /**
@@ -131,10 +128,7 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
           })}
         </Text>
       )}
-      {board.rows.length === 0 && (board.picks ?? []).length > 0 ? (
-        // No player answer yet: the Hilads suggestions fill the tab (one line says the board is open).
-        <Text style={styles.emptyLine}>{t('compare.emptyTitle')}. {t('compare.emptyBody')}</Text>
-      ) : board.rows.length === 0 ? (
+      {board.rows.length === 0 ? (
         <EmptyState icon="earth-outline" title={t('compare.emptyTitle')} body={t('compare.emptyBody')}
                     action={onAnswer ? <Button size="sm" icon="camera-outline" label={t('ctaAnswerNoCity')} onPress={onAnswer} /> : undefined} />
       ) : (
@@ -161,63 +155,6 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
           })}
         </View>
       )}
-      {/* Below the empty state, then below the board once players answered. */}
-      <PicksMeanwhile picks={board.picks ?? []} />
-    </View>
-  );
-}
-
-/**
- * A sheet tab with no answer yet (World, my city): the day's Hilads suggestions
- * under a one-line "be the first", else the usual empty state.
- */
-export function SuggestionsWhenEmpty({ date, empty }: { date: string; empty: ReactNode }) {
-  const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
-  const { identity, account } = useApp();
-  const [picks, setPicks] = useState<NonNullable<DailyBoard['picks']> | null>(null);
-  useEffect(() => {
-    let alive = true;
-    fetchDailyBoard(date, account ? null : identity?.guestId).then(b => { if (alive) setPicks(b.picks ?? []); }).catch(() => { if (alive) setPicks([]); });
-    return () => { alive = false; };
-  }, [date, account, identity?.guestId]);
-  if (picks === null) return null;
-  if (picks.length === 0) return <>{empty}</>;
-  return (
-    <View style={styles.wrap}>
-      <Text style={styles.emptyLine}>{t('beFirstSub')}</Text>
-      <PicksMeanwhile picks={picks} />
-    </View>
-  );
-}
-
-/**
- * "Meanwhile, from our picks": the Hilads picks attached to the challenge, with
- * the pick's own checked answer. Editorial context, never a row of the board.
- */
-function PicksMeanwhile({ picks }: { picks: NonNullable<DailyBoard['picks']> }) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  const { t, i18n } = useTranslation('daily');
-  const router = useRouter();
-  if (picks.length === 0) return null;
-  return (
-    <View style={styles.picks}>
-      <Text style={styles.title} accessibilityRole="header">{t('compare.picksTitle')}</Text>
-      <View style={styles.table}>
-        {picks.map((p, i) => (
-          <TouchableOpacity key={p.place.id} style={[styles.row, i > 0 && styles.rowLine]} onPress={() => router.push(`/spot/${p.place.id}` as never)}
-                            accessibilityRole="button" activeOpacity={0.7}>
-            {p.photo ? <Image source={{ uri: p.photo.thumbUrl ?? p.photo.url }} style={styles.pickPhoto} contentFit="cover" />
-              : <CityFlag country={p.city?.country} size={20} />}
-            <View style={styles.rowBody}>
-              <Text style={styles.cityName} numberOfLines={1}>{p.city?.name ? `${shortCityName(p.city.name)} · ${p.place.name}` : p.place.name}</Text>
-              {p.answer && <Text style={styles.answer} numberOfLines={2}>{answerText(p.answer, i18n.language)}</Text>}
-              <PickBadge />
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 }
@@ -246,7 +183,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cityTitle:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   grid:       { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   cell:       { width: '48%' },
-  picks:      { gap: 8, marginTop: 6 },
-  emptyLine:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  pickPhoto:  { width: 52, height: 52, borderRadius: 10, backgroundColor: c.primaryTint },
 });

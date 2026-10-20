@@ -1319,7 +1319,7 @@
       "emptyTitle": "まだ写真がありません",
       "emptyBody": "ボードの最初の街になろう。",
       "noAnswer": "まだ回答なし",
-      "median": "中央値 {{price}}",
+      "median": "いつもの値段 {{price}}",
       "proofs_one": "写真{{count}}枚",
       "proofs_other": "写真{{count}}枚",
       "boardTitle": "世界はこう言った",

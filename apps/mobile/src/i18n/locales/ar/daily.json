@@ -580,7 +580,7 @@
     "emptyTitle": "لا صور بعد",
     "emptyBody": "كن أول مدينة على اللوحة.",
     "noAnswer": "لا إجابة بعد",
-    "median": "الوسيط {{price}}",
+    "median": "السعر المعتاد {{price}}",
     "proofs_zero": "لا صور",
     "proofs_one": "صورة واحدة",
     "proofs_two": "صورتان",

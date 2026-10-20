@@ -1319,7 +1319,7 @@
       "emptyTitle": "No photos yet",
       "emptyBody": "Be the first city on the board.",
       "noAnswer": "No answer yet",
-      "median": "Median {{price}}",
+      "median": "Usual price {{price}}",
       "proofs_one": "{{count}} photo",
       "proofs_other": "{{count}} photos",
       "boardTitle": "What the world said",

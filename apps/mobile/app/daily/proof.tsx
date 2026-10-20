@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -32,7 +33,7 @@ import { shortCityName } from '@/i18n/cityName';
 import { Button, CityFlag, TextField } from '@/ui';
 import { AnswerInput } from '@/features/compare/AnswerInput';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
-import { answerValue, draftFrom, emptyDraft, type AnswerDraft } from '@/features/compare/format';
+import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
 import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/types';
 
 /** A position older than this is refreshed before posting (the distance check). */
@@ -412,8 +413,23 @@ export default function DailyProofScreen() {
         // The comparison question (SPEC 10.2): one quick screen, required.
         <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-            <Text style={styles.kicker}>{t('compare.kicker')}</Text>
-            <Text style={styles.question} accessibilityRole="header">{compare.question}</Text>
+            {photo ? (
+              // My photo with today's question over it, and my answer appearing on it as I type.
+              <View style={styles.qCard}>
+                <Image source={{ uri: photo.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+                <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.85)']} locations={[0, 0.45, 1]} style={styles.qShade} />
+                <View style={styles.qText}>
+                  <Text style={styles.qKicker}>{t('compare.kicker')}</Text>
+                  <Text style={styles.qQuestion} accessibilityRole="header">{compare.question}</Text>
+                  {!!draftLabel(answer, compare.type) && <Text style={styles.qAnswer} numberOfLines={1}>{draftLabel(answer, compare.type)}</Text>}
+                </View>
+              </View>
+            ) : (
+              <>
+                <Text style={styles.kicker}>{t('compare.kicker')}</Text>
+                <Text style={styles.question} accessibilityRole="header">{compare.question}</Text>
+              </>
+            )}
             <Text style={styles.questionSub}>{t('compare.sub')}</Text>
             <AnswerInput compare={compare} draft={answer} onChange={setAnswer} autoFocus={compare.type !== 'time'} />
           </ScrollView>
@@ -631,7 +647,20 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   kicker:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 8 },
   question:    { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   questionSub: { fontSize: FontSizes.sm, color: c.muted, marginBottom: 10 },
+  qCard:       { aspectRatio: 4 / 5, maxHeight: 420, borderRadius: 20, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'flex-end', marginBottom: 6 },
+  qShade:      { position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%' },
+  qText:       { padding: 16, gap: 4 },
+  qKicker:     { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 0.6, opacity: 0.9 },
+  qQuestion:   { fontSize: 22, lineHeight: 27, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
+  qAnswer:     { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, overflow: 'hidden',
+                 backgroundColor: '#FFFFFF', color: '#2A1C13', fontSize: FontSizes.md, fontWeight: '800' },
   submit:      { backgroundColor: c.primary, borderRadius: 16, minHeight: 52, alignItems: 'center', justifyContent: 'center' },
   submitOff:   { opacity: 0.5 },
   submitText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
 });
+
+/** The answer as it will read (the photo card's live preview): the text, or the time. */
+function draftLabel(d: AnswerDraft, type: string): string {
+  if (type === 'time') return hhmm(d.minutes);
+  return d.text.trim();
+}

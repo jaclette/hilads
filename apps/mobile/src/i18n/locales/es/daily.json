@@ -533,7 +533,7 @@
     "emptyTitle": "Aún no hay fotos",
     "emptyBody": "Sé la primera ciudad del tablero.",
     "noAnswer": "Aún sin respuesta",
-    "median": "Mediana {{price}}",
+    "median": "Precio habitual {{price}}",
     "proofs_one": "{{count}} foto",
     "proofs_other": "{{count}} fotos",
     "boardTitle": "Lo que dijo el mundo",

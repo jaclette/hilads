@@ -4,8 +4,7 @@ import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
-import { useDaily, useDc, ProofTile, SheetSkeleton } from './dailyShared'
-import { PickBadge } from '../map/Pick'
+import { useDc, ProofTile, SheetSkeleton } from './dailyShared'
 import { answerText, useMoney } from './compareShared'
 
 /**
@@ -98,10 +97,7 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
           })}
         </p>
       )}
-      {board.rows.length === 0 && (board.picks ?? []).length > 0 ? (
-        // No player answer yet: the Hilads suggestions fill the tab (one line says the board is open).
-        <p className="dc-muted">{t('compare.emptyTitle')}. {t('compare.emptyBody')}</p>
-      ) : board.rows.length === 0 ? (
+      {board.rows.length === 0 ? (
         <div className="dc-center">
           <Icon name="earth-outline" size={30} style={{ color: 'var(--muted2)' }} />
           <p className="dc-empty-title">{t('compare.emptyTitle')}</p>
@@ -128,59 +124,7 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
           })}
         </div>
       )}
-      {/* Below the empty state, then below the board once players answered. */}
-      <PicksMeanwhile picks={board.picks ?? []} ans={ans} />
     </div>
   )
 }
 
-/**
- * A sheet tab with no answer yet (World, my city): the day's Hilads suggestions
- * under a one-line "be the first", else the usual empty state.
- */
-export function SuggestionsWhenEmpty({ date, empty }) {
-  const { t, i18n } = useDc()
-  const [picks, setPicks] = useState(null)
-  useEffect(() => {
-    let alive = true
-    fetchDailyBoard(date, i18n.language).then(b => { if (alive) setPicks(b.picks ?? []) }).catch(() => { if (alive) setPicks([]) })
-    return () => { alive = false }
-  }, [date, i18n.language])
-  if (picks === null) return null
-  if (picks.length === 0) return empty
-  const ans = (a) => (a ? answerText(a, i18n.language) : '-')
-  return (
-    <div>
-      <p className="dc-muted">{t('beFirstSub')}</p>
-      <PicksMeanwhile picks={picks} ans={ans} />
-    </div>
-  )
-}
-
-/**
- * "Meanwhile, from our picks": the Hilads picks attached to the challenge, with
- * the pick's own checked answer. Editorial context, never a row of the board.
- */
-function PicksMeanwhile({ picks, ans }) {
-  const { t } = useDc()
-  const { openSpot } = useDaily()
-  if (picks.length === 0) return null
-  return (
-    <div className="cmp-picks">
-      <h3 className="cmp-picks-title">{t('compare.picksTitle')}</h3>
-      <div className="cmp-table">
-        {picks.map(p => (
-          <div key={p.place.id} className="cmp-row" role="button" tabIndex={0} onClick={() => openSpot(p.place.id)}
-               onKeyDown={(e) => { if (e.key === 'Enter') openSpot(p.place.id) }}>
-            {p.photo ? <img className="cmp-pick-photo" src={p.photo.thumbUrl || p.photo.url} alt="" loading="lazy" /> : <CityFlag country={p.city?.country} size={20} />}
-            <span className="cmp-row-body">
-              <span className="cmp-row-city">{p.city?.name ? `${shortCityName(p.city.name)} · ${p.place.name}` : p.place.name}</span>
-              {p.answer && <span className="cmp-row-answer">{ans(p.answer)}</span>}
-              <PickBadge />
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}

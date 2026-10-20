@@ -1318,7 +1318,7 @@
       "emptyTitle": "還沒有照片",
       "emptyBody": "成為榜上的第一個城市。",
       "noAnswer": "還沒有回答",
-      "median": "中位數 {{price}}",
+      "median": "常見價格 {{price}}",
       "proofs_one": "{{count}} 張照片",
       "proofs_other": "{{count}} 張照片",
       "boardTitle": "全世界是這樣說的",

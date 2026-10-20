@@ -238,7 +238,8 @@ final class DailyProofRepository
      */
     public static function listApproved(string $challengeId, ?string $cityId, ?int $before, int $limit): array
     {
-        $where = ["p.challenge_id = ?", "p.moderation_status = 'approved'"];
+        // The challenge sheet shows players' photos only (never Hilads picks).
+        $where = ["p.challenge_id = ?", "p.moderation_status = 'approved'", "NOT p.is_suggestion"];
         $args  = [$challengeId];
         if ($cityId !== null) {
             $where[] = "p.city_id = ?";

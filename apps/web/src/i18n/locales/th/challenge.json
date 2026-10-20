@@ -1318,7 +1318,7 @@
       "emptyTitle": "ยังไม่มีรูป",
       "emptyBody": "มาเป็นเมืองแรกบนกระดาน",
       "noAnswer": "ยังไม่มีคำตอบ",
-      "median": "ค่ามัธยฐาน {{price}}",
+      "median": "ราคาปกติ {{price}}",
       "proofs_one": "{{count}} รูป",
       "proofs_other": "{{count}} รูป",
       "boardTitle": "ทั่วโลกว่าอย่างไร",
