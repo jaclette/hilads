@@ -525,6 +525,8 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, highlight,
   const prompted = useRef(false)
   // Nothing to vote on when the strip only holds Hilads suggestions: no prompt, no note.
   const votable = voting && items.some(p => !p.suggestion)
+  // The sheet lists players' photos only: with suggestions alone it would be empty, so no "See all".
+  const browsable = items.some(p => !p.suggestion)
   useEffect(() => {
     if (!votable || prompted.current) return
     prompted.current = true
@@ -534,10 +536,16 @@ function Strip({ title, stats, onOpen, items, voting, source, footer, highlight,
     <div className="today-card">
       <div className="today-card-head">
         {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-        <button type="button" className="today-card-title today-card-title--link" onClick={onOpen} aria-label={plain(title)}>
-          <HighlightText text={title} color={highlight} /><Icon name="chevron-forward" size={16} />
-        </button>
-        <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
+        {browsable ? (
+          <>
+            <button type="button" className="today-card-title today-card-title--link" onClick={onOpen} aria-label={plain(title)}>
+              <HighlightText text={title} color={highlight} /><Icon name="chevron-forward" size={16} />
+            </button>
+            <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
+          </>
+        ) : (
+          <span className="today-card-title" role="heading" aria-level={2} aria-label={plain(title)}><HighlightText text={title} color={highlight} /></span>
+        )}
       </div>
       {stats && <span className="dc-muted today-proofs-stats">{stats}</span>}
       {/* No vote limit: one vote per photo, as many photos as I like. */}

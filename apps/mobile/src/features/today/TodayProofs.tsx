@@ -133,6 +133,8 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
   const prompted = useRef(false);
   // Nothing to vote on when the strip only holds Hilads suggestions: no prompt, no note.
   const votable = voting && items.some(p => !p.suggestion);
+  // The sheet lists players' photos only: with suggestions alone it would be empty, so no "See all".
+  const browsable = items.some(p => !p.suggestion);
   useEffect(() => {
     if (!votable || prompted.current) return;
     prompted.current = true;
@@ -142,7 +144,8 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
   return (
     <Card style={styles.card}>
       {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-      <SectionTitle small title={title} highlight={highlight} onPress={onOpen} action={{ label: t('today.seeAll'), onPress: onOpen }} />
+      <SectionTitle small title={title} highlight={highlight} onPress={browsable ? onOpen : undefined}
+                    action={browsable ? { label: t('today.seeAll'), onPress: onOpen } : undefined} />
       {!!stats && <Text style={styles.stats}>{stats}</Text>}
       {/* No vote limit: one vote per answer, as many answers as I like. */}
       {votable && (
