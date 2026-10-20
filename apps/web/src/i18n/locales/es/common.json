@@ -245,5 +245,19 @@
     "share": "Juega por {{city}} conmigo en Hilads.",
     "pioneerTitle": "Insignias de pionero",
     "pioneerSub": "La primera foto aprobada de una ciudad. Tuya para siempre."
+  },
+  "appModal": {
+    "title": {
+      "play": "Descarga la app para jugar",
+      "playCity": "Descarga la app para jugar por {{city}}",
+      "vote": "Descarga la app para votar por {{city}}",
+      "joinPlan": "Descarga la app para unirte a este plan",
+      "sayHi": "Descarga la app para saludar a {{city}}",
+      "propose": "Descarga la app para proponer un reto"
+    },
+    "sub": "Es gratis y te lleva un minuto.",
+    "download": "Descargar la app",
+    "keepExploring": "Seguir explorando",
+    "scan": "Escanea con tu móvil"
   }
 }

@@ -14,7 +14,8 @@ import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
 import ExampleEventCard from './components/ExampleEventCard'
 import AppMapCard from './components/AppMapCard'
 import MapScreen from './components/map/MapScreen'
-import { APP_STORE, PLAY_STORE, deviceStore } from './components/map/spotsShared'
+import { deviceStore } from './components/map/spotsShared'
+import { openAppModal } from './components/AppModal'
 import TodayScreen from './components/today/TodayScreen'
 import PassportScreen from './components/passport/PassportScreen'
 import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScreens'
@@ -689,11 +690,11 @@ function DailyFeedCard({ item, t, onOpen }) {
             : t('daily.proposedBy', { name: by })}</div>
         )}
         {p.twist?.text && <div className="feed-daily-twist"><Icon name="location-outline" size={14} /> {t('daily.localTwist')}: {tr?.twist ?? p.twist.text}</div>}
-        {/* Proofs are posted from the app (W2 decision): "Take it" opens the store. */}
-        <a className="feed-daily-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-           onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }) }}>
+        {/* Photos are posted from the app (W2 decision): "Take it" opens the app modal. */}
+        <button type="button" className="feed-daily-cta"
+           onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }); openAppModal({ action: 'play', surface: 'chat_card' }) }}>
           {t('dc.takeIt', { ns: 'challenge' })}
-        </a>
+        </button>
         {time && <span className="feed-join-time">{time}</span>}
       </div>
     )

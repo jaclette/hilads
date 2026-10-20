@@ -243,5 +243,19 @@
     "share": "Play for {{city}} with me on Hilads.",
     "pioneerTitle": "Pioneer badges",
     "pioneerSub": "The first approved photo ever in a city. Yours forever."
+  },
+  "appModal": {
+    "title": {
+      "play": "Download the app to play",
+      "playCity": "Download the app to play for {{city}}",
+      "vote": "Download the app to vote for {{city}}",
+      "joinPlan": "Download the app to join this plan",
+      "sayHi": "Download the app to say hi to {{city}}",
+      "propose": "Download the app to propose a challenge"
+    },
+    "sub": "It's free, and it takes a minute.",
+    "download": "Download the app",
+    "keepExploring": "Keep exploring",
+    "scan": "Scan with your phone"
   }
 }

@@ -242,5 +242,19 @@
     "pioneerTitle": "Huy hiệu tiên phong",
     "pioneerSub": "Bức ảnh được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi.",
     "streak_one": "{{city}} đã chơi {{count}} ngày liên tiếp"
+  },
+  "appModal": {
+    "title": {
+      "play": "Tải app để chơi",
+      "playCity": "Tải app để chơi cho {{city}}",
+      "vote": "Tải app để bình chọn cho {{city}}",
+      "joinPlan": "Tải app để tham gia kế hoạch này",
+      "sayHi": "Tải app để chào {{city}}",
+      "propose": "Tải app để đề xuất thử thách"
+    },
+    "sub": "Miễn phí, chỉ mất một phút.",
+    "download": "Tải app",
+    "keepExploring": "Tiếp tục khám phá",
+    "scan": "Quét bằng điện thoại"
   }
 }

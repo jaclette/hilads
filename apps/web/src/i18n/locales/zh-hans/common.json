@@ -242,5 +242,19 @@
     "pioneerTitle": "先锋徽章",
     "pioneerSub": "一座城市里第一张通过审核的照片。永远属于你。",
     "streak_one": "{{city}}已连续 {{count}} 天参加"
+  },
+  "appModal": {
+    "title": {
+      "play": "下载 App 来参加",
+      "playCity": "下载 App，代表{{city}}参加",
+      "vote": "下载 App，为{{city}}投票",
+      "joinPlan": "下载 App，加入这个计划",
+      "sayHi": "下载 App，跟{{city}}打个招呼",
+      "propose": "下载 App，提议一个挑战"
+    },
+    "sub": "免费，只要一分钟。",
+    "download": "下载 App",
+    "keepExploring": "继续逛逛",
+    "scan": "用手机扫一扫"
   }
 }

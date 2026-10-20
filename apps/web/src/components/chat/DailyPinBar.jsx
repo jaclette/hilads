@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
-import { APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
+import { deviceStore } from '../map/spotsShared'
+import { openAppModal } from '../AppModal'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { useDaily, useDc, StatusChip } from '../daily/dailyShared'
@@ -40,10 +41,10 @@ export default function DailyPinBar() {
         <span className="pin-bar-text">{challenge.text}</span>
       </span>
       {myProof ? <StatusChip status={myProof.status} /> : challenge.isActive && (
-        <a className="pin-bar-take" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-           onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_pin' }) }}>
+        <button type="button" className="pin-bar-take"
+           onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_pin' }); openAppModal({ action: 'play', surface: 'chat_pin' }) }}>
           {t('takeIt')}
-        </a>
+        </button>
       )}
     </div>
   )

@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next'
 import SpotPage from './SpotPage'
 import { fetchMap, fetchMapCities, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, APP_STORE, PLAY_STORE, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
+import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
+import { openAppModal } from '../AppModal'
 import Icon, { iconHtml } from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
@@ -231,14 +232,14 @@ function EmptyCard({ today, t }) {
       {challenge?.isActive && !placeTheme && tomorrowKey && <span className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</span>}
     </>
   )
-  // The whole card is the tap target: the store on a place theme (proofs are
+  // The whole card is the tap target: the app modal on a place theme (photos are
   // posted from the app), else today's challenge.
   if (canTake) {
     return (
-      <a className="wm-sheet wm-sheet--empty" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-         onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'map_empty' })}>
+      <button type="button" className="wm-sheet wm-sheet--empty"
+         onClick={() => { track('web_today_take_clicked', { store: store ?? 'ios', surface: 'map_empty' }); openAppModal({ action: 'play', surface: 'map_empty' }) }}>
         {body}
-      </a>
+      </button>
     )
   }
   return (

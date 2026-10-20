@@ -243,5 +243,19 @@
     "share": "Maglaro tayo para sa {{city}} sa Hilads.",
     "pioneerTitle": "Mga pioneer badge",
     "pioneerSub": "Ang kauna-unahang naaprubahang litrato sa isang lungsod. Sa iyo habambuhay."
+  },
+  "appModal": {
+    "title": {
+      "play": "I-download ang app para maglaro",
+      "playCity": "I-download ang app para maglaro para sa {{city}}",
+      "vote": "I-download ang app para bumoto para sa {{city}}",
+      "joinPlan": "I-download ang app para sumali sa planong ito",
+      "sayHi": "I-download ang app para mag-hi sa {{city}}",
+      "propose": "I-download ang app para magmungkahi ng challenge"
+    },
+    "sub": "Libre ito, at isang minuto lang.",
+    "download": "I-download ang app",
+    "keepExploring": "Mag-explore pa",
+    "scan": "I-scan gamit ang phone mo"
   }
 }

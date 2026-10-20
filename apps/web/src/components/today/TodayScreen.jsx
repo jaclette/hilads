@@ -4,7 +4,8 @@ import { fetchDailyBoard, fetchDailyCalendar, fetchDailyPodium, fetchDailyToday,
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
-import { APP_STORE, PLAY_STORE, deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
+import { deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
+import { openAppModal } from '../AppModal'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { answerText } from '../daily/compareShared'
@@ -295,12 +296,13 @@ function Ticket({ data, loading }) {
             </button>
           </>
         ) : (
-          // White on the photo, pulsing (paused off screen, in a hidden tab, with reduced motion). The web opens the store.
+          // White on the photo, pulsing (paused off screen, in a hidden tab, with reduced motion). The web opens the app modal.
           <span ref={setPulseEl} className={`today-cta-pulse${HERO_CTA_TONE === 'sun' ? ' today-cta-pulse--sun' : ''}${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
-            <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-               onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' }) }}>
+            <button type="button" className="today-cta"
+               onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(8); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'today' })
+                 openAppModal({ action: 'play', city: cityShort, cityId: here?.id ?? null, surface: 'today_hero' }) }}>
               <Icon name="camera-outline" size={20} />{ctaLabel}
-            </a>
+            </button>
           </span>
         )}
         {!myProof && here?.source === 'ip' && !!cityShort && (

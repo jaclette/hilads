@@ -243,5 +243,19 @@
     "share": "Spiel mit mir für {{city}} auf Hilads.",
     "pioneerTitle": "Pionier-Abzeichen",
     "pioneerSub": "Das allererste freigegebene Foto in einer Stadt. Für immer deins."
+  },
+  "appModal": {
+    "title": {
+      "play": "Lade die App, um mitzuspielen",
+      "playCity": "Lade die App, um für {{city}} zu spielen",
+      "vote": "Lade die App, um für {{city}} abzustimmen",
+      "joinPlan": "Lade die App, um bei diesem Plan mitzumachen",
+      "sayHi": "Lade die App, um {{city}} Hallo zu sagen",
+      "propose": "Lade die App, um eine Challenge vorzuschlagen"
+    },
+    "sub": "Kostenlos, und es dauert nur eine Minute.",
+    "download": "App laden",
+    "keepExploring": "Weiter entdecken",
+    "scan": "Mit dem Handy scannen"
   }
 }

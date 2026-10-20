@@ -4,7 +4,8 @@ import { fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToda
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag, CityName } from '../CityName'
 import { track } from '../../lib/analytics'
-import { APP_STORE, PLAY_STORE, deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
+import { deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
+import { openAppModal } from '../AppModal'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
   RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer, useHere,
@@ -195,10 +196,11 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
                 <>
                   {/* The photo rule, next to the answer step (moved from the Today hero). */}
                   <p className="dc-photo-rule"><Icon name="camera-outline" size={18} /><span><strong>{t('proofHint.title')}</strong> {isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}</span></p>
-                  <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-                     onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })}>
+                  <button type="button" className="today-cta"
+                     onClick={() => { track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })
+                       openAppModal({ action: 'play', city: here?.name ? shortCityName(here.name) : null, cityId: here?.id ?? null, surface: 'challenge_sheet' }) }}>
                     {here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
-                  </a>
+                  </button>
                 </>
               )}
             </div>

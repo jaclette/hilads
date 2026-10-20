@@ -242,5 +242,19 @@
     "pioneerTitle": "Lencana pelopor",
     "pioneerSub": "Foto pertama yang disetujui di sebuah kota. Milikmu selamanya.",
     "streak_one": "{{city}} sudah main {{count}} hari berturut-turut"
+  },
+  "appModal": {
+    "title": {
+      "play": "Unduh aplikasinya untuk main",
+      "playCity": "Unduh aplikasinya untuk main buat {{city}}",
+      "vote": "Unduh aplikasinya untuk vote {{city}}",
+      "joinPlan": "Unduh aplikasinya untuk ikut rencana ini",
+      "sayHi": "Unduh aplikasinya untuk menyapa {{city}}",
+      "propose": "Unduh aplikasinya untuk mengusulkan tantangan"
+    },
+    "sub": "Gratis, dan cuma butuh semenit.",
+    "download": "Unduh aplikasinya",
+    "keepExploring": "Lanjut menjelajah",
+    "scan": "Pindai dengan ponselmu"
   }
 }

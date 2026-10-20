@@ -242,5 +242,19 @@
     "pioneerTitle": "개척자 배지",
     "pioneerSub": "도시에서 처음으로 승인된 사진. 영원히 당신의 것.",
     "streak_one": "{{city}}가 {{count}}일 연속 참여했어요"
+  },
+  "appModal": {
+    "title": {
+      "play": "앱을 받고 참여하세요",
+      "playCity": "앱을 받고 {{city}} 대표로 참여하세요",
+      "vote": "앱을 받고 {{city}}에 투표하세요",
+      "joinPlan": "앱을 받고 이 플랜에 참여하세요",
+      "sayHi": "앱을 받고 {{city}}에 인사하세요",
+      "propose": "앱을 받고 챌린지를 제안하세요"
+    },
+    "sub": "무료이고, 1분이면 돼요.",
+    "download": "앱 다운로드",
+    "keepExploring": "계속 둘러보기",
+    "scan": "휴대폰으로 스캔하세요"
   }
 }

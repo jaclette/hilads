@@ -6,7 +6,8 @@ import { fetchSpot } from '../../api'
 import { localizeCityName, shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
-import { themeName, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
+import { themeName, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
+import { openAppModal } from '../AppModal'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { thumbFallback } from '../../lib/thumbFallback'
@@ -112,18 +113,14 @@ export default function SpotPage({ spotId, onBack }) {
                  onClick={() => track('web_spot_directions', { spot: spot.id })}>
                 <Icon name="navigate-outline" size={18} />{t('map.directions')}
               </a>
-              <a className="wm-btn" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-                 onClick={() => track('web_app_map_card_clicked', { store: store ?? 'ios', placement: 'spot' })}>
+              <button type="button" className="wm-btn"
+                 onClick={() => { track('web_app_map_card_clicked', { store: store ?? 'ios', placement: 'spot' }); openAppModal({ action: 'play', surface: 'spot' }) }}>
                 <Icon name="camera-outline" size={18} />{t('spot.proofInApp')}
-              </a>
+              </button>
               <button type="button" className="wm-btn wm-btn--ghost wm-spot-share" onClick={share}>
                 <Icon name="share-social-outline" size={18} />{copied ? tc('shareLink.copied') : tc('shareLink.share')}
               </button>
             </div>
-            {!store && (
-              <a className="wm-store-alt" href={PLAY_STORE} target="_blank" rel="noopener noreferrer"
-                 onClick={() => track('web_app_map_card_clicked', { store: 'android', placement: 'spot' })}>Google Play</a>
-            )}
 
             {photos.length > 0 && (
               <>

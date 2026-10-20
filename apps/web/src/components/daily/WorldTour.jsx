@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
-import { APP_STORE, PLAY_STORE, deviceStore, themeName } from '../map/spotsShared'
+import { deviceStore, themeName } from '../map/spotsShared'
+import { openAppModal } from '../AppModal'
 import { CityFlag } from '../CityName'
 import Icon from '../Icon'
 import { RankMedal, useDc } from './dailyShared'
@@ -120,10 +121,10 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
           <p className="tour-turn-title">{t('tour.yourTurn')}</p>
           {today && <p className="tour-turn-text">{t('tour.todayIs', { question: today.compare?.question ?? today.text })}</p>}
           {today?.isActive && (
-            <a className="today-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
-               onClick={() => track('web_today_take_clicked', { store: store ?? 'ios', surface: 'world_tour' })}>
+            <button type="button" className="today-cta"
+               onClick={() => { track('web_today_take_clicked', { store: store ?? 'ios', surface: 'world_tour' }); openAppModal({ action: 'play', surface: 'world_tour' }) }}>
               <Icon name="camera-outline" size={20} />{t('ctaAnswerNoCity')}
-            </a>
+            </button>
           )}
           <button type="button" className="tour-link" onClick={onClose}>{t('tour.close')}</button>
         </div>

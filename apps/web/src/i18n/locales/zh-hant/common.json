@@ -242,5 +242,19 @@
     "pioneerTitle": "先鋒徽章",
     "pioneerSub": "一座城市裡第一張通過審核的照片。永遠屬於你。",
     "streak_one": "{{city}}已連續 {{count}} 天參加"
+  },
+  "appModal": {
+    "title": {
+      "play": "下載 App 來參加",
+      "playCity": "下載 App，代表{{city}}參加",
+      "vote": "下載 App，為{{city}}投票",
+      "joinPlan": "下載 App，加入這個計畫",
+      "sayHi": "下載 App，跟{{city}}打聲招呼",
+      "propose": "下載 App，提議一個挑戰"
+    },
+    "sub": "免費，只要一分鐘。",
+    "download": "下載 App",
+    "keepExploring": "繼續逛逛",
+    "scan": "用手機掃一掃"
   }
 }

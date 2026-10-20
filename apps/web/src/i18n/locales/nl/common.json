@@ -243,5 +243,19 @@
     "share": "Speel samen met mij voor {{city}} op Hilads.",
     "pioneerTitle": "Pioniersbadges",
     "pioneerSub": "De allereerste goedgekeurde foto in een stad. Voor altijd van jou."
+  },
+  "appModal": {
+    "title": {
+      "play": "Download de app om te spelen",
+      "playCity": "Download de app om voor {{city}} te spelen",
+      "vote": "Download de app om op {{city}} te stemmen",
+      "joinPlan": "Download de app om mee te doen met dit plan",
+      "sayHi": "Download de app om {{city}} gedag te zeggen",
+      "propose": "Download de app om een challenge voor te stellen"
+    },
+    "sub": "Het is gratis en duurt een minuut.",
+    "download": "Download de app",
+    "keepExploring": "Verder ontdekken",
+    "scan": "Scan met je telefoon"
   }
 }

@@ -17514,3 +17514,31 @@ body.has-app-promo-banner .page-header {
 .dc-photo-rule { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0; padding: 10px 12px; border-radius: 12px;
                  background: color-mix(in srgb, var(--primary) 12%, transparent); font-size: 14px; line-height: 1.4; color: var(--text); }
 .dc-photo-rule .icon { flex-shrink: 0; color: var(--primary-text); }
+
+/* "Download the app" modal (web): every action that needs the app opens it first.
+   A bottom sheet on phones, a centered card from 600 px; QR code + badges on desktop. */
+.app-modal-wrap { z-index: 1200; }
+.app-modal { align-items: center; text-align: center; gap: 10px; padding-top: 10px; }
+.app-modal-icon { width: 56px; height: 56px; border-radius: 14px; margin-top: 4px; }
+.app-modal-title { margin: 4px 0 0; font-size: 20px; line-height: 26px; font-weight: 800; color: var(--text); letter-spacing: -.2px; }
+.app-modal-sub { margin: 0; font-size: 14px; line-height: 20px; color: var(--muted2); }
+.app-modal-cta { align-self: stretch; min-height: 52px; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;
+                 border-radius: 16px; background: var(--primary); color: #fff; font-size: 16px; font-weight: 800; text-decoration: none; }
+.app-modal-cta:active { transform: scale(.97); }
+.app-modal-desktop { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 6px; }
+.app-modal-qr { width: 168px; height: 168px; padding: 6px; border-radius: 16px; background: #fff; border: 1.5px solid var(--line); }
+.app-modal-qr svg { width: 100%; height: 100%; display: block; }
+.app-modal-scan { margin: 0; font-size: 13px; color: var(--muted2); }
+.app-modal-badges { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.app-modal-badge { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px;
+                   background: var(--text); color: var(--bg); font-size: 14px; font-weight: 700; text-decoration: none; }
+.app-modal-keep { min-height: 44px; padding: 0 16px; border: none; background: none; font: inherit; font-size: 15px; font-weight: 700;
+                  color: var(--text); text-decoration: underline; cursor: pointer; }
+@media (min-width: 600px) {
+  .app-modal-wrap { justify-content: center; align-items: center; }
+  .app-modal { width: 400px; max-width: calc(100vw - 32px); border-radius: 24px; padding: 20px 24px 16px; }
+  .app-modal .v3-sheet-grabber { display: none; }
+}
+/* Store links that became app-modal buttons keep their link look. */
+button.today-cta, button.feed-daily-cta, button.pin-bar-take, button.wm-btn, button.amc-store { font-family: inherit; cursor: pointer; border: none; }
+button.today-cta { width: 100%; }

@@ -1,19 +1,18 @@
 import { useTranslation } from 'react-i18next'
 import { track } from '../lib/analytics'
-import { APP_STORE, PLAY_STORE, deviceStore } from './map/spotsShared'
+import { deviceStore } from './map/spotsShared'
+import { openAppModal } from './AppModal'
 import Icon from './Icon'
 
 /**
  * "See the spots on the map" (SPEC 9.10, web with 1.8.0): where the web used to
- * offer challenge creation, it now opens the web map of spots, with the app
- * stores below (proofs are posted from the app). A phone sees its own store;
- * desktop sees both.
+ * offer challenge creation, it now opens the web map of spots, with "Download
+ * the app" below (photos are posted from the app), through the app modal.
  */
 export default function AppMapCard({ city, placement, compact = false, onOpenMap }) {
   const { t } = useTranslation('challenge')
   const store = deviceStore()
-  const stores = store ? [store] : ['ios', 'android']
-  const click = (s) => track('web_app_map_card_clicked', { store: s, placement })
+  const click = () => { track('web_app_map_card_clicked', { store: store ?? 'desktop', placement }); openAppModal({ action: 'play', city, surface: `map_card_${placement}` }) }
   const openMap = () => { track('web_app_map_card_clicked', { store: 'web_map', placement }); onOpenMap?.() }
 
   return (
@@ -25,12 +24,9 @@ export default function AppMapCard({ city, placement, compact = false, onOpenMap
         <button type="button" className="amc-store amc-map" onClick={openMap}>{t('map.see')}</button>
       )}
       <div className="amc-stores">
-        {stores.map(s => (
-          <a key={s} className={`amc-store${onOpenMap ? ' amc-store--ghost' : ''}`} href={s === 'ios' ? APP_STORE : PLAY_STORE}
-             target="_blank" rel="noopener noreferrer" onClick={() => click(s)}>
-            {s === 'ios' ? 'App Store' : 'Google Play'}
-          </a>
-        ))}
+        <button type="button" className={`amc-store${onOpenMap ? ' amc-store--ghost' : ''}`} onClick={click}>
+          {t('appModal.download', { ns: 'common' })}
+        </button>
       </div>
     </div>
   )
