@@ -14367,7 +14367,7 @@ function dailyCompareFields(array $challenge, array $body, bool $create): array
     }
     foreach (['answer_text', 'home_answer_text', 'home_line'] as $col) {
         if (($fields[$col] ?? null) !== null && ModerationService::check($fields[$col]) !== null) {
-            Response::json(['error' => 'Your answer was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
+            Response::json(['error' => 'Your text was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
         }
     }
     return $fields;

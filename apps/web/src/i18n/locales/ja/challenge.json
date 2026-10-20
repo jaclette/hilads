@@ -809,7 +809,7 @@
   "appMap": {
     "title": "マップでスポットを見る",
     "titleCity": "{{city}}のスポットをマップで見る",
-    "body": "地元の人が Daily Challenge のプルーフを投稿する場所。Hilads アプリからあなたも投稿しよう。"
+    "body": "地元の人が Daily Challenge の写真を投稿する場所。Hilads アプリからあなたも投稿しよう。"
   },
   "creationClosed": "challenge の作成は終了しました。Hilads アプリで Daily Challenge に参加しよう。",
   "map": {
@@ -831,8 +831,8 @@
     "sortNearest": "近い順",
     "sortWeek": "今週の人気順",
     "spotsTomorrow": "スポットは明日の challenge から：{{theme}}",
-    "proofs_one": "プルーフ {{count}} 件",
-    "proofs_other": "プルーフ {{count}} 件",
+    "proofs_one": "写真 {{count}} 枚",
+    "proofs_other": "写真 {{count}} 枚",
     "votes_one": "{{count}} 票",
     "votes_other": "{{count}} 票",
     "unavailable": "マップは現在利用できません。",
@@ -853,7 +853,7 @@
     "notFound": "このスポットは利用できません。",
     "local": "ローカル",
     "morePhotos": "写真をもっと見る",
-    "proofInApp": "アプリでプルーフを投稿"
+    "proofInApp": "アプリで写真を投稿"
   },
   "dc": {
     "kicker": "Daily Challenge",
@@ -862,8 +862,8 @@
     "nothingLive": "次の Daily Challenge はもうすぐです",
     "cta": "challenge に参加する",
     "ctaIn": "やってみる",
-    "ctaTaken": "チャレンジ達成 · 自分の回答を見る",
-    "seeProofs": "今日の回答を見る",
+    "ctaTaken": "チャレンジ達成 · 自分の写真を見る",
+    "seeProofs": "今日の写真を見る",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} の Local Twist",
     "twistBy": "by {{name}}",
@@ -872,20 +872,20 @@
     "countCity": "{{city}} で {{count}} 人",
     "countZero": "まだ誰もいません - 一番乗りしよう",
     "beFirst": "今日の一番乗りになろう",
-    "beFirstSub": "まだ回答がありません。投稿して街を盛り上げよう。",
-    "yourProof": "あなたの回答",
+    "beFirstSub": "まだ写真がありません。一番乗りになろう、世界が待っています。",
+    "yourProof": "あなたの写真",
     "status": {
       "pending": "保留中",
       "approved": "公開中",
       "rejected": "非公開",
       "removed": "削除済み"
     },
-    "pendingHint": "すべての回答は公開前に確認されます。",
+    "pendingHint": "すべての写真は公開前に確認されます。",
     "reasonLabel": "理由: {{reason}}",
     "fixIt": "修正する",
     "edit": "編集",
     "delete": "削除",
-    "deleteTitle": "回答を削除しますか?",
+    "deleteTitle": "写真を削除しますか?",
     "deleteBody": "challenge とチャンネルから消えます。",
     "cancel": "キャンセル",
     "closed": "終了",
@@ -893,8 +893,8 @@
     "practicalTitle": "知っておきたいこと",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "{{count}} 件の回答より",
-    "priceFrom_other": "{{count}} 件の回答より",
+    "priceFrom_one": "写真 {{count}} 枚より",
+    "priceFrom_other": "写真 {{count}} 枚より",
     "places_one": "{{count}} か所をピン留め",
     "places_other": "{{count}} か所をピン留め",
     "unnamedPlace": "ピン留めした場所",
@@ -907,8 +907,8 @@
     "notFound": "この Daily Challenge は存在しません。",
     "cityRowEmpty": "{{city}} で最初に challenge を作ろう",
     "proof": {
-      "titleNew": "あなたの回答",
-      "titleEdit": "回答を編集",
+      "titleNew": "あなたの写真",
+      "titleEdit": "写真を編集",
       "camera": "カメラ",
       "gallery": "ギャラリー",
       "changePhoto": "写真を変更",
@@ -921,10 +921,10 @@
       "pinHint": "ほかの人に見つけてほしい場合だけ。",
       "pinChange": "変更",
       "pinRemove": "削除",
-      "submit": "回答を投稿",
+      "submit": "写真を投稿",
       "save": "変更を保存",
       "sending": "送信中…",
-      "sentTitle": "{{city}}が答えました！",
+      "sentTitle": "{{city}}が参加しました！",
       "sentBody": "世界の答えを見てみよう。写真は承認後に表示されます。",
       "ok": "OK",
       "permPhotoTitle": "写真へのアクセスが必要です",
@@ -933,12 +933,12 @@
       "permCameraBody": "写真を撮るには、設定でカメラへのアクセスを許可してください。",
       "photoRequired": "先に写真を追加してください。",
       "locationOff": "位置情報がオフなので、この場所はピン留めできません。",
-      "editOnlyActive": "challenge が終わるまで回答を編集できます。",
+      "editOnlyActive": "challenge が終わるまで写真を編集できます。",
       "takeTitle": "写真を撮ろう",
       "retake": "撮り直す"
     },
     "errors": {
-      "already_posted": "今日の challenge にはもう回答を投稿済みです。",
+      "already_posted": "今日の challenge にはもう参加済みです。",
       "challenge_closed": "この challenge は終了しました。",
       "no_active_challenge": "今は Daily Challenge がありません。",
       "moderation_blocked": "キャプションが報告されました - 言い換えてください。",
@@ -950,12 +950,12 @@
       "rate_limited": "試行回数が多すぎます - 少し待ってください。",
       "image_processing_failed": "この写真は処理できません。別の写真を試してください。",
       "generic": "問題が発生しました。もう一度試してください。",
-      "place_required": "プルーフの場所を選んでください。",
+      "place_required": "写真の場所を選んでください。",
       "place_not_allowed": "この challenge には場所がありません。",
       "place_not_found": "その場所は利用できなくなりました。別の場所を選んでください。",
       "invalid_place_name": "場所の名前は1〜80文字にしてください。",
       "place_name_blocked": "その場所の名前は報告されました。言い換えてください。",
-      "invalid_position": "このプルーフを投稿するには位置情報が必要です。",
+      "invalid_position": "この写真を投稿するには位置情報が必要です。",
       "too_far": "この場所から遠すぎます。"
     },
     "push": {
@@ -973,11 +973,11 @@
       "pickCity": "都市を選ぶ",
       "worldSelection": "世界セレクション: この都市はまだ公開されていません",
       "empty": "最初の Daily Challenge がもうすぐ届きます。",
-      "proofs_one": "{{count}} 件の回答",
-      "proofs_other": "{{count}} 件の回答"
+      "proofs_one": "{{count}} 枚の写真",
+      "proofs_other": "{{count}} 枚の写真"
     },
     "report": {
-      "title": "この回答を報告",
+      "title": "この写真を報告",
       "body": "どんな問題がありますか?",
       "reasons": {
         "inappropriate": "不適切",
@@ -987,23 +987,23 @@
         "other": "その他"
       },
       "thanks": "ありがとうございます - 確認します。",
-      "already": "この回答はすでに報告済みです。"
+      "already": "この写真はすでに報告済みです。"
     },
     "vote": {
       "vote": "投票する",
       "withdraw": "投票を取り消す",
-      "yours": "あなたの回答",
+      "yours": "あなたの写真",
       "errors": {
         "voting_closed": "challenge の終了とともに投票は締め切られました。",
         "rate_limited": "試行が多すぎます - 少し待ってください。",
-        "own_proof": "自分の回答には投票できません。",
-        "not_found": "この回答はもう表示できません。",
+        "own_proof": "自分の写真には投票できません。",
+        "not_found": "この写真はもう表示できません。",
         "generic": "問題が発生しました。もう一度お試しください。"
       },
       "voteFor": "{{city}}に投票",
-      "prompt": "好きな答えに投票しよう",
-      "tourNote": "各都市でいちばん票を集めた回答が、明日の世界一周に登場します。",
-      "afterPost": "好きな答えに投票しよう"
+      "prompt": "好きな写真に投票しよう",
+      "tourNote": "各都市でいちばん票を集めた写真が、明日の世界一周に登場します。",
+      "afterPost": "好きな写真に投票しよう"
     },
     "results": {
       "title": "結果",
@@ -1017,7 +1017,7 @@
       "streak": "現在の連続記録",
       "bestStreak": "最長記録",
       "completed": "達成数",
-      "bestProofs": "ベスト回答",
+      "bestProofs": "ベスト写真",
       "emptyMine": "今日のchallenge から連続記録が始まります。"
     },
     "streak_one": "{{count}}日連続",
@@ -1080,7 +1080,7 @@
       "titleChallenge": "ピン留めされた場所",
       "titleCity": "{{city}} のピン留めされた場所",
       "titleWorld": "世界中のピン留めされた場所",
-      "seeProof": "回答を見る",
+      "seeProof": "写真を見る",
       "openChallenge": "challenge を開く",
       "search": "料理、カフェ、通りを検索",
       "searchA11y": "スポットを検索",
@@ -1100,20 +1100,20 @@
       "closeSpot": "閉じる",
       "emptyTitle": "ここに最初のスポットを置こう",
       "planA11y": "予定：{{title}}、{{time}}",
-      "proofs_one": "プルーフ {{count}} 件",
-      "proofs_other": "プルーフ {{count}} 件"
+      "proofs_one": "写真 {{count}} 枚",
+      "proofs_other": "写真 {{count}} 枚"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "次のドロップまでは暫定",
       "finalIn": "確定まで {{time}}",
       "official": "公式表彰台",
-      "minProofs": "Top 10 は回答が {{min}} 件で公開。現在：{{n}} 件。",
-      "noVotes": "まだ投票がありません。好きな回答に投票しよう！",
+      "minProofs": "Top 10 は写真が {{min}} 枚で公開。現在：{{n}} 枚。",
+      "noVotes": "まだ投票がありません。好きな写真に投票しよう！",
       "me": "あなた：#{{rank}} · ♥ {{votes}}",
       "meCity": "{{city}}で #{{rank}}",
-      "noProof": "回答を投稿してランキングに参加しよう。",
-      "pending": "回答は承認後にランキングに入ります。",
+      "noProof": "参加してランキングに入ろう。",
+      "pending": "写真は承認後にランキングに入ります。",
       "cityTop": "{{city}}の Top 3",
       "compactTitle": "今の Top 3",
       "seeAll": "Top 10 ›"
@@ -1209,17 +1209,17 @@
       "hint": "早めボーナス：{{time}} までに投稿"
     },
     "group": {
-      "title": "新しい回答：{{n}}",
+      "title": "新しい写真：{{n}}",
       "citiesMore": "{{cities}} ほか {{n}} 件",
-      "galleryTitle": "新しい回答"
+      "galleryTitle": "新しい写真"
     },
     "today": {
       "early": "早割ボーナスは {{time}} まで",
       "tomorrow": "明日：{{theme}}",
       "aroundWorld": "今日の世界",
       "inCity": "今日の{{city}}",
-      "proofs_one": "{{count}}件のプルーフ",
-      "proofs_other": "{{count}}件のプルーフ",
+      "proofs_one": "写真{{count}}枚",
+      "proofs_other": "写真{{count}}枚",
       "countries_one": "{{count}}か国",
       "countries_other": "{{count}}か国",
       "proofsIn": "{{countries}}から{{proofs}}",
@@ -1235,7 +1235,7 @@
       "openMap": "マップを開く",
       "spotsFallback": "あなたの都市にはまだスポットがありません。最寄りのスポット：",
       "spotsEmpty": "ここにはまだスポットがありません。今日の challenge に参加して、最初のスポットをマップに置こう。",
-      "seeMine": "自分のプルーフを見る",
+      "seeMine": "自分の写真を見る",
       "votes_one": "{{count}} 票",
       "votes_other": "{{count}} 票",
       "day": {
@@ -1245,7 +1245,7 @@
         "today": "今日",
         "tomorrow": "明日",
         "later": "予定",
-        "none": "プルーフなし"
+        "none": "写真なし"
       },
       "links": {
         "pastSub": "これまでの日の写真",
@@ -1304,7 +1304,7 @@
     },
     "takeIt": "参加する",
     "proofHint": {
-      "title": "答えを写真で",
+      "title": "写真を撮ろう",
       "place": "いちばん票を集めた写真がスポットの写真に。",
       "noPlace": "いちばん票を集めた写真が表彰台へ。"
     },
@@ -1316,26 +1316,26 @@
       "latest": "いちばん遅い：{{city}} {{answer}}",
       "lowest": "いちばん少ない：{{city}} {{answer}}",
       "highest": "いちばん多い：{{city}} {{answer}}",
-      "emptyTitle": "まだ回答がありません",
+      "emptyTitle": "まだ写真がありません",
       "emptyBody": "ボードの最初の街になろう。",
       "noAnswer": "まだ回答なし",
       "median": "中央値 {{price}}",
-      "proofs_one": "{{count}}件の回答",
-      "proofs_other": "{{count}}件の回答",
-      "boardTitle": "世界の答え",
+      "proofs_one": "写真{{count}}枚",
+      "proofs_other": "写真{{count}}枚",
+      "boardTitle": "世界はこう言った",
       "cheapest": "いちばん安い：{{city}} {{price}}",
       "priciest": "いちばん高い：{{city}} {{price}}",
       "funFact": "{{city}}は{{other}}の{{ratio}}倍の値段。",
-      "worldAnswers": "今日、世界が答える",
-      "seeAnswers": "回答を見る",
-      "firstIn": "最初の回答が届き始めました",
+      "worldAnswers": "今日の質問",
+      "seeAnswers": "くらべる",
+      "firstIn": "最初の写真が届き始めました",
       "picksTitle": "Hiladsのおすすめ",
-      "answeredRow_one": "すでに{{count}}か国が回答",
-      "answeredRow_other": "すでに{{count}}か国が回答",
+      "answeredRow_one": "すでに{{count}}か国が参加",
+      "answeredRow_other": "すでに{{count}}か国が参加",
       "tip": "タップして、あなたの街を世界とくらべよう。",
       "nCountries_one": "{{count}}か国",
       "nCountries_other": "{{count}}か国",
-      "youAnswered": "回答を送りました。世界とくらべてみよう。"
+      "youAnswered": "写真を送りました。世界とくらべてみよう。"
     },
     "backHome": {
       "hereIn": "ここ：{{city}}",
@@ -1354,7 +1354,7 @@
         "night": "夜"
       },
       "yourTurn": "あなたの番。",
-      "todayIs": "今日、世界が答える：{{question}}",
+      "todayIs": "今日の質問：{{question}}",
       "close": "閉じる",
       "sub_one": "{{count}}都市、同じチャレンジ",
       "sub_other": "{{count}}都市、同じチャレンジ"
@@ -1382,15 +1382,15 @@
       "and": "{{a}}と{{b}}",
       "twoCitiesEmpty": "この2都市の比較はまだありません。",
       "noResults": "該当する比較はありません。",
-      "empty": "回答が3件そろった都市から比較が表示されます。",
+      "empty": "写真が3枚そろった都市から比較が表示されます。",
       "priceTitle": "{{label}}はいくら？",
       "moreCities_one": "ほか{{count}}都市",
       "moreCities_other": "ほか{{count}}都市"
     },
-    "ctaAnswer": "{{city}}代表で答える",
-    "ctaAnswerNoCity": "写真で答える",
+    "ctaAnswer": "{{city}}代表で参加",
+    "ctaAnswerNoCity": "今日の挑戦に参加",
     "represent": {
-      "button": "{{city}}代表で答える"
+      "button": "{{city}}代表で参加"
     },
     "countdown": {
       "hm": "{{h}}時間{{m}}分",

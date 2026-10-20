@@ -320,7 +320,7 @@
     "early": "Temprano",
     "proposedBy": "Propuesto por {{name}}",
     "proposedByCity": "Propuesto por {{name}} · {{city}}",
-    "groupTitle": "Nuevas respuestas: {{n}}",
+    "groupTitle": "Nuevas fotos: {{n}}",
     "groupCitiesMore": "{{cities}} y {{n}} más"
   }
 }

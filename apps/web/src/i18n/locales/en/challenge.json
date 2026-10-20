@@ -809,7 +809,7 @@
   "appMap": {
     "title": "See the spots on the map",
     "titleCity": "See the spots of {{city}} on the map",
-    "body": "Where locals post their Daily Challenge proofs. Post yours from the Hilads app."
+    "body": "Where locals post their Daily Challenge photos. Post yours from the Hilads app."
   },
   "creationClosed": "Creating challenges is closed. Take the Daily Challenge in the Hilads app.",
   "map": {
@@ -831,8 +831,8 @@
     "sortNearest": "Nearest",
     "sortWeek": "Most voted this week",
     "spotsTomorrow": "Spots come from tomorrow's challenge: {{theme}}",
-    "proofs_one": "{{count}} proof",
-    "proofs_other": "{{count}} proofs",
+    "proofs_one": "{{count}} photo",
+    "proofs_other": "{{count}} photos",
     "votes_one": "{{count}} vote",
     "votes_other": "{{count}} votes",
     "unavailable": "The map isn't available right now.",
@@ -853,7 +853,7 @@
     "notFound": "This spot is not available.",
     "local": "Local",
     "morePhotos": "More photos",
-    "proofInApp": "Post your proof in the app"
+    "proofInApp": "Post your photo in the app"
   },
   "dc": {
     "kicker": "Daily Challenge",
@@ -862,8 +862,8 @@
     "nothingLive": "The next Daily Challenge is on its way",
     "cta": "Take the challenge",
     "ctaIn": "I'm in",
-    "ctaTaken": "Challenge taken · See my answer",
-    "seeProofs": "See today's answers",
+    "ctaTaken": "Challenge taken · See my photo",
+    "seeProofs": "See today's photos",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} Local Twist",
     "twistBy": "by {{name}}",
@@ -872,20 +872,20 @@
     "countCity": "{{count}} in {{city}}",
     "countZero": "Nobody yet - be the first",
     "beFirst": "Be the first today",
-    "beFirstSub": "No answer yet. Be the first, the world is waiting.",
-    "yourProof": "Your answer",
+    "beFirstSub": "No photo yet. Be the first, the world is waiting.",
+    "yourProof": "Your photo",
     "status": {
       "pending": "Pending",
       "approved": "Published",
       "rejected": "Not published",
       "removed": "Removed"
     },
-    "pendingHint": "Every answer is checked before it goes live.",
+    "pendingHint": "Every photo is checked before it goes live.",
     "reasonLabel": "Why: {{reason}}",
     "fixIt": "Fix it",
     "edit": "Edit",
     "delete": "Delete",
-    "deleteTitle": "Delete your answer?",
+    "deleteTitle": "Delete your photo?",
     "deleteBody": "It disappears from the challenge and the channels.",
     "cancel": "Cancel",
     "closed": "Closed",
@@ -893,8 +893,8 @@
     "practicalTitle": "Good to know",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "from {{count}} answer",
-    "priceFrom_other": "from {{count}} answers",
+    "priceFrom_one": "from {{count}} photo",
+    "priceFrom_other": "from {{count}} photos",
     "places_one": "{{count}} place pinned",
     "places_other": "{{count}} places pinned",
     "unnamedPlace": "Pinned place",
@@ -907,8 +907,8 @@
     "notFound": "This Daily Challenge doesn't exist.",
     "cityRowEmpty": "Be the first to create a challenge in {{city}}",
     "proof": {
-      "titleNew": "Your answer",
-      "titleEdit": "Edit your answer",
+      "titleNew": "Your photo",
+      "titleEdit": "Edit your photo",
       "camera": "Camera",
       "gallery": "Gallery",
       "changePhoto": "Change photo",
@@ -921,10 +921,10 @@
       "pinHint": "Only if you want others to find it.",
       "pinChange": "Change",
       "pinRemove": "Remove",
-      "submit": "Post my answer",
+      "submit": "Post my photo",
       "save": "Save changes",
       "sending": "Sending…",
-      "sentTitle": "{{city}} has answered!",
+      "sentTitle": "{{city}} has played!",
       "sentBody": "See what the world said. Your photo shows once it's approved.",
       "ok": "OK",
       "permPhotoTitle": "Photo access needed",
@@ -933,12 +933,12 @@
       "permCameraBody": "Allow camera access in your settings to take a photo.",
       "photoRequired": "Add a photo first.",
       "locationOff": "Location is off, so this place can't be pinned.",
-      "editOnlyActive": "You can edit your answer until the challenge ends.",
+      "editOnlyActive": "You can edit your photo until the challenge ends.",
       "takeTitle": "Take your photo",
       "retake": "Retake"
     },
     "errors": {
-      "already_posted": "You already answered today's challenge.",
+      "already_posted": "You already played today's challenge.",
       "challenge_closed": "This challenge is closed.",
       "no_active_challenge": "There's no Daily Challenge right now.",
       "moderation_blocked": "Your caption was flagged - please rephrase it.",
@@ -950,12 +950,12 @@
       "rate_limited": "Too many tries - wait a moment.",
       "image_processing_failed": "That photo can't be processed. Try another one.",
       "generic": "Something went wrong. Try again.",
-      "place_required": "Pick the place of your answer.",
+      "place_required": "Pick the place of your photo.",
       "place_not_allowed": "This challenge has no place.",
       "place_not_found": "That place is no longer available. Pick another one.",
       "invalid_place_name": "The place name must be 1 to 80 characters.",
       "place_name_blocked": "That place name was flagged. Please rephrase it.",
-      "invalid_position": "Your position is needed to post this answer.",
+      "invalid_position": "Your position is needed to post this photo.",
       "too_far": "You're too far from this place."
     },
     "push": {
@@ -973,11 +973,11 @@
       "pickCity": "Choose a city",
       "worldSelection": "World selection: this city is not live yet",
       "empty": "The first Daily Challenges are on their way.",
-      "proofs_one": "{{count}} answer",
-      "proofs_other": "{{count}} answers"
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos"
     },
     "report": {
-      "title": "Report this answer",
+      "title": "Report this photo",
       "body": "What's wrong with it?",
       "reasons": {
         "inappropriate": "Inappropriate",
@@ -987,23 +987,23 @@
         "other": "Something else"
       },
       "thanks": "Thanks - we will check it.",
-      "already": "You already reported this answer."
+      "already": "You already reported this photo."
     },
     "vote": {
       "vote": "Vote",
       "withdraw": "Remove my vote",
-      "yours": "Your answer",
+      "yours": "Your photo",
       "errors": {
         "voting_closed": "Voting closed with the challenge.",
         "rate_limited": "Too many tries - wait a moment.",
-        "own_proof": "You can't vote for your own answer.",
-        "not_found": "This answer is no longer available.",
+        "own_proof": "You can't vote for your own photo.",
+        "not_found": "This photo is no longer available.",
         "generic": "Something went wrong. Try again."
       },
       "voteFor": "Vote for {{city}}",
-      "prompt": "Vote for the answers you love",
-      "tourNote": "The most voted answer of each city makes tomorrow's world tour.",
-      "afterPost": "Vote for the answers you love"
+      "prompt": "Vote for the photos you love",
+      "tourNote": "The most voted photo of each city makes tomorrow's world tour.",
+      "afterPost": "Vote for the photos you love"
     },
     "results": {
       "title": "Results",
@@ -1017,7 +1017,7 @@
       "streak": "Current streak",
       "bestStreak": "Best streak",
       "completed": "Completed",
-      "bestProofs": "Best answers",
+      "bestProofs": "Best photos",
       "emptyMine": "Your streak starts with today's challenge."
     },
     "streak_one": "{{count}}-day streak",
@@ -1080,7 +1080,7 @@
       "titleChallenge": "Pinned places",
       "titleCity": "Pinned places in {{city}}",
       "titleWorld": "Pinned places around the world",
-      "seeProof": "See the answer",
+      "seeProof": "See the photo",
       "openChallenge": "Open the challenge",
       "search": "Search a dish, a café, a street",
       "searchA11y": "Search spots",
@@ -1100,20 +1100,20 @@
       "closeSpot": "Close",
       "emptyTitle": "Be the first to put a spot here",
       "planA11y": "Plan: {{title}}, {{time}}",
-      "proofs_one": "{{count}} answer",
-      "proofs_other": "{{count}} answers"
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Provisional until the drop",
       "finalIn": "Final in {{time}}",
       "official": "Official podium",
-      "minProofs": "The Top 10 opens at {{min}} answers. So far: {{n}}.",
-      "noVotes": "No votes yet. Vote for your favorite answers!",
+      "minProofs": "The Top 10 opens at {{min}} photos. So far: {{n}}.",
+      "noVotes": "No votes yet. Vote for your favorite photos!",
       "me": "You: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} in {{city}}",
-      "noProof": "Answer to get ranked.",
-      "pending": "Your answer gets ranked once approved.",
+      "noProof": "Play to get ranked.",
+      "pending": "Your photo gets ranked once approved.",
       "cityTop": "Top 3 in {{city}}",
       "compactTitle": "Top 3 right now",
       "seeAll": "Top 10 ›"
@@ -1209,20 +1209,20 @@
       "hint": "Early bonus: post before {{time}}"
     },
     "group": {
-      "title": "New answers: {{n}}",
+      "title": "New photos: {{n}}",
       "citiesMore": "{{cities}} and {{n}} more",
-      "galleryTitle": "New answers"
+      "galleryTitle": "New photos"
     },
     "today": {
       "early": "Early bonus until {{time}}",
       "tomorrow": "Tomorrow: {{theme}}",
       "aroundWorld": "Today around the world",
       "inCity": "Today in {{city}}",
-      "proofs_one": "{{count}} answer",
-      "proofs_other": "{{count}} answers",
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos",
       "countries_one": "{{count}} country",
       "countries_other": "{{count}} countries",
-      "proofsIn": "{{proofs}} in {{countries}}",
+      "proofsIn": "{{proofs}} from {{countries}}",
       "podiumTitle": "Yesterday's podium",
       "spotsIn": "Spots in {{city}}",
       "allPast": "All past challenges",
@@ -1235,7 +1235,7 @@
       "openMap": "Open map",
       "spotsFallback": "No spot in your city yet. The nearest ones:",
       "spotsEmpty": "No spot here yet. Take today's challenge to put the first one on the map.",
-      "seeMine": "See your answer",
+      "seeMine": "See your photo",
       "votes_one": "{{count}} vote",
       "votes_other": "{{count}} votes",
       "day": {
@@ -1245,7 +1245,7 @@
         "today": "today",
         "tomorrow": "tomorrow",
         "later": "coming up",
-        "none": "no answer"
+        "none": "no photo"
       },
       "links": {
         "pastSub": "Photos from previous days",
@@ -1304,7 +1304,7 @@
     },
     "takeIt": "Take it",
     "proofHint": {
-      "title": "Snap your answer",
+      "title": "Take your photo",
       "place": "The most voted photo becomes the spot's photo.",
       "noPlace": "The most voted photo makes the podium."
     },
@@ -1316,26 +1316,26 @@
       "latest": "Latest: {{city}} {{answer}}",
       "lowest": "Lowest: {{city}} {{answer}}",
       "highest": "Highest: {{city}} {{answer}}",
-      "emptyTitle": "No answers yet",
+      "emptyTitle": "No photos yet",
       "emptyBody": "Be the first city on the board.",
       "noAnswer": "No answer yet",
       "median": "Median {{price}}",
-      "proofs_one": "{{count}} answer",
-      "proofs_other": "{{count}} answers",
-      "boardTitle": "How the world answered",
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos",
+      "boardTitle": "What the world said",
       "cheapest": "Cheapest: {{city}} {{price}}",
       "priciest": "Priciest: {{city}} {{price}}",
       "funFact": "{{ratio}}× the price in {{city}} than in {{other}}.",
-      "worldAnswers": "Today, the world answers",
-      "seeAnswers": "See answers",
-      "firstIn": "First answers coming in",
+      "worldAnswers": "Today's question",
+      "seeAnswers": "Compare",
+      "firstIn": "First photos coming in",
       "picksTitle": "Hilads suggestions",
-      "answeredRow_one": "Already {{count}} country answered",
-      "answeredRow_other": "Already {{count}} countries answered",
+      "answeredRow_one": "Already {{count}} country played",
+      "answeredRow_other": "Already {{count}} countries played",
       "tip": "Tap to compare your city with the world.",
       "nCountries_one": "{{count}} country",
       "nCountries_other": "{{count}} countries",
-      "youAnswered": "Your answer is in. See how the world compares."
+      "youAnswered": "Your photo is in. See how the world compares."
     },
     "backHome": {
       "hereIn": "Here in {{city}}",
@@ -1354,7 +1354,7 @@
         "night": "At night"
       },
       "yourTurn": "Your turn.",
-      "todayIs": "Today the world answers: {{question}}",
+      "todayIs": "Today's question: {{question}}",
       "close": "Close",
       "sub_one": "{{count}} city, same challenge",
       "sub_other": "{{count}} cities, same challenge"
@@ -1382,15 +1382,15 @@
       "and": "{{a}} and {{b}}",
       "twoCitiesEmpty": "No comparison with both cities yet.",
       "noResults": "No comparison matches.",
-      "empty": "The first comparisons show here once cities have 3 answers.",
+      "empty": "The first comparisons show here once cities have 3 photos.",
       "priceTitle": "How much is {{label}}?",
       "moreCities_one": "+{{count}} more city",
       "moreCities_other": "+{{count}} more cities"
     },
-    "ctaAnswer": "Answer for {{city}}",
-    "ctaAnswerNoCity": "Snap my answer",
+    "ctaAnswer": "Play for {{city}}",
+    "ctaAnswerNoCity": "Play today",
     "represent": {
-      "button": "Answer for {{city}}"
+      "button": "Play for {{city}}"
     },
     "countdown": {
       "hm": "{{h}}h {{m}}m",

@@ -809,7 +809,7 @@
   "appMap": {
     "title": "Lihat spot di peta",
     "titleCity": "Lihat spot di {{city}} di peta",
-    "body": "Tempat warga lokal memposting bukti Daily Challenge. Posting buktimu dari aplikasi Hilads."
+    "body": "Tempat warga lokal memposting foto Daily Challenge. Posting punyamu dari aplikasi Hilads."
   },
   "creationClosed": "Pembuatan challenge sudah ditutup. Ikuti Daily Challenge di aplikasi Hilads.",
   "map": {
@@ -831,8 +831,8 @@
     "sortNearest": "Terdekat",
     "sortWeek": "Paling banyak dipilih minggu ini",
     "spotsTomorrow": "Spot datang dari challenge besok: {{theme}}",
-    "proofs_one": "{{count}} bukti",
-    "proofs_other": "{{count}} bukti",
+    "proofs_one": "{{count}} foto",
+    "proofs_other": "{{count}} foto",
     "votes_one": "{{count}} suara",
     "votes_other": "{{count}} suara",
     "unavailable": "Peta sedang tidak tersedia.",
@@ -853,7 +853,7 @@
     "notFound": "Spot ini tidak tersedia.",
     "local": "Lokal",
     "morePhotos": "Foto lainnya",
-    "proofInApp": "Posting buktimu di aplikasi"
+    "proofInApp": "Posting fotomu di aplikasi"
   },
   "dc": {
     "kicker": "Daily Challenge",
@@ -862,8 +862,8 @@
     "nothingLive": "Daily Challenge berikutnya segera hadir",
     "cta": "Ambil challenge-nya",
     "ctaIn": "Aku ikut",
-    "ctaTaken": "Challenge selesai · Lihat jawabanku",
-    "seeProofs": "Lihat jawaban hari ini",
+    "ctaTaken": "Challenge selesai · Lihat fotoku",
+    "seeProofs": "Lihat foto hari ini",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist {{city}}",
     "twistBy": "oleh {{name}}",
@@ -872,20 +872,20 @@
     "countCity": "{{count}} di {{city}}",
     "countZero": "Belum ada - jadilah yang pertama",
     "beFirst": "Jadilah yang pertama hari ini",
-    "beFirstSub": "Belum ada jawaban. Posting punyamu dan inspirasi kotamu.",
-    "yourProof": "Jawabanmu",
+    "beFirstSub": "Belum ada foto. Jadilah yang pertama, dunia menunggu.",
+    "yourProof": "Fotomu",
     "status": {
       "pending": "Tertunda",
       "approved": "Dipublikasikan",
       "rejected": "Tidak dipublikasikan",
       "removed": "Dihapus"
     },
-    "pendingHint": "Setiap jawaban dicek dulu sebelum tayang.",
+    "pendingHint": "Setiap foto dicek dulu sebelum tayang.",
     "reasonLabel": "Alasan: {{reason}}",
     "fixIt": "Perbaiki",
     "edit": "Edit",
     "delete": "Hapus",
-    "deleteTitle": "Hapus jawabanmu?",
+    "deleteTitle": "Hapus fotomu?",
     "deleteBody": "Buktimu akan hilang dari challenge dan semua channel.",
     "cancel": "Batal",
     "closed": "Ditutup",
@@ -893,8 +893,8 @@
     "practicalTitle": "Perlu kamu tahu",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "dari {{count}} jawaban",
-    "priceFrom_other": "dari {{count}} jawaban",
+    "priceFrom_one": "dari {{count}} foto",
+    "priceFrom_other": "dari {{count}} foto",
     "places_one": "{{count}} tempat ditandai",
     "places_other": "{{count}} tempat ditandai",
     "unnamedPlace": "Tempat yang ditandai",
@@ -907,8 +907,8 @@
     "notFound": "Daily Challenge ini tidak ada.",
     "cityRowEmpty": "Jadilah yang pertama membuat challenge di {{city}}",
     "proof": {
-      "titleNew": "Jawabanmu",
-      "titleEdit": "Edit jawabanmu",
+      "titleNew": "Fotomu",
+      "titleEdit": "Edit fotomu",
       "camera": "Kamera",
       "gallery": "Galeri",
       "changePhoto": "Ganti foto",
@@ -921,10 +921,10 @@
       "pinHint": "Hanya kalau kamu mau orang lain bisa menemukannya.",
       "pinChange": "Ganti",
       "pinRemove": "Hapus",
-      "submit": "Posting jawabanku",
+      "submit": "Posting fotoku",
       "save": "Simpan perubahan",
       "sending": "Mengirim…",
-      "sentTitle": "{{city}} sudah menjawab!",
+      "sentTitle": "{{city}} sudah main!",
       "sentBody": "Lihat apa kata dunia. Fotomu muncul setelah disetujui.",
       "ok": "OK",
       "permPhotoTitle": "Perlu akses foto",
@@ -933,12 +933,12 @@
       "permCameraBody": "Izinkan akses kamera di pengaturan untuk mengambil foto.",
       "photoRequired": "Tambahkan foto dulu.",
       "locationOff": "Lokasi mati, jadi tempat ini tidak bisa ditandai.",
-      "editOnlyActive": "Kamu bisa edit jawabanmu sampai challenge berakhir.",
+      "editOnlyActive": "Kamu bisa edit fotomu sampai challenge berakhir.",
       "takeTitle": "Ambil fotomu",
       "retake": "Ulangi"
     },
     "errors": {
-      "already_posted": "Kamu sudah posting jawaban untuk challenge hari ini.",
+      "already_posted": "Kamu sudah main challenge hari ini.",
       "challenge_closed": "Challenge ini sudah ditutup.",
       "no_active_challenge": "Belum ada Daily Challenge saat ini.",
       "moderation_blocked": "Keteranganmu ditandai - coba tulis ulang ya.",
@@ -950,12 +950,12 @@
       "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
       "image_processing_failed": "Foto itu tidak bisa diproses. Coba yang lain.",
       "generic": "Ada yang salah. Coba lagi.",
-      "place_required": "Pilih tempat jawabanmu.",
+      "place_required": "Pilih tempat fotomu.",
       "place_not_allowed": "Challenge ini tidak punya tempat.",
       "place_not_found": "Tempat itu sudah tidak tersedia. Pilih yang lain.",
       "invalid_place_name": "Nama tempat harus 1 sampai 80 karakter.",
       "place_name_blocked": "Nama tempat itu ditandai. Tulis ulang.",
-      "invalid_position": "Lokasimu dibutuhkan untuk mengirim jawaban ini.",
+      "invalid_position": "Lokasimu dibutuhkan untuk mengirim foto ini.",
       "too_far": "Kamu terlalu jauh dari tempat ini."
     },
     "push": {
@@ -973,11 +973,11 @@
       "pickCity": "Pilih kota",
       "worldSelection": "Pilihan Dunia: kota ini belum live",
       "empty": "Daily Challenge pertama segera datang.",
-      "proofs_one": "{{count}} jawaban",
-      "proofs_other": "{{count}} jawaban"
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto"
     },
     "report": {
-      "title": "Laporkan jawaban ini",
+      "title": "Laporkan foto ini",
       "body": "Apa masalahnya?",
       "reasons": {
         "inappropriate": "Tidak pantas",
@@ -987,23 +987,23 @@
         "other": "Lainnya"
       },
       "thanks": "Makasih - kami akan cek.",
-      "already": "Kamu sudah melaporkan jawaban ini."
+      "already": "Kamu sudah melaporkan foto ini."
     },
     "vote": {
       "vote": "Pilih",
       "withdraw": "Tarik pilihanku",
-      "yours": "Jawabanmu",
+      "yours": "Fotomu",
       "errors": {
         "voting_closed": "Pemungutan suara ditutup bersama challenge-nya.",
         "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
-        "own_proof": "Kamu tidak bisa memilih jawabanmu sendiri.",
-        "not_found": "Jawaban ini sudah tidak tersedia.",
+        "own_proof": "Kamu tidak bisa memilih fotomu sendiri.",
+        "not_found": "Foto ini sudah tidak tersedia.",
         "generic": "Ada yang salah. Coba lagi."
       },
       "voteFor": "Pilih {{city}}",
-      "prompt": "Pilih jawaban yang kamu suka",
-      "tourNote": "Jawaban dengan suara terbanyak tiap kota masuk tur dunia besok.",
-      "afterPost": "Pilih jawaban yang kamu suka"
+      "prompt": "Pilih foto yang kamu suka",
+      "tourNote": "Foto dengan suara terbanyak tiap kota masuk tur dunia besok.",
+      "afterPost": "Pilih foto yang kamu suka"
     },
     "results": {
       "title": "Hasil",
@@ -1017,7 +1017,7 @@
       "streak": "Streak saat ini",
       "bestStreak": "Streak terbaik",
       "completed": "Selesai",
-      "bestProofs": "Jawaban terbaik",
+      "bestProofs": "Foto terbaik",
       "emptyMine": "Streak-mu dimulai dengan challenge hari ini."
     },
     "streak_one": "Streak {{count}} hari",
@@ -1080,7 +1080,7 @@
       "titleChallenge": "Tempat yang disematkan",
       "titleCity": "Tempat yang disematkan di {{city}}",
       "titleWorld": "Tempat yang disematkan di seluruh dunia",
-      "seeProof": "Lihat jawaban",
+      "seeProof": "Lihat foto",
       "openChallenge": "Buka challenge",
       "search": "Cari makanan, kafe, jalan",
       "searchA11y": "Cari spot",
@@ -1100,20 +1100,20 @@
       "closeSpot": "Tutup",
       "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
       "planA11y": "Rencana: {{title}}, {{time}}",
-      "proofs_one": "{{count}} jawaban",
-      "proofs_other": "{{count}} jawaban"
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Sementara sampai drop berikutnya",
       "finalIn": "Final dalam {{time}}",
       "official": "Podium resmi",
-      "minProofs": "Top 10 dibuka saat ada {{min}} jawaban. Sejauh ini: {{n}}.",
-      "noVotes": "Belum ada suara. Pilih jawaban favoritmu!",
+      "minProofs": "Top 10 dibuka saat ada {{min}} foto. Sejauh ini: {{n}}.",
+      "noVotes": "Belum ada suara. Pilih foto favoritmu!",
       "me": "Kamu: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} di {{city}}",
-      "noProof": "Posting jawabanmu agar masuk peringkat.",
-      "pending": "Jawabanmu masuk peringkat setelah disetujui.",
+      "noProof": "Ikut main agar masuk peringkat.",
+      "pending": "Fotomu masuk peringkat setelah disetujui.",
       "cityTop": "Top 3 di {{city}}",
       "compactTitle": "Top 3 saat ini",
       "seeAll": "Top 10 ›"
@@ -1209,20 +1209,20 @@
       "hint": "Bonus cepat: posting sebelum {{time}}"
     },
     "group": {
-      "title": "Jawaban baru: {{n}}",
+      "title": "Foto baru: {{n}}",
       "citiesMore": "{{cities}} dan {{n}} lainnya",
-      "galleryTitle": "Jawaban baru"
+      "galleryTitle": "Foto baru"
     },
     "today": {
       "early": "Bonus cepat sampai {{time}}",
       "tomorrow": "Besok: {{theme}}",
       "aroundWorld": "Hari ini di seluruh dunia",
       "inCity": "Hari ini di {{city}}",
-      "proofs_one": "{{count}} jawaban",
-      "proofs_other": "{{count}} jawaban",
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto",
       "countries_one": "{{count}} negara",
       "countries_other": "{{count}} negara",
-      "proofsIn": "{{proofs}} di {{countries}}",
+      "proofsIn": "{{proofs}} dari {{countries}}",
       "podiumTitle": "Podium kemarin",
       "spotsIn": "Spot di {{city}}",
       "allPast": "Semua challenge sebelumnya",
@@ -1235,7 +1235,7 @@
       "openMap": "Buka peta",
       "spotsFallback": "Belum ada spot di kotamu. Yang terdekat:",
       "spotsEmpty": "Belum ada spot di sini. Ikuti challenge hari ini untuk menaruh spot pertama di peta.",
-      "seeMine": "Lihat jawabanmu",
+      "seeMine": "Lihat fotomu",
       "votes_one": "{{count}} suara",
       "votes_other": "{{count}} suara",
       "day": {
@@ -1245,7 +1245,7 @@
         "today": "hari ini",
         "tomorrow": "besok",
         "later": "segera",
-        "none": "tanpa jawaban"
+        "none": "tanpa foto"
       },
       "links": {
         "pastSub": "Foto dari hari-hari sebelumnya",
@@ -1304,7 +1304,7 @@
     },
     "takeIt": "Ikuti",
     "proofHint": {
-      "title": "Foto jawabanmu",
+      "title": "Ambil fotomu",
       "place": "Foto dengan suara terbanyak jadi foto spot.",
       "noPlace": "Foto dengan suara terbanyak naik podium."
     },
@@ -1316,26 +1316,26 @@
       "latest": "Paling akhir: {{city}} {{answer}}",
       "lowest": "Paling rendah: {{city}} {{answer}}",
       "highest": "Paling tinggi: {{city}} {{answer}}",
-      "emptyTitle": "Belum ada jawaban",
+      "emptyTitle": "Belum ada foto",
       "emptyBody": "Jadilah kota pertama di papan.",
       "noAnswer": "Belum ada jawaban",
       "median": "Median {{price}}",
-      "proofs_one": "{{count}} jawaban",
-      "proofs_other": "{{count}} jawaban",
-      "boardTitle": "Begini dunia menjawab",
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto",
+      "boardTitle": "Kata dunia",
       "cheapest": "Termurah: {{city}} {{price}}",
       "priciest": "Termahal: {{city}} {{price}}",
       "funFact": "{{ratio}}× lebih mahal di {{city}} daripada di {{other}}.",
-      "worldAnswers": "Hari ini dunia menjawab",
-      "seeAnswers": "Lihat jawaban",
-      "firstIn": "Jawaban pertama mulai masuk",
+      "worldAnswers": "Pertanyaan hari ini",
+      "seeAnswers": "Bandingkan",
+      "firstIn": "Foto pertama mulai masuk",
       "picksTitle": "Saran Hilads",
-      "answeredRow_one": "Sudah {{count}} negara menjawab",
-      "answeredRow_other": "Sudah {{count}} negara menjawab",
+      "answeredRow_one": "Sudah {{count}} negara main",
+      "answeredRow_other": "Sudah {{count}} negara main",
       "tip": "Ketuk untuk membandingkan kotamu dengan dunia.",
       "nCountries_one": "{{count}} negara",
       "nCountries_other": "{{count}} negara",
-      "youAnswered": "Jawabanmu sudah masuk. Lihat perbandingannya dengan dunia."
+      "youAnswered": "Fotomu sudah masuk. Lihat kata dunia."
     },
     "backHome": {
       "hereIn": "Di sini, {{city}}",
@@ -1354,7 +1354,7 @@
         "night": "Malam hari"
       },
       "yourTurn": "Giliranmu.",
-      "todayIs": "Hari ini dunia menjawab: {{question}}",
+      "todayIs": "Pertanyaan hari ini: {{question}}",
       "close": "Tutup",
       "sub_one": "{{count}} kota, tantangan yang sama",
       "sub_other": "{{count}} kota, tantangan yang sama"
@@ -1382,15 +1382,15 @@
       "and": "{{a}} dan {{b}}",
       "twoCitiesEmpty": "Belum ada perbandingan untuk kedua kota ini.",
       "noResults": "Tidak ada perbandingan yang cocok.",
-      "empty": "Perbandingan pertama muncul setelah kota punya 3 jawaban.",
+      "empty": "Perbandingan pertama muncul setelah kota punya 3 foto.",
       "priceTitle": "Berapa harga {{label}}?",
       "moreCities_one": "+{{count}} kota lagi",
       "moreCities_other": "+{{count}} kota lagi"
     },
-    "ctaAnswer": "Jawab untuk {{city}}",
-    "ctaAnswerNoCity": "Jawab pakai foto",
+    "ctaAnswer": "Main untuk {{city}}",
+    "ctaAnswerNoCity": "Ikut main",
     "represent": {
-      "button": "Jawab untuk {{city}}"
+      "button": "Main untuk {{city}}"
     },
     "countdown": {
       "hm": "{{h}} j {{m}} m",

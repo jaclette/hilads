@@ -320,7 +320,7 @@
     "early": "Awal",
     "proposedBy": "Diusulkan oleh {{name}}",
     "proposedByCity": "Diusulkan oleh {{name}} · {{city}}",
-    "groupTitle": "Jawaban baru: {{n}}",
+    "groupTitle": "Foto baru: {{n}}",
     "groupCitiesMore": "{{cities}} dan {{n}} lainnya"
   }
 }

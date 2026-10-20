@@ -184,8 +184,8 @@
     "title": "보기",
     "world": "전 세계",
     "pickCity": "도시 선택",
-    "citySub": "내 도시의 challenge, 답변, 스팟",
-    "worldSub": "모든 도시의 답변과 스팟",
+    "citySub": "내 도시의 challenge, 사진, 스팟",
+    "worldSub": "모든 도시의 사진과 스팟",
     "changeCity": "도시 변경",
     "a11y": "{{scope}} 보는 중. 눌러서 변경"
   },
@@ -223,9 +223,9 @@
     "errorBody": "신고를 보내지 못했어. 다시 시도해 줘."
   },
   "subtitles": {
-    "map": "세계의 답변에서 나온 스팟.",
+    "map": "세계의 사진에서 나온 스팟.",
     "hi": "도시에 인사하고 플랜에 참여해요.",
-    "passport": "나의 도시, 나의 답변, 나의 스탬프."
+    "passport": "나의 도시, 나의 사진, 나의 스탬프."
   },
   "photoBy": "사진: @{{username}}",
   "pick": {

@@ -184,8 +184,8 @@
     "title": "Ipakita",
     "world": "Mundo",
     "pickCity": "Pumili ng lungsod",
-    "citySub": "Ang challenge, mga sagot at spot ng lungsod mo",
-    "worldSub": "Mga sagot at spot mula sa lahat ng lungsod",
+    "citySub": "Ang challenge, mga litrato at spot ng lungsod mo",
+    "worldSub": "Mga litrato at spot mula sa lahat ng lungsod",
     "changeCity": "Palitan ang lungsod",
     "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
   },
@@ -223,9 +223,9 @@
     "errorBody": "Hindi naipadala ang report. Subukan ulit."
   },
   "subtitles": {
-    "map": "Mga spot mula sa sagot ng mundo.",
+    "map": "Mga spot mula sa mga litrato ng mundo.",
     "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
-    "passport": "Mga lungsod, sagot at tatak mo."
+    "passport": "Mga lungsod, litrato at tatak mo."
   },
   "photoBy": "Larawan ni @{{username}}",
   "pick": {

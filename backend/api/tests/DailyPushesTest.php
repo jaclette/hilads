@@ -161,13 +161,13 @@ final class DailyPushesTest extends TestCase
 
     public function testOutcomeLines(): void
     {
-        $this->assertSame('Yesterday your answer ranked 2nd in the world.',
+        $this->assertSame('Yesterday your photo ranked 2nd in the world.',
             DailyPushes::outcomeLine(self::mine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9]), null));
-        $this->assertSame('Yesterday your answer was the best in Ho Chi Minh City.',
+        $this->assertSame('Yesterday your photo was the best in Ho Chi Minh City.',
             DailyPushes::outcomeLine(self::mine(['cityRank' => 1, 'cityBest' => true, 'votes' => 3]), null));
-        $this->assertSame('Yesterday your answer ranked 4th in Ho Chi Minh City.',
+        $this->assertSame('Yesterday your photo ranked 4th in Ho Chi Minh City.',
             DailyPushes::outcomeLine(self::mine(['cityRank' => 4, 'votes' => 1]), null));
-        $this->assertSame('Yesterday your answer got 1 vote.',
+        $this->assertSame('Yesterday your photo got 1 vote.',
             DailyPushes::outcomeLine(self::mine(['cityName' => null, 'votes' => 1]), null));
         $this->assertNull(DailyPushes::outcomeLine(self::mine(['cityName' => null]), null));
 
@@ -190,9 +190,9 @@ final class DailyPushesTest extends TestCase
     {
         $c = ['text_i18n' => '{"en":"Eat what locals eat","fr":"Mange ce que mangent les locaux"}', 'challenge_date' => '2026-11-02'];
         $m = DailyPushes::morningMessage($c, "Yesterday's winner: Anh, 14 votes.", 'en', 'Ho Chi Minh City');
-        $this->assertSame("Eat what locals eat Your answer represents Saigon in the world tour 🌍 Yesterday's winner: Anh, 14 votes.", $m['body']);
+        $this->assertSame("Eat what locals eat Your photo represents Saigon in the world tour 🌍 Yesterday's winner: Anh, 14 votes.", $m['body']);
         $fr = DailyPushes::morningMessage($c, null, 'fr', 'Paris');
-        $this->assertSame('Mange ce que mangent les locaux Ta réponse représente Paris dans le tour du monde 🌍', $fr['body']);
+        $this->assertSame('Mange ce que mangent les locaux Ta photo représente Paris dans le tour du monde 🌍', $fr['body']);
         $this->assertNull(DailyPushes::tourLine(null));
         // Too long for the 150-character body: the challenge alone.
         $long = ['text_i18n' => json_encode(['en' => str_repeat('a', 120)]), 'challenge_date' => '2026-11-02'];
@@ -204,11 +204,11 @@ final class DailyPushesTest extends TestCase
         $c = ['text_i18n' => '{"en":"Find a bar","fr":"Trouve un bar"}', 'challenge_date' => '2026-11-02', 'theme' => 'sip',
               'compare_type' => 'word', 'compare_question_i18n' => '{"en":"How do locals say cheers?","fr":"Comment les locaux trinquent-ils ?"}'];
         $m = DailyPushes::morningMessage($c, null, 'en', null, 'Ho Chi Minh City');
-        $this->assertSame('🍹 Today the world answers', $m['title']);
-        $this->assertSame("How do locals say cheers? Add Saigon's answer.", $m['body']);
+        $this->assertSame("🍹 Today's question", $m['title']);
+        $this->assertSame("How do locals say cheers? Play for Saigon.", $m['body']);
         $fr = DailyPushes::morningMessage($c, null, 'fr', null, 'Paris');
-        $this->assertSame("🍹 Aujourd'hui, le monde répond", $fr['title']);
-        $this->assertSame('Comment les locaux trinquent-ils ? Ajoute la réponse de Paris.', $fr['body']);
+        $this->assertSame("🍹 La question du jour", $fr['title']);
+        $this->assertSame('Comment les locaux trinquent-ils ? Joue pour Paris.', $fr['body']);
         // No city: the theme title over the challenge text.
         $this->assertSame('Find a bar', DailyPushes::morningMessage($c)['body']);
     }
@@ -218,9 +218,9 @@ final class DailyPushesTest extends TestCase
         $c = ['text_i18n' => '{"en":"Find a bar"}', 'challenge_date' => '2026-11-02', 'theme' => 'sip'];
         $m = DailyPushes::voteReminderMessage($c, 6 * 3600, 'Lisbon', 'Mexico City');
         $this->assertSame('🍹 Drinks · 6h left', $m['title']);
-        $this->assertSame('Lisbon and Mexico City answered today. Go see what they said.', $m['body']);
+        $this->assertSame('Lisbon and Mexico City played today. Go see their photos.', $m['body']);
         $this->assertSame(['compare', 'vote_reminder'], [$m['data']['tab'], $m['pushType']]);
-        $this->assertSame("Lisbonne et Mexico ont répondu aujourd'hui. Va voir ce qu'ils ont dit.", DailyPushes::voteReminderMessage($c, 3600, 'Lisbon', 'Mexico City', 'fr')['body']);
+        $this->assertSame("Lisbonne et Mexico ont joué aujourd'hui. Va voir leurs photos.", DailyPushes::voteReminderMessage($c, 3600, 'Lisbon', 'Mexico City', 'fr')['body']);
 
         $cities = [['id' => 'city_5', 'name' => 'Saigon'], ['id' => 'city_62', 'name' => 'Lisbon'], ['id' => 'city_4', 'name' => 'Tokyo']];
         $this->assertSame(['Lisbon', 'Tokyo'], DailyPushes::waitingCities($cities, 'city_5'));
@@ -230,19 +230,19 @@ final class DailyPushesTest extends TestCase
 
     public function testFirstVoteNamesTheVotersCity(): void
     {
-        $this->assertSame('Someone in Lisbon voted for your answer.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'en', 'Lisbon')['body']);
-        $this->assertSame('Quelqu\'un à Saigon a voté pour ta réponse.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr', 'Ho Chi Minh City')['body']);
+        $this->assertSame('Someone in Lisbon voted for your photo.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'en', 'Lisbon')['body']);
+        $this->assertSame('Quelqu\'un à Saigon a voté pour ta photo.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr', 'Ho Chi Minh City')['body']);
     }
 
     public function testReminderWorldLine(): void
     {
         $m = DailyPushes::reminderMessage(self::SHRINE, 3600, 'en', null, 9, null, ['n' => 5, 'city' => 'Ho Chi Minh City']);
-        $this->assertSame('Find a shrine and ask a local what it means. Already 5 countries answered. Saigon, your move.', $m['body']);
+        $this->assertSame('Find a shrine and ask a local what it means. Already 5 countries played. Saigon, your move.', $m['body']);
         $fr = DailyPushes::reminderMessage(self::SHRINE, 3600, 'fr', null, 9, null, ['n' => 5, 'city' => 'Paris']);
-        $this->assertStringEndsWith('Déjà 5 pays ont répondu. Paris, à toi de jouer.', $fr['body']);
+        $this->assertStringEndsWith('Déjà 5 pays ont joué. Paris, à toi de jouer.', $fr['body']);
         // A city streak to save keeps the Represent your city line.
         $streak = DailyPushes::reminderMessage(self::SHRINE, 3600, 'en', null, 9, ['name' => 'Paris', 'n' => 4], ['n' => 5, 'city' => 'Paris']);
-        $this->assertStringContainsString("Paris has answered 4 days in a row", $streak['body']);
+        $this->assertStringContainsString("Paris has played 4 days in a row", $streak['body']);
     }
 
     private const SHRINE = ['challenge_date' => '2026-11-02', 'theme' => 'only_here',
@@ -285,10 +285,10 @@ final class DailyPushesTest extends TestCase
     public function testFirstVoteMessageOpensTheProof(): void
     {
         $m = DailyPushes::firstVoteMessage('2026-11-02', 'p1');
-        $this->assertSame('Your answer got its first vote!', $m['body']);
+        $this->assertSame('Your photo got its first vote!', $m['body']);
         $this->assertSame('p1', $m['data']['proofId']);
         $this->assertSame('2026-11-02', $m['data']['date']);
-        $this->assertSame('Ta réponse a reçu son premier vote !', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr')['body']);
+        $this->assertSame('Ta photo a reçu son premier vote !', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr')['body']);
     }
 
     public function testProposalPushesInTheAuthorsLanguage(): void
@@ -302,9 +302,9 @@ final class DailyPushesTest extends TestCase
 
     public function testDigestMessage(): void
     {
-        $this->assertSame('3 people voted for your answer. 5 people completed your Local Twist.',
+        $this->assertSame('3 people voted for your photo. 5 people completed your Local Twist.',
             DailyPushes::digestMessage('2026-11-02', 3, 5)['body']);
-        $this->assertSame('1 person voted for your answer.', DailyPushes::digestMessage('2026-11-02', 1, 0)['body']);
+        $this->assertSame('1 person voted for your photo.', DailyPushes::digestMessage('2026-11-02', 1, 0)['body']);
         $this->assertSame('1 person completed your Local Twist.', DailyPushes::digestMessage('2026-11-02', 0, 1)['body']);
         $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0));
     }
@@ -312,9 +312,9 @@ final class DailyPushesTest extends TestCase
     public function testTop10Text(): void
     {
         $m = DailyPushes::top10Message('2026-11-02', 4);
-        $this->assertSame("You're in today's top 10! Your answer is #4 in the world right now.", $m['body']);
+        $this->assertSame("You're in today's top 10! Your photo is #4 in the world right now.", $m['body']);
         $this->assertSame('2026-11-02', $m['data']['date']);
-        $this->assertSame('Tu es dans le top 10 du jour ! Ta réponse est #4 dans le monde en ce moment.',
+        $this->assertSame('Tu es dans le top 10 du jour ! Ta photo est #4 dans le monde en ce moment.',
                           DailyPushes::top10Message('2026-11-02', 4, 'fr')['body']);
     }
 

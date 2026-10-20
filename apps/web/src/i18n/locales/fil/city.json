@@ -320,7 +320,7 @@
     "early": "Maaga",
     "proposedBy": "Mungkahi ni {{name}}",
     "proposedByCity": "Mungkahi ni {{name}} · {{city}}",
-    "groupTitle": "Mga bagong sagot: {{n}}",
+    "groupTitle": "Mga bagong litrato: {{n}}",
     "groupCitiesMore": "{{cities}} at {{n}} pa"
   }
 }

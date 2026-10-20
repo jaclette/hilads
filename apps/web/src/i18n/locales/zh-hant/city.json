@@ -320,7 +320,7 @@
     "early": "搶先",
     "proposedBy": "由 {{name}} 提議",
     "proposedByCity": "由 {{name}} · {{city}} 提議",
-    "groupTitle": "新的回答：{{n}}",
+    "groupTitle": "新照片：{{n}}",
     "groupCitiesMore": "{{cities}} 等另外 {{n}} 個"
   }
 }

@@ -196,8 +196,8 @@
     "title": "Mostrar",
     "world": "Mundo",
     "pickCity": "Elige una ciudad",
-    "citySub": "El challenge, las respuestas y los spots de tu ciudad",
-    "worldSub": "Respuestas y spots de todas las ciudades",
+    "citySub": "El challenge, las fotos y los spots de tu ciudad",
+    "worldSub": "Fotos y spots de todas las ciudades",
     "changeCity": "Cambiar de ciudad",
     "a11y": "Mostrando {{scope}}. Toca para cambiar"
   },
@@ -205,9 +205,9 @@
   "settings": "Ajustes",
   "firstLaunch": "Juega local. Compara global.",
   "subtitles": {
-    "map": "Spots de las respuestas del mundo.",
+    "map": "Spots de las fotos del mundo.",
     "hi": "Saluda a tu ciudad. Únete a un plan.",
-    "passport": "Tus ciudades, tus respuestas, tus sellos."
+    "passport": "Tus ciudades, tus fotos, tus sellos."
   },
   "photoBy": "Foto de @{{username}}",
   "pick": {
@@ -224,26 +224,26 @@
     "textSpotCity": "{{name}}, {{city}}, en Hilads"
   },
   "represent": {
-    "empty": "{{city}} aún no ha respondido hoy. Sé el primero.",
-    "beFirst": "Sé la primera respuesta de {{city}}",
-    "emptyThere": "{{city}} aún no ha respondido hoy.",
+    "empty": "{{city}} aún no ha jugado hoy. Sé el primero.",
+    "beFirst": "Sé el primero en jugar por {{city}}",
+    "emptyThere": "{{city}} aún no ha jugado hoy.",
     "notIn": "¿No estás en {{city}}?",
     "change": "Cambiar",
-    "locationNeeded": "Permite la ubicación para responder por donde estás.",
-    "button": "Responde por {{city}}",
+    "locationNeeded": "Permite la ubicación para jugar por donde estás.",
+    "button": "Juega por {{city}}",
     "firstPosted": "Pusiste a {{city}} en el mapa del mundo de hoy.",
     "pioneer": "Pionero de {{city}}",
     "spotOne": "Spot n.º 1 en {{city}}",
-    "streak_one": "{{city}} lleva {{count}} día seguido respondiendo",
-    "streak_many": "{{city}}, representada {{count}} días seguidos",
-    "streak_other": "{{city}} lleva {{count}} días seguidos respondiendo",
+    "streak_one": "{{city}} lleva {{count}} día seguido jugando",
+    "streak_many": "{{city}} lleva {{count}} de días seguidos jugando",
+    "streak_other": "{{city}} lleva {{count}} días seguidos jugando",
     "board_one": "{{count}} ciudad está en el marcador de hoy. {{city}} todavía no.",
     "board_many": "{{count}} ciudades están en el marcador de hoy. {{city}} todavía no.",
     "board_other": "{{count}} ciudades están en el marcador de hoy. {{city}} todavía no.",
     "mapEmpty": "{{city}} aún no está en el mapa del mundo. Ponla.",
     "invite": "Invita a un amigo",
-    "share": "Responde por {{city}} conmigo en Hilads.",
+    "share": "Juega por {{city}} conmigo en Hilads.",
     "pioneerTitle": "Insignias de pionero",
-    "pioneerSub": "La primera respuesta aprobada en una ciudad. Tuya para siempre."
+    "pioneerSub": "La primera foto aprobada de una ciudad. Tuya para siempre."
   }
 }

@@ -334,7 +334,7 @@
     "early": "Рано",
     "proposedBy": "Предложил(а) {{name}}",
     "proposedByCity": "Предложил(а) {{name}} · {{city}}",
-    "groupTitle": "Новые ответы: {{n}}",
+    "groupTitle": "Новые фото: {{n}}",
     "groupCitiesMore": "{{cities}} и ещё {{n}}"
   }
 }

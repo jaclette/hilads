@@ -320,7 +320,7 @@
     "early": "빠름",
     "proposedBy": "{{name}}님의 제안",
     "proposedByCity": "{{name}} · {{city}}의 제안",
-    "groupTitle": "새 답변: {{n}}",
+    "groupTitle": "새 사진: {{n}}",
     "groupCitiesMore": "{{cities}} 외 {{n}}개"
   }
 }

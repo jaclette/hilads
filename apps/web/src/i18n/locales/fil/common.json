@@ -196,8 +196,8 @@
     "title": "Ipakita",
     "world": "Mundo",
     "pickCity": "Pumili ng lungsod",
-    "citySub": "Ang challenge, mga sagot at spot ng lungsod mo",
-    "worldSub": "Mga sagot at spot mula sa lahat ng lungsod",
+    "citySub": "Ang challenge, mga litrato at spot ng lungsod mo",
+    "worldSub": "Mga litrato at spot mula sa lahat ng lungsod",
     "changeCity": "Palitan ang lungsod",
     "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
   },
@@ -205,9 +205,9 @@
   "settings": "Mga setting",
   "firstLaunch": "Laro lokal. Kumpara global.",
   "subtitles": {
-    "map": "Mga spot mula sa sagot ng mundo.",
+    "map": "Mga spot mula sa mga litrato ng mundo.",
     "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
-    "passport": "Mga lungsod, sagot at tatak mo."
+    "passport": "Mga lungsod, litrato at tatak mo."
   },
   "photoBy": "Larawan ni @{{username}}",
   "pick": {
@@ -224,24 +224,24 @@
     "textSpotCity": "{{name}}, {{city}}, sa Hilads"
   },
   "represent": {
-    "empty": "Hindi pa sumasagot ang {{city}} ngayon. Ikaw na ang mauna.",
-    "beFirst": "Maging unang sagot ng {{city}}",
-    "emptyThere": "Hindi pa sumasagot ang {{city}} ngayon.",
+    "empty": "Hindi pa naglalaro ang {{city}} ngayon. Ikaw na ang mauna.",
+    "beFirst": "Ikaw ang maunang maglaro para sa {{city}}",
+    "emptyThere": "Hindi pa naglalaro ang {{city}} ngayon.",
     "notIn": "Wala ka sa {{city}}?",
     "change": "Palitan",
-    "locationNeeded": "Payagan ang lokasyon para sumagot para sa kinaroroonan mo.",
-    "button": "Sumagot para sa {{city}}",
+    "locationNeeded": "Payagan ang lokasyon para maglaro para sa kinaroroonan mo.",
+    "button": "Maglaro para sa {{city}}",
     "firstPosted": "Inilagay mo ang {{city}} sa world map ngayon.",
     "pioneer": "Pioneer ng {{city}}",
     "spotOne": "Spot #1 sa {{city}}",
-    "streak_one": "{{count}} araw nang sumasagot ang {{city}}",
-    "streak_other": "{{count}} araw nang sunod-sunod sumasagot ang {{city}}",
+    "streak_one": "{{count}} araw nang naglalaro ang {{city}}",
+    "streak_other": "{{count}} araw nang sunod-sunod naglalaro ang {{city}}",
     "board_one": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
     "board_other": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
     "mapEmpty": "Wala pa sa world map ang {{city}}. Ilagay mo.",
     "invite": "Mag-imbita ng kaibigan",
-    "share": "Sumagot tayo para sa {{city}} sa Hilads.",
+    "share": "Maglaro tayo para sa {{city}} sa Hilads.",
     "pioneerTitle": "Mga pioneer badge",
-    "pioneerSub": "Ang kauna-unahang naaprubahang sagot sa isang lungsod. Sa iyo habambuhay."
+    "pioneerSub": "Ang kauna-unahang naaprubahang litrato sa isang lungsod. Sa iyo habambuhay."
   }
 }

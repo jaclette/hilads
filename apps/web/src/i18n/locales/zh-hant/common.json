@@ -196,8 +196,8 @@
     "title": "顯示",
     "world": "世界",
     "pickCity": "選擇城市",
-    "citySub": "你所在城市的 challenge、回答和地點",
-    "worldSub": "所有城市的回答和地點",
+    "citySub": "你所在城市的 challenge、照片和地點",
+    "worldSub": "所有城市的照片和地點",
     "changeCity": "更換城市",
     "a11y": "正在顯示{{scope}}。點按以更換"
   },
@@ -205,9 +205,9 @@
   "settings": "設定",
   "firstLaunch": "在地玩，全球比。",
   "subtitles": {
-    "map": "來自全世界回答的地點。",
+    "map": "來自全世界照片的地點。",
     "hi": "向你的城市打聲招呼。加入一個計畫。",
-    "passport": "你的城市、你的回答、你的印章。"
+    "passport": "你的城市、你的照片、你的印章。"
   },
   "photoBy": "照片：@{{username}}",
   "pick": {
@@ -224,23 +224,23 @@
     "textSpotCity": "Hilads 上的 {{name}}（{{city}}）"
   },
   "represent": {
-    "empty": "{{city}}今天還沒有回答。來當第一個吧。",
-    "beFirst": "成為{{city}}的第一個回答",
-    "emptyThere": "{{city}}今天還沒有回答。",
+    "empty": "{{city}}今天還沒有人參加。來當第一個吧。",
+    "beFirst": "第一個代表{{city}}參加",
+    "emptyThere": "{{city}}今天還沒有人參加。",
     "notIn": "不在{{city}}？",
     "change": "更改",
-    "locationNeeded": "允許定位，為你所在的地方作答。",
-    "button": "為{{city}}作答",
+    "locationNeeded": "允許定位，代表你所在的地方參加。",
+    "button": "代表{{city}}參加",
     "firstPosted": "你把{{city}}放上了今天的世界地圖。",
     "pioneer": "{{city}}先鋒",
     "spotOne": "{{city}}第 1 號地點",
-    "streak_other": "{{city}}已連續 {{count}} 天作答",
+    "streak_other": "{{city}}已連續 {{count}} 天參加",
     "board_other": "今天已有 {{count}} 座城市上榜。{{city}}還沒有。",
     "mapEmpty": "{{city}}還沒上世界地圖。把它放上去吧。",
     "invite": "邀請朋友",
-    "share": "和我一起在 Hilads 上為{{city}}作答。",
+    "share": "和我一起在 Hilads 上代表{{city}}參加。",
     "pioneerTitle": "先鋒徽章",
-    "pioneerSub": "一座城市裡第一條通過審核的回答。永遠屬於你。",
-    "streak_one": "{{city}}已連續 {{count}} 天作答"
+    "pioneerSub": "一座城市裡第一張通過審核的照片。永遠屬於你。",
+    "streak_one": "{{city}}已連續 {{count}} 天參加"
   }
 }

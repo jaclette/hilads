@@ -184,8 +184,8 @@
     "title": "Show",
     "world": "World",
     "pickCity": "Pick a city",
-    "citySub": "Your city's challenge, answers and spots",
-    "worldSub": "Answers and spots from every city",
+    "citySub": "Your city's challenge, photos and spots",
+    "worldSub": "Photos and spots from every city",
     "changeCity": "Change city",
     "a11y": "Showing {{scope}}. Tap to change"
   },
@@ -223,9 +223,9 @@
     "errorBody": "Could not send the report. Try again."
   },
   "subtitles": {
-    "map": "Spots from the world's answers.",
+    "map": "Spots from the world's photos.",
     "hi": "Say hi to your city. Join a plan.",
-    "passport": "Your cities, your answers, your stamps."
+    "passport": "Your cities, your photos, your stamps."
   },
   "photoBy": "Photo by @{{username}}",
   "pick": {

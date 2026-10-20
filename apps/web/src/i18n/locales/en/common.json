@@ -196,8 +196,8 @@
     "title": "Show",
     "world": "World",
     "pickCity": "Pick a city",
-    "citySub": "Your city's challenge, answers and spots",
-    "worldSub": "Answers and spots from every city",
+    "citySub": "Your city's challenge, photos and spots",
+    "worldSub": "Photos and spots from every city",
     "changeCity": "Change city",
     "a11y": "Showing {{scope}}. Tap to change"
   },
@@ -205,9 +205,9 @@
   "settings": "Settings",
   "firstLaunch": "Play local. Compare global.",
   "subtitles": {
-    "map": "Spots from the world's answers.",
+    "map": "Spots from the world's photos.",
     "hi": "Say hi to your city. Join a plan.",
-    "passport": "Your cities, your answers, your stamps."
+    "passport": "Your cities, your photos, your stamps."
   },
   "photoBy": "Photo by @{{username}}",
   "pick": {
@@ -224,24 +224,24 @@
     "textSpotCity": "{{name}}, {{city}}, on Hilads"
   },
   "represent": {
-    "empty": "{{city}} hasn't answered yet today. Be the first.",
-    "beFirst": "Be {{city}}'s first answer",
-    "emptyThere": "{{city}} hasn't answered yet today.",
+    "empty": "{{city}} hasn't played yet today. Be the first.",
+    "beFirst": "Be the first to play for {{city}}",
+    "emptyThere": "{{city}} hasn't played yet today.",
     "notIn": "Not in {{city}}?",
     "change": "Change",
-    "locationNeeded": "Allow location to answer for where you are.",
-    "button": "Answer for {{city}}",
+    "locationNeeded": "Allow location to play for where you are.",
+    "button": "Play for {{city}}",
     "firstPosted": "You put {{city}} on today's world map.",
     "pioneer": "Pioneer of {{city}}",
     "spotOne": "Spot #1 in {{city}}",
-    "streak_one": "{{city}} has answered {{count}} day in a row",
-    "streak_other": "{{city}} has answered {{count}} days in a row",
+    "streak_one": "{{city}} has played {{count}} day in a row",
+    "streak_other": "{{city}} has played {{count}} days in a row",
     "board_one": "{{count}} city is on today's board. {{city}} isn't yet.",
     "board_other": "{{count}} cities are on today's board. {{city}} isn't yet.",
     "mapEmpty": "{{city}} isn't on the world map yet. Put it there.",
     "invite": "Invite a friend",
-    "share": "Answer for {{city}} with me on Hilads.",
+    "share": "Play for {{city}} with me on Hilads.",
     "pioneerTitle": "Pioneer badges",
-    "pioneerSub": "The first approved answer ever in a city. Yours forever."
+    "pioneerSub": "The first approved photo ever in a city. Yours forever."
   }
 }

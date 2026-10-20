@@ -809,7 +809,7 @@
   "appMap": {
     "title": "Xem các spot trên bản đồ",
     "titleCity": "Xem các spot ở {{city}} trên bản đồ",
-    "body": "Nơi người địa phương đăng bằng chứng Daily Challenge. Đăng của bạn từ app Hilads."
+    "body": "Nơi người địa phương đăng ảnh Daily Challenge. Đăng ảnh của bạn từ app Hilads."
   },
   "creationClosed": "Đã đóng tạo challenge. Hãy làm Daily Challenge trong app Hilads.",
   "map": {
@@ -831,8 +831,8 @@
     "sortNearest": "Gần nhất",
     "sortWeek": "Bình chọn nhiều nhất tuần này",
     "spotsTomorrow": "Spot sẽ đến từ challenge ngày mai: {{theme}}",
-    "proofs_one": "{{count}} bằng chứng",
-    "proofs_other": "{{count}} bằng chứng",
+    "proofs_one": "{{count}} ảnh",
+    "proofs_other": "{{count}} ảnh",
     "votes_one": "{{count}} phiếu",
     "votes_other": "{{count}} phiếu",
     "unavailable": "Bản đồ hiện không khả dụng.",
@@ -853,7 +853,7 @@
     "notFound": "Spot này không còn khả dụng.",
     "local": "Người địa phương",
     "morePhotos": "Thêm ảnh",
-    "proofInApp": "Đăng bằng chứng trong app"
+    "proofInApp": "Đăng ảnh của bạn trong app"
   },
   "dc": {
     "kicker": "Daily Challenge",
@@ -862,8 +862,8 @@
     "nothingLive": "Daily Challenge tiếp theo sắp tới rồi",
     "cta": "Nhận challenge",
     "ctaIn": "Mình tham gia",
-    "ctaTaken": "Đã làm thử thách · Xem câu trả lời",
-    "seeProofs": "Xem câu trả lời hôm nay",
+    "ctaTaken": "Đã làm thử thách · Xem ảnh của mình",
+    "seeProofs": "Xem ảnh hôm nay",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist ở {{city}}",
     "twistBy": "bởi {{name}}",
@@ -872,20 +872,20 @@
     "countCity": "{{count}} ở {{city}}",
     "countZero": "Chưa có ai - hãy là người đầu tiên",
     "beFirst": "Hãy là người đầu tiên hôm nay",
-    "beFirstSub": "Chưa có câu trả lời nào. Đăng của bạn và truyền cảm hứng cho cả thành phố.",
-    "yourProof": "Câu trả lời của bạn",
+    "beFirstSub": "Chưa có ảnh nào. Hãy là người đầu tiên, cả thế giới đang chờ.",
+    "yourProof": "Ảnh của bạn",
     "status": {
       "pending": "Đang chờ duyệt",
       "approved": "Đã đăng",
       "rejected": "Không được đăng",
       "removed": "Đã gỡ"
     },
-    "pendingHint": "Mỗi câu trả lời đều được kiểm tra trước khi hiển thị.",
+    "pendingHint": "Mỗi ảnh đều được kiểm tra trước khi hiển thị.",
     "reasonLabel": "Lý do: {{reason}}",
     "fixIt": "Sửa lại",
     "edit": "Sửa",
     "delete": "Xóa",
-    "deleteTitle": "Xóa câu trả lời của bạn?",
+    "deleteTitle": "Xóa ảnh của bạn?",
     "deleteBody": "Bằng chứng sẽ biến mất khỏi challenge và các kênh.",
     "cancel": "Hủy",
     "closed": "Đã kết thúc",
@@ -893,8 +893,8 @@
     "practicalTitle": "Nên biết",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "theo {{count}} câu trả lời",
-    "priceFrom_other": "theo {{count}} câu trả lời",
+    "priceFrom_one": "theo {{count}} ảnh",
+    "priceFrom_other": "theo {{count}} ảnh",
     "places_one": "{{count}} địa điểm được ghim",
     "places_other": "{{count}} địa điểm được ghim",
     "unnamedPlace": "Địa điểm đã ghim",
@@ -907,8 +907,8 @@
     "notFound": "Daily Challenge này không tồn tại.",
     "cityRowEmpty": "Hãy là người đầu tiên tạo challenge ở {{city}}",
     "proof": {
-      "titleNew": "Câu trả lời của bạn",
-      "titleEdit": "Sửa câu trả lời",
+      "titleNew": "Ảnh của bạn",
+      "titleEdit": "Sửa ảnh của bạn",
       "camera": "Máy ảnh",
       "gallery": "Thư viện",
       "changePhoto": "Đổi ảnh",
@@ -921,10 +921,10 @@
       "pinHint": "Chỉ khi bạn muốn người khác tìm thấy.",
       "pinChange": "Đổi",
       "pinRemove": "Gỡ",
-      "submit": "Đăng câu trả lời",
+      "submit": "Đăng ảnh của mình",
       "save": "Lưu thay đổi",
       "sending": "Đang gửi…",
-      "sentTitle": "{{city}} đã trả lời!",
+      "sentTitle": "{{city}} đã chơi!",
       "sentBody": "Xem cả thế giới đã nói gì. Ảnh của bạn hiện ra khi được duyệt.",
       "ok": "OK",
       "permPhotoTitle": "Cần quyền truy cập ảnh",
@@ -933,12 +933,12 @@
       "permCameraBody": "Cho phép truy cập máy ảnh trong cài đặt để chụp ảnh.",
       "photoRequired": "Hãy thêm ảnh trước.",
       "locationOff": "Vị trí đang tắt nên không thể ghim địa điểm này.",
-      "editOnlyActive": "Bạn có thể sửa câu trả lời cho đến khi challenge kết thúc.",
+      "editOnlyActive": "Bạn có thể sửa ảnh cho đến khi challenge kết thúc.",
       "takeTitle": "Chụp ảnh của bạn",
       "retake": "Chụp lại"
     },
     "errors": {
-      "already_posted": "Bạn đã đăng câu trả lời cho challenge hôm nay rồi.",
+      "already_posted": "Bạn đã chơi challenge hôm nay rồi.",
       "challenge_closed": "Challenge này đã kết thúc.",
       "no_active_challenge": "Hiện chưa có Daily Challenge nào.",
       "moderation_blocked": "Chú thích của bạn bị gắn cờ - hãy viết lại nhé.",
@@ -950,12 +950,12 @@
       "rate_limited": "Thử quá nhiều lần - đợi một chút nhé.",
       "image_processing_failed": "Không xử lý được ảnh này. Thử ảnh khác nhé.",
       "generic": "Có lỗi xảy ra. Thử lại nhé.",
-      "place_required": "Hãy chọn địa điểm cho câu trả lời.",
+      "place_required": "Hãy chọn địa điểm cho ảnh của bạn.",
       "place_not_allowed": "Challenge này không có địa điểm.",
       "place_not_found": "Địa điểm này không còn nữa. Hãy chọn địa điểm khác.",
       "invalid_place_name": "Tên địa điểm phải từ 1 đến 80 ký tự.",
       "place_name_blocked": "Tên địa điểm này đã bị gắn cờ. Hãy viết lại.",
-      "invalid_position": "Cần vị trí của bạn để đăng câu trả lời này.",
+      "invalid_position": "Cần vị trí của bạn để đăng ảnh này.",
       "too_far": "Bạn đang ở quá xa địa điểm này."
     },
     "push": {
@@ -973,11 +973,11 @@
       "pickCity": "Chọn thành phố",
       "worldSelection": "Lựa chọn Thế giới: thành phố này chưa hoạt động",
       "empty": "Những Daily Challenge đầu tiên sắp tới rồi.",
-      "proofs_one": "{{count}} câu trả lời",
-      "proofs_other": "{{count}} câu trả lời"
+      "proofs_one": "{{count}} ảnh",
+      "proofs_other": "{{count}} ảnh"
     },
     "report": {
-      "title": "Báo cáo câu trả lời này",
+      "title": "Báo cáo ảnh này",
       "body": "Có vấn đề gì vậy?",
       "reasons": {
         "inappropriate": "Không phù hợp",
@@ -987,23 +987,23 @@
         "other": "Lý do khác"
       },
       "thanks": "Cảm ơn - bọn mình sẽ kiểm tra.",
-      "already": "Bạn đã báo cáo câu trả lời này rồi."
+      "already": "Bạn đã báo cáo ảnh này rồi."
     },
     "vote": {
       "vote": "Bình chọn",
       "withdraw": "Rút bình chọn",
-      "yours": "Câu trả lời của bạn",
+      "yours": "Ảnh của bạn",
       "errors": {
         "voting_closed": "Bình chọn đã đóng cùng challenge.",
         "rate_limited": "Thử quá nhiều lần - đợi một chút.",
-        "own_proof": "Bạn không thể bình chọn cho câu trả lời của mình.",
-        "not_found": "Câu trả lời này không còn nữa.",
+        "own_proof": "Bạn không thể bình chọn cho ảnh của mình.",
+        "not_found": "Ảnh này không còn nữa.",
         "generic": "Đã có lỗi. Thử lại nhé."
       },
       "voteFor": "Bầu cho {{city}}",
-      "prompt": "Bình chọn cho những câu trả lời bạn thích",
-      "tourNote": "Câu trả lời được bầu nhiều nhất của mỗi thành phố sẽ vào vòng quanh thế giới ngày mai.",
-      "afterPost": "Bình chọn cho những câu trả lời bạn thích"
+      "prompt": "Bình chọn cho những ảnh bạn thích",
+      "tourNote": "Ảnh được bầu nhiều nhất của mỗi thành phố sẽ vào vòng quanh thế giới ngày mai.",
+      "afterPost": "Bình chọn cho những ảnh bạn thích"
     },
     "results": {
       "title": "Kết quả",
@@ -1017,7 +1017,7 @@
       "streak": "Chuỗi hiện tại",
       "bestStreak": "Chuỗi dài nhất",
       "completed": "Đã hoàn thành",
-      "bestProofs": "Câu trả lời hay nhất",
+      "bestProofs": "Ảnh đẹp nhất",
       "emptyMine": "Chuỗi của bạn bắt đầu với challenge hôm nay."
     },
     "streak_other": "Chuỗi {{count}} ngày",
@@ -1079,7 +1079,7 @@
       "titleChallenge": "Địa điểm đã ghim",
       "titleCity": "Địa điểm đã ghim ở {{city}}",
       "titleWorld": "Địa điểm đã ghim trên thế giới",
-      "seeProof": "Xem câu trả lời",
+      "seeProof": "Xem ảnh",
       "openChallenge": "Mở challenge",
       "search": "Tìm món ăn, quán cà phê, con phố",
       "searchA11y": "Tìm spot",
@@ -1099,20 +1099,20 @@
       "closeSpot": "Đóng",
       "emptyTitle": "Hãy là người đầu tiên đặt spot ở đây",
       "planA11y": "Kế hoạch: {{title}}, {{time}}",
-      "proofs_one": "{{count}} câu trả lời",
-      "proofs_other": "{{count}} câu trả lời"
+      "proofs_one": "{{count}} ảnh",
+      "proofs_other": "{{count}} ảnh"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Tạm thời cho đến lượt drop",
       "finalIn": "Chốt sau {{time}}",
       "official": "Bục vinh quang chính thức",
-      "minProofs": "Top 10 mở khi có {{min}} câu trả lời. Hiện có: {{n}}.",
-      "noVotes": "Chưa có bình chọn. Hãy bình chọn cho câu trả lời bạn thích!",
+      "minProofs": "Top 10 mở khi có {{min}} ảnh. Hiện có: {{n}}.",
+      "noVotes": "Chưa có bình chọn. Hãy bình chọn cho ảnh bạn thích!",
       "me": "Bạn: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} ở {{city}}",
-      "noProof": "Đăng câu trả lời để được xếp hạng.",
-      "pending": "Câu trả lời của bạn sẽ được xếp hạng sau khi duyệt.",
+      "noProof": "Chơi để được xếp hạng.",
+      "pending": "Ảnh của bạn sẽ được xếp hạng sau khi duyệt.",
       "cityTop": "Top 3 ở {{city}}",
       "compactTitle": "Top 3 lúc này",
       "seeAll": "Top 10 ›"
@@ -1208,20 +1208,20 @@
       "hint": "Thưởng nhanh tay: đăng trước {{time}}"
     },
     "group": {
-      "title": "Câu trả lời mới: {{n}}",
+      "title": "Ảnh mới: {{n}}",
       "citiesMore": "{{cities}} và {{n}} nữa",
-      "galleryTitle": "Câu trả lời mới"
+      "galleryTitle": "Ảnh mới"
     },
     "today": {
       "early": "Thưởng sớm đến {{time}}",
       "tomorrow": "Ngày mai: {{theme}}",
       "aroundWorld": "Hôm nay trên thế giới",
       "inCity": "Hôm nay ở {{city}}",
-      "proofs_one": "{{count}} câu trả lời",
-      "proofs_other": "{{count}} câu trả lời",
+      "proofs_one": "{{count}} ảnh",
+      "proofs_other": "{{count}} ảnh",
       "countries_one": "{{count}} quốc gia",
       "countries_other": "{{count}} quốc gia",
-      "proofsIn": "{{proofs}} ở {{countries}}",
+      "proofsIn": "{{proofs}} từ {{countries}}",
       "podiumTitle": "Bục vinh quang hôm qua",
       "spotsIn": "Địa điểm ở {{city}}",
       "allPast": "Tất cả thử thách đã qua",
@@ -1234,7 +1234,7 @@
       "openMap": "Mở bản đồ",
       "spotsFallback": "Thành phố của bạn chưa có spot. Gần nhất:",
       "spotsEmpty": "Ở đây chưa có spot. Nhận challenge hôm nay để đặt spot đầu tiên lên bản đồ.",
-      "seeMine": "Xem câu trả lời của bạn",
+      "seeMine": "Xem ảnh của bạn",
       "votes_one": "{{count}} phiếu",
       "votes_other": "{{count}} phiếu",
       "day": {
@@ -1244,7 +1244,7 @@
         "today": "hôm nay",
         "tomorrow": "ngày mai",
         "later": "sắp tới",
-        "none": "chưa có câu trả lời"
+        "none": "chưa có ảnh"
       },
       "links": {
         "pastSub": "Ảnh của những ngày trước",
@@ -1303,7 +1303,7 @@
     },
     "takeIt": "Nhận",
     "proofHint": {
-      "title": "Chụp câu trả lời của bạn",
+      "title": "Chụp ảnh của bạn",
       "place": "Ảnh được bình chọn nhiều nhất sẽ thành ảnh của spot.",
       "noPlace": "Ảnh được bình chọn nhiều nhất lên bục vinh quang."
     },
@@ -1315,26 +1315,26 @@
       "latest": "Muộn nhất: {{city}} {{answer}}",
       "lowest": "Thấp nhất: {{city}} {{answer}}",
       "highest": "Cao nhất: {{city}} {{answer}}",
-      "emptyTitle": "Chưa có câu trả lời",
+      "emptyTitle": "Chưa có ảnh",
       "emptyBody": "Hãy là thành phố đầu tiên trên bảng.",
       "noAnswer": "Chưa có câu trả lời",
       "median": "Trung vị {{price}}",
-      "proofs_one": "{{count}} câu trả lời",
-      "proofs_other": "{{count}} câu trả lời",
-      "boardTitle": "Cả thế giới đã trả lời thế nào",
+      "proofs_one": "{{count}} ảnh",
+      "proofs_other": "{{count}} ảnh",
+      "boardTitle": "Thế giới nói gì",
       "cheapest": "Rẻ nhất: {{city}} {{price}}",
       "priciest": "Đắt nhất: {{city}} {{price}}",
       "funFact": "Ở {{city}} đắt gấp {{ratio}} lần so với {{other}}.",
-      "worldAnswers": "Hôm nay, cả thế giới trả lời",
-      "seeAnswers": "Xem câu trả lời",
-      "firstIn": "Những câu trả lời đầu tiên đang đến",
+      "worldAnswers": "Câu hỏi hôm nay",
+      "seeAnswers": "So sánh",
+      "firstIn": "Những ảnh đầu tiên đang đến",
       "picksTitle": "Gợi ý từ Hilads",
-      "answeredRow_one": "Đã có {{count}} quốc gia trả lời",
-      "answeredRow_other": "Đã có {{count}} quốc gia trả lời",
+      "answeredRow_one": "Đã có {{count}} quốc gia chơi",
+      "answeredRow_other": "Đã có {{count}} quốc gia chơi",
       "tip": "Chạm để so sánh thành phố của bạn với thế giới.",
       "nCountries_one": "{{count}} quốc gia",
       "nCountries_other": "{{count}} quốc gia",
-      "youAnswered": "Câu trả lời của bạn đã gửi. Xem thế giới so sánh thế nào."
+      "youAnswered": "Ảnh của bạn đã gửi. Xem thế giới nói gì."
     },
     "backHome": {
       "hereIn": "Ở đây, {{city}}",
@@ -1353,7 +1353,7 @@
         "night": "Ban đêm"
       },
       "yourTurn": "Đến lượt bạn.",
-      "todayIs": "Hôm nay, cả thế giới trả lời: {{question}}",
+      "todayIs": "Câu hỏi hôm nay: {{question}}",
       "close": "Đóng",
       "sub_one": "{{count}} thành phố, cùng một thử thách",
       "sub_other": "{{count}} thành phố, cùng một thử thách"
@@ -1381,15 +1381,15 @@
       "and": "{{a}} và {{b}}",
       "twoCitiesEmpty": "Chưa có so sánh nào cho hai thành phố này.",
       "noResults": "Không có so sánh phù hợp.",
-      "empty": "Những so sánh đầu tiên sẽ hiện khi các thành phố có 3 câu trả lời.",
+      "empty": "Những so sánh đầu tiên sẽ hiện khi các thành phố có 3 ảnh.",
       "priceTitle": "{{label}} giá bao nhiêu?",
       "moreCities_one": "+{{count}} thành phố khác",
       "moreCities_other": "+{{count}} thành phố khác"
     },
-    "ctaAnswer": "Trả lời cho {{city}}",
-    "ctaAnswerNoCity": "Trả lời bằng ảnh",
+    "ctaAnswer": "Chơi cho {{city}}",
+    "ctaAnswerNoCity": "Chơi ngay",
     "represent": {
-      "button": "Trả lời cho {{city}}"
+      "button": "Chơi cho {{city}}"
     },
     "countdown": {
       "hm": "{{h}} giờ {{m}} phút",

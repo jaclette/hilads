@@ -196,8 +196,8 @@
     "title": "Anzeigen",
     "world": "Welt",
     "pickCity": "Stadt wählen",
-    "citySub": "Challenge, Antworten und Spots deiner Stadt",
-    "worldSub": "Antworten und Spots aus allen Städten",
+    "citySub": "Challenge, Fotos und Spots deiner Stadt",
+    "worldSub": "Fotos und Spots aus allen Städten",
     "changeCity": "Stadt wechseln",
     "a11y": "Zeigt {{scope}}. Tippen zum Wechseln"
   },
@@ -205,9 +205,9 @@
   "settings": "Einstellungen",
   "firstLaunch": "Lokal spielen. Global vergleichen.",
   "subtitles": {
-    "map": "Spots aus den Antworten der Welt.",
+    "map": "Spots aus den Fotos der Welt.",
     "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
-    "passport": "Deine Städte, deine Antworten, deine Stempel."
+    "passport": "Deine Städte, deine Fotos, deine Stempel."
   },
   "photoBy": "Foto von @{{username}}",
   "pick": {
@@ -224,24 +224,24 @@
     "textSpotCity": "{{name}}, {{city}}, auf Hilads"
   },
   "represent": {
-    "empty": "{{city}} hat heute noch nicht geantwortet. Sei die erste Antwort.",
-    "beFirst": "Sei die erste Antwort aus {{city}}",
-    "emptyThere": "{{city}} hat heute noch nicht geantwortet.",
+    "empty": "{{city}} hat heute noch nicht gespielt. Sei die erste Person.",
+    "beFirst": "Spiel als Erste:r für {{city}}",
+    "emptyThere": "{{city}} hat heute noch nicht gespielt.",
     "notIn": "Nicht in {{city}}?",
     "change": "Ändern",
-    "locationNeeded": "Erlaube den Standort, um für deinen Ort zu antworten.",
-    "button": "Antworte für {{city}}",
+    "locationNeeded": "Erlaube den Standort, um für deinen Ort zu spielen.",
+    "button": "Spiel für {{city}}",
     "firstPosted": "Du hast {{city}} heute auf die Weltkarte gebracht.",
     "pioneer": "Pionier von {{city}}",
     "spotOne": "Spot Nr. 1 in {{city}}",
-    "streak_one": "{{city}} hat {{count}} Tag in Folge geantwortet",
-    "streak_other": "{{city}} hat {{count}} Tage in Folge geantwortet",
+    "streak_one": "{{city}} hat {{count}} Tag in Folge gespielt",
+    "streak_other": "{{city}} hat {{count}} Tage in Folge gespielt",
     "board_one": "{{count}} Stadt ist heute auf der Tafel. {{city}} noch nicht.",
     "board_other": "{{count}} Städte sind heute auf der Tafel. {{city}} noch nicht.",
     "mapEmpty": "{{city}} ist noch nicht auf der Weltkarte. Bring es dorthin.",
     "invite": "Lade einen Freund ein",
-    "share": "Antworte mit mir für {{city}} auf Hilads.",
+    "share": "Spiel mit mir für {{city}} auf Hilads.",
     "pioneerTitle": "Pionier-Abzeichen",
-    "pioneerSub": "Die allererste freigegebene Antwort in einer Stadt. Für immer deine."
+    "pioneerSub": "Das allererste freigegebene Foto in einer Stadt. Für immer deins."
   }
 }

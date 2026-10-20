@@ -33,9 +33,9 @@ final class DailyPresenceTest extends TestCase
     {
         $c = ['challenge_date' => '2026-11-02', 'theme' => 'taste', 'text_i18n' => '{"en":"Eat what locals eat","fr":"Mange comme les locaux"}'];
         $m = DailyPushes::reminderMessage($c, 6 * 3600, 'en', 'Linh', 3, ['name' => 'Ho Chi Minh City', 'n' => 5]);
-        $this->assertSame("Eat what locals eat Saigon has answered 5 days in a row. Keep it going tonight?", $m['body']);
+        $this->assertSame("Eat what locals eat Saigon has played 5 days in a row. Keep it going tonight?", $m['body']);
         $fr = DailyPushes::reminderMessage($c, 6 * 3600, 'fr', null, 0, ['name' => 'Ho Chi Minh City', 'n' => 5]);
-        $this->assertSame("Mange comme les locaux Saigon a répondu 5 jours de suite. Tu continues ce soir ?", $fr['body']);
+        $this->assertSame("Mange comme les locaux Saigon a joué 5 jours de suite. Tu continues ce soir ?", $fr['body']);
         // Under 2 days: the usual social line.
         $one = DailyPushes::reminderMessage($c, 6 * 3600, 'en', null, 6, ['name' => 'Ho Chi Minh City', 'n' => 1]);
         $this->assertSame('Eat what locals eat 6 people already did it.', $one['body']);

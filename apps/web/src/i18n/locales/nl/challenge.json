@@ -809,7 +809,7 @@
   "appMap": {
     "title": "Bekijk de spots op de kaart",
     "titleCity": "Bekijk de spots van {{city}} op de kaart",
-    "body": "Waar locals hun Daily Challenge-bewijzen posten. Post de jouwe vanuit de Hilads-app."
+    "body": "Waar locals hun Daily Challenge-foto's posten. Post de jouwe vanuit de Hilads-app."
   },
   "creationClosed": "Challenges maken is gesloten. Doe de Daily Challenge in de Hilads-app.",
   "map": {
@@ -831,8 +831,8 @@
     "sortNearest": "Dichtstbij",
     "sortWeek": "Meeste stemmen deze week",
     "spotsTomorrow": "Spots komen met de challenge van morgen: {{theme}}",
-    "proofs_one": "{{count}} bewijs",
-    "proofs_other": "{{count}} bewijzen",
+    "proofs_one": "{{count}} foto",
+    "proofs_other": "{{count}} foto's",
     "votes_one": "{{count}} stem",
     "votes_other": "{{count}} stemmen",
     "unavailable": "De kaart is nu niet beschikbaar.",
@@ -853,7 +853,7 @@
     "notFound": "Deze spot is niet beschikbaar.",
     "local": "Local",
     "morePhotos": "Meer foto's",
-    "proofInApp": "Post je bewijs in de app"
+    "proofInApp": "Post je foto in de app"
   },
   "dc": {
     "kicker": "Daily Challenge",
@@ -862,8 +862,8 @@
     "nothingLive": "De volgende Daily Challenge komt eraan",
     "cta": "Doe de challenge",
     "ctaIn": "Ik doe mee",
-    "ctaTaken": "Challenge gedaan · Mijn antwoord bekijken",
-    "seeProofs": "Bekijk de antwoorden van vandaag",
+    "ctaTaken": "Challenge gedaan · Mijn foto bekijken",
+    "seeProofs": "Bekijk de foto's van vandaag",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} Local Twist",
     "twistBy": "door {{name}}",
@@ -872,20 +872,20 @@
     "countCity": "{{count}} in {{city}}",
     "countZero": "Nog niemand - wees de eerste",
     "beFirst": "Wees vandaag de eerste",
-    "beFirstSub": "Nog geen antwoord. Post het jouwe en inspireer de stad.",
-    "yourProof": "Jouw antwoord",
+    "beFirstSub": "Nog geen foto. Wees de eerste, de wereld wacht.",
+    "yourProof": "Jouw foto",
     "status": {
       "pending": "In afwachting",
       "approved": "Gepubliceerd",
       "rejected": "Niet gepubliceerd",
       "removed": "Verwijderd"
     },
-    "pendingHint": "Elk antwoord wordt gecheckt voordat het live gaat.",
+    "pendingHint": "Elke foto wordt gecheckt voordat hij live gaat.",
     "reasonLabel": "Waarom: {{reason}}",
     "fixIt": "Aanpassen",
     "edit": "Bewerken",
     "delete": "Verwijderen",
-    "deleteTitle": "Je antwoord verwijderen?",
+    "deleteTitle": "Je foto verwijderen?",
     "deleteBody": "Het verdwijnt uit de challenge en de kanalen.",
     "cancel": "Annuleren",
     "closed": "Gesloten",
@@ -893,8 +893,8 @@
     "practicalTitle": "Goed om te weten",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "op basis van {{count}} antwoord",
-    "priceFrom_other": "op basis van {{count}} antwoorden",
+    "priceFrom_one": "op basis van {{count}} foto",
+    "priceFrom_other": "op basis van {{count}} foto's",
     "places_one": "{{count}} plek vastgepind",
     "places_other": "{{count}} plekken vastgepind",
     "unnamedPlace": "Vastgepinde plek",
@@ -907,8 +907,8 @@
     "notFound": "Deze Daily Challenge bestaat niet.",
     "cityRowEmpty": "Wees de eerste die een challenge in {{city}} maakt",
     "proof": {
-      "titleNew": "Jouw antwoord",
-      "titleEdit": "Antwoord bewerken",
+      "titleNew": "Jouw foto",
+      "titleEdit": "Foto bewerken",
       "camera": "Camera",
       "gallery": "Galerij",
       "changePhoto": "Andere foto",
@@ -921,10 +921,10 @@
       "pinHint": "Alleen als je wilt dat anderen hem vinden.",
       "pinChange": "Wijzigen",
       "pinRemove": "Verwijderen",
-      "submit": "Post mijn antwoord",
+      "submit": "Post mijn foto",
       "save": "Wijzigingen opslaan",
       "sending": "Versturen…",
-      "sentTitle": "{{city}} heeft geantwoord!",
+      "sentTitle": "{{city}} heeft gespeeld!",
       "sentBody": "Zie wat de wereld zei. Je foto verschijnt zodra hij is goedgekeurd.",
       "ok": "OK",
       "permPhotoTitle": "Toegang tot foto's nodig",
@@ -933,12 +933,12 @@
       "permCameraBody": "Geef cameratoegang in je instellingen om een foto te maken.",
       "photoRequired": "Voeg eerst een foto toe.",
       "locationOff": "Locatie staat uit, dus deze plek kan niet worden vastgepind.",
-      "editOnlyActive": "Je kunt je antwoord bewerken tot de challenge afloopt.",
+      "editOnlyActive": "Je kunt je foto bewerken tot de challenge afloopt.",
       "takeTitle": "Maak je foto",
       "retake": "Opnieuw"
     },
     "errors": {
-      "already_posted": "Je hebt al een antwoord gepost voor de challenge van vandaag.",
+      "already_posted": "Je hebt de challenge van vandaag al gespeeld.",
       "challenge_closed": "Deze challenge is gesloten.",
       "no_active_challenge": "Er is nu geen Daily Challenge.",
       "moderation_blocked": "Je bijschrift is gemarkeerd - formuleer het anders.",
@@ -950,12 +950,12 @@
       "rate_limited": "Te veel pogingen - wacht even.",
       "image_processing_failed": "Deze foto kan niet worden verwerkt. Probeer een andere.",
       "generic": "Er ging iets mis. Probeer het opnieuw.",
-      "place_required": "Kies de plek van je antwoord.",
+      "place_required": "Kies de plek van je foto.",
       "place_not_allowed": "Deze challenge heeft geen plek.",
       "place_not_found": "Die plek is niet meer beschikbaar. Kies een andere.",
       "invalid_place_name": "De naam van de plek moet 1 tot 80 tekens zijn.",
       "place_name_blocked": "Die plaatsnaam is gemarkeerd. Formuleer hem anders.",
-      "invalid_position": "Je locatie is nodig om dit antwoord te posten.",
+      "invalid_position": "Je locatie is nodig om deze foto te posten.",
       "too_far": "Je bent te ver van deze plek."
     },
     "push": {
@@ -973,11 +973,11 @@
       "pickCity": "Kies een stad",
       "worldSelection": "Wereldselectie: deze stad is nog niet live",
       "empty": "De eerste Daily Challenges komen eraan.",
-      "proofs_one": "{{count}} antwoord",
-      "proofs_other": "{{count}} antwoorden"
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto's"
     },
     "report": {
-      "title": "Dit antwoord melden",
+      "title": "Deze foto melden",
       "body": "Wat is er mis mee?",
       "reasons": {
         "inappropriate": "Ongepast",
@@ -987,23 +987,23 @@
         "other": "Iets anders"
       },
       "thanks": "Bedankt - we checken het.",
-      "already": "Je hebt dit antwoord al gemeld."
+      "already": "Je hebt deze foto al gemeld."
     },
     "vote": {
       "vote": "Stemmen",
       "withdraw": "Mijn stem intrekken",
-      "yours": "Jouw antwoord",
+      "yours": "Jouw foto",
       "errors": {
         "voting_closed": "Stemmen is gesloten met de challenge.",
         "rate_limited": "Te veel pogingen - wacht even.",
-        "own_proof": "Je kunt niet op je eigen antwoord stemmen.",
-        "not_found": "Dit antwoord is niet meer beschikbaar.",
+        "own_proof": "Je kunt niet op je eigen foto stemmen.",
+        "not_found": "Deze foto is niet meer beschikbaar.",
         "generic": "Er ging iets mis. Probeer opnieuw."
       },
       "voteFor": "Stem op {{city}}",
-      "prompt": "Stem op de antwoorden die je mooi vindt",
-      "tourNote": "Het meest gestemde antwoord van elke stad gaat mee in de wereldtour van morgen.",
-      "afterPost": "Stem op de antwoorden die je mooi vindt"
+      "prompt": "Stem op de foto's die je mooi vindt",
+      "tourNote": "De meest gestemde foto van elke stad gaat mee in de wereldtour van morgen.",
+      "afterPost": "Stem op de foto's die je mooi vindt"
     },
     "results": {
       "title": "Resultaten",
@@ -1017,7 +1017,7 @@
       "streak": "Huidige reeks",
       "bestStreak": "Beste reeks",
       "completed": "Voltooid",
-      "bestProofs": "Beste antwoorden",
+      "bestProofs": "Beste foto's",
       "emptyMine": "Je reeks begint met de challenge van vandaag."
     },
     "streak_one": "{{count}} dag op rij",
@@ -1080,7 +1080,7 @@
       "titleChallenge": "Vastgezette plekken",
       "titleCity": "Vastgezette plekken in {{city}}",
       "titleWorld": "Vastgezette plekken wereldwijd",
-      "seeProof": "Bekijk het antwoord",
+      "seeProof": "Bekijk de foto",
       "openChallenge": "Open de challenge",
       "search": "Zoek een gerecht, een café, een straat",
       "searchA11y": "Spots zoeken",
@@ -1100,20 +1100,20 @@
       "closeSpot": "Sluiten",
       "emptyTitle": "Zet hier als eerste een spot neer",
       "planA11y": "Plan: {{title}}, {{time}}",
-      "proofs_one": "{{count}} antwoord",
-      "proofs_other": "{{count}} antwoorden"
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto's"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Voorlopig tot de drop",
       "finalIn": "Definitief over {{time}}",
       "official": "Officieel podium",
-      "minProofs": "De Top 10 opent bij {{min}} antwoorden. Tot nu toe: {{n}}.",
-      "noVotes": "Nog geen stemmen. Stem op je favoriete antwoorden!",
+      "minProofs": "De Top 10 opent bij {{min}} foto's. Tot nu toe: {{n}}.",
+      "noVotes": "Nog geen stemmen. Stem op je favoriete foto's!",
       "me": "Jij: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} in {{city}}",
-      "noProof": "Plaats je antwoord om in de ranglijst te komen.",
-      "pending": "Je antwoord komt in de ranglijst zodra het is goedgekeurd.",
+      "noProof": "Speel mee om in de ranglijst te komen.",
+      "pending": "Je foto komt in de ranglijst zodra hij is goedgekeurd.",
       "cityTop": "Top 3 in {{city}}",
       "compactTitle": "Top 3 op dit moment",
       "seeAll": "Top 10 ›"
@@ -1209,20 +1209,20 @@
       "hint": "Vroegbonus: post vóór {{time}}"
     },
     "group": {
-      "title": "Nieuwe antwoorden: {{n}}",
+      "title": "Nieuwe foto's: {{n}}",
       "citiesMore": "{{cities}} en nog {{n}}",
-      "galleryTitle": "Nieuwe antwoorden"
+      "galleryTitle": "Nieuwe foto's"
     },
     "today": {
       "early": "Vroegbonus tot {{time}}",
       "tomorrow": "Morgen: {{theme}}",
       "aroundWorld": "Vandaag over de hele wereld",
       "inCity": "Vandaag in {{city}}",
-      "proofs_one": "{{count}} antwoord",
-      "proofs_other": "{{count}} antwoorden",
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto's",
       "countries_one": "{{count}} land",
       "countries_other": "{{count}} landen",
-      "proofsIn": "{{proofs}} in {{countries}}",
+      "proofsIn": "{{proofs}} uit {{countries}}",
       "podiumTitle": "Het podium van gisteren",
       "spotsIn": "Spots in {{city}}",
       "allPast": "Alle eerdere challenges",
@@ -1235,7 +1235,7 @@
       "openMap": "Kaart openen",
       "spotsFallback": "Nog geen spots in jouw stad. De dichtstbijzijnde:",
       "spotsEmpty": "Hier is nog geen spot. Doe de challenge van vandaag en zet de eerste op de kaart.",
-      "seeMine": "Bekijk je antwoord",
+      "seeMine": "Bekijk je foto",
       "votes_one": "{{count}} stem",
       "votes_other": "{{count}} stemmen",
       "day": {
@@ -1245,7 +1245,7 @@
         "today": "vandaag",
         "tomorrow": "morgen",
         "later": "binnenkort",
-        "none": "geen antwoord"
+        "none": "geen foto"
       },
       "links": {
         "pastSub": "Foto's van de vorige dagen",
@@ -1304,7 +1304,7 @@
     },
     "takeIt": "Doe mee",
     "proofHint": {
-      "title": "Je antwoord, op de foto",
+      "title": "Maak je foto",
       "place": "De meest gestemde foto wordt de foto van de spot.",
       "noPlace": "De meest gestemde foto komt op het podium."
     },
@@ -1316,26 +1316,26 @@
       "latest": "Laatst: {{city}} {{answer}}",
       "lowest": "Laagst: {{city}} {{answer}}",
       "highest": "Hoogst: {{city}} {{answer}}",
-      "emptyTitle": "Nog geen antwoorden",
+      "emptyTitle": "Nog geen foto's",
       "emptyBody": "Wees de eerste stad op het bord.",
       "noAnswer": "Nog geen antwoord",
       "median": "Mediaan {{price}}",
-      "proofs_one": "{{count}} antwoord",
-      "proofs_other": "{{count}} antwoorden",
-      "boardTitle": "Zo antwoordde de wereld",
+      "proofs_one": "{{count}} foto",
+      "proofs_other": "{{count}} foto's",
+      "boardTitle": "Wat de wereld zei",
       "cheapest": "Goedkoopst: {{city}} {{price}}",
       "priciest": "Duurst: {{city}} {{price}}",
       "funFact": "{{ratio}}× zo duur in {{city}} als in {{other}}.",
-      "worldAnswers": "Vandaag antwoordt de wereld",
-      "seeAnswers": "Antwoorden bekijken",
-      "firstIn": "De eerste antwoorden komen binnen",
+      "worldAnswers": "De vraag van vandaag",
+      "seeAnswers": "Vergelijken",
+      "firstIn": "De eerste foto's komen binnen",
       "picksTitle": "Hilads-suggesties",
-      "answeredRow_one": "Al {{count}} land heeft geantwoord",
-      "answeredRow_other": "Al {{count}} landen hebben geantwoord",
+      "answeredRow_one": "Al {{count}} land heeft gespeeld",
+      "answeredRow_other": "Al {{count}} landen hebben gespeeld",
       "tip": "Tik om je stad met de wereld te vergelijken.",
       "nCountries_one": "{{count}} land",
       "nCountries_other": "{{count}} landen",
-      "youAnswered": "Je antwoord is binnen. Zie hoe de wereld zich verhoudt."
+      "youAnswered": "Je foto is binnen. Zie hoe de wereld zich verhoudt."
     },
     "backHome": {
       "hereIn": "Hier in {{city}}",
@@ -1354,7 +1354,7 @@
         "night": "'s Nachts"
       },
       "yourTurn": "Jouw beurt.",
-      "todayIs": "Vandaag antwoordt de wereld: {{question}}",
+      "todayIs": "De vraag van vandaag: {{question}}",
       "close": "Sluiten",
       "sub_one": "{{count}} stad, dezelfde challenge",
       "sub_other": "{{count}} steden, dezelfde challenge"
@@ -1382,15 +1382,15 @@
       "and": "{{a}} en {{b}}",
       "twoCitiesEmpty": "Nog geen vergelijking met beide steden.",
       "noResults": "Geen vergelijking gevonden.",
-      "empty": "De eerste vergelijkingen verschijnen zodra steden 3 antwoorden hebben.",
+      "empty": "De eerste vergelijkingen verschijnen zodra steden 3 foto's hebben.",
       "priceTitle": "Wat kost {{label}}?",
       "moreCities_one": "+{{count}} andere stad",
       "moreCities_other": "+{{count}} andere steden"
     },
-    "ctaAnswer": "Antwoord voor {{city}}",
-    "ctaAnswerNoCity": "Ik antwoord met een foto",
+    "ctaAnswer": "Speel voor {{city}}",
+    "ctaAnswerNoCity": "Ik speel",
     "represent": {
-      "button": "Antwoord voor {{city}}"
+      "button": "Speel voor {{city}}"
     },
     "countdown": {
       "hm": "{{h}}u {{m}}m",

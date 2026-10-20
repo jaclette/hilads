@@ -320,7 +320,7 @@
     "early": "En avance",
     "proposedBy": "Proposé par {{name}}",
     "proposedByCity": "Proposé par {{name}} · {{city}}",
-    "groupTitle": "Nouvelles réponses : {{n}}",
+    "groupTitle": "Nouvelles photos : {{n}}",
     "groupCitiesMore": "{{cities}} et {{n}} de plus"
   }
 }

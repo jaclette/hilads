@@ -184,8 +184,8 @@
     "title": "Tonen",
     "world": "Wereld",
     "pickCity": "Kies een stad",
-    "citySub": "De challenge, antwoorden en spots van jouw stad",
-    "worldSub": "Antwoorden en spots uit alle steden",
+    "citySub": "De challenge, foto's en spots van jouw stad",
+    "worldSub": "Foto's en spots uit alle steden",
     "changeCity": "Stad wijzigen",
     "a11y": "Toont {{scope}}. Tik om te wijzigen"
   },
@@ -223,9 +223,9 @@
     "errorBody": "Melding versturen mislukt. Probeer het opnieuw."
   },
   "subtitles": {
-    "map": "Spots uit de antwoorden van de wereld.",
+    "map": "Spots uit de foto's van de wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
-    "passport": "Je steden, je antwoorden, je stempels."
+    "passport": "Je steden, je foto's, je stempels."
   },
   "photoBy": "Foto van @{{username}}",
   "pick": {

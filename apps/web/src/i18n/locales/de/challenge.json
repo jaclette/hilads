@@ -809,7 +809,7 @@
   "appMap": {
     "title": "Spots auf der Karte ansehen",
     "titleCity": "Spots in {{city}} auf der Karte ansehen",
-    "body": "Hier posten Locals ihre Daily-Challenge-Beweise. Poste deinen in der Hilads-App."
+    "body": "Hier posten Locals ihre Daily-Challenge-Fotos. Poste deins in der Hilads-App."
   },
   "creationClosed": "Challenges erstellen ist geschlossen. Mach die Daily Challenge in der Hilads-App.",
   "map": {
@@ -831,8 +831,8 @@
     "sortNearest": "Am nächsten",
     "sortWeek": "Meiste Stimmen diese Woche",
     "spotsTomorrow": "Spots kommen mit der Challenge von morgen: {{theme}}",
-    "proofs_one": "{{count}} Beweis",
-    "proofs_other": "{{count}} Beweise",
+    "proofs_one": "{{count}} Foto",
+    "proofs_other": "{{count}} Fotos",
     "votes_one": "{{count}} Stimme",
     "votes_other": "{{count}} Stimmen",
     "unavailable": "Die Karte ist gerade nicht verfügbar.",
@@ -853,7 +853,7 @@
     "notFound": "Dieser Spot ist nicht verfügbar.",
     "local": "Local",
     "morePhotos": "Mehr Fotos",
-    "proofInApp": "Poste deinen Beweis in der App"
+    "proofInApp": "Poste dein Foto in der App"
   },
   "dc": {
     "kicker": "Daily Challenge",
@@ -862,8 +862,8 @@
     "nothingLive": "Die nächste Daily Challenge ist unterwegs",
     "cta": "Nimm die Challenge an",
     "ctaIn": "Ich bin dabei",
-    "ctaTaken": "Challenge geschafft · Meine Antwort ansehen",
-    "seeProofs": "Antworten von heute ansehen",
+    "ctaTaken": "Challenge geschafft · Mein Foto ansehen",
+    "seeProofs": "Fotos von heute ansehen",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist in {{city}}",
     "twistBy": "von {{name}}",
@@ -872,20 +872,20 @@
     "countCity": "{{count}} in {{city}}",
     "countZero": "Noch niemand - mach den Anfang",
     "beFirst": "Mach heute den Anfang",
-    "beFirstSub": "Noch keine Antwort. Sei die erste Stadt, die Welt wartet.",
-    "yourProof": "Deine Antwort",
+    "beFirstSub": "Noch kein Foto. Sei die erste Person, die Welt wartet.",
+    "yourProof": "Dein Foto",
     "status": {
       "pending": "Ausstehend",
       "approved": "Veröffentlicht",
       "rejected": "Nicht veröffentlicht",
       "removed": "Entfernt"
     },
-    "pendingHint": "Jede Antwort wird geprüft, bevor sie online geht.",
+    "pendingHint": "Jedes Foto wird geprüft, bevor es online geht.",
     "reasonLabel": "Grund: {{reason}}",
     "fixIt": "Korrigieren",
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "deleteTitle": "Deine Antwort löschen?",
+    "deleteTitle": "Dein Foto löschen?",
     "deleteBody": "Er verschwindet aus der Challenge und den Kanälen.",
     "cancel": "Abbrechen",
     "closed": "Beendet",
@@ -893,8 +893,8 @@
     "practicalTitle": "Gut zu wissen",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "aus {{count}} Antwort",
-    "priceFrom_other": "aus {{count}} Antworten",
+    "priceFrom_one": "aus {{count}} Foto",
+    "priceFrom_other": "aus {{count}} Fotos",
     "places_one": "{{count}} Ort markiert",
     "places_other": "{{count}} Orte markiert",
     "unnamedPlace": "Markierter Ort",
@@ -907,8 +907,8 @@
     "notFound": "Diese Daily Challenge gibt es nicht.",
     "cityRowEmpty": "Starte die erste Challenge in {{city}}",
     "proof": {
-      "titleNew": "Deine Antwort",
-      "titleEdit": "Antwort bearbeiten",
+      "titleNew": "Dein Foto",
+      "titleEdit": "Foto bearbeiten",
       "camera": "Kamera",
       "gallery": "Galerie",
       "changePhoto": "Foto ändern",
@@ -921,10 +921,10 @@
       "pinHint": "Nur wenn andere ihn finden sollen.",
       "pinChange": "Ändern",
       "pinRemove": "Entfernen",
-      "submit": "Antwort posten",
+      "submit": "Foto posten",
       "save": "Änderungen speichern",
       "sending": "Wird gesendet…",
-      "sentTitle": "{{city}} hat geantwortet!",
+      "sentTitle": "{{city}} hat gespielt!",
       "sentBody": "Schau, was die Welt gesagt hat. Dein Foto erscheint nach der Freigabe.",
       "ok": "OK",
       "permPhotoTitle": "Foto-Zugriff nötig",
@@ -933,12 +933,12 @@
       "permCameraBody": "Erlaube den Kamera-Zugriff in deinen Einstellungen, um ein Foto aufzunehmen.",
       "photoRequired": "Füge zuerst ein Foto hinzu.",
       "locationOff": "Standort ist aus, daher kann dieser Ort nicht markiert werden.",
-      "editOnlyActive": "Du kannst deine Antwort bearbeiten, bis die Challenge endet.",
+      "editOnlyActive": "Du kannst dein Foto bearbeiten, bis die Challenge endet.",
       "takeTitle": "Mach dein Foto",
       "retake": "Neu aufnehmen"
     },
     "errors": {
-      "already_posted": "Du hast die heutige Challenge schon beantwortet.",
+      "already_posted": "Du hast die heutige Challenge schon gespielt.",
       "challenge_closed": "Diese Challenge ist beendet.",
       "no_active_challenge": "Gerade läuft keine Daily Challenge.",
       "moderation_blocked": "Deine Bildunterschrift wurde markiert - bitte formuliere sie um.",
@@ -950,12 +950,12 @@
       "rate_limited": "Zu viele Versuche - warte kurz.",
       "image_processing_failed": "Dieses Foto kann nicht verarbeitet werden. Versuch ein anderes.",
       "generic": "Etwas ist schiefgelaufen. Versuch es nochmal.",
-      "place_required": "Wähle den Ort deiner Antwort.",
+      "place_required": "Wähle den Ort deines Fotos.",
       "place_not_allowed": "Diese Challenge hat keinen Ort.",
       "place_not_found": "Dieser Ort ist nicht mehr verfügbar. Wähle einen anderen.",
       "invalid_place_name": "Der Ortsname muss 1 bis 80 Zeichen lang sein.",
       "place_name_blocked": "Dieser Ortsname wurde markiert. Formuliere ihn um.",
-      "invalid_position": "Dein Standort wird gebraucht, um diese Antwort zu posten.",
+      "invalid_position": "Dein Standort wird gebraucht, um dieses Foto zu posten.",
       "too_far": "Du bist zu weit von diesem Ort entfernt."
     },
     "push": {
@@ -973,11 +973,11 @@
       "pickCity": "Stadt auswählen",
       "worldSelection": "Welt-Auswahl: Diese Stadt ist noch nicht live",
       "empty": "Die ersten Daily Challenges sind unterwegs.",
-      "proofs_one": "{{count}} Antwort",
-      "proofs_other": "{{count}} Antworten"
+      "proofs_one": "{{count}} Foto",
+      "proofs_other": "{{count}} Fotos"
     },
     "report": {
-      "title": "Diese Antwort melden",
+      "title": "Dieses Foto melden",
       "body": "Was stimmt damit nicht?",
       "reasons": {
         "inappropriate": "Unangemessen",
@@ -987,23 +987,23 @@
         "other": "Etwas anderes"
       },
       "thanks": "Danke - wir schauen es uns an.",
-      "already": "Du hast diese Antwort schon gemeldet."
+      "already": "Du hast dieses Foto schon gemeldet."
     },
     "vote": {
       "vote": "Abstimmen",
       "withdraw": "Stimme zurückziehen",
-      "yours": "Deine Antwort",
+      "yours": "Dein Foto",
       "errors": {
         "voting_closed": "Die Abstimmung endete mit der Challenge.",
         "rate_limited": "Zu viele Versuche - warte kurz.",
-        "own_proof": "Du kannst nicht für deine eigene Antwort stimmen.",
-        "not_found": "Diese Antwort ist nicht mehr verfügbar.",
+        "own_proof": "Du kannst nicht für dein eigenes Foto stimmen.",
+        "not_found": "Dieses Foto ist nicht mehr verfügbar.",
         "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
       },
       "voteFor": "Für {{city}} stimmen",
-      "prompt": "Stimm für die Antworten, die du magst",
-      "tourNote": "Die meistgewählte Antwort jeder Stadt kommt in die Weltreise von morgen.",
-      "afterPost": "Stimm für die Antworten, die du magst"
+      "prompt": "Stimm für die Fotos, die du magst",
+      "tourNote": "Das meistgewählte Foto jeder Stadt kommt in die Weltreise von morgen.",
+      "afterPost": "Stimm für die Fotos, die du magst"
     },
     "results": {
       "title": "Ergebnisse",
@@ -1017,7 +1017,7 @@
       "streak": "Aktuelle Serie",
       "bestStreak": "Beste Serie",
       "completed": "Geschafft",
-      "bestProofs": "Beste Antworten",
+      "bestProofs": "Beste Fotos",
       "emptyMine": "Deine Serie beginnt mit der heutigen Challenge."
     },
     "streak_one": "{{count}} Tag in Folge",
@@ -1080,7 +1080,7 @@
       "titleChallenge": "Markierte Orte",
       "titleCity": "Markierte Orte in {{city}}",
       "titleWorld": "Markierte Orte weltweit",
-      "seeProof": "Antwort ansehen",
+      "seeProof": "Foto ansehen",
       "openChallenge": "Challenge öffnen",
       "search": "Suche ein Gericht, ein Café, eine Straße",
       "searchA11y": "Spots suchen",
@@ -1100,20 +1100,20 @@
       "closeSpot": "Schließen",
       "emptyTitle": "Setz hier als Erste:r einen Spot",
       "planA11y": "Plan: {{title}}, {{time}}",
-      "proofs_one": "{{count}} Antwort",
-      "proofs_other": "{{count}} Antworten"
+      "proofs_one": "{{count}} Foto",
+      "proofs_other": "{{count}} Fotos"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Vorläufig bis zum Drop",
       "finalIn": "Endgültig in {{time}}",
       "official": "Offizielles Podium",
-      "minProofs": "Die Top 10 starten ab {{min}} Antworten. Bisher: {{n}}.",
-      "noVotes": "Noch keine Stimmen. Stimm für deine Lieblingsantworten ab!",
+      "minProofs": "Die Top 10 starten ab {{min}} Fotos. Bisher: {{n}}.",
+      "noVotes": "Noch keine Stimmen. Stimm für deine Lieblingsfotos ab!",
       "me": "Du: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} in {{city}}",
-      "noProof": "Antworte, um gerankt zu werden.",
-      "pending": "Deine Antwort wird nach der Freigabe gerankt.",
+      "noProof": "Spiel mit, um gerankt zu werden.",
+      "pending": "Dein Foto wird nach der Freigabe gerankt.",
       "cityTop": "Top 3 in {{city}}",
       "compactTitle": "Top 3 gerade",
       "seeAll": "Top 10 ›"
@@ -1209,20 +1209,20 @@
       "hint": "Früh-Bonus: poste vor {{time}}"
     },
     "group": {
-      "title": "Neue Antworten: {{n}}",
+      "title": "Neue Fotos: {{n}}",
       "citiesMore": "{{cities}} und {{n}} weitere",
-      "galleryTitle": "Neue Antworten"
+      "galleryTitle": "Neue Fotos"
     },
     "today": {
       "early": "Frühbonus bis {{time}}",
       "tomorrow": "Morgen: {{theme}}",
       "aroundWorld": "Heute auf der ganzen Welt",
       "inCity": "Heute in {{city}}",
-      "proofs_one": "{{count}} Antwort",
-      "proofs_other": "{{count}} Antworten",
+      "proofs_one": "{{count}} Foto",
+      "proofs_other": "{{count}} Fotos",
       "countries_one": "{{count}} Land",
       "countries_other": "{{count}} Ländern",
-      "proofsIn": "{{proofs}} in {{countries}}",
+      "proofsIn": "{{proofs}} aus {{countries}}",
       "podiumTitle": "Das Podium von gestern",
       "spotsIn": "Spots in {{city}}",
       "allPast": "Alle vergangenen Challenges",
@@ -1235,7 +1235,7 @@
       "openMap": "Karte öffnen",
       "spotsFallback": "Noch kein Spot in deiner Stadt. Die nächsten:",
       "spotsEmpty": "Hier gibt es noch keinen Spot. Nimm die Challenge von heute an und setz den ersten auf die Karte.",
-      "seeMine": "Deine Antwort ansehen",
+      "seeMine": "Dein Foto ansehen",
       "votes_one": "{{count}} Stimme",
       "votes_other": "{{count}} Stimmen",
       "day": {
@@ -1245,7 +1245,7 @@
         "today": "heute",
         "tomorrow": "morgen",
         "later": "demnächst",
-        "none": "keine Antwort"
+        "none": "kein Foto"
       },
       "links": {
         "pastSub": "Fotos der vorherigen Tage",
@@ -1304,7 +1304,7 @@
     },
     "takeIt": "Annehmen",
     "proofHint": {
-      "title": "Deine Antwort als Foto",
+      "title": "Mach dein Foto",
       "place": "Das meistgewählte Foto wird das Foto des Spots.",
       "noPlace": "Das meistgewählte Foto kommt aufs Podium."
     },
@@ -1316,26 +1316,26 @@
       "latest": "Am spätesten: {{city}} {{answer}}",
       "lowest": "Am niedrigsten: {{city}} {{answer}}",
       "highest": "Am höchsten: {{city}} {{answer}}",
-      "emptyTitle": "Noch keine Antworten",
+      "emptyTitle": "Noch keine Fotos",
       "emptyBody": "Sei die erste Stadt auf der Tafel.",
       "noAnswer": "Noch keine Antwort",
       "median": "Median {{price}}",
-      "proofs_one": "{{count}} Antwort",
-      "proofs_other": "{{count}} Antworten",
-      "boardTitle": "So hat die Welt geantwortet",
+      "proofs_one": "{{count}} Foto",
+      "proofs_other": "{{count}} Fotos",
+      "boardTitle": "Das sagt die Welt",
       "cheapest": "Am günstigsten: {{city}} {{price}}",
       "priciest": "Am teuersten: {{city}} {{price}}",
       "funFact": "In {{city}} {{ratio}}-mal so teuer wie in {{other}}.",
-      "worldAnswers": "Heute antwortet die Welt",
-      "seeAnswers": "Antworten ansehen",
-      "firstIn": "Die ersten Antworten kommen",
+      "worldAnswers": "Die Frage des Tages",
+      "seeAnswers": "Vergleichen",
+      "firstIn": "Die ersten Fotos kommen",
       "picksTitle": "Hilads-Vorschläge",
-      "answeredRow_one": "Schon {{count}} Land hat geantwortet",
-      "answeredRow_other": "Schon {{count}} Länder haben geantwortet",
+      "answeredRow_one": "Schon {{count}} Land hat gespielt",
+      "answeredRow_other": "Schon {{count}} Länder haben gespielt",
       "tip": "Tippe, um deine Stadt mit der Welt zu vergleichen.",
       "nCountries_one": "{{count}} Land",
       "nCountries_other": "{{count}} Länder",
-      "youAnswered": "Deine Antwort ist da. Schau, wie die Welt im Vergleich antwortet."
+      "youAnswered": "Dein Foto ist da. Schau, was die Welt sagt."
     },
     "backHome": {
       "hereIn": "Hier in {{city}}",
@@ -1354,7 +1354,7 @@
         "night": "In der Nacht"
       },
       "yourTurn": "Du bist dran.",
-      "todayIs": "Heute antwortet die Welt: {{question}}",
+      "todayIs": "Die Frage des Tages: {{question}}",
       "close": "Schließen",
       "sub_one": "{{count}} Stadt, dieselbe Challenge",
       "sub_other": "{{count}} Städte, dieselbe Challenge"
@@ -1382,15 +1382,15 @@
       "and": "{{a}} und {{b}}",
       "twoCitiesEmpty": "Noch kein Vergleich mit beiden Städten.",
       "noResults": "Kein Vergleich passt.",
-      "empty": "Die ersten Vergleiche erscheinen, sobald Städte 3 Antworten haben.",
+      "empty": "Die ersten Vergleiche erscheinen, sobald Städte 3 Fotos haben.",
       "priceTitle": "Was kostet {{label}}?",
       "moreCities_one": "+{{count}} weitere Stadt",
       "moreCities_other": "+{{count}} weitere Städte"
     },
-    "ctaAnswer": "Antworte für {{city}}",
-    "ctaAnswerNoCity": "Ich antworte per Foto",
+    "ctaAnswer": "Spiel für {{city}}",
+    "ctaAnswerNoCity": "Ich spiele",
     "represent": {
-      "button": "Antworte für {{city}}"
+      "button": "Spiel für {{city}}"
     },
     "countdown": {
       "hm": "{{h}} Std. {{m}} Min.",

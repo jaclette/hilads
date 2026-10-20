@@ -184,8 +184,8 @@
     "title": "显示",
     "world": "世界",
     "pickCity": "选择城市",
-    "citySub": "你所在城市的 challenge、回答和地点",
-    "worldSub": "所有城市的回答和地点",
+    "citySub": "你所在城市的 challenge、照片和地点",
+    "worldSub": "所有城市的照片和地点",
     "changeCity": "更换城市",
     "a11y": "正在显示{{scope}}。点按以更换"
   },
@@ -223,9 +223,9 @@
     "errorBody": "举报提交失败，请重试。"
   },
   "subtitles": {
-    "map": "来自全世界回答的地点。",
+    "map": "来自全世界照片的地点。",
     "hi": "向你的城市打个招呼。加入一个计划。",
-    "passport": "你的城市、你的回答、你的印章。"
+    "passport": "你的城市、你的照片、你的印章。"
   },
   "photoBy": "照片：@{{username}}",
   "pick": {

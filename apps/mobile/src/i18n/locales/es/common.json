@@ -184,8 +184,8 @@
     "title": "Mostrar",
     "world": "Mundo",
     "pickCity": "Elige una ciudad",
-    "citySub": "El challenge, las respuestas y los spots de tu ciudad",
-    "worldSub": "Respuestas y spots de todas las ciudades",
+    "citySub": "El challenge, las fotos y los spots de tu ciudad",
+    "worldSub": "Fotos y spots de todas las ciudades",
     "changeCity": "Cambiar de ciudad",
     "a11y": "Mostrando {{scope}}. Toca para cambiar"
   },
@@ -223,9 +223,9 @@
     "errorBody": "No se pudo enviar la denuncia. Inténtalo de nuevo."
   },
   "subtitles": {
-    "map": "Spots de las respuestas del mundo.",
+    "map": "Spots de las fotos del mundo.",
     "hi": "Saluda a tu ciudad. Únete a un plan.",
-    "passport": "Tus ciudades, tus respuestas, tus sellos."
+    "passport": "Tus ciudades, tus fotos, tus sellos."
   },
   "photoBy": "Foto de @{{username}}",
   "pick": {

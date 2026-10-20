@@ -196,8 +196,8 @@
     "title": "Tonen",
     "world": "Wereld",
     "pickCity": "Kies een stad",
-    "citySub": "De challenge, antwoorden en spots van jouw stad",
-    "worldSub": "Antwoorden en spots uit alle steden",
+    "citySub": "De challenge, foto's en spots van jouw stad",
+    "worldSub": "Foto's en spots uit alle steden",
     "changeCity": "Stad wijzigen",
     "a11y": "Toont {{scope}}. Tik om te wijzigen"
   },
@@ -205,9 +205,9 @@
   "settings": "Instellingen",
   "firstLaunch": "Speel lokaal. Vergelijk wereldwijd.",
   "subtitles": {
-    "map": "Spots uit de antwoorden van de wereld.",
+    "map": "Spots uit de foto's van de wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
-    "passport": "Je steden, je antwoorden, je stempels."
+    "passport": "Je steden, je foto's, je stempels."
   },
   "photoBy": "Foto van @{{username}}",
   "pick": {
@@ -224,24 +224,24 @@
     "textSpotCity": "{{name}}, {{city}}, op Hilads"
   },
   "represent": {
-    "empty": "{{city}} heeft vandaag nog niet geantwoord. Wees de eerste.",
-    "beFirst": "Wees het eerste antwoord van {{city}}",
-    "emptyThere": "{{city}} heeft vandaag nog niet geantwoord.",
+    "empty": "{{city}} heeft vandaag nog niet gespeeld. Wees de eerste.",
+    "beFirst": "Speel als eerste voor {{city}}",
+    "emptyThere": "{{city}} heeft vandaag nog niet gespeeld.",
     "notIn": "Niet in {{city}}?",
     "change": "Wijzigen",
-    "locationNeeded": "Sta locatie toe om te antwoorden voor waar je bent.",
-    "button": "Antwoord voor {{city}}",
+    "locationNeeded": "Sta locatie toe om te spelen voor waar je bent.",
+    "button": "Speel voor {{city}}",
     "firstPosted": "Je zette {{city}} vandaag op de wereldkaart.",
     "pioneer": "Pionier van {{city}}",
     "spotOne": "Spot #1 in {{city}}",
-    "streak_one": "{{city}} antwoordt al {{count}} dag",
-    "streak_other": "{{city}} antwoordt al {{count}} dagen op rij",
+    "streak_one": "{{city}} speelt al {{count}} dag",
+    "streak_other": "{{city}} speelt al {{count}} dagen op rij",
     "board_one": "{{count}} stad staat vandaag op het bord. {{city}} nog niet.",
     "board_other": "{{count}} steden staan vandaag op het bord. {{city}} nog niet.",
     "mapEmpty": "{{city}} staat nog niet op de wereldkaart. Zet het erop.",
     "invite": "Nodig een vriend uit",
-    "share": "Antwoord samen met mij voor {{city}} op Hilads.",
+    "share": "Speel samen met mij voor {{city}} op Hilads.",
     "pioneerTitle": "Pioniersbadges",
-    "pioneerSub": "Het allereerste goedgekeurde antwoord in een stad. Voor altijd van jou."
+    "pioneerSub": "De allereerste goedgekeurde foto in een stad. Voor altijd van jou."
   }
 }

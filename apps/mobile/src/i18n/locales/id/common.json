@@ -184,8 +184,8 @@
     "title": "Tampilkan",
     "world": "Dunia",
     "pickCity": "Pilih kota",
-    "citySub": "Challenge, jawaban, dan spot di kotamu",
-    "worldSub": "Jawaban dan spot dari semua kota",
+    "citySub": "Challenge, foto, dan spot di kotamu",
+    "worldSub": "Foto dan spot dari semua kota",
     "changeCity": "Ganti kota",
     "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
   },
@@ -223,9 +223,9 @@
     "errorBody": "Laporan gagal dikirim. Coba lagi."
   },
   "subtitles": {
-    "map": "Spot dari jawaban dunia.",
+    "map": "Spot dari foto dunia.",
     "hi": "Sapa kotamu. Ikut sebuah rencana.",
-    "passport": "Kotamu, jawabanmu, capmu."
+    "passport": "Kotamu, fotomu, capmu."
   },
   "photoBy": "Foto oleh @{{username}}",
   "pick": {

@@ -184,8 +184,8 @@
     "title": "Hiển thị",
     "world": "Thế giới",
     "pickCity": "Chọn thành phố",
-    "citySub": "Challenge, câu trả lời và spot của thành phố bạn",
-    "worldSub": "Câu trả lời và spot từ mọi thành phố",
+    "citySub": "Challenge, ảnh và spot của thành phố bạn",
+    "worldSub": "Ảnh và spot từ mọi thành phố",
     "changeCity": "Đổi thành phố",
     "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
   },
@@ -223,9 +223,9 @@
     "errorBody": "Không gửi được báo cáo. Thử lại nhé."
   },
   "subtitles": {
-    "map": "Các spot từ câu trả lời của thế giới.",
+    "map": "Các spot từ ảnh của thế giới.",
     "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
-    "passport": "Thành phố, câu trả lời và con dấu của bạn."
+    "passport": "Thành phố, ảnh và con dấu của bạn."
   },
   "photoBy": "Ảnh của @{{username}}",
   "pick": {

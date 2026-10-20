@@ -184,8 +184,8 @@
     "title": "Afficher",
     "world": "Monde",
     "pickCity": "Choisir une ville",
-    "citySub": "Le défi, les réponses et les spots de ta ville",
-    "worldSub": "Les réponses et les spots de toutes les villes",
+    "citySub": "Le défi, les photos et les spots de ta ville",
+    "worldSub": "Les photos et les spots de toutes les villes",
     "changeCity": "Changer de ville",
     "a11y": "Affichage : {{scope}}. Touche pour changer"
   },
@@ -223,9 +223,9 @@
     "errorBody": "Impossible d’envoyer le signalement. Réessaie."
   },
   "subtitles": {
-    "map": "Les spots des réponses du monde.",
+    "map": "Les spots des photos du monde.",
     "hi": "Dis bonjour à ta ville. Rejoins un plan.",
-    "passport": "Tes villes, tes réponses, tes tampons."
+    "passport": "Tes villes, tes photos, tes tampons."
   },
   "photoBy": "Photo de @{{username}}",
   "pick": {

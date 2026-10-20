@@ -196,8 +196,8 @@
     "title": "보기",
     "world": "전 세계",
     "pickCity": "도시 선택",
-    "citySub": "내 도시의 challenge, 답변, 스팟",
-    "worldSub": "모든 도시의 답변과 스팟",
+    "citySub": "내 도시의 challenge, 사진, 스팟",
+    "worldSub": "모든 도시의 사진과 스팟",
     "changeCity": "도시 변경",
     "a11y": "{{scope}} 보는 중. 눌러서 변경"
   },
@@ -205,9 +205,9 @@
   "settings": "설정",
   "firstLaunch": "로컬에서 놀고, 세계와 비교하자.",
   "subtitles": {
-    "map": "세계의 답변에서 나온 스팟.",
+    "map": "세계의 사진에서 나온 스팟.",
     "hi": "도시에 인사하고 플랜에 참여해요.",
-    "passport": "나의 도시, 나의 답변, 나의 스탬프."
+    "passport": "나의 도시, 나의 사진, 나의 스탬프."
   },
   "photoBy": "사진: @{{username}}",
   "pick": {
@@ -224,23 +224,23 @@
     "textSpotCity": "Hilads의 {{name}}, {{city}}"
   },
   "represent": {
-    "empty": "{{city}}는 오늘 아직 답하지 않았어요. 첫 번째가 되어 보세요.",
-    "beFirst": "{{city}}의 첫 답이 되어 보세요",
-    "emptyThere": "{{city}}는 오늘 아직 답하지 않았어요.",
+    "empty": "{{city}}는 오늘 아직 참여하지 않았어요. 첫 번째가 되어 보세요.",
+    "beFirst": "{{city}} 대표로 가장 먼저 참여해 보세요",
+    "emptyThere": "{{city}}는 오늘 아직 참여하지 않았어요.",
     "notIn": "{{city}}에 있지 않나요?",
     "change": "변경",
-    "locationNeeded": "지금 있는 곳을 대표해 답하려면 위치를 허용하세요.",
-    "button": "{{city}} 대표로 답하기",
+    "locationNeeded": "지금 있는 곳을 대표해 참여하려면 위치를 허용하세요.",
+    "button": "{{city}} 대표로 참여하기",
     "firstPosted": "오늘 {{city}}를 세계 지도에 올렸어요.",
     "pioneer": "{{city}} 개척자",
     "spotOne": "{{city}} 1호 스팟",
-    "streak_other": "{{city}}가 {{count}}일 연속 답했어요",
+    "streak_other": "{{city}}가 {{count}}일 연속 참여했어요",
     "board_other": "오늘 {{count}}개 도시가 보드에 올랐어요. 아직 {{city}} 차례가 남았어요.",
     "mapEmpty": "{{city}}는 아직 세계 지도에 없어요. 올려 주세요.",
     "invite": "친구 초대하기",
-    "share": "Hilads에서 함께 {{city}} 대표로 답해요.",
+    "share": "Hilads에서 함께 {{city}} 대표로 참여해요.",
     "pioneerTitle": "개척자 배지",
-    "pioneerSub": "도시에서 처음으로 승인된 답변. 영원히 당신의 것.",
-    "streak_one": "{{city}}가 {{count}}일 연속 답했어요"
+    "pioneerSub": "도시에서 처음으로 승인된 사진. 영원히 당신의 것.",
+    "streak_one": "{{city}}가 {{count}}일 연속 참여했어요"
   }
 }

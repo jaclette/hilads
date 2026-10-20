@@ -196,8 +196,8 @@
     "title": "Hiển thị",
     "world": "Thế giới",
     "pickCity": "Chọn thành phố",
-    "citySub": "Challenge, câu trả lời và spot của thành phố bạn",
-    "worldSub": "Câu trả lời và spot từ mọi thành phố",
+    "citySub": "Challenge, ảnh và spot của thành phố bạn",
+    "worldSub": "Ảnh và spot từ mọi thành phố",
     "changeCity": "Đổi thành phố",
     "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
   },
@@ -205,9 +205,9 @@
   "settings": "Cài đặt",
   "firstLaunch": "Chơi địa phương. So toàn cầu.",
   "subtitles": {
-    "map": "Các spot từ câu trả lời của thế giới.",
+    "map": "Các spot từ ảnh của thế giới.",
     "hi": "Chào thành phố của bạn. Tham gia một kế hoạch.",
-    "passport": "Thành phố, câu trả lời và con dấu của bạn."
+    "passport": "Thành phố, ảnh và con dấu của bạn."
   },
   "photoBy": "Ảnh của @{{username}}",
   "pick": {
@@ -224,23 +224,23 @@
     "textSpotCity": "{{name}}, {{city}}, trên Hilads"
   },
   "represent": {
-    "empty": "{{city}} chưa trả lời hôm nay. Hãy là người đầu tiên.",
-    "beFirst": "Hãy là câu trả lời đầu tiên của {{city}}",
-    "emptyThere": "{{city}} chưa trả lời hôm nay.",
+    "empty": "{{city}} chưa chơi hôm nay. Hãy là người đầu tiên.",
+    "beFirst": "Hãy là người đầu tiên chơi cho {{city}}",
+    "emptyThere": "{{city}} chưa chơi hôm nay.",
     "notIn": "Không ở {{city}}?",
     "change": "Đổi",
-    "locationNeeded": "Cho phép vị trí để trả lời cho nơi bạn đang ở.",
-    "button": "Trả lời cho {{city}}",
+    "locationNeeded": "Cho phép vị trí để chơi cho nơi bạn đang ở.",
+    "button": "Chơi cho {{city}}",
     "firstPosted": "Bạn đã đưa {{city}} lên bản đồ thế giới hôm nay.",
     "pioneer": "Người tiên phong của {{city}}",
     "spotOne": "Spot #1 ở {{city}}",
-    "streak_other": "{{city}} đã trả lời {{count}} ngày liên tiếp",
+    "streak_other": "{{city}} đã chơi {{count}} ngày liên tiếp",
     "board_other": "{{count}} thành phố đã có mặt hôm nay. {{city}} thì chưa.",
     "mapEmpty": "{{city}} chưa có trên bản đồ thế giới. Hãy đưa lên.",
     "invite": "Mời bạn bè",
-    "share": "Cùng mình trả lời cho {{city}} trên Hilads.",
+    "share": "Cùng mình chơi cho {{city}} trên Hilads.",
     "pioneerTitle": "Huy hiệu tiên phong",
-    "pioneerSub": "Câu trả lời được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi.",
-    "streak_one": "{{city}} đã trả lời {{count}} ngày liên tiếp"
+    "pioneerSub": "Bức ảnh được duyệt đầu tiên ở một thành phố. Của bạn mãi mãi.",
+    "streak_one": "{{city}} đã chơi {{count}} ngày liên tiếp"
   }
 }
