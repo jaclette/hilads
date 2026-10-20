@@ -2,7 +2,8 @@ import Mapbox from '@rnmapbox/maps';
 
 /**
  * Mapbox setup (V3-07, SPEC 9.5): the public token from the build environment
- * (EXPO_PUBLIC_MAPBOX_TOKEN, never committed), telemetry off (the SDK would
+ * (EXPO_PUBLIC_MAPBOX_TOKEN: a public pk. token, set in eas.json for the store
+ * builds since .env.local never reaches them), telemetry off (the SDK would
  * otherwise send location and usage data to Mapbox), and the map styles: the
  * standard Mapbox light / dark styles until the Hilads Studio style is set in
  * EXPO_PUBLIC_MAPBOX_STYLE_LIGHT / _DARK.
