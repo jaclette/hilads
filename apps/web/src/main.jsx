@@ -118,6 +118,12 @@ async function bootstrap() {
     document.documentElement.lang = locale
     document.documentElement.dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
 
+    // /design: the joyful design's component gallery (DESIGN.md), outside the app.
+    if (window.location.pathname === '/design') {
+        const { default: DesignGallery } = await import('./components/joy/DesignGallery')
+        createRoot(document.getElementById('root')).render(<><DesignGallery /><BootShellDone /></>)
+        return
+    }
     createRoot(document.getElementById('root')).render(
         <>
             <App />

@@ -3,6 +3,7 @@
  * Shows app state, connection info, and quick-action buttons.
  */
 import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
@@ -41,6 +42,7 @@ function Action({ title, onPress, danger }: { title: string; onPress: () => void
 // ── Panel ─────────────────────────────────────────────────────────────────────
 
 export function DebugPanel() {
+  const router = useRouter();
   const styles = useThemedStyles(makeStyles);
 
   const { identity, sessionId, account, city, wsConnected, logout } = useApp();
@@ -94,6 +96,7 @@ export function DebugPanel() {
 
       <Text style={styles.heading}>Actions</Text>
       <View style={styles.actions}>
+        <Action title="Design gallery" onPress={() => router.push('/design-gallery' as never)} />
         <Action title="Force WS reconnect"  onPress={handleForceReconnect} />
         <Action title="Clear session + identity" onPress={handleClearSession} danger />
         {/* TEMPORARY - remove after confirming events appear in hilads-mobile Sentry project */}
