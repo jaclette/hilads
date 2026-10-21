@@ -1,0 +1,55 @@
+# The photo flow: back goes one step back, and asks before discarding the photo.
+# Needs a signed-in account that has not played today, and a camera (the
+# emulator's virtual scene is fine).
+appId: com.hilads.app
+tags: [navigation, camera]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "today-play"
+# First play ever: the how-it-works sheet comes first.
+- runFlow:
+    when:
+      visible:
+        id: "how-camera"
+    commands:
+      - tapOn:
+          id: "how-camera"
+- extendedWaitUntil:
+    visible:
+      id: "camera-shutter"
+    timeout: 30000
+- tapOn:
+    id: "camera-shutter"
+- extendedWaitUntil:
+    visible:
+      id: "camera-use"
+    timeout: 30000
+- tapOn:
+    id: "camera-use"
+- extendedWaitUntil:
+    visible:
+      id: "proof-screen"
+    timeout: 30000
+# Back from a later step: one step back, still in the flow.
+- back
+- assertVisible:
+    id: "proof-screen"
+# Back until the confirmation, keep editing first.
+- repeat:
+    while:
+      notVisible: "Discard"
+    times: 4
+    commands:
+      - back
+- assertVisible: "Keep editing"
+- tapOn: "Keep editing"
+- assertVisible:
+    id: "proof-screen"
+# Then discard: back to Today.
+- back
+- tapOn: "Discard"
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000

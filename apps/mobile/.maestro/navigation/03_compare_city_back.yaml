@@ -1,0 +1,51 @@
+# Today → challenge sheet → Compare → a city → back (the board) → back (Today).
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "today-hero"
+- extendedWaitUntil:
+    visible:
+      id: "daily-sheet"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "chip-compare"
+    direction: DOWN
+    timeout: 30000
+    visibilityPercentage: 100
+    centerElement: true
+    speed: 90
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    id: "chip-compare"
+- scrollUntilVisible:
+    element:
+      id: "compare-city"
+    direction: DOWN
+    timeout: 30000
+    visibilityPercentage: 100
+    centerElement: true
+    speed: 90
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    id: "compare-city"
+- extendedWaitUntil:
+    visible:
+      id: "compare-all-cities"
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: "compare-all-cities"
+    timeout: 20000
+- assertVisible:
+    id: "daily-sheet"
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000
+- assertNotVisible:
+    id: "daily-sheet"

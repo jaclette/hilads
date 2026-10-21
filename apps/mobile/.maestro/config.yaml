@@ -1,0 +1,3 @@
+# maestro test .maestro  (from apps/mobile) runs every navigation flow.
+flows:
+  - "navigation/*"

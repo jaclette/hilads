@@ -1,0 +1,66 @@
+# Bug: Today → a photo in "Today around the world" → Android back closed the
+# viewer but the sheet's own back arrow stopped working.
+# Expected: back closes the viewer, then everything keeps working.
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- scrollUntilVisible:
+    element:
+      id: "strip-world-.*"
+    direction: DOWN
+    timeout: 60000
+    visibilityPercentage: 100
+    centerElement: true
+    speed: 90
+    waitToSettleTimeoutMs: 500
+# The fixed header covers the top of the list: bring the card fully below it
+# (a tap on a half-hidden card would land on its Vote button).
+- swipe:
+    start: 50%, 45%
+    end: 50%, 70%
+    duration: 400
+- waitForAnimationToEnd
+- tapOn:
+    id: "strip-world-.*"
+- extendedWaitUntil:
+    visible:
+      id: "proof-viewer"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: "proof-viewer"
+    timeout: 20000
+- assertVisible:
+    id: "daily-sheet"
+# The sheet's own back arrow still works.
+- tapOn:
+    id: "header-back"
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000
+- assertNotVisible:
+    id: "daily-sheet"
+# And the app still navigates: open the challenge again and come back.
+- scrollUntilVisible:
+    element:
+      id: "today-hero"
+    direction: UP
+    timeout: 30000
+    visibilityPercentage: 100
+    centerElement: true
+    speed: 90
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    id: "today-hero"
+- extendedWaitUntil:
+    visible:
+      id: "daily-sheet"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-hero"
+    timeout: 30000

@@ -10,6 +10,7 @@ import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { useDaily, useDc, useCountdown, formatCountdown, useOriginal, OriginalToggle } from './dailyShared'
+import { useBackLayer } from '../../lib/backLayers'
 
 // Proposals on the web (W2, the app's daily/propose, daily/twist and
 // daily/proposals): signed-in only, same API and rules as the app.
@@ -150,6 +151,7 @@ export function TwistScreen({ onBack }) {
   const [sending, setSending] = useState(false)
   const [error, setError]     = useState(null)
   const [confirm, setConfirm] = useState(false)
+  useBackLayer(confirm, () => setConfirm(false))
   const left = useCountdown(data?.open ? data.closesAt : null)
   const [showOriginal, toggleOriginal] = useOriginal()
 

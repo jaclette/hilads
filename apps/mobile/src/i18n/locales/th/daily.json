@@ -81,7 +81,11 @@
     "retake": "ถ่ายใหม่",
     "sentTitleNoCity": "ส่งรูปแล้ว!",
     "compare": "เปรียบเทียบ",
-    "priceFor": "ราคาที่จ่าย: {{label}}"
+    "priceFor": "ราคาที่จ่าย: {{label}}",
+    "discardTitle": "ทิ้งรูปของคุณไหม?",
+    "discardBody": "รูปและข้อมูลที่กรอกไว้จะหายไป",
+    "keepEditing": "แก้ไขต่อ",
+    "discard": "ทิ้ง"
   },
   "errors": {
     "already_posted": "คุณเล่น challenge วันนี้ไปแล้ว",

@@ -1,0 +1,43 @@
+# Hi → Messages → a private conversation → back → back → back (Today).
+# Needs a signed-in account with at least one conversation.
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-chat"
+- extendedWaitUntil:
+    visible:
+      id: "hi-messages"
+    timeout: 30000
+- tapOn:
+    id: "hi-messages"
+- extendedWaitUntil:
+    visible:
+      id: "messages-screen"
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: "conversation-row"
+    timeout: 30000
+- tapOn:
+    id: "conversation-row"
+- extendedWaitUntil:
+    visible:
+      id: "dm-back"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "messages-screen"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "hi-messages"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000

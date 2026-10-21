@@ -62,7 +62,7 @@ export default function PassportScreen() {
 
   const header = (
     <ScreenHeader variant="tab" title={t('passport.title')} subtitle={t('subtitles.passport', { ns: 'common' })} art="passport"
-                  right={<IconButton icon="settings-outline" iconSize={21} label={t('settings')} onPress={() => router.push('/settings' as never)} />} />
+                  right={<IconButton icon="settings-outline" iconSize={21} label={t('settings')} onPress={() => router.push('/settings' as never)} testID="passport-settings" />} />
   );
 
   if (!account) {

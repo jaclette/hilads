@@ -8,6 +8,7 @@ import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, TextField } from '@/ui';
 import { AuthScreen } from '@/features/auth/AuthScreen';
+import { goBack } from '@/lib/nav';
 
 export default function ForgotPasswordScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -41,7 +42,7 @@ export default function ForgotPasswordScreen() {
           <View style={styles.successIcon}><Ionicons name="mail-outline" size={34} color={colors.primaryOnTint} /></View>
           <Text style={styles.successTitle} accessibilityRole="header">{t('forgotPassword.sentTitle')}</Text>
           <Text style={styles.successBody}>{t('forgotPassword.sentBody')}</Text>
-          <Button label={t('forgotPassword.backToSignIn')} onPress={() => router.back()} style={styles.stretch} />
+          <Button label={t('forgotPassword.backToSignIn')} onPress={() => goBack()} style={styles.stretch} />
         </View>
       </AuthScreen>
     );

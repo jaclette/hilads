@@ -81,7 +81,11 @@
     "retake": "Retake",
     "sentTitleNoCity": "Your photo is in!",
     "compare": "Compare",
-    "priceFor": "Price paid: {{label}}"
+    "priceFor": "Price paid: {{label}}",
+    "discardTitle": "Discard your photo?",
+    "discardBody": "Your photo and what you filled in will be lost.",
+    "keepEditing": "Keep editing",
+    "discard": "Discard"
   },
   "errors": {
     "already_posted": "You already played today's challenge.",

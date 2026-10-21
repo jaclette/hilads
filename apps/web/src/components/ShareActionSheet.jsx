@@ -11,8 +11,10 @@
 
 import { useTranslation } from 'react-i18next'
 import Icon from './Icon'
+import { useBackLayer } from '../lib/backLayers'
 
 export default function ShareActionSheet({ onSnap, onSpot, onPlan, onHiNow, onClose, spotLoading }) {
+  useBackLayer(true, onClose)   // browser back closes it
   const { t } = useTranslation('common')
   return (
     <>

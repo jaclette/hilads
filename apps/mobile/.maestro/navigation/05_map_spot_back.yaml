@@ -1,0 +1,64 @@
+# Map → a spot (its card, then its page) → back (Map) → back (Today).
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-map"
+- extendedWaitUntil:
+    visible:
+      id: "map-view-toggle"
+    timeout: 30000
+# The list shows the spots as rows (the map remembers the last view).
+- runFlow:
+    when:
+      notVisible:
+        id: "spot-row"
+    commands:
+      - tapOn:
+          id: "map-view-toggle"
+- extendedWaitUntil:
+    visible:
+      id: "spot-row"
+    timeout: 30000
+# A spot first opens its card over the map: back closes the card only.
+- tapOn:
+    id: "spot-row"
+- extendedWaitUntil:
+    visible:
+      id: "spot-sheet"
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: "spot-sheet"
+    timeout: 20000
+- assertVisible:
+    id: "map-view-toggle"
+# Then the spot's page, and back to the map.
+- tapOn:
+    id: "spot-row"
+- tapOn:
+    id: "spot-open"
+- extendedWaitUntil:
+    visible:
+      id: "spot-screen"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "map-view-toggle"
+    timeout: 30000
+- assertNotVisible:
+    id: "spot-screen"
+# The card is still open: back closes it, then back leaves the tab for Today.
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: "spot-sheet"
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000

@@ -44,6 +44,7 @@ import { DailyProfileStats } from '@/features/daily/DailyProfileStats';
 import { VIBE_ICONS } from '@/features/profile/vibes';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
+import { goBack } from '@/lib/nav';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
@@ -351,7 +352,7 @@ export default function PublicProfileScreen() {
                 targetNickname: user.displayName,
                 guestId:        account ? undefined : identity?.guestId,
               });
-              router.back();
+              goBack();
             } catch (err) {
               // Roll back the optimistic patch on failure.
               if (user) removeBlocked({ userId: user.id });
@@ -406,7 +407,7 @@ export default function PublicProfileScreen() {
       ) : error ? (
         <View style={styles.center}>
           <EmptyState icon="person-outline" body={error}
-                      action={<Button variant="secondary" label={t('goBack')} onPress={() => router.back()} />} />
+                      action={<Button variant="secondary" label={t('goBack')} onPress={() => goBack()} />} />
         </View>
       ) : user ? (
         <>

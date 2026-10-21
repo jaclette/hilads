@@ -87,7 +87,11 @@
     "retake": "Переснять",
     "sentTitleNoCity": "Твоё фото отправлено!",
     "compare": "Сравнить",
-    "priceFor": "Сколько заплатил: {{label}}"
+    "priceFor": "Сколько заплатил: {{label}}",
+    "discardTitle": "Удалить фото?",
+    "discardBody": "Твоё фото и всё, что ты заполнил, будут потеряны.",
+    "keepEditing": "Продолжить",
+    "discard": "Удалить"
   },
   "errors": {
     "already_posted": "Ты уже сыграл в сегодняшний challenge.",

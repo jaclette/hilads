@@ -7,7 +7,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
  * Round 44 px icon button (back, gear, bell, locate), with an optional unread
  * dot. tone="onPhoto": translucent white on a photo or the camera (viewer, camera).
  */
-export function IconButton({ icon, onPress, label, badge = false, iconSize = 22, tone = 'default', style }: {
+export function IconButton({ icon, onPress, label, badge = false, iconSize = 22, tone = 'default', style, testID }: {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   onPress: () => void;
   label: string;
@@ -15,11 +15,12 @@ export function IconButton({ icon, onPress, label, badge = false, iconSize = 22,
   iconSize?: number;
   tone?: 'default' | 'onPhoto';
   style?: StyleProp<ViewStyle>;
+  testID?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   return (
-    <TouchableOpacity style={[styles.round, tone === 'onPhoto' && styles.onPhoto, style]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
+    <TouchableOpacity style={[styles.round, tone === 'onPhoto' && styles.onPhoto, style]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label} testID={testID}>
       <Ionicons name={icon} size={iconSize} color={tone === 'onPhoto' ? colors.white : colors.text} />
       {badge && <View style={styles.dot} />}
     </TouchableOpacity>

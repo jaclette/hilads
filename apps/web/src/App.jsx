@@ -88,6 +88,7 @@ import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
 import { registerPush, unregisterPush } from './push'
 import { themeName } from './components/map/spotsShared'
+import { useBackLayer, useBackStack } from './lib/backLayers'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -1379,6 +1380,34 @@ export default function App() {
   const [obPickingCity, setObPickingCity] = useState(false)
   const [obShowAuth, setObShowAuth] = useState(false)
   const [obAuthInitialTab, setObAuthInitialTab] = useState('signup')
+
+  // ── Browser back (the navigation rule, same as the app) ───────────────────
+  // Back closes the top layer: a modal, a sheet, a screen over the tabs; from
+  // another tab it goes to Today; only Today with nothing open leaves the site.
+  // Each layer closes the way its own back button does.
+  const ready = status === 'ready'
+  const onTodayTab = showToday && !showMap && !showProfileDrawer
+  useBackLayer(ready && !onTodayTab, () => goToTodayTab())
+  useBackStack(ready ? dailyStack.length : 0, closeDaily)
+  useBackLayer(showScopeSheet, () => setShowScopeSheet(false))
+  useBackLayer(showSettings, () => setShowSettings(false))
+  useBackLayer(passportSub !== null, () => setPassportSub(null))
+  useBackLayer(showWorldArrivals, () => setShowWorldArrivals(false))
+  useBackLayer(showCityPicker, () => setShowCityPicker(false))
+  useBackLayer(showEventDrawer, () => setShowEventDrawer(false))
+  useBackLayer(showPeopleDrawer, () => setShowPeopleDrawer(false))
+  useBackLayer(showArrivalsSheet, () => setShowArrivalsSheet(false))
+  useBackLayer(showConversations, () => setShowConversations(false))
+  useBackLayer(activeDm !== null, () => setActiveDm(null))
+  useBackLayer(viewingProfile !== null, () => setViewingProfile(null))
+  useBackLayer(showAuthScreen, () => setShowAuthScreen(false))
+  useBackLayer(showNotifications, () => setShowNotifications(false))
+  useBackLayer(showFriendRequests, () => setShowFriendRequests(false))
+  useBackLayer(showEventLimitReached, () => setShowEventLimitReached(false))
+  useBackLayer(showEditEvent, () => setShowEditEvent(false))
+  useBackLayer(showCreateTopic, () => { setShowCreateTopic(false); setEditTopic(null) })
+  useBackLayer(activeTopic !== null, () => setActiveTopic(null))
+  useBackLayer(activeChallenge !== null, () => setActiveChallenge(null))
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [citySearchQuery, setCitySearchQuery] = useState('')

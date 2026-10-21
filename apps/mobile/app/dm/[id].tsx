@@ -46,6 +46,7 @@ import { ReactionPills } from '@/features/chat/ReactionPills';
 import { ReactionBurstOverlay } from '@/features/chat/ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import type { DmMessage, ReplyRef } from '@/types';
+import { goBack } from '@/lib/nav';
 
 // ── Date separator - reused from ChatMessage visual style ─────────────────────
 
@@ -913,7 +914,7 @@ export default function DMThreadScreen() {
 
       {/* ── Header ── */}
       <View style={styles.header}>
-        <IconButton icon="chevron-back" label={t('back', { ns: 'common' })} onPress={() => router.back()} />
+        <IconButton icon="chevron-back" label={t('back', { ns: 'common' })} onPress={() => goBack()} testID="dm-back" />
 
         {/* Tap the avatar + name to open the other user's profile. */}
         <TouchableOpacity
@@ -976,7 +977,7 @@ export default function DMThreadScreen() {
       {resolveError ? (
         <View style={styles.center}>
           <EmptyState icon="cloud-offline-outline" body={resolveError}
-                      action={<Button variant="secondary" label={t('goBack')} onPress={() => router.back()} />} />
+                      action={<Button variant="secondary" label={t('goBack')} onPress={() => goBack()} />} />
         </View>
       ) : !conversationId ? (
         <View style={styles.center}>

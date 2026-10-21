@@ -81,7 +81,11 @@
     "retake": "重拍",
     "sentTitleNoCity": "你的照片已发送！",
     "compare": "比较",
-    "priceFor": "支付价格：{{label}}"
+    "priceFor": "支付价格：{{label}}",
+    "discardTitle": "放弃这张照片?",
+    "discardBody": "你的照片和填写的内容将会丢失。",
+    "keepEditing": "继续编辑",
+    "discard": "放弃"
   },
   "errors": {
     "already_posted": "你已经参加过今天的 challenge 了。",

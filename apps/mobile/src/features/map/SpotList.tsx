@@ -70,7 +70,7 @@ export function SpotList({ spots, sort, onSort, me, origin, onPick, topInset, bo
         ].filter(Boolean).join(' · ');
         const votes = sort === 'week' ? s.votesWeek : s.votes;
         return (
-          <TouchableOpacity style={styles.row} onPress={() => onPick(s)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={s.name}>
+          <TouchableOpacity style={styles.row} onPress={() => onPick(s)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={s.name} testID="spot-row">
             {s.cover.thumbUrl || s.cover.photoUrl
               ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
               : <View style={[styles.photo, styles.photoEmpty]}><ThemeIcon theme={theme ?? 'only_here'} size={22} color={colors.primaryText} /></View>}

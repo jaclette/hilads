@@ -81,7 +81,11 @@
     "retake": "撮り直す",
     "sentTitleNoCity": "写真を送りました！",
     "compare": "比べる",
-    "priceFor": "支払った金額：{{label}}"
+    "priceFor": "支払った金額：{{label}}",
+    "discardTitle": "写真を破棄しますか?",
+    "discardBody": "写真と入力した内容は失われます。",
+    "keepEditing": "編集を続ける",
+    "discard": "破棄"
   },
   "errors": {
     "already_posted": "今日の challenge にはもう参加済みです。",

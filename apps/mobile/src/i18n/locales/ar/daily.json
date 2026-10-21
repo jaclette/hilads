@@ -93,7 +93,11 @@
     "retake": "أعد الالتقاط",
     "sentTitleNoCity": "أُرسلت صورتك!",
     "compare": "قارن",
-    "priceFor": "السعر المدفوع: {{label}}"
+    "priceFor": "السعر المدفوع: {{label}}",
+    "discardTitle": "هل تريد تجاهل صورتك؟",
+    "discardBody": "ستفقد صورتك وما أدخلته.",
+    "keepEditing": "متابعة التعديل",
+    "discard": "تجاهل"
   },
   "errors": {
     "already_posted": "لقد لعبت challenge اليوم بالفعل.",

@@ -81,7 +81,11 @@
     "retake": "Ulangi",
     "sentTitleNoCity": "Fotomu terkirim!",
     "compare": "Bandingkan",
-    "priceFor": "Harga dibayar: {{label}}"
+    "priceFor": "Harga dibayar: {{label}}",
+    "discardTitle": "Buang fotomu?",
+    "discardBody": "Fotomu dan isian yang sudah kamu isi akan hilang.",
+    "keepEditing": "Lanjut edit",
+    "discard": "Buang"
   },
   "errors": {
     "already_posted": "Kamu sudah main challenge hari ini.",

@@ -12,6 +12,7 @@ import { Button, Chip, IconButton } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
 import { PhotoCredit } from './PhotoCredit';
 import { PickBadge } from './PickBadge';
+import { useSwipeDown } from '@/ui/useSwipeDown';
 
 /**
  * The selected spot's card at the bottom of the map (map.html): photo, name,
@@ -21,6 +22,8 @@ import { PickBadge } from './PickBadge';
 export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onClose }: {
   spot: Spot; distanceM: number | null; onOpen: () => void; onDirections: () => void; onShare: () => void; onClose: () => void;
 }) {
+  // Closes like every sheet: the grabber, a swipe down, Android back (the map's useBackClose).
+  const swipe = useSwipeDown(onClose);
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
@@ -32,7 +35,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
     : null;
 
   return (
-    <View style={styles.sheet} accessibilityLabel={t('map.selected', { name: spot.name })}>
+    <View style={styles.sheet} accessibilityLabel={t('map.selected', { name: spot.name })} testID="spot-sheet" {...swipe}>
       <TouchableOpacity style={styles.grabZone} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('map.closeSpot')}>
         <View style={styles.grabber} />
       </TouchableOpacity>
@@ -67,7 +70,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
       {!!spot.cover.caption && <Text style={styles.caption} numberOfLines={2}>“{spot.cover.caption}”</Text>}
       <PhotoCredit by={spot.cover.by} credit={spot.cover.credit} style={styles.credit} />
       <View style={styles.actions}>
-        <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} />
+        <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} testID="spot-open" />
         <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />
         <IconButton icon="share-social-outline" label={t('share.title')} onPress={onShare} style={styles.share} />
       </View>

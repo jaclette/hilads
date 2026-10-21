@@ -15,6 +15,8 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { authQuery } from '@/lib/authReturn';
 import { BrandMark, Button } from '@/ui';
+import { goBack } from '@/lib/nav';
+import { useSwipeDown } from '@/ui/useSwipeDown';
 
 const REASONS = [
   'view_profile', 'create_event', 'send_dm', 'join_hangout', 'create_hangout',
@@ -30,6 +32,8 @@ export default function AuthGateScreen() {
   const gateReason: GateReason = (REASONS as readonly string[]).includes(reason ?? '') ? reason as GateReason : 'view_profile';
 
   useEffect(() => { track('guest_signup_prompted', { action: gateReason }); }, [gateReason]);
+  // Every way out is the same close: the scrim, Not now, a swipe down, Android back (a route).
+  const swipe = useSwipeDown(goBack);
 
   // replace, not push: the sheet leaves the stack, so after auth the user
   // lands on returnTo (or pops straight back to the screen they were on).
@@ -37,9 +41,9 @@ export default function AuthGateScreen() {
     router.replace(`${base}${authQuery(returnTo, gateReason)}` as never);
 
   return (
-    <View style={styles.root}>
-      <Pressable style={styles.scrim} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('sheet.notNow')} />
-      <SafeAreaView edges={['bottom']} style={styles.sheet}>
+    <View style={styles.root} testID="auth-gate">
+      <Pressable style={styles.scrim} onPress={() => goBack()} accessibilityRole="button" accessibilityLabel={t('sheet.notNow')} />
+      <SafeAreaView edges={['bottom']} style={styles.sheet} {...swipe}>
         <View style={styles.handle} />
         <BrandMark size="lg" />
         <Text style={styles.tagline}>{t('firstLaunch', { ns: 'common' })}</Text>
@@ -51,7 +55,7 @@ export default function AuthGateScreen() {
 
         <Button label={t('sheet.signUp')} onPress={() => go('/sign-up')} style={styles.stretch} />
         <Button variant="secondary" label={t('sheet.haveAccount')} onPress={() => go('/sign-in')} style={styles.stretch} />
-        <TouchableOpacity style={styles.notNow} onPress={() => router.back()} accessibilityRole="button">
+        <TouchableOpacity style={styles.notNow} onPress={() => goBack()} accessibilityRole="button">
           <Text style={styles.notNowText}>{t('sheet.notNow')}</Text>
         </TouchableOpacity>
       </SafeAreaView>

@@ -35,7 +35,7 @@ export function HowItWorksSheet({ visible, placeTheme, onCamera, onLater, onClos
           </View>
         ))}
       </View>
-      <Button label={t('howItWorks.camera')} icon="camera-outline" onPress={onCamera} style={styles.cta} />
+      <Button label={t('howItWorks.camera')} icon="camera-outline" onPress={onCamera} style={styles.cta} testID="how-camera" />
       <Button variant="link" label={t('howItWorks.later')} onPress={onLater} />
     </Sheet>
   );

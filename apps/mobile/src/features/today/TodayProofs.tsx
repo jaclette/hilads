@@ -180,6 +180,7 @@ function StripItem({ proof, guestId, source, onPress }: { proof: StripProof; gue
   const title = proof.answer ? answerText(proof.answer, i18n.language) : proof.spot?.name ?? proof.place?.name ?? proof.caption ?? '';
   return (
     <TouchableOpacity style={styles.item} onPress={onPress} accessibilityRole="button"
+                      testID={`strip-${source === 'strip_world' ? 'world' : 'city'}-${proof.city?.country ?? ''}`}
                       accessibilityLabel={[proof.rank ? `#${proof.rank}` : null, city, title, votes].filter(Boolean).join(', ')}>
       <View style={styles.photo}>
         <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" />

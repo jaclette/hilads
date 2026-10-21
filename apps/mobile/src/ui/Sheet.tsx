@@ -3,8 +3,12 @@ import { Modal, Pressable, View, StyleSheet, type StyleProp, type ViewStyle } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
+import { useSwipeDown } from './useSwipeDown';
 
-/** Bottom sheet: slides up over a scrim (tap to close), with a grabber and the bottom safe area. */
+/**
+ * Bottom sheet: slides up over a scrim, with a grabber and the bottom safe area.
+ * Every way out runs `onClose`: the scrim, a swipe down, Android back.
+ */
 export function Sheet({ visible, onClose, closeLabel, style, children }: {
   visible: boolean;
   onClose: () => void;
@@ -14,10 +18,11 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
 }) {
   const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
+  const swipe = useSwipeDown(onClose);
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.md }, style]}>
+      <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.md }, style]} {...swipe}>
         <View style={styles.grabber} />
         {children}
       </View>

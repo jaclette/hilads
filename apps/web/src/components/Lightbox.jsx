@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { mediaDownloadUrl } from '../api'
 import Icon from './Icon'
+import { useBackLayer } from '../lib/backLayers'
 
 /**
  * Shared photo lightbox - used by the channel/event/topic feed (App.jsx) and
@@ -19,6 +20,7 @@ import Icon from './Icon'
  * The overlay also closes on backdrop click and on Escape.
  */
 export default function Lightbox({ url, onClose }) {
+  useBackLayer(!!url, onClose)   // browser back closes it
   const { t } = useTranslation('chat')
   const [busy, setBusy] = useState(null)  // 'download' | 'share' | null
   const [toast, setToast] = useState(null)

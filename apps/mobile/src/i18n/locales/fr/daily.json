@@ -81,7 +81,11 @@
     "retake": "Reprendre",
     "sentTitleNoCity": "Ta photo est partie !",
     "compare": "Comparer",
-    "priceFor": "Prix payé : {{label}}"
+    "priceFor": "Prix payé : {{label}}",
+    "discardTitle": "Abandonner ta photo ?",
+    "discardBody": "Ta photo et ce que tu as rempli seront perdus.",
+    "keepEditing": "Continuer",
+    "discard": "Abandonner"
   },
   "errors": {
     "already_posted": "Tu as déjà joué au défi du jour.",

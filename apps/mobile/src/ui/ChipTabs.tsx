@@ -31,7 +31,7 @@ export function ChipTabs<K extends string>({ options, value, onChange }: { optio
           const on = o.key === value;
           return (
             <TouchableOpacity key={o.key} style={[styles.chip, on && styles.chipOn]} onPress={() => onChange(o.key)} activeOpacity={0.8}
-                              accessibilityRole="tab" accessibilityState={{ selected: on }}>
+                              accessibilityRole="tab" accessibilityState={{ selected: on }} testID={`chip-${o.key}`}>
               {!!o.flag && <CityFlag country={o.flag} />}
               <Text style={[styles.label, on && styles.labelOn]}>{o.label}</Text>
             </TouchableOpacity>

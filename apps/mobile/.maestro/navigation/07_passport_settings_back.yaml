@@ -1,0 +1,29 @@
+# Passport → Settings → back (Passport) → back (Today).
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-passport"
+- extendedWaitUntil:
+    visible:
+      id: "passport-settings"
+    timeout: 30000
+- tapOn:
+    id: "passport-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-screen"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "passport-settings"
+    timeout: 30000
+- assertNotVisible:
+    id: "settings-screen"
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000

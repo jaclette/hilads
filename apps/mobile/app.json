@@ -1128,6 +1128,7 @@
       "expo-router",
       "@bacons/apple-targets",
       "./plugins/withSingleTopActivity",
+      "./plugins/withLegacyBackHandling",
       [
         "./plugins/withNdkVersion",
         {

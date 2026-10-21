@@ -16,6 +16,7 @@ import HeaderArt from '../HeaderArt'
 import { shortCityName } from '../../i18n/cityName'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PickBadge, PhotoCredit } from './Pick'
+import { useBackLayer } from '../../lib/backLayers'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -266,6 +267,9 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [theme, setTheme]     = useState(null)
   const [selected, setSelected] = useState(null)
   const [openSpotId, setOpenSpotId] = useState(initialSpotId)
+  // Browser back: the spot's page, then its card, before the map itself.
+  useBackLayer(selected !== null, () => setSelected(null))
+  useBackLayer(openSpotId !== null, () => setOpenSpotId(null))
   const [query, setQuery]     = useState('')
   const [results, setResults] = useState(null)
   const [camera, setCamera]   = useState(null)

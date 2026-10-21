@@ -25,6 +25,7 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { themeCover } from '@/features/today/covers';
 import { useHere } from '@/hooks/useDaily';
 import type { DailyTour } from '@/types';
+import { goBack } from '@/lib/nav';
 
 /** How long a slide stays before the next one (no auto-advance with reduce motion). */
 const SLIDE_MS = 6000;
@@ -70,7 +71,7 @@ export default function TourScreen() {
   const slides = tour?.slides ?? [];
   const total = slides.length + 1;   // + "Your turn"
   const last = index >= slides.length;
-  const close = () => router.back();
+  const close = () => goBack();
   const go = (next: number) => {
     if (next < 0) return;
     if (next >= total) { close(); return; }
@@ -96,7 +97,7 @@ export default function TourScreen() {
 
   const pan = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
-    onPanResponderRelease: (_, g) => { if (g.dy > 80) router.back(); },
+    onPanResponderRelease: (_, g) => { if (g.dy > 80) goBack(); },
   })).current;
 
   if (!tour) {
@@ -119,12 +120,12 @@ export default function TourScreen() {
     ? (todayChallenge.coverUrl ? { uri: todayChallenge.coverUrl } : themeCover(todayChallenge.theme?.key ?? 'only_here', todayChallenge.date))
     : proof ? { uri: proof.photoUrl } : null;
   const takeIt = () => {
-    router.back();
+    goBack();
     router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
   };
 
   return (
-    <View style={styles.wrap} {...pan.panHandlers}>
+    <View style={styles.wrap} {...pan.panHandlers} testID="daily-tour">
       {cover && <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} />}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />

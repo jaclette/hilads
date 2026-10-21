@@ -48,7 +48,7 @@ export default function TodayScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
-      <View style={styles.header}><AppHeader /><BrandLine /></View>
+      <View style={styles.header} testID="today-screen"><AppHeader /><BrandLine /></View>
       <ScrollView
         contentContainerStyle={styles.content}
         onScroll={onScroll}

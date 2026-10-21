@@ -14,6 +14,7 @@ import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import type { DailyBoard, DailyCityRef, DailyProof } from '@/types';
 import { answerText } from './format';
 import { useMoney } from './money';
+import { useBackClose } from '@/lib/useBackClose';
 
 /**
  * The Compare tab of the challenge sheet (SPEC 10.6): "How the world answered",
@@ -40,6 +41,8 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
   const [city, setCity] = useState<DailyCityRef | null>(null);
   const [cityProofs, setCityProofs] = useState<DailyProof[] | null>(null);
   const tracked = useRef(false);
+  // A city's photos are a layer over the board: Android back returns to every city first.
+  useBackClose(city !== null, () => setCity(null));
 
   useEffect(() => {
     let alive = true;
@@ -74,7 +77,7 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
   if (city) {
     return (
       <View style={styles.wrap}>
-        <TouchableOpacity style={styles.back} onPress={() => setCity(null)} accessibilityRole="button" hitSlop={8}>
+        <TouchableOpacity style={styles.back} onPress={() => setCity(null)} accessibilityRole="button" hitSlop={8} testID="compare-all-cities">
           <Ionicons name="chevron-back" size={18} color={colors.text} />
           <Text style={styles.backText}>{t('compare.allCities')}</Text>
         </TouchableOpacity>
@@ -137,7 +140,7 @@ export function CompareBoard({ date, source, onOpenProof, onAnswer }: {
             const price = money.fromEur(r.priceMedianEur);
             return (
               <TouchableOpacity key={r.city.id} style={[styles.row, i > 0 && styles.rowLine]} onPress={() => setCity(r.city)}
-                                accessibilityRole="button" activeOpacity={0.7}>
+                                accessibilityRole="button" activeOpacity={0.7} testID="compare-city">
                 <CityFlag country={r.city.country} size={20} />
                 <View style={styles.rowBody}>
                   <Text style={styles.cityName} numberOfLines={1}>{shortCityName(r.city.name)}</Text>

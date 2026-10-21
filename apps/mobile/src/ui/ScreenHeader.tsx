@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { IconButton } from './IconButton';
 import { HeaderArt, type HeaderArtKind } from './HeaderArt';
+import { goBack } from '@/lib/nav';
 
 /**
  * Screen header. "back" (pushed screens): round back button and the title.
@@ -15,7 +15,7 @@ import { HeaderArt, type HeaderArtKind } from './HeaderArt';
  * most on small screens (SPEC 9.1). `art` (tab only): the screen's line
  * drawing on the header's right, left of its buttons (decorative).
  */
-export function ScreenHeader({ title, subtitle, art, variant = 'back', right, onBack, compact = false }: {
+export function ScreenHeader({ title, subtitle, art, variant = 'back', right, onBack, compact = false, testID }: {
   title: string;
   subtitle?: string;
   art?: HeaderArtKind;
@@ -23,13 +23,14 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
   right?: ReactNode;
   onBack?: () => void;
   compact?: boolean;
+  /** Marks the screen for the UI tests (.maestro). */
+  testID?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
-  const router = useRouter();
   const { t } = useTranslation('common');
   if (variant === 'tab') {
     return (
-      <View style={styles.tab}>
+      <View style={styles.tab} testID={testID}>
         <View style={styles.tabText}>
           <Text style={styles.tabTitle} accessibilityRole="header">{title}</Text>
           {!!subtitle && <Text style={styles.subtitle} numberOfLines={2}>{subtitle}</Text>}
@@ -41,8 +42,8 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
     );
   }
   return (
-    <View style={styles.back}>
-      <IconButton icon="chevron-back" onPress={onBack ?? (() => router.back())} label={t('back')} />
+    <View style={styles.back} testID={testID}>
+      <IconButton icon="chevron-back" onPress={onBack ?? goBack} label={t('back')} testID="header-back" />
       {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} accessibilityRole="header">{title}</Text>
              : <View style={styles.spacer} />}
       {right}

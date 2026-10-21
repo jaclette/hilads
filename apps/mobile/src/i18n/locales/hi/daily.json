@@ -81,7 +81,11 @@
     "retake": "दोबारा लो",
     "sentTitleNoCity": "आपकी फ़ोटो भेज दी गई!",
     "compare": "तुलना करें",
-    "priceFor": "चुकाई गई कीमत: {{label}}"
+    "priceFor": "चुकाई गई कीमत: {{label}}",
+    "discardTitle": "अपनी फ़ोटो हटाएँ?",
+    "discardBody": "आपकी फ़ोटो और भरी गई जानकारी खो जाएगी।",
+    "keepEditing": "संपादन जारी रखें",
+    "discard": "हटाएँ"
   },
   "errors": {
     "already_posted": "आप आज का challenge खेल चुके हैं।",

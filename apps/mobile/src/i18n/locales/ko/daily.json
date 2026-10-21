@@ -81,7 +81,11 @@
     "retake": "다시 찍기",
     "sentTitleNoCity": "사진을 보냈어요!",
     "compare": "비교하기",
-    "priceFor": "지불한 가격: {{label}}"
+    "priceFor": "지불한 가격: {{label}}",
+    "discardTitle": "사진을 삭제할까요?",
+    "discardBody": "사진과 입력한 내용이 사라져요.",
+    "keepEditing": "계속 편집",
+    "discard": "삭제"
   },
   "errors": {
     "already_posted": "오늘의 challenge에 이미 참여했어요.",

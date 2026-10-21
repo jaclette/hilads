@@ -8,7 +8,8 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { usePreventRemove } from '@react-navigation/core';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
@@ -35,6 +36,7 @@ import { AnswerInput } from '@/features/compare/AnswerInput';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
 import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/types';
+import { goBack as leave } from '@/lib/nav';
 
 /** A position older than this is refreshed before posting (the distance check). */
 const POSITION_MAX_AGE_MS = 2 * 60 * 1000;
@@ -116,6 +118,34 @@ export default function DailyProofScreen() {
   const proofCityId = original?.city?.id ?? today?.here?.id ?? null;   // a new proof is posted for where I am
   const showHome = !!original?.backHome
     || (home ? home.id === null || home.id !== proofCityId : account?.mode === 'exploring');
+
+  // Back (the navigation rule): every way out (Android back, the arrow, the iOS
+  // swipe) goes one step back - home → details → answer → place → photo - and,
+  // on the first step, asks before throwing away a new photo. Leaving after a
+  // post (leaving.current) is never held.
+  const navigation = useNavigation();
+  const leaving = useRef(false);
+  const stepBack = (): boolean => {
+    if (step === 'home') setStep('details');
+    else if (step === 'details' && compare) setStep('answer');
+    else if ((step === 'details' || step === 'answer') && !original && needsPlace) setStep('place');
+    else if (step === 'place' && photo) setStep('photo');
+    else return false;
+    return true;
+  };
+  const canStepBack = step === 'home' || (step === 'details' && !!compare)
+    || ((step === 'details' || step === 'answer') && !original && needsPlace) || (step === 'place' && !!photo);
+  const unsaved = !sent && !original && !!photo;
+  usePreventRemove(canStepBack || unsaved, ({ data }) => {
+    if (leaving.current || stepBack()) {
+      if (leaving.current) navigation.dispatch(data.action);
+      return;
+    }
+    Alert.alert(t('proof.discardTitle'), t('proof.discardBody'), [
+      { text: t('proof.keepEditing'), style: 'cancel' },
+      { text: t('proof.discard'), style: 'destructive', onPress: () => navigation.dispatch(data.action) },
+    ]);
+  });
 
   useEffect(() => {
     let alive = true;
@@ -304,7 +334,7 @@ export default function DailyProofScreen() {
       // An existing spot shows on the map at once; a new place after review.
       const spot = saved.spot ?? null;
       const next = spot && !spot.inReview ? `/(tabs)/map?spot=${spot.id}&source=proof` : '/(tabs)/today';
-      if (original) { router.replace(next as never); return; }
+      if (original) { leaving.current = true; router.replace(next as never); return; }
       // "Propose a challenge" nudge (V2-06), at most once a week.
       const lastNudge = Number(await AsyncStorage.getItem(PROPOSE_NUDGE_KEY).catch(() => null)) || 0;
       const nudge = Date.now() - lastNudge > PROPOSE_NUDGE_EVERY_MS;
@@ -335,6 +365,7 @@ export default function DailyProofScreen() {
       await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
       await askDailyPush('first_proof', identity?.guestId);
     }
+    leaving.current = true;
     router.replace(to as never);
   };
 
@@ -343,7 +374,7 @@ export default function DailyProofScreen() {
   // Sent (SPEC 9.14): the confirmation, then the share card and where to share it.
   if (sent && challenge) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
         <ScrollView contentContainerStyle={styles.sent}>
           <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>
           <Text style={styles.stepTitle} accessibilityRole="header">
@@ -378,22 +409,15 @@ export default function DailyProofScreen() {
   }
 
   const closed = !loading && (!challenge || (original !== null && !challenge.isActive));
-  /** One step back: home → details → answer → place → photo, else leave. */
-  const goBack = () => {
-    if (step === 'home') setStep('details');
-    else if (step === 'details' && compare) setStep('answer');
-    else if ((step === 'details' || step === 'answer') && !original && needsPlace) setStep('place');
-    else if (step === 'place' && photo) setStep('photo');
-    else router.back();
-  };
   const placeName = place ? (place.kind === 'spot' ? place.spot.name : place.name) : original?.spot?.name ?? null;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
       <View style={styles.nav}>
         <TouchableOpacity
           style={styles.back}
-          onPress={goBack}
+          onPress={leave}
+          testID="header-back"
           accessibilityRole="button"
           accessibilityLabel={t('back')}
         >

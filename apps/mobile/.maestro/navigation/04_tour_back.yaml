@@ -1,0 +1,33 @@
+# Today → yesterday's world tour → back → Today.
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- scrollUntilVisible:
+    element:
+      id: "tour-circle"
+    direction: DOWN
+    timeout: 60000
+    visibilityPercentage: 30
+    speed: 90
+    waitToSettleTimeoutMs: 500
+# Bring the circles fully below the fixed header before tapping.
+- swipe:
+    start: 50%, 45%
+    end: 50%, 60%
+    duration: 400
+- waitForAnimationToEnd
+- tapOn:
+    id: "tour-circle"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "daily-tour"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000
+- assertNotVisible:
+    id: "daily-tour"

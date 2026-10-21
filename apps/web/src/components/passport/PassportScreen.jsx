@@ -8,6 +8,7 @@ import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import HeaderArt from '../HeaderArt'
+import { useBackLayer } from '../../lib/backLayers'
 
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
@@ -36,6 +37,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
   const [today, setToday] = useState(null)
   const [counts, setCounts] = useState({ spots: null, proposals: null, friends: null, week: null, alltime: null })
   const [help, setHelp] = useState(false)
+  useBackLayer(help, () => setHelp(false))
   const cityKey = cityId ? (String(cityId).startsWith('city_') ? String(cityId) : `city_${cityId}`) : null
   const cityNum = cityKey ? Number(cityKey.slice(5)) : null
   const city = cityName ? shortCityName(cityName) : null

@@ -61,7 +61,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         <DashedRoute width={slides.length * (CIRCLE + 20)} height={CIRCLE * 0.6} style={styles.route} />
         {slides.map(({ s, i }, n) => (
-          <TouchableOpacity key={s.city.id} style={styles.item} onPress={() => open(i)} accessibilityRole="button"
+          <TouchableOpacity key={s.city.id} style={styles.item} onPress={() => open(i)} accessibilityRole="button" testID="tour-circle"
                             accessibilityLabel={t('tour.openCity', { city: shortCityName(s.city.name) })}>
             <View style={[styles.ring, { borderColor: ACCENTS[n % ACCENTS.length] }]}>
               <Photo thumb={s.proof.thumbUrl} full={s.proof.photoUrl} style={styles.photo} contentFit="cover" transition={150}

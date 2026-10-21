@@ -56,6 +56,7 @@ import { track } from '@/services/analytics';
 import { Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
+import { goBack } from '@/lib/nav';
 
 // Outline icon per challenge type (V3: no emoji as chrome).
 type IoniconName = keyof typeof Ionicons.glyphMap;
@@ -306,7 +307,7 @@ export default function ChallengeChatScreen() {
         onPress: async () => {
           try {
             await deleteChallenge(id, identity.guestId);
-            router.back();
+            goBack();
           } catch {
             Alert.alert(t('errSave'));
           }
@@ -996,7 +997,7 @@ export default function ChallengeChatScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.nav}>
-          <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
+          <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
             <Ionicons name="chevron-back" size={18} color={colors.text} />
             <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
           </TouchableOpacity>
@@ -1045,7 +1046,7 @@ export default function ChallengeChatScreen() {
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
+        <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
           <Ionicons name="chevron-back" size={18} color={colors.text} />
           <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>

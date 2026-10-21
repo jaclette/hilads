@@ -13,6 +13,7 @@ import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Button, TextField } from '@/ui';
 import { AuthScreen, PasswordEye } from '@/features/auth/AuthScreen';
+import { goBack } from '@/lib/nav';
 
 
 export default function SignInScreen() {
@@ -85,7 +86,7 @@ export default function SignInScreen() {
           // opened over it), otherwise replaces this screen with it.
           router.dismissTo(safeReturn as never);
         } else {
-          router.back();
+          goBack();
         }
       }
     } catch (err: unknown) {

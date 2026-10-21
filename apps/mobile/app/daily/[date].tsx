@@ -62,7 +62,7 @@ function Loading() {
   const { t } = useTranslation('daily');
   return (
     <Screen>
-      <ScreenHeader title={t('kicker')} />
+      <ScreenHeader title={t('kicker')} testID="daily-sheet" />
       <View style={styles.list}><SheetSkeleton /></View>
     </Screen>
   );
@@ -335,7 +335,7 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
 
   return (
     <Screen>
-      <ScreenHeader title={t('kicker')} right={<Text style={styles.navDate}>{challenge?.date ? shortDate(challenge.date, i18n.language) : ''}</Text>} />
+      <ScreenHeader title={t('kicker')} testID="daily-sheet" right={<Text style={styles.navDate}>{challenge?.date ? shortDate(challenge.date, i18n.language) : ''}</Text>} />
 
       {loading && !sheet ? (
         <View style={styles.list}><SheetSkeleton /></View>

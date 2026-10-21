@@ -1,0 +1,19 @@
+# Bug: Today → today's challenge → Android back quit the app (Android 16 predictive back).
+# Expected: back returns to Today.
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "today-hero"
+- extendedWaitUntil:
+    visible:
+      id: "daily-sheet"
+    timeout: 30000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-hero"
+    timeout: 30000
+- assertNotVisible:
+    id: "daily-sheet"

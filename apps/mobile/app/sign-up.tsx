@@ -16,6 +16,7 @@ import { EulaCheckbox, EulaCopyBlock } from '@/features/auth/EulaPromptModal';
 import { AuthScreen, PasswordEye } from '@/features/auth/AuthScreen';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { Button, TextField } from '@/ui';
+import { goBack } from '@/lib/nav';
 
 
 export default function SignUpScreen() {
@@ -130,7 +131,7 @@ export default function SignUpScreen() {
           // opened over it), otherwise replaces this screen with it.
           router.dismissTo(safeReturn as never);
         } else {
-          router.back();
+          goBack();
         }
       }
     } catch (err: unknown) {

@@ -98,6 +98,7 @@ export function PulseButton({ label, onPress, fast, visible, intercept, tone = '
           style={[styles.button, { backgroundColor: bg }]}
           accessibilityRole="button"
           accessibilityLabel={label}
+          testID="today-play"
         >
           <Ionicons name="camera-outline" size={20} color={tone === 'white' ? TANGERINE_TEXT : INK} />
           <Text style={styles.label} numberOfLines={1}>{label}</Text>

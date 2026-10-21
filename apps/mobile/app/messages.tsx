@@ -69,7 +69,7 @@ function DMRow({ convo, onPress, onDelete }: { convo: Conversation; onPress: () 
   );
 
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={confirmDelete} delayLongPress={350} activeOpacity={0.7} accessibilityRole="button">
+    <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={confirmDelete} delayLongPress={350} activeOpacity={0.7} accessibilityRole="button" testID="conversation-row">
       <Avatar uri={convo.other_photo_url ? thumbUrl(convo.other_photo_url) : null} name={name} size={48} fallback="color" />
       <View style={styles.rowBody}>
         <View style={styles.rowTop}>
@@ -256,7 +256,7 @@ export default function MessagesScreen() {
   if (!account) {
     return (
       <Screen>
-        <ScreenHeader title={t('messages', { ns: 'common' })} onBack={goBack} />
+        <ScreenHeader title={t('messages', { ns: 'common' })} onBack={goBack} testID="messages-screen" />
         <UpgradePrompt title={t('upgradeTitle')} subtitle={t('upgradeSub')} />
       </Screen>
     );
@@ -276,7 +276,7 @@ export default function MessagesScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title={t('messages', { ns: 'common' })} onBack={goBack}
+      <ScreenHeader title={t('messages', { ns: 'common' })} onBack={goBack} testID="messages-screen"
                     right={hasUnread ? <Button variant="link" label={t('markAllRead')} onPress={markAllRead} /> : undefined} />
 
       {/* Filter pills */}

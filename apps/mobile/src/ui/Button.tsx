@@ -9,7 +9,7 @@ type IconName = React.ComponentProps<typeof Ionicons>['name'];
  * V3 button (SPEC 9.11): primary = tangerine with ink text (DESIGN.md), secondary = card with a
  * line border, danger = red outline (delete), link = primary text. md is 48 high, sm 44; radius 16 (14 sm).
  */
-export function Button({ label, onPress, variant = 'primary', size = 'md', icon, loading = false, disabled = false, style, accessibilityLabel }: {
+export function Button({ label, onPress, variant = 'primary', size = 'md', icon, loading = false, disabled = false, style, accessibilityLabel, testID }: {
   label: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'danger' | 'link';
@@ -19,6 +19,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
+  testID?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -31,6 +32,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
       activeOpacity={0.85}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      testID={testID}
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
     >
       {loading ? <ActivityIndicator color={color} /> : (

@@ -81,7 +81,11 @@
     "retake": "Repetir",
     "sentTitleNoCity": "¡Tu foto ya está!",
     "compare": "Comparar",
-    "priceFor": "Precio pagado: {{label}}"
+    "priceFor": "Precio pagado: {{label}}",
+    "discardTitle": "¿Descartar tu foto?",
+    "discardBody": "Se perderán tu foto y lo que rellenaste.",
+    "keepEditing": "Seguir editando",
+    "discard": "Descartar"
   },
   "errors": {
     "already_posted": "Ya jugaste el challenge de hoy.",

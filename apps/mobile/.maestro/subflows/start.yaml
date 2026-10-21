@@ -1,0 +1,18 @@
+# Opens the app on Today. A release build starts directly; a dev build needs
+# DEV_URL (the Metro URL, see README.md), opened through the dev client.
+appId: com.hilads.app
+env:
+  DEV_URL: ""
+---
+- launchApp:
+    stopApp: true
+- runFlow:
+    when:
+      true: ${DEV_URL != ''}
+    commands:
+      - openLink: ${DEV_URL}
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 90000
+- waitForAnimationToEnd

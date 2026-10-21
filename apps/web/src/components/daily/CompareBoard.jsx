@@ -6,6 +6,7 @@ import { CityFlag } from '../CityName'
 import Icon from '../Icon'
 import { useDc, ProofTile, SheetSkeleton } from './dailyShared'
 import { answerText, useMoney } from './compareShared'
+import { useBackLayer } from '../../lib/backLayers'
 
 /**
  * The Compare tab of the challenge sheet (SPEC 10.6): "How the world answered",
@@ -20,6 +21,7 @@ export default function CompareBoard({ date, source = 'tab', onOpenProof }) {
   const [board, setBoard] = useState(() => cachedDailyBoard(date, i18n.language))   // prefetched by Today: instant, then refreshed
   const [failed, setFailed] = useState(false)
   const [city, setCity] = useState(null)
+  useBackLayer(city !== null, () => setCity(null))   // a city's photos: browser back returns to every city
   const [cityProofs, setCityProofs] = useState(null)
   const tracked = useRef(false)
 

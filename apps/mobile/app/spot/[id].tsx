@@ -58,7 +58,7 @@ export default function SpotScreen() {
       .catch(() => setNext(offset));
   }, [next, data, guestId]);
 
-  const nav = <ScreenHeader compact title={data?.spot.name ?? ''} />;
+  const nav = <ScreenHeader compact title={data?.spot.name ?? ''} testID="spot-screen" />;
 
   if (failed) {
     return <SafeAreaView style={styles.container} edges={['top']}>{nav}<View style={styles.center}><Text style={styles.muted}>{t('spot.notFound')}</Text></View></SafeAreaView>;

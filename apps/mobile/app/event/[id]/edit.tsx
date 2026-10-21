@@ -19,6 +19,7 @@ import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Chip, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { CategoryPicker, DatePicker, TimePicker, type EventType, addDays, isSameDay, startOfDay, withDate } from '@/features/events/EventPickers';
+import { goBack } from '@/lib/nav';
 
 // ── Time helpers ──────────────────────────────────────────────────────────────
 
@@ -95,7 +96,7 @@ export default function EditEventScreen() {
         ends_at:       endUnix,
         type,
       });
-      router.back();
+      goBack();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t('errUpdate'));
     } finally {

@@ -21,6 +21,7 @@ import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
 import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
+import { goBack } from '@/lib/nav';
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ export default function GuestProfileScreen() {
                 targetNickname: name,
                 guestId:        account ? undefined : identity?.guestId,
               });
-              router.back();
+              goBack();
             } catch {
               removeBlocked({ guestId });
               Alert.alert(t('blockFailTitle', { ns: 'dm' }), t('blockFailBody', { ns: 'dm' }));

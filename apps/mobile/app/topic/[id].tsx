@@ -31,6 +31,7 @@ import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { Banner, Button, Chip, EmptyState, IconButton, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Message, Topic, UserDTO } from '@/types';
+import { goBack } from '@/lib/nav';
 
 const CATEGORY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
   general: 'chatbubbles-outline', tips: 'bulb-outline', food: 'restaurant-outline',
@@ -91,7 +92,7 @@ export default function TopicChatScreen() {
           if (!identity) return;
           try {
             await deleteTopic(id, identity.guestId);
-            router.back();
+            goBack();
           } catch {
             Alert.alert(t('deleteFailTitle'), t('deleteFailBody'));
           }

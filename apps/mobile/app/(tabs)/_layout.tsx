@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
-import { Tabs, useFocusEffect } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform, Keyboard } from 'react-native';
+import { Tabs, router, useFocusEffect, useSegments } from 'expo-router';
+import { View, Text, Pressable, StyleSheet, BackHandler, Platform, Keyboard } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -67,6 +67,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             key={tab.name}
             accessibilityRole="tab"
             accessibilityLabel={label}
+            testID={`tab-${tab.name}`}
             accessibilityState={{ selected: focused }}
             style={[styles.tab, focused && { backgroundColor: colors.primaryTint }]}
             onPress={() => {
@@ -115,22 +116,24 @@ const styles = StyleSheet.create({
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 export default function TabsLayout() {
-  // ── Android hardware back - double-press to exit ───────────────────────────
-  // useFocusEffect scopes this handler to when the tab group is focused.
-  // It auto-cleans up when a root-stack screen (event, DM, etc.) gains focus,
-  // so back navigation on those screens is unaffected.
-  const lastBackPressRef = useRef(0);
+  // ── Android hardware back (navigation rule) ───────────────────────────────
+  // Back closes the top layer; from another tab's root it goes to Today, and
+  // only Today with nothing open leaves the app. backBehavior="firstRoute" does
+  // the tabs part; this handler sends the off-bar screens (Hi Local, nearby,
+  // me) back to the tab they belong to. useFocusEffect scopes it to when the
+  // tab group is focused: a pushed screen (event, DM, sheet...) handles its own.
+  const segments = useSegments();
+  const segmentsRef = useRef(segments);
+  segmentsRef.current = segments;
   useFocusEffect(
     useCallback(() => {
       if (Platform.OS !== 'android') return;
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-        const now = Date.now();
-        if (now - lastBackPressRef.current < 2000) {
-          return false; // second press → let the OS exit
-        }
-        lastBackPressRef.current = now;
-        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
-        return true; // first press → show toast, block exit
+        const tab = segmentsRef.current[1];
+        const owner = tab === 'events' || tab === 'here' ? 'chat' : tab === 'me' ? 'passport' : null;
+        if (!owner) return false;
+        router.navigate(`/(tabs)/${owner}` as never);
+        return true;
       });
       return () => sub.remove();
     }, []),
@@ -140,6 +143,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       initialRouteName="today"
+      backBehavior="firstRoute"
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >

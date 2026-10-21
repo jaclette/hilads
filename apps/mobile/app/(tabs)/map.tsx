@@ -29,6 +29,7 @@ import { shortCityName } from '@/i18n/cityName';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { DailyThemeKey } from '@/types';
 import { Chip, CityFlag, IconButton, TextField } from '@/ui';
+import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
 const IDLE_DEBOUNCE_MS = 400;
@@ -87,6 +88,8 @@ export default function MapScreen() {
   const [loaded, setLoaded]     = useState(false);
   const [cityEmpty, setCityEmpty] = useState(false);
   const [selected, setSelected] = useState<Spot | null>(null);
+  // The selected spot's card is a layer over the map: Android back closes it first.
+  useBackClose(selected !== null, () => setSelected(null));
   const [share, setShare]       = useState<ShareContent | null>(null);
   const [me, setMe]             = useState<[number, number] | null>(null);
   const [query, setQuery]       = useState('');
@@ -443,7 +446,7 @@ export default function MapScreen() {
       <View style={styles.bottom} pointerEvents="box-none">
         {notice && <Text style={styles.notice}>{notice}</Text>}
         {view === 'map' && <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />}
-        <TouchableOpacity style={styles.toggle} onPress={toggleView} activeOpacity={0.85} accessibilityRole="button">
+        <TouchableOpacity style={styles.toggle} onPress={toggleView} activeOpacity={0.85} accessibilityRole="button" testID="map-view-toggle">
           <Ionicons name={view === 'map' ? 'list-outline' : 'map-outline'} size={18} color={colors.bg} />
           <Text style={styles.toggleText}>{view === 'map' ? t('map.list') : t('map.mapView')}</Text>
         </TouchableOpacity>

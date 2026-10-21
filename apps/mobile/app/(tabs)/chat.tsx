@@ -869,7 +869,7 @@ export default function ChatTab() {
               await shareLink({ title, message, url });
             }} />
             {/* Private messages, with the unread dot; a guest is asked to sign up. */}
-            <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={!!account && unreadDMs > 0}
+            <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={!!account && unreadDMs > 0} testID="hi-messages"
                         onPress={() => {
                           if (!account) { router.push('/auth-gate?reason=send_dm&returnTo=%2Fmessages' as never); return; }
                           setUnreadDMs(0); clearEventChatCounts(); router.push('/messages');

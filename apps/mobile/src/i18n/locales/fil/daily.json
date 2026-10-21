@@ -81,7 +81,11 @@
     "retake": "Kumuha ulit",
     "sentTitleNoCity": "Naipadala na ang litrato mo!",
     "compare": "Ikumpara",
-    "priceFor": "Ibinayad: {{label}}"
+    "priceFor": "Ibinayad: {{label}}",
+    "discardTitle": "Itapon ang litrato mo?",
+    "discardBody": "Mawawala ang litrato mo at ang mga inilagay mo.",
+    "keepEditing": "Ituloy ang pag-edit",
+    "discard": "Itapon"
   },
   "errors": {
     "already_posted": "Naglaro ka na sa challenge ngayong araw.",

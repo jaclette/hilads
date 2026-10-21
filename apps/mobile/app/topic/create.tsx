@@ -10,6 +10,7 @@ import { ApiError } from '@/api/client';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
+import { goBack } from '@/lib/nav';
 
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
 
@@ -46,7 +47,7 @@ export default function CreateTopicScreen() {
     if (editId) {
       try {
         await updateTopic(editId, identity.guestId, title.trim(), description.trim() || null, category);
-        router.back();
+        goBack();
       } catch (err) {
         setError(err instanceof Error ? err.message : t('errSave'));
       } finally {
@@ -74,7 +75,7 @@ export default function CreateTopicScreen() {
     const coords = geo.coords!;
     try {
       await createTopic(city.channelId, identity.guestId, trimmedTitle, description.trim() || null, category, coords);
-      router.back();
+      goBack();
     } catch (err) {
       // One-hangout-per-user: surface the existing hangout instead of an error.
       if (err instanceof ApiError && err.status === 409 && err.body?.error === 'hangout_limit') {

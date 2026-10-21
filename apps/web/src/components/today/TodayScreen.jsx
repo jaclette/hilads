@@ -21,6 +21,7 @@ import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PhotoCredit, PickBadge, PickPill, creditAuthor } from '../map/Pick'
 import { ACCENTS, DashedRoute, FlagSticker, HighlightText, Wordmark, plain, themeColor } from '../joy/Joy'
+import { useBackLayer } from '../../lib/backLayers'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -621,6 +622,7 @@ function TourRow({ today }) {
   const [tour, setTour] = useState(null)
   const [failed, setFailed] = useState(false)
   const [open, setOpen] = useState(null)
+  useBackLayer(open !== null, () => setOpen(null))   // the tour viewer: browser back closes it
   const [broken, setBroken] = useState([])   // proof ids whose photo didn't load: never a flag-only circle
   const cityId = today?.city?.id ?? null
   const loaded = !!today

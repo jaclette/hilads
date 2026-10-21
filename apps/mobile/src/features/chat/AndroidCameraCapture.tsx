@@ -195,7 +195,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
               </TouchableOpacity>
 
               {/* Use Photo - primary CTA */}
-              <Button icon="checkmark" label={t('camera.usePhoto')} onPress={handleUsePhoto} loading={compressing} style={styles.useBtn} />
+              <Button icon="checkmark" label={t('camera.usePhoto')} onPress={handleUsePhoto} loading={compressing} style={styles.useBtn} testID="camera-use" />
 
             </View>
           </View>
@@ -239,6 +239,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
                 activeOpacity={0.75}
                 accessibilityRole="button"
                 accessibilityLabel={t('composer.takePhoto')}
+                testID="camera-shutter"
               >
                 {taking
                   ? <ActivityIndicator size="small" color={colors.white} />

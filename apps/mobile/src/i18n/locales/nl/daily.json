@@ -81,7 +81,11 @@
     "retake": "Opnieuw",
     "sentTitleNoCity": "Je foto is binnen!",
     "compare": "Vergelijken",
-    "priceFor": "Betaald: {{label}}"
+    "priceFor": "Betaald: {{label}}",
+    "discardTitle": "Je foto weggooien?",
+    "discardBody": "Je foto en wat je hebt ingevuld gaan verloren.",
+    "keepEditing": "Verder bewerken",
+    "discard": "Weggooien"
   },
   "errors": {
     "already_posted": "Je hebt de challenge van vandaag al gespeeld.",

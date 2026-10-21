@@ -234,7 +234,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   return (
     <View style={styles.hero}>
       {/* The whole photo opens the challenge sheet (twist, full question, answers). */}
-      <Pressable style={StyleSheet.absoluteFill} onPress={openSheet} accessibilityRole="button"
+      <Pressable style={StyleSheet.absoluteFill} onPress={openSheet} accessibilityRole="button" testID="today-hero"
                  accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
         {photo !== null && <Image source={photo} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
         <LinearGradient colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']} style={styles.shadeTop} />

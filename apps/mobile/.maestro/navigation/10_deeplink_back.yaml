@@ -1,0 +1,30 @@
+# A link to today's challenge opens the sheet with Today under it: back → Today, never out of the app.
+appId: com.hilads.app
+tags: [navigation]
+env:
+  DEV_URL: ""
+---
+- runFlow: ../subflows/start.yaml
+- stopApp
+- openLink: "hilads://today"
+- runFlow:
+    when:
+      true: ${DEV_URL != ''}
+    commands:
+      # A dev build reloads its bundle first: open the link once the app is up.
+      - extendedWaitUntil:
+          visible:
+            id: "today-screen"
+          timeout: 90000
+      - openLink: "hilads://today"
+- extendedWaitUntil:
+    visible:
+      id: "daily-sheet"
+    timeout: 90000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000
+- assertNotVisible:
+    id: "daily-sheet"

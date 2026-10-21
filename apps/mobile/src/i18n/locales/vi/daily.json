@@ -81,7 +81,11 @@
     "retake": "Chụp lại",
     "sentTitleNoCity": "Ảnh của bạn đã gửi!",
     "compare": "So sánh",
-    "priceFor": "Giá đã trả: {{label}}"
+    "priceFor": "Giá đã trả: {{label}}",
+    "discardTitle": "Bỏ ảnh của bạn?",
+    "discardBody": "Ảnh và những gì bạn đã điền sẽ bị mất.",
+    "keepEditing": "Tiếp tục chỉnh",
+    "discard": "Bỏ"
   },
   "errors": {
     "already_posted": "Bạn đã chơi challenge hôm nay rồi.",

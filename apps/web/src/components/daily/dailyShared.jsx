@@ -27,6 +27,7 @@ export function useHere() {
 }
 import { themeName } from '../map/spotsShared'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { useBackLayer } from '../../lib/backLayers'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
 // features/daily): the screens' context, the app's strings (challenge.json →
@@ -297,9 +298,11 @@ const REPORT_REASONS = ['inappropriate', 'person_without_consent', 'dangerous', 
 
 /** Full-screen photo of one proof: author, badges, caption, price, place, vote, report. */
 export function ProofViewer({ proof, onClose }) {
+  useBackLayer(!!proof, onClose)   // browser back closes it
   const { t } = useDc()
   const { account, needAccount, openSpot } = useDaily()
   const [reporting, setReporting] = useState(false)
+  useBackLayer(reporting, () => setReporting(false))   // the report menu closes before the photo
   const [notice, setNotice] = useState(null)
   const money = useMoney()
   if (!proof) return null

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { track } from '../lib/analytics'
+import { useBackLayer } from '../lib/backLayers'
 
 // The app's reasons (apps/mobile auth-gate); the web's old "view_profile"
 // fallback covers anything else.
@@ -16,6 +17,7 @@ const REASONS = [
  * guest is back where they were afterwards.
  */
 export default function SignUpSheet({ reason, city = null, onAuth, onClose }) {
+  useBackLayer(true, onClose)   // browser back closes it
   const { t } = useTranslation('auth')
   const r = REASONS.includes(reason) ? reason : 'view_profile'
   useEffect(() => { track('guest_signup_prompted', { action: r }) }, [r])

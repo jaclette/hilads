@@ -51,13 +51,15 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const name = proof.user.displayName || proof.user.username || '';
   return (
     <Modal visible animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen">
-      <View style={styles.wrap}>
+      <View style={styles.wrap} testID="proof-viewer">
       {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
       <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
       <View style={[StyleSheet.absoluteFill, styles.shade]} />
       <SafeAreaView style={styles.flex}>
-        <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={styles.close} />
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={styles.close} testID="viewer-close" />
+        {/* Pulling down past the top (iOS bounce) closes it like a swipe-down modal; Android back closes it too. */}
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}
+                    onScrollEndDrag={e => { if (e.nativeEvent.contentOffset.y < -70) onClose(); }}>
         <Image source={{ uri: proof.photoUrl }} contentFit="contain"
                style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
                onLoad={e => { if (e.source.width && e.source.height) setRatio(e.source.width / e.source.height); }} />

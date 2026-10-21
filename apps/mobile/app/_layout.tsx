@@ -44,6 +44,10 @@ if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
 // Keep native splash visible while booting
 SplashScreen.preventAutoHideAsync();
 
+// A deep link or a push opens its screen with Today (the tabs) under it, so
+// back goes to Today instead of leaving the app (the navigation rule).
+export const unstable_settings = { initialRouteName: '(tabs)' };
+
 // ── Inner layout (has access to AppContext) ───────────────────────────────────
 
 function RootLayoutInner() {

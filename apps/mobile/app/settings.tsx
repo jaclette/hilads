@@ -270,7 +270,7 @@ export default function SettingsScreen() {
   return (
     <Screen>
       {/* Back + title (Settings opens from the Passport gear, SPEC 9.7). */}
-      <ScreenHeader title={t('settings')} />
+      <ScreenHeader title={t('settings')} testID="settings-screen" />
 
       <ScrollView
         style={styles.scrollView}

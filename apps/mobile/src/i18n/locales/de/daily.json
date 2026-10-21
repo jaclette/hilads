@@ -81,7 +81,11 @@
     "retake": "Neu aufnehmen",
     "sentTitleNoCity": "Dein Foto ist da!",
     "compare": "Vergleichen",
-    "priceFor": "Bezahlt: {{label}}"
+    "priceFor": "Bezahlt: {{label}}",
+    "discardTitle": "Dein Foto verwerfen?",
+    "discardBody": "Dein Foto und deine Angaben gehen verloren.",
+    "keepEditing": "Weiter bearbeiten",
+    "discard": "Verwerfen"
   },
   "errors": {
     "already_posted": "Du hast die heutige Challenge schon gespielt.",
