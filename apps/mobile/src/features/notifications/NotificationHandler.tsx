@@ -374,8 +374,9 @@ function resolvePushRoute(data: NotifData): string | null {
       // My Local Twist proposal was picked → its status screen.
       return '/daily/twist';
 
-    case 'daily_first_vote': {
-      // My proof got its first vote (prompt 12) → that proof in its sheet.
+    case 'daily_first_vote':
+    case 'daily_new_photo': {
+      // My proof got its first vote (prompt 12), or someone just played → that proof in its sheet.
       const { date, proofId } = data as { date?: string; proofId?: string };
       const day = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : 'today';
       return proofId ? `/daily/${day}?source=push&proof=${encodeURIComponent(proofId)}` : `/daily/${day}?source=push`;

@@ -20,7 +20,9 @@ declare(strict_types=1);
  *   send time, skipped when there is no news;
  * - first_vote: queued and sent right away when a proof gets its first vote
  *   (prompt 12); later votes are told by the digest;
- * - top10, proposal_approved, proposal_day, proposal_result.
+ * - top10, proposal_approved, proposal_day, proposal_result;
+ * - new_photo: queued for everyone when a photo goes live (someone just
+ *   played), once per recipient and day, text stored at queue time.
  *
  * Every push says what the challenge is: the morning "🌸 Today: Traditions"
  * and the reminder "🌸 Traditions · 6h left" carry the challenge text as
@@ -751,6 +753,93 @@ final class DailyPushes
             }
         }
         return self::insert($rows);
+    }
+
+    /**
+     * Someone just played (the founder's call, 2026-10-21): when a photo goes
+     * live, everyone with Daily pushes hears it - "📸 Linh just played in
+     * Saigon!" over the challenge. Once per recipient and challenge day (the
+     * unique key: the day's first photo is the one told), in their daytime
+     * (else 09:00 local), never after the end; not to its author, nor to
+     * anyone who blocked them. Sent by the tick. Returns rows queued.
+     */
+    public static function queueNewPhoto(array $proof, DateTimeImmutable $now): int
+    {
+        if (DailyProofRepository::bool($proof['is_demo'] ?? false) || DailyProofRepository::bool($proof['is_seed'] ?? false)
+            || DailyProofRepository::bool($proof['is_suggestion'] ?? false)) {
+            return 0;
+        }
+        $date      = (string) $proof['challenge_date'];
+        $challenge = DailyChallengeRepository::findPublishedByDate($date);
+        if ($challenge === null || !DailyClock::isActive($date, $now)) {
+            return 0;
+        }
+        [, $end] = DailyClock::window($date);
+        $author  = (string) $proof['user_id'];
+        $pdo     = Database::pdo();
+        $stmt    = $pdo->prepare("SELECT blocker_user_id, blocker_guest_id FROM blocks WHERE blocked_user_id = ?");
+        $stmt->execute([$author]);
+        $blockedBy = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $b) {
+            $blockedBy[$b['blocker_user_id'] !== null ? 'u:' . $b['blocker_user_id'] : 'g:' . $b['blocker_guest_id']] = true;
+        }
+        $authorGuest = $pdo->prepare("SELECT guest_id FROM users WHERE id = ?");
+        $authorGuest->execute([$author]);
+        $authorGuestId = $authorGuest->fetchColumn() ?: null;
+
+        $messages = [];   // one per locale
+        $message  = static function (string $locale) use (&$messages, $challenge, $proof): array {
+            return $messages[$locale] ??= self::newPhotoMessage($challenge, $proof, self::morningLocale($challenge, $locale));
+        };
+        $rows = [];
+        foreach (self::userRecipients() as $u) {
+            $key = 'u:' . $u['id'];
+            $at  = self::morningSendAt($now, $u['tz']);
+            if ($u['id'] === $author || isset($blockedBy[$key]) || $at >= $end) {
+                continue;
+            }
+            $rows[] = [$key, $u['id'], null, $date, 'new_photo', $at, $u['tz'], $message($u['locale']) + ['locale' => $u['locale']]];
+        }
+        $guests = $pdo->query("
+            SELECT t.guest_id, max(t.timezone) AS token_tz, max(t.locale) AS token_locale
+            FROM mobile_push_tokens t
+            WHERE t.user_id IS NULL AND t.guest_id IS NOT NULL
+              AND NOT EXISTS (SELECT 1 FROM users u WHERE u.guest_id = t.guest_id)
+            GROUP BY t.guest_id
+        ")->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($guests as $g) {
+            $key = 'g:' . $g['guest_id'];
+            $tz  = self::pickTimezone($g['token_tz']);
+            $at  = self::morningSendAt($now, $tz);
+            if ($g['guest_id'] === $authorGuestId || isset($blockedBy[$key]) || $at >= $end) {
+                continue;
+            }
+            $loc    = DailyI18n::normalize($g['token_locale']);
+            $rows[] = [$key, null, $g['guest_id'], $date, 'new_photo', $at, $tz, $message($loc) + ['locale' => $loc]];
+        }
+        return self::insert($rows);
+    }
+
+    /**
+     * The "someone just played" push: "📸 Linh just played in Saigon!" over the
+     * challenge text, then "Come see what they found 👀" when it fits in
+     * BODY_MAX. $locale must come from morningLocale(). Opens the photo.
+     */
+    public static function newPhotoMessage(array $challenge, array $proof, string $locale = 'en'): array
+    {
+        $name  = trim((string) ($proof['display_name'] ?? '')) ?: (string) ($proof['username'] ?? '');
+        $city  = !empty($proof['city_name']) ? CityNames::short((string) $proof['city_name'], $locale) : null;
+        $title = $city !== null
+            ? (DailyPushText::render('new_photo_title', $locale, ['name' => $name, 'city' => $city]) ?? "📸 {$name} just played in {$city}!")
+            : (DailyPushText::render('new_photo_title_nocity', $locale, ['name' => $name]) ?? "📸 {$name} just played!");
+        // The challenge's headline (the Today hero's title) when it has one, else its text.
+        $heads = json_decode((string) ($challenge['headline_i18n'] ?? ''), true) ?: [];
+        $head  = $locale === 'en' ? (string) ($heads['en'] ?? '') : (string) (DailyI18n::pick($heads, $locale) ?? '');
+        $text  = trim($head) !== '' ? $head : self::challengeText($challenge, $locale);   // never an English headline in a translated push
+        $see   = DailyPushText::render('new_photo_see', $locale) ?? 'Come see what they found 👀';
+        $body  = mb_strlen($text . ' ' . $see) <= self::BODY_MAX ? $text . ' ' . $see : $text;
+        return ['title' => $title, 'body' => $body,
+                'data'  => self::data((string) $proof['challenge_date']) + ['proofId' => (string) $proof['id']]];
     }
 
     /** Digests of the selected Local Twists' authors (registered users), at the drop. */

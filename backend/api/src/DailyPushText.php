@@ -20,7 +20,7 @@ final class DailyPushText
         'title_today', 'title_reminder', 'did_count', 'did_count_one', 'did_friend', 'did_friend_others',
         'did_friend_others_one', 'theme_hidden_gem', 'theme_taste', 'theme_ask_local', 'theme_local_find', 'theme_night_out',
         'theme_sip', 'theme_only_here', 'theme_special', 'city_streak', 'tour', 'answered_countries', 'first_vote_city', 'title_world', 'morning_add',
-        'vote_reminder',
+        'vote_reminder', 'new_photo_title', 'new_photo_title_nocity', 'new_photo_see',
     ];
 
     private const T = [
@@ -66,6 +66,9 @@ final class DailyPushText
             'title_world' => "La question du jour",
             'morning_add' => "{question} Joue pour {city}.",
             'vote_reminder' => "{a} et {b} ont joué aujourd'hui. Va voir leurs photos.",
+            'new_photo_title' => "📸 {name} vient de jouer à {city} !",
+            'new_photo_title_nocity' => "📸 {name} vient de jouer !",
+            'new_photo_see' => "Viens voir sa photo 👀",
         ],
         'vi' => [
             'world' => "Hôm qua ảnh của bạn đứng #{rank} thế giới.",
@@ -109,6 +112,9 @@ final class DailyPushText
             'title_world' => "Câu hỏi hôm nay",
             'morning_add' => "{question} Chơi cho {city}.",
             'vote_reminder' => "{a} và {b} đã chơi hôm nay. Xem ảnh của họ nhé.",
+            'new_photo_title' => "📸 {name} vừa chơi ở {city}!",
+            'new_photo_title_nocity' => "📸 {name} vừa chơi!",
+            'new_photo_see' => "Vào xem bạn ấy tìm được gì 👀",
         ],
         'es' => [
             'world' => "Ayer tu foto quedó #{rank} en el mundo.",
@@ -152,6 +158,9 @@ final class DailyPushText
             'title_world' => "La pregunta del día",
             'morning_add' => "{question} Juega por {city}.",
             'vote_reminder' => "{a} y {b} jugaron hoy. Ve a ver sus fotos.",
+            'new_photo_title' => "📸 ¡{name} acaba de jugar en {city}!",
+            'new_photo_title_nocity' => "📸 ¡{name} acaba de jugar!",
+            'new_photo_see' => "Ven a ver lo que encontró 👀",
         ],
         'it' => [
             'world' => "Ieri la tua foto era #{rank} nel mondo.",
@@ -195,6 +204,9 @@ final class DailyPushText
             'title_world' => "La domanda del giorno",
             'morning_add' => "{question} Gioca per {city}.",
             'vote_reminder' => "{a} e {b} hanno giocato oggi. Vai a vedere le loro foto.",
+            'new_photo_title' => "📸 {name} ha appena giocato a {city}!",
+            'new_photo_title_nocity' => "📸 {name} ha appena giocato!",
+            'new_photo_see' => "Vieni a vedere cosa ha trovato 👀",
         ],
         'pt-br' => [
             'world' => "Ontem sua foto ficou em #{rank} no mundo.",
@@ -238,6 +250,9 @@ final class DailyPushText
             'title_world' => "A pergunta do dia",
             'morning_add' => "{question} Jogue por {city}.",
             'vote_reminder' => "{a} e {b} jogaram hoje. Vá ver as fotos deles.",
+            'new_photo_title' => "📸 {name} acabou de jogar em {city}!",
+            'new_photo_title_nocity' => "📸 {name} acabou de jogar!",
+            'new_photo_see' => "Vem ver o que encontrou 👀",
         ],
         'pt-pt' => [
             'world' => "Ontem a tua foto ficou em #{rank} no mundo.",
@@ -281,6 +296,9 @@ final class DailyPushText
             'title_world' => "A pergunta do dia",
             'morning_add' => "{question} Joga por {city}.",
             'vote_reminder' => "{a} e {b} jogaram hoje. Vai ver as fotos deles.",
+            'new_photo_title' => "📸 {name} acabou de jogar em {city}!",
+            'new_photo_title_nocity' => "📸 {name} acabou de jogar!",
+            'new_photo_see' => "Vem ver o que encontrou 👀",
         ],
         'de' => [
             'world' => "Gestern war dein Foto #{rank} weltweit.",
@@ -324,6 +342,9 @@ final class DailyPushText
             'title_world' => "Die Frage des Tages",
             'morning_add' => "{question} Spiel für {city}.",
             'vote_reminder' => "{a} und {b} haben heute gespielt. Schau dir ihre Fotos an.",
+            'new_photo_title' => "📸 {name} hat gerade in {city} gespielt!",
+            'new_photo_title_nocity' => "📸 {name} hat gerade gespielt!",
+            'new_photo_see' => "Schau, was dabei rauskam 👀",
         ],
         'nl' => [
             'world' => "Gisteren was je foto #{rank} wereldwijd.",
@@ -367,6 +388,9 @@ final class DailyPushText
             'title_world' => "De vraag van vandaag",
             'morning_add' => "{question} Speel voor {city}.",
             'vote_reminder' => "{a} en {b} hebben vandaag gespeeld. Bekijk hun foto's.",
+            'new_photo_title' => "📸 {name} speelde net in {city}!",
+            'new_photo_title_nocity' => "📸 {name} speelde net!",
+            'new_photo_see' => "Kom kijken wat het werd 👀",
         ],
         'zh-hans' => [
             'world' => "昨天你的照片在全球排名第 {rank}。",
@@ -410,6 +434,9 @@ final class DailyPushText
             'title_world' => "今日问题",
             'morning_add' => "{question} 代表{city}参加吧。",
             'vote_reminder' => "{a}和{b}今天已经参加了。去看看他们的照片。",
+            'new_photo_title' => "📸 {name}刚刚在{city}参加了挑战！",
+            'new_photo_title_nocity' => "📸 {name}刚刚参加了挑战！",
+            'new_photo_see' => "快来看看拍到了什么 👀",
         ],
         'zh-hant' => [
             'world' => "昨天你的照片在全球排名第 {rank}。",
@@ -453,6 +480,9 @@ final class DailyPushText
             'title_world' => "今日問題",
             'morning_add' => "{question} 代表{city}參加吧。",
             'vote_reminder' => "{a}和{b}今天已經參加了。去看看他們的照片。",
+            'new_photo_title' => "📸 {name}剛剛在{city}參加了挑戰！",
+            'new_photo_title_nocity' => "📸 {name}剛剛參加了挑戰！",
+            'new_photo_see' => "快來看看拍到了什麼 👀",
         ],
         'ja' => [
             'world' => "昨日のあなたの写真は世界で{rank}位でした。",
@@ -496,6 +526,9 @@ final class DailyPushText
             'title_world' => "今日の質問",
             'morning_add' => "{question} {city}代表で参加しよう。",
             'vote_reminder' => "{a}と{b}が今日参加しました。写真を見てみよう。",
+            'new_photo_title' => "📸 {name}さんが{city}で参加しました！",
+            'new_photo_title_nocity' => "📸 {name}さんが参加しました！",
+            'new_photo_see' => "どんな写真か見てみよう 👀",
         ],
         'ko' => [
             'world' => "어제 당신의 사진은 세계 {rank}위였어요.",
@@ -539,6 +572,9 @@ final class DailyPushText
             'title_world' => "오늘의 질문",
             'morning_add' => "{question} {city} 대표로 참여하세요.",
             'vote_reminder' => "{a}와(과) {b}가 오늘 참여했어요. 사진을 보러 가요.",
+            'new_photo_title' => "📸 {name}님이 {city}에서 참여했어요!",
+            'new_photo_title_nocity' => "📸 {name}님이 참여했어요!",
+            'new_photo_see' => "무엇을 찾았는지 보러 가요 👀",
         ],
         'fil' => [
             'world' => "Kahapon, #{rank} sa mundo ang litrato mo.",
@@ -582,6 +618,9 @@ final class DailyPushText
             'title_world' => "Tanong ngayong araw",
             'morning_add' => "{question} Maglaro para sa {city}.",
             'vote_reminder' => "Naglaro ngayon ang {a} at {b}. Tingnan ang mga litrato nila.",
+            'new_photo_title' => "📸 Kakalaro lang ni {name} sa {city}!",
+            'new_photo_title_nocity' => "📸 Kakalaro lang ni {name}!",
+            'new_photo_see' => "Tingnan kung ano ang nahanap niya 👀",
         ],
         'th' => [
             'world' => "เมื่อวานรูปของคุณอยู่อันดับ #{rank} ของโลก",
@@ -625,6 +664,9 @@ final class DailyPushText
             'title_world' => "คำถามประจำวัน",
             'morning_add' => "{question} เล่นเพื่อ{city}",
             'vote_reminder' => "{a} และ {b} เล่นแล้ววันนี้ ไปดูรูปของพวกเขากัน",
+            'new_photo_title' => "📸 {name} เพิ่งเล่นที่{city}!",
+            'new_photo_title_nocity' => "📸 {name} เพิ่งเล่น!",
+            'new_photo_see' => "มาดูกันว่าเจออะไร 👀",
         ],
         'id' => [
             'world' => "Kemarin fotomu peringkat #{rank} di dunia.",
@@ -668,6 +710,9 @@ final class DailyPushText
             'title_world' => "Pertanyaan hari ini",
             'morning_add' => "{question} Main untuk {city}.",
             'vote_reminder' => "{a} dan {b} sudah main hari ini. Lihat foto mereka.",
+            'new_photo_title' => "📸 {name} baru saja main di {city}!",
+            'new_photo_title_nocity' => "📸 {name} baru saja main!",
+            'new_photo_see' => "Yuk lihat apa yang ditemukan 👀",
         ],
         'hi' => [
             'world' => "कल आपकी फ़ोटो दुनिया में #{rank} पर थी।",
@@ -711,6 +756,9 @@ final class DailyPushText
             'title_world' => "आज का सवाल",
             'morning_add' => "{question} {city} के लिए खेलें।",
             'vote_reminder' => "{a} और {b} ने आज खेला। उनकी फ़ोटो देखो।",
+            'new_photo_title' => "📸 {name} ने अभी {city} में खेला!",
+            'new_photo_title_nocity' => "📸 {name} ने अभी खेला!",
+            'new_photo_see' => "आओ देखो क्या मिला 👀",
         ],
         'ru' => [
             'world' => "Вчера твоё фото было #{rank} в мире.",
@@ -754,6 +802,9 @@ final class DailyPushText
             'title_world' => "Вопрос дня",
             'morning_add' => "{question} Играй за {city}.",
             'vote_reminder' => "{a} и {b} сегодня сыграли. Посмотри их фото.",
+            'new_photo_title' => "📸 {name} уже в игре: {city}!",
+            'new_photo_title_nocity' => "📸 {name} уже в игре!",
+            'new_photo_see' => "Посмотри, что получилось 👀",
         ],
         'ar' => [
             'world' => "أمس كانت صورتك #{rank} في العالم.",
@@ -797,6 +848,9 @@ final class DailyPushText
             'title_world' => "سؤال اليوم",
             'morning_add' => "{question} العب باسم {city}.",
             'vote_reminder' => "لعب {a} و{b} اليوم. اذهب لترى صورهم.",
+            'new_photo_title' => "📸 لعب {name} للتو في {city}!",
+            'new_photo_title_nocity' => "📸 لعب {name} للتو!",
+            'new_photo_see' => "تعال وشاهد ما وجده 👀",
         ],
     ];
 

@@ -2798,9 +2798,11 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_push_log_sent_day
 
 // V2-01: the "You're in today's top 10!" push. Reversal: the same constraint
 // without 'top10' (after deleting the top10 rows).
+// 2026-10-21: 'new_photo' (someone just played, to everyone). Reversal: the
+// same constraint without it (after deleting the new_photo rows).
 run($pdo, "ALTER TABLE daily_push_log DROP CONSTRAINT IF EXISTS daily_push_log_type_check", 'drop daily_push_log_type_check');
 run($pdo, "ALTER TABLE daily_push_log ADD CONSTRAINT daily_push_log_type_check
-            CHECK (type IN ('morning', 'reminder', 'digest', 'top10', 'proposal_approved', 'proposal_day', 'proposal_result', 'first_vote'))",
+            CHECK (type IN ('morning', 'reminder', 'digest', 'top10', 'proposal_approved', 'proposal_day', 'proposal_result', 'first_vote', 'new_photo'))",
     'daily_push_log_type_check');
 
 // Content reports on proofs. user_reports allows one report per (reporter,

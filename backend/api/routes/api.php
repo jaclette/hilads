@@ -15292,6 +15292,14 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
     DailyCompare::rememberHomeCity($user['id'], $fields);
     $proof = dailyAfterProofWrite($proof['id']);
     apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
+    // Everyone hears it (once a day each): "📸 Linh just played in Saigon!" over the challenge. Sent by the tick.
+    if (($proof['moderation_status'] ?? null) === 'approved') {
+        try {
+            DailyPushes::queueNewPhoto($proof, new DateTimeImmutable('now'));
+        } catch (\Throwable $e) {
+            error_log('[daily] new photo push failed: ' . $e->getMessage());
+        }
+    }
     // Represent your city (SPEC 9.16): the city's first proof of the day ("You put Saigon on the world map today.").
     $cityFirst = false;
     try {
