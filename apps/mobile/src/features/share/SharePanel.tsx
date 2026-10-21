@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { captureRef } from 'react-native-view-shot';
@@ -12,6 +13,21 @@ import { shareText, shareUrl, type ShareContent } from './content';
 import { IMAGE_CHANNELS, directChannels, shareTo, type ShareChannel } from './targets';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
+
+const STORY_TIP_KEY = 'share_story_link_tip_v1';
+const STORY_CHANNELS: ShareChannel[] = ['instagram_story', 'facebook_story'];
+
+/** Once per phone, before the first Story: the link is copied, add it as a Link sticker. */
+async function storyLinkTip(t: (k: string) => string): Promise<void> {
+  try {
+    if (await AsyncStorage.getItem(STORY_TIP_KEY)) return;
+    await AsyncStorage.setItem(STORY_TIP_KEY, '1');
+  } catch {
+    return;
+  }
+  await new Promise<void>(resolve => Alert.alert(t('share.storyLinkTitle'), t('share.storyLinkBody'),
+    [{ text: t('share.storyLinkOk'), onPress: () => resolve() }], { cancelable: true, onDismiss: () => resolve() }));
+}
 
 // Brand names stay as they are in every language.
 const LABEL: Record<ShareChannel, string> = {
@@ -56,6 +72,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   const go = async (channel: ShareChannel) => {
     if (IMAGE_CHANNELS.includes(channel) && !file && !failed) return;
     try {
+      if (STORY_CHANNELS.includes(channel)) await storyLinkTip(t);
       const res = await shareTo(channel, { file, url: shareUrl(content), text: shareText(content) });
       if (channel === 'copy_link') { setCopied(true); setTimeout(() => setCopied(false), 2000); }
       if (res.done) track('share_completed', { ...props, channel, ...(res.activity ? { activity: res.activity } : {}) });

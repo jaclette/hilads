@@ -62,6 +62,9 @@ export async function shareTo(channel: ShareChannel, { file, url, text }: { file
     case 'instagram_story':
     case 'facebook_story': {
       if (!file) return { done: false };
+      // No app can place a Link sticker in a Story: the link waits in the
+      // clipboard for the one the player adds (Instagram suggests it).
+      await Clipboard.setStringAsync(link);
       if (Platform.OS === 'android') {
         // Android: the card goes to the app itself (a plain image share, read
         // permission granted to it): Instagram offers Story / Feed / Chats,
