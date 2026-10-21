@@ -224,7 +224,7 @@ final class DailyModerationService
         }
         DailyCards::hideProof($proof['id'], $proof['city_id']);
         error_log("[daily] proof {$proof['id']} hidden after " . self::REPORT_HIDE_THRESHOLD . " reports");
-        self::alertAdminQueue();
+        self::alertAdminQueue(DailyProofRepository::findById($proof['id']));
         return 'reported_hidden';
     }
 
@@ -235,9 +235,11 @@ final class DailyModerationService
 
     /**
      * Push the admin (ADMIN_TEST_USER_ID) that proofs are waiting, at most once
-     * every 30 minutes. Best effort.
+     * every 30 minutes. Best effort. With the `$proof` that triggered it, the
+     * push says who, where and which challenge: "@jaclette in Ho Chi Minh City:
+     * Ask a local where they eat… · 1 waiting".
      */
-    public static function alertAdminQueue(): void
+    public static function alertAdminQueue(?array $proof = null): void
     {
         $adminId = trim((string) getenv('ADMIN_TEST_USER_ID'));
         if ($adminId === '' || self::autoApproveEnabled()) {
@@ -253,17 +255,33 @@ final class DailyModerationService
             if ($n === 0) {
                 return;
             }
+            $waiting = $n === 1 ? '1 waiting' : "{$n} waiting";
+            $body = $proof !== null ? self::queueLine($proof) . " · {$waiting}"
+                : ($n === 1 ? '1 photo is waiting for review.' : "{$n} photos are waiting for review.");
             NotificationRepository::createUnchecked(
                 $adminId,
                 'daily_moderation',
-                'Daily Challenge',
-                $n === 1 ? '1 proof is waiting for review.' : "{$n} proofs are waiting for review.",
-                [],
+                'New photo to review',
+                $body,
+                $proof !== null ? ['proofId' => $proof['id'], 'date' => (string) ($proof['challenge_date'] ?? '')] : [],
                 'en',
             );
         } catch (\Throwable $e) {
             error_log('[daily] queue alert failed: ' . $e->getMessage());
         }
+    }
+
+    /** "@jaclette in Ho Chi Minh City: Ask a local where they eat…" (the challenge in English, 70 characters at most). */
+    public static function queueLine(array $proof): string
+    {
+        $who   = '@' . ($proof['username'] ?? $proof['display_name'] ?? '?');
+        $where = !empty($proof['city_name']) ? " in {$proof['city_name']}" : '';
+        $texts = json_decode((string) ($proof['challenge_text_i18n'] ?? ''), true);
+        $text  = is_array($texts) ? (string) ($texts['en'] ?? reset($texts) ?: '') : '';
+        if (mb_strlen($text) > 70) {
+            $text = rtrim(mb_substr($text, 0, 69)) . '…';
+        }
+        return $text !== '' ? "{$who}{$where}: {$text}" : "{$who}{$where}";
     }
 
     private static function mustFind(string $proofId): array

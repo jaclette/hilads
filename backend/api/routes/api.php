@@ -14328,8 +14328,9 @@ function dailyAfterProofWrite(string $proofId, array $user): array
         DailyAdminService::$actor = DailyModerationService::autoApproveEnabled() ? 'auto-approve' : 'trusted';
         return DailyModerationService::approveProof($proofId);
     }
-    DailyModerationService::alertAdminQueue();
-    return DailyProofRepository::findById($proofId);
+    $proof = DailyProofRepository::findById($proofId);
+    DailyModerationService::alertAdminQueue($proof);
+    return $proof;
 }
 
 /** Viewer's two-way block set, for guests too (?guestId=). */
