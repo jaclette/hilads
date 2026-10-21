@@ -62,6 +62,18 @@ export async function shareTo(channel: ShareChannel, { file, url, text }: { file
     case 'instagram_story':
     case 'facebook_story': {
       if (!file) return { done: false };
+      if (Platform.OS === 'android') {
+        // Android: the card goes to the app itself (a plain image share, read
+        // permission granted to it): Instagram offers Story / Feed / Chats,
+        // Facebook its composer. The Stories intent depends on the Meta app's
+        // Android setup and failed silently (Instagram) or opened a blank story
+        // (Facebook) - reported 2026-10-21.
+        await RNShare.shareSingle({
+          social: channel === 'instagram_story' ? Social.Instagram : Social.Facebook,
+          url: file, type: 'image/jpeg', filename: 'hilads', message: link,
+        });
+        return { done: true };
+      }
       await RNShare.shareSingle({
         social: channel === 'instagram_story' ? Social.InstagramStories : Social.FacebookStories,
         appId: META_APP_ID, backgroundImage: file, attributionURL: link,
