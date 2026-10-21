@@ -141,7 +141,7 @@ final class DailyProofRepository
                 home_city_id, home_city_name, home_country, home_answer_text, home_answer_number, home_answer_minutes,
                 home_price_amount, home_price_currency, home_line
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (challenge_id, user_id) WHERE NOT is_seed AND NOT is_suggestion DO NOTHING
+            ON CONFLICT DO NOTHING
             RETURNING id
         ");
         $stmt->execute([
