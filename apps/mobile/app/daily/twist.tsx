@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView,
+  ActivityIndicator, Alert,
   Text, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -18,6 +18,7 @@ import {
 import { formatCountdown, useCountdown } from '@/hooks/useDaily';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import type { DailyTwistProposalScreen, DailyTwistProposalStatus } from '@/types';
+import { KeyboardForm } from '@/ui/keyboard';
 
 /**
  * Propose tomorrow's Local Twist (locals of a live city). Shows tomorrow's
@@ -126,79 +127,76 @@ export default function DailyTwistScreen() {
                       body={t(`twist.reasons.${blocked}`, { city: cityName, defaultValue: t('errors.generic') })} />
         </View>
       ) : (
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-            <Card variant="ticket" style={styles.card}>
-              <View style={styles.iconRow}>
-                <Ionicons name="flame" size={14} color={colors.primaryText} />
-                <Text style={styles.kicker}>{t('twist.tomorrow')}</Text>
-              </View>
-              <Text style={styles.challenge}>{showOriginal && data.challenge?.original ? data.challenge.original.text : data.challenge?.text}</Text>
-              {!!data.challenge?.context && (
-                <Text style={styles.context}>{showOriginal && data.challenge.original ? data.challenge.original.context : data.challenge.context}</Text>
-              )}
-              <OriginalToggle translated={!!data.challenge?.original} showingOriginal={showOriginal} onPress={toggleOriginal} />
-            </Card>
-
-            <Text style={styles.intro}>{t('twist.intro', { city: cityName })}</Text>
-            <View style={styles.iconRow}>
-              <Ionicons name="time-outline" size={14} color={data.open ? colors.primaryText : colors.muted} />
-              <Text style={[styles.deadline, !data.open && styles.deadlineClosed]}>
-                {data.open && left !== null ? t('twist.closesIn', { time: formatCountdown(left) }) : t('twist.closed')}
-              </Text>
-            </View>
-
-            {proposal && !editing && (
-              <Card style={styles.mine}>
-                <View style={styles.mineTop}>
-                  <Text style={styles.mineTitle}>{t('twist.yours')}</Text>
-                  <StatusChip status={proposal.status} />
-                </View>
-                <Text style={styles.mineText}>{proposal.text}</Text>
-                <Text style={styles.muted}>{t(`twist.statusHint.${proposal.status}`, { city: cityName })}</Text>
-                {canChange && (
-                  <View style={styles.actions}>
-                    <Button variant="link" label={t('edit')} onPress={() => { setText(proposal.text); setEditing(true); }} />
-                    <TouchableOpacity onPress={withdraw} style={styles.dangerBtn} accessibilityRole="button">
-                      <Text style={styles.danger}>{t('twist.withdraw')}</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </Card>
-            )}
-
-            {showForm && (
-              <>
-                <TextField
-                  label={t('twist.label', { city: cityName })}
-                  value={text}
-                  onChangeText={setText}
-                  placeholder={t('twist.placeholder')}
-                  maxLength={data.maxLength}
-                  multiline
-                  autoFocus={!proposal}
+        <KeyboardForm contentContainerStyle={styles.body} padBottom footer={showForm ? (
+              <View style={styles.footer}>
+                {editing && <Button variant="link" label={t('cancel')} onPress={() => setEditing(false)} />}
+                <Button
+                  label={proposal ? t('proof.save') : t('twist.submit')}
+                  onPress={submit}
+                  disabled={!text.trim()}
+                  loading={sending}
+                  style={styles.submit}
                 />
-                <Text style={[styles.counter, text.length > data.maxLength - 20 && styles.counterNear]}>
-                  {text.length}/{data.maxLength}
-                </Text>
-                <Text style={styles.muted}>{t('twist.hint')}</Text>
-              </>
+              </View>
+          ) : undefined}>
+          <Card variant="ticket" style={styles.card}>
+            <View style={styles.iconRow}>
+              <Ionicons name="flame" size={14} color={colors.primaryText} />
+              <Text style={styles.kicker}>{t('twist.tomorrow')}</Text>
+            </View>
+            <Text style={styles.challenge}>{showOriginal && data.challenge?.original ? data.challenge.original.text : data.challenge?.text}</Text>
+            {!!data.challenge?.context && (
+              <Text style={styles.context}>{showOriginal && data.challenge.original ? data.challenge.original.context : data.challenge.context}</Text>
             )}
-          </ScrollView>
+            <OriginalToggle translated={!!data.challenge?.original} showingOriginal={showOriginal} onPress={toggleOriginal} />
+          </Card>
+
+          <Text style={styles.intro}>{t('twist.intro', { city: cityName })}</Text>
+          <View style={styles.iconRow}>
+            <Ionicons name="time-outline" size={14} color={data.open ? colors.primaryText : colors.muted} />
+            <Text style={[styles.deadline, !data.open && styles.deadlineClosed]}>
+              {data.open && left !== null ? t('twist.closesIn', { time: formatCountdown(left) }) : t('twist.closed')}
+            </Text>
+          </View>
+
+          {proposal && !editing && (
+            <Card style={styles.mine}>
+              <View style={styles.mineTop}>
+                <Text style={styles.mineTitle}>{t('twist.yours')}</Text>
+                <StatusChip status={proposal.status} />
+              </View>
+              <Text style={styles.mineText}>{proposal.text}</Text>
+              <Text style={styles.muted}>{t(`twist.statusHint.${proposal.status}`, { city: cityName })}</Text>
+              {canChange && (
+                <View style={styles.actions}>
+                  <Button variant="link" label={t('edit')} onPress={() => { setText(proposal.text); setEditing(true); }} />
+                  <TouchableOpacity onPress={withdraw} style={styles.dangerBtn} accessibilityRole="button">
+                    <Text style={styles.danger}>{t('twist.withdraw')}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Card>
+          )}
 
           {showForm && (
-            <View style={styles.footer}>
-              {editing && <Button variant="link" label={t('cancel')} onPress={() => setEditing(false)} />}
-              <Button
-                label={proposal ? t('proof.save') : t('twist.submit')}
-                onPress={submit}
-                disabled={!text.trim()}
-                loading={sending}
-                style={styles.submit}
+            <>
+              <TextField
+                label={t('twist.label', { city: cityName })}
+                value={text}
+                testID="twist-text"
+                onChangeText={setText}
+                placeholder={t('twist.placeholder')}
+                maxLength={data.maxLength}
+                multiline
+                autoFocus={!proposal}
               />
-            </View>
+              <Text style={[styles.counter, text.length > data.maxLength - 20 && styles.counterNear]}>
+                {text.length}/{data.maxLength}
+              </Text>
+              <Text style={styles.muted}>{t('twist.hint')}</Text>
+            </>
           )}
-        </KeyboardAvoidingView>
+        </KeyboardForm>
       )}
     </Screen>
   );

@@ -1,0 +1,16 @@
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://sign-up" }
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { FIELD: "signup-username", TEXT: "keyboardtest" }
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { CLOSE: "1", FIELD: "signup-email", TEXT: "keyboard.test@example.com" }
+- runFlow:
+    file: ../subflows/type_secret.yaml
+    env: { CLOSE: "1", FIELD: "signup-password", TEXT: "not-a-password" }

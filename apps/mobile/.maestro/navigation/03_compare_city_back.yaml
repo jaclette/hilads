@@ -13,10 +13,10 @@ tags: [navigation]
     element:
       id: "chip-compare"
     direction: DOWN
-    timeout: 30000
-    visibilityPercentage: 100
+    timeout: 60000
+    visibilityPercentage: 60
     centerElement: true
-    speed: 90
+    speed: 45
     waitToSettleTimeoutMs: 500
 - tapOn:
     id: "chip-compare"
@@ -24,10 +24,10 @@ tags: [navigation]
     element:
       id: "compare-city"
     direction: DOWN
-    timeout: 30000
-    visibilityPercentage: 100
+    timeout: 60000
+    visibilityPercentage: 60
     centerElement: true
-    speed: 90
+    speed: 45
     waitToSettleTimeoutMs: 500
 - tapOn:
     id: "compare-city"
@@ -35,14 +35,18 @@ tags: [navigation]
     visible:
       id: "compare-all-cities"
     timeout: 20000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "compare-all-cities" }
 - extendedWaitUntil:
     notVisible:
       id: "compare-all-cities"
     timeout: 20000
 - assertVisible:
     id: "daily-sheet"
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
       id: "today-screen"

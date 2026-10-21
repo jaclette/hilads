@@ -32,7 +32,9 @@ tags: [navigation, camera]
       id: "proof-screen"
     timeout: 30000
 # Back from a later step: one step back, still in the flow.
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "header-back" }
 - assertVisible:
     id: "proof-screen"
 # Back until the confirmation, keep editing first.
@@ -41,13 +43,17 @@ tags: [navigation, camera]
       notVisible: "Discard"
     times: 4
     commands:
-      - back
+      - runFlow:
+          file: ../subflows/back.yaml
+          env: { KIND: "tap", TAP: "header-back" }
 - assertVisible: "Keep editing"
 - tapOn: "Keep editing"
 - assertVisible:
     id: "proof-screen"
 # Then discard: back to Today.
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "header-back" }
 - tapOn: "Discard"
 - extendedWaitUntil:
     visible:

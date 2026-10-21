@@ -10,24 +10,19 @@ tags: [navigation]
       id: "strip-world-.*"
     direction: DOWN
     timeout: 60000
-    visibilityPercentage: 100
+    visibilityPercentage: 60
     centerElement: true
-    speed: 90
+    speed: 45
     waitToSettleTimeoutMs: 500
-# The fixed header covers the top of the list: bring the card fully below it
-# (a tap on a half-hidden card would land on its Vote button).
-- swipe:
-    start: 50%, 45%
-    end: 50%, 70%
-    duration: 400
-- waitForAnimationToEnd
 - tapOn:
     id: "strip-world-.*"
 - extendedWaitUntil:
     visible:
       id: "proof-viewer"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "modal" }
 - extendedWaitUntil:
     notVisible:
       id: "proof-viewer"
@@ -48,10 +43,10 @@ tags: [navigation]
     element:
       id: "today-hero"
     direction: UP
-    timeout: 30000
-    visibilityPercentage: 100
+    timeout: 60000
+    visibilityPercentage: 60
     centerElement: true
-    speed: 90
+    speed: 45
     waitToSettleTimeoutMs: 500
 - tapOn:
     id: "today-hero"
@@ -59,7 +54,9 @@ tags: [navigation]
     visible:
       id: "daily-sheet"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
       id: "today-hero"

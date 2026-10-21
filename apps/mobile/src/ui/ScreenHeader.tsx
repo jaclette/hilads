@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Keyboard, Pressable, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
@@ -42,12 +42,13 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
     );
   }
   return (
-    <View style={styles.back} testID={testID}>
+    // A tap on the header (outside the form) closes the keyboard (the keyboard rule).
+    <Pressable style={styles.back} testID={testID} onPress={Keyboard.dismiss} accessible={false}>
       <IconButton icon="chevron-back" onPress={onBack ?? goBack} label={t('back')} testID="header-back" />
-      {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} accessibilityRole="header">{title}</Text>
-             : <View style={styles.spacer} />}
+      {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} accessibilityRole="header" testID="header-title">{title}</Text>
+             : <Text style={styles.spacer} testID="header-title"> </Text>}
       {right}
-    </View>
+    </Pressable>
   );
 }
 

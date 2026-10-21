@@ -102,6 +102,7 @@ export default function SignInScreen() {
       <TextField
         label={t('signIn.email')}
         value={email}
+        testID="signin-email"
         onChangeText={setEmail}
         placeholder={t('signIn.emailPlaceholder')}
         keyboardType="email-address"
@@ -113,6 +114,7 @@ export default function SignInScreen() {
       <TextField
         label={t('signIn.password')}
         value={password}
+        testID="signin-password"
         onChangeText={setPassword}
         placeholder="••••••••"
         secureTextEntry={!showPassword}

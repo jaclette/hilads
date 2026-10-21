@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { BrandMark, Screen, ScreenHeader } from '@/ui';
+import { KeyboardForm } from '@/ui/keyboard';
 
 /** Sign in / sign up / forgot password: back button, the "Hi" mark, title, subtitle, an error box, then the form. */
 export function AuthScreen({ title, subtitle, error, children }: { title?: string; subtitle?: string; error?: string | null; children: ReactNode }) {
@@ -12,25 +13,24 @@ export function AuthScreen({ title, subtitle, error, children }: { title?: strin
   const { colors } = useTheme();
   return (
     <Screen edges={['top', 'bottom']}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScreenHeader title="" />
-        <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-          {!!title && (
-            <View style={styles.head}>
-              <BrandMark size="lg" />
-              <Text style={styles.title} accessibilityRole="header">{title}</Text>
-              {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-            </View>
-          )}
-          {!!error && (
-            <View style={styles.error} accessibilityRole="alert">
-              <Ionicons name="alert-circle-outline" size={18} color={colors.red} />
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          )}
-          {children}
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <ScreenHeader title="" />
+      {/* The focused field and the button under it stay above the keyboard. */}
+      <KeyboardForm contentContainerStyle={styles.body} bottomOffset={120}>
+        {!!title && (
+          <View style={styles.head}>
+            <BrandMark size="lg" />
+            <Text style={styles.title} accessibilityRole="header">{title}</Text>
+            {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          </View>
+        )}
+        {!!error && (
+          <View style={styles.error} accessibilityRole="alert">
+            <Ionicons name="alert-circle-outline" size={18} color={colors.red} />
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
+        {children}
+      </KeyboardForm>
     </Screen>
   );
 }

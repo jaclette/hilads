@@ -1,0 +1,23 @@
+# A private conversation: the input bar sits on the keyboard. Nothing is sent.
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-chat"
+- tapOn:
+    id: "hi-messages"
+- extendedWaitUntil:
+    visible:
+      id: "conversation-row"
+    timeout: 30000
+- tapOn:
+    id: "conversation-row"
+- extendedWaitUntil:
+    visible:
+      id: "dm-input"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { FIELD: "dm-input", TEXT: "See you there" }
+- eraseText: 40

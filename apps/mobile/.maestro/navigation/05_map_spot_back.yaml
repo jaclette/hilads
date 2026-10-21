@@ -28,7 +28,9 @@ tags: [navigation]
     visible:
       id: "spot-sheet"
     timeout: 20000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "sheet" }
 - extendedWaitUntil:
     notVisible:
       id: "spot-sheet"
@@ -44,7 +46,9 @@ tags: [navigation]
     visible:
       id: "spot-screen"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
       id: "map-view-toggle"
@@ -52,12 +56,16 @@ tags: [navigation]
 - assertNotVisible:
     id: "spot-screen"
 # The card is still open: back closes it, then back leaves the tab for Today.
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "sheet" }
 - extendedWaitUntil:
     notVisible:
       id: "spot-sheet"
     timeout: 20000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "tab-today" }
 - extendedWaitUntil:
     visible:
       id: "today-screen"

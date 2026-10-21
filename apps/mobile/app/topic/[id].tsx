@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState, Platform,
+  TouchableOpacity, StyleSheet, Alert, AppState,
 } from 'react-native';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,7 @@ import { Banner, Button, Chip, EmptyState, IconButton, Screen, ScreenHeader } fr
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Message, Topic, UserDTO } from '@/types';
 import { goBack } from '@/lib/nav';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 const CATEGORY_ICONS: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
   general: 'chatbubbles-outline', tips: 'bulb-outline', food: 'restaurant-outline',
@@ -355,7 +356,7 @@ export default function TopicChatScreen() {
       <>
       {/* Android: no KAV behavior (adjustResize lifts the composer); 'padding'
           on top left a black gap on interactive keyboard dismissal. */}
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
         <FlatList
           data={messages}
           keyExtractor={(m, i) => m.id ?? String(i)}

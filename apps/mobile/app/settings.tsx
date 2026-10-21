@@ -8,7 +8,7 @@ import { thumbUrl } from '@/lib/imageThumb';
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,7 @@ import { VIBE_ICONS } from '@/features/profile/vibes';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { shortCityName } from '@/i18n/cityName';
 import type { HomeCityRef } from '@/types';
+import { KeyboardAwareScrollView, KeyboardStickyView, useKeyboardState } from 'react-native-keyboard-controller';
 
 // ── Constants - must match backend allowed lists ──────────────────────────────
 
@@ -63,6 +64,7 @@ export default function SettingsScreen() {
   const router  = useRouter();
   const { t }   = useTranslation('me');
   const insets  = useSafeAreaInsets();
+  const keyboardUp = useKeyboardState(k => k.isVisible);
   const { identity, account, setAccount, setIdentity, logout, city, setCity } = useApp();
 
   const [username,           setUsername]           = useState(account?.username ?? '');
@@ -272,10 +274,12 @@ export default function SettingsScreen() {
       {/* Back + title (Settings opens from the Passport gear, SPEC 9.7). */}
       <ScreenHeader title={t('settings')} testID="settings-screen" />
 
-      <ScrollView
+      {/* The keyboard rule: the focused field stays in sight above Save, which rides on the keyboard. */}
+      <KeyboardAwareScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        bottomOffset={isGuest ? 24 : 96}
         contentContainerStyle={[styles.content, { paddingBottom: (isGuest ? 32 : 150) + insets.bottom }]}
       >
 
@@ -361,6 +365,7 @@ export default function SettingsScreen() {
               label={t('fieldUsername')}
               prefix="@"
               value={username}
+              testID="settings-username"
               onChangeText={handleUsernameChange}
               placeholder={t('usernamePlaceholder')}
               autoCapitalize="none"
@@ -375,6 +380,7 @@ export default function SettingsScreen() {
               <TextField
                 label={t('fieldAbout')}
                 value={aboutMe}
+                testID="settings-about"
                 onChangeText={setAboutMe}
                 placeholder={t('aboutPlaceholder')}
                 maxLength={150}
@@ -427,6 +433,7 @@ export default function SettingsScreen() {
             <TextField
               label={t('fieldAge')}
               value={ageStr}
+              testID="settings-age"
               onChangeText={text => setAgeStr(text.replace(/[^0-9]/g, ''))}
               placeholder={t('agePlaceholder')}
               keyboardType="number-pad"
@@ -485,10 +492,11 @@ export default function SettingsScreen() {
         <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
           <Text style={styles.version}>v{APP_VERSION}</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* ══ STICKY: Save CTA (registered only) ══════════════════════════════ */}
       {!isGuest && (
+        <KeyboardStickyView style={styles.stickyWrap} offset={{ closed: 0, opened: Math.max(12, insets.bottom) - 8 }}>
         <View style={[styles.stickyCta, { paddingBottom: Math.max(12, insets.bottom) }]}>
           {saveError ? <Text style={styles.saveError} accessibilityRole="alert">{saveError}</Text> : null}
           <Button
@@ -498,13 +506,15 @@ export default function SettingsScreen() {
             disabled={photoUploading}
             loading={saving}
           />
-          <View style={styles.stickyBottomRow}>
+          {/* While typing, only Save rides on the keyboard. */}
+          {!keyboardUp && <View style={styles.stickyBottomRow}>
             <Button variant="link" label={t('signOut')} onPress={handleLogout} />
             <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAccount} accessibilityRole="button">
               <Text style={styles.deleteText}>{t('deleteAccount')}</Text>
             </TouchableOpacity>
-          </View>
+          </View>}
         </View>
+        </KeyboardStickyView>
       )}
 
       {/* PR48 - Legend city picker. Selects a channel, posts /me/city,
@@ -585,7 +595,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   version:       { fontSize: FontSizes.xs, fontWeight: '500', color: c.mutedDim },
 
   // Sticky save
-  stickyCta:       { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: Spacing.md, paddingTop: 10, gap: 4,
+  stickyWrap:      { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  stickyCta:       { paddingHorizontal: Spacing.md, paddingTop: 10, gap: 4,
                      backgroundColor: c.bg, borderTopWidth: Border, borderTopColor: c.line },
   saveError:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.red, textAlign: 'center' },
   stickyBottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

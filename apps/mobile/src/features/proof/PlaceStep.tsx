@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Linking, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Linking, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { fetchNearbyPlaces } from '@/api/daily';
 import { distance } from '@/features/today/format';
 import type { DailyThemeKey, NearbyPlace } from '@/types';
+import { KeyboardForm } from '@/ui/keyboard';
 
 /** Above this, the position is flagged as approximate (the check allows 150 m). */
 const APPROX_M = 100;
@@ -123,7 +124,13 @@ export function PlaceStep({ theme, onPicked }: {
   const approximate = position?.accuracy !== null && position?.accuracy !== undefined && position.accuracy > APPROX_M;
 
   return (
-    <ScrollView contentContainerStyle={styles.list} keyboardShouldPersistTaps="handled">
+    // The new place's name stays in sight above the keyboard, its button rides on top of it.
+    <KeyboardForm contentContainerStyle={styles.list} footerStyle={styles.footer} footer={phase === 'new' ? (
+      <TouchableOpacity style={[styles.cta, name.trim() === '' && styles.off]} onPress={pickNew} disabled={name.trim() === ''}
+                        accessibilityRole="button" testID="place-use-new">
+        <Text style={styles.ctaText}>{t('place.useNew')}</Text>
+      </TouchableOpacity>
+    ) : undefined}>
       <Text style={styles.title}>{t('place.title')}</Text>
       {approximate && (
         <View style={styles.warn}>
@@ -141,7 +148,7 @@ export function PlaceStep({ theme, onPicked }: {
           {places.length > 4 && (
             <View style={styles.search}>
               <Ionicons name="search-outline" size={18} color={colors.muted} />
-              <TextInput style={styles.searchInput} value={query} onChangeText={setQuery} placeholder={t('place.search')}
+              <TextInput style={styles.searchInput} value={query} onChangeText={setQuery} placeholder={t('place.search')} returnKeyType="search"
                          placeholderTextColor={colors.muted} accessibilityLabel={t('place.search')} />
             </View>
           )}
@@ -160,7 +167,7 @@ export function PlaceStep({ theme, onPicked }: {
               <Ionicons name="chevron-forward" size={18} color={colors.muted} />
             </TouchableOpacity>
           ))}
-          <TouchableOpacity style={[styles.row, styles.newRow]} onPress={() => setPhase('new')} accessibilityRole="button">
+          <TouchableOpacity style={[styles.row, styles.newRow]} onPress={() => setPhase('new')} accessibilityRole="button" testID="place-new">
             <Ionicons name="add-circle-outline" size={20} color={colors.primaryText} />
             <View style={styles.rowBody}>
               <Text style={styles.rowName}>{t('place.newTitle')}</Text>
@@ -184,11 +191,9 @@ export function PlaceStep({ theme, onPicked }: {
             autoFocus
             returnKeyType="done"
             onSubmitEditing={pickNew}
+            testID="place-name"
           />
           <Text style={styles.hint}>{t('place.newHint')}</Text>
-          <TouchableOpacity style={[styles.cta, name.trim() === '' && styles.off]} onPress={pickNew} disabled={name.trim() === ''} accessibilityRole="button">
-            <Text style={styles.ctaText}>{t('place.useNew')}</Text>
-          </TouchableOpacity>
           {places.length > 0 && (
             <TouchableOpacity onPress={() => setPhase('list')} accessibilityRole="button" style={styles.backToList}>
               <Text style={styles.link}>{t('place.backToList')}</Text>
@@ -196,7 +201,7 @@ export function PlaceStep({ theme, onPicked }: {
           )}
         </View>
       )}
-    </ScrollView>
+    </KeyboardForm>
   );
 }
 
@@ -211,6 +216,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   secondaryText: { color: c.text },
   off:           { opacity: 0.45 },
   list:          { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
+  footer:        { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   warn:          { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 14, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   warnText:      { flex: 1, fontSize: FontSizes.xs, color: c.text },
   refresh:       { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 },

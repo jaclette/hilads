@@ -1,0 +1,22 @@
+# Propose a challenge: the three fields stay above the keyboard. Nothing is sent.
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://daily/propose" }
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { FIELD: "propose-text", TEXT: "Find the best banh mi near a school" }
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { CLOSE: "1", FIELD: "propose-why", TEXT: "Kids know" }
+- runFlow:
+    when:
+      visible:
+        id: "propose-twist"
+    commands:
+      - runFlow:
+          file: ../subflows/type_and_check.yaml
+          env: { CLOSE: "1", FIELD: "propose-twist", TEXT: "Ask for extra pate" }

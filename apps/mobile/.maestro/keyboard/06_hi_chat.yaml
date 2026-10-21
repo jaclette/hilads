@@ -1,0 +1,15 @@
+# The Hi channel: the input bar sits on the keyboard. Nothing is sent.
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-chat"
+- extendedWaitUntil:
+    visible:
+      id: "chat-input"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { FIELD: "chat-input", TEXT: "Anyone at the night market" }
+- eraseText: 60

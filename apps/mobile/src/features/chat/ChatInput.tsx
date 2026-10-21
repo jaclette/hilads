@@ -539,6 +539,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         ref={inputRef}
         style={styles.input}
         value={text}
+        testID="chat-input"
         onChangeText={handleChangeText}
         onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; detectMention(selection.end); }}
         placeholder={placeholder ?? t('composer.placeholderDefault')}

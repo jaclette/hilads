@@ -13,6 +13,7 @@ import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { socket } from '@/lib/socket';
@@ -273,12 +274,16 @@ function ThemedRoot() {
   const { theme, colors } = useTheme();
   return (
     <SafeAreaProvider style={{ backgroundColor: colors.bg }}>
+      {/* The keyboard rule (src/ui/keyboard.tsx): one keyboard handling for every
+          screen, Android edge-to-edge included (adjustResize no longer resizes it). */}
+      <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
       <AppProvider>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.bg} />
         <ScopeProvider>
           <RootLayoutInner />
         </ScopeProvider>
       </AppProvider>
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 }

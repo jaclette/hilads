@@ -8,15 +8,10 @@ tags: [navigation]
       id: "tour-circle"
     direction: DOWN
     timeout: 60000
-    visibilityPercentage: 30
-    speed: 90
+    visibilityPercentage: 60
+    centerElement: true
+    speed: 45
     waitToSettleTimeoutMs: 500
-# Bring the circles fully below the fixed header before tapping.
-- swipe:
-    start: 50%, 45%
-    end: 50%, 60%
-    duration: 400
-- waitForAnimationToEnd
 - tapOn:
     id: "tour-circle"
     index: 0
@@ -24,7 +19,9 @@ tags: [navigation]
     visible:
       id: "daily-tour"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "modal" }
 - extendedWaitUntil:
     visible:
       id: "today-screen"

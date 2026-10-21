@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, Alert, Linking } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constant
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { goBack } from '@/lib/nav';
+import { KeyboardForm } from '@/ui/keyboard';
 
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
 
@@ -115,10 +116,18 @@ export default function CreateTopicScreen() {
     <Screen>
       <ScreenHeader title={editId ? t('editTitle') : t('startTitle')} />
 
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
+      <KeyboardForm contentContainerStyle={styles.bodyContent} padBottom footerStyle={styles.footer} footer={
+        <Button
+          label={editId ? t('saveChanges') : t('startCta')}
+          onPress={handleSubmit}
+          loading={submitting}
+          disabled={!title.trim()}
+        />
+      }>
         <TextField
           label={t('titleLabel')}
           value={title}
+          testID="topic-title"
           onChangeText={setTitle}
           placeholder={t('titlePlaceholder')}
           maxLength={100}
@@ -140,14 +149,7 @@ export default function CreateTopicScreen() {
         ) : null}
 
         {error ? <Text style={styles.errorText} accessibilityRole="alert">{error}</Text> : null}
-
-        <Button
-          label={editId ? t('saveChanges') : t('startCta')}
-          onPress={handleSubmit}
-          loading={submitting}
-          disabled={!title.trim()}
-        />
-      </ScrollView>
+      </KeyboardForm>
     </Screen>
   );
 }
@@ -156,7 +158,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   limitWrap:   { flex: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
   stretch:     { alignSelf: 'stretch', marginTop: Spacing.sm },
   body:        { flex: 1 },
-  bodyContent: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xl * 2 },
+  bodyContent: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xl },
+  footer:      { paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   expiryNote:  { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted, textAlign: 'center' },
   geoHint:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 12, paddingHorizontal: 14,
                  borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },

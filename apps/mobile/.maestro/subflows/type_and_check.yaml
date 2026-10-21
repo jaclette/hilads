@@ -1,0 +1,38 @@
+# Types TEXT into the field FIELD, then taps the field again and checks its
+# text did not change: a field hidden by the keyboard would get that tap on a
+# key instead (a stray letter), so the check fails. The field is first brought to the middle
+# of the screen with the keyboard closed, the way a person reaches it.
+appId: com.hilads.app
+---
+# CLOSE: "1" when the keyboard is still up from the previous field: a tap on
+# the screen's header closes it (the keyboard rule's "tap outside"). Never
+# Maestro's hideKeyboard: on Android it presses back (leaves the screen), on
+# iOS it cannot dismiss React Native's keyboard.
+- runFlow:
+    when:
+      true: ${typeof CLOSE !== 'undefined' && CLOSE == '1'}
+    commands:
+      - tapOn:
+          id: "header-title"
+- scrollUntilVisible:
+    element:
+      id: ${FIELD}
+    direction: DOWN
+    centerElement: true
+    timeout: 20000
+- tapOn:
+    id: ${FIELD}
+- eraseText: 80
+- inputText: ${TEXT}
+# The field's text right after typing (iOS erases only before the caret, so a
+# field's old text may remain: compare with itself, and check it holds TEXT).
+- copyTextFrom:
+    id: ${FIELD}
+- evalScript: ${output.typed = maestro.copiedText}
+- tapOn:
+    id: ${FIELD}
+- copyTextFrom:
+    id: ${FIELD}
+- assertTrue:
+    condition: ${maestro.copiedText == output.typed && maestro.copiedText.indexOf(TEXT) >= 0}
+    label: "the field kept its text after a second tap (it is not under the keyboard)"

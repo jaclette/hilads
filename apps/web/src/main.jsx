@@ -9,6 +9,7 @@ import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 import posthog from 'posthog-js'
 import { captureUtm } from './lib/utm'
 import { initTheme } from './lib/theme'
+import { installKeyboardViewport } from './lib/keyboardViewport'
 
 // Crawler / bot / link-previewer short-circuit. The prerender already shipped
 // the SSR HTML (title, meta, hreflang, JSON-LD, body) that bots index - running
@@ -109,6 +110,7 @@ async function bootstrap() {
     // Apply the stored theme before first paint (defaults to dark today — a no-op
     // until phase 3 flips the default and ships the Me-screen toggle).
     initTheme()
+    installKeyboardViewport()   // fixed bars and fields stay above the on-screen keyboard (iOS Safari)
 
     const locale = resolveInitialLocale()
     if (locale !== 'en') {

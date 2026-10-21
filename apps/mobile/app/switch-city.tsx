@@ -30,6 +30,7 @@ import type { City } from '@/types';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, TextField } from '@/ui';
+import { KeyboardArea } from '@/ui/keyboard';
 
 // ── Live activity dot - mirrors web .activity-dot.live pulse animation ───────
 
@@ -233,11 +234,13 @@ export default function SwitchCityScreen() {
           variant="search"
           placeholder={t('searchPlaceholder')}
           value={query}
+          testID="city-search"
           onChangeText={setQuery}
           onClear={() => setQuery('')}
           clearLabel={t('clear', { ns: 'common', defaultValue: 'Clear' })}
           autoCapitalize="none"
           autoCorrect={false}
+          returnKeyType="search"
         />
       </View>
 
@@ -264,6 +267,8 @@ export default function SwitchCityScreen() {
         </RowGroup>
       )}
 
+      {/* The list ends at the keyboard while searching: every result stays reachable. */}
+      <KeyboardArea>
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator color={colors.primary} size="large" />
@@ -305,6 +310,7 @@ export default function SwitchCityScreen() {
           }
         />
       )}
+      </KeyboardArea>
     </Screen>
   );
 }

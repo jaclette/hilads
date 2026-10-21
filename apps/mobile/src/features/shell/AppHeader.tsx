@@ -51,6 +51,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
         <TouchableOpacity
           style={styles.signUp}
           onPress={() => router.push('/sign-up?action=header' as never)}
+          testID="header-signup"
           accessibilityRole="button"
         >
           <Text style={styles.signUpText} numberOfLines={1}>{t('signUp')}</Text>

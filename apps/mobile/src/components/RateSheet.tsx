@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet,
-  ActivityIndicator, KeyboardAvoidingView, Platform, Alert,
+  ActivityIndicator, Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { avatarColor } from '@/lib/avatarColors';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { RatePrompt } from '@/types';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 const COMMENT_MAX = 500;
 
@@ -81,7 +82,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={busy ? undefined : onClose} />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
         style={styles.kavWrap}
         pointerEvents="box-none"
       >

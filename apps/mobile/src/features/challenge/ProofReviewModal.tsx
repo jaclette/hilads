@@ -30,6 +30,7 @@ import {
 } from '@/api/challenges';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 type Props = {
   visible:        boolean;
@@ -117,100 +118,103 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={() => !busy && onClose()} />
-      <View style={styles.sheet}>
-        <View style={styles.handle} />
+      {/* Rises above the keyboard (react-native-keyboard-controller: Android edge-to-edge too). */}
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <Pressable style={styles.backdrop} onPress={() => !busy && onClose()} />
+        <View style={styles.sheet}>
+          <View style={styles.handle} />
 
-        {loading ? (
-          <View style={styles.loadingWrap}>
-            <ActivityIndicator color={colors.muted} />
-          </View>
-        ) : !proof ? (
-          <View style={styles.loadingWrap}>
-            <Text style={styles.emptyText}>{t('intl.proof.waitingVerdict')}</Text>
-          </View>
-        ) : (
-          <ScrollView contentContainerStyle={styles.scroll}>
-            <Text style={styles.title}>
-              {mode === 'verdict' ? t('intl.proof.reviewModalTitle', { defaultValue: 'Review the proof' })
-                                  : t('intl.proof.rejectModalTitle')}
-            </Text>
+          {loading ? (
+            <View style={styles.loadingWrap}>
+              <ActivityIndicator color={colors.muted} />
+            </View>
+          ) : !proof ? (
+            <View style={styles.loadingWrap}>
+              <Text style={styles.emptyText}>{t('intl.proof.waitingVerdict')}</Text>
+            </View>
+          ) : (
+            <ScrollView contentContainerStyle={styles.scroll}>
+              <Text style={styles.title}>
+                {mode === 'verdict' ? t('intl.proof.reviewModalTitle', { defaultValue: 'Review the proof' })
+                                    : t('intl.proof.rejectModalTitle')}
+              </Text>
 
-            <Image
-              source={{ uri: proof.media_url }}
-              style={styles.image}
-              contentFit="cover"
-              transition={120}
-            />
+              <Image
+                source={{ uri: proof.media_url }}
+                style={styles.image}
+                contentFit="cover"
+                transition={120}
+              />
 
-            {mode === 'verdict' ? (
-              <View style={styles.verdictRow}>
-                <TouchableOpacity
-                  style={[styles.btn, styles.btnReject, busy && { opacity: 0.5 }]}
-                  onPress={() => { setError(null); setMode('reason'); }}
-                  disabled={!!busy}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="close" size={18} color={colors.red} />
-                  <Text style={styles.btnRejectText}>{t('intl.proof.rejectCta')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.btn, styles.btnApprove, busy && { opacity: 0.5 }]}
-                  onPress={handleApprove}
-                  disabled={!!busy}
-                  activeOpacity={0.85}
-                >
-                  {busy === 'approve'
-                    ? <ActivityIndicator color={colors.localText} size="small" />
-                    : (
-                      <>
-                        <Ionicons name="checkmark" size={18} color={colors.localText} />
-                        <Text style={styles.btnApproveText}>{t('intl.proof.approveCta')}</Text>
-                      </>
-                    )}
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{ gap: Spacing.sm }}>
-                <Text style={styles.hint}>{t('intl.proof.rejectModalHint', { count: attemptsLeft })}</Text>
-                <TextInput
-                  style={styles.reasonInput}
-                  value={reason}
-                  onChangeText={setReason}
-                  placeholder={t('intl.proof.reasonPlaceholder')}
-                  placeholderTextColor={colors.mutedDim}
-                  maxLength={200}
-                  multiline
-                  autoFocus
-                />
-                <Text style={styles.charCount}>{reason.length} / 200</Text>
+              {mode === 'verdict' ? (
                 <View style={styles.verdictRow}>
                   <TouchableOpacity
-                    style={[styles.btn, styles.btnSecondary]}
-                    onPress={() => { setReason(''); setError(null); setMode('verdict'); }}
+                    style={[styles.btn, styles.btnReject, busy && { opacity: 0.5 }]}
+                    onPress={() => { setError(null); setMode('reason'); }}
                     disabled={!!busy}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.btnSecondaryText}>{t('cancel', { defaultValue: 'Back' })}</Text>
+                    <Ionicons name="close" size={18} color={colors.red} />
+                    <Text style={styles.btnRejectText}>{t('intl.proof.rejectCta')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.btn, styles.btnReject, (!reason.trim() || busy === 'reject') && { opacity: 0.5 }]}
-                    onPress={handleReject}
-                    disabled={!reason.trim() || busy === 'reject'}
+                    style={[styles.btn, styles.btnApprove, busy && { opacity: 0.5 }]}
+                    onPress={handleApprove}
+                    disabled={!!busy}
                     activeOpacity={0.85}
                   >
-                    {busy === 'reject'
-                      ? <ActivityIndicator color={colors.red} size="small" />
-                      : <Text style={styles.btnRejectText}>{t('intl.proof.rejectConfirm')}</Text>}
+                    {busy === 'approve'
+                      ? <ActivityIndicator color={colors.localText} size="small" />
+                      : (
+                        <>
+                          <Ionicons name="checkmark" size={18} color={colors.localText} />
+                          <Text style={styles.btnApproveText}>{t('intl.proof.approveCta')}</Text>
+                        </>
+                      )}
                   </TouchableOpacity>
                 </View>
-              </View>
-            )}
+              ) : (
+                <View style={{ gap: Spacing.sm }}>
+                  <Text style={styles.hint}>{t('intl.proof.rejectModalHint', { count: attemptsLeft })}</Text>
+                  <TextInput
+                    style={styles.reasonInput}
+                    value={reason}
+                    onChangeText={setReason}
+                    placeholder={t('intl.proof.reasonPlaceholder')}
+                    placeholderTextColor={colors.mutedDim}
+                    maxLength={200}
+                    multiline
+                    autoFocus
+                  />
+                  <Text style={styles.charCount}>{reason.length} / 200</Text>
+                  <View style={styles.verdictRow}>
+                    <TouchableOpacity
+                      style={[styles.btn, styles.btnSecondary]}
+                      onPress={() => { setReason(''); setError(null); setMode('verdict'); }}
+                      disabled={!!busy}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.btnSecondaryText}>{t('cancel', { defaultValue: 'Back' })}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.btn, styles.btnReject, (!reason.trim() || busy === 'reject') && { opacity: 0.5 }]}
+                      onPress={handleReject}
+                      disabled={!reason.trim() || busy === 'reject'}
+                      activeOpacity={0.85}
+                    >
+                      {busy === 'reject'
+                        ? <ActivityIndicator color={colors.red} size="small" />
+                        : <Text style={styles.btnRejectText}>{t('intl.proof.rejectConfirm')}</Text>}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
 
-            {error ? <Text style={styles.errorLine}>{error}</Text> : null}
-          </ScrollView>
-        )}
-      </View>
+              {error ? <Text style={styles.errorLine}>{error}</Text> : null}
+            </ScrollView>
+          )}
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

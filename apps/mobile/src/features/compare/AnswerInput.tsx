@@ -30,6 +30,7 @@ export function AnswerInput({ compare, draft, onChange, autoFocus = false, place
         <View style={styles.flex}>
           <TextField
             value={draft.text}
+            testID="answer-input"
             onChangeText={v => onChange({ ...draft, text: v.replace(/[^0-9]/g, '').slice(0, 10) })}
             keyboardType="number-pad"
             placeholder={placeholder ?? t('compare.numberPlaceholder')}
@@ -48,6 +49,7 @@ export function AnswerInput({ compare, draft, onChange, autoFocus = false, place
     <View style={styles.textWrap}>
       <TextField
         value={draft.text}
+        testID="answer-input"
         onChangeText={v => onChange({ ...draft, text: v.replace(/\n/g, ' ').slice(0, max) })}
         placeholder={placeholder ?? t(compare.type === 'word' ? 'compare.wordPlaceholder' : 'compare.textPlaceholder')}
         autoFocus={autoFocus}

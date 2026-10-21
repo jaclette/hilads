@@ -53,6 +53,7 @@ export default function ForgotPasswordScreen() {
       <TextField
         label={t('forgotPassword.email')}
         value={email}
+        testID="forgot-email"
         onChangeText={setEmail}
         placeholder={t('forgotPassword.emailPlaceholder')}
         keyboardType="email-address"

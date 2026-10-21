@@ -1,0 +1,51 @@
+# Back, the platform's way (KIND, default screen; no env defaults here: a
+# subflow's own defaults would override the caller's values). Android: the back key, whatever KIND. iOS:
+#   screen - the screen's back arrow (a pushed screen; see below)
+#   modal  - swipe down (a full-screen viewer or story)
+#   sheet  - swipe down on a bottom sheet
+#   tap    - tap TAP: a layer iOS closes with its own button, a screen that
+#            holds the swipe (the photo flow), or a tab (iOS has no back
+#            between tabs: the tab bar)
+appId: com.hilads.app
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+      true: ${typeof KIND === 'undefined' || KIND == 'screen'}
+    commands:
+      # The screen's back arrow: Maestro cannot drive iOS's edge-swipe gesture
+      # (XCTest drags do not reach the edge recognizer); the swipe itself is
+      # the native stack's own and stays enabled on every pushed screen.
+      - tapOn:
+          id: "header-back"
+- runFlow:
+    when:
+      platform: iOS
+      true: ${typeof KIND !== 'undefined' && KIND == 'modal'}
+    commands:
+      - swipe:
+          start: 50%, 35%
+          end: 50%, 90%
+          duration: 300
+- runFlow:
+    when:
+      platform: iOS
+      true: ${typeof KIND !== 'undefined' && KIND == 'sheet'}
+    commands:
+      - swipe:
+          start: 50%, 72%
+          end: 50%, 98%
+          duration: 300
+- runFlow:
+    when:
+      platform: iOS
+      true: ${typeof KIND !== 'undefined' && KIND == 'tap'}
+    commands:
+      - tapOn:
+          id: ${TAP}
+- waitForAnimationToEnd

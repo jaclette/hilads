@@ -1,0 +1,10 @@
+# Opens LINK in the app; on iOS, confirms the system "Open in Hilads?" prompt.
+appId: com.hilads.app
+---
+- openLink: ${LINK}
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Open"
+    commands:
+      - tapOn: "Open"

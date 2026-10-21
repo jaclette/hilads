@@ -1,0 +1,41 @@
+# One-time setup on a fresh install (not part of the suite): allow the
+# permissions and sign in with the test account. EMAIL / PASSWORD from -e.
+appId: com.hilads.app
+env:
+  EMAIL: "linh.nguyen@example.com"
+  PASSWORD: "hilads-store-2026"
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- tapOn:
+    text: "Cancel"
+    optional: true
+- extendedWaitUntil:
+    visible: "Choose your city.*|Today"
+    timeout: 90000
+- runFlow:
+    when:
+      visible:
+        id: "city-search"
+    commands:
+      - tapOn: "Ho Chi Minh City.*"
+- extendedWaitUntil:
+    visible:
+      id: "tab-today"
+    timeout: 60000
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://sign-in" }
+- tapOn:
+    id: "signin-email"
+- inputText: ${EMAIL}
+- tapOn:
+    id: "signin-password"
+- inputText: ${PASSWORD}
+- pressKey: Enter
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 60000

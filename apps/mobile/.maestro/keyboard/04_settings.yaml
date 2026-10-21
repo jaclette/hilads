@@ -1,0 +1,27 @@
+# Settings: every field stays above the keyboard and Save rides on it. Nothing is saved.
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-passport"
+- tapOn:
+    id: "passport-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-screen"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { FIELD: "settings-username", TEXT: "linhtest" }
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { CLOSE: "1", FIELD: "settings-about", TEXT: "Saigon street food" }
+- scrollUntilVisible:
+    element:
+      id: "settings-age"
+    direction: DOWN
+    timeout: 20000
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { CLOSE: "1", FIELD: "settings-age", TEXT: "29" }

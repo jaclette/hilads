@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
+  TouchableOpacity, StyleSheet, Platform,
   Animated, Linking, ToastAndroid, Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -33,6 +33,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import type { Message, EventParticipant, ReplyRef } from '@/types';
 import { placeUrl, searchUrl } from '@/lib/directions';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -483,9 +484,9 @@ export default function EventDetailScreen() {
       {event && (
         <KeyboardAvoidingView
           style={styles.flex}
-          // Android: rely on the window's adjustResize (no KAV behavior) - layering
-          // 'padding' on top left a black gap on interactive keyboard dismissal.
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          // The keyboard rule: the input bar sits on the keyboard, the messages shrink
+          // above it (react-native-keyboard-controller: Android edge-to-edge too).
+          behavior="padding"
         >
           <FlatList
             ref={flatListRef}

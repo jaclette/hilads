@@ -13,7 +13,7 @@
 import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  StyleSheet, KeyboardAvoidingView, Keyboard, Platform,
+  StyleSheet, Keyboard, Platform,
   TouchableOpacity, Animated, Alert,
 } from 'react-native';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -52,6 +52,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import type { Message, ReplyRef, MentionRef } from '@/types';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 // ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.

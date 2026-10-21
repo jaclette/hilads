@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { submitHostRating, submitTakerRating, type ChallengeReveal } from '@/api/challenges';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 /**
  * GROUP challenge result reveal modal. Role-specific, never-negative copy +
@@ -136,161 +137,164 @@ export function ChallengeResultModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={styles.wrap} pointerEvents="box-none">
-        <View style={styles.card}>
-          <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-            {showPhoto ? (
-              <View style={styles.photoWrap}>
-                <Image source={{ uri: winnerPhotoUrl! }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
-                {winnerName ? (
-                  <View style={styles.photoCaption}>
-                    <Ionicons name="ribbon-outline" size={14} color={colors.onGold} />
-                    <Text style={styles.photoCaptionText}>{winnerName}</Text>
-                  </View>
-                ) : null}
-              </View>
-            ) : (
-              <Ionicons name={icon} size={64} color={colors.gold} style={styles.bigIcon} />
-            )}
-
-            <View style={styles.titleRow}>
-              <Ionicons name={icon} size={20} color={colors.gold} />
-              <Text style={styles.title}>{title}</Text>
-            </View>
-            {challengeTitle ? (
-              <View style={styles.challengeNameRow}>
-                <Ionicons name="pin-outline" size={14} color={colors.muted} />
-                <Text style={styles.challengeName} numberOfLines={2}>{challengeTitle}</Text>
-              </View>
-            ) : null}
-            {body ? <Text style={styles.body}>{body}</Text> : null}
-
-            {showPoints ? (
-              <View style={styles.pointsBlock}>
-                <Text style={styles.points}>+{displayPoints}</Text>
-                {headCount > 0 && hb ? (
-                  <View style={styles.breakdownRow}>
-                    {staggered ? (
-                      <>
-                        {Array.from({ length: revealedHeads }).map((_, i) => (
-                          <PopIcon key={i} name="person-outline" />
-                        ))}
-                        <Text style={styles.breakdown}> = +{hb.perHead * revealedHeads}</Text>
-                        {revealedHeads >= headCount ? (
-                          <>
-                            <Ionicons name="home-outline" size={14} color={colors.mutedDim} style={styles.breakdownIconGap} />
-                            <Text style={styles.breakdown}> +{hb.base}</Text>
-                          </>
-                        ) : null}
-                      </>
-                    ) : (
-                      <>
-                        <Ionicons name="person-outline" size={14} color={colors.mutedDim} />
-                        <Text style={styles.breakdown}>{` ×${headCount} = +${hb.perHead * headCount}`}</Text>
-                        <Ionicons name="home-outline" size={14} color={colors.mutedDim} style={styles.breakdownIconGap} />
-                        <Text style={styles.breakdown}>{` +${hb.base}`}</Text>
-                      </>
-                    )}
-                  </View>
-                ) : null}
-                {finalTotal > 0 ? (
-                  <Animated.Text
-                    style={[
-                      styles.total,
-                      {
-                        color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, colors.gold] }),
-                        textShadowColor: colors.gold,
-                        textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
-                        transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
-                      },
-                    ]}
-                  >
-                    {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
-                  </Animated.Text>
-                ) : null}
-              </View>
-            ) : null}
-
-            {/* Current ranking - same lens as the +points celebration popin. */}
-            {rankTopN != null ? (
-              <View style={styles.rankBlock}>
-                <TouchableOpacity
-                  style={styles.rankRow}
-                  activeOpacity={onOpenLeaderboard ? 0.7 : 1}
-                  disabled={!onOpenLeaderboard}
-                  onPress={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
-                >
-                  <Ionicons name="location-outline" size={16} color={colors.muted} />
-                  <Text style={styles.rankLabel} numberOfLines={1}>
-                    {rankCity != null
-                      ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
-                      : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
-                  </Text>
-                  {onOpenLeaderboard ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.rankRow}
-                  activeOpacity={onOpenLeaderboard ? 0.7 : 1}
-                  disabled={!onOpenLeaderboard}
-                  onPress={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
-                >
-                  <Ionicons name="globe-outline" size={16} color={colors.muted} />
-                  <Text style={styles.rankLabel} numberOfLines={1}>
-                    {rankGlobal != null
-                      ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
-                      : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
-                  </Text>
-                  {onOpenLeaderboard ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null}
-                </TouchableOpacity>
-              </View>
-            ) : null}
-
-            {showRating ? (
-              <View style={styles.rateBlock}>
-                <Text style={styles.rateTitle}>{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</Text>
-                <View style={styles.rateStars}>
-                  {[1, 2, 3, 4, 5].map(n => (
-                    <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 6, bottom: 6, left: 3, right: 3 }}>
-                      <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? colors.gold : colors.line} />
-                    </TouchableOpacity>
-                  ))}
+      {/* Rises above the keyboard (react-native-keyboard-controller: Android edge-to-edge too). */}
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        <View style={styles.wrap} pointerEvents="box-none">
+          <View style={styles.card}>
+            <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+              {showPhoto ? (
+                <View style={styles.photoWrap}>
+                  <Image source={{ uri: winnerPhotoUrl! }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
+                  {winnerName ? (
+                    <View style={styles.photoCaption}>
+                      <Ionicons name="ribbon-outline" size={14} color={colors.onGold} />
+                      <Text style={styles.photoCaptionText}>{winnerName}</Text>
+                    </View>
+                  ) : null}
                 </View>
-                <TextInput
-                  style={styles.noteInput}
-                  placeholder={t('result.notePlaceholder', { defaultValue: 'Add a note (optional)' })}
-                  placeholderTextColor={colors.muted}
-                  value={hostNote}
-                  onChangeText={setHostNote}
-                  multiline
-                  maxLength={500}
-                />
-              </View>
-            ) : null}
+              ) : (
+                <Ionicons name={icon} size={64} color={colors.gold} style={styles.bigIcon} />
+              )}
 
-            <TouchableOpacity
-              style={[styles.cta, (savingRating || (showRating && hostStars === 0)) && { opacity: 0.5 }]}
-              activeOpacity={0.85}
-              disabled={savingRating || (showRating && hostStars === 0)}
-              onPress={async () => {
-                if (showRating && hostStars > 0) {
-                  setSavingRating(true);
-                  try {
-                    if (showHostRating) await submitHostRating(reveal.challengeId, hostStars, hostNote);
-                    else await submitTakerRating(reveal.challengeId, hostStars, hostNote);
-                  } catch { /* non-fatal */ }
-                  setSavingRating(false);
-                }
-                onClose();
-              }}
-            >
-              {savingRating
-                ? <ActivityIndicator color={colors.onGold} />
-                : <Text style={styles.ctaText}>{showRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' })}</Text>}
-            </TouchableOpacity>
-          </ScrollView>
+              <View style={styles.titleRow}>
+                <Ionicons name={icon} size={20} color={colors.gold} />
+                <Text style={styles.title}>{title}</Text>
+              </View>
+              {challengeTitle ? (
+                <View style={styles.challengeNameRow}>
+                  <Ionicons name="pin-outline" size={14} color={colors.muted} />
+                  <Text style={styles.challengeName} numberOfLines={2}>{challengeTitle}</Text>
+                </View>
+              ) : null}
+              {body ? <Text style={styles.body}>{body}</Text> : null}
+
+              {showPoints ? (
+                <View style={styles.pointsBlock}>
+                  <Text style={styles.points}>+{displayPoints}</Text>
+                  {headCount > 0 && hb ? (
+                    <View style={styles.breakdownRow}>
+                      {staggered ? (
+                        <>
+                          {Array.from({ length: revealedHeads }).map((_, i) => (
+                            <PopIcon key={i} name="person-outline" />
+                          ))}
+                          <Text style={styles.breakdown}> = +{hb.perHead * revealedHeads}</Text>
+                          {revealedHeads >= headCount ? (
+                            <>
+                              <Ionicons name="home-outline" size={14} color={colors.mutedDim} style={styles.breakdownIconGap} />
+                              <Text style={styles.breakdown}> +{hb.base}</Text>
+                            </>
+                          ) : null}
+                        </>
+                      ) : (
+                        <>
+                          <Ionicons name="person-outline" size={14} color={colors.mutedDim} />
+                          <Text style={styles.breakdown}>{` ×${headCount} = +${hb.perHead * headCount}`}</Text>
+                          <Ionicons name="home-outline" size={14} color={colors.mutedDim} style={styles.breakdownIconGap} />
+                          <Text style={styles.breakdown}>{` +${hb.base}`}</Text>
+                        </>
+                      )}
+                    </View>
+                  ) : null}
+                  {finalTotal > 0 ? (
+                    <Animated.Text
+                      style={[
+                        styles.total,
+                        {
+                          color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, colors.gold] }),
+                          textShadowColor: colors.gold,
+                          textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
+                          transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
+                        },
+                      ]}
+                    >
+                      {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
+                    </Animated.Text>
+                  ) : null}
+                </View>
+              ) : null}
+
+              {/* Current ranking - same lens as the +points celebration popin. */}
+              {rankTopN != null ? (
+                <View style={styles.rankBlock}>
+                  <TouchableOpacity
+                    style={styles.rankRow}
+                    activeOpacity={onOpenLeaderboard ? 0.7 : 1}
+                    disabled={!onOpenLeaderboard}
+                    onPress={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
+                  >
+                    <Ionicons name="location-outline" size={16} color={colors.muted} />
+                    <Text style={styles.rankLabel} numberOfLines={1}>
+                      {rankCity != null
+                        ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
+                        : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
+                    </Text>
+                    {onOpenLeaderboard ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.rankRow}
+                    activeOpacity={onOpenLeaderboard ? 0.7 : 1}
+                    disabled={!onOpenLeaderboard}
+                    onPress={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
+                  >
+                    <Ionicons name="globe-outline" size={16} color={colors.muted} />
+                    <Text style={styles.rankLabel} numberOfLines={1}>
+                      {rankGlobal != null
+                        ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
+                        : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
+                    </Text>
+                    {onOpenLeaderboard ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null}
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+
+              {showRating ? (
+                <View style={styles.rateBlock}>
+                  <Text style={styles.rateTitle}>{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</Text>
+                  <View style={styles.rateStars}>
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 6, bottom: 6, left: 3, right: 3 }}>
+                        <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? colors.gold : colors.line} />
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <TextInput
+                    style={styles.noteInput}
+                    placeholder={t('result.notePlaceholder', { defaultValue: 'Add a note (optional)' })}
+                    placeholderTextColor={colors.muted}
+                    value={hostNote}
+                    onChangeText={setHostNote}
+                    multiline
+                    maxLength={500}
+                  />
+                </View>
+              ) : null}
+
+              <TouchableOpacity
+                style={[styles.cta, (savingRating || (showRating && hostStars === 0)) && { opacity: 0.5 }]}
+                activeOpacity={0.85}
+                disabled={savingRating || (showRating && hostStars === 0)}
+                onPress={async () => {
+                  if (showRating && hostStars > 0) {
+                    setSavingRating(true);
+                    try {
+                      if (showHostRating) await submitHostRating(reveal.challengeId, hostStars, hostNote);
+                      else await submitTakerRating(reveal.challengeId, hostStars, hostNote);
+                    } catch { /* non-fatal */ }
+                    setSavingRating(false);
+                  }
+                  onClose();
+                }}
+              >
+                {savingRating
+                  ? <ActivityIndicator color={colors.onGold} />
+                  : <Text style={styles.ctaText}>{showRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' })}</Text>}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

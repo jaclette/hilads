@@ -10,7 +10,9 @@ tags: [navigation]
     visible:
       id: "daily-sheet"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
       id: "today-hero"

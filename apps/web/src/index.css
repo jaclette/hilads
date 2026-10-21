@@ -17661,3 +17661,16 @@ button.today-cta { width: 100%; }
 .world-ticker-line:has(.world-ticker-entry) { overflow: visible; padding-bottom: 3px; }
 .today-teaser-flags .world-flag + .world-flag { margin-left: -6px; }
 .world-flag--dim { opacity: .7; }
+
+/* ── The keyboard rule (lib/keyboardViewport.js) ─────────────────────────────
+   Android Chrome resizes the layout with the keyboard (interactive-widget in
+   index.html); iOS Safari does not: --kb is the keyboard's overlap, so every
+   full-screen layer, sheet and bottom bar ends at the keyboard's top, and the
+   tab bar steps aside while typing (as in the app). */
+html.kb-open { --mobile-tabbar-height: 0px; }   /* the hidden tab bar's room goes to the content */
+html.kb-open #root { height: calc(100% - var(--kb, 0px)); }
+html.kb-open :is(.full-page, .friend-req-screen, .modal-overlay, .v3-sheet-wrap, .share-sheet-overlay, .arrivals-sheet-backdrop,
+  .loc-picker-overlay, .delete-account-overlay, .create-chooser-overlay, .upc-modal-overlay, .onboarding-overlay, .gsg-modal-backdrop,
+  .crm-backdrop, .gmp-backdrop, .su-auth, .limit-legend-modal, .account-welcome-overlay) { bottom: var(--kb, 0px); }
+html.kb-open :is(.share-sheet, .arrivals-sheet, .open-in-app, .sl-cta-dock) { bottom: var(--kb, 0px); }
+html.kb-open :is(.bottom-nav, .install-banner, .mention-nudge) { display: none; }

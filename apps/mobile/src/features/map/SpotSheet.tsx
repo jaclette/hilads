@@ -23,7 +23,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
   spot: Spot; distanceM: number | null; onOpen: () => void; onDirections: () => void; onShare: () => void; onClose: () => void;
 }) {
   // Closes like every sheet: the grabber, a swipe down, Android back (the map's useBackClose).
-  const swipe = useSwipeDown(onClose);
+  const swipe = useSwipeDown(onClose, { capture: true });
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');

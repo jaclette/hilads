@@ -149,6 +149,7 @@ export default function SignUpScreen() {
           label={t('signUp.username')}
           prefix="@"
           value={username}
+          testID="signup-username"
           onChangeText={handleUsernameChange}
           placeholder={t('signUp.usernamePlaceholder')}
           autoCapitalize="none"
@@ -171,6 +172,7 @@ export default function SignUpScreen() {
       <TextField
         label={t('signUp.email')}
         value={email}
+        testID="signup-email"
         onChangeText={setEmail}
         placeholder={t('signUp.emailPlaceholder')}
         keyboardType="email-address"
@@ -182,6 +184,7 @@ export default function SignUpScreen() {
       <TextField
         label={t('signUp.password')}
         value={password}
+        testID="signup-password"
         onChangeText={setPassword}
         placeholder={t('signUp.passwordPlaceholder')}
         secureTextEntry={!showPassword}

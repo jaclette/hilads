@@ -13,6 +13,7 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
 import { ComparisonCard, comparisonShare, comparisonTitle, useComparisonValue } from '@/features/index/ComparisonCard';
 import type { DailyCityRef, DailyComparison } from '@/types';
+import { KeyboardAwareScrollView, type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 type Section = 'price' | 'time' | 'word';
 const SECTIONS: Section[] = ['price', 'time', 'word'];
@@ -39,7 +40,7 @@ export default function ComparedScreen() {
   const [share, setShare] = useState<ShareContent | null>(null);
   const [pair, setPair] = useState<[DailyCityRef | null, DailyCityRef | null] | null>(null);
   const [picking, setPicking] = useState<0 | 1 | null>(null);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const searched = useRef(false);
   const focused = useRef(false);
   const sectionY = useRef<Partial<Record<Section, number>>>({});
@@ -93,7 +94,8 @@ export default function ComparedScreen() {
       {!cards ? (
         failed ? <EmptyState icon="cloud-offline-outline" body={t('loadFailed')} /> : <ActivityIndicator color={colors.primary} style={styles.loading} />
       ) : (
-        <ScrollView ref={scrollRef} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+        // The keyboard rule: the search field and its results stay above the keyboard.
+        <KeyboardAwareScrollView ref={scrollRef} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled" bottomOffset={160}>
           <Text style={styles.sub}>{t('index.screenSub')}</Text>
 
           {/* Two cities: pick two, see every comparison where both have data. */}
@@ -170,7 +172,7 @@ export default function ComparedScreen() {
                 })}
             </>
           )}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       )}
 
       <Sheet visible={picking !== null} onClose={() => setPicking(null)} closeLabel={t('close', { ns: 'common' })} style={styles.sheet}>

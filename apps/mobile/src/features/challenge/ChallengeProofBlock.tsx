@@ -38,6 +38,7 @@ import { uploadFile } from '@/api/uploads';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 type Props = {
   acceptanceId: string;
@@ -259,33 +260,36 @@ export function ChallengeProofBlock({
 
         {/* Reject reason modal - mandatory, 1–200 chars. */}
         <Modal visible={rejectOpen} animationType="slide" transparent onRequestClose={() => setRejectOpen(false)}>
-          <Pressable style={styles.modalBackdrop} onPress={() => setRejectOpen(false)} />
-          <View style={styles.modalSheet}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>{t('intl.proof.rejectModalTitle')}</Text>
-            <Text style={styles.modalHint}>{t('intl.proof.rejectModalHint', { count: attemptsLeft })}</Text>
-            <TextInput
-              style={styles.reasonInput}
-              value={rejectReason}
-              onChangeText={setRejectReason}
-              placeholder={t('intl.proof.reasonPlaceholder')}
-              placeholderTextColor={colors.mutedDim}
-              maxLength={200}
-              multiline
-              autoFocus
-            />
-            <Text style={styles.charCount}>{rejectReason.length} / 200</Text>
-            <TouchableOpacity
-              style={[styles.modalSubmit, (!rejectReason.trim() || busy === 'reject') && { opacity: 0.5 }]}
-              onPress={handleReject}
-              disabled={!rejectReason.trim() || busy === 'reject'}
-              activeOpacity={0.85}
-            >
-              {busy === 'reject'
-                ? <ActivityIndicator color={colors.white} />
-                : <Text style={styles.modalSubmitText}>{t('intl.proof.rejectConfirm')}</Text>}
-            </TouchableOpacity>
-          </View>
+          {/* Rises above the keyboard (react-native-keyboard-controller: Android edge-to-edge too). */}
+          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+            <Pressable style={styles.modalBackdrop} onPress={() => setRejectOpen(false)} />
+            <View style={styles.modalSheet}>
+              <View style={styles.modalHandle} />
+              <Text style={styles.modalTitle}>{t('intl.proof.rejectModalTitle')}</Text>
+              <Text style={styles.modalHint}>{t('intl.proof.rejectModalHint', { count: attemptsLeft })}</Text>
+              <TextInput
+                style={styles.reasonInput}
+                value={rejectReason}
+                onChangeText={setRejectReason}
+                placeholder={t('intl.proof.reasonPlaceholder')}
+                placeholderTextColor={colors.mutedDim}
+                maxLength={200}
+                multiline
+                autoFocus
+              />
+              <Text style={styles.charCount}>{rejectReason.length} / 200</Text>
+              <TouchableOpacity
+                style={[styles.modalSubmit, (!rejectReason.trim() || busy === 'reject') && { opacity: 0.5 }]}
+                onPress={handleReject}
+                disabled={!rejectReason.trim() || busy === 'reject'}
+                activeOpacity={0.85}
+              >
+                {busy === 'reject'
+                  ? <ActivityIndicator color={colors.white} />
+                  : <Text style={styles.modalSubmitText}>{t('intl.proof.rejectConfirm')}</Text>}
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
         </Modal>
       </View>
     );

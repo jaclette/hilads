@@ -1,0 +1,97 @@
+# The photo flow: the new place's name, the answer, the caption and the price
+# stay above the keyboard; Next moves from the caption to the price; the steps'
+# main buttons stay tappable over the keyboard. Nothing is posted (discarded at the end).
+appId: com.hilads.app
+tags: [keyboard, camera]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "today-play"
+- runFlow:
+    when:
+      visible:
+        id: "how-camera"
+    commands:
+      - tapOn:
+          id: "how-camera"
+- extendedWaitUntil:
+    visible:
+      id: "camera-shutter"
+    timeout: 30000
+- tapOn:
+    id: "camera-shutter"
+- extendedWaitUntil:
+    visible:
+      id: "camera-use"
+    timeout: 30000
+- tapOn:
+    id: "camera-use"
+# A place theme first asks for the place: a new one, by its name (the
+# name field opens at once when no place is nearby).
+- runFlow:
+    when:
+      visible:
+        id: "place-new"
+    commands:
+      - tapOn:
+          id: "place-new"
+- runFlow:
+    when:
+      visible:
+        id: "place-name"
+    commands:
+      - runFlow:
+          file: ../subflows/type_and_check.yaml
+          env:
+            FIELD: "place-name"
+            TEXT: "Quan Bia Test"
+      # Its button rides on the keyboard: tapping it moves on.
+      - tapOn:
+          id: "place-use-new"
+# The day's question.
+- runFlow:
+    when:
+      visible:
+        id: "answer-input"
+    commands:
+      - runFlow:
+          file: ../subflows/type_and_check.yaml
+          env:
+            FIELD: "answer-input"
+            TEXT: "Mot hai ba"
+      - tapOn:
+          id: "answer-next"
+# The details: caption, then Next to the price.
+- extendedWaitUntil:
+    visible:
+      id: "proof-caption"
+    timeout: 20000
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env:
+      FIELD: "proof-caption"
+      TEXT: "Cheers at the corner"
+- pressKey: Enter
+- inputText: "12"
+- assertVisible:
+    id: "proof-amount"
+    text: "12"
+- tapOn:
+    id: "proof-amount"
+- assertVisible:
+    id: "proof-amount"
+    text: "12"
+# Leave without posting.
+- repeat:
+    while:
+      notVisible: "Discard"
+    times: 5
+    commands:
+      - runFlow:
+          file: ../subflows/back.yaml
+          env: { KIND: "tap", TAP: "header-back" }
+- tapOn: "Discard"
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000

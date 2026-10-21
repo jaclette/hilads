@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Linking } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -18,6 +18,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Chip, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LocationPicker } from '@/features/chat/LocationPicker';
 import { CategoryPicker, DatePicker, TimePicker, type EventType, addDays, isSameDay, startOfDay, timeStr, withDate } from '@/features/events/EventPickers';
+import { KeyboardForm } from '@/ui/keyboard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -264,12 +265,14 @@ export default function CreateEventScreen() {
     <Screen>
       <ScreenHeader title={isLocal ? t('hostTitle') : t('createTitle')} />
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+      {/* The keyboard rule: the focused field stays in sight, Submit rides on the keyboard. */}
+      <KeyboardForm contentContainerStyle={styles.content} padBottom footerStyle={styles.footer} footer={
+        <Button
+          label={isLocal ? (repeat !== 'once' ? t('submitOpenSpot') : t('submitStart')) : t('submitCreate')}
+          onPress={handleSubmit}
+          loading={submitting}
+        />
+      }>
         {/* ── QUICK PRESETS (locals only) ───────────────────────────────────── */}
         {isLocal && (
           <View style={styles.section}>
@@ -306,6 +309,7 @@ export default function CreateEventScreen() {
         <TextField
           label={t('title')}
           value={title}
+          testID="event-title"
           onChangeText={setTitle}
           placeholder={t('titlePlaceholder')}
           maxLength={100}
@@ -426,18 +430,7 @@ export default function CreateEventScreen() {
 
         {/* ── Error ─────────────────────────────────────────────────────────── */}
         {error ? <Text style={styles.errorText} accessibilityRole="alert">{error}</Text> : null}
-
-        {/* ── Submit ────────────────────────────────────────────────────────── */}
-        <Button
-          label={
-            isLocal
-              ? (repeat !== 'once' ? t('submitOpenSpot') : t('submitStart'))
-              : t('submitCreate')
-          }
-          onPress={handleSubmit}
-          loading={submitting}
-        />
-      </ScrollView>
+      </KeyboardForm>
 
       {/* ── Map location picker (shared with drop-my-spot) ── */}
       {showLocPicker && locPickerCenter && (
@@ -459,6 +452,7 @@ export default function CreateEventScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scroll:  { flex: 1 },
   content: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: 24 },
+  footer:  { paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   section: { gap: 10 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
   hint:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },

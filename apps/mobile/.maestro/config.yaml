@@ -1,3 +1,4 @@
-# maestro test .maestro  (from apps/mobile) runs every navigation flow.
+# maestro test .maestro  (from apps/mobile) runs every flow: navigation and keyboard.
 flows:
   - "navigation/*"
+  - "keyboard/*"

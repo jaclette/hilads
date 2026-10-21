@@ -33,7 +33,7 @@ export default function AuthGateScreen() {
 
   useEffect(() => { track('guest_signup_prompted', { action: gateReason }); }, [gateReason]);
   // Every way out is the same close: the scrim, Not now, a swipe down, Android back (a route).
-  const swipe = useSwipeDown(goBack);
+  const swipe = useSwipeDown(goBack, { capture: true });
 
   // replace, not push: the sheet leaves the stack, so after auth the user
   // lands on returnTo (or pops straight back to the screen they were on).

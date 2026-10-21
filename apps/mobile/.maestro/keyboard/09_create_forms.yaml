@@ -1,0 +1,27 @@
+# Creating a plan and a hangout: the title fields stay above the keyboard. Nothing is created.
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://event/create" }
+- runFlow:
+    when:
+      visible:
+        id: "event-title"
+    commands:
+      - runFlow:
+          file: ../subflows/type_and_check.yaml
+          env: { FIELD: "event-title", TEXT: "Sunset drinks" }
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://topic/create" }
+- runFlow:
+    when:
+      visible:
+        id: "topic-title"
+    commands:
+      - runFlow:
+          file: ../subflows/type_and_check.yaml
+          env: { CLOSE: "1", FIELD: "topic-title", TEXT: "Best pho tonight" }

@@ -409,6 +409,7 @@ export default function MapScreen() {
             <TextField
               variant="search"
               value={query}
+              testID="map-search"
               onChangeText={setQuery}
               placeholder={t('map.search')}
               returnKeyType="search"

@@ -1,0 +1,21 @@
+# The map search and the city search.
+appId: com.hilads.app
+tags: [keyboard]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-map"
+- extendedWaitUntil:
+    visible:
+      id: "map-search"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { FIELD: "map-search", TEXT: "pho" }
+- eraseText: 10
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://switch-city" }
+- runFlow:
+    file: ../subflows/type_and_check.yaml
+    env: { CLOSE: "1", FIELD: "city-search", TEXT: "Lis" }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView,
+  ActivityIndicator, Alert, Platform, ScrollView,
   Text, TextInput, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -37,6 +37,7 @@ import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
 import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/types';
 import { goBack as leave } from '@/lib/nav';
+import { KeyboardForm, useNextField } from '@/ui/keyboard';
 
 /** A position older than this is refreshed before posting (the distance check). */
 const POSITION_MAX_AGE_MS = 2 * 60 * 1000;
@@ -136,6 +137,17 @@ export default function DailyProofScreen() {
   const canStepBack = step === 'home' || (step === 'details' && !!compare)
     || ((step === 'details' || step === 'answer') && !original && needsPlace) || (step === 'place' && !!photo);
   const unsaved = !sent && !original && !!photo;
+  // Next / Done on the raw fields (TextField has it built in).
+  const captionRef = useRef<TextInput>(null);
+  const amountRef = useRef<TextInput>(null);
+  const currencyRef = useRef<TextInput>(null);
+  const homeAmountRef = useRef<TextInput>(null);
+  const homeCurrencyRef = useRef<TextInput>(null);
+  const captionNext = useNextField(captionRef);
+  const amountNext = useNextField(amountRef);
+  const currencyNext = useNextField(currencyRef);
+  const homeAmountNext = useNextField(homeAmountRef);
+  const homeCurrencyNext = useNextField(homeCurrencyRef);
   usePreventRemove(canStepBack || unsaved, ({ data }) => {
     if (leaving.current || stepBack()) {
       if (leaving.current) navigation.dispatch(data.action);
@@ -435,97 +447,98 @@ export default function DailyProofScreen() {
         <PlaceStep theme={themeKey === 'special' ? null : themeKey} onPicked={onPlace} />
       ) : step === 'answer' && compare ? (
         // The comparison question (SPEC 10.2): one quick screen, required.
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-            {photo ? (
-              // My photo with today's question over it, and my answer appearing on it as I type.
-              <View style={styles.qCard}>
-                <Image source={{ uri: photo.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
-                <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.85)']} locations={[0, 0.45, 1]} style={styles.qShade} />
-                <View style={styles.qText}>
-                  <Text style={styles.qKicker}>{t('compare.kicker')}</Text>
-                  <Text style={styles.qQuestion} accessibilityRole="header">{compare.question}</Text>
-                  {!!draftLabel(answer, compare.type) && (
-                    <View style={styles.qAnswer}><Text style={styles.qAnswerText} numberOfLines={1}>{draftLabel(answer, compare.type)}</Text></View>
-                  )}
-                </View>
+        <KeyboardForm contentContainerStyle={styles.body} footer={(
+            <View style={styles.footer}>
+              <Button label={t('compare.next')} disabled={!answerReady} onPress={() => setStep('details')} testID="answer-next" />
+            </View>
+          )}>
+          {photo ? (
+            // My photo with today's question over it, and my answer appearing on it as I type.
+            <View style={styles.qCard}>
+              <Image source={{ uri: photo.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+              <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.85)']} locations={[0, 0.45, 1]} style={styles.qShade} />
+              <View style={styles.qText}>
+                <Text style={styles.qKicker}>{t('compare.kicker')}</Text>
+                <Text style={styles.qQuestion} accessibilityRole="header">{compare.question}</Text>
+                {!!draftLabel(answer, compare.type) && (
+                  <View style={styles.qAnswer}><Text style={styles.qAnswerText} numberOfLines={1}>{draftLabel(answer, compare.type)}</Text></View>
+                )}
               </View>
-            ) : (
-              <>
-                <Text style={styles.kicker}>{t('compare.kicker')}</Text>
-                <Text style={styles.question} accessibilityRole="header">{compare.question}</Text>
-              </>
-            )}
-            <Text style={styles.questionSub}>{t('compare.sub')}</Text>
-            <AnswerInput compare={compare} draft={answer} onChange={setAnswer} autoFocus={compare.type !== 'time'} />
-          </ScrollView>
-          <View style={styles.footer}>
-            <Button label={t('compare.next')} disabled={!answerReady} onPress={() => setStep('details')} />
-          </View>
-        </KeyboardAvoidingView>
+            </View>
+          ) : (
+            <>
+              <Text style={styles.kicker}>{t('compare.kicker')}</Text>
+              <Text style={styles.question} accessibilityRole="header">{compare.question}</Text>
+            </>
+          )}
+          <Text style={styles.questionSub}>{t('compare.sub')}</Text>
+          <AnswerInput compare={compare} draft={answer} onChange={setAnswer} autoFocus={compare.type !== 'time'} />
+        </KeyboardForm>
       ) : step === 'home' ? (
         // "And back home?" (SPEC 10.4): optional, skippable.
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-            <Text style={styles.question} accessibilityRole="header">{t('backHome.title')}</Text>
-            <TouchableOpacity style={styles.placeRow} onPress={() => setHomePicker(true)} accessibilityRole="button">
-              {home ? <CityFlag country={home.country} size={20} /> : <Ionicons name="home-outline" size={20} color={colors.primaryText} />}
-              <Text style={styles.placeName} numberOfLines={1}>
-                {home ? t('backHome.homeIn', { city: shortCityName(home.name) }) : t('backHome.pickCity')}
-              </Text>
-              <Text style={styles.link}>{home ? t('place.change') : t('backHome.choose')}</Text>
-            </TouchableOpacity>
-            {home && (
-              <>
-                {compare && (
-                  <>
-                    <Text style={styles.label}>{compare.question}</Text>
-                    <AnswerInput compare={compare} draft={homeDraft.answer}
-                                 onChange={a => setHomeDraft(d => ({ ...d, answer: a, answerSet: true }))}
-                                 placeholder={t('backHome.answerPlaceholder', { city: shortCityName(home.name) })} />
-                  </>
-                )}
-                {parseAmount(amount) !== null && (
-                  <>
-                    <Text style={styles.label}>{t('backHome.price', { city: shortCityName(home.name) })}</Text>
-                    <View style={styles.priceRow}>
-                      <TextInput
-                        style={[styles.input, styles.flex]}
-                        value={homeDraft.amount}
-                        onChangeText={v => setHomeDraft(d => ({ ...d, amount: v }))}
-                        placeholder={t('proof.pricePlaceholder')}
-                        placeholderTextColor={colors.muted}
-                        keyboardType="decimal-pad"
-                      />
-                      <TextInput
-                        style={[styles.input, styles.currency]}
-                        value={homeDraft.currency || defaultCurrency(home.country)}
-                        onChangeText={v => setHomeDraft(d => ({ ...d, currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) }))}
-                        autoCapitalize="characters"
-                        maxLength={3}
-                        accessibilityLabel="Currency"
-                      />
-                    </View>
-                  </>
-                )}
-                <Text style={styles.label}>{t('backHome.line')}</Text>
-                <TextField
-                  value={homeDraft.line}
-                  onChangeText={v => setHomeDraft(d => ({ ...d, line: v.replace(/\n/g, ' ').slice(0, HOME_LINE_MAX) }))}
-                  placeholder={t('backHome.linePlaceholder')}
-                  maxLength={HOME_LINE_MAX}
-                  returnKeyType="done"
-                  blurOnSubmit
-                />
-                <Text style={[styles.counter, homeDraft.line.length > HOME_LINE_MAX - 10 && styles.counterNear]}>{homeDraft.line.length} / {HOME_LINE_MAX}</Text>
-              </>
-            )}
-          </ScrollView>
-          <View style={[styles.footer, styles.footerRow]}>
-            <Button variant="secondary" style={styles.flex} label={t('backHome.skip')} disabled={sending} onPress={() => submit(false, false)} />
-            <Button style={styles.flex} loading={sending} label={original ? t('proof.save') : t('proof.submit')} onPress={() => submit()} />
-          </View>
-        </KeyboardAvoidingView>
+        <KeyboardForm contentContainerStyle={styles.body} footer={(
+            <View style={[styles.footer, styles.footerRow]}>
+              <Button variant="secondary" style={styles.flex} label={t('backHome.skip')} disabled={sending} onPress={() => submit(false, false)} />
+              <Button style={styles.flex} loading={sending} label={original ? t('proof.save') : t('proof.submit')} onPress={() => submit()} />
+            </View>
+          )}>
+          <Text style={styles.question} accessibilityRole="header">{t('backHome.title')}</Text>
+          <TouchableOpacity style={styles.placeRow} onPress={() => setHomePicker(true)} accessibilityRole="button">
+            {home ? <CityFlag country={home.country} size={20} /> : <Ionicons name="home-outline" size={20} color={colors.primaryText} />}
+            <Text style={styles.placeName} numberOfLines={1}>
+              {home ? t('backHome.homeIn', { city: shortCityName(home.name) }) : t('backHome.pickCity')}
+            </Text>
+            <Text style={styles.link}>{home ? t('place.change') : t('backHome.choose')}</Text>
+          </TouchableOpacity>
+          {home && (
+            <>
+              {compare && (
+                <>
+                  <Text style={styles.label}>{compare.question}</Text>
+                  <AnswerInput compare={compare} draft={homeDraft.answer}
+                               onChange={a => setHomeDraft(d => ({ ...d, answer: a, answerSet: true }))}
+                               placeholder={t('backHome.answerPlaceholder', { city: shortCityName(home.name) })} />
+                </>
+              )}
+              {parseAmount(amount) !== null && (
+                <>
+                  <Text style={styles.label}>{t('backHome.price', { city: shortCityName(home.name) })}</Text>
+                  <View style={styles.priceRow}>
+                    <TextInput
+                      ref={homeAmountRef}
+                      {...homeAmountNext}
+                      style={[styles.input, styles.flex]}
+                      value={homeDraft.amount}
+                      onChangeText={v => setHomeDraft(d => ({ ...d, amount: v }))}
+                      placeholder={t('proof.pricePlaceholder')}
+                      placeholderTextColor={colors.muted}
+                      keyboardType="decimal-pad"
+                    />
+                    <TextInput
+                      ref={homeCurrencyRef}
+                      {...homeCurrencyNext}
+                      style={[styles.input, styles.currency]}
+                      value={homeDraft.currency || defaultCurrency(home.country)}
+                      onChangeText={v => setHomeDraft(d => ({ ...d, currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) }))}
+                      autoCapitalize="characters"
+                      maxLength={3}
+                      accessibilityLabel="Currency"
+                    />
+                  </View>
+                </>
+              )}
+              <Text style={styles.label}>{t('backHome.line')}</Text>
+              <TextField
+                value={homeDraft.line}
+                testID="home-line"
+                onChangeText={v => setHomeDraft(d => ({ ...d, line: v.replace(/\n/g, ' ').slice(0, HOME_LINE_MAX) }))}
+                placeholder={t('backHome.linePlaceholder')}
+                maxLength={HOME_LINE_MAX}
+              />
+              <Text style={[styles.counter, homeDraft.line.length > HOME_LINE_MAX - 10 && styles.counterNear]}>{homeDraft.line.length} / {HOME_LINE_MAX}</Text>
+            </>
+          )}
+        </KeyboardForm>
       ) : step === 'photo' ? (
         <View style={styles.center}>
           <View style={styles.icon}><Ionicons name="camera-outline" size={32} color={colors.primaryOnTint} /></View>
@@ -537,85 +550,90 @@ export default function DailyProofScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-            {photo && (
-              <View style={styles.photoWrap}>
-                <Image source={{ uri: photo.uri }} style={styles.photo} contentFit="cover" />
-                <TouchableOpacity style={styles.retake} onPress={takePhoto} accessibilityRole="button">
-                  <Ionicons name="camera-outline" size={18} color={colors.text} />
-                  <Text style={styles.retakeText}>{t('proof.retake')}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {needsPlace && (
-              <View style={styles.placeRow}>
-                <Ionicons name="location-outline" size={20} color={colors.primaryText} />
-                <Text style={styles.placeName} numberOfLines={1}>{placeName ?? t('place.none')}</Text>
-                <TouchableOpacity onPress={() => setStep('place')} accessibilityRole="button" hitSlop={8}>
-                  <Text style={styles.link}>{t('place.change')}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {tooFar && (
-              <View style={styles.tooFar} accessibilityRole="alert">
-                <Text style={styles.tooFarText}>
-                  {t('place.tooFar', { distance: distance(tooFar.distanceM, i18n.language), name: placeName ?? '', radius: tooFar.radiusM })}
-                </Text>
-                <View style={styles.tooFarActions}>
-                  <TouchableOpacity style={[styles.smallBtn, styles.smallPrimary]} onPress={() => submit(true)} accessibilityRole="button">
-                    <Text style={styles.smallPrimaryText}>{t('place.tryAgain')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.smallBtn} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} accessibilityRole="button">
-                    <Text style={styles.smallBtnText}>{t('place.pickAnother')}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-
-            <Text style={styles.label}>{t('proof.caption')}</Text>
-            <TextInput
-              style={styles.input}
-              value={caption}
-              onChangeText={v => setCaption(v.replace(/\n/g, ' ').slice(0, CAPTION_MAX))}
-              placeholder={t('proof.captionPlaceholder')}
-              placeholderTextColor={colors.muted}
-              maxLength={CAPTION_MAX}
-              returnKeyType="done"
-              blurOnSubmit
-            />
-            <Text style={[styles.counter, caption.length > CAPTION_MAX - 15 && styles.counterNear]}>{caption.length} / {CAPTION_MAX}</Text>
-
-            <Text style={styles.label}>{compare?.priceLabel ? t('proof.priceFor', { label: compare.priceLabel }) : t('proof.price')}</Text>
-            <View style={styles.priceRow}>
-              <TextInput
-                style={[styles.input, styles.flex]}
-                value={amount}
-                onChangeText={setAmount}
-                placeholder={t('proof.pricePlaceholder')}
-                placeholderTextColor={colors.muted}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={[styles.input, styles.currency]}
-                value={currency}
-                onChangeText={v => setCurrency(v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3))}
-                autoCapitalize="characters"
-                maxLength={3}
-                accessibilityLabel="Currency"
-              />
+        <KeyboardForm contentContainerStyle={styles.body} footer={(
+            <View style={styles.footer}>
+              <TouchableOpacity style={[styles.submit, (!photo || sending) && styles.submitOff]} onPress={afterDetails} disabled={sending} accessibilityRole="button">
+                {sending ? <ActivityIndicator color={colors.white} />
+                  : <Text style={styles.submitText}>{showHome ? t('compare.next') : original ? t('proof.save') : t('proof.submit')}</Text>}
+              </TouchableOpacity>
             </View>
-          </ScrollView>
+          )}>
+          {photo && (
+            <View style={styles.photoWrap}>
+              <Image source={{ uri: photo.uri }} style={styles.photo} contentFit="cover" />
+              <TouchableOpacity style={styles.retake} onPress={takePhoto} accessibilityRole="button">
+                <Ionicons name="camera-outline" size={18} color={colors.text} />
+                <Text style={styles.retakeText}>{t('proof.retake')}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
-          <View style={styles.footer}>
-            <TouchableOpacity style={[styles.submit, (!photo || sending) && styles.submitOff]} onPress={afterDetails} disabled={sending} accessibilityRole="button">
-              {sending ? <ActivityIndicator color={colors.white} />
-                : <Text style={styles.submitText}>{showHome ? t('compare.next') : original ? t('proof.save') : t('proof.submit')}</Text>}
-            </TouchableOpacity>
+          {needsPlace && (
+            <View style={styles.placeRow}>
+              <Ionicons name="location-outline" size={20} color={colors.primaryText} />
+              <Text style={styles.placeName} numberOfLines={1}>{placeName ?? t('place.none')}</Text>
+              <TouchableOpacity onPress={() => setStep('place')} accessibilityRole="button" hitSlop={8}>
+                <Text style={styles.link}>{t('place.change')}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {tooFar && (
+            <View style={styles.tooFar} accessibilityRole="alert">
+              <Text style={styles.tooFarText}>
+                {t('place.tooFar', { distance: distance(tooFar.distanceM, i18n.language), name: placeName ?? '', radius: tooFar.radiusM })}
+              </Text>
+              <View style={styles.tooFarActions}>
+                <TouchableOpacity style={[styles.smallBtn, styles.smallPrimary]} onPress={() => submit(true)} accessibilityRole="button">
+                  <Text style={styles.smallPrimaryText}>{t('place.tryAgain')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.smallBtn} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} accessibilityRole="button">
+                  <Text style={styles.smallBtnText}>{t('place.pickAnother')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          <Text style={styles.label}>{t('proof.caption')}</Text>
+          <TextInput
+            style={styles.input}
+            value={caption}
+            testID="proof-caption"
+            onChangeText={v => setCaption(v.replace(/\n/g, ' ').slice(0, CAPTION_MAX))}
+            placeholder={t('proof.captionPlaceholder')}
+            placeholderTextColor={colors.muted}
+            maxLength={CAPTION_MAX}
+            ref={captionRef}
+            {...captionNext}
+          />
+          <Text style={[styles.counter, caption.length > CAPTION_MAX - 15 && styles.counterNear]}>{caption.length} / {CAPTION_MAX}</Text>
+
+          <Text style={styles.label}>{compare?.priceLabel ? t('proof.priceFor', { label: compare.priceLabel }) : t('proof.price')}</Text>
+          <View style={styles.priceRow}>
+            <TextInput
+              ref={amountRef}
+              {...amountNext}
+              style={[styles.input, styles.flex]}
+              value={amount}
+              testID="proof-amount"
+              onChangeText={setAmount}
+              placeholder={t('proof.pricePlaceholder')}
+              placeholderTextColor={colors.muted}
+              keyboardType="decimal-pad"
+            />
+            <TextInput
+              ref={currencyRef}
+              {...currencyNext}
+              style={[styles.input, styles.currency]}
+              value={currency}
+              testID="proof-currency"
+              onChangeText={v => setCurrency(v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3))}
+              autoCapitalize="characters"
+              maxLength={3}
+              accessibilityLabel="Currency"
+            />
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardForm>
       )}
 
       <HomeCityPicker visible={homePicker} selected={home} onPick={pickHome} onClose={() => setHomePicker(false)} />

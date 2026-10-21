@@ -15,14 +15,18 @@ tags: [navigation]
     visible:
       id: "settings-screen"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
       id: "passport-settings"
     timeout: 30000
 - assertNotVisible:
     id: "settings-screen"
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "tab-today" }
 - extendedWaitUntil:
     visible:
       id: "today-screen"

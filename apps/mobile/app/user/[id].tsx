@@ -45,6 +45,7 @@ import { VIBE_ICONS } from '@/features/profile/vibes';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { goBack } from '@/lib/nav';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
@@ -414,10 +415,13 @@ export default function PublicProfileScreen() {
           {/* Scrollable page body. Identity + tab bar live INSIDE so they
               scroll away with the rest of the content; only the top header
               and the bottom action bar stay pinned. */}
-          <ScrollView
+          {/* The keyboard rule: the vibe note and its Send stay above the keyboard. */}
+          <KeyboardAwareScrollView
             style={styles.tabContent}
             contentContainerStyle={[styles.tabContentBody, { paddingBottom: Math.max(100, insets.bottom + 80) }]}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bottomOffset={80}
           >
           {/* Identity section */}
           <View style={styles.identitySection}>
@@ -718,7 +722,7 @@ export default function PublicProfileScreen() {
               </View>
             )}
 
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </>
       ) : null}
 

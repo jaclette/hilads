@@ -9,7 +9,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity, Pressable,
-  ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
+  ActivityIndicator, StyleSheet, Platform,
   Animated, Alert, Linking, InteractionManager, Keyboard,
 } from 'react-native';
 import { EmojiPanel } from '@/features/chat/EmojiPanel';
@@ -47,6 +47,7 @@ import { ReactionBurstOverlay } from '@/features/chat/ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import type { DmMessage, ReplyRef } from '@/types';
 import { goBack } from '@/lib/nav';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 // ── Date separator - reused from ChatMessage visual style ─────────────────────
 
@@ -579,9 +580,9 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      // Android: rely on the window's adjustResize (no KAV behavior) - layering
-      // 'padding' on top left a black gap on interactive keyboard dismissal.
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      // The keyboard rule: the input bar sits on the keyboard, the messages shrink
+      // above it (react-native-keyboard-controller: Android edge-to-edge too).
+      behavior="padding"
     >
       {error && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8} accessibilityRole="alert">
@@ -711,6 +712,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         <TextInput
           style={styles.input}
           value={text}
+          testID="dm-input"
           onChangeText={setText}
           onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; }}
           onFocus={() => { setFocused(true); setShowEmoji(false); }}

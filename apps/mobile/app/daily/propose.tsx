@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { dailyErrorCode, proposeChallenge } from '@/api/daily';
 import { useDailyToday } from '@/hooks/useDaily';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import type { DailyThemeKey } from '@/types';
+import { KeyboardForm } from '@/ui/keyboard';
 
 const TEXT_MAX  = 120;
 const WHY_MAX   = 200;
@@ -97,73 +98,74 @@ export default function DailyProposeScreen() {
     <Screen>
       <ScreenHeader title={t('propose.title')} />
 
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-          <TextField
-            label={t('propose.textLabel')}
-            value={text}
-            onChangeText={setText}
-            placeholder={t('propose.textPlaceholder')}
-            multiline
-            maxLength={TEXT_MAX + 20}
-            autoCapitalize="sentences"
-          />
-          <Text style={[styles.counter, length > TEXT_MAX && styles.counterOver, length > 100 && length <= TEXT_MAX && styles.counterNear]}>
-            {length} / {TEXT_MAX}
-          </Text>
+      <KeyboardForm contentContainerStyle={styles.body} padBottom footerStyle={styles.footer} footer={
+        <Button label={t('propose.submit')} onPress={submit} disabled={!canSend && !sending} loading={sending} />
+      }>
+        <TextField
+          label={t('propose.textLabel')}
+          value={text}
+          testID="propose-text"
+          onChangeText={setText}
+          placeholder={t('propose.textPlaceholder')}
+          multiline
+          maxLength={TEXT_MAX + 20}
+          autoCapitalize="sentences"
+        />
+        <Text style={[styles.counter, length > TEXT_MAX && styles.counterOver, length > 100 && length <= TEXT_MAX && styles.counterNear]}>
+          {length} / {TEXT_MAX}
+        </Text>
 
-          <Text style={styles.label}>{t('propose.themeLabel')}</Text>
-          <View style={styles.themes}>
-            {THEME_KEYS.map(k => (
-              <Chip key={k} variant="filter" label={themeName(k)} selected={theme === k} onPress={() => setTheme(k)} />
-            ))}
-          </View>
+        <Text style={styles.label}>{t('propose.themeLabel')}</Text>
+        <View style={styles.themes}>
+          {THEME_KEYS.map(k => (
+            <Chip key={k} variant="filter" label={themeName(k)} selected={theme === k} onPress={() => setTheme(k)} />
+          ))}
+        </View>
 
-          <TextField
-            label={t('propose.whyLabel')}
-            value={why}
-            onChangeText={setWhy}
-            placeholder={t('propose.whyPlaceholder')}
-            multiline
-            maxLength={WHY_MAX}
-          />
+        <TextField
+          label={t('propose.whyLabel')}
+          value={why}
+          testID="propose-why"
+          onChangeText={setWhy}
+          placeholder={t('propose.whyPlaceholder')}
+          multiline
+          maxLength={WHY_MAX}
+        />
 
-          {canTwist && (
-            <>
-              <TextField
-                label={t('propose.twistLabel', { city: cityName })}
-                value={twist}
-                onChangeText={setTwist}
-                placeholder={t('propose.twistPlaceholder', { city: cityName })}
-                multiline
-                maxLength={TWIST_MAX}
-              />
-            </>
-          )}
+        {canTwist && (
+          <>
+            <TextField
+              label={t('propose.twistLabel', { city: cityName })}
+              value={twist}
+              testID="propose-twist"
+              onChangeText={setTwist}
+              placeholder={t('propose.twistPlaceholder', { city: cityName })}
+              multiline
+              maxLength={TWIST_MAX}
+            />
+          </>
+        )}
 
-          <Card style={styles.rules}>
-            <Text style={styles.rulesTitle}>{t('propose.rulesTitle')}</Text>
-            {[1, 2, 3, 4, 5].map(i => (
-              <View key={i} style={styles.ruleRow}>
-                <Ionicons name="checkmark" size={16} color={colors.localText} />
-                <Text style={styles.rule}>{t(`propose.rule${i}`)}</Text>
-              </View>
-            ))}
-            <Text style={styles.reviewed}>{t('propose.reviewed')}</Text>
-          </Card>
-
-          {error === 'pending_exists' ? (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>{t('propose.pendingExists')}</Text>
-              <Button variant="link" label={t('propose.seeMine')} onPress={() => router.replace('/daily/proposals' as never)} style={styles.linkBtn} />
+        <Card style={styles.rules}>
+          <Text style={styles.rulesTitle}>{t('propose.rulesTitle')}</Text>
+          {[1, 2, 3, 4, 5].map(i => (
+            <View key={i} style={styles.ruleRow}>
+              <Ionicons name="checkmark" size={16} color={colors.localText} />
+              <Text style={styles.rule}>{t(`propose.rule${i}`)}</Text>
             </View>
-          ) : error ? (
-            <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
-          ) : null}
+          ))}
+          <Text style={styles.reviewed}>{t('propose.reviewed')}</Text>
+        </Card>
 
-          <Button label={t('propose.submit')} onPress={submit} disabled={!canSend && !sending} loading={sending} style={styles.cta} />
-        </ScrollView>
-      </KeyboardAvoidingView>
+        {error === 'pending_exists' ? (
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>{t('propose.pendingExists')}</Text>
+            <Button variant="link" label={t('propose.seeMine')} onPress={() => router.replace('/daily/proposals' as never)} style={styles.linkBtn} />
+          </View>
+        ) : error ? (
+          <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
+        ) : null}
+      </KeyboardForm>
     </Screen>
   );
 }
@@ -186,5 +188,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   errorBox:    { borderRadius: Radius.button, borderWidth: 1.5, borderColor: c.red, padding: 12, gap: 4 },
   errorText:   { fontSize: FontSizes.xs, color: c.red, fontWeight: '600' },
   linkBtn:     { alignSelf: 'flex-start' },
-  cta:         { marginTop: 8 },
+  footer:      { padding: Spacing.md, paddingTop: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
 });

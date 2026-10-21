@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -20,6 +20,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Chip, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { CategoryPicker, DatePicker, TimePicker, type EventType, addDays, isSameDay, startOfDay, withDate } from '@/features/events/EventPickers';
 import { goBack } from '@/lib/nav';
+import { KeyboardForm } from '@/ui/keyboard';
 
 // ── Time helpers ──────────────────────────────────────────────────────────────
 
@@ -161,12 +162,10 @@ export default function EditEventScreen() {
     <Screen>
       <ScreenHeader title={t('editEvent')} />
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+      {/* The keyboard rule: the focused field stays in sight, Save rides on the keyboard. */}
+      <KeyboardForm contentContainerStyle={styles.content} padBottom footerStyle={styles.footer} footer={
+        <Button label={t('saveChanges')} onPress={handleSave} loading={submitting} disabled={deleting} />
+      }>
         {/* ── CATEGORY ──────────────────────────────────────────────────────── */}
         <View style={styles.section}>
           <SectionTitle small title={t('category')} />
@@ -220,9 +219,8 @@ export default function EditEventScreen() {
 
         {error ? <Text style={styles.errorText} accessibilityRole="alert">{error}</Text> : null}
 
-        {/* ── Save / Delete ─────────────────────────────────────────────────── */}
+        {/* ── Delete (Save is in the footer) ────────────────────────────────── */}
         <View style={styles.actions}>
-          <Button label={t('saveChanges')} onPress={handleSave} loading={submitting} disabled={deleting} />
           <Button
             variant="danger"
             icon="trash-outline"
@@ -233,7 +231,7 @@ export default function EditEventScreen() {
             accessibilityLabel={t('deleteEvent')}
           />
         </View>
-      </ScrollView>
+      </KeyboardForm>
     </Screen>
   );
 }
@@ -243,6 +241,7 @@ export default function EditEventScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scroll:       { flex: 1 },
   content:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: 24 },
+  footer:       { paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   loadingBlock: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   section:      { gap: 10 },
   chipRow:      { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },

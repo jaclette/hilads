@@ -1,13 +1,16 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet, type TextInputProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { useNextField } from './keyboard';
 
 /**
  * Text input. "search": a pill with a search icon and a clear button (map).
  * "field": a labelled form field, primary border on focus, error line below;
  * `prefix` sits before the text ("@"), `right` after it (password eye, status).
+ * A one-line field gets "Next" (the next field) or "Done" (the last one) unless
+ * the screen sets its own return key (Send, Search...).
  */
 export function TextField({ variant = 'field', label, error, onClear, clearLabel, prefix, right, ...input }: TextInputProps & {
   variant?: 'field' | 'search';
@@ -21,6 +24,9 @@ export function TextField({ variant = 'field', label, error, onClear, clearLabel
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
+  const ref = useRef<TextInput>(null);
+  const next = useNextField(ref);
+  const auto = variant === 'field' && !input.multiline && input.returnKeyType === undefined;
 
   if (variant === 'search') {
     return (
@@ -41,10 +47,17 @@ export function TextField({ variant = 'field', label, error, onClear, clearLabel
       <View style={[styles.field, input.multiline && styles.multiline, focused && styles.focused, !!error && styles.errorBorder]}>
         {!!prefix && <Text style={styles.prefix}>{prefix}</Text>}
         <TextInput
+          ref={ref}
           style={[styles.input, input.multiline && styles.inputMultiline]}
           placeholderTextColor={colors.mutedDim}
           accessibilityLabel={input.accessibilityLabel ?? label}
+          {...(auto ? next : null)}
           {...input}
+          {...(auto ? { onSubmitEditing: (e: Parameters<NonNullable<TextInputProps['onSubmitEditing']>>[0]) => {
+            // Done on the last field also submits the form when the screen asks for it.
+            if (next.returnKeyType === 'done') input.onSubmitEditing?.(e);
+            next.onSubmitEditing?.(e);
+          } } : null)}
           onFocus={e => { setFocused(true); input.onFocus?.(e); }}
           onBlur={e => { setFocused(false); input.onBlur?.(e); }}
         />

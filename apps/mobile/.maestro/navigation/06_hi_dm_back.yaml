@@ -26,17 +26,23 @@ tags: [navigation]
     visible:
       id: "dm-back"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "dm-back" }
 - extendedWaitUntil:
     visible:
       id: "messages-screen"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
       id: "hi-messages"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "tab-today" }
 - extendedWaitUntil:
     visible:
       id: "today-screen"

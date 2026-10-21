@@ -3,12 +3,16 @@ appId: com.hilads.app
 tags: [navigation]
 ---
 - runFlow: ../subflows/start.yaml
-- openLink: "hilads://auth-gate?reason=daily_vote"
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://auth-gate?reason=daily_vote" }
 - extendedWaitUntil:
     visible:
       id: "auth-gate"
     timeout: 30000
-- back
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "sheet" }
 - extendedWaitUntil:
     notVisible:
       id: "auth-gate"
@@ -16,7 +20,9 @@ tags: [navigation]
 - assertVisible:
     id: "today-screen"
 # Swipe down closes it the same way.
-- openLink: "hilads://auth-gate?reason=daily_vote"
+- runFlow:
+    file: ../subflows/open_link.yaml
+    env: { LINK: "hilads://auth-gate?reason=daily_vote" }
 - extendedWaitUntil:
     visible:
       id: "auth-gate"

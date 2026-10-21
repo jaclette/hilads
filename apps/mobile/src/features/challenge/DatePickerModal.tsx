@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 /**
  * Date+time+venue picker for propose-a-date flows.
@@ -235,234 +236,237 @@ export function DatePickerModal({
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={styles.backdrop}>
-        {/* Sheet - header pinned top, content scrolls in the middle, Submit
-            pinned bottom. paddingBottom clears any bottom tab bar that's
-            mounted under us. */}
-        <View style={[styles.sheet, { paddingBottom: bottomInset + 8 }]}>
-          <View style={styles.handle} />
+      {/* Rises above the keyboard (react-native-keyboard-controller: Android edge-to-edge too). */}
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <View style={styles.backdrop}>
+          {/* Sheet - header pinned top, content scrolls in the middle, Submit
+              pinned bottom. paddingBottom clears any bottom tab bar that's
+              mounted under us. */}
+          <View style={[styles.sheet, { paddingBottom: bottomInset + 8 }]}>
+            <View style={styles.handle} />
 
-          <View style={styles.header}>
-            <TouchableOpacity onPress={onClose} accessibilityLabel={t('cancel', { ns: 'common' })}>
-              <Ionicons name="close" size={22} color={colors.muted} />
-            </TouchableOpacity>
-            <Text style={styles.title}>{t('schedule.picker.title')}</Text>
-            <View style={{ width: 22 }} />
-          </View>
-
-          <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-            <Text style={styles.sectionLabel}>{t('schedule.picker.whenLabel')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsRow}>
-              {dayLabels.map(d => {
-                const selected = d.offset === dayOffset && customDate === null;
-                return (
-                  <TouchableOpacity
-                    key={d.offset}
-                    style={[styles.pill, selected && styles.pillSelected]}
-                    onPress={() => { setDayOffset(d.offset); setCustomDate(null); }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{d.label}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-              {/* Free-form date - opens the native calendar picker. When a
-                  custom date is set, the pill shows the chosen date and is
-                  treated as selected; tapping it again re-opens the picker. */}
-              <TouchableOpacity
-                style={[styles.pill, customDate !== null && styles.pillSelected]}
-                onPress={() => setShowDate(true)}
-                activeOpacity={0.7}
-                accessibilityLabel={t('schedule.picker.otherDate')}
-              >
-                <Ionicons
-                  name="calendar-outline"
-                  size={13}
-                  color={customDate !== null ? colors.primaryOnTint : colors.muted}
-                  style={{ marginRight: 4 }}
-                />
-                <Text style={[styles.pillText, customDate !== null && styles.pillTextSelected]}>
-                  {customDateLabel}
-                </Text>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={onClose} accessibilityLabel={t('cancel', { ns: 'common' })}>
+                <Ionicons name="close" size={22} color={colors.muted} />
               </TouchableOpacity>
+              <Text style={styles.title}>{t('schedule.picker.title')}</Text>
+              <View style={{ width: 22 }} />
+            </View>
+
+            <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+              <Text style={styles.sectionLabel}>{t('schedule.picker.whenLabel')}</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsRow}>
+                {dayLabels.map(d => {
+                  const selected = d.offset === dayOffset && customDate === null;
+                  return (
+                    <TouchableOpacity
+                      key={d.offset}
+                      style={[styles.pill, selected && styles.pillSelected]}
+                      onPress={() => { setDayOffset(d.offset); setCustomDate(null); }}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{d.label}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+                {/* Free-form date - opens the native calendar picker. When a
+                    custom date is set, the pill shows the chosen date and is
+                    treated as selected; tapping it again re-opens the picker. */}
+                <TouchableOpacity
+                  style={[styles.pill, customDate !== null && styles.pillSelected]}
+                  onPress={() => setShowDate(true)}
+                  activeOpacity={0.7}
+                  accessibilityLabel={t('schedule.picker.otherDate')}
+                >
+                  <Ionicons
+                    name="calendar-outline"
+                    size={13}
+                    color={customDate !== null ? colors.primaryOnTint : colors.muted}
+                    style={{ marginRight: 4 }}
+                  />
+                  <Text style={[styles.pillText, customDate !== null && styles.pillTextSelected]}>
+                    {customDateLabel}
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
+
+              <Text style={styles.sectionLabel}>{t('schedule.picker.timeLabel')}</Text>
+              <View style={styles.pillsGrid}>
+                {TIME_PRESETS.map(p => {
+                  const selected = p.key === timeKey && customTime === null;
+                  return (
+                    <TouchableOpacity
+                      key={p.key}
+                      style={[styles.pill, selected && styles.pillSelected]}
+                      onPress={() => { setTimeKey(p.key); setCustomTime(null); }}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{p.key}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+                {/* Free-form time. Same pattern as the date pill above. */}
+                <TouchableOpacity
+                  style={[styles.pill, customTime !== null && styles.pillSelected]}
+                  onPress={() => setShowTime(true)}
+                  activeOpacity={0.7}
+                  accessibilityLabel={t('schedule.picker.otherTime')}
+                >
+                  <Ionicons
+                    name="time-outline"
+                    size={13}
+                    color={customTime !== null ? colors.primaryOnTint : colors.muted}
+                    style={{ marginRight: 4 }}
+                  />
+                  <Text style={[styles.pillText, customTime !== null && styles.pillTextSelected]}>
+                    {customTimeLabel}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Native pickers - iOS renders inline (default 'spinner'), so we
+                  wrap in a small frame for visual consistency. Android renders
+                  as a transient dialog and auto-dismisses on selection. */}
+              {showDate && (
+                <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
+                  <DateTimePicker
+                    value={customDate ?? new Date()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    minimumDate={minPickerDate}
+                    maximumDate={maxPickerDate}
+                    onChange={handleDateChange}
+                    themeVariant="dark"
+                  />
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
+                      style={styles.nativePickerDone}
+                      onPress={() => setShowDate(false)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+              {showTime && (
+                <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
+                  <DateTimePicker
+                    value={(() => {
+                      const d = new Date();
+                      if (customTime) d.setHours(customTime.h, customTime.m, 0, 0);
+                      return d;
+                    })()}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    is24Hour
+                    onChange={handleTimeChange}
+                    themeVariant="dark"
+                  />
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
+                      style={styles.nativePickerDone}
+                      onPress={() => setShowTime(false)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+
+              {/* END TIME - shown only when required (legacy propose-date). The
+                  rating window opens at proposed_ends_at. Group challenges hide
+                  this entirely (only the start counts). */}
+              {requireEndTime && (<>
+              <Text style={styles.sectionLabel}>{t('schedule.picker.endTimeLabel')}</Text>
+              <View style={styles.pillsGrid}>
+                {TIME_PRESETS.map(p => {
+                  const selected = p.key === endTimeKey && customEndTime === null;
+                  return (
+                    <TouchableOpacity
+                      key={p.key}
+                      style={[styles.pill, selected && styles.pillSelected]}
+                      onPress={() => { setEndTimeKey(p.key); setCustomEndTime(null); }}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{p.key}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+                <TouchableOpacity
+                  style={[styles.pill, customEndTime !== null && styles.pillSelected]}
+                  onPress={() => setShowEndTime(true)}
+                  activeOpacity={0.7}
+                  accessibilityLabel={t('schedule.picker.otherTime')}
+                >
+                  <Ionicons
+                    name="time-outline"
+                    size={13}
+                    color={customEndTime !== null ? colors.primaryOnTint : colors.muted}
+                    style={{ marginRight: 4 }}
+                  />
+                  <Text style={[styles.pillText, customEndTime !== null && styles.pillTextSelected]}>
+                    {customEndTimeLabel}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {/* Inline validation hint when both times are set but end ≤ start. */}
+              {startMinutes !== null && endMinutes !== null && !endIsAfterStart && (
+                <Text style={styles.validationHint}>{t('schedule.picker.endAfterStart')}</Text>
+              )}
+              {showEndTime && (
+                <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
+                  <DateTimePicker
+                    value={(() => {
+                      const d = new Date();
+                      if (customEndTime) d.setHours(customEndTime.h, customEndTime.m, 0, 0);
+                      return d;
+                    })()}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    is24Hour
+                    onChange={handleEndTimeChange}
+                    themeVariant="dark"
+                  />
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
+                      style={styles.nativePickerDone}
+                      onPress={() => setShowEndTime(false)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+              </>)}
+
+              <Text style={styles.sectionLabel}>{t('schedule.picker.whereLabel')}</Text>
+              <TextInput
+                style={styles.venueInput}
+                value={venue}
+                onChangeText={setVenue}
+                placeholder={t('schedule.picker.wherePlaceholder')}
+                placeholderTextColor={colors.mutedDim}
+                maxLength={200}
+                returnKeyType="done"
+              />
             </ScrollView>
 
-            <Text style={styles.sectionLabel}>{t('schedule.picker.timeLabel')}</Text>
-            <View style={styles.pillsGrid}>
-              {TIME_PRESETS.map(p => {
-                const selected = p.key === timeKey && customTime === null;
-                return (
-                  <TouchableOpacity
-                    key={p.key}
-                    style={[styles.pill, selected && styles.pillSelected]}
-                    onPress={() => { setTimeKey(p.key); setCustomTime(null); }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{p.key}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-              {/* Free-form time. Same pattern as the date pill above. */}
-              <TouchableOpacity
-                style={[styles.pill, customTime !== null && styles.pillSelected]}
-                onPress={() => setShowTime(true)}
-                activeOpacity={0.7}
-                accessibilityLabel={t('schedule.picker.otherTime')}
-              >
-                <Ionicons
-                  name="time-outline"
-                  size={13}
-                  color={customTime !== null ? colors.primaryOnTint : colors.muted}
-                  style={{ marginRight: 4 }}
-                />
-                <Text style={[styles.pillText, customTime !== null && styles.pillTextSelected]}>
-                  {customTimeLabel}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Native pickers - iOS renders inline (default 'spinner'), so we
-                wrap in a small frame for visual consistency. Android renders
-                as a transient dialog and auto-dismisses on selection. */}
-            {showDate && (
-              <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
-                <DateTimePicker
-                  value={customDate ?? new Date()}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                  minimumDate={minPickerDate}
-                  maximumDate={maxPickerDate}
-                  onChange={handleDateChange}
-                  themeVariant="dark"
-                />
-                {Platform.OS === 'ios' && (
-                  <TouchableOpacity
-                    style={styles.nativePickerDone}
-                    onPress={() => setShowDate(false)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-            {showTime && (
-              <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
-                <DateTimePicker
-                  value={(() => {
-                    const d = new Date();
-                    if (customTime) d.setHours(customTime.h, customTime.m, 0, 0);
-                    return d;
-                  })()}
-                  mode="time"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  is24Hour
-                  onChange={handleTimeChange}
-                  themeVariant="dark"
-                />
-                {Platform.OS === 'ios' && (
-                  <TouchableOpacity
-                    style={styles.nativePickerDone}
-                    onPress={() => setShowTime(false)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-
-            {/* END TIME - shown only when required (legacy propose-date). The
-                rating window opens at proposed_ends_at. Group challenges hide
-                this entirely (only the start counts). */}
-            {requireEndTime && (<>
-            <Text style={styles.sectionLabel}>{t('schedule.picker.endTimeLabel')}</Text>
-            <View style={styles.pillsGrid}>
-              {TIME_PRESETS.map(p => {
-                const selected = p.key === endTimeKey && customEndTime === null;
-                return (
-                  <TouchableOpacity
-                    key={p.key}
-                    style={[styles.pill, selected && styles.pillSelected]}
-                    onPress={() => { setEndTimeKey(p.key); setCustomEndTime(null); }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{p.key}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-              <TouchableOpacity
-                style={[styles.pill, customEndTime !== null && styles.pillSelected]}
-                onPress={() => setShowEndTime(true)}
-                activeOpacity={0.7}
-                accessibilityLabel={t('schedule.picker.otherTime')}
-              >
-                <Ionicons
-                  name="time-outline"
-                  size={13}
-                  color={customEndTime !== null ? colors.primaryOnTint : colors.muted}
-                  style={{ marginRight: 4 }}
-                />
-                <Text style={[styles.pillText, customEndTime !== null && styles.pillTextSelected]}>
-                  {customEndTimeLabel}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {/* Inline validation hint when both times are set but end ≤ start. */}
-            {startMinutes !== null && endMinutes !== null && !endIsAfterStart && (
-              <Text style={styles.validationHint}>{t('schedule.picker.endAfterStart')}</Text>
-            )}
-            {showEndTime && (
-              <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
-                <DateTimePicker
-                  value={(() => {
-                    const d = new Date();
-                    if (customEndTime) d.setHours(customEndTime.h, customEndTime.m, 0, 0);
-                    return d;
-                  })()}
-                  mode="time"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  is24Hour
-                  onChange={handleEndTimeChange}
-                  themeVariant="dark"
-                />
-                {Platform.OS === 'ios' && (
-                  <TouchableOpacity
-                    style={styles.nativePickerDone}
-                    onPress={() => setShowEndTime(false)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-            </>)}
-
-            <Text style={styles.sectionLabel}>{t('schedule.picker.whereLabel')}</Text>
-            <TextInput
-              style={styles.venueInput}
-              value={venue}
-              onChangeText={setVenue}
-              placeholder={t('schedule.picker.wherePlaceholder')}
-              placeholderTextColor={colors.mutedDim}
-              maxLength={200}
-              returnKeyType="done"
-            />
-          </ScrollView>
-
-          {/* Submit - pinned to the sheet bottom, OUTSIDE the ScrollView so
-              it stays visible regardless of how tall the inner content is. */}
-          <TouchableOpacity
-            style={[styles.submit, !canSubmit && styles.submitDisabled]}
-            onPress={submit}
-            disabled={!canSubmit}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.submitText}>{submitLabel}</Text>
-          </TouchableOpacity>
+            {/* Submit - pinned to the sheet bottom, OUTSIDE the ScrollView so
+                it stays visible regardless of how tall the inner content is. */}
+            <TouchableOpacity
+              style={[styles.submit, !canSubmit && styles.submitDisabled]}
+              onPress={submit}
+              disabled={!canSubmit}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.submitText}>{submitLabel}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

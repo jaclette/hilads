@@ -1,14 +1,12 @@
 # Opens the app on Today. A release build starts directly; a dev build needs
 # DEV_URL (the Metro URL, see README.md), opened through the dev client.
 appId: com.hilads.app
-env:
-  DEV_URL: ""
 ---
 - launchApp:
     stopApp: true
 - runFlow:
     when:
-      true: ${DEV_URL != ''}
+      true: ${typeof DEV_URL !== 'undefined' && DEV_URL != ''}
     commands:
       - openLink: ${DEV_URL}
 - extendedWaitUntil:
@@ -16,3 +14,28 @@ env:
       id: "today-screen"
     timeout: 90000
 - waitForAnimationToEnd
+# The iOS simulator drops the saved session on relaunch (a real iPhone keeps
+# it): sign the test account in again. EMAIL / PASSWORD from -e, else the
+# store demo account.
+- runFlow:
+    when:
+      platform: iOS
+      visible:
+        id: "header-signup"
+    commands:
+      - runFlow:
+          file: open_link.yaml
+          env: { LINK: "hilads://sign-in" }
+      - tapOn:
+          id: "signin-email"
+      - inputText: "${typeof EMAIL !== 'undefined' ? EMAIL : 'linh.nguyen@example.com'}"
+      - tapOn:
+          id: "signin-password"
+      - inputText: "${typeof PASSWORD !== 'undefined' ? PASSWORD : 'hilads-store-2026'}"
+      - pressKey: Enter
+      - extendedWaitUntil:
+          visible:
+            id: "today-screen"
+          timeout: 60000
+      - waitForAnimationToEnd
+
