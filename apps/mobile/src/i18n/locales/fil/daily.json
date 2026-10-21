@@ -25,7 +25,7 @@
     "rejected": "Hindi na-publish",
     "removed": "Tinanggal"
   },
-  "pendingHint": "Chine-check ang bawat litrato bago ito mag-live.",
+  "pendingHint": "Nai-report ang litratong ito at sinusuri na.",
   "reasonLabel": "Dahilan: {{reason}}",
   "fixIt": "Ayusin",
   "edit": "I-edit",
@@ -70,7 +70,7 @@
     "save": "I-save ang changes",
     "sending": "Sine-send…",
     "sentTitle": "Naglaro na ang {{city}}!",
-    "sentBody": "Tingnan ang sinabi ng mundo. Lalabas ang litrato mo kapag naaprubahan.",
+    "sentBody": "Tingnan ang sinabi ng mundo. Live na ang litrato mo.",
     "ok": "OK",
     "permPhotoTitle": "Kailangan ng access sa photos",
     "permPhotoBody": "Payagan ang access sa settings mo para makapagdagdag ng photo.",

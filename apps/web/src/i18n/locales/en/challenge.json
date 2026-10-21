@@ -882,7 +882,7 @@
       "rejected": "Not published",
       "removed": "Removed"
     },
-    "pendingHint": "Every photo is checked before it goes live.",
+    "pendingHint": "This photo was reported and is being checked.",
     "reasonLabel": "Why: {{reason}}",
     "fixIt": "Fix it",
     "edit": "Edit",
@@ -927,7 +927,7 @@
       "save": "Save changes",
       "sending": "Sending…",
       "sentTitle": "{{city}} has played!",
-      "sentBody": "See what the world said. Your photo shows once it's approved.",
+      "sentBody": "See what the world said. Your photo is live.",
       "ok": "OK",
       "permPhotoTitle": "Photo access needed",
       "permPhotoBody": "Allow access in your settings to add a photo.",

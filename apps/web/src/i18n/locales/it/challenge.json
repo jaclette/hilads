@@ -882,7 +882,7 @@
       "rejected": "Non pubblicata",
       "removed": "Rimossa"
     },
-    "pendingHint": "Ogni foto viene controllata prima di essere pubblicata.",
+    "pendingHint": "Questa foto è stata segnalata ed è in verifica.",
     "reasonLabel": "Motivo: {{reason}}",
     "fixIt": "Correggila",
     "edit": "Modifica",
@@ -927,7 +927,7 @@
       "save": "Salva modifiche",
       "sending": "Invio…",
       "sentTitle": "{{city}} ha giocato!",
-      "sentBody": "Guarda cosa ha detto il mondo. La tua foto appare una volta approvata.",
+      "sentBody": "Guarda cosa ha detto il mondo. La tua foto è online.",
       "ok": "OK",
       "permPhotoTitle": "Serve l'accesso alle foto",
       "permPhotoBody": "Consenti l'accesso nelle impostazioni per aggiungere una foto.",

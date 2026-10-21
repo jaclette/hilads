@@ -25,7 +25,7 @@
     "rejected": "未發布",
     "removed": "已移除"
   },
-  "pendingHint": "每張照片上線前都會經過審核。",
+  "pendingHint": "這張照片被檢舉，正在審核。",
   "reasonLabel": "原因：{{reason}}",
   "fixIt": "去修改",
   "edit": "編輯",
@@ -70,7 +70,7 @@
     "save": "儲存變更",
     "sending": "傳送中…",
     "sentTitle": "{{city}}已參加！",
-    "sentBody": "看看全世界怎麼說。你的照片審核通過後顯示。",
+    "sentBody": "看看全世界怎麼說。你的照片已發布。",
     "ok": "好",
     "permPhotoTitle": "需要照片權限",
     "permPhotoBody": "請在設定中允許存取，才能新增照片。",

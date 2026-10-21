@@ -882,7 +882,7 @@
       "rejected": "게시 안 됨",
       "removed": "삭제됨"
     },
-    "pendingHint": "모든 사진은 게시 전에 확인해요.",
+    "pendingHint": "이 사진은 신고되어 확인 중이에요.",
     "reasonLabel": "이유: {{reason}}",
     "fixIt": "수정하기",
     "edit": "수정",
@@ -927,7 +927,7 @@
       "save": "변경사항 저장",
       "sending": "보내는 중…",
       "sentTitle": "{{city}}가 참여했어요!",
-      "sentBody": "세계가 뭐라고 했는지 보세요. 사진은 승인 후에 보여요.",
+      "sentBody": "전 세계의 답을 확인해 보세요. 사진이 게시됐어요.",
       "ok": "확인",
       "permPhotoTitle": "사진 접근 권한이 필요해요",
       "permPhotoBody": "사진을 추가하려면 설정에서 접근을 허용해 주세요.",

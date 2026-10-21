@@ -882,7 +882,7 @@
       "rejected": "Tidak dipublikasikan",
       "removed": "Dihapus"
     },
-    "pendingHint": "Setiap foto dicek dulu sebelum tayang.",
+    "pendingHint": "Foto ini dilaporkan dan sedang diperiksa.",
     "reasonLabel": "Alasan: {{reason}}",
     "fixIt": "Perbaiki",
     "edit": "Edit",
@@ -927,7 +927,7 @@
       "save": "Simpan perubahan",
       "sending": "Mengirim…",
       "sentTitle": "{{city}} sudah main!",
-      "sentBody": "Lihat apa kata dunia. Fotomu muncul setelah disetujui.",
+      "sentBody": "Lihat apa kata dunia. Fotomu sudah tayang.",
       "ok": "OK",
       "permPhotoTitle": "Perlu akses foto",
       "permPhotoBody": "Izinkan akses di pengaturan untuk menambahkan foto.",

@@ -25,7 +25,7 @@
     "rejected": "Non publiée",
     "removed": "Retirée"
   },
-  "pendingHint": "Chaque photo est vérifiée avant d'être publiée.",
+  "pendingHint": "Cette photo a été signalée et est en cours de vérification.",
   "reasonLabel": "Pourquoi : {{reason}}",
   "fixIt": "La corriger",
   "edit": "Modifier",
@@ -70,7 +70,7 @@
     "save": "Enregistrer",
     "sending": "Envoi…",
     "sentTitle": "{{city}} a joué !",
-    "sentBody": "Regarde ce que le monde a dit. Ta photo apparaît une fois validée.",
+    "sentBody": "Découvre ce que le monde a dit. Ta photo est en ligne.",
     "ok": "OK",
     "permPhotoTitle": "Accès aux photos nécessaire",
     "permPhotoBody": "Autorise l'accès dans tes réglages pour ajouter une photo.",

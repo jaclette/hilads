@@ -25,7 +25,7 @@
     "rejected": "未发布",
     "removed": "已移除"
   },
-  "pendingHint": "每张照片上线前都会经过审核。",
+  "pendingHint": "这张照片被举报，正在审核。",
   "reasonLabel": "原因：{{reason}}",
   "fixIt": "去修改",
   "edit": "编辑",
@@ -70,7 +70,7 @@
     "save": "保存修改",
     "sending": "发送中…",
     "sentTitle": "{{city}}已参加！",
-    "sentBody": "看看全世界怎么说。你的照片审核通过后显示。",
+    "sentBody": "看看全世界怎么说。你的照片已发布。",
     "ok": "好的",
     "permPhotoTitle": "需要照片权限",
     "permPhotoBody": "请在设置中允许访问，以添加照片。",

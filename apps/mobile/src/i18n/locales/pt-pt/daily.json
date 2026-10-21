@@ -25,7 +25,7 @@
     "rejected": "Não publicada",
     "removed": "Removida"
   },
-  "pendingHint": "Cada foto é verificada antes de ser publicada.",
+  "pendingHint": "Esta foto foi denunciada e está a ser verificada.",
   "reasonLabel": "Motivo: {{reason}}",
   "fixIt": "Corrigir",
   "edit": "Editar",
@@ -70,7 +70,7 @@
     "save": "Guardar alterações",
     "sending": "A enviar…",
     "sentTitle": "{{city}} jogou!",
-    "sentBody": "Vê o que o mundo disse. A tua foto aparece depois de aprovada.",
+    "sentBody": "Vê o que o mundo disse. A tua foto já está publicada.",
     "ok": "OK",
     "permPhotoTitle": "É preciso acesso às fotos",
     "permPhotoBody": "Permite o acesso nas definições para adicionar uma foto.",

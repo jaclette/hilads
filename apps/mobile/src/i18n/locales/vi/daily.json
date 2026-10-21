@@ -25,7 +25,7 @@
     "rejected": "Không được đăng",
     "removed": "Đã gỡ"
   },
-  "pendingHint": "Mỗi ảnh đều được kiểm tra trước khi hiển thị.",
+  "pendingHint": "Ảnh này đã bị báo cáo và đang được kiểm tra.",
   "reasonLabel": "Lý do: {{reason}}",
   "fixIt": "Sửa lại",
   "edit": "Sửa",
@@ -70,7 +70,7 @@
     "save": "Lưu thay đổi",
     "sending": "Đang gửi…",
     "sentTitle": "{{city}} đã chơi!",
-    "sentBody": "Xem cả thế giới đã nói gì. Ảnh của bạn hiện ra khi được duyệt.",
+    "sentBody": "Xem cả thế giới nói gì. Ảnh của bạn đã được đăng.",
     "ok": "OK",
     "permPhotoTitle": "Cần quyền truy cập ảnh",
     "permPhotoBody": "Cho phép truy cập trong cài đặt để thêm ảnh.",

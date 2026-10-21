@@ -882,7 +882,7 @@
       "rejected": "Nicht veröffentlicht",
       "removed": "Entfernt"
     },
-    "pendingHint": "Jedes Foto wird geprüft, bevor es online geht.",
+    "pendingHint": "Dieses Foto wurde gemeldet und wird geprüft.",
     "reasonLabel": "Grund: {{reason}}",
     "fixIt": "Korrigieren",
     "edit": "Bearbeiten",
@@ -927,7 +927,7 @@
       "save": "Änderungen speichern",
       "sending": "Wird gesendet…",
       "sentTitle": "{{city}} hat gespielt!",
-      "sentBody": "Schau, was die Welt gesagt hat. Dein Foto erscheint nach der Freigabe.",
+      "sentBody": "Sieh, was die Welt gesagt hat. Dein Foto ist online.",
       "ok": "OK",
       "permPhotoTitle": "Foto-Zugriff nötig",
       "permPhotoBody": "Erlaube den Zugriff in deinen Einstellungen, um ein Foto hinzuzufügen.",

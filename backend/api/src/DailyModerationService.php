@@ -228,6 +228,14 @@ final class DailyModerationService
         return 'reported_hidden';
     }
 
+    /** True when a proof's open reports keep it hidden until an admin decides (an edit does not bring it back). */
+    public static function heldByReports(string $proofId): bool
+    {
+        $stmt = Database::pdo()->prepare("SELECT count(*) FROM daily_proof_reports WHERE proof_id = ? AND status = 'open'");
+        $stmt->execute([$proofId]);
+        return self::shouldHide((int) $stmt->fetchColumn());
+    }
+
     public static function shouldHide(int $openReports): bool
     {
         return $openReports >= self::REPORT_HIDE_THRESHOLD;

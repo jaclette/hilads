@@ -25,7 +25,7 @@
     "rejected": "非公開",
     "removed": "削除済み"
   },
-  "pendingHint": "すべての写真は公開前に確認されます。",
+  "pendingHint": "この写真は報告され、確認中です。",
   "reasonLabel": "理由: {{reason}}",
   "fixIt": "修正する",
   "edit": "編集",
@@ -70,7 +70,7 @@
     "save": "変更を保存",
     "sending": "送信中…",
     "sentTitle": "{{city}}が参加しました！",
-    "sentBody": "世界の答えを見てみよう。写真は承認後に表示されます。",
+    "sentBody": "世界の答えを見てみよう。あなたの写真は公開されました。",
     "ok": "OK",
     "permPhotoTitle": "写真へのアクセスが必要です",
     "permPhotoBody": "写真を追加するには、設定でアクセスを許可してください。",

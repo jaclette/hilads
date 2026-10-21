@@ -25,7 +25,7 @@
     "rejected": "Niet gepubliceerd",
     "removed": "Verwijderd"
   },
-  "pendingHint": "Elke foto wordt gecheckt voordat hij live gaat.",
+  "pendingHint": "Deze foto is gemeld en wordt gecontroleerd.",
   "reasonLabel": "Waarom: {{reason}}",
   "fixIt": "Aanpassen",
   "edit": "Bewerken",
@@ -70,7 +70,7 @@
     "save": "Wijzigingen opslaan",
     "sending": "Versturen…",
     "sentTitle": "{{city}} heeft gespeeld!",
-    "sentBody": "Zie wat de wereld zei. Je foto verschijnt zodra hij is goedgekeurd.",
+    "sentBody": "Kijk wat de wereld zei. Je foto staat online.",
     "ok": "OK",
     "permPhotoTitle": "Toegang tot foto's nodig",
     "permPhotoBody": "Geef toegang in je instellingen om een foto toe te voegen.",
