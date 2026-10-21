@@ -16,6 +16,8 @@
   "countZero": "Wala pa - maging una ka",
   "beFirst": "Maging una ngayong araw",
   "beFirstSub": "Wala pang litrato. Ikaw na ang mauna, naghihintay ang mundo.",
+  "firstYours": "Naipadala na ang litrato mo",
+  "firstYoursSub": "Lalabas ito rito kapag naaprubahan, kasama ng mga litrato ng iba.",
   "yourProof": "Ang litrato mo",
   "status": {
     "pending": "Nakabinbin",

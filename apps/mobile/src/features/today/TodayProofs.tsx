@@ -133,8 +133,9 @@ function Strip({ title, stats, onOpen, items, guestId, voting, source, onProof, 
   const prompted = useRef(false);
   // Nothing to vote on when the strip only holds Hilads suggestions: no prompt, no note.
   const votable = voting && items.some(p => !p.suggestion);
-  // The sheet lists players' photos only: with suggestions alone it would be empty, so no "See all".
-  const browsable = items.some(p => !p.suggestion);
+  // The sheet lists approved players' photos only: with suggestions or my pending photo alone it
+  // would be empty, so no "See all".
+  const browsable = items.some(p => !p.suggestion && p.status === 'approved');
   useEffect(() => {
     if (!votable || prompted.current) return;
     prompted.current = true;

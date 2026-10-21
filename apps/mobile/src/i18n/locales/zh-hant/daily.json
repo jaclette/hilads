@@ -16,6 +16,8 @@
   "countZero": "還沒有人完成 - 來當第一個",
   "beFirst": "成為今天的第一個",
   "beFirstSub": "還沒有照片。來當第一個吧，全世界都在等。",
+  "firstYours": "你的照片已送出",
+  "firstYoursSub": "審核通過後會和大家的照片一起顯示在這裡。",
   "yourProof": "你的照片",
   "status": {
     "pending": "待審核",

@@ -16,6 +16,8 @@
   "countZero": "아직 아무도 없어요 - 첫 번째가 되어보세요",
   "beFirst": "오늘의 첫 번째가 되어보세요",
   "beFirstSub": "아직 사진이 없어요. 첫 번째가 되어 보세요, 세계가 기다리고 있어요.",
+  "firstYours": "사진이 등록됐어요",
+  "firstYoursSub": "승인되면 다른 사람들의 사진과 함께 여기에 표시돼요.",
   "yourProof": "내 사진",
   "status": {
     "pending": "대기 중",

@@ -16,6 +16,8 @@
   "countZero": "Noch niemand - mach den Anfang",
   "beFirst": "Mach heute den Anfang",
   "beFirstSub": "Noch kein Foto. Sei die erste Person, die Welt wartet.",
+  "firstYours": "Dein Foto ist da",
+  "firstYoursSub": "Es erscheint hier, sobald es freigegeben ist, mit den Fotos der anderen.",
   "yourProof": "Dein Foto",
   "status": {
     "pending": "Ausstehend",

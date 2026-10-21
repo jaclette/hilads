@@ -16,6 +16,8 @@
   "countZero": "还没人完成 - 来当第一个",
   "beFirst": "成为今天的第一个",
   "beFirstSub": "还没有照片。来当第一个吧，全世界都在等。",
+  "firstYours": "你的照片已提交",
+  "firstYoursSub": "审核通过后会和大家的照片一起显示在这里。",
   "yourProof": "你的照片",
   "status": {
     "pending": "待审核",

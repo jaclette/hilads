@@ -248,9 +248,10 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
               <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} onOpenProof={openProof} />
             ) : sheet.proofs.length === 0 ? (
               <div className="dc-center">
-                <Icon name="camera-outline" size={30} style={{ color: 'var(--muted2)' }} />
-                <p className="dc-empty-title">{t('beFirst')}</p>
-                <p className="dc-muted">{t('beFirstSub')}</p>
+                {/* Once I played (mine waits for review), it's in - not "be the first". */}
+                <Icon name={myProof ? 'time-outline' : 'camera-outline'} size={30} style={{ color: 'var(--muted2)' }} />
+                <p className="dc-empty-title">{t(myProof ? 'firstYours' : 'beFirst')}</p>
+                <p className="dc-muted">{t(myProof ? 'firstYoursSub' : 'beFirstSub')}</p>
               </div>
             ) : (
               <>

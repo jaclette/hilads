@@ -873,6 +873,8 @@
     "countZero": "Belum ada - jadilah yang pertama",
     "beFirst": "Jadilah yang pertama hari ini",
     "beFirstSub": "Belum ada foto. Jadilah yang pertama, dunia menunggu.",
+    "firstYours": "Fotomu sudah masuk",
+    "firstYoursSub": "Fotomu muncul di sini setelah disetujui, bersama foto yang lain.",
     "yourProof": "Fotomu",
     "status": {
       "pending": "Tertunda",

@@ -16,6 +16,8 @@
   "countZero": "Nadie todavía - sé el primero",
   "beFirst": "Sé el primero hoy",
   "beFirstSub": "Aún no hay fotos. Sé el primero, el mundo espera.",
+  "firstYours": "Tu foto ya está",
+  "firstYoursSub": "Aparecerá aquí cuando se apruebe, con las fotos de los demás.",
   "yourProof": "Tu foto",
   "status": {
     "pending": "Pendiente",

@@ -373,8 +373,10 @@ function Sheet({ date, openProofId, source, initialTab, pushType, shareProof }: 
               onOpenProof={openProofById}
             />
           ) : (
-            // No answer yet: the day's Hilads suggestions, else the usual "be the first".
-            <EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />
+            // No approved photo yet: "be the first", or, once I played (mine waits for review), that it's in.
+            sheet?.myProof
+              ? <EmptyState icon="time-outline" title={t('firstYours')} body={t('firstYoursSub')} />
+              : <EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />
           )}
         />
       )}

@@ -873,6 +873,8 @@
     "countZero": "Personne pour l'instant - sois le premier",
     "beFirst": "Sois le premier aujourd'hui",
     "beFirstSub": "Pas encore de photo. Sois le premier, le monde attend.",
+    "firstYours": "Ta photo est partie",
+    "firstYoursSub": "Elle apparaît ici une fois validée, avec les photos des autres.",
     "yourProof": "Ta photo",
     "status": {
       "pending": "En attente",

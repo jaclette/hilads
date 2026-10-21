@@ -16,6 +16,8 @@
   "countZero": "Chưa có ai - hãy là người đầu tiên",
   "beFirst": "Hãy là người đầu tiên hôm nay",
   "beFirstSub": "Chưa có ảnh nào. Hãy là người đầu tiên, cả thế giới đang chờ.",
+  "firstYours": "Ảnh của bạn đã được gửi",
+  "firstYoursSub": "Ảnh sẽ hiện ở đây sau khi được duyệt, cùng ảnh của mọi người.",
   "yourProof": "Ảnh của bạn",
   "status": {
     "pending": "Đang chờ duyệt",
