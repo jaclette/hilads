@@ -26,19 +26,20 @@ function within<T>(p: Promise<T>, ms: number): Promise<T> {
 }
 
 /**
- * The best fix we can get: GPS first; indoors (no satellites) the network
- * position, then a recent last-known one. A coarser fix is still a position:
- * the place step flags it as approximate instead of failing (reported
- * 2026-10-22: "Your position isn't available" at home on LTE).
+ * The best fix we can get, in 15 s at most: GPS and the network position are
+ * asked at once; GPS wins if it answers within 8 s, otherwise the network
+ * position (indoors, no satellites), then a recent last-known one. A coarser
+ * fix is still a position: the place step flags it as approximate instead of
+ * failing (reported 2026-10-22: "Your position isn't available" at home on LTE,
+ * then the spinner stuck on "Finding where you are").
  */
 async function preciseFix(): Promise<Location.LocationObject> {
-  try {
-    return await within(Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }), 12_000);
-  } catch {}
-  try {
-    return await within(Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }), 8_000);
-  } catch {}
-  const last = await Location.getLastKnownPositionAsync({ maxAge: 5 * 60 * 1000 });
+  const gps     = within(Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }), 8_000);
+  const network = within(Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }), 12_000);
+  gps.catch(() => {}); network.catch(() => {});
+  try { return await gps; } catch {}
+  try { return await network; } catch {}
+  const last = await within(Location.getLastKnownPositionAsync({ maxAge: 5 * 60 * 1000 }), 3_000).catch(() => null);
   if (!last) throw new Error('no fix');
   return last;
 }
@@ -74,12 +75,12 @@ export async function requestFeatureLocation(feature: GpsFeature, opts: { precis
     }
 
     // Android: permission granted but device location services off.
-    const servicesOn = await Location.hasServicesEnabledAsync().catch(() => true);
+    const servicesOn = await within(Location.hasServicesEnabledAsync(), 3_000).catch(() => true);
     if (!servicesOn) return { ok: false, reason: 'services_off' };
 
     // precise: a fresh high-accuracy fix (the Daily proof's distance check, V3-08);
     // otherwise a recent last-known position is enough.
-    const last = opts.precise ? null : await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
+    const last = opts.precise ? null : await within(Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 }), 3_000).catch(() => null);
     const pos = last ?? (opts.precise
       ? await preciseFix()
       : await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
