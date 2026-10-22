@@ -8,6 +8,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { fetchNearbyPlaces } from '@/api/daily';
+import { fetchPlaceSuggestions, type PlaceSuggestion } from '@/lib/placeSuggestions';
 import { distance } from '@/features/today/format';
 import type { DailyThemeKey, NearbyPlace } from '@/types';
 import { KeyboardForm } from '@/ui/keyboard';
@@ -27,7 +28,8 @@ type Phase = 'intro' | 'locating' | 'denied' | 'failed' | 'list' | 'new';
 /**
  * The proof's place step (SPEC 9.4): one line on why the position is needed,
  * then the Hilads spots within 100 m (search, distance, proof count) and "New
- * place" (a name; the device position becomes its position). Handles a refused
+ * place" (a name; the device position becomes its position), with the real
+ * places around (Mapbox) to pick that name in one tap. Handles a refused
  * permission, location services off and an approximate fix.
  */
 export function PlaceStep({ theme, onPicked }: {
@@ -41,6 +43,7 @@ export function PlaceStep({ theme, onPicked }: {
   const [settings, setSettings] = useState(false);
   const [position, setPosition] = useState<Position | null>(null);
   const [places, setPlaces]     = useState<NearbyPlace[]>([]);
+  const [around, setAround]     = useState<PlaceSuggestion[]>([]);
   const [query, setQuery]       = useState('');
   const [name, setName]         = useState('');
 
@@ -56,30 +59,36 @@ export function PlaceStep({ theme, onPicked }: {
     }
     const pos = { ...geo.coords, accuracy: geo.accuracy ?? null, at: Date.now() };
     setPosition(pos);
-    try {
-      const items = await fetchNearbyPlaces(pos.lat, pos.lng);
-      setPlaces(items);
-      setPhase(items.length === 0 ? 'new' : 'list');
-    } catch {
-      setPlaces([]);
-      setPhase('new');
-    }
-  }, []);
+    const [items, real] = await Promise.all([
+      fetchNearbyPlaces(pos.lat, pos.lng).catch(() => [] as NearbyPlace[]),
+      fetchPlaceSuggestions(pos.lat, pos.lng, i18n.language),
+    ]);
+    // A real place already in Hilads shows once, as the Hilads place.
+    const known = new Set(items.map(p => p.name.trim().toLowerCase()));
+    const fresh = real.filter(r => !known.has(r.name.toLowerCase()));
+    setPlaces(items);
+    setAround(fresh);
+    setPhase(items.length === 0 && fresh.length === 0 ? 'new' : 'list');
+  }, [i18n.language]);
 
   // Already allowed: no need to explain first, go straight to the list.
   useEffect(() => {
     Location.getForegroundPermissionsAsync().then(p => { if (p.granted) locate(); }).catch(() => {});
   }, [locate]);
 
-  const shown = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return q ? places.filter(p => p.name.toLowerCase().includes(q)) : places;
-  }, [places, query]);
+  const q = query.trim().toLowerCase();
+  const shown = useMemo(() => (q ? places.filter(p => p.name.toLowerCase().includes(q)) : places), [places, q]);
+  const shownAround = useMemo(() => (q ? around.filter(p => p.name.toLowerCase().includes(q)) : around), [around, q]);
 
   const pickSpot = (spot: NearbyPlace) => {
     if (!position) return;
     track('place_picked', { kind: 'spot', distance_m: spot.distanceM, in_review: spot.inReview, theme });
     onPicked({ kind: 'spot', spot }, position);
+  };
+  const pickAround = (p: PlaceSuggestion) => {
+    if (!position) return;
+    track('place_picked', { kind: 'suggested', distance_m: p.distanceM, in_review: true, theme });
+    onPicked({ kind: 'new', name: p.name.slice(0, NAME_MAX) }, position);
   };
   const pickNew = () => {
     const n = name.trim().replace(/\s+/g, ' ');
@@ -145,7 +154,7 @@ export function PlaceStep({ theme, onPicked }: {
 
       {phase === 'list' && (
         <>
-          {places.length > 4 && (
+          {places.length + around.length > 4 && (
             <View style={styles.search}>
               <Ionicons name="search-outline" size={18} color={colors.muted} />
               <TextInput style={styles.searchInput} value={query} onChangeText={setQuery} placeholder={t('place.search')} returnKeyType="search"
@@ -167,6 +176,24 @@ export function PlaceStep({ theme, onPicked }: {
               <Ionicons name="chevron-forward" size={18} color={colors.muted} />
             </TouchableOpacity>
           ))}
+          {shownAround.length > 0 && (
+            <Text style={styles.section}>{t('place.aroundYou')}</Text>
+          )}
+          {shownAround.map(p => (
+            <TouchableOpacity key={p.id} style={styles.row} onPress={() => pickAround(p)} accessibilityRole="button"
+                              accessibilityLabel={`${p.name}, ${distance(p.distanceM, i18n.language)}`} testID="place-around">
+              <Ionicons name="storefront-outline" size={20} color={colors.muted} />
+              <View style={styles.rowBody}>
+                <Text style={styles.rowName} numberOfLines={1}>{p.name}</Text>
+                <Text style={styles.rowMeta} numberOfLines={1}>
+                  {distance(p.distanceM, i18n.language)}
+                  {p.category ? ` · ${p.category}` : ''}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+            </TouchableOpacity>
+          ))}
+          {shownAround.length > 0 && <Text style={styles.credit}>© Mapbox</Text>}
           <TouchableOpacity style={[styles.row, styles.newRow]} onPress={() => setPhase('new')} accessibilityRole="button" testID="place-new">
             <Ionicons name="add-circle-outline" size={20} color={colors.primaryText} />
             <View style={styles.rowBody}>
@@ -179,7 +206,7 @@ export function PlaceStep({ theme, onPicked }: {
 
       {phase === 'new' && (
         <View style={styles.newBox}>
-          {places.length === 0 && <Text style={styles.body}>{t('place.noneNearby')}</Text>}
+          {places.length + around.length === 0 && <Text style={styles.body}>{t('place.noneNearby')}</Text>}
           <Text style={styles.label}>{t('place.nameLabel')}</Text>
           <TextInput
             style={styles.input}
@@ -194,7 +221,7 @@ export function PlaceStep({ theme, onPicked }: {
             testID="place-name"
           />
           <Text style={styles.hint}>{t('place.newHint')}</Text>
-          {places.length > 0 && (
+          {places.length + around.length > 0 && (
             <TouchableOpacity onPress={() => setPhase('list')} accessibilityRole="button" style={styles.backToList}>
               <Text style={styles.link}>{t('place.backToList')}</Text>
             </TouchableOpacity>
@@ -225,6 +252,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   searchInput:   { flex: 1, fontSize: FontSizes.sm, color: c.text, paddingVertical: 0 },
   row:           { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   newRow:        { borderStyle: 'dashed' },
+  section:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 6 },
+  credit:        { fontSize: FontSizes.xs, color: c.muted, alignSelf: 'flex-end', marginTop: -4 },
   rowBody:       { flex: 1 },
   rowName:       { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   rowMeta:       { fontSize: FontSizes.xs, color: c.muted, marginTop: 2 },
