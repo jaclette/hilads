@@ -40,9 +40,9 @@ final class PlacesTest extends TestCase
 
     public function testPlaceThemes(): void
     {
-        $this->assertFalse(Places::isPlaceTheme('language'));
+        $this->assertFalse(Places::isPlaceTheme('special'));
         $this->assertFalse(Places::isPlaceTheme(null));
-        foreach (['street_food', 'coffee', 'market', 'night_out', 'neighborhood', 'traditions'] as $t) {
+        foreach (['street_food', 'coffee', 'market', 'night_out', 'neighborhood', 'traditions', 'language', 'join_in', 'ask_local'] as $t) {
             $this->assertTrue(Places::isPlaceTheme($t), $t);
         }
     }
@@ -97,8 +97,15 @@ final class PlacesTest extends TestCase
         $spot  = ['spotId' => '0123456789abcdef', 'newName' => null, 'lat' => 1.0, 'lng' => 2.0];
         $noPos = ['spotId' => null, 'newName' => 'Stall', 'lat' => null, 'lng' => null];
 
-        $this->assertNull(Places::checkForTheme('language', $none));
-        $this->assertSame('place_not_allowed', Places::checkForTheme('language', $spot));
+        $this->assertSame('place_not_allowed', Places::checkForTheme('special', $spot));
+        $this->assertSame('place_required', Places::checkForTheme('join_in', $none));
+        $this->assertNull(Places::checkForTheme('join_in', $spot));
+        // An app from before Join in (Ask a local: no place step) still posts without a place.
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['HTTP_X_THEMES'] = '2';
+        $this->assertNull(Places::checkForTheme('ask_local', $none));
+        $this->assertSame('place_required', Places::checkForTheme('coffee', $none));
+        unset($_SERVER['REQUEST_METHOD'], $_SERVER['HTTP_X_THEMES']);
         $this->assertSame('place_required', Places::checkForTheme('coffee', $none));
         $this->assertSame('invalid_position', Places::checkForTheme('coffee', $noPos));
         $this->assertNull(Places::checkForTheme('coffee', $spot));

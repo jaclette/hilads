@@ -59,8 +59,8 @@ async function fetchJson(url, ms = 1500) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
-    // themes=2: the themes v2 keys (the API answers v1 keys without it).
-    const r = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2', { signal: ctrl.signal, headers: { Accept: 'application/json' } });
+    // themes=2: the themes v2 keys (the API answers v1 keys without it); themesRev=3: join_in.
+    const r = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2&themesRev=3', { signal: ctrl.signal, headers: { Accept: 'application/json' } });
     if (!r.ok) return null;
     return await r.json();
   } catch {

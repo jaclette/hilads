@@ -13,7 +13,7 @@ export const HIGHLIGHT = { bg: '#FFD2C2', text: '#8A3418' }
 export const THEME_COLORS = {
   hidden_gem: { fill: '#1FB5A8', onFill: '#2A1C13', light: '#157E75', dark: '#1FB5A8' },
   taste:      { fill: HIGHLIGHT.bg, onFill: HIGHLIGHT.text, light: '#B74F45', dark: '#FF6F61', line: '#B74F45' },   // the peach pill (line: its rings)
-  ask_local:  { fill: '#3D9BF0', onFill: '#2A1C13', light: '#2E75B6', dark: '#3D9BF0' },
+  join_in:    { fill: '#3D9BF0', onFill: '#2A1C13', light: '#2E75B6', dark: '#3D9BF0' },
   local_find: { fill: '#FF7EB0', onFill: '#2A1C13', light: '#AD5577', dark: '#FF7EB0' },
   night_out:  { fill: '#5B5BD6', onFill: '#FFFFFF', light: '#5B5BD6', dark: '#9A9AF5' },
   sip:        { fill: '#FFC93C', onFill: '#2A1C13', light: '#896C20', dark: '#FFC93C' },

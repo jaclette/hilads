@@ -10,7 +10,7 @@ import { defaultThemeFor } from '@/features/daily/themes';
 export const THEME_COVERS: Record<DailyThemeKey, number> = {
   hidden_gem: require('../../../assets/covers/hidden_gem.jpg'),
   taste:      require('../../../assets/covers/taste.jpg'),
-  ask_local:  require('../../../assets/covers/ask_local.jpg'),
+  join_in:    require('../../../assets/covers/join_in.jpg'),   // PLACEHOLDER: replace with the real Join in cover
   local_find: require('../../../assets/covers/local_find.jpg'),
   night_out:  require('../../../assets/covers/night_out.jpg'),
   sip:        require('../../../assets/covers/sip.jpg'),

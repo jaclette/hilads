@@ -353,7 +353,7 @@ final class SpotsAdmin
     {
         $theme = DailyThemes::normalize($in['theme'] ?? null);
         if ($theme === null || !Places::isPlaceTheme($theme)) {
-            throw new InvalidArgumentException('Pick a place theme (Ask a local has no place).');
+            throw new InvalidArgumentException('Pick a place theme (a special day has no place).');
         }
         $username = ltrim(trim((string) ($in['username'] ?? '')), '@') ?: self::SEED_USERNAME;
         $userId   = DailyAdminService::userIdForUsername($username);

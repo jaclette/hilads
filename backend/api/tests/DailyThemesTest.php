@@ -11,13 +11,13 @@ final class DailyThemesTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($_SERVER['REQUEST_METHOD'], $_SERVER['HTTP_X_THEMES']);
+        unset($_SERVER['REQUEST_METHOD'], $_SERVER['HTTP_X_THEMES'], $_SERVER['HTTP_X_THEMES_REV']);
     }
 
     public function testEveryWeekdayHasItsTheme(): void
     {
         // 2026-11-02 is a Monday.
-        $expected = ['hidden_gem', 'taste', 'ask_local', 'local_find', 'night_out', 'sip', 'only_here'];
+        $expected = ['hidden_gem', 'taste', 'join_in', 'local_find', 'night_out', 'sip', 'only_here'];
         foreach ($expected as $i => $key) {
             $date = (new DateTimeImmutable('2026-11-02'))->modify("+{$i} days")->format('Y-m-d');
             $this->assertSame($key, DailyThemes::forDate($date), $date);
@@ -26,8 +26,12 @@ final class DailyThemesTest extends TestCase
 
     public function testNormalizeAcceptsKeysAndNames(): void
     {
-        $this->assertSame('ask_local', DailyThemes::normalize('ask_local'));
-        $this->assertSame('ask_local', DailyThemes::normalize('Ask a local'));
+        $this->assertSame('join_in', DailyThemes::normalize('join_in'));
+        $this->assertSame('join_in', DailyThemes::normalize('Join in'));
+        // Renamed: Ask a local became Join in.
+        $this->assertSame('join_in', DailyThemes::normalize('ask_local'));
+        $this->assertSame('join_in', DailyThemes::normalize('Ask a local'));
+        $this->assertSame('join_in', DailyThemes::effective('ask_local', null));
         $this->assertSame('hidden_gem', DailyThemes::normalize(' hidden GEM '));
         $this->assertSame('night_out', DailyThemes::normalize('Night out'));
         // v1 keys and names map to their v2 theme.
@@ -56,13 +60,19 @@ final class DailyThemesTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $this->assertTrue(DailyThemes::legacyClient());
         $this->assertSame(['key' => 'coffee', 'name' => 'Coffee'], DailyThemes::format('sip', '2026-11-02'));
-        $this->assertSame(['key' => 'language', 'name' => 'Language'], DailyThemes::format('ask_local', null));
+        $this->assertSame(['key' => 'language', 'name' => 'Language'], DailyThemes::format('join_in', null));
         // A special: the v1 key of its weekday's theme (2026-10-31 is a Saturday: Drinks, v1 coffee).
         $this->assertSame('coffee', DailyThemes::format('special', '2026-10-31')['key']);
         $this->assertSame(['coffee', 'neighborhood'], DailyThemes::clientList(['sip', 'hidden_gem', 'special']));
         $_SERVER['HTTP_X_THEMES'] = '2';
         $this->assertFalse(DailyThemes::legacyClient());
         $this->assertSame(['key' => 'sip', 'name' => 'Drinks'], DailyThemes::format('sip', '2026-11-02'));
+        // A v2 app (before Join in) gets the key it knows; v3 gets the current one.
+        $this->assertSame('ask_local', DailyThemes::format('join_in', null)['key']);
+        $this->assertSame('ask_local', DailyThemes::client('ask_local'));
+        $_SERVER['HTTP_X_THEMES_REV'] = '3';
+        $this->assertSame(['key' => 'join_in', 'name' => 'Join in'], DailyThemes::format('ask_local', null));
+        $this->assertSame(['join_in', 'sip'], DailyThemes::clientList(['join_in', 'sip', 'special']));
     }
 
     public function testImportThemes(): void
@@ -78,7 +88,7 @@ final class DailyThemesTest extends TestCase
         ]];
         $r = DailyAdminService::validateImport($doc, fn(string $slug): ?string => null);
         $this->assertSame('sip', $r['entries'][0]['theme']);         // given (a name), even off its weekday
-        $this->assertSame('ask_local', $r['entries'][1]['theme']);   // Wednesday default
+        $this->assertSame('join_in', $r['entries'][1]['theme']);   // Wednesday default
         $this->assertNull($r['entries'][2]['theme']);                // reserve: themed when used
         $this->assertSame('special', $r['entries'][4]['theme']);
         $this->assertSame(['id' => 'halloween', 'names' => ['en' => 'Halloween', 'zh-hans' => '万圣节']], $r['entries'][4]['special']);
@@ -100,7 +110,7 @@ final class DailyThemesTest extends TestCase
                            'published' => true, 'myStatus' => 'approved'], $days[0]);
         $this->assertSame('taste', $days[1]['theme']['key']);   // Tuesday default
         $this->assertFalse($days[2]['published']);              // nothing that day
-        $this->assertSame('ask_local', $days[2]['theme']['key']);
+        $this->assertSame('join_in', $days[2]['theme']['key']);
         $this->assertFalse($days[3]['published']);              // scheduled: theme only
         $this->assertSame('local_find', $days[3]['theme']['key']);
         $this->assertNull($days[3]['myStatus']);

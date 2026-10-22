@@ -854,7 +854,7 @@ export interface DailyTheme {
 }
 
 /** The 7 weekly themes (v2, 2026-10-19). */
-export type DailyThemeKey = 'hidden_gem' | 'taste' | 'ask_local' | 'local_find' | 'night_out' | 'sip' | 'only_here';
+export type DailyThemeKey = 'hidden_gem' | 'taste' | 'join_in' | 'local_find' | 'night_out' | 'sip' | 'only_here';
 
 /** A special day (SPEC 9.15): its name in the viewer's language, emoji (pushes), icon (an Ionicons name). */
 export interface DailySpecial {

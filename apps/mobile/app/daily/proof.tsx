@@ -72,7 +72,7 @@ type TooFar = { distanceM: number; radiusM: number };
  * new place at my position), then the answer to the comparison question
  * (SPEC 10.2, required when the challenge has one), the caption and price,
  * and "And back home?" (10.4, optional: the same question for my home city).
- * Ask a local proofs skip the place. The backend checks I'm within 150 m of the spot; "too far"
+ * A special day's proofs skip the place. The backend checks I'm within 150 m of the spot; "too far"
  * lets me retry from where I am or pick another place. /daily/proof creates,
  * /daily/proof?edit=<id> edits. Every proof goes to review.
  */

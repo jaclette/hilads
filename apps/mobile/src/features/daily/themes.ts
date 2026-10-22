@@ -9,7 +9,7 @@ import type { DailyThemeKey } from '@/types';
 
 /** English names (the API's DailyThemes), for screens that pick a theme before any payload. */
 export const THEME_NAMES: Record<DailyThemeKey, string> = {
-  hidden_gem: 'Hidden gem', taste: 'Taste', ask_local: 'Ask a local', local_find: 'Local find',
+  hidden_gem: 'Hidden gem', taste: 'Taste', join_in: 'Join in', local_find: 'Local find',
   night_out: 'Night out', sip: 'Drinks', only_here: 'Only here',
 };
 
@@ -28,14 +28,14 @@ export function themeName(key?: string | null, opts?: { special?: { name: string
   return i18n.t(`themes.${key}`, { ns: 'common', defaultValue: THEME_NAMES[key as DailyThemeKey] ?? key });
 }
 
-/** Every weekly theme but Ask a local is about a place (the proof's spot); a special day is not. */
+/** Every weekly theme is about a place (the proof's spot; Join in: where it happens); a special day is not. */
 export function isPlaceTheme(key?: string | null): boolean {
-  return !!key && key !== 'ask_local' && key !== 'special';
+  return !!key && key !== 'special';
 }
 
 /** ISO weekday (1 = Monday) of each theme's default day, in weekly order. */
 export const THEME_WEEKDAY: Record<DailyThemeKey, number> = {
-  hidden_gem: 1, taste: 2, ask_local: 3, local_find: 4, night_out: 5, sip: 6, only_here: 7,
+  hidden_gem: 1, taste: 2, join_in: 3, local_find: 4, night_out: 5, sip: 6, only_here: 7,
 };
 
 export const THEME_KEYS = Object.keys(THEME_WEEKDAY) as DailyThemeKey[];

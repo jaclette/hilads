@@ -68,11 +68,11 @@ final class Places
         return trim($s);
     }
 
-    /** Every weekly theme but Ask a local (v1: Language) is about a place; a special day is not. */
+    /** Every weekly theme is about a place (Join in: where it happens); a special day is not. */
     public static function isPlaceTheme(?string $theme): bool
     {
         $key = $theme !== null ? DailyThemes::effective($theme, null) : null;
-        return $key !== null && $key !== 'ask_local' && $key !== DailyThemes::SPECIAL;
+        return $key !== null && $key !== DailyThemes::SPECIAL;
     }
 
     /** True when the body uses the V3 place format (sent by the app from 1.8.0). */
@@ -128,14 +128,19 @@ final class Places
     }
 
     /**
-     * Theme rules on parsed input. Language: no place. Place themes: a spot or
-     * a new place, and the device position. Returns an error code or null.
+     * Theme rules on parsed input. A special day: no place. Place themes: a
+     * spot or a new place, and the device position. Join in on an app built
+     * before it (no X-Themes-Rev: 3, so Ask a local without a place step) may post
+     * without one. Returns an error code or null.
      */
     public static function checkForTheme(?string $theme, array $in): ?string
     {
         $hasPlace = $in['spotId'] !== null || $in['newName'] !== null;
         if (!self::isPlaceTheme($theme)) {
             return $hasPlace ? 'place_not_allowed' : null;
+        }
+        if (!$hasPlace && DailyThemes::clientVersion() < 3 && DailyThemes::effective($theme, null) === 'join_in') {
+            return null;
         }
         if (!$hasPlace) {
             return 'place_required';

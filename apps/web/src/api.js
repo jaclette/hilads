@@ -2366,9 +2366,10 @@ function cityNumber(cityId) {
   return String(cityId).replace(/^city_/, '')
 }
 
-// Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys.
+// Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys;
+// themesRev=3: the keys since (join_in), else ask_local for Join in.
 // A query parameter, not a header, so GETs stay simple requests (no CORS preflight).
-const THEMES_V2 = { themes: '2' }
+const THEMES_V2 = { themes: '2', themesRev: '3' }
 
 function spotsQuery(params) {
   const q = new URLSearchParams(THEMES_V2)

@@ -8,7 +8,7 @@ import {
   TANGERINE_TEXT, ThemeChipJoy, Wordmark, themeColor,
 } from '@/ui/joy';
 
-const THEMES: [string, string][] = [['hidden_gem', 'Hidden gem'], ['taste', 'Taste'], ['ask_local', 'Ask a local'], ['local_find', 'Local find'],
+const THEMES: [string, string][] = [['hidden_gem', 'Hidden gem'], ['taste', 'Taste'], ['join_in', 'Join in'], ['local_find', 'Local find'],
   ['night_out', 'Night out'], ['sip', 'Drinks'], ['only_here', 'Only here']];
 
 /** The joyful design's component gallery (DESIGN.md), light and dark (switch the app theme). Debug only. */

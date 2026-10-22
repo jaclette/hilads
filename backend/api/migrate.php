@@ -3170,14 +3170,14 @@ run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS cover_url TEXT"
 foreach (['daily_challenges', 'daily_proposals'] as $t) {
     run($pdo, "
         UPDATE {$t} SET theme = CASE theme
-            WHEN 'neighborhood' THEN 'hidden_gem' WHEN 'street_food' THEN 'taste' WHEN 'language' THEN 'ask_local'
+            WHEN 'neighborhood' THEN 'hidden_gem' WHEN 'street_food' THEN 'taste' WHEN 'language' THEN 'join_in'
             WHEN 'market' THEN 'local_find' WHEN 'coffee' THEN 'sip' WHEN 'traditions' THEN 'only_here' END
         WHERE theme IN ('neighborhood', 'street_food', 'language', 'market', 'coffee', 'traditions')
     ", "{$t}.theme v2");
 }
 run($pdo, "
     UPDATE daily_challenges SET text_i18n = jsonb_build_object('en', 'Seed spots: ' || CASE theme
-        WHEN 'hidden_gem' THEN 'Hidden gem' WHEN 'taste' THEN 'Taste' WHEN 'ask_local' THEN 'Ask a local'
+        WHEN 'hidden_gem' THEN 'Hidden gem' WHEN 'taste' THEN 'Taste' WHEN 'ask_local' THEN 'Ask a local' WHEN 'join_in' THEN 'Join in'
         WHEN 'local_find' THEN 'Local find' WHEN 'night_out' THEN 'Night out' WHEN 'sip' THEN 'Sip' ELSE 'Only here' END)
     WHERE status = 'seed' AND text_i18n->>'en' LIKE 'Seed spots: %'
 ", 'seed challenges theme names v2');
@@ -3418,6 +3418,30 @@ run($pdo, "
         fetched_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
 ", 'daily_rates');
+
+// Join in (2026-10-22) replaces Ask a local: the stored key moves with its
+// theme (challenges, proposals, the uploaded theme cover), so stamps, Local
+// Pass progress and spots follow. One DO block = one transaction; idempotent.
+// An uploaded join_in cover already there wins (the ask_local one is kept).
+// Reversal (the same updates the other way round):
+//   UPDATE daily_challenges SET theme = 'ask_local' WHERE theme = 'join_in';
+//   UPDATE daily_proposals  SET theme = 'ask_local' WHERE theme = 'join_in';
+//   UPDATE daily_theme_covers SET theme = 'ask_local' WHERE theme = 'join_in'
+//     AND NOT EXISTS (SELECT 1 FROM daily_theme_covers WHERE theme = 'ask_local');
+//   UPDATE daily_challenges SET text_i18n = jsonb_set(text_i18n, '{en}', '"Seed spots: Ask a local"')
+//     WHERE status = 'seed' AND text_i18n->>'en' = 'Seed spots: Join in';
+run($pdo, "
+    DO \$\$
+    BEGIN
+        UPDATE daily_challenges SET theme = 'join_in' WHERE theme = 'ask_local';
+        UPDATE daily_proposals  SET theme = 'join_in' WHERE theme = 'ask_local';
+        UPDATE daily_theme_covers SET theme = 'join_in' WHERE theme = 'ask_local'
+            AND NOT EXISTS (SELECT 1 FROM daily_theme_covers WHERE theme = 'join_in');
+        UPDATE daily_challenges SET text_i18n = jsonb_set(text_i18n, '{en}', '\"Seed spots: Join in\"')
+            WHERE status = 'seed' AND text_i18n->>'en' = 'Seed spots: Ask a local';
+    END
+    \$\$
+", 'themes: ask_local -> join_in');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

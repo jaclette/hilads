@@ -245,7 +245,7 @@ final class DailyModerationService
      * Push the admin (ADMIN_TEST_USER_ID) that proofs are waiting, at most once
      * every 30 minutes. Best effort. With the `$proof` that triggered it, the
      * push says who, where and which challenge: "@jaclette in Ho Chi Minh City:
-     * Ask a local where they eat… · 1 waiting".
+     * Find the street chess players… · 1 waiting".
      */
     public static function alertAdminQueue(?array $proof = null): void
     {
@@ -279,7 +279,7 @@ final class DailyModerationService
         }
     }
 
-    /** "@jaclette in Ho Chi Minh City: Ask a local where they eat…" (the challenge in English, 70 characters at most). */
+    /** "@jaclette in Ho Chi Minh City: Find the street chess players…" (the challenge in English, 70 characters at most). */
     public static function queueLine(array $proof): string
     {
         $who   = '@' . ($proof['username'] ?? $proof['display_name'] ?? '?');

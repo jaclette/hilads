@@ -432,9 +432,9 @@ final class Spots
      */
     public static function find(array $scope): array
     {
-        // Payloads carry the client's theme keys (DailyThemes::legacyClient): cached apart.
+        // Payloads carry the client's theme keys (DailyThemes::clientVersion): cached apart.
         // Payloads carry a pick's "Good to know" in the request's language: cached apart too.
-        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate() . (DailyThemes::legacyClient() ? '|v1' : '') . '|' . DailyI18n::current());
+        $key = 'spots_v2_' . md5(json_encode($scope) . '|' . DailyClock::currentDate() . '|v' . DailyThemes::clientVersion() . '|' . DailyI18n::current());
         return Cache::remember($key, self::CACHE_TTL, static fn(): array => self::query($scope)) ?? [];
     }
 

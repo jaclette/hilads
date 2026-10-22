@@ -36,9 +36,9 @@ final class DailyProposalsTest extends TestCase
 
     public function testNextFreeDayOfTheTheme(): void
     {
-        // 2026-11-04 is a Wednesday; Ask a local = Wednesday.
-        $this->assertSame('2026-11-11', DailyProposals::nextFreeDay('ask_local', '2026-11-04', []));
-        $this->assertSame('2026-11-18', DailyProposals::nextFreeDay('ask_local', '2026-11-04', ['2026-11-11' => true]));
+        // 2026-11-04 is a Wednesday; Join in = Wednesday.
+        $this->assertSame('2026-11-11', DailyProposals::nextFreeDay('join_in', '2026-11-04', []));
+        $this->assertSame('2026-11-18', DailyProposals::nextFreeDay('join_in', '2026-11-04', ['2026-11-11' => true]));
         $this->assertSame('2026-11-05', DailyProposals::nextFreeDay('local_find', '2026-11-04', []));
         $this->assertSame('2026-11-09', DailyProposals::nextFreeDay('hidden_gem', '2026-11-04', []));
     }

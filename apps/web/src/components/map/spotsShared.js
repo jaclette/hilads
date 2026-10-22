@@ -6,10 +6,10 @@ import { shortCityName } from '../../i18n/cityName'
 // themes.*), English as fallback.
 
 // Themes v2 (SPEC 8.2), Monday first.
-export const THEME_KEYS = ['hidden_gem', 'taste', 'ask_local', 'local_find', 'night_out', 'sip', 'only_here']
+export const THEME_KEYS = ['hidden_gem', 'taste', 'join_in', 'local_find', 'night_out', 'sip', 'only_here']
 
 export const THEME_NAMES = {
-  hidden_gem: 'Hidden gem', taste: 'Taste', ask_local: 'Ask a local', local_find: 'Local find',
+  hidden_gem: 'Hidden gem', taste: 'Taste', join_in: 'Join in', local_find: 'Local find',
   night_out: 'Night out', sip: 'Drinks', only_here: 'Only here',
 }
 
@@ -28,9 +28,9 @@ export function themeName(key, opts) {
   return i18n.t(`themes.${key}`, { ns: 'common', defaultValue: THEME_NAMES[key] ?? key })
 }
 
-/** Every weekly theme but Ask a local is about a place; a special day is not. */
+/** Every weekly theme is about a place (Join in: where it happens); a special day is not. */
 export function isPlaceTheme(key) {
-  return !!key && key !== 'ask_local' && key !== 'special'
+  return !!key && key !== 'special'
 }
 
 export const CITY_ZOOM = 14

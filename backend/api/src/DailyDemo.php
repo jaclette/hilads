@@ -200,7 +200,7 @@ final class DailyDemo
                              $p['local'] ? 'local' : 'traveler', $p['local'] ? $p['city'] : null, $cityId, $now, $now]);
                 $users[$p['key']] = $userId;
 
-                // No spot on a day without a place (Ask a local).
+                // No spot on a day without a place (a special day).
                 $placeId = null;
                 if (($p['spot'] ?? null) !== null) {
                     $placeId = bin2hex(random_bytes(8));

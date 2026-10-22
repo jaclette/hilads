@@ -162,9 +162,11 @@ daily_styles();
                 <?= csrf_input() ?>
                 <input type="hidden" name="theme" value="<?= dh($key) ?>">
                 <h3 style="margin-bottom:6px"><?= dh(DailyThemes::name($key)) ?><?= $key === DailyThemes::SPECIAL ? ' <span class="daily-muted" style="font-size:12px">(a special without its own cover)</span>' : '' ?></h3>
+                <?php if (isset(DailyThemes::DESCRIPTIONS[$key])): ?><div class="daily-muted" style="margin-bottom:6px"><?= dh(DailyThemes::DESCRIPTIONS[$key]) ?></div><?php endif; ?>
                 <img src="<?= dh($url ?? ('https://hilads.live/covers/' . ($key === DailyThemes::SPECIAL ? 'only_here' : $key) . '.jpg')) ?>" alt=""
                      style="width:100%;aspect-ratio:5/2;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px">
-                <div class="hint" style="margin-bottom:6px"><?= $url ? 'Uploaded.' : 'Bundled default.' ?></div>
+                <div class="hint" style="margin-bottom:6px"><?= $url ? 'Uploaded.' : (in_array($key, DailyThemes::PLACEHOLDER_COVERS, true)
+                    ? '<strong>Placeholder</strong>: upload this theme\'s cover.' : 'Bundled default.') ?></div>
                 <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
                 <div class="form-actions" style="gap:6px">
                     <button class="btn btn-primary btn-sm" type="submit" name="action" value="theme_cover_upload">Upload</button>
