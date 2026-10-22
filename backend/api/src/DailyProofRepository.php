@@ -386,10 +386,13 @@ final class DailyProofRepository
      * challenge in a city (or the world when $cityId is null), ties to the
      * most recent: {proofId, photoUrl, thumbUrl, username, city: {name,
      * country}, suggestion, credit}, or null before any answer. Cached 30 s.
+     * $withSuggestions false (the challenge has its own cover, picked in the
+     * back office): Hilads suggestions never take the hero, only players' photos.
      */
-    public static function heroCover(string $challengeId, ?string $cityId): ?array
+    public static function heroCover(string $challengeId, ?string $cityId, bool $withSuggestions = true): ?array
     {
-        return Cache::remember('daily_hero_cover_v1_' . $challengeId . '_' . ($cityId ?? 'world'), 30, static function () use ($challengeId, $cityId): array {
+        $key = 'daily_hero_cover_v1_' . $challengeId . '_' . ($cityId ?? 'world') . ($withSuggestions ? '' : '_nosugg');
+        return Cache::remember($key, 30, static function () use ($challengeId, $cityId, $withSuggestions): array {
             $stmt = Database::pdo()->prepare("
                 SELECT p.id, p.photo_url, p.photo_credit, to_jsonb(p)->>'photo_source_url' AS photo_source_url, p.is_suggestion,
                        u.username, ch.name AS city_name, cc.country AS city_country
@@ -398,7 +401,7 @@ final class DailyProofRepository
                 LEFT JOIN channels ch ON ch.id = p.city_id
                 LEFT JOIN cities cc   ON cc.channel_id = p.city_id
                 WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
-                  AND (?::text IS NULL OR p.city_id = ?)
+                  AND (?::text IS NULL OR p.city_id = ?)" . ($withSuggestions ? '' : ' AND NOT p.is_suggestion') . "
                 ORDER BY p.is_suggestion, p.vote_count DESC, p.approved_at DESC, p.id
                 LIMIT 1
             ");
