@@ -1007,7 +1007,8 @@
       "voteFor": "Pilih {{city}}",
       "prompt": "Pilih foto yang kamu suka",
       "tourNote": "Foto dengan suara terbanyak tiap kota masuk tur dunia besok.",
-      "afterPost": "Pilih foto yang kamu suka"
+      "afterPost": "Pilih foto yang kamu suka",
+      "validatedHint": "Divalidasi warga lokal: seseorang yang tinggal di sini memberi vote untuk foto ini."
     },
     "results": {
       "title": "Hasil",
@@ -1399,6 +1400,41 @@
     "countdown": {
       "hm": "{{h}} j {{m}} m",
       "ms": "{{m}} m {{s}} d"
+    },
+    "feed": {
+      "title": "Foto hari ini",
+      "world": "Dunia",
+      "swipe": "Geser ke atas untuk lanjut",
+      "doubleTap": "Ketuk dua kali untuk vote",
+      "emptyWorld": "Belum ada foto hari ini. Jadilah yang pertama!",
+      "emptyCity": "Belum ada yang main di {{city}} hari ini.",
+      "endTitle": "Semua sudah kamu lihat, untuk sekarang!",
+      "endBody": "Foto baru masuk sepanjang hari. Balik lagi nanti.",
+      "endPlay": "Giliranmu: tunjukkan kotamu ke dunia.",
+      "backToday": "Kembali ke Hari ini",
+      "seeAll": "Lihat semua foto"
+    },
+    "countries": {
+      "played_other": "{{count}} negara main hari ini",
+      "yourCity": "Kotamu",
+      "represent": "Wakili kotamu",
+      "emptyBody": "Belum ada yang main hari ini. Jadilah yang pertama menaruh kotamu di peta!",
+      "openCountry": "{{city}}: lihat fotonya",
+      "byCountry": "Per negara"
+    },
+    "recap": {
+      "label": "Kemarin",
+      "cities_other": "{{count}} kota ikut main"
+    },
+    "worldSays": {
+      "title": "Kata dunia",
+      "first": "Jadilah yang pertama menjawab",
+      "more_other": "+{{count}} lagi"
+    },
+    "myCity": {
+      "in_other": "Di {{city}} · {{count}} foto",
+      "first": "Jadilah yang pertama di {{city}}",
+      "seeMine": "Lihat fotoku"
     }
   }
 }

@@ -1007,7 +1007,8 @@
       "voteFor": "Iboto ang {{city}}",
       "prompt": "Iboto ang mga litratong gusto mo",
       "tourNote": "Ang litratong may pinakamaraming boto sa bawat lungsod ay sasama sa world tour bukas.",
-      "afterPost": "Iboto ang mga litratong gusto mo"
+      "afterPost": "Iboto ang mga litratong gusto mo",
+      "validatedHint": "Kumpirmado ng isang lokal: may nakatira rito na bumoto sa litratong ito."
     },
     "results": {
       "title": "Resulta",
@@ -1399,6 +1400,45 @@
     "countdown": {
       "hm": "{{h}}h {{m}}m",
       "ms": "{{m}}m {{s}}s"
+    },
+    "feed": {
+      "title": "Mga litrato ngayon",
+      "world": "Mundo",
+      "swipe": "Mag-swipe pataas para sa iba pa",
+      "doubleTap": "I-double tap para bumoto",
+      "emptyWorld": "Wala pang litrato ngayon. Ikaw na ang mauna!",
+      "emptyCity": "Wala pang naglaro sa {{city}} ngayong araw.",
+      "endTitle": "Nakita mo na lahat sa ngayon!",
+      "endBody": "Buong araw may bagong litrato. Bumalik ka mamaya.",
+      "endPlay": "Ikaw na: ipakita mo sa mundo ang lungsod mo.",
+      "backToday": "Bumalik sa Ngayon",
+      "seeAll": "Tingnan lahat ng litrato"
+    },
+    "countries": {
+      "played_one": "{{count}} bansa ang naglaro ngayon",
+      "played_other": "{{count}} bansa ang naglaro ngayon",
+      "yourCity": "Lungsod mo",
+      "represent": "Irepresenta ang lungsod mo",
+      "emptyBody": "Wala pang naglaro ngayon. Ikaw na ang maunang maglagay ng lungsod mo sa mapa!",
+      "openCountry": "{{city}}: tingnan ang mga litrato",
+      "byCountry": "Ayon sa bansa"
+    },
+    "recap": {
+      "label": "Kahapon",
+      "cities_one": "{{count}} lungsod ang naglaro",
+      "cities_other": "{{count}} lungsod ang naglaro"
+    },
+    "worldSays": {
+      "title": "Ang sabi ng mundo",
+      "first": "Ikaw na ang unang sumagot",
+      "more_one": "+{{count}} pa",
+      "more_other": "+{{count}} pa"
+    },
+    "myCity": {
+      "in_one": "Sa {{city}} · {{count}} litrato",
+      "in_other": "Sa {{city}} · {{count}} litrato",
+      "first": "Ikaw na ang una sa {{city}}",
+      "seeMine": "Tingnan ang litrato ko"
     }
   }
 }

@@ -105,6 +105,18 @@ export function answerText(a, locale) {
 }
 
 /** A proof's answer chip. */
+/**
+ * The caption only repeats the answer ("Everyone has and need this!" under the
+ * answer "Everyone has and need this"): the viewers show it once, as the answer.
+ * Compared without case, accents, spaces or punctuation.
+ */
+export function captionRepeatsAnswer(caption, answer, locale) {
+  if (!caption || !answer) return false
+  const norm = (v) => v.normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f\s.,!?¡¿;:'"‘’“”«»()[\]…\-–—·、。，！？「」]/g, '')
+  const c = norm(caption)
+  return c !== '' && c === norm(answerText(answer, locale))
+}
+
 export function AnswerChip({ answer, onDark = false }) {
   const { i18n } = useTranslation()
   if (!answer) return null

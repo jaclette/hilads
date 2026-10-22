@@ -20,6 +20,8 @@ import TodayScreen from './components/today/TodayScreen'
 import PassportScreen from './components/passport/PassportScreen'
 import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import ChallengeScreen from './components/daily/ChallengeScreen'
+import PhotosScreen from './components/daily/PhotosScreen'
+import CountriesScreen from './components/daily/CountriesScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import ArchiveScreen from './components/daily/ArchiveScreen'
 import IndexScreen from './components/daily/IndexScreen'
@@ -962,6 +964,7 @@ export default function App() {
   const openDaily  = (name, params = {}) => setDailyStack(st => [...st, { name, params }])
   const closeDaily = () => setDailyStack(st => st.slice(0, -1))
   const [mapSpotId, setMapSpotId] = useState(null)
+  const [mapTheme, setMapTheme] = useState(null)   // the challenge screen's "Places pinned": the map on that theme
   // Passport (W4): Settings behind the gear, and the screens behind its rows.
   const [showSettings, setShowSettings] = useState(false)
   const [passportSub, setPassportSub] = useState(null) // 'spots' | 'friends' | null
@@ -4873,7 +4876,8 @@ export default function App() {
     openDaily,
     openProfile: (id, name) => openProfile(id, name ?? ''),
     // A spot (or the map) from Today / a proof: the Map tab, on that spot.
-    openSpot: (id) => { goToMapTab(); setMapSpotId(id ?? null) },
+    openSpot: (id) => { goToMapTab(); setMapTheme(null); setMapSpotId(id ?? null) },
+    openMapTheme: (theme) => { goToMapTab(); setMapSpotId(null); setMapTheme(theme ?? null) },
     needAccount: (reason, extra = {}) => setGuestGate({ reason, ...extra }),
   }
 
@@ -5680,8 +5684,9 @@ export default function App() {
 
       {showMap && (
         <MapScreen
-          key={mapSpotId ?? 'map'}
+          key={mapSpotId ?? (mapTheme ? `map-${mapTheme}` : 'map')}
           initialSpotId={mapSpotId}
+          initialTheme={mapTheme}
           channelId={channelId}
           cityName={city ? shortCityName(city) : null}
           scope={channelScope}
@@ -5699,6 +5704,8 @@ export default function App() {
         if (!top) return null
         const key = `${dailyStack.length}:${top.name}`
         if (top.name === 'challenge') return <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
+        if (top.name === 'photos')    return <PhotosScreen key={key} {...top.params} onBack={closeDaily} />
+        if (top.name === 'countries') return <CountriesScreen key={key} {...top.params} onBack={closeDaily} />
         if (top.name === 'propose')   return <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
         if (top.name === 'twist')     return <TwistScreen key={key} onBack={closeDaily} />
         if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
@@ -6789,8 +6796,11 @@ export default function App() {
               setShowProfileDrawer(true)
             } else if (notif.type === 'profile_view' && d.viewerId) {
               openProfile(d.viewerId, d.viewerName ?? '')
-            } else if ((notif.type === 'daily_vote' || notif.type === 'daily_twist_completed') && d.proofId) {
-              // A vote on my proof / a completion of my Local Twist → that proof in its sheet.
+            } else if (notif.type === 'daily_vote' && d.proofId) {
+              // A vote on my photo → Today's photos on it (a photo of another day opens on its challenge).
+              openDaily('photos', { proofId: d.proofId, source: 'notification' })
+            } else if (notif.type === 'daily_twist_completed' && d.proofId) {
+              // A completion of my Local Twist → that proof in its sheet.
               openDaily('challenge', { date: d.date ?? 'today', proofId: d.proofId })
             } else if (notif.type === 'daily_twist_picked') {
               openDaily('twist')

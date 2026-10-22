@@ -264,13 +264,13 @@ function EmptyCard({ today, t }) {
  * its city), the current city's spots and Hi plans, theme chips, search, and a
  * spot page. Locate-me goes back to my position and my city. Full screen.
  */
-export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null, scope = 'city', scopePill = null, onScopeCity }) {
+export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null, initialTheme = null, scope = 'city', scopePill = null, onScopeCity }) {
   const { t, i18n } = useTranslation('challenge')
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
   const [plans, setPlans]     = useState([])
   const [zoom, setZoom]       = useState(CITY_ZOOM)
-  const [theme, setTheme]     = useState(null)
+  const [theme, setTheme]     = useState(initialTheme)   // the challenge screen's "Places pinned": opened on its theme
   const [selected, setSelected] = useState(null)
   const [openSpotId, setOpenSpotId] = useState(initialSpotId)
   // Browser back: the spot's page, then its card, before the map itself.

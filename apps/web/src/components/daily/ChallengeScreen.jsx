@@ -1,53 +1,38 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import BackButton from '../BackButton'
-import { cachedDailySheet, fetchDailyLeaderboard, fetchDailyProof, fetchDailySheet, fetchDailyToday } from '../../api'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { cachedDailySheet, fetchDailyProof, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
-import { CityFlag, CityName } from '../CityName'
+import { CityFlag } from '../CityName'
 import { track } from '../../lib/analytics'
+import { thumbFallback } from '../../lib/thumbFallback'
 import { deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
+import { themeIcon } from '../../lib/icons'
+import { themeColor } from '../joy/Joy'
+import Icon from '../Icon'
+import { answerText } from './compareShared'
+import { compareCountryGroups, compareCountryProofs } from './countryOrder'
+import WorldBubbles from './WorldBubbles'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
-  RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer, useHere,
-  getLastToday, SheetSkeleton,
+  StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofViewer, useHere, getLastToday, SheetSkeleton, challengeCover,
 } from './dailyShared'
-import Icon from '../Icon'
-import CompareBoard from './CompareBoard'
-import { PhotoCredit } from '../map/Pick'
-import { themeIcon } from '../../lib/icons'
-import { thumbFallback } from '../../lib/thumbFallback'
-
-const POLL_MS = 30_000
-
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
-const LINE = { display: 'flex', alignItems: 'center', gap: 6 }
-
-/** Provisional leaderboard of the active challenge, polled every 30 s while shown. */
-export function useLeaderboard(active) {
-  const [board, setBoard] = useState(null)
-  useEffect(() => {
-    if (!active) return
-    let alive = true
-    const load = () => fetchDailyLeaderboard().then(d => { if (alive) setBoard(d) }).catch(() => {})
-    load()
-    const id = setInterval(() => { if (document.visibilityState === 'visible') load() }, POLL_MS)
-    return () => { alive = false; clearInterval(id) }
-  }, [active])
-  return board
-}
 
 /**
- * A Daily Challenge (the app's /daily/[date]): challenge, context, Local Twist
- * and its author, "Proposed by", my proof, practical info, then World / City /
- * Top 10. `proofId` opens that proof on arrival; `tab` ('top10', 'compare', 'world', 'city') opens that tab.
- * Proofs are posted from the app, so the CTA opens the store.
+ * A Daily Challenge on the web (the app's /daily/[date]), made to make people
+ * play: an illustrated hero (the challenge's cover, else its theme's; never a
+ * player's photo) with back and the timer, the theme, the question large and
+ * the instruction (the challenge's subtitle, else its text); "The world says"
+ * (a bubble per country, a tap opens that country in "See all"); Good to know
+ * (price range, places pinned → the map on the theme); my photo once played;
+ * my city (its top photo → "See all"); and a sticky bar: the photo rule, then
+ * "Play" (the app: photos are posted there) or "See my photo". The photo
+ * grids and Top 10 live in "See all". `proofId` opens that photo on arrival.
  */
 export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) {
   const { i18n } = useDc()
   const { cityId } = useDaily()
   // From the hero, today's date is already known (no loader).
   const [date, setDate] = useState(dateParam !== 'today' ? dateParam : getLastToday()?.challenge?.date ?? null)
-  // 'today': resolve today's date first (the sheet API is by date).
   useEffect(() => {
     if (date) return
     fetchDailyToday(cityId, i18n.language).then(d => setDate(d.challenge?.date ?? 'none')).catch(() => setDate('none'))
@@ -59,370 +44,250 @@ export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) 
       </div>
     )
   }
-  return <Sheet date={date} {...rest} />
+  return <Challenge date={date} {...rest} />
 }
 
-function Sheet({ date, proofId = null, tab: initialTab = null, source = null, onBack }) {
+function Challenge({ date, proofId = null, source = null, onBack }) {
   const { t, i18n } = useDc()
-  const { cityId, account, openProfile, needAccount, openSpot } = useDaily()
-  const [scope, setScope] = useState(initialTab === 'city' ? 'city' : 'world')
-  const [tab, setTab] = useState(['top10', 'compare', 'world', 'city'].includes(initialTab) ? initialTab : 'world')
-  // Instant: the sheet Today prefetched, else its top from Today's challenge with placeholders below. Refreshed right away.
-  const [loaded, setSheet] = useState(() => cachedDailySheet(date, { scope: initialTab === 'city' ? 'city' : 'world', cityId, locale: i18n.language }))
+  const { cityId, account, openProfile, needAccount, openDaily, openMapTheme } = useDaily()
+  const here = useHere()   // "Play for [city]", my city block: where I am, not the browsed city
+  const [loaded, setSheet] = useState(() => cachedDailySheet(date, { scope: 'world', cityId, locale: i18n.language }))
+  // Instant: the sheet Today prefetched, else its top from Today's challenge.
   const sheet = useMemo(() => {
     if (loaded) return loaded
     const today = getLastToday()
     if (!today?.challenge || today.challenge.date !== date) return null
     return { ...today, scope: 'world', proofs: [], hasMore: false, nextBefore: null, practical: { priceRanges: [], places: [] }, results: null }
   }, [loaded, date])
-  const pending = !loaded
-  // The Today hero's photo for this day (same choice as the hero: my city's in city scope, else the world's).
-  const { scope: todayScope } = useDaily()
-  const lastToday = getLastToday()
-  const heroCover = lastToday?.challenge?.date === date
-    ? (todayScope === 'city' ? lastToday.heroCover?.city : null) ?? lastToday.heroCover?.world ?? null
-    : null
   const [error, setError] = useState(null)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [viewing, setViewing] = useState(null)
   const [showOriginal, toggleOriginal] = useOriginal()
-  const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null)
+  const challenge = sheet?.challenge ?? null
+  const myProof = sheet?.myProof ?? null
+  const secondsLeft = useCountdown(challenge?.isActive ? challenge.endsAt : null)
+  const isToday = date === getLastToday()?.challenge?.date
+  // The hero is full bleed: the app promo banner (above screens) steps aside while it's open.
+  useEffect(() => {
+    document.body.classList.add('dch-open')
+    return () => document.body.classList.remove('dch-open')
+  }, [])
 
-  const load = useCallback(async () => {
+  const load = async () => {
     try {
-      const s = await fetchDailySheet(date, { scope, cityId, locale: i18n.language })
+      const s = await fetchDailySheet(date, { scope: 'world', cityId, locale: i18n.language })
       const open = !!s.challenge?.isActive
-      seedProofs([...s.proofs, s.myProof, ...(s.results?.world ?? []), ...(s.results?.cities ?? []), s.results?.cityBest], open)
+      seedProofs([...s.proofs, s.myProof], open)
       if (open) seedVotesLeft(s.myVotes?.left ?? null)
       setSheet(s); setError(null)
     } catch (err) {
       setError(err.status === 404 ? 'not_found' : 'failed')
     }
-  }, [date, scope, cityId, i18n.language])
-  useEffect(() => { load() }, [load])
+  }
+  useEffect(() => { load() }, [date, cityId, i18n.language]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // "The world says" (the same data as Today's mosaic), and my city's top photo and count.
+  const myCityId = here?.id ?? sheet?.city?.id ?? null
+  const myCityName = here?.name ?? sheet?.city?.name ?? null
+  const [countries, setCountries] = useState(null)
+  const [mine, setMine] = useState(null)
+  useEffect(() => {
+    fetchDailyTodayCountries({ date: isToday ? null : date, cityId: myCityId, locale: i18n.language }).then(setCountries).catch(() => {})
+  }, [date, isToday, myCityId, i18n.language])
+  useEffect(() => {
+    if (!myCityId) { setMine(null); return }
+    fetchDailySheet(date, { scope: 'city', cityId: myCityId, limit: 50, locale: i18n.language })
+      .then(s => setMine({ top: s.proofs.filter(p => !p.suggestion).sort(compareCountryProofs)[0] ?? null, count: s.counts?.city ?? 0 }))
+      .catch(() => {})
+  }, [date, myCityId, i18n.language])
 
   const tracked = useRef(false)
   useEffect(() => {
-    if (!sheet?.challenge || tracked.current) return
+    if (!challenge || tracked.current) return
     tracked.current = true
-    track('daily_challenge_viewed', { source: source ?? (proofId ? 'proof_link' : 'sheet'), date: sheet.challenge.date, platform_surface: 'web' })
-  }, [sheet, proofId, source])
+    track('daily_challenge_viewed', { source: source ?? (proofId ? 'proof_link' : 'sheet'), date: challenge.date, platform_surface: 'web' })
+  }, [challenge, proofId, source])
 
-  // proofId: open it once (from the list, or fetched).
+  // proofId: open it once (from the sheet, or fetched).
   const opened = useRef(false)
   useEffect(() => {
     if (!proofId || opened.current || !sheet) return
     opened.current = true
-    openProof(proofId)
+    const known = [...sheet.proofs, sheet.myProof].find(p => p?.id === proofId)
+    if (known) { setViewing(known); return }
+    fetchDailyProof(proofId, i18n.language).then(p => { seedProofs([p], !!sheet.challenge?.isActive); setViewing(p) }).catch(() => {})
   }, [proofId, sheet]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Without a tab asked: a closed challenge opens on its podium (Top 10), an open one on
-  // Compare once 2 countries played (and the day has a question); else World. Once.
-  const defaulted = useRef(initialTab !== null)
-  useEffect(() => {
-    if (!sheet?.challenge || defaulted.current) return
-    defaulted.current = true
-    if (!sheet.challenge.isActive) setTab('top10')
-    else if (sheet.challenge.compare && (sheet.counts?.countries ?? 0) >= 2) setTab('compare')
-  }, [sheet])
-
-  const openProof = (id) => {
-    const known = [...(sheet?.proofs ?? []), sheet?.myProof, ...(sheet?.results?.world ?? []), ...(sheet?.results?.cities ?? [])]
-      .find(p => p?.id === id)
-    if (known) { setViewing(known); return }
-    fetchDailyProof(id, i18n.language).then(p => { seedProofs([p], !!sheet?.challenge?.isActive); setViewing(p) }).catch(() => {})
+  const seeAll = (country) => {
+    track('challenge_bubble_tapped', { country, platform_surface: 'web' })
+    openDaily('countries', { ...(isToday ? {} : { date }), ...(country ? { country } : {}), source: 'challenge' })
   }
-
-  const loadMore = async () => {
-    if (!sheet?.hasMore || loadingMore || sheet.nextBefore === null) return
-    setLoadingMore(true)
-    try {
-      const next = await fetchDailySheet(date, { scope, cityId, before: sheet.nextBefore, locale: i18n.language })
-      seedProofs(next.proofs, !!next.challenge?.isActive)
-      setSheet(prev => ({
-        ...prev,
-        proofs: [...prev.proofs, ...next.proofs.filter(p => !prev.proofs.some(q => q.id === p.id))],
-        hasMore: next.hasMore, nextBefore: next.nextBefore,
-      }))
-    } catch { /* keep what we have */ } finally { setLoadingMore(false) }
+  const play = () => {
+    track('challenge_cta_tapped', { played: !!myProof, platform_surface: 'web' })
+    if (myProof) { setViewing(myProof); return }
+    track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'challenge' })
+    openAppModal({ action: 'play', city: here?.name ? shortCityName(here.name) : null, cityId: here?.id ?? null, surface: 'challenge_sheet' })
   }
-
-  const selectTab = (next) => { setTab(next); if (next === 'world' || next === 'city') setScope(next) }
   const goProfile = (id, name) => { if (!account) { needAccount('view_profile'); return } openProfile(id, name) }
 
-  const challenge = sheet?.challenge ?? null
-  const myProof = sheet?.myProof ?? null
-  const isLive = !!sheet?.city?.isLive
-  const cityName = sheet?.city?.name ? shortCityName(sheet.city.name) : ''
-  const here = useHere()   // "Answer for [city]": where I am, not the browsed city
-  const store = deviceStore()
-
-  return (
-    <div className="full-page dc-page">
-      <div className="page-header">
-        <BackButton onClick={onBack} />
-        <span className="page-title">{t('kicker')}</span>
-      </div>
-      <div className="page-body dc-body">
-        {!sheet && !error ? <SheetSkeleton />
-        : (error && pending && !sheet) || !challenge ? (
-          <div className="dc-center">
-            <p className="dc-muted">{error === 'failed' ? t('loadFailed') : t('notFound')}</p>
-            {error === 'failed' && <button type="button" className="dc-link" onClick={load}>{t('retry')}</button>}
-          </div>
-        ) : (
-          <>
-            <div className="dc-card">
-              <div className="dc-card-top">
-                <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('kicker')}</span>
-                <span className={`dc-countdown${challenge.isActive && isFinalHours(secondsLeft) ? ' dc-countdown--warn' : ''}`} style={ROW}>
-                  {challenge.isActive && secondsLeft !== null && <Icon name="time-outline" size={14} />}
-                  {challenge.isActive && secondsLeft !== null ? t('timeLeft', { time: formatCountdown(secondsLeft) }) : t('closed')}
-                </span>
-              </div>
-              {challenge.theme && <span className="today-chip dc-theme" style={ROW}><Icon name={themeIcon(challenge.theme.key, challenge.special)} size={14} />{themeName(challenge.theme.key, { special: challenge.special })}</span>}
-              <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
-              {challenge.context && <p className="dc-context">{showOriginal && challenge.original ? challenge.original.context : challenge.context}</p>}
-              {/* The full question (moved here from the Today hero, SPEC 9.3). */}
-              {challenge.compare && <p className="dc-question">{showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question}</p>}
-              <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
-              {/* The hero's photo when it is a Hilads pick's: its full credit, license and source link (CC attribution). */}
-              {heroCover?.suggestion && heroCover.credit && (
-                <PhotoCredit cover={{ credit: heroCover.credit }} url={heroCover.creditUrl} className="dc-muted dc-cover-credit" />
-              )}
-              {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
-
-              {sheet.twist && isLive && (
-                <div className="dc-twist">
-                  <span className="dc-twist-label" style={ROW}>{sheet.city?.country ? <CityFlag country={sheet.city.country} /> : <Icon name="location-outline" size={14} />}{t('twistIn', { city: cityName })}</span>
-                  <span className="dc-twist-text">{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</span>
-                  {sheet.twist.author ? (
-                    <button type="button" className="dc-author" onClick={() => goProfile(sheet.twist.author.id, personName(sheet.twist.author))}>
-                      {sheet.twist.author.photoUrl ? <img src={sheet.twist.author.photoUrl} alt="" /> : <span className="dc-author-empty" />}
-                      {t('twistBy', { name: personName(sheet.twist.author) })}
-                    </button>
-                  ) : sheet.twist.credit && <span className="dc-author">{t('twistBy', { name: sheet.twist.credit })}</span>}
-                </div>
-              )}
-
-              {myProof ? (
-                <div className="dc-mine" role="button" tabIndex={0} onClick={() => setViewing(myProof)}>
-                  <img src={myProof.thumbUrl || myProof.photoUrl} onError={thumbFallback(myProof.photoUrl)} alt="" />
-                  <div className="dc-mine-body">
-                    <span className="dc-mine-title">{t('yourProof')}</span>
-                    <StatusChip status={myProof.status} />
-                    {myProof.status === 'pending' && <span className="dc-muted">{t('pendingHint')}</span>}
-                    {myProof.rejectionReason && <span className="dc-reason">{t('reasonLabel', { reason: myProof.rejectionReason })}</span>}
-                  </div>
-                </div>
-              ) : challenge.isActive && (
-                <>
-                  {/* The photo rule, next to the answer step (moved from the Today hero). */}
-                  <p className="dc-photo-rule"><Icon name="camera-outline" size={18} /><span><strong>{t('proofHint.title')}</strong> {isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}</span></p>
-                  <button type="button" className="today-cta"
-                     onClick={() => { track('web_today_take_clicked', { store: store ?? 'ios', surface: 'sheet' })
-                       openAppModal({ action: 'play', city: here?.name ? shortCityName(here.name) : null, cityId: here?.id ?? null, surface: 'challenge_sheet' }) }}>
-                    {here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
-                  </button>
-                </>
-              )}
-            </div>
-
-            <Practical sheet={sheet} onOpenProof={openProof} onOpenSpot={openSpot} />
-
-            {/* Content-sized chips, never cut: Compare first, then World, the city, Top 10. */}
-            <ScrollTabs>
-              {[...(sheet.challenge?.compare ? ['compare'] : []), 'world', ...(isLive ? ['city'] : []), 'top10'].map(k => (
-                <button key={k} type="button" role="tab" aria-selected={tab === k} className={`dc-tab${tab === k ? ' dc-tab--on' : ''}`} onClick={() => selectTab(k)}>
-                  {k === 'world' ? t('tabWorld') : k === 'city' ? <CityName name={sheet.city?.name} country={sheet.city?.country} short />
-                    : k === 'compare' ? t('compare.tab') : t('leaderboard.tab')}
-                </button>
-              ))}
-            </ScrollTabs>
-
-            {tab === 'compare' ? (
-              <CompareBoard date={sheet.challenge.date} source={source === 'teaser' ? 'teaser' : 'tab'} onOpenProof={setViewing} />
-            ) : pending ? (
-              <SheetSkeleton rows={tab === 'top10'} />
-            ) : tab === 'top10' ? (
-              <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} onOpenProof={openProof} />
-            ) : sheet.proofs.length === 0 ? (
-              <div className="dc-center">
-                {/* Once I played (mine waits for review), it's in - not "be the first". */}
-                <Icon name={myProof ? 'time-outline' : 'camera-outline'} size={30} style={{ color: 'var(--muted2)' }} />
-                <p className="dc-empty-title">{t(myProof ? 'firstYours' : 'beFirst')}</p>
-                <p className="dc-muted">{t(myProof ? 'firstYoursSub' : 'beFirstSub')}</p>
-              </div>
-            ) : (
-              <>
-                <div className="dc-grid">
-                  {sheet.proofs.map(p => <ProofTile key={p.id} proof={p} onOpen={() => setViewing(p)} />)}
-                </div>
-                {sheet.hasMore && (
-                  <button type="button" className="wm-btn wm-btn--ghost wm-more" onClick={loadMore} disabled={loadingMore}>
-                    {loadingMore ? '…' : t('seeProofs')}
-                  </button>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
-      <ProofViewer proof={viewing} onClose={() => setViewing(null)} />
-    </div>
-  )
-}
-
-/** Practical info from approved proofs: the price range paid and the pinned places. */
-function Practical({ sheet, onOpenProof, onOpenSpot }) {
-  const { t, i18n } = useDc()
-  const range = sheet.practical?.priceRanges?.[0]
-  const places = sheet.practical?.places ?? []
-  if (!range && places.length === 0) return null
-  return (
-    <div className="dc-practical">
-      <p className="dc-section">{t('practicalTitle')}</p>
-      {range && (
-        <p className="dc-line" style={LINE}>
-          <Icon name="cash-outline" size={16} style={{ color: 'var(--muted2)' }} />
-          <span>{range.min === range.max
-            ? t('priceOne', { amount: formatAmount(range.min, i18n.language), currency: range.currency })
-            : t('priceRange', { min: formatAmount(range.min, i18n.language), max: formatAmount(range.max, i18n.language), currency: range.currency })}
-          {range.count ? ` · ${t('priceFrom', { count: range.count })}` : ''}</span>
-        </p>
-      )}
-      {places.length > 0 && (
-        <>
-          <p className="dc-line" style={LINE}><Icon name="location-outline" size={16} style={{ color: 'var(--muted2)' }} />{t('places', { count: places.length })}</p>
-          <button type="button" className="dc-pill-btn" onClick={() => onOpenSpot(null)}>{t('map.see')}</button>
-          {places.slice(0, 5).map(p => (
-            <button key={p.proofId} type="button" className="dc-place" onClick={() => onOpenProof(p.proofId)}>
-              {/* "🇲🇽 Churrería El Moro · Mexico City" */}
-              {p.city?.country ? <CityFlag country={p.city.country} size={14} /> : '· '}
-              <span className="dc-place-name">{p.name || t('unnamedPlace')}</span>
-              {p.city?.name && <span className="dc-place-city"> · {shortCityName(p.city.name)}</span>}
-            </button>
-          ))}
-        </>
-      )}
-    </div>
-  )
-}
-
-/** Top 10: the live leaderboard while active, the official podium once closed. */
-function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
-  const { t } = useDc()
-  const active = !!sheet.challenge?.isActive
-  const lb = useLeaderboard(active)
-  const board = lb && lb.date === sheet.challenge?.date ? lb : null
-
-  if (!active) {
-    const r = sheet.results
+  if (!challenge) {
     return (
-      <div className="dc-board">
-        <p className="dc-section" style={LINE}><Icon name="trophy-outline" size={16} />{t('leaderboard.official')}</p>
-        {!r || (r.world.length === 0 && r.cities.length === 0) ? <p className="dc-muted">{t('results.none')}</p> : (
-          <>
-            {r.world.map((p, i) => <ResultRow key={p.id} proof={p} label={<RankMedal rank={i + 1} />} onOpen={() => onOpenProof(p.id)} />)}
-            {r.cities.length > 0 && <p className="dc-section">{t('results.bestInCities')}</p>}
-            {r.cities.map(p => <ResultRow key={`c${p.id}`} proof={p} label={<Icon name="location-outline" size={18} />} onOpen={() => onOpenProof(p.id)} />)}
-          </>
-        )}
+      <div className="full-page dc-page">
+        <div className="page-body dc-body">
+          {!error ? <SheetSkeleton /> : (
+            <div className="dc-center">
+              <p className="dc-muted">{error === 'failed' ? t('loadFailed') : t('notFound')}</p>
+              {error === 'failed' && <button type="button" className="dc-link" onClick={load}>{t('retry')}</button>}
+              <button type="button" className="dc-link" onClick={onBack}>{t('back')}</button>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
 
-  const myProof = sheet.myProof
+  const cover = challengeCover(challenge)
+  const question = challenge.compare ? (showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question) : null
+  const text = showOriginal && challenge.original ? challenge.original.text : challenge.text
+  const instruction = question
+    ? (showOriginal && challenge.original ? text : challenge.subtitle || text)
+    : (showOriginal && challenge.original ? challenge.original.context : challenge.context) ?? ''
+  const range = sheet.practical?.priceRanges?.[0]
+  const placesCount = sheet.practical?.places?.length ?? 0
+  const items = [...(countries?.items ?? [])].sort((a, b) => compareCountryGroups(a, b, here?.country ?? sheet.city?.country ?? null))
+  const myCountry = items.find(g => g.city.id === myCityId)?.country ?? here?.country ?? sheet.city?.country ?? null
+  const cityShort = myCityName ? shortCityName(myCityName) : null
+  const canPlay = challenge.isActive
+  const showBar = canPlay || !!myProof
+  const hue = themeColor(challenge.special ? 'special' : challenge.theme?.key)
+  const isLive = !!sheet.city?.isLive
+
   return (
-    <div className="dc-board">
-      <p className="dc-section" style={LINE}><Icon name="trophy-outline" size={16} />{t('leaderboard.tab')}</p>
-      <p className="dc-muted">
-        {t('leaderboard.provisional')}
-        {secondsLeft !== null ? ` · ${t('leaderboard.finalIn', { time: formatCountdown(secondsLeft) })}` : ''}
-      </p>
-      {board?.me ? (
-        <div className="dc-me">
-          <span>{t('leaderboard.me', { rank: board.me.rank, votes: board.me.voteCount })}</span>
-          {board.me.cityRank !== null && myProof?.city && (
-            <span className="dc-muted">{t('leaderboard.meCity', { rank: board.me.cityRank, city: shortCityName(myProof.city.name) })}</span>
-          )}
+    <div className="full-page dch-page">
+      <div className="dch-scroll">
+        {/* 1. The hero: the cover, the theme, the question and the instruction. */}
+        <div className="dch-hero">
+          {cover && <img className="dch-hero-photo" src={cover} alt="" />}
+          <div className="dch-hero-bottom">
+            {challenge.theme && (
+              <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>
+                <Icon name={themeIcon(challenge.theme.key, challenge.special)} size={15} />{themeName(challenge.theme.key, { special: challenge.special })}
+              </span>
+            )}
+            <h1 className="dch-question">{question ?? text}</h1>
+            {instruction && <p className="dch-instruction">{instruction}</p>}
+          </div>
         </div>
-      ) : (
-        <p className="dc-muted">{myProof?.status === 'pending' ? t('leaderboard.pending') : !myProof ? t('leaderboard.noProof') : ''}</p>
-      )}
-      {!board ? <SheetSkeleton rows />
-      : !board.ranked ? <p className="dc-empty-title" style={LINE}><Icon name="flame-outline" size={18} />{t('leaderboard.minProofs', { min: board.minProofs, n: board.approvedCount })}</p>
-      : board.world.length === 0 ? <p className="dc-empty-title" style={LINE}><Icon name="heart-outline" size={18} />{t('leaderboard.noVotes')}</p>
-      : (
-        <>
-          {board.world.map(e => <EntryRow key={e.proofId} entry={e} mine={e.proofId === board.me?.proofId} onOpen={() => onOpenProof(e.proofId)} />)}
-          {board.cities.map(c => (
-            <div key={c.city.id}>
-              <p className="dc-section" style={LINE}>{c.city.country ? <CityFlag country={c.city.country} /> : <Icon name="location-outline" size={16} />}{t('leaderboard.cityTop', { city: shortCityName(c.city.name) })}</p>
-              {c.entries.map(e => <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onOpen={() => onOpenProof(e.proofId)} />)}
+
+        <div className="dch-body">
+          {(challenge.original || sheet.twist?.originalText || challenge.proposedBy) && (
+            <div className="dch-meta">
+              <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
+              {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
             </div>
-          ))}
-        </>
+          )}
+
+          {/* 2. The world says. */}
+          <section className="dch-block">
+            <h2 className="dch-title">{t('worldSays.title')}</h2>
+            <WorldBubbles items={items} seed={challenge.date} onOpen={seeAll} onFirst={canPlay && !myProof ? play : undefined} />
+          </section>
+
+          {/* The Local Twist of my city (locals of a live city). */}
+          {sheet.twist && isLive && (
+            <div className="dc-twist">
+              <span className="dc-twist-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                {sheet.city?.country ? <CityFlag country={sheet.city.country} /> : <Icon name="location-outline" size={14} />}
+                {t('twistIn', { city: sheet.city?.name ? shortCityName(sheet.city.name) : '' })}
+              </span>
+              <span className="dc-twist-text">{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</span>
+              {sheet.twist.author ? (
+                <button type="button" className="dc-author" onClick={() => goProfile(sheet.twist.author.id, personName(sheet.twist.author))}>
+                  {sheet.twist.author.photoUrl ? <img src={sheet.twist.author.photoUrl} alt="" /> : <span className="dc-author-empty" />}
+                  {t('twistBy', { name: personName(sheet.twist.author) })}
+                </button>
+              ) : sheet.twist.credit && <span className="dc-author">{t('twistBy', { name: sheet.twist.credit })}</span>}
+            </div>
+          )}
+
+          {/* 3. Good to know: two small tiles. */}
+          {(range || placesCount > 0) && (
+            <section className="dch-block">
+              <h2 className="dch-title">{t('practicalTitle')}</h2>
+              <div className="dch-tiles">
+                {range && (
+                  <div className="dch-tile">
+                    <Icon name="cash-outline" size={18} />
+                    <strong>{range.min === range.max
+                      ? t('priceOne', { amount: formatAmount(range.min, i18n.language), currency: range.currency })
+                      : t('priceRange', { min: formatAmount(range.min, i18n.language), max: formatAmount(range.max, i18n.language), currency: range.currency })}</strong>
+                    {range.count ? <span className="dc-muted">{t('priceFrom', { count: range.count })}</span> : null}
+                  </div>
+                )}
+                {placesCount > 0 && (
+                  <button type="button" className="dch-tile"
+                          onClick={() => openMapTheme(challenge.theme && isPlaceTheme(challenge.theme.key) ? challenge.theme.key : null)}>
+                    <Icon name="location-outline" size={18} />
+                    <strong>{t('places', { count: placesCount })}</strong>
+                    <span className="dch-tile-link">{t('map.see')} ›</span>
+                  </button>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* My photo (posted from the app): its status. */}
+          {myProof && (
+            <button type="button" className="dch-row" onClick={() => setViewing(myProof)}>
+              <img className="dch-thumb" src={myProof.thumbUrl || myProof.photoUrl} onError={thumbFallback(myProof.photoUrl)} alt="" />
+              <span className="dch-row-body">
+                <span className="dch-row-title">{t('yourProof')} <StatusChip status={myProof.status} /></span>
+                {myProof.status === 'pending' && <span className="dc-muted">{t('pendingHint')}</span>}
+                {myProof.rejectionReason && <span className="dc-reason">{t('reasonLabel', { reason: myProof.rejectionReason })}</span>}
+              </span>
+            </button>
+          )}
+
+          {/* 4. My city: its top photo, or be its first. */}
+          {cityShort && (mine?.top ? (
+            <button type="button" className="dch-row" onClick={() => seeAll(myCountry)}>
+              <img className="dch-thumb" src={mine.top.thumbUrl || mine.top.photoUrl} onError={thumbFallback(mine.top.photoUrl)} alt="" />
+              <span className="dch-row-body">
+                <span className="dch-row-title">{t('myCity.in', { city: cityShort, count: mine.count })}</span>
+                {(mine.top.answer && !mine.top.backHome) || mine.top.caption
+                  ? <span className="dch-row-answer">{mine.top.answer && !mine.top.backHome ? answerText(mine.top.answer, i18n.language) : mine.top.caption}</span> : null}
+              </span>
+              <Icon name="chevron-forward" size={20} />
+            </button>
+          ) : mine && canPlay && !myProof ? (
+            <button type="button" className="dch-row dch-row--first" onClick={play}>
+              <span className="tc-camera"><Icon name="camera-outline" size={22} /></span>
+              <span className="dch-row-title dch-row-body">{t('myCity.first', { city: cityShort })}</span>
+              <Icon name="chevron-forward" size={20} />
+            </button>
+          ) : null)}
+        </div>
+      </div>
+
+      {/* Back and the timer stay on top while scrolling. */}
+      <div className="dch-top">
+        <button type="button" className="dch-pill dch-back" onClick={onBack} aria-label={t('back')}><Icon name="chevron-back" size={22} /></button>
+        <span className={`dch-pill dch-timer${challenge.isActive && isFinalHours(secondsLeft) ? ' dch-timer--warn' : ''}`}>
+          <Icon name="time-outline" size={14} />
+          {challenge.isActive && secondsLeft !== null ? t('timeLeft', { time: formatCountdown(secondsLeft) }) : t('closed')}
+        </span>
+      </div>
+
+      {/* 5. Sticky: the photo rule in one line, then Play (the app) or See my photo. */}
+      {showBar && (
+        <div className="dch-bar">
+          {!myProof && <p className="dch-rule">{isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}</p>}
+          <button type="button" className={`today-cta${myProof ? ' today-cta--taken' : ''}`} onClick={play}>
+            <Icon name="camera-outline" size={20} />
+            {myProof ? t('myCity.seeMine') : here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
+          </button>
+        </div>
       )}
-    </div>
-  )
-}
-
-function EntryRow({ entry, mine, hideCity = false, onOpen }) {
-  return (
-    <button type="button" className={`dc-row${mine ? ' dc-row--mine' : ''}`} onClick={onOpen}>
-      <span className="dc-rank">{entry.rank <= 3 ? <RankMedal rank={entry.rank} /> : `#${entry.rank}`}</span>
-      {entry.thumbUrl ? <img className="dc-row-thumb" src={entry.thumbUrl} alt="" /> : <span className="dc-row-thumb" />}
-      <span className="dc-row-body">
-        <span className="dc-row-name">{personName(entry.user)} {entry.user.localPass && <LocalPassBadge />}</span>
-        <span className="dc-muted">
-          <RoleLabel isLocal={entry.isLocal} />
-          {!hideCity && entry.city && <> · <CityName name={entry.city.name} country={entry.city.country} short /></>}
-        </span>
-      </span>
-      <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{entry.voteCount}</span>
-    </button>
-  )
-}
-
-function ResultRow({ proof, label, onOpen }) {
-  return (
-    <button type="button" className="dc-row" onClick={onOpen}>
-      <span className="dc-rank">{label}</span>
-      <img className="dc-row-thumb" src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" />
-      <span className="dc-row-body">
-        <span className="dc-row-name">{personName(proof.user)} {proof.user.localPass && <LocalPassBadge />}</span>
-        <span className="dc-muted">
-          <RoleLabel isLocal={proof.isLocal} suggestion={proof.suggestion} />
-          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
-        </span>
-      </span>
-      <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{proof.voteCount}</span>
-    </button>
-  )
-}
-
-/**
- * The sheet's tabs: content-sized chips in a horizontal scroll, never cut in
- * any locale; a soft fade at an edge while more tabs follow on that side.
- */
-function ScrollTabs({ children }) {
-  const ref = useRef(null)
-  const [edges, setEdges] = useState({ left: false, right: false })
-  const measure = useCallback(() => {
-    const el = ref.current
-    if (!el) return
-    setEdges({ left: el.scrollLeft > 4, right: el.scrollWidth - el.clientWidth - el.scrollLeft > 4 })
-  }, [])
-  useEffect(() => {
-    measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
-  }, [measure, children])
-  return (
-    <div ref={ref} role="tablist" onScroll={measure}
-         className={`dc-tabs${edges.left ? ' dc-tabs--fade-left' : ''}${edges.right ? ' dc-tabs--fade-right' : ''}`}>
-      {children}
+      <ProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </div>
   )
 }

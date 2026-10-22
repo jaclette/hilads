@@ -1007,7 +1007,8 @@
       "voteFor": "{{city}}에 투표",
       "prompt": "마음에 드는 사진에 투표하세요",
       "tourNote": "도시마다 가장 많은 표를 받은 사진이 내일의 세계 일주에 나가요.",
-      "afterPost": "마음에 드는 사진에 투표하세요"
+      "afterPost": "마음에 드는 사진에 투표하세요",
+      "validatedHint": "현지인 인증: 이곳에 사는 사람이 이 사진에 투표했어요."
     },
     "results": {
       "title": "결과",
@@ -1398,6 +1399,41 @@
     "countdown": {
       "hm": "{{h}}시간 {{m}}분",
       "ms": "{{m}}분 {{s}}초"
+    },
+    "feed": {
+      "title": "오늘의 사진",
+      "world": "전 세계",
+      "swipe": "위로 스와이프해서 더 보기",
+      "doubleTap": "두 번 탭해서 투표",
+      "emptyWorld": "오늘은 아직 사진이 없어요. 첫 번째가 되어 보세요!",
+      "emptyCity": "오늘 {{city}}에서는 아직 아무도 참여하지 않았어요.",
+      "endTitle": "지금까지 올라온 사진을 다 봤어요!",
+      "endBody": "새 사진이 하루 종일 올라와요. 나중에 다시 와요.",
+      "endPlay": "이제 당신 차례: 당신의 도시를 세상에 보여 주세요.",
+      "backToday": "오늘로 돌아가기",
+      "seeAll": "모든 사진 보기"
+    },
+    "countries": {
+      "played_other": "오늘 {{count}}개국이 참여했어요",
+      "yourCity": "내 도시",
+      "represent": "내 도시를 대표하세요",
+      "emptyBody": "오늘은 아직 아무도 참여하지 않았어요. 가장 먼저 내 도시를 지도에 올려 보세요!",
+      "openCountry": "{{city}}: 사진 보기",
+      "byCountry": "국가별"
+    },
+    "recap": {
+      "label": "어제",
+      "cities_other": "{{count}}개 도시가 참여"
+    },
+    "worldSays": {
+      "title": "세계의 대답",
+      "first": "가장 먼저 답해 보세요",
+      "more_other": "+{{count}}개 더"
+    },
+    "myCity": {
+      "in_other": "{{city}} · 사진 {{count}}장",
+      "first": "{{city}}에서 첫 번째가 되어 보세요",
+      "seeMine": "내 사진 보기"
     }
   }
 }

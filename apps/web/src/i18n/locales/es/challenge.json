@@ -1007,7 +1007,8 @@
       "voteFor": "Vota por {{city}}",
       "prompt": "Vota por las fotos que te encantan",
       "tourNote": "La foto más votada de cada ciudad entra en la vuelta al mundo de mañana.",
-      "afterPost": "Vota por las fotos que te encantan"
+      "afterPost": "Vota por las fotos que te encantan",
+      "validatedHint": "Validada por un local: alguien que vive aquí votó por esta foto."
     },
     "results": {
       "title": "Resultados",
@@ -1399,6 +1400,49 @@
     "countdown": {
       "hm": "{{h}} h {{m}} min",
       "ms": "{{m}} min {{s}} s"
+    },
+    "feed": {
+      "title": "Las fotos de hoy",
+      "world": "Mundo",
+      "swipe": "Desliza hacia arriba para ver más",
+      "doubleTap": "Toca dos veces para votar",
+      "emptyWorld": "Aún no hay fotos hoy. ¡Sé el primero!",
+      "emptyCity": "Nadie ha jugado aún hoy en {{city}}.",
+      "endTitle": "¡Ya lo has visto todo por ahora!",
+      "endBody": "Llegan fotos nuevas todo el día. Vuelve luego.",
+      "endPlay": "Tu turno: enséñale tu ciudad al mundo.",
+      "backToday": "Volver a Hoy",
+      "seeAll": "Ver todas las fotos"
+    },
+    "countries": {
+      "played_one": "{{count}} país jugó hoy",
+      "played_many": "{{count}} países jugaron hoy",
+      "played_other": "{{count}} países jugaron hoy",
+      "yourCity": "Tu ciudad",
+      "represent": "Representa a tu ciudad",
+      "emptyBody": "Nadie ha jugado aún hoy. ¡Pon tu ciudad en el mapa primero!",
+      "openCountry": "{{city}}: ver las fotos",
+      "byCountry": "Por país"
+    },
+    "recap": {
+      "label": "Ayer",
+      "cities_one": "{{count}} ciudad jugó",
+      "cities_many": "{{count}} ciudades jugaron",
+      "cities_other": "{{count}} ciudades jugaron"
+    },
+    "worldSays": {
+      "title": "El mundo dice",
+      "first": "Sé el primero en responder",
+      "more_one": "+{{count}} más",
+      "more_many": "+{{count}} más",
+      "more_other": "+{{count}} más"
+    },
+    "myCity": {
+      "in_one": "En {{city}} · {{count}} foto",
+      "in_many": "En {{city}} · {{count}} fotos",
+      "in_other": "En {{city}} · {{count}} fotos",
+      "first": "Sé el primero en {{city}}",
+      "seeMine": "Ver mi foto"
     }
   }
 }

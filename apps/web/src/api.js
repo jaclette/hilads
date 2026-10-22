@@ -2490,8 +2490,9 @@ export function fetchDailyArchive({ scope = 'world', cityId, before, theme, limi
 }
 
 /** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. */
-export function fetchDailyTodayProofs({ scope = 'world', cityId, limit = 12, locale } = {}) {
-  return daily('GET', '/daily/today/proofs', { params: { scope, cityId: cityNum(cityId), limit, locale } })
+/** order 'new': Today's photos (newest first, players' photos only, up to 60). */
+export function fetchDailyTodayProofs({ scope = 'world', cityId, limit = 12, locale, order } = {}) {
+  return daily('GET', '/daily/today/proofs', { params: { scope, cityId: cityNum(cityId), limit, locale, order } })
 }
 
 export async function fetchDailyProof(id, locale) {
@@ -2513,6 +2514,17 @@ export function voteDailyProof(id)   { return daily('POST', `/daily/proofs/${id}
 export function unvoteDailyProof(id) { return daily('DELETE', `/daily/proofs/${id}/vote`) }
 /** Who voted for my photo, newest first (its author only). → [{ id, username, displayName, photoUrl, city, isLocal }] */
 export async function fetchDailyVoters(id) { return (await daily('GET', `/daily/proofs/${id}/voters`)).items }
+
+/** A day's players' photos by country (Today's stories and mosaic, "See all", the challenge's bubbles); `date` a past day, default today. */
+export function fetchDailyTodayCountries({ date, cityId, locale } = {}) {
+  return daily('GET', '/daily/today/countries', { params: { date, cityId: cityNum(cityId), locale } })
+}
+/** The photos I've just viewed (signed in): at most 100 ids per call. */
+export function markDailyProofsSeen(ids) { return daily('POST', '/daily/proofs/seen', { body: { ids } }) }
+/** These approved photos (1 to 50 ids), with my votes. */
+export async function fetchDailyProofsByIds(ids, locale) {
+  return (await daily('GET', '/daily/proofs', { params: { ids: ids.join(','), locale } })).items
+}
 
 /** Report a visible proof. 409 = already reported. */
 export function reportDailyProof(id, reasonCode) {

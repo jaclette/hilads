@@ -1035,7 +1035,8 @@
       "voteFor": "صوّت لـ{{city}}",
       "prompt": "صوّت للصور التي تحبها",
       "tourNote": "الصورة الأكثر تصويتًا في كل مدينة تدخل جولة العالم غدًا.",
-      "afterPost": "صوّت للصور التي تحبها"
+      "afterPost": "صوّت للصور التي تحبها",
+      "validatedHint": "موثّقة من أحد السكان المحليين: شخص يعيش هنا صوّت لهذه الصورة."
     },
     "results": {
       "title": "النتائج",
@@ -1467,6 +1468,61 @@
     "countdown": {
       "hm": "{{h}} س {{m}} د",
       "ms": "{{m}} د {{s}} ث"
+    },
+    "feed": {
+      "title": "صور اليوم",
+      "world": "العالم",
+      "swipe": "اسحب للأعلى للمزيد",
+      "doubleTap": "انقر مرتين للتصويت",
+      "emptyWorld": "لا توجد صور بعد اليوم. كن الأول!",
+      "emptyCity": "لم يلعب أحد في {{city}} اليوم بعد.",
+      "endTitle": "شاهدت كل شيء حتى الآن!",
+      "endBody": "تصل صور جديدة طوال اليوم. عُد لاحقًا.",
+      "endPlay": "دورك الآن: أرِ العالم مدينتك.",
+      "backToday": "العودة إلى اليوم",
+      "seeAll": "عرض كل الصور"
+    },
+    "countries": {
+      "played_zero": "لم تلعب أي دولة اليوم",
+      "played_one": "لعبت دولة واحدة اليوم",
+      "played_two": "لعبت دولتان اليوم",
+      "played_few": "لعبت {{count}} دول اليوم",
+      "played_many": "لعبت {{count}} دولة اليوم",
+      "played_other": "لعبت {{count}} دولة اليوم",
+      "yourCity": "مدينتك",
+      "represent": "مثّل مدينتك",
+      "emptyBody": "لم يلعب أحد اليوم بعد. كن أول من يضع مدينته على الخريطة!",
+      "openCountry": "{{city}}: شاهد الصور",
+      "byCountry": "حسب البلد"
+    },
+    "recap": {
+      "label": "أمس",
+      "cities_zero": "لم تلعب أي مدينة",
+      "cities_one": "لعبت مدينة واحدة",
+      "cities_two": "لعبت مدينتان",
+      "cities_few": "لعبت {{count}} مدن",
+      "cities_many": "لعبت {{count}} مدينة",
+      "cities_other": "لعبت {{count}} مدينة"
+    },
+    "worldSays": {
+      "title": "العالم يقول",
+      "first": "كن أول من يجيب",
+      "more_zero": "+{{count}} أخرى",
+      "more_one": "+{{count}} أخرى",
+      "more_two": "+{{count}} أخرى",
+      "more_few": "+{{count}} أخرى",
+      "more_many": "+{{count}} أخرى",
+      "more_other": "+{{count}} أخرى"
+    },
+    "myCity": {
+      "in_zero": "في {{city}} · {{count}} صورة",
+      "in_one": "في {{city}} · {{count}} صورة",
+      "in_two": "في {{city}} · {{count}} صورة",
+      "in_few": "في {{city}} · {{count}} صورة",
+      "in_many": "في {{city}} · {{count}} صورة",
+      "in_other": "في {{city}} · {{count}} صورة",
+      "first": "كن الأول في {{city}}",
+      "seeMine": "شاهد صورتي"
     }
   }
 }

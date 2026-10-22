@@ -1,27 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyBoard, fetchDailyCalendar, fetchDailyPodium, fetchDailySheet, fetchDailyToday, fetchDailyTodayProofs, fetchDailyTour, fetchSpotsNear } from '../../api'
-import { localizeCityName, shortCityName } from '../../i18n/cityName'
+import { fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday, fetchSpotsNear } from '../../api'
+import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
-import { deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
+import { deviceStore, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { answerText } from '../daily/compareShared'
-import WorldTourViewer from '../daily/WorldTour'
 import { IndexCarousel } from '../daily/Comparisons'
-import { CityFlag, CityName } from '../CityName'
+import TodayCountries, { YesterdayRecap } from './TodayCountries'
+import { CityFlag } from '../CityName'
 import { LiveDot, WorldTicker, useLiveMotion } from './WorldLive'
 import {
-  useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, useVoteCount,
-  StatusChip, OriginalToggle, setLastHere, setLastToday, useOriginal, ProposedBy, RankMedal, VoteButton,
+  challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { PhotoCredit, PickBadge, PickPill, creditAuthor } from '../map/Pick'
-import { ACCENTS, DashedRoute, FlagSticker, HighlightText, Wordmark, plain, themeColor } from '../joy/Joy'
-import { useBackLayer } from '../../lib/backLayers'
+import { PhotoCredit, PickBadge } from '../map/Pick'
+import { Wordmark, themeColor } from '../joy/Joy'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -77,12 +75,11 @@ export default function TodayScreen({ header }) {
       <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
         <Ticket data={data} loading={loading} />
+        {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
+        <TodayCountries today={data} />
+        {/* Yesterday's recap: the winning photo, the question, how many cities played. */}
+        <YesterdayRecap today={data} />
         <Week today={data} />
-        {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
-        <TourRow today={data} />
-        <TodayProofs today={data} />
-        {/* Hilads picks of today's challenge, votable on their own (never player answers). */}
-        <TodayPicks today={data} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel />
         <SpotsNear />
@@ -112,12 +109,6 @@ function ChallengeFriend({ challenge, representCity = null, source = 'today_card
 }
 
 /** Bundled covers of known special days (public/covers), by id ("halloween-2027" too). */
-const SPECIAL_COVERS = ['halloween']
-function specialCover(special) {
-  const id = special?.id?.replace(/-\d{4}$/, '')
-  return id && SPECIAL_COVERS.includes(id) ? id : 'only_here'
-}
-
 /**
  * Today's brand line (SPEC 9.3 / 9.9, DESIGN.md): the official "hilads"
  * wordmark (the mark is the header's logo just above), then the tagline in
@@ -236,7 +227,7 @@ function Ticket({ data, loading }) {
 
   const theme = challenge.theme?.key ?? null
   // A special day without a cover: its bundled one (Halloween), else Only here's; the API sends uploaded covers.
-  const cover = challenge.coverUrl || (theme ? `/covers/${theme === 'special' ? specialCover(challenge.special) : theme}.jpg` : null)
+  const cover = challengeCover(challenge)
   // Represent your city (SPEC 9.16), city scope only, for where I am (never the browsed city):
   // nobody has represented it today (my own pending proof counts for me), and its run of
   // represented days. Browsing another city: that city's state, as information only.
@@ -263,12 +254,9 @@ function Ticket({ data, loading }) {
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
   const hue = themeColor(challenge.special ? 'special' : theme)
 
-  // The hero's photo (SPEC 9.3): the day's most voted answer in my scope (the city, else the
-  // world), with its credit; before any answer, the challenge's or the theme's cover.
-  const hero = (scope === 'city' ? data.heroCover?.city : null) ?? data.heroCover?.world ?? null
-  const photo = hero ? hero.photoUrl : cover
-  // On the photo: "📸 [author]" only (a pick's full credit, license and source link are in the sheet).
-  const heroCredit = hero ? (hero.suggestion && hero.credit ? creditAuthor(hero.credit) : hero.username ? `@${hero.username}` : null) : null
+  // The hero's photo: a cover, never a player's photo (those are in the mosaic right under it):
+  // the challenge's own, else its special day's, else its theme's (uploaded default, else bundled).
+  const photo = cover
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text)
   // Nobody has answered for my city yet: "Be Saigon's first answer".
   const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
@@ -286,7 +274,6 @@ function Ticket({ data, loading }) {
         </span>
         <span className="today-hero-topright">
           {secondsLeft !== null && <span className="today-hero-chip"><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>}
-          {heroCredit && <span className="today-hero-credit">📸 {heroCredit}</span>}
         </span>
       </div>
       <div className="today-hero-bottom">
@@ -448,317 +435,9 @@ function LinkRow({ icon, title, sub, onClick, accent }) {
 /** Votes per user and day (DailyVotes::MAX). */
 
 /**
- * Today's proofs (SPEC 9.3) and Today around the world (V4 votes). City
- * scope: "Today in Saigon", then, once 2 countries answered, "Today around
- * the world": one card per city with its most voted answer, the cities with
- * the most answers first. World scope: "Today around the world" is the main
- * strip (all of World's proofs before 2 countries). Under each title, while
- * voting is open: "Who gets your 3 votes today?" with my votes left; each
- * card has its vote button; under the strips, what the votes do.
- */
-function TodayProofs({ today }) {
-  const { t, i18n } = useDc()
-  const { t: tc } = useTranslation('common')
-  const { scope, openDaily } = useDaily()
-  const [strip, setStrip] = useState(null)
-  const [cities, setCities] = useState(null)
-  const date = today?.challenge?.date ?? null
-  const cityNum = scope === 'city' ? today?.city?.id ?? null : null
-
-  useEffect(() => {
-    if (!date) { setStrip(null); setCities(null); return }
-    let alive = true
-    Promise.all([
-      fetchDailyTodayProofs({ scope: cityNum ? 'city' : 'world', cityId: cityNum, locale: i18n.language }),
-      fetchDailyTodayProofs({ scope: 'cities', locale: i18n.language }),
-    ]).then(([s, c]) => {
-      if (!alive) return
-      setStrip(s); setCities(c); seedProofs([...s.proofs, ...c.proofs], true)
-    }).catch(() => { /* keep what we have */ })
-    return () => { alive = false }
-  }, [date, cityNum, i18n.language])
-
-  // My own proof in review leads the strip, with its badge (only mine: others' never show before approval).
-  const mine = today?.myProof?.status === 'pending'
-    && (strip?.scope === 'world' || today.myProof.city?.id === strip?.city?.id) ? today.myProof : null
-  // Players' photos first, then the Hilads suggestions (badge only, never voted on or counted).
-  const items = playersFirst([...(mine && !strip?.proofs.some(p => p.id === mine.id) ? [{ ...mine, rank: null }] : []), ...(strip?.proofs ?? [])])
-  const around = cities && cities.countries >= 2 && cities.proofs.length > 0 ? cities : null
-  const cityStrip = strip?.scope === 'city' && items.length > 0 ? strip : null
-  // World's strip only while fewer than 2 countries answered (else Today around the world).
-  const worldStrip = !cityStrip && !around && strip && items.length > 0 ? strip : null
-  if (!cityStrip && !around && !worldStrip) return null
-
-  const voting = !!today?.challenge?.isActive
-  // Represent your city (SPEC 9.16), World scope: never a zero count; my own pending proof counts for me.
-  const presence = scope === 'world' ? today?.here?.presence ?? null : null
-  const myCity = today?.here?.name ? shortCityName(today.here.name) : null
-  const board = !!presence && !presence.represented && presence.citiesToday > 0 && !!myCity && voting ? (
-    <div className="today-board">
-      <span>{tc('represent.board', { count: presence.citiesToday, city: myCity })}</span>
-      <ChallengeFriend challenge={today.challenge} representCity={myCity} source="world_strip" />
-    </div>
-  ) : null
-  const aroundData = around ?? worldStrip
-  // The titles' key word ("Today in *Saigon*") sits on today's theme color.
-  const highlight = themeColor(today?.challenge?.special ? 'special' : today?.challenge?.theme?.key).fill
-  return (
-    <>
-      {cityStrip && (
-        <Strip title={t('today.inCity', { city: shortCityName(cityStrip.city?.name ?? '') })} stats={cityStrip.total > 0 ? t('today.proofs', { count: cityStrip.total }) : null}
-               onOpen={() => openDaily('challenge', { date: 'today', source: 'today_strip', tab: 'city' })}
-               items={items} voting={voting} source="strip_city" footer={!around && voting} highlight={highlight} />
-      )}
-      {aroundData && (
-        <Strip title={t('today.aroundWorld')}
-               stats={aroundData.total > 0 ? t('today.proofsIn', { proofs: t('today.proofs', { count: aroundData.total }), countries: t('today.countries', { count: aroundData.countries }) }) : null}
-               onOpen={() => openDaily('challenge', around ? { date: 'today', source: 'world_strip', tab: 'compare' } : { date: 'today', source: 'today_strip', tab: 'world' })}
-               items={around ? playersFirst(around.proofs) : items} voting={voting} source="strip_world" footer={voting} board={board} highlight={highlight} />
-      )}
-    </>
-  )
-}
-
-/** One strip: title and "See all" (the sheet), the vote prompt while voting is open, the cards, what the votes do. */
-function Strip({ title, stats, onOpen, items, voting, source, footer, highlight, board = null }) {
-  const { t } = useDc()
-  const { account, openDaily } = useDaily()
-  const prompted = useRef(false)
-  // Nothing to vote on when the strip only holds Hilads suggestions: no prompt, no note.
-  const votable = voting && items.some(p => !p.suggestion)
-  // The sheet lists approved players' photos only: with suggestions or my pending photo alone it
-  // would be empty, so no "See all".
-  const browsable = items.some(p => !p.suggestion && p.status === 'approved')
-  useEffect(() => {
-    if (!votable || prompted.current) return
-    prompted.current = true
-    track('vote_prompt_shown', { source, guest: !account, platform_surface: 'web' })
-  }, [votable]) // eslint-disable-line react-hooks/exhaustive-deps
-  return (
-    <div className="today-card">
-      <div className="today-card-head">
-        {/* The title and "See all" open the challenge sheet on the strip's tab. */}
-        {browsable ? (
-          <>
-            <button type="button" className="today-card-title today-card-title--link" onClick={onOpen} aria-label={plain(title)}>
-              <HighlightText text={title} color={highlight} /><Icon name="chevron-forward" size={16} />
-            </button>
-            <button type="button" className="dc-link" onClick={onOpen}>{t('today.seeAll')}</button>
-          </>
-        ) : (
-          <span className="today-card-title" role="heading" aria-level={2} aria-label={plain(title)}><HighlightText text={title} color={highlight} /></span>
-        )}
-      </div>
-      {stats && <span className="dc-muted today-proofs-stats">{stats}</span>}
-      {/* No vote limit: one vote per photo, as many photos as I like. */}
-      {votable && (
-        <div className="vote-prompt">
-          <span className="vote-prompt-text">{t('vote.prompt')}</span>
-        </div>
-      )}
-      {board}
-      <div className="proof-strip">
-        {items.map(p => (
-          <StripProof key={p.id} proof={p} source={source} onOpen={() => openDaily('challenge', { date: 'today', proofId: p.id })} />
-        ))}
-      </div>
-      {footer && votable && <p className="dc-muted vote-tour-note">{t('vote.tourNote')}</p>}
-    </div>
-  )
-}
-
-/**
- * One card, the same structure everywhere: the photo, then a fixed-height
- * info block: the flag and city on one line, the answer (else the place or
- * the caption) on 2 reserved lines, then the vote button pinned to the
- * bottom, so buttons line up whatever the text. A Hilads pick has the
- * "★ Hilads" pill on its photo and no vote button.
- */
-function StripProof({ proof, source, onOpen }) {
-  const { t, i18n } = useDc()
-  const voteCount = useVoteCount(proof)
-  const city = proof.city ? localizeCityName(proof.city.name ?? '') : ''
-  const votes = proof.suggestion ? null : t('today.votes', { count: voteCount })
-  const title = proof.answer ? answerText(proof.answer, i18n.language) : proof.spot?.name ?? proof.place?.name ?? proof.caption ?? ''
-  return (
-    <div className="proof-strip-item">
-      <button type="button" className="proof-strip-open" onClick={onOpen}
-              aria-label={[proof.rank ? `#${proof.rank}` : null, city, title, votes].filter(Boolean).join(', ')}>
-        <span className="proof-strip-photo">
-          <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
-          {proof.rank && <span className="proof-strip-rank"><RankMedal rank={proof.rank} size={24} /></span>}
-          {proof.status === 'pending' && <span className="proof-strip-pending"><StatusChip status="pending" /></span>}
-          {proof.suggestion && <PickPill />}
-        </span>
-        <span className="proof-strip-cityrow">
-          {proof.city?.name && <><FlagSticker country={proof.city.country} size={18} /><span className="proof-strip-city">{shortCityName(proof.city.name)}</span></>}
-        </span>
-        <span className="proof-strip-answer">{title}</span>
-      </button>
-      <div className="proof-strip-bottom">
-        {!proof.suggestion && proof.status === 'approved' && <VoteButton proof={proof} variant="strip" source={source} />}
-      </div>
-    </div>
-  )
-}
-
-/** Players' photos first, the Hilads suggestions after (stable). */
-function playersFirst(list) {
-  return [...list.filter(p => !p.suggestion), ...list.filter(p => p.suggestion)]
-}
-
-/**
- * Yesterday's podium (SPEC 9.3): yesterday's top 3 proofs of the scope with
- * gold, silver and bronze seals, author, city and votes, and "N proofs in M
- * countries". A photo opens it in yesterday's sheet; "See all" opens the sheet.
- * A city with no proof yesterday shows World's; hidden when there were none.
- */
-/**
- * Yesterday around the world (SPEC 10.7): "[N] cities, same challenge" and
- * one story circle per city, opening the tour at that city. Fewer than 2
- * cities (or no tour): yesterday's podium stays.
- */
-function TourRow({ today }) {
-  const { t, i18n } = useDc()
-  const [tour, setTour] = useState(null)
-  const [failed, setFailed] = useState(false)
-  const [open, setOpen] = useState(null)
-  useBackLayer(open !== null, () => setOpen(null))   // the tour viewer: browser back closes it
-  const [broken, setBroken] = useState([])   // proof ids whose photo didn't load: never a flag-only circle
-  const cityId = today?.city?.id ?? null
-  const loaded = !!today
-
-  useEffect(() => {
-    if (!loaded) return
-    let alive = true
-    fetchDailyTour(cityId, i18n.language)
-      .then(r => { if (alive) { setTour(r); setFailed(false) } })
-      .catch(() => { if (alive) setFailed(true) })
-    return () => { alive = false }
-  }, [loaded, cityId, i18n.language])
-
-  if (!tour && !failed) return null
-  const slides = (tour?.slides ?? []).map((s, i) => ({ s, i })).filter(({ s }) => (s.proof.thumbUrl || s.proof.photoUrl) && !broken.includes(s.proof.id))
-  if (!tour || slides.length < 2) return <Podium today={today} />
-  return (
-    <div className="today-card">
-      <div className="today-card-head">
-        <HighlightText className="today-card-title" text={t('tour.title')} />
-        <button type="button" className="dc-link" onClick={() => setOpen(0)}>{t('tour.watch')}</button>
-      </div>
-      <span className="dc-muted today-proofs-stats">{t('tour.sub', { count: slides.length })}</span>
-      <div className="tour-circles">
-        <DashedRoute />
-        {slides.map(({ s, i }, n) => (
-          <button key={s.city.id} type="button" className="tour-circle" onClick={() => setOpen(i)}
-                  aria-label={t('tour.openCity', { city: shortCityName(s.city.name) })}>
-            <span className="tour-circle-ring" style={{ '--a': ACCENTS[n % ACCENTS.length] }}>
-              <img src={s.proof.thumbUrl || s.proof.photoUrl} alt="" loading="lazy" onError={(e) => {
-                // The thumbnail, then the full photo; both gone: the city leaves the row.
-                if (s.proof.photoUrl && e.currentTarget.src !== s.proof.photoUrl) e.currentTarget.src = s.proof.photoUrl
-                else setBroken(b => (b.includes(s.proof.id) ? b : [...b, s.proof.id]))
-              }} />
-              <span className="tour-circle-flag"><FlagSticker country={s.city.country} size={24} /></span>
-            </span>
-            <span className="tour-circle-name">{shortCityName(s.city.name)}</span>
-          </button>
-        ))}
-      </div>
-      {open !== null && <WorldTourViewer tour={tour} start={open} onClose={() => setOpen(null)} />}
-    </div>
-  )
-}
-
-function Podium({ today }) {
-  const { t, i18n } = useDc()
-  const { scope, openDaily } = useDaily()
-  const [podium, setPodium] = useState(null)
-  const cityNum = scope === 'city' ? today?.city?.id ?? null : null
-  const loaded = !!today
-
-  useEffect(() => {
-    if (!loaded) return
-    let alive = true
-    fetchDailyPodium({ scope: cityNum ? 'city' : 'world', cityId: cityNum, locale: i18n.language })
-      .then(p => { if (alive) { setPodium(p); seedProofs(p.proofs, false) } })
-      .catch(() => { /* keep what we have */ })
-    return () => { alive = false }
-  }, [loaded, cityNum, i18n.language])
-
-  if (!podium || podium.proofs.length === 0) return null
-  const proofs = t('today.proofs', { count: podium.total })
-  return (
-    <div className="today-card">
-      <div className="today-card-head">
-        <span className="today-card-title">{t('today.podiumTitle')}</span>
-        <button type="button" className="dc-link" onClick={() => openDaily('challenge', { date: podium.date, source: 'today' })}>{t('today.seeAll')}</button>
-      </div>
-      <span className="dc-muted today-proofs-stats">
-        {podium.scope === 'world' ? t('today.proofsIn', { proofs, countries: t('today.countries', { count: podium.countries }) }) : proofs}
-      </span>
-      <div className="podium-row">
-        {podium.proofs.map(p => (
-          <button key={p.id} type="button" className="podium-item" onClick={() => openDaily('challenge', { date: podium.date, proofId: p.id })}
-                  aria-label={[`#${p.rank}`, p.user.username ?? p.user.displayName, p.city ? localizeCityName(p.city.name) : null, t('today.votes', { count: p.voteCount })].filter(Boolean).join(', ')}>
-            <span className="proof-strip-photo podium-photo">
-              <img src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" />
-              <span className="proof-strip-rank"><RankMedal rank={p.rank} size={24} podium /></span>
-            </span>
-            <span className="podium-name">{p.user.displayName || p.user.username}</span>
-            {p.city?.name && <CityName name={p.city.name} country={p.city.country} short className="podium-city" />}
-            <span className="dc-muted proof-strip-votes">{t('today.votes', { count: p.voteCount })}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/**
  * Spots near you: the nearest 2-3 spots (position only if already allowed, else
  * the city centre). In a city I'm not in: "Spots in <city>", around its centre.
  */
-/**
- * "Meanwhile, from our picks" on Today: the Hilads picks attached to today's
- * challenge (photo, city, place, the pick's checked answer), each votable on
- * its own. Hidden when the day has none.
- */
-function TodayPicks({ today }) {
-  const { t, i18n } = useDc()
-  const { openSpot } = useDaily()
-  const [picks, setPicks] = useState([])
-  const date = today?.challenge?.isActive ? today.challenge.date : null
-  useEffect(() => {
-    if (!date) { setPicks([]); return }
-    let alive = true
-    fetchDailyBoard(date, i18n.language).then(b => { if (alive) setPicks(b.picks ?? []) }).catch(() => {})
-    return () => { alive = false }
-  }, [date, i18n.language])
-  if (picks.length === 0) return null
-  return (
-    <div className="spots">
-      <div className="today-card-head"><span className="today-card-title">{t('compare.picksTitle')}</span></div>
-      <div className="spots-row">
-        {picks.map(p => (
-          <div key={p.place.id} className="spot-card" role="button" tabIndex={0} onClick={() => openSpot(p.place.id)}
-               onKeyDown={(e) => { if (e.key === 'Enter') openSpot(p.place.id) }} aria-label={p.place.name}>
-            <span className="spot-card-photo">
-              {p.photo ? <img src={p.photo.thumbUrl || p.photo.url} onError={thumbFallback(p.photo.url)} alt="" loading="lazy" /> : <span className="spot-card-img" />}
-              <PhotoCredit cover={{ credit: p.photo?.credit }} className="photo-credit" />
-              <PickPill />
-            </span>
-            <span className="spot-card-body">
-              <span className="dc-muted" style={ROW}><CityFlag country={p.city?.country} size={14} />{p.city?.name ? shortCityName(p.city.name) : ''}</span>
-              <span className="spot-card-name">{p.place.name}</span>
-              {p.answer && <span className="today-pick-answer">{answerText(p.answer, i18n.language)}</span>}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 function SpotsNear() {
   const { t, i18n } = useDc()
   const { cityId, scope, openSpot } = useDaily()

@@ -8,7 +8,7 @@ import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 import AvatarWithFlag from '../AvatarWithFlag'
-import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
+import { AnswerChip, BackHomeBlock, captionRepeatsAnswer, useMoney } from './compareShared'
 
 // Where I am, as Today last said ({id, name, country, source, presence} | null):
 // the sheet's "Answer for [city]" uses it, never the browsed city.
@@ -38,9 +38,24 @@ import { useBackLayer } from '../../lib/backLayers'
  * What the Daily screens need from App: the account, the city, and how to
  * navigate (open a Daily screen, a profile, a spot, the sign-up gate).
  */
+const SPECIAL_COVERS = ['halloween']
+/**
+ * A challenge's cover (the Today hero, the challenge screen): never a player's
+ * photo. Its own, its special day's or its theme's uploaded default (the API
+ * resolves those), else the bundled one (a special day: Halloween's, else Only here's).
+ */
+export function challengeCover(challenge) {
+  if (!challenge) return null
+  if (challenge.coverUrl) return challenge.coverUrl
+  const theme = challenge.theme?.key ?? null
+  if (!theme) return null
+  const special = challenge.special?.id?.replace(/-\d{4}$/, '')
+  return `/covers/${theme === 'special' ? (special && SPECIAL_COVERS.includes(special) ? special : 'only_here') : theme}.jpg`
+}
+
 export const DailyContext = createContext({
   account: null, cityId: null, scope: 'city',
-  openDaily: () => {}, openProfile: () => {}, openSpot: () => {}, needAccount: () => {},
+  openDaily: () => {}, openProfile: () => {}, openSpot: () => {}, openMapTheme: () => {}, needAccount: () => {},
 })
 export const useDaily = () => useContext(DailyContext)
 
@@ -209,13 +224,13 @@ export function useVotesLeft() {
 }
 
 /**
- * Vote for a proof: heart, "Vote for Lisbon" on another city's answer ("Vote"
- * on my own city's), the count, my votes left while voting is open; tap again
- * to withdraw. Disabled on my own proof and once the challenge closed. Guests
- * get the sign-up gate ("Sign up to vote for Lisbon"). `source`: vote_cast.
- * On my own photo, `onShowVoters` turns it into the list of who voted.
+ * Casting a vote on a proof, shared by the vote button and Today's photos:
+ * its vote state, whether I can vote, the label ("Vote for Lisbon", "Vote"
+ * on my own city's), the last error, and `press` (vote, or withdraw unless
+ * `withdraw` is false: a double tap never takes a vote back). Guests get the
+ * sign-up gate. Resolves true once voted.
  */
-export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile', onShowVoters }) {
+export function useCastVote(proof, source) {
   const { t } = useDc()
   const { account, cityId, needAccount } = useDaily()
   const [busy, setBusy] = useState(false)
@@ -226,14 +241,11 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile', onS
   const ownCity = !!proof.city && cityId != null && Number(String(cityId).replace(/^city_/, '')) === proof.city.id
   const short = proof.city?.name ? shortCityName(proof.city.name) : null
   const voteLabel = !ownCity && short ? t('vote.voteFor', { city: short }) : t('vote.vote')
-  const showVoters = !!onShowVoters && !!state?.isMine && state.voteCount > 0
 
-  const click = async (e) => {
-    e.stopPropagation()
-    if (!state || busy) return
-    if (showVoters) { onShowVoters(); return }
-    if (!account) { needAccount('daily_vote', { city: short }); return }
-    if (!canVote) return
+  const press = async ({ withdraw = true } = {}) => {
+    if (!state || busy) return false
+    if (!account) { needAccount('daily_vote', { city: short }); return false }
+    if (!canVote || (state.myVote && !withdraw)) return false
     setBusy(true); setError(null)
     const action = state.myVote ? 'unvote' : 'vote'
     try {
@@ -243,11 +255,35 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile', onS
       emit()
       track('daily_vote_cast', { action, challenge_date: proof.date, city: proof.city?.name ?? null, is_local: account.mode === 'local', platform_surface: 'web' })
       track('vote_cast', { action, source, challenge_date: proof.date, city: proof.city?.name ?? null, own_city: ownCity, platform_surface: 'web' })
+      return r.voted
     } catch (err) {
       setError(t(`vote.errors.${err.code}`, { defaultValue: t('vote.errors.generic') }))
+      return false
     } finally {
       setBusy(false)
     }
+  }
+
+  return { state, canVote, voteLabel, error, press }
+}
+
+/**
+ * Vote for a proof: heart, "Vote for Lisbon" on another city's answer ("Vote"
+ * on my own city's), the count, my votes left while voting is open; tap again
+ * to withdraw. Disabled on my own proof and once the challenge closed. Guests
+ * get the sign-up gate ("Sign up to vote for Lisbon"). `source`: vote_cast.
+ * On my own photo, `onShowVoters` turns it into the list of who voted.
+ */
+export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile', onShowVoters }) {
+  const { t } = useDc()
+  const { account } = useDaily()
+  const { state, canVote, voteLabel, error, press } = useCastVote(proof, source)
+  const showVoters = !!onShowVoters && !!state?.isMine && state.voteCount > 0
+
+  const click = (e) => {
+    e.stopPropagation()
+    if (showVoters) { onShowVoters(); return }
+    press()
   }
 
   const sub = state?.isMine ? t('vote.yours') : null
@@ -304,7 +340,7 @@ const REPORT_REASONS = ['inappropriate', 'person_without_consent', 'dangerous', 
 /** Full-screen photo of one proof: author, badges, caption, price, place, vote, report. */
 export function ProofViewer({ proof, onClose }) {
   useBackLayer(!!proof, onClose)   // browser back closes it
-  const { t } = useDc()
+  const { t, i18n } = useDc()
   const { account, needAccount, openSpot, openProfile } = useDaily()
   const [reporting, setReporting] = useState(false)
   const [voters, setVoters] = useState(null)   // null closed, 'loading', 'error' or the list
@@ -364,7 +400,8 @@ export function ProofViewer({ proof, onClose }) {
           </div>
         )}
         {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
-        {proof.caption && <p className="dc-viewer-caption">{proof.caption}</p>}
+        {/* Once: a caption that only repeats the answer stays out. */}
+        {proof.caption && !captionRepeatsAnswer(proof.caption, proof.backHome ? null : proof.answer, i18n.language) && <p className="dc-viewer-caption">{proof.caption}</p>}
         {proof.backHome && <BackHomeBlock proof={proof} />}
         {((proof.price && !proof.backHome) || proof.place || proof.spot) && (
           <p className="dc-viewer-extra">
@@ -389,32 +426,9 @@ export function ProofViewer({ proof, onClose }) {
         {notice && <p className="dc-viewer-notice" role="status">{notice}</p>}
       </div>
       </div>
-      {voters !== null && (
-        <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('vote.votersTitle')}>
-          <button type="button" className="v3-sheet-scrim" onClick={() => setVoters(null)} aria-label={t('back')} />
-          <div className="v3-sheet">
-            <span className="v3-sheet-grabber" aria-hidden="true" />
-            <p className="v3-sheet-title">{t('vote.votersTitle')}</p>
-            {voters === 'loading' ? <SheetSkeleton rows />
-              : voters === 'error' ? <p className="dc-muted">{t('vote.errors.generic')}</p>
-              : voters.length === 0 ? <p className="dc-muted">{t('vote.votersEmpty')}</p>
-              : (
-                <div className="dc-voters">
-                  {voters.map(v => (
-                    // A voter's profile opens over the app: the viewer closes first.
-                    <button key={v.id} type="button" className="v3-scope-row" onClick={() => { setVoters(null); onClose(); openProfile(v.id, v.username) }}>
-                      <AvatarWithFlag userId={v.id} displayName={personName(v)} photoUrl={v.photoUrl} size={40} />
-                      <span className="v3-scope-row-body">
-                        <span className="v3-scope-row-title">{personName(v)}</span>
-                        {v.city && <span className="v3-scope-row-sub">{shortCityName(v.city)}</span>}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-          </div>
-        </div>
-      )}
+      {/* A voter's profile opens over the app: the viewer closes first. */}
+      <VotersSheet voters={voters} onClose={() => setVoters(null)}
+                   onOpen={(v) => { setVoters(null); onClose(); openProfile(v.id, v.username) }} />
       {reporting && (
         <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('report.title')}>
           <button type="button" className="v3-sheet-scrim" onClick={() => setReporting(false)} aria-label={t('cancel')} />
@@ -432,6 +446,37 @@ export function ProofViewer({ proof, onClose }) {
       )}
     </div>,
     document.getElementById('root') ?? document.body,
+  )
+}
+
+/** Who voted for my photo: `voters` null (closed), 'loading', 'error' or the list; a row opens that voter. */
+export function VotersSheet({ voters, onClose, onOpen }) {
+  const { t } = useDc()
+  if (voters === null) return null
+  return (
+    <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('vote.votersTitle')}>
+      <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('back')} />
+      <div className="v3-sheet">
+        <span className="v3-sheet-grabber" aria-hidden="true" />
+        <p className="v3-sheet-title">{t('vote.votersTitle')}</p>
+        {voters === 'loading' ? <SheetSkeleton rows />
+          : voters === 'error' ? <p className="dc-muted">{t('vote.errors.generic')}</p>
+          : voters.length === 0 ? <p className="dc-muted">{t('vote.votersEmpty')}</p>
+          : (
+            <div className="dc-voters">
+              {voters.map(v => (
+                <button key={v.id} type="button" className="v3-scope-row" onClick={() => onOpen(v)}>
+                  <AvatarWithFlag userId={v.id} displayName={personName(v)} photoUrl={v.photoUrl} size={40} />
+                  <span className="v3-scope-row-body">
+                    <span className="v3-scope-row-title">{personName(v)}</span>
+                    {v.city && <span className="v3-scope-row-sub">{shortCityName(v.city)}</span>}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+      </div>
+    </div>
   )
 }
 
