@@ -215,7 +215,11 @@ class MobilePushService
                 'sound'      => isset($signature[$token]) ? DailyPushes::SIGNATURE_SOUND : 'default',
                 'channelId'  => isset($signature[$token]) ? DailyPushes::SIGNATURE_CHANNEL : 'default', // Android channels defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
-                'priority'   => $isActionable ? 'high' : null,
+                // Daily pushes are tied to a moment (the drop, the last hours): high
+                // priority, or Android holds them while the phone sleeps (Doze) -
+                // the 09:01 morning push of 2026-10-22 never showed, a test sent
+                // to the awake phone did.
+                'priority'   => $isActionable || $daily ? 'high' : null,
                 // Android big-picture. On iOS, mutableContent lets the
                 // Notification Service Extension download + attach the image.
                 'richContent'    => $richImage !== null ? ['image' => $richImage] : null,
