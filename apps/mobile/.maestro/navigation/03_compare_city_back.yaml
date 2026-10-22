@@ -1,4 +1,5 @@
-# Today → challenge sheet → Compare → a city → back (the board) → back (Today).
+# Today → challenge screen → a "The world says" bubble → that country in
+# "See all" → back (the challenge screen) → back (Today).
 appId: com.hilads.app
 tags: [navigation]
 ---
@@ -11,7 +12,7 @@ tags: [navigation]
     timeout: 30000
 - scrollUntilVisible:
     element:
-      id: "chip-compare"
+      id: "world-bubble"
     direction: DOWN
     timeout: 60000
     visibilityPercentage: 60
@@ -19,28 +20,18 @@ tags: [navigation]
     speed: 45
     waitToSettleTimeoutMs: 500
 - tapOn:
-    id: "chip-compare"
-- scrollUntilVisible:
-    element:
-      id: "compare-city"
-    direction: DOWN
-    timeout: 60000
-    visibilityPercentage: 60
-    centerElement: true
-    speed: 45
-    waitToSettleTimeoutMs: 500
-- tapOn:
-    id: "compare-city"
+    id: "world-bubble"
+    index: 0
 - extendedWaitUntil:
     visible:
-      id: "compare-all-cities"
+      id: "countries-screen"
     timeout: 20000
 - runFlow:
     file: ../subflows/back.yaml
-    env: { KIND: "tap", TAP: "compare-all-cities" }
+    env: { KIND: "screen" }
 - extendedWaitUntil:
     notVisible:
-      id: "compare-all-cities"
+      id: "countries-screen"
     timeout: 20000
 - assertVisible:
     id: "daily-sheet"

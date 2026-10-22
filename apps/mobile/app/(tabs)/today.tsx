@@ -8,8 +8,7 @@ import { useDailyToday } from '@/hooks/useDaily';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
-import { TodayProofs } from '@/features/today/TodayProofs';
-import { TodayPicks } from '@/features/today/TodayPicks';
+import { TodayCountries } from '@/features/today/TodayCountries';
 import { TodayTour } from '@/features/tour/TodayTour';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { SpotsNear } from '@/features/today/SpotsNear';
@@ -17,11 +16,11 @@ import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
 
 /**
- * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, the week
- * strip, today's proofs, yesterday's podium and Spots near you (or in the
- * chosen city). Never
- * empty: without local activity it still shows the challenge, World proofs and
- * the nearest spots anywhere.
+ * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, today's
+ * photos by country (stories row and mosaic), yesterday's tour or podium, the
+ * week strip, the Index and Spots near you (or in the chosen city). Never
+ * empty: without photos it still shows the challenge, "Represent your city"
+ * and the nearest spots anywhere. Hilads picks stay on the Map and Spots.
  */
 export default function TodayScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -58,12 +57,11 @@ export default function TodayScreen() {
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
-        <TodayWeek today={daily.data} />
+        {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
+        <TodayCountries today={daily.data} refreshKey={refreshKey} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TodayTour today={daily.data} refreshKey={refreshKey} />
-        <TodayProofs today={daily.data} refreshKey={refreshKey} />
-        {/* Hilads picks of today's challenge, votable on their own (never player answers). */}
-        <TodayPicks today={daily.data} refreshKey={refreshKey} />
+        <TodayWeek today={daily.data} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />

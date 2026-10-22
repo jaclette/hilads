@@ -150,6 +150,7 @@
     "yours": "あなたの写真",
     "votersTitle": "投票した人",
     "votersEmpty": "まだ投票はありません。",
+    "validatedHint": "地元の人のお墨付き：ここに住む人がこの写真に投票しました。",
     "errors": {
       "voting_closed": "challenge の終了とともに投票は締め切られました。",
       "rate_limited": "試行が多すぎます - 少し待ってください。",
@@ -637,5 +638,39 @@
   "countdown": {
     "hm": "{{h}}時間{{m}}分",
     "ms": "{{m}}分{{s}}秒"
+  },
+  "feed": {
+    "world": "世界",
+    "swipe": "上にスワイプして続きを見る",
+    "doubleTap": "ダブルタップで投票",
+    "emptyWorld": "今日はまだ写真がありません。一番乗りしよう！",
+    "emptyCity": "今日は{{city}}でまだ誰も参加していません。",
+    "endTitle": "今のところ全部見ました！",
+    "endBody": "新しい写真が一日中届きます。また見に来てね。",
+    "endPlay": "次はあなたの番：あなたの街を世界に見せよう。",
+    "backToday": "今日に戻る",
+    "seeAll": "すべての写真を見る"
+  },
+  "countries": {
+    "played_other": "今日は{{count}}か国が参加",
+    "yourCity": "あなたの街",
+    "represent": "あなたの街を代表しよう",
+    "emptyBody": "今日はまだ誰も参加していません。一番乗りで街を地図に載せよう！",
+    "openCountry": "{{city}}：写真を見る",
+    "byCountry": "国別"
+  },
+  "recap": {
+    "label": "昨日",
+    "cities_other": "{{count}}都市が参加"
+  },
+  "worldSays": {
+    "title": "世界の答え",
+    "first": "最初に答えよう",
+    "more_other": "ほか{{count}}件"
+  },
+  "myCity": {
+    "in_other": "{{city}} · {{count}}枚の写真",
+    "first": "{{city}}で一番乗りしよう",
+    "seeMine": "自分の写真を見る"
   }
 }

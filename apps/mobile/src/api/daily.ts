@@ -13,6 +13,7 @@ import type {
   DailyProofInput,
   DailySheet,
   DailyTodayProofs,
+  DailyTodayCountries,
   DailyPodium,
   DailyToday,
   DailyTwistProposal,
@@ -88,13 +89,28 @@ export async function fetchDailyPodium(
   });
 }
 
-/** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. */
+/** Today's stories row and mosaic in one call: a day's players' photos grouped by country (`date`: a past day, default today). */
+export async function fetchDailyTodayCountries(
+  opts: { cityId?: string | number | null; guestId?: string | null; date?: string | null } = {},
+): Promise<DailyTodayCountries> {
+  return api.get<DailyTodayCountries>('/daily/today/countries', {
+    params: { date: opts.date ?? undefined, cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, locale: locale() },
+  });
+}
+
+/** The photos I've just viewed (signed in): at most 100 ids per call. */
+export async function markDailyProofsSeen(ids: string[]): Promise<void> {
+  await api.post('/daily/proofs/seen', { ids });
+}
+
+/** Today's proof strip: the scope's proofs (most voted, then newest), total and countries. A city with none falls back to World. order 'new': Today's photos (newest first, players only, up to 60). */
 export async function fetchDailyTodayProofs(
-  opts: { scope?: 'world' | 'city' | 'cities'; cityId?: string | number | null; limit?: number; guestId?: string | null } = {},
+  opts: { scope?: 'world' | 'city' | 'cities'; cityId?: string | number | null; limit?: number; guestId?: string | null; order?: 'new' } = {},
 ): Promise<DailyTodayProofs> {
   return api.get<DailyTodayProofs>('/daily/today/proofs', {
     params: {
       scope:   opts.scope ?? 'world',
+      order:   opts.order,
       cityId:  cityParam(opts.cityId),
       limit:   opts.limit ?? 12,
       guestId: opts.guestId ?? undefined,

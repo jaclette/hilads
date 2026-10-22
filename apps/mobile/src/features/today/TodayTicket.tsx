@@ -22,7 +22,6 @@ import { TANGERINE, themeColor } from '@/ui/joy';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
-import { creditAuthor } from '@/features/map/PhotoCredit';
 import { LiveDot, WorldTicker, useLiveMotion, type TickerEntry } from './WorldLive';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { remindMeLater } from '@/api/daily';
@@ -217,12 +216,10 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
     if (r?.queued) Alert.alert(t('howItWorks.laterDone'));
   };
 
-  // The hero's photo (SPEC 9.3): the day's most voted answer in my scope (the city, else the
-  // world), with its credit; before any answer, the challenge's or the theme's cover.
-  const hero = (scope === 'city' ? data?.heroCover?.city : null) ?? data?.heroCover?.world ?? null;
-  const photo = hero ? { uri: hero.photoUrl } : challenge.coverUrl ? { uri: challenge.coverUrl } : themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
-  // On the photo: "📸 [author]" only (a pick's full credit, license and source link are in the sheet).
-  const heroCredit = hero ? (hero.suggestion && hero.credit ? creditAuthor(hero.credit) : hero.username ? `@${hero.username}` : null) : null;
+  // The hero's photo: a cover, never a player's photo (those are in the mosaic right under it):
+  // the challenge's own, else its special day's, else its theme's uploaded default (all resolved
+  // by the server in coverUrl), else the bundled theme cover.
+  const photo = challenge.coverUrl ? { uri: challenge.coverUrl } : themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text);
   // Nobody has answered for my city yet: "Be Saigon's first answer".
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
@@ -254,7 +251,6 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
               <Text style={styles.chipText}>{t('timeLeft', { time: formatCountdown(secondsLeft) })}</Text>
             </View>
           )}
-          {!!heroCredit && <Text style={styles.credit} numberOfLines={1}>📸 {heroCredit}</Text>}
         </View>
       </View>
 
@@ -385,7 +381,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                  borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.42)' },
   chipText:    { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
   themeChip:   { borderRadius: 999, paddingHorizontal: 11 },
-  credit:      { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.92)', maxWidth: 200, ...ON_PHOTO_SHADOW },
   heroBottom:  { gap: 12, padding: 16 },
   headline:    { fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3, ...ON_PHOTO_SHADOW },
   worldRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 32 },

@@ -206,6 +206,7 @@ function RootLayoutInner() {
             />
             {/* Yesterday around the world (SPEC 10.7): a full-screen story viewer; it handles swipe down itself. */}
             <Stack.Screen name="daily/tour" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
+            <Stack.Screen name="daily/photos" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />

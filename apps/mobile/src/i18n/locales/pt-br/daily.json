@@ -150,6 +150,7 @@
     "yours": "Sua foto",
     "votersTitle": "Quem votou",
     "votersEmpty": "Ainda sem votos.",
+    "validatedHint": "Validada por um local: alguém que mora aqui votou nesta foto.",
     "errors": {
       "voting_closed": "A votação fechou com o challenge.",
       "rate_limited": "Muitas tentativas - espere um pouco.",
@@ -639,5 +640,47 @@
   "countdown": {
     "hm": "{{h}} h {{m}} min",
     "ms": "{{m}} min {{s}} s"
+  },
+  "feed": {
+    "world": "Mundo",
+    "swipe": "Deslize para cima para ver mais",
+    "doubleTap": "Toque duas vezes para votar",
+    "emptyWorld": "Ainda não há fotos hoje. Seja o primeiro!",
+    "emptyCity": "Ninguém jogou em {{city}} hoje ainda.",
+    "endTitle": "Você viu tudo por enquanto!",
+    "endBody": "Fotos novas chegam o dia todo. Volte mais tarde.",
+    "endPlay": "Sua vez: mostre sua cidade para o mundo.",
+    "backToday": "Voltar para Hoje",
+    "seeAll": "Ver todas as fotos"
+  },
+  "countries": {
+    "played_one": "{{count}} país jogou hoje",
+    "played_many": "{{count}} países jogaram hoje",
+    "played_other": "{{count}} países jogaram hoje",
+    "yourCity": "Sua cidade",
+    "represent": "Represente sua cidade",
+    "emptyBody": "Ninguém jogou ainda hoje. Coloque sua cidade no mapa primeiro!",
+    "openCountry": "{{city}}: ver as fotos",
+    "byCountry": "Por país"
+  },
+  "recap": {
+    "label": "Ontem",
+    "cities_one": "{{count}} cidade jogou",
+    "cities_many": "{{count}} cidades jogaram",
+    "cities_other": "{{count}} cidades jogaram"
+  },
+  "worldSays": {
+    "title": "O mundo diz",
+    "first": "Seja o primeiro a responder",
+    "more_one": "+{{count}} a mais",
+    "more_many": "+{{count}} a mais",
+    "more_other": "+{{count}} a mais"
+  },
+  "myCity": {
+    "in_one": "Em {{city}} · {{count}} foto",
+    "in_many": "Em {{city}} · {{count}} fotos",
+    "in_other": "Em {{city}} · {{count}} fotos",
+    "first": "Seja o primeiro em {{city}}",
+    "seeMine": "Ver minha foto"
   }
 }

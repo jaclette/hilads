@@ -770,6 +770,8 @@ export interface DailyChallenge {
   text:     string;
   /** The Today hero's short headline (45 characters), localized; null = show the text. */
   headline?: string | null;
+  /** The challenge screen's line under the question (80 characters), localized; null = show the text. */
+  subtitle?: string | null;
   context:  string | null;
   /** Set when text/context are the founder's translation in the viewer's language. */
   original?: { text: string; context: string | null } | null;
@@ -1126,6 +1128,25 @@ export interface DailyTodayProofs {
   ranked:    boolean;                      // the leaderboard threshold is reached
   /** scope cities: each proof's city answer count (the order). */
   proofs:    (DailyProof & { rank: number | null; cityCount?: number })[];
+}
+
+/** GET /daily/today/countries: Today's stories row and mosaic, today's players' photos by country. */
+export interface DailyTodayCountries {
+  date:      string;
+  total:     number;                       // photos
+  countries: number;
+  items:     DailyCountryGroup[];          // my country first, then unseen, then the most recent
+}
+
+export interface DailyCountryGroup {
+  country:  string;                        // ISO code, upper case
+  city:     { id: number; name: string; country: string };   // the city of its top photo
+  count:    number;
+  latestAt: number;
+  /** Signed in: one of its photos I haven't viewed; null for a guest (kept on the device). */
+  unseen:   boolean | null;
+  ids:      string[];                      // its photos, newest first (the story order)
+  top:      DailyProof;                    // most voted, newest on a tie
 }
 
 /** GET /daily/podium: Today's "Yesterday's podium" (SPEC 9.3). */

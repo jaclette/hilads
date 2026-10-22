@@ -9,6 +9,7 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityName, Photo } from '@/ui';
 import { AnswerChip } from '@/features/compare/AnswerChip';
+import { captionRepeatsAnswer } from '@/features/compare/format';
 import { BackHomeBlock } from '@/features/compare/BackHomeBlock';
 import { useMoney } from '@/features/compare/money';
 import { DailyVoteButton } from './DailyVoteButton';
@@ -37,7 +38,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const [share, setShare] = useState<ShareContent | null>(null);
   const [votersOf, setVotersOf] = useState<string | null>(null);
@@ -99,7 +100,8 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             </View>
           )}
           {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
-          {!!proof.caption && <Text style={styles.caption}>{proof.caption}</Text>}
+          {/* Once: a caption that only repeats the answer stays out. */}
+          {!!proof.caption && !captionRepeatsAnswer(proof.caption, proof.backHome ? null : proof.answer, i18n.language) && <Text style={styles.caption}>{proof.caption}</Text>}
           {proof.backHome && <BackHomeBlock proof={proof} />}
           {((proof.price && !proof.backHome) || proof.place) && (
             <View style={styles.nameRow}>

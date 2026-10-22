@@ -67,7 +67,7 @@ export default function MapScreen() {
   const { t, i18n } = useTranslation('daily');
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const params = useLocalSearchParams<{ spot?: string; source?: string }>();
+  const params = useLocalSearchParams<{ spot?: string; source?: string; theme?: string }>();
   const { city } = useApp();
   const { scope, setScope } = useScope();
   const today = useDailyToday(city?.channelId);
@@ -80,6 +80,11 @@ export default function MapScreen() {
   const centered  = useRef(false);
 
   const [themeFilter, setThemeFilter] = useState<DailyThemeKey | null>(null);
+  // ?theme=<key> (the challenge screen's "Places pinned"): open on that theme's spots.
+  useEffect(() => {
+    const k = params.theme as DailyThemeKey | undefined;
+    if (k && PLACE_THEMES.includes(k)) setThemeFilter(k);
+  }, [params.theme]);
   const [spots, setSpots]       = useState<Spot[]>([]);
   const [plans, setPlans]       = useState<PlanPin[]>([]);
   const [center, setCenter]     = useState<[number, number] | null>(null);

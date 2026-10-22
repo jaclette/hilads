@@ -34,44 +34,16 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
-  const router = useRouter();
-  const { account, identity, city } = useApp();
-  const guestId = account ? null : identity?.guestId ?? null;
-
-  useEffect(() => { setVoteViewer(account?.id ?? (guestId ? `g:${guestId}` : null)); }, [account?.id, guestId]);
-  const state = useVoteState(proofId, guestId);
-  const [busy, setBusy] = useState(false);
+  const { account } = useApp();
+  const { state, canVote, voteLabel, press } = useCastVote({ proofId, date, cityName, cityId, source });
 
   const onDark = variant === 'viewer';
   const iconColor = state?.myVote ? colors.primaryText : onDark ? colors.white : colors.muted;
-  const canVote = !!state && state.votingOpen && !state.isMine;
-  const myCityId = city?.channelId ? Number(String(city.channelId).replace(/^city_/, '')) : null;
-  const ownCity = cityId !== null && cityId === myCityId;
-  const short = cityName ? shortCityName(cityName) : null;
-  // "Vote for Lisbon" on another city's answer, "Vote" on my own city's.
-  const voteLabel = !ownCity && short ? t('vote.voteFor', { city: short }) : t('vote.vote');
-
   const showVoters = !!onShowVoters && !!state?.isMine && state.voteCount > 0;
 
-  const onPress = async () => {
-    if (!state || busy) return;
+  const onPress = () => {
     if (showVoters) { onShowVoters!(); return; }
-    if (!account) {
-      router.push(`/auth-gate?reason=daily_vote${short ? `&city=${encodeURIComponent(short)}` : ''}` as never);
-      return;
-    }
-    if (!canVote) return;
-    setBusy(true);
-    const action = state.myVote ? 'unvote' : 'vote';
-    const res = await toggleVote(proofId);
-    setBusy(false);
-    if (res.error) {
-      Alert.alert(t(`vote.errors.${res.error}`, { defaultValue: t('errors.generic') }));
-      return;
-    }
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-    track('daily_vote_cast', { action, challenge_date: date, city: cityName, is_local: account.mode === 'local' });
-    track('vote_cast', { action, source, challenge_date: date, city: cityName, own_city: ownCity });
+    press();
   };
 
   const count = state ? state.voteCount : null;
@@ -105,6 +77,56 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
       )}
     </TouchableOpacity>
   );
+}
+
+/**
+ * Casting a vote on a proof, shared by the vote button and Today's photos:
+ * the vote state, whether I can vote, the label ("Vote for Lisbon", "Vote"
+ * on my own city's), and `press` (vote, or withdraw with `withdraw`). Guests
+ * go to the sign-up gate; errors show an alert. Resolves true once voted.
+ */
+export function useCastVote({ proofId, date, cityName = null, cityId = null, source = 'card' }: {
+  proofId: string; date: string; cityName?: string | null; cityId?: number | null; source?: string;
+}) {
+  const { t } = useTranslation('daily');
+  const router = useRouter();
+  const { account, identity, city } = useApp();
+  const guestId = account ? null : identity?.guestId ?? null;
+
+  useEffect(() => { setVoteViewer(account?.id ?? (guestId ? `g:${guestId}` : null)); }, [account?.id, guestId]);
+  const state = useVoteState(proofId, guestId);
+  const [busy, setBusy] = useState(false);
+
+  const canVote = !!state && state.votingOpen && !state.isMine;
+  const myCityId = city?.channelId ? Number(String(city.channelId).replace(/^city_/, '')) : null;
+  const ownCity = cityId !== null && cityId === myCityId;
+  const short = cityName ? shortCityName(cityName) : null;
+  // "Vote for Lisbon" on another city's answer, "Vote" on my own city's.
+  const voteLabel = !ownCity && short ? t('vote.voteFor', { city: short }) : t('vote.vote');
+
+  /** `withdraw` false: a vote only (a double tap never takes a vote back). */
+  const press = async ({ withdraw = true }: { withdraw?: boolean } = {}): Promise<boolean> => {
+    if (!state || busy) return false;
+    if (!account) {
+      router.push(`/auth-gate?reason=daily_vote${short ? `&city=${encodeURIComponent(short)}` : ''}` as never);
+      return false;
+    }
+    if (!canVote || (state.myVote && !withdraw)) return false;
+    setBusy(true);
+    const action = state.myVote ? 'unvote' : 'vote';
+    const res = await toggleVote(proofId);
+    setBusy(false);
+    if (res.error) {
+      Alert.alert(t(`vote.errors.${res.error}`, { defaultValue: t('errors.generic') }));
+      return false;
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    track('daily_vote_cast', { action, challenge_date: date, city: cityName, is_local: account.mode === 'local' });
+    track('vote_cast', { action, source, challenge_date: date, city: cityName, own_city: ownCity });
+    return res.voted;
+  };
+
+  return { state, canVote, voteLabel, press };
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({

@@ -353,8 +353,8 @@ function resolvePushRoute(data: NotifData): string | null {
       return '/daily/today?source=push&tab=compare';
 
     case 'daily_top10':
-      // My proof entered today's top 10 → the sheet's Top 10 tab.
-      return '/daily/today?source=push&tab=top10';
+      // My proof entered today's top 10 → the Top 10, in "See all" (the challenge screen has no tabs).
+      return '/daily/countries?sort=top10&source=push';
 
     case 'daily_proposal_approved':
       // My challenge proposal was approved (V2-05) → its status.
@@ -376,10 +376,11 @@ function resolvePushRoute(data: NotifData): string | null {
 
     case 'daily_first_vote':
     case 'daily_new_photo': {
-      // My proof got its first vote (prompt 12), or someone just played → that proof in its sheet.
+      // My proof got its first vote (prompt 12), or someone just played → that photo.
       const { date, proofId } = data as { date?: string; proofId?: string };
       const day = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : 'today';
-      return proofId ? `/daily/${day}?source=push&proof=${encodeURIComponent(proofId)}` : `/daily/${day}?source=push`;
+      // Today's photos on that photo, the others after (a photo of another day opens on its challenge).
+      return proofId ? `/daily/photos?source=push&proof=${encodeURIComponent(proofId)}` : `/daily/${day}?source=push`;
     }
 
     case 'daily_digest': {

@@ -150,6 +150,7 @@
     "yours": "Your photo",
     "votersTitle": "Who voted",
     "votersEmpty": "No votes yet.",
+    "validatedHint": "Validated by a local: someone who lives here voted for this photo.",
     "errors": {
       "voting_closed": "Voting closed with the challenge.",
       "rate_limited": "Too many tries - wait a moment.",
@@ -638,5 +639,43 @@
   "countdown": {
     "hm": "{{h}}h {{m}}m",
     "ms": "{{m}}m {{s}}s"
+  },
+  "feed": {
+    "world": "World",
+    "swipe": "Swipe up for more",
+    "doubleTap": "Double tap to vote",
+    "emptyWorld": "No photos yet today. Be the first!",
+    "emptyCity": "Nobody has played in {{city}} yet today.",
+    "endTitle": "That's everyone so far!",
+    "endBody": "New photos land all day. Come back for more.",
+    "endPlay": "Your turn: show the world your city.",
+    "backToday": "Back to Today",
+    "seeAll": "See all photos"
+  },
+  "countries": {
+    "played_one": "{{count}} country played today",
+    "played_other": "{{count}} countries played today",
+    "yourCity": "Your city",
+    "represent": "Represent your city",
+    "emptyBody": "Nobody has played yet today. Put your city on the map first!",
+    "openCountry": "{{city}}: see the photos",
+    "byCountry": "By country"
+  },
+  "recap": {
+    "label": "Yesterday",
+    "cities_one": "{{count}} city played",
+    "cities_other": "{{count}} cities played"
+  },
+  "worldSays": {
+    "title": "The world says",
+    "first": "Be the first to answer",
+    "more_one": "+{{count}} more",
+    "more_other": "+{{count}} more"
+  },
+  "myCity": {
+    "in_one": "In {{city}} · {{count}} photo",
+    "in_other": "In {{city}} · {{count}} photos",
+    "first": "Be the first in {{city}}",
+    "seeMine": "See my photo"
   }
 }

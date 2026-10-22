@@ -150,6 +150,7 @@
     "yours": "Ta photo",
     "votersTitle": "Qui a voté",
     "votersEmpty": "Pas encore de vote.",
+    "validatedHint": "Validé par un local : quelqu'un qui vit ici a voté pour cette photo.",
     "errors": {
       "voting_closed": "Les votes sont clos avec le challenge.",
       "rate_limited": "Trop de tentatives - attends un peu.",
@@ -639,5 +640,47 @@
   "countdown": {
     "hm": "{{h}} h {{m}}",
     "ms": "{{m}} min {{s}} s"
+  },
+  "feed": {
+    "world": "Monde",
+    "swipe": "Glisse vers le haut pour la suite",
+    "doubleTap": "Touche deux fois pour voter",
+    "emptyWorld": "Pas encore de photo aujourd'hui. Sois le premier !",
+    "emptyCity": "Personne n'a encore joué à {{city}} aujourd'hui.",
+    "endTitle": "Tu as tout vu pour l'instant !",
+    "endBody": "De nouvelles photos arrivent toute la journée. Reviens vite.",
+    "endPlay": "À toi : montre ta ville au monde.",
+    "backToday": "Retour à Aujourd'hui",
+    "seeAll": "Voir toutes les photos"
+  },
+  "countries": {
+    "played_one": "{{count}} pays a joué aujourd'hui",
+    "played_many": "{{count}} pays ont joué aujourd'hui",
+    "played_other": "{{count}} pays ont joué aujourd'hui",
+    "yourCity": "Ta ville",
+    "represent": "Représente ta ville",
+    "emptyBody": "Personne n'a encore joué aujourd'hui. Mets ta ville sur la carte en premier !",
+    "openCountry": "{{city}} : voir les photos",
+    "byCountry": "Par pays"
+  },
+  "recap": {
+    "label": "Hier",
+    "cities_one": "{{count}} ville a joué",
+    "cities_many": "{{count}} villes ont joué",
+    "cities_other": "{{count}} villes ont joué"
+  },
+  "worldSays": {
+    "title": "Le monde répond",
+    "first": "Sois le premier à répondre",
+    "more_one": "+{{count}} autre",
+    "more_many": "+{{count}} autres",
+    "more_other": "+{{count}} autres"
+  },
+  "myCity": {
+    "in_one": "À {{city}} · {{count}} photo",
+    "in_many": "À {{city}} · {{count}} photos",
+    "in_other": "À {{city}} · {{count}} photos",
+    "first": "Sois le premier à {{city}}",
+    "seeMine": "Voir ma photo"
   }
 }

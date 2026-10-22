@@ -150,6 +150,7 @@
     "yours": "Jouw foto",
     "votersTitle": "Wie stemde",
     "votersEmpty": "Nog geen stemmen.",
+    "validatedHint": "Bevestigd door een local: iemand die hier woont, stemde op deze foto.",
     "errors": {
       "voting_closed": "Stemmen is gesloten met de challenge.",
       "rate_limited": "Te veel pogingen - wacht even.",
@@ -638,5 +639,43 @@
   "countdown": {
     "hm": "{{h}}u {{m}}m",
     "ms": "{{m}}m {{s}}s"
+  },
+  "feed": {
+    "world": "Wereld",
+    "swipe": "Veeg omhoog voor meer",
+    "doubleTap": "Tik twee keer om te stemmen",
+    "emptyWorld": "Nog geen foto's vandaag. Wees de eerste!",
+    "emptyCity": "Vandaag heeft nog niemand gespeeld in {{city}}.",
+    "endTitle": "Je hebt alles gezien, voor nu!",
+    "endBody": "De hele dag komen er nieuwe foto's bij. Kom later terug.",
+    "endPlay": "Jouw beurt: laat de wereld je stad zien.",
+    "backToday": "Terug naar Vandaag",
+    "seeAll": "Alle foto's bekijken"
+  },
+  "countries": {
+    "played_one": "{{count}} land speelde vandaag",
+    "played_other": "{{count}} landen speelden vandaag",
+    "yourCity": "Jouw stad",
+    "represent": "Vertegenwoordig je stad",
+    "emptyBody": "Vandaag heeft nog niemand gespeeld. Zet jouw stad als eerste op de kaart!",
+    "openCountry": "{{city}}: bekijk de foto's",
+    "byCountry": "Per land"
+  },
+  "recap": {
+    "label": "Gisteren",
+    "cities_one": "{{count}} stad speelde mee",
+    "cities_other": "{{count}} steden speelden mee"
+  },
+  "worldSays": {
+    "title": "De wereld zegt",
+    "first": "Antwoord als eerste",
+    "more_one": "+{{count}} meer",
+    "more_other": "+{{count}} meer"
+  },
+  "myCity": {
+    "in_one": "In {{city}} · {{count}} foto",
+    "in_other": "In {{city}} · {{count}} foto's",
+    "first": "Wees de eerste in {{city}}",
+    "seeMine": "Bekijk mijn foto"
   }
 }

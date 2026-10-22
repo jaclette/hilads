@@ -150,6 +150,7 @@
     "yours": "你的照片",
     "votersTitle": "誰投了票",
     "votersEmpty": "還沒有投票。",
+    "validatedHint": "當地人認證：住在這裡的人為這張照片投了票。",
     "errors": {
       "voting_closed": "challenge 結束，投票已關閉。",
       "rate_limited": "嘗試次數太多 - 請稍等。",
@@ -636,5 +637,39 @@
   "countdown": {
     "hm": "{{h}}小時{{m}}分",
     "ms": "{{m}}分{{s}}秒"
+  },
+  "feed": {
+    "world": "全世界",
+    "swipe": "上滑看更多",
+    "doubleTap": "點兩下投票",
+    "emptyWorld": "今天還沒有照片。來當第一個吧！",
+    "emptyCity": "今天還沒有人在{{city}}參與。",
+    "endTitle": "目前的照片都看完囉！",
+    "endBody": "新照片整天不斷上傳，晚點再來看看。",
+    "endPlay": "輪到你了：向世界展示你的城市。",
+    "backToday": "返回今日",
+    "seeAll": "查看所有照片"
+  },
+  "countries": {
+    "played_other": "今天有 {{count}} 個國家參與",
+    "yourCity": "你的城市",
+    "represent": "代表你的城市",
+    "emptyBody": "今天還沒有人參與。搶先讓你的城市登上地圖！",
+    "openCountry": "{{city}}：查看照片",
+    "byCountry": "按國家"
+  },
+  "recap": {
+    "label": "昨天",
+    "cities_other": "{{count}} 個城市參與"
+  },
+  "worldSays": {
+    "title": "世界怎麼說",
+    "first": "來當第一個回答的人",
+    "more_other": "還有 {{count}} 個"
+  },
+  "myCity": {
+    "in_other": "{{city}} · {{count}} 張照片",
+    "first": "成為{{city}}的第一個",
+    "seeMine": "查看我的照片"
   }
 }

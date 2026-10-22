@@ -150,6 +150,7 @@
     "yours": "Ảnh của bạn",
     "votersTitle": "Ai đã bình chọn",
     "votersEmpty": "Chưa có phiếu bầu nào.",
+    "validatedHint": "Được người địa phương xác nhận: một người sống ở đây đã bình chọn cho ảnh này.",
     "errors": {
       "voting_closed": "Bình chọn đã đóng cùng challenge.",
       "rate_limited": "Thử quá nhiều lần - đợi một chút.",
@@ -636,5 +637,39 @@
   "countdown": {
     "hm": "{{h}} giờ {{m}} phút",
     "ms": "{{m}} phút {{s}} giây"
+  },
+  "feed": {
+    "world": "Thế giới",
+    "swipe": "Vuốt lên để xem tiếp",
+    "doubleTap": "Chạm hai lần để bình chọn",
+    "emptyWorld": "Hôm nay chưa có ảnh nào. Hãy là người đầu tiên!",
+    "emptyCity": "Hôm nay chưa ai chơi ở {{city}}.",
+    "endTitle": "Bạn đã xem hết rồi!",
+    "endBody": "Ảnh mới đến suốt cả ngày. Quay lại xem nhé.",
+    "endPlay": "Đến lượt bạn: khoe thành phố của bạn với thế giới.",
+    "backToday": "Về Hôm nay",
+    "seeAll": "Xem tất cả ảnh"
+  },
+  "countries": {
+    "played_other": "{{count}} quốc gia đã chơi hôm nay",
+    "yourCity": "Thành phố của bạn",
+    "represent": "Đại diện cho thành phố của bạn",
+    "emptyBody": "Hôm nay chưa ai chơi. Hãy là người đầu tiên đưa thành phố của bạn lên bản đồ!",
+    "openCountry": "{{city}}: xem ảnh",
+    "byCountry": "Theo quốc gia"
+  },
+  "recap": {
+    "label": "Hôm qua",
+    "cities_other": "{{count}} thành phố đã chơi"
+  },
+  "worldSays": {
+    "title": "Thế giới nói gì",
+    "first": "Hãy là người trả lời đầu tiên",
+    "more_other": "+{{count}} nữa"
+  },
+  "myCity": {
+    "in_other": "Ở {{city}} · {{count}} ảnh",
+    "first": "Hãy là người đầu tiên ở {{city}}",
+    "seeMine": "Xem ảnh của tôi"
   }
 }

@@ -150,6 +150,7 @@
     "yours": "La tua foto",
     "votersTitle": "Chi ha votato",
     "votersEmpty": "Ancora nessun voto.",
+    "validatedHint": "Convalidata da un local: qualcuno che vive qui ha votato questa foto.",
     "errors": {
       "voting_closed": "Le votazioni si sono chiuse con il challenge.",
       "rate_limited": "Troppi tentativi - aspetta un attimo.",
@@ -639,5 +640,47 @@
   "countdown": {
     "hm": "{{h}} h {{m}} min",
     "ms": "{{m}} min {{s}} s"
+  },
+  "feed": {
+    "world": "Mondo",
+    "swipe": "Scorri in su per altre foto",
+    "doubleTap": "Tocca due volte per votare",
+    "emptyWorld": "Ancora nessuna foto oggi. Sii il primo!",
+    "emptyCity": "Nessuno ha ancora giocato a {{city}} oggi.",
+    "endTitle": "Hai visto tutto, per ora!",
+    "endBody": "Nuove foto arrivano tutto il giorno. Torna più tardi.",
+    "endPlay": "Tocca a te: mostra la tua città al mondo.",
+    "backToday": "Torna a Oggi",
+    "seeAll": "Vedi tutte le foto"
+  },
+  "countries": {
+    "played_one": "{{count}} paese ha giocato oggi",
+    "played_many": "{{count}} paesi hanno giocato oggi",
+    "played_other": "{{count}} paesi hanno giocato oggi",
+    "yourCity": "La tua città",
+    "represent": "Rappresenta la tua città",
+    "emptyBody": "Nessuno ha ancora giocato oggi. Metti per primo la tua città sulla mappa!",
+    "openCountry": "{{city}}: vedi le foto",
+    "byCountry": "Per paese"
+  },
+  "recap": {
+    "label": "Ieri",
+    "cities_one": "{{count}} città ha giocato",
+    "cities_many": "{{count}} città hanno giocato",
+    "cities_other": "{{count}} città hanno giocato"
+  },
+  "worldSays": {
+    "title": "Il mondo dice",
+    "first": "Rispondi per primo",
+    "more_one": "+{{count}} altro",
+    "more_many": "+{{count}} altri",
+    "more_other": "+{{count}} altri"
+  },
+  "myCity": {
+    "in_one": "A {{city}} · {{count}} foto",
+    "in_many": "A {{city}} · {{count}} foto",
+    "in_other": "A {{city}} · {{count}} foto",
+    "first": "Sii il primo a {{city}}",
+    "seeMine": "Vedi la mia foto"
   }
 }

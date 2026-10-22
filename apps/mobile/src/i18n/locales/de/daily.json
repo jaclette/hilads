@@ -150,6 +150,7 @@
     "yours": "Dein Foto",
     "votersTitle": "Wer abgestimmt hat",
     "votersEmpty": "Noch keine Stimmen.",
+    "validatedHint": "Von einem Local bestätigt: Jemand, der hier lebt, hat für dieses Foto gestimmt.",
     "errors": {
       "voting_closed": "Die Abstimmung endete mit der Challenge.",
       "rate_limited": "Zu viele Versuche - warte kurz.",
@@ -638,5 +639,43 @@
   "countdown": {
     "hm": "{{h}} Std. {{m}} Min.",
     "ms": "{{m}} Min. {{s}} Sek."
+  },
+  "feed": {
+    "world": "Welt",
+    "swipe": "Nach oben wischen für mehr",
+    "doubleTap": "Doppeltippen zum Abstimmen",
+    "emptyWorld": "Heute noch keine Fotos. Sei die erste Person!",
+    "emptyCity": "Heute hat in {{city}} noch niemand gespielt.",
+    "endTitle": "Du hast vorerst alles gesehen!",
+    "endBody": "Den ganzen Tag kommen neue Fotos. Schau später wieder rein.",
+    "endPlay": "Du bist dran: Zeig der Welt deine Stadt.",
+    "backToday": "Zurück zu Heute",
+    "seeAll": "Alle Fotos ansehen"
+  },
+  "countries": {
+    "played_one": "{{count}} Land hat heute gespielt",
+    "played_other": "{{count}} Länder haben heute gespielt",
+    "yourCity": "Deine Stadt",
+    "represent": "Vertritt deine Stadt",
+    "emptyBody": "Heute hat noch niemand gespielt. Bring deine Stadt zuerst auf die Karte!",
+    "openCountry": "{{city}}: Fotos ansehen",
+    "byCountry": "Nach Land"
+  },
+  "recap": {
+    "label": "Gestern",
+    "cities_one": "{{count}} Stadt hat gespielt",
+    "cities_other": "{{count}} Städte haben gespielt"
+  },
+  "worldSays": {
+    "title": "Die Welt sagt",
+    "first": "Antworte als Erstes",
+    "more_one": "+{{count}} weitere",
+    "more_other": "+{{count}} weitere"
+  },
+  "myCity": {
+    "in_one": "In {{city}} · {{count}} Foto",
+    "in_other": "In {{city}} · {{count}} Fotos",
+    "first": "Sei zuerst dabei in {{city}}",
+    "seeMine": "Mein Foto ansehen"
   }
 }

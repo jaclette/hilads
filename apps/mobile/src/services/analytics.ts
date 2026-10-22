@@ -93,6 +93,19 @@ export type AnalyticsEvent =
   | 'world_tour_slide_viewed'
   | 'world_tour_completed'
   | 'world_tour_shared'
+  // Today's photos (the feed): opened { source, pinned }, tab { tab }, viewed { index, city, tab }, challenge_opened.
+  | 'daily_photos_opened'
+  | 'daily_photos_tab'
+  | 'daily_photos_viewed'
+  | 'daily_photos_challenge_opened'
+  // Today's country stories and mosaic: story { country, unseen }, tile { country }, play { has_photos }.
+  | 'today_countries_story'
+  | 'today_countries_tile'
+  | 'today_countries_play'
+  | 'today_countries_all'
+  | 'today_countries_sort'
+  | 'challenge_bubble_tapped'
+  | 'challenge_cta_tapped'
   // The Hilads Index (SPEC 10.9): viewed { source, week }, shared { card }.
   | 'index_viewed'
   | 'index_shared'

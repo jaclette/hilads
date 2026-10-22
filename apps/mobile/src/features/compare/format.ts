@@ -41,6 +41,19 @@ export function answerText(a: DailyAnswer, locale?: string): string {
   return String(a.value);
 }
 
+/**
+ * The caption only repeats the answer ("Everyone has and need this!" under the
+ * answer "Everyone has and need this"): the viewers show it once, as the answer.
+ * Compared without case, accents, spaces or punctuation.
+ */
+export function captionRepeatsAnswer(caption: string | null | undefined, answer: DailyAnswer | null | undefined, locale?: string): boolean {
+  if (!caption || !answer) return false;
+  const norm = (v: string) => v.normalize('NFKD').toLowerCase()
+    .replace(/[\u0300-\u036f\s.,!?¡¿;:'"‘’“”«»()\[\]…\-–—·、。，！？「」]/g, '');
+  const c = norm(caption);
+  return c !== '' && c === norm(answerText(answer, locale));
+}
+
 /** The value an input holds for a question type: text for word / text / number, minutes for time. */
 export type AnswerDraft = { text: string; minutes: number };
 

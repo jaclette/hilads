@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
@@ -7,32 +7,30 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
+import { answerText } from '@/features/compare/format';
+import { RankMedal } from '@/features/daily/RankMedal';
 import { Card, Photo, SectionTitle } from '@/ui';
-import { ACCENTS, DashedRoute, FlagSticker } from '@/ui/joy';
-import { TodayPodium } from '@/features/today/TodayPodium';
+import { FlagSticker } from '@/ui/joy';
 import type { DailyToday, DailyTour } from '@/types';
 import { rememberTour } from './store';
 
-const CIRCLE = 68;
+const THUMB = 84;
 
 /**
- * Yesterday around the world (SPEC 10.7) on Today: "[N] cities, same
- * challenge" and one story circle per city: its photo cropped to a circle in
- * a ring of the joyful accents, its flag sticker, and the short name, opening
- * the tour at that city. A dashed route links the circles (decorative).
- * Never a flag-only circle: a city whose photo can't load leaves the row.
- * Fewer than 2 cities: the row is hidden (yesterday's podium module instead).
+ * Yesterday's recap on Today (SPEC 10.7), one card: the winning photo
+ * (yesterday's #1, else the most voted), "Yesterday", the question, the
+ * winner's flag, city and answer ("Lisbon · Saúde!"), and how many cities
+ * played. "Watch" and the card open yesterday's tour at the winner. Hidden
+ * when yesterday had no photo.
  */
 export function TodayTour({ today, refreshKey }: { today: DailyToday | null; refreshKey: number }) {
   const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { account, identity } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
   const cityId = today?.city?.id ?? null;
   const [tour, setTour] = useState<DailyTour | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [broken, setBroken] = useState<string[]>([]);   // proof ids whose photo didn't load
   const loaded = !!today;
 
   const load = useCallback(async () => {
@@ -41,50 +39,54 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
       const next = await fetchDailyTour({ cityId, guestId });
       rememberTour(next);
       setTour(next);
-      setFailed(false);
-    } catch {
-      setFailed(true);   // no tour (nothing closed yet): the podium module
-    }
+    } catch { /* no tour (nothing closed yet): no card */ }
   }, [loaded, cityId, guestId]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!tour && !failed) return null;
-  const slides = (tour?.slides ?? []).map((s, i) => ({ s, i })).filter(({ s }) => !!(s.proof.thumbUrl || s.proof.photoUrl) && !broken.includes(s.proof.id));
-  if (!tour || slides.length < 2) return <TodayPodium today={today} refreshKey={refreshKey} />;
+  const slides = tour?.slides ?? [];
+  if (!tour || slides.length === 0) return null;
+  // The winner: yesterday's #1, else the most voted photo.
+  let at = slides.findIndex(s => s.podium === 1);
+  if (at < 0) at = slides.reduce((best, s, i) => (s.proof.voteCount > slides[best].proof.voteCount ? i : best), 0);
+  const win = slides[at];
+  const answer = win.proof.answer && !win.proof.backHome ? answerText(win.proof.answer, i18n.language) : null;
+  const question = tour.challenge.compare?.question ?? tour.challenge.text;
+  const open = () => router.push(`/daily/tour?start=${at}&source=today_recap` as never);
 
-  const open = (start: number) => router.push(`/daily/tour?start=${start}&source=today` as never);
   return (
     <Card style={styles.card}>
-      <SectionTitle small title={t('tour.title')} action={{ label: t('tour.watch'), onPress: () => open(0) }} />
-      <Text style={styles.sub}>{t('tour.sub', { count: slides.length })}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
-        <DashedRoute width={slides.length * (CIRCLE + 20)} height={CIRCLE * 0.6} style={styles.route} />
-        {slides.map(({ s, i }, n) => (
-          <TouchableOpacity key={s.city.id} style={styles.item} onPress={() => open(i)} accessibilityRole="button" testID="tour-circle"
-                            accessibilityLabel={t('tour.openCity', { city: shortCityName(s.city.name) })}>
-            <View style={[styles.ring, { borderColor: ACCENTS[n % ACCENTS.length] }]}>
-              <Photo thumb={s.proof.thumbUrl} full={s.proof.photoUrl} style={styles.photo} contentFit="cover" transition={150}
-                     onError={() => setBroken(b => (b.includes(s.proof.id) ? b : [...b, s.proof.id]))} />
-              <FlagSticker country={s.city.country} size={24} style={styles.flag} />
-            </View>
-            <Text style={styles.name} numberOfLines={1}>{shortCityName(s.city.name)}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <SectionTitle small title={t('recap.label')} action={{ label: t('tour.watch'), onPress: open }} />
+      <TouchableOpacity style={styles.row} onPress={open} activeOpacity={0.85} accessibilityRole="button" testID="yesterday-recap"
+                        accessibilityLabel={[t('recap.label'), question, shortCityName(win.city.name), answer].filter(Boolean).join(', ')}>
+        <View>
+          <Photo thumb={win.proof.thumbUrl} full={win.proof.photoUrl} style={styles.thumb} contentFit="cover" transition={150} />
+          {win.podium === 1 && <RankMedal rank={1} size={24} style={styles.medal} />}
+        </View>
+        <View style={styles.body}>
+          <Text style={styles.question} numberOfLines={2}>{question}</Text>
+          <View style={styles.cityRow}>
+            <FlagSticker country={win.city.country} size={16} />
+            <Text style={styles.city} numberOfLines={1}>
+              {shortCityName(win.city.name)}{answer ? <Text style={styles.answer}>{` · ${answer}`}</Text> : null}
+            </Text>
+          </View>
+          <Text style={styles.meta}>{t('recap.cities', { count: slides.length })}</Text>
+        </View>
+      </TouchableOpacity>
     </Card>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:  { padding: 14, gap: 6 },
-  sub:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, marginTop: -4 },
-  row:   { gap: 12, paddingTop: 6, paddingRight: 4 },
-  item:  { width: CIRCLE + 8, alignItems: 'center', gap: 6 },
-  ring:  { width: CIRCLE + 8, height: CIRCLE + 8, borderRadius: (CIRCLE + 8) / 2, borderWidth: 3, backgroundColor: c.bg2,
-           alignItems: 'center', justifyContent: 'center' },
-  route: { left: CIRCLE / 2, top: 6 + CIRCLE * 0.2 },
-  photo: { width: CIRCLE, height: CIRCLE, borderRadius: CIRCLE / 2, backgroundColor: c.bg3 },
-  flag:  { position: 'absolute', bottom: -3, right: -3 },
-  name:  { fontSize: 12, fontWeight: '700', color: c.text, textAlign: 'center' },
+  card:     { padding: 14, gap: 10 },
+  row:      { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  thumb:    { width: THUMB, height: THUMB, borderRadius: 16, backgroundColor: c.bg3 },
+  medal:    { position: 'absolute', top: -6, left: -6, borderWidth: 2, borderColor: c.bg2 },
+  body:     { flex: 1, gap: 4 },
+  question: { fontSize: FontSizes.md, lineHeight: 21, fontWeight: '800', color: c.text },
+  cityRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  city:     { flexShrink: 1, fontSize: 14, fontWeight: '700', color: c.text },
+  answer:   { fontWeight: '800', color: c.primaryText },
+  meta:     { fontSize: 13, fontWeight: '600', color: c.muted },
 });

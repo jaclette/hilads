@@ -1,13 +1,13 @@
-# Bug: Today → a photo in "Today around the world" → Android back closed the
-# viewer but the sheet's own back arrow stopped working.
-# Expected: back closes the viewer, then everything keeps working.
+# Bug: Today → a photo of today's mosaic ("Same challenge. Different
+# worlds.") → back closed Today's photos but the app stopped navigating.
+# Expected: back closes Today's photos, then everything keeps working.
 appId: com.hilads.app
 tags: [navigation]
 ---
 - runFlow: ../subflows/start.yaml
 - scrollUntilVisible:
     element:
-      id: "strip-world-.*"
+      id: "mosaic-tile"
     direction: DOWN
     timeout: 60000
     visibilityPercentage: 60
@@ -15,29 +15,21 @@ tags: [navigation]
     speed: 45
     waitToSettleTimeoutMs: 500
 - tapOn:
-    id: "strip-world-.*"
+    id: "mosaic-tile"
 - extendedWaitUntil:
     visible:
-      id: "proof-viewer"
+      id: "daily-photos"
     timeout: 30000
+# Today's photos scrolls vertically: iOS closes it with its own button.
 - runFlow:
     file: ../subflows/back.yaml
-    env: { KIND: "modal" }
+    env: { KIND: "tap", TAP: "photos-close" }
 - extendedWaitUntil:
     notVisible:
-      id: "proof-viewer"
+      id: "daily-photos"
     timeout: 20000
 - assertVisible:
-    id: "daily-sheet"
-# The sheet's own back arrow still works.
-- tapOn:
-    id: "header-back"
-- extendedWaitUntil:
-    visible:
-      id: "today-screen"
-    timeout: 30000
-- assertNotVisible:
-    id: "daily-sheet"
+    id: "today-screen"
 # And the app still navigates: open the challenge again and come back.
 - scrollUntilVisible:
     element:
