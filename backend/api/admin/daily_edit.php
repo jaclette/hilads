@@ -104,6 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             return 'Headline saved.';
         }, 'Headline saved.', $self . '#headline'),
 
+        'save_subtitle' => daily_action(function () use ($p, $id) {
+            $tr = trim((string) ($p['subtitle_tr'] ?? '')) !== '' ? json_decode((string) $p['subtitle_tr'], true) : [];
+            if (!is_array($tr)) {
+                throw new InvalidArgumentException('Translations must be a JSON object: {"fr": "...", "vi": "..."}.');
+            }
+            DailyAdminService::setChallengeSubtitle($id, (string) ($p['subtitle_en'] ?? ''), $tr);
+            return 'Subtitle saved.';
+        }, 'Subtitle saved.', $self . '#subtitle'),
+
         'save_translations' => daily_action(function () use ($p, $id) {
             $row  = DailyAdminService::setChallengeTranslations($id, (array) ($p['tr_text'] ?? []), (array) ($p['tr_context'] ?? []));
             $text = json_decode((string) $row['text_i18n'], true) ?: [];
@@ -268,6 +277,17 @@ daily_styles();
                     <div class="form-group"><label>Translations (optional JSON)</label>
                         <textarea name="headline_tr" rows="3" style="font-family:monospace" placeholder='{"fr": "Trouve la plus vieille boutique de ta rue."}'><?= dh($hlTr ? json_encode($hlTr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '') ?></textarea></div>
                     <div class="form-actions"><button class="btn btn-primary" type="submit">Save headline</button></div>
+                </form>
+
+                <?php $st = json_decode((string) ($challenge['subtitle_i18n'] ?? ''), true) ?: []; $stTr = array_diff_key($st, ['en' => true]); ?>
+                <form method="POST" action="<?= dh($self) ?>" class="form-card" id="subtitle" style="margin-top:16px">
+                    <?= csrf_input() ?><input type="hidden" name="action" value="save_subtitle">
+                    <h3 style="margin-bottom:4px">Subtitle <span class="daily-muted">(challenge screen, under the question, <?= DailyAdminService::SUBTITLE_MAX ?> characters max, <?= count($stTr) ?>/18 translated)</span></h3>
+                    <div class="form-group"><input type="text" name="subtitle_en" maxlength="<?= DailyAdminService::SUBTITLE_MAX ?>" value="<?= dh($st['en'] ?? '') ?>" placeholder="Raise a glass where the locals drink.">
+                        <div class="hint">One short line that doesn't repeat the question. Empty: the challenge text shows.</div></div>
+                    <div class="form-group"><label>Translations (optional JSON)</label>
+                        <textarea name="subtitle_tr" rows="3" style="font-family:monospace" placeholder='{"fr": "Trinque là où boivent les locaux."}'><?= dh($stTr ? json_encode($stTr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '') ?></textarea></div>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Save subtitle</button></div>
                 </form>
 
                 <form method="POST" action="<?= dh($self) ?>" enctype="multipart/form-data" class="form-card" id="cover" style="margin-top:16px">

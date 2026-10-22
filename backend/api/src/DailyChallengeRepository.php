@@ -572,6 +572,8 @@ final class DailyChallengeRepository
             'text'     => $tText ?? $enText,
             // The Today hero's short headline (SPEC 9.3) in the viewer's language, else English; null = show the text.
             'headline' => self::headline($row['headline_i18n'] ?? null, $locale),
+            // The challenge screen's subtitle under the question, same fallback; null = show the text.
+            'subtitle' => self::headline($row['subtitle_i18n'] ?? null, $locale),
             'context'  => $isTranslated ? ($tCtx ?? $enCtx) : $enCtx,
             'original' => $isTranslated ? ['text' => $enText, 'context' => $enCtx] : null,
             'lang'     => $isTranslated ? $locale : null,

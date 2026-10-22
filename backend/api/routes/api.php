@@ -14525,9 +14525,10 @@ $router->add('GET', '/api/v1/daily/today', function () {
     if ($out['challenge'] !== null) {
         try {
             $hc = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
-            // A cover picked in the back office (the challenge's, its special's or its theme's
-            // uploaded default) beats Hilads suggestions; a player's photo still takes over.
-            $sugg = $hc !== null && empty($out['challenge']['coverUrl']);
+            // Players' photos only (2026-10-22: Hilads picks live on the Map and Spots near
+            // you, never next to players' photos): before the first one, the cover picked in
+            // the back office or the theme's.
+            $sugg = false;
             $out['heroCover'] = $hc !== null ? [
                 'city'  => $scopeCityId !== null ? DailyProofRepository::heroCover((string) $hc['id'], $scopeCityId, $sugg) : null,
                 'world' => DailyProofRepository::heroCover((string) $hc['id'], null, $sugg),
@@ -14563,7 +14564,8 @@ $router->add('POST', '/api/v1/daily/remind-me', function () {
 // its proof and country counts; scope=cities: one proof per city, its most
 // voted, the cities with the most answers first (cityCount). A city with no proof yet falls back to World.
 // rank 1-3 marks the first three voted proofs once the leaderboard ranks
-// (MIN_PROOFS); blocked authors are hidden without renumbering.
+// (MIN_PROOFS); blocked authors are hidden without renumbering. order=new:
+// Today's photos (the feed): newest first, players' photos only, up to 60, no rank.
 $router->add('GET', '/api/v1/daily/today/proofs', function () {
     $user      = AuthService::currentUser();
     $date      = DailyClock::currentDate();
@@ -14572,7 +14574,8 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
     if ($challenge === null) {
         Response::json($out);
     }
-    $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 12)));
+    $feed   = ($_GET['order'] ?? '') === 'new';
+    $limit  = max(1, min($feed ? 60 : 20, (int) ($_GET['limit'] ?? 12)));
     // Today around the world: one card per city, its most voted answer (V4 votes).
     if (($_GET['scope'] ?? 'world') === 'cities') {
         $strip = DailyProofRepository::perCity($challenge['id'], $limit);
@@ -14584,13 +14587,13 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
                             $visible)]);
     }
     $cityId = ($_GET['scope'] ?? 'world') === 'city' ? dailyCityParam($user) : null;
-    $strip  = $cityId !== null ? DailyProofRepository::strip($challenge['id'], $cityId, $limit) : null;
+    $strip  = $cityId !== null ? DailyProofRepository::strip($challenge['id'], $cityId, $limit, false, $feed) : null;
     if ($strip === null || $strip['total'] === 0) {
         $cityId = null;
-        $strip  = DailyProofRepository::strip($challenge['id'], null, $limit);
+        $strip  = DailyProofRepository::strip($challenge['id'], null, $limit, false, $feed);
     }
 
-    $ranked = $strip['total'] >= DailyLeaderboard::MIN_PROOFS;
+    $ranked = !$feed && $strip['total'] >= DailyLeaderboard::MIN_PROOFS;
     $rows   = $strip['rows'];
     foreach ($rows as $i => &$r) {
         $r['strip_rank'] = $ranked && $i < 3 && (int) $r['vote_count'] > 0 && !DailyProofRepository::bool($r['is_suggestion'] ?? false) ? $i + 1 : null;
@@ -14611,6 +14614,73 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
         $visible,
     );
     Response::json($out);
+});
+
+// GET /api/v1/daily/today/countries?date=&cityId=&guestId=&locale= - Today's stories
+// row and mosaic in one request: today's players' photos grouped by country
+// (never a Hilads suggestion; blocked authors left out). Each item: {country,
+// city: {id, name, country}, count, latestAt, unseen (signed in: a photo I
+// haven't viewed, else null: the app keeps a guest's on the device), ids (the
+// country's photos, newest first: the story order), top (its most voted photo,
+// newest on a tie, as a proof)}. Order: the country of cityId (else my current
+// city) first, then the countries with unseen photos, then the most recent.
+// date (YYYY-MM-DD, a past published challenge: the challenge screen of that
+// day) defaults to today. {date, total, countries, items}; no challenge = empty.
+$router->add('GET', '/api/v1/daily/today/countries', function () {
+    $user      = AuthService::currentUser();
+    $date      = DailyClock::currentDate();
+    if (isset($_GET['date'])) {
+        $asked = (string) $_GET['date'];
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $asked) || $asked > $date) {
+            Response::json(['error' => 'date must be YYYY-MM-DD, today or before', 'code' => 'invalid_date'], 400);
+        }
+        $date = $asked;
+    }
+    $challenge = DailyChallengeRepository::findPublishedByDate($date);
+    if ($challenge === null) {
+        Response::json(['date' => $date, 'total' => 0, 'countries' => 0, 'items' => []]);
+    }
+    $viewerId = $user['id'] ?? null;
+    $rows     = filterByBlocks(DailyProofRepository::countryRows($challenge['id']), dailyBlocks($user), 'user_id', 'guest_id');
+    $here     = dailyCityParam($user);
+    $first    = $here !== null ? strtoupper((string) CityRepository::countryOf($here)) : null;
+    $seen     = $viewerId !== null ? DailyProofRepository::seenSet($viewerId, array_column($rows, 'id')) : null;
+    $groups   = DailyProofRepository::groupByCountry($rows, $first, $seen);
+
+    $tops = DailyProofRepository::rowsByIds(array_column($groups, 'topId'));
+    $tops = array_column(DailyVotes::annotate(array_values($tops), $viewerId), null, 'id');
+    $items = [];
+    foreach ($groups as $g) {
+        if (!isset($tops[$g['topId']])) {
+            continue;
+        }
+        $items[] = [
+            'country'  => $g['country'],
+            'city'     => ['id' => (int) substr((string) $g['cityId'], 5), 'name' => $g['cityName'], 'country' => $g['country']],
+            'count'    => $g['count'],
+            'latestAt' => $g['latestAt'],
+            'unseen'   => $g['unseen'],
+            'ids'      => $g['ids'],
+            'top'      => DailyProofRepository::format($tops[$g['topId']], $viewerId),
+        ];
+    }
+    Response::json(['date' => $date, 'total' => count($rows), 'countries' => count($items), 'items' => $items]);
+});
+
+// POST /api/v1/daily/proofs/seen {ids: [...]} - the photos I've just viewed
+// (Today's stories: a country's ring turns neutral once all its photos are
+// seen). Signed in; at most 100 ids per call, unknown ids are skipped. {added}.
+$router->add('POST', '/api/v1/daily/proofs/seen', function () {
+    $user = AuthService::requireAuth('daily');
+    if (!DbRateLimiter::allow('daily_seen|' . $user['id'], 120, 600)) {
+        Response::json(['error' => 'Too many requests - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    $ids  = Request::json()['ids'] ?? null;
+    if (!is_array($ids)) {
+        Response::json(['error' => 'ids must be a list of proof ids.', 'code' => 'invalid_ids'], 422);
+    }
+    $ids = array_values(array_unique(array_filter($ids, static fn($id): bool => is_string($id) && preg_match('/^[A-Za-z0-9_-]{1,64}$/', $id) === 1)));
+    Response::json(['added' => DailyProofRepository::markSeen($user['id'], array_slice($ids, 0, 100))]);
 });
 
 // GET /api/v1/daily/podium?scope=world|city&cityId= - Today's "Yesterday's

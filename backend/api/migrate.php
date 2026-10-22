@@ -3443,6 +3443,24 @@ run($pdo, "
     \$\$
 ", 'themes: ask_local -> join_in');
 
+// The challenge screen's subtitle under the question (2026-10-22): {en, fr, ...},
+// 80 characters each, set in the back office (challenge page, "Subtitle") or by
+// import ("subtitle"); the challenge text shows when absent.
+// Reversal: ALTER TABLE daily_challenges DROP COLUMN subtitle_i18n.
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS subtitle_i18n JSONB", 'daily_challenges.subtitle_i18n');
+
+// Photos I've viewed (2026-10-22, Today's country stories): a story ring is
+// colored while one of its country's photos is unseen. Signed-in viewers only
+// (a guest's are kept on the device). Reversal: DROP TABLE daily_proof_views.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_proof_views (
+        user_id   TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        proof_id  TEXT        NOT NULL REFERENCES daily_proofs(id) ON DELETE CASCADE,
+        viewed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (user_id, proof_id)
+    )
+", 'daily_proof_views');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

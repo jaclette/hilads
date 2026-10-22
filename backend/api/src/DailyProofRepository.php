@@ -264,17 +264,19 @@ final class DailyProofRepository
      * votes, earliest approval), for yesterday's podium. Viewer-independent,
      * cached 15 s per scope.
      */
-    public static function strip(string $challengeId, ?string $cityId, int $limit, bool $podium = false): array
+    public static function strip(string $challengeId, ?string $cityId, int $limit, bool $podium = false, bool $feed = false): array
     {
-        $key   = "daily_strip_v2_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}" . ($podium ? '_podium' : '');
+        $key   = "daily_strip_v2_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}" . ($podium ? '_podium' : '') . ($feed ? '_feed' : '');
         $order = $podium ? 'p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id'
-                         : 'p.vote_count DESC, p.approved_at DESC, p.id DESC';
-        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit, $order, $podium): array {
+               : ($feed ? 'p.approved_at DESC, p.id DESC' : 'p.vote_count DESC, p.approved_at DESC, p.id DESC');
+        // The podium and the photo feed are players' photos only (never a Hilads suggestion).
+        $players = $podium || $feed;
+        return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit, $order, $players): array {
             $pdo        = Database::pdo();
             $cityFilter = $cityId !== null ? " AND p.city_id = ?" : "";
             $args       = $cityId !== null ? [$challengeId, $cityId] : [$challengeId];
             // Hilads suggestions are never counted, never on the podium; in the strip they come after the players' photos.
-            $listFilter = $podium ? " AND NOT p.is_suggestion" : "";
+            $listFilter = $players ? " AND NOT p.is_suggestion" : "";
 
             $stmt = $pdo->prepare("
                 SELECT count(*) AS total, count(DISTINCT c.country) AS countries
@@ -291,6 +293,111 @@ final class DailyProofRepository
 
             return ['total' => (int) $counts['total'], 'countries' => (int) $counts['countries'], 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         });
+    }
+
+    /**
+     * Today by country (Today's stories row and mosaic): every approved
+     * player's photo of the challenge (never a Hilads suggestion), light rows
+     * {id, user_id, city_id, city_name, country, vote_count, at}, newest first.
+     * Cached 15 s; blocks and "seen" are applied per viewer by the caller.
+     */
+    public static function countryRows(string $challengeId): array
+    {
+        return Cache::remember("daily_countries_v1_{$challengeId}", 15, static function () use ($challengeId): array {
+            $stmt = Database::pdo()->prepare("
+                SELECT p.id, p.user_id, p.city_id, ch.name AS city_name, cc.country, p.vote_count,
+                       extract(epoch FROM coalesce(p.approved_at, p.created_at))::bigint AS at
+                FROM daily_proofs p
+                JOIN channels ch ON ch.id = p.city_id
+                JOIN cities cc   ON cc.channel_id = p.city_id
+                WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion AND cc.country IS NOT NULL
+                ORDER BY at DESC, p.id DESC
+                LIMIT 2000
+            ");
+            $stmt->execute([$challengeId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }) ?? [];
+    }
+
+    /**
+     * Group countryRows (already filtered) by country: [{country, cityId,
+     * cityName, ids (newest first), count, latestAt, topId}], the top being the
+     * most voted photo (newest on a tie), its city the country's city. Ordered:
+     * $firstCountry first, then the countries with a photo not in $seen
+     * (null: unknown, not used), then the most recent.
+     */
+    public static function groupByCountry(array $rows, ?string $firstCountry, ?array $seen): array
+    {
+        $groups = [];
+        foreach ($rows as $r) {
+            $c = strtoupper((string) $r['country']);
+            $g = &$groups[$c];
+            $g ??= ['country' => $c, 'ids' => [], 'latestAt' => (int) $r['at'], 'top' => null, 'unseen' => false];
+            $g['ids'][] = $r['id'];
+            if ($seen !== null && !isset($seen[$r['id']])) {
+                $g['unseen'] = true;
+            }
+            // Rows come newest first: a later row only wins with strictly more votes.
+            if ($g['top'] === null || (int) $r['vote_count'] > (int) $g['top']['vote_count']) {
+                $g['top'] = $r;
+            }
+            unset($g);
+        }
+        $out = array_values($groups);
+        usort($out, static function (array $a, array $b) use ($firstCountry): int {
+            $fa = $a['country'] === $firstCountry ? 0 : 1;
+            $fb = $b['country'] === $firstCountry ? 0 : 1;
+            return [$fa, $b['unseen'] ? 1 : 0, $b['latestAt']] <=> [$fb, $a['unseen'] ? 1 : 0, $a['latestAt']];
+        });
+        return array_map(static fn(array $g): array => [
+            'country'  => $g['country'],
+            'cityId'   => $g['top']['city_id'],
+            'cityName' => $g['top']['city_name'],
+            'ids'      => $g['ids'],
+            'count'    => count($g['ids']),
+            'latestAt' => $g['latestAt'],
+            'unseen'   => $seen === null ? null : $g['unseen'],
+            'topId'    => $g['top']['id'],
+        ], $out);
+    }
+
+    /** The full rows of these proofs (any order). */
+    public static function rowsByIds(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+        $stmt = Database::pdo()->prepare(self::SELECT . " WHERE p.id = ANY (string_to_array(?, ','))");
+        $stmt->execute([implode(',', $ids)]);
+        return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), null, 'id');
+    }
+
+    /** The ids among $ids this user has viewed, as a set (id => true). */
+    public static function seenSet(string $userId, array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+        $stmt = Database::pdo()->prepare("
+            SELECT proof_id FROM daily_proof_views WHERE user_id = ? AND proof_id = ANY (string_to_array(?, ','))
+        ");
+        $stmt->execute([$userId, implode(',', $ids)]);
+        return array_fill_keys($stmt->fetchAll(PDO::FETCH_COLUMN), true);
+    }
+
+    /** Remember these proofs as viewed by this user (unknown ids are skipped). Returns rows added. */
+    public static function markSeen(string $userId, array $ids): int
+    {
+        if ($ids === []) {
+            return 0;
+        }
+        $stmt = Database::pdo()->prepare("
+            INSERT INTO daily_proof_views (user_id, proof_id)
+            SELECT ?, p.id FROM daily_proofs p WHERE p.id = ANY (string_to_array(?, ','))
+            ON CONFLICT DO NOTHING
+        ");
+        $stmt->execute([$userId, implode(',', $ids)]);
+        return $stmt->rowCount();
     }
 
     /**

@@ -136,20 +136,23 @@ final class DailyAdminService
     }
 
     public const HEADLINE_MAX = 45;
+    /** The challenge screen's subtitle under the question (the hero's short instruction). */
+    public const SUBTITLE_MAX = 80;
 
     /**
      * The headline of a challenge as stored: en (required unless all empty)
-     * plus {locale: text} translations, each at most HEADLINE_MAX characters.
-     * Null when en is empty (the hero shows the challenge text). Throws.
+     * plus {locale: text} translations, each at most $max characters
+     * (HEADLINE_MAX; SUBTITLE_MAX for a subtitle). Null when en is empty (the
+     * text is shown instead). Throws.
      */
-    public static function headlineJson(?string $en, array $translations, string $label = 'Headline'): ?string
+    public static function headlineJson(?string $en, array $translations, string $label = 'Headline', int $max = self::HEADLINE_MAX): ?string
     {
         $en = trim((string) preg_replace('/\s+/u', ' ', (string) $en));
         if ($en === '') {
             return null;
         }
-        if (mb_strlen($en) > self::HEADLINE_MAX) {
-            throw new InvalidArgumentException("{$label} is longer than " . self::HEADLINE_MAX . " characters: \"{$en}\".");
+        if (mb_strlen($en) > $max) {
+            throw new InvalidArgumentException("{$label} is longer than {$max} characters: \"{$en}\".");
         }
         $all = ['en' => $en];
         foreach ($translations as $loc => $text) {
@@ -158,8 +161,8 @@ final class DailyAdminService
             if ($loc === 'en' || $text === '' || !in_array($loc, DailyI18n::LOCALES, true)) {
                 continue;
             }
-            if (mb_strlen($text) > self::HEADLINE_MAX) {
-                throw new InvalidArgumentException("{$label} ({$loc}) is longer than " . self::HEADLINE_MAX . ' characters.');
+            if (mb_strlen($text) > $max) {
+                throw new InvalidArgumentException("{$label} ({$loc}) is longer than {$max} characters.");
             }
             $all[$loc] = $text;
         }
@@ -176,6 +179,19 @@ final class DailyAdminService
         $after = self::find($id);
         self::forgetCachedDate($after['challenge_date']);
         self::audit('daily_challenge.headline', 'daily_challenge', $id, ['headline_i18n' => $before['headline_i18n'] ?? null], ['headline_i18n' => $json]);
+        return $after;
+    }
+
+    /** Back office: set (or clear, en empty) a challenge's subtitle (the challenge screen, under the question). Audited. */
+    public static function setChallengeSubtitle(string $id, ?string $en, array $translations): array
+    {
+        $before = self::mustFind($id);
+        $json   = self::headlineJson($en, $translations, 'Subtitle', self::SUBTITLE_MAX);
+        Database::pdo()->prepare("UPDATE daily_challenges SET subtitle_i18n = ?::jsonb, updated_at = now(), updated_by = ? WHERE id = ?")
+            ->execute([$json, self::actorName(), $id]);
+        $after = self::find($id);
+        self::forgetCachedDate($after['challenge_date']);
+        self::audit('daily_challenge.subtitle', 'daily_challenge', $id, ['subtitle_i18n' => $before['subtitle_i18n'] ?? null], ['subtitle_i18n' => $json]);
         return $after;
     }
 
@@ -665,8 +681,20 @@ final class DailyAdminService
                 }
             }
 
+            // The challenge screen's subtitle (under the question): {en, fr, ...}, 80 characters each, optional.
+            $subtitle = null;
+            if (isset($c['subtitle'])) {
+                try {
+                    $st = is_array($c['subtitle']) ? $c['subtitle'] : ['en' => (string) $c['subtitle']];
+                    $subtitle = self::headlineJson((string) ($st['en'] ?? ''), array_diff_key($st, ['en' => true]), "{$label}: subtitle", self::SUBTITLE_MAX);
+                } catch (InvalidArgumentException $e) {
+                    $errors[] = $e->getMessage();
+                }
+            }
+
             $entries[] = [
                 'headline' => $headline,
+                'subtitle' => $subtitle,
                 'label'   => $label,
                 'date'    => $reserve ? null : $date,
                 'reserve' => $reserve,
@@ -897,6 +925,20 @@ final class DailyAdminService
                 $stmt->execute([$e['headline'], $e['reserve'] ? $e['text'] : $e['date'], $e['headline']]);
                 if ($stmt->rowCount() > 0) {
                     $report[] = ['entry' => $e['label'], 'action' => 'headline_set', 'date' => $e['date'], 'headline' => json_decode($e['headline'], true)['en']];
+                }
+            }
+
+            // Subtitles the same way (a headlines file can carry them: imported without Replace).
+            foreach ($check['entries'] as $e) {
+                if (($e['subtitle'] ?? null) === null) {
+                    continue;
+                }
+                $stmt = $e['reserve']
+                    ? $pdo->prepare("UPDATE daily_challenges SET subtitle_i18n = ?::jsonb WHERE is_reserve AND text_i18n->>'en' = ? AND subtitle_i18n IS DISTINCT FROM ?::jsonb")
+                    : $pdo->prepare("UPDATE daily_challenges SET subtitle_i18n = ?::jsonb WHERE challenge_date = ? AND subtitle_i18n IS DISTINCT FROM ?::jsonb");
+                $stmt->execute([$e['subtitle'], $e['reserve'] ? $e['text'] : $e['date'], $e['subtitle']]);
+                if ($stmt->rowCount() > 0) {
+                    $report[] = ['entry' => $e['label'], 'action' => 'subtitle_set', 'date' => $e['date'], 'subtitle' => json_decode($e['subtitle'], true)['en']];
                 }
             }
 
