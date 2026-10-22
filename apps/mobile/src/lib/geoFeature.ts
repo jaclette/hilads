@@ -21,6 +21,28 @@ export interface GpsResult {
   permanentlyDenied?: boolean;
 }
 
+function within<T>(p: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([p, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
+}
+
+/**
+ * The best fix we can get: GPS first; indoors (no satellites) the network
+ * position, then a recent last-known one. A coarser fix is still a position:
+ * the place step flags it as approximate instead of failing (reported
+ * 2026-10-22: "Your position isn't available" at home on LTE).
+ */
+async function preciseFix(): Promise<Location.LocationObject> {
+  try {
+    return await within(Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }), 12_000);
+  } catch {}
+  try {
+    return await within(Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }), 8_000);
+  } catch {}
+  const last = await Location.getLastKnownPositionAsync({ maxAge: 5 * 60 * 1000 });
+  if (!last) throw new Error('no fix');
+  return last;
+}
+
 /**
  * Request precise location for a SPECIFIC feature, at the moment it's used -
  * never up-front. Mirrors the web lib/gpsFeature:
@@ -59,10 +81,7 @@ export async function requestFeatureLocation(feature: GpsFeature, opts: { precis
     // otherwise a recent last-known position is enough.
     const last = opts.precise ? null : await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
     const pos = last ?? (opts.precise
-      ? await Promise.race([
-          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }),
-          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 15_000)),
-        ])
+      ? await preciseFix()
       : await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
     const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     // Opportunistically fix a city that IP-geolocation placed wrong (no prompt -
