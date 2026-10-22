@@ -313,9 +313,9 @@ export default function MapScreen() {
     })),
   }), [spots, selected?.id, i18n.language, worldView]);
 
-  // The pin photos (72 px PNGs, drawn at 24 pt).
+  // The pin photos (216 px PNGs, drawn at 72 pt).
   const pinImages = useMemo(() => Object.fromEntries(
-    spots.filter(s => s.cover.pinUrl).map(s => [`pin-${s.id}`, { url: s.cover.pinUrl!, scale: 3 }]),
+    spots.filter(s => s.cover.pinUrl).map(s => [`pin-${s.id}`, { url: `${s.cover.pinUrl}&s=216`, scale: 3 }]),
   ), [spots]);
 
   if (!hasToken) {
@@ -360,7 +360,7 @@ export default function MapScreen() {
           <SymbolLayer id="spot-labels-photo" filter={['all', ['!', ['has', 'point_count']], ['!=', ['get', 'img'], '']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
             iconImage: ['get', 'img'], iconAnchor: 'left', iconOffset: [16, 0],
             textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
-            textAnchor: 'left', textOffset: [3.8, 0], textJustify: 'left', textMaxWidth: 20,
+            textAnchor: 'left', textOffset: [7.8, 0], textJustify: 'left', textMaxWidth: 20,
             textAllowOverlap: false, iconAllowOverlap: false, symbolSortKey: ['get', 'rank'],
           }} />
           <SymbolLayer id="spot-labels" filter={['all', ['!', ['has', 'point_count']], ['==', ['get', 'img'], '']]} minZoomLevel={LABEL_MIN_ZOOM} style={{

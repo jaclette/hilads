@@ -4648,9 +4648,10 @@ $router->add('GET', '/api/v1/img-thumb', function () {
 });
 
 // GET /api/v1/img-pin?f=<32hex>.<ext>
-// The map's pin photo: a 72 px disc with a white ring (transparent PNG), made
-// once from the cached thumbnail (else the original) and cached on R2
-// (pin_v1_<base>.png). Same immutable caching as img-thumb.
+// The map's pin photo: a disc with a white ring (transparent PNG), made once
+// from the cached thumbnail (else the original) and cached on R2. 72 px
+// (pin_v1_<base>.png, the first builds: 24 pt), or 216 px with s=216
+// (pin_v2_<base>.png: 72 pt). Same immutable caching as img-thumb.
 $router->add('GET', '/api/v1/img-pin', function () {
     $f = (string) ($_GET['f'] ?? '');
     if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $f, $m)) {
@@ -4659,7 +4660,8 @@ $router->add('GET', '/api/v1/img-pin', function () {
     $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
     if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
 
-    $pinName = 'pin_v1_' . strtolower($m[1]) . '.png';
+    $big     = (string) ($_GET['s'] ?? '') === '216';
+    $pinName = ($big ? 'pin_v2_' : 'pin_v1_') . strtolower($m[1]) . '.png';
     $emit = static function (string $bytes): void {
         header('Content-Type: image/png');
         header('Cache-Control: public, max-age=31536000, immutable');
@@ -4678,7 +4680,7 @@ $router->add('GET', '/api/v1/img-pin', function () {
         $srcTmp = tempnam(sys_get_temp_dir(), 'pins');
         file_put_contents($srcTmp, $src);
         $mime   = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
-        $pinTmp = ImageProcessor::circlePin($srcTmp, $mime);
+        $pinTmp = $big ? ImageProcessor::circlePin($srcTmp, $mime, 216, 12) : ImageProcessor::circlePin($srcTmp, $mime);
         @unlink($srcTmp);
         if ($pinTmp === null) { Response::json(['error' => 'Unreadable image'], 422); }
         $bytes = file_get_contents($pinTmp);

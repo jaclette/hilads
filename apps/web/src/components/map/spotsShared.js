@@ -122,8 +122,9 @@ export function placeLabels(pins, obstacles = [], { pin = 22, gap = 4, h = 22, v
   const out = new Map()
   const order = [...pins].sort((a, b) => (b.selected - a.selected) || (a.rank - b.rank))
   for (const p of order) {
-    const right = { x1: p.x + pin + gap, y1: p.y - h / 2, x2: p.x + pin + gap + p.w, y2: p.y + h / 2 }
-    const left  = { x1: p.x - pin - gap - p.w, y1: p.y - h / 2, x2: p.x - pin - gap, y2: p.y + h / 2 }
+    const ph = p.h ?? h   // a label with a photo is taller
+    const right = { x1: p.x + pin + gap, y1: p.y - ph / 2, x2: p.x + pin + gap + p.w, y2: p.y + ph / 2 }
+    const left  = { x1: p.x - pin - gap - p.w, y1: p.y - ph / 2, x2: p.x - pin - gap, y2: p.y + ph / 2 }
     const side = !hits(right, p.id) ? 'right' : !hits(left, p.id) ? 'left'
       : p.selected ? (outside(right) && !outside(left) ? 'left' : 'right') : null
     if (!side) continue

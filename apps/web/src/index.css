@@ -17268,8 +17268,14 @@ body.has-app-promo-banner .page-header {
 .wm-pin-label--right { left: 48px; }
 .wm-pin-label--left { right: 48px; }
 .wm-pin-label--on { border-color: var(--primary); }
-.wm-pin-label--photo { display: flex; align-items: center; gap: 4px; padding-left: 2px; }
-.wm-pin-photo { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; flex: none; }
+/* A label with the spot's photo: the round photo, then the name's pill. */
+.wm-pin-label--photo { display: flex; align-items: center; gap: 6px; height: 54px; padding: 0; background: none; border: none; box-shadow: none; }
+.wm-pin-photo { width: 54px; height: 54px; box-sizing: border-box; border-radius: 50%; border: 3px solid #fff; object-fit: cover; flex: none;
+  box-shadow: 0 1px 4px rgba(36, 26, 18, 0.25); }
+.wm-pin-text { height: 22px; line-height: 22px; padding: 0 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+  box-shadow: 0 1px 4px rgba(36, 26, 18, 0.18); }
+.wm-pin-label--photo.wm-pin-label--on .wm-pin-text { border-color: var(--primary); }
+.wm-pin-label--photo.wm-pin-label--left { flex-direction: row-reverse; }
 /* Empty city card: today's challenge, then "Take it" (place theme) or tomorrow's theme (Language day). */
 .wm-sheet--empty { align-items: stretch; }
 .wm-sheet--empty .wm-sheet-title { margin: 0; }

@@ -40,8 +40,9 @@ function km(a, b) {
 // Pin labels from this zoom (the city view), where they stay readable.
 const LABEL_MIN_ZOOM = 14
 const LABEL_FONT = '700 12px'
-// The photo in a label: 18 px and its gap (.wm-pin-photo).
-const PHOTO_W = 22
+// The photo in a label: 54 px with its ring, and its gap (.wm-pin-photo).
+const PHOTO_W = 60
+const PHOTO_H = 54
 
 const escapeHtml = (v) => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
 
@@ -64,8 +65,8 @@ const spotIcon = (spot, label, side, selected) => L.divIcon({
     : `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(spot.themes?.[0] ? themeIcon(spot.themes[0]) : 'location-outline', 20)}</span>`)
     + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}${spot.cover?.thumbUrl ? ' wm-pin-label--photo' : ''}">`
       // The spot's photo before its name (like the app).
-      + (spot.cover?.thumbUrl ? `<img class="wm-pin-photo" src="${escapeHtml(spot.cover.thumbUrl)}" alt="" loading="lazy" />` : '')
-      + `${escapeHtml(label)}</span>` : ''),
+      + (spot.cover?.thumbUrl ? `<img class="wm-pin-photo" src="${escapeHtml(spot.cover.thumbUrl)}" alt="" loading="lazy" /><span class="wm-pin-text">${escapeHtml(label)}</span>` : escapeHtml(label))
+      + '</span>' : ''),
   iconSize: [44, 44], iconAnchor: [22, 22],
 })
 // A World bubble: the city's flag and its spot count.
@@ -150,7 +151,7 @@ function Pins({ spots, zoom, selected, onSpot, onCluster }) {
       if (zoom < LABEL_MIN_ZOOM && !isSelected) { pins.push({ id: s.id, x: p.x, y: p.y, w: 0, selected: false, rank: 0, off: true }); return }
       const label = pinLabel(s.name, s.priceRange, i18n.language)
       text.set(s.id, label)
-      pins.push({ id: s.id, x: p.x, y: p.y, w: labelWidth(label) + (s.cover?.thumbUrl ? PHOTO_W : 0), selected: isSelected, rank: -(s.proofCount * 1000 + s.votes) })
+      pins.push({ id: s.id, x: p.x, y: p.y, w: labelWidth(label) + (s.cover?.thumbUrl ? PHOTO_W : 0), ...(s.cover?.thumbUrl ? { h: PHOTO_H } : {}), selected: isSelected, rank: -(s.proofCount * 1000 + s.votes) })
     })
     const vb = map.getPixelBounds()
     const sides = placeLabels(pins.filter(p => !p.off), [...obstacles, ...pins.filter(p => p.off).map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))],
