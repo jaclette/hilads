@@ -148,6 +148,8 @@
     "vote": "Vote",
     "withdraw": "Remove my vote",
     "yours": "Your photo",
+    "votersTitle": "Who voted",
+    "votersEmpty": "No votes yet.",
     "errors": {
       "voting_closed": "Voting closed with the challenge.",
       "rate_limited": "Too many tries - wait a moment.",

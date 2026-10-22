@@ -212,6 +212,20 @@ export async function voteDailyProof(proofId: string): Promise<DailyVoteResult> 
   return api.post<DailyVoteResult>(`/daily/proofs/${proofId}/vote`, {});
 }
 
+export interface DailyVoter {
+  id:          string;
+  username:    string;
+  displayName: string | null;
+  photoUrl:    string | null;
+  city:        string | null;
+  isLocal:     boolean;
+}
+
+/** Who voted for my photo, newest first (its author only). */
+export async function fetchDailyVoters(proofId: string): Promise<DailyVoter[]> {
+  return (await api.get<{ items: DailyVoter[] }>(`/daily/proofs/${proofId}/voters`)).items;
+}
+
 /** Withdraw my vote (gives it back) while the challenge is open. */
 export async function unvoteDailyProof(proofId: string): Promise<DailyVoteResult> {
   return api.delete<DailyVoteResult>(`/daily/proofs/${proofId}/vote`);

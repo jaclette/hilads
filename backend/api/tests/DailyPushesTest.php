@@ -231,6 +231,8 @@ final class DailyPushesTest extends TestCase
     public function testFirstVoteNamesTheVotersCity(): void
     {
         $this->assertSame('Someone in Lisbon voted for your photo.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'en', 'Lisbon')['body']);
+        $this->assertSame('Linh voted for your photo.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'en', 'Lisbon', 'Linh')['body']);
+        $this->assertSame('Linh a voté pour ta photo.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr', 'Lisbon', 'Linh')['body']);
         $this->assertSame('Quelqu\'un à Saigon a voté pour ta photo.', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr', 'Ho Chi Minh City')['body']);
     }
 

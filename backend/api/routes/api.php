@@ -14961,6 +14961,16 @@ foreach (['POST' => true, 'DELETE' => false] as $pickVoteMethod => $pickVoteOn) 
     });
 }
 
+// GET /api/v1/daily/proofs/{id}/voters - who voted for my photo (its author only).
+$router->add('GET', '/api/v1/daily/proofs/{id}/voters', function (array $params) {
+    $user  = AuthService::requireAuth();
+    $proof = preg_match('/^[a-f0-9]{16}$/', $params['id']) ? DailyProofRepository::findById($params['id']) : null;
+    if ($proof === null || $proof['user_id'] !== $user['id']) {
+        Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
+    }
+    Response::json(['items' => DailyVotes::voters($proof['id'], dailyBlocks($user)['user_ids'] ?? [])]);
+});
+
 // POST /api/v1/daily/proofs/{id}/vote - vote for a proof (one per proof, no limit per challenge).
 // Voting twice for the same proof is a no-op.
 $router->add('POST', '/api/v1/daily/proofs/{id}/vote', function (array $params) {

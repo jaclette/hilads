@@ -148,6 +148,8 @@
     "vote": "投票する",
     "withdraw": "投票を取り消す",
     "yours": "あなたの写真",
+    "votersTitle": "投票した人",
+    "votersEmpty": "まだ投票はありません。",
     "errors": {
       "voting_closed": "challenge の終了とともに投票は締め切られました。",
       "rate_limited": "試行が多すぎます - 少し待ってください。",

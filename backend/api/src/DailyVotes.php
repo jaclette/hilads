@@ -124,6 +124,39 @@ final class DailyVotes
     }
 
     /** The next vote's rank for a voter: one past the highest used. Pure. */
+    /**
+     * Who voted for a proof, newest first, for its author: id, names, avatar
+     * and the voter's current city. Blocked people in either direction left out.
+     */
+    public static function voters(string $proofId, array $blockedUserIds = []): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT u.id, u.username, u.display_name, u.profile_photo_url, ch.name AS city_name, v.voter_is_local
+            FROM daily_votes v
+            JOIN users u          ON u.id = v.voter_user_id
+            LEFT JOIN channels ch ON ch.id = u.current_city_id
+            WHERE v.proof_id = ?
+            ORDER BY v.created_at DESC
+            LIMIT 500
+        ");
+        $stmt->execute([$proofId]);
+        $out = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            if (in_array($r['id'], $blockedUserIds, true)) {
+                continue;
+            }
+            $out[] = [
+                'id'          => $r['id'],
+                'username'    => $r['username'],
+                'displayName' => $r['display_name'],
+                'photoUrl'    => R2Uploader::thumbProxy($r['profile_photo_url']),
+                'city'        => $r['city_name'],
+                'isLocal'     => DailyProofRepository::bool($r['voter_is_local']),
+            ];
+        }
+        return $out;
+    }
+
     public static function nextSlot(array $usedSlots): int
     {
         return $usedSlots === [] ? 1 : max($usedSlots) + 1;

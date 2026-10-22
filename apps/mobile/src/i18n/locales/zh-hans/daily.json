@@ -148,6 +148,8 @@
     "vote": "投票",
     "withdraw": "撤回投票",
     "yours": "你的照片",
+    "votersTitle": "谁投了票",
+    "votersEmpty": "还没有投票。",
     "errors": {
       "voting_closed": "challenge 结束，投票已关闭。",
       "rate_limited": "尝试次数太多 - 请稍等。",

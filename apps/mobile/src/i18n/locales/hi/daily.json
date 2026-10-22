@@ -148,6 +148,8 @@
     "vote": "वोट करें",
     "withdraw": "मेरा वोट हटाएं",
     "yours": "आपकी फ़ोटो",
+    "votersTitle": "किसने वोट दिया",
+    "votersEmpty": "अभी तक कोई वोट नहीं।",
     "errors": {
       "voting_closed": "challenge के साथ वोटिंग बंद हो गई।",
       "rate_limited": "बहुत ज़्यादा कोशिशें - थोड़ा रुकें।",

@@ -19,6 +19,8 @@ interface Props {
   /** vote_cast source: strip_city, strip_world, hi_card, viewer, sheet_tile. */
   source?:   string;
   variant?:  'card' | 'tile' | 'viewer' | 'strip';
+  /** My own photo with votes: the tap lists who voted. */
+  onShowVoters?: () => void;
 }
 
 /**
@@ -26,9 +28,9 @@ interface Props {
  * on my own city's), the vote count, and my votes left while voting is open.
  * Tap again to withdraw. Disabled on my own proof and once the challenge
  * closed (count only). Guests go to the sign-up gate ("Sign up to vote for
- * Lisbon").
+ * Lisbon"). On my own photo, `onShowVoters` turns it into the list of who voted.
  */
-export function DailyVoteButton({ proofId, date, cityName = null, cityId = null, source = 'card', variant = 'card' }: Props) {
+export function DailyVoteButton({ proofId, date, cityName = null, cityId = null, source = 'card', variant = 'card', onShowVoters }: Props) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
@@ -49,8 +51,11 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
   // "Vote for Lisbon" on another city's answer, "Vote" on my own city's.
   const voteLabel = !ownCity && short ? t('vote.voteFor', { city: short }) : t('vote.vote');
 
+  const showVoters = !!onShowVoters && !!state?.isMine && state.voteCount > 0;
+
   const onPress = async () => {
     if (!state || busy) return;
+    if (showVoters) { onShowVoters!(); return; }
     if (!account) {
       router.push(`/auth-gate?reason=daily_vote${short ? `&city=${encodeURIComponent(short)}` : ''}` as never);
       return;
@@ -76,12 +81,12 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
     <TouchableOpacity
       style={[styles.btn, variant === 'tile' && styles.btnTile, variant === 'strip' && styles.btnStrip, onDark && styles.btnDark, state?.myVote && styles.btnOn]}
       onPress={onPress}
-      disabled={!state || (!!account && !canVote)}
+      disabled={!state || (!!account && !canVote && !showVoters)}
       hitSlop={8}
       activeOpacity={0.7}
       accessibilityRole="button"
       accessibilityState={{ selected: !!state?.myVote, disabled: !canVote }}
-      accessibilityLabel={state?.myVote ? t('vote.withdraw') : voteLabel}
+      accessibilityLabel={showVoters ? t('vote.votersTitle') : state?.myVote ? t('vote.withdraw') : voteLabel}
     >
       <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={variant === 'tile' ? 15 : 18} color={iconColor} />
       {count !== null && (
@@ -94,6 +99,9 @@ export function DailyVoteButton({ proofId, date, cityName = null, cityId = null,
       )}
       {!!sub && variant !== 'tile' && variant !== 'strip' && (
         <View style={styles.subWrap}><Text style={[styles.sub, onDark && styles.subDark]} numberOfLines={1}>{sub}</Text></View>
+      )}
+      {showVoters && variant !== 'tile' && variant !== 'strip' && (
+        <Ionicons name="chevron-forward" size={14} color={onDark ? colors.onCaramelMuted : colors.muted} />
       )}
     </TouchableOpacity>
   );

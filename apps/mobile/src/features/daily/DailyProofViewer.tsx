@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityName, Photo } from '@/ui';
@@ -11,6 +12,7 @@ import { AnswerChip } from '@/features/compare/AnswerChip';
 import { BackHomeBlock } from '@/features/compare/BackHomeBlock';
 import { useMoney } from '@/features/compare/money';
 import { DailyVoteButton } from './DailyVoteButton';
+import { DailyVotersSheet } from './DailyVotersSheet';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
@@ -36,7 +38,9 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
+  const router = useRouter();
   const [share, setShare] = useState<ShareContent | null>(null);
+  const [votersOf, setVotersOf] = useState<string | null>(null);
   const money = useMoney();
   const { width, height } = useWindowDimensions();
   // The photo's width / height once loaded (square until then): its box hugs it.
@@ -116,13 +120,17 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             </View>
           )}
           {proof.status === 'approved' && !proof.suggestion && (
-            <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="viewer" variant="viewer" />
+            <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="viewer" variant="viewer"
+                             onShowVoters={proof.isMine ? () => setVotersOf(proof.id) : undefined} />
           )}
           {shareable && challenge && (
             <Button icon="share-social-outline" label={t('share.shareProof')} onPress={() => setShare(proofShare(proof, challenge))} />
           )}
         </View>
         </ScrollView>
+        {/* A voter's profile opens over the app: the viewer closes first. */}
+        <DailyVotersSheet proofId={votersOf} onClose={() => setVotersOf(null)}
+                          onOpenUser={id => { setVotersOf(null); onClose(); router.push(`/user/${id}` as never); }} />
         <ShareSheet content={share} source={autoShare ? 'podium' : 'viewer'} onClose={() => setShare(null)} />
       </SafeAreaView>
       </View>

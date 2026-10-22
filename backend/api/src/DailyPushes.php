@@ -461,16 +461,21 @@ final class DailyPushes
         return DailyPushText::render('theme_' . $key, $locale) ?? DailyThemes::name($key);
     }
 
-    /** The first vote on a proof (prompt 12): opens that proof. */
-    /** The first vote: "Someone in Lisbon voted for your photo." (the voter's city, never their name). */
-    public static function firstVoteMessage(string $date, string $proofId, string $locale = 'en', ?string $voterCity = null): array
+    /**
+     * The first vote on a proof (prompt 12), opens that proof: "Linh voted for
+     * your photo."; rows queued before the name was kept: "Someone in Lisbon
+     * voted for your photo.".
+     */
+    public static function firstVoteMessage(string $date, string $proofId, string $locale = 'en', ?string $voterCity = null, ?string $voterName = null): array
     {
         $city = $voterCity !== null && $voterCity !== '' ? CityNames::short($voterCity, $locale) : null;
         return [
             'title' => 'Daily Challenge',
-            'body'  => $city !== null
+            'body'  => $voterName !== null && $voterName !== ''
+                ? (DailyPushText::render('bell_vote', $locale, ['name' => $voterName]) ?? "{$voterName} voted for your photo.")
+                : ($city !== null
                 ? (DailyPushText::render('first_vote_city', $locale, ['city' => $city]) ?? "Someone in {$city} voted for your photo.")
-                : (DailyPushText::render('first_vote', $locale) ?? 'Your photo got its first vote!'),
+                : (DailyPushText::render('first_vote', $locale) ?? 'Your photo got its first vote!')),
             'data'  => self::data($date) + ['proofId' => $proofId],
         ];
     }
@@ -717,7 +722,7 @@ final class DailyPushes
      * author and challenge (unique key), so a withdrawn then recast first vote
      * sends nothing new. Returns rows queued.
      */
-    public static function queueFirstVote(string $userId, string $date, string $proofId, DateTimeImmutable $now, ?string $voterCity = null): int
+    public static function queueFirstVote(string $userId, string $date, string $proofId, DateTimeImmutable $now, ?string $voterCity = null, ?string $voterName = null): int
     {
         [, $end] = DailyClock::window($date);
         $rows = [];
@@ -725,7 +730,7 @@ final class DailyPushes
             $at = self::morningSendAt($now, $u['tz']);
             if ($at < $end) {
                 $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'first_vote', $at, $u['tz'],
-                           ['data' => self::data($date) + ['proofId' => $proofId], 'locale' => $u['locale'], 'voterCity' => $voterCity]];
+                           ['data' => self::data($date) + ['proofId' => $proofId], 'locale' => $u['locale'], 'voterCity' => $voterCity, 'voterName' => $voterName]];
             }
         }
         return self::insert($rows);
@@ -991,7 +996,7 @@ final class DailyPushes
                     $reason = 'expired';
                 } else {
                     $msg = self::firstVoteMessage((string) $row['challenge_date'], (string) ($msg['data']['proofId'] ?? ''),
-                                                  (string) ($msg['locale'] ?? 'en'), $msg['voterCity'] ?? null) + ['locale' => $msg['locale'] ?? 'en'];
+                                                  (string) ($msg['locale'] ?? 'en'), $msg['voterCity'] ?? null, $msg['voterName'] ?? null) + ['locale' => $msg['locale'] ?? 'en'];
                 }
             } elseif ($row['type'] === 'top10') {
                 if (!DailyClock::isActive((string) $row['challenge_date'], $now)) {
