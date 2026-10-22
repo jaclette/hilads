@@ -134,4 +134,11 @@ class R2Uploader
             : rtrim(getenv('API_PUBLIC_URL') ?: 'https://api.hilads.live', '/');
         return $apiBase . '/api/v1/img-thumb?f=' . strtolower($base);
     }
+
+    /** The round map pin of an uploaded image (GET /api/v1/img-pin), or null for any other image. */
+    public static function pinProxy(?string $url): ?string
+    {
+        $thumb = self::thumbProxy($url);
+        return $thumb !== null && $thumb !== $url ? str_replace('/api/v1/img-thumb?', '/api/v1/img-pin?', $thumb) : null;
+    }
 }

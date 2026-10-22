@@ -4647,6 +4647,50 @@ $router->add('GET', '/api/v1/img-thumb', function () {
     }
 });
 
+// GET /api/v1/img-pin?f=<32hex>.<ext>
+// The map's pin photo: a 72 px disc with a white ring (transparent PNG), made
+// once from the cached thumbnail (else the original) and cached on R2
+// (pin_v1_<base>.png). Same immutable caching as img-thumb.
+$router->add('GET', '/api/v1/img-pin', function () {
+    $f = (string) ($_GET['f'] ?? '');
+    if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $f, $m)) {
+        Response::json(['error' => 'Invalid image'], 400);
+    }
+    $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
+    if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
+
+    $pinName = 'pin_v1_' . strtolower($m[1]) . '.png';
+    $emit = static function (string $bytes): void {
+        header('Content-Type: image/png');
+        header('Cache-Control: public, max-age=31536000, immutable');
+        header('Content-Length: ' . strlen($bytes));
+        echo $bytes;
+        exit;
+    };
+
+    $cached = @file_get_contents($r2Base . '/' . $pinName);
+    if ($cached !== false && $cached !== '') { $emit($cached); }
+
+    try {
+        $src = @file_get_contents($r2Base . '/thumb_' . strtolower($m[1]) . '.jpg');
+        if ($src === false || $src === '') { $src = @file_get_contents($r2Base . '/' . $f); }
+        if ($src === false || $src === '') { Response::json(['error' => 'Not found'], 404); }
+        $srcTmp = tempnam(sys_get_temp_dir(), 'pins');
+        file_put_contents($srcTmp, $src);
+        $mime   = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
+        $pinTmp = ImageProcessor::circlePin($srcTmp, $mime);
+        @unlink($srcTmp);
+        if ($pinTmp === null) { Response::json(['error' => 'Unreadable image'], 422); }
+        $bytes = file_get_contents($pinTmp);
+        try { R2Uploader::put($pinTmp, $pinName, 'image/png'); } catch (\Throwable $e) {}
+        @unlink($pinTmp);
+        $emit($bytes);
+    } catch (\Throwable $e) {
+        error_log('[img-pin] ' . $f . ': ' . $e->getMessage());
+        Response::json(['error' => 'Pin failed'], 500);
+    }
+});
+
 // ── Local legends - city ambassadors with their picks ────────────────────────
 // GET /api/v1/channels/{channelId}/ambassadors
 // Public endpoint. Returns up to 10 ambassadors for this city, most recently

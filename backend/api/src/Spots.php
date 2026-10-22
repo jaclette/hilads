@@ -165,6 +165,8 @@ final class Spots
             'cover'            => [
                 'photoUrl' => $r['cover_photo'],
                 'thumbUrl' => R2Uploader::thumbProxy($r['cover_photo']),
+                // A round photo for the map's pin labels (uploaded photos only).
+                'pinUrl'   => R2Uploader::pinProxy($r['cover_photo']),
                 'caption'  => $r['cover_caption'],
                 // "Photo by @username": the proof's author; a pick's photo carries its credit instead.
                 'proofId'  => $r['cover_proof_id'] ?? null,

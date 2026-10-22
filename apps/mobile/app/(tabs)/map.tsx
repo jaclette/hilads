@@ -5,7 +5,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Camera, CircleLayer, LineLayer, LocationPuck, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
+import { Camera, CircleLayer, Images, LineLayer, LocationPuck, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -306,10 +306,17 @@ export default function MapScreen() {
       type: 'Feature', id: s.id,
       // rank: lower is placed first when labels collide (most proofs, then votes).
       // pick: a Hilads pick (editorial) gets its own pin: gold with a star.
-      properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes), pick: !!s.pick },
+      // img: the cover's round photo, shown before the label.
+      properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes), pick: !!s.pick,
+                    img: s.cover.pinUrl ? `pin-${s.id}` : '' },
       geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
     })),
   }), [spots, selected?.id, i18n.language, worldView]);
+
+  // The pin photos (72 px PNGs, drawn at 24 pt).
+  const pinImages = useMemo(() => Object.fromEntries(
+    spots.filter(s => s.cover.pinUrl).map(s => [`pin-${s.id}`, { url: s.cover.pinUrl!, scale: 3 }]),
+  ), [spots]);
 
   if (!hasToken) {
     return <View style={[styles.container, styles.center]}><Text style={styles.muted}>{t('map.noToken')}</Text></View>;
@@ -349,12 +356,20 @@ export default function MapScreen() {
           <SymbolLayer id="spot-pick-stars" filter={['all', ['!', ['has', 'point_count']], ['get', 'pick']]} style={{
             textField: '★', textColor: '#FFFFFF', textSize: 13, textAllowOverlap: true, textIgnorePlacement: true,
           }} />
-          <SymbolLayer id="spot-labels" filter={['!', ['has', 'point_count']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
+          {/* A spot with a photo: the round photo, then its label, on the pin's right. */}
+          <SymbolLayer id="spot-labels-photo" filter={['all', ['!', ['has', 'point_count']], ['!=', ['get', 'img'], '']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
+            iconImage: ['get', 'img'], iconAnchor: 'left', iconOffset: [16, 0],
+            textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
+            textAnchor: 'left', textOffset: [3.8, 0], textJustify: 'left', textMaxWidth: 20,
+            textAllowOverlap: false, iconAllowOverlap: false, symbolSortKey: ['get', 'rank'],
+          }} />
+          <SymbolLayer id="spot-labels" filter={['all', ['!', ['has', 'point_count']], ['==', ['get', 'img'], '']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
             textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
             textVariableAnchor: ['left', 'right'], textRadialOffset: 1.3, textJustify: 'auto', textMaxWidth: 20,
             textAllowOverlap: false, textIgnorePlacement: false, symbolSortKey: ['get', 'rank'],
           }} />
         </ShapeSource>
+        <Images images={pinImages} />
 
         {plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} />)}
 

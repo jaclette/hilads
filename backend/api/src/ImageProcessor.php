@@ -184,4 +184,57 @@ class ImageProcessor
         }
         return $img;
     }
+    /**
+     * A map pin photo: the image's centre square as a disc of $size px with a
+     * white ring, transparent outside (anti-aliased edges). PNG temp file, or null.
+     */
+    public static function circlePin(string $srcPath, string $srcMime, int $size = 72, int $ring = 5): ?string
+    {
+        if (!extension_loaded('gd')) {
+            return null;
+        }
+        $src = match ($srcMime) {
+            'image/jpeg' => @imagecreatefromjpeg($srcPath),
+            'image/png'  => @imagecreatefrompng($srcPath),
+            'image/webp' => @imagecreatefromwebp($srcPath),
+            default      => null,
+        };
+        if (!$src) {
+            return null;
+        }
+        $w = imagesx($src);
+        $h = imagesy($src);
+        $side = min($w, $h);
+        $photo = imagecreatetruecolor($size, $size);
+        imagecopyresampled($photo, $src, 0, 0, intdiv($w - $side, 2), intdiv($h - $side, 2), $size, $size, $side, $side);
+        imagedestroy($src);
+
+        $out = imagecreatetruecolor($size, $size);
+        imagealphablending($out, false);
+        imagesavealpha($out, true);
+        $r     = $size / 2;
+        $inner = $r - $ring;
+        for ($y = 0; $y < $size; $y++) {
+            for ($x = 0; $x < $size; $x++) {
+                $d = hypot($x + 0.5 - $r, $y + 0.5 - $r);
+                // Coverage of the disc (outer edge) and of the photo (inner edge), 0..1.
+                $disc = max(0.0, min(1.0, $r - $d + 0.5));
+                if ($disc <= 0.0) {
+                    imagesetpixel($out, $x, $y, imagecolorallocatealpha($out, 255, 255, 255, 127));
+                    continue;
+                }
+                $p   = max(0.0, min(1.0, $inner - $d + 0.5));
+                $rgb = imagecolorat($photo, $x, $y);
+                $cr  = (int) round((($rgb >> 16) & 0xFF) * $p + 255 * (1 - $p));
+                $cg  = (int) round((($rgb >> 8) & 0xFF) * $p + 255 * (1 - $p));
+                $cb  = (int) round(($rgb & 0xFF) * $p + 255 * (1 - $p));
+                imagesetpixel($out, $x, $y, imagecolorallocatealpha($out, $cr, $cg, $cb, (int) round(127 * (1 - $disc))));
+            }
+        }
+        imagedestroy($photo);
+        $tmp = tempnam(sys_get_temp_dir(), 'pin');
+        $ok  = imagepng($out, $tmp, 6);
+        imagedestroy($out);
+        return $ok ? $tmp : null;
+    }
 }

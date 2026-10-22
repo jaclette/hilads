@@ -20,7 +20,9 @@ export interface Spot {
   priceRange:       { min: number; max: number; median?: number; currency: string } | null;
   lastProofDate:    string | null;
   /** The most voted approved proof (ties: the most recent), credited to `by` (its author's username). */
-  cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null; proofId?: string | null; by?: string | null;
+  cover:            { photoUrl: string | null; thumbUrl: string | null; caption: string | null;
+                      /** The cover as a round photo for the map's pin labels (uploaded photos only). */
+                      pinUrl?: string | null; proofId?: string | null; by?: string | null;
                       /** A Hilads pick's photo credit ("Jane Doe / Unsplash"), instead of `by`. */
                       credit?: string | null };
   /** A Hilads pick (editorial spot): its "Good to know"; pickOnly while no player answered there. Never an answer. */

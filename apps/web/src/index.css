@@ -17268,6 +17268,8 @@ body.has-app-promo-banner .page-header {
 .wm-pin-label--right { left: 48px; }
 .wm-pin-label--left { right: 48px; }
 .wm-pin-label--on { border-color: var(--primary); }
+.wm-pin-label--photo { display: flex; align-items: center; gap: 4px; padding-left: 2px; }
+.wm-pin-photo { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; flex: none; }
 /* Empty city card: today's challenge, then "Take it" (place theme) or tomorrow's theme (Language day). */
 .wm-sheet--empty { align-items: stretch; }
 .wm-sheet--empty .wm-sheet-title { margin: 0; }
