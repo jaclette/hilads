@@ -995,6 +995,8 @@
       "vote": "Stemmen",
       "withdraw": "Mijn stem intrekken",
       "yours": "Jouw foto",
+      "votersTitle": "Wie stemde",
+      "votersEmpty": "Nog geen stemmen.",
       "errors": {
         "voting_closed": "Stemmen is gesloten met de challenge.",
         "rate_limited": "Te veel pogingen - wacht even.",

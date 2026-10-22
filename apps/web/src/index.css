@@ -16582,6 +16582,7 @@ body.has-app-promo-banner .page-header {
 .v3-scope-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .v3-scope-row-title { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
 .v3-scope-row-sub { font-size: 13px; color: var(--muted2); }
+.dc-voters { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; }
 .v3-scope-row--on .v3-scope-row-sub { color: inherit; opacity: 0.85; }
 
 /* W1: flat headers on the app ground, like the app. */

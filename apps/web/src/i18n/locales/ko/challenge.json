@@ -995,6 +995,8 @@
       "vote": "투표",
       "withdraw": "투표 취소",
       "yours": "내 사진",
+      "votersTitle": "투표한 사람",
+      "votersEmpty": "아직 투표가 없어요.",
       "errors": {
         "voting_closed": "challenge가 끝나서 투표가 마감됐어요.",
         "rate_limited": "시도가 너무 많아요 - 잠시 기다려 주세요.",

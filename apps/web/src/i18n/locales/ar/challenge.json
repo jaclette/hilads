@@ -1023,6 +1023,8 @@
       "vote": "صوّت",
       "withdraw": "اسحب صوتي",
       "yours": "صورتك",
+      "votersTitle": "من صوّت",
+      "votersEmpty": "لا أصوات بعد.",
       "errors": {
         "voting_closed": "أُغلق التصويت مع انتهاء الـ challenge.",
         "rate_limited": "محاولات كثيرة - انتظر قليلًا.",

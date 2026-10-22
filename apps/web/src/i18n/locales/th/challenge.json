@@ -995,6 +995,8 @@
       "vote": "โหวต",
       "withdraw": "ถอนโหวต",
       "yours": "รูปของคุณ",
+      "votersTitle": "ใครโหวตบ้าง",
+      "votersEmpty": "ยังไม่มีโหวต",
       "errors": {
         "voting_closed": "การโหวตปิดพร้อม challenge แล้ว",
         "rate_limited": "ลองบ่อยเกินไป - รอสักครู่",

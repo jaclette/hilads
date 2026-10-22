@@ -995,6 +995,8 @@
       "vote": "Pilih",
       "withdraw": "Tarik pilihanku",
       "yours": "Fotomu",
+      "votersTitle": "Siapa yang memilih",
+      "votersEmpty": "Belum ada suara.",
       "errors": {
         "voting_closed": "Pemungutan suara ditutup bersama challenge-nya.",
         "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",

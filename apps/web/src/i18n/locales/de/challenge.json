@@ -995,6 +995,8 @@
       "vote": "Abstimmen",
       "withdraw": "Stimme zurückziehen",
       "yours": "Dein Foto",
+      "votersTitle": "Wer abgestimmt hat",
+      "votersEmpty": "Noch keine Stimmen.",
       "errors": {
         "voting_closed": "Die Abstimmung endete mit der Challenge.",
         "rate_limited": "Zu viele Versuche - warte kurz.",

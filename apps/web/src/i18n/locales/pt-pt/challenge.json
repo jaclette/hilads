@@ -995,6 +995,8 @@
       "vote": "Votar",
       "withdraw": "Retirar o meu voto",
       "yours": "A tua foto",
+      "votersTitle": "Quem votou",
+      "votersEmpty": "Ainda sem votos.",
       "errors": {
         "voting_closed": "A votação fechou com o challenge.",
         "rate_limited": "Demasiadas tentativas - espera um pouco.",

@@ -995,6 +995,8 @@
       "vote": "投票",
       "withdraw": "撤回投票",
       "yours": "你的照片",
+      "votersTitle": "誰投了票",
+      "votersEmpty": "還沒有投票。",
       "errors": {
         "voting_closed": "challenge 結束，投票已關閉。",
         "rate_limited": "嘗試次數太多 - 請稍等。",

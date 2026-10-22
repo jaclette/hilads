@@ -995,6 +995,8 @@
       "vote": "Bình chọn",
       "withdraw": "Rút bình chọn",
       "yours": "Ảnh của bạn",
+      "votersTitle": "Ai đã bình chọn",
+      "votersEmpty": "Chưa có phiếu bầu nào.",
       "errors": {
         "voting_closed": "Bình chọn đã đóng cùng challenge.",
         "rate_limited": "Thử quá nhiều lần - đợi một chút.",

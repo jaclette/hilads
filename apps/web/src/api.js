@@ -2510,6 +2510,8 @@ export function fetchDailyLeaderboard() {
 /** Vote / withdraw my vote (3 per challenge). → { voted, votesLeft, voteCount, validatedByLocal } */
 export function voteDailyProof(id)   { return daily('POST', `/daily/proofs/${id}/vote`, { body: {} }) }
 export function unvoteDailyProof(id) { return daily('DELETE', `/daily/proofs/${id}/vote`) }
+/** Who voted for my photo, newest first (its author only). → [{ id, username, displayName, photoUrl, city, isLocal }] */
+export async function fetchDailyVoters(id) { return (await daily('GET', `/daily/proofs/${id}/voters`)).items }
 
 /** Report a visible proof. 409 = already reported. */
 export function reportDailyProof(id, reasonCode) {

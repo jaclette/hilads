@@ -2,11 +2,12 @@ import { createContext, useContext, useEffect, useState, useSyncExternalStore } 
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import i18n from '../../i18n'
-import { voteDailyProof, unvoteDailyProof, reportDailyProof } from '../../api'
+import { voteDailyProof, unvoteDailyProof, reportDailyProof, fetchDailyVoters } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
+import AvatarWithFlag from '../AvatarWithFlag'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 
 // Where I am, as Today last said ({id, name, country, source, presence} | null):
@@ -212,8 +213,9 @@ export function useVotesLeft() {
  * on my own city's), the count, my votes left while voting is open; tap again
  * to withdraw. Disabled on my own proof and once the challenge closed. Guests
  * get the sign-up gate ("Sign up to vote for Lisbon"). `source`: vote_cast.
+ * On my own photo, `onShowVoters` turns it into the list of who voted.
  */
-export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
+export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile', onShowVoters }) {
   const { t } = useDc()
   const { account, cityId, needAccount } = useDaily()
   const [busy, setBusy] = useState(false)
@@ -224,10 +226,12 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
   const ownCity = !!proof.city && cityId != null && Number(String(cityId).replace(/^city_/, '')) === proof.city.id
   const short = proof.city?.name ? shortCityName(proof.city.name) : null
   const voteLabel = !ownCity && short ? t('vote.voteFor', { city: short }) : t('vote.vote')
+  const showVoters = !!onShowVoters && !!state?.isMine && state.voteCount > 0
 
   const click = async (e) => {
     e.stopPropagation()
     if (!state || busy) return
+    if (showVoters) { onShowVoters(); return }
     if (!account) { needAccount('daily_vote', { city: short }); return }
     if (!canVote) return
     setBusy(true); setError(null)
@@ -250,9 +254,9 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
 
   return (
     <span className="dc-vote-wrap">
-      <button type="button" onClick={click} disabled={!state || (!!account && !canVote)}
+      <button type="button" onClick={click} disabled={!state || (!!account && !canVote && !showVoters)}
               className={`dc-vote dc-vote--${variant}${state?.myVote ? ' dc-vote--on' : ''}`}
-              aria-pressed={!!state?.myVote} aria-label={state?.myVote ? t('vote.withdraw') : voteLabel}>
+              aria-pressed={!!state?.myVote} aria-label={showVoters ? t('vote.votersTitle') : state?.myVote ? t('vote.withdraw') : voteLabel}>
         <Icon name={state?.myVote ? 'heart' : 'heart-outline'} size={variant === 'tile' ? 14 : 16} />
         {state && (
           <span className="dc-vote-count">
@@ -261,6 +265,7 @@ export function VoteButton({ proof, variant = 'tile', source = 'sheet_tile' }) {
           </span>
         )}
         {sub && variant !== 'tile' && variant !== 'strip' && <span className="dc-vote-sub">{sub}</span>}
+        {showVoters && variant !== 'tile' && variant !== 'strip' && <Icon name="chevron-forward" size={13} />}
       </button>
       {error && <span className="dc-vote-error" role="status">{error}</span>}
     </span>
@@ -300,13 +305,20 @@ const REPORT_REASONS = ['inappropriate', 'person_without_consent', 'dangerous', 
 export function ProofViewer({ proof, onClose }) {
   useBackLayer(!!proof, onClose)   // browser back closes it
   const { t } = useDc()
-  const { account, needAccount, openSpot } = useDaily()
+  const { account, needAccount, openSpot, openProfile } = useDaily()
   const [reporting, setReporting] = useState(false)
+  const [voters, setVoters] = useState(null)   // null closed, 'loading', 'error' or the list
+  useBackLayer(voters !== null, () => setVoters(null))   // the list closes before the photo
   useBackLayer(reporting, () => setReporting(false))   // the report menu closes before the photo
   const [notice, setNotice] = useState(null)
   const money = useMoney()
   if (!proof) return null
   const name = personName(proof.user)
+
+  const showVoters = async () => {
+    setVoters('loading')
+    try { setVoters(await fetchDailyVoters(proof.id)) } catch { setVoters('error') }
+  }
 
   const report = async (reason) => {
     setReporting(false)
@@ -367,7 +379,7 @@ export function ProofViewer({ proof, onClose }) {
           </p>
         )}
         <div className="dc-viewer-actions">
-          {proof.status === 'approved' && !proof.suggestion && <VoteButton proof={proof} variant="viewer" source="viewer" />}
+          {proof.status === 'approved' && !proof.suggestion && <VoteButton proof={proof} variant="viewer" source="viewer" onShowVoters={proof.isMine ? showVoters : undefined} />}
           {!proof.isMine && (
             <button type="button" className="dc-viewer-report" onClick={() => (account ? setReporting(true) : needAccount('view_profile'))}>
               {t('report.title')}
@@ -377,6 +389,32 @@ export function ProofViewer({ proof, onClose }) {
         {notice && <p className="dc-viewer-notice" role="status">{notice}</p>}
       </div>
       </div>
+      {voters !== null && (
+        <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('vote.votersTitle')}>
+          <button type="button" className="v3-sheet-scrim" onClick={() => setVoters(null)} aria-label={t('back')} />
+          <div className="v3-sheet">
+            <span className="v3-sheet-grabber" aria-hidden="true" />
+            <p className="v3-sheet-title">{t('vote.votersTitle')}</p>
+            {voters === 'loading' ? <SheetSkeleton rows />
+              : voters === 'error' ? <p className="dc-muted">{t('vote.errors.generic')}</p>
+              : voters.length === 0 ? <p className="dc-muted">{t('vote.votersEmpty')}</p>
+              : (
+                <div className="dc-voters">
+                  {voters.map(v => (
+                    // A voter's profile opens over the app: the viewer closes first.
+                    <button key={v.id} type="button" className="v3-scope-row" onClick={() => { setVoters(null); onClose(); openProfile(v.id, v.username) }}>
+                      <AvatarWithFlag userId={v.id} displayName={personName(v)} photoUrl={v.photoUrl} size={40} />
+                      <span className="v3-scope-row-body">
+                        <span className="v3-scope-row-title">{personName(v)}</span>
+                        {v.city && <span className="v3-scope-row-sub">{shortCityName(v.city)}</span>}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+          </div>
+        </div>
+      )}
       {reporting && (
         <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('report.title')}>
           <button type="button" className="v3-sheet-scrim" onClick={() => setReporting(false)} aria-label={t('cancel')} />

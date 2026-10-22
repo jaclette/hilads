@@ -995,6 +995,8 @@
       "vote": "Bumoto",
       "withdraw": "Bawiin ang boto ko",
       "yours": "Litrato mo",
+      "votersTitle": "Sino ang bumoto",
+      "votersEmpty": "Wala pang boto.",
       "errors": {
         "voting_closed": "Sarado na ang botohan kasabay ng challenge.",
         "rate_limited": "Masyadong maraming subok - maghintay sandali.",
