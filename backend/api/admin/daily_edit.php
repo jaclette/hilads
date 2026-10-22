@@ -245,7 +245,7 @@ daily_styles();
             </form>
 
             <?php if (!$isNew):
-                $coverTheme = DailyThemes::format($theme, $date !== '' ? $date : DailyClock::currentDate())['key'] ?? 'traditions';
+                $coverTheme = DailyThemes::effective($theme, $date !== '' ? $date : DailyClock::currentDate()) ?? 'only_here';
                 $coverUrl   = $challenge['cover_url'] ?? null; ?>
                 <?php $hl = json_decode((string) ($challenge['headline_i18n'] ?? ''), true) ?: []; $hlTr = array_diff_key($hl, ['en' => true]); ?>
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="headline" style="margin-top:16px">

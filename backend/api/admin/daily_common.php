@@ -48,12 +48,14 @@ function daily_state_badge(string $state): string
 /** Theme label for a stored theme (or the date's weekday theme). */
 function daily_theme_label(?string $theme, ?string $date, ?string $specialId = null): string
 {
-    $t = DailyThemes::format($theme, $date);
-    if ($t !== null && $t['key'] === DailyThemes::SPECIAL) {
+    // effective(), not format(): the back office is a browser without "X-Themes: 2",
+    // which format() takes for an old app and answers with the v1 names (Market, Coffee...).
+    $key = DailyThemes::effective($theme, $date);
+    if ($key === DailyThemes::SPECIAL) {
         $sp = DailySpecials::find($specialId);
         return $sp !== null ? DailySpecials::emoji($specialId) . ' ' . DailySpecials::nameOf($sp, 'en') : 'Special';
     }
-    return $t === null ? '' : $t['name'];
+    return $key === null ? '' : DailyThemes::name($key);
 }
 
 /**
