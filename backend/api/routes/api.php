@@ -14525,8 +14525,9 @@ $router->add('GET', '/api/v1/daily/today', function () {
     if ($out['challenge'] !== null) {
         try {
             $hc = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
-            // A cover picked in the back office beats Hilads suggestions; a player's photo still takes over.
-            $sugg = $hc !== null && empty($hc['cover_url']);
+            // A cover picked in the back office (the challenge's, its special's or its theme's
+            // uploaded default) beats Hilads suggestions; a player's photo still takes over.
+            $sugg = $hc !== null && empty($out['challenge']['coverUrl']);
             $out['heroCover'] = $hc !== null ? [
                 'city'  => $scopeCityId !== null ? DailyProofRepository::heroCover((string) $hc['id'], $scopeCityId, $sugg) : null,
                 'world' => DailyProofRepository::heroCover((string) $hc['id'], null, $sugg),

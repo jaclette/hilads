@@ -144,6 +144,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
         'cover_remove' => daily_action(fn() => DailyAdminService::setCover($id, null),
             'Cover removed: the theme\'s default image shows.', $self . '#cover'),
 
+        // This challenge's cover becomes its theme's default: every challenge of
+        // the theme without a cover of its own shows it (Specials → Theme covers).
+        'cover_as_theme' => daily_action(function () use ($challenge) {
+            $url = $challenge['cover_url'] ?? null;
+            $key = DailyThemes::effective($challenge['theme'] ?? null, $challenge['challenge_date'] ?? DailyClock::currentDate());
+            if (!$url || $key === null) {
+                throw new InvalidArgumentException('Upload a cover for this challenge first.');
+            }
+            DailyThemes::setCover($key, $url);
+            return 'Now the default cover of every ' . DailyThemes::name($key) . ' challenge without its own.';
+        }, 'Saved.', $self . '#cover'),
+
         'test_push' => daily_action(function () use ($challenge) {
             $adminId = trim((string) getenv('ADMIN_TEST_USER_ID'));
             if ($adminId === '') {
@@ -269,9 +281,11 @@ daily_styles();
                     <div class="form-actions" style="gap:8px">
                         <button class="btn btn-primary btn-sm" type="submit" name="action" value="cover_upload">Upload cover</button>
                         <?php if ($coverUrl): ?>
+                            <button class="btn btn-secondary btn-sm" type="submit" name="action" value="cover_as_theme" formnovalidate>Make it the <?= dh(DailyThemes::name($coverTheme)) ?> default</button>
                             <button class="btn btn-secondary btn-sm" type="submit" name="action" value="cover_remove" formnovalidate>Use the theme's default</button>
                         <?php endif; ?>
                     </div>
+                    <div class="hint" style="margin-top:8px">Every theme's default cover: <a href="/admin/daily/specials#themes">Specials → Theme covers</a>.</div>
                 </form>
             <?php endif; ?>
 
