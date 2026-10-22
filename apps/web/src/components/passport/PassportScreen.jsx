@@ -13,11 +13,8 @@ import { useBackLayer } from '../../lib/backLayers'
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
 
-// Daily Challenge points (score_rules, role 'daily'), same rows as the app's sheet.
-const POINTS = [
-  ['proof', 10], ['early', 5], ['streak', 2], ['vote', 2],
-  ['top', '30 / 20 / 10'], ['cityBest', 15], ['twist', 15], ['proposal', 25], ['localPass', 50],
-]
+// The three ways to earn Daily Challenge points, same rows as the app's sheet.
+const POINTS = [['proof', 10], ['vote', 2], ['top', '30 / 20 / 10']]
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 

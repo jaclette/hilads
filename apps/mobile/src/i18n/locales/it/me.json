@@ -131,15 +131,9 @@
   "points": {
     "title": "Come guadagnare punti",
     "intro": "I punti del Daily Challenge contano nel Most Local della settimana. Tutti i punti contano nella classifica di sempre.",
-    "proof": "Foto approvata",
-    "early": "Foto rapida (prime 3 ore)",
-    "streak": "Ogni giorno della tua serie",
+    "proof": "Pubblicare la tua foto",
     "vote": "Voti (per challenge)",
     "top": "Top 3 mondiale del giorno",
-    "cityBest": "Miglior foto della tua città",
-    "twist": "Il tuo Local Twist scelto",
-    "proposal": "La tua proposta di challenge scelta",
-    "localPass": "Local Pass (tutti i 7 timbri di una città)",
     "weekly": "Il Most Local della settimana riparte ogni lunedì."
   },
   "fieldBackHome": "Città d'origine (E a casa tua?)",

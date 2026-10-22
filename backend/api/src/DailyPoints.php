@@ -19,6 +19,11 @@ declare(strict_types=1);
  *   daily_top1/2/3, daily_city_best, daily_twist (twist author), plus a safety
  *   pass for approved proofs that missed their approval award.
  *
+ * Since 2026-10-22 only three kinds earn (EARNING_KINDS, the founder's call:
+ * "too complicated"): posting a photo, voting, the World top 3. Streak, early,
+ * city best, twist, proposal and Local Pass awards stop; the streak, the early
+ * badge and the Local Pass stay, without points. Past rows are kept.
+ *
  * Reversal: proof-linked rows carry daily_proof_id. Reject and admin removal
  * delete them, an owner delete cascades, and trg_score_event_daily_reverse
  * takes the points back off the user's totals.
@@ -26,6 +31,8 @@ declare(strict_types=1);
 final class DailyPoints
 {
     public const STREAK_CAP = 20;
+    /** The only kinds that still earn points (see the class comment). */
+    public const EARNING_KINDS = ['daily_proof', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3'];
 
     /** @var array<string,int>|null */
     private static ?array $rules = null;
@@ -182,7 +189,7 @@ final class DailyPoints
     private static function insert(string $userId, string $challengeId, string $kind, int $points,
                                    ?string $cityId, ?string $proofId, ?string $twistId): bool
     {
-        if ($points <= 0) {
+        if ($points <= 0 || !in_array($kind, self::EARNING_KINDS, true)) {
             return false;
         }
         $stmt = Database::pdo()->prepare("

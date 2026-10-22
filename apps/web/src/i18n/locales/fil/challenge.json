@@ -1045,7 +1045,7 @@
       },
       "statusHint": {
         "pending": "Isang twist bawat lungsod ang pinipili bago ang challenge bukas.",
-        "picked": "Ilalabas ito kasama ang challenge bukas sa {{city}}, may pangalan mo. May points ka sa pagsasara.",
+        "picked": "Ilalabas ito kasama ang challenge bukas sa {{city}}, may pangalan mo.",
         "not_picked": "Ibang twist ang napili ngayon. Subukan ulit bukas!"
       },
       "heroCta": "Imungkahi ang Local Twist bukas · hanggang {{time}}",

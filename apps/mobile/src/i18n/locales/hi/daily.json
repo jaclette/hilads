@@ -198,7 +198,7 @@
     },
     "statusHint": {
       "pending": "कल के challenge से पहले हर शहर के लिए एक twist चुना जाता है।",
-      "picked": "यह कल के challenge के साथ {{city}} में आपके नाम से लाइव होगा। क्लोज़ पर आपको पॉइंट्स मिलेंगे।",
+      "picked": "यह कल के challenge के साथ {{city}} में आपके नाम से लाइव होगा।",
       "not_picked": "इस बार कोई और twist चुना गया। कल फिर कोशिश करें!"
     },
     "heroCta": "कल का Local Twist सुझाएं · {{time}} तक",

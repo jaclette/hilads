@@ -174,15 +174,9 @@
     "points": {
       "title": "So sammelst du Punkte",
       "intro": "Daily-Challenge-Punkte zählen für das wöchentliche Most Local. Alle Punkte zählen für die Bestenliste aller Zeiten.",
-      "proof": "Bestätigtes Foto",
-      "early": "Frühes Foto (erste 3 Stunden)",
-      "streak": "Jeder Tag deiner Serie",
+      "proof": "Dein Foto posten",
       "vote": "Abstimmen (pro Challenge)",
       "top": "Welt-Top-3 des Tages",
-      "cityBest": "Bestes Foto deiner Stadt",
-      "twist": "Dein Local Twist gewählt",
-      "proposal": "Dein Challenge-Vorschlag gewählt",
-      "localPass": "Local Pass (alle 7 Stempel einer Stadt)",
       "weekly": "Das wöchentliche Most Local startet jeden Montag neu."
     },
     "tabFriends": "Freunde",

@@ -198,7 +198,7 @@
     },
     "statusHint": {
       "pending": "Per stad wordt één twist gekozen voor de challenge van morgen.",
-      "picked": "Hij verschijnt met de challenge van morgen in {{city}}, met je naam. Je verdient punten bij de afsluiting.",
+      "picked": "Hij verschijnt met de challenge van morgen in {{city}}, met je naam.",
       "not_picked": "Deze keer is een andere twist gekozen. Probeer het morgen weer!"
     },
     "heroCta": "Stel de Local Twist van morgen voor · tot {{time}}",

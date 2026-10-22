@@ -198,7 +198,7 @@
     },
     "statusHint": {
       "pending": "Um twist por cidade é escolhido antes do challenge de amanhã.",
-      "picked": "Ele sai com o challenge de amanhã em {{city}}, com seu nome. Você ganha pontos no fechamento.",
+      "picked": "Ele sai com o challenge de amanhã em {{city}}, com seu nome.",
       "not_picked": "Desta vez outro twist foi escolhido. Tente de novo amanhã!"
     },
     "heroCta": "Proponha o Local Twist de amanhã · até {{time}}",

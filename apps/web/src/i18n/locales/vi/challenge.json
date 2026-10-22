@@ -1044,7 +1044,7 @@
       },
       "statusHint": {
         "pending": "Mỗi thành phố chọn một twist trước challenge ngày mai.",
-        "picked": "Nó sẽ lên sóng cùng challenge ngày mai ở {{city}} với tên bạn. Bạn nhận điểm khi kết thúc.",
+        "picked": "Nó sẽ lên sóng cùng challenge ngày mai ở {{city}} với tên bạn.",
         "not_picked": "Lần này một twist khác được chọn. Thử lại ngày mai nhé!"
       },
       "heroCta": "Đề xuất Local Twist ngày mai · đến {{time}}",

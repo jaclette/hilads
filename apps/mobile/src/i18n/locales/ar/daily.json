@@ -218,7 +218,7 @@
     },
     "statusHint": {
       "pending": "يُختار twist واحد لكل مدينة قبل challenge الغد.",
-      "picked": "سيُنشر مع challenge الغد في {{city}} باسمك. تحصل على النقاط عند الإغلاق.",
+      "picked": "سيُنشر مع challenge الغد في {{city}} باسمك.",
       "not_picked": "اختير twist آخر هذه المرة. حاول غدًا!"
     },
     "heroCta": "اقترح Local Twist الغد · حتى {{time}}",

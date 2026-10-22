@@ -174,15 +174,9 @@
     "points": {
       "title": "如何获得积分",
       "intro": "Daily Challenge 积分计入每周 Most Local。所有积分都计入历史榜。",
-      "proof": "照片通过",
-      "early": "早鸟照片（前 3 小时）",
-      "streak": "连续打卡的每一天",
+      "proof": "发布你的照片",
       "vote": "投票（每个 challenge）",
       "top": "当天全球前三",
-      "cityBest": "你所在城市的最佳照片",
-      "twist": "你的 Local Twist 被选中",
-      "proposal": "你的 challenge 提议被选中",
-      "localPass": "Local Pass（集齐一个城市的 7 枚印章）",
       "weekly": "每周 Most Local 每周一重置。"
     },
     "tabFriends": "好友",

@@ -1045,7 +1045,7 @@
       },
       "statusHint": {
         "pending": "Satu twist per kota dipilih sebelum challenge besok.",
-        "picked": "Tayang bersama challenge besok di {{city}} dengan namamu. Poin didapat saat penutupan.",
+        "picked": "Tayang bersama challenge besok di {{city}} dengan namamu.",
         "not_picked": "Kali ini twist lain yang terpilih. Coba lagi besok!"
       },
       "heroCta": "Usulkan Local Twist besok · sampai {{time}}",

@@ -1045,7 +1045,7 @@
       },
       "statusHint": {
         "pending": "One twist per city is picked before tomorrow's challenge.",
-        "picked": "It goes live with tomorrow's challenge in {{city}}, with your name. You earn points at the close.",
+        "picked": "It goes live with tomorrow's challenge in {{city}}, with your name.",
         "not_picked": "Another twist was picked this time. Try again tomorrow!"
       },
       "heroCta": "Propose tomorrow's Local Twist · until {{time}}",

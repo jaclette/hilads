@@ -174,15 +174,9 @@
     "points": {
       "title": "ポイントのもらい方",
       "intro": "Daily Challenge のポイントは週間 Most Local に入ります。すべてのポイントは歴代ランキングに入ります。",
-      "proof": "承認された写真",
-      "early": "早めの写真（最初の3時間）",
-      "streak": "連続記録の毎日",
+      "proof": "写真を投稿",
       "vote": "投票（challenge ごと）",
       "top": "その日の世界トップ3",
-      "cityBest": "都市のベスト写真",
-      "twist": "Local Twist が採用",
-      "proposal": "challenge の提案が採用",
-      "localPass": "Local Pass（1都市でスタンプ7個）",
       "weekly": "週間 Most Local は毎週月曜にリセットされます。"
     },
     "tabFriends": "友達",

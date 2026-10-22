@@ -131,15 +131,9 @@
   "points": {
     "title": "Paano kumita ng points",
     "intro": "Bumibilang sa lingguhang Most Local ang points ng Daily Challenge. Lahat ng points ay bumibilang sa lahat ng panahon.",
-    "proof": "Naaprubahang litrato",
-    "early": "Maagang litrato (unang 3 oras)",
-    "streak": "Bawat araw ng streak mo",
+    "proof": "Pag-post ng photo mo",
     "vote": "Pagboto (bawat challenge)",
     "top": "World top 3 ng araw",
-    "cityBest": "Pinakamagandang litrato sa lungsod mo",
-    "twist": "Napiling Local Twist mo",
-    "proposal": "Napiling challenge na mungkahi mo",
-    "localPass": "Local Pass (lahat ng 7 tatak sa isang lungsod)",
     "weekly": "Nagsisimula ulit ang lingguhang Most Local tuwing Lunes."
   },
   "fieldBackHome": "Lungsod na pinagmulan (E sa inyo?)",

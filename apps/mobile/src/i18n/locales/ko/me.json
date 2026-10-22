@@ -131,15 +131,9 @@
   "points": {
     "title": "포인트 받는 법",
     "intro": "Daily Challenge 포인트는 주간 Most Local에 들어가요. 모든 포인트는 역대 순위에 들어가요.",
-    "proof": "승인된 사진",
-    "early": "빠른 사진(첫 3시간)",
-    "streak": "연속 기록의 매일",
+    "proof": "사진 올리기",
     "vote": "투표(challenge마다)",
     "top": "오늘의 세계 TOP 3",
-    "cityBest": "도시 최고 사진",
-    "twist": "내 Local Twist 선정",
-    "proposal": "내 challenge 제안 선정",
-    "localPass": "Local Pass(한 도시 스탬프 7개)",
     "weekly": "주간 Most Local은 매주 월요일에 초기화돼요."
   },
   "fieldBackHome": "고향 (고향에서는요?)",

@@ -174,15 +174,9 @@
     "points": {
       "title": "Zo verdien je punten",
       "intro": "Daily Challenge-punten tellen voor de wekelijkse Most Local. Alle punten tellen voor de ranglijst aller tijden.",
-      "proof": "Goedgekeurde foto",
-      "early": "Vroege foto (eerste 3 uur)",
-      "streak": "Elke dag van je reeks",
+      "proof": "Je foto plaatsen",
       "vote": "Stemmen (per challenge)",
       "top": "Wereld top 3 van de dag",
-      "cityBest": "Beste foto van je stad",
-      "twist": "Je Local Twist gekozen",
-      "proposal": "Je challenge-voorstel gekozen",
-      "localPass": "Local Pass (alle 7 stempels van een stad)",
       "weekly": "De wekelijkse Most Local begint elke maandag opnieuw."
     },
     "tabFriends": "Vrienden",

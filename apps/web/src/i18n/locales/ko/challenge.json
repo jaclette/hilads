@@ -1044,7 +1044,7 @@
       },
       "statusHint": {
         "pending": "내일 challenge 전에 도시마다 twist 하나가 선택돼요.",
-        "picked": "내일 {{city}} challenge와 함께 내 이름으로 공개돼요. 포인트는 마감 때 받아요.",
+        "picked": "내일 {{city}} challenge와 함께 내 이름으로 공개돼요.",
         "not_picked": "이번에는 다른 twist가 선택됐어요. 내일 다시 도전하세요!"
       },
       "heroCta": "내일의 Local Twist 제안 · {{time}}까지",

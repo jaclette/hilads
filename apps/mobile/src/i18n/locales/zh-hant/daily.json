@@ -197,7 +197,7 @@
     },
     "statusHint": {
       "pending": "明天的 challenge 開始前，每個城市會選出一個 twist。",
-      "picked": "它會隨明天 {{city}} 的 challenge 以你的名字發布。積分在結束時發放。",
+      "picked": "它會隨明天 {{city}} 的 challenge 以你的名字發布。",
       "not_picked": "這次選了別的 twist。明天再試試！"
     },
     "heroCta": "提議明天的 Local Twist · 截止 {{time}}",

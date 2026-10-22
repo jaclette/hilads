@@ -4,12 +4,9 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
 
-// Daily Challenge points (score_rules, role 'daily'). Keep in step with the
-// migration's seeds if a value changes.
-const ROWS: [string, number | string][] = [
-  ['proof', 10], ['early', 5], ['streak', 2], ['vote', 2],
-  ['top', '30 / 20 / 10'], ['cityBest', 15], ['twist', 15], ['proposal', 25], ['localPass', 50],
-];
+// The three ways to earn Daily Challenge points (DailyPoints::EARNING_KINDS,
+// values in score_rules). Keep in step if a value changes.
+const ROWS: [string, number | string][] = [['proof', 10], ['vote', 2], ['top', '30 / 20 / 10']];
 
 /** "How to earn points" (SPEC 9.2): a help sheet opened from Passport. */
 export function PointsHelpSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {

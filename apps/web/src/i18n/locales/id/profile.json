@@ -174,15 +174,9 @@
     "points": {
       "title": "Cara dapat poin",
       "intro": "Poin Daily Challenge masuk ke Most Local mingguan. Semua poin masuk ke peringkat sepanjang masa.",
-      "proof": "Foto disetujui",
-      "early": "Foto cepat (3 jam pertama)",
-      "streak": "Setiap hari dalam streak",
+      "proof": "Posting fotomu",
       "vote": "Memberi suara (per challenge)",
       "top": "Top 3 dunia hari itu",
-      "cityBest": "Foto terbaik di kotamu",
-      "twist": "Local Twist-mu terpilih",
-      "proposal": "Usulan challenge-mu terpilih",
-      "localPass": "Local Pass (7 stempel di satu kota)",
       "weekly": "Most Local mingguan diulang setiap Senin."
     },
     "tabFriends": "Teman",

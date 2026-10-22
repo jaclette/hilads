@@ -174,15 +174,9 @@
     "points": {
       "title": "How to earn points",
       "intro": "Daily Challenge points count in the weekly Most Local. All points count all time.",
-      "proof": "Approved photo",
-      "early": "Early photo (first 3 hours)",
-      "streak": "Each day of your streak",
+      "proof": "Posting your photo",
       "vote": "Voting (per challenge)",
       "top": "World top 3 of the day",
-      "cityBest": "Best photo of your city",
-      "twist": "Your Local Twist picked",
-      "proposal": "Your challenge proposal picked",
-      "localPass": "Local Pass (all 7 stamps in a city)",
       "weekly": "The weekly Most Local resets every Monday."
     },
     "tabFriends": "Friends",

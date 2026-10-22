@@ -174,15 +174,9 @@
     "points": {
       "title": "如何獲得積分",
       "intro": "Daily Challenge 積分計入每週 Most Local。所有積分都計入歷來榜。",
-      "proof": "照片通過",
-      "early": "早鳥照片（前 3 小時）",
-      "streak": "連續打卡的每一天",
+      "proof": "發布你的照片",
       "vote": "投票（每個 challenge）",
       "top": "當天全球前三",
-      "cityBest": "你所在城市的最佳照片",
-      "twist": "你的 Local Twist 被選中",
-      "proposal": "你的 challenge 提議被選中",
-      "localPass": "Local Pass（集滿一個城市的 7 枚印章）",
       "weekly": "每週 Most Local 每週一重設。"
     },
     "tabFriends": "好友",
