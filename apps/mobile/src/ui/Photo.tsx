@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Image, type ImageProps } from 'expo-image';
+import { coverThumbUrl } from '@/lib/imageThumb';
 
 /**
  * A proof or spot photo: its thumbnail, then the full photo when the thumbnail
@@ -14,4 +15,13 @@ export function Photo({ thumb, full, ...rest }: Omit<ImageProps, 'source'> & { t
     if (!failed && thumb && full && thumb !== full) setFailed(true);
     else rest.onError?.(e);
   }} />;
+}
+
+/**
+ * A hero cover: the challenge's uploaded cover at a cover size (the original
+ * if that fails), else `fallback` (a bundled theme cover) as is.
+ */
+export function CoverPhoto({ url, fallback, ...rest }: Omit<ImageProps, 'source'> & { url?: string | null; fallback?: number | null }) {
+  if (url) return <Photo {...rest} thumb={coverThumbUrl(url)} full={url} />;
+  return fallback != null ? <Image {...rest} source={fallback} /> : null;
 }

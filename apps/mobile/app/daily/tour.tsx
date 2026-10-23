@@ -23,6 +23,7 @@ import { lastTour } from '@/features/tour/store';
 import { proofShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { themeCover } from '@/features/today/covers';
+import { coverThumbUrl } from '@/lib/imageThumb';
 import { useHere } from '@/hooks/useDaily';
 import type { DailyTour } from '@/types';
 import { goBack } from '@/lib/nav';
@@ -117,7 +118,7 @@ export default function TourScreen() {
   const todayChallenge = tour.today;
   const here = useHere();   // "Answer for [city]": where I am, not the browsed city
   const cover = last && todayChallenge
-    ? (todayChallenge.coverUrl ? { uri: todayChallenge.coverUrl } : themeCover(todayChallenge.theme?.key ?? 'only_here', todayChallenge.date))
+    ? (todayChallenge.coverUrl ? { uri: coverThumbUrl(todayChallenge.coverUrl) } : themeCover(todayChallenge.theme?.key ?? 'only_here', todayChallenge.date))
     : proof ? { uri: proof.photoUrl } : null;
   const takeIt = () => {
     goBack();

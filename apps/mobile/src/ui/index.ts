@@ -17,7 +17,7 @@ export { ScreenHeader } from './ScreenHeader';
 export { SectionTitle } from './SectionTitle';
 export { Segmented } from './Segmented';
 export { ChipTabs } from './ChipTabs';
-export { Photo } from './Photo';
+export { CoverPhoto, Photo } from './Photo';
 export { Sheet } from './Sheet';
 export { TextField } from './TextField';
 export { ThemeIcon, THEME_ICON } from './ThemeIcon';

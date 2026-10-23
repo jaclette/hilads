@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -31,7 +30,7 @@ import { WorldBubbles } from '@/features/challenge/WorldBubbles';
 import { themeCover } from '@/features/today/covers';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
-import { Avatar, Button, Chip, CityFlag, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
+import { Avatar, Button, Chip, CityFlag, CoverPhoto, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
 import type { DailyProof, DailySheet, DailyTodayCountries } from '@/types';
 
 /** The hero takes this share of the screen height. */
@@ -209,7 +208,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof }: {
     );
   }
 
-  const cover = challenge.coverUrl ? { uri: challenge.coverUrl } : themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
+  const fallbackCover = themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
   const question = challenge.compare ? (showOriginal && challenge.compare.original ? challenge.compare.original : challenge.compare.question) : null;
   const text = showOriginal && challenge.original ? challenge.original.text : challenge.text;
   const priceRange = sheet!.practical.priceRanges[0];
@@ -228,7 +227,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof }: {
       <ScrollView contentContainerStyle={{ paddingBottom: (showBar ? barHeight : insets.bottom) + 24 }} showsVerticalScrollIndicator={false}>
         {/* 1. The hero: the cover, back and timer on top, the theme, question and instruction at the bottom. */}
         <View style={[styles.hero, { height: Math.max(300, height * HERO_SHARE) }]}>
-          {cover && <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
+          <CoverPhoto url={challenge.coverUrl} fallback={fallbackCover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
           <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
           <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
           <View style={styles.heroBottom}>

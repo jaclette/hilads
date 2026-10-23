@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +17,7 @@ import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { CoverPhoto } from '@/ui/Photo';
 import { TANGERINE, themeColor } from '@/ui/joy';
 import { answerText } from '@/features/compare/format';
 import { themeCover } from './covers';
@@ -219,7 +219,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   // The hero's photo: a cover, never a player's photo (those are in the mosaic right under it):
   // the challenge's own, else its special day's, else its theme's uploaded default (all resolved
   // by the server in coverUrl), else the bundled theme cover.
-  const photo = challenge.coverUrl ? { uri: challenge.coverUrl } : themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
+  const fallbackCover = themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text);
   // Nobody has answered for my city yet: "Be Saigon's first answer".
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
@@ -233,7 +233,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
       {/* The whole photo opens the challenge sheet (twist, full question, answers). */}
       <Pressable style={StyleSheet.absoluteFill} onPress={openSheet} accessibilityRole="button" testID="today-hero"
                  accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
-        {photo !== null && <Image source={photo} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
+        <CoverPhoto url={challenge.coverUrl} fallback={fallbackCover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
         <LinearGradient colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']} style={styles.shadeTop} />
         <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)']} locations={[0, 0.4, 1]} style={styles.shadeBottom} />
       </Pressable>
@@ -308,13 +308,10 @@ function Cover({ coverUrl, themeKey, label, special, date, secondsLeft }: {
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
-  const source = coverUrl ? { uri: coverUrl } : themeCover(themeKey, date, special?.id);
   return (
     <View style={styles.cover}>
-      {source !== null && (
-        <Image source={source} style={StyleSheet.absoluteFill} contentFit="cover" transition={150}
-               accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
-      )}
+      <CoverPhoto url={coverUrl} fallback={themeCover(themeKey, date, special?.id)} style={StyleSheet.absoluteFill} contentFit="cover" transition={150}
+                  accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
       <LinearGradient colors={COVER_SHADE} locations={[0, 0.28, 0.55, 1]} style={StyleSheet.absoluteFill} />
       <View style={styles.coverRow}>
         <View style={styles.coverLabel}>
