@@ -1,4 +1,6 @@
-FROM php:8.2-apache
+# Pinned to a patch release so a rebuild can never reuse an older cached base.
+# 8.2.35 fixes CVE-2026-109618 / CVE-2026-109619 (RCE, mod_php most exposed).
+FROM php:8.2.35-apache
 
 # Enable mod_rewrite
 RUN a2enmod rewrite
@@ -19,6 +21,10 @@ RUN echo "log_errors = On\nerror_log = /dev/stderr" \
 
 RUN echo "upload_max_filesize = 10M\npost_max_size = 12M" \
     > /usr/local/etc/php/conf.d/uploads.ini
+
+# Session upload progress is unused; off removes the CVE-2026-109619 path.
+RUN echo "session.upload_progress.enabled = 0" \
+    > /usr/local/etc/php/conf.d/security.ini
 
 # OPcache — pre-compiles PHP files at startup so first requests are fast.
 # opcache.validate_timestamps=0 disables stat() calls per request in production.
