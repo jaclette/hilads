@@ -1,4 +1,5 @@
 import { API_URL } from '@/constants';
+import { appHeaders } from '@/lib/appVersion';
 
 // Per-session cache mirroring the web side. Backend has a 24h DB cache, this
 // layer just avoids re-fetching the same URL across many bubbles in one screen.
@@ -32,7 +33,7 @@ export function getLinkPreview(url: string | null | undefined): Promise<LinkPrev
     try {
       // API_URL already ends with /api/v1 (see src/constants.ts) - no double prefix.
       const res = await fetch(`${API_URL}/link-preview?url=${encodeURIComponent(url)}`, {
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json', ...appHeaders() },
       });
       if (!res.ok) return null;
       const data    = await res.json();

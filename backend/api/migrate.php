@@ -3461,6 +3461,34 @@ run($pdo, "
     )
 ", 'daily_proof_views');
 
+// App versions (2026-10-23, Admin › App versions): per-platform minimum and
+// latest versions read by GET /app/config, and the "Block old apps" switch.
+// Reversal: DROP TABLE app_settings (the environment variables apply again).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS app_settings (
+        key        TEXT        PRIMARY KEY,
+        value      TEXT        NOT NULL DEFAULT '',
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_by TEXT
+    )
+", 'app_settings');
+
+// Accounts and guests seen on an app from before the update screen while
+// "Block old apps" is on (id = 'user:<id>' or 'guest:<id>'): the "Old app
+// versions" push audience. Reversal: DROP TABLE old_app_seen; and the
+// push_broadcasts CHECK below back to without 'old_app'.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS old_app_seen (
+        id       TEXT        PRIMARY KEY,
+        user_id  TEXT        REFERENCES users(id) ON DELETE CASCADE,
+        guest_id TEXT,
+        platform TEXT        NOT NULL,
+        seen_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'old_app_seen');
+run($pdo, "ALTER TABLE push_broadcasts DROP CONSTRAINT IF EXISTS push_broadcasts_audience_type_check", 'drop push_broadcasts audience_type check (old_app)');
+run($pdo, "ALTER TABLE push_broadcasts ADD CONSTRAINT push_broadcasts_audience_type_check CHECK (audience_type IN ('all','all_installs','city','user','test','old_app'))", 'push_broadcasts.audience_type +old_app');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

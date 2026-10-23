@@ -256,6 +256,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/push') {
     require __DIR__ . '/push.php';
 
+} elseif ($uri === '/admin/app-versions') {
+    require __DIR__ . '/app_versions.php';
+
 } elseif ($uri === '/admin/events/create') {
     require __DIR__ . '/event_create.php';
 

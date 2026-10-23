@@ -1,6 +1,5 @@
-import { Platform } from 'react-native';
 import { API_URL } from '@/constants';
-import { APP_BUILD_VERSION } from '@/lib/appVersion';
+import { appHeaders } from '@/lib/appVersion';
 
 // ── Token store ───────────────────────────────────────────────────────────────
 // React Native fetch doesn't handle cookies automatically.
@@ -50,11 +49,9 @@ async function request<T = unknown>(
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    // Lets the backend stamp arrivals with the originating platform (BO column).
-    // Platform.OS is 'ios' | 'android' on native; harmless elsewhere.
-    'X-Platform': Platform.OS,
-    // V3-04: the app version, for GET /app/config's update prompts and server-side gating.
-    'X-App-Version': APP_BUILD_VERSION,
+    // X-Platform (arrivals' platform, /app/config's versions) and X-App-Version
+    // (update prompts; a call without it is an old app and can be blocked).
+    ...appHeaders(),
     // Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys.
     'X-Themes': '2',
     // ...and the keys since (join_in): without it the API answers ask_local for Join in.

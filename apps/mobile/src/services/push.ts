@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api, getAuthToken } from '@/api/client';
 import { API_URL } from '@/constants';
 import i18n from '@/i18n';
+import { appHeaders } from '@/lib/appVersion';
 import { deviceTimezone } from '@/lib/deviceTimezone';
 import { track } from '@/services/analytics';
 
@@ -382,6 +383,7 @@ async function registerTokenWithBackend(token: string, guestId?: string | null):
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept':       'application/json',
+    ...appHeaders(),
   };
   // Send auth via BOTH Cookie and Authorization: Bearer. iOS NSURLSession owns
   // its own cookie jar and silently strips manually-set Cookie headers, so a

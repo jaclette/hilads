@@ -919,10 +919,10 @@ $router->add('GET', '/internal/run-cron', function () {
                 $audienceFilter = json_decode((string) ($row['audience_filter'] ?: '{}'), true) ?: [];
                 $extra          = json_decode((string) ($row['extra_data'] ?: '{}'), true) ?: [];
                 $deepLink       = ($row['deep_link'] ?? '') !== '' ? (string) $row['deep_link'] : null;
-                $includeGuests  = ($audienceType === 'all_installs') || !empty($row['include_guests']);
+                $includeGuests  = PushBroadcastService::includesGuests($audienceType) || !empty($row['include_guests']);
 
                 $userIds    = PushBroadcastService::resolveAudience($audienceType, $audienceFilter);
-                $guestCount = $includeGuests ? count(PushBroadcastService::guestTokens()) : 0;
+                $guestCount = $includeGuests ? count(PushBroadcastService::guestTokens($audienceType)) : 0;
                 $total      = count($userIds) + $guestCount;
 
                 if ($total > 0) {
@@ -932,7 +932,7 @@ $router->add('GET', '/internal/run-cron', function () {
                     );
                     PushBroadcastService::dispatch($bid, $userIds, (string) $row['title'], (string) $row['body'], $deepLink, $extra);
                     if ($includeGuests) {
-                        PushBroadcastService::dispatchGuestTokens($bid, (string) $row['title'], (string) $row['body'], $deepLink, $extra);
+                        PushBroadcastService::dispatchGuestTokens($bid, (string) $row['title'], (string) $row['body'], $deepLink, $extra, $audienceType);
                     }
                 } else {
                     $bid = null;
@@ -1035,8 +1035,8 @@ $router->add('GET', '/internal/fix-push-audience', function () {
 
     $pdo = Database::pdo();
     $pdo->exec("ALTER TABLE push_broadcasts DROP CONSTRAINT IF EXISTS push_broadcasts_audience_type_check");
-    $pdo->exec("ALTER TABLE push_broadcasts ADD CONSTRAINT push_broadcasts_audience_type_check CHECK (audience_type IN ('all','all_installs','city','user','test'))");
-    Response::json(['ok' => true, 'message' => "push_broadcasts.audience_type now allows 'all_installs' - retry the push."]);
+    $pdo->exec("ALTER TABLE push_broadcasts ADD CONSTRAINT push_broadcasts_audience_type_check CHECK (audience_type IN ('all','all_installs','city','user','test','old_app'))");
+    Response::json(['ok' => true, 'message' => "push_broadcasts.audience_type now allows 'all_installs' and 'old_app' - retry the push."]);
 });
 
 // ── Internal migration endpoint ───────────────────────────────────────────────
@@ -13295,9 +13295,11 @@ $router->add('GET', '/api/v1/leaderboard/week', function () {
 // GET /api/v1/app/config - versions and switches for the app (V3-04). From
 // 1.8.0 the app reads it at launch and on foreground: below latestVersion an
 // "Update available" banner, below minVersion a blocking "Update required".
+// The versions are the caller's platform's (X-Platform), set in Admin › App versions.
 $router->add('GET', '/api/v1/app/config', function () {
     header('Cache-Control: public, max-age=300');
-    Response::json(AppConfig::payload());
+    header('Vary: X-Platform');
+    Response::json(AppConfig::payload(Request::platform()));
 });
 
 // GET /api/v1/channels/{cityId}/people - the Chat people row (V3-04, SPEC 9.6):

@@ -33,6 +33,9 @@ final class PushBroadcastService
      *   ['city', channelId: int]  - users with presence in that city channel
      *   ['user', userId: string]  - single registered user (admin search)
      *   ['test', userId: string]  - single user (admin's own ADMIN_TEST_USER_ID)
+     *   ['old_app']               - accounts seen on an app from before the update
+     *                               screen (old_app_seen, see AppConfig::guardOldApp);
+     *                               their guest devices via guestTokens('old_app')
      *
      * Returns matching userIds (registered, not deleted, opted in).
      */
@@ -74,6 +77,18 @@ final class PushBroadcastService
                 $stmt->execute(['city_' . $channelId]);
                 return $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
+            case 'old_app':
+                $stmt = Database::pdo()->prepare("
+                    SELECT DISTINCT u.id
+                    FROM old_app_seen o
+                    JOIN users u ON u.id = o.user_id
+                    LEFT JOIN notification_preferences np ON np.user_id = u.id
+                    WHERE u.deleted_at IS NULL
+                      AND COALESCE(np.admin_announcement_push, TRUE) = TRUE
+                ");
+                $stmt->execute();
+                return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
             case 'user':
             case 'test':
                 $userId = $filter['userId'] ?? '';
@@ -105,24 +120,34 @@ final class PushBroadcastService
         // O(N) on user count which is fine: this runs once per "Confirm send"
         // tap and the result is shown to the admin before the actual send.
         $count = count(self::resolveAudience($type, $filter));
-        // 'all_installs' also reaches guest devices, which resolveAudience can't
-        // return (they have no userId). Add their token count for the estimate.
-        if ($type === 'all_installs') {
-            $count += count(self::guestTokens());
+        // 'all_installs' / 'old_app' also reach guest devices, which resolveAudience
+        // can't return (they have no userId). Add their token count for the estimate.
+        if (self::includesGuests($type)) {
+            $count += count(self::guestTokens($type));
         }
         return $count;
+    }
+
+    /** Audiences that also reach unregistered guest devices. */
+    public static function includesGuests(string $type): bool
+    {
+        return $type === 'all_installs' || $type === 'old_app';
     }
 
     /**
      * Distinct Expo tokens for unregistered guest devices (no user_id). These are
      * pushed directly (native only) - guests have no bell, no prefs, no web push.
+     * 'old_app': only the guests seen on an old app (old_app_seen).
      */
-    public static function guestTokens(): array
+    public static function guestTokens(string $type = 'all_installs'): array
     {
+        $only = $type === 'old_app'
+            ? ' AND guest_id IN (SELECT guest_id FROM old_app_seen WHERE guest_id IS NOT NULL)'
+            : '';
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT token
             FROM mobile_push_tokens
-            WHERE user_id IS NULL AND guest_id IS NOT NULL
+            WHERE user_id IS NULL AND guest_id IS NOT NULL{$only}
         ");
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
@@ -131,17 +156,18 @@ final class PushBroadcastService
     /**
      * Native-push the broadcast to every guest device token and bump the
      * push_broadcasts delivered counter by however many were queued. Called
-     * after the registered-user dispatch for an 'all_installs' send. Returns the
-     * number of guest devices reached.
+     * after the registered-user dispatch for an 'all_installs' or 'old_app' send.
+     * Returns the number of guest devices reached.
      */
     public static function dispatchGuestTokens(
         int     $broadcastId,
         string  $title,
         string  $body,
         ?string $deepLink,
-        array   $extraData = []
+        array   $extraData = [],
+        string  $type = 'all_installs'
     ): int {
-        $tokens = self::guestTokens();
+        $tokens = self::guestTokens($type);
         if (empty($tokens)) return 0;
 
         $sent = MobilePushService::sendToTokens($tokens, $title, $body, $extraData + [

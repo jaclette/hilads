@@ -100,3 +100,4 @@ require_once __DIR__ . '/../src/DailyComparisons.php';
 require_once __DIR__ . '/../src/DailyDemo.php';
 require_once __DIR__ . '/../src/DailyLocalPass.php';
 require_once __DIR__ . '/../src/DailyProposals.php';
+require_once __DIR__ . '/../src/Request.php';

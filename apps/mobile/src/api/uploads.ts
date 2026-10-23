@@ -2,6 +2,7 @@ import { Image } from 'react-native';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { API_URL } from '@/constants';
 import { getAuthToken } from './client';
+import { appHeaders } from '@/lib/appVersion';
 
 const MAX_DIM  = 1600; // longest side - plenty for a phone screen, ~10x smaller file
 const JPEG_Q   = 0.8;
@@ -77,7 +78,7 @@ export async function uploadFile(
     name: `photo.${ext}`,
   } as unknown as Blob);
 
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { ...appHeaders() };
   const token = getAuthToken();
   if (token) headers['Cookie'] = `hilads_token=${token}`;
 

@@ -293,4 +293,7 @@ $router = new Router();
 
 require_once __DIR__ . '/../routes/api.php';
 
+// Apps from before the update screen get 426 when "Block old apps" is on (Admin › App versions).
+AppConfig::guardOldApp($uri);
+
 $router->dispatch($method, $uri);

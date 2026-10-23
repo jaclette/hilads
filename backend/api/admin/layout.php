@@ -256,6 +256,7 @@ function admin_nav(string $current = ''): void
             '/admin/bans'    => 'Bans',
             '/admin/email'   => 'Email',
             '/admin/push'    => 'Push',
+            '/admin/app-versions' => 'App versions',
         ];
         foreach ($links as $href => $label) {
             $active = ($current === $href) ? ' class="active"' : '';

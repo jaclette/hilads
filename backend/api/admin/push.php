@@ -72,6 +72,8 @@ function admin_push_parse_audience(): array
             return ['all', []];
         case 'all_installs':
             return ['all_installs', []];
+        case 'old_app':
+            return ['old_app', []];
         case 'city':
             $channelId = (int) ($_POST['city_channel_id'] ?? 0);
             if ($channelId <= 0) admin_die('City audience requires a valid channelId.');
@@ -298,7 +300,7 @@ if ($method === 'POST') {
                         }
                     } else {
                         [$audienceType, $audienceFilter] = admin_push_parse_audience();
-                        $includeGuests = ($audienceType === 'all_installs');
+                        $includeGuests = PushBroadcastService::includesGuests($audienceType);
                     }
                     if ($flashError === null) {
                         Database::pdo()->prepare("
@@ -344,8 +346,8 @@ if ($method === 'POST') {
                     // 'all_installs' also reaches unregistered guest devices, which
                     // resolveAudience can't return (no userId). They're pushed
                     // natively after the registered dispatch.
-                    $includeGuests = ($audienceType === 'all_installs');
-                    $guestCount    = $includeGuests ? count(PushBroadcastService::guestTokens()) : 0;
+                    $includeGuests = PushBroadcastService::includesGuests($audienceType);
+                    $guestCount    = $includeGuests ? count(PushBroadcastService::guestTokens($audienceType)) : 0;
                     if (empty($userIds) && $guestCount === 0) {
                         $flashError = 'Audience resolved to 0 recipients - nothing to send.';
                     } else {
@@ -359,7 +361,7 @@ if ($method === 'POST') {
                         // so the admin doesn't sit on a hanging request while we
                         // POST 50k pushes one by one. The history table reflects
                         // sending → sent as the loop runs.
-                        register_shutdown_function(static function () use ($broadcastId, $userIds, $title, $body, $deepLink, $includeGuests, $pushExtra): void {
+                        register_shutdown_function(static function () use ($broadcastId, $userIds, $title, $body, $deepLink, $includeGuests, $pushExtra, $audienceType): void {
                             if (function_exists('fastcgi_finish_request')) {
                                 fastcgi_finish_request();
                             }
@@ -368,7 +370,7 @@ if ($method === 'POST') {
                                 // Guest devices: native-only push after the registered
                                 // dispatch sets status='sent'; this bumps delivered_count.
                                 if ($includeGuests) {
-                                    PushBroadcastService::dispatchGuestTokens($broadcastId, $title, $body, $deepLink, $pushExtra);
+                                    PushBroadcastService::dispatchGuestTokens($broadcastId, $title, $body, $deepLink, $pushExtra, $audienceType);
                                 }
                             } catch (\Throwable $e) {
                                 error_log('[admin/push] dispatch crashed for broadcast=' . $broadcastId . ' err=' . $e->getMessage());
@@ -445,6 +447,11 @@ admin_nav('/admin/push');
                         <input type="radio" name="audience_type" value="all_installs" <?= $savedAudience === 'all_installs' ? 'checked' : '' ?>>
                         All app installs (incl. guests)
                         <span style="color:#666;font-size:11px;display:block;margin-left:22px">Registered users + unregistered guest devices. Guests get a native push only (no in-app inbox).</span>
+                    </label>
+                    <label style="font-weight:normal;text-transform:none;letter-spacing:0">
+                        <input type="radio" name="audience_type" value="old_app" <?= $savedAudience === 'old_app' ? 'checked' : '' ?>>
+                        Old app versions
+                        <span style="color:#666;font-size:11px;display:block;margin-left:22px">Accounts and guest devices seen on an app from before the update screen (1.7.1 and older) while "Block old apps" is on (<a href="/admin/app-versions">App versions</a>).</span>
                     </label>
                     <label style="font-weight:normal;text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                         <input type="radio" name="audience_type" value="city" <?= $savedAudience === 'city' ? 'checked' : '' ?>>
@@ -539,7 +546,7 @@ admin_nav('/admin/push');
             <tbody>
             <?php foreach ($scheduled as $s):
                 $aud = match ($s['audience_type']) {
-                    'all' => 'All registered', 'all_installs' => 'All installs (+guests)',
+                    'all' => 'All registered', 'all_installs' => 'All installs (+guests)', 'old_app' => 'Old app versions',
                     'city' => 'City', 'user' => 'One user', default => $s['audience_type'],
                 }; ?>
                 <tr>
@@ -584,6 +591,7 @@ admin_nav('/admin/push');
                     $audienceText = match ($r['audience_type']) {
                         'all'          => 'All',
                         'all_installs' => 'All installs (+guests)',
+                        'old_app'      => 'Old app versions',
                         'city'         => 'City #' . (json_decode($r['audience_filter'], true)['channelId'] ?? '?'),
                         'user'         => 'User',
                         'test'         => 'Test (self)',

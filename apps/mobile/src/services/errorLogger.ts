@@ -12,6 +12,7 @@
 import { Platform } from 'react-native';
 import { API_URL } from '@/constants';
 import { getAuthToken } from '@/api/client';
+import { appHeaders } from '@/lib/appVersion';
 
 export interface ErrorContext {
   screen?:  string;
@@ -63,6 +64,7 @@ async function sendToBackend(payload: object): Promise<void> {
       method:  'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...appHeaders(),
         ...(token ? { Cookie: `hilads_token=${token}` } : {}),
       },
       body: JSON.stringify({ ...payload, platform: Platform.OS }),
