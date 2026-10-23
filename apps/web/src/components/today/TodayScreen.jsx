@@ -17,6 +17,7 @@ import {
   challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
+import { coverImage } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PhotoCredit, PickBadge } from '../map/Pick'
 import { Wordmark, themeColor } from '../joy/Joy'
@@ -266,7 +267,7 @@ function Ticket({ data, loading }) {
   return (
     <div className="today-hero dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
          aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
-      {photo && <img className="today-hero-photo" src={photo} alt="" />}
+      {photo && <img className="today-hero-photo" {...coverImage(photo)} onError={thumbFallback(photo)} alt="" fetchPriority="high" decoding="async" />}
       <div className="today-hero-top">
         {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
         <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>

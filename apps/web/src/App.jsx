@@ -948,6 +948,15 @@ export default function App() {
   const { t } = useTranslation('city')
   const installPrompt = useBeforeInstallPrompt()
   const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
+  // A first guest visit to / or a public link joins at once (W5): "Joining" from the
+  // first paint, never a flash of the landing (whose assets would load for nothing).
+  // Signed-in visits have the rehydrating spinner. Off once the join starts, so a
+  // later return to onboarding (logout, failed join) shows the landing again.
+  const [entryJoin, setEntryJoin] = useState(() => {
+    const link = parseDeepLink()
+    try { return (isPublicEntryLink(link) || isBareHome(link)) && !localStorage.getItem(AUTH_FLAG_KEY) } catch { return false }
+  })
+  useEffect(() => { if (status !== 'onboarding') setEntryJoin(false) }, [status])
   // ── World channel (global companion channel) ──
   const [channelScope, setChannelScope] = useState('city') // 'city' | 'world'
   const [worldUnread,  setWorldUnread]  = useState(0)
@@ -4615,6 +4624,15 @@ export default function App() {
 
   // ── Onboarding ─────────────────────────────────────────────────────────────
 
+  if ((status === 'onboarding' && entryJoin) || status === 'joining') {
+    return (
+      <div className="screen center">
+        <div className="loading-spinner" />
+        <p className="loading-text">{city ? t('joining', { city }) : t('joiningDefault')}</p>
+      </div>
+    )
+  }
+
   if (status === 'onboarding') {
     if (showForgotPassword) {
       return (
@@ -4750,17 +4768,6 @@ export default function App() {
           </div>
         )}
       </>
-    )
-  }
-
-  // ── Joining (transition) ───────────────────────────────────────────────────
-
-  if (status === 'joining') {
-    return (
-      <div className="screen center">
-        <div className="loading-spinner" />
-        <p className="loading-text">{city ? t('joining', { city }) : t('joiningDefault')}</p>
-      </div>
     )
   }
 

@@ -7,6 +7,7 @@ export function thumbFallback(full) {
     const img = e.currentTarget
     if (full && img.dataset.fallback !== '1' && img.src !== full) {
       img.dataset.fallback = '1'
+      img.removeAttribute('srcset')   // a cover's sizes would win over src
       img.src = full
     }
   }

@@ -165,7 +165,7 @@ export function YesterdayRecap({ today }) {
       </div>
       <button type="button" className="tc-recap" onClick={watch}>
         <span className="tc-recap-photo">
-          <img src={win.proof.thumbUrl || win.proof.photoUrl} onError={thumbFallback(win.proof.photoUrl)} alt="" />
+          <img src={win.proof.thumbUrl || win.proof.photoUrl} onError={thumbFallback(win.proof.photoUrl)} alt="" loading="lazy" />
           {win.podium === 1 && <span className="tc-recap-medal"><RankMedal rank={1} size={22} /></span>}
         </span>
         <span className="tc-recap-body">

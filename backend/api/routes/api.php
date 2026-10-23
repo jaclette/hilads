@@ -4594,12 +4594,14 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url, 'thumbUrl' => $thumbUrl], 201);
 });
 
-// GET /api/v1/img-thumb?f=<32hex>.<ext>
+// GET /api/v1/img-thumb?f=<32hex>.<ext>[&c=600|1000]
 // On-the-fly thumbnail proxy: returns a ≤400px JPEG for an uploaded image so
 // feeds never load the full original. Works for EVERY image (existing + new) -
 // no backfill, no deterministic-name dependency. Lazily generates the thumb the
 // FIRST time and caches it on R2 (thumb_<base>.jpg); subsequent misses stream
 // that. Immutable cache headers so browsers/expo cache it after one fetch.
+// c=600|1000: a cover size (heroes): the SHORTER side ≤ c, cached as
+// thumb_c<c>_<base>.jpg, for a photo cropped to fill a big frame.
 $router->add('GET', '/api/v1/img-thumb', function () {
     $f = (string) ($_GET['f'] ?? '');
     if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $f, $m)) {
@@ -4608,7 +4610,8 @@ $router->add('GET', '/api/v1/img-thumb', function () {
     $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
     if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
 
-    $thumbName = 'thumb_' . $m[1] . '.jpg';
+    $cover     = in_array((string) ($_GET['c'] ?? ''), ['600', '1000'], true) ? (int) $_GET['c'] : null;
+    $thumbName = ($cover !== null ? "thumb_c{$cover}_" : 'thumb_') . $m[1] . '.jpg';
     $thumbUrl  = $r2Base . '/' . $thumbName;
     $origUrl   = $r2Base . '/' . $f;
 
@@ -4634,7 +4637,9 @@ $router->add('GET', '/api/v1/img-thumb', function () {
         $srcTmp = tempnam(sys_get_temp_dir(), 'thmb');
         file_put_contents($srcTmp, $orig);
         $mime  = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
-        $thumbTmp = ImageProcessor::generateAvatarThumbnail($srcTmp, $mime);
+        $thumbTmp = $cover !== null
+            ? ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, $cover, 78, true)
+            : ImageProcessor::generateAvatarThumbnail($srcTmp, $mime);
         @unlink($srcTmp);
         if ($thumbTmp === null) { header('Location: ' . $origUrl, true, 302); exit; }
         $bytes = file_get_contents($thumbTmp);

@@ -6,7 +6,6 @@ import Icon from './Icon'
 import { cityFlag } from '../cityMeta'
 import { eventIcon, CHALLENGE_TYPE_ICONS } from '../lib/icons'
 import { formatTime } from '../eventUtils'
-import VideoHero from './VideoHero'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from '../config/featuredCity'
 
 /**
@@ -18,13 +17,6 @@ import { FEATURED_CITY, MIN_LIVE_COUNT } from '../config/featuredCity'
  *          · 4 conversion (repeat CTA + store badges + create/login).
  */
 
-// The hero clips are cut from these tracks - the landing autoplays MUTED (browser
-// rule), so these links are the only way to actually hear them. Titles are proper
-// nouns and stay untranslated; only the "Full song" screen-reader prefix is i18n.
-const TRACKS = [
-  { slug: 'dzo',    title: 'Một, Hai, Ba, Dzô! Em Ơi', url: 'https://soundcloud.com/huynh-jacques/mo-t-hai-ba-dzo-em-o-i-1' },
-  { slug: 'comtam', title: 'BROKEN RICE, BROKEN FRENCH', url: 'https://soundcloud.com/huynh-jacques/broken-rice-broken-french' },
-]
 const SCREENS = ['hook', 'live', 'how', 'proof', 'convert']
 const LAST = SCREENS.length - 1
 
@@ -208,22 +200,6 @@ export default function StoriesLanding({
         {/* SPEC 10.1: why Hilads is unique, then what you do. */}
         <h1 className="sl-concept-tagline">{tw('dc.worlds.tagline')}</h1>
         <p className="sl-concept-sub">{t('stories.tagline')}</p>
-        <VideoHero onVisible={() => track('video_visible')} onPlay={() => track('video_played')} />
-        <div className="sl-songs">
-          {TRACKS.map((tr) => (
-            <a
-              key={tr.slug}
-              className="sl-song"
-              href={tr.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${t('stories.fullSong')}: ${tr.title}`}
-              onClick={() => track('full_song_clicked', { track: tr.slug })}
-            >
-              <Icon name="headset-outline" size={16} /> {tr.title}
-            </a>
-          ))}
-        </div>
         <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen1_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>

@@ -3,6 +3,7 @@ import { cachedDailySheet, fetchDailyProof, fetchDailySheet, fetchDailyToday, fe
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag } from '../CityName'
 import { track } from '../../lib/analytics'
+import { coverImage } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { deviceStore, isPlaceTheme, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
@@ -166,7 +167,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
       <div className="dch-scroll">
         {/* 1. The hero: the cover, the theme, the question and the instruction. */}
         <div className="dch-hero">
-          {cover && <img className="dch-hero-photo" src={cover} alt="" />}
+          {cover && <img className="dch-hero-photo" {...coverImage(cover)} onError={thumbFallback(cover)} alt="" fetchPriority="high" decoding="async" />}
           <div className="dch-hero-bottom">
             {challenge.theme && (
               <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>
@@ -202,7 +203,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
               <span className="dc-twist-text">{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</span>
               {sheet.twist.author ? (
                 <button type="button" className="dc-author" onClick={() => goProfile(sheet.twist.author.id, personName(sheet.twist.author))}>
-                  {sheet.twist.author.photoUrl ? <img src={sheet.twist.author.photoUrl} alt="" /> : <span className="dc-author-empty" />}
+                  {sheet.twist.author.photoUrl ? <img src={sheet.twist.author.photoUrl} alt="" loading="lazy" /> : <span className="dc-author-empty" />}
                   {t('twistBy', { name: personName(sheet.twist.author) })}
                 </button>
               ) : sheet.twist.credit && <span className="dc-author">{t('twistBy', { name: sheet.twist.credit })}</span>}
@@ -238,7 +239,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
           {/* My photo (posted from the app): its status. */}
           {myProof && (
             <button type="button" className="dch-row" onClick={() => setViewing(myProof)}>
-              <img className="dch-thumb" src={myProof.thumbUrl || myProof.photoUrl} onError={thumbFallback(myProof.photoUrl)} alt="" />
+              <img className="dch-thumb" src={myProof.thumbUrl || myProof.photoUrl} onError={thumbFallback(myProof.photoUrl)} alt="" loading="lazy" />
               <span className="dch-row-body">
                 <span className="dch-row-title">{t('yourProof')} <StatusChip status={myProof.status} /></span>
                 {myProof.status === 'pending' && <span className="dc-muted">{t('pendingHint')}</span>}
@@ -250,7 +251,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
           {/* 4. My city: its top photo, or be its first. */}
           {cityShort && (mine?.top ? (
             <button type="button" className="dch-row" onClick={() => seeAll(myCountry)}>
-              <img className="dch-thumb" src={mine.top.thumbUrl || mine.top.photoUrl} onError={thumbFallback(mine.top.photoUrl)} alt="" />
+              <img className="dch-thumb" src={mine.top.thumbUrl || mine.top.photoUrl} onError={thumbFallback(mine.top.photoUrl)} alt="" loading="lazy" />
               <span className="dch-row-body">
                 <span className="dch-row-title">{t('myCity.in', { city: cityShort, count: mine.count })}</span>
                 {(mine.top.answer && !mine.top.backHome) || mine.top.caption

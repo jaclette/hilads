@@ -30,12 +30,16 @@ class ImageProcessor
      *
      * Safe to call on any valid image - if the source is already
      * smaller than $maxDim, it is re-encoded as JPEG but not enlarged.
+     *
+     * $shortSide: bound the SHORTER side instead (a cover cropped to fill
+     * its frame keeps enough pixels whichever way the photo was taken).
      */
     public static function generateAvatarThumbnail(
         string $srcPath,
         string $srcMime,
         int $maxDim = 400,
         int $quality = 80,
+        bool $shortSide = false,
     ): ?string {
         self::$lastError = null;
 
@@ -69,7 +73,11 @@ class ImageProcessor
             return null;
         }
 
-        if ($srcW >= $srcH) {
+        if ($shortSide) {
+            $scale = min(1, $maxDim / min($srcW, $srcH));
+            $newW  = max(1, (int) round($srcW * $scale));
+            $newH  = max(1, (int) round($srcH * $scale));
+        } elseif ($srcW >= $srcH) {
             $newW = min($srcW, $maxDim);
             $newH = (int) round($srcH * $newW / $srcW);
         } else {
