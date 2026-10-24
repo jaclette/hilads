@@ -168,6 +168,8 @@ export const Colors = {
   // Darkens the blurred copy of a photo that fills the viewer around it.
   photoBlurShade: 'rgba(0,0,0,0.55)',
   photoControl:   'rgba(255,255,255,0.16)',
+  // A round button over a photo or the camera: a dark disc, visible on bright photos too.
+  photoButton:    'rgba(0,0,0,0.42)',
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -243,6 +245,8 @@ export const LightColors: ThemeColors = {
   // Darkens the blurred copy of a photo that fills the viewer around it.
   photoBlurShade: 'rgba(0,0,0,0.55)',
   photoControl:   'rgba(255,255,255,0.16)',
+  // A round button over a photo or the camera: a dark disc, visible on bright photos too.
+  photoButton:    'rgba(0,0,0,0.42)',
 };
 
 export type ThemeName = 'light' | 'dark';

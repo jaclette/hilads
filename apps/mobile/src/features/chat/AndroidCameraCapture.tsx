@@ -15,7 +15,7 @@
 import { useRef, useState } from 'react';
 import {
   Modal, View, TouchableOpacity, ActivityIndicator,
-  StyleSheet, SafeAreaView, Text, Image,
+  StyleSheet, Text, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -24,6 +24,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import { Button, IconButton } from '@/ui';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -62,6 +63,14 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
   const [capturedUri, setCapturedUri] = useState<string | null>(null);
 
   const [permission, requestPermission] = useCameraPermissions();
+
+  // Light status bar icons over the black camera (the permission screen follows the theme).
+  const shown = useModalStatusBar(visible, !!permission?.granted);
+
+  // The camera and the photo fill the screen, edge to edge; the controls sit
+  // inside the safe area (status bar, notch / Dynamic Island, gesture bar).
+  const top    = insets.top + Spacing.sm;
+  const bottom = insets.bottom;
 
   // Reset state each time the modal opens
   function handleModalShow() {
@@ -153,17 +162,18 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 
   return (
     <Modal
-      visible={visible}
+      visible={shown}
       animationType="slide"
       statusBarTranslucent
+      navigationBarTranslucent
       onRequestClose={onClose}
       onShow={handleModalShow}
     >
-      <SafeAreaView style={styles.root}>
+      <View style={styles.root}>
 
         {/* ── Permission denied ─────────────────────────────────────────── */}
         {!permission.granted ? (
-          <View style={styles.center}>
+          <View style={[styles.center, { paddingTop: insets.top, paddingBottom: bottom }]}>
             <View style={styles.permIcon}><Ionicons name="camera-outline" size={34} color={colors.primaryOnTint} /></View>
             <Text style={styles.permText}>{t('composer.cameraPermBody')}</Text>
             <Button label={t('camera.grant')} onPress={requestPermission} style={styles.permBtn} />
@@ -177,10 +187,10 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
             <Image source={{ uri: capturedUri }} style={styles.previewImage} resizeMode="cover" />
 
             {/* Close button (top-left) */}
-            <IconButton icon="close" tone="onPhoto" iconSize={26} label={t('close')} onPress={onClose} style={styles.previewClose} />
+            <IconButton icon="close" tone="onPhoto" iconSize={26} label={t('close')} onPress={onClose} style={[styles.previewClose, { top }]} />
 
-            {/* Action bar - paddingBottom absorbs bottom nav bar on Android */}
-            <View style={[styles.previewBar, insets.bottom > 0 && { paddingBottom: 20 + insets.bottom }]}>
+            {/* Action bar, above the gesture / navigation bar */}
+            <View style={[styles.previewBar, { paddingBottom: 20 + bottom }]}>
 
               {/* Retake */}
               <TouchableOpacity
@@ -214,19 +224,16 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
               }}
             />
 
-            {/* ── Top bar: close + flash ───────────────────────────────── */}
-            <View style={styles.topBar}>
-              <TouchableOpacity style={styles.iconBtn} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('close')}>
-                <Ionicons name="close" size={28} color={colors.white} />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.iconBtn} onPress={cycleFlash} accessibilityRole="button" accessibilityLabel={t('camera.flash')}>
+            {/* ── Top: close + flash, below the status bar / notch ─────── */}
+            <View style={[styles.topBar, { top }]} pointerEvents="box-none">
+              <IconButton icon="close" tone="onPhoto" iconSize={28} label={t('close')} onPress={onClose} />
+              <TouchableOpacity style={styles.flashBtn} onPress={cycleFlash} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('camera.flash')}>
                 <Ionicons name={flashIcon} size={26} color={flash !== 'off' ? colors.gold : colors.white} />
               </TouchableOpacity>
             </View>
 
-            {/* ── Bottom bar: shutter + flip ───────────────────────────── */}
-            <View style={[styles.bottomBar, insets.bottom > 0 && { height: 120 + insets.bottom, paddingBottom: 16 + insets.bottom }]}>
+            {/* ── Bottom bar: shutter + flip, above the gesture / navigation bar ── */}
+            <View style={[styles.bottomBar, { height: 120 + bottom, paddingBottom: 16 + bottom }]}>
 
               {/* Spacer (keeps shutter centred) */}
               <View style={styles.iconBtn} />
@@ -265,7 +272,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
           </>
         )}
 
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 }
@@ -281,8 +288,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   permBtn:  { alignSelf: 'stretch' },
 
   camera:    { flex: 1 },
-  topBar:    { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-               paddingTop: 8, paddingHorizontal: 8, backgroundColor: c.photoControl },
+  topBar:    { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+               paddingHorizontal: Spacing.md },
+  flashBtn:  { width: 48, height: 48, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoButton },
   bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around',
                paddingBottom: 16, backgroundColor: c.photoControl },
   iconBtn:   { width: 60, height: 60, alignItems: 'center', justifyContent: 'center' },
@@ -292,7 +300,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   previewRoot:  { flex: 1, backgroundColor: c.photoScrim },
   previewImage: { flex: 1 },
-  previewClose: { position: 'absolute', top: 12, left: 12 },
+  previewClose: { position: 'absolute', left: Spacing.md },
   previewBar:   { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
                   gap: 12, paddingHorizontal: 20, paddingVertical: 20, backgroundColor: c.photoScrim },
   retakeBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 48, paddingHorizontal: 20, borderRadius: Radius.button,

@@ -16,6 +16,7 @@ import {
   ActivityIndicator, StyleSheet, Alert, Modal, Pressable,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -128,6 +129,8 @@ export default function PublicProfileScreen() {
   const [vibeMessage,  setVibeMessage]  = useState('');
   const [showVibeForm,       setShowVibeForm]       = useState(false);
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
+  // Light status bar icons over the dark lightbox.
+  const avatarLightboxShown = useModalStatusBar(showAvatarLightbox);
   const [showReportModal,    setShowReportModal]    = useState(false);
   const [showActionSheet,    setShowActionSheet]    = useState(false);
   const [blockBusy,          setBlockBusy]          = useState(false);
@@ -800,15 +803,16 @@ export default function PublicProfileScreen() {
       {/* ── Avatar lightbox ── */}
       {user?.avatarUrl ? (
         <Modal
-          visible={showAvatarLightbox}
+          visible={avatarLightboxShown}
           transparent
           animationType="fade"
           statusBarTranslucent
+          navigationBarTranslucent
           onRequestClose={() => setShowAvatarLightbox(false)}
         >
           <Pressable style={styles.lightboxOverlay} onPress={() => setShowAvatarLightbox(false)}>
             <Image source={{ uri: user.avatarUrl }} style={styles.lightboxImage} resizeMode="contain" />
-            <IconButton icon="close" tone="onPhoto" label={t('close', { ns: 'common' })} onPress={() => setShowAvatarLightbox(false)} style={styles.lightboxClose} />
+            <IconButton icon="close" tone="onPhoto" label={t('close', { ns: 'common' })} onPress={() => setShowAvatarLightbox(false)} style={[styles.lightboxClose, { top: insets.top + Spacing.sm }]} />
           </Pressable>
         </Modal>
       ) : null}
@@ -893,5 +897,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // ── Avatar lightbox ──
   lightboxOverlay: { flex: 1, backgroundColor: c.photoScrim, alignItems: 'center', justifyContent: 'center' },
   lightboxImage:   { width: '100%', height: '80%' },
-  lightboxClose:   { position: 'absolute', top: 56, right: 16 },
+  lightboxClose:   { position: 'absolute', right: Spacing.md },
 });

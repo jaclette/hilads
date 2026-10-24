@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityName, Photo } from '@/ui';
 import { AnswerChip } from '@/features/compare/AnswerChip';
@@ -21,6 +21,7 @@ import { Button, Chip, IconButton, ModeLabel } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, type ShareContent } from '@/features/share/content';
 import { themeName } from './themes';
+import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import type { DailyChallenge, DailyProof } from '@/types';
 import { PickBadge } from '@/features/map/PickBadge';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
@@ -40,6 +41,9 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  // Light status bar icons over the dark viewer.
+  const shown = useModalStatusBar(!!proof);
   const [share, setShare] = useState<ShareContent | null>(null);
   const [votersOf, setVotersOf] = useState<string | null>(null);
   const money = useMoney();
@@ -55,13 +59,14 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   if (!proof) return null;
   const name = proof.user.displayName || proof.user.username || '';
   return (
-    <Modal visible animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen">
+    <Modal visible={shown} animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen" statusBarTranslucent navigationBarTranslucent>
       <View style={styles.wrap} testID="proof-viewer">
       {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
       <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
       <View style={[StyleSheet.absoluteFill, styles.shade]} />
       <SafeAreaView style={styles.flex}>
-        <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={styles.close} testID="viewer-close" />
+        {/* Below the status bar / notch (an absolute child ignores the safe area's padding). */}
+        <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={[styles.close, { top: insets.top + Spacing.sm }]} testID="viewer-close" />
         {/* Pulling down past the top (iOS bounce) closes it like a swipe-down modal; Android back closes it too. */}
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}
                     onScrollEndDrag={e => { if (e.nativeEvent.contentOffset.y < -70) onClose(); }}>
@@ -147,7 +152,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   shade:    { backgroundColor: c.photoBlurShade },
   // The photo and its information block stay together, centred when they fit.
   scroll:   { flexGrow: 1, justifyContent: 'center', paddingTop: 56 },
-  close:    { position: 'absolute', top: 54, right: 16, zIndex: 2 },
+  close:    { position: 'absolute', right: Spacing.md, zIndex: 2 },
   context:  { gap: 2 },
   contextHead: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
   contextText: { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
