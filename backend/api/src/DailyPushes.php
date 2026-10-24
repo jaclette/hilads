@@ -717,23 +717,22 @@ final class DailyPushes
     }
 
     /**
-     * The first vote on a proof (prompt 12): queued for its author right away
-     * in their daytime, else at 09:00 local, never after the end; once per
-     * author and challenge (unique key), so a withdrawn then recast first vote
-     * sends nothing new. Returns rows queued.
+     * A vote on a proof (every vote since 2026-10-25): "Linh voted for your
+     * photo." to its author right away, any hour, outside the daily cap,
+     * unless they turned Daily pushes off. Opens the photo. Returns devices.
      */
-    public static function queueFirstVote(string $userId, string $date, string $proofId, DateTimeImmutable $now, ?string $voterCity = null, ?string $voterName = null): int
+    public static function sendVote(string $userId, string $date, string $proofId, ?string $voterName = null): int
     {
-        [, $end] = DailyClock::window($date);
-        $rows = [];
-        foreach (self::userRecipients([$userId]) as $u) {
-            $at = self::morningSendAt($now, $u['tz']);
-            if ($at < $end) {
-                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'first_vote', $at, $u['tz'],
-                           ['data' => self::data($date) + ['proofId' => $proofId], 'locale' => $u['locale'], 'voterCity' => $voterCity, 'voterName' => $voterName]];
-            }
+        $u = self::userRecipients([$userId])[0] ?? null;   // none: no device, or Daily pushes off
+        if ($u === null) {
+            return 0;
         }
-        return self::insert($rows);
+        $stmt = Database::pdo()->prepare("SELECT token FROM mobile_push_tokens WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $msg = self::firstVoteMessage($date, $proofId, $u['locale'], null, $voterName);
+        $n   = self::sendToDevices($stmt->fetchAll(PDO::FETCH_COLUMN), $msg['title'], $msg['body'], $msg['data'], 'daily_first_vote');
+        MobilePushService::flush();
+        return $n;
     }
 
     /**

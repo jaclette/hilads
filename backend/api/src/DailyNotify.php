@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Daily Challenge activity for the bell, and the first-vote push (prompt 12):
+ * Daily Challenge activity for the bell, and the vote push:
  * - every vote a proof receives: a bell row for its author, in real time
- *   (WebSocket "newNotification"), never a push. The proof's first vote also
- *   sends the first_vote push right away, with the voter's name, within the 3-a-day cap; later votes
- *   are told by the evening digest;
+ *   (WebSocket "newNotification"), and a push right away with the voter's
+ *   name ("Linh voted for your photo.", every vote since 2026-10-25);
  * - every approved proof in the city of a selected Local Twist, by someone
  *   else: a bell row for the twist's author, in real time, never a push.
  *
@@ -31,20 +30,13 @@ final class DailyNotify
             }
             $date = (string) $p['challenge_date'];
             $data = ['proofId' => $p['id'], 'date' => $date, 'voterId' => $voter['id']];
+            // Once per voter and photo (a vote withdrawn and cast again tells nothing new).
             if (!self::alreadyTold($p['user_id'], self::TYPE_VOTE, $data, 'voterId')) {
                 $name = self::name($voter);
                 $body = DailyPushText::render('bell_vote', self::locale($p['user_id']), ['name' => $name])
                         ?? "{$name} voted for your photo.";
                 self::bell($p['user_id'], self::TYPE_VOTE, $body, $data);
-            }
-            if ((int) $p['vote_count'] === 1 && DailyClock::isActive($date)) {
-                $now = new DateTimeImmutable('now');
-                // "Linh voted for your photo." (the city stays for rows without the name).
-                $voterCity = ($voter['current_city_id'] ?? null) !== null
-                    ? (CityRepository::findById((int) substr((string) $voter['current_city_id'], 5))['name'] ?? null) : null;
-                if (DailyPushes::queueFirstVote($p['user_id'], $date, $p['id'], $now, $voterCity, self::name($voter)) > 0) {
-                    DailyPushes::sendDue($now, 1, 'u:' . $p['user_id'], 'first_vote');
-                }
+                DailyPushes::sendVote($p['user_id'], $date, $p['id'], $name);
             }
         } catch (\Throwable $e) {
             error_log('[daily] vote notification failed: ' . $e->getMessage());
