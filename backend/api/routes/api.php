@@ -15428,10 +15428,10 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
     DailyCompare::rememberHomeCity($user['id'], $fields);
     $proof = dailyAfterProofWrite($proof['id']);
     apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
-    // Everyone hears it (once a day each): "📸 Linh just played in Saigon!" over the challenge. Sent by the tick.
+    // Everyone hears it, every photo, right away: "📸 Linh just played in Saigon!" over the challenge.
     if (($proof['moderation_status'] ?? null) === 'approved') {
         try {
-            DailyPushes::queueNewPhoto($proof, new DateTimeImmutable('now'));
+            DailyPushes::sendNewPhoto($proof, new DateTimeImmutable('now'));
         } catch (\Throwable $e) {
             error_log('[daily] new photo push failed: ' . $e->getMessage());
         }

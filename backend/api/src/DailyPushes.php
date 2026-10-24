@@ -761,14 +761,13 @@ final class DailyPushes
     }
 
     /**
-     * Someone just played (the founder's call, 2026-10-21): when a photo goes
-     * live, everyone with Daily pushes hears it - "📸 Linh just played in
-     * Saigon!" over the challenge. Once per recipient and challenge day (the
-     * unique key: the day's first photo is the one told), in their daytime
-     * (else 09:00 local), never after the end; not to its author, nor to
-     * anyone who blocked them. Sent by the tick. Returns rows queued.
+     * Someone just played (the founder's call, 2026-10-21; every photo since
+     * 2026-10-25): when a photo goes live, everyone with Daily pushes hears it
+     * right away - "📸 Linh just played in Saigon!" over the challenge. Every
+     * photo, any hour, outside the daily cap and the queue; not to its author,
+     * nor to anyone who blocked them. Returns the devices sent to.
      */
-    public static function queueNewPhoto(array $proof, DateTimeImmutable $now): int
+    public static function sendNewPhoto(array $proof, DateTimeImmutable $now): int
     {
         if (DailyProofRepository::bool($proof['is_demo'] ?? false) || DailyProofRepository::bool($proof['is_seed'] ?? false)
             || DailyProofRepository::bool($proof['is_suggestion'] ?? false)) {
@@ -779,10 +778,9 @@ final class DailyPushes
         if ($challenge === null || !DailyClock::isActive($date, $now)) {
             return 0;
         }
-        [, $end] = DailyClock::window($date);
-        $author  = (string) $proof['user_id'];
-        $pdo     = Database::pdo();
-        $stmt    = $pdo->prepare("SELECT blocker_user_id, blocker_guest_id FROM blocks WHERE blocked_user_id = ?");
+        $author = (string) $proof['user_id'];
+        $pdo    = Database::pdo();
+        $stmt   = $pdo->prepare("SELECT blocker_user_id, blocker_guest_id FROM blocks WHERE blocked_user_id = ?");
         $stmt->execute([$author]);
         $blockedBy = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $b) {
@@ -792,37 +790,38 @@ final class DailyPushes
         $authorGuest->execute([$author]);
         $authorGuestId = $authorGuest->fetchColumn() ?: null;
 
-        $messages = [];   // one per locale
-        $message  = static function (string $locale) use (&$messages, $challenge, $proof): array {
-            return $messages[$locale] ??= self::newPhotoMessage($challenge, $proof, self::morningLocale($challenge, $locale));
-        };
-        $rows = [];
+        // Devices by language: users with Daily pushes on, then guests' own devices.
+        $locales = [];
         foreach (self::userRecipients() as $u) {
-            $key = 'u:' . $u['id'];
-            $at  = self::morningSendAt($now, $u['tz']);
-            if ($u['id'] === $author || isset($blockedBy[$key]) || $at >= $end) {
-                continue;
+            if ($u['id'] !== $author && !isset($blockedBy['u:' . $u['id']])) {
+                $locales['u:' . $u['id']] = $u['locale'];
             }
-            $rows[] = [$key, $u['id'], null, $date, 'new_photo', $at, $u['tz'], $message($u['locale']) + ['locale' => $u['locale']]];
         }
-        $guests = $pdo->query("
-            SELECT t.guest_id, max(t.timezone) AS token_tz, max(t.locale) AS token_locale
-            FROM mobile_push_tokens t
-            WHERE t.user_id IS NULL AND t.guest_id IS NOT NULL
-              AND NOT EXISTS (SELECT 1 FROM users u WHERE u.guest_id = t.guest_id)
-            GROUP BY t.guest_id
-        ")->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($guests as $g) {
-            $key = 'g:' . $g['guest_id'];
-            $tz  = self::pickTimezone($g['token_tz']);
-            $at  = self::morningSendAt($now, $tz);
-            if ($g['guest_id'] === $authorGuestId || isset($blockedBy[$key]) || $at >= $end) {
-                continue;
+        $tokens = [];
+        foreach ($pdo->query("
+            SELECT user_id, guest_id, token, locale FROM mobile_push_tokens t
+            WHERE t.user_id IS NOT NULL
+               OR (t.guest_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM users u WHERE u.guest_id = t.guest_id))
+        ")->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            if ($t['user_id'] !== null) {
+                $loc = $locales['u:' . $t['user_id']] ?? null;
+            } else {
+                $skip = $t['guest_id'] === $authorGuestId || isset($blockedBy['g:' . $t['guest_id']]);
+                $loc  = $skip ? null : DailyI18n::normalize($t['locale']);
             }
-            $loc    = DailyI18n::normalize($g['token_locale']);
-            $rows[] = [$key, null, $g['guest_id'], $date, 'new_photo', $at, $tz, $message($loc) + ['locale' => $loc]];
+            if ($loc !== null) {
+                $tokens[$loc][] = $t['token'];
+            }
         }
-        return self::insert($rows);
+
+        $sent = 0;
+        foreach ($tokens as $locale => $list) {
+            $msg   = self::newPhotoMessage($challenge, $proof, self::morningLocale($challenge, $locale));
+            $sent += self::sendToDevices($list, $msg['title'], $msg['body'], $msg['data'], 'daily_new_photo');
+        }
+        MobilePushService::flush();
+        error_log('[daily-push] new photo ' . $proof['id'] . ': ' . $sent . ' device(s)');
+        return $sent;
     }
 
     /**
