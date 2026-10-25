@@ -1,13 +1,16 @@
 import type { DailyCountryGroup, DailyProof } from '@/types';
 
 /**
- * A country's photos, best first: the most liked, then the most recent
- * (approval, else posting time). The server picks each country's top photo
- * by the same rule (DailyProofRepository::groupByCountry): Today's mosaic
- * tile shows that top photo.
+ * Photos, best first - the one rule everywhere a photo is ranked: the most
+ * liked, then the earliest posted (the first to post keeps the spot until
+ * someone gets more likes), then the id. The server ranks by the same rule
+ * (DailyResults::rankProofs): each country's top photo (Today's mosaic tile),
+ * the podium, the tour.
  */
 export function compareCountryProofs(a: DailyProof, b: DailyProof): number {
-  return (b.voteCount - a.voteCount) || ((b.approvedAt ?? b.createdAt ?? 0) - (a.approvedAt ?? a.createdAt ?? 0));
+  return (b.voteCount - a.voteCount)
+    || ((a.createdAt ?? a.approvedAt ?? 0) - (b.createdAt ?? b.approvedAt ?? 0))
+    || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 }
 
 /**

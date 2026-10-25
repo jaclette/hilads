@@ -9,6 +9,7 @@ import { fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
 import { answerText } from '@/features/compare/format';
 import { RankMedal } from '@/features/daily/RankMedal';
+import { compareCountryProofs } from '@/features/daily/countryOrder';
 import { Card, Photo, SectionTitle } from '@/ui';
 import { FlagSticker } from '@/ui/joy';
 import type { DailyToday, DailyTour } from '@/types';
@@ -18,7 +19,7 @@ const THUMB = 84;
 
 /**
  * Yesterday's recap on Today (SPEC 10.7), one card: the winning photo
- * (yesterday's #1, else the most voted), "Yesterday", the question, the
+ * (yesterday's #1, else the best: compareCountryProofs), "Yesterday", the question, the
  * winner's flag, city and answer ("Lisbon · Saúde!"), and how many cities
  * played. "Watch" and the card open yesterday's tour at the winner. Hidden
  * when yesterday had no photo.
@@ -46,9 +47,10 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
 
   const slides = tour?.slides ?? [];
   if (!tour || slides.length === 0) return null;
-  // The winner: yesterday's #1, else the most voted photo.
+  // The winner: yesterday's #1, else the best photo (the shared rule: most liked, then the earliest posted).
   let at = slides.findIndex(s => s.podium === 1);
-  if (at < 0) at = slides.reduce((best, s, i) => (s.proof.voteCount > slides[best].proof.voteCount ? i : best), 0);
+  if (at < 0) at = slides.reduce((best, s, i) => (compareCountryProofs(s.proof, slides[best].proof) < 0 ? i : best), 0);
+  const cities = new Set(slides.map(s => s.city.id)).size;   // a slide per photo: several per city
   const win = slides[at];
   const answer = win.proof.answer && !win.proof.backHome ? answerText(win.proof.answer, i18n.language) : null;
   const question = tour.challenge.compare?.question ?? tour.challenge.text;
@@ -71,7 +73,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
               {shortCityName(win.city.name)}{answer ? <Text style={styles.answer}>{` · ${answer}`}</Text> : null}
             </Text>
           </View>
-          <Text style={styles.meta}>{t('recap.cities', { count: slides.length })}</Text>
+          <Text style={styles.meta}>{t('recap.cities', { count: cities })}</Text>
         </View>
       </TouchableOpacity>
     </Card>

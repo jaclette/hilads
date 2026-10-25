@@ -24,6 +24,7 @@ import { captionRepeatsAnswer } from '@/features/compare/format';
 import { seedProofs } from '@/features/daily/votes';
 import { flushSeen, markSeen } from '@/features/daily/seen';
 import { lastCountries } from '@/features/today/TodayCountries';
+import { rankCountryProofs } from '@/features/daily/countryOrder';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
@@ -49,9 +50,9 @@ const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.9)'] as
  * profile), city and flag, answer, caption and place; a big heart to vote
  * (a double tap on the photo votes too, with a heart burst; the first vote of
  * the visit throws confetti) and Share. The end: "Your turn" when I haven't
- * played. `proof` (the new-photo and first-vote pushes, a mosaic tile) opens
- * on that photo, the others follow; `country` (Today's stories row) plays that
- * country's photos, then the next countries' (Today's order), like a story.
+ * played. `proof` (the new-photo and first-vote pushes) opens on that photo,
+ * the others follow; `country` (Today's stories row, a mosaic tile) plays that
+ * country's photos best first, then the next countries' (Today's order), like a story.
  * Each photo shown counts as seen (the story rings).
  */
 export default function PhotosScreen() {
@@ -114,14 +115,17 @@ export default function PhotosScreen() {
   }, [tab, cityId, guestId, challenge?.isActive]);
   useEffect(() => { setProofs(null); load(); }, [load]);
 
-  // A country's story (Today's stories row): its photos, then the next countries', in Today's order.
+  // A country's story (Today's stories row, a mosaic tile): its photos best first (its top photo
+  // leading, rankCountryProofs), then the next countries' the same way, in Today's order.
   const story = useMemo(() => {
     const groups = country ? lastCountries()?.items ?? [] : [];
     const at = groups.findIndex(g => g.country === country);
-    if (at < 0) return null;
-    const ids = [...groups.slice(at), ...groups.slice(0, at)].flatMap(g => g.ids);
+    if (at < 0 || !proofs) return null;
+    const byId = new Map(proofs.map(p => [p.id, p]));
+    const ids = [...groups.slice(at), ...groups.slice(0, at)].flatMap(g =>
+      rankCountryProofs(g.ids.map(id => byId.get(id)).filter((p): p is DailyProof => !!p), g.top.id).map(p => p.id));
     return new Map(ids.map((id, i) => [id, i]));
-  }, [country]);
+  }, [country, proofs]);
 
   const items: Item[] = useMemo(() => {
     if (story && tab === 'world') {

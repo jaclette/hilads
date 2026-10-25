@@ -34,8 +34,9 @@ export function lastCountries(): DailyTodayCountries | null { return last; }
  *   (play, or my photo once posted). A circle opens Today's photos at that
  *   country, the next countries following (a story).
  * - the mosaic, "Same challenge. Different worlds.": up to 6 countries, each
- *   with its most voted photo, its answer in large text and its votes (my
- *   country first, then the most voted: compareCountryGroups); "See all" opens every
+ *   with its best photo, its answer in large text and its votes (my country
+ *   first, then the most voted: compareCountryGroups; a tile opens Today's
+ *   photos on that photo, its country's other photos next); "See all" opens every
  *   country's photos; "Represent your city" until I play: the free slot of an odd grid,
  *   else a banner under it.
  * Nobody played yet: only "Represent your city" with an invitation. Players'
@@ -91,7 +92,7 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
   };
   const openTile = (g: DailyCountryGroup) => {
     track('today_countries_tile', { country: g.country });
-    router.push(`/daily/photos?proof=${g.top.id}&source=today_mosaic` as never);
+    router.push(`/daily/photos?country=${g.country}&source=today_mosaic` as never);
   };
   const yourCity = () => {
     if (myProof) router.push(`/daily/photos?proof=${myProof.id}&source=today_stories` as never);

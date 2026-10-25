@@ -84,7 +84,7 @@ export default function TourScreen() {
     if (!tour || seen.current.has(index)) return;
     seen.current.add(index);
     if (index < slides.length) track('world_tour_slide_viewed', { city: slides[index].city.name, index, date: tour.date });
-    else track('world_tour_completed', { date: tour.date, cities: slides.length });
+    else track('world_tour_completed', { date: tour.date, cities: new Set(slides.map(s => s.city.id)).size, photos: slides.length });
   }, [index, tour]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The progress bar of the current slide, then the next one (paused while held, a sheet open, or reduce motion).
