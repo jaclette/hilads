@@ -7,7 +7,7 @@ declare(strict_types=1);
  * one row per city with at least one approved proof, and Today's live teaser.
  *
  * A city's row shows the answer of its best proof (the results ranking,
- * DailyResults::rankProofs: votes, then local votes, then earliest approval,
+ * DailyResults::rankProofs: votes, then the earliest posted,
  * SPEC 10.12), else of its best proof that has an answer (proofs from apps
  * before V4 have none); the median price in EUR (Currencies) and the proof
  * count. Number and time questions also get the range across cities. Demo and
@@ -157,7 +157,7 @@ final class DailyBoard
         return Cache::remember(self::cacheKey($challengeId), self::CACHE_TTL, static function () use ($challengeId): array {
             $stmt = Database::pdo()->prepare("
                 SELECT p.id, p.user_id, p.city_id, ch.name AS city_name, cc.country,
-                       p.vote_count, p.local_vote_count, p.approved_at,
+                       p.vote_count, p.local_vote_count, p.approved_at, p.created_at,
                        p.answer_text, p.answer_number, p.answer_minutes, p.price_amount, p.price_currency
                 FROM daily_proofs p
                 JOIN channels ch    ON ch.id = p.city_id

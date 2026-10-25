@@ -274,7 +274,7 @@ final class DailyChallengeRepository
         $stmt = $pdo->prepare("
             SELECT challenge_id, id, photo_url FROM (
                 SELECT p.challenge_id, p.id, p.photo_url,
-                       row_number() OVER (PARTITION BY p.challenge_id ORDER BY p.is_suggestion, p.vote_count DESC, p.approved_at DESC) AS rn
+                       row_number() OVER (PARTITION BY p.challenge_id ORDER BY p.is_suggestion, p.vote_count DESC, p.created_at ASC, p.id) AS rn
                 FROM daily_proofs p
                 WHERE p.challenge_id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'{$cityFilter}
             ) x WHERE rn <= " . self::ARCHIVE_PHOTOS . " ORDER BY challenge_id, rn
@@ -329,7 +329,7 @@ final class DailyChallengeRepository
                        ON r.proof_id = p.id AND r.challenge_id = dc.id AND r.scope = :scope
                 WHERE p.challenge_id = dc.id AND p.moderation_status = 'approved'
                   AND (CAST(:city1 AS TEXT) IS NULL OR p.city_id = :city2)
-                ORDER BY p.is_suggestion, r.rank NULLS LAST, p.vote_count DESC, p.approved_at DESC
+                ORDER BY p.is_suggestion, r.rank NULLS LAST, p.vote_count DESC, p.created_at ASC, p.id
                 LIMIT 1
             ) best ON true
             LEFT JOIN daily_twists tw

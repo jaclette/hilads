@@ -17,17 +17,17 @@ final class DailyCountriesTest extends TestCase
         ['id' => 'p1', 'city_id' => 'city_3', 'city_name' => 'Tokyo',  'country' => 'jp', 'vote_count' => 0, 'at' => 100],
     ];
 
-    public function testGroupsByCountryNewestFirstWithTheMostVotedOnTop(): void
+    public function testGroupsByCountryNewestFirstWithTheBestOnTop(): void
     {
         $g = array_column(DailyProofRepository::groupByCountry(self::ROWS, null, null), null, 'country');
         $this->assertSame(['p5', 'p3'], $g['VN']['ids']);
         $this->assertSame(2, $g['VN']['count']);
-        // A tie (2 votes each): the newest wins, and its city is the country's.
-        $this->assertSame('p5', $g['VN']['topId']);
-        $this->assertSame('Saigon', $g['VN']['cityName']);
+        // A tie (2 votes each): the earliest posted keeps the spot, and its city is the country's.
+        $this->assertSame('p3', $g['VN']['topId']);
+        $this->assertSame('Hanoi', $g['VN']['cityName']);
         $this->assertSame('p2', $g['DE']['topId']);
-        // No vote at all: the newest.
-        $this->assertSame('p6', $g['JP']['topId']);
+        // No vote at all: the earliest posted.
+        $this->assertSame('p1', $g['JP']['topId']);
         $this->assertNull($g['JP']['unseen']);
     }
 

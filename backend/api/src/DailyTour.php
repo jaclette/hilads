@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 /**
  * Yesterday around the world (SPEC 10.7): the world tour of a closed
- * challenge, one slide per city with at least one approved proof, using the
- * city's best proof (the results ranking, SPEC 10.12). Demo and seed proofs
- * never count.
+ * challenge, every approved photo (since 2026-10-25; one per city before),
+ * grouped by city, each city's photos best first (DailyResults::rankProofs:
+ * most votes, then the earliest posted). Demo and seed proofs never count.
  *
  * Built once at the drop's closing step (DailyDrop::closeChallenge) and stored
  * in daily_world_tours (the city slides with their proof ids); a past day
@@ -18,7 +18,8 @@ declare(strict_types=1);
  * leaves the tour.
  *
  * Order (per viewer): the cities of the global podium first (rank 1 to 3),
- * then the viewer's city, then the other cities, most proofs first.
+ * then the viewer's city, then the other cities, most proofs first; inside a
+ * city, its photos best first.
  */
 final class DailyTour
 {
@@ -27,8 +28,10 @@ final class DailyTour
     // ── Pure helpers (unit-tested) ────────────────────────────────────────────
 
     /**
-     * Slides from proof rows (id, city_id, vote counts, approved_at) and the
-     * World top 3 proof ids (rank order): [{cityId, proofId, count, podium (1-3|null)}]. Pure.
+     * Slides from proof rows (id, city_id, vote_count, created_at) and the
+     * World top 3 proof ids (rank order): one per photo, [{cityId, proofId,
+     * count (the city's photos), rank (0 = the city's best), podium (1-3|null)}],
+     * each city's photos best first. Pure.
      */
     public static function slides(array $proofs, array $worldTop3): array
     {
@@ -39,29 +42,30 @@ final class DailyTour
         $podium = array_flip(array_values($worldTop3));
         $out    = [];
         foreach ($byCity as $cityId => $list) {
-            $best  = DailyResults::rankProofs($list)[0];
-            // A city on the podium shows its podium proof (the best of the city may tie it).
-            $onPodium = null;
-            foreach ($list as $p) {
-                if (isset($podium[$p['id']]) && ($onPodium === null || $podium[$p['id']] < $podium[$onPodium['id']])) {
-                    $onPodium = $p;
-                }
+            foreach (DailyResults::rankProofs($list) as $i => $p) {
+                $out[] = ['cityId' => $cityId, 'proofId' => $p['id'], 'count' => count($list), 'rank' => $i,
+                          'podium' => isset($podium[$p['id']]) ? $podium[$p['id']] + 1 : null];
             }
-            $pick  = $onPodium ?? $best;
-            $out[] = ['cityId' => $cityId, 'proofId' => $pick['id'], 'count' => count($list),
-                      'podium' => isset($podium[$pick['id']]) ? $podium[$pick['id']] + 1 : null];
         }
         return $out;
     }
 
-    /** Slides in the viewer's order: podium (by rank), the viewer's city, the others (most proofs, then city id). Pure. */
+    /**
+     * Slides in the viewer's order, grouped by city: the podium's cities (by
+     * their best podium rank), the viewer's city, the others (most proofs, then
+     * city id); inside a city, best first. Pure.
+     */
     public static function order(array $slides, ?string $viewerCityId): array
     {
-        usort($slides, static function (array $a, array $b) use ($viewerCityId): int {
-            $ka = [$a['podium'] ?? 9, $a['cityId'] === $viewerCityId ? 0 : 1, -$a['count'], $a['cityId']];
-            $kb = [$b['podium'] ?? 9, $b['cityId'] === $viewerCityId ? 0 : 1, -$b['count'], $b['cityId']];
-            return $ka <=> $kb;
-        });
+        $cityPodium = [];
+        foreach ($slides as $s) {
+            if ($s['podium'] !== null) {
+                $cityPodium[$s['cityId']] = min($cityPodium[$s['cityId']] ?? 9, $s['podium']);
+            }
+        }
+        $key = static fn(array $s): array => [$cityPodium[$s['cityId']] ?? 9, $s['cityId'] === $viewerCityId ? 0 : 1,
+                                              -$s['count'], $s['cityId'], $s['rank'] ?? 0];
+        usort($slides, static fn(array $a, array $b): int => $key($a) <=> $key($b));
         return $slides;
     }
 
@@ -82,7 +86,7 @@ final class DailyTour
     public static function build(array $challenge): int
     {
         $stmt = Database::pdo()->prepare("
-            SELECT p.id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.photo_url
+            SELECT p.id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.created_at, p.photo_url
             FROM daily_proofs p
             JOIN channels ch ON ch.id = p.city_id
             JOIN users u     ON u.id = p.user_id
@@ -92,16 +96,9 @@ final class DailyTour
         $stmt->execute([$challenge['id']]);
         $top3   = array_column(DailyResults::worldTop3((string) $challenge['id']), 'id');
         $rows   = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        // A chosen photo gone from storage (e.g. a cleanup): drop that proof, the city takes its next best.
-        $photos = array_column($rows, 'photo_url', 'id');
-        for ($round = 0; $round < 10; $round++) {
-            $slides  = self::slides($rows, $top3);
-            $missing = array_values(array_filter(array_column($slides, 'proofId'), static fn($id) => !self::photoExists((string) ($photos[$id] ?? ''))));
-            if ($missing === []) {
-                break;
-            }
-            $rows = array_values(array_filter($rows, static fn(array $r) => !in_array($r['id'], $missing, true)));
-        }
+        // A photo gone from storage (e.g. a cleanup) leaves the tour.
+        $rows   = array_values(array_filter($rows, static fn(array $r): bool => self::photoExists((string) $r['photo_url'])));
+        $slides = self::slides($rows, $top3);
         Database::pdo()->prepare("
             INSERT INTO daily_world_tours (challenge_id, slides, built_at) VALUES (?, ?::jsonb, now())
             ON CONFLICT (challenge_id) DO UPDATE SET slides = EXCLUDED.slides, built_at = now()
@@ -126,9 +123,11 @@ final class DailyTour
                 $raw = $stmt->fetchColumn();
             }
             $slides = $raw === false ? [] : (json_decode((string) $raw, true) ?: []);
-            // A slide whose proof no longer qualifies (an older build, a removal): rebuild once.
+            // A tour stored before every photo had its slide (no 'rank'), or a slide whose proof
+            // no longer qualifies (an older build, a removal): rebuild once.
+            $rows = DailyProofRepository::rowsByIds(array_column($slides, 'proofId'));
             foreach ($slides as $s) {
-                if (!self::qualifies(DailyProofRepository::findById((string) $s['proofId']))) {
+                if (!array_key_exists('rank', $s) || !self::qualifies($rows[$s['proofId']] ?? null)) {
                     self::build($challenge);
                     $stmt->execute([$challenge['id']]);
                     $raw = $stmt->fetchColumn();
@@ -169,13 +168,16 @@ final class DailyTour
     public static function forViewer(array $challenge, ?string $viewerCityId, ?string $viewerId, array $blockedUserIds = []): array
     {
         $blocked = array_flip($blockedUserIds);
+        $stored  = self::order(self::stored($challenge), $viewerCityId);
+        $rows    = DailyProofRepository::rowsByIds(array_column($stored, 'proofId'));
+        $cities  = [];
         $slides  = [];
-        foreach (self::order(self::stored($challenge), $viewerCityId) as $s) {
-            $row = DailyProofRepository::findById((string) $s['proofId']);
+        foreach ($stored as $s) {
+            $row = $rows[$s['proofId']] ?? null;
             if (!self::qualifies($row) || isset($blocked[$row['user_id']])) {
                 continue;
             }
-            $city   = CityRepository::findById((int) substr((string) $s['cityId'], 5));
+            $city   = $cities[$s['cityId']] ??= CityRepository::findById((int) substr((string) $s['cityId'], 5));
             $slides[] = [
                 'city'   => ['id' => (int) substr((string) $s['cityId'], 5), 'name' => $city['name'] ?? $row['city_name'],
                              'country' => $city['country'] ?? null],
@@ -194,12 +196,14 @@ final class DailyTour
         ];
     }
 
-    /** user id => city name of the authors whose proof represents their city in a challenge's tour (the morning push). */
+    /** user id => city name of the authors whose proof represents their city (its best) in a challenge's tour (the morning push). */
     public static function authors(array $challenge): array
     {
         $out = [];
-        foreach (self::stored($challenge) as $s) {
-            $row = DailyProofRepository::findById((string) $s['proofId']);
+        $stored = array_values(array_filter(self::stored($challenge), static fn(array $s): bool => ($s['rank'] ?? 0) === 0));
+        $rows   = DailyProofRepository::rowsByIds(array_column($stored, 'proofId'));
+        foreach ($stored as $s) {
+            $row = $rows[$s['proofId']] ?? null;
             if (self::qualifies($row)) {
                 $out[(string) $row['user_id']] = (string) ($row['city_name'] ?? '');
             }
@@ -219,6 +223,6 @@ final class DailyTour
 
     private static function key(string $challengeId): string
     {
-        return 'daily_tour_v2_' . $challengeId;
+        return 'daily_tour_v3_' . $challengeId;
     }
 }

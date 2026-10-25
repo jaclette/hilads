@@ -259,16 +259,16 @@ final class DailyProofRepository
 
     /**
      * Today's proof strip (SPEC 9.3): a scope's approved proofs, most voted
-     * first then newest, with the scope's proof and country counts ($cityId
-     * null = World). $podium: the official results order instead (votes, local
-     * votes, earliest approval), for yesterday's podium. Viewer-independent,
+     * first then the earliest posted (DailyResults::rankProofs), with the
+     * scope's proof and country counts ($cityId null = World). $podium:
+     * players' photos only, for yesterday's podium. Viewer-independent,
      * cached 15 s per scope.
      */
     public static function strip(string $challengeId, ?string $cityId, int $limit, bool $podium = false, bool $feed = false): array
     {
         $key   = "daily_strip_v2_{$challengeId}_" . ($cityId ?? 'world') . "_{$limit}" . ($podium ? '_podium' : '') . ($feed ? '_feed' : '');
-        $order = $podium ? 'p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id'
-               : ($feed ? 'p.approved_at DESC, p.id DESC' : 'p.vote_count DESC, p.approved_at DESC, p.id DESC');
+        // The podium and the strip: DailyResults::rankProofs (votes, then the earliest posted); the feed: newest.
+        $order = $feed ? 'p.approved_at DESC, p.id DESC' : 'p.vote_count DESC, p.created_at ASC, p.id';
         // The podium and the photo feed are players' photos only (never a Hilads suggestion).
         $players = $podium || $feed;
         return Cache::remember($key, 15, static function () use ($challengeId, $cityId, $limit, $order, $players): array {
@@ -298,15 +298,16 @@ final class DailyProofRepository
     /**
      * Today by country (Today's stories row and mosaic): every approved
      * player's photo of the challenge (never a Hilads suggestion), light rows
-     * {id, user_id, city_id, city_name, country, vote_count, at}, newest first.
+     * {id, user_id, city_id, city_name, country, vote_count, at, posted}, newest first.
      * Cached 15 s; blocks and "seen" are applied per viewer by the caller.
      */
     public static function countryRows(string $challengeId): array
     {
-        return Cache::remember("daily_countries_v1_{$challengeId}", 15, static function () use ($challengeId): array {
+        return Cache::remember("daily_countries_v2_{$challengeId}", 15, static function () use ($challengeId): array {
             $stmt = Database::pdo()->prepare("
                 SELECT p.id, p.user_id, p.city_id, ch.name AS city_name, cc.country, p.vote_count,
-                       extract(epoch FROM coalesce(p.approved_at, p.created_at))::bigint AS at
+                       extract(epoch FROM coalesce(p.approved_at, p.created_at))::bigint AS at,
+                       extract(epoch FROM p.created_at)::bigint AS posted
                 FROM daily_proofs p
                 JOIN channels ch ON ch.id = p.city_id
                 JOIN cities cc   ON cc.channel_id = p.city_id
@@ -322,7 +323,8 @@ final class DailyProofRepository
     /**
      * Group countryRows (already filtered) by country: [{country, cityId,
      * cityName, ids (newest first), count, latestAt, topId}], the top being the
-     * most voted photo (newest on a tie), its city the country's city. Ordered:
+     * country's best photo (DailyResults::rankProofs: most votes, then the
+     * earliest posted), its city the country's city. Ordered:
      * $firstCountry first, then the countries with a photo not in $seen
      * (null: unknown, not used), then the most recent.
      */
@@ -337,8 +339,7 @@ final class DailyProofRepository
             if ($seen !== null && !isset($seen[$r['id']])) {
                 $g['unseen'] = true;
             }
-            // Rows come newest first: a later row only wins with strictly more votes.
-            if ($g['top'] === null || (int) $r['vote_count'] > (int) $g['top']['vote_count']) {
+            if ($g['top'] === null || self::betterThan($r, $g['top'])) {
                 $g['top'] = $r;
             }
             unset($g);
@@ -359,6 +360,13 @@ final class DailyProofRepository
             'unseen'   => $seen === null ? null : $g['unseen'],
             'topId'    => $g['top']['id'],
         ], $out);
+    }
+
+    /** True when countryRows row $a ranks before $b (DailyResults::rankProofs: votes, earliest posted, id). */
+    private static function betterThan(array $a, array $b): bool
+    {
+        return [-(int) $a['vote_count'], (int) ($a['posted'] ?? $a['at']), (string) $a['id']]
+             < [-(int) $b['vote_count'], (int) ($b['posted'] ?? $b['at']), (string) $b['id']];
     }
 
     /** The full rows of these proofs (any order). */
@@ -415,7 +423,7 @@ final class DailyProofRepository
                     SELECT p.id, count(*) FILTER (WHERE NOT p.is_suggestion) OVER (PARTITION BY p.city_id) AS city_count,
                            bool_and(p.is_suggestion) OVER (PARTITION BY p.city_id) AS only_suggestions,
                            row_number() OVER (PARTITION BY p.city_id
-                                              ORDER BY p.is_suggestion, p.vote_count DESC, p.local_vote_count DESC, p.approved_at ASC, p.id) AS rn
+                                              ORDER BY p.is_suggestion, p.vote_count DESC, p.created_at ASC, p.id) AS rn
                     FROM daily_proofs p
                     WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.city_id IS NOT NULL
                 ) x
@@ -509,7 +517,7 @@ final class DailyProofRepository
                 LEFT JOIN cities cc   ON cc.channel_id = p.city_id
                 WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
                   AND (?::text IS NULL OR p.city_id = ?)" . ($withSuggestions ? '' : ' AND NOT p.is_suggestion') . "
-                ORDER BY p.is_suggestion, p.vote_count DESC, p.approved_at DESC, p.id
+                ORDER BY p.is_suggestion, p.vote_count DESC, p.created_at ASC, p.id
                 LIMIT 1
             ");
             $stmt->execute([$challengeId, $cityId, $cityId]);

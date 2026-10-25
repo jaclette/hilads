@@ -12,15 +12,17 @@ final class DailyResultsTest extends TestCase
                 'local_vote_count' => $local, 'approved_at' => $approved];
     }
 
-    public function testTiesGoToLocalVotesThenEarliestApproval(): void
+    public function testTiesGoToTheEarliestPostedNeverToLocalVotes(): void
     {
         $ranked = DailyResults::rankProofs([
             self::proof('a', 'city_1', 3, 0, '2026-11-02 09:00:00+00'),
-            self::proof('b', 'city_1', 3, 1, '2026-11-02 12:00:00+00'),   // same votes, one more local vote
+            self::proof('b', 'city_1', 3, 1, '2026-11-02 12:00:00+00'),   // same votes, one more local vote: no help
             self::proof('c', 'city_1', 5, 0, '2026-11-02 20:00:00+00'),   // most votes
             self::proof('d', 'city_1', 3, 0, '2026-11-02 08:00:00+00'),   // ties with a, approved earlier
+            ['created_at' => '2026-11-02 07:00:00+00'] + self::proof('e', 'city_1', 3, 0, '2026-11-02 13:00:00+00'),   // posted first, approved later
+            self::proof('f', 'city_1', 3, 0, '2026-11-02 09:00:00+00'),   // ties with a on everything: the id
         ]);
-        $this->assertSame(['c', 'b', 'd', 'a'], array_column($ranked, 'id'));
+        $this->assertSame(['c', 'e', 'd', 'a', 'f', 'b'], array_column($ranked, 'id'));
     }
 
     public function testPlanTop3NeedsVotesAndCityBestNeedsALiveCity(): void

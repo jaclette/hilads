@@ -22,11 +22,11 @@ final class DailyLeaderboardTest extends TestCase
     {
         $ranked = DailyLeaderboard::withRanks([
             self::proof('a', null, 3, 0, '2026-11-02 09:00:00+00'),
-            self::proof('b', null, 3, 1, '2026-11-02 12:00:00+00'),   // more local votes: listed first
+            self::proof('b', null, 3, 1, '2026-11-02 12:00:00+00'),   // posted later: listed after, local votes don't count
             self::proof('c', null, 5),
             self::proof('d', null, 1),
         ]);
-        $this->assertSame([['c', 1], ['b', 2], ['a', 2], ['d', 4]], self::ranks($ranked));
+        $this->assertSame([['c', 1], ['a', 2], ['b', 2], ['d', 4]], self::ranks($ranked));
     }
 
     public function testNothingIsRankedBelowTheMinimumProofs(): void

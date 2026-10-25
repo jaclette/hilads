@@ -52,7 +52,7 @@ final class DailyLeaderboard
      * [cityId, rows], the city with the best proof first. Blocked authors are
      * hidden without renumbering. $mine is the viewer's approved proof row
      * (id, city_id, vote_count) or null. Rows need user_id, city_id,
-     * vote_count, local_vote_count, approved_at, id.
+     * vote_count, created_at (else approved_at), id.
      */
     public static function build(int $approvedCount, array $rows, array $liveCityIds, array $blockedUserIds, ?array $mine): array
     {
@@ -212,7 +212,7 @@ final class DailyLeaderboard
             $count  = (int) $counts['n'];
 
             $stmt = $pdo->prepare("
-                SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.is_local, p.is_demo,
+                SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.created_at, p.is_local, p.is_demo,
                        p.photo_url, u.username, u.display_name, u.profile_photo_url, ch.name AS city_name,
                        (lp.user_id IS NOT NULL) AS author_local_pass
                 FROM daily_proofs p

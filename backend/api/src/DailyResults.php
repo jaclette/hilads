@@ -24,15 +24,19 @@ final class DailyResults
     // ── Pure helpers (unit-tested) ────────────────────────────────────────────
 
     /**
-     * Rows ordered best first: votes, then local votes, then earliest approval
-     * (then id, so the order is stable). Rows need vote_count,
-     * local_vote_count, approved_at, id.
+     * Rows ordered best first, the one rule everywhere a photo is ranked (the
+     * podium, the leaderboard, a city's or a country's best, the tour; the app
+     * and the web's compareCountryProofs): the most votes, then the earliest
+     * posted (the first to post keeps the spot until someone gets more votes),
+     * then the id, so the order is stable. Rows need vote_count, created_at
+     * (else approved_at), id.
      */
     public static function rankProofs(array $rows): array
     {
-        usort($rows, static function (array $a, array $b): int {
-            return [(int) $b['vote_count'], (int) $b['local_vote_count'], strtotime((string) $a['approved_at']), $a['id']]
-               <=> [(int) $a['vote_count'], (int) $a['local_vote_count'], strtotime((string) $b['approved_at']), $b['id']];
+        $posted = static fn(array $r): int => (int) strtotime((string) ($r['created_at'] ?? $r['approved_at'] ?? ''));
+        usort($rows, static function (array $a, array $b) use ($posted): int {
+            return [(int) $b['vote_count'], $posted($a), (string) $a['id']]
+               <=> [(int) $a['vote_count'], $posted($b), (string) $b['id']];
         });
         return $rows;
     }
@@ -101,7 +105,7 @@ final class DailyResults
     {
         $pdo  = Database::pdo();
         $stmt = $pdo->prepare("
-            SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at
+            SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.created_at
             FROM daily_proofs p
             JOIN users u ON u.id = p.user_id
             WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT u.is_demo AND NOT p.is_suggestion
