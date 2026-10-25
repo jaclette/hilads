@@ -3,9 +3,16 @@
  * a country's photos best first, and countries best first wherever they're compared.
  */
 
-/** A country's photos: the most liked, then the most recent (the server's top photo rule). */
+/**
+ * Photos, best first - the one rule everywhere a photo is ranked: the most
+ * liked, then the earliest posted (the first to post keeps the spot until
+ * someone gets more likes), then the id. The server ranks by the same rule
+ * (DailyResults::rankProofs): each country's top photo, the podium, the tour.
+ */
 export function compareCountryProofs(a, b) {
-  return (b.voteCount - a.voteCount) || ((b.approvedAt ?? b.createdAt ?? 0) - (a.approvedAt ?? a.createdAt ?? 0))
+  return (b.voteCount - a.voteCount)
+    || ((a.createdAt ?? a.approvedAt ?? 0) - (b.createdAt ?? b.approvedAt ?? 0))
+    || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
 }
 
 /** A country's photos in that order, its top photo (the mosaic tile's) always first. */

@@ -10,7 +10,7 @@ import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import { FlagSticker, onFillOf, plain, themeColor } from '../joy/Joy'
 import { AnswerChip, captionRepeatsAnswer } from './compareShared'
-import { lastCountries } from './countryOrder'
+import { lastCountries, rankCountryProofs } from './countryOrder'
 import { flushSeen, markSeen } from './seen'
 import {
   LocalPassBadge, RoleLabel, VotersSheet, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc,
@@ -27,7 +27,9 @@ const DOUBLE_TAP_MS = 280
  * under them. Each photo: its player (opens the profile), city, answer,
  * caption and place; a big heart to vote (a double tap on the photo votes
  * too, with a heart burst) and Share. The end: the app to play. `proofId`
- * (a vote notification, a strip photo) opens on that photo, the others follow.
+ * (a vote notification, a strip photo) opens on that photo, the others follow;
+ * `country` (Today's stories row, a mosaic tile) plays that country's photos
+ * best first, then the next countries'.
  */
 export default function PhotosScreen({ tab: initialTab = 'world', proofId = null, country = null, source = 'today', onBack }) {
   const { t } = useDc()
@@ -79,14 +81,17 @@ export default function PhotosScreen({ tab: initialTab = 'world', proofId = null
   }
   useEffect(load, [tab]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // A country's story (Today's stories row): its photos, then the next countries', in Today's order.
+  // A country's story (Today's stories row, a mosaic tile): its photos best first (its top photo
+  // leading, rankCountryProofs), then the next countries' the same way, in Today's order.
   const story = useMemo(() => {
     const groups = country ? lastCountries()?.items ?? [] : []
     const at = groups.findIndex(g => g.country === country)
-    if (at < 0) return null
-    const ids = [...groups.slice(at), ...groups.slice(0, at)].flatMap(g => g.ids)
+    if (at < 0 || !proofs) return null
+    const byId = new Map(proofs.map(p => [p.id, p]))
+    const ids = [...groups.slice(at), ...groups.slice(0, at)].flatMap(g =>
+      rankCountryProofs(g.ids.map(id => byId.get(id)).filter(Boolean), g.top.id).map(p => p.id))
     return new Map(ids.map((id, i) => [id, i]))
-  }, [country])
+  }, [country, proofs])
 
   const photos = useMemo(() => {
     if (story && tab === 'world') return [...(proofs ?? [])].sort((a, b) => (story.get(a.id) ?? 1e9) - (story.get(b.id) ?? 1e9))

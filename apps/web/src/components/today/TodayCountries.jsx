@@ -8,7 +8,7 @@ import { openAppModal } from '../AppModal'
 import Icon from '../Icon'
 import { FlagSticker, themeColor } from '../joy/Joy'
 import { answerText } from '../daily/compareShared'
-import { compareCountryGroups, rememberCountries } from '../daily/countryOrder'
+import { compareCountryGroups, compareCountryProofs, rememberCountries } from '../daily/countryOrder'
 import { RankMedal, seedProofs, useDaily, useDc, useHere, useVoteCount } from '../daily/dailyShared'
 import { hasUnseen, useSeen } from '../daily/seen'
 import WorldTourViewer from '../daily/WorldTour'
@@ -24,7 +24,8 @@ const MOSAIC_MAX = 6
  *   that country, the next countries following.
  * - the mosaic, "Same challenge. Different worlds.": up to 6 countries in the
  *   shared order (my country first, then the most voted), each with its top
- *   photo, its answer large and its votes; "See all" opens every country's
+ *   photo, its answer large and its votes (a tile opens Today's photos on that
+ *   photo, its country's other photos next, like a story); "See all" opens every country's
  *   photos. "Represent your city" (the app, photos are posted there) fills the
  *   free slot of an odd grid, else a banner under it.
  * Players' photos only (never a Hilads pick).
@@ -102,7 +103,7 @@ export default function TodayCountries({ today }) {
           </div>
           {data.items.length === 0 && <p className="dc-muted">{t('countries.emptyBody')}</p>}
           <div className="tc-grid">
-            {tiles.map(g => <Tile key={g.country} group={g} onOpen={() => { track('today_countries_tile', { country: g.country, platform_surface: 'web' }); openDaily('photos', { proofId: g.top.id, source: 'today_mosaic' }) }} />)}
+            {tiles.map(g => <Tile key={g.country} group={g} onOpen={() => { track('today_countries_tile', { country: g.country, platform_surface: 'web' }); openDaily('photos', { country: g.country, source: 'today_mosaic' }) }} />)}
             {canPlay && tiles.length % 2 === 1 && <button type="button" className="tc-tile tc-represent" onClick={play}>{represent}</button>}
           </div>
           {canPlay && tiles.length % 2 === 0 && <button type="button" className="tc-banner" onClick={play}>{represent}<Icon name="chevron-forward" size={18} /></button>}
@@ -132,7 +133,7 @@ function Tile({ group, onOpen }) {
 
 /**
  * Yesterday's recap, one card (the app's TodayTour): the winning photo
- * (yesterday's #1, else the most voted), "Yesterday", the question, the
+ * (yesterday's #1, else the best: compareCountryProofs), "Yesterday", the question, the
  * winner's flag, city and answer, how many cities played; "Watch" and the
  * card open yesterday's tour at the winner.
  */
@@ -151,8 +152,10 @@ export function YesterdayRecap({ today }) {
   }, [loaded, cityId, i18n.language])
   const slides = tour?.slides ?? []
   if (!tour || slides.length === 0) return null
+  // The winner: yesterday's #1, else the best photo (the shared rule: most liked, then the earliest posted).
   let at = slides.findIndex(s => s.podium === 1)
-  if (at < 0) at = slides.reduce((best, s, i) => (s.proof.voteCount > slides[best].proof.voteCount ? i : best), 0)
+  if (at < 0) at = slides.reduce((best, s, i) => (compareCountryProofs(s.proof, slides[best].proof) < 0 ? i : best), 0)
+  const cities = new Set(slides.map(s => s.city.id)).size   // a slide per photo: several per city
   const win = slides[at]
   const answer = win.proof.answer && !win.proof.backHome ? answerText(win.proof.answer, i18n.language) : null
   const question = tour.challenge.compare?.question ?? tour.challenge.text
@@ -171,7 +174,7 @@ export function YesterdayRecap({ today }) {
         <span className="tc-recap-body">
           <span className="tc-recap-q">{question}</span>
           <span className="tc-city"><FlagSticker country={win.city.country} size={16} />{shortCityName(win.city.name)}{answer && <span className="tc-recap-answer"> · {answer}</span>}</span>
-          <span className="dc-muted">{t('recap.cities', { count: slides.length })}</span>
+          <span className="dc-muted">{t('recap.cities', { count: cities })}</span>
         </span>
       </button>
       {open !== null && <WorldTourViewer tour={tour} start={open} onClose={() => setOpen(null)} />}

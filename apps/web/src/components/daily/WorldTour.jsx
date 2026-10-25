@@ -36,7 +36,7 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
     if (seen.current.has(index)) return
     seen.current.add(index)
     if (index < slides.length) track('world_tour_slide_viewed', { city: slides[index].city.name, index, date: tour.date, platform_surface: 'web' })
-    else track('world_tour_completed', { date: tour.date, cities: slides.length, platform_surface: 'web' })
+    else track('world_tour_completed', { date: tour.date, cities: new Set(slides.map(s => s.city.id)).size, photos: slides.length, platform_surface: 'web' })
   }, [index]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const go = (next) => {
