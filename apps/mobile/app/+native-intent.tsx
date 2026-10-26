@@ -16,12 +16,17 @@ function canonicalizeChallenge(p: string): string {
   return p.replace(/\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})(\b|$)/i, '/challenge/$1$2');
 }
 
-// hilads.live/today (any locale) → today's Daily Challenge sheet. The app
+// hilads.live/today (any locale) → today's Daily Challenge sheet, and a past
+// challenge's web page /challenge/{date}-{slug} → that day's sheet. The app
 // route is /daily/[date]; source=link lets the sheet track daily_link_opened.
+// The web archive /challenges → the app's past challenges.
 function rewriteToday(prefix: string, pathOnly: string, suffix: string): string | null {
-  if (pathOnly !== '/today' && pathOnly !== '/today/') return null;
   const extra = suffix.startsWith('?') ? '&' + suffix.slice(1) : '';
-  return `${prefix}/daily/today?source=link${extra}`;
+  if (pathOnly === '/today' || pathOnly === '/today/') return `${prefix}/daily/today?source=link${extra}`;
+  const past = pathOnly.match(/^\/challenge\/(\d{4}-\d{2}-\d{2})(?:-[a-z0-9-]*)?\/?$/);
+  if (past) return `${prefix}/daily/${past[1]}?source=link${extra}`;
+  if (pathOnly === '/challenges' || pathOnly === '/challenges/') return `${prefix}/daily/archive${suffix}`;
+  return null;
 }
 
 export function redirectSystemPath({ path }: { path: string; initial: boolean }): string {
