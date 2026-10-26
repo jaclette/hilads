@@ -21,6 +21,7 @@ import { coverImage } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PhotoCredit, PickBadge } from '../map/Pick'
 import { Wordmark, themeColor } from '../joy/Joy'
+import { SeasonalDayIcon, SeasonalHeroDecor, SeasonalTeaser, isEventDay, setSeasonalEvent, useSeasonal, useSeasonalAttr, useSeasonalLive } from '../event/seasonal'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** Brand term: English in every locale. */
@@ -44,6 +45,8 @@ function distance(m, lang) {
  */
 export default function TodayScreen({ header }) {
   const { i18n } = useDc()
+  // A seasonal event's live look (Halloween...) re-colors the whole tab.
+  const seasonalAttr = useSeasonalAttr()
   const { cityId, here, hereVersion } = useDaily()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -58,6 +61,7 @@ export default function TodayScreen({ header }) {
         setData(d)
         setLastHere(d.here)
         setLastToday(d)
+        setSeasonalEvent(d.event)
         // The sheet's photos and the Compare board, so the hero's tap opens them ready.
         if (d.challenge) {
           fetchDailySheet(d.challenge.date, { scope: 'world', cityId, locale: i18n.language }).catch(() => {})
@@ -71,11 +75,13 @@ export default function TodayScreen({ header }) {
   }, [cityId, i18n.language, hereKey, hereVersion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="full-page full-page--tab today-page">
+    <div className="full-page full-page--tab today-page" {...seasonalAttr}>
       {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
       <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
         <Ticket data={data} loading={loading} />
+        {/* A seasonal event's countdown (teaser days). */}
+        <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
         <TodayCountries today={data} />
         {/* Yesterday's recap: the winning photo, the question, how many cities played. */}
@@ -157,6 +163,7 @@ let tipUntil = 0
 
 function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
+  const seasonal = useSeasonalLive()
   const { t: tc } = useTranslation('common')
   const { scope, openDaily, locateHere } = useDaily()
   const [showOriginal, toggleOriginal] = useOriginal()
@@ -260,7 +267,9 @@ function Ticket({ data, loading }) {
   const photo = cover
   const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text)
   // Nobody has answered for my city yet: "Be Saigon's first answer".
-  const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
+  // A seasonal event's live day (Halloween: "Haunt Lisbon 👻") replaces every version.
+  const ctaLabel = seasonal ? (cityShort ? t(seasonal.theme.copy.cta, { city: cityShort }) : t(seasonal.theme.copy.ctaNoCity))
+    : !cityShort ? t('ctaAnswerNoCity')
     : presence && !presence.represented ? tc('represent.beFirst', { city: cityShort })
     : t('ctaAnswer', { city: cityShort })
 
@@ -268,6 +277,7 @@ function Ticket({ data, loading }) {
     <div className="today-hero dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
          aria-label={`${DAILY_CHALLENGE}${theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
       {photo && <img className="today-hero-photo" {...coverImage(photo)} onError={thumbFallback(photo)} alt="" fetchPriority="high" decoding="async" />}
+      <SeasonalHeroDecor />
       <div className="today-hero-top">
         {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
         <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>
@@ -323,6 +333,9 @@ function Ticket({ data, loading }) {
 /** The week strip: the streak (→ calendar), tomorrow's theme, Monday to Sunday, "Propose a challenge". */
 function Week({ today }) {
   const { t, i18n } = useDc()
+  // A seasonal event (teaser, live, recap): its days show its icon (Halloween: a pumpkin).
+  const seasonal = useSeasonal()
+  const dayIcon = (date, size, fallback) => (isEventDay(seasonal, date) ? <SeasonalDayIcon themeKey={seasonal.key} size={size} /> : fallback)
   const { account, openDaily, needAccount } = useDaily()
   const [cal, setCal] = useState(null)
   const [peek, setPeek] = useState(false)
@@ -388,7 +401,7 @@ function Week({ today }) {
                 {state === 'done' ? <Icon name="checkmark" size={18} />
                   : state === 'pending' ? <Icon name="hourglass-outline" size={17} />
                   : state === 'missed' ? <Icon name="close" size={17} />
-                  : theme ? <Icon name={themeIcon(theme, special)} size={17} /> : null}
+                  : theme ? dayIcon(date, 17, <Icon name={themeIcon(theme, special)} size={17} />) : null}
               </span>
             </button>
           )
@@ -396,7 +409,7 @@ function Week({ today }) {
       </div>
       {peek && tomorrowTheme && (
         <p className="week-peek" style={ROW} role="status">
-          <Icon name={themeIcon(tomorrowTheme.key, tomorrowSpecial)} size={16} />{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}
+          {dayIcon(addDays(current, 1), 16, <Icon name={themeIcon(tomorrowTheme.key, tomorrowSpecial)} size={16} />)}{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}
         </p>
       )}
       {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}

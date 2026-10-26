@@ -1439,6 +1439,17 @@
       "in_other": "In {{city}} · {{count}} foto's",
       "first": "Wees de eerste in {{city}}",
       "seeMine": "Bekijk mijn foto"
+    },
+    "event": {
+      "halloween": {
+        "teaser_one": "🎃 Halloweenjacht morgen. Elke stad, één griezelige foto.",
+        "teaser_other": "🎃 Halloweenjacht over {{count}} dagen. Elke stad, één griezelige foto.",
+        "cta": "Spook door {{city}} 👻",
+        "ctaNoCity": "Doe mee aan de jacht 👻",
+        "played_one": "In {{count}} land spookt het 🎃",
+        "played_other": "In {{count}} landen spookt het 🎃",
+        "represent": "Laat het spoken in je stad 👻"
+      }
     }
   }
 }

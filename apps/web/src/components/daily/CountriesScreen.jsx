@@ -13,6 +13,7 @@ import {
   EarlyBadge, LocalPassBadge, ProofViewer, RoleLabel, SheetSkeleton, VoteButton, getLastToday, personName, seedProofs,
   useCountdown, useDaily, useDc, useHere,
 } from './dailyShared'
+import { SeasonalZone } from '../event/seasonal'
 
 /** The server lists at most 50 photos per call. */
 const BATCH = 50
@@ -26,7 +27,12 @@ const BATCH = 50
  * today), `country` scrolls to that section, `sort` 'top10' opens on Top 10.
  * A photo opens Today's photos on it (a past day: on its own).
  */
-export default function CountriesScreen({ date: dateParam = null, country = null, sort: initialSort = 'country', source = 'today', onBack }) {
+// A seasonal event's live look (Halloween...) re-colors the screen.
+export default function CountriesScreen(props) {
+  return <SeasonalZone><CountriesScreenContent {...props} /></SeasonalZone>
+}
+
+function CountriesScreenContent({ date: dateParam = null, country = null, sort: initialSort = 'country', source = 'today', onBack }) {
   const { t, i18n } = useDc()
   const { openDaily } = useDaily()
   const here = useHere()

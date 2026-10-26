@@ -1439,6 +1439,17 @@
       "in_other": "In {{city}} · {{count}} photos",
       "first": "Be the first in {{city}}",
       "seeMine": "See my photo"
+    },
+    "event": {
+      "halloween": {
+        "teaser_one": "🎃 Halloween hunt tomorrow. Every city, one spooky photo.",
+        "teaser_other": "🎃 Halloween hunt in {{count}} days. Every city, one spooky photo.",
+        "cta": "Haunt {{city}} 👻",
+        "ctaNoCity": "Join the hunt 👻",
+        "played_one": "{{count}} country is haunted 🎃",
+        "played_other": "{{count}} countries are haunted 🎃",
+        "represent": "Haunt your city 👻"
+      }
     }
   }
 }

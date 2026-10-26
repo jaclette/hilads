@@ -17806,3 +17806,72 @@ button.dch-tile { cursor: pointer; }
 .wb-text { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-align: left; }
 @keyframes wb-pop { from { opacity: 0; transform: rotate(var(--r, 0deg)) scale(.8); } to { opacity: 1; transform: rotate(var(--r, 0deg)) scale(1); } }
 @media (prefers-reduced-motion: reduce) { .wb-bubble { animation: none; } }
+
+/* ── Seasonal events (components/event/seasonal.jsx) ───────────────────────────
+   The live palette on a Daily screen's root ([data-event]), the same in light
+   and dark mode: Halloween = deep night purple, pumpkin orange accents. Every
+   text pair is WCAG AA (text 14.6:1 on a card, muted 7.6:1, links 8.3:1, white
+   on the primary 4.7:1, ink on the CTA 7.7:1). */
+[data-event="halloween"] {
+  --bg: #1A1030;
+  --surface: #251842;
+  --surface2: #2E2050;
+  --bg2: #251842;
+  --border: #3D2A64;
+  --line: #3D2A64;
+  --separator: rgba(255, 255, 255, 0.10);
+  --text: #F6F0FF;
+  --muted: #C3B5DE;
+  --muted2: #C3B5DE;
+  --text-muted: #C3B5DE;
+  --accent: #FF8A1F;
+  --accent2: #FFA552;
+  --hot-text: #FFA552;
+  --hot-dot: #FF8A1F;
+  --primary: #C2510A;
+  --primary-text: #FFA552;
+  --primary-tint: #4A2A3A;
+  --primary-on-tint: #FFC48A;
+  --cta: #FF8A1F;
+  --on-cta: #1A1030;
+  --step-bg: #2A1C4A;
+  --elevated: #2A1C4A;
+  --input-bg: #140C26;
+  --other-bg: #2A1C4A;
+  --flag-line: rgba(255, 255, 255, 0.28);
+  --overlay-weak: rgba(255, 255, 255, 0.04);
+  --overlay: rgba(255, 255, 255, 0.07);
+  --overlay-strong: rgba(255, 255, 255, 0.12);
+  --scrim: rgba(0, 0, 0, 0.6);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: dark;
+}
+
+/* Teaser: the countdown banner under Today's hero (16.2:1 on the night ground). */
+.seasonal-teaser { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 18px;
+                   background: #1A1030; border: 1.5px solid #3D2A64; color: #F6F0FF; font-size: 14px; line-height: 20px; font-weight: 700; }
+.seasonal-teaser svg { flex-shrink: 0; }
+
+/* The live hero: cobwebs in the top corners, ghosts floating slowly over the photo. */
+.seasonal-decor { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.seasonal-web { position: absolute; top: 0; }
+.seasonal-web--left { left: 0; }
+.seasonal-web--right { right: 0; transform: scaleX(-1); }
+.seasonal-ghost { position: absolute; opacity: .85; animation: seasonal-float var(--d, 3.6s) ease-in-out var(--delay, 0s) infinite alternate; }
+@keyframes seasonal-float {
+  from { transform: translate(-2.5px, 0) rotate(-3deg); opacity: .75; }
+  to   { transform: translate(2.5px, -8px) rotate(3deg); opacity: .95; }
+}
+@media (prefers-reduced-motion: reduce) { .seasonal-ghost { animation: none; } }
+
+/* The header mark's witch hat. */
+.v3-mark-wrap { position: relative; flex-shrink: 0; display: block; }
+.seasonal-hat { position: absolute; left: -7px; top: -10px; transform: rotate(-18deg); pointer-events: none; }
+
+/* A mosaic tile's badge. */
+.tc-tile { position: relative; }
+.seasonal-badge { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 14px;
+                  background: rgba(26, 16, 48, 0.72); display: flex; align-items: center; justify-content: center; font-size: 16px; line-height: 1; }
+.seasonal-zone { display: contents; }

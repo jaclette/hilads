@@ -1435,6 +1435,15 @@
       "in_other": "{{city}} · {{count}}枚の写真",
       "first": "{{city}}で一番乗りしよう",
       "seeMine": "自分の写真を見る"
+    },
+    "event": {
+      "halloween": {
+        "teaser_other": "🎃 ハロウィンハントまであと{{count}}日。どの街も、ちょっと怖い写真を1枚。",
+        "cta": "{{city}}にお化けを 👻",
+        "ctaNoCity": "ハントに参加 👻",
+        "played_other": "{{count}}か国にお化けが出没中 🎃",
+        "represent": "あなたの街にお化けを 👻"
+      }
     }
   }
 }

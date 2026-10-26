@@ -15,6 +15,7 @@ import { flushSeen, markSeen } from './seen'
 import {
   LocalPassBadge, RoleLabel, VotersSheet, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc,
 } from './dailyShared'
+import { SeasonalZone } from '../event/seasonal'
 
 const LIMIT = 60
 /** Two taps closer than this are a double tap (a vote). */
@@ -31,7 +32,12 @@ const DOUBLE_TAP_MS = 280
  * `country` (Today's stories row, a mosaic tile) plays that country's photos
  * best first, then the next countries'.
  */
-export default function PhotosScreen({ tab: initialTab = 'world', proofId = null, country = null, source = 'today', onBack }) {
+// A seasonal event's live look (Halloween...) re-colors the screen.
+export default function PhotosScreen(props) {
+  return <SeasonalZone><PhotosScreenContent {...props} /></SeasonalZone>
+}
+
+function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, country = null, source = 'today', onBack }) {
   const { t } = useDc()
   const { cityId, account, openDaily, openProfile } = useDaily()
   const today = getLastToday()

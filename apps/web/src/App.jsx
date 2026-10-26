@@ -17,6 +17,7 @@ import MapScreen from './components/map/MapScreen'
 import { deviceStore } from './components/map/spotsShared'
 import { openAppModal } from './components/AppModal'
 import TodayScreen from './components/today/TodayScreen'
+import { LogoHat } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
 import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import ChallengeScreen from './components/daily/ChallengeScreen'
@@ -3805,7 +3806,8 @@ export default function App() {
   function renderAppHeader() {
     return (
       <div className="v3-header">
-        <img className="v3-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
+        {/* A seasonal event's live day: the mark wears its hat. */}
+        <span className="v3-mark-wrap"><img className="v3-mark" src="/logo/icon.svg" alt="" aria-hidden="true" /><LogoHat /></span>
         {renderScopePill()}
         {/* Private messages, with the unread dot; a guest is asked to sign up (like the app). */}
         <button type="button" className="v3-round" aria-label={t('header.messages')}

@@ -17,6 +17,7 @@ import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
   StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofViewer, useHere, getLastToday, SheetSkeleton, challengeCover,
 } from './dailyShared'
+import { SeasonalZone } from '../event/seasonal'
 
 /**
  * A Daily Challenge on the web (the app's /daily/[date]), made to make people
@@ -29,7 +30,12 @@ import {
  * "Play" (the app: photos are posted there) or "See my photo". The photo
  * grids and Top 10 live in "See all". `proofId` opens that photo on arrival.
  */
-export default function ChallengeScreen({ date: dateParam = 'today', ...rest }) {
+// A seasonal event's live look (Halloween...) re-colors the screen.
+export default function ChallengeScreen(props) {
+  return <SeasonalZone><ChallengeScreenContent {...props} /></SeasonalZone>
+}
+
+function ChallengeScreenContent({ date: dateParam = 'today', ...rest }) {
   const { i18n } = useDc()
   const { cityId } = useDaily()
   // From the hero, today's date is already known (no loader).

@@ -1443,6 +1443,19 @@
       "in_other": "A {{city}} · {{count}} foto",
       "first": "Sii il primo a {{city}}",
       "seeMine": "Vedi la mia foto"
+    },
+    "event": {
+      "halloween": {
+        "teaser_one": "🎃 Caccia di Halloween domani. Ogni città, una foto da brividi.",
+        "teaser_many": "🎃 Caccia di Halloween tra {{count}} giorni. Ogni città, una foto da brividi.",
+        "teaser_other": "🎃 Caccia di Halloween tra {{count}} giorni. Ogni città, una foto da brividi.",
+        "cta": "Infesta {{city}} 👻",
+        "ctaNoCity": "Unisciti alla caccia 👻",
+        "played_one": "{{count}} paese è infestato 🎃",
+        "played_many": "{{count}} paesi sono infestati 🎃",
+        "played_other": "{{count}} paesi sono infestati 🎃",
+        "represent": "Infesta la tua città 👻"
+      }
     }
   }
 }

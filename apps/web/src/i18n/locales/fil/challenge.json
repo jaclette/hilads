@@ -1439,6 +1439,17 @@
       "in_other": "Sa {{city}} · {{count}} litrato",
       "first": "Ikaw na ang una sa {{city}}",
       "seeMine": "Tingnan ang litrato ko"
+    },
+    "event": {
+      "halloween": {
+        "teaser_one": "🎃 Halloween hunt bukas. Bawat lungsod, isang nakakatakot na litrato.",
+        "teaser_other": "🎃 Halloween hunt sa loob ng {{count}} araw. Bawat lungsod, isang nakakatakot na litrato.",
+        "cta": "Multuhin ang {{city}} 👻",
+        "ctaNoCity": "Sumali sa hunt 👻",
+        "played_one": "{{count}} bansa ang minumulto 🎃",
+        "played_other": "{{count}} bansa ang minumulto 🎃",
+        "represent": "Multuhin ang lungsod mo 👻"
+      }
     }
   }
 }

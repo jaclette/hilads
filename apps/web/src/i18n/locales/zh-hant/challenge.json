@@ -1434,6 +1434,15 @@
       "in_other": "{{city}} · {{count}} 張照片",
       "first": "成為{{city}}的第一個",
       "seeMine": "查看我的照片"
+    },
+    "event": {
+      "halloween": {
+        "teaser_other": "🎃 {{count}} 天後開啟萬聖節尋鬼。每座城市，一張嚇人的照片。",
+        "cta": "讓{{city}}鬧鬼 👻",
+        "ctaNoCity": "加入尋鬼 👻",
+        "played_other": "{{count}} 個國家正在鬧鬼 🎃",
+        "represent": "讓你的城市鬧鬼 👻"
+      }
     }
   }
 }

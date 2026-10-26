@@ -12,6 +12,7 @@ import { compareCountryGroups, compareCountryProofs, rememberCountries } from '.
 import { RankMedal, seedProofs, useDaily, useDc, useHere, useVoteCount } from '../daily/dailyShared'
 import { hasUnseen, useSeen } from '../daily/seen'
 import WorldTourViewer from '../daily/WorldTour'
+import { isEventDay, useSeasonal, useSeasonalLive } from '../event/seasonal'
 
 const MOSAIC_MAX = 6
 
@@ -36,6 +37,9 @@ export default function TodayCountries({ today }) {
   const here = useHere()
   useSeen()
   const [data, setData] = useState(null)
+  // A seasonal event's live day: its copy ("3 countries are haunted 🎃") and a badge on each tile.
+  const seasonal = useSeasonalLive()
+  const copy = seasonal?.theme.copy
   const challenge = today?.challenge ?? null
   const cityId = here?.id ?? today?.city?.id ?? null
 
@@ -65,7 +69,7 @@ export default function TodayCountries({ today }) {
   const represent = (
     <>
       <span className="tc-camera"><Icon name="camera-outline" size={24} /></span>
-      <span className="tc-represent-text">{t('countries.represent')}</span>
+      <span className="tc-represent-text">{t(copy?.represent ?? 'countries.represent')}</span>
     </>
   )
 
@@ -73,7 +77,7 @@ export default function TodayCountries({ today }) {
     <div className="tc">
       {data.items.length > 0 && (
         <div className="tc-block">
-          <p className="tc-title">{t('countries.played', { count: data.items.length })}</p>
+          <p className="tc-title">{t(copy?.played ?? 'countries.played', { count: data.items.length })}</p>
           <div className="tc-stories">
             {stories.map(g => {
               const unseen = hasUnseen(g)
@@ -103,7 +107,7 @@ export default function TodayCountries({ today }) {
           </div>
           {data.items.length === 0 && <p className="dc-muted">{t('countries.emptyBody')}</p>}
           <div className="tc-grid">
-            {tiles.map(g => <Tile key={g.country} group={g} onOpen={() => { track('today_countries_tile', { country: g.country, platform_surface: 'web' }); openDaily('photos', { country: g.country, source: 'today_mosaic' }) }} />)}
+            {tiles.map(g => <Tile key={g.country} group={g} badge={seasonal?.theme.emoji} onOpen={() => { track('today_countries_tile', { country: g.country, platform_surface: 'web' }); openDaily('photos', { country: g.country, source: 'today_mosaic' }) }} />)}
             {canPlay && tiles.length % 2 === 1 && <button type="button" className="tc-tile tc-represent" onClick={play}>{represent}</button>}
           </div>
           {canPlay && tiles.length % 2 === 0 && <button type="button" className="tc-banner" onClick={play}>{represent}<Icon name="chevron-forward" size={18} /></button>}
@@ -114,7 +118,7 @@ export default function TodayCountries({ today }) {
 }
 
 /** A mosaic tile: the country's top photo, its flag and city, its answer (else the caption) large, its votes. */
-function Tile({ group, onOpen }) {
+function Tile({ group, onOpen, badge }) {
   const { i18n } = useDc()
   const p = group.top
   const votes = useVoteCount(p)
@@ -122,6 +126,7 @@ function Tile({ group, onOpen }) {
   return (
     <button type="button" className="tc-tile" onClick={onOpen} aria-label={[shortCityName(group.city.name), line, votes].join(', ')}>
       <img className="tc-photo" src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" />
+      {badge && <span className="seasonal-badge" aria-hidden="true">{badge}</span>}
       <span className="tc-tile-body">
         <span className="tc-city"><FlagSticker country={group.country} size={16} />{shortCityName(group.city.name)}</span>
         <span className="tc-answer">{line}</span>
@@ -141,6 +146,8 @@ export function YesterdayRecap({ today }) {
   const { t, i18n } = useDc()
   const [tour, setTour] = useState(null)
   const [open, setOpen] = useState(null)
+  // Yesterday was a seasonal event's day (Halloween's recap): the label keeps its emoji.
+  const seasonal = useSeasonal()
   useBackLayer(open !== null, () => setOpen(null))
   const cityId = today?.city?.id ?? null
   const loaded = !!today
@@ -152,6 +159,7 @@ export function YesterdayRecap({ today }) {
   }, [loaded, cityId, i18n.language])
   const slides = tour?.slides ?? []
   if (!tour || slides.length === 0) return null
+  const recap = seasonal?.event.phase === 'recap' || isEventDay(seasonal, tour.date)
   // The winner: yesterday's #1, else the best photo (the shared rule: most liked, then the earliest posted).
   let at = slides.findIndex(s => s.podium === 1)
   if (at < 0) at = slides.reduce((best, s, i) => (compareCountryProofs(s.proof, slides[best].proof) < 0 ? i : best), 0)
@@ -163,7 +171,7 @@ export function YesterdayRecap({ today }) {
   return (
     <div className="today-card">
       <div className="today-card-head">
-        <span className="today-card-title">{t('recap.label')}</span>
+        <span className="today-card-title">{recap ? `${t('recap.label')} ${seasonal.theme.emoji}` : t('recap.label')}</span>
         <button type="button" className="dc-link" onClick={watch}>{t('tour.watch')}</button>
       </div>
       <button type="button" className="tc-recap" onClick={watch}>

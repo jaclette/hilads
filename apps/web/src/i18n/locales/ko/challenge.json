@@ -1434,6 +1434,15 @@
       "in_other": "{{city}} · 사진 {{count}}장",
       "first": "{{city}}에서 첫 번째가 되어 보세요",
       "seeMine": "내 사진 보기"
+    },
+    "event": {
+      "halloween": {
+        "teaser_other": "🎃 할로윈 헌트까지 {{count}}일. 도시마다 으스스한 사진 한 장.",
+        "cta": "{{city}}에 유령 출몰 👻",
+        "ctaNoCity": "헌트에 참여하기 👻",
+        "played_other": "{{count}}개국에 유령 출몰 중 🎃",
+        "represent": "우리 도시에 유령 출몰 👻"
+      }
     }
   }
 }
