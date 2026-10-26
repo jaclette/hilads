@@ -13,6 +13,7 @@ import Icon, { iconHtml } from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
 import HeaderArt from '../HeaderArt'
+import { SeasonalMapSky, setSeasonalEvent, useSeasonalLive } from '../event/seasonal'
 import { shortCityName } from '../../i18n/cityName'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PickBadge, PhotoCredit } from './Pick'
@@ -294,7 +295,9 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   useEffect(() => { setZoom(world ? WORLD_ZOOM : CITY_ZOOM) }, [world])
   const areaRef = useRef(null)
   const cityCenterRef = useRef(null)
-  const dark = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark'
+  // A seasonal event's live day: the night map (its palette is dark).
+  const seasonalLive = useSeasonalLive()
+  const dark = !!seasonalLive || (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark')
   const tiles = mapTiles(dark)
 
   useEffect(() => { track('web_map_opened', { city: cityName ?? null }) }, [cityName])
@@ -346,7 +349,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   // Today's challenge, for the empty city card.
   useEffect(() => {
     if (!channelId) return
-    fetchDailyToday(channelId, i18n.language).then(setToday).catch(() => {})
+    fetchDailyToday(channelId, i18n.language).then(d => { setSeasonalEvent(d?.event); setToday(d) }).catch(() => {})
   }, [channelId, i18n.language])
 
   useEffect(() => {
@@ -497,6 +500,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
           </button>
         )}
         {notice && <div className="wm-notice" role="status">{notice}</div>}
+        {view === 'map' && <SeasonalMapSky />}
         {tiles.mapbox && (
           <a className="wm-mapbox-logo" href="https://www.mapbox.com/" target="_blank" rel="noopener noreferrer" aria-label="Mapbox">mapbox</a>
         )}

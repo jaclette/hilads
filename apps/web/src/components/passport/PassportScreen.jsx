@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { LogoHat, setSeasonalEvent } from '../event/seasonal'
 import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends, fetchWeeklyRank } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag } from '../CityName'
@@ -44,7 +45,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
     let alive = true
     const set = (patch) => { if (alive) setCounts(c => ({ ...c, ...patch })) }
     fetchUserDaily(account.id, i18n.language).then(s => { if (alive) setStats(s) }).catch(() => {})
-    fetchDailyToday(cityKey, i18n.language).then(d => { if (alive) setToday(d) }).catch(() => {})
+    fetchDailyToday(cityKey, i18n.language).then(d => { setSeasonalEvent(d?.event); if (alive) setToday(d) }).catch(() => {})
     fetchMySpots().then(s => set({ spots: s.length })).catch(() => {})
     fetchMyProposals(i18n.language).then(p => set({ proposals: p.items.filter(x => x.status === 'pending').length })).catch(() => {})
     fetchUserFriends(account.id, { page: 1, limit: 1 }).then(f => set({ friends: f.total })).catch(() => {})
@@ -153,9 +154,13 @@ function Identity({ name, photo, mode, city, country }) {
   const local = mode === 'local'
   return (
     <div className="pp-identity">
-      {photo
-        ? <img className="pp-avatar" src={thumbUrl(photo)} alt="" />
-        : <span className="pp-avatar pp-avatar--empty">{(name.replace('@', '') || '?')[0].toUpperCase()}</span>}
+      {/* A seasonal event's live day: the passport photo wears the hat. */}
+      <span className="pp-avatar-wrap">
+        {photo
+          ? <img className="pp-avatar" src={thumbUrl(photo)} alt="" />
+          : <span className="pp-avatar pp-avatar--empty">{(name.replace('@', '') || '?')[0].toUpperCase()}</span>}
+        <LogoHat size={40} className="seasonal-hat seasonal-hat--avatar" />
+      </span>
       <div className="pp-identity-body">
         <span className="pp-name">{name}</span>
         <div className="pp-chips">

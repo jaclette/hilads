@@ -17,7 +17,7 @@ import MapScreen from './components/map/MapScreen'
 import { deviceStore } from './components/map/spotsShared'
 import { openAppModal } from './components/AppModal'
 import TodayScreen from './components/today/TodayScreen'
-import { LogoHat } from './components/event/seasonal'
+import { LogoHat, SeasonalDayIcon, TabGhost, useSeasonalLive } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
 import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import ChallengeScreen from './components/daily/ChallengeScreen'
@@ -1574,6 +1574,8 @@ export default function App() {
   const cityMsgBufferRef    = useRef([])           // { message } objects buffered during event mode
 
   const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
+  // A seasonal event's live day: Today's tab wears its icon (Halloween: a pumpkin).
+  const seasonalLive = useSeasonalLive()
   const installBannerUsesBottomNav = !showCityPicker && !showEventDrawer && !showPeopleDrawer
   const showInstallOnMainSurface = status === 'ready' && (
     (!showCityPicker && !showEventDrawer && !showPeopleDrawer && !showProfileDrawer && !showConversations && !showNotifications && !showCreateEvent && !showEditEvent)
@@ -5684,7 +5686,8 @@ export default function App() {
             return tabs.map(({ key, active, onClick, Icon }) => (
               <button key={key} type="button" className={`bottom-nav-tab${active ? ' active' : ''}`} onClick={onClick}
                       aria-current={active ? 'page' : undefined}>
-                <span className="bottom-nav-icon"><Icon /></span>
+                {active && <TabGhost />}
+                <span className="bottom-nav-icon">{key === 'today' && seasonalLive?.key === 'halloween' ? <SeasonalDayIcon themeKey="halloween" size={26} /> : <Icon />}</span>
                 <span className="bottom-nav-label">{t(`tabs.${key}`, { ns: 'common' })}</span>
               </button>
             ))

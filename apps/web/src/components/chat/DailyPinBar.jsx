@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchDailyToday } from '../../api'
+import { setSeasonalEvent } from '../event/seasonal'
 import { track } from '../../lib/analytics'
 import { deviceStore } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
@@ -20,7 +21,7 @@ export default function DailyPinBar() {
 
   useEffect(() => {
     let alive = true
-    fetchDailyToday(cityId, i18n.language).then(d => { if (alive) setData(d) }).catch(() => {})
+    fetchDailyToday(cityId, i18n.language).then(d => { setSeasonalEvent(d?.event); if (alive) setData(d) }).catch(() => {})
     return () => { alive = false }
   }, [cityId, i18n.language])
 

@@ -6,14 +6,20 @@
  * right so the title stays on a plain background. Decorative. Photos stay
  * reserved for the Daily Challenge cover on Today.
  */
+import { SeasonalHeaderDecor } from './event/seasonal'
+
 export default function HeaderArt({ kind }) {
   return (
+    <>
     <svg className="header-art" viewBox="0 0 160 96" aria-hidden="true" focusable="false"
          fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
       {kind === 'hi' && <Bubbles />}
       {kind === 'map' && <Contours />}
       {kind === 'passport' && <Stamp />}
     </svg>
+    {/* A seasonal event's live day: a cobweb and ghosts over the drawing. */}
+    <SeasonalHeaderDecor />
+    </>
   )
 }
 

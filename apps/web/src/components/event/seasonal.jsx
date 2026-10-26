@@ -53,6 +53,12 @@ export function setSeasonalEvent(event) {
   if (next?.event.id === current?.event.id && next?.event.phase === current?.event.phase
       && next?.event.startsInDays === current?.event.startsInDays) return
   current = next
+  // Live: the whole app wears the palette (index.css html[data-event]): every
+  // tab, the bottom bar, the sheets.
+  if (typeof document !== 'undefined') {
+    if (next?.event.phase === 'live') document.documentElement.setAttribute('data-event', next.key)
+    else document.documentElement.removeAttribute('data-event')
+  }
   listeners.forEach(l => l())
 }
 
@@ -119,12 +125,12 @@ export function SeasonalHeroDecor() {
   )
 }
 
-/** A witch hat on the header's "Hi" mark while the event is live. */
-export function LogoHat() {
+/** A witch hat on the header's "Hi" mark (or the passport photo: `size`) while the event is live. */
+export function LogoHat({ size = 25, className = 'seasonal-hat' }) {
   const live = useSeasonalLive()
   if (live?.key !== 'halloween') return null
   return (
-    <svg className="seasonal-hat" width="25" height="25" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <path d="M7.2 18.2 12.6 3.4c.4-1 1.7-1.3 2.4-.4l.4.6-1.6 1 2.2 13.6z" fill="#3B2266" />
       <rect x="8.3" y="14.6" width="8.6" height="2.4" rx="0.6" fill="#FF8A1F" />
       <ellipse cx="12" cy="18.6" rx="10.5" ry="2.6" fill="#2A1850" />
@@ -142,6 +148,54 @@ export function SeasonalDayIcon({ themeKey, size }) {
       <path d="M12 7c-1.5 1.6-2.3 3.9-2.3 6.3s.8 4.8 2.3 6.4" />
       <path d="M12 7c1.5 1.6 2.3 3.9 2.3 6.3s-.8 4.8-2.3 6.4" />
       <path d="M12 7c0-1.7.7-3 2.2-3.6" />
+    </svg>
+  )
+}
+
+/** A tab header's live touch (Hi, Map, Passport): a cobweb in the corner, ghosts floating over the drawing. */
+export function SeasonalHeaderDecor() {
+  const live = useSeasonalLive()
+  if (live?.key !== 'halloween') return null
+  return (
+    <div className="seasonal-header-decor" aria-hidden="true">
+      <Cobweb className="seasonal-web seasonal-web--right" />
+      <span className="seasonal-ghost" style={{ right: '96px', top: '18px', '--d': '3.6s', '--delay': '0s' }}><Ghost size={24} /></span>
+      <span className="seasonal-ghost" style={{ right: '40px', top: '52px', '--d': '4.2s', '--delay': '.9s' }}><Ghost size={15} /></span>
+    </div>
+  )
+}
+
+/** The bottom bar's live touch: a little ghost peeking over the active tab (hops in, then bobs). */
+export function TabGhost() {
+  const live = useSeasonalLive()
+  if (live?.key !== 'halloween') return null
+  return <span className="seasonal-tab-ghost" aria-hidden="true"><Ghost size={20} /></span>
+}
+
+/** The map's live sky: a crescent moon and bats crossing under the search bar. */
+export function SeasonalMapSky() {
+  const live = useSeasonalLive()
+  if (live?.key !== 'halloween') return null
+  return (
+    <div className="seasonal-sky" aria-hidden="true">
+      <svg className="seasonal-moon" width="54" height="54" viewBox="0 0 54 54">
+        <circle cx="27" cy="27" r="24" fill="#FFE7B0" opacity="0.18" />
+        <path d="M33 8a19 19 0 1 0 13 30A16 16 0 0 1 33 8z" fill="#FFD27A" />
+      </svg>
+      <span className="seasonal-bat" style={{ top: '24px', '--d': '9s', '--delay': '0s' }}><Bat size={44} /></span>
+      <span className="seasonal-bat" style={{ top: '78px', '--d': '12.5s', '--delay': '3.2s' }}><Bat size={32} /></span>
+      <span className="seasonal-bat" style={{ top: '48px', '--d': '15s', '--delay': '6.8s' }}><Bat size={24} /></span>
+    </div>
+  )
+}
+
+function Bat({ size }) {
+  return (
+    <svg width={size} height={size * 0.6} viewBox="0 0 24 14.4">
+      <path d="M12 4.2c-.5-1.3-1.3-2-2-2.2.3.7.3 1.4 0 1.9C8.4 2.6 5.6 1.6 1 3.4c1.9.6 3 1.9 3.2 3.6 1.6-.9 3.3-.6 4.4.5.9.9 1.7 2.3 3.4 4.3 1.7-2 2.5-3.4 3.4-4.3 1.1-1.1 2.8-1.4 4.4-.5.2-1.7 1.3-3 3.2-3.6-4.6-1.8-7.4-.8-9 .5-.3-.5-.3-1.2 0-1.9-.7.2-1.5.9-2 2.2z"
+            fill="#2A1850" stroke="#C3B5DE" strokeWidth="0.6" strokeLinejoin="round" />
+      <circle cx="11.1" cy="4.9" r="0.45" fill="#FF8A1F" />
+      <circle cx="12.9" cy="4.9" r="0.45" fill="#FF8A1F" />
     </svg>
   )
 }

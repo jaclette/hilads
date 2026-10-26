@@ -17808,10 +17808,12 @@ button.dch-tile { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .wb-bubble { animation: none; } }
 
 /* ── Seasonal events (components/event/seasonal.jsx) ───────────────────────────
-   The live palette on a Daily screen's root ([data-event]), the same in light
+   The live palette on the app ([data-event] on <html>, and a Daily screen's root), the same in light
    and dark mode: Halloween = deep night purple, pumpkin orange accents. Every
    text pair is WCAG AA (text 14.6:1 on a card, muted 7.6:1, links 8.3:1, white
    on the primary 4.7:1, ink on the CTA 7.7:1). */
+/* html[data-event]: the whole app on the live day (beats html[data-theme]). */
+html[data-event="halloween"],
 [data-event="halloween"] {
   --bg: #1A1030;
   --surface: #251842;
@@ -17875,3 +17877,38 @@ button.dch-tile { cursor: pointer; }
 .seasonal-badge { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 14px;
                   background: rgba(26, 16, 48, 0.72); display: flex; align-items: center; justify-content: center; font-size: 16px; line-height: 1; }
 .seasonal-zone { display: contents; }
+
+/* The live day, app-wide: the tab headers' drawing and the bottom bar take the palette. */
+html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28; }
+
+/* A tab header: a cobweb in the top corner, ghosts over the drawing. */
+.seasonal-header-decor { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+
+/* The bottom bar: a ghost peeking over the active tab, hopping in then bobbing. */
+.seasonal-tab-ghost { position: absolute; top: -16px; left: 50%; margin-left: -10px; pointer-events: none; z-index: 1;
+                      animation: seasonal-hop .42s cubic-bezier(.34, 1.8, .64, 1) both, seasonal-bob 1.3s ease-in-out .42s infinite alternate; }
+@keyframes seasonal-hop { from { transform: translateY(14px); opacity: .4; } to { transform: translateY(0); opacity: 1; } }
+@keyframes seasonal-bob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-3px) rotate(4deg); } }
+
+/* The map: a crescent moon and bats crossing the night map. */
+.seasonal-sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 450; }
+.seasonal-moon { position: absolute; right: 18px; top: 6px; }
+.seasonal-bat { position: absolute; left: 0; animation: seasonal-fly var(--d, 10s) linear var(--delay, 0s) infinite both; }
+.seasonal-bat svg { display: block; animation: seasonal-flap .18s ease-in-out infinite alternate; }
+@keyframes seasonal-fly {
+  0%   { transform: translate(-60px, 0); }
+  25%  { transform: translate(calc(25vw - 15px), -10px); }
+  50%  { transform: translate(calc(50vw), 10px); }
+  75%  { transform: translate(calc(75vw + 15px), -10px); }
+  100% { transform: translate(calc(100vw + 60px), 0); }
+}
+@keyframes seasonal-flap { from { transform: scaleY(1); } to { transform: scaleY(.45); } }
+
+/* The passport photo's hat. */
+.pp-avatar-wrap { position: relative; flex-shrink: 0; display: block; }
+.seasonal-hat--avatar { left: -12px; top: -16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .seasonal-tab-ghost, .seasonal-bat, .seasonal-bat svg { animation: none; }
+  .seasonal-bat { transform: translate(30vw, 0); }
+}
