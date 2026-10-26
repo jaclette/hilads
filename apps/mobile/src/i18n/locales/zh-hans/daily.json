@@ -671,5 +671,14 @@
     "in_other": "{{city}} · {{count}} 张照片",
     "first": "成为{{city}}的第一个",
     "seeMine": "查看我的照片"
+  },
+  "event": {
+    "halloween": {
+      "teaser_other": "🎃 {{count}} 天后开启万圣节寻鬼。每座城市，一张吓人的照片。",
+      "cta": "让{{city}}闹鬼 👻",
+      "ctaNoCity": "加入寻鬼 👻",
+      "played_other": "{{count}} 个国家正在闹鬼 🎃",
+      "represent": "让你的城市闹鬼 👻"
+    }
   }
 }

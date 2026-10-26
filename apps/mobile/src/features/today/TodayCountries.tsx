@@ -13,6 +13,7 @@ import { hasUnseen, useSeen } from '@/features/daily/seen';
 import { compareCountryGroups } from '@/features/daily/countryOrder';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { useHere } from '@/hooks/useDaily';
+import { useSeasonalLive } from '@/features/event/seasonal';
 import { track } from '@/services/analytics';
 import { Photo, SectionTitle } from '@/ui';
 import { FlagSticker, themeColor } from '@/ui/joy';
@@ -66,6 +67,9 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
   }, [challenge?.id, challenge?.isActive, here?.id, today?.city?.id, guestId]); // eslint-disable-line react-hooks/exhaustive-deps
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A seasonal event's live day: its copy ("3 countries are haunted 🎃") and a badge on each tile.
+  const seasonal = useSeasonalLive();
+  const copy = seasonal?.theme.copy;
 
   if (!challenge || !data) return null;
   // The server's order, kept fresh as photos get seen here: my country, then unseen, then the most recent.
@@ -103,7 +107,7 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
     <View style={styles.wrap} testID="today-countries">
       {items.length > 0 && (
         <View style={styles.block}>
-          <SectionTitle small title={t('countries.played', { count: items.length })} />
+          <SectionTitle small title={t(copy?.played ?? 'countries.played', { count: items.length })} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
             {items.map(g => {
               const unseen = hasUnseen(g);
@@ -119,7 +123,7 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
             })}
             {(canPlay || myProof) && (
               <TouchableOpacity style={styles.story} onPress={yourCity} accessibilityRole="button" testID="country-story-mine"
-                                accessibilityLabel={myProof ? t('vote.yours') : t('countries.represent')}>
+                                accessibilityLabel={myProof ? t('vote.yours') : t(copy?.represent ?? 'countries.represent')}>
                 <View style={[styles.ring, styles.dashed]}>
                   <Ionicons name={myProof ? 'image-outline' : 'add'} size={28} color={colors.primaryText} />
                 </View>
@@ -136,12 +140,12 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
                         action={items.length > 0 ? { label: t('today.seeAll'), onPress: () => router.push('/daily/countries?source=today_mosaic' as never) } : undefined} />
           {items.length === 0 && <Text style={styles.invite}>{t('countries.emptyBody')}</Text>}
           <View style={styles.grid}>
-            {tiles.map(g => <Tile key={g.country} group={g} onPress={() => openTile(g)} />)}
+            {tiles.map(g => <Tile badge={seasonal?.theme.emoji} key={g.country} group={g} onPress={() => openTile(g)} />)}
             {/* An odd grid: "Represent your city" fills its free slot. */}
             {canPlay && tiles.length % 2 === 1 && (
               <TouchableOpacity style={[styles.tile, styles.representTile]} onPress={play} accessibilityRole="button" testID="represent-tile">
                 <View style={styles.camera}><Ionicons name="camera-outline" size={28} color={colors.primaryText} /></View>
-                <Text style={styles.representText}>{t('countries.represent')}</Text>
+                <Text style={styles.representText}>{t(copy?.represent ?? 'countries.represent')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -149,7 +153,7 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
           {canPlay && tiles.length % 2 === 0 && (
             <TouchableOpacity style={styles.representBanner} onPress={play} accessibilityRole="button" testID="represent-tile">
               <View style={styles.camera}><Ionicons name="camera-outline" size={26} color={colors.primaryText} /></View>
-              <Text style={[styles.representText, styles.representBannerText]}>{t('countries.represent')}</Text>
+              <Text style={[styles.representText, styles.representBannerText]}>{t(copy?.represent ?? 'countries.represent')}</Text>
               <Ionicons name="chevron-forward" size={20} color={colors.primaryText} />
             </TouchableOpacity>
           )}
@@ -160,7 +164,7 @@ export function TodayCountries({ today, refreshKey }: { today: DailyToday | null
 }
 
 /** A mosaic tile: the country's most voted photo, its flag and city, its answer (else the caption) large, its votes. */
-function Tile({ group, onPress }: { group: DailyCountryGroup; onPress: () => void }) {
+function Tile({ group, onPress, badge }: { group: DailyCountryGroup; onPress: () => void; badge?: string }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { i18n } = useTranslation('daily');
@@ -174,6 +178,7 @@ function Tile({ group, onPress }: { group: DailyCountryGroup; onPress: () => voi
                       accessibilityLabel={[shortCityName(group.city.name), line, String(votes)].filter(Boolean).join(', ')}>
       <View style={styles.photo}>
         <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+        {!!badge && <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><Text style={styles.badgeText}>{badge}</Text></View>}
       </View>
       <View style={styles.tileBody}>
         <View style={styles.cityRow}>
@@ -192,6 +197,9 @@ function Tile({ group, onPress }: { group: DailyCountryGroup; onPress: () => voi
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { gap: 14 },
+  badge:     { position: 'absolute', top: 6, right: 6, width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(26,16,48,0.72)',
+               alignItems: 'center', justifyContent: 'center' },
+  badgeText: { fontSize: 16 },
   block:     { gap: 8 },
   row:       { gap: 14, paddingVertical: 2, paddingRight: 4 },
   story:     { width: CIRCLE + 8, alignItems: 'center', gap: 6 },

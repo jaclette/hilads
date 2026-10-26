@@ -671,5 +671,14 @@
     "in_other": "Ở {{city}} · {{count}} ảnh",
     "first": "Hãy là người đầu tiên ở {{city}}",
     "seeMine": "Xem ảnh của tôi"
+  },
+  "event": {
+    "halloween": {
+      "teaser_other": "🎃 Săn Halloween sau {{count}} ngày nữa. Mỗi thành phố, một bức ảnh rùng rợn.",
+      "cta": "Hù dọa {{city}} 👻",
+      "ctaNoCity": "Tham gia cuộc săn 👻",
+      "played_other": "{{count}} quốc gia đã bị ma ám 🎃",
+      "represent": "Hù dọa thành phố của bạn 👻"
+    }
   }
 }

@@ -7,6 +7,7 @@ import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
 import { isGpsCity } from '@/lib/gpsCityCorrection';
 import { seedProofs, seedVotesLeft } from '@/features/daily/votes';
+import { setSeasonalEvent } from '@/features/event/seasonal';
 import type { DailyArchiveItem, DailyCalendar, DailyGuide, DailyProof, DailySheet, DailyToday } from '@/types';
 
 // Daily Challenge data hooks. Same plain useState/useEffect pattern as the rest
@@ -114,6 +115,7 @@ export function useDailyToday(cityId: string | null | undefined) {
       setData(d);
       lastToday = d;
       setLastHere(d.here);
+      setSeasonalEvent(d.event);
       // The sheet's photos and the Compare board, so the hero's tap opens them ready.
       if (d.challenge) {
         prefetchSheet(d.challenge.date, 'world', cityId, account ? null : guestIdRef.current);

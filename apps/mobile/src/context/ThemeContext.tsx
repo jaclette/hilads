@@ -60,6 +60,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+/**
+ * Re-colors a subtree (a seasonal event's Daily screens): its themed styles
+ * read these colors and this mode, the rest of the app keeps the user's theme.
+ * Null colors: the user's theme (the provider stays, so turning the override
+ * on or off never remounts the subtree).
+ */
+export function ThemeOverride({ colors, theme, children }: { colors: ThemeColors | null; theme: ThemeName; children: ReactNode }) {
+  const parent = useTheme();
+  const value = useMemo<ThemeCtx>(
+    () => (colors ? { ...parent, theme, colors } : parent),
+    [colors, theme, parent],
+  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+
 export function useTheme(): ThemeCtx {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error('useTheme must be used inside ThemeProvider');

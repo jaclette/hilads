@@ -24,6 +24,8 @@ import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
 import { LiveDot, WorldTicker, useLiveMotion, type TickerEntry } from './WorldLive';
 import { HowItWorksSheet } from './HowItWorksSheet';
+import { useSeasonalLive } from '@/features/event/seasonal';
+import { SeasonalHeroDecor } from '@/features/event/SeasonalArt';
 import { remindMeLater } from '@/api/daily';
 import { resolveLocation } from '@/api/channels';
 import * as Location from 'expo-location';
@@ -100,6 +102,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   }, [tip]);
   // The world block moves only on screen, in the foreground, without reduce motion.
   const motion = useLiveMotion(visible);
+  const seasonal = useSeasonalLive();
   useEffect(() => {
     AsyncStorage.getItem(HOW_IT_WORKS_KEY).then(v => setHowSeen(v === '1')).catch(() => setHowSeen(true));
   }, []);
@@ -224,7 +227,9 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   // Nobody has answered for my city yet: "Be Saigon's first answer".
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
   const tc = themeColor(challenge.special ? 'special' : challenge.theme?.key);
-  const ctaLabel = !cityShort ? t('ctaAnswerNoCity')
+  // A seasonal event's live day (Halloween: "Haunt Lisbon 👻") replaces every version.
+  const ctaLabel = seasonal ? (cityShort ? t(seasonal.theme.copy.cta, { city: cityShort }) : t(seasonal.theme.copy.ctaNoCity))
+    : !cityShort ? t('ctaAnswerNoCity')
     : presence && !presence.represented ? t('represent.beFirst', { city: cityShort })
     : t('ctaAnswer', { city: cityShort });
 
@@ -237,6 +242,7 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
         <LinearGradient colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']} style={styles.shadeTop} />
         <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)']} locations={[0, 0.4, 1]} style={styles.shadeBottom} />
       </Pressable>
+      <SeasonalHeroDecor visible={visible} />
 
       <View style={styles.heroTop} pointerEvents="box-none">
         <View style={[styles.chip, styles.themeChip, { backgroundColor: tc.fill }]}>

@@ -682,5 +682,18 @@
     "in_other": "Em {{city}} · {{count}} fotos",
     "first": "Seja o primeiro em {{city}}",
     "seeMine": "Ver minha foto"
+  },
+  "event": {
+    "halloween": {
+      "teaser_one": "🎃 Caçada de Halloween amanhã. Cada cidade, uma foto assustadora.",
+      "teaser_many": "🎃 Caçada de Halloween em {{count}} dias. Cada cidade, uma foto assustadora.",
+      "teaser_other": "🎃 Caçada de Halloween em {{count}} dias. Cada cidade, uma foto assustadora.",
+      "cta": "Assombre {{city}} 👻",
+      "ctaNoCity": "Entre na caçada 👻",
+      "played_one": "{{count}} país está assombrado 🎃",
+      "played_many": "{{count}} países estão assombrados 🎃",
+      "played_other": "{{count}} países estão assombrados 🎃",
+      "represent": "Assombre sua cidade 👻"
+    }
   }
 }

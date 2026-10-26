@@ -11,6 +11,7 @@ import { answerText } from '@/features/compare/format';
 import { RankMedal } from '@/features/daily/RankMedal';
 import { compareCountryProofs } from '@/features/daily/countryOrder';
 import { Card, Photo, SectionTitle } from '@/ui';
+import { isEventDay, useSeasonal } from '@/features/event/seasonal';
 import { FlagSticker } from '@/ui/joy';
 import type { DailyToday, DailyTour } from '@/types';
 import { rememberTour } from './store';
@@ -32,6 +33,9 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
   const guestId = account ? null : identity?.guestId ?? null;
   const cityId = today?.city?.id ?? null;
   const [tour, setTour] = useState<DailyTour | null>(null);
+  // Yesterday was a seasonal event's day (Halloween's recap): the label keeps its emoji.
+  const seasonal = useSeasonal();
+  const recap = seasonal?.event.phase === 'recap' || isEventDay(seasonal, tour?.date);
   const loaded = !!today;
 
   const load = useCallback(async () => {
@@ -58,7 +62,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
 
   return (
     <Card style={styles.card}>
-      <SectionTitle small title={t('recap.label')} action={{ label: t('tour.watch'), onPress: open }} />
+      <SectionTitle small title={recap ? `${t('recap.label')} ${seasonal!.theme.emoji}` : t('recap.label')} action={{ label: t('tour.watch'), onPress: open }} />
       <TouchableOpacity style={styles.row} onPress={open} activeOpacity={0.85} accessibilityRole="button" testID="yesterday-recap"
                         accessibilityLabel={[t('recap.label'), question, shortCityName(win.city.name), answer].filter(Boolean).join(', ')}>
         <View>

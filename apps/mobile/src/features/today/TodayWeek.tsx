@@ -1,4 +1,4 @@
-import { useState, type ComponentProps } from 'react';
+import { useState, type ComponentProps, type ReactNode } from 'react';
 import { Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,8 @@ import { track } from '@/services/analytics';
 import { useDailyCalendar } from '@/hooks/useDaily';
 import { addDays, ymd, themeName } from '@/features/daily/themes';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { isEventDay, useSeasonal } from '@/features/event/seasonal';
+import { SeasonalDayIcon } from '@/features/event/SeasonalArt';
 import { themeColor, tint } from '@/ui/joy';
 import type { DailyCalendar, DailyToday } from '@/types';
 import { RowGroup } from '@/ui';
@@ -33,6 +35,10 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const now = ymd(new Date());
   const cal = useDailyCalendar(addDays(now, -8), addDays(now, 8));
   const [peek, setPeek] = useState(false);
+  // A seasonal event (teaser, live, recap): its days show its icon (Halloween: a pumpkin).
+  const seasonal = useSeasonal();
+  const dayIcon = (date: string, size: number, color: string, fallback: ReactNode) =>
+    (isEventDay(seasonal, date) ? <SeasonalDayIcon themeKey={seasonal!.key} size={size} color={color} /> : fallback);
   const current = cal.data?.today ?? today?.challenge?.date ?? null;
   if (!current) return null;
 
@@ -94,7 +100,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
                 {state === 'pending' && <Ionicons name="time-outline" size={18} color={colors.text} />}
                 {state === 'missed' && <Ionicons name="close" size={18} color={colors.mutedDim} />}
                 {(state === 'today' || state === 'tomorrow' || state === 'none' || state === 'later') && !!d?.theme && (
-                  <ThemeIcon theme={d.theme.key} special={d.special?.icon} size={18} color={state === 'later' ? colors.mutedDim : iconColor} />
+                  dayIcon(date, 18, state === 'later' ? colors.mutedDim : iconColor,
+                          <ThemeIcon theme={d.theme.key} special={d.special?.icon} size={18} color={state === 'later' ? colors.mutedDim : iconColor} />)
                 )}
               </View>
             </TouchableOpacity>
@@ -103,7 +110,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
       </View>
       {peek && !!tomorrowTheme && (
         <View style={styles.peek} accessibilityLiveRegion="polite">
-          <ThemeIcon theme={tomorrowTheme.key} special={tomorrowSpecial?.icon} size={16} color={colors.text} />
+          {dayIcon(addDays(current, 1), 16, colors.text,
+                   <ThemeIcon theme={tomorrowTheme.key} special={tomorrowSpecial?.icon} size={16} color={colors.text} />)}
           <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</Text>
         </View>
       )}

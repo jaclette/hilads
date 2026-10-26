@@ -672,5 +672,14 @@
     "in_other": "Di {{city}} · {{count}} foto",
     "first": "Jadilah yang pertama di {{city}}",
     "seeMine": "Lihat fotoku"
+  },
+  "event": {
+    "halloween": {
+      "teaser_other": "🎃 Perburuan Halloween {{count}} hari lagi. Setiap kota, satu foto seram.",
+      "cta": "Hantui {{city}} 👻",
+      "ctaNoCity": "Ikut perburuan 👻",
+      "played_other": "{{count}} negara sedang dihantui 🎃",
+      "represent": "Hantui kotamu 👻"
+    }
   }
 }

@@ -961,8 +961,28 @@ export interface DailyHeroCover {
   creditUrl?: string | null;
 }
 
+/**
+ * A seasonal event's look on today's challenge date (Admin › Daily › Seasonal
+ * events): teaser (a countdown), live, or recap (the day after). The app draws
+ * the theme it knows by key (features/event/seasonal), else nothing.
+ */
+export interface SeasonalEvent {
+  id:           string;
+  theme:        string;
+  phase:        'teaser' | 'live' | 'recap';
+  /** The event's first and last challenge dates (YYYY-MM-DD). */
+  start:        string;
+  end:          string;
+  /** Teaser: days until the start. */
+  startsInDays: number | null;
+  /** Shown to a preview account (Admin), not by date. */
+  preview?:     boolean;
+}
+
 export interface DailyToday {
   challenge:   DailyChallenge | null;
+  /** A seasonal event's look today (Halloween...), else null. */
+  event?:      SeasonalEvent | null;
   nextDropAt:  number;
   secondsLeft: number;
   serverTime:  number;

@@ -32,6 +32,7 @@ import { proofShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { useDailyToday, useHere } from '@/hooks/useDaily';
 import type { DailyProof } from '@/types';
+import { SeasonalScope } from '@/features/event/SeasonalArt';
 
 type Tab = 'world' | 'city';
 type Item = { kind: 'photo'; proof: DailyProof } | { kind: 'end' };
@@ -55,7 +56,12 @@ const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.9)'] as
  * country's photos best first, then the next countries' (Today's order), like a story.
  * Each photo shown counts as seen (the story rings).
  */
+// A seasonal event's live look (Halloween...) re-colors the screen.
 export default function PhotosScreen() {
+  return <SeasonalScope><PhotosScreenContent /></SeasonalScope>;
+}
+
+function PhotosScreenContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();

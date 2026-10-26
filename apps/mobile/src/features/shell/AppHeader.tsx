@@ -16,6 +16,7 @@ import { Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { BrandMark, IconButton } from '@/ui';
 import { ScopeSelector } from './ScopeSelector';
+import { LogoHat } from '@/features/event/SeasonalArt';
 
 interface Props {
   /** Optional nodes injected before the messages / bell buttons. */
@@ -32,7 +33,8 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 
   return (
     <View style={styles.bar}>
-      <BrandMark />
+      {/* A seasonal event's live day: the logo wears its hat. */}
+      <View style={styles.logo}><BrandMark /><LogoHat logoSize={40} /></View>
 
       <ScopeSelector />
 
@@ -64,6 +66,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // No horizontal padding: each tab's header container sets it.
   bar:            { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 10, paddingBottom: 6 },
+  logo:           { overflow: 'visible' },
   signUp:         { height: 44, paddingHorizontal: 16, borderRadius: Radius.full, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
   signUpText:     { color: c.onCta, fontSize: 14, fontWeight: '800' },
 });

@@ -682,5 +682,18 @@
     "in_other": "À {{city}} · {{count}} photos",
     "first": "Sois le premier à {{city}}",
     "seeMine": "Voir ma photo"
+  },
+  "event": {
+    "halloween": {
+      "teaser_one": "🎃 Chasse d'Halloween demain. Chaque ville, une photo qui donne des frissons.",
+      "teaser_many": "🎃 Chasse d'Halloween dans {{count}} jours. Chaque ville, une photo qui donne des frissons.",
+      "teaser_other": "🎃 Chasse d'Halloween dans {{count}} jours. Chaque ville, une photo qui donne des frissons.",
+      "cta": "Hante {{city}} 👻",
+      "ctaNoCity": "Rejoins la chasse 👻",
+      "played_one": "{{count}} pays est hanté 🎃",
+      "played_many": "{{count}} pays sont hantés 🎃",
+      "played_other": "{{count}} pays sont hantés 🎃",
+      "represent": "Hante ta ville 👻"
+    }
   }
 }

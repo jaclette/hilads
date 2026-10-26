@@ -32,6 +32,7 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
 import { Avatar, Button, Chip, CityFlag, CoverPhoto, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
 import type { DailyProof, DailySheet, DailyTodayCountries } from '@/types';
+import { SeasonalScope } from '@/features/event/SeasonalArt';
 
 /** The hero takes this share of the screen height. */
 const HERO_SHARE = 0.4;
@@ -53,7 +54,12 @@ const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)'] a
  * Top 10 live in "See all" (/daily/countries). ?proof=<id> opens that photo
  * on arrival (?share=1 its share sheet).
  */
+// A seasonal event's live look (Halloween...) re-colors the screen.
 export default function DailySheetScreen() {
+  return <SeasonalScope><DailySheetScreenContent /></SeasonalScope>;
+}
+
+function DailySheetScreenContent() {
   const { date: dateParam, proof: proofParam, source, push_type: pushType, share } = useLocalSearchParams<{ date: string; proof?: string; source?: string; push_type?: string; share?: string }>();
   const { city } = useApp();
   // /daily/today from the hero: today's date is already known (no loader).

@@ -38,6 +38,8 @@ import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/fe
 import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/types';
 import { goBack as leave } from '@/lib/nav';
 import { KeyboardForm, useNextField } from '@/ui/keyboard';
+import { BatBurst, SeasonalScope } from '@/features/event/SeasonalArt';
+import { setSeasonalEvent, useSeasonalLive } from '@/features/event/seasonal';
 
 /** A position older than this is refreshed before posting (the distance check). */
 const POSITION_MAX_AGE_MS = 2 * 60 * 1000;
@@ -76,13 +78,19 @@ type TooFar = { distanceM: number; radiusM: number };
  * lets me retry from where I am or pick another place. /daily/proof creates,
  * /daily/proof?edit=<id> edits. Every proof goes to review.
  */
+// A seasonal event's live look (Halloween...) re-colors the screen.
 export default function DailyProofScreen() {
+  return <SeasonalScope><DailyProofScreenContent /></SeasonalScope>;
+}
+
+function DailyProofScreenContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const { account, city, identity, setAccount } = useApp();
+  const seasonal = useSeasonalLive();
 
   const [today, setToday]       = useState<DailyToday | null>(null);
   const [original, setOriginal] = useState<DailyProof | null>(null);
@@ -169,6 +177,7 @@ export default function DailyProofScreen() {
         ]);
         if (!alive) return;
         setToday(d);
+        setSeasonalEvent(d.event);
         // Already posted today: "new proof" edits that one instead.
         if (!p && d.myProof && d.myProof.status !== 'removed') p = d.myProof;
         if (p) {
@@ -388,7 +397,9 @@ export default function DailyProofScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
         <ScrollView contentContainerStyle={styles.sent}>
-          <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>
+          {/* A seasonal event's live day: a burst of bats instead of the checkmark. */}
+          {seasonal?.key === 'halloween' ? <BatBurst />
+            : <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>}
           <Text style={styles.stepTitle} accessibilityRole="header">
             {sent.proof.city?.name ? t('proof.sentTitle', { city: shortCityName(sent.proof.city.name) }) : t('proof.sentTitleNoCity')}
           </Text>

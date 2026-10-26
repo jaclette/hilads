@@ -19,6 +19,7 @@ import { DailyLeaderboardPanel } from '@/features/daily/DailyLeaderboardPanel';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
 import { FlagSticker } from '@/ui/joy';
 import type { DailyCountryGroup, DailyProof, DailyTodayCountries } from '@/types';
+import { SeasonalScope } from '@/features/event/SeasonalArt';
 
 /** The server lists at most 50 proofs per call. */
 const BATCH = 50;
@@ -34,7 +35,12 @@ type Section = { group: DailyCountryGroup; data: DailyProof[][] };
  * tile's photo leading (rankCountryProofs). A photo opens Today's photos
  * on it. Back returns to Today where it was.
  */
+// A seasonal event's live look (Halloween...) re-colors the screen.
 export default function CountriesScreen() {
+  return <SeasonalScope><CountriesScreenContent /></SeasonalScope>;
+}
+
+function CountriesScreenContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');

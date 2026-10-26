@@ -14,6 +14,7 @@ import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { SpotsNear } from '@/features/today/SpotsNear';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
+import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
 
 /**
  * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, today's
@@ -23,6 +24,11 @@ import { BrandLine } from '@/features/today/BrandLine';
  * and the nearest spots anywhere. Hilads picks stay on the Map and Spots.
  */
 export default function TodayScreen() {
+  // A seasonal event's live look (Halloween...) re-colors the whole tab.
+  return <SeasonalScope><TodayContent /></SeasonalScope>;
+}
+
+function TodayContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { city, account } = useApp();
@@ -57,6 +63,8 @@ export default function TodayScreen() {
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
+        {/* A seasonal event's countdown (teaser days). */}
+        <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
         <TodayCountries today={daily.data} refreshKey={refreshKey} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
