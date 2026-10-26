@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/ThemeContext';
 import { FontSizes } from '@/constants';
+import { useSeasonalLive } from '@/features/event/seasonal';
+import { PumpkinIcon, SeasonalScope, TabGhost } from '@/features/event/SeasonalArt';
 
 // ── Tabs (V3, SPEC 9.1 and the mockups): stroke icons with a label; the
 // active tab sits on a primary-tint pill. ─────────────────────────────────────
@@ -29,6 +31,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { t } = useTranslation('common');
+  // A seasonal event's live day: Today wears its icon (Halloween: a pumpkin) and a ghost peeks over the active tab.
+  const halloween = useSeasonalLive()?.key === 'halloween';
 
   // Hide the bar entirely while the keyboard is up so typing in chat gets a
   // focused, gap-free conversation. We UNMOUNT (return null) rather than just
@@ -82,7 +86,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               }
             }}
           >
-            <Ionicons name={tab.icon} size={24} color={color} />
+            {focused && <TabGhost />}
+            {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} /> : <Ionicons name={tab.icon} size={24} color={color} />}
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>
           </Pressable>
         );
@@ -139,8 +144,10 @@ export default function TabsLayout() {
     }, []),
   );
 
-  // V3 (SPEC 9.1): Today is the home for everyone.
+  // V3 (SPEC 9.1): Today is the home for everyone. A seasonal event's live
+  // day colors the whole tab bar and every tab (SeasonalScope).
   return (
+    <SeasonalScope>
     <Tabs
       initialRouteName="today"
       backBehavior="firstRoute"
@@ -160,5 +167,6 @@ export default function TabsLayout() {
       <Tabs.Screen name="me"         options={{ title: 'Me' }} />
       <Tabs.Screen name="here"       options={{ title: 'Here' }} />
     </Tabs>
+    </SeasonalScope>
   );
 }

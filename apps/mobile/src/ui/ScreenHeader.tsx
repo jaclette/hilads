@@ -6,6 +6,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { IconButton } from './IconButton';
 import { HeaderArt, type HeaderArtKind } from './HeaderArt';
 import { goBack } from '@/lib/nav';
+import { SeasonalHeaderDecor } from '@/features/event/SeasonalArt';
 
 /**
  * Screen header. "back" (pushed screens): round back button and the title.
@@ -36,7 +37,7 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
           {!!subtitle && <Text style={styles.subtitle} numberOfLines={2}>{subtitle}</Text>}
         </View>
         {/* The drawing ends where the buttons start: never behind them. */}
-        <View style={styles.artSlot} pointerEvents="none">{art && <HeaderArt kind={art} />}</View>
+        <View style={styles.artSlot} pointerEvents="none">{art && <HeaderArt kind={art} />}<SeasonalHeaderDecor /></View>
         {right}
       </View>
     );

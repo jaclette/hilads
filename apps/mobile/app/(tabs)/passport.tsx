@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { LogoHat } from '@/features/event/SeasonalArt';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -171,7 +172,8 @@ function Identity({ name, photo, mode, cityName, cityCountry }: {
   const local = mode === 'local';
   return (
     <View style={styles.identity}>
-      <Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={64} ring />
+      {/* A seasonal event's live day: the passport photo wears the hat. */}
+      <View><Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={64} ring /><LogoHat logoSize={64} /></View>
       <View style={styles.identityBody}>
         <Text style={styles.name} numberOfLines={1}>{name}</Text>
         <View style={styles.chips}>

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Camera, CircleLayer, Images, LineLayer, LocationPuck, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { SeasonalMapSky } from '@/features/event/SeasonalArt';
 import { useApp } from '@/context/AppContext';
 import { useScope, type Scope } from '@/context/ScopeContext';
 import { track } from '@/services/analytics';
@@ -418,6 +419,9 @@ export default function MapScreen() {
           empty={showEmpty ? null : <Text style={styles.listEmpty}>{t('map.noResults')}</Text>}
         />
       )}
+
+      {/* A seasonal event's live day: the night sky (moon, bats) over the map. */}
+      {view === 'map' && <SeasonalMapSky top={topH} />}
 
       {/* Top overlay: the Map's subtitle (no title bar over the map), search + theme chips. */}
       <View style={[styles.top, { paddingTop: insets.top + 10 }, view === 'list' && styles.topList]} pointerEvents="box-none"

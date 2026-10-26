@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { AppState, StyleSheet, Text, View } from 'react-native';
+import { AppState, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing, cancelAnimation, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withRepeat, withSequence, withTiming,
 } from 'react-native-reanimated';
-import Svg, { Ellipse, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
 import { useIsFocused } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -25,9 +25,10 @@ const ORANGE = '#FF8A1F';
 const HIDDEN = { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' } as const;
 
 /**
- * The live phase's palette on a Daily screen (Today, the challenge sheet,
- * See all, the viewer, the camera): its themed styles read the event's
- * colors; the status bar turns light while the screen is focused.
+ * The live phase's palette on a subtree (the whole tab bar and its tabs, the
+ * Daily screens: the challenge sheet, See all, the viewer, the camera): its
+ * themed styles read the event's colors; the status bar turns light while the
+ * screen is focused.
  */
 export function SeasonalScope({ children }: { children: ReactNode }) {
   const live = useSeasonalLive();
@@ -204,8 +205,110 @@ export function SeasonalTeaser() {
   );
 }
 
+/**
+ * A tab header's live touch (Hi, Passport... every ScreenHeader "tab"): a
+ * cobweb in the top corner and a ghost floating over the line drawing.
+ */
+export function SeasonalHeaderDecor() {
+  const live = useSeasonalLive();
+  const run = useMotion(true);
+  if (live?.key !== 'halloween') return null;
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none" {...HIDDEN}>
+      <View style={styles.headerWeb}><Cobweb flip size={58} /></View>
+      <FloatingGhost size={24} left="22%" top="18%" period={3600} delay={0} run={run} />
+      <FloatingGhost size={15} left="62%" top="52%" period={4200} delay={900} run={run} />
+    </View>
+  );
+}
+
+/**
+ * The tab bar's live touch: a little ghost peeking over the active tab. It
+ * hops in when the tab changes (it remounts with the tab), then bobs.
+ */
+export function TabGhost() {
+  const live = useSeasonalLive();
+  const run = useMotion(true);
+  const hop = useSharedValue(run ? 1 : 0);
+  const bob = useSharedValue(0);
+  useEffect(() => {
+    if (!run) { hop.value = 0; bob.value = 0; return; }
+    hop.value = withSequence(withTiming(1, { duration: 0 }), withTiming(0, { duration: 420, easing: Easing.out(Easing.back(3)) }));
+    bob.value = withDelay(420, withRepeat(withTiming(1, { duration: 1300, easing: Easing.inOut(Easing.sin) }), -1, true));
+    return () => { cancelAnimation(hop); cancelAnimation(bob); };
+  }, [run, hop, bob]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateY: 14 * hop.value - 3 * bob.value }, { rotate: `${8 * bob.value - 4}deg` }],
+    opacity: 1 - hop.value * 0.6,
+  }));
+  if (live?.key !== 'halloween') return null;
+  return <Animated.View style={[styles.tabGhost, style]} pointerEvents="none" {...HIDDEN}><Ghost size={20} /></Animated.View>;
+}
+
+/** A bat silhouette, wings spread (24-unit box). */
+function BatShape({ size, color = '#2A1850' }: { size: number; color?: string }) {
+  return (
+    <Svg width={size} height={size * 0.6} viewBox="0 0 24 14.4">
+      <Path d="M12 4.2c-.5-1.3-1.3-2-2-2.2.3.7.3 1.4 0 1.9C8.4 2.6 5.6 1.6 1 3.4c1.9.6 3 1.9 3.2 3.6 1.6-.9 3.3-.6 4.4.5.9.9 1.7 2.3 3.4 4.3 1.7-2 2.5-3.4 3.4-4.3 1.1-1.1 2.8-1.4 4.4-.5.2-1.7 1.3-3 3.2-3.6-4.6-1.8-7.4-.8-9 .5-.3-.5-.3-1.2 0-1.9-.7.2-1.5.9-2 2.2z"
+            fill={color} stroke="#C3B5DE" strokeWidth={0.6} strokeLinejoin="round" />
+      <Circle cx={11.1} cy={4.9} r={0.45} fill="#FF8A1F" />
+      <Circle cx={12.9} cy={4.9} r={0.45} fill="#FF8A1F" />
+    </Svg>
+  );
+}
+
+/** A bat crossing the screen from left to right, wings flapping, then again. */
+function FlyingBat({ size, top, period, delay, run, width }: {
+  size: number; top: number; period: number; delay: number; run: boolean; width: number;
+}) {
+  const x = useSharedValue(0);
+  const flap = useSharedValue(0);
+  useEffect(() => {
+    if (!run) { cancelAnimation(x); cancelAnimation(flap); x.value = 0.3; flap.value = 0; return; }
+    x.value = 0;
+    x.value = withDelay(delay, withRepeat(withTiming(1, { duration: period, easing: Easing.linear }), -1, false));
+    flap.value = withRepeat(withTiming(1, { duration: 180, easing: Easing.inOut(Easing.quad) }), -1, true);
+    return () => { cancelAnimation(x); cancelAnimation(flap); };
+  }, [run, x, flap, period, delay]);
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: -size + (width + size * 2) * x.value },
+      { translateY: Math.sin(x.value * Math.PI * 4) * 10 },
+      { scaleY: 1 - 0.55 * flap.value },
+    ],
+  }));
+  return <Animated.View style={[{ position: 'absolute', left: 0, top }, style]} pointerEvents="none"><BatShape size={size} /></Animated.View>;
+}
+
+/**
+ * The map's live sky (over the night map style): a crescent moon and bats
+ * crossing under the search bar. `top`: where the map's top overlay ends.
+ */
+export function SeasonalMapSky({ top }: { top: number }) {
+  const live = useSeasonalLive();
+  const run = useMotion(true);
+  const { width } = useWindowDimensions();
+  if (live?.key !== 'halloween') return null;
+  return (
+    <View style={[StyleSheet.absoluteFill, { top }]} pointerEvents="none" {...HIDDEN}>
+      <View style={styles.moon}>
+        <Svg width={54} height={54} viewBox="0 0 54 54">
+          <Circle cx={27} cy={27} r={24} fill="#FFE7B0" opacity={0.18} />
+          <Path d="M33 8a19 19 0 1 0 13 30A16 16 0 0 1 33 8z" fill="#FFD27A" />
+        </Svg>
+      </View>
+      <FlyingBat size={44} top={24} period={9000} delay={0} run={run} width={width} />
+      <FlyingBat size={32} top={78} period={12500} delay={3200} run={run} width={width} />
+      <FlyingBat size={24} top={48} period={15000} delay={6800} run={run} width={width} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   webLeft:  { position: 'absolute', left: 0, top: 0 },
+  headerWeb: { position: 'absolute', right: 0, top: 0 },
+  tabGhost: { position: 'absolute', top: -16, alignSelf: 'center' },
+  moon:     { position: 'absolute', right: 18, top: 6 },
   webRight: { position: 'absolute', right: 0, top: 0 },
   bat:      { position: 'absolute', fontSize: 22 },
   burst:    { alignItems: 'center', justifyContent: 'center', backgroundColor: CARD, borderWidth: 1.5, borderColor: ORANGE },
