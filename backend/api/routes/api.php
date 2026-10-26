@@ -14848,6 +14848,34 @@ $router->add('GET', '/api/v1/daily/archive', function () {
     Response::json($out);
 });
 
+// GET /api/v1/daily/web/challenges?locale= - the web's /challenges archive and
+// sitemap: every closed challenge with its counts, and the cities that played. Public.
+$router->add('GET', '/api/v1/daily/web/challenges', function () {
+    header('Cache-Control: public, max-age=300');
+    Response::json(DailyWeb::challenges(DailyI18n::current()));
+});
+
+// GET /api/v1/daily/web/challenges/{date}?locale= - a closed challenge's web
+// page: each country's top photo, answer and photo count. Public.
+$router->add('GET', '/api/v1/daily/web/challenges/{date}', function (array $params) {
+    $page = DailyWeb::challenge((string) $params['date'], DailyI18n::current());
+    if ($page === null) {
+        Response::json(['error' => 'Challenge not found', 'code' => 'not_found'], 404);
+    }
+    header('Cache-Control: public, max-age=300');
+    Response::json($page);
+});
+
+// GET /api/v1/daily/web/cities/{id}?locale= - a city page's photos of the last
+// challenges it played (id: the numeric city id). Public.
+$router->add('GET', '/api/v1/daily/web/cities/{id}', function (array $params) {
+    if (!ctype_digit((string) $params['id'])) {
+        Response::json(['error' => 'Unknown city', 'code' => 'invalid_city'], 400);
+    }
+    header('Cache-Control: public, max-age=300');
+    Response::json(DailyWeb::city('city_' . $params['id'], DailyI18n::current()));
+});
+
 // GET /api/v1/daily/calendar?from=&to= - week strip and month calendar: per day
 // its theme, whether it was published and my proof's status, plus my streak.
 $router->add('GET', '/api/v1/daily/calendar', function () {
