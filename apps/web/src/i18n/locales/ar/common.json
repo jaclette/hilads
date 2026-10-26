@@ -11,8 +11,8 @@
     "onlyIn": "في {{city}} فقط"
   },
   "meta": {
-    "cityTitle": "كن محليًا في {{city}} - Hilads",
-    "cityDesc": "كن محليًا في {{city}}: أطلق تحدّيًا، انضم إلى meetup، ادخل hangout، اكتشف Local Events. دردشة حية مع المتصلين الآن.",
+    "cityTitle": "{{city}} على Hilads - العب محليًا. قارن عالميًا.",
+    "cityDesc": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. العب في {{city}}، التقط صورة وشاهد كيف أجاب العالم.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "انضم إلى {{title}} على Hilads - Local Event يحدث الآن. شاهد من سيأتي وتحدث في الدردشة الحية."
   },

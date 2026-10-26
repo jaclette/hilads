@@ -86,16 +86,13 @@ function renderPage(channels) {
 
   const totalCities  = sorted.length
   const totalOnline  = sorted.reduce((s, c) => s + (c.activeUsers ?? 0), 0)
-  const totalEvents  = sorted.reduce((s, c) => s + (c.eventCount  ?? 0), 0)
 
   const cityListItems = sorted.map(ch => {
     const flag    = cityFlag(ch.country)
     const slug    = cityToSlug(ch.city)
     const online  = ch.activeUsers ?? 0
     const events  = ch.eventCount  ?? 0
-    const activity = online > 0
-      ? `${online} online${events > 0 ? ` · ${events} events` : ''}`
-      : (events > 0 ? `${events} events` : 'Quiet right now')
+    const activity = online > 0 ? `${online} online` : 'Play today\'s challenge'
     const className = online === 0 && events === 0 ? 'city city--quiet' : 'city'
     return `<li><a class="${className}" href="/city/${slug}">
       <span class="city__flag" aria-hidden="true">${flag}</span>
@@ -111,7 +108,7 @@ function renderPage(channels) {
         '@type':       'WebPage',
         '@id':         `${SITE_BASE}/cities`,
         name:          'All Hilads cities',
-        description:   `See live activity in ${totalCities || '345+'} cities worldwide. Real-time city activity, no sign-up.`,
+        description:   `Today's Daily Challenge in ${totalCities || '345+'} cities. One challenge a day, the same in every city.`,
         url:           `${SITE_BASE}/cities`,
         isPartOf:      { '@type': 'WebSite', name: 'Hilads', url: SITE_BASE },
       },
@@ -141,8 +138,10 @@ function renderPage(channels) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>All Hilads cities - feel local, anywhere</title>
-  <meta name="description" content="See live activity in ${totalCities || '345+'} Hilads cities worldwide. Real-time city activity, no sign-up." />
+  <title>All Hilads cities - Play local. Compare global.</title>
+  <meta name="description" content="Today's Daily Challenge in ${totalCities || '345+'} cities. One challenge a day, the same in every city. Snap a photo, see how the world answered." />
+  <!-- A hub, not a landing page: its city links are followed, the page itself stays out of the index (and the sitemap). -->
+  <meta name="robots" content="noindex, follow" />
   <meta name="theme-color" content="#161210" />
   <link rel="canonical" href="${SITE_BASE}/cities" />
   <link rel="icon" type="image/svg+xml" href="/logo/icon.svg" />
@@ -151,16 +150,16 @@ function renderPage(channels) {
   <meta property="og:type"        content="website" />
   <meta property="og:site_name"   content="Hilads" />
   <meta property="og:url"         content="${SITE_BASE}/cities" />
-  <meta property="og:title"       content="All Hilads cities - feel local, anywhere" />
-  <meta property="og:description" content="See live activity in ${totalCities || '345+'} cities worldwide. Real-time, no sign-up." />
+  <meta property="og:title"       content="All Hilads cities - Play local. Compare global." />
+  <meta property="og:description" content="Today's Daily Challenge in ${totalCities || '345+'} cities. One challenge a day, the same in every city." />
   <meta property="og:image"       content="${SITE_BASE}/og/og-default.png" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
 
   <!-- Twitter -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="All Hilads cities - feel local, anywhere" />
-  <meta name="twitter:description" content="See live activity in ${totalCities || '345+'} cities worldwide." />
+  <meta name="twitter:title"       content="All Hilads cities - Play local. Compare global." />
+  <meta name="twitter:description" content="Today's Daily Challenge in ${totalCities || '345+'} cities." />
   <meta name="twitter:image"       content="${SITE_BASE}/og/og-default.png" />
 
   <style>
@@ -288,19 +287,18 @@ function renderPage(channels) {
         <img src="/logo/icon.svg" alt="" width="36" height="36" />
         <span>Hilads</span>
       </a>
-      <a class="header__cta" href="/">Open Hilads →</a>
+      <a class="header__cta" href="/today">Play today's challenge →</a>
     </header>
 
     <section class="hero">
       <h1 class="hero__title">All Hilads cities</h1>
       <p class="hero__sub">
-        See who's around in ${totalCities || '345+'} cities worldwide.
-        Real-time city activity, no sign-up. Tap a city to jump into
-        what's happening tonight.
+        One challenge a day, the same in ${totalCities || '345+'} cities.
+        Pick a city, snap your photo and see how the world answered.
       </p>
     </section>
 
-    ${totalOnline + totalEvents > 0 ? `
+    ${totalOnline > 0 ? `
     <div class="stats">
       <div class="stat">
         <div class="stat__num">${totalCities}</div>
@@ -309,10 +307,6 @@ function renderPage(channels) {
       ${totalOnline > 0 ? `<div class="stat">
         <div class="stat__num">${totalOnline}</div>
         <div class="stat__label">People online</div>
-      </div>` : ''}
-      ${totalEvents > 0 ? `<div class="stat">
-        <div class="stat__num">${totalEvents}</div>
-        <div class="stat__label">Events scheduled</div>
       </div>` : ''}
     </div>
     ` : ''}
@@ -329,7 +323,7 @@ function renderPage(channels) {
         <a href="/privacy">Privacy</a>
         <a href="/child-safety">Safety</a>
       </p>
-      <p class="footer__tagline">Hilads - feel local, anywhere.</p>
+      <p class="footer__tagline">Hilads - Play local. Compare global.</p>
     </footer>
   </div>
 

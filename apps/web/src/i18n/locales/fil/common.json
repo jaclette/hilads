@@ -11,8 +11,8 @@
     "onlyIn": "Sa {{city}} lang"
   },
   "meta": {
-    "cityTitle": "Maging local sa {{city}} - Hilads",
-    "cityDesc": "Maging local sa {{city}}: sumali sa challenges, mag-meetup, mag-hangout, tuklasin ang Local Events. Live chat sa mga online ngayon.",
+    "cityTitle": "{{city}} sa Hilads - Laro lokal. Kumpara global.",
+    "cityDesc": "Isang challenge kada araw, pareho sa bawat lungsod. Maglaro sa {{city}}, mag-snap ng photo at tingnan kung paano sumagot ang mundo.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Sumali sa {{title}} sa Hilads - isang Local Event na nangyayari ngayon. Tingnan kung sino ang papasok at mag-live chat."
   },

@@ -1,7 +1,7 @@
 {
   "name": "Hilads",
   "short_name": "Hilads",
-  "description": "See what's happening right now in your city.",
+  "description": "One challenge a day, the same in every city. Snap a photo, see how the world answered.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

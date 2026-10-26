@@ -11,8 +11,8 @@
     "onlyIn": "Chỉ có ở {{city}}"
   },
   "meta": {
-    "cityTitle": "Trở thành người địa phương ở {{city}} - Hilads",
-    "cityDesc": "Trở thành người địa phương ở {{city}}: tham gia thử thách, gặp gỡ ở meetup, tham gia hangout, khám phá Local Events. Chat trực tiếp với người đang online.",
+    "cityTitle": "{{city}} trên Hilads - Chơi địa phương. So toàn cầu.",
+    "cityDesc": "Mỗi ngày một thử thách, giống nhau ở mọi thành phố. Chơi ở {{city}}, chụp ảnh và xem thế giới đã trả lời thế nào.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Tham gia {{title}} trên Hilads - một Local Event đang diễn ra. Xem ai đến và chat trực tiếp."
   },

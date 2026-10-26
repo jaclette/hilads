@@ -39,8 +39,15 @@ export default function middleware(request: Request) {
   const url = new URL(request.url)
   const pathname = url.pathname
 
-  // Already locale-prefixed → let the rewrite / prerender / SPA handle it.
+  // English is un-prefixed: /en/... is never a page (it served the app shell, a
+  // soft 404). 301 to the bare URL, for crawlers and people alike.
   const seg = pathname.split('/')[1]
+  if (seg === 'en') {
+    url.pathname = pathname.slice(3) || '/'
+    return Response.redirect(url, 301)
+  }
+
+  // Already locale-prefixed → let the rewrite / prerender / SPA handle it.
   if (LOCALES.includes(seg)) return
 
   // Never redirect crawlers - keep them on the canonical + hreflang.

@@ -125,6 +125,9 @@ function parseDeepLink() {
   // The SSR prerender renders the full SEO content; the SPA just joins the
   // host city on hydration so the user lands in a usable place.
   const challengeMatch = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
+  // /challenge/{date}-{slug}: a past Daily Challenge's public page (the prerender
+  // serves its photos); the app opens that day's challenge sheet.
+  const dailyMatch     = path.match(/^\/challenge\/(\d{4}-\d{2}-\d{2})(?:-[a-z0-9-]+)?$/)
   const venueMatch     = path.match(/^\/venue\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
@@ -140,6 +143,7 @@ function parseDeepLink() {
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
   if (challengeMatch)      return { type: 'challenge',     id: challengeMatch[1] }
+  if (dailyMatch)          return { type: 'daily',         date: dailyMatch[1] }
   if (venueMatch)          return { type: 'venue',         id: venueMatch[1] }
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }
@@ -182,7 +186,7 @@ function isBareHome(link) {
 function isPublicEntryLink(link) {
   return !!link && [
     'city', 'event', 'topic', 'challenge', 'venue', 'past',
-    'challenges', 'leaderboard', 'map',
+    'challenges', 'leaderboard', 'map', 'daily',
   ].includes(link.type)
 }
 
@@ -1980,6 +1984,7 @@ export default function App() {
       openScreenOnJoinRef.current = 'leaderboard'
     }
     if (link.type === 'challenges')      openScreenOnJoinRef.current = 'challenges'
+    if (link.type === 'daily')           openScreenOnJoinRef.current = `daily:${link.date}`
     if (link.type === 'map')             openScreenOnJoinRef.current = 'map'
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
@@ -2941,7 +2946,13 @@ export default function App() {
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
-      if (openScreenOnJoinRef.current === 'challenges')    { goToTodayTab(); openScreenOnJoinRef.current = null } // retired browser (as in the app): /challenges opens Today
+      // /challenges: the past challenges (Today's archive); /challenge/{date}-{slug}: that day's sheet.
+      if (openScreenOnJoinRef.current === 'challenges')    { goToTodayTab(); openDaily('archive'); openScreenOnJoinRef.current = null }
+      if (String(openScreenOnJoinRef.current).startsWith('daily:')) {
+        goToTodayTab()
+        openDaily('challenge', { date: openScreenOnJoinRef.current.slice(6), source: 'link' })
+        openScreenOnJoinRef.current = null
+      }
       if (openScreenOnJoinRef.current === 'map')           { setShowMap(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }

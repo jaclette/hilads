@@ -11,8 +11,8 @@
     "onlyIn": "ที่{{city}}ที่เดียว"
   },
   "meta": {
-    "cityTitle": "มาเป็นคนท้องถิ่นใน {{city}} - Hilads",
-    "cityDesc": "มาเป็นคนท้องถิ่นใน {{city}}: รับชาเลนจ์ เข้าร่วม meetup เข้า hangout ค้นพบ Local Events แชทสดกับคนออนไลน์",
+    "cityTitle": "{{city}} บน Hilads - เล่นแบบโลคอล เทียบทั่วโลก",
+    "cityDesc": "วันละหนึ่งชาเลนจ์ เหมือนกันทุกเมือง เล่นที่ {{city}} ถ่ายรูป แล้วดูว่าทั่วโลกตอบว่าอะไร",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "เข้าร่วม {{title}} ใน Hilads - Local Event ที่กำลังเกิดขึ้น ดูว่าใครจะไปและแชทสด"
   },

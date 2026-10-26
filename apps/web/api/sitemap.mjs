@@ -1,89 +1,38 @@
 /**
  * Vercel serverless function - dynamic /sitemap.xml.
  *
- * Replaces the old build-time scripts/gen-sitemap.mjs (which wrote a static
- * public/sitemap.xml that only refreshed on deploy and never listed events).
- * This generates the sitemap ON REQUEST from current backend data, so a newly
- * created event appears automatically - within the CDN cache TTL, no redeploy.
+ * Generated on request from the public API (vercel.json rewrites /sitemap.xml
+ * here; a static public/sitemap.xml would shadow it, so there is none).
  *
- * Routing: vercel.json rewrites /sitemap.xml → /api/sitemap. The static file
- * was deleted because Vercel serves filesystem matches BEFORE rewrites, so a
- * committed public/sitemap.xml would shadow this function.
+ * Contents - exactly the indexable pages (prerender.mjs decides the robots tag
+ * with the same rules; a noindex page listed here would contradict it):
+ *   - home and /challenges, every language
+ *   - the city pages of the cities that played a Daily Challenge, every language
+ *   - past Daily Challenges with 3 countries or more: the English page only,
+ *     every language from 15 countries
+ * Old-concept pages (venues, events, 1-to-1 challenges, city categories and
+ * "past" pages) redirect to their city page and are never listed.
  *
- * Cache: s-maxage 3 h + 24 h stale-while-revalidate. Crawler hits are served
- * from the Vercel CDN; the backend is queried only on a cache miss (≈ every
- * 3 h), never per request. A few hours of staleness is fine for SEO.
+ * Each entry's <loc> is the un-prefixed English URL; pages in every language
+ * list their 19 alternates + x-default as <xhtml:link>.
  *
- * Contents (mirrors gen-sitemap.mjs, plus events):
- *   - home + /cities core pages
- *   - indexable city pages (chat OR active events OR venues - matches the
- *     prerender's noindex criterion; empty cities excluded)
- *   - category × city pages (server-side ≥3 threshold)
- *   - venue pages (/venue/<slug>-<id>)
- *   - EVENT pages (/event/<slug>-<id>) - non-expired, non-deleted, non-venue
- * Hangouts/topics (private, 24 h TTL) are never included.
- *
- * Each entry uses the un-prefixed English URL as the canonical <loc> and lists
- * /fr, /vi, /es + x-default as <xhtml:link> alternates (one <url> per page).
+ * Cache: s-maxage 3 h + 24 h stale-while-revalidate. Crawlers get the CDN copy;
+ * the API is read on a miss only.
  */
 
 const API_BASE  = process.env.HILADS_API_BASE  || 'https://api.hilads.live'
 const SITE_BASE = (process.env.HILADS_SITE_BASE || 'https://hilads.live').replace(/\/+$/, '')
 
-// Venue URLs (/venue/<slug>-<id>) launched 2026-05-20; floor their lastmod
-// there so pre-launch-seeded venues report the date the URL actually changed.
-// Mirrors gen-sitemap.mjs VENUE_URL_LAUNCH.
-const VENUE_URL_LAUNCH = process.env.SITEMAP_VENUE_LAUNCH || '2026-05-20'
-
 const SITEMAP_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
 
-// ── Slug helpers - keep in sync with App.jsx cityToSlug / eventUtils eventSlug
-//    / prerender.mjs venueSlug (the repo intentionally mirrors these). ──────────
+// Mirrors prerender.mjs INDEX_MIN / ALL_LOCALES_MIN - keep in sync.
+const INDEX_MIN       = 3
+const ALL_LOCALES_MIN = 15
 
+// Mirrors App.jsx / prerender.mjs cityToSlug - keep in sync.
 function cityToSlug(name) {
-  return String(name || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
-
-function stripDiacritics(s) {
-  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
-}
-
-function venueSlug(name, id) {
-  const t = stripDiacritics(name)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-    .replace(/-+$/g, '')
-  return t ? `${t}-${id}` : id
-}
-
-function eventSlug(title, id) {
-  const t = stripDiacritics(title)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-    .replace(/-+$/g, '')
-  return t ? `${t}-${id}` : id
-}
-
-// Challenge URLs use the same slug shape as events - kept separate for
-// future divergence, but the implementation matches today.
-function challengeSlug(title, id) {
-  const t = stripDiacritics(title)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-    .replace(/-+$/g, '')
-  return t ? `${t}-${id}` : id
-}
-
-// ── XML builders ────────────────────────────────────────────────────────────
 
 function xmlEscape(s) {
   return String(s)
@@ -94,25 +43,19 @@ function xmlEscape(s) {
     .replace(/'/g, '&apos;')
 }
 
-function hreflangLinks(loc) {
-  const path = loc.startsWith(SITE_BASE) ? loc.slice(SITE_BASE.length) : null
-  if (path === null) return []
-  const alt = (l) => `${SITE_BASE}${l === 'en' ? '' : '/' + l}${path}`
+function hreflangLinks(path) {
+  const alt = (l) => `${SITE_BASE}${l === 'en' ? '' : '/' + l}${path === '/' && l !== 'en' ? '/' : path}`
   return [
     ...SITEMAP_LOCALES.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(alt(l))}"/>`),
     `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(alt('en'))}"/>`,
   ]
 }
 
-function urlEntry({ loc, lastmod, changefreq, priority, alternates = true }) {
+function urlEntry({ path, lastmod, changefreq, priority, alternates }) {
   return [
     '  <url>',
-    `    <loc>${xmlEscape(loc)}</loc>`,
-    // Ephemeral per-item pages (events, challenges) list ONLY the English URL -
-    // their localized variants are noindex'd in the prerender, so advertising 19
-    // hreflang alternates here would just feed Google URLs it will refuse to
-    // index. City / category / venue pages keep the full 19-locale cluster.
-    ...(alternates ? hreflangLinks(loc) : []),
+    `    <loc>${xmlEscape(SITE_BASE + path)}</loc>`,
+    ...(alternates ? hreflangLinks(path) : []),
     lastmod    ? `    <lastmod>${lastmod}</lastmod>` : null,
     changefreq ? `    <changefreq>${changefreq}</changefreq>` : null,
     priority   ? `    <priority>${priority}</priority>` : null,
@@ -120,91 +63,36 @@ function urlEntry({ loc, lastmod, changefreq, priority, alternates = true }) {
   ].filter(Boolean).join('\n')
 }
 
-const dayFromEpoch = (sec) => new Date(sec * 1000).toISOString().slice(0, 10)
-
-// ── Backend fetches (resilient - a failure degrades that section, never 500) ──
-
-async function fetchJson(path, pick) {
-  try {
-    const r = await fetch(`${API_BASE}${path}`, { headers: { Accept: 'application/json' } })
-    if (!r.ok) {
-      console.warn(`[sitemap] ${path} responded ${r.status}`)
-      return []
-    }
-    const data = await r.json()
-    const arr = pick(data)
-    return Array.isArray(arr) ? arr : []
-  } catch (err) {
-    console.warn(`[sitemap] could not reach ${path}: ${err.message}`)
-    return []
-  }
+/** The day after a challenge date: when its page last changed (it closes then). */
+function dayAfter(date) {
+  return new Date(Date.parse(`${date}T12:00:00Z`) + 86400000).toISOString().slice(0, 10)
 }
 
-// ── Entry assembly ────────────────────────────────────────────────────────────
-
-function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
-  const today = new Date().toISOString().slice(0, 10)
-
-  const entries = [
-    urlEntry({ loc: `${SITE_BASE}/`,       lastmod: today, changefreq: 'daily', priority: '1.0' }),
-    urlEntry({ loc: `${SITE_BASE}/cities`, lastmod: today, changefreq: 'daily', priority: '0.9' }),
+/** The indexable pages: [{path, lastmod, changefreq, priority, alternates}]. Also the IndexNow ping's list (scripts/gen-sitemap.mjs). */
+export function indexablePages({ items, cities }) {
+  const today  = new Date().toISOString().slice(0, 10)
+  const latest = items[0] ? dayAfter(items[0].date) : today
+  const pages = [
+    { path: '/',           lastmod: today,  changefreq: 'daily', priority: '1.0', alternates: true },
+    { path: '/challenges', lastmod: latest, changefreq: 'daily', priority: '0.9', alternates: true },
   ]
 
-  // Indexable cities: chat messages OR active events OR seeded venues - the
-  // SAME criterion the prerender uses for the city robots tag. Listing a
-  // noindex city here would contradict its meta.
-  const venueCitySlugs = new Set(
-    venues.map(v => (v?.city_name ? cityToSlug(v.city_name) : null)).filter(Boolean),
-  )
   const seen = new Set()
-  for (const ch of channels) {
-    const name = ch?.city
-    if (!name || typeof name !== 'string') continue
-    const slug = cityToSlug(name)
+  for (const c of cities) {
+    const slug = cityToSlug(c?.name)
     if (!slug || seen.has(slug)) continue
     seen.add(slug)
-
-    const messageCount = Number(ch?.messageCount) || 0
-    const eventCount   = Number(ch?.eventCount)   || 0
-    if (!(messageCount > 0 || eventCount > 0 || venueCitySlugs.has(slug))) continue
-
-    const lastmod = Number.isFinite(ch?.lastActivityAt) && ch.lastActivityAt > 0
-      ? dayFromEpoch(ch.lastActivityAt)
-      : today
-    entries.push(urlEntry({ loc: `${SITE_BASE}/city/${slug}`, lastmod, changefreq: 'hourly', priority: '0.8' }))
+    pages.push({ path: `/city/${slug}`, lastmod: today, changefreq: 'daily', priority: '0.8', alternates: true })
   }
 
-  // Category × city pages (≥3 combined events+venues, enforced server-side).
-  for (const p of categoryPairs) {
-    if (!p?.city_slug || !p?.category) continue
-    entries.push(urlEntry({ loc: `${SITE_BASE}/city/${p.city_slug}/${p.category}`, lastmod: today, changefreq: 'daily', priority: '0.7' }))
+  for (const c of items) {
+    if (!c?.date || !c?.slug || !(c.countries >= INDEX_MIN)) continue
+    pages.push({
+      path: `/challenge/${c.date}-${c.slug}`, lastmod: dayAfter(c.date), changefreq: 'weekly', priority: '0.7',
+      alternates: c.countries >= ALL_LOCALES_MIN,
+    })
   }
-
-  // Venue pages - one canonical URL per seeded venue.
-  for (const v of venues) {
-    if (!v?.id || !v?.name) continue
-    const created = v.updated_at ? dayFromEpoch(v.updated_at) : today
-    const lastmod = created > VENUE_URL_LAUNCH ? created : VENUE_URL_LAUNCH
-    entries.push(urlEntry({ loc: `${SITE_BASE}/venue/${venueSlug(v.name, v.id)}`, lastmod, changefreq: 'weekly', priority: '0.6' }))
-  }
-
-  // Event pages - non-expired, non-deleted, non-venue (filtered server-side).
-  for (const e of events) {
-    if (!e?.id || !e?.title) continue
-    const lastmod = e.updated_at ? dayFromEpoch(e.updated_at) : today
-    entries.push(urlEntry({ loc: `${SITE_BASE}/event/${eventSlug(e.title, e.id)}`, lastmod, changefreq: 'daily', priority: '0.7', alternates: false }))
-  }
-
-  // Challenge pages - both open and validated are indexable (validated stay
-  // up; only hard-deleted via channels.status='deleted' get filtered server-
-  // side). LIMIT 40000 on the backend keeps us inside one sitemap file.
-  for (const c of (challenges || [])) {
-    if (!c?.id || !c?.title) continue
-    const lastmod = c.updated_at ? dayFromEpoch(c.updated_at) : today
-    entries.push(urlEntry({ loc: `${SITE_BASE}/challenge/${challengeSlug(c.title, c.id)}`, lastmod, changefreq: 'weekly', priority: '0.7', alternates: false }))
-  }
-
-  return entries
+  return pages
 }
 
 function renderSitemap(entries) {
@@ -217,23 +105,29 @@ function renderSitemap(entries) {
   ].join('\n')
 }
 
-// ── Handler ────────────────────────────────────────────────────────────────────
+export async function fetchChallenges() {
+  try {
+    const r = await fetch(`${API_BASE}/api/v1/daily/web/challenges?locale=en&themes=2&themesRev=3`, { headers: { Accept: 'application/json' } })
+    if (!r.ok) {
+      console.warn(`[sitemap] /daily/web/challenges responded ${r.status}`)
+      return null
+    }
+    const d = await r.json()
+    return Array.isArray(d?.items) && Array.isArray(d?.cities) ? d : null
+  } catch (err) {
+    console.warn(`[sitemap] could not reach the API: ${err.message}`)
+    return null
+  }
+}
 
 export default async function handler(req, res) {
-  const [channels, venues, categoryPairs, events, challenges] = await Promise.all([
-    fetchJson('/api/v1/channels',           d => d?.channels),
-    fetchJson('/api/v1/sitemap/venues',     d => d?.venues),
-    fetchJson('/api/v1/sitemap/categories', d => d?.pairs),
-    fetchJson('/api/v1/sitemap/events',     d => d?.events),
-    fetchJson('/api/v1/sitemap/challenges', d => d?.challenges),
-  ])
-
-  const entries = buildEntries({ channels, venues, categoryPairs, events, challenges })
-  const xml = renderSitemap(entries)
+  const data = await fetchChallenges()
+  const entries = indexablePages(data ?? { items: [], cities: [] }).map(urlEntry)
 
   res.statusCode = 200
   res.setHeader('Content-Type',  'application/xml; charset=utf-8')
-  res.setHeader('Cache-Control', 'public, s-maxage=10800, stale-while-revalidate=86400')
+  // The API down: a short cache, so a home-only sitemap doesn't stick for hours.
+  res.setHeader('Cache-Control', data ? 'public, s-maxage=10800, stale-while-revalidate=86400' : 'public, s-maxage=300')
   res.setHeader('x-sitemap-urls', String(entries.length))
-  res.end(xml)
+  res.end(renderSitemap(entries))
 }

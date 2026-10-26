@@ -11,8 +11,8 @@
     "onlyIn": "Seulement à {{city}}"
   },
   "meta": {
-    "cityTitle": "Deviens local à {{city}} - Hilads",
-    "cityDesc": "Deviens local à {{city}} : lance un challenge, rejoins un meetup, plonge dans un hangout, trouve des Local Events. Chat live avec les gens en ligne.",
+    "cityTitle": "{{city}} sur Hilads - Joue local. Compare global.",
+    "cityDesc": "Un défi par jour, le même dans chaque ville. Joue à {{city}}, prends une photo et découvre comment le monde a répondu.",
     "eventTitle": "Local Event : {{title}} | Hilads",
     "eventDesc": "Rejoins {{title}} sur Hilads - un Local Event qui se passe maintenant. Vois qui y va et chatte avec les gens en ligne."
   },

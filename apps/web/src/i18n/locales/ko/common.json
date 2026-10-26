@@ -11,8 +11,8 @@
     "onlyIn": "{{city}}에만"
   },
   "meta": {
-    "cityTitle": "{{city}}에서 로컬이 되어요 - Hilads",
-    "cityDesc": "{{city}}에서 로컬이 되어요: 챌린지 도전, 모임 참여, 행아웃 진입, Local Events 발견. 지금 온라인인 사람과 실시간 채팅.",
+    "cityTitle": "Hilads의 {{city}} - 로컬에서 놀고, 세계와 비교하자.",
+    "cityDesc": "하루에 하나, 모든 도시에 같은 챌린지. {{city}}에서 참여하고 사진을 찍어 세계가 어떻게 답했는지 확인해요.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "{{title}}에 Hilads에서 참여해요 - 지금 진행 중인 Local Event. 누가 가는지 보고 실시간으로 대화해요."
   },

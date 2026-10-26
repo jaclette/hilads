@@ -11,8 +11,8 @@
     "onlyIn": "Cuma di {{city}}"
   },
   "meta": {
-    "cityTitle": "Jadi orang lokal di {{city}} - Hilads",
-    "cityDesc": "Jadi orang lokal di {{city}}: ikut tantangan, gabung meetup, masuk hangout, temukan Local Events. Chat langsung dengan yang sedang online.",
+    "cityTitle": "{{city}} di Hilads - Main lokal. Bandingkan global.",
+    "cityDesc": "Satu tantangan sehari, sama di setiap kota. Main di {{city}}, ambil foto, dan lihat bagaimana dunia menjawab.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Gabung {{title}} di Hilads - Local Event yang sedang berlangsung. Lihat siapa yang datang dan ngobrol langsung."
   },

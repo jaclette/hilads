@@ -11,8 +11,8 @@
     "onlyIn": "सिर्फ़ {{city}} में"
   },
   "meta": {
-    "cityTitle": "{{city}} में लोकल बनिए - Hilads",
-    "cityDesc": "{{city}} में लोकल बनिए: चैलेंज लीजिए, मुलाक़ातों में जुड़िए, hangouts में पहुँचिए, Local Events खोजिए। ऑनलाइन लोगों के साथ लाइव चैट।",
+    "cityTitle": "Hilads पर {{city}} - लोकल खेलो। ग्लोबल तुलना करो।",
+    "cityDesc": "हर दिन एक चैलेंज, हर शहर में एक जैसा। {{city}} में खेलिए, फ़ोटो लीजिए और देखिए दुनिया ने क्या जवाब दिया।",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Hilads पर {{title}} में जुड़िए - एक Local Event जो अभी हो रहा है। देखिए कौन आ रहा है और लाइव चैट कीजिए।"
   },

@@ -11,8 +11,8 @@
     "onlyIn": "{{city}}獨有"
   },
   "meta": {
-    "cityTitle": "在 {{city}} 成為在地人 - Hilads",
-    "cityDesc": "在 {{city}} 成為在地人：參與 challenge、加入 meetup、進入 hangout、發現 Local Events。和正線上的人即時聊天。",
+    "cityTitle": "Hilads 上的{{city}} - 在地玩，全球比。",
+    "cityDesc": "每天一個挑戰，每座城市都一樣。在{{city}}參與，拍一張照片，看看全世界怎麼回答。",
     "eventTitle": "Local Event：{{title}} | Hilads",
     "eventDesc": "在 Hilads 加入 {{title}} - 一個正在進行的 Local Event。看誰會去，即時聊天。"
   },

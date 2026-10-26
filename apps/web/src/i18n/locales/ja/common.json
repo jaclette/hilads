@@ -11,8 +11,8 @@
     "onlyIn": "{{city}}だけ"
   },
   "meta": {
-    "cityTitle": "{{city}}でローカルになろう - Hilads",
-    "cityDesc": "{{city}}でローカルになろう：チャレンジに挑む、ミートアップに参加、ハングアウトに入る、Local Eventsを見つける。今オンラインの人とライブチャット。",
+    "cityTitle": "Hiladsの{{city}} - 地元で遊ぶ。世界と比べる。",
+    "cityDesc": "1日1つのチャレンジ、どの街でも同じお題。{{city}}で参加して写真を撮り、世界の答えを見てみましょう。",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "{{title}}にHiladsで参加 - 今行われているLocal Event。誰が参加するか見て、ライブチャットで話そう。"
   },

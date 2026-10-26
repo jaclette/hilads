@@ -36,6 +36,16 @@
       "permanent": false
     },
     {
+      "source": "/city/:slug/:sub",
+      "destination": "/city/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug/:sub",
+      "destination": "/:locale/city/:slug",
+      "permanent": true
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "hilads.vercel.app" }],
       "destination": "https://hilads.live/$1",
@@ -99,9 +109,8 @@
     { "source": "/challenge/:id",        "destination": "/api/prerender?type=challenge&id=:id" },
     { "source": "/venue/:id",            "destination": "/api/prerender?type=venue&id=:id" },
     { "source": "/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug" },
-    { "source": "/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug" },
-    { "source": "/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category" },
     { "source": "/cities",               "destination": "/api/cities-index" },
+    { "source": "/challenges",           "destination": "/api/prerender?type=archive" },
     { "source": "/",                     "destination": "/api/prerender?type=home" },
 
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/today",               "destination": "/api/today?locale=:locale" },
@@ -110,8 +119,7 @@
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/challenge/:id",        "destination": "/api/prerender?type=challenge&id=:id&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/challenges",           "destination": "/api/prerender?type=archive&locale=:locale" },
 
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)",  "destination": "/api/prerender?type=home&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/", "destination": "/api/prerender?type=home&locale=:locale" },

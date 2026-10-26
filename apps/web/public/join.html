@@ -12,7 +12,20 @@
        navigator.language (all 19 app locales); French markup is the no-JS fallback. -->
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#FBF6F0" />
-  <title>Hilads — deviens local dans ta ville</title>
+  <title>Hilads - Play local. Compare global.</title>
+  <meta name="description" content="One challenge a day, the same in every city. Snap a photo, see how the world answered." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hilads" />
+  <meta property="og:url" content="https://hilads.live/join" />
+  <meta property="og:title" content="Hilads - Play local. Compare global." />
+  <meta property="og:description" content="One challenge a day, the same in every city. Snap a photo, see how the world answered." />
+  <meta property="og:image" content="https://hilads.live/og/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Hilads - Play local. Compare global." />
+  <meta name="twitter:description" content="One challenge a day, the same in every city. Snap a photo, see how the world answered." />
+  <meta name="twitter:image" content="https://hilads.live/og/og-default.png" />
   <style>
     :root{
       /* Daylight theme — warm white + orange (logo colors). --accent2 is deepened
@@ -416,7 +429,6 @@
     $('nav1').textContent = lb.nav1;
     $('nav2').textContent = lb.nav2;
     $('nav3').textContent = lb.nav3;
-    document.title = ('Hilads — ' + t.h1.replace('{city}', t.city)).replace(/[.。]\s*$/, '');
 
     /* ── City from the IP edge fn (never empty: localized "your city" fallback) ─ */
     var ALIAS = { 'Ho Chi Minh City': 'Saigon' };

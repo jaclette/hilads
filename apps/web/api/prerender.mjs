@@ -1,28 +1,34 @@
 /**
- * Vercel serverless function - per-page prerender for shareable URLs.
+ * Vercel serverless function - server-rendered SEO pages over the SPA shell.
  *
  * Why this exists
  * ───────────────
- * Hilads is a Vite SPA. Without server rendering, every shared URL
- * (`/event/:id`, `/e/:id`, `/city/:slug`) returns the same generic
- * `index.html` to social crawlers - WhatsApp, iMessage, Twitter, FB,
- * Slack, LinkedIn. None of them execute JavaScript before reading meta
- * tags, so they never see the per-event / per-city OG metadata that the
- * client-side `setPageMeta()` injects after React mounts.
+ * Hilads is a Vite SPA. Crawlers (Google, WhatsApp, iMessage, Slack...) read
+ * the HTML before any JavaScript runs, so this function serves the app shell
+ * with the page's own title, description, Open Graph tags, canonical,
+ * hreflang, JSON-LD and a crawlable body inside #root. React replaces the body
+ * when it mounts; humans see the same page as before.
  *
- * This function intercepts those routes on Vercel's edge (via `vercel.json`
- * rewrites), fetches the page-specific data from `api.hilads.live`, replaces
- * the OG / Twitter / canonical / `<title>` tags in the SPA shell, and serves
- * the modified HTML. Humans get the same content - only the meta tags
- * differ. The SPA still hydrates normally.
+ * Pages (vercel.json rewrites, each also under a locale prefix /fr, /ja...):
+ *   /                          home (the bare English / is the static index.html)
+ *   /city/{slug}               today's challenge and how the city answered
+ *   /challenges                every past Daily Challenge
+ *   /challenge/{date}-{slug}   a past Daily Challenge: each country's top photo and answer
+ * Old-concept pages answer 301 to their city page: /event/{id}, /e/{id},
+ * /venue/{id}, /challenge/{slug}-{16hex}; /city/{slug}/past and
+ * /city/{slug}/{category} redirect in vercel.json. A gone one answers 410.
  *
- * On any failure (API down, slow, malformed payload) the function falls back
- * to the unmodified shell - the page never breaks visibly.
+ * Indexing: a challenge page is indexable from 3 countries, in English only
+ * until it reaches 15 countries (then every language, with hreflang). A city
+ * page is indexable once the city has played a challenge. Home and the
+ * archive: every language.
  *
- * Caching
- * ───────
- * Events: s-maxage 5min, SWR 24h - attendee counts change minute-to-minute.
- * Cities: s-maxage 1h,  SWR 24h - city metadata is more stable.
+ * Data: the public API (DailyWeb: players' approved photos only, username and
+ * city, never a suggestion or a demo). On any failure the page falls back to
+ * the plain shell (404 noindex for a content page) - it never breaks.
+ *
+ * Caching (CDN): past challenges a day (they're closed), the archive and city
+ * pages until the next drop (at most an hour), home an hour.
  */
 
 import { readFile }      from 'node:fs/promises'
@@ -52,26 +58,48 @@ import hi_ssr from '../src/i18n/locales/hi/ssr.json' with { type: 'json' }
 import ru_ssr from '../src/i18n/locales/ru/ssr.json' with { type: 'json' }
 import ar_ssr from '../src/i18n/locales/ar/ssr.json' with { type: 'json' }
 
+// City names in each language, by city slug (the client's public/citynames).
+import fr_cities from '../public/citynames/fr.json' with { type: 'json' }
+import vi_cities from '../public/citynames/vi.json' with { type: 'json' }
+import es_cities from '../public/citynames/es.json' with { type: 'json' }
+import it_cities from '../public/citynames/it.json' with { type: 'json' }
+import ptbr_cities from '../public/citynames/pt-br.json' with { type: 'json' }
+import ptpt_cities from '../public/citynames/pt-pt.json' with { type: 'json' }
+import de_cities from '../public/citynames/de.json' with { type: 'json' }
+import nl_cities from '../public/citynames/nl.json' with { type: 'json' }
+import zhhans_cities from '../public/citynames/zh-hans.json' with { type: 'json' }
+import zhhant_cities from '../public/citynames/zh-hant.json' with { type: 'json' }
+import ja_cities from '../public/citynames/ja.json' with { type: 'json' }
+import ko_cities from '../public/citynames/ko.json' with { type: 'json' }
+import fil_cities from '../public/citynames/fil.json' with { type: 'json' }
+import th_cities from '../public/citynames/th.json' with { type: 'json' }
+import id_cities from '../public/citynames/id.json' with { type: 'json' }
+import hi_cities from '../public/citynames/hi.json' with { type: 'json' }
+import ru_cities from '../public/citynames/ru.json' with { type: 'json' }
+import ar_cities from '../public/citynames/ar.json' with { type: 'json' }
+
 const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr, it: it_ssr, 'pt-br': ptbr_ssr, 'pt-pt': ptpt_ssr, de: de_ssr, nl: nl_ssr, 'zh-hans': zhhans_ssr, 'zh-hant': zhhant_ssr, ja: ja_ssr, ko: ko_ssr, fil: fil_ssr, th: th_ssr, id: id_ssr, hi: hi_ssr, ru: ru_ssr, ar: ar_ssr }
+const CITY_NAMES  = { fr: fr_cities, vi: vi_cities, es: es_cities, it: it_cities, 'pt-br': ptbr_cities, 'pt-pt': ptpt_cities, de: de_cities, nl: nl_cities, 'zh-hans': zhhans_cities, 'zh-hant': zhhant_cities, ja: ja_cities, ko: ko_cities, fil: fil_cities, th: th_cities, id: id_cities, hi: hi_cities, ru: ru_cities, ar: ar_cities }
 const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES', it: 'it-IT', 'pt-br': 'pt-BR', 'pt-pt': 'pt-PT', de: 'de-DE', nl: 'nl-NL', 'zh-hans': 'zh-CN', 'zh-hant': 'zh-TW', ja: 'ja-JP', ko: 'ko-KR', fil: 'fil-PH', th: 'th-TH', id: 'id-ID', hi: 'hi-IN', ru: 'ru-RU', ar: 'ar-SA' }
 const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES', it: 'it_IT', 'pt-br': 'pt_BR', 'pt-pt': 'pt_PT', de: 'de_DE', nl: 'nl_NL', 'zh-hans': 'zh_CN', 'zh-hant': 'zh_TW', ja: 'ja_JP', ko: 'ko_KR', fil: 'fil_PH', th: 'th_TH', id: 'id_ID', hi: 'hi_IN', ru: 'ru_RU', ar: 'ar_SA' }
 // Right-to-left locales - emit dir="rtl" on the SSR <html>.
 const RTL_LOCALES = ['ar']
 
-// '' for the default (English) locale; '/fr' | '/vi' otherwise. Used to keep SSR
-// internal links inside the localized cluster (mirrors the redirect/canonical prefixing).
+// Locale (Option A: un-prefixed = English canonical; /fr, /vi... additive).
+const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
+
+// A challenge page is indexable from INDEX_MIN countries (thinner pages exist
+// but stay noindex), in English only until it reaches ALL_LOCALES_MIN countries:
+// the answers aren't translated, so below that the 18 other languages are
+// near-duplicates Google refuses to index (it did, ~10k URLs, before).
+const INDEX_MIN       = 3
+const ALL_LOCALES_MIN = 15
+
+// '' for the default (English) locale; '/fr' | '/vi' otherwise. Keeps SSR
+// internal links inside the localized cluster.
 function localePrefixFor(locale) { return locale === 'en' ? '' : `/${locale}` }
 
-// Localized category label by slug. EN keeps the backend-supplied label (canonical,
-// no regression); non-EN uses the ssr.json label, falling back to the backend label.
-const CAT_KEY = { coffee: 'catCoffee', drinks: 'catDrinks', music: 'catMusic', food: 'catFood', meetup: 'catMeetup', party: 'catParty' }
-function catLabel(locale, slug, fallback) {
-  if (locale === 'en') return fallback
-  const k = CAT_KEY[slug]
-  return k ? T(locale, `city.${k}`) : fallback
-}
-
-// Translate an SSR string. `key` is a dot-path (e.g. 'event.labelWhen'); params
+// Translate an SSR string. `key` is a dot-path (e.g. 'daily.title'); params
 // fill {placeholders}. Falls back to English on any missing key/locale so a
 // lagging translation never blanks a page. Returns raw text (caller escapes).
 function T(locale, key, params = {}) {
@@ -81,10 +109,15 @@ function T(locale, key, params = {}) {
   return str.replace(/\{(\w+)\}/g, (_, k) => (params[k] != null ? String(params[k]) : ''))
 }
 
+/** "1 photo" / "12 photos" (key + 'One' | 'Many'). */
+function Tn(locale, key, count) {
+  return T(locale, `${key}${count === 1 ? 'One' : 'Many'}`, { count })
+}
+
 const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live'
 const SITE_BASE = process.env.HILADS_SITE_BASE || 'https://hilads.live'
 
-const API_TIMEOUT_MS   = 1500
+const API_TIMEOUT_MS   = 2000
 const SHELL_TIMEOUT_MS = 2500
 
 // ── Shell loader (cached per cold start) ──────────────────────────────────────
@@ -170,55 +203,10 @@ function cityToSlug(name) {
   return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-// Mirrors apps/web/src/eventUtils.js eventSlug() - keep in sync.
-function eventSlug(event) {
-  if (!event?.id) return ''
-  const titleSlug = String(event.title || '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-    .replace(/-+$/g, '')
-  return titleSlug ? `${titleSlug}-${event.id}` : event.id
-}
-
-// Mirrors apps/web/src/eventUtils.js extractEventHex() - keep in sync.
-function extractEventHex(input) {
+// The trailing 16-hex id of an old event / venue / challenge URL.
+function extractHex(input) {
   const m = String(input || '').match(/([a-f0-9]{16})$/i)
   return m ? m[1].toLowerCase() : null
-}
-
-// Slug used for venue URLs: `/venue/<slug>-<series_id_hex>`. Mirrors the
-// title-only slug pattern used for events (eventSlug) so the URL shape stays
-// consistent across surfaces.
-function venueSlugFromName(name, id) {
-  const titleSlug = String(name || '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-    .replace(/-+$/g, '')
-  return titleSlug ? `${titleSlug}-${id}` : id
-}
-
-// Challenge URLs use the exact same `<slug>-<16hex>` shape as events. Kept
-// separate from eventSlug for clarity even though the implementation is
-// identical - if either entity's slug rules diverge later, they don't bleed.
-function challengeSlug(challenge) {
-  if (!challenge?.id) return ''
-  const titleSlug = String(challenge.title || '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
-    .replace(/-+$/g, '')
-  return titleSlug ? `${titleSlug}-${challenge.id}` : challenge.id
 }
 
 function htmlEscape(s) {
@@ -230,38 +218,54 @@ function htmlEscape(s) {
     .replace(/'/g, '&#39;')
 }
 
-function formatTime(unixTs, timezone, locale = 'en') {
-  return new Date(unixTs * 1000).toLocaleTimeString(DATE_LOCALE[locale] || 'en-US', {
-    timeZone: timezone || 'UTC',
-    hour:     'numeric',
-    minute:   '2-digit',
-    // Omit hour12 so each locale uses its own convention (en → 12h, fr/vi → 24h).
-  })
+/** A city's name in the page's language (public/citynames), else the API's. */
+function cityName(name, locale) {
+  return (locale !== 'en' && CITY_NAMES[locale]?.[cityToSlug(name)]) || name
 }
 
-async function fetchWithTimeout(url, ms) {
-  const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), ms)
+/** A country's name in the page's language ("VN" → "Vietnam" / "Viêt Nam"). */
+function countryName(cc, locale) {
+  if (!cc || !/^[A-Za-z]{2}$/.test(cc)) return ''
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' } })
-    if (!res.ok) return null
-    return await res.json()
-  } catch (err) {
-    console.warn(`[prerender] fetch failed (${url}):`, err.message)
-    return null
-  } finally {
-    clearTimeout(t)
+    return new Intl.DisplayNames([DATE_LOCALE[locale] || 'en-US'], { type: 'region' }).of(cc.toUpperCase()) || cc
+  } catch {
+    return cc
   }
 }
 
-// Status-aware variant - returns { status, data }. Used by the event branch
-// so it can pass through a 410 (moderated/removed event) to the crawler
-// instead of silently serving the generic shell as a soft-404.
-async function fetchWithStatus(url, ms) {
+function flagEmoji(cc) {
+  if (!cc || cc.length !== 2) return ''
+  return [...cc.toUpperCase()]
+    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
+    .join('')
+}
+
+/** "October 24, 2026" in the page's language. */
+function dateLabel(date, locale) {
+  try {
+    return new Date(`${date}T12:00:00Z`).toLocaleDateString(DATE_LOCALE[locale] || 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+  } catch {
+    return date
+  }
+}
+
+/** The challenge's headline: its comparison question, else its text. */
+function headline(c) {
+  return c.question || c.text
+}
+
+function challengePath(c) {
+  return `/challenge/${c.date}-${c.slug}`
+}
+
+async function fetchJson(url, ms = API_TIMEOUT_MS) {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), ms)
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' } })
+    // themes=2 / themesRev=3: the current theme keys (old apps get v1 keys).
+    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2&themesRev=3', {
+      signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' },
+    })
     const data = res.ok ? await res.json() : null
     return { status: res.status, data }
   } catch (err) {
@@ -272,1377 +276,44 @@ async function fetchWithStatus(url, ms) {
   }
 }
 
-// ── Per-surface metadata composers ────────────────────────────────────────────
-
-// Format a past event date as "Friday, May 15, 2026" in the city's timezone.
-function formatPastDate(unixTs, timezone, locale = 'en') {
-  return new Date(unixTs * 1000).toLocaleDateString(DATE_LOCALE[locale] || 'en-US', {
-    timeZone: timezone || 'UTC',
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  })
+/** CDN seconds until the next daily drop, between 1 min and 1 h. */
+function untilNextDrop(today) {
+  const left = Number.isFinite(today?.nextDropAt) ? today.nextDropAt - Math.floor(Date.now() / 1000) : 3600
+  return Math.max(60, Math.min(3600, left))
 }
 
-function composeEventMeta(payload, canonicalPath, eventId, locale = 'en') {
-  // Backend shape: { event, cityName, country, timezone }
-  const ev = payload?.event
-  if (!ev || !ev.title) return null
-
-  const where = ev.location ? T(locale, 'event.atFrag', { location: ev.location }) : ''
-
-  let title, description
-  if (ev.is_past) {
-    // Past-event framing: honest, no "join now" CTA. Still indexable - past
-    // events carry SEO content mass and answer "did X happen" queries.
-    const whenDate = ev.starts_at ? formatPastDate(ev.starts_at, payload.timezone, locale) : ''
-    const when     = whenDate ? T(locale, 'event.happenedOnFrag', { date: whenDate }) : ''
-    const attended = (ev.participant_count ?? 0) > 0 ? T(locale, 'event.attendedFrag', { count: ev.participant_count }) : ''
-    const city     = payload.cityName || T(locale, 'event.cityFallback')
-    title       = payload.cityName
-      ? T(locale, 'event.titlePastCity', { title: ev.title, city: payload.cityName })
-      : T(locale, 'event.titlePast', { title: ev.title })
-    description = T(locale, 'event.descPast', { title: ev.title, where, when, attended, city })
-  } else {
-    const time = ev.starts_at ? T(locale, 'event.timeFrag', { time: formatTime(ev.starts_at, payload.timezone, locale) }) : ''
-    const city = payload.cityName || T(locale, 'event.cityFallback')
-    title       = payload.cityName
-      ? T(locale, 'event.titleCity', { title: ev.title, city: payload.cityName })
-      : T(locale, 'event.title', { title: ev.title })
-    description = T(locale, 'event.descUpcoming', { title: ev.title, city, time })
-  }
-
-  return {
-    title,
-    description,
-    url:         `${SITE_BASE}${canonicalPath}`,
-    // Per-event dynamic OG card generated by /api/og (M3). Crawlers fetch
-    // this directly when rendering link previews; cached at the CDN.
-    image:       `${SITE_BASE}/api/og?type=event&id=${encodeURIComponent(eventId)}`,
-  }
-}
-
-// Category × city meta - adapts to actual bucket size (events + venues).
-function composeCategoryMeta(payload, canonicalPath, locale = 'en') {
-  if (!payload?.city?.name || !payload?.category?.label) return null
-  const city  = payload.city.name
-  const slug  = payload.category.slug
-  const label = catLabel(locale, slug, payload.category.label)
-  const labelCap = label[0].toUpperCase() + label.slice(1)
-  const evN   = payload.total_events ?? 0
-  const venN  = payload.total_venues ?? 0
-  const total = evN + venN
-
-  let title, description
-  if (total >= 10) {
-    title       = T(locale, 'category.titleCount', { label: labelCap, city, total })
-    description = T(locale, 'category.descMany', { total, label, city })
-  } else if (total >= 3) {
-    title       = T(locale, 'category.title', { label: labelCap, city })
-    description = evN > 0
-      ? T(locale, 'category.descSomeUpcoming', { label, city, count: evN })
-      : T(locale, 'category.descSomeBrowse', { label, city })
-  } else {
-    title       = T(locale, 'category.title', { label: labelCap, city })
-    description = T(locale, 'category.descFew', { label, city })
-  }
-
-  return {
-    title,
-    description,
-    url:   `${SITE_BASE}${canonicalPath}`,
-    // Reuse the city OG card. Future: dedicated /api/og?type=category card.
-    image: `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(payload.city.slug ?? slug)}`,
-  }
-}
-
-function composeCategoryJsonLd(payload, canonicalUrl) {
-  if (!payload?.city?.name) return null
-  const events = Array.isArray(payload.events) ? payload.events : []
-  const venues = Array.isArray(payload.venues) ? payload.venues : []
-  const items  = []
-
-  // Events first (real activity), venues second. Cap at 20 total.
-  for (const e of events.slice(0, 20)) {
-    items.push({ type: 'event', name: e.title, url: `${SITE_BASE}/event/${eventSlug(e)}` })
-  }
-  for (const v of venues.slice(0, 20 - items.length)) {
-    items.push({ type: 'venue', name: v.name, url: `${SITE_BASE}/venue/${venueSlugFromName(v.name, v.id)}` })
-  }
-
-  const itemList = {
-    '@type':         'ItemList',
-    name:            `${payload.category.label} in ${payload.city.name}`,
-    numberOfItems:   items.length,
-    itemListElement: items.map((it, i) => ({
-      '@type':   'ListItem',
-      position:  i + 1,
-      url:       it.url,
-      name:      it.name,
-    })),
-  }
-
-  const breadcrumb = composeBreadcrumb([
-    { name: 'Home',                       url: `${SITE_BASE}/` },
-    { name: payload.city.name,            url: `${SITE_BASE}/city/${payload.city.slug}` },
-    { name: payload.category.label,       url: canonicalUrl },
-  ])
-
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [...siteGraphNodes(), itemList, breadcrumb],
-  }
-}
-
-function composeCategoryBody(payload, locale = 'en') {
-  const lp       = localePrefixFor(locale)
-  const city     = payload.city.name
-  const citySlug = payload.city.slug
-  const category = payload.category
-  const label    = catLabel(locale, category.slug, category.label)
-  const labelCap = label[0].toUpperCase() + label.slice(1)
-  const events   = Array.isArray(payload.events) ? payload.events : []
-  const venues   = Array.isArray(payload.venues) ? payload.venues : []
-
-  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(label)}</span></nav>`
-
-  let intro
-  if (events.length > 0 || venues.length > 0) {
-    const bits = []
-    if (events.length > 0) {
-      const evLabel = (events.length === 1 && locale === 'en') ? label.replace(/s$/, '') : label
-      bits.push(T(locale, 'category.introEvents', { count: events.length, label: evLabel }))
-    }
-    if (venues.length > 0) {
-      bits.push(venues.length === 1 ? T(locale, 'category.introVenuesOne') : T(locale, 'category.introVenuesMany', { count: venues.length }))
-    }
-    intro = bits.join(T(locale, 'category.introJoiner')) + T(locale, 'category.introSuffix', { city })
-  } else {
-    intro = T(locale, 'category.introBrowse', { label, city })
-  }
-
-  const eventsSection = events.length > 0
-    ? `<section><h2>${T(locale, 'category.upcomingHeading', { label: htmlEscape(label), city: htmlEscape(city) })}</h2><ul>${events.slice(0, 20).map(e => {
-        const slug = eventSlug(e)
-        const t = e.starts_at ? formatTime(e.starts_at, payload.city.timezone, locale) : ''
-        const w = e.location ? ` · ${htmlEscape(e.location)}` : ''
-        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` - ${htmlEscape(t)}` : ''}${w}</li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  const venuesHeading = category.slug === 'coffee'
-    ? T(locale, 'category.venuesHeadingCoffee', { city: htmlEscape(city) })
-    : category.slug === 'drinks'
-      ? T(locale, 'category.venuesHeadingBars', { city: htmlEscape(city) })
-      : T(locale, 'category.venuesHeadingGeneric', { city: htmlEscape(city) })
-  const venuesSection = venues.length > 0
-    ? `<section><h2>${venuesHeading}</h2><ul>${venues.slice(0, 20).map(v => {
-        const slug = venueSlugFromName(v.name, v.id)
-        const icon = v.category === 'bar' ? '🍻' : '☕'
-        const a    = v.address ? ` - ${htmlEscape(v.address)}` : ''
-        return `<li>${icon} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${a}</li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsInHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'category.aboutBody', { label: htmlEscape(label), city: htmlEscape(city) })}</p><p>${T(locale, 'common.seeOnHilads', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'category.everythingElseLink', { city: htmlEscape(city) })}</a>` })}</p></section>`
-
-  return [
-    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
-    `<main class="ssr-main">`,
-    breadcrumb,
-    `<h1>${htmlEscape(T(locale, 'category.title', { label: labelCap, city }))}</h1>`,
-    `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
-    eventsSection,
-    venuesSection,
-    evergreen,
-    `</main>`,
-  ].filter(Boolean).join('\n')
-}
-
-// ── Past archive (per-city) ───────────────────────────────────────────────────
-// Server-rendered index of finished one-off hangouts + expired pulses for a
-// city. Indexable ONLY when there's real content - empty archives are noindex
-// so we never publish thin pages. Past hangouts link to their existing
-// /event/<slug> pages (which stay indexable); pulses have no detail page so
-// they're listed as plain text for content mass.
-
-function composePastMeta(payload, canonicalPath, citySlug, itemCount, locale = 'en') {
-  if (!payload?.city) return null
-  const city  = payload.city
-  const title = T(locale, 'past.title', { city })
-  const description = itemCount > 0
-    ? T(locale, 'past.descItems', { city })
-    : T(locale, 'past.descEmpty', { city })
-  return {
-    title,
-    description,
-    url:     `${SITE_BASE}${canonicalPath}`,
-    image:   `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(citySlug)}`,
-    noindex: itemCount === 0,   // no thin archive pages
-  }
-}
-
-function composePastJsonLd(payload, items, citySlug, canonicalUrl) {
-  if (!payload?.city) return null
-  const events    = items.filter(it => it.kind === 'event')
-  const listItems = events.slice(0, 20).map((e, i) => ({
-    '@type':  'ListItem',
-    position: i + 1,
-    url:      `${SITE_BASE}/event/${eventSlug(e)}`,
-    name:     e.title,
-  }))
-  const itemList = {
-    '@type':         'ItemList',
-    name:            `Past hangouts in ${payload.city}`,
-    numberOfItems:   listItems.length,
-    itemListElement: listItems,
-  }
-  const breadcrumb = composeBreadcrumb([
-    { name: 'Home',        url: `${SITE_BASE}/` },
-    { name: payload.city,  url: `${SITE_BASE}/city/${citySlug}` },
-    { name: 'Past',        url: canonicalUrl },
-  ])
-  return {
-    '@context': 'https://schema.org',
-    '@graph':   [...siteGraphNodes(), itemList, breadcrumb],
-  }
-}
-
-function composePastBody(payload, items, citySlug, locale = 'en', validatedChallenges = []) {
-  const lp     = localePrefixFor(locale)
-  const city   = payload.city
-  const tz     = payload.timezone
-  const events = items.filter(it => it.kind === 'event')
-  const pulses = items.filter(it => it.kind === 'topic')
-  const challenges = Array.isArray(validatedChallenges) ? validatedChallenges : []
-
-  // Adjust the intro empty-vs-items decision so a city with only validated
-  // challenges (no past events/pulses) still gets the "look back" copy
-  // instead of the empty placeholder.
-  const hasAny = items.length > 0 || challenges.length > 0
-  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${T(locale, 'past.breadcrumb')}</span></nav>`
-  const intro = hasAny
-    ? T(locale, 'past.introItems', { city })
-    : T(locale, 'past.introEmpty', { city })
-
-  const eventsSection = events.length > 0
-    ? `<section><h2>${T(locale, 'past.pastHangoutsHeading', { city: htmlEscape(city) })}</h2><ul>${events.slice(0, 20).map(e => {
-        const slug = eventSlug(e)
-        const when = e.starts_at ? formatPastDate(e.starts_at, tz, locale) : ''
-        const loc  = e.location || e.venue
-        const w    = loc ? ` · ${htmlEscape(loc)}` : ''
-        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${when ? ` - ${htmlEscape(when)}` : ''}${w}</li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  const pulsesSection = pulses.length > 0
-    ? `<section><h2>${T(locale, 'past.pastPulsesHeading', { city: htmlEscape(city) })}</h2><ul>${pulses.slice(0, 20).map(p => {
-        const replies = p.message_count ?? 0
-        const repliesTxt = replies > 0 ? ` - ${T(locale, replies === 1 ? 'past.replyOne' : 'past.replyMany', { count: replies })}` : ''
-        return `<li>${htmlEscape(p.title)}${repliesTxt}</li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  // Validated challenges - evergreen content (no expiry), so this section
-  // is the long-tail SEO asset of the past page. Type emoji + title link
-  // to the canonical /challenge/{slug}-{id}. Cap at 20 to match the other
-  // sections.
-  const typeIcon = (t) => ({ food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[t] || '🔥')
-  const challengesSection = challenges.length > 0
-    ? `<section><h2>${T(locale, 'past.pastChallengesHeading', { city: htmlEscape(city) })}</h2><ul>${challenges.slice(0, 20).map(ch => {
-        const slug = challengeSlug(ch)
-        const icon = typeIcon(ch.challenge_type)
-        return `<li>${icon} <a href="${lp}/challenge/${slug}">${htmlEscape(ch.title)}</a></li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  const evergreen = `<section><h2>${T(locale, 'past.whatsNextHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'past.whatsNextBody', { city: htmlEscape(city), link: `<a href="${lp}/city/${citySlug}">${T(locale, 'past.whatsHappeningNowLink')}</a>` })}</p></section>`
-
-  return [
-    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
-    `<main class="ssr-main">`,
-    breadcrumb,
-    `<h1>${htmlEscape(T(locale, 'past.h1', { city }))}</h1>`,
-    `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
-    eventsSection,
-    pulsesSection,
-    challengesSection,
-    evergreen,
-    `</main>`,
-  ].filter(Boolean).join('\n')
-}
-
-function composeVenueMeta(payload, canonicalPath, venueId, locale = 'en') {
-  // Backend shape: { venue: { id, name, address, category, hours, city, ... } }
-  const v = payload?.venue
-  if (!v || !v.name) return null
-
-  const cityName = v.city?.name || ''
-  const where    = v.address ? T(locale, 'venue.atFrag', { address: v.address }) : ''
-  const description = T(locale, 'venue.desc', { name: v.name, where, city: cityName })
-
-  return {
-    title:       cityName ? T(locale, 'venue.titleCity', { name: v.name, city: cityName }) : T(locale, 'venue.title', { name: v.name }),
-    description,
-    url:         `${SITE_BASE}${canonicalPath}`,
-    // No dedicated venue OG image yet - reuse the city card so embeds aren't
-    // generic. Cheap to swap to /api/og?type=venue&id=... when we ship it.
-    image:       v.city?.slug
-                  ? `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(v.city.slug)}`
-                  : `${SITE_BASE}/og/og-default.png`,
-  }
-}
-
-// City meta tags. The title and description are intent-matched to "what's
-// happening in X" queries (events + meetups), not the vague "see who's
-// around" copy we used to ship. Three description tiers based on actual
-// event volume; the ≥30 tier exposes the count as social proof. Timeframe
-// prefix in the title reflects the city's local hour + day of week so the
-// snippet feels live across time zones. Returns {noindex:true} for cities
-// with literally zero indexable content (no events AND no venues AND no chat).
-function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0, locale = 'en', challengeCount = 0) {
-  if (!payload?.city) return null
-  const city      = payload.city
-  const timeframe = T(locale, 'timeframe.today')
-  const title     = T(locale, 'city.title', { timeframe, city })
-
-  let description
-  if (upcomingCount >= 30) {
-    description = T(locale, 'city.descHigh', { city, count: upcomingCount })
-  } else if (upcomingCount >= 10) {
-    description = T(locale, 'city.descMid', { city })
-  } else {
-    description = T(locale, 'city.descLow', { city })
-  }
-  // (descChallengeSuffix was a tail "+ N défis" appended on top of the
-  // events-led description. The base tiers now lead with défi as a category
-  // anchor, so the suffix would double-reference and risk SERP truncation.
-  // challengeCount stays in the signature for the noindex decision below.)
-
-  // noindex only when there's truly nothing of substance: zero upcoming
-  // events AND zero seeded venues AND zero chat messages AND zero open
-  // challenges. Any one of these makes the page worth indexing - a city
-  // with just a defi or two is still a live page worth surfacing.
-  const noindex = upcomingCount === 0 && venueCount === 0 && messageCount === 0 && challengeCount === 0
-
-  return {
-    title,
-    description,
-    url:     `${SITE_BASE}${canonicalPath}`,
-    image:   `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(citySlug)}`,
-    noindex,
-  }
-}
-
-// ── JSON-LD composers ─────────────────────────────────────────────────────────
-// Emitted as a single @graph script. Google reads each top-level entry as a
-// separate entity. This unlocks Event rich results (carousel, calendar add)
-// and ItemList signals on city pages without needing multiple <script> blocks.
-
-const ORG_NODE = {
-  '@type': 'Organization',
-  name:    'Hilads',
-  url:     SITE_BASE,
-}
-
-// Site-level entities emitted on every prerendered page. Organization gives
-// Google's brand panel; WebSite establishes site identity. SearchAction is
-// omitted because there's no functional /?q= search endpoint yet - adding it
-// without a backing route would trigger a structured-data warning in GSC.
-// Enumerates the four experience types Hilads offers. Surfaced via
-// Organization.hasOfferCatalog on every prerendered page so the brand panel
-// + city pages all carry the same machine-readable "ways to become local"
-// signal. Names track the user-facing brand terms — "Local Events" stays
-// English (brand-locked), the others read as plain category labels.
-const HILADS_OFFER_CATALOG = {
-  '@type': 'OfferCatalog',
-  '@id':   `${SITE_BASE}/#offer-catalog`,
-  name:    'Ways to become local on Hilads',
-  itemListElement: [
-    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Challenges',   description: 'Take on or launch a challenge for locals or travelers in your city.' } },
-    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Meetups',      description: 'Meet people in person — agree on a date and meet up.' } },
-    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Hangouts',     description: 'Drop into casual hangouts happening right now in your city.' } },
-    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Local Events', description: 'Find and join real local events happening in your city.' } },
-  ],
-}
+// ── JSON-LD ───────────────────────────────────────────────────────────────────
 
 const ORG_GRAPH_NODE = {
   '@type': 'Organization',
   '@id':   `${SITE_BASE}/#organization`,
   name:    'Hilads',
-  url:     SITE_BASE,
-  logo:    `${SITE_BASE}/og/og-default.png`,
-  description: 'Hilads turns any city into a place you can become local in — through challenges, meetups, hangouts, and Local Events.',
-  hasOfferCatalog: HILADS_OFFER_CATALOG,
+  url:     `${SITE_BASE}/`,
+  logo:    `${SITE_BASE}/logo/icon.svg`,
+  slogan:  'Play local. Compare global.',
+  description: 'Hilads is the daily photo challenge for travelers and locals: one challenge a day, the same in every city, and every country\'s answers side by side.',
+  sameAs: [
+    'https://apps.apple.com/app/id6768905591',
+    'https://play.google.com/store/apps/details?id=com.hilads.app',
+  ],
 }
 
 const WEBSITE_GRAPH_NODE = {
   '@type':   'WebSite',
   '@id':     `${SITE_BASE}/#website`,
   name:      'Hilads',
-  url:       SITE_BASE,
+  url:       `${SITE_BASE}/`,
   publisher: { '@id': `${SITE_BASE}/#organization` },
 }
 
-function siteGraphNodes() {
-  return [ORG_GRAPH_NODE, WEBSITE_GRAPH_NODE]
+function graph(...nodes) {
+  return { '@context': 'https://schema.org', '@graph': [ORG_GRAPH_NODE, WEBSITE_GRAPH_NODE, ...nodes.filter(Boolean)] }
 }
 
-function isoOr(unixTs, fallback) {
-  if (typeof unixTs !== 'number' || !Number.isFinite(unixTs)) return fallback
-  return new Date(unixTs * 1000).toISOString()
-}
-
-function composeEventJsonLd(payload, canonicalUrl) {
-  const ev = payload?.event
-  if (!ev || !ev.title || !ev.starts_at) return null
-
-  // Place node - venue + address + optional geo. Required by Google for Event
-  // rich results to qualify.
-  const place = {
-    '@type': 'Place',
-    name:    ev.venue || ev.location || payload.cityName || 'Hilads',
-    address: {
-      '@type':          'PostalAddress',
-      streetAddress:    ev.location || ev.location_hint || undefined,
-      addressLocality:  payload.cityName || undefined,
-      addressCountry:   payload.country  || undefined,
-    },
-  }
-  if (typeof ev.venue_lat === 'number' && typeof ev.venue_lng === 'number') {
-    place.geo = {
-      '@type':   'GeoCoordinates',
-      latitude:  ev.venue_lat,
-      longitude: ev.venue_lng,
-    }
-  }
-
-  const event = {
-    '@type':              'Event',
-    '@id':                canonicalUrl,
-    name:                 ev.title,
-    startDate:            isoOr(ev.starts_at),
-    endDate:              isoOr(ev.ends_at, undefined),
-    eventStatus:          'https://schema.org/EventScheduled',
-    eventAttendanceMode:  'https://schema.org/OfflineEventAttendanceMode',
-    location:             place,
-    image:                [payload._ogImage || `${SITE_BASE}/og/og-default.png`],
-    description:          payload._descriptionForSchema,
-    // organizer.url is required by Google's Event structured data. Hosts have no
-    // public profile page, so point a Person organizer at the platform (matches
-    // ORG_NODE) - this clears the GSC "missing field url (in organizer)" warning.
-    organizer:            ev.host_nickname
-                            ? { '@type': 'Person', name: ev.host_nickname, url: SITE_BASE }
-                            : ORG_NODE,
-    // performer is a recommended Event field (clears the GSC "missing field
-    // performer" warning). Social hangouts have no distinct act, so name the host
-    // (a Person) as the performer; fall back to the event itself as a
-    // PerformingGroup when there's no host. ev.title is guaranteed (checked above).
-    performer:            ev.host_nickname
-                            ? { '@type': 'Person', name: ev.host_nickname, url: SITE_BASE }
-                            : { '@type': 'PerformingGroup', name: ev.title },
-    url:                  canonicalUrl,
-    // Free events: Google requires an Offer with availability + price=0 to
-    // surface in event rich results without warning.
-    offers: {
-      '@type':         'Offer',
-      url:             canonicalUrl,
-      price:           '0',
-      priceCurrency:   'USD',
-      availability:    'https://schema.org/InStock',
-      validFrom:       isoOr(ev.created_at ?? ev.starts_at - 86400),
-    },
-  }
-
-  // Strip nullish fields so the JSON stays clean.
-  for (const k of Object.keys(event)) if (event[k] === undefined) delete event[k]
-  for (const k of Object.keys(place.address)) if (place.address[k] === undefined) delete place.address[k]
-
-  const breadcrumb = composeBreadcrumb([
-    { name: 'Home',                url: `${SITE_BASE}/` },
-    payload.cityName && payload.citySlug
-      ? { name: payload.cityName,  url: `${SITE_BASE}/city/${payload.citySlug}` }
-      : null,
-    { name: ev.title,              url: canonicalUrl },
-  ].filter(Boolean))
-
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [...siteGraphNodes(), event, breadcrumb],
-  }
-}
-
-function composeVenueJsonLd(payload, canonicalUrl) {
-  const v = payload?.venue
-  if (!v || !v.name) return null
-
-  // category 'bar' → BarOrPub, anything else (cafe) → CafeOrCoffeeShop.
-  // These are well-known schema.org LocalBusiness subtypes Google supports.
-  const type = v.category === 'bar' ? 'BarOrPub' : 'CafeOrCoffeeShop'
-
-  const node = {
-    '@type': type,
-    '@id':   canonicalUrl,
-    name:    v.name,
-    address: {
-      '@type':         'PostalAddress',
-      streetAddress:   v.address || undefined,
-      addressLocality: v.city?.name || undefined,
-      addressCountry:  v.city?.country || undefined,
-    },
-    url: canonicalUrl,
-  }
-
-  // GeoCoordinates - emitted only when both coordinates exist. Unlocks the
-  // map preview in Google's rich result for LocalBusiness types. Falls back
-  // gracefully (no map preview) when nulls - never errors.
-  if (typeof v.lat === 'number' && typeof v.lng === 'number') {
-    node.geo = {
-      '@type':   'GeoCoordinates',
-      latitude:  v.lat,
-      longitude: v.lng,
-    }
-  }
-
-  // openingHoursSpecification: single window applied to every day, since the
-  // seed only captures one open/close pair. Per-weekday data lands later.
-  if (v.hours?.opens && v.hours?.closes) {
-    node.openingHoursSpecification = [{
-      '@type':     'OpeningHoursSpecification',
-      dayOfWeek:   Array.isArray(v.hours.daysOfWeek) && v.hours.daysOfWeek.length > 0
-                     ? v.hours.daysOfWeek
-                     : ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-      opens:       v.hours.opens,
-      closes:      v.hours.closes,
-    }]
-  }
-
-  for (const k of Object.keys(node.address)) if (node.address[k] === undefined) delete node.address[k]
-
-  const breadcrumb = composeBreadcrumb([
-    { name: 'Home', url: `${SITE_BASE}/` },
-    v.city?.name && v.city?.slug
-      ? { name: v.city.name, url: `${SITE_BASE}/city/${v.city.slug}` }
-      : null,
-    { name: v.name, url: canonicalUrl },
-  ].filter(Boolean))
-
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [...siteGraphNodes(), node, breadcrumb],
-  }
-}
-
-function composeCityJsonLd(payload, canonicalUrl, upcomingEvents, challenges) {
-  if (!payload?.city) return null
-
-  const place = {
-    '@type': 'Place',
-    '@id':   canonicalUrl,
-    name:    payload.city,
-    address: {
-      '@type':         'PostalAddress',
-      addressLocality: payload.city,
-      addressCountry:  payload.country || undefined,
-    },
-    url:     canonicalUrl,
-  }
-  for (const k of Object.keys(place.address)) if (place.address[k] === undefined) delete place.address[k]
-
-  // TouristAttraction reinforces that the page is an entry point for
-  // visitors who want to become local in this city — Google's brand
-  // panel + travel-intent queries both lean on this type. Same @id as
-  // the Place node so they're recognised as the same entity with two
-  // type signals.
-  const touristAttraction = {
-    '@type':         'TouristAttraction',
-    '@id':           `${canonicalUrl}#tourist-attraction`,
-    name:            `Become local in ${payload.city}`,
-    description:     `Take on challenges, join meetups, drop into hangouts, find Local Events — every step earns your place in ${payload.city}.`,
-    url:             canonicalUrl,
-    containedInPlace: { '@id': canonicalUrl },
-  }
-
-  const graph = [place, touristAttraction, composeBreadcrumb([
-    { name: 'Home',         url: `${SITE_BASE}/` },
-    { name: payload.city,   url: canonicalUrl    },
-  ])]
-
-  // ItemList signals to Google that the city page is an authoritative index of
-  // events in that city - improves ranking on geographic queries. Cap at 10
-  // entries to keep the payload light.
-  if (Array.isArray(upcomingEvents) && upcomingEvents.length > 0) {
-    graph.push({
-      '@type': 'ItemList',
-      name:    `Upcoming events in ${payload.city}`,
-      numberOfItems: upcomingEvents.length,
-      itemListElement: upcomingEvents.slice(0, 10).map((ev, i) => ({
-        '@type':   'ListItem',
-        position:  i + 1,
-        url:       `${SITE_BASE}/event/${eventSlug(ev)}`,
-        name:      ev.title,
-      })),
-    })
-  }
-
-  // Second ItemList - open challenges in this city. Same authority pitch as
-  // events, scoped to the new primary entity so /challenge/{slug}-{id} URLs
-  // get linked from the city's most-authoritative page.
-  if (Array.isArray(challenges) && challenges.length > 0) {
-    graph.push({
-      '@type': 'ItemList',
-      name:    `Open challenges in ${payload.city}`,
-      numberOfItems: challenges.length,
-      itemListElement: challenges.slice(0, 10).map((ch, i) => ({
-        '@type':   'ListItem',
-        position:  i + 1,
-        url:       `${SITE_BASE}/challenge/${challengeSlug(ch)}`,
-        name:      ch.title,
-      })),
-    })
-  }
-
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [...siteGraphNodes(), ...graph],
-  }
-}
-
-// ── SSR body composers ───────────────────────────────────────────────────────
-// Inject crawlable HTML into <div id="root"> before React mounts. React
-// (createRoot().render) replaces the contents on hydration, so humans see
-// this content for ~200-800ms (perceived as fast LCP, then interactive),
-// while Googlebot indexes it as the canonical page body.
-
-function flagEmoji(cc) {
-  if (!cc || cc.length !== 2) return ''
-  return [...cc.toUpperCase()]
-    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
-    .join('')
-}
-
-// H1 mirrors the title's leading phrase so the searcher's "events in X"
-// query keeps reading consistently from SERP → page. Timeframe-led, same
-// timezone-aware logic as composeCityMeta. Branded suffix dropped - the
-// title's "| Hilads" is enough; H1 should stay topical.
-function cityH1(city, timeframe, locale = 'en') {
-  return T(locale, 'city.h1', { timeframe, city })
-}
-
-// Country-name resolver (ISO-2 → full English name) via Intl, with a small
-// regional flavour map layered on top so popular markets get more specific
-// copy than just "in France". Unmapped countries fall back to the country
-// name alone. Keep this list short and edit by hand - it's the per-city
-// differentiation hook for ~80% of traffic.
-const COUNTRY_FLAVOUR = {
-  FR: 'café culture, late dinners, after-work apéros',
-  GB: 'pub nights, weekend brunches, festival season',
-  US: 'bar-hopping, food meetups, sports nights',
-  CA: 'cosy bars, indie shows, weekend trail meetups',
-  ES: 'late dinners, terrazas, all-night neighborhoods',
-  IT: 'aperitivo hour, slow dinners, piazza nights',
-  DE: 'beer-garden afternoons, club nights, weekend markets',
-  NL: 'canal walks, café terraces, club crawls',
-  PT: 'sunset miradouros, fado nights, late-summer evenings',
-  AU: 'beach BBQs, coffee culture, sundowner sessions',
-  NZ: 'craft beer, hiking meetups, coffee-shop hangouts',
-  JP: 'izakaya runs, neighborhood crawls, after-work drinks',
-  KR: 'food crawls, late-night soju, K-indie shows',
-  TH: 'street-food tours, beach parties, sunset cocktails',
-  VN: 'cà phê early, beer late, motorbike crews',
-  ID: 'beach hangouts, warung dinners, surf meetups',
-  PH: 'karaoke nights, beach trips, food crawls',
-  MY: 'mamak runs, café culture, weekend hawker tours',
-  SG: 'hawker dinners, rooftop drinks, weekend brunches',
-  IN: 'food walks, chai meetups, evening street crawls',
-  BR: 'beach hangouts, samba nights, all-day food culture',
-  MX: 'taquería nights, mezcal crawls, weekend rooftops',
-  AR: 'late dinners, asado weekends, milonga nights',
-  CO: 'salsa nights, café culture, weekend trails',
-  CL: 'pisco nights, hiking weekends, café meetups',
-  PE: 'food crawls, pisco bars, weekend day-trips',
-  EG: 'late-night cafés, Nile sunset walks, weekend trips',
-  MA: 'rooftop sunsets, medina walks, mint-tea afternoons',
-  ZA: 'braai weekends, wine-region trips, beachfront nights',
-  TR: 'rooftop dinners, ferry rides, late-night meyhane',
-  AE: 'rooftop bars, brunch culture, desert weekends',
-  CN: 'late food crawls, KTV nights, neighborhood meetups',
-  TW: 'night markets, café crawls, mountain weekends',
-  HK: 'rooftop bars, late dim sum, weekend hikes',
-}
-
-function regionLine(country) {
-  if (!country || country.length !== 2) return ''
-  try {
-    const cn = new Intl.DisplayNames(['en'], { type: 'region' })
-    const name = cn.of(country.toUpperCase())
-    const flavour = COUNTRY_FLAVOUR[country.toUpperCase()]
-    return flavour
-      ? `In ${name} you'll find ${flavour}.`
-      : `Live in ${name} or just visiting? Hilads brings the people out.`
-  } catch {
-    return ''
-  }
-}
-
-// Count event_type distribution after filtering out venue-derived rows.
-function categoryCounts(events) {
-  const out = {}
-  for (const ev of events) {
-    const t = ev?.type
-    if (!t) continue
-    out[t] = (out[t] || 0) + 1
-  }
-  return out
-}
-
-// City-page category cards (must match backend categoryMeta() allowlist).
-const CITY_CATEGORIES = [
-  { slug: 'coffee', label: 'Coffee meetups',     venueCat: 'cafe', icon: '☕' },
-  { slug: 'drinks', label: 'Drinks & nightlife', venueCat: 'bar',  icon: '🍻' },
-  { slug: 'music',  label: 'Music',              venueCat: null,   icon: '🎵' },
-  { slug: 'food',   label: 'Food meetups',       venueCat: null,   icon: '🍽️' },
-  { slug: 'meetup', label: 'Meetups',            venueCat: null,   icon: '👥' },
-  { slug: 'party',  label: 'Parties',            venueCat: null,   icon: '🎉' },
-]
-
-// Render a "Browse by category in <city>" block on the city page. Each link
-// goes to /city/<slug>/<category> which the prerender serves with its own
-// content. Only categories with ≥3 events+venues are shown - same threshold
-// the backend uses to gate the sitemap so we never link to a 404.
-function categoryLinksHtml(city, citySlug, events, venues, locale = 'en') {
-  const lp = localePrefixFor(locale)
-  const evCounts = {}
-  for (const e of events) {
-    const t = e?.type
-    if (t) evCounts[t] = (evCounts[t] || 0) + 1
-  }
-  let cafes = 0, bars = 0
-  for (const v of venues) {
-    if (v.category === 'bar') bars++
-    else cafes++
-  }
-
-  const eligible = CITY_CATEGORIES.filter(c => {
-    const ev = evCounts[c.slug] ?? 0
-    const vn = c.venueCat === 'cafe' ? cafes : c.venueCat === 'bar' ? bars : 0
-    return (ev + vn) >= 3
-  })
-
-  if (eligible.length === 0) return ''
-  return `<section><h2>${T(locale, 'city.browseByCategoryHeading', { city: htmlEscape(city) })}</h2><ul>${
-    eligible.map(c =>
-      `<li>${c.icon} <a href="${lp}/city/${citySlug}/${c.slug}">${T(locale, 'city.categoryLink', { label: htmlEscape(catLabel(locale, c.slug, c.label)), city: htmlEscape(city) })}</a></li>`
-    ).join('')
-  }</ul></section>`
-}
-
-// Human label for an event_type. Mirrors apps/web/src/cityMeta.js EVENT_TYPES;
-// keep in sync.
-const CATEGORY_LABEL = {
-  drinks: 'drinks',
-  party:  'parties',
-  music:  'music nights',
-  food:   'food meetups',
-  coffee: 'coffee meetups',
-  sport:  'sport',
-  meetup: 'meetups',
-  other:  'other',
-}
-
-function topCategoriesLine(counts) {
-  const sorted = Object.entries(counts)
-    .filter(([k]) => k !== 'other')
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-  if (sorted.length === 0) return ''
-  const parts = sorted.map(([k, n]) => `${CATEGORY_LABEL[k] || k} (${n})`)
-  if (parts.length === 1) return `Most active right now: ${parts[0]}.`
-  if (parts.length === 2) return `Most active right now: ${parts[0]} and ${parts[1]}.`
-  return `Most active right now: ${parts[0]}, ${parts[1]}, and ${parts[2]}.`
-}
-
-function venueMixLine(venues) {
-  if (!Array.isArray(venues) || venues.length === 0) return ''
-  let cafes = 0, bars = 0
-  for (const v of venues) {
-    if (v.category === 'bar') bars++
-    else cafes++
-  }
-  const bits = []
-  if (cafes) bits.push(`${cafes} ${cafes === 1 ? 'coffee spot' : 'coffee spots'}`)
-  if (bars)  bits.push(`${bars} ${bars === 1 ? 'bar' : 'bars'}`)
-  if (bits.length === 0) return ''
-  if (bits.length === 1) return `Venue scene: ${bits[0]}.`
-  return `Venue scene: ${bits[0]} and ${bits[1]}.`
-}
-
-function daysAgo(unixTs) {
-  if (!unixTs) return null
-  const ms = Date.now() - unixTs * 1000
-  if (ms < 0) return 0
-  return Math.floor(ms / (24 * 60 * 60 * 1000))
-}
-
-function freshnessLine(events) {
-  if (!Array.isArray(events) || events.length === 0) return ''
-  const latest = events
-    .map(e => e?.created_at)
-    .filter(t => typeof t === 'number')
-    .sort((a, b) => b - a)[0]
-  const d = daysAgo(latest)
-  if (d === null) return ''
-  if (d === 0) return 'Latest activity: today.'
-  if (d === 1) return 'Latest activity: yesterday.'
-  if (d <= 7)  return `Latest activity: ${d} days ago.`
-  return ''  // older than a week - don't advertise stale freshness
-}
-
-// The SSR body's styles live in index.html's <head> (brand palette, light and
-// dark), with the branded boot shell that covers it until React mounts. Only
-// the page-specific extras are added here.
-const SSR_CITY_STYLES = ''
-
-function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challenges = []) {
-  const city  = payload.city || ''
-  if (!city) return null
-  const lp             = localePrefixFor(locale)
-  const country        = payload.country || ''
-  const flag           = flagEmoji(country)
-  const events         = Array.isArray(upcomingEvents) ? upcomingEvents : []
-  const venueList      = Array.isArray(venues) ? venues : []
-  const challengeList  = Array.isArray(challenges) ? challenges : []
-  const eventCount     = events.length
-  const venueCount     = venueList.length
-  const challengeCount = challengeList.length
-
-  // Challenges lead - they're the hero of the product, so they head the
-  // intro line and the body sections below; events/venues follow.
-  const introBits = []
-  if (challengeCount > 0) introBits.push(challengeCount === 1 ? T(locale, 'city.introChallengesOne') : T(locale, 'city.introChallengesMany', { count: challengeCount }))
-  if (eventCount     > 0) introBits.push(eventCount     === 1 ? T(locale, 'city.introEventsOne')     : T(locale, 'city.introEventsMany',     { count: eventCount }))
-  if (venueCount     > 0) introBits.push(venueCount     === 1 ? T(locale, 'city.introVenuesOne')     : T(locale, 'city.introVenuesMany',     { count: venueCount }))
-  const introSuffix = introBits.length > 0
-    ? T(locale, 'city.introSuffix', { bits: introBits.join(', ') })
-    : T(locale, 'city.introEmpty')
-  const intro = `${flag} ${htmlEscape(city)}${country ? `, ${htmlEscape(country)}` : ''}${htmlEscape(introSuffix)}`
-
-  // Events list - up to 20, each linking to /event/<slug>-<id> (slug form for
-  // SEO authority; prerender 301s bare hex anyway).
-  const eventItems = events.slice(0, 20).map(ev => {
-    const slug  = eventSlug(ev)
-    const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone, locale) : ''
-    const where = ev.location ? ` · ${htmlEscape(ev.location)}` : ''
-    return `<li><a href="${lp}/event/${slug}">${htmlEscape(ev.title)}</a>${when ? ` - ${htmlEscape(when)}` : ''}${where}</li>`
-  }).join('\n        ')
-  const eventsHeading = T(locale, 'city.upcomingEventsHeading', { city: htmlEscape(city) })
-  const eventsSection = eventCount > 0
-    ? `<section><h2>${eventsHeading}</h2><ul>\n        ${eventItems}\n      </ul></section>`
-    : `<section><h2>${eventsHeading}</h2><p>${T(locale, 'city.noEvents')}</p></section>`
-
-  // Venues showcase - up to 6
-  let venuesSection = ''
-  if (venueCount > 0) {
-    const venueItems = venueList.slice(0, 6).map(v => {
-      const slug = venueSlugFromName(v.name, v.id)
-      const cat  = v.category === 'bar' ? '🍻' : '☕'
-      return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` - ${htmlEscape(v.address)}` : ''}</li>`
-    }).join('\n        ')
-    venuesSection = `<section><h2>${T(locale, 'city.popularVenuesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${venueItems}\n      </ul></section>`
-  }
-
-  // Open challenges - up to 10. Type emoji + title link to the canonical
-  // /challenge/{slug}-{id}. Audience badge ("for locals" / "for explorers")
-  // disambiguates target. Skipped entirely when the city has no open défi.
-  let challengesSection = ''
-  if (challengeCount > 0) {
-    const typeIcon = (t) => ({ food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[t] || '🔥')
-    const challengeItems = challengeList.slice(0, 10).map(ch => {
-      const slug     = challengeSlug(ch)
-      const icon     = typeIcon(ch.challenge_type)
-      const audience = ch.audience === 'explorers'
-        ? T(locale, 'city.challengeForExplorers')
-        : T(locale, 'city.challengeForLocals')
-      return `<li>${icon} <a href="${lp}/challenge/${slug}">${htmlEscape(ch.title)}</a> - <em>${htmlEscape(audience)}</em></li>`
-    }).join('\n        ')
-    challengesSection = `<section><h2>${T(locale, 'city.openChallengesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${challengeItems}\n      </ul></section>`
-  }
-
-  // City-specific signals (event mix / venue split / freshness / country
-  // flavour). These are EN-only curated micro-copy - on non-default locales we
-  // omit the block entirely rather than leak English, keeping the page fully
-  // in-language. The localized core content above carries the page.
-  let signalsBlock = ''
-  if (locale === 'en') {
-    const signals = [
-      topCategoriesLine(categoryCounts(events)),
-      venueMixLine(venueList),
-      freshnessLine(events),
-      regionLine(country),
-    ].filter(Boolean)
-    signalsBlock = signals.length > 0
-      ? `<p class="ssr-signals">${signals.map(htmlEscape).join(' ')}</p>`
-      : ''
-  }
-
-  // Evergreen copy - two paragraphs, city-specific.
-  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsInHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'city.aboutBody1', { city: htmlEscape(city) })}</p><p>${T(locale, 'city.aboutBody2', { city: htmlEscape(city) })}</p></section>`
-
-  const citySlug = cityToSlug(city)
-  const categoriesSection = categoryLinksHtml(city, citySlug, events, venueList, locale)
-  const timeframe = T(locale, 'timeframe.today')
-
-  return [
-    `<style>${SSR_CITY_STYLES}</style>`,
-    `<main class="ssr-main">`,
-    `<h1>${htmlEscape(cityH1(city, timeframe, locale))}</h1>`,
-    `<p class="ssr-intro">${intro}</p>`,
-    signalsBlock,
-    // Challenges first - the hero. Events, categories, venues follow.
-    challengesSection,
-    eventsSection,
-    categoriesSection,
-    venuesSection,
-    evergreen,
-    `</main>`,
-  ].join('\n')
-}
-
-// ── Home (localized landing) ──────────────────────────────────────────────────
-// Static - no backend fetch, so the homepage always renders even if the API is
-// slow/down. Mirrors the city page shape (meta + body + site graph), localized
-// via the `home.*` ssr.json keys. The final-serve block rewrites meta.url to the
-// per-locale form (/fr/ etc.); hreflang for basePath '/' already emits all locales.
-function composeHomeMeta(canonicalPath, locale = 'en') {
-  return {
-    title:       T(locale, 'home.title'),
-    description: T(locale, 'home.description'),
-    url:         `${SITE_BASE}${canonicalPath}`,
-    image:       `${SITE_BASE}/og/og-default.png`,
-  }
-}
-
-function composeHomeJsonLd() {
-  return { '@context': 'https://schema.org', '@graph': siteGraphNodes() }
-}
-
-function composeHomeBody(locale = 'en') {
-  const lp = localePrefixFor(locale)
-  return [
-    `<style>${SSR_CITY_STYLES} .ssr-subhead { font-size: 1.05rem; font-weight: 700; color: #FF7A3C; margin: 0 0 0.75rem; letter-spacing: 0.2px; }</style>`,
-    `<main class="ssr-main">`,
-    `<h1>${htmlEscape(T(locale, 'home.h1'))}</h1>`,
-    `<p class="ssr-subhead">${htmlEscape(T(locale, 'home.subhead'))}</p>`,
-    `<p class="ssr-intro">${htmlEscape(T(locale, 'home.intro'))}</p>`,
-    `<section><h2>${htmlEscape(T(locale, 'home.aboutHeading'))}</h2><p>${htmlEscape(T(locale, 'home.aboutBody'))}</p></section>`,
-    `<p><a href="${lp}/cities">${htmlEscape(T(locale, 'home.citiesCta'))}</a></p>`,
-    `</main>`,
-  ].join('\n')
-}
-
-// Body for /event/<id> - H1 + when/where/host + breadcrumb + related events
-// in the same city + evergreen. Filters venue-tagged events out of the
-// "Other events" list so we don't link into the redirect chain to /venue/.
-function composeEventBody(payload, otherEvents, locale = 'en') {
-  const ev = payload?.event
-  if (!ev || !ev.title) return null
-  const lp       = localePrefixFor(locale)
-  const city     = payload.cityName || ''
-  const country  = payload.country  || ''
-  const citySlug = city ? cityToSlug(city) : ''
-
-  const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone, locale) : ''
-  const dateStr = ev.starts_at
-    ? new Date(ev.starts_at * 1000).toLocaleDateString(DATE_LOCALE[locale] || 'en-US', {
-        timeZone: payload.timezone || 'UTC',
-        weekday: 'long', month: 'long', day: 'numeric',
-      })
-    : ''
-  // Past events: show a badge + past-tense date + attendee count instead of
-  // the upcoming "When:" line. Still fully indexable.
-  const pastBadge = ev.is_past ? `<p class="ssr-past-badge">${T(locale, 'event.pastBadge')}</p>` : ''
-  const attendedLine = ev.is_past && (ev.participant_count ?? 0) > 0
-    ? `<p class="ssr-attended">${T(locale, ev.participant_count === 1 ? 'event.attendedOne' : 'event.attendedMany', { count: `<strong>${ev.participant_count}</strong>` })}</p>`
-    : ''
-  const whereLine = ev.location ? `<p class="ssr-where"><strong>${T(locale, 'event.labelWhere')}</strong> ${htmlEscape(ev.location)}</p>` : ''
-  const whenLine  = ev.is_past
-    ? (dateStr ? `<p class="ssr-when"><strong>${T(locale, 'event.labelHappenedOn')}</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : '')
-    : (dateStr ? `<p class="ssr-when"><strong>${T(locale, 'event.labelWhen')}</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : '')
-  const hostLine  = ev.host_nickname ? `<p class="ssr-host"><strong>${T(locale, 'event.labelHostedBy')}</strong> ${htmlEscape(ev.host_nickname)}</p>` : ''
-  const recur     = ev.recurrence_label ? `<p class="ssr-recur"><strong>${T(locale, 'event.labelRecurs')}</strong> ${htmlEscape(ev.recurrence_label)}</p>` : ''
-
-  const breadcrumb = city && citySlug
-    ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(ev.title)}</span></nav>`
-    : ''
-
-  // Related - other events in the same city, exclude self + venue rows.
-  // For a past event this becomes a "Similar upcoming events" funnel back to
-  // live content; for a live event it's just "Other events".
-  const related = (Array.isArray(otherEvents) ? otherEvents : [])
-    .filter(e => e.id !== ev.id && !e.is_venue)
-    .slice(0, 8)
-  const relatedHeading = ev.is_past
-    ? T(locale, 'event.upcomingEventsIn', { city: htmlEscape(city) })
-    : T(locale, 'event.otherEventsIn', { city: htmlEscape(city) })
-  const relatedSection = related.length > 0
-    ? `<section><h2>${relatedHeading}</h2><ul>${related.map(e => {
-        const slug = eventSlug(e)
-        const t = e.starts_at ? formatTime(e.starts_at, payload.timezone, locale) : ''
-        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` - ${htmlEscape(t)}` : ''}</li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  const cityLink = city && citySlug
-    ? `<p>${T(locale, 'common.seeOnHilads', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'event.otherThingsLink', { city: htmlEscape(city) })}</a>` })}</p>`
-    : ''
-  // Internal-link nudge toward challenges in the same city - gives the
-  // /challenge/{slug}-{id} URLs an inbound link from the high-volume event
-  // page. Same pattern as the cityLink right above; the link target is the
-  // city page (which now has an "Open challenges" section).
-  const challengesLink = city && citySlug
-    ? `<p>${T(locale, 'common.seeChallengesSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'common.seeChallengesLink', { city: htmlEscape(city) })}</a>` })}</p>`
-    : ''
-
-  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsHeading')}</h2><p>${T(locale, 'common.aboutHiladsBody')}</p>${cityLink}${challengesLink}</section>`
-
-  return [
-    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; } .ssr-past-badge { display: inline-block; background: #2a2a2a; color: #bbb; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin: 0 0 0.5rem; }</style>`,
-    `<main class="ssr-main">`,
-    breadcrumb,
-    pastBadge,
-    `<h1>${htmlEscape(ev.title)}</h1>`,
-    whenLine,
-    whereLine,
-    hostLine,
-    attendedLine,
-    recur,
-    relatedSection,
-    evergreen,
-    `</main>`,
-  ].filter(Boolean).join('\n')
-}
-
-// Body for /venue/<id> - H1 + address/hours + breadcrumb + related venues
-// in the same city + evergreen with venue-type context.
-function composeVenueBody(payload, otherVenues, locale = 'en') {
-  const v = payload?.venue
-  if (!v || !v.name) return null
-  const lp = localePrefixFor(locale)
-  const city = v.city?.name || ''
-  const citySlug = v.city?.slug || ''
-  const isBar = v.category === 'bar'
-
-  const breadcrumb = city && citySlug
-    ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(v.name)}</span></nav>`
-    : ''
-
-  const addrLine  = v.address ? `<p class="ssr-where"><strong>${T(locale, 'venue.labelAddress')}</strong> ${htmlEscape(v.address)}</p>` : ''
-  const hoursLine = v.hours?.opens && v.hours?.closes
-    ? `<p class="ssr-when"><strong>${T(locale, 'venue.labelHours')}</strong> ${T(locale, 'venue.hoursValue', { opens: htmlEscape(v.hours.opens), closes: htmlEscape(v.hours.closes) })}</p>`
-    : ''
-  const catLine = `<p class="ssr-cat"><strong>${T(locale, 'venue.labelType')}</strong> ${isBar ? T(locale, 'venue.typeBar') : T(locale, 'venue.typeCafe')}</p>`
-
-  const related = (Array.isArray(otherVenues) ? otherVenues : [])
-    .filter(o => o.id !== v.id)
-    .slice(0, 6)
-  const relatedSection = related.length > 0 && city
-    ? `<section><h2>${T(locale, 'venue.otherVenuesIn', { city: htmlEscape(city) })}</h2><ul>${related.map(o => {
-        const slug = venueSlugFromName(o.name, o.id)
-        const cat = o.category === 'bar' ? '🍻' : '☕'
-        return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(o.name)}</a></li>`
-      }).join('')}</ul></section>`
-    : ''
-
-  const cityLink = city && citySlug
-    ? `<p>${T(locale, 'venue.whatsHappeningSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'venue.whatsHappeningLink', { city: htmlEscape(city) })}</a>` })}</p>`
-    : ''
-  // Mirror of the composeEventBody nudge - same paragraph pattern so venue
-  // pages push internal authority toward /challenge/{slug}-{id} too.
-  const challengesLink = city && citySlug
-    ? `<p>${T(locale, 'common.seeChallengesSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'common.seeChallengesLink', { city: htmlEscape(city) })}</a>` })}</p>`
-    : ''
-
-  const evergreen = isBar
-    ? `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutBar', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}${challengesLink}</section>`
-    : `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutCafe', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}${challengesLink}</section>`
-
-  return [
-    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
-    `<main class="ssr-main">`,
-    breadcrumb,
-    `<h1>${htmlEscape(v.name)}</h1>`,
-    catLine,
-    addrLine,
-    hoursLine,
-    relatedSection,
-    evergreen,
-    `</main>`,
-  ].filter(Boolean).join('\n')
-}
-
-// ── Challenge (Défi) composers ────────────────────────────────────────────────
-// Challenges are the third entity type Hilads indexes for SEO. Schema.org
-// type is `CreativeWork` (not Event) per the implementation plan - an Event
-// requires `startDate`, which is meaningless for a persistent challenge and
-// would trigger GSC validation warnings if we faked a sentinel value.
-// CreativeWork validates cleanly + still gives us a rich breadcrumb + the
-// page ranks via the textual content (H1, audience, type, about block).
-
-function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
-  const ch = payload?.challenge
-  if (!ch || !ch.title) return null
-
-  const cityName       = payload?.cityName || ''
-  const targetCityName = payload?.targetCityName || ''
-  const isInternational = (ch.mode ?? 'local') === 'international'
-
-  // Title strategy:
-  //   - International with target  → "Paris → Tokyo · {title} - Hilads"
-  //     (dual-city in the SERP title is the gold for cross-city SEO; both
-  //     city queries can match this row.)
-  //   - International "anywhere"   → "{title} · International challenge - Hilads"
-  //   - Local with city            → existing "challenge.title" template
-  //   - No city                    → "challenge.titleNoCity"
-  let title
-  if (isInternational && targetCityName && cityName) {
-    title = T(locale, 'challenge.titleIntlDual',     { origin: cityName, target: targetCityName, title: ch.title })
-  } else if (isInternational) {
-    title = T(locale, 'challenge.titleIntlAnywhere', { title: ch.title })
-  } else if (cityName) {
-    title = T(locale, 'challenge.title',             { title: ch.title, city: cityName })
-  } else {
-    title = T(locale, 'challenge.titleNoCity',       { title: ch.title })
-  }
-
-  // Description strategy mirrors title - International gets its own variants;
-  // Local keeps the existing audience-targeted ones.
-  let description
-  if (isInternational && targetCityName) {
-    description = T(locale, 'challenge.descIntlDual', { origin: cityName, target: targetCityName, title: ch.title }).trim()
-  } else if (isInternational) {
-    description = T(locale, 'challenge.descIntlAnywhere', { origin: cityName, title: ch.title }).trim()
-  } else {
-    const descKey = ch.audience === 'locals'    ? 'challenge.descLocals'
-                  : ch.audience === 'explorers' ? 'challenge.descExplorers'
-                  :                               'challenge.descGeneric'
-    description = T(locale, descKey, { title: ch.title, city: cityName || '' }).trim()
-  }
-
-  // Visibility-aware indexing:
-  //   - public  → indexable (default)
-  //   - friends → noindex (crawlers see the public-fallback row from the
-  //     backend's visibility-aware findById; without auth they'll get a
-  //     404. We still ship the page shell so a logged-in friend who
-  //     follows a direct link gets a clean SPA bootstrap. The noindex
-  //     keeps it out of Google.)
-  //   - private → noindex (404 to anon; same reasoning, defence in depth)
-  //
-  // The sitemap (backend /api/v1/sitemap/challenges) already filters
-  // public-only, so non-public URLs aren't actively advertised either.
-  // This noindex is the second line of defence for any URL leaked via
-  // direct share / referral.
-  const visibility = ch.visibility ?? 'public'
-  const noindex    = visibility !== 'public'
-
-  return {
-    title,
-    description,
-    url:   `${SITE_BASE}${canonicalPath}`,
-    noindex,
-    // Dedicated challenge OG card (title + cross-city route + type icon).
-    // /api/og falls back to the static brand card on any render failure.
-    image: ch.id
-            ? `${SITE_BASE}/api/og?type=challenge&id=${encodeURIComponent(ch.id)}`
-            : `${SITE_BASE}/og/og-default.png`,
-  }
-}
-
-function composeChallengeJsonLd(payload, canonicalUrl) {
-  const ch = payload?.challenge
-  if (!ch) return null
-
-  // Non-public rows skip structured data entirely. JSON-LD is a strong
-  // indexability signal; even with the robots:noindex tag in place we
-  // don't want a competing positive signal on the same page. Matches
-  // the visibility gate in composeChallengeMeta above.
-  if ((ch.visibility ?? 'public') !== 'public') return null
-
-  const cityName        = payload?.cityName       || ''
-  const country         = payload?.country        || ''
-  const targetCityName  = payload?.targetCityName || ''
-  const targetCountry   = payload?.targetCountry  || ''
-  const isInternational = (ch.mode ?? 'local') === 'international'
-
-  // CreativeWork - sidesteps the Event-requires-startDate problem while still
-  // exposing structured author / about / breadcrumb signals.
-  //
-  // International rows additionally emit:
-  //   locationCreated      - where the challenge originated (city A)
-  //   audience.geographicArea - recipient location (city B) when targeted,
-  //                             "Worldwide" semantic when target is null.
-  // Both are CreativeWork-native properties (audience.geographicArea is the
-  // canonical schema.org pattern for "this content targets people in X").
-  const work = {
-    '@type':       'CreativeWork',
-    '@id':         canonicalUrl,
-    name:          ch.title,
-    url:           canonicalUrl,
-    inLanguage:    payload?.locale || 'en',
-    dateCreated:   ch.created_at ? new Date(ch.created_at * 1000).toISOString() : undefined,
-    // Generic author - pseudonymous-by-default identities mean we never
-    // surface a member's chosen username in indexable structured data.
-    // The in-app UI still renders the real name; this is purely the
-    // crawler-facing path. Replaces the previous {name: ch.creator_nickname}
-    // shape which would have leaked usernames into JSON-LD.
-    author: {
-      '@type': 'Person',
-      name:    'Hilads member',
-      // Mirror the Event-organizer fix: include a url field so Google's
-      // Person rich result validation doesn't warn on missing url.
-      url:     SITE_BASE,
-    },
-    about:    cityName ? cityName : undefined,
-  }
-
-  if (isInternational) {
-    // Place node for the origin city - same shape as the existing about field
-    // but with @type:Place + addressLocality so Google can index it as a
-    // location rather than a free-text topic.
-    if (cityName) {
-      work.locationCreated = {
-        '@type':           'Place',
-        name:              cityName,
-        address: country ? { '@type': 'PostalAddress', addressLocality: cityName, addressCountry: country }
-                         : { '@type': 'PostalAddress', addressLocality: cityName },
-      }
-    }
-    // Recipient location - the target city if set, otherwise a Worldwide
-    // semantic. Both render as a CreativeWork.audience with geographicArea.
-    work.audience = {
-      '@type': 'Audience',
-      ...(targetCityName
-        ? {
-            geographicArea: {
-              '@type':           'Place',
-              name:              targetCityName,
-              address: targetCountry
-                ? { '@type': 'PostalAddress', addressLocality: targetCityName, addressCountry: targetCountry }
-                : { '@type': 'PostalAddress', addressLocality: targetCityName },
-            },
-            audienceType: 'travelers and locals in ' + targetCityName,
-          }
-        : { audienceType: 'travelers and locals worldwide' }),
-    }
-    // Cross-city keyword cluster - search queries like "Paris Tokyo
-    // challenge" should match this row. Filter blanks before joining.
-    work.keywords = [
-      'challenge',
-      'cross-city challenge',
-      'global challenge',
-      cityName,
-      targetCityName,
-      cityName && targetCityName ? `${cityName} vs ${targetCityName}` : null,
-      ch.challenge_type,
-    ].filter(Boolean).join(', ')
-  } else {
-    work.keywords = [
-      'challenge',
-      'local challenge',
-      ch.audience === 'explorers' ? 'traveler challenge' : null,
-      cityName,
-      ch.challenge_type,
-      ch.audience,
-    ].filter(Boolean).join(', ')
-  }
-
-  // Drop undefined keys so the JSON-LD stays minimal.
-  for (const k of Object.keys(work)) if (work[k] === undefined) delete work[k]
-
-  const breadcrumb = composeBreadcrumb([
-    { name: 'Home',  url: `${SITE_BASE}/` },
-    payload?.cityName && payload?.citySlug
-      ? { name: payload.cityName, url: `${SITE_BASE}/city/${payload.citySlug}` }
-      : null,
-    { name: ch.title, url: canonicalUrl },
-  ].filter(Boolean))
-
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [...siteGraphNodes(), work, breadcrumb],
-  }
-}
-
-const CHALLENGE_TYPE_ICONS = {
-  food:    '🍜',
-  place:   '📍',
-  culture: '🎭',
-  help:    '🤝',
-}
-
-function composeChallengeBody(payload, locale = 'en') {
-  const ch = payload?.challenge
-  if (!ch) return null
-
-  // Non-public rows skip the SSR body entirely. Crawlers get only the
-  // noindex'd HTML shell; the SPA still boots for authenticated users
-  // (the visibility-aware findById gates whether they actually see the
-  // row). This keeps any leaked URL from caching the row's content in
-  // a CDN under the wrong indexability signal.
-  if ((ch.visibility ?? 'public') !== 'public') return null
-  const lp        = localePrefixFor(locale)
-  const cityName  = payload?.cityName || ''
-  const citySlug  = payload?.citySlug || ''
-  const typeIcon  = CHALLENGE_TYPE_ICONS[ch.challenge_type] || '🔥'
-  const typeLabel = T(locale, `challenge.type${ch.challenge_type.charAt(0).toUpperCase()}${ch.challenge_type.slice(1)}`)
-  const audienceLabel = ch.audience === 'locals'
-    ? T(locale, 'challenge.audienceLocals',    { city: htmlEscape(cityName) })
-    : T(locale, 'challenge.audienceExplorers', { city: htmlEscape(cityName) })
-  const isValidated = ch.status === 'validated'
-
-  const breadcrumb = cityName && citySlug
-    ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(cityName)}</a> › <span>${T(locale, 'challenge.h1Tag')}</span></nav>`
-    : ''
-
-  // Badge row - Challenge tag + audience pill + (when validated) ✓ badge.
-  // Inlined as text so the SSR body remains paint-fast (no external CSS).
-  const statusBadge = isValidated
-    ? `<span class="ssr-badge ssr-badge-validated">${T(locale, 'challenge.validatedBadge')}</span>`
-    : `<span class="ssr-badge ssr-badge-open">${T(locale, 'challenge.openBadge')}</span>`
-
-  const participantsLine = (ch.participant_count ?? 0) === 0
-    ? T(locale, 'challenge.noParticipants')
-    : (ch.participant_count === 1
-        ? T(locale, 'challenge.participantsOne')
-        : T(locale, 'challenge.participantsMany', { count: ch.participant_count }))
-
-  const cityLink = cityName && citySlug
-    ? `<p><a href="${lp}/city/${citySlug}">${T(locale, 'challenge.cityLink', { city: htmlEscape(cityName) })}</a></p>`
-    : ''
-
-  return [
-    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; } .ssr-badge-row { display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 0.5rem; } .ssr-badge { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.06); color: #ccc; } .ssr-badge-challenge { background: rgba(255,122,60,0.14); border-color: rgba(255,122,60,0.30); color: #FF7A3C; } .ssr-badge-validated { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.20); color: #4ade80; }</style>`,
-    `<main class="ssr-main">`,
-    breadcrumb,
-    `<div class="ssr-badge-row">`,
-      `<span class="ssr-badge ssr-badge-challenge">${T(locale, 'challenge.h1Tag').toUpperCase()}</span>`,
-      `<span class="ssr-badge">${audienceLabel}</span>`,
-      statusBadge,
-    `</div>`,
-    `<h1>${typeIcon} ${htmlEscape(ch.title)}</h1>`,
-    `<p class="ssr-cat"><strong>${T(locale, 'challenge.typeLabel')}</strong> ${typeLabel}</p>`,
-    `<p class="ssr-meta">${participantsLine}</p>`,
-    `<section><h2>${T(locale, 'challenge.aboutHeading')}</h2><p>${T(locale, 'challenge.aboutBody')}</p>${cityLink}</section>`,
-    `</main>`,
-  ].filter(Boolean).join('\n')
-}
-
-function composeBreadcrumb(items) {
+function breadcrumb(items) {
   return {
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((it, i) => ({
-      '@type':   'ListItem',
-      position:  i + 1,
-      name:      it.name,
-      item:      it.url,
-    })),
+    itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: it.url })),
   }
 }
 
@@ -1652,18 +323,270 @@ function jsonLdSafe(obj) {
   return JSON.stringify(obj).replace(/</g, '\\u003C')
 }
 
+// ── Pages ─────────────────────────────────────────────────────────────────────
+// Each returns { meta: {title, description, url, image}, jsonLd, body, indexable,
+// hreflang (every language advertised), cache (CDN seconds) }.
+
+// Extra styles for the SSR bodies (the base .ssr-main styles are in index.html).
+const SSR_STYLES = `<style>
+  .ssr-main .ssr-kicker { font-size: .85rem; font-weight: 800; color: #6E5D4E; margin: 0 0 .25rem; }
+  .ssr-main .ssr-crumbs { font-size: .85rem; margin: 0 0 .75rem; }
+  .ssr-main .ssr-photos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .ssr-main .ssr-photos li { margin: 0; }
+  .ssr-main .ssr-photos figure { margin: 0; }
+  .ssr-main .ssr-photos img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; display: block; background: #F3EAE0; }
+  .ssr-main .ssr-photos figcaption { font-size: .85rem; color: #6E5D4E; margin-top: .35rem; }
+  .ssr-main .ssr-photos figcaption b { color: #241A12; }
+  .ssr-main .ssr-cta { display: inline-block; margin: .25rem 0 1rem; padding: .7rem 1.1rem; border-radius: 14px; background: #C24A38; color: #fff !important; }
+</style>`
+
+function homePage(locale) {
+  const lp = localePrefixFor(locale)
+  return {
+    meta: {
+      title:       T(locale, 'home.title'),
+      description: T(locale, 'home.description'),
+      url:         `${SITE_BASE}/`,
+      image:       `${SITE_BASE}/og/og-default.png`,
+    },
+    jsonLd: graph(),
+    body: [
+      SSR_STYLES,
+      `<main class="ssr-main">`,
+      `<h1>${htmlEscape(T(locale, 'home.h1'))}</h1>`,
+      `<p class="ssr-intro">${htmlEscape(T(locale, 'home.intro'))}</p>`,
+      `<p><a class="ssr-cta" href="${lp}/today">${htmlEscape(T(locale, 'home.playCta'))}</a></p>`,
+      `<section><h2>${htmlEscape(T(locale, 'home.howHeading'))}</h2><p>${htmlEscape(T(locale, 'home.howBody'))}</p></section>`,
+      `<p><a href="${lp}/challenges">${htmlEscape(T(locale, 'home.archiveCta'))}</a></p>`,
+      `</main>`,
+    ].join('\n'),
+    indexable: true,
+    hreflang:  true,
+    canonicalPath: '/',
+    cache:     3600,
+  }
+}
+
+/** A photo's figure: the image, then "🇻🇳 Vietnam: Một, hai, ba, dzô!", its count and "Photo by @linh in Ho Chi Minh City". */
+function photoFigure({ photo, country, answer, photos, question, locale }) {
+  const place  = country ? `${flagEmoji(country)} ${countryName(country, locale)}` : cityName(photo.city, locale)
+  const city   = cityName(photo.city, locale)
+  const credit = T(locale, 'daily.photoBy', { user: `@${photo.username}`, city })
+  const alt    = [answer || question, credit].filter(Boolean).join(' - ')
+  return `<li><figure><img src="${htmlEscape(photo.url)}" alt="${htmlEscape(alt)}" loading="lazy" width="300" height="400" />`
+    + `<figcaption><b>${htmlEscape(place)}${answer ? `: ${htmlEscape(answer)}` : ''}</b><br />`
+    + `${photos ? `${htmlEscape(Tn(locale, 'daily.photos', photos))} · ` : ''}${htmlEscape(credit)}</figcaption></figure></li>`
+}
+
+async function challengePage(id, locale, localePrefix) {
+  const m = String(id).match(/^(\d{4}-\d{2}-\d{2})(?:-([a-z0-9-]*))?$/)
+  if (!m) return null
+  const { data } = await fetchJson(`${API_BASE}/api/v1/daily/web/challenges/${m[1]}?locale=${encodeURIComponent(locale)}`)
+  if (!data?.challenge) return null
+  const c     = data.challenge
+  const path  = challengePath(c)
+  // One URL per challenge: a missing or old slug moves to the current one.
+  if (m[2] !== c.slug) return { redirect: `${SITE_BASE}${localePrefix}${path}` }
+
+  const lp        = localePrefixFor(locale)
+  const nCountry  = data.totals.countries
+  const title     = headline(c)
+  const answered  = data.countries.filter(r => r.answer)
+  const answers   = answered.slice(0, 6).map(r => `${countryName(r.country, locale) || cityName(r.cities[0]?.name, locale)}: ${r.answer}`).join(' · ')
+  const places    = [...new Set(data.countries.flatMap(r => r.cities.map(ci => cityName(ci.name, locale))))].slice(0, 6).join(', ')
+  const description = answers ? T(locale, 'daily.descAnswers', { answers: answers.replace(/[.!?]?$/, (p) => p || '.') })
+    : places ? T(locale, 'daily.descPhotos', { text: c.text, places })
+    : T(locale, 'daily.descEmpty', { text: c.text })
+  const url = `${SITE_BASE}${lp}${path}`
+
+  const figures = data.countries.map(r => photoFigure({ photo: r.photo, country: r.country, answer: r.answer, photos: r.photos, question: c.question, locale })).join('\n        ')
+  const nav = [
+    data.prev ? `<a href="${lp}${challengePath(data.prev)}" rel="prev">← ${htmlEscape(T(locale, 'daily.prev'))}: ${htmlEscape(headline(data.prev))}</a>` : null,
+    data.next ? `<a href="${lp}${challengePath(data.next)}" rel="next">${htmlEscape(T(locale, 'daily.next'))}: ${htmlEscape(headline(data.next))} →</a>` : null,
+  ].filter(Boolean).map(a => `<p>${a}</p>`).join('\n')
+
+  const body = [
+    SSR_STYLES,
+    `<main class="ssr-main">`,
+    `<p class="ssr-crumbs"><a href="${lp}/">Hilads</a> › <a href="${lp}/challenges">${htmlEscape(T(locale, 'daily.archiveLink'))}</a></p>`,
+    `<p class="ssr-kicker">${htmlEscape(T(locale, 'daily.kicker', { date: dateLabel(c.date, locale) }))}</p>`,
+    `<h1>${htmlEscape(title)}</h1>`,
+    c.question ? `<p class="ssr-intro">${htmlEscape(c.text)}</p>` : '',
+    c.context ? `<p>${htmlEscape(c.context)}</p>` : '',
+    data.totals.photos ? `<p>${htmlEscape(Tn(locale, 'daily.photos', data.totals.photos))} · ${htmlEscape(Tn(locale, 'daily.countries', nCountry))}</p>` : '',
+    `<section><h2>${htmlEscape(T(locale, 'daily.answersHeading'))}</h2>`,
+    figures ? `<ul class="ssr-photos">\n        ${figures}\n      </ul>` : `<p>${htmlEscape(T(locale, 'daily.noPhotos'))}</p>`,
+    `</section>`,
+    nav,
+    `<section><h2>${htmlEscape(T(locale, 'daily.playCta'))}</h2><p>${htmlEscape(T(locale, 'daily.playSub'))}</p><p><a class="ssr-cta" href="${lp}/today">${htmlEscape(T(locale, 'daily.playCta'))}</a></p></section>`,
+    `</main>`,
+  ].join('\n')
+
+  // How the world answered: one image per country (its top photo).
+  const list = data.countries.length ? {
+    '@type': 'ItemList',
+    name: `${title} - ${T(locale, 'daily.answersHeading')}`,
+    numberOfItems: data.countries.length,
+    itemListElement: data.countries.map((r, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'ImageObject',
+        contentUrl:   r.photo.url,
+        thumbnailUrl: r.photo.thumbUrl,
+        name:         [countryName(r.country, locale), r.answer].filter(Boolean).join(': ') || title,
+        caption:      T(locale, 'daily.photoBy', { user: `@${r.photo.username}`, city: cityName(r.photo.city, locale) }),
+        creator:      { '@type': 'Person', name: r.photo.username },
+        creditText:   `@${r.photo.username} on Hilads`,
+        contentLocation: { '@type': 'Place', name: [r.photo.city, countryName(r.country, 'en')].filter(Boolean).join(', ') },
+        datePublished: c.date,
+      },
+    })),
+  } : null
+
+  return {
+    meta: {
+      title: nCountry > 0
+        ? T(locale, 'daily.title', { question: title, countries: Tn(locale, 'daily.countries', nCountry) })
+        : T(locale, 'daily.titleNone', { question: title }),
+      description,
+      url: `${SITE_BASE}${path}`,
+      // The countries' top photos side by side; the static mosaic until a photo exists.
+      image: data.totals.photos > 0 ? `${SITE_BASE}/api/og?type=challenge&date=${c.date}` : `${SITE_BASE}/og/og-default.png`,
+    },
+    jsonLd: graph(
+      breadcrumb([
+        { name: 'Hilads', url: `${SITE_BASE}${lp}/` },
+        { name: T(locale, 'daily.archiveLink'), url: `${SITE_BASE}${lp}/challenges` },
+        { name: title, url },
+      ]),
+      list,
+    ),
+    body,
+    indexable: nCountry >= INDEX_MIN && (locale === 'en' || nCountry >= ALL_LOCALES_MIN),
+    hreflang:  nCountry >= ALL_LOCALES_MIN,
+    canonicalPath: path,
+    cache: 86400,
+  }
+}
+
+async function archivePage(locale) {
+  const { data } = await fetchJson(`${API_BASE}/api/v1/daily/web/challenges?locale=${encodeURIComponent(locale)}`)
+  if (!Array.isArray(data?.items)) return null
+  const lp    = localePrefixFor(locale)
+  const items = data.items.map(c => {
+    const stats = c.photos ? ` - ${Tn(locale, 'daily.photos', c.photos)} · ${Tn(locale, 'daily.countries', c.countries)}` : ''
+    return `<li><a href="${lp}${challengePath(c)}">${htmlEscape(headline(c))}</a> <small>${htmlEscape(dateLabel(c.date, locale))}${htmlEscape(stats)}</small></li>`
+  }).join('\n        ')
+  const url = `${SITE_BASE}${lp}/challenges`
+  return {
+    meta: {
+      title:       T(locale, 'daily.archiveTitle'),
+      description: T(locale, 'daily.archiveDescription'),
+      url:         `${SITE_BASE}/challenges`,
+      image:       `${SITE_BASE}/og/og-default.png`,
+    },
+    jsonLd: graph(
+      breadcrumb([{ name: 'Hilads', url: `${SITE_BASE}${lp}/` }, { name: T(locale, 'daily.archiveLink'), url }]),
+      data.items.length ? {
+        '@type': 'ItemList',
+        name: T(locale, 'daily.archiveH1'),
+        numberOfItems: data.items.length,
+        itemListElement: data.items.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE_BASE}${lp}${challengePath(c)}`, name: headline(c) })),
+      } : null,
+    ),
+    body: [
+      SSR_STYLES,
+      `<main class="ssr-main">`,
+      `<p class="ssr-crumbs"><a href="${lp}/">Hilads</a></p>`,
+      `<h1>${htmlEscape(T(locale, 'daily.archiveH1'))}</h1>`,
+      `<p class="ssr-intro">${htmlEscape(T(locale, 'daily.archiveIntro'))}</p>`,
+      `<p><a class="ssr-cta" href="${lp}/today">${htmlEscape(T(locale, 'daily.playCta'))}</a></p>`,
+      items ? `<ul>\n        ${items}\n      </ul>` : '',
+      `</main>`,
+    ].join('\n'),
+    indexable: true,
+    hreflang:  true,
+    canonicalPath: '/challenges',
+    cache: 3600,
+  }
+}
+
+async function cityPage(slug, locale) {
+  const { data: city } = await fetchJson(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`)
+  if (!city?.city || !city.channelId) return null
+  const [{ data: today }, { data: recentData }] = await Promise.all([
+    fetchJson(`${API_BASE}/api/v1/daily/today?locale=${encodeURIComponent(locale)}`),
+    fetchJson(`${API_BASE}/api/v1/daily/web/cities/${encodeURIComponent(city.channelId)}?locale=${encodeURIComponent(locale)}`),
+  ])
+  const lp       = localePrefixFor(locale)
+  const name     = cityName(city.city, locale)
+  const c        = today?.challenge?.text ? today.challenge : null
+  const question = c ? (c.compare?.question || c.text) : null
+  const recent   = Array.isArray(recentData?.recent) ? recentData.recent : []
+
+  const figures = recent.map(r => photoFigure({ photo: r.photo, country: null, answer: r.answer, photos: r.photos, question: headline(r), locale })
+    .replace('<figcaption>', `<figcaption><a href="${lp}${challengePath(r)}">${htmlEscape(headline(r))}</a><br />`)).join('\n        ')
+
+  return {
+    meta: {
+      title:       question ? T(locale, 'city.title', { city: name, question }) : T(locale, 'city.titleNoChallenge', { city: name }),
+      description: question ? T(locale, 'city.description', { city: name, question }) : T(locale, 'city.descriptionNoChallenge', { city: name }),
+      url:         `${SITE_BASE}/city/${slug}`,
+      image:       `${SITE_BASE}/og/og-default.png`,
+    },
+    jsonLd: graph(breadcrumb([
+      { name: 'Hilads', url: `${SITE_BASE}${lp}/` },
+      { name, url: `${SITE_BASE}${lp}/city/${slug}` },
+    ])),
+    body: [
+      SSR_STYLES,
+      `<main class="ssr-main">`,
+      `<h1>${htmlEscape(`${flagEmoji(city.country)} ${T(locale, 'city.h1', { city: name })}`.trim())}</h1>`,
+      c ? `<section><h2>${htmlEscape(T(locale, 'city.todayHeading'))}</h2><p class="ssr-intro"><b>${htmlEscape(question)}</b></p>${c.compare?.question ? `<p>${htmlEscape(c.text)}</p>` : ''}</section>` : '',
+      `<p><a class="ssr-cta" href="${lp}/today">${htmlEscape(T(locale, 'city.playCta', { city: name }))}</a></p>`,
+      `<section><h2>${htmlEscape(T(locale, 'city.recentHeading', { city: name }))}</h2>`,
+      figures ? `<ul class="ssr-photos">\n        ${figures}\n      </ul>` : `<p>${htmlEscape(T(locale, 'city.recentEmpty', { city: name }))}</p>`,
+      `</section>`,
+      `<p><a href="${lp}/challenges">${htmlEscape(T(locale, 'city.archiveLink'))}</a></p>`,
+      `</main>`,
+    ].join('\n'),
+    // A city that never played is a thin page: it stays out of the index (and the sitemap).
+    indexable: recent.length > 0,
+    hreflang:  recent.length > 0,
+    canonicalPath: `/city/${slug}`,
+    cache: untilNextDrop(today),
+  }
+}
+
+/**
+ * An old-concept URL (event, venue, 1-to-1 challenge): 301 to its city page,
+ * else 410 Gone so Google drops it.
+ */
+async function oldPage(type, id, localePrefix) {
+  const hex = extractHex(id)
+  if (!hex) return { gone: true }
+  if (type === 'venue') {
+    const { data } = await fetchJson(`${API_BASE}/api/v1/venues/${hex}`)
+    const slug = data?.venue?.city?.slug
+    return slug ? { redirect: `${SITE_BASE}${localePrefix}/city/${slug}` } : { gone: true }
+  }
+  const { data } = await fetchJson(`${API_BASE}/api/v1/${type === 'challenge' ? 'challenges' : 'events'}/${hex}`)
+  const slug = data?.cityName ? cityToSlug(data.cityName) : null
+  if (slug) return { redirect: `${SITE_BASE}${localePrefix}/city/${slug}` }
+  // A cross-city challenge with no origin city: the new challenges.
+  if (type === 'challenge' && data?.challenge) return { redirect: `${SITE_BASE}${localePrefix}/challenges` }
+  return { gone: true }
+}
+
 // ── HTML transformation ──────────────────────────────────────────────────────
 // Targeted regex per tag - never DOM-parses. If a tag doesn't match (e.g. the
-// shell template changed), that tag is left untouched. Self-healing if the
-// shell drifts.
+// shell template changed), that tag is left untouched.
 
-// Inject a JSON-LD script tag just before </head>. Schemas drive Google Event
-// rich results + ItemList ranking signals; doesn't affect human visitors.
+// Inject a JSON-LD script just before </head>, replacing the one baked into
+// the shell (the bare-/ home's Organization + WebSite).
 function injectJsonLd(shell, jsonLd) {
   if (!jsonLd) return shell
-  // Strip any JSON-LD baked into the shell (the static bare-/ home includes a
-  // brand-level Organization+WebSite block); page-specific JSON-LD already
-  // carries those nodes via siteGraphNodes(), so we'd duplicate otherwise.
   const stripped = shell.replace(
     /[ \t]*<script[^>]*type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>\s*/gi,
     '',
@@ -1672,11 +595,7 @@ function injectJsonLd(shell, jsonLd) {
   return stripped.replace(/<\/head>/i, tag)
 }
 
-// Inject a robots noindex directive into <head>. Used for cities with zero
-// upcoming events AND zero venues AND zero chat messages - genuinely empty
-// pages that shouldn't dilute the site's quality signal in Google's index.
-// The shell has no pre-existing robots tag so we always insert (rather than
-// replace).
+// The shell has no robots tag: insert one.
 function injectRobotsNoindex(shell) {
   return shell.replace(
     /<\/head>/i,
@@ -1684,19 +603,15 @@ function injectRobotsNoindex(shell) {
   )
 }
 
-// Inject SSR body content inside <div id="root"> before the <noscript>
-// fallback. React's createRoot().render() overwrites #root's children on
-// mount, so humans only see this for the cold-load window (LCP win); Googlebot
-// indexes it as the canonical body content for the URL.
+// Replace the shell's SSR <main> (the bare-/ home's) with the page's body.
+// React's createRoot().render() replaces #root's children on mount; Googlebot
+// indexes this as the page's content.
 function injectBody(shell, body) {
   if (!body) return shell
-  // Shell ships an <main class="ssr-main"> for the bare-/ English home; for
-  // other prerendered pages we replace that block with the page-specific body
-  // so we don't end up with two stacked <main>s. Fallback: prepend (legacy).
   if (/<main class="ssr-main"/i.test(shell)) {
-    return shell.replace(/[ \t]*<main class="ssr-main"[\s\S]*?<\/main>\s*/i, `${body}\n      `)
+    return shell.replace(/[ \t]*<main class="ssr-main"[\s\S]*?<\/main>\s*/i, () => `${body}\n      `)
   }
-  return shell.replace(/<div id="root">/i, `<div id="root">\n      ${body}`)
+  return shell.replace(/<div id="root">/i, () => `<div id="root">\n      ${body}`)
 }
 
 function injectMeta(shell, meta, locale = 'en') {
@@ -1704,114 +619,59 @@ function injectMeta(shell, meta, locale = 'en') {
   const d   = htmlEscape(meta.description)
   const u   = htmlEscape(meta.url)
   const img = meta.image ? htmlEscape(meta.image) : null
+  const set = (re, tag) => (html) => html.replace(re, () => tag)
 
-  let out = shell
-    .replace(/<title>[^<]*<\/title>/i, `<title>${t}</title>`)
-    .replace(
-      /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,
-      `<meta name="description" content="${d}" />`,
-    )
-    .replace(
-      /<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i,
-      `<meta property="og:title" content="${t}" />`,
-    )
-    .replace(
-      /<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i,
-      `<meta property="og:description" content="${d}" />`,
-    )
-    .replace(
-      /<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i,
-      `<meta property="og:url" content="${u}" />`,
-    )
-    .replace(
-      /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/i,
-      `<meta name="twitter:title" content="${t}" />`,
-    )
-    .replace(
-      /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/i,
-      `<meta name="twitter:description" content="${d}" />`,
-    )
-    .replace(
-      /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/i,
-      `<link rel="canonical" href="${u}" />`,
-    )
+  let out = [
+    set(/<title>[^<]*<\/title>/i, `<title>${t}</title>`),
+    set(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${d}" />`),
+    set(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${t}" />`),
+    set(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${d}" />`),
+    set(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${u}" />`),
+    set(/<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:title" content="${t}" />`),
+    set(/<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:description" content="${d}" />`),
+    set(/<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/i, `<link rel="canonical" href="${u}" />`),
+    // og:locale must match the page language (the shell ships en_US).
+    set(/<meta\s+property="og:locale"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:locale" content="${OG_LOCALE[locale] || 'en_US'}" />`),
+    set(/<meta\s+property="og:image:alt"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image:alt" content="${t}" />`),
+    set(/<meta\s+name="twitter:image:alt"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:image:alt" content="${t}" />`),
+  ].reduce((html, f) => f(html), shell)
 
   if (img) {
-    // Replace BOTH og:image variants (regular + secure_url) and twitter:image.
-    out = out
-      .replace(
-        /<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i,
-        `<meta property="og:image" content="${img}" />`,
-      )
-      .replace(
-        /<meta\s+property="og:image:secure_url"\s+content="[^"]*"\s*\/?>/i,
-        `<meta property="og:image:secure_url" content="${img}" />`,
-      )
-      .replace(
-        /<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/i,
-        `<meta name="twitter:image" content="${img}" />`,
-      )
+    // Both og:image variants (regular + secure_url) and twitter:image.
+    out = [
+      set(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${img}" />`),
+      set(/<meta\s+property="og:image:secure_url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image:secure_url" content="${img}" />`),
+      set(/<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:image" content="${img}" />`),
+    ].reduce((html, f) => f(html), out)
   }
-
-  // og:locale must match the page language (shell ships en_US - overriding to
-  // it is a no-op on default, fr_FR/vi_VN on localized URLs).
-  out = out.replace(
-    /<meta\s+property="og:locale"\s+content="[^"]*"\s*\/?>/i,
-    `<meta property="og:locale" content="${OG_LOCALE[locale] || 'en_US'}" />`,
-  )
-
-  // On localized pages, point the image alt text at the localized page title.
-  // English keeps the shell's generic brand alt (no regression).
-  if (locale !== 'en') {
-    out = out
-      .replace(
-        /<meta\s+property="og:image:alt"\s+content="[^"]*"\s*\/?>/i,
-        `<meta property="og:image:alt" content="${t}" />`,
-      )
-      .replace(
-        /<meta\s+name="twitter:image:alt"\s+content="[^"]*"\s*\/?>/i,
-        `<meta name="twitter:image:alt" content="${t}" />`,
-      )
-  }
-
   return out
 }
-
-// ── Locale (Option A: un-prefixed = English canonical; /fr, /vi additive) ─────
-const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
-
-// Ephemeral, per-item pages (events, challenges) are thin and near-duplicate
-// across 19 machine translations - Google crawled all 19 and filed the localized
-// variants under "Crawled - currently not indexed" (~10k URLs). Keep ONLY the
-// English page indexable: drop the 19-locale hreflang fan-out on these types and
-// noindex the localized variants, so Google stops discovering + recrawling 18
-// extra URLs per item. Cuts crawl budget + Postgres egress. City / category /
-// venue / home stay full 19-locale (they're the pages that actually earn rankings).
-const EPHEMERAL_SEO_TYPES = new Set(['event', 'challenge'])
 
 function setHtmlLang(shell, locale) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
   return shell.replace(/<html\s+lang="[^"]*"/i, `<html lang="${locale}" dir="${dir}"`)
 }
 
-// Every prerendered page advertises all locales + x-default so Google clusters
-// the un-prefixed (EN) and /fr, /vi variants as one set. basePath is the
-// UN-prefixed canonical path (e.g. /city/paris); each alternate prepends its
-// locale segment (EN stays bare).
-function injectHreflang(shell, basePath) {
-  const alt = (loc) => `${SITE_BASE}${loc === 'en' ? '' : '/' + loc}${basePath}`
-  const links = [
-    ...I18N_LOCALES.map((loc) => `<link rel="alternate" hreflang="${loc}" href="${alt(loc)}" />`),
-    `<link rel="alternate" hreflang="x-default" href="${alt('en')}" />`,
-  ].join('\n  ')
-  // Strip any hreflang links baked into the shell (used for the static bare-/
-  // home so Googlebot sees the locale cluster without going through prerender)
-  // before re-injecting the page-specific block.
+// Replace the shell's hreflang block. basePath is the un-prefixed path (e.g.
+// /city/paris); with all=false the page lists none (an English-only page).
+function injectHreflang(shell, basePath, all) {
   const stripped = shell.replace(
     /[ \t]*<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>\s*/gi,
     '',
   )
+  if (!all) return stripped
+  const alt = (loc) => `${SITE_BASE}${loc === 'en' ? '' : '/' + loc}${basePath === '/' && loc !== 'en' ? '/' : basePath}`
+  const links = [
+    ...I18N_LOCALES.map((loc) => `<link rel="alternate" hreflang="${loc}" href="${alt(loc)}" />`),
+    `<link rel="alternate" hreflang="x-default" href="${alt('en')}" />`,
+  ].join('\n  ')
   return stripped.replace(/<\/head>/i, `${links}\n  </head>`)
+}
+
+function send(res, status, headers, body = '') {
+  res.statusCode = status
+  for (const [k, v] of Object.entries(headers)) res.setHeader(k, v)
+  res.end(body)
 }
 
 // ── Handler ──────────────────────────────────────────────────────────────────
@@ -1819,387 +679,72 @@ function injectHreflang(shell, basePath) {
 export default async function handler(req, res) {
   const shell = await getShell(req)
   if (!shell) {
-    // Both fs and HTTP failed. Surface enough context in the response to
-    // diagnose; Vercel function logs will also have the per-attempt errors.
-    const fsTried = fsCandidatePaths().join(' | ')
-    res.statusCode = 500
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-    res.setHeader('x-prerender-error', 'shell-unavailable')
-    res.end(`prerender: shell unavailable
-fs candidates tried: ${fsTried}
-http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.headers.host || '(none)'}
-`)
+    // Both fs and HTTP failed: enough context to diagnose (function logs have the rest).
+    send(res, 500, { 'Content-Type': 'text/plain; charset=utf-8', 'x-prerender-error': 'shell-unavailable' },
+      `prerender: shell unavailable\nfs candidates tried: ${fsCandidatePaths().join(' | ')}\n`)
     return
   }
 
-  const { type, id, slug, shortlink } = req.query || {}
-  const isShortLink = shortlink === '1'
-
-  // Locale from the rewrite (?locale=fr|vi); default English. localePrefix is
-  // prepended to canonical/og:url AND to every 301 Location below, so a
-  // localized request like /fr/event/<bare-hex> consolidates to
-  // /fr/event/<slug> rather than dropping back to the EN URL.
+  const { type, id, slug } = req.query || {}
+  // Locale from the rewrite (?locale=fr); default English. The prefix goes on
+  // the canonical and on every 301 Location below.
   const rawLocale = (req.query || {}).locale
   const locale = I18N_LOCALES.includes(rawLocale) ? rawLocale : 'en'
   const localePrefix = locale === 'en' ? '' : `/${locale}`
 
-  let meta          = null
-  let jsonLd        = null
-  let bodyHtml      = null   // SSR'd body content injected inside #root
-  let canonicalPath = '/'
-  let cacheMaxAge   = 60     // tiny default; widened only when we actually inject meta
-
+  let page = null
   try {
-    if (type === 'event' && typeof id === 'string') {
-      // Accept BOTH bare 16-hex IDs (legacy + short-link path) AND the new
-      // slug form `kebab-title-<16-hex>`. Always extract the trailing 16-hex
-      // as the canonical lookup key.
-      const hex = extractEventHex(id)
-      if (hex) {
-        const inputIsHexOnly = id.toLowerCase() === hex
-        const { status: evStatus, data } = await fetchWithStatus(
-          `${API_BASE}/api/v1/events/${encodeURIComponent(hex)}`,
-          API_TIMEOUT_MS,
-        )
-
-        // 410 Gone: the event was moderated/removed. Pass the 410 straight
-        // through so Google deindexes it permanently (vs the soft-404 that a
-        // generic-shell 200 would produce).
-        if (evStatus === 410) {
-          res.statusCode = 410
-          res.setHeader('Content-Type', 'text/html; charset=utf-8')
-          res.setHeader('Cache-Control', 'public, max-age=3600')
-          res.end('<!doctype html><title>Event removed</title><p>This event has been removed.</p>')
-          return
-        }
-
-        // SEO: occurrences of seeded venues (coffee shops, bars) MUST 301 to
-        // the canonical /venue/<slug>-<series_id> page. Google has thousands
-        // of these /event/<...> URLs cached from before the refactor.
-        if (data?.event?.is_venue && data.event.series_id) {
-          const venueSlugId = venueSlugFromName(data.event.title, data.event.series_id)
-          res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}${localePrefix}/venue/${venueSlugId}`)
-          res.setHeader('Cache-Control', 'public, max-age=3600')
-          res.end()
-          return
-        }
-
-        // 404-fallback: the event row is gone but the channel_id may be a
-        // retired recurring-occurrence whose canonical event still exists, or a
-        // venue occurrence. Both kept alive for Google's cached /event/<hash>
-        // URLs. One extra hop in the SEO-transition tail; cheap and correct.
-        if (!data?.event && !isShortLink) {
-          // (1) Retired recurring occurrence → canonical event (bare hex; the
-          //     bare-hex→slug 301 below resolves it to the final slug URL).
-          const evtRedirect = await fetchWithTimeout(
-            `${API_BASE}/api/v1/events/${encodeURIComponent(hex)}/redirect`,
-            API_TIMEOUT_MS,
-          )
-          if (evtRedirect?.to) {
-            res.statusCode = 301
-            res.setHeader('Location', `${SITE_BASE}${localePrefix}/event/${evtRedirect.to}`)
-            res.setHeader('Cache-Control', 'public, max-age=3600')
-            res.end()
-            return
-          }
-
-          // (2) Venue occurrence → canonical /venue/ page.
-          const redirect = await fetchWithTimeout(
-            `${API_BASE}/api/v1/events/${encodeURIComponent(hex)}/venue-redirect`,
-            API_TIMEOUT_MS,
-          )
-          if (redirect?.venue?.id) {
-            const venueSlugId = redirect.venue.slug
-              ? `${redirect.venue.slug}-${redirect.venue.id}`
-              : redirect.venue.id
-            res.statusCode = 301
-            res.setHeader('Location', `${SITE_BASE}${localePrefix}/venue/${venueSlugId}`)
-            res.setHeader('Cache-Control', 'public, max-age=3600')
-            res.end()
-            return
-          }
-        }
-
-        // 301 from /event/<bare-hex> to /event/<slug>-<hex> when we can resolve
-        // the event. Consolidates SEO authority on the slug version. Skipped
-        // for /e/<hex> short links (shortlink=1 flag) - those stay short by
-        // design; SEO consolidation still happens via <link rel="canonical">.
-        if (data?.event && inputIsHexOnly && !isShortLink) {
-          const slugId = eventSlug(data.event)
-          res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}${localePrefix}/event/${slugId}`)
-          res.setHeader('Cache-Control', 'public, max-age=3600')
-          res.end()
-          return
-        }
-
-        // Canonical URL is always the slug version when we have event data.
-        canonicalPath = data?.event ? `/event/${eventSlug(data.event)}` : `/event/${hex}`
-        meta = composeEventMeta(data, canonicalPath, hex, locale)
-        if (meta) {
-          cacheMaxAge = 3600                 // 1 h - events change slowly for crawlers; longer TTL + fewer indexed locales cuts Postgres egress
-          const augmented = {
-            ...data,
-            _descriptionForSchema: meta.description,
-            _ogImage:               meta.image,
-            citySlug:               data.cityName ? cityToSlug(data.cityName) : undefined,
-          }
-          jsonLd = composeEventJsonLd(augmented, meta.url)
-
-          // Body: H1 + when/where/host + related events in the same city.
-          // Fetch related upcoming in parallel; best-effort, body still
-          // renders without it.
-          let otherEvents = []
-          if (data?.event?.channel_id) {
-            const otherData = await fetchWithTimeout(
-              `${API_BASE}/api/v1/channels/${encodeURIComponent(data.event.channel_id)}/events/upcoming?days=7`,
-              API_TIMEOUT_MS,
-            )
-            otherEvents = Array.isArray(otherData?.events) ? otherData.events : []
-          }
-          bodyHtml = composeEventBody(data, otherEvents, locale)
-        }
-      }
-    } else if (type === 'challenge' && typeof id === 'string') {
-      // Same `<slug>-<16hex>` URL shape as events. Bare hex 301s to the slug
-      // form to consolidate SEO authority on a single canonical.
-      const hex = extractEventHex(id)
-      if (hex) {
-        const inputIsHexOnly = id.toLowerCase() === hex
-        const data = await fetchWithTimeout(
-          `${API_BASE}/api/v1/challenges/${encodeURIComponent(hex)}`,
-          API_TIMEOUT_MS,
-        )
-
-        if (data?.challenge && inputIsHexOnly) {
-          const slugId = challengeSlug(data.challenge)
-          res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}${localePrefix}/challenge/${slugId}`)
-          res.setHeader('Cache-Control', 'public, max-age=3600')
-          res.end()
-          return
-        }
-
-        // Canonical = slug form when we resolved the challenge; bare hex
-        // otherwise (the route will still 404-render below if `meta` is null).
-        canonicalPath = data?.challenge
-          ? `/challenge/${challengeSlug(data.challenge)}`
-          : `/challenge/${hex}`
-
-        const augmented = data?.challenge
-          ? { ...data, citySlug: data.cityName ? cityToSlug(data.cityName) : undefined, locale }
-          : null
-
-        if (augmented) {
-          meta = composeChallengeMeta(augmented, canonicalPath, locale)
-        }
-        if (meta) {
-          cacheMaxAge = 1800   // 30 min - challenges churn slowly, validated state changes rarely
-          jsonLd = composeChallengeJsonLd(augmented, meta.url)
-          bodyHtml = composeChallengeBody(augmented, locale)
-        }
-      }
-    } else if (type === 'venue' && typeof id === 'string') {
-      const hex = extractEventHex(id)
-      if (hex) {
-        const inputIsHexOnly = id.toLowerCase() === hex
-        const data = await fetchWithTimeout(
-          `${API_BASE}/api/v1/venues/${encodeURIComponent(hex)}`,
-          API_TIMEOUT_MS,
-        )
-
-        // 301 from /venue/<bare-hex> to /venue/<slug>-<hex> - same SEO
-        // consolidation move as events.
-        if (data?.venue && inputIsHexOnly) {
-          const slugId = venueSlugFromName(data.venue.name, data.venue.id)
-          res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}${localePrefix}/venue/${slugId}`)
-          res.setHeader('Cache-Control', 'public, max-age=3600')
-          res.end()
-          return
-        }
-
-        canonicalPath = data?.venue
-          ? `/venue/${venueSlugFromName(data.venue.name, data.venue.id)}`
-          : `/venue/${hex}`
-        meta = composeVenueMeta(data, canonicalPath, hex, locale)
-        if (meta) {
-          cacheMaxAge = 3600                 // 1 h - venue info changes rarely
-          jsonLd = composeVenueJsonLd(data, meta.url)
-
-          // Body: address/hours + related venues in the same city
-          let otherVenues = []
-          if (data?.venue?.city?.slug) {
-            const otherData = await fetchWithTimeout(
-              `${API_BASE}/api/v1/cities/${encodeURIComponent(data.venue.city.slug)}/venues`,
-              API_TIMEOUT_MS,
-            )
-            otherVenues = Array.isArray(otherData?.venues) ? otherData.venues : []
-          }
-          bodyHtml = composeVenueBody(data, otherVenues, locale)
-        }
-      }
-    } else if (type === 'category' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
-      const category = (req.query || {}).category
-      if (typeof category === 'string' && /^[a-z]{1,32}$/.test(category)) {
-        canonicalPath = `/city/${slug}/${category}`
-        const data = await fetchWithTimeout(
-          `${API_BASE}/api/v1/cities/${encodeURIComponent(slug)}/categories/${encodeURIComponent(category)}`,
-          API_TIMEOUT_MS,
-        )
-        if (data?.city?.name) {
-          cacheMaxAge = 1800            // 30 min - events churn but slower than per-event
-          meta     = composeCategoryMeta(data, canonicalPath, locale)
-          jsonLd   = composeCategoryJsonLd(data, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
-          bodyHtml = composeCategoryBody(data, locale)
-        }
-      }
+    if (type === 'home') {
+      page = homePage(locale)
+    } else if (type === 'archive') {
+      page = await archivePage(locale)
     } else if (type === 'city' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
-      canonicalPath = `/city/${slug}`
-      const cityData = await fetchWithTimeout(
-        `${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`,
-        API_TIMEOUT_MS,
-      )
-      if (cityData?.city) {
-        cacheMaxAge = 3600                 // 1 h - cities stable
-        // Parallel: upcoming events (ItemList + body) + venues (body showcase)
-        // + challenges (body section + ItemList). Best-effort - any failure
-        // is non-fatal; we just emit less content. Same timeout budget as
-        // cityData itself.
-        const [upcomingData, venuesData, challengesData] = cityData?.channelId
-          ? await Promise.all([
-              fetchWithTimeout(
-                `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/events/upcoming?days=7`,
-                API_TIMEOUT_MS,
-              ),
-              fetchWithTimeout(
-                `${API_BASE}/api/v1/cities/${encodeURIComponent(slug)}/venues`,
-                API_TIMEOUT_MS,
-              ),
-              fetchWithTimeout(
-                `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/challenges?limit=20`,
-                API_TIMEOUT_MS,
-              ),
-            ])
-          : [null, null, null]
-        const rawUpcoming   = Array.isArray(upcomingData?.events) ? upcomingData.events : []
-        // Filter out venue-derived "events" - those have a dedicated /venue/
-        // page; including them here would create a 301 chain (city → event →
-        // venue) and dilute link equity. They surface separately under
-        // "Popular venues". is_venue is set by EventRepository::format.
-        const upcoming       = rawUpcoming.filter(ev => !ev.is_venue)
-        const venues         = Array.isArray(venuesData?.venues) ? venuesData.venues : []
-        const challenges     = Array.isArray(challengesData?.challenges) ? challengesData.challenges : []
-        const upcomingCount  = upcoming.length
-        const challengeCount = challenges.length
-        // messageCount comes from the by-slug payload (same server-side fetch),
-        // so it's present at SSR time - no separate request that could time out
-        // and falsely flip a chatty city to noindex.
-        const messageCount  = Number.isFinite(cityData.messageCount) ? cityData.messageCount : 0
-
-        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount, locale, challengeCount)
-        jsonLd = composeCityJsonLd(cityData, meta.url, upcoming, challenges)
-        bodyHtml = composeCityBody(cityData, upcoming, venues, locale, challenges)
-      }
-    } else if (type === 'past' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
-      canonicalPath = `/city/${slug}/past`
-      const cityData = await fetchWithTimeout(
-        `${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`,
-        API_TIMEOUT_MS,
-      )
-      if (cityData?.city && cityData?.channelId) {
-        // Pull the most recent finished hangouts + expired pulses + validated
-        // challenges in parallel. Best-effort on each; empty arrays drop the
-        // corresponding section silently.
-        const [archive, validatedData] = await Promise.all([
-          fetchWithTimeout(
-            `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/past?type=both&limit=20`,
-            API_TIMEOUT_MS,
-          ),
-          fetchWithTimeout(
-            `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/challenges/validated?limit=20`,
-            API_TIMEOUT_MS,
-          ),
-        ])
-        const items                = Array.isArray(archive?.items)           ? archive.items           : []
-        const validatedChallenges  = Array.isArray(validatedData?.challenges) ? validatedData.challenges : []
-        // Past page is indexable as soon as ANY of the three archive types
-        // has content - composePastMeta only had `items.length` to decide;
-        // also feed it the validated-challenge count so a city with only
-        // archived défis is still indexable.
-        const totalArchive = items.length + validatedChallenges.length
-        cacheMaxAge = 1800            // 30 min - past content is stable but newly-expired items trickle in
-        meta     = composePastMeta(cityData, canonicalPath, slug, totalArchive, locale)
-        jsonLd   = composePastJsonLd(cityData, items, slug, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
-        bodyHtml = composePastBody(cityData, items, slug, locale, validatedChallenges)
-      }
-    } else if (type === 'home') {
-      // Localized landing page. Static (no backend fetch) so it always renders.
-      canonicalPath = '/'
-      cacheMaxAge   = 3600
-      meta     = composeHomeMeta(canonicalPath, locale)
-      jsonLd   = composeHomeJsonLd()
-      bodyHtml = composeHomeBody(locale)
+      page = await cityPage(slug, locale)
+    } else if (type === 'challenge' && typeof id === 'string' && /^\d{4}-\d{2}-\d{2}/.test(id)) {
+      page = await challengePage(id, locale, localePrefix)
+    } else if (['event', 'venue', 'challenge'].includes(type) && typeof id === 'string') {
+      page = await oldPage(type, id, localePrefix)
     }
   } catch (err) {
-    console.error('[prerender] composer failed:', err)
-    meta = null
-    jsonLd = null
+    console.error('[prerender] page failed:', err)
+    page = null
   }
 
-  // Self-referential canonical per locale (Option A). EN keeps the bare URL.
-  if (meta && localePrefix) {
-    meta = { ...meta, url: `${SITE_BASE}${localePrefix}${canonicalPath}` }
+  if (page?.redirect) {
+    send(res, 301, { Location: page.redirect, 'Cache-Control': 'public, max-age=3600' })
+    return
+  }
+  if (page?.gone) {
+    send(res, 410, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600', 'x-prerender': `${type}-gone` },
+      '<!doctype html><title>Hilads</title><meta name="robots" content="noindex" /><p>This page no longer exists. <a href="/">Play today\'s challenge on Hilads</a>.</p>')
+    return
   }
 
   let html = setHtmlLang(shell, locale)
 
-  // Soft-404 guard: a content-entity route (event/venue/category/city/past) that
-  // produced no meta means the backend has no such record - the redirect checks
-  // above already ran, so this is a genuine miss, not a slug/venue redirect.
-  // Serve a real 404 + noindex shell (the SPA still boots and can show its own
-  // not-found UI) instead of falling through to a 200 generic shell, which Google
-  // reports as a soft 404.
-  const CONTENT_TYPES = new Set(['event', 'challenge', 'venue', 'category', 'city', 'past'])
-  if (!meta && CONTENT_TYPES.has(type)) {
-    res.statusCode = 404
-    res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    // Short cache only: a meta-less miss can also be a transient backend
-    // failure (the venue/city/category/past fetches can't distinguish 404 from
-    // 5xx/timeout). 60s bounds the blast radius - a blip that recovers won't
-    // pin a 404 on a valid page, while a genuinely-dead page stays 404 on every
-    // recrawl and gets deindexed.
-    res.setHeader('Cache-Control', 'public, max-age=60')
-    res.setHeader('x-prerender', `${type}-404`)
-    if (shellSource) res.setHeader('x-prerender-shell', shellSource)
-    res.end(injectRobotsNoindex(html))
+  // No page: no such record (or the API failed). A real 404 + noindex shell,
+  // never a 200 generic shell (a soft 404). Short cache: it may be a blip.
+  if (!page) {
+    send(res, 404, {
+      'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60',
+      'x-prerender': `${type ?? 'none'}-404`, ...(shellSource ? { 'x-prerender-shell': shellSource } : {}),
+    }, injectRobotsNoindex(html))
     return
   }
 
-  if (meta)          html = injectMeta(html, meta, locale)
-  // Skip the 19-locale hreflang fan-out on ephemeral per-item pages (events /
-  // challenges) - only their English page is a first-class SEO surface.
-  if (meta && !EPHEMERAL_SEO_TYPES.has(type)) html = injectHreflang(html, canonicalPath)
-  // noindex the LOCALIZED (non-English) variant of an ephemeral page. English
-  // (localePrefix === '') stays indexable; the /fr, /ar, … duplicates get a
-  // robots noindex so Google drops them from the "crawled - not indexed" bucket.
-  const ephemeralLocaleVariant = EPHEMERAL_SEO_TYPES.has(type) && !!localePrefix
-  if (meta && (meta.noindex || ephemeralLocaleVariant)) html = injectRobotsNoindex(html)
-  if (jsonLd)        html = injectJsonLd(html, jsonLd)
-  if (bodyHtml)      html = injectBody(html,   bodyHtml)
+  // Self-referential canonical per locale (Option A). EN keeps the bare URL.
+  const meta = localePrefix ? { ...page.meta, url: `${SITE_BASE}${localePrefix}${page.canonicalPath}` } : page.meta
+  html = injectMeta(html, meta, locale)
+  html = injectHreflang(html, page.canonicalPath, page.hreflang)
+  if (!page.indexable) html = injectRobotsNoindex(html)
+  html = injectJsonLd(html, page.jsonLd)
+  html = injectBody(html, page.body)
 
-  res.statusCode = 200
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  // Always allow CDN caching, with stale-while-revalidate so users never wait
-  // on a cold cache miss.
-  res.setHeader(
-    'Cache-Control',
-    `public, s-maxage=${cacheMaxAge}, stale-while-revalidate=86400`,
-  )
-  // Surface for debugging in DevTools / curl. Helps confirm that crawlers are
-  // hitting the prerender path vs the static shell.
-  res.setHeader('x-prerender', meta ? `${type}-hit` : `${type ?? 'none'}-miss`)
-  if (shellSource) res.setHeader('x-prerender-shell', shellSource)
-  res.end(html)
+  send(res, 200, {
+    'Content-Type': 'text/html; charset=utf-8',
+    // stale-while-revalidate: crawlers and people never wait on a cold miss.
+    'Cache-Control': `public, s-maxage=${page.cache}, stale-while-revalidate=86400`,
+    'x-prerender': `${type}-hit`,
+    ...(shellSource ? { 'x-prerender-shell': shellSource } : {}),
+  }, html)
 }
