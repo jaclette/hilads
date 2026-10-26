@@ -113,6 +113,12 @@ final class AppConfig
         foreach ($values as $k => $v) {
             $stmt->execute([$k, $v, $by]);
         }
+        self::forgetSettings();
+    }
+
+    /** After a write to app_settings: the next read goes to the database. */
+    public static function forgetSettings(): void
+    {
         Cache::forget(self::SETTINGS_CACHE);
         self::$settings = null;
     }

@@ -180,6 +180,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/daily/specials') {
     require __DIR__ . '/daily_specials.php';
 
+} elseif ($uri === '/admin/daily/events') {
+    require __DIR__ . '/daily_events.php';
+
 } elseif ($uri === '/admin/daily/import') {
     require __DIR__ . '/daily_import.php';
 

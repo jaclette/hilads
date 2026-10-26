@@ -162,6 +162,7 @@ function daily_subnav(string $current): void
         '/admin/daily/spots'   => '📍 Spots',
         '/admin/daily/picks'   => '⭐ Picks',
         '/admin/daily/specials' => '✨ Special days',
+        '/admin/daily/events'  => '🎃 Seasonal events',
         '/admin/daily/import'  => '⬆️ Import',
         '/admin/daily/log'     => '📜 Log',
     ];

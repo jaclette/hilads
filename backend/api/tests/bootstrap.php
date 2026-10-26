@@ -74,6 +74,7 @@ require_once __DIR__ . '/../src/DailyModerationService.php';
 require_once __DIR__ . '/../src/Places.php';
 require_once __DIR__ . '/../src/Spots.php';
 require_once __DIR__ . '/../src/AppConfig.php';
+require_once __DIR__ . '/../src/SeasonalEvents.php';
 require_once __DIR__ . '/../src/WeeklyLeaderboard.php';
 require_once __DIR__ . '/../src/PeopleCounts.php';
 require_once __DIR__ . '/../src/SpotsAdmin.php';

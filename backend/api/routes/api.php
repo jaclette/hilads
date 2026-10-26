@@ -14527,6 +14527,13 @@ $router->add('GET', '/api/v1/daily/today', function () {
     $out['twistProposal'] = $user !== null ? DailyTwistProposals::summaryFor($user) : null;
     // Ever posted a proof: Today's brand line shows until the first one (SPEC 9.3).
     $out['hasProof'] = $user !== null && DailyProofRepository::hasAny($user['id']);
+    // A seasonal event's look (Halloween...): its theme and phase on this challenge date, else null.
+    try {
+        $out['event'] = SeasonalEvents::forViewer(DailyClock::currentDate(), $user);
+    } catch (\Throwable $e) {
+        error_log('[daily] seasonal event failed: ' . $e->getMessage());
+        $out['event'] = null;
+    }
     // SPEC 9.3: the hero's photo, the day's most voted answer in my city and in the world (the app picks by scope).
     $out['heroCover'] = null;
     if ($out['challenge'] !== null) {
