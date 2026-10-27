@@ -19,6 +19,8 @@
  *             no_match     no name match: placed city proposed, check it
  *             duplicate    another seed city maps to the same GeoNames city
  *             collision    city_<geoname_id> is one of our other seed ids
+ *             pinned       decided in review (PINNED below)
+ *   merge_into - a duplicate seed merged into the one with data (MERGE_INTO)
  */
 
 declare(strict_types=1);
@@ -26,6 +28,17 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Database.php';
 require_once __DIR__ . '/../src/CityPlacement.php';
+
+// Review decisions (2026-10-27).
+const PINNED = [
+    'city_195' => 1645528, // "Bali" (centre of the island) → Denpasar
+];
+const MERGE_INTO = [ // duplicate seed → the seed with the data
+    'city_323' => 'city_176', // Chongqing
+    'city_304' => 'city_223', // Tbilisi
+    'city_340' => 'city_232', // Muscat
+    'city_344' => 'city_250', // Dakar
+];
 
 $pdo    = Database::pdo();
 $cities = require __DIR__ . '/../src/cities_data.php';
@@ -63,6 +76,12 @@ foreach ($cities as $c) {
     $placed = CityPlacement::place($pdo, (float) $c['lat'], (float) $c['lng']);
     $pick   = $match ?? $placed;
     $status = $match === null ? 'no_match' : ((int) $match['geoname_id'] === (int) ($placed['geoname_id'] ?? 0) ? 'ok' : 'absorbed');
+    if (isset(PINNED["city_{$c['id']}"])) {
+        $pin = $pdo->prepare("SELECT geoname_id, name, population, timezone, lat, lng FROM geo_cities WHERE geoname_id = ?");
+        $pin->execute([PINNED["city_{$c['id']}"]]);
+        $pick   = $pin->fetch(PDO::FETCH_ASSOC);
+        $status = 'pinned';
+    }
     $rows[] = [
         'id'             => "city_{$c['id']}",
         'name'           => $c['name'],
@@ -75,13 +94,14 @@ foreach ($cities as $c) {
         'placed_id'      => $placed['geoname_id'] ?? '',
         'placed_name'    => $placed['name'] ?? '',
         'status'         => $status,
+        'merge_into'     => MERGE_INTO["city_{$c['id']}"] ?? '',
     ];
 }
 
 // A GeoNames city shared by two seeds, or city_<geoname_id> taken by another seed.
 $count = array_count_values(array_filter(array_column($rows, 'geoname_id')));
 foreach ($rows as &$r) {
-    if ($r['geoname_id'] !== '' && $count[$r['geoname_id']] > 1) $r['status'] .= ' duplicate';
+    if ($r['geoname_id'] !== '' && $count[$r['geoname_id']] > 1 && !in_array($r['id'], MERGE_INTO, true) && $r['merge_into'] === '') $r['status'] .= ' duplicate';
     if ($r['geoname_id'] !== '' && isset($seedIds[(int) $r['geoname_id']]) && "city_{$r['geoname_id']}" !== $r['id']) $r['status'] .= ' collision';
 }
 unset($r);

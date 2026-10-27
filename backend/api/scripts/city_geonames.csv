@@ -1,351 +1,351 @@
-id,name,country,geoname_id,geo_name,geo_population,geo_km,tz_differs,placed_id,placed_name,status
-city_1,Paris,FR,2988507,Paris,2138551,0.4,,2988507,Paris,ok
-city_2,London,GB,2643743,London,8961989,0.2,,2643743,London,ok
-city_3,"New York",US,5128581,"New York City",8804190,0.2,,5128581,"New York City",ok
-city_4,Tokyo,JP,1850147,Tokyo,9733276,0,,1850147,Tokyo,ok
-city_5,Sydney,AU,2147714,Sydney,5638830,0.2,,2147714,Sydney,ok
-city_6,"São Paulo",BR,3448439,"São Paulo",12400232,0.4,,3448439,"São Paulo",ok
-city_7,Cairo,EG,360630,Cairo,9606916,2.4,,360630,Cairo,ok
-city_8,Mumbai,IN,1275339,Mumbai,12691836,0.6,,1275339,Mumbai,ok
-city_9,Bangkok,TH,1609350,Bangkok,5104476,0.3,,1609350,Bangkok,ok
-city_10,"Mexico City",MX,3530597,"Mexico City",12294193,0.7,,3530597,"Mexico City",ok
-city_11,Lagos,NG,2332459,Lagos,15388000,8,,2332459,Lagos,ok
-city_12,Istanbul,TR,745044,Istanbul,15701602,2.5,,745044,Istanbul,ok
-city_13,"Buenos Aires",AR,3435910,"Buenos Aires",2891082,1.1,,3435910,"Buenos Aires",ok
-city_14,"Los Angeles",US,5368361,"Los Angeles",3820914,0,,5368361,"Los Angeles",ok
-city_15,Singapore,SG,1880252,Singapore,5638700,7.7,,1880159,"Ulu Bedok",absorbed
-city_16,Dubai,AE,292223,Dubai,3790000,14.7,,292223,Dubai,ok
-city_17,Berlin,DE,2950159,Berlin,3426354,0.6,,2950159,Berlin,ok
-city_18,Nairobi,KE,184745,Nairobi,4397073,1.1,,184745,Nairobi,ok
-city_19,Seoul,KR,1835848,Seoul,10349312,0.1,,1835848,Seoul,ok
-city_20,"Ho Chi Minh City",VN,1566083,"Ho Chi Minh City",14002598,0,,1566083,"Ho Chi Minh City",ok
-city_21,Lyon,FR,2996944,Lyon,520774,1.9,,2996944,Lyon,ok
-city_22,Marseille,FR,2995469,Marseille,877215,0.9,,2995469,Marseille,ok
-city_23,Toulouse,FR,2972315,Toulouse,511684,0.1,,2972315,Toulouse,ok
-city_24,Nice,FR,2990440,Nice,342669,0.9,,2990440,Nice,ok
-city_25,Nantes,FR,2990969,Nantes,325070,0.1,,2990969,Nantes,ok
-city_26,Strasbourg,FR,2973783,Strasbourg,274845,1.3,,2973783,Strasbourg,ok
-city_27,Bordeaux,FR,3031582,Bordeaux,265328,0.4,,3031582,Bordeaux,ok
-city_28,Montpellier,FR,2992166,Montpellier,248252,0,,2992166,Montpellier,ok
-city_29,Lille,FR,2998324,Lille,238695,0.5,,2998324,Lille,ok
-city_30,Rennes,FR,2983990,Rennes,227830,0.7,,2983990,Rennes,ok
-city_31,Manchester,GB,2643123,Manchester,568996,0.3,,2643123,Manchester,ok
-city_32,Birmingham,GB,2655603,Birmingham,1157603,0.8,,2655603,Birmingham,ok
-city_33,Leeds,GB,2644688,Leeds,536280,0.5,,2644688,Leeds,ok
-city_34,Glasgow,GB,2648579,Glasgow,626410,0.4,,2648579,Glasgow,ok
-city_35,Liverpool,GB,2644210,Liverpool,496770,0.9,,2644210,Liverpool,ok
-city_36,Edinburgh,GB,2650225,Edinburgh,514990,0.5,,2650225,Edinburgh,ok
-city_37,Bristol,GB,2654675,Bristol,479024,0.6,,2654675,Bristol,ok
-city_38,Hamburg,DE,2911298,Hamburg,1973896,2.7,,2911298,Hamburg,ok
-city_39,Munich,DE,2867714,Munich,1505005,0.5,,2867714,Munich,ok
-city_40,Cologne,DE,2886242,Köln,1024621,0,,2886242,Köln,ok
-city_41,Frankfurt,DE,2925533,"Frankfurt am Main",650000,0.5,,2925533,"Frankfurt am Main",ok
-city_42,Stuttgart,DE,2825297,Stuttgart,612663,0.8,,2825297,Stuttgart,ok
-city_43,Düsseldorf,DE,2934246,Düsseldorf,618685,0.3,,2934246,Düsseldorf,ok
-city_44,Leipzig,DE,2879139,Leipzig,504971,0.1,,2879139,Leipzig,ok
-city_45,Dresden,DE,2935022,Dresden,564904,0.1,,2935022,Dresden,ok
-city_46,Barcelona,ES,3128760,Barcelona,1686208,1.3,,3128760,Barcelona,ok
-city_47,Madrid,ES,3117735,Madrid,3255944,0.1,,3117735,Madrid,ok
-city_48,Seville,ES,2510911,Sevilla,686741,1.2,,2510911,Sevilla,ok
-city_49,Valencia,ES,2509954,Valencia,824340,0.5,,2509954,Valencia,ok
-city_50,Bilbao,ES,3128026,Bilbao,347342,0,,3128026,Bilbao,ok
-city_51,Málaga,ES,2514256,Málaga,592346,0.2,,2514256,Málaga,ok
-city_52,Rome,IT,3169070,Rome,2318895,1.7,,3169070,Rome,ok
-city_53,Milan,IT,3173435,Milan,1371498,0.3,,3173435,Milan,ok
-city_54,Naples,IT,3172394,Naples,909048,0,,3172394,Naples,ok
-city_55,Turin,IT,3165524,Turin,847287,0,,3165524,Turin,ok
-city_56,Florence,IT,3176959,Florence,367150,1.3,,3176959,Florence,ok
-city_57,Bologna,IT,3181928,Bologna,394843,0.3,,3181928,Bologna,ok
-city_58,Venice,IT,3164603,Venice,51298,1.4,,3164603,Venice,ok
-city_59,Amsterdam,NL,2759794,Amsterdam,741636,1.2,,2759794,Amsterdam,ok
-city_60,Rotterdam,NL,2747891,Rotterdam,868135,0,,2747891,Rotterdam,ok
-city_61,Brussels,BE,2800866,Brussels,1019022,0.2,,2800866,Brussels,ok
-city_62,Lisbon,PT,2267057,Lisbon,517802,1,,2267057,Lisbon,ok
-city_63,Porto,PT,2735943,Porto,252687,1.8,,2735943,Porto,ok
-city_64,Vienna,AT,2761369,Vienna,1691468,0.1,,2761369,Vienna,ok
-city_65,Zurich,CH,2657896,Zürich,415367,1.3,,2657896,Zürich,ok
-city_66,Geneva,CH,2660646,Geneva,201741,0.3,,2660646,Geneva,ok
-city_67,Prague,CZ,3067696,Prague,1165581,1.9,,3067696,Prague,ok
-city_68,Warsaw,PL,756135,Warsaw,1702139,0,,756135,Warsaw,ok
-city_69,Kraków,PL,3094802,Kraków,816614,0.7,,3094802,Kraków,ok
-city_70,Budapest,HU,3054643,Budapest,1741041,0.1,,3054643,Budapest,ok
-city_71,Bratislava,SK,3060972,Bratislava,423737,0.1,,3060972,Bratislava,ok
-city_72,Stockholm,SE,2673730,Stockholm,1515017,0,,2673730,Stockholm,ok
-city_73,Gothenburg,SE,2711537,Gothenburg,608462,0.5,,2711537,Gothenburg,ok
-city_74,Oslo,NO,3143244,Oslo,1082575,0.4,,3143244,Oslo,ok
-city_75,Copenhagen,DK,2618425,Copenhagen,1153615,0.2,,2618425,Copenhagen,ok
-city_76,Helsinki,FI,658225,Helsinki,658864,0.2,,658225,Helsinki,ok
-city_77,Reykjavik,IS,3413829,Reykjavík,118918,2.6,,3413829,Reykjavík,ok
-city_78,Bucharest,RO,683506,Bucharest,1877155,0.7,,683506,Bucharest,ok
-city_79,Sofia,BG,727011,Sofia,1152556,0.2,,727011,Sofia,ok
-city_80,Athens,GR,264371,Athens,664046,0,,264371,Athens,ok
-city_81,Belgrade,RS,792680,Belgrade,1273651,1.6,,792680,Belgrade,ok
-city_82,Zagreb,HR,3186886,Zagreb,663592,0.3,,3186886,Zagreb,ok
-city_83,Ljubljana,SI,3196359,Ljubljana,272220,0.6,,3196359,Ljubljana,ok
-city_84,Kyiv,UA,703448,Kyiv,2952301,0.5,,703448,Kyiv,ok
-city_85,Riga,LV,456172,Riga,742572,0.4,,456172,Riga,ok
-city_86,Tallinn,EE,588409,Tallinn,394024,0,,588409,Tallinn,ok
-city_87,Vilnius,LT,593116,Vilnius,542366,0.2,,593116,Vilnius,ok
-city_88,Dublin,IE,2964574,Dublin,1024027,2,,2964574,Dublin,ok
-city_89,Luxembourg,LU,2960316,Luxembourg,76684,0.2,,2960316,Luxembourg,ok
-city_90,Valletta,MT,2562305,Valletta,6794,0,,2562305,Valletta,ok
-city_91,Moscow,RU,524901,Moscow,10381222,0.4,,524901,Moscow,ok
-city_92,"Saint Petersburg",RU,498817,"Saint Petersburg",5351935,1.3,,498817,"Saint Petersburg",ok
-city_93,Novosibirsk,RU,1496747,Novosibirsk,1612833,4.9,,1496747,Novosibirsk,ok
-city_94,Yekaterinburg,RU,1486209,Yekaterinburg,1495066,2.1,,1486209,Yekaterinburg,ok
-city_95,Kazan,RU,551487,Kazan,1243500,0,,551487,Kazan,ok
-city_96,Chicago,US,4887398,Chicago,2664452,3.5,,4887398,Chicago,ok
-city_97,Houston,US,4699066,Houston,2314157,0.7,,4699066,Houston,ok
-city_98,Phoenix,US,5308655,Phoenix,1650070,0,,5308655,Phoenix,ok
-city_99,Philadelphia,US,4560349,Philadelphia,1573916,0.1,,4560349,Philadelphia,ok
-city_100,"San Antonio",US,4726206,"San Antonio",1526656,0,,4726206,"San Antonio",ok
-city_101,"San Diego",US,5391811,"San Diego",1404452,0.3,,5391811,"San Diego",ok
-city_102,Dallas,US,4684888,Dallas,1326087,1.1,,4684888,Dallas,ok
-city_103,"San Francisco",US,5391959,"San Francisco",827526,0,,5391959,"San Francisco",ok
-city_104,Seattle,US,5809844,Seattle,780995,0,,5809844,Seattle,ok
-city_105,Denver,US,5419384,Denver,729019,0.5,,5419384,Denver,ok
-city_106,Washington,US,4140963,Washington,689545,1.3,,4140963,Washington,ok
-city_107,Nashville,US,4644585,Nashville,689447,0.4,,4644585,Nashville,ok
-city_108,Austin,US,4671654,Austin,974447,0,,4671654,Austin,ok
-city_109,"Las Vegas",US,5506956,"Las Vegas",641903,0.6,,5506956,"Las Vegas",ok
-city_110,Portland,US,5746545,Portland,652503,2,,5746545,Portland,ok
-city_111,Miami,US,4164138,Miami,487014,1.4,,4164138,Miami,ok
-city_112,Atlanta,US,4180439,Atlanta,510823,0,,4180439,Atlanta,ok
-city_113,Minneapolis,US,5037649,Minneapolis,410939,0.3,,5037649,Minneapolis,ok
-city_114,Boston,US,4930956,Boston,653833,0.2,,4930956,Boston,ok
-city_115,Detroit,US,4990729,Detroit,645705,0,,4990729,Detroit,ok
-city_116,"New Orleans",US,4335045,"New Orleans",362701,0.5,,4335045,"New Orleans",ok
-city_117,Tampa,US,4174757,Tampa,414547,0.4,,4174757,Tampa,ok
-city_118,Baltimore,US,4347778,Baltimore,585708,0,,4347778,Baltimore,ok
-city_119,Charlotte,US,4460243,Charlotte,911311,0,,4460243,Charlotte,ok
-city_120,Raleigh,US,4487042,Raleigh,482295,0.8,,4487042,Raleigh,ok
-city_121,Indianapolis,US,4259418,Indianapolis,887642,0,,4259418,Indianapolis,ok
-city_122,Columbus,US,4509177,Columbus,913175,0,,4509177,Columbus,ok
-city_123,Pittsburgh,US,5206379,Pittsburgh,304391,0,,5206379,Pittsburgh,ok
-city_124,Sacramento,US,5389489,Sacramento,524943,0,,5389489,Sacramento,ok
-city_125,"Kansas City",US,4393217,"Kansas City",475378,0,,4393217,"Kansas City",ok
-city_126,"Salt Lake City",US,5780993,"Salt Lake City",215548,0,,5780993,"Salt Lake City",ok
-city_127,"Oklahoma City",US,4544349,"Oklahoma City",681054,0,,4544349,"Oklahoma City",ok
-city_128,Memphis,US,4641239,Memphis,633104,0,,4641239,Memphis,ok
-city_129,Honolulu,US,5856195,Honolulu,350964,0,,5856195,Honolulu,ok
-city_130,Anchorage,US,5879400,Anchorage,289600,0,,5879400,Anchorage,ok
-city_131,Toronto,CA,6167865,Toronto,2794356,6,,6167865,Toronto,ok
-city_132,Montreal,CA,6077243,Montréal,1762949,1.8,,6077243,Montréal,ok
-city_133,Vancouver,CA,6173331,Vancouver,662248,3.7,,6173331,Vancouver,ok
-city_134,Calgary,CA,5913490,Calgary,1306784,1.1,,5913490,Calgary,ok
-city_135,Edmonton,CA,5946768,Edmonton,1010899,1.7,,5946768,Edmonton,ok
-city_136,Ottawa,CA,6094817,Ottawa,1017449,1.2,,6094817,Ottawa,ok
-city_137,Winnipeg,CA,6183235,Winnipeg,749607,1.3,,6183235,Winnipeg,ok
-city_138,"Quebec City",CA,6325494,Québec,531902,0.5,,6325494,Québec,ok
-city_139,Halifax,CA,6324729,Halifax,471559,0.7,,6324729,Halifax,ok
-city_140,Guadalajara,MX,4005539,Guadalajara,1385629,2,,4005539,Guadalajara,ok
-city_141,Monterrey,MX,3995465,Monterrey,1135512,0.3,,3995465,Monterrey,ok
-city_142,Cancún,MX,3531673,Cancún,888797,1.5,,3531673,Cancún,ok
-city_143,Tijuana,MX,3981609,Tijuana,1922523,0,,3981609,Tijuana,ok
-city_144,"Panama City",PA,3703443,"Panama City",408168,0,,3703443,"Panama City",ok
-city_145,"San José",CR,3621849,"San José",335007,0.9,,3621849,"San José",ok
-city_146,"Guatemala City",GT,3598132,"Guatemala City",994938,0.9,,3598132,"Guatemala City",ok
-city_147,Havana,CU,3553478,Havana,2163824,2.7,,3553478,Havana,ok
-city_148,"San Juan",PR,4568127,"San Juan",418140,0.1,,4568127,"San Juan",ok
-city_149,"Santo Domingo",DO,3492908,"Santo Domingo",2201941,4.4,,3492908,"Santo Domingo",ok
-city_150,"Rio de Janeiro",BR,3451190,"Rio de Janeiro",6747815,1,,3451190,"Rio de Janeiro",ok
-city_151,Brasília,BR,3469058,Brasília,2207718,5.3,,3469058,Brasília,ok
-city_152,"Belo Horizonte",BR,3470127,"Belo Horizonte",2721564,0.6,,3470127,"Belo Horizonte",ok
-city_153,Salvador,BR,3450554,Salvador,2711840,1.2,,3450554,Salvador,ok
-city_154,Fortaleza,BR,3399415,Fortaleza,2400000,0,,3399415,Fortaleza,ok
-city_155,Curitiba,BR,3464975,Curitiba,1948626,0.1,,3464975,Curitiba,ok
-city_156,Manaus,BR,3663517,Manaus,2219580,1.9,,3663517,Manaus,ok
-city_157,"Porto Alegre",BR,3452925,"Porto Alegre",1488252,1.2,,3452925,"Porto Alegre",ok
-city_158,Recife,BR,3390760,Recife,1653461,5.2,,3390760,Recife,ok
-city_159,Bogotá,CO,3688689,Bogotá,7674366,11.3,,3667905,Soacha,absorbed
-city_160,Medellín,CO,3674962,Medellín,1999979,1.1,,3674962,Medellín,ok
-city_161,Cali,CO,3687925,Cali,2392877,2.7,,3687925,Cali,ok
-city_162,Lima,PE,3936456,Lima,7737002,1.6,,3928245,"Santiago de Surco",absorbed
-city_163,Santiago,CL,3871336,Santiago,4837295,2.1,,3871336,Santiago,ok
-city_164,Quito,EC,3652462,Quito,2781641,8.4,,3652462,Quito,ok
-city_165,Caracas,VE,3646738,Caracas,3000000,2.8,,3646738,Caracas,ok
-city_166,Montevideo,UY,3441575,Montevideo,1270737,2.2,,3441575,Montevideo,ok
-city_167,Asunción,PY,3439389,Asunción,1482200,0,,3439389,Asunción,ok
-city_168,"La Paz",BO,3911925,"La Paz",2004652,3.5,,3911925,"La Paz",ok
-city_169,Guayaquil,EC,3657509,Guayaquil,2723665,4.9,,3657509,Guayaquil,ok
-city_170,Córdoba,AR,3860259,Córdoba,2106734,1.5,,3860259,Córdoba,ok
-city_171,Beijing,CN,1816670,Beijing,18960744,0.9,,1816670,Beijing,ok
-city_172,Shanghai,CN,1796236,Shanghai,24874500,1.7,,1796236,Shanghai,ok
-city_173,Shenzhen,CN,1795565,Shenzhen,17494398,1.1,,1795565,Shenzhen,ok
-city_174,Guangzhou,CN,1809858,Guangzhou,18676605,2,,1809858,Guangzhou,ok
-city_175,Chengdu,CN,1815286,Chengdu,20937757,10.4,,1815286,Chengdu,ok
-city_176,Chongqing,CN,1814906,Chongqing,22000000,0.7,,1814906,Chongqing,"ok duplicate"
-city_177,Wuhan,CN,1791247,Wuhan,13739000,3.9,,1791247,Wuhan,ok
-city_178,Xi'an,CN,1790630,Xi’an,12952907,9.3,,1790630,Xi’an,ok
-city_179,Hangzhou,CN,1808926,Hangzhou,11936010,2.3,,1808926,Hangzhou,ok
-city_180,Nanjing,CN,1799962,Nanjing,9314685,1.8,,1799962,Nanjing,ok
-city_181,"Hong Kong",HK,1819729,"Hong Kong",7396076,4.6,,1819353,"Mong Kok",absorbed
-city_182,Taipei,TW,1668341,Taipei,7871900,4.5,,1668341,Taipei,ok
-city_183,Osaka,JP,1853909,Osaka,2753862,0.1,,1853909,Osaka,ok
-city_184,Nagoya,JP,1856057,Nagoya,2332176,0,,1856057,Nagoya,ok
-city_185,Fukuoka,JP,1863967,Fukuoka,1612392,1.7,,1863967,Fukuoka,ok
-city_186,Sapporo,JP,2128295,Sapporo,1973832,0.7,,2128295,Sapporo,ok
-city_187,Kyoto,JP,1857910,Kyoto,1463723,1.7,,1857910,Kyoto,ok
-city_188,Busan,KR,1838524,Busan,3285147,9.6,,1838524,Busan,ok
-city_189,Incheon,KR,1843564,Incheon,3015482,0,,1843564,Incheon,ok
-city_190,Ulaanbaatar,MN,2028462,"Ulan Bator",844818,2.9,,2028462,"Ulan Bator",ok
-city_191,Hanoi,VN,1581130,Hanoi,8053663,0.8,,1581130,Hanoi,ok
-city_192,Jakarta,ID,1642911,Jakarta,8540121,0.6,,1642911,Jakarta,ok
-city_193,Surabaya,ID,1625822,Surabaya,3018022,0.9,,1625822,Surabaya,ok
-city_194,Bandung,ID,1650357,Bandung,2528163,0.9,,1650357,Bandung,ok
-city_195,Bali,ID,1634710,Munduk,6200,8.1,,1634710,Munduk,no_match
-city_196,"Kuala Lumpur",MY,1735161,"Kuala Lumpur",1453975,0.2,,1735161,"Kuala Lumpur",ok
-city_197,Manila,PH,1701668,Manila,1600000,0.6,,1692192,"Quezon City",absorbed
-city_198,Cebu,PH,1717512,"Cebu City",965332,0.6,,1717512,"Cebu City",ok
-city_199,Yangon,MM,1298824,Yangon,4477638,7.9,"Asia/Rangoon → Asia/Yangon",1298824,Yangon,ok
-city_200,"Phnom Penh",KH,1821306,"Phnom Penh",1573544,1.5,,1821306,"Phnom Penh",ok
-city_201,Vientiane,LA,1651944,Vientiane,840940,3.6,,1651944,Vientiane,ok
-city_202,Colombo,LK,1248991,Colombo,648034,1.7,,1248991,Colombo,ok
-city_203,Delhi,IN,1273294,Delhi,11034555,4.8,,1273294,Delhi,ok
-city_204,Bangalore,IN,1277333,Bengaluru,8495492,0.1,,1277333,Bengaluru,ok
-city_205,Chennai,IN,1264527,Chennai,4681087,1,,1264527,Chennai,ok
-city_206,Kolkata,IN,1275004,Kolkata,4631392,1.1,,1275004,Kolkata,ok
-city_207,Hyderabad,IN,1269843,Hyderabad,6993262,3.2,,1269843,Hyderabad,ok
-city_208,Pune,IN,1259229,Pune,3124458,0.2,,1259229,Pune,ok
-city_209,Ahmedabad,IN,1279233,Ahmedabad,6357693,1.7,,1279233,Ahmedabad,ok
-city_210,Jaipur,IN,1269515,Jaipur,3046163,0.8,,1269515,Jaipur,ok
-city_211,Karachi,PK,1174872,Karachi,11624219,0.9,,1174872,Karachi,ok
-city_212,Lahore,PK,1172451,Lahore,13004135,4.2,,1172451,Lahore,ok
-city_213,Islamabad,PK,1176615,Islamabad,601600,4.1,,1176615,Islamabad,ok
-city_214,Dhaka,BD,1185241,Dhaka,10356500,11.1,,1185241,Dhaka,ok
-city_215,Chittagong,BD,1205733,Chattogram,3920222,5.4,,1205733,Chattogram,ok
-city_216,Kathmandu,NP,1283240,Kathmandu,1442271,1.8,,1283240,Kathmandu,ok
-city_217,Kabul,AF,1138958,Kabul,4434550,0.6,,1138958,Kabul,ok
-city_218,Almaty,KZ,1526384,Almaty,1977011,5.9,,1526384,Almaty,ok
-city_219,Astana,KZ,1526273,Astana,1544142,0,,1526273,Astana,ok
-city_220,Tashkent,UZ,1512569,Tashkent,1978028,4.4,,1512569,Tashkent,ok
-city_221,Bishkek,KG,1528675,Bishkek,900000,1.7,,1528675,Bishkek,ok
-city_222,Baku,AZ,587084,Baku,2351300,4.1,,587084,Baku,ok
-city_223,Tbilisi,GE,611717,Tbilisi,1049498,2.7,,611717,Tbilisi,"ok duplicate"
-city_224,Yerevan,AM,616052,Yerevan,1144700,1.1,,616052,Yerevan,ok
-city_225,Tehran,IR,112931,Tehran,7153309,3,,112931,Tehran,ok
-city_226,Mashhad,IR,124665,Mashhad,2307177,0.1,,124665,Mashhad,ok
-city_227,Baghdad,IQ,98182,Baghdad,7216000,4.3,,98182,Baghdad,ok
-city_228,Riyadh,SA,108410,Riyadh,4205961,5.5,,108410,Riyadh,ok
-city_229,Jeddah,SA,105343,Jeddah,4697000,0.8,,105343,Jeddah,ok
-city_230,Doha,QA,290030,Doha,344939,0,,290030,Doha,ok
-city_231,"Abu Dhabi",AE,292968,"Abu Dhabi",1807000,2,,292968,"Abu Dhabi",ok
-city_232,Muscat,OM,287286,Muscat,797000,2.6,,288764,Bawshar,"absorbed duplicate"
-city_233,"Kuwait City",KW,285787,"Kuwait City",60064,1,,285787,"Kuwait City",ok
-city_234,Beirut,LB,276781,Beirut,1916100,0.1,,276781,Beirut,ok
-city_235,Amman,JO,250441,Amman,1275857,3.3,,250441,Amman,ok
-city_236,"Tel Aviv",IL,293397,"Tel Aviv",432892,0.5,,293397,"Tel Aviv",ok
-city_237,Jerusalem,IL,281184,Jerusalem,971800,0.3,,281184,Jerusalem,ok
-city_238,Damascus,SY,170654,Damascus,1569394,1.4,,170654,Damascus,ok
-city_239,Nicosia,CY,146268,Nicosia,200452,2.9,,146268,Nicosia,ok
-city_240,Kinshasa,CD,2314302,Kinshasa,16000000,13.7,,2314302,Kinshasa,ok
-city_241,"Dar es Salaam",TZ,160263,"Dar es Salaam",5383728,7.6,,160263,"Dar es Salaam",ok
-city_242,Johannesburg,ZA,993800,Johannesburg,9418183,0.4,,993800,Johannesburg,ok
-city_243,"Cape Town",ZA,3369157,"Cape Town",4772846,0.1,,3369157,"Cape Town",ok
-city_244,Durban,ZA,1007311,Durban,3338026,0.7,,1007311,Durban,ok
-city_245,Luanda,AO,2240449,Luanda,2776168,0,,2240449,Luanda,ok
-city_246,Abidjan,CI,2293538,Abidjan,6321017,1,,2293538,Abidjan,ok
-city_247,Kano,NG,2335204,Kano,4910000,8.2,,2335204,Kano,ok
-city_248,Ibadan,NG,2339354,Ibadan,3649000,4.5,,2339354,Ibadan,ok
-city_249,Accra,GH,2306104,Accra,1963264,5.4,,2306104,Accra,ok
-city_250,Dakar,SN,2253354,Dakar,2646503,0,,2253354,Dakar,"ok duplicate"
-city_251,"Addis Ababa",ET,344979,"Addis Ababa",3860000,0.8,,344979,"Addis Ababa",ok
-city_252,Kampala,UG,232422,Kampala,1680600,3.5,,232422,Kampala,ok
-city_253,Kigali,RW,202061,Kigali,1132686,0.7,,202061,Kigali,ok
-city_254,Harare,ZW,890299,Harare,1542813,2.1,,890299,Harare,ok
-city_255,Lusaka,ZM,909137,Lusaka,2212301,4.4,,909137,Lusaka,ok
-city_256,Maputo,MZ,1040652,Maputo,1254837,1.1,,1040652,Maputo,ok
-city_257,Tunis,TN,2464470,Tunis,693210,0,,2464470,Tunis,ok
-city_258,Algiers,DZ,2507480,Algiers,2364230,0.6,,2507480,Algiers,ok
-city_259,Casablanca,MA,2553604,Casablanca,3665954,2.6,,2553604,Casablanca,ok
-city_260,Rabat,MA,2538475,Rabat,1655753,1.2,,2538475,Rabat,ok
-city_261,Tripoli,LY,2210247,Tripoli,1302947,1.8,,2210247,Tripoli,ok
-city_262,Khartoum,SD,379252,Khartoum,1974647,6.4,,379252,Khartoum,ok
-city_263,Antananarivo,MG,1070940,Antananarivo,1349501,0,,1070940,Antananarivo,ok
-city_264,Douala,CM,2232593,Douala,1338082,7.1,,2232593,Douala,ok
-city_265,Yaoundé,CM,2220957,Yaoundé,1299369,2.6,,2220957,Yaoundé,ok
-city_266,Conakry,GN,2422465,Conakry,1928389,15.8,,2422465,Conakry,ok
-city_267,Bamako,ML,2460596,Bamako,4227569,4.5,,2460596,Bamako,ok
-city_268,Ouagadougou,BF,2357048,Ouagadougou,2415266,1.7,,2357048,Ouagadougou,ok
-city_269,Alexandria,EG,361058,Alexandria,5263542,0.3,,361058,Alexandria,ok
-city_270,Kumasi,GH,2298890,Kumasi,2544530,0,,2298890,Kumasi,ok
-city_271,Melbourne,AU,2158177,Melbourne,5435590,0,,2158177,Melbourne,ok
-city_272,Brisbane,AU,2174003,Brisbane,2780063,0.4,,2174003,Brisbane,ok
-city_273,Perth,AU,2063523,Perth,2384371,0.2,,2063523,Perth,ok
-city_274,Adelaide,AU,2078025,Adelaide,1469163,0.2,,2078025,Adelaide,ok
-city_275,Canberra,AU,2172517,Canberra,367752,0.3,,2172517,Canberra,ok
-city_276,"Gold Coast",AU,2165087,"Gold Coast",640778,3.5,,2165087,"Gold Coast",ok
-city_277,Auckland,NZ,2193733,Auckland,1547200,0,,2193733,Auckland,ok
-city_278,Wellington,NZ,2179537,Wellington,381900,0,,2179537,Wellington,ok
-city_279,Christchurch,NZ,2192362,Christchurch,419200,0.3,,2192362,Christchurch,ok
-city_280,Thessaloniki,GR,734077,Thessaloníki,317778,0.8,,734077,Thessaloníki,ok
-city_281,Palermo,IT,2523920,Palermo,648260,0.2,,2523920,Palermo,ok
-city_282,Genoa,IT,3176219,Genoa,580097,0.2,,3176219,Genoa,ok
-city_283,Bari,IT,3182351,Bari,316491,0.4,,3182351,Bari,ok
-city_284,Saragossa,ES,3104324,Zaragoza,686986,0,,3104324,Zaragoza,ok
-city_285,Alicante,ES,2521978,Alicante,348901,0,,2521978,Alicante,ok
-city_286,Palma,ES,2512989,Palma,438234,0,,2512989,Palma,ok
-city_287,"The Hague",NL,2747373,"The Hague",474292,0.7,,2747373,"The Hague",ok
-city_288,Utrecht,NL,2745912,Utrecht,376435,0.1,,2745912,Utrecht,ok
-city_289,Antwerp,BE,2803138,Antwerp,529247,0.2,,2803138,Antwerp,ok
-city_290,Ghent,BE,2797656,Gent,265086,0.5,,2797656,Gent,ok
-city_291,Bern,CH,2661552,Bern,121631,0,,2661552,Bern,ok
-city_292,Basel,CH,2661604,Basel,177595,1.2,,2661604,Basel,ok
-city_293,Łódź,PL,3093133,Łódź,639890,1.8,,3093133,Łódź,ok
-city_294,Wrocław,PL,3081368,Wrocław,672545,0.8,,3081368,Wrocław,ok
-city_295,Gdańsk,PL,3099434,Gdańsk,487371,0.2,,3099434,Gdańsk,ok
-city_296,Minsk,BY,625144,Minsk,1742124,0.6,,625144,Minsk,ok
-city_297,Kharkiv,UA,706483,Kharkiv,1421125,2.2,,706483,Kharkiv,ok
-city_298,Odessa,UA,698740,Odesa,1010537,1.6,,698740,Odesa,ok
-city_299,Tirana,AL,3183875,Tirana,418495,0,,3183875,Tirana,ok
-city_300,Sarajevo,BA,3191281,Sarajevo,696731,4.6,,3191281,Sarajevo,ok
-city_301,Skopje,MK,785842,Skopje,474889,0,,785842,Skopje,ok
-city_302,Podgorica,ME,3193044,Podgorica,236852,1.2,,3193044,Podgorica,ok
-city_303,Chisinau,MD,618426,Chisinau,635994,0.4,,618426,Chisinau,ok
-city_304,Tbilisi,GE,611717,Tbilisi,1049498,2.7,,611717,Tbilisi,"ok duplicate"
-city_305,Cardiff,GB,2653822,Cardiff,372089,0.2,,2653822,Cardiff,ok
-city_306,Sheffield,GB,2638077,Sheffield,556500,0.3,,2638077,Sheffield,ok
-city_307,Newcastle,GB,2641673,"Newcastle upon Tyne",300125,0.6,,2641673,"Newcastle upon Tyne",ok
-city_308,"San José",US,5392171,"San Jose",997368,0.8,,5392171,"San Jose",ok
-city_309,Jacksonville,US,4160021,Jacksonville,1009833,0,,4160021,Jacksonville,ok
-city_310,"Fort Worth",US,4691930,"Fort Worth",1008106,3.5,,4691930,"Fort Worth",ok
-city_311,"El Paso",US,5520993,"El Paso",678815,0.4,,5520993,"El Paso",ok
-city_312,Tucson,US,5318313,Tucson,542629,4.5,,5318313,Tucson,ok
-city_313,Fresno,US,5350937,Fresno,542107,1.7,,5350937,Fresno,ok
-city_314,"Virginia Beach",US,4791259,"Virginia Beach",454808,0,,4791259,"Virginia Beach",ok
-city_315,Milwaukee,US,5263045,Milwaukee,563531,0,,5263045,Milwaukee,ok
-city_316,Albuquerque,US,5454711,Albuquerque,564559,0.1,,5454711,Albuquerque,ok
-city_317,Omaha,US,5074472,Omaha,486051,0.5,,5074472,Omaha,ok
-city_318,"Long Beach",US,5367929,"Long Beach",474140,0.5,,5367929,"Long Beach",ok
-city_319,Louisville,US,4299276,Louisville,624444,0.2,,4299276,Louisville,ok
-city_320,Rosario,AR,3838583,Rosario,948312,1.1,,3838583,Rosario,ok
-city_321,Mendoza,AR,3844421,Mendoza,114893,1.7,,3844421,Mendoza,ok
-city_322,Tianjin,CN,1792947,Tianjin,13866009,0,,1792947,Tianjin,ok
-city_323,Chongqing,CN,1814906,Chongqing,22000000,0.7,,1814906,Chongqing,"ok duplicate"
-city_324,Nanning,CN,1799869,Nanning,5977185,5.1,,1799869,Nanning,ok
-city_325,Kunming,CN,1804651,Kunming,5950578,21.1,,1804651,Kunming,ok
-city_326,Harbin,CN,2037013,Harbin,10009854,10.7,,2037013,Harbin,ok
-city_327,Macau,MO,1821274,Macau,649335,0.3,,1821274,Macau,ok
-city_328,Kaohsiung,TW,1673820,Kaohsiung,2737660,1.7,,1673820,Kaohsiung,ok
-city_329,Kochi,IN,1273874,Kochi,633553,1.2,,1273874,Kochi,ok
-city_330,Surat,IN,1255364,Surat,4591246,2.9,,1255364,Surat,ok
-city_331,Nagpur,IN,1262180,Nagpur,2405665,0.3,,1262180,Nagpur,ok
-city_332,Thiruvananthapuram,IN,1254163,Thiruvananthapuram,788271,4.5,,1254163,Thiruvananthapuram,ok
-city_333,Medan,ID,1214520,Medan,2486283,1.5,,1214520,Medan,ok
-city_334,Makassar,ID,1622786,Makassar,1474393,0.1,,1622786,Makassar,ok
-city_335,Penang,MY,1735106,"George Town",158336,0.6,,1735106,"George Town",ok
-city_336,Davao,PH,1715348,Davao,1848947,21.7,,1715348,Davao,ok
-city_337,Mecca,SA,104515,Makkah,1578722,5.3,,104515,Makkah,ok
-city_338,Medina,SA,109223,Madinah,1300000,7.7,,101760,Sulţānah,absorbed
-city_339,Basra,IQ,99532,Basrah,1326564,0,,99532,Basrah,ok
-city_340,Muscat,OM,287286,Muscat,797000,2.6,,288764,Bawshar,"absorbed duplicate"
-city_341,"Port Harcourt",NG,2324774,"Port Harcourt",2120000,5.9,,2324774,"Port Harcourt",ok
-city_342,Abuja,NG,2352778,Abuja,2690000,10.8,,2352778,Abuja,ok
-city_343,Mombasa,KE,186301,Mombasa,1208333,1.3,,186301,Mombasa,ok
-city_344,Dakar,SN,2253354,Dakar,2646503,0.3,,2253354,Dakar,"ok duplicate"
-city_345,Libreville,GA,2399697,Libreville,846090,3.1,,2399697,Libreville,ok
-city_346,Brazzaville,CG,2260535,Brazzaville,1982000,1.3,,2260535,Brazzaville,ok
-city_347,Mogadishu,SO,53654,Mogadishu,2587183,3,,53654,Mogadishu,ok
-city_348,Asmara,ER,343300,Asmara,563930,1.5,,343300,Asmara,ok
-city_349,Djibouti,DJ,223817,Djibouti,626512,1.9,,223817,Djibouti,ok
-city_350,Lilongwe,MW,927967,Lilongwe,1115815,1.5,,927967,Lilongwe,ok
+id,name,country,geoname_id,geo_name,geo_population,geo_km,tz_differs,placed_id,placed_name,status,merge_into
+city_1,Paris,FR,2988507,Paris,2138551,0.4,,2988507,Paris,ok,
+city_2,London,GB,2643743,London,8961989,0.2,,2643743,London,ok,
+city_3,"New York",US,5128581,"New York City",8804190,0.2,,5128581,"New York City",ok,
+city_4,Tokyo,JP,1850147,Tokyo,9733276,0,,1850147,Tokyo,ok,
+city_5,Sydney,AU,2147714,Sydney,5638830,0.2,,2147714,Sydney,ok,
+city_6,"São Paulo",BR,3448439,"São Paulo",12400232,0.4,,3448439,"São Paulo",ok,
+city_7,Cairo,EG,360630,Cairo,9606916,2.4,,360630,Cairo,ok,
+city_8,Mumbai,IN,1275339,Mumbai,12691836,0.6,,1275339,Mumbai,ok,
+city_9,Bangkok,TH,1609350,Bangkok,5104476,0.3,,1609350,Bangkok,ok,
+city_10,"Mexico City",MX,3530597,"Mexico City",12294193,0.7,,3530597,"Mexico City",ok,
+city_11,Lagos,NG,2332459,Lagos,15388000,8,,2332459,Lagos,ok,
+city_12,Istanbul,TR,745044,Istanbul,15701602,2.5,,745044,Istanbul,ok,
+city_13,"Buenos Aires",AR,3435910,"Buenos Aires",2891082,1.1,,3435910,"Buenos Aires",ok,
+city_14,"Los Angeles",US,5368361,"Los Angeles",3820914,0,,5368361,"Los Angeles",ok,
+city_15,Singapore,SG,1880252,Singapore,5638700,7.7,,1880252,Singapore,ok,
+city_16,Dubai,AE,292223,Dubai,3790000,14.7,,292223,Dubai,ok,
+city_17,Berlin,DE,2950159,Berlin,3426354,0.6,,2950159,Berlin,ok,
+city_18,Nairobi,KE,184745,Nairobi,4397073,1.1,,184745,Nairobi,ok,
+city_19,Seoul,KR,1835848,Seoul,10349312,0.1,,1835848,Seoul,ok,
+city_20,"Ho Chi Minh City",VN,1566083,"Ho Chi Minh City",14002598,0,,1566083,"Ho Chi Minh City",ok,
+city_21,Lyon,FR,2996944,Lyon,520774,1.9,,2996944,Lyon,ok,
+city_22,Marseille,FR,2995469,Marseille,877215,0.9,,2995469,Marseille,ok,
+city_23,Toulouse,FR,2972315,Toulouse,511684,0.1,,2972315,Toulouse,ok,
+city_24,Nice,FR,2990440,Nice,342669,0.9,,2990440,Nice,ok,
+city_25,Nantes,FR,2990969,Nantes,325070,0.1,,2990969,Nantes,ok,
+city_26,Strasbourg,FR,2973783,Strasbourg,274845,1.3,,2973783,Strasbourg,ok,
+city_27,Bordeaux,FR,3031582,Bordeaux,265328,0.4,,3031582,Bordeaux,ok,
+city_28,Montpellier,FR,2992166,Montpellier,248252,0,,2992166,Montpellier,ok,
+city_29,Lille,FR,2998324,Lille,238695,0.5,,2998324,Lille,ok,
+city_30,Rennes,FR,2983990,Rennes,227830,0.7,,2983990,Rennes,ok,
+city_31,Manchester,GB,2643123,Manchester,568996,0.3,,2643123,Manchester,ok,
+city_32,Birmingham,GB,2655603,Birmingham,1157603,0.8,,2655603,Birmingham,ok,
+city_33,Leeds,GB,2644688,Leeds,536280,0.5,,2644688,Leeds,ok,
+city_34,Glasgow,GB,2648579,Glasgow,626410,0.4,,2648579,Glasgow,ok,
+city_35,Liverpool,GB,2644210,Liverpool,496770,0.9,,2644210,Liverpool,ok,
+city_36,Edinburgh,GB,2650225,Edinburgh,514990,0.5,,2650225,Edinburgh,ok,
+city_37,Bristol,GB,2654675,Bristol,479024,0.6,,2654675,Bristol,ok,
+city_38,Hamburg,DE,2911298,Hamburg,1973896,2.7,,2911298,Hamburg,ok,
+city_39,Munich,DE,2867714,Munich,1505005,0.5,,2867714,Munich,ok,
+city_40,Cologne,DE,2886242,Köln,1024621,0,,2886242,Köln,ok,
+city_41,Frankfurt,DE,2925533,"Frankfurt am Main",650000,0.5,,2925533,"Frankfurt am Main",ok,
+city_42,Stuttgart,DE,2825297,Stuttgart,612663,0.8,,2825297,Stuttgart,ok,
+city_43,Düsseldorf,DE,2934246,Düsseldorf,618685,0.3,,2934246,Düsseldorf,ok,
+city_44,Leipzig,DE,2879139,Leipzig,504971,0.1,,2879139,Leipzig,ok,
+city_45,Dresden,DE,2935022,Dresden,564904,0.1,,2935022,Dresden,ok,
+city_46,Barcelona,ES,3128760,Barcelona,1686208,1.3,,3128760,Barcelona,ok,
+city_47,Madrid,ES,3117735,Madrid,3255944,0.1,,3117735,Madrid,ok,
+city_48,Seville,ES,2510911,Sevilla,686741,1.2,,2510911,Sevilla,ok,
+city_49,Valencia,ES,2509954,Valencia,824340,0.5,,2509954,Valencia,ok,
+city_50,Bilbao,ES,3128026,Bilbao,347342,0,,3128026,Bilbao,ok,
+city_51,Málaga,ES,2514256,Málaga,592346,0.2,,2514256,Málaga,ok,
+city_52,Rome,IT,3169070,Rome,2318895,1.7,,3169070,Rome,ok,
+city_53,Milan,IT,3173435,Milan,1371498,0.3,,3173435,Milan,ok,
+city_54,Naples,IT,3172394,Naples,909048,0,,3172394,Naples,ok,
+city_55,Turin,IT,3165524,Turin,847287,0,,3165524,Turin,ok,
+city_56,Florence,IT,3176959,Florence,367150,1.3,,3176959,Florence,ok,
+city_57,Bologna,IT,3181928,Bologna,394843,0.3,,3181928,Bologna,ok,
+city_58,Venice,IT,3164603,Venice,51298,1.4,,3164603,Venice,ok,
+city_59,Amsterdam,NL,2759794,Amsterdam,741636,1.2,,2759794,Amsterdam,ok,
+city_60,Rotterdam,NL,2747891,Rotterdam,868135,0,,2747891,Rotterdam,ok,
+city_61,Brussels,BE,2800866,Brussels,1019022,0.2,,2800866,Brussels,ok,
+city_62,Lisbon,PT,2267057,Lisbon,517802,1,,2267057,Lisbon,ok,
+city_63,Porto,PT,2735943,Porto,252687,1.8,,2735943,Porto,ok,
+city_64,Vienna,AT,2761369,Vienna,1691468,0.1,,2761369,Vienna,ok,
+city_65,Zurich,CH,2657896,Zürich,415367,1.3,,2657896,Zürich,ok,
+city_66,Geneva,CH,2660646,Geneva,201741,0.3,,2660646,Geneva,ok,
+city_67,Prague,CZ,3067696,Prague,1165581,1.9,,3067696,Prague,ok,
+city_68,Warsaw,PL,756135,Warsaw,1702139,0,,756135,Warsaw,ok,
+city_69,Kraków,PL,3094802,Kraków,816614,0.7,,3094802,Kraków,ok,
+city_70,Budapest,HU,3054643,Budapest,1741041,0.1,,3054643,Budapest,ok,
+city_71,Bratislava,SK,3060972,Bratislava,423737,0.1,,3060972,Bratislava,ok,
+city_72,Stockholm,SE,2673730,Stockholm,1515017,0,,2673730,Stockholm,ok,
+city_73,Gothenburg,SE,2711537,Gothenburg,608462,0.5,,2711537,Gothenburg,ok,
+city_74,Oslo,NO,3143244,Oslo,1082575,0.4,,3143244,Oslo,ok,
+city_75,Copenhagen,DK,2618425,Copenhagen,1153615,0.2,,2618425,Copenhagen,ok,
+city_76,Helsinki,FI,658225,Helsinki,658864,0.2,,658225,Helsinki,ok,
+city_77,Reykjavik,IS,3413829,Reykjavík,118918,2.6,,3413829,Reykjavík,ok,
+city_78,Bucharest,RO,683506,Bucharest,1877155,0.7,,683506,Bucharest,ok,
+city_79,Sofia,BG,727011,Sofia,1152556,0.2,,727011,Sofia,ok,
+city_80,Athens,GR,264371,Athens,664046,0,,264371,Athens,ok,
+city_81,Belgrade,RS,792680,Belgrade,1273651,1.6,,792680,Belgrade,ok,
+city_82,Zagreb,HR,3186886,Zagreb,663592,0.3,,3186886,Zagreb,ok,
+city_83,Ljubljana,SI,3196359,Ljubljana,272220,0.6,,3196359,Ljubljana,ok,
+city_84,Kyiv,UA,703448,Kyiv,2952301,0.5,,703448,Kyiv,ok,
+city_85,Riga,LV,456172,Riga,742572,0.4,,456172,Riga,ok,
+city_86,Tallinn,EE,588409,Tallinn,394024,0,,588409,Tallinn,ok,
+city_87,Vilnius,LT,593116,Vilnius,542366,0.2,,593116,Vilnius,ok,
+city_88,Dublin,IE,2964574,Dublin,1024027,2,,2964574,Dublin,ok,
+city_89,Luxembourg,LU,2960316,Luxembourg,76684,0.2,,2960316,Luxembourg,ok,
+city_90,Valletta,MT,2562305,Valletta,6794,0,,2562305,Valletta,ok,
+city_91,Moscow,RU,524901,Moscow,10381222,0.4,,524901,Moscow,ok,
+city_92,"Saint Petersburg",RU,498817,"Saint Petersburg",5351935,1.3,,498817,"Saint Petersburg",ok,
+city_93,Novosibirsk,RU,1496747,Novosibirsk,1612833,4.9,,1496747,Novosibirsk,ok,
+city_94,Yekaterinburg,RU,1486209,Yekaterinburg,1495066,2.1,,1486209,Yekaterinburg,ok,
+city_95,Kazan,RU,551487,Kazan,1243500,0,,551487,Kazan,ok,
+city_96,Chicago,US,4887398,Chicago,2664452,3.5,,4887398,Chicago,ok,
+city_97,Houston,US,4699066,Houston,2314157,0.7,,4699066,Houston,ok,
+city_98,Phoenix,US,5308655,Phoenix,1650070,0,,5308655,Phoenix,ok,
+city_99,Philadelphia,US,4560349,Philadelphia,1573916,0.1,,4560349,Philadelphia,ok,
+city_100,"San Antonio",US,4726206,"San Antonio",1526656,0,,4726206,"San Antonio",ok,
+city_101,"San Diego",US,5391811,"San Diego",1404452,0.3,,5391811,"San Diego",ok,
+city_102,Dallas,US,4684888,Dallas,1326087,1.1,,4684888,Dallas,ok,
+city_103,"San Francisco",US,5391959,"San Francisco",827526,0,,5391959,"San Francisco",ok,
+city_104,Seattle,US,5809844,Seattle,780995,0,,5809844,Seattle,ok,
+city_105,Denver,US,5419384,Denver,729019,0.5,,5419384,Denver,ok,
+city_106,Washington,US,4140963,Washington,689545,1.3,,4140963,Washington,ok,
+city_107,Nashville,US,4644585,Nashville,689447,0.4,,4644585,Nashville,ok,
+city_108,Austin,US,4671654,Austin,974447,0,,4671654,Austin,ok,
+city_109,"Las Vegas",US,5506956,"Las Vegas",641903,0.6,,5506956,"Las Vegas",ok,
+city_110,Portland,US,5746545,Portland,652503,2,,5746545,Portland,ok,
+city_111,Miami,US,4164138,Miami,487014,1.4,,4164138,Miami,ok,
+city_112,Atlanta,US,4180439,Atlanta,510823,0,,4180439,Atlanta,ok,
+city_113,Minneapolis,US,5037649,Minneapolis,410939,0.3,,5037649,Minneapolis,ok,
+city_114,Boston,US,4930956,Boston,653833,0.2,,4930956,Boston,ok,
+city_115,Detroit,US,4990729,Detroit,645705,0,,4990729,Detroit,ok,
+city_116,"New Orleans",US,4335045,"New Orleans",362701,0.5,,4335045,"New Orleans",ok,
+city_117,Tampa,US,4174757,Tampa,414547,0.4,,4174757,Tampa,ok,
+city_118,Baltimore,US,4347778,Baltimore,585708,0,,4347778,Baltimore,ok,
+city_119,Charlotte,US,4460243,Charlotte,911311,0,,4460243,Charlotte,ok,
+city_120,Raleigh,US,4487042,Raleigh,482295,0.8,,4487042,Raleigh,ok,
+city_121,Indianapolis,US,4259418,Indianapolis,887642,0,,4259418,Indianapolis,ok,
+city_122,Columbus,US,4509177,Columbus,913175,0,,4509177,Columbus,ok,
+city_123,Pittsburgh,US,5206379,Pittsburgh,304391,0,,5206379,Pittsburgh,ok,
+city_124,Sacramento,US,5389489,Sacramento,524943,0,,5389489,Sacramento,ok,
+city_125,"Kansas City",US,4393217,"Kansas City",475378,0,,4393217,"Kansas City",ok,
+city_126,"Salt Lake City",US,5780993,"Salt Lake City",215548,0,,5780993,"Salt Lake City",ok,
+city_127,"Oklahoma City",US,4544349,"Oklahoma City",681054,0,,4544349,"Oklahoma City",ok,
+city_128,Memphis,US,4641239,Memphis,633104,0,,4641239,Memphis,ok,
+city_129,Honolulu,US,5856195,Honolulu,350964,0,,5856195,Honolulu,ok,
+city_130,Anchorage,US,5879400,Anchorage,289600,0,,5879400,Anchorage,ok,
+city_131,Toronto,CA,6167865,Toronto,2794356,6,,6167865,Toronto,ok,
+city_132,Montreal,CA,6077243,Montréal,1762949,1.8,,6077243,Montréal,ok,
+city_133,Vancouver,CA,6173331,Vancouver,662248,3.7,,6173331,Vancouver,ok,
+city_134,Calgary,CA,5913490,Calgary,1306784,1.1,,5913490,Calgary,ok,
+city_135,Edmonton,CA,5946768,Edmonton,1010899,1.7,,5946768,Edmonton,ok,
+city_136,Ottawa,CA,6094817,Ottawa,1017449,1.2,,6094817,Ottawa,ok,
+city_137,Winnipeg,CA,6183235,Winnipeg,749607,1.3,,6183235,Winnipeg,ok,
+city_138,"Quebec City",CA,6325494,Québec,531902,0.5,,6325494,Québec,ok,
+city_139,Halifax,CA,6324729,Halifax,471559,0.7,,6324729,Halifax,ok,
+city_140,Guadalajara,MX,4005539,Guadalajara,1385629,2,,4005539,Guadalajara,ok,
+city_141,Monterrey,MX,3995465,Monterrey,1135512,0.3,,3995465,Monterrey,ok,
+city_142,Cancún,MX,3531673,Cancún,888797,1.5,,3531673,Cancún,ok,
+city_143,Tijuana,MX,3981609,Tijuana,1922523,0,,3981609,Tijuana,ok,
+city_144,"Panama City",PA,3703443,"Panama City",408168,0,,3703443,"Panama City",ok,
+city_145,"San José",CR,3621849,"San José",335007,0.9,,3621849,"San José",ok,
+city_146,"Guatemala City",GT,3598132,"Guatemala City",994938,0.9,,3598132,"Guatemala City",ok,
+city_147,Havana,CU,3553478,Havana,2163824,2.7,,3553478,Havana,ok,
+city_148,"San Juan",PR,4568127,"San Juan",418140,0.1,,4568127,"San Juan",ok,
+city_149,"Santo Domingo",DO,3492908,"Santo Domingo",2201941,4.4,,3492908,"Santo Domingo",ok,
+city_150,"Rio de Janeiro",BR,3451190,"Rio de Janeiro",6747815,1,,3451190,"Rio de Janeiro",ok,
+city_151,Brasília,BR,3469058,Brasília,2207718,5.3,,3469058,Brasília,ok,
+city_152,"Belo Horizonte",BR,3470127,"Belo Horizonte",2721564,0.6,,3470127,"Belo Horizonte",ok,
+city_153,Salvador,BR,3450554,Salvador,2711840,1.2,,3450554,Salvador,ok,
+city_154,Fortaleza,BR,3399415,Fortaleza,2400000,0,,3399415,Fortaleza,ok,
+city_155,Curitiba,BR,3464975,Curitiba,1948626,0.1,,3464975,Curitiba,ok,
+city_156,Manaus,BR,3663517,Manaus,2219580,1.9,,3663517,Manaus,ok,
+city_157,"Porto Alegre",BR,3452925,"Porto Alegre",1488252,1.2,,3452925,"Porto Alegre",ok,
+city_158,Recife,BR,3390760,Recife,1653461,5.2,,3390760,Recife,ok,
+city_159,Bogotá,CO,3688689,Bogotá,7674366,11.3,,3688689,Bogotá,ok,
+city_160,Medellín,CO,3674962,Medellín,1999979,1.1,,3674962,Medellín,ok,
+city_161,Cali,CO,3687925,Cali,2392877,2.7,,3687925,Cali,ok,
+city_162,Lima,PE,3936456,Lima,7737002,1.6,,3936456,Lima,ok,
+city_163,Santiago,CL,3871336,Santiago,4837295,2.1,,3871336,Santiago,ok,
+city_164,Quito,EC,3652462,Quito,2781641,8.4,,3652462,Quito,ok,
+city_165,Caracas,VE,3646738,Caracas,3000000,2.8,,3646738,Caracas,ok,
+city_166,Montevideo,UY,3441575,Montevideo,1270737,2.2,,3441575,Montevideo,ok,
+city_167,Asunción,PY,3439389,Asunción,1482200,0,,3439389,Asunción,ok,
+city_168,"La Paz",BO,3911925,"La Paz",2004652,3.5,,3911925,"La Paz",ok,
+city_169,Guayaquil,EC,3657509,Guayaquil,2723665,4.9,,3657509,Guayaquil,ok,
+city_170,Córdoba,AR,3860259,Córdoba,2106734,1.5,,3860259,Córdoba,ok,
+city_171,Beijing,CN,1816670,Beijing,18960744,0.9,,1816670,Beijing,ok,
+city_172,Shanghai,CN,1796236,Shanghai,24874500,1.7,,1796236,Shanghai,ok,
+city_173,Shenzhen,CN,1795565,Shenzhen,17494398,1.1,,1795565,Shenzhen,ok,
+city_174,Guangzhou,CN,1809858,Guangzhou,18676605,2,,1809858,Guangzhou,ok,
+city_175,Chengdu,CN,1815286,Chengdu,20937757,10.4,,1815286,Chengdu,ok,
+city_176,Chongqing,CN,1814906,Chongqing,22000000,0.7,,1814906,Chongqing,ok,
+city_177,Wuhan,CN,1791247,Wuhan,13739000,3.9,,1791247,Wuhan,ok,
+city_178,Xi'an,CN,1790630,Xi’an,12952907,9.3,,1790630,Xi’an,ok,
+city_179,Hangzhou,CN,1808926,Hangzhou,11936010,2.3,,1808926,Hangzhou,ok,
+city_180,Nanjing,CN,1799962,Nanjing,9314685,1.8,,1799962,Nanjing,ok,
+city_181,"Hong Kong",HK,1819729,"Hong Kong",7396076,4.6,,1819729,"Hong Kong",ok,
+city_182,Taipei,TW,1668341,Taipei,7871900,4.5,,1668341,Taipei,ok,
+city_183,Osaka,JP,1853909,Osaka,2753862,0.1,,1853909,Osaka,ok,
+city_184,Nagoya,JP,1856057,Nagoya,2332176,0,,1856057,Nagoya,ok,
+city_185,Fukuoka,JP,1863967,Fukuoka,1612392,1.7,,1863967,Fukuoka,ok,
+city_186,Sapporo,JP,2128295,Sapporo,1973832,0.7,,2128295,Sapporo,ok,
+city_187,Kyoto,JP,1857910,Kyoto,1463723,1.7,,1857910,Kyoto,ok,
+city_188,Busan,KR,1838524,Busan,3285147,9.6,,1838524,Busan,ok,
+city_189,Incheon,KR,1843564,Incheon,3015482,0,,1843564,Incheon,ok,
+city_190,Ulaanbaatar,MN,2028462,"Ulan Bator",844818,2.9,,2028462,"Ulan Bator",ok,
+city_191,Hanoi,VN,1581130,Hanoi,8053663,0.8,,1581130,Hanoi,ok,
+city_192,Jakarta,ID,1642911,Jakarta,8540121,0.6,,1642911,Jakarta,ok,
+city_193,Surabaya,ID,1625822,Surabaya,3018022,0.9,,1625822,Surabaya,ok,
+city_194,Bandung,ID,1650357,Bandung,2528163,0.9,,1650357,Bandung,ok,
+city_195,Bali,ID,1645528,Denpasar,670210,37,,1634710,Munduk,pinned,
+city_196,"Kuala Lumpur",MY,1735161,"Kuala Lumpur",1453975,0.2,,1735161,"Kuala Lumpur",ok,
+city_197,Manila,PH,1701668,Manila,1600000,0.6,,1701668,Manila,ok,
+city_198,Cebu,PH,1717512,"Cebu City",965332,0.6,,1717512,"Cebu City",ok,
+city_199,Yangon,MM,1298824,Yangon,4477638,7.9,"Asia/Rangoon → Asia/Yangon",1298824,Yangon,ok,
+city_200,"Phnom Penh",KH,1821306,"Phnom Penh",1573544,1.5,,1821306,"Phnom Penh",ok,
+city_201,Vientiane,LA,1651944,Vientiane,840940,3.6,,1651944,Vientiane,ok,
+city_202,Colombo,LK,1248991,Colombo,648034,1.7,,1248991,Colombo,ok,
+city_203,Delhi,IN,1273294,Delhi,11034555,4.8,,1273294,Delhi,ok,
+city_204,Bangalore,IN,1277333,Bengaluru,8495492,0.1,,1277333,Bengaluru,ok,
+city_205,Chennai,IN,1264527,Chennai,4681087,1,,1264527,Chennai,ok,
+city_206,Kolkata,IN,1275004,Kolkata,4631392,1.1,,1275004,Kolkata,ok,
+city_207,Hyderabad,IN,1269843,Hyderabad,6993262,3.2,,1269843,Hyderabad,ok,
+city_208,Pune,IN,1259229,Pune,3124458,0.2,,1259229,Pune,ok,
+city_209,Ahmedabad,IN,1279233,Ahmedabad,6357693,1.7,,1279233,Ahmedabad,ok,
+city_210,Jaipur,IN,1269515,Jaipur,3046163,0.8,,1269515,Jaipur,ok,
+city_211,Karachi,PK,1174872,Karachi,11624219,0.9,,1174872,Karachi,ok,
+city_212,Lahore,PK,1172451,Lahore,13004135,4.2,,1172451,Lahore,ok,
+city_213,Islamabad,PK,1176615,Islamabad,601600,4.1,,1176615,Islamabad,ok,
+city_214,Dhaka,BD,1185241,Dhaka,10356500,11.1,,1185241,Dhaka,ok,
+city_215,Chittagong,BD,1205733,Chattogram,3920222,5.4,,1205733,Chattogram,ok,
+city_216,Kathmandu,NP,1283240,Kathmandu,1442271,1.8,,1283240,Kathmandu,ok,
+city_217,Kabul,AF,1138958,Kabul,4434550,0.6,,1138958,Kabul,ok,
+city_218,Almaty,KZ,1526384,Almaty,1977011,5.9,,1526384,Almaty,ok,
+city_219,Astana,KZ,1526273,Astana,1544142,0,,1526273,Astana,ok,
+city_220,Tashkent,UZ,1512569,Tashkent,1978028,4.4,,1512569,Tashkent,ok,
+city_221,Bishkek,KG,1528675,Bishkek,900000,1.7,,1528675,Bishkek,ok,
+city_222,Baku,AZ,587084,Baku,2351300,4.1,,587084,Baku,ok,
+city_223,Tbilisi,GE,611717,Tbilisi,1049498,2.7,,611717,Tbilisi,ok,
+city_224,Yerevan,AM,616052,Yerevan,1144700,1.1,,616052,Yerevan,ok,
+city_225,Tehran,IR,112931,Tehran,7153309,3,,112931,Tehran,ok,
+city_226,Mashhad,IR,124665,Mashhad,2307177,0.1,,124665,Mashhad,ok,
+city_227,Baghdad,IQ,98182,Baghdad,7216000,4.3,,98182,Baghdad,ok,
+city_228,Riyadh,SA,108410,Riyadh,4205961,5.5,,108410,Riyadh,ok,
+city_229,Jeddah,SA,105343,Jeddah,4697000,0.8,,105343,Jeddah,ok,
+city_230,Doha,QA,290030,Doha,344939,0,,290030,Doha,ok,
+city_231,"Abu Dhabi",AE,292968,"Abu Dhabi",1807000,2,,292968,"Abu Dhabi",ok,
+city_232,Muscat,OM,287286,Muscat,797000,2.6,,287286,Muscat,ok,
+city_233,"Kuwait City",KW,285787,"Kuwait City",60064,1,,285787,"Kuwait City",ok,
+city_234,Beirut,LB,276781,Beirut,1916100,0.1,,276781,Beirut,ok,
+city_235,Amman,JO,250441,Amman,1275857,3.3,,250441,Amman,ok,
+city_236,"Tel Aviv",IL,293397,"Tel Aviv",432892,0.5,,293397,"Tel Aviv",ok,
+city_237,Jerusalem,IL,281184,Jerusalem,971800,0.3,,281184,Jerusalem,ok,
+city_238,Damascus,SY,170654,Damascus,1569394,1.4,,170654,Damascus,ok,
+city_239,Nicosia,CY,146268,Nicosia,200452,2.9,,146268,Nicosia,ok,
+city_240,Kinshasa,CD,2314302,Kinshasa,16000000,13.7,,2314302,Kinshasa,ok,
+city_241,"Dar es Salaam",TZ,160263,"Dar es Salaam",5383728,7.6,,160263,"Dar es Salaam",ok,
+city_242,Johannesburg,ZA,993800,Johannesburg,9418183,0.4,,993800,Johannesburg,ok,
+city_243,"Cape Town",ZA,3369157,"Cape Town",4772846,0.1,,3369157,"Cape Town",ok,
+city_244,Durban,ZA,1007311,Durban,3338026,0.7,,1007311,Durban,ok,
+city_245,Luanda,AO,2240449,Luanda,2776168,0,,2240449,Luanda,ok,
+city_246,Abidjan,CI,2293538,Abidjan,6321017,1,,2293538,Abidjan,ok,
+city_247,Kano,NG,2335204,Kano,4910000,8.2,,2335204,Kano,ok,
+city_248,Ibadan,NG,2339354,Ibadan,3649000,4.5,,2339354,Ibadan,ok,
+city_249,Accra,GH,2306104,Accra,1963264,5.4,,2306104,Accra,ok,
+city_250,Dakar,SN,2253354,Dakar,2646503,0,,2253354,Dakar,ok,
+city_251,"Addis Ababa",ET,344979,"Addis Ababa",3860000,0.8,,344979,"Addis Ababa",ok,
+city_252,Kampala,UG,232422,Kampala,1680600,3.5,,232422,Kampala,ok,
+city_253,Kigali,RW,202061,Kigali,1132686,0.7,,202061,Kigali,ok,
+city_254,Harare,ZW,890299,Harare,1542813,2.1,,890299,Harare,ok,
+city_255,Lusaka,ZM,909137,Lusaka,2212301,4.4,,909137,Lusaka,ok,
+city_256,Maputo,MZ,1040652,Maputo,1254837,1.1,,1040652,Maputo,ok,
+city_257,Tunis,TN,2464470,Tunis,693210,0,,2464470,Tunis,ok,
+city_258,Algiers,DZ,2507480,Algiers,2364230,0.6,,2507480,Algiers,ok,
+city_259,Casablanca,MA,2553604,Casablanca,3665954,2.6,,2553604,Casablanca,ok,
+city_260,Rabat,MA,2538475,Rabat,1655753,1.2,,2538475,Rabat,ok,
+city_261,Tripoli,LY,2210247,Tripoli,1302947,1.8,,2210247,Tripoli,ok,
+city_262,Khartoum,SD,379252,Khartoum,1974647,6.4,,379252,Khartoum,ok,
+city_263,Antananarivo,MG,1070940,Antananarivo,1349501,0,,1070940,Antananarivo,ok,
+city_264,Douala,CM,2232593,Douala,1338082,7.1,,2232593,Douala,ok,
+city_265,Yaoundé,CM,2220957,Yaoundé,1299369,2.6,,2220957,Yaoundé,ok,
+city_266,Conakry,GN,2422465,Conakry,1928389,15.8,,2422465,Conakry,ok,
+city_267,Bamako,ML,2460596,Bamako,4227569,4.5,,2460596,Bamako,ok,
+city_268,Ouagadougou,BF,2357048,Ouagadougou,2415266,1.7,,2357048,Ouagadougou,ok,
+city_269,Alexandria,EG,361058,Alexandria,5263542,0.3,,361058,Alexandria,ok,
+city_270,Kumasi,GH,2298890,Kumasi,2544530,0,,2298890,Kumasi,ok,
+city_271,Melbourne,AU,2158177,Melbourne,5435590,0,,2158177,Melbourne,ok,
+city_272,Brisbane,AU,2174003,Brisbane,2780063,0.4,,2174003,Brisbane,ok,
+city_273,Perth,AU,2063523,Perth,2384371,0.2,,2063523,Perth,ok,
+city_274,Adelaide,AU,2078025,Adelaide,1469163,0.2,,2078025,Adelaide,ok,
+city_275,Canberra,AU,2172517,Canberra,367752,0.3,,2172517,Canberra,ok,
+city_276,"Gold Coast",AU,2165087,"Gold Coast",640778,3.5,,2165087,"Gold Coast",ok,
+city_277,Auckland,NZ,2193733,Auckland,1547200,0,,2193733,Auckland,ok,
+city_278,Wellington,NZ,2179537,Wellington,381900,0,,2179537,Wellington,ok,
+city_279,Christchurch,NZ,2192362,Christchurch,419200,0.3,,2192362,Christchurch,ok,
+city_280,Thessaloniki,GR,734077,Thessaloníki,317778,0.8,,734077,Thessaloníki,ok,
+city_281,Palermo,IT,2523920,Palermo,648260,0.2,,2523920,Palermo,ok,
+city_282,Genoa,IT,3176219,Genoa,580097,0.2,,3176219,Genoa,ok,
+city_283,Bari,IT,3182351,Bari,316491,0.4,,3182351,Bari,ok,
+city_284,Saragossa,ES,3104324,Zaragoza,686986,0,,3104324,Zaragoza,ok,
+city_285,Alicante,ES,2521978,Alicante,348901,0,,2521978,Alicante,ok,
+city_286,Palma,ES,2512989,Palma,438234,0,,2512989,Palma,ok,
+city_287,"The Hague",NL,2747373,"The Hague",474292,0.7,,2747373,"The Hague",ok,
+city_288,Utrecht,NL,2745912,Utrecht,376435,0.1,,2745912,Utrecht,ok,
+city_289,Antwerp,BE,2803138,Antwerp,529247,0.2,,2803138,Antwerp,ok,
+city_290,Ghent,BE,2797656,Gent,265086,0.5,,2797656,Gent,ok,
+city_291,Bern,CH,2661552,Bern,121631,0,,2661552,Bern,ok,
+city_292,Basel,CH,2661604,Basel,177595,1.2,,2661604,Basel,ok,
+city_293,Łódź,PL,3093133,Łódź,639890,1.8,,3093133,Łódź,ok,
+city_294,Wrocław,PL,3081368,Wrocław,672545,0.8,,3081368,Wrocław,ok,
+city_295,Gdańsk,PL,3099434,Gdańsk,487371,0.2,,3099434,Gdańsk,ok,
+city_296,Minsk,BY,625144,Minsk,1742124,0.6,,625144,Minsk,ok,
+city_297,Kharkiv,UA,706483,Kharkiv,1421125,2.2,,706483,Kharkiv,ok,
+city_298,Odessa,UA,698740,Odesa,1010537,1.6,,698740,Odesa,ok,
+city_299,Tirana,AL,3183875,Tirana,418495,0,,3183875,Tirana,ok,
+city_300,Sarajevo,BA,3191281,Sarajevo,696731,4.6,,3191281,Sarajevo,ok,
+city_301,Skopje,MK,785842,Skopje,474889,0,,785842,Skopje,ok,
+city_302,Podgorica,ME,3193044,Podgorica,236852,1.2,,3193044,Podgorica,ok,
+city_303,Chisinau,MD,618426,Chisinau,635994,0.4,,618426,Chisinau,ok,
+city_304,Tbilisi,GE,611717,Tbilisi,1049498,2.7,,611717,Tbilisi,ok,city_223
+city_305,Cardiff,GB,2653822,Cardiff,372089,0.2,,2653822,Cardiff,ok,
+city_306,Sheffield,GB,2638077,Sheffield,556500,0.3,,2638077,Sheffield,ok,
+city_307,Newcastle,GB,2641673,"Newcastle upon Tyne",300125,0.6,,2641673,"Newcastle upon Tyne",ok,
+city_308,"San José",US,5392171,"San Jose",997368,0.8,,5392171,"San Jose",ok,
+city_309,Jacksonville,US,4160021,Jacksonville,1009833,0,,4160021,Jacksonville,ok,
+city_310,"Fort Worth",US,4691930,"Fort Worth",1008106,3.5,,4691930,"Fort Worth",ok,
+city_311,"El Paso",US,5520993,"El Paso",678815,0.4,,5520993,"El Paso",ok,
+city_312,Tucson,US,5318313,Tucson,542629,4.5,,5318313,Tucson,ok,
+city_313,Fresno,US,5350937,Fresno,542107,1.7,,5350937,Fresno,ok,
+city_314,"Virginia Beach",US,4791259,"Virginia Beach",454808,0,,4791259,"Virginia Beach",ok,
+city_315,Milwaukee,US,5263045,Milwaukee,563531,0,,5263045,Milwaukee,ok,
+city_316,Albuquerque,US,5454711,Albuquerque,564559,0.1,,5454711,Albuquerque,ok,
+city_317,Omaha,US,5074472,Omaha,486051,0.5,,5074472,Omaha,ok,
+city_318,"Long Beach",US,5367929,"Long Beach",474140,0.5,,5367929,"Long Beach",ok,
+city_319,Louisville,US,4299276,Louisville,624444,0.2,,4299276,Louisville,ok,
+city_320,Rosario,AR,3838583,Rosario,948312,1.1,,3838583,Rosario,ok,
+city_321,Mendoza,AR,3844421,Mendoza,114893,1.7,,3844421,Mendoza,ok,
+city_322,Tianjin,CN,1792947,Tianjin,13866009,0,,1792947,Tianjin,ok,
+city_323,Chongqing,CN,1814906,Chongqing,22000000,0.7,,1814906,Chongqing,ok,city_176
+city_324,Nanning,CN,1799869,Nanning,5977185,5.1,,1799869,Nanning,ok,
+city_325,Kunming,CN,1804651,Kunming,5950578,21.1,,1804651,Kunming,ok,
+city_326,Harbin,CN,2037013,Harbin,10009854,10.7,,2037013,Harbin,ok,
+city_327,Macau,MO,1821274,Macau,649335,0.3,,1821274,Macau,ok,
+city_328,Kaohsiung,TW,1673820,Kaohsiung,2737660,1.7,,1673820,Kaohsiung,ok,
+city_329,Kochi,IN,1273874,Kochi,633553,1.2,,1273874,Kochi,ok,
+city_330,Surat,IN,1255364,Surat,4591246,2.9,,1255364,Surat,ok,
+city_331,Nagpur,IN,1262180,Nagpur,2405665,0.3,,1262180,Nagpur,ok,
+city_332,Thiruvananthapuram,IN,1254163,Thiruvananthapuram,788271,4.5,,1254163,Thiruvananthapuram,ok,
+city_333,Medan,ID,1214520,Medan,2486283,1.5,,1214520,Medan,ok,
+city_334,Makassar,ID,1622786,Makassar,1474393,0.1,,1622786,Makassar,ok,
+city_335,Penang,MY,1735106,"George Town",158336,0.6,,1735106,"George Town",ok,
+city_336,Davao,PH,1715348,Davao,1848947,21.7,,1715348,Davao,ok,
+city_337,Mecca,SA,104515,Makkah,1578722,5.3,,104515,Makkah,ok,
+city_338,Medina,SA,109223,Madinah,1300000,7.7,,109223,Madinah,ok,
+city_339,Basra,IQ,99532,Basrah,1326564,0,,99532,Basrah,ok,
+city_340,Muscat,OM,287286,Muscat,797000,2.6,,287286,Muscat,ok,city_232
+city_341,"Port Harcourt",NG,2324774,"Port Harcourt",2120000,5.9,,2324774,"Port Harcourt",ok,
+city_342,Abuja,NG,2352778,Abuja,2690000,10.8,,2352778,Abuja,ok,
+city_343,Mombasa,KE,186301,Mombasa,1208333,1.3,,186301,Mombasa,ok,
+city_344,Dakar,SN,2253354,Dakar,2646503,0.3,,2253354,Dakar,ok,city_250
+city_345,Libreville,GA,2399697,Libreville,846090,3.1,,2399697,Libreville,ok,
+city_346,Brazzaville,CG,2260535,Brazzaville,1982000,1.3,,2260535,Brazzaville,ok,
+city_347,Mogadishu,SO,53654,Mogadishu,2587183,3,,53654,Mogadishu,ok,
+city_348,Asmara,ER,343300,Asmara,563930,1.5,,343300,Asmara,ok,
+city_349,Djibouti,DJ,223817,Djibouti,626512,1.9,,223817,Djibouti,ok,
+city_350,Lilongwe,MW,927967,Lilongwe,1115815,1.5,,927967,Lilongwe,ok,

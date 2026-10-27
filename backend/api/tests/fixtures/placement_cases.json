@@ -21,5 +21,22 @@
   {"place": "Oakland",                 "lat": 37.80437, "lng": -122.2708,   "expect": 5378538, "city": "Oakland"},
   {"place": "Yokohama",                "lat": 35.43333, "lng": 139.65,      "expect": 1848354, "city": "Yokohama"},
   {"place": "Kowloon",                 "lat": 22.31667, "lng": 114.18333,   "expect": 1819729, "city": "Hong Kong"},
-  {"place": "Hong Kong Island",        "lat": 22.26302, "lng": 114.18419,   "expect": 1819729, "city": "Hong Kong"}
+  {"place": "Hong Kong Island",        "lat": 22.26302, "lng": 114.18419,   "expect": 1819729, "city": "Hong Kong"},
+  {"place": "Mong Kok",               "lat": 22.31935, "lng": 114.17136,  "expect": 1819729, "city": "Hong Kong"},
+  {"place": "Wan Chai",               "lat": 22.2814,  "lng": 114.1726,   "expect": 1819729, "city": "Hong Kong"},
+  {"place": "Singapore Orchard",      "lat": 1.3048,   "lng": 103.8318,   "expect": 1880252, "city": "Singapore"},
+  {"place": "Bogotá Usaquén",         "lat": 4.7,      "lng": -74.03,     "expect": 3688689, "city": "Bogotá"},
+  {"place": "Bogotá Suba",            "lat": 4.74,     "lng": -74.08,     "expect": 3688689, "city": "Bogotá"},
+  {"place": "Lima San Isidro",        "lat": -12.097,  "lng": -77.036,    "expect": 3936456, "city": "Lima"},
+  {"place": "Lima Barranco",          "lat": -12.15,   "lng": -77.02,     "expect": 3936456, "city": "Lima"},
+  {"place": "Makati",                 "lat": 14.5547,  "lng": 121.0244,   "expect": 1701668, "city": "Manila"},
+  {"place": "Quezon City",            "lat": 14.6488,  "lng": 121.0509,   "expect": 1701668, "city": "Manila"},
+  {"place": "Sulţānah",               "lat": 24.4927,  "lng": 39.5857,    "expect": 109223, "city": "Madinah"},
+  {"place": "Bawshar",                "lat": 23.5777,  "lng": 58.3998,    "expect": 287286, "city": "Muscat"},
+  {"place": "Gatineau",               "lat": 45.47723, "lng": -75.70164,  "expect": 5959974, "city": "Gatineau"},
+  {"place": "Hull",                   "lat": 45.42761, "lng": -75.71056,  "expect": 5959974, "city": "Gatineau"},
+  {"place": "Ubud",                   "lat": -8.5069,  "lng": 115.2625,   "expect": 1622846, "city": "Ubud"},
+  {"place": "Canggu",                 "lat": -8.6478,  "lng": 115.1385,   "expect": 1645528, "city": "Denpasar"},
+  {"place": "Seminyak",               "lat": -8.6913,  "lng": 115.1683,   "expect": 1645528, "city": "Denpasar"},
+  {"place": "Kuta",                   "lat": -8.72332, "lng": 115.17234,  "expect": 1645528, "city": "Denpasar"}
 ]

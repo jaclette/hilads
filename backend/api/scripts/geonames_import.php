@@ -210,7 +210,7 @@ if (in_array('--fixture', $args, true)) {
             if (CityPlacement::distanceKm($case['lat'], $case['lng'], (float) $c[8], (float) $c[9]) <= 60) {
                 $near[(int) $c[0]] = [
                     'geoname_id' => (int) $c[0], 'name' => $c[1], 'country' => $c[3], 'admin1' => $c[4],
-                    'population' => (int) $c[6], 'lat' => (float) $c[8], 'lng' => (float) $c[9],
+                    'population' => (int) $c[6], 'lat' => (float) $c[8], 'lng' => (float) $c[9], 'feature_code' => $c[10],
                 ];
                 break;
             }

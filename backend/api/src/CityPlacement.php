@@ -12,7 +12,12 @@ declare(strict_types=1);
  *      itself when it is never absorbed
  *   4. a neighbour within 30 km, in N's country and admin1, at least 3 times
  *      N's population and 200,000 or more → the most populous such neighbour
- *      (no size cap: Brooklyn or Pudong are districts and play for their city)
+ *      (no size cap: Brooklyn or Pudong are districts and play for their city).
+ *      Across admin1 too when the neighbour has no admin1 (Hong Kong,
+ *      Singapore) or is the capital of 1,000,000+ within 15 km (Bogotá, Lima,
+ *      Kuala Lumpur sit in their own region). A never-absorbed neighbour
+ *      keeps its own area (Hull → Gatineau, not Ottawa); an attached one
+ *      hands it on (Makati → Quezon City → Manila)
  *   5. otherwise N
  *
  * GPS, IP (existing cities only) and the city search all go through choose().
@@ -23,6 +28,8 @@ final class CityPlacement
     public const NEIGHBOUR_KM = 30;
     public const RATIO        = 3;
     public const MIN_ABSORBER = 200_000;
+    public const CAPITAL_KM   = 15;
+    public const CAPITAL_POP  = 1_000_000;
 
     /**
      * Overrides seeded by migrate.php (geoname_id => [target or null = never
@@ -34,11 +41,16 @@ final class CityPlacement
         12747064 => [1819729, 'Hong Kong Island → Hong Kong (GeoNames district)'],
         1819609  => [1819729, 'Kowloon → Hong Kong (GeoNames district)'],
         12747063 => [1819729, 'New Territories → Hong Kong (GeoNames district)'],
+        1692192  => [1701668, 'Quezon City → Manila (Metro Manila plays as Manila)'],
+        101760   => [109223,  'Sulţānah → Madinah (district)'],
+        288764   => [287286,  'Bawshar → Muscat (district)'],
+        5959974  => [null,    'Gatineau stays Gatineau (Québec, not Ottawa)'],
+        1622846  => [null,    'Ubud stays Ubud (not Denpasar)'],
     ];
 
     /**
      * The play city among $candidates (geo_cities rows: geoname_id, country,
-     * admin1, population, lat, lng), or null when none is within 50 km.
+     * admin1, population, lat, lng, feature_code), or null when none is within 50 km.
      * $overrides: geoname_id => target geoname_id, or null (never absorbed);
      * an attach target must be among $candidates (place() adds it).
      */
@@ -54,22 +66,34 @@ final class CityPlacement
 
         $n = $near[0];
         if (array_key_exists((int) $n['geoname_id'], $overrides)) {
-            $target = $overrides[(int) $n['geoname_id']];
-            if ($target === null) return $n;
-            foreach ($candidates as $c) {
-                if ((int) $c['geoname_id'] === (int) $target) return $c + ['distance_km' => self::distanceKm($lat, $lng, (float) $c['lat'], (float) $c['lng'])];
-            }
-            return $n; // target missing from the base: fall back on the municipality
+            return self::follow($n, $candidates, $lat, $lng, $overrides);
         }
 
         $absorber = null;
+        $kept     = null; // the most populous never-absorbed neighbour: it holds its area
         foreach ($near as $c) {
-            if ($c['distance_km'] > self::NEIGHBOUR_KM || $c['country'] !== $n['country'] || $c['admin1'] !== $n['admin1']) continue;
+            if ($c['distance_km'] > self::NEIGHBOUR_KM || $c['country'] !== $n['country']) continue;
+            $capital = ($c['feature_code'] ?? '') === 'PPLC' && (int) $c['population'] >= self::CAPITAL_POP && $c['distance_km'] <= self::CAPITAL_KM;
+            if ($c['admin1'] !== $n['admin1'] && $c['admin1'] !== '' && !$capital) continue;
             $pop = (int) $c['population'];
             if ($pop < self::MIN_ABSORBER || $pop < self::RATIO * (int) $n['population']) continue;
             if ($absorber === null || $pop > (int) $absorber['population']) $absorber = $c;
+            $isKept = array_key_exists((int) $c['geoname_id'], $overrides) && $overrides[(int) $c['geoname_id']] === null;
+            if ($isKept && ($kept === null || $pop > (int) $kept['population'])) $kept = $c;
         }
-        return $absorber ?? $n;
+        $absorber = $kept ?? $absorber;
+        return $absorber ? self::follow($absorber, $candidates, $lat, $lng, $overrides) : $n;
+    }
+
+    /** $city, or the city its override attaches it to (the target must be among $candidates). */
+    private static function follow(array $city, array $candidates, float $lat, float $lng, array $overrides): array
+    {
+        $target = $overrides[(int) $city['geoname_id']] ?? null;
+        if ($target === null) return $city;
+        foreach ($candidates as $c) {
+            if ((int) $c['geoname_id'] === (int) $target) return $c + ['distance_km' => self::distanceKm($lat, $lng, (float) $c['lat'], (float) $c['lng'])];
+        }
+        return $city; // target missing from the base: keep the city itself
     }
 
     /** The geo_cities rows within 50 km of a position (bounding box, indexed). */
@@ -78,7 +102,7 @@ final class CityPlacement
         $dLat = self::RADIUS_KM / 111.0;
         $dLng = self::RADIUS_KM / (111.0 * max(cos(deg2rad($lat)), 0.01));
         $stmt = $pdo->prepare("
-            SELECT geoname_id, name, country, admin1, population, timezone, lat, lng
+            SELECT geoname_id, name, country, admin1, population, timezone, lat, lng, feature_code
             FROM geo_cities
             WHERE lat BETWEEN ? AND ? AND lng BETWEEN ? AND ?
         ");
@@ -109,7 +133,7 @@ final class CityPlacement
         $missing = array_diff(array_filter($overrides), array_map('intval', array_column($candidates, 'geoname_id')));
         if ($missing) {
             $in   = implode(',', array_fill(0, count($missing), '?'));
-            $stmt = $pdo->prepare("SELECT geoname_id, name, country, admin1, population, timezone, lat, lng FROM geo_cities WHERE geoname_id IN ({$in})");
+            $stmt = $pdo->prepare("SELECT geoname_id, name, country, admin1, population, timezone, lat, lng, feature_code FROM geo_cities WHERE geoname_id IN ({$in})");
             $stmt->execute(array_values($missing));
             $candidates = array_merge($candidates, $stmt->fetchAll(PDO::FETCH_ASSOC));
         }
