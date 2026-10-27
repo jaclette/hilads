@@ -43,6 +43,8 @@ const DOUBLE_TAP_MS = 280;
 // Dark in both themes, like every photo viewer (fixed photo tokens).
 const SHADE_TOP = ['rgba(0,0,0,0.55)', 'rgba(0,0,0,0)'] as const;
 const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.9)'] as const;
+// The selected tab's ink on its white fill: fixed, else a dark theme (Halloween) writes off-white on white.
+const TAB_ON_INK = '#2A1C13';
 
 /**
  * Today's photos: what everyone posted today, one full-screen photo at a
@@ -266,7 +268,7 @@ function TabPill({ label, icon, country, on, onPress }: {
   const { colors } = useTheme();
   return (
     <TouchableOpacity style={[styles.tab, on && styles.tabOn]} onPress={onPress} accessibilityRole="tab" accessibilityState={{ selected: on }}>
-      {icon ? <Ionicons name={icon} size={15} color={on ? colors.text : colors.white} /> : <FlagSticker country={country} size={16} />}
+      {icon ? <Ionicons name={icon} size={15} color={on ? TAB_ON_INK : colors.white} /> : <FlagSticker country={country} size={16} />}
       <Text style={[styles.tabText, on && styles.tabTextOn]} numberOfLines={1}>{label}</Text>
     </TouchableOpacity>
   );
@@ -428,7 +430,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tab:         { flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: 160, height: 36, paddingHorizontal: 14, borderRadius: 18, backgroundColor: c.photoControl },
   tabOn:       { backgroundColor: c.white },
   tabText:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
-  tabTextOn:   { color: c.text },
+  tabTextOn:   { color: TAB_ON_INK },
   pill:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 4, maxWidth: '92%', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999 },
   pillText:    { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '800' },
   burst:       { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, alignItems: 'center', justifyContent: 'center' },
