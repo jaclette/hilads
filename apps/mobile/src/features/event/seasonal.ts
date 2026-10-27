@@ -99,8 +99,23 @@ export interface ActiveSeasonal {
 let current: ActiveSeasonal | null = null;
 const listeners = new Set<() => void>();
 
+// Dev builds only (Debug screen): a forced phase, to see a theme before its dates.
+let devForced: SeasonalEvent | null = null;
+let fromServer: SeasonalEvent | null | undefined = null;
+
+/** Dev builds: force a theme's phase (null = back to the server's event). Release builds ignore it. */
+export function setSeasonalPreview(theme: string | null, phase: SeasonalEvent['phase'] = 'live'): void {
+  if (!__DEV__) return;
+  const day = (n: number) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
+  const start = phase === 'teaser' ? day(2) : phase === 'recap' ? day(-1) : day(0);
+  devForced = theme ? { id: `dev-${theme}`, theme, phase, start, end: start, startsInDays: phase === 'teaser' ? 2 : null, preview: true } : null;
+  setSeasonalEvent(fromServer);
+}
+
 /** Today's fetch: the event of the day, kept only when this build knows its theme. */
 export function setSeasonalEvent(event: SeasonalEvent | null | undefined): void {
+  fromServer = event;
+  if (devForced) event = devForced;
   const theme = event ? SEASONAL_THEMES[event.theme] : undefined;
   const next = event && theme ? { event, theme, key: event.theme } : null;
   if (next?.event.id === current?.event.id && next?.event.phase === current?.event.phase

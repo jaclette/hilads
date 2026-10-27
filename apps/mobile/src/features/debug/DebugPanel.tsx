@@ -11,6 +11,7 @@ import { clearIdentity } from '@/lib/identity';
 import { clearToken } from '@/services/session';
 import { FontSizes, Spacing, Radius, API_URL, WS_URL, APP_VERSION, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
+import { setSeasonalPreview } from '@/features/event/seasonal';
 
 // ── Row ───────────────────────────────────────────────────────────────────────
 
@@ -93,6 +94,19 @@ export function DebugPanel() {
         <Row label="City"        value={city?.name ?? 'Not detected'} />
         <Row label="Channel ID"  value={city?.channelId ?? '-'} />
       </View>
+
+      {/* Dev builds: see a seasonal theme before its dates (the server's event otherwise). */}
+      {__DEV__ && (
+        <>
+          <Text style={styles.heading}>Seasonal preview</Text>
+          <View style={styles.actions}>
+            <Action title="Halloween: teaser" onPress={() => setSeasonalPreview('halloween', 'teaser')} />
+            <Action title="Halloween: live (Oct 31)" onPress={() => setSeasonalPreview('halloween', 'live')} />
+            <Action title="Halloween: recap (Nov 1)" onPress={() => setSeasonalPreview('halloween', 'recap')} />
+            <Action title="Off (server's event)" onPress={() => setSeasonalPreview(null)} />
+          </View>
+        </>
+      )}
 
       <Text style={styles.heading}>Actions</Text>
       <View style={styles.actions}>
