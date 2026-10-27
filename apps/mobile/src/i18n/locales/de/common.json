@@ -238,5 +238,11 @@
     "chooseTitle": "Route öffnen in",
     "ask": "Jedes Mal fragen",
     "setting": "Route"
+  },
+  "citySwitch": {
+    "title": "Du bist in {{city}}",
+    "body": "Deine Stadt ist {{from}}. Zu {{city}} wechseln?",
+    "switch": "Zu {{city}} wechseln",
+    "stay": "In {{from}} bleiben"
   }
 }

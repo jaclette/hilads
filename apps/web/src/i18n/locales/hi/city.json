@@ -72,7 +72,13 @@
     "events_other": "{{count}} इवेंट",
     "hangout_one": "{{count}} मुलाक़ात",
     "hangout_other": "{{count}} मुलाक़ात",
-    "msgs": "{{count}} मैसेज"
+    "msgs": "{{count}} मैसेज",
+    "hereTitle": "आप कहाँ हैं?",
+    "useMyLocation": "मेरी लोकेशन इस्तेमाल करें",
+    "playsIn": "{{city}} में खेलता है",
+    "credit": "शहर का डेटा ©",
+    "changeLimit": "आपने आज कई बार शहर बदला है। कल फिर कोशिश करें।",
+    "pickFailed": "यह शहर नहीं चुना जा सका। फिर से कोशिश करें।"
   },
   "joining": "{{city}} से जुड़ रहे हैं…",
   "joiningDefault": "चैट से जुड़ रहे हैं…",
@@ -322,5 +328,11 @@
     "proposedByCity": "{{name}} · {{city}} का सुझाव",
     "groupTitle": "नई फ़ोटो: {{n}}",
     "groupCitiesMore": "{{cities}} और {{n}} और"
+  },
+  "switchSheet": {
+    "title": "आप {{city}} में हैं",
+    "body": "आपका शहर {{from}} है। अब से {{city}} के लिए खेलें?",
+    "switch": "{{city}} पर जाएँ",
+    "stay": "{{from}} में रहें"
   }
 }

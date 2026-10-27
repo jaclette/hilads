@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "고향 (고향에서는요?)",
   "backHomePlaceholder": "설정 안 됨",
-  "backHomeHint": "Daily Challenge의 \"고향에서는요?\"에서 지금 있는 곳과 비교할 때 쓰여요."
+  "backHomeHint": "Daily Challenge의 \"고향에서는요?\"에서 지금 있는 곳과 비교할 때 쓰여요.",
+  "cityDataCredit": "도시 데이터 © GeoNames (CC BY 4.0)"
 }

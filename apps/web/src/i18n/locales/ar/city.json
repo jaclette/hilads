@@ -72,7 +72,13 @@
     "events_other": "{{count}} فعالية",
     "hangout_one": "لقاء واحد",
     "hangout_other": "{{count}} لقاء",
-    "msgs": "{{count}} رسائل"
+    "msgs": "{{count}} رسائل",
+    "hereTitle": "أين أنت؟",
+    "useMyLocation": "استخدم موقعي",
+    "playsIn": "يلعب في {{city}}",
+    "credit": "بيانات المدن ©",
+    "changeLimit": "غيّرت مدينتك كثيرًا اليوم. حاول مجددًا غدًا.",
+    "pickFailed": "تعذّر اختيار هذه المدينة. حاول مجددًا."
   },
   "joining": "جارٍ الاتصال بـ {{city}}…",
   "joiningDefault": "جارٍ الاتصال بالدردشة…",
@@ -347,5 +353,11 @@
     "proposedByCity": "اقترحه {{name}} · {{city}}",
     "groupTitle": "صور جديدة: {{n}}",
     "groupCitiesMore": "{{cities}} و{{n}} أخرى"
+  },
+  "switchSheet": {
+    "title": "أنت في {{city}}",
+    "body": "مدينتك هي {{from}}. هل تلعب لـ{{city}} من الآن؟",
+    "switch": "الانتقال إلى {{city}}",
+    "stay": "البقاء في {{from}}"
   }
 }

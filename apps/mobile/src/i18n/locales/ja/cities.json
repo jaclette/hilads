@@ -22,5 +22,11 @@
   "loadError": "街を読み込めませんでした",
   "noResults": "「{{query}}」に一致する街が見つかりませんでした",
   "noCities": "街が見つかりませんでした",
-  "firstTimeTitle": "まず都市を選ぶ"
+  "firstTimeTitle": "まず都市を選ぶ",
+  "playsIn": "{{city}}としてプレイ",
+  "hereTitle": "今どこにいますか？",
+  "useMyLocation": "現在地を使う",
+  "changeLimit": "今日は都市を変更しすぎです。明日もう一度お試しください。",
+  "locationNeeded": "都市を見つけるために位置情報へのアクセスを許可してください。",
+  "noCityNearby": "50 km以内に都市がありません。検索してください。"
 }

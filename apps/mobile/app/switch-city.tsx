@@ -9,20 +9,33 @@
  * Structure: back header ("Switch city"; first launch: large title, no back),
  * the search pill, ranking filter chips, "Back to my location", then city
  * cards (activity dot, flag, name, "You're here", stats).
+ *
+ * The search covers every city in the world (V5-01, GET /cities/search): a pick
+ * that isn't a Hilads city yet creates it, a suburb lands in its main city
+ * ("plays in New York"). mode=here ("Not in Saigon? Change" on Today): the
+ * pick also sets where I am - an account's city (POST /me/city), a guest's on
+ * the device - with "Use my location" first.
  */
 
 import { useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ScrollView,
   TouchableOpacity, ActivityIndicator, RefreshControl,
-  Animated,
+  Animated, Alert,
 } from 'react-native';
+import * as Location from 'expo-location';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
 import { localizeCityName } from '@/i18n/cityName';
-import { fetchChannels, joinChannel } from '@/api/channels';
+import {
+  fetchChannels, joinChannel, searchCities, pickCity, setMyCity, resolveLocation, isNoCity,
+  type CitySearchResult,
+} from '@/api/channels';
+import { ApiError } from '@/api/client';
+import { requestFeatureLocation } from '@/lib/geoFeature';
+import { markGpsCity } from '@/lib/gpsCityCorrection';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
@@ -94,6 +107,24 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
   );
 }
 
+// ── World search result: flag, name, where a pick plays ───────────────────────
+
+function SearchResultRow({ item, onPress }: { item: CitySearchResult; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('cities');
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.8} accessibilityRole="button" style={styles.cardTouch}>
+      <Card style={styles.card}>
+        <View style={styles.cardTop}>
+          <CityFlag country={item.country} />
+          <Text style={styles.cityName} numberOfLines={2}>{item.name}</Text>
+        </View>
+        {!!item.playsIn && <Text style={[styles.stat, styles.playsIn]}>{t('playsIn', { city: item.playsIn.name })}</Text>}
+      </Card>
+    </TouchableOpacity>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function SwitchCityScreen() {
@@ -104,16 +135,19 @@ export default function SwitchCityScreen() {
   const { t } = useTranslation('cities');
   // First-launch mode: routed here by useAppBoot when IP detection found no city.
   // No back button, a "start here" headline, and the pick completes onboarding.
-  const { firstTime } = useLocalSearchParams<{ firstTime?: string }>();
+  const { firstTime, mode } = useLocalSearchParams<{ firstTime?: string; mode?: string }>();
   const isFirstTime = firstTime === '1';
-  const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setJoined } = useApp();
+  // "Not in Saigon? Change": the pick sets where I am, not only what I browse.
+  const isHere = mode === 'here';
+  const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setDetectedCity, setJoined } = useApp();
   const { setScope } = useScope();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   // Guards a double-tap / rapid re-pick from firing the switch sequence twice
   // (setCity + joinChannel + WS join + navigate) before navigation settles.
   const switchingRef = useRef(false);
   const [cities,        setCities]        = useState<City[]>([]);  // ranked top-10 (filter mode)
-  const [allCities,     setAllCities]     = useState<City[]>([]);  // all cities unranked (search mode)
+  const [results,       setResults]       = useState<CitySearchResult[] | null>(null); // world search (null = not searching)
+  const [busy,          setBusy]          = useState(false);         // a pick / locate in flight
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState(false);
@@ -135,20 +169,72 @@ export default function SwitchCityScreen() {
     }
   }
 
-  // Lazy-load full channel list - only fetched when user actually types a search query.
-  // Avoids a second parallel request on screen mount; the full list is only needed for search.
+  // World search (every GeoNames city, our aliases too), debounced; under 2 letters, the ranked list.
   useEffect(() => {
-    if (!query.trim() || allCities.length > 0) return;
+    const q = query.trim();
+    if (q.length < 2) { setResults(null); return; }
     let cancelled = false;
-    fetchChannels().then(all => { if (!cancelled) setAllCities(all); }).catch(() => {});
-    return () => { cancelled = true; };
-  }, [query, allCities.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    const timer = setTimeout(() => {
+      searchCities(q).then(r => { if (!cancelled) setResults(r); }).catch(() => { if (!cancelled) setResults([]); });
+    }, 250);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [query]);
 
   useEffect(() => { load(filter); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function changeFilter(f: 'active' | 'challenges' | 'events' | 'online') {
     setFilter(f);
     load(f);
+  }
+
+  /** A world search pick: the Hilads city it plays in (created at its first pick), then as a list pick. */
+  async function pickResult(item: CitySearchResult) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const c = await pickCity(item.geonameId);
+      track('city_search_pick', { geonameId: item.geonameId, cityId: c.channelId, created: item.channelId == null });
+      await choose(c);
+    } catch {
+      Alert.alert(t('loadError'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** mode=here: this is where I am (account: /me/city; guest: the device), then I browse it. */
+  async function choose(item: City) {
+    if (!isHere) { switchToCity(item); return; }
+    try {
+      if (account) await setMyCity({ channelId: item.channelId });
+      else { setDetectedCity(item); markGpsCity(item.channelId); }
+      track('here_set', { cityId: item.channelId, how: 'pick' });
+      switchToCity(item);
+    } catch (err) {
+      const limit = err instanceof ApiError && err.body?.code === 'city_change_limit';
+      Alert.alert(limit ? t('changeLimit') : t('loadError'));
+    }
+  }
+
+  /** mode=here "Use my location": GPS sets where I am (an explicit ask: no "Switch?" sheet). */
+  async function useMyLocation() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const r = await requestFeatureLocation('challenge_proof', { correct: false });
+      if (!r.ok || !r.coords) { Alert.alert(t('locationNeeded')); return; }
+      const geo = await Location.reverseGeocodeAsync({ latitude: r.coords.lat, longitude: r.coords.lng }).catch(() => null);
+      const c = await resolveLocation(r.coords.lat, r.coords.lng, geo?.[0]?.isoCountryCode ?? null);
+      markGpsCity(c.channelId);
+      setDetectedCity(c);
+      if (account && c.switchFrom) await setMyCity({ channelId: c.channelId });
+      track('here_set', { cityId: c.channelId, how: 'gps' });
+      switchToCity(c);
+    } catch (err) {
+      Alert.alert(isNoCity(err) ? t('noCityNearby') : t('loadError'));
+    } finally {
+      setBusy(false);
+    }
   }
 
   function switchToCity(item: City) {
@@ -180,6 +266,8 @@ export default function SwitchCityScreen() {
       setJoined(true);
       track('first_launch_city_selected', { chosen_city: item.name, method: 'manual_picker' });
     }
+    // mode=here: back to Today, which reloads for the new city.
+    if (isHere && router.canGoBack()) { router.back(); return; }
     // replace (not push) - back shouldn't return here. First launch lands
     // on Today, the home (V3-11); a later switch returns to the city chat.
     router.replace((isFirstTime ? '/(tabs)/today' : '/(tabs)/chat') as never);
@@ -189,20 +277,8 @@ export default function SwitchCityScreen() {
   const hasActivity  = cities.some(c => (c.onlineCount ?? 0) > 0);
   const sectionLabel = query.trim() ? null : (hasActivity ? t('topCities') : t('cities'));
 
-  // Search mode: filter all cities by query, pin active city first
-  // Default mode: use backend-ranked top-10, pin active city first
+  // Backend-ranked top-10, pin active city first (searching shows `results` instead).
   const displayList = (() => {
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      const matches = allCities.filter(c =>
-        c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q),
-      );
-      if (!activeCity) return matches;
-      return [
-        ...matches.filter(c => c.channelId === activeCity.channelId),
-        ...matches.filter(c => c.channelId !== activeCity.channelId),
-      ];
-    }
     if (!activeCity) return cities;
     return [
       ...cities.filter(c => c.channelId === activeCity.channelId),
@@ -227,7 +303,7 @@ export default function SwitchCityScreen() {
       {/* First launch: no back (the user must pick to proceed) and a "start here" headline. */}
       {isFirstTime
         ? <ScreenHeader variant="tab" title={t('firstTimeTitle')} />
-        : <ScreenHeader title={t('title')} onBack={goBack} />}
+        : <ScreenHeader title={isHere ? t('hereTitle') : t('title')} onBack={goBack} />}
 
       <View style={styles.search}>
         <TextField
@@ -243,6 +319,13 @@ export default function SwitchCityScreen() {
           returnKeyType="search"
         />
       </View>
+
+      {/* Where I am: GPS first, then the search or a city below. */}
+      {isHere && !query.trim() && (
+        <RowGroup style={styles.backToLocation}>
+          <ListRow icon="locate-outline" title={t('useMyLocation')} onPress={useMyLocation} />
+        </RowGroup>
+      )}
 
       {/* Ranking filters - hidden during search. */}
       {!query.trim() && (
@@ -260,7 +343,7 @@ export default function SwitchCityScreen() {
       )}
 
       {/* Back to my location - only when the detected city isn't the active one. */}
-      {detectedCity && detectedCity.channelId !== activeCity?.channelId && (
+      {!isHere && !query.trim() && detectedCity && detectedCity.channelId !== activeCity?.channelId && (
         <RowGroup style={styles.backToLocation}>
           <ListRow icon="locate-outline" title={t('backToLocation')} value={localizeCityName(detectedCity.name)}
                    onPress={() => switchToCity(detectedCity)} />
@@ -269,10 +352,23 @@ export default function SwitchCityScreen() {
 
       {/* The list ends at the keyboard while searching: every result stays reachable. */}
       <KeyboardArea>
-      {loading ? (
+      {loading || busy || (query.trim().length >= 2 && results === null) ? (
         <View style={styles.center}>
           <ActivityIndicator color={colors.primary} size="large" />
         </View>
+      ) : results !== null ? (
+        <FlatList
+          data={results}
+          keyExtractor={(r) => String(r.geonameId)}
+          keyboardShouldPersistTaps="handled"
+          renderItem={({ item }) => <SearchResultRow item={item} onPress={() => pickResult(item)} />}
+          contentContainerStyle={results.length === 0 ? styles.flex1 : styles.listContent}
+          ListEmptyComponent={
+            <View style={styles.center}>
+              <Text style={styles.emptyText}>{t('noResults', { query })}</Text>
+            </View>
+          }
+        />
       ) : error ? (
         <View style={styles.center}>
           <Text style={styles.emptyText}>{t('loadError')}</Text>
@@ -287,7 +383,7 @@ export default function SwitchCityScreen() {
             <CityCard
               city={item}
               isActive={item.channelId === activeCity?.channelId}
-              onPress={() => switchToCity(item)}
+              onPress={() => choose(item)}
             />
           )}
           refreshControl={
@@ -297,7 +393,7 @@ export default function SwitchCityScreen() {
               tintColor={colors.primary}
             />
           }
-          ListHeaderComponent={sectionLabel ? (
+          ListHeaderComponent={sectionLabel && query.trim().length < 2 ? (
             <Text style={styles.sectionLabel}>{sectionLabel}</Text>
           ) : null}
           contentContainerStyle={displayList.length === 0 ? styles.flex1 : styles.listContent}
@@ -337,6 +433,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   statStrong:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   statOnline:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.green },
+  playsIn:        { paddingLeft: 26 },
   activityDot:    { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: c.line },
   activityDotLive:{ backgroundColor: c.green },
 });

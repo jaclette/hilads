@@ -22,5 +22,11 @@
   "loadError": "Städte konnten nicht geladen werden",
   "noResults": "Keine Stadt gefunden für „{{query}}“",
   "noCities": "Keine Städte gefunden",
-  "firstTimeTitle": "Wähl deine Stadt zum Starten"
+  "firstTimeTitle": "Wähl deine Stadt zum Starten",
+  "playsIn": "Spielt in {{city}}",
+  "hereTitle": "Wo bist du?",
+  "useMyLocation": "Meinen Standort verwenden",
+  "changeLimit": "Du hast heute zu oft die Stadt gewechselt. Versuch es morgen wieder.",
+  "locationNeeded": "Erlaube den Standortzugriff, um deine Stadt zu finden.",
+  "noCityNearby": "Keine Stadt im Umkreis von 50 km. Such deine."
 }

@@ -72,7 +72,13 @@
     "events_other": "{{count}} acara",
     "hangout_one": "{{count}} nongkrong",
     "hangout_other": "{{count}} nongkrong",
-    "msgs": "{{count}} pesan"
+    "msgs": "{{count}} pesan",
+    "hereTitle": "Kamu di mana?",
+    "useMyLocation": "Pakai lokasiku",
+    "playsIn": "Main di {{city}}",
+    "credit": "Data kota ©",
+    "changeLimit": "Kamu sudah sering ganti kota hari ini. Coba lagi besok ya.",
+    "pickFailed": "Kota ini nggak bisa dipilih. Coba lagi."
   },
   "joining": "Bergabung dengan {{city}}…",
   "joiningDefault": "Bergabung dengan chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Diusulkan oleh {{name}} · {{city}}",
     "groupTitle": "Foto baru: {{n}}",
     "groupCitiesMore": "{{cities}} dan {{n}} lainnya"
+  },
+  "switchSheet": {
+    "title": "Kamu di {{city}}",
+    "body": "Kotamu {{from}}. Main untuk {{city}} mulai sekarang?",
+    "switch": "Pindah ke {{city}}",
+    "stay": "Tetap di {{from}}"
   }
 }

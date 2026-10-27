@@ -72,7 +72,13 @@
     "hangout_other": "{{count}} tụ tập",
     "msgs": "{{count}} tin",
     "events_one": "{{count}} sự kiện",
-    "hangout_one": "{{count}} tụ tập"
+    "hangout_one": "{{count}} tụ tập",
+    "hereTitle": "Bạn đang ở đâu?",
+    "useMyLocation": "Dùng vị trí của tôi",
+    "playsIn": "Chơi ở {{city}}",
+    "credit": "Dữ liệu thành phố ©",
+    "changeLimit": "Hôm nay bạn đã đổi thành phố nhiều lần. Thử lại vào ngày mai nhé.",
+    "pickFailed": "Không thể chọn thành phố này. Thử lại nhé."
   },
   "joining": "Đang vào {{city}}…",
   "joiningDefault": "Đang vào chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Đề xuất bởi {{name}} · {{city}}",
     "groupTitle": "Ảnh mới: {{n}}",
     "groupCitiesMore": "{{cities}} và {{n}} nữa"
+  },
+  "switchSheet": {
+    "title": "Bạn đang ở {{city}}",
+    "body": "Thành phố của bạn là {{from}}. Chơi cho {{city}} từ bây giờ?",
+    "switch": "Chuyển sang {{city}}",
+    "stay": "Ở lại {{from}}"
   }
 }

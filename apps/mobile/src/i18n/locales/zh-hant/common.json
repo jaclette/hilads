@@ -238,5 +238,11 @@
     "chooseTitle": "用以下應用程式開啟路線",
     "ask": "每次都詢問",
     "setting": "路線"
+  },
+  "citySwitch": {
+    "title": "你在{{city}}",
+    "body": "你的城市是{{from}}。切換到{{city}}？",
+    "switch": "切換到{{city}}",
+    "stay": "留在{{from}}"
   }
 }

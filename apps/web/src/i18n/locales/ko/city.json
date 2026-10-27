@@ -72,7 +72,13 @@
     "events_other": "이벤트 {{count}}개",
     "hangout_one": "모임 {{count}}개",
     "hangout_other": "모임 {{count}}개",
-    "msgs": "메시지 {{count}}개"
+    "msgs": "메시지 {{count}}개",
+    "hereTitle": "지금 어디에 있어요?",
+    "useMyLocation": "내 위치 사용",
+    "playsIn": "{{city}}에서 플레이",
+    "credit": "도시 데이터 ©",
+    "changeLimit": "오늘 도시를 너무 많이 바꿨어요. 내일 다시 해 보세요.",
+    "pickFailed": "이 도시를 선택할 수 없어요. 다시 해 보세요."
   },
   "joining": "{{city}}에 연결하는 중…",
   "joiningDefault": "채팅에 연결하는 중…",
@@ -322,5 +328,11 @@
     "proposedByCity": "{{name}} · {{city}}의 제안",
     "groupTitle": "새 사진: {{n}}",
     "groupCitiesMore": "{{cities}} 외 {{n}}개"
+  },
+  "switchSheet": {
+    "title": "{{city}}에 있어요",
+    "body": "내 도시는 {{from}}이에요. 지금부터 {{city}}에서 플레이할까요?",
+    "switch": "{{city}}(으)로 바꾸기",
+    "stay": "{{from}}에 그대로 있기"
   }
 }

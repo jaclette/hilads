@@ -22,5 +22,11 @@
   "loadError": "無法載入城市",
   "noResults": "找不到符合「{{query}}」的城市",
   "noCities": "找不到任何城市",
-  "firstTimeTitle": "選擇你的城市開始"
+  "firstTimeTitle": "選擇你的城市開始",
+  "playsIn": "計入{{city}}",
+  "hereTitle": "你在哪裡？",
+  "useMyLocation": "使用我的位置",
+  "changeLimit": "你今天更換城市的次數太多了，明天再試吧。",
+  "locationNeeded": "允許存取位置以找到你的城市。",
+  "noCityNearby": "50 公里內沒有城市，搜尋你的城市吧。"
 }

@@ -31,6 +31,26 @@ const SHORT_NAMES: Record<string, Record<string, string>> = {
 };
 const NON_LATIN = new Set(['ar', 'hi', 'ja', 'ko', 'ru', 'th', 'zh-hans', 'zh-hant']);
 
+// Short names the server sent (cities.short_name, back office), per locale.
+const SERVER_SHORT: Record<string, Record<string, string>> = {};
+
+/**
+ * Remember the names the server gave a city in a locale (V5-01: every city on
+ * the GeoNames base comes with its name in the app's language and its short
+ * name), so localizeCityName / shortCityName show them wherever the city's
+ * English name is used - cities created on demand have no cityNames entry.
+ */
+export function rememberCityNames(english: string | null | undefined, locale: string,
+                                  localized?: string | null, short?: string | null): void {
+  if (!english) return;
+  const slug = citySlug(english);
+  const lang = String(locale || '').toLowerCase();
+  if (localized && localized !== english && !i18n.exists(slug, { ns: 'cityNames', lng: lang })) {
+    i18n.addResource(lang, 'cityNames', slug, localized);
+  }
+  if (short) (SERVER_SHORT[slug] ??= {})[lang] = short;
+}
+
 /** A city's short display name in the active locale (see SHORT_NAMES), else its localized name. */
 export function shortCityName(name: string | null | undefined): string {
   if (!name) return name ?? '';
@@ -38,5 +58,7 @@ export function shortCityName(name: string | null | undefined): string {
   const lang = String(i18n.language || '').toLowerCase();
   if (short?.[lang]) return short[lang];
   if (short && !NON_LATIN.has(lang)) return short['*'];
+  const fromServer = SERVER_SHORT[citySlug(name)]?.[lang];
+  if (fromServer) return fromServer;
   return localizeCityName(name);
 }

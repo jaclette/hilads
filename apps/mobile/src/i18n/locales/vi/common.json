@@ -238,5 +238,11 @@
     "chooseTitle": "Mở chỉ đường bằng",
     "ask": "Luôn hỏi",
     "setting": "Chỉ đường"
+  },
+  "citySwitch": {
+    "title": "Bạn đang ở {{city}}",
+    "body": "Thành phố của bạn là {{from}}. Chuyển sang {{city}}?",
+    "switch": "Chuyển sang {{city}}",
+    "stay": "Ở lại {{from}}"
   }
 }

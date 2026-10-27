@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "地元（あなたの地元では？）",
   "backHomePlaceholder": "未設定",
-  "backHomeHint": "Daily Challenge の「あなたの地元では？」で、今いる場所と比べるのに使います。"
+  "backHomeHint": "Daily Challenge の「あなたの地元では？」で、今いる場所と比べるのに使います。",
+  "cityDataCredit": "都市データ © GeoNames (CC BY 4.0)"
 }

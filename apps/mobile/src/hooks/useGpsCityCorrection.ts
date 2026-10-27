@@ -9,18 +9,31 @@
  *   - always refreshes `detectedCity` (so "Back to my location" points right),
  *   - auto-switches the active city ONLY if the user is still sitting on the
  *     auto-placed city (city === detectedCity) - so a manual browse is respected.
+ * An account's city confirmed by GPS or chosen by the user is never switched
+ * silently (V5-01): the server keeps it and reports it (switchFrom), and the
+ * app asks "You're in Potsdam. Switch from Berlin?" (CitySwitchSheet). "Stay"
+ * isn't asked again for that city during the session.
  * Runs at most once per session.
  */
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
-import { resolveLocation, joinChannel } from '@/api/channels';
+import { resolveLocation, joinChannel, setMyCity, type CitySwitchFrom } from '@/api/channels';
+import type { City } from '@/types';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import { markGpsCity, setCityCorrector } from '@/lib/gpsCityCorrection';
 
-export function useGpsCityCorrection(): void {
+/** GPS found another city than the account's: the switch to offer. */
+export interface CityProposal { to: City; from: CitySwitchFrom }
+
+/** Cities the user answered "Stay" for, this session. */
+const declined = new Set<string>();
+
+export function useGpsCityCorrection(): {
+  proposal: CityProposal | null; accept: () => void; stay: () => void;
+} {
   const {
     city, detectedCity, identity, sessionId, account,
     setCity, setDetectedCity, setJustPlacedCity, setIdentity,
@@ -30,6 +43,23 @@ export function useGpsCityCorrection(): void {
   const ref = useRef({ city, detectedCity, identity, sessionId, account });
   ref.current = { city, detectedCity, identity, sessionId, account };
   const doneRef = useRef(false);
+  const [proposal, setProposal] = useState<CityProposal | null>(null);
+
+  /** Make a city the active one (browse + chat presence), as a first placement does. */
+  const moveTo = useCallback((to: City) => {
+    const s = ref.current;
+    const nickname = s.account?.display_name ?? s.identity?.nickname ?? '';
+    setCity(to);
+    if (s.identity) {
+      const updated = { ...s.identity, channelId: to.channelId };
+      saveIdentity(updated).catch(() => {});
+      setIdentity(updated);
+      if (s.sessionId) {
+        joinChannel(to.channelId, s.sessionId, s.identity.guestId, nickname).catch(() => {});
+        socket.joinCity(to.channelId, s.sessionId, nickname, s.account?.id, s.identity.guestId);
+      }
+    }
+  }, [setCity, setIdentity]);
 
   useEffect(() => {
     const corrector = (coords: { lat: number; lng: number }) => {
@@ -47,6 +77,15 @@ export function useGpsCityCorrection(): void {
           const accurate = await resolveLocation(coords.lat, coords.lng, country);
           if (!accurate?.channelId) return;
 
+          // The account's city stayed (GPS-confirmed or chosen): ask, never switch silently.
+          if (accurate.switchFrom) {
+            if (declined.has(accurate.channelId)) return;
+            doneRef.current = true;
+            setProposal({ to: accurate, from: accurate.switchFrom });
+            track('city_switch_proposed', { from: accurate.switchFrom.name, to: accurate.name });
+            return;
+          }
+
           // Always refresh the "your real location" reference.
           setDetectedCity(accurate);
           markGpsCity(accurate.channelId);
@@ -57,17 +96,7 @@ export function useGpsCityCorrection(): void {
           if (!onAutoCity || accurate.channelId === s.city?.channelId) return;
 
           doneRef.current = true;
-          const nickname = account?.display_name ?? s.identity?.nickname ?? '';
-          setCity(accurate);
-          if (s.identity) {
-            const updated = { ...s.identity, channelId: accurate.channelId };
-            saveIdentity(updated).catch(() => {});
-            setIdentity(updated);
-            if (s.sessionId) {
-              joinChannel(accurate.channelId, s.sessionId, s.identity.guestId, nickname).catch(() => {});
-              socket.joinCity(accurate.channelId, s.sessionId, nickname, s.account?.id, s.identity.guestId);
-            }
-          }
+          moveTo(accurate);
           setJustPlacedCity(accurate); // one-shot "we moved you to {city}" banner
           track('gps_city_corrected', { to: accurate.name });
         } catch { /* correction is best-effort */ }
@@ -78,4 +107,25 @@ export function useGpsCityCorrection(): void {
     return () => setCityCorrector(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const accept = useCallback(() => {
+    const p = proposal;
+    setProposal(null);
+    if (!p) return;
+    track('city_switch_accepted', { from: p.from.name, to: p.to.name });
+    setDetectedCity(p.to);
+    markGpsCity(p.to.channelId);
+    moveTo(p.to);
+    setMyCity({ channelId: p.to.channelId }).catch(() => {});
+  }, [proposal, moveTo, setDetectedCity]);
+
+  const stay = useCallback(() => {
+    const p = proposal;
+    setProposal(null);
+    if (!p) return;
+    declined.add(p.to.channelId);
+    track('city_switch_declined', { from: p.from.name, to: p.to.name });
+  }, [proposal]);
+
+  return { proposal, accept, stay };
 }

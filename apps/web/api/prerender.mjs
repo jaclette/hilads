@@ -276,6 +276,23 @@ async function fetchJson(url, ms = API_TIMEOUT_MS) {
   }
 }
 
+/** The slug a merged city's old slug now answers with (by-slug 404 code city_merged), or null. */
+async function mergedCitySlug(slug, ms = API_TIMEOUT_MS) {
+  const ctrl = new AbortController()
+  const t = setTimeout(() => ctrl.abort(), ms)
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`, {
+      signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' },
+    })
+    const data = res.status === 404 ? await res.json().catch(() => null) : null
+    return data?.code === 'city_merged' && /^[a-z0-9-]{1,80}$/.test(data.slug ?? '') ? data.slug : null
+  } catch {
+    return null
+  } finally {
+    clearTimeout(t)
+  }
+}
+
 /** CDN seconds until the next daily drop, between 1 min and 1 h. */
 function untilNextDrop(today) {
   const left = Number.isFinite(today?.nextDropAt) ? today.nextDropAt - Math.floor(Date.now() / 1000) : 3600
@@ -513,7 +530,12 @@ async function archivePage(locale) {
 }
 
 async function cityPage(slug, locale) {
-  const { data: city } = await fetchJson(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`)
+  const { status, data: city } = await fetchJson(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`)
+  if (status === 404) {
+    // A city merged into another (back office): 301 to where it lives now.
+    const moved = await mergedCitySlug(slug)
+    if (moved && moved !== slug) return { redirect: `${localePrefixFor(locale)}/city/${moved}` }
+  }
   if (!city?.city || !city.channelId) return null
   const [{ data: today }, { data: recentData }] = await Promise.all([
     fetchJson(`${API_BASE}/api/v1/daily/today?locale=${encodeURIComponent(locale)}`),

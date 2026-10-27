@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "Cidade de origem (E na sua cidade?)",
   "backHomePlaceholder": "Não definida",
-  "backHomeHint": "Usada por \"E na sua cidade?\" no Daily Challenge, para comparar com onde você está."
+  "backHomeHint": "Usada por \"E na sua cidade?\" no Daily Challenge, para comparar com onde você está.",
+  "cityDataCredit": "Dados das cidades © GeoNames (CC BY 4.0)"
 }

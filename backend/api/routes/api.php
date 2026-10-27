@@ -2528,12 +2528,8 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         }
     }
 
-    Response::json([
-        'city'       => $city['name'],
-        'channelId'  => $city['id'],
-        'timezone'   => $city['timezone'],
-        'country'    => $city['country'] ?? null,
-        'geonameId'  => $city['geoname_id'] ?? null,
+    // name / shortName: in the app's language (body locale), V5 apps show them.
+    Response::json(worldCityPayload($city, DailyI18n::normalize($body['locale'] ?? 'en')) + [
         // propose mode: the account's city GPS did not replace - the app offers the switch.
         'switchFrom' => $switchFrom,
     ]);
@@ -2634,13 +2630,7 @@ $router->add('POST', '/api/v1/me/city', function () {
     }
 
     $city = CityRepository::findById((int) substr($channelId, 5));
-    Response::json([
-        'ok'        => true,
-        'channelId' => $channelId,
-        'city'      => $city['name'] ?? null,
-        'country'   => $city['country'] ?? null,
-        'timezone'  => $city['timezone'] ?? null,
-    ]);
+    Response::json(['ok' => true] + ($city !== null ? worldCityPayload($city, DailyI18n::normalize($body['locale'] ?? 'en')) : []) + ['channelId' => $channelId]);
 });
 
 // ── World cities (V5-01) ──────────────────────────────────────────────────────

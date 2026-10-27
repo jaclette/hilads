@@ -238,5 +238,11 @@
     "chooseTitle": "길찾기 열기",
     "ask": "매번 묻기",
     "setting": "길찾기"
+  },
+  "citySwitch": {
+    "title": "{{city}}에 있어요",
+    "body": "내 도시는 {{from}}이에요. {{city}}(으)로 바꿀까요?",
+    "switch": "{{city}}(으)로 바꾸기",
+    "stay": "{{from}}에 그대로 있기"
   }
 }

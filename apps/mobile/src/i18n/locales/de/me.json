@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "Heimatstadt (Und bei dir zu Hause?)",
   "backHomePlaceholder": "Nicht festgelegt",
-  "backHomeHint": "Für „Und bei dir zu Hause?“ in der Daily Challenge, zum Vergleich mit dem Ort, an dem du bist."
+  "backHomeHint": "Für „Und bei dir zu Hause?“ in der Daily Challenge, zum Vergleich mit dem Ort, an dem du bist.",
+  "cityDataCredit": "Städtedaten © GeoNames (CC BY 4.0)"
 }

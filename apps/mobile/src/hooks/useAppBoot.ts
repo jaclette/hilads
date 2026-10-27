@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { loadOrCreateIdentity, generateSessionId, saveIdentity, loadDetectedCity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
-import { bootstrapChannel, fetchChannels } from '@/api/channels';
+import { bootstrapChannel, fetchChannels, fetchCityById } from '@/api/channels';
 import { fetchIpCity } from '@/api/geo';
 import { authMe } from '@/api/auth';
 import { fetchMyBlocks } from '@/api/blocks';
@@ -147,17 +147,25 @@ export function useAppBoot(): Result {
         if (identity.channelId) {
           // Returning user (has already chosen a city): auto-rejoin it. No GPS,
           // no re-detection - their city choice is respected as-is.
+          // One lookup by id (a merged city answers with the city it lives in
+          // now); an older server without it: the whole list.
+          const savedCity = fetchCityById(identity.channelId)
+            .catch(() => fetchChannels().then(list => list.find(c => c.channelId === identity.channelId) ?? null));
           Promise.race([
-            Promise.all([authPromise, fetchChannels()]),
+            Promise.all([authPromise, savedCity]),
             new Promise<never>((_, reject) =>
               setTimeout(() => reject(new Error('boot: channel fetch timeout')), BOOT_FETCH_TIMEOUT_MS),
             ),
           ])
-            .then(async ([user, channels]) => {
+            .then(async ([user, saved]) => {
               if (cancelled) return;
               const displayName = user?.display_name ?? identity.nickname;
-              const saved = channels.find(c => c.channelId === identity.channelId);
               if (saved) {
+                if (saved.channelId !== identity.channelId) {
+                  const moved = { ...identity, channelId: saved.channelId };
+                  saveIdentity(moved).catch(() => {});
+                  setIdentity(moved);
+                }
                 setCity(saved);
                 bootstrapChannel(saved.channelId, sessionId, identity.guestId, displayName)
                   .then(boot => {

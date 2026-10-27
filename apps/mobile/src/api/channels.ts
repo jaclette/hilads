@@ -1,30 +1,98 @@
-import { api } from './client';
+import { api, ApiError } from './client';
+import i18n from '@/i18n';
+import { rememberCityNames } from '@/i18n/cityName';
 import type { City, Message, Reaction, UserDTO, Badge } from '@/types';
 
 // ── City / channel resolution ─────────────────────────────────────────────────
 
-// Backend returns { city: string, channelId: string|number, timezone: string, country: string }.
-// The 'city' field is the name - different from the City type's 'name' field.
-// We normalise here so the rest of the app always gets a proper City object.
-//
-// Optional `country` (ISO-2) lets the backend constrain nearest-city to the
-// same country, preventing cross-border snaps (e.g. Phu Quoc → Phnom Penh).
-// Resolved on the client via native reverse-geocode in useAppBoot.
-export async function resolveLocation(lat: number, lng: number, country?: string | null): Promise<City> {
-  const data = await api.post<{
-    city:      string;
-    channelId: string | number;
-    timezone:  string;
-    country:   string | null;
-  }>('/location/resolve', country ? { lat, lng, country } : { lat, lng });
+// A city as the V5 endpoints send it (resolve, search pick, by-id, /me/city):
+// `city` the English name (the app's key: slug, cityNames), `name` /
+// `shortName` in the app's language, remembered for localizeCityName.
+interface CityPayload {
+  channelId:  string | number;
+  city:       string;
+  name?:      string | null;
+  shortName?: string | null;
+  country:    string | null;
+  timezone:   string | null;
+  geonameId?: number | null;
+}
 
+function locale(): string {
+  return i18n.language || 'en';
+}
+
+function toCity(data: CityPayload): City {
+  rememberCityNames(data.city, locale(), data.name, data.shortName);
   return {
     channelId: String(data.channelId),
     name:      data.city,
     country:   data.country ?? '',
     timezone:  data.timezone ?? 'UTC',
     slug:      (data.city ?? '').toLowerCase().replace(/\s+/g, '-'),
+    geonameId: data.geonameId ?? null,
   };
+}
+
+/** GPS found a city other than the account's (kept) one: the app asks "Switch?". */
+export interface CitySwitchFrom { channelId: string; name: string; country: string }
+
+/** No city within 50 km of the position (POST /location/resolve 404 no_city). */
+export function isNoCity(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 404 && err.body?.code === 'no_city';
+}
+
+// Optional `country` (ISO-2): a hint for older servers' nearest-city. propose:
+// the server never moves an account's GPS-confirmed or chosen city; it reports
+// it as switchFrom and the app asks (CitySwitchSheet). Throws no_city (isNoCity)
+// beyond 50 km of any city.
+export async function resolveLocation(lat: number, lng: number, country?: string | null): Promise<City & { switchFrom?: CitySwitchFrom | null }> {
+  const data = await api.post<CityPayload & { switchFrom?: { channelId: string | number; city: string; country: string | null } | null }>(
+    '/location/resolve', { lat, lng, ...(country ? { country } : {}), propose: true, locale: locale() });
+  const sf = data.switchFrom;
+  return {
+    ...toCity(data),
+    switchFrom: sf ? { channelId: String(sf.channelId), name: sf.city, country: sf.country ?? '' } : null,
+  };
+}
+
+/** A city of the world search (GET /cities/search): where a pick plays, and its Hilads city if any. */
+export interface CitySearchResult {
+  geonameId:  number;
+  name:       string;               // in the app's language
+  country:    string;
+  population: number;
+  playsIn:    { geonameId: number; name: string } | null;
+  channelId:  number | null;
+}
+
+export async function searchCities(q: string): Promise<CitySearchResult[]> {
+  const data = await api.get<{ cities: CitySearchResult[] }>('/cities/search', { params: { q, locale: locale() } });
+  return data.cities ?? [];
+}
+
+/** The Hilads city a picked search result plays in, created at its first pick. */
+export async function pickCity(geonameId: number): Promise<City> {
+  return toCity(await api.post<CityPayload>('/cities/pick', { geonameId, locale: locale() }));
+}
+
+/** One city by id; a merged city answers with the city it lives in now. Null when unknown. */
+export async function fetchCityById(channelId: string | number): Promise<City | null> {
+  try {
+    return toCity(await api.get<CityPayload>(`/cities/by-id/${encodeURIComponent(String(channelId))}`, { params: { locale: locale() } }));
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
+/**
+ * Set where I am (an account's city for the Daily, source manual): a city
+ * (channelId) or a search pick (geonameId). Returns the city. Throws (429
+ * city_change_limit after 10 changes a day).
+ */
+export async function setMyCity(target: { channelId: string | number } | { geonameId: number }): Promise<City> {
+  return toCity(await api.post<CityPayload>('/me/city', { ...target, locale: locale() }));
 }
 
 // Raw shape returned by GET /channels - fields differ from the City type.

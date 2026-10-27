@@ -16540,6 +16540,16 @@ body.has-app-promo-banner .page-header {
 .v3-scope-row-sub { font-size: 13px; color: var(--muted2); }
 .dc-voters { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; }
 .v3-scope-row--on .v3-scope-row-sub { color: inherit; opacity: 0.85; }
+/* V5-01: "You're in Potsdam. Switch from Berlin?" (GPS found another city) and the GeoNames credit. */
+.v3-sheet-title .city-flag, .v3-sheet-title img { vertical-align: -2px; }
+.city-switch-sub { font-size: 14px; color: var(--muted2); margin: 0 0 6px; }
+.city-switch-btn { min-height: 52px; border-radius: 16px; border: none; background: var(--primary); color: #fff; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; }
+.city-switch-stay { min-height: 48px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+.city-credit { padding: 14px 16px 24px; text-align: center; font-size: 12px; color: var(--muted2); }
+.city-credit a { color: inherit; text-decoration: underline; }
+.lp-footer { flex-wrap: wrap; }
+.lp-footer-credit { flex-basis: 100%; text-align: center; font-size: 11px; color: var(--muted2); }
+.lp-footer-credit a { color: inherit; }
 
 /* W1: flat headers on the app ground, like the app. */
 .tab-app-header, .chat-header { background: var(--bg); }

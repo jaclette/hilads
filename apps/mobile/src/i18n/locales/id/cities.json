@@ -22,5 +22,11 @@
   "loadError": "Tidak bisa memuat kota",
   "noResults": "Tidak ada kota untuk \"{{query}}\"",
   "noCities": "Tidak ada kota ditemukan",
-  "firstTimeTitle": "Pilih kotamu untuk mulai"
+  "firstTimeTitle": "Pilih kotamu untuk mulai",
+  "playsIn": "Main di {{city}}",
+  "hereTitle": "Kamu di mana?",
+  "useMyLocation": "Pakai lokasiku",
+  "changeLimit": "Kamu sudah terlalu sering ganti kota hari ini. Coba lagi besok.",
+  "locationNeeded": "Izinkan akses lokasi untuk menemukan kotamu.",
+  "noCityNearby": "Tidak ada kota dalam jarak 50 km. Cari kotamu."
 }

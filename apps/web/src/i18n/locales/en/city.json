@@ -91,7 +91,13 @@
     "events_other": "{{count}} events",
     "hangout_one": "{{count}} hangout",
     "hangout_other": "{{count}} hangouts",
-    "msgs": "{{count}} msgs"
+    "msgs": "{{count}} msgs",
+    "hereTitle": "Where are you?",
+    "useMyLocation": "Use my location",
+    "playsIn": "Plays in {{city}}",
+    "credit": "City data ©",
+    "changeLimit": "You've changed city a lot today. Try again tomorrow.",
+    "pickFailed": "Couldn't set this city. Try again."
   },
   "joining": "Joining {{city}}…",
   "joiningDefault": "Joining the chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Proposed by {{name}} · {{city}}",
     "groupTitle": "New photos: {{n}}",
     "groupCitiesMore": "{{cities}} and {{n}} more"
+  },
+  "switchSheet": {
+    "title": "You're in {{city}}",
+    "body": "Your city is {{from}}. Play for {{city}} from now on?",
+    "switch": "Switch to {{city}}",
+    "stay": "Stay in {{from}}"
   }
 }

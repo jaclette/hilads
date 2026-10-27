@@ -661,6 +661,8 @@ export default function LandingPage({
         <Logo variant="icon" size="sm" />
         {/* Brand tagline - fixed English. */}
         <span className="lp-footer-tagline">{t('stories.tagline')}</span>
+        {/* Data credits (CC BY). */}
+        <span className="lp-footer-credit">City data © <a href="https://www.geonames.org" target="_blank" rel="noopener noreferrer">GeoNames</a> (CC BY 4.0) · Maps © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></span>
       </footer>
 
     </div>

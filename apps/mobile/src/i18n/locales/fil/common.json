@@ -238,5 +238,11 @@
     "chooseTitle": "Buksan ang direksyon sa",
     "ask": "Itanong palagi",
     "setting": "Direksyon"
+  },
+  "citySwitch": {
+    "title": "Nasa {{city}} ka",
+    "body": "Ang city mo ay {{from}}. Lumipat sa {{city}}?",
+    "switch": "Lumipat sa {{city}}",
+    "stay": "Manatili sa {{from}}"
   }
 }

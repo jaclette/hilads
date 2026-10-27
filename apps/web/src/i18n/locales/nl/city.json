@@ -72,7 +72,13 @@
     "events_other": "{{count}} evenementen",
     "hangout_one": "{{count}} meetup",
     "hangout_other": "{{count}} meetups",
-    "msgs": "{{count}} ber."
+    "msgs": "{{count}} ber.",
+    "hereTitle": "Waar ben je?",
+    "useMyLocation": "Mijn locatie gebruiken",
+    "playsIn": "Speelt voor {{city}}",
+    "credit": "Stadsgegevens ©",
+    "changeLimit": "Je bent vandaag vaak van stad gewisseld. Probeer het morgen opnieuw.",
+    "pickFailed": "Deze stad kon niet worden gekozen. Probeer het opnieuw."
   },
   "joining": "Verbinden met {{city}}…",
   "joiningDefault": "Verbinden met de chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Voorgesteld door {{name}} · {{city}}",
     "groupTitle": "Nieuwe foto's: {{n}}",
     "groupCitiesMore": "{{cities}} en nog {{n}}"
+  },
+  "switchSheet": {
+    "title": "Je bent in {{city}}",
+    "body": "Je stad is {{from}}. Vanaf nu voor {{city}} spelen?",
+    "switch": "Overstappen naar {{city}}",
+    "stay": "In {{from}} blijven"
   }
 }

@@ -8,7 +8,7 @@ import { thumbUrl } from '@/lib/imageThumb';
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, Linking, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -492,6 +492,8 @@ export default function SettingsScreen() {
         <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
           <Text style={styles.version}>v{APP_VERSION}</Text>
         </TouchableOpacity>
+        {/* GeoNames (CC BY 4.0) asks for credit: the city base behind placement and search. */}
+        <Text style={styles.credit} onPress={() => Linking.openURL('https://www.geonames.org')}>{t('cityDataCredit')}</Text>
       </KeyboardAwareScrollView>
 
       {/* ══ STICKY: Save CTA (registered only) ══════════════════════════════ */}
@@ -593,6 +595,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   settingsTitle: { marginTop: 6, marginBottom: -8 },
   versionWrap:   { alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 20 },
   version:       { fontSize: FontSizes.xs, fontWeight: '500', color: c.mutedDim },
+  credit:        { textAlign: 'center', fontSize: FontSizes.xs, color: c.mutedDim },
 
   // Sticky save
   stickyWrap:      { position: 'absolute', left: 0, right: 0, bottom: 0 },

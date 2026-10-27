@@ -238,5 +238,11 @@
     "chooseTitle": "Buka rute di",
     "ask": "Tanya setiap kali",
     "setting": "Petunjuk arah"
+  },
+  "citySwitch": {
+    "title": "Kamu di {{city}}",
+    "body": "Kotamu {{from}}. Pindah ke {{city}}?",
+    "switch": "Pindah ke {{city}}",
+    "stay": "Tetap di {{from}}"
   }
 }

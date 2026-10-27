@@ -72,7 +72,13 @@
     "events_other": "{{count}} กิจกรรม",
     "hangout_one": "{{count}} นัดเจอ",
     "hangout_other": "{{count}} นัดเจอ",
-    "msgs": "{{count}} ข้อความ"
+    "msgs": "{{count}} ข้อความ",
+    "hereTitle": "ตอนนี้คุณอยู่ที่ไหน",
+    "useMyLocation": "ใช้ตำแหน่งของฉัน",
+    "playsIn": "เล่นที่{{city}}",
+    "credit": "ข้อมูลเมือง ©",
+    "changeLimit": "วันนี้คุณเปลี่ยนเมืองบ่อยเกินไป ลองใหม่พรุ่งนี้นะ",
+    "pickFailed": "เลือกเมืองนี้ไม่ได้ ลองใหม่อีกครั้ง"
   },
   "joining": "กำลังเข้าร่วม {{city}}…",
   "joiningDefault": "กำลังเข้าร่วมแชท…",
@@ -322,5 +328,11 @@
     "proposedByCity": "เสนอโดย {{name}} · {{city}}",
     "groupTitle": "รูปใหม่: {{n}}",
     "groupCitiesMore": "{{cities}} และอีก {{n}}"
+  },
+  "switchSheet": {
+    "title": "คุณอยู่ที่{{city}}",
+    "body": "เมืองของคุณคือ{{from}} เล่นให้{{city}}ตั้งแต่ตอนนี้ไหม",
+    "switch": "เปลี่ยนเป็น{{city}}",
+    "stay": "อยู่ที่{{from}}ต่อ"
   }
 }

@@ -238,5 +238,11 @@
     "chooseTitle": "Abrir a rota no",
     "ask": "Perguntar sempre",
     "setting": "Como chegar"
+  },
+  "citySwitch": {
+    "title": "Você está em {{city}}",
+    "body": "Sua cidade é {{from}}. Trocar para {{city}}?",
+    "switch": "Trocar para {{city}}",
+    "stay": "Ficar em {{from}}"
   }
 }

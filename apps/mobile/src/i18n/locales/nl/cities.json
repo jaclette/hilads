@@ -22,5 +22,11 @@
   "loadError": "Kon steden niet laden",
   "noResults": "Geen stad gevonden voor \"{{query}}\"",
   "noCities": "Geen steden gevonden",
-  "firstTimeTitle": "Kies je stad om te beginnen"
+  "firstTimeTitle": "Kies je stad om te beginnen",
+  "playsIn": "Speelt in {{city}}",
+  "hereTitle": "Waar ben je?",
+  "useMyLocation": "Mijn locatie gebruiken",
+  "changeLimit": "Je bent vandaag te vaak van stad gewisseld. Probeer het morgen opnieuw.",
+  "locationNeeded": "Geef toegang tot je locatie om je stad te vinden.",
+  "noCityNearby": "Geen stad binnen 50 km. Zoek de jouwe."
 }

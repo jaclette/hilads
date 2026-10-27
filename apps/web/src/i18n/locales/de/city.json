@@ -72,7 +72,13 @@
     "events_other": "{{count}} Events",
     "hangout_one": "{{count}} Treffen",
     "hangout_other": "{{count}} Treffen",
-    "msgs": "{{count}} Nachr."
+    "msgs": "{{count}} Nachr.",
+    "hereTitle": "Wo bist du?",
+    "useMyLocation": "Meinen Standort verwenden",
+    "playsIn": "Spielt für {{city}}",
+    "credit": "Städtedaten ©",
+    "changeLimit": "Du hast heute oft die Stadt gewechselt. Versuch es morgen wieder.",
+    "pickFailed": "Diese Stadt konnte nicht gewählt werden. Versuch es noch mal."
   },
   "joining": "Verbinde mit {{city}}…",
   "joiningDefault": "Verbinde mit dem Chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Vorgeschlagen von {{name}} · {{city}}",
     "groupTitle": "Neue Fotos: {{n}}",
     "groupCitiesMore": "{{cities}} und {{n}} weitere"
+  },
+  "switchSheet": {
+    "title": "Du bist in {{city}}",
+    "body": "Deine Stadt ist {{from}}. Ab jetzt für {{city}} spielen?",
+    "switch": "Zu {{city}} wechseln",
+    "stay": "In {{from}} bleiben"
   }
 }

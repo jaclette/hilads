@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "अपना शहर (और आपके शहर में?)",
   "backHomePlaceholder": "सेट नहीं",
-  "backHomeHint": "Daily Challenge के \"और आपके शहर में?\" में, जहाँ आप हैं उससे तुलना के लिए।"
+  "backHomeHint": "Daily Challenge के \"और आपके शहर में?\" में, जहाँ आप हैं उससे तुलना के लिए।",
+  "cityDataCredit": "शहर डेटा © GeoNames (CC BY 4.0)"
 }

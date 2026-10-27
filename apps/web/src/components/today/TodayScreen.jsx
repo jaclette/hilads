@@ -165,10 +165,8 @@ function Ticket({ data, loading }) {
   const { t, i18n } = useDc()
   const seasonal = useSeasonalLive()
   const { t: tc } = useTranslation('common')
-  const { scope, openDaily, locateHere } = useDaily()
+  const { scope, openDaily, changeHere: openChangeHere } = useDaily()
   const [showOriginal, toggleOriginal] = useOriginal()
-  const [locating, setLocating] = useState(false)
-  const [locateFailed, setLocateFailed] = useState(false)
   const secondsLeft = useCountdown(data?.challenge ? data.nextDropAt : null)
   const [pulseEl, setPulseEl] = useState(null)
   const tracked = useRef(null)
@@ -246,16 +244,12 @@ function Ticket({ data, loading }) {
   const cityStreak = presence && cityShort && presence.streak >= 2 ? presence.streak : 0
   const elsewhere = scope === 'city' && !!city?.name && city.id !== here?.id
   const emptyThere = !emptyCity && elsewhere && !!data.presence && !data.presence.represented && challenge.isActive
-  // My city is an IP guess (a VPN gets it wrong): "Not in Berlin? Change" asks for the location.
-  const changeHere = async (e) => {
+  // "Not in Berlin? Change", whatever placed me (an IP guess, GPS near a border, a VPN):
+  // the city picker, with "Use my location" and a search of every city.
+  const changeHere = (e) => {
     e.stopPropagation()
-    if (locating) return
-    setLocating(true)
-    setLocateFailed(false)
-    const ok = await locateHere()
-    setLocating(false)
-    setLocateFailed(!ok)
-    track('here_change', { ok, from: here?.name ?? null, platform_surface: 'web' })
+    openChangeHere?.()
+    track('here_change', { from: here?.name ?? null, source: here?.source ?? null, platform_surface: 'web' })
   }
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
@@ -319,12 +313,11 @@ function Ticket({ data, loading }) {
             </button>
           </span>
         )}
-        {!myProof && here?.source === 'ip' && !!cityShort && (
-          <button type="button" className="today-not-here today-not-here--hero" onClick={changeHere} disabled={locating}>
+        {!myProof && !!cityShort && (
+          <button type="button" className="today-not-here today-not-here--hero" onClick={changeHere}>
             {tc('represent.notIn', { city: cityShort })} <span className="today-not-here-link">{tc('represent.change')}</span>
           </button>
         )}
-        {locateFailed && <span className="today-not-here today-not-here--hero">{tc('represent.locationNeeded')}</span>}
       </div>
     </div>
   )

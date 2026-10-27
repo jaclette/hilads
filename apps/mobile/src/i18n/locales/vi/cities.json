@@ -22,5 +22,11 @@
   "noCities": "Không tìm thấy thành phố",
   "events_one": "{{count}} sự kiện",
   "hangout_one": "{{count}} tụ tập",
-  "firstTimeTitle": "Chọn thành phố để bắt đầu"
+  "firstTimeTitle": "Chọn thành phố để bắt đầu",
+  "playsIn": "Chơi tại {{city}}",
+  "hereTitle": "Bạn đang ở đâu?",
+  "useMyLocation": "Dùng vị trí của tôi",
+  "changeLimit": "Hôm nay bạn đã đổi thành phố quá nhiều lần. Thử lại vào ngày mai nhé.",
+  "locationNeeded": "Cho phép truy cập vị trí để tìm thành phố của bạn.",
+  "noCityNearby": "Không có thành phố nào trong vòng 50 km. Hãy tìm thành phố của bạn."
 }

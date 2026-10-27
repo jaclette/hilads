@@ -72,7 +72,13 @@
     "events_other": "{{count}} 個活動",
     "hangout_one": "{{count}} 個聚會",
     "hangout_other": "{{count}} 個聚會",
-    "msgs": "{{count}} 則訊息"
+    "msgs": "{{count}} 則訊息",
+    "hereTitle": "你在哪裡？",
+    "useMyLocation": "使用我的位置",
+    "playsIn": "在{{city}}玩",
+    "credit": "城市資料 ©",
+    "changeLimit": "你今天換城市的次數太多了，明天再試吧。",
+    "pickFailed": "無法選擇這個城市，請再試一次。"
   },
   "joining": "正在加入 {{city}}…",
   "joiningDefault": "正在加入聊天…",
@@ -322,5 +328,11 @@
     "proposedByCity": "由 {{name}} · {{city}} 提議",
     "groupTitle": "新照片：{{n}}",
     "groupCitiesMore": "{{cities}} 等另外 {{n}} 個"
+  },
+  "switchSheet": {
+    "title": "你在{{city}}",
+    "body": "你的城市是{{from}}。從現在起為{{city}}玩？",
+    "switch": "切換到{{city}}",
+    "stay": "留在{{from}}"
   }
 }

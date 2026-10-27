@@ -238,5 +238,11 @@
     "chooseTitle": "Route openen in",
     "ask": "Elke keer vragen",
     "setting": "Route"
+  },
+  "citySwitch": {
+    "title": "Je bent in {{city}}",
+    "body": "Je stad is {{from}}. Overstappen naar {{city}}?",
+    "switch": "Naar {{city}}",
+    "stay": "In {{from}} blijven"
   }
 }

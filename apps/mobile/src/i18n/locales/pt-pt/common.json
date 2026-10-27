@@ -238,5 +238,11 @@
     "chooseTitle": "Abrir o percurso no",
     "ask": "Perguntar sempre",
     "setting": "Direções"
+  },
+  "citySwitch": {
+    "title": "Estás em {{city}}",
+    "body": "A tua cidade é {{from}}. Mudar para {{city}}?",
+    "switch": "Mudar para {{city}}",
+    "stay": "Ficar em {{from}}"
   }
 }

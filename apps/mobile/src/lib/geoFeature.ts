@@ -52,7 +52,7 @@ async function preciseFix(): Promise<Location.LocationObject> {
  *  - Don't nag: a previously/permanently-denied user is not re-prompted.
  * The caller decides how to degrade (Hi now blocks + explains; others soft-fail).
  */
-export async function requestFeatureLocation(feature: GpsFeature, opts: { precise?: boolean } = {}): Promise<GpsResult> {
+export async function requestFeatureLocation(feature: GpsFeature, opts: { precise?: boolean; correct?: boolean } = {}): Promise<GpsResult> {
   try {
     const existing = await Location.getForegroundPermissionsAsync();
     let granted = existing.status === 'granted';
@@ -87,7 +87,8 @@ export async function requestFeatureLocation(feature: GpsFeature, opts: { precis
     const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     // Opportunistically fix a city that IP-geolocation placed wrong (no prompt -
     // we already have a real fix here). Fire-and-forget; never blocks the caller.
-    runCityCorrection(coords);
+    // correct: false - the caller resolves the city itself ("Use my location").
+    if (opts.correct !== false) runCityCorrection(coords);
     return { ok: true, coords, accuracy: pos.coords.accuracy ?? null };
   } catch {
     return { ok: false, reason: 'error' };

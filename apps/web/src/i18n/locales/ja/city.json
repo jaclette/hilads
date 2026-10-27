@@ -72,7 +72,13 @@
     "events_other": "{{count}}件のイベント",
     "hangout_one": "{{count}}件の集まり",
     "hangout_other": "{{count}}件の集まり",
-    "msgs": "{{count}}件のメッセージ"
+    "msgs": "{{count}}件のメッセージ",
+    "hereTitle": "今どこにいますか？",
+    "useMyLocation": "現在地を使う",
+    "playsIn": "{{city}}でプレイ",
+    "credit": "都市データ ©",
+    "changeLimit": "今日は都市を何度も変更しました。明日もう一度試してください。",
+    "pickFailed": "この都市を選べませんでした。もう一度試してください。"
   },
   "joining": "{{city}}に参加中…",
   "joiningDefault": "チャットに参加中…",
@@ -322,5 +328,11 @@
     "proposedByCity": "{{name}} · {{city}} の提案",
     "groupTitle": "新しい写真：{{n}}",
     "groupCitiesMore": "{{cities}} ほか {{n}} 件"
+  },
+  "switchSheet": {
+    "title": "{{city}}にいます",
+    "body": "あなたの都市は{{from}}です。これから{{city}}でプレイしますか？",
+    "switch": "{{city}}に切り替える",
+    "stay": "{{from}}のままにする"
   }
 }

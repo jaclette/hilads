@@ -28,6 +28,7 @@ import { usePushRegistration } from '@/hooks/usePushRegistration';
 import { useDeviceTimezone } from '@/hooks/useDeviceTimezone';
 import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
+import { CitySwitchSheet } from '@/components/CitySwitchSheet';
 import { PlacedCityBanner } from '@/components/PlacedCityBanner';
 import { UpdateGate } from '@/features/shell/UpdateGate';
 import { ScopeProvider } from '@/context/ScopeContext';
@@ -138,7 +139,8 @@ function RootLayoutInner() {
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
   useDeviceTimezone();             // device IANA timezone → backend (Daily pushes at local time)
-  useGpsCityCorrection();          // fix an IP-mislocated city when precise GPS becomes available
+  // fix an IP-mislocated city when precise GPS becomes available; ask before moving a kept city
+  const citySwitch = useGpsCityCorrection();
 
   // Re-assert WS presence with the correct identity whenever it becomes known.
   // Depend on account AND the join preconditions (joined/city/sessionId), not just
@@ -228,6 +230,7 @@ function RootLayoutInner() {
               the first-time picker in useAppBoot - no landing overlay, no
               GPS prompt. A one-shot banner confirms the auto-placement. */}
           <PlacedCityBanner />
+          <CitySwitchSheet proposal={citySwitch.proposal} onSwitch={citySwitch.accept} onStay={citySwitch.stay} />
           {/* "Update available" banner / blocking "Update required" (GET /app/config, V3-04). */}
           <UpdateGate />
         </>

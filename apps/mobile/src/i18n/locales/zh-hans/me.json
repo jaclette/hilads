@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "家乡（你家乡呢？）",
   "backHomePlaceholder": "未设置",
-  "backHomeHint": "用于 Daily Challenge 中的“你家乡呢？”，与你所在的地方作比较。"
+  "backHomeHint": "用于 Daily Challenge 中的“你家乡呢？”，与你所在的地方作比较。",
+  "cityDataCredit": "城市数据 © GeoNames (CC BY 4.0)"
 }

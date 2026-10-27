@@ -238,5 +238,11 @@
     "chooseTitle": "経路を開くアプリ",
     "ask": "毎回確認する",
     "setting": "経路"
+  },
+  "citySwitch": {
+    "title": "{{city}}にいます",
+    "body": "あなたの都市は{{from}}です。{{city}}に切り替えますか？",
+    "switch": "{{city}}に切り替える",
+    "stay": "{{from}}のままにする"
   }
 }

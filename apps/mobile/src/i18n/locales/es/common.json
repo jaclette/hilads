@@ -238,5 +238,11 @@
     "chooseTitle": "Abrir la ruta en",
     "ask": "Preguntar siempre",
     "setting": "Cómo llegar"
+  },
+  "citySwitch": {
+    "title": "Estás en {{city}}",
+    "body": "Tu ciudad es {{from}}. ¿Cambiar a {{city}}?",
+    "switch": "Cambiar a {{city}}",
+    "stay": "Quedarme en {{from}}"
   }
 }

@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "Kota asal (Kalau di kotamu?)",
   "backHomePlaceholder": "Belum diatur",
-  "backHomeHint": "Dipakai oleh \"Kalau di kotamu?\" di Daily Challenge, untuk dibandingkan dengan tempatmu sekarang."
+  "backHomeHint": "Dipakai oleh \"Kalau di kotamu?\" di Daily Challenge, untuk dibandingkan dengan tempatmu sekarang.",
+  "cityDataCredit": "Data kota © GeoNames (CC BY 4.0)"
 }

@@ -72,7 +72,13 @@
     "events_other": "{{count}} eventos",
     "hangout_one": "{{count}} quedada",
     "hangout_other": "{{count}} quedadas",
-    "msgs": "{{count}} msgs"
+    "msgs": "{{count}} msgs",
+    "hereTitle": "¿Dónde estás?",
+    "useMyLocation": "Usar mi ubicación",
+    "playsIn": "Juega por {{city}}",
+    "credit": "Datos de ciudades ©",
+    "changeLimit": "Hoy has cambiado mucho de ciudad. Vuelve a intentarlo mañana.",
+    "pickFailed": "No se pudo elegir esta ciudad. Inténtalo de nuevo."
   },
   "joining": "Conectando con {{city}}…",
   "joiningDefault": "Conectando con el chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Propuesto por {{name}} · {{city}}",
     "groupTitle": "Nuevas fotos: {{n}}",
     "groupCitiesMore": "{{cities}} y {{n}} más"
+  },
+  "switchSheet": {
+    "title": "Estás en {{city}}",
+    "body": "Tu ciudad es {{from}}. ¿Jugar por {{city}} a partir de ahora?",
+    "switch": "Cambiar a {{city}}",
+    "stay": "Quedarme en {{from}}"
   }
 }

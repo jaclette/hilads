@@ -23,6 +23,8 @@ export interface City {
   messageCount?:       number;
   recentMessageCount?: number;
   liveScore?:          number;
+  /** The GeoNames city (V5-01), when the server sent it. */
+  geonameId?:          number | null;
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────

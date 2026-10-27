@@ -238,5 +238,11 @@
     "chooseTitle": "Open directions in",
     "ask": "Ask every time",
     "setting": "Directions"
+  },
+  "citySwitch": {
+    "title": "You're in {{city}}",
+    "body": "Your city is {{from}}. Switch to {{city}}?",
+    "switch": "Switch to {{city}}",
+    "stay": "Stay in {{from}}"
   }
 }

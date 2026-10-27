@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "Ville d'origine (Et chez toi ?)",
   "backHomePlaceholder": "Non renseignée",
-  "backHomeHint": "Utilisée par « Et chez toi ? » dans le Daily Challenge, pour comparer avec là où tu es."
+  "backHomeHint": "Utilisée par « Et chez toi ? » dans le Daily Challenge, pour comparer avec là où tu es.",
+  "cityDataCredit": "Données des villes © GeoNames (CC BY 4.0)"
 }

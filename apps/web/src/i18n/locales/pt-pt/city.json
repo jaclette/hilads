@@ -72,7 +72,13 @@
     "events_other": "{{count}} eventos",
     "hangout_one": "{{count}} convívio",
     "hangout_other": "{{count}} convívios",
-    "msgs": "{{count}} msgs"
+    "msgs": "{{count}} msgs",
+    "hereTitle": "Onde estás?",
+    "useMyLocation": "Usar a minha localização",
+    "playsIn": "Joga por {{city}}",
+    "credit": "Dados das cidades ©",
+    "changeLimit": "Hoje mudaste muitas vezes de cidade. Tenta de novo amanhã.",
+    "pickFailed": "Não foi possível escolher esta cidade. Tenta de novo."
   },
   "joining": "A ligar-se a {{city}}…",
   "joiningDefault": "A ligar-se ao chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Proposto por {{name}} · {{city}}",
     "groupTitle": "Novas fotos: {{n}}",
     "groupCitiesMore": "{{cities}} e mais {{n}}"
+  },
+  "switchSheet": {
+    "title": "Estás em {{city}}",
+    "body": "A tua cidade é {{from}}. Jogar por {{city}} a partir de agora?",
+    "switch": "Mudar para {{city}}",
+    "stay": "Ficar em {{from}}"
   }
 }

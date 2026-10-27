@@ -238,5 +238,11 @@
     "chooseTitle": "Apri il percorso in",
     "ask": "Chiedi ogni volta",
     "setting": "Indicazioni"
+  },
+  "citySwitch": {
+    "title": "Sei a {{city}}",
+    "body": "La tua città è {{from}}. Passare a {{city}}?",
+    "switch": "Passa a {{city}}",
+    "stay": "Resta a {{from}}"
   }
 }

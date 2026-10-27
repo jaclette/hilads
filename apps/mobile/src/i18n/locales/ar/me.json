@@ -158,5 +158,6 @@
   },
   "fieldBackHome": "مدينتك الأصلية (وفي مدينتك؟)",
   "backHomePlaceholder": "غير محددة",
-  "backHomeHint": "تُستخدم في \"وفي مدينتك؟\" ضمن Daily Challenge للمقارنة مع المكان الذي أنت فيه."
+  "backHomeHint": "تُستخدم في \"وفي مدينتك؟\" ضمن Daily Challenge للمقارنة مع المكان الذي أنت فيه.",
+  "cityDataCredit": "بيانات المدن © GeoNames (CC BY 4.0)"
 }

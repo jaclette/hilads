@@ -238,5 +238,11 @@
     "chooseTitle": "Ouvrir l'itinéraire dans",
     "ask": "Demander à chaque fois",
     "setting": "Itinéraire"
+  },
+  "citySwitch": {
+    "title": "Tu es à {{city}}",
+    "body": "Ta ville est {{from}}. Passer à {{city}} ?",
+    "switch": "Passer à {{city}}",
+    "stay": "Rester à {{from}}"
   }
 }

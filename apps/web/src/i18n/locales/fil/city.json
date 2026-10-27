@@ -72,7 +72,13 @@
     "events_other": "{{count}} event",
     "hangout_one": "{{count}} tambayan",
     "hangout_other": "{{count}} tambayan",
-    "msgs": "{{count}} mensahe"
+    "msgs": "{{count}} mensahe",
+    "hereTitle": "Nasaan ka?",
+    "useMyLocation": "Gamitin ang location ko",
+    "playsIn": "Naglalaro sa {{city}}",
+    "credit": "City data ©",
+    "changeLimit": "Madami ka nang pinalitang city ngayon. Subukan ulit bukas.",
+    "pickFailed": "Hindi mapili ang city na ito. Subukan ulit."
   },
   "joining": "Kumokonekta sa {{city}}…",
   "joiningDefault": "Kumokonekta sa chat…",
@@ -322,5 +328,11 @@
     "proposedByCity": "Mungkahi ni {{name}} · {{city}}",
     "groupTitle": "Mga bagong litrato: {{n}}",
     "groupCitiesMore": "{{cities}} at {{n}} pa"
+  },
+  "switchSheet": {
+    "title": "Nasa {{city}} ka",
+    "body": "{{from}} ang city mo. Maglaro para sa {{city}} simula ngayon?",
+    "switch": "Lumipat sa {{city}}",
+    "stay": "Manatili sa {{from}}"
   }
 }

@@ -73,7 +73,6 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { account, identity, setDetectedCity } = useApp();
-  const [locating, setLocating] = useState(false);
   const { scope } = useScope();
   const [showOriginal, toggleOriginal] = useOriginal();
   const tracked = useRef<string | null>(null);
@@ -167,13 +166,10 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
     onReload?.();
     return true;
   };
-  const changeHere = async () => {
-    if (locating) return;
-    setLocating(true);
-    const ok = await locateHere();
-    setLocating(false);
-    track('here_change', { ok, from: here?.name ?? null });
-    if (!ok) Alert.alert(t('represent.locationNeeded'));
+  // "Not in Saigon? Change": the city search, which sets where I am (Use my location first).
+  const changeHere = () => {
+    track('here_change', { from: here?.name ?? null, source: here?.source ?? null });
+    router.push('/switch-city?mode=here' as never);
   };
   const onCta = async () => {
     if (myProof) { openSheet(); return; }
@@ -287,13 +283,12 @@ export function TodayTicket({ data, loading, secondsLeft, visible = true, onRelo
           <PulseButton tone={HERO_CTA_TONE} label={ctaLabel} onPress={onCta} intercept={firstTap} visible={visible && !howOpen}
                        fast={secondsLeft !== null && isFinalHours(secondsLeft)} />
         )}
-        {/* My city is an IP guess (a VPN gets it wrong): "Not in Saigon? Change" asks for the location. */}
-        {!myProof && here?.source === 'ip' && !!cityShort && (
-          <TouchableOpacity style={styles.notHere} onPress={changeHere} disabled={locating} hitSlop={8} accessibilityRole="button">
+        {/* Where I play, always correctable (an IP guess, a VPN, GPS at a border): the city search. */}
+        {!myProof && !!cityShort && (
+          <TouchableOpacity style={styles.notHere} onPress={changeHere} hitSlop={8} accessibilityRole="button">
             <Text style={styles.notHereText}>
               {t('represent.notIn', { city: cityShort })} <Text style={styles.notHereLink}>{t('represent.change')}</Text>
             </Text>
-            {locating && <ActivityIndicator size="small" color="#FFFFFF" />}
           </TouchableOpacity>
         )}
       </View>

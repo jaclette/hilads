@@ -22,5 +22,11 @@
   "loadError": "Impossibile caricare le città",
   "noResults": "Nessuna città trovata per «{{query}}»",
   "noCities": "Nessuna città trovata",
-  "firstTimeTitle": "Scegli la tua città per iniziare"
+  "firstTimeTitle": "Scegli la tua città per iniziare",
+  "playsIn": "Gioca a {{city}}",
+  "hereTitle": "Dove sei?",
+  "useMyLocation": "Usa la mia posizione",
+  "changeLimit": "Hai cambiato città troppe volte oggi. Riprova domani.",
+  "locationNeeded": "Consenti l'accesso alla posizione per trovare la tua città.",
+  "noCityNearby": "Nessuna città entro 50 km. Cerca la tua."
 }

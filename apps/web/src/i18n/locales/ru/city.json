@@ -72,7 +72,13 @@
     "events_other": "{{count}} событий",
     "hangout_one": "{{count}} тусовка",
     "hangout_other": "{{count}} тусовок",
-    "msgs": "{{count}} сообщ."
+    "msgs": "{{count}} сообщ.",
+    "hereTitle": "Где ты?",
+    "useMyLocation": "Использовать моё местоположение",
+    "playsIn": "Играет за {{city}}",
+    "credit": "Данные о городах ©",
+    "changeLimit": "Сегодня ты слишком часто меняешь город. Попробуй завтра.",
+    "pickFailed": "Не удалось выбрать этот город. Попробуй ещё раз."
   },
   "joining": "Подключаюсь к городу {{city}}…",
   "joiningDefault": "Подключаюсь к чату…",
@@ -336,5 +342,11 @@
     "proposedByCity": "Предложил(а) {{name}} · {{city}}",
     "groupTitle": "Новые фото: {{n}}",
     "groupCitiesMore": "{{cities}} и ещё {{n}}"
+  },
+  "switchSheet": {
+    "title": "Ты в городе {{city}}",
+    "body": "Твой город — {{from}}. Играть за {{city}} с этого момента?",
+    "switch": "Переключиться на {{city}}",
+    "stay": "Остаться: {{from}}"
   }
 }

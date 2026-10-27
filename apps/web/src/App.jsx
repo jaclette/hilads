@@ -42,6 +42,7 @@ import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
 import { setTheme, getStoredTheme } from './lib/theme'
 import { updateProfile } from './api'
+import { searchCities, pickCity, setMyCity } from './api'
 import LandingPage from './components/LandingPage'
 import StoriesLanding from './components/StoriesLanding'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from './config/featuredCity'
@@ -1051,6 +1052,10 @@ export default function App() {
   // nearby we show "N members", and hide the pill entirely for empty cities.
   const [cityMemberCount, setCityMemberCount] = useState(null)
   const [showCityPicker, setShowCityPicker] = useState(false)
+  // 'browse' (the header's city) or 'here' (Today's "Not in Berlin? Change": where I am).
+  const [cityPickerMode, setCityPickerMode] = useState('browse')
+  // GPS found another city than the account's (resolve switchFrom): "Switch?" {to, from}.
+  const [cityProposal, setCityProposal] = useState(null)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
   const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)
   const [channelsLoading, setChannelsLoading] = useState(false)
@@ -1441,6 +1446,24 @@ export default function App() {
       .catch(() => {})
     return () => { cancelled = true }
   }, [showCityPicker, citySearchQuery, allChannels.length]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── City search on the server (2+ letters): every city in the world, any
+  // language or alias ("saig" → Ho Chi Minh City). results null = not searched
+  // or failed (the local list filter answers then).
+  const [citySearch, setCitySearch] = useState({ q: '', results: null })
+  const [cityPicking, setCityPicking] = useState(false)
+  const [cityPickError, setCityPickError] = useState(null)
+  useEffect(() => {
+    const q = citySearchQuery.trim()
+    if (!(showCityPicker || obPickingCity) || q.length < 2) { setCitySearch({ q: '', results: null }); return }
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => {
+      searchCities(q, { signal: ctrl.signal })
+        .then(results => setCitySearch({ q, results }))
+        .catch(() => { if (!ctrl.signal.aborted) setCitySearch({ q, results: null }) })
+    }, 250)
+    return () => { clearTimeout(timer); ctrl.abort() }
+  }, [citySearchQuery, showCityPicker, obPickingCity])
 
   // ── Local legends fetch - ambassadors for this city (no filter dependency) ──
   useEffect(() => {
@@ -2347,6 +2370,7 @@ export default function App() {
       // falls back to global nearest when no country is sent.
       const country = await reverseGeocodeCountry(userLat, userLng)
       const location = await resolveLocation(userLat, userLng, country)
+      proposeCitySwitch(location)
       if (switchCity) {
         setCity(location.city)
         setCityCountry(location.country ?? null)
@@ -2367,7 +2391,11 @@ export default function App() {
       setUserLocation(null)
       // GeolocationPositionError.PERMISSION_DENIED = code 1
       // POSITION_UNAVAILABLE = 2, TIMEOUT = 3 - permission was granted but no fix
-      if (err && err.code === 1) {
+      // No city within 50 km (V5-01): the picker, never a city far away.
+      if (err?.code === 'no_city') {
+        setGeoState('error')
+        openCityPicker()
+      } else if (err && err.code === 1) {
         setGeoState('denied')
       } else {
         // covers: no geolocation API, GPS unavailable/timeout, network/server error
@@ -2415,6 +2443,7 @@ export default function App() {
     const country = await reverseGeocodeCountry(lat, lng)
     const location = await resolveLocation(lat, lng, country)
     if (!location?.channelId) return null
+    proposeCitySwitch(location)
     setGeoChannelId(location.channelId)
     setGeoCity(location.city ?? null)
     setGeoCountry(location.country ?? null)
@@ -2430,7 +2459,9 @@ export default function App() {
       const pos = await getPosition()
       setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
       return !!(await placeHere(pos.coords.latitude, pos.coords.longitude))
-    } catch {
+    } catch (err) {
+      // No city within 50 km: pick where I am by hand.
+      if (err?.code === 'no_city') openCityPicker('here')
       return false
     }
   }
@@ -3611,10 +3642,129 @@ export default function App() {
     }
   }
 
-  async function openCityPicker() {
+  async function openCityPicker(mode = 'browse') {
+    setCityPickerMode(mode === 'here' ? 'here' : 'browse')
+    setCityPickError(null)
     setShowCityPicker(true)
     setCitySearchQuery('')
     loadChannels(cityFilter)
+  }
+
+  // A pick in the picker: a list row ({channelId, city, timezone, country}) or a
+  // city the search found, settled first by the server (POST /cities/pick:
+  // created when new, Brooklyn → New York). Browse switches the header's city;
+  // 'here' (Today's Change) sets where I am.
+  async function pickFromPicker(row, onCity) {
+    if (cityPicking) return
+    setCityPickError(null)
+    setCityPicking(true)
+    try {
+      const c = row.geonameId != null && row.timezone === undefined ? await pickCity(row.geonameId) : row
+      await onCity(c)
+    } catch (err) {
+      setCityPickError(err?.code === 'city_change_limit' ? t('picker.changeLimit') : t('picker.pickFailed'))
+    } finally {
+      setCityPicking(false)
+    }
+  }
+
+  function pickInCityPicker(row) {
+    return pickFromPicker(row, async (c) => {
+      if (cityPickerMode !== 'here') { switchCity(c.channelId, c.city, c.timezone, c.country); return }
+      await setHereCity(c)
+      setShowCityPicker(false)
+    })
+  }
+
+  // Where I am, by hand (any source, a VPN or a border town gets GPS wrong): an
+  // account's city on the server (POST /me/city); a guest keeps it on the device.
+  async function setHereCity(c) {
+    const placed = account ? await setMyCity({ channelId: c.channelId }) : c
+    setGeoChannelId(placed.channelId)
+    setGeoCity(placed.city ?? null)
+    setGeoCountry(placed.country ?? null)
+    setGeoTimezone(placed.timezone ?? null)
+    saveGeoCity({ channelId: placed.channelId, city: placed.city, country: placed.country, timezone: placed.timezone })
+    setHereVersion(v => v + 1)
+    track('here_set', { to: placed.city ?? null, platform_surface: 'web' })
+  }
+
+  // GPS found another city than the account's (a city it confirmed by GPS or
+  // chose): ask once a session per city instead of switching silently.
+  const STAY_KEY = 'hilads_city_stay'
+  function proposeCitySwitch(location) {
+    if (!account || !location?.switchFrom || !location.channelId) return
+    try {
+      const stayed = JSON.parse(sessionStorage.getItem(STAY_KEY) || '[]')
+      if (stayed.includes(String(location.channelId))) return
+    } catch { /* storage blocked: ask */ }
+    setCityProposal({ to: location, from: location.switchFrom })
+  }
+
+  function stayInCity() {
+    if (cityProposal) {
+      try {
+        const stayed = JSON.parse(sessionStorage.getItem(STAY_KEY) || '[]')
+        sessionStorage.setItem(STAY_KEY, JSON.stringify([...stayed, String(cityProposal.to.channelId)]))
+      } catch { /* storage blocked */ }
+      track('city_switch_proposal', { choice: 'stay', to: cityProposal.to.city, platform_surface: 'web' })
+    }
+    setCityProposal(null)
+  }
+
+  async function acceptCitySwitch() {
+    const to = cityProposal?.to
+    setCityProposal(null)
+    if (!to) return
+    track('city_switch_proposal', { choice: 'switch', to: to.city, platform_surface: 'web' })
+    try {
+      await setMyCity({ channelId: to.channelId })
+      setHereVersion(v => v + 1)
+    } catch { /* the next GPS fix asks again */ }
+    switchCity(to.channelId, to.city, to.timezone ?? 'UTC', to.country)
+  }
+
+  function renderCityProposal() {
+    if (!cityProposal) return null
+    const to   = shortCityName(cityProposal.to.city)
+    const from = shortCityName(cityProposal.from.city)
+    return (
+      <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('switchSheet.title', { city: to })}>
+        <button type="button" className="v3-sheet-scrim" onClick={stayInCity} aria-label={t('switchSheet.stay', { city: from })} />
+        <div className="v3-sheet">
+          <span className="v3-sheet-grabber" aria-hidden="true" />
+          <p className="v3-sheet-title"><CityFlag country={cityProposal.to.country} /> {t('switchSheet.title', { city: to })}</p>
+          <p className="city-switch-sub">{t('switchSheet.body', { city: to, from })}</p>
+          <button type="button" className="city-switch-btn" onClick={acceptCitySwitch}>{t('switchSheet.switch', { city: to })}</button>
+          <button type="button" className="city-switch-stay" onClick={stayInCity}>{t('switchSheet.stay', { city: from })}</button>
+        </div>
+      </div>
+    )
+  }
+
+  // Search results (2+ letters): every city in the world, with where it plays.
+  // Returns null when the server search hasn't answered (the local filter shows).
+  function renderCitySearchResults(onPick) {
+    const q = citySearchQuery.trim()
+    if (q.length < 2 || citySearch.q !== q || !citySearch.results) return null
+    if (citySearch.results.length === 0) return <div className="city-no-results">{t('picker.noResults', { query: q })}</div>
+    return (
+      <>
+        {citySearch.results.map(r => (
+          <button key={r.geonameId} className="city-row" disabled={cityPicking} onClick={() => onPick(r)}>
+            <div className="city-row-top">
+              <div className="city-row-left">
+                <span className={`activity-dot${r.channelId ? ' live' : ''}`} />
+                <CityFlag country={r.country} />
+                <span className="city-row-name">{r.name}</span>
+              </div>
+            </div>
+            {r.playsIn && <div className="city-row-stats"><span className="city-row-members">{t('picker.playsIn', { city: r.playsIn.name })}</span></div>}
+          </button>
+        ))}
+        <div className="city-credit">{t('picker.credit')} <a href="https://www.geonames.org" target="_blank" rel="noopener noreferrer">GeoNames</a> (CC BY 4.0)</div>
+      </>
+    )
   }
 
   // "My city" bottom-tab handler - closes every drawer so the City Channel
@@ -4747,6 +4897,8 @@ export default function App() {
                   ))}
                 </div>
               ) : (() => {
+                const found = renderCitySearchResults(r => pickFromPicker(r, c => joinCityFromOb(c.channelId, c.city, c.timezone, c.country)))
+                if (found) return found
                 const q = citySearchQuery.trim().toLowerCase()
                 const sorted = [...obChannels]
                   .filter(ch => !q || ch.city.toLowerCase().includes(q))
@@ -4893,6 +5045,8 @@ export default function App() {
     // account's comes from the server). hereVersion bumps once GPS placed me.
     here: account ? null : geoChannelId ? { cityId: geoChannelId, gps: true } : ipChannelId ? { cityId: ipChannelId, gps: false } : null,
     hereVersion, locateHere,
+    // Today's "Not in Berlin? Change": the city picker, setting where I am.
+    changeHere: () => openCityPicker('here'),
     // The current city's country: prices are shown in its currency (SPEC 10.5).
     cityCountry,
     openDaily,
@@ -5704,6 +5858,7 @@ export default function App() {
       </>
 
       {renderScopeSheet()}
+      {renderCityProposal()}
 
       {showMap && (
         <MapScreen
@@ -5778,7 +5933,7 @@ export default function App() {
         <div className="full-page">
           <div className="page-header">
             <BackButton onClick={() => setShowCityPicker(false)} />
-            <span className="page-title">{t('picker.switchTitle')}</span>
+            <span className="page-title">{cityPickerMode === 'here' ? t('picker.hereTitle') : t('picker.switchTitle')}</span>
           </div>
           <div className="city-search-wrap">
             <input
@@ -5808,7 +5963,28 @@ export default function App() {
               ))}
             </div>
           )}
-          {geoChannelId && geoChannelId !== channelId && geoCity && (
+          {cityPickerMode === 'here' && (
+            <button
+              className="back-to-location-btn"
+              disabled={cityPicking}
+              onClick={async () => {
+                setCityPickError(null)
+                setCityPicking(true)
+                const ok = await locateHere()
+                setCityPicking(false)
+                if (ok) setShowCityPicker(false)
+                else setCityPickError(t('represent.locationNeeded', { ns: 'common' }))
+              }}
+            >
+              <span className="back-to-location-icon" style={{ color: 'var(--primary-text)' }}><Icon name="locate-outline" size={20} /></span>
+              <span className="back-to-location-text">
+                <span className="back-to-location-label">{t('picker.useMyLocation')}</span>
+              </span>
+              <span className="back-to-location-arrow"><Icon name="chevron-forward" size={18} /></span>
+            </button>
+          )}
+          {cityPickError && <div className="city-no-results">{cityPickError}</div>}
+          {cityPickerMode === 'browse' && geoChannelId && geoChannelId !== channelId && geoCity && (
             <button
               className="back-to-location-btn"
               onClick={() => switchCity(geoChannelId, geoCity, geoTimezone ?? 'UTC', geoCountry)}
@@ -5838,6 +6014,8 @@ export default function App() {
             ) : (() => {
               const q = citySearchQuery.trim().toLowerCase()
 
+              const found = renderCitySearchResults(pickInCityPicker)
+              if (found) return found
               if (q) {
                 // Search mode - query against all channels (full unranked list)
                 const results = [...allChannels]
@@ -5846,7 +6024,7 @@ export default function App() {
                 if (results.length === 0) return <div className="city-no-results">{t('picker.noResults', { query: q })}</div>
                 return results.map(ch => renderCityRow(
                   ch,
-                  (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
+                  pickInCityPicker,
                   ch.channelId === channelId
                 ))
               }
@@ -5861,7 +6039,7 @@ export default function App() {
                   <div className="city-list-label">{label}</div>
                   {top10.map(ch => renderCityRow(
                     ch,
-                    (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
+                    pickInCityPicker,
                     ch.channelId === channelId
                   ))}
                 </>

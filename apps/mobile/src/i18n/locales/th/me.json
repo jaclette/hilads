@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "เมืองบ้านเกิด (แล้วที่บ้านคุณล่ะ?)",
   "backHomePlaceholder": "ยังไม่ได้ตั้ง",
-  "backHomeHint": "ใช้ใน \"แล้วที่บ้านคุณล่ะ?\" ของ Daily Challenge เพื่อเทียบกับที่ที่คุณอยู่"
+  "backHomeHint": "ใช้ใน \"แล้วที่บ้านคุณล่ะ?\" ของ Daily Challenge เพื่อเทียบกับที่ที่คุณอยู่",
+  "cityDataCredit": "ข้อมูลเมือง © GeoNames (CC BY 4.0)"
 }

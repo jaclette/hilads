@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "Home city (Back home)",
   "backHomePlaceholder": "Not set",
-  "backHomeHint": "Used by \"And back home?\" in the Daily Challenge, to compare with where you are."
+  "backHomeHint": "Used by \"And back home?\" in the Daily Challenge, to compare with where you are.",
+  "cityDataCredit": "City data © GeoNames (CC BY 4.0)"
 }

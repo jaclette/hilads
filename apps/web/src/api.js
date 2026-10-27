@@ -1,4 +1,10 @@
+import i18n from './i18n'
+import { registerCityNames } from './i18n/cityName'
+
 const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
+
+// The app's language as the API's locale codes (en, fr, pt-br, zh-hans...).
+const apiLocale = () => String(i18n.language || 'en').toLowerCase()
 
 // ── Deep link resolution ───────────────────────────────────────────────────────
 
@@ -20,7 +26,11 @@ export async function fetchCityVenues(slug) {
 
 export async function fetchCityBySlug(slug) {
   const res = await fetch(`${BASE}/cities/by-slug/${encodeURIComponent(slug)}`)
-  if (res.status === 404) return null
+  if (res.status === 404) {
+    // A city merged into another: the one it lives in now.
+    const moved = await res.json().catch(() => null)
+    return moved?.code === 'city_merged' && moved.slug && moved.slug !== slug ? fetchCityBySlug(moved.slug) : null
+  }
   if (!res.ok) throw new Error('Failed to resolve city slug')
   return res.json() // { channelId, city, country, timezone, slug }
 }
@@ -47,16 +57,68 @@ export async function createGuestSession(nickname) {
 // same country, preventing cross-border snaps. The caller is expected to
 // resolve it via Nominatim (see reverseGeocodeCountry in App.jsx). When
 // omitted/null, backend falls back to global nearest.
+//
+// propose: an account's city confirmed by GPS or chosen by hand never moves:
+// the answer's switchFrom is that city when GPS found another (the app asks
+// "Switch?"). No city within 50 km → an error with code 'no_city' (the picker).
 export async function resolveLocation(lat, lng, country) {
-  const body = country ? { lat, lng, country } : { lat, lng }
+  const body = { lat, lng, propose: true, locale: apiLocale(), ...(country ? { country } : {}) }
   const res = await fetch(`${BASE}/location/resolve`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(body),
   })
-  if (!res.ok) throw new Error('Failed to resolve location')
-  return res.json()
+  if (!res.ok) throw await cityError(res, 'Failed to resolve location')
+  return registerCityNames(await res.json())
+}
+
+/** An Error carrying the API's code (no_city, city_change_limit...). */
+async function cityError(res, message) {
+  const data = await res.json().catch(() => null)
+  return Object.assign(new Error(data?.error || message), { code: data?.code ?? null, status: res.status })
+}
+
+// ── World cities (every GeoNames city, created at the first visit) ─────────────
+
+/** Cities whose name starts with q, any language or alias: [{geonameId, name, country, population, playsIn, channelId}]. */
+export async function searchCities(q, { signal } = {}) {
+  const res = await fetch(`${BASE}/cities/search?q=${encodeURIComponent(q)}&locale=${encodeURIComponent(apiLocale())}`, { signal })
+  if (!res.ok) throw new Error('Failed to search cities')
+  const data = await res.json()
+  return data.cities ?? []
+}
+
+/** The Hilads city a searched city plays in (Brooklyn → New York), created when needed. */
+export async function pickCity(geonameId) {
+  const res = await fetch(`${BASE}/cities/pick`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ geonameId, locale: apiLocale() }),
+  })
+  if (!res.ok) throw await cityError(res, 'Failed to pick city')
+  return registerCityNames(await res.json())
+}
+
+/** Set where an account is ({channelId} or {geonameId}): returns the city; code city_change_limit after 10 a day. */
+export async function setMyCity(pick) {
+  const res = await fetch(`${BASE}/me/city`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ ...pick, locale: apiLocale() }),
+  })
+  if (!res.ok) throw await cityError(res, 'Failed to set city')
+  return registerCityNames(await res.json())
+}
+
+/** One city by its channel id (a merged city answers with its target, mergedFrom), or null. */
+export async function fetchCityById(id) {
+  const res = await fetch(`${BASE}/cities/by-id/${encodeURIComponent(id)}?locale=${encodeURIComponent(apiLocale())}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch city')
+  return registerCityNames(await res.json())
 }
 
 // Lightweight country-only reverse-geocode via Nominatim (zoom=3 = country

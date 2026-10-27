@@ -138,5 +138,6 @@
   },
   "fieldBackHome": "Lungsod na pinagmulan (E sa inyo?)",
   "backHomePlaceholder": "Hindi nakatakda",
-  "backHomeHint": "Ginagamit ng \"E sa inyo?\" sa Daily Challenge, para ikumpara sa kinaroroonan mo."
+  "backHomeHint": "Ginagamit ng \"E sa inyo?\" sa Daily Challenge, para ikumpara sa kinaroroonan mo.",
+  "cityDataCredit": "City data © GeoNames (CC BY 4.0)"
 }

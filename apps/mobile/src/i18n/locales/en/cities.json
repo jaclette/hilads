@@ -22,5 +22,11 @@
   "msgs": "{{count}} msgs",
   "loadError": "Couldn't load cities",
   "noResults": "No city found for \"{{query}}\"",
-  "noCities": "No cities found"
+  "noCities": "No cities found",
+  "playsIn": "Plays in {{city}}",
+  "hereTitle": "Where are you?",
+  "useMyLocation": "Use my location",
+  "changeLimit": "You've changed city too often today. Try again tomorrow.",
+  "locationNeeded": "Allow location access to find your city.",
+  "noCityNearby": "No city within 50 km of you. Search for yours."
 }
