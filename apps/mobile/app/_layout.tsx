@@ -9,7 +9,7 @@ import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
 import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
 import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
 import { ChallengeResultLaunchGate } from '@/features/challenge/ChallengeResultLaunchGate';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useRootNavigationState } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -121,7 +121,15 @@ function RootLayoutInner() {
 
     return () => sub.remove();
   }, []);
-  const { retry } = useAppBoot();
+  const { retry, redirect, clearRedirect } = useAppBoot();
+  // The boot's landing (the city picker), once the Stack is mounted: the root
+  // route has a nested state only then (see useAppBoot).
+  const stackMounted = !!useRootNavigationState()?.routes?.[0]?.state;
+  useEffect(() => {
+    if (booting || !stackMounted || !redirect) return;
+    clearRedirect();
+    router.replace(redirect as never);
+  }, [booting, stackMounted, redirect]); // eslint-disable-line react-hooks/exhaustive-deps
   useAppLifecycle();          // foreground/background WS resilience
   usePresenceHeartbeat();     // keep presence alive
   usePresence();              // sync online users list to AppContext

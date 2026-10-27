@@ -20,6 +20,9 @@ const BOOT_FETCH_TIMEOUT_MS = 8_000;
 
 interface Result {
   retry: () => void;
+  /** Where to land once booted (the city picker), or null. Navigated by the root layout. */
+  redirect: string | null;
+  clearRedirect: () => void;
 }
 
 // ── useAppBoot ────────────────────────────────────────────────────────────────
@@ -40,6 +43,11 @@ export function useAppBoot(): Result {
   } = useApp();
 
   const [retryCount, setRetryCount] = useState(0);
+  // Never router.replace() from here: during boot the Stack isn't mounted yet, so
+  // the replace targets the root navigator, which remounts the root layout → boot
+  // runs again → replace again: an endless boot screen (offline, or an IP city we
+  // can't match). The root layout navigates once the Stack is mounted.
+  const [redirect, setRedirect] = useState<string | null>(null);
 
   function retry() {
     setBootError(null);
@@ -91,8 +99,8 @@ export function useAppBoot(): Result {
         if (failure) track('first_launch_ip_detection_failed', { reason: failure });
         else track('first_launch_ip_detection_resolved', { city: 'unknown' });
         track('first_launch_city_picker_shown');
+        setRedirect('/switch-city?firstTime=1');
         setBooting(false);
-        router.replace('/switch-city?firstTime=1');
       }
     }
 
@@ -176,15 +184,15 @@ export function useAppBoot(): Result {
                 // Their saved city no longer exists → let them re-pick (normal
                 // picker; they're an existing user, not first-launch).
                 console.log('[boot] saved city not found → city picker');
+                setRedirect('/switch-city');
                 setBooting(false);
-                router.replace('/switch-city');
               }
             })
             .catch(() => {
               if (!cancelled) {
                 console.log('[boot] returning-user channel fetch failed → city picker');
+                setRedirect('/switch-city');
                 setBooting(false);
-                router.replace('/switch-city');
               }
             });
         } else {
@@ -211,5 +219,5 @@ export function useAppBoot(): Result {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [retryCount]);
 
-  return { retry };
+  return { retry, redirect, clearRedirect: () => setRedirect(null) };
 }
