@@ -93,7 +93,7 @@ admin_nav('/admin/cities');
         </div>
         <div class="form-group">
             <label style="text-transform:none;letter-spacing:0;font-size:14px;color:#eee">
-                <input type="checkbox" name="force_live" value="1" <?= $city['force_live'] ? 'checked' : '' ?>> Live for the Daily (force live)
+                <input type="checkbox" name="force_live" value="1" style="width:auto;margin-right:6px" <?= $city['force_live'] ? 'checked' : '' ?>> Live for the Daily (force live)
             </label>
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
