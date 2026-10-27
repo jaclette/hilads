@@ -40,7 +40,8 @@ export function UpdateGate() {
   const storeUrl = Platform.OS === 'ios' ? config.storeUrls.ios : config.storeUrls.android;
   const openStore = () => { Linking.openURL(storeUrl).catch(() => {}); };
 
-  if (isOlderVersion(APP_BUILD_VERSION, config.minVersion)) {
+  // Dev builds never block: a local build older than the prod minimum still runs.
+  if (!__DEV__ && isOlderVersion(APP_BUILD_VERSION, config.minVersion)) {
     return (
       <Modal visible animationType="fade" onRequestClose={() => {}}>
         <View style={[styles.required, { paddingTop: insets.top + Spacing.xl, paddingBottom: insets.bottom + Spacing.lg }]}>
