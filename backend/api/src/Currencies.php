@@ -88,10 +88,22 @@ final class Currencies
 
     // ── Reads ────────────────────────────────────────────────────────────────
 
-    /** The currency of a city ('city_N'), else USD. */
+    /** The currency of a city ('city_N'): our list, else GeoNames' (V5-01 cities anywhere), else USD. */
     public static function forCity(?string $cityId): string
     {
-        return self::forCountry(CityRepository::countryOf($cityId));
+        $country = strtoupper(trim((string) CityRepository::countryOf($cityId)));
+        if ($country === '' || isset(self::BY_COUNTRY[$country])) {
+            return self::forCountry($country);
+        }
+        try {
+            $stmt = Database::pdo()->prepare("SELECT currency FROM geo_countries WHERE country = ?");
+            $stmt->execute([$country]);
+            $code = $stmt->fetchColumn();
+            if (self::isCode($code)) return $code;
+        } catch (\Throwable) {
+            // No GeoNames base loaded: the fallback below.
+        }
+        return self::forCountry($country);
     }
 
     /** @var ?array per request */

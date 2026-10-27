@@ -2430,9 +2430,21 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         }
     }
 
-    $city = CityRepository::nearest($lat, $lng, $country);
+    // V5-01: the GeoNames city this position plays in, created at the first
+    // visit; nobody beyond 50 km (the app shows the city picker). Before the
+    // seeds are mapped to GeoNames, the legacy nearest city.
+    $city = WorldCities::fromPosition($lat, $lng, $country);
+    if ($city === null) {
+        Response::json(['error' => 'No city within 50 km', 'code' => 'no_city'], 404);
+    }
 
-    // Two-signal transition rule for users.current_city_id.
+    // propose: true (V5 apps) - GPS never moves a city confirmed by GPS or
+    // chosen by the user: it replaces only a guess (IP, profile, none), and
+    // otherwise reports the new city so the app asks "Switch?" (POST /me/city).
+    $propose = !empty($body['propose']);
+    $switchFrom = null;
+
+    // Two-signal transition rule for users.current_city_id (older apps).
     // Only runs for authenticated users (guests don't have a row in users).
     // State machine, atomic single-UPDATE:
     //   current IS NULL                                 → commit (first city ever)
@@ -2460,7 +2472,7 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         // or confirmation marks the city 'gps'.
         $hasSource = citySourceSql('gps') !== '';
         $guess = $hasSource ? "(current_city_id IS NULL OR COALESCE(current_city_source, '') NOT IN ('gps', 'manual'))" : "(current_city_id IS NULL)";
-        $two   = "(pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes')";
+        $two   = $propose ? "false" : "(pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes')";
         $hit   = "(current_city_id = :geo OR {$guess} OR {$two})";
         Database::pdo()->prepare("
             UPDATE users SET
@@ -2508,39 +2520,52 @@ $router->add('POST', '/api/v1/location/resolve', function () {
                 $newCityIdForRank ?: null,
             );
         }
+        if ($propose && $newCityIdForRank !== null && $newCityIdForRank !== $geoChannelId) {
+            $from = CityRepository::findById((int) substr((string) $newCityIdForRank, 5));
+            if ($from !== null) {
+                $switchFrom = ['channelId' => $from['id'], 'city' => $from['name'], 'country' => $from['country']];
+            }
+        }
     }
 
     Response::json([
-        'city'      => $city['name'],
-        'channelId' => $city['id'],
-        'timezone'  => $city['timezone'],
-        'country'   => $city['country'] ?? null,
+        'city'       => $city['name'],
+        'channelId'  => $city['id'],
+        'timezone'   => $city['timezone'],
+        'country'    => $city['country'] ?? null,
+        'geonameId'  => $city['geoname_id'] ?? null,
+        // propose mode: the account's city GPS did not replace - the app offers the switch.
+        'switchFrom' => $switchFrom,
     ]);
 });
 
 // POST /api/v1/me/city
-// Explicit manual city switch from the city picker. Immediately commits the
-// chosen city as current_city_id, bypassing the two-signal rule.
-// Body: { channelId: int | string }  - accepts either 42 or "city_42".
+// Explicit manual city switch: "Not in [city]? Change" (a city search) and the
+// GPS "Switch?" sheet. Immediately commits the chosen city as current_city_id,
+// source 'manual'. Open to everyone since V5-01 (Legends only before), a few
+// changes a day. Body: { channelId: int | string } - 42 or "city_42" - or
+// { geonameId: int } for a city picked in the search, created when needed
+// (Brooklyn plays in New York City).
 $router->add('POST', '/api/v1/me/city', function () {
     $user = AuthService::requireAuth();
 
-    // Manual home-city overrides are restricted to Hilads Legends
-    // (city ambassadors). For everyone else, current_city_id is
-    // strictly geolocation-driven (set only by /location/resolve),
-    // so a normal user toggling cities in the UI changes what they
-    // see but never overwrites their actual home city. Legends are
-    // the explicit exception - they can claim a city from their
-    // profile even when they aren't physically geolocated to it.
-    if (!($user['_is_ambassador'] ?? false)) {
-        Response::json([
-            'error' => 'Only Hilads Legends can set their home city manually. Your home city follows your geolocation.',
-            'code'  => 'legend_only',
-        ], 403);
+    if (!($user['_is_ambassador'] ?? false) && !DbRateLimiter::allow('me_city|' . $user['id'], 10, 86400)) {
+        Response::json(['error' => 'Too many city changes today', 'code' => 'city_change_limit'], 429);
     }
 
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
+
+    $geonameId = $body['geonameId'] ?? null;
+    if ($geonameId !== null) {
+        if (!is_int($geonameId) && !ctype_digit((string) $geonameId)) Response::json(['error' => 'Invalid geonameId'], 400);
+        if (!DbRateLimiter::allow('city_pick|' . Request::ip(), 30, 3600)) {
+            Response::json(['error' => 'Too many requests'], 429);
+        }
+        $picked = WorldCities::fromPick((int) $geonameId);
+        if ($picked === null) Response::json(['error' => 'Unknown city'], 404);
+        $body['channelId'] = $picked['id'];
+    }
 
     $raw = $body['channelId'] ?? null;
     if ($raw === null || $raw === '') Response::json(['error' => 'channelId is required'], 400);
@@ -2606,7 +2631,83 @@ $router->add('POST', '/api/v1/me/city', function () {
         error_log('[me/city] membership upsert failed: ' . $e->getMessage());
     }
 
-    Response::json(['ok' => true, 'channelId' => $channelId]);
+    $city = CityRepository::findById((int) substr($channelId, 5));
+    Response::json([
+        'ok'        => true,
+        'channelId' => $channelId,
+        'city'      => $city['name'] ?? null,
+        'country'   => $city['country'] ?? null,
+        'timezone'  => $city['timezone'] ?? null,
+    ]);
+});
+
+// ── World cities (V5-01) ──────────────────────────────────────────────────────
+
+/** A Hilads city for the apps, named in $locale when GeoNames has it. */
+function worldCityPayload(array $city, string $locale): array
+{
+    $gid = $city['geoname_id'] ?? null;
+    return [
+        'channelId' => $city['id'],
+        'city'      => $city['name'],
+        'name'      => ($gid !== null && $locale !== 'en' ? WorldCities::localName((int) $gid, $locale) : null) ?? $city['name'],
+        'country'   => $city['country'],
+        'timezone'  => $city['timezone'],
+        'geonameId' => $gid,
+    ];
+}
+
+// GET /api/v1/cities/search?q=&locale=
+// Every GeoNames city whose name (any of our locales) starts with q, most
+// populous first: where a pick plays (playsIn) and its Hilads channelId when
+// the city exists already. Picking one: POST /cities/pick or /me/city.
+$router->add('GET', '/api/v1/cities/search', function () {
+    enforceRateLimit('city_search', 60, 60);
+    $q = trim((string) ($_GET['q'] ?? ''));
+    if (mb_strlen($q) > 60) Response::json(['error' => 'q is too long'], 400);
+    Response::json(['cities' => WorldCities::search($q, DailyI18n::normalize($_GET['locale'] ?? 'en'))]);
+});
+
+// GET /api/v1/cities/active?locale=
+// The cities with activity (members now, or photos in the last 90 days), most
+// members first: the scope selector's list.
+$router->add('GET', '/api/v1/cities/active', function () {
+    $locale = DailyI18n::normalize($_GET['locale'] ?? 'en');
+    $cities = WorldCities::active();
+    if ($locale !== 'en') {
+        $names = WorldCities::localNames(array_values(array_filter(array_column($cities, 'geonameId'))), $locale);
+        foreach ($cities as &$c) {
+            $c['name'] = $c['geonameId'] !== null ? ($names[$c['geonameId']] ?? $c['name']) : $c['name'];
+        }
+        unset($c);
+    }
+    Response::json(['cities' => $cities]);
+});
+
+// GET /api/v1/cities/by-id/{id}?locale= - one city by its channel id (42 or
+// city_42): the app checks its saved city without loading the whole list.
+$router->add('GET', '/api/v1/cities/by-id/{id}', function (array $params) {
+    if (!preg_match('/^(?:city_)?(\d+)$/', (string) ($params['id'] ?? ''), $m)) {
+        Response::json(['error' => 'Invalid id'], 400);
+    }
+    $city = CityRepository::findById((int) $m[1]);
+    if ($city === null) Response::json(['error' => 'Unknown city'], 404);
+    Response::json(worldCityPayload($city, DailyI18n::normalize($_GET['locale'] ?? 'en')));
+});
+
+// POST /api/v1/cities/pick { geonameId } - the Hilads city a city picked in
+// the search plays in, created at its first pick. Guests keep it on the
+// device; an account sets it with /me/city.
+$router->add('POST', '/api/v1/cities/pick', function () {
+    $body = Request::json();
+    $gid  = $body['geonameId'] ?? null;
+    if (!is_int($gid) && !ctype_digit((string) $gid)) Response::json(['error' => 'geonameId is required'], 400);
+    if (!DbRateLimiter::allow('city_pick|' . Request::ip(), 30, 3600)) {
+        Response::json(['error' => 'Too many requests'], 429);
+    }
+    $city = WorldCities::fromPick((int) $gid);
+    if ($city === null) Response::json(['error' => 'Unknown city'], 404);
+    Response::json(worldCityPayload($city, DailyI18n::normalize($body['locale'] ?? 'en')));
 });
 
 // POST /api/v1/me/dismiss-public-optin

@@ -3545,6 +3545,21 @@ foreach (CityPlacement::SEED_OVERRIDES as $gid => [$target, $note]) {
 }
 echo "  OK  geo_city_overrides seeds\n";
 
+// 2026-10-27 - V5-01 step 3: Hilads cities on the GeoNames base. geoname_id is
+// the GeoNames city a Hilads city is (our 350 seeds get theirs from
+// scripts/city_geonames_apply.php; cities created at a first visit carry it
+// from the start); auto_created marks those. Name-prefix indexes for the
+// city search (GET /cities/search).
+// Reversal: DROP INDEX idx_geo_city_names_lower, idx_geo_cities_lower_name,
+//   idx_geo_cities_lower_ascii, idx_cities_geoname_id;
+//   ALTER TABLE cities DROP COLUMN auto_created, DROP COLUMN geoname_id;
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS geoname_id INTEGER", 'cities.geoname_id');
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS auto_created BOOLEAN NOT NULL DEFAULT false", 'cities.auto_created');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS idx_cities_geoname_id ON cities (geoname_id) WHERE geoname_id IS NOT NULL", 'idx_cities_geoname_id');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_cities_lower_ascii ON geo_cities (lower(ascii_name) text_pattern_ops)", 'idx_geo_cities_lower_ascii');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_cities_lower_name ON geo_cities (lower(name) text_pattern_ops)", 'idx_geo_cities_lower_name');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_city_names_lower ON geo_city_names (lower(name) text_pattern_ops)", 'idx_geo_city_names_lower');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

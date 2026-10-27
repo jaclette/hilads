@@ -7,6 +7,8 @@ class CityRepository
     /** In-memory cache - loaded once per request from Postgres. */
     private static ?array $cities = null;
 
+    private const CACHE_KEY = 'cities_all_v2';
+
     private static function load(): array
     {
         if (self::$cities !== null) {
@@ -21,14 +23,14 @@ class CityRepository
         // (~5GB). TTL: 1 hour. Both stores clear on deploy / instance restart.
         $apcu = function_exists('apcu_fetch') && PHP_SAPI !== 'cli';
         if ($apcu) {
-            $cached = apcu_fetch('hilads_cities_v1');
+            $cached = apcu_fetch(self::CACHE_KEY);
             if (is_array($cached)) {
                 self::$cities = $cached;
                 return self::$cities;
             }
         }
         if (PHP_SAPI !== 'cli') {
-            $cached = Cache::get('cities_all_v1');
+            $cached = Cache::get(self::CACHE_KEY);
             if ($cached !== null) {
                 self::$cities = $cached;
                 return self::$cities;
@@ -43,7 +45,8 @@ class CityRepository
                     ci.country,
                     ci.lat,
                     ci.lng,
-                    ci.timezone
+                    ci.timezone,
+                    " . self::geonameColumn() . "
                 FROM channels ch
                 JOIN cities ci ON ci.channel_id = ch.id
                 WHERE ch.type = 'city'
@@ -61,14 +64,15 @@ class CityRepository
                 'lat'      => (float) $row['lat'],
                 'lng'      => (float) $row['lng'],
                 'timezone' => $row['timezone'],
+                'geoname_id' => $row['geoname_id'] !== null ? (int) $row['geoname_id'] : null,
             ];
         }, $rows);
 
         if ($apcu) {
-            apcu_store('hilads_cities_v1', self::$cities, 3600);
+            apcu_store(self::CACHE_KEY, self::$cities, 3600);
         }
         if (PHP_SAPI !== 'cli') {
-            Cache::set('cities_all_v1', self::$cities, 3600);
+            Cache::set(self::CACHE_KEY, self::$cities, 3600);
         }
 
         return self::$cities;
@@ -79,6 +83,51 @@ class CityRepository
         return self::load();
     }
 
+    /**
+     * cities.geoname_id, or NULL before the V5-01 migration ran (the code can
+     * ship first: every city is then unmapped and placement stays legacy).
+     */
+    private static function geonameColumn(): string
+    {
+        static $has = null;
+        if ($has === null) {
+            try {
+                $has = Database::pdo()->query("
+                    SELECT 1 FROM information_schema.columns WHERE table_name = 'cities' AND column_name = 'geoname_id'
+                ")->fetchColumn() !== false;
+            } catch (\Throwable) {
+                $has = false;
+            }
+        }
+        return $has ? 'ci.geoname_id' : 'NULL::int AS geoname_id';
+    }
+
+    /** Drop every cached copy of the list (a city was created, merged or edited). */
+    public static function forget(): void
+    {
+        self::$cities = null;
+        if (function_exists('apcu_delete')) apcu_delete(self::CACHE_KEY);
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    /** The Hilads city of a GeoNames city, or null. */
+    public static function findByGeonameId(int $geonameId): ?array
+    {
+        foreach (self::load() as $city) {
+            if ($city['geoname_id'] === $geonameId) return $city;
+        }
+        return null;
+    }
+
+    /** Whether the seed cities are mapped to GeoNames yet (V5-01): before that, placement stays legacy. */
+    public static function mapped(): bool
+    {
+        foreach (self::load() as $city) {
+            if ($city['geoname_id'] !== null) return true;
+        }
+        return false;
+    }
+
     public static function findById(int $id): ?array
     {
         foreach (self::load() as $city) {
@@ -86,7 +135,23 @@ class CityRepository
                 return $city;
             }
         }
-        return null;
+        // A city created since this instance cached the list (another instance,
+        // within the hour): one small row read, kept for the rest of the request.
+        $stmt = Database::pdo()->prepare("
+            SELECT ch.name, ci.country, ci.lat, ci.lng, ci.timezone, " . self::geonameColumn() . "
+            FROM channels ch JOIN cities ci ON ci.channel_id = ch.id
+            WHERE ch.id = ? AND ch.type = 'city' AND ch.status = 'active'
+        ");
+        $stmt->execute(['city_' . $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+        $city = [
+            'id' => $id, 'name' => $row['name'], 'country' => $row['country'],
+            'lat' => (float) $row['lat'], 'lng' => (float) $row['lng'], 'timezone' => $row['timezone'],
+            'geoname_id' => $row['geoname_id'] !== null ? (int) $row['geoname_id'] : null,
+        ];
+        self::$cities[] = $city;
+        return $city;
     }
 
     /** ISO-2 country code of a city ("city_5" or 5), or null. Uses the cached city list. */

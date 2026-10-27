@@ -20,9 +20,9 @@
  * snapshot answers in ~30ms even cold. Regenerate it with `node api/_gen-cities.mjs`
  * when the city set changes (best-effort: a brand-new city won't match until then).
  *
- * Match: nearest supported city by haversine within MATCH_RADIUS_KM; else, if
- * the visitor's country has exactly one supported city, that city (country
- * fallback — handles "far from the only city in the country"); else unknown.
+ * Match: nearest supported city by haversine within MATCH_RADIUS_KM, else
+ * unknown (the picker). IP is a last resort (V5-01): never a city more than
+ * 50 km away, and never a new one — cities are created only by GPS or a pick.
  *
  * Privacy: the raw IP is NEVER read, returned, or logged. The response carries
  * only the resolved supported-city name (or "unknown") — aggregate analytics.
@@ -30,7 +30,7 @@
 
 import { CITIES } from './_cities.mjs'
 
-const MATCH_RADIUS_KM = 150   // nearest-city cutoff for a confident State A
+const MATCH_RADIUS_KM = 50    // same cap as GPS placement (V5-01)
 
 // Haversine great-circle distance in km.
 function distanceKm(aLat, aLng, bLat, bLng) {
@@ -43,7 +43,7 @@ function distanceKm(aLat, aLng, bLat, bLng) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)))
 }
 
-function resolve(country, lat, lng) {
+function resolve(lat, lng) {
   const hasCoords = Number.isFinite(lat) && Number.isFinite(lng)
 
   // 1) Nearest supported city by proximity (primary signal).
@@ -59,15 +59,7 @@ function resolve(country, lat, lng) {
     }
   }
 
-  // 2) Country fallback: exactly one supported city in the visitor's country.
-  if (country) {
-    const inCountry = CITIES.filter(c => c.co === country)
-    if (inCountry.length === 1) {
-      return { state: 'city_matched', city: inCountry[0], via: 'country' }
-    }
-  }
-
-  // 3) No confident match → State B (client falls back to the featured city).
+  // 2) No confident match → State B (client falls back to the featured city).
   return { state: 'city_unknown', city: null, via: 'none' }
 }
 
@@ -124,7 +116,7 @@ export default async function handler(req, res) {
   } catch { /* keep Vercel values */ }
 
   try {
-    const { state, city, via } = resolve(country, lat, lng)
+    const { state, city, via } = resolve(lat, lng)
     res.statusCode = 200
     res.end(JSON.stringify(
       state === 'city_matched'
