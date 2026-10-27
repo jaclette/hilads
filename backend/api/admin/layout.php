@@ -250,6 +250,7 @@ function admin_nav(string $current = ''): void
             '/admin/challenges' => 'Challenges',
             '/admin/campaigns'  => '⚡ Campaigns',
             '/admin/daily'      => '🔥 Daily',
+            '/admin/cities'     => 'Cities',
             '/admin/messages'=> 'Messages',
             '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',

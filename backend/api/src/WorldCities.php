@@ -98,18 +98,12 @@ final class WorldCities
     private static function findInDb(int $geonameId): ?array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT ch.id, ch.name, ci.country, ci.lat, ci.lng, ci.timezone, ci.geoname_id
-            FROM cities ci JOIN channels ch ON ch.id = ci.channel_id
+            SELECT ch.id FROM cities ci JOIN channels ch ON ch.id = ci.channel_id
             WHERE ci.geoname_id = ? AND ch.status = 'active'
         ");
         $stmt->execute([$geonameId]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) return null;
-        return [
-            'id' => (int) substr($row['id'], 5), 'name' => $row['name'], 'country' => $row['country'],
-            'lat' => (float) $row['lat'], 'lng' => (float) $row['lng'], 'timezone' => $row['timezone'],
-            'geoname_id' => (int) $row['geoname_id'],
-        ];
+        $id = $stmt->fetchColumn();
+        return $id ? CityRepository::findById((int) substr((string) $id, 5)) : null;
     }
 
     /** A GeoNames city's name in a locale (preferred, else the first), or null. */
@@ -146,12 +140,22 @@ final class WorldCities
         if (mb_strlen($q) < 2) return [];
         $like = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $q) . '%';
         $pdo  = Database::pdo();
+        // Our short names and aliases (Saigon, HCMC) find their city too.
+        $ours = [];
+        foreach (CityRepository::all() as $c) {
+            if ($c['geoname_id'] === null) continue;
+            foreach (array_merge([$c['short_name'] ?? ''], $c['aliases'], array_values($c['short_name_i18n'])) as $alias) {
+                if ($alias !== '' && str_starts_with(mb_strtolower($alias), $q)) $ours[] = $c['geoname_id'];
+            }
+        }
+        $ours = $ours ? implode(',', array_unique($ours)) : '0';
         $stmt = $pdo->prepare("
             SELECT g.geoname_id, g.name, g.country, g.population, g.lat, g.lng
             FROM geo_cities g
             WHERE lower(g.ascii_name) LIKE :p OR lower(g.name) LIKE :p
                OR g.geoname_id IN (SELECT geoname_id FROM geo_city_names WHERE lower(name) LIKE :p)
-            ORDER BY g.population DESC
+               OR g.geoname_id IN ({$ours})
+            ORDER BY g.geoname_id IN ({$ours}) DESC, g.population DESC
             LIMIT {$limit}
         ");
         $stmt->execute(['p' => $like]);

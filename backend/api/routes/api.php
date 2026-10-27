@@ -2575,6 +2575,8 @@ $router->add('POST', '/api/v1/me/city', function () {
         ? 'city_' . $raw
         : (is_string($raw) && preg_match('/^city_\d+$/', $raw) ? $raw : null);
     if ($channelId === null) Response::json(['error' => 'Invalid channelId'], 400);
+    $mergedInto = CityRepository::mergedInto((int) substr($channelId, 5));
+    if ($mergedInto !== null) $channelId = 'city_' . $mergedInto;
 
     // Validate the channel exists and is an active city.
     $stmt = Database::pdo()->prepare("
@@ -2651,6 +2653,7 @@ function worldCityPayload(array $city, string $locale): array
         'channelId' => $city['id'],
         'city'      => $city['name'],
         'name'      => ($gid !== null && $locale !== 'en' ? WorldCities::localName((int) $gid, $locale) : null) ?? $city['name'],
+        'shortName' => $city['short_name_i18n'][$locale] ?? (in_array($locale, ['ar', 'hi', 'ja', 'ko', 'ru', 'th', 'zh-hans', 'zh-hant'], true) ? null : ($city['short_name'] ?? null)),
         'country'   => $city['country'],
         'timezone'  => $city['timezone'],
         'geonameId' => $gid,
@@ -2690,9 +2693,13 @@ $router->add('GET', '/api/v1/cities/by-id/{id}', function (array $params) {
     if (!preg_match('/^(?:city_)?(\d+)$/', (string) ($params['id'] ?? ''), $m)) {
         Response::json(['error' => 'Invalid id'], 400);
     }
-    $city = CityRepository::findById((int) $m[1]);
+    // A merged city answers with the city it lives in now (mergedFrom): the
+    // app replaces the id it kept.
+    $id   = (int) $m[1];
+    $into = CityRepository::findById($id) === null ? CityRepository::mergedInto($id) : null;
+    $city = CityRepository::findById($into ?? $id);
     if ($city === null) Response::json(['error' => 'Unknown city'], 404);
-    Response::json(worldCityPayload($city, DailyI18n::normalize($_GET['locale'] ?? 'en')));
+    Response::json(worldCityPayload($city, DailyI18n::normalize($_GET['locale'] ?? 'en')) + ['mergedFrom' => $into !== null ? $id : null]);
 });
 
 // POST /api/v1/cities/pick { geonameId } - the Hilads city a city picked in
@@ -2766,10 +2773,34 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
         : $build();
 
     if ($payload === null) {
+        // A merged city's old page: where it lives now (the prerender 301s to it).
+        $to = mergedCityBySlug($slug);
+        if ($to !== null) {
+            Response::json(['error' => 'City merged', 'code' => 'city_merged', 'channelId' => $to['id'], 'city' => $to['name'],
+                'slug' => trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($to['name'])), '-')], 404);
+        }
         Response::json(['error' => 'City not found'], 404);
     }
     Response::json($payload);
 });
+
+/** The city a merged city with this slug now lives in, or null. */
+function mergedCityBySlug(string $slug): ?array
+{
+    try {
+        $rows = Database::pdo()->query("
+            SELECT ch.id, ch.name FROM channels ch WHERE ch.type = 'city' AND ch.status = 'merged'
+        ")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\Throwable) {
+        return null;
+    }
+    foreach ($rows as $r) {
+        if (trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($r['name'])), '-') !== $slug) continue;
+        $into = CityRepository::mergedInto((int) substr($r['id'], 5));
+        return $into !== null ? CityRepository::findById($into) : null;
+    }
+    return null;
+}
 
 // GET /api/v1/events/{eventId}/venue-redirect
 // Resolve a (possibly expired) event-occurrence channel_id to its venue,

@@ -3560,6 +3560,39 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_cities_lower_ascii ON geo_cities (
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_cities_lower_name ON geo_cities (lower(name) text_pattern_ops)", 'idx_geo_cities_lower_name');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_city_names_lower ON geo_city_names (lower(name) text_pattern_ops)", 'idx_geo_city_names_lower');
 
+// 2026-10-27 - V5-01 step 4: the back office Cities page. short_name: the name
+// a city is known by worldwide where space is tight (Saigon), short_name_i18n
+// its form in a locale that differs ({"vi": "Sài Gòn"}), aliases: more names
+// the city search finds. merged_into: a city merged into another (its channel
+// is status 'merged'; apps and links that kept it are sent to the target).
+// Seeds the 8 short names the apps hard-coded (cityName.ts / cityName.js).
+// Reversal: ALTER TABLE cities DROP COLUMN short_name, DROP COLUMN short_name_i18n,
+//   DROP COLUMN aliases, DROP COLUMN merged_into;
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS short_name TEXT", 'cities.short_name');
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS short_name_i18n JSONB NOT NULL DEFAULT '{}'", 'cities.short_name_i18n');
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS aliases TEXT[] NOT NULL DEFAULT '{}'", 'cities.aliases');
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS merged_into TEXT", 'cities.merged_into');
+foreach ([
+    'Ho Chi Minh City'   => ['Saigon', ['vi' => 'Sài Gòn'], ['Saigon', 'Sài Gòn', 'HCMC']],
+    'Saint Petersburg'   => ['St. Petersburg', ['ru' => 'Петербург'], ['St Petersburg', 'St. Petersburg', 'Petersburg']],
+    'Rio de Janeiro'     => ['Rio', [], ['Rio']],
+    'Thiruvananthapuram' => ['Trivandrum', [], ['Trivandrum']],
+    'Guatemala City'     => ['Guatemala', [], []],
+    'Quebec City'        => ['Québec', [], ['Québec', 'Quebec']],
+    'Panama City'        => ['Panamá', [], []],
+    'Kuwait City'        => ['Kuwait', [], []],
+] as $name => [$short, $i18n, $aliases]) {
+    try {
+        $pdo->prepare("
+            UPDATE cities SET short_name = ?, short_name_i18n = ?::jsonb, aliases = ?::text[]
+            WHERE short_name IS NULL AND channel_id = (SELECT id FROM channels WHERE type = 'city' AND name = ? ORDER BY id LIMIT 1)
+        ")->execute([$short, json_encode($i18n ?: new stdClass(), JSON_UNESCAPED_UNICODE), '{' . implode(',', array_map(fn($a) => '"' . $a . '"', $aliases)) . '}', $name]);
+    } catch (\Throwable $e) {
+        echo "  FAIL short name {$name}: {$e->getMessage()}\n";
+    }
+}
+echo "  OK  city short names seeds\n";
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

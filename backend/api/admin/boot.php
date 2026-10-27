@@ -262,6 +262,20 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/app-versions') {
     require __DIR__ . '/app_versions.php';
 
+} elseif ($uri === '/admin/cities') {
+    require __DIR__ . '/cities.php';
+
+} elseif ($uri === '/admin/cities/suburbs') {
+    require __DIR__ . '/city_suburbs.php';
+
+} elseif (preg_match('#^/admin/cities/(city_\d+)$#', $uri, $m)) {
+    $cityId = $m[1];
+    require __DIR__ . '/city_edit.php';
+
+} elseif (preg_match('#^/admin/cities/(city_\d+)/merge$#', $uri, $m)) {
+    $cityId = $m[1];
+    require __DIR__ . '/city_merge.php';
+
 } elseif ($uri === '/admin/events/create') {
     require __DIR__ . '/event_create.php';
 

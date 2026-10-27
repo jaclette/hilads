@@ -7,7 +7,7 @@ class CityRepository
     /** In-memory cache - loaded once per request from Postgres. */
     private static ?array $cities = null;
 
-    private const CACHE_KEY = 'cities_all_v2';
+    private const CACHE_KEY = 'cities_all_v3';
 
     private static function load(): array
     {
@@ -46,7 +46,7 @@ class CityRepository
                     ci.lat,
                     ci.lng,
                     ci.timezone,
-                    " . self::geonameColumn() . "
+                    " . self::v5Columns() . "
                 FROM channels ch
                 JOIN cities ci ON ci.channel_id = ch.id
                 WHERE ch.type = 'city'
@@ -55,18 +55,7 @@ class CityRepository
             ")
             ->fetchAll(PDO::FETCH_ASSOC);
 
-        // Cast numeric fields to their proper types (PDO returns strings)
-        self::$cities = array_map(function (array $row): array {
-            return [
-                'id'       => (int)   $row['id'],
-                'name'     => $row['name'],
-                'country'  => $row['country'],
-                'lat'      => (float) $row['lat'],
-                'lng'      => (float) $row['lng'],
-                'timezone' => $row['timezone'],
-                'geoname_id' => $row['geoname_id'] !== null ? (int) $row['geoname_id'] : null,
-            ];
-        }, $rows);
+        self::$cities = array_map(self::fromRow(...), $rows);
 
         if ($apcu) {
             apcu_store(self::CACHE_KEY, self::$cities, 3600);
@@ -84,22 +73,45 @@ class CityRepository
     }
 
     /**
-     * cities.geoname_id, or NULL before the V5-01 migration ran (the code can
-     * ship first: every city is then unmapped and placement stays legacy).
+     * The V5-01 columns (GeoNames id, short names, aliases), or NULLs before
+     * the migration ran: the code can ship first, every city is then unmapped
+     * and placement stays legacy.
      */
-    private static function geonameColumn(): string
+    private static function v5Columns(): string
     {
         static $has = null;
         if ($has === null) {
             try {
                 $has = Database::pdo()->query("
-                    SELECT 1 FROM information_schema.columns WHERE table_name = 'cities' AND column_name = 'geoname_id'
-                ")->fetchColumn() !== false;
+                    SELECT array_agg(column_name::text) FROM information_schema.columns
+                    WHERE table_name = 'cities' AND column_name IN ('geoname_id', 'short_name')
+                ")->fetchColumn() ?: '';
             } catch (\Throwable) {
-                $has = false;
+                $has = '';
             }
         }
-        return $has ? 'ci.geoname_id' : 'NULL::int AS geoname_id';
+        return (str_contains($has, 'geoname_id') ? 'ci.geoname_id' : 'NULL::int AS geoname_id') . ', '
+            . (str_contains($has, 'short_name')
+                ? 'ci.short_name, ci.short_name_i18n::text AS short_name_i18n, array_to_json(ci.aliases)::text AS aliases'
+                : 'NULL AS short_name, NULL AS short_name_i18n, NULL AS aliases');
+    }
+
+    /** A cities row as the list holds it (PDO returns strings). */
+    private static function fromRow(array $row): array
+    {
+        return [
+            'id'         => (int)   $row['id'],
+            'name'       => $row['name'],
+            'country'    => $row['country'],
+            'lat'        => (float) $row['lat'],
+            'lng'        => (float) $row['lng'],
+            'timezone'   => $row['timezone'],
+            'geoname_id' => $row['geoname_id'] !== null ? (int) $row['geoname_id'] : null,
+            // Saigon, {"vi": "Sài Gòn"}, more names the search finds.
+            'short_name'      => $row['short_name'] ?? null,
+            'short_name_i18n' => json_decode((string) ($row['short_name_i18n'] ?? ''), true) ?: [],
+            'aliases'         => json_decode((string) ($row['aliases'] ?? ''), true) ?: [],
+        ];
     }
 
     /** Drop every cached copy of the list (a city was created, merged or edited). */
@@ -128,6 +140,27 @@ class CityRepository
         return false;
     }
 
+    /**
+     * The city a merged city now lives in (city_12 merged into city_7 → 7,
+     * following a chain), or null when it was never merged.
+     */
+    public static function mergedInto(int $id): ?int
+    {
+        $into = null;
+        try {
+            $stmt = Database::pdo()->prepare("SELECT merged_into FROM cities WHERE channel_id = ?");
+            for ($i = 0; $i < 5; $i++) {
+                $stmt->execute(['city_' . $id]);
+                $next = $stmt->fetchColumn();
+                if (!is_string($next) || !preg_match('/^city_(\d+)$/', $next, $m)) break;
+                $into = $id = (int) $m[1];
+            }
+        } catch (\Throwable) {
+            return null; // before the V5-01 migration
+        }
+        return $into;
+    }
+
     public static function findById(int $id): ?array
     {
         foreach (self::load() as $city) {
@@ -138,18 +171,14 @@ class CityRepository
         // A city created since this instance cached the list (another instance,
         // within the hour): one small row read, kept for the rest of the request.
         $stmt = Database::pdo()->prepare("
-            SELECT ch.name, ci.country, ci.lat, ci.lng, ci.timezone, " . self::geonameColumn() . "
+            SELECT " . $id . " AS id, ch.name, ci.country, ci.lat, ci.lng, ci.timezone, " . self::v5Columns() . "
             FROM channels ch JOIN cities ci ON ci.channel_id = ch.id
             WHERE ch.id = ? AND ch.type = 'city' AND ch.status = 'active'
         ");
         $stmt->execute(['city_' . $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return null;
-        $city = [
-            'id' => $id, 'name' => $row['name'], 'country' => $row['country'],
-            'lat' => (float) $row['lat'], 'lng' => (float) $row['lng'], 'timezone' => $row['timezone'],
-            'geoname_id' => $row['geoname_id'] !== null ? (int) $row['geoname_id'] : null,
-        ];
+        $city = self::fromRow($row);
         self::$cities[] = $city;
         return $city;
     }

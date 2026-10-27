@@ -53,6 +53,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/CityRepository.php';
     require_once __DIR__ . '/../src/CityPlacement.php';
     require_once __DIR__ . '/../src/WorldCities.php';
+    require_once __DIR__ . '/../src/CityAdmin.php';
     require_once __DIR__ . '/../src/UserRepository.php';
     require_once __DIR__ . '/../src/UsernameService.php';
     require_once __DIR__ . '/../src/BanRepository.php';
@@ -215,6 +216,7 @@ require_once __DIR__ . '/../src/NicknameGenerator.php';
 require_once __DIR__ . '/../src/CityRepository.php';
 require_once __DIR__ . '/../src/CityPlacement.php';
 require_once __DIR__ . '/../src/WorldCities.php';
+require_once __DIR__ . '/../src/CityAdmin.php';
 require_once __DIR__ . '/../src/PresenceRepository.php';
 require_once __DIR__ . '/../src/MessageRepository.php';
 require_once __DIR__ . '/../src/WorldRepository.php';
