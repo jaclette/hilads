@@ -3489,6 +3489,62 @@ run($pdo, "
 run($pdo, "ALTER TABLE push_broadcasts DROP CONSTRAINT IF EXISTS push_broadcasts_audience_type_check", 'drop push_broadcasts audience_type check (old_app)');
 run($pdo, "ALTER TABLE push_broadcasts ADD CONSTRAINT push_broadcasts_audience_type_check CHECK (audience_type IN ('all','all_installs','city','user','test','old_app'))", 'push_broadcasts.audience_type +old_app');
 
+// V5-01 (2026-10-27): the GeoNames world city base (cities5000 + names in our
+// 19 locales + country currencies), loaded by scripts/geonames_import.php.
+// Read-only reference data: Hilads cities (channels + cities) point to it.
+// Reversal: DROP TABLE geo_city_names, geo_cities, geo_countries;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS geo_cities (
+        geoname_id   INTEGER          PRIMARY KEY,
+        name         TEXT             NOT NULL,
+        ascii_name   TEXT             NOT NULL,
+        country      CHAR(2)          NOT NULL,
+        admin1       TEXT             NOT NULL DEFAULT '',
+        admin2       TEXT             NOT NULL DEFAULT '',
+        population   INTEGER          NOT NULL DEFAULT 0,
+        timezone     TEXT             NOT NULL,
+        lat          DOUBLE PRECISION NOT NULL,
+        lng          DOUBLE PRECISION NOT NULL,
+        feature_code TEXT             NOT NULL
+    )
+", 'geo_cities');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_geo_cities_lat_lng ON geo_cities (lat, lng)", 'idx_geo_cities_lat_lng');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS geo_city_names (
+        geoname_id   INTEGER NOT NULL REFERENCES geo_cities(geoname_id) ON DELETE CASCADE,
+        locale       TEXT    NOT NULL,
+        name         TEXT    NOT NULL,
+        is_preferred BOOLEAN NOT NULL DEFAULT false,
+        is_short     BOOLEAN NOT NULL DEFAULT false,
+        PRIMARY KEY (geoname_id, locale, name)
+    )
+", 'geo_city_names');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS geo_countries (
+        country  CHAR(2) PRIMARY KEY,
+        name     TEXT    NOT NULL,
+        currency CHAR(3)
+    )
+", 'geo_countries');
+// Placement exceptions, edited in the back office: a city attached to another
+// (target_geoname_id) or never absorbed (NULL target). No FK to geo_cities:
+// geonames_import.php --load truncates and reloads it.
+// Reversal: DROP TABLE geo_city_overrides;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS geo_city_overrides (
+        geoname_id        INTEGER     PRIMARY KEY,
+        target_geoname_id INTEGER,
+        note              TEXT,
+        created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'geo_city_overrides');
+require_once __DIR__ . '/src/CityPlacement.php';
+foreach (CityPlacement::SEED_OVERRIDES as $gid => [$target, $note]) {
+    $stmt = $pdo->prepare("INSERT INTO geo_city_overrides (geoname_id, target_geoname_id, note) VALUES (?, ?, ?) ON CONFLICT (geoname_id) DO NOTHING");
+    $stmt->execute([$gid, $target, $note]);
+}
+echo "  OK  geo_city_overrides seeds\n";
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
