@@ -1,28 +1,20 @@
 // Words of the promo in English and French (COPY.md 16). Shared by the video,
 // the carousel and the captions. *word* marks the highlighted word (DESIGN.md 3.3).
+// Native, not an ad: the brand only on the end card and the caption's last line,
+// never "download", "free app" or a URL.
 
 export const COPY = {
   en: {
-    tourTitle: '*Yesterday* around the world',
-    count: (cities, countries) => `${cities} ${cities === 1 ? 'city' : 'cities'} · ${countries} ${countries === 1 ? 'country' : 'countries'}`,
-    todayKicker: "Today's question",
-    yourTurn: 'Your turn.',
-    tagline: 'Play local. Compare global.',
-    playOn: 'Play on hilads.live',
-    hookCities: (n) => `${n} ${n === 1 ? 'city' : 'cities'} answered yesterday.`,
+    playFor: 'Play for *your city* on Hilads',
+    comment: 'And in your city? Tell us in the comments 👇',
+    cta: 'Play for your city on Hilads: link in bio',
     andMore: (n) => `and ${n} more`,
-    today: (q) => `Today's question: ${q}`,
   },
   fr: {
-    tourTitle: "Le tour du monde d'*hier*",
-    count: (cities, countries) => `${cities} ${cities === 1 ? 'ville' : 'villes'} · ${countries} pays`,
-    todayKicker: 'La question du jour',
-    yourTurn: 'À toi.',
-    tagline: 'Joue local. Compare global.',
-    playOn: 'Joue sur hilads.live',
-    hookCities: (n) => `${n} ${n === 1 ? 'ville a répondu' : 'villes ont répondu'} hier.`,
+    playFor: 'Joue pour *ta ville* sur Hilads',
+    comment: 'Et dans ta ville ? Dis-le en commentaire 👇',
+    cta: 'Joue pour ta ville sur Hilads : lien en bio',
     andMore: (n) => `et ${n} de plus`,
-    today: (q) => `La question du jour : ${q}`,
   },
 };
 

@@ -22,22 +22,24 @@ npm run promo -- 2026-10-31   # another day
 npm run promo -- --no-upload  # render only (out/<date>/)
 ```
 
-Your clip: put `<date>.mp4` (or `.mov`, `.m4v`) in `PROMO_CLIPS_DIR`, for example `2026-10-31.mp4`. It opens the video with its own sound, cut at 15 s. Everything after it is silent: add your music in each app. Without a clip, the video starts with the title card.
+Your clip: put `<date>.mp4` (or `.mov`, `.m4v`) in `PROMO_CLIPS_DIR`, for example `2026-10-31.mp4`. It opens the video with its own sound and the question over it, cut at 15 s. Everything after it is silent: add your music in each app. Without a clip, the video opens on the first city's photo with the question.
 
 ## What it makes
 
 | | |
 |---|---|
-| Video (1080×1920, 20 to 30 s) | your clip, the title card (yesterday's question, cities and countries, flags), about 1 s per city (photo, flag, city, the answer in a bubble, @photographer), the end card (today's question, Play local. Compare global., hilads.live) |
-| Carousel (1080×1350 JPEGs, zipped) | a title slide, one slide per city (18 at most), an end slide |
-| Caption | a hook on the question, three highlight answers, today's question, the tagline, five hashtags |
+| Video (1080×1920, 20 to 30 s) | the hook: your clip (else the first city's photo) with yesterday's question as a plain story caption; about 1 s per city (photo, flag, city, the answer in a bubble, @photographer); the end card, 2 s: the small logo and "Play for your city on Hilads" |
+| Carousel (1080×1350 JPEGs, zipped) | the first city's photo with the question, one slide per city (18 at most), the end slide |
+| Caption | the question, three answers, "And in your city? Tell us in the comments", then on the last line "Play for your city on Hilads: link in bio", five hashtags |
+
+Native, not an ad: no logo, URL or app name before the end card, never "download" or "free app".
 
 Cities: one per country first (the tour's order, podium first), then second cities, so the first seconds show as many countries as possible. Each city shows its best photo the author allows (see SPEC 10.13); the back office's Promo page shows why a photo is out and can exclude one. After an exclusion, run the command again: the new render replaces the old one.
 
 ## Files
 
 - `render.mjs`: reads `GET /internal/promo/{date}`, renders, uploads (presigned R2 URLs from the API) and saves to the back office.
-- `src/Promo.jsx`: the frames (the app's design: cream, ink, Be Vietnam Pro, theme colors, flag stickers, answer bubbles).
+- `src/Promo.jsx`: the frames (the hook's caption in the system font, like text typed in Instagram; then the app's design: flag stickers, answer bubbles, credits; the brand on the end card only).
 - `src/timing.js`: how long each part lasts and how many cities fit.
 - `captions.mjs`: the captions and hashtags.
 - `npm run studio`: preview the frames in Remotion Studio. `npm test`: captions and timing.

@@ -1,16 +1,19 @@
-// The promo's frames in the app's design (DESIGN.md): cream ground, ink text,
-// Be Vietnam Pro, the theme's color, flag stickers and answer bubbles.
+// The promo's frames. Native, not an ad: the hook is a photo (or your clip)
+// with the question as a plain story caption, no logo, URL or app name; the
+// comparison in the middle uses the app's design (flag stickers, answer
+// bubbles, credits); the brand appears only on the end card.
 // One set of parts for the story video (1080×1920) and the carousel (1080×1350).
 
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
-import { COPY, answerText, flagEmoji, theme } from './copy.js';
+import { COPY, answerText, flagEmoji } from './copy.js';
 
 const CREAM = '#FBF5EE';
 const INK = '#2A1C13';
-const MUTED = '#6F5B4D';
 const TANGERINE = '#FF7A3D';
 const FONT = 'Be Vietnam Pro';
+// The hook's caption looks like text typed in Instagram or TikTok, not like our brand.
+const NATIVE = '-apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif';
 
 for (const [file, weight] of [['Medium', '500'], ['Bold', '700'], ['ExtraBold', '800']]) {
   loadFont({ family: FONT, url: staticFile(`fonts/BeVietnamPro-${file}.ttf`), weight });
@@ -37,6 +40,18 @@ function Highlighted({ text, fill, ink }) {
     : <span key={i}>{part}</span>);
 }
 
+/** The question as a story caption: black text on white boxes, line by line, centered. */
+function Caption({ text, size, top }) {
+  return (
+    <div style={{ position: 'absolute', top, left: 70, right: 70, textAlign: 'center', textWrap: 'balance', fontFamily: NATIVE, fontWeight: 700, fontSize: size, lineHeight: 1.36 }}>
+      <span style={{ background: '#fff', color: '#000', padding: `${size * 0.1}px ${size * 0.28}px`, borderRadius: size * 0.22,
+                     boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
 /** The round flag sticker: white border, soft warm shadow (DESIGN.md 3.1). */
 function Flag({ city, size }) {
   const ring = Math.max(4, Math.round(size / 20));
@@ -51,8 +66,8 @@ function Flag({ city, size }) {
 }
 
 /** The answer's speech bubble: white, ink, radius, a small tail (DESIGN.md 3.2). */
-function Bubble({ text, size, still }) {
-  const p = useIn(4, still);
+function Bubble({ text, size, delay = 4, still }) {
+  const p = useIn(delay, still);
   return (
     <div style={{ position: 'relative', alignSelf: 'flex-start', maxWidth: '100%', transform: `scale(${0.6 + 0.4 * p})`, opacity: p, transformOrigin: 'bottom left' }}>
       <div style={{ background: '#fff', color: INK, fontFamily: FONT, fontWeight: 800, fontSize: size, lineHeight: 1.1,
@@ -76,75 +91,31 @@ function Camera({ size }) {
   );
 }
 
-function ThemeChip({ challenge, locale, size }) {
-  const t = theme(challenge.theme);
-  return (
-    <div style={{ display: 'inline-block', background: t.fill, color: t.ink, fontFamily: FONT, fontWeight: 800, fontSize: size,
-                  padding: `${size * 0.3}px ${size * 0.7}px`, borderRadius: size * 2 }}>
-      {challenge.themeName?.[locale] ?? ''}
-    </div>
-  );
-}
-
-function Brand({ size, color = INK }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: size * 0.4 }}>
-      <Img src={staticFile('logo.svg')} style={{ width: size * 1.5, height: size * 1.5, borderRadius: size * 0.35 }} />
-      <span style={{ fontFamily: FONT, fontWeight: 800, fontSize: size, color, letterSpacing: -1 }}>Hilads</span>
-    </div>
-  );
-}
-
-/** The dashed route line (DESIGN.md 3.4): decorative, in the band under the brand, never under text. */
-function Route({ width, height }) {
-  return (
-    <svg width={width} height={height} style={{ position: 'absolute', inset: 0 }} aria-hidden>
-      <path d={`M -40 ${height * 0.17} C ${width * 0.3} ${height * 0.11}, ${width * 0.6} ${height * 0.2}, ${width + 40} ${height * 0.13}`}
-            fill="none" stroke={INK} strokeOpacity={0.3} strokeWidth={5} strokeDasharray="18 16" />
-    </svg>
-  );
-}
-
 // ── Cards ─────────────────────────────────────────────────────────────────────
 
-/** Yesterday's question, the cities and countries, their flags. */
-function TitleCard({ data, cities, countries, locale, post, still }) {
-  const { width, height } = useVideoConfig();
-  const c = COPY[locale];
-  const t = theme(data.yesterday.theme);
-  const k = post ? 0.8 : 1;
+/** Your clip with the question over it, from the first frame. */
+function ClipHook({ clip, question }) {
+  const { height } = useVideoConfig();
   return (
-    <AbsoluteFill style={{ background: CREAM, padding: `${post ? 90 : 150}px 80px`, fontFamily: FONT, color: INK }}>
-      <Route width={width} height={height} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 44 * k, height: '100%', position: 'relative' }}>
-        <Rise still={still}><Brand size={52 * k} /></Rise>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 44 * k }}>
-          <Rise delay={3} still={still}><ThemeChip challenge={data.yesterday} locale={locale} size={40 * k} /></Rise>
-          <Rise delay={6} still={still} style={{ fontWeight: 800, fontSize: 60 * k, letterSpacing: -1 }}>
-            <Highlighted text={c.tourTitle} fill={t.fill} ink={t.ink} />
-          </Rise>
-          <Rise delay={9} still={still} style={{ fontWeight: 800, fontSize: 104 * k, lineHeight: 1.05, letterSpacing: -2 }}>
-            {data.yesterday.question[locale]}
-          </Rise>
-          <Rise delay={12} still={still} style={{ fontWeight: 700, fontSize: 44 * k, color: MUTED }}>
-            {c.count(cities.length, countries)}
-          </Rise>
-          <Rise delay={15} still={still} style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {cities.slice(0, 9).map((city, i) => (
-              <div key={city.proofId} style={{ marginLeft: i === 0 ? 0 : -22 * k }}><Flag city={city} size={104 * k} /></div>
-            ))}
-          </Rise>
-        </div>
-      </div>
+    <AbsoluteFill style={{ background: '#000' }}>
+      <OffthreadVideo src={staticFile(clip)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <Caption text={question} size={64} top={height * 0.26} />
     </AbsoluteFill>
   );
 }
 
-/** One city: its photo full-bleed, flag, name, the answer in a bubble, the photographer. */
-function CityCard({ city, locale, post, still }) {
+/**
+ * One city: its photo full-bleed, flag, name, the answer in a bubble, the photographer.
+ * With $question, the card opens as the hook: the photo and the question only
+ * (and the credit) for $hook frames, then the city and its answer come in.
+ * In a still, $question alone makes the hook slide.
+ */
+function CityCard({ city, locale, post, still, question = null, hook = 0 }) {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { durationInFrames, height } = useVideoConfig();
   const zoom = still ? 1.02 : interpolate(frame, [0, durationInFrames], [1, 1.07], { extrapolateRight: 'clamp' });
+  const hooking = question !== null && (still || frame < hook);
+  const reveal = still ? 0 : hook;
   const answer = answerText(city, locale);
   const medal = { 1: '#FFC93C', 2: '#E3E6EA', 3: '#E8A87C' }[city.podium] ?? null;
   const k = post ? 0.85 : 1;
@@ -152,64 +123,52 @@ function CityCard({ city, locale, post, still }) {
     <AbsoluteFill style={{ background: '#000', fontFamily: FONT }}>
       <Img src={staticFile(city.photo)} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})` }} />
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.6) 100%)' }} />
-      <div style={{ position: 'absolute', top: post ? 70 : 150, left: 64, right: 64, display: 'flex', alignItems: 'center', gap: 28 * k }}>
-        <Flag city={city} size={124 * k} />
-        <div style={{ color: '#fff', fontWeight: 800, fontSize: 84 * k, lineHeight: 1, letterSpacing: -1.5, textShadow: '0 3px 14px rgba(0,0,0,0.45)' }}>
-          {city.name[locale]}
-        </div>
-        {medal && <div style={{ width: 84 * k, height: 84 * k, borderRadius: 84, background: medal, color: INK, fontWeight: 800, fontSize: 44 * k,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid #fff', flexShrink: 0 }}>#{city.podium}</div>}
-      </div>
+      {hooking
+        ? <Caption text={question} size={post ? 58 : 64} top={height * (post ? 0.2 : 0.26)} />
+        : (
+          <Rise delay={reveal} still={still} style={{ position: 'absolute', top: post ? 70 : 150, left: 64, right: 64, display: 'flex', alignItems: 'center', gap: 28 * k }}>
+            <Flag city={city} size={124 * k} />
+            <div style={{ color: '#fff', fontWeight: 800, fontSize: 84 * k, lineHeight: 1, letterSpacing: -1.5, textShadow: '0 3px 14px rgba(0,0,0,0.45)' }}>
+              {city.name[locale]}
+            </div>
+            {medal && <div style={{ width: 84 * k, height: 84 * k, borderRadius: 84, background: medal, color: INK, fontWeight: 800, fontSize: 44 * k,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid #fff', flexShrink: 0 }}>#{city.podium}</div>}
+          </Rise>
+        )}
       <div style={{ position: 'absolute', left: 64, right: 64, bottom: post ? 90 : 220, display: 'flex', flexDirection: 'column', gap: 48 * k }}>
-        {answer && <Bubble text={answer} size={76 * k} still={still} />}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ background: 'rgba(255,255,255,0.92)', color: INK, fontWeight: 700, fontSize: 38 * k, padding: '12px 26px', borderRadius: 60,
-                        display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Camera size={38 * k} />@{city.username}
-          </div>
-          <div style={{ color: '#fff', fontWeight: 700, fontSize: 34 * k, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>hilads.live</div>
+        {!hooking && answer && <Bubble text={answer} size={76 * k} delay={reveal + 4} still={still} />}
+        <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.92)', color: INK, fontWeight: 700, fontSize: 38 * k, padding: '12px 26px', borderRadius: 60,
+                      display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Camera size={38 * k} />@{city.username}
         </div>
       </div>
     </AbsoluteFill>
   );
 }
 
-/** Today's question, the tagline and hilads.live. */
-function EndCard({ data, locale, post, still }) {
-  const { width, height } = useVideoConfig();
-  const c = COPY[locale];
-  const t = theme(data.today.theme);
-  const k = post ? 0.8 : 1;
+/** The end card, the only place for the brand: the small logo and "Play for your city on Hilads". */
+function EndCard({ locale, post, still }) {
+  const k = post ? 0.85 : 1;
   return (
-    <AbsoluteFill style={{ background: CREAM, padding: `${post ? 90 : 150}px 80px`, fontFamily: FONT, color: INK }}>
-      <Route width={width} height={height} />
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
-        <Rise still={still}><Brand size={52 * k} /></Rise>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 44 * k }}>
-          <Rise delay={3} still={still}><ThemeChip challenge={data.today} locale={locale} size={40 * k} /></Rise>
-          <Rise delay={5} still={still} style={{ fontWeight: 800, fontSize: 48 * k, color: MUTED, textTransform: 'uppercase', letterSpacing: 2 }}>
-            {c.todayKicker}
-          </Rise>
-          <Rise delay={8} still={still} style={{ fontWeight: 800, fontSize: 100 * k, lineHeight: 1.05, letterSpacing: -2 }}>
-            {data.today.question[locale]}
-          </Rise>
-          <Rise delay={11} still={still} style={{ fontWeight: 800, fontSize: 72 * k }}>
-            <Highlighted text={`*${c.yourTurn}*`} fill={t.fill} ink={t.ink} />
-          </Rise>
-        </div>
-        <Rise delay={14} still={still} style={{ display: 'flex', flexDirection: 'column', gap: 30 * k, alignItems: 'flex-start' }}>
-          <div style={{ fontWeight: 800, fontSize: 56 * k, letterSpacing: -1 }}>{c.tagline}</div>
-          <div style={{ background: TANGERINE, color: INK, fontWeight: 800, fontSize: 60 * k, padding: '18px 44px', borderRadius: 30 }}>hilads.live</div>
-        </Rise>
-      </div>
+    <AbsoluteFill style={{ background: CREAM, fontFamily: FONT, color: INK, padding: '0 90px', display: 'flex', flexDirection: 'column',
+                           justifyContent: 'center', alignItems: 'center', gap: 56 * k, textAlign: 'center' }}>
+      <Rise still={still}><Img src={staticFile('logo.svg')} style={{ width: 120 * k, height: 120 * k, borderRadius: 30 * k }} /></Rise>
+      <Rise delay={4} still={still} style={{ fontWeight: 800, fontSize: 92 * k, lineHeight: 1.15, letterSpacing: -2 }}>
+        <Highlighted text={COPY[locale].playFor} fill={TANGERINE} ink={INK} />
+      </Rise>
     </AbsoluteFill>
   );
 }
 
 // ── Compositions ──────────────────────────────────────────────────────────────
 
-/** The story video: your clip (with its sound), the title card, one second per city, the end card. Silent after the clip. */
-export function PromoVideo({ locale, data, cities, countries, clip, timing }) {
+/**
+ * The story video: the hook (your clip with its sound and the question over it,
+ * else the first city's photo with the question), one second per city, the end
+ * card. Silent after the clip.
+ */
+export function PromoVideo({ locale, data, cities, clip, timing }) {
+  const question = data.yesterday.question[locale];
   let at = 0;
   const seq = (frames, node, key) => {
     const el = <Sequence key={key} from={at} durationInFrames={frames}>{node}</Sequence>;
@@ -217,18 +176,19 @@ export function PromoVideo({ locale, data, cities, countries, clip, timing }) {
     return el;
   };
   return (
-    <AbsoluteFill style={{ background: CREAM }}>
-      {clip && seq(timing.clip, <OffthreadVideo src={staticFile(clip)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />, 'clip')}
-      {seq(timing.title, <TitleCard data={data} cities={cities} countries={countries} locale={locale} />, 'title')}
-      {cities.slice(0, timing.cities).map((city) => seq(timing.city, <CityCard city={city} locale={locale} />, city.proofId))}
-      {seq(timing.end, <EndCard data={data} locale={locale} />, 'end')}
+    <AbsoluteFill style={{ background: '#000' }}>
+      {clip && seq(timing.clip, <ClipHook clip={clip} question={question} />, 'clip')}
+      {cities.slice(0, timing.cities).map((city, i) => i === 0 && timing.hook > 0
+        ? seq(timing.hook + timing.city, <CityCard city={city} locale={locale} question={question} hook={timing.hook} />, city.proofId)
+        : seq(timing.city, <CityCard city={city} locale={locale} />, city.proofId))}
+      {seq(timing.end, <EndCard locale={locale} />, 'end')}
     </AbsoluteFill>
   );
 }
 
-/** One carousel slide (1080×1350): {kind: title | city | end, index}. */
-export function PromoSlide({ locale, data, cities, countries, slide }) {
+/** One carousel slide (1080×1350): {kind: hook | city | end, index}. The hook is the first city's photo with the question. */
+export function PromoSlide({ locale, data, cities, slide }) {
   if (slide.kind === 'city') return <CityCard city={cities[slide.index]} locale={locale} post still />;
-  if (slide.kind === 'end') return <EndCard data={data} locale={locale} post still />;
-  return <TitleCard data={data} cities={cities} countries={countries} locale={locale} post still />;
+  if (slide.kind === 'end') return <EndCard locale={locale} post still />;
+  return <CityCard city={cities[0]} locale={locale} post still question={data.yesterday.question[locale]} />;
 }

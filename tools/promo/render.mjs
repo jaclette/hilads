@@ -1,8 +1,9 @@
 // npm run promo [-- YYYY-MM-DD] [--no-upload]
 // Renders a day's promo from yesterday's world tour (SPEC 10.13), in English
-// and French: the story video (1080×1920, your clip first when
-// PROMO_CLIPS_DIR has <date>.mp4), the Instagram carousel (1080×1350 JPEGs,
-// zipped) and the captions. Then uploads them to Back office › Daily › Promo.
+// and French: the story video (1080×1920, opening on your clip when
+// PROMO_CLIPS_DIR has <date>.mp4, else on the first city's photo, with the
+// question as a caption), the Instagram carousel (1080×1350 JPEGs, zipped) and
+// the captions. Then uploads them to Back office › Daily › Promo.
 // Needs .env: API_URL, PROMO_TOKEN, optional PROMO_CLIPS_DIR.
 
 import { existsSync } from 'node:fs';
@@ -97,13 +98,12 @@ async function main() {
     clipSeconds = (await getVideoMetadata(path.join(pub, clip))).durationInSeconds;
     console.log(`  your clip: ${path.basename(clipFile)} (${clipSeconds.toFixed(1)} s${clipSeconds > 15 ? ', cut at 15 s' : ''})`);
   } else {
-    console.log('  no clip for this day: the video starts with the title card');
+    console.log("  no clip for this day: the video opens on the first city's photo");
   }
 
   const t = timing(clipSeconds, cities.length);
   const videoCities = cities.slice(0, t.cities);
   const slideCities = cities.slice(0, CAROUSEL_CITIES);
-  const countriesOf = (list) => new Set(list.map((c) => c.country).filter(Boolean)).size;
   console.log(`  video: ${videoCities.length} cities, ${(t.total / 30).toFixed(1)} s · carousel: ${slideCities.length} cities`);
 
   console.log('  bundling…');
@@ -112,15 +112,15 @@ async function main() {
   const files = [];
   const assets = [];
   for (const locale of LOCALES) {
-    const videoProps = { locale, data, cities: videoCities, countries: countriesOf(videoCities), clip, timing: t };
+    const videoProps = { locale, data, cities: videoCities, clip, timing: t };
     const video = await selectComposition({ serveUrl, id: 'Video', inputProps: videoProps });
     const videoFile = path.join(out, `hilads-${date}-${locale}.mp4`);
     console.log(`  rendering the ${locale.toUpperCase()} video…`);
     await renderMedia({ composition: video, serveUrl, codec: 'h264', outputLocation: videoFile, inputProps: videoProps, muted: !clip });
     files.push({ kind: `video_${locale}`, file: videoFile, contentType: 'video/mp4' });
 
-    const slideProps = { locale, data, cities: slideCities, countries: countriesOf(slideCities) };
-    const slides = [{ kind: 'title' }, ...slideCities.map((_, index) => ({ kind: 'city', index })), { kind: 'end' }];
+    const slideProps = { locale, data, cities: slideCities };
+    const slides = [{ kind: 'hook' }, ...slideCities.map((_, index) => ({ kind: 'city', index })), { kind: 'end' }];
     const dir = path.join(out, `carousel-${locale}`);
     await mkdir(dir, { recursive: true });
     console.log(`  rendering the ${locale.toUpperCase()} carousel (${slides.length} slides)…`);

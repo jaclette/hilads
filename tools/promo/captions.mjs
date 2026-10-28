@@ -1,6 +1,7 @@
-// The ready-to-paste caption of a day (Instagram, TikTok, YouTube Shorts):
-// a hook on yesterday's question, the highlight answers (podium cities first,
-// one per country), the tagline, today's question and five hashtags.
+// The ready-to-paste caption of a day (Instagram, TikTok, YouTube Shorts),
+// native, not an ad: yesterday's question as the hook, three answers (podium
+// cities first, one per country), the invitation to comment, and only on the
+// last line "Play for your city on Hilads: link in bio", then five hashtags.
 
 import { COPY, answerText, flagEmoji, theme } from './src/copy.js';
 
@@ -40,7 +41,7 @@ export function hashtags(themeKey, locale) {
 export function caption(data, cities, locale) {
   const c = COPY[locale];
   const y = data.yesterday;
-  const lines = [`${y.question[locale]} ${theme(y.theme).emoji}🌍`, c.hookCities(cities.length), ''];
+  const lines = [`${y.question[locale]} ${theme(y.theme).emoji}`, ''];
 
   const withAnswer = cities.filter((city) => answerText(city, locale));
   if (withAnswer.length > 0) {
@@ -54,6 +55,6 @@ export function caption(data, cities, locale) {
     lines.push(cities.length > 4 ? `${names}, ${c.andMore(cities.length - 4)}` : names);
   }
 
-  lines.push('', c.today(data.today.question[locale]), `${c.tagline} ${c.playOn}`, '', hashtags(y.theme, locale).join(' '));
+  lines.push('', c.comment, '', c.cta, '', hashtags(y.theme, locale).join(' '));
   return lines.join('\n');
 }

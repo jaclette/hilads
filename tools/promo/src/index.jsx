@@ -11,16 +11,15 @@ const sample = {
   },
   cities: [],
   clip: null,
-  timing: { clip: 0, title: 75, city: 30, end: 90, cities: 0, total: 165 },
-  countries: 0,
+  timing: { clip: 0, hook: 75, city: 30, end: 60, cities: 0, total: 60 },
 };
 
 function Root() {
   return (
     <>
-      <Composition id="Video" component={PromoVideo} width={1080} height={1920} fps={30} durationInFrames={165}
+      <Composition id="Video" component={PromoVideo} width={1080} height={1920} fps={30} durationInFrames={60}
         defaultProps={sample} calculateMetadata={({ props }) => ({ durationInFrames: props.timing.total })} />
-      <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'title' } }} />
+      <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />
     </>
   );
 }
