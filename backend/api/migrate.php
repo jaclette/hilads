@@ -3613,6 +3613,26 @@ run($pdo, "
     \$\$
 ", 'themes: join_in -> get_around');
 
+// Daily promo (SPEC 10.9, 2026-10-28): the video, carousel and captions made
+// from yesterday's world tour by tools/promo. Photo rights: the author's
+// consent ('yes' = every photo, also before the terms' clause; 'no' = none;
+// NULL = photos from DailyPromo::TERMS_SINCE), when the one-time ask was shown,
+// and a per-photo exclusion from the back office. The rendered files and
+// captions per promo date, one row per kind (a rerun replaces it).
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS promo_consent TEXT CHECK (promo_consent IN ('yes', 'no'))", 'users.promo_consent');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS promo_asked_at TIMESTAMPTZ", 'users.promo_asked_at');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS promo_excluded BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.promo_excluded');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_promo_assets (
+        promo_date  DATE        NOT NULL,
+        kind        TEXT        NOT NULL,
+        url         TEXT,
+        content     TEXT,
+        rendered_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (promo_date, kind)
+    )
+", 'daily_promo_assets');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

@@ -53,6 +53,23 @@ class R2Uploader
         return rtrim(getenv('R2_PUBLIC_URL'), '/') . '/' . $filename;
     }
 
+    /** A presigned PUT for one object (a client uploads it without R2 keys, e.g. tools/promo), valid $minutes. */
+    public static function presignPut(string $key, string $contentType, int $minutes = 30): string
+    {
+        $cmd = self::client()->getCommand('PutObject', [
+            'Bucket'      => getenv('R2_BUCKET'),
+            'Key'         => $key,
+            'ContentType' => $contentType,
+        ]);
+        return (string) self::client()->createPresignedRequest($cmd, '+' . $minutes . ' minutes')->getUri();
+    }
+
+    /** The public URL of an object key. */
+    public static function publicUrl(string $key): string
+    {
+        return rtrim((string) getenv('R2_PUBLIC_URL'), '/') . '/' . $key;
+    }
+
     /**
      * Delete one object from R2. Best effort: a failure is logged, never thrown,
      * so the caller's own delete still succeeds.

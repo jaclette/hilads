@@ -15752,3 +15752,76 @@ $router->add('GET', '/internal/daily-tick', function () {
     set_time_limit(120);
     Response::json(DailyDrop::tick());
 });
+
+// ── Daily promo (SPEC 10.9) ───────────────────────────────────────────────────
+// tools/promo (run on a Mac) reads a day's data, uploads the rendered files to
+// R2 with presigned URLs and saves them to the back office. X-Promo-Token =
+// the PROMO_TOKEN env var (a header: Apache may drop Authorization).
+function promoGuard(string $date): void
+{
+    $expected = getenv('PROMO_TOKEN') ?: null;
+    if ($expected === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    if (!hash_equals($expected, (string) ($_SERVER['HTTP_X_PROMO_TOKEN'] ?? ''))) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+    if (!DailyClock::isValidDate($date)) {
+        Response::json(['error' => 'Bad date'], 400);
+    }
+}
+
+// GET /internal/promo/{date}: yesterday's tour (allowed photos, promo order) and today's challenge.
+$router->add('GET', '/internal/promo/{date}', function (array $params) {
+    promoGuard($params['date']);
+    $data = DailyPromo::data($params['date']);
+    if ($data === null) {
+        Response::json(['error' => 'No published challenge on this day or the day before'], 404);
+    }
+    Response::json($data);
+});
+
+// POST /internal/promo/{date}/uploads {files: [{name, contentType}]} → {files: [{name, putUrl, url}]}
+$router->add('POST', '/internal/promo/{date}/uploads', function (array $params) {
+    promoGuard($params['date']);
+    $files = Request::json()['files'] ?? null;
+    if (!is_array($files) || $files === [] || count($files) > 60) {
+        Response::json(['error' => 'files: 1 to 60 entries'], 422);
+    }
+    $out = [];
+    foreach ($files as $f) {
+        $type = (string) ($f['contentType'] ?? '');
+        if (!in_array($type, ['video/mp4', 'image/jpeg', 'image/png', 'application/zip'], true)) {
+            Response::json(['error' => 'Unsupported contentType: ' . $type], 422);
+        }
+        $out[] = ['name' => (string) ($f['name'] ?? '')] + DailyPromo::uploadUrl($params['date'], (string) ($f['name'] ?? 'file'), $type);
+    }
+    Response::json(['files' => $out]);
+});
+
+// POST /internal/promo/{date}/assets {assets: [{kind, url?, content?}]}: the render, shown in Back office › Daily › Promo.
+$router->add('POST', '/internal/promo/{date}/assets', function (array $params) {
+    promoGuard($params['date']);
+    $assets = Request::json()['assets'] ?? null;
+    if (!is_array($assets) || $assets === []) {
+        Response::json(['error' => 'assets required'], 422);
+    }
+    try {
+        Response::json(['saved' => DailyPromo::saveAssets($params['date'], $assets)]);
+    } catch (InvalidArgumentException $e) {
+        Response::json(['error' => $e->getMessage()], 422);
+    }
+});
+
+// POST /api/v1/me/promo {answer: yes|no|later}: the one-time ask (yes, later) and the setting (yes, no).
+$router->add('POST', '/api/v1/me/promo', function () {
+    $user   = AuthService::requireAuth();
+    $answer = (string) (Request::json()['answer'] ?? '');
+    try {
+        DailyPromo::answer($user['id'], $answer);
+    } catch (InvalidArgumentException $e) {
+        Response::json(['error' => $e->getMessage()], 422);
+    }
+    $fresh = UserRepository::findById($user['id']) ?? $user;
+    Response::json(['ok' => true, 'promoConsent' => $fresh['promo_consent'] ?? null, 'promoAsk' => false]);
+});

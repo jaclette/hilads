@@ -86,6 +86,7 @@ require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/DailyVotes.php';
 require_once __DIR__ . '/../src/DailyResults.php';
 require_once __DIR__ . '/../src/DailyPoints.php';
+require_once __DIR__ . '/../src/DailyPromo.php';
 require_once __DIR__ . '/../src/DailyLeaderboard.php';
 require_once __DIR__ . '/../src/Cache.php';
 require_once __DIR__ . '/../src/DailyThemes.php';

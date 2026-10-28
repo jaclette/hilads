@@ -683,6 +683,9 @@ class AuthService
             // Saved theme preference ('light'|'dark'), or null = no preference.
             // The client reconciles this against its local cache on login.
             'theme'             => $user['theme'] ?? null,
+            // Daily promo (SPEC 10.9): 'yes' | 'no' | null (photos from the terms' clause), and the one-time ask.
+            'promoConsent'      => $user['promo_consent'] ?? null,
+            'promoAsk'          => DailyPromo::asks($user),
         ]);
     }
 
