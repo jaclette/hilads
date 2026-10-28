@@ -244,5 +244,14 @@
     "body": "Your city is {{from}}. Switch to {{city}}?",
     "switch": "Switch to {{city}}",
     "stay": "Stay in {{from}}"
+  },
+  "promo": {
+    "askTitle": "Allow Hilads to feature your photos, always credited?",
+    "askBody": "Your Daily Challenge photos could appear in our posts on Instagram, TikTok and YouTube, always with your @username. You can change this anytime in Settings.",
+    "allow": "Allow",
+    "notNow": "Not now",
+    "setting": "Feature my photos",
+    "on": "On",
+    "off": "Off"
   }
 }

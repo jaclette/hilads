@@ -262,5 +262,14 @@
     "chooseTitle": "Buka rute di",
     "ask": "Tanya setiap kali",
     "setting": "Petunjuk arah"
+  },
+  "promo": {
+    "askTitle": "Izinkan Hilads menampilkan fotomu, selalu dengan kredit?",
+    "askBody": "Foto Daily Challenge-mu bisa muncul di postingan kami di Instagram, TikTok, dan YouTube, selalu dengan @username-mu. Kamu bisa mengubahnya kapan saja di Pengaturan.",
+    "allow": "Izinkan",
+    "notNow": "Nanti saja",
+    "setting": "Tampilkan fotoku",
+    "on": "Aktif",
+    "off": "Nonaktif"
   }
 }

@@ -244,5 +244,14 @@
     "body": "Kotamu {{from}}. Pindah ke {{city}}?",
     "switch": "Pindah ke {{city}}",
     "stay": "Tetap di {{from}}"
+  },
+  "promo": {
+    "askTitle": "Izinkan Hilads menampilkan fotomu, selalu dengan kredit?",
+    "askBody": "Foto Daily Challenge-mu bisa muncul di postingan kami di Instagram, TikTok, dan YouTube, selalu dengan @username-mu. Kamu bisa mengubahnya kapan saja di Pengaturan.",
+    "allow": "Izinkan",
+    "notNow": "Nanti saja",
+    "setting": "Tampilkan fotoku",
+    "on": "Aktif",
+    "off": "Nonaktif"
   }
 }

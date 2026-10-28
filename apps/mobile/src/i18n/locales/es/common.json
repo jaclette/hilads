@@ -244,5 +244,14 @@
     "body": "Tu ciudad es {{from}}. ¿Cambiar a {{city}}?",
     "switch": "Cambiar a {{city}}",
     "stay": "Quedarme en {{from}}"
+  },
+  "promo": {
+    "askTitle": "¿Permites que Hilads muestre tus fotos, siempre con tu nombre?",
+    "askBody": "Tus fotos del Daily Challenge podrían aparecer en nuestras publicaciones de Instagram, TikTok y YouTube, siempre con tu @usuario. Puedes cambiarlo cuando quieras en Ajustes.",
+    "allow": "Permitir",
+    "notNow": "Ahora no",
+    "setting": "Mostrar mis fotos",
+    "on": "Sí",
+    "off": "No"
   }
 }

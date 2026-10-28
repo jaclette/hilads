@@ -77,6 +77,11 @@ export async function acceptEula(): Promise<{ user: User }> {
   return api.post<{ user: User }>('/users/me/eula');
 }
 
+/** Daily promo (SPEC 10.9): the one-time ask (yes / later) and the Settings row (yes / no). */
+export async function answerPromo(answer: 'yes' | 'no' | 'later'): Promise<{ promoConsent: 'yes' | 'no' | null }> {
+  return api.post('/me/promo', { answer });
+}
+
 export async function authLogout(): Promise<void> {
   await api.post('/auth/logout').catch(() => {});
 }

@@ -262,5 +262,14 @@
     "chooseTitle": "用以下应用打开路线",
     "ask": "每次都询问",
     "setting": "路线"
+  },
+  "promo": {
+    "askTitle": "允许 Hilads 展示你的照片吗？始终署名。",
+    "askBody": "你的 Daily Challenge 照片可能出现在我们的 Instagram、TikTok 和 YouTube 帖子中，并始终标注你的 @用户名。你可以随时在设置中更改。",
+    "allow": "允许",
+    "notNow": "以后再说",
+    "setting": "展示我的照片",
+    "on": "开",
+    "off": "关"
   }
 }

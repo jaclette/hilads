@@ -643,6 +643,10 @@ export interface User {
    * subsequent submits.
    */
   has_seen_public_optin?: boolean;
+  /** Daily promo (SPEC 10.9): 'yes' (every photo), 'no' (none), null (photos from the terms' clause). */
+  promoConsent?: 'yes' | 'no' | null;
+  /** Show the one-time "Allow Hilads to feature your photos?" ask (photos posted before the clause). */
+  promoAsk?: boolean;
   /**
    * Live source of truth for "what city is this user in." Server-side, updated
    * by the two-signal transition rule on /location/resolve and immediately by

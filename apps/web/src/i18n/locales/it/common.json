@@ -265,5 +265,14 @@
     "chooseTitle": "Apri il percorso in",
     "ask": "Chiedi ogni volta",
     "setting": "Indicazioni"
+  },
+  "promo": {
+    "askTitle": "Permetti a Hilads di mostrare le tue foto, sempre con il tuo nome?",
+    "askBody": "Le tue foto del Daily Challenge potrebbero apparire nei nostri post su Instagram, TikTok e YouTube, sempre con il tuo @username. Puoi cambiarlo quando vuoi nelle Impostazioni.",
+    "allow": "Permetti",
+    "notNow": "Non ora",
+    "setting": "Mostra le mie foto",
+    "on": "Sì",
+    "off": "No"
   }
 }

@@ -901,6 +901,19 @@ export async function createChallenge(channelId, guestId, nickname, title, chall
   return res.json() // newly-created Challenge object
 }
 
+// Daily promo (SPEC 10.9): the one-time ask (yes / later) and the Me screen's
+// "Feature my photos" (yes / no). Returns { ok, promoConsent, promoAsk }.
+export async function answerPromo(answer) {
+  const res = await fetch(`${BASE}/me/promo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ answer }),
+  })
+  if (!res.ok) throw new Error('Failed to save')
+  return res.json()
+}
+
 // Flip users.has_seen_public_optin to TRUE so the first-time public modal
 // stops showing. Server returns { ok, hasSeenPublicOptin }.
 export async function dismissPublicOptin() {

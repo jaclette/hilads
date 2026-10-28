@@ -265,5 +265,14 @@
     "chooseTitle": "Abrir a rota no",
     "ask": "Perguntar sempre",
     "setting": "Como chegar"
+  },
+  "promo": {
+    "askTitle": "Permitir que o Hilads mostre suas fotos, sempre com crédito?",
+    "askBody": "Suas fotos do Daily Challenge podem aparecer nos nossos posts no Instagram, TikTok e YouTube, sempre com seu @usuário. Você pode mudar isso quando quiser nas Configurações.",
+    "allow": "Permitir",
+    "notNow": "Agora não",
+    "setting": "Mostrar minhas fotos",
+    "on": "Sim",
+    "off": "Não"
   }
 }

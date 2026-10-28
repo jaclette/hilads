@@ -263,5 +263,14 @@
     "chooseTitle": "Route öffnen in",
     "ask": "Jedes Mal fragen",
     "setting": "Route"
+  },
+  "promo": {
+    "askTitle": "Darf Hilads deine Fotos zeigen, immer mit Nennung?",
+    "askBody": "Deine Daily Challenge Fotos könnten in unseren Posts auf Instagram, TikTok und YouTube erscheinen, immer mit deinem @Namen. Du kannst das jederzeit in den Einstellungen ändern.",
+    "allow": "Erlauben",
+    "notNow": "Nicht jetzt",
+    "setting": "Meine Fotos zeigen",
+    "on": "An",
+    "off": "Aus"
   }
 }

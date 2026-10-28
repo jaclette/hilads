@@ -244,5 +244,14 @@
     "body": "Thành phố của bạn là {{from}}. Chuyển sang {{city}}?",
     "switch": "Chuyển sang {{city}}",
     "stay": "Ở lại {{from}}"
+  },
+  "promo": {
+    "askTitle": "Cho phép Hilads giới thiệu ảnh của bạn, luôn ghi tên bạn?",
+    "askBody": "Ảnh Daily Challenge của bạn có thể xuất hiện trong bài đăng của chúng tôi trên Instagram, TikTok và YouTube, luôn kèm @tên của bạn. Bạn có thể đổi bất cứ lúc nào trong Cài đặt.",
+    "allow": "Cho phép",
+    "notNow": "Để sau",
+    "setting": "Giới thiệu ảnh của tôi",
+    "on": "Bật",
+    "off": "Tắt"
   }
 }

@@ -29,6 +29,7 @@ import { useDeviceTimezone } from '@/hooks/useDeviceTimezone';
 import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
 import { CitySwitchSheet } from '@/components/CitySwitchSheet';
+import { PromoAskSheet } from '@/features/promo/PromoAskSheet';
 import { PlacedCityBanner } from '@/components/PlacedCityBanner';
 import { UpdateGate } from '@/features/shell/UpdateGate';
 import { ScopeProvider } from '@/context/ScopeContext';
@@ -231,6 +232,8 @@ function RootLayoutInner() {
               GPS prompt. A one-shot banner confirms the auto-placement. */}
           <PlacedCityBanner />
           <CitySwitchSheet proposal={citySwitch.proposal} onSwitch={citySwitch.accept} onStay={citySwitch.stay} />
+          {/* Daily promo (SPEC 10.9): once, after the EULA and any city question. */}
+          <PromoAskSheet blocked={showEulaModal || !!citySwitch.proposal} />
           {/* "Update available" banner / blocking "Update required" (GET /app/config, V3-04). */}
           <UpdateGate />
         </>

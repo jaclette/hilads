@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { setLocale } from '../i18n'
 import { setTheme } from '../lib/theme'
-import { updateProfile } from '../api'
+import { answerPromo, updateProfile } from '../api'
 import Icon from './Icon'
 import { MAPS_APP_NAMES, getMapsApp, mapsApps, setMapsApp } from '../lib/directions'
 
@@ -34,7 +34,7 @@ const LANGS = [
  * Available to everyone — pass `account` for members (theme also saves to the DB
  * so it follows the account across devices) or omit it for guests (local only).
  */
-export default function AppearanceLanguageCard({ account = null }) {
+export default function AppearanceLanguageCard({ account = null, onSave = null }) {
   const { t, i18n } = useTranslation(['profile', 'common'])
   const [theme, setThemeChoice] = useState(
     () => (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme')) || 'light',
@@ -47,6 +47,15 @@ export default function AppearanceLanguageCard({ account = null }) {
     setTheme(tv)
     setThemeChoice(tv)
     if (account?.id) updateProfile({ theme: tv }).catch(() => {}) // members: persist to DB
+  }
+
+  // Daily promo (SPEC 10.9), members: Off → 'no' (no photo); On → 'yes' (every photo, earlier ones too).
+  const promoOn = account?.promoConsent !== 'no'
+  const pickPromo = (on) => {
+    if (!account || on === promoOn) return
+    const next = on ? 'yes' : 'no'
+    onSave?.({ ...account, promoConsent: next, promoAsk: false })
+    answerPromo(next).catch(() => onSave?.(account))
   }
 
   const cur = LANGS.find(l => l.code === i18n.language) || LANGS[0]
@@ -87,6 +96,21 @@ export default function AppearanceLanguageCard({ account = null }) {
               <button key={app ?? 'ask'} type="button" className={`profile-mode-btn${mapsApp === app ? ' profile-mode-btn--on' : ''}`}
                       aria-pressed={mapsApp === app} onClick={() => pickMaps(app)}>
                 <span className="profile-mode-btn-name">{app ? MAPS_APP_NAMES[app] : t('common:directions.ask')}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Feature my photos (members): Hilads may use their Daily photos in promos, always credited. */}
+      {account && onSave && (
+        <div className="profile-mode-section">
+          <span className="profile-mode-label">{t('common:promo.setting')}</span>
+          <div className="profile-mode-btns" role="group" aria-label={t('common:promo.setting')}>
+            {[true, false].map(on => (
+              <button key={String(on)} type="button" className={`profile-mode-btn${promoOn === on ? ' profile-mode-btn--on' : ''}`}
+                      aria-pressed={promoOn === on} onClick={() => pickPromo(on)}>
+                <span className="profile-mode-btn-name">{t(on ? 'common:promo.on' : 'common:promo.off')}</span>
               </button>
             ))}
           </div>

@@ -262,5 +262,14 @@
     "chooseTitle": "길찾기 열기",
     "ask": "매번 묻기",
     "setting": "길찾기"
+  },
+  "promo": {
+    "askTitle": "Hilads가 회원님의 사진을 소개해도 될까요? 항상 출처를 표시해요.",
+    "askBody": "회원님의 Daily Challenge 사진이 Instagram, TikTok, YouTube 게시물에 나올 수 있어요. 항상 @사용자 이름을 함께 표시해요. 설정에서 언제든지 바꿀 수 있어요.",
+    "allow": "허용",
+    "notNow": "나중에",
+    "setting": "내 사진 소개하기",
+    "on": "켜짐",
+    "off": "꺼짐"
   }
 }

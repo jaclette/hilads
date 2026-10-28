@@ -293,7 +293,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
 
           {/* Appearance (theme) + Language — shared with the guest Me view
               so members and guests get the identical pickers. */}
-          <AppearanceLanguageCard account={account} />
+          <AppearanceLanguageCard account={account} onSave={onSave} />
 
         </div>
 

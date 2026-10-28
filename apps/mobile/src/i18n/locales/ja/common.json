@@ -244,5 +244,14 @@
     "body": "あなたの都市は{{from}}です。{{city}}に切り替えますか？",
     "switch": "{{city}}に切り替える",
     "stay": "{{from}}のままにする"
+  },
+  "promo": {
+    "askTitle": "Hilads があなたの写真を紹介してもいいですか？必ずクレジットを入れます。",
+    "askBody": "あなたの Daily Challenge の写真が Instagram、TikTok、YouTube の投稿に登場することがあります。必ずあなたの @ユーザー名を表示します。設定からいつでも変更できます。",
+    "allow": "許可する",
+    "notNow": "あとで",
+    "setting": "写真を紹介する",
+    "on": "オン",
+    "off": "オフ"
   }
 }

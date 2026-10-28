@@ -262,5 +262,14 @@
     "chooseTitle": "Mở chỉ đường bằng",
     "ask": "Luôn hỏi",
     "setting": "Chỉ đường"
+  },
+  "promo": {
+    "askTitle": "Cho phép Hilads giới thiệu ảnh của bạn, luôn ghi tên bạn?",
+    "askBody": "Ảnh Daily Challenge của bạn có thể xuất hiện trong bài đăng của chúng tôi trên Instagram, TikTok và YouTube, luôn kèm @tên của bạn. Bạn có thể đổi bất cứ lúc nào trong Cài đặt.",
+    "allow": "Cho phép",
+    "notNow": "Để sau",
+    "setting": "Giới thiệu ảnh của tôi",
+    "on": "Bật",
+    "off": "Tắt"
   }
 }

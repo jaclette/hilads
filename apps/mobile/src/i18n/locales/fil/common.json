@@ -244,5 +244,14 @@
     "body": "Ang city mo ay {{from}}. Lumipat sa {{city}}?",
     "switch": "Lumipat sa {{city}}",
     "stay": "Manatili sa {{from}}"
+  },
+  "promo": {
+    "askTitle": "Payagan ang Hilads na i-feature ang mga litrato mo, laging may credit?",
+    "askBody": "Puwedeng lumabas ang mga Daily Challenge na litrato mo sa mga post namin sa Instagram, TikTok at YouTube, laging kasama ang @username mo. Puwede mo itong baguhin anumang oras sa Mga setting.",
+    "allow": "Payagan",
+    "notNow": "Mamaya na",
+    "setting": "I-feature ang mga litrato ko",
+    "on": "On",
+    "off": "Off"
   }
 }

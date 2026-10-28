@@ -244,5 +244,14 @@
     "body": "Ta ville est {{from}}. Passer à {{city}} ?",
     "switch": "Passer à {{city}}",
     "stay": "Rester à {{from}}"
+  },
+  "promo": {
+    "askTitle": "Autoriser Hilads à montrer tes photos, toujours créditées ?",
+    "askBody": "Tes photos du Daily Challenge pourraient apparaître dans nos posts sur Instagram, TikTok et YouTube, toujours avec ton @pseudo. Tu peux changer ça à tout moment dans les Réglages.",
+    "allow": "Autoriser",
+    "notNow": "Pas maintenant",
+    "setting": "Montrer mes photos",
+    "on": "Oui",
+    "off": "Non"
   }
 }

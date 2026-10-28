@@ -244,5 +244,14 @@
     "body": "Je stad is {{from}}. Overstappen naar {{city}}?",
     "switch": "Naar {{city}}",
     "stay": "In {{from}} blijven"
+  },
+  "promo": {
+    "askTitle": "Mag Hilads je foto's laten zien, altijd met vermelding?",
+    "askBody": "Je Daily Challenge-foto's kunnen in onze posts op Instagram, TikTok en YouTube verschijnen, altijd met je @gebruikersnaam. Je kunt dit altijd wijzigen in Instellingen.",
+    "allow": "Toestaan",
+    "notNow": "Niet nu",
+    "setting": "Mijn foto's tonen",
+    "on": "Aan",
+    "off": "Uit"
   }
 }

@@ -66,6 +66,7 @@ import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
 import SignUpSheet from './components/SignUpSheet'
 import AccountWelcome from './components/AccountWelcome'
+import PromoAsk from './components/PromoAsk'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
 import ProfileScreen from './components/ProfileScreen'
@@ -7345,6 +7346,9 @@ export default function App() {
         bursts={reactionBursts}
         onDone={id => setReactionBursts(prev => prev.filter(b => b.id !== id))}
       />
+
+      {/* Daily promo (SPEC 10.9): the one-time "feature your photos?" ask, never over the welcome. */}
+      {!showAccountWelcome && <PromoAsk account={account} onAnswered={setAccount} />}
 
       {/* One-time congrats screen, shown right after account creation (signup only). */}
       {showAccountWelcome && account && (

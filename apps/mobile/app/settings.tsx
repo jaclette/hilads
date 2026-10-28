@@ -16,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { saveIdentity } from '@/lib/identity';
-import { updateProfile, deleteAccount, checkUsernameAvailability } from '@/api/auth';
+import { updateProfile, deleteAccount, checkUsernameAvailability, answerPromo } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { setCurrentCity } from '@/api/channels';
 import { isLegend as accountIsLegend } from '@/lib/canCreateEvent';
@@ -59,6 +59,13 @@ export default function SettingsScreen() {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     if (account?.id) updateProfile({ theme: next }).catch(() => {});
+  };
+  // Off → 'no' (no photo); On → 'yes' (every photo, earlier ones too: an explicit choice).
+  const onTogglePromo = () => {
+    if (!account) return;
+    const next = account.promoConsent === 'no' ? 'yes' : 'no';
+    setAccount({ ...account, promoConsent: next, promoAsk: false });
+    answerPromo(next).catch(() => setAccount(account));
   };
 
   const router  = useRouter();
@@ -485,6 +492,17 @@ export default function SettingsScreen() {
           <DirectionsRow divider />
           {!isGuest && (
             <ListRow icon="ban-outline" title={t('blockedUsers')} divider onPress={() => router.push('/blocked-users' as never)} />
+          )}
+          {/* Daily promo (SPEC 10.9): Hilads may feature this member's photos, always credited. */}
+          {!isGuest && (
+            <ListRow
+              icon="images-outline"
+              title={t('promo.setting', { ns: 'common' })}
+              value={account?.promoConsent === 'no' ? t('promo.off', { ns: 'common' }) : t('promo.on', { ns: 'common' })}
+              chevron={false}
+              divider
+              onPress={onTogglePromo}
+            />
           )}
         </RowGroup>
 
