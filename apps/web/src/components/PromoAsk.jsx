@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import ConfirmDialog from './ConfirmDialog'
 import { answerPromo } from '../api'
 
-// Daily promo (SPEC 10.9): asked once to players with photos from before the
+// Daily promo (SPEC 10.13): asked once to players with photos from before the
 // terms' promo clause. Allow lets Hilads feature those too; Not now (or a tap
 // outside) never asks again. The Me screen's "Feature my photos" changes it later.
 export default function PromoAsk({ account, onAnswered }) {

@@ -493,7 +493,7 @@ export default function SettingsScreen() {
           {!isGuest && (
             <ListRow icon="ban-outline" title={t('blockedUsers')} divider onPress={() => router.push('/blocked-users' as never)} />
           )}
-          {/* Daily promo (SPEC 10.9): Hilads may feature this member's photos, always credited. */}
+          {/* Daily promo (SPEC 10.13): Hilads may feature this member's photos, always credited. */}
           {!isGuest && (
             <ListRow
               icon="images-outline"

@@ -6,7 +6,7 @@ import { useApp } from '@/context/AppContext';
 import { answerPromo } from '@/api/auth';
 import { Button, Sheet } from '@/ui';
 
-// Daily promo (SPEC 10.9): asked once to players with photos from before the
+// Daily promo (SPEC 10.13): asked once to players with photos from before the
 // terms' promo clause. Allow lets Hilads feature those too; Not now (or
 // closing) never asks again, and photos from the clause on stay covered.
 // Settings › Feature my photos changes it later.

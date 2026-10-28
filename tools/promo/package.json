@@ -2,7 +2,7 @@
   "name": "hilads-promo",
   "private": true,
   "type": "module",
-  "description": "Daily promo video, carousel and captions from yesterday's world tour (SPEC 10.9). Rendered on a Mac, uploaded to Back office › Daily › Promo.",
+  "description": "Daily promo video, carousel and captions from yesterday's world tour (SPEC 10.13). Rendered on a Mac, uploaded to Back office › Daily › Promo.",
   "scripts": {
     "promo": "node --env-file-if-exists=.env render.mjs",
     "studio": "remotion studio src/index.jsx",

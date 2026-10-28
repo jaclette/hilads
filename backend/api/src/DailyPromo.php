@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Daily promo (SPEC 10.9): the video, carousel and captions made every
+ * Daily promo (SPEC 10.13): the video, carousel and captions made every
  * morning from yesterday's world tour by tools/promo (rendered on a Mac, not
  * here). This class gives the generator its data and keeps what it uploads.
  *

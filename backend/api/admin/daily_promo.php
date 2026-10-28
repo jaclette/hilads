@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Daily promo (SPEC 10.9): a day's video, carousel and captions, rendered on a
+// Daily promo (SPEC 10.13): a day's video, carousel and captions, rendered on a
 // Mac by tools/promo from yesterday's world tour, with a download per file.
 // Below, every photo of that tour: the one each city shows, and why the others
 // are left out. Exclude leaves one photo out (rerun the command after).

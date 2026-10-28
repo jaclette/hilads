@@ -3613,7 +3613,7 @@ run($pdo, "
     \$\$
 ", 'themes: join_in -> get_around');
 
-// Daily promo (SPEC 10.9, 2026-10-28): the video, carousel and captions made
+// Daily promo (SPEC 10.13, 2026-10-28): the video, carousel and captions made
 // from yesterday's world tour by tools/promo. Photo rights: the author's
 // consent ('yes' = every photo, also before the terms' clause; 'no' = none;
 // NULL = photos from DailyPromo::TERMS_SINCE), when the one-time ask was shown,

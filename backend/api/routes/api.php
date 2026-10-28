@@ -15753,7 +15753,7 @@ $router->add('GET', '/internal/daily-tick', function () {
     Response::json(DailyDrop::tick());
 });
 
-// ── Daily promo (SPEC 10.9) ───────────────────────────────────────────────────
+// ── Daily promo (SPEC 10.13) ───────────────────────────────────────────────────
 // tools/promo (run on a Mac) reads a day's data, uploads the rendered files to
 // R2 with presigned URLs and saves them to the back office. X-Promo-Token =
 // the PROMO_TOKEN env var (a header: Apache may drop Authorization).

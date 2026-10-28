@@ -1,5 +1,5 @@
 // npm run promo [-- YYYY-MM-DD] [--no-upload]
-// Renders a day's promo from yesterday's world tour (SPEC 10.9), in English
+// Renders a day's promo from yesterday's world tour (SPEC 10.13), in English
 // and French: the story video (1080×1920, your clip first when
 // PROMO_CLIPS_DIR has <date>.mp4), the Instagram carousel (1080×1350 JPEGs,
 // zipped) and the captions. Then uploads them to Back office › Daily › Promo.

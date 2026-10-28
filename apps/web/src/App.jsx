@@ -7347,7 +7347,7 @@ export default function App() {
         onDone={id => setReactionBursts(prev => prev.filter(b => b.id !== id))}
       />
 
-      {/* Daily promo (SPEC 10.9): the one-time "feature your photos?" ask, never over the welcome. */}
+      {/* Daily promo (SPEC 10.13): the one-time "feature your photos?" ask, never over the welcome. */}
       {!showAccountWelcome && <PromoAsk account={account} onAnswered={setAccount} />}
 
       {/* One-time congrats screen, shown right after account creation (signup only). */}

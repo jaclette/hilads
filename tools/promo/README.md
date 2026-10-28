@@ -1,4 +1,4 @@
-# Daily promo (SPEC 10.9)
+# Daily promo (SPEC 10.13)
 
 Every morning, from yesterday's world tour: a vertical video, an Instagram carousel and a caption, in English and French. Rendered on your Mac with Remotion, uploaded to **Back office › Daily › Promo** with a download for each. You post them by hand.
 
@@ -32,7 +32,7 @@ Your clip: put `<date>.mp4` (or `.mov`, `.m4v`) in `PROMO_CLIPS_DIR`, for exampl
 | Carousel (1080×1350 JPEGs, zipped) | a title slide, one slide per city (18 at most), an end slide |
 | Caption | a hook on the question, three highlight answers, today's question, the tagline, five hashtags |
 
-Cities: one per country first (the tour's order, podium first), then second cities, so the first seconds show as many countries as possible. Each city shows its best photo the author allows (see SPEC 10.9); the back office's Promo page shows why a photo is out and can exclude one. After an exclusion, run the command again: the new render replaces the old one.
+Cities: one per country first (the tour's order, podium first), then second cities, so the first seconds show as many countries as possible. Each city shows its best photo the author allows (see SPEC 10.13); the back office's Promo page shows why a photo is out and can exclude one. After an exclusion, run the command again: the new render replaces the old one.
 
 ## Files
 

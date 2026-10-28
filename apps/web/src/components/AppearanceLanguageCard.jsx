@@ -49,7 +49,7 @@ export default function AppearanceLanguageCard({ account = null, onSave = null }
     if (account?.id) updateProfile({ theme: tv }).catch(() => {}) // members: persist to DB
   }
 
-  // Daily promo (SPEC 10.9), members: Off → 'no' (no photo); On → 'yes' (every photo, earlier ones too).
+  // Daily promo (SPEC 10.13), members: Off → 'no' (no photo); On → 'yes' (every photo, earlier ones too).
   const promoOn = account?.promoConsent !== 'no'
   const pickPromo = (on) => {
     if (!account || on === promoOn) return
