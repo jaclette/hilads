@@ -1,0 +1,61 @@
+// Words of the promo in English and French (COPY.md 16). Shared by the video,
+// the carousel and the captions. *word* marks the highlighted word (DESIGN.md 3.3).
+
+export const COPY = {
+  en: {
+    tourTitle: '*Yesterday* around the world',
+    count: (cities, countries) => `${cities} ${cities === 1 ? 'city' : 'cities'} · ${countries} ${countries === 1 ? 'country' : 'countries'}`,
+    todayKicker: "Today's question",
+    yourTurn: 'Your turn.',
+    tagline: 'Play local. Compare global.',
+    playOn: 'Play on hilads.live',
+    hookCities: (n) => `${n} ${n === 1 ? 'city' : 'cities'} answered yesterday.`,
+    andMore: (n) => `and ${n} more`,
+    today: (q) => `Today's question: ${q}`,
+  },
+  fr: {
+    tourTitle: "Le tour du monde d'*hier*",
+    count: (cities, countries) => `${cities} ${cities === 1 ? 'ville' : 'villes'} · ${countries} pays`,
+    todayKicker: 'La question du jour',
+    yourTurn: 'À toi.',
+    tagline: 'Joue local. Compare global.',
+    playOn: 'Joue sur hilads.live',
+    hookCities: (n) => `${n} ${n === 1 ? 'ville a répondu' : 'villes ont répondu'} hier.`,
+    andMore: (n) => `et ${n} de plus`,
+    today: (q) => `La question du jour : ${q}`,
+  },
+};
+
+// Theme colors (DESIGN.md 2): fill and the text that goes on it.
+export const THEMES = {
+  hidden_gem: { fill: '#1FB5A8', ink: '#2A1C13', emoji: '💎' },
+  taste:      { fill: '#FFD2C2', ink: '#8A3418', emoji: '🍜' },
+  get_around: { fill: '#3D9BF0', ink: '#2A1C13', emoji: '🛵' },
+  local_find: { fill: '#FF7EB0', ink: '#2A1C13', emoji: '🧭' },
+  night_out:  { fill: '#5B5BD6', ink: '#FFFFFF', emoji: '🌙' },
+  sip:        { fill: '#FFC93C', ink: '#2A1C13', emoji: '🥂' },
+  only_here:  { fill: '#FFD2C2', ink: '#8A3418', emoji: '📍' },
+  special:    { fill: '#FF7A3D', ink: '#2A1C13', emoji: '✨' },
+};
+
+export const theme = (key) => THEMES[key] ?? THEMES.special;
+
+/** A country's flag emoji ("vn" → 🇻🇳), or 🌍. */
+export function flagEmoji(country) {
+  if (!country || !/^[a-z]{2}$/i.test(country)) return '🌍';
+  return String.fromCodePoint(...[...country.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+}
+
+/** A city's answer as shown in its bubble: the answer, else the price, else nothing. */
+export function answerText(city, locale) {
+  if (city.answer?.[locale]) return city.answer[locale];
+  if (city.price) {
+    try {
+      return new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: city.price.currency, maximumFractionDigits: 2 })
+        .format(city.price.amount);
+    } catch {
+      return `${city.price.amount} ${city.price.currency}`;
+    }
+  }
+  return null;
+}
