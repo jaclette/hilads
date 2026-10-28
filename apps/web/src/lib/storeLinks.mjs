@@ -22,12 +22,16 @@ export function storeForAgent(ua = '') {
 
 const clean = (v) => (v == null ? '' : String(v).toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60))
 
-/** { action, city, cityId, surface, medium } → the store URL for `store`. */
-export function storeLink(store, { action = 'play', city = null, cityId = null, surface = null, medium = 'app_modal' } = {}) {
+/**
+ * { action, city, cityId, surface, medium, source, campaign } → the store URL for `store`.
+ * `source` and `campaign` come from an outside link's UTM (a story's link
+ * sticker: /get?utm_source=instagram&utm_medium=story&utm_campaign=halloween).
+ */
+export function storeLink(store, { action = 'play', city = null, cityId = null, surface = null, medium = 'app_modal', source = 'hilads_web', campaign = null } = {}) {
   const params = {
-    utm_source: 'hilads_web',
+    utm_source: clean(source),
     utm_medium: clean(medium),
-    utm_campaign: clean(action),
+    utm_campaign: clean(campaign || action),
     ...(surface ? { utm_content: clean(surface) } : {}),
     ...(city ? { utm_term: clean(city) } : {}),
     hilads_action: clean(action),
@@ -35,7 +39,7 @@ export function storeLink(store, { action = 'play', city = null, cityId = null, 
   }
   const query = new URLSearchParams(params).toString()
   if (store === 'android') return `${PLAY_STORE_URL}&referrer=${encodeURIComponent(query)}`
-  const ct = [clean(action), clean(surface), clean(city)].filter(Boolean).join('_').slice(0, 40)
+  const ct = (campaign ? [clean(source), clean(medium), clean(campaign)] : [clean(action), clean(surface), clean(city)]).filter(Boolean).join('_').slice(0, 40)
   return `${APP_STORE_URL}?mt=8&ct=${encodeURIComponent(ct)}&${query}`
 }
 

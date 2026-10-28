@@ -1,5 +1,6 @@
 import { Composition, Still, registerRoot } from 'remotion';
 import { PromoVideo, PromoSlide } from './Promo.jsx';
+import { StoryFrame } from './Stories.jsx';
 
 // Props come from render.mjs ({locale, data, cities, clip, timing}); the
 // defaults let `npm run studio` open without a render.
@@ -19,6 +20,8 @@ function Root() {
     <>
       <Composition id="Video" component={PromoVideo} width={1080} height={1920} fps={30} durationInFrames={60}
         defaultProps={sample} calculateMetadata={({ props }) => ({ durationInFrames: props.timing.total })} />
+      <Composition id="Story" component={StoryFrame} width={1080} height={1920} fps={30} durationInFrames={150}
+        defaultProps={{ frame: 'help', locale: 'en', halloween: true, photo: null, still: false, guide: false }} />
       <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />
     </>
   );

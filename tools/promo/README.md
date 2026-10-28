@@ -42,4 +42,5 @@ Cities: one per country first (the tour's order, podium first), then second citi
 - `src/Promo.jsx`: the frames (the hook's caption in the system font, like text typed in Instagram; then the app's design: flag stickers, answer bubbles, credits; the brand on the end card only).
 - `src/timing.js`: how long each part lasts and how many cities fit.
 - `captions.mjs`: the captions and hashtags.
+- `npm run stories`: the story frames that recruit players (`src/Stories.jsx`), saved in `store-screenshots/stories/` (see its README).
 - `npm run studio`: preview the frames in Remotion Studio. `npm test`: captions and timing.

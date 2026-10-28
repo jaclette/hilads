@@ -22,19 +22,19 @@ for (const [file, weight] of [['Medium', '500'], ['Bold', '700'], ['ExtraBold', 
 // ── Pieces ────────────────────────────────────────────────────────────────────
 
 /** 0 → 1 as the part comes in, from $delay frames; always 1 in a still. */
-function useIn(delay = 0, still = false) {
+export function useIn(delay = 0, still = false) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   return still ? 1 : spring({ frame: frame - delay, fps, config: { damping: 14, stiffness: 160 } });
 }
 
-function Rise({ delay = 0, still, children, style }) {
+export function Rise({ delay = 0, still, children, style }) {
   const p = useIn(delay, still);
   return <div style={{ opacity: p, transform: `translateY(${(1 - p) * 40}px)`, ...style }}>{children}</div>;
 }
 
 /** Text with its *word* on a block of $fill (DESIGN.md 3.3). */
-function Highlighted({ text, fill, ink }) {
+export function Highlighted({ text, fill, ink }) {
   return text.split(/(\*[^*]+\*)/).map((part, i) => part.startsWith('*')
     ? <span key={i} style={{ background: fill, color: ink, borderRadius: 14, padding: '0 14px', boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}>{part.slice(1, -1)}</span>
     : <span key={i}>{part}</span>);
@@ -53,7 +53,7 @@ function Caption({ text, size, top }) {
 }
 
 /** The round flag sticker: white border, soft warm shadow (DESIGN.md 3.1). */
-function Flag({ city, size }) {
+export function Flag({ city, size }) {
   const ring = Math.max(4, Math.round(size / 20));
   return (
     <div style={{ width: size, height: size, borderRadius: size, overflow: 'hidden', border: `${ring}px solid #fff`, flexShrink: 0,
@@ -66,7 +66,7 @@ function Flag({ city, size }) {
 }
 
 /** The answer's speech bubble: white, ink, radius, a small tail (DESIGN.md 3.2). */
-function Bubble({ text, size, delay = 4, still }) {
+export function Bubble({ text, size, delay = 4, still }) {
   const p = useIn(delay, still);
   return (
     <div style={{ position: 'relative', alignSelf: 'flex-start', maxWidth: '100%', transform: `scale(${0.6 + 0.4 * p})`, opacity: p, transformOrigin: 'bottom left' }}>
