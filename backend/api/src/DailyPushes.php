@@ -598,9 +598,10 @@ final class DailyPushes
             $o            = $outcomes[$u['id']] ?? null;
             $line         = $o !== null ? self::outcomeLine($o['mine'], $o['winner'], $loc) : null;
             $withOutcome += $line !== null ? 1 : 0;
+            $render = ['locale' => $u['locale'], 'outcome' => $line, 'tourCity' => $tourCity[$u['id']] ?? null, 'userCity' => $u['cityName'] ?? null];
             $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'morning',
                        self::morningSendAt($now, $u['tz']), $u['tz'],
-                       self::morningMessage($challenge, $line, $loc, $tourCity[$u['id']] ?? null, $u['cityName'] ?? null)];
+                       self::morningMessage($challenge, $line, $loc, $render['tourCity'], $render['userCity']) + ['render' => $render]];
         }
 
         // Guest devices: tokens without an account, unless that guest id
@@ -616,7 +617,8 @@ final class DailyPushes
             $tz     = self::pickTimezone($g['token_tz']);
             $loc    = self::morningLocale($challenge, DailyI18n::normalize($g['token_locale']));
             $rows[] = ['g:' . $g['guest_id'], null, $g['guest_id'], $date, 'morning',
-                       self::morningSendAt($now, $tz), $tz, self::morningMessage($challenge, null, $loc)];
+                       self::morningSendAt($now, $tz), $tz,
+                       self::morningMessage($challenge, null, $loc) + ['render' => ['locale' => DailyI18n::normalize($g['token_locale'])]]];
         }
 
         $later = count(array_filter($rows, static fn(array $r): bool => $r[5] > $now));
@@ -936,6 +938,7 @@ final class DailyPushes
 
         $facts = self::sendFacts($rows);
 
+        $current  = [];   // date => the published challenge (morning pushes)
         $sent     = [];   // [id, localDay, payload]
         $skipped  = [];
         $deferred = [];
@@ -980,6 +983,17 @@ final class DailyPushes
                                                      self::worldAnswered($challenge, $userCity, (string) $row['challenge_date']))
                                + ['locale' => $msg['locale'] ?? 'en'];
                     }
+                }
+            } elseif ($row['type'] === 'morning' && isset($msg['render'])) {
+                // Written again from the day's challenge as it is now: a push queued for a
+                // later 09:00 follows a challenge edited or replaced after the drop.
+                $date      = (string) $row['challenge_date'];
+                $challenge = array_key_exists($date, $current) ? $current[$date]
+                           : ($current[$date] = DailyChallengeRepository::findPublishedByDate($date));
+                if ($challenge !== null) {
+                    $r   = $msg['render'];
+                    $msg = self::morningMessage($challenge, $r['outcome'] ?? null, self::morningLocale($challenge, (string) ($r['locale'] ?? 'en')),
+                                                $r['tourCity'] ?? null, $r['userCity'] ?? null) + ['render' => $r];
                 }
             } elseif ($row['type'] === 'digest') {
                 $digest = self::digestMessage((string) $row['challenge_date'],
