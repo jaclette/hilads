@@ -163,6 +163,7 @@ function daily_subnav(string $current): void
         '/admin/daily/picks'   => '⭐ Picks',
         '/admin/daily/specials' => '✨ Special days',
         '/admin/daily/events'  => '🎃 Seasonal events',
+        '/admin/daily/promo'   => '🎬 Promo',
         '/admin/daily/import'  => '⬆️ Import',
         '/admin/daily/log'     => '📜 Log',
     ];
