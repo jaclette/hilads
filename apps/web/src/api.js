@@ -2429,9 +2429,9 @@ function cityNumber(cityId) {
 }
 
 // Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys;
-// themesRev=3: the keys since (join_in), else ask_local for Join in.
+// themesRev=4: the keys since (get_around), else an older Wednesday key.
 // A query parameter, not a header, so GETs stay simple requests (no CORS preflight).
-const THEMES_V2 = { themes: '2', themesRev: '3' }
+const THEMES_V2 = { themes: '2', themesRev: '4' }
 
 function spotsQuery(params) {
   const q = new URLSearchParams(THEMES_V2)

@@ -39,8 +39,8 @@ function trim(j) {
 
 /** Today's challenge (cityId = numeric city id, optional). null when the API fails. */
 export async function fetchDailyToday(cityId, ms = 2500) {
-  // themes=2: the themes v2 keys (hidden_gem, taste...), not the v1 ones old apps get; themesRev=3: join_in.
-  const qs = `?themes=2&themesRev=3${cityId ? `&cityId=${encodeURIComponent(cityId)}` : ''}`
+  // themes=2: the themes v2 keys (hidden_gem, taste...), not the v1 ones old apps get; themesRev=4: get_around.
+  const qs = `?themes=2&themesRev=4${cityId ? `&cityId=${encodeURIComponent(cityId)}` : ''}`
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), ms)
   try {

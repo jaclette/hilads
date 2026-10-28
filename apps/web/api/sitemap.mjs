@@ -107,7 +107,7 @@ function renderSitemap(entries) {
 
 export async function fetchChallenges() {
   try {
-    const r = await fetch(`${API_BASE}/api/v1/daily/web/challenges?locale=en&themes=2&themesRev=3`, { headers: { Accept: 'application/json' } })
+    const r = await fetch(`${API_BASE}/api/v1/daily/web/challenges?locale=en&themes=2&themesRev=4`, { headers: { Accept: 'application/json' } })
     if (!r.ok) {
       console.warn(`[sitemap] /daily/web/challenges responded ${r.status}`)
       return null

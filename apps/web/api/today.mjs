@@ -28,7 +28,7 @@ import { TODAY_STRINGS } from './_today-i18n.mjs'
 
 const SITE = 'https://hilads.live'
 const THEME_EMOJI = {
-  hidden_gem: '💎', taste: '🍜', join_in: '🤸', local_find: '🛍️', night_out: '🌙', sip: '🍹', only_here: '📍',
+  hidden_gem: '💎', taste: '🍜', get_around: '🛵', local_find: '🛍️', night_out: '🌙', sip: '🍹', only_here: '📍',
 }
 const LOCALES = Object.keys(TODAY_STRINGS)
 

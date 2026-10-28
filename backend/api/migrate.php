@@ -3593,6 +3593,26 @@ foreach ([
 }
 echo "  OK  city short names seeds\n";
 
+// Get around (2026-10-28) replaces Join in on Wednesdays: the stored key moves
+// with its theme (challenges, proposals), so stamps, Local Pass progress and
+// spots follow. The uploaded join_in cover (people together) stays behind:
+// Get around shows its bundled cover until one is uploaded. One DO block = one
+// transaction; idempotent. Reversal:
+//   UPDATE daily_challenges SET theme = 'join_in' WHERE theme = 'get_around';
+//   UPDATE daily_proposals  SET theme = 'join_in' WHERE theme = 'get_around';
+//   UPDATE daily_challenges SET text_i18n = jsonb_set(text_i18n, '{en}', '"Seed spots: Join in"')
+//     WHERE status = 'seed' AND text_i18n->>'en' = 'Seed spots: Get around';
+run($pdo, "
+    DO \$\$
+    BEGIN
+        UPDATE daily_challenges SET theme = 'get_around' WHERE theme IN ('join_in', 'ask_local');
+        UPDATE daily_proposals  SET theme = 'get_around' WHERE theme IN ('join_in', 'ask_local');
+        UPDATE daily_challenges SET text_i18n = jsonb_set(text_i18n, '{en}', '\"Seed spots: Get around\"')
+            WHERE status = 'seed' AND text_i18n->>'en' IN ('Seed spots: Join in', 'Seed spots: Ask a local');
+    END
+    \$\$
+", 'themes: join_in -> get_around');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

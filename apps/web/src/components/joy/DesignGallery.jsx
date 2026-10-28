@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ACCENTS, AnswerBubble, DashedRoute, FlagSticker, HighlightText, JoyButton, Stamp, THEME_COLORS, ThemeChipJoy, Wordmark } from './Joy'
 
-const THEMES = [['hidden_gem', 'Hidden gem'], ['taste', 'Taste'], ['join_in', 'Join in'], ['local_find', 'Local find'],
+const THEMES = [['hidden_gem', 'Hidden gem'], ['taste', 'Taste'], ['get_around', 'Get around'], ['local_find', 'Local find'],
   ['night_out', 'Night out'], ['sip', 'Drinks'], ['only_here', 'Only here']]
 
 /** /design: the joyful design's component gallery (DESIGN.md), with a light / dark switch. */

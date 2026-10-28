@@ -16,6 +16,8 @@ import { Confetti, themeColor, tint } from '@/ui/joy';
 
 // v2: themes v2 renamed every key, so the v1 record would read as all new stamps.
 const KEY = (userId: string, cityId: number) => `hilads_stamps_v2_${userId}_${cityId}`;
+// The Wednesday theme's earlier keys: a stamp recorded under one is the Get around stamp, not a new one.
+const RENAMED: Record<string, string> = { ask_local: 'get_around', join_in: 'get_around' };
 
 /**
  * The stamp animation (SPEC 9.7): when a newly approved proof adds a theme
@@ -41,7 +43,7 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
       if (!alive) return;
       AsyncStorage.setItem(key, JSON.stringify(progress.themes)).catch(() => {});
       if (prev === null) return;   // first look on this phone: record only
-      const seen = new Set<string>(JSON.parse(prev) as string[]);
+      const seen = new Set<string>((JSON.parse(prev) as string[]).map(th => RENAMED[th] ?? th));
       const fresh = progress.themes.find(th => !seen.has(th));
       if (!fresh) return;
       setStamp({ theme: fresh, city: shortCityName(progress.city.name ?? '') });

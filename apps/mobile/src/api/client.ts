@@ -54,8 +54,8 @@ async function request<T = unknown>(
     ...appHeaders(),
     // Themes v2 keys (hidden_gem, taste...): without it the API answers with the v1 keys.
     'X-Themes': '2',
-    // ...and the keys since (join_in): without it the API answers ask_local for Join in.
-    'X-Themes-Rev': '3',
+    // ...and the keys since (get_around): without it the API answers an older Wednesday key.
+    'X-Themes-Rev': '4',
     // V4: this build asks the comparison question, so the API requires the answer on new proofs.
     'X-Compare': '1',
     ...(extraHeaders as Record<string, string>),

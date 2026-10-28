@@ -42,7 +42,7 @@ final class PlacesTest extends TestCase
     {
         $this->assertFalse(Places::isPlaceTheme('special'));
         $this->assertFalse(Places::isPlaceTheme(null));
-        foreach (['street_food', 'coffee', 'market', 'night_out', 'neighborhood', 'traditions', 'language', 'join_in', 'ask_local'] as $t) {
+        foreach (['street_food', 'coffee', 'market', 'night_out', 'neighborhood', 'traditions', 'language', 'ask_local', 'join_in', 'get_around'] as $t) {
             $this->assertTrue(Places::isPlaceTheme($t), $t);
         }
     }
@@ -98,14 +98,17 @@ final class PlacesTest extends TestCase
         $noPos = ['spotId' => null, 'newName' => 'Stall', 'lat' => null, 'lng' => null];
 
         $this->assertSame('place_not_allowed', Places::checkForTheme('special', $spot));
-        $this->assertSame('place_required', Places::checkForTheme('join_in', $none));
-        $this->assertNull(Places::checkForTheme('join_in', $spot));
+        $this->assertSame('place_required', Places::checkForTheme('get_around', $none));
+        $this->assertNull(Places::checkForTheme('get_around', $spot));
         // An app from before Join in (Ask a local: no place step) still posts without a place.
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['HTTP_X_THEMES'] = '2';
         $this->assertNull(Places::checkForTheme('ask_local', $none));
         $this->assertSame('place_required', Places::checkForTheme('coffee', $none));
-        unset($_SERVER['REQUEST_METHOD'], $_SERVER['HTTP_X_THEMES']);
+        // An app from Join in (rev 3) has the place step: a place is required.
+        $_SERVER['HTTP_X_THEMES_REV'] = '3';
+        $this->assertSame('place_required', Places::checkForTheme('join_in', $none));
+        unset($_SERVER['REQUEST_METHOD'], $_SERVER['HTTP_X_THEMES'], $_SERVER['HTTP_X_THEMES_REV']);
         $this->assertSame('place_required', Places::checkForTheme('coffee', $none));
         $this->assertSame('invalid_position', Places::checkForTheme('coffee', $noPos));
         $this->assertNull(Places::checkForTheme('coffee', $spot));

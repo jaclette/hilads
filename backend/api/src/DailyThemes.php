@@ -23,7 +23,7 @@ final class DailyThemes
     public const THEMES = [
         'hidden_gem' => ['Hidden gem', 1],
         'taste'      => ['Taste', 2],
-        'join_in'    => ['Join in', 3],
+        'get_around' => ['Get around', 3],
         'local_find' => ['Local find', 4],
         'night_out'  => ['Night out', 5],
         'sip'        => ['Drinks', 6],
@@ -32,24 +32,33 @@ final class DailyThemes
 
     /** Short English description of each theme, for the back office. */
     public const DESCRIPTIONS = [
-        'join_in' => 'Jump into something locals do together.',
+        'get_around' => 'Move around the city the way locals do.',
     ];
 
     /**
      * Themes whose image bundled in the apps (assets/covers, web public/covers)
-     * is a placeholder: TODO replace join_in.jpg with the real Join in cover,
-     * then empty this list.
+     * is a placeholder, marked in the back office until a cover is uploaded.
      */
-    public const PLACEHOLDER_COVERS = ['join_in'];
+    public const PLACEHOLDER_COVERS = [];
 
     /**
-     * Keys renamed since themes v2: old key => current key. Apps sending
-     * "X-Themes: 2" (built before the rename) get the old key back
-     * (Join in, 2026-10-22, was Ask a local).
+     * Keys renamed since themes v2: old key => current key (the Wednesday
+     * theme: Ask a local, then Join in on 2026-10-22, then Get around on
+     * 2026-10-28).
      */
     public const RENAMED = [
-        'ask_local' => 'join_in',
+        'ask_local' => 'get_around',
+        'join_in'   => 'get_around',
     ];
+
+    /** The key an app of each themes revision knows for a current key (clientVersion() 2 and 3). */
+    private const CLIENT_KEYS = [
+        2 => ['get_around' => 'ask_local'],
+        3 => ['get_around' => 'join_in'],
+    ];
+
+    /** Old theme names an import file or the back office may still use. */
+    private const RENAMED_NAMES = ['ask a local' => 'get_around', 'join in' => 'get_around'];
 
     /** A special day of world scope (daily_specials): not a weekly theme, no Local Pass stamp. */
     public const SPECIAL = 'special';
@@ -58,7 +67,7 @@ final class DailyThemes
     public const LEGACY = [
         'neighborhood' => 'hidden_gem',
         'street_food'  => 'taste',
-        'language'     => 'join_in',
+        'language'     => 'get_around',
         'market'       => 'local_find',
         'night_out'    => 'night_out',
         'coffee'       => 'sip',
@@ -96,7 +105,7 @@ final class DailyThemes
 
     /**
      * A weekly theme key from a key or a name, current, renamed or v1 ("taste",
-     * "Taste", "ask_local", "Ask a local", "Street food"), else null. Never
+     * "Taste", "join_in", "Join in", "Street food"), else null. Never
      * "special": see normalizeAny().
      */
     public static function normalize(mixed $v): ?string
@@ -111,8 +120,8 @@ final class DailyThemes
                 return $key;
             }
         }
-        if (isset(self::RENAMED[$u]) || $t === 'ask a local') {
-            return self::RENAMED[$u] ?? 'join_in';
+        if (isset(self::RENAMED[$u]) || isset(self::RENAMED_NAMES[$t])) {
+            return self::RENAMED[$u] ?? self::RENAMED_NAMES[$t];
         }
         foreach (self::LEGACY_NAMES as $old => $name) {
             if ($t === $old || $t === strtolower($name) || $u === $old) {
@@ -143,7 +152,7 @@ final class DailyThemes
         return $date !== null ? self::forDate($date) : null;
     }
 
-    /** Payload shape {key, name}, or null. Keys are the client's (v1 for an old app, ask_local for a v2 one). */
+    /** Payload shape {key, name}, or null. Keys are the client's (v1 for an old app, the pre-rename key for a v2/v3 one). */
     public static function format(?string $stored, ?string $date): ?array
     {
         $key = self::effective($stored, $date);
@@ -157,7 +166,7 @@ final class DailyThemes
         return ['key' => self::client($key, $date), 'name' => self::name($key)];
     }
 
-    /** A theme key as the client knows it (v1 for an old app, the pre-rename key for a v2 one). For raw key lists (spot themes, stamps). */
+    /** A theme key as the client knows it (v1 for an old app, the pre-rename key for a v2/v3 one). For raw key lists (spot themes, stamps). */
     public static function client(string $key, ?string $date = null): string
     {
         $key = self::effective($key, $date) ?? $key;
@@ -165,11 +174,7 @@ final class DailyThemes
         if ($version === 1) {
             return self::toLegacy($key, $date);
         }
-        if ($version === 2) {
-            $old = array_search($key, self::RENAMED, true);
-            return $old === false ? $key : $old;
-        }
-        return $key;
+        return self::CLIENT_KEYS[$version][$key] ?? $key;
     }
 
     /** Distinct client keys of stored keys (spot themes), without specials, in the stored order. */
@@ -199,19 +204,22 @@ final class DailyThemes
     /**
      * The theme keys the client knows: "X-Themes: 2" (the app) or "?themes=2"
      * (the web: a query parameter, no CORS preflight) = themes v2, plus
-     * "X-Themes-Rev: 3" / "?themesRev=3" = current (Join in), else v2 before
-     * the renames (RENAMED); none = an app built before themes v2 (v1 keys).
-     * The 2 stays so a backend from before 3 still sends v2 keys. CLI
-     * (pushes, scripts) is always current.
+     * "X-Themes-Rev: 4" / "?themesRev=4" = current (Get around), 3 = Join in,
+     * else v2 before the renames (Ask a local); none = an app built before
+     * themes v2 (v1 keys). The 2 stays so an older backend still sends v2
+     * keys. CLI (pushes, scripts) is always current.
      */
     public static function clientVersion(): int
     {
         if (!isset($_SERVER['REQUEST_METHOD'])) {   // CLI: jobs, scripts
-            return 3;
+            return 4;
         }
         $v = max((int) trim((string) ($_SERVER['HTTP_X_THEMES'] ?? '')), (int) ($_GET['themes'] ?? 0));
         $rev = max((int) trim((string) ($_SERVER['HTTP_X_THEMES_REV'] ?? '')), (int) ($_GET['themesRev'] ?? 0));
-        if ($v >= 3 || ($v === 2 && $rev >= 3)) {
+        if ($v >= 4 || ($v >= 2 && $rev >= 4)) {
+            return 4;
+        }
+        if ($v === 3 || ($v === 2 && $rev === 3)) {
             return 3;
         }
         return $v === 2 ? 2 : 1;

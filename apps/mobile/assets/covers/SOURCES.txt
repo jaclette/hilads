@@ -1,12 +1,12 @@
 Default Daily Challenge cover per theme (1200x480 crops). All CC0 / public domain, from Wikimedia Commons:
 sip.jpg           File:Two Hands Cafe latte art (Unsplash).jpg
-join_in.jpg       PLACEHOLDER (blue card "JOIN IN") - TODO: replace with the real Join in cover (1200x480)
+get_around.jpg    File:Tuk Tuk (Unsplash).jpg   (Jakob Owens, CC0; Get around since 2026-10-28, replaced the Join in placeholder)
 local_find.jpg    File:Street Fruit Seller at work (Unsplash).jpg
 hidden_gem.jpg    File:Đêm@HộiAn.jpg
 night_out.jpg     File:Night Shopping in the City (Unsplash).jpg
 taste.jpg         File:Asian Street Food Vendor (Unsplash).jpg
 only_here.jpg     File:In holy smoke (Unsplash).jpg
 Themes v2 (2026-10-19): the files moved with their theme (neighborhood → hidden_gem, street_food → taste,
-language → ask_local (Join in since 2026-10-22), market → local_find, coffee → sip, traditions → only_here) until the new covers are uploaded
+language → ask_local (Join in since 2026-10-22, Get around since 2026-10-28), market → local_find, coffee → sip, traditions → only_here) until the new covers are uploaded
 in the back office (Special days → Theme covers), which then win.
 halloween.jpg    File:Carved pumpkin as face (Unsplash).jpg   (special day "halloween", until a cover is uploaded on it)

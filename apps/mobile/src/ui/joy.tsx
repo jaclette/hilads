@@ -27,7 +27,7 @@ type ThemeColor = { fill: string; onFill: string; textLight: string; textDark: s
 export const THEME_COLORS: Record<string, ThemeColor> = {
   hidden_gem: { fill: '#1FB5A8', onFill: INK, textLight: '#157E75', textDark: '#1FB5A8' },
   taste:      { fill: Highlight.bg, onFill: Highlight.text, textLight: '#B74F45', textDark: '#FF6F61', line: '#B74F45' },   // the peach pill
-  join_in:    { fill: '#3D9BF0', onFill: INK, textLight: '#2E75B6', textDark: '#3D9BF0' },
+  get_around: { fill: '#3D9BF0', onFill: INK, textLight: '#2E75B6', textDark: '#3D9BF0' },
   local_find: { fill: '#FF7EB0', onFill: INK, textLight: '#AD5577', textDark: '#FF7EB0' },
   night_out:  { fill: '#5B5BD6', onFill: '#FFFFFF', textLight: '#5B5BD6', textDark: '#9A9AF5' },
   sip:        { fill: '#FFC93C', onFill: INK, textLight: '#896C20', textDark: '#FFC93C' },

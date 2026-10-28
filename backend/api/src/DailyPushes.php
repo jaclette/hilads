@@ -231,7 +231,7 @@ final class DailyPushes
 
     /** Theme emojis: in pushes only, never in the app's interface. */
     public const THEME_EMOJI = [
-        'hidden_gem' => '💎', 'taste' => '🍜', 'join_in' => '🤸', 'local_find' => '🛍️',
+        'hidden_gem' => '💎', 'taste' => '🍜', 'get_around' => '🛵', 'local_find' => '🛍️',
         'night_out' => '🌙', 'sip' => '🍹', 'only_here' => '📍',
     ];
     /** A push body stays under this many characters: a longer one drops its extra line. */

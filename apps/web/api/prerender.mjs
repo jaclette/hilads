@@ -262,8 +262,8 @@ async function fetchJson(url, ms = API_TIMEOUT_MS) {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), ms)
   try {
-    // themes=2 / themesRev=3: the current theme keys (old apps get v1 keys).
-    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2&themesRev=3', {
+    // themes=2 / themesRev=4: the current theme keys (old apps get v1 keys).
+    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'themes=2&themesRev=4', {
       signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' },
     })
     const data = res.ok ? await res.json() : null

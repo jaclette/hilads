@@ -7,7 +7,7 @@ import { ICON_NAMES } from '../components/Icon'
 export const THEME_ICON = {
   hidden_gem: 'diamond-outline',
   taste:      'theme-taste',
-  join_in:    'people-outline',
+  get_around: 'bus-outline',
   local_find: 'bag-handle-outline',
   night_out:  'moon-outline',
   sip:        'cafe-outline',

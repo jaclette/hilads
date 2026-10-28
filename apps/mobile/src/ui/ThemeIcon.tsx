@@ -8,7 +8,7 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 export const THEME_ICON: Record<string, IconName> = {
   hidden_gem: 'diamond-outline',
   taste:      'restaurant-outline',      // drawn: a bowl with chopsticks
-  join_in:    'people-outline',
+  get_around: 'bus-outline',
   local_find: 'bag-handle-outline',
   night_out:  'moon-outline',
   sip:        'cafe-outline',

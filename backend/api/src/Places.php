@@ -68,7 +68,7 @@ final class Places
         return trim($s);
     }
 
-    /** Every weekly theme is about a place (Join in: where it happens); a special day is not. */
+    /** Every weekly theme is about a place (Get around: where you hop on or off); a special day is not. */
     public static function isPlaceTheme(?string $theme): bool
     {
         $key = $theme !== null ? DailyThemes::effective($theme, null) : null;
@@ -129,9 +129,9 @@ final class Places
 
     /**
      * Theme rules on parsed input. A special day: no place. Place themes: a
-     * spot or a new place, and the device position. Join in on an app built
-     * before it (no X-Themes-Rev: 3, so Ask a local without a place step) may post
-     * without one. Returns an error code or null.
+     * spot or a new place, and the device position. The Wednesday theme from an
+     * app built before Join in (no X-Themes-Rev, so Ask a local without a place
+     * step) may post without one. Returns an error code or null.
      */
     public static function checkForTheme(?string $theme, array $in): ?string
     {
@@ -139,7 +139,7 @@ final class Places
         if (!self::isPlaceTheme($theme)) {
             return $hasPlace ? 'place_not_allowed' : null;
         }
-        if (!$hasPlace && DailyThemes::clientVersion() < 3 && DailyThemes::effective($theme, null) === 'join_in') {
+        if (!$hasPlace && DailyThemes::clientVersion() < 3 && DailyThemes::effective($theme, null) === 'get_around') {
             return null;
         }
         if (!$hasPlace) {

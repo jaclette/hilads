@@ -729,6 +729,9 @@ final class DailyAdminService
      * deleted; a day in the file gets the file's texts and translations only
      * (nothing merged), its own cover is cleared when the text changes, and
      * its founder twists not in the file are removed (locals' proposals stay).
+     * Today's challenge is replaced too while nobody has played it (no proof
+     * but seeds, demos and Hilads suggestions): it stays published, and its
+     * Hilads suggestions go (they were picked for the old challenge).
      * When the file has reserve entries, the unused reserve is deleted first.
      * Report lines carry what was there ("was").
      */
@@ -746,6 +749,7 @@ final class DailyAdminService
             'text'  => (json_decode((string) $r['text_i18n'], true) ?: [])['en'] ?? '',
             'theme' => $r['theme'],
         ];
+        $todayReplaced = false;
         $pdo->beginTransaction();
         try {
             if ($replace) {
@@ -812,9 +816,10 @@ final class DailyAdminService
                     $stmt = $pdo->prepare("SELECT id, status, text_i18n, theme, compare_type, compare_key, price_key FROM daily_challenges WHERE challenge_date = ? FOR UPDATE");
                     $stmt->execute([$e['date']]);
                     $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $freeToday = $replace && $existing && $e['date'] === $today && !self::played($existing['id']);
                     // Today's and published challenges keep their text; they only
                     // get the file's comparison question when they have none (SPEC 10.2).
-                    if ($existing && $e['date'] >= $today && ($existing['status'] === 'published' || $e['date'] === $today)) {
+                    if (!$freeToday && $existing && $e['date'] >= $today && ($existing['status'] === 'published' || $e['date'] === $today)) {
                         if ($existing['compare_type'] === null && $e['compare'] !== null) {
                             self::setCompare($existing['id'], $e['compare']);
                             $report[] = ['entry' => $e['label'], 'action' => 'compare_added', 'id' => $existing['id'], 'date' => $e['date'],
@@ -823,11 +828,12 @@ final class DailyAdminService
                             $report[] = ['entry' => $e['label'], 'action' => 'keys_added', 'id' => $existing['id'], 'date' => $e['date'],
                                          'key' => $e['compare']['key'] ?? null, 'priceKey' => $e['compare']['price']['key'] ?? null];
                         } else {
-                            $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is already published"];
+                            $report[] = ['entry' => $e['label'], 'action' => 'skip',
+                                         'reason' => $e['date'] === $today && $replace ? "{$e['date']} is today and already played: it stays until the next drop" : "{$e['date']} is already published"];
                         }
                         continue;
                     }
-                    if ($e['date'] <= $today) {
+                    if (!$freeToday && $e['date'] <= $today) {
                         // A past day keeps everything, but gets the Index keys it lacks (its answers then count).
                         $report[] = $existing && self::fillIndexKeys($existing, $e['compare'])
                             ? ['entry' => $e['label'], 'action' => 'keys_added', 'id' => $existing['id'], 'date' => $e['date'],
@@ -835,7 +841,7 @@ final class DailyAdminService
                             : ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
                         continue;
                     }
-                    if ($existing && $existing['status'] === 'published') {
+                    if (!$freeToday && $existing && $existing['status'] === 'published') {
                         $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is already published"];
                         continue;
                     }
@@ -844,7 +850,8 @@ final class DailyAdminService
                         $changed = ($was($existing)['text']) !== $e['text'];
                         $pdo->prepare("
                             UPDATE daily_challenges
-                            SET text_i18n = ?::jsonb, context_i18n = ?::jsonb, status = 'scheduled', theme = ?, special_id = ?,
+                            SET text_i18n = ?::jsonb, context_i18n = ?::jsonb, theme = ?, special_id = ?,
+                                status = CASE WHEN status = 'published' THEN status ELSE 'scheduled' END,
                                 cover_url = CASE WHEN ? THEN NULL ELSE cover_url END,
                                 updated_at = now(), updated_by = ?
                             WHERE id = ?
@@ -859,7 +866,11 @@ final class DailyAdminService
                         ");
                         $stmt->execute([$id, implode(',', $keep)]);
                         self::setCompare($id, $e['compare']);
-                        $report[] = ['entry' => $e['label'], 'action' => 'replace', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'],
+                        if ($freeToday) {
+                            $pdo->prepare("DELETE FROM daily_proofs WHERE challenge_id = ? AND is_suggestion")->execute([$id]);
+                            $todayReplaced = true;
+                        }
+                        $report[] = ['entry' => $e['label'], 'action' => $freeToday ? 'replace_today' : 'replace', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'],
                                      'text' => $e['text'], 'was' => $was($existing), 'twistsRemoved' => $stmt->rowCount(),
                                      'missingLocales' => $e['missingLocales'],
                                      'compare' => $e['compare']['question']['en'] ?? null, 'compareMissingLocales' => $e['compareMissingLocales']];
@@ -948,6 +959,9 @@ final class DailyAdminService
                 $counts = array_count_values(array_column($report, 'action'));
                 self::audit('daily_challenge.import', 'daily_challenge', null, null, ['counts' => $counts, 'replace' => $replace]);
                 $pdo->commit();
+                if ($todayReplaced) {
+                    Cache::forget('daily_challenge_v2_' . $today);
+                }
             }
         } catch (\Throwable $e) {
             $pdo->rollBack();
@@ -1179,6 +1193,16 @@ final class DailyAdminService
     private static function actorName(): string
     {
         return self::$actor ?? (getenv('ADMIN_USERNAME') ?: 'admin');
+    }
+
+    /** True once someone has posted a photo on the challenge (seeds, demos and Hilads suggestions aside, any status). */
+    private static function played(string $challengeId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM daily_proofs WHERE challenge_id = ? AND NOT is_seed AND NOT is_demo AND NOT is_suggestion LIMIT 1
+        ");
+        $stmt->execute([$challengeId]);
+        return $stmt->fetchColumn() !== false;
     }
 
     private static function forgetCachedDate(?string $date): void
