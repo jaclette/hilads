@@ -12,7 +12,7 @@ import { useDailyCalendar } from '@/hooks/useDaily';
 import { addDays, ymd, themeName } from '@/features/daily/themes';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { isEventDay, useSeasonal } from '@/features/event/seasonal';
-import { SeasonalDayIcon } from '@/features/event/SeasonalArt';
+import { PumpkinIcon, SeasonalDayIcon } from '@/features/event/SeasonalArt';
 import { Confetti, themeColor, tint } from '@/ui/joy';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { DailyCalendar, DailyToday } from '@/types';
@@ -106,7 +106,10 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
       <View style={styles.head}>
         <TouchableOpacity style={styles.streak} onPress={() => router.push('/daily/calendar' as never)} accessibilityRole="button" hitSlop={6}>
           <Animated.View style={[styles.streakInner, { transform: [{ scale: bump }] }]}>
-            <Ionicons name={streak ? 'flame' : 'flame-outline'} size={19} color={streak ? colors.primaryText : colors.text} />
+            {/* The event's day (Halloween): the flame is a jack-o'-lantern. */}
+            {seasonal?.event.phase === 'live' && seasonal.key === 'halloween'
+              ? <PumpkinIcon size={19} color={streak ? colors.primaryText : colors.text} />
+              : <Ionicons name={streak ? 'flame' : 'flame-outline'} size={19} color={streak ? colors.primaryText : colors.text} />}
             <Text style={styles.streakText}>{streak ? t('streak', { count: streak }) : t('week.title')}</Text>
           </Animated.View>
         </TouchableOpacity>

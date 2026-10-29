@@ -1455,10 +1455,11 @@
     "event": {
       "halloween": {
         "teaser_other": "{{count}} 天后开启万圣节寻鬼",
-        "cta": "让{{city}}闹鬼 👻",
-        "ctaNoCity": "加入寻鬼 👻",
+        "cta": "为{{city}}拍点吓人的",
+        "ctaNoCity": "拍点吓人的",
         "played_other": "{{count}} 座城市闹鬼了 🎃",
-        "represent": "让你的城市闹鬼 👻"
+        "represent": "让你的城市闹鬼 👻",
+        "onBoard": "{{city}}正在榜单上闹鬼！👻"
       }
     },
     "hero": {

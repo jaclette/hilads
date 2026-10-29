@@ -695,10 +695,11 @@
   "event": {
     "halloween": {
       "teaser_other": "Săn Halloween sau {{count}} ngày nữa",
-      "cta": "Hù dọa {{city}} 👻",
-      "ctaNoCity": "Tham gia cuộc săn 👻",
+      "cta": "Chụp gì đó rùng rợn cho {{city}}",
+      "ctaNoCity": "Chụp gì đó rùng rợn",
       "represent": "Hù dọa thành phố của bạn 👻",
-      "played_other": "{{count}} thành phố bị ma ám 🎃"
+      "played_other": "{{count}} thành phố bị ma ám 🎃",
+      "onBoard": "{{city}} đang ám bảng xếp hạng! 👻"
     }
   },
   "hero": {

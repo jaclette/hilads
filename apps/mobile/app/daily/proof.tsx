@@ -460,7 +460,9 @@ function DailyProofScreenContent() {
           <View style={styles.boardRow}>
             {!!sent.proof.city?.country && <CityFlag country={sent.proof.city.country} size={22} />}
             <Text style={styles.stepTitle} accessibilityRole="header">
-              {sent.proof.city?.name ? t('proof.onBoard', { city: shortCityName(sent.proof.city.name) }) : t('proof.sentTitleNoCity')}
+              {sent.proof.city?.name
+                ? t(seasonal?.key === 'halloween' ? 'event.halloween.onBoard' : 'proof.onBoard', { city: shortCityName(sent.proof.city.name) })
+                : t('proof.sentTitleNoCity')}
             </Text>
           </View>
           {citiesToday !== null && citiesToday > 1 && <Text style={styles.boardSub}>{t('proof.citiesToday', { count: citiesToday })}</Text>}

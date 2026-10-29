@@ -157,6 +157,8 @@ export function LogoHat({ logoSize }: { logoSize: number }) {
 
 const BAT_COUNT = 8;
 
+const BURST_EMOJI = ['🦇', '🍬', '🎃'];
+
 function Bat({ index, run }: { index: number; run: boolean }) {
   const t = useSharedValue(0);
   const angle = (index / BAT_COUNT) * Math.PI * 2 + (index % 2 ? 0.25 : -0.1);
@@ -174,7 +176,8 @@ function Bat({ index, run }: { index: number; run: boolean }) {
       { scale: 0.4 + 0.8 * t.value },
     ],
   }));
-  return <Animated.Text style={[styles.bat, style]}>🦇</Animated.Text>;
+  // Bats, candy and pumpkins, in turn.
+  return <Animated.Text style={[styles.bat, style]}>{BURST_EMOJI[index % BURST_EMOJI.length]}</Animated.Text>;
 }
 
 /**

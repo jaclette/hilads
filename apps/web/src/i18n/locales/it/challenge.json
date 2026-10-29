@@ -1476,12 +1476,13 @@
         "teaser_one": "Caccia di Halloween domani",
         "teaser_many": "Caccia di Halloween tra {{count}} giorni",
         "teaser_other": "Caccia di Halloween tra {{count}} giorni",
-        "cta": "Infesta {{city}} 👻",
-        "ctaNoCity": "Unisciti alla caccia 👻",
+        "cta": "Uno scatto da paura per {{city}}",
+        "ctaNoCity": "Uno scatto da paura",
         "played_one": "{{count}} città è infestata 🎃",
         "played_many": "{{count}} città sono infestate 🎃",
         "played_other": "{{count}} città sono infestate 🎃",
-        "represent": "Infesta la tua città 👻"
+        "represent": "Infesta la tua città 👻",
+        "onBoard": "{{city}} infesta la classifica! 👻"
       }
     },
     "hero": {

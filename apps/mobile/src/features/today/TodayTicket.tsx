@@ -23,7 +23,7 @@ import { PulseButton, type PulseTone } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { todayCities } from './useTodayCountries';
 import { useSeasonalLive } from '@/features/event/seasonal';
-import { SeasonalHeroDecor } from '@/features/event/SeasonalArt';
+import { PumpkinIcon, SeasonalHeroDecor } from '@/features/event/SeasonalArt';
 import { remindMeLater } from '@/api/daily';
 import { resolveLocation } from '@/api/channels';
 import * as Location from 'expo-location';
@@ -172,7 +172,7 @@ export function TodayTicket({ data, countries, loading, secondsLeft, visible = t
   const ask = original ? null : challenge.subtitle || (challenge.headline && challenge.headline !== challenge.text ? challenge.text : null);
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
   const tc = themeColor(challenge.special ? 'special' : challenge.theme?.key);
-  // A seasonal event's live day (Halloween: "Haunt Lisbon 👻") replaces the label.
+  // A seasonal event's live day (Halloween: "Snap something spooky for Lisbon") replaces the label.
   const ctaLabel = seasonal ? (cityShort ? t(seasonal.theme.copy.cta, { city: cityShort }) : t(seasonal.theme.copy.ctaNoCity))
     : cityShort ? t('hero.cta', { city: cityShort }) : t('hero.ctaNoCity');
   // Never played (this device, no streak): the three steps under the ask.
@@ -191,7 +191,10 @@ export function TodayTicket({ data, countries, loading, secondsLeft, visible = t
 
       <View style={styles.heroTop} pointerEvents="box-none">
         <View style={[styles.chip, styles.themeChip, { backgroundColor: tc.fill }]}>
-          {challenge.theme && <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={15} color={tc.onFill} />}
+          {/* Halloween's live day: the chip wears a pumpkin. */}
+          {challenge.theme && (seasonal?.key === 'halloween' && challenge.special
+            ? <PumpkinIcon size={15} color={tc.onFill} />
+            : <ThemeIcon theme={challenge.theme.key} special={challenge.special?.icon} size={15} color={tc.onFill} />)}
           {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
           <Text style={[styles.chipText, { color: tc.onFill }]} numberOfLines={1}>{themeLabel || DAILY_CHALLENGE}</Text>
         </View>

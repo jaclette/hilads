@@ -722,12 +722,13 @@
       "teaser_one": "Chasse d'Halloween demain",
       "teaser_many": "Chasse d'Halloween dans {{count}} jours",
       "teaser_other": "Chasse d'Halloween dans {{count}} jours",
-      "cta": "Hante {{city}} 👻",
-      "ctaNoCity": "Rejoins la chasse 👻",
+      "cta": "Une photo qui fait peur pour {{city}}",
+      "ctaNoCity": "Une photo qui fait peur",
       "represent": "Hante ta ville 👻",
       "played_one": "{{count}} ville est hantée 🎃",
       "played_many": "{{count}} villes sont hantées 🎃",
-      "played_other": "{{count}} villes sont hantées 🎃"
+      "played_other": "{{count}} villes sont hantées 🎃",
+      "onBoard": "{{city}} hante le classement ! 👻"
     }
   },
   "hero": {

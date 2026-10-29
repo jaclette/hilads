@@ -1466,11 +1466,12 @@
       "halloween": {
         "teaser_one": "Halloweenjacht morgen",
         "teaser_other": "Halloweenjacht over {{count}} dagen",
-        "cta": "Spook door {{city}} 👻",
-        "ctaNoCity": "Doe mee aan de jacht 👻",
+        "cta": "Iets griezeligs voor {{city}}",
+        "ctaNoCity": "Fotografeer iets griezeligs",
         "played_one": "In {{count}} stad spookt het 🎃",
         "played_other": "In {{count}} steden spookt het 🎃",
-        "represent": "Laat het spoken in je stad 👻"
+        "represent": "Laat het spoken in je stad 👻",
+        "onBoard": "{{city}} spookt door het bord! 👻"
       }
     },
     "hero": {

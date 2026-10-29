@@ -695,10 +695,11 @@
   "event": {
     "halloween": {
       "teaser_other": "할로윈 헌트까지 {{count}}일",
-      "cta": "{{city}}에 유령 출몰 👻",
-      "ctaNoCity": "헌트에 참여하기 👻",
+      "cta": "{{city}}을 위한 으스스한 사진",
+      "ctaNoCity": "으스스한 걸 찍어요",
       "represent": "우리 도시에 유령 출몰 👻",
-      "played_other": "{{count}}개 도시에 유령이 나타났어 🎃"
+      "played_other": "{{count}}개 도시에 유령이 나타났어 🎃",
+      "onBoard": "{{city}}, 보드에 출몰! 👻"
     }
   },
   "hero": {

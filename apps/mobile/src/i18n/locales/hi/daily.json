@@ -709,11 +709,12 @@
     "halloween": {
       "teaser_one": "हैलोवीन हंट कल है",
       "teaser_other": "हैलोवीन हंट {{count}} दिन में",
-      "cta": "{{city}} को भुतहा बनाओ 👻",
-      "ctaNoCity": "हंट में शामिल हो 👻",
+      "cta": "{{city}} के लिए कुछ डरावना खींचें",
+      "ctaNoCity": "कुछ डरावना खींचें",
       "represent": "अपने शहर को भुतहा बनाओ 👻",
       "played_one": "{{count}} शहर में भूत है 🎃",
-      "played_other": "{{count}} शहरों में भूत हैं 🎃"
+      "played_other": "{{count}} शहरों में भूत हैं 🎃",
+      "onBoard": "{{city}} बोर्ड पर भूत बनकर छाया है! 👻"
     }
   },
   "hero": {

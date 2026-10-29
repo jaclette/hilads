@@ -1466,11 +1466,12 @@
       "halloween": {
         "teaser_one": "Halloween hunt tomorrow",
         "teaser_other": "Halloween hunt in {{count}} days",
-        "cta": "Haunt {{city}} 👻",
-        "ctaNoCity": "Join the hunt 👻",
+        "cta": "Snap something spooky for {{city}}",
+        "ctaNoCity": "Snap something spooky",
         "played_one": "{{count}} city is haunted 🎃",
         "played_other": "{{count}} cities are haunted 🎃",
-        "represent": "Haunt your city 👻"
+        "represent": "Haunt your city 👻",
+        "onBoard": "{{city}} is haunting the board! 👻"
       }
     },
     "hero": {

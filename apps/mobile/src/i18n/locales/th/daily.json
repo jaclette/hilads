@@ -695,10 +695,11 @@
   "event": {
     "halloween": {
       "teaser_other": "ล่าฮาโลวีนอีก {{count}} วัน",
-      "cta": "ไปหลอน {{city}} 👻",
-      "ctaNoCity": "ร่วมล่าด้วยกัน 👻",
+      "cta": "ถ่ายอะไรน่ากลัวให้ {{city}}",
+      "ctaNoCity": "ถ่ายอะไรน่ากลัวๆ",
       "represent": "ไปหลอนเมืองของคุณ 👻",
-      "played_other": "{{count}} เมืองมีผีหลอก 🎃"
+      "played_other": "{{count}} เมืองมีผีหลอก 🎃",
+      "onBoard": "{{city}} กำลังหลอนกระดาน! 👻"
     }
   },
   "hero": {

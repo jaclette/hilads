@@ -1466,11 +1466,12 @@
       "halloween": {
         "teaser_one": "Die Halloween-Jagd ist morgen",
         "teaser_other": "Halloween-Jagd in {{count}} Tagen",
-        "cta": "Spuke in {{city}} 👻",
-        "ctaNoCity": "Mach mit bei der Jagd 👻",
+        "cta": "Etwas Gruseliges für {{city}}",
+        "ctaNoCity": "Etwas Gruseliges knipsen",
         "played_one": "{{count}} Stadt spukt 🎃",
         "played_other": "In {{count}} Städten spukt es 🎃",
-        "represent": "Spuke in deiner Stadt 👻"
+        "represent": "Spuke in deiner Stadt 👻",
+        "onBoard": "{{city}} spukt durchs Ranking! 👻"
       }
     },
     "hero": {

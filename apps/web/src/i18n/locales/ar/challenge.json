@@ -1574,15 +1574,16 @@
         "teaser_few": "مطاردة الهالوين بعد {{count}} أيام",
         "teaser_many": "مطاردة الهالوين بعد {{count}} يومًا",
         "teaser_other": "مطاردة الهالوين بعد {{count}} يومًا",
-        "cta": "أرعب {{city}} 👻",
-        "ctaNoCity": "انضم إلى المطاردة 👻",
+        "cta": "صورة مخيفة من أجل {{city}}",
+        "ctaNoCity": "التقط شيئًا مخيفًا",
         "played_zero": "{{count}} مدينة مسكونة 🎃",
         "played_one": "مدينة واحدة مسكونة 🎃",
         "played_two": "مدينتان مسكونتان 🎃",
         "played_few": "{{count}} مدن مسكونة 🎃",
         "played_many": "{{count}} مدينة مسكونة 🎃",
         "played_other": "{{count}} مدينة مسكونة 🎃",
-        "represent": "أرعب مدينتك 👻"
+        "represent": "أرعب مدينتك 👻",
+        "onBoard": "{{city}} تسكن لوحة النتائج! 👻"
       }
     },
     "hero": {

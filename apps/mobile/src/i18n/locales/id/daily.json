@@ -696,10 +696,11 @@
   "event": {
     "halloween": {
       "teaser_other": "Perburuan Halloween {{count}} hari lagi",
-      "cta": "Hantui {{city}} 👻",
-      "ctaNoCity": "Ikut perburuan 👻",
+      "cta": "Foto seram untuk {{city}}",
+      "ctaNoCity": "Foto sesuatu yang seram",
       "represent": "Hantui kotamu 👻",
-      "played_other": "{{count}} kota berhantu 🎃"
+      "played_other": "{{count}} kota berhantu 🎃",
+      "onBoard": "{{city}} menghantui papan! 👻"
     }
   },
   "hero": {

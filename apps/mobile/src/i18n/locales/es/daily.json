@@ -722,12 +722,13 @@
       "teaser_one": "Cacería de Halloween mañana",
       "teaser_many": "Cacería de Halloween en {{count}} días",
       "teaser_other": "Cacería de Halloween en {{count}} días",
-      "cta": "Embruja {{city}} 👻",
-      "ctaNoCity": "Únete a la cacería 👻",
+      "cta": "Algo terrorífico para {{city}}",
+      "ctaNoCity": "Fotografía algo terrorífico",
       "represent": "Embruja tu ciudad 👻",
       "played_one": "{{count}} ciudad está embrujada 🎃",
       "played_many": "{{count}} ciudades están embrujadas 🎃",
-      "played_other": "{{count}} ciudades están embrujadas 🎃"
+      "played_other": "{{count}} ciudades están embrujadas 🎃",
+      "onBoard": "¡{{city}} embruja el ranking! 👻"
     }
   },
   "hero": {

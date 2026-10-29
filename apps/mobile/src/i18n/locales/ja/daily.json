@@ -696,10 +696,11 @@
   "event": {
     "halloween": {
       "teaser_other": "ハロウィンハントまであと{{count}}日",
-      "cta": "{{city}}にお化けを 👻",
-      "ctaNoCity": "ハントに参加 👻",
+      "cta": "{{city}}のために不気味な一枚を",
+      "ctaNoCity": "不気味な一枚を撮ろう",
       "represent": "あなたの街にお化けを 👻",
-      "played_other": "{{count}}都市に幽霊が出た 🎃"
+      "played_other": "{{count}}都市に幽霊が出た 🎃",
+      "onBoard": "{{city}}がボードに出没中！👻"
     }
   },
   "hero": {

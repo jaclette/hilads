@@ -1455,10 +1455,11 @@
     "event": {
       "halloween": {
         "teaser_other": "{{count}} 天後開啟萬聖節尋鬼",
-        "cta": "讓{{city}}鬧鬼 👻",
-        "ctaNoCity": "加入尋鬼 👻",
+        "cta": "為{{city}}拍點嚇人的",
+        "ctaNoCity": "拍點嚇人的",
         "played_other": "{{count}} 座城市鬧鬼了 🎃",
-        "represent": "讓你的城市鬧鬼 👻"
+        "represent": "讓你的城市鬧鬼 👻",
+        "onBoard": "{{city}}正在榜單上鬧鬼！👻"
       }
     },
     "hero": {

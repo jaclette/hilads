@@ -1466,11 +1466,12 @@
       "halloween": {
         "teaser_one": "Halloween hunt bukas",
         "teaser_other": "Halloween hunt sa loob ng {{count}} araw",
-        "cta": "Multuhin ang {{city}} 👻",
-        "ctaNoCity": "Sumali sa hunt 👻",
+        "cta": "Kumuha ng nakakatakot para sa {{city}}",
+        "ctaNoCity": "Kumuha ng nakakatakot",
         "played_one": "{{count}} lungsod ang minumulto 🎃",
         "played_other": "{{count}} lungsod ang minumulto 🎃",
-        "represent": "Multuhin ang lungsod mo 👻"
+        "represent": "Multuhin ang lungsod mo 👻",
+        "onBoard": "Minumulto ng {{city}} ang board! 👻"
       }
     },
     "hero": {

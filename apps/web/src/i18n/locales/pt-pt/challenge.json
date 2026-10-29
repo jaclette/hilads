@@ -1476,12 +1476,13 @@
         "teaser_one": "Caça de Halloween amanhã",
         "teaser_many": "Caça de Halloween daqui a {{count}} dias",
         "teaser_other": "Caça de Halloween daqui a {{count}} dias",
-        "cta": "Assombra {{city}} 👻",
-        "ctaNoCity": "Junta-te à caça 👻",
+        "cta": "Uma foto assustadora por {{city}}",
+        "ctaNoCity": "Uma foto assustadora",
         "played_one": "{{count}} cidade está assombrada 🎃",
         "played_many": "{{count}} cidades estão assombradas 🎃",
         "played_other": "{{count}} cidades estão assombradas 🎃",
-        "represent": "Assombra a tua cidade 👻"
+        "represent": "Assombra a tua cidade 👻",
+        "onBoard": "{{city}} está a assombrar a classificação! 👻"
       }
     },
     "hero": {
