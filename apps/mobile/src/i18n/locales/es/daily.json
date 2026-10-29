@@ -690,10 +690,10 @@
       "teaser_other": "Cacería de Halloween en {{count}} días",
       "cta": "Embruja {{city}} 👻",
       "ctaNoCity": "Únete a la cacería 👻",
-      "played_one": "{{count}} país está embrujado 🎃",
-      "played_many": "{{count}} países están embrujados 🎃",
-      "played_other": "{{count}} países están embrujados 🎃",
-      "represent": "Embruja tu ciudad 👻"
+      "represent": "Embruja tu ciudad 👻",
+      "played_one": "{{count}} ciudad está embrujada 🎃",
+      "played_many": "{{count}} ciudades están embrujadas 🎃",
+      "played_other": "{{count}} ciudades están embrujadas 🎃"
     }
   },
   "hero": {
@@ -716,5 +716,23 @@
       "tell": "Explícalo",
       "compare": "Compara"
     }
+  },
+  "stories": {
+    "played_one": "{{count}} ciudad jugó hoy",
+    "played_many": "{{count}} ciudades jugaron hoy",
+    "played_other": "{{count}} ciudades jugaron hoy",
+    "yourCity": "¿{{city}}?",
+    "of": "Foto {{index}} de {{total}}",
+    "cityOf": "Ciudad {{index}} de {{total}}",
+    "next": "Foto siguiente"
+  },
+  "mosaic": {
+    "players_one": "{{count}} jugador",
+    "players_many": "{{count}} jugadores",
+    "players_other": "{{count}} jugadores",
+    "missing": "¡Falta {{city}}!",
+    "yesterday": "Ayer el mundo dijo…",
+    "beFirst": "Representa a {{city}}",
+    "beFirstSub": "Sé la primera ciudad hoy"
   }
 }

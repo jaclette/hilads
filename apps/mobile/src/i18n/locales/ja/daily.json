@@ -678,8 +678,8 @@
       "teaser_other": "ハロウィンハントまであと{{count}}日",
       "cta": "{{city}}にお化けを 👻",
       "ctaNoCity": "ハントに参加 👻",
-      "played_other": "{{count}}か国にお化けが出没中 🎃",
-      "represent": "あなたの街にお化けを 👻"
+      "represent": "あなたの街にお化けを 👻",
+      "played_other": "{{count}}都市に幽霊が出た 🎃"
     }
   },
   "hero": {
@@ -698,5 +698,19 @@
       "tell": "ひとこと",
       "compare": "比べる"
     }
+  },
+  "stories": {
+    "played_other": "今日は{{count}}都市が参加",
+    "yourCity": "{{city}}は？",
+    "of": "写真 {{index}}/{{total}}",
+    "cityOf": "都市 {{index}}/{{total}}",
+    "next": "次の写真"
+  },
+  "mosaic": {
+    "players_other": "{{count}}人",
+    "missing": "{{city}}がまだ！",
+    "yesterday": "昨日、世界はこう言った…",
+    "beFirst": "{{city}}の代表になろう",
+    "beFirstSub": "今日最初の街になろう"
   }
 }

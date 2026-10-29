@@ -772,13 +772,13 @@
       "teaser_other": "مطاردة الهالوين بعد {{count}} يومًا",
       "cta": "أرعب {{city}} 👻",
       "ctaNoCity": "انضم إلى المطاردة 👻",
-      "played_zero": "لا دولة مسكونة بعد 🎃",
-      "played_one": "دولة واحدة مسكونة 🎃",
-      "played_two": "دولتان مسكونتان 🎃",
-      "played_few": "{{count}} دول مسكونة 🎃",
-      "played_many": "{{count}} دولة مسكونة 🎃",
-      "played_other": "{{count}} دولة مسكونة 🎃",
-      "represent": "أرعب مدينتك 👻"
+      "represent": "أرعب مدينتك 👻",
+      "played_zero": "{{count}} مدينة مسكونة 🎃",
+      "played_one": "مدينة واحدة مسكونة 🎃",
+      "played_two": "مدينتان مسكونتان 🎃",
+      "played_few": "{{count}} مدن مسكونة 🎃",
+      "played_many": "{{count}} مدينة مسكونة 🎃",
+      "played_other": "{{count}} مدينة مسكونة 🎃"
     }
   },
   "hero": {
@@ -807,5 +807,29 @@
       "tell": "احكِ",
       "compare": "قارن"
     }
+  },
+  "stories": {
+    "played_zero": "لم تلعب أي مدينة اليوم",
+    "played_one": "لعبت مدينة واحدة اليوم",
+    "played_two": "لعبت مدينتان اليوم",
+    "played_few": "لعبت {{count}} مدن اليوم",
+    "played_many": "لعبت {{count}} مدينة اليوم",
+    "played_other": "لعبت {{count}} مدينة اليوم",
+    "yourCity": "{{city}}؟",
+    "of": "الصورة {{index}} من {{total}}",
+    "cityOf": "المدينة {{index}} من {{total}}",
+    "next": "الصورة التالية"
+  },
+  "mosaic": {
+    "players_zero": "{{count}} لاعب",
+    "players_one": "لاعب واحد",
+    "players_two": "لاعبان",
+    "players_few": "{{count}} لاعبين",
+    "players_many": "{{count}} لاعبًا",
+    "players_other": "{{count}} لاعب",
+    "missing": "{{city}} غائبة!",
+    "yesterday": "أمس قال العالم…",
+    "beFirst": "مثّل {{city}}",
+    "beFirstSub": "كن أول مدينة اليوم"
   }
 }

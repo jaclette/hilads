@@ -684,9 +684,9 @@
       "teaser_other": "Halloween hunt sa loob ng {{count}} araw",
       "cta": "Multuhin ang {{city}} 👻",
       "ctaNoCity": "Sumali sa hunt 👻",
-      "played_one": "{{count}} bansa ang minumulto 🎃",
-      "played_other": "{{count}} bansa ang minumulto 🎃",
-      "represent": "Multuhin ang lungsod mo 👻"
+      "represent": "Multuhin ang lungsod mo 👻",
+      "played_one": "{{count}} lungsod ang minumulto 🎃",
+      "played_other": "{{count}} lungsod ang minumulto 🎃"
     }
   },
   "hero": {
@@ -707,5 +707,21 @@
       "tell": "Ikuwento",
       "compare": "Ikumpara"
     }
+  },
+  "stories": {
+    "played_one": "{{count}} lungsod ang naglaro ngayon",
+    "played_other": "{{count}} lungsod ang naglaro ngayon",
+    "yourCity": "{{city}}?",
+    "of": "Litrato {{index}} sa {{total}}",
+    "cityOf": "Lungsod {{index}} sa {{total}}",
+    "next": "Susunod na litrato"
+  },
+  "mosaic": {
+    "players_one": "{{count}} manlalaro",
+    "players_other": "{{count}} manlalaro",
+    "missing": "Kulang ang {{city}}!",
+    "yesterday": "Kahapon, sabi ng mundo…",
+    "beFirst": "Katawanin ang {{city}}",
+    "beFirstSub": "Maging unang lungsod ngayon"
   }
 }

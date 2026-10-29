@@ -678,8 +678,8 @@
       "teaser_other": "Perburuan Halloween {{count}} hari lagi",
       "cta": "Hantui {{city}} 👻",
       "ctaNoCity": "Ikut perburuan 👻",
-      "played_other": "{{count}} negara sedang dihantui 🎃",
-      "represent": "Hantui kotamu 👻"
+      "represent": "Hantui kotamu 👻",
+      "played_other": "{{count}} kota berhantu 🎃"
     }
   },
   "hero": {
@@ -698,5 +698,19 @@
       "tell": "Ceritakan",
       "compare": "Bandingkan"
     }
+  },
+  "stories": {
+    "played_other": "{{count}} kota main hari ini",
+    "yourCity": "{{city}}?",
+    "of": "Foto {{index}} dari {{total}}",
+    "cityOf": "Kota {{index}} dari {{total}}",
+    "next": "Foto berikutnya"
+  },
+  "mosaic": {
+    "players_other": "{{count}} pemain",
+    "missing": "{{city}} belum ada!",
+    "yesterday": "Kemarin dunia bilang…",
+    "beFirst": "Wakili {{city}}",
+    "beFirstSub": "Jadilah kota pertama hari ini"
   }
 }

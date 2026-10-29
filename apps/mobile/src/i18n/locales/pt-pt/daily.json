@@ -690,10 +690,10 @@
       "teaser_other": "Caça de Halloween daqui a {{count}} dias",
       "cta": "Assombra {{city}} 👻",
       "ctaNoCity": "Junta-te à caça 👻",
-      "played_one": "{{count}} país está assombrado 🎃",
-      "played_many": "{{count}} países estão assombrados 🎃",
-      "played_other": "{{count}} países estão assombrados 🎃",
-      "represent": "Assombra a tua cidade 👻"
+      "represent": "Assombra a tua cidade 👻",
+      "played_one": "{{count}} cidade está assombrada 🎃",
+      "played_many": "{{count}} cidades estão assombradas 🎃",
+      "played_other": "{{count}} cidades estão assombradas 🎃"
     }
   },
   "hero": {
@@ -716,5 +716,23 @@
       "tell": "Descreve",
       "compare": "Compara"
     }
+  },
+  "stories": {
+    "played_one": "{{count}} cidade jogou hoje",
+    "played_many": "{{count}} cidades jogaram hoje",
+    "played_other": "{{count}} cidades jogaram hoje",
+    "yourCity": "{{city}}?",
+    "of": "Foto {{index}} de {{total}}",
+    "cityOf": "Cidade {{index}} de {{total}}",
+    "next": "Foto seguinte"
+  },
+  "mosaic": {
+    "players_one": "{{count}} jogador",
+    "players_many": "{{count}} jogadores",
+    "players_other": "{{count}} jogadores",
+    "missing": "Falta {{city}}!",
+    "yesterday": "Ontem o mundo disse…",
+    "beFirst": "Representa {{city}}",
+    "beFirstSub": "Sê a primeira cidade hoje"
   }
 }

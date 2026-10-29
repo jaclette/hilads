@@ -92,6 +92,8 @@ export type AnalyticsEvent =
   | 'world_tour_opened'
   | 'world_tour_slide_viewed'
   | 'world_tour_completed'
+  | 'today_stories_opened'
+  | 'today_stories_completed'
   | 'world_tour_shared'
   // Today's photos (the feed): opened { source, pinned }, tab { tab }, viewed { index, city, tab }, challenge_opened.
   | 'daily_photos_opened'

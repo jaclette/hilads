@@ -677,8 +677,8 @@
       "teaser_other": "Săn Halloween sau {{count}} ngày nữa",
       "cta": "Hù dọa {{city}} 👻",
       "ctaNoCity": "Tham gia cuộc săn 👻",
-      "played_other": "{{count}} quốc gia đã bị ma ám 🎃",
-      "represent": "Hù dọa thành phố của bạn 👻"
+      "represent": "Hù dọa thành phố của bạn 👻",
+      "played_other": "{{count}} thành phố bị ma ám 🎃"
     }
   },
   "hero": {
@@ -697,5 +697,19 @@
       "tell": "Kể",
       "compare": "So sánh"
     }
+  },
+  "stories": {
+    "played_other": "{{count}} thành phố đã chơi hôm nay",
+    "yourCity": "{{city}}?",
+    "of": "Ảnh {{index}}/{{total}}",
+    "cityOf": "Thành phố {{index}}/{{total}}",
+    "next": "Ảnh tiếp theo"
+  },
+  "mosaic": {
+    "players_other": "{{count}} người chơi",
+    "missing": "Thiếu {{city}}!",
+    "yesterday": "Hôm qua thế giới nói…",
+    "beFirst": "Đại diện cho {{city}}",
+    "beFirstSub": "Là thành phố đầu tiên hôm nay"
   }
 }

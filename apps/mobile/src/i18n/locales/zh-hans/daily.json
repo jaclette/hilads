@@ -677,8 +677,8 @@
       "teaser_other": "{{count}} 天后开启万圣节寻鬼",
       "cta": "让{{city}}闹鬼 👻",
       "ctaNoCity": "加入寻鬼 👻",
-      "played_other": "{{count}} 个国家正在闹鬼 🎃",
-      "represent": "让你的城市闹鬼 👻"
+      "represent": "让你的城市闹鬼 👻",
+      "played_other": "{{count}} 座城市闹鬼了 🎃"
     }
   },
   "hero": {
@@ -697,5 +697,19 @@
       "tell": "说说",
       "compare": "比较"
     }
+  },
+  "stories": {
+    "played_other": "今天已有 {{count}} 座城市参加",
+    "yourCity": "{{city}}？",
+    "of": "第 {{index}}/{{total}} 张照片",
+    "cityOf": "第 {{index}}/{{total}} 座城市",
+    "next": "下一张"
+  },
+  "mosaic": {
+    "players_other": "{{count}} 位玩家",
+    "missing": "还缺{{city}}！",
+    "yesterday": "昨天，世界这样说…",
+    "beFirst": "代表{{city}}",
+    "beFirstSub": "成为今天第一座城市"
   }
 }

@@ -677,8 +677,8 @@
       "teaser_other": "할로윈 헌트까지 {{count}}일",
       "cta": "{{city}}에 유령 출몰 👻",
       "ctaNoCity": "헌트에 참여하기 👻",
-      "played_other": "{{count}}개국에 유령 출몰 중 🎃",
-      "represent": "우리 도시에 유령 출몰 👻"
+      "represent": "우리 도시에 유령 출몰 👻",
+      "played_other": "{{count}}개 도시에 유령이 나타났어 🎃"
     }
   },
   "hero": {
@@ -697,5 +697,19 @@
       "tell": "말하기",
       "compare": "비교하기"
     }
+  },
+  "stories": {
+    "played_other": "오늘 {{count}}개 도시 참여",
+    "yourCity": "{{city}}?",
+    "of": "사진 {{index}}/{{total}}",
+    "cityOf": "도시 {{index}}/{{total}}",
+    "next": "다음 사진"
+  },
+  "mosaic": {
+    "players_other": "{{count}}명",
+    "missing": "{{city}} 없음!",
+    "yesterday": "어제 세계는 이렇게 말했어…",
+    "beFirst": "{{city}} 대표하기",
+    "beFirstSub": "오늘 첫 번째 도시가 되어 봐"
   }
 }

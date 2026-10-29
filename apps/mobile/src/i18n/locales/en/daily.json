@@ -684,9 +684,9 @@
       "teaser_other": "Halloween hunt in {{count}} days",
       "cta": "Haunt {{city}} 👻",
       "ctaNoCity": "Join the hunt 👻",
-      "played_one": "{{count}} country is haunted 🎃",
-      "played_other": "{{count}} countries are haunted 🎃",
-      "represent": "Haunt your city 👻"
+      "represent": "Haunt your city 👻",
+      "played_one": "{{count}} city is haunted 🎃",
+      "played_other": "{{count}} cities are haunted 🎃"
     }
   },
   "hero": {
@@ -707,5 +707,21 @@
       "tell": "Tell it",
       "compare": "Compare"
     }
+  },
+  "stories": {
+    "played_one": "{{count}} city played today",
+    "played_other": "{{count}} cities played today",
+    "yourCity": "{{city}}?",
+    "of": "Photo {{index}} of {{total}}",
+    "cityOf": "City {{index}} of {{total}}",
+    "next": "Next photo"
+  },
+  "mosaic": {
+    "players_one": "{{count}} player",
+    "players_other": "{{count}} players",
+    "missing": "{{city}} is missing!",
+    "yesterday": "Yesterday the world said…",
+    "beFirst": "Represent {{city}}",
+    "beFirstSub": "Be the first city today"
   }
 }

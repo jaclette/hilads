@@ -684,9 +684,9 @@
       "teaser_other": "हैलोवीन हंट {{count}} दिन में",
       "cta": "{{city}} को भुतहा बनाओ 👻",
       "ctaNoCity": "हंट में शामिल हो 👻",
-      "played_one": "{{count}} देश भुतहा है 🎃",
-      "played_other": "{{count}} देश भुतहा हैं 🎃",
-      "represent": "अपने शहर को भुतहा बनाओ 👻"
+      "represent": "अपने शहर को भुतहा बनाओ 👻",
+      "played_one": "{{count}} शहर में भूत है 🎃",
+      "played_other": "{{count}} शहरों में भूत हैं 🎃"
     }
   },
   "hero": {
@@ -707,5 +707,21 @@
       "tell": "बताओ",
       "compare": "तुलना करो"
     }
+  },
+  "stories": {
+    "played_one": "आज {{count}} शहर ने खेला",
+    "played_other": "आज {{count}} शहरों ने खेला",
+    "yourCity": "{{city}}?",
+    "of": "फ़ोटो {{index}}/{{total}}",
+    "cityOf": "शहर {{index}}/{{total}}",
+    "next": "अगली फ़ोटो"
+  },
+  "mosaic": {
+    "players_one": "{{count}} खिलाड़ी",
+    "players_other": "{{count}} खिलाड़ी",
+    "missing": "{{city}} नहीं है!",
+    "yesterday": "कल दुनिया ने कहा…",
+    "beFirst": "{{city}} की ओर से खेलो",
+    "beFirstSub": "आज पहला शहर बनो"
   }
 }

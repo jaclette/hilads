@@ -1,7 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { markDailyProofsSeen } from '@/api/daily';
-import type { DailyCountryGroup } from '@/types';
 
 /**
  * The photos I've viewed (Today's stories: a country's ring is colored while
@@ -61,9 +60,15 @@ export function markSeen(id: string, signedIn: boolean) {
 /** Send what's waiting now (the viewer closes). */
 export const flushSeen = flush;
 
-/** A country still has a photo I haven't viewed: the server's flag (signed in) and the device's. */
-export function hasUnseen(group: DailyCountryGroup): boolean {
+/** A country (or a city) still has a photo I haven't viewed: the server's flag (signed in) and the device's. */
+export function hasUnseen(group: { unseen: boolean | null; ids: string[] }): boolean {
   return (group.unseen ?? true) && group.ids.some(id => !seen.has(id));
+}
+
+/** One photo already viewed on this device (a story ring's segment). */
+export function isSeen(id: string): boolean {
+  load();
+  return seen.has(id);
 }
 
 /** Re-render when what I've seen changes. */

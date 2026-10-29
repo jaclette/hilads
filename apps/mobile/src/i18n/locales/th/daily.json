@@ -677,8 +677,8 @@
       "teaser_other": "ล่าฮาโลวีนอีก {{count}} วัน",
       "cta": "ไปหลอน {{city}} 👻",
       "ctaNoCity": "ร่วมล่าด้วยกัน 👻",
-      "played_other": "{{count}} ประเทศโดนผีหลอกแล้ว 🎃",
-      "represent": "ไปหลอนเมืองของคุณ 👻"
+      "represent": "ไปหลอนเมืองของคุณ 👻",
+      "played_other": "{{count}} เมืองมีผีหลอก 🎃"
     }
   },
   "hero": {
@@ -697,5 +697,19 @@
       "tell": "เล่า",
       "compare": "เปรียบเทียบ"
     }
+  },
+  "stories": {
+    "played_other": "วันนี้ {{count}} เมืองเล่นแล้ว",
+    "yourCity": "{{city}}?",
+    "of": "รูป {{index}}/{{total}}",
+    "cityOf": "เมือง {{index}}/{{total}}",
+    "next": "รูปถัดไป"
+  },
+  "mosaic": {
+    "players_other": "ผู้เล่น {{count}} คน",
+    "missing": "ขาด {{city}}!",
+    "yesterday": "เมื่อวานโลกบอกว่า…",
+    "beFirst": "เป็นตัวแทนของ {{city}}",
+    "beFirstSub": "เป็นเมืองแรกวันนี้"
   }
 }

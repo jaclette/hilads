@@ -690,10 +690,10 @@
       "teaser_other": "Caccia di Halloween tra {{count}} giorni",
       "cta": "Infesta {{city}} 👻",
       "ctaNoCity": "Unisciti alla caccia 👻",
-      "played_one": "{{count}} paese è infestato 🎃",
-      "played_many": "{{count}} paesi sono infestati 🎃",
-      "played_other": "{{count}} paesi sono infestati 🎃",
-      "represent": "Infesta la tua città 👻"
+      "represent": "Infesta la tua città 👻",
+      "played_one": "{{count}} città è infestata 🎃",
+      "played_many": "{{count}} città sono infestate 🎃",
+      "played_other": "{{count}} città sono infestate 🎃"
     }
   },
   "hero": {
@@ -716,5 +716,23 @@
       "tell": "Racconta",
       "compare": "Confronta"
     }
+  },
+  "stories": {
+    "played_one": "{{count}} città ha giocato oggi",
+    "played_many": "{{count}} città hanno giocato oggi",
+    "played_other": "{{count}} città hanno giocato oggi",
+    "yourCity": "{{city}}?",
+    "of": "Foto {{index}} di {{total}}",
+    "cityOf": "Città {{index}} di {{total}}",
+    "next": "Foto successiva"
+  },
+  "mosaic": {
+    "players_one": "{{count}} giocatore",
+    "players_many": "{{count}} giocatori",
+    "players_other": "{{count}} giocatori",
+    "missing": "Manca {{city}}!",
+    "yesterday": "Ieri il mondo ha detto…",
+    "beFirst": "Rappresenta {{city}}",
+    "beFirstSub": "Sii la prima città oggi"
   }
 }
