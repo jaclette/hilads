@@ -87,7 +87,13 @@
     "discardTitle": "Abandonner ta photo ?",
     "discardBody": "Ta photo et ce que tu as rempli seront perdus.",
     "keepEditing": "Continuer",
-    "discard": "Abandonner"
+    "discard": "Abandonner",
+    "onBoard": "{{city}} est dans la partie !",
+    "citiesToday_one": "Une des {{count}} villes du jour",
+    "citiesToday_many": "Une des {{count}} villes du jour",
+    "citiesToday_other": "Une des {{count}} villes du jour",
+    "onMap": "Ta photo est sur la carte · Voir",
+    "compareNow": "Comparer maintenant"
   },
   "errors": {
     "already_posted": "Tu as déjà joué au défi du jour.",
@@ -432,7 +438,8 @@
     "spotsTeaser_other": "{{count}} spots près de toi",
     "spotsTeaserIn_one": "{{count}} spot à {{city}}",
     "spotsTeaserIn_many": "{{count}} spots à {{city}}",
-    "spotsTeaserIn_other": "{{count}} spots à {{city}}"
+    "spotsTeaserIn_other": "{{count}} spots à {{city}}",
+    "refreshing": "On fait le tour du monde…"
   },
   "spot": {
     "rankWeekFirst": "Le plus voté cette semaine à {{city}}",

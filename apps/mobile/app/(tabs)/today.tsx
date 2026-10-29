@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, View, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -34,6 +35,7 @@ function TodayContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { city, account } = useApp();
+  const { t } = useTranslation('daily');
   const daily = useDailyToday(city?.channelId);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -62,7 +64,8 @@ function TodayContent() {
         contentContainerStyle={styles.content}
         onScroll={onScroll}
         scrollEventThrottle={100}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]}
+                                        title={t('today.refreshing')} titleColor={colors.muted} />}
       >
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} countries={countries} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />

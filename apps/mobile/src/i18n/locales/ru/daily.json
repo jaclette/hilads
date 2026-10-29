@@ -93,7 +93,14 @@
     "discardTitle": "Удалить фото?",
     "discardBody": "Твоё фото и всё, что ты заполнил, будут потеряны.",
     "keepEditing": "Продолжить",
-    "discard": "Удалить"
+    "discard": "Удалить",
+    "onBoard": "{{city}} в игре!",
+    "citiesToday_one": "Один из {{count}} города сегодня",
+    "citiesToday_few": "Один из {{count}} городов сегодня",
+    "citiesToday_many": "Один из {{count}} городов сегодня",
+    "citiesToday_other": "Один из {{count}} города сегодня",
+    "onMap": "Твоё фото уже на карте · Смотреть",
+    "compareNow": "Сравнить сейчас"
   },
   "errors": {
     "already_posted": "Ты уже сыграл в сегодняшний challenge.",
@@ -455,7 +462,8 @@
     "spotsTeaserIn_one": "{{count}} место в городе {{city}}",
     "spotsTeaserIn_few": "{{count}} места в городе {{city}}",
     "spotsTeaserIn_many": "{{count}} мест в городе {{city}}",
-    "spotsTeaserIn_other": "{{count}} места в городе {{city}}"
+    "spotsTeaserIn_other": "{{count}} места в городе {{city}}",
+    "refreshing": "Облетаем мир…"
   },
   "spot": {
     "rankWeekFirst": "Больше всего голосов на этой неделе в {{city}}",

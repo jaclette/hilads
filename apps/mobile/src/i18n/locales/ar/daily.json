@@ -99,7 +99,16 @@
     "discardTitle": "هل تريد تجاهل صورتك؟",
     "discardBody": "ستفقد صورتك وما أدخلته.",
     "keepEditing": "متابعة التعديل",
-    "discard": "تجاهل"
+    "discard": "تجاهل",
+    "onBoard": "{{city}} على اللوحة!",
+    "citiesToday_zero": "واحدة من {{count}} مدينة اليوم",
+    "citiesToday_one": "المدينة الوحيدة اليوم",
+    "citiesToday_two": "واحدة من مدينتين اليوم",
+    "citiesToday_few": "واحدة من {{count}} مدن اليوم",
+    "citiesToday_many": "واحدة من {{count}} مدينة اليوم",
+    "citiesToday_other": "واحدة من {{count}} مدينة اليوم",
+    "onMap": "صورتك الآن على الخريطة · شاهدها",
+    "compareNow": "قارن الآن"
   },
   "errors": {
     "already_posted": "لقد لعبت challenge اليوم بالفعل.",
@@ -481,7 +490,8 @@
     "spotsTeaserIn_two": "مكانان في {{city}}",
     "spotsTeaserIn_few": "{{count}} أماكن في {{city}}",
     "spotsTeaserIn_many": "{{count}} مكانًا في {{city}}",
-    "spotsTeaserIn_other": "{{count}} مكان في {{city}}"
+    "spotsTeaserIn_other": "{{count}} مكان في {{city}}",
+    "refreshing": "نتفقد العالم…"
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",

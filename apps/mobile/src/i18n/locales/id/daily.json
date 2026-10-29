@@ -87,7 +87,11 @@
     "discardTitle": "Buang fotomu?",
     "discardBody": "Fotomu dan isian yang sudah kamu isi akan hilang.",
     "keepEditing": "Lanjut edit",
-    "discard": "Buang"
+    "discard": "Buang",
+    "onBoard": "{{city}} sudah masuk papan!",
+    "citiesToday_other": "Salah satu dari {{count}} kota hari ini",
+    "onMap": "Fotomu sudah ada di peta · Lihat",
+    "compareNow": "Bandingkan sekarang"
   },
   "errors": {
     "already_posted": "Kamu sudah main challenge hari ini.",
@@ -426,7 +430,8 @@
       "twistSub": "Untuk warga lokal, sampai {{time}}"
     },
     "spotsTeaser_other": "{{count}} spot di dekatmu",
-    "spotsTeaserIn_other": "{{count}} spot di {{city}}"
+    "spotsTeaserIn_other": "{{count}} spot di {{city}}",
+    "refreshing": "Keliling dunia dulu…"
   },
   "spot": {
     "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",

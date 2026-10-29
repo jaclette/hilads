@@ -87,7 +87,12 @@
     "discardTitle": "Discard your photo?",
     "discardBody": "Your photo and what you filled in will be lost.",
     "keepEditing": "Keep editing",
-    "discard": "Discard"
+    "discard": "Discard",
+    "onBoard": "{{city}} is on the board!",
+    "citiesToday_one": "One of {{count}} cities today",
+    "citiesToday_other": "One of {{count}} cities today",
+    "onMap": "Your photo is now on the map · See it",
+    "compareNow": "Compare now"
   },
   "errors": {
     "already_posted": "You already played today's challenge.",
@@ -429,7 +434,8 @@
     "spotsTeaser_one": "{{count}} spot near you",
     "spotsTeaser_other": "{{count}} spots near you",
     "spotsTeaserIn_one": "{{count}} spot in {{city}}",
-    "spotsTeaserIn_other": "{{count}} spots in {{city}}"
+    "spotsTeaserIn_other": "{{count}} spots in {{city}}",
+    "refreshing": "Checking the world…"
   },
   "spot": {
     "rankWeekFirst": "Top voted this week in {{city}}",

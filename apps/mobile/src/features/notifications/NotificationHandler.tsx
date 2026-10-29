@@ -344,13 +344,13 @@ function resolvePushRoute(data: NotifData): string | null {
 
     case 'daily_morning':
     case 'daily_reminder':
-      // Daily Challenge pushes (no challengeId on purpose) → the challenge sheet,
-      // its Compare tab once 2 countries answered (data.tab, set at send time).
-      return data.tab === 'compare' ? '/daily/today?source=push&tab=compare' : '/daily/today?source=push';
+      // Daily Challenge pushes (no challengeId on purpose) → the challenge,
+      // or the compare view once 2 countries answered (data.tab, set at send time).
+      return data.tab === 'compare' ? '/daily/countries?source=push' : '/daily/today?source=push';
 
     case 'daily_vote_reminder':
       // Posted but no vote yet: the Compare tab, where the other cities are.
-      return '/daily/today?source=push&tab=compare';
+      return '/daily/countries?source=push';
 
     case 'daily_top10':
       // My proof entered today's top 10 → the Top 10, in "See all" (the challenge screen has no tabs).

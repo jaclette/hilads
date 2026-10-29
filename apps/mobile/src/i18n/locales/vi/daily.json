@@ -87,7 +87,11 @@
     "discardTitle": "Bỏ ảnh của bạn?",
     "discardBody": "Ảnh và những gì bạn đã điền sẽ bị mất.",
     "keepEditing": "Tiếp tục chỉnh",
-    "discard": "Bỏ"
+    "discard": "Bỏ",
+    "onBoard": "{{city}} đã lên bảng!",
+    "citiesToday_other": "Một trong {{count}} thành phố hôm nay",
+    "onMap": "Ảnh của bạn đã lên bản đồ · Xem",
+    "compareNow": "So sánh ngay"
   },
   "errors": {
     "already_posted": "Bạn đã chơi challenge hôm nay rồi.",
@@ -425,7 +429,8 @@
       "twistSub": "Dành cho người địa phương, đến {{time}}"
     },
     "spotsTeaser_other": "{{count}} địa điểm gần bạn",
-    "spotsTeaserIn_other": "{{count}} địa điểm ở {{city}}"
+    "spotsTeaserIn_other": "{{count}} địa điểm ở {{city}}",
+    "refreshing": "Đang xem cả thế giới…"
   },
   "spot": {
     "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

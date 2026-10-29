@@ -87,7 +87,11 @@
     "discardTitle": "写真を破棄しますか?",
     "discardBody": "写真と入力した内容は失われます。",
     "keepEditing": "編集を続ける",
-    "discard": "破棄"
+    "discard": "破棄",
+    "onBoard": "{{city}}がボードに登場！",
+    "citiesToday_other": "今日の{{count}}都市のひとつ",
+    "onMap": "写真がマップに載りました · 見る",
+    "compareNow": "今すぐ比べる"
   },
   "errors": {
     "already_posted": "今日の challenge にはもう参加済みです。",
@@ -426,7 +430,8 @@
       "twistSub": "地元の人向け・{{time}}まで"
     },
     "spotsTeaser_other": "近くのスポット{{count}}件",
-    "spotsTeaserIn_other": "{{city}}のスポット{{count}}件"
+    "spotsTeaserIn_other": "{{city}}のスポット{{count}}件",
+    "refreshing": "世界をチェック中…"
   },
   "spot": {
     "rankWeekFirst": "今週{{city}}で最多得票",

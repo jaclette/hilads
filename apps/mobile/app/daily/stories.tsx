@@ -26,6 +26,9 @@ import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
+import { themeColor } from '@/ui/joy';
+import { getLastToday } from '@/hooks/useDaily';
+import * as Haptics from 'expo-haptics';
 import type { DailyCityGroup, DailyProof } from '@/types';
 
 /** How long a photo stays before the next one (no auto-advance with reduce motion). */
@@ -148,6 +151,9 @@ function Stories() {
     );
   }
 
+  // The segments fill in today's theme color (the theme color system, V3 polish 7).
+  const tc = themeColor(getLastToday()?.challenge?.special ? 'special' : getLastToday()?.challenge?.theme?.key);
+  const barColor = { backgroundColor: tc.line ?? tc.fill };
   const openProfile = (p: DailyProof) => {
     if (!canAccessProfile(account)) { router.push('/auth-gate?reason=view_profile' as never); return; }
     router.push(`/user/${p.user.id}` as never);
@@ -169,9 +175,9 @@ function Stories() {
         <View style={styles.bars} accessibilityLabel={t('stories.of', { index: photoIndex + 1, total: ids.length })}>
           {ids.map((id, i) => (
             <View key={id} style={styles.bar}>
-              {i < photoIndex && <View style={[styles.barFill, { width: '100%' }]} />}
+              {i < photoIndex && <View style={[styles.barFill, barColor, { width: '100%' }]} />}
               {i === photoIndex && (
-                <Animated.View style={[styles.barFill, {
+                <Animated.View style={[styles.barFill, barColor, {
                   width: reduceMotion ? '100%' : progress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
                 }]} />
               )}
@@ -211,7 +217,10 @@ function TapZones({ proof, onPrev, onNext, onHold }: {
     if (now - lastTap.current < DOUBLE_TAP_MS) {
       lastTap.current = 0;
       if (pending.current) { clearTimeout(pending.current); pending.current = null; }
-      if (canVote && !state?.myVote) press({ withdraw: false });
+      if (canVote && !state?.myVote) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+        press({ withdraw: false });
+      }
       return;
     }
     lastTap.current = now;
@@ -237,6 +246,7 @@ function Bottom({ proof, insetBottom, onProfile }: { proof: DailyProof; insetBot
   const name = proof.user.displayName || proof.user.username || '';
   const vote = () => {
     if (!state || state.isMine || (!canVote && !state.myVote)) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     pop.setValue(0.6);
     Animated.spring(pop, { toValue: 1, friction: 3, useNativeDriver: true }).start();
     press({ withdraw: !!state.myVote });

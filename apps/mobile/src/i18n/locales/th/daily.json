@@ -87,7 +87,11 @@
     "discardTitle": "ทิ้งรูปของคุณไหม?",
     "discardBody": "รูปและข้อมูลที่กรอกไว้จะหายไป",
     "keepEditing": "แก้ไขต่อ",
-    "discard": "ทิ้ง"
+    "discard": "ทิ้ง",
+    "onBoard": "{{city}} ขึ้นกระดานแล้ว!",
+    "citiesToday_other": "หนึ่งใน {{count}} เมืองวันนี้",
+    "onMap": "รูปของคุณอยู่บนแผนที่แล้ว · ดู",
+    "compareNow": "เปรียบเทียบเลย"
   },
   "errors": {
     "already_posted": "คุณเล่น challenge วันนี้ไปแล้ว",
@@ -425,7 +429,8 @@
       "twistSub": "สำหรับคนท้องถิ่น ถึง {{time}}"
     },
     "spotsTeaser_other": "{{count}} จุดใกล้คุณ",
-    "spotsTeaserIn_other": "{{count}} จุดใน {{city}}"
+    "spotsTeaserIn_other": "{{count}} จุดใน {{city}}",
+    "refreshing": "กำลังดูทั่วโลก…"
   },
   "spot": {
     "rankWeekFirst": "ได้โหวตมากที่สุดสัปดาห์นี้ใน{{city}}",

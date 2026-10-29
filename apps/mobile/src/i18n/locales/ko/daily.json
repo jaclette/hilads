@@ -87,7 +87,11 @@
     "discardTitle": "사진을 삭제할까요?",
     "discardBody": "사진과 입력한 내용이 사라져요.",
     "keepEditing": "계속 편집",
-    "discard": "삭제"
+    "discard": "삭제",
+    "onBoard": "{{city}} 보드에 올랐어!",
+    "citiesToday_other": "오늘 {{count}}개 도시 중 하나",
+    "onMap": "네 사진이 지도에 올라갔어 · 보기",
+    "compareNow": "지금 비교하기"
   },
   "errors": {
     "already_posted": "오늘의 challenge에 이미 참여했어요.",
@@ -425,7 +429,8 @@
       "twistSub": "현지인 전용, {{time}}까지"
     },
     "spotsTeaser_other": "근처 스팟 {{count}}곳",
-    "spotsTeaserIn_other": "{{city}} 스팟 {{count}}곳"
+    "spotsTeaserIn_other": "{{city}} 스팟 {{count}}곳",
+    "refreshing": "세계를 둘러보는 중…"
   },
   "spot": {
     "rankWeekFirst": "이번 주 {{city}} 최다 득표",

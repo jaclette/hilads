@@ -87,7 +87,13 @@
     "discardTitle": "Descartar a tua foto?",
     "discardBody": "A tua foto e o que preencheste vão perder-se.",
     "keepEditing": "Continuar a editar",
-    "discard": "Descartar"
+    "discard": "Descartar",
+    "onBoard": "{{city}} está no jogo!",
+    "citiesToday_one": "Uma de {{count}} cidades hoje",
+    "citiesToday_many": "Uma de {{count}} cidades hoje",
+    "citiesToday_other": "Uma de {{count}} cidades hoje",
+    "onMap": "A tua foto já está no mapa · Ver",
+    "compareNow": "Comparar agora"
   },
   "errors": {
     "already_posted": "Já jogaste o challenge de hoje.",
@@ -432,7 +438,8 @@
     "spotsTeaser_other": "{{count}} sítios perto de ti",
     "spotsTeaserIn_one": "{{count}} sítio em {{city}}",
     "spotsTeaserIn_many": "{{count}} sítios em {{city}}",
-    "spotsTeaserIn_other": "{{count}} sítios em {{city}}"
+    "spotsTeaserIn_other": "{{count}} sítios em {{city}}",
+    "refreshing": "A dar a volta ao mundo…"
   },
   "spot": {
     "rankWeekFirst": "O mais votado esta semana em {{city}}",

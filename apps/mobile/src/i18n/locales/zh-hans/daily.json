@@ -87,7 +87,11 @@
     "discardTitle": "放弃这张照片?",
     "discardBody": "你的照片和填写的内容将会丢失。",
     "keepEditing": "继续编辑",
-    "discard": "放弃"
+    "discard": "放弃",
+    "onBoard": "{{city}} 上榜了！",
+    "citiesToday_other": "今天 {{count}} 座城市之一",
+    "onMap": "你的照片已在地图上 · 查看",
+    "compareNow": "立即比较"
   },
   "errors": {
     "already_posted": "你已经参加过今天的 challenge 了。",
@@ -425,7 +429,8 @@
       "twistSub": "限本地人，截至 {{time}}"
     },
     "spotsTeaser_other": "你附近有 {{count}} 个地点",
-    "spotsTeaserIn_other": "{{city}}有 {{count}} 个地点"
+    "spotsTeaserIn_other": "{{city}}有 {{count}} 个地点",
+    "refreshing": "正在环游世界…"
   },
   "spot": {
     "rankWeekFirst": "本周{{city}}得票最多",

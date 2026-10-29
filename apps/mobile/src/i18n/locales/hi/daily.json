@@ -87,7 +87,12 @@
     "discardTitle": "अपनी फ़ोटो हटाएँ?",
     "discardBody": "आपकी फ़ोटो और भरी गई जानकारी खो जाएगी।",
     "keepEditing": "संपादन जारी रखें",
-    "discard": "हटाएँ"
+    "discard": "हटाएँ",
+    "onBoard": "{{city}} बोर्ड पर है!",
+    "citiesToday_one": "आज के {{count}} शहरों में से एक",
+    "citiesToday_other": "आज के {{count}} शहरों में से एक",
+    "onMap": "तुम्हारी फ़ोटो अब मैप पर है · देखो",
+    "compareNow": "अभी तुलना करो"
   },
   "errors": {
     "already_posted": "आप आज का challenge खेल चुके हैं।",
@@ -429,7 +434,8 @@
     "spotsTeaser_one": "तुम्हारे पास {{count}} स्पॉट",
     "spotsTeaser_other": "तुम्हारे पास {{count}} स्पॉट",
     "spotsTeaserIn_one": "{{city}} में {{count}} स्पॉट",
-    "spotsTeaserIn_other": "{{city}} में {{count}} स्पॉट"
+    "spotsTeaserIn_other": "{{city}} में {{count}} स्पॉट",
+    "refreshing": "दुनिया देख रहे हैं…"
   },
   "spot": {
     "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",

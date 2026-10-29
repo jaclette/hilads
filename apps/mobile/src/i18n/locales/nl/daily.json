@@ -87,7 +87,12 @@
     "discardTitle": "Je foto weggooien?",
     "discardBody": "Je foto en wat je hebt ingevuld gaan verloren.",
     "keepEditing": "Verder bewerken",
-    "discard": "Weggooien"
+    "discard": "Weggooien",
+    "onBoard": "{{city}} doet mee!",
+    "citiesToday_one": "Een van de {{count}} steden vandaag",
+    "citiesToday_other": "Een van de {{count}} steden vandaag",
+    "onMap": "Je foto staat op de kaart · Bekijk",
+    "compareNow": "Nu vergelijken"
   },
   "errors": {
     "already_posted": "Je hebt de challenge van vandaag al gespeeld.",
@@ -429,7 +434,8 @@
     "spotsTeaser_one": "{{count}} spot bij jou in de buurt",
     "spotsTeaser_other": "{{count}} spots bij jou in de buurt",
     "spotsTeaserIn_one": "{{count}} spot in {{city}}",
-    "spotsTeaserIn_other": "{{count}} spots in {{city}}"
+    "spotsTeaserIn_other": "{{count}} spots in {{city}}",
+    "refreshing": "Even de wereld rond…"
   },
   "spot": {
     "rankWeekFirst": "Meest gestemd deze week in {{city}}",

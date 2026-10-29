@@ -87,7 +87,12 @@
     "discardTitle": "Dein Foto verwerfen?",
     "discardBody": "Dein Foto und deine Angaben gehen verloren.",
     "keepEditing": "Weiter bearbeiten",
-    "discard": "Verwerfen"
+    "discard": "Verwerfen",
+    "onBoard": "{{city}} ist dabei!",
+    "citiesToday_one": "Eine von {{count}} Städten heute",
+    "citiesToday_other": "Eine von {{count}} Städten heute",
+    "onMap": "Dein Foto ist jetzt auf der Karte · Ansehen",
+    "compareNow": "Jetzt vergleichen"
   },
   "errors": {
     "already_posted": "Du hast die heutige Challenge schon gespielt.",
@@ -429,7 +434,8 @@
     "spotsTeaser_one": "{{count}} Spot in deiner Nähe",
     "spotsTeaser_other": "{{count}} Spots in deiner Nähe",
     "spotsTeaserIn_one": "{{count}} Spot in {{city}}",
-    "spotsTeaserIn_other": "{{count}} Spots in {{city}}"
+    "spotsTeaserIn_other": "{{count}} Spots in {{city}}",
+    "refreshing": "Wir schauen um die Welt…"
   },
   "spot": {
     "rankWeekFirst": "Diese Woche am meisten gewählt in {{city}}",

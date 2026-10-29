@@ -18,7 +18,9 @@ import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { askDailyPush } from '@/services/push';
 import { uploadFile } from '@/api/uploads';
-import { createDailyProof, dailyErrorCode, fetchDailyProof, fetchDailyToday, updateDailyProof } from '@/api/daily';
+import { createDailyProof, dailyErrorCode, fetchDailyProof, fetchDailyToday, fetchDailyTodayCountries, updateDailyProof } from '@/api/daily';
+import * as Haptics from 'expo-haptics';
+import { Confetti } from '@/ui/joy';
 import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
@@ -101,6 +103,7 @@ function DailyProofScreenContent() {
   const [photo, setPhoto]       = useState<Photo | null>(null);
   const [invite, setInvite]     = useState<ShareContent | null>(null);
   const [sent, setSent]         = useState<{ proof: DailyProof; body: string; next: string; nudge: boolean; cityFirst: boolean } | null>(null);
+  const [citiesToday, setCitiesToday] = useState<number | null>(null);
   const [caption, setCaption]   = useState('');
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
@@ -362,6 +365,9 @@ function DailyProofScreenContent() {
       if (nudge) AsyncStorage.setItem(PROPOSE_NUDGE_KEY, String(Date.now())).catch(() => {});
       const body = spot?.inReview ? `${t('proof.sentBody')}\n\n${t('place.newOnMapLater')}` : t('proof.sentBody');
       setSent({ proof: saved, body, next, nudge, cityFirst });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      // How many cities are on today's board with mine (the celebration's line).
+      fetchDailyTodayCountries({ cityId: saved.city?.id ?? null }).then(d => setCitiesToday(d.cityCount ?? d.items.length)).catch(() => {});
     } catch (err) {
       const code = dailyErrorCode(err);
       if (code === 'too_far' && err instanceof ApiError) {
@@ -400,10 +406,19 @@ function DailyProofScreenContent() {
           {/* A seasonal event's live day: a burst of bats instead of the checkmark. */}
           {seasonal?.key === 'halloween' ? <BatBurst />
             : <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>}
-          <Text style={styles.stepTitle} accessibilityRole="header">
-            {sent.proof.city?.name ? t('proof.sentTitle', { city: shortCityName(sent.proof.city.name) }) : t('proof.sentTitleNoCity')}
-          </Text>
+          {/* My city is on today's board (V3 polish 7): its flag, a burst of confetti, how many cities play with it. */}
+          <View style={styles.boardRow}>
+            {!!sent.proof.city?.country && <CityFlag country={sent.proof.city.country} size={22} />}
+            <Text style={styles.stepTitle} accessibilityRole="header">
+              {sent.proof.city?.name ? t('proof.onBoard', { city: shortCityName(sent.proof.city.name) }) : t('proof.sentTitleNoCity')}
+            </Text>
+          </View>
+          {citiesToday !== null && citiesToday > 1 && <Text style={styles.boardSub}>{t('proof.citiesToday', { count: citiesToday })}</Text>}
           <Text style={styles.muted}>{sent.body}</Text>
+          {/* On the map at once (an existing spot): its link. */}
+          {sent.next.startsWith('/(tabs)/map') && (
+            <Button variant="link" icon="location-outline" label={t('proof.onMap')} onPress={() => afterProof(sent.next)} />
+          )}
           {/* Represent your city (SPEC 9.16): the city's first proof of the day. */}
           {sent.cityFirst && !!sent.proof.city?.name && (
             <View style={styles.firstCity}>
@@ -419,12 +434,12 @@ function DailyProofScreenContent() {
           )}
         </ScrollView>
         <ShareSheet content={invite} source="represent_after_proof" onClose={() => setInvite(null)} />
+        {seasonal?.key !== 'halloween' && <Confetti run />}
         <View style={styles.footer}>
           {/* Votes go to the other cities: straight to how the world answered (COPY.md). */}
           <Text style={styles.votesNext}>{t('vote.afterPost')}</Text>
-          {challenge.compare
-            ? <Button icon="earth-outline" label={t('proof.compare')} onPress={() => afterProof('/daily/today?tab=compare&source=after_proof')} />
-            : <Button icon="earth-outline" label={t('seeProofs')} onPress={() => afterProof('/daily/today?tab=world&source=after_proof')} />}
+          {/* Compare now: the world's cities side by side (the compare view). */}
+          <Button icon="earth-outline" label={t('proof.compareNow')} onPress={() => afterProof('/daily/countries?source=after_proof')} />
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
         </View>
       </SafeAreaView>
@@ -668,6 +683,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   challenge:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingHorizontal: Spacing.md, paddingBottom: 6 },
   icon:        { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   stepTitle:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
+  boardRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' },
+  boardSub:     { fontSize: 15, fontWeight: '700', color: c.primaryText, textAlign: 'center' },
   cta:         { alignSelf: 'stretch', flexDirection: 'row', gap: 8, minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
   ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
   body:        { padding: Spacing.md, gap: 8, paddingBottom: 30 },
