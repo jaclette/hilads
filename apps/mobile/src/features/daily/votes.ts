@@ -25,6 +25,11 @@ let viewerSet = false;
 const listeners = new Set<() => void>();
 let version = 0;
 
+// Proof data also carries comments (count, 2 latest): comments.ts listens here.
+type StateSink = (proofId: string, commentCount: number | undefined, latest?: DailyVoteState['latestComments']) => void;
+const sinks = new Set<StateSink>();
+export function onProofStates(sink: StateSink) { sinks.add(sink); }
+
 function emit() {
   version++;
   listeners.forEach(l => l());
@@ -57,6 +62,7 @@ export function seedProofs(proofs: (DailyProof | null | undefined)[], votingOpen
       voteCount: p.voteCount, validatedByLocal: p.validatedByLocal, myVote: p.myVote,
       isMine: p.isMine, votingOpen, at,
     });
+    sinks.forEach(f => f(p.id, p.commentCount));
     changed = true;
   }
   if (changed) emit();
@@ -92,7 +98,10 @@ async function flush() {
     try {
       const res = await fetchDailyProofStates(chunk, batchGuestId);
       const at = Date.now();
-      for (const [id, st] of Object.entries(res.items)) states.set(id, { ...st, at });
+      for (const [id, st] of Object.entries(res.items)) {
+        states.set(id, { ...st, at });
+        sinks.forEach(f => f(id, st.commentCount, st.latestComments));
+      }
       if (res.myVotes) votesLeft = res.myVotes.left;
       emit();
     } catch (err) {

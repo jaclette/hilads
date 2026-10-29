@@ -15269,6 +15269,24 @@ function photoCommentsTarget(string $photoId, ?array $user): array
     return $proof;
 }
 
+/**
+ * Tell the photo's watchers (WS proofComment) what changed, with the fresh count
+ * and the 2 latest for previews. Viewer-neutral: each app works out isMine,
+ * canDelete and its blocks itself. Best effort.
+ */
+function photoCommentBroadcast(string $photoId, array $change): void
+{
+    try {
+        $change += [
+            'commentCount'   => PhotoComments::counts([$photoId])[$photoId] ?? 0,
+            'latestComments' => PhotoComments::latest([$photoId], null, [])[$photoId] ?? [],
+        ];
+        postToWs('/broadcast/proof-comment', ['proofId' => $photoId] + $change);
+    } catch (\Throwable $e) {
+        error_log('[comments] broadcast failed: ' . $e->getMessage());
+    }
+}
+
 /** A visible comment whose writer the viewer did not block, or a 404. */
 function photoCommentTarget(string $id, ?array $user): array
 {
@@ -15314,6 +15332,7 @@ $router->add('POST', '/api/v1/daily/proofs/{id}/comments', function (array $para
     }
     $count = PhotoComments::counts([$proof['id']])[$proof['id']] ?? 0;
     apiLog('daily', 'comment', ['proof' => $proof['id'], 'user' => $user['id']]);
+    photoCommentBroadcast($proof['id'], ['kind' => 'created', 'comment' => PhotoComments::format($row, null)]);
     Response::json(['comment' => PhotoComments::format($row, $user['id']), 'commentCount' => $count], 201);
 });
 
@@ -15327,6 +15346,7 @@ $router->add('DELETE', '/api/v1/daily/comments/{id}', function (array $params) {
         Response::json(['error' => $forbidden ? 'Not your comment' : 'Comment not found', 'code' => $e->getMessage()],
                        $forbidden ? 403 : 404);
     }
+    photoCommentBroadcast($photoId, ['kind' => 'deleted', 'commentId' => (int) $params['id']]);
     Response::json(['ok' => true, 'commentCount' => PhotoComments::counts([$photoId])[$photoId] ?? 0]);
 });
 
@@ -15338,7 +15358,10 @@ foreach (['POST' => true, 'DELETE' => false] as $commentLikeMethod => $commentLi
             Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
         }
         $comment = photoCommentTarget($params['id'], $user);
-        Response::json(PhotoComments::like((int) $comment['id'], $user['id'], $commentLikeOn));
+        $like = PhotoComments::like((int) $comment['id'], $user['id'], $commentLikeOn);
+        postToWs('/broadcast/proof-comment', ['proofId' => $comment['photo_id'], 'kind' => 'liked',
+                                              'commentId' => (int) $comment['id'], 'likeCount' => $like['likeCount']]);
+        Response::json($like);
     });
 }
 
@@ -15366,6 +15389,9 @@ $router->add('POST', '/api/v1/daily/comments/{id}/report', function (array $para
     }
     if ($result === 'already_reported') {
         Response::json(['error' => 'You already reported this comment.', 'code' => 'already_reported'], 409);
+    }
+    if ($result === 'reported_hidden') {
+        photoCommentBroadcast($comment['photo_id'], ['kind' => 'deleted', 'commentId' => (int) $comment['id']]);
     }
     Response::json(['ok' => true, 'hidden' => $result === 'reported_hidden']);
 });

@@ -13,6 +13,7 @@
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
  *                    joinUser(userId)                       - per-user channel for friend reqs etc.
+ *                    watchProofs(proofIds[]) / unwatchProofs(proofIds[]) - Daily photos on screen (comments)
  *                    reaction(type, messageId, cityId, userId?, timestamp)
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
@@ -35,6 +36,7 @@
  *                    POST /broadcast/challenge-validated  { channelId, challenge }
  *                    POST /broadcast/challenge-unvalidated { channelId, challenge }
  *                    POST /broadcast/user-event           { userId, event, payload }
+ *                    POST /broadcast/proof-comment        { proofId, ...change } → proofComment to the photo's watchers
  *
  * All events are JSON objects with an `event` field.
  *
@@ -104,6 +106,9 @@ const dmRooms = new Map()
 // requests, future profile-view bursts, etc). Multi-device users have multiple
 // sockets in the set. Cleaned up when sockets close (see removeWs).
 const userRooms = new Map()
+// Daily photo id → sockets showing it (comments sheet, chat card, story viewer).
+// A photo is watched from any city, so this is not a city room.
+const proofWatchers = new Map()
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -457,6 +462,47 @@ function broadcastConversationMessage(conversationId, message) {
   console.log(`[WS][emit] event=newConversationMessage target=dm:${conversationId.slice(0, 8)} recipients=${recipients}/${room.size}`)
 }
 
+// ── Daily photo watchers (comments) ────────────────────────────────────────────
+
+const MAX_WATCHED_PROOFS = 200
+
+function handleWatchProofs(ws, { proofIds }) {
+  if (!Array.isArray(proofIds)) return
+  if (!ws._proofs) ws._proofs = new Set()
+  for (const id of proofIds) {
+    if (typeof id !== 'string' || !/^[a-f0-9]{16}$/.test(id) || ws._proofs.size >= MAX_WATCHED_PROOFS) continue
+    if (!proofWatchers.has(id)) proofWatchers.set(id, new Set())
+    proofWatchers.get(id).add(ws)
+    ws._proofs.add(id)
+  }
+}
+
+function handleUnwatchProofs(ws, { proofIds }) {
+  if (!Array.isArray(proofIds) || !ws._proofs) return
+  for (const id of proofIds) unwatchProof(ws, id)
+}
+
+function unwatchProof(ws, id) {
+  const set = proofWatchers.get(id)
+  if (set) {
+    set.delete(ws)
+    if (set.size === 0) proofWatchers.delete(id)
+  }
+  ws._proofs?.delete(id)
+}
+
+// {event:'proofComment', proofId, kind: 'created'|'deleted'|'liked', ...} to the photo's watchers.
+function broadcastProofComment(proofId, change) {
+  const set = proofWatchers.get(proofId)
+  if (!set) return
+  const msg = JSON.stringify({ ...change, event: 'proofComment', proofId })
+  let recipients = 0
+  for (const ws of set) {
+    if (ws.readyState === 1 /* OPEN */) { ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=proofComment kind=${change.kind} proof=${proofId} recipients=${recipients}/${set.size}`)
+}
+
 // ── Per-user channel ───────────────────────────────────────────────────────────
 
 function handleJoinUser(ws, { userId }) {
@@ -643,6 +689,11 @@ function handleBroadcastRequest(req, res) {
         broadcastChallengeUpdated(channelId, challenge)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/proof-comment') {
+        const { proofId, ...change } = JSON.parse(body)
+        if (typeof proofId === 'string') broadcastProofComment(proofId, change)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'POST' && req.url === '/broadcast/reaction') {
         const { channelId, messageId, reactions } = JSON.parse(body)
         console.log(`[internal] broadcast reaction channelId=${JSON.stringify(channelId)} msgId=${messageId}`)
@@ -739,11 +790,15 @@ wss.on('connection', (ws, req) => {
       case 'joinConversation':   return handleJoinConversation(ws, msg)
       case 'leaveConversation':  return handleLeaveConversation(ws, msg)
       case 'joinUser':           return handleJoinUser(ws, msg)
+      case 'watchProofs':        return handleWatchProofs(ws, msg)
+      case 'unwatchProofs':      return handleUnwatchProofs(ws, msg)
       case 'reaction':           return handleReactionBurst(ws, msg)
     }
   })
 
   ws.on('close', () => {
+    // Photo watchers have no presence to keep: drop them now.
+    for (const id of [...(ws._proofs ?? [])]) unwatchProof(ws, id)
     // Presence grace period: defer cleanup so a brief disconnect - backgrounding
     // the app, a network blip - doesn't flicker the user offline instantly.
     // removeWs only drops entries still pointing at THIS socket, so a reconnect

@@ -949,6 +949,7 @@ export interface DailyProof {
   localVoteCount:   number;
   validatedByLocal: boolean;
   myVote:           boolean;          // the viewer voted for it
+  commentCount?:    number;           // visible comments (absent before the comments release)
   worldRank:        number | null;    // 1-3 once the challenge closed
   cityRank:         number | null;    // rank within its city once closed
   isMine:           boolean;
@@ -1265,6 +1266,31 @@ export interface DailyVoteState {
   myVote:           boolean;
   isMine:           boolean;
   votingOpen:       boolean;
+  commentCount?:    number;           // comments (absent on an older API)
+  latestComments?:  PhotoComment[];   // the 2 latest, oldest first
+}
+
+/** A comment on a Daily photo (GET /daily/proofs/{id}/comments). */
+export interface PhotoComment {
+  id:        number;
+  photoId:   string;
+  body:      string;
+  user: {
+    id:          string;
+    username:    string | null;
+    displayName: string | null;
+    photoUrl:    string | null;
+    city:        { name: string; country: string } | null;   // the commenter's city
+  };
+  isAuthor:  boolean;                  // written by the photo's author
+  isMine:    boolean;
+  canDelete: boolean;
+  likeCount: number;
+  myLike:    boolean;
+  replyTo:   { id: number; username: string | null; body: string } | null;
+  mentions:  { userId: string; username: string }[];
+  createdAt: number;
+  editedAt:  number | null;
 }
 
 export interface DailyUserStats {

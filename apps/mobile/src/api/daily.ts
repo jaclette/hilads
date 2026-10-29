@@ -10,6 +10,7 @@ import type {
   DailyPlacePin,
   DailyProposal,
   DailyProof,
+  PhotoComment,
   DailyProofInput,
   DailySheet,
   DailyTodayProofs,
@@ -214,6 +215,39 @@ export type DailyReportReason = 'inappropriate' | 'person_without_consent' | 'da
 /** Report a visible proof (guests pass their guestId). 409 = already reported. */
 export async function reportDailyProof(proofId: string, reasonCode: DailyReportReason, guestId?: string | null): Promise<void> {
   await api.post(`/daily/proofs/${proofId}/report`, { reasonCode, guestId: guestId ?? undefined });
+}
+
+// ── Comments on photos ─────────────────────────────────────────────────────
+
+export interface PhotoCommentsPage {
+  items:        PhotoComment[];
+  hasMore:      boolean;
+  commentCount: number;
+}
+
+/** A page of a photo's comments, oldest first: the latest, or the ones before a comment id. */
+export async function fetchPhotoComments(proofId: string, before?: number | null, guestId?: string | null): Promise<PhotoCommentsPage> {
+  return api.get(`/daily/proofs/${proofId}/comments`, { params: { before: before ?? undefined, guestId: guestId ?? undefined } });
+}
+
+/** Comment a photo (signed in). Errors: invalid_body, moderation_blocked, invalid_reply, rate_limited, signup_required. */
+export async function postPhotoComment(proofId: string, body: string, replyToId?: number | null): Promise<{ comment: PhotoComment; commentCount: number }> {
+  return api.post(`/daily/proofs/${proofId}/comments`, { body, replyToId: replyToId ?? undefined });
+}
+
+export async function deletePhotoComment(commentId: number): Promise<{ commentCount: number }> {
+  return api.delete(`/daily/comments/${commentId}`);
+}
+
+export async function likePhotoComment(commentId: number, on: boolean): Promise<{ likeCount: number; myLike: boolean }> {
+  return on ? api.post(`/daily/comments/${commentId}/like`, {}) : api.delete(`/daily/comments/${commentId}/like`);
+}
+
+export type PhotoCommentReportReason = 'inappropriate' | 'harassment' | 'spam' | 'other';
+
+/** Report a comment (guests pass their guestId). 409 = already reported. */
+export async function reportPhotoComment(commentId: number, reasonCode: PhotoCommentReportReason, guestId?: string | null): Promise<void> {
+  await api.post(`/daily/comments/${commentId}/report`, { reasonCode, guestId: guestId ?? undefined });
 }
 
 export interface DailyVoteResult {

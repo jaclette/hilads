@@ -44,6 +44,8 @@ class HiladsSocket {
   private pendingChallengeThread: PendingChallengeThread | null = null;
   private pendingDm:    PendingDm    | null = null;
   private pendingUser:  PendingUser  | null = null;
+  // Daily photos on screen (comments): proof id → how many views show it.
+  private watchedProofs = new Map<string, number>();
 
   // ── Connection ──────────────────────────────────────────────────────────────
 
@@ -243,6 +245,22 @@ class HiladsSocket {
   }
 
   /**
+   * Live comments of a Daily photo (event 'proofComment'). Refcounted: the
+   * server is told once per photo, and again after a reconnect.
+   */
+  watchProof(proofId: string): () => void {
+    const n = this.watchedProofs.get(proofId) ?? 0;
+    this.watchedProofs.set(proofId, n + 1);
+    if (n === 0) this.send({ event: 'watchProofs', proofIds: [proofId] });
+    return () => {
+      const left = (this.watchedProofs.get(proofId) ?? 1) - 1;
+      if (left > 0) { this.watchedProofs.set(proofId, left); return; }
+      this.watchedProofs.delete(proofId);
+      this.send({ event: 'unwatchProofs', proofIds: [proofId] });
+    };
+  }
+
+  /**
    * Drop all replay state - call from logout so a future reconnect doesn't
    * silently re-join rooms tied to the previous identity.
    */
@@ -288,6 +306,7 @@ class HiladsSocket {
         if (this.pendingChallengeThread) this.send({ event: 'joinChallengeThread', ...this.pendingChallengeThread });
         if (this.pendingDm)              this.send({ event: 'joinConversation',    ...this.pendingDm });
         if (this.pendingUser)  this.send({ event: 'joinUser',         ...this.pendingUser });
+        if (this.watchedProofs.size > 0) this.send({ event: 'watchProofs', proofIds: [...this.watchedProofs.keys()] });
         this._dispatch('connected', {});
       };
 
