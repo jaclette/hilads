@@ -14,6 +14,12 @@
  * locale (bare paths: English, the browser language is not guessed so the
  * CDN copy stays one per path). PostHog: link_opened and link_cta, with the
  * share link's utm_source.
+ *
+ * A photo shared from the app's share card (share card redo) carries
+ * ?from=<username>&city=<city>&tpl=<template>: the page then opens on "@anh
+ * played for Saigon" and the challenge's share question ("What's YOUR city's
+ * answer?"), read in the browser so the CDN copy stays one per path.
+ * PostHog: share_link_visit, share_link_install_click (open / stores / web).
  */
 
 import { API_BASE } from './_daily.mjs'
@@ -109,9 +115,13 @@ function body(data, S, SS, locale) {
   }
   if (data.kind === 'proof') {
     const p = data.proof
+    const ask = `<section class="ask" id="ask" hidden>
+      <div class="from" id="ask-from"></div>
+      <div class="ask-q">${esc((c && c.shareQuestion) || SS.ask)}</div>
+    </section>`
     const rank = p.worldRank && p.worldRank <= 3 ? fmt(SS.rankWorld, { rank: p.worldRank })
       : p.cityRank && p.cityRank <= 3 && p.city ? fmt(SS.rankCity, { rank: p.cityRank, city: p.city.name }) : null
-    return `<figure class="photo"><img src="${esc(p.photoUrl)}" alt="${esc(p.caption || '')}" />${rank ? `<span class="rank">${esc(rank)}</span>` : ''}</figure>
+    return `${ask}<figure class="photo"><img src="${esc(p.photoUrl)}" alt="${esc(p.caption || '')}" />${rank ? `<span class="rank">${esc(rank)}</span>` : ''}</figure>
     <section class="card">
       <div class="kicker">Daily Challenge</div>${challenge}
       <div class="meta">${p.city ? `<span>${flagImg(p.city.country)}${esc(p.city.name)}</span>` : ''}${p.user && p.user.username ? `<span>${esc(fmt(SS.by, { user: p.user.username }))}</span>` : ''}<span>${HEART}${p.voteCount}</span></div>
@@ -150,7 +160,7 @@ export function renderShare(type, id, data, locale) {
     : c ? `Daily Challenge: ${c.text}` : 'Hilads'
   const description = S.tag
   const appPath = `${type}/${id}`
-  const boot = { kind, id, state: data ? data.state : 'not_found', locale, appPath }
+  const boot = { kind, id, state: data ? data.state : 'not_found', locale, appPath, playedFor: SS.playedFor }
 
   return `<!doctype html>
 <html lang="${esc(locale)}"${locale === 'ar' ? ' dir="rtl"' : ''}>
@@ -216,6 +226,11 @@ export function renderShare(type, id, data, locale) {
     a.open{ background:var(--primary); }
     a.web{ background:var(--surface); color:var(--text); border:1.5px solid var(--line); }
     a.btn:active{ transform:scale(.98); }
+    .ask{ display:flex; flex-direction:column; gap:6px; padding:18px; border-radius:22px; background:#FFD9C7; color:#3B1D0E; }
+    .ask[hidden]{ display:none; }
+    .ask:not([hidden]) + .photo img{ max-height:40svh; }  /* a friend's visit: the buttons stay near the fold */
+    .from{ font-size:14px; font-weight:700; }
+    .ask-q{ font-size:clamp(24px,7vw,30px); font-weight:800; letter-spacing:-.5px; line-height:1.15; text-wrap:balance; }
   </style>
 </head>
 <body>
@@ -273,15 +288,29 @@ export function renderShare(type, id, data, locale) {
     var isAndroid = /android/i.test(ua), isMobile = /android|iphone|ipad|ipod/i.test(ua);
     var IN_APP_RE = /\\b(Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\\/|MicroMessenger|Snapchat|Twitter|TikTok|KAKAOTALK)\\b/i;
     if (isAndroid) $('stores').insertBefore($('cta-android'), $('cta-ios'));
+    // The share's from / city / tpl ride along to the app (its link_opened).
+    var appPath = B.appPath + (B.kind === 'proof' && sp.get('from') ? '?' + new URLSearchParams({ from: sp.get('from'), tpl: sp.get('tpl') || '' }).toString() : '')
     var appUrl = isAndroid
-      ? 'intent://' + B.appPath + '#Intent;scheme=hilads;package=com.hilads.app;S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end'
-      : 'hilads://' + B.appPath;
+      ? 'intent://' + appPath + '#Intent;scheme=hilads;package=com.hilads.app;S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end'
+      : 'hilads://' + appPath;
     if (isMobile && B.kind) {
       $('cta-open').setAttribute('href', appUrl);
       $('cta-open').hidden = false;
       // In-app browsers swallow Universal / App Links: bounce to the app, as on /today.
       if (IN_APP_RE.test(ua)) setTimeout(function () { try { location.href = appUrl; } catch (e) {} }, 400);
     }
+
+    /* A share card's link: "@anh played for Saigon" over the share question. */
+    var from = (sp.get('from') || '').replace(/[^A-Za-z0-9_.]/g, '').slice(0, 30);
+    var city = (sp.get('city') || '').slice(0, 60);
+    var tpl = ['turn','versus','result'].indexOf(sp.get('tpl')) >= 0 ? sp.get('tpl') : null;
+    if (from && B.kind === 'proof' && $('ask')) {
+      $('ask-from').textContent = city ? B.playedFor.replace('{user}', from).replace('{city}', city) : '@' + from;
+      $('ask').hidden = false;
+    }
+    var shareProps = { proof_id: B.id, from: from || null, city: city || null, template: tpl,
+      utm_source: sp.get('utm_source') || null, in_app_browser: IN_APP_RE.test(ua), locale: B.locale };
+    if (from) cap('share_link_visit', shareProps);
 
     cap('link_opened', {
       content_type: B.kind || 'not_found', content_id: B.id, state: B.state, locale: B.locale,
@@ -294,6 +323,7 @@ export function renderShare(type, id, data, locale) {
         e.preventDefault();
         var url = el.getAttribute('href');
         cap('link_cta', { target: target, content_type: B.kind || 'not_found', content_id: B.id, utm_source: sp.get('utm_source') || null });
+        if (from) cap('share_link_install_click', Object.assign({ target: target }, shareProps));
         setTimeout(function () { location.href = url; }, 140);
       });
     }

@@ -77,6 +77,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
 
   useEffect(() => {
     track('share_started', props);
+    track('share_opened', props);
     directChannels().then(setChannels).catch(() => {});
     if (!proof) return;
     // Versus: one photo per other city, today's challenge only (a past photo has no Versus).
@@ -127,13 +128,16 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   const go = async (channel: ShareChannel) => {
     if (busy) return;
     setBusy(channel);
+    track('share_target', { ...props, channel });
     try {
       const file = IMAGE_CHANNELS.includes(channel) ? await fileFor(key) : null;
       if (STORY_CHANNELS.includes(channel)) {
         if (!file) return;
         await storyLinkTip(t);
       }
-      const res = await shareTo(channel, { file, url: shareUrl(content), text: shareText(content) });
+      // My photo's link names the template, for the landing's share_link_visit.
+      const url = proof ? `${shareUrl(content)}${shareUrl(content).includes('?') ? '&' : '?'}tpl=${template}` : shareUrl(content);
+      const res = await shareTo(channel, { file, url, text: shareText(content) });
       if (channel === 'copy_link') { setCopied(true); setTimeout(() => setCopied(false), 2000); }
       if (res.done) track('share_completed', { ...props, channel, ...(res.activity ? { activity: res.activity } : {}) });
     } catch {

@@ -8,11 +8,13 @@ import { fetchDailyProof } from '@/api/daily';
 // Shared proof link (SPEC 9.14): hilads.live/p/{id} and hilads://p/{id} → the
 // proof in its day's sheet. A proof I can't see (in review, removed) → today.
 export default function ProofLink() {
-  const { id, utm_source: utm } = useLocalSearchParams<{ id: string; utm_source?: string }>();
+  const { id, utm_source: utm, from, tpl } = useLocalSearchParams<{ id: string; utm_source?: string; from?: string; tpl?: string }>();
   const router = useRouter();
   const { colors } = useTheme();
   useEffect(() => {
-    track('link_opened', { content_type: 'proof', content_id: id, utm_source: utm ?? null });
+    track('link_opened', { content_type: 'proof', content_id: id, utm_source: utm ?? null, from: from ?? null, template: tpl ?? null });
+    // A share card's link (?from=anh&tpl=turn) opened the app.
+    if (from) track('share_link_visit', { proof_id: id, from, template: tpl ?? null, utm_source: utm ?? null, source: 'app' });
     fetchDailyProof(String(id))
       .then(p => router.replace(`/daily/${p.date}?proof=${p.id}&source=link` as never))
       .catch(() => router.replace('/daily/today?source=link' as never));
