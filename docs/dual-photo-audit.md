@@ -56,3 +56,25 @@ Backend copies of `photo_url`: `DailyCards::proofPayload` (chat card snapshot), 
 - Camera switch time varies (slow Android): the countdown starts on `onCameraReady` of the front camera, with a timeout fallback.
 - Two uploads per post: both before the `POST`, the selfie's failure falls back to posting the photo alone only after a retry prompt.
 - Mobile ships only with a store build (no OTA); the API change is additive (old apps keep posting single photos).
+
+## 5. QA (Phase 5, 2026-10-29)
+
+Checked: backend unit tests (262 green, incl. selfie validation and format), local API (migration, `selfieUrl` on proofs and on the chat card), `tsc` (no new errors vs HEAD, 22 baseline), web `vite build` + eslint, and the iOS simulator against a local backend:
+
+| Check | Result |
+| --- | --- |
+| Hi chat post with a selfie: inset top-left, one-time tip beside it, tap swaps (selfie big, photo inset) and the tip goes | OK |
+| Story viewer: inset under the city header, clear of the progress bar and close button | OK |
+| Mosaic: small inset on a dual photo's card, single photos unchanged | OK |
+| Single photos everywhere: as before (no placeholder) | OK |
+| Old apps: `selfieUrl` / `selfieThumbUrl` are new optional fields; no endpoint changed shape | OK by construction |
+
+Not checked here (needs devices):
+- the capture itself: the simulator has no camera (back → front switch time, countdown, auto-capture, Dual toggle remembered, Retake selfie / Remove selfie / Add your face / Retake all, permission denied, a device without a front camera, slow Android);
+- drag-to-corner in the story viewer with a real finger (the simulated drag could not be driven);
+- share card capture with the inset, Android, small screens, long translations.
+
+Skipped on purpose:
+- **No gallery** in the Daily flow (camera only, SPEC 9.4): "Add your face" lives on the camera's review instead.
+- **No blurhash / stored dimensions**: none exist today; the thumb is the placeholder for both images, like the rest of the app.
+- **Selfie never in** spot covers, map pins, the promo video, SEO pages and og images (a face needs its own consent for promo; covers and pins stay about the place).
