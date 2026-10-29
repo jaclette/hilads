@@ -1423,6 +1423,22 @@
       "openCountry": "{{city}}: bekijk de foto's",
       "byCountry": "Per land"
     },
+    "stories": {
+      "played_one": "{{count}} stad speelde vandaag",
+      "played_other": "{{count}} steden speelden vandaag",
+      "yourCity": "{{city}}?",
+      "of": "Foto {{index}} van {{total}}",
+      "cityOf": "Stad {{index}} van {{total}}",
+      "next": "Volgende foto"
+    },
+    "mosaic": {
+      "players_one": "{{count}} speler",
+      "players_other": "{{count}} spelers",
+      "missing": "{{city}} ontbreekt!",
+      "yesterday": "Gisteren zei de wereld…",
+      "beFirst": "Vertegenwoordig {{city}}",
+      "beFirstSub": "Wees vandaag de eerste stad"
+    },
     "recap": {
       "label": "Gisteren",
       "cities_one": "{{count}} stad speelde mee",
@@ -1446,8 +1462,8 @@
         "teaser_other": "Halloweenjacht over {{count}} dagen",
         "cta": "Spook door {{city}} 👻",
         "ctaNoCity": "Doe mee aan de jacht 👻",
-        "played_one": "In {{count}} land spookt het 🎃",
-        "played_other": "In {{count}} landen spookt het 🎃",
+        "played_one": "In {{count}} stad spookt het 🎃",
+        "played_other": "In {{count}} steden spookt het 🎃",
         "represent": "Laat het spoken in je stad 👻"
       }
     },

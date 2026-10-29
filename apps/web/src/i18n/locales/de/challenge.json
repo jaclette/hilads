@@ -1423,6 +1423,22 @@
       "openCountry": "{{city}}: Fotos ansehen",
       "byCountry": "Nach Land"
     },
+    "stories": {
+      "played_one": "{{count}} Stadt hat heute gespielt",
+      "played_other": "{{count}} Städte haben heute gespielt",
+      "yourCity": "{{city}}?",
+      "of": "Foto {{index}} von {{total}}",
+      "cityOf": "Stadt {{index}} von {{total}}",
+      "next": "Nächstes Foto"
+    },
+    "mosaic": {
+      "players_one": "{{count}} Spieler",
+      "players_other": "{{count}} Spieler",
+      "missing": "{{city}} fehlt!",
+      "yesterday": "Gestern sagte die Welt…",
+      "beFirst": "Vertritt {{city}}",
+      "beFirstSub": "Sei heute die erste Stadt"
+    },
     "recap": {
       "label": "Gestern",
       "cities_one": "{{count}} Stadt hat gespielt",
@@ -1446,8 +1462,8 @@
         "teaser_other": "Halloween-Jagd in {{count}} Tagen",
         "cta": "Spuke in {{city}} 👻",
         "ctaNoCity": "Mach mit bei der Jagd 👻",
-        "played_one": "In {{count}} Land spukt es 🎃",
-        "played_other": "In {{count}} Ländern spukt es 🎃",
+        "played_one": "{{count}} Stadt spukt 🎃",
+        "played_other": "In {{count}} Städten spukt es 🎃",
         "represent": "Spuke in deiner Stadt 👻"
       }
     },

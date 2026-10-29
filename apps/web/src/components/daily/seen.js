@@ -51,10 +51,15 @@ export function markSeen(id, signedIn) {
 /** Send what's waiting now (the viewer closes). */
 export const flushSeen = flush
 
-/** A country still has a photo I haven't viewed: the server's flag (signed in) and this browser's. */
+/** A country (or a city: any { unseen, ids }) still has a photo I haven't viewed: the server's flag (signed in) and this browser's. */
 export function hasUnseen(group) {
   load()
   return (group.unseen ?? true) && group.ids.some(id => !seen.has(id))
+}
+
+/** One photo already viewed in this browser (a story ring's segment). */
+export function isSeen(id) {
+  return load().has(id)
 }
 
 /** Re-render when what I've seen changes. */

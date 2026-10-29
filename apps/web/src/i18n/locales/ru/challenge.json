@@ -1459,6 +1459,26 @@
       "openCountry": "{{city}}: смотреть фото",
       "byCountry": "По странам"
     },
+    "stories": {
+      "played_one": "Сегодня сыграл {{count}} город",
+      "played_few": "Сегодня сыграли {{count}} города",
+      "played_many": "Сегодня сыграли {{count}} городов",
+      "played_other": "Сегодня сыграли {{count}} города",
+      "yourCity": "{{city}}?",
+      "of": "Фото {{index}} из {{total}}",
+      "cityOf": "Город {{index}} из {{total}}",
+      "next": "Следующее фото"
+    },
+    "mosaic": {
+      "players_one": "{{count}} игрок",
+      "players_few": "{{count}} игрока",
+      "players_many": "{{count}} игроков",
+      "players_other": "{{count}} игрока",
+      "missing": "Нет города {{city}}!",
+      "yesterday": "Вчера мир сказал…",
+      "beFirst": "Представь {{city}}",
+      "beFirstSub": "Стань первым городом сегодня"
+    },
     "recap": {
       "label": "Вчера",
       "cities_one": "Играл {{count}} город",
@@ -1490,10 +1510,10 @@
         "teaser_other": "Охота на Хэллоуин через {{count}} дня",
         "cta": "Напугай город {{city}} 👻",
         "ctaNoCity": "Присоединяйся к охоте 👻",
-        "played_one": "{{count}} страна во власти призраков 🎃",
-        "played_few": "{{count}} страны во власти призраков 🎃",
-        "played_many": "{{count}} стран во власти призраков 🎃",
-        "played_other": "{{count}} страны во власти призраков 🎃",
+        "played_one": "В {{count}} городе водятся призраки 🎃",
+        "played_few": "В {{count}} городах водятся призраки 🎃",
+        "played_many": "В {{count}} городах водятся призраки 🎃",
+        "played_other": "В {{count}} городах водятся призраки 🎃",
         "represent": "Напугай свой город 👻"
       }
     },

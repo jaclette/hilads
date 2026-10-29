@@ -1422,6 +1422,20 @@
       "openCountry": "{{city}}: lihat fotonya",
       "byCountry": "Per negara"
     },
+    "stories": {
+      "played_other": "{{count}} kota main hari ini",
+      "yourCity": "{{city}}?",
+      "of": "Foto {{index}} dari {{total}}",
+      "cityOf": "Kota {{index}} dari {{total}}",
+      "next": "Foto berikutnya"
+    },
+    "mosaic": {
+      "players_other": "{{count}} pemain",
+      "missing": "{{city}} belum ada!",
+      "yesterday": "Kemarin dunia bilang…",
+      "beFirst": "Wakili {{city}}",
+      "beFirstSub": "Jadilah kota pertama hari ini"
+    },
     "recap": {
       "label": "Kemarin",
       "cities_other": "{{count}} kota ikut main"
@@ -1441,7 +1455,7 @@
         "teaser_other": "Perburuan Halloween {{count}} hari lagi",
         "cta": "Hantui {{city}} 👻",
         "ctaNoCity": "Ikut perburuan 👻",
-        "played_other": "{{count}} negara sedang dihantui 🎃",
+        "played_other": "{{count}} kota berhantu 🎃",
         "represent": "Hantui kotamu 👻"
       }
     },

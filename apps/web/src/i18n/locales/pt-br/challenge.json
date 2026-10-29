@@ -1424,6 +1424,24 @@
       "openCountry": "{{city}}: ver as fotos",
       "byCountry": "Por país"
     },
+    "stories": {
+      "played_one": "{{count}} cidade jogou hoje",
+      "played_many": "{{count}} cidades jogaram hoje",
+      "played_other": "{{count}} cidades jogaram hoje",
+      "yourCity": "{{city}}?",
+      "of": "Foto {{index}} de {{total}}",
+      "cityOf": "Cidade {{index}} de {{total}}",
+      "next": "Próxima foto"
+    },
+    "mosaic": {
+      "players_one": "{{count}} jogador",
+      "players_many": "{{count}} jogadores",
+      "players_other": "{{count}} jogadores",
+      "missing": "Falta {{city}}!",
+      "yesterday": "Ontem o mundo disse…",
+      "beFirst": "Represente {{city}}",
+      "beFirstSub": "Seja a primeira cidade hoje"
+    },
     "recap": {
       "label": "Ontem",
       "cities_one": "{{count}} cidade jogou",
@@ -1451,9 +1469,9 @@
         "teaser_other": "Caçada de Halloween em {{count}} dias",
         "cta": "Assombre {{city}} 👻",
         "ctaNoCity": "Entre na caçada 👻",
-        "played_one": "{{count}} país está assombrado 🎃",
-        "played_many": "{{count}} países estão assombrados 🎃",
-        "played_other": "{{count}} países estão assombrados 🎃",
+        "played_one": "{{count}} cidade está assombrada 🎃",
+        "played_many": "{{count}} cidades estão assombradas 🎃",
+        "played_other": "{{count}} cidades estão assombradas 🎃",
         "represent": "Assombre sua cidade 👻"
       }
     },

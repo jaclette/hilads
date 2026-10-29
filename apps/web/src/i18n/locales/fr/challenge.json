@@ -1424,6 +1424,24 @@
       "openCountry": "{{city}} : voir les photos",
       "byCountry": "Par pays"
     },
+    "stories": {
+      "played_one": "{{count}} ville a joué aujourd'hui",
+      "played_many": "{{count}} villes ont joué aujourd'hui",
+      "played_other": "{{count}} villes ont joué aujourd'hui",
+      "yourCity": "{{city}} ?",
+      "of": "Photo {{index}} sur {{total}}",
+      "cityOf": "Ville {{index}} sur {{total}}",
+      "next": "Photo suivante"
+    },
+    "mosaic": {
+      "players_one": "{{count}} joueur",
+      "players_many": "{{count}} joueurs",
+      "players_other": "{{count}} joueurs",
+      "missing": "Il manque {{city}} !",
+      "yesterday": "Hier, le monde a dit…",
+      "beFirst": "Représente {{city}}",
+      "beFirstSub": "Sois la première ville aujourd'hui"
+    },
     "recap": {
       "label": "Hier",
       "cities_one": "{{count}} ville a joué",
@@ -1451,9 +1469,9 @@
         "teaser_other": "Chasse d'Halloween dans {{count}} jours",
         "cta": "Hante {{city}} 👻",
         "ctaNoCity": "Rejoins la chasse 👻",
-        "played_one": "{{count}} pays est hanté 🎃",
-        "played_many": "{{count}} pays sont hantés 🎃",
-        "played_other": "{{count}} pays sont hantés 🎃",
+        "played_one": "{{count}} ville est hantée 🎃",
+        "played_many": "{{count}} villes sont hantées 🎃",
+        "played_other": "{{count}} villes sont hantées 🎃",
         "represent": "Hante ta ville 👻"
       }
     },

@@ -17726,6 +17726,34 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-recap-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .tc-recap-q { font-size: 16px; line-height: 21px; font-weight: 800; }
 .tc-recap-answer { color: var(--primary-text); font-weight: 800; }
+/* The stories row by city (V3 polish 2): a ring cut in one segment per photo, a count badge. */
+.tc-stories { padding: 4px 2px; }
+.tc-ring-box { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+.tc-ring--seg, .tc-ring-svg { position: absolute; inset: 0; }
+.tc-ring-box .tc-inner { position: relative; }
+.tc-count { position: absolute; right: -2px; bottom: -2px; min-width: 22px; height: 22px; padding: 0 5px; box-sizing: border-box; border-radius: 11px; border: 2px solid var(--bg);
+            display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+/* The mosaic: one card per city, a theme-colored polaroid pile behind it, leaning its own way (inline). */
+.tc-grid { row-gap: 16px; padding-top: 4px; align-items: start; }
+.tc-card { position: relative; display: block; min-width: 0; border: 0; background: none; padding: 0; font: inherit; text-align: left; color: var(--text); cursor: pointer; }
+.tc-card > .tc-tile { position: relative; z-index: 1; height: 100%; }
+.tc-card--faded { opacity: 0.55; }
+.tc-layer { position: absolute; inset: 0; border-radius: 16px; opacity: 0.55; }
+.tc-layer--back { transform: translate(4px, 2px) rotate(4deg); }
+.tc-layer--back2 { opacity: 0.3; transform: translate(-4px, 3px) rotate(-4deg); }
+.tc-photo-box { position: relative; display: block; }
+.tc-pill { position: absolute; left: 6px; top: 6px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px;
+           background: rgba(0,0,0,0.45); color: #fff; font-size: 11px; font-weight: 800; }
+.tc-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.tc-avatars { display: flex; align-items: center; min-width: 0; }
+.tc-avatar { display: flex; border-radius: 50%; border: 2px solid var(--surface); }
+.tc-avatar + .tc-avatar { margin-left: -7px; }
+.tc-more { margin-left: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.tc-grid > .tc-represent { min-height: 200px; gap: 8px; }
+.tc-represent-sub { font-size: 13px; font-weight: 600; color: var(--primary-on-tint); text-align: center; }
+/* Today's stories viewer (the tour's frame): a 5 s segment per photo, held to pause. */
+.st-bar-fill--run { animation: tour-fill 5s linear forwards; }
+.st-tap { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 
 /* ── "See all": every country's photos ── */
 .dc-sort { display: flex; padding: 4px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); }

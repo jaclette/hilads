@@ -23,6 +23,7 @@ import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScree
 import ChallengeScreen from './components/daily/ChallengeScreen'
 import PhotosScreen from './components/daily/PhotosScreen'
 import CountriesScreen from './components/daily/CountriesScreen'
+import StoriesScreen from './components/daily/StoriesScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import ArchiveScreen from './components/daily/ArchiveScreen'
 import IndexScreen from './components/daily/IndexScreen'
@@ -5899,6 +5900,7 @@ export default function App() {
         if (top.name === 'challenge') return <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
         if (top.name === 'photos')    return <PhotosScreen key={key} {...top.params} onBack={closeDaily} />
         if (top.name === 'countries') return <CountriesScreen key={key} {...top.params} onBack={closeDaily} />
+        if (top.name === 'stories')   return <StoriesScreen key={key} {...top.params} onBack={closeDaily} />
         if (top.name === 'propose')   return <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
         if (top.name === 'twist')     return <TwistScreen key={key} onBack={closeDaily} />
         if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
