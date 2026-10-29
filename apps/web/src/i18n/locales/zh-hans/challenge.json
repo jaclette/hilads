@@ -1437,11 +1437,28 @@
     },
     "event": {
       "halloween": {
-        "teaser_other": "🎃 {{count}} 天后开启万圣节寻鬼。每座城市，一张吓人的照片。",
+        "teaser_other": "{{count}} 天后开启万圣节寻鬼",
         "cta": "让{{city}}闹鬼 👻",
         "ctaNoCity": "加入寻鬼 👻",
         "played_other": "{{count}} 个国家正在闹鬼 🎃",
         "represent": "让你的城市闹鬼 👻"
+      }
+    },
+    "hero": {
+      "cta": "为{{city}}拍一张",
+      "ctaNoCity": "拍一张",
+      "played": "你已参加 · 看看世界",
+      "firstCity": "成为今天全球第一座城市",
+      "citiesIn_other": "{{count}} 座城市已参加",
+      "citiesMissing_other": "{{count}} 座城市已参加，{{city}} 还没有！",
+      "steps": {
+        "snap": "拍照",
+        "name": "说出名字",
+        "count": "数一数",
+        "time": "计时",
+        "price": "标价",
+        "tell": "说说",
+        "compare": "比较"
       }
     }
   }

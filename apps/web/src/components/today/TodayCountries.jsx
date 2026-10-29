@@ -17,8 +17,47 @@ import { isEventDay, useSeasonal, useSeasonalLive } from '../event/seasonal'
 const MOSAIC_MAX = 6
 
 /**
- * Today's photos by country, right under the hero (the app's TodayCountries,
- * one request: GET /daily/today/countries):
+ * Today's photos by city and by country (GET /daily/today/countries), loaded
+ * once for the whole tab (the app's useTodayCountries): the hero's live strip
+ * and the compare section read the same list, so they never disagree.
+ */
+export function useTodayCountries(today) {
+  const here = useHere()
+  const [data, setData] = useState(null)
+  const challenge = today?.challenge ?? null
+  // My city first: where I am, else the city I'm browsing.
+  const cityId = here?.id ?? today?.city?.id ?? null
+
+  useEffect(() => {
+    if (!challenge) return
+    let alive = true
+    fetchDailyTodayCountries({ cityId }).then(d => {
+      if (!alive) return
+      seedProofs([...d.items.map(i => i.top), ...(d.cities ?? []).map(c => c.top)], !!challenge.isActive)
+      rememberCountries(d)
+      setData(d)
+    }).catch(() => {})
+    return () => { alive = false }
+  }, [challenge?.id, cityId]) // eslint-disable-line react-hooks/exhaustive-deps
+  return challenge ? data : null
+}
+
+/**
+ * Today's cities (one per city that played): the server's `cities` when it
+ * sends them, else one per country from an older server (its top photo's city).
+ */
+export function todayCities(data) {
+  if (!data) return []
+  if (data.cities) return data.cities
+  return data.items.map(i => ({
+    city: i.city, count: i.count, authorCount: null, authors: [], totalLikes: null,
+    latestAt: i.latestAt, unseen: i.unseen, ids: i.ids, top: i.top,
+  }))
+}
+
+/**
+ * Today's photos by country, right under the hero (the app's TodayCountries;
+ * `data`: useTodayCountries, the list the hero's live strip reads too):
  * - the stories row, "[n] countries played today": a circle per country (its
  *   flag, the city under it), ringed in today's theme color while one of its
  *   photos is unseen; then "+ Your city". A circle opens Today's photos at
@@ -31,29 +70,15 @@ const MOSAIC_MAX = 6
  *   free slot of an odd grid, else a banner under it.
  * Players' photos only (never a Hilads pick).
  */
-export default function TodayCountries({ today }) {
+export default function TodayCountries({ today, data }) {
   const { t } = useDc()
   const { openDaily } = useDaily()
   const here = useHere()
   useSeen()
-  const [data, setData] = useState(null)
   // A seasonal event's live day: its copy ("3 countries are haunted 🎃") and a badge on each tile.
   const seasonal = useSeasonalLive()
   const copy = seasonal?.theme.copy
   const challenge = today?.challenge ?? null
-  const cityId = here?.id ?? today?.city?.id ?? null
-
-  useEffect(() => {
-    if (!challenge) return
-    let alive = true
-    fetchDailyTodayCountries({ cityId }).then(d => {
-      if (!alive) return
-      seedProofs(d.items.map(i => i.top), !!challenge.isActive)
-      rememberCountries(d)
-      setData(d)
-    }).catch(() => {})
-    return () => { alive = false }
-  }, [challenge?.id, cityId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!challenge || !data) return null
   const mine = (here?.country ?? today?.city?.country ?? '').toUpperCase()

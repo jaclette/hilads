@@ -1526,12 +1526,12 @@
     },
     "event": {
       "halloween": {
-        "teaser_zero": "🎃 مطاردة الهالوين بعد {{count}} يومًا. كل مدينة، صورة واحدة مخيفة.",
-        "teaser_one": "🎃 مطاردة الهالوين غدًا. كل مدينة، صورة واحدة مخيفة.",
-        "teaser_two": "🎃 مطاردة الهالوين بعد يومين. كل مدينة، صورة واحدة مخيفة.",
-        "teaser_few": "🎃 مطاردة الهالوين بعد {{count}} أيام. كل مدينة، صورة واحدة مخيفة.",
-        "teaser_many": "🎃 مطاردة الهالوين بعد {{count}} يومًا. كل مدينة، صورة واحدة مخيفة.",
-        "teaser_other": "🎃 مطاردة الهالوين بعد {{count}} يومًا. كل مدينة، صورة واحدة مخيفة.",
+        "teaser_zero": "مطاردة الهالوين بعد {{count}} يومًا",
+        "teaser_one": "مطاردة الهالوين غدًا",
+        "teaser_two": "مطاردة الهالوين بعد يومين",
+        "teaser_few": "مطاردة الهالوين بعد {{count}} أيام",
+        "teaser_many": "مطاردة الهالوين بعد {{count}} يومًا",
+        "teaser_other": "مطاردة الهالوين بعد {{count}} يومًا",
         "cta": "أرعب {{city}} 👻",
         "ctaNoCity": "انضم إلى المطاردة 👻",
         "played_zero": "لا دولة مسكونة بعد 🎃",
@@ -1541,6 +1541,33 @@
         "played_many": "{{count}} دولة مسكونة 🎃",
         "played_other": "{{count}} دولة مسكونة 🎃",
         "represent": "أرعب مدينتك 👻"
+      }
+    },
+    "hero": {
+      "cta": "التقط صورة لـ{{city}}",
+      "ctaNoCity": "التقط صورة",
+      "played": "لعبت · شاهد العالم",
+      "firstCity": "كن أول مدينة في العالم اليوم",
+      "citiesIn_zero": "{{count}} مدينة شاركت",
+      "citiesIn_one": "مدينة واحدة شاركت",
+      "citiesIn_two": "مدينتان شاركتا",
+      "citiesIn_few": "{{count}} مدن شاركت",
+      "citiesIn_many": "{{count}} مدينة شاركت",
+      "citiesIn_other": "{{count}} مدينة شاركت",
+      "citiesMissing_zero": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
+      "citiesMissing_one": "مدينة واحدة شاركت. {{city}} لم تشارك بعد!",
+      "citiesMissing_two": "مدينتان شاركتا. {{city}} لم تشارك بعد!",
+      "citiesMissing_few": "{{count}} مدن شاركت. {{city}} لم تشارك بعد!",
+      "citiesMissing_many": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
+      "citiesMissing_other": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
+      "steps": {
+        "snap": "صوّر",
+        "name": "سمِّه",
+        "count": "عُدّ",
+        "time": "وقّت",
+        "price": "حدّد السعر",
+        "tell": "احكِ",
+        "compare": "قارن"
       }
     }
   }

@@ -27,7 +27,7 @@ import CalendarScreen from './components/daily/CalendarScreen'
 import ArchiveScreen from './components/daily/ArchiveScreen'
 import IndexScreen from './components/daily/IndexScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
-import { DailyContext, VoteButton, LocalPassBadge, seedStates, useOriginal, OriginalToggle } from './components/daily/dailyShared'
+import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle } from './components/daily/dailyShared'
 import PeopleRow from './components/chat/PeopleRow'
 import DailyPinBar from './components/chat/DailyPinBar'
 import { createSocket } from './socket'
@@ -1113,6 +1113,8 @@ export default function App() {
   const [ipChannelId, setIpChannelId] = useState(null)
   // Bumped when GPS placed me (Today refetches its "Answer for [city]").
   const [hereVersion, setHereVersion] = useState(0)
+  // Where I am, as Today last said ({id, name, country, source}): the scope pill's mark and its sheet's "You're in [city]".
+  const dailyHere = useHere()
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
@@ -3950,15 +3952,20 @@ export default function App() {
     const fullLabel = channelScope === 'world' ? t('scope.world', { ns: 'common' }) : (city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' }))
     // The pill is tight: the city's short name ("Saigon") after its flag.
     const label = channelScope === 'city' && city ? shortCityName(city) : fullLabel
+    // Somewhere else than the city shown: a small location mark on the pill.
+    const shownId = channelId ?? previewChannelId
+    const away = channelScope === 'city' && !!dailyHere && shownId != null && String(dailyHere.id) !== String(shownId)
+    const hereName = dailyHere?.name ? shortCityName(dailyHere.name) : null
     return (
       <button
         type="button"
         className={`v3-scope ${extraClass}`.trim()}
         onClick={() => setShowScopeSheet(true)}
-        aria-label={t('scope.a11y', { ns: 'common', scope: fullLabel })}
+        aria-label={[t('scope.a11y', { ns: 'common', scope: fullLabel }), away && hereName ? t('scope.here', { ns: 'common', city: hereName }) : null].filter(Boolean).join('. ')}
       >
         {channelScope === 'world' ? <Icon name="globe-outline" size={18} /> : <CityFlag country={cityCountry} />}
         <span className="v3-scope-label">{label}</span>
+        {away && <Icon name="navigate" size={13} className="v3-scope-away" />}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <polyline points="6 9 12 15 18 9" />
         </svg>
@@ -4001,7 +4008,7 @@ export default function App() {
     )
   }
 
-  // The scope sheet: my city, World, change city.
+  // The scope sheet: my city, World, where I am, change city.
   function renderScopeSheet() {
     if (!showScopeSheet) return null
     const pick = (scope) => {
@@ -4009,6 +4016,7 @@ export default function App() {
       if (scope === 'city' && !city) { openCityPicker(); return }
       switchScope(scope)
     }
+    const hereName = dailyHere?.name ? shortCityName(dailyHere.name) : null
     const Row = ({ icon, title, flag, sub, active, onClick }) => (
       <button type="button" className={`v3-scope-row${active ? ' v3-scope-row--on' : ''}`} onClick={onClick} aria-pressed={!!active}>
         <span className="v3-scope-row-icon" aria-hidden="true"><Icon name={icon} size={20} /></span>
@@ -4030,6 +4038,14 @@ export default function App() {
                active={channelScope === 'city'} onClick={() => pick('city')} />
           <Row icon="globe-outline" title={t('scope.world', { ns: 'common' })} sub={t('scope.worldSub', { ns: 'common' })}
                active={channelScope === 'world'} onClick={() => pick('world')} />
+          {/* Where I play today (an IP guess, a VPN, GPS at a border): always correctable (Today's old "Not in Berlin? Change"). */}
+          <Row icon="navigate-outline" title={hereName ? t('scope.here', { ns: 'common', city: hereName }) : t('scope.hereUnknown', { ns: 'common' })}
+               flag={hereName ? dailyHere.country : null} sub={t('scope.hereSub', { ns: 'common' })}
+               onClick={() => {
+                 setShowScopeSheet(false)
+                 track('here_change', { from: dailyHere?.name ?? null, source: dailyHere?.source ?? null, surface: 'scope_sheet', platform_surface: 'web' })
+                 openCityPicker('here')
+               }} />
           <Row icon="swap-horizontal-outline" title={t('scope.changeCity', { ns: 'common' })} onClick={() => { setShowScopeSheet(false); openCityPicker() }} />
         </div>
       </div>
@@ -5046,8 +5062,6 @@ export default function App() {
     // account's comes from the server). hereVersion bumps once GPS placed me.
     here: account ? null : geoChannelId ? { cityId: geoChannelId, gps: true } : ipChannelId ? { cityId: ipChannelId, gps: false } : null,
     hereVersion, locateHere,
-    // Today's "Not in Berlin? Change": the city picker, setting where I am.
-    changeHere: () => openCityPicker('here'),
     // The current city's country: prices are shown in its currency (SPEC 10.5).
     cityCountry,
     openDaily,

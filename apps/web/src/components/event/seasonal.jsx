@@ -97,15 +97,20 @@ export function SeasonalZone({ children }) {
   return <div className="seasonal-zone" {...attr}>{children}</div>
 }
 
-/** Teaser: the countdown banner under Today's hero ("🎃 Halloween hunt in 2 days..."). */
+/** Teaser days shown before the start: closer, the countdown waits (on the day, the hero is the event). */
+const TEASER_DAYS = 3
+
+/** Teaser: a compact one-line countdown under Today's hero ("Halloween hunt in 2 days"), the last 3 days. */
 export function SeasonalTeaser() {
   const s = useSeasonal()
   const { t } = useDc()
   if (!s || s.event.phase !== 'teaser') return null
+  const days = s.event.startsInDays ?? 1
+  if (days > TEASER_DAYS) return null
   return (
     <div className="seasonal-teaser" role="status">
-      {s.key === 'halloween' && <Ghost size={22} />}
-      <span>{t(s.theme.copy.teaser, { count: s.event.startsInDays ?? 1 })}</span>
+      {s.key === 'halloween' && <Ghost size={20} />}
+      <span className="seasonal-teaser-text">{t(s.theme.copy.teaser, { count: days })}</span>
     </div>
   )
 }

@@ -1442,13 +1442,32 @@
     },
     "event": {
       "halloween": {
-        "teaser_one": "🎃 Halloween hunt bukas. Bawat lungsod, isang nakakatakot na litrato.",
-        "teaser_other": "🎃 Halloween hunt sa loob ng {{count}} araw. Bawat lungsod, isang nakakatakot na litrato.",
+        "teaser_one": "Halloween hunt bukas",
+        "teaser_other": "Halloween hunt sa loob ng {{count}} araw",
         "cta": "Multuhin ang {{city}} 👻",
         "ctaNoCity": "Sumali sa hunt 👻",
         "played_one": "{{count}} bansa ang minumulto 🎃",
         "played_other": "{{count}} bansa ang minumulto 🎃",
         "represent": "Multuhin ang lungsod mo 👻"
+      }
+    },
+    "hero": {
+      "cta": "Kumuha ng litrato para sa {{city}}",
+      "ctaNoCity": "Kumuha ng litrato",
+      "played": "Nakapaglaro ka na · Tingnan ang mundo",
+      "firstCity": "Maging unang lungsod sa mundo ngayon",
+      "citiesIn_one": "{{count}} lungsod ang naglaro",
+      "citiesIn_other": "{{count}} lungsod ang naglaro",
+      "citiesMissing_one": "{{count}} lungsod ang naglaro. Wala pa ang {{city}}!",
+      "citiesMissing_other": "{{count}} lungsod ang naglaro. Wala pa ang {{city}}!",
+      "steps": {
+        "snap": "Kunan",
+        "name": "Pangalanan",
+        "count": "Bilangin",
+        "time": "Orasan",
+        "price": "Presyuhan",
+        "tell": "Ikuwento",
+        "compare": "Ikumpara"
       }
     }
   }

@@ -199,7 +199,10 @@
     "citySub": "Ang challenge, mga litrato at spot ng lungsod mo",
     "worldSub": "Mga litrato at spot mula sa lahat ng lungsod",
     "changeCity": "Palitan ang lungsod",
-    "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
+    "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan",
+    "here": "Nasa {{city}} ka",
+    "hereUnknown": "Nasaan ka?",
+    "hereSub": "Mali? Palitan kung saan ka naglalaro"
   },
   "signUp": "Mag-sign up",
   "settings": "Mga setting",

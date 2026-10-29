@@ -1446,15 +1446,36 @@
     },
     "event": {
       "halloween": {
-        "teaser_one": "🎃 Chasse d'Halloween demain. Chaque ville, une photo qui donne des frissons.",
-        "teaser_many": "🎃 Chasse d'Halloween dans {{count}} jours. Chaque ville, une photo qui donne des frissons.",
-        "teaser_other": "🎃 Chasse d'Halloween dans {{count}} jours. Chaque ville, une photo qui donne des frissons.",
+        "teaser_one": "Chasse d'Halloween demain",
+        "teaser_many": "Chasse d'Halloween dans {{count}} jours",
+        "teaser_other": "Chasse d'Halloween dans {{count}} jours",
         "cta": "Hante {{city}} 👻",
         "ctaNoCity": "Rejoins la chasse 👻",
         "played_one": "{{count}} pays est hanté 🎃",
         "played_many": "{{count}} pays sont hantés 🎃",
         "played_other": "{{count}} pays sont hantés 🎃",
         "represent": "Hante ta ville 👻"
+      }
+    },
+    "hero": {
+      "cta": "Prends la photo pour {{city}}",
+      "ctaNoCity": "Prends la photo",
+      "played": "Tu as joué · Vois le monde",
+      "firstCity": "Sois la première ville du monde aujourd'hui",
+      "citiesIn_one": "{{count}} ville a joué",
+      "citiesIn_many": "{{count}} villes ont joué",
+      "citiesIn_other": "{{count}} villes ont joué",
+      "citiesMissing_one": "{{count}} ville a joué. Pas encore {{city}} !",
+      "citiesMissing_many": "{{count}} villes ont joué. Pas encore {{city}} !",
+      "citiesMissing_other": "{{count}} villes ont joué. Pas encore {{city}} !",
+      "steps": {
+        "snap": "Photographie",
+        "name": "Nomme",
+        "count": "Compte",
+        "time": "Chronomètre",
+        "price": "Donne le prix",
+        "tell": "Raconte",
+        "compare": "Compare"
       }
     }
   }

@@ -199,7 +199,10 @@
     "citySub": "내 도시의 challenge, 사진, 스팟",
     "worldSub": "모든 도시의 사진과 스팟",
     "changeCity": "도시 변경",
-    "a11y": "{{scope}} 보는 중. 눌러서 변경"
+    "a11y": "{{scope}} 보는 중. 눌러서 변경",
+    "here": "지금 {{city}}에 있어",
+    "hereUnknown": "지금 어디야?",
+    "hereSub": "아니야? 플레이할 도시 바꾸기"
   },
   "signUp": "가입하기",
   "settings": "설정",

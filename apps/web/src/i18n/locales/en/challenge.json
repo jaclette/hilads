@@ -1442,13 +1442,32 @@
     },
     "event": {
       "halloween": {
-        "teaser_one": "🎃 Halloween hunt tomorrow. Every city, one spooky photo.",
-        "teaser_other": "🎃 Halloween hunt in {{count}} days. Every city, one spooky photo.",
+        "teaser_one": "Halloween hunt tomorrow",
+        "teaser_other": "Halloween hunt in {{count}} days",
         "cta": "Haunt {{city}} 👻",
         "ctaNoCity": "Join the hunt 👻",
         "played_one": "{{count}} country is haunted 🎃",
         "played_other": "{{count}} countries are haunted 🎃",
         "represent": "Haunt your city 👻"
+      }
+    },
+    "hero": {
+      "cta": "Snap it for {{city}}",
+      "ctaNoCity": "Snap it",
+      "played": "You played · See the world",
+      "firstCity": "Be the first city in the world today",
+      "citiesIn_one": "{{count}} city in",
+      "citiesIn_other": "{{count}} cities in",
+      "citiesMissing_one": "{{count}} city in. {{city}} isn't yet!",
+      "citiesMissing_other": "{{count}} cities in. {{city}} isn't yet!",
+      "steps": {
+        "snap": "Snap it",
+        "name": "Name it",
+        "count": "Count it",
+        "time": "Time it",
+        "price": "Price it",
+        "tell": "Tell it",
+        "compare": "Compare"
       }
     }
   }

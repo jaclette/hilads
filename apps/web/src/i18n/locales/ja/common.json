@@ -199,7 +199,10 @@
     "citySub": "あなたの都市の challenge、写真、スポット",
     "worldSub": "すべての都市の写真とスポット",
     "changeCity": "都市を変更",
-    "a11y": "{{scope}}を表示中。タップで変更"
+    "a11y": "{{scope}}を表示中。タップで変更",
+    "here": "今いるのは{{city}}",
+    "hereUnknown": "今どこにいる？",
+    "hereSub": "違う？プレイする街を変更"
   },
   "signUp": "登録する",
   "settings": "設定",

@@ -199,7 +199,10 @@
     "citySub": "Challenge, foto, dan spot di kotamu",
     "worldSub": "Foto dan spot dari semua kota",
     "changeCity": "Ganti kota",
-    "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
+    "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti",
+    "here": "Kamu di {{city}}",
+    "hereUnknown": "Kamu di mana?",
+    "hereSub": "Salah? Ubah tempat kamu main"
   },
   "signUp": "Daftar",
   "settings": "Pengaturan",

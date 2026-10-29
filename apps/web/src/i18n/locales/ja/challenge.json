@@ -1438,11 +1438,28 @@
     },
     "event": {
       "halloween": {
-        "teaser_other": "🎃 ハロウィンハントまであと{{count}}日。どの街も、ちょっと怖い写真を1枚。",
+        "teaser_other": "ハロウィンハントまであと{{count}}日",
         "cta": "{{city}}にお化けを 👻",
         "ctaNoCity": "ハントに参加 👻",
         "played_other": "{{count}}か国にお化けが出没中 🎃",
         "represent": "あなたの街にお化けを 👻"
+      }
+    },
+    "hero": {
+      "cta": "{{city}}のために撮ろう",
+      "ctaNoCity": "撮ろう",
+      "played": "参加済み · 世界を見る",
+      "firstCity": "今日、世界で最初の街になろう",
+      "citiesIn_other": "{{count}}都市が参加",
+      "citiesMissing_other": "{{count}}都市が参加。{{city}}はまだ！",
+      "steps": {
+        "snap": "撮る",
+        "name": "名前を書く",
+        "count": "数える",
+        "time": "時間を書く",
+        "price": "値段を書く",
+        "tell": "ひとこと",
+        "compare": "比べる"
       }
     }
   }

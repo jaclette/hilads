@@ -8,11 +8,9 @@ import { deviceStore, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
-import { answerText } from '../daily/compareShared'
 import { IndexCarousel } from '../daily/Comparisons'
-import TodayCountries, { YesterdayRecap } from './TodayCountries'
+import TodayCountries, { YesterdayRecap, todayCities, useTodayCountries } from './TodayCountries'
 import { CityFlag } from '../CityName'
-import { LiveDot, WorldTicker, useLiveMotion } from './WorldLive'
 import {
   challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
 } from '../daily/dailyShared'
@@ -20,7 +18,7 @@ import { ymd } from '../daily/CalendarScreen'
 import { coverImage } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PhotoCredit, PickBadge } from '../map/Pick'
-import { Wordmark, themeColor } from '../joy/Joy'
+import { FlagSticker, Wordmark, themeColor } from '../joy/Joy'
 import { SeasonalDayIcon, SeasonalHeroDecor, SeasonalTeaser, isEventDay, setSeasonalEvent, useSeasonal, useSeasonalAttr, useSeasonalLive } from '../event/seasonal'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
@@ -73,17 +71,19 @@ export default function TodayScreen({ header }) {
       .finally(() => { if (alive) setLoading(false) })
     return () => { alive = false }
   }, [cityId, i18n.language, hereKey, hereVersion]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Today's cities, one list for the hero's live strip and the compare section.
+  const countries = useTodayCountries(data)
 
   return (
     <div className="full-page full-page--tab today-page" {...seasonalAttr}>
       {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
       <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
-        <Ticket data={data} loading={loading} />
+        <Ticket data={data} countries={countries} loading={loading} />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
-        <TodayCountries today={data} />
+        <TodayCountries today={data} data={countries} />
         {/* Yesterday's recap: the winning photo, the question, how many cities played. */}
         <YesterdayRecap today={data} />
         <Week today={data} />
@@ -150,50 +150,25 @@ function usePulseVisible(el) {
 }
 
 /**
- * Today's Daily Challenge as a ticket (SPEC 9.3): an image band (the
- * challenge's cover, else its theme's) with "Daily Challenge" over the theme
- * and the time left; the challenge on the light background; the Local Twist,
- * "I'm in" (the card's only orange element) or my proof's status, and how many
- * took it. Tomorrow's Local Twist proposal sits under the week strip.
+ * Today's Daily Challenge, the hero (SPEC 9.3, V3 polish, the app's
+ * TodayTicket): the cover photo with the theme chip and the time left; the
+ * short headline and, under it, the full ask; for a player who never played,
+ * the three steps (Snap it, Name it, Compare); the live strip of the cities
+ * that played today (the same list as the compare section under it: GET
+ * /daily/today/countries), which opens the compare view; "Snap it for [city]"
+ * (the web opens the app modal: photos are posted from the app), then "You
+ * played · See the world" once my photo is in. Tapping the photo opens the challenge.
  */
-const COMPARE_TIP_KEY = 'hilads_compare_tip_seen'
-const TIP_MS = 6000
-/** Until when the world block's tip shows (epoch ms; 0 = hidden): the card can remount while it shows. */
-let tipUntil = 0
-
-function Ticket({ data, loading }) {
-  const { t, i18n } = useDc()
+function Ticket({ data, countries, loading }) {
+  const { t } = useDc()
   const seasonal = useSeasonalLive()
-  const { t: tc } = useTranslation('common')
-  const { scope, openDaily, changeHere: openChangeHere } = useDaily()
-  const [showOriginal, toggleOriginal] = useOriginal()
+  const { scope, openDaily } = useDaily()
+  const [showOriginal] = useOriginal()
   const secondsLeft = useCountdown(data?.challenge ? data.nextDropAt : null)
   const [pulseEl, setPulseEl] = useState(null)
   const tracked = useRef(null)
   const challenge = data?.challenge ?? null
   const pulseOn = usePulseVisible(pulseEl)
-  // The world block's one-time tip (per browser): "Tap to compare your city with the world."
-  const [tip, setTip] = useState(() => Date.now() < tipUntil)
-  const hideTip = () => { tipUntil = 0; setTip(false) }
-  const hasCompare = !!challenge?.compare
-  // The world block moves only on screen, in a visible tab, without reduce motion.
-  const [worldEl, setWorldEl] = useState(null)
-  const motion = useLiveMotion(worldEl)
-  useEffect(() => {
-    if (!hasCompare) return
-    try {
-      if (localStorage.getItem(COMPARE_TIP_KEY) === '1') return
-      localStorage.setItem(COMPARE_TIP_KEY, '1')
-    } catch { return }
-    tipUntil = Date.now() + TIP_MS
-    setTip(true)
-  }, [hasCompare])
-  useEffect(() => {
-    if (!tip) return
-    const id = setTimeout(() => setTip(false), Math.max(0, tipUntil - Date.now()))
-    return () => clearTimeout(id)
-  }, [tip])
-
   useEffect(() => {
     if (!challenge || tracked.current === challenge.id) return
     tracked.current = challenge.id
@@ -213,43 +188,21 @@ function Ticket({ data, loading }) {
 
   const city = data.city
   const myProof = data.myProof ?? null
-  const twist = data.twist && city?.isLive ? data.twist : null
-  const earlyUntil = !myProof && data.early && data.early.until * 1000 > Date.now() ? data.early.until : null
   const store = deviceStore()
   const open = () => openDaily('challenge', { date: 'today', source: 'today' })
-  const world = data?.world ?? null
-  // Hilads suggestions (no player answer yet): the place's name goes with its answer.
-  const suggested = !!world?.suggested
-  const line = (a) => [a.place, a.answer ? answerText(a.answer, i18n.language) : null].filter(Boolean).join(' · ')
-  const answers = (world?.answers ?? []).filter(a => a.answer || a.place).slice(0, 3).map(line)
-  const compared = !!world && world.countries >= 2
-  // A player's answer to the question goes in a speech bubble; a place (or a Hilads suggestion) stays a line.
-  const ticker = (world?.answers ?? []).filter(a => (a.answer || a.place) && a.city?.name)
-    .map(a => {
-      const bubble = !suggested && !!a.answer
-      return { cityId: a.city.id, city: a.city.name, country: a.city.country ?? null, bubble, answer: bubble ? answerText(a.answer, i18n.language) : line(a) }
-    })
-  const timeOf = (s) => new Date(s * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
-
   const theme = challenge.theme?.key ?? null
   // A special day without a cover: its bundled one (Halloween), else Only here's; the API sends uploaded covers.
   const cover = challengeCover(challenge)
-  // Represent your city (SPEC 9.16), city scope only, for where I am (never the browsed city):
-  // nobody has represented it today (my own pending proof counts for me), and its run of
-  // represented days. Browsing another city: that city's state, as information only.
+  // Where I am (never the browsed city): the button's city.
   const here = data.here ?? null
-  const presence = scope === 'city' ? here?.presence ?? null : null
   const cityShort = here?.name ? shortCityName(here.name) : null
-  const emptyCity = !!presence && !presence.represented && !!cityShort && challenge.isActive
-  const cityStreak = presence && cityShort && presence.streak >= 2 ? presence.streak : 0
-  const elsewhere = scope === 'city' && !!city?.name && city.id !== here?.id
-  const emptyThere = !emptyCity && elsewhere && !!data.presence && !data.presence.represented && challenge.isActive
-  // "Not in Berlin? Change", whatever placed me (an IP guess, GPS near a border, a VPN):
-  // the city picker, with "Use my location" and a search of every city.
-  const changeHere = (e) => {
-    e.stopPropagation()
-    openChangeHere?.()
-    track('here_change', { from: here?.name ?? null, source: here?.source ?? null, platform_surface: 'web' })
+  // Today's cities, the same list as the compare section: is mine in?
+  const cities = todayCities(countries)
+  const mineIn = !!myProof || (!!here && cities.some(c => String(c.city.id) === String(here.id)))
+  // The compare view: every city's photos, side by side (the same as the compare section's "See all").
+  const openCompare = (source) => {
+    track('world_teaser_tapped', { cities: cities.length, source, platform_surface: 'web' })
+    openDaily('countries', { source })
   }
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = theme ? themeName(theme, { special: challenge.special, city: scope === 'city' ? city?.name : null }) : ''
@@ -259,13 +212,15 @@ function Ticket({ data, loading }) {
   // The hero's photo: a cover, never a player's photo (those are in the mosaic right under it):
   // the challenge's own, else its special day's, else its theme's (uploaded default, else bundled).
   const photo = cover
-  const headline = showOriginal && challenge.original ? challenge.original.text : (challenge.headline || challenge.text)
-  // Nobody has answered for my city yet: "Be Saigon's first answer".
-  // A seasonal event's live day (Halloween: "Haunt Lisbon 👻") replaces every version.
+  const original = showOriginal && challenge.original ? challenge.original.text : null
+  const headline = original ?? (challenge.headline || challenge.text)
+  // The full ask under a short headline ("...and share its local name"): the subtitle, else the text.
+  const ask = original ? null : challenge.subtitle || (challenge.headline && challenge.headline !== challenge.text ? challenge.text : null)
+  // A seasonal event's live day (Halloween: "Haunt Lisbon 👻") replaces the label.
   const ctaLabel = seasonal ? (cityShort ? t(seasonal.theme.copy.cta, { city: cityShort }) : t(seasonal.theme.copy.ctaNoCity))
-    : !cityShort ? t('ctaAnswerNoCity')
-    : presence && !presence.represented ? tc('represent.beFirst', { city: cityShort })
-    : t('ctaAnswer', { city: cityShort })
+    : cityShort ? t('hero.cta', { city: cityShort }) : t('hero.ctaNoCity')
+  // Never played (no photo today, no streak; the web posts none): the three steps under the ask.
+  const showSteps = !myProof && !data.streak && challenge.isActive
 
   return (
     <div className="today-hero dc-clickable" role="button" tabIndex={0} onClick={open} onKeyDown={(e) => { if (e.key === 'Enter') open() }}
@@ -282,28 +237,23 @@ function Ticket({ data, loading }) {
         </span>
       </div>
       <div className="today-hero-bottom">
-        <p className="today-hero-headline">{headline}</p>
-        {/* The world line: flags, the latest answers, "See answers" (the Compare tab). */}
-        <button type="button" className="today-hero-world" ref={setWorldEl} onClick={(e) => {
-          e.stopPropagation()
-          openDaily('challenge', challenge.compare ? { date: 'today', source: 'teaser', tab: 'compare' } : { date: 'today', source: 'today_block', tab: 'world' })
-        }}>
-          <LiveDot live={motion.live} />
-          {compared ? (
-            <WorldTicker entries={ticker} flags={world.flags ?? world.answers.map(a => a.city.country)} live={motion.live} reduced={motion.reduced}
-                         staticLine={[t('compare.nCountries', { count: world.countries }), ...answers].join(' · ')} />
-          ) : <span className="today-hero-first">{t('compare.firstIn')}</span>}
-          <span className="today-hero-see">{t('compare.seeAnswers')}<Icon name="chevron-forward" size={15} /></span>
-        </button>
+        <div className="today-hero-titles">
+          <p className="today-hero-headline">{headline}</p>
+          {!!ask && <p className="today-hero-ask">{ask}</p>}
+        </div>
+        {showSteps && <Steps compareType={challenge.compare?.type ?? null} price={!!challenge.compare?.priceLabel} />}
+        <LiveStrip cities={cities} mineIn={mineIn} city={cityShort} active={challenge.isActive}
+                   onClick={(e) => { e.stopPropagation(); openCompare('hero_strip') }} />
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <StatusChip status={myProof.status} />}
+            {/* Played: no pulse; the button opens the world's photos. */}
             <button type="button" className="today-cta today-cta--taken"
-                    onClick={(e) => { e.stopPropagation(); openDaily('challenge', { date: 'today', proofId: myProof.id }) }}>
-              <Icon name="checkmark-circle-outline" size={20} />{t('ctaTaken')}
+                    onClick={(e) => { e.stopPropagation(); openCompare('hero_played') }}>
+              <Icon name="checkmark-circle-outline" size={20} />{t('hero.played')}
             </button>
           </>
-        ) : (
+        ) : challenge.isActive ? (
           // White on the photo, pulsing (paused off screen, in a hidden tab, with reduced motion). The web opens the app modal.
           <span ref={setPulseEl} className={`today-cta-pulse${HERO_CTA_TONE === 'sun' ? ' today-cta-pulse--sun' : ''}${isFinalHours(secondsLeft) ? ' today-cta-pulse--fast' : ''}${pulseOn ? '' : ' today-cta-pulse--paused'}`}>
             <button type="button" className="today-cta"
@@ -312,14 +262,60 @@ function Ticket({ data, loading }) {
               <Icon name="camera-outline" size={20} />{ctaLabel}
             </button>
           </span>
-        )}
-        {!myProof && !!cityShort && (
-          <button type="button" className="today-not-here today-not-here--hero" onClick={changeHere}>
-            {tc('represent.notIn', { city: cityShort })} <span className="today-not-here-link">{tc('represent.change')}</span>
-          </button>
-        )}
+        ) : null}
       </div>
     </div>
+  )
+}
+
+/**
+ * How it works in three steps, for a player who never played: Snap it, then
+ * the challenge's own action (Name it for a word, Count it, Time it, Price
+ * it; Tell it without a question), then Compare. On the photo, so white.
+ */
+function Steps({ compareType, price }) {
+  const { t } = useDc()
+  const second = price ? ['pricetag-outline', 'hero.steps.price']
+    : compareType === 'number' ? ['stats-chart-outline', 'hero.steps.count']
+    : compareType === 'time' ? ['time-outline', 'hero.steps.time']
+    : compareType ? ['create-outline', 'hero.steps.name']
+    : ['chatbubble-ellipses-outline', 'hero.steps.tell']
+  const steps = [['camera-outline', 'hero.steps.snap'], second, ['earth-outline', 'hero.steps.compare']]
+  return (
+    <p className="today-steps">
+      {steps.map(([icon, key], i) => (
+        <span key={key} className="today-step-wrap">
+          {i > 0 && <Icon name="chevron-forward" size={13} className="today-step-arrow" />}
+          <span className="today-step"><Icon name={icon} size={14} />{t(key)}</span>
+        </span>
+      ))}
+    </p>
+  )
+}
+
+/**
+ * The live strip: the flags of the cities that played today (mine first) and
+ * where my city stands ("2 cities in. Saigon isn't yet!", "3 cities in ·
+ * Compare", "Be the first city in the world today"). Opens the compare view.
+ */
+function LiveStrip({ cities, mineIn, city, active, onClick }) {
+  const { t } = useDc()
+  const n = cities.length
+  if (n === 0 && !active) return null
+  const text = n === 0 ? t('hero.firstCity')
+    : mineIn ? `${t('hero.citiesIn', { count: n })} · ${t('compare.seeAnswers')}`
+    : city ? t('hero.citiesMissing', { count: n, city })
+    : t('hero.citiesIn', { count: n })
+  return (
+    <button type="button" className="today-strip" onClick={onClick} aria-label={text}>
+      {n > 0 ? (
+        <span className="today-strip-flags" aria-hidden="true">
+          {cities.slice(0, 4).map(c => <FlagSticker key={c.city.id} country={c.city.country} size={22} />)}
+        </span>
+      ) : <Icon name="earth-outline" size={18} />}
+      <span className="today-strip-text">{text}</span>
+      <Icon name="chevron-forward" size={16} />
+    </button>
   )
 }
 

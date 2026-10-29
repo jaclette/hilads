@@ -1437,11 +1437,28 @@
     },
     "event": {
       "halloween": {
-        "teaser_other": "🎃 ล่าฮาโลวีนอีก {{count}} วัน ทุกเมือง หนึ่งภาพสุดหลอน",
+        "teaser_other": "ล่าฮาโลวีนอีก {{count}} วัน",
         "cta": "ไปหลอน {{city}} 👻",
         "ctaNoCity": "ร่วมล่าด้วยกัน 👻",
         "played_other": "{{count}} ประเทศโดนผีหลอกแล้ว 🎃",
         "represent": "ไปหลอนเมืองของคุณ 👻"
+      }
+    },
+    "hero": {
+      "cta": "ถ่ายให้ {{city}}",
+      "ctaNoCity": "ถ่ายเลย",
+      "played": "เล่นแล้ว · ดูทั่วโลก",
+      "firstCity": "เป็นเมืองแรกของโลกวันนี้",
+      "citiesIn_other": "{{count}} เมืองเล่นแล้ว",
+      "citiesMissing_other": "{{count}} เมืองเล่นแล้ว {{city}} ยังไม่เล่น!",
+      "steps": {
+        "snap": "ถ่าย",
+        "name": "ตั้งชื่อ",
+        "count": "นับ",
+        "time": "จับเวลา",
+        "price": "ใส่ราคา",
+        "tell": "เล่า",
+        "compare": "เปรียบเทียบ"
       }
     }
   }

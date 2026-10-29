@@ -1437,11 +1437,28 @@
     },
     "event": {
       "halloween": {
-        "teaser_other": "🎃 할로윈 헌트까지 {{count}}일. 도시마다 으스스한 사진 한 장.",
+        "teaser_other": "할로윈 헌트까지 {{count}}일",
         "cta": "{{city}}에 유령 출몰 👻",
         "ctaNoCity": "헌트에 참여하기 👻",
         "played_other": "{{count}}개국에 유령 출몰 중 🎃",
         "represent": "우리 도시에 유령 출몰 👻"
+      }
+    },
+    "hero": {
+      "cta": "{{city}} 대표로 찍기",
+      "ctaNoCity": "사진 찍기",
+      "played": "참여 완료 · 세계 보기",
+      "firstCity": "오늘 세계 첫 번째 도시가 되어 봐",
+      "citiesIn_other": "{{count}}개 도시 참여",
+      "citiesMissing_other": "{{count}}개 도시 참여. {{city}} 아직!",
+      "steps": {
+        "snap": "찍기",
+        "name": "이름 쓰기",
+        "count": "세기",
+        "time": "시간 재기",
+        "price": "가격 쓰기",
+        "tell": "말하기",
+        "compare": "비교하기"
       }
     }
   }

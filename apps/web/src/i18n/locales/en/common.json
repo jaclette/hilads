@@ -199,7 +199,10 @@
     "citySub": "Your city's challenge, photos and spots",
     "worldSub": "Photos and spots from every city",
     "changeCity": "Change city",
-    "a11y": "Showing {{scope}}. Tap to change"
+    "a11y": "Showing {{scope}}. Tap to change",
+    "here": "You're in {{city}}",
+    "hereUnknown": "Where are you?",
+    "hereSub": "Not right? Change where you play"
   },
   "signUp": "Sign up",
   "settings": "Settings",

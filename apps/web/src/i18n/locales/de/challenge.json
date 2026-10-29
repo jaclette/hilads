@@ -1442,13 +1442,32 @@
     },
     "event": {
       "halloween": {
-        "teaser_one": "🎃 Die Halloween-Jagd ist morgen. Jede Stadt, ein gruseliges Foto.",
-        "teaser_other": "🎃 Halloween-Jagd in {{count}} Tagen. Jede Stadt, ein gruseliges Foto.",
+        "teaser_one": "Die Halloween-Jagd ist morgen",
+        "teaser_other": "Halloween-Jagd in {{count}} Tagen",
         "cta": "Spuke in {{city}} 👻",
         "ctaNoCity": "Mach mit bei der Jagd 👻",
         "played_one": "In {{count}} Land spukt es 🎃",
         "played_other": "In {{count}} Ländern spukt es 🎃",
         "represent": "Spuke in deiner Stadt 👻"
+      }
+    },
+    "hero": {
+      "cta": "Knips es für {{city}}",
+      "ctaNoCity": "Knips es",
+      "played": "Gespielt · Sieh dir die Welt an",
+      "firstCity": "Sei heute die erste Stadt der Welt",
+      "citiesIn_one": "{{count}} Stadt ist dabei",
+      "citiesIn_other": "{{count}} Städte sind dabei",
+      "citiesMissing_one": "{{count}} Stadt ist dabei. {{city}} noch nicht!",
+      "citiesMissing_other": "{{count}} Städte sind dabei. {{city}} noch nicht!",
+      "steps": {
+        "snap": "Knipsen",
+        "name": "Benennen",
+        "count": "Zählen",
+        "time": "Zeit stoppen",
+        "price": "Preis nennen",
+        "tell": "Erzählen",
+        "compare": "Vergleichen"
       }
     }
   }

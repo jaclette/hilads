@@ -1446,15 +1446,36 @@
     },
     "event": {
       "halloween": {
-        "teaser_one": "🎃 Caça de Halloween amanhã. Cada cidade, uma foto assustadora.",
-        "teaser_many": "🎃 Caça de Halloween daqui a {{count}} dias. Cada cidade, uma foto assustadora.",
-        "teaser_other": "🎃 Caça de Halloween daqui a {{count}} dias. Cada cidade, uma foto assustadora.",
+        "teaser_one": "Caça de Halloween amanhã",
+        "teaser_many": "Caça de Halloween daqui a {{count}} dias",
+        "teaser_other": "Caça de Halloween daqui a {{count}} dias",
         "cta": "Assombra {{city}} 👻",
         "ctaNoCity": "Junta-te à caça 👻",
         "played_one": "{{count}} país está assombrado 🎃",
         "played_many": "{{count}} países estão assombrados 🎃",
         "played_other": "{{count}} países estão assombrados 🎃",
         "represent": "Assombra a tua cidade 👻"
+      }
+    },
+    "hero": {
+      "cta": "Tira a foto por {{city}}",
+      "ctaNoCity": "Tira a foto",
+      "played": "Já jogaste · Vê o mundo",
+      "firstCity": "Sê a primeira cidade do mundo hoje",
+      "citiesIn_one": "{{count}} cidade jogou",
+      "citiesIn_many": "{{count}} cidades jogaram",
+      "citiesIn_other": "{{count}} cidades jogaram",
+      "citiesMissing_one": "{{count}} cidade jogou. {{city}} ainda não!",
+      "citiesMissing_many": "{{count}} cidades jogaram. {{city}} ainda não!",
+      "citiesMissing_other": "{{count}} cidades jogaram. {{city}} ainda não!",
+      "steps": {
+        "snap": "Tira a foto",
+        "name": "Dá o nome",
+        "count": "Conta",
+        "time": "Cronometra",
+        "price": "Dá o preço",
+        "tell": "Descreve",
+        "compare": "Compara"
       }
     }
   }

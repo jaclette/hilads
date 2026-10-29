@@ -16508,6 +16508,8 @@ body.has-app-promo-banner .page-header {
 .v3-scope { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; position: relative; }
 .v3-scope > svg { flex-shrink: 0; }
 .v3-scope-label { flex: 1; min-width: 0; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Where I am differs from the city shown: a small location mark before the chevron. */
+.v3-scope > .v3-scope-away { width: 13px; height: 13px; color: var(--primary-text); }
 .v3-round { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
 .v3-dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); border: 2px solid var(--surface); }
 .v3-signup { height: 44px; flex-shrink: 0; padding: 0 16px; border-radius: 999px; border: none; background: var(--primary); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
@@ -16715,37 +16717,14 @@ body.has-app-promo-banner .page-header {
 .today-world-answers { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .today-world-see { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; font-size: 13px; font-weight: 800; color: var(--primary-text); }
 .today-world-mine { font-size: 13px; font-weight: 700; color: var(--primary-text); }
-.live-dot { position: relative; display: inline-block; width: 7px; height: 7px; margin: 0 3px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
-.live-dot--on::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--primary); animation: live-ring 1.8s ease-out infinite; }
-@keyframes live-ring { from { transform: scale(1); opacity: 0.55; } to { transform: scale(2.6); opacity: 0; } }
-.world-ticker { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
-.world-flag { display: inline-flex; transition: transform 0.25s ease, opacity 0.25s ease; }
-.world-flag--on { transform: scale(1.15); position: relative; z-index: 2; }
-.world-flag--dim { opacity: 0.45; }
-.world-flag--new { animation: flag-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-@keyframes flag-in { from { transform: scale(0.4); } to { transform: scale(1); } }
-.world-ticker-box { flex: 1; min-width: 0; height: 20px; overflow: hidden; display: flex; align-items: center; }
-.world-ticker-line { display: block; min-width: 0; font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.world-ticker-line strong { font-weight: 800; color: var(--text); }
-.world-ticker-line--in { animation: ticker-in 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
-@keyframes ticker-in { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .live-dot--on::after, .world-ticker-line--in, .world-flag--new { animation: none; } }
 .today-world-tip { position: absolute; top: 100%; left: 12px; right: 12px; margin-top: 10px; z-index: 10; padding: 10px 14px; border: 0; border-radius: 14px; background: var(--text); color: var(--bg); font: inherit; font-size: 14px; font-weight: 700; text-align: left; cursor: pointer; }
 .today-world-tip::before { content: ''; position: absolute; top: -6px; left: 24px; width: 12px; height: 12px; background: var(--text); transform: rotate(45deg); }
-.today-teaser-flags { display: inline-flex; align-items: center; flex-shrink: 0; }
-.today-teaser-flags .city-flag { border-radius: 3px; box-shadow: 0 0 0 1.5px var(--step-bg); }
-.today-teaser-flags .city-flag + .city-flag, .today-teaser-flags .world-flag + .world-flag { margin-left: -7px; }
 .today-took { align-self: center; min-height: 44px; border: none; background: none; padding: 0 4px; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted2); cursor: pointer; text-align: center; }
 .today-took-link { font-weight: 700; color: var(--primary-text); }
 .today-friend { display: inline-flex; align-items: center; gap: 6px; margin-top: -6px; color: var(--text); }
 .today-empty-city { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 14px; font-weight: 700; line-height: 1.35; }
 .today-city-streak { align-self: center; gap: 6px; margin-top: -4px; font-size: 13px; font-weight: 700; color: var(--text); }
 .today-city-streak .icon { color: var(--primary-text); }
-/* My city is an IP guess: "Not in Berlin? Change" under the button. */
-.today-not-here { align-self: center; min-height: 32px; margin-top: -4px; padding: 4px 8px; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); text-align: center; cursor: pointer; }
-.today-not-here:disabled { opacity: .6; cursor: default; }
-.today-not-here-link { font-weight: 800; color: var(--primary-text); }
-.today-not-here--error { cursor: default; color: var(--text); }
 .today-board { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 13px; font-weight: 700; line-height: 1.35; }
 .today-board .today-friend { margin-top: 0; align-self: flex-start; min-height: 32px; padding: 0; }
 .proof-strip, .spots-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
@@ -17490,13 +17469,24 @@ body.has-app-promo-banner .page-header {
 .today-hero-bottom { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
 .today-hero-headline { margin: 0; font-size: 24px; line-height: 29px; font-weight: 800; letter-spacing: -.3px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5);
                        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.today-hero-world { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 0; border: 0; background: none; font: inherit; color: #fff; text-align: left; cursor: pointer; }
-.today-hero-world .world-ticker-line, .today-hero-first { color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
-.today-hero-world .world-ticker-line strong { color: #fff; }
-.today-hero-first { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* Primary on a dark pill: 4.5:1 even over a bright photo. */
-.today-hero-see { display: inline-flex; align-items: center; gap: 2px; padding: 4px 5px 4px 9px; border-radius: 12px; background: rgba(0,0,0,.6);
-                  font-size: 13px; font-weight: 800; color: #D9622A; white-space: nowrap; }
+/* The full ask under the short headline. */
+.today-hero-titles { display: flex; flex-direction: column; gap: 4px; }
+.today-hero-ask { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5);
+                  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* How it works in three steps (a player who never played): white pills on the photo. */
+.today-steps { margin: 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; }
+.today-step-wrap { display: inline-flex; align-items: center; gap: 4px; margin-right: 4px; }
+.today-step-arrow { color: rgba(255,255,255,.75); }
+.today-step { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 999px; white-space: nowrap;
+              background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); font-size: 12px; font-weight: 800; color: #fff; }
+/* The live strip: today's cities' flags (overlapping) and where my city stands, on a dark pill; opens the compare view. */
+.today-strip { align-self: flex-start; max-width: 100%; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 10px 6px 8px;
+               border: 0; border-radius: 20px; background: rgba(0,0,0,.5); color: #fff; font: inherit; text-align: left; cursor: pointer; }
+.today-strip:active { opacity: .7; }
+.today-strip > .icon { flex-shrink: 0; }
+.today-strip-flags { display: inline-flex; align-items: center; flex-shrink: 0; }
+.today-strip-flags > .joy-flag + .joy-flag { margin-left: -7px; }
+.today-strip-text { min-width: 0; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* The button on the photo: white, ink label, primary camera icon, white rings (75%); the primary
    (#D9622A, as on dark surfaces: the hero is always dark) stays for small accents. */
 .today-hero .today-cta { min-height: 52px; border-radius: 16px; background: #fff; color: #2A1C13; }
@@ -17506,8 +17496,9 @@ body.has-app-promo-banner .page-header {
 .today-hero .today-cta-pulse--sun .today-cta { background: #FF7A3D; }
 .today-hero .today-cta-pulse--sun .today-cta .icon { color: #2A1C13; }
 .today-hero .today-cta-pulse--sun::before, .today-hero .today-cta-pulse--sun::after { border-color: #FF7A3D; }
-.today-not-here--hero { color: rgba(255,255,255,.92); text-shadow: 0 1px 4px rgba(0,0,0,.5); }
-.today-not-here--hero .today-not-here-link { color: #fff; }
+/* Played: "You played · See the world", the secondary button (a card in the theme's colors). */
+.today-hero .today-cta--taken { background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
+.today-hero .today-cta--taken .icon { color: var(--primary-text); }
 .dc-question { margin: 4px 0 0; font-size: 16px; font-weight: 800; color: var(--text); }
 .dc-photo-rule { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0; padding: 10px 12px; border-radius: 12px;
                  background: color-mix(in srgb, var(--primary) 12%, transparent); font-size: 14px; line-height: 1.4; color: var(--text); }
@@ -17611,9 +17602,7 @@ button.today-cta { width: 100%; }
 .brand-line--joy .joy-lockup { flex-shrink: 0; }
 .brand-line--joy .brand-line-tag { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .today-hero-chip--theme { border-radius: 999px; padding: 6px 11px; background: var(--c); color: var(--on); }
-.today-hero-see { color: #FF7A3D; }
 .today-hero .today-cta .icon { color: #B2552A; }
-.live-dot, .live-dot--on::after { background: var(--cta); }
 .week-dot--done { background: var(--c); color: var(--on); }
 .week-dot--pending { background: color-mix(in srgb, var(--c) 24%, transparent); color: var(--text); }
 .week-dot--today { border: 2.5px solid var(--cl, var(--c)); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ct); }
@@ -17628,14 +17617,6 @@ button.today-cta { width: 100%; }
 .tour-circle-flag { right: -3px; bottom: -3px; border: 0; border-radius: 50%; overflow: visible; }
 .proof-strip-cityrow { gap: 5px; height: 20px; }
 .proof-strip-cityrow .joy-flag { flex-shrink: 0; }
-.today-hero-world .world-ticker-box { height: 34px; }
-.world-ticker-entry { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.world-ticker-entry > strong { flex-shrink: 0; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 800; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
-.world-ticker-entry .joy-bubble { align-self: center; margin-bottom: 3px; }
-.world-flag .joy-flag { display: block; }
-.world-ticker-line:has(.world-ticker-entry) { overflow: visible; padding-bottom: 3px; }
-.today-teaser-flags .world-flag + .world-flag { margin-left: -6px; }
-.world-flag--dim { opacity: .7; }
 
 /* ── The keyboard rule (lib/keyboardViewport.js) ─────────────────────────────
    Android Chrome resizes the layout with the keyboard (interactive-widget in
@@ -17861,10 +17842,11 @@ html[data-event="halloween"],
   color-scheme: dark;
 }
 
-/* Teaser: the countdown banner under Today's hero (16.2:1 on the night ground). */
-.seasonal-teaser { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 18px;
+/* Teaser: the one-line countdown under Today's hero, the last 3 days (16.2:1 on the night ground). */
+.seasonal-teaser { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 18px;
                    background: #1A1030; border: 1.5px solid #3D2A64; color: #F6F0FF; font-size: 14px; line-height: 20px; font-weight: 700; }
 .seasonal-teaser svg { flex-shrink: 0; }
+.seasonal-teaser-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* The live hero: cobwebs in the top corners, ghosts floating slowly over the photo. */
 .seasonal-decor { position: absolute; inset: 0; pointer-events: none; z-index: 1; }

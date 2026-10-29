@@ -1442,13 +1442,32 @@
     },
     "event": {
       "halloween": {
-        "teaser_one": "🎃 Halloweenjacht morgen. Elke stad, één griezelige foto.",
-        "teaser_other": "🎃 Halloweenjacht over {{count}} dagen. Elke stad, één griezelige foto.",
+        "teaser_one": "Halloweenjacht morgen",
+        "teaser_other": "Halloweenjacht over {{count}} dagen",
         "cta": "Spook door {{city}} 👻",
         "ctaNoCity": "Doe mee aan de jacht 👻",
         "played_one": "In {{count}} land spookt het 🎃",
         "played_other": "In {{count}} landen spookt het 🎃",
         "represent": "Laat het spoken in je stad 👻"
+      }
+    },
+    "hero": {
+      "cta": "Maak een foto voor {{city}}",
+      "ctaNoCity": "Maak een foto",
+      "played": "Je hebt gespeeld · Bekijk de wereld",
+      "firstCity": "Wees vandaag de eerste stad ter wereld",
+      "citiesIn_one": "{{count}} stad doet mee",
+      "citiesIn_other": "{{count}} steden doen mee",
+      "citiesMissing_one": "{{count}} stad doet mee. {{city}} nog niet!",
+      "citiesMissing_other": "{{count}} steden doen mee. {{city}} nog niet!",
+      "steps": {
+        "snap": "Foto",
+        "name": "Benoem",
+        "count": "Tel",
+        "time": "Klok",
+        "price": "Prijs",
+        "tell": "Vertel",
+        "compare": "Vergelijk"
       }
     }
   }

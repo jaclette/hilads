@@ -199,7 +199,10 @@
     "citySub": "O challenge, as fotos e os spots da tua cidade",
     "worldSub": "Fotos e spots de todas as cidades",
     "changeCity": "Mudar de cidade",
-    "a11y": "A mostrar {{scope}}. Toca para mudar"
+    "a11y": "A mostrar {{scope}}. Toca para mudar",
+    "here": "Estás em {{city}}",
+    "hereUnknown": "Onde estás?",
+    "hereSub": "Não é isso? Muda onde jogas"
   },
   "signUp": "Registar",
   "settings": "Definições",
