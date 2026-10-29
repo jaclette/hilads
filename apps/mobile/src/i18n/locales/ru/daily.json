@@ -567,7 +567,23 @@
     "statLikes_many": "лайков",
     "statLikes_other": "лайка",
     "textPassport": "Мой паспорт Hilads в городе {{city}}. Один челлендж. Разные миры.",
-    "textPassportNoCity": "Мой паспорт Hilads. Один челлендж. Разные миры."
+    "textPassportNoCity": "Мой паспорт Hilads. Один челлендж. Разные миры.",
+    "card": {
+      "question": "А что ответит ТВОЙ город?",
+      "playedFor": "@{{user}} играет за {{city}}",
+      "yourCity": "Твой город?",
+      "vs": "VS",
+      "template": {
+        "turn": "Твой ход",
+        "versus": "Дуэль",
+        "result": "Результат"
+      },
+      "votes_one": "{{count}} голос",
+      "votes_few": "{{count}} голоса",
+      "votes_many": "{{count}} голосов",
+      "votes_other": "{{count}} голоса"
+    },
+    "textProofAsk": "Я играю за {{city}} в Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} сегодня ещё не играл. Будь первым.",

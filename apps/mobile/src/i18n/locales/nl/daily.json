@@ -533,7 +533,21 @@
     "statLikes_one": "like",
     "statLikes_other": "likes",
     "textPassport": "Mijn Hilads-paspoort in {{city}}. Zelfde challenge. Andere werelden.",
-    "textPassportNoCity": "Mijn Hilads-paspoort. Zelfde challenge. Andere werelden."
+    "textPassportNoCity": "Mijn Hilads-paspoort. Zelfde challenge. Andere werelden.",
+    "card": {
+      "question": "Wat is het antwoord van JOUW stad?",
+      "playedFor": "@{{user}} speelde voor {{city}}",
+      "yourCity": "Jouw stad?",
+      "vs": "VS",
+      "template": {
+        "turn": "Jouw beurt",
+        "versus": "Duel",
+        "result": "Resultaat"
+      },
+      "votes_one": "{{count}} stem",
+      "votes_other": "{{count}} stemmen"
+    },
+    "textProofAsk": "Ik speelde voor {{city}} op Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} heeft vandaag nog niet gespeeld. Wees de eerste.",

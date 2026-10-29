@@ -533,7 +533,21 @@
     "statLikes_one": "लाइक",
     "statLikes_other": "लाइक",
     "textPassport": "{{city}} में मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।",
-    "textPassportNoCity": "मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।"
+    "textPassportNoCity": "मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।",
+    "card": {
+      "question": "और आपके शहर का जवाब क्या है?",
+      "playedFor": "@{{user}} ने {{city}} के लिए खेला",
+      "yourCity": "आपका शहर?",
+      "vs": "VS",
+      "template": {
+        "turn": "आपकी बारी",
+        "versus": "मुकाबला",
+        "result": "नतीजा"
+      },
+      "votes_one": "{{count}} वोट",
+      "votes_other": "{{count}} वोट"
+    },
+    "textProofAsk": "मैंने Hilads पर {{city}} के लिए खेला: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} ने आज अभी तक नहीं खेला। पहले बनें।",

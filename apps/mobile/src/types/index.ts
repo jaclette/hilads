@@ -782,6 +782,8 @@ export interface DailyChallenge {
   headline?: string | null;
   /** The challenge screen's line under the question (80 characters), localized; null = show the text. */
   subtitle?: string | null;
+  /** The share card's question (70 characters), localized; null = "What's YOUR city's answer?". */
+  shareQuestion?: string | null;
   context:  string | null;
   /** Set when text/context are the founder's translation in the viewer's language. */
   original?: { text: string; context: string | null } | null;

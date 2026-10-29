@@ -525,7 +525,20 @@
     "statPhotos_other": "ảnh",
     "statLikes_other": "lượt thích",
     "textPassport": "Hộ chiếu Hilads của tôi ở {{city}}. Cùng thử thách. Những thế giới khác nhau.",
-    "textPassportNoCity": "Hộ chiếu Hilads của tôi. Cùng thử thách. Những thế giới khác nhau."
+    "textPassportNoCity": "Hộ chiếu Hilads của tôi. Cùng thử thách. Những thế giới khác nhau.",
+    "card": {
+      "question": "Còn thành phố CỦA BẠN trả lời sao?",
+      "playedFor": "@{{user}} chơi cho {{city}}",
+      "yourCity": "Thành phố bạn?",
+      "vs": "VS",
+      "template": {
+        "turn": "Đến lượt bạn",
+        "versus": "Đối đầu",
+        "result": "Kết quả"
+      },
+      "votes_other": "{{count}} lượt bình chọn"
+    },
+    "textProofAsk": "Mình đã chơi cho {{city}} trên Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} chưa chơi hôm nay. Hãy là người đầu tiên.",

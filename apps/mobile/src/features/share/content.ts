@@ -23,6 +23,8 @@ export type ShareContent =
       /** Event mode: a photo of the live event's days gets its share frame (e.g. "halloween"). */
       eventKey?: string | null;
       rank: { rank: number; city: string | null } | null;
+      /** The photo's challenge date, votes and the share card's question (the challenge's, else the apps' default). */
+      date?: string; voteCount?: number; shareQuestion?: string | null;
       /** Today's question and my answer, for the share line (COPY.md). */
       question?: string | null; answer?: string | null }
   | { type: 'spot'; id: string; photoUrl: string | null; theme: ThemeKey | null; name: string; city: City; by: string | null }
@@ -49,6 +51,7 @@ export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareC
   return {
     type: 'proof', id: proof.id, photoUrl: proof.photoUrl, selfieUrl: proof.selfieUrl ?? null, theme: challenge.theme?.key ?? null, text: challenge.text,
     eventKey: eventShareKey(proof.date),
+    date: proof.date, voteCount: proof.voteCount, shareQuestion: challenge.shareQuestion ?? null,
     themeLabel: challenge.theme ? themeName(challenge.theme.key, { special: challenge.special, city: proof.city?.name }) : null,
     city: proof.city, username: proof.user.username ?? null,
     rank: world ? { rank: world, city: null } : city && proof.city?.name ? { rank: city, city: proof.city.name } : null,
@@ -76,11 +79,19 @@ export function representShare(challenge: DailyChallenge, city: NonNullable<City
   return { ...todayShare(challenge, city), represent: true } as ShareContent;
 }
 
-/** The link, in the sharer's language (/fr/p/..., English unprefixed). */
+/**
+ * The link, in the sharer's language (/fr/p/..., English unprefixed). My
+ * photo's link names who shared it and their city (?from=anh&city=Saigon):
+ * the landing page says "@anh played for Saigon".
+ */
 export function shareUrl(c: ShareContent): string {
   const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : c.type === 'index' ? `/d/${c.date}`
     : c.type === 'passport' ? '/' : '/today';
-  return `${BASE_URL}${sharePrefix()}${path}`;
+  const url = `${BASE_URL}${sharePrefix()}${path}`;
+  if (c.type !== 'proof') return url;
+  const q = [c.username ? `from=${encodeURIComponent(c.username)}` : null,
+             c.city?.name ? `city=${encodeURIComponent(shortCityName(c.city.name))}` : null].filter(Boolean);
+  return q.length ? `${url}?${q.join('&')}` : url;
 }
 
 /** Any approved photo's public page (hilads.live/p/{id}), in the sharer's language. */
@@ -95,7 +106,9 @@ export function shareText(c: ShareContent): string {
     // "How do locals say cheers? In Saigon: Một, hai, ba, dzô! And in your city? Play local. Compare global."
     const city = c.city?.name ? shortCityName(c.city.name) : null;
     if (!city) return c.text;
-    return c.question && c.answer ? t('textProof', { question: c.question, city, answer: c.answer }) : t('textProofNoAnswer', { challenge: c.text, city });
+    if (c.question && c.answer) return t('textProof', { question: c.question, city, answer: c.answer });
+    // "I played for Saigon on Hilads: Find a fruit locals love. What's YOUR city's answer?"
+    return t('textProofAsk', { city, challenge: c.text, question: c.shareQuestion || t('card.question') });
   }
   if (c.type === 'spot') {
     return c.city?.name ? t('textSpotCity', { name: c.name, city: localizeCityName(c.city.name) }) : t('textSpot', { name: c.name });

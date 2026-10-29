@@ -601,7 +601,25 @@
     "statLikes_many": "إعجابًا",
     "statLikes_other": "إعجاب",
     "textPassport": "جواز سفري في Hilads في {{city}}. نفس التحدي. عوالم مختلفة.",
-    "textPassportNoCity": "جواز سفري في Hilads. نفس التحدي. عوالم مختلفة."
+    "textPassportNoCity": "جواز سفري في Hilads. نفس التحدي. عوالم مختلفة.",
+    "card": {
+      "question": "وما جواب مدينتك أنت؟",
+      "playedFor": "@{{user}} لعب من أجل {{city}}",
+      "yourCity": "مدينتك؟",
+      "vs": "VS",
+      "template": {
+        "turn": "دورك",
+        "versus": "مواجهة",
+        "result": "النتيجة"
+      },
+      "votes_zero": "{{count}} صوت",
+      "votes_one": "صوت واحد",
+      "votes_two": "صوتان",
+      "votes_few": "{{count}} أصوات",
+      "votes_many": "{{count}} صوتًا",
+      "votes_other": "{{count}} صوت"
+    },
+    "textProofAsk": "لعبت من أجل {{city}} على Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "لم تلعب {{city}} اليوم بعد. كن الأول.",

@@ -533,7 +533,21 @@
     "statLikes_one": "like",
     "statLikes_other": "likes",
     "textPassport": "My Hilads passport in {{city}}. Same challenge. Different worlds.",
-    "textPassportNoCity": "My Hilads passport. Same challenge. Different worlds."
+    "textPassportNoCity": "My Hilads passport. Same challenge. Different worlds.",
+    "card": {
+      "question": "What's YOUR city's answer?",
+      "playedFor": "@{{user}} played for {{city}}",
+      "yourCity": "Your city?",
+      "vs": "VS",
+      "template": {
+        "turn": "Your turn",
+        "versus": "Versus",
+        "result": "Result"
+      },
+      "votes_one": "{{count}} vote",
+      "votes_other": "{{count}} votes"
+    },
+    "textProofAsk": "I played for {{city}} on Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} hasn't played yet today. Be the first.",

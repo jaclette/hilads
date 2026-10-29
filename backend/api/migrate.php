@@ -3449,6 +3449,12 @@ run($pdo, "
 // Reversal: ALTER TABLE daily_challenges DROP COLUMN subtitle_i18n.
 run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS subtitle_i18n JSONB", 'daily_challenges.subtitle_i18n');
 
+// The share card's question (2026-10-29, share card redo): {en, fr, ...}, 70
+// characters each, set in the back office (challenge page, "Share question");
+// the apps show "What's YOUR city's answer?" when absent.
+// Reversal: ALTER TABLE daily_challenges DROP COLUMN share_question_i18n.
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS share_question_i18n JSONB", 'daily_challenges.share_question_i18n');
+
 // Photos I've viewed (2026-10-22, Today's country stories): a story ring is
 // colored while one of its country's photos is unseen. Signed-in viewers only
 // (a guest's are kept on the device). Reversal: DROP TABLE daily_proof_views.

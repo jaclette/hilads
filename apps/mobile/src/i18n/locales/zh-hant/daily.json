@@ -525,7 +525,20 @@
     "statPhotos_other": "張照片",
     "statLikes_other": "個讚",
     "textPassport": "我在{{city}}的 Hilads 護照。同一個挑戰，不同的世界。",
-    "textPassportNoCity": "我的 Hilads 護照。同一個挑戰，不同的世界。"
+    "textPassportNoCity": "我的 Hilads 護照。同一個挑戰，不同的世界。",
+    "card": {
+      "question": "你的城市會怎麼回答？",
+      "playedFor": "@{{user}} 代表{{city}}出戰",
+      "yourCity": "你的城市？",
+      "vs": "VS",
+      "template": {
+        "turn": "輪到你了",
+        "versus": "對決",
+        "result": "結果"
+      },
+      "votes_other": "{{count}} 票"
+    },
+    "textProofAsk": "我在 Hilads 代表{{city}}出戰：{{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}}今天還沒有人參加。來當第一個吧。",

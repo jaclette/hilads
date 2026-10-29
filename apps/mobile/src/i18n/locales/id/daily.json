@@ -526,7 +526,20 @@
     "statPhotos_other": "foto",
     "statLikes_other": "suka",
     "textPassport": "Paspor Hilads-ku di {{city}}. Tantangan sama. Dunia berbeda.",
-    "textPassportNoCity": "Paspor Hilads-ku. Tantangan sama. Dunia berbeda."
+    "textPassportNoCity": "Paspor Hilads-ku. Tantangan sama. Dunia berbeda.",
+    "card": {
+      "question": "Apa jawaban kotaMU?",
+      "playedFor": "@{{user}} bermain untuk {{city}}",
+      "yourCity": "Kotamu?",
+      "vs": "VS",
+      "template": {
+        "turn": "Giliranmu",
+        "versus": "Duel",
+        "result": "Hasil"
+      },
+      "votes_other": "{{count}} suara"
+    },
+    "textProofAsk": "Aku main untuk {{city}} di Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} belum main hari ini. Jadilah yang pertama.",

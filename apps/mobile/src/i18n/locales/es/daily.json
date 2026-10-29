@@ -540,7 +540,22 @@
     "statLikes_many": "likes",
     "statLikes_other": "likes",
     "textPassport": "Mi pasaporte Hilads en {{city}}. Mismo reto. Mundos diferentes.",
-    "textPassportNoCity": "Mi pasaporte Hilads. Mismo reto. Mundos diferentes."
+    "textPassportNoCity": "Mi pasaporte Hilads. Mismo reto. Mundos diferentes.",
+    "card": {
+      "question": "¿Y la respuesta de TU ciudad?",
+      "playedFor": "@{{user}} jugó por {{city}}",
+      "yourCity": "¿Tu ciudad?",
+      "vs": "VS",
+      "template": {
+        "turn": "Tu turno",
+        "versus": "Versus",
+        "result": "Resultado"
+      },
+      "votes_one": "{{count}} voto",
+      "votes_many": "{{count}} votos",
+      "votes_other": "{{count}} votos"
+    },
+    "textProofAsk": "Jugué por {{city}} en Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} aún no ha jugado hoy. Sé el primero.",

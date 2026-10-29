@@ -574,6 +574,8 @@ final class DailyChallengeRepository
             'headline' => self::headline($row['headline_i18n'] ?? null, $locale),
             // The challenge screen's subtitle under the question, same fallback; null = show the text.
             'subtitle' => self::headline($row['subtitle_i18n'] ?? null, $locale),
+            // The share card's question in the viewer's language, else English; null = the apps' "What's YOUR city's answer?".
+            'shareQuestion' => self::headline($row['share_question_i18n'] ?? null, $locale),
             'context'  => $isTranslated ? ($tCtx ?? $enCtx) : $enCtx,
             'original' => $isTranslated ? ['text' => $enText, 'context' => $enCtx] : null,
             'lang'     => $isTranslated ? $locale : null,

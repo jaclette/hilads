@@ -540,7 +540,22 @@
     "statLikes_many": "like",
     "statLikes_other": "like",
     "textPassport": "Il mio passaporto Hilads a {{city}}. Stessa sfida. Mondi diversi.",
-    "textPassportNoCity": "Il mio passaporto Hilads. Stessa sfida. Mondi diversi."
+    "textPassportNoCity": "Il mio passaporto Hilads. Stessa sfida. Mondi diversi.",
+    "card": {
+      "question": "E la risposta della TUA città?",
+      "playedFor": "@{{user}} ha giocato per {{city}}",
+      "yourCity": "La tua città?",
+      "vs": "VS",
+      "template": {
+        "turn": "Tocca a te",
+        "versus": "Sfida",
+        "result": "Risultato"
+      },
+      "votes_one": "{{count}} voto",
+      "votes_many": "{{count}} voti",
+      "votes_other": "{{count}} voti"
+    },
+    "textProofAsk": "Ho giocato per {{city}} su Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}} non ha ancora giocato oggi. Sii il primo.",

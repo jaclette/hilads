@@ -11,7 +11,6 @@ import { THEME_KEYS } from '@/features/daily/themes';
 import { FLAGS } from '@/ui/flags';
 import { themeColor } from '@/ui/joy';
 import type { ShareContent } from './content';
-import { EVENT_CARD, EventFrame } from '@/features/event/EventFrame';
 
 const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
 
@@ -121,39 +120,6 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
     );
   }
 
-  // Event mode (Halloween…): the event's ground, the photo as a tilted polaroid, the event frame.
-  const ev = content.type === 'proof' && content.eventKey ? EVENT_CARD[content.eventKey] : undefined;
-  if (ev && content.type === 'proof') {
-    return (
-      <View ref={ref} collapsable={false} style={[s.card, { backgroundColor: ev.ground }]}>
-        <Svg width={W} height={u(640)} style={s.fill}>
-          <Defs>
-            <LinearGradient id="eventGround" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={ev.ground} />
-              <Stop offset="1" stopColor={ev.ground2} />
-            </LinearGradient>
-          </Defs>
-          <Rect x="0" y="0" width="100%" height="100%" fill="url(#eventGround)" />
-        </Svg>
-        <View style={s.polaroid}>
-          <Image source={cover} style={s.polaroidPhoto} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />
-          {!!selfie && <Image source={{ uri: selfie }} style={s.polaroidSelfie} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />}
-        </View>
-        <EventFrame eventKey={content.eventKey!} width={W} height={u(640)} />
-        <View style={s.bottom}>
-          {!!kicker && <Text style={[s.kicker, { color: ev.accent }]} numberOfLines={1}>{kicker.toUpperCase()}</Text>}
-          <Text style={s.title} numberOfLines={4}>{content.text}</Text>
-          <View style={s.metaRow}>
-            {flag && <Image source={flag} style={s.flag} contentFit="cover" />}
-            <Text style={s.meta} numberOfLines={1}>{[city, content.username ? `@${content.username}` : null].filter(Boolean).join('  ·  ')}</Text>
-          </View>
-          <Text style={[s.cta, { color: ev.accent }]}>{`${t('worlds.tagline')} ${ev.emoji}`}</Text>
-          {footer}
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View ref={ref} collapsable={false} style={s.card}>
       <Image source={cover} style={s.fill} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />
@@ -219,10 +185,6 @@ const HILADS_INDEX = 'Hilads Index';
 const s = {
   card:      { width: W, height: u(640), backgroundColor: '#1A1410', overflow: 'hidden' },
   fill:      { position: 'absolute', top: 0, left: 0, width: W, height: u(640) },
-  polaroid:  { position: 'absolute', top: u(70), left: u(55), width: u(250), padding: u(10), paddingBottom: u(34), backgroundColor: white,
-               transform: [{ rotate: '-3deg' }], shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: u(10), shadowOffset: { width: 0, height: u(4) } },
-  polaroidPhoto:  { width: u(230), height: u(270) },
-  polaroidSelfie: { position: 'absolute', top: u(18), left: u(18), width: u(64), height: u(86), borderRadius: u(10), borderWidth: u(2.5), borderColor: white },
   selfie:    { position: 'absolute', top: u(86), right: u(16), width: u(92), height: u(122), borderRadius: u(14), borderWidth: u(3), borderColor: white, zIndex: 1 },
   badge:     { position: 'absolute', top: u(84), left: u(24), paddingHorizontal: u(14), paddingVertical: u(7), borderRadius: u(999), backgroundColor: '#D9AE52' },
   badgeText: { fontFamily: appFont('800'), fontSize: u(15), color: '#1A1206' },

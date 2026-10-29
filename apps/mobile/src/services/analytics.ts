@@ -82,6 +82,9 @@ export type AnalyticsEvent =
   // Sharing (SPEC 9.14): { content_type, source } + share_completed { channel, activity? }; link_opened { content_type, utm_source }.
   | 'share_started'
   | 'share_completed'
+  | 'share_opened'
+  | 'share_template_selected'
+  | 'share_target'
   | 'link_opened'
   // Same challenge. Different worlds (SPEC 10.11): compare_answer_posted { type }, back_home_added { has_answer, has_price, has_line }.
   | 'compare_answer_posted'

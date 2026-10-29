@@ -533,7 +533,21 @@
     "statLikes_one": "like",
     "statLikes_other": "likes",
     "textPassport": "Ang Hilads passport ko sa {{city}}. Parehong challenge. Ibang mundo.",
-    "textPassportNoCity": "Ang Hilads passport ko. Parehong challenge. Ibang mundo."
+    "textPassportNoCity": "Ang Hilads passport ko. Parehong challenge. Ibang mundo.",
+    "card": {
+      "question": "Ano ang sagot ng IYONG lungsod?",
+      "playedFor": "Naglaro si @{{user}} para sa {{city}}",
+      "yourCity": "Lungsod mo?",
+      "vs": "VS",
+      "template": {
+        "turn": "Ikaw na",
+        "versus": "Laban",
+        "result": "Resulta"
+      },
+      "votes_one": "{{count}} boto",
+      "votes_other": "{{count}} boto"
+    },
+    "textProofAsk": "Naglaro ako para sa {{city}} sa Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "Hindi pa naglalaro ang {{city}} ngayon. Ikaw na ang mauna.",

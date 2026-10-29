@@ -525,7 +525,20 @@
     "statPhotos_other": "장",
     "statLikes_other": "좋아요",
     "textPassport": "{{city}}에서의 나의 Hilads 여권. 같은 챌린지, 다른 세계.",
-    "textPassportNoCity": "나의 Hilads 여권. 같은 챌린지, 다른 세계."
+    "textPassportNoCity": "나의 Hilads 여권. 같은 챌린지, 다른 세계.",
+    "card": {
+      "question": "당신 도시의 답은?",
+      "playedFor": "@{{user}} 님이 {{city}} 대표로 참여",
+      "yourCity": "당신의 도시?",
+      "vs": "VS",
+      "template": {
+        "turn": "네 차례",
+        "versus": "대결",
+        "result": "결과"
+      },
+      "votes_other": "{{count}}표"
+    },
+    "textProofAsk": "Hilads에서 {{city}} 대표로 참여했어: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}}는 오늘 아직 참여하지 않았어요. 첫 번째가 되어 보세요.",

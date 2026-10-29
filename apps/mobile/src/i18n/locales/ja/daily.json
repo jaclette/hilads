@@ -526,7 +526,20 @@
     "statPhotos_other": "枚",
     "statLikes_other": "いいね",
     "textPassport": "{{city}}の私のHiladsパスポート。同じチャレンジ、違う世界。",
-    "textPassportNoCity": "私のHiladsパスポート。同じチャレンジ、違う世界。"
+    "textPassportNoCity": "私のHiladsパスポート。同じチャレンジ、違う世界。",
+    "card": {
+      "question": "あなたの街の答えは？",
+      "playedFor": "@{{user}}が{{city}}代表でプレイ",
+      "yourCity": "あなたの街は？",
+      "vs": "VS",
+      "template": {
+        "turn": "次はあなた",
+        "versus": "対決",
+        "result": "結果"
+      },
+      "votes_other": "{{count}}票"
+    },
+    "textProofAsk": "Hiladsで{{city}}代表としてプレイしたよ：{{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}}は今日まだ参加していません。最初の一人になろう。",

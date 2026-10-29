@@ -525,7 +525,20 @@
     "statPhotos_other": "รูป",
     "statLikes_other": "ไลก์",
     "textPassport": "พาสปอร์ต Hilads ของฉันที่ {{city}} ชาเลนจ์เดียวกัน โลกที่ต่างกัน",
-    "textPassportNoCity": "พาสปอร์ต Hilads ของฉัน ชาเลนจ์เดียวกัน โลกที่ต่างกัน"
+    "textPassportNoCity": "พาสปอร์ต Hilads ของฉัน ชาเลนจ์เดียวกัน โลกที่ต่างกัน",
+    "card": {
+      "question": "แล้วเมืองของคุณตอบว่าอะไร?",
+      "playedFor": "@{{user}} เล่นให้ {{city}}",
+      "yourCity": "เมืองของคุณ?",
+      "vs": "VS",
+      "template": {
+        "turn": "ตาคุณแล้ว",
+        "versus": "ดวล",
+        "result": "ผลลัพธ์"
+      },
+      "votes_other": "{{count}} โหวต"
+    },
+    "textProofAsk": "ฉันเล่นให้ {{city}} บน Hilads: {{challenge}} {{question}}"
   },
   "represent": {
     "empty": "{{city}}ยังไม่ได้เล่นวันนี้ มาเป็นคนแรกกัน",

@@ -113,6 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             return 'Subtitle saved.';
         }, 'Subtitle saved.', $self . '#subtitle'),
 
+        'save_share_question' => daily_action(function () use ($p, $id) {
+            $tr = trim((string) ($p['share_question_tr'] ?? '')) !== '' ? json_decode((string) $p['share_question_tr'], true) : [];
+            if (!is_array($tr)) {
+                throw new InvalidArgumentException('Translations must be a JSON object: {"fr": "...", "vi": "..."}.');
+            }
+            DailyAdminService::setChallengeShareQuestion($id, (string) ($p['share_question_en'] ?? ''), $tr);
+            return 'Share question saved.';
+        }, 'Share question saved.', $self . '#share-question'),
+
         'save_translations' => daily_action(function () use ($p, $id) {
             $row  = DailyAdminService::setChallengeTranslations($id, (array) ($p['tr_text'] ?? []), (array) ($p['tr_context'] ?? []));
             $text = json_decode((string) $row['text_i18n'], true) ?: [];
@@ -288,6 +297,17 @@ daily_styles();
                     <div class="form-group"><label>Translations (optional JSON)</label>
                         <textarea name="subtitle_tr" rows="3" style="font-family:monospace" placeholder='{"fr": "Trinque là où boivent les locaux."}'><?= dh($stTr ? json_encode($stTr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '') ?></textarea></div>
                     <div class="form-actions"><button class="btn btn-primary" type="submit">Save subtitle</button></div>
+                </form>
+
+                <?php $sq = json_decode((string) ($challenge['share_question_i18n'] ?? ''), true) ?: []; $sqTr = array_diff_key($sq, ['en' => true]); ?>
+                <form method="POST" action="<?= dh($self) ?>" class="form-card" id="share-question" style="margin-top:16px">
+                    <?= csrf_input() ?><input type="hidden" name="action" value="save_share_question">
+                    <h3 style="margin-bottom:4px">Share question <span class="daily-muted">(the share card's big question, <?= DailyAdminService::SHARE_QUESTION_MAX ?> characters max, <?= count($sqTr) ?>/18 translated)</span></h3>
+                    <div class="form-group"><input type="text" name="share_question_en" maxlength="<?= DailyAdminService::SHARE_QUESTION_MAX ?>" value="<?= dh($sq['en'] ?? '') ?>" placeholder="Where do YOU go for pho?">
+                        <div class="hint">Asks the friend who sees the Story. Empty: "What's YOUR city's answer?" (translated in the apps).</div></div>
+                    <div class="form-group"><label>Translations (optional JSON)</label>
+                        <textarea name="share_question_tr" rows="3" style="font-family:monospace" placeholder='{"fr": "Et toi, tu vas où pour un pho ?"}'><?= dh($sqTr ? json_encode($sqTr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '') ?></textarea></div>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Save share question</button></div>
                 </form>
 
                 <form method="POST" action="<?= dh($self) ?>" enctype="multipart/form-data" class="form-card" id="cover" style="margin-top:16px">

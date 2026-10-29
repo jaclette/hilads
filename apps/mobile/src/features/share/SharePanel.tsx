@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
+import { fetchDailyTodayProofs } from '@/api/daily';
 import { CARD_DP, ShareCard } from './ShareCard';
+import { PROOF_CARD_DP, ProofCard, type ShareTemplate, type VersusPhoto } from './ProofCard';
 import { shareText, shareUrl, type ShareContent } from './content';
 import { IMAGE_CHANNELS, directChannels, shareTo, type ShareChannel } from './targets';
 
@@ -40,73 +42,162 @@ const LABEL: Record<ShareChannel, string> = {
  * targets (Instagram and Facebook Stories with the card image; WhatsApp,
  * Messenger, Telegram and X with the link, whose preview is the card), Copy
  * link, and More (the system share sheet: Zalo, LINE, KakaoTalk, Snapchat,
- * TikTok...). The card is captured once it's drawn; link targets work before
- * that. share_started on mount, share_completed per share.
+ * TikTok...). My photo gets three templates to swipe through (ProofCard:
+ * Your turn, Versus when other cities played the same day, Result); other
+ * content its one card. A card is captured when a target needs it (once per
+ * template); link targets work before that. share_started on mount,
+ * share_template_selected on a swipe, share_completed per share.
  */
 export function SharePanel({ content, source, previewHeight = 300 }: { content: ShareContent; source: string; previewHeight?: number }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
-  const card = useRef<View>(null);
-  const [file, setFile] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
+  const proof = content.type === 'proof' ? content : null;
   const [channels, setChannels] = useState<ShareChannel[]>([]);
   const [copied, setCopied] = useState(false);
-  const props = { content_type: content.type === 'today' && content.represent ? 'represent' : content.type, source };
+  const [busy, setBusy] = useState<ShareChannel | null>(null);
+  const [failed, setFailed] = useState(false);
+  // My photo: the templates (Versus once other cities' photos of the day are in) and the one on screen.
+  const [others, setOthers] = useState<VersusPhoto[] | null>(proof ? null : []);
+  const [template, setTemplate] = useState<ShareTemplate>('turn');
+  const [still, setStill] = useState(false);
+  const [pageW, setPageW] = useState(0);
+  const pager = useRef<ScrollView>(null);
+  const templates: ShareTemplate[] = others && others.length > 0 ? ['turn', 'versus', 'result'] : ['turn', 'result'];
+  const key = proof ? template : 'card';
+  const props = { content_type: content.type === 'today' && content.represent ? 'represent' : content.type, source,
+                  ...(proof ? { template } : {}) };
+
+  // Each card: its view, whether it's drawn, and its captured file.
+  const cards = useRef(new Map<string, { view: View | null; ready: boolean; file: string | null }>());
+  const card = (k: string) => {
+    let c = cards.current.get(k);
+    if (!c) { c = { view: null, ready: false, file: null }; cards.current.set(k, c); }
+    return c;
+  };
 
   useEffect(() => {
     track('share_started', props);
     directChannels().then(setChannels).catch(() => {});
+    if (!proof) return;
+    // Versus: one photo per other city, today's challenge only (a past photo has no Versus).
+    let alive = true;
+    const done = (list: VersusPhoto[]) => { if (alive) setOthers(list); };
+    const timer = setTimeout(() => done([]), 2500);
+    fetchDailyTodayProofs({ scope: 'cities', limit: 12 }).then(r => {
+      clearTimeout(timer);
+      if (r.date !== proof.date) return done([]);
+      const seen = new Set([proof.city?.name ?? '']);
+      done(r.proofs.filter(p => {
+        const city = p.city?.name ?? '';
+        if (p.id === proof.id || p.suggestion || !p.photoUrl || !city || seen.has(city)) return false;
+        seen.add(city);
+        return true;
+      }).slice(0, 3).map(p => ({ id: p.id, photoUrl: p.photoUrl, city: p.city?.name ?? null, country: p.city?.country ?? null })));
+    }).catch(() => { clearTimeout(timer); done([]); });
+    return () => { alive = false; clearTimeout(timer); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const capture = async () => {
+  /** The card's image: captured once it's drawn (the "?" held still), then kept. */
+  const fileFor = async (k: string): Promise<string | null> => {
+    const c = card(k);
+    if (c.file) return c.file;
+    for (let i = 0; i < 70 && !c.ready; i++) await wait(100);
+    if (!c.view) return null;
+    setStill(true);
+    await wait(60);
     try {
-      // The card is laid out at 1080 x 1920 px on this screen: captured as is
+      // The card is laid out at full size on this screen: captured as is
       // (a width/height option would be read as points on iOS, 3x too big).
-      const uri = await captureRef(card, { format: 'jpg', quality: 0.92, result: 'tmpfile' });
-      setFile(uri);
+      c.file = await captureRef(c.view, { format: 'jpg', quality: 0.92, result: 'tmpfile' });
+      return c.file;
     } catch {
       setFailed(true);
+      return null;
+    } finally {
+      setStill(false);
     }
   };
 
+  const pick = (next: ShareTemplate, method: 'swipe' | 'tap') => {
+    if (next === template) return;
+    setTemplate(next);
+    track('share_template_selected', { ...props, template: next, method });
+  };
+
   const go = async (channel: ShareChannel) => {
-    if (IMAGE_CHANNELS.includes(channel) && !file && !failed) return;
+    if (busy) return;
+    setBusy(channel);
     try {
-      if (STORY_CHANNELS.includes(channel)) await storyLinkTip(t);
+      const file = IMAGE_CHANNELS.includes(channel) ? await fileFor(key) : null;
+      if (STORY_CHANNELS.includes(channel)) {
+        if (!file) return;
+        await storyLinkTip(t);
+      }
       const res = await shareTo(channel, { file, url: shareUrl(content), text: shareText(content) });
       if (channel === 'copy_link') { setCopied(true); setTimeout(() => setCopied(false), 2000); }
       if (res.done) track('share_completed', { ...props, channel, ...(res.activity ? { activity: res.activity } : {}) });
     } catch {
       Alert.alert(t('share.failed'));
+    } finally {
+      setBusy(null);
     }
   };
 
-  // No card (the capture failed): no Stories; More sends the link alone.
+  const cardW = previewHeight * 9 / 16;
+  const scaled = (k: string, node: (ref: (v: View | null) => void, onReady: () => void) => React.ReactNode, dp: { width: number; height: number }) => (
+    <View style={[styles.preview, { height: previewHeight, width: cardW }]}
+          accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <View style={{
+        position: 'absolute', width: dp.width, height: dp.height,
+        left: (cardW - dp.width) / 2, top: (previewHeight - dp.height) / 2,
+        transform: [{ scale: previewHeight / dp.height }],
+      }}>
+        {node(v => { card(k).view = v; }, () => { card(k).ready = true; })}
+      </View>
+    </View>
+  );
+
+  // No card (a capture failed): no Stories; More sends the link alone.
   const all: ShareChannel[] = [...channels.filter(ch => !failed || !IMAGE_CHANNELS.includes(ch)), 'copy_link', 'share_sheet'];
   return (
     <View style={styles.wrap}>
       {/* The card at full size, scaled down to the preview: what gets captured. */}
-      {!failed && (
-        <View style={[styles.preview, { height: previewHeight, width: previewHeight * 9 / 16 }]}
-              accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <View style={{
-            position: 'absolute', width: CARD_DP.width, height: CARD_DP.height,
-            left: (previewHeight * 9 / 16 - CARD_DP.width) / 2, top: (previewHeight - CARD_DP.height) / 2,
-            transform: [{ scale: previewHeight / CARD_DP.height }],
-          }}>
-            <ShareCard ref={card} content={content} onReady={capture} />
+      {!proof ? scaled('card', (ref, onReady) => <ShareCard ref={ref} content={content} onReady={onReady} />, CARD_DP) : others === null ? (
+        <View style={[styles.preview, styles.loading, { height: previewHeight, width: cardW }]}><ActivityIndicator /></View>
+      ) : (
+        <View onLayout={e => setPageW(e.nativeEvent.layout.width)}>
+          {pageW > 0 && (
+            <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false}
+                        onMomentumScrollEnd={e => pick(templates[Math.round(e.nativeEvent.contentOffset.x / pageW)] ?? template, 'swipe')}>
+              {templates.map(tp => (
+                <View key={tp} style={{ width: pageW, alignItems: 'center' }}>
+                  {scaled(tp, (ref, onReady) => (
+                    <ProofCard ref={ref} content={proof} template={tp} format="story" others={others} still={still || tp !== template} onReady={onReady} />
+                  ), PROOF_CARD_DP.story)}
+                </View>
+              ))}
+            </ScrollView>
+          )}
+          <View style={styles.tabs} accessibilityRole="tablist">
+            {templates.map((tp, i) => (
+              <TouchableOpacity key={tp} style={[styles.tab, tp === template && styles.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: tp === template }}
+                                onPress={() => { pager.current?.scrollTo({ x: i * pageW, animated: true }); pick(tp, 'tap'); }}>
+                <Text style={[styles.tabText, tp === template && styles.tabTextOn]}>{t(`share.card.template.${tp}`)}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-          {!file && <View style={styles.wait}><ActivityIndicator color="#FFFFFF" /></View>}
         </View>
       )}
       <View style={styles.grid}>
         {all.map(ch => {
-          const waiting = IMAGE_CHANNELS.includes(ch) && !file && !failed;
           const label = ch === 'copy_link' ? (copied ? t('share.copied') : t('share.copyLink')) : ch === 'share_sheet' ? t('share.more') : LABEL[ch];
           return (
-            <TouchableOpacity key={ch} style={[styles.target, waiting && styles.waiting]} onPress={() => go(ch)} disabled={waiting}
+            <TouchableOpacity key={ch} style={[styles.target, !!busy && busy !== ch && styles.waiting]} onPress={() => go(ch)} disabled={!!busy}
                               accessibilityRole="button" accessibilityLabel={label}>
-              <TargetIcon channel={ch} copied={copied} />
+              <View>
+                <TargetIcon channel={ch} copied={copied} />
+                {busy === ch && <View style={styles.spin}><ActivityIndicator color="#FFFFFF" /></View>}
+              </View>
               <Text style={styles.label} numberOfLines={2}>{label}</Text>
             </TouchableOpacity>
           );
@@ -115,6 +206,8 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
     </View>
   );
 }
+
+const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 const BRAND: Partial<Record<ShareChannel, string>> = {
   facebook_story: '#1877F2', whatsapp: '#25D366', messenger: '#0A7CFF', telegram: '#229ED9', x: '#000000',
@@ -163,11 +256,17 @@ function TargetIcon({ channel, copied }: { channel: ShareChannel; copied: boolea
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { gap: 16 },
   preview:   { alignSelf: 'center', borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg3 },
-  wait:      { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
+  loading:   { alignItems: 'center', justifyContent: 'center' },
   grid:      { flexDirection: 'row', flexWrap: 'wrap', rowGap: 14 },
   target:    { width: '25%', alignItems: 'center', gap: 6, paddingHorizontal: 2 },
   waiting:   { opacity: 0.4 },
   icon:      { width: SIZE, height: SIZE, borderRadius: Radius.full, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   plain:     { backgroundColor: c.bg3, borderWidth: 1, borderColor: c.line },
   label:     { fontSize: 12, lineHeight: 15, fontWeight: '600', color: c.text, textAlign: 'center' },
+  spin:      { ...StyleSheet.absoluteFillObject, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
+  tabs:      { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 12 },
+  tab:       { paddingHorizontal: 14, minHeight: 36, justifyContent: 'center', borderRadius: Radius.full, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2 },
+  tabOn:     { backgroundColor: c.text, borderColor: c.text },
+  tabText:   { fontSize: 13, fontWeight: '700', color: c.text },
+  tabTextOn: { color: c.bg },
 });

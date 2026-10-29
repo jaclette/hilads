@@ -138,6 +138,8 @@ final class DailyAdminService
     public const HEADLINE_MAX = 45;
     /** The challenge screen's subtitle under the question (the hero's short instruction). */
     public const SUBTITLE_MAX = 80;
+    /** The share card's question ("Where do YOU go for pho?"). */
+    public const SHARE_QUESTION_MAX = 70;
 
     /**
      * The headline of a challenge as stored: en (required unless all empty)
@@ -192,6 +194,19 @@ final class DailyAdminService
         $after = self::find($id);
         self::forgetCachedDate($after['challenge_date']);
         self::audit('daily_challenge.subtitle', 'daily_challenge', $id, ['subtitle_i18n' => $before['subtitle_i18n'] ?? null], ['subtitle_i18n' => $json]);
+        return $after;
+    }
+
+    /** Back office: set (or clear, en empty) a challenge's share card question. Audited. */
+    public static function setChallengeShareQuestion(string $id, ?string $en, array $translations): array
+    {
+        $before = self::mustFind($id);
+        $json   = self::headlineJson($en, $translations, 'Share question', self::SHARE_QUESTION_MAX);
+        Database::pdo()->prepare("UPDATE daily_challenges SET share_question_i18n = ?::jsonb, updated_at = now(), updated_by = ? WHERE id = ?")
+            ->execute([$json, self::actorName(), $id]);
+        $after = self::find($id);
+        self::forgetCachedDate($after['challenge_date']);
+        self::audit('daily_challenge.share_question', 'daily_challenge', $id, ['share_question_i18n' => $before['share_question_i18n'] ?? null], ['share_question_i18n' => $json]);
         return $after;
     }
 
