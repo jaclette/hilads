@@ -72,6 +72,7 @@ export function DualPhoto({
   const [corner, setCorner] = useState(0);            // 0 top-left, 1 top-right, 2 bottom-left, 3 bottom-right
   const [selfieBig, setSelfieBig] = useState(false);
   const [tip, setTip] = useState(false);
+  const [loaded, setLoaded] = useState({ main: false, selfie: false });
 
   const ratio = inset === 'small' ? 0.24 : 0.28;
   const m = inset === 'small' ? 6 : MARGIN;
@@ -110,7 +111,7 @@ export function DualPhoto({
 
   // Back to the photo when the pictures change (a recycled cell, the next story).
   useEffect(() => {
-    setSelfieBig(false); setCorner(0); drag.setValue({ x: 0, y: 0 });
+    setSelfieBig(false); setCorner(0); setLoaded({ main: false, selfie: false }); drag.setValue({ x: 0, y: 0 });
     anim.main.pop.setValue(1); anim.main.isInset.setValue(0);
     anim.selfie.pop.setValue(1); anim.selfie.isInset.setValue(1);
   }, [main.uri, selfie?.uri, drag, anim]);
@@ -203,9 +204,14 @@ export function DualPhoto({
         accessibilityLabel={isInset && interactive ? t('dual.swapA11y') : undefined}
         {...(isInset && interactive ? pan.panHandlers : {})}
       >
-        <Image source={{ uri: src.uri }} placeholder={src.thumb ? { uri: src.thumb } : undefined} style={StyleSheet.absoluteFill}
-               contentFit={big ? contentFit : 'cover'} transition={transition}
-               onLoad={which === 'main' && onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
+        {/* A swap resizes the layer: Android reloads an image sized for its view, fading in from the
+            placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
+        <Image source={{ uri: src.uri }} placeholder={src.thumb && !loaded[which] ? { uri: src.thumb } : undefined} style={StyleSheet.absoluteFill}
+               contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : transition} allowDownscaling={false}
+               onLoad={e => {
+                 if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
+                 if (which === 'main') onLoadMain?.({ width: e.source.width, height: e.source.height });
+               }} />
       </Animated.View>
     );
   };
