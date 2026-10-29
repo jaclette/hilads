@@ -12,6 +12,8 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyTour } from '@/api/daily';
 import { track } from '@/services/analytics';
+import { CommentButton } from '@/features/daily/CommentButton';
+import { commentsTargetOf, PhotoCommentsHost, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
 import { shortCityName } from '@/i18n/cityName';
 import { Button, CityFlag, IconButton } from '@/ui';
 import { AnswerChip } from '@/features/compare/AnswerChip';
@@ -55,6 +57,7 @@ export default function TourScreen() {
   const [failed, setFailed] = useState(false);
   const [index, setIndex] = useState(Math.max(0, Number(start) || 0));
   const [paused, setPaused] = useState(false);
+  const commentsOpen = useCommentsOpen();
   const [share, setShare] = useState<ShareContent | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
   const progress = useRef(new Animated.Value(0)).current;
@@ -90,11 +93,11 @@ export default function TourScreen() {
   // The progress bar of the current slide, then the next one (paused while held, a sheet open, or reduce motion).
   useEffect(() => {
     progress.setValue(0);
-    if (!tour || last || paused || share || reduceMotion) return;
+    if (!tour || last || paused || share || commentsOpen || reduceMotion) return;
     const anim = Animated.timing(progress, { toValue: 1, duration: SLIDE_MS, easing: Easing.linear, useNativeDriver: false });
     anim.start(({ finished }) => { if (finished) go(index + 1); });
     return () => anim.stop();
-  }, [index, tour, paused, share, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [index, tour, paused, share, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pan = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
@@ -173,6 +176,7 @@ export default function TourScreen() {
           {proof.backHome && <BackHomeBlock proof={proof} />}
           <View style={styles.actions} pointerEvents="box-none">
             <Text style={styles.tagline}>{t('worlds.tagline')}</Text>
+            <CommentButton target={commentsTargetOf(proof)} variant="side" />
             <IconButton icon="share-social-outline" tone="onPhoto" label={t('share.shareProof')}
                         onPress={() => { setShare(proofShare(proof, tour.challenge)); track('world_tour_shared', { city: slide.city.name, date: tour.date }); }} />
           </View>
@@ -190,6 +194,8 @@ export default function TourScreen() {
       )}
 
       <ShareSheet content={share} source="world_tour" onClose={() => setShare(null)} />
+      {/* A native full-screen modal: comments open in its own layer. */}
+      <PhotoCommentsHost />
     </View>
   );
 }

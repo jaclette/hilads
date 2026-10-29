@@ -9,6 +9,7 @@ import { compactPrice, distance } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
 import { Button, Chip, IconButton } from '@/ui';
+import { CommentButton } from '@/features/daily/CommentButton';
 import { shortCityName } from '@/i18n/cityName';
 import { PhotoCredit } from './PhotoCredit';
 import { PickBadge } from './PickBadge';
@@ -75,6 +76,8 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
       <View style={styles.actions}>
         <Button variant={onPlayToday ? 'secondary' : 'primary'} label={t('map.openSpot')} onPress={onOpen} style={styles.btn} testID="spot-open" />
         <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />
+        {/* The cover photo's comments (its header loads from the photo). */}
+        {!!spot.cover.proofId && <CommentButton target={{ proofId: spot.cover.proofId, thumbUrl: spot.cover.thumbUrl ?? spot.cover.photoUrl }} variant="inline" />}
         <IconButton icon="share-social-outline" label={t('share.title')} onPress={onShare} style={styles.share} />
       </View>
     </View>

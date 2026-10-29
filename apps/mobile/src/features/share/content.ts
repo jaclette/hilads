@@ -71,6 +71,11 @@ export function shareUrl(c: ShareContent): string {
   return `${BASE_URL}${sharePrefix()}${path}`;
 }
 
+/** Any approved photo's public page (hilads.live/p/{id}), in the sharer's language. */
+export function proofUrl(id: string): string {
+  return `${BASE_URL}${sharePrefix()}/p/${id}`;
+}
+
 /** The line that goes with the link (never containing it). */
 export function shareText(c: ShareContent): string {
   const t = (key: string, opts?: Record<string, unknown>) => i18n.t(`share.${key}`, { ns: 'daily', ...opts });

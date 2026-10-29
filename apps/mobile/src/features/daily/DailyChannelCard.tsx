@@ -25,6 +25,11 @@ import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyPerson, DailyThemeKey, DailyTwist, Message } from '@/types';
 import { themeName } from '@/features/daily/themes';
+import { proofUrl } from '@/features/share/content';
+import { shareLink } from '@/lib/shareLink';
+import { CommentButton } from './CommentButton';
+import { CommentPreview } from './CommentPreview';
+import type { CommentsTarget } from './PhotoCommentsSheet';
 
 type TopProof = {
   rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
@@ -250,6 +255,12 @@ function ProofCard({ message, reactions, time, longPress }: {
   const vote = useVoteState(p.proofId, account ? null : identity?.guestId ?? null);
   if (!p.date || !p.proofId || !p.photoUrl) return null;
   const name = p.user?.displayName || p.user?.username || message.nickname || '';
+  // Comments live on the photo, not on this message (one thread wherever it shows).
+  const target: CommentsTarget = {
+    proofId: p.proofId, thumbUrl: p.thumbUrl ?? p.photoUrl, author: p.user ?? null,
+    city: p.city ?? null, theme: p.theme?.key ?? null, isMine: !!account && account.id === p.user?.id,
+  };
+  const share = () => { shareLink({ title: name, message: p.caption || p.challengeText || '', url: proofUrl(p.proofId!) }).catch(() => {}); };
   const open = () => router.push(`/daily/${p.date}?proof=${p.proofId}` as never);
   const openAuthor = () => {
     if (!p.user?.id) return;
@@ -312,8 +323,13 @@ function ProofCard({ message, reactions, time, longPress }: {
             {vote?.validatedByLocal && <Ionicons name="checkmark-circle" size={18} color={colors.localText} accessibilityLabel={t('validatedByLocal')} />}
             {p.isEarly && <EarlyBadge />}
             <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} cityId={p.city?.id ?? null} source="hi_card" />
+            <CommentButton target={target} variant="inline" />
+            <TouchableOpacity style={styles.share} onPress={share} hitSlop={6} accessibilityRole="button" accessibilityLabel={t('share.title')}>
+              <Ionicons name="share-outline" size={19} color={colors.text} />
+            </TouchableOpacity>
           </View>
         </View>
+        <CommentPreview target={target} />
         <Text style={styles.proofOf} numberOfLines={1}>{t('kicker')} · {p.challengeText}</Text>
       </TouchableOpacity>
       {reactions}
@@ -359,6 +375,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   themeChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full, backgroundColor: c.primaryTint },
   themeText:     { fontSize: 12, fontWeight: '700', color: c.primaryOnTint },
   voteRight:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  share:         { minHeight: 32, paddingHorizontal: 4, justifyContent: 'center' },
   caption:       { fontSize: FontSizes.sm, color: c.text },
   proofOf:       { fontSize: 11, color: c.muted },
   time:          { fontSize: 11, color: c.muted, marginTop: 4, alignSelf: 'flex-start' },

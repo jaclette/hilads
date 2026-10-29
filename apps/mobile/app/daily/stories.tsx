@@ -24,6 +24,8 @@ import { seedProofs } from '@/features/daily/votes';
 import { flushSeen, markSeen } from '@/features/daily/seen';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
+import { CommentButton } from '@/features/daily/CommentButton';
+import { commentsTargetOf, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
 import { themeColor } from '@/ui/joy';
@@ -128,14 +130,15 @@ function Stories() {
     }
   };
 
-  // The current photo's segment fills, then the next photo (paused while held or with reduce motion).
+  // The current photo's segment fills, then the next photo (paused while held, while its comments are open, or with reduce motion).
+  const commentsOpen = useCommentsOpen();
   useEffect(() => {
     progress.setValue(0);
-    if (!proof || paused || reduceMotion) return;
+    if (!proof || paused || commentsOpen || reduceMotion) return;
     const anim = Animated.timing(progress, { toValue: 1, duration: PHOTO_MS, easing: Easing.linear, useNativeDriver: false });
     anim.start(({ finished }) => { if (finished) next(); });
     return () => anim.stop();
-  }, [proof?.id, paused, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [proof?.id, paused, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pan = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
@@ -265,6 +268,7 @@ function Bottom({ proof, insetBottom, onProfile }: { proof: DailyProof; insetBot
         )}
       </View>
       {proof.status === 'approved' && (
+        <View style={styles.rail}>
         <TouchableOpacity onPress={vote} accessibilityRole="button" testID="stories-vote" disabled={!state || state.isMine}
                           accessibilityState={{ selected: !!state?.myVote }}
                           accessibilityLabel={state?.myVote ? t('vote.withdraw') : voteLabel}>
@@ -273,6 +277,8 @@ function Bottom({ proof, insetBottom, onProfile }: { proof: DailyProof; insetBot
           </Animated.View>
           <Text style={styles.count}>{state?.voteCount ?? proof.voteCount}</Text>
         </TouchableOpacity>
+        <CommentButton target={commentsTargetOf(proof)} variant="side" />
+        </View>
       )}
     </View>
   );
@@ -297,6 +303,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   who:         { flexDirection: 'row', alignItems: 'center', gap: 8 },
   name:        { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.white },
   caption:     { fontSize: FontSizes.md, fontWeight: '500', color: c.white },
+  rail:        { alignItems: 'center', gap: 14 },
   heart:       { width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl },
   heartOn:     { backgroundColor: c.primary },
   count:       { marginTop: 4, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },

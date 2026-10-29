@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import {
   ActivityIndicator, FlatList, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput,
   TouchableOpacity, useWindowDimensions, View,
@@ -81,6 +81,14 @@ export function closePhotoComments() {
   notifyOpen();
 }
 
+const subscribeOpen = (l: () => void) => { openListeners.add(l); return () => { openListeners.delete(l); }; };
+
+/** True while a comments sheet is open (a story viewer pauses). */
+export function useCommentsOpen(): boolean {
+  useSyncExternalStore(subscribeOpen, () => openVersion);
+  return current !== null;
+}
+
 /**
  * Mount once per layer that can open comments (root, native modal screens, the
  * photo viewer). `onLeave`: the layer closes itself before a profile opens.
@@ -92,10 +100,7 @@ export function PhotoCommentsHost({ onLeave }: { onLeave?: () => void } = {}) {
     notifyOpen();
     return () => { hosts.splice(hosts.indexOf(id), 1); notifyOpen(); };
   }, [id]);
-  useSyncExternalStore(
-    useCallback((l: () => void) => { openListeners.add(l); return () => { openListeners.delete(l); }; }, []),
-    () => openVersion,
-  );
+  useSyncExternalStore(subscribeOpen, () => openVersion);
   const mine = current !== null && hosts[hosts.length - 1] === id;
   return mine ? <PhotoCommentsSheet target={current!} onClose={closePhotoComments} onLeave={onLeave} /> : null;
 }

@@ -25,6 +25,8 @@ import { seedProofs } from '@/features/daily/votes';
 import { flushSeen, markSeen } from '@/features/daily/seen';
 import { lastCountries } from '@/features/today/useTodayCountries';
 import { rankCountryProofs } from '@/features/daily/countryOrder';
+import { CommentButton } from '@/features/daily/CommentButton';
+import { commentsTargetOf, PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
@@ -257,6 +259,8 @@ function PhotosScreenContent() {
       <DailyVotersSheet proofId={votersOf} onClose={() => setVotersOf(null)}
                         onOpenUser={id => { setVotersOf(null); openProfile(id); }} />
       <ShareSheet content={share} source="photos" onClose={() => setShare(null)} />
+      {/* A native full-screen modal: comments open in its own layer. */}
+      <PhotoCommentsHost />
     </View>
   );
 }
@@ -368,7 +372,7 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
           )}
         </View>
 
-        {/* The actions column: the heart (with its count) and Share. */}
+        {/* The actions column: the heart (with its count), the comments and Share. */}
         <View style={styles.actions}>
           {proof.status === 'approved' && (
             <TouchableOpacity onPress={() => vote(true)} accessibilityRole="button" testID="photos-vote"
@@ -382,6 +386,7 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
               <Text style={styles.count}>{state?.voteCount ?? proof.voteCount}</Text>
             </TouchableOpacity>
           )}
+          {proof.status === 'approved' && <CommentButton target={commentsTargetOf(proof)} variant="side" />}
           {onShare && (
             <TouchableOpacity onPress={onShare} accessibilityRole="button" accessibilityLabel={t('share.shareProof')}>
               <View style={styles.heart}><Ionicons name="paper-plane" size={24} color={colors.white} /></View>

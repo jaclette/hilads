@@ -298,14 +298,14 @@ final class DailyProofRepository
     /**
      * Today by country (Today's stories row and mosaic): every approved
      * player's photo of the challenge (never a Hilads suggestion), light rows
-     * {id, user_id, city_id, city_name, country, vote_count, at, posted}, newest first.
+     * {id, user_id, city_id, city_name, country, vote_count, comment_count, at, posted}, newest first.
      * Cached 15 s; blocks and "seen" are applied per viewer by the caller.
      */
     public static function countryRows(string $challengeId): array
     {
         return Cache::remember("daily_countries_v2_{$challengeId}", 15, static function () use ($challengeId): array {
             $stmt = Database::pdo()->prepare("
-                SELECT p.id, p.user_id, p.city_id, ch.name AS city_name, cc.country, p.vote_count,
+                SELECT p.id, p.user_id, p.city_id, ch.name AS city_name, cc.country, p.vote_count, p.comment_count,
                        extract(epoch FROM coalesce(p.approved_at, p.created_at))::bigint AS at,
                        extract(epoch FROM p.created_at)::bigint AS posted
                 FROM daily_proofs p
@@ -365,7 +365,7 @@ final class DailyProofRepository
     /**
      * Group countryRows (already filtered) by city: [{cityId, cityName,
      * country, ids (best first), count, authorIds (best first, distinct),
-     * totalLikes, latestAt, unseen, topId}]. Ordered: $firstCity first, then
+     * totalLikes, totalComments, latestAt, unseen, topId}]. Ordered: $firstCity first, then
      * the cities with a photo not in $seen, then the most recent.
      */
     public static function groupByCity(array $rows, ?string $firstCity, ?array $seen): array
@@ -374,9 +374,10 @@ final class DailyProofRepository
         foreach ($rows as $r) {
             $g = &$groups[$r['city_id']];
             $g ??= ['cityId' => $r['city_id'], 'cityName' => $r['city_name'], 'country' => strtoupper((string) $r['country']),
-                    'rows' => [], 'latestAt' => (int) $r['at'], 'unseen' => false, 'likes' => 0];
+                    'rows' => [], 'latestAt' => (int) $r['at'], 'unseen' => false, 'likes' => 0, 'comments' => 0];
             $g['rows'][] = $r;
             $g['likes'] += (int) $r['vote_count'];
+            $g['comments'] += (int) ($r['comment_count'] ?? 0);
             if ($seen !== null && !isset($seen[$r['id']])) {
                 $g['unseen'] = true;
             }
@@ -393,6 +394,7 @@ final class DailyProofRepository
                 'count'      => count($g['rows']),
                 'authorIds'  => array_values(array_unique(array_column($g['rows'], 'user_id'))),
                 'totalLikes' => $g['likes'],
+                'totalComments' => $g['comments'],
                 'latestAt'   => $g['latestAt'],
                 'unseen'     => $seen === null ? null : $g['unseen'],
                 'topId'      => $g['rows'][0]['id'],

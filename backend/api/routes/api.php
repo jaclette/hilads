@@ -14817,6 +14817,7 @@ $router->add('GET', '/api/v1/daily/today/countries', function () {
             'authorCount' => count($g['authorIds']),
             'authors'     => array_values(array_filter(array_map(static fn(string $id) => $authors[$id] ?? null, array_slice($g['authorIds'], 0, 3)))),
             'totalLikes'  => $g['totalLikes'],
+            'totalComments' => $g['totalComments'],
             'latestAt'    => $g['latestAt'],
             'unseen'      => $g['unseen'],
             'ids'         => $g['ids'],

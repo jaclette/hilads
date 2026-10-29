@@ -207,7 +207,8 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
   return (
     <TouchableOpacity style={[styles.cardWrap, { transform: [{ rotate: `${lean(group.city.id)}deg` }] }, faded && styles.faded]} onPress={onPress}
                       accessibilityRole="button" testID="mosaic-tile"
-                      accessibilityLabel={[shortCityName(group.city.name), line, pile ? t('mosaic.players', { count: players }) : null, String(likes)].filter(Boolean).join(', ')}>
+                      accessibilityLabel={[shortCityName(group.city.name), line, pile ? t('mosaic.players', { count: players }) : null, String(likes),
+                                          group.totalComments ? t('comments.count', { count: group.totalComments }) : null].filter(Boolean).join(', ')}>
       {pile && <View style={[styles.layer, styles.layerBack, { backgroundColor: pileColor }]} />}
       {pile && group.count > 2 && <View style={[styles.layer, styles.layerBack2, { backgroundColor: pileColor }]} />}
       <View style={styles.card}>
@@ -237,6 +238,12 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
               {more > 0 && <Text style={styles.more}>+{more}</Text>}
             </View>
             <View style={styles.votes}>
+              {!!group.totalComments && (
+                <>
+                  <Ionicons name="chatbubble-outline" size={14} color={colors.muted} />
+                  <Text style={[styles.votesText, styles.commentsText]}>{group.totalComments}</Text>
+                </>
+              )}
               <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={15} color={state?.myVote ? colors.primary : colors.muted} />
               <Text style={styles.votesText}>{likes}</Text>
             </View>
@@ -306,6 +313,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   more:      { marginLeft: 4, fontSize: 12, fontWeight: '700', color: c.muted },
   votes:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
   votesText: { fontSize: 13, fontWeight: '700', color: c.muted },
+  commentsText: { marginRight: 6 },
   slot:      { minHeight: 200, alignItems: 'center', justifyContent: 'center', gap: 8, padding: Spacing.md, borderRadius: 16,
                borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 2, backgroundColor: c.primaryTint },
   camera:    { width: 52, height: 52, borderRadius: 26, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },

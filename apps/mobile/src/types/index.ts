@@ -1176,6 +1176,7 @@ export interface DailyCityGroup {
   authorCount: number | null;              // distinct players (null: an older server)
   authors:     { id: string; username: string | null; displayName: string | null; photoUrl: string | null }[];   // 3 at most
   totalLikes:  number | null;
+  totalComments?: number;                  // comments on its photos (absent: an older server)
   latestAt:    number;
   unseen:      boolean | null;
   ids:         string[];                   // best first
