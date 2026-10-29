@@ -715,6 +715,18 @@
       "played_one": "{{count}} Stadt spukt 🎃",
       "played_other": "In {{count}} Städten spukt es 🎃",
       "onBoard": "{{city}} spukt durchs Ranking! 👻"
+    },
+    "stickers": {
+      "title": "Mach es gruselig 🎃",
+      "skip": "Überspringen",
+      "done": "Fertig",
+      "spookify": "Grusel mich 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "Höchstens {{count}} Sticker",
+      "remove": "Sticker entfernen",
+      "add": "Sticker hinzufügen",
+      "frame": "Rahmen"
     }
   },
   "hero": {

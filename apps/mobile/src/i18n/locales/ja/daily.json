@@ -701,6 +701,18 @@
       "represent": "あなたの街にお化けを 👻",
       "played_other": "{{count}}都市に幽霊が出た 🎃",
       "onBoard": "{{city}}がボードに出没中！👻"
+    },
+    "stickers": {
+      "title": "こわくしよう 🎃",
+      "skip": "スキップ",
+      "done": "完了",
+      "spookify": "おばけ化 🎲",
+      "photo": "写真",
+      "selfie": "自撮り",
+      "max": "ステッカーは{{count}}個まで",
+      "remove": "ステッカーを削除",
+      "add": "ステッカーを追加",
+      "frame": "フレーム"
     }
   },
   "hero": {

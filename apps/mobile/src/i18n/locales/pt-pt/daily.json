@@ -729,6 +729,18 @@
       "played_many": "{{count}} cidades estão assombradas 🎃",
       "played_other": "{{count}} cidades estão assombradas 🎃",
       "onBoard": "{{city}} está a assombrar a classificação! 👻"
+    },
+    "stickers": {
+      "title": "Torna-a assustadora 🎃",
+      "skip": "Saltar",
+      "done": "Concluído",
+      "spookify": "Assusta-me 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "No máximo {{count}} autocolantes",
+      "remove": "Remover autocolante",
+      "add": "Adicionar autocolante",
+      "frame": "Moldura"
     }
   },
   "hero": {

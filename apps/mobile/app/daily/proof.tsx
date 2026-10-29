@@ -24,6 +24,7 @@ import { Confetti } from '@/ui/joy';
 import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { DualCamera, dualPreferred, type DualShot } from '@/features/daily/DualCamera';
+import { StickerStep } from '@/features/event/StickerStep';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
 import { fetchAppConfig } from '@/api/appConfig';
 import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/PlaceStep';
@@ -43,7 +44,7 @@ import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/typ
 import { goBack as leave } from '@/lib/nav';
 import { KeyboardForm, useNextField } from '@/ui/keyboard';
 import { BatBurst, SeasonalScope } from '@/features/event/SeasonalArt';
-import { setSeasonalEvent, useSeasonalLive } from '@/features/event/seasonal';
+import { setSeasonalEvent, useEventFeature, useSeasonalLive } from '@/features/event/seasonal';
 
 /** A position older than this is refreshed before posting (the distance check). */
 const POSITION_MAX_AGE_MS = 2 * 60 * 1000;
@@ -114,6 +115,11 @@ function DailyProofScreenContent() {
   const [dualEnabled, setDualEnabled] = useState(false);
   // iOS hybrid and Add your face: the photo the selfie goes with (the camera opens on the selfie).
   const [selfieFor, setSelfieFor] = useState<string | null>(null);
+  // Event mode: the sticker step after a new photo (Halloween's pack, or the event's remote one).
+  const stickerEvent = useEventFeature('stickers');
+  const hasPack = !!stickerEvent && (stickerEvent.key === 'halloween' || (stickerEvent.event.stickers?.length ?? 0) > 0);
+  const [stickersOpen, setStickersOpen] = useState(false);
+  const afterCapture = () => { if (hasPack) setStickersOpen(true); };
   // Dual photo: the selfie taken right after the photo (null: the photo alone).
   const [selfie, setSelfie]     = useState<Photo | null>(null);
   const [sending, setSending]   = useState(false);
@@ -247,6 +253,7 @@ function DailyProofScreenContent() {
       if (!(await dualPreferred())) {   // Dual turned off by the person: the photo alone
         setSelfie(null);
         gotPhoto({ uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+        afterCapture();
         return;
       }
       setSelfieFor(uri);
@@ -261,6 +268,7 @@ function DailyProofScreenContent() {
     if (!pick.canceled && pick.assets?.[0]) {
       setSelfie(null);   // a new photo from the single camera never keeps an earlier selfie
       gotPhoto({ uri: pick.assets[0].uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+      afterCapture();
     }
   };
   const gotShot = (shot: DualShot) => {
@@ -272,6 +280,7 @@ function DailyProofScreenContent() {
     }
     setSelfie(shot.selfie ? { uri: shot.selfie, mime: 'image/jpeg', remoteUrl: null } : null);
     gotPhoto({ uri: shot.main, mime: 'image/jpeg', remoteUrl: null });
+    afterCapture();
   };
   /** After the photo and the place: the question when there is one, else the caption and price. */
   const afterPlace: Step = compare ? 'answer' : 'details';
@@ -729,9 +738,18 @@ function DailyProofScreenContent() {
                     onRetakeMain={Platform.OS === 'ios' ? () => { setCameraOpen(false); setTimeout(takePhoto, 400); } : undefined}
                     night={today?.challenge?.theme?.key === 'night_out' || !!today?.challenge?.special?.id?.startsWith('halloween')} />
       )}
+      {photo && stickersOpen && (
+        <StickerStep visible main={photo.uri} selfie={selfie?.uri ?? null} remote={stickerEvent?.event.stickers}
+                     onSkip={() => setStickersOpen(false)}
+                     onDone={out => {
+                       setStickersOpen(false);
+                       if (out.main !== photo.uri) setPhoto({ uri: out.main, mime: 'image/jpeg', remoteUrl: null });
+                       if (selfie && out.selfie && out.selfie !== selfie.uri) setSelfie({ uri: out.selfie, mime: 'image/jpeg', remoteUrl: null });
+                     }} />
+      )}
       <AndroidCameraCapture
         visible={androidCamera}
-        onCapture={uri => { setAndroidCamera(false); setSelfie(null); gotPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); }}
+        onCapture={uri => { setAndroidCamera(false); setSelfie(null); gotPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); afterCapture(); }}
         onClose={() => setAndroidCamera(false)}
       />
     </SafeAreaView>

@@ -729,6 +729,18 @@
       "played_many": "{{count}} ciudades están embrujadas 🎃",
       "played_other": "{{count}} ciudades están embrujadas 🎃",
       "onBoard": "¡{{city}} embruja el ranking! 👻"
+    },
+    "stickers": {
+      "title": "Hazla terrorífica 🎃",
+      "skip": "Omitir",
+      "done": "Listo",
+      "spookify": "Asústame 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "{{count}} stickers como máximo",
+      "remove": "Quitar sticker",
+      "add": "Añadir sticker",
+      "frame": "Marco"
     }
   },
   "hero": {

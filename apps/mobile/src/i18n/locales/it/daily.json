@@ -729,6 +729,18 @@
       "played_many": "{{count}} città sono infestate 🎃",
       "played_other": "{{count}} città sono infestate 🎃",
       "onBoard": "{{city}} infesta la classifica! 👻"
+    },
+    "stickers": {
+      "title": "Rendila spaventosa 🎃",
+      "skip": "Salta",
+      "done": "Fatto",
+      "spookify": "Spaventami 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "Massimo {{count}} sticker",
+      "remove": "Togli sticker",
+      "add": "Aggiungi sticker",
+      "frame": "Cornice"
     }
   },
   "hero": {

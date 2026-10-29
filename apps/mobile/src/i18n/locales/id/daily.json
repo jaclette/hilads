@@ -701,6 +701,18 @@
       "represent": "Hantui kotamu 👻",
       "played_other": "{{count}} kota berhantu 🎃",
       "onBoard": "{{city}} menghantui papan! 👻"
+    },
+    "stickers": {
+      "title": "Bikin seram 🎃",
+      "skip": "Lewati",
+      "done": "Selesai",
+      "spookify": "Seramkan aku 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "Maksimal {{count}} stiker",
+      "remove": "Hapus stiker",
+      "add": "Tambah stiker",
+      "frame": "Bingkai"
     }
   },
   "hero": {

@@ -700,6 +700,18 @@
       "represent": "Hù dọa thành phố của bạn 👻",
       "played_other": "{{count}} thành phố bị ma ám 🎃",
       "onBoard": "{{city}} đang ám bảng xếp hạng! 👻"
+    },
+    "stickers": {
+      "title": "Làm nó rùng rợn 🎃",
+      "skip": "Bỏ qua",
+      "done": "Xong",
+      "spookify": "Hù tôi đi 🎲",
+      "photo": "Ảnh",
+      "selfie": "Selfie",
+      "max": "Tối đa {{count}} sticker",
+      "remove": "Gỡ sticker",
+      "add": "Thêm sticker",
+      "frame": "Khung"
     }
   },
   "hero": {

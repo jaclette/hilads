@@ -715,6 +715,18 @@
       "played_one": "{{count}} city is haunted 🎃",
       "played_other": "{{count}} cities are haunted 🎃",
       "onBoard": "{{city}} is haunting the board! 👻"
+    },
+    "stickers": {
+      "title": "Make it spooky 🎃",
+      "skip": "Skip",
+      "done": "Done",
+      "spookify": "Spookify me 🎲",
+      "photo": "Photo",
+      "selfie": "Selfie",
+      "max": "{{count}} stickers max",
+      "remove": "Remove sticker",
+      "add": "Add sticker",
+      "frame": "Frame"
     }
   },
   "hero": {

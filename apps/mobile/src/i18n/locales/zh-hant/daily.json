@@ -700,6 +700,18 @@
       "represent": "讓你的城市鬧鬼 👻",
       "played_other": "{{count}} 座城市鬧鬼了 🎃",
       "onBoard": "{{city}}正在榜單上鬧鬼！👻"
+    },
+    "stickers": {
+      "title": "讓它變嚇人 🎃",
+      "skip": "略過",
+      "done": "完成",
+      "spookify": "一鍵嚇人 🎲",
+      "photo": "照片",
+      "selfie": "自拍",
+      "max": "最多 {{count}} 個貼紙",
+      "remove": "移除貼紙",
+      "add": "新增貼紙",
+      "frame": "相框"
     }
   },
   "hero": {

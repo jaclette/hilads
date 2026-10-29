@@ -729,6 +729,18 @@
       "played_many": "{{count}} villes sont hantées 🎃",
       "played_other": "{{count}} villes sont hantées 🎃",
       "onBoard": "{{city}} hante le classement ! 👻"
+    },
+    "stickers": {
+      "title": "Rends-la effrayante 🎃",
+      "skip": "Passer",
+      "done": "Terminé",
+      "spookify": "Fais-moi peur 🎲",
+      "photo": "Photo",
+      "selfie": "Selfie",
+      "max": "{{count}} stickers max",
+      "remove": "Retirer le sticker",
+      "add": "Ajouter un sticker",
+      "frame": "Cadre"
     }
   },
   "hero": {

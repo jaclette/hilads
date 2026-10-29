@@ -715,6 +715,18 @@
       "played_one": "{{count}} lungsod ang minumulto 🎃",
       "played_other": "{{count}} lungsod ang minumulto 🎃",
       "onBoard": "Minumulto ng {{city}} ang board! 👻"
+    },
+    "stickers": {
+      "title": "Gawing nakakatakot 🎃",
+      "skip": "Laktawan",
+      "done": "Tapos na",
+      "spookify": "Takutin mo ako 🎲",
+      "photo": "Photo",
+      "selfie": "Selfie",
+      "max": "Hanggang {{count}} sticker lang",
+      "remove": "Alisin ang sticker",
+      "add": "Magdagdag ng sticker",
+      "frame": "Frame"
     }
   },
   "hero": {

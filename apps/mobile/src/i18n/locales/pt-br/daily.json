@@ -729,6 +729,18 @@
       "played_many": "{{count}} cidades estão assombradas 🎃",
       "played_other": "{{count}} cidades estão assombradas 🎃",
       "onBoard": "{{city}} está assombrando o ranking! 👻"
+    },
+    "stickers": {
+      "title": "Deixe assustadora 🎃",
+      "skip": "Pular",
+      "done": "Pronto",
+      "spookify": "Me assuste 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "No máximo {{count}} figurinhas",
+      "remove": "Remover figurinha",
+      "add": "Adicionar figurinha",
+      "frame": "Moldura"
     }
   },
   "hero": {

@@ -700,6 +700,18 @@
       "represent": "우리 도시에 유령 출몰 👻",
       "played_other": "{{count}}개 도시에 유령이 나타났어 🎃",
       "onBoard": "{{city}}, 보드에 출몰! 👻"
+    },
+    "stickers": {
+      "title": "으스스하게 만들기 🎃",
+      "skip": "건너뛰기",
+      "done": "완료",
+      "spookify": "으스스하게 🎲",
+      "photo": "사진",
+      "selfie": "셀카",
+      "max": "스티커는 최대 {{count}}개",
+      "remove": "스티커 삭제",
+      "add": "스티커 추가",
+      "frame": "프레임"
     }
   },
   "hero": {

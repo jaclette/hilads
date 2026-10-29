@@ -715,6 +715,18 @@
       "played_one": "In {{count}} stad spookt het 🎃",
       "played_other": "In {{count}} steden spookt het 🎃",
       "onBoard": "{{city}} spookt door het bord! 👻"
+    },
+    "stickers": {
+      "title": "Maak het griezelig 🎃",
+      "skip": "Overslaan",
+      "done": "Klaar",
+      "spookify": "Maak me griezelig 🎲",
+      "photo": "Foto",
+      "selfie": "Selfie",
+      "max": "Maximaal {{count}} stickers",
+      "remove": "Sticker weghalen",
+      "add": "Sticker toevoegen",
+      "frame": "Lijst"
     }
   },
   "hero": {
