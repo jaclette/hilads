@@ -145,7 +145,7 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const [replyTo, setReplyTo] = useState<PhotoComment | null>(null);
   const [menu, setMenu] = useState<Menu>(null);
   const [showEmoji, setShowEmoji] = useState(false);
-  const [keyboard, setKeyboard] = useState(false);
+  const [keyboard, setKeyboard] = useState(0);   // its height while open
   const [mentionQuery, setMentionQuery] = useState<{ query: string; at: number } | null>(null);
   const [suggestions, setSuggestions] = useState<MentionSuggestion[]>([]);
   const [confetti, setConfetti] = useState(false);
@@ -156,8 +156,8 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const cursor = useRef(0);
 
   useEffect(() => {
-    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboard(true));
-    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboard(false));
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', e => setKeyboard(e.endCoordinates.height));
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboard(0));
     return () => { show.remove(); hide.remove(); };
   }, []);
 
@@ -264,9 +264,8 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const authorName = target.author?.username ? `@${target.author.username}` : target.author?.displayName ?? '';
   const flag = countryToFlag(target.city?.country);
   const firstId = !thread.hasMore ? items.find(c => !c.pending)?.id ?? null : null;
-  const sheetStyle = keyboard
-    ? { flex: 1, marginTop: insets.top + 8 }
-    : { height: Math.round(height * 0.78) };
+  // Full height above the keyboard while typing (the sheet rises with it), else 78% of the screen.
+  const sheetStyle = { height: keyboard > 0 ? height - keyboard - insets.top - 8 : Math.round(height * 0.78) };
 
   return (
     <Sheet visible onClose={onClose} closeLabel={t('comments.close')} style={[styles.sheet, sheetStyle]}>
@@ -332,7 +331,7 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
       {!!notice && <Text style={styles.notice} accessibilityLiveRegion="polite">{notice}</Text>}
 
       {/* ── Quick reactions while the composer is empty ── */}
-      {text.length === 0 && !replyTo && !keyboard && (
+      {text.length === 0 && !replyTo && keyboard === 0 && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="always"
                     contentContainerStyle={styles.chips} style={styles.chipsRow}>
           {quickKeys(target.theme).map(k => (

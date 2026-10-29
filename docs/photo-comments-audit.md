@@ -74,3 +74,27 @@ Read-only audit for comments on Daily Challenge photos ("proofs"). Paths are rel
 - Chat payloads are frozen copies: comment previews come from the state store, never from `payload`.
 - Load: `latestComments` is one batched query per state call (≤50 ids); WS subscriptions are per open photo, refcounted.
 - Migration has to run on Render before the new app ships (endpoints fail soft until then: `commentCount` 0).
+
+## 9. QA (Phase 6, 2026-10-29)
+
+Checked on the local stack (Docker API + Postgres, three test accounts), unit tests (`PhotoCommentsTest`, `PhotoCommentNotifyTest`: 260 tests green), `tsc` (no new errors vs HEAD, 22 baseline) and `vite build` + eslint (web).
+
+| Check | Result |
+| --- | --- |
+| Post, list (oldest first, pages of 30), reply quote, @mention resolved (unknown handles stay text), 300-char limit, reply to a gone comment | OK (API) |
+| Guest posts → 401 `signup_required` (app/web: Sign up to comment) | OK |
+| Delete: writer and photo author yes, others 403; count follows (trigger) | OK |
+| Like / unlike, report (one per person, own comment refused), hidden at 3 reports, back office Keep / Remove | OK |
+| Blocks: blocker doesn't see the blocked person's comments, blocked can't comment on the blocker's photo | OK |
+| Rate limit 10 / minute / user (`DbRateLimiter`) | OK (11th refused) |
+| `/daily/proofs/state` commentCount + 2 latest; proofs `commentCount`; `cities[].totalComments` | OK |
+| WS: `watchProofs` + `/broadcast/proof-comment` → `proofComment` to the watcher | OK (WS server alone) |
+| Notifications: author / mention / reply / earlier commenter, priority, no self, grouping within 5 min without a second push, author answering on their own photo | OK (bell rows checked in the DB) |
+| Old apps: only new fields and endpoints | OK by construction |
+
+To check on devices before release (not run here: `apps/mobile/.env.local` points at production, which has neither the migration nor the endpoints yet):
+- a comment from the chat card shows at once in the story viewer and the mosaic count, and back;
+- push received for each kind, grouping, a tap from a killed app opens the photo with its comments on that comment;
+- keyboard on iOS and Android (the sheet takes the height above the keyboard), small screens, light / dark / Halloween, long German strings.
+
+Release order: deploy the API and run `php migrate.php` on Render, redeploy the WS service (`watchProofs`), deploy the web (Vercel, manual), then the app build (no OTA).
