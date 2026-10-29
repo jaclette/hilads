@@ -545,7 +545,8 @@
       "format": {
         "story": "ストーリー",
         "post": "投稿"
-      }
+      },
+      "shared": "シェアしたよ！誰が答えるかな 🌍"
     },
     "textProofAsk": "Hiladsで{{city}}代表としてプレイしたよ：{{challenge}} {{question}}"
   },

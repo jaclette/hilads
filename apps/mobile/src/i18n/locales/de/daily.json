@@ -553,7 +553,8 @@
       "format": {
         "story": "Story",
         "post": "Beitrag"
-      }
+      },
+      "shared": "Geteilt! Mal sehen, wer antwortet 🌍"
     },
     "textProofAsk": "Ich habe auf Hilads für {{city}} gespielt: {{challenge}} {{question}}"
   },

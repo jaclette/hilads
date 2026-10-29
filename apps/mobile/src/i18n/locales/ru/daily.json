@@ -589,7 +589,8 @@
       "format": {
         "story": "История",
         "post": "Пост"
-      }
+      },
+      "shared": "Готово! Посмотрим, кто ответит 🌍"
     },
     "textProofAsk": "Я играю за {{city}} в Hilads: {{challenge}} {{question}}"
   },

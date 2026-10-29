@@ -161,7 +161,7 @@ export const ProofCard = forwardRef<View, {
           <Image source={LOGO} style={s.logo} contentFit="contain" onLoad={loadedOne} onError={loadedOne} />
           <View style={s.brand}>
             <Text style={[s.brandName, { color: ink }]}>Hilads</Text>
-            <Text style={[s.tagline, { color: ink }]} numberOfLines={1}>{t('worlds.tagline')}{ev ? ` ${ev.emoji}` : ''}</Text>
+            <Text style={[s.tagline, { color: ink }]} numberOfLines={1}>{t('worlds.tagline')}</Text>
           </View>
           <Text style={[s.site, { color: ink }]}>hilads.live</Text>
         </View>

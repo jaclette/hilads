@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, AppState, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import * as MediaLibrary from 'expo-media-library';
-import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInRight, FadeOut } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { captureRef } from 'react-native-view-shot';
@@ -39,7 +40,9 @@ const LABEL: Record<ShareChannel, string> = {
  * it (once per template and format); link targets work before that. Before a
  * Story, the link is copied and a toast says to add it with the Link sticker.
  * share_started / share_opened on mount, share_template_selected on a swipe,
- * share_target on a tap, share_completed per share.
+ * share_target on a tap, share_completed per share. Playful: the cards slide
+ * in, the "?" wiggles, a tick on each swipe, and "Shared! Let's see who
+ * answers 🌍" with a success haptic once a share went out.
  */
 export function SharePanel({ content, source, previewHeight = 300 }: { content: ShareContent; source: string; previewHeight?: number }) {
   const styles = useThemedStyles(makeStyles);
@@ -125,8 +128,23 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   };
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
+  // "Shared! Let's see who answers 🌍" once the share went out, when the player is back in the app.
+  const cheer = useRef(false);
+  const shared = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    if (AppState.currentState === 'active') say(t('share.card.shared'));
+    else cheer.current = true;
+  };
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', st => {
+      if (st === 'active' && cheer.current) { cheer.current = false; setTimeout(() => say(t('share.card.shared')), 400); }
+    });
+    return () => sub.remove();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const pick = (next: ShareTemplate, method: 'swipe' | 'tap') => {
     if (next === template) return;
+    Haptics.selectionAsync().catch(() => {});
     setTemplate(next);
     track('share_template_selected', { ...props, template: next, method });
   };
@@ -150,6 +168,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
       const url = proof ? `${shareUrl(content)}${shareUrl(content).includes('?') ? '&' : '?'}tpl=${template}` : shareUrl(content);
       const res = await shareTo(channel, { file, url, text: shareText(content) });
       if (channel === 'copy_link') { setCopied(true); setTimeout(() => setCopied(false), 2000); }
+      if (res.done && channel !== 'copy_link') shared();
       if (res.done) track('share_completed', { ...props, channel, ...(proof ? { format: story ? 'story' : format } : {}), ...(res.activity ? { activity: res.activity } : {}) });
     } catch {
       Alert.alert(t('share.failed'));
@@ -203,13 +222,14 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
           {pageW > 0 && (
             <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={e => pick(templates[Math.round(e.nativeEvent.contentOffset.x / pageW)] ?? template, 'swipe')}>
-              {templates.map(tp => (
-                <View key={tp} style={{ width: pageW, alignItems: 'center' }}>
+              {templates.map((tp, i) => (
+                // The cards slide in one after the other (a plain fade with Reduce motion: reanimated's default).
+                <Animated.View key={tp} entering={FadeInRight.delay(i * 90).springify().damping(16)} style={{ width: pageW, alignItems: 'center' }}>
                   {/* The Post (4:5) covers its template's Story, still drawn for the Stories targets. */}
                   {tp === template && format === 'post'
                     ? scaled([proofLayer(tp, 'story'), proofLayer(tp, 'post')], previewHeight * 4 / 5)
                     : scaled([proofLayer(tp, 'story')])}
-                </View>
+                </Animated.View>
               ))}
             </ScrollView>
           )}

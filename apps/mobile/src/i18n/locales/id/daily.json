@@ -545,7 +545,8 @@
       "format": {
         "story": "Story",
         "post": "Postingan"
-      }
+      },
+      "shared": "Terbagikan! Kita lihat siapa yang menjawab 🌍"
     },
     "textProofAsk": "Aku main untuk {{city}} di Hilads: {{challenge}} {{question}}"
   },

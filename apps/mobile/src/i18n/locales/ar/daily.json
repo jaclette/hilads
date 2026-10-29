@@ -625,7 +625,8 @@
       "format": {
         "story": "قصة",
         "post": "منشور"
-      }
+      },
+      "shared": "تمت المشاركة! لنرَ من سيجيب 🌍"
     },
     "textProofAsk": "لعبت من أجل {{city}} على Hilads: {{challenge}} {{question}}"
   },

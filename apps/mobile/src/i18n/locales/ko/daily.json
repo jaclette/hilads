@@ -544,7 +544,8 @@
       "format": {
         "story": "스토리",
         "post": "게시물"
-      }
+      },
+      "shared": "공유 완료! 누가 답할지 볼까 🌍"
     },
     "textProofAsk": "Hilads에서 {{city}} 대표로 참여했어: {{challenge}} {{question}}"
   },

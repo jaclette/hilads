@@ -553,7 +553,8 @@
       "format": {
         "story": "Story",
         "post": "Post"
-      }
+      },
+      "shared": "Na-share na! Tingnan natin kung sino ang sasagot 🌍"
     },
     "textProofAsk": "Naglaro ako para sa {{city}} sa Hilads: {{challenge}} {{question}}"
   },

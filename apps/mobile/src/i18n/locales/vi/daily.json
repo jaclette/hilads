@@ -544,7 +544,8 @@
       "format": {
         "story": "Story",
         "post": "Bài đăng"
-      }
+      },
+      "shared": "Đã chia sẻ! Xem ai sẽ trả lời nào 🌍"
     },
     "textProofAsk": "Mình đã chơi cho {{city}} trên Hilads: {{challenge}} {{question}}"
   },

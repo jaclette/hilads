@@ -553,7 +553,8 @@
       "format": {
         "story": "स्टोरी",
         "post": "पोस्ट"
-      }
+      },
+      "shared": "शेयर हो गया! देखते हैं कौन जवाब देता है 🌍"
     },
     "textProofAsk": "मैंने Hilads पर {{city}} के लिए खेला: {{challenge}} {{question}}"
   },

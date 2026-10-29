@@ -544,7 +544,8 @@
       "format": {
         "story": "สตอรี่",
         "post": "โพสต์"
-      }
+      },
+      "shared": "แชร์แล้ว! มาดูกันว่าใครจะตอบ 🌍"
     },
     "textProofAsk": "ฉันเล่นให้ {{city}} บน Hilads: {{challenge}} {{question}}"
   },

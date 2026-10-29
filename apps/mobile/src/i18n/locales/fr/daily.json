@@ -561,7 +561,8 @@
       "format": {
         "story": "Story",
         "post": "Post"
-      }
+      },
+      "shared": "Partagé ! Voyons qui va répondre 🌍"
     },
     "textProofAsk": "J'ai joué pour {{city}} sur Hilads : {{challenge}} {{question}}"
   },

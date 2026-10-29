@@ -544,7 +544,8 @@
       "format": {
         "story": "快拍",
         "post": "帖子"
-      }
+      },
+      "shared": "已分享！看看谁会回答 🌍"
     },
     "textProofAsk": "我在 Hilads 代表{{city}}出战：{{challenge}} {{question}}"
   },
