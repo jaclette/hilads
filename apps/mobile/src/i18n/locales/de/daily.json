@@ -750,5 +750,57 @@
     "yesterday": "Gestern sagte die Welt…",
     "beFirst": "Vertritt {{city}}",
     "beFirstSub": "Sei heute die erste Stadt"
+  },
+  "comments": {
+    "title": "Kommentare",
+    "close": "Schließen",
+    "comment": "Kommentieren",
+    "newComments": "Neue Kommentare",
+    "empty": "Schreib den ersten Kommentar 💬",
+    "emptySub": "Frag, wo das ist, reagiere, vergleiche mit deiner Stadt.",
+    "placeholder": "Kommentar schreiben…",
+    "placeholderGuest": "Registriere dich zum Kommentieren",
+    "older": "Frühere Kommentare ansehen",
+    "reply": "Antworten",
+    "copy": "Kopieren",
+    "delete": "Löschen",
+    "cancelReply": "Antwort abbrechen",
+    "replyingTo": "Antwort an @{{name}}",
+    "author": "Autor",
+    "first": "Erster!",
+    "sending": "Wird gesendet…",
+    "failed": "Nicht gesendet · Tippen zum Wiederholen",
+    "discard": "Entfernen",
+    "like": "Gefällt mir",
+    "actionsHint": "Lange drücken zum Antworten, Kopieren oder Melden",
+    "quickHint": "Lange drücken, um vor dem Senden zu bearbeiten",
+    "count_one": "{{count}} Kommentar",
+    "count_other": "{{count}} Kommentare",
+    "seeAll_one": "Kommentar ansehen",
+    "seeAll_other": "Alle {{count}} Kommentare ansehen",
+    "quick": {
+      "soLocal": "🔥 So lokal!",
+      "wantThis": "🤤 Will ich haben!",
+      "neverSeen": "😮 Noch nie gesehen",
+      "whereIsIt": "📍 Wo ist das?",
+      "whatsItCalled": "🏷️ Wie heißt das?"
+    },
+    "errors": {
+      "moderation_blocked": "Dieser Kommentar kann nicht gepostet werden. Bleib freundlich!",
+      "rate_limited": "Langsam! Versuch es in einer Minute nochmal.",
+      "invalid_body": "Ein Kommentar hat höchstens 300 Zeichen.",
+      "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
+    },
+    "report": {
+      "action": "Melden",
+      "reasons": {
+        "inappropriate": "Unangemessen",
+        "harassment": "Belästigung oder Hass",
+        "spam": "Spam",
+        "other": "Etwas anderes"
+      },
+      "thanks": "Danke - wir prüfen das.",
+      "already": "Du hast diesen Kommentar schon gemeldet."
+    }
   }
 }

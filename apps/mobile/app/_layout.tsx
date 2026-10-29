@@ -34,6 +34,7 @@ import { PlacedCityBanner } from '@/components/PlacedCityBanner';
 import { UpdateGate } from '@/features/shell/UpdateGate';
 import { ScopeProvider } from '@/context/ScopeContext';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
+import { PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
 import { track } from '@/services/analytics';
 
 // ── Sentry - init before any render ──────────────────────────────────────────
@@ -227,6 +228,8 @@ function RootLayoutInner() {
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
           </Stack>
+          {/* Comments on a Daily photo, from anywhere (screens shown as native modals mount their own). */}
+          <PhotoCommentsHost />
           {/* First-launch guests are auto-joined to their IP city or routed to
               the first-time picker in useAppBoot - no landing overlay, no
               GPS prompt. A one-shot banner confirms the auto-placement. */}

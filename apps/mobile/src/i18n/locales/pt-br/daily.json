@@ -768,5 +768,57 @@
     "yesterday": "Ontem o mundo disse…",
     "beFirst": "Represente {{city}}",
     "beFirstSub": "Seja a primeira cidade hoje"
+  },
+  "comments": {
+    "title": "Comentários",
+    "close": "Fechar",
+    "comment": "Comentar",
+    "newComments": "Novos comentários",
+    "empty": "Seja o primeiro a dizer algo 💬",
+    "emptySub": "Pergunte onde é, reaja, compare com a sua cidade.",
+    "placeholder": "Adicione um comentário…",
+    "placeholderGuest": "Cadastre-se para comentar",
+    "older": "Ver comentários anteriores",
+    "reply": "Responder",
+    "copy": "Copiar",
+    "delete": "Excluir",
+    "cancelReply": "Cancelar resposta",
+    "replyingTo": "Respondendo a @{{name}}",
+    "author": "Autor",
+    "first": "Primeiro!",
+    "sending": "Enviando…",
+    "failed": "Não enviado · Toque para tentar de novo",
+    "discard": "Remover",
+    "like": "Curtir",
+    "actionsHint": "Toque e segure para responder, copiar ou denunciar",
+    "quickHint": "Toque e segure para editar antes de enviar",
+    "count_one": "{{count}} comentário",
+    "count_other": "{{count}} comentários",
+    "seeAll_one": "Ver o comentário",
+    "seeAll_other": "Ver todos os {{count}} comentários",
+    "quick": {
+      "soLocal": "🔥 Muito local!",
+      "wantThis": "🤤 Quero!",
+      "neverSeen": "😮 Nunca vi isso",
+      "whereIsIt": "📍 Onde fica?",
+      "whatsItCalled": "🏷️ Como se chama?"
+    },
+    "errors": {
+      "moderation_blocked": "Este comentário não pode ser publicado. Seja gentil!",
+      "rate_limited": "Calma! Tente de novo em um minuto.",
+      "invalid_body": "Um comentário tem no máximo 300 caracteres.",
+      "generic": "Algo deu errado. Tente de novo."
+    },
+    "report": {
+      "action": "Denunciar",
+      "reasons": {
+        "inappropriate": "Inapropriado",
+        "harassment": "Assédio ou ódio",
+        "spam": "Spam",
+        "other": "Outra coisa"
+      },
+      "thanks": "Obrigado - vamos verificar.",
+      "already": "Você já denunciou este comentário."
+    }
   }
 }

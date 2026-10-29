@@ -21,6 +21,8 @@ import { Button, Chip, IconButton, ModeLabel } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, type ShareContent } from '@/features/share/content';
 import { themeName } from './themes';
+import { CommentButton } from './CommentButton';
+import { commentsTargetOf, PhotoCommentsHost } from './PhotoCommentsSheet';
 import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import type { DailyChallenge, DailyProof } from '@/types';
 import { PickBadge } from '@/features/map/PickBadge';
@@ -130,6 +132,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
             <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="viewer" variant="viewer"
                              onShowVoters={proof.isMine ? () => setVotersOf(proof.id) : undefined} />
           )}
+          {proof.status === 'approved' && <CommentButton target={commentsTargetOf(proof)} variant="pill" />}
           {shareable && challenge && (
             <Button icon="share-social-outline" label={t('share.shareProof')} onPress={() => setShare(proofShare(proof, challenge))} />
           )}
@@ -140,6 +143,8 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
                           onOpenUser={id => { setVotersOf(null); onClose(); router.push(`/user/${id}` as never); }} />
         <ShareSheet content={share} source={autoShare ? 'podium' : 'viewer'} onClose={() => setShare(null)} />
       </SafeAreaView>
+      {/* Comments open above this modal; a profile from them closes it. */}
+      <PhotoCommentsHost onLeave={onClose} />
       </View>
     </Modal>
   );

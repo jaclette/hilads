@@ -731,5 +731,57 @@
     "yesterday": "昨天，世界这样说…",
     "beFirst": "代表{{city}}",
     "beFirstSub": "成为今天第一座城市"
+  },
+  "comments": {
+    "title": "评论",
+    "close": "关闭",
+    "comment": "评论",
+    "newComments": "新评论",
+    "empty": "来说第一句吧 💬",
+    "emptySub": "问问在哪儿，回应一下，和你的城市比一比。",
+    "placeholder": "添加评论…",
+    "placeholderGuest": "注册后即可评论",
+    "older": "查看更早的评论",
+    "reply": "回复",
+    "copy": "复制",
+    "delete": "删除",
+    "cancelReply": "取消回复",
+    "replyingTo": "回复 @{{name}}",
+    "author": "作者",
+    "first": "沙发！",
+    "sending": "发送中…",
+    "failed": "未发送 · 点按重试",
+    "discard": "移除",
+    "like": "赞",
+    "actionsHint": "长按可回复、复制或举报",
+    "quickHint": "长按可在发送前编辑",
+    "count_one": "{{count}} 条评论",
+    "count_other": "{{count}} 条评论",
+    "seeAll_one": "查看 {{count}} 条评论",
+    "seeAll_other": "查看全部 {{count}} 条评论",
+    "quick": {
+      "soLocal": "🔥 太本地了！",
+      "wantThis": "🤤 想要！",
+      "neverSeen": "😮 从没见过",
+      "whereIsIt": "📍 在哪儿？",
+      "whatsItCalled": "🏷️ 这叫什么？"
+    },
+    "errors": {
+      "moderation_blocked": "这条评论无法发布。友善一点哦！",
+      "rate_limited": "慢一点！一分钟后再试。",
+      "invalid_body": "评论最多 300 个字符。",
+      "generic": "出了点问题，请重试。"
+    },
+    "report": {
+      "action": "举报",
+      "reasons": {
+        "inappropriate": "不当内容",
+        "harassment": "骚扰或仇恨",
+        "spam": "垃圾信息",
+        "other": "其他"
+      },
+      "thanks": "谢谢 - 我们会核查。",
+      "already": "你已经举报过这条评论。"
+    }
   }
 }

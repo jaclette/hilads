@@ -768,5 +768,57 @@
     "yesterday": "Ieri il mondo ha detto…",
     "beFirst": "Rappresenta {{city}}",
     "beFirstSub": "Sii la prima città oggi"
+  },
+  "comments": {
+    "title": "Commenti",
+    "close": "Chiudi",
+    "comment": "Commenta",
+    "newComments": "Nuovi commenti",
+    "empty": "Sii il primo a dire qualcosa 💬",
+    "emptySub": "Chiedi dov'è, reagisci, confronta con la tua città.",
+    "placeholder": "Aggiungi un commento…",
+    "placeholderGuest": "Registrati per commentare",
+    "older": "Vedi i commenti precedenti",
+    "reply": "Rispondi",
+    "copy": "Copia",
+    "delete": "Elimina",
+    "cancelReply": "Annulla risposta",
+    "replyingTo": "Rispondi a @{{name}}",
+    "author": "Autore",
+    "first": "Primo!",
+    "sending": "Invio…",
+    "failed": "Non inviato · Tocca per riprovare",
+    "discard": "Rimuovi",
+    "like": "Mi piace",
+    "actionsHint": "Tieni premuto per rispondere, copiare o segnalare",
+    "quickHint": "Tieni premuto per modificare prima di inviare",
+    "count_one": "{{count}} commento",
+    "count_other": "{{count}} commenti",
+    "seeAll_one": "Vedi il commento",
+    "seeAll_other": "Vedi tutti i {{count}} commenti",
+    "quick": {
+      "soLocal": "🔥 Super locale!",
+      "wantThis": "🤤 Lo voglio!",
+      "neverSeen": "😮 Mai visto",
+      "whereIsIt": "📍 Dov'è?",
+      "whatsItCalled": "🏷️ Come si chiama?"
+    },
+    "errors": {
+      "moderation_blocked": "Questo commento non può essere pubblicato. Sii gentile!",
+      "rate_limited": "Piano! Riprova tra un minuto.",
+      "invalid_body": "Un commento ha al massimo 300 caratteri.",
+      "generic": "Qualcosa è andato storto. Riprova."
+    },
+    "report": {
+      "action": "Segnala",
+      "reasons": {
+        "inappropriate": "Inappropriato",
+        "harassment": "Molestie o odio",
+        "spam": "Spam",
+        "other": "Altro"
+      },
+      "thanks": "Grazie - lo controlleremo.",
+      "already": "Hai già segnalato questo commento."
+    }
   }
 }

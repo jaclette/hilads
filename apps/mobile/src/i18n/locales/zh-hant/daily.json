@@ -731,5 +731,57 @@
     "yesterday": "昨天，世界這樣說…",
     "beFirst": "代表{{city}}",
     "beFirstSub": "成為今天第一座城市"
+  },
+  "comments": {
+    "title": "留言",
+    "close": "關閉",
+    "comment": "留言",
+    "newComments": "新留言",
+    "empty": "來說第一句吧 💬",
+    "emptySub": "問問在哪裡，回應一下，和你的城市比一比。",
+    "placeholder": "新增留言…",
+    "placeholderGuest": "註冊後即可留言",
+    "older": "查看較早的留言",
+    "reply": "回覆",
+    "copy": "複製",
+    "delete": "刪除",
+    "cancelReply": "取消回覆",
+    "replyingTo": "回覆 @{{name}}",
+    "author": "作者",
+    "first": "搶頭香！",
+    "sending": "傳送中…",
+    "failed": "未傳送 · 點一下重試",
+    "discard": "移除",
+    "like": "讚",
+    "actionsHint": "長按可回覆、複製或檢舉",
+    "quickHint": "長按可在傳送前編輯",
+    "count_one": "{{count}} 則留言",
+    "count_other": "{{count}} 則留言",
+    "seeAll_one": "查看 {{count}} 則留言",
+    "seeAll_other": "查看全部 {{count}} 則留言",
+    "quick": {
+      "soLocal": "🔥 超在地！",
+      "wantThis": "🤤 想要！",
+      "neverSeen": "😮 從沒看過",
+      "whereIsIt": "📍 在哪裡？",
+      "whatsItCalled": "🏷️ 這叫什麼？"
+    },
+    "errors": {
+      "moderation_blocked": "這則留言無法發布。友善一點喔！",
+      "rate_limited": "慢一點！一分鐘後再試。",
+      "invalid_body": "留言最多 300 個字元。",
+      "generic": "發生問題，請再試一次。"
+    },
+    "report": {
+      "action": "檢舉",
+      "reasons": {
+        "inappropriate": "不當內容",
+        "harassment": "騷擾或仇恨",
+        "spam": "垃圾訊息",
+        "other": "其他"
+      },
+      "thanks": "謝謝 - 我們會查看。",
+      "already": "你已經檢舉過這則留言。"
+    }
   }
 }

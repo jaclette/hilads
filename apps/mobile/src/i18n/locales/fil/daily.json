@@ -750,5 +750,57 @@
     "yesterday": "Kahapon, sabi ng mundo…",
     "beFirst": "Katawanin ang {{city}}",
     "beFirstSub": "Maging unang lungsod ngayon"
+  },
+  "comments": {
+    "title": "Mga komento",
+    "close": "Isara",
+    "comment": "Mag-comment",
+    "newComments": "Mga bagong komento",
+    "empty": "Ikaw na ang unang magsalita 💬",
+    "emptySub": "Itanong kung saan ito, mag-react, ikumpara sa lungsod mo.",
+    "placeholder": "Magdagdag ng komento…",
+    "placeholderGuest": "Mag-sign up para mag-comment",
+    "older": "Tingnan ang mga naunang komento",
+    "reply": "Sumagot",
+    "copy": "Kopyahin",
+    "delete": "Burahin",
+    "cancelReply": "Kanselahin ang sagot",
+    "replyingTo": "Sumasagot kay @{{name}}",
+    "author": "May-ari",
+    "first": "Una!",
+    "sending": "Ipinapadala…",
+    "failed": "Hindi naipadala · I-tap para subukan ulit",
+    "discard": "Alisin",
+    "like": "I-like",
+    "actionsHint": "Pindutin nang matagal para sumagot, kopyahin o i-report",
+    "quickHint": "Pindutin nang matagal para i-edit bago ipadala",
+    "count_one": "{{count}} komento",
+    "count_other": "{{count}} na komento",
+    "seeAll_one": "Tingnan ang komento",
+    "seeAll_other": "Tingnan ang lahat ng {{count}} komento",
+    "quick": {
+      "soLocal": "🔥 Sobrang local!",
+      "wantThis": "🤤 Gusto ko 'to!",
+      "neverSeen": "😮 Ngayon ko lang 'to nakita",
+      "whereIsIt": "📍 Saan 'to?",
+      "whatsItCalled": "🏷️ Ano'ng tawag dito?"
+    },
+    "errors": {
+      "moderation_blocked": "Hindi mai-post ang komentong ito. Maging mabait!",
+      "rate_limited": "Dahan-dahan! Subukan ulit pagkalipas ng isang minuto.",
+      "invalid_body": "Hanggang 300 character lang ang komento.",
+      "generic": "May nagkamali. Subukan ulit."
+    },
+    "report": {
+      "action": "I-report",
+      "reasons": {
+        "inappropriate": "Hindi angkop",
+        "harassment": "Panliligalig o pagkamuhi",
+        "spam": "Spam",
+        "other": "Iba pa"
+      },
+      "thanks": "Salamat - titingnan namin.",
+      "already": "Na-report mo na ang komentong ito."
+    }
   }
 }

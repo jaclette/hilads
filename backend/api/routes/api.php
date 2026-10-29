@@ -15336,6 +15336,17 @@ $router->add('POST', '/api/v1/daily/proofs/{id}/comments', function (array $para
     Response::json(['comment' => PhotoComments::format($row, $user['id']), 'commentCount' => $count], 201);
 });
 
+// GET /api/v1/daily/proofs/{id}/mention-suggestions?q= - @ autocomplete in a
+// photo's comments: its author and thread first, then its city. Same shape as
+// the chat's {suggestions}.
+$router->add('GET', '/api/v1/daily/proofs/{id}/mention-suggestions', function (array $params) {
+    $user  = AuthService::requireAuth();
+    enforceRateLimit('mention_suggest', 120, 60);
+    $proof = photoCommentsTarget($params['id'], $user);
+    $q     = substr(preg_replace('/[^A-Za-z0-9_]/', '', (string) ($_GET['q'] ?? '')) ?? '', 0, 30);
+    Response::json(['suggestions' => PhotoComments::mentionSuggestions($proof, $q, $user['id'], dailyBlocks($user)['user_ids'] ?? [])]);
+});
+
 // DELETE /api/v1/daily/comments/{id} - delete my comment, or any comment on my photo.
 $router->add('DELETE', '/api/v1/daily/comments/{id}', function (array $params) {
     $user = AuthService::requireAuth();

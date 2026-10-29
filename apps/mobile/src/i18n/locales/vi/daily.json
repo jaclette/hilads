@@ -731,5 +731,57 @@
     "yesterday": "Hôm qua thế giới nói…",
     "beFirst": "Đại diện cho {{city}}",
     "beFirstSub": "Là thành phố đầu tiên hôm nay"
+  },
+  "comments": {
+    "title": "Bình luận",
+    "close": "Đóng",
+    "comment": "Bình luận",
+    "newComments": "Bình luận mới",
+    "empty": "Hãy là người đầu tiên lên tiếng 💬",
+    "emptySub": "Hỏi chỗ đó ở đâu, thả cảm xúc, so với thành phố của bạn.",
+    "placeholder": "Thêm bình luận…",
+    "placeholderGuest": "Đăng ký để bình luận",
+    "older": "Xem bình luận trước",
+    "reply": "Trả lời",
+    "copy": "Sao chép",
+    "delete": "Xóa",
+    "cancelReply": "Hủy trả lời",
+    "replyingTo": "Trả lời @{{name}}",
+    "author": "Tác giả",
+    "first": "Đầu tiên!",
+    "sending": "Đang gửi…",
+    "failed": "Chưa gửi được · Chạm để thử lại",
+    "discard": "Bỏ",
+    "like": "Thích",
+    "actionsHint": "Nhấn giữ để trả lời, sao chép hoặc báo cáo",
+    "quickHint": "Nhấn giữ để sửa trước khi gửi",
+    "count_one": "{{count}} bình luận",
+    "count_other": "{{count}} bình luận",
+    "seeAll_one": "Xem {{count}} bình luận",
+    "seeAll_other": "Xem cả {{count}} bình luận",
+    "quick": {
+      "soLocal": "🔥 Đúng chất local!",
+      "wantThis": "🤤 Thèm quá!",
+      "neverSeen": "😮 Chưa thấy bao giờ",
+      "whereIsIt": "📍 Ở đâu vậy?",
+      "whatsItCalled": "🏷️ Cái này tên gì?"
+    },
+    "errors": {
+      "moderation_blocked": "Không thể đăng bình luận này. Hãy thân thiện nhé!",
+      "rate_limited": "Từ từ thôi! Thử lại sau một phút.",
+      "invalid_body": "Bình luận tối đa 300 ký tự.",
+      "generic": "Đã có lỗi. Thử lại nhé."
+    },
+    "report": {
+      "action": "Báo cáo",
+      "reasons": {
+        "inappropriate": "Không phù hợp",
+        "harassment": "Quấy rối hoặc thù ghét",
+        "spam": "Spam",
+        "other": "Lý do khác"
+      },
+      "thanks": "Cảm ơn - chúng tôi sẽ kiểm tra.",
+      "already": "Bạn đã báo cáo bình luận này rồi."
+    }
   }
 }

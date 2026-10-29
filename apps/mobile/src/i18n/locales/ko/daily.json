@@ -731,5 +731,57 @@
     "yesterday": "어제 세계는 이렇게 말했어…",
     "beFirst": "{{city}} 대표하기",
     "beFirstSub": "오늘 첫 번째 도시가 되어 봐"
+  },
+  "comments": {
+    "title": "댓글",
+    "close": "닫기",
+    "comment": "댓글 달기",
+    "newComments": "새 댓글",
+    "empty": "첫 댓글을 남겨 보세요 💬",
+    "emptySub": "어디인지 묻고, 반응하고, 내 도시와 비교해 보세요.",
+    "placeholder": "댓글 추가…",
+    "placeholderGuest": "가입하고 댓글 달기",
+    "older": "이전 댓글 보기",
+    "reply": "답글",
+    "copy": "복사",
+    "delete": "삭제",
+    "cancelReply": "답글 취소",
+    "replyingTo": "@{{name}}님에게 답글",
+    "author": "작성자",
+    "first": "첫 댓글!",
+    "sending": "보내는 중…",
+    "failed": "전송 실패 · 탭하여 다시 시도",
+    "discard": "지우기",
+    "like": "좋아요",
+    "actionsHint": "길게 눌러 답글, 복사, 신고",
+    "quickHint": "길게 눌러 보내기 전에 수정",
+    "count_one": "댓글 {{count}}개",
+    "count_other": "댓글 {{count}}개",
+    "seeAll_one": "댓글 {{count}}개 보기",
+    "seeAll_other": "댓글 {{count}}개 모두 보기",
+    "quick": {
+      "soLocal": "🔥 완전 로컬!",
+      "wantThis": "🤤 갖고 싶다!",
+      "neverSeen": "😮 처음 봐요",
+      "whereIsIt": "📍 어디예요?",
+      "whatsItCalled": "🏷️ 이름이 뭐예요?"
+    },
+    "errors": {
+      "moderation_blocked": "이 댓글은 게시할 수 없어요. 친절하게 말해 주세요!",
+      "rate_limited": "잠깐만요! 1분 후에 다시 시도해 주세요.",
+      "invalid_body": "댓글은 최대 300자예요.",
+      "generic": "문제가 생겼어요. 다시 시도해 주세요."
+    },
+    "report": {
+      "action": "신고",
+      "reasons": {
+        "inappropriate": "부적절함",
+        "harassment": "괴롭힘 또는 혐오",
+        "spam": "스팸",
+        "other": "기타"
+      },
+      "thanks": "고마워요 - 확인할게요.",
+      "already": "이미 신고한 댓글이에요."
+    }
   }
 }

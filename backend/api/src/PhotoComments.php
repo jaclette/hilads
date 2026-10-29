@@ -214,6 +214,36 @@ final class PhotoComments
         return 'reported_hidden';
     }
 
+    /**
+     * @-autocomplete for a photo's thread: its author and the people already in
+     * it first, then the photo's city (people living there), then anyone, by
+     * prefix. Registered users only, the caller and blocked people left out.
+     */
+    public static function mentionSuggestions(array $photo, string $q, ?string $viewerId, array $blockedUserIds): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
+            FROM users u
+            WHERE u.username IS NOT NULL AND u.deleted_at IS NULL AND lower(u.username) LIKE :q
+              AND u.id <> :viewer AND NOT (u.id = ANY (string_to_array(:blocked, ',')))
+            ORDER BY (u.id = :author) DESC,
+                     EXISTS (SELECT 1 FROM photo_comments c WHERE c.photo_id = :photo AND c.user_id = u.id AND c.deleted_at IS NULL) DESC,
+                     (u.current_city_id IS NOT DISTINCT FROM :city) DESC,
+                     u.username
+            LIMIT 8
+        ");
+        $stmt->execute([
+            'q' => strtolower(trim($q)) . '%', 'viewer' => $viewerId ?? '', 'blocked' => implode(',', $blockedUserIds),
+            'author' => $photo['user_id'], 'photo' => $photo['id'], 'city' => $photo['city_id'],
+        ]);
+        return array_map(static fn(array $r): array => [
+            'userId'      => $r['id'],
+            'username'    => $r['username'],
+            'displayName' => $r['display_name'],
+            'avatarUrl'   => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
+        ], $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
     /** Reported comments with open reports, most reported first (back office › Daily › Today). */
     public static function reportedQueue(int $limit = 50): array
     {

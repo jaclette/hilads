@@ -1,5 +1,6 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
+import type { MentionSuggestion } from './mentions';
 import type {
   DailyBoard, DailyCompared, DailyRates, DailyTour,
   NearbyPlace,
@@ -233,6 +234,16 @@ export async function fetchPhotoComments(proofId: string, before?: number | null
 /** Comment a photo (signed in). Errors: invalid_body, moderation_blocked, invalid_reply, rate_limited, signup_required. */
 export async function postPhotoComment(proofId: string, body: string, replyToId?: number | null): Promise<{ comment: PhotoComment; commentCount: number }> {
   return api.post(`/daily/proofs/${proofId}/comments`, { body, replyToId: replyToId ?? undefined });
+}
+
+/** @ autocomplete in a photo's comments: its author and thread first. Never throws. */
+export async function fetchPhotoMentionSuggestions(proofId: string, q: string): Promise<MentionSuggestion[]> {
+  try {
+    const data = await api.get<{ suggestions?: MentionSuggestion[] }>(`/daily/proofs/${proofId}/mention-suggestions`, { params: { q } });
+    return data.suggestions ?? [];
+  } catch {
+    return [];
+  }
 }
 
 export async function deletePhotoComment(commentId: number): Promise<{ commentCount: number }> {

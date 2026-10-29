@@ -886,5 +886,65 @@
     "yesterday": "أمس قال العالم…",
     "beFirst": "مثّل {{city}}",
     "beFirstSub": "كن أول مدينة اليوم"
+  },
+  "comments": {
+    "title": "التعليقات",
+    "close": "إغلاق",
+    "comment": "علّق",
+    "newComments": "تعليقات جديدة",
+    "empty": "كن أول من يقول شيئًا 💬",
+    "emptySub": "اسأل أين هو، تفاعل، قارن بمدينتك.",
+    "placeholder": "أضف تعليقًا…",
+    "placeholderGuest": "سجّل لتعلّق",
+    "older": "عرض التعليقات السابقة",
+    "reply": "رد",
+    "copy": "نسخ",
+    "delete": "حذف",
+    "cancelReply": "إلغاء الرد",
+    "replyingTo": "رد على @{{name}}",
+    "author": "الكاتب",
+    "first": "الأول!",
+    "sending": "جارٍ الإرسال…",
+    "failed": "لم يُرسل · اضغط لإعادة المحاولة",
+    "discard": "إزالة",
+    "like": "إعجاب",
+    "actionsHint": "اضغط مطولًا للرد أو النسخ أو الإبلاغ",
+    "quickHint": "اضغط مطولًا للتعديل قبل الإرسال",
+    "count_zero": "{{count}} تعليق",
+    "count_one": "تعليق واحد",
+    "count_two": "تعليقان",
+    "count_few": "{{count}} تعليقات",
+    "count_many": "{{count}} تعليقًا",
+    "count_other": "{{count}} تعليق",
+    "seeAll_zero": "عرض كل التعليقات ({{count}})",
+    "seeAll_one": "عرض كل التعليقات ({{count}})",
+    "seeAll_two": "عرض كل التعليقات ({{count}})",
+    "seeAll_few": "عرض كل التعليقات ({{count}})",
+    "seeAll_many": "عرض كل التعليقات ({{count}})",
+    "seeAll_other": "عرض كل التعليقات ({{count}})",
+    "quick": {
+      "soLocal": "🔥 محلي جدًا!",
+      "wantThis": "🤤 أريد هذا!",
+      "neverSeen": "😮 لم أرَ هذا من قبل",
+      "whereIsIt": "📍 أين هذا؟",
+      "whatsItCalled": "🏷️ ما اسمه؟"
+    },
+    "errors": {
+      "moderation_blocked": "لا يمكن نشر هذا التعليق. كن لطيفًا!",
+      "rate_limited": "على مهلك! حاول بعد دقيقة.",
+      "invalid_body": "التعليق 300 حرف كحد أقصى.",
+      "generic": "حدث خطأ ما. حاول مرة أخرى."
+    },
+    "report": {
+      "action": "إبلاغ",
+      "reasons": {
+        "inappropriate": "غير لائق",
+        "harassment": "تحرش أو كراهية",
+        "spam": "رسائل مزعجة",
+        "other": "شيء آخر"
+      },
+      "thanks": "شكرًا - سنتحقق من ذلك.",
+      "already": "لقد أبلغت عن هذا التعليق بالفعل."
+    }
   }
 }
