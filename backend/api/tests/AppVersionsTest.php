@@ -122,4 +122,15 @@ final class AppVersionsTest extends TestCase
         AppConfig::setSettings(['dual_photo' => '1']);
         $this->assertTrue(AppConfig::payload('android')['dualPhoto']);
     }
+
+    public function testDualPhotoTestersAllowlist(): void
+    {
+        $tester = 'dc46c6caf828962a4caf13c7c1c4680e';
+        $this->assertSame([$tester, '343dc4925a36383b6db84419b2440453'],
+            AppConfig::parseTesters(" DC46C6CAF828962A4CAF13C7C1C4680E,\n343dc4925a36383b6db84419b2440453 nope @lan $tester"));
+        AppConfig::setSettings(['dual_photo' => '0', 'dual_photo_testers' => $tester]);
+        $this->assertTrue(AppConfig::payload('ios', $tester)['dualPhoto'], 'a tester gets it while the switch is off');
+        $this->assertFalse(AppConfig::payload('ios', '343dc4925a36383b6db84419b2440453')['dualPhoto']);
+        $this->assertFalse(AppConfig::payload('ios', null)['dualPhoto'], 'guests: the previous capture');
+    }
 }

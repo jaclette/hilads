@@ -16,7 +16,8 @@ declare(strict_types=1);
  *                              get 426 on every call, and their accounts are
  *                              kept in old_app_seen for an "Old app versions" push.
  *   Dual photo                 Admin › App versions: the Daily camera with the
- *                              selfie (off: the previous capture).
+ *                              selfie (off: the previous capture), for everyone
+ *                              or only for the testers' user ids.
  * The app sends X-Platform and X-App-Version from 1.8.0 and reads GET /api/v1/app/config.
  */
 final class AppConfig
@@ -109,6 +110,7 @@ final class AppConfig
         }
         $values['block_old_apps'] = !empty($in['block_old_apps']) ? '1' : '0';
         $values['dual_photo']     = !empty($in['dual_photo']) ? '1' : '0';
+        $values['dual_photo_testers'] = implode("\n", self::parseTesters((string) ($in['dual_photo_testers'] ?? '')));
         $stmt = Database::pdo()->prepare("
             INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES (?, ?, now(), ?)
             ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now(), updated_by = EXCLUDED.updated_by
@@ -155,6 +157,25 @@ final class AppConfig
     public static function dualPhoto(): bool
     {
         return (self::settings()['dual_photo'] ?? '0') === '1';
+    }
+
+    /** Dual photo for this user: the switch, or the testers' allowlist (user ids). */
+    public static function dualPhotoFor(?string $userId): bool
+    {
+        return self::dualPhoto() || ($userId !== null && in_array($userId, self::dualPhotoTesters(), true));
+    }
+
+    /** The testers who get dual photo while the switch is off (Admin › App versions). */
+    public static function dualPhotoTesters(): array
+    {
+        return self::parseTesters((string) (self::settings()['dual_photo_testers'] ?? ''));
+    }
+
+    /** User ids (32 hex) from free text: one per line, or separated by commas or spaces; anything else is dropped. */
+    public static function parseTesters(string $raw): array
+    {
+        preg_match_all('/\b[a-f0-9]{32}\b/', strtolower($raw), $m);
+        return array_values(array_unique($m[0]));
     }
 
     // ── Old apps (up to 1.7.1: no update screen, no X-App-Version) ────────────
@@ -283,14 +304,14 @@ final class AppConfig
     }
 
     /** GET /app/config payload, for the caller's platform (X-Platform). */
-    public static function payload(?string $platform = null): array
+    public static function payload(?string $platform = null, ?string $userId = null): array
     {
         return [
             'minVersion'              => self::platformVersion('min', $platform),
             'latestVersion'           => self::platformVersion('latest', $platform),
             'storeUrls'               => self::STORE_URLS,
             'challengeCreationClosed' => self::challengeCreationClosed(),
-            'dualPhoto'               => self::dualPhoto(),
+            'dualPhoto'               => self::dualPhotoFor($userId),
         ];
     }
 }

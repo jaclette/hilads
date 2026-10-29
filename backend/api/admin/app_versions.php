@@ -93,6 +93,9 @@ admin_nav('/admin/app-versions');
             <p style="color:#777;font-size:12px;margin:6px 0 0 22px">
                 On: the Daily camera takes the photo, then a selfie (apps with the dual camera). Off: the previous camera (the system camera on iOS). Dual photos already posted show everywhere either way. Apps read it when they open the camera.
             </p>
+            <label for="dual_photo_testers" style="display:block;margin:12px 0 4px 22px;font-size:13px;color:#ccc">Testers (on for them even when off) - user ids, one per line</label>
+            <textarea id="dual_photo_testers" name="dual_photo_testers" rows="3" style="margin-left:22px;width:calc(100% - 22px);font-family:monospace;font-size:12px"
+                      placeholder="dc46c6caf828962a4caf13c7c1c4680e"><?= $h($saved['dual_photo_testers'] ?? '') ?></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
         <?php if ($last): ?><span style="color:#666;font-size:12px;margin-left:10px">Last saved <?= $h($last['at']) ?> UTC by <?= $h($last['updated_by']) ?></span><?php endif; ?>

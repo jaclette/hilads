@@ -13424,9 +13424,10 @@ $router->add('GET', '/api/v1/leaderboard/week', function () {
 // "Update available" banner, below minVersion a blocking "Update required".
 // The versions are the caller's platform's (X-Platform), set in Admin › App versions.
 $router->add('GET', '/api/v1/app/config', function () {
-    header('Cache-Control: public, max-age=300');
-    header('Vary: X-Platform');
-    Response::json(AppConfig::payload(Request::platform()));
+    // Private: dualPhoto depends on who asks (the testers' allowlist).
+    header('Cache-Control: private, max-age=300');
+    header('Vary: X-Platform, Authorization, Cookie');
+    Response::json(AppConfig::payload(Request::platform(), AuthService::currentUser()['id'] ?? null));
 });
 
 // GET /api/v1/channels/{cityId}/people - the Chat people row (V3-04, SPEC 9.6):
