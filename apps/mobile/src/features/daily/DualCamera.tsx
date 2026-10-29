@@ -15,8 +15,10 @@ import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import { Button, DualPhoto, IconButton } from '@/ui';
 
 /**
- * The Daily photo camera, BeReal style (docs/dual-photo-audit.md), on iOS and
- * Android: the back camera for the photo, then the front camera with a live
+ * The Daily photo camera, BeReal style (docs/dual-photo-audit.md). Android:
+ * our back camera (pinch to zoom, flash off / auto / on) for the photo. iOS
+ * (hybrid): the system camera takes the photo (lenses, macro, tap-to-focus,
+ * HDR) and this opens on the selfie with `selfieFor`. Then the front camera with a live
  * preview and a 3-2-1 countdown for the selfie (a tap on the shutter takes it
  * earlier), then a review laid out like the post (tap the inset to swap):
  * Retake selfie, Retake all, Remove selfie / Add your face, Use.
@@ -48,13 +50,22 @@ function isNight(d = new Date()): boolean {
 const SCREEN_FLASH_MS = 350;   // the white screen lights the face before the shot
 
 const DUAL_KEY = 'hilads_dual_photo';
+
+/** The person's Dual choice (on unless they turned it off), for the iOS hybrid flow. */
+export async function dualPreferred(): Promise<boolean> {
+  return (await AsyncStorage.getItem(DUAL_KEY).catch(() => null)) !== '0';
+}
 const COUNTDOWN_FROM = 3;
 const FRONT_TIMEOUT_MS = 5000;
 
 type Phase = 'main' | 'selfie' | 'review';
 
-export function DualCamera({ visible, initial, night = false, onCapture, onClose }: {
+export function DualCamera({ visible, initial, selfieFor = null, night = false, onRetakeMain, onCapture, onClose }: {
   visible: boolean;
+  /** iOS hybrid / Add your face: the photo is taken (system camera, or already there); open on its selfie. */
+  selfieFor?: string | null;
+  /** Retake all with the system camera (iOS): the caller closes this and opens it. */
+  onRetakeMain?: () => void;
   /** A night theme (Night out, a night special like Halloween): the screen flash starts on. */
   night?: boolean;
   /** The shots to review again (e.g. "Retake" from a later step keeps nothing). */
@@ -77,7 +88,9 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
   const [backFacing, setBackFacing] = useState<'back' | 'front'>('back');
   const [ready, setReady] = useState(false);
   const [taking, setTaking] = useState(false);
-  const [flash, setFlash] = useState<'off' | 'on'>('off');
+  const [flash, setFlash] = useState<'off' | 'auto' | 'on'>('off');
+  const [zoom, setZoom] = useState(0);
+  const pinch = useRef<{ dist: number; zoom: number } | null>(null);
   const [main, setMain] = useState<string | null>(null);
   const [selfie, setSelfie] = useState<string | null>(null);
   const [count, setCount] = useState<number | null>(null);
@@ -105,8 +118,19 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
     clearTimers();
     setReady(false); setTaking(false); setCount(null); setNotice(null); setWink(false); setLit(false);
     setScreenFlash(night || isNight());
+    setZoom(0);
     if (initial) { setMain(initial.main); setSelfie(initial.selfie); setPhase('review'); }
+    else if (selfieFor) { setMain(selfieFor); setSelfie(null); setDual(true); toSelfie(); }
     else { setMain(null); setSelfie(null); setPhase('main'); }
+  };
+
+  // Pinch to zoom on the photo's viewfinder (Android; iOS uses the system camera's lenses).
+  const onTouchMove = (e: { nativeEvent: { touches: { pageX: number; pageY: number }[] } }) => {
+    const t2 = e.nativeEvent.touches;
+    if (t2.length !== 2) { pinch.current = null; return; }
+    const dist = Math.hypot(t2[0].pageX - t2[1].pageX, t2[0].pageY - t2[1].pageY);
+    if (!pinch.current) { pinch.current = { dist, zoom }; return; }
+    setZoom(Math.min(1, Math.max(0, pinch.current.zoom + (dist - pinch.current.dist) / 600)));
   };
 
   const toggleDual = () => {
@@ -114,6 +138,8 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
     setDual(next);
     Haptics.selectionAsync().catch(() => {});
     AsyncStorage.setItem(DUAL_KEY, next ? '1' : '0').catch(() => {});
+    // Off on the selfie screen: no selfie this time (the photo goes alone).
+    if (!next && phase === 'selfie') { clearTimers(); setCount(null); setSelfie(null); setNotice(null); setPhase('review'); }
   };
 
   // ── The flash between the two cameras, the countdown's bouncy numbers ──
@@ -206,7 +232,7 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
   if (!permission) return null;
 
   return (
-    <Modal visible={shown} animationType="slide" statusBarTranslucent navigationBarTranslucent onRequestClose={onClose} onShow={onShow}>
+    <Modal visible={shown} animationType={selfieFor ? 'fade' : 'slide'} statusBarTranslucent navigationBarTranslucent onRequestClose={onClose} onShow={onShow}>
       <View style={styles.root}>
         {!permission.granted ? (
           <View style={[styles.center, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -226,7 +252,10 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
               <View style={styles.row}>
                 <Chip icon="camera-reverse-outline" label={selfie ? t('dual.retakeSelfie') : t('dual.addFace')} onPress={toSelfie} />
                 {!!selfie && <Chip icon="close-circle-outline" label={t('dual.removeSelfie')} onPress={() => setSelfie(null)} />}
-                <Chip icon="refresh" label={t('dual.retakeAll')} onPress={() => { setMain(null); setSelfie(null); setNotice(null); setReady(false); setPhase('main'); }} />
+                <Chip icon="refresh" label={t('dual.retakeAll')} onPress={() => {
+                  if (onRetakeMain) { onRetakeMain(); return; }
+                  setMain(null); setSelfie(null); setNotice(null); setReady(false); setPhase('main');
+                }} />
               </View>
               <Button icon="checkmark" label={tc('camera.usePhoto')} onPress={() => onCapture({ main, selfie })} testID="camera-use" />
             </View>
@@ -240,9 +269,14 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
               style={styles.flex}
               facing={facing}
               flash={phase === 'main' ? flash : 'off'}
+              zoom={phase === 'main' ? zoom : 0}
               onCameraReady={onReady}
               onMountError={() => { if (phase === 'selfie') { clearTimers(); setNotice(t('dual.frontFailed')); setPhase('review'); } }}
             />
+            {/* Pinch to zoom on the photo's viewfinder. */}
+            {phase === 'main' && (
+              <View style={StyleSheet.absoluteFill} onTouchMove={onTouchMove} onTouchEnd={() => { pinch.current = null; }} />
+            )}
             {/* The main photo, small, while the selfie is taken: what it goes with. */}
             {phase === 'selfie' && main && (
               <View style={[styles.mainThumb, { top: top + 60 }]} pointerEvents="none">
@@ -251,7 +285,7 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
             )}
             <View style={[styles.topBar, { top }]} pointerEvents="box-none">
               <IconButton icon="close" tone="onPhoto" iconSize={28} label={tc('close')} onPress={onClose} />
-              {phase === 'main' && (
+              {(phase === 'main' || phase === 'selfie') && (
                 <TouchableOpacity style={[styles.dual, dual && styles.dualOn]} onPress={toggleDual} accessibilityRole="switch"
                                   accessibilityState={{ checked: dual }} accessibilityLabel={dual ? t('dual.on') : t('dual.off')}>
                   <Text style={styles.dualEmoji}>🤳</Text>
@@ -259,8 +293,12 @@ export function DualCamera({ visible, initial, night = false, onCapture, onClose
                 </TouchableOpacity>
               )}
               {phase === 'main' ? (
-                <TouchableOpacity style={styles.round} onPress={() => setFlash(f => (f === 'off' ? 'on' : 'off'))} accessibilityRole="button" accessibilityLabel={tc('camera.flash')}>
-                  <Ionicons name={flash === 'on' ? 'flash' : 'flash-off-outline'} size={24} color={flash === 'on' ? colors.gold : colors.white} />
+                // The rear flash: off → auto → on.
+                <TouchableOpacity style={styles.round} onPress={() => setFlash(f => (f === 'off' ? 'auto' : f === 'auto' ? 'on' : 'off'))}
+                                  accessibilityRole="button" accessibilityLabel={tc('camera.flash')} accessibilityValue={{ text: flash }}>
+                  <Ionicons name={flash === 'on' ? 'flash' : flash === 'auto' ? 'flash-outline' : 'flash-off-outline'} size={24}
+                            color={flash === 'off' ? colors.white : colors.gold} />
+                  {flash === 'auto' && <Text style={styles.auto}>A</Text>}
                 </TouchableOpacity>
               ) : (
                 // The selfie's screen flash (front camera: the screen lights the face).
@@ -334,6 +372,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   shutter:      { width: 78, height: 78, borderRadius: Radius.full, borderWidth: 4, borderColor: c.white, alignItems: 'center', justifyContent: 'center' },
   shutterInner: { width: 60, height: 60, borderRadius: Radius.full, backgroundColor: c.white },
   dim:       { opacity: 0.4 },
+  auto:      { position: 'absolute', right: 8, bottom: 6, fontSize: 10, fontWeight: '800', color: c.gold },
   flash:     { backgroundColor: c.white },
   mainThumb: { position: 'absolute', left: Spacing.md, width: 84, height: 112, borderRadius: 12, overflow: 'hidden', borderWidth: 2, borderColor: c.white },
   countWrap: { position: 'absolute', left: 0, right: 0, top: '30%', alignItems: 'center', gap: 6 },

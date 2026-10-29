@@ -23,7 +23,7 @@ import * as Haptics from 'expo-haptics';
 import { Confetti } from '@/ui/joy';
 import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { DualCamera, type DualShot } from '@/features/daily/DualCamera';
+import { DualCamera, dualPreferred, type DualShot } from '@/features/daily/DualCamera';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
 import { fetchAppConfig } from '@/api/appConfig';
 import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/PlaceStep';
@@ -112,6 +112,8 @@ function DailyProofScreenContent() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [androidCamera, setAndroidCamera] = useState(false);
   const [dualEnabled, setDualEnabled] = useState(false);
+  // iOS hybrid and Add your face: the photo the selfie goes with (the camera opens on the selfie).
+  const [selfieFor, setSelfieFor] = useState<string | null>(null);
   // Dual photo: the selfie taken right after the photo (null: the photo alone).
   const [selfie, setSelfie]     = useState<Photo | null>(null);
   const [sending, setSending]   = useState(false);
@@ -233,7 +235,24 @@ function DailyProofScreenContent() {
   // platforms, the photo then the selfie (the system camera can't chain one).
   // Off: the previous capture, unchanged.
   const takePhoto = async () => {
-    if (dualEnabled) { setCameraOpen(true); return; }
+    if (dualEnabled) {
+      // Android: our camera for both. iOS (hybrid): the system camera for the photo (lenses,
+      // macro, tap-to-focus, HDR), then ours opens on the selfie at once. A cancel posts nothing.
+      if (Platform.OS === 'android') { setSelfieFor(null); setCameraOpen(true); return; }
+      const cam = await ImagePicker.requestCameraPermissionsAsync();
+      if (cam.status !== 'granted') { Alert.alert(t('proof.permCameraTitle'), t('proof.permCameraBody')); return; }
+      const pick = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, cameraType: ImagePicker.CameraType.back });
+      if (pick.canceled || !pick.assets?.[0]) return;
+      const uri = pick.assets[0].uri;
+      if (!(await dualPreferred())) {   // Dual turned off by the person: the photo alone
+        setSelfie(null);
+        gotPhoto({ uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+        return;
+      }
+      setSelfieFor(uri);
+      setCameraOpen(true);
+      return;
+    }
     // Android: in-app camera (launchCameraAsync hangs on Android 14 + singleTask).
     if (Platform.OS === 'android') { setAndroidCamera(true); return; }
     const cam = await ImagePicker.requestCameraPermissionsAsync();
@@ -246,6 +265,11 @@ function DailyProofScreenContent() {
   };
   const gotShot = (shot: DualShot) => {
     setCameraOpen(false);
+    // Add your face on a photo already there: only the selfie changes.
+    if (photo && shot.main === photo.uri) {
+      setSelfie(shot.selfie ? { uri: shot.selfie, mime: 'image/jpeg', remoteUrl: null } : null);
+      return;
+    }
     setSelfie(shot.selfie ? { uri: shot.selfie, mime: 'image/jpeg', remoteUrl: null } : null);
     gotPhoto({ uri: shot.main, mime: 'image/jpeg', remoteUrl: null });
   };
@@ -613,10 +637,18 @@ function DailyProofScreenContent() {
           {photo && (
             <View style={styles.photoWrap}>
               <DualPhoto main={{ uri: photo.uri }} selfie={selfie ? { uri: selfie.uri } : null} style={styles.photo} />
-              <TouchableOpacity style={styles.retake} onPress={takePhoto} accessibilityRole="button">
-                <Ionicons name="camera-outline" size={18} color={colors.text} />
-                <Text style={styles.retakeText}>{t('proof.retake')}</Text>
-              </TouchableOpacity>
+              <View style={styles.photoActions}>
+                <TouchableOpacity style={styles.retake} onPress={takePhoto} accessibilityRole="button">
+                  <Ionicons name="camera-outline" size={18} color={colors.text} />
+                  <Text style={styles.retakeText}>{t('proof.retake')}</Text>
+                </TouchableOpacity>
+                {/* Dual photo: a selfie for a photo without one. */}
+                {dualEnabled && !selfie && (
+                  <TouchableOpacity style={styles.retake} onPress={() => { setSelfieFor(photo.uri); setCameraOpen(true); }} accessibilityRole="button">
+                    <Text style={styles.retakeText}>{t('dual.addFace')}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           )}
 
@@ -691,7 +723,8 @@ function DailyProofScreenContent() {
       <HomeCityPicker visible={homePicker} selected={home} onPick={pickHome} onClose={() => setHomePicker(false)} />
 
       {dualEnabled && (
-        <DualCamera visible={cameraOpen} onCapture={gotShot} onClose={() => setCameraOpen(false)}
+        <DualCamera visible={cameraOpen} selfieFor={selfieFor} onCapture={gotShot} onClose={() => setCameraOpen(false)}
+                    onRetakeMain={Platform.OS === 'ios' ? () => { setCameraOpen(false); setTimeout(takePhoto, 400); } : undefined}
                     night={today?.challenge?.theme?.key === 'night_out' || !!today?.challenge?.special?.id?.startsWith('halloween')} />
       )}
       <AndroidCameraCapture
@@ -719,6 +752,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
   body:        { padding: Spacing.md, gap: 8, paddingBottom: 30 },
   photoWrap:   { gap: 8 },
+  photoActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
   photo:       { width: '100%', aspectRatio: 1, borderRadius: 18, backgroundColor: c.bg3 },
   retake:      { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   retakeText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
