@@ -1543,6 +1543,19 @@
         "thanks": "Salamat - titingnan namin.",
         "already": "Na-report mo na ang komentong ito."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "Naka-on ang dual photo",
+      "off": "Naka-off ang dual photo",
+      "nowYou": "Ikaw naman! 😄",
+      "frontFailed": "Hindi mabuksan ang front camera. Mag-isa ang photo mo.",
+      "swapHint": "I-tap ang maliit na photo para magpalit 👆",
+      "retakeSelfie": "Ulitin ang selfie",
+      "removeSelfie": "Alisin ang selfie",
+      "retakeAll": "Ulitin lahat",
+      "addFace": "Idagdag ang mukha mo 🤳",
+      "swapA11y": "Pagpalitin ang mga photo"
     }
   }
 }

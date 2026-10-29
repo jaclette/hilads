@@ -244,6 +244,7 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
       <span className="tc-tile">
         <span className="tc-photo-box">
           <img className="tc-photo" src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" />
+          {p.selfieUrl && <img className="dp-mini" src={p.selfieThumbUrl ?? p.selfieUrl} alt="" />}
           {pile && (
             <span className="tc-pill"><Icon name="camera" size={12} />{players > 0 ? `${group.count} · ${t('mosaic.players', { count: players })}` : group.count}</span>
           )}

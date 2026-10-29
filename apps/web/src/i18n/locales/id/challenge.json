@@ -1530,6 +1530,19 @@
         "thanks": "Terima kasih - akan kami periksa.",
         "already": "Kamu sudah melaporkan komentar ini."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "Foto ganda aktif",
+      "off": "Foto ganda nonaktif",
+      "nowYou": "Sekarang kamu! 😄",
+      "frontFailed": "Kamera depan tidak bisa dibuka. Fotomu diposting sendiri.",
+      "swapHint": "Ketuk foto kecil untuk menukar 👆",
+      "retakeSelfie": "Ulangi selfie",
+      "removeSelfie": "Hapus selfie",
+      "retakeAll": "Ulangi semua",
+      "addFace": "Tambahkan wajahmu 🤳",
+      "swapA11y": "Tukar foto"
     }
   }
 }

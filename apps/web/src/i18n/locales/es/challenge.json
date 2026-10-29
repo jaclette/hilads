@@ -1556,6 +1556,19 @@
         "thanks": "Gracias - lo revisaremos.",
         "already": "Ya denunciaste este comentario."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "Foto doble activada",
+      "off": "Foto doble desactivada",
+      "nowYou": "¡Ahora tú! 😄",
+      "frontFailed": "No se pudo abrir la cámara frontal. Tu foto va sola.",
+      "swapHint": "Toca la foto pequeña para cambiar 👆",
+      "retakeSelfie": "Repetir selfie",
+      "removeSelfie": "Quitar selfie",
+      "retakeAll": "Repetir todo",
+      "addFace": "Añade tu cara 🤳",
+      "swapA11y": "Cambiar las fotos"
     }
   }
 }

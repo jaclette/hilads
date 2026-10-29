@@ -147,6 +147,7 @@ export function MyPhotosScreen({ onBack, onOpenPhoto }) {
               <button key={p.id} type="button" className="pp-photo" onClick={() => onOpenPhoto(p)}
                       aria-label={[p.city?.name, p.caption].filter(Boolean).join(', ')}>
                 <img src={p.thumbUrl ?? p.photoUrl} alt="" loading="lazy" />
+                {p.selfieUrl && <img className="dp-mini" src={p.selfieThumbUrl ?? p.selfieUrl} alt="" />}
               </button>
             ))}
           </div>

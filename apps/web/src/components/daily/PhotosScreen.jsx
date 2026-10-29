@@ -17,6 +17,7 @@ import {
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
 import { CommentButton, commentsTargetOf } from './PhotoCommentsSheet'
+import { DualPhoto, selfieOf } from './DualPhoto'
 
 const LIMIT = 60
 /** Two taps closer than this are a double tap (a vote). */
@@ -234,9 +235,12 @@ function Slide({ proof, hint, onProfile, onVoters }) {
   return (
     <section className="dc-photos-slide">
       <div className="dc-photos-blur" style={{ backgroundImage: `url("${proof.thumbUrl || proof.photoUrl}")` }} aria-hidden="true" />
-      <img className="dc-photos-photo" src={proof.photoUrl} alt={proof.caption || ''} loading="lazy"
-           onPointerUp={tap} onDoubleClick={doubleTap}
-           title={t('feed.doubleTap')} />
+      {proof.selfieUrl
+        ? <DualPhoto className="dc-photos-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} fit="contain" insetTop={64}
+                     alt={proof.caption || ''} onPointerUp={tap} onDoubleClick={doubleTap} title={t('feed.doubleTap')} />
+        : <img className="dc-photos-photo" src={proof.photoUrl} alt={proof.caption || ''} loading="lazy"
+               onPointerUp={tap} onDoubleClick={doubleTap}
+               title={t('feed.doubleTap')} />}
       {burst > 0 && <span key={burst} className="dc-photos-burst" aria-hidden="true"><Icon name="heart" size={120} /></span>}
       <div className="dc-photos-shade" aria-hidden="true" />
       <div className="dc-photos-bottom">

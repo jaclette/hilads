@@ -1543,6 +1543,19 @@
         "thanks": "Bedankt - we kijken ernaar.",
         "already": "Je hebt deze reactie al gemeld."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "Dubbele foto aan",
+      "off": "Dubbele foto uit",
+      "nowYou": "Nu jij! 😄",
+      "frontFailed": "De voorcamera ging niet open. Je foto gaat alleen.",
+      "swapHint": "Tik op de kleine foto om te wisselen 👆",
+      "retakeSelfie": "Selfie opnieuw",
+      "removeSelfie": "Selfie weghalen",
+      "retakeAll": "Alles opnieuw",
+      "addFace": "Laat je gezicht zien 🤳",
+      "swapA11y": "Foto's wisselen"
     }
   }
 }

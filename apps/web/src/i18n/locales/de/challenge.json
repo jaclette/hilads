@@ -1543,6 +1543,19 @@
         "thanks": "Danke - wir prüfen das.",
         "already": "Du hast diesen Kommentar schon gemeldet."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "Doppelfoto an",
+      "off": "Doppelfoto aus",
+      "nowYou": "Jetzt du! 😄",
+      "frontFailed": "Die Frontkamera ließ sich nicht öffnen. Dein Foto geht allein.",
+      "swapHint": "Tippe auf das kleine Foto zum Tauschen 👆",
+      "retakeSelfie": "Selfie neu",
+      "removeSelfie": "Selfie entfernen",
+      "retakeAll": "Alles neu",
+      "addFace": "Zeig dein Gesicht 🤳",
+      "swapA11y": "Fotos tauschen"
     }
   }
 }

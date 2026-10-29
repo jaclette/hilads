@@ -143,6 +143,7 @@ function CompactTile({ proof, mainAnswer, onOpen }) {
     <div className="dc-ctile">
       <button type="button" className="dc-ctile-photo" onClick={onOpen} aria-label={personName(proof.user)}>
         <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
+        {proof.selfieUrl && <img className="dp-mini" src={proof.selfieThumbUrl ?? proof.selfieUrl} alt="" />}
       </button>
       <div className="dc-ctile-meta">
         <div className="dc-ctile-name">

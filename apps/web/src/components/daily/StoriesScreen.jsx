@@ -13,6 +13,7 @@ import { LocalPassBadge, getLastToday, personName, seedProofs, useCastVote, useD
 import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoCommentsSheet'
 import { flushSeen, markSeen } from './seen'
 import { SeasonalZone } from '../event/seasonal'
+import { DualPhoto, selfieOf } from './DualPhoto'
 
 /** How long a photo stays before the next one (no auto-advance with reduced motion). */
 const PHOTO_MS = 5000
@@ -154,7 +155,10 @@ function Stories({ city: startCity = null, source = 'today', onBack }) {
   return createPortal(
     <div className="tour" role="dialog" aria-modal="true" aria-label={t('worlds.tagline')}>
       {proof
-        ? <img key={proof.id} className="tour-photo" src={proof.photoUrl} alt={proof.caption || ''} onError={() => skipPhoto(proof.id)} />
+        ? proof.selfieUrl
+          ? <DualPhoto key={proof.id} className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)}
+                       draggable insetTop={76} alt={proof.caption || ''} />
+          : <img key={proof.id} className="tour-photo" src={proof.photoUrl} alt={proof.caption || ''} onError={() => skipPhoto(proof.id)} />
         : <div className="dc-photos-center"><span className="dc-photos-spinner" aria-hidden="true" /></div>}
       <div className="tour-shade" />
 

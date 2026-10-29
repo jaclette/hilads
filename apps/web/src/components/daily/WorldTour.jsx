@@ -11,6 +11,7 @@ import { plain } from '../joy/Joy'
 import { RankMedal, useDc } from './dailyShared'
 import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoCommentsSheet'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
+import { DualPhoto, selfieOf } from './DualPhoto'
 
 const SLIDE_MS = 6000
 
@@ -77,7 +78,9 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
     <div className="tour" role="dialog" aria-modal="true" aria-label={plain(t('tour.title'))}
          onTouchStart={(e) => { touch.current = e.touches[0].clientY; setPaused(true) }}
          onTouchEnd={(e) => { setPaused(false); if (touch.current !== null && e.changedTouches[0].clientY - touch.current > 80) onClose(); touch.current = null }}>
-      {slide ? <img className="tour-photo" src={proof.photoUrl} alt={proof.caption || ''} />
+      {slide ? (proof.selfieUrl
+          ? <DualPhoto className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} insetTop={64} alt={proof.caption || ''} />
+          : <img className="tour-photo" src={proof.photoUrl} alt={proof.caption || ''} />)
         : today?.coverUrl ? <img className="tour-photo" src={today.coverUrl} alt="" /> : null}
       <div className="tour-shade" />
       <button type="button" className="tour-tap" onClick={tap} onMouseDown={() => setPaused(true)} onMouseUp={() => setPaused(false)}

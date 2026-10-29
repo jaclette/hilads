@@ -41,7 +41,7 @@ export function useCommentsOpen() {
 /** A target from a full proof. `onLeave`: the layer under it closes before a profile opens. */
 export function commentsTargetOf(p, extra = {}) {
   return {
-    proofId: p.id, thumbUrl: p.thumbUrl ?? p.photoUrl, author: p.user,
+    proofId: p.id, thumbUrl: p.thumbUrl ?? p.photoUrl, selfieThumb: p.selfieThumbUrl ?? p.selfieUrl ?? null, author: p.user,
     city: p.city ? { name: p.city.name, country: p.city.country } : null,
     theme: p.context?.theme?.key ?? null, isMine: !!p.isMine, ...extra,
   }
@@ -187,7 +187,12 @@ function Sheet({ initial, onClose }) {
       <div className="pc-sheet">
         <span className="v3-sheet-grabber" aria-hidden="true" />
         <div className="pc-head">
-          {target.thumbUrl && <img className="pc-thumb" src={thumbUrl(target.thumbUrl)} alt="" />}
+          {target.thumbUrl && (
+            <span className="pc-thumb-wrap">
+              <img className="pc-thumb" src={thumbUrl(target.thumbUrl)} alt="" />
+              {target.selfieThumb && <img className="pc-thumb-selfie" src={target.selfieThumb} alt="" />}
+            </span>
+          )}
           <div className="pc-head-body">
             <p className="pc-title">{t('comments.title')}{count > 0 ? ` · ${count}` : ''}</p>
             <p className="pc-byline">{byline}</p>

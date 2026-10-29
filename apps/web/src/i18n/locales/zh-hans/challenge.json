@@ -1529,6 +1529,19 @@
         "thanks": "谢谢 - 我们会核查。",
         "already": "你已经举报过这条评论。"
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "双拍已开启",
+      "off": "双拍已关闭",
+      "nowYou": "轮到你了！😄",
+      "frontFailed": "无法打开前置摄像头。只发这张照片。",
+      "swapHint": "点小图切换 👆",
+      "retakeSelfie": "重拍自拍",
+      "removeSelfie": "移除自拍",
+      "retakeAll": "全部重拍",
+      "addFace": "加上你的脸 🤳",
+      "swapA11y": "切换照片"
     }
   }
 }

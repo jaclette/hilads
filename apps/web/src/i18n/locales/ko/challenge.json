@@ -1529,6 +1529,19 @@
         "thanks": "고마워요 - 확인할게요.",
         "already": "이미 신고한 댓글이에요."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "듀얼 사진 켜짐",
+      "off": "듀얼 사진 꺼짐",
+      "nowYou": "이제 당신 차례! 😄",
+      "frontFailed": "전면 카메라를 열 수 없어요. 사진만 올라가요.",
+      "swapHint": "작은 사진을 탭해서 바꿔 보세요 👆",
+      "retakeSelfie": "셀카 다시 찍기",
+      "removeSelfie": "셀카 빼기",
+      "retakeAll": "모두 다시 찍기",
+      "addFace": "얼굴도 넣어요 🤳",
+      "swapA11y": "사진 바꾸기"
     }
   }
 }

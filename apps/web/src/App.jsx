@@ -30,6 +30,7 @@ import IndexScreen from './components/daily/IndexScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
 import { CommentButton, CommentPreview, PhotoCommentsHost, openPhotoComments } from './components/daily/PhotoCommentsSheet'
+import { DualPhoto, selfieOf } from './components/daily/DualPhoto'
 import { bindCommentsSocket } from './components/daily/comments'
 import { themeColor } from './components/joy/Joy'
 import PeopleRow from './components/chat/PeopleRow'
@@ -734,8 +735,11 @@ function DailyFeedCard({ item, t, onOpen }) {
         </span>
         {p.isEarly && <span className="feed-daily-early"><Icon name="flash-outline" size={11} /> {t('daily.early')}</span>}
       </div>
-      <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy"
-           onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />
+      {p.selfieUrl ? (
+        <DualPhoto className="feed-daily-photo" main={{ url: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} alt={p.caption || ''}
+                   onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />
+      ) : <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy"
+           onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />}
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-tags">
         {p.spot && <span className="feed-daily-tag"><Icon name="location-outline" size={12} /> {p.spot.name}</span>}
@@ -760,7 +764,7 @@ function DailyFeedCard({ item, t, onOpen }) {
 /** A chat card's photo as a comments target (its payload is a snapshot; the comments come live). */
 function proofCommentsTarget(p) {
   return {
-    proofId: p.proofId, thumbUrl: p.thumbUrl ?? p.photoUrl, author: p.user ?? null, city: p.city ?? null,
+    proofId: p.proofId, thumbUrl: p.thumbUrl ?? p.photoUrl, selfieThumb: p.selfieThumbUrl ?? p.selfieUrl ?? null, author: p.user ?? null, city: p.city ?? null,
     theme: p.theme?.key ?? null, isMine: !!p.user?.id && p.user.id === SELF_IDENTITY.userId,
   }
 }

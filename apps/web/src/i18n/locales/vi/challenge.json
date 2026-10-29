@@ -1529,6 +1529,19 @@
         "thanks": "Cảm ơn - chúng tôi sẽ kiểm tra.",
         "already": "Bạn đã báo cáo bình luận này rồi."
       }
+    },
+    "dual": {
+      "toggle": "Dual",
+      "on": "Ảnh kép đang bật",
+      "off": "Ảnh kép đang tắt",
+      "nowYou": "Tới bạn! 😄",
+      "frontFailed": "Không mở được camera trước. Ảnh của bạn sẽ đăng một mình.",
+      "swapHint": "Chạm ảnh nhỏ để đổi 👆",
+      "retakeSelfie": "Chụp lại selfie",
+      "removeSelfie": "Bỏ selfie",
+      "retakeAll": "Chụp lại tất cả",
+      "addFace": "Thêm mặt bạn 🤳",
+      "swapA11y": "Đổi ảnh"
     }
   }
 }

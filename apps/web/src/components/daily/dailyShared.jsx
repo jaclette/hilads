@@ -31,6 +31,7 @@ export function useHere() {
 import { themeName } from '../map/spotsShared'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { useBackLayer } from '../../lib/backLayers'
+import { DualPhoto, selfieOf } from './DualPhoto'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
 // features/daily): the screens' context, the app's strings (challenge.json →
@@ -322,6 +323,7 @@ export function ProofTile({ proof, onOpen }) {
     <div className="dc-tile" role="button" tabIndex={0} onClick={onOpen} onKeyDown={(e) => { if (e.key === 'Enter') onOpen() }}>
       <div className="dc-tile-photo">
         <img src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt={proof.caption || ''} loading="lazy" />
+        {proof.selfieUrl && <img className="dp-mini" src={proof.selfieThumbUrl ?? proof.selfieUrl} alt="" />}
         {proof.worldRank !== null && proof.worldRank <= 3 && <span className="dc-tile-medal"><RankMedal rank={proof.worldRank} /></span>}
       </div>
       <div className="dc-tile-meta">
@@ -380,7 +382,9 @@ export function ProofViewer({ proof, onClose }) {
       {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
       <div className="dc-viewer-blur" style={{ backgroundImage: `url("${proof.thumbUrl || proof.photoUrl}")` }} aria-hidden="true" />
       <div className="dc-viewer-scroll">
-      <img className="dc-viewer-photo" src={proof.photoUrl} alt={proof.caption || ''} />
+      {proof.selfieUrl
+        ? <DualPhoto className="dc-viewer-photo dc-viewer-dual" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} fit="contain" alt={proof.caption || ''} />
+        : <img className="dc-viewer-photo" src={proof.photoUrl} alt={proof.caption || ''} />}
       <div className="dc-viewer-meta">
         <div className="dc-viewer-name">
           {name} · <RoleLabel isLocal={proof.isLocal} suggestion={proof.suggestion} />
