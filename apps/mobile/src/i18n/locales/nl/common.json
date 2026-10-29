@@ -256,5 +256,9 @@
     "setting": "Mijn foto's tonen",
     "on": "Aan",
     "off": "Uit"
+  },
+  "wakingUp": {
+    "title": "Hilads wordt wakker… 🌍",
+    "body": "Over een paar seconden terug, we blijven het proberen."
   }
 }

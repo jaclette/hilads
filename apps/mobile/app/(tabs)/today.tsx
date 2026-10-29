@@ -68,7 +68,7 @@ function TodayContent() {
                                         title={t('today.refreshing')} titleColor={colors.muted} />}
       >
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
-          <TodayTicket data={daily.data} countries={countries} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
+          <TodayTicket data={daily.data} countries={countries} loading={daily.loading} error={daily.error} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />

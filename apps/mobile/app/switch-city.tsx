@@ -42,7 +42,8 @@ import { track } from '@/services/analytics';
 import type { City } from '@/types';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, TextField } from '@/ui';
+import { Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, TextField, WakingUp } from '@/ui';
+import { readOffline, writeOffline } from '@/lib/offlineCache';
 import { KeyboardArea } from '@/ui/keyboard';
 
 // ── Live activity dot - mirrors web .activity-dot.live pulse animation ───────
@@ -156,13 +157,17 @@ export default function SwitchCityScreen() {
 
   async function load(sort: string, isRefresh = false) {
     if (isRefresh) setRefreshing(true);
-    else if (cities.length === 0) setLoading(true);
-    setError(false);
+    else if (cities.length === 0 && !error) setLoading(true);   // "waking up" stays up while it retries
     try {
       const ranked = await fetchChannels(sort);
       setCities(ranked);
+      setError(false);
+      writeOffline(`cities:${sort}`, ranked);
     } catch {
-      setError(true);
+      // Unreachable (a deploy, no network): the last list loaded on this phone, else "waking up".
+      const cached = await readOffline<City[]>(`cities:${sort}`);
+      if (cached?.length) setCities(cached);
+      else setError(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -371,8 +376,7 @@ export default function SwitchCityScreen() {
         />
       ) : error ? (
         <View style={styles.center}>
-          <Text style={styles.emptyText}>{t('loadError')}</Text>
-          <Button variant="secondary" label={t('retry', { ns: 'common' })} onPress={() => load(filter)} style={styles.retry} />
+          <WakingUp onRetry={() => load(filter)} />
         </View>
       ) : (
         <FlatList
@@ -421,7 +425,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   backToLocation: { marginHorizontal: Spacing.md, marginBottom: 4 },
   center:         { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Spacing.md },
   emptyText:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, textAlign: 'center' },
-  retry:          { minWidth: 140 },
   sectionLabel:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: 6, paddingBottom: 8 },
   listContent:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
   cardTouch:      { marginBottom: 10 },

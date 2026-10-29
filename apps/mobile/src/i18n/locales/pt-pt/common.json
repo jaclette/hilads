@@ -256,5 +256,9 @@
     "setting": "Mostrar as minhas fotos",
     "on": "Sim",
     "off": "Não"
+  },
+  "wakingUp": {
+    "title": "O Hilads está a acordar… 🌍",
+    "body": "Volta dentro de segundos, continuamos a tentar."
   }
 }

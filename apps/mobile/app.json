@@ -1136,6 +1136,7 @@
       "@bacons/apple-targets",
       "./plugins/withSingleTopActivity",
       "./plugins/withLegacyBackHandling",
+      "./plugins/withNetworkRecovery",
       [
         "./plugins/withNdkVersion",
         {

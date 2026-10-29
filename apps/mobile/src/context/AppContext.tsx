@@ -5,11 +5,13 @@ import React, {
   useCallback,
   useMemo,
   useRef,
+  useEffect,
   type ReactNode,
 } from 'react';
 import type { GuestIdentity, City, Message, User, OnlineUser, EventChatPreview } from '@/types';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
+import { clearOffline, writeOffline } from '@/lib/offlineCache';
 import { unregisterPushToken } from '@/services/push';
 import { socket } from '@/lib/socket';
 import { track, resetAnalytics } from '@/services/analytics';
@@ -107,6 +109,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [identity,     setIdentityRaw]  = useState<GuestIdentity | null>(null);
   const [sessionId,    setSessionId]    = useState<string | null>(null);
   const [account,      setAccount]      = useState<User | null>(null);
+  // The signed-in account, kept on the phone: a launch while the API can't be reached
+  // (a deploy, no network) still opens signed in (useAppBoot). Cleared on sign-out only.
+  useEffect(() => { if (account) writeOffline('account', account); }, [account]);
   const [city,         setCity]         = useState<City | null>(null);
   const [wsConnected,             setWsConnected]             = useState(false);
   const [unreadDMs,               setUnreadDMs]               = useState(0);
@@ -203,6 +208,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await unregisterPushToken().catch(() => {}); // remove device token before clearing auth
     await authLogout();
     await clearToken();
+    clearOffline('account');
     setAccount(null);
     setUnreadDMs(0);
     setUnreadNotifications(0);

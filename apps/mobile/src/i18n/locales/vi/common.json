@@ -256,5 +256,9 @@
     "setting": "Giới thiệu ảnh của tôi",
     "on": "Bật",
     "off": "Tắt"
+  },
+  "wakingUp": {
+    "title": "Hilads đang thức dậy… 🌍",
+    "body": "Quay lại sau vài giây, chúng mình sẽ tự thử lại."
   }
 }

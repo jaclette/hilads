@@ -256,5 +256,9 @@
     "setting": "Tampilkan fotoku",
     "on": "Aktif",
     "off": "Nonaktif"
+  },
+  "wakingUp": {
+    "title": "Hilads sedang bangun… 🌍",
+    "body": "Kembali dalam beberapa detik, kami terus mencoba."
   }
 }

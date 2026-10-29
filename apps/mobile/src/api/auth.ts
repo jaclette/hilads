@@ -1,4 +1,4 @@
-import { api, setAuthToken, getAuthToken } from './client';
+import { api, setAuthToken, getAuthToken, isAuthFailure } from './client';
 import { persistToken } from '@/services/session';
 import type { User } from '@/types';
 
@@ -6,12 +6,18 @@ export async function createGuestSession(nickname: string): Promise<{ guestId: s
   return api.post('/guest/session', { nickname });
 }
 
+/**
+ * The signed-in user, or null when the session is gone (401: the token is no longer valid).
+ * Any other failure (offline, timeout, a 5xx / 502 during a deploy) THROWS: the session may be
+ * perfectly fine, so callers keep the user signed in and ask again later. Never null for those.
+ */
 export async function authMe(): Promise<User | null> {
   try {
     const data = await api.get<{ user: User }>('/auth/me');
     return data.user ?? null;
-  } catch {
-    return null;
+  } catch (err) {
+    if (isAuthFailure(err)) return null;
+    throw err;
   }
 }
 

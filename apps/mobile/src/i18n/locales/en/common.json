@@ -256,5 +256,9 @@
     "setting": "Feature my photos",
     "on": "On",
     "off": "Off"
+  },
+  "wakingUp": {
+    "title": "Hilads is waking up… 🌍",
+    "body": "Back in a few seconds, we'll keep trying."
   }
 }

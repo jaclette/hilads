@@ -31,7 +31,7 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { markGpsCity } from '@/lib/gpsCityCorrection';
 import { askDailyPush } from '@/services/push';
 import { formatCountdown, isFinalHours } from '@/hooks/useDaily';
-import { Button } from '@/ui';
+import { Button, WakingUp } from '@/ui';
 import type { DailyCompareType, DailyToday, DailyTodayCountries } from '@/types';
 import { isPlaceTheme, themeName } from '@/features/daily/themes';
 
@@ -50,8 +50,8 @@ const FIRST_PROOF_KEY = 'hilads_daily_first_proof_done';
  * compare view; "Snap it for [city]" (straight to the camera), then "You played
  * · See the world" once my photo is in. Tapping the photo opens the challenge.
  */
-export function TodayTicket({ data, countries, loading, secondsLeft, visible = true, onReload }: {
-  data: DailyToday | null; loading: boolean; secondsLeft: number | null;
+export function TodayTicket({ data, countries, loading, error = false, secondsLeft, visible = true, onReload }: {
+  data: DailyToday | null; loading: boolean; error?: boolean; secondsLeft: number | null;
   /** Today's cities (useTodayCountries), shared with the compare section. */
   countries: DailyTodayCountries | null;
   /** The card is on screen (Today's scroll): the button's pulse runs only then. */
@@ -90,6 +90,10 @@ export function TodayTicket({ data, countries, loading, secondsLeft, visible = t
 
   if (loading && !data) {
     return <View style={[styles.ticket, styles.placeholder]}><ActivityIndicator color={colors.primary} /></View>;
+  }
+  // The API can't be reached and nothing is kept on the phone: never "nothing live".
+  if (error && !data) {
+    return <View style={[styles.ticket, styles.placeholder]}><WakingUp onRetry={() => onReload?.()} /></View>;
   }
   if (!challenge) {
     return (

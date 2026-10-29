@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import i18n from '@/i18n';
 import { useFocusEffect } from 'expo-router';
+import { readOffline, writeOffline } from '@/lib/offlineCache';
 import { fetchDailyArchive, fetchDailyBoard, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
@@ -81,6 +82,14 @@ export function useHere(): DailyToday['here'] {
 // challenge sheet opens instantly from the hero: its top from Today, the rest from the
 // cache, refreshed in the background.
 let lastToday: DailyToday | null = null;
+
+// Today's last answer kept on the phone, while its challenge still runs (before nextDropAt),
+// its server clock moved on by the time it was kept (the countdown stays right).
+async function keptToday(cityId: string | null | undefined): Promise<DailyToday | null> {
+  const kept = await readOffline<{ at: number; data: DailyToday }>(`today:${cityId ?? ''}`);
+  if (!kept || kept.data.nextDropAt * 1000 <= Date.now()) return null;
+  return { ...kept.data, serverTime: kept.data.serverTime + Math.floor((Date.now() - kept.at) / 1000) };
+}
 export function getLastToday(): DailyToday | null { return lastToday; }
 const sheetCache = new Map<string, DailySheet>();
 const sheetKey = (date: string, scope: string, cityId: string | null | undefined) => `${date}|${scope}|${cityId ?? ''}|${i18n.language}`;
@@ -105,6 +114,10 @@ export function useDailyToday(cityId: string | null | undefined) {
   const [data, setData]       = useState<DailyToday | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  const failures = useRef(0);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // A guest's own city: where the app placed them (GPS, else the IP guess). An account's comes from the server.
   const hereId  = account ? null : detectedCity?.channelId ?? null;
   const hereGps = isGpsCity(hereId);
@@ -127,13 +140,27 @@ export function useDailyToday(cityId: string | null | undefined) {
       }
       if (d.challenge?.isActive) seedVotesLeft(d.myVotes?.left ?? null);
       setError(false);
+      failures.current = 0;
+      if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; }
+      writeOffline(`today:${cityId ?? ''}`, { at: Date.now(), data: d });
     } catch (err) {
       console.warn('[daily] today failed:', String(err));
       setError(true);
+      // Unreachable (a deploy, no network): keep what's shown, else today's last answer kept on
+      // the phone, and ask again on its own (5 s, 10 s, 20 s… at most a minute apart).
+      if (!dataRef.current) {
+        const kept = await keptToday(cityId);
+        if (kept && !dataRef.current) setData(kept);
+      }
+      if (retryTimer.current) clearTimeout(retryTimer.current);
+      retryTimer.current = setTimeout(() => loadRef.current(), Math.min(5000 * 2 ** failures.current++, 60_000));
     } finally {
       setLoading(false);
     }
   }, [cityId, hereId, hereGps]);
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  useEffect(() => () => { if (retryTimer.current) clearTimeout(retryTimer.current); }, []);
 
   useEffect(() => { setLoading(true); load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));

@@ -8,6 +8,9 @@ services:
     autoDeploy: false
     dockerfilePath: ./backend/api/Dockerfile
     dockerContext: ./backend/api
+    # Zero-downtime deploys: a new instance takes traffic only once /health answers 200
+    # (public/health.php: Apache up + Postgres reachable); the old one keeps serving until then.
+    healthCheckPath: /health
     envVars:
       - key: PORT
         value: 8080

@@ -8,11 +8,12 @@ import { fetchIpCity } from '@/api/geo';
 import { authMe } from '@/api/auth';
 import { fetchMyBlocks } from '@/api/blocks';
 import { blockedSetFromApiRows } from '@/lib/blockFilter';
-import { loadSavedToken } from '@/services/session';
+import { clearToken, loadSavedToken } from '@/services/session';
+import { clearOffline, readOffline } from '@/lib/offlineCache';
 import { applyStoredLocale } from '@/i18n';
 import { getColdStartNotificationRoute } from '@/features/notifications/NotificationHandler';
 import { track } from '@/services/analytics';
-import type { GuestIdentity } from '@/types';
+import type { GuestIdentity, User } from '@/types';
 
 // Boot: max time to wait for fetchChannels() before giving up. If the API is
 // unreachable, fetch() has no built-in timeout and the OS TCP timeout is ~75s.
@@ -126,16 +127,42 @@ export function useAppBoot(): Result {
         socket.connect();
 
         // Phase 3: Auth check - background.
+        // Signed out ONLY when the server says the session is gone (401). Offline, a timeout or
+        // a 5xx / 502 during a deploy: open signed in with the account kept on the phone and ask
+        // again in the background until the API answers (5 s, 10 s, 20 s… up to a minute apart).
+        const signIn = (user: User) => {
+          setAccount(user);
+          socket.joinUser(user.id);
+          fetchMyBlocks()
+            .then(rows => { if (!cancelled) setBlockedSet(blockedSetFromApiRows(rows)); })
+            .catch(err => console.warn('[boot] fetchMyBlocks failed (non-fatal):', String(err)));
+        };
+        const sessionGone = async () => {
+          await clearToken();
+          clearOffline('account');
+          if (!cancelled) setAccount(null);
+        };
+        const recheck = (delay: number) => setTimeout(() => {
+          if (cancelled) return;
+          authMe()
+            .then(user => { if (cancelled) return; if (user) signIn(user); else sessionGone(); })
+            .catch(err => { console.warn('[boot] auth re-check failed, retrying:', String(err)); recheck(Math.min(delay * 2, 60_000)); });
+        }, delay);
         const authPromise = loadSavedToken()
-          .then(hadToken => (hadToken ? authMe() : null))
-          .then(user => {
-            if (!cancelled && user) {
-              setAccount(user);
-              socket.joinUser(user.id);
-              fetchMyBlocks()
-                .then(rows => { if (!cancelled) setBlockedSet(blockedSetFromApiRows(rows)); })
-                .catch(err => console.warn('[boot] fetchMyBlocks failed (non-fatal):', String(err)));
+          .then(async hadToken => {
+            if (!hadToken) return null;
+            try {
+              const user = await authMe();
+              if (!user) { await sessionGone(); return null; }
+              return user;
+            } catch (err) {
+              console.warn('[boot] auth check unreachable, keeping the session:', String(err));
+              recheck(5000);
+              return readOffline<User>('account');
             }
+          })
+          .then(user => {
+            if (!cancelled && user) signIn(user);
             return user ?? null;
           })
           .catch(err => {

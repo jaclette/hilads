@@ -31,7 +31,41 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T = unknown>(
+/**
+ * A failure that says nothing about the request itself: no network, a timeout, a 5xx
+ * (502 / 503 while Render swaps instances on a deploy) or a 429. Never a reason to sign
+ * anyone out or to give up for good: retry, keep showing what's cached.
+ */
+export function isTransient(err: unknown): boolean {
+  if (!(err instanceof ApiError)) return true;           // fetch threw: offline, DNS, abort (timeout)
+  return err.status >= 500 || err.status === 429;
+}
+
+/** The session is really gone: the server said so (401). The only reason to sign out. */
+export function isAuthFailure(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 401;
+}
+
+// Reads retry a transient failure twice (0.6 s, then 1.8 s): a deploy's swap or a dropped
+// connection rarely outlasts that. Writes never retry here (not idempotent).
+const RETRY_DELAYS_MS = [600, 1800];
+
+async function request<T = unknown>(path: string, options: FetchOptions = {}): Promise<T> {
+  const method = (options.method ?? 'GET').toUpperCase();
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await requestOnce<T>(path, options);
+    } catch (err) {
+      const delay = RETRY_DELAYS_MS[attempt];
+      // A 15 s timeout isn't retried (3 × 15 s is too long to wait): callers fall back to their cache.
+      const timedOut = err instanceof Error && err.name === 'AbortError';
+      if (method !== 'GET' || delay === undefined || timedOut || !isTransient(err)) throw err;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
+async function requestOnce<T = unknown>(
   path: string,
   options: FetchOptions = {},
 ): Promise<T> {

@@ -256,5 +256,9 @@
     "setting": "I-feature ang mga litrato ko",
     "on": "On",
     "off": "Off"
+  },
+  "wakingUp": {
+    "title": "Gumigising ang Hilads… 🌍",
+    "body": "Babalik sa ilang segundo, patuloy naming susubukan."
   }
 }
