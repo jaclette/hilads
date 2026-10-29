@@ -187,7 +187,10 @@
     "citySub": "Le défi, les photos et les spots de ta ville",
     "worldSub": "Les photos et les spots de toutes les villes",
     "changeCity": "Changer de ville",
-    "a11y": "Affichage : {{scope}}. Touche pour changer"
+    "a11y": "Affichage : {{scope}}. Touche pour changer",
+    "here": "Tu es à {{city}}",
+    "hereUnknown": "Tu es où ?",
+    "hereSub": "Pas ça ? Change où tu joues"
   },
   "notificationsUnread_one": "Notifications, {{count}} non lue",
   "notificationsUnread_other": "Notifications, {{count}} non lues",

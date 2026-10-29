@@ -187,7 +187,10 @@
     "citySub": "De challenge, foto's en spots van jouw stad",
     "worldSub": "Foto's en spots uit alle steden",
     "changeCity": "Stad wijzigen",
-    "a11y": "Toont {{scope}}. Tik om te wijzigen"
+    "a11y": "Toont {{scope}}. Tik om te wijzigen",
+    "here": "Je bent in {{city}}",
+    "hereUnknown": "Waar ben je?",
+    "hereSub": "Klopt niet? Kies waar je speelt"
   },
   "notificationsUnread_one": "Meldingen, {{count}} ongelezen",
   "notificationsUnread_other": "Meldingen, {{count}} ongelezen",

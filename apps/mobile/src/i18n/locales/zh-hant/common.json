@@ -187,7 +187,10 @@
     "citySub": "你所在城市的 challenge、照片和地點",
     "worldSub": "所有城市的照片和地點",
     "changeCity": "更換城市",
-    "a11y": "正在顯示{{scope}}。點按以更換"
+    "a11y": "正在顯示{{scope}}。點按以更換",
+    "here": "你在{{city}}",
+    "hereUnknown": "你在哪裡？",
+    "hereSub": "不對？更改你參加的城市"
   },
   "notificationsUnread_one": "通知，{{count}} 則未讀",
   "notificationsUnread_other": "通知，{{count}} 則未讀",

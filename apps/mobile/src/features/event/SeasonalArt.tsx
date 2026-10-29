@@ -191,16 +191,20 @@ export function BatBurst({ size = 64 }: { size?: number }) {
   );
 }
 
-/** Teaser: the countdown banner under Today's hero ("🎃 Halloween hunt in 2 days..."). */
+/** Teaser days shown before the start: closer, the countdown waits (on the day, the hero is the event). */
+const TEASER_DAYS = 3;
+
+/** Teaser: a compact one-line countdown under Today's hero ("Halloween hunt in 2 days"), the last 3 days. */
 export function SeasonalTeaser() {
   const s = useSeasonal();
   const { t } = useTranslation('daily');
   if (!s || s.event.phase !== 'teaser') return null;
   const days = s.event.startsInDays ?? 1;
+  if (days > TEASER_DAYS) return null;
   return (
     <View style={styles.teaser} accessibilityRole="text">
-      {s.key === 'halloween' && <View style={styles.teaserGhost}><Ghost size={22} /></View>}
-      <Text style={styles.teaserText}>{t(s.theme.copy.teaser, { count: days })}</Text>
+      {s.key === 'halloween' && <View style={styles.teaserGhost}><Ghost size={20} /></View>}
+      <Text style={styles.teaserText} numberOfLines={1}>{t(s.theme.copy.teaser, { count: days })}</Text>
     </View>
   );
 }
@@ -314,8 +318,8 @@ const styles = StyleSheet.create({
   burst:    { alignItems: 'center', justifyContent: 'center', backgroundColor: CARD, borderWidth: 1.5, borderColor: ORANGE },
   burstCenter: { fontSize: 30 },
   teaser: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.sm,
-    paddingVertical: 12, paddingHorizontal: 14, borderRadius: Radius.card, backgroundColor: NIGHT,
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+    paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.card, backgroundColor: NIGHT,
     borderWidth: 1.5, borderColor: '#3D2A64',
   },
   teaserGhost: { width: 26, alignItems: 'center' },

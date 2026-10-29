@@ -674,11 +674,28 @@
   },
   "event": {
     "halloween": {
-      "teaser_other": "🎃 Săn Halloween sau {{count}} ngày nữa. Mỗi thành phố, một bức ảnh rùng rợn.",
+      "teaser_other": "Săn Halloween sau {{count}} ngày nữa",
       "cta": "Hù dọa {{city}} 👻",
       "ctaNoCity": "Tham gia cuộc săn 👻",
       "played_other": "{{count}} quốc gia đã bị ma ám 🎃",
       "represent": "Hù dọa thành phố của bạn 👻"
+    }
+  },
+  "hero": {
+    "cta": "Chụp cho {{city}}",
+    "ctaNoCity": "Chụp ngay",
+    "played": "Bạn đã chơi · Xem thế giới",
+    "firstCity": "Hãy là thành phố đầu tiên trên thế giới hôm nay",
+    "citiesIn_other": "{{count}} thành phố đã chơi",
+    "citiesMissing_other": "{{count}} thành phố đã chơi. {{city}} thì chưa!",
+    "steps": {
+      "snap": "Chụp",
+      "name": "Gọi tên",
+      "count": "Đếm",
+      "time": "Bấm giờ",
+      "price": "Ghi giá",
+      "tell": "Kể",
+      "compare": "So sánh"
     }
   }
 }

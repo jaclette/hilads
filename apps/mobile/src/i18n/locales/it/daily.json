@@ -685,15 +685,36 @@
   },
   "event": {
     "halloween": {
-      "teaser_one": "🎃 Caccia di Halloween domani. Ogni città, una foto da brividi.",
-      "teaser_many": "🎃 Caccia di Halloween tra {{count}} giorni. Ogni città, una foto da brividi.",
-      "teaser_other": "🎃 Caccia di Halloween tra {{count}} giorni. Ogni città, una foto da brividi.",
+      "teaser_one": "Caccia di Halloween domani",
+      "teaser_many": "Caccia di Halloween tra {{count}} giorni",
+      "teaser_other": "Caccia di Halloween tra {{count}} giorni",
       "cta": "Infesta {{city}} 👻",
       "ctaNoCity": "Unisciti alla caccia 👻",
       "played_one": "{{count}} paese è infestato 🎃",
       "played_many": "{{count}} paesi sono infestati 🎃",
       "played_other": "{{count}} paesi sono infestati 🎃",
       "represent": "Infesta la tua città 👻"
+    }
+  },
+  "hero": {
+    "cta": "Scatta per {{city}}",
+    "ctaNoCity": "Scatta",
+    "played": "Hai giocato · Guarda il mondo",
+    "firstCity": "Sii la prima città del mondo oggi",
+    "citiesIn_one": "{{count}} città ha giocato",
+    "citiesIn_many": "{{count}} città hanno giocato",
+    "citiesIn_other": "{{count}} città hanno giocato",
+    "citiesMissing_one": "{{count}} città ha giocato. {{city}} non ancora!",
+    "citiesMissing_many": "{{count}} città hanno giocato. {{city}} non ancora!",
+    "citiesMissing_other": "{{count}} città hanno giocato. {{city}} non ancora!",
+    "steps": {
+      "snap": "Scatta",
+      "name": "Dagli un nome",
+      "count": "Conta",
+      "time": "Cronometra",
+      "price": "Metti il prezzo",
+      "tell": "Racconta",
+      "compare": "Confronta"
     }
   }
 }

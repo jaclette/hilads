@@ -187,7 +187,10 @@
     "citySub": "तुम्हारे शहर का challenge, फ़ोटो और स्पॉट",
     "worldSub": "सभी शहरों की फ़ोटो और स्पॉट",
     "changeCity": "शहर बदलें",
-    "a11y": "{{scope}} दिख रहा है। बदलने के लिए टैप करें"
+    "a11y": "{{scope}} दिख रहा है। बदलने के लिए टैप करें",
+    "here": "तुम {{city}} में हो",
+    "hereUnknown": "तुम कहाँ हो?",
+    "hereSub": "सही नहीं? बदलो कि तुम कहाँ खेलते हो"
   },
   "notificationsUnread_one": "सूचनाएँ, {{count}} अनपढ़ी",
   "notificationsUnread_other": "सूचनाएँ, {{count}} अनपढ़ी",

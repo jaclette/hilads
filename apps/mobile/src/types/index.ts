@@ -1162,6 +1162,21 @@ export interface DailyTodayCountries {
   total:     number;                       // photos
   countries: number;
   items:     DailyCountryGroup[];          // my country first, then unseen, then the most recent
+  /** By city (V3 polish): absent from an older server. My city first, then unseen, then the most recent. */
+  cityCount?: number;
+  cities?:   DailyCityGroup[];
+}
+
+export interface DailyCityGroup {
+  city:        { id: number; name: string; country: string };
+  count:       number;                     // photos
+  authorCount: number | null;              // distinct players (null: an older server)
+  authors:     { id: string; username: string | null; displayName: string | null; photoUrl: string | null }[];   // 3 at most
+  totalLikes:  number | null;
+  latestAt:    number;
+  unseen:      boolean | null;
+  ids:         string[];                   // best first
+  top:         DailyProof;
 }
 
 export interface DailyCountryGroup {

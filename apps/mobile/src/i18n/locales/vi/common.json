@@ -187,7 +187,10 @@
     "citySub": "Challenge, ảnh và spot của thành phố bạn",
     "worldSub": "Ảnh và spot từ mọi thành phố",
     "changeCity": "Đổi thành phố",
-    "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
+    "a11y": "Đang hiển thị {{scope}}. Chạm để đổi",
+    "here": "Bạn đang ở {{city}}",
+    "hereUnknown": "Bạn đang ở đâu?",
+    "hereSub": "Không đúng? Đổi nơi bạn chơi"
   },
   "notificationsUnread_one": "Thông báo, {{count}} chưa đọc",
   "notificationsUnread_other": "Thông báo, {{count}} chưa đọc",

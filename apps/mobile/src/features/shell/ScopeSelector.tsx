@@ -1,8 +1,10 @@
 /**
  * The app-wide scope selector (SPEC 9.1): the pill (my city's flag and short
- * name, or World) and its sheet (my city, World, change city). The same
- * component in every tab's header and next to the Map's search bar; a pick
- * changes the scope everywhere.
+ * name, or World) and its sheet (my city, World, where I am, change city). The
+ * same component in every tab's header and next to the Map's search bar; a
+ * pick changes the scope everywhere. When I'm somewhere else than the city
+ * shown, a small location mark on the pill says so; the sheet's "You're in
+ * [city]" row fixes where I play (the hero's old "Not in Saigon? Change").
  */
 
 import React, { useState } from 'react';
@@ -16,6 +18,8 @@ import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityFlag, Sheet } from '@/ui';
+import { useHere } from '@/hooks/useDaily';
+import { track } from '@/services/analytics';
 
 export function ScopeSelector({ style, onPicked }: {
   style?: StyleProp<ViewStyle>;
@@ -29,6 +33,10 @@ export function ScopeSelector({ style, onPicked }: {
   const { city } = useApp();
   const { scope, setScope } = useScope();
   const [sheet, setSheet] = useState(false);
+  // Where I am (the server's "here"): elsewhere than the city shown, a hint on the pill.
+  const here = useHere();
+  const hereName = here?.name ? shortCityName(here.name) : null;
+  const away = scope === 'city' && !!here && !!city && String(here.id) !== String(city.channelId);
 
   const cityName = city?.name ? localizeCityName(city.name) : t('scope.pickCity');
   // The pill is tight: the city's short name ("Saigon") after its flag.
@@ -48,10 +56,11 @@ export function ScopeSelector({ style, onPicked }: {
         onPress={() => setSheet(true)}
         activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel={t('scope.a11y', { scope: scope === 'world' ? label : cityName })}
+        accessibilityLabel={[t('scope.a11y', { scope: scope === 'world' ? label : cityName }), away && hereName ? t('scope.here', { city: hereName }) : null].filter(Boolean).join('. ')}
       >
         {scope === 'world' ? <Ionicons name="globe-outline" size={17} color={colors.text} /> : <CityFlag country={city?.country} />}
         <Text style={styles.scopeText} numberOfLines={1}>{label}</Text>
+        {away && <Ionicons name="navigate" size={13} color={colors.primaryText} testID="scope-away" />}
         <Ionicons name="chevron-down" size={18} color={colors.text} />
       </TouchableOpacity>
       <ScopeSheet
@@ -61,6 +70,13 @@ export function ScopeSelector({ style, onPicked }: {
         cityCountry={city?.country ?? null}
         onPick={pick}
         onChangeCity={() => { setSheet(false); router.push('/switch-city' as never); }}
+        hereName={hereName}
+        hereCountry={here?.country ?? null}
+        onHere={() => {
+          setSheet(false);
+          track('here_change', { from: here?.name ?? null, source: here?.source ?? null, surface: 'scope_sheet' });
+          router.push('/switch-city?mode=here' as never);
+        }}
         onClose={() => setSheet(false)}
       />
     </>
@@ -68,9 +84,10 @@ export function ScopeSelector({ style, onPicked }: {
 }
 
 /** Bottom sheet of the scope selector: my city, World, change city. */
-function ScopeSheet({ visible, scope, cityName, cityCountry, onPick, onChangeCity, onClose }: {
+function ScopeSheet({ visible, scope, cityName, cityCountry, hereName, hereCountry, onPick, onChangeCity, onHere, onClose }: {
   visible: boolean; scope: Scope; cityName: string | null; cityCountry: string | null;
-  onPick: (s: Scope) => void; onChangeCity: () => void; onClose: () => void;
+  hereName: string | null; hereCountry: string | null;
+  onPick: (s: Scope) => void; onChangeCity: () => void; onHere: () => void; onClose: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -101,6 +118,9 @@ function ScopeSheet({ visible, scope, cityName, cityCountry, onPick, onChangeCit
            active={scope === 'city' && !!cityName} onPress={() => onPick('city')} />
       <Row icon="globe-outline" title={t('scope.world')} sub={t('scope.worldSub')}
            active={scope === 'world'} onPress={() => onPick('world')} />
+      {/* Where I play today (an IP guess, a VPN, GPS at a border): always correctable. */}
+      <Row icon="navigate-outline" title={hereName ? t('scope.here', { city: hereName }) : t('scope.hereUnknown')} flag={hereName ? hereCountry : null}
+           sub={t('scope.hereSub')} onPress={onHere} />
       <Row icon="swap-horizontal-outline" title={t('scope.changeCity')} onPress={onChangeCity} />
     </Sheet>
   );

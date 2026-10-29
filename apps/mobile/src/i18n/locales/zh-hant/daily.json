@@ -674,11 +674,28 @@
   },
   "event": {
     "halloween": {
-      "teaser_other": "🎃 {{count}} 天後開啟萬聖節尋鬼。每座城市，一張嚇人的照片。",
+      "teaser_other": "{{count}} 天後開啟萬聖節尋鬼",
       "cta": "讓{{city}}鬧鬼 👻",
       "ctaNoCity": "加入尋鬼 👻",
       "played_other": "{{count}} 個國家正在鬧鬼 🎃",
       "represent": "讓你的城市鬧鬼 👻"
+    }
+  },
+  "hero": {
+    "cta": "為{{city}}拍一張",
+    "ctaNoCity": "拍一張",
+    "played": "你已參加 · 看看世界",
+    "firstCity": "成為今天全球第一座城市",
+    "citiesIn_other": "{{count}} 座城市已參加",
+    "citiesMissing_other": "{{count}} 座城市已參加，{{city}} 還沒有！",
+    "steps": {
+      "snap": "拍照",
+      "name": "說出名字",
+      "count": "數一數",
+      "time": "計時",
+      "price": "標價",
+      "tell": "說說",
+      "compare": "比較"
     }
   }
 }

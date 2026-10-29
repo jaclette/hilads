@@ -685,15 +685,36 @@
   },
   "event": {
     "halloween": {
-      "teaser_one": "🎃 Cacería de Halloween mañana. Cada ciudad, una foto escalofriante.",
-      "teaser_many": "🎃 Cacería de Halloween en {{count}} días. Cada ciudad, una foto escalofriante.",
-      "teaser_other": "🎃 Cacería de Halloween en {{count}} días. Cada ciudad, una foto escalofriante.",
+      "teaser_one": "Cacería de Halloween mañana",
+      "teaser_many": "Cacería de Halloween en {{count}} días",
+      "teaser_other": "Cacería de Halloween en {{count}} días",
       "cta": "Embruja {{city}} 👻",
       "ctaNoCity": "Únete a la cacería 👻",
       "played_one": "{{count}} país está embrujado 🎃",
       "played_many": "{{count}} países están embrujados 🎃",
       "played_other": "{{count}} países están embrujados 🎃",
       "represent": "Embruja tu ciudad 👻"
+    }
+  },
+  "hero": {
+    "cta": "Haz la foto por {{city}}",
+    "ctaNoCity": "Haz la foto",
+    "played": "Ya jugaste · Mira el mundo",
+    "firstCity": "Sé la primera ciudad del mundo hoy",
+    "citiesIn_one": "{{count}} ciudad jugó",
+    "citiesIn_many": "{{count}} ciudades jugaron",
+    "citiesIn_other": "{{count}} ciudades jugaron",
+    "citiesMissing_one": "{{count}} ciudad jugó. ¡{{city}} aún no!",
+    "citiesMissing_many": "{{count}} ciudades jugaron. ¡{{city}} aún no!",
+    "citiesMissing_other": "{{count}} ciudades jugaron. ¡{{city}} aún no!",
+    "steps": {
+      "snap": "Haz la foto",
+      "name": "Nómbralo",
+      "count": "Cuéntalos",
+      "time": "Mide el tiempo",
+      "price": "Ponle precio",
+      "tell": "Explícalo",
+      "compare": "Compara"
     }
   }
 }

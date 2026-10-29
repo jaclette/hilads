@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AppState, Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, {
   Easing, cancelAnimation, runOnJS, useAnimatedStyle, useReducedMotion, useSharedValue,
-  withDelay, withRepeat, withTiming, type SharedValue,
+  withDelay, withRepeat, withSequence, withTiming, type SharedValue,
 } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -14,6 +14,8 @@ const CYCLE_MS      = 1600;   // one ring's expansion
 const FAST_CYCLE_MS = 1200;   // the last 3 hours before the next drop
 const GROW_X = 0.08;          // the ring ends 8% wider ...
 const GROW_Y = 0.5;           // ... and 50% taller than the button
+const BREATHE = 1.02;         // the button itself breathes: 1.00 → 1.02 → 1.00 ...
+const BREATHE_MS = 600;       // ... up and down, once every 3 s
 
 /** The button on the hero's photo (SPEC 9.3): white, or the "sun orange" option. */
 const TONES = {
@@ -27,7 +29,8 @@ const INK = '#2A1C13';
  * Today's "I'm in" (SPEC 9.3): the hero's camera button (white, ink label,
  * tangerine camera icon) with a continuous pulse, two white rings (75%) in relay
  * expanding from its edge while fading
- * (1.6 s, the second 0.8 s later; 1.2 s in the last 3 hours). The pulse runs
+ * (1.6 s, the second 0.8 s later; 1.2 s in the last 3 hours), and the button
+ * gently breathing (1.00 → 1.02 every 3 s) until I play. The pulse runs
  * only while `visible` (the card on screen), the tab is focused and the app is
  * in the foreground. A press gives light haptics, scales the button to 0.97
  * and grows a tangerine disc from it before `onPress` opens the camera. The OS
@@ -50,6 +53,7 @@ export function PulseButton({ label, onPress, fast, visible, intercept, tone = '
   const ring1 = useSharedValue(0);
   const ring2 = useSharedValue(0);
   const press = useSharedValue(1);
+  const breathe = useSharedValue(1);
   const reveal = useSharedValue(0);
   const running = visible && focused && foreground && !reduceMotion;
   const cycle = fast ? FAST_CYCLE_MS : CYCLE_MS;
@@ -67,12 +71,22 @@ export function PulseButton({ label, onPress, fast, visible, intercept, tone = '
     return () => { cancelAnimation(ring1); cancelAnimation(ring2); };
   }, [running, cycle, ring1, ring2]);
 
+  useEffect(() => {
+    if (!running) { cancelAnimation(breathe); breathe.value = 1; return; }
+    const ease = Easing.inOut(Easing.quad);
+    breathe.value = withRepeat(withSequence(
+      withDelay(3000 - 2 * BREATHE_MS, withTiming(BREATHE, { duration: BREATHE_MS, easing: ease })),
+      withTiming(1, { duration: BREATHE_MS, easing: ease }),
+    ), -1, false);
+    return () => cancelAnimation(breathe);
+  }, [running, breathe]);
+
   // Back from the camera: the disc is gone, the button full size.
   useEffect(() => { if (focused) { reveal.value = 0; press.value = 1; } }, [focused, reveal, press]);
 
   const ring1Style = useAnimatedStyle(() => ringFrame(ring1));
   const ring2Style = useAnimatedStyle(() => ringFrame(ring2));
-  const buttonStyle = useAnimatedStyle(() => ({ transform: [{ scale: press.value }] }));
+  const buttonStyle = useAnimatedStyle(() => ({ transform: [{ scale: press.value * breathe.value }] }));
   const revealStyle = useAnimatedStyle(() => ({
     opacity: reveal.value === 0 ? 0 : 1,
     transform: [{ scale: reveal.value * 24 }],

@@ -11,7 +11,7 @@ import { answerText } from '@/features/compare/format';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import { compareCountryGroups, rankCountryProofs } from '@/features/daily/countryOrder';
 import { seedProofs } from '@/features/daily/votes';
-import { lastCountries } from '@/features/today/TodayCountries';
+import { lastCountries } from '@/features/today/useTodayCountries';
 import { getLastToday, useCountdown, useDailySheet, useHere } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
 import { Button, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';

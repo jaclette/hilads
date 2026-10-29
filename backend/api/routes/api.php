@@ -14774,7 +14774,7 @@ $router->add('GET', '/api/v1/daily/today/countries', function () {
     }
     $challenge = DailyChallengeRepository::findPublishedByDate($date);
     if ($challenge === null) {
-        Response::json(['date' => $date, 'total' => 0, 'countries' => 0, 'items' => []]);
+        Response::json(['date' => $date, 'total' => 0, 'countries' => 0, 'items' => [], 'cityCount' => 0, 'cities' => []]);
     }
     $viewerId = $user['id'] ?? null;
     $rows     = filterByBlocks(DailyProofRepository::countryRows($challenge['id']), dailyBlocks($user), 'user_id', 'guest_id');
@@ -14782,8 +14782,10 @@ $router->add('GET', '/api/v1/daily/today/countries', function () {
     $first    = $here !== null ? strtoupper((string) CityRepository::countryOf($here)) : null;
     $seen     = $viewerId !== null ? DailyProofRepository::seenSet($viewerId, array_column($rows, 'id')) : null;
     $groups   = DailyProofRepository::groupByCountry($rows, $first, $seen);
+    $firstCity = $here !== null ? (str_starts_with((string) $here, 'city_') ? (string) $here : 'city_' . $here) : null;
+    $cityGroups = DailyProofRepository::groupByCity($rows, $firstCity, $seen);
 
-    $tops = DailyProofRepository::rowsByIds(array_column($groups, 'topId'));
+    $tops = DailyProofRepository::rowsByIds(array_values(array_unique(array_merge(array_column($groups, 'topId'), array_column($cityGroups, 'topId')))));
     $tops = array_column(DailyVotes::annotate(array_values($tops), $viewerId), null, 'id');
     $items = [];
     foreach ($groups as $g) {
@@ -14800,7 +14802,29 @@ $router->add('GET', '/api/v1/daily/today/countries', function () {
             'top'      => DailyProofRepository::format($tops[$g['topId']], $viewerId),
         ];
     }
-    Response::json(['date' => $date, 'total' => count($rows), 'countries' => count($items), 'items' => $items]);
+    // By city (V3 polish): Today's live strip, stories and mosaic. Every city with
+    // its photo count, distinct authors (3 avatars), likes, ids best first and its top.
+    $authors = DailyProofRepository::authorsByIds(array_merge(...array_map(
+        static fn(array $g): array => array_slice($g['authorIds'], 0, 3), $cityGroups ?: [['authorIds' => []]])));
+    $cities = [];
+    foreach ($cityGroups as $g) {
+        if (!isset($tops[$g['topId']])) {
+            continue;
+        }
+        $cities[] = [
+            'city'        => ['id' => (int) substr((string) $g['cityId'], 5), 'name' => $g['cityName'], 'country' => $g['country']],
+            'count'       => $g['count'],
+            'authorCount' => count($g['authorIds']),
+            'authors'     => array_values(array_filter(array_map(static fn(string $id) => $authors[$id] ?? null, array_slice($g['authorIds'], 0, 3)))),
+            'totalLikes'  => $g['totalLikes'],
+            'latestAt'    => $g['latestAt'],
+            'unseen'      => $g['unseen'],
+            'ids'         => $g['ids'],
+            'top'         => DailyProofRepository::format($tops[$g['topId']], $viewerId),
+        ];
+    }
+    Response::json(['date' => $date, 'total' => count($rows), 'countries' => count($items), 'items' => $items,
+                    'cityCount' => count($cities), 'cities' => $cities]);
 });
 
 // POST /api/v1/daily/proofs/seen {ids: [...]} - the photos I've just viewed

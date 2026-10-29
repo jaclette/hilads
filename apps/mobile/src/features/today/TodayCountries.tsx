@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { fetchDailyTodayCountries } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
 import { answerText } from '@/features/compare/format';
 import { hasUnseen, useSeen } from '@/features/daily/seen';
 import { compareCountryGroups } from '@/features/daily/countryOrder';
-import { seedProofs, useVoteState } from '@/features/daily/votes';
+import { useVoteState } from '@/features/daily/votes';
 import { useHere } from '@/hooks/useDaily';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { track } from '@/services/analytics';
@@ -21,10 +19,6 @@ import type { DailyCountryGroup, DailyToday, DailyTodayCountries } from '@/types
 
 const CIRCLE = 64;
 const MOSAIC_MAX = 6;
-
-let last: DailyTodayCountries | null = null;
-/** The last country list Today showed: Today's photos follows its story order. */
-export function lastCountries(): DailyTodayCountries | null { return last; }
 
 /**
  * Today's photos by country, right under the hero (one request,
@@ -43,30 +37,15 @@ export function lastCountries(): DailyTodayCountries | null { return last; }
  * Nobody played yet: only "Represent your city" with an invitation. Players'
  * photos only (never a Hilads pick).
  */
-export function TodayCountries({ today, refreshKey }: { today: DailyToday | null; refreshKey: number }) {
+export function TodayCountries({ today, data }: { today: DailyToday | null; data: DailyTodayCountries | null }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
-  const { account, identity } = useApp();
+  const { account } = useApp();
   const here = useHere();
   useSeen();
-  const [data, setData] = useState<DailyTodayCountries | null>(last);
   const challenge = today?.challenge ?? null;
-  const guestId = account ? null : identity?.guestId ?? null;
-
-  const load = useCallback(async () => {
-    if (!challenge) return;
-    try {
-      // My country first: where I am, else the city I'm browsing.
-      const next = await fetchDailyTodayCountries({ cityId: here?.id ?? today?.city?.id ?? null, guestId });
-      seedProofs(next.items.map(i => i.top), challenge.isActive);
-      last = next;
-      setData(next);
-    } catch { /* keep what we have */ }
-  }, [challenge?.id, challenge?.isActive, here?.id, today?.city?.id, guestId]); // eslint-disable-line react-hooks/exhaustive-deps
-  useFocusEffect(useCallback(() => { load(); }, [load]));
-  useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
   // A seasonal event's live day: its copy ("3 countries are haunted 🎃") and a badge on each tile.
   const seasonal = useSeasonalLive();
   const copy = seasonal?.theme.copy;

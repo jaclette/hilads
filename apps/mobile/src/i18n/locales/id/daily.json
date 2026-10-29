@@ -675,11 +675,28 @@
   },
   "event": {
     "halloween": {
-      "teaser_other": "🎃 Perburuan Halloween {{count}} hari lagi. Setiap kota, satu foto seram.",
+      "teaser_other": "Perburuan Halloween {{count}} hari lagi",
       "cta": "Hantui {{city}} 👻",
       "ctaNoCity": "Ikut perburuan 👻",
       "played_other": "{{count}} negara sedang dihantui 🎃",
       "represent": "Hantui kotamu 👻"
+    }
+  },
+  "hero": {
+    "cta": "Foto untuk {{city}}",
+    "ctaNoCity": "Ambil foto",
+    "played": "Kamu sudah main · Lihat dunia",
+    "firstCity": "Jadilah kota pertama di dunia hari ini",
+    "citiesIn_other": "{{count}} kota sudah main",
+    "citiesMissing_other": "{{count}} kota sudah main. {{city}} belum!",
+    "steps": {
+      "snap": "Foto",
+      "name": "Sebut namanya",
+      "count": "Hitung",
+      "time": "Catat waktu",
+      "price": "Tulis harga",
+      "tell": "Ceritakan",
+      "compare": "Bandingkan"
     }
   }
 }

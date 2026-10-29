@@ -23,7 +23,7 @@ import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
 import { seedProofs } from '@/features/daily/votes';
 import { flushSeen, markSeen } from '@/features/daily/seen';
-import { lastCountries } from '@/features/today/TodayCountries';
+import { lastCountries } from '@/features/today/useTodayCountries';
 import { rankCountryProofs } from '@/features/daily/countryOrder';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';

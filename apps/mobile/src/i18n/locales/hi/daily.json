@@ -680,13 +680,32 @@
   },
   "event": {
     "halloween": {
-      "teaser_one": "🎃 हैलोवीन हंट कल है। हर शहर, एक डरावनी फ़ोटो।",
-      "teaser_other": "🎃 हैलोवीन हंट {{count}} दिन में। हर शहर, एक डरावनी फ़ोटो।",
+      "teaser_one": "हैलोवीन हंट कल है",
+      "teaser_other": "हैलोवीन हंट {{count}} दिन में",
       "cta": "{{city}} को भुतहा बनाओ 👻",
       "ctaNoCity": "हंट में शामिल हो 👻",
       "played_one": "{{count}} देश भुतहा है 🎃",
       "played_other": "{{count}} देश भुतहा हैं 🎃",
       "represent": "अपने शहर को भुतहा बनाओ 👻"
+    }
+  },
+  "hero": {
+    "cta": "{{city}} के लिए फ़ोटो लो",
+    "ctaNoCity": "फ़ोटो लो",
+    "played": "तुमने खेल लिया · दुनिया देखो",
+    "firstCity": "आज दुनिया का पहला शहर बनो",
+    "citiesIn_one": "{{count}} शहर ने खेला",
+    "citiesIn_other": "{{count}} शहरों ने खेला",
+    "citiesMissing_one": "{{count}} शहर ने खेला। {{city}} अभी नहीं!",
+    "citiesMissing_other": "{{count}} शहरों ने खेला। {{city}} अभी नहीं!",
+    "steps": {
+      "snap": "फ़ोटो लो",
+      "name": "नाम बताओ",
+      "count": "गिनो",
+      "time": "समय बताओ",
+      "price": "दाम बताओ",
+      "tell": "बताओ",
+      "compare": "तुलना करो"
     }
   }
 }

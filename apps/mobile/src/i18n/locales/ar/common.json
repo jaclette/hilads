@@ -191,7 +191,10 @@
     "citySub": "الـ challenge والصور والأماكن في مدينتك",
     "worldSub": "الصور والأماكن من كل المدن",
     "changeCity": "غيّر المدينة",
-    "a11y": "يُعرض {{scope}}. اضغط للتغيير"
+    "a11y": "يُعرض {{scope}}. اضغط للتغيير",
+    "here": "أنت في {{city}}",
+    "hereUnknown": "أين أنت؟",
+    "hereSub": "ليس صحيحًا؟ غيّر مكان لعبك"
   },
   "notificationsUnread_zero": "الإشعارات، لا شيء غير مقروء",
   "notificationsUnread_one": "الإشعارات، إشعار واحد غير مقروء",

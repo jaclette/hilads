@@ -9,6 +9,7 @@ import { AppHeader } from '@/features/shell/AppHeader';
 import { TodayTicket } from '@/features/today/TodayTicket';
 import { TodayWeek } from '@/features/today/TodayWeek';
 import { TodayCountries } from '@/features/today/TodayCountries';
+import { useTodayCountries } from '@/features/today/useTodayCountries';
 import { TodayTour } from '@/features/tour/TodayTour';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { SpotsNear } from '@/features/today/SpotsNear';
@@ -35,6 +36,8 @@ function TodayContent() {
   const daily = useDailyToday(city?.channelId);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  // Today's cities, one list for the hero's live strip and the compare section.
+  const countries = useTodayCountries(daily.data, refreshKey);
   // The card's "I'm in" pulses only while the card is on screen.
   const [ticketVisible, setTicketVisible] = useState(true);
   const ticketBottom = useRef(Number.POSITIVE_INFINITY);
@@ -61,12 +64,12 @@ function TodayContent() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
-          <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
+          <TodayTicket data={daily.data} countries={countries} loading={daily.loading} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
-        <TodayCountries today={daily.data} refreshKey={refreshKey} />
+        <TodayCountries today={daily.data} data={countries} />
         {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
         <TodayTour today={daily.data} refreshKey={refreshKey} />
         <TodayWeek today={daily.data} />

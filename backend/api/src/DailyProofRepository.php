@@ -362,6 +362,69 @@ final class DailyProofRepository
         ], $out);
     }
 
+    /**
+     * Group countryRows (already filtered) by city: [{cityId, cityName,
+     * country, ids (best first), count, authorIds (best first, distinct),
+     * totalLikes, latestAt, unseen, topId}]. Ordered: $firstCity first, then
+     * the cities with a photo not in $seen, then the most recent.
+     */
+    public static function groupByCity(array $rows, ?string $firstCity, ?array $seen): array
+    {
+        $groups = [];
+        foreach ($rows as $r) {
+            $g = &$groups[$r['city_id']];
+            $g ??= ['cityId' => $r['city_id'], 'cityName' => $r['city_name'], 'country' => strtoupper((string) $r['country']),
+                    'rows' => [], 'latestAt' => (int) $r['at'], 'unseen' => false, 'likes' => 0];
+            $g['rows'][] = $r;
+            $g['likes'] += (int) $r['vote_count'];
+            if ($seen !== null && !isset($seen[$r['id']])) {
+                $g['unseen'] = true;
+            }
+            unset($g);
+        }
+        $out = [];
+        foreach ($groups as $g) {
+            usort($g['rows'], static fn(array $a, array $b): int => self::betterThan($a, $b) ? -1 : (self::betterThan($b, $a) ? 1 : 0));
+            $out[] = [
+                'cityId'     => $g['cityId'],
+                'cityName'   => $g['cityName'],
+                'country'    => $g['country'],
+                'ids'        => array_column($g['rows'], 'id'),
+                'count'      => count($g['rows']),
+                'authorIds'  => array_values(array_unique(array_column($g['rows'], 'user_id'))),
+                'totalLikes' => $g['likes'],
+                'latestAt'   => $g['latestAt'],
+                'unseen'     => $seen === null ? null : $g['unseen'],
+                'topId'      => $g['rows'][0]['id'],
+            ];
+        }
+        usort($out, static function (array $a, array $b) use ($firstCity): int {
+            $fa = $a['cityId'] === $firstCity ? 0 : 1;
+            $fb = $b['cityId'] === $firstCity ? 0 : 1;
+            return [$fa, $b['unseen'] ? 1 : 0, $b['latestAt']] <=> [$fb, $a['unseen'] ? 1 : 0, $a['latestAt']];
+        });
+        return $out;
+    }
+
+    /** {id: {id, username, displayName, photoUrl}} for the avatars of Today's cities. */
+    public static function authorsByIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter($ids)));
+        if ($ids === []) {
+            return [];
+        }
+        $stmt = Database::pdo()->prepare("
+            SELECT id, username, display_name, coalesce(profile_thumb_photo_url, profile_photo_url) AS photo
+            FROM users WHERE id IN (" . implode(',', array_fill(0, count($ids), '?')) . ") AND deleted_at IS NULL
+        ");
+        $stmt->execute($ids);
+        $out = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $u) {
+            $out[$u['id']] = ['id' => $u['id'], 'username' => $u['username'], 'displayName' => $u['display_name'], 'photoUrl' => $u['photo']];
+        }
+        return $out;
+    }
+
     /** True when countryRows row $a ranks before $b (DailyResults::rankProofs: votes, earliest posted, id). */
     private static function betterThan(array $a, array $b): bool
     {
