@@ -6,6 +6,8 @@ export interface AppConfig {
   latestVersion:           string | null;
   storeUrls:               { ios: string; android: string };
   challengeCreationClosed: boolean;
+  /** Dual photo (photo + selfie) capture; absent or false: the previous camera. */
+  dualPhoto?:              boolean;
 }
 
 export function fetchAppConfig(): Promise<AppConfig> {

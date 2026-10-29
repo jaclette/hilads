@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView,
+  ActivityIndicator, Alert, Platform, ScrollView,
   Text, TextInput, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +24,8 @@ import { Confetti } from '@/ui/joy';
 import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { DualCamera, type DualShot } from '@/features/daily/DualCamera';
+import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
+import { fetchAppConfig } from '@/api/appConfig';
 import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/PlaceStep';
 import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
@@ -107,6 +110,8 @@ function DailyProofScreenContent() {
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [androidCamera, setAndroidCamera] = useState(false);
+  const [dualEnabled, setDualEnabled] = useState(false);
   // Dual photo: the selfie taken right after the photo (null: the photo alone).
   const [selfie, setSelfie]     = useState<Photo | null>(null);
   const [sending, setSending]   = useState(false);
@@ -175,11 +180,14 @@ function DailyProofScreenContent() {
     let alive = true;
     (async () => {
       try {
-        let [d, p] = await Promise.all([
+        let [d, p, config] = await Promise.all([
           fetchDailyToday(city?.channelId),
           edit ? fetchDailyProof(edit) : Promise.resolve(null),
+          // The dual photo switch, known before the camera opens (a failure or 3 s without an answer: off).
+          Promise.race([fetchAppConfig().catch(() => null), new Promise<null>(r => setTimeout(() => r(null), 3000))]),
         ]);
         if (!alive) return;
+        setDualEnabled(config?.dualPhoto === true);
         setToday(d);
         setSeasonalEvent(d.event);
         // Already posted today: "new proof" edits that one instead.
@@ -220,9 +228,22 @@ function DailyProofScreenContent() {
     track('daily_proof_started', dailyTrackProps(today, account?.mode));
   }, [edit, today, account?.mode]);
 
-  // ── Photo: camera only (SPEC 9.4), the photo then the selfie (dual photo) ──
-  // Our own camera on both platforms: the system camera can't chain a live selfie.
-  const takePhoto = () => setCameraOpen(true);
+  // ── Photo: camera only (SPEC 9.4) ────────────────────────────────────────
+  // Dual photo on (remote switch, Admin › App versions): our camera on both
+  // platforms, the photo then the selfie (the system camera can't chain one).
+  // Off: the previous capture, unchanged.
+  const takePhoto = async () => {
+    if (dualEnabled) { setCameraOpen(true); return; }
+    // Android: in-app camera (launchCameraAsync hangs on Android 14 + singleTask).
+    if (Platform.OS === 'android') { setAndroidCamera(true); return; }
+    const cam = await ImagePicker.requestCameraPermissionsAsync();
+    if (cam.status !== 'granted') { Alert.alert(t('proof.permCameraTitle'), t('proof.permCameraBody')); return; }
+    const pick = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, cameraType: ImagePicker.CameraType.back });
+    if (!pick.canceled && pick.assets?.[0]) {
+      setSelfie(null);   // a new photo from the single camera never keeps an earlier selfie
+      gotPhoto({ uri: pick.assets[0].uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+    }
+  };
   const gotShot = (shot: DualShot) => {
     setCameraOpen(false);
     setSelfie(shot.selfie ? { uri: shot.selfie, mime: 'image/jpeg', remoteUrl: null } : null);
@@ -669,7 +690,15 @@ function DailyProofScreenContent() {
 
       <HomeCityPicker visible={homePicker} selected={home} onPick={pickHome} onClose={() => setHomePicker(false)} />
 
-      <DualCamera visible={cameraOpen} onCapture={gotShot} onClose={() => setCameraOpen(false)} />
+      {dualEnabled && (
+        <DualCamera visible={cameraOpen} onCapture={gotShot} onClose={() => setCameraOpen(false)}
+                    night={today?.challenge?.theme?.key === 'night_out' || !!today?.challenge?.special?.id?.startsWith('halloween')} />
+      )}
+      <AndroidCameraCapture
+        visible={androidCamera}
+        onCapture={uri => { setAndroidCamera(false); setSelfie(null); gotPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); }}
+        onClose={() => setAndroidCamera(false)}
+      />
     </SafeAreaView>
   );
 }

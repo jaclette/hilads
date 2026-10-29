@@ -28,14 +28,35 @@ import { Button, DualPhoto, IconButton } from '@/ui';
 
 export interface DualShot { main: string; selfie: string | null }
 
+// The front "screen flash": a white screen at full brightness while the selfie
+// is taken (night photos: Night out, Halloween). expo-brightness is a native
+// module: loaded defensively, a binary without it keeps the white screen only.
+type BrightnessModule = { getBrightnessAsync(): Promise<number>; setBrightnessAsync(v: number): Promise<void> };
+let brightnessModule: BrightnessModule | null | undefined;
+function brightness(): BrightnessModule | null {
+  if (brightnessModule === undefined) {
+    try { brightnessModule = require('expo-brightness') as BrightnessModule; }   // eslint-disable-line @typescript-eslint/no-require-imports
+    catch { brightnessModule = null; }
+  }
+  return brightnessModule;
+}
+/** Is it dark out? From 18:00 to 07:00 local time. */
+function isNight(d = new Date()): boolean {
+  const h = d.getHours();
+  return h >= 18 || h < 7;
+}
+const SCREEN_FLASH_MS = 350;   // the white screen lights the face before the shot
+
 const DUAL_KEY = 'hilads_dual_photo';
 const COUNTDOWN_FROM = 3;
 const FRONT_TIMEOUT_MS = 5000;
 
 type Phase = 'main' | 'selfie' | 'review';
 
-export function DualCamera({ visible, initial, onCapture, onClose }: {
+export function DualCamera({ visible, initial, night = false, onCapture, onClose }: {
   visible: boolean;
+  /** A night theme (Night out, a night special like Halloween): the screen flash starts on. */
+  night?: boolean;
   /** The shots to review again (e.g. "Retake" from a later step keeps nothing). */
   initial?: DualShot | null;
   onCapture: (shot: DualShot) => void;
@@ -62,6 +83,9 @@ export function DualCamera({ visible, initial, onCapture, onClose }: {
   const [count, setCount] = useState<number | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [wink, setWink] = useState(false);
+  // The selfie's screen flash: on at night or for a night theme, the person can switch it.
+  const [screenFlash, setScreenFlash] = useState(false);
+  const [lit, setLit] = useState(false);
   const frontTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tick = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -79,7 +103,8 @@ export function DualCamera({ visible, initial, onCapture, onClose }: {
   // Each opening starts over (or on the shots to review again).
   const onShow = () => {
     clearTimers();
-    setReady(false); setTaking(false); setCount(null); setNotice(null); setWink(false);
+    setReady(false); setTaking(false); setCount(null); setNotice(null); setWink(false); setLit(false);
+    setScreenFlash(night || isNight());
     if (initial) { setMain(initial.main); setSelfie(initial.selfie); setPhase('review'); }
     else { setMain(null); setSelfie(null); setPhase('main'); }
   };
@@ -141,7 +166,19 @@ export function DualCamera({ visible, initial, onCapture, onClose }: {
     setCount(null);
     setWink(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    // Screen flash: white screen, full brightness, a moment for the exposure, the shot, then back.
+    let before: number | null = null;
+    if (screenFlash) {
+      setLit(true);
+      const b = brightness();
+      if (b) { before = await b.getBrightnessAsync().catch(() => null); await b.setBrightnessAsync(1).catch(() => {}); }
+      await new Promise(r => setTimeout(r, SCREEN_FLASH_MS));
+    }
     const uri = await shoot();
+    if (screenFlash) {
+      if (before !== null) brightness()?.setBrightnessAsync(before).catch(() => {});
+      setLit(false);
+    }
     setWink(false);
     if (uri) { setSelfie(uri); setNotice(null); }
     else setNotice(t('dual.frontFailed'));
@@ -203,7 +240,6 @@ export function DualCamera({ visible, initial, onCapture, onClose }: {
               style={styles.flex}
               facing={facing}
               flash={phase === 'main' ? flash : 'off'}
-              mirror={facing === 'front'}
               onCameraReady={onReady}
               onMountError={() => { if (phase === 'selfie') { clearTimers(); setNotice(t('dual.frontFailed')); setPhase('review'); } }}
             />
@@ -226,7 +262,13 @@ export function DualCamera({ visible, initial, onCapture, onClose }: {
                 <TouchableOpacity style={styles.round} onPress={() => setFlash(f => (f === 'off' ? 'on' : 'off'))} accessibilityRole="button" accessibilityLabel={tc('camera.flash')}>
                   <Ionicons name={flash === 'on' ? 'flash' : 'flash-off-outline'} size={24} color={flash === 'on' ? colors.gold : colors.white} />
                 </TouchableOpacity>
-              ) : <View style={styles.round} />}
+              ) : (
+                // The selfie's screen flash (front camera: the screen lights the face).
+                <TouchableOpacity style={styles.round} onPress={() => setScreenFlash(v => !v)} accessibilityRole="switch"
+                                  accessibilityState={{ checked: screenFlash }} accessibilityLabel={tc('camera.flash')}>
+                  <Ionicons name={screenFlash ? 'flash' : 'flash-off-outline'} size={24} color={screenFlash ? colors.gold : colors.white} />
+                </TouchableOpacity>
+              )}
             </View>
 
             {phase === 'selfie' && (
@@ -252,6 +294,7 @@ export function DualCamera({ visible, initial, onCapture, onClose }: {
               ) : <View style={styles.round} />}
             </View>
             <Animated.View style={[StyleSheet.absoluteFill, styles.flash, flashStyle]} pointerEvents="none" />
+            {lit && <View style={[StyleSheet.absoluteFill, styles.flash]} pointerEvents="none" />}
           </>
         )}
       </View>

@@ -15,6 +15,8 @@ declare(strict_types=1);
  *                              update screen (no X-App-Version, up to 1.7.1)
  *                              get 426 on every call, and their accounts are
  *                              kept in old_app_seen for an "Old app versions" push.
+ *   Dual photo                 Admin › App versions: the Daily camera with the
+ *                              selfie (off: the previous capture).
  * The app sends X-Platform and X-App-Version from 1.8.0 and reads GET /api/v1/app/config.
  */
 final class AppConfig
@@ -106,6 +108,7 @@ final class AppConfig
             }
         }
         $values['block_old_apps'] = !empty($in['block_old_apps']) ? '1' : '0';
+        $values['dual_photo']     = !empty($in['dual_photo']) ? '1' : '0';
         $stmt = Database::pdo()->prepare("
             INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES (?, ?, now(), ?)
             ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now(), updated_by = EXCLUDED.updated_by
@@ -142,6 +145,16 @@ final class AppConfig
     public static function blockOldApps(): bool
     {
         return (self::settings()['block_old_apps'] ?? '0') === '1';
+    }
+
+    /**
+     * Dual photo (docs/dual-photo-audit.md): the Daily camera with the selfie.
+     * Off by default: the apps keep the previous capture (the system camera
+     * on iOS). Dual photos already posted show everywhere either way.
+     */
+    public static function dualPhoto(): bool
+    {
+        return (self::settings()['dual_photo'] ?? '0') === '1';
     }
 
     // ── Old apps (up to 1.7.1: no update screen, no X-App-Version) ────────────
@@ -277,6 +290,7 @@ final class AppConfig
             'latestVersion'           => self::platformVersion('latest', $platform),
             'storeUrls'               => self::STORE_URLS,
             'challengeCreationClosed' => self::challengeCreationClosed(),
+            'dualPhoto'               => self::dualPhoto(),
         ];
     }
 }

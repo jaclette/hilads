@@ -114,4 +114,12 @@ final class AppVersionsTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         AppConfig::saveSettings(['ios_min_version' => '1.8.1-beta'], 'test');
     }
+
+    public function testDualPhotoIsOffUntilSwitchedOn(): void
+    {
+        AppConfig::setSettings([]);
+        $this->assertFalse(AppConfig::payload('ios')['dualPhoto'], 'off by default: the previous camera');
+        AppConfig::setSettings(['dual_photo' => '1']);
+        $this->assertTrue(AppConfig::payload('android')['dualPhoto']);
+    }
 }

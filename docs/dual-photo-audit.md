@@ -78,3 +78,27 @@ Skipped on purpose:
 - **No gallery** in the Daily flow (camera only, SPEC 9.4): "Add your face" lives on the camera's review instead.
 - **No blurhash / stored dimensions**: none exist today; the thumb is the placeholder for both images, like the rest of the app.
 - **Selfie never in** spot covers, map pins, the promo video, SEO pages and og images (a face needs its own consent for promo; covers and pins stay about the place).
+
+## 6. Remote switch, screen flash, mirroring (2026-10-29, after review)
+
+- **Off by default**: `app_settings.dual_photo` (Admin › App versions › "Dual photo"), sent as `dualPhoto` by `GET /app/config`. `proof.tsx` reads it with today's challenge (3 s cap, any failure = off) before the camera can open. Off = the previous capture exactly: `launchCameraAsync` (system camera) on iOS, `AndroidCameraCapture` on Android. A single-camera photo drops any earlier selfie (an edit never pairs a new photo with an old selfie). Dual photos already posted show everywhere whatever the switch.
+- **OTA**: `expo-updates` is not in the app (`package.json`, `node_modules`), so an EAS Update cannot reach installed apps; JS ships with a store build only. The switch protects the capture whichever way it ships.
+- **Screen flash** for the selfie: a white full-screen overlay plus full brightness (`expo-brightness`, new native module, loaded defensively) for 350 ms before the shot, brightness restored after. On by default for Night out, Halloween and 18:00–07:00 local time; a flash button on the selfie screen switches it.
+- **Mirroring**: no `mirror` on the front camera, so expo-camera saves the selfie un-mirrored (text reads correctly) while the live preview stays mirror-like.
+
+## 7. In-app camera vs the iOS system camera (what dual mode costs on iOS)
+
+Android is unchanged: its Daily capture already used `CameraView`. On iOS, dual mode replaces the system camera (`UIImagePickerController`) with expo-camera (`AVCapturePhotoOutput`):
+
+| | System camera (switch off) | In-app camera (dual on) |
+| --- | --- | --- |
+| Lenses | pinch and 0.5x / 1x / 2–5x, macro auto-switch on Pro models | 1x wide only (expo-camera has `zoom` and `selectedLens`, not wired) |
+| Close-ups (food) | macro on Pro models | wide lens minimum focus distance: close dishes can be soft |
+| Focus / exposure | tap to focus and expose, exposure slider | continuous auto only (no focus-point API in expo-camera 16) |
+| HDR / Deep Fusion | Apple's full pipeline | likely lighter: expo-camera doesn't expose quality prioritization (to confirm on device) |
+| Night | Night mode is a Camera-app feature; the picker doesn't offer it either (as far as I know) | none; the rear flash on/off |
+| Flash | auto / on / off | on / off (expo supports auto, not wired) |
+| Shutter | instant | a short lag (takePictureAsync with processing) |
+| Resolution | both are downscaled to 1600 px and re-encoded at upload | same |
+
+Ways to win most of it back: pinch-to-zoom and an 0.5x button (`zoom`, `selectedLens`), flash auto, or a hybrid (the system camera for the photo, the in-app front camera only for the selfie).

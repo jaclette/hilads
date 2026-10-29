@@ -85,6 +85,15 @@ admin_nav('/admin/app-versions');
                 These versions have no update screen: every call gets "426 Update required" and the app shows "A new version of Hilads is here. Update the app…" where it shows errors (in the user's language). The web and apps from 1.8.0 are never blocked by this. Accounts and guests seen on an old app join the Push page's "Old app versions" audience. Turn it off to let them back in at once.
             </p>
         </div>
+        <div class="form-group">
+            <label style="font-weight:normal;text-transform:none;letter-spacing:0;font-size:14px;color:#eee">
+                <input type="checkbox" name="dual_photo" value="1" <?= ($saved['dual_photo'] ?? '0') === '1' ? 'checked' : '' ?>>
+                Dual photo (photo + selfie)
+            </label>
+            <p style="color:#777;font-size:12px;margin:6px 0 0 22px">
+                On: the Daily camera takes the photo, then a selfie (apps with the dual camera). Off: the previous camera (the system camera on iOS). Dual photos already posted show everywhere either way. Apps read it when they open the camera.
+            </p>
+        </div>
         <button type="submit" class="btn btn-primary">Save</button>
         <?php if ($last): ?><span style="color:#666;font-size:12px;margin-left:10px">Last saved <?= $h($last['at']) ?> UTC by <?= $h($last['updated_by']) ?></span><?php endif; ?>
     </form>
