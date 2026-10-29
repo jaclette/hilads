@@ -158,7 +158,7 @@ export default function PassportScreen() {
             <Text style={styles.comparedText}>{t('passport.comparedCities', { count: stats!.comparedCities!.length })}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsRow}>
               {stats!.comparedCities!.map(c => (
-                <TouchableOpacity key={c.id} style={styles.flagChip} onPress={() => router.push(`/daily/stories?city=${c.id}&source=passport` as never)}
+                <TouchableOpacity key={c.id} style={styles.flagChip} onPress={() => router.push(`/daily/stories?city=${c.id}&name=${encodeURIComponent(c.name ?? '')}&source=passport` as never)}
                                   accessibilityRole="button" accessibilityLabel={c.name ?? ''}>
                   <FlagSticker country={c.country} size={22} />
                   <Text style={styles.flagName} numberOfLines={1}>{shortCityName(c.name ?? '')}</Text>

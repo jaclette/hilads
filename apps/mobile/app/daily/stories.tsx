@@ -62,7 +62,7 @@ function Stories() {
   const router = useRouter();
   const { account, identity } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
-  const { city: startCity, source } = useLocalSearchParams<{ city?: string; source?: string }>();
+  const { city: startCity, name: startName, source } = useLocalSearchParams<{ city?: string; name?: string; source?: string }>();
   const [cities, setCities] = useState<DailyCityGroup[] | null>(() => {
     const list = todayCities(lastCountries());
     return list.length ? list : null;
@@ -94,7 +94,9 @@ function Stories() {
     return () => flushSeen();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const group = order[cityIndex] ?? null;
+  // The city asked for hasn't played today (a Passport flag): say so, never another city's photos.
+  const absent = !!startCity && !!cities && !cities.some(c => String(c.city.id) === String(startCity));
+  const group = absent ? null : order[cityIndex] ?? null;
   const ids = (group?.ids ?? []).filter(id => !gone.has(id));
   const proof = ids[photoIndex] ? proofs[ids[photoIndex]] ?? null : null;
 
@@ -148,7 +150,9 @@ function Stories() {
   if (!group) {
     return (
       <View style={[styles.wrap, styles.center]}>
-        {failed || (cities && !cities.length) ? <Text style={styles.caption}>{t('loadFailed')}</Text> : <ActivityIndicator color={colors.white} />}
+        {failed ? <Text style={styles.caption}>{t('loadFailed')}</Text>
+          : cities && (absent || !cities.length) ? <Text style={styles.caption}>{startName ? t('represent.emptyThere', { city: localizeCityName(startName) }) : t('hero.firstCity')}</Text>
+          : <ActivityIndicator color={colors.white} />}
         <IconButton icon="close" tone="onPhoto" onPress={close} label={t('back')} style={[styles.close, { top: insets.top + 8 }]} />
       </View>
     );

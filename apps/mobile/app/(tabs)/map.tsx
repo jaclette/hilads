@@ -570,8 +570,9 @@ function PlanMarker({ plan }: { plan: PlanPin }) {
   const ongoing = plan.startsAt * 1000 <= now && (plan.endsAt ? plan.endsAt * 1000 > now : true);
   const hours = (plan.startsAt * 1000 - now) / 3_600_000;
   // Soon: relative ("in 2 hours", localized); later: the day and time.
+  // Hermes on Android has no Intl.RelativeTimeFormat (new undefined → crash): the time instead.
   const time = ongoing ? t('map.planNow')
-    : hours < 6 ? new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
+    : hours < 6 && typeof Intl.RelativeTimeFormat === 'function' ? new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
     : start.toLocaleString(i18n.language, start.toDateString() === new Date().toDateString()
         ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' });
   const going = plan.participantCount > 1 ? t('map.planGoing', { count: plan.participantCount }) : null;
