@@ -77,17 +77,22 @@ export function DualPhoto({
   const dy = useSharedValue(0);
 
   const ratio = inset === 'small' ? 0.24 : 0.28;
-  const insetRect = useMemo<Rect>(() => {
-    const w = Math.round(size.w * ratio);
-    const h = Math.min(Math.round(w * 4 / 3), Math.max(0, size.h - 2 * MARGIN - insetTop));
+  const rectFor = (sw: number, sh: number): Rect => {
+    const w = Math.round(sw * ratio);
+    const h = Math.min(Math.round(w * 4 / 3), Math.max(0, sh - 2 * MARGIN - insetTop));
     const m = inset === 'small' ? 6 : MARGIN;
     return {
-      x: corner % 2 === 0 ? m : size.w - w - m,
-      y: corner < 2 ? m + insetTop : size.h - h - m,
+      x: corner % 2 === 0 ? m : sw - w - m,
+      y: corner < 2 ? m + insetTop : sh - h - m,
       w, h, r: inset === 'small' ? 8 : 12,
     };
-  }, [size, ratio, corner, inset, insetTop]);
-  const bigRect: Rect = { x: 0, y: 0, w: size.w, h: size.h, r: 0 };
+  };
+  const insetRect = useMemo(() => rectFor(size.w, size.h), [size, ratio, corner, inset, insetTop]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The geometry lives in a shared value, not in the animated styles' dependencies: a layer
+  // mounted before a dependency change reached the UI thread stayed 0×0 (an empty card,
+  // a black viewer, now and then). Written on layout, before the layers mount.
+  const geom = useSharedValue<{ big: Rect; inset: Rect }>({ big: { x: 0, y: 0, w: 0, h: 0, r: 0 }, inset: insetRect });
+  useEffect(() => { geom.value = { big: { x: 0, y: 0, w: size.w, h: size.h, r: 0 }, inset: insetRect }; }, [size, insetRect, geom]);
 
   // Back to the photo when the pictures change (a recycled cell, the next story).
   useEffect(() => { setSelfieBig(false); p.value = 0; setCorner(0); }, [main.uri, selfie?.uri, p]);
@@ -148,14 +153,16 @@ export function DualPhoto({
 
   const onLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
-    if (width !== size.w || height !== size.h) setSize({ w: width, h: height });
+    if (width === size.w && height === size.h) return;
+    geom.value = { big: { x: 0, y: 0, w: width, h: height, r: 0 }, inset: rectFor(width, height) };
+    setSize({ w: width, h: height });
   };
 
   const border = theme === 'dark' ? colors.bg2 : colors.white;
   const ready = size.w > 0 && !!selfie;
   // The photo shrinks into the inset when the selfie grows; whichever is the inset sits on top.
-  const mainStyle = useLayer(p, bigRect, insetRect, false, dx, dy);
-  const selfieStyle = useLayer(p, bigRect, insetRect, true, dx, dy);
+  const mainStyle = useLayer(p, geom, false, dx, dy);
+  const selfieStyle = useLayer(p, geom, true, dx, dy);
   const mainOnTop = selfieBig;
 
   const layer = (which: 'main' | 'selfie') => {
@@ -203,8 +210,9 @@ export function DualPhoto({
 }
 
 /** A layer between the big frame and the inset: p = 0 photo big, 1 selfie big. */
-function useLayer(p: SharedValue<number>, big: Rect, inset: Rect, isSelfie: boolean, dx: SharedValue<number>, dy: SharedValue<number>) {
+function useLayer(p: SharedValue<number>, geom: SharedValue<{ big: Rect; inset: Rect }>, isSelfie: boolean, dx: SharedValue<number>, dy: SharedValue<number>) {
   return useAnimatedStyle(() => {
+    const { big, inset } = geom.value;
     // How much of the way this layer is to being the inset.
     const k = isSelfie ? 1 - p.value : p.value;
     const lerp = (a: number, b: number) => a + (b - a) * k;
@@ -215,7 +223,7 @@ function useLayer(p: SharedValue<number>, big: Rect, inset: Rect, isSelfie: bool
       height: lerp(big.h, inset.h),
       borderRadius: lerp(big.r, inset.r),
     };
-  }, [big.x, big.y, big.w, big.h, inset.x, inset.y, inset.w, inset.h, inset.r, isSelfie]);
+  });
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
