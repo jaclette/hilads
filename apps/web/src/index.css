@@ -17200,6 +17200,15 @@ html.kb-open .quick-row { display: none; }
 .hilocal-cta--later { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
 /* Empty states (the app's EmptyState): stroke icon, title, body, primary Button. */
 .events-empty-icon { color: var(--primary-text); display: flex; justify-content: center; }
+/* The icon in a soft bubble with the Hilads logo peeking at its corner (V3 polish 7). */
+.events-empty-icon, .empty-icon, .topic-chat-empty-icon, .notif-empty-icon, .conv-empty-icon {
+  position: relative; flex-shrink: 0; width: 64px; height: 64px; margin: 0 auto 0.25rem; border-radius: 50%;
+  background: var(--primary-tint); display: flex; align-items: center; justify-content: center;
+}
+.events-empty-icon::after, .empty-icon::after, .topic-chat-empty-icon::after, .notif-empty-icon::after, .conv-empty-icon::after {
+  content: ''; position: absolute; right: -6px; bottom: -4px; width: 22px; height: 22px;
+  background: url('/logo/icon.svg') center / contain no-repeat; transform: rotate(-10deg);
+}
 .events-empty-title { font-size: 16px; font-weight: 800; color: var(--text); }
 .events-empty-sub { font-size: 14px; color: var(--muted2); }
 .events-empty-cta, .events-empty-cta:hover { min-height: 48px; padding: 0 20px; border: none; border-radius: 16px; background: var(--primary); color: #fff; font-size: 15px; font-weight: 700; box-shadow: none; transform: none; }

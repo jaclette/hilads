@@ -5,7 +5,7 @@ import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
-import { FlagSticker } from '../joy/Joy'
+import { FlagSticker, themeColor } from '../joy/Joy'
 import { todayCities } from '../today/TodayCountries'
 import { AnswerChip, captionRepeatsAnswer } from './compareShared'
 import { lastCountries, rememberCountries } from './countryOrder'
@@ -142,6 +142,11 @@ function Stories({ city: startCity = null, source = 'today', onBack }) {
     )
   }
 
+  // The segments fill in today's theme color (the theme color system, V3 polish 7).
+  const today = getLastToday()?.challenge
+  const tc = themeColor(today?.special ? 'special' : today?.theme?.key)
+  const barColor = tc.line ?? tc.fill
+
   return createPortal(
     <div className="tour" role="dialog" aria-modal="true" aria-label={t('worlds.tagline')}>
       {proof
@@ -158,7 +163,7 @@ function Stories({ city: startCity = null, source = 'today', onBack }) {
             <span key={id} className="tour-bar">
               <span key={`${cityIndex}-${photoIndex}`}
                     className={`tour-bar-fill${i < photoIndex || (i === photoIndex && reduce) ? ' tour-bar-fill--done' : ''}${i === photoIndex && proof && !reduce ? ' st-bar-fill--run' : ''}`}
-                    style={i === photoIndex && paused ? { animationPlayState: 'paused' } : undefined}
+                    style={{ background: barColor, ...(i === photoIndex && paused ? { animationPlayState: 'paused' } : {}) }}
                     onAnimationEnd={i === photoIndex ? next : undefined} />
             </span>
           ))}
@@ -205,7 +210,7 @@ function TapZone({ proof, onPrev, onNext, onHold }) {
     if (now - lastTap.current < DOUBLE_TAP_MS) {
       lastTap.current = 0
       clearTimeout(pending.current); pending.current = null
-      if (canVote && !state?.myVote) press({ withdraw: false })
+      if (canVote && !state?.myVote) { navigator.vibrate?.(12); press({ withdraw: false }) }
       return
     }
     lastTap.current = now
@@ -228,6 +233,7 @@ function Bottom({ proof, onProfile }) {
   const name = personName(proof.user)
   const vote = () => {
     if (!state || state.isMine || (!canVote && !state.myVote)) return
+    navigator.vibrate?.(12)
     press({ withdraw: !!state.myVote })
   }
   return (
