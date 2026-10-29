@@ -62,7 +62,7 @@ function Stories() {
   const router = useRouter();
   const { account, identity } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
-  const { city: startCity, name: startName, source } = useLocalSearchParams<{ city?: string; name?: string; source?: string }>();
+  const { city: startCity, name: startName, source, photo: startPhoto } = useLocalSearchParams<{ city?: string; name?: string; source?: string; photo?: string }>();
   const [cities, setCities] = useState<DailyCityGroup[] | null>(() => {
     const list = todayCities(lastCountries());
     return list.length ? list : null;
@@ -99,6 +99,15 @@ function Stories() {
   const group = absent ? null : order[cityIndex] ?? null;
   const ids = (group?.ids ?? []).filter(id => !gone.has(id));
   const proof = ids[photoIndex] ? proofs[ids[photoIndex]] ?? null : null;
+
+  // Opened from a mosaic pile: start at the photo that was on top of it.
+  const startedAt = useRef(false);
+  useEffect(() => {
+    if (startedAt.current || !startPhoto || !group || cityIndex !== 0) return;
+    startedAt.current = true;
+    const i = ids.indexOf(startPhoto);
+    if (i > 0) setPhotoIndex(i);
+  }, [group?.city.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A city's photos, the first time it shows (its top one is already there).
   useEffect(() => {

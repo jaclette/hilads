@@ -110,6 +110,7 @@ export type AnalyticsEvent =
   // Today's country stories and mosaic: story { country, unseen }, tile { country }, play { has_photos }.
   | 'today_countries_story'
   | 'today_countries_tile'
+  | 'today_pile_swipe'
   | 'today_countries_play'
   | 'today_countries_all'
   | 'today_countries_sort'

@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PanResponder, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
@@ -7,11 +10,12 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { fetchDailyTour } from '@/api/daily';
+import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
 import { answerText } from '@/features/compare/format';
 import { hasUnseen, isSeen, useSeen } from '@/features/daily/seen';
-import { useVoteState } from '@/features/daily/votes';
+import { seedProofs, useVoteState } from '@/features/daily/votes';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useHere } from '@/hooks/useDaily';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { lastTour, rememberTour } from '@/features/tour/store';
@@ -87,9 +91,9 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
     track('today_countries_play', { has_photos: cities.length > 0 });
     router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
   };
-  const openCity = (g: DailyCityGroup, source: 'today_stories' | 'today_mosaic') => {
+  const openCity = (g: DailyCityGroup, source: 'today_stories' | 'today_mosaic', photo?: string) => {
     track(source === 'today_stories' ? 'today_countries_story' : 'today_countries_tile', { country: g.city.country, unseen: hasUnseen(g) });
-    router.push(`/daily/stories?city=${g.city.id}&source=${source}` as never);
+    router.push(`/daily/stories?city=${g.city.id}&source=${source}${photo ? `&photo=${photo}` : ''}` as never);
   };
   const yesterday = (tour?.slides ?? []).slice().sort((a, b) => (a.podium ?? 99) - (b.podium ?? 99)).slice(0, 3);
 
@@ -139,7 +143,7 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
           <View style={styles.grid}>
             {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onPress={play} />}
             {cities.length > 0
-              ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onPress={() => openCity(g, 'today_mosaic')} />)
+              ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onPress={photo => openCity(g, 'today_mosaic', photo)} />)
               : yesterday.map(s => <CityCard key={s.city.id} faded pileColor={theme.fill} group={{
                   city: { id: s.city.id, name: s.city.name, country: s.city.country ?? '' }, count: s.count, authorCount: null,
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
@@ -188,83 +192,216 @@ function lean(id: number): number {
 }
 
 /**
- * A city's card: its most liked photo (a polaroid pile behind it when the city
- * has several), its answer large, its players and its likes. `faded`:
- * yesterday's card in the empty state.
+ * A city's card: its most liked photo, and when the city has several, a pile of
+ * them (the next ones peek out behind, theme-colored edges): swipe sideways to
+ * bring the next to the front, endlessly; its answer, player, likes, comments
+ * and selfie follow the photo on top, and a tap opens the stories at it. A
+ * one-time peek shows the swipe. `faded`: yesterday's card in the empty state.
  */
 function CityCard({ group, onPress, pileColor, badge, faded = false }: {
-  group: DailyCityGroup; onPress: () => void; pileColor: string; badge?: string; faded?: boolean;
+  group: DailyCityGroup; onPress: (photoId: string) => void; pileColor: string; badge?: string; faded?: boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const { account, identity } = useApp();
-  const state = useVoteState(group.top.id, account ? null : identity?.guestId ?? null);
-  const p: DailyProof = group.top;
+  const guestId = account ? null : identity?.guestId ?? null;
+  const reduced = useReducedMotion();
+  const photos = usePilePhotos(group, guestId);
+  const n = photos.length;
+  const [front, setFront] = useState(0);
+  useEffect(() => { if (front >= n) setFront(0); }, [n, front]);
+  const at = (k: number) => photos[(front + k) % Math.max(1, n)];
+  const p: DailyProof = at(0) ?? group.top;
+  const state = useVoteState(p.id, guestId);
   const line = p.answer && !p.backHome ? answerText(p.answer, i18n.language) : p.caption ?? p.spot?.name ?? p.place?.name ?? '';
-  const likes = group.totalLikes ?? state?.voteCount ?? p.voteCount;
+  const likes = state?.voteCount ?? p.voteCount;
+  const comments = p.commentCount ?? 0;
   const pile = group.count > 1;
+  const swipeable = n > 1 && !faded;
   const players = group.authorCount ?? 0;
-  const more = players - group.authors.length;
+
+  // The top photo follows the thumb sideways (a slight tilt); past a third of the card, or a
+  // flick, it flies off and the next photo comes to the front, endlessly; short of it, it springs
+  // back. Transforms only (UI thread). Horizontal moves only: the page's vertical scroll wins.
+  const width = useRef(160);
+  const tx = useSharedValue(0);
+  const fade = useSharedValue(1);
+  const lift = useSharedValue(1);
+  const swiping = useRef(false);
+  const next = () => {
+    Haptics.selectionAsync().catch(() => {});
+    track('today_pile_swipe', { city: group.city.id, photos: n });
+    setFront(f => (f + 1) % n);
+    // The new top photo rises from the pile.
+    tx.value = 0;
+    fade.value = reduced ? withTiming(1, { duration: 150 }) : 1;
+    lift.value = reduced ? 1 : 0.94;
+    if (!reduced) lift.value = withSpring(1, { damping: 14, stiffness: 180 });
+  };
+  const nextRef = useRef(next);
+  nextRef.current = next;
+  // On the card's wrapper, in the capture phase: the tappable card under it already holds the
+  // touch, and React Native never lets a child take a touch from its parent.
+  const horizontal = (g: { dx: number; dy: number }) => swipeable && Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5;
+  const pan = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_, g) => horizontal(g),
+    onMoveShouldSetPanResponder: (_, g) => horizontal(g),
+    onPanResponderGrant: () => { swiping.current = true; },
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderMove: (_, g) => { tx.value = g.dx; },
+    onPanResponderRelease: (_, g) => {
+      swiping.current = false;
+      const dir = g.dx > 0 ? 1 : -1;
+      if (Math.abs(g.dx) > width.current * 0.33 || (Math.abs(g.vx) > 0.6 && Math.abs(g.dx) > 24)) {
+        const done = () => nextRef.current();
+        if (reduced) fade.value = withTiming(0, { duration: 150 }, f => { if (f) runOnJS(done)(); });
+        else tx.value = withTiming(dir * width.current * 1.4, { duration: 200 }, f => { if (f) runOnJS(done)(); });
+      } else {
+        tx.value = withSpring(0, { damping: 15, stiffness: 200 });
+      }
+    },
+    onPanResponderTerminate: () => { swiping.current = false; tx.value = withSpring(0); },
+  }), [swipeable, reduced, tx, fade]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Once ever (on this phone): the first pile shown peeks aside, so the swipe is found.
+  useEffect(() => {
+    if (!swipeable || reduced) return;
+    let live = true;
+    claimPileHint().then(mine => {
+      if (!live || !mine) return;
+      tx.value = withDelay(500, withSequence(withTiming(-width.current * 0.22, { duration: 300 }), withSpring(0, { damping: 12, stiffness: 160 })));
+    });
+    return () => { live = false; };
+  }, [swipeable, reduced, tx]);
+
+  const topStyle = useAnimatedStyle(() => ({
+    opacity: fade.value,
+    transform: [
+      { translateX: tx.value },
+      { rotate: `${reduced ? 0 : (tx.value / Math.max(1, width.current)) * 10}deg` },
+      { scale: lift.value },
+    ],
+  }));
+
   return (
-    <TouchableOpacity style={[styles.cardWrap, { transform: [{ rotate: `${lean(group.city.id)}deg` }] }, faded && styles.faded]} onPress={onPress}
-                      accessibilityRole="button" testID="mosaic-tile"
-                      accessibilityLabel={[shortCityName(group.city.name), line, pile ? t('mosaic.players', { count: players }) : null, String(likes),
-                                          group.totalComments ? t('comments.count', { count: group.totalComments }) : null].filter(Boolean).join(', ')}>
-      {pile && <View style={[styles.layer, styles.layerBack, { backgroundColor: pileColor }]} />}
-      {pile && group.count > 2 && <View style={[styles.layer, styles.layerBack2, { backgroundColor: pileColor }]} />}
-      <View style={styles.card}>
-        <View style={styles.photo}>
-          {p.selfieUrl
-            ? <DualPhoto main={{ uri: p.thumbUrl ?? p.photoUrl }} selfie={selfieOf(p)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
-            : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
-          {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
-          {(pile || !!badge) && (
-            <View style={styles.corner} pointerEvents="none">
-              {pile && (
-                <View style={styles.pill}>
-                  <Ionicons name={players > 0 && players >= group.count ? 'people' : 'camera'} size={12} color={colors.white} />
-                  <Text style={styles.pillText} numberOfLines={1}>
-                    {players <= 0 ? group.count
-                      : players >= group.count ? t('mosaic.players', { count: players })
-                      : `${group.count} · ${t('mosaic.players', { count: players })}`}
-                  </Text>
+    <View style={[styles.cardWrap, { transform: [{ rotate: `${lean(group.city.id)}deg` }] }, faded && styles.faded]}
+          onLayout={e => { width.current = e.nativeEvent.layout.width; }} {...pan.panHandlers}>
+      {/* The pile: the next photos themselves, offset and tilted, a theme-colored edge; plain sheets until they load. */}
+      {pile && group.count > 2 && <PileSheet proof={n > 2 ? at(2) : null} color={pileColor} back2 />}
+      {pile && <PileSheet proof={n > 1 ? at(1) : null} color={pileColor} />}
+      <TouchableOpacity onPress={() => { if (!swiping.current) onPress(p.id); }} activeOpacity={0.9}
+                        accessibilityRole="button" testID="mosaic-tile"
+                        accessibilityLabel={[shortCityName(group.city.name), line, pile ? t('mosaic.players', { count: players }) : null,
+                                            swipeable ? t('stories.of', { index: front + 1, total: n }) : null, String(likes),
+                                            comments ? t('comments.count', { count: comments }) : null].filter(Boolean).join(', ')}
+                        accessibilityActions={swipeable ? [{ name: 'next', label: t('stories.next') }] : undefined}
+                        onAccessibilityAction={e => { if (e.nativeEvent.actionName === 'next') next(); }}>
+        <Animated.View style={topStyle}>
+          <View style={styles.card}>
+            <View style={styles.photo}>
+              {p.selfieUrl
+                ? <DualPhoto main={{ uri: p.thumbUrl ?? p.photoUrl }} selfie={selfieOf(p)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
+                : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
+              {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
+              {(pile || !!badge) && (
+                <View style={styles.corner} pointerEvents="none">
+                  {pile && (
+                    <View style={styles.pill}>
+                      <Ionicons name={players > 0 && players >= group.count ? 'people' : 'camera'} size={12} color={colors.white} />
+                      <Text style={styles.pillText} numberOfLines={1}>
+                        {players <= 0 ? group.count
+                          : players >= group.count ? t('mosaic.players', { count: players })
+                          : `${group.count} · ${t('mosaic.players', { count: players })}`}
+                      </Text>
+                    </View>
+                  )}
+                  {!!badge && <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><Text style={styles.badgeText}>{badge}</Text></View>}
                 </View>
               )}
-              {!!badge && <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><Text style={styles.badgeText}>{badge}</Text></View>}
-            </View>
-          )}
-        </View>
-        <View style={styles.tileBody}>
-          <View style={styles.cityRow}>
-            <FlagSticker country={group.city.country} size={16} />
-            <Text style={styles.city} numberOfLines={1}>{shortCityName(group.city.name)}</Text>
-          </View>
-          <Text style={styles.answer} numberOfLines={2}>{line}</Text>
-          <View style={styles.foot}>
-            <View style={styles.avatars}>
-              {group.authors.map((a, i) => (
-                <View key={a.id} style={[styles.avatar, i > 0 && styles.avatarOverlap]}>
-                  <Avatar uri={a.photoUrl} name={a.displayName || a.username || ''} size={20} />
+              {/* Which photo of the pile is on top. */}
+              {swipeable && (
+                <View style={styles.dots} pointerEvents="none">
+                  {photos.slice(0, MAX_SEGMENTS).map((x, i) => <View key={x.id} style={[styles.dot, i === front % MAX_SEGMENTS && styles.dotOn]} />)}
                 </View>
-              ))}
-              {more > 0 && <Text style={styles.more}>+{more}</Text>}
-            </View>
-            <View style={styles.votes}>
-              {!!group.totalComments && (
-                <>
-                  <Ionicons name="chatbubble-outline" size={14} color={colors.muted} />
-                  <Text style={[styles.votesText, styles.commentsText]}>{group.totalComments}</Text>
-                </>
               )}
-              <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={15} color={state?.myVote ? colors.primary : colors.muted} />
-              <Text style={styles.votesText}>{likes}</Text>
+            </View>
+            <View style={styles.tileBody}>
+              <View style={styles.cityRow}>
+                <FlagSticker country={group.city.country} size={16} />
+                <Text style={styles.city} numberOfLines={1}>{shortCityName(group.city.name)}</Text>
+              </View>
+              <Text style={styles.answer} numberOfLines={2}>{line}</Text>
+              <View style={styles.foot}>
+                <View style={styles.avatars}>
+                  <View style={styles.avatar}>
+                    <Avatar uri={p.user.photoUrl ?? null} name={p.user.displayName || p.user.username || ''} size={20} />
+                  </View>
+                </View>
+                <View style={styles.votes}>
+                  {comments > 0 && (
+                    <>
+                      <Ionicons name="chatbubble-outline" size={14} color={colors.muted} />
+                      <Text style={[styles.votesText, styles.commentsText]}>{comments}</Text>
+                    </>
+                  )}
+                  <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={15} color={state?.myVote ? colors.primary : colors.muted} />
+                  <Text style={styles.votesText}>{likes}</Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-      </View>
-    </TouchableOpacity>
+        </Animated.View>
+      </TouchableOpacity>
+    </View>
   );
+}
+
+/** A photo under the top one: the real next photo, edge visible, theme-colored border. */
+function PileSheet({ proof, color, back2 = false }: { proof: DailyProof | null; color: string; back2?: boolean }) {
+  const styles = useThemedStyles(makeStyles);
+  return (
+    <View pointerEvents="none" style={[styles.layer, back2 ? styles.layerBack2 : styles.layerBack,
+                                       proof ? [styles.layerPhoto, { borderColor: color }] : { backgroundColor: color }]}>
+      {proof && <View style={styles.photo}><Photo thumb={proof.thumbUrl} full={proof.thumbUrl ?? proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" /></View>}
+    </View>
+  );
+}
+
+// The city's photos for its pile (best first, the top one already there), fetched once per
+// city and kept for the session: the card's back photos and what a swipe brings to the front.
+const pileCache = new Map<string, DailyProof>();
+const pileAsked = new Set<string>();
+const PILE_MAX = 8;
+function usePilePhotos(group: DailyCityGroup, guestId: string | null): DailyProof[] {
+  const ids = group.ids.slice(0, PILE_MAX);
+  const [, bump] = useState(0);
+  const key = ids.join(',');
+  useEffect(() => {
+    const missing = ids.filter(id => id !== group.top.id && !pileCache.has(id) && !pileAsked.has(id));
+    if (!missing.length) return;
+    missing.forEach(id => pileAsked.add(id));
+    let live = true;
+    fetchDailyProofsByIds(missing, guestId)
+      .then(list => { seedProofs(list, true); list.forEach(x => pileCache.set(x.id, x)); if (live) bump(v => v + 1); })
+      .catch(() => missing.forEach(id => pileAsked.delete(id)));
+    return () => { live = false; };
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+  return ids.map(id => (id === group.top.id ? group.top : pileCache.get(id))).filter((x): x is DailyProof => !!x);
+}
+
+// The one-time peek: the first swipeable pile shown on this phone, never again.
+const PILE_HINT_KEY = 'hilads_pile_hint_v1';
+let pileHint: Promise<boolean> | null = null;
+function claimPileHint(): Promise<boolean> {
+  pileHint ??= AsyncStorage.getItem(PILE_HINT_KEY).then(v => {
+    if (v === '1') return false;
+    AsyncStorage.setItem(PILE_HINT_KEY, '1').catch(() => {});
+    return true;
+  }).catch(() => false);
+  const mine = pileHint;
+  pileHint = Promise.resolve(false);   // later cards: no
+  return mine;
 }
 
 /** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
@@ -305,8 +442,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   faded:     { opacity: 0.55 },
   // The polaroid pile: theme-colored sheets peeking out behind the card.
   layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 16, opacity: 0.55 },
-  layerBack: { transform: [{ rotate: '4deg' }, { translateX: 4 }, { translateY: 2 }] },
-  layerBack2: { opacity: 0.3, transform: [{ rotate: '-4deg' }, { translateX: -4 }, { translateY: 3 }] },
+  layerBack: { transform: [{ rotate: '5deg' }, { translateX: 8 }, { translateY: -2 }] },
+  layerBack2: { opacity: 0.3, transform: [{ rotate: '-5deg' }, { translateX: -7 }, { translateY: 3 }] },
+  // A back sheet showing its photo: opaque, its edge in the theme color.
+  layerPhoto: { opacity: 1, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 2 },
+  dots:      { position: 'absolute', bottom: 6, alignSelf: 'center', flexDirection: 'row', gap: 4, paddingHorizontal: 6, paddingVertical: 4,
+               borderRadius: 8, backgroundColor: c.photoPill },
+  dot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: c.photoControl },
+  dotOn:     { backgroundColor: c.white },
   card:      { borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   photo:     { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
   // Leaves the left 30 % to the selfie inset (24 % + its margin); a long count truncates.
