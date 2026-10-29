@@ -59,6 +59,10 @@ $proofCell = function (array $r) use ($cityName): string {
     $label = DailyProofRepository::bool($r['is_local']) ? '🌍 Local' : '🧭 Traveler';
     return '<div style="display:flex;gap:10px;align-items:flex-start">'
         . '<a href="' . dh($r['photo_url']) . '" target="_blank"><img class="daily-thumb" src="' . dh(R2Uploader::thumbProxy($r['photo_url'])) . '" alt=""></a>'
+        // Dual photo: the selfie next to it (moderated with the post).
+        . (($r['selfie_url'] ?? null) !== null
+            ? '<a href="' . dh($r['selfie_url']) . '" target="_blank" title="Selfie"><img class="daily-thumb" style="width:40px;height:54px" src="' . dh(R2Uploader::thumbProxy($r['selfie_url'])) . '" alt="Selfie"></a>'
+            : '')
         . '<div><strong>@' . dh($r['username'] ?: $r['display_name']) . '</strong> <span class="daily-muted">' . dh($label) . ' · ' . dh($cityName($r['city_id'])) . '</span>'
         . ($r['edited_at'] ? ' <span class="badge" style="background:#3f3f46;color:#ddd">edited</span>' : '')
         . '<div style="margin-top:4px">' . ($r['caption'] !== null ? dh($r['caption']) : '<span class="daily-muted">no caption</span>') . '</div>'

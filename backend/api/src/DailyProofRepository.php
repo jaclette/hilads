@@ -61,6 +61,20 @@ final class DailyProofRepository
             $out['photo_url'] = $url;
         }
 
+        // Dual photo: the selfie taken right after the photo (optional; null removes it).
+        if (array_key_exists('selfieUrl', $body)) {
+            $selfie = $body['selfieUrl'];
+            if ($selfie === null) {
+                $out['selfie_url'] = null;
+            } else {
+                $selfie = is_string($selfie) ? trim($selfie) : '';
+                if ($selfie === '' || R2Uploader::ownUploadFilename($selfie) === null) {
+                    return [[], 'invalid_selfie'];
+                }
+                $out['selfie_url'] = $selfie;
+            }
+        }
+
         if (array_key_exists('caption', $body)) {
             $caption = $body['caption'];
             if ($caption !== null && !is_string($caption)) {
@@ -134,13 +148,13 @@ final class DailyProofRepository
 
         $stmt = Database::pdo()->prepare("
             INSERT INTO daily_proofs (
-                id, challenge_id, user_id, city_id, photo_url, caption,
+                id, challenge_id, user_id, city_id, photo_url, selfie_url, caption,
                 price_amount, price_currency, place_lat, place_lng, place_name, is_local, is_early,
                 place_id, distance_m,
                 answer_text, answer_number, answer_minutes,
                 home_city_id, home_city_name, home_country, home_answer_text, home_answer_number, home_answer_minutes,
                 home_price_amount, home_price_currency, home_line
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT DO NOTHING
             RETURNING id
         ");
@@ -150,6 +164,7 @@ final class DailyProofRepository
             $user['id'],
             $cityId,
             $fields['photo_url'],
+            $fields['selfie_url'] ?? null,
             $fields['caption'] ?? null,
             $fields['price_amount'] ?? null,
             $currency,
@@ -171,7 +186,7 @@ final class DailyProofRepository
     /** Apply an edit and send the proof back to moderation. */
     public static function update(string $id, array $fields): ?array
     {
-        $allowed = ['photo_url', 'caption', 'price_amount', 'price_currency', 'place_lat', 'place_lng', 'place_name',
+        $allowed = ['photo_url', 'selfie_url', 'caption', 'price_amount', 'price_currency', 'place_lat', 'place_lng', 'place_name',
                     'place_id', 'distance_m', ...self::COMPARE_COLUMNS];
         $sets = [];
         $args = [];
@@ -623,6 +638,10 @@ final class DailyProofRepository
             'isEarly'          => self::bool($row['is_early'] ?? false),
             'photoUrl'         => $row['photo_url'],
             'thumbUrl'         => R2Uploader::thumbProxy($row['photo_url']),
+            // Dual photo: the selfie shown as an inset over the photo (null: a single photo).
+            // Never a spot's cover or a map pin: those stay on photo_url.
+            'selfieUrl'        => $row['selfie_url'] ?? null,
+            'selfieThumbUrl'   => ($row['selfie_url'] ?? null) !== null ? R2Uploader::thumbProxy($row['selfie_url']) : null,
             'caption'          => $row['caption'],
             // amount and currency, plus eur: the amount in EUR (SPEC 10.5; null before the first rates).
             'price'            => $row['price_amount'] !== null

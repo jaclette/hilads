@@ -14519,6 +14519,7 @@ function dailyBlocks(?array $user): array
 
 const DAILY_ERRORS = [
     'invalid_photo'   => 'The photo must be uploaded through /api/v1/uploads.',
+    'invalid_selfie'  => 'The selfie must be uploaded through /api/v1/uploads.',
     'invalid_caption' => 'The caption must be one sentence of at most 140 characters.',
     'invalid_price'   => 'The price needs an amount and a 3-letter currency code.',
     'invalid_place'   => 'The place needs a valid latitude and longitude.',
@@ -15844,6 +15845,10 @@ $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
     if (isset($fields['photo_url']) && $fields['photo_url'] !== $proof['photo_url']) {
         dailyDeletePhoto($proof['photo_url']);
     }
+    // A replaced or removed selfie (dual photo) goes from storage too.
+    if (array_key_exists('selfie_url', $fields) && ($proof['selfie_url'] ?? null) !== null && $fields['selfie_url'] !== $proof['selfie_url']) {
+        dailyDeletePhoto($proof['selfie_url']);
+    }
     Response::json(['proof' => DailyProofRepository::format($updated, $user['id'])]);
 });
 
@@ -15855,6 +15860,9 @@ $router->add('DELETE', '/api/v1/daily/proofs/{id}', function (array $params) {
     DailyCards::hideProof($proof['id'], $proof['city_id']);
     DailyProofRepository::delete($proof['id']);
     dailyDeletePhoto($proof['photo_url']);
+    if (($proof['selfie_url'] ?? null) !== null) {
+        dailyDeletePhoto($proof['selfie_url']);
+    }
     apiLog('daily', 'proof deleted', ['proof' => $proof['id'], 'user' => $user['id']]);
     Response::json(['ok' => true]);
 });

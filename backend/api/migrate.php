@@ -3707,6 +3707,12 @@ run($pdo, "
 ", 'trg_photo_comments_count');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS comment_push BOOLEAN NOT NULL DEFAULT true", 'notification_preferences.comment_push');
 
+// Dual photo (2026-10-29, docs/dual-photo-audit.md): the selfie taken right
+// after the Daily photo, shown as an inset over it. Optional: NULL = a single
+// photo (and every proof posted by an older app). Never a spot's cover or a map
+// pin. Reversal: ALTER TABLE daily_proofs DROP COLUMN selfie_url.
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS selfie_url TEXT", 'daily_proofs.selfie_url');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
