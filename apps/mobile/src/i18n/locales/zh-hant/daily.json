@@ -536,7 +536,15 @@
         "versus": "對決",
         "result": "結果"
       },
-      "votes_other": "{{count}} 票"
+      "votes_other": "{{count}} 票",
+      "linkCopied": "連結已複製 🔗 用連結貼圖加入",
+      "save": "儲存圖片",
+      "saved": "已儲存到照片",
+      "savePermission": "請在設定中允許 Hilads 加入照片以儲存圖片。",
+      "format": {
+        "story": "限時動態",
+        "post": "貼文"
+      }
     },
     "textProofAsk": "我在 Hilads 代表{{city}}出戰：{{challenge}} {{question}}"
   },

@@ -536,7 +536,15 @@
         "versus": "Đối đầu",
         "result": "Kết quả"
       },
-      "votes_other": "{{count}} lượt bình chọn"
+      "votes_other": "{{count}} lượt bình chọn",
+      "linkCopied": "Đã sao chép link 🔗 Thêm bằng nhãn dán Liên kết",
+      "save": "Lưu ảnh",
+      "saved": "Đã lưu vào ảnh của bạn",
+      "savePermission": "Cho phép Hilads thêm ảnh trong Cài đặt để lưu ảnh.",
+      "format": {
+        "story": "Story",
+        "post": "Bài đăng"
+      }
     },
     "textProofAsk": "Mình đã chơi cho {{city}} trên Hilads: {{challenge}} {{question}}"
   },

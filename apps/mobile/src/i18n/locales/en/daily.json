@@ -545,7 +545,15 @@
         "result": "Result"
       },
       "votes_one": "{{count}} vote",
-      "votes_other": "{{count}} votes"
+      "votes_other": "{{count}} votes",
+      "linkCopied": "Link copied 🔗 Add it with the Link sticker",
+      "save": "Save image",
+      "saved": "Saved to your photos",
+      "savePermission": "Allow Hilads to add photos in Settings to save the image.",
+      "format": {
+        "story": "Story",
+        "post": "Post"
+      }
     },
     "textProofAsk": "I played for {{city}} on Hilads: {{challenge}} {{question}}"
   },

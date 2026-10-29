@@ -545,7 +545,15 @@
         "result": "Resulta"
       },
       "votes_one": "{{count}} boto",
-      "votes_other": "{{count}} boto"
+      "votes_other": "{{count}} boto",
+      "linkCopied": "Nakopya ang link 🔗 Idagdag gamit ang Link sticker",
+      "save": "I-save ang larawan",
+      "saved": "Na-save sa iyong photos",
+      "savePermission": "Payagan ang Hilads na magdagdag ng photos sa Settings para ma-save ang larawan.",
+      "format": {
+        "story": "Story",
+        "post": "Post"
+      }
     },
     "textProofAsk": "Naglaro ako para sa {{city}} sa Hilads: {{challenge}} {{question}}"
   },

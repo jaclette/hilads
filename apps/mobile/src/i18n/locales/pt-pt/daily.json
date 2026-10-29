@@ -553,7 +553,15 @@
       },
       "votes_one": "{{count}} voto",
       "votes_many": "{{count}} votos",
-      "votes_other": "{{count}} votos"
+      "votes_other": "{{count}} votos",
+      "linkCopied": "Link copiado 🔗 Adiciona-o com o autocolante Link",
+      "save": "Guardar imagem",
+      "saved": "Guardada nas tuas fotos",
+      "savePermission": "Permite que o Hilads adicione fotos nas Definições para guardar a imagem.",
+      "format": {
+        "story": "Story",
+        "post": "Publicação"
+      }
     },
     "textProofAsk": "Joguei por {{city}} no Hilads: {{challenge}} {{question}}"
   },

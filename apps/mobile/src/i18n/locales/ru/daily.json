@@ -581,7 +581,15 @@
       "votes_one": "{{count}} голос",
       "votes_few": "{{count}} голоса",
       "votes_many": "{{count}} голосов",
-      "votes_other": "{{count}} голоса"
+      "votes_other": "{{count}} голоса",
+      "linkCopied": "Ссылка скопирована 🔗 Добавь её стикером «Ссылка»",
+      "save": "Сохранить",
+      "saved": "Сохранено в фото",
+      "savePermission": "Разреши Hilads добавлять фото в Настройках, чтобы сохранить картинку.",
+      "format": {
+        "story": "История",
+        "post": "Пост"
+      }
     },
     "textProofAsk": "Я играю за {{city}} в Hilads: {{challenge}} {{question}}"
   },

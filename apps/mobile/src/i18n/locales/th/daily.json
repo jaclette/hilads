@@ -536,7 +536,15 @@
         "versus": "ดวล",
         "result": "ผลลัพธ์"
       },
-      "votes_other": "{{count}} โหวต"
+      "votes_other": "{{count}} โหวต",
+      "linkCopied": "คัดลอกลิงก์แล้ว 🔗 เพิ่มด้วยสติกเกอร์ลิงก์",
+      "save": "บันทึกรูป",
+      "saved": "บันทึกลงในรูปภาพแล้ว",
+      "savePermission": "อนุญาตให้ Hilads เพิ่มรูปภาพในการตั้งค่าเพื่อบันทึกรูป",
+      "format": {
+        "story": "สตอรี่",
+        "post": "โพสต์"
+      }
     },
     "textProofAsk": "ฉันเล่นให้ {{city}} บน Hilads: {{challenge}} {{question}}"
   },

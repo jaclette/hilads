@@ -537,7 +537,15 @@
         "versus": "対決",
         "result": "結果"
       },
-      "votes_other": "{{count}}票"
+      "votes_other": "{{count}}票",
+      "linkCopied": "リンクをコピーしました 🔗 リンクスタンプで追加してね",
+      "save": "画像を保存",
+      "saved": "写真に保存しました",
+      "savePermission": "画像を保存するには、設定で Hilads に写真の追加を許可してください。",
+      "format": {
+        "story": "ストーリー",
+        "post": "投稿"
+      }
     },
     "textProofAsk": "Hiladsで{{city}}代表としてプレイしたよ：{{challenge}} {{question}}"
   },

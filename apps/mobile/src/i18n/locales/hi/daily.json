@@ -545,7 +545,15 @@
         "result": "नतीजा"
       },
       "votes_one": "{{count}} वोट",
-      "votes_other": "{{count}} वोट"
+      "votes_other": "{{count}} वोट",
+      "linkCopied": "लिंक कॉपी हो गया 🔗 इसे Link स्टिकर से जोड़ें",
+      "save": "इमेज सेव करें",
+      "saved": "आपकी फ़ोटो में सेव हो गई",
+      "savePermission": "इमेज सेव करने के लिए Settings में Hilads को फ़ोटो जोड़ने दें।",
+      "format": {
+        "story": "स्टोरी",
+        "post": "पोस्ट"
+      }
     },
     "textProofAsk": "मैंने Hilads पर {{city}} के लिए खेला: {{challenge}} {{question}}"
   },

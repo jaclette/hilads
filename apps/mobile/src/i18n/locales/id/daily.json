@@ -537,7 +537,15 @@
         "versus": "Duel",
         "result": "Hasil"
       },
-      "votes_other": "{{count}} suara"
+      "votes_other": "{{count}} suara",
+      "linkCopied": "Tautan disalin 🔗 Tambahkan dengan stiker Tautan",
+      "save": "Simpan gambar",
+      "saved": "Tersimpan di fotomu",
+      "savePermission": "Izinkan Hilads menambahkan foto di Pengaturan untuk menyimpan gambar.",
+      "format": {
+        "story": "Story",
+        "post": "Postingan"
+      }
     },
     "textProofAsk": "Aku main untuk {{city}} di Hilads: {{challenge}} {{question}}"
   },

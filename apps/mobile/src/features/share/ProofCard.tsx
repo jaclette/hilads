@@ -141,7 +141,7 @@ export const ProofCard = forwardRef<View, {
           <Rect x="0" y="0" width="100%" height="100%" fill="url(#pcEvent)" />
         </Svg>
       ) : (
-        <Doodles width={size.width} height={size.height} color={doodle} />
+        <Doodles width={size.width} height={size.height} color={doodle} edges={story} />
       )}
       {ev && <EventFrame eventKey={content.eventKey!} width={size.width} height={size.height} />}
 
@@ -224,23 +224,26 @@ function Mystery({ width, height, label, still }: { width: number; height: numbe
   );
 }
 
-/** Hand-drawn doodles on the theme's ground: squiggles, stars, dots, a dotted arc (decor, kept to the edges). */
-function Doodles({ width, height, color }: { width: number; height: number; color: string }) {
+/**
+ * Hand-drawn doodles on the theme's ground: stars and dots, plus (on a story,
+ * in the Stories' top and bottom margins) a squiggle, a ring and a dotted arc.
+ */
+function Doodles({ width, height, color, edges }: { width: number; height: number; color: string; edges: boolean }) {
   const x = (n: number) => (n / 360) * width;
   const y = (n: number) => (n / 640) * height;
   const star = (cx: number, cy: number, r: number) =>
     `M${cx} ${cy - r} L${cx + r * 0.3} ${cy - r * 0.3} L${cx + r} ${cy} L${cx + r * 0.3} ${cy + r * 0.3} L${cx} ${cy + r} L${cx - r * 0.3} ${cy + r * 0.3} L${cx - r} ${cy} L${cx - r * 0.3} ${cy - r * 0.3} Z`;
   return (
     <Svg width={width} height={height} style={s.abs}>
-      <Path d={`M${x(-6)} ${y(40)} q${x(20)} ${-y(22)} ${x(40)} 0 t${x(40)} 0 t${x(40)} 0`} stroke={color} strokeWidth={u(4)} fill="none" strokeLinecap="round" opacity={0.35} />
+      {edges && <Path d={`M${x(-6)} ${y(40)} q${x(20)} ${-y(22)} ${x(40)} 0 t${x(40)} 0 t${x(40)} 0`} stroke={color} strokeWidth={u(4)} fill="none" strokeLinecap="round" opacity={0.35} />}
       <Path d={star(x(318), y(52), u(13))} fill={color} opacity={0.4} />
       <Path d={star(x(26), y(330), u(9))} fill={color} opacity={0.35} />
       <Path d={star(x(338), y(400), u(11))} fill={color} opacity={0.35} />
       <Circle cx={x(300)} cy={y(250)} r={u(5)} fill={color} opacity={0.35} />
       <Circle cx={x(52)} cy={y(220)} r={u(4)} fill={color} opacity={0.35} />
-      <Circle cx={x(334)} cy={y(606)} r={u(26)} stroke={color} strokeWidth={u(3)} fill="none" opacity={0.25} />
-      <Path d={`M${x(-10)} ${y(600)} q${x(60)} ${-y(70)} ${x(120)} ${-y(10)}`} stroke={color} strokeWidth={u(3)} strokeDasharray={`${u(2)} ${u(9)}`}
-            strokeLinecap="round" fill="none" opacity={0.45} />
+      {edges && <Circle cx={x(334)} cy={y(606)} r={u(26)} stroke={color} strokeWidth={u(3)} fill="none" opacity={0.25} />}
+      {edges && <Path d={`M${x(-10)} ${y(600)} q${x(60)} ${-y(70)} ${x(120)} ${-y(10)}`} stroke={color} strokeWidth={u(3)} strokeDasharray={`${u(2)} ${u(9)}`}
+            strokeLinecap="round" fill="none" opacity={0.45} />}
     </Svg>
   );
 }

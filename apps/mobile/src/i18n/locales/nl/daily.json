@@ -545,7 +545,15 @@
         "result": "Resultaat"
       },
       "votes_one": "{{count}} stem",
-      "votes_other": "{{count}} stemmen"
+      "votes_other": "{{count}} stemmen",
+      "linkCopied": "Link gekopieerd 🔗 Voeg hem toe met de Link-sticker",
+      "save": "Afbeelding bewaren",
+      "saved": "Bewaard in je foto's",
+      "savePermission": "Sta Hilads toe foto's toe te voegen in Instellingen om de afbeelding te bewaren.",
+      "format": {
+        "story": "Story",
+        "post": "Post"
+      }
     },
     "textProofAsk": "Ik speelde voor {{city}} op Hilads: {{challenge}} {{question}}"
   },

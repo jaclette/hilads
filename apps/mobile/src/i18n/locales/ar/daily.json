@@ -617,7 +617,15 @@
       "votes_two": "صوتان",
       "votes_few": "{{count}} أصوات",
       "votes_many": "{{count}} صوتًا",
-      "votes_other": "{{count}} صوت"
+      "votes_other": "{{count}} صوت",
+      "linkCopied": "تم نسخ الرابط 🔗 أضفه بملصق الرابط",
+      "save": "حفظ الصورة",
+      "saved": "تم الحفظ في صورك",
+      "savePermission": "اسمح لـ Hilads بإضافة الصور من الإعدادات لحفظ الصورة.",
+      "format": {
+        "story": "قصة",
+        "post": "منشور"
+      }
     },
     "textProofAsk": "لعبت من أجل {{city}} على Hilads: {{challenge}} {{question}}"
   },

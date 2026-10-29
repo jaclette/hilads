@@ -536,7 +536,15 @@
         "versus": "대결",
         "result": "결과"
       },
-      "votes_other": "{{count}}표"
+      "votes_other": "{{count}}표",
+      "linkCopied": "링크 복사됨 🔗 링크 스티커로 추가해 줘",
+      "save": "이미지 저장",
+      "saved": "사진에 저장됨",
+      "savePermission": "이미지를 저장하려면 설정에서 Hilads의 사진 추가를 허용해 줘.",
+      "format": {
+        "story": "스토리",
+        "post": "게시물"
+      }
     },
     "textProofAsk": "Hilads에서 {{city}} 대표로 참여했어: {{challenge}} {{question}}"
   },
