@@ -290,7 +290,8 @@
     "done": "ทำแล้ว",
     "pending": "รอตรวจสอบ",
     "missed": "ยังไม่ได้ทำ",
-    "none": "ไม่มี challenge"
+    "none": "ไม่มี challenge",
+    "keep": "เล่นวันนี้เพื่อรักษาสถิติต่อเนื่อง"
   },
   "calendar": {
     "title": "Daily Challenges ของฉัน",
@@ -366,7 +367,9 @@
       "invalid_twist": "Local Twist ต้องไม่เกิน 280 ตัวอักษร",
       "twist_not_allowed": "เฉพาะคนท้องถิ่นของเมืองที่ live เท่านั้นที่เพิ่ม Local Twist ได้",
       "moderation_blocked": "ข้อเสนอของคุณถูกระบบกลั่นกรองบล็อก โปรดเขียนใหม่"
-    }
+    },
+    "linkAsk": "มีไอเดียชาเลนจ์ไหม?",
+    "linkCta": "เสนอเลย"
   },
   "early": {
     "badge": "เร็ว",
@@ -416,7 +419,9 @@
       "proposeSub": "ไอเดียของคุณอาจกลายเป็นชาเลนจ์ของทุกคน",
       "twistTitle": "เสนอ Local Twist ของพรุ่งนี้",
       "twistSub": "สำหรับคนท้องถิ่น ถึง {{time}}"
-    }
+    },
+    "spotsTeaser_other": "{{count}} จุดใกล้คุณ",
+    "spotsTeaserIn_other": "{{count}} จุดใน {{city}}"
   },
   "spot": {
     "rankWeekFirst": "ได้โหวตมากที่สุดสัปดาห์นี้ใน{{city}}",

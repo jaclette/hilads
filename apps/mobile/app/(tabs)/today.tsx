@@ -13,16 +13,17 @@ import { useTodayCountries } from '@/features/today/useTodayCountries';
 import { TodayTour } from '@/features/tour/TodayTour';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { SpotsNear } from '@/features/today/SpotsNear';
+import { ProposeLink } from '@/features/today/ProposeLink';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
 import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
 
 /**
- * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, today's
- * photos by country (stories row and mosaic), yesterday's tour or podium, the
- * week strip, the Index and Spots near you (or in the chosen city). Never
- * empty: without photos it still shows the challenge, "Represent your city"
- * and the nearest spots anywhere. Hilads picks stay on the Map and Spots.
+ * TODAY, the home (SPEC 9.3, V3 polish): the Daily Challenge hero, the
+ * seasonal banner, today's photos by city (stories row and mosaic), your week
+ * (streak, tomorrow), yesterday with every past challenge, the Index, a slim
+ * row to the spots near you and "Got a challenge idea? Propose it". Never
+ * empty: without photos it shows yesterday's best cities and my city's slot.
  */
 export default function TodayScreen() {
   // A seasonal event's live look (Halloween...) re-colors the whole tab.
@@ -70,12 +71,14 @@ function TodayContent() {
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
         <TodayCountries today={daily.data} data={countries} />
-        {/* Yesterday around the world (SPEC 10.7); yesterday's podium below 2 cities. */}
-        <TodayTour today={daily.data} refreshKey={refreshKey} />
+        {/* Your week: the streak, tomorrow's theme and the week strip. */}
         <TodayWeek today={daily.data} />
+        {/* Yesterday around the world (SPEC 10.7) and every past challenge. */}
+        <TodayTour today={daily.data} refreshKey={refreshKey} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel refreshKey={refreshKey} />
         <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
+        <ProposeLink />
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />
     </SafeAreaView>

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
@@ -22,14 +23,24 @@ const THUMB = 84;
  * Yesterday's recap on Today (SPEC 10.7), one card: the winning photo
  * (yesterday's #1, else the best: compareCountryProofs), "Yesterday", the question, the
  * winner's flag, city and answer ("Lisbon · Saúde!"), and how many cities
- * played. "Watch" and the card open yesterday's tour at the winner. Hidden
- * when yesterday had no photo.
+ * played. "Watch" and the card open yesterday's tour at the winner. Its
+ * footer opens every past challenge (V3 polish 3.2); without a photo
+ * yesterday, that link stays on its own.
  */
 export function TodayTour({ today, refreshKey }: { today: DailyToday | null; refreshKey: number }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { account, identity } = useApp();
+  const archive = (
+    <TouchableOpacity style={styles.archive} onPress={() => router.push('/daily/archive?source=today_yesterday' as never)}
+                      accessibilityRole="button" hitSlop={6} testID="today-archive">
+      <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />
+      <Text style={styles.archiveText}>{t('today.allPast')}</Text>
+      <Ionicons name="chevron-forward" size={15} color={colors.primaryText} />
+    </TouchableOpacity>
+  );
   const guestId = account ? null : identity?.guestId ?? null;
   const cityId = today?.city?.id ?? null;
   const [tour, setTour] = useState<DailyTour | null>(null);
@@ -50,7 +61,8 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
   useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const slides = tour?.slides ?? [];
-  if (!tour || slides.length === 0) return null;
+  if (!loaded) return null;
+  if (!tour || slides.length === 0) return <Card style={styles.card}>{archive}</Card>;
   // The winner: yesterday's #1, else the best photo (the shared rule: most liked, then the earliest posted).
   let at = slides.findIndex(s => s.podium === 1);
   if (at < 0) at = slides.reduce((best, s, i) => (compareCountryProofs(s.proof, slides[best].proof) < 0 ? i : best), 0);
@@ -80,6 +92,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
           <Text style={styles.meta}>{t('recap.cities', { count: cities })}</Text>
         </View>
       </TouchableOpacity>
+      <View style={styles.footer}>{archive}</View>
     </Card>
   );
 }
@@ -95,4 +108,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   city:     { flexShrink: 1, fontSize: 14, fontWeight: '700', color: c.text },
   answer:   { fontWeight: '800', color: c.primaryText },
   meta:     { fontSize: 13, fontWeight: '600', color: c.muted },
+  footer:   { borderTopWidth: 1, borderTopColor: c.line, paddingTop: 10 },
+  archive:  { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 28 },
+  archiveText: { flex: 1, fontSize: 14, fontWeight: '700', color: c.primaryText },
 });

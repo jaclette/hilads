@@ -290,7 +290,8 @@
     "done": "완료",
     "pending": "검토 대기 중",
     "missed": "미완료",
-    "none": "challenge 없음"
+    "none": "challenge 없음",
+    "keep": "오늘 플레이하고 연속 기록을 지켜"
   },
   "calendar": {
     "title": "내 Daily Challenges",
@@ -366,7 +367,9 @@
       "invalid_twist": "Local Twist는 280자 이내로 써 주세요.",
       "twist_not_allowed": "live 중인 도시의 현지인만 Local Twist를 추가할 수 있어요.",
       "moderation_blocked": "제안이 모더레이션에 걸렸어요. 다르게 써 주세요."
-    }
+    },
+    "linkAsk": "챌린지 아이디어 있어?",
+    "linkCta": "제안하기"
   },
   "early": {
     "badge": "빠름",
@@ -416,7 +419,9 @@
       "proposeSub": "내 아이디어가 모두의 챌린지가 될 수 있어요",
       "twistTitle": "내일의 Local Twist 제안하기",
       "twistSub": "현지인 전용, {{time}}까지"
-    }
+    },
+    "spotsTeaser_other": "근처 스팟 {{count}}곳",
+    "spotsTeaserIn_other": "{{city}} 스팟 {{count}}곳"
   },
   "spot": {
     "rankWeekFirst": "이번 주 {{city}} 최다 득표",

@@ -1,5 +1,6 @@
-import { useState, type ComponentProps, type ReactNode } from 'react';
-import { Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
+import { Animated, Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -12,19 +13,26 @@ import { addDays, ymd, themeName } from '@/features/daily/themes';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { isEventDay, useSeasonal } from '@/features/event/seasonal';
 import { SeasonalDayIcon } from '@/features/event/SeasonalArt';
-import { themeColor, tint } from '@/ui/joy';
+import { Confetti, themeColor, tint } from '@/ui/joy';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { DailyCalendar, DailyToday } from '@/types';
 import { RowGroup } from '@/ui';
 
 type Day = DailyCalendar['days'][number];
 type State = 'done' | 'pending' | 'missed' | 'today' | 'tomorrow' | 'later' | 'none';
 
+/** The streak last shown on Today (this run of the app): a higher one bumps the flame. */
+let shownStreak: number | null = null;
+
 /**
- * Today's week strip (SPEC 9.3, today.html): the streak, tomorrow's theme as a
- * teaser, and Monday to Sunday with each day's status: done, missed, today,
+ * "Your week" (SPEC 9.3, V3 polish 3.1), one card: the streak (it bumps, with
+ * a small burst, when it grows after a photo) and tomorrow's theme in its own
+ * color, then Monday to Sunday with each day's status: done, missed, today,
  * tomorrow, each in its theme's color (DESIGN.md: a done day is filled with it,
- * today ringed with it). A past day opens its sheet; the streak opens the
- * calendar. Guests see the week's themes without statuses.
+ * today ringed with it); "Play today to keep your streak" when a streak of 2+
+ * waits for today's photo. A past day opens its sheet; the streak opens the
+ * calendar. Guests see the week's themes without statuses. A live city's local
+ * still finds tomorrow's Local Twist at the bottom.
  */
 export function TodayWeek({ today }: { today: DailyToday | null }) {
   const styles = useThemedStyles(makeStyles);
@@ -35,18 +43,42 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const now = ymd(new Date());
   const cal = useDailyCalendar(addDays(now, -8), addDays(now, 8));
   const [peek, setPeek] = useState(false);
+  const reduced = useReducedMotion();
+  const bump = useRef(new Animated.Value(1)).current;
+  const [burst, setBurst] = useState(false);
   // A seasonal event (teaser, live, recap): its days show its icon (Halloween: a pumpkin).
   const seasonal = useSeasonal();
   const dayIcon = (date: string, size: number, color: string, fallback: ReactNode) =>
     (isEventDay(seasonal, date) ? <SeasonalDayIcon themeKey={seasonal!.key} size={size} color={color} /> : fallback);
   const current = cal.data?.today ?? today?.challenge?.date ?? null;
+  const streakNow = today?.streak ?? cal.data?.streak?.current ?? null;
+  // The streak grew since Today last showed it (a photo just went in): bump the flame and the number.
+  useEffect(() => {
+    if (streakNow === null) return;
+    const grew = shownStreak !== null && streakNow > shownStreak;
+    shownStreak = streakNow;
+    if (!grew) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    if (reduced) return;
+    bump.setValue(1);
+    Animated.sequence([
+      Animated.timing(bump, { toValue: 1.35, duration: 160, useNativeDriver: true }),
+      Animated.spring(bump, { toValue: 1, friction: 3, useNativeDriver: true }),
+    ]).start();
+    setBurst(true);
+    const id = setTimeout(() => setBurst(false), 1600);
+    return () => clearTimeout(id);
+  }, [streakNow]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!current) return null;
 
   const dow = (new Date(`${current}T12:00:00Z`).getUTCDay() + 6) % 7;   // Monday = 0
   const monday = addDays(current, -dow);
   const byDate = new Map((cal.data?.days ?? []).map(d => [d.date, d]));
   const week = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
-  const streak = today?.streak ?? cal.data?.streak?.current ?? null;
+  const streak = streakNow;
+  // Today not played yet and a streak worth keeping: say so under the week.
+  const atRisk = !!account && !today?.myProof && !!today?.challenge?.isActive && (streak ?? 0) >= 2;
+  const tomorrowColor = themeColor(today?.tomorrow?.special ? 'special' : (today?.tomorrow?.theme?.key ?? byDate.get(addDays(current, 1))?.theme?.key));
   const tomorrowTheme = today?.tomorrow?.theme ?? byDate.get(addDays(current, 1))?.theme ?? null;
   const tomorrowSpecial = today?.tomorrow?.special ?? byDate.get(addDays(current, 1))?.special ?? null;
 
@@ -69,13 +101,25 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   };
 
   return (
-    <View style={styles.wrap}>
+    <View style={styles.wrap} testID="today-week">
+      <Confetti run={burst} count={18} />
       <View style={styles.head}>
         <TouchableOpacity style={styles.streak} onPress={() => router.push('/daily/calendar' as never)} accessibilityRole="button" hitSlop={6}>
-          <Ionicons name="flame-outline" size={18} color={colors.text} />
-          <Text style={styles.streakText}>{streak ? t('streak', { count: streak }) : t('week.title')}</Text>
+          <Animated.View style={[styles.streakInner, { transform: [{ scale: bump }] }]}>
+            <Ionicons name={streak ? 'flame' : 'flame-outline'} size={19} color={streak ? colors.primaryText : colors.text} />
+            <Text style={styles.streakText}>{streak ? t('streak', { count: streak }) : t('week.title')}</Text>
+          </Animated.View>
         </TouchableOpacity>
-        {!!tomorrowTheme && <Text style={styles.tomorrowText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</Text>}
+        {!!tomorrowTheme && (
+          <View style={styles.tomorrowRow}>
+            {dayIcon(addDays(current, 1), 15, mode === 'dark' ? tomorrowColor.textDark : tomorrowColor.textLight,
+                     <ThemeIcon theme={tomorrowTheme.key} special={tomorrowSpecial?.icon} size={15}
+                                color={mode === 'dark' ? tomorrowColor.textDark : tomorrowColor.textLight} />)}
+            <Text style={[styles.tomorrowText, { color: mode === 'dark' ? tomorrowColor.textDark : tomorrowColor.textLight }]} numberOfLines={1}>
+              {t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.row}>
         {week.map(date => {
@@ -115,17 +159,16 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</Text>
         </View>
       )}
-      {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}
-      <RowGroup style={styles.links}>
-        <LinkRow icon="calendar-outline" accent={ACCENT_SKY} title={t('today.allPast')} sub={t('today.links.pastSub')}
-                 onPress={() => router.push('/daily/archive' as never)} />
-        {/* Propose a challenge (SPEC 8.6): guests get the sign-up sheet, then the form. */}
-        <LinkRow divider icon="bulb-outline" accent={ACCENT_SUN} title={t('propose.cta')} sub={t('today.links.proposeSub')}
-                 onPress={() => router.push((account ? '/daily/propose?source=week_strip'
-                   : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)} />
-        {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
-        {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
-          <LinkRow divider icon="leaf-outline" accent={ACCENT_TEAL} title={t('today.links.twistTitle')}
+      {atRisk && (
+        <View style={styles.risk}>
+          <Ionicons name="flame" size={15} color={colors.primaryText} />
+          <Text style={styles.riskText}>{t('week.keep')}</Text>
+        </View>
+      )}
+      {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
+      {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
+        <RowGroup style={styles.links}>
+          <LinkRow icon="leaf-outline" accent={ACCENT_TEAL} title={t('today.links.twistTitle')}
                    sub={today.twistProposal.status
                      ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
                      : t('today.links.twistSub', { time: new Date(today.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
@@ -133,8 +176,8 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
                      track('daily_proposal_started', { entry: 'twist_week', type: 'twist', city: today.city?.name ?? null });
                      router.push('/daily/twist' as never);
                    }} />
-        )}
-      </RowGroup>
+        </RowGroup>
+      )}
     </View>
   );
 }
@@ -159,12 +202,10 @@ function LinkRow({ icon, title, sub, onPress, accent, divider = false }: {
 }
 
 const DOT = 40;
-const ACCENT_SKY = '#3D9BF0';
-const ACCENT_SUN = '#FFC93C';
 const ACCENT_TEAL = '#1FB5A8';
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:         { gap: 8 },
+  wrap:         { gap: 10, padding: 14, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, overflow: 'hidden' },
   links:        { marginTop: 6 },
   linkRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingHorizontal: 14, paddingVertical: 10 },
   rowDivider:   { borderTopWidth: 1, borderTopColor: c.line },
@@ -176,9 +217,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   peek:         { flexDirection: 'row', alignItems: 'center', gap: 6 },
   peekText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   head:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  streak:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 },
+  streak:       { minHeight: 32, justifyContent: 'center' },
+  streakInner:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  tomorrowRow:  { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
+  risk:         { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12, backgroundColor: c.primaryTint },
+  riskText:     { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.primaryOnTint },
   streakText:   { fontSize: 15, fontWeight: '800', color: c.text },
-  tomorrowText: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'right' },
+  tomorrowText: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '800', textAlign: 'right' },
   row:          { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
   day:          { flex: 1, alignItems: 'center', gap: 6, minHeight: 44 },
   weekday:      { fontSize: 12, fontWeight: '600', color: c.muted },

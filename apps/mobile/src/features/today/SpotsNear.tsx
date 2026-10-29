@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,14 +8,11 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useScope } from '@/context/ScopeContext';
 import { fetchSpotsNear, type Spot } from '@/api/spots';
-import { compactPrice, distance } from './format';
-import { CityFlag, SectionTitle } from '@/ui';
 import { shortCityName } from '@/i18n/cityName';
-import { PhotoCredit } from '@/features/map/PhotoCredit';
-import { PickBadge } from '@/features/map/PickBadge';
 
 /**
- * Spots near you (SPEC 9.3): the 2-3 nearest spots, linking to the Map. Uses
+ * Spots near you (SPEC 9.3, V3 polish 3.4): one slim row, "12 spots near you ·
+ * Open map" (the Map owns the spots); hidden when there's none around. Uses
  * the phone's position only when location is already allowed (Today never
  * asks), else the city centre; World scope uses the city centre too. When the
  * city has no spot yet, the nearest ones anywhere show with a note. In a city
@@ -25,7 +21,7 @@ import { PickBadge } from '@/features/map/PickBadge';
 export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refreshKey: number }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t, i18n } = useTranslation('daily');
+  const { t } = useTranslation('daily');
   const router = useRouter();
   const { scope } = useScope();
   const [spots, setSpots] = useState<Spot[] | null>(null);
@@ -56,72 +52,24 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
 
   const openMap = (spotId?: string) => router.push((spotId ? `/(tabs)/map?spot=${spotId}&source=today` : '/(tabs)/map?source=today') as never);
 
-  if (spots === null) return null;
+  if (spots === null || spots.length === 0 || fallback) return null;
+  // One slim row: the Map owns the spots (V3 polish 3.4).
+  const label = away ? t('today.spotsTeaserIn', { count: spots.length, city: shortCityName(away.name) }) : t('today.spotsTeaser', { count: spots.length });
   return (
-    <View style={styles.wrap}>
-      {away ? (
-        <View style={styles.head}>
-          <CityFlag country={away.country} />
-          <View style={styles.headTitle}>
-            <SectionTitle title={t('today.spotsIn', { city: shortCityName(away.name) })}
-                          action={{ label: t('today.openMap'), onPress: () => openMap() }} />
-          </View>
-        </View>
-      ) : (
-        <SectionTitle title={t('today.spotsTitle')} action={{ label: t('today.openMap'), onPress: () => openMap() }} />
-      )}
-      {fallback && spots.length > 0 && <Text style={styles.note}>{t('today.spotsFallback')}</Text>}
-      {spots.length === 0 ? (
-        <TouchableOpacity style={styles.empty} onPress={() => openMap()} accessibilityRole="button">
-          <Ionicons name="location-outline" size={22} color={colors.primaryText} />
-          <Text style={styles.emptyText}>{t('today.spotsEmpty')}</Text>
-        </TouchableOpacity>
-      ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cards}>
-          {spots.map(s => (
-            <TouchableOpacity key={s.id} style={styles.card} onPress={() => openMap(s.id)} activeOpacity={0.85}
-                              accessibilityRole="button" accessibilityLabel={s.name}>
-              <View>
-                {s.cover.thumbUrl || s.cover.photoUrl
-                  ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
-                  : <View style={styles.photo} />}
-                <PhotoCredit by={s.cover.by} credit={s.cover.credit} overlay />
-              </View>
-              <View style={styles.body}>
-                <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
-                {!!s.pick && <PickBadge />}
-                <View style={styles.meta}>
-                  {s.distanceM !== undefined && (
-                    <View style={styles.metaItem}>
-                      <Ionicons name="location-outline" size={13} color={colors.muted} />
-                      <Text style={styles.metaText}>{distance(s.distanceM, i18n.language)}</Text>
-                    </View>
-                  )}
-                  {s.priceRange && <Text style={styles.metaText}>{compactPrice(s.priceRange.min, s.priceRange.currency, i18n.language)}</Text>}
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+    <TouchableOpacity style={styles.teaser} onPress={() => openMap()} accessibilityRole="button" testID="today-spots"
+                      accessibilityLabel={`${label}. ${t('today.openMap')}`}>
+      <View style={styles.pin}><Ionicons name="location" size={18} color={colors.primaryText} /></View>
+      <Text style={styles.teaserText} numberOfLines={1}>{label}</Text>
+      <Text style={styles.open}>{t('today.openMap')}</Text>
+      <Ionicons name="chevron-forward" size={16} color={colors.primaryText} />
+    </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:      { gap: 8 },
-  head:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  headTitle: { flex: 1 },
-  note:      { fontSize: 12, color: c.muted },
-  cards:     { gap: 10 },
-  card:      { width: 150, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 16, overflow: 'hidden' },
-  photo:     { height: 62, backgroundColor: c.primaryTint },
-  body:      { paddingHorizontal: 10, paddingTop: 8, paddingBottom: 10, gap: 4 },
-  name:      { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  meta:      { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  metaItem:  { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  metaText:  { fontSize: 12, fontWeight: '600', color: c.muted },
-  empty:     { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line,
-               borderStyle: 'dashed', borderRadius: 16, padding: 14, minHeight: 56 },
-  emptyText: { flex: 1, fontSize: FontSizes.sm, color: c.muted },
+  teaser:     { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 12, paddingVertical: 8,
+                borderRadius: 16, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  pin:        { width: 32, height: 32, borderRadius: 16, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  teaserText: { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  open:       { fontSize: 13, fontWeight: '800', color: c.primaryText },
 });

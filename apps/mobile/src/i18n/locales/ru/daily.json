@@ -305,7 +305,8 @@
     "done": "Выполнено",
     "pending": "На проверке",
     "missed": "Не сделано",
-    "none": "Нет challenge"
+    "none": "Нет challenge",
+    "keep": "Сыграй сегодня, чтобы не прервать серию"
   },
   "calendar": {
     "title": "Мои Daily Challenges",
@@ -381,7 +382,9 @@
       "invalid_twist": "Local Twist — не больше 280 символов.",
       "twist_not_allowed": "Добавить Local Twist могут только местные жители города в режиме live.",
       "moderation_blocked": "Модерация заблокировала предложение. Переформулируй его."
-    }
+    },
+    "linkAsk": "Есть идея для челленджа?",
+    "linkCta": "Предложи"
   },
   "early": {
     "badge": "Рано",
@@ -437,7 +440,15 @@
       "proposeSub": "Твоя идея может стать challenge для всех",
       "twistTitle": "Предложить Local Twist на завтра",
       "twistSub": "Для местных, до {{time}}"
-    }
+    },
+    "spotsTeaser_one": "{{count}} место рядом",
+    "spotsTeaser_few": "{{count}} места рядом",
+    "spotsTeaser_many": "{{count}} мест рядом",
+    "spotsTeaser_other": "{{count}} места рядом",
+    "spotsTeaserIn_one": "{{count}} место в городе {{city}}",
+    "spotsTeaserIn_few": "{{count}} места в городе {{city}}",
+    "spotsTeaserIn_many": "{{count}} мест в городе {{city}}",
+    "spotsTeaserIn_other": "{{count}} места в городе {{city}}"
   },
   "spot": {
     "rankWeekFirst": "Больше всего голосов на этой неделе в {{city}}",

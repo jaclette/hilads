@@ -291,7 +291,8 @@
     "done": "पूरा किया",
     "pending": "समीक्षा बाकी",
     "missed": "नहीं किया",
-    "none": "कोई challenge नहीं"
+    "none": "कोई challenge नहीं",
+    "keep": "अपनी स्ट्रीक बचाने के लिए आज खेलो"
   },
   "calendar": {
     "title": "मेरे Daily Challenges",
@@ -367,7 +368,9 @@
       "invalid_twist": "Local Twist 280 अक्षरों से कम रखें।",
       "twist_not_allowed": "सिर्फ़ लाइव शहर के लोकल ही Local Twist जोड़ सकते हैं।",
       "moderation_blocked": "आपका सुझाव मॉडरेशन ने रोक दिया। कृपया दोबारा लिखें।"
-    }
+    },
+    "linkAsk": "चैलेंज का कोई आइडिया है?",
+    "linkCta": "सुझाओ"
   },
   "early": {
     "badge": "जल्दी",
@@ -417,7 +420,11 @@
       "proposeSub": "तुम्हारा आइडिया सबका चैलेंज बन सकता है",
       "twistTitle": "कल का Local Twist सुझाओ",
       "twistSub": "लोकल्स के लिए, {{time}} तक"
-    }
+    },
+    "spotsTeaser_one": "तुम्हारे पास {{count}} स्पॉट",
+    "spotsTeaser_other": "तुम्हारे पास {{count}} स्पॉट",
+    "spotsTeaserIn_one": "{{city}} में {{count}} स्पॉट",
+    "spotsTeaserIn_other": "{{city}} में {{count}} स्पॉट"
   },
   "spot": {
     "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",

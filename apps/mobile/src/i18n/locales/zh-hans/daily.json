@@ -290,7 +290,8 @@
     "done": "已完成",
     "pending": "等待审核",
     "missed": "未完成",
-    "none": "没有 challenge"
+    "none": "没有 challenge",
+    "keep": "今天参加，保持连续记录"
   },
   "calendar": {
     "title": "我的 Daily Challenges",
@@ -366,7 +367,9 @@
       "invalid_twist": "Local Twist 请少于 280 个字符。",
       "twist_not_allowed": "只有正在 live 的城市的本地人才能添加 Local Twist。",
       "moderation_blocked": "你的提议被审核拦截了，请换个说法。"
-    }
+    },
+    "linkAsk": "有挑战的点子吗？",
+    "linkCta": "提出来"
   },
   "early": {
     "badge": "抢先",
@@ -416,7 +419,9 @@
       "proposeSub": "你的点子可能成为大家的挑战",
       "twistTitle": "提议明天的 Local Twist",
       "twistSub": "限本地人，截至 {{time}}"
-    }
+    },
+    "spotsTeaser_other": "你附近有 {{count}} 个地点",
+    "spotsTeaserIn_other": "{{city}}有 {{count}} 个地点"
   },
   "spot": {
     "rankWeekFirst": "本周{{city}}得票最多",

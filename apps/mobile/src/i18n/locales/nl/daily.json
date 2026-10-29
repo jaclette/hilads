@@ -291,7 +291,8 @@
     "done": "Gedaan",
     "pending": "Wacht op controle",
     "missed": "Niet gedaan",
-    "none": "Geen challenge"
+    "none": "Geen challenge",
+    "keep": "Speel vandaag om je reeks te houden"
   },
   "calendar": {
     "title": "Mijn Daily Challenges",
@@ -367,7 +368,9 @@
       "invalid_twist": "Houd de Local Twist onder de 280 tekens.",
       "twist_not_allowed": "Alleen locals van een live stad kunnen een Local Twist toevoegen.",
       "moderation_blocked": "Je voorstel is door de moderatie geblokkeerd. Herformuleer het."
-    }
+    },
+    "linkAsk": "Een idee voor een challenge?",
+    "linkCta": "Stel het voor"
   },
   "early": {
     "badge": "Vroeg",
@@ -417,7 +420,11 @@
       "proposeSub": "Jouw idee kan ieders challenge worden",
       "twistTitle": "Local Twist van morgen voorstellen",
       "twistSub": "Voor locals, tot {{time}}"
-    }
+    },
+    "spotsTeaser_one": "{{count}} spot bij jou in de buurt",
+    "spotsTeaser_other": "{{count}} spots bij jou in de buurt",
+    "spotsTeaserIn_one": "{{count}} spot in {{city}}",
+    "spotsTeaserIn_other": "{{count}} spots in {{city}}"
   },
   "spot": {
     "rankWeekFirst": "Meest gestemd deze week in {{city}}",

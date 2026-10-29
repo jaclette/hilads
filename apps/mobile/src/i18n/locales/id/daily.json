@@ -291,7 +291,8 @@
     "done": "Selesai",
     "pending": "Menunggu ditinjau",
     "missed": "Belum dikerjakan",
-    "none": "Tidak ada challenge"
+    "none": "Tidak ada challenge",
+    "keep": "Main hari ini untuk menjaga streak-mu"
   },
   "calendar": {
     "title": "Daily Challenges saya",
@@ -367,7 +368,9 @@
       "invalid_twist": "Local Twist maksimal 280 karakter.",
       "twist_not_allowed": "Hanya warga lokal kota yang live yang bisa menambah Local Twist.",
       "moderation_blocked": "Usulanmu diblokir moderasi. Tulis ulang ya."
-    }
+    },
+    "linkAsk": "Punya ide tantangan?",
+    "linkCta": "Usulkan"
   },
   "early": {
     "badge": "Awal",
@@ -417,7 +420,9 @@
       "proposeSub": "Idemu bisa jadi challenge semua orang",
       "twistTitle": "Usulkan Local Twist besok",
       "twistSub": "Untuk warga lokal, sampai {{time}}"
-    }
+    },
+    "spotsTeaser_other": "{{count}} spot di dekatmu",
+    "spotsTeaserIn_other": "{{count}} spot di {{city}}"
   },
   "spot": {
     "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",

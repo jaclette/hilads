@@ -291,7 +291,8 @@
     "done": "Réussi",
     "pending": "En attente de validation",
     "missed": "Pas fait",
-    "none": "Pas de challenge"
+    "none": "Pas de challenge",
+    "keep": "Joue aujourd'hui pour garder ta série"
   },
   "calendar": {
     "title": "Mes Daily Challenges",
@@ -367,7 +368,9 @@
       "invalid_twist": "Le Local Twist doit faire moins de 280 caractères.",
       "twist_not_allowed": "Seuls les locaux d'une ville live peuvent ajouter un Local Twist.",
       "moderation_blocked": "Ta proposition a été bloquée par la modération. Reformule-la."
-    }
+    },
+    "linkAsk": "Une idée de défi ?",
+    "linkCta": "Propose-la"
   },
   "early": {
     "badge": "En avance",
@@ -417,7 +420,13 @@
       "proposeSub": "Ton idée pourrait devenir le défi de tous",
       "twistTitle": "Proposer le Local Twist de demain",
       "twistSub": "Pour les locaux, jusqu'à {{time}}"
-    }
+    },
+    "spotsTeaser_one": "{{count}} spot près de toi",
+    "spotsTeaser_many": "{{count}} spots près de toi",
+    "spotsTeaser_other": "{{count}} spots près de toi",
+    "spotsTeaserIn_one": "{{count}} spot à {{city}}",
+    "spotsTeaserIn_many": "{{count}} spots à {{city}}",
+    "spotsTeaserIn_other": "{{count}} spots à {{city}}"
   },
   "spot": {
     "rankWeekFirst": "Le plus voté cette semaine à {{city}}",

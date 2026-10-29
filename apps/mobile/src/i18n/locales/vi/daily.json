@@ -290,7 +290,8 @@
     "done": "Đã hoàn thành",
     "pending": "Đang chờ duyệt",
     "missed": "Chưa làm",
-    "none": "Không có challenge"
+    "none": "Không có challenge",
+    "keep": "Chơi hôm nay để giữ chuỗi ngày"
   },
   "calendar": {
     "title": "Daily Challenges của tôi",
@@ -366,7 +367,9 @@
       "invalid_twist": "Local Twist phải dưới 280 ký tự.",
       "twist_not_allowed": "Chỉ người địa phương của thành phố đang live mới thêm được Local Twist.",
       "moderation_blocked": "Đề xuất bị bộ lọc kiểm duyệt chặn. Hãy viết lại."
-    }
+    },
+    "linkAsk": "Có ý tưởng thử thách?",
+    "linkCta": "Đề xuất ngay"
   },
   "early": {
     "badge": "Sớm",
@@ -416,7 +419,9 @@
       "proposeSub": "Ý tưởng của bạn có thể thành thử thách của mọi người",
       "twistTitle": "Đề xuất Local Twist cho ngày mai",
       "twistSub": "Dành cho người địa phương, đến {{time}}"
-    }
+    },
+    "spotsTeaser_other": "{{count}} địa điểm gần bạn",
+    "spotsTeaserIn_other": "{{count}} địa điểm ở {{city}}"
   },
   "spot": {
     "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

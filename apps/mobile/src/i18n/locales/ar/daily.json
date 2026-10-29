@@ -319,7 +319,8 @@
     "done": "مكتمل",
     "pending": "بانتظار المراجعة",
     "missed": "لم يُنجز",
-    "none": "لا يوجد challenge"
+    "none": "لا يوجد challenge",
+    "keep": "العب اليوم لتحافظ على سلسلتك"
   },
   "calendar": {
     "title": "Daily Challenges الخاصة بي",
@@ -395,7 +396,9 @@
       "invalid_twist": "اجعل الـ Local Twist أقل من 280 حرفًا.",
       "twist_not_allowed": "فقط السكان المحليون لمدينة مباشرة يمكنهم إضافة Local Twist.",
       "moderation_blocked": "حظرت الإشراف اقتراحك. أعد صياغته."
-    }
+    },
+    "linkAsk": "عندك فكرة تحدٍّ؟",
+    "linkCta": "اقترحها"
   },
   "early": {
     "badge": "مبكر",
@@ -457,7 +460,19 @@
       "proposeSub": "قد تصبح فكرتك تحدي الجميع",
       "twistTitle": "اقترح Local Twist الغد",
       "twistSub": "للسكان المحليين، حتى {{time}}"
-    }
+    },
+    "spotsTeaser_zero": "لا أماكن قريبة",
+    "spotsTeaser_one": "مكان واحد قريب منك",
+    "spotsTeaser_two": "مكانان قريبان منك",
+    "spotsTeaser_few": "{{count}} أماكن قريبة منك",
+    "spotsTeaser_many": "{{count}} مكانًا قريبًا منك",
+    "spotsTeaser_other": "{{count}} مكان قريب منك",
+    "spotsTeaserIn_zero": "لا أماكن في {{city}}",
+    "spotsTeaserIn_one": "مكان واحد في {{city}}",
+    "spotsTeaserIn_two": "مكانان في {{city}}",
+    "spotsTeaserIn_few": "{{count}} أماكن في {{city}}",
+    "spotsTeaserIn_many": "{{count}} مكانًا في {{city}}",
+    "spotsTeaserIn_other": "{{count}} مكان في {{city}}"
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",

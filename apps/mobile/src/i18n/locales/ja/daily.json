@@ -291,7 +291,8 @@
     "done": "達成",
     "pending": "審査待ち",
     "missed": "未達成",
-    "none": "challenge なし"
+    "none": "challenge なし",
+    "keep": "今日プレイして連続記録をキープ"
   },
   "calendar": {
     "title": "私の Daily Challenges",
@@ -367,7 +368,9 @@
       "invalid_twist": "Local Twist は280文字以内にしてください。",
       "twist_not_allowed": "Local Twist を追加できるのは live 中の街の地元の人だけです。",
       "moderation_blocked": "提案がモデレーションでブロックされました。言い換えてください。"
-    }
+    },
+    "linkAsk": "チャレンジのアイデアある？",
+    "linkCta": "提案する"
   },
   "early": {
     "badge": "早い",
@@ -417,7 +420,9 @@
       "proposeSub": "あなたのアイデアがみんなのチャレンジになるかも",
       "twistTitle": "明日の Local Twist を提案",
       "twistSub": "地元の人向け・{{time}}まで"
-    }
+    },
+    "spotsTeaser_other": "近くのスポット{{count}}件",
+    "spotsTeaserIn_other": "{{city}}のスポット{{count}}件"
   },
   "spot": {
     "rankWeekFirst": "今週{{city}}で最多得票",
