@@ -61,6 +61,7 @@ class Request
      */
     public static function isBot(): bool
     {
+        if (self::isCrawlerNetwork()) return true;
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
         if ($ua === '') return false;
         return (bool) preg_match(
@@ -73,5 +74,22 @@ class Request
             '/(Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider|[a-z](?:bot|crawler|spider)\/\d)/i',
             $ua,
         );
+    }
+
+    /**
+     * Crawler networks that run the web app with an ordinary browser User-Agent,
+     * so isBot() can't tell them by name. 16.216.88.0/24: Reflection AI's
+     * renderer (reverse DNS reflectionbot-*.reflection.ai), which arrived in a
+     * city chat on every /city page it read (2026-10-29).
+     */
+    private const CRAWLER_PREFIXES = ['16.216.88.'];
+
+    private static function isCrawlerNetwork(): bool
+    {
+        $ip = self::ip();
+        foreach (self::CRAWLER_PREFIXES as $prefix) {
+            if (str_starts_with($ip, $prefix)) return true;
+        }
+        return false;
     }
 }
