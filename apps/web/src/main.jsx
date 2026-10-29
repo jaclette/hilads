@@ -22,7 +22,10 @@ import { installKeyboardViewport } from './lib/keyboardViewport'
 // "WhatsApp/<ver>" to a normal Chromium UA - matching it would break real
 // human users clicking a WhatsApp link. The link previewer doesn't run JS
 // anyway, so removing it costs nothing.
-const BOT_UA_RE = /Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider/i
+// The last token catches the crawlers not named here by their "<name>bot/<version>"
+// (Reflectionbot/1.0 crawled the city pages and arrived in each city's chat);
+// the slash and version keep a phone brand like CUBOT out.
+const BOT_UA_RE = /Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider|[a-z](?:bot|crawler|spider)\/\d/i
 const IS_BOT = typeof navigator !== 'undefined' && BOT_UA_RE.test(navigator.userAgent || '')
 
 // Key + host come from env (VITE_POSTHOG_KEY / VITE_POSTHOG_HOST) — never hard

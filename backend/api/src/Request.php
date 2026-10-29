@@ -68,7 +68,9 @@ class Request
             // "WhatsApp/<ver>" to a regular Chromium UA; matching it would
             // mis-classify real human users. The link previewer doesn't hit
             // /guest/session anyway.
-            '/(Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider)/i',
+            // The last token: any other "<name>bot/<version>" crawler (Reflectionbot/1.0),
+            // the slash and version keeping a phone brand like CUBOT out.
+            '/(Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider|[a-z](?:bot|crawler|spider)\/\d)/i',
             $ua,
         );
     }

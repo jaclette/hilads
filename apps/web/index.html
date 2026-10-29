@@ -48,7 +48,7 @@
           }
         } catch (e) {}
         // Crawlers don't run the app (main.jsx): they read the SEO body, never the shell.
-        if (/Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider/i.test(navigator.userAgent || '')) {
+        if (/Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider|[a-z](?:bot|crawler|spider)\/\d/i.test(navigator.userAgent || '')) {
           document.documentElement.classList.add('no-boot-shell');
         }
       })();

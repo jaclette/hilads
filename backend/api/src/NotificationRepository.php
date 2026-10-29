@@ -670,12 +670,12 @@ class NotificationRepository
             $arriverUserId = $stmt->fetchColumn() ?: null;
         }
 
-        // Crawler / bot accounts: their reads still work (POST /bootstrap
+        // Crawlers (by User-Agent) and bot accounts: their reads still work (POST /bootstrap
         // upstream already wrote presence), we just don't want them to
         // generate the visible noise of an arrival - no feed "X just landed"
         // line, no WS broadcast, no city-wide push fan-out. Check both the
         // resolved user_id and the nickname so a guest-mode bot is caught too.
-        if (BotAccountService::isBotUserId($arriverUserId) || BotAccountService::isBotNickname($arriverNickname)) {
+        if (Request::isBot() || BotAccountService::isBotUserId($arriverUserId) || BotAccountService::isBotNickname($arriverNickname)) {
             return;
         }
         $arriverKey = $arriverUserId !== null ? ('u:' . $arriverUserId) : ('g:' . $arriverGuestId);
