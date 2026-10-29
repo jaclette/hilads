@@ -33,6 +33,7 @@ import {
   type CommentItem,
 } from './comments';
 import { themeName } from './themes';
+import { relativeTime } from '@/features/notifications/NotifRow';
 
 // The comments of a Daily photo (docs/photo-comments-audit.md): one sheet for
 // every place a photo shows. Open it with openPhotoComments(); the topmost
@@ -440,7 +441,7 @@ function CommentRow({ c, first, flash, live, onProfile, onLongPress, onLike, onR
   onProfile: (userId: string) => void; onLongPress: () => void; onLike: () => void;
   onRetry: () => void; onDiscard: () => void;
 }) {
-  const { t, i18n } = useTranslation('daily');
+  const { t } = useTranslation('daily');
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const name = c.user.username ? `@${c.user.username}` : c.user.displayName ?? '';
@@ -465,7 +466,7 @@ function CommentRow({ c, first, flash, live, onProfile, onLongPress, onLike, onR
             {!!flag && <Text style={styles.flag} accessibilityLabel={c.user.city?.name ?? undefined}>{flag}</Text>}
             {c.isAuthor && <View style={styles.authorPill}><Text style={styles.authorText}>{t('comments.author')}</Text></View>}
             {first && <View style={styles.firstPill}><Text style={styles.firstText}>{t('comments.first')}</Text></View>}
-            <Text style={styles.time}>{c.pending === 'sending' ? t('comments.sending') : ago(c.createdAt, i18n.language)}</Text>
+            <Text style={styles.time}>{c.pending === 'sending' ? t('comments.sending') : ago(c.createdAt)}</Text>
           </View>
           {c.replyTo && (
             <View style={styles.quote}>
@@ -508,18 +509,9 @@ function segments(c: PhotoComment): { text: string; userId?: string }[] {
   return out;
 }
 
-/** "5 min ago", "yesterday"… in the app's language. */
-function ago(createdAt: number, lng: string): string {
-  const s = Math.max(0, Date.now() / 1000 - createdAt);
-  try {
-    const f = new Intl.RelativeTimeFormat(lng, { numeric: 'auto', style: 'narrow' });
-    if (s < 60) return f.format(0, 'second');
-    if (s < 3600) return f.format(-Math.floor(s / 60), 'minute');
-    if (s < 86400) return f.format(-Math.floor(s / 3600), 'hour');
-    return f.format(-Math.floor(s / 86400), 'day');
-  } catch {
-    return '';
-  }
+/** "now", "5m", "2h"… like the bell (Hermes has no Intl.RelativeTimeFormat here). */
+function ago(createdAt: number): string {
+  return relativeTime(String(createdAt));
 }
 
 function HeartButton({ count, on, onPress, color, muted }: { count: number; on: boolean; onPress: () => void; color: string; muted: string }) {
@@ -602,7 +594,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   time:        { fontSize: FontSizes.tiny, fontWeight: '400', color: c.mutedDim },
   authorPill:  { backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: 7, paddingVertical: 1 },
   authorText:  { fontSize: FontSizes.tiny, fontWeight: '700', color: c.primaryOnTint },
-  firstPill:   { backgroundColor: c.goldTint, borderRadius: Radius.full, paddingHorizontal: 7, paddingVertical: 1 },
+  firstPill:   { backgroundColor: c.gold, borderRadius: Radius.full, paddingHorizontal: 7, paddingVertical: 1 },
   firstText:   { fontSize: FontSizes.tiny, fontWeight: '800', color: c.onGold },
   quote:       { borderLeftWidth: 3, borderLeftColor: c.line, paddingLeft: 8, marginTop: 4 },
   quoteName:   { fontSize: FontSizes.tiny, fontWeight: '700', color: c.muted },

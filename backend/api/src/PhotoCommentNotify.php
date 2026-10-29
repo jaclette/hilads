@@ -12,8 +12,8 @@ declare(strict_types=1);
  * types photo_mention (mention_push) and photo_comment (comment_push).
  *
  * Grouping: for the author and earlier commenters, more comments on the same
- * photo while the last row is unread and under GROUP_WINDOW old update that
- * row ("Lan and 2 others commented on your photo") without a new push.
+ * photo (not its author's own) while the last row is unread and under
+ * GROUP_WINDOW old update that row ("Lan and 2 others commented on your photo") without a new push.
  * Mentions and replies always come one by one. Best effort: a failure here
  * never fails the comment.
  */
@@ -57,7 +57,8 @@ final class PhotoCommentNotify
                     'ownerName'  => $owner,
                     'selfPhoto'  => $photo['user_id'] === $writer['id'],
                 ];
-                if (($kind === 'author' || $kind === 'previous') && self::grouped($uid, $data, $text)) {
+                // The photo's author answering on it is told on its own ("Lan replied on their photo").
+                if (($kind === 'author' || $kind === 'previous') && !$data['selfPhoto'] && self::grouped($uid, $data, $text)) {
                     continue;
                 }
                 $locale = self::locale($uid);
@@ -118,6 +119,7 @@ final class PhotoCommentNotify
         $stmt = $pdo->prepare("
             SELECT id, data FROM notifications
             WHERE user_id = ? AND type = ? AND is_read = false AND data->>'proofId' = ? AND data->>'kind' = ?
+              AND COALESCE((data->>'selfPhoto')::boolean, false) = false
               AND created_at > now() - make_interval(secs => ?)
             ORDER BY id DESC LIMIT 1
         ");
