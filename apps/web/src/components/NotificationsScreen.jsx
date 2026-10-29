@@ -39,6 +39,8 @@ const TYPE_ICONS = {
   daily_vote:              'heart-outline',
   daily_twist_completed:   'leaf-outline',
   daily_twist_picked:      'leaf-outline',
+  photo_comment:           'chatbubble-ellipses-outline',
+  photo_mention:           'at-outline',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -180,12 +182,16 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
                 className={`notif-row${n.is_read ? ' read' : ''}`}
                 onClick={() => handleClickNotif(n)}
               >
-                <span className="notif-icon" style={{ color: n.is_read ? 'var(--muted2)' : 'var(--primary-text)' }}><Icon name={TYPE_ICONS[n.type] ?? 'notifications-outline'} size={20} /></span>
+                {/* A comment: who wrote it (the icon on it), the photo's thumbnail at the end. */}
+                {n.data?.actorPhoto
+                  ? <span className="notif-actor"><img src={n.data.actorPhoto} alt="" /><Icon name={TYPE_ICONS[n.type]} size={12} /></span>
+                  : <span className="notif-icon" style={{ color: n.is_read ? 'var(--muted2)' : 'var(--primary-text)' }}><Icon name={TYPE_ICONS[n.type] ?? 'notifications-outline'} size={20} /></span>}
                 <div className="notif-content">
                   <span className="notif-title">{n.title}</span>
                   {n.body && <span className="notif-body-text">{n.body}</span>}
                   <span className="notif-time">{timeAgo(n.created_at)}</span>
                 </div>
+                {n.data?.photoThumb && <img className="notif-thumb" src={n.data.photoThumb} alt="" />}
                 {!n.is_read && <span className="notif-unread-dot" />}
               </button>
             ))}
@@ -217,6 +223,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             <Toggle
               checked={prefs?.mention_push ?? true}
               onChange={v => handleTogglePref('mention_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">{t('prefs.commentName')}</span>
+              <span className="notif-pref-desc">{t('prefs.commentDesc')}</span>
+            </div>
+            <Toggle
+              checked={prefs?.comment_push ?? true}
+              onChange={v => handleTogglePref('comment_push', v)}
               disabled={prefsSaving || !prefs}
             />
           </div>

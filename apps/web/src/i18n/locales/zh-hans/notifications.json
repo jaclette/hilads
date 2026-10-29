@@ -26,6 +26,8 @@
     "cityJoinName": "有人来到了你所在的城市",
     "cityJoinDesc": "当有人加入你所在的城市频道时",
     "worldArrivalName": "来自全球的新加入",
-    "worldArrivalDesc": "当有新用户从任何城市加入时（World 频道）"
+    "worldArrivalDesc": "当有新用户从任何城市加入时（World 频道）",
+    "commentName": "评论",
+    "commentDesc": "你的照片和你评论过的照片"
   }
 }

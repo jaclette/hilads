@@ -26,6 +26,8 @@
     "cityJoinName": "Iemand arriveert in je stad",
     "cityJoinDesc": "Wanneer iemand meedoet aan het kanaal van jouw stad",
     "worldArrivalName": "Nieuwe aankomsten wereldwijd",
-    "worldArrivalDesc": "Wanneer iemand nieuw uit een willekeurige stad binnenkomt (World-kanaal)"
+    "worldArrivalDesc": "Wanneer iemand nieuw uit een willekeurige stad binnenkomt (World-kanaal)",
+    "commentName": "Reacties",
+    "commentDesc": "Op je foto's en op foto's waarop je reageerde"
   }
 }

@@ -1504,6 +1504,58 @@
         "tell": "Descreve",
         "compare": "Compara"
       }
+    },
+    "comments": {
+      "title": "Comentários",
+      "close": "Fechar",
+      "comment": "Comentar",
+      "newComments": "Novos comentários",
+      "empty": "Sê o primeiro a dizer algo 💬",
+      "emptySub": "Pergunta onde é, reage, compara com a tua cidade.",
+      "placeholder": "Adiciona um comentário…",
+      "placeholderGuest": "Regista-te para comentar",
+      "older": "Ver comentários anteriores",
+      "reply": "Responder",
+      "copy": "Copiar",
+      "delete": "Eliminar",
+      "cancelReply": "Cancelar resposta",
+      "replyingTo": "A responder a @{{name}}",
+      "author": "Autor",
+      "first": "Primeiro!",
+      "sending": "A enviar…",
+      "failed": "Não enviado · Toca para tentar de novo",
+      "discard": "Remover",
+      "like": "Gosto",
+      "actionsHint": "Mantém premido para responder, copiar ou denunciar",
+      "quickHint": "Mantém premido para editar antes de enviar",
+      "count_one": "{{count}} comentário",
+      "count_other": "{{count}} comentários",
+      "seeAll_one": "Ver o comentário",
+      "seeAll_other": "Ver todos os {{count}} comentários",
+      "quick": {
+        "soLocal": "🔥 Tão local!",
+        "wantThis": "🤤 Quero!",
+        "neverSeen": "😮 Nunca vi isto",
+        "whereIsIt": "📍 Onde é?",
+        "whatsItCalled": "🏷️ Como se chama?"
+      },
+      "errors": {
+        "moderation_blocked": "Este comentário não pode ser publicado. Sê simpático!",
+        "rate_limited": "Calma! Tenta de novo daqui a um minuto.",
+        "invalid_body": "Um comentário tem no máximo 300 caracteres.",
+        "generic": "Algo correu mal. Tenta de novo."
+      },
+      "report": {
+        "action": "Denunciar",
+        "reasons": {
+          "inappropriate": "Inapropriado",
+          "harassment": "Assédio ou ódio",
+          "spam": "Spam",
+          "other": "Outra coisa"
+        },
+        "thanks": "Obrigado - vamos verificar.",
+        "already": "Já denunciaste este comentário."
+      }
     }
   }
 }

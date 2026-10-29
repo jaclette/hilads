@@ -1478,6 +1478,58 @@
         "tell": "Ceritakan",
         "compare": "Bandingkan"
       }
+    },
+    "comments": {
+      "title": "Komentar",
+      "close": "Tutup",
+      "comment": "Komentari",
+      "newComments": "Komentar baru",
+      "empty": "Jadilah yang pertama bilang sesuatu 💬",
+      "emptySub": "Tanya di mana tempatnya, beri reaksi, bandingkan dengan kotamu.",
+      "placeholder": "Tambahkan komentar…",
+      "placeholderGuest": "Daftar untuk berkomentar",
+      "older": "Lihat komentar sebelumnya",
+      "reply": "Balas",
+      "copy": "Salin",
+      "delete": "Hapus",
+      "cancelReply": "Batalkan balasan",
+      "replyingTo": "Membalas @{{name}}",
+      "author": "Pembuat",
+      "first": "Pertama!",
+      "sending": "Mengirim…",
+      "failed": "Belum terkirim · Ketuk untuk mencoba lagi",
+      "discard": "Buang",
+      "like": "Suka",
+      "actionsHint": "Tekan lama untuk membalas, menyalin, atau melaporkan",
+      "quickHint": "Tekan lama untuk mengedit sebelum mengirim",
+      "count_one": "{{count}} komentar",
+      "count_other": "{{count}} komentar",
+      "seeAll_one": "Lihat komentar",
+      "seeAll_other": "Lihat semua {{count}} komentar",
+      "quick": {
+        "soLocal": "🔥 Lokal banget!",
+        "wantThis": "🤤 Mau!",
+        "neverSeen": "😮 Belum pernah lihat",
+        "whereIsIt": "📍 Di mana ini?",
+        "whatsItCalled": "🏷️ Namanya apa?"
+      },
+      "errors": {
+        "moderation_blocked": "Komentar ini tidak bisa diposting. Tetap ramah ya!",
+        "rate_limited": "Pelan-pelan! Coba lagi sebentar lagi.",
+        "invalid_body": "Komentar maksimal 300 karakter.",
+        "generic": "Ada yang salah. Coba lagi."
+      },
+      "report": {
+        "action": "Laporkan",
+        "reasons": {
+          "inappropriate": "Tidak pantas",
+          "harassment": "Pelecehan atau kebencian",
+          "spam": "Spam",
+          "other": "Lainnya"
+        },
+        "thanks": "Terima kasih - akan kami periksa.",
+        "already": "Kamu sudah melaporkan komentar ini."
+      }
     }
   }
 }

@@ -1491,6 +1491,58 @@
         "tell": "Tell it",
         "compare": "Compare"
       }
+    },
+    "comments": {
+      "title": "Comments",
+      "close": "Close",
+      "comment": "Comment",
+      "newComments": "New comments",
+      "empty": "Be the first to say something 💬",
+      "emptySub": "Ask where it is, react, compare with your city.",
+      "placeholder": "Add a comment…",
+      "placeholderGuest": "Sign up to comment",
+      "older": "See earlier comments",
+      "reply": "Reply",
+      "copy": "Copy",
+      "delete": "Delete",
+      "cancelReply": "Cancel reply",
+      "replyingTo": "Replying to @{{name}}",
+      "author": "Author",
+      "first": "First!",
+      "sending": "Sending…",
+      "failed": "Not sent · Tap to retry",
+      "discard": "Remove",
+      "like": "Like",
+      "actionsHint": "Long press to reply, copy or report",
+      "quickHint": "Long press to edit before sending",
+      "count_one": "{{count}} comment",
+      "count_other": "{{count}} comments",
+      "seeAll_one": "See the comment",
+      "seeAll_other": "See all {{count}} comments",
+      "quick": {
+        "soLocal": "🔥 So local!",
+        "wantThis": "🤤 Want this!",
+        "neverSeen": "😮 Never seen this",
+        "whereIsIt": "📍 Where is it?",
+        "whatsItCalled": "🏷️ What's it called?"
+      },
+      "errors": {
+        "moderation_blocked": "This comment can't be posted. Keep it friendly!",
+        "rate_limited": "Easy there! Try again in a minute.",
+        "invalid_body": "A comment is 300 characters max.",
+        "generic": "Something went wrong. Try again."
+      },
+      "report": {
+        "action": "Report",
+        "reasons": {
+          "inappropriate": "Inappropriate",
+          "harassment": "Harassment or hate",
+          "spam": "Spam",
+          "other": "Something else"
+        },
+        "thanks": "Thanks - we'll check it.",
+        "already": "You already reported this comment."
+      }
     }
   }
 }

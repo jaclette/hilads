@@ -1504,6 +1504,58 @@
         "tell": "Raconte",
         "compare": "Compare"
       }
+    },
+    "comments": {
+      "title": "Commentaires",
+      "close": "Fermer",
+      "comment": "Commenter",
+      "newComments": "Nouveaux commentaires",
+      "empty": "Sois le premier à dire quelque chose 💬",
+      "emptySub": "Demande où c'est, réagis, compare avec ta ville.",
+      "placeholder": "Ajoute un commentaire…",
+      "placeholderGuest": "Inscris-toi pour commenter",
+      "older": "Voir les commentaires précédents",
+      "reply": "Répondre",
+      "copy": "Copier",
+      "delete": "Supprimer",
+      "cancelReply": "Annuler la réponse",
+      "replyingTo": "Réponse à @{{name}}",
+      "author": "Auteur",
+      "first": "Premier !",
+      "sending": "Envoi…",
+      "failed": "Pas envoyé · Touche pour réessayer",
+      "discard": "Retirer",
+      "like": "J'aime",
+      "actionsHint": "Appui long pour répondre, copier ou signaler",
+      "quickHint": "Appui long pour modifier avant d'envoyer",
+      "count_one": "{{count}} commentaire",
+      "count_other": "{{count}} commentaires",
+      "seeAll_one": "Voir le commentaire",
+      "seeAll_other": "Voir les {{count}} commentaires",
+      "quick": {
+        "soLocal": "🔥 Trop local !",
+        "wantThis": "🤤 J'en veux !",
+        "neverSeen": "😮 Jamais vu ça",
+        "whereIsIt": "📍 C'est où ?",
+        "whatsItCalled": "🏷️ Ça s'appelle comment ?"
+      },
+      "errors": {
+        "moderation_blocked": "Ce commentaire ne peut pas être publié. Reste sympa !",
+        "rate_limited": "Doucement ! Réessaie dans une minute.",
+        "invalid_body": "Un commentaire fait 300 caractères max.",
+        "generic": "Un problème est survenu. Réessaie."
+      },
+      "report": {
+        "action": "Signaler",
+        "reasons": {
+          "inappropriate": "Inapproprié",
+          "harassment": "Harcèlement ou haine",
+          "spam": "Spam",
+          "other": "Autre chose"
+        },
+        "thanks": "Merci - on va vérifier.",
+        "already": "Tu as déjà signalé ce commentaire."
+      }
     }
   }
 }

@@ -10,6 +10,7 @@ import { todayCities } from '../today/TodayCountries'
 import { AnswerChip, captionRepeatsAnswer } from './compareShared'
 import { lastCountries, rememberCountries } from './countryOrder'
 import { LocalPassBadge, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc } from './dailyShared'
+import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoCommentsSheet'
 import { flushSeen, markSeen } from './seen'
 import { SeasonalZone } from '../event/seasonal'
 
@@ -51,7 +52,10 @@ function Stories({ city: startCity = null, source = 'today', onBack }) {
   const [proofs, setProofs] = useState({})
   // Photos that couldn't load (removed, a network error): skipped, never a stuck loader.
   const [gone, setGone] = useState(() => new Set())
-  const [paused, setPaused] = useState(false)
+  const [held, setHeld] = useState(false)
+  // Paused while held, and while the photo's comments are open.
+  const commentsOpen = useCommentsOpen()
+  const paused = held || commentsOpen
   const reduce = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
   // Start at the city asked for; the cities before it come at the end.
@@ -154,7 +158,7 @@ function Stories({ city: startCity = null, source = 'today', onBack }) {
         : <div className="dc-photos-center"><span className="dc-photos-spinner" aria-hidden="true" /></div>}
       <div className="tour-shade" />
 
-      {proof && <TapZone proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
+      {proof && <TapZone proof={proof} onPrev={prev} onNext={next} onHold={setHeld} />}
 
       <div className="tour-top">
         {/* One segment per photo of the city: done, filling, to come. */}
@@ -255,6 +259,7 @@ function Bottom({ proof, onProfile }) {
             <span className="dc-photos-heart-btn"><Icon name={state?.myVote || state?.isMine ? 'heart' : 'heart-outline'} size={28} /></span>
             <span className="dc-photos-count">{state?.voteCount ?? proof.voteCount}</span>
           </button>
+          <CommentButton target={commentsTargetOf(proof)} variant="side" />
         </div>
       )}
     </div>

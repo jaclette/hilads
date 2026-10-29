@@ -26,6 +26,8 @@
     "cityJoinName": "Seseorang tiba di kotamu",
     "cityJoinDesc": "Saat ada yang gabung ke channel kota yang kamu ikuti",
     "worldArrivalName": "Kedatangan baru dari seluruh dunia",
-    "worldArrivalDesc": "Saat orang baru bergabung dari kota mana pun (kanal World)"
+    "worldArrivalDesc": "Saat orang baru bergabung dari kota mana pun (kanal World)",
+    "commentName": "Komentar",
+    "commentDesc": "Di fotomu dan foto yang kamu komentari"
   }
 }

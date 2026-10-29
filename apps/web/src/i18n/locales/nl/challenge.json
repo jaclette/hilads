@@ -1491,6 +1491,58 @@
         "tell": "Vertel",
         "compare": "Vergelijk"
       }
+    },
+    "comments": {
+      "title": "Reacties",
+      "close": "Sluiten",
+      "comment": "Reageren",
+      "newComments": "Nieuwe reacties",
+      "empty": "Zeg als eerste iets 💬",
+      "emptySub": "Vraag waar het is, reageer, vergelijk met je stad.",
+      "placeholder": "Schrijf een reactie…",
+      "placeholderGuest": "Meld je aan om te reageren",
+      "older": "Eerdere reacties bekijken",
+      "reply": "Beantwoorden",
+      "copy": "Kopiëren",
+      "delete": "Verwijderen",
+      "cancelReply": "Antwoord annuleren",
+      "replyingTo": "Antwoord aan @{{name}}",
+      "author": "Maker",
+      "first": "Eerste!",
+      "sending": "Versturen…",
+      "failed": "Niet verstuurd · Tik om opnieuw te proberen",
+      "discard": "Weghalen",
+      "like": "Vind ik leuk",
+      "actionsHint": "Lang drukken om te beantwoorden, kopiëren of melden",
+      "quickHint": "Lang drukken om te bewerken voor het versturen",
+      "count_one": "{{count}} reactie",
+      "count_other": "{{count}} reacties",
+      "seeAll_one": "Bekijk de reactie",
+      "seeAll_other": "Bekijk alle {{count}} reacties",
+      "quick": {
+        "soLocal": "🔥 Zo lokaal!",
+        "wantThis": "🤤 Wil ik!",
+        "neverSeen": "😮 Nog nooit gezien",
+        "whereIsIt": "📍 Waar is dit?",
+        "whatsItCalled": "🏷️ Hoe heet dit?"
+      },
+      "errors": {
+        "moderation_blocked": "Deze reactie kan niet geplaatst worden. Blijf vriendelijk!",
+        "rate_limited": "Rustig aan! Probeer het over een minuut opnieuw.",
+        "invalid_body": "Een reactie is maximaal 300 tekens.",
+        "generic": "Er ging iets mis. Probeer het opnieuw."
+      },
+      "report": {
+        "action": "Melden",
+        "reasons": {
+          "inappropriate": "Ongepast",
+          "harassment": "Intimidatie of haat",
+          "spam": "Spam",
+          "other": "Iets anders"
+        },
+        "thanks": "Bedankt - we kijken ernaar.",
+        "already": "Je hebt deze reactie al gemeld."
+      }
     }
   }
 }

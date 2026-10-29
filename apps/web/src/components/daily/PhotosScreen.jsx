@@ -16,6 +16,7 @@ import {
   LocalPassBadge, RoleLabel, VotersSheet, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc,
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
+import { CommentButton, commentsTargetOf } from './PhotoCommentsSheet'
 
 const LIMIT = 60
 /** Two taps closer than this are a double tap (a vote). */
@@ -267,6 +268,7 @@ function Slide({ proof, hint, onProfile, onVoters }) {
               <span className="dc-photos-count">{count}</span>
             </button>
           )}
+          {proof.status === 'approved' && <CommentButton target={commentsTargetOf(proof)} variant="side" />}
           <button type="button" className="dc-photos-heart" aria-label={t('share.shareProof')}
                   onClick={() => shareLink({ type: 'proof', path: `/p/${proof.id}`, text: t('worlds.tagline'), source: 'photos' })}>
             <span className="dc-photos-heart-btn"><Icon name="paper-plane-outline" size={24} /></span>

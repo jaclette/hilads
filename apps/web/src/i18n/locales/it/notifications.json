@@ -26,6 +26,8 @@
     "cityJoinName": "Qualcuno arriva nella tua città",
     "cityJoinDesc": "Quando qualcuno entra nel canale della tua città",
     "worldArrivalName": "Nuovi arrivi nel mondo",
-    "worldArrivalDesc": "Quando un nuovo utente arriva da qualsiasi città (canale World)"
+    "worldArrivalDesc": "Quando un nuovo utente arriva da qualsiasi città (canale World)",
+    "commentName": "Commenti",
+    "commentDesc": "Sulle tue foto e su quelle che hai commentato"
   }
 }

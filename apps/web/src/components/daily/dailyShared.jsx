@@ -9,6 +9,8 @@ import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 import AvatarWithFlag from '../AvatarWithFlag'
 import { AnswerChip, BackHomeBlock, captionRepeatsAnswer, useMoney } from './compareShared'
+import { seedComments } from './comments'
+import { CommentButton, commentsTargetOf } from './PhotoCommentsSheet'
 
 // Where I am, as Today last said ({id, name, country, source, presence} | null):
 // the sheet's "Answer for [city]" uses it, never the browsed city.
@@ -197,6 +199,7 @@ export function seedProofs(proofs, open) {
       voteCount: p.voteCount, myVote: !!p.myVote, isMine: !!p.isMine,
       votingOpen: open && p.status === 'approved', validatedByLocal: !!p.validatedByLocal,
     })
+    seedComments(p.id, p.commentCount)
   })
   emit()
 }
@@ -204,7 +207,10 @@ export function seedVotesLeft(n) { votesLeft = n; emit() }
 
 /** Seed from GET /daily/proofs/state (chat cards carry no vote state). */
 export function seedStates(items, myVotes) {
-  Object.entries(items || {}).forEach(([id, st]) => votes.set(id, { ...st }))
+  Object.entries(items || {}).forEach(([id, st]) => {
+    votes.set(id, { ...st })
+    seedComments(id, st.commentCount, st.latestComments)
+  })
   if (myVotes) votesLeft = myVotes.left
   emit()
 }
@@ -417,6 +423,8 @@ export function ProofViewer({ proof, onClose }) {
         )}
         <div className="dc-viewer-actions">
           {proof.status === 'approved' && !proof.suggestion && <VoteButton proof={proof} variant="viewer" source="viewer" onShowVoters={proof.isMine ? showVoters : undefined} />}
+          {/* Its comments open above the viewer; a profile from them closes it first. */}
+          {proof.status === 'approved' && <CommentButton target={commentsTargetOf(proof, { onLeave: onClose })} variant="pill" />}
           {!proof.isMine && (
             <button type="button" className="dc-viewer-report" onClick={() => (account ? setReporting(true) : needAccount('view_profile'))}>
               {t('report.title')}

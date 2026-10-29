@@ -71,6 +71,7 @@ export function createSocket() {
   let pendingChallengeJoin    = null
   let pendingChallengeThreadJoin = null
   let pendingUserJoin         = null  // per-user channel for friend reqs etc.
+  const watchedProofs = new Map()     // Daily photo id → views showing it (live comments)
 
   // ── Dispatch ────────────────────────────────────────────────────────────────
 
@@ -105,6 +106,7 @@ export function createSocket() {
       if (pendingChallengeJoin)    send({ event: 'joinChallenge',     ...pendingChallengeJoin })
       if (pendingChallengeThreadJoin) send({ event: 'joinChallengeThread', ...pendingChallengeThreadJoin })
       if (pendingUserJoin)         send({ event: 'joinUser',          ...pendingUserJoin })
+      if (watchedProofs.size > 0)  send({ event: 'watchProofs', proofIds: [...watchedProofs.keys()] })
 
       // Notify subscribers - useful for catch-up fetches after a disconnect gap
       dispatch('connected', {})
@@ -274,6 +276,22 @@ export function createSocket() {
       if (!userId) return
       pendingUserJoin = { userId }
       send({ event: 'joinUser', userId })
+    },
+
+    /**
+     * Live comments of a Daily photo (event 'proofComment'). Refcounted: the
+     * server hears once per photo, again after a reconnect. Returns the unwatch.
+     */
+    watchProof(proofId) {
+      const n = watchedProofs.get(proofId) ?? 0
+      watchedProofs.set(proofId, n + 1)
+      if (n === 0) send({ event: 'watchProofs', proofIds: [proofId] })
+      return () => {
+        const left = (watchedProofs.get(proofId) ?? 1) - 1
+        if (left > 0) { watchedProofs.set(proofId, left); return }
+        watchedProofs.delete(proofId)
+        send({ event: 'unwatchProofs', proofIds: [proofId] })
+      }
     },
 
     /** Keep presence alive. Call when tab regains focus. */

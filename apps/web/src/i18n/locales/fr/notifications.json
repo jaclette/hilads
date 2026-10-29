@@ -26,6 +26,8 @@
     "profileViewName": "Vues de profil",
     "profileViewDesc": "Quand quelqu'un consulte ton profil",
     "announcementName": "Annonces de Hilads",
-    "announcementDesc": "Quelques nouvelles de l'équipe de temps en temps"
+    "announcementDesc": "Quelques nouvelles de l'équipe de temps en temps",
+    "commentName": "Commentaires",
+    "commentDesc": "Sur tes photos et les photos que tu as commentées"
   }
 }

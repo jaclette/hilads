@@ -9,6 +9,7 @@ import { CityFlag } from '../CityName'
 import Icon from '../Icon'
 import { plain } from '../joy/Joy'
 import { RankMedal, useDc } from './dailyShared'
+import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoCommentsSheet'
 import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 
 const SLIDE_MS = 6000
@@ -24,6 +25,7 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
   const money = useMoney()
   const [index, setIndex] = useState(start)
   const [paused, setPaused] = useState(false)
+  const commentsOpen = useCommentsOpen()   // the slide waits while its comments are open
   const seen = useRef(new Set())
   const touch = useRef(null)
   const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -46,10 +48,10 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
   }
   // Auto-advance (not on the last slide, while held, or with reduced motion).
   useEffect(() => {
-    if (last || paused || reduce) return
+    if (last || paused || commentsOpen || reduce) return
     const timer = setTimeout(() => go(index + 1), SLIDE_MS)
     return () => clearTimeout(timer)
-  }, [index, paused]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [index, paused, commentsOpen]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
@@ -111,6 +113,7 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
           {proof.backHome && <BackHomeBlock proof={proof} />}
           <div className="tour-actions">
             <span className="tour-tagline">{t('worlds.tagline')}</span>
+            <CommentButton target={commentsTargetOf(proof)} variant="side" />
             <button type="button" className="tour-share" aria-label={t('share.shareProof')} onClick={() => {
               track('world_tour_shared', { city: slide.city.name, date: tour.date, platform_surface: 'web' })
               shareLink({ type: 'proof', path: `/p/${proof.id}`, text: t('worlds.tagline'), source: 'world_tour' })

@@ -259,7 +259,10 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
               ))}
               {more > 0 && <span className="tc-more">+{more}</span>}
             </span>
-            <span className="tc-votes"><Icon name="heart-outline" size={14} />{likes}</span>
+            <span className="tc-votes">
+              {group.totalComments > 0 && <span className="pc-count"><Icon name="chatbubble-outline" size={13} />{group.totalComments}</span>}
+              <Icon name="heart-outline" size={14} />{likes}
+            </span>
           </span>
         </span>
       </span>

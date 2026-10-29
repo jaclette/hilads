@@ -26,6 +26,8 @@
     "cityJoinName": "May dumating sa iyong lungsod",
     "cityJoinDesc": "Kapag may sumali sa channel ng lungsod na kinaroroonan mo",
     "worldArrivalName": "Mga bagong dating sa buong mundo",
-    "worldArrivalDesc": "Kapag may bagong sumali mula sa kahit anong lungsod (World channel)"
+    "worldArrivalDesc": "Kapag may bagong sumali mula sa kahit anong lungsod (World channel)",
+    "commentName": "Mga komento",
+    "commentDesc": "Sa mga photo mo at sa mga photo na kinomentuhan mo"
   }
 }

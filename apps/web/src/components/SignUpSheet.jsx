@@ -7,7 +7,7 @@ import { useBackLayer } from '../lib/backLayers'
 // fallback covers anything else.
 const REASONS = [
   'view_profile', 'create_event', 'send_dm', 'join_hangout', 'create_hangout',
-  'create_challenge', 'accept_challenge', 'join_challenge', 'daily_proof', 'daily_vote',
+  'create_challenge', 'accept_challenge', 'join_challenge', 'daily_proof', 'daily_vote', 'daily_comment',
 ]
 
 /**

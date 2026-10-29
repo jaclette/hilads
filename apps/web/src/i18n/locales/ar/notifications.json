@@ -26,6 +26,8 @@
     "cityJoinName": "وصل أحدهم إلى مدينتك",
     "cityJoinDesc": "عندما ينضم أي شخص إلى قناة المدينة التي أنت فيها",
     "worldArrivalName": "وافدون جدد حول العالم",
-    "worldArrivalDesc": "عند انضمام شخص جديد من أي مدينة (قناة World)"
+    "worldArrivalDesc": "عند انضمام شخص جديد من أي مدينة (قناة World)",
+    "commentName": "التعليقات",
+    "commentDesc": "على صورك وعلى الصور التي علّقت عليها"
   }
 }

@@ -19,6 +19,7 @@ import { thumbFallback } from '../../lib/thumbFallback'
 import { PickBadge, PhotoCredit } from './Pick'
 import { themeColor } from '../joy/Joy'
 import { useBackLayer } from '../../lib/backLayers'
+import { CommentButton } from '../daily/PhotoCommentsSheet'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -627,6 +628,8 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                 </button>
               )}
               <button type="button" className={`wm-sheet-cta${canPlayHere ? ' wm-btn--ghost' : ''}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
+              {/* The cover photo's comments (their header loads from the photo). */}
+              {selected.cover?.proofId && <CommentButton target={{ proofId: selected.cover.proofId, thumbUrl: selected.cover.thumbUrl ?? selected.cover.photoUrl }} variant="inline" />}
             </div>
           )}
         </div>

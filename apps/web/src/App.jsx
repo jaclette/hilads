@@ -29,6 +29,8 @@ import ArchiveScreen from './components/daily/ArchiveScreen'
 import IndexScreen from './components/daily/IndexScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
+import { CommentButton, CommentPreview, PhotoCommentsHost, openPhotoComments } from './components/daily/PhotoCommentsSheet'
+import { bindCommentsSocket } from './components/daily/comments'
 import { themeColor } from './components/joy/Joy'
 import PeopleRow from './components/chat/PeopleRow'
 import DailyPinBar from './components/chat/DailyPinBar'
@@ -740,10 +742,34 @@ function DailyFeedCard({ item, t, onOpen }) {
         {themeName(p.theme?.key) && <span className="feed-daily-tag">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={12} />} {themeName(p.theme.key)}</span>}
         {p.city?.name && <CityName name={p.city.name} country={p.city.country} className="feed-daily-tag" />}
       </div>
-      {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" source="hi_card" />}
+      {p.proofId && (
+        <div className="feed-daily-actions">
+          <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" source="hi_card" />
+          {/* Comments live on the photo (one thread wherever it shows), never as chat messages. */}
+          <CommentButton target={proofCommentsTarget(p)} variant="inline" />
+          <button type="button" className="pc-btn pc-btn--inline" aria-label={t('shareLink.share', { ns: 'common' })}
+                  onClick={() => shareProofLink(p)}><Icon name="share-outline" size={18} /></button>
+        </div>
+      )}
+      {p.proofId && <CommentPreview target={proofCommentsTarget(p)} />}
       {time && <span className="feed-join-time">{time}</span>}
     </div>
   )
+}
+
+/** A chat card's photo as a comments target (its payload is a snapshot; the comments come live). */
+function proofCommentsTarget(p) {
+  return {
+    proofId: p.proofId, thumbUrl: p.thumbUrl ?? p.photoUrl, author: p.user ?? null, city: p.city ?? null,
+    theme: p.theme?.key ?? null, isMine: !!p.user?.id && p.user.id === SELF_IDENTITY.userId,
+  }
+}
+
+/** Share a photo's public page (hilads.live/p/{id}): the system sheet, else the link copied. */
+function shareProofLink(p) {
+  const url = `${window.location.origin}/p/${p.proofId}`
+  if (navigator.share) navigator.share({ title: p.user?.displayName || 'Hilads', text: p.caption || p.challengeText || '', url }).catch(() => {})
+  else navigator.clipboard?.writeText(url)
 }
 
 // lastJoinAtRef: pass the component ref so join messages are throttled to 1 per 8s.
@@ -3031,6 +3057,7 @@ export default function App() {
       // ── Socket: real-time presence ───────────────────────────────────────────
       const socket = socketRef.current ?? createSocket()
       socketRef.current = socket
+      bindCommentsSocket(socket)   // live comments on the Daily photos on screen
 
       // If the user is already authed by the time the socket spins up, kick
       // off the per-user channel subscription. This covers the cold-start
@@ -7055,6 +7082,9 @@ export default function App() {
               setShowProfileDrawer(true)
             } else if (notif.type === 'profile_view' && d.viewerId) {
               openProfile(d.viewerId, d.viewerName ?? '')
+            } else if ((notif.type === 'photo_comment' || notif.type === 'photo_mention') && d.proofId) {
+              // A comment on a photo → its comments, on that comment (the header shows the photo).
+              openPhotoComments({ proofId: d.proofId, focusCommentId: d.commentId ?? null })
             } else if (notif.type === 'daily_vote' && d.proofId) {
               // A vote on my photo → Today's photos on it (a photo of another day opens on its challenge).
               openDaily('photos', { proofId: d.proofId, source: 'notification' })
@@ -7415,6 +7445,8 @@ export default function App() {
         />
       )}
     </div>
+    {/* Comments on a Daily photo, from anywhere (above every screen and viewer). */}
+    <PhotoCommentsHost />
     </DailyContext.Provider>
   )
 }

@@ -26,6 +26,8 @@
     "cityJoinName": "誰かがあなたの街に到着",
     "cityJoinDesc": "あなたがいる街のチャンネルに誰かが参加したとき",
     "worldArrivalName": "世界中からの新着",
-    "worldArrivalDesc": "どこかの都市から新しい人が参加したとき（Worldチャンネル）"
+    "worldArrivalDesc": "どこかの都市から新しい人が参加したとき（Worldチャンネル）",
+    "commentName": "コメント",
+    "commentDesc": "あなたの写真と、あなたがコメントした写真"
   }
 }

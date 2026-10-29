@@ -2606,6 +2606,25 @@ export function reportDailyProof(id, reasonCode) {
   return daily('POST', `/daily/proofs/${id}/report`, { body: { reasonCode } })
 }
 
+// ── Comments on Daily photos (one thread per photo, oldest first) ─────────
+
+/** A page of a photo's comments: the latest, or the ones before a comment id. → {items, hasMore, commentCount} */
+export function fetchPhotoComments(proofId, before) {
+  return daily('GET', `/daily/proofs/${proofId}/comments`, { params: { before } })
+}
+/** Comment a photo (signed in). → {comment, commentCount}; err.code moderation_blocked, rate_limited, invalid_body, invalid_reply */
+export function postPhotoComment(proofId, body, replyToId) {
+  return daily('POST', `/daily/proofs/${proofId}/comments`, { body: { body, replyToId: replyToId ?? undefined } })
+}
+export function deletePhotoComment(id) { return daily('DELETE', `/daily/comments/${id}`) }
+export function likePhotoComment(id, on) { return daily(on ? 'POST' : 'DELETE', `/daily/comments/${id}/like`, on ? { body: {} } : {}) }
+/** 409 = already reported. */
+export function reportPhotoComment(id, reasonCode) { return daily('POST', `/daily/comments/${id}/report`, { body: { reasonCode } }) }
+/** @ autocomplete in a photo's comments: its author and thread first. Never throws. */
+export async function fetchPhotoMentionSuggestions(proofId, q) {
+  try { return (await daily('GET', `/daily/proofs/${proofId}/mention-suggestions`, { params: { q } })).suggestions ?? [] } catch { return [] }
+}
+
 /** Proposals (signed in): a challenge, mine, withdraw. */
 export async function proposeChallenge(input) {
   return (await daily('POST', '/daily/proposals', { body: input })).proposal

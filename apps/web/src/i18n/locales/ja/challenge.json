@@ -1478,6 +1478,58 @@
         "tell": "ひとこと",
         "compare": "比べる"
       }
+    },
+    "comments": {
+      "title": "コメント",
+      "close": "閉じる",
+      "comment": "コメントする",
+      "newComments": "新しいコメント",
+      "empty": "最初のコメントをしよう 💬",
+      "emptySub": "場所を聞いたり、反応したり、自分の街と比べよう。",
+      "placeholder": "コメントを追加…",
+      "placeholderGuest": "登録してコメントしよう",
+      "older": "以前のコメントを見る",
+      "reply": "返信",
+      "copy": "コピー",
+      "delete": "削除",
+      "cancelReply": "返信をキャンセル",
+      "replyingTo": "@{{name}}さんに返信",
+      "author": "投稿者",
+      "first": "一番乗り！",
+      "sending": "送信中…",
+      "failed": "未送信 · タップして再送",
+      "discard": "取り消す",
+      "like": "いいね",
+      "actionsHint": "長押しで返信・コピー・報告",
+      "quickHint": "長押しで送信前に編集",
+      "count_one": "コメント{{count}}件",
+      "count_other": "コメント{{count}}件",
+      "seeAll_one": "コメント{{count}}件を見る",
+      "seeAll_other": "コメント{{count}}件をすべて見る",
+      "quick": {
+        "soLocal": "🔥 ローカルすぎる！",
+        "wantThis": "🤤 ほしい！",
+        "neverSeen": "😮 初めて見た",
+        "whereIsIt": "📍 どこにあるの？",
+        "whatsItCalled": "🏷️ なんて名前？"
+      },
+      "errors": {
+        "moderation_blocked": "このコメントは投稿できません。やさしい言葉でね！",
+        "rate_limited": "ちょっと待って！1分後にもう一度試してね。",
+        "invalid_body": "コメントは300文字までです。",
+        "generic": "問題が発生しました。もう一度試してね。"
+      },
+      "report": {
+        "action": "報告",
+        "reasons": {
+          "inappropriate": "不適切",
+          "harassment": "嫌がらせ・ヘイト",
+          "spam": "スパム",
+          "other": "その他"
+        },
+        "thanks": "ありがとう - 確認します。",
+        "already": "このコメントはすでに報告済みです。"
+      }
     }
   }
 }

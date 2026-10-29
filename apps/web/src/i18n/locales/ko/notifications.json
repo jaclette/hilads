@@ -26,6 +26,8 @@
     "cityJoinName": "누군가 내 도시에 도착",
     "cityJoinDesc": "누군가 내가 있는 도시 채널에 참여할 때",
     "worldArrivalName": "전 세계 새 도착",
-    "worldArrivalDesc": "다른 도시에서 새로운 사람이 합류할 때 (World 채널)"
+    "worldArrivalDesc": "다른 도시에서 새로운 사람이 합류할 때 (World 채널)",
+    "commentName": "댓글",
+    "commentDesc": "내 사진과 내가 댓글을 단 사진"
   }
 }
