@@ -1,0 +1,58 @@
+# Dual photo (photo + selfie): Phase 0 audit (2026-10-29)
+
+BeReal-style Daily photo: the photo (back camera) and a selfie (front camera) taken right after, shown as a small inset that swaps on tap. Paths relative to the repo root; `api.php` = `backend/api/routes/api.php`. App first (`apps/mobile`), web after (display only: the web never posts a Daily photo).
+
+## 1. Capture today
+
+- Versions: expo ~53, **expo-camera ~16.1.11** (in the iOS build: `ExpoCamera` in `ios/Podfile.lock`, `NSCameraUsageDescription` set), expo-image-picker ~16.1.4, expo-image-manipulator ~13.1.7. No vision-camera.
+- `apps/mobile/app/daily/proof.tsx` (`Step = 'place' | 'photo' | 'answer' | 'details' | 'home'`): **camera only, no gallery** (SPEC 9.4).
+  - iOS: `ImagePicker.launchCameraAsync({cameraType: back})`, the system camera UI (no live viewfinder of ours, no way to chain a selfie).
+  - Android: `src/features/chat/AndroidCameraCapture.tsx` (`CameraView`, flip, flash, preview Retake / Use photo, resize to width 1920 JPEG 0.78), because `launchCameraAsync` hangs on Android 14 + singleTask.
+  - `gotPhoto({uri, mime, remoteUrl})` → place / answer / details; the photo uploads at submit (`uploadFile`, cached `remoteUrl` for retries). Retake from a later step stays there.
+- Upload: `POST /api/v1/uploads` (multipart `file`, 10 MB, jpeg/png/webp, ≤6000 px / 40 MP, `ImageProcessor::stripMetadata` re-encodes and drops EXIF, R2 `<32hex>.<ext>` + `thumb_<32hex>.jpg`). Client `uploadFile` downscales to 1600 px JPEG 0.8 first.
+- Submit: `POST /daily/proofs` → `DailyProofRepository::validateInput` (`photoUrl` must be our upload, `invalid_photo`) → create → `dailyAfterProofWrite` (**auto-approved**, no image moderation; 3 reports hide a post; admin queue). `PATCH` deletes a replaced photo from R2; `DELETE` deletes the proof and its photo.
+- No photo metadata is read anywhere (no EXIF GPS / time); the place check uses the GPS position sent in the body.
+- Small local preferences: AsyncStorage keys `hilads_*` (e.g. `hilads_daily_first_proof_done`).
+
+## 2. Where a Daily photo is drawn
+
+Shared `src/ui/Photo.tsx` (`thumb` then `full`, no placeholder of its own). **No width/height stored, no blurhash anywhere**; progressive loading = thumb as `placeholder`.
+
+| Surface | File | Size / tap |
+| --- | --- | --- |
+| Hi chat post | `src/features/daily/DailyChannelCard.tsx` ProofCard | full width 4:3; tap → photo |
+| Story viewer | `app/daily/stories.tsx` | full-bleed; TapZones (prev / next / double-tap vote / hold), PanResponder |
+| Today's photos | `app/daily/photos.tsx` Slide | full screen contain; double-tap vote |
+| Yesterday tour | `app/daily/tour.tsx` | full-bleed; tap zones |
+| Photo viewer | `src/features/daily/DailyProofViewer.tsx` | width × measured ratio |
+| Mosaic city card | `src/features/today/TodayCountries.tsx` CityCard | square; tap → stories |
+| Tiles (gallery, countries, profile) | `DailyProofTile.tsx` | square; tap → viewer |
+| My photos | `app/my-photos.tsx` | square grid |
+| Comments header | `PhotoCommentsSheet.tsx` | 44 px thumb |
+| Yesterday recap, leaderboard, archive, challenge page thumbs | `TodayTour.tsx`, `DailyLeaderboardPanel.tsx`, `archive.tsx`, `[date].tsx` | small thumbs |
+| Map: pins, spot sheet, spot page, lists | `map.tsx`, `SpotSheet.tsx`, `app/spot/[id].tsx`, `SpotList.tsx` | the spot's **cover** |
+| Share card | `src/features/share/ShareCard.tsx` (view-shot) | `content.photoUrl` full card |
+
+Web: `App.jsx` DailyFeedCard, `TodayCountries.jsx`, `dailyShared.jsx` ProofTile / ProofViewer, `PhotosScreen.jsx`, `StoriesScreen.jsx`, `WorldTour.jsx`, `CountriesScreen.jsx`, `FriendsScreens.jsx` My photos, map screens; server `apps/web/api/og.mjs`, `share-page.mjs`, `prerender.mjs`.
+
+Backend copies of `photo_url`: `DailyCards::proofPayload` (chat card snapshot), `Spots` cover (`array_agg(p.photo_url ORDER BY cover)`) + pins, `DailyTour`, `DailyPromo`, `DailyWeb` (SEO), `DailyChallengeRepository` pins/archive, `DailyLeaderboard`, `PhotoCommentNotify`, back office.
+
+## 3. Decisions
+
+- **Schema**: `daily_proofs.selfie_url TEXT NULL`, sent as optional `selfieUrl` in the same `POST`/`PATCH` (atomic post; `null` removes it), validated like `photoUrl` (`invalid_selfie`), same upload pipeline (metadata stripped). No width/height column: the selfie is shown as a 3:4 inset with `cover`.
+- **Returned** as `selfieUrl` + `selfieThumbUrl` by `DailyProofRepository::format` (every proof endpoint) and the chat card payload. Older apps ignore it and show the photo.
+- **Main photo only** for: spot covers and map pins (Spots reads `photo_url` only, unchanged), the promo video (a face needs its own consent), SEO pages / og images, push and bell thumbnails, the archive and leaderboard thumbs.
+- **Deleting** a proof deletes both images; a replaced or removed selfie is deleted on edit. Back office shows the selfie next to the photo.
+- **Capture**: one in-app camera for the Daily photo on both platforms (`DualCamera`, from `AndroidCameraCapture`): back viewfinder → shutter → flash transition → front camera with a live preview and a 3-2-1 countdown (tap = now) → review (inset, swap, Retake selfie, Retake all, Remove selfie / Add your face) → the existing steps. Sequential, never simultaneous. Dual on by default, remembered (`hilads_dual_photo`). Chat and challenge cameras unchanged.
+- **No gallery** in the Daily flow today, so the brief's "gallery + Add your face" becomes **Add your face** on the review whenever there is no selfie (dual off, removed, or the front camera failed).
+- **Fallbacks**: no front camera / switch failure / timeout → the photo alone, a short notice, never a crash. Permission denied → the existing permission screen.
+- **Display**: one `DualPhoto` component (photo + inset ~28 % top-left, theme-aware border, shadow, tap = 250 ms animated swap + light haptic, local state; draggable to a corner in the story viewer; non-interactive small inset on mosaic cards and tiles). No placeholder for a missing selfie. Thumb placeholders, selfie thumb preloaded.
+- **Share card**: the inset in a corner of the photo.
+- Web: display only (`DualPhoto` in the web screens), the camera stays in the app.
+
+## 4. Risks
+
+- iOS loses the system camera UI for Daily photos (our viewfinder instead); flash/zoom parity is ours to keep.
+- Camera switch time varies (slow Android): the countdown starts on `onCameraReady` of the front camera, with a timeout fallback.
+- Two uploads per post: both before the `POST`, the selfie's failure falls back to posting the photo alone only after a retry prompt.
+- Mobile ships only with a store build (no OTA); the API change is additive (old apps keep posting single photos).
