@@ -520,7 +520,19 @@
     "textSpot": "{{name}} no Hilads",
     "textSpotCity": "{{name}}, {{city}}, no Hilads",
     "textToday": "O Daily Challenge de hoje no Hilads: {{challenge}} Topa?",
-    "textProofNoAnswer": "{{challenge}} Em {{city}}. E na sua cidade? Jogue local. Compare global."
+    "textProofNoAnswer": "{{challenge}} Em {{city}}. E na sua cidade? Jogue local. Compare global.",
+    "passportKicker": "Meu passaporte Hilads",
+    "statCities_one": "cidade",
+    "statCities_many": "cidades",
+    "statCities_other": "cidades",
+    "statPhotos_one": "foto",
+    "statPhotos_many": "fotos",
+    "statPhotos_other": "fotos",
+    "statLikes_one": "curtida",
+    "statLikes_many": "curtidas",
+    "statLikes_other": "curtidas",
+    "textPassport": "Meu passaporte Hilads em {{city}}. Mesmo desafio. Mundos diferentes.",
+    "textPassportNoCity": "Meu passaporte Hilads. Mesmo desafio. Mundos diferentes."
   },
   "represent": {
     "empty": "{{city}} ainda não jogou hoje. Seja o primeiro.",

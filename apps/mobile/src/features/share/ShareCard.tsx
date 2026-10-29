@@ -7,7 +7,9 @@ import { appFont } from '@/scaling';
 import { localizeCityName } from '@/i18n/cityName';
 import { themeName } from '@/features/daily/themes';
 import { THEME_COVERS, themeCover } from '@/features/today/covers';
+import { THEME_KEYS } from '@/features/daily/themes';
 import { FLAGS } from '@/ui/flags';
+import { themeColor } from '@/ui/joy';
 import type { ShareContent } from './content';
 
 const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -60,6 +62,61 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
     : null;
   // SPEC 10.1: share cards say why Hilads is unique (the app and stores keep "Play local. Compare global.").
   const tagline = t('worlds.tagline', { defaultValue: TAGLINE_EN });
+  const footer = (
+    <View style={s.footer}>
+      <Image source={LOGO} style={s.logo} contentFit="contain" onLoad={loadedOne} onError={loadedOne} />
+      <View style={s.brand}>
+        <Text style={s.brandName}>Hilads</Text>
+        <Text style={s.tagline} numberOfLines={2}>{tagline}</Text>
+      </View>
+      <Text style={s.site}>hilads.live</Text>
+    </View>
+  );
+
+  // My passport (V3 polish 6): a warm passport page, my photo, @username and city,
+  // the 7 stamps in their theme colors (the missing ones as outlines), my stats.
+  if (content.type === 'passport') {
+    const have = new Set(content.stamps);
+    return (
+      <View ref={ref} collapsable={false} style={[s.card, s.passport]}>
+        <View style={s.passportTop}>
+          <Text style={s.passportKicker}>{t('share.passportKicker').toUpperCase()}</Text>
+          {content.photoUrl
+            ? <Image source={{ uri: content.photoUrl }} style={s.passportPhoto} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />
+            : <View style={[s.passportPhoto, s.passportNoPhoto]} onLayout={loadedOne} />}
+          {!!content.username && <Text style={s.passportName}>@{content.username}</Text>}
+          {city && (
+            <View style={[s.metaRow, s.passportCity]}>
+              {flag && <Image source={flag} style={s.flag} contentFit="cover" />}
+              <Text style={s.passportCityText} numberOfLines={1}>{city}</Text>
+            </View>
+          )}
+        </View>
+        <View style={s.stampGrid}>
+          {THEME_KEYS.map((k, i) => {
+            const tc = themeColor(k);
+            const on = have.has(k);
+            return (
+              <View key={k} style={[s.stampDot, on ? { backgroundColor: tc.fill, borderColor: tc.line ?? '#2A1C13' } : s.stampOff,
+                                    { transform: [{ rotate: `${(i % 2 ? 1 : -1) * (4 + i)}deg` }] }]} />
+            );
+          })}
+          <View style={[s.stampDot, content.earned ? s.passOn : s.passOff]} />
+        </View>
+        <View style={s.statsRow}>
+          {[[content.stats.cities, t('share.statCities', { count: content.stats.cities })],
+            [content.stats.photos, t('share.statPhotos', { count: content.stats.photos })],
+            [content.stats.likes, t('share.statLikes', { count: content.stats.likes })]].map(([n, label]) => (
+            <View key={String(label)} style={s.stat}>
+              <Text style={s.statValue}>{n}</Text>
+              <Text style={s.statLabel} numberOfLines={1}>{label}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={s.passportBottom}>{footer}</View>
+      </View>
+    );
+  }
 
   return (
     <View ref={ref} collapsable={false} style={s.card}>
@@ -113,14 +170,7 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
           </View>
         )}
 
-        <View style={s.footer}>
-          <Image source={LOGO} style={s.logo} contentFit="contain" onLoad={loadedOne} onError={loadedOne} />
-          <View style={s.brand}>
-            <Text style={s.brandName}>Hilads</Text>
-            <Text style={s.tagline} numberOfLines={2}>{tagline}</Text>
-          </View>
-          <Text style={s.site}>hilads.live</Text>
-        </View>
+        {footer}
       </View>
     </View>
   );
@@ -152,4 +202,23 @@ const s = {
   brandName: { fontFamily: appFont('800'), fontSize: u(17), color: white, letterSpacing: u(-0.3) },
   tagline:   { fontFamily: appFont('500'), fontSize: u(12), color: 'rgba(255,255,255,0.78)' },
   site:      { fontFamily: appFont('700'), fontSize: u(15), color: white, marginLeft: u(8) },
+  // The passport card: a warm ink-brown page (fixed colors: an image, the same in every theme).
+  passport:       { backgroundColor: '#2A1C13', alignItems: 'center' },
+  passportTop:    { marginTop: u(72), alignItems: 'center' },
+  passportKicker: { fontFamily: appFont('800'), fontSize: u(12), letterSpacing: u(2), color: '#FFB48A', marginBottom: u(16) },
+  passportPhoto:  { width: u(96), height: u(96), borderRadius: u(48), borderWidth: u(4), borderColor: '#FFC93C' },
+  passportNoPhoto: { backgroundColor: '#4A3426' },
+  passportName:   { fontFamily: appFont('800'), fontSize: u(26), color: white, marginTop: u(14), letterSpacing: u(-0.3) },
+  passportCity:   { marginTop: u(6) },
+  passportCityText: { fontFamily: appFont('700'), fontSize: u(16), color: 'rgba(255,255,255,0.9)' },
+  stampGrid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', width: u(220), marginTop: u(22), gap: u(10) },
+  stampDot:       { width: u(40), height: u(40), borderRadius: u(20), borderWidth: u(3) },
+  stampOff:       { borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.35)' },
+  passOn:         { backgroundColor: '#D9AE52', borderColor: '#FFE08A' },
+  passOff:        { borderStyle: 'dashed', borderColor: '#D9AE52' },
+  statsRow:       { flexDirection: 'row', marginTop: u(20), width: u(300), justifyContent: 'space-between' },
+  stat:           { alignItems: 'center', flex: 1 },
+  statValue:      { fontFamily: appFont('800'), fontSize: u(28), color: white },
+  statLabel:      { fontFamily: appFont('600'), fontSize: u(12), color: 'rgba(255,255,255,0.75)' },
+  passportBottom: { position: 'absolute', left: u(24), right: u(24), bottom: u(96) },
 } satisfies Record<string, ViewStyle | TextStyle | ImageStyle>;

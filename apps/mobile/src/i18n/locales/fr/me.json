@@ -126,7 +126,21 @@
     "specialTitle": "Tampons spéciaux",
     "specialSub": "Édition limitée, un par jour spécial. Ne compte pas pour le Local Pass.",
     "compared_one": "Comparé avec {{count}} pays",
-    "compared_other": "Comparé avec {{count}} pays"
+    "compared_other": "Comparé avec {{count}} pays",
+    "stampsOf_one": "{{count}} tampon sur {{total}}",
+    "stampsOf_many": "{{count}} tampons sur {{total}}",
+    "stampsOf_other": "{{count}} tampons sur {{total}}",
+    "passEarned": "Obtenu à {{city}}",
+    "passToGo_one": "Encore {{count}} tampon",
+    "passToGo_many": "Encore {{count}} tampons",
+    "passToGo_other": "Encore {{count}} tampons",
+    "comparedCities_one": "Comparé avec {{count}} ville",
+    "comparedCities_many": "Comparé avec {{count}} villes",
+    "comparedCities_other": "Comparé avec {{count}} villes",
+    "myPhotos": "Mes photos",
+    "noPhotos": "Tes photos du Daily Challenge apparaîtront ici.",
+    "share": "Partager mon passeport",
+    "localSince": "Local de {{city}} depuis {{date}}"
   },
   "points": {
     "title": "Comment gagner des points",
@@ -139,5 +153,16 @@
   "fieldBackHome": "Ville d'origine (Et chez toi ?)",
   "backHomePlaceholder": "Non renseignée",
   "backHomeHint": "Utilisée par « Et chez toi ? » dans le Daily Challenge, pour comparer avec là où tu es.",
-  "cityDataCredit": "Données des villes © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "Données des villes © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_one": "ville",
+    "cities_many": "villes",
+    "cities_other": "villes",
+    "photos_one": "photo",
+    "photos_many": "photos",
+    "photos_other": "photos",
+    "likes_one": "like",
+    "likes_many": "likes",
+    "likes_other": "likes"
+  }
 }

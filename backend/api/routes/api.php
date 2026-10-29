@@ -15500,6 +15500,23 @@ $router->add('GET', '/api/v1/me/spots', function () {
     Response::json(['items' => $ids === [] ? [] : Spots::find(['ids' => $ids])]);
 });
 
+// GET /api/v1/me/daily-photos - my Daily Challenge photos (Passport's "My
+// photos", V3 polish 6): approved ones, newest first, 60 at most. Signed in.
+$router->add('GET', '/api/v1/me/daily-photos', function () {
+    $user = AuthService::requireAuth();
+    $stmt = Database::pdo()->prepare("
+        SELECT id FROM daily_proofs
+        WHERE user_id = ? AND moderation_status = 'approved' AND NOT is_seed AND NOT is_demo
+        ORDER BY created_at DESC
+        LIMIT 60
+    ");
+    $stmt->execute([$user['id']]);
+    $ids  = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $rows = DailyProofRepository::rowsByIds($ids);
+    $rows = DailyVotes::annotate(array_values(array_filter(array_map(static fn(string $id) => $rows[$id] ?? null, $ids))), $user['id']);
+    Response::json(['items' => array_map(static fn(array $r): array => DailyProofRepository::format($r, $user['id']), $rows)]);
+});
+
 // GET /api/v1/spots/search?q=&cityId=|bbox= - spots whose name or dish tags
 // match (accent and case insensitive), most voted first.
 $router->add('GET', '/api/v1/spots/search', function () {

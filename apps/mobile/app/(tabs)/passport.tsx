@@ -1,11 +1,15 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
+import { FlagSticker } from '@/ui/joy';
+import { RankMedal } from '@/features/daily/RankMedal';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import type { ShareContent } from '@/features/share/content';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { LogoHat } from '@/features/event/SeasonalArt';
 import { useApp } from '@/context/AppContext';
@@ -25,11 +29,15 @@ import type { DailyLocalPassProgress, DailyUserStats } from '@/types';
 interface Counts { spots: number | null; proposals: number | null; friends: number | null; week: number | null; alltime: number | null }
 
 /**
- * PASSPORT (SPEC 9.7, passport.html), replacing MY PROFILE: identity (avatar,
- * username, Local / Exploring, city), streak and weekly rank, one page per
- * city with the 7 theme stamps and the Local Pass seal, then My spots, My
- * proposals, Friends and Most Local all time. Settings behind the gear; "How
- * points work" as a help sheet. Guests get an invitation to start theirs.
+ * PASSPORT (SPEC 9.7, V3 polish 6), a real, shareable passport: identity
+ * (avatar, @username, home city, "Local of Saigon since…", cities, photos and
+ * likes received), streak and weekly rank, the flags of the cities I've been
+ * compared with, one page per city (swipe, with dots) with the 7 stamps in
+ * their theme colors (tap: the photo that earned it) and the Local Pass apart,
+ * then My photos, My spots, My proposals (+ Propose), Friends and Most Local
+ * all time (a medal for the podium), and "Share my passport". Settings
+ * behind the gear; "How points work" as a help sheet. Guests get an
+ * invitation to start theirs.
  */
 export default function PassportScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -42,6 +50,8 @@ export default function PassportScreen() {
   const [stats, setStats]   = useState<DailyUserStats | null>(null);
   const [counts, setCounts] = useState<Counts>({ spots: null, proposals: null, friends: null, week: null, alltime: null });
   const [help, setHelp]     = useState(false);
+  const [page, setPage]     = useState(0);
+  const [share, setShare]   = useState<ShareContent | null>(null);
 
   const cityKey = city?.channelId ? (String(city.channelId).startsWith('city_') ? String(city.channelId) : `city_${city.channelId}`) : null;
   const cityNum = cityKey ? Number(cityKey.slice(5)) : null;
@@ -95,6 +105,22 @@ export default function PassportScreen() {
   const todayTheme = todayKey === 'special' ? null : todayKey;
   const tomorrow = today.data?.tomorrow?.theme ?? null;
   const streak = stats?.currentStreak ?? today.data?.streak ?? 0;
+  const home = stats?.homeCity ?? null;
+  // "Local of Saigon since March 2026": my home city (else the city shown) and when I joined.
+  const sinceCity = home?.name ? shortCityName(home.name) : cityName;
+  const since = stats?.memberSince && sinceCity && account.mode === 'local'
+    ? t('passport.localSince', { city: sinceCity, date: new Date(stats.memberSince * 1000).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) })
+    : null;
+  const openStamp = (s: { date: string; proofId: string }) => router.push(`/daily/${s.date}?proof=${s.proofId}` as never);
+  const sharePassport = () => {
+    const first = progress[0];
+    setShare({
+      type: 'passport', photoUrl: account.profile_photo_url ?? null, theme: null, text: t('passport.title'),
+      city: first ? { name: first.city.name, country: first.city.country ?? null } : city ? { name: city.name, country: city.country } : null,
+      username: account.username ?? null, stamps: first?.themes ?? [], earned: !!first?.earned,
+      stats: { cities: stats?.citiesPlayed ?? 0, photos: stats?.photos ?? stats?.completed ?? 0, likes: stats?.likesReceived ?? 0 },
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -104,8 +130,10 @@ export default function PassportScreen() {
           name={account.username ? `@${account.username}` : account.display_name}
           photo={account.thumbAvatarUrl ?? account.profile_photo_url ?? null}
           mode={account.mode ?? null}
-          cityName={cityName}
-          cityCountry={city?.country ?? null}
+          cityName={home ? shortCityName(home.name ?? '') : cityName}
+          cityCountry={home ? home.country : city?.country ?? null}
+          since={since}
+          stats={stats ? { cities: stats.citiesPlayed ?? null, photos: stats.photos ?? stats.completed, likes: stats.likesReceived ?? null } : null}
         />
 
         <View style={styles.cards}>
@@ -124,7 +152,21 @@ export default function PassportScreen() {
             <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
           </Card>
         </View>
-        {(stats?.comparedCountries ?? 0) > 0 && (
+        {/* The cities I've been compared with: their flags (a tap opens that city's photos today). */}
+        {(stats?.comparedCities?.length ?? 0) > 0 ? (
+          <View style={styles.comparedBlock}>
+            <Text style={styles.comparedText}>{t('passport.comparedCities', { count: stats!.comparedCities!.length })}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsRow}>
+              {stats!.comparedCities!.map(c => (
+                <TouchableOpacity key={c.id} style={styles.flagChip} onPress={() => router.push(`/daily/stories?city=${c.id}&source=passport` as never)}
+                                  accessibilityRole="button" accessibilityLabel={c.name ?? ''}>
+                  <FlagSticker country={c.country} size={22} />
+                  <Text style={styles.flagName} numberOfLines={1}>{shortCityName(c.name ?? '')}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        ) : (stats?.comparedCountries ?? 0) > 0 && (
           <View style={styles.compared}>
             <Ionicons name="earth-outline" size={16} color={colors.muted} />
             <Text style={styles.comparedText}>{t('passport.compared', { count: stats!.comparedCountries })}</Text>
@@ -132,15 +174,24 @@ export default function PassportScreen() {
         )}
 
         {progress.length > 1 ? (
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} snapToInterval={pageWidth + 10} decelerationRate="fast"
-                      contentContainerStyle={styles.pages}>
-            {progress.map(p => (
-              <CityPage key={p.city.id} width={pageWidth} cityName={shortCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes} earned={p.earned}
-                        todayTheme={p.city.id === cityNum ? todayTheme : null} tomorrowTheme={p.city.id === cityNum ? tomorrow : null} />
-            ))}
-          </ScrollView>
+          <View style={styles.pagesWrap}>
+            {/* One page per city: snaps page by page (no pagingEnabled: the pages are narrower than the screen). */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToInterval={pageWidth + 10} decelerationRate="fast"
+                        contentContainerStyle={styles.pages}
+                        onMomentumScrollEnd={e => setPage(Math.round(e.nativeEvent.contentOffset.x / (pageWidth + 10)))}>
+              {progress.map(p => (
+                <CityPage key={p.city.id} width={pageWidth} cityName={shortCityName(p.city.name ?? '')} country={p.city.country} themes={p.themes}
+                          stamps={p.stamps} total={p.total} earned={p.earned} onStamp={openStamp}
+                          todayTheme={p.city.id === cityNum ? todayTheme : null} tomorrowTheme={p.city.id === cityNum ? tomorrow : null} />
+              ))}
+            </ScrollView>
+            <View style={styles.dots} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              {progress.map((p, i) => <View key={p.city.id} style={[styles.dot, i === page && styles.dotOn]} />)}
+            </View>
+          </View>
         ) : progress.length === 1 ? (
-          <CityPage cityName={shortCityName(progress[0].city.name ?? '')} country={progress[0].city.country} themes={progress[0].themes} earned={progress[0].earned}
+          <CityPage cityName={shortCityName(progress[0].city.name ?? '')} country={progress[0].city.country} themes={progress[0].themes}
+                    stamps={progress[0].stamps} total={progress[0].total} earned={progress[0].earned} onStamp={openStamp}
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
 
@@ -148,23 +199,32 @@ export default function PassportScreen() {
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
 
         <RowGroup>
-          <ListRow title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />
+          <ListRow title={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onPress={() => router.push('/my-photos' as never)} />
+          <ListRow divider title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />
           <ListRow divider title={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onPress={() => router.push('/daily/proposals' as never)} />
+          {/* Propose a challenge lives here now (moved from Today, V3 polish 3.3). */}
+          <ListRow divider icon="add-circle-outline" title={t('propose.cta', { ns: 'daily' })} onPress={() => router.push('/daily/propose?source=passport' as never)} />
           <ListRow divider title={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onPress={() => router.push('/friends' as never)} />
           <ListRow divider title={t('passport.mostLocalAllTime')}
+                   leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={26} /> : undefined}
                    value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
                    onPress={() => router.push(`/leaderboard?scope=${cityKey ? 'city' : 'world'}&period=alltime` as never)} />
         </RowGroup>
 
+        <Button icon="share-social-outline" label={t('passport.share')} onPress={sharePassport} testID="passport-share" />
         <Button variant="link" icon="help-circle-outline" label={t('passport.howPoints')} onPress={() => setHelp(true)} style={styles.center} />
       </ScrollView>
       <PointsHelpSheet visible={help} onClose={() => setHelp(false)} />
+      <ShareSheet content={share} source="passport" onClose={() => setShare(null)} />
     </SafeAreaView>
   );
 }
 
-function Identity({ name, photo, mode, cityName, cityCountry }: {
+function Identity({ name, photo, mode, cityName, cityCountry, since = null, stats = null }: {
   name: string; photo: string | null; mode: string | null; cityName: string | null; cityCountry: string | null;
+  /** "Local of Saigon since March 2026". */
+  since?: string | null;
+  stats?: { cities: number | null; photos: number | null; likes: number | null } | null;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -176,6 +236,7 @@ function Identity({ name, photo, mode, cityName, cityCountry }: {
       <View><Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={64} ring /><LogoHat logoSize={64} /></View>
       <View style={styles.identityBody}>
         <Text style={styles.name} numberOfLines={1}>{name}</Text>
+        {!!since && <Text style={styles.since} numberOfLines={1}>{since}</Text>}
         <View style={styles.chips}>
           {mode && <ModeLabel mode={local ? 'local' : 'traveler'} label={t(`mode.${local ? 'local' : 'exploring'}.label`)} />}
           {cityName && (
@@ -185,6 +246,13 @@ function Identity({ name, photo, mode, cityName, cityCountry }: {
             </View>
           )}
         </View>
+        {stats && (
+          <View style={styles.stats}>
+            {([['cities', stats.cities], ['photos', stats.photos], ['likes', stats.likes]] as const).map(([k, n]) => n !== null && (
+              <Text key={k} style={styles.stat}><Text style={styles.statN}>{n}</Text> {t(`passportStats.${k}`, { ns: 'me', count: n })}</Text>
+            ))}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -206,6 +274,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },
   compared:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  comparedBlock:  { gap: 8 },
+  flagsRow:       { gap: 8 },
+  flagChip:       { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingLeft: 6, paddingRight: 12, borderRadius: Radius.full,
+                    borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  flagName:       { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: 120 },
+  pagesWrap:      { gap: 8 },
+  dots:           { flexDirection: 'row', justifyContent: 'center', gap: 6 },
+  dot:            { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },
+  dotOn:          { backgroundColor: c.primary, width: 18 },
+  since:          { fontSize: 13, fontWeight: '600', color: c.muted },
+  stats:          { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12 },
+  stat:           { fontSize: 13, fontWeight: '600', color: c.muted },
+  statN:          { fontWeight: '800', color: c.text },
   comparedText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   pages:          { gap: 10 },
   center:         { alignSelf: 'center' },

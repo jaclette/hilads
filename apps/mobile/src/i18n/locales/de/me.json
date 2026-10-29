@@ -126,7 +126,18 @@
     "specialTitle": "Sonderstempel",
     "specialSub": "Limitierte Edition, einer pro Sondertag. Zählt nicht für den Local Pass.",
     "compared_one": "Mit {{count}} Land verglichen",
-    "compared_other": "Mit {{count}} Ländern verglichen"
+    "compared_other": "Mit {{count}} Ländern verglichen",
+    "stampsOf_one": "{{count}} von {{total}} Stempeln",
+    "stampsOf_other": "{{count}} von {{total}} Stempeln",
+    "passEarned": "Erhalten in {{city}}",
+    "passToGo_one": "Noch {{count}} Stempel",
+    "passToGo_other": "Noch {{count}} Stempel",
+    "comparedCities_one": "Verglichen mit {{count}} Stadt",
+    "comparedCities_other": "Verglichen mit {{count}} Städten",
+    "myPhotos": "Meine Fotos",
+    "noPhotos": "Deine Daily-Challenge-Fotos erscheinen hier.",
+    "share": "Meinen Pass teilen",
+    "localSince": "Local in {{city}} seit {{date}}"
   },
   "points": {
     "title": "So sammelst du Punkte",
@@ -139,5 +150,13 @@
   "fieldBackHome": "Heimatstadt (Und bei dir zu Hause?)",
   "backHomePlaceholder": "Nicht festgelegt",
   "backHomeHint": "Für „Und bei dir zu Hause?“ in der Daily Challenge, zum Vergleich mit dem Ort, an dem du bist.",
-  "cityDataCredit": "Städtedaten © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "Städtedaten © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_one": "Stadt",
+    "cities_other": "Städte",
+    "photos_one": "Foto",
+    "photos_other": "Fotos",
+    "likes_one": "Like",
+    "likes_other": "Likes"
+  }
 }

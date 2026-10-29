@@ -102,14 +102,15 @@ final class DailyLocalPass
 
     /**
      * A user's passes and per-city progress (profile): passes [{city,
-     * earnedAt}], progress [{city, done, total, themes, earned}] for every
-     * city with an approved proof, most advanced first.
+     * earnedAt}], progress [{city, done, total, themes, earned, stamps}] for
+     * every city with an approved proof, most advanced first; stamps:
+     * {theme: {date, proofId}}, the first photo that earned each stamp.
      */
     public static function forUser(string $userId): array
     {
         $pdo  = Database::pdo();
         $stmt = $pdo->prepare("
-            SELECT p.city_id, ch.name AS city_name, dc.theme, dc.challenge_date
+            SELECT p.id, p.city_id, ch.name AS city_name, dc.theme, dc.challenge_date
             FROM daily_proofs p
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN channels ch         ON ch.id = p.city_id
@@ -141,7 +142,19 @@ final class DailyLocalPass
         $progress = [];
         foreach ($byCity as $cityId => $rows) {
             $themes = self::themesOf($rows);
+            $stamps = [];
+            foreach ($rows as $r) {
+                $key = DailyThemes::effective($r['theme'] ?? null, $r['challenge_date'] ?? null);
+                if ($key === null || !in_array($key, $themes, true)) {
+                    continue;
+                }
+                $client = DailyThemes::client($key);
+                if (!isset($stamps[$client]) || $r['challenge_date'] < $stamps[$client]['date']) {
+                    $stamps[$client] = ['date' => $r['challenge_date'], 'proofId' => $r['id']];
+                }
+            }
             $progress[] = [
+                'stamps' => (object) $stamps,
                 'city'   => self::city($cityId, $names[$cityId]),
                 'done'   => count($themes),
                 'total'  => count(DailyThemes::THEMES),

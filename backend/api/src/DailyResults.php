@@ -327,7 +327,83 @@ final class DailyResults
             'pioneerOf'         => DailyPresence::citiesOf($userId),
             // COPY.md 7: "Compared with N countries".
             'comparedCountries' => self::comparedCountries($userId),
+            // V3 polish 6: the passport's identity and the cities I've been compared with.
+            ...self::passportFacts($userId),
+            'comparedCities'    => self::comparedCities($userId),
         ];
+    }
+
+    /**
+     * The passport's identity line and stats: photos (approved, mine), likes
+     * received on them, cities played, home city and member since (epoch).
+     */
+    public static function passportFacts(string $userId): array
+    {
+        try {
+            $pdo  = Database::pdo();
+            $stmt = $pdo->prepare("
+                SELECT count(*) AS photos, coalesce(sum(p.vote_count), 0) AS likes, count(DISTINCT p.city_id) AS cities
+                FROM daily_proofs p
+                WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion
+            ");
+            $stmt->execute([$userId]);
+            $n = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+            $stmt = $pdo->prepare("
+                SELECT u.created_at, u.home_city_id, ch.name AS home_name, cc.country AS home_country
+                FROM users u
+                LEFT JOIN channels ch ON ch.id = u.home_city_id
+                LEFT JOIN cities cc   ON cc.channel_id = u.home_city_id
+                WHERE u.id = ?
+            ");
+            $stmt->execute([$userId]);
+            $u = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+            $home = !empty($u['home_city_id']) && preg_match('/^city_(\d+)$/', (string) $u['home_city_id'], $m)
+                ? ['id' => (int) $m[1], 'name' => $u['home_name'], 'country' => $u['home_country']] : null;
+            return [
+                'photos'        => (int) ($n['photos'] ?? 0),
+                'likesReceived' => (int) ($n['likes'] ?? 0),
+                'citiesPlayed'  => (int) ($n['cities'] ?? 0),
+                'homeCity'      => $home,
+                'memberSince'   => isset($u['created_at']) ? (int) $u['created_at'] : null,
+            ];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * The cities (not mine) whose players answered the same challenges as my
+     * approved photos, all time: [{id, name, country}], 12 at most, the most
+     * shared first. Hilads suggestions never count.
+     */
+    public static function comparedCities(string $userId): array
+    {
+        try {
+            $stmt = Database::pdo()->prepare("
+                WITH mine AS (
+                    SELECT DISTINCT p.challenge_id, p.city_id
+                    FROM daily_proofs p
+                    WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                )
+                SELECT o.city_id, ch.name, cc.country, count(DISTINCT o.challenge_id) AS shared
+                FROM daily_proofs o
+                JOIN (SELECT DISTINCT challenge_id FROM mine) m ON m.challenge_id = o.challenge_id
+                JOIN users u    ON u.id = o.user_id AND NOT u.is_demo
+                JOIN channels ch ON ch.id = o.city_id
+                JOIN cities cc  ON cc.channel_id = o.city_id
+                WHERE o.user_id <> ? AND o.moderation_status = 'approved' AND NOT o.is_seed AND NOT o.is_demo AND NOT o.is_suggestion
+                  AND o.city_id NOT IN (SELECT city_id FROM mine)
+                GROUP BY o.city_id, ch.name, cc.country
+                ORDER BY shared DESC, ch.name
+                LIMIT 12
+            ");
+            $stmt->execute([$userId, $userId]);
+            return array_map(static fn(array $r): array => [
+                'id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['name'], 'country' => $r['country'],
+            ], $stmt->fetchAll(PDO::FETCH_ASSOC));
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     /**

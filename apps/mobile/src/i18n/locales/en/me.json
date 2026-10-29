@@ -126,7 +126,18 @@
     "specialTitle": "Special stamps",
     "specialSub": "Limited edition, one per special day. Not counted for the Local Pass.",
     "compared_one": "Compared with {{count}} country",
-    "compared_other": "Compared with {{count}} countries"
+    "compared_other": "Compared with {{count}} countries",
+    "stampsOf_one": "{{count}} of {{total}} stamps",
+    "stampsOf_other": "{{count}} of {{total}} stamps",
+    "passEarned": "Earned in {{city}}",
+    "passToGo_one": "{{count}} stamp to go",
+    "passToGo_other": "{{count}} stamps to go",
+    "comparedCities_one": "Compared with {{count}} city",
+    "comparedCities_other": "Compared with {{count}} cities",
+    "myPhotos": "My photos",
+    "noPhotos": "Your Daily Challenge photos will show up here.",
+    "share": "Share my passport",
+    "localSince": "Local of {{city}} since {{date}}"
   },
   "points": {
     "title": "How to earn points",
@@ -139,5 +150,13 @@
   "fieldBackHome": "Home city (Back home)",
   "backHomePlaceholder": "Not set",
   "backHomeHint": "Used by \"And back home?\" in the Daily Challenge, to compare with where you are.",
-  "cityDataCredit": "City data © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "City data © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_one": "city",
+    "cities_other": "cities",
+    "photos_one": "photo",
+    "photos_other": "photos",
+    "likes_one": "like",
+    "likes_other": "likes"
+  }
 }

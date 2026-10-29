@@ -126,7 +126,15 @@
     "specialTitle": "스페셜 스탬프",
     "specialSub": "한정판, 특별한 날마다 하나씩. Local Pass에는 포함되지 않아요.",
     "compared_one": "{{count}}개국과 비교했어요",
-    "compared_other": "{{count}}개국과 비교했어요"
+    "compared_other": "{{count}}개국과 비교했어요",
+    "stampsOf_other": "스탬프 {{count}}/{{total}}",
+    "passEarned": "{{city}}에서 획득",
+    "passToGo_other": "스탬프 {{count}}개 남음",
+    "comparedCities_other": "{{count}}개 도시와 비교",
+    "myPhotos": "내 사진",
+    "noPhotos": "Daily Challenge 사진이 여기에 표시돼.",
+    "share": "내 여권 공유하기",
+    "localSince": "{{date}}부터 {{city}} 로컬"
   },
   "points": {
     "title": "포인트 받는 법",
@@ -139,5 +147,10 @@
   "fieldBackHome": "고향 (고향에서는요?)",
   "backHomePlaceholder": "설정 안 됨",
   "backHomeHint": "Daily Challenge의 \"고향에서는요?\"에서 지금 있는 곳과 비교할 때 쓰여요.",
-  "cityDataCredit": "도시 데이터 © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "도시 데이터 © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_other": "개 도시",
+    "photos_other": "장",
+    "likes_other": "좋아요"
+  }
 }

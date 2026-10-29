@@ -513,7 +513,13 @@
     "textSpot": "{{name}} บน Hilads",
     "textSpotCity": "{{name}}, {{city}} บน Hilads",
     "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?",
-    "textProofNoAnswer": "{{challenge}} ที่{{city}} แล้วเมืองของคุณล่ะ? เล่นแบบโลคอล เทียบทั่วโลก"
+    "textProofNoAnswer": "{{challenge}} ที่{{city}} แล้วเมืองของคุณล่ะ? เล่นแบบโลคอล เทียบทั่วโลก",
+    "passportKicker": "พาสปอร์ต Hilads ของฉัน",
+    "statCities_other": "เมือง",
+    "statPhotos_other": "รูป",
+    "statLikes_other": "ไลก์",
+    "textPassport": "พาสปอร์ต Hilads ของฉันที่ {{city}} ชาเลนจ์เดียวกัน โลกที่ต่างกัน",
+    "textPassportNoCity": "พาสปอร์ต Hilads ของฉัน ชาเลนจ์เดียวกัน โลกที่ต่างกัน"
   },
   "represent": {
     "empty": "{{city}}ยังไม่ได้เล่นวันนี้ มาเป็นคนแรกกัน",

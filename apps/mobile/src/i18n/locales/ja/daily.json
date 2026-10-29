@@ -514,7 +514,13 @@
     "textSpot": "Hilads の {{name}}",
     "textSpotCity": "Hilads の {{name}}（{{city}}）",
     "textToday": "Hilads の今日の Daily Challenge：{{challenge}} やってみる？",
-    "textProofNoAnswer": "{{challenge}} {{city}}より。あなたの街は？地元で遊ぶ。世界と比べる。"
+    "textProofNoAnswer": "{{challenge}} {{city}}より。あなたの街は？地元で遊ぶ。世界と比べる。",
+    "passportKicker": "私のHiladsパスポート",
+    "statCities_other": "都市",
+    "statPhotos_other": "枚",
+    "statLikes_other": "いいね",
+    "textPassport": "{{city}}の私のHiladsパスポート。同じチャレンジ、違う世界。",
+    "textPassportNoCity": "私のHiladsパスポート。同じチャレンジ、違う世界。"
   },
   "represent": {
     "empty": "{{city}}は今日まだ参加していません。最初の一人になろう。",

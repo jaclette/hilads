@@ -24,6 +24,9 @@ export type ShareContent =
   | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City;
       /** "Answer for Saigon with me on Hilads." (SPEC 9.16) instead of the challenge line. */
       represent?: boolean }
+  /** My passport (V3 polish 6): my photo, @username, my city, my stamps there and my stats; links to Hilads. */
+  | { type: 'passport'; photoUrl: string | null; theme: null; themeLabel?: null; text: string; city: City; username: string | null;
+      stamps: DailyThemeKey[]; earned: boolean; stats: { cities: number; photos: number; likes: number } }
   /** A comparison of the Hilads Index (SPEC 10.9): its question, then one line per city ("Saigon · €1.20"); links to its latest day. */
   | { type: 'index'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date: string; text: string; city: null;
       lines: { country: string | null; city: string; value: string }[] };
@@ -63,7 +66,8 @@ export function representShare(challenge: DailyChallenge, city: NonNullable<City
 
 /** The link, in the sharer's language (/fr/p/..., English unprefixed). */
 export function shareUrl(c: ShareContent): string {
-  const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : c.type === 'index' ? `/d/${c.date}` : '/today';
+  const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : c.type === 'index' ? `/d/${c.date}`
+    : c.type === 'passport' ? '/' : '/today';
   return `${BASE_URL}${sharePrefix()}${path}`;
 }
 
@@ -78,6 +82,9 @@ export function shareText(c: ShareContent): string {
   }
   if (c.type === 'spot') {
     return c.city?.name ? t('textSpotCity', { name: c.name, city: localizeCityName(c.city.name) }) : t('textSpot', { name: c.name });
+  }
+  if (c.type === 'passport') {
+    return c.city?.name ? t('textPassport', { city: shortCityName(c.city.name) }) : t('textPassportNoCity');
   }
   if (c.type === 'index') {
     // "How much is a drink? Saigon ₫30,000 · Lisbon ₫49,400"

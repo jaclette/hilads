@@ -126,7 +126,18 @@
     "specialTitle": "स्पेशल स्टैम्प",
     "specialSub": "लिमिटेड एडिशन, हर खास दिन का एक। Local Pass में नहीं गिना जाता।",
     "compared_one": "{{count}} देश से तुलना की",
-    "compared_other": "{{count}} देशों से तुलना की"
+    "compared_other": "{{count}} देशों से तुलना की",
+    "stampsOf_one": "{{total}} में से {{count}} मुहर",
+    "stampsOf_other": "{{total}} में से {{count}} मुहरें",
+    "passEarned": "{{city}} में मिला",
+    "passToGo_one": "{{count}} मुहर और",
+    "passToGo_other": "{{count}} मुहरें और",
+    "comparedCities_one": "{{count}} शहर से तुलना",
+    "comparedCities_other": "{{count}} शहरों से तुलना",
+    "myPhotos": "मेरी फ़ोटो",
+    "noPhotos": "तुम्हारी Daily Challenge फ़ोटो यहाँ दिखेंगी।",
+    "share": "मेरा पासपोर्ट शेयर करो",
+    "localSince": "{{date}} से {{city}} का लोकल"
   },
   "points": {
     "title": "पॉइंट कैसे कमाएँ",
@@ -139,5 +150,13 @@
   "fieldBackHome": "अपना शहर (और आपके शहर में?)",
   "backHomePlaceholder": "सेट नहीं",
   "backHomeHint": "Daily Challenge के \"और आपके शहर में?\" में, जहाँ आप हैं उससे तुलना के लिए।",
-  "cityDataCredit": "शहर डेटा © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "शहर डेटा © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_one": "शहर",
+    "cities_other": "शहर",
+    "photos_one": "फ़ोटो",
+    "photos_other": "फ़ोटो",
+    "likes_one": "लाइक",
+    "likes_other": "लाइक"
+  }
 }

@@ -513,7 +513,13 @@
     "textSpot": "{{name}} trên Hilads",
     "textSpotCity": "{{name}}, {{city}}, trên Hilads",
     "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?",
-    "textProofNoAnswer": "{{challenge}} Ở {{city}}. Còn ở thành phố bạn? Chơi địa phương. So toàn cầu."
+    "textProofNoAnswer": "{{challenge}} Ở {{city}}. Còn ở thành phố bạn? Chơi địa phương. So toàn cầu.",
+    "passportKicker": "Hộ chiếu Hilads của tôi",
+    "statCities_other": "thành phố",
+    "statPhotos_other": "ảnh",
+    "statLikes_other": "lượt thích",
+    "textPassport": "Hộ chiếu Hilads của tôi ở {{city}}. Cùng thử thách. Những thế giới khác nhau.",
+    "textPassportNoCity": "Hộ chiếu Hilads của tôi. Cùng thử thách. Những thế giới khác nhau."
   },
   "represent": {
     "empty": "{{city}} chưa chơi hôm nay. Hãy là người đầu tiên.",

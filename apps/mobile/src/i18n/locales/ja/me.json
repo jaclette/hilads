@@ -126,7 +126,15 @@
     "specialTitle": "スペシャルスタンプ",
     "specialSub": "限定版。特別な日ごとに1つ。Local Passにはカウントされません。",
     "compared_one": "{{count}}か国と比べた",
-    "compared_other": "{{count}}か国と比べた"
+    "compared_other": "{{count}}か国と比べた",
+    "stampsOf_other": "スタンプ {{count}}/{{total}}",
+    "passEarned": "{{city}}で獲得",
+    "passToGo_other": "あと{{count}}個",
+    "comparedCities_other": "{{count}}都市と比較",
+    "myPhotos": "自分の写真",
+    "noPhotos": "Daily Challengeの写真がここに表示されます。",
+    "share": "パスポートをシェア",
+    "localSince": "{{date}}から{{city}}のローカル"
   },
   "points": {
     "title": "ポイントのもらい方",
@@ -139,5 +147,10 @@
   "fieldBackHome": "地元（あなたの地元では？）",
   "backHomePlaceholder": "未設定",
   "backHomeHint": "Daily Challenge の「あなたの地元では？」で、今いる場所と比べるのに使います。",
-  "cityDataCredit": "都市データ © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "都市データ © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_other": "都市",
+    "photos_other": "枚",
+    "likes_other": "いいね"
+  }
 }

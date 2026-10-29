@@ -514,7 +514,13 @@
     "textSpot": "{{name}} di Hilads",
     "textSpotCity": "{{name}}, {{city}}, di Hilads",
     "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Ikut?",
-    "textProofNoAnswer": "{{challenge}} Di {{city}}. Kalau di kotamu? Main lokal. Bandingkan global."
+    "textProofNoAnswer": "{{challenge}} Di {{city}}. Kalau di kotamu? Main lokal. Bandingkan global.",
+    "passportKicker": "Paspor Hilads-ku",
+    "statCities_other": "kota",
+    "statPhotos_other": "foto",
+    "statLikes_other": "suka",
+    "textPassport": "Paspor Hilads-ku di {{city}}. Tantangan sama. Dunia berbeda.",
+    "textPassportNoCity": "Paspor Hilads-ku. Tantangan sama. Dunia berbeda."
   },
   "represent": {
     "empty": "{{city}} belum main hari ini. Jadilah yang pertama.",

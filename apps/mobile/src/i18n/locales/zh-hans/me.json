@@ -126,7 +126,15 @@
     "specialTitle": "特别印章",
     "specialSub": "限量版，每个特别日一枚。不计入 Local Pass。",
     "compared_one": "已与 {{count}} 个国家/地区比较",
-    "compared_other": "已与 {{count}} 个国家/地区比较"
+    "compared_other": "已与 {{count}} 个国家/地区比较",
+    "stampsOf_other": "{{count}}/{{total}} 个印章",
+    "passEarned": "在{{city}}获得",
+    "passToGo_other": "还差 {{count}} 个印章",
+    "comparedCities_other": "已与 {{count}} 座城市比较",
+    "myPhotos": "我的照片",
+    "noPhotos": "你的 Daily Challenge 照片会显示在这里。",
+    "share": "分享我的护照",
+    "localSince": "自{{date}}起的{{city}}本地人"
   },
   "points": {
     "title": "如何获得积分",
@@ -139,5 +147,10 @@
   "fieldBackHome": "家乡（你家乡呢？）",
   "backHomePlaceholder": "未设置",
   "backHomeHint": "用于 Daily Challenge 中的“你家乡呢？”，与你所在的地方作比较。",
-  "cityDataCredit": "城市数据 © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "城市数据 © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_other": "座城市",
+    "photos_other": "张照片",
+    "likes_other": "个赞"
+  }
 }

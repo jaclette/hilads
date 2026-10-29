@@ -126,7 +126,15 @@
     "specialTitle": "Stempel spesial",
     "specialSub": "Edisi terbatas, satu untuk setiap hari spesial. Tidak dihitung untuk Local Pass.",
     "compared_one": "Dibandingkan dengan {{count}} negara",
-    "compared_other": "Dibandingkan dengan {{count}} negara"
+    "compared_other": "Dibandingkan dengan {{count}} negara",
+    "stampsOf_other": "{{count}} dari {{total}} cap",
+    "passEarned": "Didapat di {{city}}",
+    "passToGo_other": "{{count}} cap lagi",
+    "comparedCities_other": "Dibandingkan dengan {{count}} kota",
+    "myPhotos": "Fotoku",
+    "noPhotos": "Foto Daily Challenge-mu akan muncul di sini.",
+    "share": "Bagikan pasporku",
+    "localSince": "Warga lokal {{city}} sejak {{date}}"
   },
   "points": {
     "title": "Cara dapat poin",
@@ -139,5 +147,10 @@
   "fieldBackHome": "Kota asal (Kalau di kotamu?)",
   "backHomePlaceholder": "Belum diatur",
   "backHomeHint": "Dipakai oleh \"Kalau di kotamu?\" di Daily Challenge, untuk dibandingkan dengan tempatmu sekarang.",
-  "cityDataCredit": "Data kota © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "Data kota © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_other": "kota",
+    "photos_other": "foto",
+    "likes_other": "suka"
+  }
 }

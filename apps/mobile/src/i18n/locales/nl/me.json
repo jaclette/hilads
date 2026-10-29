@@ -126,7 +126,18 @@
     "specialTitle": "Speciale stempels",
     "specialSub": "Beperkte oplage, één per speciale dag. Telt niet mee voor de Local Pass.",
     "compared_one": "Vergeleken met {{count}} land",
-    "compared_other": "Vergeleken met {{count}} landen"
+    "compared_other": "Vergeleken met {{count}} landen",
+    "stampsOf_one": "{{count}} van {{total}} stempels",
+    "stampsOf_other": "{{count}} van {{total}} stempels",
+    "passEarned": "Behaald in {{city}}",
+    "passToGo_one": "Nog {{count}} stempel",
+    "passToGo_other": "Nog {{count}} stempels",
+    "comparedCities_one": "Vergeleken met {{count}} stad",
+    "comparedCities_other": "Vergeleken met {{count}} steden",
+    "myPhotos": "Mijn foto's",
+    "noPhotos": "Je Daily Challenge-foto's verschijnen hier.",
+    "share": "Deel mijn paspoort",
+    "localSince": "Local van {{city}} sinds {{date}}"
   },
   "points": {
     "title": "Zo verdien je punten",
@@ -139,5 +150,13 @@
   "fieldBackHome": "Thuisstad (En bij jou thuis?)",
   "backHomePlaceholder": "Niet ingesteld",
   "backHomeHint": "Gebruikt door \"En bij jou thuis?\" in de Daily Challenge, om te vergelijken met waar je bent.",
-  "cityDataCredit": "Stadsgegevens © GeoNames (CC BY 4.0)"
+  "cityDataCredit": "Stadsgegevens © GeoNames (CC BY 4.0)",
+  "passportStats": {
+    "cities_one": "stad",
+    "cities_other": "steden",
+    "photos_one": "foto",
+    "photos_other": "foto's",
+    "likes_one": "like",
+    "likes_other": "likes"
+  }
 }

@@ -513,7 +513,13 @@
     "textSpot": "Hilads 上的 {{name}}",
     "textSpotCity": "Hilads 上的 {{name}}（{{city}}）",
     "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你来吗？",
-    "textProofNoAnswer": "{{challenge}} 在{{city}}。你的城市呢？本地玩，全球比。"
+    "textProofNoAnswer": "{{challenge}} 在{{city}}。你的城市呢？本地玩，全球比。",
+    "passportKicker": "我的 Hilads 护照",
+    "statCities_other": "座城市",
+    "statPhotos_other": "张照片",
+    "statLikes_other": "个赞",
+    "textPassport": "我在{{city}}的 Hilads 护照。同一个挑战，不同的世界。",
+    "textPassportNoCity": "我的 Hilads 护照。同一个挑战，不同的世界。"
   },
   "represent": {
     "empty": "{{city}}今天还没有人参加。来当第一个吧。",

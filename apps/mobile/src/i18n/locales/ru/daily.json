@@ -543,7 +543,22 @@
     "textSpot": "{{name}} в Hilads",
     "textSpotCity": "{{name}}, {{city}}, в Hilads",
     "textToday": "Сегодняшний Daily Challenge в Hilads: {{challenge}} Ты в деле?",
-    "textProofNoAnswer": "{{challenge}} {{city}}. А в твоём городе? Играй локально. Сравнивай глобально."
+    "textProofNoAnswer": "{{challenge}} {{city}}. А в твоём городе? Играй локально. Сравнивай глобально.",
+    "passportKicker": "Мой паспорт Hilads",
+    "statCities_one": "город",
+    "statCities_few": "города",
+    "statCities_many": "городов",
+    "statCities_other": "города",
+    "statPhotos_one": "фото",
+    "statPhotos_few": "фото",
+    "statPhotos_many": "фото",
+    "statPhotos_other": "фото",
+    "statLikes_one": "лайк",
+    "statLikes_few": "лайка",
+    "statLikes_many": "лайков",
+    "statLikes_other": "лайка",
+    "textPassport": "Мой паспорт Hilads в городе {{city}}. Один челлендж. Разные миры.",
+    "textPassportNoCity": "Мой паспорт Hilads. Один челлендж. Разные миры."
   },
   "represent": {
     "empty": "{{city}} сегодня ещё не играл. Будь первым.",

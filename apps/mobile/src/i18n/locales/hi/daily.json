@@ -517,7 +517,16 @@
     "textSpot": "Hilads पर {{name}}",
     "textSpotCity": "Hilads पर {{name}}, {{city}}",
     "textToday": "Hilads पर आज का Daily Challenge: {{challenge}} क्या आप तैयार हैं?",
-    "textProofNoAnswer": "{{challenge}} {{city}} में। और आपके शहर में? लोकल खेलो। ग्लोबल तुलना करो।"
+    "textProofNoAnswer": "{{challenge}} {{city}} में। और आपके शहर में? लोकल खेलो। ग्लोबल तुलना करो।",
+    "passportKicker": "मेरा Hilads पासपोर्ट",
+    "statCities_one": "शहर",
+    "statCities_other": "शहर",
+    "statPhotos_one": "फ़ोटो",
+    "statPhotos_other": "फ़ोटो",
+    "statLikes_one": "लाइक",
+    "statLikes_other": "लाइक",
+    "textPassport": "{{city}} में मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।",
+    "textPassportNoCity": "मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।"
   },
   "represent": {
     "empty": "{{city}} ने आज अभी तक नहीं खेला। पहले बनें।",

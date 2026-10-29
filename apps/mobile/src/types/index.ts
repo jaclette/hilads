@@ -892,6 +892,8 @@ export interface DailyLocalPassProgress {
   themes:    DailyThemeKey[];
   earned:    boolean;
   earnedAt?: number | null;
+  /** The first photo that earned each stamp (V3 polish 6; absent from an older server). */
+  stamps?:   Partial<Record<DailyThemeKey, { date: string; proofId: string }>>;
 }
 
 export interface DailyPerson {
@@ -1278,6 +1280,14 @@ export interface DailyUserStats {
   pioneerOf?:         { city: { id: number; name: string | null; country?: string | null }; since: number }[];
   /** "Compared with N countries": the other countries that answered the challenges this user answered. */
   comparedCountries?: number;
+  /** V3 polish 6 (absent from an older server): the passport's stats and identity. */
+  photos?:         number;
+  likesReceived?:  number;
+  citiesPlayed?:   number;
+  homeCity?:       { id: number; name: string | null; country: string | null } | null;
+  memberSince?:    number | null;
+  /** The cities (not mine) compared with my photos, the most shared first (12 at most). */
+  comparedCities?: { id: number; name: string | null; country: string | null }[];
 }
 
 /** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */

@@ -290,6 +290,11 @@ export async function withdrawProposal(id: string): Promise<void> {
 }
 
 /** Daily Challenge profile stats (signed-in viewers only). */
+/** My Daily Challenge photos, newest first (Passport's "My photos"). */
+export async function fetchMyDailyPhotos(): Promise<DailyProof[]> {
+  return (await api.get<{ items: DailyProof[] }>('/me/daily-photos', { params: { locale: locale() } })).items;
+}
+
 export async function fetchUserDaily(userId: string): Promise<DailyUserStats> {
   return api.get<DailyUserStats>(`/users/${userId}/daily`, { params: { locale: locale() } });
 }

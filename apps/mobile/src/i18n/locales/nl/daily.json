@@ -517,7 +517,16 @@
     "textSpot": "{{name}} op Hilads",
     "textSpotCity": "{{name}}, {{city}}, op Hilads",
     "textToday": "De Daily Challenge van vandaag op Hilads: {{challenge}} Doe je mee?",
-    "textProofNoAnswer": "{{challenge}} In {{city}}. En in jouw stad? Speel lokaal. Vergelijk wereldwijd."
+    "textProofNoAnswer": "{{challenge}} In {{city}}. En in jouw stad? Speel lokaal. Vergelijk wereldwijd.",
+    "passportKicker": "Mijn Hilads-paspoort",
+    "statCities_one": "stad",
+    "statCities_other": "steden",
+    "statPhotos_one": "foto",
+    "statPhotos_other": "foto's",
+    "statLikes_one": "like",
+    "statLikes_other": "likes",
+    "textPassport": "Mijn Hilads-paspoort in {{city}}. Zelfde challenge. Andere werelden.",
+    "textPassportNoCity": "Mijn Hilads-paspoort. Zelfde challenge. Andere werelden."
   },
   "represent": {
     "empty": "{{city}} heeft vandaag nog niet gespeeld. Wees de eerste.",
