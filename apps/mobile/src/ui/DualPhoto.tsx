@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { PanResponder, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, Easing, PanResponder, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { Image, type ImageContentFit } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-import Animated, {
-  Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
-} from 'react-native-reanimated';
+import { useReducedMotion } from 'react-native-reanimated';
 import type { ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 
@@ -72,30 +70,30 @@ export function DualPhoto({
   const [corner, setCorner] = useState(0);            // 0 top-left, 1 top-right, 2 bottom-left, 3 bottom-right
   const [selfieBig, setSelfieBig] = useState(false);
   const [tip, setTip] = useState(false);
-  const p = useSharedValue(0);                         // 0: photo big, 1: selfie big
-  const dx = useSharedValue(0);
-  const dy = useSharedValue(0);
 
   const ratio = inset === 'small' ? 0.24 : 0.28;
-  const rectFor = (sw: number, sh: number): Rect => {
-    const w = Math.round(sw * ratio);
-    const h = Math.min(Math.round(w * 4 / 3), Math.max(0, sh - 2 * MARGIN - insetTop));
-    const m = inset === 'small' ? 6 : MARGIN;
-    return {
-      x: corner % 2 === 0 ? m : sw - w - m,
-      y: corner < 2 ? m + insetTop : sh - h - m,
-      w, h, r: inset === 'small' ? 8 : 12,
-    };
+  const m = inset === 'small' ? 6 : MARGIN;
+  // Measured only for the drag's landing corner and the tip: the layers themselves are laid out
+  // with plain styles (full frame / % width + 3:4), never with measured or animated sizes. Animated
+  // width/height on Android (old architecture) could leave a freshly mounted layer at 0×0: an empty
+  // card, a black viewer with a white dot in the corner.
+  const insetRect = useMemo((): Rect => {
+    const w = Math.round(size.w * ratio);
+    const h = Math.round(w * 4 / 3);
+    return { x: corner % 2 === 0 ? m : size.w - w - m, y: corner < 2 ? m + insetTop : size.h - h - m, w, h, r: 0 };
+  }, [size, ratio, corner, m, insetTop]);
+  const insetPos: ViewStyle = {
+    width: `${ratio * 100}%`, aspectRatio: 3 / 4, borderRadius: inset === 'small' ? 8 : 12,
+    ...(corner < 2 ? { top: m + insetTop } : { bottom: m }),
+    ...(corner % 2 === 0 ? { left: m } : { right: m }),
   };
-  const insetRect = useMemo(() => rectFor(size.w, size.h), [size, ratio, corner, inset, insetTop]); // eslint-disable-line react-hooks/exhaustive-deps
-  // The geometry lives in a shared value, not in the animated styles' dependencies: a layer
-  // mounted before a dependency change reached the UI thread stayed 0×0 (an empty card,
-  // a black viewer, now and then). Written on layout, before the layers mount.
-  const geom = useSharedValue<{ big: Rect; inset: Rect }>({ big: { x: 0, y: 0, w: 0, h: 0, r: 0 }, inset: insetRect });
-  useEffect(() => { geom.value = { big: { x: 0, y: 0, w: size.w, h: size.h, r: 0 }, inset: insetRect }; }, [size, insetRect, geom]);
+
+  // The swap: the new inset pops in. The drag: the inset follows the finger. Both JS-driven (one transform).
+  const pop = useRef(new Animated.Value(1)).current;
+  const drag = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
 
   // Back to the photo when the pictures change (a recycled cell, the next story).
-  useEffect(() => { setSelfieBig(false); p.value = 0; setCorner(0); }, [main.uri, selfie?.uri, p]);
+  useEffect(() => { setSelfieBig(false); setCorner(0); drag.setValue({ x: 0, y: 0 }); pop.setValue(1); }, [main.uri, selfie?.uri, drag, pop]);
 
   // The one-time swap tip, on the first interactive dual photo shown.
   useEffect(() => {
@@ -116,7 +114,10 @@ export function DualPhoto({
     const next = !selfieBig;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setSelfieBig(next);
-    p.value = withTiming(next ? 1 : 0, { duration: reduced ? 0 : SWAP_MS, easing: Easing.out(Easing.cubic) });
+    if (!reduced) {
+      pop.setValue(0);
+      Animated.timing(pop, { toValue: 1, duration: SWAP_MS, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+    }
     onSwap?.(next);
   };
   const swapRef = useRef(swap);
@@ -129,41 +130,32 @@ export function DualPhoto({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_, g) => draggable && (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4),
     onPanResponderTerminationRequest: () => false,
-    onPanResponderMove: (_, g) => { if (draggable) { dx.value = g.dx; dy.value = g.dy; } },
+    onPanResponderMove: (_, g) => { if (draggable) drag.setValue({ x: g.dx, y: g.dy }); },
     onPanResponderRelease: (_, g) => {
-      if (Math.abs(g.dx) < 6 && Math.abs(g.dy) < 6) { dx.value = 0; dy.value = 0; swapRef.current(); return; }
+      if (Math.abs(g.dx) < 6 && Math.abs(g.dy) < 6) { drag.setValue({ x: 0, y: 0 }); swapRef.current(); return; }
       if (!draggable) return;
       const { size: s, insetRect: r } = sizeRef.current;
       const cx = r.x + r.w / 2 + g.dx;
       const cy = r.y + r.h / 2 + g.dy;
       const next = (cy > s.h / 2 ? 2 : 0) + (cx > s.w / 2 ? 1 : 0);
       // Land where the finger left it, then glide into the new corner.
-      const m = inset === 'small' ? 6 : MARGIN;
       const nx = next % 2 === 0 ? m : s.w - r.w - m;
       const ny = next < 2 ? m + insetTop : s.h - r.h - m;
-      dx.value = r.x + g.dx - nx;
-      dy.value = r.y + g.dy - ny;
+      drag.setValue({ x: r.x + g.dx - nx, y: r.y + g.dy - ny });
       setCorner(next);
-      dx.value = withTiming(0, { duration: reduced ? 0 : 200 });
-      dy.value = withTiming(0, { duration: reduced ? 0 : 200 });
+      Animated.timing(drag, { toValue: { x: 0, y: 0 }, duration: reduced ? 0 : 200, useNativeDriver: false }).start();
       Haptics.selectionAsync().catch(() => {});
     },
-    onPanResponderTerminate: () => { dx.value = withTiming(0); dy.value = withTiming(0); },
-  }), [draggable, dx, dy, inset, insetTop]);
+    onPanResponderTerminate: () => { Animated.timing(drag, { toValue: { x: 0, y: 0 }, duration: 150, useNativeDriver: false }).start(); },
+  }), [draggable, drag, m, insetTop, reduced]);
 
   const onLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
-    if (width === size.w && height === size.h) return;
-    geom.value = { big: { x: 0, y: 0, w: width, h: height, r: 0 }, inset: rectFor(width, height) };
-    setSize({ w: width, h: height });
+    if (width !== size.w || height !== size.h) setSize({ w: width, h: height });
   };
 
   const border = theme === 'dark' ? colors.bg2 : colors.white;
-  const ready = size.w > 0 && !!selfie;
-  // The photo shrinks into the inset when the selfie grows; whichever is the inset sits on top.
-  const mainStyle = useLayer(p, geom, false, dx, dy);
-  const selfieStyle = useLayer(p, geom, true, dx, dy);
-  const mainOnTop = selfieBig;
+  const ready = !!selfie;
 
   const layer = (which: 'main' | 'selfie') => {
     const src = which === 'main' ? main : selfie!;
@@ -172,8 +164,10 @@ export function DualPhoto({
     return (
       <Animated.View
         key={which}
-        style={[styles.layer, which === 'main' ? mainStyle : selfieStyle, isInset && [styles.insetFrame, { borderColor: border }],
-                { zIndex: (which === 'main') === mainOnTop ? 2 : 1 }]}
+        style={[styles.layer, big ? StyleSheet.absoluteFill : [insetPos, styles.insetFrame, { borderColor: border }],
+                { zIndex: isInset ? 2 : 1 },
+                isInset && { opacity: pop, transform: [{ translateX: drag.x }, { translateY: drag.y },
+                                                      { scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) }] }]}
         pointerEvents={big || !interactive ? 'none' : 'auto'}
         accessible={isInset && interactive}
         accessibilityRole={isInset && interactive ? 'button' : undefined}
@@ -199,7 +193,7 @@ export function DualPhoto({
           {layer('selfie')}
         </>
       ) : null}
-      {tip && ready && (
+      {tip && ready && size.w > 0 && (
         <View pointerEvents="none" style={[styles.tip, { top: insetRect.y + 6, ...(corner % 2 === 0 ? { left: insetRect.x + insetRect.w + 8 } : { right: size.w - insetRect.x + 8 }) }]}>
           <Text style={styles.tipText}>{t('dual.swapHint')}</Text>
         </View>
@@ -207,23 +201,6 @@ export function DualPhoto({
       {children}
     </View>
   );
-}
-
-/** A layer between the big frame and the inset: p = 0 photo big, 1 selfie big. */
-function useLayer(p: SharedValue<number>, geom: SharedValue<{ big: Rect; inset: Rect }>, isSelfie: boolean, dx: SharedValue<number>, dy: SharedValue<number>) {
-  return useAnimatedStyle(() => {
-    const { big, inset } = geom.value;
-    // How much of the way this layer is to being the inset.
-    const k = isSelfie ? 1 - p.value : p.value;
-    const lerp = (a: number, b: number) => a + (b - a) * k;
-    return {
-      left: lerp(big.x, inset.x) + dx.value * k,
-      top: lerp(big.y, inset.y) + dy.value * k,
-      width: lerp(big.w, inset.w),
-      height: lerp(big.h, inset.h),
-      borderRadius: lerp(big.r, inset.r),
-    };
-  });
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
