@@ -802,5 +802,18 @@
       "thanks": "Thanks - we'll check it.",
       "already": "You already reported this comment."
     }
+  },
+  "dual": {
+    "toggle": "Dual",
+    "on": "Dual photo on",
+    "off": "Dual photo off",
+    "nowYou": "Now you! 😄",
+    "frontFailed": "Couldn't open the front camera. Your photo goes alone.",
+    "swapHint": "Tap the small photo to swap 👆",
+    "retakeSelfie": "Retake selfie",
+    "removeSelfie": "Remove selfie",
+    "retakeAll": "Retake all",
+    "addFace": "Add your face 🤳",
+    "swapA11y": "Swap the photos"
   }
 }

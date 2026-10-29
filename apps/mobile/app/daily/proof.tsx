@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Alert, Platform, ScrollView,
+  ActivityIndicator, Alert, ScrollView,
   Text, TextInput, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { usePreventRemove } from '@react-navigation/core';
@@ -23,7 +22,7 @@ import * as Haptics from 'expo-haptics';
 import { Confetti } from '@/ui/joy';
 import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
+import { DualCamera, type DualShot } from '@/features/daily/DualCamera';
 import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/PlaceStep';
 import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
@@ -33,7 +32,7 @@ import { SharePanel } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, TextField } from '@/ui';
+import { Button, CityFlag, DualPhoto, TextField } from '@/ui';
 import { AnswerInput } from '@/features/compare/AnswerInput';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
@@ -107,7 +106,9 @@ function DailyProofScreenContent() {
   const [caption, setCaption]   = useState('');
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
-  const [androidCamera, setAndroidCamera] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  // Dual photo: the selfie taken right after the photo (null: the photo alone).
+  const [selfie, setSelfie]     = useState<Photo | null>(null);
   const [sending, setSending]   = useState(false);
   const [tooFar, setTooFar]     = useState<TooFar | null>(null);
   const [answer, setAnswer]     = useState<AnswerDraft>(emptyDraft());
@@ -186,6 +187,7 @@ function DailyProofScreenContent() {
         if (p) {
           setOriginal(p);
           setPhoto({ uri: p.photoUrl, mime: null, remoteUrl: p.photoUrl });
+          setSelfie(p.selfieUrl ? { uri: p.selfieUrl, mime: null, remoteUrl: p.selfieUrl } : null);
           setCaption(p.caption ?? '');
           if (p.price) { setAmount(String(p.price.amount)); setCurrency(p.price.currency); }
           setAnswer(draftFrom(p.answer));
@@ -218,14 +220,13 @@ function DailyProofScreenContent() {
     track('daily_proof_started', dailyTrackProps(today, account?.mode));
   }, [edit, today, account?.mode]);
 
-  // ── Photo: camera only (SPEC 9.4) ────────────────────────────────────────
-  const takePhoto = async () => {
-    // Android: in-app camera (launchCameraAsync hangs on Android 14 + singleTask).
-    if (Platform.OS === 'android') { setAndroidCamera(true); return; }
-    const cam = await ImagePicker.requestCameraPermissionsAsync();
-    if (cam.status !== 'granted') { Alert.alert(t('proof.permCameraTitle'), t('proof.permCameraBody')); return; }
-    const pick = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, cameraType: ImagePicker.CameraType.back });
-    if (!pick.canceled && pick.assets?.[0]) gotPhoto({ uri: pick.assets[0].uri, mime: pick.assets[0].mimeType ?? null, remoteUrl: null });
+  // ── Photo: camera only (SPEC 9.4), the photo then the selfie (dual photo) ──
+  // Our own camera on both platforms: the system camera can't chain a live selfie.
+  const takePhoto = () => setCameraOpen(true);
+  const gotShot = (shot: DualShot) => {
+    setCameraOpen(false);
+    setSelfie(shot.selfie ? { uri: shot.selfie, mime: 'image/jpeg', remoteUrl: null } : null);
+    gotPhoto({ uri: shot.main, mime: 'image/jpeg', remoteUrl: null });
   };
   /** After the photo and the place: the question when there is one, else the caption and price. */
   const afterPlace: Step = compare ? 'answer' : 'details';
@@ -330,6 +331,10 @@ function DailyProofScreenContent() {
       if (!original || photoUrl !== original.photoUrl) input.photoUrl = photoUrl;
       // The upload is done: keep it if a retry is needed.
       if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
+      // The selfie, in the same post (atomic): sent when new, changed or removed.
+      const selfieUrl = selfie ? selfie.remoteUrl ?? (await uploadFile(selfie.uri, selfie.mime)).url : null;
+      if (selfie && !selfie.remoteUrl && selfieUrl) setSelfie({ ...selfie, remoteUrl: selfieUrl });
+      if (original ? (original.selfieUrl ?? null) !== selfieUrl : selfieUrl !== null) input.selfieUrl = selfieUrl;
 
       let cityFirst = false;
       let saved: DailyProof;
@@ -481,7 +486,7 @@ function DailyProofScreenContent() {
           {photo ? (
             // My photo with today's question over it, and my answer appearing on it as I type.
             <View style={styles.qCard}>
-              <Image source={{ uri: photo.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+              <DualPhoto main={{ uri: photo.uri }} selfie={selfie ? { uri: selfie.uri } : null} style={StyleSheet.absoluteFill} />
               <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.85)']} locations={[0, 0.45, 1]} style={styles.qShade} />
               <View style={styles.qText}>
                 <Text style={styles.qKicker}>{t('compare.kicker')}</Text>
@@ -586,7 +591,7 @@ function DailyProofScreenContent() {
           )}>
           {photo && (
             <View style={styles.photoWrap}>
-              <Image source={{ uri: photo.uri }} style={styles.photo} contentFit="cover" />
+              <DualPhoto main={{ uri: photo.uri }} selfie={selfie ? { uri: selfie.uri } : null} style={styles.photo} />
               <TouchableOpacity style={styles.retake} onPress={takePhoto} accessibilityRole="button">
                 <Ionicons name="camera-outline" size={18} color={colors.text} />
                 <Text style={styles.retakeText}>{t('proof.retake')}</Text>
@@ -664,11 +669,7 @@ function DailyProofScreenContent() {
 
       <HomeCityPicker visible={homePicker} selected={home} onPick={pickHome} onClose={() => setHomePicker(false)} />
 
-      <AndroidCameraCapture
-        visible={androidCamera}
-        onCapture={uri => { setAndroidCamera(false); gotPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); }}
-        onClose={() => setAndroidCamera(false)}
-      />
+      <DualCamera visible={cameraOpen} onCapture={gotShot} onClose={() => setCameraOpen(false)} />
     </SafeAreaView>
   );
 }

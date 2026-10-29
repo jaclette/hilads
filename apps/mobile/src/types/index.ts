@@ -935,6 +935,8 @@ export interface DailyProof {
   creditUrl?:       string | null;
   photoUrl:         string;
   thumbUrl:         string | null;
+  selfieUrl?:       string | null;    // dual photo: the selfie shown as an inset (absent: an older API)
+  selfieThumbUrl?:  string | null;
   caption:          string | null;
   price:            DailyPrice | null;
   /** The proof's currency, with or without a price (its city's by default). */
@@ -1360,6 +1362,7 @@ export interface DailyArchive {
 }
 
 export interface DailyProofInput {
+  selfieUrl?: string | null;   // dual photo: null removes it
   photoUrl?: string;
   caption?:  string | null;
   price?:    { amount: number; currency: string } | null;
