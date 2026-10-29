@@ -186,7 +186,7 @@ final class SeasonalEvents
                     : null,
                 'preview'      => $preview,
                 'features'     => self::features($e),
-                'stickers'     => array_values((array) ($e['stickers'] ?? [])),
+                'stickers'     => self::cleanStickers($e['stickers'] ?? []),
             ];
             if ($preview) {
                 return $out;

@@ -29,3 +29,40 @@ Halloween 2026 = the Oct 31 **Special** challenge ("Every city, one spooky photo
 - **No new native module**: view-shot, svg and reanimated cover stickers, frames and bats; gestures with PanResponder (two-finger pinch / rotate computed from the touches).
 - **Server failure** → `event` null → the app's normal look (existing behavior); `enabled: false` hides an event at the next refresh.
 - Web: the skin already mirrors the app; the web gets the map chip, chat chips and stamp look where it shows them (no capture, no stickers).
+
+## Config (Admin › Daily › Seasonal events)
+
+One row per event, stored as JSON in `app_settings.seasonal_events`:
+
+```json
+{"id": "halloween-2026", "name": "Halloween", "theme": "halloween",
+ "teaserStart": "2026-10-28", "start": "2026-10-31", "end": "2026-10-31",
+ "enabled": true,
+ "features": {"skin": true, "stickers": true, "stamp": true, "shareFrame": true, "mapPins": true, "chatChips": true, "ambient": true},
+ "stickers": [{"id": "cat", "url": "https://…/cat.png"}],
+ "previewUsers": ["jacques"], "previewPhase": "live"}
+```
+
+- `enabled: false` hides the event for everyone, previews included. A missing `enabled` or a missing feature means on, so events saved before event mode keep working.
+- The remote sticker pack is entered one `id https://…png` per line, 40 at most. Bad lines are dropped on save and again on read. Without a pack, the app uses its bundled SVG pack.
+- Apps see a change at their next `/daily/today` or `/app/config` fetch (opening the app or coming back to it). Settings are cached for 60 s on the server.
+- Dev: the app's debug panel has teaser / live / recap / off previews; on web, `?event=halloween&phase=live` works in `npm run dev`; on the backend, `DAILY_FAKE_NOW` moves the Daily clock.
+
+## QA (local, 2026-10-29)
+
+| Check | Result |
+| --- | --- |
+| Live event, no switches saved (legacy) | `/daily/today` and `/app/config` send it with all 7 features on |
+| `enabled: false` | `event: null` on both; with `previewUsers` too |
+| `stickers` + `mapPins` off | false in `features`, the rest on |
+| Teaser (start in 2 days) / recap (ended yesterday) | `teaser` + `startsInDays: 2` / `recap` |
+| Preview user before the start | `live` + `preview: true` for that user only |
+| Broken JSON in the setting | `event: null` (normal app look) |
+| Hand-edited sticker pack (raw text, `ftp://` URL) | apps get only clean `{id, url}` rows (fixed in this phase: read-side cleaning) |
+| `/map?theme=special` and `/map/cities?theme=special` | 200; unknown themes still 400 |
+| Halloween morning push | en / fr / de copy checked; catalog test covers all 19 locales |
+| Simulator (iPhone 17 Pro, local API) | live: hero ghosts, cobwebs, bats, "Snap something spooky"; map "🎃 Halloween" chip; Sydney chat "👻 Boo!", "🎃 Happy Halloween Sydney!", "Who's going out for Halloween tonight?"; kill switch + relaunch: normal look |
+| API down | the app keeps the event from its last good fetch until the next one answers. A failure on the server side sends `event: null` |
+| phpunit / mobile tsc / web eslint + build | 265 OK / 22 (baseline) / clean |
+
+Not run here (needs a device): the sticker step with a real camera photo, the bake at upload size, the stamp thunk haptic, and the share card export. These are in the device checklist.

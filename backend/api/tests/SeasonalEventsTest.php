@@ -93,5 +93,10 @@ final class SeasonalEventsTest extends TestCase
         $this->assertTrue($some['features']['ambient'], 'not posted: on');
         $this->assertSame([['id' => 'pumpkin', 'url' => 'https://media.test/p.png'], ['id' => 'ghost', 'url' => 'https://media.test/g.png']], $some['stickers']);
         $this->assertTrue(SeasonalEvents::features(['id' => 'old'])['shareFrame'], 'an event saved before event mode: all on');
+
+        // A setting edited by hand (the pack as raw text, a bad URL): the apps still get clean {id, url} rows.
+        $raw = ['id' => 'hw', 'theme' => 'halloween', 'start' => '2026-10-31', 'end' => '2026-10-31',
+                'stickers' => "cat https://media.test/c.png\nbad ftp://x"];
+        $this->assertSame([['id' => 'cat', 'url' => 'https://media.test/c.png']], SeasonalEvents::forViewer('2026-10-31', null, [$raw])['stickers']);
     }
 }
