@@ -148,5 +148,18 @@
   "campaignWorld": "월드",
   "campaignCta": "포인트 2배 · 챌린지 도전",
   "imageRetry": "탭해서 다시 시도",
-  "imageUnavailable": "이미지를 볼 수 없어"
+  "imageUnavailable": "이미지를 볼 수 없어",
+  "quick": {
+    "hi": "👋 안녕 {{city}}!",
+    "tonight": "오늘 밤 누가 나와?",
+    "theme": {
+      "hidden_gem": "근처에 숨은 명소 있어?",
+      "taste": "근처 최고의 길거리 음식은?",
+      "get_around": "여기서 이동하기 제일 좋은 방법은?",
+      "local_find": "근처 최고의 시장은?",
+      "night_out": "오늘 밤 어디가 핫해?",
+      "sip": "한잔하기 좋은 곳은?",
+      "only_here": "여기서만 볼 수 있는 건?"
+    }
+  }
 }

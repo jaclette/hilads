@@ -74,9 +74,11 @@ interface Props {
   /** "+" menu extras (city Chat, V3-09): create a Hi plan / start a Hi now. */
   onCreatePlan?:    () => void;
   onHiNow?:         () => void;
+  /** A quick-start chip's text: fills the composer (a new `key` each tap) and focuses it. */
+  prefill?:         { text: string; key: number } | null;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false, onCreatePlan, onHiNow }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false, onCreatePlan, onHiNow, prefill }: Props) {
   const styles      = useThemedStyles(makeStyles);
   const replyStyles = useThemedStyles(makeReplyStyles);
   const editStyles  = useThemedStyles(makeEditStyles);
@@ -112,6 +114,13 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
   function vibePressOut() {
     Animated.timing(vibScale, { toValue: 1, duration: 200, useNativeDriver: true }).start();
   }
+
+  useEffect(() => {
+    if (!prefill) return;
+    setText(prefill.text);
+    textRef.current = prefill.text;
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }, [prefill?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Seed composer text when entering edit mode. We key on editing?.id so
   // switching from edit-msg-A to edit-msg-B (rare, but possible if the user

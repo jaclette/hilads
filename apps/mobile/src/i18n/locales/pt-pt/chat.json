@@ -148,5 +148,18 @@
   "campaignWorld": "Mundo",
   "campaignCta": "Pontos a dobrar · Aceita o desafio",
   "imageRetry": "Toca para tentar de novo",
-  "imageUnavailable": "Imagem indisponível"
+  "imageUnavailable": "Imagem indisponível",
+  "quick": {
+    "hi": "👋 Olá {{city}}!",
+    "tonight": "Quem sai esta noite?",
+    "theme": {
+      "hidden_gem": "Algum tesouro escondido aqui perto?",
+      "taste": "A melhor comida de rua aqui perto?",
+      "get_around": "A melhor forma de andar por aqui?",
+      "local_find": "O melhor mercado aqui perto?",
+      "night_out": "Onde é a festa esta noite?",
+      "sip": "O melhor sítio para beber um copo?",
+      "only_here": "O que só se encontra aqui?"
+    }
+  }
 }

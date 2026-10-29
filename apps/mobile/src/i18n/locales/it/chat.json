@@ -148,5 +148,18 @@
   "campaignWorld": "Mondo",
   "campaignCta": "Punti doppi · Accetta la sfida",
   "imageRetry": "Tocca per riprovare",
-  "imageUnavailable": "Immagine non disponibile"
+  "imageUnavailable": "Immagine non disponibile",
+  "quick": {
+    "hi": "👋 Ciao {{city}}!",
+    "tonight": "Chi esce stasera?",
+    "theme": {
+      "hidden_gem": "Qualche gemma nascosta qui vicino?",
+      "taste": "Il miglior street food qui vicino?",
+      "get_around": "Il modo migliore per spostarsi qui?",
+      "local_find": "Il miglior mercato qui vicino?",
+      "night_out": "Dove si fa festa stasera?",
+      "sip": "Il posto migliore per bere qualcosa?",
+      "only_here": "Cosa si trova solo qui?"
+    }
+  }
 }

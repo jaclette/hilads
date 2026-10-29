@@ -45,10 +45,36 @@ final class PeopleCounts
                          array_slice($out, 0, self::TONIGHT_MAX));
     }
 
+    /**
+     * Tonight's plans with up to 3 avatars of the people going (photos only),
+     * shown only where the count itself shows (going >= MIN): [... + avatars].
+     */
+    private static function withAvatars(PDO $pdo, array $plans): array
+    {
+        $ids = array_values(array_unique(array_column(array_filter($plans, static fn(array $p): bool => $p['going'] !== null), 'id')));
+        $by  = [];
+        if ($ids !== []) {
+            $stmt = $pdo->prepare("
+                SELECT p.channel_id, coalesce(u.profile_thumb_photo_url, u.profile_photo_url) AS photo
+                FROM event_participants p JOIN users u ON u.id = p.user_id
+                WHERE p.channel_id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")
+                  AND u.deleted_at IS NULL AND coalesce(u.profile_thumb_photo_url, u.profile_photo_url) IS NOT NULL
+                ORDER BY p.joined_at
+            ");
+            $stmt->execute($ids);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                if (count($by[$r['channel_id']] ?? []) < 3) {
+                    $by[$r['channel_id']][] = $r['photo'];
+                }
+            }
+        }
+        return array_map(static fn(array $p): array => $p + ['avatars' => $p['going'] !== null ? ($by[$p['id']] ?? []) : []], $plans);
+    }
+
     /** {nearby, hiNow, arrivalsWeek, tonight} for a city channel number. Cached CACHE_TTL seconds. */
     public static function forCity(int $cityChannel): array
     {
-        return Cache::remember('people_v1_' . $cityChannel, self::CACHE_TTL, static function () use ($cityChannel): array {
+        return Cache::remember('people_v2_' . $cityChannel, self::CACHE_TTL, static function () use ($cityChannel): array {
             $pdo    = Database::pdo();
             $cityId = 'city_' . $cityChannel;
 
@@ -83,7 +109,7 @@ final class PeopleCounts
                 'nearby'       => self::gate(PresenceRepository::getCount($cityChannel)),
                 'hiNow'        => self::gate((int) $hiNow->fetchColumn()),
                 'arrivalsWeek' => self::gate((int) $arrivals->fetchColumn()),
-                'tonight'      => self::tonight($events, time(), $endOfDay),
+                'tonight'      => self::withAvatars($pdo, self::tonight($events, time(), $endOfDay)),
                 'min'          => self::MIN,
             ];
         }) ?? [];

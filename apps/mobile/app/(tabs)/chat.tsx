@@ -14,7 +14,7 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, Keyboard, Platform,
-  TouchableOpacity, Animated, Alert,
+  TouchableOpacity, Animated, Alert, ScrollView,
 } from 'react-native';
 import { thumbUrl } from '@/lib/imageThumb';
 import { formatSmartTime } from '@/lib/messageTime';
@@ -298,6 +298,10 @@ export default function ChatTab() {
   // challenges hero + secondary pills) so the conversation gets full height -
   // only the feed and the composer remain. iOS gets the smoother will* events.
   const [keyboardUp, setKeyboardUp] = useState(false);
+  // The feed scrolled into history: the pinned challenge shrinks to a slim pill.
+  const [pinCompact, setPinCompact] = useState(false);
+  // A quick-start chip tapped: its text fills the composer.
+  const [prefill, setPrefill] = useState<{ text: string; key: number } | null>(null);
   useEffect(() => {
     const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
@@ -637,6 +641,13 @@ export default function ChatTab() {
   // Sorted newest-first for the inverted FlatList:
   //   index 0 = bottom of screen (newest message, near input)
   //   high index = top of screen (oldest, user scrolls up)
+  // Nobody wrote in the city today (a plain text message, type absent = text): the quick-start chips show.
+  const quietToday = useMemo(() => {
+    const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+    const at = (v: number | string) => (typeof v === 'number' ? v * 1000 : Date.parse(v));
+    return !messages.some(m => (!m.type || m.type === 'text') && !!m.createdAt && at(m.createdAt) >= dayStart.getTime());
+  }, [messages]);
+
   const allMessages = useMemo<Message[]>(() => {
     const chat = messages.filter(m =>
       // 'new_user' = World "X from City just joined" arrivals; the arrivals pill
@@ -870,7 +881,7 @@ export default function ChatTab() {
               await shareLink({ title, message, url });
             }} />
             {/* Private messages, with the unread dot; a guest is asked to sign up. */}
-            <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={!!account && unreadDMs > 0} testID="hi-messages"
+            <IconButton icon="chatbubbles-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={!!account && unreadDMs > 0} testID="hi-messages"
                         onPress={() => {
                           if (!account) { router.push('/auth-gate?reason=send_dm&returnTo=%2Fmessages' as never); return; }
                           setUnreadDMs(0); clearEventChatCounts(); router.push('/messages');
@@ -919,9 +930,8 @@ export default function ChatTab() {
         style={styles.flex}
         behavior="padding"
       >
-        {/* Today's Daily Challenge pinned on top of World (in a city channel
-            the Daily hero card above is the pin). */}
-        {!keyboardUp && <DailyPinBar data={daily.data} source="chat_pin" />}
+        {/* Today's Daily Challenge pinned on top of the city and World: slim once scrolled, a "You played" pill once played. */}
+        {!keyboardUp && <DailyPinBar data={daily.data} source="chat_pin" compact={pinCompact} />}
         {channelScope === 'city' && quietCardOpen && (
           <TouchableOpacity
             style={styles.quietCard}
@@ -961,6 +971,8 @@ export default function ChatTab() {
             initialNumToRender={12}
             removeClippedSubviews
             contentContainerStyle={styles.listContent}
+            onScroll={e => { const up = e.nativeEvent.contentOffset.y > 60; setPinCompact(v => (v === up ? v : up)); }}
+            scrollEventThrottle={100}
             keyboardShouldPersistTaps="handled"
             onEndReached={hasMore ? loadOlder : undefined}
             onEndReachedThreshold={0.2}
@@ -1015,8 +1027,15 @@ export default function ChatTab() {
           </View>
         )}
 
+        {/* A quiet city chat today: three ways to start, prefilled in the composer. */}
+        {channelScope === 'city' && !keyboardUp && !loading && quietToday && (
+          <QuickStart city={city?.name ? shortCityName(city.name) : null} themeKey={daily.data?.challenge?.theme?.key ?? null}
+                      onPick={text => setPrefill({ text, key: Date.now() })} />
+        )}
+
         {/* ── Input - web: .input-bar ── */}
         <ChatInput
+          prefill={prefill}
           sending={sending}
           mentionContext={channelScope === 'world' ? 'world' : 'city'}
           mentionChannelId={channelScope === 'world' ? 'world' : channelId}
@@ -1100,13 +1119,41 @@ export default function ChatTab() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const TOP_FADE = [1, 0.8, 0.6, 0.4, 0.25, 0.1];
+const TOP_FADE = [0.9, 0.55, 0.25, 0.08];
+
+/**
+ * A quiet city chat (V3 polish 5): three quick-start chips above the
+ * composer, "👋 Hi Saigon!", "Who's around tonight?" and one on today's theme;
+ * a tap fills the composer (never sends).
+ */
+function QuickStart({ city, themeKey, onPick }: { city: string | null; themeKey: string | null; onPick: (text: string) => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('chat');
+  const chips = [
+    city ? t('quick.hi', { city }) : null,
+    t('quick.tonight'),
+    themeKey ? t(`quick.theme.${themeKey}`, { defaultValue: '' }) : null,
+  ].filter((x): x is string => !!x);
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickRow} contentContainerStyle={styles.quick} keyboardShouldPersistTaps="handled">
+      {chips.map(c => (
+        <TouchableOpacity key={c} style={styles.quickChip} onPress={() => onPick(c)} accessibilityRole="button" testID="chat-quick">
+          <Text style={styles.quickText} numberOfLines={1}>{c}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+}
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:      { flex: 1, backgroundColor: c.bg },
   flex:           { flex: 1 },
   topFade:        { position: 'absolute', top: 0, left: 0, right: 0 },
   topFadeStrip:   { height: 3, backgroundColor: c.bg },
+  quickRow:       { flexGrow: 0, flexShrink: 0 },
+  quick:          { gap: 8, paddingHorizontal: 12, paddingBottom: 8, alignItems: 'center' },
+  quickChip:      { minHeight: 36, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  quickText:      { fontSize: 14, fontWeight: '700', color: c.text },
   header:         { gap: 10, paddingBottom: 8, backgroundColor: c.bg },
   headerButtons:  { flexDirection: 'row', gap: 8 },
   inset:          { paddingHorizontal: Spacing.md },

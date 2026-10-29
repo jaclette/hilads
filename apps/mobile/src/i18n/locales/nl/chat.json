@@ -148,5 +148,18 @@
   "campaignWorld": "Wereld",
   "campaignCta": "Dubbele punten · Doe de challenge",
   "imageRetry": "Tik om opnieuw te proberen",
-  "imageUnavailable": "Afbeelding niet beschikbaar"
+  "imageUnavailable": "Afbeelding niet beschikbaar",
+  "quick": {
+    "hi": "👋 Hoi {{city}}!",
+    "tonight": "Wie gaat er vanavond uit?",
+    "theme": {
+      "hidden_gem": "Een verborgen pareltje in de buurt?",
+      "taste": "Het beste streetfood in de buurt?",
+      "get_around": "Hoe kom je hier het best rond?",
+      "local_find": "De beste markt in de buurt?",
+      "night_out": "Waar is het feest vanavond?",
+      "sip": "De beste plek voor een drankje?",
+      "only_here": "Wat vind je alleen hier?"
+    }
+  }
 }

@@ -5,7 +5,8 @@ export interface PeopleCounts {
   nearby:       number | null;
   hiNow:        number | null;
   arrivalsWeek: number | null;
-  tonight:      { id: string; title: string; startsAt: number; going: number | null }[];
+  /** avatars: up to 3 photos of the people going (absent from an older server). */
+  tonight:      { id: string; title: string; startsAt: number; going: number | null; avatars?: string[] }[];
   min:          number;
 }
 

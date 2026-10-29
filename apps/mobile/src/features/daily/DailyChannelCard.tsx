@@ -17,7 +17,9 @@ import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
-import { CityFlag, CityName, Photo } from '@/ui';
+import { BrandMark, CityFlag, CityName, Photo } from '@/ui';
+import { themeColor } from '@/ui/joy';
+import { getLastToday } from '@/hooks/useDaily';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { ThemeIcon } from '@/ui/ThemeIcon';
@@ -90,9 +92,19 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
       track('daily_challenge_viewed', { source: 'channel_card', challenge_date: p.date ?? null, city: city?.name ?? null });
       router.push(`/daily/${p.date}` as never);
     };
+    // Today's drop wears today's theme color (an older card keeps the ticket line).
+    const today = getLastToday()?.challenge;
+    const accent = today && today.date === p.date
+      ? themeColor(today.special ? 'special' : today.theme?.key) : null;
     return (
       <View style={styles.wrap}>
-        <TouchableOpacity style={[styles.card, styles.challengeCard]} onPress={open} onLongPress={longPress} activeOpacity={0.85} accessibilityRole="button">
+        {/* The daily drop comes from Hilads: its "Hi" avatar and name, like a friendly bot. */}
+        <View style={styles.from}>
+          <BrandMark size="sm" />
+          <Text style={styles.fromName}>Hilads</Text>
+        </View>
+        <TouchableOpacity style={[styles.card, styles.challengeCard, accent && { borderColor: accent.line ?? accent.fill, borderLeftWidth: 5 }]}
+                          onPress={open} onLongPress={longPress} activeOpacity={0.85} accessibilityRole="button">
           <View style={styles.kickerRow}>
             <Ionicons name="flame-outline" size={16} color={colors.primaryText} />
             <Text style={styles.kicker}>{t('kicker')}</Text>
@@ -315,6 +327,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:          { flex: 1 },
   card:          { backgroundColor: c.bg2, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 8 },
   challengeCard: { borderColor: c.ticketLine },
+  from:          { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, marginLeft: 2 },
+  fromName:      { fontSize: 12, fontWeight: '800', color: c.text },
   kickerRow:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
   kicker:        { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   challengeText: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },

@@ -148,5 +148,18 @@
   "campaignWorld": "Mundo",
   "campaignCta": "Dobleng puntos · Tanggapin ang hamon",
   "imageRetry": "I-tap para subukan ulit",
-  "imageUnavailable": "Hindi available ang larawan"
+  "imageUnavailable": "Hindi available ang larawan",
+  "quick": {
+    "hi": "👋 Hi {{city}}!",
+    "tonight": "Sino'ng lalabas mamayang gabi?",
+    "theme": {
+      "hidden_gem": "May hidden gem ba malapit dito?",
+      "taste": "Pinakamasarap na street food dito?",
+      "get_around": "Pinakamadaling paraan ng paglibot dito?",
+      "local_find": "Pinakamagandang palengke dito?",
+      "night_out": "Saan ang party mamayang gabi?",
+      "sip": "Saan magandang uminom?",
+      "only_here": "Ano ang dito lang makikita?"
+    }
+  }
 }

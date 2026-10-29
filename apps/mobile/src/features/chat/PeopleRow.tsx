@@ -1,6 +1,7 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
@@ -44,6 +45,12 @@ export function PeopleRow({ cityId, onArrivals }: { cityId: string; onArrivals: 
     const time = new Date(p.startsAt * 1000).toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
     chips.push(
       <TouchableOpacity key={p.id} style={styles.chip} onPress={() => router.push(`/event/${p.id}` as never)} accessibilityRole="button">
+        {/* Who's going: up to 3 small faces before the title. */}
+        {!!p.avatars?.length && (
+          <View style={styles.faces} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            {p.avatars.map((uri, i) => <Image key={uri} source={{ uri }} style={[styles.face, i > 0 && styles.faceOverlap]} contentFit="cover" />)}
+          </View>
+        )}
         <Text style={styles.bold} numberOfLines={1}>{p.title}, {time}</Text>
         {p.going !== null && <Text style={styles.muted}>{t('people.going', { count: p.going })}</Text>}
       </TouchableOpacity>,
@@ -82,4 +89,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   muted:      { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   dot:        { width: 8, height: 8, borderRadius: 4, backgroundColor: c.green },
+  faces:      { flexDirection: 'row' },
+  face:       { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: c.bg2, backgroundColor: c.bg3 },
+  faceOverlap: { marginLeft: -8 },
 });
