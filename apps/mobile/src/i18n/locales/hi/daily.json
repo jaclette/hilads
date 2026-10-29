@@ -240,7 +240,7 @@
     "titleWorld": "दुनिया भर में पिन की गई जगहें",
     "seeProof": "फ़ोटो देखें",
     "openChallenge": "challenge खोलें",
-    "search": "कोई डिश, कैफ़े या गली खोजें",
+    "search": "कोई डिश, कैफ़े खोजो…",
     "searchA11y": "स्पॉट खोजें",
     "clearSearch": "खोज साफ़ करें",
     "noResults": "कोई स्पॉट नहीं मिला",
@@ -266,7 +266,12 @@
     "proofs_one": "{{count}} फ़ोटो",
     "proofs_other": "{{count}} फ़ोटो",
     "cityBubbleA11y_one": "{{city}}, {{count}} स्पॉट",
-    "cityBubbleA11y_other": "{{city}}, {{count}} स्पॉट"
+    "cityBubbleA11y_other": "{{city}}, {{count}} स्पॉट",
+    "todayChip": "आज",
+    "playHere": "आज यहाँ खेलो",
+    "planNow": "अभी",
+    "planGoing_one": "{{count}} जा रहा है",
+    "planGoing_other": "{{count}} जा रहे हैं"
   },
   "leaderboard": {
     "tab": "Top 10",

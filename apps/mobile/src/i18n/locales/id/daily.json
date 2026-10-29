@@ -240,7 +240,7 @@
     "titleWorld": "Tempat yang disematkan di seluruh dunia",
     "seeProof": "Lihat foto",
     "openChallenge": "Buka challenge",
-    "search": "Cari makanan, kafe, jalan",
+    "search": "Cari makanan, kafe…",
     "searchA11y": "Cari spot",
     "clearSearch": "Hapus pencarian",
     "noResults": "Tidak ada spot yang cocok",
@@ -266,7 +266,11 @@
     "proofs_one": "{{count}} foto",
     "proofs_other": "{{count}} foto",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "todayChip": "Hari ini",
+    "playHere": "Main di sini hari ini",
+    "planNow": "sekarang",
+    "planGoing_other": "{{count}} ikut"
   },
   "leaderboard": {
     "tab": "Top 10",

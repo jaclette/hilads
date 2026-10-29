@@ -239,7 +239,7 @@
     "titleWorld": "สถานที่ที่ปักหมุดทั่วโลก",
     "seeProof": "ดูรูป",
     "openChallenge": "เปิด challenge",
-    "search": "ค้นหาอาหาร คาเฟ่ ถนน",
+    "search": "ค้นหาอาหาร คาเฟ่…",
     "searchA11y": "ค้นหาสปอต",
     "clearSearch": "ล้างการค้นหา",
     "noResults": "ไม่พบสปอตที่ตรงกัน",
@@ -265,7 +265,11 @@
     "proofs_one": "{{count}} รูป",
     "proofs_other": "{{count}} รูป",
     "cityBubbleA11y_one": "{{city}} · {{count}} สปอต",
-    "cityBubbleA11y_other": "{{city}} · {{count}} สปอต"
+    "cityBubbleA11y_other": "{{city}} · {{count}} สปอต",
+    "todayChip": "วันนี้",
+    "playHere": "เล่นที่นี่วันนี้",
+    "planNow": "ตอนนี้",
+    "planGoing_other": "ไป {{count}} คน"
   },
   "leaderboard": {
     "tab": "Top 10",

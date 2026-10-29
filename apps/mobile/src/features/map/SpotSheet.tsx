@@ -19,8 +19,10 @@ import { useSwipeDown } from '@/ui/useSwipeDown';
  * theme, distance, price paid, "Validated by a local", proofs and votes, the
  * cover caption, then Open spot, Directions and Share (SPEC 9.14).
  */
-export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onClose }: {
+export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onClose, onPlayToday }: {
   spot: Spot; distanceM: number | null; onOpen: () => void; onDirections: () => void; onShare: () => void; onClose: () => void;
+  /** The spot fits today's theme and I haven't played: "Play here today" (the camera). */
+  onPlayToday?: () => void;
 }) {
   // Closes like every sheet: the grabber, a swipe down, Android back (the map's useBackClose).
   const swipe = useSwipeDown(onClose, { capture: true });
@@ -69,8 +71,9 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
       </TouchableOpacity>
       {!!spot.cover.caption && <Text style={styles.caption} numberOfLines={2}>“{spot.cover.caption}”</Text>}
       <PhotoCredit by={spot.cover.by} credit={spot.cover.credit} style={styles.credit} />
+      {onPlayToday && <Button icon="camera-outline" label={t('map.playHere')} onPress={onPlayToday} testID="spot-play-today" />}
       <View style={styles.actions}>
-        <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} testID="spot-open" />
+        <Button variant={onPlayToday ? 'secondary' : 'primary'} label={t('map.openSpot')} onPress={onOpen} style={styles.btn} testID="spot-open" />
         <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />
         <IconButton icon="share-social-outline" label={t('share.title')} onPress={onShare} style={styles.share} />
       </View>

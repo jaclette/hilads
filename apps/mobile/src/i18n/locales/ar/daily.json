@@ -260,7 +260,7 @@
     "titleWorld": "الأماكن المثبّتة حول العالم",
     "seeProof": "عرض الصورة",
     "openChallenge": "فتح الـ challenge",
-    "search": "ابحث عن طبق أو مقهى أو شارع",
+    "search": "ابحث عن طبق أو مقهى…",
     "searchA11y": "ابحث عن أماكن",
     "clearSearch": "امسح البحث",
     "noResults": "لا يوجد مكان مطابق",
@@ -294,7 +294,16 @@
     "cityBubbleA11y_two": "{{city}}: مكانان",
     "cityBubbleA11y_few": "{{city}}: {{count}} أماكن",
     "cityBubbleA11y_many": "{{city}}: {{count}} مكانًا",
-    "cityBubbleA11y_other": "{{city}}: {{count}} مكان"
+    "cityBubbleA11y_other": "{{city}}: {{count}} مكان",
+    "todayChip": "اليوم",
+    "playHere": "العب هنا اليوم",
+    "planNow": "الآن",
+    "planGoing_zero": "لا أحد ذاهب",
+    "planGoing_one": "شخص واحد ذاهب",
+    "planGoing_two": "شخصان ذاهبان",
+    "planGoing_few": "{{count}} ذاهبون",
+    "planGoing_many": "{{count}} ذاهبًا",
+    "planGoing_other": "{{count}} ذاهب"
   },
   "leaderboard": {
     "tab": "Top 10",

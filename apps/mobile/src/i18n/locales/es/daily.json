@@ -240,7 +240,7 @@
     "titleWorld": "Lugares fijados en el mundo",
     "seeProof": "Ver la foto",
     "openChallenge": "Abrir el challenge",
-    "search": "Busca un plato, un café, una calle",
+    "search": "Busca un plato, un café…",
     "searchA11y": "Buscar spots",
     "clearSearch": "Borrar la búsqueda",
     "noResults": "Ningún spot coincide",
@@ -266,7 +266,13 @@
     "proofs_one": "{{count}} foto",
     "proofs_other": "{{count}} fotos",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Hoy",
+    "playHere": "Juega aquí hoy",
+    "planNow": "ahora",
+    "planGoing_one": "{{count}} va",
+    "planGoing_many": "{{count}} van",
+    "planGoing_other": "{{count}} van"
   },
   "leaderboard": {
     "tab": "Top 10",

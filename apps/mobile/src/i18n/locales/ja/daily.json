@@ -240,7 +240,7 @@
     "titleWorld": "世界中のピン留めされた場所",
     "seeProof": "写真を見る",
     "openChallenge": "challenge を開く",
-    "search": "料理、カフェ、通りを検索",
+    "search": "料理、カフェを検索…",
     "searchA11y": "スポットを検索",
     "clearSearch": "検索をクリア",
     "noResults": "一致するスポットはありません",
@@ -266,7 +266,11 @@
     "proofs_one": "写真 {{count}} 枚",
     "proofs_other": "写真 {{count}} 枚",
     "cityBubbleA11y_one": "{{city}}、スポット{{count}}件",
-    "cityBubbleA11y_other": "{{city}}、スポット{{count}}件"
+    "cityBubbleA11y_other": "{{city}}、スポット{{count}}件",
+    "todayChip": "今日",
+    "playHere": "今日ここでプレイ",
+    "planNow": "開催中",
+    "planGoing_other": "{{count}}人参加"
   },
   "leaderboard": {
     "tab": "Top 10",

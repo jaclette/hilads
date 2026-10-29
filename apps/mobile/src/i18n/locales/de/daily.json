@@ -240,7 +240,7 @@
     "titleWorld": "Markierte Orte weltweit",
     "seeProof": "Foto ansehen",
     "openChallenge": "Challenge öffnen",
-    "search": "Suche ein Gericht, ein Café, eine Straße",
+    "search": "Such ein Gericht, ein Café…",
     "searchA11y": "Spots suchen",
     "clearSearch": "Suche löschen",
     "noResults": "Kein passender Spot",
@@ -266,7 +266,12 @@
     "proofs_one": "{{count}} Foto",
     "proofs_other": "{{count}} Fotos",
     "cityBubbleA11y_one": "{{city}}, {{count}} Spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} Spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} Spots",
+    "todayChip": "Heute",
+    "playHere": "Spiel heute hier",
+    "planNow": "jetzt",
+    "planGoing_one": "{{count}} dabei",
+    "planGoing_other": "{{count}} dabei"
   },
   "leaderboard": {
     "tab": "Top 10",

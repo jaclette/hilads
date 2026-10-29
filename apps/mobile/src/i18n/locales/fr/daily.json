@@ -240,7 +240,7 @@
     "titleWorld": "Lieux épinglés dans le monde",
     "seeProof": "Voir la photo",
     "openChallenge": "Ouvrir le challenge",
-    "search": "Cherche un plat, un café, une rue",
+    "search": "Cherche un plat, un café…",
     "searchA11y": "Chercher des spots",
     "clearSearch": "Effacer la recherche",
     "noResults": "Aucun spot ne correspond",
@@ -266,7 +266,13 @@
     "proofs_one": "{{count}} photo",
     "proofs_other": "{{count}} photos",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Aujourd'hui",
+    "playHere": "Joue ici aujourd'hui",
+    "planNow": "maintenant",
+    "planGoing_one": "{{count}} y va",
+    "planGoing_many": "{{count}} y vont",
+    "planGoing_other": "{{count}} y vont"
   },
   "leaderboard": {
     "tab": "Top 10",

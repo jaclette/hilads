@@ -20,6 +20,8 @@ import { fetchMap, fetchMapCities, fetchSpot, searchSpots, type Bbox, type MapCi
 import { THEME_KEYS, isPlaceTheme, themeName } from '@/features/daily/themes';
 import { meters, pinLabel } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { themeColor } from '@/ui/joy';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { SpotSheet } from '@/features/map/SpotSheet';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
@@ -41,6 +43,18 @@ const CITY_RADIUS_M = 30_000;
 const LABEL_MIN_ZOOM = 13.5;
 // Tap target around a pin, in points (SPEC: 44 minimum).
 const PIN_HITBOX = { width: 44, height: 44 };
+/** A pin's color: its theme's (the ring color when the fill is too pale on the map), as on the filter chips. */
+const pinColor = (k: string) => { const c = themeColor(k); return c.line ?? c.fill; };
+/** Clusters count their spots per theme and wear the color of the theme they have most of. */
+const CLUSTER_PROPS = Object.fromEntries(THEME_KEYS.filter(k => isPlaceTheme(k)).map(k => [k, ['+', ['case', ['==', ['get', 'theme'], k], 1, 0]]]));
+const CLUSTER_COLOR = ['case',
+  ...THEME_KEYS.filter(k => isPlaceTheme(k)).flatMap(k => [
+    ['all', ...THEME_KEYS.filter(j => isPlaceTheme(j) && j !== k).map(j => ['>=', ['get', k], ['get', j]])], pinColor(k),
+  ]),
+  '#C9501A'];
+const PIN_RADIUS = 11;
+/** The "Today" pins breathe: their halo grows and fades every 1.2 s. */
+const PULSE_MS = 1200;
 // The last view (map or list), remembered on the device.
 const VIEW_KEY = 'hilads_map_view';
 
@@ -81,6 +95,12 @@ export default function MapScreen() {
   const centered  = useRef(false);
 
   const [themeFilter, setThemeFilter] = useState<DailyThemeKey | null>(null);
+  // "Today": only the spots of today's challenge photos (a chip before the themes).
+  const [todayOnly, setTodayOnly] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const [pulse, setPulse] = useState(false);
+  // The pins grow in once, when the first spots arrive.
+  const [grown, setGrown] = useState(false);
   // ?theme=<key> (the challenge screen's "Places pinned"): open on that theme's spots.
   useEffect(() => {
     const k = params.theme as DailyThemeKey | undefined;
@@ -113,6 +133,17 @@ export default function MapScreen() {
 
   const cityId = city?.channelId ?? null;
   const todayTheme = today.data?.challenge?.theme?.key ?? null;
+  const todayDate = today.data?.challenge?.date ?? null;
+  useEffect(() => {
+    if (!todayOnly || reduceMotion) { setPulse(false); return; }
+    const id = setInterval(() => setPulse(p => !p), PULSE_MS);
+    return () => clearInterval(id);
+  }, [todayOnly, reduceMotion]);
+  useEffect(() => {
+    if (grown || spots.length === 0) return;
+    const id = setTimeout(() => setGrown(true), reduceMotion ? 0 : 50);
+    return () => clearTimeout(id);
+  }, [spots.length, grown, reduceMotion]);
 
   useEffect(() => {
     AsyncStorage.getItem(VIEW_KEY).then(v => { if (v === 'list' || v === 'map') setView(v); }).catch(() => {});
@@ -272,11 +303,19 @@ export default function MapScreen() {
 
   const pickTheme = (k: DailyThemeKey | null) => {
     setThemeFilter(k);
+    setTodayOnly(false);
     setSelected(null);
     track('map_filter_used', { theme: k ?? 'all', is_today: k !== null && k === todayTheme });
   };
 
   // Back to my position and my city (World scope switches to the city).
+  const pickToday = () => {
+    setThemeFilter(null);
+    setTodayOnly(true);
+    setSelected(null);
+    track('map_filter_used', { theme: 'today', is_today: true });
+  };
+
   const locate = async () => {
     const res = await requestFeatureLocation('map_locate');
     if (!res.ok || !res.coords) {
@@ -306,18 +345,22 @@ export default function MapScreen() {
     if (s) select(s, 'map_pin');
   };
 
+  // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
+  const isToday = (s: Spot) => !!todayDate && s.lastProofDate === todayDate;
+  const shown = todayOnly ? spots.filter(isToday) : spots;
   const shape = useMemo<GeoJSON.FeatureCollection>(() => ({
     type: 'FeatureCollection',
-    features: worldView ? [] : spots.filter(s => s.id !== selected?.id).map(s => ({
+    features: worldView ? [] : shown.filter(s => s.id !== selected?.id).map(s => ({
       type: 'Feature', id: s.id,
       // rank: lower is placed first when labels collide (most proofs, then votes).
       // pick: a Hilads pick (editorial) gets its own pin: gold with a star.
       // img: the cover's round photo, shown before the label.
+      // theme: the pin's color (the filter's theme, else the spot's first); today: a photo of today's challenge.
       properties: { id: s.id, label: pinLabel(s.name, s.priceRange, i18n.language), rank: -(s.proofCount * 1000 + s.votes), pick: !!s.pick,
-                    img: s.cover.pinUrl ? `pin-${s.id}` : '' },
+                    img: s.cover.pinUrl ? `pin-${s.id}` : '', theme: themeFilter ?? s.themes[0] ?? 'taste', today: isToday(s) },
       geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
     })),
-  }), [spots, selected?.id, i18n.language, worldView]);
+  }), [spots, selected?.id, i18n.language, worldView, todayOnly, todayDate, themeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The pin photos (216 px PNGs, drawn at 72 pt).
   const pinImages = useMemo(() => Object.fromEntries(
@@ -330,7 +373,7 @@ export default function MapScreen() {
 
   const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0;
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => themeFilter === null || s.themes.includes(themeFilter)) : spots;
+  const listSpots = results !== null ? results.filter(s => themeFilter === null || s.themes.includes(themeFilter)) : shown;
   const bboxCentre: [number, number] | null = lastBbox.current
     ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
 
@@ -349,15 +392,27 @@ export default function MapScreen() {
         <Camera ref={cameraRef} minZoomLevel={scope === 'world' ? WORLD_MIN_ZOOM : MIN_ZOOM} defaultSettings={{ centerCoordinate: center ?? [106.7009, 10.7769], zoomLevel: CITY_ZOOM }} />
         {me && <LocationPuck visible puckBearingEnabled={false} pulsing={{ isEnabled: false }} />}
 
-        <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} hitbox={PIN_HITBOX} onPress={onSourcePress}>
+        <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} hitbox={PIN_HITBOX} onPress={onSourcePress}
+                     clusterProperties={CLUSTER_PROPS}>
           <CircleLayer id="spot-clusters" filter={['has', 'point_count']} style={{
-            circleColor: colors.primaryOnTint, circleRadius: 20, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
+            circleColor: CLUSTER_COLOR as never, circleRadius: grown ? 20 : 0, circleRadiusTransition: { duration: 350, delay: 0 },
+            circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
+          }} />
+          {/* Today's photos: a soft halo that breathes under the pin. */}
+          <CircleLayer id="spot-today-halo" filter={['all', ['!', ['has', 'point_count']], ['get', 'today']]} style={{
+            circleColor: pinColor(todayTheme ?? 'taste'), circleRadius: todayOnly ? (pulse ? 24 : 15) : 0,
+            circleOpacity: todayOnly ? (pulse ? 0 : 0.45) : 0,
+            circleRadiusTransition: { duration: PULSE_MS, delay: 0 }, circleOpacityTransition: { duration: PULSE_MS, delay: 0 },
           }} />
           <SymbolLayer id="spot-cluster-count" filter={['has', 'point_count']} style={{
             textField: ['get', 'point_count_abbreviated'], textColor: '#FFFFFF', textSize: 15, textAllowOverlap: true, textIgnorePlacement: true,
           }} />
           <CircleLayer id="spot-pins" filter={['!', ['has', 'point_count']]} style={{
-            circleColor: ['case', ['get', 'pick'], colors.gold, colors.primary], circleRadius: 11, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
+            // A pin wears its theme's color; a Hilads pick stays gold with its star.
+            circleColor: ['case', ['get', 'pick'], colors.gold, ['match', ['get', 'theme'],
+              ...PLACE_THEMES.flatMap(k => [k, pinColor(k)]), colors.primary]] as never,
+            circleRadius: grown ? PIN_RADIUS : 0, circleRadiusTransition: { duration: 350, delay: 0 },
+            circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
           }} />
           <SymbolLayer id="spot-pick-stars" filter={['all', ['!', ['has', 'point_count']], ['get', 'pick']]} style={{
             textField: '★', textColor: '#FFFFFF', textSize: 13, textAllowOverlap: true, textIgnorePlacement: true,
@@ -426,7 +481,6 @@ export default function MapScreen() {
       {/* Top overlay: the Map's subtitle (no title bar over the map), search + theme chips. */}
       <View style={[styles.top, { paddingTop: insets.top + 10 }, view === 'list' && styles.topList]} pointerEvents="box-none"
             onLayout={e => setTopH(e.nativeEvent.layout.height)}>
-        <Text style={styles.subtitle} numberOfLines={2}>{t('subtitles.map', { ns: 'common' })}</Text>
         <View style={styles.searchRow}>
           <ScopeSelector style={styles.scope} />
           <View style={styles.search}>
@@ -458,7 +512,8 @@ export default function MapScreen() {
           </View>
         )}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
-          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null} onPress={() => pickTheme(null)} />
+          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null && !todayOnly} onPress={() => pickTheme(null)} />
+          {!!todayDate && <Chip variant="filter" theme={todayTheme} label={t('map.todayChip')} selected={todayOnly} onPress={pickToday} />}
           {PLACE_THEMES.map(k => (
             <Chip key={k} variant="filter" theme={k} label={themeName(k)} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
           ))}
@@ -483,6 +538,8 @@ export default function MapScreen() {
             onDirections={() => openDirections(selected.lat, selected.lng)}
             onShare={() => setShare(spotShare(selected))}
             onClose={() => setSelected(null)}
+            onPlayToday={selected.themes.includes(todayTheme as DailyThemeKey) && today.data?.challenge?.isActive && !today.data?.myProof
+              ? () => { track('map_play_here', { spot: selected.id }); router.push('/daily/proof' as never); } : undefined}
           />
         ) : showEmpty ? (
           <EmptyCity today={today.data} />
@@ -493,20 +550,27 @@ export default function MapScreen() {
   );
 }
 
-/** A Hi plan as a dated pin: "Birdy, 6 PM" in caramel. Opens the plan. */
+/** A Hi plan as a dated pin: "Birdy, now · 10 going", "Birdy, in 2 hours". Caramel; opens the plan. */
 function PlanMarker({ plan }: { plan: PlanPin }) {
   const styles = useThemedStyles(makeStyles);
   const { i18n, t } = useTranslation('daily');
   const router = useRouter();
   const start = new Date(plan.startsAt * 1000);
-  const sameDay = start.toDateString() === new Date().toDateString();
-  const time = start.toLocaleString(i18n.language, sameDay ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  const now = Date.now();
+  const ongoing = plan.startsAt * 1000 <= now && (plan.endsAt ? plan.endsAt * 1000 > now : true);
+  const hours = (plan.startsAt * 1000 - now) / 3_600_000;
+  // Soon: relative ("in 2 hours", localized); later: the day and time.
+  const time = ongoing ? t('map.planNow')
+    : hours < 6 ? new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
+    : start.toLocaleString(i18n.language, start.toDateString() === new Date().toDateString()
+        ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  const going = plan.participantCount > 1 ? t('map.planGoing', { count: plan.participantCount }) : null;
   return (
     <MarkerView coordinate={[plan.lng, plan.lat]} anchor={{ x: 0.5, y: 0.5 }}>
-      <TouchableOpacity style={styles.plan} onPress={() => router.push(`/event/${plan.id}` as never)} accessibilityRole="button"
-                        accessibilityLabel={t('map.planA11y', { title: plan.title, time })}>
-        <Ionicons name="calendar-outline" size={14} color="#FFFFFF" />
-        <Text style={styles.planText} numberOfLines={1}>{plan.title}, {time}</Text>
+      <TouchableOpacity style={[styles.plan, ongoing && styles.planNow]} onPress={() => router.push(`/event/${plan.id}` as never)} accessibilityRole="button"
+                        accessibilityLabel={[t('map.planA11y', { title: plan.title, time }), going].filter(Boolean).join(', ')}>
+        <Ionicons name={ongoing ? 'radio-button-on' : 'calendar-outline'} size={14} color="#FFFFFF" />
+        <Text style={styles.planText} numberOfLines={1}>{plan.title}, {time}{going ? ` · ${going}` : ''}</Text>
       </TouchableOpacity>
     </MarkerView>
   );
@@ -516,7 +580,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:     { flex: 1, backgroundColor: c.bg },
   center:        { alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   muted:         { fontSize: FontSizes.md, color: c.muted, textAlign: 'center' },
-  top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Spacing.md, gap: 10 },
+  top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Spacing.md, gap: 10, paddingBottom: 10,
+                   backgroundColor: c.bg + 'E6', borderBottomLeftRadius: 22, borderBottomRightRadius: 22 },
   results:       { backgroundColor: c.bg2, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, paddingVertical: 4 },
   result:        { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, paddingHorizontal: 14 },
   resultBody:    { flex: 1 },
@@ -534,8 +599,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bottom:        { position: 'absolute', left: 8, right: 8, bottom: 12, gap: 10 },
   locate:        { alignSelf: 'flex-end', marginRight: 8 },
   topList:       { backgroundColor: c.bg, paddingBottom: 10 },
-  // A pill so the muted line stays readable over the map tiles.
-  subtitle:      { alignSelf: 'flex-start', maxWidth: '100%', fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted, backgroundColor: c.bg, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12, overflow: 'hidden' },
   listEmpty:     { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', padding: Spacing.lg },
   toggle:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18,
                    borderRadius: Radius.full, backgroundColor: c.text },
@@ -547,7 +610,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                    borderWidth: 1.5, borderColor: c.line, paddingHorizontal: 12, paddingVertical: 6, overflow: 'hidden' },
   selectedPin:   { width: 50, height: 50, borderRadius: Radius.full, backgroundColor: c.primary, borderWidth: 4, borderColor: c.primaryTint,
                    alignItems: 'center', justifyContent: 'center' },
-  plan:          { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingLeft: 10, paddingRight: 12, maxWidth: 200,
+  plan:          { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingLeft: 10, paddingRight: 12, maxWidth: 240,
                    borderRadius: Radius.full, borderWidth: 2.5, borderColor: '#FFFFFF', backgroundColor: c.caramel },
-  planText:      { fontSize: FontSizes.xs, fontWeight: '700', color: '#FFFFFF' },
+  planNow:       { backgroundColor: c.primary },
+  planText:      { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: '#FFFFFF' },
 });

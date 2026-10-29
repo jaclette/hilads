@@ -240,7 +240,7 @@
     "titleWorld": "Lugares marcados pelo mundo",
     "seeProof": "Ver a foto",
     "openChallenge": "Abrir o challenge",
-    "search": "Busque um prato, um café, uma rua",
+    "search": "Busque um prato, um café…",
     "searchA11y": "Buscar spots",
     "clearSearch": "Limpar a busca",
     "noResults": "Nenhum spot encontrado",
@@ -266,7 +266,13 @@
     "proofs_one": "{{count}} foto",
     "proofs_other": "{{count}} fotos",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Hoje",
+    "playHere": "Jogue aqui hoje",
+    "planNow": "agora",
+    "planGoing_one": "{{count}} vai",
+    "planGoing_many": "{{count}} vão",
+    "planGoing_other": "{{count}} vão"
   },
   "leaderboard": {
     "tab": "Top 10",

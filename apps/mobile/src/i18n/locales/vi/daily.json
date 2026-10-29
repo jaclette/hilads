@@ -239,7 +239,7 @@
     "titleWorld": "Địa điểm đã ghim trên thế giới",
     "seeProof": "Xem ảnh",
     "openChallenge": "Mở challenge",
-    "search": "Tìm món ăn, quán cà phê, con phố",
+    "search": "Tìm món ăn, quán cà phê…",
     "searchA11y": "Tìm spot",
     "clearSearch": "Xóa tìm kiếm",
     "noResults": "Không có spot phù hợp",
@@ -265,7 +265,11 @@
     "proofs_one": "{{count}} ảnh",
     "proofs_other": "{{count}} ảnh",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "todayChip": "Hôm nay",
+    "playHere": "Chơi ở đây hôm nay",
+    "planNow": "bây giờ",
+    "planGoing_other": "{{count}} người đi"
   },
   "leaderboard": {
     "tab": "Top 10",

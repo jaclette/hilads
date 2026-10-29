@@ -250,7 +250,7 @@
     "titleWorld": "Отмеченные места по всему миру",
     "seeProof": "Открыть фото",
     "openChallenge": "Открыть challenge",
-    "search": "Найди блюдо, кафе, улицу",
+    "search": "Найди блюдо, кафе…",
     "searchA11y": "Искать места",
     "clearSearch": "Очистить поиск",
     "noResults": "Подходящих мест нет",
@@ -280,7 +280,14 @@
     "cityBubbleA11y_one": "{{city}}: {{count}} место",
     "cityBubbleA11y_few": "{{city}}: {{count}} места",
     "cityBubbleA11y_many": "{{city}}: {{count}} мест",
-    "cityBubbleA11y_other": "{{city}}: {{count}} места"
+    "cityBubbleA11y_other": "{{city}}: {{count}} места",
+    "todayChip": "Сегодня",
+    "playHere": "Сыграй здесь сегодня",
+    "planNow": "сейчас",
+    "planGoing_one": "{{count}} идёт",
+    "planGoing_few": "{{count}} идут",
+    "planGoing_many": "{{count}} идут",
+    "planGoing_other": "{{count}} идут"
   },
   "leaderboard": {
     "tab": "Top 10",

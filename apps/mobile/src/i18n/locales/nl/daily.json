@@ -240,7 +240,7 @@
     "titleWorld": "Vastgezette plekken wereldwijd",
     "seeProof": "Bekijk de foto",
     "openChallenge": "Open de challenge",
-    "search": "Zoek een gerecht, een café, een straat",
+    "search": "Zoek een gerecht, een café…",
     "searchA11y": "Spots zoeken",
     "clearSearch": "Zoekopdracht wissen",
     "noResults": "Geen spot gevonden",
@@ -266,7 +266,12 @@
     "proofs_one": "{{count}} foto",
     "proofs_other": "{{count}} foto's",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Vandaag",
+    "playHere": "Speel hier vandaag",
+    "planNow": "nu",
+    "planGoing_one": "{{count}} gaat",
+    "planGoing_other": "{{count}} gaan"
   },
   "leaderboard": {
     "tab": "Top 10",

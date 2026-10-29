@@ -240,7 +240,7 @@
     "titleWorld": "Pinned places around the world",
     "seeProof": "See the photo",
     "openChallenge": "Open the challenge",
-    "search": "Search a dish, a café, a street",
+    "search": "Search a dish, a café…",
     "searchA11y": "Search spots",
     "clearSearch": "Clear the search",
     "noResults": "No spot matches",
@@ -266,7 +266,12 @@
     "proofs_one": "{{count}} photo",
     "proofs_other": "{{count}} photos",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Today",
+    "playHere": "Play here today",
+    "planNow": "now",
+    "planGoing_one": "{{count}} going",
+    "planGoing_other": "{{count}} going"
   },
   "leaderboard": {
     "tab": "Top 10",
