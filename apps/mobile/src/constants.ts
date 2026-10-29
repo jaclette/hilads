@@ -170,6 +170,7 @@ export const Colors = {
   photoControl:   'rgba(255,255,255,0.16)',
   // A round button over a photo or the camera: a dark disc, visible on bright photos too.
   photoButton:    'rgba(0,0,0,0.42)',
+  photoPill:      'rgba(0,0,0,0.62)',          // a count on a photo: readable on bright pictures
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -247,6 +248,7 @@ export const LightColors: ThemeColors = {
   photoControl:   'rgba(255,255,255,0.16)',
   // A round button over a photo or the camera: a dark disc, visible on bright photos too.
   photoButton:    'rgba(0,0,0,0.42)',
+  photoPill:      'rgba(0,0,0,0.62)',          // a count on a photo: readable on bright pictures
 };
 
 export type ThemeName = 'light' | 'dark';

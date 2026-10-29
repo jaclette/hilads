@@ -36,7 +36,8 @@ const MOSAIC_MAX = 6;
  *   before I play, as a dashed "Saigon?" bubble that opens the camera. A
  *   bubble opens the story viewer at that city, the next cities following.
  * - The mosaic: one card per city (its most liked photo), a polaroid pile
- *   behind it when the city has several photos ("2 · 2 players"), its answer
+ *   behind it when the city has several photos (top right, clear of a selfie:
+ *   "2 players", or "3 · 2 players" when someone posted twice), its answer
  *   large, its players' avatars and its likes; cards lean a little, each its
  *   own way. My city's empty slot comes first until I play.
  * - Nobody played yet: yesterday's top 3 cities, greyed ("Yesterday the world
@@ -217,13 +218,22 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
           {p.selfieUrl
             ? <DualPhoto main={{ uri: p.thumbUrl ?? p.photoUrl }} selfie={selfieOf(p)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
             : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
-          {pile && (
-            <View style={styles.pill}>
-              <Ionicons name="camera" size={12} color={colors.white} />
-              <Text style={styles.pillText}>{players > 0 ? `${group.count} · ${t('mosaic.players', { count: players })}` : group.count}</Text>
+          {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
+          {(pile || !!badge) && (
+            <View style={styles.corner} pointerEvents="none">
+              {pile && (
+                <View style={styles.pill}>
+                  <Ionicons name={players > 0 && players >= group.count ? 'people' : 'camera'} size={12} color={colors.white} />
+                  <Text style={styles.pillText} numberOfLines={1}>
+                    {players <= 0 ? group.count
+                      : players >= group.count ? t('mosaic.players', { count: players })
+                      : `${group.count} · ${t('mosaic.players', { count: players })}`}
+                  </Text>
+                </View>
+              )}
+              {!!badge && <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><Text style={styles.badgeText}>{badge}</Text></View>}
             </View>
           )}
-          {!!badge && <View style={styles.badge} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><Text style={styles.badgeText}>{badge}</Text></View>}
         </View>
         <View style={styles.tileBody}>
           <View style={styles.cityRow}>
@@ -299,10 +309,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   layerBack2: { opacity: 0.3, transform: [{ rotate: '-4deg' }, { translateX: -4 }, { translateY: 3 }] },
   card:      { borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   photo:     { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
-  pill:      { position: 'absolute', left: 6, top: 6, flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4,
-               borderRadius: 12, backgroundColor: c.photoControl },
-  pillText:  { fontSize: 11, fontWeight: '800', color: c.white },
-  badge:     { position: 'absolute', top: 6, right: 6, width: 28, height: 28, borderRadius: 14, backgroundColor: c.photoControl,
+  // Leaves the left 30 % to the selfie inset (24 % + its margin); a long count truncates.
+  corner:    { position: 'absolute', top: 6, right: 6, left: '30%', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 4 },
+  pill:      { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, flexShrink: 1,
+               borderRadius: 12, backgroundColor: c.photoPill },
+  pillText:  { fontSize: 11, fontWeight: '800', color: c.white, flexShrink: 1 },
+  badge:     { width: 28, height: 28, borderRadius: 14, backgroundColor: c.photoControl,
                alignItems: 'center', justifyContent: 'center' },
   badgeText: { fontSize: 16 },
   tileBody:  { padding: 10, gap: 4 },

@@ -17845,8 +17845,13 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-layer--back { transform: translate(4px, 2px) rotate(4deg); }
 .tc-layer--back2 { opacity: 0.3; transform: translate(-4px, 3px) rotate(-4deg); }
 .tc-photo-box { position: relative; display: block; }
-.tc-pill { position: absolute; left: 6px; top: 6px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px;
-           background: rgba(0,0,0,0.45); color: #fff; font-size: 11px; font-weight: 800; }
+/* Top-right, leaving the left 30 % to the selfie inset (.dp-mini, 24 %); a long count truncates. */
+.tc-corner { position: absolute; top: 6px; right: 6px; left: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 4px; pointer-events: none; }
+.tc-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; min-width: 0;
+           background: rgba(0,0,0,0.62); color: #fff; font-size: 11px; font-weight: 800; }
+.tc-pill svg { flex-shrink: 0; }
+.tc-pill-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.seasonal-badge.seasonal-badge--inline { position: static; flex-shrink: 0; }
 .tc-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .tc-avatars { display: flex; align-items: center; min-width: 0; }
 .tc-avatar { display: flex; border-radius: 50%; border: 2px solid var(--surface); }

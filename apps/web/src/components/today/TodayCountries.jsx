@@ -245,10 +245,20 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
         <span className="tc-photo-box">
           <img className="tc-photo" src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" />
           {p.selfieUrl && <img className="dp-mini" src={p.selfieThumbUrl ?? p.selfieUrl} alt="" />}
-          {pile && (
-            <span className="tc-pill"><Icon name="camera" size={12} />{players > 0 ? `${group.count} · ${t('mosaic.players', { count: players })}` : group.count}</span>
+          {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
+          {(pile || badge) && (
+            <span className="tc-corner">
+              {pile && (
+                <span className="tc-pill">
+                  <Icon name={players > 0 && players >= group.count ? 'people-outline' : 'camera'} size={12} />
+                  <span className="tc-pill-text">{players <= 0 ? group.count
+                    : players >= group.count ? t('mosaic.players', { count: players })
+                    : `${group.count} · ${t('mosaic.players', { count: players })}`}</span>
+                </span>
+              )}
+              {badge && <span className="seasonal-badge seasonal-badge--inline" aria-hidden="true">{badge}</span>}
+            </span>
           )}
-          {badge && <span className="seasonal-badge" aria-hidden="true">{badge}</span>}
         </span>
         <span className="tc-tile-body">
           <span className="tc-city"><FlagSticker country={group.city.country} size={16} />{shortCityName(group.city.name)}</span>
