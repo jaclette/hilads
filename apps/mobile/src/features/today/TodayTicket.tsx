@@ -23,7 +23,7 @@ import { PulseButton, type PulseTone } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
 import { todayCities } from './useTodayCountries';
 import { useSeasonalLive } from '@/features/event/seasonal';
-import { PumpkinIcon, SeasonalHeroDecor } from '@/features/event/SeasonalArt';
+import { AmbientBats, PumpkinIcon, SeasonalHeroDecor } from '@/features/event/SeasonalArt';
 import { remindMeLater } from '@/api/daily';
 import { resolveLocation } from '@/api/channels';
 import * as Location from 'expo-location';
@@ -188,6 +188,8 @@ export function TodayTicket({ data, countries, loading, secondsLeft, visible = t
         <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)']} locations={[0, 0.4, 1]} style={styles.shadeBottom} />
       </Pressable>
       <SeasonalHeroDecor visible={visible} />
+      {/* Event mode: bats drifting across the hero. */}
+      <AmbientBats />
 
       <View style={styles.heroTop} pointerEvents="box-none">
         <View style={[styles.chip, styles.themeChip, { backgroundColor: tc.fill }]}>

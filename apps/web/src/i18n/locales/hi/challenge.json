@@ -846,7 +846,8 @@
     "playHere": "आज यहाँ खेलो",
     "planNow": "अभी",
     "planGoing_one": "{{count}} जा रहा है",
-    "planGoing_other": "{{count}} जा रहे हैं"
+    "planGoing_other": "{{count}} जा रहे हैं",
+    "halloween": "🎃 हैलोवीन"
   },
   "spot": {
     "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",

@@ -294,7 +294,8 @@
     "planGoing_one": "{{count}} идёт",
     "planGoing_few": "{{count}} идут",
     "planGoing_many": "{{count}} идут",
-    "planGoing_other": "{{count}} идут"
+    "planGoing_other": "{{count}} идут",
+    "halloween": "🎃 Хэллоуин"
   },
   "leaderboard": {
     "tab": "Top 10",

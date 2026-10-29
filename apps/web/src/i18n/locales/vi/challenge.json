@@ -845,7 +845,8 @@
     "todayChip": "Hôm nay",
     "playHere": "Chơi ở đây hôm nay",
     "planNow": "bây giờ",
-    "planGoing_other": "{{count}} người đi"
+    "planGoing_other": "{{count}} người đi",
+    "halloween": "🎃 Halloween"
   },
   "spot": {
     "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

@@ -160,6 +160,12 @@
       "night_out": "Saan ang party mamayang gabi?",
       "sip": "Saan magandang uminom?",
       "only_here": "Ano ang dito lang makikita?"
+    },
+    "halloween": {
+      "boo": "👻 Bulaga!",
+      "happy": "🎃 Happy Halloween, {{city}}!",
+      "happyNoCity": "🎃 Happy Halloween!",
+      "tonight": "Sino'ng lalabas ngayong gabi para sa Halloween?"
     }
   }
 }

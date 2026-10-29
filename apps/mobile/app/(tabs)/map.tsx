@@ -9,6 +9,8 @@ import { Camera, CircleLayer, Images, LineLayer, LocationPuck, MapView, MarkerVi
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { SeasonalMapSky } from '@/features/event/SeasonalArt';
+import { useEventFeature } from '@/features/event/seasonal';
+import { EVENT_CARD } from '@/features/event/EventFrame';
 import { useApp } from '@/context/AppContext';
 import { useScope, type Scope } from '@/context/ScopeContext';
 import { track } from '@/services/analytics';
@@ -53,6 +55,9 @@ const CLUSTER_COLOR = ['case',
   ]),
   '#C9501A'];
 const PIN_RADIUS = 11;
+/** The event's filter (Halloween first): the spots of special-day photos, as pumpkin pins. */
+const SPECIAL = 'special';
+const PUMPKIN = EVENT_CARD.halloween.accent;
 /** The "Today" pins breathe: their halo grows and fades every 1.2 s. */
 const PULSE_MS = 1200;
 // The last view (map or list), remembered on the device.
@@ -94,7 +99,11 @@ export default function MapScreen() {
   const lastBbox  = useRef<Bbox | null>(null);
   const centered  = useRef(false);
 
-  const [themeFilter, setThemeFilter] = useState<DailyThemeKey | null>(null);
+  const [themeFilter, setThemeFilter] = useState<DailyThemeKey | typeof SPECIAL | null>(null);
+  const mapEvent = useEventFeature('mapPins');
+  const pumpkins = mapEvent?.key === 'halloween';
+  // The event ended (or its map switch went off) while its filter was on: back to all.
+  useEffect(() => { if (!pumpkins && themeFilter === SPECIAL) setThemeFilter(null); }, [pumpkins, themeFilter]);
   // "Today": only the spots of today's challenge photos (a chip before the themes).
   const [todayOnly, setTodayOnly] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -301,7 +310,7 @@ export default function MapScreen() {
     return () => clearTimeout(id);
   }, [query, cityId, scope]);
 
-  const pickTheme = (k: DailyThemeKey | null) => {
+  const pickTheme = (k: DailyThemeKey | typeof SPECIAL | null) => {
     setThemeFilter(k);
     setTodayOnly(false);
     setSelected(null);
@@ -373,7 +382,7 @@ export default function MapScreen() {
 
   const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0;
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => themeFilter === null || s.themes.includes(themeFilter)) : shown;
+  const listSpots = results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
   const bboxCentre: [number, number] | null = lastBbox.current
     ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
 
@@ -410,9 +419,9 @@ export default function MapScreen() {
           <CircleLayer id="spot-pins" filter={['!', ['has', 'point_count']]} style={{
             // A pin wears its theme's color; a Hilads pick stays gold with its star.
             circleColor: ['case', ['get', 'pick'], colors.gold, ['match', ['get', 'theme'],
-              ...PLACE_THEMES.flatMap(k => [k, pinColor(k)]), colors.primary]] as never,
+              ...PLACE_THEMES.flatMap(k => [k, pinColor(k)]), SPECIAL, PUMPKIN, colors.primary]] as never,
             circleRadius: grown ? PIN_RADIUS : 0, circleRadiusTransition: { duration: 350, delay: 0 },
-            circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
+            circleStrokeColor: ['case', ['==', ['get', 'theme'], SPECIAL], '#4A1F5E', '#FFFFFF'] as never, circleStrokeWidth: 2.5,
           }} />
           <SymbolLayer id="spot-pick-stars" filter={['all', ['!', ['has', 'point_count']], ['get', 'pick']]} style={{
             textField: '★', textColor: '#FFFFFF', textSize: 13, textAllowOverlap: true, textIgnorePlacement: true,
@@ -514,6 +523,7 @@ export default function MapScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
           <Chip variant="filter" label={t('map.all')} selected={themeFilter === null && !todayOnly} onPress={() => pickTheme(null)} />
           {!!todayDate && <Chip variant="filter" theme={todayTheme} label={t('map.todayChip')} selected={todayOnly} onPress={pickToday} />}
+          {pumpkins && <Chip variant="filter" label={t('map.halloween')} selected={themeFilter === SPECIAL} onPress={() => pickTheme(SPECIAL)} />}
           {PLACE_THEMES.map(k => (
             <Chip key={k} variant="filter" theme={k} label={themeName(k)} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
           ))}

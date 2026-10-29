@@ -15619,7 +15619,8 @@ function spotsTheme(): ?string
     if (!isset($_GET['theme']) || $_GET['theme'] === '' || $_GET['theme'] === 'all') {
         return null;
     }
-    $theme = DailyThemes::normalize((string) $_GET['theme']);
+    // "special": the spots of special-day photos (the event's map filter, Halloween first).
+    $theme = DailyThemes::normalizeAny((string) $_GET['theme']);
     if ($theme === null) {
         Response::json(['error' => 'Unknown theme', 'code' => 'invalid_theme'], 400);
     }

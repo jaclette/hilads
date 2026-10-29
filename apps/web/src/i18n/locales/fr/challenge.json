@@ -847,7 +847,8 @@
     "planNow": "maintenant",
     "planGoing_one": "{{count}} y va",
     "planGoing_many": "{{count}} y vont",
-    "planGoing_other": "{{count}} y vont"
+    "planGoing_other": "{{count}} y vont",
+    "halloween": "🎃 Halloween"
   },
   "spot": {
     "rankWeekFirst": "Le plus voté cette semaine à {{city}}",

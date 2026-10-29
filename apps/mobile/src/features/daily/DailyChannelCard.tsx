@@ -31,6 +31,8 @@ import { shareLink } from '@/lib/shareLink';
 import { CommentButton } from './CommentButton';
 import { CommentPreview } from './CommentPreview';
 import type { CommentsTarget } from './PhotoCommentsSheet';
+import { useSeasonalLive } from '@/features/event/seasonal';
+import { EVENT_CARD } from '@/features/event/EventFrame';
 
 type TopProof = {
   rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
@@ -85,6 +87,7 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
   const router = useRouter();
   const { city } = useApp();
   const [showOriginal, toggleOriginal] = useOriginal();
+  const seasonal = useSeasonalLive();
   const time = message.createdAt ? formatSmartTime(message.createdAt) : null;
   const longPress = onLongPress ? () => onLongPress(message) : undefined;
   const reactions = message.reactions && message.reactions.length > 0 && onReact
@@ -102,8 +105,10 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
     };
     // Today's drop wears today's theme color (an older card keeps the ticket line).
     const today = getLastToday()?.challenge;
+    // An event's live day (its skin on): the event's accent (Halloween: pumpkin orange).
     const accent = today && today.date === p.date
-      ? themeColor(today.special ? 'special' : today.theme?.key) : null;
+      ? (seasonal && EVENT_CARD[seasonal.key] ? { fill: EVENT_CARD[seasonal.key].accent, line: EVENT_CARD[seasonal.key].accent }
+        : themeColor(today.special ? 'special' : today.theme?.key)) : null;
     return (
       <View style={styles.wrap}>
         {/* The daily drop comes from Hilads: its "Hi" avatar and name, like a friendly bot. */}

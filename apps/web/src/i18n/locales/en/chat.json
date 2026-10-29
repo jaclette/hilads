@@ -44,6 +44,12 @@
       "night_out": "Where's the party tonight?",
       "sip": "Best spot for a drink?",
       "only_here": "What can you only find here?"
+    },
+    "halloween": {
+      "boo": "👻 Boo!",
+      "happy": "🎃 Happy Halloween {{city}}!",
+      "happyNoCity": "🎃 Happy Halloween!",
+      "tonight": "Who's going out for Halloween tonight?"
     }
   }
 }

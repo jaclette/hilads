@@ -246,6 +246,18 @@ final class DailyPushes
                                           ?string $userCity = null): array
     {
         $theme = self::themeOf($challenge);
+        // Halloween's special day (event mode): its own spooky copy, whatever the question.
+        if (str_starts_with((string) ($challenge['special_id'] ?? ''), 'halloween')) {
+            $city = $userCity !== null && $userCity !== '' ? CityNames::short($userCity, $locale) : null;
+            $text = $city !== null
+                ? (DailyPushText::render('halloween_body', $locale, ['city' => $city]) ?? "One spooky photo for {$city}!")
+                : (DailyPushText::render('halloween_body_nocity', $locale) ?? 'One spooky photo for your city!');
+            return [
+                'title' => DailyPushText::render('halloween_title', $locale) ?? '👻 The Halloween hunt is on',
+                'body'  => self::withLine(self::withLine($text, self::tourLine($tourCity, $locale)), $outcome),
+                'data'  => self::data((string) $challenge['challenge_date']),
+            ];
+        }
         // COPY.md 6: "💎 Today the world answers" over "[question] Add Saigon's answer."; without a question or
         // a city, the theme title over the challenge text.
         $question = DailyCompare::payload($challenge, $locale)['question'] ?? null;

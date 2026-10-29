@@ -273,7 +273,8 @@
     "todayChip": "今天",
     "playHere": "今天在這裡參加",
     "planNow": "進行中",
-    "planGoing_other": "{{count}} 人參加"
+    "planGoing_other": "{{count}} 人參加",
+    "halloween": "🎃 萬聖節"
   },
   "leaderboard": {
     "tab": "Top 10",

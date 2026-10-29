@@ -278,7 +278,8 @@
     "planNow": "maintenant",
     "planGoing_one": "{{count}} y va",
     "planGoing_many": "{{count}} y vont",
-    "planGoing_other": "{{count}} y vont"
+    "planGoing_other": "{{count}} y vont",
+    "halloween": "🎃 Halloween"
   },
   "leaderboard": {
     "tab": "Top 10",

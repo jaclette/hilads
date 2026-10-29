@@ -53,6 +53,7 @@ import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useEventFeature } from '@/features/event/seasonal';
 
 // ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
@@ -642,6 +643,8 @@ export default function ChatTab() {
   //   index 0 = bottom of screen (newest message, near input)
   //   high index = top of screen (oldest, user scrolls up)
   // Nobody wrote in the city today (a plain text message, type absent = text): the quick-start chips show.
+  // Event mode: the event's chat chips (Halloween: Boo!, Happy Halloween…).
+  const chatEvent = useEventFeature('chatChips');
   const quietToday = useMemo(() => {
     const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
     const at = (v: number | string) => (typeof v === 'number' ? v * 1000 : Date.parse(v));
@@ -1027,10 +1030,11 @@ export default function ChatTab() {
           </View>
         )}
 
-        {/* A quiet city chat today: three ways to start, prefilled in the composer. */}
-        {channelScope === 'city' && !keyboardUp && !loading && quietToday && (
+        {/* A quiet city chat today: three ways to start, prefilled in the composer. An event's day
+            (its chat chips on) shows its own, in any city chat. */}
+        {channelScope === 'city' && !keyboardUp && !loading && (quietToday || !!chatEvent) && (
           <QuickStart city={city?.name ? shortCityName(city.name) : null} themeKey={daily.data?.challenge?.theme?.key ?? null}
-                      onPick={text => setPrefill({ text, key: Date.now() })} />
+                      eventKey={chatEvent?.key ?? null} onPick={text => setPrefill({ text, key: Date.now() })} />
         )}
 
         {/* ── Input - web: .input-bar ── */}
@@ -1126,10 +1130,16 @@ const TOP_FADE = [0.9, 0.55, 0.25, 0.08];
  * composer, "👋 Hi Saigon!", "Who's around tonight?" and one on today's theme;
  * a tap fills the composer (never sends).
  */
-function QuickStart({ city, themeKey, onPick }: { city: string | null; themeKey: string | null; onPick: (text: string) => void }) {
+function QuickStart({ city, themeKey, eventKey, onPick }: {
+  city: string | null; themeKey: string | null; eventKey: string | null; onPick: (text: string) => void;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('chat');
-  const chips = [
+  const chips = eventKey === 'halloween' ? [
+    t('quick.halloween.boo'),
+    city ? t('quick.halloween.happy', { city }) : t('quick.halloween.happyNoCity'),
+    t('quick.halloween.tonight'),
+  ] : [
     city ? t('quick.hi', { city }) : null,
     t('quick.tonight'),
     themeKey ? t(`quick.theme.${themeKey}`, { defaultValue: '' }) : null,

@@ -273,7 +273,8 @@
     "todayChip": "Hôm nay",
     "playHere": "Chơi ở đây hôm nay",
     "planNow": "bây giờ",
-    "planGoing_other": "{{count}} người đi"
+    "planGoing_other": "{{count}} người đi",
+    "halloween": "🎃 Halloween"
   },
   "leaderboard": {
     "tab": "Top 10",

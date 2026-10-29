@@ -160,6 +160,12 @@
       "night_out": "Tối nay đi đâu vui?",
       "sip": "Chỗ nào uống nước ngon nhất?",
       "only_here": "Có gì chỉ ở đây mới có?"
+    },
+    "halloween": {
+      "boo": "👻 Hù!",
+      "happy": "🎃 Halloween vui vẻ nhé {{city}}!",
+      "happyNoCity": "🎃 Halloween vui vẻ!",
+      "tonight": "Tối nay ai đi chơi Halloween?"
     }
   }
 }

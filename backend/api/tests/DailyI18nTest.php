@@ -135,6 +135,7 @@ final class DailyI18nTest extends TestCase
             'tour' => ['{city}'], 'answered_countries' => ['{city}', '{n}'],
             'first_vote_city' => ['{city}'], 'title_world' => [], 'morning_add' => ['{city}', '{question}'], 'vote_reminder' => ['{a}', '{b}'],
             'new_photo_title' => ['{city}', '{name}'], 'new_photo_title_nocity' => ['{name}'], 'new_photo_see' => [],
+            'halloween_title' => [], 'halloween_body' => ['{city}'], 'halloween_body_nocity' => [],
         ];
         $catalog = DailyPushText::catalog();
         $this->assertSame(DailyI18n::others(), array_keys($catalog));

@@ -44,6 +44,12 @@
       "night_out": "Waar is het feest vanavond?",
       "sip": "De beste plek voor een drankje?",
       "only_here": "Wat vind je alleen hier?"
+    },
+    "halloween": {
+      "boo": "👻 Boe!",
+      "happy": "🎃 Fijne Halloween {{city}}!",
+      "happyNoCity": "🎃 Fijne Halloween!",
+      "tonight": "Wie gaat er vanavond uit voor Halloween?"
     }
   }
 }

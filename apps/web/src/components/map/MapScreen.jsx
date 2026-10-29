@@ -13,7 +13,7 @@ import Icon, { iconHtml } from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { useDaily } from '../daily/dailyShared'
 import HeaderArt from '../HeaderArt'
-import { SeasonalMapSky, setSeasonalEvent, useSeasonalLive } from '../event/seasonal'
+import { SeasonalMapSky, setSeasonalEvent, useEventFeature, useSeasonalLive } from '../event/seasonal'
 import { shortCityName } from '../../i18n/cityName'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PickBadge, PhotoCredit } from './Pick'
@@ -52,11 +52,15 @@ const PHOTO_H = 54
 // The place themes (the chips, the pins' colors).
 const PLACE_THEMES = THEME_KEYS.filter(isPlaceTheme)
 /** A pin's color: its theme's (the ring color when the fill is too pale on the map), as on the filter chips. */
-const pinColor = (k) => { const c = themeColor(k); return c.line ?? c.fill }
+// The event's filter (Halloween first): the spots of special-day photos, as pumpkin pins.
+const SPECIAL = 'special'
+const PUMPKIN = '#FF8A1F'
+const pinColor = (k) => { if (k === SPECIAL) return PUMPKIN; const c = themeColor(k); return c.line ?? c.fill }
 /** The icon on a theme-colored pin: white on a ring color, else the theme's own text color. */
-const pinInk = (k) => { const c = themeColor(k); return c.line ? '#FFFFFF' : c.onFill }
+const pinInk = (k) => { if (k === SPECIAL) return '#FFFFFF'; const c = themeColor(k); return c.line ? '#FFFFFF' : c.onFill }
 /** A cluster wears the color of the theme it has most of (the first theme on a tie, like the app). */
 function clusterTheme(items, filter) {
+  if (filter === SPECIAL) return SPECIAL
   const n = {}
   items.forEach(s => { const k = filter ?? s.themes?.[0] ?? 'taste'; n[k] = (n[k] ?? 0) + 1 })
   return PLACE_THEMES.reduce((best, k) => ((n[k] ?? 0) > (n[best] ?? 0) ? k : best), PLACE_THEMES[0])
@@ -348,6 +352,10 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const cityCenterRef = useRef(null)
   // A seasonal event's live day: the night map (its palette is dark).
   const seasonalLive = useSeasonalLive()
+  const mapEvent = useEventFeature('mapPins')
+  const pumpkins = mapEvent?.key === 'halloween'
+  // The event ended (or its map switch went off) while its filter was on: back to all.
+  useEffect(() => { if (!pumpkins && theme === SPECIAL) setTheme(null) }, [pumpkins, theme])
   const dark = !!seasonalLive || (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark')
   const tiles = mapTiles(dark)
 
@@ -481,7 +489,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const isToday = (s) => !!todayDate && s.lastProofDate === todayDate
   const shown = todayOnly ? spots.filter(isToday) : spots
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => theme === null || s.themes.includes(theme)) : shown
+  const listSpots = results !== null ? results.filter(s => theme === null || theme === SPECIAL || s.themes.includes(theme)) : shown
   // The spot fits today's theme and I haven't played: "Play here today" (the app modal, photos are posted from the app).
   const canPlayHere = !!selected && !!todayTheme && selected.themes.includes(todayTheme) && today?.challenge?.isActive && !today?.myProof
   const areaCentre = areaRef.current ? [(areaRef.current[1] + areaRef.current[3]) / 2, (areaRef.current[0] + areaRef.current[2]) / 2] : center
@@ -525,6 +533,11 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                         aria-pressed={todayOnly} onClick={pickToday}>
                   <Icon name={themeIcon(todayTheme)} size={15} />{t('map.todayChip')}
                 </button>
+              )}
+              {pumpkins && (
+                <button type="button" className={`wm-chip${theme === SPECIAL ? ' wm-chip--on' : ''}`}
+                        style={theme === SPECIAL ? { background: PUMPKIN, borderColor: PUMPKIN, color: '#FFFFFF' } : undefined}
+                        aria-pressed={theme === SPECIAL} onClick={() => pickTheme(SPECIAL)}>{t('map.halloween')}</button>
               )}
               {PLACE_THEMES.map(k => (
                 <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={{ ...ROW, ...(theme === k ? chipOn(k) : null) }}

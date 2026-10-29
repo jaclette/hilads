@@ -845,7 +845,8 @@
     "todayChip": "วันนี้",
     "playHere": "เล่นที่นี่วันนี้",
     "planNow": "ตอนนี้",
-    "planGoing_other": "ไป {{count}} คน"
+    "planGoing_other": "ไป {{count}} คน",
+    "halloween": "🎃 ฮาโลวีน"
   },
   "spot": {
     "rankWeekFirst": "ได้โหวตมากที่สุดสัปดาห์นี้ใน{{city}}",

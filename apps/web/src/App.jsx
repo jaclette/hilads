@@ -17,7 +17,7 @@ import MapScreen from './components/map/MapScreen'
 import { deviceStore } from './components/map/spotsShared'
 import { openAppModal } from './components/AppModal'
 import TodayScreen from './components/today/TodayScreen'
-import { LogoHat, SeasonalDayIcon, TabGhost, useSeasonalLive } from './components/event/seasonal'
+import { LogoHat, SeasonalDayIcon, TabGhost, useEventFeature, useSeasonalLive } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import ChallengeScreen from './components/daily/ChallengeScreen'
@@ -1643,6 +1643,7 @@ export default function App() {
   const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
   // A seasonal event's live day: Today's tab wears its icon (Halloween: a pumpkin).
   const seasonalLive = useSeasonalLive()
+  const chatEvent = useEventFeature('chatChips')
   const installBannerUsesBottomNav = !showCityPicker && !showEventDrawer && !showPeopleDrawer
   const showInstallOnMainSurface = status === 'ready' && (
     (!showCityPicker && !showEventDrawer && !showPeopleDrawer && !showProfileDrawer && !showConversations && !showNotifications && !showCreateEvent && !showEditEvent)
@@ -5856,8 +5857,8 @@ export default function App() {
         )}
 
         {/* A quiet city chat today: three ways to start, prefilled in the composer. */}
-        {city && !activeEvent && channelScope === 'city' && quietToday && (
-          <QuickStart city={shortCityName(city)} themeKey={dailyToday?.challenge?.theme?.key ?? null}
+        {city && !activeEvent && channelScope === 'city' && (quietToday || !!chatEvent) && (
+          <QuickStart city={shortCityName(city)} themeKey={dailyToday?.challenge?.theme?.key ?? null} eventKey={chatEvent?.key ?? null}
                       onPick={(text) => {
                         setInput(text)
                         requestAnimationFrame(() => { const el = chatInputRef.current; if (el) { el.focus(); el.setSelectionRange(text.length, text.length) } })

@@ -846,7 +846,8 @@
     "playHere": "Maglaro dito ngayon",
     "planNow": "ngayon na",
     "planGoing_one": "{{count}} pupunta",
-    "planGoing_other": "{{count}} pupunta"
+    "planGoing_other": "{{count}} pupunta",
+    "halloween": "🎃 Halloween"
   },
   "spot": {
     "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",

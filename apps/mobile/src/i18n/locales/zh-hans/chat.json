@@ -160,6 +160,12 @@
       "night_out": "今晚哪里热闹？",
       "sip": "喝一杯去哪里最好？",
       "only_here": "有什么是这里才有的？"
+    },
+    "halloween": {
+      "boo": "👻 嘘！",
+      "happy": "🎃 {{city}}，万圣节快乐！",
+      "happyNoCity": "🎃 万圣节快乐！",
+      "tonight": "今晚谁出去过万圣节？"
     }
   }
 }

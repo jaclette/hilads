@@ -51,12 +51,13 @@ export function setSeasonalEvent(event) {
   const theme = event ? SEASONAL_THEMES[event.theme] : null
   const next = event && theme ? { event, theme, key: event.theme } : null
   if (next?.event.id === current?.event.id && next?.event.phase === current?.event.phase
-      && next?.event.startsInDays === current?.event.startsInDays) return
+      && next?.event.startsInDays === current?.event.startsInDays
+      && JSON.stringify(next?.event.features) === JSON.stringify(current?.event.features)) return
   current = next
   // Live: the whole app wears the palette (index.css html[data-event]): every
   // tab, the bottom bar, the sheets.
   if (typeof document !== 'undefined') {
-    if (next?.event.phase === 'live') document.documentElement.setAttribute('data-event', next.key)
+    if (next?.event.phase === 'live' && next.event.features?.skin !== false) document.documentElement.setAttribute('data-event', next.key)
     else document.documentElement.removeAttribute('data-event')
   }
   listeners.forEach(l => l())
@@ -74,10 +75,20 @@ export function useSeasonal() {
   return value
 }
 
-/** The live phase's theme, else null. */
+/** The live phase's theme, else null (null too when the event's skin switch is off). */
 export function useSeasonalLive() {
   const s = useSeasonal()
-  return s?.event.phase === 'live' ? s : null
+  return s?.event.phase === 'live' && s.event.features?.skin !== false ? s : null
+}
+
+/**
+ * The live event when one of its features is on (Admin › Daily › Seasonal
+ * events: skin, stickers, stamp, shareFrame, mapPins, chatChips, ambient;
+ * an older server without switches = all on), else null.
+ */
+export function useEventFeature(feature) {
+  const s = useSeasonal()
+  return s?.event.phase === 'live' && s.event.features?.[feature] !== false ? s : null
 }
 
 /** A date (YYYY-MM-DD) is one of the event's days (the week strip's icon). */

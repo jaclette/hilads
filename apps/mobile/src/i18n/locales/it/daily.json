@@ -278,7 +278,8 @@
     "planNow": "ora",
     "planGoing_one": "{{count}} partecipa",
     "planGoing_many": "{{count}} partecipano",
-    "planGoing_other": "{{count}} partecipano"
+    "planGoing_other": "{{count}} partecipano",
+    "halloween": "🎃 Halloween"
   },
   "leaderboard": {
     "tab": "Top 10",

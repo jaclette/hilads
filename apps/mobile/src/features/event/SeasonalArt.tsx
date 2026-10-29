@@ -9,7 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing } from '@/constants';
 import { ThemeOverride } from '@/context/ThemeContext';
-import { useSeasonal, useSeasonalLive } from './seasonal';
+import { useEventFeature, useSeasonal, useSeasonalLive } from './seasonal';
 
 /**
  * A seasonal event's art (Halloween first): drawn, cute, never gory. Every
@@ -291,6 +291,24 @@ function FlyingBat({ size, top, period, delay, run, width }: {
  * The map's live sky (over the night map style): a crescent moon and bats
  * crossing under the search bar. `top`: where the map's top overlay ends.
  */
+/**
+ * Event mode's ambient bats (its "ambient" switch): two bats drifting slowly
+ * across an area (Today's hero, the celebration). Nothing with Reduce motion,
+ * off screen or in the background.
+ */
+export function AmbientBats({ top = 0 }: { top?: number }) {
+  const ambient = useEventFeature('ambient');
+  const run = useMotion(true);
+  const { width } = useWindowDimensions();
+  if (ambient?.key !== 'halloween' || !run) return null;
+  return (
+    <View style={[StyleSheet.absoluteFill, { top }]} pointerEvents="none" {...HIDDEN}>
+      <FlyingBat size={30} top={18} period={14000} delay={0} run={run} width={width} />
+      <FlyingBat size={22} top={64} period={18000} delay={5200} run={run} width={width} />
+    </View>
+  );
+}
+
 export function SeasonalMapSky({ top }: { top: number }) {
   const live = useSeasonalLive();
   const run = useMotion(true);

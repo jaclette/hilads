@@ -44,7 +44,7 @@ import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/fe
 import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/types';
 import { goBack as leave } from '@/lib/nav';
 import { KeyboardForm, useNextField } from '@/ui/keyboard';
-import { BatBurst, SeasonalScope } from '@/features/event/SeasonalArt';
+import { AmbientBats, BatBurst, SeasonalScope } from '@/features/event/SeasonalArt';
 import { setSeasonalEvent, useEventFeature, useSeasonalLive } from '@/features/event/seasonal';
 
 /** A position older than this is refreshed before posting (the distance check). */
@@ -508,6 +508,7 @@ function DailyProofScreenContent() {
           <Button icon="earth-outline" label={t('proof.compareNow')} onPress={() => afterProof('/daily/countries?source=after_proof')} />
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
         </View>
+        <AmbientBats top={60} />
         {stampThunk && challenge.special && <EventStampThunk name={challenge.special.name} onDone={() => setStampThunk(false)} />}
       </SafeAreaView>
     );

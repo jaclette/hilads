@@ -276,7 +276,8 @@
     "playHere": "Spiel heute hier",
     "planNow": "jetzt",
     "planGoing_one": "{{count}} dabei",
-    "planGoing_other": "{{count}} dabei"
+    "planGoing_other": "{{count}} dabei",
+    "halloween": "🎃 Halloween"
   },
   "leaderboard": {
     "tab": "Top 10",

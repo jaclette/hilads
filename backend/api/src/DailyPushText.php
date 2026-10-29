@@ -21,6 +21,7 @@ final class DailyPushText
         'did_friend_others_one', 'theme_hidden_gem', 'theme_taste', 'theme_get_around', 'theme_local_find', 'theme_night_out',
         'theme_sip', 'theme_only_here', 'theme_special', 'city_streak', 'tour', 'answered_countries', 'first_vote_city', 'title_world', 'morning_add',
         'vote_reminder', 'new_photo_title', 'new_photo_title_nocity', 'new_photo_see',
+        'halloween_title', 'halloween_body', 'halloween_body_nocity',
     ];
 
     private const T = [
@@ -69,6 +70,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} vient de jouer à {city} !",
             'new_photo_title_nocity' => "📸 {name} vient de jouer !",
             'new_photo_see' => "Viens voir sa photo 👀",
+            'halloween_title' => "👻 La chasse d'Halloween est ouverte",
+            'halloween_body' => "Une photo qui fait peur pour {city} !",
+            'halloween_body_nocity' => "Une photo qui fait peur pour ta ville !",
         ],
         'vi' => [
             'world' => "Hôm qua ảnh của bạn đứng #{rank} thế giới.",
@@ -115,6 +119,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} vừa chơi ở {city}!",
             'new_photo_title_nocity' => "📸 {name} vừa chơi!",
             'new_photo_see' => "Vào xem bạn ấy tìm được gì 👀",
+            'halloween_title' => "👻 Cuộc săn Halloween bắt đầu",
+            'halloween_body' => "Một bức ảnh rùng rợn cho {city}!",
+            'halloween_body_nocity' => "Một bức ảnh rùng rợn cho thành phố của bạn!",
         ],
         'es' => [
             'world' => "Ayer tu foto quedó #{rank} en el mundo.",
@@ -161,6 +168,9 @@ final class DailyPushText
             'new_photo_title' => "📸 ¡{name} acaba de jugar en {city}!",
             'new_photo_title_nocity' => "📸 ¡{name} acaba de jugar!",
             'new_photo_see' => "Ven a ver lo que encontró 👀",
+            'halloween_title' => "👻 Empieza la caza de Halloween",
+            'halloween_body' => "¡Una foto terrorífica para {city}!",
+            'halloween_body_nocity' => "¡Una foto terrorífica para tu ciudad!",
         ],
         'it' => [
             'world' => "Ieri la tua foto era #{rank} nel mondo.",
@@ -207,6 +217,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} ha appena giocato a {city}!",
             'new_photo_title_nocity' => "📸 {name} ha appena giocato!",
             'new_photo_see' => "Vieni a vedere cosa ha trovato 👀",
+            'halloween_title' => "👻 La caccia di Halloween è aperta",
+            'halloween_body' => "Uno scatto da paura per {city}!",
+            'halloween_body_nocity' => "Uno scatto da paura per la tua città!",
         ],
         'pt-br' => [
             'world' => "Ontem sua foto ficou em #{rank} no mundo.",
@@ -253,6 +266,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} acabou de jogar em {city}!",
             'new_photo_title_nocity' => "📸 {name} acabou de jogar!",
             'new_photo_see' => "Vem ver o que encontrou 👀",
+            'halloween_title' => "👻 A caça de Halloween começou",
+            'halloween_body' => "Uma foto assustadora por {city}!",
+            'halloween_body_nocity' => "Uma foto assustadora pela sua cidade!",
         ],
         'pt-pt' => [
             'world' => "Ontem a tua foto ficou em #{rank} no mundo.",
@@ -299,6 +315,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} acabou de jogar em {city}!",
             'new_photo_title_nocity' => "📸 {name} acabou de jogar!",
             'new_photo_see' => "Vem ver o que encontrou 👀",
+            'halloween_title' => "👻 A caça de Halloween começou",
+            'halloween_body' => "Uma foto assustadora por {city}!",
+            'halloween_body_nocity' => "Uma foto assustadora pela tua cidade!",
         ],
         'de' => [
             'world' => "Gestern war dein Foto #{rank} weltweit.",
@@ -345,6 +364,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} hat gerade in {city} gespielt!",
             'new_photo_title_nocity' => "📸 {name} hat gerade gespielt!",
             'new_photo_see' => "Schau, was dabei rauskam 👀",
+            'halloween_title' => "👻 Die Halloween-Jagd läuft",
+            'halloween_body' => "Ein gruseliges Foto für {city}!",
+            'halloween_body_nocity' => "Ein gruseliges Foto für deine Stadt!",
         ],
         'nl' => [
             'world' => "Gisteren was je foto #{rank} wereldwijd.",
@@ -391,6 +413,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} speelde net in {city}!",
             'new_photo_title_nocity' => "📸 {name} speelde net!",
             'new_photo_see' => "Kom kijken wat het werd 👀",
+            'halloween_title' => "👻 De Halloween-jacht is begonnen",
+            'halloween_body' => "Eén griezelige foto voor {city}!",
+            'halloween_body_nocity' => "Eén griezelige foto voor je stad!",
         ],
         'zh-hans' => [
             'world' => "昨天你的照片在全球排名第 {rank}。",
@@ -437,6 +462,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name}刚刚在{city}参加了挑战！",
             'new_photo_title_nocity' => "📸 {name}刚刚参加了挑战！",
             'new_photo_see' => "快来看看拍到了什么 👀",
+            'halloween_title' => "👻 万圣节狩猎开始了",
+            'halloween_body' => "为{city}拍一张吓人的照片！",
+            'halloween_body_nocity' => "为你的城市拍一张吓人的照片！",
         ],
         'zh-hant' => [
             'world' => "昨天你的照片在全球排名第 {rank}。",
@@ -483,6 +511,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name}剛剛在{city}參加了挑戰！",
             'new_photo_title_nocity' => "📸 {name}剛剛參加了挑戰！",
             'new_photo_see' => "快來看看拍到了什麼 👀",
+            'halloween_title' => "👻 萬聖節狩獵開始了",
+            'halloween_body' => "為{city}拍一張嚇人的照片！",
+            'halloween_body_nocity' => "為你的城市拍一張嚇人的照片！",
         ],
         'ja' => [
             'world' => "昨日のあなたの写真は世界で{rank}位でした。",
@@ -529,6 +560,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name}さんが{city}で参加しました！",
             'new_photo_title_nocity' => "📸 {name}さんが参加しました！",
             'new_photo_see' => "どんな写真か見てみよう 👀",
+            'halloween_title' => "👻 ハロウィンハント開始",
+            'halloween_body' => "{city}のために不気味な一枚を！",
+            'halloween_body_nocity' => "あなたの街のために不気味な一枚を！",
         ],
         'ko' => [
             'world' => "어제 당신의 사진은 세계 {rank}위였어요.",
@@ -575,6 +609,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name}님이 {city}에서 참여했어요!",
             'new_photo_title_nocity' => "📸 {name}님이 참여했어요!",
             'new_photo_see' => "무엇을 찾았는지 보러 가요 👀",
+            'halloween_title' => "👻 할로윈 사냥 시작",
+            'halloween_body' => "{city}을 위한 으스스한 사진 한 장!",
+            'halloween_body_nocity' => "우리 도시를 위한 으스스한 사진 한 장!",
         ],
         'fil' => [
             'world' => "Kahapon, #{rank} sa mundo ang litrato mo.",
@@ -621,6 +658,9 @@ final class DailyPushText
             'new_photo_title' => "📸 Kakalaro lang ni {name} sa {city}!",
             'new_photo_title_nocity' => "📸 Kakalaro lang ni {name}!",
             'new_photo_see' => "Tingnan kung ano ang nahanap niya 👀",
+            'halloween_title' => "👻 Simula na ang Halloween hunt",
+            'halloween_body' => "Isang nakakatakot na photo para sa {city}!",
+            'halloween_body_nocity' => "Isang nakakatakot na photo para sa lungsod mo!",
         ],
         'th' => [
             'world' => "เมื่อวานรูปของคุณอยู่อันดับ #{rank} ของโลก",
@@ -667,6 +707,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} เพิ่งเล่นที่{city}!",
             'new_photo_title_nocity' => "📸 {name} เพิ่งเล่น!",
             'new_photo_see' => "มาดูกันว่าเจออะไร 👀",
+            'halloween_title' => "👻 ล่าฮาโลวีนเริ่มแล้ว",
+            'halloween_body' => "รูปสยองหนึ่งรูปเพื่อ {city}!",
+            'halloween_body_nocity' => "รูปสยองหนึ่งรูปเพื่อเมืองของคุณ!",
         ],
         'id' => [
             'world' => "Kemarin fotomu peringkat #{rank} di dunia.",
@@ -713,6 +756,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} baru saja main di {city}!",
             'new_photo_title_nocity' => "📸 {name} baru saja main!",
             'new_photo_see' => "Yuk lihat apa yang ditemukan 👀",
+            'halloween_title' => "👻 Perburuan Halloween dimulai",
+            'halloween_body' => "Satu foto seram untuk {city}!",
+            'halloween_body_nocity' => "Satu foto seram untuk kotamu!",
         ],
         'hi' => [
             'world' => "कल आपकी फ़ोटो दुनिया में #{rank} पर थी।",
@@ -759,6 +805,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} ने अभी {city} में खेला!",
             'new_photo_title_nocity' => "📸 {name} ने अभी खेला!",
             'new_photo_see' => "आओ देखो क्या मिला 👀",
+            'halloween_title' => "👻 हैलोवीन हंट शुरू",
+            'halloween_body' => "{city} के लिए एक डरावनी फ़ोटो!",
+            'halloween_body_nocity' => "अपने शहर के लिए एक डरावनी फ़ोटो!",
         ],
         'ru' => [
             'world' => "Вчера твоё фото было #{rank} в мире.",
@@ -805,6 +854,9 @@ final class DailyPushText
             'new_photo_title' => "📸 {name} уже в игре: {city}!",
             'new_photo_title_nocity' => "📸 {name} уже в игре!",
             'new_photo_see' => "Посмотри, что получилось 👀",
+            'halloween_title' => "👻 Охота на Хэллоуин началась",
+            'halloween_body' => "Одно жуткое фото за {city}!",
+            'halloween_body_nocity' => "Одно жуткое фото за свой город!",
         ],
         'ar' => [
             'world' => "أمس كانت صورتك #{rank} في العالم.",
@@ -851,6 +903,9 @@ final class DailyPushText
             'new_photo_title' => "📸 لعب {name} للتو في {city}!",
             'new_photo_title_nocity' => "📸 لعب {name} للتو!",
             'new_photo_see' => "تعال وشاهد ما وجده 👀",
+            'halloween_title' => "👻 بدأ صيد الهالوين",
+            'halloween_body' => "صورة مخيفة واحدة من أجل {city}!",
+            'halloween_body_nocity' => "صورة مخيفة واحدة من أجل مدينتك!",
         ],
     ];
 

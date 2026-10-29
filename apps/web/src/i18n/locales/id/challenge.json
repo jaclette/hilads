@@ -845,7 +845,8 @@
     "todayChip": "Hari ini",
     "playHere": "Main di sini hari ini",
     "planNow": "sekarang",
-    "planGoing_other": "{{count}} ikut"
+    "planGoing_other": "{{count}} ikut",
+    "halloween": "🎃 Halloween"
   },
   "spot": {
     "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",

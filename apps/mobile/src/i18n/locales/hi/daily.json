@@ -276,7 +276,8 @@
     "playHere": "आज यहाँ खेलो",
     "planNow": "अभी",
     "planGoing_one": "{{count}} जा रहा है",
-    "planGoing_other": "{{count}} जा रहे हैं"
+    "planGoing_other": "{{count}} जा रहे हैं",
+    "halloween": "🎃 हैलोवीन"
   },
   "leaderboard": {
     "tab": "Top 10",

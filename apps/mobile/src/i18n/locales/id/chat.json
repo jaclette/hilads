@@ -160,6 +160,12 @@
       "night_out": "Di mana pestanya malam ini?",
       "sip": "Tempat terbaik buat minum?",
       "only_here": "Apa yang cuma ada di sini?"
+    },
+    "halloween": {
+      "boo": "👻 Bu!",
+      "happy": "🎃 Selamat Halloween, {{city}}!",
+      "happyNoCity": "🎃 Selamat Halloween!",
+      "tonight": "Siapa yang keluar malam ini untuk Halloween?"
     }
   }
 }

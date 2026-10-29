@@ -845,7 +845,8 @@
     "todayChip": "今日",
     "playHere": "今日ここでプレイ",
     "planNow": "開催中",
-    "planGoing_other": "{{count}}人参加"
+    "planGoing_other": "{{count}}人参加",
+    "halloween": "🎃 ハロウィン"
   },
   "spot": {
     "rankWeekFirst": "今週{{city}}で最多得票",

@@ -862,7 +862,8 @@
     "planGoing_two": "شخصان ذاهبان",
     "planGoing_few": "{{count}} ذاهبون",
     "planGoing_many": "{{count}} ذاهبًا",
-    "planGoing_other": "{{count}} ذاهب"
+    "planGoing_other": "{{count}} ذاهب",
+    "halloween": "🎃 هالوين"
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",
