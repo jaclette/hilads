@@ -15,7 +15,8 @@ import { track } from '@/services/analytics';
 import { CommentButton } from '@/features/daily/CommentButton';
 import { commentsTargetOf, PhotoCommentsHost, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, IconButton } from '@/ui';
+import { Button, CityFlag, DualPhoto, IconButton } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { BackHomeBlock } from '@/features/compare/BackHomeBlock';
 import { useMoney } from '@/features/compare/money';
@@ -130,14 +131,17 @@ export default function TourScreen() {
 
   return (
     <View style={styles.wrap} {...pan.panHandlers} testID="daily-tour">
-      {cover && <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} />}
-      <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
-      <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
-
-      {/* Tap zones: the left third goes back, the rest forward; hold to pause. */}
+      {/* Tap zones: the left third goes back, the rest forward; hold to pause. The photo over them lets
+          touches through; its selfie inset (dual photo) catches its own taps. */}
       <Pressable style={StyleSheet.absoluteFill} onPress={e => go(e.nativeEvent.locationX < 120 ? index - 1 : index + 1)}
                  onLongPress={() => setPaused(true)} onPressOut={() => setPaused(false)} delayLongPress={250}
                  accessibilityRole="button" accessibilityLabel={t('tour.next')} />
+      {!last && proof
+        ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
+                     transition={120} insetTop={insets.top + 64} />
+        : cover && <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} pointerEvents="none" />}
+      <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
+      <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
 
       <View style={[styles.top, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
         <View style={styles.bars}>

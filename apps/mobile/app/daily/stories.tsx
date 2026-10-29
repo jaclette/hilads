@@ -3,7 +3,6 @@ import {
   AccessibilityInfo, ActivityIndicator, Animated, Easing, PanResponder, Pressable, Text, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -16,7 +15,8 @@ import { track } from '@/services/analytics';
 import { localizeCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
-import { Avatar, IconButton } from '@/ui';
+import { Avatar, DualPhoto, IconButton } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { FlagSticker } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
@@ -164,14 +164,14 @@ function Stories() {
 
   return (
     <View style={styles.wrap} {...pan.panHandlers} testID="today-stories">
+      {/* The tap zones first: the photo over them lets touches through, its selfie inset catches its own (swap, drag to a corner). */}
+      {proof && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
-        ? <Image source={{ uri: proof.photoUrl }} placeholder={proof.thumbUrl ? { uri: proof.thumbUrl } : undefined}
-                 style={StyleSheet.absoluteFill} contentFit="cover" transition={120} />
+        ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
+                     transition={120} draggable insetTop={insets.top + 76} />
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
-
-      {proof && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
 
       <View style={[styles.top, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
         {/* One segment per photo of the city: done, filling, to come. */}

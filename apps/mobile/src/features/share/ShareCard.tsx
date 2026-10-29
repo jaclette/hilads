@@ -44,7 +44,9 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
     // One more frame so the images are on screen before the capture.
     requestAnimationFrame(() => setTimeout(onReady, 120));
   };
-  const loadedOne = () => { loaded.current += 1; if (loaded.current >= 2) ready(); };
+  // The logo and the photo, plus the selfie inset of a dual photo.
+  const selfie = content.type === 'proof' ? content.selfieUrl ?? null : null;
+  const loadedOne = () => { loaded.current += 1; if (loaded.current >= (selfie ? 3 : 2)) ready(); };
   useEffect(() => {
     const timer = setTimeout(ready, READY_TIMEOUT_MS);
     return () => clearTimeout(timer);
@@ -121,6 +123,7 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
   return (
     <View ref={ref} collapsable={false} style={s.card}>
       <Image source={cover} style={s.fill} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />
+      {!!selfie && <Image source={{ uri: selfie }} style={s.selfie} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />}
       <Svg width={W} height={u(640)} style={s.fill}>
         <Defs>
           <LinearGradient id="shareTop" x1="0" y1="0" x2="0" y2="1">
@@ -182,6 +185,7 @@ const HILADS_INDEX = 'Hilads Index';
 const s = {
   card:      { width: W, height: u(640), backgroundColor: '#1A1410', overflow: 'hidden' },
   fill:      { position: 'absolute', top: 0, left: 0, width: W, height: u(640) },
+  selfie:    { position: 'absolute', top: u(86), right: u(16), width: u(92), height: u(122), borderRadius: u(14), borderWidth: u(3), borderColor: white, zIndex: 1 },
   badge:     { position: 'absolute', top: u(84), left: u(24), paddingHorizontal: u(14), paddingVertical: u(7), borderRadius: u(999), backgroundColor: '#D9AE52' },
   badgeText: { fontFamily: appFont('800'), fontSize: u(15), color: '#1A1206' },
   bottom:    { position: 'absolute', left: u(24), right: u(24), bottom: u(96) },

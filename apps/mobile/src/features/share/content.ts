@@ -17,6 +17,8 @@ type ThemeKey = DailyThemeKey | 'special';
 
 export type ShareContent =
   | { type: 'proof'; id: string; photoUrl: string; theme: ThemeKey | null; themeLabel?: string | null; text: string; city: City; username: string | null;
+      /** Dual photo: the selfie drawn as an inset in a corner of the photo. */
+      selfieUrl?: string | null;
       rank: { rank: number; city: string | null } | null;
       /** Today's question and my answer, for the share line (COPY.md). */
       question?: string | null; answer?: string | null }
@@ -36,7 +38,7 @@ export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareC
   const world = proof.worldRank !== null && proof.worldRank <= 3 ? proof.worldRank : null;
   const city = proof.cityRank !== null && proof.cityRank <= 3 ? proof.cityRank : null;
   return {
-    type: 'proof', id: proof.id, photoUrl: proof.photoUrl, theme: challenge.theme?.key ?? null, text: challenge.text,
+    type: 'proof', id: proof.id, photoUrl: proof.photoUrl, selfieUrl: proof.selfieUrl ?? null, theme: challenge.theme?.key ?? null, text: challenge.text,
     themeLabel: challenge.theme ? themeName(challenge.theme.key, { special: challenge.special, city: proof.city?.name }) : null,
     city: proof.city, username: proof.user.username ?? null,
     rank: world ? { rank: world, city: null } : city && proof.city?.name ? { rank: city, city: proof.city.name } : null,

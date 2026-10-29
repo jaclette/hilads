@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { CityName, Photo } from '@/ui';
+import { CityName, DualPhoto, Photo } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
@@ -32,7 +33,9 @@ export function DailyProofTile({ proof, onPress, compact = false, mainAnswer = n
   if (compact) return <CompactTile proof={proof} onPress={onPress} mainAnswer={mainAnswer} />;
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
-      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />
+      {proof.selfieUrl
+        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
+        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
       {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
       <View style={styles.meta}>
         <View style={styles.nameRow}>
@@ -77,7 +80,9 @@ function CompactTile({ proof, onPress, mainAnswer }: { proof: DailyProof; onPres
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button"
                       accessibilityLabel={[name, answer ? answerText(answer, i18n.language) : null, proof.caption].filter(Boolean).join(', ')}>
-      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />
+      {proof.selfieUrl
+        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
+        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
       {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
       <View style={styles.meta}>
         <View style={styles.compactRow}>

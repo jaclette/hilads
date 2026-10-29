@@ -17,7 +17,8 @@ import { track } from '@/services/analytics';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
-import { Avatar, Button, IconButton, ModeLabel, Photo } from '@/ui';
+import { Avatar, Button, DualPhoto, IconButton, ModeLabel, Photo } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { Confetti, FlagSticker, onFillOf, themeColor } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
@@ -286,6 +287,8 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
+  // The selfie inset sits below the feed's tabs.
+  const insetTop = useSafeAreaInsets().top + 64;
   const { state, canVote, voteLabel, press } = useCastVote({
     proofId: proof.id, date: proof.date, cityName: proof.city?.name ?? null, cityId: proof.city?.id ?? null, source: 'photos',
   });
@@ -325,8 +328,8 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
       <View style={[StyleSheet.absoluteFill, styles.blurShade]} />
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} accessibilityRole="image"
                  accessibilityLabel={[name, proof.city?.name, title].filter(Boolean).join(', ')} accessibilityHint={t('feed.doubleTap')}>
-        <Image source={{ uri: proof.photoUrl }} placeholder={proof.thumbUrl ? { uri: proof.thumbUrl } : undefined}
-               style={StyleSheet.absoluteFill} contentFit="contain" transition={150} />
+        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
+                   contentFit="contain" insetTop={insetTop} />
       </Pressable>
       <Animated.View pointerEvents="none" style={[styles.burst, {
         opacity: burst.interpolate({ inputRange: [0, 0.15, 0.7, 1], outputRange: [0, 1, 1, 0] }),

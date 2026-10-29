@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
-import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { CityName, Photo } from '@/ui';
+import { CityName, DualPhoto, Photo } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
 import { BackHomeBlock } from '@/features/compare/BackHomeBlock';
@@ -72,9 +72,9 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
         {/* Pulling down past the top (iOS bounce) closes it like a swipe-down modal; Android back closes it too. */}
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}
                     onScrollEndDrag={e => { if (e.nativeEvent.contentOffset.y < -70) onClose(); }}>
-        <Image source={{ uri: proof.photoUrl }} contentFit="contain"
-               style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
-               onLoad={e => { if (e.source.width && e.source.height) setRatio(e.source.width / e.source.height); }} />
+        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} contentFit="contain"
+                   style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
+                   onLoadMain={s => { if (s.width && s.height) setRatio(s.width / s.height); }} />
         <View style={styles.meta}>
           <View style={styles.nameRow}>
             <Text style={styles.name}>{name}</Text>

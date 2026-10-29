@@ -17,7 +17,8 @@ import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
-import { BrandMark, CityFlag, CityName, Photo } from '@/ui';
+import { BrandMark, CityFlag, CityName, DualPhoto, Photo } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { themeColor } from '@/ui/joy';
 import { getLastToday } from '@/hooks/useDaily';
 import { useVoteState } from './votes';
@@ -49,6 +50,8 @@ type ProofPayload = {
   proofId: string; challengeId: string; date: string; challengeText: string;
   user: DailyPerson; isLocal: boolean; city: { id: number; name: string; country?: string | null } | null;
   photoUrl: string; thumbUrl: string | null; caption: string | null;
+  /** Dual photo (absent on older cards and single photos). */
+  selfieUrl?: string | null; selfieThumbUrl?: string | null;
   isEarly?: boolean;
   /** V3-09 (absent on older cards). */
   theme?: { key: DailyThemeKey; name: string } | null;
@@ -257,7 +260,7 @@ function ProofCard({ message, reactions, time, longPress }: {
   const name = p.user?.displayName || p.user?.username || message.nickname || '';
   // Comments live on the photo, not on this message (one thread wherever it shows).
   const target: CommentsTarget = {
-    proofId: p.proofId, thumbUrl: p.thumbUrl ?? p.photoUrl, author: p.user ?? null,
+    proofId: p.proofId, thumbUrl: p.thumbUrl ?? p.photoUrl, selfieThumb: p.selfieThumbUrl ?? p.selfieUrl ?? null, author: p.user ?? null,
     city: p.city ?? null, theme: p.theme?.key ?? null, isMine: !!account && account.id === p.user?.id,
   };
   const share = () => { shareLink({ title: name, message: p.caption || p.challengeText || '', url: proofUrl(p.proofId!) }).catch(() => {}); };
@@ -304,7 +307,10 @@ function ProofCard({ message, reactions, time, longPress }: {
             <Ionicons name="ellipsis-horizontal" size={18} color={colors.muted} />
           </TouchableOpacity>
         </View>
-        <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.photo} contentFit="cover" transition={150} />
+        {/* Dual photo: tap the selfie inset to swap (the rest of the card opens the photo). */}
+        {p.selfieUrl
+          ? <DualPhoto main={{ uri: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} style={styles.photo} />
+          : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (
           <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>

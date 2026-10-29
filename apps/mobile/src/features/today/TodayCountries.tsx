@@ -16,7 +16,8 @@ import { useHere } from '@/hooks/useDaily';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { lastTour, rememberTour } from '@/features/tour/store';
 import { track } from '@/services/analytics';
-import { Avatar, Photo, SectionTitle } from '@/ui';
+import { Avatar, DualPhoto, Photo, SectionTitle } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import { FlagSticker, themeColor } from '@/ui/joy';
 import type { DailyCityGroup, DailyProof, DailyToday, DailyTodayCountries, DailyTour } from '@/types';
 import { todayCities } from './useTodayCountries';
@@ -213,7 +214,9 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
       {pile && group.count > 2 && <View style={[styles.layer, styles.layerBack2, { backgroundColor: pileColor }]} />}
       <View style={styles.card}>
         <View style={styles.photo}>
-          <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+          {p.selfieUrl
+            ? <DualPhoto main={{ uri: p.thumbUrl ?? p.photoUrl }} selfie={selfieOf(p)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
+            : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
           {pile && (
             <View style={styles.pill}>
               <Ionicons name="camera" size={12} color={colors.white} />

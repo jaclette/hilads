@@ -7,7 +7,8 @@ import { Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchMyDailyPhotos } from '@/api/daily';
-import { EmptyState, Photo, ScreenHeader } from '@/ui';
+import { EmptyState, DualPhoto, Photo, ScreenHeader } from '@/ui';
+import { selfieOf } from '@/features/daily/selfie';
 import type { DailyProof } from '@/types';
 
 const COLUMNS = 3;
@@ -45,7 +46,9 @@ export default function MyPhotosScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => router.push(`/daily/${item.date}?proof=${item.id}` as never)} accessibilityRole="button"
                               accessibilityLabel={[item.city?.name, item.caption].filter(Boolean).join(', ')}>
-              <Photo thumb={item.thumbUrl} full={item.photoUrl} style={[styles.photo, { width: size, height: size }]} contentFit="cover" />
+              {item.selfieUrl
+                ? <DualPhoto main={{ uri: item.thumbUrl ?? item.photoUrl }} selfie={selfieOf(item)} style={[styles.photo, { width: size, height: size }]} inset="small" interactive={false} />
+                : <Photo thumb={item.thumbUrl} full={item.photoUrl} style={[styles.photo, { width: size, height: size }]} contentFit="cover" />}
             </TouchableOpacity>
           )}
         />

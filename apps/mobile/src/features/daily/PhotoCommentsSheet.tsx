@@ -45,6 +45,8 @@ export const COMMENT_MAX = 300;
 export interface CommentsTarget {
   proofId:   string;
   thumbUrl?: string | null;
+  /** Dual photo: the selfie, drawn small over the header's thumbnail. */
+  selfieThumb?: string | null;
   author?:   { id: string; username: string | null; displayName: string | null; photoUrl: string | null } | null;
   city?:     { name: string; country?: string | null } | null;
   theme?:    string | null;
@@ -56,7 +58,7 @@ export interface CommentsTarget {
 /** A target from a full proof (viewers, story viewer, passport). */
 export function commentsTargetOf(p: DailyProof, focusCommentId?: number | null): CommentsTarget {
   return {
-    proofId: p.id, thumbUrl: p.thumbUrl ?? p.photoUrl, author: p.user,
+    proofId: p.id, thumbUrl: p.thumbUrl ?? p.photoUrl, selfieThumb: p.selfieThumbUrl ?? p.selfieUrl ?? null, author: p.user,
     city: p.city ? { name: p.city.name, country: p.city.country } : null,
     theme: p.context?.theme?.key ?? null, isMine: p.isMine, focusCommentId,
   };
@@ -272,7 +274,12 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
     <Sheet visible onClose={onClose} closeLabel={t('comments.close')} style={[styles.sheet, sheetStyle]}>
       {/* ── Header: the photo, its author and city, its theme, the count ── */}
       <View style={styles.header}>
-        {!!target.thumbUrl && <Image source={{ uri: thumbUrl(target.thumbUrl) }} style={styles.thumb} contentFit="cover" />}
+        {!!target.thumbUrl && (
+          <View>
+            <Image source={{ uri: thumbUrl(target.thumbUrl) }} style={styles.thumb} contentFit="cover" />
+            {!!target.selfieThumb && <Image source={{ uri: target.selfieThumb }} style={styles.thumbSelfie} contentFit="cover" />}
+          </View>
+        )}
         <View style={styles.headerBody}>
           <Text style={styles.title} accessibilityRole="header">
             {t('comments.title')}{count > 0 ? ` · ${count}` : ''}
@@ -574,6 +581,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   header:      { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingBottom: 10,
                  borderBottomWidth: 1, borderBottomColor: c.line },
   thumb:       { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3 },
+  thumbSelfie: { position: 'absolute', right: -6, bottom: -6, width: 22, height: 28, borderRadius: 6, borderWidth: 1.5, borderColor: c.bg2, backgroundColor: c.bg3 },
   headerBody:  { flex: 1, minWidth: 0 },
   title:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   byline:      { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: 2 },
