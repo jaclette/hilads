@@ -1130,7 +1130,8 @@
       "done": "已完成",
       "pending": "等待審核",
       "missed": "未完成",
-      "none": "沒有 challenge"
+      "none": "沒有 challenge",
+      "keep": "今天參加，保持連續紀錄"
     },
     "calendar": {
       "title": "我的 Daily Challenges",
@@ -1206,7 +1207,9 @@
         "invalid_twist": "Local Twist 請少於 280 個字元。",
         "twist_not_allowed": "只有正在 live 的城市的在地人才能加入 Local Twist。",
         "moderation_blocked": "你的提議被審核擋下了，請換個說法。"
-      }
+      },
+      "linkAsk": "有挑戰的點子嗎？",
+      "linkCta": "提出來"
     },
     "early": {
       "badge": "搶先",
@@ -1228,17 +1231,13 @@
       "countries_other": "{{count}} 個國家",
       "proofsIn": "來自{{countries}}的{{proofs}}",
       "podiumTitle": "昨日頒獎台",
-      "spotsIn": "{{city}}的地點",
       "allPast": "所有往期挑戰",
       "archiveTitle": "往期挑戰",
       "archiveAll": "全部主題",
       "archiveEmpty": "這裡還沒有往期挑戰。",
       "archiveMore": "顯示更多",
       "seeAll": "查看全部",
-      "spotsTitle": "你附近的地點",
       "openMap": "打開地圖",
-      "spotsFallback": "你的城市還沒有地點。最近的是：",
-      "spotsEmpty": "這裡還沒有地點。參加今天的 challenge，把第一個地點放到地圖上。",
       "seeMine": "查看你的照片",
       "votes_one": "{{count}} 票",
       "votes_other": "{{count}} 票",
@@ -1252,11 +1251,11 @@
         "none": "無照片"
       },
       "links": {
-        "pastSub": "往日的照片",
-        "proposeSub": "你的點子可能成為大家的挑戰",
         "twistTitle": "提議明天的 Local Twist",
         "twistSub": "限在地人，截至 {{time}}"
-      }
+      },
+      "spotsTeaser_other": "你附近有 {{count}} 個地點",
+      "spotsTeaserIn_other": "{{city}}有 {{count}} 個地點"
     },
     "spot": {
       "rankWeekFirst": "本週{{city}}得票最多",

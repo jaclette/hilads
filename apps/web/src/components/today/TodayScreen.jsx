@@ -10,14 +10,12 @@ import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { IndexCarousel } from '../daily/Comparisons'
 import TodayCountries, { YesterdayRecap, todayCities, useTodayCountries } from './TodayCountries'
-import { CityFlag } from '../CityName'
 import {
   challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { coverImage } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { PhotoCredit, PickBadge } from '../map/Pick'
 import { FlagSticker, Wordmark, themeColor } from '../joy/Joy'
 import { SeasonalDayIcon, SeasonalHeroDecor, SeasonalTeaser, isEventDay, setSeasonalEvent, useSeasonal, useSeasonalAttr, useSeasonalLive } from '../event/seasonal'
 
@@ -29,17 +27,12 @@ const HERO_CTA_TONE = 'white'
 
 const addDays = (date, n) => ymd(new Date(Date.parse(`${date}T12:00:00Z`) + n * 86400000))
 
-/** "350 m" / "1.2 km". */
-function distance(m, lang) {
-  if (m < 1000) return `${Math.round(m / 10) * 10 || m} m`
-  const km = m / 1000
-  return `${new Intl.NumberFormat(lang, { maximumFractionDigits: km < 10 ? 1 : 0 }).format(km)} km`
-}
-
 /**
- * TODAY, the web home (W2, the app's Today tab, SPEC 9.3): the Daily Challenge
- * ticket, the week strip, today's proofs, yesterday's podium and Spots near
- * you (or in the chosen city). Proofs are posted from the app: "Take the challenge" opens the store.
+ * TODAY, the web home (W2, the app's Today tab, SPEC 9.3, V3 polish): the
+ * Daily Challenge hero, the seasonal banner, today's photos by city, your week
+ * (streak, tomorrow), yesterday with every past challenge, the Index, a slim
+ * row to the spots near you and "Got a challenge idea? Propose it". Proofs are
+ * posted from the app: "Take the challenge" opens the store.
  */
 export default function TodayScreen({ header }) {
   const { i18n } = useDc()
@@ -84,12 +77,14 @@ export default function TodayScreen({ header }) {
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
         <TodayCountries today={data} data={countries} />
-        {/* Yesterday's recap: the winning photo, the question, how many cities played. */}
-        <YesterdayRecap today={data} />
+        {/* Your week: the streak, tomorrow's theme and the week strip. */}
         <Week today={data} />
+        {/* Yesterday's recap (the winning photo, the question, how many cities played) and every past challenge. */}
+        <YesterdayRecap today={data} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel />
         <SpotsNear />
+        <ProposeLink />
       </div>
     </div>
   )
@@ -319,7 +314,15 @@ function LiveStrip({ cities, mineIn, city, active, onClick }) {
   )
 }
 
-/** The week strip: the streak (→ calendar), tomorrow's theme, Monday to Sunday, "Propose a challenge". */
+/** The streak last shown on Today (this page session): a higher one bumps the flame. */
+let shownStreak = null
+
+/**
+ * "Your week" (SPEC 9.3, V3 polish 3.1), one card: the streak (→ calendar; it
+ * bumps when it grows after a photo) and tomorrow's theme in its own color,
+ * then Monday to Sunday; "Play today to keep your streak" when a streak of 2+
+ * waits for today's photo. A live city's local still finds tomorrow's Local Twist at the bottom.
+ */
 function Week({ today }) {
   const { t, i18n } = useDc()
   // A seasonal event (teaser, live, recap): its days show its icon (Halloween: a pumpkin).
@@ -328,12 +331,23 @@ function Week({ today }) {
   const { account, openDaily, needAccount } = useDaily()
   const [cal, setCal] = useState(null)
   const [peek, setPeek] = useState(false)
+  const [bump, setBump] = useState(0)
   const now = ymd(new Date())
   // The week's themes are public (the challenges' themes, else the weekday
   // defaults): loaded for everyone; my statuses and streak only come signed in.
   useEffect(() => {
     fetchDailyCalendar(addDays(now, -8), addDays(now, 8)).then(setCal).catch(() => {})
   }, [account?.id, now]) // eslint-disable-line react-hooks/exhaustive-deps
+  const streak = today?.streak ?? cal?.streak?.current ?? null
+  // The streak grew since Today last showed it (a photo just went in): bump the flame and the number (CSS, none with reduced motion).
+  useEffect(() => {
+    if (streak === null) return
+    const grew = shownStreak !== null && streak > shownStreak
+    shownStreak = streak
+    if (!grew) return
+    navigator.vibrate?.(12)
+    setBump(b => b + 1)
+  }, [streak])
 
   const current = cal?.today ?? today?.challenge?.date ?? null
   if (!current) return null
@@ -341,7 +355,8 @@ function Week({ today }) {
   const monday = addDays(current, -dow)
   const byDate = new Map((cal?.days ?? []).map(d => [d.date, d]))
   const week = Array.from({ length: 7 }, (_, i) => addDays(monday, i))
-  const streak = today?.streak ?? cal?.streak?.current ?? null
+  // Today not played yet and a streak worth keeping: say so under the week.
+  const atRisk = !!account && !today?.myProof && !!today?.challenge?.isActive && (streak ?? 0) >= 2
   const tomorrowTheme = today?.tomorrow?.theme ?? byDate.get(addDays(current, 1))?.theme ?? null
   const tomorrowSpecial = today?.tomorrow?.special ?? byDate.get(addDays(current, 1))?.special ?? null
 
@@ -361,16 +376,24 @@ function Week({ today }) {
     track('daily_week_strip_used', { action: 'day', date, status: state, platform_surface: 'web' })
     openDaily('challenge', state === 'today' ? { date: 'today', source: 'week' } : { date })
   }
-  const propose = () => (account ? openDaily('propose', { source: 'week_strip' }) : needAccount('create_challenge'))
+  // Tomorrow's theme color: its text tone in light and in dark.
+  const tc = tomorrowTheme ? themeColor(tomorrowSpecial ? 'special' : tomorrowTheme.key) : null
 
   return (
     <div className="week">
       <div className="week-head">
-        <button type="button" className="week-streak" style={ROW} onClick={() => (account ? openDaily('calendar') : needAccount('view_profile'))}>
-          <Icon name="flame-outline" size={17} style={{ color: 'var(--primary-text)' }} />
-          {streak ? t('streak', { count: streak }) : t('week.title')}
+        <button type="button" className="week-streak" onClick={() => (account ? openDaily('calendar') : needAccount('view_profile'))}>
+          <span key={bump} className={`week-streak-inner${bump ? ' week-streak-inner--bump' : ''}`}>
+            <Icon name={streak ? 'flame' : 'flame-outline'} size={18} className={streak ? 'week-flame' : undefined} />
+            {streak ? t('streak', { count: streak }) : t('week.title')}
+          </span>
         </button>
-        {tomorrowTheme && <span className="week-tomorrow">{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</span>}
+        {tomorrowTheme && (
+          <span className="week-tomorrow" style={{ '--tl': tc.light, '--td': tc.dark }}>
+            {dayIcon(addDays(current, 1), 15, <Icon name={themeIcon(tomorrowTheme.key, tomorrowSpecial)} size={15} />)}
+            <span className="week-tomorrow-text">{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</span>
+          </span>
+        )}
       </div>
       <div className="week-row">
         {week.map(date => {
@@ -401,12 +424,10 @@ function Week({ today }) {
           {dayIcon(addDays(current, 1), 16, <Icon name={themeIcon(tomorrowTheme.key, tomorrowSpecial)} size={16} />)}{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}
         </p>
       )}
-      {/* Secondary links (SPEC 9.3): list rows in one card, no orange (it stays the Daily Challenge button's). */}
-      <div className="link-rows">
-        <LinkRow icon="calendar-outline" accent="#3D9BF0" title={t('today.allPast')} sub={t('today.links.pastSub')} onClick={() => openDaily('archive')} />
-        <LinkRow icon="bulb-outline" accent="#FFC93C" title={t('propose.cta')} sub={t('today.links.proposeSub')} onClick={propose} />
-        {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
-        {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
+      {atRisk && <p className="week-keep"><Icon name="flame" size={15} />{t('week.keep')}</p>}
+      {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
+      {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
+        <div className="link-rows">
           <LinkRow icon="leaf-outline" accent="#1FB5A8" title={t('today.links.twistTitle')}
                    sub={today.twistProposal.status
                      ? t('twist.heroStatus', { status: t(`twist.status.${today.twistProposal.status}`) })
@@ -415,8 +436,8 @@ function Week({ today }) {
                      track('daily_proposal_started', { entry: 'twist_week', type: 'twist', platform_surface: 'web' })
                      openDaily('twist')
                    }} />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -435,18 +456,18 @@ function LinkRow({ icon, title, sub, onClick, accent }) {
   )
 }
 
-/** Votes per user and day (DailyVotes::MAX). */
-
 /**
- * Spots near you: the nearest 2-3 spots (position only if already allowed, else
- * the city centre). In a city I'm not in: "Spots in <city>", around its centre.
+ * Spots near you (SPEC 9.3, V3 polish 3.4): one slim row, "12 spots near you ·
+ * Open map" (the Map owns the spots); hidden when there's none around, or only
+ * the nearest ones anywhere. Position only if already allowed, else the city
+ * centre. In a city I'm not in: "3 spots in <city>", around its centre.
  */
 function SpotsNear() {
-  const { t, i18n } = useDc()
+  const { t } = useDc()
   const { cityId, scope, openSpot } = useDaily()
   const [spots, setSpots] = useState(null)
   const [fallback, setFallback] = useState(false)
-  // Centred on the chosen city when I'm not in it: "Spots in <city>".
+  // Centred on the chosen city when I'm not in it: "3 spots in <city>".
   const [away, setAway] = useState(null)
 
   useEffect(() => {
@@ -471,36 +492,28 @@ function SpotsNear() {
     return () => { alive = false }
   }, [cityId, scope])
 
-  if (spots === null) return null
+  if (spots === null || spots.length === 0 || fallback) return null
+  const label = away ? t('today.spotsTeaserIn', { count: spots.length, city: shortCityName(away.name) }) : t('today.spotsTeaser', { count: spots.length })
   return (
-    <div className="spots">
-      <div className="today-card-head">
-        <span className="today-card-title">{away ? <span style={ROW}><CityFlag country={away.country} />{t('today.spotsIn', { city: shortCityName(away.name) })}</span> : t('today.spotsTitle')}</span>
-        <button type="button" className="dc-link" onClick={() => openSpot(null)}>{t('today.openMap')}</button>
-      </div>
-      {fallback && spots.length > 0 && <p className="dc-muted">{t('today.spotsFallback')}</p>}
-      {spots.length === 0 ? (
-        <button type="button" className="spots-empty" onClick={() => openSpot(null)}><Icon name="location-outline" size={18} style={{ color: 'var(--primary-text)' }} />{t('today.spotsEmpty')}</button>
-      ) : (
-        <div className="spots-row">
-          {spots.map(s => (
-            <button key={s.id} type="button" className="spot-card" onClick={() => openSpot(s.id)} aria-label={s.name}>
-              <span className="spot-card-photo">
-                {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" /> : <span className="spot-card-img" />}
-                <PhotoCredit cover={s.cover} className="photo-credit" />
-              </span>
-              <span className="spot-card-body">
-                <span className="spot-card-name">{s.name}</span>
-                {s.pick && <PickBadge />}
-                <span className="dc-muted" style={ROW}>
-                  {s.distanceM !== undefined && <><Icon name="location-outline" size={13} />{distance(s.distanceM, i18n.language)}</>}
-                  {s.themes?.[0] ? <Icon name={themeIcon(s.themes[0])} size={13} /> : null}
-                </span>
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <button type="button" className="spots-teaser" onClick={() => openSpot(null)} aria-label={`${label}. ${t('today.openMap')}`}>
+      <span className="spots-teaser-pin"><Icon name="location" size={18} /></span>
+      <span className="spots-teaser-text">{label}</span>
+      <span className="spots-teaser-open">{t('today.openMap')}<Icon name="chevron-forward" size={16} /></span>
+    </button>
+  )
+}
+
+/**
+ * The bottom of Today (V3 polish 3.3): a friendly text link, "Got a challenge
+ * idea? Propose it" (SPEC 8.6: guests get the sign-up sheet, then the form).
+ */
+function ProposeLink() {
+  const { t } = useDc()
+  const { account, openDaily, needAccount } = useDaily()
+  return (
+    <button type="button" className="today-propose" onClick={() => (account ? openDaily('propose', { source: 'today_link' }) : needAccount('create_challenge'))}>
+      <Icon name="bulb-outline" size={16} />
+      <span>{t('propose.linkAsk')} <span className="today-propose-cta">{t('propose.linkCta')}</span></span>
+    </button>
   )
 }

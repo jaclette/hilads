@@ -1130,7 +1130,8 @@
       "done": "Đã hoàn thành",
       "pending": "Đang chờ duyệt",
       "missed": "Chưa làm",
-      "none": "Không có challenge"
+      "none": "Không có challenge",
+      "keep": "Chơi hôm nay để giữ chuỗi ngày"
     },
     "calendar": {
       "title": "Daily Challenges của tôi",
@@ -1206,7 +1207,9 @@
         "invalid_twist": "Local Twist phải dưới 280 ký tự.",
         "twist_not_allowed": "Chỉ người địa phương của thành phố đang live mới thêm được Local Twist.",
         "moderation_blocked": "Đề xuất bị bộ lọc kiểm duyệt chặn. Hãy viết lại."
-      }
+      },
+      "linkAsk": "Có ý tưởng thử thách?",
+      "linkCta": "Đề xuất ngay"
     },
     "early": {
       "badge": "Sớm",
@@ -1228,17 +1231,13 @@
       "countries_other": "{{count}} quốc gia",
       "proofsIn": "{{proofs}} từ {{countries}}",
       "podiumTitle": "Bục vinh quang hôm qua",
-      "spotsIn": "Địa điểm ở {{city}}",
       "allPast": "Tất cả thử thách đã qua",
       "archiveTitle": "Thử thách đã qua",
       "archiveAll": "Tất cả chủ đề",
       "archiveEmpty": "Chưa có thử thách nào đã qua ở đây.",
       "archiveMore": "Xem thêm",
       "seeAll": "Xem tất cả",
-      "spotsTitle": "Spot gần bạn",
       "openMap": "Mở bản đồ",
-      "spotsFallback": "Thành phố của bạn chưa có spot. Gần nhất:",
-      "spotsEmpty": "Ở đây chưa có spot. Nhận challenge hôm nay để đặt spot đầu tiên lên bản đồ.",
       "seeMine": "Xem ảnh của bạn",
       "votes_one": "{{count}} phiếu",
       "votes_other": "{{count}} phiếu",
@@ -1252,11 +1251,11 @@
         "none": "chưa có ảnh"
       },
       "links": {
-        "pastSub": "Ảnh của những ngày trước",
-        "proposeSub": "Ý tưởng của bạn có thể thành thử thách của mọi người",
         "twistTitle": "Đề xuất Local Twist cho ngày mai",
         "twistSub": "Dành cho người địa phương, đến {{time}}"
-      }
+      },
+      "spotsTeaser_other": "{{count}} địa điểm gần bạn",
+      "spotsTeaserIn_other": "{{count}} địa điểm ở {{city}}"
     },
     "spot": {
       "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

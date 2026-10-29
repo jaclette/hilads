@@ -1131,7 +1131,8 @@
       "done": "Gedaan",
       "pending": "Wacht op controle",
       "missed": "Niet gedaan",
-      "none": "Geen challenge"
+      "none": "Geen challenge",
+      "keep": "Speel vandaag om je reeks te houden"
     },
     "calendar": {
       "title": "Mijn Daily Challenges",
@@ -1207,7 +1208,9 @@
         "invalid_twist": "Houd de Local Twist onder de 280 tekens.",
         "twist_not_allowed": "Alleen locals van een live stad kunnen een Local Twist toevoegen.",
         "moderation_blocked": "Je voorstel is door de moderatie geblokkeerd. Herformuleer het."
-      }
+      },
+      "linkAsk": "Een idee voor een challenge?",
+      "linkCta": "Stel het voor"
     },
     "early": {
       "badge": "Vroeg",
@@ -1229,17 +1232,13 @@
       "countries_other": "{{count}} landen",
       "proofsIn": "{{proofs}} uit {{countries}}",
       "podiumTitle": "Het podium van gisteren",
-      "spotsIn": "Spots in {{city}}",
       "allPast": "Alle eerdere challenges",
       "archiveTitle": "Eerdere challenges",
       "archiveAll": "Alle thema's",
       "archiveEmpty": "Hier nog geen eerdere challenge.",
       "archiveMore": "Meer tonen",
       "seeAll": "Alles bekijken",
-      "spotsTitle": "Spots bij jou in de buurt",
       "openMap": "Kaart openen",
-      "spotsFallback": "Nog geen spots in jouw stad. De dichtstbijzijnde:",
-      "spotsEmpty": "Hier is nog geen spot. Doe de challenge van vandaag en zet de eerste op de kaart.",
       "seeMine": "Bekijk je foto",
       "votes_one": "{{count}} stem",
       "votes_other": "{{count}} stemmen",
@@ -1253,11 +1252,13 @@
         "none": "geen foto"
       },
       "links": {
-        "pastSub": "Foto's van de vorige dagen",
-        "proposeSub": "Jouw idee kan ieders challenge worden",
         "twistTitle": "Local Twist van morgen voorstellen",
         "twistSub": "Voor locals, tot {{time}}"
-      }
+      },
+      "spotsTeaser_one": "{{count}} spot bij jou in de buurt",
+      "spotsTeaser_other": "{{count}} spots bij jou in de buurt",
+      "spotsTeaserIn_one": "{{count}} spot in {{city}}",
+      "spotsTeaserIn_other": "{{count}} spots in {{city}}"
     },
     "spot": {
       "rankWeekFirst": "Meest gestemd deze week in {{city}}",

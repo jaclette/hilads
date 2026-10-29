@@ -1131,7 +1131,8 @@
       "done": "Completato",
       "pending": "In attesa di revisione",
       "missed": "Non fatto",
-      "none": "Nessun challenge"
+      "none": "Nessun challenge",
+      "keep": "Gioca oggi per mantenere la tua serie"
     },
     "calendar": {
       "title": "I miei Daily Challenge",
@@ -1207,7 +1208,9 @@
         "invalid_twist": "Il Local Twist deve stare sotto i 280 caratteri.",
         "twist_not_allowed": "Solo i locali di una città live possono aggiungere un Local Twist.",
         "moderation_blocked": "La moderazione ha bloccato la tua proposta. Riformulala."
-      }
+      },
+      "linkAsk": "Hai un'idea per una sfida?",
+      "linkCta": "Proponila"
     },
     "early": {
       "badge": "In anticipo",
@@ -1229,17 +1232,13 @@
       "countries_other": "{{count}} paesi",
       "proofsIn": "{{proofs}} da {{countries}}",
       "podiumTitle": "Il podio di ieri",
-      "spotsIn": "Spot a {{city}}",
       "allPast": "Tutte le challenge passate",
       "archiveTitle": "Challenge passate",
       "archiveAll": "Tutti i temi",
       "archiveEmpty": "Ancora nessuna challenge passata qui.",
       "archiveMore": "Mostra altro",
       "seeAll": "Vedi tutto",
-      "spotsTitle": "Spot vicino a te",
       "openMap": "Apri la mappa",
-      "spotsFallback": "Ancora nessuno spot nella tua città. I più vicini:",
-      "spotsEmpty": "Ancora nessuno spot qui. Accetta il challenge di oggi per mettere il primo sulla mappa.",
       "seeMine": "Vedi la tua foto",
       "votes_one": "{{count}} voto",
       "votes_other": "{{count}} voti",
@@ -1253,11 +1252,15 @@
         "none": "nessuna foto"
       },
       "links": {
-        "pastSub": "Le foto dei giorni precedenti",
-        "proposeSub": "La tua idea potrebbe diventare la challenge di tutti",
         "twistTitle": "Proponi il Local Twist di domani",
         "twistSub": "Per i locali, fino alle {{time}}"
-      }
+      },
+      "spotsTeaser_one": "{{count}} spot vicino a te",
+      "spotsTeaser_many": "{{count}} spot vicino a te",
+      "spotsTeaser_other": "{{count}} spot vicino a te",
+      "spotsTeaserIn_one": "{{count}} spot a {{city}}",
+      "spotsTeaserIn_many": "{{count}} spot a {{city}}",
+      "spotsTeaserIn_other": "{{count}} spot a {{city}}"
     },
     "spot": {
       "rankWeekFirst": "Il più votato questa settimana a {{city}}",

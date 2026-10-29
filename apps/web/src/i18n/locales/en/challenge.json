@@ -1131,7 +1131,8 @@
       "done": "Completed",
       "pending": "Waiting for review",
       "missed": "Not done",
-      "none": "No challenge"
+      "none": "No challenge",
+      "keep": "Play today to keep your streak"
     },
     "calendar": {
       "title": "My Daily Challenges",
@@ -1207,7 +1208,9 @@
         "invalid_twist": "Keep the Local Twist under 280 characters.",
         "twist_not_allowed": "Only locals of a live city can add a Local Twist.",
         "moderation_blocked": "Your proposal was flagged by moderation. Please rephrase."
-      }
+      },
+      "linkAsk": "Got a challenge idea?",
+      "linkCta": "Propose it"
     },
     "early": {
       "badge": "Early",
@@ -1229,17 +1232,13 @@
       "countries_other": "{{count}} countries",
       "proofsIn": "{{proofs}} from {{countries}}",
       "podiumTitle": "Yesterday's podium",
-      "spotsIn": "Spots in {{city}}",
       "allPast": "All past challenges",
       "archiveTitle": "Past challenges",
       "archiveAll": "All themes",
       "archiveEmpty": "No past challenge here yet.",
       "archiveMore": "Show more",
       "seeAll": "See all",
-      "spotsTitle": "Spots near you",
       "openMap": "Open map",
-      "spotsFallback": "No spot in your city yet. The nearest ones:",
-      "spotsEmpty": "No spot here yet. Take today's challenge to put the first one on the map.",
       "seeMine": "See your photo",
       "votes_one": "{{count}} vote",
       "votes_other": "{{count}} votes",
@@ -1253,11 +1252,13 @@
         "none": "no photo"
       },
       "links": {
-        "pastSub": "Photos from previous days",
-        "proposeSub": "Your idea could become everyone's challenge",
         "twistTitle": "Propose tomorrow's Local Twist",
         "twistSub": "For locals, until {{time}}"
-      }
+      },
+      "spotsTeaser_one": "{{count}} spot near you",
+      "spotsTeaser_other": "{{count}} spots near you",
+      "spotsTeaserIn_one": "{{count}} spot in {{city}}",
+      "spotsTeaserIn_other": "{{count}} spots in {{city}}"
     },
     "spot": {
       "rankWeekFirst": "Top voted this week in {{city}}",

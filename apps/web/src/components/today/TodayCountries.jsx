@@ -287,11 +287,14 @@ function SlotCard({ city, first, label, onOpen }) {
  * Yesterday's recap, one card (the app's TodayTour): the winning photo
  * (yesterday's #1, else the best: compareCountryProofs), "Yesterday", the question, the
  * winner's flag, city and answer, how many cities played; "Watch" and the
- * card open yesterday's tour at the winner.
+ * card open yesterday's tour at the winner. Its footer opens every past
+ * challenge (V3 polish 3.2); without a photo yesterday, that link stays on its own.
  */
 export function YesterdayRecap({ today }) {
   const { t, i18n } = useDc()
-  const [tour, setTour] = useState(null)
+  const { openDaily } = useDaily()
+  // undefined while loading, null when it failed.
+  const [tour, setTour] = useState(undefined)
   const [open, setOpen] = useState(null)
   // Yesterday was a seasonal event's day (Halloween's recap): the label keeps its emoji.
   const seasonal = useSeasonal()
@@ -302,11 +305,17 @@ export function YesterdayRecap({ today }) {
   useEffect(() => {
     if (!loaded) return
     let alive = true
-    loadTour(cityId, i18n.language, day).then(r => { if (alive) setTour(r) }).catch(() => {})
+    loadTour(cityId, i18n.language, day).then(r => { if (alive) setTour(r) }).catch(() => { if (alive) setTour(null) })
     return () => { alive = false }
   }, [loaded, cityId, i18n.language, day])
+  const archive = (
+    <button type="button" className="tc-archive" onClick={() => openDaily('archive', { source: 'today_yesterday' })}>
+      <Icon name="calendar-outline" size={16} /><span className="tc-archive-text">{t('today.allPast')}</span><Icon name="chevron-forward" size={15} />
+    </button>
+  )
   const slides = tour?.slides ?? []
-  if (!tour || slides.length === 0) return null
+  if (tour === undefined) return null
+  if (!tour || slides.length === 0) return <div className="today-card">{archive}</div>
   const recap = seasonal?.event.phase === 'recap' || isEventDay(seasonal, tour.date)
   // The winner: yesterday's #1, else the best photo (the shared rule: most liked, then the earliest posted).
   let at = slides.findIndex(s => s.podium === 1)
@@ -333,6 +342,7 @@ export function YesterdayRecap({ today }) {
           <span className="dc-muted">{t('recap.cities', { count: cities })}</span>
         </span>
       </button>
+      <div className="tc-archive-footer">{archive}</div>
       {open !== null && <WorldTourViewer tour={tour} start={open} onClose={() => setOpen(null)} />}
     </div>
   )

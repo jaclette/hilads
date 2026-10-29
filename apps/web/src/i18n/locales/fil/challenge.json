@@ -1131,7 +1131,8 @@
       "done": "Tapos na",
       "pending": "Hinihintay ang review",
       "missed": "Hindi nagawa",
-      "none": "Walang challenge"
+      "none": "Walang challenge",
+      "keep": "Maglaro ngayon para hindi maputol ang streak mo"
     },
     "calendar": {
       "title": "Aking Daily Challenges",
@@ -1207,7 +1208,9 @@
         "invalid_twist": "Panatilihing wala pang 280 character ang Local Twist.",
         "twist_not_allowed": "Ang mga local lang ng live na lungsod ang makakapagdagdag ng Local Twist.",
         "moderation_blocked": "Na-block ng moderation ang mungkahi mo. Pakiulit sa ibang salita."
-      }
+      },
+      "linkAsk": "May ideya ka ba para sa challenge?",
+      "linkCta": "Imungkahi"
     },
     "early": {
       "badge": "Maaga",
@@ -1229,17 +1232,13 @@
       "countries_other": "{{count}} bansa",
       "proofsIn": "{{proofs}} mula sa {{countries}}",
       "podiumTitle": "Podium kahapon",
-      "spotsIn": "Mga spot sa {{city}}",
       "allPast": "Lahat ng nakaraang challenge",
       "archiveTitle": "Mga nakaraang challenge",
       "archiveAll": "Lahat ng tema",
       "archiveEmpty": "Wala pang nakaraang challenge dito.",
       "archiveMore": "Ipakita pa",
       "seeAll": "Tingnan lahat",
-      "spotsTitle": "Mga spot malapit sa iyo",
       "openMap": "Buksan ang mapa",
-      "spotsFallback": "Wala pang spot sa lungsod mo. Ang pinakamalapit:",
-      "spotsEmpty": "Wala pang spot dito. Gawin ang challenge ngayon para mailagay ang una sa mapa.",
       "seeMine": "Tingnan ang litrato mo",
       "votes_one": "{{count}} boto",
       "votes_other": "{{count}} boto",
@@ -1253,11 +1252,13 @@
         "none": "walang litrato"
       },
       "links": {
-        "pastSub": "Mga litrato ng mga nakaraang araw",
-        "proposeSub": "Puwedeng maging challenge ng lahat ang ideya mo",
         "twistTitle": "Magmungkahi ng Local Twist bukas",
         "twistSub": "Para sa mga lokal, hanggang {{time}}"
-      }
+      },
+      "spotsTeaser_one": "{{count}} spot malapit sa iyo",
+      "spotsTeaser_other": "{{count}} spot malapit sa iyo",
+      "spotsTeaserIn_one": "{{count}} spot sa {{city}}",
+      "spotsTeaserIn_other": "{{count}} spot sa {{city}}"
     },
     "spot": {
       "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",

@@ -1131,7 +1131,8 @@
       "done": "達成",
       "pending": "審査待ち",
       "missed": "未達成",
-      "none": "challenge なし"
+      "none": "challenge なし",
+      "keep": "今日プレイして連続記録をキープ"
     },
     "calendar": {
       "title": "私の Daily Challenges",
@@ -1207,7 +1208,9 @@
         "invalid_twist": "Local Twist は280文字以内にしてください。",
         "twist_not_allowed": "Local Twist を追加できるのは live 中の街の地元の人だけです。",
         "moderation_blocked": "提案がモデレーションでブロックされました。言い換えてください。"
-      }
+      },
+      "linkAsk": "チャレンジのアイデアある？",
+      "linkCta": "提案する"
     },
     "early": {
       "badge": "早い",
@@ -1229,17 +1232,13 @@
       "countries_other": "{{count}}か国",
       "proofsIn": "{{countries}}から{{proofs}}",
       "podiumTitle": "昨日の表彰台",
-      "spotsIn": "{{city}}のスポット",
       "allPast": "過去のチャレンジをすべて見る",
       "archiveTitle": "過去のチャレンジ",
       "archiveAll": "すべてのテーマ",
       "archiveEmpty": "ここにはまだ過去のチャレンジがありません。",
       "archiveMore": "もっと見る",
       "seeAll": "すべて見る",
-      "spotsTitle": "近くのスポット",
       "openMap": "マップを開く",
-      "spotsFallback": "あなたの都市にはまだスポットがありません。最寄りのスポット：",
-      "spotsEmpty": "ここにはまだスポットがありません。今日の challenge に参加して、最初のスポットをマップに置こう。",
       "seeMine": "自分の写真を見る",
       "votes_one": "{{count}} 票",
       "votes_other": "{{count}} 票",
@@ -1253,11 +1252,11 @@
         "none": "写真なし"
       },
       "links": {
-        "pastSub": "これまでの日の写真",
-        "proposeSub": "あなたのアイデアがみんなのチャレンジになるかも",
         "twistTitle": "明日の Local Twist を提案",
         "twistSub": "地元の人向け・{{time}}まで"
-      }
+      },
+      "spotsTeaser_other": "近くのスポット{{count}}件",
+      "spotsTeaserIn_other": "{{city}}のスポット{{count}}件"
     },
     "spot": {
       "rankWeekFirst": "今週{{city}}で最多得票",

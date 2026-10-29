@@ -1131,7 +1131,8 @@
       "done": "पूरा किया",
       "pending": "समीक्षा बाकी",
       "missed": "नहीं किया",
-      "none": "कोई challenge नहीं"
+      "none": "कोई challenge नहीं",
+      "keep": "अपनी स्ट्रीक बचाने के लिए आज खेलो"
     },
     "calendar": {
       "title": "मेरे Daily Challenges",
@@ -1207,7 +1208,9 @@
         "invalid_twist": "Local Twist 280 अक्षरों से कम रखें।",
         "twist_not_allowed": "सिर्फ़ लाइव शहर के लोकल ही Local Twist जोड़ सकते हैं।",
         "moderation_blocked": "आपका सुझाव मॉडरेशन ने रोक दिया। कृपया दोबारा लिखें।"
-      }
+      },
+      "linkAsk": "चैलेंज का कोई आइडिया है?",
+      "linkCta": "सुझाओ"
     },
     "early": {
       "badge": "जल्दी",
@@ -1229,17 +1232,13 @@
       "countries_other": "{{count}} देशों",
       "proofsIn": "{{countries}} से {{proofs}}",
       "podiumTitle": "कल का पोडियम",
-      "spotsIn": "{{city}} में जगहें",
       "allPast": "सभी पिछले चैलेंज",
       "archiveTitle": "पिछले चैलेंज",
       "archiveAll": "सभी थीम",
       "archiveEmpty": "यहाँ अभी कोई पिछला चैलेंज नहीं है।",
       "archiveMore": "और दिखाएँ",
       "seeAll": "सब देखें",
-      "spotsTitle": "तुम्हारे पास के स्पॉट",
       "openMap": "मैप खोलें",
-      "spotsFallback": "तुम्हारे शहर में अभी कोई स्पॉट नहीं है। सबसे पास वाले:",
-      "spotsEmpty": "यहाँ अभी कोई स्पॉट नहीं है। आज का challenge लो और पहला स्पॉट मैप पर लगाओ।",
       "seeMine": "अपनी फ़ोटो देखें",
       "votes_one": "{{count}} वोट",
       "votes_other": "{{count}} वोट",
@@ -1253,11 +1252,13 @@
         "none": "कोई फ़ोटो नहीं"
       },
       "links": {
-        "pastSub": "पिछले दिनों की फ़ोटो",
-        "proposeSub": "तुम्हारा आइडिया सबका चैलेंज बन सकता है",
         "twistTitle": "कल का Local Twist सुझाओ",
         "twistSub": "लोकल्स के लिए, {{time}} तक"
-      }
+      },
+      "spotsTeaser_one": "तुम्हारे पास {{count}} स्पॉट",
+      "spotsTeaser_other": "तुम्हारे पास {{count}} स्पॉट",
+      "spotsTeaserIn_one": "{{city}} में {{count}} स्पॉट",
+      "spotsTeaserIn_other": "{{city}} में {{count}} स्पॉट"
     },
     "spot": {
       "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",

@@ -16686,10 +16686,25 @@ body.has-app-promo-banner .page-header {
 .today-mine { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .today-propose { display: flex; align-items: center; gap: 8px; min-height: 40px; border: none; background: none; padding: 0; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary-text); text-align: left; cursor: pointer; }
 .today-propose-text { flex: 1; }
-.week { display: flex; flex-direction: column; gap: 8px; }
+.week { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--surface); }
 .week-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.week-streak { border: none; background: none; padding: 4px 0; font: inherit; font-size: 15px; font-weight: 800; color: var(--text); cursor: pointer; }
-.week-tomorrow { font-size: 12px; font-weight: 600; color: var(--muted2); text-align: right; }
+.week-streak { flex-shrink: 0; min-height: 32px; border: none; background: none; padding: 0; font: inherit; font-size: 15px; font-weight: 800; color: var(--text); cursor: pointer; }
+.week-streak-inner { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.week-flame { color: var(--primary-text); }
+/* The streak grew (a photo just went in): the flame and the number bump, a ring bursts off the flame. */
+.week-streak-inner--bump { animation: week-bump .6s cubic-bezier(.34, 1.8, .64, 1); }
+.week-streak-inner--bump::before { content: ''; position: absolute; left: -4px; top: 50%; width: 26px; height: 26px; margin-top: -13px; border-radius: 50%;
+                                   border: 2px solid var(--primary-text); opacity: 0; pointer-events: none; animation: week-burst .8s ease-out; }
+@keyframes week-bump { 0% { transform: scale(1); } 30% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes week-burst { 0% { opacity: .9; transform: scale(.6); } 100% { opacity: 0; transform: scale(2.2); } }
+@media (prefers-reduced-motion: reduce) { .week-streak-inner--bump, .week-streak-inner--bump::before { animation: none; } }
+/* Tomorrow's theme in its own text color (light / dark; the Halloween night is dark too). */
+.week-tomorrow { min-width: 0; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; color: var(--tl); }
+[data-theme="dark"] .week-tomorrow, [data-event="halloween"] .week-tomorrow { color: var(--td); }
+.week-tomorrow svg { flex-shrink: 0; }
+.week-tomorrow-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.week-keep { margin: 0; display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 12px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 13px; font-weight: 700; }
+.week-keep svg { flex-shrink: 0; color: var(--primary-text); }
 .week-row { display: flex; justify-content: space-between; gap: 4px; }
 .week-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; border: none; background: none; padding: 0; font: inherit; cursor: pointer; }
 .week-day:disabled { cursor: default; }
@@ -16727,8 +16742,8 @@ body.has-app-promo-banner .page-header {
 .today-city-streak .icon { color: var(--primary-text); }
 .today-board { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 13px; font-weight: 700; line-height: 1.35; }
 .today-board .today-friend { margin-top: 0; align-self: flex-start; min-height: 32px; padding: 0; }
-.proof-strip, .spots-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.proof-strip::-webkit-scrollbar, .spots-row::-webkit-scrollbar { display: none; }
+.proof-strip { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.proof-strip::-webkit-scrollbar { display: none; }
 .proof-strip { gap: 10px; }
 .proof-strip-item { flex-shrink: 0; width: 112px; display: flex; flex-direction: column; }
 .proof-strip-open { display: flex; flex-direction: column; gap: 2px; border: none; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
@@ -16746,12 +16761,16 @@ body.has-app-promo-banner .page-header {
 .proof-strip-rank { position: absolute; top: 6px; left: 6px; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
 .proof-strip-city { font-size: 13px; font-weight: 700; }
 .proof-strip-votes { font-size: 12px; }
-.spots { display: flex; flex-direction: column; gap: 8px; }
-.spots-empty { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 0 14px; border-radius: 16px; border: 1.5px dashed var(--line); background: var(--surface); font: inherit; font-size: 14px; color: var(--text); cursor: pointer; text-align: left; }
-.spot-card { flex-shrink: 0; width: 180px; border-radius: 16px; overflow: hidden; border: 1.5px solid var(--line); background: var(--surface); padding: 0; font: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column; }
-.spot-card img, .spot-card-img { width: 100%; height: 100px; object-fit: cover; display: block; background: var(--surface2); }
-.spot-card-body { padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
-.spot-card-name { font-size: 14px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Spots near you (V3 polish 3.4): one slim row to the Map. */
+.spots-teaser { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; color: var(--text); text-align: left; cursor: pointer; }
+.spots-teaser:active, .spots-teaser:hover { background: var(--surface2); }
+.spots-teaser-pin { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--primary-tint); color: var(--primary-text); display: flex; align-items: center; justify-content: center; }
+.spots-teaser-text { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spots-teaser-open { flex-shrink: 0; display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 800; color: var(--primary-text); }
+/* The bottom of Today (V3 polish 3.3): "Got a challenge idea? Propose it". */
+.today-propose { align-self: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 12px; border: none; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); text-align: center; cursor: pointer; }
+.today-propose svg { flex-shrink: 0; }
+.today-propose-cta { font-weight: 800; color: var(--primary-text); text-decoration: underline; }
 
 /* Cards in the Today / Daily columns keep their height (no flex squeeze). */
 .today-body > *, .dc-body > * { flex-shrink: 0; }
@@ -17264,7 +17283,7 @@ body.has-app-promo-banner .page-header {
 .city-flag { flex-shrink: 0; display: inline-block; border-radius: 2px; box-shadow: 0 0 0 1px var(--flag-line); object-fit: cover; }
 @media (min-resolution: 2dppx) { .city-flag { box-shadow: 0 0 0 0.5px var(--flag-line); } }
 
-/* Today: yesterday's podium, week strip links, the past challenges archive (SPEC 9.3). */
+/* Today: yesterday's podium, the week strip's peek, the past challenges archive (SPEC 9.3). */
 .week-peek { margin: 0; font-size: 13px; font-weight: 700; color: var(--text); }
 .podium-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .podium-item { min-width: 0; display: flex; flex-direction: column; gap: 2px; border: none; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
@@ -17297,12 +17316,7 @@ body.has-app-promo-banner .page-header {
 .header-art { position: absolute; top: 0; right: 0; height: 100%; max-height: 112px; width: auto; aspect-ratio: 160 / 96;
   color: var(--header-art); opacity: var(--header-art-opacity); stroke-width: var(--header-art-stroke); pointer-events: none; z-index: -1; }
 
-/* "Photo by @username" on a spot's cover (SPEC 9.5). */
-.spot-card-photo { position: relative; display: block; }
-.photo-credit { position: absolute; left: 6px; bottom: 6px; max-width: 90%; padding: 2px 7px; border-radius: 999px; background: rgba(0, 0, 0, 0.58);
-  color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* Today's secondary links (SPEC 9.3): rows in one bordered card, no orange. */
+/* Today's link rows (SPEC 9.3, the Local Twist in Your week): rows in one bordered card, no orange. */
 .link-rows { margin-top: 6px; display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 18px; background: var(--surface); overflow: hidden; }
 .link-row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; border: none; background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer; }
 .link-row + .link-row { border-top: 1px solid var(--line); }
@@ -17449,7 +17463,6 @@ body.has-app-promo-banner .page-header {
 .cmp-picks-title { margin: 0 0 8px; font-size: 14px; font-weight: 800; color: var(--muted); }
 .cmp-pick-photo { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .today-pick-answer { font-size: 13px; font-weight: 800; color: var(--primary-text); }
-.spot-card[role="button"] { cursor: pointer; }
 
 /* Today hero (SPEC 9.3): the photo fills the card (4:5, radius 24), gradients top and bottom,
    white text with a soft shadow (4.5:1 over the gradient), the button in solid primary. */
@@ -17726,6 +17739,11 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-recap-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .tc-recap-q { font-size: 16px; line-height: 21px; font-weight: 800; }
 .tc-recap-answer { color: var(--primary-text); font-weight: 800; }
+/* Every past challenge: the recap card's footer, or alone in a card without a recap (V3 polish 3.2). */
+.tc-archive-footer { border-top: 1px solid var(--line); padding-top: 4px; }
+.tc-archive { width: 100%; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 700; color: var(--primary-text); text-align: left; cursor: pointer; }
+.tc-archive svg { flex-shrink: 0; }
+.tc-archive-text { flex: 1; min-width: 0; }
 /* The stories row by city (V3 polish 2): a ring cut in one segment per photo, a count badge. */
 .tc-stories { padding: 4px 2px; }
 .tc-ring-box { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
