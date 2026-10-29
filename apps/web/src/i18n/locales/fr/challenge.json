@@ -815,7 +815,7 @@
   "map": {
     "see": "Voir la carte",
     "button": "Carte",
-    "search": "Cherche un plat, un café, une rue",
+    "search": "Cherche un plat, un café…",
     "searchA11y": "Chercher des spots",
     "clearSearch": "Effacer la recherche",
     "noResults": "Aucun spot ne correspond",
@@ -841,7 +841,13 @@
     "locate": "Centrer la carte sur moi",
     "locationFailed": "Ta position n'est pas disponible pour le moment.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Aujourd'hui",
+    "playHere": "Joue ici aujourd'hui",
+    "planNow": "maintenant",
+    "planGoing_one": "{{count}} y va",
+    "planGoing_many": "{{count}} y vont",
+    "planGoing_other": "{{count}} y vont"
   },
   "spot": {
     "rankWeekFirst": "Le plus voté cette semaine à {{city}}",

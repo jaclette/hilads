@@ -815,7 +815,7 @@
   "map": {
     "see": "查看地圖",
     "button": "地圖",
-    "search": "搜尋菜餚、咖啡館、街道",
+    "search": "搜尋菜色、咖啡館…",
     "searchA11y": "搜尋地點",
     "clearSearch": "清除搜尋",
     "noResults": "沒有符合的地點",
@@ -841,7 +841,11 @@
     "locate": "將地圖定位到我",
     "locationFailed": "暫時無法取得你的位置。",
     "cityBubbleA11y_one": "{{city}}，{{count}} 個地點",
-    "cityBubbleA11y_other": "{{city}}，{{count}} 個地點"
+    "cityBubbleA11y_other": "{{city}}，{{count}} 個地點",
+    "todayChip": "今天",
+    "playHere": "今天在這裡參加",
+    "planNow": "進行中",
+    "planGoing_other": "{{count}} 人參加"
   },
   "spot": {
     "rankWeekFirst": "本週{{city}}得票最多",

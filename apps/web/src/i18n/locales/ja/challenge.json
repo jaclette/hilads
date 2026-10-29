@@ -815,7 +815,7 @@
   "map": {
     "see": "地図を見る",
     "button": "地図",
-    "search": "料理、カフェ、通りを検索",
+    "search": "料理、カフェを検索…",
     "searchA11y": "スポットを検索",
     "clearSearch": "検索をクリア",
     "noResults": "一致するスポットはありません",
@@ -841,7 +841,11 @@
     "locate": "地図を現在地に合わせる",
     "locationFailed": "現在地を取得できません。",
     "cityBubbleA11y_one": "{{city}}、スポット{{count}}件",
-    "cityBubbleA11y_other": "{{city}}、スポット{{count}}件"
+    "cityBubbleA11y_other": "{{city}}、スポット{{count}}件",
+    "todayChip": "今日",
+    "playHere": "今日ここでプレイ",
+    "planNow": "開催中",
+    "planGoing_other": "{{count}}人参加"
   },
   "spot": {
     "rankWeekFirst": "今週{{city}}で最多得票",

@@ -815,7 +815,7 @@
   "map": {
     "see": "지도 보기",
     "button": "지도",
-    "search": "음식, 카페, 거리 검색",
+    "search": "음식, 카페 검색…",
     "searchA11y": "스팟 검색",
     "clearSearch": "검색 지우기",
     "noResults": "일치하는 스팟이 없어요",
@@ -841,7 +841,11 @@
     "locate": "내 위치로 지도 이동",
     "locationFailed": "지금은 위치를 가져올 수 없어요.",
     "cityBubbleA11y_one": "{{city}}, 스팟 {{count}}곳",
-    "cityBubbleA11y_other": "{{city}}, 스팟 {{count}}곳"
+    "cityBubbleA11y_other": "{{city}}, 스팟 {{count}}곳",
+    "todayChip": "오늘",
+    "playHere": "오늘 여기서 플레이",
+    "planNow": "진행 중",
+    "planGoing_other": "{{count}}명 참여"
   },
   "spot": {
     "rankWeekFirst": "이번 주 {{city}} 최다 득표",

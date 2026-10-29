@@ -815,7 +815,7 @@
   "map": {
     "see": "Lihat peta",
     "button": "Peta",
-    "search": "Cari makanan, kafe, jalan",
+    "search": "Cari makanan, kafe…",
     "searchA11y": "Cari spot",
     "clearSearch": "Hapus pencarian",
     "noResults": "Tidak ada spot yang cocok",
@@ -841,7 +841,11 @@
     "locate": "Pusatkan peta ke saya",
     "locationFailed": "Lokasimu belum tersedia saat ini.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "todayChip": "Hari ini",
+    "playHere": "Main di sini hari ini",
+    "planNow": "sekarang",
+    "planGoing_other": "{{count}} ikut"
   },
   "spot": {
     "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",

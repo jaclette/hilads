@@ -16333,7 +16333,9 @@ body.has-app-promo-banner .page-header {
 
 /* ── Web map of spots (components/map, SPEC 9.5) ─────────────────────────── */
 .wm-page { overflow: hidden; }
-.wm-top { flex-shrink: 0; padding: 0.625rem 0.75rem 0.5rem; background: var(--surface); border-bottom: 1px solid var(--separator); display: flex; flex-direction: column; gap: 0.5rem; }
+.wm-top { position: absolute; top: 0; left: 0; right: 0; z-index: 1050; padding: 0.625rem 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;
+  background: color-mix(in srgb, var(--bg) 90%, transparent); border-radius: 0 0 22px 22px; }
+.wm-top--list { background: var(--bg); }
 .wm-search-row { display: flex; align-items: center; gap: 8px; }
 .wm-search-row .wm-search { flex: 1; min-width: 0; }
 .v3-scope.v3-scope--map { flex: 0 0 auto; max-width: 150px; height: 46px; }
@@ -16357,9 +16359,27 @@ body.has-app-promo-banner .page-header {
 .wm-spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent); animation: wm-spin 0.8s linear infinite; }
 @keyframes wm-spin { to { transform: rotate(360deg); } }
 .wm-pin-wrap { background: transparent; border: none; }
-.wm-pin { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: #fff; border: 2.5px solid #C24A38; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25); }
-.wm-cluster { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; background: #C24A38; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25); }
-.wm-plan { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; background: #FFF4E5; border: 2px dashed #B87228; }
+.wm-pin { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: var(--primary); color: #fff; border: 2.5px solid #fff; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25); }
+.wm-cluster { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; background: var(--primary); border: 3px solid #fff; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25); }
+/* A Hi plan: a caramel pill (on now: primary) centred on its point; only the pill takes taps. */
+.leaflet-marker-icon.leaflet-interactive.wm-plan-wrap { display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.wm-plan { display: inline-flex; align-items: center; gap: 6px; max-width: 240px; height: 36px; box-sizing: border-box; padding: 0 12px 0 10px; border-radius: 999px;
+  border: 2.5px solid #fff; background: var(--mine-bg); color: #fff; font-size: 12px; font-weight: 700; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25); pointer-events: auto; cursor: pointer; }
+.wm-plan--now { background: var(--primary); }
+.wm-plan .icon { flex: none; }
+.wm-plan-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The first spots grow in; "Today" pins breathe (a halo in today's theme color, still with Reduce motion). */
+.wm-grow { animation: wm-grow 0.35s ease-out both; }
+@keyframes wm-grow { from { transform: scale(0); } }
+.wm-pin--today { animation: wm-breathe 1.2s ease-in-out infinite alternate; }
+@keyframes wm-breathe {
+  from { box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25), 0 0 0 4px color-mix(in srgb, var(--halo) 45%, transparent); }
+  to { box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25), 0 0 0 14px color-mix(in srgb, var(--halo) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wm-grow { animation: none; }
+  .wm-pin--today { animation: none; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.25), 0 0 0 4px color-mix(in srgb, var(--halo) 45%, transparent); }
+}
 .wm-mapbox-logo { position: absolute; left: 8px; bottom: 8px; z-index: 500; font: 800 13px/1 system-ui, sans-serif; letter-spacing: -0.3px; color: #000; background: rgba(255, 255, 255, 0.85); padding: 4px 7px; border-radius: 6px; text-decoration: none; }
 .wm-sheet { position: absolute; left: 0.75rem; right: 0.75rem; bottom: max(0.75rem, env(safe-area-inset-bottom)); z-index: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 0.75rem; box-shadow: 0 8px 28px rgba(36, 26, 18, 0.22); display: flex; flex-direction: column; gap: 0.625rem; }
 .wm-sheet--empty { align-items: center; }
@@ -16395,8 +16415,8 @@ body.has-app-promo-banner .page-header {
   .wm-sheet { left: auto; right: 1rem; width: 380px; }
 }
 .wm-me { display: block; width: 22px; height: 22px; border-radius: 50%; background: #2F80ED; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47, 128, 237, 0.22), 0 2px 6px rgba(0, 0, 0, 0.25); }
-.wm-locate { position: absolute; right: 12px; top: 12px; z-index: 550; width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.18); cursor: pointer; }
-.wm-notice { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 560; max-width: calc(100% - 96px); background: var(--text); color: var(--bg); font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.875rem; border-radius: 12px; text-align: center; }
+.wm-locate { position: absolute; right: 12px; top: calc(var(--wm-top-h, 0px) + 12px); z-index: 550; width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.18); cursor: pointer; }
+.wm-notice { position: absolute; left: 50%; top: calc(var(--wm-top-h, 0px) + 12px); transform: translateX(-50%); z-index: 560; max-width: calc(100% - 96px); background: var(--text); color: var(--bg); font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.875rem; border-radius: 12px; text-align: center; }
 
 /* ── Desktop: the app in a phone-width column (W1, web = the app) ──────────
    The transform makes the column the containing block of every fixed screen
@@ -17260,7 +17280,7 @@ body.has-app-promo-banner .page-header {
 .wm-bottom .wm-sheet { position: relative; left: auto; right: auto; bottom: auto; width: auto; }
 .wm-toggle { align-self: center; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: none; border-radius: 999px;
   background: var(--text); color: var(--bg); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(36, 26, 18, 0.25); }
-.wm-list { position: absolute; inset: 0; z-index: 1000; overflow-y: auto; background: var(--bg); padding: 8px 0 140px; }
+.wm-list { position: absolute; inset: 0; z-index: 1000; overflow-y: auto; background: var(--bg); padding: calc(var(--wm-top-h, 0px) + 8px) 0 140px; }
 .wm-list-sorts { display: flex; gap: 8px; padding: 0 1rem 10px; flex-wrap: wrap; }
 .wm-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 76px; padding: 10px 1rem; border: none; border-bottom: 1px solid var(--line);
   background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
@@ -17930,6 +17950,7 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 
 /* The map: a crescent moon and bats crossing the night map. */
 .seasonal-sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 450; }
+.wm-map .seasonal-sky { top: var(--wm-top-h, 0px); }
 .seasonal-moon { position: absolute; right: 18px; top: 6px; }
 .seasonal-bat { position: absolute; left: 0; animation: seasonal-fly var(--d, 10s) linear var(--delay, 0s) infinite both; }
 .seasonal-bat svg { display: block; animation: seasonal-flap .18s ease-in-out infinite alternate; }

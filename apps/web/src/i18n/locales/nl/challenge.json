@@ -815,7 +815,7 @@
   "map": {
     "see": "Bekijk de kaart",
     "button": "Kaart",
-    "search": "Zoek een gerecht, een café, een straat",
+    "search": "Zoek een gerecht, een café…",
     "searchA11y": "Spots zoeken",
     "clearSearch": "Zoekopdracht wissen",
     "noResults": "Geen spot gevonden",
@@ -841,7 +841,12 @@
     "locate": "Kaart op mij centreren",
     "locationFailed": "Je locatie is nu niet beschikbaar.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Vandaag",
+    "playHere": "Speel hier vandaag",
+    "planNow": "nu",
+    "planGoing_one": "{{count}} gaat",
+    "planGoing_other": "{{count}} gaan"
   },
   "spot": {
     "rankWeekFirst": "Meest gestemd deze week in {{city}}",

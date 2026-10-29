@@ -815,7 +815,7 @@
   "map": {
     "see": "Открыть карту",
     "button": "Карта",
-    "search": "Найди блюдо, кафе, улицу",
+    "search": "Найди блюдо, кафе…",
     "searchA11y": "Искать места",
     "clearSearch": "Очистить поиск",
     "noResults": "Подходящих мест нет",
@@ -847,7 +847,14 @@
     "cityBubbleA11y_one": "{{city}}: {{count}} место",
     "cityBubbleA11y_few": "{{city}}: {{count}} места",
     "cityBubbleA11y_many": "{{city}}: {{count}} мест",
-    "cityBubbleA11y_other": "{{city}}: {{count}} места"
+    "cityBubbleA11y_other": "{{city}}: {{count}} места",
+    "todayChip": "Сегодня",
+    "playHere": "Сыграй здесь сегодня",
+    "planNow": "сейчас",
+    "planGoing_one": "{{count}} идёт",
+    "planGoing_few": "{{count}} идут",
+    "planGoing_many": "{{count}} идут",
+    "planGoing_other": "{{count}} идут"
   },
   "spot": {
     "rankWeekFirst": "Больше всего голосов на этой неделе в {{city}}",

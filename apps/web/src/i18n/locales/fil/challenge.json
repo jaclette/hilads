@@ -815,7 +815,7 @@
   "map": {
     "see": "Tingnan ang mapa",
     "button": "Mapa",
-    "search": "Maghanap ng pagkain, café, kalye",
+    "search": "Maghanap ng pagkain, café…",
     "searchA11y": "Maghanap ng spot",
     "clearSearch": "I-clear ang paghahanap",
     "noResults": "Walang tugmang spot",
@@ -841,7 +841,12 @@
     "locate": "Igitna ang mapa sa akin",
     "locationFailed": "Hindi available ang lokasyon mo ngayon.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "todayChip": "Ngayon",
+    "playHere": "Maglaro dito ngayon",
+    "planNow": "ngayon na",
+    "planGoing_one": "{{count}} pupunta",
+    "planGoing_other": "{{count}} pupunta"
   },
   "spot": {
     "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",

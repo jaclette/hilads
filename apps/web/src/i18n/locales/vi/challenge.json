@@ -815,7 +815,7 @@
   "map": {
     "see": "Xem bản đồ",
     "button": "Bản đồ",
-    "search": "Tìm món ăn, quán cà phê, con phố",
+    "search": "Tìm món ăn, quán cà phê…",
     "searchA11y": "Tìm spot",
     "clearSearch": "Xóa tìm kiếm",
     "noResults": "Không có spot phù hợp",
@@ -841,7 +841,11 @@
     "locate": "Đưa bản đồ về vị trí của tôi",
     "locationFailed": "Hiện chưa lấy được vị trí của bạn.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "todayChip": "Hôm nay",
+    "playHere": "Chơi ở đây hôm nay",
+    "planNow": "bây giờ",
+    "planGoing_other": "{{count}} người đi"
   },
   "spot": {
     "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",

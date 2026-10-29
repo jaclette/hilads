@@ -815,7 +815,7 @@
   "map": {
     "see": "See the map",
     "button": "Map",
-    "search": "Search a dish, a café, a street",
+    "search": "Search a dish, a café…",
     "searchA11y": "Search spots",
     "clearSearch": "Clear the search",
     "noResults": "No spot matches",
@@ -841,7 +841,12 @@
     "locate": "Center the map on me",
     "locationFailed": "Your position isn't available right now.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spots"
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
+    "todayChip": "Today",
+    "playHere": "Play here today",
+    "planNow": "now",
+    "planGoing_one": "{{count}} going",
+    "planGoing_other": "{{count}} going"
   },
   "spot": {
     "rankWeekFirst": "Top voted this week in {{city}}",

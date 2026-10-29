@@ -17,12 +17,15 @@ import { SeasonalMapSky, setSeasonalEvent, useSeasonalLive } from '../event/seas
 import { shortCityName } from '../../i18n/cityName'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PickBadge, PhotoCredit } from './Pick'
+import { themeColor } from '../joy/Joy'
 import { useBackLayer } from '../../lib/backLayers'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
 const VIEW_KEY = 'hilads_map_view'
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+/** A selected theme chip wears the theme's color (the pins' color: the Map's legend). */
+const chipOn = (k) => { const c = themeColor(k); return { background: c.fill, borderColor: c.line ?? c.fill, color: c.onFill } }
 // The camera stays around the city (like the app): about 110 km each way.
 const CITY_SPAN = 1
 // Within this distance of the city centre, "where I am" just moves the camera;
@@ -45,6 +48,19 @@ const LABEL_FONT = '700 12px'
 const PHOTO_W = 60
 const PHOTO_H = 54
 
+// The place themes (the chips, the pins' colors).
+const PLACE_THEMES = THEME_KEYS.filter(isPlaceTheme)
+/** A pin's color: its theme's (the ring color when the fill is too pale on the map), as on the filter chips. */
+const pinColor = (k) => { const c = themeColor(k); return c.line ?? c.fill }
+/** The icon on a theme-colored pin: white on a ring color, else the theme's own text color. */
+const pinInk = (k) => { const c = themeColor(k); return c.line ? '#FFFFFF' : c.onFill }
+/** A cluster wears the color of the theme it has most of (the first theme on a tie, like the app). */
+function clusterTheme(items, filter) {
+  const n = {}
+  items.forEach(s => { const k = filter ?? s.themes?.[0] ?? 'taste'; n[k] = (n[k] ?? 0) + 1 })
+  return PLACE_THEMES.reduce((best, k) => ((n[k] ?? 0) > (n[best] ?? 0) ? k : best), PLACE_THEMES[0])
+}
+
 const escapeHtml = (v) => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
 
 let measureCtx = null
@@ -58,12 +74,15 @@ function labelWidth(text) {
 }
 
 // 44 px: the tap target (the label, when shown, is tappable too).
-const spotIcon = (spot, label, side, selected) => L.divIcon({
+// theme: the pin's color (the filter's theme, else the spot's first); halo: a
+// photo of today's challenge under the "Today" chip (its theme's color); grow:
+// the first spots grow in.
+const spotIcon = (spot, label, side, selected, { theme, halo, grow }) => L.divIcon({
   className: 'wm-pin-wrap',
   // A Hilads pick (editorial): its own gold pin with a star.
   html: (spot.pick
-    ? `<span class="wm-pin wm-pin--pick${selected ? ' wm-pin--on' : ''}">${iconHtml('star', 20)}</span>`
-    : `<span class="wm-pin${selected ? ' wm-pin--on' : ''}" style="color: var(--primary)">${iconHtml(spot.themes?.[0] ? themeIcon(spot.themes[0]) : 'location-outline', 20)}</span>`)
+    ? `<span class="wm-pin wm-pin--pick${selected ? ' wm-pin--on' : ''}${grow ? ' wm-grow' : ''}">${iconHtml('star', 20)}</span>`
+    : `<span class="wm-pin${selected ? ' wm-pin--on' : ''}${halo ? ' wm-pin--today' : grow ? ' wm-grow' : ''}" style="background: ${pinColor(theme)}; color: ${pinInk(theme)}${halo ? `; --halo: ${halo}` : ''}">${iconHtml(themeIcon(theme), 20)}</span>`)
     + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}${spot.cover?.thumbUrl ? ' wm-pin-label--photo' : ''}">`
       // The spot's photo before its name (like the app).
       + (spot.cover?.thumbUrl ? `<img class="wm-pin-photo" src="${escapeHtml(spot.cover.thumbUrl)}" alt="" loading="lazy" /><span class="wm-pin-text">${escapeHtml(label)}</span>` : escapeHtml(label))
@@ -76,9 +95,9 @@ const bubbleIcon = (b) => L.divIcon({
   html: `<span class="wm-bubble">${/^[A-Z]{2}$/.test(b.city.country ?? '') ? `<img src="/flags/${b.city.country.toLowerCase()}.svg" alt="" width="18" height="14" />` : ''}${b.spots}</span>`,
   iconSize: [64, 36], iconAnchor: [32, 18],
 })
-const clusterIcon = (n) => L.divIcon({
+const clusterIcon = (n, theme, grow) => L.divIcon({
   className: 'wm-pin-wrap',
-  html: `<span class="wm-cluster">${n}</span>`,
+  html: `<span class="wm-cluster${grow ? ' wm-grow' : ''}" style="background: ${pinColor(theme)}">${n}</span>`,
   iconSize: [44, 44], iconAnchor: [22, 22],
 })
 const meIcon = L.divIcon({
@@ -86,11 +105,26 @@ const meIcon = L.divIcon({
   html: '<span class="wm-me"></span>',
   iconSize: [22, 22], iconAnchor: [11, 11],
 })
-const planIcon = () => L.divIcon({
-  className: 'wm-pin-wrap',
-  html: `<span class="wm-plan" style="color: var(--accent2)">${iconHtml('calendar-outline', 18)}</span>`,
-  iconSize: [36, 36], iconAnchor: [18, 18],
+// A Hi plan as a dated pill: "Birdy, now · 10 going", "Birdy, in 2 hours" (caramel; now: primary).
+const planIcon = (text, now) => L.divIcon({
+  className: 'wm-pin-wrap wm-plan-wrap',
+  html: `<span class="wm-plan${now ? ' wm-plan--now' : ''}">${iconHtml(now ? 'radio-button-on' : 'calendar-outline', 14)}<span class="wm-plan-text">${escapeHtml(text)}</span></span>`,
+  iconSize: [240, 36], iconAnchor: [120, 18],
 })
+
+/** A plan's pill text and whether it is on now: soon is relative ("in 2 hours", localized), later the day and time. */
+function planLabel(plan, t, lang) {
+  const now = Date.now()
+  const start = new Date(plan.startsAt * 1000)
+  const ongoing = plan.startsAt * 1000 <= now && (plan.endsAt ? plan.endsAt * 1000 > now : true)
+  const hours = (plan.startsAt * 1000 - now) / 3_600_000
+  const time = ongoing ? t('map.planNow')
+    : hours < 6 ? new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
+    : start.toLocaleString(lang, start.toDateString() === new Date().toDateString()
+        ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' })
+  const going = plan.participantCount > 1 ? t('map.planGoing', { count: plan.participantCount }) : null
+  return { text: `${plan.title}, ${time}${going ? ` · ${going}` : ''}`, ongoing }
+}
 
 /** Reports the visible area (debounced) and the zoom; keeps the camera on the city. */
 function MapWatcher({ onArea, onZoom }) {
@@ -114,12 +148,13 @@ function MapWatcher({ onArea, onZoom }) {
 }
 
 /** Moves the camera when the parent asks (search pick, cluster tap, the city's spots). */
-function CameraTo({ target }) {
+function CameraTo({ target, top }) {
   const map = useMap()
   useEffect(() => {
-    if (target?.bounds) map.fitBounds(target.bounds, { padding: [48, 48], maxZoom: CITY_ZOOM + 1, animate: false })
+    // The header sits over the map: frame below it.
+    if (target?.bounds) map.fitBounds(target.bounds, { paddingTopLeft: [48, 48 + top], paddingBottomRight: [48, 48], maxZoom: CITY_ZOOM + 1, animate: false })
     else if (target) map.setView([target.lat, target.lng], target.zoom, { animate: true })
-  }, [target, map])
+  }, [target, map]) // eslint-disable-line react-hooks/exhaustive-deps
   return null
 }
 
@@ -133,7 +168,7 @@ function defaultThemeFor(date) {
  * Pins grouped by screen distance at the current zoom (the selected spot
  * stays out of the groups), with labels where they fit: see placeLabels.
  */
-function Pins({ spots, zoom, selected, onSpot, onCluster }) {
+function Pins({ spots, zoom, selected, onSpot, onCluster, theme, halo, isToday, grow }) {
   const map = useMap()
   const { i18n } = useTranslation()
   const groups = useMemo(() => {
@@ -161,10 +196,11 @@ function Pins({ spots, zoom, selected, onSpot, onCluster }) {
   }, [groups, zoom, map, selected?.id, i18n.language])
   return groups.map(g => g.items.length === 1 ? (
     <Marker key={g.items[0].id} position={[g.lat, g.lng]} zIndexOffset={g.items[0].id === selected?.id ? 1000 : 0}
-            icon={spotIcon(g.items[0], labels.text.get(g.items[0].id), labels.sides.get(g.items[0].id), g.items[0].id === selected?.id)}
+            icon={spotIcon(g.items[0], labels.text.get(g.items[0].id), labels.sides.get(g.items[0].id), g.items[0].id === selected?.id,
+                           { theme: theme ?? g.items[0].themes?.[0] ?? 'taste', halo: halo && isToday(g.items[0]) ? halo : null, grow })}
             eventHandlers={{ click: () => onSpot(g.items[0]) }} title={g.items[0].name} />
   ) : (
-    <Marker key={`c:${g.items.map(s => s.id).join(',')}`} position={[g.lat, g.lng]} icon={clusterIcon(g.items.length)}
+    <Marker key={`c:${g.items.map(s => s.id).join(',')}`} position={[g.lat, g.lng]} icon={clusterIcon(g.items.length, clusterTheme(g.items, theme), grow)}
             eventHandlers={{ click: () => onCluster(g) }} />
   ))
 }
@@ -272,6 +308,10 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [plans, setPlans]     = useState([])
   const [zoom, setZoom]       = useState(CITY_ZOOM)
   const [theme, setTheme]     = useState(initialTheme)   // the challenge screen's "Places pinned": opened on its theme
+  // "Today": only the spots of today's challenge photos (a chip after All).
+  const [todayOnly, setTodayOnly] = useState(false)
+  // The pins grow in once, when the first spots arrive.
+  const [grow, setGrow]       = useState(true)
   const [selected, setSelected] = useState(null)
   const [openSpotId, setOpenSpotId] = useState(initialSpotId)
   // Browser back: the spot's page, then its card, before the map itself.
@@ -289,6 +329,16 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [cityEmpty, setCityEmpty] = useState(false)  // the city really has no spot (not just the visible area)
   const [today, setToday]     = useState(null)
   const [bubbles, setBubbles] = useState([])
+  // The header over the map: its height keeps the locate button, the list and the framing below it.
+  const topRef = useRef(null)
+  const [topH, setTopH]       = useState(0)
+  useEffect(() => {
+    const el = topRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setTopH(el.offsetHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [openSpotId])  // back from a spot's page: a new header
   const world = scope === 'world'
   const worldView = world && zoom < MIN_ZOOM
   // The map remounts on a scope change: start at its zoom.
@@ -382,11 +432,24 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
       .catch(() => {})
   }, [channelId, theme, nearMe, world])
 
+  useEffect(() => {
+    if (!grow || spots.length === 0) return
+    const id = setTimeout(() => setGrow(false), 400)
+    return () => clearTimeout(id)
+  }, [spots.length, grow])
+
   const pickTheme = (k) => {
     const next = theme === k ? null : k
     setTheme(next)
+    setTodayOnly(false)
     setSelected(null)
     if (areaRef.current) loadArea(areaRef.current, next)
+  }
+
+  const pickToday = () => {
+    setTodayOnly(true)
+    setSelected(null)
+    if (theme !== null) { setTheme(null); if (areaRef.current) loadArea(areaRef.current, null) }
   }
 
   // Search: name or dish tag, in the city.
@@ -411,8 +474,15 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
     track('web_map_view_switched', { view: next })
     try { localStorage.setItem(VIEW_KEY, next) } catch { /* private mode */ }
   }
+  // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
+  const todayTheme = today?.challenge?.theme?.key ?? null
+  const todayDate = today?.challenge?.date ?? null
+  const isToday = (s) => !!todayDate && s.lastProofDate === todayDate
+  const shown = todayOnly ? spots.filter(isToday) : spots
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => theme === null || s.themes.includes(theme)) : spots
+  const listSpots = results !== null ? results.filter(s => theme === null || s.themes.includes(theme)) : shown
+  // The spot fits today's theme and I haven't played: "Play here today" (the app modal, photos are posted from the app).
+  const canPlayHere = !!selected && !!todayTheme && selected.themes.includes(todayTheme) && today?.challenge?.isActive && !today?.myProof
   const areaCentre = areaRef.current ? [(areaRef.current[1] + areaRef.current[3]) / 2, (areaRef.current[0] + areaRef.current[2]) / 2] : center
   const showEmpty = center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty)
 
@@ -426,47 +496,54 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         <HeaderArt kind="map" />
         <div className="tab-heading">
           <span className="page-title">{world ? t('scope.world', { ns: 'common' }) : nearMe ? t('map.nearYou') : (cityName || t('map.button'))}</span>
-          <p className="tab-subtitle">{t('subtitles.map', { ns: 'common' })}</p>
         </div>
       </div>
 
-      <div className="wm-top">
-        <div className="wm-search-row">
-        {scopePill}
-        <div className="wm-search">
-          <Icon name="search-outline" size={18} style={{ color: 'var(--muted2)' }} />
-          <input
-            type="search"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder={t('map.search')}
-            aria-label={t('map.searchA11y')}
-          />
-          {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
-        </div>
-        </div>
-        {results === null || view === 'list' ? (
-          <div className="wm-chips" role="toolbar">
-            <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
-            {THEME_KEYS.filter(isPlaceTheme).map(k => (
-              <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => pickTheme(k)}>
-                <Icon name={themeIcon(k)} size={15} />{themeName(k)}
-              </button>
-            ))}
+      <div className="wm-map" style={{ '--wm-top-h': `${topH}px` }}>
+        {/* The scope, search and chips in one translucent header over the map. */}
+        <div ref={topRef} className={`wm-top${view === 'list' ? ' wm-top--list' : ''}`}>
+          <div className="wm-search-row">
+          {scopePill}
+          <div className="wm-search">
+            <Icon name="search-outline" size={18} style={{ color: 'var(--muted2)' }} />
+            <input
+              type="search"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder={t('map.search')}
+              aria-label={t('map.searchA11y')}
+            />
+            {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
           </div>
-        ) : (
-          <div className="wm-results">
-            {results.length === 0 ? <p className="wm-empty">{t('map.noResults')}</p> : results.map(s => (
-              <button key={s.id} type="button" className="wm-result" onClick={() => focusSpot(s)}>
-                <span className="wm-result-name">{s.name}</span>
-                <span className="wm-result-meta">{s.pick && !s.proofCount ? t('pick.badge', { ns: 'common' }) : t('map.proofs', { count: s.proofCount })}</span>
-              </button>
-            ))}
           </div>
-        )}
-      </div>
+          {results === null || view === 'list' ? (
+            <div className="wm-chips" role="toolbar">
+              <button type="button" className={`wm-chip${theme === null && !todayOnly ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
+              {todayDate && (
+                <button type="button" className={`wm-chip${todayOnly ? ' wm-chip--on' : ''}`} style={{ ...ROW, ...(todayOnly ? chipOn(todayTheme) : null) }}
+                        aria-pressed={todayOnly} onClick={pickToday}>
+                  <Icon name={themeIcon(todayTheme)} size={15} />{t('map.todayChip')}
+                </button>
+              )}
+              {PLACE_THEMES.map(k => (
+                <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={{ ...ROW, ...(theme === k ? chipOn(k) : null) }}
+                        aria-pressed={theme === k} onClick={() => pickTheme(k)}>
+                  <Icon name={themeIcon(k)} size={15} />{themeName(k)}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="wm-results">
+              {results.length === 0 ? <p className="wm-empty">{t('map.noResults')}</p> : results.map(s => (
+                <button key={s.id} type="button" className="wm-result" onClick={() => focusSpot(s)}>
+                  <span className="wm-result-name">{s.name}</span>
+                  <span className="wm-result-meta">{s.pick && !s.proofCount ? t('pick.badge', { ns: 'common' }) : t('map.proofs', { count: s.proofCount })}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <div className="wm-map">
         {center ? (
           <MapContainer key={`${scope}:${center.join(',')}`} center={world ? [20, center[1]] : center} zoom={world ? WORLD_ZOOM : CITY_ZOOM}
                         minZoom={world ? WORLD_ZOOM : MIN_ZOOM} zoomControl={false} className="wm-leaflet"
@@ -475,19 +552,21 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             <TileLayer url={tiles.url} attribution={tiles.attribution} tileSize={tiles.tileSize} zoomOffset={tiles.zoomOffset} maxZoom={19} />
             <MapWatcher onArea={bbox => loadArea(bbox)} onZoom={setZoom} />
             {/* A move made in the other scope (the city's frame, a bubble) never replays after the map remounts. */}
-            <CameraTo target={camera?.scope === scope ? camera : null} />
+            <CameraTo target={camera?.scope === scope ? camera : null} top={topH} />
             {worldView && bubbles.slice(0, 150).map(b => (
               <Marker key={`c:${b.city.id}`} position={[b.city.lat, b.city.lng]} icon={bubbleIcon(b)}
                       title={t('map.cityBubbleA11y', { city: shortCityName(b.city.name), count: b.spots })}
                       eventHandlers={{ click: () => openBubble(b) }} />
             ))}
-            <Pins spots={worldView ? [] : spots} zoom={zoom} selected={selected} onSpot={setSelected}
-                  onCluster={g => setCamera({ scope, lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })} />
+            <Pins spots={worldView ? [] : shown} zoom={zoom} selected={selected} onSpot={setSelected}
+                  onCluster={g => setCamera({ scope, lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })}
+                  theme={theme} halo={todayOnly ? pinColor(todayTheme ?? 'taste') : null} isToday={isToday} grow={grow} />
             {me && <Marker position={me} icon={meIcon} interactive={false} />}
-            {plans.map(p => (
-              <Marker key={`p:${p.id}`} position={[p.lat, p.lng]} icon={planIcon()} title={p.title}
-                      eventHandlers={{ click: () => onOpenPlan?.(p.id) }} />
-            ))}
+            {plans.map(p => {
+              const { text, ongoing } = planLabel(p, t, i18n.language)
+              return <Marker key={`p:${p.id}`} position={[p.lat, p.lng]} icon={planIcon(text, ongoing)} title={text}
+                             eventHandlers={{ click: () => onOpenPlan?.(p.id) }} />
+            })}
           </MapContainer>
         ) : (
           <div className="wm-loading">{failed ? t('map.unavailable') : <span className="wm-spinner" aria-hidden="true" />}</div>
@@ -541,7 +620,13 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                   <PhotoCredit cover={selected.cover} className="wm-sheet-meta" />
                 </span>
               </button>
-              <button type="button" className="wm-sheet-cta" onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
+              {canPlayHere && (
+                <button type="button" className="wm-sheet-cta"
+                        onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_spot' }); openAppModal({ action: 'play', surface: 'map_spot' }) }}>
+                  <Icon name="camera-outline" size={18} />{t('map.playHere')}
+                </button>
+              )}
+              <button type="button" className={`wm-sheet-cta${canPlayHere ? ' wm-btn--ghost' : ''}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
             </div>
           )}
         </div>
