@@ -727,7 +727,9 @@
       "remove": "Sticker weghalen",
       "add": "Sticker toevoegen",
       "frame": "Lijst"
-    }
+    },
+    "limited": "Beperkte editie",
+    "stampEarned": "Stempel in beperkte editie verdiend!"
   },
   "hero": {
     "cta": "Maak een foto voor {{city}}",

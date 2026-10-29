@@ -1461,7 +1461,9 @@
         "played_other": "{{count}} kota berhantu 🎃",
         "represent": "Hantui kotamu 👻",
         "onBoard": "{{city}} menghantui papan! 👻"
-      }
+      },
+      "limited": "Edisi terbatas",
+      "stampEarned": "Cap edisi terbatas didapat!"
     },
     "hero": {
       "cta": "Foto untuk {{city}}",

@@ -1461,7 +1461,9 @@
         "played_other": "{{count}}都市に幽霊が出た 🎃",
         "represent": "あなたの街にお化けを 👻",
         "onBoard": "{{city}}がボードに出没中！👻"
-      }
+      },
+      "limited": "限定版",
+      "stampEarned": "限定スタンプをゲット！"
     },
     "hero": {
       "cta": "{{city}}のために撮ろう",

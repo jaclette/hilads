@@ -741,7 +741,9 @@
       "remove": "Quitar sticker",
       "add": "Añadir sticker",
       "frame": "Marco"
-    }
+    },
+    "limited": "Edición limitada",
+    "stampEarned": "¡Sello de edición limitada conseguido!"
   },
   "hero": {
     "cta": "Haz la foto por {{city}}",

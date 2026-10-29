@@ -1472,7 +1472,9 @@
         "played_other": "In {{count}} steden spookt het 🎃",
         "represent": "Laat het spoken in je stad 👻",
         "onBoard": "{{city}} spookt door het bord! 👻"
-      }
+      },
+      "limited": "Beperkte editie",
+      "stampEarned": "Stempel in beperkte editie verdiend!"
     },
     "hero": {
       "cta": "Maak een foto voor {{city}}",

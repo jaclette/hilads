@@ -712,7 +712,9 @@
       "remove": "移除贴纸",
       "add": "添加贴纸",
       "frame": "相框"
-    }
+    },
+    "limited": "限量版",
+    "stampEarned": "获得限量版印章！"
   },
   "hero": {
     "cta": "为{{city}}拍一张",

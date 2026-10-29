@@ -712,7 +712,9 @@
       "remove": "Gỡ sticker",
       "add": "Thêm sticker",
       "frame": "Khung"
-    }
+    },
+    "limited": "Phiên bản giới hạn",
+    "stampEarned": "Đã nhận con dấu phiên bản giới hạn!"
   },
   "hero": {
     "cta": "Chụp cho {{city}}",

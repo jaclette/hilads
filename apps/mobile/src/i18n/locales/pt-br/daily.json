@@ -741,7 +741,9 @@
       "remove": "Remover figurinha",
       "add": "Adicionar figurinha",
       "frame": "Moldura"
-    }
+    },
+    "limited": "Edição limitada",
+    "stampEarned": "Carimbo de edição limitada conquistado!"
   },
   "hero": {
     "cta": "Tire a foto por {{city}}",

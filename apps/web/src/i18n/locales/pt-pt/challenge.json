@@ -1483,7 +1483,9 @@
         "played_other": "{{count}} cidades estão assombradas 🎃",
         "represent": "Assombra a tua cidade 👻",
         "onBoard": "{{city}} está a assombrar a classificação! 👻"
-      }
+      },
+      "limited": "Edição limitada",
+      "stampEarned": "Carimbo de edição limitada conquistado!"
     },
     "hero": {
       "cta": "Tira a foto por {{city}}",

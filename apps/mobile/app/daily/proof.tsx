@@ -25,6 +25,7 @@ import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { DualCamera, dualPreferred, type DualShot } from '@/features/daily/DualCamera';
 import { StickerStep } from '@/features/event/StickerStep';
+import { EventStampThunk, isEventStampId } from '@/features/event/EventStamp';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
 import { fetchAppConfig } from '@/api/appConfig';
 import { PlaceStep, type PlaceChoice, type Position } from '@/features/proof/PlaceStep';
@@ -119,6 +120,8 @@ function DailyProofScreenContent() {
   const stickerEvent = useEventFeature('stickers');
   const hasPack = !!stickerEvent && (stickerEvent.key === 'halloween' || (stickerEvent.event.stickers?.length ?? 0) > 0);
   const [stickersOpen, setStickersOpen] = useState(false);
+  const stampEvent = useEventFeature('stamp');
+  const [stampThunk, setStampThunk] = useState(false);
   const afterCapture = () => { if (hasPack) setStickersOpen(true); };
   // Dual photo: the selfie taken right after the photo (null: the photo alone).
   const [selfie, setSelfie]     = useState<Photo | null>(null);
@@ -424,6 +427,8 @@ function DailyProofScreenContent() {
       if (nudge) AsyncStorage.setItem(PROPOSE_NUDGE_KEY, String(Date.now())).catch(() => {});
       const body = spot?.inReview ? `${t('proof.sentBody')}\n\n${t('place.newOnMapLater')}` : t('proof.sentBody');
       setSent({ proof: saved, body, next, nudge, cityFirst });
+      // Event mode: a first photo on the event's special day earns its limited-edition stamp (the thunk).
+      if (!original && stampEvent && challenge?.special && isEventStampId(challenge.special.id)) setStampThunk(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       // How many cities are on today's board with mine (the celebration's line).
       fetchDailyTodayCountries({ cityId: saved.city?.id ?? null }).then(d => setCitiesToday(d.cityCount ?? d.items.length)).catch(() => {});
@@ -503,6 +508,7 @@ function DailyProofScreenContent() {
           <Button icon="earth-outline" label={t('proof.compareNow')} onPress={() => afterProof('/daily/countries?source=after_proof')} />
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
         </View>
+        {stampThunk && challenge.special && <EventStampThunk name={challenge.special.name} onDone={() => setStampThunk(false)} />}
       </SafeAreaView>
     );
   }

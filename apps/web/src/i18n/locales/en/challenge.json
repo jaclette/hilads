@@ -1472,7 +1472,9 @@
         "played_other": "{{count}} cities are haunted 🎃",
         "represent": "Haunt your city 👻",
         "onBoard": "{{city}} is haunting the board! 👻"
-      }
+      },
+      "limited": "Limited edition",
+      "stampEarned": "Limited-edition stamp earned!"
     },
     "hero": {
       "cta": "Snap it for {{city}}",

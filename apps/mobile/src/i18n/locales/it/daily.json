@@ -741,7 +741,9 @@
       "remove": "Togli sticker",
       "add": "Aggiungi sticker",
       "frame": "Cornice"
-    }
+    },
+    "limited": "Edizione limitata",
+    "stampEarned": "Timbro in edizione limitata ottenuto!"
   },
   "hero": {
     "cta": "Scatta per {{city}}",

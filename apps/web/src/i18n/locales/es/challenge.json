@@ -1483,7 +1483,9 @@
         "played_other": "{{count}} ciudades están embrujadas 🎃",
         "represent": "Embruja tu ciudad 👻",
         "onBoard": "¡{{city}} embruja el ranking! 👻"
-      }
+      },
+      "limited": "Edición limitada",
+      "stampEarned": "¡Sello de edición limitada conseguido!"
     },
     "hero": {
       "cta": "Haz la foto por {{city}}",

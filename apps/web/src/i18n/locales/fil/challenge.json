@@ -1472,7 +1472,9 @@
         "played_other": "{{count}} lungsod ang minumulto 🎃",
         "represent": "Multuhin ang lungsod mo 👻",
         "onBoard": "Minumulto ng {{city}} ang board! 👻"
-      }
+      },
+      "limited": "Limited edition",
+      "stampEarned": "Nakuha mo ang limited-edition na stamp!"
     },
     "hero": {
       "cta": "Kumuha ng litrato para sa {{city}}",

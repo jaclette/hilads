@@ -1483,7 +1483,9 @@
         "played_other": "{{count}} villes sont hantées 🎃",
         "represent": "Hante ta ville 👻",
         "onBoard": "{{city}} hante le classement ! 👻"
-      }
+      },
+      "limited": "Édition limitée",
+      "stampEarned": "Tampon édition limitée gagné !"
     },
     "hero": {
       "cta": "Prends la photo pour {{city}}",

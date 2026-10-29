@@ -1460,7 +1460,9 @@
         "played_other": "{{count}}개 도시에 유령이 나타났어 🎃",
         "represent": "우리 도시에 유령 출몰 👻",
         "onBoard": "{{city}}, 보드에 출몰! 👻"
-      }
+      },
+      "limited": "한정판",
+      "stampEarned": "한정판 스탬프 획득!"
     },
     "hero": {
       "cta": "{{city}} 대표로 찍기",

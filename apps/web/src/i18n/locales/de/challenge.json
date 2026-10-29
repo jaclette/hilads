@@ -1472,7 +1472,9 @@
         "played_other": "In {{count}} Städten spukt es 🎃",
         "represent": "Spuke in deiner Stadt 👻",
         "onBoard": "{{city}} spukt durchs Ranking! 👻"
-      }
+      },
+      "limited": "Limitierte Edition",
+      "stampEarned": "Limitierter Stempel verdient!"
     },
     "hero": {
       "cta": "Knips es für {{city}}",

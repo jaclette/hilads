@@ -1460,7 +1460,9 @@
         "played_other": "{{count}} 座城市闹鬼了 🎃",
         "represent": "让你的城市闹鬼 👻",
         "onBoard": "{{city}}正在榜单上闹鬼！👻"
-      }
+      },
+      "limited": "限量版",
+      "stampEarned": "获得限量版印章！"
     },
     "hero": {
       "cta": "为{{city}}拍一张",

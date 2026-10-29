@@ -727,7 +727,9 @@
       "remove": "Remove sticker",
       "add": "Add sticker",
       "frame": "Frame"
-    }
+    },
+    "limited": "Limited edition",
+    "stampEarned": "Limited-edition stamp earned!"
   },
   "hero": {
     "cta": "Snap it for {{city}}",

@@ -727,7 +727,9 @@
       "remove": "Alisin ang sticker",
       "add": "Magdagdag ng sticker",
       "frame": "Frame"
-    }
+    },
+    "limited": "Limited edition",
+    "stampEarned": "Nakuha mo ang limited-edition na stamp!"
   },
   "hero": {
     "cta": "Kumuha ng litrato para sa {{city}}",

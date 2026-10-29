@@ -713,7 +713,9 @@
       "remove": "Hapus stiker",
       "add": "Tambah stiker",
       "frame": "Bingkai"
-    }
+    },
+    "limited": "Edisi terbatas",
+    "stampEarned": "Cap edisi terbatas didapat!"
   },
   "hero": {
     "cta": "Foto untuk {{city}}",

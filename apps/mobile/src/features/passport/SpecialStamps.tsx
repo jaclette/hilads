@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { DailySpecialStamp } from '@/types';
+import { EventStamp, isEventStampId } from '@/features/event/EventStamp';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 const ROTATION = [5, -4, 6, -6, 3, -5, 7];
@@ -27,10 +28,14 @@ export function SpecialStamps({ stamps }: { stamps: DailySpecialStamp[] }) {
           const date = new Date(`${s.date}T12:00:00Z`).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
           return (
             <View key={s.id} style={styles.cell} accessibilityLabel={`${s.name}, ${date}`}>
-              <View style={[styles.stamp, { transform: [{ rotate: `${ROTATION[i % ROTATION.length]}deg` }] }]}>
-                <View style={styles.inner}><Ionicons name={(s.icon || 'sparkles-outline') as IconName} size={22} color={colors.gold} /></View>
-              </View>
+              {/* An event's own stamp (Halloween): its scalloped orange / purple ink, "Limited edition". */}
+              {isEventStampId(s.id) ? <EventStamp size={SIZE + 4} rotation={ROTATION[i % ROTATION.length]} /> : (
+                <View style={[styles.stamp, { transform: [{ rotate: `${ROTATION[i % ROTATION.length]}deg` }] }]}>
+                  <View style={styles.inner}><Ionicons name={(s.icon || 'sparkles-outline') as IconName} size={22} color={colors.gold} /></View>
+                </View>
+              )}
               <Text style={styles.label} numberOfLines={2}>{s.name}</Text>
+              {isEventStampId(s.id) && <Text style={styles.limited}>{t('event.limited', { ns: 'daily' })}</Text>}
               <Text style={styles.date} numberOfLines={1}>{date}</Text>
             </View>
           );
@@ -54,4 +59,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
            alignItems: 'center', justifyContent: 'center' },
   label: { fontSize: 11, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 14 },
   date:  { fontSize: 10, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  limited: { fontSize: 10, fontWeight: '800', color: c.primaryText, textAlign: 'center' },
 });

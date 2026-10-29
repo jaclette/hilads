@@ -741,7 +741,9 @@
       "remove": "Retirer le sticker",
       "add": "Ajouter un sticker",
       "frame": "Cadre"
-    }
+    },
+    "limited": "Édition limitée",
+    "stampEarned": "Tampon édition limitée gagné !"
   },
   "hero": {
     "cta": "Prends la photo pour {{city}}",

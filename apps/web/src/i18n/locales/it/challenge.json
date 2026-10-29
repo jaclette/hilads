@@ -1483,7 +1483,9 @@
         "played_other": "{{count}} città sono infestate 🎃",
         "represent": "Infesta la tua città 👻",
         "onBoard": "{{city}} infesta la classifica! 👻"
-      }
+      },
+      "limited": "Edizione limitata",
+      "stampEarned": "Timbro in edizione limitata ottenuto!"
     },
     "hero": {
       "cta": "Scatta per {{city}}",

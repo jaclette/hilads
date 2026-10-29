@@ -741,7 +741,9 @@
       "remove": "Remover autocolante",
       "add": "Adicionar autocolante",
       "frame": "Moldura"
-    }
+    },
+    "limited": "Edição limitada",
+    "stampEarned": "Carimbo de edição limitada conquistado!"
   },
   "hero": {
     "cta": "Tira a foto por {{city}}",
