@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { PanResponder, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { PanResponder, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { Image, type ImageContentFit } from 'expo-image';
 import * as Haptics from 'expo-haptics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import Animated, {
   Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
@@ -26,6 +27,22 @@ export interface PhotoSource { uri: string; thumb?: string | null }
 
 const SWAP_MS = 250;
 const MARGIN = 10;
+
+// The one-time tip "Tap the small photo to swap" on the first dual photo seen:
+// one view in the whole app gets it, then never again (AsyncStorage).
+const TIP_KEY = 'hilads_dual_swap_tip_v1';
+const TIP_MS = 4000;
+let tipSeen: Promise<boolean> | null = null;
+let tipClaimed = false;
+function claimTip(): Promise<boolean> {
+  tipSeen ??= AsyncStorage.getItem(TIP_KEY).then(v => v === '1').catch(() => true);
+  return tipSeen.then(seen => {
+    if (seen || tipClaimed) return false;
+    tipClaimed = true;
+    AsyncStorage.setItem(TIP_KEY, '1').catch(() => {});
+    return true;
+  });
+}
 
 type Rect = { x: number; y: number; w: number; h: number; r: number };
 
@@ -54,6 +71,7 @@ export function DualPhoto({
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [corner, setCorner] = useState(0);            // 0 top-left, 1 top-right, 2 bottom-left, 3 bottom-right
   const [selfieBig, setSelfieBig] = useState(false);
+  const [tip, setTip] = useState(false);
   const p = useSharedValue(0);                         // 0: photo big, 1: selfie big
   const dx = useSharedValue(0);
   const dy = useSharedValue(0);
@@ -74,8 +92,22 @@ export function DualPhoto({
   // Back to the photo when the pictures change (a recycled cell, the next story).
   useEffect(() => { setSelfieBig(false); p.value = 0; setCorner(0); }, [main.uri, selfie?.uri, p]);
 
+  // The one-time swap tip, on the first interactive dual photo shown.
+  useEffect(() => {
+    if (!selfie || !interactive) return;
+    let live = true;
+    let hide: ReturnType<typeof setTimeout> | undefined;
+    claimTip().then(mine => {
+      if (!live || !mine) return;
+      setTip(true);
+      hide = setTimeout(() => setTip(false), TIP_MS);
+    });
+    return () => { live = false; if (hide) clearTimeout(hide); };
+  }, [selfie, interactive]);
+
   const swap = () => {
     if (!selfie) return;
+    setTip(false);
     const next = !selfieBig;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setSelfieBig(next);
@@ -160,6 +192,11 @@ export function DualPhoto({
           {layer('selfie')}
         </>
       ) : null}
+      {tip && ready && (
+        <View pointerEvents="none" style={[styles.tip, { top: insetRect.y + 6, ...(corner % 2 === 0 ? { left: insetRect.x + insetRect.w + 8 } : { right: size.w - insetRect.x + 8 }) }]}>
+          <Text style={styles.tipText}>{t('dual.swapHint')}</Text>
+        </View>
+      )}
       {children}
     </View>
   );
@@ -184,5 +221,7 @@ function useLayer(p: SharedValue<number>, big: Rect, inset: Rect, isSelfie: bool
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   frame:      { overflow: 'hidden' },
   layer:      { position: 'absolute', overflow: 'hidden', backgroundColor: c.bg3 },
+  tip:        { position: 'absolute', zIndex: 3, maxWidth: 200, backgroundColor: c.photoButton, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
+  tipText:    { color: c.white, fontSize: 13, fontWeight: '700' },
   insetFrame: { borderWidth: 2, shadowColor: c.photoScrim, shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
 });
