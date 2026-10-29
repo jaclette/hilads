@@ -5,6 +5,7 @@ import { themeName } from '@/features/daily/themes';
 import { answerText } from '@/features/compare/format';
 import type { Spot } from '@/api/spots';
 import type { DailyChallenge, DailyProof, DailyThemeKey } from '@/types';
+import { eventFeatureNow } from '@/features/event/seasonal';
 
 type City = { name: string | null; country?: string | null } | null;
 
@@ -19,6 +20,8 @@ export type ShareContent =
   | { type: 'proof'; id: string; photoUrl: string; theme: ThemeKey | null; themeLabel?: string | null; text: string; city: City; username: string | null;
       /** Dual photo: the selfie drawn as an inset in a corner of the photo. */
       selfieUrl?: string | null;
+      /** Event mode: a photo of the live event's days gets its share frame (e.g. "halloween"). */
+      eventKey?: string | null;
       rank: { rank: number; city: string | null } | null;
       /** Today's question and my answer, for the share line (COPY.md). */
       question?: string | null; answer?: string | null }
@@ -33,12 +36,19 @@ export type ShareContent =
   | { type: 'index'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date: string; text: string; city: null;
       lines: { country: string | null; city: string; value: string }[] };
 
+/** The live event's key when its share frame is on and the photo is of its days (else null). */
+function eventShareKey(date: string): string | null {
+  const ev = eventFeatureNow('shareFrame');
+  return ev && date >= ev.event.start && date <= ev.event.end ? ev.key : null;
+}
+
 /** My proof: its photo, the challenge, its city, my username and its podium rank (world first, else city). */
 export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareContent {
   const world = proof.worldRank !== null && proof.worldRank <= 3 ? proof.worldRank : null;
   const city = proof.cityRank !== null && proof.cityRank <= 3 ? proof.cityRank : null;
   return {
     type: 'proof', id: proof.id, photoUrl: proof.photoUrl, selfieUrl: proof.selfieUrl ?? null, theme: challenge.theme?.key ?? null, text: challenge.text,
+    eventKey: eventShareKey(proof.date),
     themeLabel: challenge.theme ? themeName(challenge.theme.key, { special: challenge.special, city: proof.city?.name }) : null,
     city: proof.city, username: proof.user.username ?? null,
     rank: world ? { rank: world, city: null } : city && proof.city?.name ? { rank: city, city: proof.city.name } : null,
