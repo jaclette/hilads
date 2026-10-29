@@ -29,6 +29,8 @@
     "announceLabel": "Hilads की ओर से घोषणाएं",
     "announceSub": "टीम की ओर से कभी-कभार अपडेट",
     "newChallengeLabel": "तुम्हारे शहर में नए चैलेंज",
-    "newChallengeSub": "जब कोई तुम्हारे शहर में चैलेंज शुरू करे"
+    "newChallengeSub": "जब कोई तुम्हारे शहर में चैलेंज शुरू करे",
+    "commentLabel": "कमेंट",
+    "commentSub": "आपकी फ़ोटो और उन फ़ोटो पर जिन पर आपने कमेंट किया"
   }
 }

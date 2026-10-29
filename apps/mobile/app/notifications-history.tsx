@@ -93,6 +93,9 @@ export default function NotificationsHistoryScreen() {
       router.push('/(tabs)/me' as never);
     } else if (notif.type === 'profile_view' && notif.data?.viewerId) {
       if (canAccessProfile(account)) router.push(`/user/${notif.data.viewerId}` as never);
+    } else if ((notif.type === 'photo_comment' || notif.type === 'photo_mention') && notif.data?.proofId) {
+      // A comment on a photo → the photo, its comments open on that comment.
+      router.push(`/daily/${notif.data.date ?? 'today'}?proof=${notif.data.proofId}&comment=${notif.data.commentId ?? ''}` as never);
     } else if ((notif.type === 'daily_vote' || notif.type === 'daily_twist_completed') && notif.data?.proofId) {
       // A vote on my proof / a completion of my Local Twist → that proof in its sheet.
       router.push(`/daily/${notif.data.date ?? 'today'}?proof=${notif.data.proofId}` as never);

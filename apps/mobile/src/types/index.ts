@@ -735,7 +735,8 @@ export interface Notification {
     | 'channel_message' | 'city_join'
     | 'friend_request_received' | 'friend_request_accepted' | 'friend_added' // friend_added kept for legacy rows
     | 'vibe_received' | 'profile_view' | 'daily_twist_picked'
-    | 'daily_vote' | 'daily_twist_completed';
+    | 'daily_vote' | 'daily_twist_completed'
+    | 'photo_comment' | 'photo_mention';   // comments on Daily photos
   title: string;
   body: string;
   data: {
@@ -752,8 +753,11 @@ export interface Notification {
     vibeId?: number;
     viewerId?: string;
     viewerName?: string;
-    proofId?: string;   // daily_vote, daily_twist_completed
+    proofId?: string;   // daily_vote, daily_twist_completed, photo_comment, photo_mention
     date?: string;
+    commentId?: number; // photo_comment, photo_mention: open the comments on it
+    actorPhoto?: string | null;
+    photoThumb?: string | null;
   };
   is_read: boolean;
   created_at: string;

@@ -88,6 +88,7 @@ export default function NotificationsScreen() {
     topic_reply_push:     true,
     new_topic_push:       false,
     admin_announcement_push: true,
+    comment_push:         true,
   });
 
   // ── Load latest 5 notifications + preferences ─────────────────────────────
@@ -165,6 +166,9 @@ export default function NotificationsScreen() {
       // Personal challenge invitation + take-on request both carry challengeId
       // in data; tap the bell row → land on the challenge detail.
       router.push(`/challenge/${notif.data.challengeId}` as never);
+    } else if ((notif.type === 'photo_comment' || notif.type === 'photo_mention') && notif.data?.proofId) {
+      // A comment on a photo → the photo, its comments open on that comment.
+      router.push(`/daily/${notif.data.date ?? 'today'}?proof=${notif.data.proofId}&comment=${notif.data.commentId ?? ''}` as never);
     } else if ((notif.type === 'daily_vote' || notif.type === 'daily_twist_completed') && notif.data?.proofId) {
       // A vote on my proof / a completion of my Local Twist → that proof in its sheet.
       router.push(`/daily/${notif.data.date ?? 'today'}?proof=${notif.data.proofId}` as never);
@@ -231,6 +235,8 @@ export default function NotificationsScreen() {
             {/* DM, event-chat, and city-chat toggles live on the Messages screen
                 now - they govern the envelope icon's behaviour, not the bell. */}
             <PrefRow label={t('pref.mentionLabel')} subtitle={t('pref.mentionSub')} value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
+            <View style={styles.prefDivider} />
+            <PrefRow label={t('pref.commentLabel')} subtitle={t('pref.commentSub')} value={prefs.comment_push ?? true} onChange={v => togglePref('comment_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.eventJoinLabel')} subtitle={t('pref.eventJoinSub')} value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />

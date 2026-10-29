@@ -51,6 +51,9 @@ class MobilePushService
             'profile_view'    => 'profile_view_push',
             'topic_message'   => 'topic_reply_push',
             'new_topic'       => 'new_topic_push',
+            // Comments on Daily photos (PhotoCommentNotify).
+            'photo_comment'   => 'comment_push',
+            'photo_mention'   => 'mention_push',
             default           => null,
         };
     }

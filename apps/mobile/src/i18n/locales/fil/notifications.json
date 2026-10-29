@@ -29,6 +29,8 @@
     "announceLabel": "Mga anunsyo mula sa Hilads",
     "announceSub": "Paminsan-minsang update mula sa team",
     "newChallengeLabel": "Mga bagong challenge sa lungsod mo",
-    "newChallengeSub": "Kapag may naglunsad ng challenge sa lungsod mo"
+    "newChallengeSub": "Kapag may naglunsad ng challenge sa lungsod mo",
+    "commentLabel": "Mga komento",
+    "commentSub": "Sa mga photo mo at sa mga photo na kinomentuhan mo"
   }
 }

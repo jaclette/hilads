@@ -29,6 +29,8 @@
     "announceLabel": "Anuncios de Hilads",
     "announceSub": "Novedades ocasionales del equipo",
     "newChallengeLabel": "Nuevos retos en tu ciudad",
-    "newChallengeSub": "Cuando alguien lanza un reto en tu ciudad"
+    "newChallengeSub": "Cuando alguien lanza un reto en tu ciudad",
+    "commentLabel": "Comentarios",
+    "commentSub": "En tus fotos y en las fotos que comentaste"
   }
 }

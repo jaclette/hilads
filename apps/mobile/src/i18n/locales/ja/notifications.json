@@ -29,6 +29,8 @@
     "announceLabel": "Hilads からのお知らせ",
     "announceSub": "チームからの不定期の最新情報",
     "newChallengeLabel": "あなたの街の新しいチャレンジ",
-    "newChallengeSub": "誰かがあなたの街でチャレンジを始めたとき"
+    "newChallengeSub": "誰かがあなたの街でチャレンジを始めたとき",
+    "commentLabel": "コメント",
+    "commentSub": "あなたの写真と、あなたがコメントした写真"
   }
 }

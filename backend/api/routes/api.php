@@ -15334,6 +15334,8 @@ $router->add('POST', '/api/v1/daily/proofs/{id}/comments', function (array $para
     $count = PhotoComments::counts([$proof['id']])[$proof['id']] ?? 0;
     apiLog('daily', 'comment', ['proof' => $proof['id'], 'user' => $user['id']]);
     photoCommentBroadcast($proof['id'], ['kind' => 'created', 'comment' => PhotoComments::format($row, null)]);
+    // The photo's author, the people mentioned or replied to, earlier commenters (bell + push).
+    PhotoCommentNotify::onComment($proof, $row, $user);
     Response::json(['comment' => PhotoComments::format($row, $user['id']), 'commentCount' => $count], 201);
 });
 

@@ -29,6 +29,8 @@
     "newTopicLabel": "New hangouts in your city",
     "newTopicSub": "When someone starts a new hangout in your city",
     "announceLabel": "Announcements from Hilads",
-    "announceSub": "Occasional updates from the team"
+    "announceSub": "Occasional updates from the team",
+    "commentLabel": "Comments",
+    "commentSub": "On your photos and on photos you commented"
   }
 }

@@ -29,6 +29,8 @@
     "announceLabel": "来自 Hilads 的公告",
     "announceSub": "团队偶尔发布的动态",
     "newChallengeLabel": "你所在城市的新挑战",
-    "newChallengeSub": "当有人在你所在城市发起挑战时"
+    "newChallengeSub": "当有人在你所在城市发起挑战时",
+    "commentLabel": "评论",
+    "commentSub": "你的照片和你评论过的照片"
   }
 }

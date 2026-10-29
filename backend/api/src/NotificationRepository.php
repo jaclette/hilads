@@ -118,6 +118,8 @@ class NotificationRepository
             // Admin-triggered broadcasts (from /admin/push). Default-on so
             // users get product announcements unless they opt out.
             'admin_announcement'                                        => 'admin_announcement_push',
+            'photo_comment'                                             => 'comment_push',
+            'photo_mention'                                             => 'mention_push',
             default                                                     => null,
         };
     }
@@ -142,6 +144,7 @@ class NotificationRepository
             'join_request_push'    => true,
             'admin_announcement_push' => true,
             'daily_challenge_push' => true,
+            'comment_push'         => true,
         ];
     }
 
@@ -257,6 +260,8 @@ class NotificationRepository
             // adder's profile so old notifications still work after upgrade.
             'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
             'vibe_received'                   => '/me',
+            // A comment on a Daily photo: its public page (the web opens the comments there).
+            'photo_comment', 'photo_mention'  => isset($data['proofId']) ? "/p/{$data['proofId']}" : '/notifications',
             'profile_view'                    => isset($data['viewerId']) ? "/user/{$data['viewerId']}" : '/notifications',
             'topic_message', 'new_topic',
             'join_request', 'join_request_accepted' => isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/',

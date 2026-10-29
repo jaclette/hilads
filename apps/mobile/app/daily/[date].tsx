@@ -18,6 +18,7 @@ import { deleteDailyProof, fetchDailyProof, fetchDailySheet, fetchDailyToday, fe
 import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere, getLastToday } from '@/hooks/useDaily';
 import { SheetSkeleton } from '@/features/daily/SheetSkeleton';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
+import { commentsTargetOf, openPhotoComments } from '@/features/daily/PhotoCommentsSheet';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { compareCountryGroups, compareCountryProofs } from '@/features/daily/countryOrder';
@@ -60,7 +61,8 @@ export default function DailySheetScreen() {
 }
 
 function DailySheetScreenContent() {
-  const { date: dateParam, proof: proofParam, source, push_type: pushType, share } = useLocalSearchParams<{ date: string; proof?: string; source?: string; push_type?: string; share?: string }>();
+  const { date: dateParam, proof: proofParam, source, push_type: pushType, share, comment: commentParam } =
+    useLocalSearchParams<{ date: string; proof?: string; source?: string; push_type?: string; share?: string; comment?: string }>();
   const { city } = useApp();
   // /daily/today from the hero: today's date is already known (no loader).
   const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : getLastToday()?.challenge?.date ?? null);
@@ -74,7 +76,7 @@ function DailySheetScreenContent() {
   }, [date, city?.channelId]);
 
   if (!date) return <Loading />;   // a cold deep link only: the frame with placeholders
-  return <Challenge date={date} openProofId={proofParam ?? null} source={source ?? null} pushType={pushType ?? null} shareProof={share === '1'} />;
+  return <Challenge date={date} openProofId={proofParam ?? null} source={source ?? null} pushType={pushType ?? null} shareProof={share === '1'} commentParam={commentParam} />;
 }
 
 function Loading() {
@@ -88,10 +90,12 @@ function Loading() {
   );
 }
 
-function Challenge({ date, openProofId, source, pushType, shareProof }: {
+function Challenge({ date, openProofId, source, pushType, shareProof, commentParam }: {
   date: string; openProofId: string | null; source: string | null; pushType: string | null;
   /** ?share=1: open the share sheet on the ?proof= one (mine, from yesterday's podium). */
   shareProof: boolean;
+  /** ?comment=<id>: open the ?proof= one's comments on that comment (a comment notification). */
+  commentParam?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors, theme } = useTheme();
@@ -158,9 +162,14 @@ function Challenge({ date, openProofId, source, pushType, shareProof }: {
     if (!openProofId || opened.current || !sheet) return;
     opened.current = true;
     const local = sheet.proofs.find(p => p.id === openProofId) ?? (sheet.myProof?.id === openProofId ? sheet.myProof : null);
-    if (local) { setViewing(local); return; }
-    fetchDailyProof(openProofId).then(setViewing).catch(() => {});
-  }, [openProofId, sheet]);
+    // ?comment=<id> (a comment push or bell row): its comments open over the photo, on that comment.
+    const show = (p: DailyProof) => {
+      setViewing(p);
+      if (commentParam !== undefined) setTimeout(() => openPhotoComments(commentsTargetOf(p, Number(commentParam) || null)), 450);
+    };
+    if (local) { show(local); return; }
+    fetchDailyProof(openProofId).then(show).catch(() => {});
+  }, [openProofId, sheet]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const goProfile = useCallback((userId: string) => {
     if (!canAccessProfile(account)) { router.push('/auth-gate?reason=view_profile' as never); return; }

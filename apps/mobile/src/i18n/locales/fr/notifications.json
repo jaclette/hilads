@@ -29,6 +29,8 @@
     "newTopicLabel": "Nouvelles sorties dans ta ville",
     "newTopicSub": "Quand quelqu'un lance une nouvelle sortie dans ta ville",
     "announceLabel": "Annonces de Hilads",
-    "announceSub": "Des nouvelles occasionnelles de l'équipe"
+    "announceSub": "Des nouvelles occasionnelles de l'équipe",
+    "commentLabel": "Commentaires",
+    "commentSub": "Sur tes photos et les photos que tu as commentées"
   }
 }

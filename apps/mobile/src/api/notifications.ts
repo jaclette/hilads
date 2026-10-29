@@ -17,6 +17,7 @@ export interface NotificationPreferences {
   topic_reply_push:     boolean;
   new_topic_push:       boolean;
   admin_announcement_push: boolean;
+  comment_push?:        boolean;   // comments on my photos and threads I joined (absent: an older API)
 }
 
 export async function fetchNotifications(

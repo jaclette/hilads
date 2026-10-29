@@ -29,6 +29,8 @@
     "announceLabel": "Hilads 공지",
     "announceSub": "팀의 가끔 전하는 소식",
     "newChallengeLabel": "내 도시의 새 챌린지",
-    "newChallengeSub": "누군가 내 도시에서 챌린지를 시작할 때"
+    "newChallengeSub": "누군가 내 도시에서 챌린지를 시작할 때",
+    "commentLabel": "댓글",
+    "commentSub": "내 사진과 내가 댓글을 단 사진"
   }
 }

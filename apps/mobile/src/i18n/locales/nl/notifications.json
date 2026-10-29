@@ -29,6 +29,8 @@
     "announceLabel": "Aankondigingen van Hilads",
     "announceSub": "Af en toe updates van het team",
     "newChallengeLabel": "Nieuwe challenges in je stad",
-    "newChallengeSub": "Wanneer iemand een challenge in je stad start"
+    "newChallengeSub": "Wanneer iemand een challenge in je stad start",
+    "commentLabel": "Reacties",
+    "commentSub": "Op je foto's en op foto's waarop je reageerde"
   }
 }

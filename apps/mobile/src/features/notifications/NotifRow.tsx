@@ -5,6 +5,7 @@
 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import i18n from '@/i18n';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -29,7 +30,7 @@ export function relativeTime(raw?: string | null): string {
 
 // ── Notification icon ─────────────────────────────────────────────────────────
 
-export function NotifIcon({ type, unread }: { type: Notification['type']; unread: boolean }) {
+export function NotifIcon({ type, unread, small = false }: { type: Notification['type']; unread: boolean; small?: boolean }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const iconName: React.ComponentProps<typeof Ionicons>['name'] =
@@ -44,11 +45,13 @@ export function NotifIcon({ type, unread }: { type: Notification['type']; unread
     type === 'profile_view'    ? 'eye-outline'          :
     type === 'daily_vote'      ? 'heart-outline'        :
     type === 'daily_twist_completed' ? 'leaf-outline'   :
+    type === 'photo_comment'   ? 'chatbubble-ellipses-outline' :
+    type === 'photo_mention'   ? 'at-outline'           :
     /* fallback */               'notifications-outline';
 
   return (
-    <View style={[styles.notifIcon, unread && styles.notifIconUnread]}>
-      <Ionicons name={iconName} size={20} color={unread ? colors.primaryOnTint : colors.muted} />
+    <View style={[styles.notifIcon, unread && styles.notifIconUnread, small && styles.notifIconSmall]}>
+      <Ionicons name={iconName} size={small ? 12 : 20} color={unread ? colors.primaryOnTint : colors.muted} />
     </View>
   );
 }
@@ -68,7 +71,13 @@ export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () 
       accessibilityRole="button"
     >
 
-      <NotifIcon type={notif.type} unread={unread} />
+      {/* A comment: who wrote it, with the comment icon on it; else the type's icon. */}
+      {notif.data?.actorPhoto ? (
+        <View>
+          <Image source={{ uri: notif.data.actorPhoto }} style={styles.actor} contentFit="cover" />
+          <View style={styles.actorBadge}><NotifIcon type={notif.type} unread={unread} small /></View>
+        </View>
+      ) : <NotifIcon type={notif.type} unread={unread} />}
 
       <View style={styles.notifBody}>
         <Text style={[styles.notifTitle, !unread && styles.notifTitleRead]} numberOfLines={2}>
@@ -82,6 +91,7 @@ export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () 
         {time ? <Text style={styles.notifTime}>{time}</Text> : null}
       </View>
 
+      {!!notif.data?.photoThumb && <Image source={{ uri: notif.data.photoThumb }} style={styles.thumb} contentFit="cover" />}
       {unread && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );
@@ -102,6 +112,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   notifIcon:        { width: 44, height: 44, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2,
                       alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   notifIconUnread:  { borderColor: c.primaryTint, backgroundColor: c.primaryTint },
+  notifIconSmall:   { width: 22, height: 22, borderColor: c.bg },
+  actor:            { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.bg3 },
+  actorBadge:       { position: 'absolute', right: -4, bottom: -4 },
+  thumb:            { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3, flexShrink: 0 },
   notifBody:        { flex: 1, gap: 3 },
   notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
   notifTitleRead:   { color: c.muted, fontWeight: '500' },

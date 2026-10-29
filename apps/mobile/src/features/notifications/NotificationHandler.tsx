@@ -383,6 +383,14 @@ function resolvePushRoute(data: NotifData): string | null {
       return proofId ? `/daily/photos?source=push&proof=${encodeURIComponent(proofId)}` : `/daily/${day}?source=push`;
     }
 
+    case 'photo_comment':
+    case 'photo_mention': {
+      // A comment on a photo (mine, one I commented, or mentioning me) → the photo with its comments open on it.
+      const { date, proofId, commentId } = data as { date?: string; proofId?: string; commentId?: number };
+      const day = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : 'today';
+      return proofId ? `/daily/${day}?source=push&proof=${encodeURIComponent(proofId)}&comment=${commentId ?? ''}` : '/notifications';
+    }
+
     case 'daily_digest': {
       // The digest can arrive the day after (cap reached) → its own date.
       const date = (data as { date?: string }).date;
