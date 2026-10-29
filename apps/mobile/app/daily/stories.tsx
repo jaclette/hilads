@@ -132,15 +132,21 @@ function Stories() {
     }
   };
 
-  // The current photo's segment fills, then the next photo (paused while held, while its comments are open, or with reduce motion).
+  // The current photo's segment fills, then the next photo (paused while held, while a finger is on the
+  // selfie inset, while its comments are open, or with reduce motion). A pause resumes where it stopped;
+  // only another photo starts the segment over.
   const commentsOpen = useCommentsOpen();
+  const [interacting, setInteracting] = useState(false);
+  useEffect(() => { progress.setValue(0); }, [proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    progress.setValue(0);
-    if (!proof || paused || commentsOpen || reduceMotion) return;
-    const anim = Animated.timing(progress, { toValue: 1, duration: PHOTO_MS, easing: Easing.linear, useNativeDriver: false });
-    anim.start(({ finished }) => { if (finished) next(); });
-    return () => anim.stop();
-  }, [proof?.id, paused, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!proof || paused || interacting || commentsOpen || reduceMotion) return;
+    let anim: Animated.CompositeAnimation | null = null;
+    progress.stopAnimation(at => {
+      anim = Animated.timing(progress, { toValue: 1, duration: Math.max(0, (1 - at) * PHOTO_MS), easing: Easing.linear, useNativeDriver: false });
+      anim.start(({ finished }) => { if (finished) next(); });
+    });
+    return () => { anim?.stop(); };
+  }, [proof?.id, paused, interacting, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pan = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
@@ -172,7 +178,7 @@ function Stories() {
       {proof && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                     transition={120} draggable insetTop={insets.top + 76} />
+                     transition={120} draggable insetTop={insets.top + 76} onInteract={setInteracting} />
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
@@ -297,7 +303,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
   top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 10, gap: 10 },
   bars:        { flexDirection: 'row', gap: 4 },
-  bar:         { flex: 1, height: 3, borderRadius: 2, backgroundColor: c.photoControl, overflow: 'hidden' },
+  // A dark edge keeps each segment (and the gap between them) visible on a bright photo.
+  bar:         { flex: 1, height: 3, borderRadius: 2, backgroundColor: c.photoControl, overflow: 'hidden',
+                 borderWidth: StyleSheet.hairlineWidth, borderColor: c.photoButton },
   barFill:     { height: 3, backgroundColor: c.white },
   head:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 4 },
   cityName:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.white },

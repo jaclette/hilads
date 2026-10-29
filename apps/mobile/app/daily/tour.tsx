@@ -91,14 +91,19 @@ export default function TourScreen() {
     else track('world_tour_completed', { date: tour.date, cities: new Set(slides.map(s => s.city.id)).size, photos: slides.length });
   }, [index, tour]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The progress bar of the current slide, then the next one (paused while held, a sheet open, or reduce motion).
+  // The progress bar of the current slide, then the next one (paused while held, a finger on the selfie
+  // inset, a sheet open, or reduce motion). A pause resumes where it stopped; another slide starts over.
+  const [interacting, setInteracting] = useState(false);
+  useEffect(() => { progress.setValue(0); }, [index, tour]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    progress.setValue(0);
-    if (!tour || last || paused || share || commentsOpen || reduceMotion) return;
-    const anim = Animated.timing(progress, { toValue: 1, duration: SLIDE_MS, easing: Easing.linear, useNativeDriver: false });
-    anim.start(({ finished }) => { if (finished) go(index + 1); });
-    return () => anim.stop();
-  }, [index, tour, paused, share, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!tour || last || paused || interacting || share || commentsOpen || reduceMotion) return;
+    let anim: Animated.CompositeAnimation | null = null;
+    progress.stopAnimation(at => {
+      anim = Animated.timing(progress, { toValue: 1, duration: Math.max(0, (1 - at) * SLIDE_MS), easing: Easing.linear, useNativeDriver: false });
+      anim.start(({ finished }) => { if (finished) go(index + 1); });
+    });
+    return () => { anim?.stop(); };
+  }, [index, tour, paused, interacting, share, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pan = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
@@ -138,7 +143,7 @@ export default function TourScreen() {
                  accessibilityRole="button" accessibilityLabel={t('tour.next')} />
       {!last && proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                     transition={120} insetTop={insets.top + 64} />
+                     transition={120} insetTop={insets.top + 64} onInteract={setInteracting} />
         : cover && <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} pointerEvents="none" />}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />

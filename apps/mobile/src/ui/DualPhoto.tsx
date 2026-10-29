@@ -46,7 +46,7 @@ type Rect = { x: number; y: number; w: number; h: number; r: number };
 
 export function DualPhoto({
   main, selfie, style, contentFit = 'cover', inset = 'normal', interactive = true, draggable = false,
-  insetTop = 0, transition = 150, onSwap, onLoadMain, children,
+  insetTop = 0, transition = 150, onSwap, onInteract, onLoadMain, children,
 }: {
   main: PhotoSource;
   selfie?: PhotoSource | null;
@@ -59,6 +59,8 @@ export function DualPhoto({
   insetTop?: number;
   transition?: number;
   onSwap?: (selfieBig: boolean) => void;
+  /** A finger on the inset (tap or drag) and off again: a story pauses its timer meanwhile. */
+  onInteract?: (active: boolean) => void;
   onLoadMain?: (size: { width: number; height: number }) => void;
   children?: ReactNode;
 }) {
@@ -88,12 +90,30 @@ export function DualPhoto({
     ...(corner % 2 === 0 ? { left: m } : { right: m }),
   };
 
-  // The swap: the new inset pops in. The drag: the inset follows the finger. Both JS-driven (one transform).
-  const pop = useRef(new Animated.Value(1)).current;
+  // The swap: the new inset pops in. The drag: the inset follows the finger. Each layer keeps its
+  // own animated values bound for its whole life (never handed from one view to the other, which
+  // could leave a view at the last opacity it was given: an inset gone after a second swap).
+  // `isInset` (0/1) gates the drag, so the same style shape fits the big layer and the inset.
   const drag = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const anim = useRef((['main', 'selfie'] as const).reduce((o, which) => {
+    const pop = new Animated.Value(1);
+    const isInset = new Animated.Value(which === 'selfie' ? 1 : 0);
+    o[which] = {
+      pop, isInset,
+      style: { opacity: pop, transform: [
+        { translateX: Animated.multiply(drag.x, isInset) }, { translateY: Animated.multiply(drag.y, isInset) },
+        { scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) },
+      ] },
+    };
+    return o;
+  }, {} as Record<'main' | 'selfie', { pop: Animated.Value; isInset: Animated.Value; style: object }>)).current;
 
   // Back to the photo when the pictures change (a recycled cell, the next story).
-  useEffect(() => { setSelfieBig(false); setCorner(0); drag.setValue({ x: 0, y: 0 }); pop.setValue(1); }, [main.uri, selfie?.uri, drag, pop]);
+  useEffect(() => {
+    setSelfieBig(false); setCorner(0); drag.setValue({ x: 0, y: 0 });
+    anim.main.pop.setValue(1); anim.main.isInset.setValue(0);
+    anim.selfie.pop.setValue(1); anim.selfie.isInset.setValue(1);
+  }, [main.uri, selfie?.uri, drag, anim]);
 
   // The one-time swap tip, on the first interactive dual photo shown.
   useEffect(() => {
@@ -114,14 +134,22 @@ export function DualPhoto({
     const next = !selfieBig;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setSelfieBig(next);
-    if (!reduced) {
-      pop.setValue(0);
-      Animated.timing(pop, { toValue: 1, duration: SWAP_MS, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+    const inset = next ? anim.main : anim.selfie;
+    const big = next ? anim.selfie : anim.main;
+    big.pop.stopAnimation(); big.pop.setValue(1); big.isInset.setValue(0);
+    inset.isInset.setValue(1);
+    inset.pop.stopAnimation();
+    if (reduced) inset.pop.setValue(1);
+    else {
+      inset.pop.setValue(0);
+      Animated.timing(inset.pop, { toValue: 1, duration: SWAP_MS, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
     }
     onSwap?.(next);
   };
   const swapRef = useRef(swap);
   swapRef.current = swap;
+  const interactRef = useRef(onInteract);
+  interactRef.current = onInteract;
 
   // Drag (story viewer) and tap on the inset; the corner nearest to where it's let go wins.
   const sizeRef = useRef({ size, insetRect });
@@ -130,8 +158,10 @@ export function DualPhoto({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_, g) => draggable && (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4),
     onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: () => interactRef.current?.(true),
     onPanResponderMove: (_, g) => { if (draggable) drag.setValue({ x: g.dx, y: g.dy }); },
     onPanResponderRelease: (_, g) => {
+      interactRef.current?.(false);
       if (Math.abs(g.dx) < 6 && Math.abs(g.dy) < 6) { drag.setValue({ x: 0, y: 0 }); swapRef.current(); return; }
       if (!draggable) return;
       const { size: s, insetRect: r } = sizeRef.current;
@@ -146,7 +176,8 @@ export function DualPhoto({
       Animated.timing(drag, { toValue: { x: 0, y: 0 }, duration: reduced ? 0 : 200, useNativeDriver: false }).start();
       Haptics.selectionAsync().catch(() => {});
     },
-    onPanResponderTerminate: () => { Animated.timing(drag, { toValue: { x: 0, y: 0 }, duration: 150, useNativeDriver: false }).start(); },
+    onPanResponderTerminate: () => {
+      interactRef.current?.(false); Animated.timing(drag, { toValue: { x: 0, y: 0 }, duration: 150, useNativeDriver: false }).start(); },
   }), [draggable, drag, m, insetTop, reduced]);
 
   const onLayout = (e: LayoutChangeEvent) => {
@@ -165,9 +196,7 @@ export function DualPhoto({
       <Animated.View
         key={which}
         style={[styles.layer, big ? StyleSheet.absoluteFill : [insetPos, styles.insetFrame, { borderColor: border }],
-                { zIndex: isInset ? 2 : 1 },
-                isInset && { opacity: pop, transform: [{ translateX: drag.x }, { translateY: drag.y },
-                                                      { scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) }] }]}
+                { zIndex: isInset ? 2 : 1 }, anim[which].style]}
         pointerEvents={big || !interactive ? 'none' : 'auto'}
         accessible={isInset && interactive}
         accessibilityRole={isInset && interactive ? 'button' : undefined}
