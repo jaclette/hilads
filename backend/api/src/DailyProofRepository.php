@@ -641,6 +641,8 @@ final class DailyProofRepository
             'localVoteCount'   => $local,
             'validatedByLocal' => $local > 0,
             'myVote'           => (bool) ($row['my_vote'] ?? false),
+            // Visible comments (PhotoComments); the 2 latest come with the live state.
+            'commentCount'     => (int) ($row['comment_count'] ?? 0),
             'worldRank'        => isset($row['world_rank']) ? (int) $row['world_rank'] : null,
             'cityRank'         => isset($row['city_rank']) ? (int) $row['city_rank'] : null,
             'isMine'           => $isMine,

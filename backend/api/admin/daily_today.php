@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'reject'          => daily_action(fn() => DailyModerationService::rejectProof($proof, (string) ($p['reason'] ?? '')), 'Rejected - the author sees your reason.', $self . '#queue'),
         'dismiss_reports' => daily_action(fn() => DailyModerationService::resolveReports($proof, 'dismissed'), 'Reports dismissed.', $self . '#queue'),
         'remove_proof'    => daily_action(fn() => DailyAdminService::removeProof($proof, (string) ($p['reason'] ?? '')), 'Proof removed.', $self . '#latest'),
+        'keep_comment'    => daily_action(fn() => PhotoComments::resolveReports((int) ($p['comment_id'] ?? 0), 'keep'), 'Comment kept (reports dismissed).', $self . '#comments'),
+        'remove_comment'  => daily_action(fn() => PhotoComments::resolveReports((int) ($p['comment_id'] ?? 0), 'remove'), 'Comment removed.', $self . '#comments'),
         'remove_twist'    => daily_action(fn() => DailyAdminService::removeTwist((string) ($p['twist_id'] ?? '')), 'Twist removed.', $self . '#twists'),
         'force_live'      => daily_action(function () use ($p) {
             $cityId = (string) ($p['city_id'] ?? '');
@@ -39,6 +41,7 @@ $challenge = DailyChallengeRepository::findPublishedByDate($date);
 $full      = $challenge ? DailyAdminService::find($challenge['id']) : null;
 $stats     = $challenge ? DailyAdminService::todayStats($challenge['id']) : ['approved' => 0, 'pending' => 0, 'byCity' => []];
 $queue     = DailyModerationService::queue(50);
+$reportedComments = PhotoComments::reportedQueue(50);
 $latest    = $challenge ? DailyProofRepository::listApproved($challenge['id'], null, null, 20) : [];
 $twists    = $challenge ? DailyAdminService::twistsFor($challenge['id']) : [];
 $runStmt   = Database::pdo()->prepare("SELECT * FROM daily_drop_runs WHERE challenge_date = ?");
@@ -130,6 +133,35 @@ daily_styles();
                     <form method="POST" action="<?= $self ?>" class="daily-inline" style="margin-top:6px"><?= csrf_input() ?>
                         <input type="hidden" name="action" value="remove_proof"><input type="hidden" name="proof_id" value="<?= dh($r['id']) ?>">
                         <input type="text" name="reason" placeholder="Reason (the author sees it)">
+                        <button class="btn btn-danger btn-sm" type="submit">Remove</button></form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody></table></div>
+    <?php endif; ?>
+
+    <?php if ($reportedComments !== []): ?>
+        <h3 id="comments" style="margin:18px 0 8px">Reported comments (hidden from <?= PhotoComments::REPORT_HIDE_THRESHOLD ?> reports)</h3>
+        <div class="table-wrapper"><table class="daily-stack"><tbody>
+        <?php foreach ($reportedComments as $c): ?>
+            <tr>
+                <td>
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                        <img src="<?= dh((string) $c['photo_url']) ?>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
+                        <div>
+                            <strong>@<?= dh((string) ($c['username'] ?? $c['display_name'])) ?></strong>
+                            <?= $c['hidden_at'] !== null ? '<span style="color:#f87171">· hidden</span>' : '' ?>
+                            <div style="margin-top:4px;white-space:pre-wrap"><?= dh((string) $c['body']) ?></div>
+                            <div style="margin-top:6px;color:#f87171"><?= (int) $c['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $c['reasons'])) ?></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="td-actions" style="min-width:220px">
+                    <form method="POST" action="<?= $self ?>" style="display:inline"><?= csrf_input() ?>
+                        <input type="hidden" name="action" value="keep_comment"><input type="hidden" name="comment_id" value="<?= (int) $c['id'] ?>">
+                        <button class="btn btn-secondary btn-sm" type="submit">Keep</button></form>
+                    <form method="POST" action="<?= $self ?>" style="display:inline"><?= csrf_input() ?>
+                        <input type="hidden" name="action" value="remove_comment"><input type="hidden" name="comment_id" value="<?= (int) $c['id'] ?>">
                         <button class="btn btn-danger btn-sm" type="submit">Remove</button></form>
                 </td>
             </tr>

@@ -3633,6 +3633,80 @@ run($pdo, "
     )
 ", 'daily_promo_assets');
 
+// Comments on Daily Challenge photos (2026-10-29, docs/photo-comments-audit.md).
+// One flat thread per photo: reply_to_comment_id only quotes. Soft delete
+// (deleted_at) by the commenter or the photo's author; hidden_at when reports
+// reach PhotoComments::REPORT_HIDE_THRESHOLD. daily_proofs.comment_count counts
+// the visible ones, kept by a trigger like vote_count. Registered users only.
+// Reversal: DROP TABLE photo_comment_reports, photo_comment_likes,
+// photo_comment_mentions, photo_comments; DROP FUNCTION
+// photo_comments_recount(); ALTER TABLE daily_proofs DROP COLUMN comment_count;
+// ALTER TABLE notification_preferences DROP COLUMN comment_push.
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS comment_count INTEGER NOT NULL DEFAULT 0", 'daily_proofs.comment_count');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS photo_comments (
+        id                  BIGSERIAL   PRIMARY KEY,
+        photo_id            TEXT        NOT NULL REFERENCES daily_proofs(id) ON DELETE CASCADE,
+        user_id             TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        body                TEXT        NOT NULL CHECK (char_length(body) BETWEEN 1 AND 300),
+        reply_to_comment_id BIGINT      REFERENCES photo_comments(id) ON DELETE SET NULL,
+        created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+        edited_at           TIMESTAMPTZ,
+        deleted_at          TIMESTAMPTZ,
+        hidden_at           TIMESTAMPTZ
+    )
+", 'photo_comments');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_photo_comments_photo ON photo_comments (photo_id, id) WHERE deleted_at IS NULL AND hidden_at IS NULL", 'idx_photo_comments_photo');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_photo_comments_user ON photo_comments (user_id, created_at)", 'idx_photo_comments_user');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS photo_comment_mentions (
+        comment_id        BIGINT NOT NULL REFERENCES photo_comments(id) ON DELETE CASCADE,
+        mentioned_user_id TEXT   NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        PRIMARY KEY (comment_id, mentioned_user_id)
+    )
+", 'photo_comment_mentions');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS photo_comment_likes (
+        comment_id BIGINT      NOT NULL REFERENCES photo_comments(id) ON DELETE CASCADE,
+        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (comment_id, user_id)
+    )
+", 'photo_comment_likes');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS photo_comment_reports (
+        id                BIGSERIAL   PRIMARY KEY,
+        comment_id        BIGINT      NOT NULL REFERENCES photo_comments(id) ON DELETE CASCADE,
+        reporter_user_id  TEXT        REFERENCES users(id) ON DELETE CASCADE,
+        reporter_guest_id TEXT,
+        reason_code       TEXT        NOT NULL,
+        status            TEXT        NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'reviewed', 'dismissed')),
+        created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CHECK (reporter_user_id IS NOT NULL OR reporter_guest_id IS NOT NULL)
+    )
+", 'photo_comment_reports');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_photo_comment_reports_reporter
+            ON photo_comment_reports (comment_id, COALESCE(reporter_user_id, '@g:' || reporter_guest_id))", 'uq_photo_comment_reports_reporter');
+run($pdo, "
+    CREATE OR REPLACE FUNCTION photo_comments_recount() RETURNS trigger AS \$\$
+    DECLARE pid TEXT := COALESCE(NEW.photo_id, OLD.photo_id);
+    BEGIN
+        UPDATE daily_proofs SET comment_count = (
+            SELECT count(*) FROM photo_comments
+            WHERE photo_id = pid AND deleted_at IS NULL AND hidden_at IS NULL
+        ) WHERE id = pid;
+        RETURN NULL;
+    END
+    \$\$ LANGUAGE plpgsql
+", 'photo_comments_recount()');
+run($pdo, "DROP TRIGGER IF EXISTS trg_photo_comments_count ON photo_comments", 'drop trg_photo_comments_count');
+run($pdo, "
+    CREATE TRIGGER trg_photo_comments_count
+    AFTER INSERT OR DELETE OR UPDATE OF deleted_at, hidden_at ON photo_comments
+    FOR EACH ROW EXECUTE FUNCTION photo_comments_recount()
+", 'trg_photo_comments_count');
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS comment_push BOOLEAN NOT NULL DEFAULT true", 'notification_preferences.comment_push');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

@@ -15090,8 +15090,18 @@ $router->add('GET', '/api/v1/daily/proofs/state', function () {
         $mine    = $today !== null ? DailyVotes::mine($today['id'], $user['id']) : null;
         $myVotes = $mine !== null ? ['used' => $mine['used'], 'left' => $mine['left']] : null;
     }
+    $blocked = dailyBlocks($user)['user_ids'] ?? [];
+    $items   = DailyVotes::states($ids, $user['id'] ?? null, $blocked);
+    // Comments (PhotoComments): the count and the 2 latest, for the chat card's preview.
+    $counts  = PhotoComments::counts(array_keys($items));
+    $latest  = PhotoComments::latest(array_keys($items), $user['id'] ?? null, $blocked);
+    foreach ($items as $id => &$state) {
+        $state['commentCount']   = $counts[$id] ?? 0;
+        $state['latestComments'] = $latest[$id] ?? [];
+    }
+    unset($state);
     Response::json([
-        'items'   => (object) DailyVotes::states($ids, $user['id'] ?? null, dailyBlocks($user)['user_ids'] ?? []),
+        'items'   => (object) $items,
         'myVotes' => $myVotes,
     ]);
 });
@@ -15244,6 +15254,120 @@ $router->add('POST', '/api/v1/daily/proofs/{id}/vote', function (array $params) 
         Response::json(['error' => $msg, 'code' => $e->getMessage()], $status);
     }
     dailyVoteResponse($proof, $user);
+});
+
+// ── Comments on Daily photos (PhotoComments) ─────────────────────────────
+
+/** An approved photo the viewer can see (author not blocked), or a 404. */
+function photoCommentsTarget(string $photoId, ?array $user): array
+{
+    $proof = preg_match('/^[a-f0-9]{16}$/', $photoId) ? DailyProofRepository::findById($photoId) : null;
+    if ($proof === null || $proof['moderation_status'] !== 'approved'
+        || in_array($proof['user_id'], dailyBlocks($user)['user_ids'] ?? [], true)) {
+        Response::json(['error' => 'Photo not found', 'code' => 'not_found'], 404);
+    }
+    return $proof;
+}
+
+/** A visible comment whose writer the viewer did not block, or a 404. */
+function photoCommentTarget(string $id, ?array $user): array
+{
+    $comment = ctype_digit($id) ? PhotoComments::find((int) $id, $user['id'] ?? null) : null;
+    if ($comment === null || in_array($comment['user_id'], dailyBlocks($user)['user_ids'] ?? [], true)) {
+        Response::json(['error' => 'Comment not found', 'code' => 'not_found'], 404);
+    }
+    return $comment;
+}
+
+// GET /api/v1/daily/proofs/{id}/comments?before= - a page of the photo's
+// thread, oldest first (the latest 30, or the 30 before a comment id), blocked
+// people left out: {items, hasMore, commentCount}. Public.
+$router->add('GET', '/api/v1/daily/proofs/{id}/comments', function (array $params) {
+    $user  = AuthService::currentUser();
+    $proof = photoCommentsTarget($params['id'], $user);
+    $before = ctype_digit((string) ($_GET['before'] ?? '')) ? (int) $_GET['before'] : null;
+    $page  = PhotoComments::list($proof['id'], $user['id'] ?? null, dailyBlocks($user)['user_ids'] ?? [], $before);
+    Response::json($page + ['commentCount' => (int) ($proof['comment_count'] ?? 0)]);
+});
+
+// POST /api/v1/daily/proofs/{id}/comments {body, replyToId?} - comment a photo
+// (registered users, 300 characters, 10 a minute). @handles of registered
+// users become mentions. Answers {comment, commentCount}.
+$router->add('POST', '/api/v1/daily/proofs/{id}/comments', function (array $params) {
+    $user  = AuthService::requireAuth('comment');
+    $proof = photoCommentsTarget($params['id'], $user);
+    if (!DbRateLimiter::allow('photo_comment|' . $user['id'], PhotoComments::RATE_LIMIT, 60)) {
+        Response::json(['error' => 'Too many comments - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    $body    = Request::json() ?? [];
+    $replyTo = $body['replyToId'] ?? null;
+    try {
+        $row = PhotoComments::create($proof, $user, is_string($body['body'] ?? null) ? $body['body'] : '',
+                                     is_int($replyTo) || ctype_digit((string) $replyTo) ? (int) $replyTo : null);
+    } catch (InvalidArgumentException $e) {
+        $errors = [
+            'invalid_body'       => 'A comment is 1 to ' . PhotoComments::MAX_LENGTH . ' characters.',
+            'moderation_blocked' => 'This comment was blocked by moderation.',
+            'invalid_reply'      => 'The comment you reply to is gone.',
+        ];
+        Response::json(['error' => $errors[$e->getMessage()] ?? 'Invalid comment', 'code' => $e->getMessage()], 422);
+    }
+    $count = PhotoComments::counts([$proof['id']])[$proof['id']] ?? 0;
+    apiLog('daily', 'comment', ['proof' => $proof['id'], 'user' => $user['id']]);
+    Response::json(['comment' => PhotoComments::format($row, $user['id']), 'commentCount' => $count], 201);
+});
+
+// DELETE /api/v1/daily/comments/{id} - delete my comment, or any comment on my photo.
+$router->add('DELETE', '/api/v1/daily/comments/{id}', function (array $params) {
+    $user = AuthService::requireAuth();
+    try {
+        $photoId = PhotoComments::delete(ctype_digit($params['id']) ? (int) $params['id'] : 0, $user);
+    } catch (InvalidArgumentException $e) {
+        $forbidden = $e->getMessage() === 'forbidden';
+        Response::json(['error' => $forbidden ? 'Not your comment' : 'Comment not found', 'code' => $e->getMessage()],
+                       $forbidden ? 403 : 404);
+    }
+    Response::json(['ok' => true, 'commentCount' => PhotoComments::counts([$photoId])[$photoId] ?? 0]);
+});
+
+// POST / DELETE /api/v1/daily/comments/{id}/like - heart a comment, or take it back.
+foreach (['POST' => true, 'DELETE' => false] as $commentLikeMethod => $commentLikeOn) {
+    $router->add($commentLikeMethod, '/api/v1/daily/comments/{id}/like', function (array $params) use ($commentLikeOn) {
+        $user = AuthService::requireAuth('like');
+        if (!DbRateLimiter::allow('comment_like|' . $user['id'], 60, 60)) {
+            Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+        }
+        $comment = photoCommentTarget($params['id'], $user);
+        Response::json(PhotoComments::like((int) $comment['id'], $user['id'], $commentLikeOn));
+    });
+}
+
+// POST /api/v1/daily/comments/{id}/report {reasonCode, guestId?} - report a
+// comment (guests too). Hidden for everyone at three open reports.
+$router->add('POST', '/api/v1/daily/comments/{id}/report', function (array $params) {
+    $user    = AuthService::currentUser();
+    $body    = Request::json() ?? [];
+    $guestId = $user === null && isValidGuestId($body['guestId'] ?? null) ? $body['guestId'] : null;
+    if ($user === null && $guestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+    if (!DbRateLimiter::allow('comment_report|' . ($user['id'] ?? $guestId), 10, 3600)) {
+        Response::json(['error' => 'Too many reports - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    $comment = photoCommentTarget($params['id'], $user);
+    try {
+        $result = PhotoComments::report($comment, $user['id'] ?? null, $guestId, (string) ($body['reasonCode'] ?? ''));
+    } catch (InvalidArgumentException $e) {
+        $map = [
+            'invalid_reason' => 'reasonCode must be one of: ' . implode(', ', PhotoComments::REPORT_REASONS),
+            'own_comment'    => 'You cannot report your own comment.',
+        ];
+        Response::json(['error' => $map[$e->getMessage()] ?? 'Invalid report', 'code' => $e->getMessage()], 422);
+    }
+    if ($result === 'already_reported') {
+        Response::json(['error' => 'You already reported this comment.', 'code' => 'already_reported'], 409);
+    }
+    Response::json(['ok' => true, 'hidden' => $result === 'reported_hidden']);
 });
 
 // DELETE /api/v1/daily/proofs/{id}/vote - withdraw my vote (gives it back), until the drop.
