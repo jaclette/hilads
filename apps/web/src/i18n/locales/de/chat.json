@@ -32,5 +32,18 @@
     "nearby_one": "{{count}} gerade hier",
     "nearby_other": "{{count}} gerade hier"
   },
-  "shareCity": "Stadt teilen"
+  "shareCity": "Stadt teilen",
+  "quick": {
+    "hi": "👋 Hallo {{city}}!",
+    "tonight": "Wer ist heute Abend unterwegs?",
+    "theme": {
+      "hidden_gem": "Ein Geheimtipp in der Nähe?",
+      "taste": "Das beste Streetfood in der Nähe?",
+      "get_around": "Wie kommt man hier am besten rum?",
+      "local_find": "Der beste Markt in der Nähe?",
+      "night_out": "Wo ist heute Abend Party?",
+      "sip": "Der beste Ort für einen Drink?",
+      "only_here": "Was gibt's nur hier?"
+    }
+  }
 }

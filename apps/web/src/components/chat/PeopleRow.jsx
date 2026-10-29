@@ -36,6 +36,12 @@ export default function PeopleRow({ cityId, onHiNow, onPlan, onArrivals, onNearb
     const time = new Date(p.startsAt * 1000).toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' })
     chips.push(
       <button key={p.id} type="button" className="people-chip" onClick={() => onPlan(p.id)}>
+        {/* Who's going: up to 3 small faces before the title (absent from an older server). */}
+        {!!p.avatars?.length && (
+          <span className="people-faces" aria-hidden="true">
+            {p.avatars.slice(0, 3).map(uri => <img key={uri} className="people-face" src={uri} alt="" loading="lazy" />)}
+          </span>
+        )}
         <strong className="people-chip-title">{p.title}, {time}</strong>
         {p.going !== null && <span className="people-chip-muted">{t('people.going', { count: p.going })}</span>}
       </button>,

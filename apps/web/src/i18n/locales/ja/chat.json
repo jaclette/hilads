@@ -32,5 +32,18 @@
     "nearby_one": "今ここに {{count}} 人",
     "nearby_other": "今ここに {{count}} 人"
   },
-  "shareCity": "街をシェア"
+  "shareCity": "街をシェア",
+  "quick": {
+    "hi": "👋 こんにちは、{{city}}！",
+    "tonight": "今夜出かける人いる？",
+    "theme": {
+      "hidden_gem": "近くに隠れた名所ある？",
+      "taste": "近くで一番の屋台グルメは？",
+      "get_around": "ここでの一番いい移動手段は？",
+      "local_find": "近くで一番いい市場は？",
+      "night_out": "今夜盛り上がってるのはどこ？",
+      "sip": "一杯飲むならどこがいい？",
+      "only_here": "ここでしか見つからないものは？"
+    }
+  }
 }

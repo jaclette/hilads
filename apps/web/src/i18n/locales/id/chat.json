@@ -32,5 +32,18 @@
     "nearby_one": "{{count}} di sini sekarang",
     "nearby_other": "{{count}} di sini sekarang"
   },
-  "shareCity": "Bagikan kota"
+  "shareCity": "Bagikan kota",
+  "quick": {
+    "hi": "👋 Halo {{city}}!",
+    "tonight": "Siapa yang keluar malam ini?",
+    "theme": {
+      "hidden_gem": "Ada permata tersembunyi di dekat sini?",
+      "taste": "Jajanan kaki lima terbaik di dekat sini?",
+      "get_around": "Cara terbaik keliling di sini?",
+      "local_find": "Pasar terbaik di dekat sini?",
+      "night_out": "Di mana pestanya malam ini?",
+      "sip": "Tempat terbaik buat minum?",
+      "only_here": "Apa yang cuma ada di sini?"
+    }
+  }
 }

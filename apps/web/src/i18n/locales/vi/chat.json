@@ -32,5 +32,18 @@
     "nearby_one": "{{count}} người ở đây",
     "nearby_other": "{{count}} người ở đây"
   },
-  "shareCity": "Chia sẻ thành phố"
+  "shareCity": "Chia sẻ thành phố",
+  "quick": {
+    "hi": "👋 Chào {{city}}!",
+    "tonight": "Tối nay ai đi chơi?",
+    "theme": {
+      "hidden_gem": "Gần đây có chỗ nào hay ho không?",
+      "taste": "Món đường phố ngon nhất gần đây?",
+      "get_around": "Đi lại ở đây thế nào tiện nhất?",
+      "local_find": "Chợ nào gần đây hay nhất?",
+      "night_out": "Tối nay đi đâu vui?",
+      "sip": "Chỗ nào uống nước ngon nhất?",
+      "only_here": "Có gì chỉ ở đây mới có?"
+    }
+  }
 }

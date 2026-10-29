@@ -28,9 +28,11 @@ import CalendarScreen from './components/daily/CalendarScreen'
 import ArchiveScreen from './components/daily/ArchiveScreen'
 import IndexScreen from './components/daily/IndexScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
-import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle } from './components/daily/dailyShared'
+import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
+import { themeColor } from './components/joy/Joy'
 import PeopleRow from './components/chat/PeopleRow'
 import DailyPinBar from './components/chat/DailyPinBar'
+import QuickStart from './components/chat/QuickStart'
 import { createSocket } from './socket'
 import { cityFlag } from './cityMeta'
 import Icon from './components/Icon'
@@ -688,25 +690,33 @@ function DailyFeedCard({ item, t, onOpen }) {
     // The reader's language from the challenge's translations (refreshed by the API), English as fallback.
     const translated = !!p.translations?.[i18n.language]
     const tr = showOriginal ? null : p.translations?.[i18n.language]
+    // Today's drop wears today's theme color (an older card keeps its line).
+    const today = getLastToday()?.challenge
+    const accent = today && today.date === p.date ? themeColor(today.special ? 'special' : today.theme?.key) : null
     return (
-      <div className="feed-daily feed-daily--clickable" role="button" tabIndex={0} onClick={() => onOpen({ date: p.date ?? 'today' })}>
-        <div className="feed-daily-kicker"><Icon name="flame-outline" size={13} /> {t('daily.kicker')}</div>
-        {themeName(p.theme?.key) && <span className="feed-daily-theme">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={13} />} {themeName(p.theme.key)}</span>}
-        <div className="feed-daily-text">{tr?.text ?? p.text}</div>
-        {p.context && <div className="feed-daily-context">{tr?.context ?? p.context}</div>}
-        <OriginalToggle translated={translated} showingOriginal={showOriginal} onClick={toggleOriginal} />
-        {by && (
-          <div className="feed-daily-by"><Icon name="bulb-outline" size={14} /> {p.proposedBy.city?.name
-            ? t('daily.proposedByCity', { name: by, city: localizeCityName(p.proposedBy.city.name) })
-            : t('daily.proposedBy', { name: by })}</div>
-        )}
-        {p.twist?.text && <div className="feed-daily-twist"><Icon name="location-outline" size={14} /> {t('daily.localTwist')}: {tr?.twist ?? p.twist.text}</div>}
-        {/* Photos are posted from the app (W2 decision): "Take it" opens the app modal. */}
-        <button type="button" className="feed-daily-cta"
-           onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }); openAppModal({ action: 'play', surface: 'chat_card' }) }}>
-          {t('dc.takeIt', { ns: 'challenge' })}
-        </button>
-        {time && <span className="feed-join-time">{time}</span>}
+      <div className="feed-daily-wrap">
+        {/* The daily drop comes from Hilads: its "Hi" avatar and name, like a friendly bot. */}
+        <div className="feed-daily-from"><img src="/logo/icon.svg" alt="" width="22" height="22" />Hilads</div>
+        <div className="feed-daily feed-daily--clickable" role="button" tabIndex={0} onClick={() => onOpen({ date: p.date ?? 'today' })}
+             style={accent ? { borderColor: accent.line ?? accent.fill, borderLeftWidth: 5 } : undefined}>
+          <div className="feed-daily-kicker"><Icon name="flame-outline" size={13} /> {t('daily.kicker')}</div>
+          {themeName(p.theme?.key) && <span className="feed-daily-theme">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={13} />} {themeName(p.theme.key)}</span>}
+          <div className="feed-daily-text">{tr?.text ?? p.text}</div>
+          {p.context && <div className="feed-daily-context">{tr?.context ?? p.context}</div>}
+          <OriginalToggle translated={translated} showingOriginal={showOriginal} onClick={toggleOriginal} />
+          {by && (
+            <div className="feed-daily-by"><Icon name="bulb-outline" size={14} /> {p.proposedBy.city?.name
+              ? t('daily.proposedByCity', { name: by, city: localizeCityName(p.proposedBy.city.name) })
+              : t('daily.proposedBy', { name: by })}</div>
+          )}
+          {p.twist?.text && <div className="feed-daily-twist"><Icon name="location-outline" size={14} /> {t('daily.localTwist')}: {tr?.twist ?? p.twist.text}</div>}
+          {/* Photos are posted from the app (W2 decision): "Take it" opens the app modal. */}
+          <button type="button" className="feed-daily-cta"
+             onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }); openAppModal({ action: 'play', surface: 'chat_card' }) }}>
+            {t('dc.takeIt', { ns: 'challenge' })}
+          </button>
+          {time && <span className="feed-join-time">{time}</span>}
+        </div>
       </div>
     )
   }
@@ -2310,6 +2320,17 @@ export default function App() {
   // toggle unconditionally.
   const [eventHeaderCollapsed, setEventHeaderCollapsed] = useState(false)
   const eventHeaderCollapsedRef = useRef(false)
+  // The feed scrolled into history: the pinned challenge shrinks to a slim pill.
+  const [pinCompact, setPinCompact] = useState(false)
+  const pinCompactRef = useRef(false)
+  // Today's challenge as the pin loaded it (the quick-start theme chip).
+  const [dailyToday, setDailyToday] = useState(null)
+  // Nobody wrote in the city today (a plain text message, type absent = text): the quick-start chips show.
+  const quietToday = useMemo(() => {
+    const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
+    const at = (v) => (typeof v === 'number' ? v * 1000 : Date.parse(v))
+    return !feed.some(m => (m.type === 'message' || m.type === 'text') && !!m.createdAt && at(m.createdAt) >= dayStart.getTime())
+  }, [feed])
 
   useEffect(() => {
     const container = messagesContainerRef.current
@@ -2326,6 +2347,13 @@ export default function App() {
       if (shouldCollapse !== eventHeaderCollapsedRef.current) {
         eventHeaderCollapsedRef.current = shouldCollapse
         setEventHeaderCollapsed(shouldCollapse)
+      }
+
+      // Hysteresis: the pin's own height change moves the bottom distance.
+      const compact = pinCompactRef.current ? dist > 40 : dist > 80
+      if (compact !== pinCompactRef.current) {
+        pinCompactRef.current = compact
+        setPinCompact(compact)
       }
 
       if (container.scrollTop < 200 && !loadingOlderRef.current && hasMoreMessagesRef.current) {
@@ -5229,9 +5257,7 @@ export default function App() {
                   )}
                   {account && (
                     <button type="button" className="v3-round" onClick={() => setShowConversations(true)} aria-label={t('header.messages')}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
-                      </svg>
+                      <Icon name="chatbubbles-outline" size={20} />
                       {hasAnyUnread && <span className="v3-dot" />}
                     </button>
                   )}
@@ -5281,7 +5307,7 @@ export default function App() {
             </button>
           </div>
         )}
-        {city && !activeEvent && <DailyPinBar key={`${channelScope}:${channelId}`} />}
+        {city && !activeEvent && <DailyPinBar key={`${channelScope}:${channelId}`} compact={pinCompact} onToday={setDailyToday} />}
 
         <div className="messages" ref={messagesContainerRef}>
           {channelScope === 'city' && quietCardOpen && (
@@ -5796,6 +5822,15 @@ export default function App() {
             onClose={() => setShowShareSheet(false)}
             spotLoading={spotLoading}
           />
+        )}
+
+        {/* A quiet city chat today: three ways to start, prefilled in the composer. */}
+        {city && !activeEvent && channelScope === 'city' && quietToday && (
+          <QuickStart city={shortCityName(city)} themeKey={dailyToday?.challenge?.theme?.key ?? null}
+                      onPick={(text) => {
+                        setInput(text)
+                        requestAnimationFrame(() => { const el = chatInputRef.current; if (el) { el.focus(); el.setSelectionRange(text.length, text.length) } })
+                      }} />
         )}
 
         {!editingMsg && <ReplyPreview replyingTo={replyingTo} onCancel={() => setReplyingTo(null)} />}

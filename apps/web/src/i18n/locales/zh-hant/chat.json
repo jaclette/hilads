@@ -32,5 +32,18 @@
     "nearby_one": "{{count}} 人在這裡",
     "nearby_other": "{{count}} 人在這裡"
   },
-  "shareCity": "分享城市"
+  "shareCity": "分享城市",
+  "quick": {
+    "hi": "👋 你好，{{city}}！",
+    "tonight": "今晚誰出來玩？",
+    "theme": {
+      "hidden_gem": "附近有什麼隱藏寶藏嗎？",
+      "taste": "附近最好吃的街頭小吃？",
+      "get_around": "這裡怎麼出行最方便？",
+      "local_find": "附近最好的市場？",
+      "night_out": "今晚哪裡熱鬧？",
+      "sip": "喝一杯去哪裡最好？",
+      "only_here": "有什麼是這裡才有的？"
+    }
+  }
 }
