@@ -72,4 +72,26 @@ final class SeasonalEventsTest extends TestCase
         }
         $this->assertSame('live', self::halloween(['previewPhase' => 'nope'])['previewPhase']);
     }
+
+    public function testKillSwitchFeaturesAndStickerPack(): void
+    {
+        $e = self::halloween();
+        $this->assertTrue($e['enabled']);
+        $this->assertSame(array_fill_keys(SeasonalEvents::FEATURES, true), $e['features'], 'everything on by default');
+        $live = SeasonalEvents::forViewer('2026-10-31', null, [$e]);
+        $this->assertTrue($live['features']['stickers']);
+        $this->assertSame([], $live['stickers']);
+
+        $off = self::halloween(['enabled' => '0', 'previewUsers' => 'jacques']);
+        $this->assertNull(SeasonalEvents::forViewer('2026-10-31', null, [$off]), 'the kill switch hides it');
+        $this->assertNull(SeasonalEvents::forViewer('2026-10-26', ['username' => 'jacques'], [$off]), 'previews too');
+
+        $some = self::halloween(['features' => ['skin' => '1', 'stickers' => '0', 'mapPins' => '0'],
+                                 'stickers' => "pumpkin https://media.test/p.png\nbad http://x.test/a.png\nghost https://media.test/g.png"]);
+        $this->assertFalse($some['features']['stickers']);
+        $this->assertFalse($some['features']['mapPins']);
+        $this->assertTrue($some['features']['ambient'], 'not posted: on');
+        $this->assertSame([['id' => 'pumpkin', 'url' => 'https://media.test/p.png'], ['id' => 'ghost', 'url' => 'https://media.test/g.png']], $some['stickers']);
+        $this->assertTrue(SeasonalEvents::features(['id' => 'old'])['shareFrame'], 'an event saved before event mode: all on');
+    }
 }

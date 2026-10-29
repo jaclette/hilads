@@ -10,7 +10,14 @@ declare(strict_types=1);
  * back office once their theme ships.
  *
  * Kept as one JSON list in app_settings (key seasonal_events), no table:
- *   {id, name, theme, teaserStart, start, end, previewUsers[], previewPhase}
+ *   {id, name, theme, teaserStart, start, end, previewUsers[], previewPhase,
+ *    enabled, features{skin, stickers, stamp, shareFrame, mapPins, chatChips,
+ *    ambient}, stickers[{id, url}]}
+ * Event mode (docs/halloween-audit.md): `enabled` false hides the event for
+ * everyone, previews included (the kill switch, at the apps' next refresh);
+ * each feature can be switched off on its own; `stickers` lists a remote
+ * sticker pack (PNG URLs) the apps use instead of their bundled one. Events
+ * saved before these fields count as enabled with every feature on.
  * Dates are challenge dates (DailyClock), never a device's calendar, so the
  * look always matches the challenge on screen:
  * - teaser: teaserStart ≤ date < start (a countdown: startsInDays)
@@ -23,6 +30,9 @@ final class SeasonalEvents
 {
     public const SETTING = 'seasonal_events';
     public const PHASES  = ['teaser', 'live', 'recap'];
+    /** Event mode's switches, each on unless turned off. */
+    public const FEATURES = ['skin', 'stickers', 'stamp', 'shareFrame', 'mapPins', 'chatChips', 'ambient'];
+    private const MAX_STICKERS = 40;
     /** The themes the apps know (the back office offers these; any slug is accepted). */
     public const THEMES  = ['halloween'];
 
@@ -79,7 +89,37 @@ final class SeasonalEvents
             'end'          => $dates['end'],
             'previewUsers' => $users,
             'previewPhase' => in_array($phase, self::PHASES, true) ? $phase : 'live',
+            // Absent = on (an event saved before event mode; the back office posts explicit 0s).
+            'enabled'      => !array_key_exists('enabled', $in) || !empty($in['enabled']),
+            'features'     => array_combine(self::FEATURES, array_map(
+                static fn(string $f): bool => !isset($in['features']) || !is_array($in['features']) || !array_key_exists($f, $in['features'])
+                    || !empty($in['features'][$f]), self::FEATURES)),
+            'stickers'     => self::cleanStickers($in['stickers'] ?? ''),
         ];
+    }
+
+    /** A remote sticker pack: "id https://…png" per line (or [{id, url}]). Bad lines are dropped. */
+    public static function cleanStickers(mixed $raw): array
+    {
+        $rows = is_array($raw) ? $raw : array_map(
+            static fn(string $l): array => preg_split('/\s+/', trim($l), 2) + [1 => ''],
+            preg_split('/\R/', (string) $raw) ?: []);
+        $out = [];
+        foreach ($rows as $r) {
+            $id  = strtolower(trim((string) ($r['id'] ?? $r[0] ?? '')));
+            $url = trim((string) ($r['url'] ?? $r[1] ?? ''));
+            if (preg_match('/^[a-z0-9_-]{1,32}$/', $id) && preg_match('#^https://[^\s]+$#', $url) && count($out) < self::MAX_STICKERS) {
+                $out[] = ['id' => $id, 'url' => $url];
+            }
+        }
+        return $out;
+    }
+
+    /** The feature switches of an event (an event from before event mode: all on). */
+    public static function features(array $e): array
+    {
+        $f = (array) ($e['features'] ?? []);
+        return array_combine(self::FEATURES, array_map(static fn(string $k): bool => (bool) ($f[$k] ?? true), self::FEATURES));
     }
 
     /** Add or replace (same id) an event. */
@@ -126,6 +166,9 @@ final class SeasonalEvents
         $best = null;
         $rank = ['live' => 0, 'teaser' => 1, 'recap' => 2];
         foreach ($events as $e) {
+            if (($e['enabled'] ?? true) === false) {   // the kill switch: nobody, previews included
+                continue;
+            }
             $preview = $username !== '' && in_array($username, (array) ($e['previewUsers'] ?? []), true);
             $phase   = $preview ? (string) ($e['previewPhase'] ?? 'live') : self::phase($e, $date);
             if ($phase === null || !isset($rank[$phase])) {
@@ -142,6 +185,8 @@ final class SeasonalEvents
                     ? ($preview ? 2 : max(1, self::daysBetween($date, (string) $e['start'])))
                     : null,
                 'preview'      => $preview,
+                'features'     => self::features($e),
+                'stickers'     => array_values((array) ($e['stickers'] ?? [])),
             ];
             if ($preview) {
                 return $out;

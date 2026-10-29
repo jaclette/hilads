@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Colors, type ThemeColors } from '@/constants';
-import type { SeasonalEvent } from '@/types';
+import type { EventFeature, SeasonalEvent } from '@/types';
 
 /**
  * Seasonal events (Admin › Daily › Seasonal events): the server says which
@@ -119,13 +119,14 @@ export function setSeasonalEvent(event: SeasonalEvent | null | undefined): void 
   const theme = event ? SEASONAL_THEMES[event.theme] : undefined;
   const next = event && theme ? { event, theme, key: event.theme } : null;
   if (next?.event.id === current?.event.id && next?.event.phase === current?.event.phase
-      && next?.event.startsInDays === current?.event.startsInDays) return;
+      && next?.event.startsInDays === current?.event.startsInDays
+      && JSON.stringify(next?.event.features ?? null) === JSON.stringify(current?.event.features ?? null)
+      && JSON.stringify(next?.event.stickers ?? null) === JSON.stringify(current?.event.stickers ?? null)) return;
   current = next;
   listeners.forEach(l => l());
 }
 
-/** The event on today's challenge date with a known theme, else null. */
-export function useSeasonal(): ActiveSeasonal | null {
+function useCurrent(): ActiveSeasonal | null {
   const [value, setValue] = useState(current);
   useEffect(() => {
     const l = () => setValue(current);
@@ -134,6 +135,33 @@ export function useSeasonal(): ActiveSeasonal | null {
     return () => { listeners.delete(l); };
   }, []);
   return value;
+}
+
+/** A switch of the event (absent on an older server: on). */
+const featureOn = (s: ActiveSeasonal | null, f: EventFeature) => !!s && s.event.features?.[f] !== false;
+
+/**
+ * The event on today's challenge date with a known theme, else null: its look
+ * (palette, decorations, teaser, copy). Null when the event's skin is off.
+ */
+export function useSeasonal(): ActiveSeasonal | null {
+  const value = useCurrent();
+  return featureOn(value, 'skin') ? value : null;
+}
+
+/**
+ * Event mode: the live event when one of its features is on (stickers, the
+ * stamp, the share frame, map pins, chat chips, ambient bats), else null.
+ * Independent of the skin switch.
+ */
+export function useEventFeature(feature: EventFeature): ActiveSeasonal | null {
+  const value = useCurrent();
+  return value?.event.phase === 'live' && featureOn(value, feature) ? value : null;
+}
+
+/** Outside React (a photo's share card): is this feature of the live event on? */
+export function eventFeatureNow(feature: EventFeature): ActiveSeasonal | null {
+  return current?.event.phase === 'live' && featureOn(current, feature) ? current : null;
 }
 
 /** The live phase's theme, else null (the palette, decorations, copy). */

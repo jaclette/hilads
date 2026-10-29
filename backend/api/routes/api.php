@@ -13427,7 +13427,14 @@ $router->add('GET', '/api/v1/app/config', function () {
     // Private: dualPhoto depends on who asks (the testers' allowlist).
     header('Cache-Control: private, max-age=300');
     header('Vary: X-Platform, Authorization, Cookie');
-    Response::json(AppConfig::payload(Request::platform(), AuthService::currentUser()['id'] ?? null));
+    $user = AuthService::currentUser();
+    // The seasonal event (event mode), as on /daily/today; any failure: no event.
+    try {
+        $event = SeasonalEvents::forViewer(DailyClock::currentDate(), $user);
+    } catch (\Throwable $e) {
+        $event = null;
+    }
+    Response::json(AppConfig::payload(Request::platform(), $user['id'] ?? null) + ['event' => $event]);
 });
 
 // GET /api/v1/channels/{cityId}/people - the Chat people row (V3-04, SPEC 9.6):

@@ -981,6 +981,9 @@ export interface DailyHeroCover {
  * events): teaser (a countdown), live, or recap (the day after). The app draws
  * the theme it knows by key (features/event/seasonal), else nothing.
  */
+/** Event mode's switches, each set in Admin › Daily › Seasonal events. */
+export type EventFeature = 'skin' | 'stickers' | 'stamp' | 'shareFrame' | 'mapPins' | 'chatChips' | 'ambient';
+
 export interface SeasonalEvent {
   id:           string;
   theme:        string;
@@ -992,6 +995,10 @@ export interface SeasonalEvent {
   startsInDays: number | null;
   /** Shown to a preview account (Admin), not by date. */
   preview?:     boolean;
+  /** Event mode's switches (absent on an older server: all on). */
+  features?:    Partial<Record<EventFeature, boolean>>;
+  /** A remote sticker pack (PNG URLs); empty: the pack bundled with the theme. */
+  stickers?:    { id: string; url: string }[];
 }
 
 export interface DailyToday {

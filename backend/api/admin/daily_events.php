@@ -103,6 +103,20 @@ daily_styles();
                     <option value="<?= $ph ?>"<?= ($editing['previewPhase'] ?? 'live') === $ph ? ' selected' : '' ?>><?= $ph ?></option>
                 <?php endforeach; ?>
             </select></div>
+        <div class="form-group"><label>
+            <input type="hidden" name="enabled" value="0"><input type="checkbox" name="enabled" value="1" <?= ($editing['enabled'] ?? true) ? 'checked' : '' ?>> Enabled</label>
+            <div class="hint">The kill switch: unchecked, nobody sees this event (previews included) at the apps' next refresh (about a minute).</div></div>
+        <div class="form-group"><label>Features</label>
+            <?php $feat = $editing ? SeasonalEvents::features($editing) : array_fill_keys(SeasonalEvents::FEATURES, true);
+                  $featLabels = ['skin' => 'Skin (colors, hat, hero, streak, celebration)', 'stickers' => 'Photo stickers', 'stamp' => 'Limited-edition stamp',
+                                 'shareFrame' => 'Share card frame', 'mapPins' => 'Map pins and filter', 'chatChips' => 'Chat quick chips', 'ambient' => 'Floating bats']; ?>
+            <?php foreach (SeasonalEvents::FEATURES as $f): ?>
+                <label style="display:block;font-weight:normal;text-transform:none;letter-spacing:0">
+                    <input type="hidden" name="features[<?= $f ?>]" value="0"><input type="checkbox" name="features[<?= $f ?>]" value="1" <?= $feat[$f] ? 'checked' : '' ?>> <?= dh($featLabels[$f]) ?></label>
+            <?php endforeach; ?></div>
+        <div class="form-group"><label>Remote sticker pack (optional)</label>
+            <textarea name="stickers" rows="4" style="font-family:monospace;font-size:12px" placeholder="pumpkin https://media.hilads.live/stickers/pumpkin.png"><?= dh(implode("\n", array_map(static fn($s) => $s['id'] . ' ' . $s['url'], $editing['stickers'] ?? []))) ?></textarea>
+            <div class="hint">One "id url" per line, transparent PNGs. Empty: the apps use the pack bundled with their theme.</div></div>
         <div class="form-actions" style="gap:8px">
             <button class="btn btn-primary" type="submit">Save</button>
             <?php if ($editing): ?><a class="btn btn-secondary" href="<?= dh($self) ?>">New</a><?php endif; ?>
