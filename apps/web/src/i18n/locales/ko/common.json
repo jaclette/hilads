@@ -225,7 +225,9 @@
     "copied": "복사됨",
     "textToday": "Hilads 오늘의 Daily Challenge: {{challenge}} 함께할래요?",
     "textSpot": "Hilads의 {{name}}",
-    "textSpotCity": "Hilads의 {{name}}, {{city}}"
+    "textSpotCity": "Hilads의 {{name}}, {{city}}",
+    "textPassport": "{{city}}에서의 나의 Hilads 여권. 같은 챌린지, 다른 세계.",
+    "textPassportNoCity": "나의 Hilads 여권. 같은 챌린지, 다른 세계."
   },
   "represent": {
     "empty": "{{city}}는 오늘 아직 참여하지 않았어요. 첫 번째가 되어 보세요.",

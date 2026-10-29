@@ -225,7 +225,9 @@
     "copied": "Nakopya",
     "textToday": "Ang Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?",
     "textSpot": "{{name}} sa Hilads",
-    "textSpotCity": "{{name}}, {{city}}, sa Hilads"
+    "textSpotCity": "{{name}}, {{city}}, sa Hilads",
+    "textPassport": "Ang Hilads passport ko sa {{city}}. Parehong challenge. Ibang mundo.",
+    "textPassportNoCity": "Ang Hilads passport ko. Parehong challenge. Ibang mundo."
   },
   "represent": {
     "empty": "Hindi pa naglalaro ang {{city}} ngayon. Ikaw na ang mauna.",

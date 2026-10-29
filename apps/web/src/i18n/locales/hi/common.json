@@ -225,7 +225,9 @@
     "copied": "कॉपी हो गया",
     "textToday": "Hilads पर आज का Daily Challenge: {{challenge}} क्या आप तैयार हैं?",
     "textSpot": "Hilads पर {{name}}",
-    "textSpotCity": "Hilads पर {{name}}, {{city}}"
+    "textSpotCity": "Hilads पर {{name}}, {{city}}",
+    "textPassport": "{{city}} में मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।",
+    "textPassportNoCity": "मेरा Hilads पासपोर्ट। एक ही चैलेंज। अलग-अलग दुनिया।"
   },
   "represent": {
     "empty": "{{city}} ने आज अभी तक नहीं खेला। पहले बनें।",

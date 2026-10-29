@@ -179,7 +179,24 @@
       "compared_one": "Сравнение с {{count}} страной",
       "compared_few": "Сравнение с {{count}} странами",
       "compared_many": "Сравнение с {{count}} странами",
-      "compared_other": "Сравнение с {{count}} странами"
+      "compared_other": "Сравнение с {{count}} странами",
+      "stampsOf_one": "{{count}} штамп из {{total}}",
+      "stampsOf_few": "{{count}} штампа из {{total}}",
+      "stampsOf_many": "{{count}} штампов из {{total}}",
+      "stampsOf_other": "{{count}} штампа из {{total}}",
+      "passEarned": "Получен в городе {{city}}",
+      "passToGo_one": "Остался {{count}} штамп",
+      "passToGo_few": "Осталось {{count}} штампа",
+      "passToGo_many": "Осталось {{count}} штампов",
+      "passToGo_other": "Осталось {{count}} штампа",
+      "comparedCities_one": "Сравнение с {{count}} городом",
+      "comparedCities_few": "Сравнение с {{count}} городами",
+      "comparedCities_many": "Сравнение с {{count}} городами",
+      "comparedCities_other": "Сравнение с {{count}} городами",
+      "myPhotos": "Мои фото",
+      "noPhotos": "Здесь появятся твои фото Daily Challenge.",
+      "share": "Поделиться паспортом",
+      "localSince": "Местный в городе {{city}} с {{date}}"
     },
     "points": {
       "title": "Как заработать очки",
@@ -211,6 +228,20 @@
         "label": "Путешествую",
         "desc": "Ты его открываешь"
       }
+    },
+    "passportStats": {
+      "cities_one": "город",
+      "cities_few": "города",
+      "cities_many": "городов",
+      "cities_other": "города",
+      "photos_one": "фото",
+      "photos_few": "фото",
+      "photos_many": "фото",
+      "photos_other": "фото",
+      "likes_one": "лайк",
+      "likes_few": "лайка",
+      "likes_many": "лайков",
+      "likes_other": "лайка"
     }
   },
   "friendReq": {

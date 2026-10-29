@@ -169,7 +169,21 @@
       "specialTitle": "Carimbos especiais",
       "specialSub": "Edição limitada, um por dia especial. Não conta para o Local Pass.",
       "compared_one": "Comparado com {{count}} país",
-      "compared_other": "Comparado com {{count}} países"
+      "compared_other": "Comparado com {{count}} países",
+      "stampsOf_one": "{{count}} de {{total}} carimbos",
+      "stampsOf_many": "{{count}} de {{total}} carimbos",
+      "stampsOf_other": "{{count}} de {{total}} carimbos",
+      "passEarned": "Conquistado em {{city}}",
+      "passToGo_one": "Falta {{count}} carimbo",
+      "passToGo_many": "Faltam {{count}} carimbos",
+      "passToGo_other": "Faltam {{count}} carimbos",
+      "comparedCities_one": "Comparado com {{count}} cidade",
+      "comparedCities_many": "Comparado com {{count}} cidades",
+      "comparedCities_other": "Comparado com {{count}} cidades",
+      "myPhotos": "Minhas fotos",
+      "noPhotos": "Suas fotos do Daily Challenge vão aparecer aqui.",
+      "share": "Compartilhar meu passaporte",
+      "localSince": "Local de {{city}} desde {{date}}"
     },
     "points": {
       "title": "Como ganhar pontos",
@@ -199,6 +213,17 @@
         "label": "Explorando",
         "desc": "Você está descobrindo ela"
       }
+    },
+    "passportStats": {
+      "cities_one": "cidade",
+      "cities_many": "cidades",
+      "cities_other": "cidades",
+      "photos_one": "foto",
+      "photos_many": "fotos",
+      "photos_other": "fotos",
+      "likes_one": "curtida",
+      "likes_many": "curtidas",
+      "likes_other": "curtidas"
     }
   },
   "friendReq": {

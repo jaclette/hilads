@@ -225,7 +225,9 @@
     "copied": "已複製",
     "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你要參加嗎？",
     "textSpot": "Hilads 上的 {{name}}",
-    "textSpotCity": "Hilads 上的 {{name}}（{{city}}）"
+    "textSpotCity": "Hilads 上的 {{name}}（{{city}}）",
+    "textPassport": "我在{{city}}的 Hilads 護照。同一個挑戰，不同的世界。",
+    "textPassportNoCity": "我的 Hilads 護照。同一個挑戰，不同的世界。"
   },
   "represent": {
     "empty": "{{city}}今天還沒有人參加。來當第一個吧。",

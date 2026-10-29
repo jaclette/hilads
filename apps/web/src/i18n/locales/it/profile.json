@@ -169,7 +169,21 @@
       "specialTitle": "Timbri speciali",
       "specialSub": "Edizione limitata, uno per ogni giorno speciale. Non conta per il Local Pass.",
       "compared_one": "Confrontato con {{count}} paese",
-      "compared_other": "Confrontato con {{count}} paesi"
+      "compared_other": "Confrontato con {{count}} paesi",
+      "stampsOf_one": "{{count}} timbro su {{total}}",
+      "stampsOf_many": "{{count}} timbri su {{total}}",
+      "stampsOf_other": "{{count}} timbri su {{total}}",
+      "passEarned": "Ottenuto a {{city}}",
+      "passToGo_one": "Manca {{count}} timbro",
+      "passToGo_many": "Mancano {{count}} timbri",
+      "passToGo_other": "Mancano {{count}} timbri",
+      "comparedCities_one": "Confrontato con {{count}} città",
+      "comparedCities_many": "Confrontato con {{count}} città",
+      "comparedCities_other": "Confrontato con {{count}} città",
+      "myPhotos": "Le mie foto",
+      "noPhotos": "Le tue foto del Daily Challenge appariranno qui.",
+      "share": "Condividi il mio passaporto",
+      "localSince": "Local di {{city}} da {{date}}"
     },
     "points": {
       "title": "Come guadagnare punti",
@@ -199,6 +213,17 @@
         "label": "Esplorando",
         "desc": "La stai scoprendo"
       }
+    },
+    "passportStats": {
+      "cities_one": "città",
+      "cities_many": "città",
+      "cities_other": "città",
+      "photos_one": "foto",
+      "photos_many": "foto",
+      "photos_other": "foto",
+      "likes_one": "like",
+      "likes_many": "like",
+      "likes_other": "like"
     }
   },
   "friendReq": {

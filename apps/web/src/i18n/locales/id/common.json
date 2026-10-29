@@ -225,7 +225,9 @@
     "copied": "Disalin",
     "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Ikut?",
     "textSpot": "{{name}} di Hilads",
-    "textSpotCity": "{{name}}, {{city}}, di Hilads"
+    "textSpotCity": "{{name}}, {{city}}, di Hilads",
+    "textPassport": "Paspor Hilads-ku di {{city}}. Tantangan sama. Dunia berbeda.",
+    "textPassportNoCity": "Paspor Hilads-ku. Tantangan sama. Dunia berbeda."
   },
   "represent": {
     "empty": "{{city}} belum main hari ini. Jadilah yang pertama.",

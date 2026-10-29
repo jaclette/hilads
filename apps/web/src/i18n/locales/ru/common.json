@@ -225,7 +225,9 @@
     "copied": "Скопировано",
     "textToday": "Сегодняшний Daily Challenge в Hilads: {{challenge}} Ты в деле?",
     "textSpot": "{{name}} в Hilads",
-    "textSpotCity": "{{name}}, {{city}}, в Hilads"
+    "textSpotCity": "{{name}}, {{city}}, в Hilads",
+    "textPassport": "Мой паспорт Hilads в городе {{city}}. Один челлендж. Разные миры.",
+    "textPassportNoCity": "Мой паспорт Hilads. Один челлендж. Разные миры."
   },
   "represent": {
     "empty": "{{city}} сегодня ещё не играл. Будь первым.",

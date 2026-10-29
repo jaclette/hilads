@@ -225,7 +225,9 @@
     "copied": "Đã sao chép",
     "textToday": "Daily Challenge hôm nay trên Hilads: {{challenge}} Bạn tham gia chứ?",
     "textSpot": "{{name}} trên Hilads",
-    "textSpotCity": "{{name}}, {{city}}, trên Hilads"
+    "textSpotCity": "{{name}}, {{city}}, trên Hilads",
+    "textPassport": "Hộ chiếu Hilads của tôi ở {{city}}. Cùng thử thách. Những thế giới khác nhau.",
+    "textPassportNoCity": "Hộ chiếu Hilads của tôi. Cùng thử thách. Những thế giới khác nhau."
   },
   "represent": {
     "empty": "{{city}} chưa chơi hôm nay. Hãy là người đầu tiên.",

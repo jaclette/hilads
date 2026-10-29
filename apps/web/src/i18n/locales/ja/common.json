@@ -225,7 +225,9 @@
     "copied": "コピーしました",
     "textToday": "Hilads の今日の Daily Challenge：{{challenge}} やってみる？",
     "textSpot": "Hilads の {{name}}",
-    "textSpotCity": "Hilads の {{name}}（{{city}}）"
+    "textSpotCity": "Hilads の {{name}}（{{city}}）",
+    "textPassport": "{{city}}の私のHiladsパスポート。同じチャレンジ、違う世界。",
+    "textPassportNoCity": "私のHiladsパスポート。同じチャレンジ、違う世界。"
   },
   "represent": {
     "empty": "{{city}}は今日まだ参加していません。最初の一人になろう。",

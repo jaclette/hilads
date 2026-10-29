@@ -225,7 +225,9 @@
     "copied": "تم النسخ",
     "textToday": "Daily Challenge اليوم على Hilads: {{challenge}} هل أنت معنا؟",
     "textSpot": "{{name}} على Hilads",
-    "textSpotCity": "{{name}}، {{city}}، على Hilads"
+    "textSpotCity": "{{name}}، {{city}}، على Hilads",
+    "textPassport": "جواز سفري في Hilads في {{city}}. نفس التحدي. عوالم مختلفة.",
+    "textPassportNoCity": "جواز سفري في Hilads. نفس التحدي. عوالم مختلفة."
   },
   "represent": {
     "empty": "لم تلعب {{city}} اليوم بعد. كن الأول.",

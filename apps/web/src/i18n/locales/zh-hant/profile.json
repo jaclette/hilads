@@ -169,7 +169,15 @@
       "specialTitle": "特別印章",
       "specialSub": "限量版，每個特別日一枚。不計入 Local Pass。",
       "compared_one": "已與 {{count}} 個國家/地區比較",
-      "compared_other": "已與 {{count}} 個國家/地區比較"
+      "compared_other": "已與 {{count}} 個國家/地區比較",
+      "stampsOf_other": "{{count}}/{{total}} 個印章",
+      "passEarned": "在{{city}}獲得",
+      "passToGo_other": "還差 {{count}} 個印章",
+      "comparedCities_other": "已與 {{count}} 座城市比較",
+      "myPhotos": "我的照片",
+      "noPhotos": "你的 Daily Challenge 照片會顯示在這裡。",
+      "share": "分享我的護照",
+      "localSince": "自{{date}}起的{{city}}在地人"
     },
     "points": {
       "title": "如何獲得積分",
@@ -199,6 +207,11 @@
         "label": "探索中",
         "desc": "你正在探索它"
       }
+    },
+    "passportStats": {
+      "cities_other": "座城市",
+      "photos_other": "張照片",
+      "likes_other": "個讚"
     }
   },
   "friendReq": {

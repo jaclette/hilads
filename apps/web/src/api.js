@@ -2643,6 +2643,11 @@ export function fetchUserDaily(userId, locale) {
   return daily('GET', `/users/${encodeURIComponent(userId)}/daily`, { params: { locale } })
 }
 
+/** GET /me/daily-photos: my Daily Challenge photos, newest first (Passport's "My photos"). */
+export async function fetchMyDailyPhotos(locale) {
+  return (await daily('GET', '/me/daily-photos', { params: { locale } })).items ?? []
+}
+
 /** GET /me/spots: the spots where I have an approved proof. */
 export async function fetchMySpots() {
   return (await daily('GET', '/me/spots')).items ?? []

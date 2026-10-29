@@ -225,7 +225,9 @@
     "copied": "Gekopieerd",
     "textToday": "De Daily Challenge van vandaag op Hilads: {{challenge}} Doe je mee?",
     "textSpot": "{{name}} op Hilads",
-    "textSpotCity": "{{name}}, {{city}}, op Hilads"
+    "textSpotCity": "{{name}}, {{city}}, op Hilads",
+    "textPassport": "Mijn Hilads-paspoort in {{city}}. Zelfde challenge. Andere werelden.",
+    "textPassportNoCity": "Mijn Hilads-paspoort. Zelfde challenge. Andere werelden."
   },
   "represent": {
     "empty": "{{city}} heeft vandaag nog niet gespeeld. Wees de eerste.",

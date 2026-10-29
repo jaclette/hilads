@@ -225,7 +225,9 @@
     "copied": "คัดลอกแล้ว",
     "textToday": "Daily Challenge วันนี้บน Hilads: {{challenge}} มาเล่นไหม?",
     "textSpot": "{{name}} บน Hilads",
-    "textSpotCity": "{{name}}, {{city}} บน Hilads"
+    "textSpotCity": "{{name}}, {{city}} บน Hilads",
+    "textPassport": "พาสปอร์ต Hilads ของฉันที่ {{city}} ชาเลนจ์เดียวกัน โลกที่ต่างกัน",
+    "textPassportNoCity": "พาสปอร์ต Hilads ของฉัน ชาเลนจ์เดียวกัน โลกที่ต่างกัน"
   },
   "represent": {
     "empty": "{{city}}ยังไม่ได้เล่นวันนี้ มาเป็นคนแรกกัน",

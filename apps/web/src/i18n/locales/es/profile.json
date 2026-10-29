@@ -169,7 +169,21 @@
       "specialTitle": "Sellos especiales",
       "specialSub": "Edición limitada, uno por día especial. No cuenta para el Local Pass.",
       "compared_one": "Comparado con {{count}} país",
-      "compared_other": "Comparado con {{count}} países"
+      "compared_other": "Comparado con {{count}} países",
+      "stampsOf_one": "{{count}} de {{total}} sellos",
+      "stampsOf_many": "{{count}} de {{total}} sellos",
+      "stampsOf_other": "{{count}} de {{total}} sellos",
+      "passEarned": "Conseguido en {{city}}",
+      "passToGo_one": "Falta {{count}} sello",
+      "passToGo_many": "Faltan {{count}} sellos",
+      "passToGo_other": "Faltan {{count}} sellos",
+      "comparedCities_one": "Comparado con {{count}} ciudad",
+      "comparedCities_many": "Comparado con {{count}} ciudades",
+      "comparedCities_other": "Comparado con {{count}} ciudades",
+      "myPhotos": "Mis fotos",
+      "noPhotos": "Tus fotos del Daily Challenge aparecerán aquí.",
+      "share": "Compartir mi pasaporte",
+      "localSince": "Local de {{city}} desde {{date}}"
     },
     "points": {
       "title": "Cómo ganar puntos",
@@ -199,6 +213,17 @@
         "label": "Explorando",
         "desc": "La estás descubriendo"
       }
+    },
+    "passportStats": {
+      "cities_one": "ciudad",
+      "cities_many": "ciudades",
+      "cities_other": "ciudades",
+      "photos_one": "foto",
+      "photos_many": "fotos",
+      "photos_other": "fotos",
+      "likes_one": "like",
+      "likes_many": "likes",
+      "likes_other": "likes"
     }
   },
   "friendReq": {

@@ -189,7 +189,30 @@
       "compared_two": "قورنت مع بلدين",
       "compared_few": "قورنت مع {{count}} بلدان",
       "compared_many": "قورنت مع {{count}} بلدًا",
-      "compared_other": "قورنت مع {{count}} بلد"
+      "compared_other": "قورنت مع {{count}} بلد",
+      "stampsOf_zero": "{{count}} من {{total}} أختام",
+      "stampsOf_one": "ختم واحد من {{total}}",
+      "stampsOf_two": "ختمان من {{total}}",
+      "stampsOf_few": "{{count}} أختام من {{total}}",
+      "stampsOf_many": "{{count}} ختمًا من {{total}}",
+      "stampsOf_other": "{{count}} ختم من {{total}}",
+      "passEarned": "حصلت عليه في {{city}}",
+      "passToGo_zero": "لا أختام متبقية",
+      "passToGo_one": "بقي ختم واحد",
+      "passToGo_two": "بقي ختمان",
+      "passToGo_few": "بقيت {{count}} أختام",
+      "passToGo_many": "بقي {{count}} ختمًا",
+      "passToGo_other": "بقي {{count}} ختم",
+      "comparedCities_zero": "لا مقارنات بعد",
+      "comparedCities_one": "مقارنة مع مدينة واحدة",
+      "comparedCities_two": "مقارنة مع مدينتين",
+      "comparedCities_few": "مقارنة مع {{count}} مدن",
+      "comparedCities_many": "مقارنة مع {{count}} مدينة",
+      "comparedCities_other": "مقارنة مع {{count}} مدينة",
+      "myPhotos": "صوري",
+      "noPhotos": "ستظهر صور Daily Challenge الخاصة بك هنا.",
+      "share": "شارك جواز سفري",
+      "localSince": "من سكان {{city}} منذ {{date}}"
     },
     "points": {
       "title": "كيف تكسب النقاط",
@@ -223,6 +246,26 @@
         "label": "أستكشف",
         "desc": "أنت تكتشفها"
       }
+    },
+    "passportStats": {
+      "cities_zero": "مدينة",
+      "cities_one": "مدينة",
+      "cities_two": "مدينتان",
+      "cities_few": "مدن",
+      "cities_many": "مدينة",
+      "cities_other": "مدينة",
+      "photos_zero": "صورة",
+      "photos_one": "صورة",
+      "photos_two": "صورتان",
+      "photos_few": "صور",
+      "photos_many": "صورة",
+      "photos_other": "صورة",
+      "likes_zero": "إعجاب",
+      "likes_one": "إعجاب",
+      "likes_two": "إعجابان",
+      "likes_few": "إعجابات",
+      "likes_many": "إعجابًا",
+      "likes_other": "إعجاب"
     }
   },
   "friendReq": {

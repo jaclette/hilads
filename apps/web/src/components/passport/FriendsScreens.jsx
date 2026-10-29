@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
-import { fetchIncomingFriendRequestCount, fetchMySpots, fetchUserFriends, fetchUserVibes } from '../../api'
+import { fetchIncomingFriendRequestCount, fetchMyDailyPhotos, fetchMySpots, fetchUserFriends, fetchUserVibes } from '../../api'
 import { CityName } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { themeName } from '../map/spotsShared'
@@ -122,6 +122,35 @@ export function MySpotsScreen({ onBack, onOpenSpot }) {
             <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
           </button>
         ))}
+      </div>
+    </div>
+  )
+}
+
+/** My photos (V3 polish 6, from Passport): every Daily Challenge photo of mine, newest first; a click opens it. */
+export function MyPhotosScreen({ onBack, onOpenPhoto }) {
+  const { t, i18n } = usePp()
+  const [photos, setPhotos] = useState(null)
+  useEffect(() => { fetchMyDailyPhotos(i18n.language).then(setPhotos).catch(() => setPhotos([])) }, [i18n.language])
+  return (
+    <div className="full-page dc-page">
+      <div className="page-header">
+        <BackButton onClick={onBack} />
+        <span className="page-title">{t('passport.myPhotos')}</span>
+      </div>
+      <div className="page-body dc-body">
+        {photos === null ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
+        : photos.length === 0 ? <div className="dc-center"><span className="dc-big-emoji" style={{ color: 'var(--muted2)' }}><Icon name="camera-outline" size={32} /></span><p className="dc-muted">{t('passport.noPhotos')}</p></div>
+        : (
+          <div className="pp-photos">
+            {photos.map(p => (
+              <button key={p.id} type="button" className="pp-photo" onClick={() => onOpenPhoto(p)}
+                      aria-label={[p.city?.name, p.caption].filter(Boolean).join(', ')}>
+                <img src={p.thumbUrl ?? p.photoUrl} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

@@ -169,7 +169,18 @@
       "specialTitle": "Espesyal na stamp",
       "specialSub": "Limited edition, isa bawat espesyal na araw. Hindi kasama sa Local Pass.",
       "compared_one": "Naikumpara sa {{count}} bansa",
-      "compared_other": "Naikumpara sa {{count}} bansa"
+      "compared_other": "Naikumpara sa {{count}} bansa",
+      "stampsOf_one": "{{count}} sa {{total}} na tatak",
+      "stampsOf_other": "{{count}} sa {{total}} na tatak",
+      "passEarned": "Nakuha sa {{city}}",
+      "passToGo_one": "{{count}} tatak pa",
+      "passToGo_other": "{{count}} tatak pa",
+      "comparedCities_one": "Inihambing sa {{count}} lungsod",
+      "comparedCities_other": "Inihambing sa {{count}} lungsod",
+      "myPhotos": "Mga litrato ko",
+      "noPhotos": "Dito lalabas ang mga Daily Challenge na litrato mo.",
+      "share": "I-share ang passport ko",
+      "localSince": "Lokal ng {{city}} mula {{date}}"
     },
     "points": {
       "title": "Paano kumita ng points",
@@ -199,6 +210,14 @@
         "label": "Nag-eexplore",
         "desc": "Nadiskubre mo pa lang ito"
       }
+    },
+    "passportStats": {
+      "cities_one": "lungsod",
+      "cities_other": "lungsod",
+      "photos_one": "litrato",
+      "photos_other": "litrato",
+      "likes_one": "like",
+      "likes_other": "likes"
     }
   },
   "friendReq": {

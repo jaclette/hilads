@@ -19,7 +19,7 @@ import { openAppModal } from './components/AppModal'
 import TodayScreen from './components/today/TodayScreen'
 import { LogoHat, SeasonalDayIcon, TabGhost, useSeasonalLive } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
-import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScreens'
+import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import ChallengeScreen from './components/daily/ChallengeScreen'
 import PhotosScreen from './components/daily/PhotosScreen'
 import CountriesScreen from './components/daily/CountriesScreen'
@@ -994,7 +994,7 @@ export default function App() {
   const [mapTheme, setMapTheme] = useState(null)   // the challenge screen's "Places pinned": the map on that theme
   // Passport (W4): Settings behind the gear, and the screens behind its rows.
   const [showSettings, setShowSettings] = useState(false)
-  const [passportSub, setPassportSub] = useState(null) // 'spots' | 'friends' | null
+  const [passportSub, setPassportSub] = useState(null) // 'photos' | 'spots' | 'friends' | null
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
@@ -5927,22 +5927,25 @@ export default function App() {
           }}
         />
       )}
-      {/* Daily screens sit above the map (its empty card and spot pages open them). */}
+      {/* Daily screens sit above the map (its empty card and spot pages open them), and
+          above the Passport and its sub-screens while it's open (they come later in the DOM). */}
       {(() => {
         const top = dailyStack[dailyStack.length - 1]
         if (!top) return null
         const key = `${dailyStack.length}:${top.name}`
-        if (top.name === 'challenge') return <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
-        if (top.name === 'photos')    return <PhotosScreen key={key} {...top.params} onBack={closeDaily} />
-        if (top.name === 'countries') return <CountriesScreen key={key} {...top.params} onBack={closeDaily} />
-        if (top.name === 'stories')   return <StoriesScreen key={key} {...top.params} onBack={closeDaily} />
-        if (top.name === 'propose')   return <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
-        if (top.name === 'twist')     return <TwistScreen key={key} onBack={closeDaily} />
-        if (top.name === 'proposals') return <ProposalsScreen key={key} onBack={closeDaily} />
-        if (top.name === 'calendar')  return <CalendarScreen key={key} onBack={closeDaily} />
-        if (top.name === 'archive')   return <ArchiveScreen key={key} onBack={closeDaily} />
-        if (top.name === 'index')     return <IndexScreen key={key} focus={top.params.focus ?? null} onBack={closeDaily} />
-        return null
+        const screen =
+          top.name === 'challenge' ? <ChallengeScreen key={key} {...top.params} onBack={closeDaily} />
+          : top.name === 'photos'    ? <PhotosScreen key={key} {...top.params} onBack={closeDaily} />
+          : top.name === 'countries' ? <CountriesScreen key={key} {...top.params} onBack={closeDaily} />
+          : top.name === 'stories'   ? <StoriesScreen key={key} {...top.params} onBack={closeDaily} />
+          : top.name === 'propose'   ? <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
+          : top.name === 'twist'     ? <TwistScreen key={key} onBack={closeDaily} />
+          : top.name === 'proposals' ? <ProposalsScreen key={key} onBack={closeDaily} />
+          : top.name === 'calendar'  ? <CalendarScreen key={key} onBack={closeDaily} />
+          : top.name === 'archive'   ? <ArchiveScreen key={key} onBack={closeDaily} />
+          : top.name === 'index'     ? <IndexScreen key={key} focus={top.params.focus ?? null} onBack={closeDaily} />
+          : null
+        return screen && <div className={showProfileDrawer ? 'dc-over-passport' : undefined}>{screen}</div>
       })()}
 
       {showWorldArrivals && (
@@ -6773,12 +6776,15 @@ export default function App() {
           onSettings={() => setShowSettings(true)}
           onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
           onSignIn={() => setGateAuth({ tab: 'login', action: 'passport' })}
-          onOpen={(row) => {
-            if (row === 'proposals') openDaily('proposals')
+          onOpen={(row, params) => {
+            if (['proposals', 'propose', 'challenge', 'stories'].includes(row)) openDaily(row, params)
             else if (row === 'alltime') { setLeaderboardScope(channelId ? 'city' : 'world'); setLeaderboardPeriod('alltime'); setShowLeaderboard(true) }
             else setPassportSub(row)
           }}
         />
+      )}
+      {showProfileDrawer && passportSub === 'photos' && (
+        <MyPhotosScreen onBack={() => setPassportSub(null)} onOpenPhoto={(p) => openDaily('challenge', { date: p.date, proofId: p.id })} />
       )}
       {showProfileDrawer && passportSub === 'spots' && (
         <MySpotsScreen onBack={() => setPassportSub(null)} onOpenSpot={(id) => { goToMapTab(); setMapSpotId(id) }} />

@@ -169,7 +169,15 @@
       "specialTitle": "แสตมป์พิเศษ",
       "specialSub": "รุ่นลิมิเต็ด หนึ่งดวงต่อวันพิเศษ ไม่นับรวมใน Local Pass",
       "compared_one": "เทียบกับ {{count}} ประเทศแล้ว",
-      "compared_other": "เทียบกับ {{count}} ประเทศแล้ว"
+      "compared_other": "เทียบกับ {{count}} ประเทศแล้ว",
+      "stampsOf_other": "ตราประทับ {{count}}/{{total}}",
+      "passEarned": "ได้รับที่ {{city}}",
+      "passToGo_other": "อีก {{count}} ตรา",
+      "comparedCities_other": "เปรียบเทียบกับ {{count}} เมือง",
+      "myPhotos": "รูปของฉัน",
+      "noPhotos": "รูป Daily Challenge ของคุณจะแสดงที่นี่",
+      "share": "แชร์พาสปอร์ตของฉัน",
+      "localSince": "คนท้องถิ่น {{city}} ตั้งแต่ {{date}}"
     },
     "points": {
       "title": "วิธีรับคะแนน",
@@ -199,6 +207,11 @@
         "label": "กำลังสำรวจ",
         "desc": "คุณกำลังสำรวจมันอยู่"
       }
+    },
+    "passportStats": {
+      "cities_other": "เมือง",
+      "photos_other": "รูป",
+      "likes_other": "ไลก์"
     }
   },
   "friendReq": {

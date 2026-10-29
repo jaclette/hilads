@@ -169,7 +169,15 @@
       "specialTitle": "Con dấu đặc biệt",
       "specialSub": "Phiên bản giới hạn, mỗi ngày đặc biệt một con dấu. Không tính vào Local Pass.",
       "compared_one": "Đã so sánh với {{count}} quốc gia",
-      "compared_other": "Đã so sánh với {{count}} quốc gia"
+      "compared_other": "Đã so sánh với {{count}} quốc gia",
+      "stampsOf_other": "{{count}}/{{total}} con dấu",
+      "passEarned": "Đã đạt ở {{city}}",
+      "passToGo_other": "Còn {{count}} con dấu",
+      "comparedCities_other": "Đã so sánh với {{count}} thành phố",
+      "myPhotos": "Ảnh của tôi",
+      "noPhotos": "Ảnh Daily Challenge của bạn sẽ hiện ở đây.",
+      "share": "Chia sẻ hộ chiếu",
+      "localSince": "Dân {{city}} từ {{date}}"
     },
     "points": {
       "title": "Cách kiếm điểm",
@@ -199,6 +207,11 @@
         "label": "Khám phá",
         "desc": "Bạn đang khám phá nó"
       }
+    },
+    "passportStats": {
+      "cities_other": "thành phố",
+      "photos_other": "ảnh",
+      "likes_other": "lượt thích"
     }
   },
   "friendReq": {
