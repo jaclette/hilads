@@ -39,3 +39,31 @@
 - **Versus needs other cities' photos of the same day**: `GET /daily/today/proofs?scope=cities` (one per city). For a past photo, B isn't offered (A and C still are).
 - **Captures on demand**: each template is rendered once in the swipeable preview and captured when a target needs it (cached per template and format). The 4:5 version is rendered only for the selected template.
 - **EAS Update compatible**: JS, assets and the backend only. The admin field needs a migration (`php migrate.php`). Because expo-updates isn't in a store build yet, this still ships with the next store build.
+
+## QA (local, 2026-10-29, iPhone 17 Pro simulator, local API)
+
+| Check | Result |
+| --- | --- |
+| Share question set (en + fr) | `challenge.shareQuestion` in the viewer's language on `/daily/today` and `/daily/proofs/{id}/share`; empty means `null`, and the card falls back to "What's YOUR city's answer?" |
+| Your turn / Versus / Result | swipe and tap both work; Versus shows today's photos from other cities (one per city) and is skipped for a past photo; nothing that matters sits in the Stories' top 250 / bottom 340 px |
+| Capture | system share sheet gets a 1080×1920 JPEG (≈270 KB); Save image in Post gives 1080×1350; a non-photo card (today) still saves at 1080×1920 |
+| Event mode | with Halloween live, the templates use the night-purple ground with cobwebs and the pumpkin |
+| Link | `…/p/{id}?from=lan&city=London&tpl=turn&utm_source=…&utm_medium=share`; opening it in the app logs `link_opened` with from / template, plus `share_link_visit {source: app}` |
+| Landing page | "@lan played for London" over the share question (19 locales, server-rendered question, browser-read `from`), photo capped so the buttons stay near the fold; inline script syntax-checked |
+| Analytics | `share_started`, `share_opened`, `share_template_selected {template, method}`, `share_target {channel, template, format}`, `share_completed {…, format}` seen in the app log |
+| tsc / phpunit / web eslint | 22 (baseline) / OK / clean |
+
+Not checkable in the simulator, so these are in the device checklist: the Instagram / Facebook Story handoff with the toast, the "Shared!" toast when coming back from another app, haptics, and the Link sticker paste.
+
+## Device checklist (TestFlight / internal testing)
+
+1. Post a photo, then Share. Swipe through the three cards; each swipe gives a tick, the "?" wiggles, and Versus appears once other cities have played today.
+2. Instagram Story: the toast "Link copied 🔗…" shows, then Instagram opens with the 9:16 card. Add the Link sticker, paste, post. Back in Hilads: "Shared! Let's see who answers 🌍".
+3. Switch to Post, then More → Instagram feed or Save image: the photo is 4:5 in Photos (the first save asks for add-only access).
+4. WhatsApp / Telegram / X: the line asks the share question and the link preview shows the photo.
+5. On a phone without Hilads, open the shared link: you see "@you played for City", the question, and Open / store buttons. Tap a store button (PostHog: `share_link_visit`, `share_link_install_click`).
+6. With Hilads installed, the link opens the photo in the app.
+7. Reduce Motion on: the cards fade in instead of sliding and the "?" stays still.
+8. Arabic: card text right-aligned, polaroids unchanged.
+9. A photo from a past day: no Versus.
+10. Halloween live: the cards use the Halloween ground.
