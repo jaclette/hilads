@@ -92,7 +92,8 @@
     "citiesToday_one": "One of {{count}} cities today",
     "citiesToday_other": "One of {{count}} cities today",
     "onMap": "Your photo is now on the map · See it",
-    "compareNow": "Compare now"
+    "compareNow": "Compare now",
+    "currencyA11y": "Currency"
   },
   "errors": {
     "already_posted": "You already played today's challenge.",

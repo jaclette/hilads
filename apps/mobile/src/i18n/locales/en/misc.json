@@ -11,7 +11,10 @@
     "emptyIncomingTitle": "No friend requests yet",
     "emptySentTitle": "You haven't sent any",
     "emptyIncomingSub": "When someone asks to be your friend, you'll see it here.",
-    "emptySentSub": "Pending friend requests you sent will show up here."
+    "emptySentSub": "Pending friend requests you sent will show up here.",
+    "acceptFailed": "Could not accept",
+    "declineFailed": "Could not decline",
+    "cancelFailed": "Could not cancel"
   },
   "blocked": {
     "title": "Blocked users",

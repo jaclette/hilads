@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert } from 'react-native';
+import i18n from '@/i18n';
 import {
   fetchIncomingFriendRequests, fetchOutgoingFriendRequests,
   acceptFriendRequest, declineFriendRequest, cancelFriendRequest,
@@ -99,7 +100,7 @@ export function useFriendRequests(): Result {
     } catch (e) {
       console.warn('[friend-requests] accept failed, rolling back:', String(e));
       setIncoming(prev);
-      Alert.alert('Could not accept', 'Please check your connection and try again.');
+      Alert.alert(i18n.t('friendReq.acceptFailed', { ns: 'misc' }), i18n.t('connectionHint', { ns: 'common' }));
     }
   }, []);
 
@@ -111,7 +112,7 @@ export function useFriendRequests(): Result {
     } catch (e) {
       console.warn('[friend-requests] decline failed, rolling back:', String(e));
       setIncoming(prev);
-      Alert.alert('Could not decline', 'Please check your connection and try again.');
+      Alert.alert(i18n.t('friendReq.declineFailed', { ns: 'misc' }), i18n.t('connectionHint', { ns: 'common' }));
     }
   }, []);
 
@@ -123,7 +124,7 @@ export function useFriendRequests(): Result {
     } catch (e) {
       console.warn('[friend-requests] cancel failed, rolling back:', String(e));
       setOutgoing(prev);
-      Alert.alert('Could not cancel', 'Please check your connection and try again.');
+      Alert.alert(i18n.t('friendReq.cancelFailed', { ns: 'misc' }), i18n.t('connectionHint', { ns: 'common' }));
     }
   }, []);
 

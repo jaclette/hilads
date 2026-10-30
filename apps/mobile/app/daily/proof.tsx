@@ -616,7 +616,7 @@ function DailyProofScreenContent() {
                       onChangeText={v => setHomeDraft(d => ({ ...d, currency: v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) }))}
                       autoCapitalize="characters"
                       maxLength={3}
-                      accessibilityLabel="Currency"
+                      accessibilityLabel={t('proof.currencyA11y')}
                     />
                   </View>
                 </>
@@ -732,7 +732,7 @@ function DailyProofScreenContent() {
               onChangeText={v => setCurrency(v.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3))}
               autoCapitalize="characters"
               maxLength={3}
-              accessibilityLabel="Currency"
+              accessibilityLabel={t('proof.currencyA11y')}
             />
           </View>
         </KeyboardForm>
