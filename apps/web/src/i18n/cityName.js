@@ -11,7 +11,10 @@ function citySlug(name) {
 // changes - this is purely presentational.
 export function localizeCityName(name) {
   if (!name) return name
-  return i18n.t(citySlug(name), { ns: 'cityNames', defaultValue: name })
+  const slug = citySlug(name)
+  const always = SHORT_EVERYWHERE.has(slug) ? SHORT_NAMES[slug] : null
+  if (always) return always[String(i18n.language || '').toLowerCase()] ?? always['*']
+  return i18n.t(slug, { ns: 'cityNames', defaultValue: name })
 }
 
 // Short names for cities known worldwide by one (Saigon, Rio), used where space
@@ -20,7 +23,8 @@ export function localizeCityName(name) {
 // Latin-script locales use the common short form; a non-Latin locale only gets
 // one listed for it, else its localized full name.
 const SHORT_NAMES = {
-  'ho-chi-minh-city':   { '*': 'Saigon', vi: 'Sài Gòn' },
+  'ho-chi-minh-city':   { '*': 'Saigon', vi: 'Sài Gòn', ja: 'サイゴン', ko: '사이공', 'zh-hans': '西贡', 'zh-hant': '西貢',
+                         th: 'ไซง่อน', ru: 'Сайгон', ar: 'سايغون', hi: 'साइगॉन' },
   'saint-petersburg':   { '*': 'St. Petersburg', ru: 'Петербург' },
   'rio-de-janeiro':     { '*': 'Rio' },
   'thiruvananthapuram': { '*': 'Trivandrum' },
@@ -30,6 +34,10 @@ const SHORT_NAMES = {
   'kuwait-city':        { '*': 'Kuwait' },
 }
 const NON_LATIN = new Set(['ar', 'hi', 'ja', 'ko', 'ru', 'th', 'zh-hans', 'zh-hant'])
+// Cities Hilads always calls by their short name, not only where space is tight: Saigon is
+// the city's name in the app, in every locale (docs/i18n-style-guide.md §3), stories and
+// passport included. The official name still matches in city search (the server's name).
+const SHORT_EVERYWHERE = new Set(['ho-chi-minh-city'])
 
 // Short names the server sent (V5-01: the back office edits them), per locale:
 // slug → { [lang]: short name or null }. They win over SHORT_NAMES.

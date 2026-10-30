@@ -862,10 +862,11 @@ final class NotificationI18n
 
         $params = [
             '{name}'       => self::name($type, $data),
-            '{city}'       => (string) ($data['cityName']       ?? ''),
+            // City names as the app shows them in this locale ("Saigon", vi "Sài Gòn").
+            '{city}'       => CityNames::short((string) ($data['cityName'] ?? ''), $locale),
             // Cross-city heads-up: {originCity} is where the challenge was
             // CREATED, {city} is the RECIPIENT's city (where they live).
-            '{originCity}' => (string) ($data['originCityName'] ?? ''),
+            '{originCity}' => CityNames::short((string) ($data['originCityName'] ?? ''), $locale),
             // challengeTitle joins the fallback chain so the challenge_* push
             // bodies can interpolate the challenge name from their callers.
             '{title}'      => (string) ($data['eventTitle'] ?? $data['topicTitle'] ?? $data['challengeTitle'] ?? $data['title'] ?? ''),

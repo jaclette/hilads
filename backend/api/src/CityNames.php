@@ -16,6 +16,14 @@ final class CityNames
         "ho-chi-minh-city" => [
             "*" => 'Saigon',
             "vi" => 'Sài Gòn',
+            "ja" => 'サイゴン',
+            "ko" => '사이공',
+            "zh-hans" => '西贡',
+            "zh-hant" => '西貢',
+            "th" => 'ไซง่อน',
+            "ru" => 'Сайгон',
+            "ar" => 'سايغون',
+            "hi" => 'साइगॉन',
         ],
         "saint-petersburg" => [
             "*" => 'St. Petersburg',
