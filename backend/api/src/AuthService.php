@@ -331,7 +331,7 @@ class AuthService
         $resetUrl = rtrim(getenv('APP_URL') ?: 'https://hilads.live', '/')
                   . '/reset-password?token=' . $rawToken;
 
-        self::sendResetEmail($user['email'], $user['display_name'], $resetUrl);
+        self::sendResetEmail($user['email'], $user['display_name'], $resetUrl, $user['locale'] ?? null);
     }
 
     /**
@@ -410,10 +410,37 @@ class AuthService
         return (bool) $stmt->fetchColumn();
     }
 
+
+    /**
+     * The reset email in the account's language (users.locale), English when unknown.
+     * Keys: subject, hi ({name}), line1, line2, button, expires, ignore.
+     */
+    private const RESET_EMAIL = [
+        'en' => ['Reset your Hilads password', 'Hi {name},', 'Someone asked to reset the password of your Hilads account.', 'If it was you, tap the button below to choose a new one.', 'Reset password', 'This link expires in 1 hour.', "If it wasn't you, just ignore this email: your password won't change."],
+        'fr' => ['Réinitialise ton mot de passe Hilads', 'Salut {name},', 'Quelqu’un a demandé à réinitialiser le mot de passe de ton compte Hilads.', 'Si c’est toi, appuie sur le bouton ci-dessous pour en choisir un nouveau.', 'Choisir un nouveau mot de passe', 'Ce lien expire dans 1 heure.', 'Si ce n’est pas toi, ignore simplement cet e-mail : ton mot de passe ne changera pas.'],
+        'vi' => ['Đặt lại mật khẩu Hilads', 'Chào {name},', 'Có người vừa yêu cầu đặt lại mật khẩu cho tài khoản Hilads của bạn.', 'Nếu là bạn, bấm nút bên dưới để chọn mật khẩu mới nhé.', 'Đặt lại mật khẩu', 'Link này hết hạn sau 1 giờ.', 'Nếu không phải bạn thì cứ bỏ qua email này, mật khẩu của bạn vẫn giữ nguyên.'],
+        'es' => ['Restablece tu contraseña de Hilads', 'Hola, {name}:', 'Alguien pidió restablecer la contraseña de tu cuenta de Hilads.', 'Si fuiste tú, toca el botón de abajo para elegir una nueva.', 'Restablecer contraseña', 'Este enlace caduca en 1 hora.', 'Si no fuiste tú, ignora este correo: tu contraseña no cambiará.'],
+        'it' => ['Reimposta la password di Hilads', 'Ciao {name},', 'Qualcuno ha chiesto di reimpostare la password del tuo account Hilads.', 'Se sei stato tu, tocca il pulsante qui sotto per sceglierne una nuova.', 'Reimposta password', 'Questo link scade tra 1 ora.', 'Se non sei stato tu, ignora questa email: la tua password non cambierà.'],
+        'pt-br' => ['Redefina sua senha do Hilads', 'Oi, {name},', 'Alguém pediu para redefinir a senha da sua conta no Hilads.', 'Se foi você, toque no botão abaixo para escolher uma nova.', 'Redefinir senha', 'Este link expira em 1 hora.', 'Se não foi você, é só ignorar este e-mail: sua senha não vai mudar.'],
+        'pt-pt' => ['Repõe a tua palavra-passe do Hilads', 'Olá, {name},', 'Alguém pediu para repor a palavra-passe da tua conta Hilads.', 'Se foste tu, toca no botão abaixo para escolheres uma nova.', 'Repor palavra-passe', 'Esta ligação expira dentro de 1 hora.', 'Se não foste tu, ignora este e-mail: a tua palavra-passe não vai mudar.'],
+        'de' => ['Setze dein Hilads-Passwort zurück', 'Hi {name},', 'Jemand möchte das Passwort deines Hilads-Kontos zurücksetzen.', 'Wenn du das warst, tipp auf den Button unten und wähl ein neues.', 'Passwort zurücksetzen', 'Dieser Link ist 1 Stunde gültig.', 'Warst du das nicht, ignorier diese E-Mail einfach: Dein Passwort bleibt, wie es ist.'],
+        'nl' => ['Stel je Hilads-wachtwoord opnieuw in', 'Hoi {name},', 'Iemand wil het wachtwoord van je Hilads-account opnieuw instellen.', 'Was jij dat? Tik dan op de knop hieronder om een nieuw wachtwoord te kiezen.', 'Wachtwoord opnieuw instellen', 'Deze link verloopt over 1 uur.', 'Was jij het niet? Negeer deze e-mail dan gewoon: je wachtwoord blijft hetzelfde.'],
+        'zh-hans' => ['重置你的 Hilads 密码', '{name}，你好：', '有人申请重置你的 Hilads 账号密码。', '如果是你本人，点击下方按钮设置新密码。', '重置密码', '此链接 1 小时后失效。', '如果不是你本人，忽略这封邮件即可，你的密码不会改变。'],
+        'zh-hant' => ['重設你的 Hilads 密碼', '{name}，你好：', '有人申請重設你的 Hilads 帳號密碼。', '如果是你本人，點下方按鈕設定新密碼。', '重設密碼', '這個連結 1 小時後失效。', '如果不是你本人，忽略這封信就好，你的密碼不會改變。'],
+        'ja' => ['Hilads のパスワード再設定', '{name} さん、こんにちは。', 'Hilads アカウントのパスワード再設定がリクエストされました。', 'ご本人の場合は、下のボタンから新しいパスワードを設定してください。', 'パスワードを再設定', 'このリンクの有効期限は 1 時間です。', '心当たりがない場合は、このメールは無視してください。パスワードは変更されません。'],
+        'ko' => ['Hilads 비밀번호 재설정', '{name} 님, 안녕하세요.', 'Hilads 계정의 비밀번호 재설정 요청이 들어왔어요.', '본인이 맞다면 아래 버튼을 눌러 새 비밀번호를 정해 주세요.', '비밀번호 재설정', '이 링크는 1시간 후에 만료돼요.', '본인이 요청하지 않았다면 이 메일은 무시해도 돼요. 비밀번호는 그대로예요.'],
+        'fil' => ['I-reset ang password mo sa Hilads', 'Hi {name},', 'May nag-request na i-reset ang password ng Hilads account mo.', 'Kung ikaw ito, i-tap ang button sa ibaba para pumili ng bago.', 'I-reset ang password', 'Mag-e-expire ang link na ito sa loob ng 1 oras.', 'Kung hindi ikaw, i-ignore lang ang email na ito: hindi magbabago ang password mo.'],
+        'th' => ['ตั้งรหัสผ่าน Hilads ใหม่', 'สวัสดี {name}', 'มีคนขอรีเซ็ตรหัสผ่านบัญชี Hilads ของคุณ', 'ถ้าเป็นคุณ แตะปุ่มด้านล่างเพื่อตั้งรหัสผ่านใหม่ได้เลย', 'ตั้งรหัสผ่านใหม่', 'ลิงก์นี้หมดอายุใน 1 ชั่วโมง', 'ถ้าไม่ใช่คุณ ไม่ต้องสนใจอีเมลนี้ รหัสผ่านของคุณจะไม่เปลี่ยน'],
+        'id' => ['Atur ulang kata sandi Hilads kamu', 'Hai {name},', 'Ada yang minta atur ulang kata sandi akun Hilads kamu.', 'Kalau itu kamu, ketuk tombol di bawah untuk bikin kata sandi baru.', 'Atur ulang kata sandi', 'Link ini kedaluwarsa dalam 1 jam.', 'Kalau bukan kamu, abaikan saja email ini: kata sandimu nggak akan berubah.'],
+        'hi' => ['अपना Hilads पासवर्ड रीसेट करें', 'नमस्ते {name},', 'किसी ने आपके Hilads अकाउंट का पासवर्ड रीसेट करने को कहा है।', 'अगर यह आप थे, तो नया पासवर्ड चुनने के लिए नीचे दिए बटन पर टैप करें।', 'पासवर्ड रीसेट करें', 'यह लिंक 1 घंटे में खत्म हो जाएगा।', 'अगर यह आप नहीं थे, तो इस ईमेल को अनदेखा करें: आपका पासवर्ड नहीं बदलेगा।'],
+        'ru' => ['Сброс пароля Hilads', 'Привет, {name}!', 'Кто-то запросил сброс пароля для твоего аккаунта Hilads.', 'Если это был ты, нажми кнопку ниже и придумай новый пароль.', 'Сбросить пароль', 'Ссылка действует 1 час.', 'Если это был не ты, просто проигнорируй это письмо: пароль не изменится.'],
+        'ar' => ['أعِد تعيين كلمة مرور Hilads', 'مرحبًا {name}،', 'طلب شخص ما إعادة تعيين كلمة مرور حسابك على Hilads.', 'إذا كنت أنت، فاضغط على الزر أدناه لاختيار كلمة مرور جديدة.', 'إعادة تعيين كلمة المرور', 'تنتهي صلاحية هذا الرابط خلال ساعة واحدة.', 'إذا لم تكن أنت، فتجاهل هذه الرسالة: لن تتغير كلمة مرورك.'],
+    ];
+
     /**
      * Send the reset email via Resend.
      */
-    private static function sendResetEmail(string $to, string $name, string $resetUrl): void
+    private static function sendResetEmail(string $to, string $name, string $resetUrl, ?string $locale = null): void
     {
         $apiKey = getenv('RESEND_API_KEY');
         if (!$apiKey) {
@@ -421,32 +448,30 @@ class AuthService
             return;
         }
 
-        $firstName  = explode(' ', $name)[0];
-        $htmlBody   = '<!DOCTYPE html><html><body style="font-family:sans-serif;background:#0d0b09;color:#ede9e5;margin:0;padding:40px 20px">'
+        $firstName = explode(' ', $name)[0];
+        $l = DailyI18n::normalize($locale);
+        [$subject, $hi, $line1, $line2, $button, $expires, $ignore] = self::RESET_EMAIL[$l] ?? self::RESET_EMAIL['en'];
+        $hi  = str_replace('{name}', $firstName, $hi);
+        $dir = $l === 'ar' ? ' dir="rtl"' : '';
+        $h   = static fn(string $s): string => htmlspecialchars($s);
+        $htmlBody   = '<!DOCTYPE html><html lang="' . $h($l) . '"' . $dir . '><body style="font-family:sans-serif;background:#0d0b09;color:#ede9e5;margin:0;padding:40px 20px">'
             . '<div style="max-width:480px;margin:0 auto">'
-            . '<h2 style="color:#FF7A3C;margin-bottom:8px">Reset your Hilads password</h2>'
-            . '<p>Hi ' . htmlspecialchars($firstName) . ',</p>'
-            . '<p>Someone requested a password reset for your Hilads account.<br>'
-            . 'If that was you, click the button below to choose a new password.</p>'
+            . '<h2 style="color:#FF7A3C;margin-bottom:8px">' . $h($subject) . '</h2>'
+            . '<p>' . $h($hi) . '</p>'
+            . '<p>' . $h($line1) . '<br>' . $h($line2) . '</p>'
             . '<p style="margin:28px 0">'
-            . '<a href="' . htmlspecialchars($resetUrl) . '" style="background:#FF7A3C;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:700;font-size:16px">Reset password</a>'
+            . '<a href="' . $h($resetUrl) . '" style="background:#FF7A3C;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:700;font-size:16px">' . $h($button) . '</a>'
             . '</p>'
-            . '<p style="color:#968880;font-size:14px">This link expires in <strong>1 hour</strong>.</p>'
-            . '<p style="color:#968880;font-size:14px">If you didn\'t request this, you can safely ignore this email. Your password won\'t change.</p>'
+            . '<p style="color:#968880;font-size:14px">' . $h($expires) . '</p>'
+            . '<p style="color:#968880;font-size:14px">' . $h($ignore) . '</p>'
             . '</div></body></html>';
 
-        $textBody = "Reset your Hilads password\n\n"
-            . "Hi $firstName,\n\n"
-            . "Someone requested a password reset for your Hilads account.\n"
-            . "If that was you, use the link below to choose a new password.\n\n"
-            . "$resetUrl\n\n"
-            . "This link expires in 1 hour.\n\n"
-            . "If you didn't request this, you can safely ignore this email.";
+        $textBody = "{$subject}\n\n{$hi}\n\n{$line1}\n{$line2}\n\n{$resetUrl}\n\n{$expires}\n\n{$ignore}";
 
         $payload = json_encode([
             'from'    => 'Hilads <no-reply@hilads.live>',
             'to'      => [$to],
-            'subject' => 'Reset your Hilads password',
+            'subject' => $subject,
             'html'    => $htmlBody,
             'text'    => $textBody,
         ]);
