@@ -12,23 +12,24 @@
   },
   "meta": {
     "cityTitle": "{{city}} en Hilads - Juega local. Compara global.",
-    "cityDesc": "Un reto al día, el mismo en cada ciudad. Juega en {{city}}, haz una foto y mira cómo respondió el mundo.",
-    "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Únete a {{title}} en Hilads - un Local Event que está pasando ahora. Mira quién va y chatea en directo."
+    "cityDesc": "Un reto al día, el mismo en todas las ciudades. Juega en {{city}}, haz una foto y mira cómo respondió el mundo.",
+    "eventTitle": "Evento local: {{title}} | Hilads",
+    "eventDesc": "Únete a {{title}} en Hilads, un evento local que está pasando ahora. Mira quién va y chatea en directo."
   },
   "nowTitle": "Ahora",
   "filterEvents": "🎉 Eventos locales",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Quedadas",
-  "publicEventsSection": "🎫 Eventos públicos",
+  "publicEventsSection": "🎫 Eventos locales públicos",
   "accountWelcome": {
     "title": "¡Felicidades, {{username}}!",
-    "subtitle": "Tu cuenta está lista - esto es lo que puedes hacer ahora",
+    "subtitle": "Tu cuenta está lista: esto es lo que ya puedes hacer",
     "f1": "Crea una quedada y reúne a gente ahora mismo",
     "f2": "Organiza un evento en tu ciudad",
     "f3": "Envía un mensaje privado a quien quieras",
     "f4": "Mira quién anda cerca, en vivo",
-    "f5": "Conecta con locales y viajeros",
-    "fc1": "Reta a los locales de tu ciudad",
+    "f5": "Conecta con gente local y viajeros",
+    "fc1": "Reta a la gente local de tu ciudad",
     "fc2": "Reta a otra ciudad del mundo",
     "cta": "¡Vamos!"
   },
@@ -38,23 +39,23 @@
     "fallbackCity": "tu ciudad",
     "slide1": {
       "title": "Juega local. Compara global.",
-      "body": "Hilads es la app que convierte a viajeros en locales - y ayuda a los locales a compartir lo que hace que su ciudad esté viva."
+      "body": "Hilads es la app que hace que los viajeros se sientan de aquí, y que ayuda a la gente local a compartir lo que da vida a su ciudad."
     },
     "slide2": {
       "title": "Tres formas de vivir la ciudad",
-      "itemChallenges": "🤝 Retos - desafía o déjate desafiar para descubrir lugares ocultos, probar comida real, compartir cultura o echar una mano.",
-      "itemHangouts": "🗣️ Hi now - conoce a alguien de forma espontánea",
-      "itemEvents": "🎉 Hi plan - planifica un momento para veros"
+      "itemChallenges": "🤝 Retos: reta o acepta retos para descubrir rincones escondidos, probar comida de verdad, compartir cultura o echar una mano.",
+      "itemHangouts": "🗣️ Hi now: conoce a alguien sobre la marcha",
+      "itemEvents": "🎉 Hi plan: organiza un momento para verse"
     },
     "slide3": {
-      "title": "Gana tu sitio en la ciudad",
-      "body": "Cada reto que completas, cada quedada, cada lugar que descubres te da puntos. Los puntos reflejan lo local que te has vuelto en {{city}}. Llega al top de Most Local y gana tu sitio entre los que hacen que la ciudad esté viva."
+      "title": "Gánate tu lugar en la ciudad",
+      "body": "Cada reto que completas, cada encuentro y cada sitio que descubres te dan puntos. Los puntos muestran cuánto te has vuelto de {{city}}. Llega a lo más alto de Most Local y gánate tu lugar entre quienes le dan vida a la ciudad."
     },
     "slide4": {
-      "title": "¿Listo para empezar?",
-      "ctaChallenge": "📍 Lanza tu primer reto en {{city}}",
-      "ctaMostLocal": "🤝 Descubre Most Local de {{city}}",
-      "ctaLookAround": "👀 Solo explorar por ahora",
+      "title": "¿Empezamos?",
+      "ctaChallenge": "📍 Acepta tu primer reto en {{city}}",
+      "ctaMostLocal": "🤝 Descubre el Most Local de {{city}}",
+      "ctaLookAround": "👀 Por ahora, solo mirar",
       "ctaHiNow": "🗣️ Hi now",
       "ctaHiLater": "🎉 Hi plan"
     }
@@ -62,49 +63,49 @@
   "challengeIntro": {
     "title": "Cómo funcionan los retos",
     "slide1": {
-      "title": "Los retos convierten viajes en historias",
-      "body": "Locales y viajeros se lanzan retos para vivir la ciudad de verdad - comida, sitios, cultura, ayuda. ¿La recompensa? Quedar en persona - o mandar una prueba a distancia."
+      "title": "Los retos convierten los viajes en historias",
+      "body": "La gente local y los viajeros se retan a compartir lo que hace auténtica una ciudad: comida, sitios, cultura, ayuda. ¿El premio? Verse en persona, o mandar una prueba desde lejos."
     },
     "slide2": {
       "title": "Lanza tu reto",
-      "body": "Comida, lugar, cultura o ayuda. Elige para quién, cuántas plazas y cómo lo cerráis - quedando o con foto."
+      "body": "Comida, lugar, cultura o ayuda. Elige para quién es, cuántas plazas hay y cómo se cierra: en persona o con una foto."
     },
     "slide3": {
       "title": "Alguien lo acepta",
-      "body": "Te mandan una solicitud. La revisas y aceptas - tu hilo privado se abre para chatear y organizar."
+      "body": "Te mandan una solicitud. La revisas y la aceptas, y se abre su chat privado para hablar y organizarse."
     },
     "slide4": {
-      "title": "Quedar o mandar prueba",
-      "body": "Quedad en persona o mandad una foto a distancia - tú decides. En cualquier caso, se registra cada paso."
+      "title": "Verse o mandar una prueba",
+      "body": "Verse en persona o mandar una foto desde lejos: tú decides. En los dos casos, cada paso queda registrado."
     },
     "slide5": {
       "title": "Cierra el reto",
-      "body": "Tras la quedada (o cuando llegue la foto), márcalo como hecho. Tu ciudad, vivida de verdad - un reto a la vez."
+      "body": "Después del encuentro (o cuando llegue la foto), márcalo como hecho. Tu ciudad, vivida de verdad, reto a reto."
     },
     "next": "Siguiente",
     "done": "¡Entendido!",
     "skip": "Saltar ✕",
     "slide6": {
       "title": "Más allá de tu ciudad",
-      "body": "Reta a quien sea, donde sea. La persona manda prueba - una foto geolocalizada - y tú validas a distancia. El mismo flujo de foto vale también en local. Local o global, cada reto cuenta."
+      "body": "Reta a quien sea, donde sea. Te manda una prueba, una foto geolocalizada, y tú la validas desde lejos. Con los retos locales funciona igual. Local o global, cada reto cuenta."
     },
     "slide7": {
-      "title": "Vuélvete Most Local",
-      "body": "Cada reto te da puntos - en tu ciudad Y en el mundo. Quedad en persona para sumar +50 de bonus. Local o viajero, lo que cuenta es lo que construyes aquí. Clasificación nueva cada mes."
+      "title": "Conviértete en el Most Local",
+      "body": "Cada reto te da puntos, en tu ciudad Y en el mundo. Si se ven en persona, te llevas +50 extra. Seas de aquí o viajero, lo que cuenta es lo que construyes aquí. Clasificaciones nuevas cada mes."
     },
     "createCta": "🔥 Crear un reto"
   },
   "share": {
     "title": "Comparte algo",
-    "snap": "Haz una foto",
+    "snap": "Saca una foto",
     "snapDesc": "Para el reto de hoy o solo por diversión",
-    "spot": "Comparte tu sitio",
+    "spot": "Comparte dónde estás",
     "spotDesc": "Comparte tu ubicación actual",
     "spotLoading": "Obteniendo tu ubicación…",
     "plan": "Crear un plan",
-    "planDesc": "Elige una hora y un lugar, los demás se suman",
+    "planDesc": "Elige hora y lugar, y que los demás se unan",
     "hiNow": "Hi now",
-    "hiNowDesc": "¿Te apetece algo ahora mismo? Dilo"
+    "hiNowDesc": "¿Tienes ganas de algo ahora mismo? Dilo"
   },
   "locationPicker": {
     "title": "¿Dónde estás?",
@@ -112,7 +113,7 @@
     "moveHint": "Mueve el mapa para ajustar",
     "noResults": "No se encontraron lugares",
     "loading": "Obteniendo ubicación…",
-    "confirm": "Compartir este sitio",
+    "confirm": "Compartir esta ubicación",
     "yourLocation": "Tu ubicación",
     "close": "Cerrar",
     "clearSearch": "Borrar búsqueda"
@@ -129,13 +130,13 @@
     }
   },
   "composer": {
-    "attach": "Añadir un adjunto",
-    "emoji": "Emoji",
+    "attach": "Adjuntar",
+    "emoji": "Emojis",
     "placeholderCity": "Saluda a tu ciudad",
     "placeholderHangout": "Diles que estás dentro",
     "placeholderEvent": "Chatea con los asistentes",
-    "placeholderChallenge": "Anímalos o comparte tu tip",
-    "placeholderWorld": "Pregúntale al mundo cómo lo hace"
+    "placeholderChallenge": "Anímalos o comparte un consejo",
+    "placeholderWorld": "Pregunta al mundo cómo lo hacen"
   },
   "vibe": {
     "party": "Fiesta",
@@ -171,7 +172,7 @@
     "hAgo": "hace {{count}} h",
     "dAgo": "hace {{count}} d",
     "expired": "Caducado",
-    "expiresSoon": "Caduca pronto",
+    "expiresSoon": "Termina pronto",
     "expiresInMin": "Caduca en {{mins}} min",
     "expiresInHourMin": "Caduca en {{hours}} h {{mins}} min",
     "expiresInHour": "Caduca en {{hours}} h",
@@ -181,7 +182,6 @@
   "filterChallenges": "🔥 Retos",
   "shareToCity": "Compartir en mi ciudad",
   "shareToWorld": "Compartir en el Mundo",
-  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Ver la clasificación",
     "challenge": "Ver el reto",
@@ -198,19 +198,19 @@
     "title": "Mostrar",
     "world": "Mundo",
     "pickCity": "Elige una ciudad",
-    "citySub": "El challenge, las fotos y los spots de tu ciudad",
-    "worldSub": "Fotos y spots de todas las ciudades",
+    "citySub": "El reto, las fotos y los sitios de tu ciudad",
+    "worldSub": "Fotos y sitios de todas las ciudades",
     "changeCity": "Cambiar de ciudad",
     "a11y": "Mostrando {{scope}}. Toca para cambiar",
     "here": "Estás en {{city}}",
     "hereUnknown": "¿Dónde estás?",
-    "hereSub": "¿No es así? Cambia dónde juegas"
+    "hereSub": "¿No es aquí? Cambia dónde juegas"
   },
   "signUp": "Registrarme",
   "settings": "Ajustes",
   "firstLaunch": "Juega local. Compara global.",
   "subtitles": {
-    "map": "Spots de las fotos del mundo.",
+    "map": "Sitios sacados de las fotos del mundo.",
     "hi": "Saluda a tu ciudad. Únete a un plan.",
     "passport": "Tus ciudades, tus fotos, tus sellos."
   },
@@ -228,8 +228,8 @@
     "textToday": "El Daily Challenge de hoy en Hilads: {{challenge}} ¿Te apuntas?",
     "textSpot": "{{name}} en Hilads",
     "textSpotCity": "{{name}}, {{city}}, en Hilads",
-    "textPassport": "Mi pasaporte Hilads en {{city}}. Mismo reto. Mundos diferentes.",
-    "textPassportNoCity": "Mi pasaporte Hilads. Mismo reto. Mundos diferentes."
+    "textPassport": "Mi pasaporte Hilads en {{city}}. Mismo reto. Mundos distintos.",
+    "textPassportNoCity": "Mi pasaporte Hilads. Mismo reto. Mundos distintos."
   },
   "represent": {
     "empty": "{{city}} aún no ha jugado hoy. Sé el primero.",
@@ -240,18 +240,18 @@
     "locationNeeded": "Permite la ubicación para jugar por donde estás.",
     "button": "Juega por {{city}}",
     "firstPosted": "Pusiste a {{city}} en el mapa del mundo de hoy.",
-    "pioneer": "Pionero de {{city}}",
-    "spotOne": "Spot n.º 1 en {{city}}",
+    "pioneer": "Pioneer de {{city}}",
+    "spotOne": "Sitio n.º 1 en {{city}}",
     "streak_one": "{{city}} lleva {{count}} día seguido jugando",
-    "streak_many": "{{city}} lleva {{count}} de días seguidos jugando",
+    "streak_many": "{{city}} lleva {{count}} días seguidos jugando",
     "streak_other": "{{city}} lleva {{count}} días seguidos jugando",
-    "board_one": "{{count}} ciudad está en el marcador de hoy. {{city}} todavía no.",
-    "board_many": "{{count}} ciudades están en el marcador de hoy. {{city}} todavía no.",
-    "board_other": "{{count}} ciudades están en el marcador de hoy. {{city}} todavía no.",
-    "mapEmpty": "{{city}} aún no está en el mapa del mundo. Ponla.",
+    "board_one": "{{count}} ciudad está en el tablero de hoy. {{city}} todavía no.",
+    "board_many": "{{count}} ciudades están en el tablero de hoy. {{city}} todavía no.",
+    "board_other": "{{count}} ciudades están en el tablero de hoy. {{city}} todavía no.",
+    "mapEmpty": "{{city}} aún no está en el mapa del mundo. ¡Ponla tú!",
     "invite": "Invita a un amigo",
     "share": "Juega por {{city}} conmigo en Hilads.",
-    "pioneerTitle": "Insignias de pionero",
+    "pioneerTitle": "Insignias Pioneer",
     "pioneerSub": "La primera foto aprobada de una ciudad. Tuya para siempre."
   },
   "appModal": {
@@ -266,7 +266,7 @@
     "sub": "Es gratis y te lleva un minuto.",
     "download": "Descargar la app",
     "keepExploring": "Seguir explorando",
-    "scan": "Escanea con tu móvil"
+    "scan": "Escanea con tu teléfono"
   },
   "directions": {
     "chooseTitle": "Abrir la ruta en",
@@ -281,5 +281,38 @@
     "setting": "Mostrar mis fotos",
     "on": "Sí",
     "off": "No"
+  },
+  "a11y": {
+    "close": "Cerrar",
+    "back": "Atrás",
+    "dismiss": "Cerrar",
+    "mainNav": "Principal",
+    "emojiPicker": "Selector de emojis",
+    "cancelReply": "Cancelar respuesta",
+    "welcome": "Bienvenida",
+    "approve": "Aprobar"
+  },
+  "tapToOpenMaps": "Toca para abrir en el mapa",
+  "openInApp": {
+    "text": "Sigue en la app Hilads para vivirlo completo",
+    "cta": "Abrir la app"
+  },
+  "appPromo": {
+    "text": "Vive Hilads al completo",
+    "ctaIos": "Descargar en el App Store",
+    "ctaAndroid": "Disponible en Google Play",
+    "regionIos": "Descarga la app de Hilads para iOS",
+    "regionAndroid": "Descarga la app de Hilads para Android",
+    "pitchPush": "Notificaciones push al instante",
+    "pitchFast": "Un feed más rápido y fluido",
+    "pitchAnim": "Animaciones nativas",
+    "ctaPlay": "Descargar en Google Play",
+    "continueBrowser": "Seguir en el navegador"
+  },
+  "deleteAccount": {
+    "title": "Eliminar tu cuenta",
+    "body": "Para eliminar tu cuenta de Hilads y todos tus datos, envía un correo a:",
+    "note": "Incluye tu nombre de usuario. Tus datos se borrarán para siempre en un plazo de 48 horas.",
+    "back": "Volver a Hilads"
   }
 }

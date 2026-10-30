@@ -26,12 +26,12 @@
     "limitSub": "Solo puedes tener una quedada a la vez. Ve a «{{title}}» o elimínala para lanzar una nueva.",
     "limitGo": "Ir a mi quedada",
     "yourHangout": "tu quedada",
-    "geoHint": "Activa la ubicación para ver quién está cerca ahora — y que la gente alrededor vea tu Hi",
-    "geoRequired": "Un Hi now le dice a la gente dónde encontrarte — activa la ubicación para continuar."
+    "geoHint": "Activa la ubicación para ver quién está cerca ahora y que la gente de alrededor vea tu Hi",
+    "geoRequired": "Un Hi now le dice a la gente dónde encontrarte: activa la ubicación para continuar."
   },
-  "deleteConfirm": "¿Eliminar esta quedada? Esto la termina para todos y es irreversible.",
+  "deleteConfirm": "¿Eliminar esta quedada? Se termina para todos y no se puede deshacer.",
   "deleteFailedAlert": "No se pudo eliminar. Inténtalo de nuevo.",
-  "shareAria": "Compartir la quedada",
+  "shareAria": "Compartir quedada",
   "shareTitle": "Compartir esta quedada",
   "members": {
     "oneIn": "{{name}} se apunta",
@@ -44,15 +44,15 @@
   },
   "gated": {
     "title": "Quedada solo para miembros",
-    "pending": "Solicitud pendiente - podrás unirte a la conversación en cuanto un miembro acepte.",
+    "pending": "Solicitud pendiente: podrás unirte a la conversación cuando un miembro te acepte.",
     "prompt": "Pide unirte para ver la conversación y participar.",
-    "requestBtn": "Pedir unirse"
+    "requestBtn": "Pedir unirme"
   },
   "feed": {
     "beginning": "Inicio de la conversación",
     "loading": "Cargando…",
     "emptyTitle": "Aún no hay respuestas",
-    "emptySub": "Sé el primero en lanzarte"
+    "emptySub": "¡Lánzate y escribe primero!"
   },
   "joinReq": {
     "someone": "Alguien",
@@ -75,9 +75,9 @@
   },
   "composer": {},
   "errors": {
-    "locFailed": "No se pudo obtener tu ubicación. Activa la localización e inténtalo de nuevo.",
+    "locFailed": "No se pudo obtener tu ubicación. Activa el acceso a la ubicación e inténtalo de nuevo.",
     "imageType": "Elige una imagen JPEG, PNG o WebP.",
-    "imageTooLarge": "Imagen demasiado grande. Máx. 10 MB.",
+    "imageTooLarge": "La imagen pesa demasiado. Máximo 10 MB.",
     "imageSend": "No se pudo enviar la imagen. Inténtalo de nuevo.",
     "dismiss": "{{error}} · toca para cerrar"
   }

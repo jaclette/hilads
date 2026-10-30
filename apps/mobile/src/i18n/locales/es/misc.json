@@ -11,7 +11,10 @@
     "emptyIncomingTitle": "Aún no hay solicitudes de amistad",
     "emptySentTitle": "No has enviado ninguna",
     "emptyIncomingSub": "Cuando alguien te pida amistad, lo verás aquí.",
-    "emptySentSub": "Las solicitudes de amistad pendientes que has enviado aparecerán aquí."
+    "emptySentSub": "Las solicitudes de amistad pendientes que has enviado aparecerán aquí.",
+    "acceptFailed": "No se pudo aceptar",
+    "declineFailed": "No se pudo rechazar",
+    "cancelFailed": "No se pudo cancelar"
   },
   "blocked": {
     "title": "Usuarios bloqueados",

@@ -3,20 +3,20 @@
   "dateLocale": "es-ES",
   "ogLocale": "es_ES",
   "home": {
-    "title": "Hilads - Juega local. Compara global. | Reto fotográfico diario de viajes",
-    "description": "Un reto al día, el mismo en cada ciudad. Haz una foto y mira cómo respondió el mundo. El BeReal de los viajeros.",
+    "title": "Hilads - Juega local. Compara global. | Reto diario de fotos de viaje",
+    "description": "Un reto al día, el mismo en todas las ciudades. Haz una foto y mira cómo respondió el mundo. El BeReal de los viajeros.",
     "h1": "Juega local. Compara global.",
-    "intro": "Hilads es el reto fotográfico diario para viajeros y locales. Cada día sale un reto para todo el mundo. Haz tu foto donde estés y luego mira cómo respondió cada país.",
+    "intro": "Hilads es el reto diario de fotos para viajeros y gente local. Cada día sale un reto para todo el mundo. Haz tu foto donde estés y mira cómo respondió cada país.",
     "howHeading": "Cómo funciona Hilads",
-    "howBody": "Cada día sale un nuevo Daily Challenge, el mismo en cada ciudad. Juega con una foto antes de que salga el siguiente y luego compara: un reto, respondido en cada país.",
+    "howBody": "Cada día sale un nuevo Daily Challenge, el mismo en todas las ciudades. Juega con una foto antes de que salga el siguiente y compara: un solo reto, respondido en cada país.",
     "playCta": "Juega el reto de hoy",
     "archiveCta": "Mira cómo respondió el mundo a los retos anteriores"
   },
   "city": {
     "title": "{city} en Hilads - Reto de hoy: {question}",
     "titleNoChallenge": "{city} en Hilads - Juega local. Compara global.",
-    "description": "El Daily Challenge de hoy en {city}: {question} Un reto al día, el mismo en cada ciudad. Haz una foto y mira cómo respondió el mundo.",
-    "descriptionNoChallenge": "Un reto al día, el mismo en cada ciudad. Juega en {city}, haz una foto y mira cómo respondió el mundo.",
+    "description": "El Daily Challenge de hoy en {city}: {question} Un reto al día, el mismo en todas las ciudades. Haz una foto y mira cómo respondió el mundo.",
+    "descriptionNoChallenge": "Un reto al día, el mismo en todas las ciudades. Juega en {city}, haz una foto y mira cómo respondió el mundo.",
     "h1": "{city} en Hilads",
     "todayHeading": "El reto de hoy",
     "playCta": "Juega por {city}",
@@ -27,13 +27,13 @@
   "daily": {
     "title": "{question} Respuestas de {countries} | Hilads",
     "titleNone": "{question} | Hilads Daily Challenge",
-    "descAnswers": "{answers} Un reto al día, el mismo en cada ciudad.",
-    "descPhotos": "{text} Fotos de {places}. Un reto al día, el mismo en cada ciudad.",
-    "descEmpty": "{text} Un reto al día, el mismo en cada ciudad. Haz una foto y mira cómo respondió el mundo.",
+    "descAnswers": "{answers} Un reto al día, el mismo en todas las ciudades.",
+    "descPhotos": "{text} Fotos de {places}. Un reto al día, el mismo en todas las ciudades.",
+    "descEmpty": "{text} Un reto al día, el mismo en todas las ciudades. Haz una foto y mira cómo respondió el mundo.",
     "kicker": "Daily Challenge · {date}",
     "answersHeading": "Cómo respondió el mundo",
     "photoBy": "Foto de {user} en {city}",
-    "noPhotos": "Todavía no hay fotos para este reto.",
+    "noPhotos": "Aún no hay fotos para este reto.",
     "prev": "Reto anterior",
     "next": "Reto siguiente",
     "playCta": "Juega el reto de hoy",
@@ -44,8 +44,8 @@
     "countriesOne": "1 país",
     "countriesMany": "{count} países",
     "archiveTitle": "Daily Challenges anteriores: cómo respondió el mundo | Hilads",
-    "archiveDescription": "Todos los Daily Challenges anteriores de Hilads: un reto al día, el mismo en cada ciudad, con las fotos y respuestas de cada país.",
+    "archiveDescription": "Todos los Daily Challenges anteriores de Hilads: un reto al día, el mismo en todas las ciudades, con las fotos y respuestas de cada país.",
     "archiveH1": "Daily Challenges anteriores",
-    "archiveIntro": "Un reto al día, el mismo en cada ciudad. Así respondió el mundo a cada uno."
+    "archiveIntro": "Un reto al día, el mismo en todas las ciudades. Así respondió el mundo a cada uno."
   }
 }

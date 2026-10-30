@@ -5,7 +5,7 @@
   "badgeMicro": {
     "ghost": "Solo de paso",
     "fresh": "Recién llegado",
-    "regular": "A menudo por aquí",
+    "regular": "Se deja ver a menudo",
     "host": "Hace que pasen cosas"
   },
   "modes": {
@@ -24,12 +24,12 @@
     "party": "Aquí por la vida nocturna",
     "board_games": "Trae snacks y dados",
     "coffee": "Primero el café, lo demás después",
-    "music": "Siempre buscando un buen sonido",
+    "music": "Siempre a la caza de un buen ritmo",
     "food": "Primero comemos, luego hablamos",
-    "chill": "Tranqui, buen rollo"
+    "chill": "Sin prisas, con buenas vibes"
   },
   "modeSub": {
-    "localIn": "Local en {{city}}",
+    "localIn": "Vive en {{city}}",
     "local": "Local",
     "exploringIn": "Explorando {{city}}",
     "exploring": "Explorando"
@@ -45,7 +45,8 @@
     "challenges": "Retos"
   },
   "host": "Anfitrión",
-  "live": "En directo",
+  "live": "En vivo",
+  "past": "Pasado",
   "empty": {
     "hangouts": "Aún no hay quedadas",
     "events": "Aún no hay eventos",
@@ -53,18 +54,19 @@
     "challenges": "Aún no hay retos"
   },
   "vibesTab": {
-    "score": "puntuación vibe de {{score}}",
+    "score": "Puntuación vibe: {{score}}",
     "basedOn_one": "basado en {{count}} vibe",
+    "basedOn_many": "basado en {{count}} vibes",
     "basedOn_other": "basado en {{count}} vibes",
     "updateNote": "Editar tu nota ({{rating}}★)",
     "leaveNote": "Dejar una nota",
-    "placeholder": "Di algo amable… (opcional)",
+    "placeholder": "Di algo bonito… (opcional)",
     "cancel": "Cancelar",
     "sending": "Enviando…",
-    "sendNote": "Enviar la nota",
+    "sendNote": "Enviar nota",
     "notesLabel": "Notas · {{count}}",
     "emptyTitle": "Aún no hay notas",
-    "emptySub": "Sé el primero en dejar una nota"
+    "emptySub": "Deja la primera nota"
   },
   "picks": {
     "restaurant": "Restaurante favorito",
@@ -75,15 +77,15 @@
   "actions": {
     "opening": "Abriendo…",
     "message": "Mensaje",
-    "friend": "Amigo",
+    "friend": "Amigos",
     "requestSent": "Solicitud enviada",
-    "acceptRequest": "Aceptar la solicitud",
+    "acceptRequest": "Aceptar solicitud",
     "addFriend": "+ Amigo",
     "removing": "Eliminando…",
-    "unfriend": "Eliminar",
+    "unfriend": "Eliminar amigo",
     "cancel": "Cancelar",
     "cancelling": "Cancelando…",
-    "cancelRequest": "Cancelar la solicitud",
+    "cancelRequest": "Cancelar solicitud",
     "keep": "Mantener",
     "reportTitle": "Denunciar al usuario"
   },
@@ -93,8 +95,7 @@
     "placeholder": "Describe el problema (mín. 10 caracteres)…",
     "error": "No se pudo enviar la denuncia. Inténtalo de nuevo.",
     "sending": "Enviando…",
-    "submit": "Enviar la denuncia",
+    "submit": "Enviar denuncia",
     "cancel": "Cancelar"
-  },
-  "past": "Pasado"
+  }
 }

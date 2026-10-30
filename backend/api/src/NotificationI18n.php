@@ -27,7 +27,7 @@ final class NotificationI18n
         'campaign_challenge' => [
             'fr'      => ["Campagne Hilads : points x2", "{title} - points doublés ! Tu en es ?"],
             'vi'      => ["Hilads nhân đôi điểm!", "{title} - điểm x2! Chơi không?"],
-            'es'      => ["Campaña Hilads — puntos x2",   "{title} — ¡gana el DOBLE de puntos! ¿Te apuntas?"],
+            'es'      => ["Campaña Hilads: puntos x2", "{title}: ¡gana el DOBLE de puntos! ¿Te apuntas?"],
             'it'      => ["Campagna Hilads — punti x2",   "{title} — guadagna punti DOPPI! Ci stai?"],
             'pt-br'   => ["Campanha Hilads — pontos x2",  "{title} — ganhe pontos EM DOBRO! Bora?"],
             'pt-pt'   => ["Campanha Hilads — pontos x2",  "{title} — ganha pontos a DOBRAR! Alinhas?"],
@@ -167,7 +167,7 @@ final class NotificationI18n
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
             'vi' => ["{name} vừa nhắn bạn", null],
-            'es' => ["{name} te ha enviado un mensaje",       null],
+            'es' => ["{name} te envió un mensaje", null],
             'it' => ["{name} ti ha inviato un messaggio",     null],
             'pt-br' => ["{name} te enviou uma mensagem",      null],
             'pt-pt' => ["{name} enviou-te uma mensagem",      null],
@@ -210,7 +210,7 @@ final class NotificationI18n
         'challenge_validated' => [
             'fr'      => ["Défi validé", "{name} a validé « {title} »"],
             'vi'      => ["Thử thách đã được xác nhận",          "{name} đã xác nhận \"{title}\""],
-            'es'      => ["Reto validado",                        "{name} validó \"{title}\""],
+            'es'      => ["Reto validado", "{name} validó «{title}»"],
             'it'      => ["Sfida validata",                       "{name} ha validato \"{title}\""],
             'pt-br'   => ["Desafio validado",                     "{name} validou \"{title}\""],
             'pt-pt'   => ["Desafio validado",                     "{name} validou \"{title}\""],
@@ -230,7 +230,7 @@ final class NotificationI18n
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
             'vi' => ["{name} muốn kết bạn với bạn", null],
-            'es' => ["{name} te ha enviado una solicitud de amistad", null],
+            'es' => ["{name} te envió una solicitud de amistad", null],
             'it' => ["{name} ti ha inviato una richiesta di amicizia", null],
             'pt-br' => ["{name} te enviou um pedido de amizade",      null],
             'pt-pt' => ["{name} enviou-te um pedido de amizade",      null],
@@ -250,7 +250,7 @@ final class NotificationI18n
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami",            null],
             'vi' => ["{name} đã đồng ý kết bạn", null],
-            'es' => ["{name} ha aceptado tu solicitud de amistad",   null],
+            'es' => ["{name} aceptó tu solicitud de amistad", null],
             'it' => ["{name} ha accettato la tua richiesta di amicizia", null],
             'pt-br' => ["{name} aceitou seu pedido de amizade",    null],
             'pt-pt' => ["{name} aceitou o teu pedido de amizade",   null],
@@ -270,7 +270,7 @@ final class NotificationI18n
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe",         null],
             'vi' => ["{name} vừa gửi bạn một vibe", null],
-            'es' => ["{name} te ha enviado una vibe",      null],
+            'es' => ["{name} te envió una vibe", null],
             'it' => ["{name} ti ha inviato una vibe",      null],
             'pt-br' => ["{name} te enviou uma vibe",       null],
             'pt-pt' => ["{name} enviou-te uma vibe",       null],
@@ -290,7 +290,7 @@ final class NotificationI18n
         'profile_view' => [
             'fr' => ["{name} a regardé ton profil",   null],
             'vi' => ["{name} vừa xem hồ sơ của bạn", null],
-            'es' => ["{name} ha visto tu perfil",      null],
+            'es' => ["{name} pasó por tu perfil", null],
             'it' => ["{name} ha visto il tuo profilo", null],
             'pt-br' => ["{name} viu seu perfil",       null],
             'pt-pt' => ["{name} viu o teu perfil",     null],
@@ -376,7 +376,7 @@ final class NotificationI18n
         'challenge_takeon_request' => [
             'fr'      => ["Nouvelle demande", "{name} veut relever « {title} »"],
             'vi'      => ["Có người muốn nhận lời", "{name} muốn nhận \"{title}\""],
-            'es'      => ["Nueva solicitud",                            "{name} quiere aceptar \"{title}\""],
+            'es'      => ["Nueva solicitud", "{name} quiere aceptar «{title}»"],
             'it'      => ["Nuova richiesta",                            "{name} vuole accettare \"{title}\""],
             'pt-br'   => ["Nova solicitação",                           "{name} quer aceitar \"{title}\""],
             'pt-pt'   => ["Novo pedido",                                "{name} quer aceitar \"{title}\""],
@@ -398,7 +398,7 @@ final class NotificationI18n
         'challenge_group_join' => [
             'fr'      => ["Nouveau participant", "{name} a rejoint ton défi « {title} »"],
             'vi'      => ["Có người mới tham gia", "{name} đã vào thử thách \"{title}\" của bạn"],
-            'es'      => ["Nuevo participante",     "{name} se unió a tu reto \"{title}\""],
+            'es'      => ["Nuevo participante", "{name} se unió a tu reto «{title}»"],
             'it'      => ["Nuovo partecipante",     "{name} si è unito alla tua sfida \"{title}\""],
             'pt-br'   => ["Novo participante",      "{name} entrou no seu desafio \"{title}\""],
             'pt-pt'   => ["Novo participante",      "{name} juntou-se ao teu desafio \"{title}\""],
@@ -420,7 +420,7 @@ final class NotificationI18n
         'challenge_takeon_approved' => [
             'fr'      => ["Défi accepté", "{name} a accepté ta demande pour « {title} ». On s'organise !"],
             'vi'      => ["Bạn được nhận rồi!", "{name} đồng ý cho bạn nhận \"{title}\". Lên kèo thôi!"],
-            'es'      => ["Reto aceptado",      "{name} aceptó tu solicitud para \"{title}\". ¡A planear!"],
+            'es'      => ["Reto aceptado", "{name} aceptó tu solicitud para «{title}». ¡A organizarse!"],
             'it'      => ["Sfida accettata",    "{name} ha accettato la tua richiesta per \"{title}\". Pianifichiamo!"],
             'pt-br'   => ["Desafio aceito",     "{name} aceitou seu pedido para \"{title}\". Hora de planejar!"],
             'pt-pt'   => ["Desafio aceite",      "{name} aceitou o teu pedido para \"{title}\". Hora de planear!"],
@@ -441,7 +441,7 @@ final class NotificationI18n
         'challenge_takeon_rejected' => [
             'fr'      => ["Demande refusée", "{name} a refusé ta demande pour « {title} »."],
             'vi'      => ["Yêu cầu bị từ chối", "{name} đã từ chối yêu cầu nhận \"{title}\"."],
-            'es'      => ["Solicitud rechazada",    "{name} rechazó tu solicitud para \"{title}\"."],
+            'es'      => ["Solicitud rechazada", "{name} rechazó tu solicitud para «{title}»."],
             'it'      => ["Richiesta rifiutata",    "{name} ha rifiutato la tua richiesta per \"{title}\"."],
             'pt-br'   => ["Pedido recusado",         "{name} recusou seu pedido para \"{title}\"."],
             'pt-pt'   => ["Pedido recusado",         "{name} recusou o teu pedido para \"{title}\"."],
@@ -462,7 +462,7 @@ final class NotificationI18n
         'challenge_restarted' => [
             'fr'      => ["Défi relancé", "{name} a relancé « {title} », ta participation repart à zéro"],
             'vi'      => ["Thử thách chơi lại từ đầu", "{name} đã cho \"{title}\" chơi lại từ đầu - lượt tham gia của bạn đã bị hủy"],
-            'es'      => ["Reto reiniciado",          "{name} reinició \"{title}\" - la participación se restableció"],
+            'es'      => ["Reto reiniciado", "{name} reinició «{title}» desde cero"],
             'it'      => ["Sfida riavviata",          "{name} ha riavviato \"{title}\" - la partecipazione è stata azzerata"],
             'pt-br'   => ["Desafio reiniciado",       "{name} reiniciou \"{title}\" - a participação foi zerada"],
             'pt-pt'   => ["Desafio reiniciado",       "{name} reiniciou \"{title}\" - a participação foi reposta"],
@@ -483,7 +483,7 @@ final class NotificationI18n
         'challenge_acceptor_left' => [
             'fr'      => ["Défi abandonné", "{name} a quitté le défi « {title} »"],
             'vi'      => ["Có người bỏ thử thách", "{name} đã rời thử thách \"{title}\""],
-            'es'      => ["Reto abandonado",          "{name} dejó el reto \"{title}\""],
+            'es'      => ["Reto abandonado", "{name} dejó el reto «{title}»"],
             'it'      => ["Sfida abbandonata",        "{name} ha lasciato la sfida \"{title}\""],
             'pt-br'   => ["Saiu do desafio",          "{name} saiu do desafio \"{title}\""],
             'pt-pt'   => ["Saiu do desafio",          "{name} saiu do desafio \"{title}\""],
@@ -507,7 +507,7 @@ final class NotificationI18n
         'challenge_date_proposed' => [
             'fr'      => ["Date proposée", "{name} propose une date pour « {title} »"],
             'vi'      => ["Có ngày hẹn mới", "{name} đề xuất ngày cho \"{title}\""],
-            'es'      => ["Fecha propuesta",           "{name} propuso una fecha para \"{title}\""],
+            'es'      => ["Fecha propuesta", "{name} propone una fecha para «{title}»"],
             'it'      => ["Data proposta",             "{name} ha proposto una data per \"{title}\""],
             'pt-br'   => ["Data proposta",             "{name} propôs uma data para \"{title}\""],
             'pt-pt'   => ["Data proposta",             "{name} propôs uma data para \"{title}\""],
@@ -530,7 +530,7 @@ final class NotificationI18n
         'challenge_date_approved' => [
             'fr'      => ["Date confirmée", "{name} a validé ta date pour « {title} »"],
             'vi'      => ["Chốt ngày rồi!", "{name} đã đồng ý ngày bạn chọn cho \"{title}\""],
-            'es'      => ["Fecha confirmada",          "{name} confirmó tu fecha para \"{title}\""],
+            'es'      => ["Fecha confirmada", "{name} confirmó tu fecha para «{title}»"],
             'it'      => ["Data confermata",           "{name} ha confermato la tua data per \"{title}\""],
             'pt-br'   => ["Data confirmada",           "{name} confirmou sua data para \"{title}\""],
             'pt-pt'   => ["Data confirmada",           "{name} confirmou a tua data para \"{title}\""],
@@ -552,7 +552,7 @@ final class NotificationI18n
         'challenge_verdict_approved' => [
             'fr'      => ["Défi accompli", "{name} a validé « {title} » : c'est accompli"],
             'vi'      => ["Hoàn thành thử thách!", "{name} xác nhận bạn đã hoàn thành \"{title}\""],
-            'es'      => ["Reto cumplido",            "{name} marcó \"{title}\" como cumplido"],
+            'es'      => ["Reto cumplido", "{name} marcó «{title}» como cumplido"],
             'it'      => ["Sfida completata",         "{name} ha confermato \"{title}\" come completato"],
             'pt-br'   => ["Desafio cumprido",         "{name} marcou \"{title}\" como cumprido"],
             'pt-pt'   => ["Desafio cumprido",         "{name} marcou \"{title}\" como cumprido"],
@@ -573,7 +573,7 @@ final class NotificationI18n
         'challenge_verdict_rejected' => [
             'fr'      => ["Défi clôturé", "{name} a clôturé « {title} »"],
             'vi'      => ["Thử thách đã đóng",       "{name} đã đóng \"{title}\""],
-            'es'      => ["Reto cerrado",            "{name} cerró \"{title}\""],
+            'es'      => ["Reto cerrado", "{name} cerró «{title}»"],
             'it'      => ["Sfida chiusa",            "{name} ha chiuso \"{title}\""],
             'pt-br'   => ["Desafio encerrado",        "{name} encerrou \"{title}\""],
             'pt-pt'   => ["Desafio encerrado",        "{name} encerrou \"{title}\""],
@@ -596,7 +596,7 @@ final class NotificationI18n
         'challenge_proof_submitted' => [
             'fr'      => ["Nouvelle preuve à valider", "{name} a envoyé une preuve pour « {title} »"],
             'vi'      => ["Có bằng chứng mới chờ duyệt", "{name} vừa gửi bằng chứng cho \"{title}\""],
-            'es'      => ["Nueva prueba para revisar",        "{name} envió una prueba para \"{title}\""],
+            'es'      => ["Nueva prueba para revisar", "{name} envió una prueba para «{title}»"],
             'it'      => ["Nuova prova da rivedere",          "{name} ha inviato una prova per \"{title}\""],
             'pt-br'   => ["Nova prova pra revisar",           "{name} mandou uma prova pra \"{title}\""],
             'pt-pt'   => ["Nova prova para rever",            "{name} enviou uma prova para \"{title}\""],
@@ -618,7 +618,7 @@ final class NotificationI18n
         'challenge_proof_approved' => [
             'fr'      => ["Preuve validée", "{name} a validé ta preuve pour « {title} »"],
             'vi'      => ["Bằng chứng đã được duyệt", "{name} đã duyệt bằng chứng của bạn cho \"{title}\""],
-            'es'      => ["Prueba aprobada",        "{name} aprobó tu prueba para \"{title}\""],
+            'es'      => ["Prueba aprobada", "{name} aprobó tu prueba para «{title}»"],
             'it'      => ["Prova approvata",        "{name} ha approvato la tua prova per \"{title}\""],
             'pt-br'   => ["Prova aprovada",         "{name} aprovou sua prova de \"{title}\""],
             'pt-pt'   => ["Prova aprovada",         "{name} aprovou a tua prova para \"{title}\""],
@@ -643,7 +643,7 @@ final class NotificationI18n
         'challenge_proof_rejected' => [
             'fr'      => ["Preuve refusée", "{name} a refusé ta preuve pour « {title} »"],
             'vi'      => ["Bằng chứng bị từ chối", "{name} đã từ chối bằng chứng của bạn cho \"{title}\""],
-            'es'      => ["Prueba rechazada",      "{name} rechazó tu prueba para \"{title}\""],
+            'es'      => ["Prueba rechazada", "{name} rechazó tu prueba para «{title}»"],
             'it'      => ["Prova rifiutata",        "{name} ha rifiutato la tua prova per \"{title}\""],
             'pt-br'   => ["Prova rejeitada",        "{name} rejeitou sua prova de \"{title}\""],
             'pt-pt'   => ["Prova rejeitada",        "{name} rejeitou a tua prova para \"{title}\""],
@@ -670,7 +670,7 @@ final class NotificationI18n
         'challenge_international_target' => [
             'fr'      => ["Nouveau défi international",       "Quelqu'un de {originCity} cherche un challenger à {city}"],
             'vi'      => ["Thử thách quốc tế mới", "Có người ở {originCity} đang tìm Challenger ở {city}"],
-            'es'      => ["Nuevo reto internacional",          "Alguien en {originCity} busca un challenger en {city}"],
+            'es'      => ["Nuevo reto internacional", "Alguien de {originCity} le lanza un reto a {city}"],
             'it'      => ["Nuova sfida internazionale",        "Qualcuno da {originCity} cerca un challenger a {city}"],
             'pt-br'   => ["Novo desafio internacional",        "Alguém em {originCity} procura um challenger em {city}"],
             'pt-pt'   => ["Novo desafio internacional",        "Alguém em {originCity} procura um challenger em {city}"],
@@ -716,7 +716,7 @@ final class NotificationI18n
         'rating_received' => [
             'fr'      => ["{name} t'a donné une note", "À toi de noter !"],
             'vi'      => ["{name} vừa chấm điểm bạn", "Tới lượt bạn chấm lại nè"],
-            'es'      => ["{name} te ha valorado",           "Te toca valorarle a ti"],
+            'es'      => ["{name} te valoró", "Ahora te toca a ti"],
             'it'      => ["{name} ti ha valutato",           "Tocca a te valutarlo"],
             'pt-br'   => ["{name} te avaliou",               "Sua vez de avaliar"],
             'pt-pt'   => ["{name} avaliou-te",               "É a tua vez de avaliar"],
@@ -736,7 +736,7 @@ final class NotificationI18n
         'join_request_accepted' => [
             'fr' => ["Tu y es !", "{name} t'a ajouté à {title}"],
             'vi' => ["Bạn vào rồi!", "{name} đã thêm bạn vào {title}"],
-            'es' => ["¡Ya estás dentro!", "{name} te ha añadido a {title}"],
+            'es' => ["¡Ya estás dentro!", "{name} te añadió a {title}"],
             'it' => ["Ci sei!",          "{name} ti ha aggiunto a {title}"],
             'pt-br' => ["Você entrou!",   "{name} adicionou você a {title}"],
             'pt-pt' => ["Já estás dentro!", "{name} adicionou-te a {title}"],
@@ -768,9 +768,9 @@ final class NotificationI18n
             'world'  => "{name} nhắc bạn trong kênh Thế giới",
         ],
         'es' => [
-            'titled' => "{name} te ha mencionado en {title}",
-            'city'   => "{name} te ha mencionado en {city}",
-            'world'  => "{name} te ha mencionado en el canal Mundo",
+            'titled' => "{name} te mencionó en {title}",
+            'city'   => "{name} te mencionó en {city}",
+            'world'  => "{name} te mencionó en el canal Mundo",
         ],
         'it' => [
             'titled' => "{name} ti ha menzionato in {title}",

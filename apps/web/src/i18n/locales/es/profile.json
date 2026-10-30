@@ -1,6 +1,6 @@
 {
   "pageTitle": "Mi perfil",
-  "changePhoto": "Cambiar la foto de perfil",
+  "changePhoto": "Cambiar foto de perfil",
   "yourProfile": "Tu perfil",
   "mode": "Modo",
   "modes": {
@@ -30,7 +30,7 @@
     "party": "fiesta",
     "nightlife": "vida nocturna",
     "music": "música",
-    "live music": "conciertos",
+    "live music": "música en vivo",
     "culture": "cultura",
     "art": "arte",
     "food": "comida",
@@ -66,40 +66,41 @@
     "interestsHint": "- elige hasta 5"
   },
   "ambassador": {
-    "title": "Recomendaciones de la ciudad",
-    "subtitle": "Se muestran en tu perfil como leyenda local.",
+    "title": "Recomendaciones",
+    "subtitle": "Aparecen en tu perfil, como leyenda local.",
     "restaurant": "Restaurante favorito",
     "restaurantPlaceholder": "Un sitio al que siempre llevas a la gente",
-    "spot": "Joya escondida / spot",
-    "spotPlaceholder": "Un sitio que la mayoría de turistas se pierde",
+    "spot": "Rincón escondido / sitio",
+    "spotPlaceholder": "Un lugar que casi todos los turistas se pierden",
     "tip": "Consejo local",
-    "tipPlaceholder": "Tu mejor consejo para los recién llegados",
+    "tipPlaceholder": "Tu mejor consejo para quien acaba de llegar",
     "story": "Historia de la ciudad",
     "storyPlaceholder": "Algo que te encanta de esta ciudad"
   },
   "hangouts": {
-    "empty": "Aún no hay quedadas - lanza una 🗣️",
+    "empty": "Aún no hay quedadas, ¡lanza una! 🗣️",
     "host": "Anfitrión"
   },
   "events": {
     "going": "Voy",
-    "goingEmpty": "Aún no hay planes - encuentra algo 🔥",
+    "goingEmpty": "Aún no tienes planes. Encuentra algo 🔥",
     "hosting": "Organizo",
-    "hostingEmpty": "Nada organizado aún - lanza algo ✨",
-    "live": "En directo",
+    "hostingEmpty": "Aún no organizas nada. Lanza algo ✨",
+    "live": "En vivo",
     "recurring": "↻ Recurrente",
-    "upcoming": "Próximamente",
+    "upcoming": "Próximos",
     "deleteEvent": "Eliminar el evento"
   },
   "friends": {
     "requests": "Solicitudes de amistad",
-    "empty": "Aún no tienes amigos. Añade desde los perfiles.",
+    "empty": "Aún no tienes amigos. Añádelos desde los perfiles.",
     "mine": "Mis amigos"
   },
   "vibesTab": {
     "received": "Vibes recibidos",
-    "score": "puntuación vibe de {{score}}",
+    "score": "Puntuación vibe: {{score}}",
     "basedOn_one": "basado en {{count}} vibe",
+    "basedOn_many": "basado en {{count}} vibes",
     "basedOn_other": "basado en {{count}} vibes",
     "empty": "Aún no hay vibes",
     "emptyHint": "Tu puntuación aparecerá aquí cuando la gente te deje una nota ✨"
@@ -114,8 +115,8 @@
   "deleteAccount": "Eliminar la cuenta",
   "delete": {
     "title": "¿Eliminar la cuenta?",
-    "body": "Tu perfil, tus amigos y tus ajustes se eliminarán de forma permanente. Tus mensajes y eventos permanecerán en los chats de la ciudad de forma anónima.",
-    "irreversible": "Esta acción es irreversible.",
+    "body": "Tu perfil, tus amigos y tus ajustes se borrarán para siempre. Tus mensajes y eventos seguirán en los chats de la ciudad, de forma anónima.",
+    "irreversible": "No se puede deshacer.",
     "deleting": "Eliminando…",
     "confirm": "Sí, eliminar mi cuenta",
     "cancel": "Cancelar"
@@ -126,10 +127,10 @@
     "usernameTaken": "Ese nombre de usuario ya está en uso",
     "usernameInvalid": "Nombre de usuario no válido",
     "saveFailed": "No se pudo guardar. Inténtalo de nuevo.",
-    "generic": "Se produjo un error. Inténtalo de nuevo."
+    "generic": "Algo salió mal. Inténtalo de nuevo."
   },
   "challenges": {
-    "empty": "Sin retos aún - lanza uno 🔥",
+    "empty": "Aún no hay retos, ¡lanza uno! 🔥",
     "challenger": "Retador"
   },
   "appearance": "Apariencia",
@@ -142,20 +143,20 @@
       "weekNone": "Aún sin puesto esta semana",
       "mostLocalIn": "Most Local en {{city}}",
       "mostLocalWorld": "Most Local en el mundo",
-      "hintToday": "Haz el challenge de hoy para conseguir tu sello de {{theme}}.",
+      "hintToday": "Juega el reto de hoy para conseguir tu sello de {{theme}}.",
       "hintTomorrow": "Mañana: {{theme}}",
-      "hintPass": "Local Pass conseguido. Todos los temas hechos aquí.",
+      "hintPass": "Local Pass conseguido. Completaste todos los temas aquí.",
       "localPass": "Local Pass",
-      "mySpots": "Mis spots",
+      "mySpots": "Mis sitios",
       "myProposals": "Mis propuestas",
       "friends": "Amigos",
       "mostLocalAllTime": "Most Local de todos los tiempos",
-      "allTimeRank": "N.º {{rank}} en {{city}}",
+      "allTimeRank": "#{{rank}} en {{city}}",
       "howPoints": "Cómo funcionan los puntos",
       "gotIt": "Entendido",
       "close": "Cerrar",
-      "noSpots": "Aún no hay spots. Tus fotos en lugares los añaden aquí.",
-      "pageA11y_one": "{{city}}: {{count}} sellos",
+      "noSpots": "Aún no hay sitios. Marca un lugar en tu foto y aparecerá aquí.",
+      "pageA11y_one": "{{city}}: {{count}} sello",
       "pageA11y_many": "{{city}}: {{count}} sellos",
       "pageA11y_other": "{{city}}: {{count}} sellos",
       "guestTitle": "Empieza tu pasaporte",
@@ -163,14 +164,18 @@
       "signUp": "Registrarme",
       "signIn": "Ya tengo cuenta",
       "best_one": "Récord: {{count}} día",
+      "best_many": "Récord: {{count}} días",
       "best_other": "Récord: {{count}} días",
       "stamps_one": "{{count}} de 7 sellos",
+      "stamps_many": "{{count}} de 7 sellos",
       "stamps_other": "{{count}} de 7 sellos",
       "inReview_one": "{{count}} en revisión",
+      "inReview_many": "{{count}} en revisión",
       "inReview_other": "{{count}} en revisión",
       "specialTitle": "Sellos especiales",
       "specialSub": "Edición limitada, uno por día especial. No cuenta para el Local Pass.",
       "compared_one": "Comparado con {{count}} país",
+      "compared_many": "Comparado con {{count}} países",
       "compared_other": "Comparado con {{count}} países",
       "stampsOf_one": "{{count}} de {{total}} sellos",
       "stampsOf_many": "{{count}} de {{total}} sellos",
@@ -189,22 +194,23 @@
     },
     "points": {
       "title": "Cómo ganar puntos",
-      "intro": "Los puntos del Daily Challenge cuentan en el Most Local semanal. Todos los puntos cuentan en el histórico.",
+      "intro": "Los puntos del Daily Challenge cuentan para el Most Local semanal. Todos los puntos cuentan para el total histórico.",
       "proof": "Publicar tu foto",
-      "vote": "Votar (por challenge)",
+      "vote": "Votar (por reto)",
       "top": "Top 3 mundial del día",
       "weekly": "El Most Local semanal se reinicia cada lunes."
     },
     "tabFriends": "Amigos",
     "friendRequests": "Solicitudes de amistad",
     "myFriends": "MIS AMIGOS",
-    "noFriends": "Aún no tienes amigos. Añade desde los perfiles.",
-    "vibesReceived": "VIBES RECIBIDOS",
-    "vibeScore": "{{score}} en puntuación vibe",
+    "noFriends": "Aún no tienes amigos. Añádelos desde los perfiles.",
+    "vibesReceived": "VIBES RECIBIDAS",
+    "vibeScore": "Puntuación vibe: {{score}}",
     "noVibes": "Aún no hay vibes.",
     "noVibesSub": "Tu puntuación aparecerá cuando la gente te deje una nota ✨",
     "settings": "AJUSTES",
     "vibeBasis_one": "basado en {{count}} vibe",
+    "vibeBasis_many": "basado en {{count}} vibes",
     "vibeBasis_other": "basado en {{count}} vibes",
     "mode": {
       "local": {
@@ -223,9 +229,9 @@
       "photos_one": "foto",
       "photos_many": "fotos",
       "photos_other": "fotos",
-      "likes_one": "like",
-      "likes_many": "likes",
-      "likes_other": "likes"
+      "likes_one": "me gusta",
+      "likes_many": "me gusta",
+      "likes_other": "me gusta"
     }
   },
   "friendReq": {

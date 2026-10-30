@@ -1,6 +1,6 @@
 {
   "title": "A tu alrededor",
-  "noCityTitle": "Ninguna ciudad seleccionada",
+  "noCityTitle": "No hay ciudad seleccionada",
   "noCitySub": "Elige una ciudad para ver quién está por aquí.",
   "browseCities": "Explorar ciudades",
   "filterBadge": "Insignia",
@@ -11,7 +11,7 @@
   "noMatchLive": "Nadie coincide con estos filtros por ahora.",
   "legends": "Leyendas de Hilads",
   "legendsSub": "Hacen que la ciudad se mueva",
-  "cityCrew": "Los miembros de la ciudad",
+  "cityCrew": "Miembros de la ciudad",
   "noMatchCrew": "Ningún miembro coincide con estos filtros.",
   "loadMore": "Ver más"
 }

@@ -1,10 +1,14 @@
 {
   "title": "Mensajes",
-  "filters": { "all": "Todo", "dms": "Mensajes directos", "events": "Chats de eventos" },
+  "filters": {
+    "all": "Todo",
+    "dms": "Mensajes privados",
+    "events": "Chats de eventos"
+  },
   "loading": "Cargando…",
   "error": {
     "loadTitle": "No se pudieron cargar los mensajes",
-    "loadSub": "Comprueba tu conexión y vuelve a intentarlo."
+    "loadSub": "Revisa tu conexión e inténtalo de nuevo."
   },
   "empty": {
     "eventsTitle": "Aún no hay chats de eventos",
@@ -12,17 +16,17 @@
     "title": "Aún no hay mensajes",
     "sub": "Conecta con la gente que conoces en la ciudad."
   },
-  "sectionDms": "Mensajes directos",
+  "sectionDms": "Mensajes privados",
   "sectionEvents": "Chats de eventos",
   "youPrefix": "Tú: {{message}}",
   "startConversation": "Empieza la conversación",
-  "eventCreated": "Tú creaste esto",
-  "eventJoined": "Te uniste a esto",
+  "eventCreated": "Lo creaste tú",
+  "eventJoined": "Te uniste",
   "prefs": {
     "title": "Preferencias de notificación",
-    "dmName": "Nuevos mensajes directos",
+    "dmName": "Nuevos mensajes privados",
     "dmDesc": "Cuando alguien te envía un mensaje privado",
-    "eventName": "Mensajes de chat de eventos",
+    "eventName": "Mensajes en chats de eventos",
     "eventDesc": "Cuando alguien escribe en un evento al que te has unido",
     "cityName": "Mensajes del chat de la ciudad",
     "cityDesc": "Cuando alguien escribe en el canal de tu ciudad"
@@ -32,10 +36,10 @@
     "beginning": "Inicio de la conversación",
     "photo": "Foto",
     "unavailable": "Mensaje original no disponible",
-    "tapMaps": "Toca para abrir en Maps",
+    "tapMaps": "Toca para abrir en el mapa",
     "composer": "Mensaje…",
     "imageType": "Elige una imagen JPEG, PNG o WebP.",
-    "imageTooLarge": "Imagen demasiado grande. Tamaño máx.: 10 MB.",
+    "imageTooLarge": "La imagen pesa demasiado. Máximo: 10 MB.",
     "imageSend": "No se pudo enviar la imagen. Inténtalo de nuevo."
   },
   "directMessage": "Mensaje privado"

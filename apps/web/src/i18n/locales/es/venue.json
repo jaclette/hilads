@@ -11,7 +11,7 @@
   "address": "Dirección",
   "hours": "Horario",
   "openEveryDay": "Abierto todos los días · {{opens}} – {{closes}}",
-  "ctaText": "Mira quién está por {{city}} ahora mismo.",
+  "ctaText": "Mira quién anda por {{city}} ahora mismo.",
   "openCity": "Abrir {{city}}",
   "lastUpdated": "Actualizado el {{date}}"
 }

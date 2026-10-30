@@ -1,11 +1,13 @@
 {
   "peopleHere_one": "🔥 {{count}} persona aquí ahora mismo",
+  "peopleHere_many": "🔥 {{count}} personas aquí ahora mismo",
   "peopleHere_other": "🔥 {{count}} personas aquí ahora mismo",
   "vibesToday_one": "🔥 {{count}} vibe en marcha hoy",
+  "vibesToday_many": "🔥 {{count}} vibes en marcha hoy",
   "vibesToday_other": "🔥 {{count}} vibes en marcha hoy",
-  "geoOff": "📍 Localización desactivada",
-  "geoUnreachable": "📍 No se pudo localizarte",
-  "pickCity": "Elige una ciudad\ny lánzate",
+  "geoOff": "📍 Ubicación desactivada",
+  "geoUnreachable": "📍 No pudimos obtener tu ubicación",
+  "pickCity": "Elige una ciudad\ny únete",
   "locating": "› localizando...",
   "requesting": "› solicitando ubicación...",
   "chooseManually": "Elegir una ciudad →",
@@ -14,13 +16,13 @@
   "namePlaceholder": "Saluda como...",
   "tryAgain": "Reintentar",
   "useLocation": "Usar mi ubicación",
-  "joinCity": "Unirse a {{city}} →",
+  "joinCity": "Únete a {{city}} →",
   "joinChat": "🔥 Entra ya",
   "instantAccess": "anónimo · acceso instantáneo",
   "keepIdentity": "o conserva tu identidad",
-  "createAccount": "Crear una cuenta",
+  "createAccount": "Crear cuenta",
   "logIn": "Iniciar sesión",
   "authHint": "Conserva tu nombre · desbloquea perfiles · añade amigos",
   "joinError": "No se pudo conectar. Comprueba tu conexión y vuelve a intentarlo.",
-  "conceptSub": "🔥 Los locales retan a los viajeros y viceversa — se ven para demostrarlo."
+  "conceptSub": "🔥 La gente local reta a los viajeros, y los viajeros a la gente local. Se ven en persona para demostrarlo."
 }

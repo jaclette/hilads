@@ -4,8 +4,8 @@
   "filterEvents": "Chats de eventos",
   "markAllRead": "Marcar todo como leído",
   "upgradeTitle": "Los mensajes son para miembros",
-  "upgradeSub": "Crea una cuenta gratis para enviar mensajes privados y mantenerte conectado.",
-  "emptyEventsTitle": "Sin chats de Local Event aún",
+  "upgradeSub": "Crea una cuenta gratis para enviar mensajes privados y seguir en contacto.",
+  "emptyEventsTitle": "Aún no hay chats de eventos",
   "emptyDmsTitle": "Aún no hay mensajes",
   "emptyEventsSub": "Crea un evento o únete a uno para hablar con los participantes.",
   "emptyDmsSub": "Conecta con la gente que conoces en la ciudad.",
@@ -17,7 +17,7 @@
   "pref": {
     "dmLabel": "Nuevos mensajes privados",
     "dmSub": "Cuando alguien te envía un mensaje privado",
-    "eventLabel": "Mensajes de chat de evento",
+    "eventLabel": "Mensajes en chats de eventos",
     "eventSub": "Cuando alguien escribe en un evento al que te has unido",
     "cityLabel": "Mensajes del chat de la ciudad",
     "citySub": "Cuando alguien escribe en el canal de tu ciudad"
@@ -33,7 +33,7 @@
   "resolveError": "No se pudo abrir esta conversación.",
   "goBack": "Atrás",
   "blockTitle": "¿Bloquear a {{name}}?",
-  "blockBody": "Ya no verás el contenido de {{name}}, ni él el tuyo. Puedes desbloquear a alguien más tarde desde Me → Ajustes → Usuarios bloqueados.",
+  "blockBody": "No verás el contenido de {{name}} y no verá el tuyo. Puedes desbloquear a quien quieras más tarde en Pasaporte → Ajustes → Usuarios bloqueados.",
   "blockConfirm": "Bloquear",
   "blockFailTitle": "No se pudo bloquear",
   "blockFailBody": "Inténtalo de nuevo.",
