@@ -5,37 +5,37 @@
     "category": "類別",
     "cat": {
       "general": "一般",
-      "tips": "撇步",
+      "tips": "小撇步",
       "food": "美食",
-      "drinks": "小酌",
+      "drinks": "喝一杯",
       "help": "求助",
       "meetup": "聚會"
     },
     "titleLabel": "你在想什麼？",
     "titlePlaceholder": "我想去喝杯咖啡",
-    "detailsLabel": "新增詳細資訊",
+    "detailsLabel": "補充細節",
     "optional": "（選填）",
-    "detailsPlaceholder": "給點背景說明…",
-    "expiry": "8 小時後自動到期",
+    "detailsPlaceholder": "補充一點背景…",
+    "expiry": "8 小時後自動結束",
     "saving": "儲存中…",
-    "starting": "開啟中…",
+    "starting": "發起中…",
     "saveChanges": "儲存變更",
     "startCta": "Hi now",
     "limitHeader": "一次一個",
     "limitTitle": "你已經有一個聚會了",
-    "limitSub": "你一次只能開一個聚會。前往「{{title}}」，或將它刪除以開一個新的。",
+    "limitSub": "你一次只能開一個聚會。前往「{{title}}」，或刪掉它再開新的。",
     "limitGo": "前往我的聚會",
     "yourHangout": "你的聚會",
-    "geoHint": "打開定位，看看現在誰在附近——也讓周圍的人發現你的 Hi",
-    "geoRequired": "Hi now 會告訴大家在哪裡找到你——開啟定位以繼續。"
+    "geoHint": "開啟定位，看看現在誰在附近，也讓附近的人收到你的 Hi",
+    "geoRequired": "Hi now 會讓大家知道去哪找你，開啟定位才能繼續。"
   },
-  "deleteConfirm": "刪除這個聚會？這會為所有人結束它，且無法復原。",
-  "deleteFailedAlert": "無法刪除。請重試。",
+  "deleteConfirm": "要刪除這個聚會嗎？所有人的聚會都會結束，而且無法復原。",
+  "deleteFailedAlert": "無法刪除，請再試一次。",
   "shareAria": "分享聚會",
   "shareTitle": "分享這個聚會",
   "members": {
     "oneIn": "{{name}} 加入了",
-    "countIn": "{{count}} 人在這個聚會",
+    "countIn": "這個聚會有 {{count}} 人",
     "seeAll": "查看全部"
   },
   "owner": {
@@ -43,42 +43,42 @@
     "delete": "刪除"
   },
   "gated": {
-    "title": "僅限成員的聚會",
-    "pending": "邀請待處理 - 成員接受後你就能加入對話。",
-    "prompt": "請求加入以查看對話並聊天。",
+    "title": "限成員的聚會",
+    "pending": "已送出請求，成員接受後你就能加入對話。",
+    "prompt": "請求加入，才能看對話和聊天。",
     "requestBtn": "請求加入"
   },
   "feed": {
-    "beginning": "對話開始",
-    "loading": "載入中…",
+    "beginning": "對話的開頭",
+    "loading": "載入中……",
     "emptyTitle": "還沒有回覆",
-    "emptySub": "搶先第一個投入"
+    "emptySub": "搶先加入話題"
   },
   "joinReq": {
     "someone": "有人",
     "wantsToJoin": " 想加入",
     "joined": " 加入了聚會",
-    "askedToJoin": " 請求加入",
+    "askedToJoin": " 申請加入",
     "decline": "拒絕",
     "accept": "接受",
     "accepted": "已接受",
-    "acceptedBy": "已由 {{name}} 接受",
-    "declined": "邀請已拒絕"
+    "acceptedBy": "{{name}} 已接受",
+    "declined": "已拒絕請求"
   },
   "modes": {
-    "local": "在地",
+    "local": "在地人",
     "exploring": "探索中"
   },
   "reply": {
-    "photo": "相片",
-    "unavailable": "原始訊息無法使用"
+    "photo": "照片",
+    "unavailable": "原始訊息已無法顯示"
   },
   "composer": {},
   "errors": {
-    "locFailed": "無法取得你的位置。請啟用位置存取權後再試一次。",
+    "locFailed": "無法取得你的位置。請開啟定位權限後再試一次。",
     "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",
-    "imageTooLarge": "圖片太大。上限 10 MB。",
-    "imageSend": "無法傳送圖片。請重試。",
+    "imageTooLarge": "圖片太大，上限 10 MB。",
+    "imageSend": "無法傳送圖片，請再試一次。",
     "dismiss": "{{error}} · 點一下關閉"
   }
 }

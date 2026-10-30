@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "邀請大家",
-    "linkCopied": "連結已複製",
+    "bringPeople": "揪人一起來",
+    "linkCopied": "已複製連結",
     "vibeTitle": "分享這個 vibe",
     "eventAria": "分享活動"
   },
@@ -11,8 +11,8 @@
     "create": "Hi plan"
   },
   "delete": {
-    "confirmTitle": "刪除這場活動？",
-    "confirmBody": "這會移除活動和所有訊息。此操作無法復原。",
+    "confirmTitle": "刪除這個活動？",
+    "confirmBody": "活動和所有訊息都會被刪除，而且無法復原。",
     "cancel": "取消",
     "deleting": "刪除中…",
     "confirm": "刪除",
@@ -20,16 +20,16 @@
   },
   "quickStart": "快速開始",
   "presets": {
-    "dailySpot": "每日 spot",
+    "dailySpot": "每日地點",
     "dailySpotDesc": "每天",
-    "everyEvening": "每天晚上",
+    "everyEvening": "每晚",
     "everyEveningDesc": "每天 · 晚上 8 點",
     "weekends": "週末",
-    "weekendsDesc": "週六與週日"
+    "weekendsDesc": "週六、週日"
   },
   "category": "類別",
   "categories": {
-    "drinks": "小酌",
+    "drinks": "喝一杯",
     "party": "派對",
     "music": "音樂",
     "food": "美食",
@@ -39,11 +39,11 @@
     "other": "其他"
   },
   "titleLabel": "標題",
-  "titlePlaceholder": "例如：頂樓酒吧爵士之夜",
+  "titlePlaceholder": "例如：頂樓酒吧爵士夜",
   "date": "日期",
   "today": "今天",
   "tomorrow": "明天",
-  "todayHint": "今天主辦能獲得最高的曝光度",
+  "todayHint": "今天舉辦，曝光度最高",
   "starts": "開始",
   "ends": "結束",
   "repeat": "重複",
@@ -65,15 +65,15 @@
   "intervalEvery": "每",
   "intervalDays": "天",
   "location": "地點",
-  "locating": "正在取得你的位置…",
+  "locating": "正在取得你的位置……",
   "locationPlaceholder": "選填 · 點一下在地圖上設定",
   "clearLocation": "清除地點",
   "errors": {
-    "endAfterStart": "結束時間必須在開始時間之後至少 15 分鐘",
-    "pickDay": "至少選擇一週中的一天",
-    "deleteFailed": "無法刪除活動。請重試。",
-    "locUnavailable": "此瀏覽器無法使用定位功能。你仍可在沒有位置的情況下建立活動。",
-    "locFailed": "無法取得你的位置。請啟用位置存取權，或跳過地圖。"
+    "endAfterStart": "結束時間至少要比開始時間晚 15 分鐘",
+    "pickDay": "至少選一天",
+    "deleteFailed": "無法刪除活動，再試一次吧。",
+    "locUnavailable": "這個瀏覽器無法使用定位。不加地點也可以建立活動。",
+    "locFailed": "無法取得你的位置。請開啟定位權限，或跳過地圖。"
   },
   "submit": {
     "saving": "儲存中…",
@@ -86,17 +86,17 @@
   "recur": {
     "everyday": "每天",
     "weekly": "每週",
-    "everyNDays_one": "每 {{count}} 天",
     "everyNDays_other": "每 {{count}} 天"
   },
   "limit": {
     "title": "你今天已經建立過活動了！",
-    "body": "在 Hilads，我們保持新鮮 - 每天一個活動，讓每個計畫都得到應有的關注。明天再回來建立另一個吧。",
-    "legendLink": "成為 Legend 即可建立無限活動",
-    "legendA11y": "了解如何成為 Legend",
-    "legendAlertTitle": "成為 Legend",
-    "legendAlertBody": "Legend 是被選中讓城市保持活力的在地人 - 他們想舉辦多少活動都可以。想成為其中一員嗎？來信 contact@hilads.live。",
+    "body": "Hilads 想讓一切保持新鮮：每天只能建立一個活動，讓每個計畫都被看見。明天再來建立下一個吧。",
+    "legendLink": "成為傳奇，就能無限建立活動",
+    "legendA11y": "了解如何成為傳奇",
+    "legendAlertTitle": "成為傳奇",
+    "legendAlertBody": "傳奇是被選出來讓城市保持熱鬧的在地人，想辦多少活動都可以。想成為傳奇嗎？寫信到 contact@hilads.live。",
     "gotIt": "知道了",
-    "backToNow": "返回 Now"
+    "backToNow": "返回 Now",
+    "yourEvent": "你的活動"
   }
 }

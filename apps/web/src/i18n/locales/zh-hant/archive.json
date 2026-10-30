@@ -8,27 +8,25 @@
   },
   "range": {
     "recent": "最近",
-    "last7": "過去 7 天",
-    "last14": "過去 14 天",
+    "last7": "最近 7 天",
+    "last14": "最近 14 天",
     "custom": "自訂"
   },
   "picker": {
-    "pickEnd": "接著選擇結束日",
-    "pickStart": "選擇開始日（最多 {{max}} 天）",
+    "pickEnd": "接著選結束日",
+    "pickStart": "選開始日（最多 {{max}} 天）",
     "apply": "套用"
   },
   "public": "公開",
-  "went_one": "{{count}} 人去過",
-  "went_other": "{{count}} 人去過",
+  "went_other": "{{count}} 人參加過",
   "hangoutTag": "聚會",
-  "replies_one": "{{count}} 則回覆",
   "replies_other": "{{count}} 則回覆",
   "noReplies": "沒有回覆",
   "error": "無法載入回顧",
   "retry": "重試",
-  "emptyTitle": "這裡還沒有任何內容",
-  "emptyRecentSub": "等城市累積一些紀錄後，過去的活動和聚會就會顯示在這裡。",
-  "emptyWindowSub": "這段期間沒有任何活動或聚會。試試更寬的範圍。",
+  "emptyTitle": "這裡還沒有東西",
+  "emptyRecentSub": "等城市累積一些紀錄，過去的活動和聚會就會出現在這裡。",
+  "emptyWindowSub": "這段期間沒有活動或聚會，試試拉長範圍。",
   "loadMore": "載入更多",
-  "loading": "載入中…"
+  "loading": "載入中……"
 }

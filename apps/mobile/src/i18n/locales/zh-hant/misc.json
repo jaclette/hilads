@@ -11,7 +11,10 @@
     "emptyIncomingTitle": "還沒有好友邀請",
     "emptySentTitle": "你還沒送出任何邀請",
     "emptyIncomingSub": "當有人想加你為好友時，你會在這裡看到。",
-    "emptySentSub": "你送出的待處理好友邀請會顯示在這裡。"
+    "emptySentSub": "你送出的待處理好友邀請會顯示在這裡。",
+    "acceptFailed": "無法接受",
+    "declineFailed": "無法拒絕",
+    "cancelFailed": "無法取消"
   },
   "blocked": {
     "title": "已封鎖的使用者",
@@ -20,7 +23,7 @@
     "guest": "訪客",
     "unblock": "解除封鎖",
     "unblockTitle": "解除封鎖 {{name}}？",
-    "unblockBody": "{{name}} 將可以再次看到你的內容並與你聯繫。",
+    "unblockBody": "{{name}} 將能再次看到你的內容並聯絡你。",
     "unblockFailTitle": "無法解除封鎖",
     "unblockFailBody": "請再試一次。",
     "emptyTitle": "你還沒封鎖任何人",

@@ -1,10 +1,4 @@
 {
-  "badge": {
-    "ghost": "Ghost",
-    "fresh": "新人",
-    "regular": "熟客",
-    "host": "傳奇"
-  },
   "now": "now",
   "myCity": "my city",
   "here": "here",
@@ -18,5 +12,11 @@
     "music": "音樂",
     "food": "美食",
     "chill": "放鬆"
+  },
+  "badge": {
+    "ghost": "Ghost",
+    "fresh": "新人",
+    "regular": "熟客",
+    "host": "傳奇"
   }
 }
