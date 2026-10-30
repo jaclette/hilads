@@ -2,40 +2,40 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "I-edit ang tambayan",
-    "category": "Kategorya",
+    "category": "Category",
     "cat": {
       "general": "General",
-      "tips": "Mga tip",
+      "tips": "Tips",
       "food": "Pagkain",
-      "drinks": "Inumin",
+      "drinks": "Inuman",
       "help": "Tulong",
       "meetup": "Meetup"
     },
-    "titleLabel": "Ano ang nasa isip mo?",
+    "titleLabel": "Ano'ng nasa isip mo?",
     "titlePlaceholder": "Gusto kong mag-kape",
-    "detailsLabel": "Magdagdag ng detalye",
-    "optional": "(opsyonal)",
-    "detailsPlaceholder": "Bigyan ng konteksto…",
-    "expiry": "Awtomatikong mag-e-expire sa 8 h",
+    "detailsLabel": "Magdagdag ng details",
+    "optional": "(optional)",
+    "detailsPlaceholder": "Bigyan ng konting context…",
+    "expiry": "Kusang mag-e-expire in 8 h",
     "saving": "Sine-save…",
     "starting": "Sinisimulan…",
-    "saveChanges": "I-save ang mga pagbabago",
+    "saveChanges": "I-save ang changes",
     "startCta": "Hi now",
-    "limitHeader": "Isa lang sa isang pagkakataon",
+    "limitHeader": "Isa-isa lang",
     "limitTitle": "May tambayan ka na",
-    "limitSub": "Isang tambayan lang ang puwede mong patakbuhin sa isang pagkakataon. Pumunta sa “{{title}}”, o i-delete ito para magsimula ng bago.",
-    "limitGo": "Pumunta sa aking tambayan",
-    "yourHangout": "iyong tambayan",
-    "geoHint": "I-on ang location para makita kung sino ang malapit ngayon — at makita ng mga tao sa paligid ang Hi mo",
-    "geoRequired": "Sinasabi ng Hi now sa mga tao kung saan ka matatagpuan — i-on ang lokasyon para magpatuloy."
+    "limitSub": "Isang tambayan lang ang puwede mong patakbuhin. Puntahan ang “{{title}}”, o i-delete ito para magsimula ng bago.",
+    "limitGo": "Puntahan ang tambayan ko",
+    "yourHangout": "ang tambayan mo",
+    "geoHint": "I-on ang location para makita kung sino'ng malapit ngayon - at para makita ng mga nasa paligid ang Hi mo",
+    "geoRequired": "Sinasabi ng Hi now sa iba kung saan ka makikita - i-on ang location para tumuloy."
   },
-  "deleteConfirm": "I-delete ang tambayan na ito? Tatapusin nito ito para sa lahat at hindi na maibabalik.",
+  "deleteConfirm": "I-delete ang tambayan na 'to? Matatapos ito para sa lahat at hindi na maibabalik.",
   "deleteFailedAlert": "Hindi na-delete. Subukan ulit.",
-  "shareAria": "Ibahagi ang tambayan",
-  "shareTitle": "Ibahagi ang tambayan na ito",
+  "shareAria": "I-share ang tambayan",
+  "shareTitle": "I-share ang tambayan na 'to",
   "members": {
     "oneIn": "Sumali si {{name}}",
-    "countIn": "{{count}} sa tambayan na ito",
+    "countIn": "{{count}} sa tambayan na 'to",
     "seeAll": "Tingnan lahat"
   },
   "owner": {
@@ -43,22 +43,22 @@
     "delete": "I-delete"
   },
   "gated": {
-    "title": "Members-only na tambayan",
-    "pending": "Nakabinbin ang request - makakasali ka sa usapan kapag tinanggap ka ng isang member.",
-    "prompt": "Mag-request para sumali upang makita ang usapan at makachat.",
-    "requestBtn": "Mag-request para sumali"
+    "title": "Tambayan para sa members lang",
+    "pending": "Pending ang request - makakasali ka sa usapan kapag in-accept ka ng isang member.",
+    "prompt": "Mag-request na sumali para makita ang usapan at maka-chat.",
+    "requestBtn": "Mag-request na sumali"
   },
   "feed": {
     "beginning": "Simula ng usapan",
     "loading": "Naglo-load…",
-    "emptyTitle": "Wala pang tugon",
-    "emptySub": "Maging una sa pagsali"
+    "emptyTitle": "Wala pang reply",
+    "emptySub": "Mauna kang sumali"
   },
   "joinReq": {
-    "someone": "May isang tao",
-    "wantsToJoin": " na gustong sumali",
-    "joined": " na sumali sa tambayan",
-    "askedToJoin": " na humiling na sumali",
+    "someone": "Isang tao",
+    "wantsToJoin": " ay gustong sumali",
+    "joined": " ay sumali sa tambayan",
+    "askedToJoin": " ay humiling na sumali",
     "decline": "Tanggihan",
     "accept": "Tanggapin",
     "accepted": "Tinanggap",
@@ -70,15 +70,15 @@
     "exploring": "Nag-e-explore"
   },
   "reply": {
-    "photo": "Larawan",
-    "unavailable": "Hindi available ang orihinal na mensahe"
+    "photo": "Photo",
+    "unavailable": "Hindi available ang original na message"
   },
   "composer": {},
   "errors": {
-    "locFailed": "Hindi nakuha ang lokasyon mo. I-enable ang location access at subukan ulit.",
-    "imageType": "Pumili ng JPEG, PNG, o WebP na larawan.",
-    "imageTooLarge": "Masyadong malaki ang larawan. Max 10 MB.",
-    "imageSend": "Hindi naipadala ang larawan. Subukan ulit.",
+    "locFailed": "Hindi makuha ang location mo. I-on ang location access at subukan ulit.",
+    "imageType": "Pumili ng JPEG, PNG, o WebP na image.",
+    "imageTooLarge": "Masyadong malaki ang image. Max 10 MB.",
+    "imageSend": "Hindi na-send ang image. Subukan ulit.",
     "dismiss": "{{error}} · i-tap para isara"
   }
 }

@@ -3,10 +3,10 @@
   "loading": "Naglo-load…",
   "loadError": "Hindi ma-load ang profile.",
   "badgeMicro": {
-    "ghost": "Nagbo-browse lang",
-    "fresh": "Kakarating lang",
+    "ghost": "Tumitingin-tingin lang",
+    "fresh": "Kararating lang",
     "regular": "Madalas sumipot",
-    "host": "Siyang nagpapangyari"
+    "host": "Siya ang may pakulo"
   },
   "modes": {
     "local": "Local",
@@ -14,17 +14,17 @@
   },
   "vibes": {
     "party": "Party",
-    "board_games": "Board Games",
+    "board_games": "Board games",
     "coffee": "Kape",
     "music": "Musika",
     "food": "Pagkain",
     "chill": "Chill"
   },
   "vibeTaglines": {
-    "party": "Nandito para sa night life",
+    "party": "Nandito para sa nightlife",
     "board_games": "Magdala ng snacks at dice",
     "coffee": "Kape muna, saka na ang lahat",
-    "music": "Laging humahabol ng magandang beat",
+    "music": "Laging naghahanap ng magandang beat",
     "food": "Kain muna, tanong mamaya",
     "chill": "Low key, high vibes"
   },
@@ -34,67 +34,67 @@
     "exploringIn": "Nag-e-explore sa {{city}}",
     "exploring": "Nag-e-explore"
   },
-  "from": "Taga",
+  "from": "Mula sa",
   "age": "Edad",
   "tabs": {
     "hangouts": "Hi now",
     "events": "Hi plan",
     "friends": "Mga kaibigan",
     "vibes": "Vibes",
-    "picks": "City Picks",
+    "picks": "City picks",
     "challenges": "Mga challenge"
   },
   "host": "Host",
   "live": "Live",
+  "past": "Nakaraan",
   "empty": {
     "hangouts": "Wala pang tambayan",
     "events": "Wala pang event",
     "friends": "Wala pang kaibigan",
-    "challenges": "Walang challenge pa"
+    "challenges": "Wala pang challenge"
   },
   "vibesTab": {
     "score": "{{score}} vibe score",
-    "basedOn_one": "base sa {{count}} vibe",
-    "basedOn_other": "base sa {{count}} vibes",
-    "updateNote": "I-update ang iyong note ({{rating}}★)",
+    "basedOn_one": "batay sa {{count}} vibe",
+    "basedOn_other": "batay sa {{count}} vibes",
+    "updateNote": "I-update ang note mo ({{rating}}★)",
     "leaveNote": "Mag-iwan ng note",
-    "placeholder": "Magsabi ng maganda… (opsyonal)",
-    "cancel": "Kanselahin",
-    "sending": "Ipinapadala…",
-    "sendNote": "Ipadala ang note",
+    "placeholder": "Magsabi ng maganda… (optional)",
+    "cancel": "I-cancel",
+    "sending": "Sine-send…",
+    "sendNote": "I-send ang note",
     "notesLabel": "Mga note · {{count}}",
     "emptyTitle": "Wala pang note",
-    "emptySub": "Maging una sa pag-iwan ng note"
+    "emptySub": "Mauna kang mag-iwan ng note"
   },
   "picks": {
     "restaurant": "Paboritong restaurant",
     "spot": "Hidden gem",
     "tip": "Local tip",
-    "story": "Kwento"
+    "story": "Story"
   },
   "actions": {
     "opening": "Binubuksan…",
-    "message": "Mensahe",
-    "friend": "Kaibigan",
-    "requestSent": "Naipadala na ang request",
-    "acceptRequest": "Tanggapin ang request",
-    "addFriend": "+ Kaibigan",
-    "removing": "Tinatanggal…",
+    "message": "Mag-message",
+    "friend": "Friends na",
+    "requestSent": "Na-send na ang request",
+    "acceptRequest": "Tanggapin",
+    "addFriend": "+ Friend",
+    "removing": "Inaalis…",
     "unfriend": "I-unfriend",
-    "cancel": "Kanselahin",
-    "cancelling": "Kinakansela…",
-    "cancelRequest": "Kanselahin ang request",
-    "keep": "Panatilihin",
+    "cancel": "I-cancel",
+    "cancelling": "Kina-cancel…",
+    "cancelRequest": "I-cancel ang request",
+    "keep": "Huwag na",
     "reportTitle": "I-report ang user"
   },
   "report": {
-    "existing": "Ni-report mo ang user na ito noong {{date}}. Sinusuri na ang iyong report.",
-    "sent": "Naipadala ang report. Salamat sa pagsabi.",
-    "placeholder": "Ilarawan ang problema (min 10 karakter)…",
-    "error": "Hindi maipadala ang report. Subukan ulit.",
-    "sending": "Ipinapadala…",
+    "existing": "Ni-report mo ang user na 'to noong {{date}}. Nire-review na ang report mo.",
+    "sent": "Na-send na ang report. Salamat sa pagsabi.",
+    "placeholder": "Ikwento ang problema (min 10 characters)…",
+    "error": "Hindi ma-send ang report. Subukan ulit.",
+    "sending": "Sine-send…",
     "submit": "Ipadala ang report",
-    "cancel": "Kanselahin"
-  },
-  "past": "Nakaraan"
+    "cancel": "I-cancel"
+  }
 }

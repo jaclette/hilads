@@ -1,14 +1,14 @@
 {
-  "title": "Ano ang paparating",
+  "title": "Mga paparating",
   "openCalendar": "Buksan ang calendar",
   "today": "Ngayon",
   "close": "Isara",
-  "error": "Hindi ma-load ang mga event para sa araw na ito",
+  "error": "Hindi ma-load ang mga event sa araw na 'to",
   "retry": "Subukan ulit",
-  "emptyTitle": "Walang nakaiskedyul",
-  "emptySub": "Wala pang event sa araw na ito.",
+  "emptyTitle": "Walang naka-schedule",
+  "emptySub": "Wala pang event sa araw na 'to.",
   "public": "Public",
-  "going_one": "{{count}} sasama",
-  "going_other": "{{count}} sasama",
+  "going_one": "{{count}} pupunta",
+  "going_other": "{{count}} pupunta",
   "liveNow": "Live ngayon"
 }

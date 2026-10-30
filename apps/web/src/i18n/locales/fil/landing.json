@@ -1,138 +1,138 @@
 {
   "hero": {
-    "sub": "Hindi ka lang nag-bisita. Nagiging local ka.\nBawat challenge, bawat meet, bawat lugar - kitain mo ang puwesto mo sa city na 'to.",
-    "orPreview": "O tingnan sa browser mo — walang i-install",
+    "sub": "Hindi ka lang bumibisita. Nagiging local ka na.\nBawat challenge, bawat meet, bawat spot - kunin ang puwesto mo sa city na 'to.",
+    "orPreview": "O silipin muna sa browser mo - walang install",
     "storeDownloadOn": "I-download sa",
     "storeGetItOn": "Kunin sa"
   },
   "join": {
-    "peopleLive_one": "{{count}} tao ang nagta-tambay ngayon",
-    "peopleLive_other": "{{count}} tao ang nagta-tambay ngayon",
+    "peopleLive_one": "{{count}} tao ang tumatambay ngayon",
+    "peopleLive_other": "{{count}} tao ang tumatambay ngayon",
     "events_one": "{{count}} Hi plan ngayon",
     "events_other": "{{count}} Hi plan ngayon",
-    "hangouts_one": "{{count}} Hi now aktibo",
-    "hangouts_other": "{{count}} Hi now aktibo",
-    "replies_one": "{{count}} tugon",
-    "replies_other": "{{count}} tugon",
-    "pickCity": "Pumili ng lungsod\nat sumali na",
-    "locating": "› hinahanap ang lungsod mo...",
-    "browseCities": "Mag-browse ng mga lungsod",
+    "hangouts_one": "{{count}} Hi now na active",
+    "hangouts_other": "{{count}} Hi now na active",
+    "replies_one": "{{count}} reply",
+    "replies_other": "{{count}} replies",
+    "pickCity": "Pumili ng city\nat sumali na",
+    "locating": "› hinahanap ang city mo...",
+    "browseCities": "Mag-browse ng mga city",
     "yourName": "Pangalan mo",
-    "namePlaceholder": "Kumustahin sila bilang...",
+    "namePlaceholder": "Mag-hi bilang...",
     "tryAgain": "Subukan ulit",
-    "useLocation": "Gamitin na lang ang aking lokasyon",
-    "joinCity": "Sumali sa {{city}}",
-    "joinChat": "Sumali sa Chat",
+    "useLocation": "Gamitin na lang ang location ko",
+    "joinCity": "Pumasok sa {{city}}",
+    "joinChat": "Sumali sa chat",
     "hint": "// anonymous · instant access",
-    "keepIdentity": "o panatilihin ang iyong identity",
+    "keepIdentity": "o i-keep ang identity mo",
     "createAccount": "Gumawa ng account",
     "logIn": "Mag-log in",
-    "authHint": "I-save ang pangalan mo · i-unlock ang mga profile · magdagdag ng kaibigan",
+    "authHint": "I-save ang pangalan mo · i-unlock ang profiles · mag-add ng friends",
     "challenges_one": "{{count}} bukas na challenge",
     "challenges_other": "{{count}} bukas na challenge"
   },
   "local": {
     "badge": "Local",
-    "title": "Maging ang local na nagpapakilos sa siyudad",
-    "tagline": "Alam mo ang mga spot. I-challenge ang mga local o biyahero na hanapin ang mga ito.",
+    "title": "Maging local na bida sa city",
+    "tagline": "Alam mo ang mga spot. I-challenge ang locals o biyahero na hanapin sila.",
     "bullets": [
-      "I-challenge ang mga local o biyahero - pagkain, lugar, kultura o tulong",
-      "Dalhin ang mga tao sa mga spot na mahal mo",
-      "Maging ang local na natatandaan ng mga tao"
+      "I-challenge ang locals o biyahero - pagkain, lugar, kultura o tulong",
+      "Dalhin ang mga tao sa mga spot na love mo",
+      "Maging local na hindi nila makakalimutan"
     ],
-    "cta": "Pakilusin ang siyudad mo"
+    "cta": "Pakilusin ang city mo"
   },
   "exploring": {
     "badge": "Nag-e-explore",
-    "title": "Tanggapin ang mga local na challenge kahit saan",
-    "tagline": "Saan ka man dumating, tanggapin ang mga in-launch ng mga local.",
+    "title": "Gawin ang local challenges kahit saan",
+    "tagline": "Saan ka man mapadpad, subukan ang ginawa ng locals.",
     "bullets": [
-      "Tanggapin ang mga challenge ng mga local",
-      "Hanapin ang totoong mga spot, rekomendado ng nakatira doon",
-      "Maranasan ang siyudad bilang local, hindi turista"
+      "Gawin ang challenges na ni-launch ng locals",
+      "Hanapin ang totoong spots, rekomendado ng mga nakatira doon",
+      "I-live ang city na parang local, hindi turista"
     ],
     "cta": "Tingnan ang mga challenge"
   },
   "how": {
     "eyebrow": "Paano ito gumagana",
-    "title": "Tatlong hakbang para magkita in person.",
+    "title": "Tatlong step para magkita nang personal.",
     "steps": [
       {
         "title": "Piliin ang side mo",
-        "desc": "Local. Kabisado mo ang siyudad.\nBiyahero. Gusto mong i-live ito."
+        "desc": "Local. Kabisado mo ang city.\nBiyahero. Gusto mong i-live ito."
       },
       {
         "title": "Mag-launch o sumali sa challenge",
-        "desc": "Pwedeng mag-launch ang sinuman ng meet — petsa + lugar — o photo contest na may deadline. Bukas ito sa buong grupo, hindi one-on-one."
+        "desc": "Kahit sino pwedeng mag-launch ng meet (petsa + lugar) o ng photo contest na may deadline. Para sa buong grupo ito, hindi one-on-one."
       },
       {
-        "title": "Magsama-sama",
-        "desc": "Lahat ng sumali ay magkikita in person — o magpapadala ng pinakamagandang photo bago ang deadline. Vine-validate ng host kung sino ang dumating, o pumipili ng panalo."
+        "title": "Sabay-sabay sumipot",
+        "desc": "Lahat ng sumali, magkikita in person, o magse-send ng best photo nila bago ang deadline. Ang host ang magva-validate kung sino'ng dumating, o pipili ng panalo."
       }
     ]
   },
   "stats": {
-    "peopleLive": "tao online ngayon",
-    "cities": "mga lungsod",
-    "eventsCreated": "mga event na ginawa",
-    "signupsNeeded": "kailangang mag-sign up"
+    "peopleLive": "tao ang live ngayon",
+    "cities": "cities",
+    "eventsCreated": "events na nagawa",
+    "signupsNeeded": "kailangang sign-up"
   },
   "concept": {
-    "title": "Hindi isa pang social network.\nDahilan para magkita in person.",
+    "title": "Hindi isa na namang social network.\nDahilan para magkita nang personal.",
     "rules": [
-      "Walang follower. Walang feed. Walang algorithm.",
-      "Mag-ipon ng grupo para sa totoong meet, o magpatakbo ng photo contest. Ang sumipot — o nanalo — ang nakakakuha.",
+      "Walang followers. Walang feed. Walang algorithm.",
+      "Mag-ipon ng grupo para sa totoong meet, o magpa-photo contest. Kung sino ang sumipot (o nanalo), siya ang may points.",
       "Totoong tao. Totoong lugar. Ngayon na."
     ]
   },
-  "seo": "Ang Hilads ay isang real-time social app kung saan nagtitipon ang mga tao sa real-world na challenges — group meets sa takdang oras at lugar, at photo contests sa pagitan ng mga siyudad. Sumali sa challenge sa Paris, mag-host ng meet sa Barcelona, o mag-launch ng photo contest mula Lisbon. Walang kailangang account. Sumipot lang.",
+  "seo": "Ang Hilads ay real-time social app kung saan nagkikita ang mga tao sa real-world na challenges: group meets sa takdang oras at lugar, at photo contests sa iba't ibang city. Sumali sa challenge sa Paris, mag-host ng meet sa Barcelona, o mag-launch ng photo contest mula Lisbon. Walang account na kailangan. Sumipot ka lang.",
   "download": {
     "eyebrow": "Mga mobile app",
-    "title": "Ang lungsod mo sa bulsa mo.",
-    "sub": "Malapit nang dumating ang mga native app."
+    "title": "Ang city mo, nasa bulsa mo.",
+    "sub": "Makuha ang buong experience: push notifications, mas mabilis, gawa para sa city mo."
   },
   "repeat": {
-    "eyebrow": "Sumali na",
+    "eyebrow": "Sali na",
     "titleCity": "Live na ang {{city}} ngayon.",
-    "titleGeneric": "Live na ang lungsod mo ngayon."
+    "titleGeneric": "Live na ang city mo ngayon."
   },
   "international": {
     "badge": "Cross-city",
-    "tagline": "Magpadala ng challenge sa ibang lungsod. Tumanggap ng video bilang proof.",
-    "sub": "Kapag tahimik ang lungsod mo, hindi tahimik ang mundo. I-challenge kahit sino kahit saan - magpapadala sila ng proof, ikaw ang magvavalidate mula sa malayo.",
+    "tagline": "Mag-send ng challenge sa ibang city. Makatanggap ng video pabalik.",
+    "sub": "Kapag tahimik ang city mo, hindi ang mundo. I-challenge ang kahit sino kahit saan - magse-send sila ng proof, ikaw ang magva-validate mula sa malayo.",
     "bullets": [
-      "Targetin ang isang partikular na lungsod, o buksan para sa kahit sino kahit saan.",
-      "Litrato na may geotag - proof na nangyari.",
-      "I-validate mula sa sofa. Tanggihan na may dahilan kung hindi tumutugma."
+      "Pumili ng specific na city, o iwang bukas para sa kahit sino, kahit saan.",
+      "Magse-send sila ng geotagged na photo - proof na nangyari.",
+      "Mag-validate kahit nasa sofa ka lang. I-reject na may dahilan kung may mali."
     ],
     "cta": "Subukan ang global challenge"
   },
   "stories": {
     "tagline": "Laro lokal. Kumpara global.",
-    "concept_tagline": "Hamunin ang mga local. Makilala ang mga manlalakbay. Maging local kahit saan.",
-    "screen1_invitation": "Ikaw naman. Maglunsad o sumali sa challenge.",
+    "concept_tagline": "I-challenge ang locals. Makilala ang mga biyahero. Maging local kahit saan.",
+    "screen1_invitation": "<hi>Ikaw na.</hi> Mag-launch o sumali sa challenge.",
     "fullSong": "Buong kanta",
-    "screen2_invitation": "Nandoon na sila. Sali ka na.",
-    "screen3_invitation": "Simple, di ba? Ikaw naman.",
-    "screen4_invitation": "Walang feed. Puro totoong meetup.",
-    "enterCity": "Sumali sa {{city}}",
-    "enterChallenge": "Tanggapin ang challenge",
-    "enterPicker": "Piliin ang iyong lungsod",
+    "screen2_invitation": "Nandoon na sila. <hi>Sali ka na.</hi>",
+    "screen3_invitation": "Simple, 'di ba? <hi>Ikaw na.</hi>",
+    "screen4_invitation": "Walang feed. <hi>Totoong meetups lang.</hi>",
+    "enterCity": "Pumasok sa {{city}}",
+    "enterChallenge": "Gawin ang challenge na 'to",
+    "enterPicker": "Piliin ang city mo",
     "swipeUp": "I-swipe pataas",
-    "liveHeadline": "Buhay na buhay ang {{city}} ngayon.",
+    "liveHeadline": "Live na ang {{city}} ngayon.",
     "how": {
-      "title": "Magkita nang personal, sa 3 hakbang.",
-      "step1": "Piliin ang panig mo — local o traveler",
-      "step2": "Maglunsad o sumali sa isang challenge",
+      "title": "Magkita nang personal, sa 3 step.",
+      "step1": "Piliin ang side mo - local o biyahero",
+      "step2": "Mag-launch o sumali sa challenge",
       "step3": "Magkita nang totoo"
     },
     "concept": {
       "line1": "Walang followers.",
       "line2": "Walang feed.",
       "line3": "Walang algorithm.",
-      "line4": "Isang dahilan para magkita nang personal."
+      "line4": "Dahilan para magkita nang personal."
     },
-    "storePrompt": "Mas gusto ang app? Kunin ang notifications at buong experience.",
+    "storePrompt": "Mas gusto mo ang app? Makuha ang notifications at buong experience.",
     "reassurance": "libre · walang account · 5 segundo"
   }
 }

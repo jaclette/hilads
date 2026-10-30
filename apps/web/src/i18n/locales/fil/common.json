@@ -12,113 +12,114 @@
   },
   "meta": {
     "cityTitle": "{{city}} sa Hilads - Laro lokal. Kumpara global.",
-    "cityDesc": "Isang challenge kada araw, pareho sa bawat lungsod. Maglaro sa {{city}}, mag-snap ng photo at tingnan kung paano sumagot ang mundo.",
+    "cityDesc": "Isang challenge kada araw, pareho sa bawat city. Maglaro sa {{city}}, mag-snap ng photo at tingnan ang photos ng buong mundo.",
     "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Sumali sa {{title}} sa Hilads - isang Local Event na nangyayari ngayon. Tingnan kung sino ang papasok at mag-live chat."
+    "eventDesc": "Sumali sa {{title}} sa Hilads - isang Local Event na nangyayari ngayon. Tingnan kung sino'ng pupunta at makipag-live chat sa mga online."
   },
   "nowTitle": "Ngayon",
   "filterEvents": "🎉 Local Events",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Tambayan",
   "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}!",
-    "subtitle": "Ready na ang account mo - eto ang pwede mong gawin ngayon",
-    "f1": "Mag-start ng tambayan at tipunin ang mga tao ngayon din",
+    "subtitle": "Ready na ang account mo. Eto ang puwede mong gawin ngayon",
+    "f1": "Mag-start ng tambayan at mag-ipon ng tao ngayon din",
     "f2": "Mag-organize ng event sa city mo",
-    "f3": "Magpadala ng private message kahit kanino",
-    "f4": "Tingnan kung sino ang malapit, live",
-    "f5": "Makipag-connect sa mga local at biyahero",
-    "fc1": "I-challenge ang mga local sa city mo",
-    "fc2": "I-challenge ang ibang city sa mundo",
+    "f3": "Mag-private message kahit kanino",
+    "f4": "Tingnan kung sino'ng malapit, live",
+    "f5": "Makipag-connect sa locals at biyahero",
+    "fc1": "I-challenge ang locals sa city mo",
+    "fc2": "I-challenge ang ibang city sa kabilang dulo ng mundo",
     "cta": "Tara na"
   },
   "onboarding": {
-    "skip": "Laktawan ✕",
+    "skip": "Skip ✕",
     "next": "Next",
-    "fallbackCity": "iyong city",
+    "fallbackCity": "city mo",
     "slide1": {
       "title": "Laro lokal. Kumpara global.",
-      "body": "Ang Hilads ay ang app na nagpapasok sa mga biyahero bilang local - at tumutulong sa mga local na i-share kung ano ang nagpapabuhay sa kanilang city."
+      "body": "Ang Hilads ang app na ginagawang local ang mga biyahero - at tumutulong sa locals na i-share kung ano'ng nagpapabuhay sa city nila."
     },
     "slide2": {
-      "title": "Tatlong paraan para mabuhay sa city",
-      "itemChallenges": "🤝 Challenges - mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
-      "itemHangouts": "🗣️ Hi now - makilala ang isang tao agad-agad",
+      "title": "Tatlong paraan para i-live ang city",
+      "itemChallenges": "🤝 Challenges - mag-dare o ma-dare na hanapin ang hidden spots, tikman ang totoong pagkain, mag-share ng kultura, o tumulong.",
+      "itemHangouts": "🗣️ Hi now - makipagkita agad-agad",
       "itemEvents": "🎉 Hi plan - magplano ng oras para magkita"
     },
     "slide3": {
-      "title": "Kitain ang puwesto mo sa city",
-      "body": "Bawat challenge na natapos mo, bawat meet, bawat spot na natuklasan mo, may points. Pinapakita ng points kung gaano ka na ka-local sa {{city}}. Abutin ang top ng Most Local at kitain ang puwesto mo kasama ang mga taong nagpapabuhay sa city."
+      "title": "Kunin ang puwesto mo sa city",
+      "body": "Bawat challenge na natapos mo, bawat meet, bawat spot na nadiskubre mo, may points. Pinapakita ng points kung gaano ka na ka-local sa {{city}}. Abutin ang top ng Most Local at kunin ang puwesto mo kasama ng mga nagpapabuhay sa city."
     },
     "slide4": {
-      "title": "Ready ka na bang mag-start?",
-      "ctaChallenge": "📍 Subukan ang first challenge mo sa {{city}}",
-      "ctaMostLocal": "🤝 Tuklasin ang Most Local ng {{city}}",
-      "ctaLookAround": "👀 Mag-tingin-tingin muna",
+      "title": "Ready ka na bang magsimula?",
+      "ctaChallenge": "📍 Gawin ang first challenge mo sa {{city}}",
+      "ctaMostLocal": "🤝 Tingnan ang Most Local ng {{city}}",
+      "ctaLookAround": "👀 Titingin-tingin muna",
       "ctaHiNow": "🗣️ Hi now",
       "ctaHiLater": "🎉 Hi plan"
     }
   },
   "challengeIntro": {
-    "title": "Paano gumagana ang challenges",
+    "title": "Paano gumagana ang mga challenge",
     "slide1": {
-      "title": "Ang challenges, nagiging stories ang biyahe",
-      "body": "Magka-challenge ang local at biyahero para i-share kung ano talaga ang city - food, places, culture, help. Ano ang reward? Mag-meet in person - or magpadala ng proof remotely."
+      "title": "Ginagawang kwento ng challenges ang biyahe",
+      "body": "Nagda-dare-an ang locals at biyahero na i-share kung ano ang totoong city - pagkain, lugar, kultura, tulong. Ang reward? Magkita in person - o magpadala ng proof mula sa malayo."
     },
     "slide2": {
-      "title": "I-launch ang challenge mo",
-      "body": "Food, place, culture o help. Pumili para kanino, ilang slot, at paano niyo i-wrap - meetup o photo proof."
+      "title": "I-launch ang dare mo",
+      "body": "Pagkain, lugar, kultura o tulong. Piliin kung para kanino, ilang slot, at paano tatapusin - meetup o photo proof."
     },
     "slide3": {
       "title": "May tumanggap",
-      "body": "Magpapadala sila ng request. Tingnan mo at tanggapin - magbubukas ang private thread niyo para mag-chat at mag-plan."
+      "body": "Magse-send sila ng request. I-check mo at tanggapin - magbubukas ang private thread niyo para mag-chat at magplano."
     },
     "slide4": {
-      "title": "Mag-meet o magpa-photo proof",
-      "body": "Mag-meet in person o magpadala ng photo remotely - sa'yo ang choice. Anuman ang paraan, nata-track ang bawat hakbang."
+      "title": "Magkita o mag-send ng proof",
+      "body": "Magkita in person o mag-send ng photo mula sa malayo - ikaw ang bahala. Kahit alin, naka-track ang bawat step."
     },
     "slide5": {
-      "title": "Tapusin ang challenge",
-      "body": "Pagkatapos ng meetup (o pagdating ng photo), markahan as accomplished. Ang city mo, tunay na nabuhay - one challenge at a time."
+      "title": "Tapusin na",
+      "body": "Pagkatapos ng meetup (o pagdating ng photo), i-mark as accomplished. Ang city mo, na-live nang totoo - isang challenge at a time."
     },
-    "next": "Sunod",
+    "next": "Next",
     "done": "Gets!",
     "skip": "Skip ✕",
     "slide6": {
-      "title": "Lampas sa lungsod mo",
-      "body": "Mag-challenge ka kahit kanino, kahit saan. Magpapadala sila ng proof - geotagged photo - at i-validate mo remotely. Same photo flow gumagana din sa local. Local or global, bawat challenge bilang."
+      "title": "Lampas sa city mo",
+      "body": "I-challenge ang kahit sino, kahit saan. Magse-send sila ng proof - geotagged na photo - at ikaw ang magva-validate mula sa malayo. Ganito rin ang photo flow sa local. Local man o global, bawat challenge may bilang."
     },
     "slide7": {
       "title": "Maging Most Local",
-      "body": "Bawat challenge may points - sa city mo at sa worldwide leaderboard. Magkita kayo in person para sa +50 bonus. Local o biyahero, ang mahalaga ay kung ano ang ginagawa mo dito. Bagong leaderboard kada buwan."
+      "body": "Bawat challenge may points - sa city mo AT sa buong mundo. Magkita in person para sa dagdag na +50 bonus. Local man o biyahero, ang mahalaga ay kung ano'ng binubuo mo rito. Bagong leaderboard kada buwan."
     },
     "createCta": "🔥 Gumawa ng challenge"
   },
   "share": {
-    "title": "Magbahagi ng kahit ano",
-    "snap": "Kumuha ng litrato",
-    "snapDesc": "Para sa challenge ngayon o para lang sa saya",
-    "spot": "I-drop ang iyong lugar",
-    "spotDesc": "Ibahagi ang iyong kasalukuyang lugar",
-    "spotLoading": "Kinukuha ang iyong lokasyon…",
-    "plan": "Gumawa ng plano",
+    "title": "Mag-share ng kahit ano",
+    "snap": "Kumuha ng photo",
+    "snapDesc": "Para sa challenge ngayon o trip lang",
+    "spot": "I-drop ang spot mo",
+    "spotDesc": "I-share kung nasaan ka ngayon",
+    "spotLoading": "Kinukuha ang location mo…",
+    "plan": "Gumawa ng lakad",
     "planDesc": "Pumili ng oras at lugar, sasali ang iba",
     "hiNow": "Hi now",
-    "hiNowDesc": "Gusto mo bang gumawa ng kahit ano ngayon? Sabihin mo"
+    "hiNowDesc": "Game ka ba sa kahit ano ngayon? Sabihin mo"
   },
   "locationPicker": {
     "title": "Nasaan ka?",
     "search": "Maghanap ng address o lugar",
     "moveHint": "Igalaw ang mapa para i-adjust",
     "noResults": "Walang nahanap na lugar",
-    "loading": "Kinukuha ang lokasyon…",
-    "confirm": "Ibahagi ang lugar na ito",
-    "yourLocation": "Ang iyong lokasyon",
+    "loading": "Kinukuha ang location…",
+    "confirm": "I-share ang spot na 'to",
+    "yourLocation": "Location mo",
     "close": "Isara",
-    "clearSearch": "I-clear ang paghahanap"
+    "clearSearch": "I-clear ang search"
   },
   "language": "Wika",
-  "cancel": "Kanselahin",
+  "cancel": "I-cancel",
   "loading": "Naglo-load…",
   "mode": {
     "local": {
@@ -132,32 +133,32 @@
     "attach": "Magdagdag ng attachment",
     "emoji": "Emoji",
     "placeholderCity": "Mag-hi sa city mo",
-    "placeholderHangout": "Sabihin na sasali ka",
-    "placeholderEvent": "Mag-chat sa mga papasok",
-    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo",
-    "placeholderWorld": "Tanungin ang mundo kung paano nila ito ginagawa"
+    "placeholderHangout": "Sabihin mong game ka",
+    "placeholderEvent": "Mag-chat sa mga pupunta",
+    "placeholderChallenge": "I-cheer sila, o i-share ang tip mo",
+    "placeholderWorld": "Tanungin ang mundo kung paano nila ginagawa 'to"
   },
   "vibe": {
     "party": "Party",
-    "board_games": "Board Games",
+    "board_games": "Board games",
     "coffee": "Kape",
     "music": "Musika",
     "food": "Pagkain",
     "chill": "Chill"
   },
   "weather": {
-    "clear": "maaliwalas na langit",
-    "sunnyHot": "ang ganda ng panahon",
+    "clear": "maaliwalas",
+    "sunnyHot": "ang ganda sa labas",
     "clearNight": "maaliwalas ngayong gabi",
     "mostlyClear": "halos maaliwalas",
     "partly": "kaunting ulap",
-    "overcast": "makulimlim na langit",
-    "fog": "maulap",
+    "overcast": "makulimlim",
+    "fog": "mahamog",
     "drizzle": "ambon",
     "rain": "ulan",
     "snow": "niyebe",
-    "snowShowers": "ambon ng niyebe",
-    "thunder": "bagyo"
+    "snowShowers": "pag-ulan ng niyebe",
+    "thunder": "kulog at kidlat"
   },
   "time": {
     "happeningNow": "nangyayari ngayon",
@@ -167,10 +168,10 @@
     "yesterday": "Kahapon",
     "justNow": "ngayon lang",
     "nowShort": "ngayon",
-    "mAgo": "{{count}}m ang nakaraan",
-    "hAgo": "{{count}}h ang nakaraan",
-    "dAgo": "{{count}}d ang nakaraan",
-    "expired": "Nag-expire na",
+    "mAgo": "{{count}}m ang nakalipas",
+    "hAgo": "{{count}}h ang nakalipas",
+    "dAgo": "{{count}}d ang nakalipas",
+    "expired": "Expired na",
     "expiresSoon": "Malapit nang mag-expire",
     "expiresInMin": "Mag-e-expire sa {{mins}}m",
     "expiresInHourMin": "Mag-e-expire sa {{hours}}h {{mins}}m",
@@ -178,10 +179,9 @@
     "mShort": "{{count}}m",
     "hShort": "{{count}}h"
   },
-  "filterChallenges": "🔥 Mga Challenge",
-  "shareToCity": "Ibahagi sa aking lungsod",
-  "shareToWorld": "I-share sa World",
-  "hiLocalTitle": "Hi Local",
+  "filterChallenges": "🔥 Mga challenge",
+  "shareToCity": "I-share sa city ko",
+  "shareToWorld": "I-share sa Mundo",
   "shareCta": {
     "leaderboard": "Tingnan ang leaderboard",
     "challenge": "Tingnan ang challenge",
@@ -192,44 +192,44 @@
     "today": "Ngayon",
     "map": "Mapa",
     "chat": "Hi",
-    "passport": "Pasaporte"
+    "passport": "Passport"
   },
   "scope": {
     "title": "Ipakita",
     "world": "Mundo",
-    "pickCity": "Pumili ng lungsod",
-    "citySub": "Ang challenge, mga litrato at spot ng lungsod mo",
-    "worldSub": "Mga litrato at spot mula sa lahat ng lungsod",
-    "changeCity": "Palitan ang lungsod",
+    "pickCity": "Pumili ng city",
+    "citySub": "Ang challenge, photos at spots ng city mo",
+    "worldSub": "Photos at spots mula sa bawat city",
+    "changeCity": "Palitan ang city",
     "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan",
     "here": "Nasa {{city}} ka",
     "hereUnknown": "Nasaan ka?",
     "hereSub": "Mali? Palitan kung saan ka naglalaro"
   },
   "signUp": "Mag-sign up",
-  "settings": "Mga setting",
+  "settings": "Settings",
   "firstLaunch": "Laro lokal. Kumpara global.",
   "subtitles": {
-    "map": "Mga spot mula sa mga litrato ng mundo.",
-    "hi": "Batiin ang lungsod mo. Sumali sa isang plan.",
-    "passport": "Mga lungsod, litrato at tatak mo."
+    "map": "Mga spot mula sa photos ng buong mundo.",
+    "hi": "Mag-hi sa city mo. Sumali sa isang lakad.",
+    "passport": "Ang mga city, photos at stamps mo."
   },
-  "photoBy": "Larawan ni @{{username}}",
+  "photoBy": "Photo ni @{{username}}",
   "pick": {
     "badge": "Pinili ng Hilads",
     "goodToKnow": "Dapat malaman",
-    "credit": "Larawan: {{credit}}",
-    "source": "Pinagmulan"
+    "credit": "Photo: {{credit}}",
+    "source": "Source"
   },
   "shareLink": {
     "share": "I-share",
-    "challengeFriend": "Hamunin ang kaibigan",
+    "challengeFriend": "I-challenge ang friend",
     "copied": "Nakopya",
-    "textToday": "Ang Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?",
+    "textToday": "Daily Challenge ngayon sa Hilads: {{challenge}} G ka ba?",
     "textSpot": "{{name}} sa Hilads",
     "textSpotCity": "{{name}}, {{city}}, sa Hilads",
-    "textPassport": "Ang Hilads passport ko sa {{city}}. Parehong challenge. Ibang mundo.",
-    "textPassportNoCity": "Ang Hilads passport ko. Parehong challenge. Ibang mundo."
+    "textPassport": "Ang Hilads passport ko sa {{city}}. Iisang challenge. Iba-ibang mundo.",
+    "textPassportNoCity": "Ang Hilads passport ko. Iisang challenge. Iba-ibang mundo."
   },
   "represent": {
     "empty": "Hindi pa naglalaro ang {{city}} ngayon. Ikaw na ang mauna.",
@@ -237,47 +237,80 @@
     "emptyThere": "Hindi pa naglalaro ang {{city}} ngayon.",
     "notIn": "Wala ka sa {{city}}?",
     "change": "Palitan",
-    "locationNeeded": "Payagan ang lokasyon para maglaro para sa kinaroroonan mo.",
+    "locationNeeded": "Payagan ang location para maglaro para sa kung nasaan ka.",
     "button": "Maglaro para sa {{city}}",
-    "firstPosted": "Inilagay mo ang {{city}} sa world map ngayon.",
+    "firstPosted": "Nailagay mo ang {{city}} sa world map ngayon.",
     "pioneer": "Pioneer ng {{city}}",
     "spotOne": "Spot #1 sa {{city}}",
     "streak_one": "{{count}} araw nang naglalaro ang {{city}}",
     "streak_other": "{{count}} araw nang sunod-sunod naglalaro ang {{city}}",
-    "board_one": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
-    "board_other": "{{count}} lungsod na ang nasa board ngayon. Wala pa ang {{city}}.",
-    "mapEmpty": "Wala pa sa world map ang {{city}}. Ilagay mo.",
-    "invite": "Mag-imbita ng kaibigan",
+    "board_one": "{{count}} city na ang nasa board ngayon. Wala pa ang {{city}}.",
+    "board_other": "{{count}} cities na ang nasa board ngayon. Wala pa ang {{city}}.",
+    "mapEmpty": "Wala pa sa world map ang {{city}}. Ilagay mo na.",
+    "invite": "Mag-invite ng friend",
     "share": "Maglaro tayo para sa {{city}} sa Hilads.",
-    "pioneerTitle": "Mga pioneer badge",
-    "pioneerSub": "Ang kauna-unahang naaprubahang litrato sa isang lungsod. Sa iyo habambuhay."
+    "pioneerTitle": "Pioneer badges",
+    "pioneerSub": "Ang kauna-unahang na-approve na photo sa isang city. Sa'yo habambuhay."
   },
   "appModal": {
     "title": {
       "play": "I-download ang app para maglaro",
       "playCity": "I-download ang app para maglaro para sa {{city}}",
-      "vote": "I-download ang app para bumoto para sa {{city}}",
-      "joinPlan": "I-download ang app para sumali sa planong ito",
+      "vote": "I-download ang app para mag-vote para sa {{city}}",
+      "joinPlan": "I-download ang app para sumama sa lakad na 'to",
       "sayHi": "I-download ang app para mag-hi sa {{city}}",
-      "propose": "I-download ang app para magmungkahi ng challenge"
+      "propose": "I-download ang app para mag-propose ng challenge"
     },
-    "sub": "Libre ito, at isang minuto lang.",
+    "sub": "Libre, at isang minuto lang.",
     "download": "I-download ang app",
     "keepExploring": "Mag-explore pa",
     "scan": "I-scan gamit ang phone mo"
   },
   "directions": {
-    "chooseTitle": "Buksan ang direksyon sa",
+    "chooseTitle": "Buksan ang directions sa",
     "ask": "Itanong palagi",
-    "setting": "Direksyon"
+    "setting": "Directions"
   },
   "promo": {
-    "askTitle": "Payagan ang Hilads na i-feature ang mga litrato mo, laging may credit?",
-    "askBody": "Puwedeng lumabas ang mga Daily Challenge na litrato mo sa mga post namin sa Instagram, TikTok at YouTube, laging kasama ang @username mo. Puwede mo itong baguhin anumang oras sa Mga setting.",
+    "askTitle": "Payagan ang Hilads na i-feature ang photos mo, laging may credit?",
+    "askBody": "Puwedeng ma-feature ang Daily Challenge photos mo sa mga post namin sa Instagram, TikTok at YouTube, laging may @username mo. Puwede mo itong palitan kahit kailan sa Settings.",
     "allow": "Payagan",
     "notNow": "Mamaya na",
-    "setting": "I-feature ang mga litrato ko",
+    "setting": "I-feature ang photos ko",
     "on": "On",
     "off": "Off"
+  },
+  "a11y": {
+    "close": "Isara",
+    "back": "Bumalik",
+    "dismiss": "Isara",
+    "mainNav": "Main",
+    "emojiPicker": "Pumili ng emoji",
+    "cancelReply": "I-cancel ang reply",
+    "welcome": "Welcome",
+    "approve": "I-approve"
+  },
+  "tapToOpenMaps": "I-tap para buksan sa maps",
+  "openInApp": {
+    "text": "Ituloy sa Hilads app para sa buong experience",
+    "cta": "Buksan ang app"
+  },
+  "appPromo": {
+    "text": "Makuha ang buong Hilads experience",
+    "ctaIos": "I-download sa App Store",
+    "ctaAndroid": "Kunin sa Google Play",
+    "regionIos": "Kunin ang Hilads iOS app",
+    "regionAndroid": "Kunin ang Hilads Android app",
+    "pitchPush": "Real-time na push notifications",
+    "pitchFast": "Mas mabilis at mas smooth na feed",
+    "pitchAnim": "Native-quality na animations",
+    "ctaPlay": "I-download sa Google Play",
+    "continueBrowser": "Ituloy sa browser"
+  },
+  "deleteAccount": {
+    "title": "I-delete ang account mo",
+    "body": "Para i-delete ang Hilads account mo at lahat ng data nito, mag-email sa:",
+    "note": "Isama ang username mo sa request. Permanenteng mabubura ang data mo sa loob ng 48 oras.",
+    "back": "Bumalik sa Hilads"
   }
 }

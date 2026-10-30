@@ -1,10 +1,4 @@
 {
-  "badge": {
-    "ghost": "Ghost",
-    "fresh": "Bago",
-    "regular": "Suki",
-    "host": "Alamat"
-  },
   "now": "now",
   "myCity": "my city",
   "here": "here",
@@ -13,10 +7,16 @@
   "anywhere": "anywhere",
   "vibe": {
     "party": "Party",
-    "board_games": "Board Games",
+    "board_games": "Board games",
     "coffee": "Kape",
     "music": "Musika",
     "food": "Pagkain",
     "chill": "Chill"
+  },
+  "badge": {
+    "ghost": "Ghost",
+    "fresh": "Bago",
+    "regular": "Suki",
+    "host": "Legend"
   }
 }

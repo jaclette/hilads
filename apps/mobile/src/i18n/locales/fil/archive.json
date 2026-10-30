@@ -1,16 +1,16 @@
 {
-  "title": "Ano ang nangyari",
+  "title": "Mga nangyari",
   "loadError": "Hindi ma-load ang archive",
   "filterAll": "Lahat",
-  "rangeRecent": "Kamakailan",
+  "rangeRecent": "Recent",
   "range7": "Huling 7 araw",
   "range14": "Huling 14 araw",
   "custom": "Custom",
-  "pickEnd": "Ngayon pumili ng huling araw",
-  "pickStart": "Pumili ng panimulang araw (hanggang {{max}} araw)",
+  "pickEnd": "Ngayon, piliin ang huling araw",
+  "pickStart": "Pumili ng unang araw (hanggang {{max}} araw)",
   "apply": "I-apply",
   "emptyTitle": "Wala pang laman dito",
-  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may kasaysayan na ang lungsod.",
-  "emptyWindowSub": "Walang event o tambayan sa panahong ito. Subukan ang mas malawak na range.",
+  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may history na ang city.",
+  "emptyWindowSub": "Walang event o tambayan sa range na 'to. Subukan ang mas mahabang range.",
   "filterChallenges": "Mga challenge"
 }

@@ -1,29 +1,32 @@
 {
   "friendReq": {
-    "title": "Mga friend request",
-    "incoming": "Papasok",
-    "sent": "Naipadala",
-    "wantsToBeFriend": "gustong maging kaibigan mo",
-    "requestSent": "naipadala ang request",
+    "title": "Friend requests",
+    "incoming": "Natanggap",
+    "sent": "Na-send",
+    "wantsToBeFriend": "gusto kang maging friend",
+    "requestSent": "na-send ang request",
     "decline": "Tanggihan",
     "accept": "Tanggapin",
-    "cancel": "Kanselahin",
+    "cancel": "I-cancel",
     "emptyIncomingTitle": "Wala pang friend request",
-    "emptySentTitle": "Wala ka pang naipadala",
-    "emptyIncomingSub": "Kapag may humiling maging kaibigan mo, makikita mo ito dito.",
-    "emptySentSub": "Lalabas dito ang mga naka-pending na friend request na ipinadala mo."
+    "emptySentTitle": "Wala ka pang na-send",
+    "emptyIncomingSub": "Kapag may nag-request na maging friend mo, makikita mo rito.",
+    "emptySentSub": "Lalabas dito ang mga pending na friend request na na-send mo.",
+    "acceptFailed": "Hindi ma-accept",
+    "declineFailed": "Hindi ma-decline",
+    "cancelFailed": "Hindi ma-cancel"
   },
   "blocked": {
     "title": "Mga naka-block na user",
-    "thisUser": "ang user na ito",
+    "thisUser": "ang user na 'to",
     "ghostName": "Ghost",
     "guest": "Guest",
     "unblock": "I-unblock",
     "unblockTitle": "I-unblock si {{name}}?",
-    "unblockBody": "Makikita ulit ni {{name}} ang iyong content at maaari ka na niyang kontakin muli.",
+    "unblockBody": "Makikita ulit ni {{name}} ang content mo at puwede ka na ulit niyang i-message.",
     "unblockFailTitle": "Hindi ma-unblock",
-    "unblockFailBody": "Pakisubukan ulit.",
-    "emptyTitle": "Wala kang na-block na sinuman",
-    "emptySub": "Hindi makikita ng mga naka-block na user ang iyong content, at hindi mo rin makikita ang sa kanila."
+    "unblockFailBody": "Subukan ulit.",
+    "emptyTitle": "Wala ka pang bina-block",
+    "emptySub": "Hindi makikita ng mga naka-block na user ang content mo, at hindi mo rin makikita ang sa kanila."
   }
 }

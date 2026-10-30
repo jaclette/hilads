@@ -4,36 +4,36 @@
   "ogLocale": "fil_PH",
   "home": {
     "title": "Hilads - Laro lokal. Kumpara global. | Daily travel photo challenge",
-    "description": "Isang challenge kada araw, pareho sa bawat lungsod. Mag-snap ng photo at tingnan kung paano sumagot ang mundo. BeReal para sa mga traveler.",
+    "description": "Isang challenge kada araw, pareho sa bawat city. Mag-snap ng photo at tingnan ang photos ng buong mundo. BeReal para sa mga biyahero.",
     "h1": "Laro lokal. Kumpara global.",
-    "intro": "Ang Hilads ang daily photo challenge para sa mga traveler at locals. Araw-araw, may isang challenge para sa buong mundo. Mag-snap ng photo kung nasaan ka, tapos tingnan kung paano sumagot ang bawat bansa.",
+    "intro": "Ang Hilads ang daily photo challenge para sa mga biyahero at locals. Araw-araw, may isang challenge para sa buong mundo. Mag-snap ng photo kung nasaan ka, tapos tingnan ang photos mula sa bawat bansa.",
     "howHeading": "Paano gumagana ang Hilads",
-    "howBody": "May bagong Daily Challenge araw-araw, pareho sa bawat lungsod. Laruin ito gamit ang isang photo bago lumabas ang susunod, tapos mag-kumpara: isang challenge, sinagot ng bawat bansa.",
+    "howBody": "May bagong Daily Challenge araw-araw, pareho sa bawat city. Laruin ito gamit ang isang photo bago lumabas ang susunod, tapos mag-compare: isang challenge, nilaro sa bawat bansa.",
     "playCta": "Laruin ang challenge ngayon",
-    "archiveCta": "Tingnan kung paano sinagot ng mundo ang mga nakaraang challenge"
+    "archiveCta": "Tingnan ang photos ng mundo sa mga nakaraang challenge"
   },
   "city": {
     "title": "{city} sa Hilads - Challenge ngayon: {question}",
     "titleNoChallenge": "{city} sa Hilads - Laro lokal. Kumpara global.",
-    "description": "Ang Daily Challenge ngayon sa {city}: {question} Isang challenge kada araw, pareho sa bawat lungsod. Mag-snap ng photo at tingnan kung paano sumagot ang mundo.",
-    "descriptionNoChallenge": "Isang challenge kada araw, pareho sa bawat lungsod. Maglaro sa {city}, mag-snap ng photo at tingnan kung paano sumagot ang mundo.",
+    "description": "Daily Challenge ngayon sa {city}: {question} Isang challenge kada araw, pareho sa bawat city. Mag-snap ng photo at tingnan ang photos ng buong mundo.",
+    "descriptionNoChallenge": "Isang challenge kada araw, pareho sa bawat city. Maglaro sa {city}, mag-snap ng photo at tingnan ang photos ng buong mundo.",
     "h1": "{city} sa Hilads",
     "todayHeading": "Challenge ngayon",
     "playCta": "Maglaro para sa {city}",
-    "recentHeading": "Paano sumagot ang {city}",
+    "recentHeading": "Paano naglaro ang {city}",
     "recentEmpty": "Wala pang naglaro sa {city}. Ikaw na ang mag-snap ng unang photo.",
     "archiveLink": "Lahat ng nakaraang challenge"
   },
   "daily": {
-    "title": "{question} Mga sagot mula sa {countries} | Hilads",
+    "title": "{question} Photos mula sa {countries} | Hilads",
     "titleNone": "{question} | Hilads Daily Challenge",
-    "descAnswers": "{answers} Isang challenge kada araw, pareho sa bawat lungsod.",
-    "descPhotos": "{text} Mga photo mula sa {places}. Isang challenge kada araw, pareho sa bawat lungsod.",
-    "descEmpty": "{text} Isang challenge kada araw, pareho sa bawat lungsod. Mag-snap ng photo at tingnan kung paano sumagot ang mundo.",
+    "descAnswers": "{answers} Isang challenge kada araw, pareho sa bawat city.",
+    "descPhotos": "{text} Photos mula sa {places}. Isang challenge kada araw, pareho sa bawat city.",
+    "descEmpty": "{text} Isang challenge kada araw, pareho sa bawat city. Mag-snap ng photo at tingnan ang photos ng buong mundo.",
     "kicker": "Daily Challenge · {date}",
-    "answersHeading": "Paano sumagot ang mundo",
+    "answersHeading": "Paano naglaro ang mundo",
     "photoBy": "Photo ni {user} sa {city}",
-    "noPhotos": "Wala pang photo para sa challenge na ito.",
+    "noPhotos": "Wala pang photo para sa challenge na 'to.",
     "prev": "Nakaraang challenge",
     "next": "Susunod na challenge",
     "playCta": "Laruin ang challenge ngayon",
@@ -43,9 +43,9 @@
     "photosMany": "{count} photos",
     "countriesOne": "1 bansa",
     "countriesMany": "{count} bansa",
-    "archiveTitle": "Mga nakaraang Daily Challenge: paano sumagot ang mundo | Hilads",
-    "archiveDescription": "Lahat ng nakaraang Hilads Daily Challenge: isang challenge kada araw, pareho sa bawat lungsod, kasama ang mga photo at sagot mula sa bawat bansa.",
+    "archiveTitle": "Mga nakaraang Daily Challenge: paano naglaro ang mundo | Hilads",
+    "archiveDescription": "Lahat ng nakaraang Hilads Daily Challenge: isang challenge kada araw, pareho sa bawat city, kasama ang photos mula sa bawat bansa.",
     "archiveH1": "Mga nakaraang Daily Challenge",
-    "archiveIntro": "Isang challenge kada araw, pareho sa bawat lungsod. Ganito sumagot ang mundo sa bawat isa."
+    "archiveIntro": "Isang challenge kada araw, pareho sa bawat city. Ganito naglaro ang mundo sa bawat isa."
   }
 }

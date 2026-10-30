@@ -2,14 +2,14 @@
   "showcase": {
     "cta": "Mga matagumpay na challenge",
     "title": "Mga matagumpay na challenge",
-    "allCities": "Lahat ng lungsod",
+    "allCities": "Lahat ng city",
     "clearCity": "I-clear",
-    "localTag": "Lokal",
+    "localTag": "Local",
     "by": "ni {{name}}",
     "loadMore": "Mag-load pa",
     "empty": {
       "title": "Wala pang success story",
-      "body": "Lumalabas dito ang mga natapos at mataas ang rating na challenge. Maging una kang gumawa!"
+      "body": "Dito lalabas ang mga natapos na challenge na mataas ang rating. Ikaw na ang mauna!"
     },
     "tryCta": "Gumawa ng bagong challenge",
     "note": "Ang sabi nila"
@@ -17,50 +17,50 @@
   "myChallenges": {
     "cta": "Mga challenge ko"
   },
-  "tabIntro": "Mga challenge sa pagitan ng mga local at biyahero sa loob ng isang siyudad - at across cities.",
+  "tabIntro": "Mga challenge sa pagitan ng locals at biyahero sa iisang city, at sa pagitan ng mga city.",
   "howItWorks": "Paano ito gumagana",
   "mostLocal": "Most Local",
   "seeAll": "Tingnan lahat",
   "leaderboardCta": {
     "title": "City leaderboard",
     "view": "Tingnan",
-    "sub": "Maging una sa ranking - maglunsad at tapusin ang isang challenge"
+    "sub": "Mag-launch at tapusin ang isang challenge para mauna sa ranking"
   },
   "createTitle": "Gumawa ng challenge",
   "editTitle": "I-edit ang challenge",
   "audience": "Para kanino?",
   "aud": {
-    "locals": "Mga local",
+    "locals": "Locals",
     "explorers": "Mga biyahero",
-    "members": "Members"
+    "members": "Mga miyembro"
   },
   "type": "Uri",
   "tp": {
     "food": "Pagkain",
     "place": "Lugar",
     "culture": "Kultura",
-    "help": "Baliw"
+    "help": "Kalokohan"
   },
-  "titleLabel": "Iyong challenge",
-  "titlePlaceholder": "hal. Dalhin mo ako sa paborito mong coffee spot",
+  "titleLabel": "Challenge mo",
+  "titlePlaceholder": "hal. Dalhin mo ako sa paborito mong tagong coffee spot",
   "maxParticipantsLabel": {
-    "locals": "Ilang local max?",
-    "explorers": "Ilang biyahero max?"
+    "locals": "Ilang locals, max?",
+    "explorers": "Ilang biyahero, max?"
   },
   "returnClauseLabel": "Tapos?",
   "returnClauseTemplates": {
-    "food": "...tapos puntahan mo ako para i-share 🍜",
-    "place": "...tapos ikaw mismo magsama sa akin 🗺️",
+    "food": "...tapos samahan mo akong kumain 🍜",
+    "place": "...tapos ikaw mismo ang magdala sa akin doon 🗺️",
     "culture": "...tapos magkita tayo para pag-usapan 🎭",
-    "help": "...tapos gumawa tayo ng kahit anong baliw na bagay 🤪"
+    "help": "...tapos gumawa tayo ng kalokohan nang sabay 🤪"
   },
-  "createCta": "Ilunsad ang challenge",
-  "saveChanges": "I-save ang mga pagbabago",
-  "errSave": "Hindi na-save",
-  "errStart": "Hindi nailunsad ang challenge",
-  "deleteTitle": "Tanggalin ang challenge?",
-  "deleteBody": "Tatanggalin ang challenge para sa lahat. Hindi na maibabalik.",
-  "deleteConfirm": "Tanggalin",
+  "createCta": "I-launch ang challenge",
+  "saveChanges": "I-save ang changes",
+  "errSave": "Hindi na-save ang changes",
+  "errStart": "Hindi na-launch ang challenge",
+  "deleteTitle": "I-delete ang challenge?",
+  "deleteBody": "Mawawala ang challenge para sa lahat. Hindi na 'to maibabalik.",
+  "deleteConfirm": "I-delete",
   "acceptCta": "Tanggapin ang challenge",
   "acceptedCta": "Tinanggap ✓",
   "validatedBadge": "Validated",
@@ -69,153 +69,285 @@
     "full": "Puno",
     "available": "Available",
     "inProgress": "Ongoing",
-    "takeIt": "Tatanggapin ko",
-    "takerLabel": "Tagapagtanggap",
-    "rankBadge": "Ranggo {{rank}}",
+    "takeIt": "Game ako",
+    "takerLabel": "Taker",
+    "rankBadge": "Rank {{rank}}",
     "photoBadge": "Photo",
-    "meetBadge": "Kita",
-    "photosCount_one": "{{count}} larawan",
-    "photosCount_other": "{{count}} larawan",
+    "meetBadge": "Meetup",
+    "photosCount_one": "{{count}} photo",
+    "photosCount_other": "{{count}} photos",
     "noOneJoined": "Wala pang sumasali",
     "beFirst": "Mauna ka · +2",
     "daysLeft": "{{count}}d na lang",
     "lastDay": "Malapit nang mag-expire",
     "joinGroup": "Sumali sa challenge",
-    "whoJoined": "Sino ang sumali ({{count}})",
+    "whoJoined": "Mga sumali ({{count}})",
     "ended": "Tapos na",
     "awaitingResults": "Hinihintay ang resulta"
   },
-  "statusInProgress": "Challenge ongoing",
-  "statusAccomplished": "Challenge tapos",
+  "statusInProgress": "Ongoing ang challenge",
+  "statusAccomplished": "Nagawa ang challenge",
   "openBadge": "Bukas",
-  "forLocals": "Para sa mga local",
+  "forLocals": "Para sa locals",
   "forExplorers": "Para sa mga biyahero",
   "validation": {
-    "label": "Paano i-validate?",
+    "label": "Paano iva-validate?",
     "meet": {
-      "label": "Magkita",
-      "hint": "I-share ang experience nang harap-harapan",
-      "bonusChip": "+50 bonus pag nag-meet kayo in person"
+      "label": "Meetup",
+      "hint": "I-share ang experience nang personal",
+      "bonusChip": "+50 Meet bonus pag dumating ang lahat"
     },
     "photo_proof": {
       "label": "Photo proof",
-      "hint": "Tanggapin ang proof remotely"
+      "hint": "Tanggapin ang proof kahit malayo"
     }
   },
   "notFound": "Hindi nahanap ang challenge",
   "typeBadge": {
-    "food": "Pagkain challenge",
-    "place": "Lugar challenge",
-    "culture": "Kultura challenge",
-    "help": "Baliw na challenge"
+    "food": "Challenge sa pagkain",
+    "place": "Challenge sa lugar",
+    "culture": "Challenge sa kultura",
+    "help": "Challenge na kalokohan"
   },
   "challengerTag": "Challenger",
-  "participantsLabel": "Mga kalahok",
+  "participantsLabel": "Mga sumali",
   "editBtn": "I-edit",
-  "deleteBtn": "Tanggalin",
-  "shareCta": "Ibahagi",
-  "shareInvite": "Sama sa challenge na 'to!",
+  "deleteBtn": "I-delete",
+  "shareCta": "I-share",
+  "shareInvite": "Tara, sabayan mo ako sa challenge na 'to!",
   "shareCopied": "Na-copy ang link",
   "noun": "Challenge",
+  "byCreator": "ni {{name}}",
+  "inspiration": {
+    "heading": "Mga idea ng challenge",
+    "sub": "Ano'ng nilo-launch ng locals sa ibang lugar, kumuha ng inspiration",
+    "firstLocal": "Maging unang local sa {{city}}",
+    "firstLocalSub": "Mag-drop ng challenge · tatanggapin 'yan ng mga darating na biyahero",
+    "reward": "Unang challenge · +10",
+    "launchFirst": "I-launch ang unang challenge",
+    "createYours": "Gumawa ka rin sa {{city}}",
+    "by": "ni {{name}} · {{city}}"
+  },
   "examples": {
-    "label": "Walang idea? Tap mo",
+    "label": "Walang maisip? I-tap ang isa",
     "food": [
-      "Pinakamasarap na kape sa siyudad",
-      "Kung saan talaga kumakain ng tanghalian ang mga lokal",
-      "Pinakamasarap na street food sa malapit"
+      "Hanapan mo ako ng pinakamasarap na kape dito",
+      "Saan talaga nagla-lunch ang locals",
+      "Pinakamasarap na street food spot malapit dito"
     ],
     "place": [
-      "Pinakamagandang sunset spot",
-      "Lugar na hindi nakikita ng mga turista",
-      "Kung saan ka pumupunta para mag-isip"
+      "Ipakita mo sa akin ang pinakamagandang sunset spot",
+      "Lugar na hindi nahahanap ng mga turista",
+      "Saan ka pumupunta para mag-unwind"
     ],
     "culture": [
-      "Tunay na lokal na music night ngayong weekend",
-      "Street art na worth tingnan",
-      "Lokal na show na hindi ko makakalimutan"
+      "Totoong local music night ngayong weekend",
+      "Street art na sulit makita",
+      "Local na show na hindi ko makakalimutan"
     ],
     "help": [
-      "Barbero na hindi sisira ng linggo ko",
-      "Doktor na nag-iingles",
-      "Saan magpapaayos ng phone screen"
+      "Gupitan na hindi sisira sa linggo ko",
+      "Doktor na marunong mag-English",
+      "Saan puwedeng magpaayos ng screen ng phone"
     ]
   },
   "beFirstToAccept": "Mauna kang tumanggap",
   "openThreadCta": "Buksan ang thread",
   "accept": {
     "err": {
-      "openSettings": "Buksan ang settings",
+      "openSettings": "Buksan ang Settings",
       "unknown": {
         "title": "Hindi natanggap",
         "body": "May nangyaring mali. Subukan ulit."
       },
       "not_creator": {
-        "title": "Sariling challenge mo ito",
-        "body": "Ikaw ang gumawa ng challenge na ito - hintayin mo ibang tao na tanggapin."
+        "title": "Sarili mong challenge 'to",
+        "body": "Ikaw ang gumawa ng challenge na 'to. Hintayin mong may ibang tumanggap."
       },
       "mode_required": {
-        "title": "Pumili muna ng local o biyahero",
-        "body": "I-set ang mode mo sa profile bago tumanggap ng challenges."
+        "title": "Pumili muna: local o biyahero",
+        "body": "I-set ang mode mo sa profile bago tumanggap ng challenge."
       },
       "mode_mismatch": {
-        "title": "Hindi para sa'yo ang challenge na ito",
-        "body": "Palitan ang mode mo sa profile kung gusto mong tanggapin ito."
+        "title": "Hindi para sa'yo ang challenge na 'to",
+        "body": "Palitan ang mode mo sa profile kung gusto mong tanggapin 'to."
       },
       "cap_reached": {
         "title": "Puno na ang challenge"
       },
       "in_progress": {
         "title": "May tumanggap na nito",
-        "body": "May ibang biyaherong kumukuha ngayon. Balikan mo pag tapos na sila - magiging available ulit ang challenge."
+        "body": "May ibang biyaherong gumagawa nito ngayon. Balikan mo pag tapos na sila, magiging available ulit ang challenge."
       },
       "completed": {
         "title": "Tapos na ang challenge",
-        "body": "Natapos na ang challenge na ito — sarado na sa bagong sasali."
+        "body": "Tapos na ang challenge na 'to, sarado na sa mga bagong sasali."
       }
+    }
+  },
+  "messageCreator": "I-message si {{name}} nang private",
+  "join": {
+    "gateTitle": "Maging manonood",
+    "gateBody": "Pumasok bilang manonood para masundan ang usapan at i-cheer ang taker.",
+    "cta": "Pumasok bilang manonood",
+    "leaveCta": "Lumabas sa channel",
+    "errKicked": "Inalis ka sa challenge na 'to. Hindi ka na pwedeng sumali ulit.",
+    "errClosed": "Hindi na tumatanggap ng bagong sasali ang challenge na 'to.",
+    "errGeneric": "Hindi ka nakapasok. Subukan ulit."
+  },
+  "leaveTakeon": {
+    "pill": "Umalis",
+    "confirmTitle": "Aalis ka sa challenge na 'to?",
+    "confirmBody": "Babalik sa zero ang timeline at magbubukas ulit ang challenge para sa iba. Hindi na 'to maibabalik.",
+    "confirmCta": "Umalis",
+    "failed": "Hindi nakaalis. Subukan ulit."
+  },
+  "restart": {
+    "cta": "I-restart ang challenge",
+    "confirmTitle": "I-restart ang challenge?",
+    "confirmBody": "Aalisin nito ang kasalukuyang taker, buburahin ang chat, at bubuksan ulit ang challenge mula sa zero. Hindi na 'to maibabalik.",
+    "confirmCta": "I-restart",
+    "failed": "Hindi na-restart. Subukan ulit."
+  },
+  "lock": {
+    "private": {
+      "title": "Private ang challenge na 'to",
+      "body": "Ang gumawa at ang taker lang ang makakakita ng usapan."
     }
   },
   "thread": {
     "notFound": "Hindi mahanap ang thread",
-    "empty": "Ikaw ang maunang magsalita.",
-    "emptyIntl": "Mag-hi - kapag nakuha mo, padala ka ng litrato.",
+    "empty": "Mauna kang magsalita.",
+    "emptyIntl": "Mag-hi ka. Pag nagawa mo na, mag-drop ng photo.",
     "cancel": {
-      "creatorTitle": "Kanselahin ang pagsali na ito?",
-      "acceptorTitle": "I-drop ang challenge na ito?",
-      "body": "Mabubura ang thread at chat. Pwede mong tanggapin ulit later kung magbago ang isip mo.",
-      "confirm": "I-cancel",
+      "creatorTitle": "I-cancel ang take-on na 'to?",
+      "acceptorTitle": "I-drop ang challenge na 'to?",
+      "body": "Mabubura ang thread at chat. Puwede mo itong tanggapin ulit mamaya kung magbago ang isip mo.",
+      "confirm": "I-cancel ang take-on",
       "failed": "Hindi na-cancel. Subukan ulit."
     },
     "cancelledByOther": {
       "title": "Na-cancel ang thread",
-      "body": "Kinansela ng kabilang tao ang pagsali na ito."
+      "body": "In-cancel ng kabila ang take-on na 'to."
     }
   },
   "threads": {
     "title": "Mga challenge thread ko",
-    "noMessagesYet": "Wala pang messages",
+    "noMessagesYet": "Wala pang message",
     "empty": {
       "title": "Walang active na thread",
-      "body": "Kapag tumanggap ka ng challenge o may tumanggap ng sa'yo, lalabas dito ang conversation."
+      "body": "Pag tumanggap ka ng challenge o may tumanggap ng sa'yo, dito lalabas ang usapan."
     },
     "guestGate": {
-      "title": "Mag-sign in para makita ang threads",
-      "body": "Mga threads ay 1:1 conversation sa pagitan mo at ng challenger. Kailangan mo ng account para magsimula."
+      "title": "Mag-sign in para makita ang mga thread",
+      "body": "1:1 na usapan ang thread, ikaw at ang challenger lang. Kailangan mo ng account para magsimula."
+    }
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Kumusta ang challenge? I-rate mo na",
+      "titleUrgent": "Ikaw na ang magre-rate sa challenge na 'to"
+    },
+    "sheet": {
+      "title": "Kumusta ang challenge?",
+      "subtitle": "I-rate ang challenge, hindi ang tao.",
+      "starsAria": "{{n}} star",
+      "commentPlaceholder": "Mag-iwan ng note tungkol sa challenge (optional)",
+      "submit": "I-submit ang rating",
+      "later": "Mamaya na"
+    },
+    "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
+  },
+  "scoringInfo": {
+    "aria": "Paano gumagana ang points",
+    "helpLabel": "Paano makakuha ng points",
+    "title": "Paano gumagana ang mga challenge",
+    "intro": "Maliit na points lang sa pag-join; ang malaking points, para sa talagang pagdating o pagpanalo. Hindi sulit ang puro join lang.",
+    "colStep": "Step",
+    "steps": {
+      "created": "Nagawa ang challenge",
+      "accepted": "Tinanggap ang challenge",
+      "date": "May date na",
+      "meet": "Meetup",
+      "rate": "Parehong nag-rate"
+    },
+    "noPoints": "-",
+    "totalLabel": "Total kada challenge",
+    "footnote": "Puwedeng magbago ang mga numero habang inaayos namin ang laro.",
+    "types": {
+      "heading": "Dalawang uri ng challenge",
+      "local": "Meet - magtipon ng grupo nang personal sa takdang oras at lugar. Lahat ng sumipot, malaki ang points.",
+      "international": "Photo challenge - lahat magpo-post ng photo bago ang deadline; ang challenger ang pipili ng panalo."
+    },
+    "lifecycle": {
+      "heading": "Paano natatapos",
+      "body": "Ang challenger ang nagse-set up, sumasali ang mga tao, at sa dulo, ang challenger ang nagva-validate: sino ang dumating, o aling photo ang nanalo."
+    },
+    "pointsHeading": "Paano ka kikita ng points",
+    "ways": {
+      "join": "Sumali sa challenge",
+      "create": "Gumawa ng challenge",
+      "present": "Dumating (validated na present)",
+      "host": "Mag-host ng meetup",
+      "submit": "Mag-submit ng photo sa challenge",
+      "win": "Manalo sa photo challenge"
+    },
+    "seeExamples": "Tingnan ang 3 totoong halimbawa"
+  },
+  "leaderboard": {
+    "title": "Most Local",
+    "chip": {
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "Top challengers"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Mundo",
+      "cities": "Mga city"
+    },
+    "period": {
+      "month": "Ngayong buwan",
+      "alltime": "All-time"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Ikaw · #{{rank}} · {{points}} pts",
+      "unranked": "Tumanggap ng challenge para mapasama sa board"
+    },
+    "empty": {
+      "title": "Wala pang nasa board",
+      "body": "Mauna kang tumanggap ng challenge at kumita ng points."
+    },
+    "errLoad": "Hindi na-load ang leaderboard. I-pull down para subukan ulit.",
+    "neutral": "🏆 Most Local",
+    "titleCity": "Most {{demonym}}",
+    "share": {
+      "cta": "I-share ang rank ko",
+      "periodMonth": "ngayong buwan",
+      "periodAll": "sa lahat ng panahon",
+      "placeCity": "sa {{city}}",
+      "placeWorld": "sa buong mundo",
+      "userNotTop": "🔥 #{{rank}} ako {{place}} {{period}}: {{pts}} pts! Hinahabol ko si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
+      "userTop": "👑 #1 ako {{place}} {{period}}: {{pts}} pts! Nakabuntot sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Agawin mo ang korona kung kaya mo 😏",
+      "cityNotTop": "🔥 #{{rank}} ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna sa {{below}} ({{bPts}} pts). Locals, akyat tayo 🏆",
+      "cityTop": "👑 #1 ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Hinahabol tayo ng {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Locals, dito lang tayo sa tuktok 🔥"
     }
   },
   "schedule": {
-    "proposeCta": "Mag-propose ng petsa",
-    "counterCta": "Counter-propose",
-    "editCta": "Palitan ang petsa",
-    "you": "ka",
-    "iProposedTitle": "Naghihintay ng approval",
+    "proposeCta": "Mag-propose ng date",
+    "counterCta": "Mag-propose ng iba",
+    "editCta": "Palitan ang date",
+    "you": "ikaw",
+    "iProposedTitle": "Hinihintay ang approval nila",
     "theyProposedTitle": "Nag-propose si {{name}}",
     "scheduled": {
-      "title": "Naka-schedule na ang meet-up"
+      "title": "Naka-schedule na ang meetup"
     },
     "withdraw": {
-      "title": "I-withdraw ang proposal?",
-      "body": "Mabubura ang petsa na in-propose mo. Mae-notify sila.",
-      "confirm": "I-withdraw"
+      "title": "Bawiin ang proposal?",
+      "body": "Mabubura ang date na pinropose mo. Mano-notify sila.",
+      "confirm": "Bawiin"
     },
     "today": "Ngayon",
     "tomorrow": "Bukas",
@@ -227,41 +359,41 @@
       "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix"
     },
     "err": {
-      "proposeFailed": "Hindi na-propose ang petsa. Subukan ulit.",
+      "proposeFailed": "Hindi na-propose ang date. Subukan ulit.",
       "approveFailed": "Hindi na-approve. Subukan ulit.",
-      "withdrawFailed": "Hindi na-withdraw. Subukan ulit."
+      "withdrawFailed": "Hindi nabawi. Subukan ulit."
     }
   },
   "debrief": {
     "creatorPrompt": {
       "title": "Kumusta?",
-      "body": "Nakuha ba ni {{name}}?"
+      "body": "Nagawa ba ni {{name}}?"
     },
     "acceptorWaiting": {
       "title": "Hinihintay ang verdict",
-      "body": "Mama-mark ni {{name}} kung kumusta."
+      "body": "Si {{name}} ang magsasabi kung kumusta."
     },
     "approved": {
-      "title": "Tapos na ang challenge"
+      "title": "Nagawa ang challenge"
     },
     "rejected": {
       "title": "Sarado na ang challenge"
     },
     "confirm": {
       "approve": {
-        "title": "I-mark bilang tapos?",
-        "body": "Final na 'to - hindi mo na mababago.",
-        "confirm": "I-mark bilang tapos"
+        "title": "I-mark bilang nagawa?",
+        "body": "Final na 'to, hindi mo na mababago.",
+        "confirm": "I-mark bilang nagawa"
       },
       "reject": {
         "title": "Isara nang walang verdict?",
-        "body": "Gamitin kung hindi talaga natuloy ang meetup. Final na 'to.",
+        "body": "Gamitin ito kung hindi talaga natuloy ang meetup. Final na 'to.",
         "confirm": "Isara"
       }
     },
     "err": {
       "approveFailed": "Hindi na-approve. Subukan ulit.",
-      "rejectFailed": "Hindi na-close. Subukan ulit."
+      "rejectFailed": "Hindi naisara. Subukan ulit."
     }
   },
   "closeCta": "Isara ang challenge",
@@ -269,376 +401,258 @@
   "pipeline": {
     "step": {
       "accept": "Tanggapin",
-      "date": "Petsa",
-      "meet": "Magkita",
+      "date": "Date",
+      "meet": "Meetup",
       "wrap": "Tapusin",
-      "proof": "Patunay",
+      "proof": "Proof",
       "verdict": "Verdict"
     },
     "subcta": {
       "tapToAccept": "Tanggapin ang challenge",
       "creatorWaiting": "Hinihintay na may tumanggap",
-      "creatorReviewPending": "I-review ang request ni {{name}}",
-      "acceptorAwaitingReview": "Hinihintay si {{name}} mag-review",
-      "proposeDate": "Mag-suggest ng petsa",
+      "creatorReviewPending": "I-review ang take-on request ni {{name}}",
+      "acceptorAwaitingReview": "Hinihintay ang review ni {{name}}",
+      "proposeDate": "Mag-propose ng date",
       "dateAwaiting": "Hinihintay ang approval ng creator",
-      "approveDate": "May naka-propose na petsa",
-      "meetSoon": "See you on {{date}}",
-      "creatorVerdict": "Kumusta kay {{name}}?",
-      "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
-      "accomplished": "Tapos na ang challenge",
+      "approveDate": "May na-propose nang date",
+      "meetSoon": "Kita tayo sa {{date}}",
+      "creatorVerdict": "Kumusta kayo ni {{name}}?",
+      "acceptorWaitingVerdict": "Hinihintay ang confirm ni {{name}}",
+      "rateMeetup": "I-rate ang meetup ninyo ni {{name}}",
+      "accomplished": "Nagawa ang challenge",
       "closed": "Sarado na ang challenge",
-      "submitProof": "Ipadala ang patunay",
-      "waitingForProof": "Naghihintay ng patunay",
-      "reviewProof": "Suriin ang patunay",
-      "waitingForVerdict": "Naghihintay ng verdict",
-      "rateMeetup": "I-rate ang meet-up kay {{name}}"
+      "submitProof": "Ipadala ang proof",
+      "waitingForProof": "Hinihintay ang proof",
+      "reviewProof": "I-review ang proof",
+      "waitingForVerdict": "Hinihintay ang verdict"
     }
   },
   "takeon": {
     "creator": {
-      "pendingTitle": "Gusto ni {{name}} tanggapin ang challenge mo",
-      "pendingBody": "Tanggapin para makapag-chat at mag-plano ng meet-up, o i-reject para ma-free ang slot.",
+      "pendingTitle": "Gustong tanggapin ni {{name}} ang challenge mo",
+      "pendingBody": "Tanggapin para makapag-chat at maplano ang meetup, o i-reject para mabakante ang slot.",
       "approve": "Tanggapin",
       "reject": "I-reject",
       "approveFailed": "Hindi natanggap. Subukan ulit.",
       "rejectFailed": "Hindi na-reject. Subukan ulit."
     },
     "acceptor": {
-      "waitingTitle": "Hinihintay ang sagot",
-      "waitingBody": "Tatanggapin o tatanggihan ni {{name}} ang request mo. May push ka pag may desisyon na.",
-      "rejectedTitle": "Tinanggihan ang request",
-      "rejectedBody": "Na-reject ni {{name}} 'to. Pwede ka pa rin pumili ng ibang challenge."
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "Tanggapin ang challenge para ma-unlock ang chat",
-      "body": "Kapag tinanggap mo, magkakaroon kayo ng challenger ng private thread para mag-plano ng meet-up."
-    },
-    "creator": {
-      "title": "Hinihintay na may tumanggap",
-      "body": "Kapag may biyaherong tumanggap, mag-uusap kayo dito mismo para mag-plano ng meet-up."
-    },
-    "full": {
-      "title": "Puno na ang challenge",
-      "body": "Wala nang slot. Balikan mo kung may aalis."
-    },
-    "inProgress": {
-      "title": "May kumukuha na ngayon",
-      "body": "May biyaherong kumukuha ng challenge na ito. Pag tapos na sila, magiging available ulit - balikan mo soon."
+      "waitingTitle": "Hinihintay ang review",
+      "waitingBody": "Tatanggapin o ire-reject ni {{name}} ang take-on mo. Makakatanggap ka ng push pag nakapagdesisyon na sila.",
+      "rejectedTitle": "Na-reject ang take-on",
+      "rejectedBody": "Na-reject ni {{name}} 'to. Puwede ka pa ring pumili ng ibang challenge."
     }
   },
   "postCreate": {
     "title": "Live na ang challenge mo",
-    "subtitle": "Iseed mo na - paganahin sa loob ng isang oras.",
-    "thisCity": "lungsod na ito",
-    "ctaInvite": "Ipadala kay kahit sino sa {{city}}",
-    "ctaInviteSub": "Pumili ng ilang {{audience}} - pi-ping namin.",
-    "ctaShare": "Ibahagi sa labas ng Hilads",
+    "subtitle": "Ngayon, paandarin mo na: humanap ng tatanggap sa loob ng isang oras.",
+    "thisCity": "city na 'to",
+    "ctaInvite": "Ipadala sa kahit sino sa {{city}}",
+    "ctaInviteSub": "Pumili ng ilang {{audience}}, ipi-ping namin sila.",
+    "ctaShare": "I-share sa labas ng Hilads",
     "skip": "Mamaya na lang",
     "pickerTitle": "{{audience}} sa {{city}}",
-    "pickerSubtitle": "I-tap para piliin. Makakatanggap sila ng push na may Tanggapin / Huwag pansinin.",
-    "pickerEmpty": "Walang {{audience}} sa paligid ngayon. I-share sa labas na lang.",
-    "sendCta": "Ipadala kay {{count}}",
+    "pickerSubtitle": "I-tap para piliin. Makakatanggap sila ng push na may Tanggapin / I-ignore.",
+    "pickerEmpty": "Walang {{audience}} sa paligid ngayon. I-share na lang sa labas.",
+    "sendCta": "Ipadala sa {{count}}",
     "sendCtaEmpty": "Pumili muna ng tao",
     "sentTitle": "Naipadala sa {{count}}",
-    "sentSubtitle": "Tatanggap sila ng push ngayon.",
-    "pickerSubtitleAll": "Walang eksaktong tugma - pinapakita lahat sa {{city}}."
+    "sentSubtitle": "Makakatanggap sila ng push ngayon.",
+    "pickerSubtitleAll": "Walang eksaktong match, pinapakita ang lahat sa {{city}}."
   },
   "invitation": {
     "accept": "Tanggapin",
-    "ignore": "Huwag pansinin"
+    "ignore": "I-ignore"
   },
-  "byCreator": "ni {{name}}",
-  "inspiration": {
-    "heading": "Mga ideya ng challenge",
-    "sub": "Kung ano ang nilulunsad ng mga local sa ibang lugar - magpa-inspire",
-    "firstLocal": "Maging unang local sa {{city}}",
-    "firstLocalSub": "Maglunsad ng challenge · tatanggapin ng mga dumarating na biyahero",
-    "reward": "Unang challenge · +10",
-    "launchFirst": "Ilunsad ang unang challenge",
-    "createYours": "Gawin ang sa iyo sa {{city}}",
-    "by": "ni {{name}} · {{city}}"
+  "locked": {
+    "visitor": {
+      "title": "Tanggapin ang challenge para ma-unlock ang chat",
+      "body": "Pag tinanggap mo, magkakaroon kayo ng challenger ng private thread para maplano ang meetup."
+    },
+    "creator": {
+      "title": "Hinihintay na may tumanggap",
+      "body": "Pag may biyaherong tumanggap, dito mismo kayo mag-uusap para maplano ang meetup."
+    },
+    "full": {
+      "title": "Puno na ang challenge",
+      "body": "Puno na lahat ng slot. Balikan mo kung may umatras."
+    },
+    "inProgress": {
+      "title": "May gumagawa na nito ngayon",
+      "body": "May biyaherong gumagawa ng challenge na 'to. Pag tapos na sila, magiging available ulit, kaya balikan mo agad."
+    }
   },
   "typeFilter": {
     "label": "I-filter ayon sa uri",
     "all": "Lahat",
-    "empty": "Wala sa kategoryang ito ngayon."
+    "empty": "Wala pa sa category na 'to ngayon."
   },
-  "seeAllChallenges": "Tingnan lahat →",
+  "seeAllChallenges": "Tingnan lahat ng challenge →",
   "mode": {
     "label": "Mode",
-    "local": "Lokal",
+    "local": "Local",
     "international": "International",
-    "localHint": "Sa lungsod mo. Nagtatapos sa pagkikita nang personal.",
-    "internationalHint": "Kahit saan sa mundo. Magpapadala sila ng patunay, ikaw ang magvavalidate mula sa malayo.",
+    "localHint": "Sa city mo. Natatapos sa meetup nang personal.",
+    "internationalHint": "Kahit saan sa mundo. Magpapadala sila ng proof, ikaw ang magva-validate kahit malayo.",
     "worldwide": "Buong mundo"
   },
-  "intl": {
-    "targetCityLabel": "Target na lungsod",
-    "targetCityAnywhere": "Kahit saan sa mundo",
-    "targetCityHint": "Pumili ng target city — hindi pa available ang \"Kahit saan sa mundo\".",
-    "proofRequirementsLabel": "Ano ang dapat ipakita sa larawan?",
-    "proofRequirementsPlaceholder": "hal. Ang pagkain sa liwanag ng araw, ikaw nasa frame",
-    "proofRequirementsHint": "Ang patunay ay isang larawan. Nakikita ito ng kalahok bago magpasa - maging tiyak.",
-    "cityPicker": {
-      "title": "Pumili ng target na lungsod",
-      "searchPlaceholder": "Maghanap ng lungsod…",
-      "anywhere": "Kahit saan sa mundo"
+  "visibility": {
+    "label": "Sino ang makakakita nito?",
+    "public": "Public",
+    "friends": "Mga kaibigan",
+    "publicHint": "Puwedeng makita at tanggapin ito ng kahit sino sa city.",
+    "friendsHint": "Mga kaibigan mo at mga inimbitahan mo lang ang makakakita nito.",
+    "intlLocked": "Laging public ang mga international challenge.",
+    "moderationBlocked": "Na-flag ang text mo. Ibahin mo ang pagkakasabi.",
+    "badge": {
+      "public": "Public",
+      "friends": "Mga kaibigan",
+      "private": "Private"
     },
-    "proof": {
-      "requirementsLabel": "Hinihingi ng creator",
-      "submitCta": "Ipadala patunay",
-      "tryAgainCta": "Subukang muli ({{count}} natitira)",
-      "waitingProof": "Naghihintay ng patunay",
-      "waitingVerdict": "Naghihintay ng verdict",
-      "approvedLine": "Tapos na ang challenge",
-      "closedLine": "Sarado na ang challenge",
-      "lastReason": "Dahilan: {{reason}}",
-      "geotagOk": "Geotag verified",
-      "geotagWarn": "Geotag wala sa lugar",
-      "approveCta": "Aprubahan",
-      "rejectCta": "Tanggihan",
-      "rejectModalTitle": "Tanggihan ang patunay na ito",
-      "rejectModalHint_one": "{{count}} tangka pa. Sabihin ang kailangang ayusin.",
-      "rejectModalHint_other": "{{count}} tangka pa. Sabihin ang kailangang ayusin.",
-      "reasonPlaceholder": "hal: malabo ang larawan, hindi makita ang pagkain",
-      "rejectConfirm": "Ipadala ang pagtanggi",
-      "reasonRequiredTitle": "Kailangan ng dahilan",
-      "reasonRequiredBody": "Maikling dahilan (1–200) tumutulong.",
-      "permPhotoTitle": "Kailangan ng photo access",
-      "permPhotoBody": "Pahintulutan sa Settings.",
-      "permGpsTitle": "Kailangan ng lokasyon",
-      "permGpsBody": "Kailangang-kailangan ang geotag.",
-      "gpsFailTitle": "Hindi mabasa ang GPS",
-      "gpsFailBody": "Subukan sa labas.",
-      "submitFailTitle": "Hindi naipadala",
-      "submitFailBody": "Tingnan ang koneksyon.",
-      "reviewFailTitle": "Hindi naitala ang verdict"
+    "optin": {
+      "title": "Heads up: public 'to",
+      "body": "Lumalabas ang mga public challenge sa city feed at sa public web. Makikita ng kahit sino ang pangalan mo at ang text ng challenge, pati ng mga hindi member at ng search engines. Puwede kang lumipat sa Mga kaibigan sa ibaba kung gusto mong mas limitado.",
+      "cta": "Sige, i-post nang public",
+      "switchToFriends": "Gawing Mga kaibigan na lang",
+      "dontShowAgain": "Huwag nang ipakita ulit"
     }
   },
-  "modeFilter": {
-    "label": "I-filter ayon sa mode",
-    "all": "Lahat"
-  },
-  "messageCreator": "I-message si {{name}} nang pribado",
-  "badge": {
-    "challenger": "Challenger",
-    "taker": "Taker",
-    "spectator": "Manonood"
-  },
-  "cta": {
-    "takenBy": "Kasalukuyang ginagawa ni {{name}}",
-    "closed": "Sarado na ang challenge na ito"
-  },
-  "join": {
-    "gateTitle": "Maging manonood",
-    "gateBody": "Pumasok bilang manonood para sundan ang usapan at i-cheer ang kalahok.",
-    "cta": "Pumasok bilang manonood",
-    "leaveCta": "Lumabas sa channel",
-    "errKicked": "Inalis ka sa challenge na ito. Hindi ka na puwedeng sumali ulit.",
-    "errClosed": "Hindi na tumatanggap ng bagong miyembro ang challenge.",
-    "errGeneric": "Hindi pumasok - subukan ulit."
-  },
-  "lock": {
-    "private": {
-      "title": "Pribado ang challenge na ito",
-      "body": "Tanging ang gumawa at tumanggap lang ang makakakita ng usapan."
-    }
+  "privacy": {
+    "panelTitle": "Privacy",
+    "currentPublic": "Public ang challenge na 'to - kahit sino makakakita.",
+    "currentFriends": "Sa friends lang naka-share ang challenge na 'to.",
+    "currentPrivate": "Private ang challenge na 'to - kayong dalawa lang ang makakakita.",
+    "intlNote": "Laging public ang mga international challenge.",
+    "goPrivateCta": "Gawing private (dapat pumayag kayong dalawa)",
+    "myVoteAgreed": "Bumoto kang oo - hinihintay pa ang isa.",
+    "myVoteDenied": "Tumanggi ka. I-tap sa baba kung nagbago ang isip mo.",
+    "otherVoteAgreed": "Bumoto siyang oo - ikaw na ang magdedesisyon.",
+    "otherVoteDenied": "Tumanggi siya.",
+    "voteAgreedCta": "Payag - gawing private",
+    "voteDeniedCta": "Tanggihan",
+    "withdrawCta": "Bawiin ang boto ko",
+    "needCounterparty": "Available kapag may tumanggap na ng challenge na 'to.",
+    "errVote": "Hindi na-save ang boto mo - subukan ulit.",
+    "errSave": "Hindi na-save - subukan ulit.",
+    "notifTitle": "Mga notification para sa challenge na 'to",
+    "notif": {
+      "milestones": "Mga milestone",
+      "all": "Bawat message",
+      "off": "Off"
+    },
+    "notifHint": {
+      "milestones": "Pag-accept ng taker, pag-submit ng proof, final na validation.",
+      "all": "I-ping ako sa bawat bagong message sa channel.",
+      "off": "Tahimik lang - ako na ang titingin sa channel."
+    },
+    "closedTitle": "Isara sa bagong sasali",
+    "closedBody": "Maiiwan ang mga kasali na. Hindi na tatanggap ng bago ang button na Sumali hanggang buksan mo ulit.",
+    "closedCloseCta": "Isara sa mga bagong sasali",
+    "closedReopenCta": "Buksan ulit sa mga bagong sasali"
   },
   "members": {
     "title": "Nasa channel",
-    "countIn": "{{count}} sa channel",
+    "countIn": "{{count}} ang nasa channel",
     "seeAll": "Tingnan lahat",
-    "empty": "Wala pang sumali - ikaw ang mauna.",
-    "kickCta": "Tanggalin",
-    "kickAria": "Tanggalin si {{name}} sa channel",
-    "errKick": "Hindi naalis - subukan ulit."
+    "empty": "Wala pang sumasali, ikaw na ang mauna.",
+    "kickCta": "Alisin",
+    "kickAria": "Alisin si {{name}} sa channel",
+    "errKick": "Hindi naalis. Subukan ulit."
   },
   "notif": {
     "on": "Naka-on ang notifications",
     "off": "Naka-off ang notifications"
   },
   "manage": {
-    "cta": "Pamahalaan",
-    "title": "Pamahalaan ang challenge"
-  },
-  "visibility": {
-    "badge": {
-      "public": "Pampubliko",
-      "friends": "Mga kaibigan",
-      "private": "Pribado"
-    },
-    "label": "Sino ang makakakita nito?",
-    "public": "Pampubliko",
-    "friends": "Mga kaibigan",
-    "publicHint": "Kahit sino sa lungsod ay makakakita at makakasali.",
-    "friendsHint": "Ang mga kaibigan mo lang at mga inimbitahan ang makakakita.",
-    "intlLocked": "Laging pampubliko ang mga international challenge.",
-    "moderationBlocked": "Na-flag ang text mo — pakibago ang pananalita.",
-    "optin": {
-      "title": "Heads up — pampubliko ito",
-      "body": "Lumalabas ang mga pampublikong challenge sa city feed at sa pampublikong web. Makikita ng kahit sino ang pangalan mo at ang text ng challenge — pati ng mga hindi miyembro at search engine. Pwede kang lumipat sa Mga kaibigan sa ibaba kung gusto mong mas pribado.",
-      "cta": "Sige, i-post na pampubliko",
-      "switchToFriends": "Gawing Mga kaibigan na lang",
-      "dontShowAgain": "Huwag nang ipakita ulit"
-    }
-  },
-  "privacy": {
-    "closedCloseCta": "Sarado sa bagong miyembro",
-    "closedReopenCta": "Buksang muli sa mga sasali",
-    "panelTitle": "Privacy",
-    "currentPublic": "Pampubliko ang challenge na ito — kahit sino makakakita.",
-    "currentFriends": "Sa mga kaibigan lang naka-share ang challenge na ito.",
-    "currentPrivate": "Pribado ang challenge na ito — kayong dalawa lang ang makakakita.",
-    "intlNote": "Laging pampubliko ang mga international challenge.",
-    "goPrivateCta": "Gawing pribado (pareho dapat pumayag)",
-    "myVoteAgreed": "Bumoto kang oo — hinihintay ang isa pa.",
-    "myVoteDenied": "Tumanggi ka. I-tap sa ibaba para magbago ng isip.",
-    "otherVoteAgreed": "Bumoto siyang oo — ikaw na ang magdedesisyon.",
-    "otherVoteDenied": "Tumanggi siya.",
-    "voteAgreedCta": "Pumayag — gawing pribado",
-    "voteDeniedCta": "Tumanggi",
-    "withdrawCta": "Bawiin ang boto ko",
-    "needCounterparty": "Available kapag may tumanggap na sa challenge na ito.",
-    "errVote": "Hindi na-save ang boto mo — subukan ulit.",
-    "errSave": "Hindi na-save — subukan ulit.",
-    "notifTitle": "Mga notification para sa challenge na ito",
-    "notif": {
-      "milestones": "Mga milestone",
-      "all": "Bawat mensahe",
-      "off": "Naka-off"
-    },
-    "notifHint": {
-      "milestones": "Pagtanggap ng taker, pagsumite ng patunay, panghuling validation.",
-      "all": "I-ping ako sa bawat bagong mensahe sa channel.",
-      "off": "Tahimik lang — ako na ang titingin sa channel."
-    },
-    "closedTitle": "Isara sa bagong sasali",
-    "closedBody": "Mananatili ang kasalukuyang mga sumali. Titigil ang Sumali na button sa pagtanggap ng bago hanggang buksan mo muli."
+    "cta": "I-manage",
+    "title": "I-manage ang challenge"
   },
   "details": {
     "collapseAria": "Itago ang detalye ng channel",
     "expandAria": "Ipakita ang detalye ng channel"
   },
-  "ratePrompts": {
-    "banner": {
-      "title": "I-rate ang challenge na ito - kumusta?",
-      "titleUrgent": "Ikaw na ang mag-rate sa challenge na ito"
-    },
-    "sheet": {
-      "title": "Kumusta ang challenge?",
-      "starsAria": "{{n}} star",
-      "commentPlaceholder": "Mag-iwan ng note tungkol sa challenge (opsyonal)",
-      "submit": "I-submit ang rating",
-      "later": "Mamaya na",
-      "subtitle": "I-rate ang challenge, hindi ang tao."
-    },
-    "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
+  "badge": {
+    "challenger": "Challenger",
+    "taker": "Taker",
+    "spectator": "Manonood"
   },
-  "leaderboard": {
-    "title": "Most Local",
-    "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
-      "neutral": "Top challengers"
+  "cta": {
+    "takenBy": "Ginagawa ngayon ni {{name}}",
+    "closed": "Sarado na ang challenge na 'to"
+  },
+  "intl": {
+    "targetCityLabel": "Target na city",
+    "targetCityAnywhere": "Kahit saan sa mundo",
+    "targetCityHint": "Iwan sa \"Kahit saan sa mundo\" para maabot ang mga biyahero kahit saan, o pumili ng city para mas tutok.",
+    "proofRequirementsLabel": "Ano ang dapat makita sa photo?",
+    "proofRequirementsPlaceholder": "hal. Ang pagkain habang maliwanag pa, kasama ka sa frame",
+    "proofRequirementsHint": "Photo ang proof. Makikita ito ng sasali bago mag-submit - maging specific.",
+    "cityPicker": {
+      "title": "Pumili ng target na city",
+      "searchPlaceholder": "Maghanap ng city…",
+      "anywhere": "Kahit saan sa mundo"
     },
-    "scope": {
-      "city": "My city",
-      "world": "World",
-      "cities": "Mga lungsod"
-    },
-    "period": {
-      "month": "Ngayong buwan",
-      "alltime": "All-time"
-    },
-    "points": "{{points}} pts",
-    "me": {
-      "ranked": "Ikaw · #{{rank}} · {{points}} pts",
-      "unranked": "Mag-take ng challenge para mapunta sa board"
-    },
-    "empty": {
-      "title": "Wala pang nasa board",
-      "body": "Maging una sa pag-take ng challenge at makakuha ng points."
-    },
-    "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit.",
-    "neutral": "🏆 Most Local",
-    "titleCity": "Most {{demonym}}",
-    "share": {
-      "cta": "Ibahagi ang rank ko",
-      "periodMonth": "ngayong buwan",
-      "periodAll": "sa lahat ng panahon",
-      "placeCity": "sa {{city}}",
-      "placeWorld": "sa World",
-      "userNotTop": "🔥 #{{rank}} ako {{place}} {{period}}: {{pts}} pts! Hinahabol si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
-      "userTop": "👑 #1 ako {{place}} {{period}}: {{pts}} pts! Nasa likuran ko sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Subukan mong agawin ang korona 😏",
-      "cityNotTop": "🔥 Ang {{place}} ay #{{rank}} sa lahat ng lungsod {{period}}: {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna kay {{below}} ({{bPts}} pts). Mga local, akyat na 🏆",
-      "cityTop": "👑 Ang {{place}} ay #1 sa lahat ng lungsod {{period}}: {{pts}} pts! Hinahabol tayo nina {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Mga local, manatili sa tuktok 🔥"
+    "proof": {
+      "requirementsLabel": "Ang hiningi ng creator",
+      "submitCta": "Ipadala ang proof",
+      "tryAgainCta": "Subukan ulit ({{count}} na lang)",
+      "waitingProof": "Hinihintay ang proof",
+      "waitingVerdict": "Hinihintay ang verdict",
+      "approvedLine": "Nagawa ang challenge",
+      "closedLine": "Sarado na ang challenge",
+      "lastReason": "Dahilan: {{reason}}",
+      "geotagOk": "Verified ang geotag",
+      "geotagWarn": "Wala sa target area ang geotag",
+      "approveCta": "I-approve",
+      "rejectCta": "I-reject",
+      "rejectModalTitle": "I-reject ang proof na 'to",
+      "rejectModalHint_one": "May {{count}} try pa siya. Sabihin mo kung ano ang dapat ayusin.",
+      "rejectModalHint_other": "May {{count}} try pa siya. Sabihin mo kung ano ang dapat ayusin.",
+      "reasonPlaceholder": "hal. Masyadong malabo ang photo, hindi makita ang pagkain",
+      "rejectConfirm": "Ipadala ang rejection",
+      "reasonRequiredTitle": "Kailangan ng dahilan",
+      "reasonRequiredBody": "Malaking tulong sa tatanggap ang maikling dahilan (1–200 character).",
+      "permPhotoTitle": "Kailangan ng access sa photos",
+      "permPhotoBody": "I-allow ang access sa photo library sa Settings para makapili ng proof.",
+      "permGpsTitle": "Kailangan ng location",
+      "permGpsBody": "Required ang geotag. I-enable ang location sa Settings.",
+      "gpsFailTitle": "Hindi mabasa ang GPS",
+      "gpsFailBody": "Subukan ulit sa labas o i-on ang location services.",
+      "submitFailTitle": "Hindi naipadala",
+      "submitFailBody": "I-check ang connection mo at subukan ulit.",
+      "reviewFailTitle": "Hindi na-save ang verdict"
     }
   },
-  "scoringInfo": {
-    "aria": "Paano gumagana ang points",
-    "helpLabel": "Paano kumita ng points",
-    "title": "Paano gumagana ang challenges",
-    "intro": "Maliliit na points lang sa pag-join; ang malalaking points ay para sa totoong pagpunta o panalo. Walang kwenta ang puro join lang.",
-    "colStep": "Hakbang",
-    "steps": {
-      "created": "Nagawa ang challenge",
-      "accepted": "Tinanggap ang challenge",
-      "date": "May date na",
-      "meet": "Meet-up",
-      "rate": "Both nag-rate"
-    },
-    "noPoints": "-",
-    "totalLabel": "Total kada challenge",
-    "footnote": "Pwedeng magbago ang mga numero habang ina-adjust namin ang laro.",
-    "types": {
-      "heading": "Dalawang uri ng challenge",
-      "local": "Meet — tipunin ang grupo nang personal sa takdang oras + lugar. Lahat ng pumunta, malaki ang points.",
-      "international": "Photo challenge — lahat magsu-submit ng photo bago ang deadline; ang challenger ang pipili ng panalo."
-    },
-    "lifecycle": {
-      "heading": "🔁 Paano natatapos",
-      "body": "Ang challenger ang nagtatakda, sasali ang mga tao, at sa dulo ang challenger ang magva-validate — kung sino ang pumunta, o aling photo ang nanalo."
-    },
-    "pointsHeading": "Paano kumita ng points",
-    "ways": {
-      "join": "Sumali sa isang challenge",
-      "create": "Gumawa ng challenge",
-      "present": "Dumating — na-validate na present",
-      "host": "Mag-host ng meetup",
-      "submit": "Mag-submit ng larawan sa challenge",
-      "win": "Manalo sa photo challenge"
-    },
-    "seeExamples": "Tingnan ang 3 totoong halimbawa"
+  "modeFilter": {
+    "label": "I-filter ayon sa mode",
+    "all": "Lahat"
   },
   "scoreCelebration": {
-    "unit": "puntos",
+    "unit": "points",
     "subtitle": {
       "accepted": "Tinanggap ang challenge mo",
-      "date_locked": "Set na ang date - tara",
+      "date_locked": "May date na, tara!",
       "meetup": "Mission accomplished",
       "debrief": "Mission accomplished",
-      "ghost": "Sa susunod ulit",
+      "ghost": "Bawi na lang sa susunod",
       "default": "Umaakyat ka sa ranking",
       "meet_bonus": "Na-unlock ang meet bonus",
-      "challenge_created": "Naglunsad ka ng challenge"
+      "challenge_created": "Nag-launch ka ng challenge"
     },
     "rank": {
       "city": "#{{rank}} sa {{city}}",
-      "cityBeyond": "Wala sa top {{topN}} ng inyong city",
+      "cityBeyond": "Wala ka sa top {{topN}} ng city mo",
       "world": "#{{rank}} sa buong mundo",
-      "worldBeyond": "Wala sa top {{topN}} ng buong mundo",
-      "cityUnranked": "Walang ranggo ngayong buwan sa {{city}}",
-      "worldUnranked": "Walang ranggo ngayong buwan sa mundo",
-      "cities": "{{city}} ang #{{rank}} sa mga lungsod",
-      "citiesBeyond": "{{city}} labas sa top {{topN}} na lungsod"
+      "worldBeyond": "Wala ka sa top {{topN}} sa buong mundo",
+      "cityUnranked": "Wala ka pang rank ngayong buwan sa {{city}}",
+      "worldUnranked": "Wala ka pang rank ngayong buwan sa buong mundo",
+      "cities": "#{{rank}} ang {{city}} sa mga city",
+      "citiesBeyond": "Wala ang {{city}} sa top {{topN}} na city"
     },
-    "cta": "Tara",
+    "cta": "Tara na",
     "kindShort": {
       "accepted": "Tinanggap",
-      "date_locked": "Set na ang date",
+      "date_locked": "May date na",
       "meetup": "Nagkita",
       "debrief": "Parehong nag-rate",
       "ghost": "Ghosted",
@@ -647,311 +661,297 @@
       "challenge_created": "Nagawa ang challenge"
     },
     "event": {
-      "deletedChallenge": "Tinanggal na challenge",
+      "deletedChallenge": "Na-delete na challenge",
       "andMore": "at {{count}} pa"
     },
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "Welcome! Mag-chat ka nang malaya, walang sign-up.",
-    "cta": "Gusto kunin ang challenge na ito? Mag-sign up sa 3 segundo"
-  },
-  "result": {
-    "winner": {
-      "title": "Nanalo ka!",
-      "body": "Nanalo ang photo mo sa challenge."
-    },
-    "loser": {
-      "title": "Nanalo si {{name}}",
-      "body": "Magandang kuha! Kumita ka ng {{points}} sa pagsali — subukan ulit sa susunod"
-    },
-    "present": {
-      "title": "Dumalo ka!",
-      "body": "Na-validate na present ka sa meet."
-    },
-    "absent": {
-      "title": "Na-miss mo 'to",
-      "body": "Samahan mo 'yung susunod na meet — naghihintay ang puwesto mo."
-    },
-    "host": {
-      "titlePhoto": "Nanalo si {{name}} sa challenge mo!",
-      "titleMeet": "Tapos na ang meet mo!",
-      "body": "Salamat sa pag-host.",
-      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
-    },
-    "cta": "Galing!",
-    "total": "Mayroon ka nang {{total}} points",
-    "rateTitle": "I-rate ang challenge na ito",
-    "notePlaceholder": "Magdagdag ng note (opsyonal)",
-    "saveRating": "I-save ang rating"
-  },
-  "status": {
-    "live": "Live",
-    "done": "Tapos",
-    "ended": "Tapos na"
+    "title": "Welcome! Chat lang dito, walang sign-up na kailangan.",
+    "cta": "Gusto mong tanggapin ang challenge na 'to? Mag-sign up, 3 segundo lang"
   },
   "group": {
-    "meetCta": "Piliin ang petsa ng meetup",
-    "meetRequired": "Pumili ng petsa para sa meetup.",
     "meetLabel": "Kailan at saan",
-    "meetHint": "Lahat ng sasali ay magkikita-kita dito. Ikaw ang magva-validate kung sino ang dumating pagkatapos.",
-    "meetSet": "Itakda ang meetup",
-    "done": "Tapos na ang meetup na ito.",
+    "meetCta": "I-set ang date ng meetup",
+    "meetHint": "Dito magkikita-kita ang lahat ng sasali. Pagkatapos, ikaw ang magva-validate kung sino ang dumating.",
+    "meetRequired": "Pumili ng date para sa meetup.",
+    "meetSet": "I-set ang meetup",
+    "done": "Tapos na ang meetup na 'to.",
     "validateCta": "I-validate kung sino ang dumating",
-    "validateAfter": "Mava-validate mo pagkatapos ng meetup · {{time}}",
-    "youreIn": "Sali ka na — kita tayo doon!",
+    "validateAfter": "Puwede mong i-validate pagkatapos ng meetup · {{time}}",
+    "youreIn": "Kasali ka na, kita-kits!",
     "joinCta": "Sumali sa challenge (+2 pts)",
-    "closed": "Sarado na sa bagong sasali",
-    "joinFailed": "Hindi nakasali — subukan ulit.",
-    "validateFailed": "Hindi na-validate — subukan ulit.",
+    "closed": "Sarado na sa mga bagong sasali",
+    "joinFailed": "Hindi nakasali. Subukan ulit.",
+    "validateFailed": "Hindi na-validate. Subukan ulit.",
     "validateTitle": "Sino ang dumating?",
-    "validateSub": "I-tsek lahat ng pumunta sa meetup. Bawat isa ay makakakuha ng reward.",
+    "validateSub": "I-check ang lahat ng pumunta sa meetup. May reward ang bawat isa.",
     "rateMeet": "Kumusta ang meetup?",
     "validateConfirm": "I-validate ang {{count}} present",
     "noParticipants": "Wala pang sumasali.",
     "join": "Sumali",
-    "joinedCount": "{{count}} sumali",
-    "deadlineLabel": "Deadline ng pagsumite",
+    "joinedCount": "{{count}} ang sumali",
+    "deadlineLabel": "Deadline ng pag-submit",
     "deadline24h": "24h",
     "deadline3d": "3 araw",
     "deadline1w": "1 linggo",
-    "deadlineHint": "Lahat ng sasali ay magsu-submit ng larawan bago ang deadline. Ikaw ang pipili ng panalo pagkatapos.",
+    "deadlineHint": "Lahat ng sasali ay magsa-submit ng photo bago ang deadline. Pagkatapos, ikaw ang pipili ng panalo.",
     "deadlineRequiredTitle": "Pumili ng deadline",
     "deadlineRequired": "Piliin kung gaano katagal ang challenge.",
-    "deadlinePrefix": "Bago ang",
-    "contestDone": "Tapos na ang challenge na ito.",
-    "youreInPhoto": "Sali ka na — i-submit ang larawan mo sa ibaba.",
+    "deadlinePrefix": "I-submit bago ang",
+    "contestDone": "Tapos na ang challenge na 'to.",
+    "youreInPhoto": "Kasali ka na, i-submit ang photo mo sa ibaba.",
     "pickWinnerCta": "Pumili ng panalo",
     "joinContestCta": "Sumali sa challenge (+2 pts)",
     "winnerTitle": "Pumili ng panalo",
-    "winnerSub": "Piliin ang pinakamagandang larawan. Ang panalo ang kukuha ng malaking reward.",
+    "winnerSub": "Piliin ang pinakamagandang photo. Sa panalo ang malaking reward.",
     "winnerConfirm": "Koronahan ang panalo",
-    "winnerNoSubmission": "Hindi pa nag-submit ng larawan ang taong iyon.",
-    "winnerFailed": "Hindi nakapili ng panalo — subukan ulit.",
-    "submissionsHeader_one": "{{count}} larawan",
-    "submissionsHeader_other": "{{count}} larawan",
+    "winnerNoSubmission": "Wala pang na-submit na photo ang taong 'yan.",
+    "winnerFailed": "Hindi nakapili ng panalo. Subukan ulit.",
+    "submissionsHeader_one": "{{count}} photo",
+    "submissionsHeader_other": "{{count}} photos",
     "tapToPick": "piliin ang pinakamaganda",
     "winnerTag": "Panalo",
-    "pickThis": "Piliin",
+    "pickThis": "Piliin ito",
     "winnerConfirmTitle": "Koronahan ang panalo?",
-    "winnerConfirmBody": "Si {{name}} ang kukuha ng malaking reward.",
-    "pickHint": "Piliin ang panalo mula sa mga larawan sa ibaba.",
-    "awaitingPhotos": "Wala pang larawan — umiinit na ang challenge 🔥",
-    "checkPhotos_one": "Tingnan ang {{count}} larawan",
-    "checkPhotos_other": "Tingnan ang {{count}} larawan"
-  },
-  "leaveTakeon": {
-    "pill": "🚪 Umalis",
-    "confirmTitle": "Aalis sa challenge na ito?",
-    "confirmBody": "Babalik sa zero ang timeline at mabubuksan muli ang challenge para sa iba. Hindi na maibabalik.",
-    "confirmCta": "Umalis",
-    "failed": "Hindi nakaalis — subukan ulit."
-  },
-  "restart": {
-    "cta": "I-restart ang challenge",
-    "confirmTitle": "I-restart ang challenge?",
-    "confirmBody": "Aalisin nito ang kasalukuyang taker, buburahin ang chat, at muling bubuksan ang challenge mula sa zero. Hindi na maibabalik.",
-    "confirmCta": "I-restart",
-    "failed": "Hindi na-restart — subukan ulit."
+    "winnerConfirmBody": "Kay {{name}} ang malaking reward.",
+    "pickHint": "Piliin ang panalo sa mga photo sa ibaba.",
+    "awaitingPhotos": "Wala pang photo, umiinit na ang challenge 🔥",
+    "checkPhotos_one": "Tingnan ang photo",
+    "checkPhotos_other": "Tingnan ang {{count}} photos"
   },
   "challengeIntro": {
     "slide1": {
-      "title": "Damhin ang lungsod, ngayon",
-      "body": "Maliliit na totoong challenge sa pagitan ng mga tao sa isang lungsod — at sa pagitan ng mga lungsod."
+      "title": "Damhin ang city, ngayon",
+      "body": "Maliliit na totoong dare ang mga challenge sa pagitan ng mga tao sa iisang city, at sa pagitan ng mga city."
     },
     "slide2": {
       "title": "Mag-set up ng challenge",
-      "body": "Mag-set ng meetup (petsa + lugar) o photo challenge na may deadline. Ikaw ang host."
+      "body": "Mag-set ng meetup (date + lugar) o photo challenge na may deadline. Ikaw ang host."
     },
     "slide3": {
-      "title": "Basta sumali ang kahit sino",
-      "body": "Walang hingian, walang hintayan — kung sino ang gusto, sumali. May +2 ka agad."
+      "title": "Sali lang ang kahit sino",
+      "body": "Walang hingian, walang hintayan: kung sino ang game, sumasali. May +2 ka agad."
     },
     "slide4": {
-      "title": "Paganahin mo",
-      "body": "Sabay-sabay na pupunta ang lahat sa meetup mo — o magsu-submit ng pinakamagandang larawan bago ang deadline."
+      "title": "Gawin mong totoo",
+      "body": "Sabay-sabay na darating ang lahat sa meetup mo, o magsa-submit ng pinakamagandang photo nila bago ang deadline."
     },
     "slide5": {
       "title": "Ikaw ang magva-validate",
-      "body": "Pagkatapos, kukumpirmahin mo kung sino ang dumating, o pipiliin ang panalong larawan. Doon pumapasok ang malalaking puntos."
+      "body": "Pagkatapos, ikaw ang magko-confirm kung sino ang dumating, o pipili ng panalong photo. Doon pumapasok ang malalaking points."
     },
     "slide6": {
-      "title": "Sa pagitan ng mga lungsod",
-      "body": "Gumagana ang mga photo challenge kahit malayo — i-challenge ang buong ibang lungsod na magpadala ng pinakamagandang kuha."
+      "title": "Sa pagitan ng mga city",
+      "body": "Gumagana ang photo challenge kahit malayo: i-challenge ang isang buong city na ipadala ang best shot nila."
     },
     "slide7": {
       "title": "Umakyat sa Most Local",
-      "body": "Dumating at manalo para umangat sa board. Maliit lang ang puntos sa pagsali — ang importante ay talagang gawin."
+      "body": "Dumating at manalo para umakyat sa board. Maliit lang ang points sa pagsali, kaya ang mahalaga, talagang gawin mo."
     }
+  },
+  "result": {
+    "winner": {
+      "title": "Nanalo ka!",
+      "body": "Panalo ang photo mo sa challenge."
+    },
+    "loser": {
+      "title": "Nanalo si {{name}}",
+      "body": "Ganda ng kuha! Nakakuha ka ng {{points}} sa pagsali. Bawi next time"
+    },
+    "present": {
+      "title": "Dumating ka!",
+      "body": "Validated: present ka sa meetup."
+    },
+    "absent": {
+      "title": "Na-miss mo 'to",
+      "body": "Abangan ang susunod na meetup, naghihintay ang puwesto mo."
+    },
+    "host": {
+      "titlePhoto": "Nanalo si {{name}} sa challenge mo!",
+      "titleMeet": "Tapos na ang meetup mo!",
+      "body": "Salamat sa pag-host.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Galing!",
+    "total": "May {{total}} points ka na ngayon",
+    "rateTitle": "I-rate ang challenge na 'to",
+    "notePlaceholder": "Magdagdag ng note (optional)",
+    "saveRating": "I-save ang rating"
+  },
+  "status": {
+    "live": "Live",
+    "done": "Tapos na",
+    "ended": "Tapos na"
   },
   "pointExamples": {
     "title": "3 totoong halimbawa",
-    "intro": "Paano nagbigay ng puntos ang mga totoong challenge — sino ang nakakuha ng ano.",
-    "empty": "Wala pang halimbawa — mauna kang maglunsad ng challenge!",
+    "intro": "Paano namigay ng points ang mga totoong challenge: sino ang nakakuha ng ano.",
+    "empty": "Wala pang halimbawa, mauna kang magpatakbo ng challenge!",
     "each": "bawat isa",
     "line": {
       "created": "Ginawa ni {{name}}",
       "winner": "Nanalo si {{name}}",
       "present": "{{count}} ang dumating",
-      "submission": "{{count}} ang nag-submit ng larawan",
+      "submission": "{{count}} ang nag-submit ng photo",
       "host": "Nag-host si {{name}}"
     }
   },
   "titlePh": {
     "food": "hal. Hanapan mo ako ng pinakamasarap na pho 🍜",
-    "place": "hal. Dalhin mo ako sa paborito mong sikretong lugar 📍",
-    "culture": "hal. Ipakita mo sa akin ang alam lang ng mga local 🎭",
-    "help": "hal. I-challenge mo akong gumawa ng kakaiba 🤪"
+    "place": "hal. Dalhin mo ako sa paborito mong tagong spot 📍",
+    "culture": "hal. Ipakita mo sa akin ang alam lang ng locals 🎭",
+    "help": "hal. I-dare mo akong sumubok ng kakaiba 🤪"
   },
   "relaunch": {
     "cta": "I-restart",
-    "confirmTitle": "I-restart ang challenge na ito?",
-    "confirmBody": "Bubukas ulit ito gamit ang parehong countdown na itinakda mo noong una.",
+    "confirmTitle": "I-restart ang challenge na 'to?",
+    "confirmBody": "Magbubukas ulit ito na may parehong countdown na sinet mo noong una.",
     "confirmCta": "I-restart",
-    "failed": "Hindi na-restart - subukan ulit."
+    "failed": "Hindi na-restart. Subukan ulit."
   },
   "appMap": {
     "title": "Tingnan ang mga spot sa mapa",
     "titleCity": "Tingnan ang mga spot ng {{city}} sa mapa",
-    "body": "Kung saan nagpo-post ang mga local ng kanilang Daily Challenge na litrato. I-post ang sa iyo mula sa Hilads app."
+    "body": "Dito nagpo-post ang locals ng Daily Challenge photos nila. I-post ang sa 'yo mula sa Hilads app."
   },
-  "creationClosed": "Sarado na ang paggawa ng challenge. Gawin ang Daily Challenge sa Hilads app.",
+  "creationClosed": "Sarado na ang paggawa ng challenge. Maglaro ng Daily Challenge sa Hilads app.",
   "map": {
     "see": "Tingnan ang mapa",
     "button": "Mapa",
     "search": "Maghanap ng pagkain, café…",
     "searchA11y": "Maghanap ng spot",
-    "clearSearch": "I-clear ang paghahanap",
+    "clearSearch": "I-clear ang search",
     "noResults": "Walang tugmang spot",
     "all": "Lahat",
     "openSpot": "Buksan ang spot",
-    "directions": "Direksyon",
-    "validated": "Kinumpirma ng isang local",
-    "pricePaid": "Binayarang presyo {{price}}",
+    "directions": "Directions",
+    "validated": "Kumpirmado ng isang local",
+    "pricePaid": "Binayaran {{price}}",
     "closeSpot": "Isara",
     "emptyTitle": "Ikaw na ang unang maglagay ng spot dito",
     "list": "Listahan",
     "mapView": "Mapa",
     "sortNearest": "Pinakamalapit",
-    "sortWeek": "Pinakamaraming boto ngayong linggo",
+    "sortWeek": "Pinakamaraming votes ngayong linggo",
     "spotsTomorrow": "Galing ang mga spot sa challenge bukas: {{theme}}",
-    "proofs_one": "{{count}} litrato",
-    "proofs_other": "{{count}} litrato",
-    "votes_one": "{{count}} boto",
-    "votes_other": "{{count}} boto",
+    "proofs_one": "{{count}} photo",
+    "proofs_other": "{{count}} photos",
+    "votes_one": "{{count}} vote",
+    "votes_other": "{{count}} votes",
     "unavailable": "Hindi available ang mapa ngayon.",
-    "nearYou": "Malapit sa iyo",
-    "locationDenied": "Payagan ang location para sa hilads.live sa browser mo para ma-center ang mapa sa iyo.",
+    "nearYou": "Malapit sa 'yo",
+    "locationDenied": "I-allow ang location para sa hilads.live sa browser mo para ma-center sa 'yo ang mapa.",
     "locate": "Igitna ang mapa sa akin",
-    "locationFailed": "Hindi available ang lokasyon mo ngayon.",
+    "locationFailed": "Hindi available ang location mo ngayon.",
     "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "cityBubbleA11y_other": "{{city}}, {{count}} spots",
     "todayChip": "Ngayon",
     "playHere": "Maglaro dito ngayon",
-    "planNow": "ngayon na",
+    "planNow": "ngayon",
     "planGoing_one": "{{count}} pupunta",
     "planGoing_other": "{{count}} pupunta",
     "halloween": "🎃 Halloween"
   },
   "spot": {
-    "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",
+    "rankWeekFirst": "Pinakamaraming votes ngayong linggo sa {{city}}",
     "rankWeek": "#{{rank}} ngayong linggo sa {{city}}",
-    "rankAlltimeFirst": "Pinakamaraming botong spot sa {{city}}",
-    "rankAlltime": "#{{rank}} sa lahat ng panahon sa {{city}}",
-    "photos": "Mga larawan",
+    "rankAlltimeFirst": "Spot na may pinakamaraming votes sa {{city}}",
+    "rankAlltime": "#{{rank}} all time sa {{city}}",
+    "photos": "Photos",
     "captions": "Sabi ng mga tao",
-    "notFound": "Hindi available ang spot na ito.",
+    "notFound": "Hindi available ang spot na 'to.",
     "local": "Local",
-    "morePhotos": "Higit pang larawan",
-    "proofInApp": "I-post ang litrato mo sa app"
+    "morePhotos": "Marami pang photo",
+    "proofInApp": "I-post ang photo mo sa app"
   },
   "dc": {
     "kicker": "Daily Challenge",
     "timeLeft": "{{time}} na lang",
     "nextIn": "Susunod na Daily Challenge in {{time}}",
     "nothingLive": "Parating na ang susunod na Daily Challenge",
-    "cta": "Gawin ang challenge",
+    "cta": "Sali sa challenge",
     "ctaIn": "G ako",
-    "ctaTaken": "Tapos na ang challenge · Tingnan ang litrato ko",
-    "seeProofs": "Tingnan ang mga litrato ngayong araw",
+    "ctaTaken": "Tapos na ang challenge · Tingnan ang photo ko",
+    "seeProofs": "Tingnan ang photos ngayon",
     "localTwist": "Local Twist",
     "twistIn": "{{city}} Local Twist",
     "twistBy": "ni {{name}}",
-    "count_one": "{{count}} ang gumawa nito ngayong araw",
-    "count_other": "{{count}} ang gumawa nito ngayong araw",
+    "count_one": "{{count}} na ang naglaro ngayon",
+    "count_other": "{{count}} na ang naglaro ngayon",
     "countCity": "{{count}} sa {{city}}",
-    "countZero": "Wala pa - maging una ka",
-    "beFirst": "Maging una ngayong araw",
-    "beFirstSub": "Wala pang litrato. Ikaw na ang mauna, naghihintay ang mundo.",
-    "firstYours": "Naipadala na ang litrato mo",
-    "firstYoursSub": "Lalabas ito rito kapag naaprubahan, kasama ng mga litrato ng iba.",
-    "yourProof": "Ang litrato mo",
+    "countZero": "Wala pa - ikaw na ang mauna",
+    "beFirst": "Ikaw ang mauna ngayon",
+    "beFirstSub": "Wala pang photo. Ikaw na ang mauna, naghihintay ang mundo.",
+    "firstYours": "Pasok na ang photo mo",
+    "firstYoursSub": "Lalabas ito rito kapag na-approve na, kasama ng photos ng iba.",
+    "yourProof": "Photo mo",
     "status": {
-      "pending": "Nakabinbin",
+      "pending": "Pending",
       "approved": "Na-publish",
       "rejected": "Hindi na-publish",
       "removed": "Tinanggal"
     },
-    "pendingHint": "Nai-report ang litratong ito at sinusuri na.",
+    "pendingHint": "Na-report ang photo na 'to at chine-check na.",
     "reasonLabel": "Dahilan: {{reason}}",
     "fixIt": "Ayusin",
     "edit": "I-edit",
-    "delete": "Burahin",
-    "deleteTitle": "Burahin ang litrato mo?",
+    "delete": "I-delete",
+    "deleteTitle": "Burahin ang photo mo?",
     "deleteBody": "Mawawala ito sa challenge at sa mga channel.",
-    "cancel": "Kanselahin",
+    "cancel": "I-cancel",
     "closed": "Sarado na",
     "back": "Bumalik",
-    "practicalTitle": "Good to know",
+    "practicalTitle": "Dapat malaman",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "mula sa {{count}} litrato",
-    "priceFrom_other": "mula sa {{count}} litrato",
-    "places_one": "{{count}} lugar na naka-pin",
-    "places_other": "{{count}} lugar na naka-pin",
+    "priceFrom_one": "mula sa {{count}} photo",
+    "priceFrom_other": "mula sa {{count}} photos",
+    "places_one": "{{count}} naka-pin na spot",
+    "places_other": "{{count}} naka-pin na spots",
     "unnamedPlace": "Naka-pin na lugar",
     "tabWorld": "Mundo",
     "local": "Local",
     "traveler": "Biyahero",
-    "validatedByLocal": "Validated ng isang local",
+    "validatedByLocal": "Kumpirmado ng isang local",
     "loadFailed": "Hindi ma-load ang Daily Challenge.",
     "retry": "Subukan ulit",
-    "notFound": "Wala ang Daily Challenge na ito.",
-    "cityRowEmpty": "Maging unang gumawa ng challenge sa {{city}}",
+    "notFound": "Walang ganitong Daily Challenge.",
+    "cityRowEmpty": "Ikaw na ang unang gumawa ng challenge sa {{city}}",
     "proof": {
-      "titleNew": "Ang litrato mo",
-      "titleEdit": "I-edit ang litrato mo",
+      "titleNew": "Photo mo",
+      "titleEdit": "I-edit ang photo mo",
       "camera": "Camera",
       "gallery": "Gallery",
       "changePhoto": "Palitan ang photo",
-      "addPhoto": "Magdagdag ng photo ng challenge mo",
+      "addPhoto": "Magdagdag ng photo para sa challenge mo",
       "caption": "Caption",
       "captionPlaceholder": "Isang sentence tungkol dito (optional)",
-      "price": "Binayaran",
+      "price": "Binayaran mo",
       "pricePlaceholder": "Halaga (optional)",
-      "pin": "I-pin ang lugar na ito",
-      "pinHint": "Kung gusto mo lang na mahanap ito ng iba.",
+      "pin": "I-pin ang lugar na 'to",
+      "pinHint": "Kung gusto mong mahanap din ito ng iba.",
       "pinChange": "Palitan",
-      "pinRemove": "Tanggalin",
-      "submit": "I-post ang litrato ko",
+      "pinRemove": "Alisin",
+      "submit": "I-post ang photo ko",
       "save": "I-save ang changes",
       "sending": "Sine-send…",
       "sentTitle": "Naglaro na ang {{city}}!",
-      "sentBody": "Tingnan ang sinabi ng mundo. Live na ang litrato mo.",
+      "sentBody": "Silipin ang photos ng buong mundo. Live na ang photo mo.",
       "ok": "OK",
       "permPhotoTitle": "Kailangan ng access sa photos",
       "permPhotoBody": "Payagan ang access sa settings mo para makapagdagdag ng photo.",
       "permCameraTitle": "Kailangan ng access sa camera",
       "permCameraBody": "Payagan ang camera sa settings mo para makapag-picture.",
       "photoRequired": "Magdagdag muna ng photo.",
-      "locationOff": "Naka-off ang location, kaya hindi ma-pin ang lugar na ito.",
-      "editOnlyActive": "Puwede mong i-edit ang litrato mo hanggang matapos ang challenge.",
-      "takeTitle": "Kunan ang litrato mo",
-      "retake": "Kumuha ulit"
+      "locationOff": "Naka-off ang location, kaya hindi ma-pin ang lugar na 'to.",
+      "editOnlyActive": "Puwede mong i-edit ang photo mo hanggang matapos ang challenge.",
+      "takeTitle": "Kunan ang photo mo",
+      "retake": "Kunan ulit"
     },
     "errors": {
-      "already_posted": "Naglaro ka na sa challenge ngayong araw.",
-      "challenge_closed": "Sarado na ang challenge na ito.",
+      "already_posted": "Nakapaglaro ka na sa challenge ngayon.",
+      "challenge_closed": "Sarado na ang challenge na 'to.",
       "no_active_challenge": "Walang Daily Challenge ngayon.",
       "moderation_blocked": "Na-flag ang caption mo - paki-rephrase.",
       "banned": "Hindi ka na puwedeng mag-post dito.",
@@ -959,176 +959,176 @@
       "invalid_caption": "Masyadong mahaba ang caption.",
       "invalid_price": "I-check ang halaga at currency.",
       "invalid_place": "Isang lugar lang ang piliin.",
-      "rate_limited": "Sobrang daming try - maghintay sandali.",
+      "rate_limited": "Ang dami nang try - saglit lang.",
       "image_processing_failed": "Hindi ma-process ang photo na 'yan. Subukan ang iba.",
       "generic": "May nangyaring mali. Subukan ulit.",
-      "place_required": "Piliin ang lugar ng litrato mo.",
-      "place_not_allowed": "Walang lugar ang challenge na ito.",
-      "place_not_found": "Hindi na available ang lugar na iyan. Pumili ng iba.",
-      "invalid_place_name": "Dapat 1 hanggang 80 character ang pangalan ng lugar.",
-      "place_name_blocked": "Na-flag ang pangalang iyan. Pakipalitan.",
-      "invalid_position": "Kailangan ang lokasyon mo para i-post ang litratong ito.",
-      "too_far": "Masyado kang malayo sa lugar na ito."
+      "place_required": "Piliin ang lugar ng photo mo.",
+      "place_not_allowed": "Walang lugar ang challenge na 'to.",
+      "place_not_found": "Hindi na available ang lugar na 'yan. Pumili ng iba.",
+      "invalid_place_name": "Dapat 1 hanggang 80 characters ang pangalan ng lugar.",
+      "place_name_blocked": "Na-flag ang pangalang 'yan. Palitan mo.",
+      "invalid_position": "Kailangan ang location mo para ma-post ang photo na 'to.",
+      "too_far": "Masyado kang malayo sa lugar na 'to."
     },
     "push": {
-      "bannerTitle": "Makuha ang Daily Challenge tuwing umaga",
+      "bannerTitle": "Matanggap ang Daily Challenge tuwing umaga",
       "bannerCta": "I-on",
       "askTitle": "Daily Challenge",
-      "askBody": "Makuha ang Daily Challenge tuwing umaga, sa oras na swak sa'yo.",
-      "askBodyBlocked": "Naka-off ang notifications para sa Hilads. I-on sa settings mo para makuha ang Daily Challenge tuwing umaga.",
+      "askBody": "Matanggap ang Daily Challenge tuwing umaga, sa oras na swak sa'yo.",
+      "askBodyBlocked": "Naka-off ang notifications ng Hilads. I-on sa settings mo para matanggap ang Daily Challenge tuwing umaga.",
       "yes": "Oo, i-notify ako",
-      "notNow": "Hindi muna",
-      "openSettings": "Buksan ang settings"
+      "notNow": "Mamaya na",
+      "openSettings": "Buksan ang Settings"
     },
     "archive": {
       "title": "Tapos na",
       "pickCity": "Pumili ng city",
-      "worldSelection": "Mundo selection: hindi pa live ang city na ito",
+      "worldSelection": "World selection: hindi pa live ang city na 'to",
       "empty": "Parating na ang mga unang Daily Challenge.",
-      "proofs_one": "{{count}} litrato",
-      "proofs_other": "{{count}} litrato"
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos"
     },
     "report": {
-      "title": "I-report ang litratong ito",
+      "title": "I-report ang photo na 'to",
       "body": "Ano'ng problema dito?",
       "reasons": {
         "inappropriate": "Hindi angkop",
-        "person_without_consent": "May taong ipinakita nang walang pahintulot",
+        "person_without_consent": "May taong kita nang walang pahintulot",
         "dangerous": "Delikado o ilegal",
         "spam": "Spam",
         "other": "Iba pa"
       },
-      "thanks": "Salamat - titingnan namin ito.",
-      "already": "Na-report mo na ang litratong ito."
+      "thanks": "Salamat - titingnan namin.",
+      "already": "Na-report mo na ang photo na 'to."
     },
     "vote": {
-      "vote": "Bumoto",
-      "withdraw": "Bawiin ang boto ko",
-      "yours": "Litrato mo",
-      "votersTitle": "Sino ang bumoto",
-      "votersEmpty": "Wala pang boto.",
+      "vote": "Vote",
+      "withdraw": "Bawiin ang vote ko",
+      "yours": "Photo mo",
+      "votersTitle": "Sino'ng nag-vote",
+      "votersEmpty": "Wala pang votes.",
       "errors": {
-        "voting_closed": "Sarado na ang botohan kasabay ng challenge.",
-        "rate_limited": "Masyadong maraming subok - maghintay sandali.",
-        "own_proof": "Hindi mo puwedeng iboto ang sarili mong litrato.",
-        "not_found": "Wala na ang litratong ito.",
-        "generic": "May nagkamali. Subukan ulit."
+        "voting_closed": "Sarado na ang voting kasabay ng challenge.",
+        "rate_limited": "Ang dami nang try - saglit lang.",
+        "own_proof": "Hindi mo puwedeng i-vote ang sarili mong photo.",
+        "not_found": "Wala na ang photo na 'to.",
+        "generic": "May nangyaring mali. Subukan ulit."
       },
-      "voteFor": "Iboto ang {{city}}",
-      "prompt": "Iboto ang mga litratong gusto mo",
-      "tourNote": "Ang litratong may pinakamaraming boto sa bawat lungsod ay sasama sa world tour bukas.",
-      "afterPost": "Iboto ang mga litratong gusto mo",
-      "validatedHint": "Kumpirmado ng isang lokal: may nakatira rito na bumoto sa litratong ito."
+      "voteFor": "I-vote ang {{city}}",
+      "prompt": "I-vote ang photos na gusto mo",
+      "tourNote": "Ang photo na may pinakamaraming votes sa bawat city ang pasok sa world tour bukas.",
+      "afterPost": "I-vote ang photos na gusto mo",
+      "validatedHint": "Kumpirmado ng isang local: may taga-rito na nag-vote sa photo na 'to."
     },
     "results": {
       "title": "Resulta",
       "yesterdayTop3": "Top 3 kahapon",
       "worldRank": "#{{rank}} sa mundo",
-      "bestInCities": "Pinakamahusay sa bawat live na lungsod",
-      "bestIn": "Pinakamahusay sa {{city}}",
-      "none": "Walang boto sa challenge na ito, kaya walang podium."
+      "bestInCities": "Pinakamaganda sa bawat live na city",
+      "bestIn": "Pinakamaganda sa {{city}}",
+      "none": "Walang votes sa challenge na 'to, kaya walang podium."
     },
     "profile": {
-      "streak": "Kasalukuyang streak",
+      "streak": "Streak ngayon",
       "bestStreak": "Pinakamahabang streak",
-      "completed": "Natapos",
-      "bestProofs": "Pinakamagagandang litrato",
-      "emptyMine": "Nagsisimula ang streak mo sa challenge ngayon."
+      "completed": "Tapos na",
+      "bestProofs": "Best photos",
+      "emptyMine": "Magsisimula ang streak mo sa challenge ngayon."
     },
-    "streak_one": "{{count}} araw na sunod",
-    "streak_other": "{{count}} araw na sunod",
+    "streak_one": "{{count}}-day streak",
+    "streak_other": "{{count}}-day streak",
     "twist": {
-      "title": "Magmungkahi ng Local Twist",
-      "tomorrow": "Ang Daily Challenge bukas",
-      "intro": "Local ka ng {{city}}: imungkahi kung paano gawin ang challenge bukas sa paraang {{city}}. Kapag napili, ilalabas ito kasama ang pangalan mo.",
-      "closesIn": "Magsasara ang mga mungkahi sa loob ng {{time}}",
-      "closed": "Sarado na ang mga mungkahi para bukas.",
-      "yours": "Ang mungkahi mo",
+      "title": "Mag-suggest ng Local Twist",
+      "tomorrow": "Daily Challenge bukas",
+      "intro": "Local ka ng {{city}}: i-suggest kung paano gagawin ang challenge bukas sa {{city}} style. Kapag napili, ilalabas ito kasama ang pangalan mo.",
+      "closesIn": "Magsasara ang suggestions in {{time}}",
+      "closed": "Sarado na ang suggestions para bukas.",
+      "yours": "Ang suggestion mo",
       "label": "Ang {{city}} Local Twist mo",
-      "placeholder": "hal. Cơm tấm bago mag-8am, umorder ng sườn bì chả.",
-      "hint": "Isang tip na mga local lang ang nakakaalam, sa English. Sinusuri ito bago ilabas.",
-      "submit": "Imungkahi ang twist ko",
+      "placeholder": "hal. Taho bago mag-8am, damihan ang sago.",
+      "hint": "Isang tip na locals lang ang nakakaalam, in English. Chine-check ito bago ilabas.",
+      "submit": "I-suggest ang twist ko",
       "withdraw": "Bawiin",
-      "withdrawTitle": "Bawiin ang mungkahi mo?",
-      "withdrawBody": "Puwede kang magmungkahi ulit hangga't bukas pa.",
+      "withdrawTitle": "Bawiin ang suggestion mo?",
+      "withdrawBody": "Puwede kang mag-suggest ulit hangga't bukas pa ang suggestions.",
       "status": {
-        "pending": "Sinusuri",
+        "pending": "Chine-check",
         "picked": "Napili 🎉",
         "not_picked": "Hindi napili"
       },
       "statusHint": {
-        "pending": "Isang twist bawat lungsod ang pinipili bago ang challenge bukas.",
-        "picked": "Ilalabas ito kasama ang challenge bukas sa {{city}}, may pangalan mo.",
+        "pending": "Isang twist bawat city ang pipiliin bago ang challenge bukas.",
+        "picked": "Lalabas ito sa challenge bukas sa {{city}}, kasama ang pangalan mo.",
         "not_picked": "Ibang twist ang napili ngayon. Subukan ulit bukas!"
       },
-      "heroCta": "Imungkahi ang Local Twist bukas · hanggang {{time}}",
+      "heroCta": "I-suggest ang Local Twist bukas · hanggang {{time}}",
       "heroStatus": "Ang Local Twist mo para bukas: {{status}}",
       "reasons": {
-        "no_city": "Itakda ang lungsod mo para magmungkahi ng Local Twist.",
-        "city_not_live": "Sa mga live na lungsod lang puwedeng magmungkahi ng Local Twist.",
-        "not_local": "Mga local ng {{city}} lang ang puwedeng magmungkahi ng Local Twist nito. Gawing Local ang mode mo sa profile.",
-        "no_challenge": "Hindi pa handa ang challenge bukas. Bumalik mamaya."
+        "no_city": "I-set ang city mo para makapag-suggest ng Local Twist.",
+        "city_not_live": "Sa mga live na city lang puwedeng mag-suggest ng Local Twist.",
+        "not_local": "Locals lang ng {{city}} ang puwedeng mag-suggest ng Local Twist nito. Gawing Local ang mode mo sa profile.",
+        "no_challenge": "Hindi pa ready ang challenge bukas. Balik ka mamaya."
       },
       "errors": {
-        "already_proposed": "Nakapagmungkahi ka na ng Local Twist para bukas.",
-        "closed": "Sarado na ang mga mungkahi para bukas.",
-        "invalid_text": "Sumulat ng 1 hanggang 280 character.",
-        "moderation_blocked": "Na-flag ang twist mo - pakisulat ulit.",
-        "not_editable": "Hindi na mababago ang mungkahing ito.",
-        "not_found": "Walang mungkahing babaguhin.",
-        "rate_limited": "Sobrang daming try - maghintay sandali.",
+        "already_proposed": "Naka-suggest ka na ng Local Twist para bukas.",
+        "closed": "Sarado na ang suggestions para bukas.",
+        "invalid_text": "Sumulat ng 1 hanggang 280 characters.",
+        "moderation_blocked": "Na-flag ang twist mo - paki-rephrase.",
+        "not_editable": "Hindi na puwedeng baguhin ang suggestion na 'to.",
+        "not_found": "Walang suggestion na babaguhin.",
+        "rate_limited": "Ang dami nang try - saglit lang.",
         "banned": "Hindi ka na puwedeng mag-post dito.",
-        "no_city": "Itakda ang lungsod mo para magmungkahi ng Local Twist.",
-        "city_not_live": "Sa mga live na lungsod lang puwedeng magmungkahi ng Local Twist.",
-        "not_local": "Mga local ng {{city}} lang ang puwedeng magmungkahi ng Local Twist nito. Gawing Local ang mode mo sa profile.",
-        "no_challenge": "Hindi pa handa ang challenge bukas. Bumalik mamaya."
+        "no_city": "I-set ang city mo para makapag-suggest ng Local Twist.",
+        "city_not_live": "Sa mga live na city lang puwedeng mag-suggest ng Local Twist.",
+        "not_local": "Locals lang ng {{city}} ang puwedeng mag-suggest ng Local Twist nito. Gawing Local ang mode mo sa profile.",
+        "no_challenge": "Hindi pa ready ang challenge bukas. Balik ka mamaya."
       }
     },
     "translation": {
       "seeOriginal": "Tingnan ang orihinal",
-      "seeTranslation": "Tingnan ang salin"
+      "seeTranslation": "Tingnan ang translation"
     },
     "map": {
       "see": "Tingnan ang mapa",
       "button": "Mapa",
-      "empty": "Wala pang naka-pin na lugar.",
-      "titleChallenge": "Mga naka-pin na lugar",
-      "titleCity": "Mga naka-pin na lugar sa {{city}}",
-      "titleWorld": "Mga naka-pin na lugar sa mundo",
-      "seeProof": "Tingnan ang litrato",
+      "empty": "Wala pang naka-pin na spot.",
+      "titleChallenge": "Mga naka-pin na spot",
+      "titleCity": "Mga naka-pin na spot sa {{city}}",
+      "titleWorld": "Mga naka-pin na spot sa buong mundo",
+      "seeProof": "Tingnan ang photo",
       "openChallenge": "Buksan ang challenge",
       "search": "Maghanap ng pagkain, café, kalye",
       "searchA11y": "Maghanap ng spot",
-      "clearSearch": "I-clear ang paghahanap",
+      "clearSearch": "I-clear ang search",
       "noResults": "Walang tugmang spot",
       "all": "Lahat",
       "today": "ngayon",
       "locate": "Igitna ang mapa sa akin",
-      "locationDenied": "Payagan ang location sa settings para maigitna ang mapa sa iyo.",
-      "locationFailed": "Hindi available ang lokasyon mo ngayon.",
-      "noToken": "Hindi available ang mapa sa bersyong ito.",
+      "locationDenied": "Payagan ang location sa settings mo para maigitna ang mapa sa'yo.",
+      "locationFailed": "Hindi available ang location mo ngayon.",
+      "noToken": "Hindi available ang mapa sa version na 'to.",
       "openSpot": "Buksan ang spot",
-      "directions": "Direksyon",
-      "validated": "Kinumpirma ng isang local",
-      "pricePaid": "Binayarang presyo {{price}}",
+      "directions": "Directions",
+      "validated": "Kumpirmado ng isang local",
+      "pricePaid": "Binayaran {{price}}",
       "selected": "Napili: {{name}}",
       "closeSpot": "Isara",
       "emptyTitle": "Ikaw na ang unang maglagay ng spot dito",
-      "planA11y": "Plano: {{title}}, {{time}}",
-      "proofs_one": "{{count}} litrato",
-      "proofs_other": "{{count}} litrato"
+      "planA11y": "Lakad: {{title}}, {{time}}",
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos"
     },
     "leaderboard": {
       "tab": "Top 10",
       "provisional": "Pansamantala hanggang sa drop",
-      "finalIn": "Pinal sa loob ng {{time}}",
-      "official": "Opisyal na podium",
-      "minProofs": "Magbubukas ang Top 10 sa {{min}} litrato. Sa ngayon: {{n}}.",
-      "noVotes": "Wala pang boto. Bumoto sa mga paborito mong litrato!",
+      "finalIn": "Final in {{time}}",
+      "official": "Official podium",
+      "minProofs": "Magbubukas ang Top 10 pag {{min}} photos na. Sa ngayon: {{n}}.",
+      "noVotes": "Wala pang votes. I-vote ang mga paborito mong photo!",
       "me": "Ikaw: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} sa {{city}}",
       "noProof": "Maglaro para ma-rank.",
-      "pending": "Mara-rank ang litrato mo kapag naaprubahan na.",
+      "pending": "Mara-rank ang photo mo kapag na-approve na.",
       "cityTop": "Top 3 sa {{city}}",
       "compactTitle": "Top 3 ngayon",
       "seeAll": "Top 10 ›"
@@ -1145,8 +1145,8 @@
       "keep": "Maglaro ngayon para hindi maputol ang streak mo"
     },
     "calendar": {
-      "title": "Aking Daily Challenges",
-      "streak": "Kasalukuyang streak",
+      "title": "Mga Daily Challenge ko",
+      "streak": "Streak ngayon",
       "best": "Pinakamahabang streak",
       "monthDone": "Natapos ngayong buwan: {{n}}",
       "legendDone": "Tapos na",
@@ -1155,213 +1155,213 @@
       "next": "Susunod na buwan"
     },
     "guide": {
-      "title": "Gabay sa lungsod",
+      "title": "City guide",
       "all": "Lahat",
       "emptyCity": "Wala pang {{theme}} challenge sa {{city}}. Susunod: {{day}}.",
       "emptyWorld": "Wala pang {{theme}} challenge. Susunod: {{day}}."
     },
     "localPass": {
       "name": "Local Pass",
-      "progress": "{{done}}/{{total}} tema",
-      "earned": "Nakuha na",
-      "hint": "Tapusin ang lahat ng 7 tema sa {{city}} para makuha ang Local Pass nito.",
+      "progress": "{{done}}/{{total}} themes",
+      "earned": "Nakuha",
+      "hint": "Tapusin ang 7 themes sa {{city}} para makuha ang Local Pass nito.",
       "profileTitle": "Local Passes",
       "badgeA11y": "May Local Pass"
     },
     "propose": {
-      "cta": "Magmungkahi ng challenge",
-      "short": "Magmungkahi",
-      "title": "Magmungkahi ng challenge",
-      "textLabel": "Ang challenge mo (sa English)",
+      "cta": "Mag-suggest ng challenge",
+      "short": "I-suggest",
+      "title": "Mag-suggest ng challenge",
+      "textLabel": "Ang challenge mo (in English)",
       "textPlaceholder": "Find a…",
-      "themeLabel": "Tema",
-      "whyLabel": "Bakit? (opsyonal)",
-      "whyPlaceholder": "Ano ang matutuklasan ng mga tao?",
-      "twistLabel": "Local Twist para sa {{city}} (opsyonal)",
-      "twistPlaceholder": "Paano ito ginagawa ng mga local sa {{city}}",
+      "themeLabel": "Theme",
+      "whyLabel": "Bakit? (optional)",
+      "whyPlaceholder": "Ano'ng madidiskubre ng mga tao?",
+      "twistLabel": "Local Twist para sa {{city}} (optional)",
+      "twistPlaceholder": "Paano ito ginagawa ng locals sa {{city}}",
       "rulesTitle": "Ang magandang challenge ay…",
-      "rule1": "Kayang gawin kahit saan sa lungsod, wala pang isang oras",
-      "rule2": "Hindi lalampas sa presyo ng isang lokal na kain",
-      "rule3": "Ligtas at magalang sa mga residente",
+      "rule1": "Kayang gawin kahit saan sa city, in less than an hour",
+      "rule2": "Hindi lalampas sa presyo ng isang local na kain",
+      "rule3": "Ligtas at may respeto sa mga residente",
       "rule4": "\"Find a…\", hindi kailanman eksaktong address",
       "rule5": "May natututunan: isang pangalan, kilos, o ugali",
-      "reviewed": "Bawat mungkahi ay sinusuri bago ilabas.",
-      "submit": "Ipadala ang mungkahi ko",
+      "reviewed": "Chine-check muna ang bawat suggestion bago ilabas.",
+      "submit": "I-send ang suggestion ko",
       "sentTitle": "Salamat!",
-      "sentBody": "Susuriin namin ang challenge mo. Sundan ang status sa Aking mga mungkahi.",
-      "pendingExists": "May mungkahi ka pang hinihintay ang review.",
-      "seeMine": "Tingnan ang aking mga mungkahi",
-      "mineTitle": "Aking mga mungkahi",
-      "empty": "Wala pang mungkahi. Ang ideya mo ang puwedeng susunod na Daily Challenge.",
+      "sentBody": "Iche-check namin ang challenge mo. Sundan ang status sa Mga suggestion ko.",
+      "pendingExists": "May suggestion ka pang hinihintay ang review.",
+      "seeMine": "Tingnan ang mga suggestion ko",
+      "mineTitle": "Mga suggestion ko",
+      "empty": "Wala pang suggestion. Baka ang idea mo ang susunod na Daily Challenge.",
       "typeChallenge": "Challenge",
       "typeTwist": "Local Twist",
       "status": {
-        "pending": "Sinusuri",
+        "pending": "Chine-check",
         "scheduled": "Naka-schedule · {{date}}",
         "published": "Live · {{date}}",
         "reserve": "Nasa reserve",
         "rejected": "Hindi napili",
-        "approved": "Aprubado",
+        "approved": "Approved",
         "picked": "Napili",
         "not_picked": "Hindi napili"
       },
       "reason": "Dahilan: {{reason}}",
       "withdraw": "Bawiin",
-      "withdrawTitle": "Bawiin ang mungkahing ito?",
-      "withdrawBody": "Puwede kang magpadala ng iba pagkatapos.",
-      "proposedBy": "Mungkahi ni {{name}}",
-      "proposedByCity": "Mungkahi ni {{name}} · {{city}}",
+      "withdrawTitle": "Bawiin ang suggestion na 'to?",
+      "withdrawBody": "Puwede kang mag-send ng bago pagkatapos.",
+      "proposedBy": "Suggestion ni {{name}}",
+      "proposedByCity": "Suggestion ni {{name}} · {{city}}",
       "errors": {
-        "invalid_text": "Isulat ang challenge sa 1 hanggang 120 character.",
-        "invalid_theme": "Pumili ng tema.",
-        "invalid_why": "Panatilihing wala pang 200 character ang dahilan.",
-        "invalid_twist": "Panatilihing wala pang 280 character ang Local Twist.",
-        "twist_not_allowed": "Ang mga local lang ng live na lungsod ang makakapagdagdag ng Local Twist.",
-        "moderation_blocked": "Na-block ng moderation ang mungkahi mo. Pakiulit sa ibang salita."
+        "invalid_text": "Isulat ang challenge mo sa 1 hanggang 120 characters.",
+        "invalid_theme": "Pumili ng theme.",
+        "invalid_why": "Dapat less than 200 characters ang bakit.",
+        "invalid_twist": "Dapat less than 280 characters ang Local Twist.",
+        "twist_not_allowed": "Locals lang ng live na city ang puwedeng mag-add ng Local Twist.",
+        "moderation_blocked": "Na-flag ng moderation ang suggestion mo. Paki-rephrase."
       },
-      "linkAsk": "May ideya ka ba para sa challenge?",
-      "linkCta": "Imungkahi"
+      "linkAsk": "May challenge idea ka?",
+      "linkCta": "I-suggest"
     },
     "early": {
       "badge": "Maaga",
-      "hint": "Bonus sa pagiging maaga: mag-post bago mag-{{time}}"
+      "hint": "Early bonus: mag-post bago mag-{{time}}"
     },
     "group": {
-      "title": "Mga bagong litrato: {{n}}",
+      "title": "Bagong photos: {{n}}",
       "citiesMore": "{{cities}} at {{n}} pa",
-      "galleryTitle": "Mga bagong litrato"
+      "galleryTitle": "Bagong photos"
     },
     "today": {
       "early": "Early bonus hanggang {{time}}",
       "tomorrow": "Bukas: {{theme}}",
       "aroundWorld": "Ngayon sa buong *mundo*",
       "inCity": "Ngayon sa *{{city}}*",
-      "proofs_one": "{{count}} litrato",
-      "proofs_other": "{{count}} litrato",
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos",
       "countries_one": "{{count}} bansa",
       "countries_other": "{{count}} bansa",
       "proofsIn": "{{proofs}} mula sa {{countries}}",
       "podiumTitle": "Podium kahapon",
       "allPast": "Lahat ng nakaraang challenge",
       "archiveTitle": "Mga nakaraang challenge",
-      "archiveAll": "Lahat ng tema",
+      "archiveAll": "Lahat ng themes",
       "archiveEmpty": "Wala pang nakaraang challenge dito.",
       "archiveMore": "Ipakita pa",
       "seeAll": "Tingnan lahat",
       "openMap": "Buksan ang mapa",
-      "seeMine": "Tingnan ang litrato mo",
-      "votes_one": "{{count}} boto",
-      "votes_other": "{{count}} boto",
+      "seeMine": "Tingnan ang photo mo",
+      "votes_one": "{{count}} vote",
+      "votes_other": "{{count}} votes",
       "day": {
         "done": "tapos",
-        "pending": "sinusuri",
+        "pending": "chine-check pa",
         "missed": "hindi nagawa",
         "today": "ngayon",
         "tomorrow": "bukas",
         "later": "paparating",
-        "none": "walang litrato"
+        "none": "walang photo"
       },
       "links": {
-        "twistTitle": "Magmungkahi ng Local Twist bukas",
-        "twistSub": "Para sa mga lokal, hanggang {{time}}"
+        "twistTitle": "I-suggest ang Local Twist bukas",
+        "twistSub": "Para sa locals, hanggang {{time}}"
       },
-      "spotsTeaser_one": "{{count}} spot malapit sa iyo",
-      "spotsTeaser_other": "{{count}} spot malapit sa iyo",
+      "spotsTeaser_one": "{{count}} spot malapit sa'yo",
+      "spotsTeaser_other": "{{count}} spots malapit sa'yo",
       "spotsTeaserIn_one": "{{count}} spot sa {{city}}",
-      "spotsTeaserIn_other": "{{count}} spot sa {{city}}"
+      "spotsTeaserIn_other": "{{count}} spots sa {{city}}"
     },
     "spot": {
-      "rankWeekFirst": "Pinakamaraming boto ngayong linggo sa {{city}}",
+      "rankWeekFirst": "Pinakamaraming votes ngayong linggo sa {{city}}",
       "rankWeek": "#{{rank}} ngayong linggo sa {{city}}",
-      "rankAlltimeFirst": "Pinakamaraming botong spot sa {{city}}",
-      "rankAlltime": "#{{rank}} sa lahat ng panahon sa {{city}}",
-      "photos": "Mga larawan",
+      "rankAlltimeFirst": "Spot na may pinakamaraming votes sa {{city}}",
+      "rankAlltime": "#{{rank}} all time sa {{city}}",
+      "photos": "Photos",
       "captions": "Sabi ng mga tao",
       "seeOnMap": "Tingnan sa mapa",
-      "notFound": "Hindi available ang spot na ito.",
+      "notFound": "Hindi available ang spot na 'to.",
       "local": "Local"
     },
     "place": {
       "title": "Nasaan ka?",
-      "why": "Isang beses lang gagamitin ang lokasyon mo para ilista ang mga lugar sa paligid at tiyaking nandoon ka. Hindi ito sine-save.",
+      "why": "Isang beses lang gagamitin ang location mo para ilista ang mga lugar sa paligid at i-check na nandoon ka. Hindi ito sine-save.",
       "find": "Hanapin ang mga lugar sa paligid ko",
       "locating": "Hinahanap kung nasaan ka…",
       "deniedTitle": "Naka-off ang location",
-      "deniedBody": "Sa isang lugar nangyayari ang challenge na ito: kailangan ang lokasyon mo para tiyaking nandoon ka.",
-      "failedTitle": "Hindi available ang lokasyon mo",
-      "failedBody": "Tiyaking naka-on ang location at subukan ulit, mas mabuti kung nasa labas.",
-      "openSettings": "Buksan ang settings",
+      "deniedBody": "Sa isang lugar ginagawa ang challenge na 'to: kailangan ang location mo para i-check na nandoon ka.",
+      "failedTitle": "Hindi available ang location mo",
+      "failedBody": "I-check kung naka-on ang location at subukan ulit, mas okay kung nasa labas ka.",
+      "openSettings": "Buksan ang Settings",
       "retry": "Subukan ulit",
-      "approximate": "Tantiya lang ang lokasyon mo (±{{m}} m). Lumabas o maghintay sandali, saka i-refresh.",
-      "refresh": "I-refresh ang lokasyon ko",
-      "search": "Maghanap sa mga lugar",
-      "inReview": "sinusuri",
+      "approximate": "Tantiya lang ang location mo (±{{m}} m). Lumabas ka o maghintay sandali, tapos i-refresh.",
+      "refresh": "I-refresh ang location ko",
+      "search": "Maghanap ng lugar dito",
+      "inReview": "chine-check pa",
       "newTitle": "Bagong lugar",
-      "notListed": "Wala sa listahan? Idagdag ito.",
-      "noneNearby": "Wala pang Hilads na lugar dito: idagdag ito.",
+      "notListed": "Wala sa listahan? I-add mo.",
+      "noneNearby": "Wala pang Hilads na lugar dito: i-add mo 'to.",
       "nameLabel": "Pangalan ng lugar",
-      "namePlaceholder": "hal. Cơm tấm Ba Ghiền",
-      "newHint": "Ang lokasyon mo ang magiging lokasyon nito. Lalabas ito sa mapa kapag nasuri na.",
-      "useNew": "Gamitin ang lugar na ito",
-      "backToList": "Bumalik sa mga kalapit na lugar",
+      "namePlaceholder": "hal. Aling Lucing's Sisig",
+      "newHint": "Ang location mo ang magiging location nito. Lalabas ito sa mapa kapag na-check na.",
+      "useNew": "Gamitin ang lugar na 'to",
+      "backToList": "Balik sa mga lugar na malapit",
       "at": "Sa {{name}}",
       "none": "Wala pang lugar",
       "change": "Palitan",
       "tooFar": "{{distance}} ang layo mo sa {{name}}. Lumapit hanggang {{radius}} m at subukan ulit.",
       "tryAgain": "Nandito na ako, subukan ulit",
       "pickAnother": "Pumili ng ibang lugar",
-      "newOnMapLater": "Lalabas sa mapa ang bago mong lugar kapag naaprubahan na."
+      "newOnMapLater": "Lalabas sa mapa ang bagong lugar mo kapag na-approve na."
     },
     "stamp": {
-      "title": "Bagong tatak: {{theme}}",
-      "body": "May bagong tatak ang pasaporte mo sa {{city}}.",
+      "title": "Bagong stamp: {{theme}}",
+      "body": "May bagong stamp ang {{city}} passport mo.",
       "ok": "Ayos",
       "close": "Isara"
     },
-    "takeIt": "Gawin",
+    "takeIt": "Laruin",
     "proofHint": {
-      "title": "Kunan ang litrato mo",
-      "place": "Ang litratong may pinakamaraming boto ang magiging litrato ng spot.",
-      "noPlace": "Ang litratong may pinakamaraming boto ang aakyat sa podium."
+      "title": "Kunan ang photo mo",
+      "place": "Ang photo na may pinakamaraming votes ang magiging photo ng spot.",
+      "noPlace": "Ang photo na may pinakamaraming votes ang aakyat sa podium."
     },
     "compare": {
       "tab": "Ikumpara",
-      "allCities": "Lahat ng lungsod",
-      "boardCount": "Lungsod: {{count}} · Bansa: {{countries}}",
+      "allCities": "Lahat ng city",
+      "boardCount": "Cities: {{count}} · Bansa: {{countries}}",
       "earliest": "Pinakamaaga: {{city}} {{answer}}",
       "latest": "Pinakahuli: {{city}} {{answer}}",
       "lowest": "Pinakamababa: {{city}} {{answer}}",
       "highest": "Pinakamataas: {{city}} {{answer}}",
-      "emptyTitle": "Wala pang litrato",
-      "emptyBody": "Maging unang lungsod sa board.",
+      "emptyTitle": "Wala pang photos",
+      "emptyBody": "Ikaw ang unang city sa board.",
       "noAnswer": "Wala pang sagot",
       "median": "Karaniwang presyo {{price}}",
-      "proofs_one": "{{count}} litrato",
-      "proofs_other": "{{count}} litrato",
+      "proofs_one": "{{count}} photo",
+      "proofs_other": "{{count}} photos",
       "boardTitle": "Ang sabi ng mundo",
       "cheapest": "Pinakamura: {{city}} {{price}}",
       "priciest": "Pinakamahal: {{city}} {{price}}",
-      "funFact": "{{ratio}}× ang presyo sa {{city}} kaysa sa {{other}}.",
-      "worldAnswers": "Tanong ngayong araw",
+      "funFact": "{{ratio}}× na mas mahal sa {{city}} kaysa sa {{other}}.",
+      "worldAnswers": "Tanong ngayon",
       "seeAnswers": "Ikumpara",
-      "firstIn": "Dumarating na ang mga unang litrato",
-      "picksTitle": "Mga pinili ng Hilads",
+      "firstIn": "Dumarating na ang mga unang photo",
+      "picksTitle": "Hilads picks",
       "answeredRow_one": "{{count}} bansa na ang naglaro",
       "answeredRow_other": "{{count}} bansa na ang naglaro",
-      "tip": "I-tap para ikumpara ang lungsod mo sa mundo.",
+      "tip": "I-tap para ikumpara ang city mo sa mundo.",
       "nCountries_one": "{{count}} bansa",
       "nCountries_other": "{{count}} bansa",
-      "youAnswered": "Naipadala na ang litrato mo. Tingnan ang sabi ng mundo."
+      "youAnswered": "Pasok na ang photo mo. Tingnan ang sabi ng mundo."
     },
     "backHome": {
       "hereIn": "Dito sa {{city}}",
       "homeIn": "Sa inyo, {{city}}"
     },
     "tour": {
-      "title": "Ang world tour *kahapon*",
+      "title": "*Kahapon* sa buong mundo",
       "watch": "Panoorin",
       "openCity": "Buksan ang {{city}}",
-      "next": "Susunod",
+      "next": "Next",
       "kicker": "Daily Challenge · {{theme}}",
       "moment": {
         "morning": "Sa umaga",
@@ -1370,41 +1370,41 @@
         "night": "Sa hatinggabi"
       },
       "yourTurn": "Ikaw na.",
-      "todayIs": "Tanong ngayong araw: {{question}}",
+      "todayIs": "Tanong ngayon: {{question}}",
       "close": "Isara",
-      "sub_one": "{{count}} lungsod, iisang challenge",
-      "sub_other": "{{count}} lungsod, iisang challenge"
+      "sub_one": "{{count}} city, iisang challenge",
+      "sub_other": "{{count}} cities, iisang challenge"
     },
     "worlds": {
       "tagline": "Iisang challenge. Iba-ibang mundo."
     },
     "index": {
-      "share": "Ibahagi",
-      "carouselTitle": "Ang mundo, *ikinumpara*",
-      "carouselSub": "Noong nakaraang linggo sa Hilads",
-      "seeAllComparisons": "Tingnan lahat ng paghahambing",
+      "share": "I-share",
+      "carouselTitle": "Ang mundo, *kinumpara*",
+      "carouselSub": "Noong isang linggo sa Hilads",
+      "seeAllComparisons": "Tingnan lahat ng comparisons",
       "screenTitle": "Ang Hilads Index",
-      "screenSub": "Lahat ng ikinumpara ng mundo sa Hilads.",
+      "screenSub": "Lahat ng kinumpara ng mundo sa Hilads.",
       "sections": {
         "price": "Presyo",
         "time": "Oras",
         "word": "Salita"
       },
-      "search": "Maghanap ng tanong, lungsod, sagot",
-      "clearSearch": "I-clear ang paghahanap",
-      "twoCities": "Dalawang lungsod",
-      "closeTwoCities": "Isara ang Dalawang lungsod",
-      "pickCity": "Pumili ng lungsod",
+      "search": "Maghanap ng tanong, city, sagot",
+      "clearSearch": "I-clear ang search",
+      "twoCities": "Dalawang city",
+      "closeTwoCities": "Isara ang Dalawang city",
+      "pickCity": "Pumili ng city",
       "and": "{{a}} at {{b}}",
-      "twoCitiesEmpty": "Wala pang paghahambing para sa dalawang lungsod na ito.",
-      "noResults": "Walang tugmang paghahambing.",
-      "empty": "Lalabas ang unang mga paghahambing kapag may 3 litrato na ang mga lungsod.",
+      "twoCitiesEmpty": "Wala pang comparison para sa dalawang city na 'to.",
+      "noResults": "Walang tugmang comparison.",
+      "empty": "Lalabas dito ang mga unang comparison kapag may 3 photos na ang mga city.",
       "priceTitle": "Magkano ang {{label}}?",
-      "moreCities_one": "+{{count}} pang lungsod",
-      "moreCities_other": "+{{count}} pang lungsod"
+      "moreCities_one": "+{{count}} pang city",
+      "moreCities_other": "+{{count}} pang cities"
     },
     "ctaAnswer": "Maglaro para sa {{city}}",
-    "ctaAnswerNoCity": "Maglaro na",
+    "ctaAnswerNoCity": "Maglaro ngayon",
     "represent": {
       "button": "Maglaro para sa {{city}}"
     },
@@ -1413,85 +1413,85 @@
       "ms": "{{m}}m {{s}}s"
     },
     "feed": {
-      "title": "Mga litrato ngayon",
+      "title": "Mga photo ngayong araw",
       "world": "Mundo",
-      "swipe": "Mag-swipe pataas para sa iba pa",
-      "doubleTap": "I-double tap para bumoto",
-      "emptyWorld": "Wala pang litrato ngayon. Ikaw na ang mauna!",
-      "emptyCity": "Wala pang naglaro sa {{city}} ngayong araw.",
+      "swipe": "Mag-swipe up para sa iba pa",
+      "doubleTap": "I-double tap para mag-vote",
+      "emptyWorld": "Wala pang photos ngayon. Ikaw na ang mauna!",
+      "emptyCity": "Wala pang naglaro sa {{city}} ngayon.",
       "endTitle": "Nakita mo na lahat sa ngayon!",
-      "endBody": "Buong araw may bagong litrato. Bumalik ka mamaya.",
-      "endPlay": "Ikaw na: ipakita mo sa mundo ang lungsod mo.",
-      "backToday": "Bumalik sa Ngayon",
-      "seeAll": "Tingnan lahat ng litrato"
+      "endBody": "Buong araw may bagong photos. Balik ka ulit mamaya.",
+      "endPlay": "Ikaw na: ipakita mo sa mundo ang city mo.",
+      "backToday": "Balik sa Ngayon",
+      "seeAll": "Tingnan lahat ng photos"
     },
     "countries": {
       "played_one": "{{count}} bansa ang naglaro ngayon",
       "played_other": "{{count}} bansa ang naglaro ngayon",
-      "yourCity": "Lungsod mo",
-      "represent": "Irepresenta ang lungsod mo",
-      "emptyBody": "Wala pang naglaro ngayon. Ikaw na ang maunang maglagay ng lungsod mo sa mapa!",
-      "openCountry": "{{city}}: tingnan ang mga litrato",
-      "byCountry": "Ayon sa bansa"
+      "yourCity": "City mo",
+      "represent": "I-represent ang city mo",
+      "emptyBody": "Wala pang naglaro ngayon. Ikaw ang unang maglagay ng city mo sa mapa!",
+      "openCountry": "{{city}}: tingnan ang photos",
+      "byCountry": "Per bansa"
     },
     "stories": {
-      "played_one": "{{count}} lungsod ang naglaro ngayon",
-      "played_other": "{{count}} lungsod ang naglaro ngayon",
+      "played_one": "{{count}} city ang naglaro ngayon",
+      "played_other": "{{count}} cities ang naglaro ngayon",
       "yourCity": "{{city}}?",
-      "of": "Litrato {{index}} sa {{total}}",
-      "cityOf": "Lungsod {{index}} sa {{total}}",
-      "next": "Susunod na litrato"
+      "of": "Photo {{index}} sa {{total}}",
+      "cityOf": "City {{index}} sa {{total}}",
+      "next": "Susunod na photo"
     },
     "mosaic": {
-      "players_one": "{{count}} manlalaro",
-      "players_other": "{{count}} manlalaro",
-      "missing": "Kulang ang {{city}}!",
+      "players_one": "{{count}} player",
+      "players_other": "{{count}} players",
+      "missing": "Wala pa ang {{city}}!",
       "yesterday": "Kahapon, sabi ng mundo…",
-      "beFirst": "Katawanin ang {{city}}",
-      "beFirstSub": "Maging unang lungsod ngayon"
+      "beFirst": "I-represent ang {{city}}",
+      "beFirstSub": "Ikaw ang unang city ngayon"
     },
     "recap": {
       "label": "Kahapon",
-      "cities_one": "{{count}} lungsod ang naglaro",
-      "cities_other": "{{count}} lungsod ang naglaro"
+      "cities_one": "{{count}} city ang naglaro",
+      "cities_other": "{{count}} cities ang naglaro"
     },
     "worldSays": {
       "title": "Ang sabi ng mundo",
-      "first": "Ikaw na ang unang sumagot",
+      "first": "Ikaw na ang unang maglaro",
       "more_one": "+{{count}} pa",
       "more_other": "+{{count}} pa"
     },
     "myCity": {
-      "in_one": "Sa {{city}} · {{count}} litrato",
-      "in_other": "Sa {{city}} · {{count}} litrato",
+      "in_one": "Sa {{city}} · {{count}} photo",
+      "in_other": "Sa {{city}} · {{count}} photos",
       "first": "Ikaw na ang una sa {{city}}",
-      "seeMine": "Tingnan ang litrato ko"
+      "seeMine": "Tingnan ang photo ko"
     },
     "event": {
       "halloween": {
         "teaser_one": "Halloween hunt bukas",
-        "teaser_other": "Halloween hunt sa loob ng {{count}} araw",
-        "cta": "Kumuha ng nakakatakot para sa {{city}}",
-        "ctaNoCity": "Kumuha ng nakakatakot",
-        "played_one": "{{count}} lungsod ang minumulto 🎃",
-        "played_other": "{{count}} lungsod ang minumulto 🎃",
-        "represent": "Multuhin ang lungsod mo 👻",
+        "teaser_other": "Halloween hunt, {{count}} araw na lang",
+        "cta": "Mag-snap ng nakakatakot para sa {{city}}",
+        "ctaNoCity": "Mag-snap ng nakakatakot",
+        "played_one": "{{count}} city ang minumulto 🎃",
+        "played_other": "{{count}} cities ang minumulto 🎃",
+        "represent": "Multuhin ang city mo 👻",
         "onBoard": "Minumulto ng {{city}} ang board! 👻"
       },
       "limited": "Limited edition",
       "stampEarned": "Nakuha mo ang limited-edition na stamp!"
     },
     "hero": {
-      "cta": "Kumuha ng litrato para sa {{city}}",
-      "ctaNoCity": "Kumuha ng litrato",
+      "cta": "Mag-snap para sa {{city}}",
+      "ctaNoCity": "I-snap",
       "played": "Nakapaglaro ka na · Tingnan ang mundo",
-      "firstCity": "Maging unang lungsod sa mundo ngayon",
-      "citiesIn_one": "{{count}} lungsod ang naglaro",
-      "citiesIn_other": "{{count}} lungsod ang naglaro",
-      "citiesMissing_one": "{{count}} lungsod ang naglaro. Wala pa ang {{city}}!",
-      "citiesMissing_other": "{{count}} lungsod ang naglaro. Wala pa ang {{city}}!",
+      "firstCity": "Ikaw ang unang city sa mundo ngayon",
+      "citiesIn_one": "{{count}} city na ang pasok",
+      "citiesIn_other": "{{count}} cities na ang pasok",
+      "citiesMissing_one": "{{count}} city na ang pasok. Wala pa ang {{city}}!",
+      "citiesMissing_other": "{{count}} cities na ang pasok. Wala pa ang {{city}}!",
       "steps": {
-        "snap": "Kunan",
+        "snap": "I-snap",
         "name": "Pangalanan",
         "count": "Bilangin",
         "time": "Orasan",
@@ -1501,32 +1501,32 @@
       }
     },
     "comments": {
-      "title": "Mga komento",
+      "title": "Comments",
       "close": "Isara",
       "comment": "Mag-comment",
-      "newComments": "Mga bagong komento",
-      "empty": "Ikaw na ang unang magsalita 💬",
-      "emptySub": "Itanong kung saan ito, mag-react, ikumpara sa lungsod mo.",
-      "placeholder": "Magdagdag ng komento…",
+      "newComments": "Bagong comments",
+      "empty": "Ikaw na ang unang mag-comment 💬",
+      "emptySub": "Itanong kung saan 'to, mag-react, ikumpara sa city mo.",
+      "placeholder": "Mag-comment…",
       "placeholderGuest": "Mag-sign up para mag-comment",
-      "older": "Tingnan ang mga naunang komento",
-      "reply": "Sumagot",
-      "copy": "Kopyahin",
-      "delete": "Burahin",
-      "cancelReply": "Kanselahin ang sagot",
-      "replyingTo": "Sumasagot kay @{{name}}",
-      "author": "May-ari",
+      "older": "Tingnan ang mga naunang comment",
+      "reply": "Mag-reply",
+      "copy": "I-copy",
+      "delete": "I-delete",
+      "cancelReply": "I-cancel ang reply",
+      "replyingTo": "Nagre-reply kay @{{name}}",
+      "author": "Author",
       "first": "Una!",
-      "sending": "Ipinapadala…",
-      "failed": "Hindi naipadala · I-tap para subukan ulit",
+      "sending": "Sine-send…",
+      "failed": "Hindi na-send · I-tap para subukan ulit",
       "discard": "Alisin",
       "like": "I-like",
-      "actionsHint": "Pindutin nang matagal para sumagot, kopyahin o i-report",
-      "quickHint": "Pindutin nang matagal para i-edit bago ipadala",
-      "count_one": "{{count}} komento",
-      "count_other": "{{count}} na komento",
-      "seeAll_one": "Tingnan ang komento",
-      "seeAll_other": "Tingnan ang lahat ng {{count}} komento",
+      "actionsHint": "I-long press para mag-reply, kopyahin o i-report",
+      "quickHint": "I-long press para i-edit bago i-send",
+      "count_one": "{{count}} comment",
+      "count_other": "{{count}} comments",
+      "seeAll_one": "Tingnan ang comment",
+      "seeAll_other": "Tingnan lahat ng {{count}} comments",
       "quick": {
         "soLocal": "🔥 Sobrang local!",
         "wantThis": "🤤 Gusto ko 'to!",
@@ -1535,21 +1535,21 @@
         "whatsItCalled": "🏷️ Ano'ng tawag dito?"
       },
       "errors": {
-        "moderation_blocked": "Hindi mai-post ang komentong ito. Maging mabait!",
-        "rate_limited": "Dahan-dahan! Subukan ulit pagkalipas ng isang minuto.",
-        "invalid_body": "Hanggang 300 character lang ang komento.",
-        "generic": "May nagkamali. Subukan ulit."
+        "moderation_blocked": "Hindi mai-post ang comment na 'to. Bait-bait lang!",
+        "rate_limited": "Dahan-dahan lang! Subukan ulit after isang minuto.",
+        "invalid_body": "Hanggang 300 characters lang ang comment.",
+        "generic": "May nangyaring mali. Subukan ulit."
       },
       "report": {
         "action": "I-report",
         "reasons": {
           "inappropriate": "Hindi angkop",
-          "harassment": "Panliligalig o pagkamuhi",
+          "harassment": "Harassment o hate",
           "spam": "Spam",
           "other": "Iba pa"
         },
         "thanks": "Salamat - titingnan namin.",
-        "already": "Na-report mo na ang komentong ito."
+        "already": "Na-report mo na ang comment na 'to."
       }
     },
     "dual": {
@@ -1557,13 +1557,13 @@
       "on": "Naka-on ang dual photo",
       "off": "Naka-off ang dual photo",
       "nowYou": "Ikaw naman! 😄",
-      "frontFailed": "Hindi mabuksan ang front camera. Mag-isa ang photo mo.",
+      "frontFailed": "Hindi mabuksan ang front camera. Photo mo lang ang mapo-post.",
       "swapHint": "I-tap ang maliit na photo para magpalit 👆",
-      "retakeSelfie": "Ulitin ang selfie",
+      "retakeSelfie": "Kunan ulit ang selfie",
       "removeSelfie": "Alisin ang selfie",
-      "retakeAll": "Ulitin lahat",
-      "addFace": "Idagdag ang mukha mo 🤳",
-      "swapA11y": "Pagpalitin ang mga photo"
+      "retakeAll": "Kunan ulit lahat",
+      "addFace": "Isama ang mukha mo 🤳",
+      "swapA11y": "Pagpalitin ang photos"
     }
   }
 }

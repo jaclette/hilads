@@ -1,5 +1,5 @@
 {
-  "title": "Ano ang nangyari",
+  "title": "Mga nangyari",
   "filters": {
     "all": "Lahat",
     "events": "Events",
@@ -7,28 +7,28 @@
     "challenges": "Mga challenge"
   },
   "range": {
-    "recent": "Kamakailan",
+    "recent": "Recent",
     "last7": "Huling 7 araw",
     "last14": "Huling 14 araw",
     "custom": "Custom"
   },
   "picker": {
-    "pickEnd": "Ngayon piliin ang huling araw",
+    "pickEnd": "Ngayon, piliin ang huling araw",
     "pickStart": "Pumili ng unang araw (hanggang {{max}} araw)",
     "apply": "I-apply"
   },
   "public": "Public",
-  "went_one": "{{count}} sumama",
-  "went_other": "{{count}} sumama",
+  "went_one": "{{count}} ang pumunta",
+  "went_other": "{{count}} ang pumunta",
   "hangoutTag": "Tambayan",
-  "replies_one": "{{count}} tugon",
-  "replies_other": "{{count}} tugon",
-  "noReplies": "Walang tugon",
+  "replies_one": "{{count}} reply",
+  "replies_other": "{{count}} replies",
+  "noReplies": "Walang reply",
   "error": "Hindi ma-load ang archive",
   "retry": "Subukan ulit",
-  "emptyTitle": "Wala pa rito",
-  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may history na ang lungsod.",
-  "emptyWindowSub": "Walang event o tambayan sa panahong ito. Subukan ang mas malawak na range.",
+  "emptyTitle": "Wala pang laman dito",
+  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may history na ang city.",
+  "emptyWindowSub": "Walang event o tambayan sa range na 'to. Subukan ang mas mahabang range.",
   "loadMore": "Mag-load pa",
   "loading": "Naglo-load…"
 }

@@ -1,9 +1,9 @@
 {
   "share": {
-    "bringPeople": "Magdala ng mga tao",
-    "linkCopied": "Nakopya ang link",
-    "vibeTitle": "Ibahagi ang vibe na ito",
-    "eventAria": "Ibahagi ang event"
+    "bringPeople": "Mag-invite ng tao",
+    "linkCopied": "Na-copy ang link",
+    "vibeTitle": "I-share ang vibe na 'to",
+    "eventAria": "I-share ang event"
   },
   "title": {
     "edit": "I-edit ang event",
@@ -11,14 +11,14 @@
     "create": "Hi plan"
   },
   "delete": {
-    "confirmTitle": "I-delete ang event na ito?",
-    "confirmBody": "Tatanggalin nito ang event at lahat ng mensahe. Hindi na ito maibabalik.",
-    "cancel": "Kanselahin",
+    "confirmTitle": "I-delete ang event na 'to?",
+    "confirmBody": "Mabubura ang event at lahat ng messages. Hindi na ito maibabalik.",
+    "cancel": "I-cancel",
     "deleting": "Dine-delete…",
     "confirm": "I-delete",
     "button": "I-delete ang event"
   },
-  "quickStart": "Mabilisang simula",
+  "quickStart": "Quick start",
   "presets": {
     "dailySpot": "Daily spot",
     "dailySpotDesc": "Araw-araw",
@@ -27,9 +27,9 @@
     "weekends": "Weekends",
     "weekendsDesc": "Sab at Lin"
   },
-  "category": "Kategorya",
+  "category": "Category",
   "categories": {
-    "drinks": "Inumin",
+    "drinks": "Inuman",
     "party": "Party",
     "music": "Musika",
     "food": "Pagkain",
@@ -40,18 +40,18 @@
   },
   "titleLabel": "Title",
   "titlePlaceholder": "hal. Jazz night sa Rooftop Bar",
-  "date": "Petsa",
+  "date": "Date",
   "today": "Ngayon",
   "tomorrow": "Bukas",
-  "todayHint": "Pinakamalaking visibility ang makukuha mo kapag nag-host ngayon",
+  "todayHint": "Pinakamaraming makakakita kapag ngayon ka nag-host",
   "starts": "Magsisimula",
-  "ends": "Magtatapos",
+  "ends": "Matatapos",
   "repeat": "Ulitin",
   "recurrence": {
-    "once": "Minsan",
+    "once": "Isang beses",
     "daily": "Araw-araw",
-    "weekly": "Lingguhan",
-    "everyNDays": "Tuwing N araw"
+    "weekly": "Kada linggo",
+    "everyNDays": "Kada N araw"
   },
   "weekdays": [
     "Lin",
@@ -62,41 +62,42 @@
     "Biy",
     "Sab"
   ],
-  "intervalEvery": "Tuwing",
+  "intervalEvery": "Kada",
   "intervalDays": "araw",
-  "location": "Lokasyon",
-  "locating": "Kinukuha ang lokasyon mo…",
-  "locationPlaceholder": "Opsyonal · i-tap para itakda sa mapa",
-  "clearLocation": "I-clear ang lokasyon",
+  "location": "Location",
+  "locating": "Kinukuha ang location mo…",
+  "locationPlaceholder": "Optional · i-tap para i-set sa mapa",
+  "clearLocation": "I-clear ang location",
   "errors": {
-    "endAfterStart": "Dapat hindi bababa sa 15 minuto matapos ang start time ang end time",
+    "endAfterStart": "Dapat at least 15 minuto pagkatapos ng simula ang tapos",
     "pickDay": "Pumili ng kahit isang araw ng linggo",
     "deleteFailed": "Hindi na-delete ang event. Subukan ulit.",
-    "locUnavailable": "Hindi available ang lokasyon sa browser na ito. Puwede mo pa ring gawin ang event nang wala ito.",
-    "locFailed": "Hindi nakuha ang lokasyon mo. I-enable ang location access, o laktawan ang mapa."
+    "locUnavailable": "Walang location sa browser na 'to. Pwede mo pa ring gawin ang event kahit wala nito.",
+    "locFailed": "Hindi makuha ang location mo. I-on ang location access, o i-skip ang mapa."
   },
   "submit": {
     "saving": "Sine-save…",
     "creating": "Ginagawa…",
-    "saveChanges": "I-save ang mga pagbabago",
+    "saveChanges": "I-save ang changes",
     "openSpot": "Hi plan",
     "startEvent": "Hi plan",
     "create": "Hi plan"
   },
   "recur": {
     "everyday": "Araw-araw",
-    "weekly": "Lingguhan",
-    "everyNDays_one": "Tuwing {{count}} araw",
-    "everyNDays_other": "Tuwing {{count}} araw"
+    "weekly": "Kada linggo",
+    "everyNDays_one": "Kada {{count}} araw",
+    "everyNDays_other": "Kada {{count}} araw"
   },
   "limit": {
-    "title": "Nakagawa ka na ng event mo ngayong araw!",
-    "body": "Sa Hilads, pinapanatili naming sariwa ang mga bagay - isang event kada araw para makuha ng bawat plano ang atensyong karapat-dapat dito. Bumalik bukas para gumawa ng isa pa.",
-    "legendLink": "Maging Legend para gumawa ng walang limitasyong event",
-    "legendA11y": "Alamin ang tungkol sa pagiging Legend",
+    "title": "Nakagawa ka na ng event mo ngayon!",
+    "body": "Sa Hilads, gusto naming laging fresh - isang event kada araw para mapansin ang bawat lakad. Balik ka bukas para gumawa ulit.",
+    "legendLink": "Maging Legend para gumawa ng unlimited na events",
+    "legendA11y": "Alamin kung paano maging Legend",
     "legendAlertTitle": "Maging Legend",
-    "legendAlertBody": "Ang mga Legend ay mga local na pinili para buhayin ang kanilang lungsod - pwede silang mag-host ng kahit ilang event na gusto nila. Gusto mong maging isa? Mag-reach out sa contact@hilads.live.",
-    "gotIt": "Nakuha ko",
-    "backToNow": "Bumalik sa Now"
+    "legendAlertBody": "Ang mga Legend ay locals na pinili para panatilihing buhay ang city nila - puwede silang mag-host ng kahit ilang events. Gusto mong maging isa? Mag-message sa contact@hilads.live.",
+    "gotIt": "Gets",
+    "backToNow": "Balik sa Now",
+    "yourEvent": "Event mo"
   }
 }
