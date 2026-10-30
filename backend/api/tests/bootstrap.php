@@ -93,6 +93,7 @@ require_once __DIR__ . '/../src/DailyThemes.php';
 require_once __DIR__ . '/../src/DailySpecials.php';
 require_once __DIR__ . '/../src/DailyPresence.php';
 require_once __DIR__ . '/../src/CityNames.php';
+require_once __DIR__ . '/../src/DailyTranslations.php';
 require_once __DIR__ . '/../src/Currencies.php';
 require_once __DIR__ . '/../src/DailyCompare.php';
 require_once __DIR__ . '/../src/DailyBoard.php';

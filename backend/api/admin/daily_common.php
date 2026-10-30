@@ -165,6 +165,7 @@ function daily_subnav(string $current): void
         '/admin/daily/events'  => '🎃 Seasonal events',
         '/admin/daily/promo'   => '🎬 Promo',
         '/admin/daily/import'  => '⬆️ Import',
+        '/admin/daily/translations' => '🌐 Translations',
         '/admin/daily/log'     => '📜 Log',
     ];
     echo '<div class="daily-subnav">';

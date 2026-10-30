@@ -122,6 +122,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/CityNames.php';
     require_once __DIR__ . '/../src/Currencies.php';
     require_once __DIR__ . '/../src/DailyCompare.php';
+    require_once __DIR__ . '/../src/DailyTranslations.php';
     require_once __DIR__ . '/../src/DailyBoard.php';
     require_once __DIR__ . '/../src/DailyWeb.php';
     require_once __DIR__ . '/../src/DailyTour.php';
@@ -292,6 +293,7 @@ require_once __DIR__ . '/../src/DailyPresence.php';
 require_once __DIR__ . '/../src/CityNames.php';
 require_once __DIR__ . '/../src/Currencies.php';
 require_once __DIR__ . '/../src/DailyCompare.php';
+require_once __DIR__ . '/../src/DailyTranslations.php';
 require_once __DIR__ . '/../src/DailyBoard.php';
 require_once __DIR__ . '/../src/DailyWeb.php';
 require_once __DIR__ . '/../src/DailyTour.php';
