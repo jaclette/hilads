@@ -30,7 +30,7 @@
     "party": "festa",
     "nightlife": "vida noturna",
     "music": "música",
-    "live music": "concertos",
+    "live music": "música ao vivo",
     "culture": "cultura",
     "art": "arte",
     "food": "comida",
@@ -41,7 +41,7 @@
     "beach": "praia",
     "wellness": "bem-estar",
     "travel": "viagens",
-    "hangout": "sair",
+    "hangout": "convívio",
     "socializing": "conhecer gente",
     "gaming": "videojogos",
     "tech": "tecnologia",
@@ -67,10 +67,10 @@
   },
   "ambassador": {
     "title": "Recomendações da cidade",
-    "subtitle": "Mostradas no teu perfil como lenda local.",
+    "subtitle": "Aparecem no teu perfil, como uma lenda local.",
     "restaurant": "Restaurante favorito",
-    "restaurantPlaceholder": "Um sítio onde levas sempre a gente",
-    "spot": "Joia escondida / spot",
+    "restaurantPlaceholder": "Um sítio onde levas sempre a malta",
+    "spot": "Pérola escondida / sítio",
     "spotPlaceholder": "Um sítio que a maioria dos turistas não encontra",
     "tip": "Dica local",
     "tipPlaceholder": "O teu melhor conselho para os recém-chegados",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Algo que adoras nesta cidade"
   },
   "hangouts": {
-    "empty": "Ainda não há convívios - lança um 🗣️",
+    "empty": "Ainda não há convívios - começa um 🗣️",
     "host": "Anfitrião"
   },
   "events": {
     "going": "Vou",
-    "goingEmpty": "Ainda não há planos - encontra algo 🔥",
+    "goingEmpty": "Ainda não há planos - encontra alguma coisa 🔥",
     "hosting": "A organizar",
-    "hostingEmpty": "Nada organizado ainda - lança algo ✨",
+    "hostingEmpty": "Ainda não organizaste nada - lança alguma coisa ✨",
     "live": "Ao vivo",
     "recurring": "↻ Recorrente",
     "upcoming": "Em breve",
@@ -93,16 +93,17 @@
   },
   "friends": {
     "requests": "Pedidos de amizade",
-    "empty": "Ainda não tens amigos. Adiciona a partir dos perfis.",
+    "empty": "Ainda não tens amigos. Adiciona-os a partir dos perfis.",
     "mine": "Os meus amigos"
   },
   "vibesTab": {
     "received": "Vibes recebidas",
-    "score": "pontuação vibe de {{score}}",
+    "score": "{{score}} de pontuação vibe",
     "basedOn_one": "com base em {{count}} vibe",
+    "basedOn_many": "com base em {{count}} vibes",
     "basedOn_other": "com base em {{count}} vibes",
     "empty": "Ainda não há vibes",
-    "emptyHint": "A tua pontuação aparecerá aqui quando as pessoas te deixarem uma nota ✨"
+    "emptyHint": "A tua pontuação vai aparecer aqui quando te deixarem uma nota ✨"
   },
   "save": {
     "uploading": "A carregar…",
@@ -114,22 +115,22 @@
   "deleteAccount": "Eliminar a conta",
   "delete": {
     "title": "Eliminar a conta?",
-    "body": "O teu perfil, os teus amigos e as tuas definições serão removidos de forma permanente. As tuas mensagens e eventos permanecerão nos chats da cidade de forma anónima.",
-    "irreversible": "Isto não pode ser desfeito.",
+    "body": "O teu perfil, os teus amigos e as tuas definições vão ser removidos de vez. As tuas mensagens e eventos ficam nos chats da cidade, de forma anónima.",
+    "irreversible": "Não dá para desfazer.",
     "deleting": "A eliminar…",
     "confirm": "Sim, eliminar a minha conta",
     "cancel": "Cancelar"
   },
   "errors": {
-    "photoUpload": "Não foi possível carregar a foto. Tenta novamente.",
-    "usernameTooShort": "O nome de utilizador deve ter pelo menos 3 caracteres",
+    "photoUpload": "Não deu para carregar a foto. Tenta outra vez.",
+    "usernameTooShort": "O nome de utilizador tem de ter pelo menos 3 caracteres",
     "usernameTaken": "Esse nome de utilizador já está em uso",
     "usernameInvalid": "Nome de utilizador inválido",
-    "saveFailed": "Não foi possível guardar. Tenta novamente.",
-    "generic": "Ocorreu um erro. Tenta novamente."
+    "saveFailed": "Não deu para guardar. Tenta outra vez.",
+    "generic": "Algo correu mal. Tenta outra vez."
   },
   "challenges": {
-    "empty": "Sem desafios ainda - lança um 🔥",
+    "empty": "Ainda sem desafios - lança um 🔥",
     "challenger": "Desafiante"
   },
   "appearance": "Aparência",
@@ -142,11 +143,11 @@
       "weekNone": "Ainda sem posição esta semana",
       "mostLocalIn": "Most Local em {{city}}",
       "mostLocalWorld": "Most Local no mundo",
-      "hintToday": "Faz o challenge de hoje para ganhares o carimbo de {{theme}}.",
+      "hintToday": "Faz o desafio de hoje para ganhares o carimbo de {{theme}}.",
       "hintTomorrow": "Amanhã: {{theme}}",
       "hintPass": "Local Pass conquistado. Todos os temas feitos aqui.",
       "localPass": "Local Pass",
-      "mySpots": "Os meus spots",
+      "mySpots": "Os meus sítios",
       "myProposals": "As minhas propostas",
       "friends": "Amigos",
       "mostLocalAllTime": "Most Local de sempre",
@@ -154,8 +155,8 @@
       "howPoints": "Como funcionam os pontos",
       "gotIt": "Percebi",
       "close": "Fechar",
-      "noSpots": "Ainda sem spots. As tuas fotos em locais põem-nos aqui.",
-      "pageA11y_one": "{{city}}: {{count}} carimbos",
+      "noSpots": "Ainda sem sítios. Marca um sítio na tua foto e ele aparece aqui.",
+      "pageA11y_one": "{{city}}: {{count}} carimbo",
       "pageA11y_many": "{{city}}: {{count}} carimbos",
       "pageA11y_other": "{{city}}: {{count}} carimbos",
       "guestTitle": "Começa o teu passaporte",
@@ -163,14 +164,18 @@
       "signUp": "Registar",
       "signIn": "Já tenho conta",
       "best_one": "Recorde: {{count}} dia",
+      "best_many": "Recorde: {{count}} dias",
       "best_other": "Recorde: {{count}} dias",
       "stamps_one": "{{count}} de 7 carimbos",
+      "stamps_many": "{{count}} de 7 carimbos",
       "stamps_other": "{{count}} de 7 carimbos",
       "inReview_one": "{{count}} em revisão",
+      "inReview_many": "{{count}} em revisão",
       "inReview_other": "{{count}} em revisão",
       "specialTitle": "Carimbos especiais",
       "specialSub": "Edição limitada, um por cada dia especial. Não conta para o Local Pass.",
       "compared_one": "Comparado com {{count}} país",
+      "compared_many": "Comparado com {{count}} países",
       "compared_other": "Comparado com {{count}} países",
       "stampsOf_one": "{{count}} de {{total}} carimbos",
       "stampsOf_many": "{{count}} de {{total}} carimbos",
@@ -191,20 +196,21 @@
       "title": "Como ganhar pontos",
       "intro": "Os pontos do Daily Challenge contam no Most Local da semana. Todos os pontos contam no ranking de sempre.",
       "proof": "Publicar a tua foto",
-      "vote": "Votar (por challenge)",
+      "vote": "Votar (por desafio)",
       "top": "Top 3 mundial do dia",
       "weekly": "O Most Local da semana recomeça todas as segundas."
     },
     "tabFriends": "Amigos",
     "friendRequests": "Pedidos de amizade",
     "myFriends": "OS MEUS AMIGOS",
-    "noFriends": "Ainda não tens amigos. Adiciona a partir dos perfis.",
-    "vibesReceived": "VIBES RECEBIDOS",
-    "vibeScore": "{{score}} em pontuação vibe",
+    "noFriends": "Ainda não tens amigos. Adiciona-os a partir dos perfis.",
+    "vibesReceived": "VIBES RECEBIDAS",
+    "vibeScore": "{{score}} de pontuação vibe",
     "noVibes": "Ainda não há vibes.",
-    "noVibesSub": "A tua pontuação aparecerá quando as pessoas te deixarem uma nota ✨",
+    "noVibesSub": "A tua pontuação vai aparecer quando te deixarem uma nota ✨",
     "settings": "DEFINIÇÕES",
     "vibeBasis_one": "com base em {{count}} vibe",
+    "vibeBasis_many": "com base em {{count}} vibes",
     "vibeBasis_other": "com base em {{count}} vibes",
     "mode": {
       "local": {
@@ -239,7 +245,7 @@
     "cancel": "Cancelar",
     "emptyIncomingTitle": "Ainda não há pedidos de amizade",
     "emptySentTitle": "Não enviaste nenhum",
-    "emptyIncomingSub": "Quando alguém te pedir amizade, vais vê-lo aqui.",
-    "emptySentSub": "Os pedidos de amizade pendentes que enviaste aparecerão aqui."
+    "emptyIncomingSub": "Quando alguém te pedir amizade, aparece aqui.",
+    "emptySentSub": "Os pedidos de amizade que enviaste e ainda estão pendentes aparecem aqui."
   }
 }

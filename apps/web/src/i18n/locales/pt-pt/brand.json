@@ -1,10 +1,4 @@
 {
-  "badge": {
-    "ghost": "Ghost",
-    "fresh": "Novato",
-    "regular": "Da malta",
-    "host": "Lenda"
-  },
   "now": "now",
   "myCity": "my city",
   "here": "here",
@@ -18,5 +12,11 @@
     "music": "Música",
     "food": "Comida",
     "chill": "Relax"
+  },
+  "badge": {
+    "ghost": "Ghost",
+    "fresh": "Novato",
+    "regular": "Da malta",
+    "host": "Lenda"
   }
 }

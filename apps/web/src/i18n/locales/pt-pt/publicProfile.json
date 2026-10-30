@@ -3,8 +3,8 @@
   "loading": "A carregar…",
   "loadError": "Não foi possível carregar o perfil.",
   "badgeMicro": {
-    "ghost": "Só a dar uma vista de olhos",
-    "fresh": "Acabado de chegar",
+    "ghost": "Só a espreitar",
+    "fresh": "Acabou de chegar",
     "regular": "Aparece muitas vezes",
     "host": "Faz acontecer"
   },
@@ -22,11 +22,11 @@
   },
   "vibeTaglines": {
     "party": "Aqui pela vida noturna",
-    "board_games": "Traz snacks e dados",
+    "board_games": "Traz petiscos e dados",
     "coffee": "Primeiro o café, o resto depois",
     "music": "Sempre à procura de um bom som",
     "food": "Primeiro comemos, depois falamos",
-    "chill": "Tranquilo, boa onda"
+    "chill": "Na calma, sempre com boa onda"
   },
   "modeSub": {
     "localIn": "Local em {{city}}",
@@ -46,22 +46,24 @@
   },
   "host": "Anfitrião",
   "live": "Ao vivo",
+  "past": "Passado",
   "empty": {
     "hangouts": "Ainda não há convívios",
     "events": "Ainda não há eventos",
     "friends": "Ainda não há amigos",
-    "challenges": "Sem desafios ainda"
+    "challenges": "Ainda sem desafios"
   },
   "vibesTab": {
-    "score": "pontuação vibe de {{score}}",
+    "score": "{{score}} de pontuação vibe",
     "basedOn_one": "com base em {{count}} vibe",
+    "basedOn_many": "com base em {{count}} vibes",
     "basedOn_other": "com base em {{count}} vibes",
-    "updateNote": "Editar a tua nota ({{rating}}★)",
-    "leaveNote": "Deixar uma nota",
+    "updateNote": "Edita a tua nota ({{rating}}★)",
+    "leaveNote": "Deixa uma nota",
     "placeholder": "Diz algo simpático… (opcional)",
     "cancel": "Cancelar",
     "sending": "A enviar…",
-    "sendNote": "Enviar a nota",
+    "sendNote": "Enviar nota",
     "notesLabel": "Notas · {{count}}",
     "emptyTitle": "Ainda não há notas",
     "emptySub": "Sê o primeiro a deixar uma nota"
@@ -77,24 +79,23 @@
     "message": "Mensagem",
     "friend": "Amigo",
     "requestSent": "Pedido enviado",
-    "acceptRequest": "Aceitar o pedido",
+    "acceptRequest": "Aceitar pedido",
     "addFriend": "+ Amigo",
     "removing": "A remover…",
     "unfriend": "Remover amigo",
     "cancel": "Cancelar",
     "cancelling": "A cancelar…",
-    "cancelRequest": "Cancelar o pedido",
+    "cancelRequest": "Cancelar pedido",
     "keep": "Manter",
-    "reportTitle": "Denunciar o utilizador"
+    "reportTitle": "Denunciar utilizador"
   },
   "report": {
     "existing": "Denunciaste este utilizador a {{date}}. A tua denúncia está em análise.",
     "sent": "Denúncia enviada. Obrigado por nos avisares.",
     "placeholder": "Descreve o problema (mín. 10 caracteres)…",
-    "error": "Não foi possível enviar a denúncia. Tenta novamente.",
+    "error": "Não deu para enviar a denúncia. Tenta outra vez.",
     "sending": "A enviar…",
-    "submit": "Enviar a denúncia",
+    "submit": "Enviar denúncia",
     "cancel": "Cancelar"
-  },
-  "past": "Passado"
+  }
 }

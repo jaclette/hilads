@@ -1,17 +1,17 @@
 {
-  "title": "Pessoas por perto",
+  "title": "Quem está aqui",
   "noCityTitle": "Nenhuma cidade selecionada",
   "noCitySub": "Escolhe uma cidade para ver quem está por perto.",
   "browseCities": "Explorar cidades",
-  "filterBadge": "Badge",
+  "filterBadge": "Distintivo",
   "filterVibe": "Vibe",
   "filterMode": "Modo",
   "you": "(tu)",
   "hereNow": "Aqui agora",
-  "noMatchLive": "Ninguém corresponde a estes filtros por agora.",
+  "noMatchLive": "Ninguém corresponde a estes filtros agora.",
   "legends": "Lendas do Hilads",
   "legendsSub": "São eles que fazem a cidade acontecer",
-  "cityCrew": "Membros da cidade",
+  "cityCrew": "A malta da cidade",
   "noMatchCrew": "Nenhum membro corresponde a estes filtros.",
   "loadMore": "Ver mais"
 }

@@ -1,7 +1,7 @@
 {
   "loading": "A carregar…",
-  "notFound": "Este local não está na Hilads.",
-  "loadError": "Não foi possível carregar este local. Tenta novamente.",
+  "notFound": "Este local não está no Hilads.",
+  "loadError": "Não deu para carregar este local. Tenta outra vez.",
   "breadcrumb": "Trilho de navegação",
   "category": {
     "bar": "Bar / pub",

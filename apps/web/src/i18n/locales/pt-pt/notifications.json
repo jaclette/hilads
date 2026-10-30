@@ -3,7 +3,7 @@
   "markAllRead": "Marcar tudo como lido",
   "empty": {
     "title": "Tudo em dia",
-    "sub": "As notificações aparecerão aqui"
+    "sub": "As notificações vão aparecer aqui"
   },
   "loading": "A carregar…",
   "seeAll": "Ver todas as notificações",
@@ -13,20 +13,20 @@
     "mentionDesc": "Quando alguém te @menciona numa mensagem ou convívio",
     "newEventName": "Novos eventos na tua cidade",
     "newEventDesc": "Quando alguém cria um evento na tua cidade",
+    "newChallengeName": "Novos desafios na tua cidade",
+    "newChallengeDesc": "Quando alguém lança um desafio na tua cidade",
+    "cityJoinName": "Alguém chegou à tua cidade",
+    "cityJoinDesc": "Quando alguém se junta ao canal da tua cidade",
+    "worldArrivalName": "Novas chegadas pelo mundo",
+    "worldArrivalDesc": "Quando alguém novo chega, de qualquer cidade (canal Mundo)",
     "friendName": "Pedidos de amizade",
     "friendDesc": "Quando alguém te envia um pedido de amizade ou aceita o teu",
     "notesName": "Notas",
     "notesDesc": "Quando alguém deixa uma nota no teu perfil",
     "profileViewName": "Visitas ao teu perfil",
     "profileViewDesc": "Quando alguém vê o teu perfil",
-    "announcementName": "Anúncios da Hilads",
+    "announcementName": "Anúncios do Hilads",
     "announcementDesc": "Novidades ocasionais da equipa",
-    "newChallengeName": "Novos desafios na tua cidade",
-    "newChallengeDesc": "Quando alguém lança um desafio na tua cidade",
-    "cityJoinName": "Alguém chegou à tua cidade",
-    "cityJoinDesc": "Quando alguém se junta ao canal da tua cidade",
-    "worldArrivalName": "Novas chegadas pelo mundo",
-    "worldArrivalDesc": "Quando alguém novo entra a partir de qualquer cidade (canal World)",
     "commentName": "Comentários",
     "commentDesc": "Nas tuas fotos e nas fotos que comentaste"
   }

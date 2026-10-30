@@ -1,6 +1,6 @@
 {
   "title": "O que aí vem",
   "loadError": "Não foi possível carregar os eventos desse dia",
-  "emptyTitle": "Nada previsto",
-  "emptySub": "Ainda não há eventos nesse dia."
+  "emptyTitle": "Nada agendado",
+  "emptySub": "Ainda não há eventos neste dia."
 }

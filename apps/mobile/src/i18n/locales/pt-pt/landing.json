@@ -1,7 +1,9 @@
 {
   "peopleHere_one": "🔥 {{count}} pessoa aqui agora mesmo",
+  "peopleHere_many": "🔥 {{count}} pessoas aqui agora mesmo",
   "peopleHere_other": "🔥 {{count}} pessoas aqui agora mesmo",
   "vibesToday_one": "🔥 {{count}} vibe a acontecer hoje",
+  "vibesToday_many": "🔥 {{count}} vibes a acontecer hoje",
   "vibesToday_other": "🔥 {{count}} vibes a acontecer hoje",
   "geoOff": "📍 Localização desativada",
   "geoUnreachable": "📍 Não foi possível obter a tua localização",
@@ -12,15 +14,15 @@
   "browseCities": "Explorar cidades",
   "yourName": "O TEU NOME",
   "namePlaceholder": "Diz olá como...",
-  "tryAgain": "Tentar novamente",
+  "tryAgain": "Tentar outra vez",
   "useLocation": "Usar a minha localização",
-  "joinCity": "Juntar-te a {{city}} →",
-  "joinChat": "🔥 Vamos",
+  "joinCity": "Entrar em {{city}} →",
+  "joinChat": "🔥 Entrar",
   "instantAccess": "anónimo · acesso instantâneo",
   "keepIdentity": "ou mantém a tua identidade",
   "createAccount": "Criar conta",
   "logIn": "Iniciar sessão",
   "authHint": "Guarda o teu nome · desbloqueia perfis · adiciona amigos",
-  "joinError": "Não foi possível ligar. Verifica a tua ligação e tenta novamente.",
-  "conceptSub": "🔥 Locais desafiam viajantes e vice-versa — encontram-se para provar."
+  "joinError": "Não foi possível ligar. Verifica a tua ligação e tenta outra vez.",
+  "conceptSub": "🔥 Os locais desafiam os viajantes, os viajantes desafiam os locais. Encontrem-se para o provar."
 }

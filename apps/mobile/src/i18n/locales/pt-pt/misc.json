@@ -10,8 +10,11 @@
     "cancel": "Cancelar",
     "emptyIncomingTitle": "Ainda não há pedidos de amizade",
     "emptySentTitle": "Não enviaste nenhum",
-    "emptyIncomingSub": "Quando alguém te pedir amizade, vais vê-lo aqui.",
-    "emptySentSub": "Os pedidos de amizade pendentes que enviaste aparecerão aqui."
+    "emptyIncomingSub": "Quando alguém te pedir amizade, aparece aqui.",
+    "emptySentSub": "Os pedidos de amizade que enviaste e ainda estão pendentes aparecem aqui.",
+    "acceptFailed": "Não foi possível aceitar",
+    "declineFailed": "Não foi possível recusar",
+    "cancelFailed": "Não foi possível cancelar"
   },
   "blocked": {
     "title": "Utilizadores bloqueados",
@@ -22,8 +25,8 @@
     "unblockTitle": "Desbloquear {{name}}?",
     "unblockBody": "{{name}} poderá voltar a ver o teu conteúdo e a contactar-te.",
     "unblockFailTitle": "Não foi possível desbloquear",
-    "unblockFailBody": "Tenta de novo.",
+    "unblockFailBody": "Tenta outra vez.",
     "emptyTitle": "Não bloqueaste ninguém",
-    "emptySub": "Os utilizadores bloqueados não verão o teu conteúdo, e tu não verás o deles."
+    "emptySub": "Os utilizadores bloqueados não veem o teu conteúdo e tu não vês o deles."
   }
 }

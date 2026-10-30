@@ -12,7 +12,7 @@
   },
   "delete": {
     "confirmTitle": "Eliminar este evento?",
-    "confirmBody": "Isto vai remover o evento e todas as mensagens. Não pode ser desfeito.",
+    "confirmBody": "Isto elimina o evento e todas as mensagens. Não dá para desfazer.",
     "cancel": "Cancelar",
     "deleting": "A eliminar…",
     "confirm": "Eliminar",
@@ -20,16 +20,16 @@
   },
   "quickStart": "Início rápido",
   "presets": {
-    "dailySpot": "Spot diário",
+    "dailySpot": "Sítio de sempre",
     "dailySpotDesc": "Todos os dias",
     "everyEvening": "Todas as noites",
-    "everyEveningDesc": "Diariamente · 20:00",
+    "everyEveningDesc": "Diário · 20:00",
     "weekends": "Fins de semana",
     "weekendsDesc": "Sáb. e dom."
   },
   "category": "Categoria",
   "categories": {
-    "drinks": "Copos",
+    "drinks": "Bebidas",
     "party": "Festa",
     "music": "Música",
     "food": "Comida",
@@ -39,18 +39,18 @@
     "other": "Outro"
   },
   "titleLabel": "Título",
-  "titlePlaceholder": "ex. Noite de jazz no Rooftop Bar",
+  "titlePlaceholder": "ex.: Noite de jazz no Rooftop Bar",
   "date": "Data",
   "today": "Hoje",
   "tomorrow": "Amanhã",
-  "todayHint": "Organizar hoje dá-te a maior visibilidade",
+  "todayHint": "Organizar hoje dá-te mais visibilidade",
   "starts": "Início",
   "ends": "Fim",
   "repeat": "Repetir",
   "recurrence": {
     "once": "Uma vez",
-    "daily": "Diariamente",
-    "weekly": "Semanalmente",
+    "daily": "Diário",
+    "weekly": "Semanal",
     "everyNDays": "A cada N dias"
   },
   "weekdays": [
@@ -66,10 +66,10 @@
   "intervalDays": "dias",
   "location": "Local",
   "locating": "A obter a tua localização…",
-  "locationPlaceholder": "Opcional · toca para situar no mapa",
+  "locationPlaceholder": "Opcional · toca para marcar no mapa",
   "clearLocation": "Limpar o local",
   "errors": {
-    "endAfterStart": "A hora de fim deve ser pelo menos 15 minutos depois do início",
+    "endAfterStart": "A hora de fim tem de ser pelo menos 15 minutos depois do início",
     "pickDay": "Escolhe pelo menos um dia da semana",
     "deleteFailed": "Não foi possível eliminar o evento. Tenta novamente.",
     "locUnavailable": "A localização não está disponível neste navegador. Mesmo assim, podes criar o evento sem ela.",
@@ -85,18 +85,20 @@
   },
   "recur": {
     "everyday": "Todos os dias",
-    "weekly": "Semanalmente",
+    "weekly": "Semanal",
     "everyNDays_one": "A cada {{count}} dia",
+    "everyNDays_many": "A cada {{count}} dias",
     "everyNDays_other": "A cada {{count}} dias"
   },
   "limit": {
     "title": "Já criaste o teu evento de hoje!",
-    "body": "No Hilads mantemos as coisas frescas - um evento por dia para que cada plano receba a atenção que merece. Volta amanhã para criar outro.",
+    "body": "No Hilads mantemos tudo fresco: um evento por dia, para que cada plano tenha a atenção que merece. Volta amanhã para criares outro.",
     "legendLink": "Torna-te uma Lenda para criar eventos ilimitados",
-    "legendA11y": "Saber mais sobre como te tornares uma Lenda",
+    "legendA11y": "Saber como ser uma Lenda",
     "legendAlertTitle": "Torna-te uma Lenda",
-    "legendAlertBody": "As Lendas são locais escolhidos para manter a sua cidade viva - podem organizar tantos eventos quantos quiserem. Queres ser uma? Contacta-nos em contact@hilads.live.",
-    "gotIt": "Entendido",
-    "backToNow": "Voltar a Now"
+    "legendAlertBody": "As Lendas são locais escolhidos para manter a cidade viva: podem organizar quantos eventos quiserem. Queres ser uma? Fala connosco em contact@hilads.live.",
+    "gotIt": "Percebi",
+    "backToNow": "Voltar a Now",
+    "yourEvent": "O teu evento"
   }
 }
