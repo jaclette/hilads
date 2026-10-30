@@ -1,14 +1,13 @@
 {
-  "title": "Sắp tới",
+  "title": "Sắp diễn ra",
   "openCalendar": "Mở lịch",
   "today": "Hôm nay",
   "close": "Đóng",
-  "error": "Không thể tải sự kiện cho ngày này",
+  "error": "Không tải được sự kiện ngày này",
   "retry": "Thử lại",
-  "emptyTitle": "Chưa có gì",
-  "emptySub": "Chưa có sự kiện nào trong ngày này.",
+  "emptyTitle": "Chưa có lịch gì",
+  "emptySub": "Ngày này chưa có sự kiện nào.",
   "public": "Công khai",
-  "going_other": "{{count}} tham gia",
-  "liveNow": "Trực tiếp",
-  "going_one": "{{count}} tham gia"
+  "going_other": "{{count}} người đi",
+  "liveNow": "Đang diễn ra"
 }

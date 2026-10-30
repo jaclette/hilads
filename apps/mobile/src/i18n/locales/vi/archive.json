@@ -1,16 +1,16 @@
 {
-  "title": "Hoạt động đã qua",
-  "loadError": "Không thể tải kho lưu trữ",
+  "title": "Đã diễn ra",
+  "loadError": "Không tải được các hoạt động đã qua",
   "filterAll": "Tất cả",
   "rangeRecent": "Gần đây",
   "range7": "7 ngày qua",
   "range14": "14 ngày qua",
   "custom": "Tùy chỉnh",
-  "pickEnd": "Bây giờ chọn ngày kết thúc",
+  "pickEnd": "Giờ chọn ngày kết thúc",
   "pickStart": "Chọn ngày bắt đầu (tối đa {{max}} ngày)",
   "apply": "Áp dụng",
   "emptyTitle": "Chưa có gì ở đây",
-  "emptyRecentSub": "Các sự kiện và tụ tập đã qua sẽ hiển thị ở đây khi thành phố có lịch sử.",
-  "emptyWindowSub": "Không có sự kiện hoặc tụ tập trong khoảng này. Thử khoảng rộng hơn.",
+  "emptyRecentSub": "Khi thành phố có hoạt động, sự kiện và buổi tụ tập đã qua sẽ hiện ở đây.",
+  "emptyWindowSub": "Khoảng này không có sự kiện hay buổi tụ tập nào. Thử chọn rộng hơn nhé.",
   "filterChallenges": "Thử thách"
 }

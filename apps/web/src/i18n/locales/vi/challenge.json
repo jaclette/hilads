@@ -4,12 +4,12 @@
     "title": "Thử thách thành công",
     "allCities": "Tất cả thành phố",
     "clearCity": "Xóa",
-    "localTag": "Trong thành phố",
-    "by": "bởi {{name}}",
-    "loadMore": "Tải thêm",
+    "localTag": "Dân địa phương",
+    "by": "của {{name}}",
+    "loadMore": "Xem thêm",
     "empty": {
-      "title": "Chưa có câu chuyện thành công",
-      "body": "Những thử thách đã hoàn thành và được đánh giá cao sẽ xuất hiện ở đây. Hãy là người đầu tiên!"
+      "title": "Chưa có câu chuyện thành công nào",
+      "body": "Thử thách đã hoàn thành và được đánh giá cao sẽ hiện ở đây. Làm người mở màn đi!"
     },
     "tryCta": "Tạo thử thách mới",
     "note": "Họ nói gì"
@@ -17,20 +17,20 @@
   "myChallenges": {
     "cta": "Thử thách của tôi"
   },
-  "tabIntro": "Thử thách giữa người địa phương và du khách trong một thành phố - và giữa các thành phố.",
-  "howItWorks": "Cách hoạt động",
+  "tabIntro": "Thử thách giữa dân địa phương và du khách, trong một thành phố và giữa các thành phố.",
+  "howItWorks": "Cách chơi",
   "mostLocal": "Thổ địa",
   "seeAll": "Xem tất cả",
   "leaderboardCta": {
     "title": "Bảng xếp hạng thành phố",
     "view": "Xem",
-    "sub": "Hãy là người đầu tiên lên hạng - tạo và hoàn thành một thử thách"
+    "sub": "Lên bảng xếp hạng đầu tiên: tạo và hoàn thành một thử thách"
   },
-  "createTitle": "Tạo một thử thách",
-  "editTitle": "Chỉnh sửa thử thách",
+  "createTitle": "Tạo thử thách",
+  "editTitle": "Sửa thử thách",
   "audience": "Dành cho ai?",
   "aud": {
-    "locals": "Người địa phương",
+    "locals": "Dân địa phương",
     "explorers": "Du khách",
     "members": "Thành viên"
   },
@@ -42,31 +42,31 @@
     "help": "Điên rồ"
   },
   "titleLabel": "Thử thách của bạn",
-  "titlePlaceholder": "vd. Đưa tôi đến quán cà phê yêu thích của bạn",
+  "titlePlaceholder": "VD: Dẫn mình tới quán cà phê ẩn mà bạn mê nhất",
   "maxParticipantsLabel": {
-    "locals": "Tối đa bao nhiêu người địa phương?",
+    "locals": "Tối đa bao nhiêu dân địa phương?",
     "explorers": "Tối đa bao nhiêu du khách?"
   },
   "returnClauseLabel": "Rồi sao nữa?",
   "returnClauseTemplates": {
-    "food": "...rồi tới chia sẻ với tớ 🍜",
-    "place": "...rồi tự cậu dẫn tớ đi 🗺️",
-    "culture": "...rồi gặp nhau để kể tớ nghe 🎭",
-    "help": "...và cùng làm điều điên rồ nào 🤪"
+    "food": "...rồi rủ mình ăn chung 🍜",
+    "place": "...rồi tự dẫn mình tới đó 🗺️",
+    "culture": "...rồi gặp nhau kể mình nghe 🎭",
+    "help": "...rồi cùng nhau quẩy một bữa 🤪"
   },
-  "createCta": "Tạo thử thách",
+  "createCta": "Tung thử thách",
   "saveChanges": "Lưu thay đổi",
-  "errSave": "Không thể lưu thay đổi",
-  "errStart": "Không thể tạo thử thách",
+  "errSave": "Không lưu được thay đổi",
+  "errStart": "Không tạo được thử thách",
   "deleteTitle": "Xóa thử thách?",
-  "deleteBody": "Thử thách sẽ bị xóa cho mọi người. Không thể hoàn tác.",
+  "deleteBody": "Thử thách sẽ bị xóa với mọi người và không hoàn tác được.",
   "deleteConfirm": "Xóa",
-  "acceptCta": "Chấp nhận thử thách",
-  "acceptedCta": "Đã chấp nhận ✓",
+  "acceptCta": "Nhận thử thách",
+  "acceptedCta": "Đã nhận ✓",
   "validatedBadge": "Đã xác nhận",
   "card": {
     "open": "Đang mở",
-    "full": "Đã đầy",
+    "full": "Đủ người",
     "available": "Còn trống",
     "inProgress": "Đang diễn ra",
     "takeIt": "Nhận thử thách",
@@ -76,29 +76,29 @@
     "meetBadge": "Gặp mặt",
     "photosCount": "{{count}} ảnh",
     "noOneJoined": "Chưa ai tham gia",
-    "beFirst": "Là người đầu tiên · +2",
+    "beFirst": "Làm người đầu tiên · +2",
     "daysLeft": "Còn {{count}} ngày",
     "lastDay": "Sắp hết hạn",
     "joinGroup": "Tham gia thử thách",
-    "whoJoined": "Ai đã tham gia ({{count}})",
+    "whoJoined": "Đã tham gia ({{count}})",
     "ended": "Đã kết thúc",
     "awaitingResults": "Đang chờ kết quả"
   },
   "statusInProgress": "Thử thách đang diễn ra",
-  "statusAccomplished": "Thử thách hoàn thành",
-  "openBadge": "Mở",
-  "forLocals": "Cho người địa phương",
+  "statusAccomplished": "Thử thách thành công",
+  "openBadge": "Đang mở",
+  "forLocals": "Cho dân địa phương",
   "forExplorers": "Cho du khách",
   "validation": {
-    "label": "Xác minh kiểu nào?",
+    "label": "Xác nhận thế nào?",
     "meet": {
       "label": "Gặp mặt",
-      "hint": "Cùng nhau trải nghiệm trực tiếp",
-      "bonusChip": "+50 thưởng Gặp mặt khi mọi người có mặt"
+      "hint": "Gặp nhau trải nghiệm trực tiếp",
+      "bonusChip": "+50 thưởng Gặp mặt khi ai cũng có mặt"
     },
     "photo_proof": {
       "label": "Ảnh chứng minh",
-      "hint": "Chấp nhận chứng minh từ xa"
+      "hint": "Xác nhận bằng ảnh, không cần gặp"
     }
   },
   "notFound": "Không tìm thấy thử thách",
@@ -110,437 +110,195 @@
   },
   "challengerTag": "Challenger",
   "participantsLabel": "Người tham gia",
-  "editBtn": "Chỉnh sửa",
+  "editBtn": "Sửa",
   "deleteBtn": "Xóa",
   "shareCta": "Chia sẻ",
-  "shareInvite": "Cùng tớ chấp nhận thử thách này!",
+  "shareInvite": "Nhận thử thách này cùng mình nha!",
   "shareCopied": "Đã copy link",
   "noun": "Thử thách",
+  "byCreator": "của {{name}}",
+  "inspiration": {
+    "heading": "Ý tưởng thử thách",
+    "sub": "Dân địa phương nơi khác đang tạo gì - lấy cảm hứng nè",
+    "firstLocal": "Làm dân địa phương đầu tiên ở {{city}}",
+    "firstLocalSub": "Tạo một thử thách · du khách tới sẽ nhận",
+    "reward": "Thử thách đầu tiên · +10",
+    "launchFirst": "Tung thử thách đầu tiên",
+    "createYours": "Tạo thử thách ở {{city}}",
+    "by": "của {{name}} · {{city}}"
+  },
   "examples": {
-    "label": "Hết ý tưởng? Chạm để dùng",
+    "label": "Bí ý tưởng? Chạm để chọn",
     "food": [
-      "Cà phê ngon nhất trong phố",
-      "Người địa phương thực sự ăn trưa ở đâu",
-      "Quán đường phố ngon nhất gần đây"
+      "Chỉ mình quán cà phê ngon nhất phố đi",
+      "Dân ở đây thật sự ăn trưa ở đâu",
+      "Quán vỉa hè ngon nhất quanh đây"
     ],
     "place": [
-      "Spot ngắm hoàng hôn đẹp nhất",
-      "Một nơi du khách không bao giờ tìm thấy",
-      "Nơi bạn đi để thư giãn đầu óc"
+      "Chỗ ngắm hoàng hôn đẹp nhất",
+      "Một chỗ khách du lịch không bao giờ tìm ra",
+      "Chỗ bạn hay tới cho đầu óc thảnh thơi"
     ],
     "culture": [
-      "Một đêm nhạc địa phương thật sự cuối tuần này",
-      "Tranh đường phố đáng xem",
-      "Một show địa phương đáng nhớ"
+      "Một đêm nhạc đúng chất địa phương cuối tuần này",
+      "Tranh tường đáng ghé xem",
+      "Một show địa phương nhớ mãi"
     ],
     "help": [
-      "Tiệm cắt tóc không làm hỏng tuần của tôi",
+      "Tiệm cắt tóc không làm mình xấu cả tuần",
       "Bác sĩ nói được tiếng Anh",
-      "Nơi sửa màn hình điện thoại"
+      "Chỗ thay màn hình điện thoại"
     ]
   },
-  "beFirstToAccept": "Hãy là người đầu tiên nhận",
-  "openThreadCta": "Mở thread",
+  "beFirstToAccept": "Làm người đầu tiên nhận",
+  "openThreadCta": "Vào trò chuyện",
   "accept": {
     "err": {
       "openSettings": "Mở cài đặt",
       "unknown": {
         "title": "Không nhận được",
-        "body": "Có lỗi xảy ra. Thử lại nhé."
+        "body": "Có lỗi rồi. Thử lại nhé."
       },
       "not_creator": {
-        "title": "Đây là challenge của bạn",
-        "body": "Bạn tạo challenge này - đợi người khác nhận nhé."
+        "title": "Thử thách này của bạn mà",
+        "body": "Bạn tạo thử thách này - đợi người khác nhận nhé."
       },
       "mode_required": {
-        "title": "Chọn local hoặc traveler trước",
-        "body": "Đặt chế độ trong hồ sơ trước khi nhận challenge."
+        "title": "Chọn dân địa phương hay du khách trước",
+        "body": "Chọn chế độ trong hồ sơ trước khi nhận thử thách nhé."
       },
       "mode_mismatch": {
-        "title": "Challenge này không dành cho bạn",
-        "body": "Đổi chế độ trong hồ sơ nếu muốn nhận challenge này."
+        "title": "Thử thách này không dành cho bạn",
+        "body": "Muốn nhận thì đổi chế độ trong hồ sơ nhé."
       },
       "cap_reached": {
-        "title": "Challenge đã đầy"
+        "title": "Thử thách đã đủ người"
       },
       "in_progress": {
-        "title": "Có người đang nhận rồi",
-        "body": "Một du khách khác đang nhận thử thách này. Quay lại khi họ xong nhé - thử thách sẽ mở lại."
+        "title": "Có người nhận rồi",
+        "body": "Một du khách khác đang làm thử thách này. Khi họ xong, thử thách sẽ mở lại, quay lại xem nhé."
       },
       "completed": {
         "title": "Thử thách đã hoàn thành",
-        "body": "Thử thách này đã hoàn thành - không nhận thêm người mới."
+        "body": "Thử thách này đã xong, không nhận thêm người."
       }
     }
-  },
-  "thread": {
-    "notFound": "Không tìm thấy thread",
-    "empty": "Hãy là người đầu tiên nói gì đó.",
-    "emptyIntl": "Chào nhé - xong rồi thì gửi ảnh nhé.",
-    "cancel": {
-      "creatorTitle": "Huỷ tham gia này?",
-      "acceptorTitle": "Bỏ challenge này?",
-      "body": "Thread và chat sẽ bị xoá. Bạn có thể nhận lại sau nếu đổi ý.",
-      "confirm": "Huỷ",
-      "failed": "Không huỷ được. Thử lại nhé."
-    },
-    "cancelledByOther": {
-      "title": "Thread đã huỷ",
-      "body": "Người kia đã huỷ tham gia này."
-    }
-  },
-  "threads": {
-    "title": "Thread challenge của tôi",
-    "noMessagesYet": "Chưa có tin nhắn",
-    "empty": {
-      "title": "Không có thread nào đang hoạt động",
-      "body": "Khi bạn nhận challenge hoặc ai đó nhận challenge của bạn, cuộc trò chuyện sẽ hiện ở đây."
-    },
-    "guestGate": {
-      "title": "Đăng nhập để xem thread",
-      "body": "Thread là cuộc trò chuyện 1:1 giữa bạn và người ra challenge. Cần tài khoản để bắt đầu."
-    }
-  },
-  "schedule": {
-    "proposeCta": "Đề xuất ngày",
-    "counterCta": "Đề xuất lại",
-    "editCta": "Đổi ngày",
-    "you": "bạn",
-    "iProposedTitle": "Đang chờ xác nhận",
-    "theyProposedTitle": "{{name}} đã đề xuất",
-    "scheduled": {
-      "title": "Đã lên lịch gặp"
-    },
-    "withdraw": {
-      "title": "Rút lại đề xuất?",
-      "body": "Ngày bạn đề xuất sẽ bị xóa. Đối phương sẽ được thông báo.",
-      "confirm": "Rút lại"
-    },
-    "today": "Hôm nay",
-    "tomorrow": "Ngày mai",
-    "picker": {
-      "title": "Khi nào gặp nhau?",
-      "whenLabel": "Khi nào",
-      "timeLabel": "Giờ",
-      "whereLabel": "Ở đâu (tùy chọn)",
-      "wherePlaceholder": "vd. Le Comptoir, 17 rue de la Paix"
-    },
-    "err": {
-      "proposeFailed": "Không đề xuất được ngày. Thử lại nhé.",
-      "approveFailed": "Không xác nhận được. Thử lại nhé.",
-      "withdrawFailed": "Không rút lại được. Thử lại nhé."
-    }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "Sao rồi?",
-      "body": "{{name}} làm được không?"
-    },
-    "acceptorWaiting": {
-      "title": "Đang chờ kết quả",
-      "body": "{{name}} sẽ đánh dấu kết quả."
-    },
-    "approved": {
-      "title": "Đã hoàn thành thử thách"
-    },
-    "rejected": {
-      "title": "Thử thách đã đóng"
-    },
-    "confirm": {
-      "approve": {
-        "title": "Đánh dấu là hoàn thành?",
-        "body": "Đây là quyết định cuối cùng - sau đó không đổi được nữa.",
-        "confirm": "Đánh dấu hoàn thành"
-      },
-      "reject": {
-        "title": "Đóng mà không có kết quả?",
-        "body": "Dùng nếu buổi gặp thực sự không diễn ra. Đây là quyết định cuối.",
-        "confirm": "Đóng"
-      }
-    },
-    "err": {
-      "approveFailed": "Không xác nhận được. Thử lại nhé.",
-      "rejectFailed": "Không đóng được. Thử lại nhé."
-    }
-  },
-  "closeCta": "Đóng thử thách",
-  "reopenCta": "Mở lại",
-  "pipeline": {
-    "step": {
-      "accept": "Nhận",
-      "date": "Ngày",
-      "meet": "Gặp nhau",
-      "wrap": "Tổng kết",
-      "proof": "Bằng chứng",
-      "verdict": "Phán quyết"
-    },
-    "subcta": {
-      "tapToAccept": "Nhận thử thách này",
-      "creatorWaiting": "Đang chờ ai đó nhận",
-      "creatorReviewPending": "Phản hồi yêu cầu của {{name}}",
-      "acceptorAwaitingReview": "Đang chờ {{name}} phản hồi",
-      "proposeDate": "Đề xuất một ngày",
-      "dateAwaiting": "Đang chờ người tạo duyệt",
-      "approveDate": "Một ngày đã được đề xuất",
-      "meetSoon": "Hẹn gặp lúc {{date}}",
-      "creatorVerdict": "Buổi gặp với {{name}} thế nào?",
-      "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
-      "accomplished": "Đã hoàn thành thử thách",
-      "closed": "Thử thách đã đóng",
-      "submitProof": "Gửi bằng chứng",
-      "waitingForProof": "Chờ bằng chứng",
-      "reviewProof": "Xem bằng chứng",
-      "waitingForVerdict": "Chờ phán quyết",
-      "rateMeetup": "Đánh giá buổi gặp với {{name}}"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}} muốn nhận thử thách của bạn",
-      "pendingBody": "Chấp nhận để bắt đầu chat và lên kế hoạch gặp nhau, hoặc từ chối để giải phóng chỗ.",
-      "approve": "Chấp nhận",
-      "reject": "Từ chối",
-      "approveFailed": "Không chấp nhận được. Thử lại nhé.",
-      "rejectFailed": "Không từ chối được. Thử lại nhé."
-    },
-    "acceptor": {
-      "waitingTitle": "Đang chờ phản hồi",
-      "waitingBody": "{{name}} sẽ chấp nhận hoặc từ chối yêu cầu của bạn. Bạn sẽ nhận thông báo khi họ quyết định.",
-      "rejectedTitle": "Yêu cầu bị từ chối",
-      "rejectedBody": "{{name}} đã từ chối cái này. Bạn vẫn có thể chọn thử thách khác."
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "Nhận thử thách để mở khoá chat",
-      "body": "Khi bạn nhận, bạn và người tạo sẽ có một thread riêng để lên lịch gặp nhau."
-    },
-    "creator": {
-      "title": "Đang chờ ai đó nhận",
-      "body": "Khi một du khách nhận thử thách, bạn sẽ chat ngay tại đây để lên lịch gặp nhau."
-    },
-    "full": {
-      "title": "Thử thách đã đầy",
-      "body": "Tất cả chỗ đã có người. Quay lại nếu có ai rút lui nhé."
-    },
-    "inProgress": {
-      "title": "Có người đang nhận ngay bây giờ",
-      "body": "Một du khách đang nhận thử thách này. Khi họ xong, nó sẽ trống trở lại - ghé lại sớm nhé."
-    }
-  },
-  "postCreate": {
-    "title": "Thử thách của bạn đã ra mắt",
-    "subtitle": "Giờ gieo hạt - kéo ai đó nhận trong một tiếng tới.",
-    "thisCity": "thành phố này",
-    "ctaInvite": "Gửi cho ai đó ở {{city}}",
-    "ctaInviteSub": "Chọn vài {{audience}} - bọn mình ping họ.",
-    "ctaShare": "Chia sẻ ngoài Hilads",
-    "skip": "Để sau",
-    "pickerTitle": "{{audience}} ở {{city}}",
-    "pickerSubtitle": "Chạm để chọn. Họ nhận push với Chấp nhận / Bỏ qua.",
-    "pickerEmpty": "Không có {{audience}} quanh đây. Chia sẻ ngoài thay vì.",
-    "sendCta": "Gửi cho {{count}}",
-    "sendCtaEmpty": "Chọn ai đó trước",
-    "sentTitle": "Đã gửi cho {{count}}",
-    "sentSubtitle": "Họ sẽ nhận thông báo push ngay.",
-    "pickerSubtitleAll": "Không ai khớp chính xác - hiển thị tất cả ở {{city}}."
-  },
-  "invitation": {
-    "accept": "Chấp nhận",
-    "ignore": "Bỏ qua"
-  },
-  "byCreator": "của {{name}}",
-  "inspiration": {
-    "heading": "Ý tưởng thử thách",
-    "sub": "Xem dân địa phương nơi khác tạo gì - lấy cảm hứng",
-    "firstLocal": "Hãy là người địa phương đầu tiên ở {{city}}",
-    "firstLocalSub": "Tạo một thử thách · du khách đến sẽ nhận",
-    "reward": "Thử thách đầu · +10",
-    "launchFirst": "Tạo thử thách đầu tiên",
-    "createYours": "Tạo của bạn ở {{city}}",
-    "by": "bởi {{name}} · {{city}}"
-  },
-  "typeFilter": {
-    "label": "Lọc theo loại",
-    "all": "Tất cả",
-    "empty": "Không có gì trong mục này."
-  },
-  "seeAllChallenges": "Xem tất cả thử thách →",
-  "mode": {
-    "label": "Chế độ",
-    "local": "Trong thành phố",
-    "international": "Quốc tế",
-    "localHint": "Trong thành phố của bạn. Kết thúc bằng buổi gặp trực tiếp.",
-    "internationalHint": "Bất cứ đâu trên thế giới. Họ gửi bằng chứng, bạn duyệt từ xa.",
-    "worldwide": "Toàn cầu"
-  },
-  "intl": {
-    "targetCityLabel": "Thành phố đích",
-    "targetCityAnywhere": "Bất kỳ đâu trên thế giới",
-    "targetCityHint": "Để \"Bất kỳ đâu\" để gửi đến mọi nơi, hoặc chọn một thành phố.",
-    "proofRequirementsLabel": "Ảnh cần thể hiện gì?",
-    "proofRequirementsPlaceholder": "vd. Món ăn dưới ánh sáng ban ngày, có bạn trong khung hình",
-    "proofRequirementsHint": "Bằng chứng là một bức ảnh. Người tham gia sẽ thấy phần này trước khi gửi - hãy ghi rõ.",
-    "cityPicker": {
-      "title": "Chọn thành phố đích",
-      "searchPlaceholder": "Tìm thành phố…",
-      "anywhere": "Bất kỳ đâu trên thế giới"
-    },
-    "proof": {
-      "requirementsLabel": "Người tạo yêu cầu",
-      "submitCta": "Gửi bằng chứng",
-      "tryAgainCta": "Thử lại (còn {{count}})",
-      "waitingProof": "Chờ bằng chứng",
-      "waitingVerdict": "Chờ phán quyết",
-      "approvedLine": "Thử thách hoàn thành",
-      "closedLine": "Thử thách đã đóng",
-      "lastReason": "Lý do: {{reason}}",
-      "geotagOk": "Đã xác minh vị trí",
-      "geotagWarn": "Vị trí ngoài khu vực",
-      "approveCta": "Chấp nhận",
-      "rejectCta": "Từ chối",
-      "rejectModalTitle": "Từ chối bằng chứng",
-      "rejectModalHint": "Còn {{count}} lần. Nói rõ cần sửa gì.",
-      "reasonPlaceholder": "vd: ảnh mờ, không thấy món",
-      "rejectConfirm": "Gửi từ chối",
-      "reasonRequiredTitle": "Cần lý do",
-      "reasonRequiredBody": "Lý do ngắn (1–200 ký tự) sẽ giúp.",
-      "permPhotoTitle": "Cần truy cập ảnh",
-      "permPhotoBody": "Bật trong Cài đặt.",
-      "permGpsTitle": "Cần vị trí",
-      "permGpsBody": "Bắt buộc vị trí. Bật trong Cài đặt.",
-      "gpsFailTitle": "Không đọc được GPS",
-      "gpsFailBody": "Thử ngoài trời.",
-      "submitFailTitle": "Không gửi được",
-      "submitFailBody": "Kiểm tra kết nối.",
-      "reviewFailTitle": "Không lưu được phán quyết"
-    }
-  },
-  "modeFilter": {
-    "label": "Lọc theo chế độ",
-    "all": "Tất cả"
   },
   "messageCreator": "Nhắn tin riêng cho {{name}}",
-  "badge": {
-    "challenger": "Người ra thử thách",
-    "taker": "Người nhận",
-    "spectator": "Khán giả"
-  },
-  "cta": {
-    "takenBy": "Đang được {{name}} nhận",
-    "closed": "Thử thách này đã kết thúc"
-  },
   "join": {
-    "gateTitle": "Vào với tư cách khán giả",
-    "gateBody": "Vào với tư cách khán giả để theo dõi cuộc trò chuyện và cổ vũ người tham gia.",
+    "gateTitle": "Làm khán giả",
+    "gateBody": "Vào làm khán giả để theo dõi trò chuyện và cổ vũ người nhận.",
     "cta": "Vào làm khán giả",
     "leaveCta": "Rời kênh",
-    "errKicked": "Bạn đã bị xóa khỏi thử thách này. Không thể tham gia lại.",
-    "errClosed": "Thử thách này đã đóng nhận thành viên mới.",
+    "errKicked": "Bạn đã bị mời ra khỏi thử thách này và không thể vào lại.",
+    "errClosed": "Thử thách này không nhận thêm người.",
     "errGeneric": "Không vào được - thử lại nhé."
+  },
+  "leaveTakeon": {
+    "pill": "Rời",
+    "confirmTitle": "Rời thử thách này?",
+    "confirmBody": "Tiến trình sẽ về 0 và thử thách mở lại cho người khác. Không hoàn tác được đâu.",
+    "confirmCta": "Rời",
+    "failed": "Không rời được - thử lại nhé."
+  },
+  "restart": {
+    "cta": "Làm lại thử thách từ đầu",
+    "confirmTitle": "Làm lại thử thách từ đầu?",
+    "confirmBody": "Người nhận hiện tại sẽ bị gỡ, chat bị xóa sạch và thử thách mở lại từ đầu. Không hoàn tác được đâu.",
+    "confirmCta": "Làm lại",
+    "failed": "Không làm lại được - thử lại nhé."
   },
   "lock": {
     "private": {
       "title": "Thử thách này riêng tư",
-      "body": "Chỉ người tạo và người nhận thấy được cuộc trò chuyện."
+      "body": "Chỉ người tạo và người nhận xem được cuộc trò chuyện."
     }
   },
-  "members": {
-    "title": "Trong kênh",
-    "countIn": "{{count}} người trong kênh",
-    "seeAll": "Xem tất cả",
-    "empty": "Chưa có ai tham gia - hãy là người đầu tiên.",
-    "kickCta": "Xoá",
-    "kickAria": "Xoá {{name}} khỏi kênh",
-    "errKick": "Không thể xoá - thử lại."
-  },
-  "notif": {
-    "on": "Bật thông báo",
-    "off": "Tắt thông báo"
-  },
-  "manage": {
-    "cta": "Quản lý",
-    "title": "Quản lý thử thách"
-  },
-  "visibility": {
-    "badge": {
-      "public": "Công khai",
-      "friends": "Bạn bè",
-      "private": "Riêng tư"
+  "thread": {
+    "notFound": "Không tìm thấy cuộc trò chuyện",
+    "empty": "Mở lời đầu tiên đi.",
+    "emptyIntl": "Chào một câu đi - làm xong thì gửi ảnh nhé.",
+    "cancel": {
+      "creatorTitle": "Hủy lượt nhận này?",
+      "acceptorTitle": "Bỏ thử thách này?",
+      "body": "Cuộc trò chuyện và tin nhắn sẽ bị xóa. Đổi ý thì bạn vẫn nhận lại được sau.",
+      "confirm": "Hủy lượt nhận",
+      "failed": "Không hủy được. Thử lại nhé."
     },
-    "label": "Ai xem được?",
-    "public": "Công khai",
-    "friends": "Bạn bè",
-    "publicHint": "Bất kỳ ai trong thành phố đều thấy và nhận được.",
-    "friendsHint": "Chỉ bạn bè và người bạn mời mới thấy được.",
-    "intlLocked": "Thử thách quốc tế luôn công khai.",
-    "moderationBlocked": "Nội dung của bạn bị gắn cờ - vui lòng viết lại.",
-    "optin": {
-      "title": "Lưu ý - cái này công khai",
-      "body": "Thử thách công khai xuất hiện trên feed thành phố và trên web công khai. Tên và nội dung thử thách của bạn sẽ hiển thị với bất kỳ ai - kể cả người ngoài và công cụ tìm kiếm. Bạn có thể chuyển sang Bạn bè bên dưới nếu muốn giữ kín hơn.",
-      "cta": "Hiểu rồi, đăng công khai",
-      "switchToFriends": "Chuyển sang Bạn bè",
-      "dontShowAgain": "Đừng hiện lại"
+    "cancelledByOther": {
+      "title": "Cuộc trò chuyện đã hủy",
+      "body": "Người kia đã hủy lượt nhận này."
     }
   },
-  "privacy": {
-    "closedCloseCta": "Đóng nhận thành viên mới",
-    "closedReopenCta": "Mở lại nhận thành viên",
-    "panelTitle": "Quyền riêng tư",
-    "closedTitle": "Đóng nhận thành viên mới",
-    "closedBody": "Người đang tham gia vẫn ở lại. Nút Tham gia ngừng nhận người mới cho đến khi bạn mở lại.",
-    "currentPublic": "Thử thách này đang công khai - ai cũng thấy được.",
-    "currentFriends": "Thử thách này chỉ chia sẻ với bạn bè.",
-    "currentPrivate": "Thử thách này riêng tư - chỉ hai bạn thấy được.",
-    "intlNote": "Thử thách quốc tế luôn công khai.",
-    "goPrivateCta": "Chuyển sang riêng tư (cả hai phải đồng ý)",
-    "needCounterparty": "Khả dụng khi có người nhận thử thách này.",
-    "myVoteAgreed": "Bạn đã đồng ý - đang chờ người kia.",
-    "myVoteDenied": "Bạn đã từ chối. Chạm bên dưới để đổi ý.",
-    "otherVoteAgreed": "Họ đã đồng ý - đến lượt bạn quyết định.",
-    "otherVoteDenied": "Họ đã từ chối.",
-    "voteAgreedCta": "Đồng ý - chuyển riêng tư",
-    "voteDeniedCta": "Từ chối",
-    "withdrawCta": "Rút lại lựa chọn",
-    "errSave": "Không lưu được - thử lại nhé.",
-    "errVote": "Không lưu được lựa chọn - thử lại nhé.",
-    "notifTitle": "Thông báo cho thử thách này",
-    "notif": {
-      "all": "Mọi tin nhắn",
-      "milestones": "Cột mốc",
-      "off": "Tắt"
+  "threads": {
+    "title": "Trò chuyện thử thách",
+    "noMessagesYet": "Chưa có tin nhắn",
+    "empty": {
+      "title": "Chưa có cuộc trò chuyện nào",
+      "body": "Khi bạn nhận thử thách, hoặc có người nhận thử thách bạn tạo, cuộc trò chuyện sẽ hiện ở đây."
     },
-    "notifHint": {
-      "all": "Báo cho tôi mỗi tin nhắn mới trong kênh.",
-      "milestones": "Khi người nhận chấp nhận, gửi bằng chứng và xác nhận cuối cùng.",
-      "off": "Im lặng - tôi sẽ tự kiểm tra kênh."
+    "guestGate": {
+      "title": "Đăng nhập để xem trò chuyện",
+      "body": "Đây là chat 1:1 giữa bạn và Challenger. Cần có tài khoản để bắt đầu."
     }
-  },
-  "details": {
-    "collapseAria": "Ẩn chi tiết kênh",
-    "expandAria": "Hiện chi tiết kênh"
   },
   "ratePrompts": {
     "banner": {
-      "title": "Đánh giá thử thách này - mọi thứ thế nào?",
-      "titleUrgent": "Đến lượt bạn đánh giá thử thách này"
+      "title": "Đánh giá thử thách này - thấy sao?",
+      "titleUrgent": "Tới lượt bạn đánh giá thử thách này"
     },
     "sheet": {
-      "title": "Thử thách diễn ra thế nào?",
+      "title": "Thử thách thế nào?",
+      "subtitle": "Đánh giá thử thách, không phải đánh giá người.",
       "starsAria": "{{n}} sao",
-      "commentPlaceholder": "Để lại ghi chú về thử thách (tùy chọn)",
+      "commentPlaceholder": "Ghi vài dòng về thử thách (không bắt buộc)",
       "submit": "Gửi đánh giá",
-      "later": "Để sau",
-      "subtitle": "Đánh giá thử thách, không phải con người."
+      "later": "Để sau"
     },
     "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
+  },
+  "scoringInfo": {
+    "aria": "Cách tính điểm",
+    "helpLabel": "Cách kiếm điểm",
+    "title": "Thử thách chơi thế nào",
+    "intro": "Tham gia được chút điểm; có mặt thật hay thắng mới được điểm lớn. Tham gia cho có để cày điểm thì không bõ đâu.",
+    "colStep": "Bước",
+    "steps": {
+      "created": "Tạo thử thách",
+      "accepted": "Có người nhận",
+      "date": "Chốt ngày",
+      "meet": "Gặp mặt",
+      "rate": "Hai bên đánh giá"
+    },
+    "noPoints": "-",
+    "totalLabel": "Tổng mỗi thử thách",
+    "footnote": "Điểm số có thể thay đổi trong lúc cân chỉnh game.",
+    "types": {
+      "heading": "Hai loại thử thách",
+      "local": "Gặp mặt - tụ tập một nhóm ngoài đời, đúng giờ, đúng chỗ. Ai có mặt đều được nhiều điểm.",
+      "international": "Thi ảnh - mọi người đăng ảnh trước hạn chót; Challenger chọn người thắng."
+    },
+    "lifecycle": {
+      "heading": "Kết thúc thế nào",
+      "body": "Challenger đặt luật, mọi người tham gia, cuối cùng Challenger xác nhận - ai có mặt, hoặc ảnh nào thắng."
+    },
+    "pointsHeading": "Kiếm điểm thế nào",
+    "ways": {
+      "join": "Tham gia thử thách",
+      "create": "Tạo thử thách",
+      "present": "Có mặt thật - được xác nhận",
+      "host": "Tổ chức buổi gặp",
+      "submit": "Gửi ảnh cho một thử thách",
+      "win": "Thắng thử thách ảnh"
+    },
+    "seeExamples": "Xem 3 ví dụ thật"
   },
   "leaderboard": {
     "title": "Thổ địa",
     "chip": {
       "ranked": "#{{rank}}",
       "rankedOver": "#100+",
-      "neutral": "Top thử thách"
+      "neutral": "Top Challenger"
     },
     "scope": {
       "city": "My city",
@@ -549,205 +307,461 @@
     },
     "period": {
       "month": "Tháng này",
-      "alltime": "Mọi thời điểm"
+      "alltime": "Mọi thời đại"
     },
-    "points": "{{points}} pts",
+    "points": "{{points}} điểm",
     "me": {
-      "ranked": "Bạn · #{{rank}} · {{points}} pts",
+      "ranked": "Bạn · #{{rank}} · {{points}} điểm",
       "unranked": "Nhận một thử thách để lên bảng"
     },
     "empty": {
-      "title": "Chưa ai trên bảng",
-      "body": "Hãy là người đầu tiên nhận thử thách và kiếm điểm."
+      "title": "Chưa ai lên bảng",
+      "body": "Nhận thử thách đầu tiên và bắt đầu kiếm điểm."
     },
-    "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại.",
+    "errLoad": "Không tải được bảng xếp hạng. Kéo xuống để thử lại.",
     "neutral": "🏆 Thổ địa",
     "titleCity": "Thổ địa {{demonym}}",
     "share": {
-      "cta": "Chia sẻ hạng của tôi",
+      "cta": "Chia sẻ hạng của mình",
       "periodMonth": "tháng này",
-      "periodAll": "mọi thời điểm",
+      "periodAll": "mọi thời đại",
       "placeCity": "ở {{city}}",
       "placeWorld": "trên Thế giới",
-      "userNotTop": "🔥 Tôi hạng #{{rank}} {{place}} {{period}}: {{pts}} điểm! Đang bám đuổi @{{above}} ({{aPts}} điểm) 👀 và giữ @{{below}} ({{bPts}} điểm) phía sau. Nghĩ mình vượt được tôi? 🏆",
-      "userTop": "👑 Tôi hạng #1 {{place}} {{period}}: {{pts}} điểm! @{{below1}} ({{b1Pts}} điểm) và @{{below2}} ({{b2Pts}} điểm) đang đuổi theo. Tới lật đổ tôi đi 😏",
-      "cityNotTop": "🔥 {{place}} hạng #{{rank}} trong tất cả thành phố {{period}}: {{pts}} điểm! Ngay sau {{above}} ({{aPts}} điểm) 👀 và trên {{below}} ({{bPts}} điểm). Người địa phương ơi, leo lên nào 🏆",
-      "cityTop": "👑 {{place}} hạng #1 trong tất cả thành phố {{period}}: {{pts}} điểm! {{below1}} ({{b1Pts}} điểm) và {{below2}} ({{b2Pts}} điểm) đang đuổi theo. Người địa phương ơi, giữ vững ngôi đầu 🔥"
+      "userNotTop": "🔥 Mình đang hạng #{{rank}} {{place}} {{period}}: {{pts}} điểm! Đang bám sát @{{above}} ({{aPts}} điểm) 👀 và bỏ @{{below}} ({{bPts}} điểm) lại phía sau. Nghĩ vượt được mình không? 🏆",
+      "userTop": "👑 Mình đang hạng #1 {{place}} {{period}}: {{pts}} điểm! @{{below1}} ({{b1Pts}} điểm) và @{{below2}} ({{b2Pts}} điểm) đang bám đuôi. Tới giành ngôi đi 😏",
+      "cityNotTop": "🔥 {{place}} đang hạng #{{rank}} trong mọi thành phố {{period}}: {{pts}} điểm! Ngay sau {{above}} ({{aPts}} điểm) 👀 và trên {{below}} ({{bPts}} điểm). Dân địa phương ơi, leo lên nào 🏆",
+      "cityTop": "👑 {{place}} đang hạng #1 trong mọi thành phố {{period}}: {{pts}} điểm! {{below1}} ({{b1Pts}} điểm) và {{below2}} ({{b2Pts}} điểm) đang đuổi theo. Dân địa phương ơi, giữ vững ngôi đầu nha 🔥"
     }
   },
-  "scoringInfo": {
-    "aria": "Cách tính điểm",
-    "helpLabel": "Cách kiếm điểm",
-    "title": "Thử thách hoạt động thế nào",
-    "intro": "Điểm nhỏ khi tham gia; điểm lớn khi thực sự có mặt hoặc chiến thắng. Farm điểm tham gia là vô ích.",
-    "colStep": "Bước",
-    "steps": {
-      "created": "Đã tạo thử thách",
-      "accepted": "Nhận thử thách",
-      "date": "Chốt ngày",
+  "schedule": {
+    "proposeCta": "Đề xuất ngày",
+    "counterCta": "Đề xuất ngày khác",
+    "editCta": "Đổi ngày",
+    "you": "bạn",
+    "iProposedTitle": "Đang chờ họ đồng ý",
+    "theyProposedTitle": "{{name}} đã đề xuất",
+    "scheduled": {
+      "title": "Đã chốt lịch gặp"
+    },
+    "withdraw": {
+      "title": "Rút lại đề xuất?",
+      "body": "Ngày bạn đề xuất sẽ bị xóa và người kia sẽ nhận được thông báo.",
+      "confirm": "Rút lại"
+    },
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "picker": {
+      "title": "Khi nào gặp nhau?",
+      "whenLabel": "Khi nào",
+      "timeLabel": "Giờ",
+      "whereLabel": "Ở đâu (không bắt buộc)",
+      "wherePlaceholder": "VD: Cà phê Vợt, 6 Nguyễn Thiện Thuật"
+    },
+    "err": {
+      "proposeFailed": "Không đề xuất được ngày. Thử lại nhé.",
+      "approveFailed": "Không đồng ý được. Thử lại nhé.",
+      "withdrawFailed": "Không rút lại được. Thử lại nhé."
+    }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Sao rồi?",
+      "body": "{{name}} có làm được không?"
+    },
+    "acceptorWaiting": {
+      "title": "Đang chờ kết quả",
+      "body": "{{name}} sẽ chốt kết quả."
+    },
+    "approved": {
+      "title": "Thử thách hoàn thành"
+    },
+    "rejected": {
+      "title": "Thử thách đã đóng"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Đánh dấu đã hoàn thành?",
+        "body": "Chốt là chốt - sau đó không đổi được nữa.",
+        "confirm": "Đã hoàn thành"
+      },
+      "reject": {
+        "title": "Đóng mà không chốt kết quả?",
+        "body": "Chọn cái này nếu buổi gặp không thật sự diễn ra. Chốt là không đổi được.",
+        "confirm": "Đóng"
+      }
+    },
+    "err": {
+      "approveFailed": "Không đồng ý được. Thử lại nhé.",
+      "rejectFailed": "Không đóng được. Thử lại nhé."
+    }
+  },
+  "closeCta": "Đóng thử thách",
+  "reopenCta": "Mở lại",
+  "pipeline": {
+    "step": {
+      "accept": "Chấp nhận",
+      "date": "Ngày",
       "meet": "Gặp mặt",
-      "rate": "Hai bên đánh giá"
+      "wrap": "Tổng kết",
+      "proof": "Bằng chứng",
+      "verdict": "Kết quả"
     },
-    "noPoints": "-",
-    "totalLabel": "Tổng mỗi thử thách",
-    "footnote": "Các con số có thể thay đổi.",
-    "types": {
-      "heading": "Hai loại thử thách",
-      "local": "Gặp mặt — tụ họp trực tiếp tại thời gian + địa điểm đã định. Ai có mặt đều được điểm lớn.",
-      "international": "Thi ảnh — mọi người gửi ảnh trước hạn; người tạo chọn người thắng."
+    "subcta": {
+      "tapToAccept": "Nhận thử thách",
+      "creatorWaiting": "Đang chờ người nhận",
+      "creatorReviewPending": "Xem yêu cầu nhận của {{name}}",
+      "acceptorAwaitingReview": "Đang chờ {{name}} xem yêu cầu",
+      "proposeDate": "Đề xuất ngày",
+      "dateAwaiting": "Đang chờ người tạo đồng ý",
+      "approveDate": "Có ngày được đề xuất rồi",
+      "meetSoon": "Hẹn gặp {{date}} nhé",
+      "creatorVerdict": "Gặp {{name}} thế nào?",
+      "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
+      "rateMeetup": "Đánh giá buổi gặp với {{name}}",
+      "accomplished": "Thử thách hoàn thành",
+      "closed": "Thử thách đã đóng",
+      "submitProof": "Gửi ảnh chứng minh",
+      "waitingForProof": "Đang chờ ảnh chứng minh",
+      "reviewProof": "Xem ảnh chứng minh",
+      "waitingForVerdict": "Đang chờ kết quả"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} muốn nhận thử thách của bạn",
+      "pendingBody": "Chấp nhận để bắt đầu chat và hẹn gặp, hoặc từ chối để nhường lượt cho người khác.",
+      "approve": "Chấp nhận",
+      "reject": "Từ chối",
+      "approveFailed": "Không chấp nhận được. Thử lại nhé.",
+      "rejectFailed": "Không từ chối được. Thử lại nhé."
     },
-    "lifecycle": {
-      "heading": "Cách kết thúc",
-      "body": "Người tạo đặt khung, mọi người tham gia, và người tạo xác nhận ở cuối — ai có mặt, hoặc ảnh nào thắng."
+    "acceptor": {
+      "waitingTitle": "Đang chờ duyệt",
+      "waitingBody": "{{name}} sẽ chấp nhận hoặc từ chối lượt nhận của bạn. Có quyết định là bạn nhận thông báo liền.",
+      "rejectedTitle": "Lượt nhận bị từ chối",
+      "rejectedBody": "{{name}} đã từ chối lần này. Bạn vẫn chọn được thử thách khác nhé."
+    }
+  },
+  "postCreate": {
+    "title": "Thử thách của bạn đã lên sóng",
+    "subtitle": "Giờ đi rủ người - kiếm ai đó nhận trong vòng một tiếng tới.",
+    "thisCity": "thành phố này",
+    "ctaInvite": "Gửi cho ai đó ở {{city}}",
+    "ctaInviteSub": "Chọn vài {{audience}} - Hilads sẽ báo cho họ.",
+    "ctaShare": "Chia sẻ ra ngoài Hilads",
+    "skip": "Để sau",
+    "pickerTitle": "{{audience}} ở {{city}}",
+    "pickerSubtitle": "Chạm để chọn. Họ sẽ nhận thông báo kèm nút Chấp nhận / Bỏ qua.",
+    "pickerEmpty": "Quanh đây chưa có {{audience}} nào. Chia sẻ ra ngoài thử nhé.",
+    "sendCta": "Gửi cho {{count}} người",
+    "sendCtaEmpty": "Chọn ai đó trước đã",
+    "sentTitle": "Đã gửi cho {{count}} người",
+    "sentSubtitle": "Họ sẽ nhận thông báo ngay bây giờ.",
+    "pickerSubtitleAll": "Không ai khớp hẳn - đang hiện mọi người ở {{city}}."
+  },
+  "invitation": {
+    "accept": "Chấp nhận",
+    "ignore": "Bỏ qua"
+  },
+  "locked": {
+    "visitor": {
+      "title": "Nhận thử thách để mở chat",
+      "body": "Khi bạn nhận, bạn và Challenger sẽ có cuộc trò chuyện riêng để hẹn gặp."
     },
-    "pointsHeading": "Cách kiếm điểm",
-    "ways": {
-      "join": "Tham gia thử thách",
-      "create": "Tạo thử thách",
-      "present": "Có mặt — được xác nhận",
-      "host": "Tổ chức buổi gặp",
-      "submit": "Gửi ảnh dự thi",
-      "win": "Thắng thử thách ảnh"
+    "creator": {
+      "title": "Đang chờ người nhận",
+      "body": "Khi có du khách nhận, bạn sẽ chat với họ ngay đây để hẹn gặp."
     },
-    "seeExamples": "Xem 3 ví dụ thực tế"
+    "full": {
+      "title": "Thử thách đã đủ người",
+      "body": "Hết suất rồi. Quay lại xem nếu có ai rút nhé."
+    },
+    "inProgress": {
+      "title": "Đang có người nhận thử thách này",
+      "body": "Một du khách đang làm thử thách này. Khi họ xong, thử thách sẽ trống lại - ghé lại sớm nhé."
+    }
+  },
+  "typeFilter": {
+    "label": "Lọc theo loại",
+    "all": "Tất cả",
+    "empty": "Mục này giờ chưa có gì."
+  },
+  "seeAllChallenges": "Xem tất cả thử thách →",
+  "mode": {
+    "label": "Chế độ",
+    "local": "Dân địa phương",
+    "international": "Quốc tế",
+    "localHint": "Trong thành phố của bạn. Kết thúc bằng một buổi gặp trực tiếp.",
+    "internationalHint": "Ở bất cứ đâu trên thế giới. Họ gửi ảnh chứng minh, bạn duyệt từ xa.",
+    "worldwide": "Toàn cầu"
+  },
+  "visibility": {
+    "label": "Ai xem được?",
+    "public": "Công khai",
+    "friends": "Bạn bè",
+    "publicHint": "Ai trong thành phố cũng xem và nhận được.",
+    "friendsHint": "Chỉ bạn bè và người bạn mời mới xem được.",
+    "intlLocked": "Thử thách quốc tế luôn công khai.",
+    "moderationBlocked": "Nội dung bị gắn cờ - viết lại giúp nhé.",
+    "badge": {
+      "public": "Công khai",
+      "friends": "Bạn bè",
+      "private": "Riêng tư"
+    },
+    "optin": {
+      "title": "Lưu ý - cái này công khai đó",
+      "body": "Thử thách công khai sẽ hiện trên feed thành phố và trên web. Ai cũng thấy tên bạn và nội dung thử thách, kể cả người chưa có tài khoản và công cụ tìm kiếm. Muốn kín hơn thì chuyển sang Bạn bè ở dưới nhé.",
+      "cta": "Ok, đăng công khai",
+      "switchToFriends": "Chuyển sang Bạn bè",
+      "dontShowAgain": "Đừng hiện lại"
+    }
+  },
+  "privacy": {
+    "panelTitle": "Quyền riêng tư",
+    "currentPublic": "Thử thách này đang công khai - ai cũng xem được.",
+    "currentFriends": "Thử thách này chỉ bạn bè mới thấy.",
+    "currentPrivate": "Thử thách này riêng tư - chỉ hai bạn thấy.",
+    "intlNote": "Thử thách quốc tế luôn công khai.",
+    "goPrivateCta": "Chuyển riêng tư (cả hai cùng đồng ý)",
+    "myVoteAgreed": "Bạn đã đồng ý - đang chờ người kia.",
+    "myVoteDenied": "Bạn đã từ chối. Bấm bên dưới nếu đổi ý.",
+    "otherVoteAgreed": "Người kia đã đồng ý - tới lượt bạn quyết.",
+    "otherVoteDenied": "Người kia đã từ chối.",
+    "voteAgreedCta": "Đồng ý - chuyển riêng tư",
+    "voteDeniedCta": "Từ chối",
+    "withdrawCta": "Rút lại lựa chọn",
+    "needCounterparty": "Dùng được khi có người nhận thử thách này.",
+    "errVote": "Không lưu được lựa chọn - thử lại nhé.",
+    "errSave": "Không lưu được - thử lại nhé.",
+    "notifTitle": "Thông báo của thử thách này",
+    "notif": {
+      "milestones": "Cột mốc",
+      "all": "Mọi tin nhắn",
+      "off": "Tắt"
+    },
+    "notifHint": {
+      "milestones": "Khi có người nhận, khi gửi bằng chứng, khi xác nhận cuối.",
+      "all": "Báo mình mỗi khi kênh có tin nhắn mới.",
+      "off": "Im lặng thôi - mình tự vào kênh xem."
+    },
+    "closedTitle": "Ngừng nhận người mới",
+    "closedBody": "Người đang ở trong kênh vẫn ở lại. Nút Tham gia sẽ không nhận thêm ai cho đến khi bạn mở lại.",
+    "closedCloseCta": "Không nhận thêm người vào kênh",
+    "closedReopenCta": "Mở lại cho người mới vào"
+  },
+  "members": {
+    "title": "Trong kênh",
+    "countIn": "{{count}} người trong kênh",
+    "seeAll": "Xem tất cả",
+    "empty": "Chưa ai tham gia - vào đầu tiên đi.",
+    "kickCta": "Gỡ",
+    "kickAria": "Gỡ {{name}} khỏi kênh",
+    "errKick": "Không gỡ được - thử lại nhé."
+  },
+  "notif": {
+    "on": "Đang bật thông báo",
+    "off": "Đang tắt thông báo"
+  },
+  "manage": {
+    "cta": "Quản lý",
+    "title": "Quản lý thử thách"
+  },
+  "details": {
+    "collapseAria": "Ẩn chi tiết kênh",
+    "expandAria": "Hiện chi tiết kênh"
+  },
+  "badge": {
+    "challenger": "Challenger",
+    "taker": "Người nhận",
+    "spectator": "Khán giả"
+  },
+  "cta": {
+    "takenBy": "{{name}} đang nhận thử thách này",
+    "closed": "Thử thách này đã đóng"
+  },
+  "intl": {
+    "targetCityLabel": "Thành phố mục tiêu",
+    "targetCityAnywhere": "Bất cứ đâu trên thế giới",
+    "targetCityHint": "Để \"Bất kỳ đâu\" để tới du khách khắp nơi, hoặc chọn một thành phố để nhắm đúng chỗ.",
+    "proofRequirementsLabel": "Ảnh cần có gì?",
+    "proofRequirementsPlaceholder": "VD: Món ăn chụp ban ngày, có bạn trong hình",
+    "proofRequirementsHint": "Bằng chứng là một tấm ảnh. Người nhận sẽ đọc phần này trước khi gửi - ghi cho rõ nhé.",
+    "cityPicker": {
+      "title": "Chọn thành phố mục tiêu",
+      "searchPlaceholder": "Tìm thành phố…",
+      "anywhere": "Bất cứ đâu trên thế giới"
+    },
+    "proof": {
+      "requirementsLabel": "Người tạo yêu cầu",
+      "submitCta": "Gửi ảnh chứng minh",
+      "tryAgainCta": "Thử lại (còn {{count}} lần)",
+      "waitingProof": "Đang chờ ảnh chứng minh",
+      "waitingVerdict": "Đang chờ kết quả",
+      "approvedLine": "Thử thách hoàn thành",
+      "closedLine": "Thử thách đã đóng",
+      "lastReason": "Lý do: {{reason}}",
+      "geotagOk": "Đã xác minh vị trí",
+      "geotagWarn": "Vị trí nằm ngoài khu vực yêu cầu",
+      "approveCta": "Duyệt",
+      "rejectCta": "Từ chối",
+      "rejectModalTitle": "Từ chối ảnh chứng minh",
+      "rejectModalHint": "Họ còn {{count}} lần thử. Nói họ cần sửa gì nhé.",
+      "reasonPlaceholder": "VD: Ảnh mờ quá, không thấy món",
+      "rejectConfirm": "Gửi lời từ chối",
+      "reasonRequiredTitle": "Cần có lý do",
+      "reasonRequiredBody": "Một lý do ngắn (1–200 ký tự) sẽ giúp người nhận.",
+      "permPhotoTitle": "Cần quyền truy cập ảnh",
+      "permPhotoBody": "Mở quyền truy cập thư viện ảnh trong Cài đặt để chọn ảnh bằng chứng.",
+      "permGpsTitle": "Cần quyền vị trí",
+      "permGpsBody": "Ảnh bắt buộc phải có vị trí. Bật định vị trong Cài đặt nhé.",
+      "gpsFailTitle": "Không đọc được GPS",
+      "gpsFailBody": "Thử lại ở ngoài trời hoặc bật định vị nhé.",
+      "submitFailTitle": "Không gửi được",
+      "submitFailBody": "Kiểm tra kết nối rồi thử lại nhé.",
+      "reviewFailTitle": "Không lưu được kết quả"
+    }
+  },
+  "modeFilter": {
+    "label": "Lọc theo chế độ",
+    "all": "Tất cả"
   },
   "scoreCelebration": {
     "unit": "điểm",
     "subtitle": {
-      "accepted": "Challenge của bạn đã được nhận",
-      "date_locked": "Đã chốt lịch - đi thôi",
-      "meetup": "Nhiệm vụ hoàn thành",
-      "debrief": "Nhiệm vụ hoàn thành",
-      "ghost": "May mắn lần sau",
-      "default": "Bạn đang leo bảng xếp hạng",
-      "meet_bonus": "Mở khóa thưởng gặp mặt",
-      "challenge_created": "Bạn đã tạo một thử thách"
+      "accepted": "Có người nhận thử thách của bạn rồi",
+      "date_locked": "Đã chốt lịch - lên đường thôi",
+      "meetup": "Hoàn thành nhiệm vụ",
+      "debrief": "Hoàn thành nhiệm vụ",
+      "ghost": "Lần sau may mắn hơn nhé",
+      "default": "Bạn đang leo hạng",
+      "meet_bonus": "Mở khóa thưởng Gặp mặt",
+      "challenge_created": "Bạn vừa tạo một thử thách"
     },
     "rank": {
-      "city": "#{{rank}} tại {{city}}",
-      "cityBeyond": "Ngoài top {{topN}} của thành phố bạn",
+      "city": "#{{rank}} ở {{city}}",
+      "cityBeyond": "Ngoài top {{topN}} thành phố của bạn",
       "world": "#{{rank}} toàn cầu",
       "worldBeyond": "Ngoài top {{topN}} toàn cầu",
-      "cityUnranked": "Tháng này chưa có hạng tại {{city}}",
+      "cityUnranked": "Tháng này chưa có hạng ở {{city}}",
       "worldUnranked": "Tháng này chưa có hạng toàn cầu",
       "cities": "{{city}} đứng #{{rank}} trong các thành phố",
       "citiesBeyond": "{{city}} ngoài top {{topN}} thành phố"
     },
     "cta": "Đi thôi",
     "kindShort": {
-      "accepted": "Đã nhận",
-      "date_locked": "Đã chốt lịch",
+      "accepted": "Đã chấp nhận",
+      "date_locked": "Chốt ngày",
       "meetup": "Đã gặp",
-      "debrief": "Cả hai đã đánh giá",
-      "ghost": "Ghosted",
+      "debrief": "Hai bên đã đánh giá",
+      "ghost": "Bị bùng kèo",
       "default": "Đã đạt",
-      "meet_bonus": "Thưởng gặp mặt",
-      "challenge_created": "Đã tạo thử thách"
+      "meet_bonus": "Thưởng Gặp mặt",
+      "challenge_created": "Tạo thử thách"
     },
     "event": {
-      "deletedChallenge": "Challenge đã xoá",
-      "andMore": "và {{count}} nữa"
+      "deletedChallenge": "Thử thách đã xóa",
+      "andMore": "và {{count}} cái nữa"
     },
-    "total": "Tổng: {{total}} pts"
+    "total": "Tổng: {{total}} điểm"
   },
   "welcomeGuest": {
-    "title": "Chào bạn! Trò chuyện thoải mái, không cần đăng ký.",
+    "title": "Chào bạn! Cứ thoải mái chat ở đây, không cần đăng ký.",
     "cta": "Muốn nhận thử thách này? Đăng ký trong 3 giây"
   },
   "group": {
     "meetLabel": "Khi nào & ở đâu",
     "meetCta": "Chọn ngày gặp",
-    "meetHint": "Mọi người tham gia sẽ gặp nhau ở đây. Sau đó bạn xác nhận ai đã có mặt.",
-    "meetRequired": "Hãy chọn ngày gặp.",
-    "meetSet": "Đặt buổi gặp",
+    "meetHint": "Ai tham gia cũng gặp nhau ở đây. Sau đó bạn xác nhận ai đã tới.",
+    "meetRequired": "Chọn ngày gặp nhé.",
+    "meetSet": "Hẹn buổi gặp",
     "done": "Buổi gặp đã xong.",
-    "validateCta": "Xác nhận ai đã đến",
-    "validateAfter": "Bạn có thể xác nhận sau buổi gặp · {{time}}",
-    "youreIn": "Bạn đã tham gia — hẹn gặp!",
+    "validateCta": "Xác nhận ai đã tới",
+    "validateAfter": "Xác nhận được sau buổi gặp · {{time}}",
+    "youreIn": "Bạn vào rồi - hẹn gặp ở đó nhé!",
     "joinCta": "Tham gia thử thách (+2 điểm)",
-    "closed": "Đã đóng đăng ký",
-    "joinFailed": "Không thể tham gia — thử lại.",
-    "validateFailed": "Không thể xác nhận — thử lại.",
-    "validateTitle": "Ai đã đến?",
-    "validateSub": "Đánh dấu những người đã đến. Mỗi người nhận thưởng.",
+    "closed": "Không nhận thêm người",
+    "joinFailed": "Không tham gia được - thử lại nhé.",
+    "validateFailed": "Không xác nhận được - thử lại nhé.",
+    "validateTitle": "Ai đã tới?",
+    "validateSub": "Đánh dấu những ai đã tới buổi gặp. Mỗi người đều nhận thưởng.",
     "rateMeet": "Buổi gặp thế nào?",
-    "validateConfirm": "Xác nhận {{count}} có mặt",
-    "noParticipants": "Chưa có ai tham gia.",
+    "validateConfirm": "Xác nhận {{count}} người có mặt",
+    "noParticipants": "Chưa ai tham gia.",
     "join": "Tham gia",
-    "joinedCount": "{{count}} đã tham gia",
-    "deadlineLabel": "Hạn nộp",
+    "joinedCount": "{{count}} người tham gia",
+    "deadlineLabel": "Hạn gửi ảnh",
     "deadline24h": "24h",
     "deadline3d": "3 ngày",
     "deadline1w": "1 tuần",
-    "deadlineHint": "Ai tham gia cũng gửi một ảnh trước hạn. Bạn chọn người thắng sau đó.",
-    "deadlineRequiredTitle": "Chọn hạn nộp",
-    "deadlineRequired": "Chọn thời lượng thử thách.",
-    "deadlinePrefix": "Nộp trước",
-    "contestDone": "Thử thách đã kết thúc.",
-    "youreInPhoto": "Bạn đã tham gia — gửi ảnh của bạn bên dưới.",
+    "deadlineHint": "Ai tham gia cũng gửi một ảnh trước hạn. Sau đó bạn chọn người thắng.",
+    "deadlineRequiredTitle": "Chọn hạn chót",
+    "deadlineRequired": "Chọn thử thách kéo dài bao lâu.",
+    "deadlinePrefix": "Gửi trước",
+    "contestDone": "Thử thách này đã kết thúc.",
+    "youreInPhoto": "Bạn vào rồi - gửi ảnh ở bên dưới nhé.",
     "pickWinnerCta": "Chọn người thắng",
     "joinContestCta": "Tham gia thử thách (+2 điểm)",
     "winnerTitle": "Chọn người thắng",
     "winnerSub": "Chọn ảnh đẹp nhất. Người thắng nhận phần thưởng lớn.",
-    "winnerConfirm": "Vinh danh người thắng",
-    "winnerNoSubmission": "Người đó chưa gửi ảnh.",
-    "winnerFailed": "Không thể chọn người thắng — thử lại.",
+    "winnerConfirm": "Trao ngôi vương",
+    "winnerNoSubmission": "Người này chưa gửi ảnh.",
+    "winnerFailed": "Không chọn được người thắng - thử lại nhé.",
     "submissionsHeader": "{{count}} ảnh",
     "tapToPick": "chọn ảnh đẹp nhất",
     "winnerTag": "Người thắng",
-    "pickThis": "Chọn",
-    "winnerConfirmTitle": "Vinh danh người thắng?",
-    "winnerConfirmBody": "{{name}} nhận phần thưởng lớn.",
+    "pickThis": "Chọn thắng",
+    "winnerConfirmTitle": "Trao ngôi vương?",
+    "winnerConfirmBody": "{{name}} sẽ nhận phần thưởng lớn.",
     "pickHint": "Chọn người thắng từ các ảnh bên dưới.",
-    "awaitingPhotos": "Chưa có ảnh nào — thử thách đang nóng lên 🔥",
+    "awaitingPhotos": "Chưa có ảnh nào - thử thách đang nóng dần 🔥",
     "checkPhotos": "Xem {{count}} ảnh"
   },
   "challengeIntro": {
     "slide1": {
-      "title": "Cảm nhận thành phố, ngay",
-      "body": "Thử thách là những lời mời thực tế giữa mọi người trong một thành phố — và giữa các thành phố."
+      "title": "Cảm nhận thành phố, ngay lúc này",
+      "body": "Thử thách là những trò thách nhau ngoài đời thật, giữa mọi người trong một thành phố - và giữa các thành phố."
     },
     "slide2": {
-      "title": "Tạo khung thử thách",
-      "body": "Đặt một buổi gặp (ngày + địa điểm) hoặc một thử thách ảnh có hạn chót. Bạn là người tổ chức."
+      "title": "Đặt ra thử thách",
+      "body": "Hẹn một buổi gặp (ngày + địa điểm) hoặc tạo thử thách ảnh có hạn chót. Bạn là chủ xị."
     },
     "slide3": {
-      "title": "Ai cũng có thể tham gia",
-      "body": "Không cần xin, không chờ — ai muốn thì tham gia. Bạn được +2 ngay."
+      "title": "Ai cũng vào được",
+      "body": "Không cần xin, không phải chờ - ai muốn là vào. Bạn được +2 liền."
     },
     "slide4": {
-      "title": "Biến nó thành hiện thực",
-      "body": "Mọi người cùng có mặt tại buổi gặp — hoặc gửi ảnh đẹp nhất trước hạn."
+      "title": "Làm thật luôn",
+      "body": "Mọi người cùng tới buổi gặp của bạn - hoặc gửi ảnh đẹp nhất trước hạn."
     },
     "slide5": {
       "title": "Bạn xác nhận",
-      "body": "Sau đó bạn xác nhận ai có mặt, hoặc chọn ảnh thắng. Điểm lớn nằm ở đó."
+      "body": "Sau đó bạn xác nhận ai có mặt, hoặc chọn ảnh thắng. Điểm lớn nằm ở bước này."
     },
     "slide6": {
       "title": "Giữa các thành phố",
-      "body": "Thử thách ảnh hoạt động từ xa — thách cả một thành phố khác gửi ảnh đẹp nhất."
+      "body": "Thử thách ảnh chơi được từ xa - thách cả một thành phố khác gửi tấm ảnh đẹp nhất."
     },
     "slide7": {
       "title": "Leo bảng Thổ địa",
-      "body": "Có mặt và chiến thắng để thăng hạng. Điểm tham gia nhỏ, nên quan trọng là thực sự làm."
+      "body": "Có mặt và chiến thắng để leo hạng. Điểm tham gia luôn nhỏ, nên quan trọng là làm thật."
     }
   },
   "result": {
     "winner": {
-      "title": "Bạn đã thắng!",
+      "title": "Bạn thắng rồi!",
       "body": "Ảnh của bạn đã thắng thử thách."
     },
     "loser": {
       "title": "{{name}} đã thắng",
-      "body": "Ảnh đẹp đấy! Bạn nhận {{points}} vì đã tham gia — thử lại lần sau nhé"
+      "body": "Ảnh đẹp đó! Bạn được {{points}} vì đã tham gia - lần sau chơi tiếp nhé"
     },
     "present": {
       "title": "Bạn đã có mặt!",
-      "body": "Đã xác nhận có mặt tại buổi gặp."
+      "body": "Đã xác nhận có mặt ở buổi gặp."
     },
     "absent": {
       "title": "Bạn lỡ lần này rồi",
-      "body": "Tham gia buổi gặp tới — chỗ của bạn vẫn còn đó."
+      "body": "Hẹn buổi gặp sau nhé - vẫn có suất cho bạn."
     },
     "host": {
       "titlePhoto": "{{name}} đã thắng thử thách của bạn!",
@@ -756,92 +770,75 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Tuyệt!",
-    "total": "Bạn hiện có {{total}} điểm",
+    "total": "Giờ bạn có {{total}} điểm",
     "rateTitle": "Đánh giá thử thách này",
-    "notePlaceholder": "Thêm ghi chú (tùy chọn)",
+    "notePlaceholder": "Thêm ghi chú (không bắt buộc)",
     "saveRating": "Lưu đánh giá"
   },
   "status": {
     "live": "Đang diễn ra",
-    "done": "Đã xong",
+    "done": "Xong",
     "ended": "Đã kết thúc"
   },
   "pointExamples": {
-    "title": "3 ví dụ thực tế",
-    "intro": "Cách các thử thách thực tế chia điểm — ai được gì.",
-    "empty": "Chưa có ví dụ nào — hãy là người đầu tiên tạo thử thách!",
+    "title": "3 ví dụ thật",
+    "intro": "Các thử thách thật đã chia điểm ra sao - ai được bao nhiêu.",
+    "empty": "Chưa có ví dụ nào - tạo thử thách đầu tiên đi!",
     "each": "mỗi người",
     "line": {
       "created": "{{name}} đã tạo",
       "winner": "{{name}} đã thắng",
-      "present": "{{count}} người đã đến",
+      "present": "{{count}} người đã tới",
       "submission": "{{count}} người đã gửi ảnh",
       "host": "{{name}} đã tổ chức"
     }
   },
   "titlePh": {
-    "food": "VD: Tìm cho tôi tô phở ngon nhất 🍜",
-    "place": "VD: Dẫn tôi đến nơi bí mật yêu thích của bạn 📍",
-    "culture": "VD: Cho tôi xem điều chỉ dân địa phương biết 🎭",
-    "help": "VD: Thách tôi làm điều gì đó điên rồ 🤪"
-  },
-  "leaveTakeon": {
-    "pill": "Rời đi",
-    "confirmTitle": "Rời thử thách này?",
-    "confirmBody": "Tiến trình sẽ về 0 và thử thách mở lại cho người khác. Không thể hoàn tác.",
-    "confirmCta": "Rời đi",
-    "failed": "Không rời được - thử lại nhé."
-  },
-  "restart": {
-    "cta": "Khởi động lại thử thách",
-    "confirmTitle": "Khởi động lại thử thách?",
-    "confirmBody": "Việc này gỡ người nhận hiện tại, xoá chat, và mở lại thử thách từ đầu. Không thể hoàn tác.",
-    "confirmCta": "Khởi động lại",
-    "failed": "Không khởi động lại được - thử lại nhé."
+    "food": "VD: Tìm giúp mình tô phở ngon nhất 🍜",
+    "place": "VD: Dẫn mình tới chỗ bí mật mà bạn mê nhất 📍",
+    "culture": "VD: Chỉ mình thứ chỉ dân địa phương mới biết 🎭",
+    "help": "VD: Thách mình làm trò gì đó thật điên 🤪"
   },
   "relaunch": {
-    "cta": "Khởi động lại",
-    "confirmTitle": "Khởi động lại thử thách này?",
-    "confirmBody": "Nó mở lại với cùng bộ đếm ngược bạn đã đặt lần đầu.",
-    "confirmCta": "Khởi động lại",
-    "failed": "Không thể khởi động lại - hãy thử lại."
+    "cta": "Làm lại",
+    "confirmTitle": "Làm lại thử thách này?",
+    "confirmBody": "Thử thách mở lại với đúng thời gian đếm ngược bạn đặt lần đầu.",
+    "confirmCta": "Làm lại",
+    "failed": "Không làm lại được - thử lại nhé."
   },
   "appMap": {
-    "title": "Xem các spot trên bản đồ",
-    "titleCity": "Xem các spot ở {{city}} trên bản đồ",
-    "body": "Nơi người địa phương đăng ảnh Daily Challenge. Đăng ảnh của bạn từ app Hilads."
+    "title": "Xem các địa điểm trên bản đồ",
+    "titleCity": "Xem các địa điểm ở {{city}} trên bản đồ",
+    "body": "Nơi dân địa phương đăng ảnh Daily Challenge. Đăng ảnh của bạn từ app Hilads nhé."
   },
-  "creationClosed": "Đã đóng tạo challenge. Hãy làm Daily Challenge trong app Hilads.",
+  "creationClosed": "Không còn tạo thử thách được nữa. Chơi Daily Challenge trong app Hilads nhé.",
   "map": {
     "see": "Xem bản đồ",
     "button": "Bản đồ",
     "search": "Tìm món ăn, quán cà phê…",
-    "searchA11y": "Tìm spot",
+    "searchA11y": "Tìm địa điểm",
     "clearSearch": "Xóa tìm kiếm",
-    "noResults": "Không có spot phù hợp",
+    "noResults": "Không có địa điểm nào khớp",
     "all": "Tất cả",
-    "openSpot": "Xem spot",
+    "openSpot": "Xem địa điểm",
     "directions": "Chỉ đường",
-    "validated": "Được người địa phương xác nhận",
+    "validated": "Dân địa phương xác nhận",
     "pricePaid": "Giá đã trả {{price}}",
     "closeSpot": "Đóng",
-    "emptyTitle": "Hãy là người đầu tiên đặt spot ở đây",
+    "emptyTitle": "Ghim địa điểm đầu tiên ở đây nhé",
     "list": "Danh sách",
     "mapView": "Bản đồ",
     "sortNearest": "Gần nhất",
-    "sortWeek": "Bình chọn nhiều nhất tuần này",
-    "spotsTomorrow": "Spot sẽ đến từ challenge ngày mai: {{theme}}",
-    "proofs_one": "{{count}} ảnh",
+    "sortWeek": "Nhiều bình chọn nhất tuần",
+    "spotsTomorrow": "Địa điểm sẽ có từ thử thách ngày mai: {{theme}}",
     "proofs_other": "{{count}} ảnh",
-    "votes_one": "{{count}} phiếu",
-    "votes_other": "{{count}} phiếu",
-    "unavailable": "Bản đồ hiện không khả dụng.",
+    "votes_other": "{{count}} bình chọn",
+    "unavailable": "Bản đồ đang tạm không dùng được.",
     "nearYou": "Gần bạn",
-    "locationDenied": "Cho phép hilads.live truy cập vị trí trong trình duyệt để căn bản đồ theo bạn.",
+    "locationDenied": "Cho phép hilads.live dùng vị trí trong trình duyệt để bản đồ hiện quanh bạn.",
     "locate": "Đưa bản đồ về vị trí của tôi",
-    "locationFailed": "Hiện chưa lấy được vị trí của bạn.",
-    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "locationFailed": "Chưa lấy được vị trí của bạn.",
+    "cityBubbleA11y_other": "{{city}}, {{count}} địa điểm",
     "todayChip": "Hôm nay",
     "playHere": "Chơi ở đây hôm nay",
     "planNow": "bây giờ",
@@ -849,233 +846,229 @@
     "halloween": "🎃 Halloween"
   },
   "spot": {
-    "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",
-    "rankWeek": "Hạng {{rank}} tuần này ở {{city}}",
-    "rankAlltimeFirst": "Spot được bình chọn nhiều nhất ở {{city}}",
-    "rankAlltime": "Hạng {{rank}} mọi thời đại ở {{city}}",
+    "rankWeekFirst": "Nhiều bình chọn nhất tuần này ở {{city}}",
+    "rankWeek": "#{{rank}} tuần này ở {{city}}",
+    "rankAlltimeFirst": "Địa điểm nhiều bình chọn nhất ở {{city}}",
+    "rankAlltime": "#{{rank}} mọi thời đại ở {{city}}",
     "photos": "Ảnh",
     "captions": "Mọi người nói gì",
-    "notFound": "Spot này không còn khả dụng.",
-    "local": "Người địa phương",
+    "notFound": "Địa điểm này không còn nữa.",
+    "local": "Dân địa phương",
     "morePhotos": "Thêm ảnh",
-    "proofInApp": "Đăng ảnh của bạn trong app"
+    "proofInApp": "Đăng ảnh trong app"
   },
   "dc": {
     "kicker": "Daily Challenge",
     "timeLeft": "còn {{time}}",
     "nextIn": "Daily Challenge tiếp theo sau {{time}}",
     "nothingLive": "Daily Challenge tiếp theo sắp tới rồi",
-    "cta": "Nhận challenge",
-    "ctaIn": "Mình tham gia",
-    "ctaTaken": "Đã làm thử thách · Xem ảnh của mình",
+    "cta": "Chơi thử thách",
+    "ctaIn": "Chơi luôn",
+    "ctaTaken": "Đã chơi · Xem ảnh của mình",
     "seeProofs": "Xem ảnh hôm nay",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist ở {{city}}",
-    "twistBy": "bởi {{name}}",
-    "count_one": "{{count}} người đã làm hôm nay",
-    "count_other": "{{count}} người đã làm hôm nay",
+    "twistBy": "của {{name}}",
+    "count_other": "{{count}} người đã chơi hôm nay",
     "countCity": "{{count}} ở {{city}}",
-    "countZero": "Chưa có ai - hãy là người đầu tiên",
-    "beFirst": "Hãy là người đầu tiên hôm nay",
-    "beFirstSub": "Chưa có ảnh nào. Hãy là người đầu tiên, cả thế giới đang chờ.",
-    "firstYours": "Ảnh của bạn đã được gửi",
-    "firstYoursSub": "Ảnh sẽ hiện ở đây sau khi được duyệt, cùng ảnh của mọi người.",
+    "countZero": "Chưa có ai - chơi đầu tiên đi",
+    "beFirst": "Làm người mở màn hôm nay",
+    "beFirstSub": "Chưa có ảnh nào. Bạn mở màn đi, cả thế giới đang chờ.",
+    "firstYours": "Ảnh đã gửi xong",
+    "firstYoursSub": "Duyệt xong là ảnh hiện ở đây, cùng ảnh của mọi người.",
     "yourProof": "Ảnh của bạn",
     "status": {
-      "pending": "Đang chờ duyệt",
+      "pending": "Chờ duyệt",
       "approved": "Đã đăng",
       "rejected": "Không được đăng",
       "removed": "Đã gỡ"
     },
-    "pendingHint": "Ảnh này đã bị báo cáo và đang được kiểm tra.",
+    "pendingHint": "Có người báo cáo ảnh này, tụi mình đang xem lại.",
     "reasonLabel": "Lý do: {{reason}}",
     "fixIt": "Sửa lại",
     "edit": "Sửa",
     "delete": "Xóa",
-    "deleteTitle": "Xóa ảnh của bạn?",
-    "deleteBody": "Bằng chứng sẽ biến mất khỏi challenge và các kênh.",
+    "deleteTitle": "Xóa ảnh này?",
+    "deleteBody": "Ảnh sẽ biến mất khỏi thử thách và các kênh.",
     "cancel": "Hủy",
     "closed": "Đã kết thúc",
     "back": "Quay lại",
     "practicalTitle": "Nên biết",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "theo {{count}} ảnh",
-    "priceFrom_other": "theo {{count}} ảnh",
-    "places_one": "{{count}} địa điểm được ghim",
-    "places_other": "{{count}} địa điểm được ghim",
+    "priceFrom_other": "dựa trên {{count}} ảnh",
+    "places_other": "{{count}} địa điểm đã ghim",
     "unnamedPlace": "Địa điểm đã ghim",
     "tabWorld": "Thế giới",
     "local": "Dân địa phương",
     "traveler": "Du khách",
-    "validatedByLocal": "Được người địa phương xác nhận",
+    "validatedByLocal": "Dân địa phương xác nhận",
     "loadFailed": "Không tải được Daily Challenge.",
     "retry": "Thử lại",
-    "notFound": "Daily Challenge này không tồn tại.",
-    "cityRowEmpty": "Hãy là người đầu tiên tạo challenge ở {{city}}",
+    "notFound": "Không tìm thấy Daily Challenge này.",
+    "cityRowEmpty": "Tạo thử thách đầu tiên ở {{city}} nhé",
     "proof": {
       "titleNew": "Ảnh của bạn",
-      "titleEdit": "Sửa ảnh của bạn",
+      "titleEdit": "Sửa ảnh",
       "camera": "Máy ảnh",
       "gallery": "Thư viện",
       "changePhoto": "Đổi ảnh",
-      "addPhoto": "Thêm ảnh về challenge của bạn",
+      "addPhoto": "Thêm ảnh cho thử thách",
       "caption": "Chú thích",
-      "captionPlaceholder": "Một câu về nó (không bắt buộc)",
+      "captionPlaceholder": "Một câu về ảnh (không bắt buộc)",
       "price": "Giá đã trả",
       "pricePlaceholder": "Số tiền (không bắt buộc)",
       "pin": "Ghim địa điểm này",
-      "pinHint": "Chỉ khi bạn muốn người khác tìm thấy.",
+      "pinHint": "Chỉ khi bạn muốn người khác tìm ra chỗ này.",
       "pinChange": "Đổi",
       "pinRemove": "Gỡ",
-      "submit": "Đăng ảnh của mình",
+      "submit": "Đăng ảnh",
       "save": "Lưu thay đổi",
       "sending": "Đang gửi…",
-      "sentTitle": "{{city}} đã chơi!",
-      "sentBody": "Xem cả thế giới nói gì. Ảnh của bạn đã được đăng.",
+      "sentTitle": "{{city}} đã vào cuộc!",
+      "sentBody": "Ảnh đã lên rồi. Xem cả thế giới chơi thế nào nhé.",
       "ok": "OK",
       "permPhotoTitle": "Cần quyền truy cập ảnh",
-      "permPhotoBody": "Cho phép truy cập trong cài đặt để thêm ảnh.",
-      "permCameraTitle": "Cần quyền truy cập máy ảnh",
-      "permCameraBody": "Cho phép truy cập máy ảnh trong cài đặt để chụp ảnh.",
-      "photoRequired": "Hãy thêm ảnh trước.",
-      "locationOff": "Vị trí đang tắt nên không thể ghim địa điểm này.",
-      "editOnlyActive": "Bạn có thể sửa ảnh cho đến khi challenge kết thúc.",
-      "takeTitle": "Chụp ảnh của bạn",
+      "permPhotoBody": "Vào cài đặt cho phép truy cập ảnh để thêm ảnh nhé.",
+      "permCameraTitle": "Cần quyền dùng camera",
+      "permCameraBody": "Vào cài đặt cho phép dùng máy ảnh để chụp nhé.",
+      "photoRequired": "Thêm ảnh trước đã.",
+      "locationOff": "Vị trí đang tắt nên không ghim được chỗ này.",
+      "editOnlyActive": "Bạn sửa ảnh được đến khi thử thách kết thúc.",
+      "takeTitle": "Chụp ảnh nào",
       "retake": "Chụp lại"
     },
     "errors": {
-      "already_posted": "Bạn đã chơi challenge hôm nay rồi.",
-      "challenge_closed": "Challenge này đã kết thúc.",
-      "no_active_challenge": "Hiện chưa có Daily Challenge nào.",
-      "moderation_blocked": "Chú thích của bạn bị gắn cờ - hãy viết lại nhé.",
-      "banned": "Bạn không thể đăng ở đây nữa.",
+      "already_posted": "Bạn đã chơi thử thách hôm nay rồi.",
+      "challenge_closed": "Thử thách này đã kết thúc.",
+      "no_active_challenge": "Giờ chưa có Daily Challenge nào.",
+      "moderation_blocked": "Chú thích bị gắn cờ, viết lại giúp mình nhé.",
+      "banned": "Bạn không đăng ở đây được nữa.",
       "invalid_photo": "Không dùng được ảnh này. Thử ảnh khác nhé.",
-      "invalid_caption": "Chú thích quá dài.",
-      "invalid_price": "Kiểm tra lại số tiền và đơn vị tiền tệ.",
-      "invalid_place": "Chỉ chọn một địa điểm.",
-      "rate_limited": "Thử quá nhiều lần - đợi một chút nhé.",
+      "invalid_caption": "Chú thích dài quá.",
+      "invalid_price": "Kiểm tra lại số tiền và loại tiền nhé.",
+      "invalid_place": "Chọn một địa điểm thôi.",
+      "rate_limited": "Thử nhiều quá rồi, đợi chút nhé.",
       "image_processing_failed": "Không xử lý được ảnh này. Thử ảnh khác nhé.",
-      "generic": "Có lỗi xảy ra. Thử lại nhé.",
-      "place_required": "Hãy chọn địa điểm cho ảnh của bạn.",
-      "place_not_allowed": "Challenge này không có địa điểm.",
-      "place_not_found": "Địa điểm này không còn nữa. Hãy chọn địa điểm khác.",
+      "generic": "Có lỗi rồi. Thử lại nhé.",
+      "place_required": "Chọn địa điểm chụp ảnh nhé.",
+      "place_not_allowed": "Thử thách này không có địa điểm.",
+      "place_not_found": "Địa điểm này không còn nữa. Chọn chỗ khác nhé.",
       "invalid_place_name": "Tên địa điểm phải từ 1 đến 80 ký tự.",
-      "place_name_blocked": "Tên địa điểm này đã bị gắn cờ. Hãy viết lại.",
+      "place_name_blocked": "Tên địa điểm bị gắn cờ. Viết lại nhé.",
       "invalid_position": "Cần vị trí của bạn để đăng ảnh này.",
-      "too_far": "Bạn đang ở quá xa địa điểm này."
+      "too_far": "Bạn đang ở xa chỗ này quá."
     },
     "push": {
       "bannerTitle": "Nhận Daily Challenge mỗi sáng",
       "bannerCta": "Bật",
       "askTitle": "Daily Challenge",
-      "askBody": "Nhận Daily Challenge mỗi sáng, vào giờ phù hợp với bạn.",
-      "askBodyBlocked": "Thông báo của Hilads đang tắt. Bật trong cài đặt để nhận Daily Challenge mỗi sáng.",
-      "yes": "Có, báo cho tôi",
+      "askBody": "Nhận Daily Challenge mỗi sáng, đúng giờ hợp với bạn.",
+      "askBodyBlocked": "Hilads đang tắt thông báo. Bật lại trong cài đặt để nhận Daily Challenge mỗi sáng nhé.",
+      "yes": "Có, nhắc mình nhé",
       "notNow": "Để sau",
       "openSettings": "Mở cài đặt"
     },
     "archive": {
-      "title": "Đã thực hiện",
+      "title": "Thử thách đã qua",
       "pickCity": "Chọn thành phố",
-      "worldSelection": "Lựa chọn Thế giới: thành phố này chưa hoạt động",
-      "empty": "Những Daily Challenge đầu tiên sắp tới rồi.",
-      "proofs_one": "{{count}} ảnh",
+      "worldSelection": "Tuyển chọn thế giới: thành phố này chưa mở",
+      "empty": "Những Daily Challenge đầu tiên sắp có rồi.",
       "proofs_other": "{{count}} ảnh"
     },
     "report": {
       "title": "Báo cáo ảnh này",
-      "body": "Có vấn đề gì vậy?",
+      "body": "Ảnh này có vấn đề gì?",
       "reasons": {
         "inappropriate": "Không phù hợp",
-        "person_without_consent": "Có người xuất hiện khi chưa đồng ý",
+        "person_without_consent": "Chụp người khác khi chưa được đồng ý",
         "dangerous": "Nguy hiểm hoặc phạm pháp",
         "spam": "Spam",
         "other": "Lý do khác"
       },
-      "thanks": "Cảm ơn - bọn mình sẽ kiểm tra.",
+      "thanks": "Cảm ơn nha, tụi mình sẽ kiểm tra.",
       "already": "Bạn đã báo cáo ảnh này rồi."
     },
     "vote": {
       "vote": "Bình chọn",
-      "withdraw": "Rút bình chọn",
+      "withdraw": "Bỏ bình chọn",
       "yours": "Ảnh của bạn",
       "votersTitle": "Ai đã bình chọn",
-      "votersEmpty": "Chưa có phiếu bầu nào.",
+      "votersEmpty": "Chưa có ai bình chọn.",
       "errors": {
-        "voting_closed": "Bình chọn đã đóng cùng challenge.",
-        "rate_limited": "Thử quá nhiều lần - đợi một chút.",
-        "own_proof": "Bạn không thể bình chọn cho ảnh của mình.",
+        "voting_closed": "Thử thách kết thúc nên hết bình chọn rồi.",
+        "rate_limited": "Thử nhiều quá rồi, đợi chút nhé.",
+        "own_proof": "Bạn không tự bình chọn ảnh của mình được.",
         "not_found": "Ảnh này không còn nữa.",
-        "generic": "Đã có lỗi. Thử lại nhé."
+        "generic": "Có lỗi rồi. Thử lại nhé."
       },
-      "voteFor": "Bầu cho {{city}}",
-      "prompt": "Bình chọn cho những ảnh bạn thích",
-      "tourNote": "Ảnh được bầu nhiều nhất của mỗi thành phố sẽ vào vòng quanh thế giới ngày mai.",
-      "afterPost": "Bình chọn cho những ảnh bạn thích",
-      "validatedHint": "Được người địa phương xác nhận: một người sống ở đây đã bình chọn cho ảnh này."
+      "voteFor": "Bình chọn cho {{city}}",
+      "prompt": "Bình chọn những ảnh bạn thích",
+      "tourNote": "Ảnh nhiều bình chọn nhất của mỗi thành phố sẽ vào Vòng quanh thế giới ngày mai.",
+      "afterPost": "Bình chọn những ảnh bạn thích",
+      "validatedHint": "Dân địa phương xác nhận: một người sống ở đây đã bình chọn ảnh này."
     },
     "results": {
       "title": "Kết quả",
       "yesterdayTop3": "Top 3 hôm qua",
       "worldRank": "#{{rank}} thế giới",
-      "bestInCities": "Hay nhất ở mỗi thành phố đang live",
+      "bestInCities": "Hay nhất ở mỗi thành phố đã mở",
       "bestIn": "Hay nhất ở {{city}}",
-      "none": "Challenge này không có bình chọn nên không có bục vinh danh."
+      "none": "Chưa ai bình chọn thử thách này nên không có bục vinh danh."
     },
     "profile": {
       "streak": "Chuỗi hiện tại",
       "bestStreak": "Chuỗi dài nhất",
       "completed": "Đã hoàn thành",
       "bestProofs": "Ảnh đẹp nhất",
-      "emptyMine": "Chuỗi của bạn bắt đầu với challenge hôm nay."
+      "emptyMine": "Chuỗi bắt đầu từ thử thách hôm nay."
     },
     "streak_other": "Chuỗi {{count}} ngày",
     "twist": {
       "title": "Đề xuất Local Twist",
       "tomorrow": "Daily Challenge ngày mai",
-      "intro": "Bạn là người địa phương ở {{city}}: hãy gợi ý cách làm challenge ngày mai theo kiểu {{city}}. Nếu được chọn, nó sẽ lên sóng với tên bạn.",
-      "closesIn": "Đóng đề xuất sau {{time}}",
-      "closed": "Đã đóng đề xuất cho ngày mai.",
+      "intro": "Bạn là dân {{city}}: gợi ý cách chơi thử thách ngày mai theo kiểu {{city}} nhé. Nếu được chọn, gợi ý sẽ lên kèm tên bạn.",
+      "closesIn": "Còn {{time}} để đề xuất",
+      "closed": "Đã hết hạn đề xuất cho ngày mai.",
       "yours": "Đề xuất của bạn",
       "label": "Local Twist {{city}} của bạn",
       "placeholder": "VD: Cơm tấm trước 8 giờ sáng, gọi sườn bì chả.",
-      "hint": "Một mẹo chỉ người địa phương biết, viết bằng tiếng Anh. Sẽ được kiểm tra trước khi lên sóng.",
+      "hint": "Một mẹo chỉ dân địa phương mới biết, viết bằng tiếng Anh. Tụi mình sẽ duyệt trước khi lên.",
       "submit": "Gửi đề xuất",
       "withdraw": "Rút lại",
       "withdrawTitle": "Rút lại đề xuất?",
-      "withdrawBody": "Bạn có thể đề xuất lại cho đến khi đóng.",
+      "withdrawBody": "Bạn đề xuất lại được cho đến khi hết hạn.",
       "status": {
         "pending": "Đang duyệt",
         "picked": "Được chọn 🎉",
         "not_picked": "Không được chọn"
       },
       "statusHint": {
-        "pending": "Mỗi thành phố chọn một twist trước challenge ngày mai.",
-        "picked": "Nó sẽ lên sóng cùng challenge ngày mai ở {{city}} với tên bạn.",
-        "not_picked": "Lần này một twist khác được chọn. Thử lại ngày mai nhé!"
+        "pending": "Tụi mình chọn một Local Twist cho mỗi thành phố trước thử thách ngày mai.",
+        "picked": "Twist sẽ lên cùng thử thách ngày mai ở {{city}}, kèm tên bạn.",
+        "not_picked": "Lần này một Local Twist khác được chọn. Mai thử lại nhé!"
       },
       "heroCta": "Đề xuất Local Twist ngày mai · đến {{time}}",
       "heroStatus": "Local Twist ngày mai của bạn: {{status}}",
       "reasons": {
-        "no_city": "Chọn thành phố của bạn để đề xuất Local Twist.",
-        "city_not_live": "Local Twist chỉ được đề xuất ở thành phố đang live.",
-        "not_local": "Chỉ người địa phương ở {{city}} mới đề xuất được Local Twist. Hãy chọn chế độ Local trong hồ sơ.",
-        "no_challenge": "Challenge ngày mai chưa sẵn sàng. Quay lại sau nhé."
+        "no_city": "Chọn thành phố để đề xuất Local Twist nhé.",
+        "city_not_live": "Chỉ thành phố đã mở mới đề xuất được Local Twist.",
+        "not_local": "Chỉ dân {{city}} mới đề xuất được Local Twist. Chuyển sang chế độ Dân địa phương trong hồ sơ nhé.",
+        "no_challenge": "Thử thách ngày mai chưa sẵn sàng. Quay lại sau nhé."
       },
       "errors": {
         "already_proposed": "Bạn đã đề xuất Local Twist cho ngày mai rồi.",
-        "closed": "Đã đóng đề xuất cho ngày mai.",
+        "closed": "Đã hết hạn đề xuất cho ngày mai.",
         "invalid_text": "Viết từ 1 đến 280 ký tự.",
-        "moderation_blocked": "Twist của bạn bị gắn cờ - hãy viết lại.",
-        "not_editable": "Đề xuất này không thể sửa nữa.",
-        "not_found": "Không có đề xuất để sửa.",
-        "rate_limited": "Thử quá nhiều lần - đợi một chút nhé.",
-        "banned": "Bạn không thể đăng ở đây nữa.",
-        "no_city": "Chọn thành phố của bạn để đề xuất Local Twist.",
-        "city_not_live": "Local Twist chỉ được đề xuất ở thành phố đang live.",
-        "not_local": "Chỉ người địa phương ở {{city}} mới đề xuất được Local Twist. Hãy chọn chế độ Local trong hồ sơ.",
-        "no_challenge": "Challenge ngày mai chưa sẵn sàng. Quay lại sau nhé."
+        "moderation_blocked": "Twist bị gắn cờ, viết lại nhé.",
+        "not_editable": "Đề xuất này không sửa được nữa.",
+        "not_found": "Không có đề xuất nào để sửa.",
+        "rate_limited": "Thử nhiều quá rồi, đợi chút nhé.",
+        "banned": "Bạn không đăng ở đây được nữa.",
+        "no_city": "Chọn thành phố để đề xuất Local Twist nhé.",
+        "city_not_live": "Chỉ thành phố đã mở mới đề xuất được Local Twist.",
+        "not_local": "Chỉ dân {{city}} mới đề xuất được Local Twist. Chuyển sang chế độ Dân địa phương trong hồ sơ nhé.",
+        "no_challenge": "Thử thách ngày mai chưa sẵn sàng. Quay lại sau nhé."
       }
     },
     "translation": {
@@ -1085,44 +1078,43 @@
     "map": {
       "see": "Xem bản đồ",
       "button": "Bản đồ",
-      "empty": "Chưa có địa điểm nào được ghim.",
+      "empty": "Chưa ai ghim địa điểm nào.",
       "titleChallenge": "Địa điểm đã ghim",
       "titleCity": "Địa điểm đã ghim ở {{city}}",
-      "titleWorld": "Địa điểm đã ghim trên thế giới",
+      "titleWorld": "Địa điểm đã ghim khắp thế giới",
       "seeProof": "Xem ảnh",
-      "openChallenge": "Mở challenge",
-      "search": "Tìm món ăn, quán cà phê, con phố",
-      "searchA11y": "Tìm spot",
+      "openChallenge": "Mở thử thách",
+      "search": "Tìm món ăn, quán cà phê, con đường",
+      "searchA11y": "Tìm địa điểm",
       "clearSearch": "Xóa tìm kiếm",
-      "noResults": "Không có spot phù hợp",
+      "noResults": "Không có địa điểm nào khớp",
       "all": "Tất cả",
       "today": "hôm nay",
       "locate": "Đưa bản đồ về vị trí của tôi",
-      "locationDenied": "Hãy cho phép vị trí trong cài đặt để đưa bản đồ về chỗ bạn.",
-      "locationFailed": "Hiện chưa lấy được vị trí của bạn.",
-      "noToken": "Bản đồ không có trong phiên bản này.",
-      "openSpot": "Xem spot",
+      "locationDenied": "Cho phép vị trí trong cài đặt để bản đồ hiện đúng chỗ bạn.",
+      "locationFailed": "Chưa lấy được vị trí của bạn.",
+      "noToken": "Phiên bản này chưa có bản đồ.",
+      "openSpot": "Xem địa điểm",
       "directions": "Chỉ đường",
-      "validated": "Được người địa phương xác nhận",
+      "validated": "Dân địa phương xác nhận",
       "pricePaid": "Giá đã trả {{price}}",
       "selected": "Đã chọn: {{name}}",
       "closeSpot": "Đóng",
-      "emptyTitle": "Hãy là người đầu tiên đặt spot ở đây",
-      "planA11y": "Kế hoạch: {{title}}, {{time}}",
-      "proofs_one": "{{count}} ảnh",
+      "emptyTitle": "Ghim địa điểm đầu tiên ở đây nhé",
+      "planA11y": "Kèo: {{title}}, {{time}}",
       "proofs_other": "{{count}} ảnh"
     },
     "leaderboard": {
       "tab": "Top 10",
-      "provisional": "Tạm thời cho đến lượt drop",
+      "provisional": "Tạm tính, chốt khi công bố kết quả",
       "finalIn": "Chốt sau {{time}}",
-      "official": "Bục vinh quang chính thức",
-      "minProofs": "Top 10 mở khi có {{min}} ảnh. Hiện có: {{n}}.",
-      "noVotes": "Chưa có bình chọn. Hãy bình chọn cho ảnh bạn thích!",
+      "official": "Bục vinh danh chính thức",
+      "minProofs": "Top 10 mở khi có {{min}} ảnh. Hiện có {{n}}.",
+      "noVotes": "Chưa có bình chọn nào. Bình chọn ảnh bạn thích đi!",
       "me": "Bạn: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} ở {{city}}",
-      "noProof": "Chơi để được xếp hạng.",
-      "pending": "Ảnh của bạn sẽ được xếp hạng sau khi duyệt.",
+      "noProof": "Chơi để lên bảng xếp hạng.",
+      "pending": "Duyệt xong là ảnh của bạn được xếp hạng.",
       "cityTop": "Top 3 ở {{city}}",
       "compactTitle": "Top 3 lúc này",
       "seeAll": "Top 10 ›"
@@ -1134,12 +1126,12 @@
       "tomorrow": "Ngày mai",
       "done": "Đã hoàn thành",
       "pending": "Đang chờ duyệt",
-      "missed": "Chưa làm",
-      "none": "Không có challenge",
-      "keep": "Chơi hôm nay để giữ chuỗi ngày"
+      "missed": "Chưa chơi",
+      "none": "Không có thử thách",
+      "keep": "Chơi hôm nay để giữ chuỗi"
     },
     "calendar": {
-      "title": "Daily Challenges của tôi",
+      "title": "Daily Challenge của tôi",
       "streak": "Chuỗi hiện tại",
       "best": "Chuỗi dài nhất",
       "monthDone": "Hoàn thành tháng này: {{n}}",
@@ -1151,49 +1143,49 @@
     "guide": {
       "title": "Cẩm nang thành phố",
       "all": "Tất cả",
-      "emptyCity": "Chưa có challenge {{theme}} ở {{city}}. Lần tới: {{day}}.",
-      "emptyWorld": "Chưa có challenge {{theme}}. Lần tới: {{day}}."
+      "emptyCity": "Chưa có thử thách {{theme}} ở {{city}}. Lần tới: {{day}}.",
+      "emptyWorld": "Chưa có thử thách {{theme}}. Lần tới: {{day}}."
     },
     "localPass": {
       "name": "Local Pass",
       "progress": "{{done}}/{{total}} chủ đề",
       "earned": "Đã đạt",
-      "hint": "Hoàn thành đủ 7 chủ đề ở {{city}} để nhận Local Pass của thành phố.",
+      "hint": "Hoàn thành đủ 7 chủ đề ở {{city}} để nhận Local Pass nhé.",
       "profileTitle": "Local Pass",
       "badgeA11y": "Có Local Pass"
     },
     "propose": {
-      "cta": "Đề xuất challenge",
+      "cta": "Đề xuất thử thách",
       "short": "Đề xuất",
-      "title": "Đề xuất challenge",
-      "textLabel": "Challenge của bạn (bằng tiếng Anh)",
+      "title": "Đề xuất thử thách",
+      "textLabel": "Thử thách của bạn (bằng tiếng Anh)",
       "textPlaceholder": "Find a…",
       "themeLabel": "Chủ đề",
       "whyLabel": "Vì sao? (không bắt buộc)",
-      "whyPlaceholder": "Mọi người sẽ khám phá điều gì?",
+      "whyPlaceholder": "Mọi người sẽ khám phá ra gì?",
       "twistLabel": "Local Twist cho {{city}} (không bắt buộc)",
-      "twistPlaceholder": "Người địa phương ở {{city}} làm thế nào",
-      "rulesTitle": "Một challenge hay là…",
-      "rule1": "Làm được ở bất kỳ đâu trong thành phố, dưới một giờ",
-      "rule2": "Không quá giá một bữa ăn địa phương",
-      "rule3": "An toàn và tôn trọng người dân",
-      "rule4": "\"Find a…\", không bao giờ ghi địa chỉ cụ thể",
+      "twistPlaceholder": "Dân {{city}} làm thế nào",
+      "rulesTitle": "Một thử thách hay là…",
+      "rule1": "Làm được ở bất kỳ đâu trong thành phố, chưa tới một tiếng",
+      "rule2": "Tốn không quá một bữa ăn bình dân",
+      "rule3": "An toàn, tôn trọng người dân",
+      "rule4": "\"Find a…\", không ghi địa chỉ cụ thể",
       "rule5": "Dạy một điều gì đó: một cái tên, một cử chỉ, một thói quen",
-      "reviewed": "Mọi đề xuất đều được duyệt trước khi lên sóng.",
+      "reviewed": "Tụi mình duyệt mọi đề xuất trước khi lên.",
       "submit": "Gửi đề xuất",
-      "sentTitle": "Cảm ơn bạn!",
-      "sentBody": "Chúng tôi sẽ duyệt challenge của bạn. Theo dõi trạng thái trong Đề xuất của tôi.",
+      "sentTitle": "Cảm ơn nha!",
+      "sentBody": "Tụi mình sẽ duyệt thử thách của bạn. Theo dõi trạng thái trong Đề xuất của tôi.",
       "pendingExists": "Bạn đã có một đề xuất đang chờ duyệt.",
       "seeMine": "Xem đề xuất của tôi",
       "mineTitle": "Đề xuất của tôi",
-      "empty": "Chưa có đề xuất nào. Ý tưởng của bạn có thể là Daily Challenge tiếp theo.",
-      "typeChallenge": "Challenge",
+      "empty": "Chưa có đề xuất nào. Biết đâu ý tưởng của bạn sẽ là Daily Challenge tiếp theo.",
+      "typeChallenge": "Thử thách",
       "typeTwist": "Local Twist",
       "status": {
         "pending": "Đang duyệt",
         "scheduled": "Đã lên lịch · {{date}}",
         "published": "Đang diễn ra · {{date}}",
-        "reserve": "Trong kho dự trữ",
+        "reserve": "Trong danh sách dự bị",
         "rejected": "Không được chọn",
         "approved": "Đã duyệt",
         "picked": "Được chọn",
@@ -1202,53 +1194,50 @@
       "reason": "Lý do: {{reason}}",
       "withdraw": "Rút lại",
       "withdrawTitle": "Rút lại đề xuất này?",
-      "withdrawBody": "Bạn có thể gửi đề xuất khác ngay sau đó.",
-      "proposedBy": "Đề xuất bởi {{name}}",
-      "proposedByCity": "Đề xuất bởi {{name}} · {{city}}",
+      "withdrawBody": "Bạn gửi được đề xuất khác ngay sau đó.",
+      "proposedBy": "{{name}} đề xuất",
+      "proposedByCity": "{{name}} đề xuất · {{city}}",
       "errors": {
-        "invalid_text": "Viết challenge từ 1 đến 120 ký tự.",
-        "invalid_theme": "Hãy chọn một chủ đề.",
-        "invalid_why": "Lý do phải dưới 200 ký tự.",
-        "invalid_twist": "Local Twist phải dưới 280 ký tự.",
-        "twist_not_allowed": "Chỉ người địa phương của thành phố đang live mới thêm được Local Twist.",
-        "moderation_blocked": "Đề xuất bị bộ lọc kiểm duyệt chặn. Hãy viết lại."
+        "invalid_text": "Viết thử thách từ 1 đến 120 ký tự.",
+        "invalid_theme": "Chọn một chủ đề nhé.",
+        "invalid_why": "Lý do dưới 200 ký tự thôi nhé.",
+        "invalid_twist": "Local Twist dưới 280 ký tự thôi nhé.",
+        "twist_not_allowed": "Chỉ dân địa phương ở thành phố đã mở mới thêm được Local Twist.",
+        "moderation_blocked": "Đề xuất bị bộ lọc chặn. Viết lại nhé."
       },
       "linkAsk": "Có ý tưởng thử thách?",
       "linkCta": "Đề xuất ngay"
     },
     "early": {
       "badge": "Sớm",
-      "hint": "Thưởng nhanh tay: đăng trước {{time}}"
+      "hint": "Thưởng sớm: đăng trước {{time}}"
     },
     "group": {
       "title": "Ảnh mới: {{n}}",
-      "citiesMore": "{{cities}} và {{n}} nữa",
+      "citiesMore": "{{cities}} và {{n}} thành phố khác",
       "galleryTitle": "Ảnh mới"
     },
     "today": {
       "early": "Thưởng sớm đến {{time}}",
       "tomorrow": "Ngày mai: {{theme}}",
-      "aroundWorld": "Hôm nay trên *thế giới*",
+      "aroundWorld": "Hôm nay khắp *thế giới*",
       "inCity": "Hôm nay ở *{{city}}*",
-      "proofs_one": "{{count}} ảnh",
       "proofs_other": "{{count}} ảnh",
-      "countries_one": "{{count}} quốc gia",
       "countries_other": "{{count}} quốc gia",
       "proofsIn": "{{proofs}} từ {{countries}}",
-      "podiumTitle": "Bục vinh quang hôm qua",
+      "podiumTitle": "Bục vinh danh hôm qua",
       "allPast": "Tất cả thử thách đã qua",
       "archiveTitle": "Thử thách đã qua",
       "archiveAll": "Tất cả chủ đề",
-      "archiveEmpty": "Chưa có thử thách nào đã qua ở đây.",
+      "archiveEmpty": "Ở đây chưa có thử thách nào đã qua.",
       "archiveMore": "Xem thêm",
       "seeAll": "Xem tất cả",
       "openMap": "Mở bản đồ",
       "seeMine": "Xem ảnh của bạn",
-      "votes_one": "{{count}} phiếu",
-      "votes_other": "{{count}} phiếu",
+      "votes_other": "{{count}} bình chọn",
       "day": {
         "done": "đã xong",
-        "pending": "đang chờ duyệt",
+        "pending": "chờ duyệt",
         "missed": "bỏ lỡ",
         "today": "hôm nay",
         "tomorrow": "ngày mai",
@@ -1257,52 +1246,52 @@
       },
       "links": {
         "twistTitle": "Đề xuất Local Twist cho ngày mai",
-        "twistSub": "Dành cho người địa phương, đến {{time}}"
+        "twistSub": "Cho dân địa phương, đến {{time}}"
       },
       "spotsTeaser_other": "{{count}} địa điểm gần bạn",
       "spotsTeaserIn_other": "{{count}} địa điểm ở {{city}}"
     },
     "spot": {
-      "rankWeekFirst": "Được bình chọn nhiều nhất tuần này ở {{city}}",
-      "rankWeek": "Hạng {{rank}} tuần này ở {{city}}",
-      "rankAlltimeFirst": "Spot được bình chọn nhiều nhất ở {{city}}",
-      "rankAlltime": "Hạng {{rank}} mọi thời đại ở {{city}}",
+      "rankWeekFirst": "Nhiều bình chọn nhất tuần này ở {{city}}",
+      "rankWeek": "#{{rank}} tuần này ở {{city}}",
+      "rankAlltimeFirst": "Địa điểm nhiều bình chọn nhất ở {{city}}",
+      "rankAlltime": "#{{rank}} mọi thời đại ở {{city}}",
       "photos": "Ảnh",
       "captions": "Mọi người nói gì",
       "seeOnMap": "Xem trên bản đồ",
-      "notFound": "Spot này không còn khả dụng.",
-      "local": "Người địa phương"
+      "notFound": "Địa điểm này không còn nữa.",
+      "local": "Dân địa phương"
     },
     "place": {
       "title": "Bạn đang ở đâu?",
-      "why": "Vị trí của bạn chỉ được dùng một lần để liệt kê các địa điểm quanh bạn và xác nhận bạn đang ở đó. Vị trí không bao giờ được lưu.",
-      "find": "Tìm các địa điểm quanh tôi",
-      "locating": "Đang xác định vị trí của bạn…",
+      "why": "Vị trí của bạn chỉ dùng một lần để tìm các địa điểm quanh bạn và kiểm tra bạn có ở đó không. Tụi mình không bao giờ lưu lại.",
+      "find": "Tìm địa điểm quanh đây",
+      "locating": "Đang tìm vị trí của bạn…",
       "deniedTitle": "Vị trí đang tắt",
-      "deniedBody": "Challenge này diễn ra tại một địa điểm: cần vị trí của bạn để xác nhận bạn đang ở đó.",
+      "deniedBody": "Thử thách này diễn ra tại một địa điểm: cần vị trí để kiểm tra bạn có ở đó không.",
       "failedTitle": "Chưa lấy được vị trí của bạn",
-      "failedBody": "Hãy kiểm tra vị trí đã bật và thử lại, tốt nhất là ở ngoài trời.",
+      "failedBody": "Kiểm tra xem đã bật vị trí chưa rồi thử lại, tốt nhất là ra ngoài trời.",
       "openSettings": "Mở cài đặt",
       "retry": "Thử lại",
-      "approximate": "Vị trí của bạn chưa chính xác (±{{m}} m). Ra ngoài hoặc chờ một chút rồi làm mới.",
+      "approximate": "Vị trí chưa chính xác (±{{m}} m). Ra ngoài trời hoặc đợi chút rồi làm mới nhé.",
       "refresh": "Làm mới vị trí",
-      "search": "Tìm trong các địa điểm",
+      "search": "Tìm địa điểm ở đây",
       "inReview": "đang duyệt",
       "newTitle": "Địa điểm mới",
-      "notListed": "Không có trong danh sách? Thêm vào.",
-      "noneNearby": "Ở đây chưa có địa điểm Hilads nào: thêm địa điểm này.",
+      "notListed": "Không có trong danh sách? Thêm vào nhé.",
+      "noneNearby": "Ở đây chưa có địa điểm Hilads nào: thêm chỗ này nhé.",
       "nameLabel": "Tên địa điểm",
-      "namePlaceholder": "vd. Cơm tấm Ba Ghiền",
-      "newHint": "Vị trí của bạn sẽ là vị trí của nó. Địa điểm hiện trên bản đồ sau khi được duyệt.",
+      "namePlaceholder": "VD: Cơm tấm Ba Ghiền",
+      "newHint": "Vị trí của bạn sẽ là vị trí của địa điểm. Duyệt xong là nó hiện trên bản đồ.",
       "useNew": "Chọn địa điểm này",
       "backToList": "Quay lại các địa điểm gần đây",
       "at": "Tại {{name}}",
       "none": "Chưa có địa điểm",
       "change": "Đổi",
-      "tooFar": "Bạn đang cách {{name}} {{distance}}. Hãy lại gần trong vòng {{radius}} m rồi thử lại.",
-      "tryAgain": "Tôi ở đây rồi, thử lại",
+      "tooFar": "Bạn đang cách {{name}} {{distance}}. Lại gần trong vòng {{radius}} m rồi thử lại nhé.",
+      "tryAgain": "Tới rồi, thử lại",
       "pickAnother": "Chọn địa điểm khác",
-      "newOnMapLater": "Địa điểm mới của bạn sẽ hiện trên bản đồ sau khi được duyệt."
+      "newOnMapLater": "Duyệt xong là địa điểm mới hiện trên bản đồ."
     },
     "stamp": {
       "title": "Con dấu mới: {{theme}}",
@@ -1310,11 +1299,11 @@
       "ok": "Tuyệt",
       "close": "Đóng"
     },
-    "takeIt": "Nhận",
+    "takeIt": "Chơi luôn",
     "proofHint": {
-      "title": "Chụp ảnh của bạn",
-      "place": "Ảnh được bình chọn nhiều nhất sẽ thành ảnh của spot.",
-      "noPlace": "Ảnh được bình chọn nhiều nhất lên bục vinh quang."
+      "title": "Chụp ảnh nào",
+      "place": "Ảnh nhiều bình chọn nhất sẽ thành ảnh của địa điểm.",
+      "noPlace": "Ảnh nhiều bình chọn nhất lên bục vinh danh."
     },
     "compare": {
       "tab": "So sánh",
@@ -1325,10 +1314,9 @@
       "lowest": "Thấp nhất: {{city}} {{answer}}",
       "highest": "Cao nhất: {{city}} {{answer}}",
       "emptyTitle": "Chưa có ảnh",
-      "emptyBody": "Hãy là thành phố đầu tiên trên bảng.",
+      "emptyBody": "Đưa thành phố bạn lên bảng đầu tiên nhé.",
       "noAnswer": "Chưa có câu trả lời",
-      "median": "Giá thường {{price}}",
-      "proofs_one": "{{count}} ảnh",
+      "median": "Giá phổ biến {{price}}",
       "proofs_other": "{{count}} ảnh",
       "boardTitle": "Thế giới nói gì",
       "cheapest": "Rẻ nhất: {{city}} {{price}}",
@@ -1336,18 +1324,16 @@
       "funFact": "Ở {{city}} đắt gấp {{ratio}} lần so với {{other}}.",
       "worldAnswers": "Câu hỏi hôm nay",
       "seeAnswers": "So sánh",
-      "firstIn": "Những ảnh đầu tiên đang đến",
+      "firstIn": "Những ảnh đầu tiên đang về",
       "picksTitle": "Hilads chọn",
-      "answeredRow_one": "Đã có {{count}} quốc gia chơi",
       "answeredRow_other": "Đã có {{count}} quốc gia chơi",
-      "tip": "Chạm để so sánh thành phố của bạn với thế giới.",
-      "nCountries_one": "{{count}} quốc gia",
+      "tip": "Chạm để so thành phố bạn với thế giới.",
       "nCountries_other": "{{count}} quốc gia",
-      "youAnswered": "Ảnh của bạn đã gửi. Xem thế giới nói gì."
+      "youAnswered": "Ảnh đã gửi xong. Xem thế giới so ra sao nhé."
     },
     "backHome": {
       "hereIn": "Ở đây, {{city}}",
-      "homeIn": "Ở quê, {{city}}"
+      "homeIn": "Ở quê nhà {{city}}"
     },
     "tour": {
       "title": "Vòng quanh thế giới *hôm qua*",
@@ -1361,10 +1347,9 @@
         "evening": "Buổi tối",
         "night": "Ban đêm"
       },
-      "yourTurn": "Đến lượt bạn.",
+      "yourTurn": "Tới lượt bạn.",
       "todayIs": "Câu hỏi hôm nay: {{question}}",
       "close": "Đóng",
-      "sub_one": "{{count}} thành phố, cùng một thử thách",
       "sub_other": "{{count}} thành phố, cùng một thử thách"
     },
     "worlds": {
@@ -1372,11 +1357,11 @@
     },
     "index": {
       "share": "Chia sẻ",
-      "carouselTitle": "Thế giới, *so sánh*",
+      "carouselTitle": "Cả thế giới *lên bàn cân*",
       "carouselSub": "Tuần trước trên Hilads",
-      "seeAllComparisons": "Xem tất cả so sánh",
+      "seeAllComparisons": "Xem mọi so sánh",
       "screenTitle": "Chỉ số Hilads",
-      "screenSub": "Mọi điều thế giới đã so sánh trên Hilads.",
+      "screenSub": "Tất cả những gì thế giới đã so trên Hilads.",
       "sections": {
         "price": "Giá",
         "time": "Giờ giấc",
@@ -1385,14 +1370,13 @@
       "search": "Tìm câu hỏi, thành phố, câu trả lời",
       "clearSearch": "Xóa tìm kiếm",
       "twoCities": "Hai thành phố",
-      "closeTwoCities": "Đóng Hai thành phố",
-      "pickCity": "Chọn một thành phố",
+      "closeTwoCities": "Đóng chế độ Hai thành phố",
+      "pickCity": "Chọn thành phố",
       "and": "{{a}} và {{b}}",
-      "twoCitiesEmpty": "Chưa có so sánh nào cho hai thành phố này.",
-      "noResults": "Không có so sánh phù hợp.",
-      "empty": "Những so sánh đầu tiên sẽ hiện khi các thành phố có 3 ảnh.",
+      "twoCitiesEmpty": "Chưa có so sánh nào có cả hai thành phố.",
+      "noResults": "Không có so sánh nào khớp.",
+      "empty": "Khi các thành phố có đủ 3 ảnh, so sánh đầu tiên sẽ hiện ở đây.",
       "priceTitle": "{{label}} giá bao nhiêu?",
-      "moreCities_one": "+{{count}} thành phố khác",
       "moreCities_other": "+{{count}} thành phố khác"
     },
     "ctaAnswer": "Chơi cho {{city}}",
@@ -1409,11 +1393,11 @@
       "world": "Thế giới",
       "swipe": "Vuốt lên để xem tiếp",
       "doubleTap": "Chạm hai lần để bình chọn",
-      "emptyWorld": "Hôm nay chưa có ảnh nào. Hãy là người đầu tiên!",
+      "emptyWorld": "Hôm nay chưa có ảnh nào. Mở màn đi!",
       "emptyCity": "Hôm nay chưa ai chơi ở {{city}}.",
-      "endTitle": "Bạn đã xem hết rồi!",
-      "endBody": "Ảnh mới đến suốt cả ngày. Quay lại xem nhé.",
-      "endPlay": "Đến lượt bạn: khoe thành phố của bạn với thế giới.",
+      "endTitle": "Bạn xem hết rồi đó!",
+      "endBody": "Ảnh mới lên cả ngày. Lát quay lại xem tiếp nhé.",
+      "endPlay": "Tới lượt bạn: khoe thành phố bạn với thế giới.",
       "backToday": "Về Hôm nay",
       "seeAll": "Xem tất cả ảnh"
     },
@@ -1421,7 +1405,7 @@
       "played_other": "{{count}} quốc gia đã chơi hôm nay",
       "yourCity": "Thành phố của bạn",
       "represent": "Đại diện cho thành phố của bạn",
-      "emptyBody": "Hôm nay chưa ai chơi. Hãy là người đầu tiên đưa thành phố của bạn lên bản đồ!",
+      "emptyBody": "Hôm nay chưa ai chơi. Đưa thành phố bạn lên bản đồ trước tiên nào!",
       "openCountry": "{{city}}: xem ảnh",
       "byCountry": "Theo quốc gia"
     },
@@ -1434,10 +1418,10 @@
     },
     "mosaic": {
       "players_other": "{{count}} người chơi",
-      "missing": "Thiếu {{city}}!",
+      "missing": "Còn thiếu {{city}}!",
       "yesterday": "Hôm qua thế giới nói…",
       "beFirst": "Đại diện cho {{city}}",
-      "beFirstSub": "Là thành phố đầu tiên hôm nay"
+      "beFirstSub": "Làm thành phố đầu tiên hôm nay"
     },
     "recap": {
       "label": "Hôm qua",
@@ -1445,12 +1429,12 @@
     },
     "worldSays": {
       "title": "Thế giới nói gì",
-      "first": "Hãy là người trả lời đầu tiên",
+      "first": "Làm người trả lời đầu tiên",
       "more_other": "+{{count}} nữa"
     },
     "myCity": {
       "in_other": "Ở {{city}} · {{count}} ảnh",
-      "first": "Hãy là người đầu tiên ở {{city}}",
+      "first": "Làm người đầu tiên ở {{city}}",
       "seeMine": "Xem ảnh của tôi"
     },
     "event": {
@@ -1459,21 +1443,21 @@
         "cta": "Chụp gì đó rùng rợn cho {{city}}",
         "ctaNoCity": "Chụp gì đó rùng rợn",
         "played_other": "{{count}} thành phố bị ma ám 🎃",
-        "represent": "Hù dọa thành phố của bạn 👻",
+        "represent": "Ám cả thành phố 👻",
         "onBoard": "{{city}} đang ám bảng xếp hạng! 👻"
       },
       "limited": "Phiên bản giới hạn",
-      "stampEarned": "Đã nhận con dấu phiên bản giới hạn!"
+      "stampEarned": "Bạn nhận được con dấu phiên bản giới hạn!"
     },
     "hero": {
       "cta": "Chụp cho {{city}}",
       "ctaNoCity": "Chụp ngay",
       "played": "Bạn đã chơi · Xem thế giới",
-      "firstCity": "Hãy là thành phố đầu tiên trên thế giới hôm nay",
+      "firstCity": "Làm thành phố đầu tiên trên thế giới hôm nay",
       "citiesIn_other": "{{count}} thành phố đã chơi",
       "citiesMissing_other": "{{count}} thành phố đã chơi. {{city}} thì chưa!",
       "steps": {
-        "snap": "Chụp",
+        "snap": "Chụp ngay",
         "name": "Gọi tên",
         "count": "Đếm",
         "time": "Bấm giờ",
@@ -1487,27 +1471,25 @@
       "close": "Đóng",
       "comment": "Bình luận",
       "newComments": "Bình luận mới",
-      "empty": "Hãy là người đầu tiên lên tiếng 💬",
-      "emptySub": "Hỏi chỗ đó ở đâu, thả cảm xúc, so với thành phố của bạn.",
+      "empty": "Mở lời đầu tiên đi 💬",
+      "emptySub": "Hỏi chỗ này ở đâu, thả cảm xúc, so với thành phố bạn.",
       "placeholder": "Thêm bình luận…",
       "placeholderGuest": "Đăng ký để bình luận",
-      "older": "Xem bình luận trước",
+      "older": "Xem bình luận cũ hơn",
       "reply": "Trả lời",
       "copy": "Sao chép",
       "delete": "Xóa",
       "cancelReply": "Hủy trả lời",
       "replyingTo": "Trả lời @{{name}}",
-      "author": "Tác giả",
-      "first": "Đầu tiên!",
+      "author": "Chủ ảnh",
+      "first": "Bóc tem!",
       "sending": "Đang gửi…",
       "failed": "Chưa gửi được · Chạm để thử lại",
       "discard": "Bỏ",
       "like": "Thích",
       "actionsHint": "Nhấn giữ để trả lời, sao chép hoặc báo cáo",
       "quickHint": "Nhấn giữ để sửa trước khi gửi",
-      "count_one": "{{count}} bình luận",
       "count_other": "{{count}} bình luận",
-      "seeAll_one": "Xem {{count}} bình luận",
       "seeAll_other": "Xem cả {{count}} bình luận",
       "quick": {
         "soLocal": "🔥 Đúng chất local!",
@@ -1517,10 +1499,10 @@
         "whatsItCalled": "🏷️ Cái này tên gì?"
       },
       "errors": {
-        "moderation_blocked": "Không thể đăng bình luận này. Hãy thân thiện nhé!",
-        "rate_limited": "Từ từ thôi! Thử lại sau một phút.",
+        "moderation_blocked": "Bình luận này không đăng được. Nói chuyện dễ thương thôi nha!",
+        "rate_limited": "Từ từ thôi! Thử lại sau một phút nhé.",
         "invalid_body": "Bình luận tối đa 300 ký tự.",
-        "generic": "Đã có lỗi. Thử lại nhé."
+        "generic": "Có lỗi rồi. Thử lại nhé."
       },
       "report": {
         "action": "Báo cáo",
@@ -1530,21 +1512,21 @@
           "spam": "Spam",
           "other": "Lý do khác"
         },
-        "thanks": "Cảm ơn - chúng tôi sẽ kiểm tra.",
+        "thanks": "Cảm ơn nha, tụi mình sẽ kiểm tra.",
         "already": "Bạn đã báo cáo bình luận này rồi."
       }
     },
     "dual": {
       "toggle": "Dual",
-      "on": "Ảnh kép đang bật",
-      "off": "Ảnh kép đang tắt",
-      "nowYou": "Tới bạn! 😄",
-      "frontFailed": "Không mở được camera trước. Ảnh của bạn sẽ đăng một mình.",
+      "on": "Đang bật ảnh kép",
+      "off": "Đang tắt ảnh kép",
+      "nowYou": "Tới bạn nè! 😄",
+      "frontFailed": "Không mở được camera trước. Ảnh sẽ đăng một mình.",
       "swapHint": "Chạm ảnh nhỏ để đổi 👆",
       "retakeSelfie": "Chụp lại selfie",
       "removeSelfie": "Bỏ selfie",
-      "retakeAll": "Chụp lại tất cả",
-      "addFace": "Thêm mặt bạn 🤳",
+      "retakeAll": "Chụp lại hết",
+      "addFace": "Thêm mặt bạn vào 🤳",
       "swapA11y": "Đổi ảnh"
     }
   }

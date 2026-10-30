@@ -1,6 +1,6 @@
 {
-  "title": "Sắp tới",
-  "loadError": "Không thể tải sự kiện cho ngày này",
-  "emptyTitle": "Chưa có gì",
-  "emptySub": "Chưa có sự kiện nào trong ngày này."
+  "title": "Sắp diễn ra",
+  "loadError": "Không tải được sự kiện ngày này",
+  "emptyTitle": "Chưa có lịch gì",
+  "emptySub": "Ngày này chưa có sự kiện nào."
 }

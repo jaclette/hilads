@@ -1,7 +1,7 @@
 {
   "share": {
     "bringPeople": "Rủ thêm người",
-    "linkCopied": "Đã sao chép liên kết",
+    "linkCopied": "Đã copy link",
     "vibeTitle": "Chia sẻ vibe này",
     "eventAria": "Chia sẻ sự kiện"
   },
@@ -12,7 +12,7 @@
   },
   "delete": {
     "confirmTitle": "Xóa sự kiện này?",
-    "confirmBody": "Thao tác này sẽ xóa sự kiện và tất cả tin nhắn. Không thể hoàn tác.",
+    "confirmBody": "Sự kiện và toàn bộ tin nhắn sẽ bị xóa, không hoàn tác được.",
     "cancel": "Hủy",
     "deleting": "Đang xóa…",
     "confirm": "Xóa",
@@ -20,7 +20,7 @@
   },
   "quickStart": "Bắt đầu nhanh",
   "presets": {
-    "dailySpot": "Spot hằng ngày",
+    "dailySpot": "Điểm hẹn mỗi ngày",
     "dailySpotDesc": "Mỗi ngày",
     "everyEvening": "Mỗi tối",
     "everyEveningDesc": "Hằng ngày · 20h",
@@ -32,18 +32,18 @@
     "drinks": "Đồ uống",
     "party": "Tiệc tùng",
     "music": "Âm nhạc",
-    "food": "Ẩm thực",
+    "food": "Ăn uống",
     "coffee": "Cà phê",
     "sport": "Thể thao",
     "meetup": "Gặp gỡ",
     "other": "Khác"
   },
   "titleLabel": "Tiêu đề",
-  "titlePlaceholder": "vd. Đêm jazz tại Rooftop Bar",
+  "titlePlaceholder": "VD: Đêm acoustic trên sân thượng",
   "date": "Ngày",
   "today": "Hôm nay",
   "tomorrow": "Ngày mai",
-  "todayHint": "Tổ chức hôm nay giúp bạn được chú ý nhất",
+  "todayHint": "Tổ chức hôm nay để được nhiều người thấy nhất",
   "starts": "Bắt đầu",
   "ends": "Kết thúc",
   "repeat": "Lặp lại",
@@ -65,15 +65,15 @@
   "intervalEvery": "Mỗi",
   "intervalDays": "ngày",
   "location": "Địa điểm",
-  "locating": "Đang lấy vị trí của bạn…",
-  "locationPlaceholder": "Tùy chọn · chạm để đặt trên bản đồ",
-  "clearLocation": "Xóa địa điểm",
+  "locating": "Đang lấy vị trí…",
+  "locationPlaceholder": "Không bắt buộc · chạm để chọn trên bản đồ",
+  "clearLocation": "Bỏ địa điểm",
   "errors": {
     "endAfterStart": "Giờ kết thúc phải sau giờ bắt đầu ít nhất 15 phút",
     "pickDay": "Chọn ít nhất một ngày trong tuần",
-    "deleteFailed": "Không thể xóa sự kiện. Thử lại.",
-    "locUnavailable": "Trình duyệt này không hỗ trợ định vị. Bạn vẫn có thể tạo sự kiện mà không cần nó.",
-    "locFailed": "Không lấy được vị trí của bạn. Bật quyền vị trí, hoặc bỏ qua bản đồ."
+    "deleteFailed": "Không xóa được sự kiện. Thử lại nhé.",
+    "locUnavailable": "Trình duyệt này không lấy được vị trí. Bạn vẫn tạo sự kiện được mà không cần nó.",
+    "locFailed": "Không lấy được vị trí. Bật quyền vị trí, hoặc bỏ qua bản đồ."
   },
   "submit": {
     "saving": "Đang lưu…",
@@ -85,8 +85,7 @@
   },
   "recur": {
     "everyday": "Mỗi ngày",
-    "weekly": "Hàng tuần",
-    "everyNDays_one": "Mỗi {{count}} ngày",
+    "weekly": "Hằng tuần",
     "everyNDays_other": "Mỗi {{count}} ngày"
   }
 }

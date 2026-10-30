@@ -1,17 +1,17 @@
 {
   "loading": "Đang tải…",
-  "notFound": "Địa điểm này không có trên Hilads.",
-  "loadError": "Không thể tải địa điểm này. Vui lòng thử lại.",
+  "notFound": "Chỗ này chưa có trên Hilads.",
+  "loadError": "Không tải được địa điểm này. Thử lại nhé.",
   "breadcrumb": "Đường dẫn",
   "category": {
-    "bar": "Quán bar",
+    "bar": "Bar / pub",
     "cafe": "Quán cà phê"
   },
   "typeInCity": "{{category}} ở {{city}}",
   "address": "Địa chỉ",
   "hours": "Giờ mở cửa",
   "openEveryDay": "Mở cửa mỗi ngày · {{opens}} – {{closes}}",
-  "ctaText": "Xem ai đang ở quanh {{city}} ngay bây giờ.",
+  "ctaText": "Xem ai đang ở quanh {{city}} lúc này.",
   "openCity": "Mở {{city}}",
   "lastUpdated": "Cập nhật lần cuối {{date}}"
 }

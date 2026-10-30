@@ -1,5 +1,5 @@
 {
-  "title": "Hoạt động đã qua",
+  "title": "Đã diễn ra",
   "filters": {
     "all": "Tất cả",
     "events": "Sự kiện",
@@ -18,17 +18,15 @@
     "apply": "Áp dụng"
   },
   "public": "Công khai",
-  "went_other": "{{count}} đã tham gia",
+  "went_other": "{{count}} người đã đi",
   "hangoutTag": "Tụ tập",
   "replies_other": "{{count}} trả lời",
   "noReplies": "Chưa có trả lời",
-  "error": "Không thể tải kho lưu trữ",
+  "error": "Không tải được kho lưu trữ",
   "retry": "Thử lại",
   "emptyTitle": "Chưa có gì ở đây",
-  "emptyRecentSub": "Sự kiện và tụ tập đã qua sẽ hiển thị ở đây khi thành phố có một chút lịch sử.",
-  "emptyWindowSub": "Không có sự kiện hay tụ tập nào trong khoảng này. Thử khoảng rộng hơn.",
-  "loadMore": "Tải thêm",
-  "loading": "Đang tải…",
-  "went_one": "{{count}} đã tham gia",
-  "replies_one": "{{count}} trả lời"
+  "emptyRecentSub": "Khi thành phố có hoạt động, sự kiện và buổi tụ tập đã qua sẽ hiện ở đây.",
+  "emptyWindowSub": "Khoảng này không có sự kiện hay buổi tụ tập nào. Thử chọn rộng hơn nhé.",
+  "loadMore": "Xem thêm",
+  "loading": "Đang tải…"
 }

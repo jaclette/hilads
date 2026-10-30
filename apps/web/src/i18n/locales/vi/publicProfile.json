@@ -1,15 +1,15 @@
 {
   "title": "Hồ sơ",
   "loading": "Đang tải…",
-  "loadError": "Không thể tải hồ sơ.",
+  "loadError": "Không tải được hồ sơ.",
   "badgeMicro": {
     "ghost": "Chỉ ghé xem",
-    "fresh": "Vừa mới đến",
-    "regular": "Thường xuyên xuất hiện",
-    "host": "Người tạo nên mọi thứ"
+    "fresh": "Mới tới",
+    "regular": "Hay ghé chơi",
+    "host": "Người lên kèo"
   },
   "modes": {
-    "local": "Người địa phương",
+    "local": "Dân địa phương",
     "exploring": "Đang khám phá"
   },
   "vibes": {
@@ -17,20 +17,20 @@
     "board_games": "Board game",
     "coffee": "Cà phê",
     "music": "Âm nhạc",
-    "food": "Ẩm thực",
-    "chill": "Thư giãn"
+    "food": "Ăn uống",
+    "chill": "Chill"
   },
   "vibeTaglines": {
-    "party": "Ở đây vì cuộc sống về đêm",
-    "board_games": "Mang snack và xúc xắc đến",
-    "coffee": "Cà phê trước, mọi thứ tính sau",
-    "music": "Luôn tìm kiếm một giai điệu hay",
+    "party": "Sống vì cuộc vui về đêm",
+    "board_games": "Mang snack với xúc xắc theo nha",
+    "coffee": "Cà phê trước, chuyện khác tính sau",
+    "music": "Lúc nào cũng săn nhạc hay",
     "food": "Ăn trước, hỏi sau",
-    "chill": "Nhẹ nhàng, vibe tốt"
+    "chill": "Nhẹ nhàng mà vibe cực đỉnh"
   },
   "modeSub": {
-    "localIn": "Người địa phương ở {{city}}",
-    "local": "Người địa phương",
+    "localIn": "Dân địa phương ở {{city}}",
+    "local": "Dân địa phương",
     "exploringIn": "Đang khám phá {{city}}",
     "exploring": "Đang khám phá"
   },
@@ -41,58 +41,57 @@
     "events": "Hi plan",
     "friends": "Bạn bè",
     "vibes": "Vibes",
-    "picks": "Gợi ý",
+    "picks": "Gợi ý thành phố",
     "challenges": "Thử thách"
   },
-  "host": "Chủ",
-  "live": "Trực tiếp",
+  "host": "Chủ xị",
+  "live": "Đang diễn ra",
   "past": "Đã qua",
   "empty": {
-    "hangouts": "Chưa có tụ tập",
+    "hangouts": "Chưa có buổi tụ tập nào",
     "events": "Chưa có sự kiện",
     "friends": "Chưa có bạn bè",
     "challenges": "Chưa có thử thách nào"
   },
   "vibesTab": {
-    "score": "điểm vibe {{score}}",
+    "score": "{{score}} điểm vibe",
     "basedOn_other": "dựa trên {{count}} vibe",
-    "updateNote": "Cập nhật ghi chú của bạn ({{rating}}★)",
+    "updateNote": "Sửa ghi chú ({{rating}}★)",
     "leaveNote": "Để lại ghi chú",
-    "placeholder": "Nói điều gì đó tử tế… (tùy chọn)",
+    "placeholder": "Nói gì đó dễ thương… (không bắt buộc)",
     "cancel": "Hủy",
     "sending": "Đang gửi…",
     "sendNote": "Gửi ghi chú",
     "notesLabel": "Ghi chú · {{count}}",
     "emptyTitle": "Chưa có ghi chú",
-    "emptySub": "Hãy là người đầu tiên để lại ghi chú",
-    "basedOn_one": "dựa trên {{count}} vibe"
+    "emptySub": "Để lại ghi chú đầu tiên nhé"
   },
   "picks": {
-    "restaurant": "Nhà hàng yêu thích",
-    "spot": "Địa điểm ẩn",
-    "tip": "Mẹo địa phương",
-    "story": "Câu chuyện"
+    "restaurant": "Quán ăn yêu thích",
+    "spot": "Góc ẩn",
+    "tip": "Mẹo của dân địa phương",
+    "story": "Story"
   },
   "actions": {
     "opening": "Đang mở…",
-    "message": "Nhắn tin",
+    "message": "Tin nhắn",
     "friend": "Bạn bè",
     "requestSent": "Đã gửi lời mời",
-    "acceptRequest": "Chấp nhận lời mời",
+    "acceptRequest": "Đồng ý kết bạn",
     "addFriend": "+ Kết bạn",
     "removing": "Đang xóa…",
     "unfriend": "Hủy kết bạn",
     "cancel": "Hủy",
     "cancelling": "Đang hủy…",
     "cancelRequest": "Hủy lời mời",
-    "keep": "Giữ",
+    "keep": "Giữ lại",
     "reportTitle": "Báo cáo người dùng"
   },
   "report": {
-    "existing": "Bạn đã báo cáo người dùng này vào {{date}}. Báo cáo của bạn đang được xem xét.",
-    "sent": "Đã gửi báo cáo. Cảm ơn bạn đã cho chúng tôi biết.",
-    "placeholder": "Mô tả vấn đề (tối thiểu 10 ký tự)…",
-    "error": "Không thể gửi báo cáo. Thử lại.",
+    "existing": "Bạn đã báo cáo người này vào {{date}}. Hilads đang xem xét.",
+    "sent": "Đã gửi báo cáo. Cảm ơn bạn đã báo cho tụi mình.",
+    "placeholder": "Mô tả vấn đề (ít nhất 10 ký tự)…",
+    "error": "Không gửi được báo cáo. Thử lại nhé.",
     "sending": "Đang gửi…",
     "submit": "Gửi báo cáo",
     "cancel": "Hủy"

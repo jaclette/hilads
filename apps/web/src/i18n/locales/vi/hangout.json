@@ -6,35 +6,35 @@
     "cat": {
       "general": "Chung",
       "tips": "Mẹo",
-      "food": "Đồ ăn",
+      "food": "Ăn uống",
       "drinks": "Đồ uống",
-      "help": "Trợ giúp",
-      "meetup": "Gặp gỡ"
+      "help": "Cần giúp",
+      "meetup": "Gặp mặt"
     },
     "titleLabel": "Bạn đang nghĩ gì?",
-    "titlePlaceholder": "Tôi muốn đi uống cà phê",
+    "titlePlaceholder": "Mình muốn đi cà phê",
     "detailsLabel": "Thêm chi tiết",
-    "optional": "(tùy chọn)",
-    "detailsPlaceholder": "Cho thêm chút ngữ cảnh…",
-    "expiry": "Tự hết hạn sau 8 giờ",
+    "optional": "(không bắt buộc)",
+    "detailsPlaceholder": "Kể thêm chút…",
+    "expiry": "Tự hết hạn sau 8 tiếng",
     "saving": "Đang lưu…",
-    "starting": "Đang tạo…",
+    "starting": "Đang mở…",
     "saveChanges": "Lưu thay đổi",
     "startCta": "Hi now",
     "limitHeader": "Mỗi lần một cái",
-    "limitTitle": "Bạn đã có một tụ tập",
-    "limitSub": "Bạn chỉ có thể chạy một tụ tập cùng lúc. Vào “{{title}}”, hoặc xóa nó để tạo cái mới.",
-    "limitGo": "Đến tụ tập của tôi",
+    "limitTitle": "Bạn đang có một tụ tập rồi",
+    "limitSub": "Mỗi lần bạn chỉ mở được một tụ tập. Vào “{{title}}”, hoặc xóa đi để tạo cái mới.",
+    "limitGo": "Tới tụ tập của tôi",
     "yourHangout": "tụ tập của bạn",
-    "geoHint": "Bật vị trí để xem ai đang ở gần ngay bây giờ — và để mọi người quanh đây thấy Hi của bạn",
-    "geoRequired": "Một Hi now cho mọi người biết chỗ gặp bạn — bật vị trí để tiếp tục."
+    "geoHint": "Bật vị trí để xem ai đang quanh đây - và để người gần bạn thấy Hi của bạn",
+    "geoRequired": "Hi now cho mọi người biết tìm bạn ở đâu - bật vị trí để tiếp tục nhé."
   },
-  "deleteConfirm": "Xóa tụ tập này? Việc này kết thúc nó cho mọi người và không thể hoàn tác.",
-  "deleteFailedAlert": "Không thể xóa. Vui lòng thử lại.",
+  "deleteConfirm": "Xóa buổi tụ tập này? Nó sẽ kết thúc với mọi người và không hoàn tác được.",
+  "deleteFailedAlert": "Không xóa được. Thử lại nhé.",
   "shareAria": "Chia sẻ tụ tập",
-  "shareTitle": "Chia sẻ tụ tập này",
+  "shareTitle": "Chia sẻ buổi tụ tập này",
   "members": {
-    "oneIn": "{{name}} đã tham gia",
+    "oneIn": "{{name}} đã vào",
     "countIn": "{{count}} người trong tụ tập này",
     "seeAll": "Xem tất cả"
   },
@@ -44,41 +44,41 @@
   },
   "gated": {
     "title": "Tụ tập chỉ dành cho thành viên",
-    "pending": "Yêu cầu đang chờ - bạn sẽ tham gia được cuộc trò chuyện khi một thành viên chấp nhận.",
-    "prompt": "Yêu cầu tham gia để xem và trò chuyện.",
-    "requestBtn": "Yêu cầu tham gia"
+    "pending": "Đã gửi yêu cầu - khi một thành viên chấp nhận, bạn sẽ vào được cuộc trò chuyện.",
+    "prompt": "Xin tham gia để xem và trò chuyện.",
+    "requestBtn": "Xin tham gia"
   },
   "feed": {
-    "beginning": "Đầu cuộc trò chuyện",
+    "beginning": "Bắt đầu cuộc trò chuyện",
     "loading": "Đang tải…",
-    "emptyTitle": "Chưa có phản hồi",
-    "emptySub": "Hãy là người đầu tiên tham gia"
+    "emptyTitle": "Chưa có ai trả lời",
+    "emptySub": "Vào góp chuyện đầu tiên đi"
   },
   "joinReq": {
     "someone": "Ai đó",
     "wantsToJoin": " muốn tham gia",
-    "joined": " đã tham gia tụ tập",
-    "askedToJoin": " đã yêu cầu tham gia",
+    "joined": " đã vào buổi tụ tập",
+    "askedToJoin": " xin tham gia",
     "decline": "Từ chối",
     "accept": "Chấp nhận",
     "accepted": "Đã chấp nhận",
-    "acceptedBy": "Được chấp nhận bởi {{name}}",
-    "declined": "Yêu cầu bị từ chối"
+    "acceptedBy": "{{name}} đã chấp nhận",
+    "declined": "Đã từ chối yêu cầu"
   },
   "modes": {
-    "local": "Người địa phương",
+    "local": "Dân địa phương",
     "exploring": "Đang khám phá"
   },
   "reply": {
     "photo": "Ảnh",
-    "unavailable": "Tin nhắn gốc không khả dụng"
+    "unavailable": "Tin nhắn gốc không còn"
   },
   "composer": {},
   "errors": {
-    "locFailed": "Không lấy được vị trí của bạn. Bật quyền vị trí rồi thử lại.",
-    "imageType": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP.",
-    "imageTooLarge": "Ảnh quá lớn. Tối đa 10 MB.",
-    "imageSend": "Không gửi được ảnh. Vui lòng thử lại.",
+    "locFailed": "Không lấy được vị trí. Bật quyền vị trí rồi thử lại nhé.",
+    "imageType": "Chọn ảnh JPEG, PNG hoặc WebP nhé.",
+    "imageTooLarge": "Ảnh nặng quá. Tối đa 10 MB.",
+    "imageSend": "Không gửi được ảnh. Thử lại nhé.",
     "dismiss": "{{error}} · chạm để đóng"
   }
 }

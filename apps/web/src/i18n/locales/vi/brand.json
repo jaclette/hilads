@@ -1,10 +1,4 @@
 {
-  "badge": {
-    "ghost": "Ghost",
-    "fresh": "Mới",
-    "regular": "Thành viên",
-    "host": "Huyền thoại"
-  },
   "now": "now",
   "myCity": "my city",
   "here": "here",
@@ -16,7 +10,13 @@
     "board_games": "Board game",
     "coffee": "Cà phê",
     "music": "Âm nhạc",
-    "food": "Ẩm thực",
-    "chill": "Thư giãn"
+    "food": "Ăn uống",
+    "chill": "Chill"
+  },
+  "badge": {
+    "ghost": "Ghost",
+    "fresh": "Lính mới",
+    "regular": "Dân quen",
+    "host": "Huyền thoại"
   }
 }

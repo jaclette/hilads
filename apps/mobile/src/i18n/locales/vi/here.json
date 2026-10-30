@@ -1,17 +1,17 @@
 {
   "title": "Quanh bạn",
   "noCityTitle": "Chưa chọn thành phố",
-  "noCitySub": "Chọn một thành phố để xem ai đang ở quanh đây.",
+  "noCitySub": "Chọn thành phố để xem ai đang quanh đây.",
   "browseCities": "Xem các thành phố",
   "filterBadge": "Huy hiệu",
   "filterVibe": "Vibe",
   "filterMode": "Chế độ",
   "you": "(bạn)",
   "hereNow": "Đang ở đây",
-  "noMatchLive": "Hiện không có ai khớp với các bộ lọc này.",
+  "noMatchLive": "Giờ chưa có ai khớp bộ lọc này.",
   "legends": "Huyền thoại Hilads",
-  "legendsSub": "Họ làm cho thành phố sôi động",
-  "cityCrew": "Thành viên thành phố",
-  "noMatchCrew": "Không có thành viên nào khớp với các bộ lọc này.",
+  "legendsSub": "Họ làm thành phố sôi động",
+  "cityCrew": "Hội thành phố",
+  "noMatchCrew": "Không có thành viên nào khớp bộ lọc.",
   "loadMore": "Xem thêm"
 }

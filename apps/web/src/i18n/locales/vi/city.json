@@ -1,9 +1,28 @@
 {
+  "world": {
+    "tab": "Thế giới",
+    "banner": "{{count}} thử thách liên thành phố đang diễn ra",
+    "online": "{{count}} đang online",
+    "cities": "{{count}} thành phố",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} vừa tạo thử thách {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} từ {{city}} vừa vào Hilads",
+      "challengeWon": "🏆 {{nickname}} từ {{city}} vừa thắng thử thách {{challenge}}"
+    },
+    "quietCard": "Ở đây vắng quá? Thế giới có {{count}} tin chưa đọc - chạm để xem",
+    "heroEmpty": "Làm người đầu tiên thách một thành phố",
+    "heroEmptySub": "Tạo thử thách liên thành phố",
+    "leaderboard": "Bảng xếp hạng",
+    "arrivals": "{{count}} người mới đến",
+    "arrivalsTitle": "Mới đến",
+    "arrivalsEmpty": "Chưa có ai mới đến",
+    "seeAll": "Xem tất cả"
+  },
   "inspiration": {
     "heading": "Ý tưởng tụ tập",
-    "sub": "Xem dân địa phương nơi khác tổ chức gì - lấy cảm hứng",
-    "openYours": "Tạo cái của bạn ở {{city}}",
-    "by": "bởi {{name}} · {{city}}",
+    "sub": "Dân ở nơi khác hay tổ chức gì - lấy ý tưởng nè",
+    "openYours": "Mở một buổi ở {{city}}",
+    "by": "của {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
   },
@@ -12,73 +31,69 @@
     "signIn": "Đăng nhập",
     "create_event": {
       "pageTitle": "Tạo sự kiện",
-      "title": "Khách vãng lai có thể xem, nhưng không thể tổ chức.",
-      "sub": "Tạo tài khoản để tổ chức sự kiện của riêng bạn và đưa thành phố của bạn lên bản đồ."
+      "title": "Khách vãng lai xem được, nhưng chưa tổ chức được.",
+      "sub": "Tạo tài khoản để tự tổ chức sự kiện và đưa thành phố lên bản đồ."
     },
     "view_profile": {
       "pageTitle": "Hồ sơ",
-      "title": "Khách vãng lai có thể xem, nhưng hồ sơ dành cho thành viên.",
-      "sub": "Tạo tài khoản để mở khóa hồ sơ, kết nối với mọi người và xây dựng hội của bạn trong thành phố."
+      "title": "Khách vãng lai xem được, nhưng hồ sơ chỉ dành cho thành viên.",
+      "sub": "Tạo tài khoản để xem hồ sơ, làm quen mọi người và lập hội trong thành phố."
     },
     "join_hangout": {
       "pageTitle": "Tham gia tụ tập",
-      "title": "Khách vãng lai có thể xem, nhưng không thể tham gia tụ tập.",
-      "sub": "Đăng ký để tham gia tụ tập, giữ tên của bạn và được thông báo khi có người muốn gặp."
+      "title": "Khách vãng lai xem được, nhưng chưa tham gia tụ tập được.",
+      "sub": "Đăng ký để tham gia tụ tập, giữ tên và nhận thông báo khi có người muốn gặp."
     },
     "create_hangout": {
-      "pageTitle": "Tạo tụ tập",
-      "title": "Khách vãng lai có thể xem, nhưng không thể tổ chức.",
-      "sub": "Đăng ký để tạo tụ tập, giữ tên của bạn và thu hút mọi người tham gia."
+      "pageTitle": "Mở tụ tập",
+      "title": "Khách vãng lai xem được, nhưng chưa tổ chức được.",
+      "sub": "Đăng ký để mở tụ tập, giữ tên và rủ mọi người tham gia."
     },
     "create_challenge": {
       "pageTitle": "Tung thử thách",
-      "title": "Khách vãng lai có thể xem, nhưng không thể tung thử thách.",
-      "sub": "Đăng ký để tung thử thách cho người địa phương hoặc du khách và xác nhận nó."
+      "title": "Khách vãng lai xem được, nhưng chưa tung thử thách được.",
+      "sub": "Đăng ký để tung thử thách cho dân địa phương hoặc du khách, và tự xác nhận kết quả."
     },
     "accept_challenge": {
       "pageTitle": "Nhận thử thách",
       "title": "Đăng ký để nhận thử thách này",
-      "sub": "3 giây. Bạn quay lại ngay với thử thách."
+      "sub": "Chỉ mất 3 giây. Xong là quay lại thử thách liền."
     }
   },
   "welcome": {
-    "live": "{{city}} đang trực tiếp",
+    "live": "{{city}} đang sôi động",
     "dismiss": "Đóng",
-    "body": "Người thật, ngay bây giờ. Chào hỏi, xem ai đang ở quanh đây, hoặc rủ một người bạn.",
+    "body": "Người thật, ngay lúc này. Chào một tiếng, xem ai quanh đây, hoặc rủ bạn bè vào.",
     "sayHi": "Chào",
     "invite": "Mời bạn bè"
   },
-  "imageType": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP.",
-  "imageTooLarge": "Ảnh quá lớn. Tối đa: 10 MB.",
+  "imageType": "Chọn ảnh JPEG, PNG hoặc WebP nhé.",
+  "imageTooLarge": "Ảnh nặng quá. Tối đa 10 MB.",
   "picker": {
-    "title": "Chọn một thành phố",
+    "title": "Chọn thành phố",
     "search": "Tìm thành phố…",
-    "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",
-    "topCities": "Thành phố sôi động nhất",
+    "noResults": "Không có thành phố nào tên \"{{query}}\"",
+    "topCities": "Thành phố sôi động nhất lúc này",
     "cities": "Thành phố",
     "switchTitle": "Đổi thành phố",
     "filterActive": "Sôi động nhất",
     "filterEvents": "Nhiều sự kiện nhất",
-    "filterOnline": "Trực tuyến nhiều nhất",
+    "filterOnline": "Đông người online nhất",
     "filterChallenges": "Nhiều thử thách nhất",
-    "challenges_one": "{{count}} thử thách",
     "challenges_other": "{{count}} thử thách",
-    "members_one": "{{count}} thành viên",
     "members_other": "{{count}} thành viên",
-    "backToLocation": "Về vị trí của tôi",
+    "backToLocation": "Về vị trí của mình",
     "youreHere": "bạn đang ở đây",
-    "online": "{{count}} trực tuyến",
+    "online": "{{count}} đang online",
     "events_other": "{{count}} sự kiện",
-    "hangout_other": "{{count}} tụ tập",
+    "hangout_other": "{{count}} buổi tụ tập",
     "msgs": "{{count}} tin",
-    "events_one": "{{count}} sự kiện",
-    "hangout_one": "{{count}} tụ tập",
     "hereTitle": "Bạn đang ở đâu?",
-    "useMyLocation": "Dùng vị trí của tôi",
+    "useMyLocation": "Dùng vị trí của mình",
     "playsIn": "Chơi ở {{city}}",
     "credit": "Dữ liệu thành phố ©",
-    "changeLimit": "Hôm nay bạn đã đổi thành phố nhiều lần. Thử lại vào ngày mai nhé.",
-    "pickFailed": "Không thể chọn thành phố này. Thử lại nhé."
+    "changeLimit": "Hôm nay bạn đổi thành phố nhiều quá rồi. Mai thử lại nhé.",
+    "pickFailed": "Không chọn được thành phố này. Thử lại nhé."
   },
   "joining": "Đang vào {{city}}…",
   "joiningDefault": "Đang vào chat…",
@@ -86,55 +101,53 @@
   "feed": {
     "hangoutTag": "Tụ tập",
     "eventTag": "Sự kiện",
-    "public": "Công khai",
-    "activeNow": "Đang hoạt động",
-    "repliesNew": "Chưa có trả lời - hãy là người đầu tiên",
-    "replies_other": "{{count}} trả lời",
-    "going_other": "{{count}} tham gia",
-    "hostedBy": "Tổ chức bởi {{name}}",
-    "groupHilads": "Sự kiện địa phương Hilads",
-    "groupPublic": "Sự kiện địa phương công khai",
-    "groupPublicTicket": "Sự kiện địa phương công khai",
-    "createEvent": "Tạo sự kiện địa phương",
-    "startHangout": "Tạo tụ tập",
-    "openPlace": "Mở spot của bạn",
-    "loadError": "Không thể tải sự kiện",
-    "loadErrorSub": "Thử lại sau hoặc tạo gì đó mới ở {{city}}.",
-    "emptyLocalTitle": "Mở spot của bạn",
-    "emptyTitle": "Chưa có gì diễn ra",
-    "emptyLocalSub": "Làm cho {{city}} sống động. Tạo sự kiện định kỳ tại nơi yêu thích.",
-    "emptySub": "Hãy là người đầu tiên tạo điều gì đó ở {{city}}",
-    "noEvents": "Hiện không có sự kiện địa phương",
-    "noHangouts": "Chưa có tụ tập",
-    "noEventsSub": "Hãy là người đầu tiên tạo một cái ở {{city}}",
-    "noHangoutsSub": "Tạo tụ tập và khiến cả thành phố trò chuyện",
-    "filterAll": "Tất cả",
-    "seeComing": "Sắp tới",
-    "seeHappened": "Sự kiện đã qua",
-    "createNew": "Tạo mới",
-    "nowTag": "Now",
-    "laterTag": "Plan",
+    "nowTag": "Bây giờ",
+    "laterTag": "Kèo",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
-    "sayHi": "Chào {{name}}",
+    "public": "Công khai",
+    "activeNow": "Đang hoạt động",
+    "repliesNew": "Chưa có trả lời - trả lời đầu tiên đi",
+    "sayHi": "Chào {{name}} một câu đi",
     "sayHiGeneric": "Chào",
     "hostWaiting": "Đang chờ lời chào đầu tiên",
-    "replies_one": "{{count}} trả lời",
-    "going_one": "{{count}} tham gia",
-    "hiNowHint": "gặp nhau ngay",
-    "hiLaterHint": "lên kế hoạch"
+    "replies_other": "{{count}} trả lời",
+    "going_other": "{{count}} người đi",
+    "hostedBy": "{{name}} tổ chức",
+    "groupHilads": "Sự kiện địa phương của Hilads",
+    "groupPublic": "Sự kiện công khai",
+    "groupPublicTicket": "Sự kiện công khai",
+    "createEvent": "Tạo sự kiện địa phương",
+    "startHangout": "Mở tụ tập",
+    "openPlace": "Mở chỗ của bạn",
+    "loadError": "Không tải được sự kiện",
+    "loadErrorSub": "Kéo xuống để thử lại sau, hoặc tạo gì đó mới ở {{city}}.",
+    "emptyLocalTitle": "Tổ chức ở chỗ của bạn",
+    "emptyTitle": "Chưa có gì đang diễn ra",
+    "emptyLocalSub": "Cho {{city}} sôi động lên nào. Mở một sự kiện định kỳ ở chỗ bạn thích nhất.",
+    "emptySub": "Làm người đầu tiên khuấy động {{city}} đi",
+    "noEvents": "Giờ chưa có sự kiện địa phương nào",
+    "noHangouts": "Chưa có buổi tụ tập nào",
+    "noEventsSub": "Tạo cái đầu tiên ở {{city}} đi",
+    "noHangoutsSub": "Mở một buổi tụ tập cho cả thành phố rôm rả",
+    "filterAll": "Tất cả",
+    "seeComing": "Xem sắp có gì",
+    "seeHappened": "xem đã có gì",
+    "createNew": "Tạo mới",
+    "hiNowHint": "đi chơi ngay",
+    "hiLaterHint": "lên kèo sự kiện"
   },
   "header": {
     "online": "{{count}} ở gần",
-    "liveNow": "đang trực tiếp",
+    "liveNow": "đang diễn ra",
     "seeWhosHere": "Xem ai đang ở đây",
-    "onlineAria": "{{count}} người ở gần, chạm để xem",
+    "onlineAria": "{{count}} người ở gần, chạm để xem là ai",
     "notifications": "Thông báo",
     "messages": "Tin nhắn",
     "shareCity": "Chia sẻ thành phố",
     "switchCity": "Đổi thành phố",
     "changeCity": "Đổi thành phố",
-    "currentWeather": "Thời tiết hiện tại: {{label}}"
+    "currentWeather": "Thời tiết bây giờ: {{label}}"
   },
   "here": {
     "title": "Quanh bạn",
@@ -143,13 +156,13 @@
     "filterMode": "Chế độ",
     "you": "(bạn)",
     "hereNow": "Đang ở đây",
-    "noMatchLive": "Hiện không có ai khớp với các bộ lọc này.",
+    "noMatchLive": "Giờ chưa có ai khớp bộ lọc này.",
     "legends": "Huyền thoại Hilads",
-    "legendsSub": "Họ làm cho thành phố sôi động",
-    "cityCrew": "Thành viên thành phố",
-    "noMatchCrew": "Không có thành viên nào khớp với các bộ lọc này.",
+    "legendsSub": "Họ làm thành phố sôi động",
+    "cityCrew": "Hội thành phố",
+    "noMatchCrew": "Không có thành viên nào khớp bộ lọc.",
     "loadMore": "Xem thêm",
-    "messageAria": "Nhắn tin cho {{name}}"
+    "messageAria": "Nhắn {{name}}"
   },
   "eventHeader": {
     "yourEvent": "Sự kiện của bạn",
@@ -157,28 +170,27 @@
     "join": "Tham gia",
     "joined": "Đã tham gia",
     "here": "{{count}} ở đây",
-    "going_other": "{{count}} tham gia",
+    "going_other": "{{count}} người đi",
     "locationPending": "Chưa có địa điểm",
-    "hostedBy": "Tổ chức bởi {{name}}",
-    "going_one": "{{count}} tham gia"
+    "hostedBy": "{{name}} tổ chức"
   },
   "chatEmpty": {
-    "beginning": "Đầu cuộc trò chuyện",
-    "arriving": "Mọi người đang đến",
-    "firstChat": "Hãy là người đầu tiên nhắn ở đây",
-    "firstHi": "Hãy là người đầu tiên chào hỏi"
+    "beginning": "Bắt đầu cuộc trò chuyện",
+    "arriving": "Mọi người đang tới",
+    "firstChat": "Mở màn cuộc trò chuyện ở đây đi",
+    "firstHi": "Chào một câu trước đi"
   },
   "create": {
     "title": "Làm gì đây?",
-    "hangoutTitle": "Tạo tụ tập",
-    "hangoutSub": "Tức thì - để mọi người tham gia ngay bây giờ",
+    "hangoutTitle": "Mở tụ tập",
+    "hangoutSub": "Liền tay - mọi người vào chung với bạn ngay",
     "eventTitle": "Tạo sự kiện",
-    "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia",
-    "challengeTitle": "Tạo một thử thách",
-    "challengeSub": "Người địa phương & du khách - kết nối qua một thử thách",
-    "challengePageTitle": "Tạo một thử thách",
+    "eventSub": "Lên kèo cho mọi người cùng tham gia",
+    "challengeTitle": "Tung thử thách",
+    "challengeSub": "Dân địa phương & du khách - kết nối qua một thử thách",
+    "challengePageTitle": "Tạo thử thách",
     "challengeAudience": "Dành cho ai?",
-    "challengeAudLocals": "Người địa phương",
+    "challengeAudLocals": "Dân địa phương",
     "challengeAudExplorers": "Du khách",
     "challengeType": "Loại",
     "challengeTypeFood": "Ăn uống",
@@ -186,38 +198,38 @@
     "challengeTypeCulture": "Văn hóa",
     "challengeTypeHelp": "Điên rồ",
     "challengeTitleLabel": "Thử thách của bạn",
-    "challengeTitlePlaceholder": "vd. Đưa tôi đến quán cà phê yêu thích của bạn",
-    "challengeCta": "Tạo thử thách",
-    "challengeErrStart": "Không thể tạo thử thách"
+    "challengeTitlePlaceholder": "VD: Dẫn mình tới quán cà phê ẩn mà bạn mê nhất",
+    "challengeCta": "Tung thử thách",
+    "challengeErrStart": "Không tạo được thử thách"
   },
   "goingModal": {
-    "going": "tham gia",
+    "going": "sẽ đi",
     "inThisHangout": "trong tụ tập này",
     "loading": "Đang tải…",
-    "empty": "Chưa có ai - hãy là người đầu tiên!"
+    "empty": "Chưa có ai, tham gia đầu tiên đi!"
   },
   "nickname": {
     "label": "Biệt danh",
-    "placeholder": "Tên của bạn...",
-    "heroSub": "Tạm thời ẩn danh. Bạn vẫn có thể tùy chỉnh cách mình xuất hiện.",
+    "placeholder": "Tên bạn...",
+    "heroSub": "Tạm thời ẩn danh. Bạn vẫn chọn được cách mình xuất hiện.",
     "save": "Lưu biệt danh",
-    "upgradeHint": "Giữ tên của bạn. Là người địa phương.",
+    "upgradeHint": "Giữ tên. Sống như dân địa phương.",
     "haveAccount": "Đã có tài khoản?",
-    "myEvents": "Sự kiện của tôi",
+    "myEvents": "Sự kiện của mình",
     "anonymous": "// ẩn danh · không cần đăng ký"
   },
   "prompt": {
-    "exploreText": "Xem có gì đang diễn ra",
+    "exploreText": "Xem đang có gì vui",
     "exploreCta": "Xem có gì đang diễn ra",
-    "photoText": "Chia sẻ điều đang diễn ra",
+    "photoText": "Chia sẻ chuyện đang diễn ra",
     "shoot": "Chụp",
-    "createEventText": "Có kế hoạch tối nay?",
+    "createEventText": "Tối nay có kèo chưa?",
     "createEventCta": "Tạo sự kiện",
-    "challengeIntroText": "Mới ở đây? Xem thử thách hoạt động thế nào",
-    "challengeIntroCta": "Xem",
-    "installText": "Thêm Hilads vào màn hình chính\nĐừng bỏ lỡ điều đang diễn ra trong thành phố của bạn",
+    "challengeIntroText": "Mới tới? Xem thử thách chơi thế nào",
+    "challengeIntroCta": "Xem liền",
+    "installText": "Thêm Hilads vào màn hình chính\nKhông bỏ lỡ gì đang diễn ra trong thành phố",
     "installAdd": "Thêm",
-    "installHow": "Cách"
+    "installHow": "Cách làm"
   },
   "toast": {
     "eventDeleted": "Đã xóa sự kiện"
@@ -225,30 +237,30 @@
   "pwa": {
     "addToHome": "Thêm Hilads vào màn hình chính",
     "add": "Thêm",
-    "keepClose": "Giữ Hilads bên cạnh",
-    "manualHelp": "Mở menu trình duyệt và chọn Thêm vào Màn hình chính.",
-    "dismiss": "Đóng lời nhắc cài đặt"
+    "keepClose": "Giữ Hilads luôn bên mình",
+    "manualHelp": "Mở menu trình duyệt rồi chọn Thêm vào màn hình chính.",
+    "dismiss": "Đóng gợi ý cài app"
   },
   "feedJoin": {
-    "0": "👋 {{name}} vừa đến",
-    "1": "🔥 {{name}} đã tham gia",
-    "2": "🍻 {{name}} đang ở đây",
+    "0": "👋 {{name}} vừa đáp xuống",
+    "1": "🔥 {{name}} vừa vào",
+    "2": "🍻 {{name}} có mặt rồi",
     "3": "👀 {{name}} vừa xuất hiện",
-    "4": "✨ {{name}} đã đến"
+    "4": "✨ {{name}} tới rồi"
   },
   "ambient": {
-    "0": "🔥 Mọi người đang đến",
-    "1": "🍻 Tối nay ai đi chơi?",
+    "0": "🔥 Mọi người đang tới",
+    "1": "🍻 Tối nay ai đi chơi nè?",
     "2": "💬 Thành phố đang thức dậy",
-    "3": "🌙 Hội cú đêm đang trực tuyến",
-    "4": "👀 Có người vừa đến",
-    "5": "🔥 Một gương mặt mới trong thành phố",
-    "6": "🎉 Mọi người đang ở đây ngay bây giờ",
+    "3": "🌙 Hội cú đêm đang online",
+    "4": "👀 Có người vừa tới",
+    "5": "🔥 Có gương mặt mới trong thành phố",
+    "6": "🎉 Mọi người đang ở đây nè",
     "7": "🌆 Dân địa phương đang điểm danh"
   },
   "ownerPrompt": {
-    "text": "Bạn đã tạo sự kiện này!",
-    "sub": "Làm cho nó tốt hơn - thêm mô tả, cập nhật thời gian hoặc chia sẻ.",
+    "text": "Bạn là người mở sự kiện này!",
+    "sub": "Làm nó xịn hơn nữa - thêm mô tả, đổi giờ hoặc chia sẻ.",
     "edit": "Sửa sự kiện"
   },
   "feedNew": {
@@ -259,8 +271,7 @@
     "challengeExplorers": "{{name}} thách du khách: {{title}}",
     "challengeCta": "Xem",
     "challengeValidated": "Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} Thử thách quốc tế: {{title}}",
-    "replies_one": "{{count}} trả lời"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Thử thách quốc tế: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Ảnh"
@@ -268,71 +279,49 @@
   "typing": {
     "one": "{{name}} đang nhập…",
     "two": "{{a}} và {{b}} đang nhập…",
-    "many": "Nhiều người đang nhập…"
+    "many": "Mấy người đang nhập…"
   },
   "myEvent": {
-    "live": "Trực tiếp",
+    "live": "Đang diễn ra",
     "recurring": "Định kỳ",
     "upcoming": "Sắp tới",
     "delete": "Xóa sự kiện"
   },
   "arrivalsBar": {
-    "label": "Vừa đến",
+    "label": "Mới đến",
     "sheetTitle": "Mới đến",
-    "empty": "Chưa có ai đến"
+    "empty": "Chưa có ai mới đến"
   },
   "cityHero": {
-    "mainEmpty": "🌱 chưa có thử thách nào ở {{city}}",
+    "mainEmpty": "🌱 {{city}} chưa có thử thách nào",
     "subRanked": "Chạm để nhận thử thách tiếp theo →",
     "subUnranked": "Nhận thử thách đầu tiên để bắt đầu leo hạng →",
-    "subTop": "Bảo vệ ngôi đầu →",
+    "subTop": "Giữ vững ngôi đầu →",
     "subEmpty": "Tạo thử thách đầu tiên cho du khách nhận →",
     "members": "{{count}} thành viên",
-    "nearby": "{{count}} gần đây",
-    "recent": "{{count}} vừa đến",
-    "mainUnranked_one": "🔥 {{count}} thử thách ở {{city}}",
+    "nearby": "{{count}} ở gần",
+    "recent": "{{count}} mới đến",
     "mainUnranked_other": "🔥 {{count}} thử thách ở {{city}}",
-    "mainRanked_one": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
     "mainRanked_other": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
-    "mainTop_one": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
     "mainTop_other": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}"
-  },
-  "world": {
-    "tab": "Thế giới",
-    "banner": "{{count}} thử thách liên thành phố đang diễn ra",
-    "online": "{{count}} đang online",
-    "cities": "{{count}} thành phố",
-    "sys": {
-      "challengeCreated": "🔥 {{nickname}} đã tạo thử thách {{cityA}} → {{cityB}}",
-      "newUser": "🎉 {{nickname}} từ {{city}} vừa tham gia Hilads",
-      "challengeWon": "🏆 {{nickname}} từ {{city}} vừa thắng thử thách {{challenge}}"
-    },
-    "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong Thế giới — chạm để xem",
-    "heroEmpty": "Hãy là người đầu tiên thách đấu một thành phố",
-    "heroEmptySub": "Tạo một thử thách liên thành phố",
-    "leaderboard": "Bảng xếp hạng",
-    "arrivals": "{{count}} lượt đến",
-    "arrivalsTitle": "Vừa đến",
-    "arrivalsEmpty": "Chưa có ai vừa đến",
-    "seeAll": "Xem tất cả"
   },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Dân địa phương",
     "traveler": "Du khách",
-    "ctaApp": "Tham gia challenge trong app",
+    "ctaApp": "Chơi thử thách trong app",
     "localPass": "Local Pass",
     "early": "Sớm",
-    "proposedBy": "Đề xuất bởi {{name}}",
-    "proposedByCity": "Đề xuất bởi {{name}} · {{city}}",
+    "proposedBy": "{{name}} đề xuất",
+    "proposedByCity": "{{name}} đề xuất · {{city}}",
     "groupTitle": "Ảnh mới: {{n}}",
-    "groupCitiesMore": "{{cities}} và {{n}} nữa"
+    "groupCitiesMore": "{{cities}} và {{n}} thành phố khác"
   },
   "switchSheet": {
     "title": "Bạn đang ở {{city}}",
-    "body": "Thành phố của bạn là {{from}}. Chơi cho {{city}} từ bây giờ?",
-    "switch": "Chuyển sang {{city}}",
+    "body": "Thành phố của bạn đang là {{from}}. Từ giờ chơi cho {{city}} nhé?",
+    "switch": "Đổi sang {{city}}",
     "stay": "Ở lại {{from}}"
   }
 }

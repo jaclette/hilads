@@ -1,73 +1,68 @@
 {
   "hero": {
-    "sub": "Bạn không chỉ ghé qua. Bạn đang trở thành người địa phương.\nMỗi challenge, mỗi cuộc gặp, mỗi địa điểm - kiếm cho mình một chỗ đứng trong thành phố này.",
-    "orPreview": "Hoặc xem thử trên trình duyệt — không cần cài đặt",
-    "storeDownloadOn": "Tải trên",
+    "sub": "Bạn không chỉ ghé chơi. Bạn đang thành dân địa phương.\nMỗi thử thách, mỗi lần gặp, mỗi địa điểm - giành chỗ đứng của bạn ở thành phố này.",
+    "orPreview": "Hoặc xem thử trên trình duyệt - không cần cài",
+    "storeDownloadOn": "Tải về trên",
     "storeGetItOn": "Tải trên"
   },
   "join": {
-    "peopleLive_other": "{{count}} người đang ở quanh đây",
+    "peopleLive_other": "{{count}} người đang đi chơi lúc này",
     "events_other": "{{count}} Hi plan đang diễn ra",
-    "hangouts_other": "{{count}} Hi now đang hoạt động",
+    "hangouts_other": "{{count}} Hi now đang mở",
     "replies_other": "{{count}} trả lời",
-    "pickCity": "Chọn một thành phố\nvà tham gia",
-    "locating": "› đang xác định thành phố của bạn...",
+    "pickCity": "Chọn thành phố\nvà vào chơi",
+    "locating": "› đang tìm thành phố của bạn...",
     "browseCities": "Xem các thành phố",
-    "yourName": "Tên của bạn",
-    "namePlaceholder": "Chào với tên...",
+    "yourName": "Tên bạn",
+    "namePlaceholder": "Chào mọi người với tên...",
     "tryAgain": "Thử lại",
     "useLocation": "Dùng vị trí của tôi",
-    "joinCity": "Tham gia {{city}}",
+    "joinCity": "Vào {{city}}",
     "joinChat": "Vào chat",
-    "hint": "// ẩn danh · truy cập ngay",
+    "hint": "// ẩn danh · vào ngay",
     "keepIdentity": "hoặc giữ danh tính của bạn",
     "createAccount": "Tạo tài khoản",
     "logIn": "Đăng nhập",
-    "authHint": "Giữ tên · mở khóa hồ sơ · thêm bạn bè",
-    "challenges_one": "{{count}} thử thách đang mở",
-    "challenges_other": "{{count}} thử thách đang mở",
-    "events_one": "{{count}} Hi plan đang diễn ra",
-    "hangouts_one": "{{count}} Hi now đang hoạt động",
-    "peopleLive_one": "{{count}} người đang ở quanh đây",
-    "replies_one": "{{count}} trả lời"
+    "authHint": "Giữ tên · xem hồ sơ · kết bạn",
+    "challenges_other": "{{count}} thử thách đang mở"
   },
   "local": {
-    "badge": "Người địa phương",
-    "title": "Hãy là người địa phương dẫn dắt thành phố",
-    "tagline": "Bạn biết những spot. Thách dân địa phương hoặc du khách tìm ra chúng.",
+    "badge": "Dân địa phương",
+    "title": "Làm dân địa phương cầm trịch thành phố",
+    "tagline": "Bạn biết những chỗ hay. Thách dân địa phương hoặc du khách đi tìm.",
     "bullets": [
-      "Thách dân địa phương hoặc du khách - đồ ăn, nơi chốn, văn hóa hoặc giúp đỡ",
-      "Đưa người ta đến những spot bạn yêu",
-      "Trở thành người địa phương mà mọi người nhớ đến"
+      "Thách dân địa phương hay du khách - đồ ăn, địa điểm, văn hóa hay nhờ giúp",
+      "Kéo mọi người tới những chỗ bạn mê",
+      "Thành dân địa phương mà ai cũng nhớ"
     ],
-    "cta": "Dẫn dắt thành phố"
+    "cta": "Cầm trịch thành phố"
   },
   "exploring": {
-    "badge": "Khám phá",
-    "title": "Nhận thử thách địa phương ở mọi nơi",
-    "tagline": "Đến đâu cũng nhận lấy những gì người địa phương đã tung ra.",
+    "badge": "Đang khám phá",
+    "title": "Nhận thử thách địa phương ở bất cứ đâu",
+    "tagline": "Tới đâu cũng chơi thử thách của dân ở đó.",
     "bullets": [
-      "Nhận thử thách do người địa phương tung",
-      "Tìm những spot thật sự, do người sống ở đó giới thiệu",
-      "Sống thành phố như một người địa phương, không phải khách du lịch"
+      "Nhận thử thách do dân địa phương tung ra",
+      "Tìm những chỗ xịn thật sự, do chính người sống ở đó chỉ",
+      "Sống thành phố như dân địa phương, không phải khách du lịch"
     ],
     "cta": "Xem các thử thách"
   },
   "how": {
-    "eyebrow": "Cách hoạt động",
-    "title": "Ba bước để gặp người ta trực tiếp.",
+    "eyebrow": "Cách chơi",
+    "title": "Ba bước để gặp nhau ngoài đời.",
     "steps": [
       {
-        "title": "Chọn phe của bạn",
-        "desc": "Người địa phương. Bạn rành thành phố.\nDu khách. Bạn muốn sống nó."
+        "title": "Chọn phe",
+        "desc": "Dân địa phương. Bạn rành thành phố.\nDu khách. Bạn muốn sống trọn nó."
       },
       {
-        "title": "Khởi động hoặc tham gia thử thách",
-        "desc": "Ai cũng có thể tạo một buổi gặp — ngày + địa điểm — hoặc một cuộc thi ảnh có hạn chót. Mở cho cả nhóm, không phải 1-đối-1."
+        "title": "Tạo hoặc tham gia thử thách",
+        "desc": "Ai cũng có thể tạo một buổi gặp - hẹn ngày, chọn chỗ - hoặc một cuộc thi ảnh có hạn chót. Mở cho cả nhóm, không phải 1-1."
       },
       {
         "title": "Cùng có mặt",
-        "desc": "Mọi người tham gia gặp trực tiếp — hoặc gửi ảnh đẹp nhất trước hạn. Người tổ chức xác nhận ai đến, hoặc chọn người thắng."
+        "desc": "Ai tham gia thì gặp nhau ngoài đời - hoặc gửi ảnh đẹp nhất trước hạn. Người tổ chức xác nhận ai tới, hoặc chọn người thắng."
       }
     ]
   },
@@ -75,55 +70,55 @@
     "peopleLive": "người đang online",
     "cities": "thành phố",
     "eventsCreated": "sự kiện đã tạo",
-    "signupsNeeded": "cần đăng ký"
+    "signupsNeeded": "lượt đăng ký cần có"
   },
   "concept": {
-    "title": "Không phải một mạng xã hội khác.\nMột lý do để gặp nhau trực tiếp.",
+    "title": "Không phải thêm một mạng xã hội.\nMà là một lý do để gặp nhau ngoài đời.",
     "rules": [
-      "Không người theo dõi. Không bảng tin. Không thuật toán.",
-      "Tụ họp một nhóm quanh buổi gặp thật, hoặc tổ chức thi ảnh. Ai có mặt — hoặc thắng — đều xứng đáng.",
-      "Người thật. Nơi thật. Ngay bây giờ."
+      "Không follower. Không bảng tin. Không thuật toán.",
+      "Rủ một nhóm đi gặp nhau thật, hoặc mở một cuộc thi ảnh. Ai có mặt - hoặc thắng - là xứng đáng.",
+      "Người thật. Chỗ thật. Ngay lúc này."
     ]
   },
-  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi mọi người tụ họp quanh các thử thách thực tế — buổi gặp nhóm tại thời gian và địa điểm đã định, và các cuộc thi ảnh giữa các thành phố. Tham gia thử thách ở Paris, tổ chức buổi gặp ở Barcelona, hoặc khởi động cuộc thi ảnh từ Lisbon. Không cần tài khoản. Chỉ cần có mặt.",
+  "seo": "Hilads là app xã hội thời gian thực, nơi mọi người tụ tập quanh những thử thách ngoài đời - gặp nhóm đúng giờ, đúng chỗ, và thi ảnh giữa các thành phố. Nhận thử thách ở Paris, tổ chức buổi gặp ở Barcelona, hay mở cuộc thi ảnh từ Lisbon. Không cần tài khoản. Cứ tới là được.",
   "download": {
-    "eyebrow": "Ứng dụng di động",
-    "title": "Thành phố của bạn trong túi.",
-    "sub": "Trải nghiệm đầy đủ: thông báo đẩy, nhanh hơn, dành cho thành phố của bạn."
+    "eyebrow": "App di động",
+    "title": "Cả thành phố trong túi bạn.",
+    "sub": "Trải nghiệm trọn vẹn: có thông báo đẩy, nhanh hơn, làm riêng cho thành phố của bạn."
   },
   "repeat": {
-    "eyebrow": "Tham gia",
-    "titleCity": "{{city}} đang trực tiếp ngay bây giờ.",
-    "titleGeneric": "Thành phố của bạn đang trực tiếp ngay bây giờ."
+    "eyebrow": "Vào chơi",
+    "titleCity": "{{city}} đang sôi động lúc này.",
+    "titleGeneric": "Thành phố của bạn đang sôi động lúc này."
   },
   "international": {
-    "badge": "Giữa các thành phố",
-    "tagline": "Gửi thử thách giữa các thành phố. Nhận lại video.",
-    "sub": "Khi thành phố của bạn yên ắng, thế giới thì không. Thách thức bất kỳ ai ở bất cứ đâu - họ gửi bằng chứng, bạn duyệt từ xa.",
+    "badge": "Liên thành phố",
+    "tagline": "Gửi thử thách sang thành phố khác. Nhận lại video.",
+    "sub": "Khi thành phố bạn yên ắng, thế giới thì không. Thách bất kỳ ai ở bất cứ đâu - họ gửi bằng chứng, bạn xác nhận từ xa.",
     "bullets": [
-      "Nhắm vào một thành phố cụ thể, hoặc mở cho bất kỳ ai bất cứ đâu.",
-      "Ảnh có vị trí - bằng chứng đã diễn ra.",
-      "Duyệt từ ghế sofa. Từ chối kèm lý do nếu không khớp."
+      "Chọn một thành phố cụ thể, hoặc mở cho bất kỳ ai, ở bất cứ đâu.",
+      "Họ gửi ảnh có gắn vị trí - bằng chứng là đã làm thật.",
+      "Bạn duyệt ngay trên sofa. Không ổn thì từ chối kèm lý do."
     ],
-    "cta": "Thử thử thách toàn cầu"
+    "cta": "Thử một thử thách toàn cầu"
   },
   "stories": {
     "tagline": "Chơi địa phương. So toàn cầu.",
-    "concept_tagline": "Thách thức người địa phương. Gặp gỡ du khách. Trở thành người địa phương ở bất cứ đâu.",
-    "screen1_invitation": "Tới lượt bạn. Tạo hoặc tham gia một thử thách.",
-    "fullSong": "Nghe trọn bài",
-    "screen2_invitation": "Họ đang ở đó. Bạn tham gia chứ?",
-    "screen3_invitation": "Đơn giản nhỉ? Tới lượt bạn.",
-    "screen4_invitation": "Không feed. Chỉ những cuộc gặp thật.",
+    "concept_tagline": "Thách dân địa phương. Gặp du khách. Thành dân địa phương ở bất cứ đâu.",
+    "screen1_invitation": "<hi>Tới lượt bạn.</hi> Tạo hoặc tham gia một thử thách.",
+    "fullSong": "Nghe cả bài",
+    "screen2_invitation": "Họ vào rồi đó. <hi>Vào chung đi.</hi>",
+    "screen3_invitation": "Dễ mà, đúng không? <hi>Tới lượt bạn.</hi>",
+    "screen4_invitation": "Không bảng tin. Chỉ có <hi>những buổi gặp thật.</hi>",
     "enterCity": "Vào {{city}}",
     "enterChallenge": "Nhận thử thách này",
-    "enterPicker": "Chọn thành phố của bạn",
+    "enterPicker": "Chọn thành phố",
     "swipeUp": "Vuốt lên",
-    "liveHeadline": "{{city}} đang sôi động ngay bây giờ.",
+    "liveHeadline": "{{city}} đang sôi động lúc này.",
     "how": {
-      "title": "Gặp người thật ngoài đời, chỉ 3 bước.",
-      "step1": "Chọn phe của bạn — người địa phương hay du khách",
-      "step2": "Tạo hoặc tham gia một thử thách",
+      "title": "Gặp nhau ngoài đời, chỉ 3 bước.",
+      "step1": "Chọn phe - dân địa phương hay du khách",
+      "step2": "Tạo hoặc tham gia thử thách",
       "step3": "Gặp nhau ngoài đời thật"
     },
     "concept": {
@@ -132,7 +127,7 @@
       "line3": "Không thuật toán.",
       "line4": "Một lý do để gặp nhau ngoài đời."
     },
-    "storePrompt": "Thích dùng app hơn? Nhận thông báo và trải nghiệm đầy đủ.",
+    "storePrompt": "Thích dùng app hơn? Có thông báo và trải nghiệm trọn vẹn.",
     "reassurance": "miễn phí · không cần tài khoản · 5 giây"
   }
 }
