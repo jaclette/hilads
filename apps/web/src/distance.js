@@ -1,6 +1,8 @@
 // Lightweight geo distance - no external library. Used by the NOW feed to show
 // "how far away" each located item is from the viewer (computed once per load).
 
+import i18n from './i18n'
+
 const EARTH_RADIUS_M = 6371000
 
 function toRad(deg) {
@@ -17,8 +19,8 @@ export function haversineMeters(lat1, lng1, lat2, lng2) {
   return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(a)))
 }
 
-// "300 m" under 1 km; "1.2 km" at/above 1 km (one decimal).
+// "300 m" under 1 km; "1.2 km" at/above 1 km (one decimal, the UI language's separator: "1,2 km" in fr/vi/de…).
 export function formatDistance(meters) {
   if (meters < 1000) return `${Math.round(meters)} m`
-  return `${(meters / 1000).toFixed(1)} km`
+  return `${new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(meters / 1000)} km`
 }
