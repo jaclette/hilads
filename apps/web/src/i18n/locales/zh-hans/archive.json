@@ -1,5 +1,5 @@
 {
-  "title": "已发生",
+  "title": "过往动态",
   "filters": {
     "all": "全部",
     "events": "活动",
@@ -13,22 +13,20 @@
     "custom": "自定义"
   },
   "picker": {
-    "pickEnd": "现在选择结束日期",
-    "pickStart": "选择一个开始日期（最多 {{max}} 天）",
+    "pickEnd": "再选结束日期",
+    "pickStart": "选一个开始日期（最多 {{max}} 天）",
     "apply": "应用"
   },
   "public": "公开",
-  "went_one": "{{count}} 人参加了",
-  "went_other": "{{count}} 人参加了",
+  "went_other": "{{count}} 人去了",
   "hangoutTag": "聚会",
-  "replies_one": "{{count}} 条回复",
   "replies_other": "{{count}} 条回复",
-  "noReplies": "没有回复",
-  "error": "无法加载历史记录",
+  "noReplies": "还没有回复",
+  "error": "历史记录加载失败",
   "retry": "重试",
   "emptyTitle": "这里还什么都没有",
-  "emptyRecentSub": "等城市积累一些历史后，过去的活动和聚会会显示在这里。",
-  "emptyWindowSub": "这段时间内没有活动或聚会。试试更大的时间范围。",
+  "emptyRecentSub": "等城市热闹一阵子，过去的活动和聚会就会出现在这里。",
+  "emptyWindowSub": "这段时间没有活动或聚会，换个更长的时间段试试。",
   "loadMore": "加载更多",
   "loading": "加载中…"
 }

@@ -9,7 +9,7 @@
       "food": "美食",
       "drinks": "喝一杯",
       "help": "求助",
-      "meetup": "聚会"
+      "meetup": "见面"
     },
     "titleLabel": "你在想什么？",
     "titlePlaceholder": "我想去喝杯咖啡",
@@ -19,18 +19,18 @@
     "expiry": "8 小时后自动到期",
     "saving": "保存中…",
     "starting": "发起中…",
-    "saveChanges": "保存更改",
+    "saveChanges": "保存修改",
     "startCta": "Hi now",
     "limitHeader": "一次一个",
     "limitTitle": "你已经有一个聚会了",
-    "limitSub": "你一次只能运行一个聚会。去“{{title}}”看看，或删除它来发起新的。",
-    "limitGo": "前往我的聚会",
+    "limitSub": "一次只能进行一个聚会。去“{{title}}”看看，或者删掉它再发起新的。",
+    "limitGo": "去我的聚会",
     "yourHangout": "你的聚会",
-    "geoHint": "打开定位，看看现在谁在附近——也让周围的人发现你的 Hi",
-    "geoRequired": "Hi now 会告诉大家在哪里找到你——开启定位以继续。"
+    "geoHint": "打开定位，看看现在谁在附近，也让附近的人收到你的 Hi",
+    "geoRequired": "Hi now 会告诉大家去哪儿找你，打开定位才能继续。"
   },
-  "deleteConfirm": "删除这个聚会？这会为所有人结束它，且无法撤销。",
-  "deleteFailedAlert": "无法删除。请重试。",
+  "deleteConfirm": "删除这个聚会？所有人的聚会都会结束，而且无法撤销。",
+  "deleteFailedAlert": "没删掉，再试一次吧。",
   "shareAria": "分享聚会",
   "shareTitle": "分享这个聚会",
   "members": {
@@ -44,15 +44,15 @@
   },
   "gated": {
     "title": "仅限成员的聚会",
-    "pending": "请求待处理 - 成员接受后你就能加入对话。",
-    "prompt": "请求加入以查看对话并参与聊天。",
-    "requestBtn": "请求加入"
+    "pending": "已发送请求，成员同意后你就能加入对话。",
+    "prompt": "申请加入，就能看到对话并参与聊天。",
+    "requestBtn": "申请加入"
   },
   "feed": {
     "beginning": "对话开始",
     "loading": "加载中…",
     "emptyTitle": "还没有回复",
-    "emptySub": "抢先加入吧"
+    "emptySub": "快来第一个加入吧"
   },
   "joinReq": {
     "someone": "有人",
@@ -62,23 +62,23 @@
     "decline": "拒绝",
     "accept": "接受",
     "accepted": "已接受",
-    "acceptedBy": "由 {{name}} 接受",
-    "declined": "请求已拒绝"
+    "acceptedBy": "已由 {{name}} 同意",
+    "declined": "已拒绝请求"
   },
   "modes": {
-    "local": "本地",
+    "local": "本地人",
     "exploring": "探索中"
   },
   "reply": {
     "photo": "照片",
-    "unavailable": "原始消息不可用"
+    "unavailable": "原消息无法显示"
   },
   "composer": {},
   "errors": {
-    "locFailed": "无法获取你的位置。请开启定位权限后重试。",
-    "imageType": "请选择 JPEG、PNG 或 WebP 图片。",
-    "imageTooLarge": "图片太大。最大 10 MB。",
-    "imageSend": "无法发送图片。请重试。",
-    "dismiss": "{{error}} · 点按关闭"
+    "locFailed": "没能获取你的位置。打开定位权限后再试一次吧。",
+    "imageType": "请选择 JPEG、PNG 或 WebP 格式的图片。",
+    "imageTooLarge": "图片太大了，最大 10 MB。",
+    "imageSend": "图片没发出去，再试一次吧。",
+    "dismiss": "{{error}} · 点一下关闭"
   }
 }

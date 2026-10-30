@@ -12,7 +12,7 @@
   },
   "delete": {
     "confirmTitle": "删除这个活动？",
-    "confirmBody": "这将删除该活动和所有消息。此操作无法撤销。",
+    "confirmBody": "活动和所有消息都会被删除，无法撤销。",
     "cancel": "取消",
     "deleting": "删除中…",
     "confirm": "删除",
@@ -20,9 +20,9 @@
   },
   "quickStart": "快速开始",
   "presets": {
-    "dailySpot": "每日据点",
+    "dailySpot": "每日地点",
     "dailySpotDesc": "每天",
-    "everyEvening": "每个晚上",
+    "everyEvening": "每天晚上",
     "everyEveningDesc": "每天 · 晚上 8 点",
     "weekends": "周末",
     "weekendsDesc": "周六和周日"
@@ -43,7 +43,7 @@
   "date": "日期",
   "today": "今天",
   "tomorrow": "明天",
-  "todayHint": "今天举办能让你获得最高曝光",
+  "todayHint": "今天办，曝光度最高",
   "starts": "开始",
   "ends": "结束",
   "repeat": "重复",
@@ -65,20 +65,20 @@
   "intervalEvery": "每",
   "intervalDays": "天",
   "location": "地点",
-  "locating": "正在获取你的位置…",
-  "locationPlaceholder": "可选 · 点按在地图上设置",
+  "locating": "正在获取位置…",
+  "locationPlaceholder": "可选 · 点一下在地图上设置",
   "clearLocation": "清除地点",
   "errors": {
-    "endAfterStart": "结束时间必须至少比开始时间晚 15 分钟",
-    "pickDay": "请至少选择一周中的一天",
-    "deleteFailed": "无法删除活动。请重试。",
-    "locUnavailable": "此浏览器无法获取位置。你仍可以不带位置创建活动。",
-    "locFailed": "无法获取你的位置。请开启定位权限，或跳过地图。"
+    "endAfterStart": "结束时间至少要比开始时间晚 15 分钟",
+    "pickDay": "至少选一周中的一天",
+    "deleteFailed": "活动没删掉，再试一次吧。",
+    "locUnavailable": "这个浏览器拿不到位置，不过不带位置也能创建活动。",
+    "locFailed": "没能获取你的位置。打开定位权限，或者跳过地图。"
   },
   "submit": {
     "saving": "保存中…",
     "creating": "创建中…",
-    "saveChanges": "保存更改",
+    "saveChanges": "保存修改",
     "openSpot": "Hi plan",
     "startEvent": "Hi plan",
     "create": "Hi plan"
@@ -86,17 +86,17 @@
   "recur": {
     "everyday": "每天",
     "weekly": "每周",
-    "everyNDays_one": "每 {{count}} 天",
     "everyNDays_other": "每 {{count}} 天"
   },
   "limit": {
     "title": "你今天已经创建过活动了！",
-    "body": "在 Hilads，我们保持新鲜感 - 每天一个活动，让每个计划都得到应有的关注。明天再来创建另一个吧。",
-    "legendLink": "成为 Legend 以创建无限活动",
-    "legendA11y": "了解如何成为 Legend",
-    "legendAlertTitle": "成为 Legend",
-    "legendAlertBody": "Legend 是被选中来让城市保持活力的本地人 - 他们可以举办任意数量的活动。想成为其中一员？请联系 contact@hilads.live。",
+    "body": "Hilads 想让一切保持新鲜：每天一个活动，每个计划都能被大家看到。明天再来发起下一个吧。",
+    "legendLink": "成为传奇，无限发起活动",
+    "legendA11y": "了解怎么成为传奇",
+    "legendAlertTitle": "成为传奇",
+    "legendAlertBody": "传奇是我们选出来、让城市保持热闹的本地人，他们想办多少活动都行。想成为传奇？联系 contact@hilads.live。",
     "gotIt": "知道了",
-    "backToNow": "返回 Now"
+    "backToNow": "返回 Now",
+    "yourEvent": "你的活动"
   }
 }

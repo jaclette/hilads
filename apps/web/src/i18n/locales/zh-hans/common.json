@@ -8,28 +8,29 @@
     "sip": "饮品",
     "only_here": "此地独有",
     "special": "特别篇",
-    "onlyIn": "{{city}}独有"
+    "onlyIn": "{{city}} 独有"
   },
   "meta": {
-    "cityTitle": "Hilads 上的{{city}} - 本地玩，全球比。",
-    "cityDesc": "每天一个挑战，每座城市都一样。在{{city}}参与，拍一张照片，看看全世界怎么回答。",
-    "eventTitle": "Local Event：{{title}} | Hilads",
-    "eventDesc": "在 Hilads 加入 {{title}} - 一个正在进行的 Local Event。看谁会去，实时聊天。"
+    "cityTitle": "Hilads 上的 {{city}}：本地玩，全球比。",
+    "cityDesc": "每天一个挑战，每个城市都一样。在 {{city}} 参与，拍一张照片，看看全世界都拍了什么。",
+    "eventTitle": "本地活动：{{title}} | Hilads",
+    "eventDesc": "在 Hilads 加入 {{title}}，一场正在进行的本地活动。看看谁会去，和在线的人实时聊天。"
   },
   "nowTitle": "现在",
   "filterEvents": "🎉 本地活动",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ 聚会",
-  "publicEventsSection": "🎫 公开活动",
+  "publicEventsSection": "🎫 公开本地活动",
   "accountWelcome": {
     "title": "恭喜你，{{username}}！",
-    "subtitle": "你的账号已就绪——现在你可以这样玩",
-    "f1": "发起一个聚会，立刻把大家聚到一起",
-    "f2": "在你的城市组织一场活动",
-    "f3": "给任何人发送私信",
+    "subtitle": "账号准备好了，现在你可以这样玩",
+    "f1": "发起一个聚会，马上把大家叫出来",
+    "f2": "在你的城市办一场活动",
+    "f3": "给任何人发私信",
     "f4": "实时查看附近有谁",
     "f5": "结识本地人和旅行者",
-    "fc1": "向你城市里的人发起挑战",
-    "fc2": "向世界另一座城市发起挑战",
+    "fc1": "向同城的本地人发起挑战",
+    "fc2": "向世界另一头的城市发起挑战",
     "cta": "出发吧"
   },
   "onboarding": {
@@ -38,17 +39,17 @@
     "fallbackCity": "你的城市",
     "slide1": {
       "title": "本地玩，全球比。",
-      "body": "Hilads 是把旅行者变成本地人的 app - 也帮本地人分享让自己城市鲜活的一切。"
+      "body": "Hilads 让旅行者变成本地人，也让本地人分享自己城市的精彩。"
     },
     "slide2": {
-      "title": "体验城市的三种方式",
-      "itemChallenges": "🤝 挑战 - 发起或接受挑战，发现隐藏地点、品尝真味、分享文化、伸出援手。",
-      "itemHangouts": "🗣️ Hi now - 随性认识某个人",
-      "itemEvents": "🎉 Hi plan - 计划一次见面"
+      "title": "玩转城市的三种方式",
+      "itemChallenges": "🤝 挑战：互相发起挑战，去发现隐藏的地点、尝尝地道美食、分享文化，或者帮个忙。",
+      "itemHangouts": "🗣️ Hi now：说走就走，认识新朋友",
+      "itemEvents": "🎉 Hi plan：约个时间见面"
     },
     "slide3": {
       "title": "在城市里赢得你的位置",
-      "body": "完成的每一个挑战、每一次见面、每一个发现的地方都为你赢得积分。积分反映你在 {{city}} 变得有多本地。登上 Most Local 的顶峰，赢得在让城市鲜活的人当中的位置。"
+      "body": "每完成一个挑战、每见一次面、每发现一个地点，都能赚积分。积分代表你在 {{city}} 有多本地。冲上 Most Local 榜首，和那些让城市热闹起来的人站在一起。"
     },
     "slide4": {
       "title": "准备好出发了吗？",
@@ -60,59 +61,59 @@
     }
   },
   "challengeIntro": {
-    "title": "挑战是怎么运作的",
+    "title": "挑战怎么玩",
     "slide1": {
-      "title": "挑战把旅程变成故事",
-      "body": "本地人和旅行者互相发起挑战，把城市真实地分享出来 - 美食、地点、文化、互助。奖励是什么？面对面见面，或者远程发个照片证明。"
+      "title": "挑战让旅行变成故事",
+      "body": "本地人和旅行者互相发起挑战，分享城市最真实的一面：美食、地点、文化、互助。奖励是什么？线下见面，或者远程发张照片作为证明。"
     },
     "slide2": {
       "title": "发起你的挑战",
-      "body": "美食、地点、文化或互助。选好面向谁、几个名额，以及怎么收尾 - 面对面还是照片验证。"
+      "body": "美食、地点、文化或互助都行。选好发给谁、有几个名额、怎么收尾：线下见面，还是照片证明。"
     },
     "slide3": {
-      "title": "有人接下了",
-      "body": "他们发来请求。你查看并接受——你们的私聊线就此开启，可以聊天和约时间。"
+      "title": "有人接招了",
+      "body": "对方发来请求，你看过后接受，你们的私聊就解锁了，可以聊聊、约个时间。"
     },
     "slide4": {
-      "title": "见面 还是 照片验证",
-      "body": "面对面见也行，远程发张照片也行 - 你来决定。无论哪种方式，每一步都会被记录。"
+      "title": "见面，或发照片证明",
+      "body": "线下见面，或者远程发张照片，你来定。不管哪种，每一步都有记录。"
     },
     "slide5": {
-      "title": "完成挑战",
-      "body": "见过面之后（或者照片到位之后）,标记为已完成。你的城市，活得真实 - 一个挑战接一个挑战。"
+      "title": "收尾",
+      "body": "见完面（或照片到手）后，标记为已完成。一次一个挑战，真正活出你的城市。"
     },
     "next": "下一步",
     "done": "明白啦！",
     "skip": "跳过 ✕",
     "slide6": {
       "title": "走出你的城市",
-      "body": "向任何人、任何地方发起挑战。对方发来证明 - 一张带地理标签的照片 - 你远程验证。同样的照片流程在本地也能用。本地还是全球，每个挑战都算数。"
+      "body": "向任何地方的任何人发起挑战。对方发来证明（一张带定位的照片），你远程确认。本地挑战也能用同样的照片流程。不管本地还是全球，每个挑战都算数。"
     },
     "slide7": {
       "title": "成为 Most Local",
-      "body": "每个挑战都能拿积分 - 城市榜和全球榜都算。见面再拿 +50 奖励。本地人或旅行者都没关系，重要的是你在这里做了什么。每月榜单清零。"
+      "body": "每个挑战都能赚积分，城市榜和全球榜都算。线下见面再额外加 +50。不管是本地人还是旅行者，重要的是你在这里留下了什么。榜单每月刷新。"
     },
-    "createCta": "🔥 创建挑战"
+    "createCta": "🔥 发起挑战"
   },
   "share": {
     "title": "分享点什么",
     "snap": "拍张照片",
-    "snapDesc": "参加今日挑战，或者只是好玩",
-    "spot": "分享你的位置",
-    "spotDesc": "分享你当前的位置",
-    "spotLoading": "正在获取你的位置…",
+    "snapDesc": "参加今天的挑战，或者纯粹好玩",
+    "spot": "发个地点",
+    "spotDesc": "分享你现在所在的地点",
+    "spotLoading": "正在获取位置…",
     "plan": "创建计划",
-    "planDesc": "选好时间和地点，大家一起来",
+    "planDesc": "定好时间地点，等大家加入",
     "hiNow": "Hi now",
-    "hiNowDesc": "现在想做点什么？说出来"
+    "hiNowDesc": "现在想出去玩？喊一声"
   },
   "locationPicker": {
-    "title": "你在哪里？",
+    "title": "你在哪儿？",
     "search": "搜索地址或地点",
-    "moveHint": "移动地图进行调整",
-    "noResults": "未找到地点",
+    "moveHint": "拖动地图来调整",
+    "noResults": "没找到地点",
     "loading": "正在获取位置…",
-    "confirm": "分享这个位置",
+    "confirm": "分享这个地点",
     "yourLocation": "你的位置",
     "close": "关闭",
     "clearSearch": "清除搜索"
@@ -122,7 +123,7 @@
   "loading": "加载中…",
   "mode": {
     "local": {
-      "label": "本地"
+      "label": "本地人"
     },
     "exploring": {
       "label": "探索中"
@@ -130,12 +131,12 @@
   },
   "composer": {
     "attach": "添加附件",
-    "emoji": "Emoji",
+    "emoji": "表情",
     "placeholderCity": "和你的城市打个招呼",
     "placeholderHangout": "告诉大家你来了",
     "placeholderEvent": "和参加的人聊聊",
-    "placeholderChallenge": "为他们加油，或分享你的小贴士",
-    "placeholderWorld": "问问全世界是怎么做的"
+    "placeholderChallenge": "给他们加油，或者分享你的小窍门",
+    "placeholderWorld": "问问全世界的人都怎么做"
   },
   "vibe": {
     "party": "派对",
@@ -146,14 +147,14 @@
     "chill": "放松"
   },
   "weather": {
-    "clear": "晴空万里",
-    "sunnyHot": "天气超棒",
-    "clearNight": "今夜晴朗",
-    "mostlyClear": "大致晴朗",
-    "partly": "有几朵云",
+    "clear": "晴",
+    "sunnyHot": "天气超好",
+    "clearNight": "今晚晴朗",
+    "mostlyClear": "基本晴朗",
+    "partly": "少云",
     "overcast": "阴天",
     "fog": "有雾",
-    "drizzle": "小雨",
+    "drizzle": "毛毛雨",
     "rain": "下雨",
     "snow": "下雪",
     "snowShowers": "阵雪",
@@ -166,11 +167,11 @@
     "tomorrow": "明天",
     "yesterday": "昨天",
     "justNow": "刚刚",
-    "nowShort": "现在",
+    "nowShort": "刚刚",
     "mAgo": "{{count}} 分钟前",
     "hAgo": "{{count}} 小时前",
     "dAgo": "{{count}} 天前",
-    "expired": "已到期",
+    "expired": "已过期",
     "expiresSoon": "即将到期",
     "expiresInMin": "{{mins}} 分钟后到期",
     "expiresInHourMin": "{{hours}} 小时 {{mins}} 分钟后到期",
@@ -180,8 +181,7 @@
   },
   "filterChallenges": "🔥 挑战",
   "shareToCity": "分享到我的城市",
-  "shareToWorld": "分享到世界频道",
-  "hiLocalTitle": "Hi Local",
+  "shareToWorld": "分享到全球频道",
   "shareCta": {
     "leaderboard": "查看排行榜",
     "challenge": "查看挑战",
@@ -196,87 +196,119 @@
   },
   "scope": {
     "title": "显示",
-    "world": "世界",
+    "world": "全球",
     "pickCity": "选择城市",
-    "citySub": "你所在城市的 challenge、照片和地点",
+    "citySub": "你所在城市的挑战、照片和地点",
     "worldSub": "所有城市的照片和地点",
-    "changeCity": "更换城市",
-    "a11y": "正在显示{{scope}}。点按以更换",
-    "here": "你在{{city}}",
-    "hereUnknown": "你在哪里？",
-    "hereSub": "不对？更改你参加的城市"
+    "changeCity": "切换城市",
+    "a11y": "正在显示{{scope}}，点一下切换",
+    "here": "你在 {{city}}",
+    "hereUnknown": "你在哪儿？",
+    "hereSub": "不对？换个城市玩"
   },
   "signUp": "注册",
   "settings": "设置",
   "firstLaunch": "本地玩，全球比。",
   "subtitles": {
-    "map": "来自全世界照片的地点。",
-    "hi": "向你的城市打个招呼。加入一个计划。",
+    "map": "全世界照片里的地点。",
+    "hi": "和你的城市打个招呼，加入一个计划。",
     "passport": "你的城市、你的照片、你的印章。"
   },
   "photoBy": "照片：@{{username}}",
   "pick": {
     "badge": "Hilads 精选",
     "goodToKnow": "小贴士",
-    "credit": "图片：{{credit}}",
+    "credit": "照片：{{credit}}",
     "source": "来源"
   },
   "shareLink": {
     "share": "分享",
-    "challengeFriend": "挑战一位朋友",
+    "challengeFriend": "向朋友发起挑战",
     "copied": "已复制",
-    "textToday": "Hilads 今日 Daily Challenge：{{challenge}} 你来吗？",
+    "textToday": "Hilads 今天的 Daily Challenge：{{challenge}} 你来吗？",
     "textSpot": "Hilads 上的 {{name}}",
     "textSpotCity": "Hilads 上的 {{name}}（{{city}}）",
-    "textPassport": "我在{{city}}的 Hilads 护照。同一个挑战，不同的世界。",
+    "textPassport": "我在 {{city}} 的 Hilads 护照。同一个挑战，不同的世界。",
     "textPassportNoCity": "我的 Hilads 护照。同一个挑战，不同的世界。"
   },
   "represent": {
-    "empty": "{{city}}今天还没有人参加。来当第一个吧。",
-    "beFirst": "第一个代表{{city}}参加",
-    "emptyThere": "{{city}}今天还没有人参加。",
-    "notIn": "不在{{city}}？",
+    "empty": "{{city}} 今天还没人出战，来当第一个吧。",
+    "beFirst": "第一个为 {{city}} 出战",
+    "emptyThere": "{{city}} 今天还没人出战。",
+    "notIn": "不在 {{city}}？",
     "change": "更改",
-    "locationNeeded": "允许定位，代表你所在的地方参加。",
-    "button": "代表{{city}}参加",
-    "firstPosted": "你把{{city}}放上了今天的世界地图。",
-    "pioneer": "{{city}}先锋",
-    "spotOne": "{{city}}第 1 号地点",
-    "streak_other": "{{city}}已连续 {{count}} 天参加",
-    "board_other": "今天已有 {{count}} 座城市上榜。{{city}}还没有。",
-    "mapEmpty": "{{city}}还没上世界地图。把它放上去吧。",
+    "locationNeeded": "打开定位，为你所在的城市出战。",
+    "button": "为 {{city}} 出战",
+    "firstPosted": "你把 {{city}} 放上了今天的世界地图。",
+    "pioneer": "{{city}} 先锋",
+    "spotOne": "{{city}} 第 1 号地点",
+    "streak_other": "{{city}} 已连续 {{count}} 天出战",
+    "board_other": "今天已有 {{count}} 座城市上榜，{{city}} 还没有。",
+    "mapEmpty": "{{city}} 还没上世界地图，快把它放上去。",
     "invite": "邀请朋友",
-    "share": "和我一起在 Hilads 上代表{{city}}参加。",
+    "share": "来 Hilads 和我一起为 {{city}} 出战。",
     "pioneerTitle": "先锋徽章",
-    "pioneerSub": "一座城市里第一张通过审核的照片。永远属于你。",
-    "streak_one": "{{city}}已连续 {{count}} 天参加"
+    "pioneerSub": "一座城市第一张通过审核的照片，永远属于你。"
   },
   "appModal": {
     "title": {
-      "play": "下载 App 来参加",
-      "playCity": "下载 App，代表{{city}}参加",
-      "vote": "下载 App，为{{city}}投票",
+      "play": "下载 App 来玩",
+      "playCity": "下载 App，为 {{city}} 出战",
+      "vote": "下载 App，为 {{city}} 投票",
       "joinPlan": "下载 App，加入这个计划",
-      "sayHi": "下载 App，跟{{city}}打个招呼",
+      "sayHi": "下载 App，跟 {{city}} 打个招呼",
       "propose": "下载 App，提议一个挑战"
     },
-    "sub": "免费，只要一分钟。",
+    "sub": "免费，一分钟就好。",
     "download": "下载 App",
     "keepExploring": "继续逛逛",
     "scan": "用手机扫一扫"
   },
   "directions": {
-    "chooseTitle": "用以下应用打开路线",
+    "chooseTitle": "用哪个应用导航",
     "ask": "每次都询问",
-    "setting": "路线"
+    "setting": "导航"
   },
   "promo": {
-    "askTitle": "允许 Hilads 展示你的照片吗？始终署名。",
-    "askBody": "你的 Daily Challenge 照片可能出现在我们的 Instagram、TikTok 和 YouTube 帖子中，并始终标注你的 @用户名。你可以随时在设置中更改。",
+    "askTitle": "让 Hilads 展示你的照片吗？每次都会署名。",
+    "askBody": "你的 Daily Challenge 照片可能会出现在我们的 Instagram、TikTok 和 YouTube 帖子里，每次都会标上你的 @用户名。你随时可以在设置里修改。",
     "allow": "允许",
     "notNow": "以后再说",
     "setting": "展示我的照片",
     "on": "开",
     "off": "关"
+  },
+  "a11y": {
+    "close": "关闭",
+    "back": "返回",
+    "dismiss": "关闭",
+    "mainNav": "主导航",
+    "emojiPicker": "表情选择",
+    "cancelReply": "取消回复",
+    "welcome": "欢迎",
+    "approve": "通过"
+  },
+  "tapToOpenMaps": "点一下在地图中打开",
+  "openInApp": {
+    "text": "打开 Hilads App，体验完整功能",
+    "cta": "打开 App"
+  },
+  "appPromo": {
+    "text": "体验完整版 Hilads",
+    "ctaIos": "在 App Store 下载",
+    "ctaAndroid": "在 Google Play 下载",
+    "regionIos": "下载 Hilads iOS 版",
+    "regionAndroid": "下载 Hilads Android 版",
+    "pitchPush": "实时推送通知",
+    "pitchFast": "动态更快更流畅",
+    "pitchAnim": "原生级流畅动画",
+    "ctaPlay": "在 Google Play 下载",
+    "continueBrowser": "继续用浏览器"
+  },
+  "deleteAccount": {
+    "title": "删除你的账号",
+    "body": "如果要删除你的 Hilads 账号及所有相关数据，请发邮件到：",
+    "note": "请在邮件里写上你的用户名。你的数据会在 48 小时内被永久删除。",
+    "back": "回到 Hilads"
   }
 }

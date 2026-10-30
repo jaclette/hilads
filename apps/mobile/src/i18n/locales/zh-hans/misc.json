@@ -9,21 +9,24 @@
     "accept": "接受",
     "cancel": "取消",
     "emptyIncomingTitle": "还没有好友请求",
-    "emptySentTitle": "你还没有发送任何请求",
-    "emptyIncomingSub": "当有人请求成为你的好友时，你会在这里看到。",
-    "emptySentSub": "你发送的待处理好友请求会显示在这里。"
+    "emptySentTitle": "你还没发过请求",
+    "emptyIncomingSub": "有人想加你为好友时，会显示在这里。",
+    "emptySentSub": "你发出的、还在等待回复的好友请求会显示在这里。",
+    "acceptFailed": "接受失败",
+    "declineFailed": "拒绝失败",
+    "cancelFailed": "取消失败"
   },
   "blocked": {
-    "title": "屏蔽的用户",
-    "thisUser": "此用户",
+    "title": "已屏蔽的用户",
+    "thisUser": "这位用户",
     "ghostName": "Ghost",
     "guest": "访客",
-    "unblock": "取消屏蔽",
-    "unblockTitle": "取消屏蔽 {{name}}？",
-    "unblockBody": "{{name}} 将能够再次看到你的内容并与你联系。",
-    "unblockFailTitle": "无法取消屏蔽",
-    "unblockFailBody": "请再试一次。",
+    "unblock": "解除屏蔽",
+    "unblockTitle": "解除对 {{name}} 的屏蔽？",
+    "unblockBody": "{{name}} 将能再次看到你的内容并联系你。",
+    "unblockFailTitle": "解除屏蔽失败",
+    "unblockFailBody": "再试一次吧。",
     "emptyTitle": "你还没有屏蔽任何人",
-    "emptySub": "被屏蔽的用户看不到你的内容，你也看不到他们的内容。"
+    "emptySub": "你屏蔽的人看不到你的内容，你也看不到他们的。"
   }
 }

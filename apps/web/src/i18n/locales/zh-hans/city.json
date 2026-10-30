@@ -1,139 +1,152 @@
 {
+  "world": {
+    "tab": "全球",
+    "banner_other": "{{count}} 个跨城市挑战进行中",
+    "online": "{{count}} 人在线",
+    "cities_other": "{{count}} 个城市",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} 发起了挑战：{{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{city}} 的 {{nickname}} 刚刚加入 Hilads",
+      "challengeWon": "🏆 {{city}} 的 {{nickname}} 赢下了挑战「{{challenge}}」"
+    },
+    "quietCard": "这里有点冷清？全球频道有 {{count}} 条未读，点开看看",
+    "heroEmpty": "来当第一个挑战其他城市的人",
+    "heroEmptySub": "发起跨城市挑战",
+    "leaderboard": "排行榜",
+    "arrivals_other": "{{count}} 人新到",
+    "arrivalsTitle": "新来的人",
+    "arrivalsEmpty": "最近没有新来的人",
+    "seeAll": "查看全部"
+  },
   "inspiration": {
     "heading": "聚会灵感",
-    "sub": "看看别处的本地人组织了什么 - 获取灵感",
-    "openYours": "在 {{city}} 开你自己的",
+    "sub": "看看别的城市的本地人都在组织什么，找找灵感",
+    "openYours": "在 {{city}} 也办一个",
     "by": "来自 {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
   },
   "guestGate": {
-    "createAccount": "创建账户",
+    "createAccount": "创建账号",
     "signIn": "登录",
     "create_event": {
       "pageTitle": "创建活动",
-      "title": "Ghost 可以浏览，但不能主持。",
-      "sub": "创建账户来举办你自己的活动，把你的城市放上地图。"
+      "title": "Ghost 可以随便看看，但不能办活动。",
+      "sub": "注册一个账号，办你自己的活动，让你的城市登上地图。"
     },
     "view_profile": {
-      "pageTitle": "个人资料",
-      "title": "Ghost 可以浏览，但个人资料是给成员的。",
-      "sub": "创建账户来解锁个人资料、结识他人，组建你的城市 crew。"
+      "pageTitle": "个人主页",
+      "title": "Ghost 可以随便看看，但个人主页只对成员开放。",
+      "sub": "注册一个账号，解锁个人主页、认识新朋友，组建你的城市小队。"
     },
     "join_hangout": {
       "pageTitle": "加入聚会",
-      "title": "Ghost 可以浏览，但不能加入聚会。",
-      "sub": "注册来加入聚会、保存你的名字，并在有人想见面时收到通知。"
+      "title": "Ghost 可以随便看看，但不能加入聚会。",
+      "sub": "注册后就能加入聚会、保留你的名字，有人想见面时还会通知你。"
     },
     "create_hangout": {
       "pageTitle": "发起聚会",
-      "title": "Ghost 可以浏览，但不能主持。",
-      "sub": "注册来发起聚会、保存你的名字，吸引别人加入你。"
+      "title": "Ghost 可以随便看看，但不能办活动。",
+      "sub": "注册后就能发起聚会、保留你的名字，叫上大家一起来。"
     },
     "create_challenge": {
       "pageTitle": "发起挑战",
-      "title": "Ghost 可以浏览，但不能发起挑战。",
-      "sub": "注册以向本地人或旅行者发起挑战，并验证它。"
+      "title": "Ghost 可以随便看看，但不能发起挑战。",
+      "sub": "注册后就能向本地人或旅行者发起挑战，并由你来确认结果。"
     },
     "accept_challenge": {
       "pageTitle": "接受挑战",
-      "title": "注册即可接受这个挑战",
-      "sub": "3秒搞定，立刻回到挑战。"
+      "title": "注册就能接下这个挑战",
+      "sub": "3 秒搞定，马上回到挑战。"
     }
   },
   "welcome": {
-    "live": "{{city}}正活跃",
+    "live": "{{city}} 正热闹",
     "dismiss": "关闭",
-    "body": "真实的人，就在此刻。打个招呼、看看谁在附近，或带个朋友进来。",
+    "body": "真实的人，就在此刻。打个招呼，看看谁在附近，或者拉个朋友进来。",
     "sayHi": "打个招呼",
     "invite": "邀请好友"
   },
-  "imageType": "请选择 JPEG、PNG 或 WebP 图片。",
-  "imageTooLarge": "图片过大。最大尺寸：10 MB。",
+  "imageType": "请选择 JPEG、PNG 或 WebP 格式的图片。",
+  "imageTooLarge": "图片太大了，最大 10 MB。",
   "picker": {
-    "title": "选择一个城市",
+    "title": "选择城市",
     "search": "搜索城市…",
-    "noResults": "未找到与“{{query}}”匹配的城市",
-    "topCities": "当前最活跃的城市",
+    "noResults": "没找到“{{query}}”相关的城市",
+    "topCities": "现在最热闹的城市",
     "cities": "城市",
     "switchTitle": "切换城市",
     "filterActive": "最活跃",
     "filterEvents": "活动最多",
     "filterOnline": "在线最多",
-    "filterChallenges": "最多挑战",
-    "challenges_one": "{{count}} 个挑战",
+    "filterChallenges": "挑战最多",
     "challenges_other": "{{count}} 个挑战",
-    "members_one": "{{count}} 位成员",
-    "members_other": "{{count}} 位成员",
+    "members_other": "{{count}} 名成员",
     "backToLocation": "回到我的位置",
     "youreHere": "你在这里",
     "online": "{{count}} 人在线",
-    "events_one": "{{count}} 个活动",
     "events_other": "{{count}} 个活动",
-    "hangout_one": "{{count}} 个聚会",
     "hangout_other": "{{count}} 个聚会",
     "msgs_other": "{{count}} 条消息",
-    "hereTitle": "你在哪里？",
-    "useMyLocation": "使用我的位置",
-    "playsIn": "在{{city}}玩",
+    "hereTitle": "你在哪儿？",
+    "useMyLocation": "用我的位置",
+    "playsIn": "为 {{city}} 出战",
     "credit": "城市数据 ©",
     "changeLimit": "你今天换城市的次数太多了，明天再试吧。",
-    "pickFailed": "无法选择这个城市，请再试一次。"
+    "pickFailed": "没能切换到这个城市，再试一次吧。"
   },
-  "joining": "正在加入{{city}}…",
-  "joiningDefault": "正在加入聊天…",
+  "joining": "正在进入 {{city}}…",
+  "joiningDefault": "正在进入聊天…",
   "tryAgain": "重试",
   "feed": {
     "hangoutTag": "聚会",
     "eventTag": "活动",
+    "nowTag": "现在",
+    "laterTag": "计划",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
     "public": "公开",
     "activeNow": "当前活跃",
-    "repliesNew": "还没有回复 - 来做第一个",
-    "replies_one": "{{count}} 条回复",
+    "repliesNew": "还没有回复，快来抢沙发",
+    "sayHi": "和 {{name}} 打个招呼",
+    "sayHiGeneric": "打个招呼",
+    "hostWaiting": "等第一声招呼",
     "replies_other": "{{count}} 条回复",
-    "going_one": "{{count}} 人参加",
     "going_other": "{{count}} 人参加",
-    "hostedBy": "由 {{name}} 主持",
+    "hostedBy": "{{name}} 发起",
     "groupHilads": "Hilads 本地活动",
-    "groupPublic": "公开本地活动",
-    "groupPublicTicket": "公开本地活动",
+    "groupPublic": "公开活动",
+    "groupPublicTicket": "公开活动",
     "createEvent": "创建本地活动",
     "startHangout": "发起聚会",
     "openPlace": "开放你的场地",
-    "loadError": "无法加载活动",
-    "loadErrorSub": "稍后下拉重试，或在{{city}}创建点新东西。",
-    "emptyLocalTitle": "主持你的场地",
-    "emptyTitle": "还什么都没发生",
-    "emptyLocalSub": "让{{city}}活起来。在你最爱的地方发起一个定期活动。",
-    "emptySub": "来做{{city}}里第一个让事情发生的人",
-    "noEvents": "目前没有 Local Events",
+    "loadError": "活动加载失败",
+    "loadErrorSub": "稍后下拉重试，或者在 {{city}} 办点新鲜事。",
+    "emptyLocalTitle": "在你的地盘办活动",
+    "emptyTitle": "这里还没什么动静",
+    "emptyLocalSub": "让 {{city}} 热闹起来。在你最爱的地方办一个定期活动。",
+    "emptySub": "来做 {{city}} 第一个搞事情的人",
+    "noEvents": "现在还没有本地活动",
     "noHangouts": "还没有聚会",
-    "noEventsSub": "来做{{city}}里第一个创建活动的人",
+    "noEventsSub": "来做 {{city}} 第一个办活动的人",
     "noHangoutsSub": "发起一个聚会，让全城聊起来",
     "filterAll": "全部",
-    "seeComing": "看看即将发生什么",
-    "seeHappened": "看看发生过什么",
-    "createNew": "创建",
-    "nowTag": "Now",
-    "laterTag": "Plan",
-    "hiNow": "Hi now",
-    "hiLater": "Hi plan",
-    "sayHi": "向 {{name}} 打招呼",
-    "sayHiGeneric": "打个招呼",
-    "hostWaiting": "等待第一声招呼",
+    "seeComing": "看看接下来有什么",
+    "seeHappened": "看看错过了什么",
+    "createNew": "新建",
     "hiNowHint": "现在一起玩",
-    "hiLaterHint": "计划活动"
+    "hiLaterHint": "计划个活动"
   },
   "header": {
     "online": "附近 {{count}} 人",
-    "liveNow": "正在进行",
-    "seeWhosHere": "看看谁在这里",
-    "onlineAria_other": "附近有 {{count}} 人，点击查看是谁",
+    "liveNow": "实时",
+    "seeWhosHere": "看看谁在这儿",
+    "onlineAria_other": "附近有 {{count}} 人，点一下看看是谁",
     "notifications": "通知",
     "messages": "消息",
     "shareCity": "分享城市",
     "switchCity": "切换城市",
-    "changeCity": "更换城市",
+    "changeCity": "切换城市",
     "currentWeather": "当前天气：{{label}}"
   },
   "here": {
@@ -143,7 +156,7 @@
     "filterMode": "模式",
     "you": "（你）",
     "hereNow": "此刻在这里",
-    "noMatchLive": "目前没有人符合这些筛选条件。",
+    "noMatchLive": "现在没有人符合这些筛选条件。",
     "legends": "Hilads 传奇",
     "legendsSub": "他们让城市动起来",
     "cityCrew": "城市成员",
@@ -157,27 +170,26 @@
     "join": "加入",
     "joined": "已加入",
     "here": "{{count}} 人在这里",
-    "going_one": "{{count}} 人参加",
     "going_other": "{{count}} 人参加",
-    "locationPending": "位置尚不可用",
-    "hostedBy": "由 {{name}} 主持"
+    "locationPending": "暂时还没有位置",
+    "hostedBy": "{{name}} 发起"
   },
   "chatEmpty": {
-    "beginning": "对话的开始",
-    "arriving": "大家正在陆续到来",
-    "firstChat": "来做这里第一个聊天的人",
-    "firstHi": "来做第一个打招呼的人"
+    "beginning": "对话开始",
+    "arriving": "大家正陆续到来",
+    "firstChat": "来做第一个在这儿聊天的人",
+    "firstHi": "来第一个打招呼吧"
   },
   "create": {
-    "title": "想做点什么？",
+    "title": "想玩点什么？",
     "hangoutTitle": "发起聚会",
-    "hangoutSub": "即刻开始 - 让大家现在就加入你",
+    "hangoutSub": "马上开始，让大家现在就来找你",
     "eventTitle": "创建活动",
-    "eventSub": "策划一件别人可以加入的事",
+    "eventSub": "安排点别人也能加入的事",
     "challengeTitle": "发起挑战",
-    "challengeSub": "本地人和旅行者 - 通过一个挑战连接",
+    "challengeSub": "本地人和旅行者，通过挑战认识彼此",
     "challengePageTitle": "发起挑战",
-    "challengeAudience": "给谁？",
+    "challengeAudience": "面向谁？",
     "challengeAudLocals": "本地人",
     "challengeAudExplorers": "旅行者",
     "challengeType": "类型",
@@ -186,38 +198,38 @@
     "challengeTypeCulture": "文化",
     "challengeTypeHelp": "疯狂",
     "challengeTitleLabel": "你的挑战",
-    "challengeTitlePlaceholder": "例如，带我去你最喜欢的咖啡馆",
+    "challengeTitlePlaceholder": "例如：带我去你私藏的咖啡馆",
     "challengeCta": "发起挑战",
-    "challengeErrStart": "无法发起挑战"
+    "challengeErrStart": "挑战发起失败"
   },
   "goingModal": {
     "going": "人参加",
     "inThisHangout": "在这个聚会里",
     "loading": "加载中…",
-    "empty": "还没有人 - 来做第一个加入的人吧！"
+    "empty": "还没有人，来当第一个加入的吧！"
   },
   "nickname": {
     "label": "昵称",
-    "placeholder": "你的名字...",
-    "heroSub": "暂时匿名。你仍然可以塑造自己的呈现方式。",
+    "placeholder": "你的名字…",
+    "heroSub": "现在是匿名的，不过你可以决定别人怎么看到你。",
     "save": "保存昵称",
-    "upgradeHint": "保存你的名字。继续做本地人。",
-    "haveAccount": "已经有账户了？",
+    "upgradeHint": "留住你的名字，继续做本地人。",
+    "haveAccount": "已经有账号了？",
     "myEvents": "我的活动",
     "anonymous": "// 匿名 · 无需注册"
   },
   "prompt": {
-    "exploreText": "看看现在正在发生什么",
+    "exploreText": "看看现在有什么好玩的",
     "exploreCta": "看看正在发生什么",
-    "photoText": "分享正在发生的事",
+    "photoText": "分享此刻的新鲜事",
     "shoot": "拍照",
     "createEventText": "今晚有计划吗？",
     "createEventCta": "创建活动",
     "challengeIntroText": "新来的？看看挑战怎么玩",
     "challengeIntroCta": "看看",
-    "installText": "把 Hilads 添加到主屏幕\n绝不错过你城市里正在发生的事",
+    "installText": "把 Hilads 添加到主屏幕\n你的城市发生什么，一个都不错过",
     "installAdd": "添加",
-    "installHow": "怎么做"
+    "installHow": "怎么加"
   },
   "toast": {
     "eventDeleted": "活动已删除"
@@ -226,40 +238,39 @@
     "addToHome": "把 Hilads 添加到主屏幕",
     "add": "添加",
     "keepClose": "把 Hilads 放在手边",
-    "manualHelp": "打开你的浏览器菜单，选择“添加到主屏幕”。",
+    "manualHelp": "打开浏览器菜单，选择“添加到主屏幕”。",
     "dismiss": "关闭安装提示"
   },
   "feedJoin": {
-    "0": "👋 {{name}} 刚刚抵达",
+    "0": "👋 {{name}} 刚刚落地",
     "1": "🔥 {{name}} 加入了",
-    "2": "🍻 {{name}} 在这里",
-    "3": "👀 {{name}} 刚刚出现",
+    "2": "🍻 {{name}} 来了",
+    "3": "👀 {{name}} 刚刚现身",
     "4": "✨ {{name}} 到了"
   },
   "ambient": {
-    "0": "🔥 大家正在陆续到来",
+    "0": "🔥 大家正陆续到来",
     "1": "🍻 今晚谁出来玩？",
-    "2": "💬 城市正在苏醒",
-    "3": "🌙 夜猫子们都在线",
-    "4": "👀 有人刚刚到了",
-    "5": "🔥 城市里来了张新面孔",
-    "6": "🎉 此刻有人在这里",
-    "7": "🌆 本地人正在签到"
+    "2": "💬 城市醒来了",
+    "3": "🌙 夜猫子们上线了",
+    "4": "👀 有人刚到",
+    "5": "🔥 城里来了新面孔",
+    "6": "🎉 这会儿有人在",
+    "7": "🌆 本地人纷纷上线"
   },
   "ownerPrompt": {
     "text": "这个活动是你发起的！",
-    "sub": "让它更出色 - 加点描述、更新时间，或分享出去。",
+    "sub": "再完善一下：加段描述、改改时间，或者分享出去。",
     "edit": "编辑活动"
   },
   "feedNew": {
     "event": "新活动：{{title}}",
     "join": "加入",
-    "replies_one": "{{count}} 条回复",
     "replies_other": "{{count}} 条回复",
     "challengeLocals": "{{name}} 向本地人发起挑战：{{title}}",
     "challengeExplorers": "{{name}} 向旅行者发起挑战：{{title}}",
     "challengeCta": "查看",
-    "challengeValidated": "挑战完成！{{name}} 验证了 \"{{title}}\"。",
+    "challengeValidated": "挑战完成！{{name}} 确认了「{{title}}」。",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} 国际挑战：{{title}}"
   },
   "replyPreview": {
@@ -271,68 +282,46 @@
     "many": "好几个人正在输入…"
   },
   "myEvent": {
-    "live": "正在进行",
+    "live": "进行中",
     "recurring": "定期",
     "upcoming": "即将开始",
     "delete": "删除活动"
   },
   "arrivalsBar": {
-    "label": "最近到达",
-    "sheetTitle": "到达",
-    "empty": "暂无到达"
+    "label": "新来的人",
+    "sheetTitle": "新来的人",
+    "empty": "还没有新来的人"
   },
   "cityHero": {
     "mainEmpty": "🌱 {{city}} 还没有挑战",
-    "subRanked": "点击接受下一个挑战 →",
-    "subUnranked": "接受第一个挑战，开始攀升 →",
-    "subTop": "卫冕你的头衔 →",
-    "subEmpty": "创建第一个，让旅行者接受 →",
+    "subRanked": "点一下，接下一个挑战 →",
+    "subUnranked": "接下第一个挑战，开始冲榜 →",
+    "subTop": "守住第一 →",
+    "subEmpty": "发起第一个挑战，等旅行者来接 →",
     "members_other": "{{count}} 名成员",
     "nearby": "附近 {{count}} 人",
-    "recent": "最近 {{count}} 位",
-    "mainUnranked_one": "🔥 {{city}} {{count}} 个挑战",
-    "mainUnranked_other": "🔥 {{city}} {{count}} 个挑战",
-    "mainRanked_one": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 {{rank}} 名",
-    "mainRanked_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 {{rank}} 名",
-    "mainTop_one": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名",
-    "mainTop_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名"
-  },
-  "world": {
-    "tab": "世界",
-    "banner_other": "{{count}} 个跨城市挑战进行中",
-    "online": "{{count}} 人在线",
-    "cities_other": "{{count}} 个城市",
-    "sys": {
-      "challengeCreated": "🔥 {{nickname}} 发起了一个挑战 {{cityA}} → {{cityB}}",
-      "newUser": "🎉 来自{{city}}的 {{nickname}} 刚刚加入 Hilads",
-      "challengeWon": "🏆 来自{{city}}的 {{nickname}} 赢得了挑战 {{challenge}}"
-    },
-    "quietCard": "这里很安静？世界 里有 {{count}} 条未读 — 点击查看",
-    "heroEmpty": "成为第一个挑战城市的人",
-    "heroEmptySub": "发起一个跨城市挑战",
-    "leaderboard": "排行榜",
-    "arrivals_other": "{{count}} 位新来",
-    "arrivalsTitle": "最近到达",
-    "arrivalsEmpty": "暂无新到达",
-    "seeAll": "查看全部"
+    "recent": "最近 {{count}} 人",
+    "mainUnranked_other": "🔥 {{city}} 有 {{count}} 个挑战",
+    "mainRanked_other": "🔥 {{count}} 个挑战 · 🏆 {{city}} 第 {{rank}} 名",
+    "mainTop_other": "🔥 {{count}} 个挑战 · 🏆 {{city}} 第 1 名"
   },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "本地人",
     "traveler": "旅行者",
-    "ctaApp": "在 app 里接受 challenge",
+    "ctaApp": "去 App 里接受挑战",
     "localPass": "Local Pass",
     "early": "抢先",
-    "proposedBy": "由 {{name}} 提议",
-    "proposedByCity": "由 {{name}} · {{city}} 提议",
+    "proposedBy": "{{name}} 提议",
+    "proposedByCity": "{{name}} · {{city}} 提议",
     "groupTitle": "新照片：{{n}}",
-    "groupCitiesMore": "{{cities}} 等另外 {{n}} 个"
+    "groupCitiesMore": "{{cities}} 等 {{n}} 个城市"
   },
   "switchSheet": {
-    "title": "你在{{city}}",
-    "body": "你的城市是{{from}}。从现在起为{{city}}玩？",
-    "switch": "切换到{{city}}",
-    "stay": "留在{{from}}"
+    "title": "你在 {{city}}",
+    "body": "你的城市是 {{from}}。以后改为 {{city}} 出战吗？",
+    "switch": "切换到 {{city}}",
+    "stay": "留在 {{from}}"
   }
 }

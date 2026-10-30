@@ -1,6 +1,6 @@
 {
-  "title": "即将发生",
-  "loadError": "无法加载当天的活动",
+  "title": "接下来",
+  "loadError": "这天的活动加载失败",
   "emptyTitle": "暂无安排",
-  "emptySub": "当天还没有活动。"
+  "emptySub": "这一天还没有活动。"
 }

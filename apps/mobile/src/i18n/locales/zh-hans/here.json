@@ -1,5 +1,5 @@
 {
-  "title": "你周围的人",
+  "title": "这里的人",
   "noCityTitle": "未选择城市",
   "noCitySub": "选一座城市，看看谁在附近。",
   "browseCities": "浏览城市",
@@ -8,10 +8,10 @@
   "filterMode": "模式",
   "you": "（你）",
   "hereNow": "此刻在这里",
-  "noMatchLive": "目前没有符合这些筛选条件的人。",
+  "noMatchLive": "现在没有人符合这些筛选条件。",
   "legends": "Hilads 传奇",
   "legendsSub": "他们让城市动起来",
   "cityCrew": "城市成员",
-  "noMatchCrew": "没有符合这些筛选条件的成员。",
+  "noMatchCrew": "没有成员符合这些筛选条件。",
   "loadMore": "加载更多"
 }

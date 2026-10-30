@@ -1,50 +1,32 @@
 {
   "showcase": {
-    "cta": "成功的挑战",
-    "title": "✨ 成功的挑战",
+    "cta": "高光挑战",
+    "title": "✨ 高光挑战",
     "allCities": "所有城市",
     "clearCity": "清除",
     "localTag": "本地",
-    "by": "由 {{name}}",
-    "loadMore": "加载更多",
+    "by": "来自 {{name}}",
     "empty": {
-      "title": "还没有成功故事",
-      "body": "已完成且高评分的挑战会显示在这里。来做第一个吧！"
+      "title": "还没有高光挑战",
+      "body": "完成且好评的挑战会出现在这里。来做第一个吧！"
     },
-    "tryCta": "创建新挑战",
-    "note": "他们怎么说"
+    "tryCta": "发起新挑战",
+    "note": "他们怎么说",
+    "loadMore": "加载更多"
   },
-  "myChallenges": {
-    "cta": "我的挑战",
-    "title": "我的挑战",
-    "create": "创建挑战",
-    "filter": {
-      "all": "全部",
-      "created": "我发起的",
-      "taken": "我接受的"
-    },
-    "empty": {
-      "title": "还没有挑战",
-      "body": "你发起或接受的挑战会显示在这里。"
-    },
-    "guestGate": {
-      "title": "登录后查看你的挑战",
-      "body": "创建账号即可发起挑战并接受他人的挑战。"
-    }
-  },
-  "tabIntro": "本地人与探索者在城市内的挑战 - 也跨越城市。",
-  "howItWorks": "玩法介绍",
+  "tabIntro": "城市里本地人和旅行者之间的挑战，也可以跨城市。",
+  "howItWorks": "怎么玩",
   "mostLocal": "Most Local",
   "seeAll": "查看全部",
   "leaderboardCta": {
     "title": "🏆 城市排行榜",
     "view": "查看",
-    "sub": "成为第一个上榜的人 - 发起并完成一个挑战"
+    "sub": "发起并完成一个挑战，第一个上榜"
   },
   "createTitle": "发起挑战",
   "allTitle": "全部挑战",
   "editTitle": "编辑挑战",
-  "audience": "给谁？",
+  "audience": "面向谁？",
   "aud": {
     "locals": "本地人",
     "explorers": "旅行者",
@@ -58,24 +40,24 @@
     "help": "疯狂"
   },
   "titleLabel": "你的挑战",
-  "titlePlaceholder": "例如，带我去你最喜欢的咖啡馆",
+  "titlePlaceholder": "例如：带我去你私藏的咖啡馆",
   "maxParticipantsLabel": {
-    "locals": "最多多少本地人？",
-    "explorers": "最多多少旅行者？"
+    "locals": "最多几个本地人？",
+    "explorers": "最多几个旅行者？"
   },
   "returnClauseLabel": "然后呢？",
   "returnClauseTemplates": {
-    "food": "……然后过来跟我一起分享 🍜",
-    "place": "……然后你亲自带我去 🗺️",
-    "culture": "……然后我们见面聊聊 🎭",
-    "help": "……然后我们一起做点疯狂的事 🤪"
+    "food": "……然后过来跟我一起吃 🍜",
+    "place": "……然后亲自带我去 🗺️",
+    "culture": "……然后我们约出来聊聊 🎭",
+    "help": "……然后一起干点疯狂的事 🤪"
   },
   "createCta": "发起挑战 🔥",
   "saveChanges": "保存修改",
   "errSave": "保存失败",
-  "errStart": "无法发起挑战",
+  "errStart": "挑战发起失败",
   "deleteTitle": "删除挑战？",
-  "deleteBody": "挑战将对所有人删除。无法撤销。",
+  "deleteBody": "所有人都将看不到这个挑战，而且无法撤销。",
   "deleteConfirm": "删除",
   "acceptCta": "接受挑战",
   "acceptedCta": "已接受 ✓",
@@ -83,12 +65,12 @@
   "card": {
     "open": "开放中",
     "full": "已满",
-    "available": "可接受",
+    "available": "可参加",
     "inProgress": "进行中",
-    "takeIt": "我接受",
-    "takerLabel": "接受者",
+    "takeIt": "我来接",
+    "takerLabel": "应战者",
     "rankBadge": "第 {{rank}} 名",
-    "photoBadge": "照片",
+    "photoBadge": "照片验证",
     "joinedCount": "{{count}} 人已加入",
     "meetBadge": "见面",
     "photosCount_other": "{{count}} 张照片",
@@ -97,113 +79,225 @@
     "daysLeft": "还剩 {{count}} 天",
     "lastDay": "即将到期",
     "joinGroup": "加入挑战",
-    "whoJoined": "谁加入了（{{count}}）",
+    "whoJoined": "已加入（{{count}}）",
     "ended": "已结束",
     "awaitingResults": "等待结果"
   },
   "statusInProgress": "挑战进行中",
   "statusAccomplished": "挑战搞定",
-  "openBadge": "开放",
-  "forLocals": "给本地人",
-  "forExplorers": "给旅行者",
+  "openBadge": "开放中",
+  "forLocals": "面向本地人",
+  "forExplorers": "面向旅行者",
   "validation": {
-    "label": "如何验证？",
+    "label": "怎么验证？",
     "meet": {
       "label": "见面",
-      "hint": "一起亲身体验",
-      "bonusChip": "见面再得 +50 奖励"
+      "hint": "线下见面，一起体验",
+      "bonusChip": "全员到场，额外 +50"
     },
     "photo_proof": {
       "label": "照片验证",
-      "hint": "远程接受照片验证"
+      "hint": "远程用照片验证"
     }
   },
-  "notFound": "未找到挑战",
+  "notFound": "找不到这个挑战",
   "typeBadge": {
     "food": "美食挑战",
     "place": "地点挑战",
     "culture": "文化挑战",
     "help": "疯狂挑战"
   },
-  "challengerTag": "发起人",
+  "challengerTag": "挑战者",
   "participantsLabel": "参与者",
   "editBtn": "编辑",
   "deleteBtn": "删除",
   "shareCta": "分享",
-  "shareInvite": "和我一起接受这个挑战！",
+  "shareInvite": "来 Hilads 和我一起接这个挑战 🔥",
   "shareCopied": "链接已复制 ✓",
   "noun": "挑战",
+  "byCreator": "{{name}} 发起",
+  "inspiration": {
+    "heading": "挑战灵感",
+    "sub": "看看其他城市的本地人都发起了什么，找找灵感",
+    "firstLocal": "🌱 当 {{city}} 第一个发起挑战的本地人",
+    "firstLocalSub": "发个挑战 · 新来的旅行者会来应战",
+    "reward": "首个挑战 · +10 🏆",
+    "launchFirst": "🔥 发起第一个挑战",
+    "createYours": "🔥 在 {{city}} 发起挑战",
+    "by": "来自 {{name}} · {{city}}"
+  },
   "examples": {
-    "label": "没灵感？点一个用",
+    "label": "没灵感？点一个试试",
     "food": [
-      "全城最好的咖啡",
-      "本地人真正吃午餐的地方",
-      "附近最好的街边小吃"
+      "带我去喝全城最好的咖啡",
+      "本地人中午真正会去吃的地方",
+      "附近最好吃的路边摊"
     ],
     "place": [
-      "看日落的最佳地点",
-      "游客找不到的地方",
-      "你去清空思绪的地方"
+      "带我去看最美的日落",
+      "游客永远找不到的地方",
+      "你放空发呆的地方"
     ],
     "culture": [
-      "本周末真正的本地音乐之夜",
+      "这周末一场地道的本地音乐夜",
       "值得一看的街头艺术",
-      "让我难忘的本地演出"
+      "一场让我忘不了的本地演出"
     ],
     "help": [
-      "不会毁掉我这周的理发店",
+      "一家不会让我郁闷一整周的理发店",
       "会说英语的医生",
       "哪里可以修手机屏幕"
     ]
   },
-  "beFirstToAccept": "第一个接受挑战",
-  "openThreadCta": "打开会话",
+  "beFirstToAccept": "抢先接下挑战",
+  "openThreadCta": "打开聊天",
   "accept": {
     "err": {
       "openSettings": "打开设置",
       "unknown": {
-        "title": "无法接受",
-        "body": "出错了。请再试一次。"
+        "title": "没接成",
+        "body": "出了点问题，再试一次吧。"
       },
       "not_creator": {
-        "title": "这是你自己的挑战",
-        "body": "这个挑战是你创建的 - 等别人来接受吧。"
+        "title": "这是你自己发起的挑战",
+        "body": "这个挑战是你发起的，等别人来接吧。"
       },
       "mode_required": {
-        "title": "先选择本地人或旅行者",
-        "body": "接受挑战前先在个人资料中设置你的模式。"
+        "title": "先选本地人还是旅行者",
+        "body": "接挑战前，先在个人资料里设置模式。"
       },
       "mode_mismatch": {
-        "title": "这个挑战不适合你",
-        "body": "想接受的话，在个人资料里切换你的模式。"
+        "title": "身份不符",
+        "body": "想接的话，去个人资料里切换模式。"
       },
       "cap_reached": {
         "title": "挑战已满"
       },
       "in_progress": {
-        "title": "已经有人在接了",
-        "body": "另一位旅行者正在接这个挑战。等他完成后再回来 - 挑战会重新开放。"
+        "title": "已经有人接了",
+        "body": "另一位旅行者正在挑战中。等 TA 完成后再来看看，挑战会重新开放。"
       },
       "completed": {
         "title": "挑战已完成",
-        "body": "此挑战已完成，不再接受新的参与。"
+        "body": "这个挑战已经完成，不再接受新的应战。"
       }
     }
   },
+  "chatPlaceholder": "在频道里说点什么…",
+  "messageCreator": "私信 {{name}}",
+  "badge": {
+    "challenger": "挑战者",
+    "taker": "应战者",
+    "spectator": "观众"
+  },
+  "scoringInfo": {
+    "aria": "积分规则",
+    "helpLabel": "🏆 怎么赚积分",
+    "title": "🏆 挑战怎么玩",
+    "intro": "加入只拿一点小分；真正到场或赢了才有大分。刷加入根本不划算。",
+    "colStep": "步骤",
+    "steps": {
+      "created": "挑战已发起",
+      "accepted": "有人应战",
+      "date": "日期已定",
+      "meet": "见面",
+      "rate": "互相评分"
+    },
+    "noPoints": "-",
+    "totalLabel": "每个挑战共计",
+    "footnote": "我们还在调整玩法，分数可能会变。",
+    "types": {
+      "heading": "两种挑战",
+      "local": "🏙️ 见面：约好时间地点，线下组队集合。到场的人都能拿大分。",
+      "international": "🌍 照片挑战：大家在截止前提交照片，由挑战者选出获胜者。"
+    },
+    "lifecycle": {
+      "heading": "怎么收尾",
+      "body": "挑战者出题，大家加入，最后由挑战者确认：谁到场了，或者哪张照片赢了。"
+    },
+    "pointsHeading": "💯 怎么赚积分",
+    "ways": {
+      "join": "加入挑战",
+      "create": "发起挑战",
+      "present": "到场：确认出席",
+      "host": "组织一次见面",
+      "submit": "交照片参加挑战",
+      "win": "赢下照片挑战"
+    },
+    "seeExamples": "看 3 个真实例子"
+  },
+  "cta": {
+    "takenBy": "{{name}} 正在挑战中",
+    "closed": "这个挑战已关闭"
+  },
+  "join": {
+    "gateTitle": "成为观众",
+    "gateBody": "以观众身份进来，看大家聊天，给应战者加油。",
+    "cta": "以观众身份进入",
+    "leaveCta": "退出频道",
+    "errKicked": "你已被移出这个挑战。",
+    "errClosed": "这个挑战不再接受新成员加入。",
+    "errGeneric": "没进去，再试一次。"
+  },
+  "leaveTakeon": {
+    "pill": "退出",
+    "confirmTitle": "退出这个挑战？",
+    "confirmBody": "进度会归零，挑战重新向其他人开放。无法撤销。",
+    "confirmCta": "退出",
+    "failed": "退出失败，再试一次。"
+  },
+  "restart": {
+    "cta": "重新开始挑战",
+    "confirmTitle": "重新开始挑战？",
+    "confirmBody": "这会移除当前应战者、清空聊天，挑战从零重新开放。无法撤销。",
+    "confirmCta": "重新开始",
+    "failed": "重新开始失败，再试一次。"
+  },
+  "lock": {
+    "private": {
+      "title": "这个挑战是私密的",
+      "body": "只有挑战者和应战者能看到对话。"
+    }
+  },
+  "members": {
+    "title": "频道成员",
+    "countIn": "频道里有 {{count}} 人",
+    "seeAll": "查看全部",
+    "empty": "还没有人加入，来当第一个吧。",
+    "kickCta": "移除",
+    "kickAria": "把 {{name}} 移出频道",
+    "errKick": "移除失败，再试一次。"
+  },
+  "notif": {
+    "on": "通知已开启",
+    "off": "通知已关闭"
+  },
+  "privacy": {
+    "closedCloseCta": "不再接受新成员",
+    "closedReopenCta": "重新开放加入"
+  },
+  "manage": {
+    "cta": "管理",
+    "title": "管理挑战"
+  },
+  "details": {
+    "collapseAria": "隐藏频道详情",
+    "expandAria": "显示频道详情"
+  },
   "thread": {
     "notFound": "找不到会话",
-    "empty": "第一个说点什么吧。",
-    "emptyIntl": "打个招呼 - 搞定后丢张照片上来。",
+    "empty": "来说第一句吧。",
+    "emptyIntl": "打个招呼，搞定后发张照片上来。",
     "cancel": {
-      "creatorTitle": "取消这次参与？",
+      "creatorTitle": "取消这次应战？",
       "acceptorTitle": "放弃这个挑战？",
-      "body": "会话和聊天将被删除。如果改主意了，以后可以重新接受。",
-      "confirm": "取消",
-      "failed": "无法取消。请再试一次。"
+      "body": "会话和聊天记录都会删除。改主意的话，之后还能重新接。",
+      "confirm": "取消应战",
+      "failed": "取消失败，再试一次。"
     },
     "cancelledByOther": {
       "title": "会话已取消",
-      "body": "对方取消了这次参与。"
+      "body": "对方取消了这次应战。"
     }
   },
   "threads": {
@@ -211,325 +305,45 @@
     "noMessagesYet": "还没有消息",
     "empty": {
       "title": "没有进行中的会话",
-      "body": "当你接受挑战或别人接受你的挑战时，对话会出现在这里。"
+      "body": "你接下别人的挑战，或有人接下你的挑战后，对话会出现在这里。"
     },
     "guestGate": {
       "title": "登录后查看会话",
-      "body": "会话是你和挑战发起者之间的1对1聊天。需要账号才能开始。"
+      "body": "会话是你和挑战者之间的一对一聊天。要有账号才能开始。"
     }
   },
-  "schedule": {
-    "proposeCta": "提议一个日期",
-    "counterCta": "另提一个",
-    "editCta": "改约时间",
-    "you": "你",
-    "iProposedTitle": "等待对方确认",
-    "theyProposedTitle": "{{name}} 提议了",
-    "scheduled": {
-      "title": "见面已安排"
+  "myChallenges": {
+    "cta": "我的挑战",
+    "title": "我的挑战",
+    "create": "发起挑战",
+    "filter": {
+      "all": "全部",
+      "created": "我发起的",
+      "taken": "我接受的"
     },
-    "withdraw": {
-      "title": "撤回提议？",
-      "body": "你提议的日期将被清除，对方会收到通知。",
-      "confirm": "撤回"
+    "empty": {
+      "title": "还没有挑战",
+      "body": "你发起或接下的挑战会出现在这里。"
     },
-    "today": "今天",
-    "tomorrow": "明天",
-    "picker": {
-      "title": "什么时候见面？",
-      "whenLabel": "什么时候",
-      "timeLabel": "开始时间",
-      "whereLabel": "在哪里（可选）",
-      "wherePlaceholder": "例如 Le Comptoir, 17 rue de la Paix",
-      "otherDate": "其他日期",
-      "otherTime": "其他时间",
-      "endTimeLabel": "结束时间",
-      "endAfterStart": "结束时间必须晚于开始时间。"
-    },
-    "err": {
-      "proposeFailed": "无法提议日期，请再试一次。",
-      "approveFailed": "无法确认，请再试一次。",
-      "withdrawFailed": "无法撤回，请再试一次。"
+    "guestGate": {
+      "title": "登录后查看你的挑战",
+      "body": "注册账号，发起挑战，也接下别人的挑战。"
     }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "怎么样？",
-      "body": "{{name}}做到了吗？"
-    },
-    "acceptorWaiting": {
-      "title": "等待结果",
-      "body": "{{name}}会标记结果。"
-    },
-    "approved": {
-      "title": "挑战完成"
-    },
-    "rejected": {
-      "title": "挑战已关闭"
-    },
-    "confirm": {
-      "approve": {
-        "title": "标记为完成？",
-        "body": "这是最终决定，之后不能更改。",
-        "confirm": "标记为完成"
-      },
-      "reject": {
-        "title": "不作判定就关闭？",
-        "body": "如果见面没真的发生，用这个。这是最终决定。",
-        "confirm": "关闭"
-      }
-    },
-    "err": {
-      "approveFailed": "无法确认，请再试一次。",
-      "rejectFailed": "无法关闭，请再试一次。"
-    }
-  },
-  "closeCta": "关闭挑战",
-  "reopenCta": "重新打开",
-  "pipeline": {
-    "step": {
-      "accept": "接受",
-      "date": "日期",
-      "meet": "见面",
-      "wrap": "总结",
-      "proof": "证据",
-      "verdict": "判定"
-    },
-    "subcta": {
-      "tapToAccept": "接下这个挑战",
-      "creatorWaiting": "等人来接挑战",
-      "creatorReviewPending": "回复 {{name}} 的请求",
-      "acceptorAwaitingReview": "等待 {{name}} 回复",
-      "proposeDate": "提议一个日期",
-      "dateAwaiting": "等待发起人确认",
-      "approveDate": "对方提议了一个日期",
-      "meetSoon": "{{date}} 见",
-      "creatorVerdict": "和 {{name}} 见面怎么样？",
-      "acceptorWaitingVerdict": "等待 {{name}} 确认",
-      "accomplished": "挑战完成",
-      "closed": "挑战已关闭",
-      "submitProof": "提交你的证据",
-      "waitingForProof": "等待证据",
-      "reviewProof": "审核证据",
-      "waitingForVerdict": "等待判定",
-      "rateMeetup": "给和{{name}}的见面评分"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}} 想接你的挑战",
-      "pendingBody": "接受就能开始聊天、约线下见面；拒绝就把名额放出来。",
-      "approve": "接受",
-      "reject": "拒绝",
-      "approveFailed": "接受失败，请再试一次。",
-      "rejectFailed": "拒绝失败，请再试一次。"
-    },
-    "acceptor": {
-      "waitingTitle": "等待回复",
-      "waitingBody": "{{name}} 会接受或拒绝你的请求。决定后你会收到推送。",
-      "rejectedTitle": "请求被拒绝",
-      "rejectedBody": "{{name}} 拒绝了这次。你还可以选别的挑战。"
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "接受挑战，解锁聊天",
-      "body": "你一旦接受，你们就会有一个私密会话来约线下见面。"
-    },
-    "creator": {
-      "title": "等人来接挑战",
-      "body": "有旅行者接下挑战后，你们就在这里聊，约线下见面。"
-    },
-    "full": {
-      "title": "挑战已满",
-      "body": "名额已满，有人退出再来看看。"
-    },
-    "inProgress": {
-      "title": "现在有人在接",
-      "body": "一位旅行者正在接这个挑战。等他完成后又会空出来 - 稍后再回来看看。"
-    }
-  },
-  "postCreate": {
-    "title": "你的挑战已上线",
-    "subtitle": "现在播下种子 - 让有人在一小时内接下它。",
-    "thisCity": "这座城市",
-    "ctaInvite": "发给{{city}}的某个人",
-    "ctaInviteSub": "挑几个{{audience}} - 我们去 ping 他们。",
-    "ctaShare": "在 Hilads 之外分享",
-    "skip": "稍后",
-    "pickerTitle": "{{city}}的{{audience}}",
-    "pickerSubtitle": "点击选择。他们会收到带「接受 / 忽略」的推送。",
-    "pickerEmpty": "附近暂时没有{{audience}}。换种方式在外面分享吧。",
-    "sendCta": "发送给 {{count}}",
-    "sendCtaEmpty": "先选一个人",
-    "sentTitle": "已发送给 {{count}}",
-    "sentSubtitle": "他们现在会收到推送。",
-    "pickerSubtitleAll": "没有完全匹配 - 显示 {{city}} 的所有人。"
-  },
-  "invitation": {
-    "accept": "接受",
-    "ignore": "忽略",
-    "acceptChallenge": "接受挑战"
-  },
-  "byCreator": "由 {{name}} 发起",
-  "inspiration": {
-    "heading": "挑战灵感",
-    "sub": "看看别处的本地人发起了什么 - 获取灵感",
-    "firstLocal": "🌱 成为 {{city}} 的第一个本地人",
-    "firstLocalSub": "发起一个挑战 · 到来的旅行者会来接受",
-    "reward": "首个挑战 · +10 🏆",
-    "launchFirst": "🔥 发起第一个挑战",
-    "createYours": "🔥 在 {{city}} 创建你的挑战",
-    "by": "来自 {{name}} · {{city}}"
-  },
-  "typeFilter": {
-    "label": "按类型筛选",
-    "all": "全部",
-    "empty": "这个类别现在什么都没有。"
-  },
-  "seeAllChallenges": "查看所有挑战 →",
-  "mode": {
-    "label": "模式",
-    "local": "本地",
-    "international": "国际",
-    "localHint": "在你的城市。以面对面会面结束。",
-    "internationalHint": "世界任何地方。他们提交证据，你远程验证。",
-    "worldwide": "全球"
-  },
-  "intl": {
-    "targetCityLabel": "目标城市",
-    "targetCityAnywhere": "🌍 世界任何地方",
-    "targetCityHint": "选择一个目标城市——“世界任何地方”暂未开放。",
-    "proofRequirementsLabel": "照片要拍到什么？",
-    "proofRequirementsPlaceholder": "例如：日光下的菜肴，本人入镜",
-    "proofRequirementsHint": "证据是一张照片 📸。参与者提交前会看到这里 - 写得具体些。",
-    "cityPicker": {
-      "title": "选择目标城市",
-      "searchPlaceholder": "搜索城市…",
-      "anywhere": "世界任何地方"
-    },
-    "proof": {
-      "requirementsLabel": "发起人的要求",
-      "submitCta": "提交证据",
-      "tryAgainCta": "再试一次（剩 {{count}} 次）",
-      "waitingProof": "等待证据",
-      "waitingVerdict": "等待判定",
-      "approvedLine": "挑战完成",
-      "closedLine": "挑战关闭",
-      "lastReason": "原因：{{reason}}",
-      "geotagOk": "地理位置已验证",
-      "geotagWarn": "地理位置在区域外",
-      "approveCta": "通过",
-      "rejectCta": "驳回",
-      "rejectModalTitle": "驳回此证据",
-      "rejectModalHint_other": "剩 {{count}} 次。说明需要修改什么。",
-      "reasonPlaceholder": "例：照片模糊，看不清菜品",
-      "rejectConfirm": "发送驳回",
-      "reasonRequiredTitle": "需要原因",
-      "reasonRequiredBody": "简短原因（1–200 字）有助于。",
-      "permPhotoTitle": "需要相机权限",
-      "permPhotoBody": "在「设置」中开启相机权限 - 证据必须是即时拍摄的照片。",
-      "permGpsTitle": "需要位置权限",
-      "permGpsBody": "地理位置必填。请开启定位。",
-      "gpsFailTitle": "无法读取 GPS",
-      "gpsFailBody": "请到户外重试。",
-      "submitFailTitle": "提交失败",
-      "submitFailBody": "检查网络后重试。",
-      "reviewFailTitle": "判定未保存"
-    },
-    "targetCityRequired": "“世界任何地方”暂未开放——请选择一个目标城市以继续。",
-    "targetCityRequiredTitle": "选择目标城市"
-  },
-  "modeFilter": {
-    "label": "按模式筛选",
-    "all": "全部"
-  },
-  "chatPlaceholder": "在频道里说点什么…",
-  "messageCreator": "私信 {{name}}",
-  "badge": {
-    "challenger": "发起人",
-    "taker": "接受者",
-    "spectator": "观众"
-  },
-  "cta": {
-    "takenBy": "正在由 {{name}} 接受中",
-    "closed": "此挑战已结束"
-  },
-  "join": {
-    "gateTitle": "成为观众",
-    "gateBody": "以观众身份进入，跟随对话并为挑战者加油打气。",
-    "cta": "以观众身份进入",
-    "leaveCta": "退出频道",
-    "errKicked": "你已被移出此挑战，无法重新加入。",
-    "errClosed": "此挑战已关闭新成员加入。",
-    "errGeneric": "进不去，请重试。"
-  },
-  "lock": {
-    "private": {
-      "title": "这个挑战是私密的",
-      "body": "只有创建者和挑战者能看到对话。"
-    }
-  },
-  "members": {
-    "title": "在频道中",
-    "countIn": "频道中 {{count}} 人",
-    "seeAll": "查看全部",
-    "empty": "还没有人加入 - 来当第一个吧。",
-    "kickCta": "移除",
-    "kickAria": "将 {{name}} 从频道移除",
-    "errKick": "移除失败 - 请重试。"
-  },
-  "notif": {
-    "on": "通知已开启",
-    "off": "通知已关闭"
-  },
-  "manage": {
-    "cta": "管理",
-    "title": "管理挑战"
-  },
-  "visibility": {
-    "badge": {
-      "public": "公开",
-      "friends": "朋友",
-      "private": "私密"
-    },
-    "label": "谁可以看到？",
-    "public": "🌍 公开",
-    "friends": "👯 好友",
-    "publicHint": "城市里的任何人都能看到并接受。",
-    "friendsHint": "只有你的好友和你邀请的人能看到。",
-    "intlLocked": "国际挑战始终公开。",
-    "moderationBlocked": "你的文字被标记了，请重新表述。",
-    "optin": {
-      "title": "注意 — 这是公开的",
-      "body": "公开挑战会出现在城市动态和公开网页上。你的名字和挑战内容将对任何人可见，包括非会员和搜索引擎。如果想更私密，可以在下方切换为好友。",
-      "cta": "明白，公开发布",
-      "switchToFriends": "改为好友",
-      "dontShowAgain": "不再显示"
-    }
-  },
-  "privacy": {
-    "closedCloseCta": "停止新成员加入",
-    "closedReopenCta": "重新开放加入"
-  },
-  "details": {
-    "collapseAria": "隐藏频道详情",
-    "expandAria": "显示频道详情"
   },
   "ratePrompts": {
     "banner": {
-      "title": "给这个挑战评分 - 感觉怎么样？",
+      "title": "给这个挑战打个分吧，感觉怎么样？",
       "titleUrgent": "轮到你给这个挑战评分了"
     },
     "sheet": {
       "title": "这个挑战怎么样？",
-      "starsAria": "{{n}}星",
-      "commentPlaceholder": "留下对这个挑战的评价（可选）",
+      "subtitle": "评的是挑战，不是人。",
+      "starsAria": "{{n}} 星",
+      "commentPlaceholder": "说说这个挑战（选填）",
       "submit": "提交评分",
-      "later": "稍后",
-      "subtitle": "评价挑战本身，而不是某个人。"
+      "later": "以后再说"
     },
-    "errSubmit": "评分提交失败，请重试。"
+    "errSubmit": "评分没提交成功，再试一次。"
   },
   "leaderboard": {
     "title": "Most Local",
@@ -550,137 +364,415 @@
     "points": "{{points}} 分",
     "me": {
       "ranked": "你 · #{{rank}} · {{points}} 分",
-      "unranked": "接受挑战，登上排行榜"
+      "unranked": "接下挑战，登上排行榜"
     },
     "empty": {
       "title": "排行榜还空着",
-      "body": "成为第一个接受挑战并获得分数的人。"
+      "body": "第一个接下挑战，拿下积分吧。"
     },
-    "errLoad": "加载排行榜失败，下拉重试。",
-    "neutral": "🏆 Most Local",
+    "errLoad": "排行榜加载失败，下拉重试。",
     "cityPicker": {
       "searchPlaceholder": "搜索城市…",
       "empty": "没有匹配的城市。"
     },
+    "neutral": "🏆 Most Local",
     "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "分享我的排名",
       "periodMonth": "本月",
-      "periodAll": "历史",
+      "periodAll": "总榜",
       "placeCity": "在{{city}}",
-      "placeWorld": "在世界",
-      "userNotTop": "🔥 我{{place}}{{period}}排名第 {{rank}}: {{pts}} 分！正追着 @{{above}}（{{aPts}} 分）👀，把 @{{below}}（{{bPts}} 分）甩在身后。觉得你能超过我吗？🏆",
-      "userTop": "👑 我{{place}}{{period}}排名第 1: {{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）正紧追不舍。来把我拉下王座吧 😏",
-      "cityNotTop": "🔥 {{place}}在所有城市中{{period}}排名第 {{rank}}: {{pts}} 分！紧跟 {{above}}（{{aPts}} 分）👀，领先 {{below}}（{{bPts}} 分）。本地人们，一起冲 🏆",
-      "cityTop": "👑 {{place}}在所有城市中{{period}}排名第 1: {{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追赶。本地人们，稳住第一 🔥"
+      "placeWorld": "在全球",
+      "userNotTop": "🔥 我{{place}}{{period}}排第 {{rank}}：{{pts}} 分！正追着 @{{above}}（{{aPts}} 分）👀，把 @{{below}}（{{bPts}} 分）甩在身后。你能超过我吗？🏆",
+      "userTop": "👑 我{{place}}{{period}}排第 1：{{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）紧追不舍。来抢王冠吧 😏",
+      "cityNotTop": "🔥 所有城市{{period}}排名，{{place}} 排第 {{rank}}：{{pts}} 分！紧跟 {{above}}（{{aPts}} 分）👀，领先 {{below}}（{{bPts}} 分）。本地人们，一起冲 🏆",
+      "cityTop": "👑 所有城市{{period}}排名，{{place}} 第 1：{{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追我们。本地人们，守住第一 🔥"
     }
   },
-  "scoringInfo": {
-    "aria": "积分如何获得",
-    "helpLabel": "🏆 如何赚取积分",
-    "title": "🏆 挑战如何运作",
-    "intro": "加入只得一点小分；真正到场或获胜才有大分。光刷加入毫无意义。",
-    "colStep": "步骤",
-    "steps": {
-      "created": "已创建挑战",
-      "accepted": "接受挑战",
-      "date": "约定日期",
+  "schedule": {
+    "proposeCta": "提个日期",
+    "counterCta": "另提一个",
+    "editCta": "改日期",
+    "you": "你",
+    "iProposedTitle": "等对方确认",
+    "theyProposedTitle": "{{name}} 提议了",
+    "scheduled": {
+      "title": "见面已约好"
+    },
+    "withdraw": {
+      "title": "撤回提议？",
+      "body": "你提的日期会清除，对方会收到通知。",
+      "confirm": "撤回"
+    },
+    "today": "今天",
+    "tomorrow": "明天",
+    "picker": {
+      "title": "什么时候见面？",
+      "whenLabel": "什么时候",
+      "timeLabel": "开始时间",
+      "endTimeLabel": "结束时间",
+      "endAfterStart": "结束时间必须晚于开始时间。",
+      "whereLabel": "在哪儿（选填）",
+      "wherePlaceholder": "例如：老街咖啡，南京西路 88 号",
+      "otherDate": "其他日期",
+      "otherTime": "其他时间"
+    },
+    "err": {
+      "proposeFailed": "提议日期失败，再试一次。",
+      "approveFailed": "确认失败，再试一次。",
+      "withdrawFailed": "撤回失败，再试一次。"
+    }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "怎么样？",
+      "body": "{{name}} 做到了吗？"
+    },
+    "acceptorWaiting": {
+      "title": "等结果",
+      "body": "{{name}} 会标记结果。"
+    },
+    "approved": {
+      "title": "挑战完成"
+    },
+    "rejected": {
+      "title": "挑战已关闭"
+    },
+    "confirm": {
+      "approve": {
+        "title": "标记为完成？",
+        "body": "确定后就不能改了。",
+        "confirm": "标记为完成"
+      },
+      "reject": {
+        "title": "不判定，直接关闭？",
+        "body": "如果见面其实没成，就选这个。确定后不能改。",
+        "confirm": "关闭"
+      }
+    },
+    "err": {
+      "approveFailed": "确认失败，再试一次。",
+      "rejectFailed": "关闭失败，再试一次。"
+    }
+  },
+  "closeCta": "关闭挑战",
+  "reopenCta": "重新开放",
+  "pipeline": {
+    "step": {
+      "accept": "接受",
+      "date": "日期",
       "meet": "见面",
-      "rate": "双方评分"
+      "wrap": "收尾",
+      "proof": "照片",
+      "verdict": "结果"
     },
-    "noPoints": "-",
-    "totalLabel": "每个挑战合计",
-    "footnote": "随着我们调整玩法，分数可能会变化。",
-    "types": {
-      "heading": "两种挑战",
-      "local": "🏙️ 见面 — 在约定的时间和地点线下组队集合。所有到场的人都能拿大分。",
-      "international": "🌍 照片挑战 — 所有人在截止前提交照片；由发起人选出获胜者。"
+    "subcta": {
+      "tapToAccept": "接下这个挑战",
+      "creatorWaiting": "等人来接",
+      "creatorReviewPending": "处理 {{name}} 的应战请求",
+      "acceptorAwaitingReview": "等 {{name}} 回复",
+      "proposeDate": "提个日期",
+      "dateAwaiting": "等挑战者确认",
+      "approveDate": "对方提了一个日期",
+      "meetSoon": "{{date}} 见",
+      "creatorVerdict": "和 {{name}} 见面怎么样？",
+      "acceptorWaitingVerdict": "等 {{name}} 确认",
+      "rateMeetup": "给和 {{name}} 的见面打分",
+      "accomplished": "挑战完成",
+      "closed": "挑战已关闭",
+      "submitProof": "提交照片",
+      "waitingForProof": "等对方交照片",
+      "reviewProof": "查看照片",
+      "waitingForVerdict": "等结果"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} 想接你的挑战",
+      "pendingBody": "接受就能开始聊天、约线下见面；拒绝就把名额放出来。",
+      "approve": "接受",
+      "reject": "拒绝",
+      "approveFailed": "接受失败，再试一次。",
+      "rejectFailed": "拒绝失败，再试一次。"
     },
-    "lifecycle": {
-      "heading": "🔁 如何收尾",
-      "body": "发起人设定挑战，大家加入，最后由发起人确认 —— 谁到场了，或哪张照片获胜。"
+    "acceptor": {
+      "waitingTitle": "等对方确认",
+      "waitingBody": "{{name}} 会决定接不接受你的应战，有结果会推送给你。",
+      "rejectedTitle": "对方没接受",
+      "rejectedBody": "{{name}} 这次没接受。你还可以去挑别的挑战。"
+    }
+  },
+  "postCreate": {
+    "title": "你的挑战上线了",
+    "subtitle": "趁热打铁，争取一小时内有人来接。",
+    "thisCity": "这座城市",
+    "ctaInvite": "发给 {{city}} 的人",
+    "ctaInviteSub": "挑几个{{audience}}，我们来通知他们。",
+    "ctaShare": "分享到其他地方",
+    "skip": "以后再说",
+    "pickerTitle": "{{city}} 的{{audience}}",
+    "pickerSubtitle": "点一下选中。他们会收到推送，可以选「接受」或「忽略」。",
+    "pickerEmpty": "附近暂时没有{{audience}}，换成分享到外面吧。",
+    "sendCta": "发给 {{count}} 人",
+    "sendCtaEmpty": "先选一个人",
+    "sentTitle": "已发给 {{count}} 人",
+    "sentSubtitle": "他们马上会收到推送。",
+    "pickerSubtitleAll": "没有完全匹配的人，先显示 {{city}} 的所有人。"
+  },
+  "invitation": {
+    "accept": "接受",
+    "ignore": "忽略",
+    "acceptChallenge": "接受挑战"
+  },
+  "locked": {
+    "visitor": {
+      "title": "接下挑战，解锁聊天",
+      "body": "接下之后，你和挑战者会有一个私聊，用来约见面。"
     },
-    "pointsHeading": "💯 如何赚取积分",
-    "ways": {
-      "join": "加入挑战",
-      "create": "发起挑战",
-      "present": "到场 — 已验证出席",
-      "host": "组织一次见面",
-      "submit": "向挑战提交照片",
-      "win": "赢得照片挑战"
+    "creator": {
+      "title": "等人来接",
+      "body": "有旅行者接下后，你们就在这里聊，约见面。"
     },
-    "seeExamples": "查看 3 个真实示例"
+    "full": {
+      "title": "挑战已满",
+      "body": "名额已满，有人退出再来看看。"
+    },
+    "inProgress": {
+      "title": "现在有人在接",
+      "body": "一位旅行者正在挑战中。等 TA 完成就会空出来，过会儿再来看看。"
+    }
+  },
+  "typeFilter": {
+    "label": "按类型筛选",
+    "all": "全部",
+    "empty": "这个类别暂时没有内容。"
+  },
+  "seeAllChallenges": "查看全部挑战 →",
+  "mode": {
+    "label": "模式",
+    "local": "本地",
+    "international": "国际",
+    "localHint": "就在你的城市，最后线下见面。",
+    "internationalHint": "世界任何地方都行。对方发照片，你远程验证。",
+    "worldwide": "全球"
+  },
+  "visibility": {
+    "label": "谁能看到？",
+    "public": "🌍 公开",
+    "friends": "👯 好友",
+    "badge": {
+      "public": "公开",
+      "friends": "好友",
+      "private": "私密"
+    },
+    "publicHint": "城市里的所有人都能看到并接下。",
+    "friendsHint": "只有好友和你邀请的人能看到。",
+    "intlLocked": "国际挑战一律公开。",
+    "moderationBlocked": "这段文字没通过审核，换个说法吧。",
+    "optin": {
+      "title": "注意：这是公开的",
+      "body": "公开挑战会出现在城市动态和公开网页上。任何人都能看到你的名字和挑战内容，包括非成员和搜索引擎。想更私密的话，可以在下面改成好友可见。",
+      "cta": "知道了，公开发布",
+      "switchToFriends": "改成好友可见",
+      "dontShowAgain": "不再显示"
+    }
+  },
+  "intl": {
+    "targetCityLabel": "目标城市",
+    "targetCityAnywhere": "🌍 世界任何地方",
+    "targetCityHint": "先选一个目标城市，“世界任何地方”还没开放。",
+    "targetCityRequired": "“世界任何地方”还没开放，先选一个目标城市吧。",
+    "targetCityRequiredTitle": "选择目标城市",
+    "proofRequirementsLabel": "照片要拍到什么？",
+    "proofRequirementsPlaceholder": "例如：白天拍菜，你本人要入镜",
+    "proofRequirementsHint": "要交的是一张照片 📸。应战者提交前会看到这段说明，写具体点。",
+    "cityPicker": {
+      "title": "选择目标城市",
+      "searchPlaceholder": "搜索城市…",
+      "anywhere": "世界任何地方"
+    },
+    "proof": {
+      "requirementsLabel": "挑战者的要求",
+      "submitCta": "提交照片",
+      "tryAgainCta": "再试一次（剩 {{count}} 次）",
+      "waitingProof": "等对方交照片",
+      "waitingVerdict": "等结果",
+      "approvedLine": "挑战完成",
+      "closedLine": "挑战已关闭",
+      "lastReason": "原因：{{reason}}",
+      "geotagOk": "定位已验证",
+      "geotagWarn": "定位不在目标区域内",
+      "approveCta": "通过",
+      "rejectCta": "拒绝",
+      "rejectModalTitle": "驳回这张照片",
+      "rejectModalHint_other": "TA 还剩 {{count}} 次机会，告诉 TA 要改哪里。",
+      "reasonPlaceholder": "例如：照片太糊，看不清菜",
+      "rejectConfirm": "发送驳回",
+      "reasonRequiredTitle": "请写原因",
+      "reasonRequiredBody": "写个简短原因（1–200 字），方便应战者修改。",
+      "permPhotoTitle": "需要相机权限",
+      "permPhotoBody": "去设置里打开相机权限，必须是现拍的照片。",
+      "permGpsTitle": "需要定位",
+      "permGpsBody": "必须带定位，去设置里打开定位。",
+      "gpsFailTitle": "读取不到 GPS",
+      "gpsFailBody": "到户外再试，或者打开定位服务。",
+      "submitFailTitle": "提交失败",
+      "submitFailBody": "检查一下网络，再试一次。",
+      "reviewFailTitle": "结果没保存成功"
+    }
+  },
+  "modeFilter": {
+    "label": "按模式筛选",
+    "all": "全部"
   },
   "scoreCelebration": {
     "unit": "积分",
     "subtitle": {
-      "accepted": "你的挑战被接受了",
-      "date_locked": "日程已确定 - 出发",
+      "accepted": "有人接下了你的挑战",
+      "date_locked": "日期定了，出发",
       "meetup": "任务完成",
       "debrief": "任务完成",
-      "ghost": "下次再来",
-      "default": "你正在榜上攀升",
-      "meet_bonus": "见面奖励解锁",
+      "ghost": "下次再接再厉",
+      "default": "你的排名在上升",
+      "meet_bonus": "见面奖励已解锁",
       "challenge_created": "你发起了一个挑战"
     },
     "rank": {
       "city": "{{city}} 第 {{rank}} 名",
-      "cityBeyond": "位列你所在城市前 {{topN}} 之外",
+      "cityBeyond": "城市排名前 {{topN}} 以外",
       "world": "全球第 {{rank}} 名",
-      "worldBeyond": "位列全球前 {{topN}} 之外",
-      "cityUnranked": "本月在{{city}}尚未上榜",
-      "worldUnranked": "本月全球尚未上榜",
-      "cities": "{{city}} 在城市中排名第 {{rank}}",
-      "citiesBeyond": "{{city}} 排在城市 {{topN}} 名之外"
+      "worldBeyond": "全球排名前 {{topN}} 以外",
+      "cityUnranked": "本月在 {{city}} 还没上榜",
+      "worldUnranked": "本月全球还没上榜",
+      "cities": "{{city}} 在所有城市中排第 {{rank}}",
+      "citiesBeyond": "{{city}} 在城市榜前 {{topN}} 以外"
     },
     "cta": "出发",
     "kindShort": {
       "accepted": "已接受",
-      "date_locked": "日程已确定",
+      "date_locked": "日期已定",
       "meetup": "已见面",
-      "debrief": "双方评价",
+      "debrief": "双方已评分",
       "ghost": "放鸽子",
-      "default": "获得",
+      "default": "已获得",
       "meet_bonus": "见面奖励",
-      "challenge_created": "已创建挑战"
+      "challenge_created": "挑战已发起"
     },
     "event": {
       "deletedChallenge": "已删除的挑战",
-      "andMore": "另外 {{count}} 项"
+      "andMore": "还有 {{count}} 项"
     },
-    "total": "总分： {{total}} 分"
+    "total": "总分：{{total}} 分"
   },
   "welcomeGuest": {
-    "title": "欢迎！无需注册即可畅聊。",
-    "cta": "想接下这个挑战？3秒注册"
+    "title": "欢迎！在这儿随便聊，不用注册。",
+    "cta": "想接下这个挑战？3 秒注册"
+  },
+  "group": {
+    "meetLabel": "时间和地点",
+    "meetCta": "定个见面日期",
+    "meetHint": "加入的人都在这里集合。见面后由你确认谁到场了。",
+    "meetRequired": "选一个见面日期。",
+    "meetRequiredTitle": "设置见面",
+    "meetSet": "设置见面",
+    "join": "加入",
+    "done": "这次见面已结束。",
+    "validateCta": "确认谁到场了",
+    "validateAfter": "见面后才能确认 · {{time}}",
+    "youreIn": "你加入了，到时见！",
+    "joinCta": "加入挑战（+2 分）",
+    "closed": "不再接受新成员",
+    "joinFailed": "加入失败，再试一次。",
+    "validateFailed": "确认失败，再试一次。",
+    "validateTitle": "谁到场了？",
+    "validateSub": "勾选所有来见面的人，每个人都能拿到奖励。",
+    "rateMeet": "这次见面怎么样？",
+    "validateConfirm": "确认 {{count}} 人到场",
+    "noParticipants": "还没有人加入。",
+    "deadlineLabel": "截止时间",
+    "deadline24h": "24 小时",
+    "deadline3d": "3 天",
+    "deadline1w": "1 周",
+    "deadlineHint": "加入的人在截止前各交一张照片，之后由你选出获胜者。",
+    "deadlineRequiredTitle": "选个截止时间",
+    "deadlineRequired": "选挑战持续多久。",
+    "deadlinePrefix": "提交截止",
+    "contestDone": "这个挑战已结束。",
+    "youreInPhoto": "你加入了，在下面交照片吧。",
+    "pickWinnerCta": "选出获胜者",
+    "joinContestCta": "加入挑战（+2 分）",
+    "winnerTitle": "选出获胜者",
+    "winnerSub": "选出最佳照片，获胜者拿大奖。",
+    "winnerConfirm": "为获胜者加冕",
+    "winnerNoSubmission": "这个人还没交照片。",
+    "winnerFailed": "没选成，再试一次。",
+    "submissionsHeader_other": "{{count}} 张照片",
+    "tapToPick": "选出最好的一张",
+    "winnerTag": "获胜者",
+    "pickThis": "选 TA",
+    "winnerConfirmTitle": "为获胜者加冕？",
+    "winnerConfirmBody": "{{name}} 拿下大奖。",
+    "pickHint": "从下面的照片里选出获胜者。",
+    "awaitingPhotos": "还没有照片，挑战正在升温 🔥",
+    "checkPhotos_other": "看看这 {{count}} 张照片"
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "此刻，感受这座城市",
+      "body": "挑战就是同城玩家之间、甚至城市之间的现实小约战。"
+    },
+    "slide2": {
+      "title": "出个挑战",
+      "body": "约一次见面（时间 + 地点），或者发一个有截止时间的照片挑战。你来主持。"
+    },
+    "slide3": {
+      "title": "谁都能直接加入",
+      "body": "不用申请，不用等，想来就来。马上拿 +2。"
+    },
+    "slide4": {
+      "title": "说干就干",
+      "body": "大家一起来你约的地方见面，或在截止前交上最好的照片。"
+    },
+    "slide5": {
+      "title": "由你确认",
+      "body": "之后你来确认谁到场了，或选出获胜照片。大分就在这一步。"
+    },
+    "slide6": {
+      "title": "跨城市",
+      "body": "照片挑战可以远程玩：向另一座城市发起挑战，看他们交出最好的照片。"
+    },
+    "slide7": {
+      "title": "冲上 Most Local",
+      "body": "到场、获胜才能往上冲。加入只给一点小分，重在真去做。"
+    }
   },
   "result": {
     "winner": {
       "title": "你赢了！",
-      "body": "你的照片赢得了挑战。"
+      "body": "你的照片赢下了挑战。"
     },
     "loser": {
       "title": "{{name}} 赢了",
-      "body": "拍得不错！参与就得 {{points}} — 下次再来挑战"
+      "body": "拍得不错！参与就拿到了 {{points}}，下次再来！"
     },
     "present": {
       "title": "你来了！",
-      "body": "已确认到场参加。"
+      "body": "已确认你到场。"
     },
     "absent": {
       "title": "这次错过了",
-      "body": "下次聚会一定要来 — 你的位置留着。"
+      "body": "下次见面别错过，给你留着位置。"
     },
     "host": {
-      "titlePhoto": "{{name}} 赢得了你的挑战！",
-      "titleMeet": "你的聚会结束了！",
-      "body": "感谢你的组织。",
+      "titlePhoto": "{{name}} 赢下了你的挑战！",
+      "titleMeet": "你的见面结束了！",
+      "body": "感谢你来组织。",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
-    "cta": "赞！",
+    "cta": "太棒了！",
     "total": "你现在有 {{total}} 分",
-    "rateTitle": "为这个挑战评分",
-    "notePlaceholder": "添加备注（可选）",
+    "rateTitle": "给这个挑战打分",
+    "notePlaceholder": "加个备注（选填）",
     "saveRating": "保存评分"
   },
   "status": {
@@ -688,122 +780,30 @@
     "done": "已完成",
     "ended": "已结束"
   },
-  "group": {
-    "meetCta": "选择见面日期",
-    "meetRequired": "请选择见面日期。",
-    "meetLabel": "时间和地点",
-    "meetHint": "所有加入的人都在这里一起见面。之后由你确认谁到场了。",
-    "meetRequiredTitle": "设置见面",
-    "meetSet": "设置见面",
-    "join": "加入",
-    "done": "这次见面已结束。",
-    "validateCta": "确认谁到场了",
-    "validateAfter": "见面后你可以确认 · {{time}}",
-    "youreIn": "你已加入 — 到时见！",
-    "joinCta": "加入挑战（+2 分）",
-    "closed": "已停止接受新成员",
-    "joinFailed": "加入失败，请重试。",
-    "validateFailed": "确认失败，请重试。",
-    "validateTitle": "谁到场了？",
-    "validateSub": "勾选所有来见面的人。每人都获得奖励。",
-    "rateMeet": "这次见面怎么样？",
-    "validateConfirm": "确认 {{count}} 人到场",
-    "noParticipants": "还没有人加入。",
-    "deadlineLabel": "提交截止时间",
-    "deadline24h": "24h",
-    "deadline3d": "3 天",
-    "deadline1w": "1 周",
-    "deadlineHint": "所有加入的人在截止前提交一张照片。之后由你选出获胜者。",
-    "deadlineRequiredTitle": "选择截止时间",
-    "deadlineRequired": "选择挑战持续多久。",
-    "deadlinePrefix": "截止于",
-    "contestDone": "这个挑战已结束。",
-    "youreInPhoto": "你已加入 — 在下方提交你的照片。",
-    "pickWinnerCta": "选出获胜者",
-    "joinContestCta": "加入挑战（+2 分）",
-    "winnerTitle": "选出获胜者",
-    "winnerSub": "选出最佳照片。获胜者赢得大奖励。",
-    "winnerConfirm": "为获胜者加冕",
-    "winnerNoSubmission": "该用户尚未提交照片。",
-    "winnerFailed": "无法选出获胜者，请重试。",
-    "submissionsHeader_other": "{{count}} 张照片",
-    "tapToPick": "选出最佳",
-    "winnerTag": "获胜者",
-    "pickThis": "选择",
-    "winnerConfirmTitle": "为获胜者加冕？",
-    "winnerConfirmBody": "{{name}} 赢得大奖励。",
-    "pickHint": "从下方照片中选出获胜者。",
-    "awaitingPhotos": "还没有照片 — 挑战正在升温 🔥",
-    "checkPhotos_other": "查看这 {{count}} 张照片"
-  },
-  "leaveTakeon": {
-    "pill": "退出",
-    "confirmTitle": "退出这个挑战？",
-    "confirmBody": "进度将归零，挑战将重新向他人开放。此操作无法撤销。",
-    "confirmCta": "退出",
-    "failed": "退出失败，请重试。"
-  },
-  "restart": {
-    "cta": "重新开始挑战",
-    "confirmTitle": "重新开始挑战？",
-    "confirmBody": "这会移除当前参与者、清空聊天，并将挑战从零重新开放。此操作无法撤销。",
-    "confirmCta": "重新开始",
-    "failed": "重新开始失败，请重试。"
-  },
-  "challengeIntro": {
-    "slide1": {
-      "title": "此刻，感受这座城市",
-      "body": "挑战是城市里人与人之间、以及城市之间的小小现实约战。"
-    },
-    "slide2": {
-      "title": "设定一个挑战",
-      "body": "设置一次见面（时间 + 地点），或一个带截止时间的照片挑战。你就是主办人。"
-    },
-    "slide3": {
-      "title": "谁都能直接加入",
-      "body": "不用申请，不用等待 — 想来就加入。立刻获得 +2。"
-    },
-    "slide4": {
-      "title": "让它发生",
-      "body": "大家一起到你的见面现场 — 或在截止前提交最佳照片。"
-    },
-    "slide5": {
-      "title": "由你确认",
-      "body": "之后你确认谁到场了，或选出获胜照片。大分就在这里。"
-    },
-    "slide6": {
-      "title": "跨城市",
-      "body": "照片挑战可以远程进行 — 向另一座城市发起挑战，让他们交出最佳作品。"
-    },
-    "slide7": {
-      "title": "冲上 Most Local",
-      "body": "到场并取胜才能在榜上攀升。加入只给一点点火花，关键是真正去做。"
-    }
-  },
   "pointExamples": {
-    "title": "3 个真实示例",
-    "intro": "真实挑战是怎么发分的 — 谁得了多少。",
-    "empty": "还没有示例 — 抢先发起一个挑战吧！",
+    "title": "3 个真实例子",
+    "intro": "看看真实挑战是怎么发分的：谁拿了多少。",
+    "empty": "还没有例子，抢先发起一个挑战吧！",
     "each": "每人",
     "line": {
-      "created": "{{name}} 发起了",
-      "winner": "{{name}} 获胜",
+      "created": "{{name}} 发起",
+      "winner": "{{name}} 赢了",
       "present": "{{count}} 人到场",
       "submission": "{{count}} 人提交了照片",
       "host": "{{name}} 主办"
     }
   },
   "titlePh": {
-    "food": "例如：帮我找到最好吃的一碗河粉 🍜",
-    "place": "例如：带我去你最爱的私藏角落 📍",
-    "culture": "例如：给我看只有本地人才知道的东西 🎭",
-    "help": "例如：挑战我做件疯狂的事 🤪"
+    "food": "例如：带我吃全城最好吃的一碗粉 🍜",
+    "place": "例如：带我去你私藏的秘密基地 📍",
+    "culture": "例如：带我看看只有本地人才知道的东西 🎭",
+    "help": "例如：挑战我做点疯狂的事 🤪"
   },
   "relaunch": {
     "cta": "重新开始",
     "confirmTitle": "重新开始这个挑战？",
-    "confirmBody": "将以你第一次设置的相同倒计时重新开放。",
+    "confirmBody": "会按你第一次设的倒计时重新开放。",
     "confirmCta": "重新开始",
-    "failed": "无法重新开始，请重试。"
+    "failed": "重新开始失败，再试一次。"
   }
 }

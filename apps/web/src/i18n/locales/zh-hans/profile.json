@@ -1,13 +1,13 @@
 {
-  "pageTitle": "我的个人资料",
+  "pageTitle": "我的资料",
   "changePhoto": "更换头像",
-  "yourProfile": "你的个人资料",
+  "yourProfile": "你的主页",
   "mode": "模式",
   "modes": {
-    "local": "本地",
-    "localDesc": "你了解这座城市",
+    "local": "本地人",
+    "localDesc": "你熟悉这座城市",
     "exploring": "探索中",
-    "exploringDesc": "你正在发现它"
+    "exploringDesc": "你正在探索这里"
   },
   "tabs": {
     "interests": "兴趣",
@@ -39,7 +39,7 @@
     "fitness": "健身",
     "hiking": "徒步",
     "beach": "海滩",
-    "wellness": "养生",
+    "wellness": "身心健康",
     "travel": "旅行",
     "hangout": "聚会",
     "socializing": "社交",
@@ -51,58 +51,57 @@
     "username": "用户名",
     "usernamePlaceholder": "用户名",
     "checking": "检查中…",
-    "available": "@{{username}} 可以使用",
+    "available": "@{{username}} 可以用",
     "aboutMe": "关于我",
-    "charsLeft": "- 还剩 {{count}}",
-    "aboutPlaceholder": "热爱街头小吃和随性的聊天",
+    "charsLeft": "· 还剩 {{count}} 字",
+    "aboutPlaceholder": "爱吃街边小吃，爱随便聊聊",
     "email": "邮箱",
-    "readOnly": "- 只读",
-    "homeCity": "常住城市",
-    "homeCityPlaceholder": "你住在哪里",
+    "readOnly": "· 只读",
+    "homeCity": "家乡城市",
+    "homeCityPlaceholder": "你住在哪儿",
     "age": "年龄",
     "agePlaceholder": "你的年龄",
     "myVibe": "我的 vibe",
     "interests": "兴趣",
-    "interestsHint": "- 最多选 5 个"
+    "interestsHint": "（最多选 5 个）"
   },
   "ambassador": {
     "title": "城市推荐",
-    "subtitle": "作为本地达人展示在你的个人资料上。",
+    "subtitle": "以本地达人身份展示在你的主页上。",
     "restaurant": "最爱的餐厅",
-    "restaurantPlaceholder": "你总会带人去的地方",
-    "spot": "隐藏宝藏 / 地点",
-    "spotPlaceholder": "大多数游客错过的地方",
+    "restaurantPlaceholder": "你总会带朋友去的地方",
+    "spot": "私藏地点",
+    "spotPlaceholder": "大多数游客都会错过的地方",
     "tip": "本地小贴士",
-    "tipPlaceholder": "给新来者的最佳建议",
+    "tipPlaceholder": "给新来的人最好的一条建议",
     "story": "城市故事",
-    "storyPlaceholder": "你喜爱这座城市的某一点"
+    "storyPlaceholder": "你最爱这座城市的一点"
   },
   "hangouts": {
-    "empty": "还没有聚会 - 发起一个吧 🗣️",
-    "host": "主办人"
+    "empty": "还没有聚会，发起一个吧 🗣️",
+    "host": "发起人"
   },
   "events": {
-    "going": "参加",
-    "goingEmpty": "还没有计划 - 找点事做吧 🔥",
-    "hosting": "主办",
-    "hostingEmpty": "还没有主办任何活动 - 发起一个吧 ✨",
+    "going": "要去",
+    "goingEmpty": "还没有计划，找点事做吧 🔥",
+    "hosting": "我主办的",
+    "hostingEmpty": "还没发起过活动，来搞点事吧 ✨",
     "live": "进行中",
-    "recurring": "↻ 重复",
+    "recurring": "↻ 定期",
     "upcoming": "即将开始",
     "deleteEvent": "删除活动"
   },
   "friends": {
     "requests": "好友请求",
-    "empty": "还没有好友。在个人资料里添加一些吧。",
+    "empty": "还没有好友。去别人的个人资料里加好友吧。",
     "mine": "我的好友"
   },
   "vibesTab": {
-    "received": "收到的 vibes",
-    "score": "{{score}} vibe 评分",
-    "basedOn_one": "基于 {{count}} 个 vibe",
+    "received": "收到的 vibe",
+    "score": "{{score}} vibe 分",
     "basedOn_other": "基于 {{count}} 个 vibe",
     "empty": "还没有 vibes",
-    "emptyHint": "当有人给你留言后，你的评分会显示在这里 ✨"
+    "emptyHint": "有人给你留言后，你的评分就会出现在这里 ✨"
   },
   "save": {
     "uploading": "上传中…",
@@ -114,22 +113,22 @@
   "deleteAccount": "删除账号",
   "delete": {
     "title": "删除账号？",
-    "body": "你的个人资料、好友和设置将被永久删除。你的消息和活动会以匿名形式保留在城市聊天中。",
-    "irreversible": "此操作无法撤销。",
+    "body": "你的主页、好友和设置会被永久删除。你的消息和活动会以匿名形式留在城市聊天里。",
+    "irreversible": "删除后无法恢复。",
     "deleting": "删除中…",
-    "confirm": "是的，删除我的账号",
+    "confirm": "确定，删除我的账号",
     "cancel": "取消"
   },
   "errors": {
-    "photoUpload": "头像上传失败。请重试。",
-    "usernameTooShort": "用户名至少需要 3 个字符",
-    "usernameTaken": "该用户名已被占用",
+    "photoUpload": "头像上传失败，再试一次吧。",
+    "usernameTooShort": "用户名至少要 3 个字符",
+    "usernameTaken": "这个用户名已经有人用了",
     "usernameInvalid": "用户名无效",
-    "saveFailed": "保存失败。请重试。",
-    "generic": "出错了。请重试。"
+    "saveFailed": "保存失败，再试一次吧。",
+    "generic": "出了点问题，再试一次吧。"
   },
   "challenges": {
-    "empty": "还没有挑战 - 发起一个 🔥",
+    "empty": "还没有挑战，发起一个吧 🔥",
     "challenger": "挑战者"
   },
   "appearance": "外观",
@@ -139,73 +138,68 @@
     "passport": {
       "title": "护照",
       "weekRank": "本周第 {{rank}} 名",
-      "weekNone": "本周尚未上榜",
+      "weekNone": "本周还没上榜",
       "mostLocalIn": "{{city}} Most Local",
       "mostLocalWorld": "全球 Most Local",
-      "hintToday": "完成今天的 challenge，获得{{theme}}印章。",
+      "hintToday": "完成今天的挑战，拿到 {{theme}} 印章。",
       "hintTomorrow": "明天：{{theme}}",
-      "hintPass": "已获得 Local Pass。这里的所有主题都完成了。",
+      "hintPass": "已获得 Local Pass，这里的主题全部完成。",
       "localPass": "Local Pass",
       "mySpots": "我的地点",
       "myProposals": "我的提议",
       "friends": "好友",
       "mostLocalAllTime": "Most Local 历史榜",
-      "allTimeRank": "{{city}}第 {{rank}} 名",
+      "allTimeRank": "{{city}} 第 {{rank}} 名",
       "howPoints": "积分规则",
       "gotIt": "知道了",
       "close": "关闭",
-      "noSpots": "还没有地点。你在地点拍的照片会出现在这里。",
+      "noSpots": "还没有地点。在照片里标记一个地点，它就会出现在这里。",
       "pageA11y_other": "{{city}}：{{count}} 枚印章",
-      "guestTitle": "开始你的护照",
-      "guestBody": "注册后可在每个城市收集每个主题的印章，并赢得 Local Pass。",
+      "guestTitle": "开启你的护照",
+      "guestBody": "注册后，在每座城市集齐每个主题的印章，赢取 Local Pass。",
       "signUp": "注册",
       "signIn": "我有账号",
-      "best_one": "最佳：{{count}} 天",
-      "best_other": "最佳：{{count}} 天",
-      "stamps_one": "7 枚中的 {{count}} 枚",
-      "stamps_other": "7 枚中的 {{count}} 枚",
-      "inReview_one": "{{count}} 个审核中",
+      "best_other": "最长：{{count}} 天",
+      "stamps_other": "{{count}}/7 枚印章",
       "inReview_other": "{{count}} 个审核中",
       "specialTitle": "特别印章",
-      "specialSub": "限量版，每个特别日一枚。不计入 Local Pass。",
-      "compared_one": "已与 {{count}} 个国家/地区比较",
-      "compared_other": "已与 {{count}} 个国家/地区比较",
-      "stampsOf_other": "{{count}}/{{total}} 个印章",
-      "passEarned": "在{{city}}获得",
-      "passToGo_other": "还差 {{count}} 个印章",
-      "comparedCities_other": "已与 {{count}} 座城市比较",
+      "specialSub": "限量版，每个特别的日子一枚，不计入 Local Pass。",
+      "compared_other": "已和 {{count}} 个国家/地区比过",
+      "stampsOf_other": "{{count}}/{{total}} 枚印章",
+      "passEarned": "在 {{city}} 获得",
+      "passToGo_other": "还差 {{count}} 枚印章",
+      "comparedCities_other": "已和 {{count}} 座城市比过",
       "myPhotos": "我的照片",
-      "noPhotos": "你的 Daily Challenge 照片会显示在这里。",
+      "noPhotos": "你的 Daily Challenge 照片会出现在这里。",
       "share": "分享我的护照",
-      "localSince": "自{{date}}起的{{city}}本地人"
+      "localSince": "{{date}} 起成为 {{city}} 本地人"
     },
     "points": {
-      "title": "如何获得积分",
-      "intro": "Daily Challenge 积分计入每周 Most Local。所有积分都计入历史榜。",
-      "proof": "发布你的照片",
-      "vote": "投票（每个 challenge）",
+      "title": "怎么赚积分",
+      "intro": "Daily Challenge 积分计入每周 Most Local，所有积分都计入历史榜。",
+      "proof": "发布照片",
+      "vote": "投票（每个挑战）",
       "top": "当天全球前三",
       "weekly": "每周 Most Local 每周一重置。"
     },
     "tabFriends": "好友",
     "friendRequests": "好友请求",
     "myFriends": "我的好友",
-    "noFriends": "还没有好友。去个人资料里添加一些吧。",
-    "vibesReceived": "收到的 VIBES",
-    "vibeScore": "{{score}} vibe 分数",
-    "noVibes": "还没有 vibes。",
-    "noVibesSub": "当有人给你留言后，你的分数就会显示出来 ✨",
+    "noFriends": "还没有好友。去别人的个人资料里加好友吧。",
+    "vibesReceived": "收到的 vibes",
+    "vibeScore": "{{score}} vibe 分",
+    "noVibes": "还没有 vibe。",
+    "noVibesSub": "有人给你留言后，你的评分就会出现 ✨",
     "settings": "设置",
-    "vibeBasis_one": "基于 {{count}} 个 vibe",
     "vibeBasis_other": "基于 {{count}} 个 vibe",
     "mode": {
       "local": {
-        "label": "Local",
+        "label": "本地人",
         "desc": "你熟悉这座城市"
       },
       "exploring": {
         "label": "探索中",
-        "desc": "你正在发现它"
+        "desc": "你正在探索这里"
       }
     },
     "passportStats": {
@@ -224,8 +218,8 @@
     "accept": "接受",
     "cancel": "取消",
     "emptyIncomingTitle": "还没有好友请求",
-    "emptySentTitle": "你还没有发送任何请求",
-    "emptyIncomingSub": "当有人请求成为你的好友时，你会在这里看到。",
-    "emptySentSub": "你发送的待处理好友请求会显示在这里。"
+    "emptySentTitle": "你还没发过请求",
+    "emptyIncomingSub": "有人想加你为好友时，会显示在这里。",
+    "emptySentSub": "你发出的、还在等待回复的好友请求会显示在这里。"
   }
 }
