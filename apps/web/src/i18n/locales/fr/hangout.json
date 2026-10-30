@@ -11,10 +11,10 @@
       "help": "Aide",
       "meetup": "Rencontre"
     },
-    "titleLabel": "Qu'est-ce qui te passe par la tête ?",
+    "titleLabel": "Qu'est-ce qui te passe par la tête ?",
     "titlePlaceholder": "J'ai envie d'un café",
     "detailsLabel": "Ajoute des détails",
-    "optional": "(optionnel)",
+    "optional": "(facultatif)",
     "detailsPlaceholder": "Donne un peu de contexte…",
     "expiry": "Expire dans 8 h",
     "saving": "Enregistrement…",
@@ -23,20 +23,20 @@
     "startCta": "Hi now",
     "limitHeader": "Une à la fois",
     "limitTitle": "Tu as déjà une sortie",
-    "limitSub": "Tu ne peux avoir qu'une sortie à la fois. Va sur « {{title}} », ou supprime-la pour en lancer une nouvelle.",
+    "limitSub": "Tu ne peux avoir qu'une sortie à la fois. Va sur « {{title}} », ou supprime-la pour en lancer une nouvelle.",
     "limitGo": "Aller à ma sortie",
     "yourHangout": "ta sortie",
-    "geoHint": "Active ta localisation pour voir qui est dans le coin maintenant — et que les gens autour repèrent ton Hi",
-    "geoRequired": "Un Hi now doit dire aux gens où te retrouver — active ta position pour continuer."
+    "geoHint": "Active ta localisation pour voir qui est dans le coin en ce moment, et pour que les gens autour repèrent ton Hi",
+    "geoRequired": "Un Hi now dit aux gens où te retrouver : active ta position pour continuer."
   },
-  "deleteConfirm": "Supprimer cette sortie ? Cela y met fin pour tout le monde et c'est irréversible.",
+  "deleteConfirm": "Supprimer cette sortie ? Elle se termine pour tout le monde, et c'est définitif.",
   "deleteFailedAlert": "Impossible de supprimer. Réessaie.",
   "shareAria": "Partager la sortie",
   "shareTitle": "Partager cette sortie",
   "members": {
     "oneIn": "{{name}} est dans le coup",
     "countIn": "{{count}} dans cette sortie",
-    "seeAll": "Voir tout"
+    "seeAll": "Tout voir"
   },
   "owner": {
     "edit": "Modifier",
@@ -67,7 +67,7 @@
   },
   "modes": {
     "local": "Local",
-    "exploring": "Exploration"
+    "exploring": "Voyageur"
   },
   "reply": {
     "photo": "Photo",
@@ -79,6 +79,6 @@
     "imageType": "Choisis une image JPEG, PNG ou WebP.",
     "imageTooLarge": "Image trop lourde. Max 10 Mo.",
     "imageSend": "Impossible d'envoyer l'image. Réessaie.",
-    "dismiss": "{{error}} · appuie pour fermer"
+    "dismiss": "{{error}} · touche pour fermer"
   }
 }

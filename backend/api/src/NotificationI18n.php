@@ -25,7 +25,7 @@ final class NotificationI18n
         // title (verbatim). Body ends with an "Are you in?" hook. English
         // recipients get the caller's fallback text (already interpolated).
         'campaign_challenge' => [
-            'fr'      => ["Campagne Hilads — points x2", "{title} — gagne des points DOUBLÉS ! Tu es partant ?"],
+            'fr'      => ["Campagne Hilads : points x2", "{title} - points doublés ! Tu en es ?"],
             'vi'      => ["Hilads nhân đôi điểm!", "{title} - điểm x2! Chơi không?"],
             'es'      => ["Campaña Hilads — puntos x2",   "{title} — ¡gana el DOBLE de puntos! ¿Te apuntas?"],
             'it'      => ["Campagna Hilads — punti x2",   "{title} — guadagna punti DOPPI! Ci stai?"],
@@ -208,7 +208,7 @@ final class NotificationI18n
         // participant. Both title + body are translated; English-locale users
         // get the caller's hardcoded text (see api.php POST /challenges/{id}/validate).
         'challenge_validated' => [
-            'fr'      => ["Défi validé",                         "{name} a validé « {title} »"],
+            'fr'      => ["Défi validé", "{name} a validé « {title} »"],
             'vi'      => ["Thử thách đã được xác nhận",          "{name} đã xác nhận \"{title}\""],
             'es'      => ["Reto validado",                        "{name} validó \"{title}\""],
             'it'      => ["Sfida validata",                       "{name} ha validato \"{title}\""],
@@ -308,7 +308,7 @@ final class NotificationI18n
             'ar'      => ["{name} شاهد ملفك الشخصي", null],
         ],
         'join_request' => [
-            'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
+            'fr' => ["{name} veut rejoindre", "{name} demande à rejoindre {title}"],
             'vi' => ["{name} muốn tham gia", "{name} xin vào {title}"],
             'es' => ["{name} quiere unirse",   "{name} pidió unirse a {title}"],
             'it' => ["{name} vuole unirsi",    "{name} ha chiesto di unirsi a {title}"],
@@ -374,7 +374,7 @@ final class NotificationI18n
         // hits "Accept" on their open challenge. Body references the
         // challenge title (proper user content, kept verbatim).
         'challenge_takeon_request' => [
-            'fr'      => ["Nouvelle demande",                          "{name} veut relever « {title} »"],
+            'fr'      => ["Nouvelle demande", "{name} veut relever « {title} »"],
             'vi'      => ["Có người muốn nhận lời", "{name} muốn nhận \"{title}\""],
             'es'      => ["Nueva solicitud",                            "{name} quiere aceptar \"{title}\""],
             'it'      => ["Nuova richiesta",                            "{name} vuole accettare \"{title}\""],
@@ -396,7 +396,7 @@ final class NotificationI18n
         // Group join - fires to the CREATOR when a user JOINS their group
         // challenge (no approval; many can join). Body references the title.
         'challenge_group_join' => [
-            'fr'      => ["Nouveau participant",   "{name} a rejoint ton défi « {title} »"],
+            'fr'      => ["Nouveau participant", "{name} a rejoint ton défi « {title} »"],
             'vi'      => ["Có người mới tham gia", "{name} đã vào thử thách \"{title}\" của bạn"],
             'es'      => ["Nuevo participante",     "{name} se unió a tu reto \"{title}\""],
             'it'      => ["Nuovo partecipante",     "{name} si è unito alla tua sfida \"{title}\""],
@@ -418,7 +418,7 @@ final class NotificationI18n
         // Take-on approved - fires to the ACCEPTOR when the creator
         // accepts their request. Time to plan the meet-up.
         'challenge_takeon_approved' => [
-            'fr'      => ["Défi accepté",       "{name} a accepté ta demande pour « {title} ». Place au plan !"],
+            'fr'      => ["Défi accepté", "{name} a accepté ta demande pour « {title} ». On s'organise !"],
             'vi'      => ["Bạn được nhận rồi!", "{name} đồng ý cho bạn nhận \"{title}\". Lên kèo thôi!"],
             'es'      => ["Reto aceptado",      "{name} aceptó tu solicitud para \"{title}\". ¡A planear!"],
             'it'      => ["Sfida accettata",    "{name} ha accettato la tua richiesta per \"{title}\". Pianifichiamo!"],
@@ -439,7 +439,7 @@ final class NotificationI18n
         ],
         // Take-on rejected - same surface, less happy outcome.
         'challenge_takeon_rejected' => [
-            'fr'      => ["Demande refusée",        "{name} a refusé ta demande pour « {title} »."],
+            'fr'      => ["Demande refusée", "{name} a refusé ta demande pour « {title} »."],
             'vi'      => ["Yêu cầu bị từ chối", "{name} đã từ chối yêu cầu nhận \"{title}\"."],
             'es'      => ["Solicitud rechazada",    "{name} rechazó tu solicitud para \"{title}\"."],
             'it'      => ["Richiesta rifiutata",    "{name} ha rifiutato la tua richiesta per \"{title}\"."],
@@ -460,7 +460,7 @@ final class NotificationI18n
         ],
         // Creator restarted the challenge from zero → the removed taker is told.
         'challenge_restarted' => [
-            'fr'      => ["Défi relancé",            "{name} a relancé « {title} » - la participation a été réinitialisée"],
+            'fr'      => ["Défi relancé", "{name} a relancé « {title} », ta participation repart à zéro"],
             'vi'      => ["Thử thách chơi lại từ đầu", "{name} đã cho \"{title}\" chơi lại từ đầu - lượt tham gia của bạn đã bị hủy"],
             'es'      => ["Reto reiniciado",          "{name} reinició \"{title}\" - la participación se restableció"],
             'it'      => ["Sfida riavviata",          "{name} ha riavviato \"{title}\" - la partecipazione è stata azzerata"],
@@ -481,7 +481,7 @@ final class NotificationI18n
         ],
         // Taker abandoned an active take-on → the creator's challenge reopens.
         'challenge_acceptor_left' => [
-            'fr'      => ["Défi abandonné",          "{name} a quitté le défi « {title} »"],
+            'fr'      => ["Défi abandonné", "{name} a quitté le défi « {title} »"],
             'vi'      => ["Có người bỏ thử thách", "{name} đã rời thử thách \"{title}\""],
             'es'      => ["Reto abandonado",          "{name} dejó el reto \"{title}\""],
             'it'      => ["Sfida abbandonata",        "{name} ha lasciato la sfida \"{title}\""],
@@ -505,7 +505,7 @@ final class NotificationI18n
         // Until this push existed the propose-date flow was WS-only,
         // so a backgrounded recipient never learned a date was waiting.
         'challenge_date_proposed' => [
-            'fr'      => ["Date proposée",            "{name} propose une date pour « {title} »"],
+            'fr'      => ["Date proposée", "{name} propose une date pour « {title} »"],
             'vi'      => ["Có ngày hẹn mới", "{name} đề xuất ngày cho \"{title}\""],
             'es'      => ["Fecha propuesta",           "{name} propuso una fecha para \"{title}\""],
             'it'      => ["Data proposta",             "{name} ha proposto una data per \"{title}\""],
@@ -528,7 +528,7 @@ final class NotificationI18n
         // signs off on their proposal. Counterpart to
         // challenge_date_proposed; both lock the meet-up calendar.
         'challenge_date_approved' => [
-            'fr'      => ["Date confirmée",            "{name} a validé ta date pour « {title} »"],
+            'fr'      => ["Date confirmée", "{name} a validé ta date pour « {title} »"],
             'vi'      => ["Chốt ngày rồi!", "{name} đã đồng ý ngày bạn chọn cho \"{title}\""],
             'es'      => ["Fecha confirmada",          "{name} confirmó tu fecha para \"{title}\""],
             'it'      => ["Data confermata",           "{name} ha confermato la tua data per \"{title}\""],
@@ -550,7 +550,7 @@ final class NotificationI18n
         // Verdict approved - fires to the ACCEPTOR after the meet-up,
         // the creator marked it as done.
         'challenge_verdict_approved' => [
-            'fr'      => ["Défi accompli",           "{name} a validé « {title} » comme accompli"],
+            'fr'      => ["Défi accompli", "{name} a validé « {title} » : c'est accompli"],
             'vi'      => ["Hoàn thành thử thách!", "{name} xác nhận bạn đã hoàn thành \"{title}\""],
             'es'      => ["Reto cumplido",            "{name} marcó \"{title}\" como cumplido"],
             'it'      => ["Sfida completata",         "{name} ha confermato \"{title}\" come completato"],
@@ -571,7 +571,7 @@ final class NotificationI18n
         ],
         // Verdict rejected - same surface, no-show / didn't really meet.
         'challenge_verdict_rejected' => [
-            'fr'      => ["Défi clôturé",            "{name} a clôturé « {title} »"],
+            'fr'      => ["Défi clôturé", "{name} a clôturé « {title} »"],
             'vi'      => ["Thử thách đã đóng",       "{name} đã đóng \"{title}\""],
             'es'      => ["Reto cerrado",            "{name} cerró \"{title}\""],
             'it'      => ["Sfida chiusa",            "{name} ha chiuso \"{title}\""],
@@ -594,7 +594,7 @@ final class NotificationI18n
         // Proof submitted - fires to the CREATOR when the acceptor uploads
         // a proof. Body carries the challenge title verbatim.
         'challenge_proof_submitted' => [
-            'fr'      => ["Nouvelle preuve à valider",        "{name} a envoyé une preuve pour « {title} »"],
+            'fr'      => ["Nouvelle preuve à valider", "{name} a envoyé une preuve pour « {title} »"],
             'vi'      => ["Có bằng chứng mới chờ duyệt", "{name} vừa gửi bằng chứng cho \"{title}\""],
             'es'      => ["Nueva prueba para revisar",        "{name} envió una prueba para \"{title}\""],
             'it'      => ["Nuova prova da rivedere",          "{name} ha inviato una prova per \"{title}\""],
@@ -616,7 +616,7 @@ final class NotificationI18n
         // Proof approved - fires to the ACCEPTOR after the creator's verdict.
         // Final terminal state for the acceptance.
         'challenge_proof_approved' => [
-            'fr'      => ["Preuve validée",         "{name} a validé ta preuve pour « {title} »"],
+            'fr'      => ["Preuve validée", "{name} a validé ta preuve pour « {title} »"],
             'vi'      => ["Bằng chứng đã được duyệt", "{name} đã duyệt bằng chứng của bạn cho \"{title}\""],
             'es'      => ["Prueba aprobada",        "{name} aprobó tu prueba para \"{title}\""],
             'it'      => ["Prova approvata",        "{name} ha approvato la tua prova per \"{title}\""],
@@ -641,7 +641,7 @@ final class NotificationI18n
         // the in-app screen. Keeping the push short + the screen detailed
         // reads better than a 200-char rejection in the notification tray.
         'challenge_proof_rejected' => [
-            'fr'      => ["Preuve refusée",        "{name} a refusé ta preuve pour « {title} »"],
+            'fr'      => ["Preuve refusée", "{name} a refusé ta preuve pour « {title} »"],
             'vi'      => ["Bằng chứng bị từ chối", "{name} đã từ chối bằng chứng của bạn cho \"{title}\""],
             'es'      => ["Prueba rechazada",      "{name} rechazó tu prueba para \"{title}\""],
             'it'      => ["Prova rifiutata",        "{name} ha rifiutato la tua prova per \"{title}\""],
@@ -714,7 +714,7 @@ final class NotificationI18n
         // rated yet. Tapping the push opens the challenge so the
         // RatePromptLaunchGate surfaces the RateSheet.
         'rating_received' => [
-            'fr'      => ["{name} t'a noté",                 "À ton tour de le noter"],
+            'fr'      => ["{name} t'a donné une note", "À toi de noter !"],
             'vi'      => ["{name} vừa chấm điểm bạn", "Tới lượt bạn chấm lại nè"],
             'es'      => ["{name} te ha valorado",           "Te toca valorarle a ti"],
             'it'      => ["{name} ti ha valutato",           "Tocca a te valutarlo"],
@@ -734,7 +734,7 @@ final class NotificationI18n
             'ar'      => ["{name} قيّمك",                     "حان دورك"],
         ],
         'join_request_accepted' => [
-            'fr' => ["Tu y es !",        "{name} t'a ajouté à {title}"],
+            'fr' => ["Tu y es !", "{name} t'a ajouté à {title}"],
             'vi' => ["Bạn vào rồi!", "{name} đã thêm bạn vào {title}"],
             'es' => ["¡Ya estás dentro!", "{name} te ha añadido a {title}"],
             'it' => ["Ci sei!",          "{name} ti ha aggiunto a {title}"],

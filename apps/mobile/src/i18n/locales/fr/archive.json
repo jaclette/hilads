@@ -1,16 +1,16 @@
 {
-  "title": "Activité passée",
+  "title": "Ce qui s'est passé",
   "loadError": "Impossible de charger les archives",
   "filterAll": "Tout",
   "rangeRecent": "Récent",
   "range7": "7 derniers jours",
   "range14": "14 derniers jours",
   "custom": "Personnalisé",
-  "pickEnd": "Choisis maintenant le jour de fin",
-  "pickStart": "Choisis un jour de début (jusqu'à {{max}} jours)",
+  "pickEnd": "Maintenant, choisis le dernier jour",
+  "pickStart": "Choisis le premier jour ({{max}} jours max)",
   "apply": "Appliquer",
-  "emptyTitle": "Rien ici pour l'instant",
-  "emptyRecentSub": "Les événements et sorties passés apparaîtront ici une fois que la ville aura un peu d'historique.",
-  "emptyWindowSub": "Aucun événement ou sortie dans cette période. Essaie une plage plus large.",
+  "emptyTitle": "Rien pour l'instant",
+  "emptyRecentSub": "Les événements et sorties passés s'afficheront ici dès que la ville aura un peu d'histoire.",
+  "emptyWindowSub": "Aucun événement ni sortie sur cette période. Essaie une période plus large.",
   "filterChallenges": "Défis"
 }

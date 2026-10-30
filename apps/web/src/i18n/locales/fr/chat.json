@@ -6,8 +6,8 @@
   "actionCopy": "Copier",
   "actionEdit": "Modifier",
   "actionDelete": "Supprimer",
-  "deleteConfirmBody": "Supprimer ce message ? Il sera supprimé pour tout le monde.",
-  "editFailed": "Impossible d'enregistrer la modification. Réessaie.",
+  "deleteConfirmBody": "Supprimer ce message ? Il sera supprimé pour tout le monde.",
+  "editFailed": "Impossible d'enregistrer la modif. Réessaie.",
   "deleteFailed": "Impossible de supprimer le message. Réessaie.",
   "actionDownload": "Enregistrer",
   "actionShare": "Partager",
@@ -17,41 +17,44 @@
   "shareUnavailable": "Le partage n'est pas disponible ici",
   "shareDialogTitle": "Partager la photo",
   "linkCopied": "Lien copié",
-  "photoSavePermTitle": "Accès aux photos requis",
+  "photoSavePermTitle": "Accès aux photos nécessaire",
   "photoSavePermBody": "Autorise l'accès aux photos pour enregistrer les images.",
   "photoSavePermSettings": "Autorise l'accès aux photos dans Réglages pour enregistrer les images.",
   "actionTranslate": "Traduire",
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y_one": "{{count}} personnes partantes en ce moment",
-    "hiNowA11y_many": "{{count}} personnes partantes en ce moment",
+    "hiNowA11y_one": "{{count}} personne partante en ce moment",
+    "hiNowA11y_many": "{{count}} de personnes partantes en ce moment",
     "hiNowA11y_other": "{{count}} personnes partantes en ce moment",
     "going_one": "{{count}} y va",
+    "going_many": "{{count}} y vont",
     "going_other": "{{count}} y vont",
-    "arrivals_one": "{{count}} arrivé cette semaine",
-    "arrivals_other": "{{count}} arrivés cette semaine",
+    "arrivals_one": "{{count}} arrivée cette semaine",
+    "arrivals_many": "{{count}} d'arrivées cette semaine",
+    "arrivals_other": "{{count}} arrivées cette semaine",
     "nearby_one": "{{count}} ici maintenant",
+    "nearby_many": "{{count}} ici maintenant",
     "nearby_other": "{{count}} ici maintenant"
   },
   "shareCity": "Partager la ville",
   "quick": {
-    "hi": "👋 Salut {{city}} !",
-    "tonight": "Qui sort ce soir ?",
+    "hi": "👋 Salut {{city}} !",
+    "tonight": "Qui est dans le coin ce soir ?",
     "theme": {
-      "hidden_gem": "Une pépite cachée dans le coin ?",
-      "taste": "La meilleure street food du coin ?",
-      "get_around": "Le meilleur moyen de se déplacer ici ?",
-      "local_find": "Le meilleur marché du coin ?",
-      "night_out": "Où ça bouge ce soir ?",
-      "sip": "Le meilleur spot pour boire un verre ?",
-      "only_here": "Qu'est-ce qu'on ne trouve qu'ici ?"
+      "hidden_gem": "Une pépite cachée dans le coin ?",
+      "taste": "La meilleure street food du coin ?",
+      "get_around": "Le meilleur moyen de se déplacer ici ?",
+      "local_find": "Le meilleur marché du coin ?",
+      "night_out": "Où ça bouge ce soir ?",
+      "sip": "Le meilleur spot pour boire un verre ?",
+      "only_here": "Qu'est-ce qu'on ne trouve qu'ici ?"
     },
     "halloween": {
-      "boo": "👻 Bouh !",
-      "happy": "🎃 Joyeux Halloween {{city}} !",
-      "happyNoCity": "🎃 Joyeux Halloween !",
-      "tonight": "Qui sort pour Halloween ce soir ?"
+      "boo": "👻 Bouh !",
+      "happy": "🎃 Joyeux Halloween {{city}} !",
+      "happyNoCity": "🎃 Joyeux Halloween !",
+      "tonight": "Qui sort pour Halloween ce soir ?"
     }
   }
 }

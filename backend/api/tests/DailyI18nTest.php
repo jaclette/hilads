@@ -157,12 +157,12 @@ final class DailyI18nTest extends TestCase
         $this->assertSame('fr', DailyPushes::morningLocale($c, 'fr'));
         $this->assertSame('en', DailyPushes::morningLocale($c, 'vi'));   // not translated: all English, no mix
         $line = DailyPushes::outcomeLine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9, 'cityName' => 'Paris'], null, 'fr');
-        $this->assertSame('Hier, ta photo était #2 dans le monde.', $line);
+        $this->assertSame('Ta photo d\'hier a fini #2 dans le monde.', $line);
         $fr = DailyPushes::morningMessage($c + ['theme' => 'taste'], $line, 'fr');
-        $this->assertSame("🍜 Aujourd'hui : Saveur", $fr['title']);
-        $this->assertSame('Mange Hier, ta photo était #2 dans le monde.', $fr['body']);
+        $this->assertSame("🍜 Aujourd'hui : Saveur", $fr['title']);
+        $this->assertSame('Mange Ta photo d\'hier a fini #2 dans le monde.', $fr['body']);
         $this->assertSame('Eat', DailyPushes::morningMessage($c, null, 'en')['body']);
-        $this->assertSame("Gagnant d'hier : Anh · ♥ 1.",
+        $this->assertSame("Anh a gagné hier, avec 1 ♥.",
                           DailyPushes::outcomeLine(null, ['name' => 'Anh', 'cityName' => null, 'votes' => 1], 'fr'));
     }
 
@@ -172,7 +172,7 @@ final class DailyI18nTest extends TestCase
                                            6 * 3600 + 5, 'vi', null, 6);
         $this->assertSame('🍹 Đồ uống · còn 6 giờ', $vi['title']);
         $this->assertSame('Gọi một ly cà phê 6 người đã chơi rồi.', $vi['body']);
-        $this->assertSame('Votes pour ta photo : 3. Ont relevé ton Local Twist : 1.', DailyPushes::digestMessage('2026-11-02', 3, 1, 'fr')['body']);
+        $this->assertSame('Ta photo a récolté 3 ♥. Ton Local Twist a été relevé 1 fois.', DailyPushes::digestMessage('2026-11-02', 3, 1, 'fr')['body']);
         $this->assertSame('1 person voted for your photo.', DailyPushes::digestMessage('2026-11-02', 1, 0, 'en')['body']);
         $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0, 'fr'));
     }

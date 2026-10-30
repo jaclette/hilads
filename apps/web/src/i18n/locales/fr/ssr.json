@@ -3,25 +3,25 @@
   "dateLocale": "fr-FR",
   "ogLocale": "fr_FR",
   "home": {
-    "title": "Hilads - Joue local. Compare global. | Défi photo voyage quotidien",
-    "description": "Un défi par jour, le même dans chaque ville. Prends une photo, découvre comment le monde a répondu. Le BeReal des voyageurs.",
+    "title": "Hilads - Joue local. Compare global. | Le défi photo du jour pour voyageurs",
+    "description": "Un défi par jour, le même dans chaque ville. Prends une photo, découvre ce que le monde a posté. Le BeReal des voyageurs.",
     "h1": "Joue local. Compare global.",
-    "intro": "Hilads, c'est le défi photo quotidien des voyageurs et des locaux. Chaque jour, un défi tombe pour le monde entier. Prends ta photo là où tu es, puis découvre comment chaque pays a répondu.",
+    "intro": "Hilads, c'est le défi photo quotidien des voyageurs et des locaux. Chaque jour, un défi tombe pour le monde entier. Prends ta photo là où tu es, puis découvre ce que chaque pays a posté.",
     "howHeading": "Comment marche Hilads",
-    "howBody": "Un nouveau Daily Challenge tombe chaque jour, le même dans chaque ville. Joue avec une photo avant que le suivant tombe, puis compare : un défi, des réponses de chaque pays.",
+    "howBody": "Un nouveau Daily Challenge tombe chaque jour, le même dans chaque ville. Joue avec une photo avant le prochain, puis compare : un défi, des photos de chaque pays.",
     "playCta": "Joue au défi du jour",
-    "archiveCta": "Découvre comment le monde a répondu aux défis passés"
+    "archiveCta": "Découvre ce que le monde a posté pour les défis passés"
   },
   "city": {
-    "title": "{city} sur Hilads - Défi du jour : {question}",
+    "title": "{city} sur Hilads - Défi du jour : {question}",
     "titleNoChallenge": "{city} sur Hilads - Joue local. Compare global.",
-    "description": "Le Daily Challenge du jour à {city} : {question} Un défi par jour, le même dans chaque ville. Prends une photo et découvre comment le monde a répondu.",
-    "descriptionNoChallenge": "Un défi par jour, le même dans chaque ville. Joue à {city}, prends une photo et découvre comment le monde a répondu.",
+    "description": "Le Daily Challenge du jour à {city} : {question} Un défi par jour, le même dans chaque ville. Prends une photo et découvre ce que le monde a posté.",
+    "descriptionNoChallenge": "Un défi par jour, le même dans chaque ville. Joue pour {city}, prends une photo et découvre ce que le monde a posté.",
     "h1": "{city} sur Hilads",
     "todayHeading": "Le défi du jour",
     "playCta": "Joue pour {city}",
-    "recentHeading": "Comment {city} a répondu",
-    "recentEmpty": "Personne n'a encore joué à {city}. Prends la première photo.",
+    "recentHeading": "Ce que {city} a posté",
+    "recentEmpty": "Personne n'a encore joué pour {city}. Prends la première photo.",
     "archiveLink": "Tous les défis passés"
   },
   "daily": {
@@ -29,9 +29,9 @@
     "titleNone": "{question} | Hilads Daily Challenge",
     "descAnswers": "{answers} Un défi par jour, le même dans chaque ville.",
     "descPhotos": "{text} Photos de {places}. Un défi par jour, le même dans chaque ville.",
-    "descEmpty": "{text} Un défi par jour, le même dans chaque ville. Prends une photo et découvre comment le monde a répondu.",
+    "descEmpty": "{text} Un défi par jour, le même dans chaque ville. Prends une photo et découvre ce que le monde a posté.",
     "kicker": "Daily Challenge · {date}",
-    "answersHeading": "Comment le monde a répondu",
+    "answersHeading": "Ce que le monde a posté",
     "photoBy": "Photo de {user} à {city}",
     "noPhotos": "Pas encore de photos pour ce défi.",
     "prev": "Défi précédent",
@@ -43,9 +43,9 @@
     "photosMany": "{count} photos",
     "countriesOne": "1 pays",
     "countriesMany": "{count} pays",
-    "archiveTitle": "Les Daily Challenges passés : comment le monde a répondu | Hilads",
-    "archiveDescription": "Tous les Daily Challenges Hilads passés : un défi par jour, le même dans chaque ville, avec les photos et les réponses de chaque pays.",
+    "archiveTitle": "Les Daily Challenges passés : ce que le monde a posté | Hilads",
+    "archiveDescription": "Tous les Daily Challenges Hilads passés : un défi par jour, le même dans chaque ville, avec les photos et les réponses de chaque pays.",
     "archiveH1": "Les Daily Challenges passés",
-    "archiveIntro": "Un défi par jour, le même dans chaque ville. Voici comment le monde a répondu à chacun."
+    "archiveIntro": "Un défi par jour, le même dans chaque ville. Voici ce que le monde a posté pour chacun."
   }
 }

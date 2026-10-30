@@ -2,8 +2,8 @@
   "title": "Notifications",
   "markAllRead": "Tout marquer comme lu",
   "empty": {
-    "title": "Tout est à jour",
-    "sub": "Les notifications apparaîtront ici"
+    "title": "Tu as tout vu",
+    "sub": "Tes notifications s'afficheront ici"
   },
   "loading": "Chargement…",
   "seeAll": "Voir toutes les notifications",
@@ -15,18 +15,18 @@
     "newEventDesc": "Quand quelqu'un crée un événement dans ta ville",
     "newChallengeName": "Nouveaux défis dans ta ville",
     "newChallengeDesc": "Quand quelqu'un lance un défi dans ta ville",
-    "cityJoinName": "Quelqu'un arrive dans ta ville",
+    "cityJoinName": "Quelqu'un est arrivé dans ta ville",
     "cityJoinDesc": "Quand quelqu'un rejoint le canal de ta ville",
     "worldArrivalName": "Nouveaux arrivants dans le monde",
-    "worldArrivalDesc": "Quand un nouveau arrive depuis n'importe quelle ville (canal World)",
-    "friendName": "Demandes d'amis",
+    "worldArrivalDesc": "Quand quelqu'un débarque, de n'importe quelle ville (canal Monde)",
+    "friendName": "Demandes d'ami",
     "friendDesc": "Quand quelqu'un t'envoie une demande d'ami ou accepte la tienne",
     "notesName": "Notes",
     "notesDesc": "Quand quelqu'un laisse une note sur ton profil",
     "profileViewName": "Vues de profil",
-    "profileViewDesc": "Quand quelqu'un consulte ton profil",
+    "profileViewDesc": "Quand quelqu'un regarde ton profil",
     "announcementName": "Annonces de Hilads",
-    "announcementDesc": "Quelques nouvelles de l'équipe de temps en temps",
+    "announcementDesc": "Des nouvelles de l'équipe, de temps en temps",
     "commentName": "Commentaires",
     "commentDesc": "Sur tes photos et les photos que tu as commentées"
   }

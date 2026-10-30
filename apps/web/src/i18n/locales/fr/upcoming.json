@@ -6,9 +6,10 @@
   "error": "Impossible de charger les événements de ce jour",
   "retry": "Réessayer",
   "emptyTitle": "Rien de prévu",
-  "emptySub": "Pas encore d'événements ce jour-là.",
+  "emptySub": "Pas encore d'événement ce jour-là.",
   "public": "Public",
-  "going_one": "{{count}} participant",
-  "going_other": "{{count}} participants",
+  "going_one": "{{count}} y va",
+  "going_many": "{{count}} y vont",
+  "going_other": "{{count}} y vont",
   "liveNow": "En direct"
 }

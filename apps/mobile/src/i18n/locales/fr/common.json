@@ -12,16 +12,17 @@
   },
   "nowTitle": "Maintenant",
   "filterEvents": "Événements locaux",
+  "hiLocalTitle": "👋 Hi Local",
   "filterHangouts": "🗣️ Sorties",
   "publicEventsSection": "Événements publics",
   "accountWelcome": {
-    "title": "Bravo, {{username}} !",
+    "title": "Bravo, {{username}} !",
     "subtitle": "Ton compte est prêt - voici ce que tu peux faire maintenant",
     "f1": "Lance une sortie et rassemble du monde tout de suite",
     "f2": "Organise un événement dans ta ville",
     "f3": "Envoie un message privé à qui tu veux",
     "f4": "Vois qui est dans le coin, en direct",
-    "f5": "Connecte-toi avec les locaux et les voyageurs",
+    "f5": "Rencontre des locaux et des voyageurs",
     "fc1": "Lance un défi aux gens de ta ville",
     "fc2": "Défie une autre ville dans le monde",
     "cta": "C'est parti"
@@ -29,18 +30,18 @@
   "share": {
     "title": "Partage quelque chose",
     "snap": "Prends une photo",
-    "snapDesc": "Pour le défi du jour ou juste pour le fun",
+    "snapDesc": "Pour le défi du jour ou juste pour le plaisir",
     "spot": "Partage ton spot",
-    "spotDesc": "Partage ta position actuelle",
+    "spotDesc": "Partage l'endroit où tu es",
     "spotLoading": "Localisation en cours…",
     "plan": "Créer un plan",
     "planDesc": "Choisis une heure et un lieu, les autres te rejoignent",
     "hiNow": "Hi now",
-    "hiNowDesc": "Partant pour un truc maintenant ? Dis-le"
+    "hiNowDesc": "Partant pour un truc maintenant ? Dis-le"
   },
   "locationPicker": {
-    "title": "Où es-tu ?",
-    "search": "Rechercher une adresse ou un lieu",
+    "title": "Tu es où ?",
+    "search": "Cherche une adresse ou un lieu",
     "moveHint": "Déplace la carte pour ajuster",
     "noResults": "Aucun lieu trouvé",
     "loading": "Localisation…",
@@ -60,7 +61,7 @@
   "membersEmpty": "Personne pour l'instant",
   "shareLabel": "Partager",
   "back": "Retour",
-  "placedBanner": "On t'a placé à {{city}} — tu peux changer en haut.",
+  "placedBanner": "On t'a placé à {{city}} - tu peux changer en haut.",
   "connectionHint": "Vérifie ta connexion et réessaie.",
   "notifications": "Notifications",
   "messages": "Messages",
@@ -69,30 +70,30 @@
   "openSettings": "Ouvrir les réglages",
   "composer": {
     "placeholderDefault": "Écris un message…",
-    "endedEvent": "Cet évènement est terminé",
-    "closedChallenge": "Ce défi est terminé",
+    "endedEvent": "Cet événement est terminé",
+    "closedChallenge": "Ce défi est fermé",
     "attach": "Ajouter une pièce jointe",
     "sendPhotoTitle": "Envoyer une photo",
     "takePhoto": "Prendre une photo",
     "chooseLibrary": "Choisir dans la galerie",
     "photoPermTitle": "Autorisation requise",
     "photoPermBody": "Autorise l'accès aux photos pour partager des images dans le chat.",
-    "cameraPermTitle": "Autorisation caméra requise",
-    "cameraPermSettings": "Autorise l'accès à la caméra dans Réglages → Hilads → Caméra.",
-    "cameraPermBody": "L'accès à la caméra est nécessaire pour prendre des photos.",
-    "cameraUnavailTitle": "Caméra indisponible",
-    "cameraUnavailBody": "Impossible d'ouvrir la caméra. Réessaie.",
-    "locPermTitle": "Accès à la position requis",
+    "cameraPermTitle": "Accès à l'appareil photo nécessaire",
+    "cameraPermSettings": "Autorise l'accès à l'appareil photo dans Réglages → Hilads → Appareil photo.",
+    "cameraPermBody": "L'accès à l'appareil photo est nécessaire pour prendre des photos.",
+    "cameraUnavailTitle": "Appareil photo indisponible",
+    "cameraUnavailBody": "Impossible d'ouvrir l'appareil photo. Réessaie.",
+    "locPermTitle": "Accès à la position nécessaire",
     "locPermSettings": "Active la localisation dans Réglages → Hilads → Position.",
-    "locNeededTitle": "Position nécessaire",
+    "locNeededTitle": "Localisation nécessaire",
     "locNeededBody": "Autorise l'accès à ta position pour partager ton spot.",
     "placeholderCity": "Dis bonjour à ta ville",
-    "placeholderHangout": "Dis-leur que tu es là",
+    "placeholderHangout": "Dis-leur que tu en es",
     "placeholderEvent": "Discute avec les participants",
-    "placeholderChallenge": "Encourage-les ou donne ton astuce",
+    "placeholderChallenge": "Encourage-les ou partage ton astuce",
     "send": "Envoyer",
     "emoji": "Émojis",
-    "placeholderWorld": "Demande au monde comment il fait"
+    "placeholderWorld": "Demande aux autres villes comment elles font"
   },
   "modeHeading": "Mode",
   "mode": {
@@ -123,13 +124,16 @@
   "past": "Passé",
   "activeNow": "Actif maintenant",
   "replies_one": "{{count}} réponse",
+  "replies_many": "{{count}} réponses",
   "replies_other": "{{count}} réponses",
-  "noReplies": "Pas de réponses",
-  "noRepliesFirst": "Pas encore de réponses - sois le premier",
+  "noReplies": "Aucune réponse",
+  "noRepliesFirst": "Pas encore de réponse - sois le premier",
+  "sayHi": "Dis bonjour à {{name}}",
+  "hostWaiting": "On attend le premier bonjour",
   "weather": {
     "clear": "ciel dégagé",
     "sunnyHot": "grand soleil",
-    "clearNight": "ciel clair",
+    "clearNight": "nuit dégagée",
     "mostlyClear": "plutôt dégagé",
     "partly": "quelques nuages",
     "overcast": "ciel gris",
@@ -159,12 +163,9 @@
     "expiresInHour": "Expire dans {{count}} h"
   },
   "shareToCity": "Partager dans ma ville",
-  "shareToWorld": "Partager sur le Monde",
+  "shareToWorld": "Partager avec le monde entier",
   "shareToCityError": "Impossible de partager dans ta ville. Réessaie.",
-  "shareToWorldError": "Impossible de partager sur le Monde. Réessaie.",
-  "hiLocalTitle": "👋 Hi Local",
-  "sayHi": "Dis bonjour à {{name}}",
-  "hostWaiting": "En attente du premier bonjour",
+  "shareToWorldError": "Impossible de partager avec le monde entier. Réessaie.",
   "shareCta": {
     "leaderboard": "Voir le classement",
     "challenge": "Voir le défi",
@@ -172,8 +173,8 @@
     "topic": "Voir le Hi now"
   },
   "delete": "Supprimer",
-  "deleteConversationTitle": "Supprimer la conversation ?",
-  "deleteConversationBody": "Elle disparaîtra de tes messages. Elle réapparaîtra s'ils t'écrivent à nouveau.",
+  "deleteConversationTitle": "Supprimer la conversation ?",
+  "deleteConversationBody": "Elle disparaîtra de tes messages, et reviendra si la personne t'écrit à nouveau.",
   "tabs": {
     "today": "Aujourd'hui",
     "map": "Carte",
@@ -187,12 +188,13 @@
     "citySub": "Le défi, les photos et les spots de ta ville",
     "worldSub": "Les photos et les spots de toutes les villes",
     "changeCity": "Changer de ville",
-    "a11y": "Affichage : {{scope}}. Touche pour changer",
+    "a11y": "Affichage : {{scope}}. Touche pour changer",
     "here": "Tu es à {{city}}",
-    "hereUnknown": "Tu es où ?",
-    "hereSub": "Pas ça ? Change où tu joues"
+    "hereUnknown": "Tu es où ?",
+    "hereSub": "Pas ça ? Change l'endroit où tu joues"
   },
   "notificationsUnread_one": "Notifications, {{count}} non lue",
+  "notificationsUnread_many": "Notifications, {{count}} non lues",
   "notificationsUnread_other": "Notifications, {{count}} non lues",
   "update": {
     "availableBody": "Une nouvelle version de Hilads est prête.",
@@ -206,7 +208,7 @@
   "signUp": "S'inscrire",
   "open": "Ouvrir",
   "camera": {
-    "grant": "Autoriser la caméra",
+    "grant": "Autoriser l'appareil photo",
     "retake": "Reprendre",
     "usePhoto": "Utiliser la photo",
     "flash": "Flash",
@@ -219,14 +221,14 @@
     "placeholder": "Décris le problème (10 caractères min.)",
     "submit": "Envoyer le signalement",
     "sentTitle": "Signalement envoyé",
-    "sentBody": "Merci de nous avoir prévenus. Notre équipe va regarder.",
+    "sentBody": "Merci de nous avoir prévenus. Notre équipe va y jeter un œil.",
     "dupTitle": "Déjà signalé",
-    "dupBody": "Tu as signalé cette personne le {{date}}. Ton signalement est en cours d’examen.",
+    "dupBody": "Tu as signalé cette personne le {{date}}. Ton signalement est en cours d'examen.",
     "errorTitle": "Erreur",
-    "errorBody": "Impossible d’envoyer le signalement. Réessaie."
+    "errorBody": "Impossible d'envoyer le signalement. Réessaie."
   },
   "subtitles": {
-    "map": "Les spots des photos du monde.",
+    "map": "Les spots repérés dans les photos du monde entier.",
     "hi": "Dis bonjour à ta ville. Rejoins un plan.",
     "passport": "Tes villes, tes photos, tes tampons."
   },
@@ -234,7 +236,7 @@
   "pick": {
     "badge": "Sélection Hilads",
     "goodToKnow": "Bon à savoir",
-    "credit": "Photo : {{credit}}",
+    "credit": "Photo : {{credit}}",
     "source": "Source"
   },
   "directions": {
@@ -244,21 +246,21 @@
   },
   "citySwitch": {
     "title": "Tu es à {{city}}",
-    "body": "Ta ville est {{from}}. Passer à {{city}} ?",
+    "body": "Ta ville est {{from}}. Passer à {{city}} ?",
     "switch": "Passer à {{city}}",
     "stay": "Rester à {{from}}"
   },
   "promo": {
-    "askTitle": "Autoriser Hilads à montrer tes photos, toujours créditées ?",
+    "askTitle": "Tu autorises Hilads à mettre en avant tes photos, toujours créditées ?",
     "askBody": "Tes photos du Daily Challenge pourraient apparaître dans nos posts sur Instagram, TikTok et YouTube, toujours avec ton @pseudo. Tu peux changer ça à tout moment dans les Réglages.",
     "allow": "Autoriser",
-    "notNow": "Pas maintenant",
-    "setting": "Montrer mes photos",
+    "notNow": "Plus tard",
+    "setting": "Mettre mes photos en avant",
     "on": "Oui",
     "off": "Non"
   },
   "wakingUp": {
     "title": "Hilads se réveille… 🌍",
-    "body": "Retour dans quelques secondes, on réessaie tout seuls."
+    "body": "On revient dans quelques secondes, on continue d'essayer."
   }
 }

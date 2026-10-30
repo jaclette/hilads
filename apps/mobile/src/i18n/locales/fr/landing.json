@@ -1,11 +1,13 @@
 {
   "peopleHere_one": "🔥 {{count}} personne ici en ce moment",
+  "peopleHere_many": "🔥 {{count}} de personnes ici en ce moment",
   "peopleHere_other": "🔥 {{count}} personnes ici en ce moment",
   "vibesToday_one": "🔥 {{count}} vibe en cours aujourd'hui",
+  "vibesToday_many": "🔥 {{count}} de vibes en cours aujourd'hui",
   "vibesToday_other": "🔥 {{count}} vibes en cours aujourd'hui",
   "geoOff": "📍 Localisation désactivée",
   "geoUnreachable": "📍 Impossible de te localiser",
-  "pickCity": "Choisis une ville\net plonge",
+  "pickCity": "Choisis une ville\net lance-toi",
   "locating": "› localisation...",
   "requesting": "› demande de localisation...",
   "chooseManually": "Choisir une ville →",
@@ -22,5 +24,5 @@
   "logIn": "Se connecter",
   "authHint": "Garde ton nom · débloque les profils · ajoute des amis",
   "joinError": "Connexion impossible. Vérifie ta connexion et réessaie.",
-  "conceptSub": "🔥 Les locaux défient les voyageurs, et vice-versa — on se retrouve pour le prouver."
+  "conceptSub": "🔥 Les locaux défient les voyageurs, les voyageurs défient les locaux : on se retrouve pour le prouver."
 }

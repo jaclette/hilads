@@ -1,5 +1,5 @@
 {
-  "title": "Activité passée",
+  "title": "Ce qui s'est passé",
   "filters": {
     "all": "Tout",
     "events": "Événements",
@@ -13,22 +13,24 @@
     "custom": "Perso"
   },
   "picker": {
-    "pickEnd": "Choisis maintenant le jour de fin",
-    "pickStart": "Choisis un jour de début (jusqu'à {{max}} jours)",
+    "pickEnd": "Maintenant, choisis le dernier jour",
+    "pickStart": "Choisis le premier jour ({{max}} jours max)",
     "apply": "Appliquer"
   },
   "public": "Public",
   "went_one": "{{count}} y était",
+  "went_many": "{{count}} y étaient",
   "went_other": "{{count}} y étaient",
   "hangoutTag": "Sortie",
   "replies_one": "{{count}} réponse",
+  "replies_many": "{{count}} réponses",
   "replies_other": "{{count}} réponses",
   "noReplies": "Aucune réponse",
   "error": "Impossible de charger les archives",
   "retry": "Réessayer",
-  "emptyTitle": "Rien ici pour l'instant",
-  "emptyRecentSub": "Les événements et sorties passés apparaîtront ici une fois que la ville aura un peu d'historique.",
-  "emptyWindowSub": "Aucun événement ni sortie sur cette période. Essaie une plage plus large.",
-  "loadMore": "Charger plus",
+  "emptyTitle": "Rien pour l'instant",
+  "emptyRecentSub": "Les événements et sorties passés s'afficheront ici dès que la ville aura un peu d'histoire.",
+  "emptyWindowSub": "Aucun événement ni sortie sur cette période. Essaie une période plus large.",
+  "loadMore": "Voir plus",
   "loading": "Chargement…"
 }

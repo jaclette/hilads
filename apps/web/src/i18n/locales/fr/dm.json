@@ -1,6 +1,10 @@
 {
   "title": "Messages",
-  "filters": { "all": "Tout", "dms": "Messages directs", "events": "Chats d'événements" },
+  "filters": {
+    "all": "Tout",
+    "dms": "Messages privés",
+    "events": "Chats d'événements"
+  },
   "loading": "Chargement…",
   "error": {
     "loadTitle": "Impossible de charger les messages",
@@ -10,32 +14,32 @@
     "eventsTitle": "Pas encore de chats d'événements",
     "eventsSub": "Crée ou rejoins un événement pour discuter avec les participants.",
     "title": "Pas encore de messages",
-    "sub": "Connecte-toi avec les gens que tu rencontres en ville."
+    "sub": "Garde le contact avec les gens que tu rencontres en ville."
   },
-  "sectionDms": "Messages directs",
+  "sectionDms": "Messages privés",
   "sectionEvents": "Chats d'événements",
-  "youPrefix": "Toi : {{message}}",
-  "startConversation": "Démarre la conversation",
-  "eventCreated": "Tu as créé ça",
-  "eventJoined": "Tu as rejoint ça",
+  "youPrefix": "Toi : {{message}}",
+  "startConversation": "Lance la conversation",
+  "eventCreated": "Tu l'as créé",
+  "eventJoined": "Tu l'as rejoint",
   "prefs": {
     "title": "Préférences de notification",
-    "dmName": "Nouveaux messages directs",
+    "dmName": "Nouveaux messages privés",
     "dmDesc": "Quand quelqu'un t'envoie un message privé",
     "eventName": "Messages de chat d'événement",
     "eventDesc": "Quand quelqu'un écrit dans un événement que tu as rejoint",
-    "cityName": "Messages du chat de ville",
-    "cityDesc": "Quand quelqu'un écrit dans le canal de ta ville"
+    "cityName": "Messages du chat de la ville",
+    "cityDesc": "Quand quelqu'un écrit dans le chat de ta ville"
   },
   "thread": {
     "loadError": "Impossible de charger les messages.",
     "beginning": "Début de la conversation",
     "photo": "Photo",
     "unavailable": "Message d'origine indisponible",
-    "tapMaps": "Appuie pour ouvrir dans Maps",
+    "tapMaps": "Touche pour ouvrir la carte",
     "composer": "Message…",
     "imageType": "Choisis une image JPEG, PNG ou WebP.",
-    "imageTooLarge": "Image trop lourde. Taille max : 10 Mo.",
+    "imageTooLarge": "Image trop lourde. 10 Mo max.",
     "imageSend": "Impossible d'envoyer l'image. Réessaie."
   },
   "directMessage": "Message privé"

@@ -10,7 +10,7 @@
   },
   "modes": {
     "local": "Local",
-    "exploring": "Exploration"
+    "exploring": "Voyageur"
   },
   "vibes": {
     "party": "Fête",
@@ -21,18 +21,18 @@
     "chill": "Détente"
   },
   "vibeTaglines": {
-    "party": "Là pour la vie nocturne",
-    "board_games": "Apporte snacks et dés",
+    "party": "Ici pour les soirées",
+    "board_games": "Ramène les snacks et les dés",
     "coffee": "Café d'abord, le reste après",
     "music": "Toujours en quête d'un bon son",
-    "food": "On mange d'abord, on parle après",
-    "chill": "Tranquille, bonne ambiance"
+    "food": "On mange d'abord, on discute après",
+    "chill": "Tranquille, bonnes vibes"
   },
   "modeSub": {
     "localIn": "Local à {{city}}",
     "local": "Local",
-    "exploringIn": "En exploration à {{city}}",
-    "exploring": "En exploration"
+    "exploringIn": "Explore {{city}}",
+    "exploring": "En voyage"
   },
   "from": "De",
   "age": "Âge",
@@ -54,12 +54,13 @@
     "challenges": "Pas encore de défi"
   },
   "vibesTab": {
-    "score": "score vibe de {{score}}",
+    "score": "Score vibe : {{score}}",
     "basedOn_one": "basé sur {{count}} vibe",
+    "basedOn_many": "basé sur {{count}} de vibes",
     "basedOn_other": "basé sur {{count}} vibes",
-    "updateNote": "Modifier ta note ({{rating}}★)",
-    "leaveNote": "Laisser une note",
-    "placeholder": "Dis quelque chose de gentil… (facultatif)",
+    "updateNote": "Modifie ta note ({{rating}}★)",
+    "leaveNote": "Laisse une note",
+    "placeholder": "Dis un truc sympa… (facultatif)",
     "cancel": "Annuler",
     "sending": "Envoi…",
     "sendNote": "Envoyer la note",
@@ -70,7 +71,7 @@
   "picks": {
     "restaurant": "Restaurant préféré",
     "spot": "Pépite cachée",
-    "tip": "Conseil local",
+    "tip": "Astuce du coin",
     "story": "Histoire"
   },
   "actions": {
@@ -78,10 +79,10 @@
     "message": "Message",
     "friend": "Ami",
     "requestSent": "Demande envoyée",
-    "acceptRequest": "Accepter la demande",
+    "acceptRequest": "Accepter",
     "addFriend": "+ Ami",
-    "removing": "Suppression…",
-    "unfriend": "Retirer",
+    "removing": "Retrait…",
+    "unfriend": "Retirer des amis",
     "cancel": "Annuler",
     "cancelling": "Annulation…",
     "cancelRequest": "Annuler la demande",
@@ -89,7 +90,7 @@
     "reportTitle": "Signaler l'utilisateur"
   },
   "report": {
-    "existing": "Tu as signalé cet utilisateur le {{date}}. Ton signalement est en cours d'examen.",
+    "existing": "Tu as signalé cette personne le {{date}}. Ton signalement est en cours d'examen.",
     "sent": "Signalement envoyé. Merci de nous avoir prévenus.",
     "placeholder": "Décris le problème (10 caractères min.)…",
     "error": "Impossible d'envoyer le signalement. Réessaie.",

@@ -241,7 +241,7 @@ final class DailyPushesTest extends TestCase
         $m = DailyPushes::reminderMessage(self::SHRINE, 3600, 'en', null, 9, null, ['n' => 5, 'city' => 'Ho Chi Minh City']);
         $this->assertSame('Find a shrine and ask a local what it means. Already 5 countries played. Saigon, your move.', $m['body']);
         $fr = DailyPushes::reminderMessage(self::SHRINE, 3600, 'fr', null, 9, null, ['n' => 5, 'city' => 'Paris']);
-        $this->assertStringEndsWith('Déjà 5 pays ont joué. Paris, à toi de jouer.', $fr['body']);
+        $this->assertStringEndsWith('5 pays ont déjà joué. Paris, à toi de jouer.', $fr['body']);
         // A city streak to save keeps the Represent your city line.
         $streak = DailyPushes::reminderMessage(self::SHRINE, 3600, 'en', null, 9, ['name' => 'Paris', 'n' => 4], ['n' => 5, 'city' => 'Paris']);
         $this->assertStringContainsString("Paris has played 4 days in a row", $streak['body']);
@@ -272,7 +272,7 @@ final class DailyPushesTest extends TestCase
         $this->assertSame("{$t} 1 person already did it.", DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'en', null, 1)['body']);
         $fr = DailyPushes::reminderMessage(self::SHRINE, 6 * 3600, 'fr', null, 6);
         $this->assertSame('📍 Seulement ici · plus que 6 h', $fr['title']);
-        $this->assertSame("Trouve un autel et demande à un local ce qu’il signifie. 6 personnes l'ont déjà relevé.", $fr['body']);
+        $this->assertSame("Trouve un autel et demande à un local ce qu’il signifie. 6 personnes ont déjà joué.", $fr['body']);
     }
 
     public function testALongBodyDropsItsExtraLine(): void
@@ -290,21 +290,21 @@ final class DailyPushesTest extends TestCase
         $this->assertSame('Your photo got its first vote!', $m['body']);
         $this->assertSame('p1', $m['data']['proofId']);
         $this->assertSame('2026-11-02', $m['data']['date']);
-        $this->assertSame('Ta photo a reçu son premier vote !', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr')['body']);
+        $this->assertSame('Ta photo a reçu son premier vote !', DailyPushes::firstVoteMessage('2026-11-02', 'p1', 'fr')['body']);
     }
 
     public function testProposalPushesInTheAuthorsLanguage(): void
     {
         $this->assertSame('Your challenge goes live on Monday, November 2.', DailyPushes::proposalApprovedMessage('2026-11-02')['body']);
-        $this->assertSame('Ton challenge sera en ligne le 2026-11-02.', DailyPushes::proposalApprovedMessage('2026-11-02', 'fr')['body']);
+        $this->assertSame('Ton défi sera en ligne le 2026-11-02.', DailyPushes::proposalApprovedMessage('2026-11-02', 'fr')['body']);
         // Rejected: the back office's reason in the push, which opens the proposals screen.
         $r = DailyPushes::proposalRejectedMessage('Too close to Tuesday\'s challenge.');
         $this->assertSame("Your challenge wasn't picked this time: Too close to Tuesday's challenge.", $r['body']);
         $this->assertSame('hilads://daily/proposals', $r['data']['deepLink']);
-        $this->assertSame("Ton challenge n'a pas été retenu cette fois : Trop proche.", DailyPushes::proposalRejectedMessage('Trop proche.', 'fr')['body']);
+        $this->assertSame("Ton défi n'a pas été retenu cette fois : Trop proche.", DailyPushes::proposalRejectedMessage('Trop proche.', 'fr')['body']);
         $this->assertSame('1 person completed your challenge.', DailyPushes::proposalResultMessage('2026-11-02', 1)['body']);
-        $this->assertSame('1 personne a relevé ton challenge.', DailyPushes::proposalResultMessage('2026-11-02', 1, 'fr')['body']);
-        $this->assertSame('4 personnes ont relevé ton challenge.', DailyPushes::proposalResultMessage('2026-11-02', 4, 'fr')['body']);
+        $this->assertSame('1 personne a relevé ton défi.', DailyPushes::proposalResultMessage('2026-11-02', 1, 'fr')['body']);
+        $this->assertSame('4 personnes ont relevé ton défi.', DailyPushes::proposalResultMessage('2026-11-02', 4, 'fr')['body']);
     }
 
     public function testDigestMessage(): void

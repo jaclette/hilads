@@ -2,7 +2,7 @@
   "share": {
     "bringPeople": "Inviter du monde",
     "linkCopied": "Lien copié",
-    "vibeTitle": "Partager ce vibe",
+    "vibeTitle": "Partager cette vibe",
     "eventAria": "Partager l'événement"
   },
   "title": {
@@ -11,8 +11,8 @@
     "create": "Hi plan"
   },
   "delete": {
-    "confirmTitle": "Supprimer cet événement ?",
-    "confirmBody": "Cela supprimera l'événement et tous les messages. C'est irréversible.",
+    "confirmTitle": "Supprimer cet événement ?",
+    "confirmBody": "L'événement et tous ses messages seront supprimés. C'est irréversible.",
     "cancel": "Annuler",
     "deleting": "Suppression…",
     "confirm": "Supprimer",
@@ -23,9 +23,9 @@
     "dailySpot": "Spot quotidien",
     "dailySpotDesc": "Tous les jours",
     "everyEvening": "Tous les soirs",
-    "everyEveningDesc": "Chaque jour · 20h",
+    "everyEveningDesc": "Tous les jours · 20h",
     "weekends": "Week-ends",
-    "weekendsDesc": "Sam. & dim."
+    "weekendsDesc": "Sam. et dim."
   },
   "category": "Catégorie",
   "categories": {
@@ -43,7 +43,7 @@
   "date": "Date",
   "today": "Aujourd'hui",
   "tomorrow": "Demain",
-  "todayHint": "Organiser aujourd'hui te donne le plus de visibilité",
+  "todayHint": "Organise-le aujourd'hui pour un max de visibilité",
   "starts": "Début",
   "ends": "Fin",
   "repeat": "Répéter",
@@ -65,15 +65,15 @@
   "intervalEvery": "Tous les",
   "intervalDays": "jours",
   "location": "Lieu",
-  "locating": "Récupération de ta position…",
-  "locationPlaceholder": "Optionnel · appuie pour situer sur la carte",
+  "locating": "Localisation en cours…",
+  "locationPlaceholder": "Facultatif · touche pour placer sur la carte",
   "clearLocation": "Effacer le lieu",
   "errors": {
     "endAfterStart": "L'heure de fin doit être au moins 15 minutes après le début",
     "pickDay": "Choisis au moins un jour de la semaine",
     "deleteFailed": "Impossible de supprimer l'événement. Réessaie.",
-    "locUnavailable": "La localisation n'est pas disponible dans ce navigateur. Tu peux quand même créer l'événement sans elle.",
-    "locFailed": "Impossible d'obtenir ta position. Active la localisation, ou passe la carte."
+    "locUnavailable": "La localisation n'est pas disponible dans ce navigateur. Tu peux quand même créer l'événement sans.",
+    "locFailed": "Impossible d'obtenir ta position. Active la localisation ou passe la carte."
   },
   "submit": {
     "saving": "Enregistrement…",
@@ -86,17 +86,19 @@
   "recur": {
     "everyday": "Tous les jours",
     "weekly": "Hebdomadaire",
-    "everyNDays_one": "Tous les {{count}} jour",
+    "everyNDays_one": "Tous les jours",
+    "everyNDays_many": "Tous les {{count}} de jours",
     "everyNDays_other": "Tous les {{count}} jours"
   },
   "limit": {
-    "title": "Tu as déjà créé ton événement aujourd'hui !",
-    "body": "Chez Hilads, on garde les choses fraîches - un événement par jour pour que chaque plan ait l'attention qu'il mérite. Reviens demain pour en créer un autre.",
+    "title": "Tu as déjà créé ton événement aujourd'hui !",
+    "body": "Chez Hilads, on aime que ça bouge : un événement par jour, pour que chaque plan ait l'attention qu'il mérite. Reviens demain pour en créer un autre.",
     "legendLink": "Deviens une Légende pour créer des événements illimités",
-    "legendA11y": "En savoir plus sur comment devenir une Légende",
+    "legendA11y": "En savoir plus pour devenir une Légende",
     "legendAlertTitle": "Deviens une Légende",
-    "legendAlertBody": "Les Légendes sont des locaux choisis pour faire vivre leur ville - ils peuvent organiser autant d'événements qu'ils veulent. Tu veux en devenir une ? Écris à contact@hilads.live.",
+    "legendAlertBody": "Les Légendes sont des gens du coin choisis pour faire vivre leur ville : elles peuvent organiser autant d'événements qu'elles veulent. Tu veux en devenir une ? Écris à contact@hilads.live.",
     "gotIt": "Compris",
-    "backToNow": "Retour à Now"
+    "backToNow": "Retour à Now",
+    "yourEvent": "Ton événement"
   }
 }

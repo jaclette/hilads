@@ -8,10 +8,13 @@
     "decline": "Refuser",
     "accept": "Accepter",
     "cancel": "Annuler",
-    "emptyIncomingTitle": "Pas encore de demandes d'ami",
+    "emptyIncomingTitle": "Pas encore de demande d'ami",
     "emptySentTitle": "Tu n'en as envoyé aucune",
     "emptyIncomingSub": "Quand quelqu'un te demande en ami, tu le verras ici.",
-    "emptySentSub": "Les demandes d'ami en attente que tu as envoyées apparaîtront ici."
+    "emptySentSub": "Les demandes d'ami en attente que tu as envoyées apparaîtront ici.",
+    "acceptFailed": "Impossible d'accepter",
+    "declineFailed": "Impossible de refuser",
+    "cancelFailed": "Impossible d'annuler"
   },
   "blocked": {
     "title": "Utilisateurs bloqués",
@@ -19,7 +22,7 @@
     "ghostName": "Fantôme",
     "guest": "Invité",
     "unblock": "Débloquer",
-    "unblockTitle": "Débloquer {{name}} ?",
+    "unblockTitle": "Débloquer {{name}} ?",
     "unblockBody": "{{name}} pourra de nouveau voir ton contenu et te contacter.",
     "unblockFailTitle": "Déblocage impossible",
     "unblockFailBody": "Réessaie.",
