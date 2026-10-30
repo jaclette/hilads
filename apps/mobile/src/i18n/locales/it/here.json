@@ -1,17 +1,17 @@
 {
-  "title": "Persone qui",
+  "title": "Chi c'è qui",
   "noCityTitle": "Nessuna città selezionata",
-  "noCitySub": "Scegli una città per vedere chi c'è intorno a te.",
+  "noCitySub": "Scegli una città per vedere chi c'è.",
   "browseCities": "Esplora le città",
   "filterBadge": "Badge",
   "filterVibe": "Vibe",
   "filterMode": "Modalità",
   "you": "(tu)",
-  "hereNow": "Qui ora",
+  "hereNow": "Qui adesso",
   "noMatchLive": "Nessuno corrisponde a questi filtri al momento.",
   "legends": "Leggende Hilads",
   "legendsSub": "Sono loro a far vivere la città",
   "cityCrew": "La crew della città",
   "noMatchCrew": "Nessun membro corrisponde a questi filtri.",
-  "loadMore": "Mostra altri"
+  "loadMore": "Mostra di più"
 }

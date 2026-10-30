@@ -1,7 +1,7 @@
 {
   "create": {
     "startTitle": "Hi now",
-    "editTitle": "Modifica il ritrovo",
+    "editTitle": "Modifica ritrovo",
     "category": "Categoria",
     "cat": {
       "general": "Generale",
@@ -12,7 +12,7 @@
       "meetup": "Incontro"
     },
     "titleLabel": "A cosa stai pensando?",
-    "titlePlaceholder": "Voglio prendere un caffè",
+    "titlePlaceholder": "Ho voglia di un caffè",
     "detailsLabel": "Aggiungi dettagli",
     "optional": "(facoltativo)",
     "detailsPlaceholder": "Dai un po' di contesto…",
@@ -26,17 +26,17 @@
     "limitSub": "Puoi avere un solo ritrovo alla volta. Vai su «{{title}}» o eliminalo per lanciarne uno nuovo.",
     "limitGo": "Vai al mio ritrovo",
     "yourHangout": "il tuo ritrovo",
-    "geoHint": "Attiva la posizione per vedere chi c’è intorno ora — e far notare il tuo Hi a chi è vicino",
-    "geoRequired": "Un Hi now dice alle persone dove trovarti — attiva la posizione per continuare."
+    "geoHint": "Attiva la posizione per vedere chi c'è intorno adesso e far arrivare il tuo Hi a chi è vicino",
+    "geoRequired": "Un Hi now dice alla gente dove trovarti: attiva la posizione per continuare."
   },
-  "deleteConfirm": "Eliminare questo ritrovo? Questo lo termina per tutti ed è irreversibile.",
+  "deleteConfirm": "Eliminare questo ritrovo? Finisce per tutti e non si può annullare.",
   "deleteFailedAlert": "Impossibile eliminare. Riprova.",
   "shareAria": "Condividi il ritrovo",
   "shareTitle": "Condividi questo ritrovo",
   "members": {
-    "oneIn": "{{name}} partecipa",
+    "oneIn": "{{name}} c'è",
     "countIn": "{{count}} in questo ritrovo",
-    "seeAll": "Vedi tutto"
+    "seeAll": "Vedi tutti"
   },
   "owner": {
     "edit": "Modifica",
@@ -44,29 +44,29 @@
   },
   "gated": {
     "title": "Ritrovo solo per membri",
-    "pending": "Richiesta in sospeso - potrai partecipare alla conversazione non appena un membro accetta.",
-    "prompt": "Chiedi di partecipare per vedere la conversazione e chattare.",
-    "requestBtn": "Chiedi di partecipare"
+    "pending": "Richiesta inviata: potrai unirti alla conversazione appena un membro accetta.",
+    "prompt": "Chiedi di unirti per vedere la conversazione e chattare.",
+    "requestBtn": "Chiedi di unirti"
   },
   "feed": {
     "beginning": "Inizio della conversazione",
     "loading": "Caricamento…",
     "emptyTitle": "Ancora nessuna risposta",
-    "emptySub": "Sii il primo a buttarti"
+    "emptySub": "Buttati, inizia tu"
   },
   "joinReq": {
     "someone": "Qualcuno",
-    "wantsToJoin": " vuole partecipare",
-    "joined": " ha partecipato al ritrovo",
-    "askedToJoin": " ha chiesto di partecipare",
+    "wantsToJoin": " vuole unirsi",
+    "joined": " ora è nel ritrovo",
+    "askedToJoin": " ha chiesto di unirsi",
     "decline": "Rifiuta",
     "accept": "Accetta",
-    "accepted": "Accettato",
-    "acceptedBy": "Accettato da {{name}}",
+    "accepted": "Accettata",
+    "acceptedBy": "Accettata da {{name}}",
     "declined": "Richiesta rifiutata"
   },
   "modes": {
-    "local": "Locale",
+    "local": "Del posto",
     "exploring": "In esplorazione"
   },
   "reply": {
@@ -75,8 +75,8 @@
   },
   "composer": {},
   "errors": {
-    "locFailed": "Impossibile ottenere la tua posizione. Attiva l'accesso alla posizione e riprova.",
-    "imageType": "Seleziona un'immagine JPEG, PNG o WebP.",
+    "locFailed": "Impossibile trovare la tua posizione. Attiva l'accesso alla posizione e riprova.",
+    "imageType": "Scegli un'immagine JPEG, PNG o WebP.",
     "imageTooLarge": "Immagine troppo grande. Max 10 MB.",
     "imageSend": "Impossibile inviare l'immagine. Riprova.",
     "dismiss": "{{error}} · tocca per chiudere"

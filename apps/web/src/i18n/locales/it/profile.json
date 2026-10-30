@@ -4,7 +4,7 @@
   "yourProfile": "Il tuo profilo",
   "mode": "Modalità",
   "modes": {
-    "local": "Locale",
+    "local": "Del posto",
     "localDesc": "Conosci questa città",
     "exploring": "In esplorazione",
     "exploringDesc": "La stai scoprendo"
@@ -50,46 +50,46 @@
   "fields": {
     "username": "Nome utente",
     "usernamePlaceholder": "nome utente",
-    "checking": "Verifica in corso…",
+    "checking": "Controllo…",
     "available": "@{{username}} è disponibile",
     "aboutMe": "Su di me",
     "charsLeft": "- ne restano {{count}}",
-    "aboutPlaceholder": "Adoro lo street food e le chiacchiere casuali",
+    "aboutPlaceholder": "Adoro lo street food e le chiacchiere a caso",
     "email": "Email",
     "readOnly": "- sola lettura",
     "homeCity": "Città di origine",
     "homeCityPlaceholder": "Dove vivi",
     "age": "Età",
     "agePlaceholder": "La tua età",
-    "myVibe": "Il mio vibe",
+    "myVibe": "La mia vibe",
     "interests": "Interessi",
     "interestsHint": "- scegline fino a 5"
   },
   "ambassador": {
-    "title": "Consigli della città",
-    "subtitle": "Mostrati sul tuo profilo come una leggenda locale.",
+    "title": "Consigli sulla città",
+    "subtitle": "Compare sul tuo profilo, da leggenda del posto.",
     "restaurant": "Ristorante preferito",
     "restaurantPlaceholder": "Un posto dove porti sempre la gente",
-    "spot": "Gemma nascosta / spot",
-    "spotPlaceholder": "Un posto che la maggior parte dei turisti si perde",
-    "tip": "Consiglio locale",
-    "tipPlaceholder": "Il miglior consiglio per chi è appena arrivato",
+    "spot": "Chicca nascosta / posto",
+    "spotPlaceholder": "Un posto che quasi tutti i turisti si perdono",
+    "tip": "La dritta del posto",
+    "tipPlaceholder": "Il consiglio migliore per chi arriva",
     "story": "Storia della città",
     "storyPlaceholder": "Qualcosa che ami di questa città"
   },
   "hangouts": {
-    "empty": "Ancora nessun ritrovo - lanciane uno 🗣️",
-    "host": "Organizzatore"
+    "empty": "Ancora nessun ritrovo: lanciane uno 🗣️",
+    "host": "Organizza"
   },
   "events": {
-    "going": "Partecipo",
-    "goingEmpty": "Ancora nessun piano - trova qualcosa 🔥",
+    "going": "Ci vado",
+    "goingEmpty": "Ancora nessun piano: trova qualcosa 🔥",
     "hosting": "Organizzo",
-    "hostingEmpty": "Ancora niente organizzato - lancia qualcosa ✨",
-    "live": "In diretta",
+    "hostingEmpty": "Non organizzi ancora niente: lancia qualcosa ✨",
+    "live": "In corso",
     "recurring": "↻ Ricorrente",
     "upcoming": "In arrivo",
-    "deleteEvent": "Elimina l'evento"
+    "deleteEvent": "Elimina evento"
   },
   "friends": {
     "requests": "Richieste di amicizia",
@@ -97,12 +97,13 @@
     "mine": "I miei amici"
   },
   "vibesTab": {
-    "received": "Vibes ricevuti",
-    "score": "punteggio vibe di {{score}}",
+    "received": "Vibes ricevute",
+    "score": "Punteggio vibe: {{score}}",
     "basedOn_one": "basato su {{count}} vibe",
+    "basedOn_many": "basato su {{count}} vibes",
     "basedOn_other": "basato su {{count}} vibes",
-    "empty": "Ancora nessun vibe",
-    "emptyHint": "Il tuo punteggio comparirà qui quando le persone ti lasceranno una nota ✨"
+    "empty": "Ancora nessuna vibe",
+    "emptyHint": "Il tuo punteggio comparirà qui quando qualcuno ti lascerà una nota ✨"
   },
   "save": {
     "uploading": "Caricamento…",
@@ -114,23 +115,23 @@
   "deleteAccount": "Elimina l'account",
   "delete": {
     "title": "Eliminare l'account?",
-    "body": "Il tuo profilo, i tuoi amici e le tue impostazioni verranno rimossi in modo permanente. I tuoi messaggi ed eventi resteranno nelle chat della città in forma anonima.",
-    "irreversible": "Questa azione è irreversibile.",
+    "body": "Il tuo profilo, gli amici e le impostazioni verranno eliminati per sempre. I tuoi messaggi ed eventi resteranno nelle chat delle città, in forma anonima.",
+    "irreversible": "Non si può tornare indietro.",
     "deleting": "Eliminazione…",
     "confirm": "Sì, elimina il mio account",
     "cancel": "Annulla"
   },
   "errors": {
-    "photoUpload": "Caricamento della foto non riuscito. Riprova.",
+    "photoUpload": "Foto non caricata. Riprova.",
     "usernameTooShort": "Il nome utente deve avere almeno 3 caratteri",
-    "usernameTaken": "Questo nome utente è già in uso",
+    "usernameTaken": "Nome utente già preso",
     "usernameInvalid": "Nome utente non valido",
     "saveFailed": "Salvataggio non riuscito. Riprova.",
     "generic": "Qualcosa è andato storto. Riprova."
   },
   "challenges": {
-    "empty": "Nessuna sfida - lanciane una 🔥",
-    "challenger": "Sfidante"
+    "empty": "Ancora nessuna sfida: lanciane una 🔥",
+    "challenger": "Challenger"
   },
   "appearance": "Aspetto",
   "themeLight": "Chiaro",
@@ -138,39 +139,43 @@
   "pp": {
     "passport": {
       "title": "Passaporto",
-      "weekRank": "N° {{rank}} questa settimana",
-      "weekNone": "Ancora nessuna posizione questa settimana",
+      "weekRank": "#{{rank}} questa settimana",
+      "weekNone": "Ancora fuori classifica questa settimana",
       "mostLocalIn": "Most Local a {{city}}",
       "mostLocalWorld": "Most Local nel mondo",
-      "hintToday": "Fai il challenge di oggi per ottenere il timbro {{theme}}.",
+      "hintToday": "Fai la sfida di oggi per ottenere il timbro {{theme}}.",
       "hintTomorrow": "Domani: {{theme}}",
-      "hintPass": "Local Pass ottenuto. Tutti i temi fatti qui.",
+      "hintPass": "Local Pass ottenuto. Hai fatto tutti i temi qui.",
       "localPass": "Local Pass",
-      "mySpots": "I miei spot",
+      "mySpots": "I miei posti",
       "myProposals": "Le mie proposte",
       "friends": "Amici",
       "mostLocalAllTime": "Most Local di sempre",
-      "allTimeRank": "N° {{rank}} a {{city}}",
+      "allTimeRank": "#{{rank}} a {{city}}",
       "howPoints": "Come funzionano i punti",
       "gotIt": "Capito",
       "close": "Chiudi",
-      "noSpots": "Ancora nessuno spot. Le tue foto nei luoghi li aggiungono qui.",
-      "pageA11y_one": "{{city}}: {{count}} timbri",
-      "pageA11y_many": "{{city}}: {{count}} timbri",
+      "noSpots": "Ancora nessun posto. Segna un posto nella tua foto e lo vedrai qui.",
+      "pageA11y_one": "{{city}}: {{count}} timbro",
+      "pageA11y_many": "{{city}}: {{count}} di timbri",
       "pageA11y_other": "{{city}}: {{count}} timbri",
       "guestTitle": "Inizia il tuo passaporto",
       "guestBody": "Registrati per raccogliere un timbro per tema in ogni città e ottenere il Local Pass.",
       "signUp": "Registrati",
       "signIn": "Ho già un account",
       "best_one": "Record: {{count}} giorno",
+      "best_many": "Record: {{count}} di giorni",
       "best_other": "Record: {{count}} giorni",
       "stamps_one": "{{count}} timbro su 7",
+      "stamps_many": "{{count}} timbri su 7",
       "stamps_other": "{{count}} timbri su 7",
       "inReview_one": "{{count}} in revisione",
+      "inReview_many": "{{count}} in revisione",
       "inReview_other": "{{count}} in revisione",
       "specialTitle": "Timbri speciali",
       "specialSub": "Edizione limitata, uno per ogni giorno speciale. Non conta per il Local Pass.",
       "compared_one": "Confrontato con {{count}} paese",
+      "compared_many": "Confrontato con {{count}} paesi",
       "compared_other": "Confrontato con {{count}} paesi",
       "stampsOf_one": "{{count}} timbro su {{total}}",
       "stampsOf_many": "{{count}} timbri su {{total}}",
@@ -183,15 +188,15 @@
       "comparedCities_many": "Confrontato con {{count}} città",
       "comparedCities_other": "Confrontato con {{count}} città",
       "myPhotos": "Le mie foto",
-      "noPhotos": "Le tue foto del Daily Challenge appariranno qui.",
+      "noPhotos": "Le tue foto della Daily Challenge compariranno qui.",
       "share": "Condividi il mio passaporto",
       "localSince": "Local di {{city}} da {{date}}"
     },
     "points": {
       "title": "Come guadagnare punti",
-      "intro": "I punti del Daily Challenge contano nel Most Local della settimana. Tutti i punti contano nella classifica di sempre.",
+      "intro": "I punti della Daily Challenge contano nel Most Local della settimana. Tutti i punti contano nella classifica di sempre.",
       "proof": "Pubblicare la tua foto",
-      "vote": "Voti (per challenge)",
+      "vote": "Votare (per sfida)",
       "top": "Top 3 mondiale del giorno",
       "weekly": "Il Most Local della settimana riparte ogni lunedì."
     },
@@ -199,20 +204,21 @@
     "friendRequests": "Richieste di amicizia",
     "myFriends": "I MIEI AMICI",
     "noFriends": "Ancora nessun amico. Aggiungine dai profili.",
-    "vibesReceived": "VIBES RICEVUTI",
-    "vibeScore": "{{score}} di punteggio vibe",
+    "vibesReceived": "VIBES RICEVUTE",
+    "vibeScore": "Punteggio vibe: {{score}}",
     "noVibes": "Ancora nessuna vibe.",
-    "noVibesSub": "Il tuo punteggio apparirà quando le persone ti lasceranno una nota ✨",
+    "noVibesSub": "Il tuo punteggio comparirà quando qualcuno ti lascerà una nota ✨",
     "settings": "IMPOSTAZIONI",
     "vibeBasis_one": "basato su {{count}} vibe",
+    "vibeBasis_many": "basato su {{count}} vibes",
     "vibeBasis_other": "basato su {{count}} vibes",
     "mode": {
       "local": {
-        "label": "Local",
+        "label": "Del posto",
         "desc": "Conosci questa città"
       },
       "exploring": {
-        "label": "Esplorando",
+        "label": "In esplorazione",
         "desc": "La stai scoprendo"
       }
     },
@@ -223,16 +229,16 @@
       "photos_one": "foto",
       "photos_many": "foto",
       "photos_other": "foto",
-      "likes_one": "like",
-      "likes_many": "like",
-      "likes_other": "like"
+      "likes_one": "mi piace",
+      "likes_many": "mi piace",
+      "likes_other": "mi piace"
     }
   },
   "friendReq": {
     "title": "Richieste di amicizia",
     "incoming": "Ricevute",
     "sent": "Inviate",
-    "wantsToBeFriend": "vuole essere tuo amico",
+    "wantsToBeFriend": "ti ha chiesto l'amicizia",
     "requestSent": "richiesta inviata",
     "decline": "Rifiuta",
     "accept": "Accetta",
@@ -240,6 +246,6 @@
     "emptyIncomingTitle": "Ancora nessuna richiesta di amicizia",
     "emptySentTitle": "Non ne hai inviata nessuna",
     "emptyIncomingSub": "Quando qualcuno ti chiede l'amicizia, lo vedrai qui.",
-    "emptySentSub": "Le richieste di amicizia in sospeso che hai inviato appariranno qui."
+    "emptySentSub": "Qui vedrai le richieste di amicizia che hai inviato e sono ancora in attesa."
   }
 }

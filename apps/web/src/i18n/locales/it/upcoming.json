@@ -6,9 +6,10 @@
   "error": "Impossibile caricare gli eventi di questo giorno",
   "retry": "Riprova",
   "emptyTitle": "Niente in programma",
-  "emptySub": "Ancora nessun evento in questo giorno.",
+  "emptySub": "Ancora nessun evento per questo giorno.",
   "public": "Pubblico",
-  "going_one": "{{count}} partecipante",
-  "going_other": "{{count}} partecipanti",
-  "liveNow": "In diretta"
+  "going_one": "{{count}} ci va",
+  "going_many": "{{count}} ci vanno",
+  "going_other": "{{count}} ci vanno",
+  "liveNow": "In corso ora"
 }

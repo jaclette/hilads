@@ -1,5 +1,5 @@
 {
-  "title": "Cosa è successo",
+  "title": "Cos'è successo",
   "filters": {
     "all": "Tutto",
     "events": "Eventi",
@@ -13,22 +13,24 @@
     "custom": "Personalizzato"
   },
   "picker": {
-    "pickEnd": "Ora scegli il giorno di fine",
-    "pickStart": "Scegli un giorno di inizio (fino a {{max}} giorni)",
+    "pickEnd": "Ora scegli l'ultimo giorno",
+    "pickStart": "Scegli il primo giorno (massimo {{max}} giorni)",
     "apply": "Applica"
   },
   "public": "Pubblico",
   "went_one": "{{count}} partecipante",
+  "went_many": "{{count}} partecipanti",
   "went_other": "{{count}} partecipanti",
   "hangoutTag": "Ritrovo",
   "replies_one": "{{count}} risposta",
+  "replies_many": "{{count}} di risposte",
   "replies_other": "{{count}} risposte",
   "noReplies": "Nessuna risposta",
   "error": "Impossibile caricare l'archivio",
   "retry": "Riprova",
-  "emptyTitle": "Ancora niente qui",
-  "emptyRecentSub": "Gli eventi e i ritrovi passati appariranno qui quando la città avrà un po' di storia.",
-  "emptyWindowSub": "Nessun evento o ritrovo in questo periodo. Prova con un intervallo più ampio.",
-  "loadMore": "Carica altri",
+  "emptyTitle": "Qui non c'è ancora niente",
+  "emptyRecentSub": "Gli eventi e i ritrovi passati compariranno qui quando la città avrà un po' di storia.",
+  "emptyWindowSub": "Nessun evento o ritrovo in questo periodo. Prova un intervallo più ampio.",
+  "loadMore": "Mostra di più",
   "loading": "Caricamento…"
 }
