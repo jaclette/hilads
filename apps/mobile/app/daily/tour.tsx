@@ -110,6 +110,10 @@ export default function TourScreen() {
     onPanResponderRelease: (_, g) => { if (g.dy > 80) goBack(); },
   })).current;
 
+  // A hook: above the early return below (after it, the first render without a tour had one hook
+  // fewer than the next: "Rendered more hooks than during the previous render", the tour crashed).
+  const here = useHere();   // "Answer for [city]": where I am, not the browsed city
+
   if (!tour) {
     return (
       <View style={[styles.wrap, styles.center]}>
@@ -125,7 +129,6 @@ export default function TourScreen() {
     ? themeName(tour.challenge.theme.key, { special: tour.challenge.special, city: slide?.city.name }) : '';
   const price = proof?.price && !proof.backHome ? money.price(proof.price) : null;
   const todayChallenge = tour.today;
-  const here = useHere();   // "Answer for [city]": where I am, not the browsed city
   const cover = last && todayChallenge
     ? (todayChallenge.coverUrl ? { uri: coverThumbUrl(todayChallenge.coverUrl) } : themeCover(todayChallenge.theme?.key ?? 'only_here', todayChallenge.date))
     : proof ? { uri: proof.photoUrl } : null;
@@ -144,7 +147,8 @@ export default function TourScreen() {
       {!last && proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                      transition={120} insetTop={insets.top + 64} onInteract={setInteracting} />
-        : cover && <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} pointerEvents="none" />}
+        // In a View: expo-image ignores pointerEvents on Android, and would take the tap zones' touches.
+        : cover && <View style={StyleSheet.absoluteFill} pointerEvents="none"><Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} /></View>}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
 

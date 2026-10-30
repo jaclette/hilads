@@ -144,7 +144,7 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
             {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onPress={play} />}
             {cities.length > 0
               ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onPress={photo => openCity(g, 'today_mosaic', photo)} />)
-              : yesterday.map(s => <CityCard key={s.city.id} faded pileColor={theme.fill} group={{
+              : yesterday.map(s => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
                   city: { id: s.city.id, name: s.city.name, country: s.city.country ?? '' }, count: s.count, authorCount: null,
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
                 }} onPress={() => router.push('/daily/tour?source=today_empty' as never)} />)}

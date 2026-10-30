@@ -219,9 +219,13 @@ export function DualPhoto({
   return (
     <View style={[styles.frame, style]} onLayout={onLayout} pointerEvents="box-none">
       {!selfie ? (
-        <Image source={{ uri: main.uri }} placeholder={main.thumb ? { uri: main.thumb } : undefined} style={StyleSheet.absoluteFill}
-               contentFit={contentFit} transition={transition} pointerEvents="none"
-               onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
+        // In a View: expo-image doesn't honour pointerEvents on Android, so the image took the touches
+        // meant for what lies under it (a story's tap zones: next / previous did nothing on a photo without a selfie).
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Image source={{ uri: main.uri }} placeholder={main.thumb ? { uri: main.thumb } : undefined} style={StyleSheet.absoluteFill}
+                 contentFit={contentFit} transition={transition}
+                 onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
+        </View>
       ) : ready ? (
         <>
           {layer('main')}
