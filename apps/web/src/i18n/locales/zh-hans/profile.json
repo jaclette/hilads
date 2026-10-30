@@ -155,7 +155,7 @@
       "gotIt": "知道了",
       "close": "关闭",
       "noSpots": "还没有地点。你在地点拍的照片会出现在这里。",
-      "pageA11y": "{{city}}：{{count}} 枚印章",
+      "pageA11y_other": "{{city}}：{{count}} 枚印章",
       "guestTitle": "开始你的护照",
       "guestBody": "注册后可在每个城市收集每个主题的印章，并赢得 Local Pass。",
       "signUp": "注册",

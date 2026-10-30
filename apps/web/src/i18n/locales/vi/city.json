@@ -1,9 +1,9 @@
 {
   "world": {
     "tab": "Thế giới",
-    "banner": "{{count}} thử thách liên thành phố đang diễn ra",
+    "banner_other": "{{count}} thử thách liên thành phố đang diễn ra",
     "online": "{{count}} đang online",
-    "cities": "{{count}} thành phố",
+    "cities_other": "{{count}} thành phố",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} vừa tạo thử thách {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} từ {{city}} vừa vào Hilads",
@@ -13,7 +13,7 @@
     "heroEmpty": "Làm người đầu tiên thách một thành phố",
     "heroEmptySub": "Tạo thử thách liên thành phố",
     "leaderboard": "Bảng xếp hạng",
-    "arrivals": "{{count}} người mới đến",
+    "arrivals_other": "{{count}} người mới đến",
     "arrivalsTitle": "Mới đến",
     "arrivalsEmpty": "Chưa có ai mới đến",
     "seeAll": "Xem tất cả"
@@ -87,7 +87,7 @@
     "online": "{{count}} đang online",
     "events_other": "{{count}} sự kiện",
     "hangout_other": "{{count}} buổi tụ tập",
-    "msgs": "{{count}} tin",
+    "msgs_other": "{{count}} tin",
     "hereTitle": "Bạn đang ở đâu?",
     "useMyLocation": "Dùng vị trí của mình",
     "playsIn": "Chơi ở {{city}}",
@@ -141,7 +141,7 @@
     "online": "{{count}} ở gần",
     "liveNow": "đang diễn ra",
     "seeWhosHere": "Xem ai đang ở đây",
-    "onlineAria": "{{count}} người ở gần, chạm để xem là ai",
+    "onlineAria_other": "{{count}} người ở gần, chạm để xem là ai",
     "notifications": "Thông báo",
     "messages": "Tin nhắn",
     "shareCity": "Chia sẻ thành phố",
@@ -298,7 +298,7 @@
     "subUnranked": "Nhận thử thách đầu tiên để bắt đầu leo hạng →",
     "subTop": "Giữ vững ngôi đầu →",
     "subEmpty": "Tạo thử thách đầu tiên cho du khách nhận →",
-    "members": "{{count}} thành viên",
+    "members_other": "{{count}} thành viên",
     "nearby": "{{count}} ở gần",
     "recent": "{{count}} mới đến",
     "mainUnranked_other": "🔥 {{count}} thử thách ở {{city}}",

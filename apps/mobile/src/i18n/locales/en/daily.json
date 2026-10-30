@@ -748,7 +748,8 @@
       "spookify": "Spookify me 🎲",
       "photo": "Photo",
       "selfie": "Selfie",
-      "max": "{{count}} stickers max",
+      "max_one": "{{count}} sticker max",
+      "max_other": "{{count}} stickers max",
       "remove": "Remove sticker",
       "add": "Add sticker",
       "frame": "Frame"

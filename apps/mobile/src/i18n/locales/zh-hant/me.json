@@ -112,7 +112,7 @@
     "gotIt": "知道了",
     "close": "關閉",
     "noSpots": "還沒有地點。你在地點拍的照片會出現在這裡。",
-    "pageA11y": "{{city}}：{{count}} 枚印章",
+    "pageA11y_other": "{{city}}：{{count}} 枚印章",
     "guestTitle": "開始你的護照",
     "guestBody": "註冊後可在每個城市收集每個主題的印章，並贏得 Local Pass。",
     "signUp": "註冊",

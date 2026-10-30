@@ -155,7 +155,7 @@
       "gotIt": "Oke",
       "close": "Tutup",
       "noSpots": "Belum ada spot. Fotomu di berbagai tempat akan muncul di sini.",
-      "pageA11y": "{{city}}: {{count}} stempel",
+      "pageA11y_other": "{{city}}: {{count}} stempel",
       "guestTitle": "Mulai paspormu",
       "guestBody": "Daftar untuk mengumpulkan stempel tiap tema di setiap kota dan dapatkan Local Pass.",
       "signUp": "Daftar",

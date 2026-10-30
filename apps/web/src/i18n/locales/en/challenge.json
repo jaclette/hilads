@@ -74,7 +74,8 @@
     "rankBadge": "Rank {{rank}}",
     "photoBadge": "Photo proof",
     "meetBadge": "Meet",
-    "photosCount": "{{count}} photos",
+    "photosCount_one": "{{count}} photo",
+    "photosCount_other": "{{count}} photos",
     "noOneJoined": "No one has joined yet",
     "beFirst": "Be the first · +2",
     "daysLeft": "{{count}}d left",
@@ -605,7 +606,8 @@
       "approveCta": "Approve",
       "rejectCta": "Reject",
       "rejectModalTitle": "Reject this proof",
-      "rejectModalHint": "They have {{count}} attempt(s) left. Tell them what to fix.",
+      "rejectModalHint_one": "They have {{count}} attempt left. Tell them what to fix.",
+      "rejectModalHint_other": "They have {{count}} attempts left. Tell them what to fix.",
       "reasonPlaceholder": "e.g. Photo is too blurry, can't see the dish",
       "rejectConfirm": "Send rejection",
       "reasonRequiredTitle": "Reason required",
@@ -706,7 +708,8 @@
     "winnerConfirm": "Crown the winner",
     "winnerNoSubmission": "That person hasn't submitted a photo.",
     "winnerFailed": "Could not pick the winner - try again.",
-    "submissionsHeader": "{{count}} photos",
+    "submissionsHeader_one": "{{count}} photo",
+    "submissionsHeader_other": "{{count}} photos",
     "tapToPick": "pick the best one",
     "winnerTag": "Winner",
     "pickThis": "Pick winner",
@@ -714,7 +717,8 @@
     "winnerConfirmBody": "{{name}} wins the big reward.",
     "pickHint": "Pick the winner from the photos below.",
     "awaitingPhotos": "No photos yet - the challenge is heating up 🔥",
-    "checkPhotos": "Check out the {{count}} photos"
+    "checkPhotos_one": "Check out the photo",
+    "checkPhotos_other": "Check out the {{count}} photos"
   },
   "challengeIntro": {
     "slide1": {

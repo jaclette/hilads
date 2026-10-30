@@ -762,7 +762,9 @@
       "spookify": "Fais-moi peur 🎲",
       "photo": "Photo",
       "selfie": "Selfie",
-      "max": "{{count}} stickers max",
+      "max_one": "{{count}} stickers max",
+      "max_many": "{{count}} stickers max",
+      "max_other": "{{count}} stickers max",
       "remove": "Retirer le sticker",
       "add": "Ajouter un sticker",
       "frame": "Cadre"

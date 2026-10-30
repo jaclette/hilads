@@ -74,7 +74,7 @@
     "rankBadge": "อันดับ {{rank}}",
     "photoBadge": "ภาพถ่าย",
     "meetBadge": "เจอกัน",
-    "photosCount": "{{count}} รูป",
+    "photosCount_other": "{{count}} รูป",
     "noOneJoined": "ยังไม่มีใครเข้าร่วม",
     "beFirst": "เป็นคนแรก · +2",
     "daysLeft": "เหลือ {{count}} วัน",
@@ -400,7 +400,7 @@
       "approveCta": "อนุมัติ",
       "rejectCta": "ปฏิเสธ",
       "rejectModalTitle": "ปฏิเสธหลักฐานนี้",
-      "rejectModalHint": "เหลือ {{count}} ครั้ง บอกว่าต้องแก้อะไร",
+      "rejectModalHint_other": "เหลือ {{count}} ครั้ง บอกว่าต้องแก้อะไร",
       "reasonPlaceholder": "เช่น ภาพเบลอ มองไม่เห็นอาหาร",
       "rejectConfirm": "ส่งคำปฏิเสธ",
       "reasonRequiredTitle": "ต้องบอกเหตุผล",
@@ -726,7 +726,7 @@
     "winnerConfirm": "มอบตำแหน่งผู้ชนะ",
     "winnerNoSubmission": "คนนั้นยังไม่ได้ส่งรูป",
     "winnerFailed": "เลือกผู้ชนะไม่สำเร็จ ลองอีกครั้ง",
-    "submissionsHeader": "{{count}} รูป",
+    "submissionsHeader_other": "{{count}} รูป",
     "tapToPick": "เลือกรูปที่ดีที่สุด",
     "winnerTag": "ผู้ชนะ",
     "pickThis": "เลือก",
@@ -734,7 +734,7 @@
     "winnerConfirmBody": "{{name}} จะได้รับรางวัลใหญ่",
     "pickHint": "เลือกผู้ชนะจากรูปด้านล่าง",
     "awaitingPhotos": "ยังไม่มีรูป — ชาเลนจ์กำลังเดือด 🔥",
-    "checkPhotos": "ดูรูปทั้ง {{count}} รูป"
+    "checkPhotos_other": "ดูรูปทั้ง {{count}} รูป"
   },
   "leaveTakeon": {
     "pill": "🚪 ออก",

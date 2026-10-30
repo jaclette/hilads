@@ -24,7 +24,7 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} người đang muốn đi chơi ngay",
+    "hiNowA11y_other": "{{count}} người đang muốn đi chơi ngay",
     "going_other": "{{count}} người đi",
     "arrivals_other": "{{count}} người tới tuần này",
     "nearby_other": "{{count}} người đang ở đây"

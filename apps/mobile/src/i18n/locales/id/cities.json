@@ -18,7 +18,7 @@
   "events_other": "{{count}} acara",
   "hangout_one": "{{count}} nongkrong",
   "hangout_other": "{{count}} nongkrong",
-  "msgs": "{{count}} pesan",
+  "msgs_other": "{{count}} pesan",
   "loadError": "Tidak bisa memuat kota",
   "noResults": "Tidak ada kota untuk \"{{query}}\"",
   "noCities": "Tidak ada kota ditemukan",

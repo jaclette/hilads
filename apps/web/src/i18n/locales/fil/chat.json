@@ -24,7 +24,8 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} tao ang gustong gumawa ng kahit ano ngayon",
+    "hiNowA11y_one": "{{count}} tao ang gustong gumawa ng kahit ano ngayon",
+    "hiNowA11y_other": "{{count}} tao ang gustong gumawa ng kahit ano ngayon",
     "going_one": "{{count}} pupunta",
     "going_other": "{{count}} pupunta",
     "arrivals_one": "{{count}} dumating ngayong linggo",

@@ -731,7 +731,7 @@
       "spookify": "一鍵嚇人 🎲",
       "photo": "照片",
       "selfie": "自拍",
-      "max": "最多 {{count}} 個貼紙",
+      "max_other": "最多 {{count}} 個貼紙",
       "remove": "移除貼紙",
       "add": "新增貼紙",
       "frame": "相框"

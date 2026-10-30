@@ -24,7 +24,7 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} 人现在想找点事做",
+    "hiNowA11y_other": "{{count}} 人现在想找点事做",
     "going_one": "{{count}} 人参加",
     "going_other": "{{count}} 人参加",
     "arrivals_one": "本周新来 {{count}} 人",

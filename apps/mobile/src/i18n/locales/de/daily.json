@@ -747,7 +747,8 @@
       "spookify": "Grusel mich 🎲",
       "photo": "Foto",
       "selfie": "Selfie",
-      "max": "Höchstens {{count}} Sticker",
+      "max_one": "Höchstens {{count}} Sticker",
+      "max_other": "Höchstens {{count}} Sticker",
       "remove": "Sticker entfernen",
       "add": "Sticker hinzufügen",
       "frame": "Rahmen"

@@ -717,7 +717,7 @@
       "spookify": "Biến mình thành ma 🎲",
       "photo": "Ảnh",
       "selfie": "Selfie",
-      "max": "Tối đa {{count}} sticker",
+      "max_other": "Tối đa {{count}} sticker",
       "remove": "Gỡ sticker",
       "add": "Thêm sticker",
       "frame": "Khung"

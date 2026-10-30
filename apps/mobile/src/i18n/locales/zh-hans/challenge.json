@@ -91,7 +91,7 @@
     "photoBadge": "照片",
     "joinedCount": "{{count}} 人已加入",
     "meetBadge": "见面",
-    "photosCount": "{{count}} 张照片",
+    "photosCount_other": "{{count}} 张照片",
     "noOneJoined": "还没有人加入",
     "beFirst": "⚡ 抢先加入 · +2",
     "daysLeft": "还剩 {{count}} 天",
@@ -422,7 +422,7 @@
       "approveCta": "通过",
       "rejectCta": "驳回",
       "rejectModalTitle": "驳回此证据",
-      "rejectModalHint": "剩 {{count}} 次。说明需要修改什么。",
+      "rejectModalHint_other": "剩 {{count}} 次。说明需要修改什么。",
       "reasonPlaceholder": "例：照片模糊，看不清菜品",
       "rejectConfirm": "发送驳回",
       "reasonRequiredTitle": "需要原因",
@@ -726,7 +726,7 @@
     "winnerConfirm": "为获胜者加冕",
     "winnerNoSubmission": "该用户尚未提交照片。",
     "winnerFailed": "无法选出获胜者，请重试。",
-    "submissionsHeader": "{{count}} 张照片",
+    "submissionsHeader_other": "{{count}} 张照片",
     "tapToPick": "选出最佳",
     "winnerTag": "获胜者",
     "pickThis": "选择",
@@ -734,7 +734,7 @@
     "winnerConfirmBody": "{{name}} 赢得大奖励。",
     "pickHint": "从下方照片中选出获胜者。",
     "awaitingPhotos": "还没有照片 — 挑战正在升温 🔥",
-    "checkPhotos": "查看这 {{count}} 张照片"
+    "checkPhotos_other": "查看这 {{count}} 张照片"
   },
   "leaveTakeon": {
     "pill": "退出",

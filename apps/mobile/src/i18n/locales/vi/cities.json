@@ -15,7 +15,7 @@
   "online": "{{count}} trực tuyến",
   "events_other": "{{count}} sự kiện",
   "hangout_other": "{{count}} tụ tập",
-  "msgs": "{{count}} tin",
+  "msgs_other": "{{count}} tin",
   "loadError": "Không thể tải thành phố",
   "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",
   "noCities": "Không tìm thấy thành phố",

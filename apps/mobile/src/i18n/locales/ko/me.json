@@ -112,7 +112,7 @@
     "gotIt": "알겠어요",
     "close": "닫기",
     "noSpots": "아직 스팟이 없어요. 장소에서 찍은 사진이 여기에 모여요.",
-    "pageA11y": "{{city}}: 스탬프 {{count}}개",
+    "pageA11y_other": "{{city}}: 스탬프 {{count}}개",
     "guestTitle": "여권을 시작하세요",
     "guestBody": "가입하면 도시마다 테마별 스탬프를 모으고 Local Pass를 받을 수 있어요.",
     "signUp": "가입하기",

@@ -91,7 +91,7 @@
     "photoBadge": "사진",
     "joinedCount": "{{count}}명 참여",
     "meetBadge": "만남",
-    "photosCount": "사진 {{count}}장",
+    "photosCount_other": "사진 {{count}}장",
     "noOneJoined": "아직 아무도 참여하지 않았어요",
     "beFirst": "⚡ 가장 먼저 참여하기 · +2",
     "daysLeft": "{{count}}일 남음",
@@ -422,7 +422,7 @@
       "approveCta": "승인",
       "rejectCta": "거절",
       "rejectModalTitle": "이 증거 거절",
-      "rejectModalHint": "{{count}}회 남았어요. 무엇을 고쳐야 할지 알려주세요.",
+      "rejectModalHint_other": "{{count}}회 남았어요. 무엇을 고쳐야 할지 알려주세요.",
       "reasonPlaceholder": "예: 사진이 흐려서 음식이 안 보임",
       "rejectConfirm": "거절 보내기",
       "reasonRequiredTitle": "이유 필요",
@@ -726,7 +726,7 @@
     "winnerConfirm": "우승자로 선정",
     "winnerNoSubmission": "그 사람은 아직 사진을 제출하지 않았어요.",
     "winnerFailed": "우승자를 고르지 못했어요. 다시 시도해 주세요.",
-    "submissionsHeader": "사진 {{count}}장",
+    "submissionsHeader_other": "사진 {{count}}장",
     "tapToPick": "가장 좋은 것 고르기",
     "winnerTag": "우승자",
     "pickThis": "선택",
@@ -734,7 +734,7 @@
     "winnerConfirmBody": "{{name}}님이 큰 보상을 받아요.",
     "pickHint": "아래 사진에서 우승자를 고르세요.",
     "awaitingPhotos": "아직 사진이 없어요 — 챌린지가 달아오르고 있어요 🔥",
-    "checkPhotos": "사진 {{count}}장 보기"
+    "checkPhotos_other": "사진 {{count}}장 보기"
   },
   "leaveTakeon": {
     "pill": "나가기",

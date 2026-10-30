@@ -747,7 +747,8 @@
       "spookify": "Takutin mo ako 🎲",
       "photo": "Photo",
       "selfie": "Selfie",
-      "max": "Hanggang {{count}} sticker lang",
+      "max_one": "Hanggang {{count}} sticker lang",
+      "max_other": "Hanggang {{count}} sticker lang",
       "remove": "Alisin ang sticker",
       "add": "Magdagdag ng sticker",
       "frame": "Frame"

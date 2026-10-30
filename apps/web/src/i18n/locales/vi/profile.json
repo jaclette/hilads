@@ -154,7 +154,7 @@
       "gotIt": "Hiểu rồi",
       "close": "Đóng",
       "noSpots": "Chưa có địa điểm nào. Ảnh bạn chụp tại các địa điểm sẽ hiện ở đây.",
-      "pageA11y": "{{city}}: {{count}} con dấu",
+      "pageA11y_other": "{{city}}: {{count}} con dấu",
       "guestTitle": "Lập hộ chiếu của bạn",
       "guestBody": "Đăng ký để sưu tầm con dấu cho từng chủ đề ở mỗi thành phố, và giành Local Pass.",
       "signUp": "Đăng ký",

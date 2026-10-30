@@ -18,7 +18,7 @@
   "events_other": "{{count}} 個活動",
   "hangout_one": "{{count}} 個聚會",
   "hangout_other": "{{count}} 個聚會",
-  "msgs": "{{count}} 則訊息",
+  "msgs_other": "{{count}} 則訊息",
   "loadError": "無法載入城市",
   "noResults": "找不到符合「{{query}}」的城市",
   "noCities": "找不到任何城市",

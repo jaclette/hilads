@@ -74,7 +74,7 @@
     "rankBadge": "{{rank}} 位",
     "photoBadge": "フォト",
     "meetBadge": "会う",
-    "photosCount": "{{count}}枚の写真",
+    "photosCount_other": "{{count}}枚の写真",
     "noOneJoined": "まだ誰も参加していません",
     "beFirst": "最初の一人になろう · +2",
     "daysLeft": "残り{{count}}日",
@@ -400,7 +400,7 @@
       "approveCta": "承認",
       "rejectCta": "拒否",
       "rejectModalTitle": "この証拠を拒否",
-      "rejectModalHint": "残り {{count}} 回。何を直すか伝えて。",
+      "rejectModalHint_other": "残り {{count}} 回。何を直すか伝えて。",
       "reasonPlaceholder": "例：ぼやけている、料理が見えない",
       "rejectConfirm": "拒否を送信",
       "reasonRequiredTitle": "理由が必要",
@@ -726,7 +726,7 @@
     "winnerConfirm": "勝者を決定",
     "winnerNoSubmission": "その人はまだ写真を提出していません。",
     "winnerFailed": "勝者を選べませんでした。もう一度お試しください。",
-    "submissionsHeader": "{{count}}枚の写真",
+    "submissionsHeader_other": "{{count}}枚の写真",
     "tapToPick": "ベストを選ぶ",
     "winnerTag": "勝者",
     "pickThis": "選ぶ",
@@ -734,7 +734,7 @@
     "winnerConfirmBody": "{{name}}が大きな報酬を獲得します。",
     "pickHint": "下の写真から勝者を選んでください。",
     "awaitingPhotos": "まだ写真がありません — チャレンジは盛り上がってきています 🔥",
-    "checkPhotos": "{{count}}枚の写真を見る"
+    "checkPhotos_other": "{{count}}枚の写真を見る"
   },
   "leaveTakeon": {
     "pill": "🚪 退出",

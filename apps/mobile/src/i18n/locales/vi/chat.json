@@ -1,9 +1,9 @@
 {
   "world": {
     "tab": "Thế giới",
-    "banner": "{{count}} thử thách liên thành phố đang diễn ra",
+    "banner_other": "{{count}} thử thách liên thành phố đang diễn ra",
     "online": "{{count}} đang online",
-    "cities": "{{count}} thành phố",
+    "cities_other": "{{count}} thành phố",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} vừa tạo thử thách {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} từ {{city}} vừa vào Hilads",
@@ -13,7 +13,7 @@
     "heroEmpty": "Làm người đầu tiên thách một thành phố",
     "heroEmptySub": "Tạo thử thách liên thành phố",
     "leaderboard": "Bảng xếp hạng",
-    "arrivals": "{{count}} người mới đến",
+    "arrivals_other": "{{count}} người mới đến",
     "arrivalsTitle": "Mới đến",
     "arrivalsEmpty": "Chưa có ai mới đến",
     "seeAll": "Xem tất cả"
@@ -26,10 +26,10 @@
   "weatherAlert": "Thời tiết",
   "online": "{{count}} ở gần",
   "liveNow": "đang diễn ra",
-  "onlineAria": "{{count}} người ở gần, chạm để xem là ai",
+  "onlineAria_other": "{{count}} người ở gần, chạm để xem là ai",
   "typingOne": "{{name}} đang nhập…",
   "typingTwo": "{{a}} và {{b}} đang nhập…",
-  "typingMany": "{{name}} và {{count}} người khác đang nhập…",
+  "typingMany_other": "{{name}} và {{count}} người khác đang nhập…",
   "dismissHint": "{{error}} · chạm để đóng",
   "beginning": "Bắt đầu cuộc trò chuyện",
   "emptyTitle": "Mọi người đang tới",
@@ -117,7 +117,7 @@
     "subUnranked": "Nhận thử thách đầu tiên để bắt đầu leo hạng →",
     "subTop": "Giữ vững ngôi đầu →",
     "subEmpty": "Tạo thử thách đầu tiên cho du khách nhận →",
-    "members": "{{count}} thành viên",
+    "members_other": "{{count}} thành viên",
     "nearby": "{{count}} ở gần",
     "recent": "{{count}} mới đến",
     "mainUnranked_other": "🔥 {{count}} thử thách ở {{city}}",
@@ -130,7 +130,7 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} người đang muốn đi chơi ngay",
+    "hiNowA11y_other": "{{count}} người đang muốn đi chơi ngay",
     "going_other": "{{count}} người đi",
     "arrivals_other": "{{count}} người tới tuần này",
     "nearby_other": "{{count}} người đang ở đây"

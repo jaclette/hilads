@@ -762,7 +762,9 @@
       "spookify": "Asústame 🎲",
       "photo": "Foto",
       "selfie": "Selfie",
-      "max": "{{count}} stickers como máximo",
+      "max_one": "{{count}} stickers como máximo",
+      "max_many": "{{count}} stickers como máximo",
+      "max_other": "{{count}} stickers como máximo",
       "remove": "Quitar sticker",
       "add": "Añadir sticker",
       "frame": "Marco"

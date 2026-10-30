@@ -74,7 +74,9 @@
     "rankBadge": "Rang {{rank}}",
     "photoBadge": "Photo proof",
     "meetBadge": "Meet",
-    "photosCount": "{{count}} photos",
+    "photosCount_one": "{{count}} photos",
+    "photosCount_many": "{{count}} photos",
+    "photosCount_other": "{{count}} photos",
     "noOneJoined": "Personne n'a encore rejoint",
     "beFirst": "Sois le premier · +2",
     "daysLeft": "{{count}}j restants",
@@ -400,7 +402,9 @@
       "approveCta": "Valider",
       "rejectCta": "Refuser",
       "rejectModalTitle": "Refuser cette preuve",
-      "rejectModalHint": "Il lui reste {{count}} tentative(s). Explique ce qui ne va pas.",
+      "rejectModalHint_one": "Il lui reste {{count}} tentative(s). Explique ce qui ne va pas.",
+      "rejectModalHint_many": "Il lui reste {{count}} tentative(s). Explique ce qui ne va pas.",
+      "rejectModalHint_other": "Il lui reste {{count}} tentative(s). Explique ce qui ne va pas.",
       "reasonPlaceholder": "ex : photo floue, on ne voit pas le plat",
       "rejectConfirm": "Envoyer le refus",
       "reasonRequiredTitle": "Raison obligatoire",
@@ -692,7 +696,9 @@
     "winnerConfirm": "Couronner le gagnant",
     "winnerNoSubmission": "Cette personne n'a pas envoyé de photo.",
     "winnerFailed": "Impossible de choisir le gagnant — réessaie.",
-    "submissionsHeader": "{{count}} photos",
+    "submissionsHeader_one": "{{count}} photos",
+    "submissionsHeader_many": "{{count}} photos",
+    "submissionsHeader_other": "{{count}} photos",
     "tapToPick": "choisis la meilleure",
     "winnerTag": "Gagnant",
     "pickThis": "Choisir",
@@ -700,7 +706,9 @@
     "winnerConfirmBody": "{{name}} remporte la grosse récompense.",
     "pickHint": "Choisis le gagnant parmi les photos ci-dessous.",
     "awaitingPhotos": "Pas encore de photos — le défi chauffe 🔥",
-    "checkPhotos": "Découvre les {{count}} photos"
+    "checkPhotos_one": "Découvre les {{count}} photos",
+    "checkPhotos_many": "Découvre les {{count}} photos",
+    "checkPhotos_other": "Découvre les {{count}} photos"
   },
   "challengeIntro": {
     "slide1": {

@@ -747,7 +747,8 @@
       "spookify": "Maak me griezelig 🎲",
       "photo": "Foto",
       "selfie": "Selfie",
-      "max": "Maximaal {{count}} stickers",
+      "max_one": "Maximaal {{count}} stickers",
+      "max_other": "Maximaal {{count}} stickers",
       "remove": "Sticker weghalen",
       "add": "Sticker toevoegen",
       "frame": "Lijst"

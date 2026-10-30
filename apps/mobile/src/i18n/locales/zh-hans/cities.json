@@ -18,7 +18,7 @@
   "events_other": "{{count}} 个活动",
   "hangout_one": "{{count}} 个聚会",
   "hangout_other": "{{count}} 个聚会",
-  "msgs": "{{count}} 条消息",
+  "msgs_other": "{{count}} 条消息",
   "loadError": "无法加载城市",
   "noResults": "未找到与“{{query}}”匹配的城市",
   "noCities": "未找到城市",

@@ -24,7 +24,12 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} أشخاص مستعدون لشيء الآن",
+    "hiNowA11y_zero": "{{count}} أشخاص مستعدون لشيء الآن",
+    "hiNowA11y_one": "{{count}} أشخاص مستعدون لشيء الآن",
+    "hiNowA11y_two": "{{count}} أشخاص مستعدون لشيء الآن",
+    "hiNowA11y_few": "{{count}} أشخاص مستعدون لشيء الآن",
+    "hiNowA11y_many": "{{count}} أشخاص مستعدون لشيء الآن",
+    "hiNowA11y_other": "{{count}} أشخاص مستعدون لشيء الآن",
     "going_zero": "لا أحد ذاهب",
     "going_one": "شخص واحد ذاهب",
     "going_two": "شخصان ذاهبان",

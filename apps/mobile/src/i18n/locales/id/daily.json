@@ -732,7 +732,7 @@
       "spookify": "Seramkan aku 🎲",
       "photo": "Foto",
       "selfie": "Selfie",
-      "max": "Maksimal {{count}} stiker",
+      "max_other": "Maksimal {{count}} stiker",
       "remove": "Hapus stiker",
       "add": "Tambah stiker",
       "frame": "Bingkai"

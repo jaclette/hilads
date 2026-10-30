@@ -732,7 +732,7 @@
       "spookify": "おばけ化 🎲",
       "photo": "写真",
       "selfie": "自撮り",
-      "max": "ステッカーは{{count}}個まで",
+      "max_other": "ステッカーは{{count}}個まで",
       "remove": "ステッカーを削除",
       "add": "ステッカーを追加",
       "frame": "フレーム"

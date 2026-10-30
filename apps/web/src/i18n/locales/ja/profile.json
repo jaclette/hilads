@@ -155,7 +155,7 @@
       "gotIt": "了解",
       "close": "閉じる",
       "noSpots": "スポットはまだありません。場所で撮った写真がここに表示されます。",
-      "pageA11y": "{{city}}：スタンプ {{count}} 個",
+      "pageA11y_other": "{{city}}：スタンプ {{count}} 個",
       "guestTitle": "パスポートを始めよう",
       "guestBody": "登録すると、各都市でテーマごとにスタンプを集めて Local Pass を目指せます。",
       "signUp": "登録する",

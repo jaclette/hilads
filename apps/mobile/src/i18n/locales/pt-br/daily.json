@@ -762,7 +762,9 @@
       "spookify": "Me assuste 🎲",
       "photo": "Foto",
       "selfie": "Selfie",
-      "max": "No máximo {{count}} figurinhas",
+      "max_one": "No máximo {{count}} figurinhas",
+      "max_many": "No máximo {{count}} figurinhas",
+      "max_other": "No máximo {{count}} figurinhas",
       "remove": "Remover figurinha",
       "add": "Adicionar figurinha",
       "frame": "Moldura"

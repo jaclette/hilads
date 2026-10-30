@@ -24,7 +24,8 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} लोग अभी कुछ करने को तैयार",
+    "hiNowA11y_one": "{{count}} लोग अभी कुछ करने को तैयार",
+    "hiNowA11y_other": "{{count}} लोग अभी कुछ करने को तैयार",
     "going_one": "{{count}} जा रहा है",
     "going_other": "{{count}} जा रहे हैं",
     "arrivals_one": "इस हफ़्ते {{count}} आया",

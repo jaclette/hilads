@@ -24,7 +24,9 @@
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y": "{{count}} pessoas com vontade de fazer algo agora",
+    "hiNowA11y_one": "{{count}} pessoas com vontade de fazer algo agora",
+    "hiNowA11y_many": "{{count}} pessoas com vontade de fazer algo agora",
+    "hiNowA11y_other": "{{count}} pessoas com vontade de fazer algo agora",
     "going_one": "{{count}} vai",
     "going_other": "{{count}} vão",
     "arrivals_one": "{{count}} chegou esta semana",

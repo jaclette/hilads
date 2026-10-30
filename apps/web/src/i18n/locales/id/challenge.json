@@ -74,7 +74,7 @@
     "rankBadge": "Peringkat {{rank}}",
     "photoBadge": "Foto",
     "meetBadge": "Ketemuan",
-    "photosCount": "{{count}} foto",
+    "photosCount_other": "{{count}} foto",
     "noOneJoined": "Belum ada yang gabung",
     "beFirst": "Jadi yang pertama · +2",
     "daysLeft": "{{count}} hr lagi",
@@ -400,7 +400,7 @@
       "approveCta": "Setujui",
       "rejectCta": "Tolak",
       "rejectModalTitle": "Tolak bukti ini",
-      "rejectModalHint": "Sisa {{count}} percobaan. Beri tahu yang perlu diperbaiki.",
+      "rejectModalHint_other": "Sisa {{count}} percobaan. Beri tahu yang perlu diperbaiki.",
       "reasonPlaceholder": "mis. foto buram, makanan tidak terlihat",
       "rejectConfirm": "Kirim penolakan",
       "reasonRequiredTitle": "Alasan diperlukan",
@@ -726,7 +726,7 @@
     "winnerConfirm": "Nobatkan pemenang",
     "winnerNoSubmission": "Orang itu belum mengirim foto.",
     "winnerFailed": "Gagal memilih pemenang — coba lagi.",
-    "submissionsHeader": "{{count}} foto",
+    "submissionsHeader_other": "{{count}} foto",
     "tapToPick": "pilih yang terbaik",
     "winnerTag": "Pemenang",
     "pickThis": "Pilih",
@@ -734,7 +734,7 @@
     "winnerConfirmBody": "{{name}} dapat hadiah besar.",
     "pickHint": "Pilih pemenang dari foto-foto di bawah.",
     "awaitingPhotos": "Belum ada foto — tantangan mulai memanas 🔥",
-    "checkPhotos": "Lihat {{count}} foto"
+    "checkPhotos_other": "Lihat {{count}} foto"
   },
   "leaveTakeon": {
     "pill": "🚪 Keluar",
