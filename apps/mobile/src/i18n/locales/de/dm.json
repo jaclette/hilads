@@ -33,7 +33,7 @@
   "resolveError": "Diese Unterhaltung konnte nicht geöffnet werden.",
   "goBack": "Zurück",
   "blockTitle": "{{name}} blockieren?",
-  "blockBody": "Du siehst keine Inhalte von {{name}} mehr, und {{name}} sieht deine nicht. Du kannst jemanden später unter Me → Einstellungen → Blockierte Nutzer wieder entsperren.",
+  "blockBody": "Du siehst keine Inhalte von {{name}} mehr, und {{name}} sieht deine nicht. Du kannst jemanden später unter Pass → Einstellungen → Blockierte Nutzer wieder entsperren.",
   "blockConfirm": "Blockieren",
   "blockFailTitle": "Konnte nicht blockiert werden",
   "blockFailBody": "Bitte versuche es erneut.",

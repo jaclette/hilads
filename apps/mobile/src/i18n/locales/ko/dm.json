@@ -33,7 +33,7 @@
   "resolveError": "이 대화를 열 수 없었어요.",
   "goBack": "뒤로",
   "blockTitle": "{{name}}님을 차단할까요?",
-  "blockBody": "{{name}}님의 콘텐츠를 볼 수 없고, 상대도 내 콘텐츠를 볼 수 없어요. 나중에 Me → 설정 → 차단된 사용자에서 언제든 차단을 해제할 수 있어요.",
+  "blockBody": "{{name}}님의 콘텐츠를 볼 수 없고, 상대도 내 콘텐츠를 볼 수 없어요. 나중에 여권 → 설정 → 차단된 사용자에서 언제든 차단을 해제할 수 있어요.",
   "blockConfirm": "차단",
   "blockFailTitle": "차단할 수 없었어요",
   "blockFailBody": "다시 시도해 주세요.",

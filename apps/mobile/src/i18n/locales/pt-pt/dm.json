@@ -33,7 +33,7 @@
   "resolveError": "Não foi possível abrir esta conversa.",
   "goBack": "Voltar",
   "blockTitle": "Bloquear {{name}}?",
-  "blockBody": "Deixarás de ver o conteúdo de {{name}}, e essa pessoa não verá o teu. Podes desbloquear qualquer pessoa mais tarde em Me → Definições → Utilizadores bloqueados.",
+  "blockBody": "Deixarás de ver o conteúdo de {{name}}, e essa pessoa não verá o teu. Podes desbloquear qualquer pessoa mais tarde em Passaporte → Definições → Utilizadores bloqueados.",
   "blockConfirm": "Bloquear",
   "blockFailTitle": "Não foi possível bloquear",
   "blockFailBody": "Tenta de novo.",

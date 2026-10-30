@@ -33,7 +33,7 @@
   "resolveError": "Hindi mabuksan ang usapang ito.",
   "goBack": "Bumalik",
   "blockTitle": "I-block si {{name}}?",
-  "blockBody": "Hindi mo na makikita ang content ni {{name}}, at hindi rin niya makikita ang sa iyo. Maaari mong i-unblock ang sinuman mamaya sa Me → Mga setting → Mga naka-block na user.",
+  "blockBody": "Hindi mo na makikita ang content ni {{name}}, at hindi rin niya makikita ang sa iyo. Maaari mong i-unblock ang sinuman mamaya sa Pasaporte → Mga setting → Mga naka-block na user.",
   "blockConfirm": "I-block",
   "blockFailTitle": "Hindi ma-block",
   "blockFailBody": "Pakisubukan ulit.",

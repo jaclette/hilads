@@ -33,7 +33,7 @@
   "resolveError": "无法打开此对话。",
   "goBack": "返回",
   "blockTitle": "屏蔽 {{name}}？",
-  "blockBody": "你将看不到 {{name}} 的内容，对方也看不到你的内容。你之后可以在 Me → 设置 → 屏蔽用户 里取消屏蔽任何人。",
+  "blockBody": "你将看不到 {{name}} 的内容，对方也看不到你的内容。你之后可以在 护照 → 设置 → 屏蔽用户 里取消屏蔽任何人。",
   "blockConfirm": "屏蔽",
   "blockFailTitle": "无法屏蔽",
   "blockFailBody": "请再试一次。",

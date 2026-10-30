@@ -33,7 +33,7 @@
   "resolveError": "Không mở được cuộc trò chuyện này.",
   "goBack": "Quay lại",
   "blockTitle": "Chặn {{name}}?",
-  "blockBody": "Bạn sẽ không thấy nội dung của {{name}}, và họ cũng không thấy của bạn. Muốn bỏ chặn thì vào Me → Cài đặt → Người dùng bị chặn.",
+  "blockBody": "Bạn sẽ không thấy nội dung của {{name}}, và họ cũng không thấy của bạn. Muốn bỏ chặn thì vào Hộ chiếu → Cài đặt → Người dùng bị chặn.",
   "blockConfirm": "Chặn",
   "blockFailTitle": "Không chặn được",
   "blockFailBody": "Thử lại nhé.",

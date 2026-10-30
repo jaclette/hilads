@@ -33,7 +33,7 @@
   "resolveError": "無法開啟這段對話。",
   "goBack": "返回",
   "blockTitle": "封鎖 {{name}}？",
-  "blockBody": "你將看不到 {{name}} 的內容，對方也看不到你的。之後你可以從「Me → 設定 → 已封鎖的使用者」隨時解除封鎖。",
+  "blockBody": "你將看不到 {{name}} 的內容，對方也看不到你的。之後你可以從「護照 → 設定 → 已封鎖的使用者」隨時解除封鎖。",
   "blockConfirm": "封鎖",
   "blockFailTitle": "無法封鎖",
   "blockFailBody": "請再試一次。",

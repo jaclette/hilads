@@ -33,7 +33,7 @@
   "resolveError": "Kon dit gesprek niet openen.",
   "goBack": "Terug",
   "blockTitle": "{{name}} blokkeren?",
-  "blockBody": "Je ziet geen content meer van {{name}}, en zij niet die van jou. Je kunt iemand later deblokkeren via Me → Instellingen → Geblokkeerde gebruikers.",
+  "blockBody": "Je ziet geen content meer van {{name}}, en zij niet die van jou. Je kunt iemand later deblokkeren via Paspoort → Instellingen → Geblokkeerde gebruikers.",
   "blockConfirm": "Blokkeren",
   "blockFailTitle": "Kon niet blokkeren",
   "blockFailBody": "Probeer het opnieuw.",

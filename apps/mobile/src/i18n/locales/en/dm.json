@@ -33,7 +33,7 @@
   "resolveError": "Could not open this conversation.",
   "goBack": "Go back",
   "blockTitle": "Block {{name}}?",
-  "blockBody": "You won't see content from {{name}}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.",
+  "blockBody": "You won't see content from {{name}}, and they won't see yours. You can unblock anyone later from Passport → Settings → Blocked users.",
   "blockConfirm": "Block",
   "blockFailTitle": "Could not block",
   "blockFailBody": "Please try again.",

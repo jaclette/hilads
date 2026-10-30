@@ -33,7 +33,7 @@
   "resolveError": "Tidak bisa membuka percakapan ini.",
   "goBack": "Kembali",
   "blockTitle": "Blokir {{name}}?",
-  "blockBody": "Kamu tidak akan melihat konten dari {{name}}, dan dia juga tidak melihat kontenmu. Kamu bisa membuka blokir siapa pun nanti dari Me → Pengaturan → Pengguna yang diblokir.",
+  "blockBody": "Kamu tidak akan melihat konten dari {{name}}, dan dia juga tidak melihat kontenmu. Kamu bisa membuka blokir siapa pun nanti dari Paspor → Pengaturan → Pengguna yang diblokir.",
   "blockConfirm": "Blokir",
   "blockFailTitle": "Tidak bisa memblokir",
   "blockFailBody": "Silakan coba lagi.",

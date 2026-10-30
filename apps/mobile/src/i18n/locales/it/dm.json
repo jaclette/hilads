@@ -33,7 +33,7 @@
   "resolveError": "Impossibile aprire questa conversazione.",
   "goBack": "Indietro",
   "blockTitle": "Bloccare {{name}}?",
-  "blockBody": "Non vedrai più i contenuti di {{name}}, e nemmeno lui i tuoi. Puoi sbloccare qualcuno più tardi da Me → Impostazioni → Utenti bloccati.",
+  "blockBody": "Non vedrai più i contenuti di {{name}}, e nemmeno lui i tuoi. Puoi sbloccare qualcuno più tardi da Passaporto → Impostazioni → Utenti bloccati.",
   "blockConfirm": "Blocca",
   "blockFailTitle": "Impossibile bloccare",
   "blockFailBody": "Riprova.",
