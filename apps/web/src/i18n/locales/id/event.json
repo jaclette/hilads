@@ -12,15 +12,15 @@
   },
   "delete": {
     "confirmTitle": "Hapus acara ini?",
-    "confirmBody": "Ini akan menghapus acara dan semua pesan. Tindakan ini tidak bisa dibatalkan.",
+    "confirmBody": "Acara dan semua pesannya bakal dihapus. Nggak bisa dibatalkan.",
     "cancel": "Batal",
-    "deleting": "Menghapus…",
+    "deleting": "Lagi dihapus…",
     "confirm": "Hapus",
     "button": "Hapus acara"
   },
   "quickStart": "Mulai cepat",
   "presets": {
-    "dailySpot": "Spot harian",
+    "dailySpot": "Tempat harian",
     "dailySpotDesc": "Setiap hari",
     "everyEvening": "Setiap malam",
     "everyEveningDesc": "Harian · 20.00",
@@ -43,14 +43,14 @@
   "date": "Tanggal",
   "today": "Hari ini",
   "tomorrow": "Besok",
-  "todayHint": "Mengadakan hari ini memberimu visibilitas paling tinggi",
+  "todayHint": "Bikin acara hari ini biar paling banyak dilihat",
   "starts": "Mulai",
-  "ends": "Berakhir",
+  "ends": "Selesai",
   "repeat": "Ulangi",
   "recurrence": {
     "once": "Sekali",
-    "daily": "Setiap hari",
-    "weekly": "Setiap minggu",
+    "daily": "Harian",
+    "weekly": "Mingguan",
     "everyNDays": "Setiap N hari"
   },
   "weekdays": [
@@ -69,15 +69,15 @@
   "locationPlaceholder": "Opsional · ketuk untuk atur di peta",
   "clearLocation": "Hapus lokasi",
   "errors": {
-    "endAfterStart": "Waktu berakhir harus minimal 15 menit setelah waktu mulai",
-    "pickDay": "Pilih setidaknya satu hari dalam seminggu",
-    "deleteFailed": "Tidak bisa menghapus acara. Coba lagi.",
-    "locUnavailable": "Lokasi tidak tersedia di browser ini. Kamu tetap bisa membuat acara tanpanya.",
-    "locFailed": "Tidak bisa mengambil lokasimu. Aktifkan akses lokasi, atau lewati peta."
+    "endAfterStart": "Waktu selesai minimal 15 menit setelah waktu mulai",
+    "pickDay": "Pilih minimal satu hari dalam seminggu",
+    "deleteFailed": "Gagal hapus acara. Coba lagi.",
+    "locUnavailable": "Lokasi nggak tersedia di browser ini. Kamu tetap bisa bikin acara tanpa lokasi.",
+    "locFailed": "Gagal dapat lokasimu. Aktifkan akses lokasi, atau lewati peta."
   },
   "submit": {
-    "saving": "Menyimpan…",
-    "creating": "Membuat…",
+    "saving": "Lagi disimpan…",
+    "creating": "Lagi dibuat…",
     "saveChanges": "Simpan perubahan",
     "openSpot": "Hi plan",
     "startEvent": "Hi plan",
@@ -85,18 +85,18 @@
   },
   "recur": {
     "everyday": "Setiap hari",
-    "weekly": "Setiap minggu",
-    "everyNDays_one": "Setiap {{count}} hari",
+    "weekly": "Mingguan",
     "everyNDays_other": "Setiap {{count}} hari"
   },
   "limit": {
-    "title": "Kamu sudah membuat acaramu hari ini!",
-    "body": "Di Hilads, kami menjaga semuanya tetap segar - satu acara per hari agar setiap rencana mendapat perhatian yang layak. Kembali besok untuk membuat satu lagi.",
-    "legendLink": "Jadilah Legend untuk membuat acara tanpa batas",
-    "legendA11y": "Pelajari cara menjadi Legend",
-    "legendAlertTitle": "Jadilah Legend",
-    "legendAlertBody": "Legend adalah warga lokal yang dipilih untuk menghidupkan kotanya - mereka bisa jadi host sebanyak yang mereka mau. Mau jadi salah satunya? Hubungi contact@hilads.live.",
-    "gotIt": "Mengerti",
-    "backToNow": "Kembali ke Now"
+    "title": "Kamu sudah bikin acara hari ini!",
+    "body": "Di Hilads, semuanya dijaga tetap segar: satu acara per hari, biar tiap rencana dapat perhatian yang layak. Balik lagi besok buat bikin acara lagi.",
+    "legendLink": "Jadi Legenda buat bikin acara tanpa batas",
+    "legendA11y": "Cara jadi Legenda",
+    "legendAlertTitle": "Jadi Legenda",
+    "legendAlertBody": "Legenda adalah warga lokal yang dipilih untuk menghidupkan kotanya: mereka bisa bikin acara sebanyak yang mereka mau. Mau jadi salah satunya? Hubungi contact@hilads.live.",
+    "gotIt": "Oke",
+    "backToNow": "Kembali ke Now",
+    "yourEvent": "Acaramu"
   }
 }

@@ -12,25 +12,26 @@
   },
   "meta": {
     "cityTitle": "{{city}} di Hilads - Main lokal. Bandingkan global.",
-    "cityDesc": "Satu tantangan sehari, sama di setiap kota. Main di {{city}}, ambil foto, dan lihat bagaimana dunia menjawab.",
-    "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Gabung {{title}} di Hilads - Local Event yang sedang berlangsung. Lihat siapa yang datang dan ngobrol langsung."
+    "cityDesc": "Satu tantangan sehari, sama di setiap kota. Main di {{city}}, jepret foto, dan lihat foto dari seluruh dunia.",
+    "eventTitle": "Acara lokal: {{title}} | Hilads",
+    "eventDesc": "Gabung {{title}} di Hilads, acara lokal yang lagi berlangsung. Lihat siapa aja yang datang dan ngobrol langsung sama yang online."
   },
   "nowTitle": "Sekarang",
   "filterEvents": "🎉 Acara lokal",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Nongkrong",
-  "publicEventsSection": "🎫 Acara publik",
+  "publicEventsSection": "🎫 Acara lokal publik",
   "accountWelcome": {
     "title": "Selamat, {{username}}!",
-    "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang",
-    "f1": "Mulai nongkrong dan kumpulkan orang sekarang juga",
+    "subtitle": "Akunmu sudah siap. Ini yang bisa kamu lakukan sekarang",
+    "f1": "Mulai nongkrong dan kumpulin orang sekarang juga",
     "f2": "Adakan acara di kotamu",
-    "f3": "Kirim pesan pribadi ke siapa saja",
-    "f4": "Lihat siapa yang ada di dekatmu, langsung",
-    "f5": "Terhubung dengan warga lokal dan para pelancong",
+    "f3": "Kirim pesan pribadi ke siapa aja",
+    "f4": "Lihat siapa yang ada di dekatmu, secara live",
+    "f5": "Kenalan sama warga lokal dan pelancong",
     "fc1": "Tantang warga lokal di kotamu",
     "fc2": "Tantang kota lain di dunia",
-    "cta": "Ayo mulai"
+    "cta": "Yuk mulai"
   },
   "onboarding": {
     "skip": "Lewati ✕",
@@ -38,21 +39,21 @@
     "fallbackCity": "kotamu",
     "slide1": {
       "title": "Main lokal. Bandingkan global.",
-      "body": "Hilads adalah app yang mengubah pelancong jadi orang lokal - dan membantu orang lokal berbagi apa yang membuat kotanya hidup."
+      "body": "Hilads bikin pelancong jadi warga lokal, dan bantu warga lokal berbagi hal yang bikin kotanya hidup."
     },
     "slide2": {
-      "title": "Tiga cara menghidupi kota",
-      "itemChallenges": "🤝 Tantangan - tantang atau ditantang buat menemukan tempat tersembunyi, mencicipi makanan asli, berbagi budaya, atau bantu.",
-      "itemHangouts": "🗣️ Hi now - ketemu seseorang dadakan",
-      "itemEvents": "🎉 Hi plan - atur waktu buat ketemuan"
+      "title": "Tiga cara menikmati kota",
+      "itemChallenges": "🤝 Tantangan: tantang atau ditantang buat nemuin tempat tersembunyi, nyobain makanan asli, berbagi budaya, atau bantu orang.",
+      "itemHangouts": "🗣️ Hi now: ketemuan dadakan",
+      "itemEvents": "🎉 Hi plan: atur waktu buat ketemuan"
     },
     "slide3": {
-      "title": "Raih tempatmu di kota",
-      "body": "Setiap tantangan yang kamu selesaikan, setiap pertemuan, setiap tempat yang kamu temukan kasih kamu poin. Poin mencerminkan seberapa lokal kamu sudah jadi di {{city}}. Naik ke puncak Most Local dan raih tempatmu di antara orang-orang yang menghidupkan kota."
+      "title": "Dapatkan tempatmu di kota ini",
+      "body": "Tiap tantangan yang kamu selesaikan, tiap ketemuan, tiap tempat yang kamu temukan kasih kamu poin. Poin nunjukin seberapa lokal kamu di {{city}}. Naik ke puncak Most Local dan dapatkan tempatmu di antara orang-orang yang bikin kota ini hidup."
     },
     "slide4": {
-      "title": "Siap mulai?",
-      "ctaChallenge": "📍 Ambil tantangan pertama di {{city}}",
+      "title": "Siap mulai petualanganmu?",
+      "ctaChallenge": "📍 Ikut tantangan pertamamu di {{city}}",
       "ctaMostLocal": "🤝 Lihat Most Local {{city}}",
       "ctaLookAround": "👀 Lihat-lihat dulu aja",
       "ctaHiNow": "🗣️ Hi now",
@@ -60,44 +61,44 @@
     }
   },
   "challengeIntro": {
-    "title": "Cara kerja tantangan",
+    "title": "Cara main tantangan",
     "slide1": {
-      "title": "Tantangan mengubah perjalanan jadi cerita",
-      "body": "Lokal dan pelancong saling tantang buat berbagi kota apa adanya - makanan, tempat, budaya, bantuan. Hadiahnya? Ketemuan langsung - atau kirim bukti dari jauh."
+      "title": "Tantangan bikin perjalanan jadi cerita",
+      "body": "Warga lokal dan pelancong saling tantang buat berbagi sisi asli kota: makanan, tempat, budaya, bantuan. Hadiahnya? Ketemuan langsung, atau kirim bukti dari jauh."
     },
     "slide2": {
-      "title": "Luncurkan tantanganmu",
-      "body": "Makanan, tempat, budaya atau bantuan. Pilih buat siapa, berapa slot, dan cara nutupnya - ketemuan atau bukti foto."
+      "title": "Bikin tantanganmu",
+      "body": "Makanan, tempat, budaya, atau bantuan. Pilih buat siapa, berapa slot, dan cara menutupnya: ketemuan atau bukti foto."
     },
     "slide3": {
-      "title": "Ada yang menerima",
-      "body": "Mereka kirim permintaan. Kamu cek dan terima - thread privat kalian terbuka untuk ngobrol dan atur rencana."
+      "title": "Ada yang nerima",
+      "body": "Mereka kirim permintaan. Kamu cek lalu terima, dan thread privat kalian terbuka buat ngobrol dan atur rencana."
     },
     "slide4": {
-      "title": "Ketemuan atau bukti foto",
-      "body": "Ketemu langsung atau kirim foto dari jauh - kamu yang nentuin. Apa pun caranya, tiap langkah tercatat."
+      "title": "Ketemuan atau kirim bukti",
+      "body": "Ketemu langsung atau kirim foto dari jauh, kamu yang tentuin. Apa pun caranya, tiap langkah tercatat."
     },
     "slide5": {
       "title": "Tutup tantangannya",
-      "body": "Setelah ketemu (atau pas foto masuk), tandai selesai. Kotamu, dijalani beneran - satu tantangan tiap kali."
+      "body": "Setelah ketemuan (atau begitu fotonya masuk), tandai selesai. Kotamu, dijalani beneran, satu tantangan demi satu tantangan."
     },
     "next": "Lanjut",
-    "done": "Mengerti!",
+    "done": "Oke, paham!",
     "skip": "Lewati ✕",
     "slide6": {
       "title": "Di luar kotamu",
-      "body": "Tantang siapa pun, di mana pun. Orangnya kirim bukti - foto bergeotag - dan kamu validasi dari jauh. Alur foto yang sama juga jalan di lokal. Lokal atau global, tiap tantangan dihitung."
+      "body": "Tantang siapa aja, di mana aja. Mereka kirim bukti berupa foto dengan geotag, dan kamu validasi dari jauh. Alur foto yang sama juga bisa dipakai di kotamu. Lokal atau global, tiap tantangan dihitung."
     },
     "slide7": {
       "title": "Jadi Most Local",
-      "body": "Tiap tantangan dapat poin - di kotamu dan di dunia. Ketemuan langsung dapat +50 bonus tambahan. Lokal atau pelancong, yang penting adalah apa yang kamu bangun di sini. Papan peringkat baru tiap bulan."
+      "body": "Tiap tantangan kasih kamu poin, di kotamu DAN di seluruh dunia. Ketemuan langsung dapat bonus +50. Warga lokal atau pelancong, yang penting apa yang kamu bangun di sini. Papan peringkat baru tiap bulan."
     },
-    "createCta": "🔥 Buat tantangan"
+    "createCta": "🔥 Bikin tantangan"
   },
   "share": {
     "title": "Bagikan sesuatu",
     "snap": "Ambil foto",
-    "snapDesc": "Untuk tantangan hari ini atau sekadar seru-seruan",
+    "snapDesc": "Untuk tantangan hari ini atau sekadar iseng",
     "spot": "Bagikan lokasimu",
     "spotDesc": "Bagikan lokasi terkinimu",
     "spotLoading": "Mengambil lokasimu…",
@@ -110,7 +111,7 @@
     "title": "Kamu di mana?",
     "search": "Cari alamat atau tempat",
     "moveHint": "Geser peta untuk menyesuaikan",
-    "noResults": "Tidak ada tempat ditemukan",
+    "noResults": "Tempat nggak ditemukan",
     "loading": "Mengambil lokasi…",
     "confirm": "Bagikan lokasi ini",
     "yourLocation": "Lokasimu",
@@ -122,20 +123,20 @@
   "loading": "Memuat…",
   "mode": {
     "local": {
-      "label": "Local"
+      "label": "Lokal"
     },
     "exploring": {
       "label": "Menjelajah"
     }
   },
   "composer": {
-    "attach": "Tambahkan lampiran",
+    "attach": "Tambah lampiran",
     "emoji": "Emoji",
     "placeholderCity": "Sapa kotamu",
-    "placeholderHangout": "Kasih tahu kamu ikutan",
+    "placeholderHangout": "Kasih tahu kalau kamu ikut",
     "placeholderEvent": "Ngobrol sama yang datang",
-    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu",
-    "placeholderWorld": "Tanya dunia bagaimana mereka melakukannya"
+    "placeholderChallenge": "Semangatin mereka, atau bagi tipsmu",
+    "placeholderWorld": "Tanya dunia gimana cara mereka"
   },
   "vibe": {
     "party": "Pesta",
@@ -147,11 +148,11 @@
   },
   "weather": {
     "clear": "langit cerah",
-    "sunnyHot": "cuaca indah",
+    "sunnyHot": "cerah banget",
     "clearNight": "malam cerah",
     "mostlyClear": "sebagian besar cerah",
     "partly": "sedikit berawan",
-    "overcast": "langit kelabu",
+    "overcast": "langit mendung",
     "fog": "berkabut",
     "drizzle": "gerimis",
     "rain": "hujan",
@@ -160,8 +161,8 @@
     "thunder": "badai petir"
   },
   "time": {
-    "happeningNow": "sedang berlangsung",
-    "inMin": "dalam {{count}} mnt",
+    "happeningNow": "lagi berlangsung",
+    "inMin": "{{count}} mnt lagi",
     "today": "Hari ini",
     "tomorrow": "Besok",
     "yesterday": "Kemarin",
@@ -172,19 +173,18 @@
     "dAgo": "{{count}} hari lalu",
     "expired": "Berakhir",
     "expiresSoon": "Segera berakhir",
-    "expiresInMin": "Berakhir dalam {{mins}} mnt",
+    "expiresInMin": "Berakhir {{mins}} mnt lagi",
     "expiresInHourMin": "Berakhir dalam {{hours}} jam {{mins}} mnt",
-    "expiresInHour": "Berakhir dalam {{hours}} jam",
+    "expiresInHour": "Berakhir {{hours}} jam lagi",
     "mShort": "{{count}}m",
     "hShort": "{{count}}j"
   },
   "filterChallenges": "🔥 Tantangan",
   "shareToCity": "Bagikan ke kotaku",
-  "shareToWorld": "Bagikan ke World",
-  "hiLocalTitle": "Hi Local",
+  "shareToWorld": "Bagikan ke Dunia",
   "shareCta": {
     "leaderboard": "Lihat papan peringkat",
-    "challenge": "Lihat challenge",
+    "challenge": "Lihat tantangan",
     "event": "Lihat Hi plan",
     "topic": "Lihat Hi now"
   },
@@ -198,26 +198,26 @@
     "title": "Tampilkan",
     "world": "Dunia",
     "pickCity": "Pilih kota",
-    "citySub": "Challenge, foto, dan spot di kotamu",
-    "worldSub": "Foto dan spot dari semua kota",
+    "citySub": "Tantangan, foto, dan tempat di kotamu",
+    "worldSub": "Foto dan tempat dari semua kota",
     "changeCity": "Ganti kota",
-    "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti",
+    "a11y": "Menampilkan {{scope}}. Ketuk untuk ganti",
     "here": "Kamu di {{city}}",
     "hereUnknown": "Kamu di mana?",
-    "hereSub": "Salah? Ubah tempat kamu main"
+    "hereSub": "Salah? Ganti kota tempat kamu main"
   },
   "signUp": "Daftar",
   "settings": "Pengaturan",
   "firstLaunch": "Main lokal. Bandingkan global.",
   "subtitles": {
-    "map": "Spot dari foto dunia.",
-    "hi": "Sapa kotamu. Ikut sebuah rencana.",
-    "passport": "Kotamu, fotomu, capmu."
+    "map": "Tempat dari foto-foto seluruh dunia.",
+    "hi": "Sapa kotamu. Ikut rencana.",
+    "passport": "Kotamu, fotomu, stempelmu."
   },
   "photoBy": "Foto oleh @{{username}}",
   "pick": {
     "badge": "Pilihan Hilads",
-    "goodToKnow": "Perlu diketahui",
+    "goodToKnow": "Perlu kamu tahu",
     "credit": "Foto: {{credit}}",
     "source": "Sumber"
   },
@@ -225,7 +225,7 @@
     "share": "Bagikan",
     "challengeFriend": "Tantang teman",
     "copied": "Disalin",
-    "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Ikut?",
+    "textToday": "Daily Challenge hari ini di Hilads: {{challenge}} Kamu ikut?",
     "textSpot": "{{name}} di Hilads",
     "textSpotCity": "{{name}}, {{city}}, di Hilads",
     "textPassport": "Paspor Hilads-ku di {{city}}. Tantangan sama. Dunia berbeda.",
@@ -235,48 +235,80 @@
     "empty": "{{city}} belum main hari ini. Jadilah yang pertama.",
     "beFirst": "Jadilah yang pertama main untuk {{city}}",
     "emptyThere": "{{city}} belum main hari ini.",
-    "notIn": "Tidak di {{city}}?",
-    "change": "Ubah",
-    "locationNeeded": "Izinkan lokasi untuk main dari tempatmu berada.",
+    "notIn": "Nggak di {{city}}?",
+    "change": "Ganti",
+    "locationNeeded": "Izinkan lokasi buat main dari tempatmu sekarang.",
     "button": "Main untuk {{city}}",
-    "firstPosted": "Kamu menaruh {{city}} di peta dunia hari ini.",
-    "pioneer": "Pelopor {{city}}",
-    "spotOne": "Spot #1 di {{city}}",
-    "streak_other": "{{city}} sudah main {{count}} hari berturut-turut",
+    "firstPosted": "Kamu bikin {{city}} muncul di peta dunia hari ini.",
+    "pioneer": "Pioneer {{city}}",
+    "spotOne": "Tempat #1 di {{city}}",
+    "streak_other": "{{city}} sudah main {{count}} hari beruntun",
     "board_other": "{{count}} kota sudah ada di papan hari ini. {{city}} belum.",
-    "mapEmpty": "{{city}} belum ada di peta dunia. Taruh di sana.",
+    "mapEmpty": "{{city}} belum ada di peta dunia. Yuk, taruh di sana.",
     "invite": "Ajak teman",
     "share": "Main untuk {{city}} bareng aku di Hilads.",
-    "pioneerTitle": "Lencana pelopor",
-    "pioneerSub": "Foto pertama yang disetujui di sebuah kota. Milikmu selamanya.",
-    "streak_one": "{{city}} sudah main {{count}} hari berturut-turut"
+    "pioneerTitle": "Lencana Pioneer",
+    "pioneerSub": "Foto pertama yang disetujui di sebuah kota. Milikmu selamanya."
   },
   "appModal": {
     "title": {
-      "play": "Unduh aplikasinya untuk main",
-      "playCity": "Unduh aplikasinya untuk main buat {{city}}",
-      "vote": "Unduh aplikasinya untuk vote {{city}}",
-      "joinPlan": "Unduh aplikasinya untuk ikut rencana ini",
-      "sayHi": "Unduh aplikasinya untuk menyapa {{city}}",
-      "propose": "Unduh aplikasinya untuk mengusulkan tantangan"
+      "play": "Unduh aplikasinya buat main",
+      "playCity": "Unduh aplikasinya buat main untuk {{city}}",
+      "vote": "Unduh aplikasinya buat vote {{city}}",
+      "joinPlan": "Unduh aplikasinya buat ikut rencana ini",
+      "sayHi": "Unduh aplikasinya buat nyapa {{city}}",
+      "propose": "Unduh aplikasinya buat usulin tantangan"
     },
     "sub": "Gratis, dan cuma butuh semenit.",
     "download": "Unduh aplikasinya",
-    "keepExploring": "Lanjut menjelajah",
-    "scan": "Pindai dengan ponselmu"
+    "keepExploring": "Lanjut jelajah",
+    "scan": "Pindai pakai HP-mu"
   },
   "directions": {
     "chooseTitle": "Buka rute di",
-    "ask": "Tanya setiap kali",
+    "ask": "Selalu tanya",
     "setting": "Petunjuk arah"
   },
   "promo": {
-    "askTitle": "Izinkan Hilads menampilkan fotomu, selalu dengan kredit?",
+    "askTitle": "Izinkan Hilads menampilkan fotomu, selalu dengan kredit namamu?",
     "askBody": "Foto Daily Challenge-mu bisa muncul di postingan kami di Instagram, TikTok, dan YouTube, selalu dengan @username-mu. Kamu bisa mengubahnya kapan saja di Pengaturan.",
     "allow": "Izinkan",
-    "notNow": "Nanti saja",
+    "notNow": "Nanti aja",
     "setting": "Tampilkan fotoku",
     "on": "Aktif",
     "off": "Nonaktif"
+  },
+  "a11y": {
+    "close": "Tutup",
+    "back": "Kembali",
+    "dismiss": "Tutup",
+    "mainNav": "Utama",
+    "emojiPicker": "Pilih emoji",
+    "cancelReply": "Batalkan balasan",
+    "welcome": "Selamat datang",
+    "approve": "Setujui"
+  },
+  "tapToOpenMaps": "Ketuk untuk buka di peta",
+  "openInApp": {
+    "text": "Lanjut di aplikasi Hilads biar lebih lengkap",
+    "cta": "Buka aplikasi"
+  },
+  "appPromo": {
+    "text": "Nikmati Hilads versi lengkap",
+    "ctaIos": "Unduh di App Store",
+    "ctaAndroid": "Dapatkan di Google Play",
+    "regionIos": "Dapatkan aplikasi Hilads untuk iOS",
+    "regionAndroid": "Dapatkan aplikasi Hilads untuk Android",
+    "pitchPush": "Notifikasi real-time",
+    "pitchFast": "Feed lebih cepat dan mulus",
+    "pitchAnim": "Animasi yang mulus",
+    "ctaPlay": "Unduh di Google Play",
+    "continueBrowser": "Lanjut di browser"
+  },
+  "deleteAccount": {
+    "title": "Hapus akunmu",
+    "body": "Buat hapus akun Hilads-mu dan semua datanya, kirim email ke:",
+    "note": "Sertakan username-mu di email. Datamu bakal dihapus permanen dalam 48 jam.",
+    "back": "Balik ke Hilads"
   }
 }

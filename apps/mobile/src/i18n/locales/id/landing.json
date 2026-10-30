@@ -1,10 +1,8 @@
 {
-  "peopleHere_one": "🔥 {{count}} orang di sini sekarang",
   "peopleHere_other": "🔥 {{count}} orang di sini sekarang",
-  "vibesToday_one": "🔥 {{count}} vibe berlangsung hari ini",
-  "vibesToday_other": "🔥 {{count}} vibes berlangsung hari ini",
+  "vibesToday_other": "🔥 {{count}} vibes hari ini",
   "geoOff": "📍 Lokasi mati",
-  "geoUnreachable": "📍 Tidak bisa menemukan lokasimu",
+  "geoUnreachable": "📍 Gagal mendapatkan lokasimu",
   "pickCity": "Pilih kota\ndan langsung gabung",
   "locating": "› mencari lokasi...",
   "requesting": "› meminta lokasi...",
@@ -13,14 +11,14 @@
   "yourName": "NAMAMU",
   "namePlaceholder": "Sapa sebagai...",
   "tryAgain": "Coba lagi",
-  "useLocation": "Pakai lokasiku saja",
+  "useLocation": "Pakai lokasiku aja",
   "joinCity": "Gabung {{city}} →",
   "joinChat": "🔥 Gabung",
   "instantAccess": "anonim · akses instan",
-  "keepIdentity": "atau pertahankan identitasmu",
+  "keepIdentity": "atau simpan identitasmu",
   "createAccount": "Buat akun",
   "logIn": "Masuk",
   "authHint": "Simpan namamu · buka profil · tambah teman",
-  "joinError": "Tidak bisa terhubung. Periksa koneksimu dan coba lagi.",
-  "conceptSub": "🔥 Warga lokal menantang pelancong, dan sebaliknya — bertemulah untuk membuktikannya."
+  "joinError": "Nggak bisa terhubung. Cek koneksimu dan coba lagi.",
+  "conceptSub": "🔥 Warga lokal menantang pelancong, pelancong menantang warga lokal. Ketemuan buat buktiin!"
 }

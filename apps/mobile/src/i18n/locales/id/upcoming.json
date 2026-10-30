@@ -1,6 +1,6 @@
 {
   "title": "Yang akan datang",
-  "loadError": "Tidak bisa memuat acara untuk hari ini",
-  "emptyTitle": "Tidak ada yang terjadwal",
+  "loadError": "Gagal memuat acara hari ini",
+  "emptyTitle": "Belum ada jadwal",
   "emptySub": "Belum ada acara di hari ini."
 }

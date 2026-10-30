@@ -1,17 +1,17 @@
 {
   "title": "Orang di sini",
   "noCityTitle": "Belum ada kota dipilih",
-  "noCitySub": "Pilih kota untuk melihat siapa yang ada di sekitar.",
+  "noCitySub": "Pilih kota buat lihat siapa yang ada di sekitar.",
   "browseCities": "Jelajahi kota",
-  "filterBadge": "Badge",
+  "filterBadge": "Lencana",
   "filterVibe": "Vibe",
   "filterMode": "Mode",
   "you": "(kamu)",
   "hereNow": "Di sini sekarang",
-  "noMatchLive": "Tidak ada yang cocok dengan filter ini sekarang.",
+  "noMatchLive": "Nggak ada yang cocok dengan filter ini sekarang.",
   "legends": "Legenda Hilads",
-  "legendsSub": "Mereka yang menghidupkan kota",
-  "cityCrew": "City crew",
-  "noMatchCrew": "Tidak ada anggota yang cocok dengan filter ini.",
+  "legendsSub": "Mereka yang bikin kota hidup",
+  "cityCrew": "Crew kota",
+  "noMatchCrew": "Nggak ada anggota yang cocok dengan filter ini.",
   "loadMore": "Muat lebih banyak"
 }

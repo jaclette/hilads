@@ -4,10 +4,10 @@
   "yourProfile": "Profilmu",
   "mode": "Mode",
   "modes": {
-    "local": "Local",
+    "local": "Lokal",
     "localDesc": "Kamu kenal kota ini",
-    "exploring": "Exploring",
-    "exploringDesc": "Kamu sedang menjelajahinya"
+    "exploring": "Menjelajah",
+    "exploringDesc": "Kamu lagi menjelajahinya"
   },
   "tabs": {
     "interests": "Minat",
@@ -50,63 +50,62 @@
   "fields": {
     "username": "Nama pengguna",
     "usernamePlaceholder": "nama pengguna",
-    "checking": "Memeriksa…",
+    "checking": "Lagi dicek…",
     "available": "@{{username}} tersedia",
     "aboutMe": "Tentang aku",
     "charsLeft": "- sisa {{count}}",
-    "aboutPlaceholder": "Suka jajanan kaki lima dan ngobrol spontan",
+    "aboutPlaceholder": "Suka jajanan kaki lima dan ngobrol random",
     "email": "Email",
-    "readOnly": "- hanya baca",
+    "readOnly": "- cuma bisa dibaca",
     "homeCity": "Kota asal",
     "homeCityPlaceholder": "Tempat tinggalmu",
     "age": "Usia",
-    "agePlaceholder": "Usiamu",
+    "agePlaceholder": "Umurmu",
     "myVibe": "Vibe-ku",
     "interests": "Minat",
     "interestsHint": "- pilih maksimal 5"
   },
   "ambassador": {
-    "title": "Pilihan kota",
-    "subtitle": "Ditampilkan di profilmu sebagai legenda lokal.",
+    "title": "Rekomendasi kota",
+    "subtitle": "Tampil di profilmu sebagai legenda lokal.",
     "restaurant": "Restoran favorit",
-    "restaurantPlaceholder": "Tempat yang selalu kamu ajak orang ke sana",
-    "spot": "Permata tersembunyi / spot",
-    "spotPlaceholder": "Tempat yang dilewatkan sebagian besar turis",
-    "tip": "Tip lokal",
-    "tipPlaceholder": "Saran terbaik untuk pendatang baru",
+    "restaurantPlaceholder": "Tempat yang selalu jadi andalanmu buat ngajak orang",
+    "spot": "Tempat tersembunyi",
+    "spotPlaceholder": "Tempat yang sering dilewatkan turis",
+    "tip": "Tips lokal",
+    "tipPlaceholder": "Saran terbaik buat pendatang baru",
     "story": "Cerita kota",
-    "storyPlaceholder": "Sesuatu yang kamu sukai dari kota ini"
+    "storyPlaceholder": "Hal yang kamu suka dari kota ini"
   },
   "hangouts": {
-    "empty": "Belum ada nongkrong - mulai satu 🗣️",
-    "host": "Tuan rumah"
+    "empty": "Belum ada nongkrong, yuk mulai 🗣️",
+    "host": "Host"
   },
   "events": {
-    "going": "Ikut",
-    "goingEmpty": "Belum ada rencana - cari sesuatu 🔥",
-    "hosting": "Jadi tuan rumah",
-    "hostingEmpty": "Belum ada yang dibuat - mulai sesuatu ✨",
+    "going": "Yang ikut",
+    "goingEmpty": "Belum ada rencana, cari sesuatu yuk 🔥",
+    "hosting": "Kamu host",
+    "hostingEmpty": "Belum ada yang kamu adakan, mulai sesuatu yuk ✨",
     "live": "Live",
-    "recurring": "↻ Berulang",
+    "recurring": "↻ Rutin",
     "upcoming": "Akan datang",
     "deleteEvent": "Hapus acara"
   },
   "friends": {
     "requests": "Permintaan pertemanan",
-    "empty": "Belum ada teman. Tambahkan dari profil.",
+    "empty": "Belum ada teman. Tambahkan dari profil orang.",
     "mine": "Temanku"
   },
   "vibesTab": {
     "received": "Vibes diterima",
-    "score": "skor vibe {{score}}",
-    "basedOn_one": "berdasarkan {{count}} vibe",
-    "basedOn_other": "berdasarkan {{count}} vibe",
+    "score": "Skor vibe {{score}}",
+    "basedOn_other": "berdasarkan {{count}} vibes",
     "empty": "Belum ada vibes",
-    "emptyHint": "Skormu akan muncul di sini setelah orang meninggalkan catatan untukmu ✨"
+    "emptyHint": "Skormu bakal muncul di sini setelah ada yang ninggalin catatan buatmu ✨"
   },
   "save": {
-    "uploading": "Mengunggah…",
-    "saving": "Menyimpan…",
+    "uploading": "Lagi diunggah…",
+    "saving": "Lagi disimpan…",
     "saved": "Tersimpan",
     "save": "Simpan profil"
   },
@@ -114,22 +113,22 @@
   "deleteAccount": "Hapus akun",
   "delete": {
     "title": "Hapus akun?",
-    "body": "Profil, teman, dan pengaturanmu akan dihapus permanen. Pesan dan acaramu akan tetap ada di chat kota secara anonim.",
-    "irreversible": "Tindakan ini tidak bisa dibatalkan.",
-    "deleting": "Menghapus…",
+    "body": "Profil, teman, dan pengaturanmu bakal dihapus permanen. Pesan dan acaramu tetap ada di chat kota tanpa nama.",
+    "irreversible": "Ini nggak bisa dibatalkan.",
+    "deleting": "Lagi dihapus…",
     "confirm": "Ya, hapus akunku",
     "cancel": "Batal"
   },
   "errors": {
-    "photoUpload": "Gagal mengunggah foto. Coba lagi.",
-    "usernameTooShort": "Nama pengguna harus minimal 3 karakter",
+    "photoUpload": "Gagal unggah foto. Coba lagi.",
+    "usernameTooShort": "Nama pengguna minimal 3 karakter",
     "usernameTaken": "Nama pengguna itu sudah dipakai",
     "usernameInvalid": "Nama pengguna tidak valid",
-    "saveFailed": "Gagal menyimpan. Coba lagi.",
-    "generic": "Terjadi kesalahan. Coba lagi."
+    "saveFailed": "Gagal nyimpan. Coba lagi.",
+    "generic": "Ada yang salah. Coba lagi."
   },
   "challenges": {
-    "empty": "Belum ada tantangan - luncurkan satu 🔥",
+    "empty": "Belum ada tantangan, yuk bikin 🔥",
     "challenger": "Penantang"
   },
   "appearance": "Tampilan",
@@ -142,37 +141,33 @@
       "weekNone": "Belum ada peringkat minggu ini",
       "mostLocalIn": "Most Local di {{city}}",
       "mostLocalWorld": "Most Local sedunia",
-      "hintToday": "Ikuti challenge hari ini untuk dapat stempel {{theme}}.",
+      "hintToday": "Main tantangan hari ini buat dapat stempel {{theme}}.",
       "hintTomorrow": "Besok: {{theme}}",
       "hintPass": "Local Pass didapat. Semua tema di sini selesai.",
       "localPass": "Local Pass",
-      "mySpots": "Spot saya",
-      "myProposals": "Usulan saya",
+      "mySpots": "Tempatku",
+      "myProposals": "Usulanku",
       "friends": "Teman",
       "mostLocalAllTime": "Most Local sepanjang masa",
       "allTimeRank": "#{{rank}} di {{city}}",
-      "howPoints": "Cara kerja poin",
+      "howPoints": "Cara dapat poin",
       "gotIt": "Oke",
       "close": "Tutup",
-      "noSpots": "Belum ada spot. Fotomu di berbagai tempat akan muncul di sini.",
+      "noSpots": "Belum ada tempat. Tandai tempat di fotomu, nanti muncul di sini.",
       "pageA11y_other": "{{city}}: {{count}} stempel",
       "guestTitle": "Mulai paspormu",
-      "guestBody": "Daftar untuk mengumpulkan stempel tiap tema di setiap kota dan dapatkan Local Pass.",
+      "guestBody": "Daftar buat kumpulkan stempel tiap tema di setiap kota, dan dapatkan Local Pass.",
       "signUp": "Daftar",
-      "signIn": "Saya sudah punya akun",
-      "best_one": "Terbaik: {{count}} hari",
+      "signIn": "Aku sudah punya akun",
       "best_other": "Terbaik: {{count}} hari",
-      "stamps_one": "{{count}} dari 7 stempel",
       "stamps_other": "{{count}} dari 7 stempel",
-      "inReview_one": "{{count}} ditinjau",
-      "inReview_other": "{{count}} ditinjau",
+      "inReview_other": "{{count}} lagi ditinjau",
       "specialTitle": "Stempel spesial",
-      "specialSub": "Edisi terbatas, satu untuk setiap hari spesial. Tidak dihitung untuk Local Pass.",
-      "compared_one": "Dibandingkan dengan {{count}} negara",
+      "specialSub": "Edisi terbatas, satu tiap hari spesial. Nggak dihitung untuk Local Pass.",
       "compared_other": "Dibandingkan dengan {{count}} negara",
-      "stampsOf_other": "{{count}} dari {{total}} cap",
+      "stampsOf_other": "{{count}} dari {{total}} stempel",
       "passEarned": "Didapat di {{city}}",
-      "passToGo_other": "{{count}} cap lagi",
+      "passToGo_other": "{{count}} stempel lagi",
       "comparedCities_other": "Dibandingkan dengan {{count}} kota",
       "myPhotos": "Fotoku",
       "noPhotos": "Foto Daily Challenge-mu akan muncul di sini.",
@@ -183,29 +178,28 @@
       "title": "Cara dapat poin",
       "intro": "Poin Daily Challenge masuk ke Most Local mingguan. Semua poin masuk ke peringkat sepanjang masa.",
       "proof": "Posting fotomu",
-      "vote": "Memberi suara (per challenge)",
+      "vote": "Vote (per tantangan)",
       "top": "Top 3 dunia hari itu",
-      "weekly": "Most Local mingguan diulang setiap Senin."
+      "weekly": "Most Local mingguan direset tiap Senin."
     },
     "tabFriends": "Teman",
     "friendRequests": "Permintaan pertemanan",
     "myFriends": "TEMANKU",
-    "noFriends": "Belum ada teman. Tambah dari profil orang.",
-    "vibesReceived": "VIBES YANG DITERIMA",
-    "vibeScore": "{{score}} vibe score",
+    "noFriends": "Belum ada teman. Tambahkan dari profil orang.",
+    "vibesReceived": "VIBES YANG KAMU DAPAT",
+    "vibeScore": "Skor vibe {{score}}",
     "noVibes": "Belum ada vibes.",
-    "noVibesSub": "Skormu akan muncul begitu ada yang meninggalkan catatan ✨",
+    "noVibesSub": "Skormu bakal muncul begitu ada yang ninggalin catatan ✨",
     "settings": "PENGATURAN",
-    "vibeBasis_one": "berdasarkan {{count}} vibe",
-    "vibeBasis_other": "berdasarkan {{count}} vibe",
+    "vibeBasis_other": "berdasarkan {{count}} vibes",
     "mode": {
       "local": {
-        "label": "Local",
+        "label": "Lokal",
         "desc": "Kamu kenal kota ini"
       },
       "exploring": {
         "label": "Menjelajah",
-        "desc": "Kamu sedang menjelajahinya"
+        "desc": "Kamu lagi menjelajahinya"
       }
     },
     "passportStats": {
@@ -218,14 +212,14 @@
     "title": "Permintaan pertemanan",
     "incoming": "Masuk",
     "sent": "Terkirim",
-    "wantsToBeFriend": "ingin berteman denganmu",
+    "wantsToBeFriend": "mau berteman denganmu",
     "requestSent": "permintaan terkirim",
     "decline": "Tolak",
     "accept": "Terima",
     "cancel": "Batal",
     "emptyIncomingTitle": "Belum ada permintaan pertemanan",
-    "emptySentTitle": "Kamu belum mengirim satu pun",
-    "emptyIncomingSub": "Saat seseorang ingin berteman denganmu, kamu akan melihatnya di sini.",
-    "emptySentSub": "Permintaan pertemanan tertunda yang kamu kirim akan muncul di sini."
+    "emptySentTitle": "Kamu belum kirim permintaan",
+    "emptyIncomingSub": "Kalau ada yang mau berteman denganmu, kamu bakal lihat di sini.",
+    "emptySentSub": "Permintaan pertemanan yang kamu kirim dan belum dijawab muncul di sini."
   }
 }

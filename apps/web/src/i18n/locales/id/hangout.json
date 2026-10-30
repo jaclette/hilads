@@ -9,28 +9,28 @@
       "food": "Makanan",
       "drinks": "Minuman",
       "help": "Bantuan",
-      "meetup": "Meetup"
+      "meetup": "Ketemuan"
     },
-    "titleLabel": "Apa yang ada di pikiranmu?",
+    "titleLabel": "Lagi kepikiran apa?",
     "titlePlaceholder": "Aku mau ngopi",
-    "detailsLabel": "Tambahkan detail",
+    "detailsLabel": "Tambah detail",
     "optional": "(opsional)",
-    "detailsPlaceholder": "Beri sedikit konteks…",
-    "expiry": "Berakhir otomatis dalam 8 jam",
-    "saving": "Menyimpan…",
-    "starting": "Memulai…",
+    "detailsPlaceholder": "Kasih sedikit konteks…",
+    "expiry": "Otomatis berakhir dalam 8 jam",
+    "saving": "Lagi disimpan…",
+    "starting": "Lagi dimulai…",
     "saveChanges": "Simpan perubahan",
     "startCta": "Hi now",
-    "limitHeader": "Satu per satu",
+    "limitHeader": "Satu dulu aja",
     "limitTitle": "Kamu sudah punya nongkrong",
-    "limitSub": "Kamu hanya bisa menjalankan satu nongkrong dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
-    "limitGo": "Ke nongkrong-ku",
-    "yourHangout": "nongkrong-mu",
-    "geoHint": "Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu",
-    "geoRequired": "Hi now memberi tahu orang di mana menemukanmu — aktifkan lokasi untuk lanjut."
+    "limitSub": "Kamu cuma bisa punya satu nongkrong dalam satu waktu. Buka “{{title}}”, atau hapus buat mulai yang baru.",
+    "limitGo": "Buka nongkrongku",
+    "yourHangout": "nongkrongmu",
+    "geoHint": "Nyalakan lokasi buat lihat siapa yang ada di sekitar sekarang, dan biar orang terdekat bisa lihat Hi kamu",
+    "geoRequired": "Hi now kasih tahu orang di mana kamu berada. Nyalakan lokasi buat lanjut."
   },
-  "deleteConfirm": "Hapus nongkrong ini? Ini mengakhirinya untuk semua orang dan tidak bisa dibatalkan.",
-  "deleteFailedAlert": "Tidak bisa menghapus. Silakan coba lagi.",
+  "deleteConfirm": "Hapus nongkrong ini? Nongkrongnya bakal selesai buat semua orang dan nggak bisa dibatalkan.",
+  "deleteFailedAlert": "Gagal hapus. Coba lagi, ya.",
   "shareAria": "Bagikan nongkrong",
   "shareTitle": "Bagikan nongkrong ini",
   "members": {
@@ -44,20 +44,20 @@
   },
   "gated": {
     "title": "Nongkrong khusus anggota",
-    "pending": "Permintaan menunggu - kamu bisa bergabung ke percakapan begitu seorang anggota menerima.",
-    "prompt": "Minta gabung untuk melihat percakapan dan mengobrol.",
+    "pending": "Permintaan menunggu: kamu bisa gabung obrolan begitu ada anggota yang menerima.",
+    "prompt": "Minta gabung buat lihat obrolannya dan ikut chat.",
     "requestBtn": "Minta gabung"
   },
   "feed": {
     "beginning": "Awal percakapan",
     "loading": "Memuat…",
     "emptyTitle": "Belum ada balasan",
-    "emptySub": "Jadi yang pertama gabung"
+    "emptySub": "Jadi yang pertama nimbrung"
   },
   "joinReq": {
     "someone": "Seseorang",
     "wantsToJoin": " ingin gabung",
-    "joined": " bergabung ke nongkrong",
+    "joined": " gabung ke nongkrong",
     "askedToJoin": " minta gabung",
     "decline": "Tolak",
     "accept": "Terima",
@@ -66,8 +66,8 @@
     "declined": "Permintaan ditolak"
   },
   "modes": {
-    "local": "Local",
-    "exploring": "Exploring"
+    "local": "Lokal",
+    "exploring": "Menjelajah"
   },
   "reply": {
     "photo": "Foto",
@@ -75,10 +75,10 @@
   },
   "composer": {},
   "errors": {
-    "locFailed": "Tidak bisa mengambil lokasimu. Aktifkan akses lokasi dan coba lagi.",
-    "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",
-    "imageTooLarge": "Gambar terlalu besar. Maks 10 MB.",
-    "imageSend": "Tidak bisa mengirim gambar. Silakan coba lagi.",
+    "locFailed": "Gagal dapat lokasimu. Aktifkan akses lokasi dan coba lagi.",
+    "imageType": "Pilih gambar JPEG, PNG, atau WebP, ya.",
+    "imageTooLarge": "Gambarnya kegedean. Maks 10 MB.",
+    "imageSend": "Gagal ngirim gambar. Coba lagi, ya.",
     "dismiss": "{{error}} · ketuk untuk menutup"
   }
 }

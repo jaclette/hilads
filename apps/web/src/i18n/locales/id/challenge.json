@@ -1,7 +1,7 @@
 {
   "showcase": {
-    "cta": "Tantangan sukses",
-    "title": "Tantangan sukses",
+    "cta": "Kisah sukses",
+    "title": "Kisah sukses",
     "allCities": "Semua kota",
     "clearCity": "Hapus",
     "localTag": "Lokal",
@@ -9,28 +9,28 @@
     "loadMore": "Muat lebih banyak",
     "empty": {
       "title": "Belum ada kisah sukses",
-      "body": "Tantangan yang selesai dan berperingkat tinggi muncul di sini. Jadilah yang pertama!"
+      "body": "Tantangan yang selesai dengan rating tinggi muncul di sini. Jadi yang pertama mewujudkannya!"
     },
     "tryCta": "Buat tantangan baru",
     "note": "Kata mereka"
   },
   "myChallenges": {
-    "cta": "Tantangan saya"
+    "cta": "Tantanganku"
   },
-  "tabIntro": "Tantangan antara warga lokal dan pelancong dalam satu kota - dan lintas kota.",
+  "tabIntro": "Tantangan antara warga lokal dan pelancong, di satu kota maupun antarkota.",
   "howItWorks": "Cara kerjanya",
   "mostLocal": "Most Local",
   "seeAll": "Lihat semua",
   "leaderboardCta": {
     "title": "Papan peringkat kota",
     "view": "Lihat",
-    "sub": "Jadilah yang pertama masuk peringkat - luncurkan dan selesaikan tantangan"
+    "sub": "Jadi yang pertama masuk peringkat: luncurkan dan selesaikan tantangan"
   },
   "createTitle": "Buat tantangan",
   "editTitle": "Edit tantangan",
   "audience": "Untuk siapa?",
   "aud": {
-    "locals": "Lokal",
+    "locals": "Warga lokal",
     "explorers": "Pelancong",
     "members": "Anggota"
   },
@@ -42,24 +42,24 @@
     "help": "Gila"
   },
   "titleLabel": "Tantanganmu",
-  "titlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
+  "titlePlaceholder": "mis. Ajak aku ke kedai kopi tersembunyi favoritmu",
   "maxParticipantsLabel": {
-    "locals": "Berapa lokal maks?",
-    "explorers": "Berapa pelancong maks?"
+    "locals": "Maks. berapa warga lokal?",
+    "explorers": "Maks. berapa pelancong?"
   },
-  "returnClauseLabel": "Lalu?",
+  "returnClauseLabel": "Terus?",
   "returnClauseTemplates": {
-    "food": "...dan ajak aku merasakannya bareng 🍜",
-    "place": "...dan kamu sendiri yang antar aku ke sana 🗺️",
-    "culture": "...dan kita ketemuan buat ngobrolin 🎭",
-    "help": "...dan ayo lakukan sesuatu yang gila bareng 🤪"
+    "food": "...terus ajak aku cobain bareng 🍜",
+    "place": "...terus antar aku langsung ke sana 🗺️",
+    "culture": "...terus kita ketemuan buat ngobrolin 🎭",
+    "help": "...terus kita bikin hal gila bareng 🤪"
   },
-  "createCta": "Luncurkan tantangan",
+  "createCta": "Bikin tantangan",
   "saveChanges": "Simpan perubahan",
-  "errSave": "Gagal menyimpan",
+  "errSave": "Gagal menyimpan perubahan",
   "errStart": "Gagal meluncurkan tantangan",
   "deleteTitle": "Hapus tantangan?",
-  "deleteBody": "Tantangan akan dihapus untuk semua orang. Tidak bisa dibatalkan.",
+  "deleteBody": "Tantangan ini bakal dihapus untuk semua orang. Nggak bisa dibatalkan.",
   "deleteConfirm": "Hapus",
   "acceptCta": "Terima tantangan",
   "acceptedCta": "Diterima ✓",
@@ -69,39 +69,39 @@
     "full": "Penuh",
     "available": "Tersedia",
     "inProgress": "Berlangsung",
-    "takeIt": "Saya terima",
+    "takeIt": "Aku ambil",
     "takerLabel": "Penerima",
     "rankBadge": "Peringkat {{rank}}",
-    "photoBadge": "Foto",
+    "photoBadge": "Bukti foto",
     "meetBadge": "Ketemuan",
     "photosCount_other": "{{count}} foto",
     "noOneJoined": "Belum ada yang gabung",
     "beFirst": "Jadi yang pertama · +2",
     "daysLeft": "{{count}} hr lagi",
     "lastDay": "Segera berakhir",
-    "joinGroup": "Gabung tantangan",
-    "whoJoined": "Siapa yang gabung ({{count}})",
+    "joinGroup": "Ikut tantangan",
+    "whoJoined": "Yang ikut ({{count}})",
     "ended": "Selesai",
     "awaitingResults": "Menunggu hasil"
   },
   "statusInProgress": "Tantangan berlangsung",
-  "statusAccomplished": "Tantangan kelar",
+  "statusAccomplished": "Tantangan berhasil",
   "openBadge": "Terbuka",
-  "forLocals": "Untuk lokal",
+  "forLocals": "Untuk warga lokal",
   "forExplorers": "Untuk pelancong",
   "validation": {
     "label": "Validasinya gimana?",
     "meet": {
       "label": "Ketemuan",
-      "hint": "Rasakan langsung bareng",
-      "bonusChip": "+50 bonus kalau kalian ketemuan"
+      "hint": "Rasakan bareng secara langsung",
+      "bonusChip": "+50 bonus Ketemuan kalau semua datang"
     },
     "photo_proof": {
       "label": "Bukti foto",
-      "hint": "Terima bukti dari jauh"
+      "hint": "Terima bukti foto dari jauh"
     }
   },
-  "notFound": "Tantangan tidak ditemukan",
+  "notFound": "Tantangan nggak ditemukan",
   "typeBadge": {
     "food": "Tantangan makanan",
     "place": "Tantangan tempat",
@@ -113,34 +113,45 @@
   "editBtn": "Edit",
   "deleteBtn": "Hapus",
   "shareCta": "Bagikan",
-  "shareInvite": "Ayo ikut tantangan ini bareng!",
+  "shareInvite": "Ikut tantangan ini bareng aku, yuk!",
   "shareCopied": "Tautan disalin",
   "noun": "Tantangan",
+  "byCreator": "oleh {{name}}",
+  "inspiration": {
+    "heading": "Ide tantangan",
+    "sub": "Tantangan dari warga lokal di kota lain, buat inspirasi",
+    "firstLocal": "Jadi warga lokal pertama di {{city}}",
+    "firstLocalSub": "Buat tantangan · pelancong yang datang bakal mengambilnya",
+    "reward": "Tantangan pertama · +10",
+    "launchFirst": "Bikin tantangan pertama",
+    "createYours": "Bikin punyamu di {{city}}",
+    "by": "oleh {{name}} · {{city}}"
+  },
   "examples": {
-    "label": "Tidak ada ide? Ketuk untuk pakai",
+    "label": "Butuh ide? Ketuk salah satu",
     "food": [
-      "Kopi terbaik di kota",
-      "Tempat warga lokal benar-benar makan siang",
-      "Street food terbaik di sekitar sini"
+      "Cariin kopi terbaik di kota",
+      "Tempat makan siang warga lokal yang asli",
+      "Jajanan kaki lima terbaik dekat sini"
     ],
     "place": [
-      "Spot terbaik untuk lihat matahari terbenam",
-      "Tempat yang tak pernah ditemukan turis",
-      "Tempat kamu pergi untuk menjernihkan pikiran"
+      "Tempat terbaik buat lihat matahari terbenam",
+      "Tempat yang nggak pernah ditemukan turis",
+      "Tempat kamu biasa menenangkan pikiran"
     ],
     "culture": [
-      "Malam musik lokal asli akhir pekan ini",
-      "Street art yang layak dilihat",
-      "Pertunjukan lokal yang akan kuingat"
+      "Malam musik lokal yang asli akhir pekan ini",
+      "Street art yang wajib dilihat",
+      "Pertunjukan lokal yang bakal selalu kuingat"
     ],
     "help": [
-      "Tukang cukur yang tak menghancurkan mingguku",
+      "Tukang cukur yang nggak bikin mingguku hancur",
       "Dokter yang bisa bahasa Inggris",
-      "Tempat memperbaiki layar HP"
+      "Tempat servis layar HP"
     ]
   },
-  "beFirstToAccept": "Jadilah yang pertama menerima",
-  "openThreadCta": "Buka thread",
+  "beFirstToAccept": "Jadi yang pertama menerima",
+  "openThreadCta": "Buka obrolan",
   "accept": {
     "err": {
       "openSettings": "Buka pengaturan",
@@ -149,391 +160,138 @@
         "body": "Ada yang salah. Coba lagi."
       },
       "not_creator": {
-        "title": "Ini tantangan kamu sendiri",
-        "body": "Kamu yang buat tantangan ini - tunggu orang lain menerimanya."
+        "title": "Ini tantanganmu sendiri",
+        "body": "Kamu yang bikin tantangan ini, tunggu orang lain menerimanya."
       },
       "mode_required": {
-        "title": "Pilih lokal atau pelancong dulu",
-        "body": "Atur mode kamu di profil sebelum menerima tantangan."
+        "title": "Pilih warga lokal atau pelancong dulu",
+        "body": "Atur mode di profilmu sebelum menerima tantangan."
       },
       "mode_mismatch": {
         "title": "Tantangan ini bukan untuk kamu",
-        "body": "Ganti mode kamu di profil kalau mau menerimanya."
+        "body": "Ganti mode di profilmu kalau mau ikut."
       },
       "cap_reached": {
         "title": "Tantangan penuh"
       },
       "in_progress": {
-        "title": "Ada yang lagi ngambil",
-        "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai - tantangannya bakal kosong lagi."
+        "title": "Udah ada yang ambil",
+        "body": "Ada pelancong lain yang lagi ngerjain tantangan ini. Cek lagi setelah mereka selesai, nanti tantangannya terbuka lagi."
       },
       "completed": {
         "title": "Tantangan sudah selesai",
-        "body": "Tantangan ini sudah selesai — ditutup untuk peserta baru."
+        "body": "Tantangan ini sudah selesai dan nggak menerima peserta baru."
       }
     }
   },
+  "messageCreator": "Kirim pesan pribadi ke {{name}}",
+  "join": {
+    "gateTitle": "Jadi penonton",
+    "gateBody": "Masuk sebagai penonton buat ikutin obrolan dan menyemangati yang lagi ngerjain.",
+    "cta": "Masuk sebagai penonton",
+    "leaveCta": "Keluar dari kanal",
+    "errKicked": "Kamu udah dikeluarkan dari tantangan ini dan nggak bisa gabung lagi.",
+    "errClosed": "Tantangan ini sudah nggak menerima peserta baru.",
+    "errGeneric": "Gagal masuk, coba lagi."
+  },
+  "leaveTakeon": {
+    "pill": "Keluar",
+    "confirmTitle": "Keluar dari tantangan ini?",
+    "confirmBody": "Progres balik ke nol dan tantangannya terbuka lagi buat yang lain. Nggak bisa dibatalkan.",
+    "confirmCta": "Keluar",
+    "failed": "Gagal keluar, coba lagi."
+  },
+  "restart": {
+    "cta": "Mulai ulang tantangan",
+    "confirmTitle": "Mulai ulang tantangan?",
+    "confirmBody": "Peserta sekarang bakal dikeluarkan, chat dikosongkan, dan tantangan dibuka lagi dari nol. Nggak bisa dibatalkan.",
+    "confirmCta": "Mulai ulang",
+    "failed": "Gagal mulai ulang, coba lagi."
+  },
+  "lock": {
+    "private": {
+      "title": "Tantangan ini privat",
+      "body": "Cuma pembuat dan peserta yang bisa lihat obrolannya."
+    }
+  },
   "thread": {
-    "notFound": "Thread tidak ditemukan",
+    "notFound": "Thread nggak ditemukan",
     "empty": "Jadi yang pertama ngomong.",
-    "emptyIntl": "Sapa dulu - kalau berhasil kirim foto ya.",
+    "emptyIntl": "Sapa dulu, terus kirim foto kalau udah berhasil.",
     "cancel": {
-      "creatorTitle": "Batalkan ambil tantangan ini?",
+      "creatorTitle": "Batalkan pengambilan ini?",
       "acceptorTitle": "Mundur dari tantangan ini?",
-      "body": "Thread dan chat akan dihapus. Kamu bisa terima lagi nanti kalau berubah pikiran.",
+      "body": "Thread dan chat-nya bakal dihapus. Kamu bisa terima lagi nanti kalau berubah pikiran.",
       "confirm": "Batalkan",
       "failed": "Gagal membatalkan. Coba lagi."
     },
     "cancelledByOther": {
       "title": "Thread dibatalkan",
-      "body": "Orang lain membatalkan pengambilan ini."
+      "body": "Orang satunya membatalkan pengambilan ini."
     }
   },
   "threads": {
-    "title": "Thread tantangan saya",
+    "title": "Thread tantanganku",
     "noMessagesYet": "Belum ada pesan",
     "empty": {
-      "title": "Tidak ada thread aktif",
-      "body": "Saat kamu menerima tantangan atau seseorang menerima tantanganmu, percakapannya muncul di sini."
+      "title": "Belum ada thread aktif",
+      "body": "Kalau kamu menerima tantangan atau ada yang menerima tantanganmu, obrolannya muncul di sini."
     },
     "guestGate": {
-      "title": "Masuk untuk melihat thread",
-      "body": "Thread adalah percakapan 1:1 antara kamu dan penantang. Kamu butuh akun untuk memulainya."
+      "title": "Masuk untuk lihat thread",
+      "body": "Thread itu obrolan 1:1 antara kamu dan penantang. Kamu butuh akun untuk memulainya."
     }
-  },
-  "schedule": {
-    "proposeCta": "Usulkan tanggal",
-    "counterCta": "Usulkan balik",
-    "editCta": "Ubah tanggal",
-    "you": "kamu",
-    "iProposedTitle": "Menunggu persetujuan",
-    "theyProposedTitle": "{{name}} mengusulkan",
-    "scheduled": {
-      "title": "Pertemuan dijadwalkan"
-    },
-    "withdraw": {
-      "title": "Tarik usulan?",
-      "body": "Tanggal yang kamu usulkan akan dihapus. Dia akan diberi tahu.",
-      "confirm": "Tarik"
-    },
-    "today": "Hari ini",
-    "tomorrow": "Besok",
-    "picker": {
-      "title": "Kapan kalian bertemu?",
-      "whenLabel": "Kapan",
-      "timeLabel": "Jam",
-      "whereLabel": "Di mana (opsional)",
-      "wherePlaceholder": "mis. Le Comptoir, 17 rue de la Paix"
-    },
-    "err": {
-      "proposeFailed": "Gagal mengusulkan tanggal. Coba lagi.",
-      "approveFailed": "Gagal menyetujui. Coba lagi.",
-      "withdrawFailed": "Gagal menarik. Coba lagi."
-    }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "Gimana tadi?",
-      "body": "{{name}} berhasil?"
-    },
-    "acceptorWaiting": {
-      "title": "Menunggu hasil",
-      "body": "{{name}} bakal tandai gimana hasilnya."
-    },
-    "approved": {
-      "title": "Tantangan berhasil"
-    },
-    "rejected": {
-      "title": "Tantangan ditutup"
-    },
-    "confirm": {
-      "approve": {
-        "title": "Tandai sebagai berhasil?",
-        "body": "Ini final - kamu nggak bisa ubah lagi setelah ini.",
-        "confirm": "Tandai sebagai berhasil"
-      },
-      "reject": {
-        "title": "Tutup tanpa hasil?",
-        "body": "Pakai ini kalau pertemuannya nggak benar-benar terjadi. Ini final.",
-        "confirm": "Tutup"
-      }
-    },
-    "err": {
-      "approveFailed": "Gagal menyetujui. Coba lagi.",
-      "rejectFailed": "Gagal menutup. Coba lagi."
-    }
-  },
-  "closeCta": "Tutup tantangan",
-  "reopenCta": "Buka lagi",
-  "pipeline": {
-    "step": {
-      "accept": "Terima",
-      "date": "Tanggal",
-      "meet": "Ketemu",
-      "wrap": "Penutup",
-      "proof": "Bukti",
-      "verdict": "Keputusan"
-    },
-    "subcta": {
-      "tapToAccept": "Ambil tantangan ini",
-      "creatorWaiting": "Menunggu seseorang mengambilnya",
-      "creatorReviewPending": "Tanggapi permintaan {{name}}",
-      "acceptorAwaitingReview": "Menunggu jawaban {{name}}",
-      "proposeDate": "Usulkan tanggal",
-      "dateAwaiting": "Menunggu persetujuan pembuat",
-      "approveDate": "Sebuah tanggal sudah diusulkan",
-      "meetSoon": "Sampai jumpa di {{date}}",
-      "creatorVerdict": "Bagaimana dengan {{name}}?",
-      "acceptorWaitingVerdict": "Menunggu konfirmasi dari {{name}}",
-      "accomplished": "Tantangan berhasil",
-      "closed": "Tantangan ditutup",
-      "submitProof": "Kirim bukti",
-      "waitingForProof": "Menunggu bukti",
-      "reviewProof": "Tinjau bukti",
-      "waitingForVerdict": "Menunggu keputusan",
-      "rateMeetup": "Beri rating pertemuan sama {{name}}"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}} mau ambil tantanganmu",
-      "pendingBody": "Terima buat mulai ngobrol dan atur waktu ketemu, atau tolak biar slotnya kosong lagi.",
-      "approve": "Terima",
-      "reject": "Tolak",
-      "approveFailed": "Gagal menerima. Coba lagi.",
-      "rejectFailed": "Gagal menolak. Coba lagi."
-    },
-    "acceptor": {
-      "waitingTitle": "Menunggu jawaban",
-      "waitingBody": "{{name}} akan menerima atau menolak permintaanmu. Kamu dapat notif begitu diputuskan.",
-      "rejectedTitle": "Permintaan ditolak",
-      "rejectedBody": "{{name}} menolak yang ini. Kamu masih bisa ambil tantangan lain."
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "Terima tantangan untuk membuka chat",
-      "body": "Setelah kamu terima, kamu dan penantang dapat thread privat untuk atur kapan ketemuan."
-    },
-    "creator": {
-      "title": "Menunggu seseorang mengambilnya",
-      "body": "Saat pelancong menerima, kalian akan chat di sini untuk atur kapan ketemuan."
-    },
-    "full": {
-      "title": "Tantangan penuh",
-      "body": "Semua slot sudah terisi. Cek lagi kalau ada yang mundur."
-    },
-    "inProgress": {
-      "title": "Ada yang lagi ngambil sekarang",
-      "body": "Seorang pelancong lagi ngambil tantangan ini. Pas mereka selesai, bakal kosong lagi - cek lagi nanti."
-    }
-  },
-  "postCreate": {
-    "title": "Tantanganmu sudah tayang",
-    "subtitle": "Sebarkan sekarang - biar ada yang ambil dalam jam ini.",
-    "thisCity": "kota ini",
-    "ctaInvite": "Kirim ke seseorang di {{city}}",
-    "ctaInviteSub": "Pilih beberapa {{audience}} - kami yang ping.",
-    "ctaShare": "Bagikan di luar Hilads",
-    "skip": "Nanti aja",
-    "pickerTitle": "{{audience}} di {{city}}",
-    "pickerSubtitle": "Ketuk untuk pilih. Mereka dapat push dengan Terima / Abaikan.",
-    "pickerEmpty": "Tidak ada {{audience}} di sekitar. Bagikan ke luar.",
-    "sendCta": "Kirim ke {{count}}",
-    "sendCtaEmpty": "Pilih dulu",
-    "sentTitle": "Terkirim ke {{count}}",
-    "sentSubtitle": "Mereka akan dapat push sekarang.",
-    "pickerSubtitleAll": "Tidak ada yang persis cocok - menampilkan semua di {{city}}."
-  },
-  "invitation": {
-    "accept": "Terima",
-    "ignore": "Abaikan"
-  },
-  "byCreator": "oleh {{name}}",
-  "inspiration": {
-    "heading": "Ide tantangan",
-    "sub": "Apa yang diluncurkan warga lokal di tempat lain - cari inspirasi",
-    "firstLocal": "Jadilah warga lokal pertama di {{city}}",
-    "firstLocalSub": "Luncurkan tantangan · pelancong yang datang akan menerimanya",
-    "reward": "Tantangan pertama · +10",
-    "launchFirst": "Luncurkan tantangan pertama",
-    "createYours": "Buat milikmu di {{city}}",
-    "by": "oleh {{name}} · {{city}}"
-  },
-  "typeFilter": {
-    "label": "Filter berdasarkan tipe",
-    "all": "Semua",
-    "empty": "Tidak ada di kategori ini sekarang."
-  },
-  "seeAllChallenges": "Lihat semua tantangan →",
-  "mode": {
-    "label": "Mode",
-    "local": "Lokal",
-    "international": "Internasional",
-    "localHint": "Di kotamu. Berakhir dengan pertemuan tatap muka.",
-    "internationalHint": "Di mana saja di dunia. Mereka kirim bukti, kamu validasi dari jauh.",
-    "worldwide": "Dunia"
-  },
-  "intl": {
-    "targetCityLabel": "Kota target",
-    "targetCityAnywhere": "Di mana saja di dunia",
-    "targetCityHint": "Pilih kota target — \"Di mana saja\" belum tersedia.",
-    "proofRequirementsLabel": "Foto harus menunjukkan apa?",
-    "proofRequirementsPlaceholder": "misal: Hidangan di bawah cahaya siang, kamu di dalam frame",
-    "proofRequirementsHint": "Buktinya adalah foto. Peserta melihat ini sebelum mengirim - tulis sespesifik mungkin.",
-    "cityPicker": {
-      "title": "Pilih kota target",
-      "searchPlaceholder": "Cari kota…",
-      "anywhere": "Di mana saja di dunia"
-    },
-    "proof": {
-      "requirementsLabel": "Yang diminta pembuat",
-      "submitCta": "Kirim bukti",
-      "tryAgainCta": "Coba lagi (sisa {{count}})",
-      "waitingProof": "Menunggu bukti",
-      "waitingVerdict": "Menunggu keputusan",
-      "approvedLine": "Tantangan selesai",
-      "closedLine": "Tantangan ditutup",
-      "lastReason": "Alasan: {{reason}}",
-      "geotagOk": "Geotag terverifikasi",
-      "geotagWarn": "Geotag di luar area",
-      "approveCta": "Setujui",
-      "rejectCta": "Tolak",
-      "rejectModalTitle": "Tolak bukti ini",
-      "rejectModalHint_other": "Sisa {{count}} percobaan. Beri tahu yang perlu diperbaiki.",
-      "reasonPlaceholder": "mis. foto buram, makanan tidak terlihat",
-      "rejectConfirm": "Kirim penolakan",
-      "reasonRequiredTitle": "Alasan diperlukan",
-      "reasonRequiredBody": "Alasan singkat (1–200) membantu.",
-      "permPhotoTitle": "Butuh akses foto",
-      "permPhotoBody": "Izinkan di Pengaturan.",
-      "permGpsTitle": "Butuh lokasi",
-      "permGpsBody": "Geotag wajib. Aktifkan lokasi.",
-      "gpsFailTitle": "GPS tidak terbaca",
-      "gpsFailBody": "Coba di luar.",
-      "submitFailTitle": "Gagal kirim",
-      "submitFailBody": "Cek koneksi.",
-      "reviewFailTitle": "Keputusan gagal disimpan"
-    }
-  },
-  "modeFilter": {
-    "label": "Filter berdasarkan mode",
-    "all": "Semua"
-  },
-  "messageCreator": "Kirim pesan pribadi ke {{name}}",
-  "badge": {
-    "challenger": "Penantang",
-    "taker": "Penerima",
-    "spectator": "Penonton"
-  },
-  "cta": {
-    "takenBy": "Sedang dikerjakan oleh {{name}}",
-    "closed": "Tantangan ini sudah ditutup"
-  },
-  "join": {
-    "gateTitle": "Jadi penonton",
-    "gateBody": "Masuk sebagai penonton untuk mengikuti obrolan dan menyemangati peserta.",
-    "cta": "Masuk sebagai penonton",
-    "leaveCta": "Keluar dari kanal",
-    "errKicked": "Kamu telah dikeluarkan dari tantangan ini. Tidak bisa bergabung lagi.",
-    "errClosed": "Tantangan ini tidak menerima anggota baru.",
-    "errGeneric": "Gagal masuk - coba lagi."
-  },
-  "lock": {
-    "private": {
-      "title": "Tantangan ini bersifat pribadi",
-      "body": "Hanya pembuat dan penerima yang melihat percakapan."
-    }
-  },
-  "members": {
-    "title": "Di kanal",
-    "countIn": "{{count}} di kanal",
-    "seeAll": "Lihat semua",
-    "empty": "Belum ada yang bergabung - jadilah yang pertama.",
-    "kickCta": "Hapus",
-    "kickAria": "Hapus {{name}} dari kanal",
-    "errKick": "Gagal menghapus - coba lagi."
-  },
-  "notif": {
-    "on": "Notifikasi aktif",
-    "off": "Notifikasi nonaktif"
-  },
-  "manage": {
-    "cta": "Kelola",
-    "title": "Kelola tantangan"
-  },
-  "visibility": {
-    "badge": {
-      "public": "Publik",
-      "friends": "Teman",
-      "private": "Pribadi"
-    },
-    "label": "Siapa yang bisa melihat ini?",
-    "public": "Publik",
-    "friends": "Teman",
-    "publicHint": "Siapa pun di kota bisa melihat dan menerimanya.",
-    "friendsHint": "Hanya temanmu dan orang yang kamu undang yang bisa melihatnya.",
-    "intlLocked": "Tantangan internasional selalu publik.",
-    "moderationBlocked": "Teksmu ditandai — tolong tulis ulang.",
-    "optin": {
-      "title": "Perhatian — ini publik",
-      "body": "Tantangan publik muncul di feed kota dan di web publik. Nama dan teks tantanganmu akan terlihat oleh siapa pun — termasuk non-anggota dan mesin pencari. Kamu bisa beralih ke Teman di bawah jika ingin lebih privat.",
-      "cta": "Mengerti, posting publik",
-      "switchToFriends": "Jadikan Teman saja",
-      "dontShowAgain": "Jangan tampilkan lagi"
-    }
-  },
-  "privacy": {
-    "closedCloseCta": "Tutup untuk anggota baru",
-    "closedReopenCta": "Buka kembali untuk anggota",
-    "panelTitle": "Privasi",
-    "currentPublic": "Tantangan ini publik — siapa pun bisa melihat.",
-    "currentFriends": "Tantangan ini hanya dibagikan ke teman.",
-    "currentPrivate": "Tantangan ini privat — hanya kalian berdua yang bisa melihat.",
-    "intlNote": "Tantangan internasional selalu publik.",
-    "goPrivateCta": "Jadikan privat (keduanya harus setuju)",
-    "myVoteAgreed": "Kamu memilih ya — menunggu orang lain.",
-    "myVoteDenied": "Kamu menolak. Ketuk di bawah untuk berubah pikiran.",
-    "otherVoteAgreed": "Dia memilih ya — giliranmu memutuskan.",
-    "otherVoteDenied": "Dia menolak.",
-    "voteAgreedCta": "Setuju — jadikan privat",
-    "voteDeniedCta": "Tolak",
-    "withdrawCta": "Tarik suaraku",
-    "needCounterparty": "Tersedia setelah ada yang menerima tantangan ini.",
-    "errVote": "Gagal menyimpan suaramu — coba lagi.",
-    "errSave": "Gagal menyimpan — coba lagi.",
-    "notifTitle": "Notifikasi untuk tantangan ini",
-    "notif": {
-      "milestones": "Tonggak",
-      "all": "Setiap pesan",
-      "off": "Mati"
-    },
-    "notifHint": {
-      "milestones": "Penerimaan peserta, pengiriman bukti, validasi akhir.",
-      "all": "Beri tahu aku setiap pesan baru di channel.",
-      "off": "Diam saja — aku akan cek channel sendiri."
-    },
-    "closedTitle": "Tutup untuk peserta baru",
-    "closedBody": "Peserta yang ada tetap. Tombol Gabung berhenti menerima orang baru sampai kamu membukanya lagi."
-  },
-  "details": {
-    "collapseAria": "Sembunyikan detail kanal",
-    "expandAria": "Tampilkan detail kanal"
   },
   "ratePrompts": {
     "banner": {
-      "title": "Nilai tantangan ini - bagaimana hasilnya?",
+      "title": "Kasih nilai tantangan ini, gimana hasilnya?",
       "titleUrgent": "Giliranmu menilai tantangan ini"
     },
     "sheet": {
-      "title": "Bagaimana tantangannya?",
+      "title": "Gimana tantangannya?",
+      "subtitle": "Nilai tantangannya, bukan orangnya.",
       "starsAria": "{{n}} bintang",
-      "commentPlaceholder": "Tinggalkan catatan tentang tantangan ini (opsional)",
+      "commentPlaceholder": "Tulis catatan soal tantangan ini (opsional)",
       "submit": "Kirim rating",
-      "later": "Nanti aja",
-      "subtitle": "Nilai tantangannya, bukan orangnya."
+      "later": "Nanti aja"
     },
     "errSubmit": "Gagal kirim rating. Coba lagi."
+  },
+  "scoringInfo": {
+    "aria": "Cara dapat poin",
+    "helpLabel": "Cara dapat poin",
+    "title": "Cara main tantangan",
+    "intro": "Gabung cuma dapat poin kecil; poin besar buat yang beneran datang atau menang. Asal gabung doang nggak ada untungnya.",
+    "colStep": "Langkah",
+    "steps": {
+      "created": "Tantangan dibuat",
+      "accepted": "Tantangan diterima",
+      "date": "Tanggal fix",
+      "meet": "Ketemuan",
+      "rate": "Saling menilai"
+    },
+    "noPoints": "-",
+    "totalLabel": "Total per tantangan",
+    "footnote": "Angkanya bisa berubah selagi kami menyesuaikan permainan.",
+    "types": {
+      "heading": "Dua jenis tantangan",
+      "local": "Ketemuan: kumpulin grup buat ketemu langsung di waktu dan tempat yang udah ditentuin. Semua yang datang dapat poin gede.",
+      "international": "Tantangan foto: semua kirim foto sebelum tenggat, lalu penantang pilih pemenangnya."
+    },
+    "lifecycle": {
+      "heading": "Cara selesainya",
+      "body": "Penantang yang menentukan, orang-orang ikut, dan di akhir penantang memvalidasi: siapa yang datang, atau foto mana yang menang."
+    },
+    "pointsHeading": "Cara dapat poin",
+    "ways": {
+      "join": "Gabung tantangan",
+      "create": "Buat tantangan",
+      "present": "Datang: kehadiran tervalidasi",
+      "host": "Jadi tuan rumah ketemuan",
+      "submit": "Kirim foto ke tantangan",
+      "win": "Menangin tantangan foto"
+    },
+    "seeExamples": "Lihat 3 contoh nyata"
   },
   "leaderboard": {
     "title": "Most Local",
@@ -554,13 +312,13 @@
     "points": "{{points}} poin",
     "me": {
       "ranked": "Kamu · #{{rank}} · {{points}} poin",
-      "unranked": "Terima tantangan buat masuk papan"
+      "unranked": "Ambil tantangan biar masuk papan peringkat"
     },
     "empty": {
-      "title": "Belum ada di papan",
-      "body": "Jadi yang pertama menerima tantangan dan dapat poin."
+      "title": "Belum ada yang masuk papan",
+      "body": "Jadi yang pertama ambil tantangan dan dapat poin."
     },
-    "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi.",
+    "errLoad": "Papan peringkat gagal dimuat. Tarik untuk coba lagi.",
     "neutral": "🏆 Most Local",
     "titleCity": "Most {{demonym}}",
     "share": {
@@ -568,59 +326,315 @@
       "periodMonth": "bulan ini",
       "periodAll": "sepanjang masa",
       "placeCity": "di {{city}}",
-      "placeWorld": "di World",
-      "userNotTop": "🔥 Aku #{{rank}} {{place}} {{period}}: {{pts}} poin! Mengejar @{{above}} ({{aPts}} poin) 👀 dan menahan @{{below}} ({{bPts}} poin) di belakangku. Pikir bisa menyalipku? 🏆",
-      "userTop": "👑 Aku #1 {{place}} {{period}}: {{pts}} poin! @{{below1}} ({{b1Pts}} poin) dan @{{below2}} ({{b2Pts}} poin) mengejarku. Ayo rebut takhtanya 😏",
-      "cityNotTop": "🔥 {{place}} #{{rank}} di antara semua kota {{period}}: {{pts}} poin! Tepat di belakang {{above}} ({{aPts}} poin) 👀 dan di depan {{below}} ({{bPts}} poin). Warga lokal, ayo naik 🏆",
-      "cityTop": "👑 {{place}} #1 di antara semua kota {{period}}: {{pts}} poin! {{below1}} ({{b1Pts}} poin) dan {{below2}} ({{b2Pts}} poin) mengejar kita. Warga lokal, pertahankan puncak 🔥"
+      "placeWorld": "di dunia",
+      "userNotTop": "🔥 Aku #{{rank}} {{place}} {{period}}: {{pts}} poin! Lagi ngejar @{{above}} ({{aPts}} poin) 👀 dan nahan @{{below}} ({{bPts}} poin) di belakangku. Yakin bisa nyalip aku? 🏆",
+      "userTop": "👑 Aku #1 {{place}} {{period}}: {{pts}} poin! @{{below1}} ({{b1Pts}} poin) dan @{{below2}} ({{b2Pts}} poin) nempel di belakangku. Sini rebut mahkotanya 😏",
+      "cityNotTop": "🔥 {{place}} #{{rank}} dari semua kota {{period}}: {{pts}} poin! Tepat di belakang {{above}} ({{aPts}} poin) 👀 dan di depan {{below}} ({{bPts}} poin). Warga lokal, yuk naik 🏆",
+      "cityTop": "👑 {{place}} #1 dari semua kota {{period}}: {{pts}} poin! {{below1}} ({{b1Pts}} poin) dan {{below2}} ({{b2Pts}} poin) lagi ngejar kita. Warga lokal, yuk tetap di puncak 🔥"
     }
   },
-  "scoringInfo": {
-    "aria": "Cara kerja poin",
-    "helpLabel": "Cara dapat poin",
-    "title": "Cara kerja tantangan",
-    "intro": "Gabung cuma dapat poin kecil; poin besar buat yang beneran datang atau menang. Cuma numpuk gabung nggak ada gunanya.",
-    "colStep": "Langkah",
-    "steps": {
-      "created": "Tantangan dibuat",
-      "accepted": "Tantangan diterima",
-      "date": "Tanggal fix",
-      "meet": "Bertemu",
-      "rate": "Keduanya menilai"
+  "schedule": {
+    "proposeCta": "Usulkan tanggal",
+    "counterCta": "Usulkan balik",
+    "editCta": "Ubah tanggal",
+    "you": "kamu",
+    "iProposedTitle": "Nunggu dia setuju",
+    "theyProposedTitle": "{{name}} mengusulkan",
+    "scheduled": {
+      "title": "Ketemuan terjadwal"
     },
-    "noPoints": "-",
-    "totalLabel": "Total per tantangan",
-    "footnote": "Angka bisa berubah seiring kami nyetel gamenya.",
-    "types": {
-      "heading": "Dua jenis tantangan",
-      "local": "Ketemuan — kumpulin grup buat ketemu langsung di waktu & tempat yang udah ditentuin. Semua yang datang dapat poin besar.",
-      "international": "Tantangan foto — semua kirim foto sebelum tenggat; penantang pilih pemenang."
+    "withdraw": {
+      "title": "Tarik usulan?",
+      "body": "Tanggal yang kamu usulkan bakal dihapus. Dia akan dikasih tahu.",
+      "confirm": "Tarik"
     },
-    "lifecycle": {
-      "heading": "🔁 Cara penyelesaiannya",
-      "body": "Penantang yang nentuin, orang-orang gabung, dan di akhir penantang yang validasi — siapa yang datang, atau foto mana yang menang."
+    "today": "Hari ini",
+    "tomorrow": "Besok",
+    "picker": {
+      "title": "Kapan kalian ketemuan?",
+      "whenLabel": "Kapan",
+      "timeLabel": "Jam",
+      "whereLabel": "Di mana (opsional)",
+      "wherePlaceholder": "mis. Le Comptoir, 17 rue de la Paix"
     },
-    "pointsHeading": "Cara dapat poin",
-    "ways": {
-      "join": "Gabung tantangan",
-      "create": "Buat tantangan",
-      "present": "Datang — kehadiran tervalidasi",
-      "host": "Adakan ketemuan",
-      "submit": "Kirim foto ke tantangan",
-      "win": "Menang tantangan foto"
+    "err": {
+      "proposeFailed": "Gagal mengusulkan tanggal. Coba lagi.",
+      "approveFailed": "Gagal menyetujui. Coba lagi.",
+      "withdrawFailed": "Gagal menarik. Coba lagi."
+    }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Gimana tadi?",
+      "body": "{{name}} berhasil nggak?"
     },
-    "seeExamples": "Lihat 3 contoh nyata"
+    "acceptorWaiting": {
+      "title": "Menunggu keputusan",
+      "body": "{{name}} bakal tandai gimana hasilnya."
+    },
+    "approved": {
+      "title": "Tantangan berhasil"
+    },
+    "rejected": {
+      "title": "Tantangan ditutup"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Tandai berhasil?",
+        "body": "Ini final, nggak bisa diubah lagi.",
+        "confirm": "Tandai berhasil"
+      },
+      "reject": {
+        "title": "Tutup tanpa keputusan?",
+        "body": "Pakai ini kalau ketemuannya nggak jadi. Ini final.",
+        "confirm": "Tutup"
+      }
+    },
+    "err": {
+      "approveFailed": "Gagal menyetujui. Coba lagi.",
+      "rejectFailed": "Gagal menutup. Coba lagi."
+    }
+  },
+  "closeCta": "Tutup tantangan",
+  "reopenCta": "Buka lagi",
+  "pipeline": {
+    "step": {
+      "accept": "Terima",
+      "date": "Tanggal",
+      "meet": "Ketemuan",
+      "wrap": "Selesai",
+      "proof": "Bukti",
+      "verdict": "Keputusan"
+    },
+    "subcta": {
+      "tapToAccept": "Ambil tantangan ini",
+      "creatorWaiting": "Nunggu ada yang ambil",
+      "creatorReviewPending": "Cek permintaan dari {{name}}",
+      "acceptorAwaitingReview": "Nunggu {{name}} mengecek",
+      "proposeDate": "Usulkan tanggal",
+      "dateAwaiting": "Nunggu persetujuan pembuat",
+      "approveDate": "Ada tanggal yang diusulkan",
+      "meetSoon": "Sampai ketemu {{date}}",
+      "creatorVerdict": "Gimana sama {{name}}?",
+      "acceptorWaitingVerdict": "Nunggu konfirmasi {{name}}",
+      "rateMeetup": "Kasih nilai ketemuanmu sama {{name}}",
+      "accomplished": "Tantangan berhasil",
+      "closed": "Tantangan ditutup",
+      "submitProof": "Kirim bukti",
+      "waitingForProof": "Menunggu bukti",
+      "reviewProof": "Cek bukti",
+      "waitingForVerdict": "Menunggu keputusan"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} mau ambil tantanganmu",
+      "pendingBody": "Terima buat mulai ngobrol dan atur ketemuan, atau tolak biar slotnya kosong lagi.",
+      "approve": "Terima",
+      "reject": "Tolak",
+      "approveFailed": "Gagal menerima. Coba lagi.",
+      "rejectFailed": "Gagal menolak. Coba lagi."
+    },
+    "acceptor": {
+      "waitingTitle": "Menunggu ditinjau",
+      "waitingBody": "{{name}} bakal menerima atau menolak permintaanmu. Kamu dapat notif begitu dia memutuskan.",
+      "rejectedTitle": "Permintaan ditolak",
+      "rejectedBody": "{{name}} menolak yang ini. Kamu masih bisa ambil tantangan lain."
+    }
+  },
+  "postCreate": {
+    "title": "Tantanganmu sudah live",
+    "subtitle": "Sebarin sekarang, biar ada yang ambil dalam sejam ke depan.",
+    "thisCity": "kota ini",
+    "ctaInvite": "Kirim ke orang di {{city}}",
+    "ctaInviteSub": "Pilih beberapa {{audience}}, nanti kami kabari mereka.",
+    "ctaShare": "Bagikan di luar Hilads",
+    "skip": "Nanti aja",
+    "pickerTitle": "{{audience}} di {{city}}",
+    "pickerSubtitle": "Ketuk untuk pilih. Mereka dapat notif dengan Terima / Abaikan.",
+    "pickerEmpty": "Lagi nggak ada {{audience}} di sekitar. Bagikan ke luar aja.",
+    "sendCta": "Kirim ke {{count}}",
+    "sendCtaEmpty": "Pilih orang dulu",
+    "sentTitle": "Terkirim ke {{count}}",
+    "sentSubtitle": "Mereka bakal dapat notif sekarang.",
+    "pickerSubtitleAll": "Nggak ada yang persis cocok, jadi kami tampilkan semua di {{city}}."
+  },
+  "invitation": {
+    "accept": "Terima",
+    "ignore": "Abaikan"
+  },
+  "locked": {
+    "visitor": {
+      "title": "Terima tantangan untuk buka chat",
+      "body": "Setelah kamu terima, kamu dan penantang dapat thread privat buat atur ketemuan."
+    },
+    "creator": {
+      "title": "Nunggu ada yang ambil",
+      "body": "Begitu ada pelancong yang menerima, kalian bisa chat di sini buat atur ketemuan."
+    },
+    "full": {
+      "title": "Tantangan penuh",
+      "body": "Semua slot sudah terisi. Cek lagi kalau ada yang mundur."
+    },
+    "inProgress": {
+      "title": "Lagi ada yang ngerjain",
+      "body": "Ada pelancong yang lagi ngerjain tantangan ini. Setelah dia selesai, tantangannya terbuka lagi, cek lagi nanti ya."
+    }
+  },
+  "typeFilter": {
+    "label": "Filter per jenis",
+    "all": "Semua",
+    "empty": "Lagi nggak ada apa-apa di kategori ini."
+  },
+  "seeAllChallenges": "Lihat semua tantangan →",
+  "mode": {
+    "label": "Mode",
+    "local": "Lokal",
+    "international": "Internasional",
+    "localHint": "Di kotamu. Diakhiri dengan ketemuan langsung.",
+    "internationalHint": "Di mana aja di dunia. Mereka kirim bukti, kamu validasi dari jauh.",
+    "worldwide": "Seluruh dunia"
+  },
+  "visibility": {
+    "label": "Siapa yang bisa lihat?",
+    "public": "Publik",
+    "friends": "Teman",
+    "publicHint": "Siapa pun di kota ini bisa lihat dan menerimanya.",
+    "friendsHint": "Cuma temanmu dan orang yang kamu undang yang bisa lihat.",
+    "intlLocked": "Tantangan internasional selalu publik.",
+    "moderationBlocked": "Teksmu ditandai, coba tulis ulang.",
+    "badge": {
+      "public": "Publik",
+      "friends": "Teman",
+      "private": "Pribadi"
+    },
+    "optin": {
+      "title": "Catatan: ini publik",
+      "body": "Tantangan publik muncul di feed kota dan di web publik. Nama dan teks tantanganmu bisa dilihat siapa aja, termasuk yang bukan anggota dan mesin pencari. Kalau mau lebih tertutup, ganti ke Teman di bawah.",
+      "cta": "Oke, posting publik",
+      "switchToFriends": "Ganti ke Teman aja",
+      "dontShowAgain": "Jangan tampilkan lagi"
+    }
+  },
+  "privacy": {
+    "panelTitle": "Privasi",
+    "currentPublic": "Tantangan ini publik, semua orang bisa lihat.",
+    "currentFriends": "Tantangan ini cuma dibagikan ke teman.",
+    "currentPrivate": "Tantangan ini privat, cuma kalian berdua yang bisa lihat.",
+    "intlNote": "Tantangan internasional selalu publik.",
+    "goPrivateCta": "Jadikan privat (dua-duanya harus setuju)",
+    "myVoteAgreed": "Kamu pilih iya, tinggal nunggu dia.",
+    "myVoteDenied": "Kamu menolak. Ketuk di bawah kalau berubah pikiran.",
+    "otherVoteAgreed": "Dia pilih iya, sekarang giliranmu.",
+    "otherVoteDenied": "Dia menolak.",
+    "voteAgreedCta": "Setuju, jadikan privat",
+    "voteDeniedCta": "Tolak",
+    "withdrawCta": "Tarik suaraku",
+    "needCounterparty": "Bisa dipakai setelah ada yang nerima tantangan ini.",
+    "errVote": "Gagal nyimpan suaramu, coba lagi.",
+    "errSave": "Gagal nyimpan, coba lagi.",
+    "notifTitle": "Notifikasi tantangan ini",
+    "notif": {
+      "milestones": "Momen penting",
+      "all": "Setiap pesan",
+      "off": "Nonaktif"
+    },
+    "notifHint": {
+      "milestones": "Saat tantangan diterima, bukti dikirim, dan validasi akhir.",
+      "all": "Kabari aku tiap ada pesan baru di channel.",
+      "off": "Diam aja, aku cek channel sendiri."
+    },
+    "closedTitle": "Tutup untuk peserta baru",
+    "closedBody": "Peserta yang udah ada tetap di sini. Tombol Gabung nggak nerima orang baru sampai kamu buka lagi.",
+    "closedCloseCta": "Tutup buat peserta baru",
+    "closedReopenCta": "Buka lagi buat peserta baru"
+  },
+  "members": {
+    "title": "Di kanal",
+    "countIn": "{{count}} di kanal",
+    "seeAll": "Lihat semua",
+    "empty": "Belum ada yang gabung, jadi yang pertama yuk.",
+    "kickCta": "Keluarkan",
+    "kickAria": "Keluarkan {{name}} dari kanal",
+    "errKick": "Gagal mengeluarkan, coba lagi."
+  },
+  "notif": {
+    "on": "Notifikasi aktif",
+    "off": "Notifikasi nonaktif"
+  },
+  "manage": {
+    "cta": "Kelola",
+    "title": "Kelola tantangan"
+  },
+  "details": {
+    "collapseAria": "Sembunyikan detail kanal",
+    "expandAria": "Tampilkan detail kanal"
+  },
+  "badge": {
+    "challenger": "Penantang",
+    "taker": "Penerima",
+    "spectator": "Penonton"
+  },
+  "cta": {
+    "takenBy": "Lagi dikerjakan {{name}}",
+    "closed": "Tantangan ini sudah ditutup"
+  },
+  "intl": {
+    "targetCityLabel": "Kota target",
+    "targetCityAnywhere": "Di mana aja di dunia",
+    "targetCityHint": "Biarkan \"Di mana aja\" buat menjangkau pelancong di mana pun, atau pilih satu kota biar lebih fokus.",
+    "proofRequirementsLabel": "Fotonya harus menunjukkan apa?",
+    "proofRequirementsPlaceholder": "mis. Makanannya di siang hari, dengan kamu ikut di foto",
+    "proofRequirementsHint": "Buktinya berupa foto. Peserta lihat ini sebelum ngirim, jadi tulis sejelas mungkin.",
+    "cityPicker": {
+      "title": "Pilih kota target",
+      "searchPlaceholder": "Cari kota…",
+      "anywhere": "Di mana aja di dunia"
+    },
+    "proof": {
+      "requirementsLabel": "Yang diminta pembuat",
+      "submitCta": "Kirim bukti",
+      "tryAgainCta": "Coba lagi (sisa {{count}})",
+      "waitingProof": "Menunggu bukti",
+      "waitingVerdict": "Menunggu keputusan",
+      "approvedLine": "Tantangan berhasil",
+      "closedLine": "Tantangan ditutup",
+      "lastReason": "Alasan: {{reason}}",
+      "geotagOk": "Geotag terverifikasi",
+      "geotagWarn": "Geotag di luar area target",
+      "approveCta": "Setujui",
+      "rejectCta": "Tolak",
+      "rejectModalTitle": "Tolak bukti ini",
+      "rejectModalHint_other": "Dia masih punya {{count}} kesempatan. Kasih tahu apa yang perlu diperbaiki.",
+      "reasonPlaceholder": "mis. Fotonya buram, makanannya nggak kelihatan",
+      "rejectConfirm": "Kirim penolakan",
+      "reasonRequiredTitle": "Alasan wajib diisi",
+      "reasonRequiredBody": "Alasan singkat (1–200 karakter) bantu peserta memperbaikinya.",
+      "permPhotoTitle": "Butuh akses foto",
+      "permPhotoBody": "Izinkan akses galeri foto di Pengaturan buat pilih bukti.",
+      "permGpsTitle": "Butuh lokasi",
+      "permGpsBody": "Geotag wajib. Aktifkan lokasi di Pengaturan.",
+      "gpsFailTitle": "GPS nggak terbaca",
+      "gpsFailBody": "Coba lagi di luar ruangan atau dengan layanan lokasi aktif.",
+      "submitFailTitle": "Gagal kirim",
+      "submitFailBody": "Cek koneksimu dan coba lagi.",
+      "reviewFailTitle": "Keputusan gagal disimpan"
+    }
+  },
+  "modeFilter": {
+    "label": "Filter per mode",
+    "all": "Semua"
   },
   "scoreCelebration": {
     "unit": "poin",
     "subtitle": {
       "accepted": "Tantanganmu diterima",
-      "date_locked": "Janji terkunci - ayo",
+      "date_locked": "Tanggal fix, gas!",
       "meetup": "Misi selesai",
       "debrief": "Misi selesai",
-      "ghost": "Semoga lebih beruntung lain kali",
-      "default": "Kamu naik peringkat",
-      "meet_bonus": "Bonus ketemuan kebuka",
+      "ghost": "Semoga lebih hoki lain kali",
+      "default": "Peringkatmu naik",
+      "meet_bonus": "Bonus Ketemuan terbuka",
       "challenge_created": "Kamu meluncurkan tantangan"
     },
     "rank": {
@@ -630,18 +644,18 @@
       "worldBeyond": "Di luar top {{topN}} sedunia",
       "cityUnranked": "Belum masuk peringkat bulan ini di {{city}}",
       "worldUnranked": "Belum masuk peringkat dunia bulan ini",
-      "cities": "{{city}} peringkat #{{rank}} di antara kota",
+      "cities": "{{city}} peringkat #{{rank}} dari semua kota",
       "citiesBeyond": "{{city}} di luar top {{topN}} kota"
     },
-    "cta": "Ayo",
+    "cta": "Gas",
     "kindShort": {
       "accepted": "Diterima",
-      "date_locked": "Janji terkunci",
-      "meetup": "Sudah bertemu",
-      "debrief": "Saling beri rating",
+      "date_locked": "Tanggal fix",
+      "meetup": "Udah ketemuan",
+      "debrief": "Saling menilai",
       "ghost": "Ghosting",
-      "default": "Diraih",
-      "meet_bonus": "Bonus ketemuan",
+      "default": "Didapat",
+      "meet_bonus": "Bonus Ketemuan",
       "challenge_created": "Tantangan dibuat"
     },
     "event": {
@@ -651,197 +665,180 @@
     "total": "Total: {{total}} poin"
   },
   "welcomeGuest": {
-    "title": "Selamat datang! Ngobrol bebas tanpa daftar.",
-    "cta": "Mau ambil tantangan ini? Daftar dalam 3 detik"
+    "title": "Selamat datang! Ngobrol bebas di sini, nggak perlu daftar.",
+    "cta": "Mau ambil tantangan ini? Daftar cuma 3 detik"
+  },
+  "group": {
+    "meetLabel": "Kapan & di mana",
+    "meetCta": "Atur tanggal ketemuan",
+    "meetHint": "Semua yang gabung ketemuan bareng di sini. Setelahnya kamu yang validasi siapa yang datang.",
+    "meetRequired": "Pilih tanggal ketemuan.",
+    "meetSet": "Atur ketemuan",
+    "done": "Ketemuan ini sudah selesai.",
+    "validateCta": "Validasi siapa yang datang",
+    "validateAfter": "Kamu bisa memvalidasi setelah ketemuan · {{time}}",
+    "youreIn": "Kamu ikut, sampai ketemu di sana!",
+    "joinCta": "Gabung tantangan (+2 poin)",
+    "closed": "Ditutup untuk peserta baru",
+    "joinFailed": "Gagal gabung, coba lagi.",
+    "validateFailed": "Gagal validasi, coba lagi.",
+    "validateTitle": "Siapa yang datang?",
+    "validateSub": "Centang semua yang datang ke ketemuan. Masing-masing dapat hadiahnya.",
+    "rateMeet": "Gimana ketemuannya?",
+    "validateConfirm": "Validasi {{count}} hadir",
+    "noParticipants": "Belum ada yang gabung.",
+    "join": "Gabung",
+    "joinedCount": "{{count}} ikut",
+    "deadlineLabel": "Batas waktu kirim",
+    "deadline24h": "24 jam",
+    "deadline3d": "3 hari",
+    "deadline1w": "1 minggu",
+    "deadlineHint": "Semua yang gabung kirim foto sebelum batas waktu. Setelahnya kamu pilih pemenangnya.",
+    "deadlineRequiredTitle": "Pilih batas waktu",
+    "deadlineRequired": "Tentukan berapa lama tantangannya berjalan.",
+    "deadlinePrefix": "Kirim sebelum",
+    "contestDone": "Tantangan ini sudah selesai.",
+    "youreInPhoto": "Kamu ikut, kirim fotomu di bawah.",
+    "pickWinnerCta": "Pilih pemenang",
+    "joinContestCta": "Gabung tantangan (+2 poin)",
+    "winnerTitle": "Pilih pemenang",
+    "winnerSub": "Pilih foto terbaik. Pemenangnya dapat hadiah besar.",
+    "winnerConfirm": "Nobatkan pemenang",
+    "winnerNoSubmission": "Dia belum kirim foto.",
+    "winnerFailed": "Gagal memilih pemenang, coba lagi.",
+    "submissionsHeader_other": "{{count}} foto",
+    "tapToPick": "pilih yang terbaik",
+    "winnerTag": "Pemenang",
+    "pickThis": "Pilih pemenang",
+    "winnerConfirmTitle": "Nobatkan pemenang?",
+    "winnerConfirmBody": "{{name}} dapat hadiah besar.",
+    "pickHint": "Pilih pemenang dari foto-foto di bawah.",
+    "awaitingPhotos": "Belum ada foto, tantangannya mulai panas 🔥",
+    "checkPhotos_other": "Lihat {{count}} fotonya"
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Rasakan kotanya, sekarang juga",
+      "body": "Tantangan itu tantangan kecil di dunia nyata antara orang-orang di satu kota, dan antarkota."
+    },
+    "slide2": {
+      "title": "Bikin tantangan",
+      "body": "Atur ketemuan (tanggal + tempat) atau tantangan foto dengan batas waktu. Kamu tuan rumahnya."
+    },
+    "slide3": {
+      "title": "Siapa aja bisa langsung gabung",
+      "body": "Nggak pakai minta, nggak pakai nunggu: siapa yang mau, langsung gabung. Kamu langsung dapat +2."
+    },
+    "slide4": {
+      "title": "Wujudkan bareng",
+      "body": "Semua datang bareng ke ketemuanmu, atau kirim foto terbaiknya sebelum batas waktu."
+    },
+    "slide5": {
+      "title": "Kamu yang validasi",
+      "body": "Setelahnya kamu konfirmasi siapa yang datang, atau pilih foto pemenang. Di situlah poin besarnya."
+    },
+    "slide6": {
+      "title": "Antarkota",
+      "body": "Tantangan foto bisa jarak jauh: tantang satu kota lain untuk kirim jepretan terbaik mereka."
+    },
+    "slide7": {
+      "title": "Naik di Most Local",
+      "body": "Datang dan menang biar naik di papan. Poin gabung tetap kecil, jadi yang penting beneran dilakukan."
+    }
   },
   "result": {
     "winner": {
       "title": "Kamu menang!",
-      "body": "Fotomu memenangkan tantangan."
+      "body": "Fotomu memenangkan tantangan ini."
     },
     "loser": {
       "title": "{{name}} menang",
-      "body": "Foto bagus! Kamu dapat {{points}} karena ikut — coba lagi lain kali"
+      "body": "Foto keren! Kamu dapat {{points}} karena ikut, coba lagi lain kali"
     },
     "present": {
       "title": "Kamu datang!",
-      "body": "Kehadiran di meet sudah dikonfirmasi."
+      "body": "Kehadiranmu di ketemuan sudah divalidasi."
     },
     "absent": {
-      "title": "Kamu melewatkan yang ini",
-      "body": "Jangan lewatkan meet berikutnya — tempatmu menunggu."
+      "title": "Kamu kelewatan yang ini",
+      "body": "Ikut ketemuan berikutnya ya, tempatmu udah nunggu."
     },
     "host": {
       "titlePhoto": "{{name}} memenangkan tantanganmu!",
-      "titleMeet": "Meet-mu selesai!",
-      "body": "Terima kasih sudah jadi host.",
+      "titleMeet": "Ketemuanmu selesai!",
+      "body": "Makasih sudah jadi tuan rumah.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Mantap!",
     "total": "Sekarang kamu punya {{total}} poin",
     "rateTitle": "Nilai tantangan ini",
     "notePlaceholder": "Tambahkan catatan (opsional)",
-    "saveRating": "Simpan penilaian"
+    "saveRating": "Simpan nilai"
   },
   "status": {
-    "live": "Berlangsung",
+    "live": "Live",
     "done": "Selesai",
     "ended": "Selesai"
   },
-  "group": {
-    "meetCta": "Pilih tanggal pertemuan",
-    "meetRequired": "Pilih tanggal untuk pertemuan.",
-    "meetLabel": "Kapan & di mana",
-    "meetHint": "Semua yang gabung bertemu di sini bersama. Setelahnya kamu memvalidasi siapa yang datang.",
-    "meetSet": "Atur ketemuan",
-    "done": "Ketemuan ini sudah selesai.",
-    "validateCta": "Validasi siapa yang datang",
-    "validateAfter": "Kamu bisa memvalidasi setelah ketemuan · {{time}}",
-    "youreIn": "Kamu ikut — sampai jumpa di sana!",
-    "joinCta": "Gabung tantangan (+2 poin)",
-    "closed": "Ditutup untuk peserta baru",
-    "joinFailed": "Gagal gabung — coba lagi.",
-    "validateFailed": "Gagal memvalidasi — coba lagi.",
-    "validateTitle": "Siapa yang datang?",
-    "validateSub": "Centang semua yang datang ke ketemuan. Masing-masing dapat hadiah.",
-    "rateMeet": "Bagaimana ketemuannya?",
-    "validateConfirm": "Validasi {{count}} hadir",
-    "noParticipants": "Belum ada yang gabung.",
-    "join": "Gabung",
-    "joinedCount": "{{count}} bergabung",
-    "deadlineLabel": "Batas waktu kirim",
-    "deadline24h": "24h",
-    "deadline3d": "3 hari",
-    "deadline1w": "1 minggu",
-    "deadlineHint": "Semua yang gabung mengirim foto sebelum batas waktu. Kamu memilih pemenang setelahnya.",
-    "deadlineRequiredTitle": "Pilih batas waktu",
-    "deadlineRequired": "Pilih berapa lama tantangan berlangsung.",
-    "deadlinePrefix": "Sebelum",
-    "contestDone": "Tantangan ini sudah selesai.",
-    "youreInPhoto": "Kamu ikut — kirim fotomu di bawah.",
-    "pickWinnerCta": "Pilih pemenang",
-    "joinContestCta": "Gabung tantangan (+2 poin)",
-    "winnerTitle": "Pilih pemenang",
-    "winnerSub": "Pilih foto terbaik. Pemenang dapat hadiah besar.",
-    "winnerConfirm": "Nobatkan pemenang",
-    "winnerNoSubmission": "Orang itu belum mengirim foto.",
-    "winnerFailed": "Gagal memilih pemenang — coba lagi.",
-    "submissionsHeader_other": "{{count}} foto",
-    "tapToPick": "pilih yang terbaik",
-    "winnerTag": "Pemenang",
-    "pickThis": "Pilih",
-    "winnerConfirmTitle": "Nobatkan pemenang?",
-    "winnerConfirmBody": "{{name}} dapat hadiah besar.",
-    "pickHint": "Pilih pemenang dari foto-foto di bawah.",
-    "awaitingPhotos": "Belum ada foto — tantangan mulai memanas 🔥",
-    "checkPhotos_other": "Lihat {{count}} foto"
-  },
-  "leaveTakeon": {
-    "pill": "🚪 Keluar",
-    "confirmTitle": "Keluar dari tantangan ini?",
-    "confirmBody": "Progres kembali ke nol dan tantangan terbuka lagi untuk yang lain. Tidak bisa dibatalkan.",
-    "confirmCta": "Keluar",
-    "failed": "Gagal keluar — coba lagi."
-  },
-  "restart": {
-    "cta": "Mulai ulang tantangan",
-    "confirmTitle": "Mulai ulang tantangan?",
-    "confirmBody": "Ini menghapus peserta saat ini, mengosongkan chat, dan membuka tantangan dari nol. Tidak bisa dibatalkan.",
-    "confirmCta": "Mulai ulang",
-    "failed": "Gagal memulai ulang — coba lagi."
-  },
-  "challengeIntro": {
-    "slide1": {
-      "title": "Rasakan kotanya, sekarang",
-      "body": "Tantangan adalah tantangan kecil dunia nyata antar orang di satu kota — dan antar kota."
-    },
-    "slide2": {
-      "title": "Susun tantangan",
-      "body": "Atur ketemuan (tanggal + tempat) atau tantangan foto dengan batas waktu. Kamu hostnya."
-    },
-    "slide3": {
-      "title": "Siapa pun langsung gabung",
-      "body": "Tanpa minta, tanpa nunggu — siapa yang mau, gabung. Kamu langsung dapat +2."
-    },
-    "slide4": {
-      "title": "Wujudkan",
-      "body": "Semua datang bareng ke ketemuanmu — atau kirim foto terbaik sebelum batas waktu."
-    },
-    "slide5": {
-      "title": "Kamu yang validasi",
-      "body": "Setelahnya kamu konfirmasi siapa yang hadir, atau pilih foto pemenang. Di situ poin besar didapat."
-    },
-    "slide6": {
-      "title": "Antar kota",
-      "body": "Tantangan foto bisa jarak jauh — tantang seluruh kota lain untuk mengirim jepretan terbaik mereka."
-    },
-    "slide7": {
-      "title": "Naik di Most Local",
-      "body": "Datang dan menang untuk naik peringkat. Poin gabung tetap kecil — yang penting benar-benar melakukannya."
-    }
-  },
   "pointExamples": {
     "title": "3 contoh nyata",
-    "intro": "Bagaimana tantangan nyata membagi poin — siapa dapat apa.",
-    "empty": "Belum ada contoh — jadilah yang pertama membuat tantangan!",
+    "intro": "Hasil poin dari tantangan sungguhan: siapa dapat apa.",
+    "empty": "Belum ada contoh, jadi yang pertama bikin tantangan!",
     "each": "masing-masing",
     "line": {
       "created": "{{name}} membuatnya",
       "winner": "{{name}} menang",
       "present": "{{count}} datang",
       "submission": "{{count}} mengirim foto",
-      "host": "{{name}} jadi host"
+      "host": "{{name}} jadi tuan rumah"
     }
   },
   "titlePh": {
-    "food": "mis. Carikan aku semangkuk pho terbaik 🍜",
+    "food": "mis. Cariin aku semangkuk pho terbaik 🍜",
     "place": "mis. Ajak aku ke tempat rahasia favoritmu 📍",
-    "culture": "mis. Tunjukkan sesuatu yang cuma diketahui warga lokal 🎭",
-    "help": "mis. Tantang aku melakukan hal gila 🤪"
+    "culture": "mis. Tunjukin sesuatu yang cuma warga lokal tahu 🎭",
+    "help": "mis. Tantang aku coba hal gila 🤪"
   },
   "relaunch": {
     "cta": "Mulai ulang",
     "confirmTitle": "Mulai ulang tantangan ini?",
-    "confirmBody": "Terbuka lagi dengan hitung mundur yang sama seperti yang kamu atur pertama kali.",
+    "confirmBody": "Tantangannya dibuka lagi dengan hitung mundur yang sama seperti yang kamu atur pertama kali.",
     "confirmCta": "Mulai ulang",
-    "failed": "Gagal memulai ulang - coba lagi."
+    "failed": "Gagal mulai ulang, coba lagi."
   },
   "appMap": {
-    "title": "Lihat spot di peta",
-    "titleCity": "Lihat spot di {{city}} di peta",
-    "body": "Tempat warga lokal memposting foto Daily Challenge. Posting punyamu dari aplikasi Hilads."
+    "title": "Lihat tempat-tempatnya di peta",
+    "titleCity": "Lihat tempat-tempat di {{city}} di peta",
+    "body": "Tempat warga lokal posting foto Daily Challenge mereka. Posting punyamu dari aplikasi Hilads."
   },
-  "creationClosed": "Pembuatan challenge sudah ditutup. Ikuti Daily Challenge di aplikasi Hilads.",
+  "creationClosed": "Bikin tantangan udah ditutup. Main Daily Challenge di aplikasi Hilads, yuk.",
   "map": {
     "see": "Lihat peta",
     "button": "Peta",
     "search": "Cari makanan, kafe…",
-    "searchA11y": "Cari spot",
+    "searchA11y": "Cari tempat",
     "clearSearch": "Hapus pencarian",
-    "noResults": "Tidak ada spot yang cocok",
+    "noResults": "Nggak ada tempat yang cocok",
     "all": "Semua",
-    "openSpot": "Buka spot",
+    "openSpot": "Buka tempat",
     "directions": "Rute",
     "validated": "Divalidasi oleh warga lokal",
     "pricePaid": "Harga dibayar {{price}}",
     "closeSpot": "Tutup",
-    "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
+    "emptyTitle": "Jadilah yang pertama menandai tempat di sini",
     "list": "Daftar",
     "mapView": "Peta",
     "sortNearest": "Terdekat",
-    "sortWeek": "Paling banyak dipilih minggu ini",
-    "spotsTomorrow": "Spot datang dari challenge besok: {{theme}}",
-    "proofs_one": "{{count}} foto",
+    "sortWeek": "Vote terbanyak minggu ini",
+    "spotsTomorrow": "Tempat-tempatnya datang dari tantangan besok: {{theme}}",
     "proofs_other": "{{count}} foto",
-    "votes_one": "{{count}} suara",
-    "votes_other": "{{count}} suara",
-    "unavailable": "Peta sedang tidak tersedia.",
+    "votes_other": "{{count}} vote",
+    "unavailable": "Petanya lagi nggak bisa dibuka.",
     "nearYou": "Di dekatmu",
-    "locationDenied": "Izinkan lokasi untuk hilads.live di browser agar peta berpusat padamu.",
-    "locate": "Pusatkan peta ke saya",
-    "locationFailed": "Lokasimu belum tersedia saat ini.",
-    "cityBubbleA11y_one": "{{city}}, {{count}} spot",
-    "cityBubbleA11y_other": "{{city}}, {{count}} spot",
+    "locationDenied": "Izinkan lokasi buat hilads.live di browser biar petanya pas di posisimu.",
+    "locate": "Pusatkan peta ke posisiku",
+    "locationFailed": "Lokasimu lagi nggak tersedia.",
+    "cityBubbleA11y_other": "{{city}}, {{count}} tempat",
     "todayChip": "Hari ini",
     "playHere": "Main di sini hari ini",
     "planNow": "sekarang",
@@ -849,13 +846,13 @@
     "halloween": "🎃 Halloween"
   },
   "spot": {
-    "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",
+    "rankWeekFirst": "Vote terbanyak minggu ini di {{city}}",
     "rankWeek": "#{{rank}} minggu ini di {{city}}",
-    "rankAlltimeFirst": "Spot dengan suara terbanyak di {{city}}",
+    "rankAlltimeFirst": "Tempat dengan vote terbanyak di {{city}}",
     "rankAlltime": "#{{rank}} sepanjang masa di {{city}}",
     "photos": "Foto",
     "captions": "Kata orang-orang",
-    "notFound": "Spot ini tidak tersedia.",
+    "notFound": "Tempat ini nggak tersedia.",
     "local": "Lokal",
     "morePhotos": "Foto lainnya",
     "proofInApp": "Posting fotomu di aplikasi"
@@ -865,26 +862,25 @@
     "timeLeft": "Sisa {{time}}",
     "nextIn": "Daily Challenge berikutnya dalam {{time}}",
     "nothingLive": "Daily Challenge berikutnya segera hadir",
-    "cta": "Ambil challenge-nya",
+    "cta": "Terima tantangan",
     "ctaIn": "Aku ikut",
-    "ctaTaken": "Challenge selesai · Lihat fotoku",
+    "ctaTaken": "Tantangan selesai · Lihat fotoku",
     "seeProofs": "Lihat foto hari ini",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist {{city}}",
     "twistBy": "oleh {{name}}",
-    "count_one": "{{count}} orang sudah melakukannya hari ini",
-    "count_other": "{{count}} orang sudah melakukannya hari ini",
+    "count_other": "{{count}} orang sudah main hari ini",
     "countCity": "{{count}} di {{city}}",
-    "countZero": "Belum ada - jadilah yang pertama",
+    "countZero": "Belum ada, jadilah yang pertama",
     "beFirst": "Jadilah yang pertama hari ini",
-    "beFirstSub": "Belum ada foto. Jadilah yang pertama, dunia menunggu.",
+    "beFirstSub": "Belum ada foto. Jadilah yang pertama, dunia lagi nunggu.",
     "firstYours": "Fotomu sudah masuk",
-    "firstYoursSub": "Fotomu muncul di sini setelah disetujui, bersama foto yang lain.",
+    "firstYoursSub": "Fotomu muncul di sini setelah disetujui, bareng foto yang lain.",
     "yourProof": "Fotomu",
     "status": {
-      "pending": "Tertunda",
-      "approved": "Dipublikasikan",
-      "rejected": "Tidak dipublikasikan",
+      "pending": "Menunggu",
+      "approved": "Tayang",
+      "rejected": "Nggak tayang",
       "removed": "Dihapus"
     },
     "pendingHint": "Foto ini dilaporkan dan sedang diperiksa.",
@@ -893,16 +889,14 @@
     "edit": "Edit",
     "delete": "Hapus",
     "deleteTitle": "Hapus fotomu?",
-    "deleteBody": "Buktimu akan hilang dari challenge dan semua channel.",
+    "deleteBody": "Fotomu bakal hilang dari tantangan dan semua channel.",
     "cancel": "Batal",
     "closed": "Ditutup",
     "back": "Kembali",
     "practicalTitle": "Perlu kamu tahu",
     "priceRange": "{{min}}-{{max}} {{currency}}",
     "priceOne": "{{amount}} {{currency}}",
-    "priceFrom_one": "dari {{count}} foto",
     "priceFrom_other": "dari {{count}} foto",
-    "places_one": "{{count}} tempat ditandai",
     "places_other": "{{count}} tempat ditandai",
     "unnamedPlace": "Tempat yang ditandai",
     "tabWorld": "Dunia",
@@ -911,17 +905,17 @@
     "validatedByLocal": "Divalidasi oleh warga lokal",
     "loadFailed": "Gagal memuat Daily Challenge.",
     "retry": "Coba lagi",
-    "notFound": "Daily Challenge ini tidak ada.",
-    "cityRowEmpty": "Jadilah yang pertama membuat challenge di {{city}}",
+    "notFound": "Daily Challenge ini nggak ada.",
+    "cityRowEmpty": "Jadilah yang pertama bikin tantangan di {{city}}",
     "proof": {
       "titleNew": "Fotomu",
       "titleEdit": "Edit fotomu",
       "camera": "Kamera",
       "gallery": "Galeri",
       "changePhoto": "Ganti foto",
-      "addPhoto": "Tambahkan foto challenge-mu",
+      "addPhoto": "Tambahkan foto tantanganmu",
       "caption": "Keterangan",
-      "captionPlaceholder": "Satu kalimat tentang ini (opsional)",
+      "captionPlaceholder": "Satu kalimat soal ini (opsional)",
       "price": "Harga yang dibayar",
       "pricePlaceholder": "Jumlah (opsional)",
       "pin": "Tandai tempat ini",
@@ -932,55 +926,54 @@
       "save": "Simpan perubahan",
       "sending": "Mengirim…",
       "sentTitle": "{{city}} sudah main!",
-      "sentBody": "Lihat apa kata dunia. Fotomu sudah tayang.",
+      "sentBody": "Lihat kata dunia. Fotomu sudah tayang.",
       "ok": "OK",
-      "permPhotoTitle": "Perlu akses foto",
-      "permPhotoBody": "Izinkan akses di pengaturan untuk menambahkan foto.",
-      "permCameraTitle": "Perlu akses kamera",
-      "permCameraBody": "Izinkan akses kamera di pengaturan untuk mengambil foto.",
+      "permPhotoTitle": "Butuh akses foto",
+      "permPhotoBody": "Izinkan akses di pengaturan buat menambahkan foto.",
+      "permCameraTitle": "Butuh akses kamera",
+      "permCameraBody": "Izinkan akses kamera di pengaturan buat ambil foto.",
       "photoRequired": "Tambahkan foto dulu.",
-      "locationOff": "Lokasi mati, jadi tempat ini tidak bisa ditandai.",
-      "editOnlyActive": "Kamu bisa edit fotomu sampai challenge berakhir.",
+      "locationOff": "Lokasi mati, jadi tempat ini nggak bisa ditandai.",
+      "editOnlyActive": "Kamu bisa edit fotomu sampai tantangan berakhir.",
       "takeTitle": "Ambil fotomu",
       "retake": "Ulangi"
     },
     "errors": {
-      "already_posted": "Kamu sudah main challenge hari ini.",
-      "challenge_closed": "Challenge ini sudah ditutup.",
-      "no_active_challenge": "Belum ada Daily Challenge saat ini.",
-      "moderation_blocked": "Keteranganmu ditandai - coba tulis ulang ya.",
-      "banned": "Kamu tidak bisa posting di sini lagi.",
-      "invalid_photo": "Foto itu tidak bisa dipakai. Coba yang lain.",
+      "already_posted": "Kamu sudah main tantangan hari ini.",
+      "challenge_closed": "Tantangan ini sudah ditutup.",
+      "no_active_challenge": "Lagi nggak ada Daily Challenge sekarang.",
+      "moderation_blocked": "Keteranganmu ditandai, coba tulis ulang ya.",
+      "banned": "Kamu nggak bisa posting di sini lagi.",
+      "invalid_photo": "Foto itu nggak bisa dipakai. Coba yang lain.",
       "invalid_caption": "Keterangannya terlalu panjang.",
       "invalid_price": "Cek lagi jumlah dan mata uangnya.",
-      "invalid_place": "Pilih satu tempat saja.",
-      "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
-      "image_processing_failed": "Foto itu tidak bisa diproses. Coba yang lain.",
+      "invalid_place": "Pilih satu tempat aja.",
+      "rate_limited": "Kebanyakan percobaan, tunggu sebentar ya.",
+      "image_processing_failed": "Foto itu nggak bisa diproses. Coba yang lain.",
       "generic": "Ada yang salah. Coba lagi.",
       "place_required": "Pilih tempat fotomu.",
-      "place_not_allowed": "Challenge ini tidak punya tempat.",
-      "place_not_found": "Tempat itu sudah tidak tersedia. Pilih yang lain.",
+      "place_not_allowed": "Tantangan ini nggak pakai tempat.",
+      "place_not_found": "Tempat itu sudah nggak tersedia. Pilih yang lain.",
       "invalid_place_name": "Nama tempat harus 1 sampai 80 karakter.",
-      "place_name_blocked": "Nama tempat itu ditandai. Tulis ulang.",
-      "invalid_position": "Lokasimu dibutuhkan untuk mengirim foto ini.",
+      "place_name_blocked": "Nama tempat itu ditandai. Coba tulis ulang ya.",
+      "invalid_position": "Butuh lokasimu untuk posting foto ini.",
       "too_far": "Kamu terlalu jauh dari tempat ini."
     },
     "push": {
-      "bannerTitle": "Dapatkan Daily Challenge setiap pagi",
+      "bannerTitle": "Dapat Daily Challenge tiap pagi",
       "bannerCta": "Aktifkan",
       "askTitle": "Daily Challenge",
-      "askBody": "Dapatkan Daily Challenge setiap pagi, di jam yang pas buat kamu.",
-      "askBodyBlocked": "Notifikasi Hilads sedang mati. Aktifkan di pengaturan untuk dapat Daily Challenge setiap pagi.",
+      "askBody": "Dapat Daily Challenge tiap pagi, di jam yang pas buat kamu.",
+      "askBodyBlocked": "Notifikasi Hilads lagi mati. Nyalakan di pengaturan biar dapat Daily Challenge tiap pagi.",
       "yes": "Ya, kabari aku",
-      "notNow": "Nanti saja",
+      "notNow": "Nanti aja",
       "openSettings": "Buka pengaturan"
     },
     "archive": {
       "title": "Sudah selesai",
       "pickCity": "Pilih kota",
-      "worldSelection": "Pilihan Dunia: kota ini belum live",
-      "empty": "Daily Challenge pertama segera datang.",
-      "proofs_one": "{{count}} foto",
+      "worldSelection": "Pilihan dunia: kota ini belum live",
+      "empty": "Daily Challenge pertama segera hadir.",
       "proofs_other": "{{count}} foto"
     },
     "report": {
@@ -993,26 +986,26 @@
         "spam": "Spam",
         "other": "Lainnya"
       },
-      "thanks": "Makasih - kami akan cek.",
+      "thanks": "Makasih, nanti kami cek ya.",
       "already": "Kamu sudah melaporkan foto ini."
     },
     "vote": {
-      "vote": "Pilih",
-      "withdraw": "Tarik pilihanku",
+      "vote": "Vote",
+      "withdraw": "Batalkan vote",
       "yours": "Fotomu",
-      "votersTitle": "Siapa yang memilih",
-      "votersEmpty": "Belum ada suara.",
+      "votersTitle": "Siapa yang vote",
+      "votersEmpty": "Belum ada vote.",
       "errors": {
-        "voting_closed": "Pemungutan suara ditutup bersama challenge-nya.",
-        "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
-        "own_proof": "Kamu tidak bisa memilih fotomu sendiri.",
-        "not_found": "Foto ini sudah tidak tersedia.",
+        "voting_closed": "Vote ditutup bareng tantangannya.",
+        "rate_limited": "Kebanyakan percobaan, tunggu sebentar ya.",
+        "own_proof": "Kamu nggak bisa vote fotomu sendiri.",
+        "not_found": "Foto ini sudah nggak tersedia.",
         "generic": "Ada yang salah. Coba lagi."
       },
-      "voteFor": "Pilih {{city}}",
-      "prompt": "Pilih foto yang kamu suka",
-      "tourNote": "Foto dengan suara terbanyak tiap kota masuk tur dunia besok.",
-      "afterPost": "Pilih foto yang kamu suka",
+      "voteFor": "Vote {{city}}",
+      "prompt": "Vote foto yang kamu suka",
+      "tourNote": "Foto dengan vote terbanyak di tiap kota masuk tur dunia besok.",
+      "afterPost": "Vote foto yang kamu suka",
       "validatedHint": "Divalidasi warga lokal: seseorang yang tinggal di sini memberi vote untuk foto ini."
     },
     "results": {
@@ -1021,27 +1014,26 @@
       "worldRank": "#{{rank}} di dunia",
       "bestInCities": "Terbaik di tiap kota live",
       "bestIn": "Terbaik di {{city}}",
-      "none": "Tidak ada suara di challenge ini, jadi tidak ada podium."
+      "none": "Nggak ada vote di tantangan ini, jadi nggak ada podium."
     },
     "profile": {
-      "streak": "Streak saat ini",
-      "bestStreak": "Streak terbaik",
+      "streak": "Beruntun saat ini",
+      "bestStreak": "Beruntun terbaik",
       "completed": "Selesai",
       "bestProofs": "Foto terbaik",
-      "emptyMine": "Streak-mu dimulai dengan challenge hari ini."
+      "emptyMine": "Main tantangan hari ini buat mulai beruntun."
     },
-    "streak_one": "Streak {{count}} hari",
-    "streak_other": "Streak {{count}} hari",
+    "streak_other": "{{count}} hari beruntun",
     "twist": {
       "title": "Usulkan Local Twist",
       "tomorrow": "Daily Challenge besok",
-      "intro": "Kamu warga lokal {{city}}: usulkan cara menjalani challenge besok ala {{city}}. Kalau terpilih, tayang dengan namamu.",
+      "intro": "Kamu warga lokal {{city}}: usulkan cara main tantangan besok ala {{city}}. Kalau terpilih, tayang dengan namamu.",
       "closesIn": "Usulan ditutup dalam {{time}}",
       "closed": "Usulan untuk besok sudah ditutup.",
       "yours": "Usulanmu",
       "label": "Local Twist {{city}} darimu",
-      "placeholder": "mis. Cơm tấm sebelum jam 8, minta sườn bì chả.",
-      "hint": "Satu tips yang cuma diketahui warga lokal, dalam bahasa Inggris. Dicek sebelum tayang.",
+      "placeholder": "mis. Nasi uduk sebelum jam 8, minta tambah semur jengkol.",
+      "hint": "Satu tips yang cuma diketahui warga lokal, dalam bahasa Inggris. Dicek dulu sebelum tayang.",
       "submit": "Usulkan twist-ku",
       "withdraw": "Tarik",
       "withdrawTitle": "Tarik usulanmu?",
@@ -1052,31 +1044,31 @@
         "not_picked": "Tidak terpilih"
       },
       "statusHint": {
-        "pending": "Satu twist per kota dipilih sebelum challenge besok.",
-        "picked": "Tayang bersama challenge besok di {{city}} dengan namamu.",
+        "pending": "Satu twist per kota dipilih sebelum tantangan besok.",
+        "picked": "Tayang bareng tantangan besok di {{city}}, dengan namamu.",
         "not_picked": "Kali ini twist lain yang terpilih. Coba lagi besok!"
       },
       "heroCta": "Usulkan Local Twist besok · sampai {{time}}",
       "heroStatus": "Local Twist-mu untuk besok: {{status}}",
       "reasons": {
         "no_city": "Atur kotamu untuk mengusulkan Local Twist.",
-        "city_not_live": "Local Twist hanya diusulkan di kota live.",
-        "not_local": "Hanya warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
-        "no_challenge": "Challenge besok belum siap. Kembali nanti."
+        "city_not_live": "Local Twist cuma bisa diusulkan di kota live.",
+        "not_local": "Cuma warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
+        "no_challenge": "Tantangan besok belum siap. Balik lagi nanti ya."
       },
       "errors": {
         "already_proposed": "Kamu sudah mengusulkan Local Twist untuk besok.",
         "closed": "Usulan untuk besok sudah ditutup.",
         "invalid_text": "Tulis 1 sampai 280 karakter.",
-        "moderation_blocked": "Twist-mu ditandai - tolong tulis ulang.",
-        "not_editable": "Usulan ini sudah tidak bisa diubah.",
+        "moderation_blocked": "Twist-mu ditandai, coba tulis ulang ya.",
+        "not_editable": "Usulan ini sudah nggak bisa diubah.",
         "not_found": "Tidak ada usulan untuk diubah.",
-        "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
-        "banned": "Kamu tidak bisa posting di sini lagi.",
+        "rate_limited": "Kebanyakan percobaan, tunggu sebentar ya.",
+        "banned": "Kamu nggak bisa posting di sini lagi.",
         "no_city": "Atur kotamu untuk mengusulkan Local Twist.",
-        "city_not_live": "Local Twist hanya diusulkan di kota live.",
-        "not_local": "Hanya warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
-        "no_challenge": "Challenge besok belum siap. Kembali nanti."
+        "city_not_live": "Local Twist cuma bisa diusulkan di kota live.",
+        "not_local": "Cuma warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
+        "no_challenge": "Tantangan besok belum siap. Balik lagi nanti ya."
       }
     },
     "translation": {
@@ -1086,43 +1078,42 @@
     "map": {
       "see": "Lihat peta",
       "button": "Peta",
-      "empty": "Belum ada tempat yang disematkan.",
-      "titleChallenge": "Tempat yang disematkan",
-      "titleCity": "Tempat yang disematkan di {{city}}",
-      "titleWorld": "Tempat yang disematkan di seluruh dunia",
+      "empty": "Belum ada tempat yang ditandai.",
+      "titleChallenge": "Tempat yang ditandai",
+      "titleCity": "Tempat yang ditandai di {{city}}",
+      "titleWorld": "Tempat yang ditandai di seluruh dunia",
       "seeProof": "Lihat foto",
-      "openChallenge": "Buka challenge",
+      "openChallenge": "Buka tantangan",
       "search": "Cari makanan, kafe, jalan",
-      "searchA11y": "Cari spot",
+      "searchA11y": "Cari tempat",
       "clearSearch": "Hapus pencarian",
-      "noResults": "Tidak ada spot yang cocok",
+      "noResults": "Nggak ada tempat yang cocok",
       "all": "Semua",
       "today": "hari ini",
-      "locate": "Pusatkan peta ke saya",
+      "locate": "Pusatkan peta ke posisiku",
       "locationDenied": "Izinkan lokasi di pengaturan untuk memusatkan peta ke kamu.",
-      "locationFailed": "Lokasimu belum tersedia saat ini.",
-      "noToken": "Peta tidak tersedia di versi ini.",
-      "openSpot": "Buka spot",
+      "locationFailed": "Lokasimu lagi nggak tersedia.",
+      "noToken": "Peta nggak tersedia di versi ini.",
+      "openSpot": "Buka tempat",
       "directions": "Rute",
       "validated": "Divalidasi oleh warga lokal",
       "pricePaid": "Harga dibayar {{price}}",
       "selected": "Dipilih: {{name}}",
       "closeSpot": "Tutup",
-      "emptyTitle": "Jadilah yang pertama menaruh spot di sini",
+      "emptyTitle": "Jadilah yang pertama menandai tempat di sini",
       "planA11y": "Rencana: {{title}}, {{time}}",
-      "proofs_one": "{{count}} foto",
       "proofs_other": "{{count}} foto"
     },
     "leaderboard": {
       "tab": "Top 10",
-      "provisional": "Sementara sampai drop berikutnya",
+      "provisional": "Sementara, sampai hasil keluar",
       "finalIn": "Final dalam {{time}}",
       "official": "Podium resmi",
       "minProofs": "Top 10 dibuka saat ada {{min}} foto. Sejauh ini: {{n}}.",
-      "noVotes": "Belum ada suara. Pilih foto favoritmu!",
+      "noVotes": "Belum ada vote. Vote foto favoritmu!",
       "me": "Kamu: #{{rank}} · ♥ {{votes}}",
       "meCity": "#{{rank}} di {{city}}",
-      "noProof": "Ikut main agar masuk peringkat.",
+      "noProof": "Main dulu biar masuk peringkat.",
       "pending": "Fotomu masuk peringkat setelah disetujui.",
       "cityTop": "Top 3 di {{city}}",
       "compactTitle": "Top 3 saat ini",
@@ -1135,14 +1126,14 @@
       "tomorrow": "Besok",
       "done": "Selesai",
       "pending": "Menunggu ditinjau",
-      "missed": "Belum dikerjakan",
-      "none": "Tidak ada challenge",
-      "keep": "Main hari ini untuk menjaga streak-mu"
+      "missed": "Terlewat",
+      "none": "Nggak ada tantangan",
+      "keep": "Main hari ini biar tetap beruntun"
     },
     "calendar": {
-      "title": "Daily Challenges saya",
-      "streak": "Streak saat ini",
-      "best": "Streak terbaik",
+      "title": "Daily Challenge-ku",
+      "streak": "Beruntun saat ini",
+      "best": "Beruntun terbaik",
       "monthDone": "Selesai bulan ini: {{n}}",
       "legendDone": "Selesai",
       "legendPending": "Menunggu ditinjau",
@@ -1152,46 +1143,46 @@
     "guide": {
       "title": "Panduan kota",
       "all": "Semua",
-      "emptyCity": "Belum ada challenge {{theme}} di {{city}}. Berikutnya: {{day}}.",
-      "emptyWorld": "Belum ada challenge {{theme}}. Berikutnya: {{day}}."
+      "emptyCity": "Belum ada tantangan {{theme}} di {{city}}. Berikutnya: {{day}}.",
+      "emptyWorld": "Belum ada tantangan {{theme}}. Berikutnya: {{day}}."
     },
     "localPass": {
       "name": "Local Pass",
       "progress": "{{done}}/{{total}} tema",
       "earned": "Didapat",
-      "hint": "Selesaikan ke-7 tema di {{city}} untuk mendapat Local Pass-nya.",
+      "hint": "Selesaikan ke-7 tema di {{city}} buat dapat Local Pass-nya.",
       "profileTitle": "Local Pass",
       "badgeA11y": "Pemilik Local Pass"
     },
     "propose": {
-      "cta": "Usulkan challenge",
+      "cta": "Usulkan tantangan",
       "short": "Usulkan",
-      "title": "Usulkan challenge",
-      "textLabel": "Challenge-mu (dalam bahasa Inggris)",
+      "title": "Usulkan tantangan",
+      "textLabel": "Tantanganmu (dalam bahasa Inggris)",
       "textPlaceholder": "Find a…",
       "themeLabel": "Tema",
       "whyLabel": "Kenapa? (opsional)",
-      "whyPlaceholder": "Apa yang akan ditemukan orang?",
+      "whyPlaceholder": "Apa yang bakal ditemukan orang?",
       "twistLabel": "Local Twist untuk {{city}} (opsional)",
       "twistPlaceholder": "Cara warga lokal melakukannya di {{city}}",
-      "rulesTitle": "Challenge yang baik itu…",
-      "rule1": "Bisa dilakukan di mana saja di kota, kurang dari satu jam",
-      "rule2": "Tidak lebih mahal dari sekali makan lokal",
+      "rulesTitle": "Tantangan yang bagus itu…",
+      "rule1": "Bisa dilakukan di mana aja di kota, kurang dari sejam",
+      "rule2": "Nggak lebih dari harga sekali makan lokal",
       "rule3": "Aman dan menghormati warga",
-      "rule4": "\"Find a…\", tidak pernah alamat persis",
+      "rule4": "\"Find a…\", jangan alamat persis",
       "rule5": "Mengajarkan sesuatu: nama, gerakan, kebiasaan",
       "reviewed": "Setiap usulan ditinjau sebelum tayang.",
       "submit": "Kirim usulanku",
-      "sentTitle": "Terima kasih!",
-      "sentBody": "Kami akan meninjau challenge-mu. Pantau statusnya di Usulanku.",
+      "sentTitle": "Makasih!",
+      "sentBody": "Kami bakal tinjau tantanganmu. Pantau statusnya di Usulanku.",
       "pendingExists": "Kamu sudah punya usulan yang menunggu ditinjau.",
       "seeMine": "Lihat usulanku",
       "mineTitle": "Usulanku",
       "empty": "Belum ada usulan. Idemu bisa jadi Daily Challenge berikutnya.",
-      "typeChallenge": "Challenge",
+      "typeChallenge": "Tantangan",
       "typeTwist": "Local Twist",
       "status": {
-        "pending": "Sedang ditinjau",
+        "pending": "Ditinjau",
         "scheduled": "Dijadwalkan · {{date}}",
         "published": "Tayang · {{date}}",
         "reserve": "Di cadangan",
@@ -1203,23 +1194,23 @@
       "reason": "Alasan: {{reason}}",
       "withdraw": "Tarik",
       "withdrawTitle": "Tarik usulan ini?",
-      "withdrawBody": "Kamu bisa mengirim yang lain setelahnya.",
+      "withdrawBody": "Kamu bisa kirim yang lain setelah ini.",
       "proposedBy": "Diusulkan oleh {{name}}",
       "proposedByCity": "Diusulkan oleh {{name}} · {{city}}",
       "errors": {
-        "invalid_text": "Tulis challenge-mu dalam 1 sampai 120 karakter.",
+        "invalid_text": "Tulis tantanganmu dalam 1 sampai 120 karakter.",
         "invalid_theme": "Pilih tema.",
         "invalid_why": "Alasan maksimal 200 karakter.",
         "invalid_twist": "Local Twist maksimal 280 karakter.",
-        "twist_not_allowed": "Hanya warga lokal kota yang live yang bisa menambah Local Twist.",
-        "moderation_blocked": "Usulanmu diblokir moderasi. Tulis ulang ya."
+        "twist_not_allowed": "Cuma warga lokal kota live yang bisa menambah Local Twist.",
+        "moderation_blocked": "Usulanmu ditandai moderasi. Coba tulis ulang ya."
       },
       "linkAsk": "Punya ide tantangan?",
       "linkCta": "Usulkan"
     },
     "early": {
-      "badge": "Awal",
-      "hint": "Bonus cepat: posting sebelum {{time}}"
+      "badge": "Gercep",
+      "hint": "Bonus gercep: posting sebelum {{time}}"
     },
     "group": {
       "title": "Foto baru: {{n}}",
@@ -1227,26 +1218,23 @@
       "galleryTitle": "Foto baru"
     },
     "today": {
-      "early": "Bonus cepat sampai {{time}}",
+      "early": "Bonus gercep sampai {{time}}",
       "tomorrow": "Besok: {{theme}}",
       "aroundWorld": "Hari ini di seluruh *dunia*",
       "inCity": "Hari ini di *{{city}}*",
-      "proofs_one": "{{count}} foto",
       "proofs_other": "{{count}} foto",
-      "countries_one": "{{count}} negara",
       "countries_other": "{{count}} negara",
       "proofsIn": "{{proofs}} dari {{countries}}",
       "podiumTitle": "Podium kemarin",
-      "allPast": "Semua challenge sebelumnya",
-      "archiveTitle": "Challenge sebelumnya",
+      "allPast": "Semua tantangan sebelumnya",
+      "archiveTitle": "Tantangan sebelumnya",
       "archiveAll": "Semua tema",
-      "archiveEmpty": "Belum ada challenge sebelumnya di sini.",
-      "archiveMore": "Lihat lagi",
+      "archiveEmpty": "Belum ada tantangan sebelumnya di sini.",
+      "archiveMore": "Lihat lainnya",
       "seeAll": "Lihat semua",
       "openMap": "Buka peta",
       "seeMine": "Lihat fotomu",
-      "votes_one": "{{count}} suara",
-      "votes_other": "{{count}} suara",
+      "votes_other": "{{count}} vote",
       "day": {
         "done": "selesai",
         "pending": "sedang ditinjau",
@@ -1260,50 +1248,50 @@
         "twistTitle": "Usulkan Local Twist besok",
         "twistSub": "Untuk warga lokal, sampai {{time}}"
       },
-      "spotsTeaser_other": "{{count}} spot di dekatmu",
-      "spotsTeaserIn_other": "{{count}} spot di {{city}}"
+      "spotsTeaser_other": "{{count}} tempat di dekatmu",
+      "spotsTeaserIn_other": "{{count}} tempat di {{city}}"
     },
     "spot": {
-      "rankWeekFirst": "Paling banyak dipilih minggu ini di {{city}}",
+      "rankWeekFirst": "Vote terbanyak minggu ini di {{city}}",
       "rankWeek": "#{{rank}} minggu ini di {{city}}",
-      "rankAlltimeFirst": "Spot dengan suara terbanyak di {{city}}",
+      "rankAlltimeFirst": "Tempat dengan vote terbanyak di {{city}}",
       "rankAlltime": "#{{rank}} sepanjang masa di {{city}}",
       "photos": "Foto",
       "captions": "Kata orang-orang",
       "seeOnMap": "Lihat di peta",
-      "notFound": "Spot ini tidak tersedia.",
+      "notFound": "Tempat ini nggak tersedia.",
       "local": "Lokal"
     },
     "place": {
       "title": "Kamu di mana?",
-      "why": "Lokasimu dipakai sekali untuk menampilkan tempat di sekitarmu dan memastikan kamu ada di sana. Lokasi tidak pernah disimpan.",
+      "why": "Lokasimu dipakai sekali buat menampilkan tempat di sekitarmu dan memastikan kamu ada di sana. Lokasimu nggak pernah disimpan.",
       "find": "Cari tempat di sekitarku",
       "locating": "Mencari lokasimu…",
-      "deniedTitle": "Lokasi nonaktif",
-      "deniedBody": "Challenge ini terjadi di sebuah tempat: lokasimu dibutuhkan untuk memastikan kamu ada di sana.",
-      "failedTitle": "Lokasimu tidak tersedia",
+      "deniedTitle": "Lokasi mati",
+      "deniedBody": "Tantangan ini dimainkan di sebuah tempat: kami butuh lokasimu buat memastikan kamu ada di sana.",
+      "failedTitle": "Lokasimu nggak tersedia",
       "failedBody": "Pastikan lokasi aktif lalu coba lagi, sebaiknya di luar ruangan.",
       "openSettings": "Buka pengaturan",
       "retry": "Coba lagi",
       "approximate": "Lokasimu belum akurat (±{{m}} m). Keluar ruangan atau tunggu sebentar, lalu muat ulang.",
       "refresh": "Muat ulang lokasiku",
-      "search": "Cari di antara tempat",
+      "search": "Cari tempat di sini",
       "inReview": "sedang ditinjau",
       "newTitle": "Tempat baru",
-      "notListed": "Tidak ada di daftar? Tambahkan.",
+      "notListed": "Nggak ada di daftar? Tambahkan.",
       "noneNearby": "Belum ada tempat Hilads di sini: tambahkan yang ini.",
       "nameLabel": "Nama tempat",
-      "namePlaceholder": "mis. Cơm tấm Ba Ghiền",
-      "newHint": "Lokasimu menjadi lokasinya. Tempat ini muncul di peta setelah dicek.",
+      "namePlaceholder": "mis. Nasi Uduk Kebon Kacang",
+      "newHint": "Lokasimu jadi lokasi tempat ini. Tempatnya muncul di peta setelah dicek.",
       "useNew": "Pakai tempat ini",
       "backToList": "Kembali ke tempat terdekat",
       "at": "Di {{name}}",
       "none": "Belum ada tempat",
       "change": "Ganti",
-      "tooFar": "Kamu berjarak {{distance}} dari {{name}}. Mendekatlah dalam {{radius}} m lalu coba lagi.",
+      "tooFar": "Kamu {{distance}} dari {{name}}. Mendekat sampai {{radius}} m, lalu coba lagi.",
       "tryAgain": "Aku sudah di sini, coba lagi",
       "pickAnother": "Pilih tempat lain",
-      "newOnMapLater": "Tempat barumu akan muncul di peta setelah disetujui."
+      "newOnMapLater": "Tempat barumu bakal muncul di peta setelah disetujui."
     },
     "stamp": {
       "title": "Stempel baru: {{theme}}",
@@ -1311,11 +1299,11 @@
       "ok": "Mantap",
       "close": "Tutup"
     },
-    "takeIt": "Ikuti",
+    "takeIt": "Ikut",
     "proofHint": {
       "title": "Ambil fotomu",
-      "place": "Foto dengan suara terbanyak jadi foto spot.",
-      "noPlace": "Foto dengan suara terbanyak naik podium."
+      "place": "Foto dengan vote terbanyak jadi foto tempat ini.",
+      "noPlace": "Foto dengan vote terbanyak naik podium."
     },
     "compare": {
       "tab": "Bandingkan",
@@ -1328,8 +1316,7 @@
       "emptyTitle": "Belum ada foto",
       "emptyBody": "Jadilah kota pertama di papan.",
       "noAnswer": "Belum ada jawaban",
-      "median": "Harga biasa {{price}}",
-      "proofs_one": "{{count}} foto",
+      "median": "Harga biasanya {{price}}",
       "proofs_other": "{{count}} foto",
       "boardTitle": "Kata dunia",
       "cheapest": "Termurah: {{city}} {{price}}",
@@ -1339,22 +1326,20 @@
       "seeAnswers": "Bandingkan",
       "firstIn": "Foto pertama mulai masuk",
       "picksTitle": "Pilihan Hilads",
-      "answeredRow_one": "Sudah {{count}} negara main",
       "answeredRow_other": "Sudah {{count}} negara main",
       "tip": "Ketuk untuk membandingkan kotamu dengan dunia.",
-      "nCountries_one": "{{count}} negara",
       "nCountries_other": "{{count}} negara",
       "youAnswered": "Fotomu sudah masuk. Lihat kata dunia."
     },
     "backHome": {
       "hereIn": "Di sini, {{city}}",
-      "homeIn": "Di rumah, {{city}}"
+      "homeIn": "Di kota asal, {{city}}"
     },
     "tour": {
       "title": "Keliling dunia *kemarin*",
       "watch": "Tonton",
       "openCity": "Buka {{city}}",
-      "next": "Berikutnya",
+      "next": "Lanjut",
       "kicker": "Daily Challenge · {{theme}}",
       "moment": {
         "morning": "Pagi hari",
@@ -1365,7 +1350,6 @@
       "yourTurn": "Giliranmu.",
       "todayIs": "Pertanyaan hari ini: {{question}}",
       "close": "Tutup",
-      "sub_one": "{{count}} kota, tantangan yang sama",
       "sub_other": "{{count}} kota, tantangan yang sama"
     },
     "worlds": {
@@ -1390,14 +1374,13 @@
       "pickCity": "Pilih kota",
       "and": "{{a}} dan {{b}}",
       "twoCitiesEmpty": "Belum ada perbandingan untuk kedua kota ini.",
-      "noResults": "Tidak ada perbandingan yang cocok.",
+      "noResults": "Nggak ada perbandingan yang cocok.",
       "empty": "Perbandingan pertama muncul setelah kota punya 3 foto.",
       "priceTitle": "Berapa harga {{label}}?",
-      "moreCities_one": "+{{count}} kota lagi",
       "moreCities_other": "+{{count}} kota lagi"
     },
     "ctaAnswer": "Main untuk {{city}}",
-    "ctaAnswerNoCity": "Ikut main",
+    "ctaAnswerNoCity": "Main hari ini",
     "represent": {
       "button": "Main untuk {{city}}"
     },
@@ -1408,12 +1391,12 @@
     "feed": {
       "title": "Foto hari ini",
       "world": "Dunia",
-      "swipe": "Geser ke atas untuk lanjut",
+      "swipe": "Geser ke atas buat lihat lagi",
       "doubleTap": "Ketuk dua kali untuk vote",
       "emptyWorld": "Belum ada foto hari ini. Jadilah yang pertama!",
       "emptyCity": "Belum ada yang main di {{city}} hari ini.",
-      "endTitle": "Semua sudah kamu lihat, untuk sekarang!",
-      "endBody": "Foto baru masuk sepanjang hari. Balik lagi nanti.",
+      "endTitle": "Sudah semua, untuk sekarang!",
+      "endBody": "Foto baru masuk sepanjang hari. Balik lagi nanti ya.",
       "endPlay": "Giliranmu: tunjukkan kotamu ke dunia.",
       "backToday": "Kembali ke Hari ini",
       "seeAll": "Lihat semua foto"
@@ -1422,7 +1405,7 @@
       "played_other": "{{count}} negara main hari ini",
       "yourCity": "Kotamu",
       "represent": "Wakili kotamu",
-      "emptyBody": "Belum ada yang main hari ini. Jadilah yang pertama menaruh kotamu di peta!",
+      "emptyBody": "Belum ada yang main hari ini. Taruh kotamu di peta duluan!",
       "openCountry": "{{city}}: lihat fotonya",
       "byCountry": "Per negara"
     },
@@ -1446,7 +1429,7 @@
     },
     "worldSays": {
       "title": "Kata dunia",
-      "first": "Jadilah yang pertama menjawab",
+      "first": "Jadilah yang pertama main",
       "more_other": "+{{count}} lagi"
     },
     "myCity": {
@@ -1457,28 +1440,28 @@
     "event": {
       "halloween": {
         "teaser_other": "Perburuan Halloween {{count}} hari lagi",
-        "cta": "Foto seram untuk {{city}}",
-        "ctaNoCity": "Foto sesuatu yang seram",
-        "played_other": "{{count}} kota berhantu 🎃",
+        "cta": "Jepret yang seram buat {{city}}",
+        "ctaNoCity": "Jepret yang seram",
+        "played_other": "{{count}} kota sudah dihantui 🎃",
         "represent": "Hantui kotamu 👻",
-        "onBoard": "{{city}} menghantui papan! 👻"
+        "onBoard": "{{city}} lagi menghantui papan! 👻"
       },
       "limited": "Edisi terbatas",
-      "stampEarned": "Cap edisi terbatas didapat!"
+      "stampEarned": "Dapat stempel edisi terbatas!"
     },
     "hero": {
-      "cta": "Foto untuk {{city}}",
-      "ctaNoCity": "Ambil foto",
+      "cta": "Jepret buat {{city}}",
+      "ctaNoCity": "Jepret",
       "played": "Kamu sudah main · Lihat dunia",
       "firstCity": "Jadilah kota pertama di dunia hari ini",
       "citiesIn_other": "{{count}} kota sudah main",
       "citiesMissing_other": "{{count}} kota sudah main. {{city}} belum!",
       "steps": {
-        "snap": "Foto",
+        "snap": "Jepret",
         "name": "Sebut namanya",
         "count": "Hitung",
-        "time": "Catat waktu",
-        "price": "Tulis harga",
+        "time": "Catat waktunya",
+        "price": "Catat harganya",
         "tell": "Ceritakan",
         "compare": "Bandingkan"
       }
@@ -1488,8 +1471,8 @@
       "close": "Tutup",
       "comment": "Komentari",
       "newComments": "Komentar baru",
-      "empty": "Jadilah yang pertama bilang sesuatu 💬",
-      "emptySub": "Tanya di mana tempatnya, beri reaksi, bandingkan dengan kotamu.",
+      "empty": "Yuk, jadi yang pertama komentar 💬",
+      "emptySub": "Tanya lokasinya, kasih reaksi, bandingkan sama kotamu.",
       "placeholder": "Tambahkan komentar…",
       "placeholderGuest": "Daftar untuk berkomentar",
       "older": "Lihat komentar sebelumnya",
@@ -1498,28 +1481,26 @@
       "delete": "Hapus",
       "cancelReply": "Batalkan balasan",
       "replyingTo": "Membalas @{{name}}",
-      "author": "Pembuat",
+      "author": "Kreator",
       "first": "Pertama!",
       "sending": "Mengirim…",
-      "failed": "Belum terkirim · Ketuk untuk mencoba lagi",
+      "failed": "Belum terkirim · Ketuk buat coba lagi",
       "discard": "Buang",
       "like": "Suka",
       "actionsHint": "Tekan lama untuk membalas, menyalin, atau melaporkan",
       "quickHint": "Tekan lama untuk mengedit sebelum mengirim",
-      "count_one": "{{count}} komentar",
       "count_other": "{{count}} komentar",
-      "seeAll_one": "Lihat komentar",
       "seeAll_other": "Lihat semua {{count}} komentar",
       "quick": {
         "soLocal": "🔥 Lokal banget!",
-        "wantThis": "🤤 Mau!",
+        "wantThis": "🤤 Mau ini!",
         "neverSeen": "😮 Belum pernah lihat",
         "whereIsIt": "📍 Di mana ini?",
         "whatsItCalled": "🏷️ Namanya apa?"
       },
       "errors": {
-        "moderation_blocked": "Komentar ini tidak bisa diposting. Tetap ramah ya!",
-        "rate_limited": "Pelan-pelan! Coba lagi sebentar lagi.",
+        "moderation_blocked": "Komentar ini nggak bisa diposting. Yang ramah ya!",
+        "rate_limited": "Pelan-pelan! Coba lagi semenit lagi.",
         "invalid_body": "Komentar maksimal 300 karakter.",
         "generic": "Ada yang salah. Coba lagi."
       },
@@ -1531,7 +1512,7 @@
           "spam": "Spam",
           "other": "Lainnya"
         },
-        "thanks": "Terima kasih - akan kami periksa.",
+        "thanks": "Makasih, nanti kami cek ya.",
         "already": "Kamu sudah melaporkan komentar ini."
       }
     },
@@ -1540,8 +1521,8 @@
       "on": "Foto ganda aktif",
       "off": "Foto ganda nonaktif",
       "nowYou": "Sekarang kamu! 😄",
-      "frontFailed": "Kamera depan tidak bisa dibuka. Fotomu diposting sendiri.",
-      "swapHint": "Ketuk foto kecil untuk menukar 👆",
+      "frontFailed": "Kamera depan nggak bisa dibuka. Fotomu diposting tanpa selfie.",
+      "swapHint": "Ketuk foto kecil buat menukar 👆",
       "retakeSelfie": "Ulangi selfie",
       "removeSelfie": "Hapus selfie",
       "retakeAll": "Ulangi semua",

@@ -1,73 +1,68 @@
 {
   "hero": {
-    "sub": "Kamu bukan cuma mampir. Kamu lagi jadi orang lokal.\nTiap tantangan, tiap pertemuan, tiap tempat - raih tempatmu di kota ini.",
-    "orPreview": "Atau lihat-lihat di browser — tanpa instal",
+    "sub": "Kamu bukan cuma mampir. Kamu lagi jadi warga lokal.\nTiap tantangan, tiap ketemuan, tiap tempat: dapatkan tempatmu di kota ini.",
+    "orPreview": "Atau lihat-lihat di browser, tanpa instal",
     "storeDownloadOn": "Unduh di",
     "storeGetItOn": "Dapatkan di"
   },
   "join": {
-    "peopleLive_one": "{{count}} orang sedang nongkrong sekarang",
-    "peopleLive_other": "{{count}} orang sedang nongkrong sekarang",
-    "events_one": "{{count}} Hi plan berlangsung",
+    "peopleLive_other": "{{count}} orang lagi nongkrong sekarang",
     "events_other": "{{count}} Hi plan berlangsung",
-    "hangouts_one": "{{count}} Hi now aktif",
     "hangouts_other": "{{count}} Hi now aktif",
-    "replies_one": "{{count}} balasan",
     "replies_other": "{{count}} balasan",
-    "pickCity": "Pilih kota\ndan gabung",
-    "locating": "› mencari kotamu...",
+    "pickCity": "Pilih kota\ndan langsung gabung",
+    "locating": "› lagi nyari kotamu...",
     "browseCities": "Jelajahi kota",
     "yourName": "Namamu",
     "namePlaceholder": "Sapa sebagai...",
     "tryAgain": "Coba lagi",
-    "useLocation": "Gunakan lokasiku saja",
-    "joinCity": "Gabung {{city}}",
-    "joinChat": "Gabung Chat",
-    "hint": "// anonim · akses instan",
-    "keepIdentity": "atau pertahankan identitasmu",
+    "useLocation": "Pakai lokasiku aja",
+    "joinCity": "Gabung ke {{city}}",
+    "joinChat": "Gabung chat",
+    "hint": "// anonim · langsung masuk",
+    "keepIdentity": "atau simpan identitasmu",
     "createAccount": "Buat akun",
     "logIn": "Masuk",
     "authHint": "Simpan namamu · buka profil · tambah teman",
-    "challenges_one": "{{count}} tantangan terbuka",
     "challenges_other": "{{count}} tantangan terbuka"
   },
   "local": {
-    "badge": "Local",
-    "title": "Jadilah warga lokal yang menggerakkan kota",
-    "tagline": "Kamu tahu spot-spotnya. Tantang warga lokal atau pelancong untuk menemukannya.",
+    "badge": "Lokal",
+    "title": "Jadi warga lokal yang bikin kota hidup",
+    "tagline": "Kamu tahu tempat-tempatnya. Tantang warga lokal atau pelancong buat nemuin.",
     "bullets": [
-      "Tantang warga lokal atau pelancong - makanan, tempat, budaya atau bantuan",
-      "Bawa orang ke spot favoritmu",
-      "Jadi orang lokal yang diingat orang"
+      "Tantang warga lokal atau pelancong: makanan, tempat, budaya, atau bantuan",
+      "Ajak orang ke tempat favoritmu",
+      "Jadi warga lokal yang diingat orang"
     ],
-    "cta": "Gerakkan kotamu"
+    "cta": "Hidupkan kotamu"
   },
   "exploring": {
-    "badge": "Exploring",
-    "title": "Terima tantangan lokal di kota mana saja",
-    "tagline": "Di mana pun kamu mendarat, terima apa yang diluncurkan warga lokal.",
+    "badge": "Menjelajah",
+    "title": "Ikut tantangan lokal di mana aja",
+    "tagline": "Di mana pun kamu mendarat, ikut tantangan bikinan warga lokal.",
     "bullets": [
-      "Terima tantangan yang diluncurkan warga lokal",
-      "Temukan spot asli, direkomendasikan oleh yang tinggal di sana",
-      "Jalani kota seperti warga lokal, bukan turis"
+      "Ikut tantangan bikinan warga lokal",
+      "Temukan tempat yang beneran asik, rekomendasi dari orang yang tinggal di sana",
+      "Rasakan kota kayak warga lokal, bukan turis"
     ],
     "cta": "Lihat tantangan"
   },
   "how": {
     "eyebrow": "Cara kerjanya",
-    "title": "Tiga langkah ketemu orang secara langsung.",
+    "title": "Tiga langkah buat ketemu orang langsung.",
     "steps": [
       {
-        "title": "Pilih sisimu",
-        "desc": "Local. Kamu kenal kotanya.\nPelancong. Kamu ingin menjalaninya."
+        "title": "Pilih peranmu",
+        "desc": "Warga lokal. Kamu kenal kotanya.\nPelancong. Kamu mau merasakannya."
       },
       {
-        "title": "Luncurkan atau ikut tantangan",
-        "desc": "Siapa pun bisa membuat meet — tanggal + tempat — atau kontes foto dengan tenggat. Terbuka untuk satu grup, bukan satu lawan satu."
+        "title": "Bikin atau ikut tantangan",
+        "desc": "Siapa aja bisa bikin ketemuan (tanggal + tempat) atau kontes foto dengan tenggat. Terbuka buat satu grup, bukan satu lawan satu."
       },
       {
         "title": "Datang bareng",
-        "desc": "Semua yang ikut ketemu langsung — atau kirim foto terbaik sebelum tenggat. Host memvalidasi siapa yang datang, atau memilih pemenang."
+        "desc": "Semua yang ikut ketemu langsung, atau kirim foto terbaik sebelum tenggat. Host memvalidasi siapa yang datang, atau pilih pemenangnya."
       }
     ]
   },
@@ -78,61 +73,61 @@
     "signupsNeeded": "pendaftaran dibutuhkan"
   },
   "concept": {
-    "title": "Bukan jejaring sosial lain.\nAlasan buat ketemu langsung.",
+    "title": "Bukan sekadar media sosial.\nTapi alasan buat ketemu langsung.",
     "rules": [
-      "Tanpa pengikut. Tanpa feed. Tanpa algoritma.",
-      "Kumpulkan grup untuk meet sungguhan, atau adakan kontes foto. Yang datang — atau menang — yang dapat.",
+      "Tanpa follower. Tanpa feed. Tanpa algoritma.",
+      "Kumpulin grup buat ketemuan beneran, atau bikin kontes foto. Yang datang, atau yang menang, yang dapat.",
       "Orang nyata. Tempat nyata. Sekarang juga."
     ]
   },
-  "seo": "Hilads adalah aplikasi sosial real-time tempat orang berkumpul di sekitar tantangan dunia nyata — meet grup di waktu dan tempat yang ditentukan, dan kontes foto antarkota. Ikut tantangan di Paris, jadi host meet di Barcelona, atau luncurkan kontes foto dari Lisbon. Tanpa akun. Datang saja.",
+  "seo": "Hilads adalah aplikasi sosial real-time tempat orang kumpul lewat tantangan di dunia nyata: ketemuan grup di waktu dan tempat yang ditentukan, dan kontes foto antarkota. Ikut tantangan di Paris, jadi host ketemuan di Barcelona, atau bikin kontes foto dari Lisbon. Nggak perlu akun. Datang aja.",
   "download": {
     "eyebrow": "Aplikasi mobile",
     "title": "Kotamu dalam genggaman.",
-    "sub": "Aplikasi native segera hadir."
+    "sub": "Nikmati versi lengkapnya: notifikasi, lebih cepat, dibuat untuk kotamu."
   },
   "repeat": {
     "eyebrow": "Gabung",
-    "titleCity": "{{city}} sedang live sekarang.",
-    "titleGeneric": "Kotamu sedang live sekarang."
+    "titleCity": "{{city}} lagi rame sekarang.",
+    "titleGeneric": "Kotamu lagi rame sekarang."
   },
   "international": {
     "badge": "Lintas kota",
-    "tagline": "Kirim tantangan lintas kota. Terima video sebagai bukti.",
-    "sub": "Kalau kotamu sepi, dunia tidak. Tantang siapa pun di mana pun - mereka kirim bukti, kamu validasi dari jauh.",
+    "tagline": "Kirim tantangan lintas kota. Dapat video balasannya.",
+    "sub": "Kalau kotamu lagi sepi, dunia nggak. Tantang siapa aja di mana aja: mereka kirim bukti, kamu validasi dari jauh.",
     "bullets": [
-      "Targetkan kota tertentu, atau buka untuk siapa pun di mana pun.",
-      "Foto dengan geotag - bukti bahwa terjadi.",
-      "Validasi dari sofa. Tolak dengan alasan kalau tidak cocok."
+      "Pilih kota tertentu, atau buka untuk siapa aja di mana aja.",
+      "Mereka kirim foto dengan geotag sebagai bukti.",
+      "Kamu validasi sambil rebahan. Tolak dengan alasan kalau nggak sesuai."
     ],
     "cta": "Coba tantangan global"
   },
   "stories": {
     "tagline": "Main lokal. Bandingkan global.",
-    "concept_tagline": "Tantang warga lokal. Temui pelancong. Jadi lokal di mana saja.",
-    "screen1_invitation": "Giliranmu. Buat atau ikut tantangan.",
+    "concept_tagline": "Tantang warga lokal. Ketemu pelancong. Jadi warga lokal di mana aja.",
+    "screen1_invitation": "<hi>Giliranmu.</hi> Bikin atau ikut tantangan.",
     "fullSong": "Lagu lengkap",
-    "screen2_invitation": "Mereka sudah di sana. Ikut, yuk?",
-    "screen3_invitation": "Gampang, kan? Giliranmu.",
-    "screen4_invitation": "Tanpa feed. Hanya pertemuan nyata.",
+    "screen2_invitation": "Mereka udah ikut. <hi>Gabung, yuk.</hi>",
+    "screen3_invitation": "Gampang, kan? <hi>Giliranmu.</hi>",
+    "screen4_invitation": "Tanpa feed. Cuma <hi>ketemuan beneran.</hi>",
     "enterCity": "Gabung ke {{city}}",
-    "enterChallenge": "Terima tantangan ini",
+    "enterChallenge": "Ikut tantangan ini",
     "enterPicker": "Pilih kotamu",
     "swipeUp": "Geser ke atas",
     "liveHeadline": "{{city}} lagi rame sekarang.",
     "how": {
       "title": "Ketemu orang langsung, dalam 3 langkah.",
-      "step1": "Pilih sisimu — lokal atau pelancong",
-      "step2": "Buat atau ikut tantangan",
-      "step3": "Ketemu langsung"
+      "step1": "Pilih peranmu: warga lokal atau pelancong",
+      "step2": "Bikin atau ikut tantangan",
+      "step3": "Ketemuan beneran"
     },
     "concept": {
-      "line1": "Tanpa pengikut.",
+      "line1": "Tanpa follower.",
       "line2": "Tanpa feed.",
       "line3": "Tanpa algoritma.",
-      "line4": "Alasan untuk ketemu langsung."
+      "line4": "Cuma alasan buat ketemu langsung."
     },
-    "storePrompt": "Lebih suka aplikasinya? Dapat notifikasi dan pengalaman penuh.",
+    "storePrompt": "Lebih suka pakai aplikasi? Dapat notifikasi dan versi lengkapnya.",
     "reassurance": "gratis · tanpa akun · 5 detik"
   }
 }

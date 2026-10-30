@@ -1,15 +1,15 @@
 {
   "title": "Profil",
   "loading": "Memuat…",
-  "loadError": "Tidak bisa memuat profil.",
+  "loadError": "Gagal memuat profil.",
   "badgeMicro": {
     "ghost": "Cuma lihat-lihat",
-    "fresh": "Baru saja tiba",
+    "fresh": "Baru sampai",
     "regular": "Sering muncul",
-    "host": "Bikin sesuatu terjadi"
+    "host": "Bikin semuanya jalan"
   },
   "modes": {
-    "local": "Local",
+    "local": "Lokal",
     "exploring": "Menjelajah"
   },
   "vibes": {
@@ -21,17 +21,17 @@
     "chill": "Santai"
   },
   "vibeTaglines": {
-    "party": "Di sini buat kehidupan malam",
+    "party": "Ke sini buat dunia malamnya",
     "board_games": "Bawa camilan dan dadu",
-    "coffee": "Kopi dulu, yang lain belakangan",
-    "music": "Selalu mengejar beat yang asyik",
+    "coffee": "Ngopi dulu, yang lain belakangan",
+    "music": "Selalu nyari beat yang asik",
     "food": "Makan dulu, tanya belakangan",
-    "chill": "Santai, vibes mantap"
+    "chill": "Kalem, tapi vibes-nya dapet"
   },
   "modeSub": {
-    "localIn": "Local di {{city}}",
-    "local": "Local",
-    "exploringIn": "Menjelajah {{city}}",
+    "localIn": "Warga lokal di {{city}}",
+    "local": "Lokal",
+    "exploringIn": "Lagi jelajah {{city}}",
     "exploring": "Menjelajah"
   },
   "from": "Dari",
@@ -41,11 +41,12 @@
     "events": "Hi plan",
     "friends": "Teman",
     "vibes": "Vibes",
-    "picks": "Rekomendasi",
+    "picks": "Rekomendasi kota",
     "challenges": "Tantangan"
   },
   "host": "Host",
   "live": "Live",
+  "past": "Sudah lewat",
   "empty": {
     "hangouts": "Belum ada nongkrong",
     "events": "Belum ada acara",
@@ -53,48 +54,46 @@
     "challenges": "Belum ada tantangan"
   },
   "vibesTab": {
-    "score": "skor vibe {{score}}",
-    "basedOn_one": "berdasarkan {{count}} vibe",
-    "basedOn_other": "berdasarkan {{count}} vibe",
-    "updateNote": "Perbarui catatanmu ({{rating}}★)",
-    "leaveNote": "Tinggalkan catatan",
-    "placeholder": "Katakan sesuatu yang baik… (opsional)",
+    "score": "Skor vibe {{score}}",
+    "basedOn_other": "berdasarkan {{count}} vibes",
+    "updateNote": "Ubah catatanmu ({{rating}}★)",
+    "leaveNote": "Tulis catatan",
+    "placeholder": "Bilang sesuatu yang manis… (opsional)",
     "cancel": "Batal",
     "sending": "Mengirim…",
     "sendNote": "Kirim catatan",
     "notesLabel": "Catatan · {{count}}",
     "emptyTitle": "Belum ada catatan",
-    "emptySub": "Jadilah yang pertama meninggalkan catatan"
+    "emptySub": "Jadi yang pertama nulis catatan"
   },
   "picks": {
     "restaurant": "Restoran favorit",
-    "spot": "Permata tersembunyi",
-    "tip": "Tip lokal",
+    "spot": "Harta karun",
+    "tip": "Tips lokal",
     "story": "Cerita"
   },
   "actions": {
-    "opening": "Membuka…",
+    "opening": "Lagi dibuka…",
     "message": "Pesan",
     "friend": "Teman",
     "requestSent": "Permintaan terkirim",
     "acceptRequest": "Terima permintaan",
     "addFriend": "+ Teman",
-    "removing": "Menghapus…",
+    "removing": "Lagi dihapus…",
     "unfriend": "Hapus teman",
     "cancel": "Batal",
-    "cancelling": "Membatalkan…",
+    "cancelling": "Lagi dibatalkan…",
     "cancelRequest": "Batalkan permintaan",
-    "keep": "Pertahankan",
+    "keep": "Biarin",
     "reportTitle": "Laporkan pengguna"
   },
   "report": {
     "existing": "Kamu melaporkan pengguna ini pada {{date}}. Laporanmu sedang ditinjau.",
-    "sent": "Laporan terkirim. Terima kasih sudah memberi tahu kami.",
-    "placeholder": "Jelaskan masalahnya (min. 10 karakter)…",
-    "error": "Tidak bisa mengirim laporan. Coba lagi.",
+    "sent": "Laporan terkirim. Makasih udah ngabarin kami.",
+    "placeholder": "Ceritain masalahnya (min. 10 karakter)…",
+    "error": "Gagal ngirim laporan. Coba lagi.",
     "sending": "Mengirim…",
     "submit": "Kirim laporan",
     "cancel": "Batal"
-  },
-  "past": "Lampau"
+  }
 }
