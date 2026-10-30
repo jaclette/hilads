@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -57,6 +57,11 @@ export async function dualPreferred(): Promise<boolean> {
 }
 const COUNTDOWN_FROM = 3;
 const FRONT_TIMEOUT_MS = 5000;
+// A preview not ready by then is restarted (a black viewfinder), at most twice per camera.
+const WATCHDOG_MS = 2500;
+const WATCHDOG_MAX = 2;
+// Android: the gap between closing a camera and opening the next one, so the first has let go.
+const REOPEN_GAP_MS = 300;
 
 type Phase = 'main' | 'selfie' | 'review';
 
@@ -229,6 +234,27 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
   const facing = phase === 'selfie' ? (backFacing === 'back' ? 'front' : 'back') : backFacing;
   const top = insets.top + Spacing.sm;
 
+  // Opening the other camera. Android (CameraX) switches on the same view, as the chat's camera
+  // does: a new view per camera opened before the old one let go of the hardware, and the preview
+  // stayed black now and then. iOS keeps a view per camera (its ready event comes with a new view).
+  // Either way, a preview not ready in time is restarted (a short gap first on Android).
+  const [attempt, setAttempt] = useState(0);
+  const [gap, setGap] = useState(false);
+  const viewing = shown && !!permission?.granted && phase !== 'review';
+  useEffect(() => { setAttempt(0); }, [facing]);
+  useEffect(() => {
+    if (!viewing || ready || gap || attempt >= WATCHDOG_MAX) return;
+    const id = setTimeout(() => {
+      console.warn('[dual-camera] preview not ready, restarting it:', facing, attempt + 1);
+      if (Platform.OS === 'android') {
+        setGap(true);
+        setTimeout(() => { setGap(false); setAttempt(a => a + 1); }, REOPEN_GAP_MS);
+      } else setAttempt(a => a + 1);
+    }, WATCHDOG_MS);
+    return () => clearTimeout(id);
+  }, [viewing, ready, gap, attempt, facing]);
+  const cameraKey = Platform.OS === 'ios' ? `${facing}-${attempt}` : `cam-${attempt}`;
+
   if (!permission) return null;
 
   return (
@@ -263,8 +289,8 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
         ) : (
           // ── Viewfinder: the photo (back), then the selfie (front) ──
           <>
-            <CameraView
-              key={facing}
+            {gap ? <View style={styles.flex} /> : <CameraView
+              key={cameraKey}
               ref={camera}
               style={styles.flex}
               facing={facing}
@@ -272,7 +298,7 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
               zoom={phase === 'main' ? zoom : 0}
               onCameraReady={onReady}
               onMountError={() => { if (phase === 'selfie') { clearTimers(); setNotice(t('dual.frontFailed')); setPhase('review'); } }}
-            />
+            />}
             {/* Pinch to zoom on the photo's viewfinder. */}
             {phase === 'main' && (
               <View style={StyleSheet.absoluteFill} onTouchMove={onTouchMove} onTouchEnd={() => { pinch.current = null; }} />
