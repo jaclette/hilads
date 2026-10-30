@@ -1,7 +1,7 @@
 {
   "title": "Что было",
   "filters": {
-    "all": "Всё",
+    "all": "Все",
     "events": "События",
     "pulses": "Тусовки",
     "challenges": "Челленджи"
@@ -14,25 +14,25 @@
   },
   "picker": {
     "pickEnd": "Теперь выбери последний день",
-    "pickStart": "Выбери первый день (до {{max}} дней)",
+    "pickStart": "Выбери первый день (не больше {{max}} дн.)",
     "apply": "Применить"
   },
-  "public": "Публичное",
-  "went_one": "{{count}} сходил",
-  "went_few": "🙌 {{count}} сходили",
-  "went_many": "🙌 {{count}} сходили",
-  "went_other": "{{count}} сходили",
+  "public": "Для всех",
+  "went_one": "{{count}} участник",
+  "went_few": "{{count}} участника",
+  "went_many": "{{count}} участников",
+  "went_other": "{{count}} участника",
   "hangoutTag": "Тусовка",
   "replies_one": "{{count}} ответ",
-  "replies_few": "💬 {{count}} ответа",
-  "replies_many": "💬 {{count}} ответов",
-  "replies_other": "{{count}} ответов",
+  "replies_few": "{{count}} ответа",
+  "replies_many": "{{count}} ответов",
+  "replies_other": "{{count}} ответа",
   "noReplies": "Нет ответов",
   "error": "Не удалось загрузить архив",
   "retry": "Повторить",
   "emptyTitle": "Здесь пока пусто",
   "emptyRecentSub": "Прошедшие события и тусовки появятся здесь, когда у города накопится история.",
-  "emptyWindowSub": "Ни одного события или тусовки за этот период. Попробуй более широкий диапазон.",
-  "loadMore": "Загрузить ещё",
+  "emptyWindowSub": "За этот период ни событий, ни тусовок. Попробуй выбрать период побольше.",
+  "loadMore": "Показать ещё",
   "loading": "Загрузка…"
 }

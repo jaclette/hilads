@@ -6,12 +6,12 @@
   "feelLocal": "feel local",
   "anywhere": "anywhere",
   "vibe": {
-    "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "party": "Вечеринка",
+    "board_games": "Настолки",
+    "coffee": "Кофе",
+    "music": "Музыка",
+    "food": "Еда",
+    "chill": "Чилл"
   },
   "badge": {
     "ghost": "Ghost",

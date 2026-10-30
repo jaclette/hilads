@@ -11,7 +11,7 @@
   "address": "Адрес",
   "hours": "Часы работы",
   "openEveryDay": "Открыто каждый день · {{opens}} – {{closes}}",
-  "ctaText": "Посмотри, кто сейчас рядом в городе {{city}}.",
+  "ctaText": "Посмотри, кто сейчас в городе {{city}}.",
   "openCity": "Открыть {{city}}",
   "lastUpdated": "Обновлено {{date}}"
 }

@@ -6,11 +6,11 @@
   "error": "Не удалось загрузить события за этот день",
   "retry": "Повторить",
   "emptyTitle": "Ничего не запланировано",
-  "emptySub": "В этот день пока нет событий.",
-  "public": "Публичное",
-  "going_one": "{{count}} участник",
-  "going_few": "🙌 {{count}} участника",
-  "going_many": "🙌 {{count}} участников",
-  "going_other": "{{count}} участников",
-  "liveNow": "В эфире"
+  "emptySub": "На этот день пока нет событий.",
+  "public": "Для всех",
+  "going_one": "идёт {{count}}",
+  "going_few": "идут {{count}}",
+  "going_many": "идут {{count}}",
+  "going_other": "идут {{count}}",
+  "liveNow": "Сейчас идёт"
 }
