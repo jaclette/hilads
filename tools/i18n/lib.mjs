@@ -10,8 +10,8 @@ export const ROOTS = {
 };
 export const LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant',
                         'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'];
-// Namespaces that hold proper nouns, not UI copy: never reported as "same as English".
-export const NAME_NAMESPACES = new Set(['cityNames', 'cities']);
+// Namespaces that hold proper nouns, not UI copy: never reported as "same as English" (the app's `cities` namespace is the city switcher's UI copy, not names).
+export const NAME_NAMESPACES = new Set(['cityNames']);
 
 const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
 export const pluralBase = (key) => key.replace(PLURAL_SUFFIX, '');
