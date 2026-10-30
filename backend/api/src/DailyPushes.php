@@ -524,6 +524,14 @@ final class DailyPushes
         return ['title' => 'Daily Challenge', 'body' => $body, 'data' => self::data($date ?? DailyClock::currentDate())];
     }
 
+    /** Proposal rejected: the reason the back office gave (written there, in English or as typed). */
+    public static function proposalRejectedMessage(string $reason, string $locale = 'en'): array
+    {
+        $body = DailyPushText::render('proposal_rejected', $locale, ['reason' => $reason])
+                ?? "Your challenge wasn't picked this time: {$reason}";
+        return ['title' => 'Daily Challenge', 'body' => $body, 'data' => ['deepLink' => 'hilads://daily/proposals']];
+    }
+
     /** The author's morning push on the day of their challenge (V2-05). */
     public static function proposalDayMessage(string $date, string $locale = 'en'): array
     {
@@ -728,6 +736,24 @@ final class DailyPushes
                        $message($u['locale']) + ['locale' => $u['locale']]];
         }
         return self::insert($rows);
+    }
+
+    /**
+     * A push to one user right away, any hour, outside the daily cap, unless they turned Daily
+     * pushes off (a proposal reviewed in the back office). Returns devices.
+     */
+    public static function sendNow(string $type, string $userId, callable $message): int
+    {
+        $u = self::userRecipients([$userId])[0] ?? null;   // none: no device, or Daily pushes off
+        if ($u === null) {
+            return 0;
+        }
+        $stmt = Database::pdo()->prepare("SELECT token FROM mobile_push_tokens WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $msg = $message($u['locale']);
+        $n   = self::sendToDevices($stmt->fetchAll(PDO::FETCH_COLUMN), $msg['title'], $msg['body'], $msg['data'], $type);
+        MobilePushService::flush();
+        return $n;
     }
 
     /**

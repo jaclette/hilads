@@ -76,6 +76,8 @@ td { padding: 9px 12px; vertical-align: middle; }
 .no-results { padding: 40px; text-align: center; color: #555; }
 
 /* Badges */
+.nav-count { display: inline-block; min-width: 18px; padding: 1px 6px; margin-left: 4px; border-radius: 9px; background: #FF7A3C; color: #fff;
+             font-size: 11px; font-weight: 700; line-height: 16px; text-align: center; }
 .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .badge-live    { background: rgba(255,122,60,0.18); color: #FF7A3C; }
 .badge-active  { background: rgba(34,197,94,0.12); color: #4ade80; }
@@ -235,6 +237,13 @@ function initCityPickers(cities) {
 ';
 }
 
+/** Proposals waiting for a review (challenges + Local Twists), once per request. */
+function admin_pending_proposals(): int
+{
+    static $n = null;
+    return $n ??= class_exists('DailyProposals') ? DailyProposals::pendingCount() : 0;
+}
+
 function admin_nav(string $current = ''): void
 {
     $isLoggedIn = admin_is_logged_in();
@@ -259,9 +268,13 @@ function admin_nav(string $current = ''): void
             '/admin/push'    => 'Push',
             '/admin/app-versions' => 'App versions',
         ];
+        // Proposals waiting for a review: a count on Daily (and on its Proposals tab, daily_subnav).
+        $pending = admin_pending_proposals();
         foreach ($links as $href => $label) {
             $active = ($current === $href) ? ' class="active"' : '';
-            echo '<a href="' . $href . '"' . $active . '>' . $label . '</a>';
+            $badge  = $href === '/admin/daily' && $pending > 0
+                ? ' <span class="nav-count" title="Proposals waiting">' . $pending . '</span>' : '';
+            echo '<a href="' . $href . '"' . $active . '>' . $label . $badge . '</a>';
         }
         echo '</nav>';
         echo '<div class="header-right">';

@@ -259,17 +259,17 @@ final class DailyProposals
         }
         DailyAdminService::audit('daily_proposal.approve', 'daily_proposal', $id, $p, self::find($id));
 
+        // Right away (not the next morning): the author hears back while it's fresh.
         try {
-            $now = new DateTimeImmutable('now');
-            DailyPushes::queueFor('proposal_approved', $p['user_id'], $date ?? DailyClock::currentDate($now),
-                                  static fn(string $locale): array => DailyPushes::proposalApprovedMessage($date, $locale), $now);
+            DailyPushes::sendNow('daily_proposal_approved', $p['user_id'],
+                                 static fn(string $locale): array => DailyPushes::proposalApprovedMessage($date, $locale));
         } catch (\Throwable $e) {
             error_log("[daily] proposal approved push failed for {$id}: " . $e->getMessage());
         }
         return DailyAdminService::find($challenge['id']);
     }
 
-    /** Reject with a reason the author sees in the app (no push). */
+    /** Reject with a reason: the author gets a push with it right away, and sees it in the app. */
     public static function reject(string $id, string $reason): void
     {
         $p      = self::find($id);
@@ -289,6 +289,12 @@ final class DailyProposals
             WHERE id = ?
         ")->execute([$reason, $id]);
         DailyAdminService::audit('daily_proposal.reject', 'daily_proposal', $id, $p, self::find($id));
+        try {
+            DailyPushes::sendNow('daily_proposal_rejected', $p['user_id'],
+                                 static fn(string $locale): array => DailyPushes::proposalRejectedMessage($reason, $locale));
+        } catch (\Throwable $e) {
+            error_log("[daily] proposal rejected push failed for {$id}: " . $e->getMessage());
+        }
     }
 
     public static function templates(): array
@@ -384,6 +390,25 @@ final class DailyProposals
     private static function city(?string $cityId, ?string $name): ?array
     {
         return $cityId !== null ? ['id' => (int) substr($cityId, 5), 'name' => $name, 'country' => CityRepository::countryOf($cityId)] : null;
+    }
+
+    /**
+     * Proposals waiting for a review: users' challenges, plus Local Twists for days to come.
+     * The back office's badge (top nav, Daily tabs). Best effort: 0 on error.
+     */
+    public static function pendingCount(): int
+    {
+        try {
+            $stmt = Database::pdo()->prepare("
+                SELECT (SELECT count(*) FROM daily_proposals WHERE status = 'pending')
+                     + (SELECT count(*) FROM daily_twists t JOIN daily_challenges dc ON dc.id = t.challenge_id
+                        WHERE t.proposed_at IS NOT NULL AND t.status = 'proposed' AND dc.challenge_date > ?)
+            ");
+            $stmt->execute([DailyClock::currentDate()]);
+            return (int) $stmt->fetchColumn();
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     /** Push the admin (ADMIN_TEST_USER_ID) that proposals are waiting, at most once every 30 minutes. Best effort. */

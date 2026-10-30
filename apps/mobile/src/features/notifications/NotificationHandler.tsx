@@ -357,7 +357,8 @@ function resolvePushRoute(data: NotifData): string | null {
       return '/daily/countries?sort=top10&source=push';
 
     case 'daily_proposal_approved':
-      // My challenge proposal was approved (V2-05) → its status.
+    case 'daily_proposal_rejected':
+      // My challenge proposal was approved (V2-05) or rejected (the reason in the push) → its status.
       return '/daily/proposals';
 
     case 'daily_proposal_day':

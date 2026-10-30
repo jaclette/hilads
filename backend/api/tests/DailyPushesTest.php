@@ -297,6 +297,11 @@ final class DailyPushesTest extends TestCase
     {
         $this->assertSame('Your challenge goes live on Monday, November 2.', DailyPushes::proposalApprovedMessage('2026-11-02')['body']);
         $this->assertSame('Ton challenge sera en ligne le 2026-11-02.', DailyPushes::proposalApprovedMessage('2026-11-02', 'fr')['body']);
+        // Rejected: the back office's reason in the push, which opens the proposals screen.
+        $r = DailyPushes::proposalRejectedMessage('Too close to Tuesday\'s challenge.');
+        $this->assertSame("Your challenge wasn't picked this time: Too close to Tuesday's challenge.", $r['body']);
+        $this->assertSame('hilads://daily/proposals', $r['data']['deepLink']);
+        $this->assertSame("Ton challenge n'a pas été retenu cette fois : Trop proche.", DailyPushes::proposalRejectedMessage('Trop proche.', 'fr')['body']);
         $this->assertSame('1 person completed your challenge.', DailyPushes::proposalResultMessage('2026-11-02', 1)['body']);
         $this->assertSame('1 personne a relevé ton challenge.', DailyPushes::proposalResultMessage('2026-11-02', 1, 'fr')['body']);
         $this->assertSame('4 personnes ont relevé ton challenge.', DailyPushes::proposalResultMessage('2026-11-02', 4, 'fr')['body']);

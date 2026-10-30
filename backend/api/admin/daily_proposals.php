@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'date' => (string) ($p['date'] ?? ''), 'reserve' => ($p['to'] ?? '') === 'reserve',
             ]), ($p['to'] ?? '') === 'reserve' ? 'Approved - it is in the reserve.' : 'Approved and scheduled.', $self),
         'reject' => daily_action(fn() => DailyProposals::reject((string) ($p['id'] ?? ''), $reason($p)),
-            'Rejected - the author sees your reason in the app.', $self),
+            'Rejected: the author gets a push with your reason, and sees it in the app.', $self),
         'pick_twist' => daily_action(fn() => DailyTwistProposals::pick((string) ($p['twist_id'] ?? '')),
             'Twist picked.', $self . '#twists'),
         'reject_twist' => daily_action(fn() => DailyTwistProposals::reject((string) ($p['twist_id'] ?? ''), $reason($p)),

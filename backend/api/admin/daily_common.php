@@ -168,8 +168,10 @@ function daily_subnav(string $current): void
         '/admin/daily/log'     => '📜 Log',
     ];
     echo '<div class="daily-subnav">';
+    $pending = admin_pending_proposals();
     foreach ($links as $href => $label) {
-        echo '<a href="' . $href . '"' . ($current === $href ? ' class="active"' : '') . '>' . $label . '</a>';
+        $badge = $href === '/admin/daily/proposals' && $pending > 0 ? ' <span class="nav-count">' . $pending . '</span>' : '';
+        echo '<a href="' . $href . '"' . ($current === $href ? ' class="active"' : '') . '>' . $label . $badge . '</a>';
     }
     echo '</div>';
 }

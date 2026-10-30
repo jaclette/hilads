@@ -127,7 +127,7 @@ final class DailyI18nTest extends TestCase
             'picked_tomorrow' => ['{city}'], 'picked_today' => ['{city}'], 'top10' => ['{rank}'],
             'first_vote' => [],
             'bell_vote' => ['{name}'], 'bell_twist' => ['{city}', '{name}'], 'proposal_approved' => ['{date}'],
-            'proposal_reserve' => [], 'proposal_day' => [], 'proposal_result' => ['{n}'], 'proposal_result_one' => [],
+            'proposal_reserve' => [], 'proposal_rejected' => ['{reason}'], 'proposal_day' => [], 'proposal_result' => ['{n}'], 'proposal_result_one' => [],
             'title_today' => ['{theme}'], 'title_reminder' => ['{h}', '{theme}'], 'did_count' => ['{n}'], 'did_count_one' => [],
             'did_friend' => ['{name}'], 'did_friend_others' => ['{name}', '{n}'], 'did_friend_others_one' => ['{name}'],
             'theme_hidden_gem' => [], 'theme_taste' => [], 'theme_get_around' => [], 'theme_local_find' => [],
