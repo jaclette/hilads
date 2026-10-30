@@ -33,7 +33,7 @@
   "resolveError": "Diese Unterhaltung konnte nicht geöffnet werden.",
   "goBack": "Zurück",
   "blockTitle": "{{name}} blockieren?",
-  "blockBody": "Du siehst keine Inhalte mehr von {{name}}, und umgekehrt. Entsperren kannst du später unter Pass → Einstellungen → Blockierte Nutzer.",
+  "blockBody": "Du siehst keine Inhalte mehr von {{name}}, und umgekehrt. Entsperren kannst du später unter Reisepass → Einstellungen → Blockierte Nutzer.",
   "blockConfirm": "Blockieren",
   "blockFailTitle": "Blockieren hat nicht geklappt",
   "blockFailBody": "Bitte versuch es noch mal.",

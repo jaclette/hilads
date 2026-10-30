@@ -817,9 +817,9 @@
   "appMap": {
     "title": "Vedi i posti sulla mappa",
     "titleCity": "Vedi i posti di {{city}} sulla mappa",
-    "body": "Dove la gente del posto pubblica le foto del Daily Challenge. Pubblica la tua dall'app Hilads."
+    "body": "Dove la gente del posto pubblica le foto della Daily Challenge. Pubblica la tua dall'app Hilads."
   },
-  "creationClosed": "Non si possono più creare sfide. Gioca al Daily Challenge nell'app Hilads.",
+  "creationClosed": "Non si possono più creare sfide. Gioca alla Daily Challenge nell'app Hilads.",
   "map": {
     "see": "Vedi la mappa",
     "button": "Mappa",

@@ -61,7 +61,7 @@
     "homeCityPlaceholder": "Où tu habites",
     "age": "Âge",
     "agePlaceholder": "Ton âge",
-    "myVibe": "Mon vibe",
+    "myVibe": "Ma vibe",
     "interests": "Centres d'intérêt",
     "interestsHint": "- choisis-en 5 max"
   },
@@ -97,7 +97,7 @@
     "mine": "Mes amis"
   },
   "vibesTab": {
-    "received": "Vibes reçus",
+    "received": "Vibes reçues",
     "score": "Score vibe : {{score}}",
     "basedOn_one": "basé sur {{count}} vibe",
     "basedOn_many": "basé sur {{count}} de vibes",

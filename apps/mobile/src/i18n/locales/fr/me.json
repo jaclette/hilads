@@ -23,7 +23,7 @@
   "homeCityPlaceholder": "ex. lyon",
   "fieldAge": "Âge",
   "agePlaceholder": "ex. 25",
-  "fieldMyVibe": "Mon vibe",
+  "fieldMyVibe": "Ma vibe",
   "fieldInterests": "Centres d'intérêt",
   "interestsHint": "- choisis-en 5 max",
   "interest": {
@@ -60,7 +60,7 @@
   "friendRequests": "Demandes d'ami",
   "myFriends": "Mes amis",
   "noFriends": "Pas encore d'amis. Ajoutes-en depuis les profils.",
-  "vibesReceived": "Vibes reçus",
+  "vibesReceived": "Vibes reçues",
   "vibeScore": "Score vibe : {{score}}",
   "vibeBasis_one": "basé sur {{count}} vibe",
   "vibeBasis_many": "basé sur {{count}} de vibes",

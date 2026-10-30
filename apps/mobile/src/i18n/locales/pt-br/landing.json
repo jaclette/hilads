@@ -6,7 +6,7 @@
   "vibesToday_many": "🔥 {{count}} de vibes rolando hoje",
   "vibesToday_other": "🔥 {{count}} vibes rolando hoje",
   "geoOff": "📍 Localização desativada",
-  "geoUnreachable": "📍 Não deu para pegar sua localização",
+  "geoUnreachable": "📍 Não deu pra pegar sua localização",
   "pickCity": "Escolha uma cidade\ne entre na onda",
   "locating": "› localizando...",
   "requesting": "› solicitando localização...",
@@ -23,6 +23,6 @@
   "createAccount": "Criar conta",
   "logIn": "Entrar",
   "authHint": "Salve seu nome · desbloqueie perfis · adicione amigos",
-  "joinError": "Não deu para conectar. Confira sua conexão e tente de novo.",
+  "joinError": "Não deu pra conectar. Confira sua conexão e tente de novo.",
   "conceptSub": "🔥 Moradores desafiam viajantes, viajantes desafiam moradores: marquem um encontro para provar."
 }

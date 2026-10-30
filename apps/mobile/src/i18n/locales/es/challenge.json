@@ -72,7 +72,7 @@
     "rankBadge": "Puesto {{rank}}",
     "photoBadge": "Foto",
     "joinedCount": "Participantes: {{count}}",
-    "meetBadge": "Quedada",
+    "meetBadge": "Encuentro",
     "photosCount_one": "{{count}} foto",
     "photosCount_many": "{{count}} fotos",
     "photosCount_other": "{{count}} fotos",
@@ -210,7 +210,7 @@
     "footnote": "Las cifras pueden cambiar mientras ajustamos el juego.",
     "types": {
       "heading": "Dos tipos de reto",
-      "local": "🏙️ Quedada: reúne a un grupo en persona en un lugar y una hora fijados. Quien se presenta gana muchos puntos.",
+      "local": "🏙️ Encuentro: reúne a un grupo en persona en un lugar y una hora fijados. Quien se presenta gana muchos puntos.",
       "international": "🌍 Reto de fotos: cada uno sube una foto antes de la fecha límite y el retador elige la ganadora."
     },
     "lifecycle": {
@@ -222,7 +222,7 @@
       "join": "Unirse a un reto",
       "create": "Crear un reto",
       "present": "Presentarse (validado)",
-      "host": "Organizar una quedada",
+      "host": "Organizar un encuentro",
       "submit": "Subir una foto a un reto",
       "win": "Ganar el reto de fotos"
     },
@@ -638,7 +638,7 @@
       "debrief": "¡Misión cumplida!",
       "ghost": "¡Suerte la próxima!",
       "default": "Estás subiendo en la clasificación",
-      "meet_bonus": "Bonus de quedada desbloqueado",
+      "meet_bonus": "Bonus de encuentro desbloqueado",
       "challenge_created": "Lanzaste un reto"
     },
     "rank": {
@@ -659,7 +659,7 @@
       "debrief": "Los dos valoraron",
       "ghost": "Plantón",
       "default": "Ganados",
-      "meet_bonus": "Bonus de quedada",
+      "meet_bonus": "Bonus de encuentro",
       "challenge_created": "Reto creado"
     },
     "event": {
@@ -677,20 +677,20 @@
     "meetCta": "Elige la fecha del encuentro",
     "meetHint": "Todos los que se unan se reúnen aquí. Después validas quién vino.",
     "meetRequired": "Elige una fecha para el encuentro.",
-    "meetRequiredTitle": "Fija la quedada",
-    "meetSet": "Fijar la quedada",
+    "meetRequiredTitle": "Fija el encuentro",
+    "meetSet": "Fijar el encuentro",
     "join": "Unirme",
-    "done": "Esta quedada ha terminado.",
+    "done": "Este encuentro ha terminado.",
     "validateCta": "Validar quién vino",
-    "validateAfter": "Podrás validar después de la quedada · {{time}}",
+    "validateAfter": "Podrás validar después del encuentro · {{time}}",
     "youreIn": "¡Estás dentro! Nos vemos allí.",
     "joinCta": "Unirme al reto (+2 pts)",
     "closed": "Cerrado a nuevos participantes",
     "joinFailed": "No pudiste unirte. Inténtalo de nuevo.",
     "validateFailed": "No se pudo validar. Inténtalo de nuevo.",
     "validateTitle": "¿Quién vino?",
-    "validateSub": "Marca a todos los que vinieron a la quedada. Cada uno gana la recompensa.",
-    "rateMeet": "¿Qué tal la quedada?",
+    "validateSub": "Marca a todos los que vinieron al encuentro. Cada uno gana la recompensa.",
+    "rateMeet": "¿Qué tal el encuentro?",
     "validateConfirm": "Validar asistencia ({{count}})",
     "noParticipants": "Aún no se ha unido nadie.",
     "deadlineLabel": "Fecha límite de envío",
@@ -731,7 +731,7 @@
     },
     "slide2": {
       "title": "Define un reto",
-      "body": "Crea una quedada (fecha + lugar) o un reto de fotos con fecha límite. Tú lo organizas."
+      "body": "Crea un encuentro (fecha + lugar) o un reto de fotos con fecha límite. Tú lo organizas."
     },
     "slide3": {
       "title": "Cualquiera se une",
@@ -739,7 +739,7 @@
     },
     "slide4": {
       "title": "Hazlo realidad",
-      "body": "Todos se presentan juntos a tu quedada, o envían su mejor foto antes de la fecha límite."
+      "body": "Todos se presentan juntos a tu encuentro, o envían su mejor foto antes de la fecha límite."
     },
     "slide5": {
       "title": "Tú validas",

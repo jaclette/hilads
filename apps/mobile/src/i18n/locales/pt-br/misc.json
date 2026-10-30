@@ -12,9 +12,9 @@
     "emptySentTitle": "Você não enviou nenhum",
     "emptyIncomingSub": "Quando alguém pedir sua amizade, aparece aqui.",
     "emptySentSub": "Os pedidos que você enviou e ainda estão pendentes aparecem aqui.",
-    "acceptFailed": "Não deu para aceitar",
-    "declineFailed": "Não deu para recusar",
-    "cancelFailed": "Não deu para cancelar"
+    "acceptFailed": "Não deu pra aceitar",
+    "declineFailed": "Não deu pra recusar",
+    "cancelFailed": "Não deu pra cancelar"
   },
   "blocked": {
     "title": "Usuários bloqueados",
@@ -24,7 +24,7 @@
     "unblock": "Desbloquear",
     "unblockTitle": "Desbloquear {{name}}?",
     "unblockBody": "{{name}} poderá ver seu conteúdo e te contatar de novo.",
-    "unblockFailTitle": "Não deu para desbloquear",
+    "unblockFailTitle": "Não deu pra desbloquear",
     "unblockFailBody": "Tente de novo.",
     "emptyTitle": "Você não bloqueou ninguém",
     "emptySub": "Os usuários bloqueados não verão seu conteúdo, e você não verá o deles."
