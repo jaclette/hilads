@@ -54,3 +54,6 @@ package-lock.json
 apps/web/public/landing/randomwithmeal.mp4
 # Uncompressed video masters - kept out of public/ so Vite never copies them into dist/
 apps/web/landing-src/
+
+# i18n translation passes (tools/i18n/export.mjs)
+/tmp/
