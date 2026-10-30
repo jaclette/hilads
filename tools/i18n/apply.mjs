@@ -7,8 +7,9 @@
 //
 // A translation whose placeholders or tags differ from the English is refused (old value kept) and listed.
 import fs from 'fs';
+import { execFileSync } from 'child_process';
 import path from 'path';
-import { REPO, ROOTS, categories, load, pluralBase, pluralCat, tokens } from './lib.mjs';
+import { REPO, ROOTS, categories, flatten, load, pluralBase, pluralCat, tokens } from './lib.mjs';
 
 const [locale, ...rest] = process.argv.slice(2);
 const dry = rest.includes('--dry');
@@ -52,6 +53,29 @@ for (const [id, u] of Object.entries(units)) {
 }
 
 const csv = [['key', 'screen', 'english', `old_${locale}`, `new_${locale}`, 'note']];
+// "old" is the committed value (HEAD), so applying in several steps keeps one before/after sheet;
+// notes of earlier steps are kept too.
+const headFlat = (surface, ns) => {
+  try {
+    const rel = path.relative(REPO, path.join(ROOTS[surface], locale, `${ns}.json`));
+    return flatten(JSON.parse(execFileSync('git', ['show', `HEAD:${rel}`], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })));
+  } catch { return {}; }
+};
+const csvPath = path.join(REPO, 'docs/i18n-review', `${locale}.csv`);
+const earlierNotes = {};
+if (fs.existsSync(csvPath)) {
+  const rows = [];
+  let row = [], field = '', quoted = false, justClosed = false;
+  for (const ch of fs.readFileSync(csvPath, 'utf8')) {
+    if (quoted) { if (ch === '"') { quoted = false; justClosed = true; } else field += ch; continue; }
+    if (ch === '"') { if (justClosed) field += '"'; quoted = true; }
+    else if (ch === ',') { row.push(field); field = ''; }
+    else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else field += ch;
+    justClosed = false;
+  }
+  for (const r of rows.slice(1)) if (r[5]) earlierNotes[r[0]] = r[5];
+}
 const cell = (s) => /[",\n]/.test(s ?? '') ? `"${String(s).replace(/"/g, '""')}"` : (s ?? '');
 let changed = 0;
 
@@ -62,11 +86,18 @@ for (const surface of Object.keys(ROOTS)) {
     const enObj = JSON.parse(fs.readFileSync(path.join(enDir, f), 'utf8'));
     const locFile = path.join(ROOTS[surface], locale, f);
     const locObj = fs.existsSync(locFile) ? JSON.parse(fs.readFileSync(locFile, 'utf8')) : {};
+    const head = headFlat(surface, ns);
+    const note = (key, n) => (n?.flag ? 'FLAG ' : '') + (n?.note ?? '') || earlierNotes[key] || '';
     const rebuild = (enNode, locNode, prefix) => {
       const o = {};
       for (const [k, v] of Object.entries(enNode)) {
         const dotted = prefix ? `${prefix}.${k}` : k;
-        if (v && typeof v === 'object' && !Array.isArray(v)) { o[k] = rebuild(v, locNode?.[k] ?? {}, dotted); continue; }
+        if (Array.isArray(v)) {
+          const asObj = rebuild(Object.fromEntries(v.map((x, i) => [i, x])), Object.fromEntries((Array.isArray(locNode?.[k]) ? locNode[k] : []).map((x, i) => [i, x])), dotted);
+          o[k] = v.map((_, i) => asObj[i]);
+          continue;
+        }
+        if (v && typeof v === 'object') { o[k] = rebuild(v, locNode?.[k] ?? {}, dotted); continue; }
         const cat = pluralCat(k);
         if (cat) {
           const baseLeaf = pluralBase(k);
@@ -79,7 +110,9 @@ for (const surface of Object.keys(ROOTS)) {
             if (v === undefined) continue;
             o[`${baseLeaf}_${c}`] = v;
             if (v !== oldV) changed++;
-            csv.push([`${surface}:${ns}:${dotted.replace(/_[a-z]+$/, '')}_${c}`, n?.where ?? '', enNode[`${baseLeaf}_${c}`] ?? enNode[`${baseLeaf}_other`], oldV ?? '', v, (n?.flag ? 'FLAG ' : '') + (n?.note ?? '')]);
+            const pk = `${surface}:${ns}:${prefix ? prefix + '.' : ''}${baseLeaf}_${c}`;
+            const headV = head[`${prefix ? prefix + '.' : ''}${baseLeaf}_${c}`] ?? head[`${prefix ? prefix + '.' : ''}${baseLeaf}_other`] ?? head[`${prefix ? prefix + '.' : ''}${baseLeaf}`];
+            csv.push([pk, n?.where ?? '', enNode[`${baseLeaf}_${c}`] ?? enNode[`${baseLeaf}_other`], headV ?? '', v, note(pk, n)]);
           }
           continue;
         }
@@ -90,7 +123,7 @@ for (const surface of Object.keys(ROOTS)) {
         if (nv === undefined) continue;
         o[k] = nv;
         if (typeof nv === 'string' && nv !== oldV) changed++;
-        if (typeof nv === 'string' && String(v).trim()) csv.push([id, n?.where ?? '', v, oldV ?? '', nv, (n?.flag ? 'FLAG ' : '') + (n?.note ?? '')]);
+        if (typeof nv === 'string' && String(v).trim()) csv.push([id, n?.where ?? '', v, head[dotted] ?? '', nv, note(id, n)]);
       }
       // Keys only this locale has (none expected) stay at the end rather than vanish.
       for (const [k, v] of Object.entries(locNode ?? {})) {
@@ -105,7 +138,7 @@ for (const surface of Object.keys(ROOTS)) {
 }
 
 fs.mkdirSync(path.join(REPO, 'docs/i18n-review'), { recursive: true });
-if (!dry) fs.writeFileSync(path.join(REPO, 'docs/i18n-review', `${locale}.csv`), csv.map((r) => r.map(cell).join(',')).join('\n') + '\n');
+if (!dry) fs.writeFileSync(csvPath, csv.map((r) => r.map(cell).join(',')).join('\n') + '\n');
 console.log(`${locale}: ${changed} value(s) changed, ${csv.length - 1} rows in docs/i18n-review/${locale}.csv`);
 if (missing.length) console.log(`no translation for ${missing.length} unit(s) (kept as is): ${missing.slice(0, 20).join(' ')}${missing.length > 20 ? '…' : ''}`);
 if (refused.length) { console.log(`refused ${refused.length} (placeholders / empty), kept the old value:`); for (const r of refused) console.log('  ' + r); }

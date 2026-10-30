@@ -1,1 +1,23 @@
-{"*": [], "values": {"*": []}}
+{
+ "*": [
+  "app:daily:propose.textPlaceholder",
+  "challenge:dc.propose.textPlaceholder",
+  "daily:propose.textPlaceholder",
+  "web:challenge:dc.propose.textPlaceholder"
+ ],
+ "values": {
+  "*": [
+   "Challenger",
+   "Email",
+   "Emoji",
+   "Ghost",
+   "Selfie",
+   "Spam",
+   "Story",
+   "Top 10",
+   "Top 10 ›",
+   "you@example.com",
+   "👻 Ghost"
+  ]
+ }
+}

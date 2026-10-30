@@ -26,7 +26,8 @@ export function categories(locale) {
 export function flatten(obj, prefix = '', out = {}) {
   for (const [k, v] of Object.entries(obj)) {
     const key = prefix ? `${prefix}.${k}` : k;
-    if (v && typeof v === 'object' && !Array.isArray(v)) flatten(v, key, out);
+    // Lists are walked too (landing steps: [{title, desc}]), one key per item: how.steps.0.title.
+    if (v && typeof v === 'object') flatten(Array.isArray(v) ? Object.fromEntries(v.map((x, i) => [i, x])) : v, key, out);
     else out[key] = v;
   }
   return out;
