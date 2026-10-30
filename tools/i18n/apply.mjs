@@ -3,7 +3,7 @@
 // every out-NN.json, writes the locale's app and web files (English key order, the plural forms the
 // locale needs, nothing else changed), and the review sheet docs/i18n-review/<locale>.csv.
 //
-//   node tools/i18n/apply.mjs vi [--dry]
+//   node tools/i18n/apply.mjs vi [--dry] [--base <git ref>]   (--base: the review sheet's "old" column, default HEAD)
 //
 // A translation whose placeholders or tags differ from the English is refused (old value kept) and listed.
 import fs from 'fs';
@@ -13,6 +13,8 @@ import { REPO, ROOTS, categories, flatten, load, pluralBase, pluralCat, tokens }
 
 const [locale, ...rest] = process.argv.slice(2);
 const dry = rest.includes('--dry');
+// The "old" column of the review sheet: the files at this git ref (the commit before the pass started).
+const base = rest.includes('--base') ? rest[rest.indexOf('--base') + 1] : 'HEAD';
 const dir = path.join(REPO, 'tmp/i18n', locale ?? '');
 if (!locale || !fs.existsSync(path.join(dir, 'units.json'))) { console.error('usage: apply.mjs <locale> (run export.mjs first)'); process.exit(1); }
 
@@ -58,7 +60,7 @@ const csv = [['key', 'screen', 'english', `old_${locale}`, `new_${locale}`, 'not
 const headFlat = (surface, ns) => {
   try {
     const rel = path.relative(REPO, path.join(ROOTS[surface], locale, `${ns}.json`));
-    return flatten(JSON.parse(execFileSync('git', ['show', `HEAD:${rel}`], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })));
+    return flatten(JSON.parse(execFileSync('git', ['show', `${base}:${rel}`], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })));
   } catch { return {}; }
 };
 const csvPath = path.join(REPO, 'docs/i18n-review', `${locale}.csv`);
