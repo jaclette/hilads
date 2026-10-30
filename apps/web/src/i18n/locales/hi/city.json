@@ -1,9 +1,31 @@
 {
+  "world": {
+    "tab": "दुनिया",
+    "banner_one": "{{count}} इंटर-सिटी चैलेंज लाइव",
+    "banner_other": "{{count}} इंटर-सिटी चैलेंज लाइव",
+    "online": "{{count}} ऑनलाइन",
+    "cities_one": "{{count}} शहर",
+    "cities_other": "{{count}} शहर",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} ने {{cityA}} → {{cityB}} चैलेंज लॉन्च किया",
+      "newUser": "🎉 {{city}} से {{nickname}} अभी Hilads से जुड़े",
+      "challengeWon": "🏆 {{city}} से {{nickname}} ने {{challenge}} चैलेंज जीता"
+    },
+    "quietCard": "यहाँ सन्नाटा है? दुनिया में {{count}} अनरेड, खोलने के लिए टैप करें",
+    "heroEmpty": "किसी शहर को सबसे पहले चैलेंज करें",
+    "heroEmptySub": "एक इंटर-सिटी चैलेंज लॉन्च करें",
+    "leaderboard": "लीडरबोर्ड",
+    "arrivals_one": "{{count}} नया चेहरा",
+    "arrivals_other": "{{count}} नए चेहरे",
+    "arrivalsTitle": "हाल में आए लोग",
+    "arrivalsEmpty": "हाल में कोई नहीं आया",
+    "seeAll": "सब देखें"
+  },
   "inspiration": {
     "heading": "मुलाक़ात के आइडिया",
-    "sub": "दूसरी जगहों के लोकल क्या आयोजित करते हैं - प्रेरणा लें",
-    "openYours": "{{city}} में अपना खोलो",
-    "by": "{{name}} · {{city}} द्वारा",
+    "sub": "दूसरे शहरों के लोकल्स क्या प्लान करते हैं, यहाँ से आइडिया लें",
+    "openYours": "{{city}} में अपनी शुरू करें",
+    "by": "{{name}} द्वारा · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
   },
@@ -12,47 +34,47 @@
     "signIn": "साइन इन करें",
     "create_event": {
       "pageTitle": "इवेंट बनाएं",
-      "title": "Ghosts देख सकते हैं, पर होस्ट नहीं कर सकते।",
-      "sub": "अपना खुद का इवेंट करने और अपने शहर को मैप पर लाने के लिए अकाउंट बनाएं।"
+      "title": "Ghost सिर्फ़ देख सकते हैं, होस्ट नहीं कर सकते।",
+      "sub": "अपना इवेंट करने और अपने शहर को मैप पर लाने के लिए अकाउंट बनाएं।"
     },
     "view_profile": {
       "pageTitle": "प्रोफ़ाइल",
-      "title": "Ghosts देख सकते हैं, पर प्रोफ़ाइल मेंबर्स के लिए हैं।",
+      "title": "Ghost सिर्फ़ देख सकते हैं, प्रोफ़ाइल मेंबर्स के लिए हैं।",
       "sub": "प्रोफ़ाइल अनलॉक करने, लोगों से जुड़ने और अपनी सिटी क्रू बनाने के लिए अकाउंट बनाएं।"
     },
     "join_hangout": {
-      "pageTitle": "एक मुलाक़ात में शामिल हों",
-      "title": "Ghosts देख सकते हैं, पर मुलाक़ात में शामिल नहीं हो सकते।",
-      "sub": "मुलाक़ात में शामिल होने, अपना नाम सेव करने और लोग मिलना चाहें तब नोटिफिकेशन पाने के लिए साइन अप करें।"
+      "pageTitle": "मुलाक़ात में शामिल हों",
+      "title": "Ghost सिर्फ़ देख सकते हैं, मुलाक़ात में शामिल नहीं हो सकते।",
+      "sub": "मुलाक़ात में शामिल होने, अपना नाम सेव करने और लोग मिलना चाहें तो नोटिफिकेशन पाने के लिए साइन अप करें।"
     },
     "create_hangout": {
-      "pageTitle": "एक मुलाक़ात शुरू करें",
-      "title": "Ghosts देख सकते हैं, पर होस्ट नहीं कर सकते।",
-      "sub": "एक मुलाक़ात शुरू करने, अपना नाम सेव करने और लोगों को साथ लाने के लिए साइन अप करें।"
+      "pageTitle": "मुलाक़ात शुरू करें",
+      "title": "Ghost सिर्फ़ देख सकते हैं, होस्ट नहीं कर सकते।",
+      "sub": "मुलाक़ात शुरू करने, अपना नाम सेव करने और लोगों को साथ जोड़ने के लिए साइन अप करें।"
     },
     "create_challenge": {
       "pageTitle": "चैलेंज लॉन्च करें",
-      "title": "Ghosts देख सकते हैं, चैलेंज नहीं दे सकते।",
-      "sub": "साइन अप करें ताकि लोकल्स या यात्रियों को चैलेंज दे सकें और उसे मान्यता दे सकें।"
+      "title": "Ghost सिर्फ़ देख सकते हैं, चैलेंज नहीं दे सकते।",
+      "sub": "लोकल्स या यात्रियों को चैलेंज देने और उसे ख़ुद मंज़ूर करने के लिए साइन अप करें।"
     },
     "accept_challenge": {
       "pageTitle": "चैलेंज लें",
-      "title": "इस चैलेंज को लेने के लिए साइन अप करें",
-      "sub": "3 सेकंड। चैलेंज पर सीधे वापस आ जाएंगे।"
+      "title": "यह चैलेंज लेने के लिए साइन अप करें",
+      "sub": "बस 3 सेकंड। फिर आप सीधे चैलेंज पर लौट आएंगे।"
     }
   },
   "welcome": {
     "live": "{{city}} लाइव है",
     "dismiss": "बंद करें",
-    "body": "असली लोग, अभी इसी वक़्त। हाय कहें, देखें आसपास कौन है, या किसी दोस्त को साथ लाएं।",
+    "body": "असली लोग, अभी। हाय कहें, देखें आसपास कौन है, या किसी दोस्त को बुलाएं।",
     "sayHi": "हाय कहें",
-    "invite": "दोस्तों को इनवाइट करें"
+    "invite": "दोस्तों को बुलाएं"
   },
-  "imageType": "कृपया JPEG, PNG या WebP इमेज चुनें।",
-  "imageTooLarge": "इमेज बहुत बड़ी है। अधिकतम साइज़: 10 MB।",
+  "imageType": "JPEG, PNG या WebP इमेज चुनें।",
+  "imageTooLarge": "इमेज बहुत बड़ी है। ज़्यादा से ज़्यादा 10 MB।",
   "picker": {
-    "title": "एक शहर चुनें",
-    "search": "कोई शहर खोजें…",
+    "title": "शहर चुनें",
+    "search": "शहर खोजें…",
     "noResults": "\"{{query}}\" के लिए कोई शहर नहीं मिला",
     "topCities": "अभी सबसे एक्टिव शहर",
     "cities": "शहर",
@@ -65,21 +87,21 @@
     "challenges_other": "{{count}} चैलेंज",
     "members_one": "{{count}} सदस्य",
     "members_other": "{{count}} सदस्य",
-    "backToLocation": "मेरी लोकेशन पर वापस जाएं",
+    "backToLocation": "मेरी लोकेशन पर वापस",
     "youreHere": "आप यहां हैं",
     "online": "{{count}} ऑनलाइन",
     "events_one": "{{count}} इवेंट",
     "events_other": "{{count}} इवेंट",
     "hangout_one": "{{count}} मुलाक़ात",
-    "hangout_other": "{{count}} मुलाक़ात",
+    "hangout_other": "{{count}} मुलाक़ातें",
     "msgs_one": "{{count}} मैसेज",
     "msgs_other": "{{count}} मैसेज",
     "hereTitle": "आप कहाँ हैं?",
     "useMyLocation": "मेरी लोकेशन इस्तेमाल करें",
-    "playsIn": "{{city}} में खेलता है",
+    "playsIn": "{{city}} के लिए खेलता है",
     "credit": "शहर का डेटा ©",
     "changeLimit": "आपने आज कई बार शहर बदला है। कल फिर कोशिश करें।",
-    "pickFailed": "यह शहर नहीं चुना जा सका। फिर से कोशिश करें।"
+    "pickFailed": "यह शहर सेट नहीं हो सका। फिर से कोशिश करें।"
   },
   "joining": "{{city}} से जुड़ रहे हैं…",
   "joiningDefault": "चैट से जुड़ रहे हैं…",
@@ -87,41 +109,41 @@
   "feed": {
     "hangoutTag": "मुलाक़ात",
     "eventTag": "इवेंट",
+    "nowTag": "अभी",
+    "laterTag": "प्लान",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
     "public": "पब्लिक",
     "activeNow": "अभी एक्टिव",
-    "repliesNew": "अभी कोई जवाब नहीं - पहले बनें",
+    "repliesNew": "अभी कोई जवाब नहीं, सबसे पहले आप जवाब दें",
+    "sayHi": "{{name}} को हाय कहें",
+    "sayHiGeneric": "हाय कहें",
+    "hostWaiting": "पहले हाय का इंतज़ार",
     "replies_one": "{{count}} जवाब",
     "replies_other": "{{count}} जवाब",
-    "going_one": "{{count}} जा रहे हैं",
+    "going_one": "{{count}} जा रहा है",
     "going_other": "{{count}} जा रहे हैं",
-    "hostedBy": "{{name}} द्वारा होस्ट किया गया",
+    "hostedBy": "होस्ट: {{name}}",
     "groupHilads": "Hilads लोकल इवेंट",
-    "groupPublic": "सार्वजनिक लोकल इवेंट",
-    "groupPublicTicket": "सार्वजनिक लोकल इवेंट",
+    "groupPublic": "पब्लिक लोकल इवेंट",
+    "groupPublicTicket": "पब्लिक लोकल इवेंट",
     "createEvent": "लोकल इवेंट बनाएं",
-    "startHangout": "एक मुलाक़ात शुरू करें",
+    "startHangout": "मुलाक़ात शुरू करें",
     "openPlace": "अपनी जगह खोलें",
     "loadError": "इवेंट लोड नहीं हो सके",
     "loadErrorSub": "बाद में फिर कोशिश करें या {{city}} में कुछ नया बनाएं।",
-    "emptyLocalTitle": "अपनी जगह होस्ट करें",
+    "emptyLocalTitle": "अपनी जगह पर होस्ट करें",
     "emptyTitle": "अभी कुछ नहीं हो रहा",
-    "emptyLocalSub": "{{city}} को जिंदादिल बनाएं। अपनी पसंदीदा जगह पर एक रेगुलर इवेंट शुरू करें।",
-    "emptySub": "{{city}} में कुछ करवाने वाले पहले व्यक्ति बनें",
+    "emptyLocalSub": "{{city}} में रौनक लाएं। अपनी पसंदीदा जगह पर एक रेगुलर इवेंट शुरू करें।",
+    "emptySub": "{{city}} में सबसे पहले आप कुछ शुरू करें",
     "noEvents": "अभी कोई लोकल इवेंट नहीं",
-    "noHangouts": "अभी कोई मुलाक़ात नहीं",
-    "noEventsSub": "{{city}} में एक बनाने वाले पहले व्यक्ति बनें",
-    "noHangoutsSub": "एक मुलाक़ात शुरू करें और शहर को बातों में लगाएं",
+    "noHangouts": "अभी तक कोई मुलाक़ात नहीं",
+    "noEventsSub": "{{city}} में पहला इवेंट आप बनाएं",
+    "noHangoutsSub": "मुलाक़ात शुरू करें और शहर में हलचल मचाएं",
     "filterAll": "सभी",
     "seeComing": "देखें आगे क्या है",
-    "seeHappened": "देखें क्या हुआ था",
+    "seeHappened": "देखें क्या हुआ",
     "createNew": "नया बनाएं",
-    "nowTag": "Now",
-    "laterTag": "Plan",
-    "hiNow": "Hi now",
-    "hiLater": "Hi plan",
-    "sayHi": "{{name}} को नमस्ते कहें",
-    "sayHiGeneric": "नमस्ते कहें",
-    "hostWaiting": "पहले नमस्ते का इंतज़ार",
     "hiNowHint": "अभी मिलें",
     "hiLaterHint": "इवेंट प्लान करें"
   },
@@ -129,14 +151,14 @@
     "online": "{{count}} आसपास",
     "liveNow": "अभी लाइव",
     "seeWhosHere": "देखें यहाँ कौन है",
-    "onlineAria_one": "{{count}} लोग आसपास, देखने के लिए टैप करें कौन",
-    "onlineAria_other": "{{count}} लोग आसपास, देखने के लिए टैप करें कौन",
-    "notifications": "नोटिफिकेशन",
+    "onlineAria_one": "{{count}} व्यक्ति आसपास है, कौन है यह देखने के लिए टैप करें",
+    "onlineAria_other": "{{count}} लोग आसपास हैं, कौन हैं यह देखने के लिए टैप करें",
+    "notifications": "नोटिफ़िकेशन",
     "messages": "मैसेज",
     "shareCity": "शहर शेयर करें",
     "switchCity": "शहर बदलें",
     "changeCity": "शहर बदलें",
-    "currentWeather": "मौजूदा मौसम: {{label}}"
+    "currentWeather": "अभी का मौसम: {{label}}"
   },
   "here": {
     "title": "यहाँ के लोग",
@@ -145,12 +167,12 @@
     "filterMode": "मोड",
     "you": "(आप)",
     "hereNow": "अभी यहाँ",
-    "noMatchLive": "अभी कोई इन फ़िल्टर से मैच नहीं करता।",
+    "noMatchLive": "अभी इन फ़िल्टर से कोई मैच नहीं करता।",
     "legends": "Hilads दिग्गज",
-    "legendsSub": "ये शहर को जिंदादिल बनाते हैं",
-    "cityCrew": "सिटी क्रू",
-    "noMatchCrew": "कोई मेंबर इन फ़िल्टर से मैच नहीं करता।",
-    "loadMore": "और लोड करें",
+    "legendsSub": "ये शहर में रौनक लाते हैं",
+    "cityCrew": "शहर की क्रू",
+    "noMatchCrew": "इन फ़िल्टर से कोई मेंबर मैच नहीं करता।",
+    "loadMore": "और देखें",
     "messageAria": "{{name}} को मैसेज करें"
   },
   "eventHeader": {
@@ -159,36 +181,36 @@
     "join": "शामिल हों",
     "joined": "शामिल हुए",
     "here": "{{count}} यहाँ",
-    "going_one": "{{count}} जा रहे हैं",
+    "going_one": "{{count}} जा रहा है",
     "going_other": "{{count}} जा रहे हैं",
     "locationPending": "लोकेशन अभी उपलब्ध नहीं है",
-    "hostedBy": "{{name}} द्वारा होस्ट किया गया"
+    "hostedBy": "होस्ट: {{name}}"
   },
   "chatEmpty": {
     "beginning": "बातचीत की शुरुआत",
     "arriving": "लोग आ रहे हैं",
-    "firstChat": "यहाँ चैट करने वाले पहले व्यक्ति बनें",
-    "firstHi": "हाय कहने वाले पहले व्यक्ति बनें"
+    "firstChat": "यहाँ सबसे पहले आप चैट करें",
+    "firstHi": "सबसे पहले आप हाय कहें"
   },
   "create": {
     "title": "क्या प्लान है?",
-    "hangoutTitle": "एक मुलाक़ात शुरू करें",
-    "hangoutSub": "तुरंत - लोगों को अभी आपके साथ जुड़ने दें",
-    "eventTitle": "एक इवेंट बनाएं",
-    "eventSub": "कुछ ऐसा प्लान करें जिसमें दूसरे शामिल हो सकें",
+    "hangoutTitle": "मुलाक़ात शुरू करें",
+    "hangoutSub": "तुरंत - लोग अभी आपके साथ जुड़ सकें",
+    "eventTitle": "इवेंट बनाएं",
+    "eventSub": "कुछ ऐसा प्लान करें जिसमें दूसरे भी जुड़ सकें",
     "challengeTitle": "चैलेंज लॉन्च करें",
-    "challengeSub": "लोकल्स और यात्रियों - एक चैलेंज से जुड़ें",
-    "challengePageTitle": "एक चैलेंज बनाएं",
+    "challengeSub": "लोकल्स और यात्री, एक चैलेंज से जुड़ें",
+    "challengePageTitle": "चैलेंज बनाएं",
     "challengeAudience": "किसके लिए?",
     "challengeAudLocals": "लोकल्स",
-    "challengeAudExplorers": "यात्रियों",
+    "challengeAudExplorers": "यात्री",
     "challengeType": "टाइप",
-    "challengeTypeFood": "फ़ूड",
+    "challengeTypeFood": "खाना",
     "challengeTypePlace": "जगह",
     "challengeTypeCulture": "कल्चर",
     "challengeTypeHelp": "पागलपन",
     "challengeTitleLabel": "आपका चैलेंज",
-    "challengeTitlePlaceholder": "जैसे, मुझे अपनी पसंदीदा कॉफ़ी जगह ले चलें",
+    "challengeTitlePlaceholder": "जैसे: मुझे अपनी पसंदीदा छुपी हुई कॉफ़ी वाली जगह पर ले चलें",
     "challengeCta": "चैलेंज लॉन्च करें",
     "challengeErrStart": "चैलेंज लॉन्च नहीं हो सका"
   },
@@ -196,12 +218,12 @@
     "going": "जा रहे हैं",
     "inThisHangout": "इस मुलाक़ात में",
     "loading": "लोड हो रहा है…",
-    "empty": "अभी कोई नहीं - शामिल होने वाले पहले बनें!"
+    "empty": "अभी कोई नहीं, सबसे पहले आप जुड़ें!"
   },
   "nickname": {
     "label": "निकनेम",
     "placeholder": "आपका नाम...",
-    "heroSub": "अभी के लिए एनॉनिमस। फिर भी आप तय कर सकते हैं कि आप कैसे दिखें।",
+    "heroSub": "अभी आप एनॉनिमस हैं। फिर भी आप तय कर सकते हैं कि आप कैसे दिखें।",
     "save": "निकनेम सेव करें",
     "upgradeHint": "अपना नाम सेव करें। लोकल बने रहें।",
     "haveAccount": "पहले से अकाउंट है?",
@@ -209,15 +231,15 @@
     "anonymous": "// एनॉनिमस · साइन-अप ज़रूरी नहीं"
   },
   "prompt": {
-    "exploreText": "देखें अभी क्या हो रहा है",
+    "exploreText": "देखें अभी क्या चल रहा है",
     "exploreCta": "देखें क्या हो रहा है",
-    "photoText": "शेयर करें क्या हो रहा है",
-    "shoot": "फ़ोटो",
+    "photoText": "जो चल रहा है, शेयर करें",
+    "shoot": "फ़ोटो लें",
     "createEventText": "आज रात कोई प्लान है?",
     "createEventCta": "इवेंट बनाएं",
-    "challengeIntroText": "नए हैं? चैलेंज को समझिए",
-    "challengeIntroCta": "देखें",
-    "installText": "Hilads को अपनी होम स्क्रीन पर जोड़ें\nअपने शहर में जो हो रहा है उसे कभी मिस न करें",
+    "challengeIntroText": "नए हैं? देखें चैलेंज कैसे काम करते हैं",
+    "challengeIntroCta": "दिखाएं",
+    "installText": "Hilads को अपनी होम स्क्रीन पर जोड़ें\nअपने शहर में जो हो रहा है, कुछ भी मिस न करें",
     "installAdd": "जोड़ें",
     "installHow": "कैसे"
   },
@@ -232,25 +254,25 @@
     "dismiss": "इंस्टॉल प्रॉम्प्ट बंद करें"
   },
   "feedJoin": {
-    "0": "👋 {{name}} अभी-अभी आए",
+    "0": "👋 {{name}} अभी-अभी पहुँचे",
     "1": "🔥 {{name}} शामिल हुए",
     "2": "🍻 {{name}} यहाँ हैं",
-    "3": "👀 {{name}} अभी-अभी दिखे",
+    "3": "👀 {{name}} अभी-अभी आए",
     "4": "✨ {{name}} आ गए"
   },
   "ambient": {
     "0": "🔥 लोग आ रहे हैं",
     "1": "🍻 आज रात कौन बाहर है?",
     "2": "💬 शहर जाग रहा है",
-    "3": "🌙 नाइट आउल्स ऑनलाइन हैं",
+    "3": "🌙 रात भर जागने वाले ऑनलाइन हैं",
     "4": "👀 कोई अभी-अभी आया",
     "5": "🔥 शहर में एक नया चेहरा",
     "6": "🎉 लोग अभी यहाँ हैं",
-    "7": "🌆 लोकल चेक इन कर रहे हैं"
+    "7": "🌆 लोकल्स चेक इन कर रहे हैं"
   },
   "ownerPrompt": {
-    "text": "आपने यह इवेंट शुरू किया!",
-    "sub": "इसे और बेहतर बनाएं - एक डिस्क्रिप्शन जोड़ें, समय अपडेट करें, या इसे शेयर करें।",
+    "text": "यह इवेंट आपने शुरू किया!",
+    "sub": "इसे और बेहतर बनाएं: डिस्क्रिप्शन जोड़ें, समय अपडेट करें, या इसे शेयर करें।",
     "edit": "इवेंट एडिट करें"
   },
   "feedNew": {
@@ -261,8 +283,8 @@
     "challengeLocals": "{{name}} ने लोकल्स को चैलेंज दिया: {{title}}",
     "challengeExplorers": "{{name}} ने यात्रियों को चैलेंज दिया: {{title}}",
     "challengeCta": "देखें",
-    "challengeValidated": "चैलेंज पूरा! {{name}} ने \"{{title}}\" को मान्य किया।",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} अंतरराष्ट्रीय चैलेंज: {{title}}"
+    "challengeValidated": "चैलेंज पूरा! {{name}} ने \"{{title}}\" को वेरिफ़ाई किया।",
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} इंटरनेशनल चैलेंज: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 फ़ोटो"
@@ -275,23 +297,23 @@
   "myEvent": {
     "live": "लाइव",
     "recurring": "रेगुलर",
-    "upcoming": "आगामी",
+    "upcoming": "आने वाले",
     "delete": "इवेंट डिलीट करें"
   },
   "arrivalsBar": {
-    "label": "हाल के आगमन",
-    "sheetTitle": "आगमन",
+    "label": "हाल में आए लोग",
+    "sheetTitle": "नए आए लोग",
     "empty": "अभी तक कोई नहीं आया"
   },
   "cityHero": {
     "mainEmpty": "🌱 {{city}} में अभी कोई चैलेंज नहीं",
-    "subRanked": "अगला चैलेंज स्वीकार करने के लिए टैप करें →",
-    "subUnranked": "पहला चैलेंज स्वीकार करें और ऊपर चढ़ें →",
-    "subTop": "अपना खिताब बचाएँ →",
-    "subEmpty": "यात्रियों के लिए पहला बनाएँ →",
+    "subRanked": "अगला चैलेंज लेने के लिए टैप करें →",
+    "subUnranked": "पहला चैलेंज लें और ऊपर चढ़ना शुरू करें →",
+    "subTop": "अपना ख़िताब बचाएं →",
+    "subEmpty": "यात्रियों के लिए पहला चैलेंज बनाएं →",
     "members_one": "{{count}} सदस्य",
     "members_other": "{{count}} सदस्य",
-    "nearby": "{{count}} पास में",
+    "nearby": "{{count}} आसपास",
     "recent": "{{count}} हाल ही में",
     "mainUnranked_one": "🔥 {{city}} में {{count}} चैलेंज",
     "mainUnranked_other": "🔥 {{city}} में {{count}} चैलेंज",
@@ -300,45 +322,23 @@
     "mainTop_one": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
     "mainTop_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1"
   },
-  "world": {
-    "tab": "दुनिया",
-    "banner_one": "{{count}} इंटर-सिटी चैलेंज लाइव",
-    "banner_other": "{{count}} इंटर-सिटी चैलेंज लाइव",
-    "online": "{{count}} ऑनलाइन",
-    "cities_one": "{{count}} शहर",
-    "cities_other": "{{count}} शहर",
-    "sys": {
-      "challengeCreated": "🔥 {{nickname}} ने चैलेंज शुरू किया {{cityA}} → {{cityB}}",
-      "newUser": "🎉 {{city}} से {{nickname}} अभी Hilads से जुड़े",
-      "challengeWon": "🏆 {{city}} से {{nickname}} ने चैलेंज {{challenge}} जीता"
-    },
-    "quietCard": "यहाँ शांति है? दुनिया में {{count}} अनरेड — खोलने के लिए टैप करें",
-    "heroEmpty": "किसी शहर को चैलेंज करने वाले पहले बनो",
-    "heroEmptySub": "एक इंटर-सिटी चैलेंज शुरू करो",
-    "leaderboard": "लीडरबोर्ड",
-    "arrivals_one": "{{count}} पहुंचे",
-    "arrivals_other": "{{count}} पहुंचे",
-    "arrivalsTitle": "हाल की आमद",
-    "arrivalsEmpty": "हाल में कोई नहीं आया",
-    "seeAll": "सभी देखें"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "लोकल",
     "traveler": "यात्री",
-    "ctaApp": "ऐप में challenge लें",
+    "ctaApp": "ऐप में चैलेंज लें",
     "localPass": "Local Pass",
-    "early": "जल्दी",
+    "early": "अर्ली",
     "proposedBy": "{{name}} का सुझाव",
     "proposedByCity": "{{name}} · {{city}} का सुझाव",
     "groupTitle": "नई फ़ोटो: {{n}}",
-    "groupCitiesMore": "{{cities}} और {{n}} और"
+    "groupCitiesMore": "{{cities}} और {{n}} दूसरे"
   },
   "switchSheet": {
     "title": "आप {{city}} में हैं",
     "body": "आपका शहर {{from}} है। अब से {{city}} के लिए खेलें?",
-    "switch": "{{city}} पर जाएँ",
-    "stay": "{{from}} में रहें"
+    "switch": "{{city}} पर जाएं",
+    "stay": "{{from}} में ही रहें"
   }
 }

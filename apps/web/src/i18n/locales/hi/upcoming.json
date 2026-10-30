@@ -8,7 +8,7 @@
   "emptyTitle": "कुछ शेड्यूल नहीं है",
   "emptySub": "इस दिन अभी कोई इवेंट नहीं है।",
   "public": "पब्लिक",
-  "going_one": "{{count}} जा रहे हैं",
+  "going_one": "{{count}} जा रहा है",
   "going_other": "{{count}} जा रहे हैं",
   "liveNow": "अभी लाइव"
 }

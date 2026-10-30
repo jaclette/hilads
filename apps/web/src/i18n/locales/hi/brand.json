@@ -1,17 +1,17 @@
 {
-  "now": "now",
+  "now": "अभी",
   "myCity": "my city",
   "here": "here",
   "me": "me",
   "feelLocal": "feel local",
   "anywhere": "anywhere",
   "vibe": {
-    "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "party": "पार्टी",
+    "board_games": "बोर्ड गेम्स",
+    "coffee": "कॉफ़ी",
+    "music": "म्यूज़िक",
+    "food": "खाना",
+    "chill": "चिल"
   },
   "badge": {
     "ghost": "Ghost",
