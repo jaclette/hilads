@@ -1,16 +1,16 @@
 {
   "title": "O que rolou",
-  "loadError": "Não foi possível carregar o arquivo",
+  "loadError": "Não deu pra carregar o histórico",
   "filterAll": "Tudo",
-  "rangeRecent": "Recente",
+  "rangeRecent": "Recentes",
   "range7": "Últimos 7 dias",
   "range14": "Últimos 14 dias",
   "custom": "Personalizado",
-  "pickEnd": "Agora escolha o dia final",
-  "pickStart": "Escolha um dia inicial (até {{max}} dias)",
+  "pickEnd": "Agora escolha o último dia",
+  "pickStart": "Escolha o primeiro dia (até {{max}} dias)",
   "apply": "Aplicar",
-  "emptyTitle": "Ainda não há nada aqui",
-  "emptyRecentSub": "Eventos e rolês passados aparecerão aqui quando a cidade tiver algum histórico.",
-  "emptyWindowSub": "Nenhum evento ou rolê neste período. Tente um intervalo maior.",
+  "emptyTitle": "Nada por aqui ainda",
+  "emptyRecentSub": "Os eventos e rolês passados vão aparecer aqui quando a cidade tiver um pouco de história.",
+  "emptyWindowSub": "Nenhum evento ou rolê nesse período. Tente um intervalo maior.",
   "filterChallenges": "Desafios"
 }

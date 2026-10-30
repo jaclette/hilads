@@ -6,33 +6,15 @@
     "clearCity": "Limpar",
     "localTag": "Local",
     "by": "por {{name}}",
-    "loadMore": "Carregar mais",
     "empty": {
-      "title": "Ainda não há histórias de sucesso",
-      "body": "Desafios concluídos e bem avaliados aparecem aqui. Seja o primeiro a realizar um!"
+      "title": "Nenhum desafio de sucesso ainda",
+      "body": "Desafios concluídos e bem avaliados aparecem aqui. Faça o primeiro acontecer!"
     },
     "tryCta": "Criar um novo desafio",
-    "note": "O que disseram"
+    "note": "O que disseram",
+    "loadMore": "Carregar mais"
   },
-  "myChallenges": {
-    "cta": "Meus desafios",
-    "title": "Meus desafios",
-    "create": "Criar um desafio",
-    "filter": {
-      "all": "Todos",
-      "created": "Criados",
-      "taken": "Aceitos"
-    },
-    "empty": {
-      "title": "Nenhum desafio ainda",
-      "body": "Os desafios que você cria ou aceita aparecem aqui."
-    },
-    "guestGate": {
-      "title": "Entre para ver seus desafios",
-      "body": "Crie uma conta para lançar desafios e aceitar os de outros."
-    }
-  },
-  "tabIntro": "Desafios entre locais e viajantes dentro de uma cidade - e entre cidades.",
+  "tabIntro": "Desafios entre moradores e viajantes numa mesma cidade, e entre cidades.",
   "howItWorks": "Como funciona",
   "mostLocal": "Most Local",
   "seeAll": "Ver tudo",
@@ -58,7 +40,7 @@
     "help": "Maluco"
   },
   "titleLabel": "Seu desafio",
-  "titlePlaceholder": "ex. Me leve ao seu café favorito",
+  "titlePlaceholder": "Ex.: Me leva no seu café escondido favorito",
   "maxParticipantsLabel": {
     "locals": "Quantos locais no máximo?",
     "explorers": "Quantos viajantes no máximo?"
@@ -66,23 +48,23 @@
   "returnClauseLabel": "E depois?",
   "returnClauseTemplates": {
     "food": "...e vem dividir comigo 🍜",
-    "place": "...e me leva você mesmo 🗺️",
+    "place": "...e me leva lá você mesmo 🗺️",
     "culture": "...e a gente se encontra pra conversar sobre isso 🎭",
-    "help": "...e a gente faz algo maluco junto 🤪"
+    "help": "...e bora fazer uma loucura juntos 🤪"
   },
   "createCta": "Lançar desafio 🔥",
   "saveChanges": "Salvar alterações",
-  "errSave": "Não foi possível salvar",
-  "errStart": "Não foi possível lançar o desafio",
+  "errSave": "Não deu pra salvar",
+  "errStart": "Não deu pra lançar o desafio",
   "deleteTitle": "Excluir desafio?",
-  "deleteBody": "O desafio é removido para todos. Não pode ser desfeito.",
+  "deleteBody": "O desafio some pra todo mundo. Não dá pra desfazer.",
   "deleteConfirm": "Excluir",
   "acceptCta": "Aceitar o desafio",
   "acceptedCta": "Aceito ✓",
   "validatedBadge": "Validado",
   "card": {
     "open": "Aberto",
-    "full": "Cheio",
+    "full": "Lotado",
     "available": "Disponível",
     "inProgress": "Em andamento",
     "takeIt": "Eu topo",
@@ -91,12 +73,12 @@
     "photoBadge": "Foto",
     "joinedCount": "{{count}} inscritos",
     "meetBadge": "Encontro",
-    "photosCount_one": "{{count}} fotos",
-    "photosCount_many": "{{count}} fotos",
+    "photosCount_one": "{{count}} foto",
+    "photosCount_many": "{{count}} de fotos",
     "photosCount_other": "{{count}} fotos",
     "noOneJoined": "Ninguém entrou ainda",
     "beFirst": "⚡ Seja o primeiro · +2",
-    "daysLeft": "{{count}} d restantes",
+    "daysLeft": "faltam {{count}} d",
     "lastDay": "Expira em breve",
     "joinGroup": "Entrar no desafio",
     "whoJoined": "Quem entrou ({{count}})",
@@ -104,27 +86,27 @@
     "awaitingResults": "Aguardando resultados"
   },
   "statusInProgress": "Desafio em andamento",
-  "statusAccomplished": "Desafio mandado bem",
+  "statusAccomplished": "Desafio cumprido",
   "openBadge": "Aberto",
   "forLocals": "Para locais",
   "forExplorers": "Para viajantes",
   "validation": {
     "label": "Como validar?",
     "meet": {
-      "label": "Encontrar",
+      "label": "Encontro",
       "hint": "Compartilhem a experiência pessoalmente",
-      "bonusChip": "+50 de bônus se vocês se encontrarem pessoalmente"
+      "bonusChip": "+50 de bônus de encontro se todo mundo aparecer"
     },
     "photo_proof": {
       "label": "Prova com foto",
-      "hint": "Aceite a prova à distância"
+      "hint": "Vale prova à distância"
     }
   },
   "notFound": "Desafio não encontrado",
   "typeBadge": {
-    "food": "Desafio comida",
-    "place": "Desafio lugar",
-    "culture": "Desafio cultura",
+    "food": "Desafio de comida",
+    "place": "Desafio de lugar",
+    "culture": "Desafio de cultura",
     "help": "Desafio maluco"
   },
   "challengerTag": "Desafiante",
@@ -132,44 +114,55 @@
   "editBtn": "Editar",
   "deleteBtn": "Excluir",
   "shareCta": "Compartilhar",
-  "shareInvite": "Topa esse desafio comigo!",
+  "shareInvite": "Topa esse desafio comigo no Hilads 🔥",
   "shareCopied": "Link copiado ✓",
   "noun": "Desafio",
+  "byCreator": "por {{name}}",
+  "inspiration": {
+    "heading": "Ideias de desafios",
+    "sub": "O que os locais lançam em outras cidades - inspire-se",
+    "firstLocal": "🌱 Seja o primeiro local em {{city}}",
+    "firstLocalSub": "Lance um desafio · os viajantes que chegarem vão topar",
+    "reward": "Primeiro desafio · +10 🏆",
+    "launchFirst": "🔥 Lance o primeiro desafio",
+    "createYours": "🔥 Crie o seu em {{city}}",
+    "by": "por {{name}} · {{city}}"
+  },
   "examples": {
-    "label": "Sem ideias? Toca pra usar",
+    "label": "Sem ideia? Toca numa",
     "food": [
       "O melhor café da cidade",
       "Onde os locais realmente almoçam",
-      "O melhor street food por aqui"
+      "A melhor comida de rua por aqui"
     ],
     "place": [
-      "O melhor spot pra ver o pôr do sol",
-      "Um lugar que os turistas não acham",
-      "Pra onde você vai pra dar uma respirada"
+      "O melhor lugar pra ver o pôr do sol",
+      "Um lugar que turista nunca acha",
+      "Onde você vai pra espairecer"
     ],
     "culture": [
-      "Uma noite real de música local nesse fim de semana",
+      "Uma noite de música local de verdade nesse fim de semana",
       "Arte de rua que vale ver",
-      "Um show local que vou lembrar"
+      "Um show local pra nunca esquecer"
     ],
     "help": [
-      "Um cabeleireiro que não vai ferrar minha semana",
+      "Um cabeleireiro que não vai estragar minha semana",
       "Um médico que fala inglês",
       "Onde consertar a tela do celular"
     ]
   },
   "beFirstToAccept": "Seja o primeiro a topar",
-  "openThreadCta": "Abrir thread",
+  "openThreadCta": "Abrir conversa",
   "accept": {
     "err": {
       "openSettings": "Abrir configurações",
       "unknown": {
-        "title": "Não foi possível aceitar",
+        "title": "Não deu pra aceitar",
         "body": "Algo deu errado. Tente de novo."
       },
       "not_creator": {
-        "title": "É o seu próprio desafio",
-        "body": "Você criou esse desafio - espere alguém aceitar."
+        "title": "Esse desafio é seu",
+        "body": "Você criou esse desafio. Espere outra pessoa aceitar."
       },
       "mode_required": {
         "title": "Escolha local ou viajante primeiro",
@@ -177,301 +170,95 @@
       },
       "mode_mismatch": {
         "title": "Esse desafio não é pra você",
-        "body": "Mude seu modo no perfil se quiser aceitar esse."
+        "body": "Mude seu modo no perfil se quiser topar esse."
       },
       "cap_reached": {
-        "title": "Desafio cheio"
+        "title": "Desafio lotado"
       },
       "in_progress": {
         "title": "Já tem alguém nessa",
-        "body": "Outro viajante está topando agora. Volta quando ele terminar - o desafio fica livre de novo."
+        "body": "Outro viajante está nesse desafio agora. Volta quando ele terminar: o desafio fica livre de novo."
       },
       "completed": {
         "title": "Desafio já concluído",
-        "body": "Este desafio foi concluído: fechado para novas participações."
+        "body": "Esse desafio já foi concluído e não aceita mais participantes."
       }
     }
   },
-  "thread": {
-    "notFound": "Thread não encontrado",
-    "empty": "Seja o primeiro a dizer algo.",
-    "emptyIntl": "Manda um oi - joga uma foto quando conseguir.",
-    "cancel": {
-      "creatorTitle": "Cancelar essa participação?",
-      "acceptorTitle": "Desistir desse desafio?",
-      "body": "O thread e o chat serão excluídos. Você pode aceitar de novo depois se mudar de ideia.",
-      "confirm": "Cancelar",
-      "failed": "Não foi possível cancelar. Tente de novo."
-    },
-    "cancelledByOther": {
-      "title": "Thread cancelado",
-      "body": "A outra pessoa cancelou essa participação."
-    }
-  },
-  "threads": {
-    "title": "Meus threads de desafios",
-    "noMessagesYet": "Ainda sem mensagens",
-    "empty": {
-      "title": "Nenhum thread ativo",
-      "body": "Quando você aceitar um desafio ou alguém aceitar o seu, a conversa aparece aqui."
-    },
-    "guestGate": {
-      "title": "Entre para ver os threads",
-      "body": "Threads são conversas 1:1 entre você e o desafiador. Precisa de uma conta pra começar uma."
-    }
-  },
-  "schedule": {
-    "proposeCta": "Propor uma data",
-    "counterCta": "Contrapropor",
-    "editCta": "Mudar a data",
-    "you": "você",
-    "iProposedTitle": "Aguardando aprovação",
-    "theyProposedTitle": "{{name}} propôs",
-    "scheduled": {
-      "title": "Encontro marcado"
-    },
-    "withdraw": {
-      "title": "Retirar a proposta?",
-      "body": "Sua data proposta será apagada. A outra pessoa será notificada.",
-      "confirm": "Retirar"
-    },
-    "today": "Hoje",
-    "tomorrow": "Amanhã",
-    "picker": {
-      "title": "Quando vocês vão se encontrar?",
-      "whenLabel": "Quando",
-      "timeLabel": "Horário de início",
-      "whereLabel": "Onde (opcional)",
-      "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix",
-      "otherDate": "Outra data",
-      "otherTime": "Outro horário",
-      "endTimeLabel": "Horário de fim",
-      "endAfterStart": "O horário de fim deve ser depois do início."
-    },
-    "err": {
-      "proposeFailed": "Não foi possível propor a data. Tente de novo.",
-      "approveFailed": "Não foi possível aprovar. Tente de novo.",
-      "withdrawFailed": "Não foi possível retirar. Tente de novo."
-    }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "Como foi?",
-      "body": "{{name}} mandou bem?"
-    },
-    "acceptorWaiting": {
-      "title": "Aguardando o veredicto",
-      "body": "{{name}} vai marcar como foi."
-    },
-    "approved": {
-      "title": "Desafio concluído"
-    },
-    "rejected": {
-      "title": "Desafio encerrado"
-    },
-    "confirm": {
-      "approve": {
-        "title": "Marcar como concluído?",
-        "body": "Isso é definitivo - você não vai poder mudar depois.",
-        "confirm": "Marcar como concluído"
-      },
-      "reject": {
-        "title": "Encerrar sem veredicto?",
-        "body": "Use isso se o encontro não rolou de verdade. Isso é definitivo.",
-        "confirm": "Encerrar"
-      }
-    },
-    "err": {
-      "approveFailed": "Não foi possível aprovar. Tente de novo.",
-      "rejectFailed": "Não foi possível encerrar. Tente de novo."
-    }
-  },
-  "closeCta": "Encerrar desafio",
-  "reopenCta": "Reabrir",
-  "pipeline": {
-    "step": {
-      "accept": "Aceitar",
-      "date": "Data",
-      "meet": "Encontrar",
-      "wrap": "Fechamento",
-      "proof": "Prova",
-      "verdict": "Veredicto"
-    },
-    "subcta": {
-      "tapToAccept": "Topa o desafio",
-      "creatorWaiting": "Esperando alguém topar",
-      "creatorReviewPending": "Responda o pedido de {{name}}",
-      "acceptorAwaitingReview": "Esperando a resposta de {{name}}",
-      "proposeDate": "Propõe uma data",
-      "dateAwaiting": "Esperando o criador aprovar",
-      "approveDate": "Uma data foi proposta",
-      "meetSoon": "Nos vemos {{date}}",
-      "creatorVerdict": "Como foi com {{name}}?",
-      "acceptorWaitingVerdict": "Esperando {{name}} confirmar",
-      "accomplished": "Desafio concluído",
-      "closed": "Desafio encerrado",
-      "submitProof": "Envia sua prova",
-      "waitingForProof": "Esperando a prova",
-      "reviewProof": "Revise a prova",
-      "waitingForVerdict": "Esperando o veredicto",
-      "rateMeetup": "Avalie seu encontro com {{name}}"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}} quer topar seu desafio",
-      "pendingBody": "Aceite pra começar a conversar e combinar o encontro, ou recuse pra liberar a vaga.",
-      "approve": "Aceitar",
-      "reject": "Recusar",
-      "approveFailed": "Não foi possível aceitar. Tente de novo.",
-      "rejectFailed": "Não foi possível recusar. Tente de novo."
-    },
-    "acceptor": {
-      "waitingTitle": "Esperando a resposta",
-      "waitingBody": "{{name}} vai aceitar ou recusar seu pedido. Você recebe uma notificação quando ele decidir.",
-      "rejectedTitle": "Pedido recusado",
-      "rejectedBody": "{{name}} recusou esse. Você ainda pode topar outro desafio."
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "Topa o desafio para desbloquear o chat",
-      "body": "Quando você aceitar, vocês têm um chat privado para combinar o encontro."
-    },
-    "creator": {
-      "title": "Esperando alguém topar",
-      "body": "Quando um viajante topar, vocês conversam aqui mesmo pra combinar o encontro."
-    },
-    "full": {
-      "title": "Desafio cheio",
-      "body": "Todas as vagas foram preenchidas. Volte se alguém desistir."
-    },
-    "inProgress": {
-      "title": "Já tem alguém nessa agora",
-      "body": "Um viajante está topando esse desafio. Quando terminar, fica livre de novo - passa aqui em breve."
-    }
-  },
-  "postCreate": {
-    "title": "Seu desafio está no ar",
-    "subtitle": "Agora espalhe — faça alguém aceitar na próxima hora.",
-    "thisCity": "esta cidade",
-    "ctaInvite": "Mande pra alguém em {{city}}",
-    "ctaInviteSub": "Escolha alguns {{audience}} - a gente pinga.",
-    "ctaShare": "Compartilhe fora do Hilads",
-    "skip": "Talvez depois",
-    "pickerTitle": "{{audience}} em {{city}}",
-    "pickerSubtitle": "Toque pra selecionar. Eles recebem um push com Aceitar / Ignorar.",
-    "pickerEmpty": "Nenhum {{audience}} por aqui agora. Compartilhe fora.",
-    "sendCta": "Enviar pra {{count}}",
-    "sendCtaEmpty": "Escolha alguém primeiro",
-    "sentTitle": "Enviado pra {{count}}",
-    "sentSubtitle": "Eles vão receber uma notificação push.",
-    "pickerSubtitleAll": "Sem correspondência exata - mostrando todo mundo em {{city}}."
-  },
-  "invitation": {
-    "accept": "Aceitar",
-    "ignore": "Ignorar",
-    "acceptChallenge": "Aceitar o desafio"
-  },
-  "byCreator": "por {{name}}",
-  "inspiration": {
-    "heading": "Ideias de desafios",
-    "sub": "O que os locais lançam em outros lugares - se inspire",
-    "firstLocal": "🌱 Seja o primeiro local em {{city}}",
-    "firstLocalSub": "Lance um desafio · os viajantes que chegam vão topar",
-    "reward": "Primeiro desafio · +10 🏆",
-    "launchFirst": "🔥 Lance o primeiro desafio",
-    "createYours": "🔥 Crie o seu em {{city}}",
-    "by": "por {{name}} · {{city}}"
-  },
-  "typeFilter": {
-    "label": "Filtrar por tipo",
-    "all": "Todos",
-    "empty": "Nada nessa categoria agora."
-  },
-  "seeAllChallenges": "Ver todos os desafios →",
-  "mode": {
-    "label": "Modo",
-    "local": "Local",
-    "international": "Internacional",
-    "localHint": "Na sua cidade. Termina com um encontro presencial.",
-    "internationalHint": "Em qualquer lugar do mundo. Te mandam uma prova, você valida de longe.",
-    "worldwide": "Mundo"
-  },
-  "intl": {
-    "targetCityLabel": "Cidade-alvo",
-    "targetCityAnywhere": "🌍 Qualquer lugar do mundo",
-    "targetCityHint": "Escolha uma cidade-alvo — «Qualquer lugar do mundo» ainda não está disponível.",
-    "proofRequirementsLabel": "O que a foto deve mostrar?",
-    "proofRequirementsPlaceholder": "ex. O prato à luz do dia, com você no enquadramento",
-    "proofRequirementsHint": "A prova é uma foto 📸. O participante vê isso antes de enviar - seja específico.",
-    "cityPicker": {
-      "title": "Escolha uma cidade-alvo",
-      "searchPlaceholder": "Buscar uma cidade…",
-      "anywhere": "Qualquer lugar do mundo"
-    },
-    "proof": {
-      "requirementsLabel": "O que o criador pediu",
-      "submitCta": "Enviar prova",
-      "tryAgainCta": "Tentar de novo ({{count}} restantes)",
-      "waitingProof": "Esperando a prova",
-      "waitingVerdict": "Esperando o veredicto",
-      "approvedLine": "Desafio cumprido",
-      "closedLine": "Desafio encerrado",
-      "lastReason": "Motivo: {{reason}}",
-      "geotagOk": "Geotag verificado",
-      "geotagWarn": "Geotag fora da área",
-      "approveCta": "Aprovar",
-      "rejectCta": "Rejeitar",
-      "rejectModalTitle": "Rejeitar esta prova",
-      "rejectModalHint_one": "Restam {{count}} tentativa(s). Diz o que precisa ajustar.",
-      "rejectModalHint_many": "Restam {{count}} tentativa(s). Diz o que precisa ajustar.",
-      "rejectModalHint_other": "Restam {{count}} tentativa(s). Diz o que precisa ajustar.",
-      "reasonPlaceholder": "ex.: foto borrada, não dá pra ver o prato",
-      "rejectConfirm": "Enviar rejeição",
-      "reasonRequiredTitle": "Motivo obrigatório",
-      "reasonRequiredBody": "Um motivo curto (1–200 caracteres) ajuda.",
-      "permPhotoTitle": "Acesso à câmera necessário",
-      "permPhotoBody": "Habilite o acesso à câmera nas Configurações - a prova precisa ser uma foto na hora.",
-      "permGpsTitle": "Localização necessária",
-      "permGpsBody": "O geotag é obrigatório. Ative a localização.",
-      "gpsFailTitle": "GPS indisponível",
-      "gpsFailBody": "Tente ao ar livre.",
-      "submitFailTitle": "Não foi possível enviar",
-      "submitFailBody": "Verifique a conexão e tente de novo.",
-      "reviewFailTitle": "Não foi possível salvar o veredicto"
-    },
-    "targetCityRequired": "«Qualquer lugar do mundo» ainda não está disponível — escolha uma cidade-alvo para continuar.",
-    "targetCityRequiredTitle": "Escolha uma cidade-alvo"
-  },
-  "modeFilter": {
-    "label": "Filtrar por modo",
-    "all": "Todos"
-  },
-  "chatPlaceholder": "Diga algo no canal…",
-  "messageCreator": "Mande mensagem privada para {{name}}",
+  "chatPlaceholder": "Fala alguma coisa no canal…",
+  "messageCreator": "Mandar mensagem privada pra {{name}}",
   "badge": {
     "challenger": "Desafiante",
     "taker": "Desafiado",
     "spectator": "Espectador"
   },
+  "scoringInfo": {
+    "aria": "Como funcionam os pontos",
+    "helpLabel": "🏆 Como ganhar pontos",
+    "title": "🏆 Como funcionam os desafios",
+    "intro": "Pequenas faíscas por entrar; os pontos grandes vêm de aparecer de verdade ou vencer. Entrar só pra acumular nunca compensa.",
+    "colStep": "Etapa",
+    "steps": {
+      "created": "Desafio criado",
+      "accepted": "Desafio aceito",
+      "date": "Data marcada",
+      "meet": "Encontro",
+      "rate": "Os dois avaliam"
+    },
+    "noPoints": "-",
+    "totalLabel": "Total por desafio",
+    "footnote": "Os números podem mudar conforme a gente ajusta o jogo.",
+    "types": {
+      "heading": "Dois tipos de desafio",
+      "local": "🏙️ Encontro - junte um grupo pessoalmente, em data e lugar marcados. Quem aparece ganha muito.",
+      "international": "🌍 Desafio de fotos - todo mundo manda uma foto antes do prazo; o desafiante escolhe a vencedora."
+    },
+    "lifecycle": {
+      "heading": "Como termina",
+      "body": "O desafiante monta o desafio, a galera entra e, no final, o desafiante valida: quem apareceu ou qual foto venceu."
+    },
+    "pointsHeading": "💯 Como ganhar pontos",
+    "ways": {
+      "join": "Entrar em um desafio",
+      "create": "Criar um desafio",
+      "present": "Aparecer - presença validada",
+      "host": "Organizar um encontro",
+      "submit": "Mandar uma foto pra um desafio",
+      "win": "Ganhar o desafio de fotos"
+    },
+    "seeExamples": "Ver 3 exemplos reais"
+  },
   "cta": {
-    "takenBy": "Sendo aceito por {{name}}",
+    "takenBy": "{{name}} está nesse desafio agora",
     "closed": "Este desafio está encerrado"
   },
   "join": {
     "gateTitle": "Vire espectador",
-    "gateBody": "Entre como espectador para acompanhar a conversa e torcer pelo participante.",
+    "gateBody": "Entre como espectador pra acompanhar a conversa e torcer por quem topou.",
     "cta": "Entrar como espectador",
     "leaveCta": "Sair do canal",
-    "errKicked": "Você foi removido deste desafio. Não pode entrar novamente.",
-    "errClosed": "Este desafio não está aceitando novas participações.",
+    "errKicked": "Você foi removido deste desafio.",
+    "errClosed": "Este desafio não aceita mais participantes.",
     "errGeneric": "Não deu pra entrar - tente de novo."
+  },
+  "leaveTakeon": {
+    "pill": "Sair",
+    "confirmTitle": "Sair deste desafio?",
+    "confirmBody": "A linha do tempo volta a zero e o desafio reabre para os outros. Não dá pra desfazer.",
+    "confirmCta": "Sair",
+    "failed": "Não deu pra sair. Tente de novo."
+  },
+  "restart": {
+    "cta": "Reiniciar o desafio",
+    "confirmTitle": "Reiniciar o desafio?",
+    "confirmBody": "Isso remove o participante atual, apaga o chat e reabre o desafio do zero. Não dá pra desfazer.",
+    "confirmCta": "Reiniciar",
+    "failed": "Não deu pra reiniciar. Tente de novo."
   },
   "lock": {
     "private": {
       "title": "Este desafio é privado",
-      "body": "Só o criador e quem aceita podem ver a conversa."
+      "body": "Só o criador e quem topou podem ver a conversa."
     }
   },
   "members": {
@@ -481,59 +268,84 @@
     "empty": "Ninguém entrou ainda - seja o primeiro.",
     "kickCta": "Remover",
     "kickAria": "Remover {{name}} do canal",
-    "errKick": "Não foi possível remover - tente de novo."
+    "errKick": "Não deu pra remover. Tente de novo."
   },
   "notif": {
     "on": "Notificações ativadas",
     "off": "Notificações desativadas"
   },
+  "privacy": {
+    "closedCloseCta": "Fechar para novas entradas",
+    "closedReopenCta": "Reabrir para novas entradas"
+  },
   "manage": {
     "cta": "Gerenciar",
     "title": "Gerenciar desafio"
-  },
-  "visibility": {
-    "badge": {
-      "public": "Público",
-      "friends": "Amigos",
-      "private": "Privado"
-    },
-    "label": "Quem pode ver isso?",
-    "public": "🌍 Público",
-    "friends": "👯 Amigos",
-    "publicHint": "Qualquer pessoa na cidade pode ver e aceitar.",
-    "friendsHint": "Só seus amigos e quem você convidar podem ver.",
-    "intlLocked": "Desafios internacionais são sempre públicos.",
-    "moderationBlocked": "Seu texto foi sinalizado: reescreva.",
-    "optin": {
-      "title": "Atenção: isto é público",
-      "body": "Desafios públicos aparecem no feed da cidade e na web pública. Seu nome e o texto do desafio ficarão visíveis para qualquer um — incluindo não membros e buscadores. Você pode mudar para Amigos abaixo se preferir mais discrição.",
-      "cta": "Entendi, publicar público",
-      "switchToFriends": "Melhor em Amigos",
-      "dontShowAgain": "Não mostrar de novo"
-    }
-  },
-  "privacy": {
-    "closedCloseCta": "Fechar a novas entradas",
-    "closedReopenCta": "Reabrir para entradas"
   },
   "details": {
     "collapseAria": "Ocultar detalhes do canal",
     "expandAria": "Mostrar detalhes do canal"
   },
+  "thread": {
+    "notFound": "Conversa não encontrada",
+    "empty": "Seja o primeiro a dizer algo.",
+    "emptyIntl": "Manda um oi - joga uma foto quando conseguir.",
+    "cancel": {
+      "creatorTitle": "Cancelar essa participação?",
+      "acceptorTitle": "Desistir desse desafio?",
+      "body": "A conversa e as mensagens serão apagadas. Se mudar de ideia, você pode aceitar de novo depois.",
+      "confirm": "Cancelar participação",
+      "failed": "Não deu pra cancelar. Tente de novo."
+    },
+    "cancelledByOther": {
+      "title": "Conversa cancelada",
+      "body": "A outra pessoa cancelou essa participação."
+    }
+  },
+  "threads": {
+    "title": "Minhas conversas de desafios",
+    "noMessagesYet": "Nenhuma mensagem ainda",
+    "empty": {
+      "title": "Nenhuma conversa ativa",
+      "body": "Quando você aceitar um desafio ou alguém aceitar o seu, a conversa aparece aqui."
+    },
+    "guestGate": {
+      "title": "Entre pra ver as conversas",
+      "body": "As conversas são 1:1 entre você e o desafiante. Você precisa de uma conta pra começar uma."
+    }
+  },
+  "myChallenges": {
+    "cta": "Meus desafios",
+    "title": "Meus desafios",
+    "create": "Criar um desafio",
+    "filter": {
+      "all": "Todos",
+      "created": "Criados",
+      "taken": "Aceitos"
+    },
+    "empty": {
+      "title": "Nenhum desafio ainda",
+      "body": "Os desafios que você cria ou topa aparecem aqui."
+    },
+    "guestGate": {
+      "title": "Entre para ver seus desafios",
+      "body": "Crie uma conta pra lançar desafios e topar os dos outros."
+    }
+  },
   "ratePrompts": {
     "banner": {
       "title": "Avalie este desafio - como foi?",
-      "titleUrgent": "É a sua vez de avaliar este desafio"
+      "titleUrgent": "Sua vez de avaliar este desafio"
     },
     "sheet": {
       "title": "Como foi o desafio?",
+      "subtitle": "Avalie o desafio, não a pessoa.",
       "starsAria": "{{n}} estrela",
-      "commentPlaceholder": "Deixe uma nota sobre o desafio (opcional)",
+      "commentPlaceholder": "Deixe um comentário sobre o desafio (opcional)",
       "submit": "Enviar avaliação",
-      "later": "Agora não",
-      "subtitle": "Avalie o desafio, não a pessoa."
+      "later": "Agora não"
     },
-    "errSubmit": "Não foi possível enviar sua avaliação. Tente de novo."
+    "errSubmit": "Não deu pra enviar sua avaliação. Tente de novo."
   },
   "leaderboard": {
     "title": "Most Local",
@@ -560,60 +372,262 @@
       "title": "Ninguém no ranking ainda",
       "body": "Seja o primeiro a aceitar um desafio e ganhar pontos."
     },
-    "errLoad": "Não foi possível carregar o ranking. Puxe para tentar de novo.",
-    "neutral": "🏆 Most Local",
+    "errLoad": "Não deu pra carregar o ranking. Puxe pra tentar de novo.",
     "cityPicker": {
       "searchPlaceholder": "Buscar cidades…",
-      "empty": "Nenhuma cidade corresponde."
+      "empty": "Nenhuma cidade encontrada."
     },
+    "neutral": "🏆 Most Local",
     "titleCity": "Most {{demonym}}",
     "share": {
-      "cta": "Compartilhar meu ranking",
+      "cta": "Compartilhar minha posição",
       "periodMonth": "este mês",
       "periodAll": "de todos os tempos",
       "placeCity": "em {{city}}",
-      "placeWorld": "no Mundo",
-      "userNotTop": "🔥 Sou #{{rank}} {{place}} {{period}}: {{pts}} pts! Correndo atrás de @{{above}} ({{aPts}} pts) 👀 e segurando @{{below}} ({{bPts}} pts) atrás de mim. Acha que me ultrapassa? 🏆",
-      "userTop": "👑 Sou #1 {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) e @{{below2}} ({{b2Pts}} pts) estão no meu pé. Vem me destronar 😏",
-      "cityNotTop": "🔥 {{place}} é #{{rank}} entre todas as cidades {{period}}: {{pts}} pts! Logo atrás de {{above}} ({{aPts}} pts) 👀 e na frente de {{below}} ({{bPts}} pts). Locais, bora subir 🏆",
-      "cityTop": "👑 {{place}} é #1 entre todas as cidades {{period}}: {{pts}} pts! {{below1}} ({{b1Pts}} pts) e {{below2}} ({{b2Pts}} pts) estão na nossa cola. Locais, bora ficar no topo 🔥"
+      "placeWorld": "no mundo",
+      "userNotTop": "🔥 Tô no #{{rank}} {{place}} {{period}}: {{pts}} pts! Correndo atrás de @{{above}} ({{aPts}} pts) 👀 e segurando @{{below}} ({{bPts}} pts) atrás de mim. Acha que me passa? 🏆",
+      "userTop": "👑 Tô no #1 {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) e @{{below2}} ({{b2Pts}} pts) estão na minha cola. Vem pegar a coroa 😏",
+      "cityNotTop": "🔥 {{place}} está no #{{rank}} entre todas as cidades {{period}}: {{pts}} pts! Logo atrás de {{above}} ({{aPts}} pts) 👀 e na frente de {{below}} ({{bPts}} pts). Galera daqui, bora subir 🏆",
+      "cityTop": "👑 {{place}} está no #1 entre todas as cidades {{period}}: {{pts}} pts! {{below1}} ({{b1Pts}} pts) e {{below2}} ({{b2Pts}} pts) estão na nossa cola. Galera daqui, bora ficar no topo 🔥"
     }
   },
-  "scoringInfo": {
-    "aria": "Como funcionam os pontos",
-    "helpLabel": "🏆 Como ganhar pontos",
-    "title": "🏆 Como funcionam os desafios",
-    "intro": "Faíscas pequenas por entrar; os pontos grandes por aparecer de verdade ou vencer. Acumular entradas nunca compensa.",
-    "colStep": "Etapa",
-    "steps": {
-      "created": "Desafio criado",
-      "accepted": "Desafio aceito",
-      "date": "Data marcada",
+  "schedule": {
+    "proposeCta": "Propor uma data",
+    "counterCta": "Contrapropor",
+    "editCta": "Mudar a data",
+    "you": "você",
+    "iProposedTitle": "Aguardando aprovação",
+    "theyProposedTitle": "{{name}} propôs",
+    "scheduled": {
+      "title": "Encontro marcado"
+    },
+    "withdraw": {
+      "title": "Retirar a proposta?",
+      "body": "Sua proposta de data vai ser apagada, e a outra pessoa vai ser avisada.",
+      "confirm": "Retirar"
+    },
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "picker": {
+      "title": "Quando vocês vão se encontrar?",
+      "whenLabel": "Quando",
+      "timeLabel": "Horário de início",
+      "endTimeLabel": "Horário de término",
+      "endAfterStart": "O término precisa ser depois do início.",
+      "whereLabel": "Onde (opcional)",
+      "wherePlaceholder": "Ex.: Bar do Zé, Rua Augusta, 1500",
+      "otherDate": "Outra data",
+      "otherTime": "Outro horário"
+    },
+    "err": {
+      "proposeFailed": "Não deu pra propor a data. Tente de novo.",
+      "approveFailed": "Não deu pra aprovar. Tente de novo.",
+      "withdrawFailed": "Não deu pra retirar. Tente de novo."
+    }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Como foi?",
+      "body": "{{name}} mandou bem?"
+    },
+    "acceptorWaiting": {
+      "title": "Esperando o veredito",
+      "body": "{{name}} vai dizer como foi."
+    },
+    "approved": {
+      "title": "Desafio cumprido"
+    },
+    "rejected": {
+      "title": "Desafio encerrado"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Marcar como cumprido?",
+        "body": "É definitivo: não dá pra mudar depois.",
+        "confirm": "Marcar como cumprido"
+      },
+      "reject": {
+        "title": "Encerrar sem veredito?",
+        "body": "Use se o encontro não rolou de verdade. É definitivo.",
+        "confirm": "Encerrar"
+      }
+    },
+    "err": {
+      "approveFailed": "Não deu pra aprovar. Tente de novo.",
+      "rejectFailed": "Não deu pra encerrar. Tente de novo."
+    }
+  },
+  "closeCta": "Encerrar desafio",
+  "reopenCta": "Reabrir",
+  "pipeline": {
+    "step": {
+      "accept": "Aceitar",
+      "date": "Data",
       "meet": "Encontro",
-      "rate": "Ambos avaliam"
+      "wrap": "Conclusão",
+      "proof": "Prova",
+      "verdict": "Veredito"
     },
-    "noPoints": "-",
-    "totalLabel": "Total por desafio",
-    "footnote": "Os números podem mudar conforme a gente ajusta o jogo.",
-    "types": {
-      "heading": "Dois tipos de desafio",
-      "local": "🏙️ Encontro — junte um grupo pessoalmente em uma data e lugar marcados. Quem aparece ganha muito.",
-      "international": "🌍 Desafio de fotos — todo mundo envia uma foto antes do prazo; o desafiante escolhe o vencedor."
+    "subcta": {
+      "tapToAccept": "Topa o desafio",
+      "creatorWaiting": "Esperando alguém topar",
+      "creatorReviewPending": "Responda o pedido de {{name}}",
+      "acceptorAwaitingReview": "Esperando a resposta de {{name}}",
+      "proposeDate": "Propor uma data",
+      "dateAwaiting": "Esperando o criador aprovar",
+      "approveDate": "Uma data foi proposta",
+      "meetSoon": "Nos vemos {{date}}",
+      "creatorVerdict": "Como foi com {{name}}?",
+      "acceptorWaitingVerdict": "Esperando {{name}} confirmar",
+      "rateMeetup": "Avalie seu encontro com {{name}}",
+      "accomplished": "Desafio cumprido",
+      "closed": "Desafio encerrado",
+      "submitProof": "Envia sua prova",
+      "waitingForProof": "Esperando a prova",
+      "reviewProof": "Confira a prova",
+      "waitingForVerdict": "Esperando o veredito"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} quer topar seu desafio",
+      "pendingBody": "Aceite pra começar a conversar e combinar o encontro, ou recuse pra liberar a vaga.",
+      "approve": "Aceitar",
+      "reject": "Recusar",
+      "approveFailed": "Não deu pra aceitar. Tente de novo.",
+      "rejectFailed": "Não deu pra recusar. Tente de novo."
     },
-    "lifecycle": {
-      "heading": "🔁 Como é resolvido",
-      "body": "O desafiante monta o desafio, as pessoas entram e, no final, o desafiante valida — quem apareceu ou qual foto venceu."
+    "acceptor": {
+      "waitingTitle": "Esperando a resposta",
+      "waitingBody": "{{name}} vai aceitar ou recusar seu pedido. Você recebe uma notificação quando a pessoa decidir.",
+      "rejectedTitle": "Pedido recusado",
+      "rejectedBody": "{{name}} recusou esse. Você ainda pode topar outro desafio."
+    }
+  },
+  "postCreate": {
+    "title": "Seu desafio está no ar",
+    "subtitle": "Agora espalhe: faça alguém topar na próxima hora.",
+    "thisCity": "esta cidade",
+    "ctaInvite": "Mande pra alguém em {{city}}",
+    "ctaInviteSub": "Escolha alguns {{audience}} e a gente avisa.",
+    "ctaShare": "Compartilhe fora do Hilads",
+    "skip": "Talvez depois",
+    "pickerTitle": "{{audience}} em {{city}}",
+    "pickerSubtitle": "Toque pra selecionar. Eles recebem uma notificação com Aceitar / Ignorar.",
+    "pickerEmpty": "Sem {{audience}} por aqui agora. Compartilhe fora do Hilads.",
+    "sendCta": "Enviar pra {{count}}",
+    "sendCtaEmpty": "Escolha alguém primeiro",
+    "sentTitle": "Enviado pra {{count}}",
+    "sentSubtitle": "Eles vão receber uma notificação agora.",
+    "pickerSubtitleAll": "Nenhum resultado exato. Mostrando todo mundo em {{city}}."
+  },
+  "invitation": {
+    "accept": "Aceitar",
+    "ignore": "Ignorar",
+    "acceptChallenge": "Aceitar o desafio"
+  },
+  "locked": {
+    "visitor": {
+      "title": "Topa o desafio pra desbloquear o chat",
+      "body": "Quando você aceitar, você e o desafiante ganham uma conversa privada pra combinar o encontro."
     },
-    "pointsHeading": "💯 Como ganhar pontos",
-    "ways": {
-      "join": "Entrar em um desafio",
-      "create": "Criar um desafio",
-      "present": "Aparecer — presença validada",
-      "host": "Organizar um encontro",
-      "submit": "Enviar uma foto para um desafio",
-      "win": "Ganhar o desafio de fotos"
+    "creator": {
+      "title": "Esperando alguém topar",
+      "body": "Quando um viajante topar, vocês conversam aqui mesmo pra combinar o encontro."
     },
-    "seeExamples": "Ver 3 exemplos reais"
+    "full": {
+      "title": "Desafio lotado",
+      "body": "Todas as vagas foram preenchidas. Volte se alguém desistir."
+    },
+    "inProgress": {
+      "title": "Já tem alguém nessa agora",
+      "body": "Um viajante está topando esse desafio. Quando terminar, fica livre de novo - passa aqui em breve."
+    }
+  },
+  "typeFilter": {
+    "label": "Filtrar por tipo",
+    "all": "Todos",
+    "empty": "Nada nessa categoria agora."
+  },
+  "seeAllChallenges": "Ver todos os desafios →",
+  "mode": {
+    "label": "Modo",
+    "local": "Local",
+    "international": "Internacional",
+    "localHint": "Na sua cidade. Termina com um encontro presencial.",
+    "internationalHint": "Em qualquer lugar do mundo. A pessoa manda uma prova e você valida de longe.",
+    "worldwide": "Mundo"
+  },
+  "visibility": {
+    "label": "Quem pode ver isso?",
+    "public": "🌍 Público",
+    "friends": "👯 Amigos",
+    "badge": {
+      "public": "Público",
+      "friends": "Amigos",
+      "private": "Privado"
+    },
+    "publicHint": "Qualquer pessoa na cidade pode ver e aceitar.",
+    "friendsHint": "Só seus amigos e quem você convidar podem ver.",
+    "intlLocked": "Desafios internacionais são sempre públicos.",
+    "moderationBlocked": "Seu texto foi barrado. Tente reescrever.",
+    "optin": {
+      "title": "Olha só: isso é público",
+      "body": "Desafios públicos aparecem no feed da cidade e na web aberta. Seu nome e o texto do desafio ficam visíveis pra qualquer pessoa, inclusive quem não é membro e os buscadores. Se preferir algo mais fechado, mude para Amigos abaixo.",
+      "cta": "Entendi, publicar",
+      "switchToFriends": "Deixar só pra Amigos",
+      "dontShowAgain": "Não mostrar de novo"
+    }
+  },
+  "intl": {
+    "targetCityLabel": "Cidade-alvo",
+    "targetCityAnywhere": "🌍 Qualquer lugar do mundo",
+    "targetCityHint": "Escolha uma cidade-alvo: “Qualquer lugar do mundo” ainda não está disponível.",
+    "targetCityRequired": "“Qualquer lugar do mundo” ainda não está disponível. Escolha uma cidade-alvo pra continuar.",
+    "targetCityRequiredTitle": "Escolha uma cidade-alvo",
+    "proofRequirementsLabel": "O que a foto deve mostrar?",
+    "proofRequirementsPlaceholder": "Ex.: o prato à luz do dia, com você na foto",
+    "proofRequirementsHint": "A prova é uma foto 📸. Quem topar vê isso antes de enviar, então seja específico.",
+    "cityPicker": {
+      "title": "Escolha uma cidade-alvo",
+      "searchPlaceholder": "Buscar uma cidade…",
+      "anywhere": "Qualquer lugar do mundo"
+    },
+    "proof": {
+      "requirementsLabel": "O que o criador pediu",
+      "submitCta": "Enviar prova",
+      "tryAgainCta": "Tentar de novo (restam {{count}})",
+      "waitingProof": "Esperando a prova",
+      "waitingVerdict": "Esperando o veredito",
+      "approvedLine": "Desafio cumprido",
+      "closedLine": "Desafio encerrado",
+      "lastReason": "Motivo: {{reason}}",
+      "geotagOk": "Geotag verificado",
+      "geotagWarn": "Geotag fora da área-alvo",
+      "approveCta": "Aprovar",
+      "rejectCta": "Rejeitar",
+      "rejectModalTitle": "Rejeitar esta prova",
+      "rejectModalHint_one": "Ainda resta {{count}} tentativa. Diga o que precisa ajustar.",
+      "rejectModalHint_many": "Ainda restam {{count}} de tentativas. Diga o que precisa ajustar.",
+      "rejectModalHint_other": "Ainda restam {{count}} tentativas. Diga o que precisa ajustar.",
+      "reasonPlaceholder": "Ex.: a foto está borrada, não dá pra ver o prato",
+      "rejectConfirm": "Enviar recusa",
+      "reasonRequiredTitle": "Motivo obrigatório",
+      "reasonRequiredBody": "Um motivo curto (1–200 caracteres) ajuda quem topou.",
+      "permPhotoTitle": "Precisamos de acesso à câmera",
+      "permPhotoBody": "Ative a câmera nas Configurações: a prova precisa ser uma foto tirada na hora.",
+      "permGpsTitle": "Localização necessária",
+      "permGpsBody": "O geotag é obrigatório. Ative a localização nas Configurações.",
+      "gpsFailTitle": "Não deu pra ler o GPS",
+      "gpsFailBody": "Tente ao ar livre ou com a localização ativada.",
+      "submitFailTitle": "Não deu pra enviar",
+      "submitFailBody": "Verifique sua conexão e tente de novo.",
+      "reviewFailTitle": "Não deu pra salvar o veredito"
+    }
+  },
+  "modeFilter": {
+    "label": "Filtrar por modo",
+    "all": "Todos"
   },
   "scoreCelebration": {
     "unit": "pontos",
@@ -632,17 +646,17 @@
       "cityBeyond": "Fora do top {{topN}} da sua cidade",
       "world": "#{{rank}} no mundo",
       "worldBeyond": "Fora do top {{topN}} mundial",
-      "cityUnranked": "Sem classificação este mês em {{city}}",
-      "worldUnranked": "Sem classificação este mês no mundo",
-      "cities": "{{city}} é #{{rank}} entre as cidades",
-      "citiesBeyond": "{{city}} fora do top {{topN}} de cidades"
+      "cityUnranked": "Fora do ranking deste mês em {{city}}",
+      "worldUnranked": "Fora do ranking deste mês no mundo",
+      "cities": "{{city}} está em #{{rank}} entre as cidades",
+      "citiesBeyond": "{{city}} está fora do top {{topN}} de cidades"
     },
     "cta": "Bora",
     "kindShort": {
       "accepted": "Aceito",
       "date_locked": "Encontro marcado",
       "meetup": "Se encontraram",
-      "debrief": "Ambos avaliaram",
+      "debrief": "Os dois avaliaram",
       "ghost": "Ghostado",
       "default": "Ganhos",
       "meet_bonus": "Bônus de encontro",
@@ -655,59 +669,25 @@
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "Bem-vindo! Bate-papo à vontade, sem cadastro.",
-    "cta": "Quer aceitar este desafio? Cadastre-se em 3 segundos"
-  },
-  "result": {
-    "winner": {
-      "title": "Você venceu!",
-      "body": "Sua foto venceu o desafio."
-    },
-    "loser": {
-      "title": "{{name}} venceu",
-      "body": "Boa foto! Você ganhou {{points}} por participar — tente de novo na próxima"
-    },
-    "present": {
-      "title": "Você apareceu!",
-      "body": "Presença confirmada no encontro."
-    },
-    "absent": {
-      "title": "Você perdeu esse",
-      "body": "Não perca o próximo encontro — seu lugar está esperando."
-    },
-    "host": {
-      "titlePhoto": "{{name}} venceu seu desafio!",
-      "titleMeet": "Seu encontro terminou!",
-      "body": "Obrigado por organizar.",
-      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
-    },
-    "cta": "Massa!",
-    "total": "Agora você tem {{total}} pontos",
-    "rateTitle": "Avalie este desafio",
-    "notePlaceholder": "Adicione uma nota (opcional)",
-    "saveRating": "Salvar avaliação"
-  },
-  "status": {
-    "live": "Ao vivo",
-    "done": "Concluído",
-    "ended": "Encerrado"
+    "title": "Boas-vindas! Converse à vontade aqui, sem cadastro.",
+    "cta": "Quer topar este desafio? Cadastre-se em 3 segundos"
   },
   "group": {
-    "meetCta": "Escolha a data do encontro",
-    "meetRequired": "Escolha uma data para o encontro.",
     "meetLabel": "Quando e onde",
+    "meetCta": "Definir a data do encontro",
     "meetHint": "Todo mundo que entra se encontra aqui junto. Depois você valida quem apareceu.",
+    "meetRequired": "Escolha uma data para o encontro.",
     "meetRequiredTitle": "Defina o encontro",
     "meetSet": "Definir o encontro",
     "join": "Entrar",
     "done": "Este encontro acabou.",
     "validateCta": "Validar quem apareceu",
     "validateAfter": "Você poderá validar depois do encontro · {{time}}",
-    "youreIn": "Você entrou — até lá!",
+    "youreIn": "Você entrou. Até lá!",
     "joinCta": "Entrar no desafio (+2 pts)",
     "closed": "Fechado para novas entradas",
-    "joinFailed": "Não foi possível entrar. Tente de novo.",
-    "validateFailed": "Não foi possível validar. Tente de novo.",
+    "joinFailed": "Não deu pra entrar. Tente de novo.",
+    "validateFailed": "Não deu pra validar. Tente de novo.",
     "validateTitle": "Quem apareceu?",
     "validateSub": "Marque todo mundo que veio ao encontro. Cada um ganha a recompensa.",
     "rateMeet": "Como foi o encontro?",
@@ -720,7 +700,7 @@
     "deadlineHint": "Todo mundo que entra envia uma foto antes do prazo. Você escolhe o vencedor depois.",
     "deadlineRequiredTitle": "Escolha um prazo",
     "deadlineRequired": "Escolha quanto tempo o desafio dura.",
-    "deadlinePrefix": "Até",
+    "deadlinePrefix": "Envie até",
     "contestDone": "Este desafio acabou.",
     "youreInPhoto": "Você entrou: envie sua foto abaixo.",
     "pickWinnerCta": "Escolher o vencedor",
@@ -729,9 +709,9 @@
     "winnerSub": "Escolha a melhor foto. O vencedor leva a grande recompensa.",
     "winnerConfirm": "Coroar o vencedor",
     "winnerNoSubmission": "Essa pessoa não enviou foto.",
-    "winnerFailed": "Não foi possível escolher o vencedor. Tente de novo.",
-    "submissionsHeader_one": "{{count}} fotos",
-    "submissionsHeader_many": "{{count}} fotos",
+    "winnerFailed": "Não deu pra escolher o vencedor. Tente de novo.",
+    "submissionsHeader_one": "{{count}} foto",
+    "submissionsHeader_many": "{{count}} de fotos",
     "submissionsHeader_other": "{{count}} fotos",
     "tapToPick": "escolha a melhor",
     "winnerTag": "Vencedor",
@@ -739,41 +719,27 @@
     "winnerConfirmTitle": "Coroar o vencedor?",
     "winnerConfirmBody": "{{name}} leva a grande recompensa.",
     "pickHint": "Escolha o vencedor entre as fotos abaixo.",
-    "awaitingPhotos": "Ainda sem fotos — o desafio está esquentando 🔥",
-    "checkPhotos_one": "Veja as {{count}} fotos",
-    "checkPhotos_many": "Veja as {{count}} fotos",
+    "awaitingPhotos": "Ainda sem fotos: o desafio está esquentando 🔥",
+    "checkPhotos_one": "Veja a foto",
+    "checkPhotos_many": "Veja as {{count}} de fotos",
     "checkPhotos_other": "Veja as {{count}} fotos"
-  },
-  "leaveTakeon": {
-    "pill": "Sair",
-    "confirmTitle": "Sair deste desafio?",
-    "confirmBody": "A linha do tempo volta a zero e o desafio reabre para os outros. Não dá pra desfazer.",
-    "confirmCta": "Sair",
-    "failed": "Não foi possível sair. Tente de novo."
-  },
-  "restart": {
-    "cta": "Reiniciar o desafio",
-    "confirmTitle": "Reiniciar o desafio?",
-    "confirmBody": "Isso remove o participante atual, apaga o chat e reabre o desafio do zero. Não dá pra desfazer.",
-    "confirmCta": "Reiniciar",
-    "failed": "Não foi possível reiniciar. Tente de novo."
   },
   "challengeIntro": {
     "slide1": {
       "title": "Sinta a cidade, agora",
-      "body": "Desafios são pequenas provocações do mundo real entre pessoas de uma cidade — e entre cidades."
+      "body": "Desafios são pequenas provocações no mundo real entre pessoas da mesma cidade, e entre cidades."
     },
     "slide2": {
       "title": "Monte um desafio",
-      "body": "Crie um encontro (data + lugar) ou um desafio de fotos com prazo. Você é o anfitrião."
+      "body": "Marque um encontro (data + lugar) ou crie um desafio de fotos com prazo. Quem organiza é você."
     },
     "slide3": {
-      "title": "Qualquer um entra",
-      "body": "Sem pedir, sem esperar — quem quiser entra. Você ganha +2 na hora."
+      "title": "É só entrar",
+      "body": "Sem pedir, sem esperar: quem quiser entra. Você ganha +2 na hora."
     },
     "slide4": {
       "title": "Faça acontecer",
-      "body": "Todo mundo aparece junto no seu encontro — ou envia a melhor foto antes do prazo."
+      "body": "Todo mundo aparece junto no seu encontro ou manda a melhor foto antes do prazo."
     },
     "slide5": {
       "title": "Você valida",
@@ -781,17 +747,51 @@
     },
     "slide6": {
       "title": "Entre cidades",
-      "body": "Desafios de fotos funcionam à distância — desafie outra cidade a enviar o melhor clique."
+      "body": "Desafios de fotos funcionam à distância: desafie outra cidade inteira a mandar a melhor foto."
     },
     "slide7": {
       "title": "Suba no Most Local",
-      "body": "Apareça e vença para subir no ranking. As fagulhas por entrar são pequenas: o que conta é fazer de verdade."
+      "body": "Apareça e vença pra subir no ranking. As faíscas por entrar são pequenas: o que conta é fazer de verdade."
     }
+  },
+  "result": {
+    "winner": {
+      "title": "Você venceu!",
+      "body": "Sua foto venceu o desafio."
+    },
+    "loser": {
+      "title": "{{name}} venceu",
+      "body": "Boa foto! Você ganhou {{points}} por participar. Tenta de novo na próxima"
+    },
+    "present": {
+      "title": "Você apareceu!",
+      "body": "Presença confirmada no encontro."
+    },
+    "absent": {
+      "title": "Você perdeu essa",
+      "body": "Vem pro próximo encontro: seu lugar está te esperando."
+    },
+    "host": {
+      "titlePhoto": "{{name}} venceu seu desafio!",
+      "titleMeet": "Seu encontro terminou!",
+      "body": "Valeu por organizar.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Boa!",
+    "total": "Agora você tem {{total}} pontos",
+    "rateTitle": "Avalie este desafio",
+    "notePlaceholder": "Adicione um comentário (opcional)",
+    "saveRating": "Salvar avaliação"
+  },
+  "status": {
+    "live": "Ao vivo",
+    "done": "Concluído",
+    "ended": "Encerrado"
   },
   "pointExamples": {
     "title": "3 exemplos reais",
-    "intro": "Como desafios reais pagaram — quem ganhou o quê.",
-    "empty": "Ainda sem exemplos — seja o primeiro a lançar um desafio!",
+    "intro": "Como desafios reais pagaram: quem ganhou o quê.",
+    "empty": "Ainda sem exemplos. Seja o primeiro a lançar um desafio!",
     "each": "cada",
     "line": {
       "created": "{{name}} criou",
@@ -802,16 +802,16 @@
     }
   },
   "titlePh": {
-    "food": "ex. Ache o melhor prato de pho pra mim 🍜",
-    "place": "ex. Me leve ao seu canto secreto preferido 📍",
-    "culture": "ex. Me mostre algo que só os locais conhecem 🎭",
-    "help": "ex. Me desafie a fazer algo maluco 🤪"
+    "food": "Ex.: Acha pra mim o melhor pho da cidade 🍜",
+    "place": "Ex.: Me leva no seu cantinho secreto favorito 📍",
+    "culture": "Ex.: Me mostra algo que só quem é daqui conhece 🎭",
+    "help": "Ex.: Me desafia a fazer uma loucura 🤪"
   },
   "relaunch": {
     "cta": "Reiniciar",
     "confirmTitle": "Reiniciar este desafio?",
     "confirmBody": "Ele reabre com a mesma contagem regressiva que você definiu na primeira vez.",
     "confirmCta": "Reiniciar",
-    "failed": "Não foi possível reiniciar - tente de novo."
+    "failed": "Não deu pra reiniciar. Tente de novo."
   }
 }

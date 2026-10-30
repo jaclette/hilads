@@ -1,27 +1,27 @@
 {
   "share": {
-    "bringPeople": "Trazer pessoas",
+    "bringPeople": "Chamar a galera",
     "linkCopied": "Link copiado",
     "vibeTitle": "Compartilhar esta vibe",
-    "eventAria": "Compartilhar o evento"
+    "eventAria": "Compartilhar evento"
   },
   "title": {
-    "edit": "Editar o evento",
+    "edit": "Editar evento",
     "host": "Hi plan",
     "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "Excluir este evento?",
-    "confirmBody": "Isso vai remover o evento e todas as mensagens. Não pode ser desfeito.",
+    "confirmBody": "Isso vai apagar o evento e todas as mensagens. Não dá para desfazer.",
     "cancel": "Cancelar",
-    "deleting": "Excluindo…",
+    "deleting": "Apagando…",
     "confirm": "Excluir",
-    "button": "Excluir o evento"
+    "button": "Excluir evento"
   },
   "quickStart": "Início rápido",
   "presets": {
-    "dailySpot": "Spot diário",
-    "dailySpotDesc": "Todos os dias",
+    "dailySpot": "Lugar diário",
+    "dailySpotDesc": "Todo dia",
     "everyEvening": "Toda noite",
     "everyEveningDesc": "Diário · 20h",
     "weekends": "Fins de semana",
@@ -39,11 +39,11 @@
     "other": "Outro"
   },
   "titleLabel": "Título",
-  "titlePlaceholder": "ex. Noite de jazz no Rooftop Bar",
+  "titlePlaceholder": "ex.: Noite de jazz no Rooftop Bar",
   "date": "Data",
   "today": "Hoje",
   "tomorrow": "Amanhã",
-  "todayHint": "Organizar hoje te dá a maior visibilidade",
+  "todayHint": "Marcar para hoje dá mais visibilidade",
   "starts": "Início",
   "ends": "Fim",
   "repeat": "Repetir",
@@ -66,14 +66,14 @@
   "intervalDays": "dias",
   "location": "Local",
   "locating": "Obtendo sua localização…",
-  "locationPlaceholder": "Opcional · toque para definir no mapa",
-  "clearLocation": "Limpar o local",
+  "locationPlaceholder": "Opcional · toque para marcar no mapa",
+  "clearLocation": "Limpar local",
   "errors": {
-    "endAfterStart": "O horário de fim deve ser pelo menos 15 minutos após o início",
+    "endAfterStart": "O fim precisa ser pelo menos 15 minutos depois do início",
     "pickDay": "Escolha pelo menos um dia da semana",
-    "deleteFailed": "Não foi possível excluir o evento. Tente de novo.",
-    "locUnavailable": "A localização não está disponível neste navegador. Você ainda pode criar o evento sem ela.",
-    "locFailed": "Não foi possível obter sua localização. Ative o acesso à localização ou pule o mapa."
+    "deleteFailed": "Não deu pra apagar o evento. Tente de novo.",
+    "locUnavailable": "Este navegador não tem acesso à localização. Você pode criar o evento mesmo assim.",
+    "locFailed": "Não deu pra pegar sua localização. Ative o acesso à localização ou pule o mapa."
   },
   "submit": {
     "saving": "Salvando…",
@@ -84,19 +84,21 @@
     "create": "Hi plan"
   },
   "recur": {
-    "everyday": "Todos os dias",
+    "everyday": "Todo dia",
     "weekly": "Semanal",
     "everyNDays_one": "A cada {{count}} dia",
+    "everyNDays_many": "A cada {{count}} de dias",
     "everyNDays_other": "A cada {{count}} dias"
   },
   "limit": {
     "title": "Você já criou seu evento de hoje!",
-    "body": "No Hilads, mantemos tudo fresco - um evento por dia para que cada plano receba a atenção que merece. Volte amanhã para criar outro.",
-    "legendLink": "Torne-se uma Lenda para criar eventos ilimitados",
-    "legendA11y": "Saiba mais sobre como se tornar uma Lenda",
-    "legendAlertTitle": "Torne-se uma Lenda",
-    "legendAlertBody": "Lendas são locais escolhidos para manter a cidade viva - podem organizar quantos eventos quiserem. Quer ser uma? Entre em contato em contact@hilads.live.",
+    "body": "No Hilads, a gente mantém tudo fresquinho: um evento por dia, para cada rolê ter a atenção que merece. Volte amanhã para criar outro.",
+    "legendLink": "Vire uma Lenda para criar eventos sem limite",
+    "legendA11y": "Saiba como virar uma Lenda",
+    "legendAlertTitle": "Vire uma Lenda",
+    "legendAlertBody": "As Lendas são moradores escolhidos para manter a cidade viva: podem organizar quantos eventos quiserem. Quer ser uma? Fale com a gente em contact@hilads.live.",
     "gotIt": "Entendi",
-    "backToNow": "Voltar para Now"
+    "backToNow": "Voltar para Now",
+    "yourEvent": "Seu evento"
   }
 }

@@ -8,10 +8,13 @@
     "decline": "Recusar",
     "accept": "Aceitar",
     "cancel": "Cancelar",
-    "emptyIncomingTitle": "Ainda não há pedidos de amizade",
+    "emptyIncomingTitle": "Nenhum pedido de amizade ainda",
     "emptySentTitle": "Você não enviou nenhum",
-    "emptyIncomingSub": "Quando alguém pedir sua amizade, você verá aqui.",
-    "emptySentSub": "Os pedidos de amizade pendentes que você enviou aparecerão aqui."
+    "emptyIncomingSub": "Quando alguém pedir sua amizade, aparece aqui.",
+    "emptySentSub": "Os pedidos que você enviou e ainda estão pendentes aparecem aqui.",
+    "acceptFailed": "Não deu para aceitar",
+    "declineFailed": "Não deu para recusar",
+    "cancelFailed": "Não deu para cancelar"
   },
   "blocked": {
     "title": "Usuários bloqueados",
@@ -21,7 +24,7 @@
     "unblock": "Desbloquear",
     "unblockTitle": "Desbloquear {{name}}?",
     "unblockBody": "{{name}} poderá ver seu conteúdo e te contatar de novo.",
-    "unblockFailTitle": "Não foi possível desbloquear",
+    "unblockFailTitle": "Não deu para desbloquear",
     "unblockFailBody": "Tente de novo.",
     "emptyTitle": "Você não bloqueou ninguém",
     "emptySub": "Os usuários bloqueados não verão seu conteúdo, e você não verá o deles."

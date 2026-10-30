@@ -11,7 +11,7 @@
       "help": "Ajuda",
       "meetup": "Encontro"
     },
-    "titleLabel": "O que você está pensando?",
+    "titleLabel": "Tá a fim de quê?",
     "titlePlaceholder": "Quero tomar um café",
     "detailsLabel": "Adicionar detalhes",
     "optional": "(opcional)",
@@ -23,18 +23,18 @@
     "startCta": "Hi now",
     "limitHeader": "Um de cada vez",
     "limitTitle": "Você já tem um rolê",
-    "limitSub": "Você pode ter um rolê de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",
+    "limitSub": "Você só pode ter um rolê por vez. Vá para “{{title}}” ou exclua para começar outro.",
     "limitGo": "Ir para o meu rolê",
     "yourHangout": "seu rolê",
-    "geoHint": "Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi",
-    "geoRequired": "Um Hi now diz às pessoas onde te encontrar — ative a localização para continuar."
+    "geoHint": "Ative a localização para ver quem está por perto agora e deixar a galera ao redor ver seu Hi",
+    "geoRequired": "Um Hi now mostra às pessoas onde te encontrar. Ative a localização para continuar."
   },
-  "deleteConfirm": "Excluir este rolê? Isso encerra para todo mundo e não pode ser desfeito.",
-  "deleteFailedAlert": "Não foi possível excluir. Tente de novo.",
-  "shareAria": "Compartilhar o rolê",
+  "deleteConfirm": "Apagar este rolê? Ele acaba pra todo mundo e não dá pra desfazer.",
+  "deleteFailedAlert": "Não deu pra apagar. Tente de novo.",
+  "shareAria": "Compartilhar rolê",
   "shareTitle": "Compartilhar este rolê",
   "members": {
-    "oneIn": "{{name}} está participando",
+    "oneIn": "{{name}} topou",
     "countIn": "{{count}} neste rolê",
     "seeAll": "Ver todos"
   },
@@ -44,15 +44,15 @@
   },
   "gated": {
     "title": "Rolê só para membros",
-    "pending": "Pedido pendente - você poderá entrar na conversa assim que um membro aceitar.",
-    "prompt": "Peça para participar para ver a conversa e conversar.",
-    "requestBtn": "Pedir para participar"
+    "pending": "Pedido pendente: você vai poder entrar na conversa assim que um membro aceitar.",
+    "prompt": "Peça para entrar e participe da conversa.",
+    "requestBtn": "Pedir para entrar"
   },
   "feed": {
     "beginning": "Início da conversa",
     "loading": "Carregando…",
-    "emptyTitle": "Ainda não há respostas",
-    "emptySub": "Seja o primeiro a participar"
+    "emptyTitle": "Nenhuma resposta ainda",
+    "emptySub": "Puxe a conversa"
   },
   "joinReq": {
     "someone": "Alguém",
@@ -75,10 +75,10 @@
   },
   "composer": {},
   "errors": {
-    "locFailed": "Não foi possível obter sua localização. Ative o acesso à localização e tente de novo.",
-    "imageType": "Selecione uma imagem JPEG, PNG ou WebP.",
-    "imageTooLarge": "Imagem muito grande. Máx. 10 MB.",
-    "imageSend": "Não foi possível enviar a imagem. Tente de novo.",
+    "locFailed": "Não deu pra pegar sua localização. Ative o acesso à localização e tente de novo.",
+    "imageType": "Escolha uma imagem JPEG, PNG ou WebP.",
+    "imageTooLarge": "Imagem grande demais. Máximo: 10 MB.",
+    "imageSend": "Não deu pra enviar a imagem. Tente de novo.",
     "dismiss": "{{error}} · toque para fechar"
   }
 }

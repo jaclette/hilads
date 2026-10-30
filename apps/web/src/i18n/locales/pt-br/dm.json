@@ -1,42 +1,46 @@
 {
   "title": "Mensagens",
-  "filters": { "all": "Tudo", "dms": "Mensagens diretas", "events": "Chats de eventos" },
+  "filters": {
+    "all": "Tudo",
+    "dms": "Mensagens diretas",
+    "events": "Chats de eventos"
+  },
   "loading": "Carregando…",
   "error": {
-    "loadTitle": "Não foi possível carregar as mensagens",
+    "loadTitle": "Não deu pra carregar as mensagens",
     "loadSub": "Verifique sua conexão e tente de novo."
   },
   "empty": {
-    "eventsTitle": "Ainda não há chats de eventos",
+    "eventsTitle": "Nenhum chat de evento ainda",
     "eventsSub": "Crie um evento ou participe de um para conversar com quem vai.",
-    "title": "Ainda não há mensagens",
-    "sub": "Conecte-se com as pessoas que você conhece na cidade."
+    "title": "Nenhuma mensagem ainda",
+    "sub": "Conecte-se com quem você conhece na cidade."
   },
   "sectionDms": "Mensagens diretas",
   "sectionEvents": "Chats de eventos",
   "youPrefix": "Você: {{message}}",
   "startConversation": "Comece a conversa",
-  "eventCreated": "Você criou isto",
-  "eventJoined": "Você entrou nisto",
+  "eventCreated": "Você criou",
+  "eventJoined": "Você entrou",
   "prefs": {
     "title": "Preferências de notificação",
     "dmName": "Novas mensagens diretas",
-    "dmDesc": "Quando alguém te envia uma mensagem privada",
-    "eventName": "Mensagens de chat de eventos",
+    "dmDesc": "Quando alguém te manda uma mensagem direta",
+    "eventName": "Mensagens do chat de eventos",
     "eventDesc": "Quando alguém escreve em um evento do qual você participa",
     "cityName": "Mensagens do chat da cidade",
-    "cityDesc": "Quando alguém envia uma mensagem no canal da sua cidade"
+    "cityDesc": "Quando alguém escreve no canal da sua cidade"
   },
   "thread": {
-    "loadError": "Não foi possível carregar as mensagens.",
+    "loadError": "Não deu pra carregar as mensagens.",
     "beginning": "Início da conversa",
     "photo": "Foto",
     "unavailable": "Mensagem original indisponível",
-    "tapMaps": "Toque para abrir no Maps",
+    "tapMaps": "Toque pra abrir no mapa",
     "composer": "Mensagem…",
-    "imageType": "Selecione uma imagem JPEG, PNG ou WebP.",
-    "imageTooLarge": "Imagem muito grande. Tamanho máx.: 10 MB.",
-    "imageSend": "Não foi possível enviar a imagem. Tente de novo."
+    "imageType": "Escolha uma imagem JPEG, PNG ou WebP.",
+    "imageTooLarge": "Imagem grande demais. Máximo: 10 MB.",
+    "imageSend": "Não deu pra enviar a imagem. Tente de novo."
   },
-  "directMessage": "Mensagem privada"
+  "directMessage": "Mensagem direta"
 }

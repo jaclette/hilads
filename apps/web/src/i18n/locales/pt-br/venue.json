@@ -1,7 +1,7 @@
 {
   "loading": "Carregando…",
-  "notFound": "Este local não está na Hilads.",
-  "loadError": "Não foi possível carregar este local. Tente de novo.",
+  "notFound": "Este local não está no Hilads.",
+  "loadError": "Não deu pra carregar este local. Tente de novo.",
   "breadcrumb": "Trilha de navegação",
   "category": {
     "bar": "Bar / pub",
@@ -11,7 +11,7 @@
   "address": "Endereço",
   "hours": "Horário",
   "openEveryDay": "Aberto todos os dias · {{opens}} – {{closes}}",
-  "ctaText": "Veja quem está por {{city}} agora mesmo.",
+  "ctaText": "Veja quem está por {{city}} agora.",
   "openCity": "Abrir {{city}}",
   "lastUpdated": "Atualizado em {{date}}"
 }

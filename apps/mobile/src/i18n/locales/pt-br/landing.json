@@ -1,10 +1,12 @@
 {
   "peopleHere_one": "🔥 {{count}} pessoa aqui agora mesmo",
+  "peopleHere_many": "🔥 {{count}} de pessoas aqui agora mesmo",
   "peopleHere_other": "🔥 {{count}} pessoas aqui agora mesmo",
   "vibesToday_one": "🔥 {{count}} vibe rolando hoje",
+  "vibesToday_many": "🔥 {{count}} de vibes rolando hoje",
   "vibesToday_other": "🔥 {{count}} vibes rolando hoje",
   "geoOff": "📍 Localização desativada",
-  "geoUnreachable": "📍 Não foi possível obter sua localização",
+  "geoUnreachable": "📍 Não deu para pegar sua localização",
   "pickCity": "Escolha uma cidade\ne entre na onda",
   "locating": "› localizando...",
   "requesting": "› solicitando localização...",
@@ -16,11 +18,11 @@
   "useLocation": "Usar minha localização",
   "joinCity": "Entrar em {{city}} →",
   "joinChat": "🔥 Bora",
-  "instantAccess": "anônimo · acesso instantâneo",
+  "instantAccess": "anônimo · acesso na hora",
   "keepIdentity": "ou mantenha sua identidade",
   "createAccount": "Criar conta",
   "logIn": "Entrar",
-  "authHint": "Mantenha seu nome · desbloqueie perfis · adicione amigos",
-  "joinError": "Não foi possível conectar. Verifique sua conexão e tente de novo.",
-  "conceptSub": "🔥 Locais desafiam viajantes e vice-versa — vocês se encontram para provar."
+  "authHint": "Salve seu nome · desbloqueie perfis · adicione amigos",
+  "joinError": "Não deu para conectar. Confira sua conexão e tente de novo.",
+  "conceptSub": "🔥 Moradores desafiam viajantes, viajantes desafiam moradores: marquem um encontro para provar."
 }

@@ -12,22 +12,23 @@
   },
   "meta": {
     "cityTitle": "{{city}} no Hilads - Jogue local. Compare global.",
-    "cityDesc": "Um desafio por dia, o mesmo em toda cidade. Jogue em {{city}}, tire uma foto e veja como o mundo respondeu.",
-    "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Entre em {{title}} no Hilads - um Local Event acontecendo agora. Veja quem vai e converse ao vivo."
+    "cityDesc": "Um desafio por dia, o mesmo em todas as cidades. Jogue em {{city}}, tire uma foto e veja como o mundo jogou.",
+    "eventTitle": "Evento local: {{title}} | Hilads",
+    "eventDesc": "Participe de {{title}} no Hilads, um evento local rolando agora. Veja quem vai e converse ao vivo com quem está online."
   },
   "nowTitle": "Agora",
   "filterEvents": "🎉 Eventos locais",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Rolês",
-  "publicEventsSection": "🎫 Eventos públicos",
+  "publicEventsSection": "🎫 Eventos locais públicos",
   "accountWelcome": {
     "title": "Parabéns, {{username}}!",
     "subtitle": "Sua conta está pronta - veja o que você pode fazer agora",
     "f1": "Comece um rolê e junte a galera agora mesmo",
     "f2": "Organize um evento na sua cidade",
-    "f3": "Mande uma mensagem privada para qualquer pessoa",
+    "f3": "Mande uma mensagem privada pra qualquer pessoa",
     "f4": "Veja quem está por perto, ao vivo",
-    "f5": "Conecte-se com locais e viajantes",
+    "f5": "Conecte-se com moradores e viajantes",
     "fc1": "Desafie a galera da sua cidade",
     "fc2": "Desafie outra cidade pelo mundo",
     "cta": "Bora"
@@ -38,22 +39,22 @@
     "fallbackCity": "sua cidade",
     "slide1": {
       "title": "Jogue local. Compare global.",
-      "body": "Hilads é o app que transforma viajantes em locais - e ajuda locais a compartilhar o que faz a cidade deles viver."
+      "body": "O Hilads é o app que transforma viajantes em locais, e ajuda os moradores a mostrar o que deixa a cidade viva."
     },
     "slide2": {
       "title": "Três formas de viver a cidade",
-      "itemChallenges": "🤝 Desafios - desafie ou seja desafiado a descobrir lugares escondidos, provar comida de verdade, compartilhar cultura ou ajudar.",
-      "itemHangouts": "🗣️ Hi now - conheça alguém de forma espontânea",
-      "itemEvents": "🎉 Hi plan - planeje um momento pra se ver"
+      "itemChallenges": "🤝 Desafios - desafie ou seja desafiado a descobrir lugares escondidos, provar comida de verdade, trocar cultura ou dar uma mão.",
+      "itemHangouts": "🗣️ Hi now - conheça alguém na hora",
+      "itemEvents": "🎉 Hi plan - marque um momento pra se encontrar"
     },
     "slide3": {
       "title": "Conquiste seu espaço na cidade",
-      "body": "Cada desafio que você completa, cada encontro, cada lugar que descobre te dá pontos. Os pontos refletem o quanto você virou local em {{city}}. Chegue ao topo de Most Local e conquiste seu espaço entre quem faz a cidade viver."
+      "body": "Cada desafio que você completa, cada encontro, cada lugar que descobre te dá pontos. Os pontos mostram o quanto você já virou local em {{city}}. Chegue ao topo do Most Local e conquiste seu espaço entre quem deixa a cidade viva."
     },
     "slide4": {
-      "title": "Pronto pra começar?",
-      "ctaChallenge": "📍 Lance seu primeiro desafio em {{city}}",
-      "ctaMostLocal": "🤝 Descubra Most Local de {{city}}",
+      "title": "Bora começar?",
+      "ctaChallenge": "📍 Encare seu primeiro desafio em {{city}}",
+      "ctaMostLocal": "🤝 Conheça o Most Local de {{city}}",
       "ctaLookAround": "👀 Só dar uma olhada por enquanto",
       "ctaHiNow": "🗣️ Hi now",
       "ctaHiLater": "🎉 Hi plan"
@@ -63,46 +64,46 @@
     "title": "Como funcionam os desafios",
     "slide1": {
       "title": "Desafios transformam viagens em histórias",
-      "body": "Locais e viajantes se desafiam pra fazer a cidade ganhar vida - comida, lugares, cultura, ajuda. A recompensa? Se encontrar pessoalmente - ou mandar prova à distância."
+      "body": "Moradores e viajantes se desafiam a mostrar o que a cidade tem de verdade - comida, lugares, cultura, ajuda. A recompensa? Se encontrar ao vivo, ou mandar a prova de longe."
     },
     "slide2": {
-      "title": "Lança seu desafio",
-      "body": "Comida, lugar, cultura ou ajuda. Escolha pra quem, quantas vagas e como vão fechar - encontrando ou por foto."
+      "title": "Lance seu desafio",
+      "body": "Comida, lugar, cultura ou ajuda. Escolha pra quem é, quantas vagas e como fechar: encontro ou prova por foto."
     },
     "slide3": {
       "title": "Alguém aceita",
-      "body": "Te mandam um pedido. Você revisa e aceita - sua thread privada abre pra conversar e planejar."
+      "body": "A pessoa manda um pedido. Você confere e aceita, e a conversa privada abre pra vocês combinarem tudo."
     },
     "slide4": {
       "title": "Encontro ou prova por foto",
-      "body": "Se encontrem pessoalmente ou mandem uma foto à distância - você decide. De qualquer jeito, cada passo é acompanhado."
+      "body": "Encontrem-se ao vivo ou mandem uma foto de longe, você decide. De qualquer jeito, cada passo fica registrado."
     },
     "slide5": {
-      "title": "Fecha o desafio",
-      "body": "Depois do encontro (ou quando a foto chegar), marque como concluído. Sua cidade, vivida de verdade - um desafio por vez."
+      "title": "Feche o desafio",
+      "body": "Depois do encontro (ou quando a foto chegar), marque como concluído. Sua cidade vivida de verdade, um desafio de cada vez."
     },
     "next": "Próximo",
     "done": "Entendi!",
     "skip": "Pular ✕",
     "slide6": {
       "title": "Além da sua cidade",
-      "body": "Desafie qualquer pessoa, em qualquer lugar. Ela manda a prova - uma foto geolocalizada - e você valida à distância. O mesmo fluxo de foto serve pro local também. Local ou global, todo desafio conta."
+      "body": "Desafie qualquer pessoa, em qualquer lugar. Ela manda a prova, uma foto geolocalizada, e você valida de longe. O mesmo fluxo de foto vale pro local também. Local ou global, todo desafio conta."
     },
     "slide7": {
-      "title": "Vire o Most Local",
-      "body": "Cada desafio te dá pontos - na sua cidade E no mundo. Se encontrem pessoalmente para um bônus de +50. Local ou viajante, o que importa é o que você constrói aqui. Ranking novo todo mês."
+      "title": "Seja o Most Local",
+      "body": "Cada desafio te dá pontos, na sua cidade E no mundo. Encontrem-se ao vivo e ganhem +50 de bônus. Local ou viajante, o que importa é o que você constrói aqui. Ranking novo todo mês."
     },
     "createCta": "🔥 Criar um desafio"
   },
   "share": {
     "title": "Compartilhe algo",
     "snap": "Tire uma foto",
-    "snapDesc": "Para o desafio de hoje ou só por diversão",
+    "snapDesc": "Pro desafio de hoje ou só por diversão",
     "spot": "Marque seu lugar",
-    "spotDesc": "Compartilhe sua localização atual",
+    "spotDesc": "Compartilhe onde você está",
     "spotLoading": "Obtendo sua localização…",
-    "plan": "Criar um plano",
-    "planDesc": "Escolha uma hora e um lugar, os outros entram",
+    "plan": "Criar um rolê",
+    "planDesc": "Escolha um horário e um lugar, e a galera entra",
     "hiNow": "Hi now",
     "hiNowDesc": "A fim de algo agora? Fala aí"
   },
@@ -129,13 +130,13 @@
     }
   },
   "composer": {
-    "attach": "Adicionar um anexo",
+    "attach": "Adicionar anexo",
     "emoji": "Emoji",
     "placeholderCity": "Manda um oi pra sua cidade",
     "placeholderHangout": "Avisa que você tá dentro",
     "placeholderEvent": "Converse com quem vai",
-    "placeholderChallenge": "Torça por eles ou compartilhe sua dica",
-    "placeholderWorld": "Pergunte ao mundo como ele faz"
+    "placeholderChallenge": "Torça pela galera ou compartilhe sua dica",
+    "placeholderWorld": "Pergunte pro mundo como é por lá"
   },
   "vibe": {
     "party": "Festa",
@@ -143,15 +144,15 @@
     "coffee": "Café",
     "music": "Música",
     "food": "Comida",
-    "chill": "Relax"
+    "chill": "De boa"
   },
   "weather": {
     "clear": "céu limpo",
-    "sunnyHot": "tempo lindo",
+    "sunnyHot": "dia lindo",
     "clearNight": "noite limpa",
-    "mostlyClear": "quase limpo",
+    "mostlyClear": "quase sem nuvens",
     "partly": "algumas nuvens",
-    "overcast": "céu cinzento",
+    "overcast": "céu nublado",
     "fog": "neblina",
     "drizzle": "garoa",
     "rain": "chuva",
@@ -181,7 +182,6 @@
   "filterChallenges": "🔥 Desafios",
   "shareToCity": "Compartilhar na minha cidade",
   "shareToWorld": "Compartilhar no Mundo",
-  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Ver o ranking",
     "challenge": "Ver o desafio",
@@ -198,25 +198,25 @@
     "title": "Mostrar",
     "world": "Mundo",
     "pickCity": "Escolha uma cidade",
-    "citySub": "O challenge, as fotos e os spots da sua cidade",
-    "worldSub": "Fotos e spots de todas as cidades",
+    "citySub": "O desafio, as fotos e os lugares da sua cidade",
+    "worldSub": "Fotos e lugares de todas as cidades",
     "changeCity": "Trocar de cidade",
     "a11y": "Mostrando {{scope}}. Toque para trocar",
     "here": "Você está em {{city}}",
     "hereUnknown": "Onde você está?",
-    "hereSub": "Não é isso? Mude onde você joga"
+    "hereSub": "Não é aqui? Mude onde você joga"
   },
-  "signUp": "Cadastrar",
+  "signUp": "Cadastre-se",
   "settings": "Configurações",
   "firstLaunch": "Jogue local. Compare global.",
   "subtitles": {
-    "map": "Spots das fotos do mundo.",
-    "hi": "Dá um oi pra sua cidade. Entra num plano.",
+    "map": "Lugares das fotos do mundo.",
+    "hi": "Dá um oi pra sua cidade. Entra num rolê.",
     "passport": "Suas cidades, suas fotos, seus carimbos."
   },
   "photoBy": "Foto de @{{username}}",
   "pick": {
-    "badge": "Seleção Hilads",
+    "badge": "Escolha do Hilads",
     "goodToKnow": "Bom saber",
     "credit": "Foto: {{credit}}",
     "source": "Fonte"
@@ -232,38 +232,38 @@
     "textPassportNoCity": "Meu passaporte Hilads. Mesmo desafio. Mundos diferentes."
   },
   "represent": {
-    "empty": "{{city}} ainda não jogou hoje. Seja o primeiro.",
-    "beFirst": "Seja o primeiro a jogar por {{city}}",
+    "empty": "{{city}} ainda não jogou hoje. Saia na frente.",
+    "beFirst": "Abra o placar por {{city}}",
     "emptyThere": "{{city}} ainda não jogou hoje.",
     "notIn": "Não está em {{city}}?",
     "change": "Mudar",
     "locationNeeded": "Permita a localização para jogar por onde você está.",
     "button": "Jogue por {{city}}",
     "firstPosted": "Você colocou {{city}} no mapa do mundo de hoje.",
-    "pioneer": "Pioneiro de {{city}}",
-    "spotOne": "Spot nº 1 em {{city}}",
+    "pioneer": "Pioneer de {{city}}",
+    "spotOne": "Lugar #1 em {{city}}",
     "streak_one": "{{city}} jogou {{count}} dia seguido",
     "streak_many": "{{city}} jogou {{count}} de dias seguidos",
     "streak_other": "{{city}} jogou {{count}} dias seguidos",
     "board_one": "{{count}} cidade está no placar de hoje. {{city}} ainda não.",
-    "board_many": "{{count}} cidades estão no placar de hoje. {{city}} ainda não.",
+    "board_many": "{{count}} de cidades estão no placar de hoje. {{city}} ainda não.",
     "board_other": "{{count}} cidades estão no placar de hoje. {{city}} ainda não.",
-    "mapEmpty": "{{city}} ainda não está no mapa do mundo. Coloque lá.",
+    "mapEmpty": "{{city}} ainda não está no mapa do mundo. Bora colocar?",
     "invite": "Convide um amigo",
     "share": "Jogue por {{city}} comigo no Hilads.",
-    "pioneerTitle": "Selos de pioneiro",
+    "pioneerTitle": "Selos Pioneer",
     "pioneerSub": "A primeira foto aprovada numa cidade. Sua para sempre."
   },
   "appModal": {
     "title": {
-      "play": "Baixe o app para jogar",
-      "playCity": "Baixe o app para jogar por {{city}}",
-      "vote": "Baixe o app para votar em {{city}}",
-      "joinPlan": "Baixe o app para entrar neste plano",
-      "sayHi": "Baixe o app para dar oi a {{city}}",
-      "propose": "Baixe o app para propor um desafio"
+      "play": "Baixe o app pra jogar",
+      "playCity": "Baixe o app pra jogar por {{city}}",
+      "vote": "Baixe o app pra votar em {{city}}",
+      "joinPlan": "Baixe o app pra entrar neste rolê",
+      "sayHi": "Baixe o app pra dar um oi pra {{city}}",
+      "propose": "Baixe o app pra propor um desafio"
     },
-    "sub": "É grátis e leva um minuto.",
+    "sub": "É grátis e leva um minutinho.",
     "download": "Baixar o app",
     "keepExploring": "Continuar explorando",
     "scan": "Escaneie com o celular"
@@ -281,5 +281,38 @@
     "setting": "Mostrar minhas fotos",
     "on": "Sim",
     "off": "Não"
+  },
+  "a11y": {
+    "close": "Fechar",
+    "back": "Voltar",
+    "dismiss": "Fechar",
+    "mainNav": "Principal",
+    "emojiPicker": "Seletor de emoji",
+    "cancelReply": "Cancelar resposta",
+    "welcome": "Boas-vindas",
+    "approve": "Aprovar"
+  },
+  "tapToOpenMaps": "Toque pra abrir no mapa",
+  "openInApp": {
+    "text": "Continue no app do Hilads pra aproveitar tudo",
+    "cta": "Abrir app"
+  },
+  "appPromo": {
+    "text": "Aproveite o Hilads completo",
+    "ctaIos": "Baixar na App Store",
+    "ctaAndroid": "Disponível no Google Play",
+    "regionIos": "Baixe o app do Hilads para iOS",
+    "regionAndroid": "Baixe o app do Hilads para Android",
+    "pitchPush": "Notificações push em tempo real",
+    "pitchFast": "Feed mais rápido e fluido",
+    "pitchAnim": "Animações nativas",
+    "ctaPlay": "Baixar no Google Play",
+    "continueBrowser": "Continuar no navegador"
+  },
+  "deleteAccount": {
+    "title": "Excluir sua conta",
+    "body": "Pra excluir sua conta do Hilads e todos os dados ligados a ela, mande um e-mail para:",
+    "note": "Coloque seu nome de usuário no pedido. Seus dados serão apagados para sempre em até 48 horas.",
+    "back": "Voltar para o Hilads"
   }
 }

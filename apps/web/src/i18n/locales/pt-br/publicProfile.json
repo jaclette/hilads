@@ -1,12 +1,12 @@
 {
   "title": "Perfil",
   "loading": "Carregando…",
-  "loadError": "Não foi possível carregar o perfil.",
+  "loadError": "Não deu pra carregar o perfil.",
   "badgeMicro": {
     "ghost": "Só dando uma olhada",
     "fresh": "Acabou de chegar",
     "regular": "Aparece sempre",
-    "host": "Faz as coisas acontecerem"
+    "host": "Faz acontecer"
   },
   "modes": {
     "local": "Local",
@@ -18,13 +18,13 @@
     "coffee": "Café",
     "music": "Música",
     "food": "Comida",
-    "chill": "Relax"
+    "chill": "De boa"
   },
   "vibeTaglines": {
-    "party": "Aqui pela vida noturna",
-    "board_games": "Traz petiscos e dados",
+    "party": "Aqui pela noite",
+    "board_games": "Traga petiscos e dados",
     "coffee": "Primeiro o café, o resto depois",
-    "music": "Sempre atrás de um bom som",
+    "music": "Sempre atrás de um som bom",
     "food": "Primeiro a gente come, depois conversa",
     "chill": "De boa, na vibe certa"
   },
@@ -46,25 +46,27 @@
   },
   "host": "Anfitrião",
   "live": "Ao vivo",
+  "past": "Passado",
   "empty": {
-    "hangouts": "Ainda não há rolês",
-    "events": "Ainda não há eventos",
-    "friends": "Ainda não há amigos",
+    "hangouts": "Nenhum rolê ainda",
+    "events": "Nenhum evento ainda",
+    "friends": "Nenhum amigo ainda",
     "challenges": "Nenhum desafio ainda"
   },
   "vibesTab": {
-    "score": "{{score}} de vibe score",
-    "basedOn_one": "com base em {{count}} vibe",
-    "basedOn_other": "com base em {{count}} vibes",
+    "score": "Pontuação de vibe: {{score}}",
+    "basedOn_one": "baseado em {{count}} vibe",
+    "basedOn_many": "baseado em {{count}} de vibes",
+    "basedOn_other": "baseado em {{count}} vibes",
     "updateNote": "Editar sua nota ({{rating}}★)",
     "leaveNote": "Deixar uma nota",
-    "placeholder": "Diga algo bacana… (opcional)",
+    "placeholder": "Diga algo legal… (opcional)",
     "cancel": "Cancelar",
     "sending": "Enviando…",
-    "sendNote": "Enviar a nota",
+    "sendNote": "Enviar nota",
     "notesLabel": "Notas · {{count}}",
-    "emptyTitle": "Ainda não há notas",
-    "emptySub": "Seja o primeiro a deixar uma nota"
+    "emptyTitle": "Nenhuma nota ainda",
+    "emptySub": "Deixe a primeira nota"
   },
   "picks": {
     "restaurant": "Restaurante favorito",
@@ -75,10 +77,10 @@
   "actions": {
     "opening": "Abrindo…",
     "message": "Mensagem",
-    "friend": "Amigo",
+    "friend": "Amigos",
     "requestSent": "Pedido enviado",
     "acceptRequest": "Aceitar pedido",
-    "addFriend": "+ Amigo",
+    "addFriend": "+ Adicionar",
     "removing": "Removendo…",
     "unfriend": "Desfazer amizade",
     "cancel": "Cancelar",
@@ -89,12 +91,11 @@
   },
   "report": {
     "existing": "Você denunciou este usuário em {{date}}. Sua denúncia está em análise.",
-    "sent": "Denúncia enviada. Obrigado por avisar.",
+    "sent": "Denúncia enviada. Valeu por avisar.",
     "placeholder": "Descreva o problema (mín. 10 caracteres)…",
-    "error": "Não foi possível enviar a denúncia. Tente de novo.",
+    "error": "Não deu pra enviar a denúncia. Tente de novo.",
     "sending": "Enviando…",
     "submit": "Enviar denúncia",
     "cancel": "Cancelar"
-  },
-  "past": "Passado"
+  }
 }

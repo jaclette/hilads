@@ -1,10 +1,4 @@
 {
-  "badge": {
-    "ghost": "Ghost",
-    "fresh": "Novato",
-    "regular": "Da turma",
-    "host": "Lenda"
-  },
   "now": "now",
   "myCity": "my city",
   "here": "here",
@@ -17,6 +11,12 @@
     "coffee": "Café",
     "music": "Música",
     "food": "Comida",
-    "chill": "Relax"
+    "chill": "De boa"
+  },
+  "badge": {
+    "ghost": "Ghost",
+    "fresh": "Novato",
+    "regular": "Da turma",
+    "host": "Lenda"
   }
 }
