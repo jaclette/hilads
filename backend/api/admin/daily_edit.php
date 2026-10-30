@@ -276,7 +276,18 @@ daily_styles();
 
             <?php if (!$isNew):
                 $coverTheme = DailyThemes::effective($theme, $date !== '' ? $date : DailyClock::currentDate()) ?? 'only_here';
-                $coverUrl   = $challenge['cover_url'] ?? null; ?>
+                $coverUrl   = $challenge['cover_url'] ?? null;
+                // What the apps show without a cover of its own, as they decide it: the API's coverUrl
+                // (DailyChallengeRepository: the special day's cover, else the theme's set in Specials), else
+                // the image bundled in the apps (features/today/covers.ts: a special day's own, Halloween, else
+                // its weekday theme's).
+                $specialId  = (string) ($challenge['special_id'] ?? '');
+                $isSpecial  = $coverTheme === DailyThemes::SPECIAL;
+                $bundled    = !$isSpecial ? $coverTheme
+                    : (preg_replace('/-\d{4}$/', '', $specialId) === 'halloween' ? 'halloween' : DailyThemes::forDate($date !== '' ? $date : DailyClock::currentDate()));
+                $themeCover = ($isSpecial ? (DailySpecials::payload($specialId ?: null)['coverUrl'] ?? null) : null)
+                    ?? DailyThemes::covers()[$coverTheme]
+                    ?? 'https://hilads.live/covers/' . $bundled . '.jpg'; ?>
                 <?php $hl = json_decode((string) ($challenge['headline_i18n'] ?? ''), true) ?: []; $hlTr = array_diff_key($hl, ['en' => true]); ?>
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="headline" style="margin-top:16px">
                     <?= csrf_input() ?><input type="hidden" name="action" value="save_headline">
@@ -314,7 +325,9 @@ daily_styles();
                     <?= csrf_input() ?>
                     <h3 style="margin-bottom:4px">Cover image</h3>
                     <p class="daily-muted">The image band at the top of the Daily Challenge card (about 400×160 shown, upload at least 1200×480). Without one, the theme's default image shows.</p>
-                    <img src="<?= dh($coverUrl ?? ('https://hilads.live/covers/' . $coverTheme . '.jpg')) ?>" alt=""
+                    <?php // A just-uploaded image can answer a moment late: the preview tries again (2 s, then 5 s) before giving up. ?>
+                    <img src="<?= dh($coverUrl ?? $themeCover) ?>" alt="" data-tries="0"
+                         onerror="var n=+this.dataset.tries;if(n<2){this.dataset.tries=n+1;var s=this.src.split('?')[0];var i=this;setTimeout(function(){i.src=s+'?r='+Date.now()},n?5000:2000)}"
                          style="width:100%;max-width:480px;aspect-ratio:5/2;object-fit:cover;border-radius:10px;display:block;margin:10px 0">
                     <div class="hint" style="margin-bottom:10px"><?= $coverUrl ? 'Custom cover for this challenge.' : 'Default image of the theme (' . dh($coverTheme) . ').' ?></div>
                     <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">

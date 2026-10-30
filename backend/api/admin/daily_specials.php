@@ -163,7 +163,8 @@ daily_styles();
                 <input type="hidden" name="theme" value="<?= dh($key) ?>">
                 <h3 style="margin-bottom:6px"><?= dh(DailyThemes::name($key)) ?><?= $key === DailyThemes::SPECIAL ? ' <span class="daily-muted" style="font-size:12px">(a special without its own cover)</span>' : '' ?></h3>
                 <?php if (isset(DailyThemes::DESCRIPTIONS[$key])): ?><div class="daily-muted" style="margin-bottom:6px"><?= dh(DailyThemes::DESCRIPTIONS[$key]) ?></div><?php endif; ?>
-                <img src="<?= dh($url ?? ('https://hilads.live/covers/' . ($key === DailyThemes::SPECIAL ? 'only_here' : $key) . '.jpg')) ?>" alt=""
+                <img src="<?= dh($url ?? ('https://hilads.live/covers/' . ($key === DailyThemes::SPECIAL ? 'only_here' : $key) . '.jpg')) ?>" alt="" data-tries="0"
+                     onerror="var n=+this.dataset.tries;if(n<2){this.dataset.tries=n+1;var s=this.src.split('?')[0];var i=this;setTimeout(function(){i.src=s+'?r='+Date.now()},n?5000:2000)}"
                      style="width:100%;aspect-ratio:5/2;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px">
                 <div class="hint" style="margin-bottom:6px"><?= $url ? 'Uploaded.' : (in_array($key, DailyThemes::PLACEHOLDER_COVERS, true)
                     ? '<strong>Placeholder</strong>: upload this theme\'s cover.' : 'Bundled default.') ?></div>
