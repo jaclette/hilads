@@ -10,7 +10,7 @@
   "pickStart": "Kies een begindag (tot {{max}} dagen)",
   "apply": "Toepassen",
   "emptyTitle": "Hier is nog niets",
-  "emptyRecentSub": "Voorbije evenementen en meetups verschijnen hier zodra de stad wat geschiedenis heeft.",
-  "emptyWindowSub": "Geen evenementen of meetups in dit venster. Probeer een ruimer bereik.",
+  "emptyRecentSub": "Afgelopen evenementen en meetups verschijnen hier zodra de stad wat geschiedenis heeft.",
+  "emptyWindowSub": "Geen evenementen of meetups in deze periode. Kies een langere periode.",
   "filterChallenges": "Challenges"
 }

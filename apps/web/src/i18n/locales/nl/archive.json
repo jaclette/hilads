@@ -14,7 +14,7 @@
   },
   "picker": {
     "pickEnd": "Kies nu de einddag",
-    "pickStart": "Kies een startdag (tot {{max}} dagen)",
+    "pickStart": "Kies een begindag (tot {{max}} dagen)",
     "apply": "Toepassen"
   },
   "public": "Openbaar",
@@ -28,7 +28,7 @@
   "retry": "Opnieuw proberen",
   "emptyTitle": "Hier is nog niets",
   "emptyRecentSub": "Afgelopen evenementen en meetups verschijnen hier zodra de stad wat geschiedenis heeft.",
-  "emptyWindowSub": "Geen evenementen of meetups in deze periode. Probeer een ruimere periode.",
+  "emptyWindowSub": "Geen evenementen of meetups in deze periode. Kies een langere periode.",
   "loadMore": "Meer laden",
   "loading": "Laden…"
 }

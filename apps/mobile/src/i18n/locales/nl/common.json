@@ -12,36 +12,37 @@
   },
   "nowTitle": "Nu",
   "filterEvents": "Lokale evenementen",
+  "hiLocalTitle": "👋 Hi Local",
   "filterHangouts": "🗣️ Meetups",
   "publicEventsSection": "Openbare evenementen",
   "accountWelcome": {
     "title": "Gefeliciteerd, {{username}}!",
-    "subtitle": "Je account is klaar - dit kun je nu doen",
+    "subtitle": "Je account is klaar. Dit kun je nu doen",
     "f1": "Start een meetup en breng meteen mensen samen",
     "f2": "Organiseer een evenement in je stad",
     "f3": "Stuur iedereen een privébericht",
     "f4": "Zie live wie er in de buurt is",
     "f5": "Maak contact met locals en reizigers",
     "fc1": "Daag de locals in jouw stad uit",
-    "fc2": "Daag een andere stad wereldwijd uit",
-    "cta": "Let's go"
+    "fc2": "Daag een stad aan de andere kant van de wereld uit",
+    "cta": "Aan de slag"
   },
   "share": {
     "title": "Deel iets",
     "snap": "Maak een foto",
     "snapDesc": "Voor de challenge van vandaag of gewoon voor de lol",
     "spot": "Deel je plek",
-    "spotDesc": "Deel je huidige locatie",
+    "spotDesc": "Deel waar je nu bent",
     "spotLoading": "Je locatie ophalen…",
-    "plan": "Plan maken",
+    "plan": "Maak een plan",
     "planDesc": "Kies een tijd en een plek, anderen doen mee",
     "hiNow": "Hi now",
-    "hiNowDesc": "Nu zin in iets? Zeg het"
+    "hiNowDesc": "Zin in iets, nu meteen? Zeg het"
   },
   "locationPicker": {
     "title": "Waar ben je?",
     "search": "Zoek een adres of plek",
-    "moveHint": "Verschuif de kaart om aan te passen",
+    "moveHint": "Schuif de kaart om aan te passen",
     "noResults": "Geen plekken gevonden",
     "loading": "Locatie ophalen…",
     "confirm": "Deel deze plek",
@@ -60,7 +61,8 @@
   "membersEmpty": "Nog niemand",
   "shareLabel": "Delen",
   "back": "Terug",
-  "connectionHint": "Controleer je verbinding en probeer het opnieuw.",
+  "placedBanner": "We hebben je in {{city}} gezet. Je kunt het bovenaan wijzigen.",
+  "connectionHint": "Check je verbinding en probeer het opnieuw.",
   "notifications": "Meldingen",
   "messages": "Berichten",
   "someone": "Iemand",
@@ -68,40 +70,40 @@
   "openSettings": "Instellingen openen",
   "composer": {
     "placeholderDefault": "Stuur een bericht…",
+    "endedEvent": "Dit evenement is afgelopen",
+    "closedChallenge": "Deze challenge is gesloten",
     "attach": "Bijlage toevoegen",
-    "sendPhotoTitle": "Een foto versturen",
+    "sendPhotoTitle": "Stuur een foto",
     "takePhoto": "Foto maken",
-    "chooseLibrary": "Kiezen uit galerij",
+    "chooseLibrary": "Kies uit je galerij",
     "photoPermTitle": "Toestemming nodig",
     "photoPermBody": "Geef toegang tot foto's om afbeeldingen in de chat te delen.",
-    "cameraPermTitle": "Cameratoestemming vereist",
+    "cameraPermTitle": "Cameratoegang nodig",
     "cameraPermSettings": "Geef toegang tot de camera via Instellingen → Hilads → Camera.",
     "cameraPermBody": "Cameratoegang is nodig om foto's te maken.",
     "cameraUnavailTitle": "Camera niet beschikbaar",
-    "cameraUnavailBody": "De camera kon niet worden geopend. Probeer het opnieuw.",
-    "locPermTitle": "Locatietoegang vereist",
-    "locPermSettings": "Schakel locatie in via Instellingen → Hilads → Locatie.",
+    "cameraUnavailBody": "Kon de camera niet openen. Probeer het opnieuw.",
+    "locPermTitle": "Locatietoegang nodig",
+    "locPermSettings": "Zet locatie aan via Instellingen → Hilads → Locatie.",
     "locNeededTitle": "Locatie nodig",
     "locNeededBody": "Geef locatietoegang om je plek te delen.",
     "placeholderCity": "Zeg hoi tegen je stad",
     "placeholderHangout": "Laat ze weten dat je erbij bent",
     "placeholderEvent": "Chat met de aanwezigen",
     "placeholderChallenge": "Moedig ze aan of deel je tip",
-    "endedEvent": "Dit event is afgelopen",
-    "closedChallenge": "Deze challenge is gesloten",
     "send": "Versturen",
-    "emoji": "Emoji’s",
+    "emoji": "Emoji",
     "placeholderWorld": "Vraag de wereld hoe zij het doen"
   },
   "modeHeading": "Modus",
   "mode": {
     "local": {
-      "label": "Local",
+      "label": "Lokaal",
       "desc": "Je kent deze stad"
     },
     "exploring": {
       "label": "Verkennen",
-      "desc": "Je bent hem aan het ontdekken"
+      "desc": "Je bent 'm aan het ontdekken"
     }
   },
   "badge": {
@@ -119,20 +121,23 @@
     "chill": "Chillen"
   },
   "live": "Live",
+  "past": "Afgelopen",
   "activeNow": "Nu actief",
   "replies_one": "{{count}} reactie",
   "replies_other": "{{count}} reacties",
   "noReplies": "Geen reacties",
-  "noRepliesFirst": "Nog geen reacties - wees de eerste",
+  "noRepliesFirst": "Nog geen reacties. Wees de eerste!",
+  "sayHi": "Zeg hoi tegen {{name}}",
+  "hostWaiting": "Wachten op de eerste hoi",
   "weather": {
     "clear": "heldere lucht",
     "sunnyHot": "prachtig weer",
     "clearNight": "heldere nacht",
     "mostlyClear": "overwegend helder",
-    "partly": "enkele wolken",
-    "overcast": "bewolkt",
-    "fog": "mist",
-    "drizzle": "motregen",
+    "partly": "wat wolken",
+    "overcast": "grijze lucht",
+    "fog": "mistig",
+    "drizzle": "lichte motregen",
     "rain": "regen",
     "snow": "sneeuw",
     "snowShowers": "sneeuwbuien",
@@ -157,23 +162,18 @@
     "expiresInHour": "Verloopt over {{count}} u"
   },
   "shareToCity": "Deel in mijn stad",
-  "shareToWorld": "Delen in de Wereld",
-  "hiLocalTitle": "👋 Hi Local",
-  "past": "Voorbij",
-  "sayHi": "Zeg {{name}} gedag",
-  "hostWaiting": "Wachten op de eerste begroeting",
-  "shareToCityError": "Kon niet delen in je stad. Probeer opnieuw.",
-  "shareToWorldError": "Delen in de Wereld mislukt. Probeer opnieuw.",
-  "placedBanner": "We plaatsten je in {{city}} — je kunt het bovenaan wijzigen.",
+  "shareToWorld": "Delen in Wereld",
+  "shareToCityError": "Delen in je stad lukte niet. Probeer het opnieuw.",
+  "shareToWorldError": "Delen in Wereld lukte niet. Probeer het opnieuw.",
   "shareCta": {
     "leaderboard": "Bekijk het klassement",
     "challenge": "Bekijk de challenge",
-    "event": "Bekijk de Hi plan",
+    "event": "Bekijk het Hi plan",
     "topic": "Bekijk de Hi now"
   },
   "delete": "Verwijderen",
   "deleteConversationTitle": "Gesprek verwijderen?",
-  "deleteConversationBody": "Het wordt uit je berichten verwijderd en verschijnt weer als ze je opnieuw berichten.",
+  "deleteConversationBody": "Het verdwijnt uit je berichten en komt terug als die persoon je weer een bericht stuurt.",
   "tabs": {
     "today": "Vandaag",
     "map": "Kaart",
@@ -184,10 +184,10 @@
     "title": "Tonen",
     "world": "Wereld",
     "pickCity": "Kies een stad",
-    "citySub": "De challenge, foto's en spots van jouw stad",
-    "worldSub": "Foto's en spots uit alle steden",
-    "changeCity": "Stad wijzigen",
-    "a11y": "Toont {{scope}}. Tik om te wijzigen",
+    "citySub": "De challenge, foto's en plekken van jouw stad",
+    "worldSub": "Foto's en plekken uit alle steden",
+    "changeCity": "Van stad wisselen",
+    "a11y": "{{scope}} wordt getoond. Tik om te wijzigen",
     "here": "Je bent in {{city}}",
     "hereUnknown": "Waar ben je?",
     "hereSub": "Klopt niet? Kies waar je speelt"
@@ -195,16 +195,16 @@
   "notificationsUnread_one": "Meldingen, {{count}} ongelezen",
   "notificationsUnread_other": "Meldingen, {{count}} ongelezen",
   "update": {
-    "availableBody": "Er is een nieuwe versie van Hilads.",
+    "availableBody": "Er is een nieuwe versie van Hilads klaar.",
     "cta": "Updaten",
     "later": "Later",
-    "requiredTitle": "Update Hilads",
+    "requiredTitle": "Hilads updaten",
     "requiredBody": "Deze versie wordt niet meer ondersteund. Update de app om Hilads te blijven gebruiken."
   },
-  "mapSoon": "De kaart met spots komt binnenkort.",
+  "mapSoon": "De kaart met plekken komt binnenkort.",
   "firstLaunch": "Speel lokaal. Vergelijk wereldwijd.",
   "signUp": "Aanmelden",
-  "open": "Openen",
+  "open": "Open",
   "camera": {
     "grant": "Camera toestaan",
     "retake": "Opnieuw",
@@ -219,14 +219,14 @@
     "placeholder": "Beschrijf het probleem (min. 10 tekens)",
     "submit": "Melding versturen",
     "sentTitle": "Melding verstuurd",
-    "sentBody": "Bedankt voor je melding. Ons team bekijkt het.",
+    "sentBody": "Bedankt dat je het laat weten. Ons team gaat ernaar kijken.",
     "dupTitle": "Al gemeld",
     "dupBody": "Je hebt deze gebruiker op {{date}} gemeld. Je melding wordt bekeken.",
     "errorTitle": "Fout",
     "errorBody": "Melding versturen mislukt. Probeer het opnieuw."
   },
   "subtitles": {
-    "map": "Spots uit de foto's van de wereld.",
+    "map": "Plekken uit de foto's van de hele wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
     "passport": "Je steden, je foto's, je stempels."
   },
@@ -244,13 +244,13 @@
   },
   "citySwitch": {
     "title": "Je bent in {{city}}",
-    "body": "Je stad is {{from}}. Overstappen naar {{city}}?",
-    "switch": "Naar {{city}}",
+    "body": "Je stad is {{from}}. Wisselen naar {{city}}?",
+    "switch": "Wissel naar {{city}}",
     "stay": "In {{from}} blijven"
   },
   "promo": {
     "askTitle": "Mag Hilads je foto's laten zien, altijd met vermelding?",
-    "askBody": "Je Daily Challenge-foto's kunnen in onze posts op Instagram, TikTok en YouTube verschijnen, altijd met je @gebruikersnaam. Je kunt dit altijd wijzigen in Instellingen.",
+    "askBody": "Je Daily Challenge-foto's kunnen in onze posts op Instagram, TikTok en YouTube verschijnen, altijd met je @gebruikersnaam. Je kunt dit op elk moment aanpassen in Instellingen.",
     "allow": "Toestaan",
     "notNow": "Niet nu",
     "setting": "Mijn foto's tonen",
@@ -259,6 +259,6 @@
   },
   "wakingUp": {
     "title": "Hilads wordt wakker… 🌍",
-    "body": "Over een paar seconden terug, we blijven het proberen."
+    "body": "Over een paar tellen zijn we terug, we blijven het proberen."
   }
 }

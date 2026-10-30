@@ -7,34 +7,34 @@
       "general": "Algemeen",
       "tips": "Tips",
       "food": "Eten",
-      "drinks": "Borrelen",
+      "drinks": "Drankjes",
       "help": "Hulp",
       "meetup": "Afspreken"
     },
-    "titleLabel": "Wat houdt je bezig?",
-    "titlePlaceholder": "Ik wil een koffie drinken",
+    "titleLabel": "Waar heb je zin in?",
+    "titlePlaceholder": "Ik wil ergens koffie drinken",
     "detailsLabel": "Details toevoegen",
     "optional": "(optioneel)",
-    "detailsPlaceholder": "Geef het wat context…",
+    "detailsPlaceholder": "Geef er wat context bij…",
     "expiry": "Verloopt automatisch na 8 u",
     "saving": "Opslaan…",
     "starting": "Starten…",
-    "saveChanges": "Wijzigingen opslaan",
+    "saveChanges": "Opslaan",
     "startCta": "Hi now",
     "limitHeader": "Eén tegelijk",
     "limitTitle": "Je hebt al een meetup",
-    "limitSub": "Je kunt één meetup tegelijk hebben. Ga naar “{{title}}” of verwijder hem om een nieuwe te starten.",
+    "limitSub": "Je kunt maar één meetup tegelijk hebben. Ga naar “{{title}}” of verwijder hem om een nieuwe te starten.",
     "limitGo": "Ga naar mijn meetup",
     "yourHangout": "je meetup",
-    "geoHint": "Zet locatie aan om te zien wie er nu in de buurt is — en laat mensen dichtbij je Hi zien",
-    "geoRequired": "Een Hi now vertelt mensen waar ze je vinden — zet locatie aan om door te gaan."
+    "geoHint": "Zet je locatie aan om te zien wie er nu in de buurt is, en laat mensen in de buurt je Hi zien",
+    "geoRequired": "Met een Hi now zien mensen waar ze je kunnen vinden. Zet je locatie aan om verder te gaan."
   },
-  "deleteConfirm": "Deze meetup verwijderen? Hiermee beëindig je hem voor iedereen en dit kan niet ongedaan worden gemaakt.",
-  "deleteFailedAlert": "Verwijderen mislukt. Probeer opnieuw.",
+  "deleteConfirm": "Deze meetup verwijderen? Hij stopt dan voor iedereen en dat kun je niet terugdraaien.",
+  "deleteFailedAlert": "Verwijderen lukte niet. Probeer het opnieuw.",
   "shareAria": "Meetup delen",
   "shareTitle": "Deel deze meetup",
   "members": {
-    "oneIn": "{{name}} doet mee",
+    "oneIn": "{{name}} is erbij",
     "countIn": "{{count}} in deze meetup",
     "seeAll": "Alles bekijken"
   },
@@ -44,21 +44,21 @@
   },
   "gated": {
     "title": "Meetup alleen voor leden",
-    "pending": "Verzoek in behandeling - je kunt aan het gesprek meedoen zodra een lid akkoord gaat.",
-    "prompt": "Vraag om mee te doen om het gesprek te zien en te chatten.",
+    "pending": "Verzoek verstuurd: je kunt meepraten zodra een lid je accepteert.",
+    "prompt": "Vraag of je mag meedoen om het gesprek te zien en mee te chatten.",
     "requestBtn": "Vraag om mee te doen"
   },
   "feed": {
     "beginning": "Begin van het gesprek",
     "loading": "Laden…",
     "emptyTitle": "Nog geen reacties",
-    "emptySub": "Wees de eerste die meedoet"
+    "emptySub": "Spring er als eerste in"
   },
   "joinReq": {
     "someone": "Iemand",
     "wantsToJoin": " wil meedoen",
-    "joined": " is bij de meetup gekomen",
-    "askedToJoin": " heeft gevraagd om mee te doen",
+    "joined": " doet mee met de meetup",
+    "askedToJoin": " vroeg om mee te doen",
     "decline": "Weigeren",
     "accept": "Accepteren",
     "accepted": "Geaccepteerd",
@@ -66,19 +66,19 @@
     "declined": "Verzoek geweigerd"
   },
   "modes": {
-    "local": "Local",
+    "local": "Lokaal",
     "exploring": "Verkennen"
   },
   "reply": {
     "photo": "Foto",
-    "unavailable": "Oorspronkelijk bericht niet beschikbaar"
+    "unavailable": "Origineel bericht niet beschikbaar"
   },
   "composer": {},
   "errors": {
-    "locFailed": "Je locatie kon niet worden opgehaald. Schakel locatietoegang in en probeer opnieuw.",
+    "locFailed": "Kon je locatie niet ophalen. Zet locatietoegang aan en probeer het opnieuw.",
     "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",
     "imageTooLarge": "Afbeelding te groot. Max. 10 MB.",
-    "imageSend": "Afbeelding versturen mislukt. Probeer opnieuw.",
+    "imageSend": "Afbeelding versturen lukte niet. Probeer het opnieuw.",
     "dismiss": "{{error}} · tik om te sluiten"
   }
 }

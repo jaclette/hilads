@@ -1,15 +1,15 @@
 {
   "title": "Profiel",
   "loading": "Laden…",
-  "loadError": "Kon profiel niet laden.",
+  "loadError": "Kon het profiel niet laden.",
   "badgeMicro": {
     "ghost": "Even rondkijken",
     "fresh": "Net geland",
-    "regular": "Vaak van de partij",
-    "host": "Maakt het waar"
+    "regular": "Komt vaak langs",
+    "host": "Zorgt dat het gebeurt"
   },
   "modes": {
-    "local": "Local",
+    "local": "Lokaal",
     "exploring": "Verkennen"
   },
   "vibes": {
@@ -24,14 +24,14 @@
     "party": "Hier voor het nachtleven",
     "board_games": "Neem snacks en dobbelstenen mee",
     "coffee": "Eerst koffie, de rest komt later",
-    "music": "Altijd op jacht naar een goede beat",
+    "music": "Altijd op zoek naar een goede beat",
     "food": "Eerst eten, dan praten",
     "chill": "Low key, high vibes"
   },
   "modeSub": {
     "localIn": "Local in {{city}}",
-    "local": "Local",
-    "exploringIn": "{{city}} aan het verkennen",
+    "local": "Lokaal",
+    "exploringIn": "Ontdekt {{city}}",
     "exploring": "Verkennen"
   },
   "from": "Uit",
@@ -41,11 +41,12 @@
     "events": "Hi plan",
     "friends": "Vrienden",
     "vibes": "Vibes",
-    "picks": "Tips uit de stad",
+    "picks": "Stadstips",
     "challenges": "Challenges"
   },
   "host": "Host",
   "live": "Live",
+  "past": "Afgelopen",
   "empty": {
     "hangouts": "Nog geen meetups",
     "events": "Nog geen evenementen",
@@ -53,24 +54,24 @@
     "challenges": "Nog geen challenges"
   },
   "vibesTab": {
-    "score": "{{score}} vibe-score",
+    "score": "{{score}} vibescore",
     "basedOn_one": "gebaseerd op {{count}} vibe",
     "basedOn_other": "gebaseerd op {{count}} vibes",
-    "updateNote": "Je notitie bijwerken ({{rating}}★)",
-    "leaveNote": "Een notitie achterlaten",
-    "placeholder": "Zeg iets aardigs… (optioneel)",
+    "updateNote": "Werk je notitie bij ({{rating}}★)",
+    "leaveNote": "Laat een notitie achter",
+    "placeholder": "Zeg iets liefs… (optioneel)",
     "cancel": "Annuleren",
     "sending": "Versturen…",
-    "sendNote": "Notitie versturen",
+    "sendNote": "Notitie sturen",
     "notesLabel": "Notities · {{count}}",
     "emptyTitle": "Nog geen notities",
-    "emptySub": "Wees de eerste die een notitie achterlaat"
+    "emptySub": "Laat als eerste een notitie achter"
   },
   "picks": {
-    "restaurant": "Favoriete restaurant",
-    "spot": "Verborgen pareltje",
+    "restaurant": "Favoriet restaurant",
+    "spot": "Pareltje",
     "tip": "Lokale tip",
-    "story": "Verhaal"
+    "story": "Story"
   },
   "actions": {
     "opening": "Openen…",
@@ -83,18 +84,17 @@
     "unfriend": "Ontvrienden",
     "cancel": "Annuleren",
     "cancelling": "Annuleren…",
-    "cancelRequest": "Verzoek annuleren",
-    "keep": "Behouden",
+    "cancelRequest": "Verzoek intrekken",
+    "keep": "Laat maar",
     "reportTitle": "Gebruiker melden"
   },
   "report": {
     "existing": "Je hebt deze gebruiker op {{date}} gemeld. Je melding wordt bekeken.",
-    "sent": "Melding verstuurd. Bedankt voor het doorgeven.",
+    "sent": "Melding verstuurd. Bedankt dat je het laat weten.",
     "placeholder": "Beschrijf het probleem (min. 10 tekens)…",
-    "error": "Kon melding niet versturen. Probeer het opnieuw.",
+    "error": "Melding versturen lukte niet. Probeer het opnieuw.",
     "sending": "Versturen…",
     "submit": "Melding versturen",
     "cancel": "Annuleren"
-  },
-  "past": "Voorbij"
+  }
 }

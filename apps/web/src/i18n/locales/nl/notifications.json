@@ -2,7 +2,7 @@
   "title": "Meldingen",
   "markAllRead": "Alles als gelezen markeren",
   "empty": {
-    "title": "Alles bijgewerkt",
+    "title": "Je bent helemaal bij",
     "sub": "Meldingen verschijnen hier"
   },
   "loading": "Laden…",
@@ -10,24 +10,24 @@
   "prefs": {
     "title": "Meldingsvoorkeuren",
     "mentionName": "Vermeldingen @",
-    "mentionDesc": "Wanneer iemand je @vermeldt in een bericht of meetup",
+    "mentionDesc": "Als iemand je @vermeldt in een bericht of meetup",
     "newEventName": "Nieuwe evenementen in je stad",
-    "newEventDesc": "Wanneer iemand een evenement maakt in je stad",
+    "newEventDesc": "Als iemand een evenement maakt in je stad",
+    "newChallengeName": "Nieuwe challenges in je stad",
+    "newChallengeDesc": "Als iemand een challenge start in je stad",
+    "cityJoinName": "Iemand is in je stad aangekomen",
+    "cityJoinDesc": "Als iemand het stadskanaal binnenkomt waar jij in zit",
+    "worldArrivalName": "Nieuwkomers wereldwijd",
+    "worldArrivalDesc": "Als er een nieuwkomer uit welke stad dan ook binnenkomt (World-kanaal)",
     "friendName": "Vriendschapsverzoeken",
-    "friendDesc": "Wanneer iemand je een vriendschapsverzoek stuurt of die van jou accepteert",
+    "friendDesc": "Als iemand je een vriendschapsverzoek stuurt of het jouwe accepteert",
     "notesName": "Notities",
-    "notesDesc": "Wanneer iemand een notitie achterlaat op je profiel",
-    "profileViewName": "Profielweergaven",
-    "profileViewDesc": "Wanneer iemand je profiel bekijkt",
+    "notesDesc": "Als iemand een notitie op je profiel achterlaat",
+    "profileViewName": "Profielbezoeken",
+    "profileViewDesc": "Als iemand je profiel bekijkt",
     "announcementName": "Aankondigingen van Hilads",
     "announcementDesc": "Af en toe nieuws van het team",
-    "newChallengeName": "Nieuwe challenges in je stad",
-    "newChallengeDesc": "Wanneer iemand een challenge in je stad start",
-    "cityJoinName": "Iemand arriveert in je stad",
-    "cityJoinDesc": "Wanneer iemand meedoet aan het kanaal van jouw stad",
-    "worldArrivalName": "Nieuwe aankomsten wereldwijd",
-    "worldArrivalDesc": "Wanneer iemand nieuw uit een willekeurige stad binnenkomt (World-kanaal)",
     "commentName": "Reacties",
-    "commentDesc": "Op je foto's en op foto's waarop je reageerde"
+    "commentDesc": "Op je foto's en op foto's waar je op hebt gereageerd"
   }
 }

@@ -1,7 +1,7 @@
 {
   "loading": "Laden…",
-  "notFound": "Deze locatie staat niet op Hilads.",
-  "loadError": "Kon deze locatie niet laden. Probeer het opnieuw.",
+  "notFound": "Deze plek staat niet op Hilads.",
+  "loadError": "Kon deze plek niet laden. Probeer het opnieuw.",
   "breadcrumb": "Broodkruimelpad",
   "category": {
     "bar": "Bar / pub",

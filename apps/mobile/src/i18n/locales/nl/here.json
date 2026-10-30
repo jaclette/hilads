@@ -1,17 +1,17 @@
 {
-  "title": "Om je heen",
+  "title": "Mensen hier",
   "noCityTitle": "Geen stad geselecteerd",
   "noCitySub": "Kies een stad om te zien wie er in de buurt is.",
-  "browseCities": "Steden verkennen",
+  "browseCities": "Steden bekijken",
   "filterBadge": "Badge",
   "filterVibe": "Vibe",
   "filterMode": "Modus",
   "you": "(jij)",
   "hereNow": "Nu hier",
-  "noMatchLive": "Niemand voldoet nu aan deze filters.",
+  "noMatchLive": "Niemand past nu bij deze filters.",
   "legends": "Hilads-legendes",
   "legendsSub": "Zij maken de stad levendig",
-  "cityCrew": "Stadsleden",
-  "noMatchCrew": "Geen leden voldoen aan deze filters.",
+  "cityCrew": "Stadscrew",
+  "noMatchCrew": "Geen leden die bij deze filters passen.",
   "loadMore": "Meer laden"
 }

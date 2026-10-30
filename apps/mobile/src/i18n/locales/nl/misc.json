@@ -1,6 +1,6 @@
 {
   "friendReq": {
-    "title": "Vriendverzoeken",
+    "title": "Vriendschapsverzoeken",
     "incoming": "Ontvangen",
     "sent": "Verzonden",
     "wantsToBeFriend": "wil je vriend zijn",
@@ -8,10 +8,13 @@
     "decline": "Weigeren",
     "accept": "Accepteren",
     "cancel": "Annuleren",
-    "emptyIncomingTitle": "Nog geen vriendverzoeken",
+    "emptyIncomingTitle": "Nog geen vriendschapsverzoeken",
     "emptySentTitle": "Je hebt er nog geen verstuurd",
-    "emptyIncomingSub": "Wanneer iemand je als vriend wil toevoegen, zie je het hier.",
-    "emptySentSub": "Openstaande vriendverzoeken die je hebt verstuurd verschijnen hier."
+    "emptyIncomingSub": "Als iemand je vriend wil worden, zie je het hier.",
+    "emptySentSub": "Openstaande vriendschapsverzoeken die je hebt gestuurd, zie je hier.",
+    "acceptFailed": "Accepteren is niet gelukt",
+    "declineFailed": "Weigeren is niet gelukt",
+    "cancelFailed": "Annuleren is niet gelukt"
   },
   "blocked": {
     "title": "Geblokkeerde gebruikers",
@@ -20,8 +23,8 @@
     "guest": "Gast",
     "unblock": "Deblokkeren",
     "unblockTitle": "{{name}} deblokkeren?",
-    "unblockBody": "{{name}} kan je content weer zien en weer contact met je opnemen.",
-    "unblockFailTitle": "Kon niet deblokkeren",
+    "unblockBody": "{{name}} kan je content dan weer zien en je weer berichten sturen.",
+    "unblockFailTitle": "Deblokkeren is niet gelukt",
     "unblockFailBody": "Probeer het opnieuw.",
     "emptyTitle": "Je hebt niemand geblokkeerd",
     "emptySub": "Geblokkeerde gebruikers zien jouw content niet, en jij niet die van hen."

@@ -1,5 +1,6 @@
 {
   "title": "Stad wisselen",
+  "firstTimeTitle": "Kies je stad om te beginnen",
   "searchPlaceholder": "Zoek een stad…",
   "topCities": "Meest actieve steden",
   "cities": "Steden",
@@ -23,7 +24,6 @@
   "loadError": "Kon steden niet laden",
   "noResults": "Geen stad gevonden voor \"{{query}}\"",
   "noCities": "Geen steden gevonden",
-  "firstTimeTitle": "Kies je stad om te beginnen",
   "playsIn": "Speelt in {{city}}",
   "hereTitle": "Waar ben je?",
   "useMyLocation": "Mijn locatie gebruiken",

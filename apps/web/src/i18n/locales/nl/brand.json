@@ -1,17 +1,17 @@
 {
-  "now": "now",
+  "now": "nu",
   "myCity": "my city",
   "here": "here",
   "me": "me",
   "feelLocal": "feel local",
   "anywhere": "anywhere",
   "vibe": {
-    "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "party": "Feest",
+    "board_games": "Bordspellen",
+    "coffee": "Koffie",
+    "music": "Muziek",
+    "food": "Eten",
+    "chill": "Chillen"
   },
   "badge": {
     "ghost": "Ghost",

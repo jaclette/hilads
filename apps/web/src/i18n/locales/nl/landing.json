@@ -1,13 +1,13 @@
 {
   "hero": {
-    "sub": "Je bent niet zomaar op bezoek. Je wordt local.\nElke challenge, elke afspraak, elke plek - verdien je plek in deze stad.",
-    "orPreview": "Of neem een kijkje in je browser — geen installatie",
+    "sub": "Je bent hier niet zomaar op bezoek. Je wordt een local.\nElke challenge, elke meet, elke plek: verdien je plek in deze stad.",
+    "orPreview": "Of neem een kijkje in je browser, zonder installatie",
     "storeDownloadOn": "Download in de",
     "storeGetItOn": "Ontdek het op"
   },
   "join": {
-    "peopleLive_one": "{{count}} persoon hangt nu rond",
-    "peopleLive_other": "{{count}} mensen hangen nu rond",
+    "peopleLive_one": "{{count}} persoon is er nu",
+    "peopleLive_other": "{{count}} mensen zijn er nu",
     "events_one": "{{count}} Hi plan bezig",
     "events_other": "{{count}} Hi plan bezig",
     "hangouts_one": "{{count}} Hi now actief",
@@ -15,59 +15,59 @@
     "replies_one": "{{count}} reactie",
     "replies_other": "{{count}} reacties",
     "pickCity": "Kies een stad\nen doe mee",
-    "locating": "› je stad lokaliseren...",
+    "locating": "› je stad zoeken...",
     "browseCities": "Steden bekijken",
-    "yourName": "Jouw naam",
-    "namePlaceholder": "Zeg hallo als...",
+    "yourName": "Je naam",
+    "namePlaceholder": "Zeg hoi als...",
     "tryAgain": "Opnieuw proberen",
-    "useLocation": "Gebruik mijn locatie",
-    "joinCity": "Doe mee in {{city}}",
-    "joinChat": "Meedoen aan chat",
+    "useLocation": "Toch mijn locatie gebruiken",
+    "joinCity": "Kom naar {{city}}",
+    "joinChat": "Naar de chat",
     "hint": "// anoniem · directe toegang",
-    "keepIdentity": "of behoud je identiteit",
-    "createAccount": "Account maken",
+    "keepIdentity": "of bewaar je identiteit",
+    "createAccount": "Account aanmaken",
     "logIn": "Inloggen",
     "authHint": "Bewaar je naam · ontgrendel profielen · voeg vrienden toe",
     "challenges_one": "{{count}} open challenge",
     "challenges_other": "{{count}} open challenges"
   },
   "local": {
-    "badge": "Local",
-    "title": "Wees de local die de stad maakt",
-    "tagline": "Jij kent de spots. Daag locals of reizigers uit om ze te vinden.",
+    "badge": "Lokaal",
+    "title": "Wees de local die de stad laat draaien",
+    "tagline": "Jij kent de plekken. Daag locals of reizigers uit om ze te vinden.",
     "bullets": [
-      "Daag locals of reizigers uit - food, plaats, cultuur of hulp",
+      "Daag locals of reizigers uit: eten, plek, cultuur of hulp",
       "Breng mensen naar de plekken waar jij van houdt",
       "Word de local die mensen onthouden"
     ],
-    "cta": "Maak je stad"
+    "cta": "Laat je stad draaien"
   },
   "exploring": {
     "badge": "Verkennen",
     "title": "Ga overal lokale challenges aan",
-    "tagline": "Waar je ook landt, doe mee aan wat locals hebben gelanceerd.",
+    "tagline": "Waar je ook landt, doe mee met wat locals hebben bedacht.",
     "bullets": [
       "Doe mee aan challenges van locals",
-      "Vind de echte spots, aanbevolen door wie er woont",
-      "Beleef de stad als een local, niet als toerist"
+      "Vind de echte plekken, getipt door wie er woont",
+      "Beleef de stad als een local, niet als een toerist"
     ],
     "cta": "Bekijk de challenges"
   },
   "how": {
-    "eyebrow": "Hoe het werkt",
-    "title": "Drie stappen om mensen persoonlijk te ontmoeten.",
+    "eyebrow": "Zo werkt het",
+    "title": "Drie stappen om mensen in het echt te ontmoeten.",
     "steps": [
       {
         "title": "Kies je kant",
-        "desc": "Local. Je kent de stad.\nReiziger. Je wil hem beleven."
+        "desc": "Local. Je kent de stad.\nReiziger. Je wilt hem beleven."
       },
       {
-        "title": "Start of doe mee aan een challenge",
-        "desc": "Iedereen start een meet — datum en plek — of een fotowedstrijd met deadline. Open voor een hele groep, niet 1-op-1."
+        "title": "Start of doe mee met een challenge",
+        "desc": "Iedereen kan een meet starten (een datum en een plek) of een fotowedstrijd met een deadline. Open voor een hele groep, niet één-op-één."
       },
       {
-        "title": "Kom samen",
-        "desc": "Iedereen die meedoet komt in het echt samen — of stuurt zijn beste foto voor de deadline. De host bevestigt wie er was, of kiest de winnaar."
+        "title": "Kom samen opdagen",
+        "desc": "Iedereen die meedoet, ziet elkaar in het echt, of stuurt vóór de deadline de beste foto. De host bevestigt wie er was of kiest de winnaar."
       }
     ]
   },
@@ -78,53 +78,53 @@
     "signupsNeeded": "aanmelding nodig"
   },
   "concept": {
-    "title": "Niet zomaar een sociaal netwerk.\nEen reden om persoonlijk samen te komen.",
+    "title": "Niet zomaar een sociaal netwerk.\nEen reden om elkaar in het echt te zien.",
     "rules": [
       "Geen volgers. Geen feeds. Geen algoritmes.",
-      "Verzamel een groep rond een echte meet, of houd een fotowedstrijd. Wie komt opdagen — of wint — verdient het.",
+      "Verzamel een groep rond een echte meet, of organiseer een fotowedstrijd. Wie komt opdagen, of wint, verdient het.",
       "Echte mensen. Echte plekken. Nu."
     ]
   },
-  "seo": "Hilads is een realtime sociale app waar mensen samenkomen rond echte challenges — groepsmeets op een vaste tijd en plek, en fotowedstrijden tussen steden. Doe mee aan een challenge in Parijs, organiseer een meet in Barcelona of start een fotowedstrijd vanuit Lissabon. Geen account nodig. Gewoon komen.",
+  "seo": "Hilads is een realtime sociale app waar mensen samenkomen rond echte challenges: groepsmeets op een vaste tijd en plek, en fotowedstrijden tussen steden. Doe mee met een challenge in Parijs, organiseer een meet in Barcelona of start een fotowedstrijd vanuit Lissabon. Geen account nodig. Kom gewoon.",
   "download": {
     "eyebrow": "Mobiele apps",
-    "title": "Jouw stad in je broekzak.",
-    "sub": "Native apps komen binnenkort."
+    "title": "Je stad in je broekzak.",
+    "sub": "Haal alles eruit: pushmeldingen, sneller, gemaakt voor jouw stad."
   },
   "repeat": {
-    "eyebrow": "Doe mee",
+    "eyebrow": "Spring erin",
     "titleCity": "{{city}} is nu live.",
-    "titleGeneric": "Jouw stad is nu live."
+    "titleGeneric": "Je stad is nu live."
   },
   "international": {
     "badge": "Cross-city",
     "tagline": "Stuur een challenge naar een andere stad. Krijg een video terug.",
-    "sub": "Als jouw stad rustig is, is de wereld dat niet. Daag iemand overal uit - ze sturen bewijs, jij bevestigt van afstand.",
+    "sub": "Is het stil in je stad? De wereld niet. Daag iemand uit, waar ook ter wereld: zij sturen bewijs, jij keurt het goed van ver weg.",
     "bullets": [
-      "Mik op een specifieke stad, of laat open voor iedereen overal.",
-      "Foto met geotag - bewijs dat het gebeurd is.",
-      "Jij bevestigt vanaf de bank. Wijs af met reden als het niet klopt."
+      "Kies een specifieke stad, of laat het open voor iedereen, overal.",
+      "Ze sturen een foto met geotag als bewijs.",
+      "Jij keurt het goed vanaf de bank. Klopt het niet? Wijs af en zeg waarom."
     ],
-    "cta": "Probeer een globale challenge"
+    "cta": "Probeer een wereldwijde challenge"
   },
   "stories": {
     "tagline": "Speel lokaal. Vergelijk wereldwijd.",
     "concept_tagline": "Daag locals uit. Ontmoet reizigers. Word overal local.",
-    "screen1_invitation": "Jouw beurt. Start of doe mee aan een challenge.",
+    "screen1_invitation": "<hi>Jij bent aan de beurt.</hi> Start of doe mee met een challenge.",
     "fullSong": "Volledig nummer",
-    "screen2_invitation": "Ze zijn er al. Doe je mee?",
-    "screen3_invitation": "Simpel, toch? Jouw beurt.",
-    "screen4_invitation": "Geen feed. Alleen echte meetups.",
+    "screen2_invitation": "Ze zijn er al. <hi>Doe mee.</hi>",
+    "screen3_invitation": "Simpel, toch? <hi>Nu jij.</hi>",
+    "screen4_invitation": "Geen feed. Gewoon <hi>echte meetups.</hi>",
     "enterCity": "Kom naar {{city}}",
-    "enterChallenge": "Doe deze uitdaging",
+    "enterChallenge": "Doe mee met deze challenge",
     "enterPicker": "Kies je stad",
     "swipeUp": "Veeg omhoog",
     "liveHeadline": "{{city}} is nu live.",
     "how": {
       "title": "Ontmoet mensen in het echt, in 3 stappen.",
-      "step1": "Kies je kant — local of reiziger",
-      "step2": "Start of doe mee aan een uitdaging",
-      "step3": "Ontmoet elkaar echt"
+      "step1": "Kies je kant: local of reiziger",
+      "step2": "Start of doe mee met een challenge",
+      "step3": "Spreek echt af"
     },
     "concept": {
       "line1": "Geen volgers.",
@@ -132,7 +132,7 @@
       "line3": "Geen algoritmes.",
       "line4": "Een reden om elkaar echt te ontmoeten."
     },
-    "storePrompt": "Liever de app? Meldingen en de volledige ervaring.",
+    "storePrompt": "Liever de app? Krijg meldingen en alles wat Hilads te bieden heeft.",
     "reassurance": "gratis · geen account · 5 seconden"
   }
 }

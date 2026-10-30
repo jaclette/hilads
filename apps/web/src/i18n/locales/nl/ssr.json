@@ -4,24 +4,24 @@
   "ogLocale": "nl_NL",
   "home": {
     "title": "Hilads - Speel lokaal. Vergelijk wereldwijd. | Dagelijkse reisfoto-challenge",
-    "description": "Eén challenge per dag, in elke stad dezelfde. Maak een foto en zie hoe de wereld antwoordde. BeReal voor reizigers.",
+    "description": "Eén challenge per dag, in elke stad dezelfde. Maak een foto en kijk wat de wereld postte. BeReal voor reizigers.",
     "h1": "Speel lokaal. Vergelijk wereldwijd.",
-    "intro": "Hilads is de dagelijkse fotochallenge voor reizigers en locals. Elke dag verschijnt er één challenge voor de hele wereld. Maak je foto waar je bent en zie daarna hoe elk land antwoordde.",
+    "intro": "Hilads is de dagelijkse fotochallenge voor reizigers en locals. Elke dag verschijnt er één challenge voor de hele wereld. Maak je foto waar je bent en kijk daarna wat elk land postte.",
     "howHeading": "Zo werkt Hilads",
-    "howBody": "Elke dag verschijnt er een nieuwe Daily Challenge, in elke stad dezelfde. Speel hem met één foto voordat de volgende verschijnt en vergelijk dan: één challenge, beantwoord in elk land.",
+    "howBody": "Elke dag verschijnt er een nieuwe Daily Challenge, in elke stad dezelfde. Speel met één foto voordat de volgende verschijnt en vergelijk dan: één challenge, gespeeld in elk land.",
     "playCta": "Speel de challenge van vandaag",
-    "archiveCta": "Zie hoe de wereld eerdere challenges beantwoordde"
+    "archiveCta": "Kijk wat de wereld postte bij eerdere challenges"
   },
   "city": {
     "title": "{city} op Hilads - Challenge van vandaag: {question}",
     "titleNoChallenge": "{city} op Hilads - Speel lokaal. Vergelijk wereldwijd.",
-    "description": "De Daily Challenge van vandaag in {city}: {question} Eén challenge per dag, in elke stad dezelfde. Maak een foto en zie hoe de wereld antwoordde.",
-    "descriptionNoChallenge": "Eén challenge per dag, in elke stad dezelfde. Speel in {city}, maak een foto en zie hoe de wereld antwoordde.",
+    "description": "De Daily Challenge van vandaag in {city}: {question} Eén challenge per dag, in elke stad dezelfde. Maak een foto en kijk wat de wereld postte.",
+    "descriptionNoChallenge": "Eén challenge per dag, in elke stad dezelfde. Speel in {city}, maak een foto en kijk wat de wereld postte.",
     "h1": "{city} op Hilads",
     "todayHeading": "Challenge van vandaag",
     "playCta": "Speel voor {city}",
-    "recentHeading": "Zo antwoordde {city}",
-    "recentEmpty": "Nog niemand heeft in {city} gespeeld. Maak de eerste foto.",
+    "recentHeading": "Wat {city} postte",
+    "recentEmpty": "Nog niemand heeft in {city} gespeeld. Maak jij de eerste foto?",
     "archiveLink": "Alle eerdere challenges"
   },
   "daily": {
@@ -29,9 +29,9 @@
     "titleNone": "{question} | Hilads Daily Challenge",
     "descAnswers": "{answers} Eén challenge per dag, in elke stad dezelfde.",
     "descPhotos": "{text} Foto's uit {places}. Eén challenge per dag, in elke stad dezelfde.",
-    "descEmpty": "{text} Eén challenge per dag, in elke stad dezelfde. Maak een foto en zie hoe de wereld antwoordde.",
+    "descEmpty": "{text} Eén challenge per dag, in elke stad dezelfde. Maak een foto en kijk wat de wereld postte.",
     "kicker": "Daily Challenge · {date}",
-    "answersHeading": "Zo antwoordde de wereld",
+    "answersHeading": "Wat de wereld postte",
     "photoBy": "Foto van {user} in {city}",
     "noPhotos": "Nog geen foto's voor deze challenge.",
     "prev": "Vorige challenge",
@@ -43,9 +43,9 @@
     "photosMany": "{count} foto's",
     "countriesOne": "1 land",
     "countriesMany": "{count} landen",
-    "archiveTitle": "Eerdere Daily Challenges: zo antwoordde de wereld | Hilads",
+    "archiveTitle": "Eerdere Daily Challenges: wat de wereld postte | Hilads",
     "archiveDescription": "Alle eerdere Daily Challenges van Hilads: één challenge per dag, in elke stad dezelfde, met de foto's en antwoorden uit elk land.",
     "archiveH1": "Eerdere Daily Challenges",
-    "archiveIntro": "Eén challenge per dag, in elke stad dezelfde. Zo antwoordde de wereld op elke challenge."
+    "archiveIntro": "Eén challenge per dag, in elke stad dezelfde. Hier zie je wat de wereld bij elke challenge postte."
   }
 }

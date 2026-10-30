@@ -12,48 +12,49 @@
   },
   "meta": {
     "cityTitle": "{{city}} op Hilads - Speel lokaal. Vergelijk wereldwijd.",
-    "cityDesc": "Eén challenge per dag, in elke stad dezelfde. Speel in {{city}}, maak een foto en zie hoe de wereld antwoordde.",
-    "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Sluit aan bij {{title}} op Hilads - een Local Event dat nu plaatsvindt. Zie wie er komt en chat live."
+    "cityDesc": "Eén challenge per dag, in elke stad dezelfde. Speel in {{city}}, maak een foto en kijk wat de rest van de wereld postte.",
+    "eventTitle": "Lokaal evenement: {{title}} | Hilads",
+    "eventDesc": "Doe mee met {{title}} op Hilads, een lokaal evenement dat nu bezig is. Kijk wie er komen en chat live met wie online is."
   },
   "nowTitle": "Nu",
   "filterEvents": "🎉 Lokale evenementen",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Meetups",
   "publicEventsSection": "🎫 Openbare evenementen",
   "accountWelcome": {
     "title": "Gefeliciteerd, {{username}}!",
-    "subtitle": "Je account is klaar - dit kun je nu doen",
+    "subtitle": "Je account is klaar. Dit kun je nu doen",
     "f1": "Start een meetup en breng meteen mensen samen",
     "f2": "Organiseer een evenement in je stad",
     "f3": "Stuur iedereen een privébericht",
     "f4": "Zie live wie er in de buurt is",
     "f5": "Maak contact met locals en reizigers",
     "fc1": "Daag de locals in jouw stad uit",
-    "fc2": "Daag een andere stad wereldwijd uit",
-    "cta": "Let's go"
+    "fc2": "Daag een stad aan de andere kant van de wereld uit",
+    "cta": "Aan de slag"
   },
   "onboarding": {
     "skip": "Overslaan ✕",
     "next": "Volgende",
-    "fallbackCity": "jouw stad",
+    "fallbackCity": "je stad",
     "slide1": {
       "title": "Speel lokaal. Vergelijk wereldwijd.",
-      "body": "Hilads is de app die reizigers tot locals maakt - en locals helpt te delen wat hun stad tot leven brengt."
+      "body": "Hilads is de app die van reizigers locals maakt, en locals laat delen waar hun stad van leeft."
     },
     "slide2": {
       "title": "Drie manieren om de stad te beleven",
-      "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
+      "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen: verborgen plekken ontdekken, echt eten proeven, cultuur delen of een handje helpen.",
       "itemHangouts": "🗣️ Hi now - ontmoet iemand spontaan",
-      "itemEvents": "🎉 Hi plan - plan een moment om af te spreken"
+      "itemEvents": "🎉 Hi plan - spreek een moment af"
     },
     "slide3": {
       "title": "Verdien je plek in de stad",
-      "body": "Elke challenge die je voltooit, elke afspraak, elke plek die je ontdekt levert je punten op. Punten laten zien hoe local je bent geworden in {{city}}. Bereik de top van Most Local en verdien je plek tussen wie de stad tot leven brengt."
+      "body": "Elke challenge die je voltooit, elke meet, elke plek die je ontdekt levert je punten op. Je punten laten zien hoe local je al bent in {{city}}. Kom bovenaan in Most Local en verdien je plek tussen de mensen die de stad laten leven."
     },
     "slide4": {
       "title": "Klaar om te beginnen?",
-      "ctaChallenge": "📍 Start je eerste challenge in {{city}}",
-      "ctaMostLocal": "🤝 Ontdek Most Local van {{city}}",
+      "ctaChallenge": "📍 Ga je eerste challenge aan in {{city}}",
+      "ctaMostLocal": "🤝 Ontdek de Most Local van {{city}}",
       "ctaLookAround": "👀 Eerst even rondkijken",
       "ctaHiNow": "🗣️ Hi now",
       "ctaHiLater": "🎉 Hi plan"
@@ -63,34 +64,34 @@
     "title": "Zo werken challenges",
     "slide1": {
       "title": "Challenges maken van reizen verhalen",
-      "body": "Locals en reizigers dagen elkaar uit om de stad echt te beleven - eten, plekken, cultuur, hulp. De beloning? Elkaar in het echt zien - of bewijs vanop afstand sturen."
+      "body": "Locals en reizigers dagen elkaar uit om te laten zien wat een stad echt maakt: eten, plekken, cultuur, hulp. De beloning? Elkaar in het echt ontmoeten, of bewijs sturen van ver weg."
     },
     "slide2": {
       "title": "Start je challenge",
-      "body": "Eten, plek, cultuur of hulp. Kies voor wie, hoeveel plekken en hoe jullie het afsluiten - in het echt of via foto."
+      "body": "Eten, plek, cultuur of hulp. Kies voor wie, hoeveel plaatsen en hoe je afsluit: in het echt afspreken of een fotobewijs."
     },
     "slide3": {
-      "title": "Iemand neemt 'm aan",
-      "body": "Ze sturen een verzoek. Jij bekijkt het en accepteert - jullie privéthread opent om te chatten en plannen."
+      "title": "Iemand gaat 'm aan",
+      "body": "Iemand stuurt een verzoek. Jij bekijkt het en accepteert, en dan opent jullie privéchat om te kletsen en te plannen."
     },
     "slide4": {
-      "title": "Afspreken of foto-bewijs",
-      "body": "Spreek persoonlijk af of stuur een foto vanop afstand - jij beslist. Hoe dan ook, elke stap wordt bijgehouden."
+      "title": "Afspreken of fotobewijs",
+      "body": "Spreek in het echt af of stuur een foto van ver weg, jij kiest. Hoe dan ook wordt elke stap bijgehouden."
     },
     "slide5": {
       "title": "Sluit 'm af",
-      "body": "Na de afspraak (of zodra de foto binnen is), zet je het op voltooid. Jouw stad, echt beleefd - één challenge per keer."
+      "body": "Na de meet (of zodra de foto binnen is) zet je hem op voltooid. Jouw stad, echt beleefd, challenge na challenge."
     },
     "next": "Volgende",
-    "done": "Begrepen!",
+    "done": "Duidelijk!",
     "skip": "Overslaan ✕",
     "slide6": {
       "title": "Buiten je stad",
-      "body": "Daag iedereen overal uit. Die persoon stuurt bewijs - een geotagged foto - en jij valideert vanop afstand. Dezelfde foto-flow werkt ook lokaal. Local of global, elke challenge telt."
+      "body": "Daag iedereen uit, waar ook ter wereld. Zij sturen bewijs (een foto met geotag) en jij keurt het goed van ver weg. Lokaal werkt het precies zo. Lokaal of wereldwijd, elke challenge telt."
     },
     "slide7": {
-      "title": "Word Most Local",
-      "body": "Elke challenge levert je punten op - in jouw stad EN wereldwijd. Spreek persoonlijk af voor een bonus van +50. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranking."
+      "title": "Word de Most Local",
+      "body": "Elke challenge levert punten op, in je stad ÉN wereldwijd. Spreek in het echt af voor +50 bonus erbovenop. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranglijst."
     },
     "createCta": "🔥 Maak een challenge"
   },
@@ -99,17 +100,17 @@
     "snap": "Maak een foto",
     "snapDesc": "Voor de challenge van vandaag of gewoon voor de lol",
     "spot": "Deel je plek",
-    "spotDesc": "Deel je huidige locatie",
+    "spotDesc": "Deel waar je nu bent",
     "spotLoading": "Je locatie ophalen…",
-    "plan": "Plan maken",
+    "plan": "Maak een plan",
     "planDesc": "Kies een tijd en een plek, anderen doen mee",
     "hiNow": "Hi now",
-    "hiNowDesc": "Nu zin in iets? Zeg het"
+    "hiNowDesc": "Zin in iets, nu meteen? Zeg het"
   },
   "locationPicker": {
     "title": "Waar ben je?",
     "search": "Zoek een adres of plek",
-    "moveHint": "Verschuif de kaart om aan te passen",
+    "moveHint": "Schuif de kaart om aan te passen",
     "noResults": "Geen plekken gevonden",
     "loading": "Locatie ophalen…",
     "confirm": "Deel deze plek",
@@ -122,7 +123,7 @@
   "loading": "Laden…",
   "mode": {
     "local": {
-      "label": "Local"
+      "label": "Lokaal"
     },
     "exploring": {
       "label": "Verkennen"
@@ -147,7 +148,7 @@
   },
   "weather": {
     "clear": "heldere lucht",
-    "sunnyHot": "schitterend weer",
+    "sunnyHot": "prachtig weer",
     "clearNight": "heldere nacht",
     "mostlyClear": "overwegend helder",
     "partly": "wat wolken",
@@ -180,12 +181,11 @@
   },
   "filterChallenges": "🔥 Challenges",
   "shareToCity": "Deel in mijn stad",
-  "shareToWorld": "Delen in de Wereld",
-  "hiLocalTitle": "Hi Local",
+  "shareToWorld": "Delen in Wereld",
   "shareCta": {
     "leaderboard": "Bekijk het klassement",
     "challenge": "Bekijk de challenge",
-    "event": "Bekijk de Hi plan",
+    "event": "Bekijk het Hi plan",
     "topic": "Bekijk de Hi now"
   },
   "tabs": {
@@ -198,10 +198,10 @@
     "title": "Tonen",
     "world": "Wereld",
     "pickCity": "Kies een stad",
-    "citySub": "De challenge, foto's en spots van jouw stad",
-    "worldSub": "Foto's en spots uit alle steden",
-    "changeCity": "Stad wijzigen",
-    "a11y": "Toont {{scope}}. Tik om te wijzigen",
+    "citySub": "De challenge, foto's en plekken van jouw stad",
+    "worldSub": "Foto's en plekken uit alle steden",
+    "changeCity": "Van stad wisselen",
+    "a11y": "{{scope}} wordt getoond. Tik om te wijzigen",
     "here": "Je bent in {{city}}",
     "hereUnknown": "Waar ben je?",
     "hereSub": "Klopt niet? Kies waar je speelt"
@@ -210,7 +210,7 @@
   "settings": "Instellingen",
   "firstLaunch": "Speel lokaal. Vergelijk wereldwijd.",
   "subtitles": {
-    "map": "Spots uit de foto's van de wereld.",
+    "map": "Plekken uit de foto's van de hele wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
     "passport": "Je steden, je foto's, je stempels."
   },
@@ -232,23 +232,23 @@
     "textPassportNoCity": "Mijn Hilads-paspoort. Zelfde challenge. Andere werelden."
   },
   "represent": {
-    "empty": "{{city}} heeft vandaag nog niet gespeeld. Wees de eerste.",
+    "empty": "{{city}} heeft vandaag nog niet gespeeld. Speel als eerste.",
     "beFirst": "Speel als eerste voor {{city}}",
     "emptyThere": "{{city}} heeft vandaag nog niet gespeeld.",
     "notIn": "Niet in {{city}}?",
     "change": "Wijzigen",
-    "locationNeeded": "Sta locatie toe om te spelen voor waar je bent.",
+    "locationNeeded": "Sta locatie toe om te spelen voor de plek waar je bent.",
     "button": "Speel voor {{city}}",
-    "firstPosted": "Je zette {{city}} vandaag op de wereldkaart.",
+    "firstPosted": "Jij hebt {{city}} vandaag op de wereldkaart gezet.",
     "pioneer": "Pionier van {{city}}",
-    "spotOne": "Spot #1 in {{city}}",
-    "streak_one": "{{city}} speelt al {{count}} dag",
+    "spotOne": "Plek #1 in {{city}}",
+    "streak_one": "{{city}} speelt al {{count}} dag op rij",
     "streak_other": "{{city}} speelt al {{count}} dagen op rij",
-    "board_one": "{{count}} stad staat vandaag op het bord. {{city}} nog niet.",
-    "board_other": "{{count}} steden staan vandaag op het bord. {{city}} nog niet.",
-    "mapEmpty": "{{city}} staat nog niet op de wereldkaart. Zet het erop.",
+    "board_one": "{{count}} stad doet vandaag mee. {{city}} nog niet.",
+    "board_other": "{{count}} steden doen vandaag mee. {{city}} nog niet.",
+    "mapEmpty": "{{city}} staat nog niet op de wereldkaart. Zet hem erop.",
     "invite": "Nodig een vriend uit",
-    "share": "Speel samen met mij voor {{city}} op Hilads.",
+    "share": "Speel met mij voor {{city}} op Hilads.",
     "pioneerTitle": "Pioniersbadges",
     "pioneerSub": "De allereerste goedgekeurde foto in een stad. Voor altijd van jou."
   },
@@ -256,12 +256,12 @@
     "title": {
       "play": "Download de app om te spelen",
       "playCity": "Download de app om voor {{city}} te spelen",
-      "vote": "Download de app om op {{city}} te stemmen",
+      "vote": "Download de app om voor {{city}} te stemmen",
       "joinPlan": "Download de app om mee te doen met dit plan",
-      "sayHi": "Download de app om {{city}} gedag te zeggen",
+      "sayHi": "Download de app om {{city}} hoi te zeggen",
       "propose": "Download de app om een challenge voor te stellen"
     },
-    "sub": "Het is gratis en duurt een minuut.",
+    "sub": "Gratis, en het duurt maar een minuutje.",
     "download": "Download de app",
     "keepExploring": "Verder ontdekken",
     "scan": "Scan met je telefoon"
@@ -273,11 +273,44 @@
   },
   "promo": {
     "askTitle": "Mag Hilads je foto's laten zien, altijd met vermelding?",
-    "askBody": "Je Daily Challenge-foto's kunnen in onze posts op Instagram, TikTok en YouTube verschijnen, altijd met je @gebruikersnaam. Je kunt dit altijd wijzigen in Instellingen.",
+    "askBody": "Je Daily Challenge-foto's kunnen in onze posts op Instagram, TikTok en YouTube verschijnen, altijd met je @gebruikersnaam. Je kunt dit op elk moment aanpassen in Instellingen.",
     "allow": "Toestaan",
     "notNow": "Niet nu",
     "setting": "Mijn foto's tonen",
     "on": "Aan",
     "off": "Uit"
+  },
+  "a11y": {
+    "close": "Sluiten",
+    "back": "Terug",
+    "dismiss": "Sluiten",
+    "mainNav": "Hoofdmenu",
+    "emojiPicker": "Emoji kiezen",
+    "cancelReply": "Antwoord annuleren",
+    "welcome": "Welkom",
+    "approve": "Goedkeuren"
+  },
+  "tapToOpenMaps": "Tik om in je kaartenapp te openen",
+  "openInApp": {
+    "text": "Ga verder in de Hilads-app voor alles wat Hilads te bieden heeft",
+    "cta": "Open app"
+  },
+  "appPromo": {
+    "text": "Haal alles uit Hilads",
+    "ctaIos": "Download in de App Store",
+    "ctaAndroid": "Ontdek het op Google Play",
+    "regionIos": "Download de Hilads-app voor iOS",
+    "regionAndroid": "Download de Hilads-app voor Android",
+    "pitchPush": "Live pushmeldingen",
+    "pitchFast": "Snellere, soepelere feed",
+    "pitchAnim": "Vloeiende animaties",
+    "ctaPlay": "Download op Google Play",
+    "continueBrowser": "Verder in de browser"
+  },
+  "deleteAccount": {
+    "title": "Je account verwijderen",
+    "body": "Wil je je Hilads-account en alle bijbehorende gegevens verwijderen? Stuur een mail naar:",
+    "note": "Zet je gebruikersnaam in je mail. Je gegevens worden binnen 48 uur definitief verwijderd.",
+    "back": "Terug naar Hilads"
   }
 }

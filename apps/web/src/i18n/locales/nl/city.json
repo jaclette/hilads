@@ -1,14 +1,36 @@
 {
+  "world": {
+    "tab": "Wereld",
+    "banner_one": "{{count}} challenge tussen steden live",
+    "banner_other": "{{count}} challenges tussen steden live",
+    "online": "{{count}} online",
+    "cities_one": "{{count}} stad",
+    "cities_other": "{{count}} steden",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} startte een challenge {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} uit {{city}} is net lid geworden van Hilads",
+      "challengeWon": "🏆 {{nickname}} uit {{city}} won de challenge {{challenge}}"
+    },
+    "quietCard": "Rustig hier? {{count}} ongelezen in Wereld, tik om te openen",
+    "heroEmpty": "Daag als eerste een stad uit",
+    "heroEmptySub": "Start een challenge tussen steden",
+    "leaderboard": "Klassement",
+    "arrivals_one": "{{count}} nieuwkomer",
+    "arrivals_other": "{{count}} nieuwkomers",
+    "arrivalsTitle": "Net aangekomen",
+    "arrivalsEmpty": "Nog geen nieuwkomers",
+    "seeAll": "Alles bekijken"
+  },
   "inspiration": {
     "heading": "Meetup-ideeën",
-    "sub": "Wat locals elders organiseren - doe inspiratie op",
-    "openYours": "Start die van jou in {{city}}",
+    "sub": "Wat locals elders organiseren - laat je inspireren",
+    "openYours": "Organiseer er zelf een in {{city}}",
     "by": "door {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
   },
   "guestGate": {
-    "createAccount": "Account maken",
+    "createAccount": "Account aanmaken",
     "signIn": "Inloggen",
     "create_event": {
       "pageTitle": "Evenement maken",
@@ -18,48 +40,48 @@
     "view_profile": {
       "pageTitle": "Profiel",
       "title": "Ghosts mogen rondkijken, maar profielen zijn voor leden.",
-      "sub": "Maak een account om profielen te ontgrendelen, met mensen te connecten en je crew in de stad op te bouwen."
+      "sub": "Maak een account om profielen te zien, mensen te leren kennen en je eigen crew in de stad op te bouwen."
     },
     "join_hangout": {
-      "pageTitle": "Meedoen met een meetup",
+      "pageTitle": "Doe mee met een meetup",
       "title": "Ghosts mogen rondkijken, maar niet meedoen met meetups.",
-      "sub": "Meld je aan om mee te doen met meetups, je naam te bewaren en bericht te krijgen wanneer mensen willen afspreken."
+      "sub": "Meld je aan om mee te doen met meetups, je naam te bewaren en een melding te krijgen als mensen willen afspreken."
     },
     "create_hangout": {
-      "pageTitle": "Een meetup starten",
+      "pageTitle": "Start een meetup",
       "title": "Ghosts mogen rondkijken, maar niet hosten.",
-      "sub": "Meld je aan om een meetup te starten, je naam te bewaren en mensen te laten meedoen."
+      "sub": "Meld je aan om een meetup te starten, je naam te bewaren en mensen bij je te laten aansluiten."
     },
     "create_challenge": {
-      "pageTitle": "Challenge starten",
+      "pageTitle": "Start een challenge",
       "title": "Ghosts kijken toe, maar dagen niet uit.",
-      "sub": "Maak een account aan om locals of reizigers uit te dagen en de challenge te valideren."
+      "sub": "Maak een account om locals of reizigers uit te dagen en zelf te beoordelen wie slaagt."
     },
     "accept_challenge": {
       "pageTitle": "Challenge accepteren",
-      "title": "Maak een account om deze challenge te accepteren",
-      "sub": "3 seconden. Je komt meteen terug bij de challenge."
+      "title": "Meld je aan om deze challenge aan te gaan",
+      "sub": "Duurt 3 seconden. Daarna ben je meteen terug bij de challenge."
     }
   },
   "welcome": {
     "live": "{{city}} is live",
     "dismiss": "Sluiten",
-    "body": "Echte mensen, nu meteen. Zeg hallo, kijk wie er om je heen is of neem een vriend mee.",
-    "sayHi": "Zeg hallo",
+    "body": "Echte mensen, nu. Zeg hoi, kijk wie er in de buurt is of haal een vriend erbij.",
+    "sayHi": "Zeg hoi",
     "invite": "Vrienden uitnodigen"
   },
   "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",
-  "imageTooLarge": "Afbeelding te groot. Max. grootte: 10 MB.",
+  "imageTooLarge": "Afbeelding te groot. Max. 10 MB.",
   "picker": {
     "title": "Kies een stad",
     "search": "Zoek een stad…",
     "noResults": "Geen stad gevonden voor \"{{query}}\"",
-    "topCities": "Meest actieve steden",
+    "topCities": "Populairste steden nu",
     "cities": "Steden",
-    "switchTitle": "Stad wisselen",
+    "switchTitle": "Wissel van stad",
     "filterActive": "Meest actief",
     "filterEvents": "Meeste evenementen",
-    "filterOnline": "Meeste online",
+    "filterOnline": "Meeste mensen online",
     "filterChallenges": "Meeste challenges",
     "challenges_one": "{{count}} challenge",
     "challenges_other": "{{count}} challenges",
@@ -72,71 +94,71 @@
     "events_other": "{{count}} evenementen",
     "hangout_one": "{{count}} meetup",
     "hangout_other": "{{count}} meetups",
-    "msgs_one": "{{count}} ber.",
-    "msgs_other": "{{count}} ber.",
+    "msgs_one": "{{count}} bericht",
+    "msgs_other": "{{count}} berichten",
     "hereTitle": "Waar ben je?",
     "useMyLocation": "Mijn locatie gebruiken",
     "playsIn": "Speelt voor {{city}}",
     "credit": "Stadsgegevens ©",
     "changeLimit": "Je bent vandaag vaak van stad gewisseld. Probeer het morgen opnieuw.",
-    "pickFailed": "Deze stad kon niet worden gekozen. Probeer het opnieuw."
+    "pickFailed": "Deze stad kiezen lukte niet. Probeer het opnieuw."
   },
-  "joining": "Verbinden met {{city}}…",
-  "joiningDefault": "Verbinden met de chat…",
+  "joining": "Naar {{city}}…",
+  "joiningDefault": "Chat openen…",
   "tryAgain": "Opnieuw proberen",
   "feed": {
     "hangoutTag": "Meetup",
     "eventTag": "Evenement",
+    "nowTag": "Nu",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
     "public": "Openbaar",
     "activeNow": "Nu actief",
-    "repliesNew": "Nog geen reacties - wees de eerste",
+    "repliesNew": "Nog geen reacties. Wees de eerste!",
+    "sayHi": "Zeg hoi tegen {{name}}",
+    "sayHiGeneric": "Zeg hoi",
+    "hostWaiting": "Wachten op de eerste hoi",
     "replies_one": "{{count}} reactie",
     "replies_other": "{{count}} reacties",
-    "going_one": "{{count}} deelnemer",
-    "going_other": "{{count}} deelnemers",
+    "going_one": "{{count}} gaat",
+    "going_other": "{{count}} gaan",
     "hostedBy": "Georganiseerd door {{name}}",
     "groupHilads": "Lokale evenementen van Hilads",
-    "groupPublic": "Openbare lokale evenementen",
-    "groupPublicTicket": "Openbare lokale evenementen",
+    "groupPublic": "Openbare evenementen",
+    "groupPublicTicket": "Openbare evenementen",
     "createEvent": "Lokaal evenement maken",
-    "startHangout": "Een meetup starten",
-    "openPlace": "Open je plek",
+    "startHangout": "Start een meetup",
+    "openPlace": "Open jouw plek",
     "loadError": "Kon de evenementen niet laden",
-    "loadErrorSub": "Probeer het later opnieuw of maak iets nieuws in {{city}}.",
-    "emptyLocalTitle": "Host je plek",
+    "loadErrorSub": "Probeer het later opnieuw of start zelf iets in {{city}}.",
+    "emptyLocalTitle": "Host op jouw plek",
     "emptyTitle": "Er gebeurt nog niets",
-    "emptyLocalSub": "Maak {{city}} levendig. Start een terugkerend evenement op je favoriete plek.",
-    "emptySub": "Wees de eerste die iets op gang brengt in {{city}}",
-    "noEvents": "Nu geen lokale evenementen",
+    "emptyLocalSub": "Breng {{city}} tot leven. Start een terugkerend evenement op je lievelingsplek.",
+    "emptySub": "Zet als eerste iets in gang in {{city}}",
+    "noEvents": "Nu even geen lokale evenementen",
     "noHangouts": "Nog geen meetups",
-    "noEventsSub": "Wees de eerste die er een maakt in {{city}}",
-    "noHangoutsSub": "Start een meetup en breng de stad aan het praten",
+    "noEventsSub": "Maak als eerste een evenement in {{city}}",
+    "noHangoutsSub": "Start een meetup en breng leven in de stad",
     "filterAll": "Alles",
     "seeComing": "Kijk wat eraan komt",
     "seeHappened": "kijk wat er gebeurd is",
     "createNew": "Nieuw maken",
-    "nowTag": "Now",
-    "laterTag": "Plan",
-    "hiNow": "Hi now",
-    "hiLater": "Hi plan",
-    "sayHi": "Zeg {{name}} gedag",
-    "sayHiGeneric": "Zeg gedag",
-    "hostWaiting": "Wachten op de eerste begroeting",
     "hiNowHint": "nu afspreken",
-    "hiLaterHint": "een plan maken"
+    "hiLaterHint": "een evenement plannen"
   },
   "header": {
     "online": "{{count}} in de buurt",
     "liveNow": "nu live",
     "seeWhosHere": "Kijk wie er is",
-    "onlineAria_one": "{{count}} mensen in de buurt, tik om te zien wie",
+    "onlineAria_one": "{{count}} persoon in de buurt, tik om te zien wie",
     "onlineAria_other": "{{count}} mensen in de buurt, tik om te zien wie",
     "notifications": "Meldingen",
     "messages": "Berichten",
     "shareCity": "Stad delen",
-    "switchCity": "Van stad wisselen",
+    "switchCity": "Wissel van stad",
     "changeCity": "Van stad wisselen",
-    "currentWeather": "Huidig weer: {{label}}"
+    "currentWeather": "Weer nu: {{label}}"
   },
   "here": {
     "title": "Mensen hier",
@@ -145,39 +167,39 @@
     "filterMode": "Modus",
     "you": "(jij)",
     "hereNow": "Nu hier",
-    "noMatchLive": "Niemand matcht deze filters op dit moment.",
+    "noMatchLive": "Niemand past nu bij deze filters.",
     "legends": "Hilads-legendes",
-    "legendsSub": "Zij maken de stad",
-    "cityCrew": "City crew",
-    "noMatchCrew": "Geen leden matchen deze filters.",
+    "legendsSub": "Zij maken de stad levendig",
+    "cityCrew": "Stadscrew",
+    "noMatchCrew": "Geen leden die bij deze filters passen.",
     "loadMore": "Meer laden",
-    "messageAria": "Bericht sturen naar {{name}}"
+    "messageAria": "Stuur {{name}} een bericht"
   },
   "eventHeader": {
     "yourEvent": "Jouw evenement",
     "edit": "Bewerken",
     "join": "Meedoen",
-    "joined": "Meegedaan",
+    "joined": "Erbij",
     "here": "{{count}} hier",
-    "going_one": "{{count}} deelnemer",
-    "going_other": "{{count}} deelnemers",
+    "going_one": "{{count}} gaat",
+    "going_other": "{{count}} gaan",
     "locationPending": "Locatie nog niet beschikbaar",
     "hostedBy": "Georganiseerd door {{name}}"
   },
   "chatEmpty": {
     "beginning": "Begin van het gesprek",
-    "arriving": "Mensen komen binnen",
-    "firstChat": "Wees de eerste die hier chat",
-    "firstHi": "Wees de eerste die hallo zegt"
+    "arriving": "Er komen mensen aan",
+    "firstChat": "Begin als eerste het gesprek",
+    "firstHi": "Zeg als eerste hoi"
   },
   "create": {
     "title": "Wat gaan we doen?",
-    "hangoutTitle": "Een meetup starten",
-    "hangoutSub": "Direct - laat mensen nu meteen meedoen",
-    "eventTitle": "Een evenement maken",
+    "hangoutTitle": "Start een meetup",
+    "hangoutSub": "Direct - mensen sluiten nu meteen bij je aan",
+    "eventTitle": "Maak een evenement",
     "eventSub": "Plan iets waar anderen aan mee kunnen doen",
     "challengeTitle": "Start een challenge",
-    "challengeSub": "Locals & reizigers - verbind via een challenge",
+    "challengeSub": "Locals & reizigers - leer elkaar kennen via een challenge",
     "challengePageTitle": "Maak een challenge",
     "challengeAudience": "Voor wie?",
     "challengeAudLocals": "Locals",
@@ -188,20 +210,20 @@
     "challengeTypeCulture": "Cultuur",
     "challengeTypeHelp": "Gek",
     "challengeTitleLabel": "Jouw challenge",
-    "challengeTitlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
+    "challengeTitlePlaceholder": "bv. Breng me naar je favoriete verborgen koffieplek",
     "challengeCta": "Challenge starten",
-    "challengeErrStart": "Challenge kon niet worden gestart"
+    "challengeErrStart": "Kon de challenge niet starten"
   },
   "goingModal": {
-    "going": "doen mee",
+    "going": "erbij",
     "inThisHangout": "in deze meetup",
     "loading": "Laden…",
-    "empty": "Nog niemand - wees de eerste die meedoet!"
+    "empty": "Nog niemand, doe als eerste mee!"
   },
   "nickname": {
     "label": "Bijnaam",
     "placeholder": "Je naam...",
-    "heroSub": "Voorlopig anoniem. Je kunt nog steeds bepalen hoe je verschijnt.",
+    "heroSub": "Voorlopig anoniem. Je bepaalt wel zelf hoe je eruitziet.",
     "save": "Bijnaam opslaan",
     "upgradeHint": "Bewaar je naam. Blijf local.",
     "haveAccount": "Heb je al een account?",
@@ -213,10 +235,10 @@
     "exploreCta": "Kijk wat er gebeurt",
     "photoText": "Deel wat er gebeurt",
     "shoot": "Foto",
-    "createEventText": "Heb je een plan vanavond?",
+    "createEventText": "Heb je vanavond een plan?",
     "createEventCta": "Evenement maken",
-    "challengeIntroText": "Nieuw hier? Ontdek challenges",
-    "challengeIntroCta": "Tonen",
+    "challengeIntroText": "Nieuw hier? Zo werken challenges",
+    "challengeIntroCta": "Laat zien",
     "installText": "Voeg Hilads toe aan je beginscherm\nMis nooit meer wat er in je stad gebeurt",
     "installAdd": "Toevoegen",
     "installHow": "Hoe"
@@ -227,30 +249,30 @@
   "pwa": {
     "addToHome": "Voeg Hilads toe aan je beginscherm",
     "add": "Toevoegen",
-    "keepClose": "Houd Hilads bij de hand",
+    "keepClose": "Hou Hilads bij de hand",
     "manualHelp": "Open het menu van je browser en kies Toevoegen aan beginscherm.",
     "dismiss": "Installatiemelding sluiten"
   },
   "feedJoin": {
     "0": "👋 {{name}} is net geland",
-    "1": "🔥 {{name}} heeft zich aangesloten",
+    "1": "🔥 {{name}} is erbij",
     "2": "🍻 {{name}} is hier",
     "3": "👀 {{name}} is net opgedoken",
     "4": "✨ {{name}} is aangekomen"
   },
   "ambient": {
-    "0": "🔥 Mensen komen binnen",
-    "1": "🍻 Wie is er vanavond op pad?",
+    "0": "🔥 Er komen mensen aan",
+    "1": "🍻 Wie gaat er vanavond op stap?",
     "2": "💬 De stad wordt wakker",
-    "3": "🌙 Nachtbrakers zijn online",
+    "3": "🌙 De nachtbrakers zijn online",
     "4": "👀 Er is net iemand aangekomen",
-    "5": "🔥 Een nieuw gezicht in de stad",
+    "5": "🔥 Nieuw gezicht in de stad",
     "6": "🎉 Er zijn nu mensen hier",
     "7": "🌆 Locals melden zich"
   },
   "ownerPrompt": {
     "text": "Jij hebt dit evenement gestart!",
-    "sub": "Maak het nog beter - voeg een beschrijving toe, pas de tijd aan of deel het.",
+    "sub": "Maak het nog beter: voeg een beschrijving toe, pas de tijd aan of deel het.",
     "edit": "Evenement bewerken"
   },
   "feedNew": {
@@ -261,7 +283,7 @@
     "challengeLocals": "{{name}} daagt de locals uit: {{title}}",
     "challengeExplorers": "{{name}} daagt de reizigers uit: {{title}}",
     "challengeCta": "Bekijk",
-    "challengeValidated": "Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd.",
+    "challengeValidated": "Challenge gehaald! {{name}} heeft \"{{title}}\" bevestigd.",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Internationale challenge: {{title}}"
   },
   "replyPreview": {
@@ -270,28 +292,28 @@
   "typing": {
     "one": "{{name}} is aan het typen…",
     "two": "{{a}} en {{b}} zijn aan het typen…",
-    "many": "Meerdere mensen zijn aan het typen…"
+    "many": "Een paar mensen zijn aan het typen…"
   },
   "myEvent": {
     "live": "Live",
     "recurring": "Terugkerend",
-    "upcoming": "Binnenkort",
+    "upcoming": "Komt eraan",
     "delete": "Evenement verwijderen"
   },
   "arrivalsBar": {
-    "label": "Recente aankomsten",
-    "sheetTitle": "Aankomsten",
-    "empty": "Nog geen aankomsten"
+    "label": "Net aangekomen",
+    "sheetTitle": "Nieuwkomers",
+    "empty": "Nog geen nieuwkomers"
   },
   "cityHero": {
     "mainEmpty": "🌱 nog geen challenges in {{city}}",
     "subRanked": "Tik om je volgende challenge aan te gaan →",
     "subUnranked": "Ga je eerste challenge aan om te klimmen →",
     "subTop": "Verdedig je titel →",
-    "subEmpty": "Maak de eerste voor reizigers →",
-    "members_one": "{{count}} leden",
+    "subEmpty": "Maak de eerste, dan kunnen reizigers 'm aangaan →",
+    "members_one": "{{count}} lid",
     "members_other": "{{count}} leden",
-    "nearby": "{{count}} dichtbij",
+    "nearby": "{{count}} in de buurt",
     "recent": "{{count}} nieuw",
     "mainUnranked_one": "🔥 {{count}} challenge in {{city}}",
     "mainUnranked_other": "🔥 {{count}} challenges in {{city}}",
@@ -300,45 +322,23 @@
     "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 in {{city}}",
     "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 in {{city}}"
   },
-  "world": {
-    "tab": "Wereld",
-    "banner_one": "{{count}} challenges tussen steden live",
-    "banner_other": "{{count}} challenges tussen steden live",
-    "online": "{{count}} online",
-    "cities_one": "{{count}} steden",
-    "cities_other": "{{count}} steden",
-    "sys": {
-      "challengeCreated": "🔥 {{nickname}} startte een challenge {{cityA}} → {{cityB}}",
-      "newUser": "🎉 {{nickname}} uit {{city}} is net lid geworden van Hilads",
-      "challengeWon": "🏆 {{nickname}} uit {{city}} won de challenge {{challenge}}"
-    },
-    "quietCard": "Rustig hier? {{count}} ongelezen in Wereld — tik om te openen",
-    "heroEmpty": "Wees de eerste die een stad uitdaagt",
-    "heroEmptySub": "Start een challenge tussen steden",
-    "leaderboard": "Ranglijst",
-    "arrivals_one": "{{count}} aankomsten",
-    "arrivals_other": "{{count}} aankomsten",
-    "arrivalsTitle": "Recente aankomsten",
-    "arrivalsEmpty": "Geen recente aankomsten",
-    "seeAll": "Alles bekijken"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
-    "local": "Local",
+    "local": "Lokaal",
     "traveler": "Reiziger",
-    "ctaApp": "Doe de challenge in de app",
+    "ctaApp": "Speel de challenge in de app",
     "localPass": "Local Pass",
     "early": "Vroeg",
     "proposedBy": "Voorgesteld door {{name}}",
     "proposedByCity": "Voorgesteld door {{name}} · {{city}}",
     "groupTitle": "Nieuwe foto's: {{n}}",
-    "groupCitiesMore": "{{cities}} en nog {{n}}"
+    "groupCitiesMore": "{{cities}} en {{n}} andere"
   },
   "switchSheet": {
     "title": "Je bent in {{city}}",
     "body": "Je stad is {{from}}. Vanaf nu voor {{city}} spelen?",
-    "switch": "Overstappen naar {{city}}",
+    "switch": "Wissel naar {{city}}",
     "stay": "In {{from}} blijven"
   }
 }

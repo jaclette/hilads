@@ -1,13 +1,13 @@
 {
   "pageTitle": "Mijn profiel",
   "changePhoto": "Profielfoto wijzigen",
-  "yourProfile": "Jouw profiel",
+  "yourProfile": "Je profiel",
   "mode": "Modus",
   "modes": {
-    "local": "Local",
+    "local": "Lokaal",
     "localDesc": "Je kent deze stad",
     "exploring": "Verkennen",
-    "exploringDesc": "Je bent hem aan het ontdekken"
+    "exploringDesc": "Je bent 'm aan het ontdekken"
   },
   "tabs": {
     "interests": "Interesses",
@@ -60,17 +60,17 @@
     "homeCity": "Thuisstad",
     "homeCityPlaceholder": "Waar je woont",
     "age": "Leeftijd",
-    "agePlaceholder": "Jouw leeftijd",
+    "agePlaceholder": "Je leeftijd",
     "myVibe": "Mijn vibe",
     "interests": "Interesses",
     "interestsHint": "- kies er maximaal 5"
   },
   "ambassador": {
-    "title": "Tips van de stad",
-    "subtitle": "Worden op je profiel getoond als local legend.",
-    "restaurant": "Favoriete restaurant",
+    "title": "Stadstips",
+    "subtitle": "Staat op je profiel, als local legend.",
+    "restaurant": "Favoriet restaurant",
     "restaurantPlaceholder": "Een plek waar je iedereen mee naartoe neemt",
-    "spot": "Verborgen parel / spot",
+    "spot": "Verborgen parel / plek",
     "spotPlaceholder": "Een plek die de meeste toeristen missen",
     "tip": "Lokale tip",
     "tipPlaceholder": "Je beste advies voor nieuwkomers",
@@ -78,31 +78,31 @@
     "storyPlaceholder": "Iets wat je geweldig vindt aan deze stad"
   },
   "hangouts": {
-    "empty": "Nog geen meetups - start er een 🗣️",
+    "empty": "Nog geen meetups, start er een 🗣️",
     "host": "Host"
   },
   "events": {
-    "going": "Ga ik",
-    "goingEmpty": "Nog geen plannen - vind iets 🔥",
-    "hosting": "Organiseer ik",
-    "hostingEmpty": "Nog niets georganiseerd - start iets ✨",
+    "going": "Ga ik heen",
+    "goingEmpty": "Nog geen plannen - zoek iets leuks 🔥",
+    "hosting": "Ik organiseer",
+    "hostingEmpty": "Nog niets georganiseerd - begin iets ✨",
     "live": "Live",
     "recurring": "↻ Terugkerend",
-    "upcoming": "Binnenkort",
+    "upcoming": "Komt eraan",
     "deleteEvent": "Evenement verwijderen"
   },
   "friends": {
     "requests": "Vriendschapsverzoeken",
-    "empty": "Nog geen vrienden. Voeg ze toe vanuit profielen.",
+    "empty": "Nog geen vrienden. Voeg ze toe vanaf hun profiel.",
     "mine": "Mijn vrienden"
   },
   "vibesTab": {
     "received": "Ontvangen vibes",
-    "score": "vibe-score van {{score}}",
+    "score": "{{score}} vibescore",
     "basedOn_one": "gebaseerd op {{count}} vibe",
     "basedOn_other": "gebaseerd op {{count}} vibes",
     "empty": "Nog geen vibes",
-    "emptyHint": "Je score verschijnt hier zodra mensen je een notitie achterlaten ✨"
+    "emptyHint": "Je score verschijnt hier zodra mensen een notitie voor je achterlaten ✨"
   },
   "save": {
     "uploading": "Uploaden…",
@@ -115,21 +115,21 @@
   "delete": {
     "title": "Account verwijderen?",
     "body": "Je profiel, vrienden en instellingen worden permanent verwijderd. Je berichten en evenementen blijven anoniem in de stadschats staan.",
-    "irreversible": "Dit kan niet ongedaan worden gemaakt.",
+    "irreversible": "Dit kun je niet terugdraaien.",
     "deleting": "Verwijderen…",
     "confirm": "Ja, verwijder mijn account",
     "cancel": "Annuleren"
   },
   "errors": {
-    "photoUpload": "Foto uploaden mislukt. Probeer opnieuw.",
-    "usernameTooShort": "Gebruikersnaam moet minstens 3 tekens lang zijn",
+    "photoUpload": "Foto uploaden lukte niet. Probeer het opnieuw.",
+    "usernameTooShort": "Je gebruikersnaam moet minstens 3 tekens lang zijn",
     "usernameTaken": "Die gebruikersnaam is al in gebruik",
     "usernameInvalid": "Ongeldige gebruikersnaam",
-    "saveFailed": "Opslaan mislukt. Probeer opnieuw.",
-    "generic": "Er ging iets mis. Probeer opnieuw."
+    "saveFailed": "Opslaan lukte niet. Probeer het opnieuw.",
+    "generic": "Er ging iets mis. Probeer het opnieuw."
   },
   "challenges": {
-    "empty": "Nog geen challenges - lanceer er een 🔥",
+    "empty": "Nog geen challenges, start er een 🔥",
     "challenger": "Challenger"
   },
   "appearance": "Weergave",
@@ -139,36 +139,36 @@
     "passport": {
       "title": "Paspoort",
       "weekRank": "Nr. {{rank}} deze week",
-      "weekNone": "Deze week nog geen plek",
+      "weekNone": "Deze week nog niet in het klassement",
       "mostLocalIn": "Most Local in {{city}}",
       "mostLocalWorld": "Most Local wereldwijd",
-      "hintToday": "Doe de challenge van vandaag voor je stempel {{theme}}.",
+      "hintToday": "Doe de challenge van vandaag voor je {{theme}}-stempel.",
       "hintTomorrow": "Morgen: {{theme}}",
       "hintPass": "Local Pass behaald. Alle thema's hier gedaan.",
       "localPass": "Local Pass",
-      "mySpots": "Mijn spots",
+      "mySpots": "Mijn plekken",
       "myProposals": "Mijn voorstellen",
       "friends": "Vrienden",
       "mostLocalAllTime": "Most Local aller tijden",
-      "allTimeRank": "Nr. {{rank}} in {{city}}",
+      "allTimeRank": "#{{rank}} in {{city}}",
       "howPoints": "Zo werken punten",
       "gotIt": "Begrepen",
       "close": "Sluiten",
-      "noSpots": "Nog geen spots. Je foto's op plekken zetten ze hier.",
-      "pageA11y_one": "{{city}}: {{count}} stempels",
+      "noSpots": "Nog geen plekken. Pin een plek bij je foto, dan verschijnt hij hier.",
+      "pageA11y_one": "{{city}}: {{count}} stempel",
       "pageA11y_other": "{{city}}: {{count}} stempels",
       "guestTitle": "Begin je paspoort",
-      "guestBody": "Meld je aan voor een stempel per thema in elke stad en verdien de Local Pass.",
+      "guestBody": "Maak een account om in elke stad een stempel per thema te verzamelen en de Local Pass te verdienen.",
       "signUp": "Aanmelden",
       "signIn": "Ik heb een account",
       "best_one": "Record: {{count}} dag",
       "best_other": "Record: {{count}} dagen",
       "stamps_one": "{{count}} van 7 stempels",
       "stamps_other": "{{count}} van 7 stempels",
-      "inReview_one": "{{count}} in controle",
-      "inReview_other": "{{count}} in controle",
+      "inReview_one": "{{count}} wordt bekeken",
+      "inReview_other": "{{count}} worden bekeken",
       "specialTitle": "Speciale stempels",
-      "specialSub": "Beperkte oplage, één per speciale dag. Telt niet mee voor de Local Pass.",
+      "specialSub": "Beperkte editie, één per speciale dag. Telt niet mee voor de Local Pass.",
       "compared_one": "Vergeleken met {{count}} land",
       "compared_other": "Vergeleken met {{count}} landen",
       "stampsOf_one": "{{count}} van {{total}} stempels",
@@ -185,31 +185,31 @@
     },
     "points": {
       "title": "Zo verdien je punten",
-      "intro": "Daily Challenge-punten tellen voor de wekelijkse Most Local. Alle punten tellen voor de ranglijst aller tijden.",
-      "proof": "Je foto plaatsen",
+      "intro": "Daily Challenge-punten tellen voor de wekelijkse Most Local. Alle punten tellen voor het klassement aller tijden.",
+      "proof": "Je foto posten",
       "vote": "Stemmen (per challenge)",
-      "top": "Wereld top 3 van de dag",
+      "top": "Wereldwijde top 3 van de dag",
       "weekly": "De wekelijkse Most Local begint elke maandag opnieuw."
     },
     "tabFriends": "Vrienden",
-    "friendRequests": "Vriendverzoeken",
+    "friendRequests": "Vriendschapsverzoeken",
     "myFriends": "MIJN VRIENDEN",
-    "noFriends": "Nog geen vrienden. Voeg er toe vanuit profielen.",
+    "noFriends": "Nog geen vrienden. Voeg ze toe vanaf hun profiel.",
     "vibesReceived": "ONTVANGEN VIBES",
     "vibeScore": "{{score}} vibescore",
     "noVibes": "Nog geen vibes.",
-    "noVibesSub": "Je score verschijnt zodra mensen je een notitie achterlaten ✨",
+    "noVibesSub": "Je score verschijnt zodra mensen een notitie voor je achterlaten ✨",
     "settings": "INSTELLINGEN",
     "vibeBasis_one": "gebaseerd op {{count}} vibe",
     "vibeBasis_other": "gebaseerd op {{count}} vibes",
     "mode": {
       "local": {
-        "label": "Local",
+        "label": "Lokaal",
         "desc": "Je kent deze stad"
       },
       "exploring": {
         "label": "Verkennen",
-        "desc": "Je bent hem aan het ontdekken"
+        "desc": "Je bent 'm aan het ontdekken"
       }
     },
     "passportStats": {
@@ -222,7 +222,7 @@
     }
   },
   "friendReq": {
-    "title": "Vriendverzoeken",
+    "title": "Vriendschapsverzoeken",
     "incoming": "Ontvangen",
     "sent": "Verzonden",
     "wantsToBeFriend": "wil je vriend zijn",
@@ -230,9 +230,9 @@
     "decline": "Weigeren",
     "accept": "Accepteren",
     "cancel": "Annuleren",
-    "emptyIncomingTitle": "Nog geen vriendverzoeken",
+    "emptyIncomingTitle": "Nog geen vriendschapsverzoeken",
     "emptySentTitle": "Je hebt er nog geen verstuurd",
-    "emptyIncomingSub": "Wanneer iemand je als vriend wil toevoegen, zie je het hier.",
-    "emptySentSub": "Openstaande vriendverzoeken die je hebt verstuurd verschijnen hier."
+    "emptyIncomingSub": "Als iemand je vriend wil worden, zie je het hier.",
+    "emptySentSub": "Openstaande vriendschapsverzoeken die je hebt gestuurd, zie je hier."
   }
 }
