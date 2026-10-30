@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Icon from './Icon'
 
 // Why this exists: Universal Links (iOS) / App Links (Android) open the native
@@ -22,6 +23,7 @@ const DEEPLINK_RE = /^\/(challenge|event|venue|city|t|e)\//
 const IN_APP_RE = /\b(Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|Snapchat|Twitter|TikTok|KAKAOTALK)\b/i
 
 export default function OpenInAppBanner() {
+  const { t } = useTranslation('common')
   const [appUrl, setAppUrl] = useState('')
 
   useEffect(() => {
@@ -55,9 +57,9 @@ export default function OpenInAppBanner() {
 
   return (
     <div className="open-in-app">
-      <span className="open-in-app-text">Continue in the Hilads app for the full experience</span>
-      <a className="open-in-app-btn" href={appUrl}>Open app</a>
-      <button type="button" className="open-in-app-close" aria-label="Dismiss" onClick={() => setAppUrl('')}><Icon name="close" size={16} /></button>
+      <span className="open-in-app-text">{t('openInApp.text')}</span>
+      <a className="open-in-app-btn" href={appUrl}>{t('openInApp.cta')}</a>
+      <button type="button" className="open-in-app-close" aria-label={t('a11y.dismiss')} onClick={() => setAppUrl('')}><Icon name="close" size={16} /></button>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { thumbUrl } from '../lib/imageThumb'
+import i18n from '../i18n'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchGroupSubmissions, pickWinner } from '../api'
@@ -84,7 +85,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
               <span className="gsg-modal-title">
                 <Icon name="camera-outline" size={18} /> {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
               </span>
-              <button type="button" className="gsg-modal-close" onClick={() => setOpen(false)} aria-label="Close"><Icon name="close" size={18} /></button>
+              <button type="button" className="gsg-modal-close" onClick={() => setOpen(false)} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={18} /></button>
             </div>
             {canPick && <p className="gsg-modal-hint">{t('group.winnerSub', { defaultValue: 'Choose the best photo. The winner earns the big reward.' })}</p>}
 

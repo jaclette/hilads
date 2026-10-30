@@ -11,12 +11,14 @@
  */
 
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchMyEvents } from '../api'
 import Icon from './Icon'
 import { eventIcon } from '../lib/icons'
 import { getTimeLabel, getEventLocation } from '../eventUtils'
 
 export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, onSelectEvent }) {
+  const { t } = useTranslation('event')
   const [showLegendInfo, setShowLegendInfo] = useState(false)
   const [blockingEvent,  setBlockingEvent]  = useState(null)
 
@@ -50,7 +52,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             type="button"
             className="back-button"
             onClick={onClose}
-            aria-label="Back"
+            aria-label={t('common:a11y.back')}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -60,11 +62,9 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
 
         <div className="limit-hero">
           <div className="limit-emoji" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name="calendar-outline" size={56} /></div>
-          <h1 className="limit-title">You've already created your event today!</h1>
+          <h1 className="limit-title">{t('limit.title')}</h1>
           <p className="limit-body">
-            At Hilads, we keep things fresh - one event per day so every plan
-            gets the attention it deserves. Come back tomorrow to create
-            another one.
+            {t('limit.body')}
           </p>
 
           {/* Blocking event - tap to open, edit, or delete. Reuses the same
@@ -80,7 +80,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
                   <Icon name={eventIcon(blockingEvent.event_type ?? blockingEvent.type)} size={16} />
                   <span className="er-title-marquee">{blockingEvent.title}</span>
                 </span>
-                <span className="er-going er-going--event">Your event</span>
+                <span className="er-going er-going--event">{t('limit.yourEvent')}</span>
               </div>
               <div className="er-badges">
                 <span className="city-row-current">
@@ -98,7 +98,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             className="limit-legend-link"
             onClick={() => setShowLegendInfo(true)}
           >
-            <Icon name="ribbon-outline" size={16} style={{ marginRight: 6 }} />Become a Legend to create unlimited events
+            <Icon name="ribbon-outline" size={16} style={{ marginRight: 6 }} />{t('limit.legendLink')}
           </button>
         </div>
 
@@ -108,7 +108,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             className="limit-primary-btn"
             onClick={onClose}
           >
-            Back to Now
+            {t('limit.backToNow')}
           </button>
         </div>
       </div>
@@ -117,18 +117,16 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
         <div className="limit-legend-modal" role="dialog" aria-modal="true">
           <div className="limit-legend-modal-card">
             <div className="limit-legend-modal-emoji" aria-hidden="true" style={{ color: 'var(--gold)' }}><Icon name="ribbon-outline" size={44} /></div>
-            <h2 className="limit-legend-modal-title">Become a Legend</h2>
+            <h2 className="limit-legend-modal-title">{t('limit.legendAlertTitle')}</h2>
             <p className="limit-legend-modal-body">
-              Legends are locals chosen to keep their city alive - they can
-              host as many events as they want. Want to become one? Reach out
-              at <a href="mailto:contact@hilads.live">contact@hilads.live</a>.
+              {t('limit.legendAlertBody')}
             </p>
             <button
               type="button"
               className="limit-legend-modal-btn"
               onClick={() => setShowLegendInfo(false)}
             >
-              Got it
+              {t('limit.gotIt')}
             </button>
           </div>
         </div>

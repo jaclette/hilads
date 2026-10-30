@@ -1,5 +1,7 @@
 import Icon from './Icon'
+import { useTranslation } from 'react-i18next'
 export default function DeleteAccountPage() {
+  const { t } = useTranslation('common')
   return (
     <div style={styles.page}>
       <div style={styles.card}>
@@ -8,10 +10,10 @@ export default function DeleteAccountPage() {
           <span style={styles.logoName}>Hilads</span>
         </a>
 
-        <h1 style={styles.title}>Delete your account</h1>
+        <h1 style={styles.title}>{t('deleteAccount.title')}</h1>
 
         <p style={styles.body}>
-          To delete your Hilads account and all associated data, send an email to:
+          {t('deleteAccount.body')}
         </p>
 
         <a href="mailto:contact@hilads.live" style={styles.email}>
@@ -21,12 +23,12 @@ export default function DeleteAccountPage() {
         <div style={styles.divider} />
 
         <p style={styles.note}>
-          Include your username in your request. Your data will be permanently deleted within 48 hours.
+          {t('deleteAccount.note')}
         </p>
       </div>
 
       <footer style={styles.footer}>
-        <a href="/" style={styles.footerLink}>Back to Hilads</a>
+        <a href="/" style={styles.footerLink}>{t('deleteAccount.back')}</a>
       </footer>
     </div>
   )

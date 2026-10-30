@@ -1,4 +1,5 @@
 import { thumbUrl } from '../lib/imageThumb'
+import i18n from '../i18n'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchChannelParticipants, kickChallengeParticipant } from '../api'
@@ -128,7 +129,7 @@ export default function ChallengeChannelMembers({
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <span className="modal-title"><Icon name="people-outline" size={18} /> {t('members.countIn', { count: rows.length })}</span>
-              <button className="going-modal-close" onClick={() => setOpen(false)} aria-label="Close"><Icon name="close" size={18} /></button>
+              <button className="going-modal-close" onClick={() => setOpen(false)} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={18} /></button>
             </div>
             <div className="going-modal-body">
               {rows.map(r => {

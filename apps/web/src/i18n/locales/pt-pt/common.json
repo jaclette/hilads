@@ -174,7 +174,9 @@
     "expiresSoon": "Expira em breve",
     "expiresInMin": "Expira daqui a {{mins}} min",
     "expiresInHourMin": "Expira daqui a {{hours}} h {{mins}} min",
-    "expiresInHour": "Expira daqui a {{hours}} h"
+    "expiresInHour": "Expira daqui a {{hours}} h",
+    "mShort": "{{count}} min",
+    "hShort": "{{count}} h"
   },
   "filterChallenges": "🔥 Desafios",
   "shareToCity": "Partilhar na minha cidade",

@@ -174,7 +174,9 @@
     "expiresSoon": "ใกล้หมดอายุ",
     "expiresInMin": "หมดอายุในอีก {{mins}} นาที",
     "expiresInHourMin": "หมดอายุในอีก {{hours}} ชม. {{mins}} นาที",
-    "expiresInHour": "หมดอายุในอีก {{hours}} ชม."
+    "expiresInHour": "หมดอายุในอีก {{hours}} ชม.",
+    "mShort": "{{count}} นาที",
+    "hShort": "{{count}} ชม."
   },
   "filterChallenges": "🔥 ชาเลนจ์",
   "shareToCity": "แชร์ไปยังเมืองของฉัน",

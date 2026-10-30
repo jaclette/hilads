@@ -88,5 +88,15 @@
     "weekly": "每周",
     "everyNDays_one": "每 {{count}} 天",
     "everyNDays_other": "每 {{count}} 天"
+  },
+  "limit": {
+    "title": "你今天已经创建过活动了！",
+    "body": "在 Hilads，我们保持新鲜感 - 每天一个活动，让每个计划都得到应有的关注。明天再来创建另一个吧。",
+    "legendLink": "成为 Legend 以创建无限活动",
+    "legendA11y": "了解如何成为 Legend",
+    "legendAlertTitle": "成为 Legend",
+    "legendAlertBody": "Legend 是被选中来让城市保持活力的本地人 - 他们可以举办任意数量的活动。想成为其中一员？请联系 contact@hilads.live。",
+    "gotIt": "知道了",
+    "backToNow": "返回 Now"
   }
 }

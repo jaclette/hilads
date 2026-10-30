@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { authValidateResetToken, authResetPassword } from '../api'
 import Icon from './Icon'
 
 export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) {
+  const { t } = useTranslation('auth')
   const [valid,    setValid]    = useState(null)  // null=checking, true, false
   const [password, setPassword] = useState('')
   const [confirm,  setConfirm]  = useState('')
@@ -18,8 +20,8 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (password !== confirm) { setError('Passwords do not match'); return }
-    if (password.length < 8)  { setError('Password must be at least 8 characters'); return }
+    if (password !== confirm) { setError(t('resetPassword.mismatch')); return }
+    if (password.length < 8)  { setError(t('resetPassword.tooShort')); return }
 
     setError(null)
     setLoading(true)
@@ -39,7 +41,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
     return (
       <div className="full-page">
         <div className="page-body page-body--centered">
-          <p className="auth-hint-top" style={{ textAlign: 'center' }}>Checking reset link…</p>
+          <p className="auth-hint-top" style={{ textAlign: 'center' }}>{t('resetPassword.checking')}</p>
         </div>
       </div>
     )
@@ -52,12 +54,12 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
         <div className="page-body page-body--centered">
           <div className="auth-success">
             <p className="auth-success-icon" style={{ color: 'var(--warning)' }}><Icon name="warning-outline" size={40} /></p>
-            <p className="auth-success-title">Link expired</p>
+            <p className="auth-success-title">{t('resetPassword.expiredTitle')}</p>
             <p className="auth-success-body">
-              This reset link is invalid or expired.
+              {t('resetPassword.expiredBody')}
             </p>
             <button className="modal-submit" onClick={onRequestNew} style={{ marginTop: 24 }}>
-              Request a new link
+              {t('resetPassword.requestNew')}
             </button>
           </div>
         </div>
@@ -72,8 +74,8 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
         <div className="page-body page-body--centered">
           <div className="auth-success">
             <p className="auth-success-icon" style={{ color: 'var(--green)' }}><Icon name="checkmark-circle-outline" size={40} /></p>
-            <p className="auth-success-title">Password updated</p>
-            <p className="auth-success-body">Your password has been updated. You are now signed in.</p>
+            <p className="auth-success-title">{t('resetPassword.doneTitle')}</p>
+            <p className="auth-success-body">{t('resetPassword.doneBody')}</p>
           </div>
         </div>
       </div>
@@ -83,20 +85,20 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
   return (
     <div className="full-page">
       <div className="page-header">
-        <span className="page-title">Choose a new password</span>
+        <span className="page-title">{t('resetPassword.title')}</span>
       </div>
 
       <div className="page-body page-body--centered">
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="modal-field">
-            <label className="modal-label">New password</label>
+            <label className="modal-label">{t('resetPassword.newPassword')}</label>
             <div className="password-field">
               <input
                 className="modal-input password-field-input"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="At least 8 characters"
+                placeholder={t('fields.passwordPlaceholder')}
                 required
                 autoFocus
               />
@@ -104,7 +106,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
                 type="button"
                 className="password-field-toggle"
                 onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? t('resetPassword.hide') : t('resetPassword.show')}
                 aria-pressed={showPassword}
                 tabIndex={-1}
               >
@@ -114,21 +116,21 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
           </div>
 
           <div className="modal-field">
-            <label className="modal-label">Confirm password</label>
+            <label className="modal-label">{t('resetPassword.confirm')}</label>
             <div className="password-field">
               <input
                 className="modal-input password-field-input"
                 type={showPassword ? 'text' : 'password'}
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
-                placeholder="Repeat your new password"
+                placeholder={t('resetPassword.confirmPlaceholder')}
                 required
               />
               <button
                 type="button"
                 className="password-field-toggle"
                 onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? t('resetPassword.hide') : t('resetPassword.show')}
                 aria-pressed={showPassword}
                 tabIndex={-1}
               >
@@ -140,7 +142,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
           {error && <p className="auth-error">{error}</p>}
 
           <button className="modal-submit" type="submit" disabled={loading}>
-            {loading ? '...' : 'Reset password'}
+            {loading ? '...' : t('resetPassword.submit')}
           </button>
         </form>
       </div>

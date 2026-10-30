@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
 import { fetchProofs, approveProof, rejectProof } from '../api'
 import Icon from './Icon'
@@ -86,7 +87,7 @@ export default function ProofReviewModal({ visible, onClose, acceptanceId, onVer
               ? t('intl.proof.reviewModalTitle', { defaultValue: 'Review the proof' })
               : t('intl.proof.rejectModalTitle')}
           </span>
-          <button className="going-modal-close" onClick={onClose} disabled={!!busy} aria-label="Close"><Icon name="close" size={18} /></button>
+          <button className="going-modal-close" onClick={onClose} disabled={!!busy} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={18} /></button>
         </div>
 
         <div className="proof-review-body">

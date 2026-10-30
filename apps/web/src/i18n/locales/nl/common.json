@@ -174,7 +174,9 @@
     "expiresSoon": "Verloopt binnenkort",
     "expiresInMin": "Verloopt over {{mins}} min",
     "expiresInHourMin": "Verloopt over {{hours}} u {{mins}} min",
-    "expiresInHour": "Verloopt over {{hours}} u"
+    "expiresInHour": "Verloopt over {{hours}} u",
+    "mShort": "{{count}} min",
+    "hShort": "{{count}} u"
   },
   "filterChallenges": "🔥 Challenges",
   "shareToCity": "Deel in mijn stad",

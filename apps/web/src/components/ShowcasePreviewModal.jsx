@@ -1,4 +1,5 @@
 import { thumbUrl } from '../lib/imageThumb'
+import i18n from '../i18n'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import ThumbImg from './ThumbImg'
@@ -64,7 +65,7 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
         </div>
       ), document.body)}
       <div className="showcase-preview" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="showcase-preview-close" onClick={onClose} aria-label="Close"><Icon name="close" size={18} /></button>
+        <button type="button" className="showcase-preview-close" onClick={onClose} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={18} /></button>
 
         <div className="showcase-preview-scroll">
           {hasProof && (

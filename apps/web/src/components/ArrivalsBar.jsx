@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
 import { thumbUrl } from '../lib/imageThumb'
 import Icon from './Icon'
@@ -127,7 +128,7 @@ export function ArrivalsSheet({ open, arrivals, onClose, onTapUser, formatTime }
         <div className="arrivals-sheet-handle" />
         <div className="arrivals-sheet-header">
           <span className="arrivals-sheet-title">{t('arrivalsBar.sheetTitle')}</span>
-          <button type="button" className="arrivals-sheet-close" onClick={onClose} aria-label="Close"><Icon name="close" size={18} /></button>
+          <button type="button" className="arrivals-sheet-close" onClick={onClose} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={18} /></button>
         </div>
         <div className="arrivals-sheet-list">
           {arrivals.length === 0 ? (

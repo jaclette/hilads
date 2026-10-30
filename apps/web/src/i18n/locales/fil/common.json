@@ -174,7 +174,9 @@
     "expiresSoon": "Malapit nang mag-expire",
     "expiresInMin": "Mag-e-expire sa {{mins}}m",
     "expiresInHourMin": "Mag-e-expire sa {{hours}}h {{mins}}m",
-    "expiresInHour": "Mag-e-expire sa {{hours}}h"
+    "expiresInHour": "Mag-e-expire sa {{hours}}h",
+    "mShort": "{{count}}m",
+    "hShort": "{{count}}h"
   },
   "filterChallenges": "🔥 Mga Challenge",
   "shareToCity": "Ibahagi sa aking lungsod",

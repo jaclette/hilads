@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
 import Icon from './Icon'
 
@@ -56,7 +57,7 @@ export function ReplyPreview({ replyingTo, onCancel }) {
           {replyingTo.type === 'image' ? t('reply.photo', { defaultValue: 'Photo' }) : (replyingTo.content || '-')}
         </span>
       </div>
-      <button type="button" className="reply-preview-close" onClick={onCancel} aria-label="Cancel reply"><Icon name="close" size={16} /></button>
+      <button type="button" className="reply-preview-close" onClick={onCancel} aria-label={i18n.t('a11y.cancelReply', { ns: 'common' })}><Icon name="close" size={16} /></button>
     </div>
   )
 }

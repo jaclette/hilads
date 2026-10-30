@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
 import { mediaDownloadUrl } from '../api'
 import Icon from './Icon'
@@ -124,7 +125,7 @@ export default function Lightbox({ url, onClose }) {
 
   return (
     <div className="lightbox-overlay" onClick={onClose}>
-      <button className="lightbox-close" onClick={onClose} aria-label="Close"><Icon name="close" size={22} /></button>
+      <button className="lightbox-close" onClick={onClose} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={22} /></button>
       <img
         src={url}
         className="lightbox-img"

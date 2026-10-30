@@ -174,7 +174,9 @@
     "expiresSoon": "Segera berakhir",
     "expiresInMin": "Berakhir dalam {{mins}} mnt",
     "expiresInHourMin": "Berakhir dalam {{hours}} jam {{mins}} mnt",
-    "expiresInHour": "Berakhir dalam {{hours}} jam"
+    "expiresInHour": "Berakhir dalam {{hours}} jam",
+    "mShort": "{{count}}m",
+    "hShort": "{{count}}j"
   },
   "filterChallenges": "🔥 Tantangan",
   "shareToCity": "Bagikan ke kotaku",

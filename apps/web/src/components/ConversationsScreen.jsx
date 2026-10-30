@@ -31,8 +31,8 @@ function formatConvTime(isoStr) {
   if (isNaN(d.getTime())) return null
   const diff = Date.now() - d.getTime()
   if (diff < 60_000)           return i18n.t('time.nowShort', { ns: 'common' })
-  if (diff < 3_600_000)        return `${Math.floor(diff / 60_000)}m`
-  if (diff < 86_400_000)       return `${Math.floor(diff / 3_600_000)}h`
+  if (diff < 3_600_000)        return i18n.t('time.mShort', { ns: 'common', count: Math.floor(diff / 60_000) })
+  if (diff < 86_400_000)       return i18n.t('time.hShort', { ns: 'common', count: Math.floor(diff / 3_600_000) })
   if (diff < 7 * 86_400_000)   return d.toLocaleDateString(i18n.language, { weekday: 'short' })
   return d.toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })
 }

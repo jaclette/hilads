@@ -174,7 +174,9 @@
     "expiresSoon": "Скоро истекает",
     "expiresInMin": "Истекает через {{mins}} мин",
     "expiresInHourMin": "Истекает через {{hours}} ч {{mins}} мин",
-    "expiresInHour": "Истекает через {{hours}} ч"
+    "expiresInHour": "Истекает через {{hours}} ч",
+    "mShort": "{{count}} мин",
+    "hShort": "{{count}} ч"
   },
   "filterChallenges": "🔥 Челленджи",
   "shareToCity": "Поделиться в моём городе",

@@ -1599,7 +1599,7 @@ export default function ChallengeChatPage({
                 type="button"
                 className="challenge-guest-welcome-close"
                 onClick={() => setShowGuestWelcome(false)}
-                aria-label="Close"
+                aria-label={i18n.t('a11y.close', { ns: 'common' })}
               >
                 <Icon name="close" size={16} />
               </button>
@@ -1640,7 +1640,7 @@ export default function ChallengeChatPage({
                 type="button"
                 className="challenge-intro-banner-close"
                 onClick={() => setShowChallengeIntroBanner(false)}
-                aria-label="Close"
+                aria-label={i18n.t('a11y.close', { ns: 'common' })}
               >
                 <Icon name="close" size={16} />
               </button>

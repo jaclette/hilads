@@ -88,5 +88,16 @@
     "weekly": "Weekly",
     "everyNDays_one": "Every {{count}} day",
     "everyNDays_other": "Every {{count}} days"
+  },
+  "limit": {
+    "title": "You've already created your event today!",
+    "body": "At Hilads, we keep things fresh - one event per day so every plan gets the attention it deserves. Come back tomorrow to create another one.",
+    "legendLink": "Become a Legend to create unlimited events",
+    "legendA11y": "Learn about becoming a Legend",
+    "legendAlertTitle": "Become a Legend",
+    "legendAlertBody": "Legends are locals chosen to keep their city alive - they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
+    "gotIt": "Got it",
+    "backToNow": "Back to Now",
+    "yourEvent": "Your event"
   }
 }

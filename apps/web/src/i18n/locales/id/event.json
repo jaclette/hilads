@@ -88,5 +88,15 @@
     "weekly": "Setiap minggu",
     "everyNDays_one": "Setiap {{count}} hari",
     "everyNDays_other": "Setiap {{count}} hari"
+  },
+  "limit": {
+    "title": "Kamu sudah membuat acaramu hari ini!",
+    "body": "Di Hilads, kami menjaga semuanya tetap segar - satu acara per hari agar setiap rencana mendapat perhatian yang layak. Kembali besok untuk membuat satu lagi.",
+    "legendLink": "Jadilah Legend untuk membuat acara tanpa batas",
+    "legendA11y": "Pelajari cara menjadi Legend",
+    "legendAlertTitle": "Jadilah Legend",
+    "legendAlertBody": "Legend adalah warga lokal yang dipilih untuk menghidupkan kotanya - mereka bisa jadi host sebanyak yang mereka mau. Mau jadi salah satunya? Hubungi contact@hilads.live.",
+    "gotIt": "Mengerti",
+    "backToNow": "Kembali ke Now"
   }
 }

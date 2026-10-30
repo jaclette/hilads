@@ -175,7 +175,9 @@
     "expiresSoon": "Sắp hết hạn",
     "expiresInMin": "Hết hạn sau {{mins}} phút",
     "expiresInHourMin": "Hết hạn sau {{hours}} giờ {{mins}} phút",
-    "expiresInHour": "Hết hạn sau {{hours}} giờ"
+    "expiresInHour": "Hết hạn sau {{hours}} giờ",
+    "mShort": "{{count}} phút",
+    "hShort": "{{count}} giờ"
   },
   "filterChallenges": "🔥 Thử thách",
   "shareToCity": "Chia sẻ lên thành phố của mình",
@@ -275,5 +277,38 @@
     "setting": "Giới thiệu ảnh của mình",
     "on": "Bật",
     "off": "Tắt"
+  },
+  "a11y": {
+    "close": "Đóng",
+    "back": "Quay lại",
+    "dismiss": "Ẩn",
+    "mainNav": "Điều hướng chính",
+    "emojiPicker": "Chọn emoji",
+    "cancelReply": "Hủy trả lời",
+    "welcome": "Chào mừng",
+    "approve": "Đồng ý"
+  },
+  "tapToOpenMaps": "Chạm để mở bản đồ",
+  "openInApp": {
+    "text": "Mở app Hilads để trải nghiệm đầy đủ nhé",
+    "cta": "Mở app"
+  },
+  "appPromo": {
+    "text": "Trải nghiệm Hilads đầy đủ trên app",
+    "ctaIos": "Tải trên App Store",
+    "ctaAndroid": "Tải trên Google Play",
+    "regionIos": "Tải app Hilads cho iOS",
+    "regionAndroid": "Tải app Hilads cho Android",
+    "pitchPush": "Thông báo tức thì",
+    "pitchFast": "Lướt nhanh, mượt hơn",
+    "pitchAnim": "Hiệu ứng mượt như app xịn",
+    "ctaPlay": "Tải trên Google Play",
+    "continueBrowser": "Tiếp tục trên trình duyệt"
+  },
+  "deleteAccount": {
+    "title": "Xóa tài khoản",
+    "body": "Để xóa tài khoản Hilads và toàn bộ dữ liệu, gửi email tới:",
+    "note": "Nhớ ghi tên người dùng của bạn trong email. Dữ liệu sẽ bị xóa vĩnh viễn trong vòng 48 giờ.",
+    "back": "Về Hilads"
   }
 }

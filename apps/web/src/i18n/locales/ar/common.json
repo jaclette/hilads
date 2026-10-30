@@ -174,7 +174,9 @@
     "expiresSoon": "ينتهي قريبًا",
     "expiresInMin": "ينتهي خلال {{mins}} د",
     "expiresInHourMin": "ينتهي خلال {{hours}} س {{mins}} د",
-    "expiresInHour": "ينتهي خلال {{hours}} س"
+    "expiresInHour": "ينتهي خلال {{hours}} س",
+    "mShort": "{{count}} د",
+    "hShort": "{{count}} س"
   },
   "filterChallenges": "🔥 التحديات",
   "shareToCity": "شارك في مدينتي",

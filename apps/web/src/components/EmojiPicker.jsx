@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import i18n from '../i18n'
 
 // ~120 frequently-used emojis - no library required, plain Unicode
 const EMOJIS = [
@@ -39,7 +40,7 @@ export default function EmojiPicker({ onSelect, onClose }) {
   }, [onClose])
 
   return (
-    <div className="emoji-picker" ref={ref} role="dialog" aria-label="Emoji picker">
+    <div className="emoji-picker" ref={ref} role="dialog" aria-label={i18n.t('a11y.emojiPicker', { ns: 'common' })}>
       {EMOJIS.map((emoji) => (
         <button
           key={emoji}

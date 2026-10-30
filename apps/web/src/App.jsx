@@ -5712,7 +5712,7 @@ export default function App() {
                             <div className="loc-bubble-body">
                               <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
                               {addr && <span className="loc-bubble-addr">{addr}</span>}
-                              {hasCoords && <span className="loc-bubble-tap">Tap to open in maps</span>}
+                              {hasCoords && <span className="loc-bubble-tap">{i18n.t('tapToOpenMaps', { ns: 'common' })}</span>}
                             </div>
                           </div>
                         )
@@ -5909,7 +5909,7 @@ export default function App() {
         />
 
         {/* Bottom navigation - mobile only */}
-        <nav className="bottom-nav" aria-label="Primary">
+        <nav className="bottom-nav" aria-label={i18n.t('a11y.mainNav', { ns: 'common' })}>
           {(() => {
             const onPassport = showProfileDrawer
             const onChat = !showToday && !showMap && !onPassport && !showEventDrawer &&
@@ -7427,8 +7427,8 @@ export default function App() {
       {mentionNudge && !account && (
         <div className="mention-nudge" role="status">
           <span className="mention-nudge-text">You're getting mentioned! Create an account so you never miss it.</span>
-          <button className="mention-nudge-btn" onClick={() => { setMentionNudge(false); setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>Sign up</button>
-          <button className="mention-nudge-dismiss" onClick={() => setMentionNudge(false)} aria-label="Dismiss">×</button>
+          <button className="mention-nudge-btn" onClick={() => { setMentionNudge(false); setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>{i18n.t('signUp', { ns: 'common' })}</button>
+          <button className="mention-nudge-dismiss" onClick={() => setMentionNudge(false)} aria-label={i18n.t('a11y.dismiss', { ns: 'common' })}>×</button>
         </div>
       )}
 

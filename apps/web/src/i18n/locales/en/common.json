@@ -175,7 +175,9 @@
     "expiresSoon": "Expires soon",
     "expiresInMin": "Expires in {{mins}}m",
     "expiresInHourMin": "Expires in {{hours}}h {{mins}}m",
-    "expiresInHour": "Expires in {{hours}}h"
+    "expiresInHour": "Expires in {{hours}}h",
+    "mShort": "{{count}}m",
+    "hShort": "{{count}}h"
   },
   "filterChallenges": "🔥 Challenges",
   "shareToCity": "Share in my city",
@@ -277,5 +279,38 @@
     "setting": "Feature my photos",
     "on": "On",
     "off": "Off"
+  },
+  "a11y": {
+    "close": "Close",
+    "back": "Back",
+    "dismiss": "Dismiss",
+    "mainNav": "Main",
+    "emojiPicker": "Emoji picker",
+    "cancelReply": "Cancel reply",
+    "welcome": "Welcome",
+    "approve": "Approve"
+  },
+  "tapToOpenMaps": "Tap to open in maps",
+  "openInApp": {
+    "text": "Continue in the Hilads app for the full experience",
+    "cta": "Open app"
+  },
+  "appPromo": {
+    "text": "Get the full Hilads experience",
+    "ctaIos": "Download on the App Store",
+    "ctaAndroid": "Get it on Google Play",
+    "regionIos": "Get the Hilads iOS app",
+    "regionAndroid": "Get the Hilads Android app",
+    "pitchPush": "Real-time push notifications",
+    "pitchFast": "Faster, smoother feed",
+    "pitchAnim": "Native-quality animations",
+    "ctaPlay": "Download on Google Play",
+    "continueBrowser": "Continue in browser"
+  },
+  "deleteAccount": {
+    "title": "Delete your account",
+    "body": "To delete your Hilads account and all associated data, send an email to:",
+    "note": "Include your username in your request. Your data will be permanently deleted within 48 hours.",
+    "back": "Back to Hilads"
   }
 }

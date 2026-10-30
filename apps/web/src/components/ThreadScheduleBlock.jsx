@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
 import { proposeDate, withdrawProposal, approveDate } from '../api'
 import ConfirmDialog from './ConfirmDialog'
@@ -210,7 +211,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
               type="button"
               onClick={handleApprove}
               disabled={busy !== null}
-              title="Approve"
+              title={i18n.t('a11y.approve', { ns: 'common' })}
               style={iconBtnPrimary}
             >
               {busy === 'approve' ? '…' : <Icon name="checkmark" size={18} />}

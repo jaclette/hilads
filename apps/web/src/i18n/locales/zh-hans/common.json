@@ -174,7 +174,9 @@
     "expiresSoon": "即将到期",
     "expiresInMin": "{{mins}} 分钟后到期",
     "expiresInHourMin": "{{hours}} 小时 {{mins}} 分钟后到期",
-    "expiresInHour": "{{hours}} 小时后到期"
+    "expiresInHour": "{{hours}} 小时后到期",
+    "mShort": "{{count}} 分钟",
+    "hShort": "{{count}} 小时"
   },
   "filterChallenges": "🔥 挑战",
   "shareToCity": "分享到我的城市",

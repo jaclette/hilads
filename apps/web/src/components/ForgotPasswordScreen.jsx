@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { authForgotPassword } from '../api'
 import BackButton from './BackButton'
 import Icon from './Icon'
 
 export default function ForgotPasswordScreen({ onBack }) {
+  const { t } = useTranslation('auth')
   const [email,   setEmail]   = useState('')
   const [loading, setLoading] = useState(false)
   const [sent,    setSent]    = useState(false)
@@ -28,36 +30,35 @@ export default function ForgotPasswordScreen({ onBack }) {
     <div className="full-page auth-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Forgot password?</span>
+        <span className="page-title">{t('forgotPassword.title')}</span>
       </div>
 
       <div className="page-body page-body--centered">
         {sent ? (
           <div className="auth-success">
             <p className="auth-success-icon" style={{ color: 'var(--primary-text)' }}><Icon name="mail-outline" size={40} /></p>
-            <p className="auth-success-title">Check your inbox</p>
+            <p className="auth-success-title">{t('forgotPassword.sentTitle')}</p>
             <p className="auth-success-body">
-              If an account exists for this email, we've sent a reset link.
-              Check your spam folder if you don't see it.
+              {t('forgotPassword.sentBody')}
             </p>
             <button className="modal-submit" onClick={onBack} style={{ marginTop: 24 }}>
-              Back to sign in
+              {t('forgotPassword.backToSignIn')}
             </button>
           </div>
         ) : (
           <form className="auth-form" onSubmit={handleSubmit}>
             <p className="auth-hint-top">
-              Enter your email and we'll send you a reset link.
+              {t('forgotPassword.subtitle')}
             </p>
 
             <div className="modal-field">
-              <label className="modal-label">Email</label>
+              <label className="modal-label">{t('forgotPassword.email')}</label>
               <input
                 className="modal-input"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={t('forgotPassword.emailPlaceholder')}
                 required
                 autoFocus
               />
@@ -66,7 +67,7 @@ export default function ForgotPasswordScreen({ onBack }) {
             {error && <p className="auth-error">{error}</p>}
 
             <button className="modal-submit" type="submit" disabled={loading}>
-              {loading ? '...' : 'Send reset link'}
+              {loading ? '...' : t('forgotPassword.submit')}
             </button>
           </form>
         )}

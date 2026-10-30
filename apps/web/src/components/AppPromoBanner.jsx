@@ -1,4 +1,5 @@
 import useAppPromotion from '../hooks/useAppPromotion'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Thin top bar inviting Android/iOS visitors to install the native app.
@@ -9,12 +10,13 @@ import useAppPromotion from '../hooks/useAppPromotion'
  * detected OS.
  */
 export default function AppPromoBanner() {
+  const { t } = useTranslation('common')
   const { shouldShowBanner, dismissBanner, trackCtaClick, os } = useAppPromotion()
 
   if (!shouldShowBanner) return null
 
-  const ctaLabel    = os === 'ios' ? 'Download on the App Store' : 'Get it on Google Play'
-  const regionLabel = os === 'ios' ? 'Get the Hilads iOS app'    : 'Get the Hilads Android app'
+  const ctaLabel    = os === 'ios' ? t('appPromo.ctaIos') : t('appPromo.ctaAndroid')
+  const regionLabel = os === 'ios' ? t('appPromo.regionIos') : t('appPromo.regionAndroid')
 
   function handleCtaClick(e) {
     e.stopPropagation()
@@ -34,7 +36,7 @@ export default function AppPromoBanner() {
       onClick={() => trackCtaClick('banner')}
     >
       <img className="app-promo-icon" src="/logo/icon.svg" alt="" aria-hidden="true" />
-      <span className="app-promo-text">Get the full Hilads experience</span>
+      <span className="app-promo-text">{t('appPromo.text')}</span>
       <button
         type="button"
         className="app-promo-cta"
@@ -45,7 +47,7 @@ export default function AppPromoBanner() {
       <button
         type="button"
         className="app-promo-dismiss"
-        aria-label="Dismiss"
+        aria-label={t('a11y.dismiss')}
         onClick={handleDismiss}
       >
         ×

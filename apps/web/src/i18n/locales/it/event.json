@@ -88,5 +88,15 @@
     "weekly": "Ogni settimana",
     "everyNDays_one": "Ogni {{count}} giorno",
     "everyNDays_other": "Ogni {{count}} giorni"
+  },
+  "limit": {
+    "title": "Hai già creato il tuo evento di oggi!",
+    "body": "Su Hilads teniamo le cose fresche - un evento al giorno così ogni piano riceve l'attenzione che merita. Torna domani per crearne un altro.",
+    "legendLink": "Diventa una Legend per creare eventi illimitati",
+    "legendA11y": "Scopri come diventare una Legend",
+    "legendAlertTitle": "Diventa una Legend",
+    "legendAlertBody": "Le Legend sono local scelti per far vivere la loro città - possono organizzare tutti gli eventi che vogliono. Vuoi diventarlo? Scrivi a contact@hilads.live.",
+    "gotIt": "Capito",
+    "backToNow": "Torna a Now"
   }
 }

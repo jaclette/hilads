@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import Icon from './Icon'
 
 // One-time congrats screen shown right after account creation (not login).
@@ -15,7 +16,7 @@ export default function AccountWelcome({ username, onClose }) {
     t('accountWelcome.f5'),
   ]
   return (
-    <div className="account-welcome-overlay" role="dialog" aria-modal="true" aria-label="Welcome">
+    <div className="account-welcome-overlay" role="dialog" aria-modal="true" aria-label={i18n.t('a11y.welcome', { ns: 'common' })}>
       <button className="account-welcome-close" onClick={onClose} aria-label={t('close', { defaultValue: 'Close' })}><Icon name="close" size={20} /></button>
       <div className="account-welcome-card">
         <div className="account-welcome-emoji" style={{ color: 'var(--primary-text)' }}><Icon name="sparkles-outline" size={48} /></div>
