@@ -1,0 +1,18 @@
+# Translation files of the app and the web, all 19 locales (tools/i18n/validate.mjs):
+# fails on a missing key, a broken placeholder or tag, or a missing plural form.
+name: i18n
+on:
+  pull_request:
+    paths: ['apps/mobile/src/i18n/locales/**', 'apps/web/src/i18n/locales/**', 'tools/i18n/**']
+  push:
+    branches: [main]
+    paths: ['apps/mobile/src/i18n/locales/**', 'apps/web/src/i18n/locales/**', 'tools/i18n/**']
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node tools/i18n/validate.mjs
