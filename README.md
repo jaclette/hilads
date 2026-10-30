@@ -169,6 +169,20 @@ Build profiles are defined in `apps/mobile/eas.json`.
 
 ---
 
+## Translations (19 languages)
+
+The app (`apps/mobile/src/i18n/locales/<locale>/`) and the web (`apps/web/src/i18n/locales/<locale>/`) each have one JSON file per namespace and locale; server texts (pushes, emails) live in `backend/api/src/NotificationI18n.php`, `DailyPushText.php` and `AuthService.php`.
+
+**Adding a string**
+1. Add the key in English (`en`), on the app and/or the web (the two use different keys for the same screens: keep both in step).
+2. Add it to the **18 other locales**, following `docs/i18n-style-guide.md`: the voice, the rules of each language (fr tu with a no-break space before ? ! : ;, vi bạn…), the **glossary** (challenge, photo, spot, streak… have one word per language) and the brand terms that stay English.
+3. A count goes in plural keys (`key_one`, `key_other`, plus each language's own forms: ru few/many, ar zero/two/few/many); never "1 photos" or "photo(s)". Numbers, distances and dates go through `Intl` with the UI language.
+4. Run `node tools/i18n/validate.mjs` (`-v` lists every finding, `--strict` fails on warnings): missing keys, placeholder / tag mismatches, plural forms, strings still in English, French typography.
+
+**A translation pass on a whole locale**: `node tools/i18n/export.mjs <locale>` → translate `tmp/i18n/<locale>/in-*.json` into `out-*.json` with `tools/i18n/TRANSLATOR.md` → `node tools/i18n/apply.mjs <locale>` (writes the files and the review sheet `docs/i18n-review/<locale>.csv`); push texts the same way with `php tools/i18n/push.php export|apply <locale>`.
+
+**Daily Challenge content** (written in the back office): Admin › Daily › 🌐 Translations (download, translate with `docs/daily-challenge/TRANSLATION.md`, upload; translations only), or one language by hand on the challenge's page.
+
 ## Environment Variables
 
 ### Backend API (`backend/api/.env`)
