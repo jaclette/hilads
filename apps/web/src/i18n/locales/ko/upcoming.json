@@ -5,10 +5,9 @@
   "close": "닫기",
   "error": "이 날의 이벤트를 불러오지 못했어요",
   "retry": "다시 시도",
-  "emptyTitle": "예정된 일정 없음",
+  "emptyTitle": "예정된 일정이 없어요",
   "emptySub": "이 날에는 아직 이벤트가 없어요.",
   "public": "공개",
-  "going_one": "{{count}}명 참여",
   "going_other": "{{count}}명 참여",
   "liveNow": "지금 라이브"
 }

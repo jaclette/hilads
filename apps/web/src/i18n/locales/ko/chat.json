@@ -6,8 +6,8 @@
   "actionCopy": "복사",
   "actionEdit": "수정",
   "actionDelete": "삭제",
-  "deleteConfirmBody": "이 메시지를 삭제할까요? 모든 사람에게서 사라져요.",
-  "editFailed": "수정을 저장하지 못했어요. 다시 시도해 주세요.",
+  "deleteConfirmBody": "이 메시지를 삭제할까요? 모두에게서 사라져요.",
+  "editFailed": "수정한 내용을 저장하지 못했어요. 다시 시도해 주세요.",
   "deleteFailed": "메시지를 삭제하지 못했어요. 다시 시도해 주세요.",
   "actionDownload": "저장",
   "actionShare": "공유",
@@ -16,7 +16,7 @@
   "shareFailed": "사진을 공유하지 못했어요",
   "shareUnavailable": "여기에서는 공유할 수 없어요",
   "shareDialogTitle": "사진 공유",
-  "linkCopied": "링크가 복사됨",
+  "linkCopied": "링크를 복사했어요",
   "photoSavePermTitle": "사진 접근 권한이 필요해요",
   "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
   "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요.",
@@ -25,31 +25,28 @@
   "people": {
     "hiNow": "Hi now",
     "hiNowA11y_other": "지금 뭔가 하고 싶은 사람 {{count}}명",
-    "going_one": "{{count}}명 참여",
     "going_other": "{{count}}명 참여",
-    "arrivals_one": "이번 주 {{count}}명 도착",
     "arrivals_other": "이번 주 {{count}}명 도착",
-    "nearby_one": "지금 여기 {{count}}명",
     "nearby_other": "지금 여기 {{count}}명"
   },
   "shareCity": "도시 공유",
   "quick": {
-    "hi": "👋 안녕 {{city}}!",
-    "tonight": "오늘 밤 누가 나와?",
+    "hi": "👋 안녕하세요, {{city}}!",
+    "tonight": "오늘 밤 나올 사람 있어요?",
     "theme": {
-      "hidden_gem": "근처에 숨은 명소 있어?",
-      "taste": "근처 최고의 길거리 음식은?",
-      "get_around": "여기서 이동하기 제일 좋은 방법은?",
-      "local_find": "근처 최고의 시장은?",
-      "night_out": "오늘 밤 어디가 핫해?",
-      "sip": "한잔하기 좋은 곳은?",
-      "only_here": "여기서만 볼 수 있는 건?"
+      "hidden_gem": "근처에 숨은 명소 있어요?",
+      "taste": "근처에 맛있는 길거리 음식 있어요?",
+      "get_around": "여기서는 뭐 타고 다니는 게 제일 좋아요?",
+      "local_find": "근처에 괜찮은 시장 있어요?",
+      "night_out": "오늘 밤 파티 어디서 해요?",
+      "sip": "한잔하기 좋은 곳 있어요?",
+      "only_here": "여기서만 볼 수 있는 게 뭐예요?"
     },
     "halloween": {
-      "boo": "👻 부!",
+      "boo": "👻 왁!",
       "happy": "🎃 해피 할로윈, {{city}}!",
       "happyNoCity": "🎃 해피 할로윈!",
-      "tonight": "오늘 밤 할로윈에 나가는 사람?"
+      "tonight": "오늘 밤 할로윈 즐기러 나가는 사람 있어요?"
     }
   }
 }

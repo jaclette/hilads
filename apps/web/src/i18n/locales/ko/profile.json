@@ -4,10 +4,10 @@
   "yourProfile": "내 프로필",
   "mode": "모드",
   "modes": {
-    "local": "Local",
+    "local": "현지인",
     "localDesc": "이 도시를 잘 알아요",
-    "exploring": "탐색 중",
-    "exploringDesc": "도시를 발견하는 중이에요"
+    "exploring": "탐험 중",
+    "exploringDesc": "도시를 알아가는 중이에요"
   },
   "tabs": {
     "interests": "관심사",
@@ -22,8 +22,8 @@
     "board_games": "보드게임",
     "coffee": "커피",
     "music": "음악",
-    "food": "맛집",
-    "chill": "칠"
+    "food": "음식",
+    "chill": "여유"
   },
   "interests": {
     "drinks": "술",
@@ -42,7 +42,7 @@
     "wellness": "웰니스",
     "travel": "여행",
     "hangout": "모임",
-    "socializing": "사교",
+    "socializing": "친구 사귀기",
     "gaming": "게임",
     "tech": "테크",
     "dating": "데이트"
@@ -54,11 +54,11 @@
     "available": "@{{username}} 사용 가능해요",
     "aboutMe": "내 소개",
     "charsLeft": "- {{count}}자 남음",
-    "aboutPlaceholder": "길거리 음식과 즉흥적인 대화를 좋아해요",
+    "aboutPlaceholder": "길거리 음식이랑 수다 떠는 거 좋아해요",
     "email": "이메일",
     "readOnly": "- 읽기 전용",
-    "homeCity": "내 도시",
-    "homeCityPlaceholder": "어디에 사세요",
+    "homeCity": "고향 도시",
+    "homeCityPlaceholder": "사는 곳",
     "age": "나이",
     "agePlaceholder": "나이",
     "myVibe": "내 vibe",
@@ -67,42 +67,41 @@
   },
   "ambassador": {
     "title": "도시 추천",
-    "subtitle": "로컬 레전드로서 프로필에 표시돼요.",
+    "subtitle": "로컬 레전드로 프로필에 보여요.",
     "restaurant": "최애 맛집",
-    "restaurantPlaceholder": "항상 사람들을 데려가는 곳",
+    "restaurantPlaceholder": "늘 사람들을 데려가는 곳",
     "spot": "숨은 명소 / 장소",
-    "spotPlaceholder": "대부분의 관광객이 놓치는 곳",
+    "spotPlaceholder": "관광객 대부분이 놓치는 곳",
     "tip": "로컬 팁",
-    "tipPlaceholder": "처음 온 사람들을 위한 최고의 조언",
+    "tipPlaceholder": "처음 온 사람에게 주는 최고의 팁",
     "story": "도시 이야기",
-    "storyPlaceholder": "이 도시에서 사랑하는 무언가"
+    "storyPlaceholder": "이 도시에서 좋아하는 것"
   },
   "hangouts": {
-    "empty": "아직 모임이 없어요 - 하나 시작해요 🗣️",
+    "empty": "아직 모임이 없어요. 하나 시작해 보세요 🗣️",
     "host": "호스트"
   },
   "events": {
-    "going": "참여 중",
-    "goingEmpty": "아직 계획이 없어요 - 뭔가 찾아봐요 🔥",
+    "going": "참여 예정",
+    "goingEmpty": "아직 약속이 없어요. 재밌는 걸 찾아보세요 🔥",
     "hosting": "주최 중",
-    "hostingEmpty": "아직 주최한 게 없어요 - 뭔가 시작해요 ✨",
-    "live": "실시간",
+    "hostingEmpty": "아직 주최한 게 없어요. 뭔가 시작해 보세요 ✨",
+    "live": "진행 중",
     "recurring": "↻ 반복",
-    "upcoming": "예정",
+    "upcoming": "다가오는 일정",
     "deleteEvent": "이벤트 삭제"
   },
   "friends": {
     "requests": "친구 요청",
-    "empty": "아직 친구가 없어요. 프로필에서 추가해 보세요.",
+    "empty": "아직 친구가 없어요. 프로필에서 친구를 추가해 보세요.",
     "mine": "내 친구"
   },
   "vibesTab": {
-    "received": "받은 vibe",
+    "received": "받은 vibes",
     "score": "vibe 점수 {{score}}",
-    "basedOn_one": "vibe {{count}}개 기준",
     "basedOn_other": "vibe {{count}}개 기준",
     "empty": "아직 vibe가 없어요",
-    "emptyHint": "사람들이 메모를 남기면 여기에 점수가 표시돼요 ✨"
+    "emptyHint": "사람들이 노트를 남기면 여기에 점수가 보여요 ✨"
   },
   "save": {
     "uploading": "업로드하는 중…",
@@ -117,22 +116,22 @@
     "body": "프로필, 친구, 설정이 영구적으로 삭제돼요. 메시지와 이벤트는 도시 채팅에 익명으로 남아요.",
     "irreversible": "되돌릴 수 없어요.",
     "deleting": "삭제하는 중…",
-    "confirm": "네, 내 계정을 삭제할게요",
+    "confirm": "네, 계정을 삭제할게요",
     "cancel": "취소"
   },
   "errors": {
     "photoUpload": "사진 업로드에 실패했어요. 다시 시도해 주세요.",
     "usernameTooShort": "사용자 이름은 3자 이상이어야 해요",
     "usernameTaken": "이미 사용 중인 사용자 이름이에요",
-    "usernameInvalid": "유효하지 않은 사용자 이름이에요",
+    "usernameInvalid": "사용자 이름이 올바르지 않아요",
     "saveFailed": "저장에 실패했어요. 다시 시도해 주세요.",
-    "generic": "문제가 발생했어요. 다시 시도해 주세요."
+    "generic": "문제가 생겼어요. 다시 시도해 주세요."
   },
   "challenges": {
-    "empty": "아직 챌린지가 없어요 - 하나 시작하세요 🔥",
+    "empty": "아직 챌린지가 없어요. 하나 시작해 보세요 🔥",
     "challenger": "출제자"
   },
-  "appearance": "테마",
+  "appearance": "화면 모드",
   "themeLight": "라이트",
   "themeDark": "다크",
   "pp": {
@@ -142,11 +141,11 @@
       "weekNone": "이번 주 아직 순위 없음",
       "mostLocalIn": "{{city}} Most Local",
       "mostLocalWorld": "전 세계 Most Local",
-      "hintToday": "오늘의 challenge로 {{theme}} 스탬프를 받으세요.",
+      "hintToday": "오늘 챌린지에 참여하고 {{theme}} 스탬프를 받아 보세요.",
       "hintTomorrow": "내일: {{theme}}",
-      "hintPass": "Local Pass 획득. 이곳의 모든 테마 완료.",
+      "hintPass": "Local Pass 획득! 여기 테마를 모두 완료했어요.",
       "localPass": "Local Pass",
-      "mySpots": "내 스팟",
+      "mySpots": "내 장소",
       "myProposals": "내 제안",
       "friends": "친구",
       "mostLocalAllTime": "역대 Most Local",
@@ -154,53 +153,48 @@
       "howPoints": "포인트 안내",
       "gotIt": "알겠어요",
       "close": "닫기",
-      "noSpots": "아직 스팟이 없어요. 장소에서 찍은 사진이 여기에 모여요.",
+      "noSpots": "아직 장소가 없어요. 사진에 장소를 표시하면 여기에 모여요.",
       "pageA11y_other": "{{city}}: 스탬프 {{count}}개",
-      "guestTitle": "여권을 시작하세요",
+      "guestTitle": "여권을 만들어 보세요",
       "guestBody": "가입하면 도시마다 테마별 스탬프를 모으고 Local Pass를 받을 수 있어요.",
       "signUp": "가입하기",
       "signIn": "계정이 있어요",
-      "best_one": "최고: {{count}}일",
       "best_other": "최고: {{count}}일",
-      "stamps_one": "스탬프 {{count}}/7",
       "stamps_other": "스탬프 {{count}}/7",
-      "inReview_one": "{{count}}개 검토 중",
       "inReview_other": "{{count}}개 검토 중",
       "specialTitle": "스페셜 스탬프",
       "specialSub": "한정판, 특별한 날마다 하나씩. Local Pass에는 포함되지 않아요.",
-      "compared_one": "{{count}}개국과 비교했어요",
       "compared_other": "{{count}}개국과 비교했어요",
       "stampsOf_other": "스탬프 {{count}}/{{total}}",
       "passEarned": "{{city}}에서 획득",
       "passToGo_other": "스탬프 {{count}}개 남음",
       "comparedCities_other": "{{count}}개 도시와 비교",
       "myPhotos": "내 사진",
-      "noPhotos": "Daily Challenge 사진이 여기에 표시돼.",
+      "noPhotos": "Daily Challenge 사진이 여기에 모여요.",
       "share": "내 여권 공유하기",
-      "localSince": "{{date}}부터 {{city}} 로컬"
+      "localSince": "{{date}}부터 {{city}} 현지인"
     },
     "points": {
       "title": "포인트 받는 법",
-      "intro": "Daily Challenge 포인트는 주간 Most Local에 들어가요. 모든 포인트는 역대 순위에 들어가요.",
+      "intro": "Daily Challenge 포인트는 주간 Most Local에 반영돼요. 모든 포인트는 역대 순위에 반영돼요.",
       "proof": "사진 올리기",
-      "vote": "투표(challenge마다)",
-      "top": "오늘의 세계 TOP 3",
+      "vote": "투표 (챌린지마다)",
+      "top": "오늘의 세계 Top 3",
       "weekly": "주간 Most Local은 매주 월요일에 초기화돼요."
     },
     "tabFriends": "친구",
     "friendRequests": "친구 요청",
     "myFriends": "내 친구",
-    "noFriends": "아직 친구가 없어요. 프로필에서 추가해 봐요.",
-    "vibesReceived": "받은 VIBES",
-    "vibeScore": "{{score}} vibe 점수",
+    "noFriends": "아직 친구가 없어요. 프로필에서 친구를 추가해 보세요.",
+    "vibesReceived": "받은 Vibes",
+    "vibeScore": "vibe 점수 {{score}}",
     "noVibes": "아직 vibes가 없어요.",
-    "noVibesSub": "사람들이 노트를 남기면 점수가 나타나요 ✨",
+    "noVibesSub": "사람들이 노트를 남기면 점수가 보여요 ✨",
     "settings": "설정",
-    "vibeBasis_one": "vibe {{count}}개 기준",
     "vibeBasis_other": "vibe {{count}}개 기준",
     "mode": {
       "local": {
-        "label": "Local",
+        "label": "현지인",
         "desc": "이 도시를 잘 알아요"
       },
       "exploring": {
@@ -226,6 +220,6 @@
     "emptyIncomingTitle": "아직 친구 요청이 없어요",
     "emptySentTitle": "보낸 요청이 없어요",
     "emptyIncomingSub": "누군가 친구가 되자고 요청하면 여기에 표시돼요.",
-    "emptySentSub": "보낸 대기 중인 친구 요청이 여기에 표시돼요."
+    "emptySentSub": "내가 보낸 친구 요청이 여기에 표시돼요."
   }
 }

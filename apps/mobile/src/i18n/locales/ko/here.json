@@ -1,7 +1,7 @@
 {
   "title": "여기 있는 사람들",
-  "noCityTitle": "선택된 도시가 없어요",
-  "noCitySub": "도시를 골라 주변에 누가 있는지 확인하세요.",
+  "noCityTitle": "선택한 도시가 없어요",
+  "noCitySub": "도시를 골라 주변에 누가 있는지 확인해 보세요.",
   "browseCities": "도시 둘러보기",
   "filterBadge": "배지",
   "filterVibe": "Vibe",
@@ -10,7 +10,7 @@
   "hereNow": "지금 여기",
   "noMatchLive": "지금 이 필터에 맞는 사람이 없어요.",
   "legends": "Hilads 전설",
-  "legendsSub": "도시를 살아 움직이게 하는 사람들",
+  "legendsSub": "이 사람들이 도시를 움직여요",
   "cityCrew": "도시 크루",
   "noMatchCrew": "이 필터에 맞는 멤버가 없어요.",
   "loadMore": "더 보기"

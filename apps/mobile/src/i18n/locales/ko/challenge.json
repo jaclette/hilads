@@ -4,49 +4,31 @@
     "title": "✨ 성공한 챌린지",
     "allCities": "모든 도시",
     "clearCity": "지우기",
-    "localTag": "로컬",
-    "by": "{{name}} 님",
-    "loadMore": "더 보기",
+    "localTag": "현지인",
+    "by": "{{name}}님",
     "empty": {
-      "title": "아직 성공 사례가 없어요",
-      "body": "완료되고 높은 평가를 받은 챌린지가 여기에 표시돼요. 첫 주인공이 되어 보세요!"
+      "title": "아직 성공한 챌린지가 없어요",
+      "body": "완료되고 평점이 높은 챌린지가 여기에 나와요. 첫 주인공이 되어 보세요!"
     },
     "tryCta": "새 챌린지 만들기",
-    "note": "한마디"
+    "note": "한마디",
+    "loadMore": "더 보기"
   },
-  "myChallenges": {
-    "cta": "내 챌린지",
-    "title": "내 챌린지",
-    "create": "챌린지 만들기",
-    "filter": {
-      "all": "전체",
-      "created": "만든 것",
-      "taken": "수락한 것"
-    },
-    "empty": {
-      "title": "아직 챌린지가 없어요",
-      "body": "직접 만들거나 수락한 챌린지가 여기에 표시돼요."
-    },
-    "guestGate": {
-      "title": "로그인하고 내 챌린지 보기",
-      "body": "계정을 만들어 챌린지를 시작하고 다른 사람의 챌린지를 수락하세요."
-    }
-  },
-  "tabIntro": "한 도시 안에서 현지인과 여행자가 벌이는 챌린지 - 그리고 도시를 넘어서.",
+  "tabIntro": "한 도시 안에서, 그리고 도시와 도시 사이에서 현지인과 여행자가 함께하는 챌린지.",
   "howItWorks": "이용 방법",
   "mostLocal": "Most Local",
   "seeAll": "전체 보기",
   "leaderboardCta": {
-    "title": "🏆 도시 리더보드",
+    "title": "🏆 도시 랭킹",
     "view": "보기",
-    "sub": "가장 먼저 랭크에 올라보세요 - 챌린지를 시작하고 완료하세요"
+    "sub": "랭킹 1등이 되어 보세요. 챌린지를 열고 끝까지 완료하면 돼요"
   },
   "createTitle": "챌린지 만들기",
   "allTitle": "모든 챌린지",
   "editTitle": "챌린지 편집",
-  "audience": "누구를 위해?",
+  "audience": "누구 대상이에요?",
   "aud": {
-    "locals": "로컬",
+    "locals": "현지인",
     "explorers": "여행자",
     "members": "멤버"
   },
@@ -57,65 +39,65 @@
     "culture": "문화",
     "help": "크레이지"
   },
-  "titleLabel": "당신의 챌린지",
-  "titlePlaceholder": "예: 가장 좋아하는 카페로 데려가 주세요",
+  "titleLabel": "내 챌린지",
+  "titlePlaceholder": "예: 나만 아는 숨은 카페로 데려가 줘요",
   "maxParticipantsLabel": {
-    "locals": "로컬 최대 몇 명?",
-    "explorers": "여행자 최대 몇 명?"
+    "locals": "현지인은 최대 몇 명?",
+    "explorers": "여행자는 최대 몇 명?"
   },
   "returnClauseLabel": "그다음은?",
   "returnClauseTemplates": {
-    "food": "…그리고 와서 같이 나눠요 🍜",
-    "place": "…그리고 직접 데려가 줘요 🗺️",
+    "food": "…그리고 와서 나랑 나눠 먹어요 🍜",
+    "place": "…그리고 직접 거기로 데려가 줘요 🗺️",
     "culture": "…그리고 만나서 얘기해요 🎭",
-    "help": "…그리고 같이 뭔가 신나는 일을 해요 🤪"
+    "help": "…그리고 같이 뭔가 엉뚱한 걸 해 봐요 🤪"
   },
   "createCta": "챌린지 시작 🔥",
   "saveChanges": "변경 사항 저장",
   "errSave": "저장하지 못했어요",
   "errStart": "챌린지를 시작하지 못했어요",
-  "deleteTitle": "챌린지 삭제?",
-  "deleteBody": "챌린지가 모두에게서 삭제돼요. 되돌릴 수 없어요.",
+  "deleteTitle": "챌린지를 삭제할까요?",
+  "deleteBody": "모두에게서 챌린지가 삭제되고, 되돌릴 수 없어요.",
   "deleteConfirm": "삭제",
-  "acceptCta": "챌린지 수락",
-  "acceptedCta": "수락됨 ✓",
-  "validatedBadge": "검증됨",
+  "acceptCta": "도전하기",
+  "acceptedCta": "도전 중 ✓",
+  "validatedBadge": "인증 완료",
   "card": {
-    "open": "모집중",
+    "open": "모집 중",
     "full": "마감",
-    "available": "모집중",
+    "available": "모집 중",
     "inProgress": "진행 중",
-    "takeIt": "도전 받기",
+    "takeIt": "도전하기",
     "takerLabel": "도전자",
     "rankBadge": "{{rank}}위",
-    "photoBadge": "사진",
+    "photoBadge": "사진 인증",
     "joinedCount": "{{count}}명 참여",
     "meetBadge": "만남",
     "photosCount_other": "사진 {{count}}장",
     "noOneJoined": "아직 아무도 참여하지 않았어요",
-    "beFirst": "⚡ 가장 먼저 참여하기 · +2",
+    "beFirst": "⚡ 첫 참여자 되기 · +2",
     "daysLeft": "{{count}}일 남음",
     "lastDay": "곧 마감",
-    "joinGroup": "챌린지 참여",
+    "joinGroup": "챌린지 참여하기",
     "whoJoined": "참여자 ({{count}})",
     "ended": "종료됨",
     "awaitingResults": "결과 기다리는 중"
   },
   "statusInProgress": "챌린지 진행 중",
   "statusAccomplished": "챌린지 성공",
-  "openBadge": "열림",
-  "forLocals": "로컬을 위해",
-  "forExplorers": "여행자를 위해",
+  "openBadge": "모집 중",
+  "forLocals": "현지인 대상",
+  "forExplorers": "여행자 대상",
   "validation": {
     "label": "어떻게 인증할까요?",
     "meet": {
-      "label": "직접 만남",
-      "hint": "직접 만나서 같이 경험해요",
-      "bonusChip": "직접 만나면 +50 보너스"
+      "label": "만남",
+      "hint": "직접 만나서 함께 경험해요",
+      "bonusChip": "모두 모이면 만남 보너스 +50"
     },
     "photo_proof": {
       "label": "사진 인증",
-      "hint": "멀리서 사진으로 인증받기"
+      "hint": "멀리서도 사진으로 인증해요"
     }
   },
   "notFound": "챌린지를 찾을 수 없어요",
@@ -127,106 +109,295 @@
   },
   "challengerTag": "출제자",
   "participantsLabel": "참가자",
-  "editBtn": "편집",
+  "editBtn": "수정",
   "deleteBtn": "삭제",
   "shareCta": "공유",
-  "shareInvite": "이 챌린지를 같이 해요!",
-  "shareCopied": "링크가 복사됨 ✓",
+  "shareInvite": "Hilads에서 나랑 이 챌린지에 도전해요 🔥",
+  "shareCopied": "링크를 복사했어요 ✓",
   "noun": "챌린지",
+  "byCreator": "{{name}}님",
+  "inspiration": {
+    "heading": "챌린지 아이디어",
+    "sub": "다른 도시 현지인들은 어떤 챌린지를 열까요? 영감을 얻어 보세요",
+    "firstLocal": "🌱 {{city}}의 첫 현지인이 되어 보세요",
+    "firstLocalSub": "챌린지를 올려 보세요 · 도착한 여행자들이 도전해요",
+    "reward": "첫 챌린지 · +10 🏆",
+    "launchFirst": "🔥 첫 챌린지 시작하기",
+    "createYours": "🔥 {{city}}에서 내 챌린지 만들기",
+    "by": "{{name}} · {{city}}"
+  },
   "examples": {
-    "label": "아이디어가 필요해요? 하나 탭하세요",
+    "label": "아이디어가 필요해요? 하나 골라 보세요",
     "food": [
-      "도시 최고의 커피",
-      "로컬이 진짜 점심 먹는 곳",
+      "이 도시에서 제일 맛있는 커피를 알려 줘요",
+      "현지인이 진짜 점심 먹는 곳",
       "이 근처 최고의 길거리 음식"
     ],
     "place": [
-      "최고의 일몰 스폿",
+      "노을이 제일 예쁜 곳을 알려 줘요",
       "관광객이 절대 못 찾는 곳",
       "머리 식히러 가는 곳"
     ],
     "culture": [
-      "이번 주말의 진짜 로컬 음악 밤",
-      "볼 가치 있는 거리 예술",
-      "기억에 남을 로컬 공연"
+      "이번 주말, 진짜 현지 음악의 밤",
+      "꼭 볼 만한 스트리트 아트",
+      "오래 기억에 남을 현지 공연"
     ],
     "help": [
-      "내 주를 망치지 않을 미용실",
-      "영어 하는 의사",
-      "폰 화면을 고칠 곳"
+      "내 일주일을 망치지 않을 미용실",
+      "영어가 통하는 병원",
+      "폰 액정 고칠 수 있는 곳"
     ]
   },
-  "beFirstToAccept": "가장 먼저 챌린지를 받아보세요",
+  "beFirstToAccept": "가장 먼저 도전해 보세요",
   "openThreadCta": "스레드 열기",
   "accept": {
     "err": {
       "openSettings": "설정 열기",
       "unknown": {
         "title": "수락하지 못했어요",
-        "body": "문제가 발생했어요. 다시 시도해 주세요."
+        "body": "문제가 생겼어요. 다시 시도해 주세요."
       },
       "not_creator": {
-        "title": "내가 만든 챌린지예요",
-        "body": "내가 만든 챌린지예요 - 다른 사람이 수락하길 기다려 주세요."
+        "title": "직접 만든 챌린지예요",
+        "body": "직접 만든 챌린지예요. 다른 사람이 도전하길 기다려 주세요."
       },
       "mode_required": {
-        "title": "먼저 로컬 또는 여행자를 선택해요",
-        "body": "챌린지를 수락하기 전에 프로필에서 모드를 설정해요."
+        "title": "먼저 현지인인지 여행자인지 골라 주세요",
+        "body": "챌린지에 도전하기 전에 프로필에서 모드를 설정해 주세요."
       },
       "mode_mismatch": {
-        "title": "이 챌린지는 당신을 위한 게 아니에요",
-        "body": "수락하고 싶다면 프로필에서 모드를 바꿔 주세요."
+        "title": "이 챌린지는 대상이 달라요",
+        "body": "도전하고 싶다면 프로필에서 모드를 바꿔 주세요."
       },
       "cap_reached": {
-        "title": "챌린지 정원이 찼어요"
+        "title": "정원이 다 찼어요"
       },
       "in_progress": {
-        "title": "지금 누가 하고 있어요",
-        "body": "다른 여행자가 지금 이 챌린지를 받고 있어요. 끝나면 다시 와요 - 챌린지가 다시 열려요."
+        "title": "지금 누가 도전 중이에요",
+        "body": "다른 여행자가 지금 도전 중이에요. 끝나면 챌린지가 다시 열리니 그때 다시 와 주세요."
       },
       "completed": {
-        "title": "이미 완료된 챌린지",
-        "body": "이 챌린지는 완료되어 새로운 참여를 받지 않아요."
+        "title": "이미 완료된 챌린지예요",
+        "body": "완료된 챌린지라 더는 도전할 수 없어요."
       }
     }
   },
+  "chatPlaceholder": "채널에 메시지 남기기…",
+  "messageCreator": "{{name}}님에게 개인 메시지 보내기",
+  "badge": {
+    "challenger": "출제자",
+    "taker": "도전자",
+    "spectator": "관전자"
+  },
+  "scoringInfo": {
+    "aria": "포인트 안내",
+    "helpLabel": "🏆 포인트 얻는 법",
+    "title": "🏆 챌린지는 이렇게 진행돼요",
+    "intro": "참여만 해도 포인트를 조금, 직접 나오거나 이기면 크게 받아요. 참여 횟수만 늘리는 건 의미가 없어요.",
+    "colStep": "단계",
+    "steps": {
+      "created": "챌린지 생성",
+      "accepted": "도전 수락",
+      "date": "날짜 확정",
+      "meet": "만남",
+      "rate": "서로 평가"
+    },
+    "noPoints": "-",
+    "totalLabel": "챌린지당 합계",
+    "footnote": "수치는 게임을 조정하면서 바뀔 수 있어요.",
+    "types": {
+      "heading": "챌린지는 두 가지예요",
+      "local": "🏙️ 만남: 정해진 시간과 장소에 그룹으로 직접 모여요. 나온 사람 모두 포인트를 크게 받아요.",
+      "international": "🌍 사진 챌린지: 모두 마감 전에 사진을 올리고, 출제자가 우승자를 골라요."
+    },
+    "lifecycle": {
+      "heading": "이렇게 마무리돼요",
+      "body": "출제자가 챌린지를 만들고 사람들이 참여하면, 마지막에 출제자가 누가 왔는지 또는 어떤 사진이 이겼는지 확인해요."
+    },
+    "pointsHeading": "💯 포인트 얻는 법",
+    "ways": {
+      "join": "챌린지에 참여하기",
+      "create": "챌린지 만들기",
+      "present": "직접 나오기 (참석 확인)",
+      "host": "만남 주최하기",
+      "submit": "챌린지에 사진 올리기",
+      "win": "사진 챌린지에서 이기기"
+    },
+    "seeExamples": "실제 예시 3개 보기"
+  },
+  "cta": {
+    "takenBy": "{{name}}님이 도전 중",
+    "closed": "종료된 챌린지예요"
+  },
+  "join": {
+    "gateTitle": "관전자로 함께하기",
+    "gateBody": "관전자로 들어와 대화를 따라가고 도전자를 응원해 보세요.",
+    "cta": "관전자로 입장",
+    "leaveCta": "채널 나가기",
+    "errKicked": "이 챌린지에서 내보내졌어요.",
+    "errClosed": "이 챌린지는 더 이상 참여를 받지 않아요.",
+    "errGeneric": "들어가지 못했어요. 다시 시도해 주세요."
+  },
+  "leaveTakeon": {
+    "pill": "나가기",
+    "confirmTitle": "이 챌린지에서 나갈까요?",
+    "confirmBody": "진행 상황이 처음으로 돌아가고 챌린지가 다른 사람들에게 다시 열려요. 되돌릴 수 없어요.",
+    "confirmCta": "나가기",
+    "failed": "나가지 못했어요. 다시 시도해 주세요."
+  },
+  "restart": {
+    "cta": "챌린지 다시 시작",
+    "confirmTitle": "챌린지를 다시 시작할까요?",
+    "confirmBody": "현재 도전자를 내보내고 채팅을 지운 뒤 챌린지를 처음부터 다시 열어요. 되돌릴 수 없어요.",
+    "confirmCta": "다시 시작",
+    "failed": "다시 시작하지 못했어요. 다시 시도해 주세요."
+  },
+  "lock": {
+    "private": {
+      "title": "이 챌린지는 비공개예요",
+      "body": "출제자와 도전자만 대화를 볼 수 있어요."
+    }
+  },
+  "members": {
+    "title": "채널 멤버",
+    "countIn": "채널에 {{count}}명",
+    "seeAll": "전체 보기",
+    "empty": "아직 아무도 없어요. 가장 먼저 참여해 보세요.",
+    "kickCta": "내보내기",
+    "kickAria": "{{name}}님을 채널에서 내보내기",
+    "errKick": "내보내지 못했어요. 다시 시도해 주세요."
+  },
+  "notif": {
+    "on": "알림 켜짐",
+    "off": "알림 꺼짐"
+  },
+  "privacy": {
+    "closedCloseCta": "신규 참여 마감",
+    "closedReopenCta": "다시 참여 받기"
+  },
+  "manage": {
+    "cta": "관리",
+    "title": "챌린지 관리"
+  },
+  "details": {
+    "collapseAria": "채널 세부 정보 숨기기",
+    "expandAria": "채널 세부 정보 보기"
+  },
   "thread": {
     "notFound": "스레드를 찾을 수 없어요",
-    "empty": "먼저 한마디 남겨봐요.",
-    "emptyIntl": "인사하고 - 해냈으면 사진 보내요.",
+    "empty": "먼저 한마디 남겨 보세요.",
+    "emptyIntl": "인사부터 해요. 해내면 사진을 올려 주세요.",
     "cancel": {
-      "creatorTitle": "이 참여를 취소할까요?",
+      "creatorTitle": "이 도전을 취소할까요?",
       "acceptorTitle": "이 챌린지를 포기할까요?",
       "body": "스레드와 채팅이 삭제돼요. 마음이 바뀌면 나중에 다시 수락할 수 있어요.",
-      "confirm": "취소",
+      "confirm": "도전 취소",
       "failed": "취소하지 못했어요. 다시 시도해 주세요."
     },
     "cancelledByOther": {
       "title": "스레드가 취소됐어요",
-      "body": "상대방이 이 참여를 취소했어요."
+      "body": "상대방이 이 도전을 취소했어요."
     }
   },
   "threads": {
     "title": "내 챌린지 스레드",
     "noMessagesYet": "아직 메시지가 없어요",
     "empty": {
-      "title": "활성 스레드가 없어요",
-      "body": "챌린지를 수락하거나 누가 내 챌린지를 수락하면 대화가 여기에 나타나요."
+      "title": "진행 중인 스레드가 없어요",
+      "body": "챌린지에 도전하거나 누가 내 챌린지에 도전하면 대화가 여기에 나와요."
     },
     "guestGate": {
       "title": "스레드를 보려면 로그인하세요",
-      "body": "스레드는 출제자와의 1:1 대화예요. 시작하려면 계정이 필요해요."
+      "body": "스레드는 출제자와 나누는 1:1 대화예요. 시작하려면 계정이 필요해요."
+    }
+  },
+  "myChallenges": {
+    "cta": "내 챌린지",
+    "title": "내 챌린지",
+    "create": "챌린지 만들기",
+    "filter": {
+      "all": "전체",
+      "created": "만든 챌린지",
+      "taken": "도전한 챌린지"
+    },
+    "empty": {
+      "title": "아직 챌린지가 없어요",
+      "body": "직접 만들거나 도전한 챌린지가 여기에 나와요."
+    },
+    "guestGate": {
+      "title": "로그인하고 내 챌린지 보기",
+      "body": "계정을 만들고 챌린지를 열거나 다른 사람의 챌린지에 도전해 보세요."
+    }
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "이 챌린지, 어땠나요? 평가해 주세요",
+      "titleUrgent": "이 챌린지를 평가할 차례예요"
+    },
+    "sheet": {
+      "title": "챌린지, 어땠나요?",
+      "subtitle": "사람 말고 챌린지를 평가해 주세요.",
+      "starsAria": "별 {{n}}개",
+      "commentPlaceholder": "챌린지에 대한 한마디 (선택)",
+      "submit": "평가 보내기",
+      "later": "나중에"
+    },
+    "errSubmit": "평가를 보내지 못했어요. 다시 시도해 주세요."
+  },
+  "leaderboard": {
+    "title": "Most Local",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 상위 랭커"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "세계",
+      "cities": "도시"
+    },
+    "period": {
+      "month": "이번 달",
+      "alltime": "전체 기간"
+    },
+    "points": "{{points}}점",
+    "me": {
+      "ranked": "나 · #{{rank}} · {{points}}점",
+      "unranked": "챌린지에 도전하고 랭킹에 올라 보세요"
+    },
+    "empty": {
+      "title": "아직 랭킹에 아무도 없어요",
+      "body": "가장 먼저 챌린지에 도전하고 포인트를 받아 보세요."
+    },
+    "errLoad": "랭킹을 불러오지 못했어요. 당겨서 다시 시도해 주세요.",
+    "cityPicker": {
+      "searchPlaceholder": "도시 검색…",
+      "empty": "찾는 도시가 없어요."
+    },
+    "neutral": "🏆 Most Local",
+    "titleCity": "Most {{demonym}}",
+    "share": {
+      "cta": "내 순위 공유",
+      "periodMonth": "이번 달",
+      "periodAll": "역대",
+      "placeCity": "{{city}}에서",
+      "placeWorld": "전 세계에서",
+      "userNotTop": "🔥 {{place}} {{period}} {{rank}}위, {{pts}}점! @{{above}}({{aPts}}점) 추격 중 👀 @{{below}}({{bPts}}점)보다는 앞서 있어요. 나를 넘어설 수 있겠어요? 🏆",
+      "userTop": "👑 {{place}} {{period}} 1위, {{pts}}점! @{{below1}}({{b1Pts}}점)도 @{{below2}}({{b2Pts}}점)도 바짝 쫓아오고 있어요. 왕관을 뺏으러 와 보세요 😏",
+      "cityNotTop": "🔥 {{place}}, {{period}} 전체 도시 중 {{rank}}위, {{pts}}점! {{above}}({{aPts}}점) 바로 뒤 👀 {{below}}({{bPts}}점)보다는 앞이에요. 현지인 여러분, 더 올라가 봐요 🏆",
+      "cityTop": "👑 {{place}}, {{period}} 전체 도시 중 1위, {{pts}}점! {{below1}}({{b1Pts}}점)도 {{below2}}({{b2Pts}}점)도 바짝 쫓아오고 있어요. 현지인 여러분, 1위를 지켜요 🔥"
     }
   },
   "schedule": {
     "proposeCta": "날짜 제안하기",
-    "counterCta": "대안 제안",
+    "counterCta": "다른 날짜 제안",
     "editCta": "날짜 변경",
-    "you": "당신",
-    "iProposedTitle": "승인 대기 중",
+    "you": "나",
+    "iProposedTitle": "상대방 승인 기다리는 중",
     "theyProposedTitle": "{{name}}님이 제안했어요",
     "scheduled": {
-      "title": "만남 일정 확정"
+      "title": "만남 날짜 확정"
     },
     "withdraw": {
       "title": "제안을 철회할까요?",
@@ -239,12 +410,12 @@
       "title": "언제 만나요?",
       "whenLabel": "언제",
       "timeLabel": "시작 시간",
-      "whereLabel": "어디서 (선택)",
-      "wherePlaceholder": "예: Le Comptoir, 17 rue de la Paix",
-      "otherDate": "다른 날짜",
-      "otherTime": "다른 시간",
       "endTimeLabel": "종료 시간",
-      "endAfterStart": "종료 시간은 시작 시간 이후여야 해요."
+      "endAfterStart": "종료 시간은 시작 시간보다 늦어야 해요.",
+      "whereLabel": "어디서 (선택)",
+      "wherePlaceholder": "예: 카페 어니언 성수점",
+      "otherDate": "다른 날짜",
+      "otherTime": "다른 시간"
     },
     "err": {
       "proposeFailed": "날짜를 제안하지 못했어요. 다시 시도해 주세요.",
@@ -255,11 +426,11 @@
   "debrief": {
     "creatorPrompt": {
       "title": "어땠어요?",
-      "body": "{{name}}님이 해냈어요?"
+      "body": "{{name}}님이 해냈나요?"
     },
     "acceptorWaiting": {
       "title": "결과를 기다리는 중",
-      "body": "{{name}}님이 결과를 표시할 거예요."
+      "body": "{{name}}님이 결과를 알려 줄 거예요."
     },
     "approved": {
       "title": "챌린지 성공"
@@ -270,12 +441,12 @@
     "confirm": {
       "approve": {
         "title": "성공으로 표시할까요?",
-        "body": "최종 결정이에요. 이후에는 바꿀 수 없어요.",
+        "body": "최종 결정이라 나중에 바꿀 수 없어요.",
         "confirm": "성공으로 표시"
       },
       "reject": {
-        "title": "결과 없이 종료할까요?",
-        "body": "만남이 실제로 이뤄지지 않았을 때 사용하세요. 최종 결정이에요.",
+        "title": "판정 없이 종료할까요?",
+        "body": "만남이 실제로 이뤄지지 않았을 때 써 주세요. 최종 결정이에요.",
         "confirm": "종료"
       }
     },
@@ -292,353 +463,196 @@
       "date": "날짜",
       "meet": "만남",
       "wrap": "마무리",
-      "proof": "증거",
+      "proof": "인증",
       "verdict": "판정"
     },
     "subcta": {
-      "tapToAccept": "챌린지를 받아요",
-      "creatorWaiting": "받아 줄 사람을 기다리는 중",
-      "creatorReviewPending": "{{name}}님의 요청에 답해요",
-      "acceptorAwaitingReview": "{{name}}님의 답을 기다리는 중",
-      "proposeDate": "날짜를 제안해요",
-      "dateAwaiting": "작성자의 승인을 기다리는 중",
+      "tapToAccept": "챌린지에 도전하기",
+      "creatorWaiting": "도전할 사람을 기다리는 중",
+      "creatorReviewPending": "{{name}}님의 도전 요청을 확인하세요",
+      "acceptorAwaitingReview": "{{name}}님의 확인을 기다리는 중",
+      "proposeDate": "날짜 제안하기",
+      "dateAwaiting": "출제자의 승인을 기다리는 중",
       "approveDate": "날짜가 제안됐어요",
       "meetSoon": "{{date}}에 만나요",
       "creatorVerdict": "{{name}}님과는 어땠어요?",
       "acceptorWaitingVerdict": "{{name}}님의 확인을 기다리는 중",
+      "rateMeetup": "{{name}}님과의 만남 평가하기",
       "accomplished": "챌린지 성공",
       "closed": "챌린지 종료",
-      "submitProof": "증거 보내기",
-      "waitingForProof": "증거 기다리는 중",
-      "reviewProof": "증거 확인",
-      "waitingForVerdict": "판정 기다리는 중",
-      "rateMeetup": "{{name}}님과의 만남 평가하기"
+      "submitProof": "인증 사진 보내기",
+      "waitingForProof": "인증 사진 기다리는 중",
+      "reviewProof": "인증 사진 확인",
+      "waitingForVerdict": "결과를 기다리는 중"
     }
   },
   "takeon": {
     "creator": {
-      "pendingTitle": "{{name}}님이 챌린지를 받고 싶어 해요",
-      "pendingBody": "수락하면 채팅을 시작하고 만남을 정할 수 있어요. 거절하면 자리가 다시 열려요.",
+      "pendingTitle": "{{name}}님이 내 챌린지에 도전하고 싶어 해요",
+      "pendingBody": "수락하면 채팅으로 만남을 정할 수 있어요. 거절하면 자리가 다시 열려요.",
       "approve": "수락",
       "reject": "거절",
       "approveFailed": "수락하지 못했어요. 다시 시도해 주세요.",
       "rejectFailed": "거절하지 못했어요. 다시 시도해 주세요."
     },
     "acceptor": {
-      "waitingTitle": "답을 기다리는 중",
-      "waitingBody": "{{name}}님이 수락하거나 거절할 거예요. 결정되면 알림이 와요.",
-      "rejectedTitle": "거절됐어요",
+      "waitingTitle": "검토 대기 중",
+      "waitingBody": "{{name}}님이 수락하거나 거절할 거예요. 결정되면 푸시 알림이 와요.",
+      "rejectedTitle": "도전이 거절됐어요",
       "rejectedBody": "{{name}}님이 이 챌린지를 거절했어요. 다른 챌린지를 골라도 돼요."
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "챌린지를 수락하면 채팅이 열려요",
-      "body": "수락하면 둘만의 비공개 스레드에서 만날 날을 정할 수 있어요."
-    },
-    "creator": {
-      "title": "받아 줄 사람을 기다리는 중",
-      "body": "여행자가 수락하면 바로 여기서 채팅하면서 만날 날을 정할 수 있어요."
-    },
-    "full": {
-      "title": "도전 마감",
-      "body": "자리가 다 찼어요. 빠지는 사람이 있는지 다시 확인해 보세요."
-    },
-    "inProgress": {
-      "title": "지금 누가 하고 있어요",
-      "body": "여행자가 이 챌린지를 받고 있어요. 끝나면 다시 열려요 - 곧 다시 와봐요."
     }
   },
   "postCreate": {
     "title": "챌린지가 공개됐어요",
-    "subtitle": "이제 씨앗을 뿌려요 - 한 시간 안에 누군가 받도록 해보세요.",
+    "subtitle": "이제 널리 알릴 차례예요. 한 시간 안에 도전할 사람을 찾아보세요.",
     "thisCity": "이 도시",
-    "ctaInvite": "{{city}}의 누군가에게 보내기",
-    "ctaInviteSub": "{{audience}} 몇 명을 선택하면 푸시를 보내요.",
-    "ctaShare": "Hilads 밖에서 공유",
+    "ctaInvite": "{{city}}에 있는 누군가에게 보내기",
+    "ctaInviteSub": "{{audience}} 몇 명을 고르면 알림을 보내 드려요.",
+    "ctaShare": "Hilads 밖으로 공유하기",
     "skip": "나중에",
     "pickerTitle": "{{city}}의 {{audience}}",
-    "pickerSubtitle": "탭해서 선택하세요. 수락 / 무시 푸시가 가요.",
-    "pickerEmpty": "지금 주변에 {{audience}}가 없어요. 대신 밖에서 공유해요.",
+    "pickerSubtitle": "탭해서 선택하세요. 수락 / 무시 버튼이 있는 푸시가 가요.",
+    "pickerEmpty": "지금은 주변에 {{audience}} 아무도 없어요. 대신 외부에 공유해 보세요.",
     "sendCta": "{{count}}명에게 보내기",
-    "sendCtaEmpty": "먼저 선택하세요",
-    "sentTitle": "{{count}}명에게 전송",
+    "sendCtaEmpty": "먼저 사람을 골라 주세요",
+    "sentTitle": "{{count}}명에게 보냈어요",
     "sentSubtitle": "지금 푸시 알림이 가요.",
-    "pickerSubtitleAll": "딱 맞는 사람이 없어요 - {{city}} 전체를 보여줄게요."
+    "pickerSubtitleAll": "딱 맞는 사람이 없어서 {{city}}에 있는 모두를 보여 드려요."
   },
   "invitation": {
     "accept": "수락",
     "ignore": "무시",
-    "acceptChallenge": "챌린지 수락"
+    "acceptChallenge": "도전하기"
   },
-  "byCreator": "{{name}}님",
-  "inspiration": {
-    "heading": "챌린지 아이디어",
-    "sub": "다른 도시 로컬들이 뭘 올리는지 보기 - 영감 얻기",
-    "firstLocal": "🌱 {{city}}의 첫 로컬이 되어보세요",
-    "firstLocalSub": "챌린지를 올리세요 · 도착하는 여행자가 받아줘요",
-    "reward": "첫 챌린지 · +10 🏆",
-    "launchFirst": "🔥 첫 챌린지 시작하기",
-    "createYours": "🔥 {{city}}에서 내 챌린지 만들기",
-    "by": "{{name}} · {{city}}"
-  },
-  "typeFilter": {
-    "label": "타입으로 필터",
-    "all": "전체",
-    "empty": "이 카테고리에 지금 아무것도 없어요."
-  },
-  "seeAllChallenges": "전체 보기 →",
-  "mode": {
-    "label": "모드",
-    "local": "로컬",
-    "international": "국제",
-    "localHint": "내 도시에서. 직접 만나는 걸로 끝나요.",
-    "internationalHint": "세계 어디든. 증거를 보내면 멀리서 승인해요.",
-    "worldwide": "전 세계"
-  },
-  "intl": {
-    "targetCityLabel": "타겟 도시",
-    "targetCityAnywhere": "🌍 세계 어디든",
-    "targetCityHint": "대상 도시를 선택하세요. '전 세계 어디든'은 아직 사용할 수 없어요.",
-    "proofRequirementsLabel": "사진에 무엇을 담아야 하나요?",
-    "proofRequirementsPlaceholder": "예: 자연광 아래 음식, 본인도 함께 프레임 안에",
-    "proofRequirementsHint": "증거는 사진 📸 이에요. 참가자가 제출 전에 확인해요 - 구체적으로 적어 주세요.",
-    "cityPicker": {
-      "title": "타겟 도시 고르기",
-      "searchPlaceholder": "도시 검색…",
-      "anywhere": "세계 어디든"
+  "locked": {
+    "visitor": {
+      "title": "챌린지에 도전하면 채팅이 열려요",
+      "body": "도전하면 출제자와 둘만의 비공개 스레드에서 만날 날을 정할 수 있어요."
     },
-    "proof": {
-      "requirementsLabel": "작성자가 요청한 것",
-      "submitCta": "증거 보내기",
-      "tryAgainCta": "다시 시도 ({{count}}회 남음)",
-      "waitingProof": "증거 기다리는 중",
-      "waitingVerdict": "판정 기다리는 중",
-      "approvedLine": "챌린지 완료",
-      "closedLine": "챌린지 종료",
-      "lastReason": "이유: {{reason}}",
-      "geotagOk": "지오태그 확인됨",
-      "geotagWarn": "지오태그가 범위 밖",
-      "approveCta": "승인",
-      "rejectCta": "거절",
-      "rejectModalTitle": "이 증거 거절",
-      "rejectModalHint_other": "{{count}}회 남았어요. 무엇을 고쳐야 할지 알려주세요.",
-      "reasonPlaceholder": "예: 사진이 흐려서 음식이 안 보임",
-      "rejectConfirm": "거절 보내기",
-      "reasonRequiredTitle": "이유 필요",
-      "reasonRequiredBody": "짧은 이유(1–200자)가 도움이 돼요.",
-      "permPhotoTitle": "카메라 접근 권한 필요",
-      "permPhotoBody": "설정에서 카메라 접근을 허용해 주세요 - 증거는 즉석에서 찍은 사진이어야 합니다.",
-      "permGpsTitle": "위치 필요",
-      "permGpsBody": "지오태그는 필수예요. 위치를 켜 주세요.",
-      "gpsFailTitle": "GPS 읽기 실패",
-      "gpsFailBody": "실외에서 다시 시도해 주세요.",
-      "submitFailTitle": "보내기 실패",
-      "submitFailBody": "연결을 확인하고 다시 시도해 주세요.",
-      "reviewFailTitle": "판정 저장 실패"
+    "creator": {
+      "title": "도전할 사람을 기다리는 중",
+      "body": "여행자가 도전하면 바로 여기서 채팅하며 만날 날을 정할 수 있어요."
     },
-    "targetCityRequired": "'전 세계 어디든'은 아직 사용할 수 없어요. 계속하려면 대상 도시를 선택하세요.",
-    "targetCityRequiredTitle": "대상 도시 선택"
-  },
-  "modeFilter": {
-    "label": "모드로 필터",
-    "all": "전체"
-  },
-  "chatPlaceholder": "채널에 메시지 남기기…",
-  "messageCreator": "{{name}}님에게 비공개 메시지",
-  "badge": {
-    "challenger": "출제자",
-    "taker": "도전자",
-    "spectator": "관전자"
-  },
-  "cta": {
-    "takenBy": "{{name}}님이 진행 중",
-    "closed": "이 챌린지는 종료됐어요"
-  },
-  "join": {
-    "gateTitle": "관전자로 참여",
-    "gateBody": "관전자로 들어와 대화를 따라가고 도전자를 응원해 보세요.",
-    "cta": "관전자로 입장",
-    "leaveCta": "채널 나가기",
-    "errKicked": "이 챌린지에서 제외되었어요. 다시 참여할 수 없어요.",
-    "errClosed": "이 챌린지는 신규 참여를 마감했어요.",
-    "errGeneric": "들어가지 못했어요. 다시 시도해 주세요."
-  },
-  "lock": {
-    "private": {
-      "title": "이 챌린지는 비공개예요",
-      "body": "생성자와 도전자만 대화를 볼 수 있어요."
+    "full": {
+      "title": "정원이 다 찼어요",
+      "body": "자리가 다 찼어요. 빠지는 사람이 생기면 다시 와 보세요."
+    },
+    "inProgress": {
+      "title": "지금 누가 도전 중이에요",
+      "body": "여행자가 이 챌린지에 도전 중이에요. 끝나면 다시 열리니 곧 다시 와 보세요."
     }
   },
-  "members": {
-    "title": "채널 안",
-    "countIn": "{{count}}명이 채널에 있어요",
-    "seeAll": "모두 보기",
-    "empty": "아직 아무도 참여하지 않았어요 - 가장 먼저 참여해 보세요.",
-    "kickCta": "내보내기",
-    "kickAria": "{{name}}님을 채널에서 내보내기",
-    "errKick": "내보내지 못했어요 - 다시 시도해 주세요."
+  "typeFilter": {
+    "label": "유형별 보기",
+    "all": "전체",
+    "empty": "지금 이 카테고리에는 아무것도 없어요."
   },
-  "notif": {
-    "on": "알림 켜짐",
-    "off": "알림 꺼짐"
-  },
-  "manage": {
-    "cta": "관리",
-    "title": "챌린지 관리"
+  "seeAllChallenges": "챌린지 전체 보기 →",
+  "mode": {
+    "label": "모드",
+    "local": "현지인",
+    "international": "글로벌",
+    "localHint": "내 도시에서 해요. 마지막엔 직접 만나요.",
+    "internationalHint": "세계 어디서든 가능해요. 상대가 인증 사진을 보내면 멀리서 확인해요.",
+    "worldwide": "전 세계"
   },
   "visibility": {
+    "label": "누가 볼 수 있나요?",
+    "public": "🌍 공개",
+    "friends": "👯 친구",
     "badge": {
       "public": "공개",
       "friends": "친구",
       "private": "비공개"
     },
-    "label": "누가 볼 수 있나요?",
-    "public": "🌍 공개",
-    "friends": "👯 친구",
-    "publicHint": "도시의 누구나 보고 수락할 수 있어요.",
+    "publicHint": "이 도시의 누구나 보고 도전할 수 있어요.",
     "friendsHint": "친구와 초대한 사람만 볼 수 있어요.",
-    "intlLocked": "국제 챌린지는 항상 공개예요.",
-    "moderationBlocked": "텍스트가 신고되었어요. 다시 표현해 주세요.",
+    "intlLocked": "글로벌 챌린지는 항상 공개예요.",
+    "moderationBlocked": "부적절한 내용이 감지됐어요. 다르게 써 주세요.",
     "optin": {
-      "title": "주의 — 이건 공개예요",
-      "body": "공개 챌린지는 도시 피드와 공개 웹에 표시돼요. 이름과 챌린지 내용이 비회원과 검색엔진을 포함한 누구에게나 보여요. 더 비공개로 두고 싶으면 아래에서 친구로 바꿀 수 있어요.",
-      "cta": "확인, 공개로 게시",
-      "switchToFriends": "친구로 변경",
-      "dontShowAgain": "다시 표시 안 함"
+      "title": "잠깐, 공개 챌린지예요",
+      "body": "공개 챌린지는 도시 피드와 공개 웹에 나와요. 내 이름과 챌린지 내용을 회원이 아닌 사람과 검색 엔진까지 누구나 볼 수 있어요. 공개 범위를 좁히고 싶다면 아래에서 친구 공개로 바꿀 수 있어요.",
+      "cta": "알겠어요, 공개로 올리기",
+      "switchToFriends": "친구 공개로 바꾸기",
+      "dontShowAgain": "다시 보지 않기"
     }
   },
-  "privacy": {
-    "closedCloseCta": "신규 참여 마감",
-    "closedReopenCta": "다시 참여 받기"
-  },
-  "details": {
-    "collapseAria": "채널 세부 정보 숨기기",
-    "expandAria": "채널 세부 정보 표시"
-  },
-  "ratePrompts": {
-    "banner": {
-      "title": "이 챌린지를 평가해요 - 어땠나요?",
-      "titleUrgent": "이 챌린지를 평가할 차례예요"
-    },
-    "sheet": {
-      "title": "챌린지, 어땠나요?",
-      "starsAria": "{{n}}점",
-      "commentPlaceholder": "챌린지에 대한 메모를 남겨요 (선택)",
-      "submit": "평가 보내기",
-      "later": "나중에",
-      "subtitle": "사람이 아니라 챌린지를 평가해요."
-    },
-    "errSubmit": "평가를 보내지 못했어요. 다시 시도해 주세요."
-  },
-  "leaderboard": {
-    "title": "Most Local",
-    "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 상위 챌린저"
-    },
-    "scope": {
-      "city": "My city",
-      "world": "세계",
-      "cities": "도시"
-    },
-    "period": {
-      "month": "이번 달",
-      "alltime": "전체"
-    },
-    "points": "{{points}}점",
-    "me": {
-      "ranked": "나 · #{{rank}} · {{points}}점",
-      "unranked": "챌린지를 시작해서 리더보드에 올라가요"
-    },
-    "empty": {
-      "title": "아직 리더보드가 비어 있어요",
-      "body": "가장 먼저 챌린지를 시작하고 포인트를 얻어요."
-    },
-    "errLoad": "리더보드를 불러오지 못했어요. 당겨서 다시 시도해 주세요.",
-    "neutral": "🏆 Most Local",
+  "intl": {
+    "targetCityLabel": "대상 도시",
+    "targetCityAnywhere": "🌍 세계 어디든",
+    "targetCityHint": "대상 도시를 골라 주세요. '세계 어디든'은 아직 안 돼요.",
+    "targetCityRequired": "'세계 어디든'은 아직 안 돼요. 계속하려면 대상 도시를 골라 주세요.",
+    "targetCityRequiredTitle": "대상 도시를 골라 주세요",
+    "proofRequirementsLabel": "사진에 뭐가 담겨야 하나요?",
+    "proofRequirementsPlaceholder": "예: 낮에 찍은 음식, 본인도 함께 나오게",
+    "proofRequirementsHint": "인증은 사진으로 해요 📸. 도전자가 올리기 전에 이 내용을 보니까 구체적으로 적어 주세요.",
     "cityPicker": {
+      "title": "대상 도시 고르기",
       "searchPlaceholder": "도시 검색…",
-      "empty": "일치하는 도시가 없어요."
+      "anywhere": "세계 어디든"
     },
-    "titleCity": "Most {{demonym}}",
-    "share": {
-      "cta": "내 순위 공유",
-      "periodMonth": "이번 달",
-      "periodAll": "전체 기간",
-      "placeCity": "{{city}}에서",
-      "placeWorld": "월드에서",
-      "userNotTop": "🔥 {{place}} {{period}} #{{rank}}위: {{pts}}점! @{{above}}({{aPts}}점) 쫓는 중 👀, @{{below}}({{bPts}}점)는 뒤에 두고 있어요. 날 넘어설 수 있어? 🏆",
-      "userTop": "👑 {{place}} {{period}} #1: {{pts}}점! @{{below1}}({{b1Pts}}점)와 @{{below2}}({{b2Pts}}점)가 바짝 쫓아와요. 왕좌를 뺏으러 와 😏",
-      "cityNotTop": "🔥 {{place}}는 모든 도시 중 {{period}} #{{rank}}위: {{pts}}점! {{above}}({{aPts}}점) 바로 뒤 👀, {{below}}({{bPts}}점) 앞이에요. 로컬 여러분, 올라가요 🏆",
-      "cityTop": "👑 {{place}}는 모든 도시 중 {{period}} #1: {{pts}}점! {{below1}}({{b1Pts}}점)와 {{below2}}({{b2Pts}}점)가 쫓아와요. 로컬 여러분, 1위 지켜요 🔥"
+    "proof": {
+      "requirementsLabel": "출제자의 요청",
+      "submitCta": "인증 사진 보내기",
+      "tryAgainCta": "다시 시도 ({{count}}회 남음)",
+      "waitingProof": "인증 사진 기다리는 중",
+      "waitingVerdict": "결과를 기다리는 중",
+      "approvedLine": "챌린지 성공",
+      "closedLine": "챌린지 종료",
+      "lastReason": "이유: {{reason}}",
+      "geotagOk": "위치 확인됨",
+      "geotagWarn": "대상 지역 밖에서 찍은 사진",
+      "approveCta": "승인",
+      "rejectCta": "거절",
+      "rejectModalTitle": "이 인증 사진 거절하기",
+      "rejectModalHint_other": "{{count}}번 더 시도할 수 있어요. 뭘 고치면 될지 알려 주세요.",
+      "reasonPlaceholder": "예: 사진이 흐려서 음식이 안 보여요",
+      "rejectConfirm": "거절 보내기",
+      "reasonRequiredTitle": "이유를 적어 주세요",
+      "reasonRequiredBody": "짧게 이유를 적어 주면(1–200자) 도전자에게 도움이 돼요.",
+      "permPhotoTitle": "카메라 권한이 필요해요",
+      "permPhotoBody": "설정에서 카메라 접근을 허용해 주세요. 인증 사진은 바로 찍은 사진이어야 해요.",
+      "permGpsTitle": "위치 권한이 필요해요",
+      "permGpsBody": "위치 정보는 필수예요. 설정에서 위치를 켜 주세요.",
+      "gpsFailTitle": "GPS를 읽지 못했어요",
+      "gpsFailBody": "밖에서 다시 시도하거나 위치 서비스를 켜 주세요.",
+      "submitFailTitle": "보내지 못했어요",
+      "submitFailBody": "연결을 확인하고 다시 시도해 주세요.",
+      "reviewFailTitle": "판정을 저장하지 못했어요"
     }
   },
-  "scoringInfo": {
-    "aria": "포인트가 어떻게 쌓이는지",
-    "helpLabel": "🏆 포인트 얻는 법",
-    "title": "🏆 챌린지 작동 방식",
-    "intro": "참여하면 작은 포인트, 실제로 나타나거나 이기면 큰 포인트를 받아요. 참여만 쌓는 건 의미가 없어요.",
-    "colStep": "단계",
-    "steps": {
-      "created": "챌린지 생성",
-      "accepted": "챌린지 수락",
-      "date": "날짜 확정",
-      "meet": "만남",
-      "rate": "양쪽 평가"
-    },
-    "noPoints": "-",
-    "totalLabel": "챌린지당 합계",
-    "footnote": "수치는 게임을 조정하면서 바뀔 수 있어요.",
-    "types": {
-      "heading": "두 가지 챌린지 종류",
-      "local": "🏙️ 만남 — 정해진 시간과 장소에 그룹으로 직접 모여요. 온 사람 모두 크게 얻어요.",
-      "international": "🌍 사진 챌린지 — 모두가 마감 전에 사진을 제출하고, 출제자가 우승자를 골라요."
-    },
-    "lifecycle": {
-      "heading": "🔁 어떻게 마무리되나",
-      "body": "출제자가 챌린지를 구성하고, 사람들이 참여하고, 마지막에 출제자가 확인해요 — 누가 왔는지, 또는 어떤 사진이 이겼는지."
-    },
-    "pointsHeading": "💯 포인트 얻는 법",
-    "ways": {
-      "join": "챌린지에 참여하기",
-      "create": "챌린지 만들기",
-      "present": "참석 — 출석 확인됨",
-      "host": "만남 주최하기",
-      "submit": "챌린지에 사진 제출하기",
-      "win": "사진 챌린지에서 이기기"
-    },
-    "seeExamples": "실제 예시 3개 보기"
+  "modeFilter": {
+    "label": "모드별 보기",
+    "all": "전체"
   },
   "scoreCelebration": {
     "unit": "포인트",
     "subtitle": {
-      "accepted": "내 챌린지가 수락되었어요",
-      "date_locked": "약속 확정 - 가자",
+      "accepted": "누군가 내 챌린지에 도전했어요",
+      "date_locked": "날짜 확정, 가 봐요!",
       "meetup": "미션 성공",
       "debrief": "미션 성공",
-      "ghost": "다음을 노려보자",
-      "default": "랭킹을 오르고 있어요",
+      "ghost": "다음엔 꼭 잘될 거예요",
+      "default": "랭킹이 오르고 있어요",
       "meet_bonus": "만남 보너스 획득",
-      "challenge_created": "챌린지를 시작했어요"
+      "challenge_created": "챌린지를 열었어요"
     },
     "rank": {
       "city": "{{city}} {{rank}}위",
-      "cityBeyond": "도시 상위 {{topN}}위 밖",
+      "cityBeyond": "내 도시 상위 {{topN}}위 밖",
       "world": "전 세계 {{rank}}위",
       "worldBeyond": "전 세계 상위 {{topN}}위 밖",
-      "cityUnranked": "이번 달 {{city}}에서 아직 순위 없음",
+      "cityUnranked": "이번 달 {{city}} 순위 없음",
       "worldUnranked": "이번 달 전 세계 순위 없음",
-      "cities": "{{city}} 도시 중 #{{rank}}위",
-      "citiesBeyond": "{{city}} 도시 상위 {{topN}}위 밖"
+      "cities": "{{city}}, 도시 중 {{rank}}위",
+      "citiesBeyond": "{{city}}, 도시 상위 {{topN}}위 밖"
     },
-    "cta": "가자",
+    "cta": "출발!",
     "kindShort": {
-      "accepted": "참여",
-      "date_locked": "약속 확정",
+      "accepted": "수락됨",
+      "date_locked": "날짜 확정",
       "meetup": "만남 완료",
-      "debrief": "서로 평가",
+      "debrief": "서로 평가 완료",
       "ghost": "잠수",
       "default": "획득",
       "meet_bonus": "만남 보너스",
@@ -648,38 +662,116 @@
       "deletedChallenge": "삭제된 챌린지",
       "andMore": "외 {{count}}건"
     },
-    "total": "총: {{total}} pts"
+    "total": "총 {{total}}점"
   },
   "welcomeGuest": {
-    "title": "환영해요! 가입 없이 자유롭게 채팅하세요.",
-    "cta": "이 챌린지에 도전하고 싶나요? 3초면 가입"
+    "title": "환영해요! 가입 없이 여기서 자유롭게 채팅해요.",
+    "cta": "이 챌린지에 도전하고 싶나요? 3초면 가입해요"
+  },
+  "group": {
+    "meetLabel": "언제, 어디서",
+    "meetCta": "만날 날짜 정하기",
+    "meetHint": "참여한 모두가 여기서 함께 만나요. 끝나고 누가 왔는지 확인하면 돼요.",
+    "meetRequired": "만날 날짜를 골라 주세요.",
+    "meetRequiredTitle": "만남 정하기",
+    "meetSet": "만남 정하기",
+    "join": "참여",
+    "done": "이 만남은 끝났어요.",
+    "validateCta": "참석자 확인하기",
+    "validateAfter": "만남이 끝나면 확인할 수 있어요 · {{time}}",
+    "youreIn": "참여 완료! 그때 봐요!",
+    "joinCta": "챌린지 참여 (+2점)",
+    "closed": "신규 참여 마감",
+    "joinFailed": "참여하지 못했어요. 다시 시도해 주세요.",
+    "validateFailed": "확인하지 못했어요. 다시 시도해 주세요.",
+    "validateTitle": "누가 왔나요?",
+    "validateSub": "만남에 온 사람을 모두 체크하세요. 체크된 사람은 각자 보상을 받아요.",
+    "rateMeet": "만남은 어땠나요?",
+    "validateConfirm": "{{count}}명 참석 확인",
+    "noParticipants": "아직 아무도 참여하지 않았어요.",
+    "deadlineLabel": "사진 마감",
+    "deadline24h": "24시간",
+    "deadline3d": "3일",
+    "deadline1w": "1주일",
+    "deadlineHint": "참여한 모두가 마감 전에 사진을 올려요. 끝나면 내가 우승자를 골라요.",
+    "deadlineRequiredTitle": "마감을 골라 주세요",
+    "deadlineRequired": "챌린지 기간을 골라 주세요.",
+    "deadlinePrefix": "마감",
+    "contestDone": "이 챌린지는 끝났어요.",
+    "youreInPhoto": "참여 완료! 아래에서 사진을 올려 주세요.",
+    "pickWinnerCta": "우승자 고르기",
+    "joinContestCta": "챌린지 참여 (+2점)",
+    "winnerTitle": "우승자 고르기",
+    "winnerSub": "가장 좋은 사진을 골라 주세요. 우승자는 큰 보상을 받아요.",
+    "winnerConfirm": "우승자로 정하기",
+    "winnerNoSubmission": "그 사람은 아직 사진을 올리지 않았어요.",
+    "winnerFailed": "우승자를 고르지 못했어요. 다시 시도해 주세요.",
+    "submissionsHeader_other": "사진 {{count}}장",
+    "tapToPick": "가장 좋은 사진 고르기",
+    "winnerTag": "우승자",
+    "pickThis": "우승자로 선택",
+    "winnerConfirmTitle": "우승자로 정할까요?",
+    "winnerConfirmBody": "{{name}}님이 큰 보상을 받아요.",
+    "pickHint": "아래 사진 중에서 우승자를 골라 주세요.",
+    "awaitingPhotos": "아직 사진이 없어요. 챌린지가 달아오르는 중 🔥",
+    "checkPhotos_other": "사진 {{count}}장 보기"
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "지금, 도시를 느껴 봐요",
+      "body": "챌린지는 한 도시 안에서, 그리고 도시와 도시 사이에서 주고받는 작은 현실 미션이에요."
+    },
+    "slide2": {
+      "title": "챌린지 만들기",
+      "body": "만남(날짜 + 장소)이나 마감이 있는 사진 챌린지를 만들어요. 호스트는 나예요."
+    },
+    "slide3": {
+      "title": "누구나 바로 참여",
+      "body": "요청도, 기다림도 없어요. 하고 싶은 사람은 바로 참여하고, 참여하면 바로 +2를 받아요."
+    },
+    "slide4": {
+      "title": "실제로 해내기",
+      "body": "모두 내 만남에 함께 나오거나, 마감 전에 가장 좋은 사진을 올려요."
+    },
+    "slide5": {
+      "title": "확인은 내가",
+      "body": "끝나면 누가 왔는지 확인하거나 우승 사진을 골라요. 큰 포인트는 여기서 나와요."
+    },
+    "slide6": {
+      "title": "도시를 넘어서",
+      "body": "사진 챌린지는 멀리서도 할 수 있어요. 다른 도시 전체에 최고의 한 컷을 보내 달라고 도전해 보세요."
+    },
+    "slide7": {
+      "title": "Most Local 랭킹 오르기",
+      "body": "직접 나오고 이겨야 랭킹이 올라가요. 참여 포인트는 작게 유지되니까, 결국 중요한 건 실제로 하는 거예요."
+    }
   },
   "result": {
     "winner": {
       "title": "우승했어요!",
-      "body": "당신의 사진이 챌린지에서 우승했어요."
+      "body": "내 사진이 챌린지에서 우승했어요."
     },
     "loser": {
-      "title": "{{name}} 님이 우승",
-      "body": "멋진 사진이에요! 참여로 {{points}} 획득 — 다음엔 더 잘할 수 있어요"
+      "title": "{{name}}님이 우승했어요",
+      "body": "멋진 사진이에요! 참여 포인트 {{points}}점을 받았어요. 다음에 다시 도전해 봐요"
     },
     "present": {
       "title": "참석했어요!",
-      "body": "모임 참석이 확인됐어요."
+      "body": "만남 참석이 확인됐어요."
     },
     "absent": {
       "title": "이번엔 놓쳤어요",
-      "body": "다음 모임엔 꼭 와요 — 자리 비워둘게요."
+      "body": "다음 만남엔 꼭 와요. 자리 맡아 둘게요."
     },
     "host": {
-      "titlePhoto": "{{name}} 님이 챌린지에서 우승했어요!",
-      "titleMeet": "모임이 끝났어요!",
-      "body": "호스트해 줘서 고마워요.",
+      "titlePhoto": "{{name}}님이 내 챌린지에서 우승했어요!",
+      "titleMeet": "만남이 끝났어요!",
+      "body": "주최해 줘서 고마워요.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
-    "cta": "좋아요!",
+    "cta": "멋져요!",
     "total": "이제 {{total}} 포인트예요",
-    "rateTitle": "이 챌린지 평가",
+    "rateTitle": "이 챌린지 평가하기",
     "notePlaceholder": "메모 추가 (선택)",
     "saveRating": "평가 저장"
   },
@@ -688,122 +780,30 @@
     "done": "완료",
     "ended": "종료됨"
   },
-  "group": {
-    "meetCta": "만날 날짜 선택",
-    "meetRequired": "만날 날짜를 선택하세요.",
-    "meetLabel": "언제 & 어디서",
-    "meetHint": "참여한 모두가 여기서 함께 만나요. 이후에 누가 왔는지 확인해요.",
-    "meetRequiredTitle": "만남 설정",
-    "meetSet": "만남 설정",
-    "join": "참여",
-    "done": "이 만남은 끝났어요.",
-    "validateCta": "참석자 확인하기",
-    "validateAfter": "만남 후에 확인할 수 있어요 · {{time}}",
-    "youreIn": "참여했어요 — 그때 봐요!",
-    "joinCta": "챌린지 참여 (+2점)",
-    "closed": "신규 참여 마감",
-    "joinFailed": "참여하지 못했어요. 다시 시도해 주세요.",
-    "validateFailed": "확인하지 못했어요. 다시 시도해 주세요.",
-    "validateTitle": "누가 왔나요?",
-    "validateSub": "만남에 온 모두를 체크하세요. 각자 보상을 받아요.",
-    "rateMeet": "만남은 어땠나요?",
-    "validateConfirm": "{{count}}명 참석 확인",
-    "noParticipants": "아직 아무도 참여하지 않았어요.",
-    "deadlineLabel": "제출 마감",
-    "deadline24h": "24h",
-    "deadline3d": "3일",
-    "deadline1w": "1주",
-    "deadlineHint": "참여한 모두가 마감 전에 사진을 제출해요. 이후에 우승자를 골라요.",
-    "deadlineRequiredTitle": "마감 선택",
-    "deadlineRequired": "챌린지 기간을 선택하세요.",
-    "deadlinePrefix": "마감",
-    "contestDone": "이 챌린지는 끝났어요.",
-    "youreInPhoto": "참여했어요 — 아래에서 사진을 제출하세요.",
-    "pickWinnerCta": "우승자 선택",
-    "joinContestCta": "챌린지 참여 (+2점)",
-    "winnerTitle": "우승자 선택",
-    "winnerSub": "가장 좋은 사진을 고르세요. 우승자가 큰 보상을 받아요.",
-    "winnerConfirm": "우승자로 선정",
-    "winnerNoSubmission": "그 사람은 아직 사진을 제출하지 않았어요.",
-    "winnerFailed": "우승자를 고르지 못했어요. 다시 시도해 주세요.",
-    "submissionsHeader_other": "사진 {{count}}장",
-    "tapToPick": "가장 좋은 것 고르기",
-    "winnerTag": "우승자",
-    "pickThis": "선택",
-    "winnerConfirmTitle": "우승자로 선정할까요?",
-    "winnerConfirmBody": "{{name}}님이 큰 보상을 받아요.",
-    "pickHint": "아래 사진에서 우승자를 고르세요.",
-    "awaitingPhotos": "아직 사진이 없어요 — 챌린지가 달아오르고 있어요 🔥",
-    "checkPhotos_other": "사진 {{count}}장 보기"
-  },
-  "leaveTakeon": {
-    "pill": "나가기",
-    "confirmTitle": "이 챌린지에서 나갈까요?",
-    "confirmBody": "진행 상황이 0으로 돌아가고 챌린지가 다른 사람에게 다시 열려요. 되돌릴 수 없어요.",
-    "confirmCta": "나가기",
-    "failed": "나가지 못했어요. 다시 시도해 주세요."
-  },
-  "restart": {
-    "cta": "챌린지 다시 시작",
-    "confirmTitle": "챌린지를 다시 시작할까요?",
-    "confirmBody": "현재 참여자를 제거하고 채팅을 지우며 챌린지를 처음부터 다시 열어요. 되돌릴 수 없어요.",
-    "confirmCta": "다시 시작",
-    "failed": "다시 시작하지 못했어요. 다시 시도해 주세요."
-  },
-  "challengeIntro": {
-    "slide1": {
-      "title": "지금, 도시를 느껴봐요",
-      "body": "챌린지는 도시 안 사람들 사이, 그리고 도시와 도시 사이의 작은 현실 도전이에요."
-    },
-    "slide2": {
-      "title": "챌린지 구성하기",
-      "body": "만남(날짜+장소)이나 마감이 있는 사진 챌린지를 설정하세요. 당신이 호스트예요."
-    },
-    "slide3": {
-      "title": "누구나 그냥 참여",
-      "body": "요청도 기다림도 없이 — 원하는 사람이 참여해요. 바로 +2를 받아요."
-    },
-    "slide4": {
-      "title": "실현하기",
-      "body": "모두가 당신의 만남에 함께 와요 — 또는 마감 전에 가장 좋은 사진을 제출해요."
-    },
-    "slide5": {
-      "title": "당신이 확인",
-      "body": "이후에 누가 참석했는지 확인하거나 우승 사진을 골라요. 큰 점수가 여기서 들어와요."
-    },
-    "slide6": {
-      "title": "도시를 넘어",
-      "body": "사진 챌린지는 멀리서도 가능해요 — 다른 도시 전체에 최고의 한 컷을 보내라고 도전하세요."
-    },
-    "slide7": {
-      "title": "Most Local 오르기",
-      "body": "참석하고 이겨서 순위를 올리세요. 참여 점수는 작게 유지돼요 — 중요한 건 실제로 하는 거예요."
-    }
-  },
   "pointExamples": {
     "title": "실제 예시 3개",
-    "intro": "실제 챌린지가 어떻게 점수를 줬는지 — 누가 무엇을 얻었는지.",
-    "empty": "아직 예시가 없어요 — 가장 먼저 챌린지를 시작해 보세요!",
-    "each": "각자",
+    "intro": "실제 챌린지에서 누가 몇 포인트를 받았는지 보여 드려요.",
+    "empty": "아직 예시가 없어요. 가장 먼저 챌린지를 열어 보세요!",
+    "each": "1인당",
     "line": {
       "created": "{{name}}님이 만들었어요",
-      "winner": "{{name}}님이 이겼어요",
+      "winner": "{{name}}님이 우승했어요",
       "present": "{{count}}명이 참석했어요",
-      "submission": "{{count}}명이 사진을 제출했어요",
+      "submission": "{{count}}명이 사진을 올렸어요",
       "host": "{{name}}님이 주최했어요"
     }
   },
   "titlePh": {
-    "food": "예: 가장 맛있는 쌀국수 한 그릇을 찾아줘 🍜",
-    "place": "예: 네가 가장 좋아하는 숨은 곳으로 데려가줘 📍",
-    "culture": "예: 현지인만 아는 걸 보여줘 🎭",
-    "help": "예: 엉뚱한 걸 해보라고 도전해줘 🤪"
+    "food": "예: 제일 맛있는 쌀국수 한 그릇을 찾아 줘요 🍜",
+    "place": "예: 가장 좋아하는 숨은 장소로 데려가 줘요 📍",
+    "culture": "예: 현지인만 아는 걸 보여 줘요 🎭",
+    "help": "예: 엉뚱한 미션을 내 줘요 🤪"
   },
   "relaunch": {
     "cta": "다시 시작",
     "confirmTitle": "이 챌린지를 다시 시작할까요?",
-    "confirmBody": "처음 설정한 것과 같은 카운트다운으로 다시 열립니다.",
+    "confirmBody": "처음 설정한 카운트다운 그대로 다시 열려요.",
     "confirmCta": "다시 시작",
-    "failed": "다시 시작하지 못했어요 - 다시 시도해 주세요."
+    "failed": "다시 시작하지 못했어요. 다시 시도해 주세요."
   }
 }

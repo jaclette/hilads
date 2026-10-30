@@ -1,8 +1,27 @@
 {
+  "world": {
+    "tab": "세계",
+    "banner_other": "도시 간 챌린지 {{count}}개 진행 중",
+    "online": "{{count}}명 접속 중",
+    "cities_other": "{{count}}개 도시",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}}님이 챌린지를 열었어요: {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{city}}의 {{nickname}}님이 방금 Hilads에 들어왔어요",
+      "challengeWon": "🏆 {{city}}의 {{nickname}}님이 {{challenge}} 챌린지에서 우승했어요"
+    },
+    "quietCard": "여기 조용하죠? 세계 채팅에 안 읽은 메시지 {{count}}개, 탭해서 열어 보세요",
+    "heroEmpty": "가장 먼저 다른 도시에 도전해 보세요",
+    "heroEmptySub": "도시 간 챌린지를 열어 보세요",
+    "leaderboard": "랭킹",
+    "arrivals_other": "{{count}}명 도착",
+    "arrivalsTitle": "최근 도착",
+    "arrivalsEmpty": "최근 도착이 없어요",
+    "seeAll": "전체 보기"
+  },
   "inspiration": {
     "heading": "모임 아이디어",
-    "sub": "다른 도시 로컬들이 뭘 여는지 보기 - 영감 얻기",
-    "openYours": "{{city}}에서 내 것 열기",
+    "sub": "다른 도시 현지인들이 여는 모임에서 아이디어를 얻어 보세요",
+    "openYours": "{{city}}에서 나도 열기",
     "by": "{{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -12,132 +31,126 @@
     "signIn": "로그인",
     "create_event": {
       "pageTitle": "이벤트 만들기",
-      "title": "Ghost는 둘러볼 수 있지만 호스트는 할 수 없어요.",
-      "sub": "계정을 만들어 직접 이벤트를 열고 내 도시를 지도에 올려보세요."
+      "title": "Ghost는 둘러볼 수만 있고, 직접 열 수는 없어요.",
+      "sub": "계정을 만들고 직접 이벤트를 열어 내 도시를 지도에 올려 보세요."
     },
     "view_profile": {
       "pageTitle": "프로필",
-      "title": "Ghost는 둘러볼 수 있지만 프로필은 멤버 전용이에요.",
-      "sub": "계정을 만들어 프로필을 열고, 사람들과 연결하고, 내 도시 크루를 만들어보세요."
+      "title": "Ghost는 둘러볼 수만 있어요. 프로필은 회원 전용이에요.",
+      "sub": "계정을 만들면 프로필을 보고, 사람들과 친해지고, 우리 도시 크루도 만들 수 있어요."
     },
     "join_hangout": {
       "pageTitle": "모임 참여하기",
-      "title": "Ghost는 둘러볼 수 있지만 모임에는 참여할 수 없어요.",
-      "sub": "가입하면 모임에 참여하고, 이름을 저장하고, 누군가 만나고 싶어할 때 알림을 받을 수 있어요."
+      "title": "Ghost는 둘러볼 수만 있고, 모임에는 참여할 수 없어요.",
+      "sub": "가입하면 모임에 참여하고, 이름을 저장하고, 누가 만나고 싶어 할 때 알림도 받을 수 있어요."
     },
     "create_hangout": {
       "pageTitle": "모임 시작하기",
-      "title": "Ghost는 둘러볼 수 있지만 호스트는 할 수 없어요.",
-      "sub": "가입하면 모임을 시작하고, 이름을 저장하고, 사람들을 모을 수 있어요."
+      "title": "Ghost는 둘러볼 수만 있고, 직접 열 수는 없어요.",
+      "sub": "가입하면 모임을 열고, 이름을 저장하고, 사람들을 모을 수 있어요."
     },
     "create_challenge": {
       "pageTitle": "챌린지 시작하기",
-      "title": "Ghost는 둘러볼 수 있지만 챌린지는 만들 수 없어요.",
-      "sub": "가입해서 로컬이나 여행자에게 챌린지를 던지고 검증하세요."
+      "title": "Ghost는 둘러볼 수만 있고, 챌린지는 할 수 없어요.",
+      "sub": "가입하면 현지인이나 여행자에게 챌린지를 내고, 결과도 직접 확인할 수 있어요."
     },
     "accept_challenge": {
-      "pageTitle": "챌린지 받기",
-      "title": "이 챌린지에 도전하려면 가입하세요",
-      "sub": "3초면 끝. 바로 챌린지로 돌아와요."
+      "pageTitle": "챌린지 도전하기",
+      "title": "가입하고 이 챌린지에 도전해 보세요",
+      "sub": "3초면 끝나요. 바로 챌린지로 돌아올 거예요."
     }
   },
   "welcome": {
-    "live": "{{city}}이(가) 라이브예요",
+    "live": "{{city}} 지금 라이브 중",
     "dismiss": "닫기",
-    "body": "진짜 사람들, 바로 지금. 인사하거나, 누가 있는지 보거나, 친구를 데려오세요.",
+    "body": "진짜 사람들이 지금 여기 있어요. 인사하고, 누가 있는지 보고, 친구도 데려와요.",
     "sayHi": "인사하기",
     "invite": "친구 초대"
   },
   "imageType": "JPEG, PNG 또는 WebP 이미지를 선택해 주세요.",
-  "imageTooLarge": "이미지가 너무 커요. 최대 크기: 10 MB.",
+  "imageTooLarge": "이미지가 너무 커요. 최대 10MB예요.",
   "picker": {
-    "title": "도시 선택",
+    "title": "도시 고르기",
     "search": "도시 검색…",
-    "noResults": "\"{{query}}\"에 해당하는 도시를 찾을 수 없어요",
+    "noResults": "\"{{query}}\"에 해당하는 도시가 없어요",
     "topCities": "지금 가장 활발한 도시",
     "cities": "도시",
-    "switchTitle": "도시 전환",
-    "filterActive": "가장 활발한",
+    "switchTitle": "도시 바꾸기",
+    "filterActive": "활발한 순",
     "filterEvents": "이벤트 많은 순",
-    "filterOnline": "가장 많이 온라인",
+    "filterOnline": "접속자 많은 순",
     "filterChallenges": "챌린지 많은 순",
-    "challenges_one": "챌린지 {{count}}개",
     "challenges_other": "챌린지 {{count}}개",
-    "members_one": "멤버 {{count}}명",
     "members_other": "멤버 {{count}}명",
     "backToLocation": "내 위치로 돌아가기",
-    "youreHere": "여기 있어요",
-    "online": "{{count}}명 온라인",
-    "events_one": "이벤트 {{count}}개",
+    "youreHere": "지금 여기",
+    "online": "{{count}}명 접속 중",
     "events_other": "이벤트 {{count}}개",
-    "hangout_one": "모임 {{count}}개",
     "hangout_other": "모임 {{count}}개",
     "msgs_other": "메시지 {{count}}개",
     "hereTitle": "지금 어디에 있어요?",
     "useMyLocation": "내 위치 사용",
-    "playsIn": "{{city}}에서 플레이",
+    "playsIn": "{{city}} 대표로 참여 중",
     "credit": "도시 데이터 ©",
-    "changeLimit": "오늘 도시를 너무 많이 바꿨어요. 내일 다시 해 보세요.",
-    "pickFailed": "이 도시를 선택할 수 없어요. 다시 해 보세요."
+    "changeLimit": "오늘 도시를 너무 자주 바꿨어요. 내일 다시 해 보세요.",
+    "pickFailed": "이 도시로 설정하지 못했어요. 다시 해 보세요."
   },
-  "joining": "{{city}}에 연결하는 중…",
-  "joiningDefault": "채팅에 연결하는 중…",
+  "joining": "{{city}} 들어가는 중…",
+  "joiningDefault": "채팅에 들어가는 중…",
   "tryAgain": "다시 시도",
   "feed": {
     "hangoutTag": "모임",
     "eventTag": "이벤트",
+    "nowTag": "지금",
+    "laterTag": "약속",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
     "public": "공개",
     "activeNow": "지금 활동 중",
-    "repliesNew": "아직 답글이 없어요 - 첫 번째가 되어보세요",
-    "replies_one": "답글 {{count}}개",
+    "repliesNew": "아직 답글이 없어요. 첫 답글을 남겨 보세요",
+    "sayHi": "{{name}}님에게 인사해 보세요",
+    "sayHiGeneric": "인사하기",
+    "hostWaiting": "첫 인사를 기다리는 중",
     "replies_other": "답글 {{count}}개",
-    "going_one": "{{count}}명 참여",
     "going_other": "{{count}}명 참여",
-    "hostedBy": "{{name}} 주최",
+    "hostedBy": "{{name}}님 주최",
     "groupHilads": "Hilads 로컬 이벤트",
-    "groupPublic": "공개 로컬 이벤트",
-    "groupPublicTicket": "공개 로컬 이벤트",
+    "groupPublic": "공개 이벤트",
+    "groupPublicTicket": "공개 이벤트",
     "createEvent": "로컬 이벤트 만들기",
     "startHangout": "모임 시작하기",
-    "openPlace": "내 장소 열기",
+    "openPlace": "내 장소에서 열기",
     "loadError": "이벤트를 불러오지 못했어요",
-    "loadErrorSub": "잠시 후 다시 시도하거나 {{city}}에서 새로운 걸 만들어보세요.",
-    "emptyLocalTitle": "내 단골 장소를 호스트해보세요",
+    "loadErrorSub": "당겨서 나중에 다시 시도하거나, {{city}}에서 새로 만들어 보세요.",
+    "emptyLocalTitle": "단골 장소에서 열어 보세요",
     "emptyTitle": "아직 아무 일도 없어요",
-    "emptyLocalSub": "{{city}}을(를) 활기차게 만들어보세요. 좋아하는 장소에서 정기 이벤트를 시작하세요.",
-    "emptySub": "{{city}}에서 가장 먼저 무언가를 시작해보세요",
+    "emptyLocalSub": "{{city}}에 활기를 불어넣어 보세요. 좋아하는 장소에서 정기 이벤트를 열어 보세요.",
+    "emptySub": "{{city}}에서 가장 먼저 판을 벌여 보세요",
     "noEvents": "지금은 로컬 이벤트가 없어요",
     "noHangouts": "아직 모임이 없어요",
-    "noEventsSub": "{{city}}에서 가장 먼저 하나 만들어보세요",
-    "noHangoutsSub": "모임을 시작해 도시가 떠들썩하게 만들어보세요",
+    "noEventsSub": "{{city}}에서 첫 이벤트를 만들어 보세요",
+    "noHangoutsSub": "모임을 열고 도시를 들썩이게 해 보세요",
     "filterAll": "전체",
     "seeComing": "다가오는 일정 보기",
     "seeHappened": "지난 활동 보기",
-    "createNew": "만들기",
-    "nowTag": "Now",
-    "laterTag": "Plan",
-    "hiNow": "Hi now",
-    "hiLater": "Hi plan",
-    "sayHi": "{{name}}님에게 인사하기",
-    "sayHiGeneric": "인사하기",
-    "hostWaiting": "첫 인사를 기다리는 중",
+    "createNew": "새로 만들기",
     "hiNowHint": "지금 모이기",
     "hiLaterHint": "약속 잡기"
   },
   "header": {
     "online": "근처 {{count}}명",
-    "liveNow": "지금 라이브",
+    "liveNow": "실시간",
     "seeWhosHere": "누가 있는지 보기",
-    "onlineAria_other": "근처에 {{count}}명, 누군지 보려면 탭하세요",
+    "onlineAria_other": "근처 {{count}}명, 탭해서 누군지 보기",
     "notifications": "알림",
     "messages": "메시지",
     "shareCity": "도시 공유",
-    "switchCity": "도시 전환",
+    "switchCity": "도시 바꾸기",
     "changeCity": "도시 변경",
     "currentWeather": "현재 날씨: {{label}}"
   },
   "here": {
-    "title": "내 주변 사람들",
+    "title": "여기 있는 사람들",
     "filterBadge": "배지",
     "filterVibe": "Vibe",
     "filterMode": "모드",
@@ -145,48 +158,47 @@
     "hereNow": "지금 여기",
     "noMatchLive": "지금 이 필터에 맞는 사람이 없어요.",
     "legends": "Hilads 전설",
-    "legendsSub": "이들이 도시를 움직여요",
+    "legendsSub": "이 사람들이 도시를 움직여요",
     "cityCrew": "도시 크루",
     "noMatchCrew": "이 필터에 맞는 멤버가 없어요.",
     "loadMore": "더 보기",
-    "messageAria": "{{name}}에게 메시지"
+    "messageAria": "{{name}} 님에게 메시지 보내기"
   },
   "eventHeader": {
     "yourEvent": "내 이벤트",
     "edit": "수정",
     "join": "참여",
     "joined": "참여함",
-    "here": "{{count}}명 있음",
-    "going_one": "{{count}}명 참여",
+    "here": "{{count}}명 여기 있어요",
     "going_other": "{{count}}명 참여",
-    "locationPending": "위치가 아직 없어요",
-    "hostedBy": "{{name}} 주최"
+    "locationPending": "아직 위치 정보가 없어요",
+    "hostedBy": "{{name}}님 주최"
   },
   "chatEmpty": {
     "beginning": "대화의 시작",
-    "arriving": "사람들이 도착하고 있어요",
-    "firstChat": "여기서 가장 먼저 채팅해보세요",
-    "firstHi": "가장 먼저 인사해보세요"
+    "arriving": "사람들이 모이고 있어요",
+    "firstChat": "여기서 첫 채팅을 시작해 보세요",
+    "firstHi": "가장 먼저 인사해 보세요"
   },
   "create": {
     "title": "뭐 할까요?",
     "hangoutTitle": "모임 시작하기",
-    "hangoutSub": "바로 - 지금 사람들이 참여하게 하세요",
+    "hangoutSub": "즉석 모임, 지금 바로 함께해요",
     "eventTitle": "이벤트 만들기",
-    "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요",
-    "challengeTitle": "챌린지 시작",
-    "challengeSub": "로컬과 여행자 - 챌린지로 연결",
+    "eventSub": "누구나 함께할 일정을 잡아요",
+    "challengeTitle": "챌린지 시작하기",
+    "challengeSub": "현지인과 여행자, 챌린지로 만나요",
     "challengePageTitle": "챌린지 만들기",
-    "challengeAudience": "누구를 위해?",
-    "challengeAudLocals": "로컬",
+    "challengeAudience": "누구 대상이에요?",
+    "challengeAudLocals": "현지인",
     "challengeAudExplorers": "여행자",
     "challengeType": "유형",
     "challengeTypeFood": "음식",
     "challengeTypePlace": "장소",
     "challengeTypeCulture": "문화",
     "challengeTypeHelp": "크레이지",
-    "challengeTitleLabel": "당신의 챌린지",
-    "challengeTitlePlaceholder": "예: 가장 좋아하는 카페로 데려가 주세요",
+    "challengeTitleLabel": "내 챌린지",
+    "challengeTitlePlaceholder": "예: 나만 아는 숨은 카페로 데려가 줘요",
     "challengeCta": "챌린지 시작",
     "challengeErrStart": "챌린지를 시작하지 못했어요"
   },
@@ -194,144 +206,121 @@
     "going": "참여",
     "inThisHangout": "이 모임에",
     "loading": "불러오는 중…",
-    "empty": "아직 아무도 없어요 - 가장 먼저 참여하세요!"
+    "empty": "아직 아무도 없어요. 가장 먼저 참여해 보세요!"
   },
   "nickname": {
     "label": "닉네임",
     "placeholder": "이름...",
-    "heroSub": "지금은 익명이에요. 그래도 어떻게 보일지는 꾸밀 수 있어요.",
+    "heroSub": "지금은 익명이에요. 그래도 어떻게 보일지는 정할 수 있어요.",
     "save": "닉네임 저장",
-    "upgradeHint": "이름을 저장하세요. 로컬로 남으세요.",
+    "upgradeHint": "이름을 저장하고 계속 함께해요.",
     "haveAccount": "이미 계정이 있나요?",
     "myEvents": "내 이벤트",
-    "anonymous": "// 익명 · 가입 필요 없음"
+    "anonymous": "// 익명 · 가입 없이"
   },
   "prompt": {
     "exploreText": "지금 무슨 일이 있는지 보기",
-    "exploreCta": "무슨 일인지 보기",
-    "photoText": "지금 일어나는 일을 공유하기",
+    "exploreCta": "무슨 일이 있는지 보기",
+    "photoText": "지금 일어나는 일을 공유해 보세요",
     "shoot": "촬영",
-    "createEventText": "오늘 밤 계획 있어요?",
+    "createEventText": "오늘 밤 약속 있어요?",
     "createEventCta": "이벤트 만들기",
     "challengeIntroText": "처음이세요? 챌린지가 뭔지 알아봐요",
-    "challengeIntroCta": "보기",
-    "installText": "Hilads를 홈 화면에 추가하세요\n내 도시에서 일어나는 일을 놓치지 마세요",
+    "challengeIntroCta": "보여 주세요",
+    "installText": "Hilads를 홈 화면에 추가해요\n내 도시에서 벌어지는 일을 놓치지 마세요",
     "installAdd": "추가",
     "installHow": "방법"
   },
   "toast": {
-    "eventDeleted": "이벤트 삭제됨"
+    "eventDeleted": "이벤트를 삭제했어요"
   },
   "pwa": {
     "addToHome": "Hilads를 홈 화면에 추가",
     "add": "추가",
     "keepClose": "Hilads를 가까이 두세요",
-    "manualHelp": "브라우저 메뉴를 열고 홈 화면에 추가를 선택하세요.",
+    "manualHelp": "브라우저 메뉴에서 '홈 화면에 추가'를 선택하세요.",
     "dismiss": "설치 안내 닫기"
   },
   "feedJoin": {
-    "0": "👋 {{name}}이(가) 방금 도착했어요",
-    "1": "🔥 {{name}}이(가) 참여했어요",
-    "2": "🍻 {{name}}이(가) 여기 있어요",
-    "3": "👀 {{name}}이(가) 방금 나타났어요",
-    "4": "✨ {{name}}이(가) 도착했어요"
+    "0": "👋 {{name}}님이 방금 도착했어요",
+    "1": "🔥 {{name}}님이 참여했어요",
+    "2": "🍻 {{name}}님이 여기 있어요",
+    "3": "👀 {{name}}님이 방금 나타났어요",
+    "4": "✨ {{name}}님이 도착했어요"
   },
   "ambient": {
-    "0": "🔥 사람들이 도착하고 있어요",
-    "1": "🍻 오늘 밤 누가 나왔을까요?",
+    "0": "🔥 사람들이 모이고 있어요",
+    "1": "🍻 오늘 밤 누가 나왔나요?",
     "2": "💬 도시가 깨어나고 있어요",
-    "3": "🌙 올빼미들이 온라인이에요",
+    "3": "🌙 올빼미족이 접속 중이에요",
     "4": "👀 누군가 방금 도착했어요",
-    "5": "🔥 도시에 새 얼굴이 떴어요",
+    "5": "🔥 도시에 새 얼굴이 나타났어요",
     "6": "🎉 지금 여기 사람들이 있어요",
-    "7": "🌆 로컬들이 들어오고 있어요"
+    "7": "🌆 현지인들이 하나둘 들어오고 있어요"
   },
   "ownerPrompt": {
-    "text": "이 이벤트를 시작했네요!",
-    "sub": "더 멋지게 - 설명을 추가하거나, 시간을 수정하거나, 공유하세요.",
+    "text": "이 이벤트를 열었네요!",
+    "sub": "더 멋지게 만들어 봐요. 설명을 추가하거나, 시간을 바꾸거나, 공유해 보세요.",
     "edit": "이벤트 수정"
   },
   "feedNew": {
     "event": "새 이벤트: {{title}}",
     "join": "참여",
-    "replies_one": "답글 {{count}}개",
     "replies_other": "답글 {{count}}개",
-    "challengeLocals": "{{name}} 님이 로컬에게 챌린지: {{title}}",
-    "challengeExplorers": "{{name}} 님이 여행자에게 챌린지: {{title}}",
+    "challengeLocals": "{{name}}님이 현지인에게 챌린지를 냈어요: {{title}}",
+    "challengeExplorers": "{{name}}님이 여행자에게 챌린지를 냈어요: {{title}}",
     "challengeCta": "보기",
-    "challengeValidated": "챌린지 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요.",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} 국제 챌린지: {{title}}"
+    "challengeValidated": "챌린지 완료! {{name}}님이 \"{{title}}\" 챌린지를 인증했어요.",
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} 글로벌 챌린지: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 사진"
   },
   "typing": {
-    "one": "{{name}}이(가) 입력 중이에요…",
-    "two": "{{a}}님과 {{b}}님이 입력 중이에요…",
+    "one": "{{name}}님이 입력 중…",
+    "two": "{{a}}님과 {{b}}님이 입력 중…",
     "many": "여러 명이 입력 중이에요…"
   },
   "myEvent": {
-    "live": "라이브",
+    "live": "진행 중",
     "recurring": "반복",
     "upcoming": "다가오는 일정",
     "delete": "이벤트 삭제"
   },
   "arrivalsBar": {
     "label": "최근 도착",
-    "sheetTitle": "도착",
-    "empty": "아직 도착이 없어요"
+    "sheetTitle": "새로 온 사람들",
+    "empty": "아직 새로 온 사람이 없어요"
   },
   "cityHero": {
     "mainEmpty": "🌱 {{city}}에 아직 챌린지가 없어요",
-    "subRanked": "탭하여 다음 챌린지를 수락하세요 →",
-    "subUnranked": "첫 챌린지를 수락하고 순위를 올리세요 →",
-    "subTop": "타이틀을 방어하세요 →",
-    "subEmpty": "여행자를 위해 첫 챌린지를 만드세요 →",
+    "subRanked": "탭해서 다음 챌린지에 도전하세요 →",
+    "subUnranked": "첫 챌린지에 도전하고 랭킹에 올라 보세요 →",
+    "subTop": "1위 자리를 지켜요 →",
+    "subEmpty": "여행자들이 도전할 첫 챌린지를 만들어 보세요 →",
     "members_other": "멤버 {{count}}명",
     "nearby": "근처 {{count}}명",
     "recent": "최근 {{count}}명",
-    "mainUnranked_one": "🔥 {{city}} 챌린지 {{count}}개",
     "mainUnranked_other": "🔥 {{city}} 챌린지 {{count}}개",
-    "mainRanked_one": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #{{rank}}",
-    "mainRanked_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #{{rank}}",
-    "mainTop_one": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #1",
-    "mainTop_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #1"
-  },
-  "world": {
-    "tab": "세계",
-    "banner_other": "도시 간 챌린지 {{count}}개 진행 중",
-    "online": "{{count}}명 온라인",
-    "cities_other": "{{count}}개 도시",
-    "sys": {
-      "challengeCreated": "🔥 {{nickname}}님이 챌린지를 열었어요 {{cityA}} → {{cityB}}",
-      "newUser": "🎉 {{city}}의 {{nickname}}님이 방금 Hilads에 합류했어요",
-      "challengeWon": "🏆 {{city}}의 {{nickname}}님이 챌린지 {{challenge}}에서 이겼어요"
-    },
-    "quietCard": "여기 조용하죠? World에 안 읽은 메시지 {{count}}개 — 탭하여 열기",
-    "heroEmpty": "도시에 도전하는 첫 번째 사람이 되세요",
-    "heroEmptySub": "도시 간 챌린지를 열어보세요",
-    "leaderboard": "리더보드",
-    "arrivals_other": "{{count}}명 도착",
-    "arrivalsTitle": "최근 도착",
-    "arrivalsEmpty": "최근 도착이 없어요",
-    "seeAll": "모두 보기"
+    "mainRanked_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 {{rank}}위",
+    "mainTop_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 1위"
   },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
-    "local": "로컬",
+    "local": "현지인",
     "traveler": "여행자",
-    "ctaApp": "앱에서 challenge 참여하기",
+    "ctaApp": "앱에서 챌린지 참여하기",
     "localPass": "Local Pass",
-    "early": "빠름",
+    "early": "얼리버드",
     "proposedBy": "{{name}}님의 제안",
     "proposedByCity": "{{name}} · {{city}}의 제안",
     "groupTitle": "새 사진: {{n}}",
-    "groupCitiesMore": "{{cities}} 외 {{n}}개"
+    "groupCitiesMore": "{{cities}} 외 {{n}}곳"
   },
   "switchSheet": {
-    "title": "{{city}}에 있어요",
-    "body": "내 도시는 {{from}}이에요. 지금부터 {{city}}에서 플레이할까요?",
+    "title": "지금 {{city}}에 있어요",
+    "body": "지금 내 도시: {{from}}. 이제부터 {{city}} 대표로 참여할까요?",
     "switch": "{{city}}(으)로 바꾸기",
     "stay": "{{from}}에 그대로 있기"
   }

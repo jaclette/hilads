@@ -1,11 +1,5 @@
 {
-  "badge": {
-    "ghost": "Ghost",
-    "fresh": "새내기",
-    "regular": "단골",
-    "host": "전설"
-  },
-  "now": "now",
+  "now": "지금",
   "myCity": "my city",
   "here": "here",
   "me": "me",
@@ -16,7 +10,13 @@
     "board_games": "보드게임",
     "coffee": "커피",
     "music": "음악",
-    "food": "맛집",
-    "chill": "칠"
+    "food": "음식",
+    "chill": "여유"
+  },
+  "badge": {
+    "ghost": "Ghost",
+    "fresh": "새내기",
+    "regular": "단골",
+    "host": "전설"
   }
 }
