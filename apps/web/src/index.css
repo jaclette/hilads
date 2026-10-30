@@ -17842,8 +17842,16 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-card > .tc-tile { position: relative; z-index: 1; height: 100%; }
 .tc-card--faded { opacity: 0.55; }
 .tc-layer { position: absolute; inset: 0; border-radius: 16px; opacity: 0.55; }
-.tc-layer--back { transform: translate(4px, 2px) rotate(4deg); }
-.tc-layer--back2 { opacity: 0.3; transform: translate(-4px, 3px) rotate(-4deg); }
+.tc-layer--back { transform: translate(8px, -2px) rotate(5deg); }
+.tc-layer--back2 { opacity: 0.3; transform: translate(-7px, 3px) rotate(-5deg); }
+/* A back sheet showing its photo (the pile, swipeable): opaque, its edge in the theme color. */
+.tc-layer--photo { opacity: 1; overflow: hidden; background: var(--surface); border: 2px solid; }
+.tc-card--pile { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.tc-card--pile > .tc-tile { will-change: transform; }
+.tc-dots { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; padding: 4px 6px;
+           border-radius: 8px; background: rgba(0,0,0,0.62); pointer-events: none; }
+.tc-dot { width: 5px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.35); }
+.tc-dot--on { background: #fff; }
 .tc-photo-box { position: relative; display: block; }
 /* Top-right, leaving the left 30 % to the selfie inset (.dp-mini, 24 %); a long count truncates. */
 .tc-corner { position: absolute; top: 6px; right: 6px; left: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 4px; pointer-events: none; }

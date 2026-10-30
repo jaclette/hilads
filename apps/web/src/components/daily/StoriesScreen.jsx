@@ -40,7 +40,7 @@ export default function StoriesScreen(props) {
   return <SeasonalZone><Stories {...props} /></SeasonalZone>
 }
 
-function Stories({ city: startCity = null, source = 'today', onBack }) {
+function Stories({ city: startCity = null, photo: startPhoto = null, source = 'today', onBack }) {
   const { t, i18n } = useDc()
   const { account, openProfile } = useDaily()
   const [cities, setCities] = useState(() => {
@@ -84,6 +84,15 @@ function Stories({ city: startCity = null, source = 'today', onBack }) {
   const group = order[cityIndex] ?? null
   const ids = (group?.ids ?? []).filter(id => !gone.has(id))
   const proof = ids[photoIndex] ? proofs[ids[photoIndex]] ?? null : null
+
+  // Opened from a mosaic pile: start at the photo that was on top of it.
+  const startedAt = useRef(false)
+  useEffect(() => {
+    if (startedAt.current || !startPhoto || !group || cityIndex !== 0) return
+    startedAt.current = true
+    const i = ids.indexOf(startPhoto)
+    if (i > 0) setPhotoIndex(i)
+  }, [group?.city.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // A city's photos, the first time it shows (its top one is already there).
   useEffect(() => {

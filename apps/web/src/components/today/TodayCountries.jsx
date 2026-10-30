@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { fetchDailyTodayCountries, fetchDailyTour } from '../../api'
+import { useEffect, useRef, useState } from 'react'
+import { fetchDailyProofsByIds, fetchDailyTodayCountries, fetchDailyTour } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { useBackLayer } from '../../lib/backLayers'
@@ -10,7 +10,7 @@ import Icon from '../Icon'
 import { FlagSticker, themeColor } from '../joy/Joy'
 import { answerText } from '../daily/compareShared'
 import { compareCountryProofs, rememberCountries } from '../daily/countryOrder'
-import { RankMedal, personName, seedProofs, useDaily, useDc, useHere, useVoteCount } from '../daily/dailyShared'
+import { RankMedal, getLastToday, personName, seedProofs, useDaily, useDc, useHere, useVoteCount } from '../daily/dailyShared'
 import { hasUnseen, isSeen, useSeen } from '../daily/seen'
 import WorldTourViewer from '../daily/WorldTour'
 import { isEventDay, useSeasonal, useSeasonalLive } from '../event/seasonal'
@@ -136,9 +136,9 @@ export default function TodayCountries({ today, data }) {
     .filter((x, k, all) => all.findIndex(y => y.s.city.id === x.s.city.id) === k).slice(0, 3)
 
   const play = () => { track('today_countries_play', { has_photos: cities.length > 0, platform_surface: 'web' }); openAppModal({ action: 'play', surface: 'today_countries' }) }
-  const openCity = (g, source) => {
+  const openCity = (g, source, photo) => {
     track(source === 'today_stories' ? 'today_countries_story' : 'today_countries_tile', { country: g.city.country, unseen: hasUnseen(g), platform_surface: 'web' })
-    openDaily('stories', { city: g.city.id, source })
+    openDaily('stories', { city: g.city.id, source, ...(photo ? { photo } : {}) })
   }
 
   return (
@@ -179,8 +179,8 @@ export default function TodayCountries({ today, data }) {
           <div className="tc-grid">
             {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onOpen={play} />}
             {cities.length > 0
-              ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={() => openCity(g, 'today_mosaic')} />)
-              : yesterday.map(({ s, i }) => <CityCard key={s.city.id} faded pileColor={theme.fill} group={{
+              ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={photo => openCity(g, 'today_mosaic', photo)} />)
+              : yesterday.map(({ s, i }) => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
                   city: { id: s.city.id, name: s.city.name, country: s.city.country ?? '' }, count: s.count ?? 1, authorCount: null,
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
                 }} onOpen={() => setTouring(i)} />)}
@@ -229,22 +229,112 @@ function lean(id) {
  */
 function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
   const { t, i18n } = useDc()
-  const p = group.top
+  const photos = usePilePhotos(group, i18n.language)
+  const n = photos.length
+  const [front, setFront] = useState(0)
+  useEffect(() => { if (front >= n) setFront(0) }, [n, front])
+  const at = k => photos[(front + k) % Math.max(1, n)]
+  const p = at(0) ?? group.top
   const votes = useVoteCount(p)
   const line = p.answer && !p.backHome ? answerText(p.answer, i18n.language) : p.caption ?? p.spot?.name ?? p.place?.name ?? ''
-  const likes = group.totalLikes ?? votes
+  const likes = votes
+  const comments = p.commentCount ?? 0
   const pile = group.count > 1
+  const swipeable = n > 1 && !faded
   const players = group.authorCount ?? 0
-  const more = players - group.authors.length
+  const reduce = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+  // The top photo follows the finger / mouse sideways (a slight tilt); past a third of the card, or a
+  // flick, it flies off and the next photo comes to the front, endlessly; short of it, it springs back.
+  // touch-action: pan-y leaves vertical moves to the page; a drag only starts on a clearly horizontal move.
+  const topRef = useRef(null)
+  const drag = useRef(null)            // { x, y, t, dx, on }
+  const dragged = useRef(false)        // swallow the click that ends a drag
+  const setTop = (dx, transition) => {
+    const el = topRef.current
+    if (!el) return
+    el.style.transition = transition ?? 'none'
+    el.style.transform = dx ? `translateX(${dx}px) rotate(${reduce ? 0 : (dx / (el.offsetWidth || 160)) * 10}deg)` : ''
+  }
+  const next = () => {
+    navigator.vibrate?.(8)
+    track('today_pile_swipe', { city: group.city.id, photos: n, platform_surface: 'web' })
+    setFront(f => (f + 1) % n)
+    const el = topRef.current
+    if (!el) return
+    // The new top photo rises from the pile.
+    el.style.transition = 'none'
+    el.style.transform = reduce ? '' : 'scale(0.94)'
+    el.style.opacity = reduce ? '0' : ''
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.transition = reduce ? 'opacity 150ms ease' : 'transform 320ms cubic-bezier(.34,1.56,.64,1)'
+      el.style.transform = ''
+      el.style.opacity = ''
+    }))
+  }
+  const onPointerDown = e => {
+    if (!swipeable || (e.pointerType === 'mouse' && e.button !== 0)) return
+    drag.current = { x: e.clientX, y: e.clientY, t: e.timeStamp, dx: 0, on: false }
+    dragged.current = false
+  }
+  const onPointerMove = e => {
+    const d = drag.current
+    if (!d) return
+    const dx = e.clientX - d.x, dy = e.clientY - d.y
+    if (!d.on) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { drag.current = null; return }   // the page scrolls
+      if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy) * 1.5) return
+      d.on = true
+      dragged.current = true
+      e.currentTarget.setPointerCapture?.(e.pointerId)
+    }
+    d.dx = dx
+    setTop(dx)
+  }
+  const onPointerUp = e => {
+    const d = drag.current
+    drag.current = null
+    if (!d?.on) return
+    const w = topRef.current?.offsetWidth || 160
+    const v = Math.abs(d.dx) / Math.max(1, e.timeStamp - d.t)          // px / ms over the whole drag
+    if (Math.abs(d.dx) > w * 0.33 || (v > 0.6 && Math.abs(d.dx) > 24)) {
+      const dir = d.dx > 0 ? 1 : -1
+      const el = topRef.current
+      if (reduce && el) { el.style.transition = 'opacity 150ms ease'; el.style.opacity = '0' }
+      else setTop(dir * w * 1.4, 'transform 200ms ease-in')
+      setTimeout(next, reduce ? 150 : 200)
+    } else {
+      setTop(0, 'transform 280ms cubic-bezier(.34,1.56,.64,1)')
+    }
+  }
+
+  // Once ever (on this browser): the first pile shown peeks aside, so the swipe is found.
+  useEffect(() => {
+    if (!swipeable || reduce || !claimPileHint()) return
+    const id = setTimeout(() => {
+      const w = topRef.current?.offsetWidth || 160
+      setTop(-w * 0.22, 'transform 300ms ease-out')
+      setTimeout(() => setTop(0, 'transform 360ms cubic-bezier(.34,1.56,.64,1)'), 320)
+    }, 500)
+    return () => clearTimeout(id)
+  }, [swipeable]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <button type="button" className={`tc-card${faded ? ' tc-card--faded' : ''}`} style={{ transform: `rotate(${lean(group.city.id)}deg)` }} onClick={onOpen}
-            aria-label={[shortCityName(group.city.name), line, pile && players > 0 ? t('mosaic.players', { count: players }) : null, likes].filter(x => x !== null && x !== '').join(', ')}>
-      {pile && <span className="tc-layer tc-layer--back" style={{ background: pileColor }} aria-hidden="true" />}
-      {pile && group.count > 2 && <span className="tc-layer tc-layer--back2" style={{ background: pileColor }} aria-hidden="true" />}
-      <span className="tc-tile">
+    <button type="button" className={`tc-card${faded ? ' tc-card--faded' : ''}${swipeable ? ' tc-card--pile' : ''}`}
+            style={{ transform: `rotate(${lean(group.city.id)}deg)` }}
+            onClick={e => { if (dragged.current) { e.preventDefault(); dragged.current = false; return } onOpen(p.id) }}
+            onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
+            onPointerCancel={() => { drag.current = null; setTop(0, 'transform 200ms ease') }}
+            onKeyDown={swipeable ? e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); next() } } : undefined}
+            aria-label={[shortCityName(group.city.name), line, pile && players > 0 ? t('mosaic.players', { count: players }) : null,
+                         swipeable ? t('stories.of', { index: front + 1, total: n }) : null, likes].filter(x => x !== null && x !== '').join(', ')}>
+      {/* The pile: the next photos themselves, offset and tilted, a theme-colored edge; plain sheets until they load. */}
+      {pile && group.count > 2 && <PileSheet proof={n > 2 ? at(2) : null} color={pileColor} back2 />}
+      {pile && <PileSheet proof={n > 1 ? at(1) : null} color={pileColor} />}
+      <span className="tc-tile" ref={topRef}>
         <span className="tc-photo-box">
-          <img className="tc-photo" src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" />
-          {p.selfieUrl && <img className="dp-mini" src={p.selfieThumbUrl ?? p.selfieUrl} alt="" />}
+          <img className="tc-photo" src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" draggable={false} />
+          {p.selfieUrl && <img className="dp-mini" src={p.selfieThumbUrl ?? p.selfieUrl} alt="" draggable={false} />}
           {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
           {(pile || badge) && (
             <span className="tc-corner">
@@ -259,19 +349,22 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
               {badge && <span className="seasonal-badge seasonal-badge--inline" aria-hidden="true">{badge}</span>}
             </span>
           )}
+          {/* Which photo of the pile is on top. */}
+          {swipeable && (
+            <span className="tc-dots" aria-hidden="true">
+              {photos.slice(0, MAX_SEGMENTS).map((x, i) => <span key={x.id} className={`tc-dot${i === front % MAX_SEGMENTS ? ' tc-dot--on' : ''}`} />)}
+            </span>
+          )}
         </span>
         <span className="tc-tile-body">
           <span className="tc-city"><FlagSticker country={group.city.country} size={16} />{shortCityName(group.city.name)}</span>
           <span className="tc-answer">{line}</span>
           <span className="tc-foot">
             <span className="tc-avatars">
-              {group.authors.map(a => (
-                <span key={a.id} className="tc-avatar"><AvatarWithFlag userId={a.id} displayName={personName(a)} photoUrl={a.photoUrl} size={20} /></span>
-              ))}
-              {more > 0 && <span className="tc-more">+{more}</span>}
+              {p.user && <span className="tc-avatar"><AvatarWithFlag userId={p.user.id} displayName={personName(p.user)} photoUrl={p.user.photoUrl} size={20} /></span>}
             </span>
             <span className="tc-votes">
-              {group.totalComments > 0 && <span className="pc-count"><Icon name="chatbubble-outline" size={13} />{group.totalComments}</span>}
+              {comments > 0 && <span className="pc-count"><Icon name="chatbubble-outline" size={13} />{comments}</span>}
               <Icon name="heart-outline" size={14} />{likes}
             </span>
           </span>
@@ -279,6 +372,51 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
       </span>
     </button>
   )
+}
+
+/** A photo under the top one: the real next photo, edge visible, theme-colored border. */
+function PileSheet({ proof, color, back2 = false }) {
+  return (
+    <span className={`tc-layer ${back2 ? 'tc-layer--back2' : 'tc-layer--back'}${proof ? ' tc-layer--photo' : ''}`}
+          style={proof ? { borderColor: color } : { background: color }} aria-hidden="true">
+      {proof && <img className="tc-photo" src={proof.thumbUrl || proof.photoUrl} alt="" loading="lazy" draggable={false} />}
+    </span>
+  )
+}
+
+// The city's photos for its pile (best first, the top one already there), fetched once per city and
+// kept for the session: the card's back photos and what a swipe brings to the front.
+const pileCache = new Map()
+const pileAsked = new Set()
+const PILE_MAX = 8
+function usePilePhotos(group, locale) {
+  const ids = group.ids.slice(0, PILE_MAX)
+  const [, bump] = useState(0)
+  const key = ids.join(',')
+  useEffect(() => {
+    const missing = ids.filter(id => id !== group.top.id && !pileCache.has(id) && !pileAsked.has(id))
+    if (!missing.length) return
+    missing.forEach(id => pileAsked.add(id))
+    let live = true
+    fetchDailyProofsByIds(missing, locale)
+      .then(list => { seedProofs(list, getLastToday()?.challenge?.isActive ?? true); list.forEach(x => pileCache.set(x.id, x)); if (live) bump(v => v + 1) })
+      .catch(() => missing.forEach(id => pileAsked.delete(id)))
+    return () => { live = false }
+  }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
+  return ids.map(id => (id === group.top.id ? group.top : pileCache.get(id))).filter(Boolean)
+}
+
+// The one-time peek: the first swipeable pile shown in this browser, never again.
+const PILE_HINT_KEY = 'hilads_pile_hint_v1'
+let pileHintTaken = false
+function claimPileHint() {
+  if (pileHintTaken) return false
+  pileHintTaken = true
+  try {
+    if (localStorage.getItem(PILE_HINT_KEY) === '1') return false
+    localStorage.setItem(PILE_HINT_KEY, '1')
+  } catch { return false }
+  return true
 }
 
 /** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
