@@ -7,11 +7,11 @@
   "anywhere": "anywhere",
   "vibe": {
     "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "board_games": "Brettspiele",
+    "coffee": "Kaffee",
+    "music": "Musik",
+    "food": "Essen",
+    "chill": "Chillen"
   },
   "badge": {
     "ghost": "Ghost",

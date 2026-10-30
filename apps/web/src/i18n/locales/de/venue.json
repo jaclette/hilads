@@ -1,7 +1,7 @@
 {
   "loading": "Wird geladen…",
   "notFound": "Diese Location ist nicht auf Hilads.",
-  "loadError": "Diese Location konnte nicht geladen werden. Bitte versuch es erneut.",
+  "loadError": "Diese Location konnte nicht geladen werden. Versuch's nochmal.",
   "breadcrumb": "Navigationspfad",
   "category": {
     "bar": "Bar / Pub",
@@ -11,7 +11,7 @@
   "address": "Adresse",
   "hours": "Öffnungszeiten",
   "openEveryDay": "Täglich geöffnet · {{opens}} – {{closes}}",
-  "ctaText": "Sieh, wer gerade in {{city}} um dich herum ist.",
+  "ctaText": "Schau, wer gerade in {{city}} unterwegs ist.",
   "openCity": "{{city}} öffnen",
   "lastUpdated": "Zuletzt aktualisiert am {{date}}"
 }

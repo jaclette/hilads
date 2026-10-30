@@ -3,15 +3,18 @@
     "title": "Freundschaftsanfragen",
     "incoming": "Erhalten",
     "sent": "Gesendet",
-    "wantsToBeFriend": "möchte dein Freund sein",
+    "wantsToBeFriend": "will mit dir befreundet sein",
     "requestSent": "Anfrage gesendet",
     "decline": "Ablehnen",
     "accept": "Annehmen",
     "cancel": "Abbrechen",
     "emptyIncomingTitle": "Noch keine Freundschaftsanfragen",
     "emptySentTitle": "Du hast noch keine gesendet",
-    "emptyIncomingSub": "Wenn dich jemand als Freund anfragt, siehst du es hier.",
-    "emptySentSub": "Ausstehende Freundschaftsanfragen, die du gesendet hast, erscheinen hier."
+    "emptyIncomingSub": "Wenn dir jemand eine Freundschaftsanfrage schickt, siehst du sie hier.",
+    "emptySentSub": "Deine offenen Freundschaftsanfragen erscheinen hier.",
+    "acceptFailed": "Annehmen hat nicht geklappt",
+    "declineFailed": "Ablehnen hat nicht geklappt",
+    "cancelFailed": "Zurückziehen hat nicht geklappt"
   },
   "blocked": {
     "title": "Blockierte Nutzer",
@@ -20,9 +23,9 @@
     "guest": "Gast",
     "unblock": "Entsperren",
     "unblockTitle": "{{name}} entsperren?",
-    "unblockBody": "{{name}} kann deine Inhalte wieder sehen und dich erneut kontaktieren.",
-    "unblockFailTitle": "Konnte nicht entsperrt werden",
-    "unblockFailBody": "Bitte versuche es erneut.",
+    "unblockBody": "{{name}} kann deine Inhalte dann wieder sehen und dich kontaktieren.",
+    "unblockFailTitle": "Entsperren hat nicht geklappt",
+    "unblockFailBody": "Bitte versuch es noch mal.",
     "emptyTitle": "Du hast niemanden blockiert",
     "emptySub": "Blockierte Nutzer sehen deine Inhalte nicht, und du siehst ihre nicht."
   }

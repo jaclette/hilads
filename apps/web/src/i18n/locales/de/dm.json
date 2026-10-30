@@ -1,42 +1,46 @@
 {
   "title": "Nachrichten",
-  "filters": { "all": "Alle", "dms": "Direktnachrichten", "events": "Event-Chats" },
+  "filters": {
+    "all": "Alle",
+    "dms": "Direktnachrichten",
+    "events": "Event-Chats"
+  },
   "loading": "Wird geladen…",
   "error": {
     "loadTitle": "Nachrichten konnten nicht geladen werden",
-    "loadSub": "Prüf deine Verbindung und versuch es erneut."
+    "loadSub": "Prüf deine Verbindung und versuch es nochmal."
   },
   "empty": {
     "eventsTitle": "Noch keine Event-Chats",
-    "eventsSub": "Erstelle ein Event oder nimm an einem teil, um mit den Teilnehmenden zu chatten.",
+    "eventsSub": "Erstell ein Event oder mach bei einem mit, um mit den anderen zu chatten.",
     "title": "Noch keine Nachrichten",
     "sub": "Vernetze dich mit Leuten, die du in der Stadt triffst."
   },
   "sectionDms": "Direktnachrichten",
   "sectionEvents": "Event-Chats",
   "youPrefix": "Du: {{message}}",
-  "startConversation": "Starte die Unterhaltung",
-  "eventCreated": "Du hast das erstellt",
-  "eventJoined": "Du bist beigetreten",
+  "startConversation": "Fang das Gespräch an",
+  "eventCreated": "Von dir erstellt",
+  "eventJoined": "Du bist dabei",
   "prefs": {
     "title": "Benachrichtigungseinstellungen",
     "dmName": "Neue Direktnachrichten",
-    "dmDesc": "Wenn dir jemand eine private Nachricht sendet",
-    "eventName": "Event-Chat-Nachrichten",
-    "eventDesc": "Wenn jemand in einem Event schreibt, dem du beigetreten bist",
-    "cityName": "Stadt-Chat-Nachrichten",
-    "cityDesc": "Wenn jemand eine Nachricht in deinem Stadt-Kanal sendet"
+    "dmDesc": "Wenn dir jemand eine Direktnachricht schickt",
+    "eventName": "Nachrichten im Event-Chat",
+    "eventDesc": "Wenn jemand in einem Event schreibt, bei dem du dabei bist",
+    "cityName": "Nachrichten im Stadt-Chat",
+    "cityDesc": "Wenn jemand im Kanal deiner Stadt schreibt"
   },
   "thread": {
     "loadError": "Nachrichten konnten nicht geladen werden.",
-    "beginning": "Anfang der Unterhaltung",
+    "beginning": "Anfang des Gesprächs",
     "photo": "Foto",
     "unavailable": "Originalnachricht nicht verfügbar",
-    "tapMaps": "Tippe, um in Maps zu öffnen",
+    "tapMaps": "Tippen, um in Karten zu öffnen",
     "composer": "Nachricht…",
-    "imageType": "Bitte wähle ein JPEG-, PNG- oder WebP-Bild.",
-    "imageTooLarge": "Bild zu groß. Maximale Größe: 10 MB.",
-    "imageSend": "Bild konnte nicht gesendet werden. Versuch es erneut."
+    "imageType": "Wähl ein JPEG-, PNG- oder WebP-Bild.",
+    "imageTooLarge": "Bild zu groß. Maximal 10 MB.",
+    "imageSend": "Bild konnte nicht gesendet werden. Versuch's nochmal."
   },
-  "directMessage": "Private Nachricht"
+  "directMessage": "Direktnachricht"
 }

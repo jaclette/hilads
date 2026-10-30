@@ -1,60 +1,60 @@
 {
   "hero": {
-    "sub": "Du bist nicht nur zu Besuch. Du wirst local.\nJede Challenge, jedes Treffen, jeder Spot - verdiene dir deinen Platz in dieser Stadt.",
-    "orPreview": "Oder schau im Browser rein – ohne Installation",
+    "sub": "Du bist nicht nur zu Besuch. Du wirst local.\nJede Challenge, jedes Treffen, jeder Spot - verdien dir deinen Platz in dieser Stadt.",
+    "orPreview": "Oder schau im Browser rein - ohne Installation",
     "storeDownloadOn": "Laden im",
     "storeGetItOn": "Jetzt bei"
   },
   "join": {
     "peopleLive_one": "{{count}} Person ist gerade unterwegs",
     "peopleLive_other": "{{count}} Leute sind gerade unterwegs",
-    "events_one": "{{count}} Hi plan laufen",
+    "events_one": "{{count}} Hi plan läuft",
     "events_other": "{{count}} Hi plan laufen",
     "hangouts_one": "{{count}} Hi now aktiv",
     "hangouts_other": "{{count}} Hi now aktiv",
     "replies_one": "{{count}} Antwort",
     "replies_other": "{{count}} Antworten",
     "pickCity": "Wähle eine Stadt\nund leg los",
-    "locating": "› deine Stadt wird geortet...",
-    "browseCities": "Städte durchstöbern",
+    "locating": "› wir suchen deine Stadt...",
+    "browseCities": "Städte entdecken",
     "yourName": "Dein Name",
     "namePlaceholder": "Sag Hallo als...",
-    "tryAgain": "Erneut versuchen",
+    "tryAgain": "Nochmal versuchen",
     "useLocation": "Stattdessen meinen Standort nutzen",
     "joinCity": "{{city}} beitreten",
-    "joinChat": "Chat beitreten",
-    "hint": "// anonym · sofortiger Zugang",
+    "joinChat": "Ab in den Chat",
+    "hint": "// anonym · sofort drin",
     "keepIdentity": "oder behalte deine Identität",
     "createAccount": "Konto erstellen",
     "logIn": "Anmelden",
-    "authHint": "Behalte deinen Namen · schalte Profile frei · füge Freunde hinzu",
+    "authHint": "Sicher dir deinen Namen · Profile freischalten · Freunde hinzufügen",
     "challenges_one": "{{count}} offene Challenge",
     "challenges_other": "{{count}} offene Challenges"
   },
   "local": {
     "badge": "Local",
-    "title": "Sei der Local, der die Stadt am Laufen hält",
+    "title": "Sei der Local, um den sich alles dreht",
     "tagline": "Du kennst die Spots. Fordere Locals oder Reisende heraus, sie zu finden.",
     "bullets": [
-      "Fordere Locals oder Reisende heraus - Food, Ort, Kultur oder Hilfe",
-      "Bring Leute an die Orte, die du liebst",
-      "Werde der Local, an den sich Leute erinnern"
+      "Fordere Locals oder Reisende heraus - Essen, Ort, Kultur oder Hilfe",
+      "Bring Leute an deine Lieblingsspots",
+      "Werde der Local, den keiner vergisst"
     ],
-    "cta": "Bring deine Stadt zum Laufen"
+    "cta": "Übernimm deine Stadt"
   },
   "exploring": {
-    "badge": "Exploring",
-    "title": "Nimm lokale Challenges überall an",
-    "tagline": "Wo immer du landest - nimm an, was die Locals gestartet haben.",
+    "badge": "Auf Erkundung",
+    "title": "Mach überall bei lokalen Challenges mit",
+    "tagline": "Wo immer du landest: Mach mit bei dem, was Locals gestartet haben.",
     "bullets": [
-      "Nimm Challenges an, die Locals gestartet haben",
+      "Mach bei Challenges von Locals mit",
       "Finde die echten Spots, empfohlen von denen, die dort leben",
       "Erlebe die Stadt wie ein Local, nicht wie ein Tourist"
     ],
     "cta": "Challenges ansehen"
   },
   "how": {
-    "eyebrow": "So funktioniert's",
+    "eyebrow": "So geht's",
     "title": "Drei Schritte, um Leute persönlich zu treffen.",
     "steps": [
       {
@@ -62,67 +62,67 @@
         "desc": "Local. Du kennst die Stadt.\nReisender. Du willst sie erleben."
       },
       {
-        "title": "Starte oder mach bei einer Challenge mit",
-        "desc": "Jeder startet ein Treffen — Datum und Ort — oder einen Fotowettbewerb mit Deadline. Offen für eine ganze Gruppe, nicht 1-zu-1."
+        "title": "Starte eine Challenge oder mach mit",
+        "desc": "Jeder kann ein Treffen starten (Datum + Ort) oder einen Fotowettbewerb mit Deadline. Offen für eine ganze Gruppe, nicht nur 1:1."
       },
       {
         "title": "Kommt zusammen",
-        "desc": "Alle, die mitmachen, treffen sich persönlich — oder schicken vor der Deadline ihr bestes Foto. Der Gastgeber bestätigt, wer da war, oder kürt den Gewinner."
+        "desc": "Alle, die mitmachen, treffen sich persönlich - oder schicken vor der Deadline ihr bestes Foto. Der Gastgeber bestätigt, wer da war, oder kürt den Gewinner."
       }
     ]
   },
   "stats": {
-    "peopleLive": "Leute jetzt online",
+    "peopleLive": "Leute gerade live",
     "cities": "Städte",
-    "eventsCreated": "erstellte Events",
-    "signupsNeeded": "Anmeldung nötig"
+    "eventsCreated": "Events erstellt",
+    "signupsNeeded": "Anmeldungen nötig"
   },
   "concept": {
-    "title": "Kein weiteres soziales Netzwerk.\nEin Grund, sich persönlich zu treffen.",
+    "title": "Nicht noch ein soziales Netzwerk.\nSondern ein Grund, sich in echt zu treffen.",
     "rules": [
       "Keine Follower. Keine Feeds. Keine Algorithmen.",
-      "Versammle eine Gruppe für ein echtes Treffen oder veranstalte einen Fotowettbewerb. Wer auftaucht — oder gewinnt — hat es sich verdient.",
-      "Echte Menschen. Echte Orte. Jetzt."
+      "Trommel eine Gruppe für ein echtes Treffen zusammen oder starte einen Fotowettbewerb. Wer kommt - oder gewinnt - hat es sich verdient.",
+      "Echte Leute. Echte Orte. Jetzt sofort."
     ]
   },
-  "seo": "Hilads ist eine Echtzeit-Social-App, in der sich Menschen rund um echte Challenges treffen — Gruppentreffen zu fester Zeit und festem Ort und Fotowettbewerbe zwischen Städten. Mach bei einer Challenge in Paris mit, veranstalte ein Treffen in Barcelona oder starte einen Fotowettbewerb aus Lissabon. Kein Account nötig. Einfach da sein.",
+  "seo": "Hilads ist eine Echtzeit-Social-App, in der sich Leute rund um echte Challenges treffen: Gruppentreffen zu fester Zeit an festem Ort und Fotowettbewerbe zwischen Städten. Mach bei einer Challenge in Paris mit, veranstalte ein Treffen in Barcelona oder starte einen Fotowettbewerb aus Lissabon. Kein Konto nötig. Einfach hingehen.",
   "download": {
     "eyebrow": "Mobile Apps",
-    "title": "Deine Stadt in deiner Tasche.",
-    "sub": "Native Apps kommen bald."
+    "title": "Deine Stadt für die Hosentasche.",
+    "sub": "Alles drin: Push-Benachrichtigungen, schneller, gemacht für deine Stadt."
   },
   "repeat": {
     "eyebrow": "Leg los",
-    "titleCity": "{{city}} ist gerade jetzt live.",
-    "titleGeneric": "Deine Stadt ist gerade jetzt live."
+    "titleCity": "{{city}} ist gerade live.",
+    "titleGeneric": "Deine Stadt ist gerade live."
   },
   "international": {
     "badge": "Cross-City",
-    "tagline": "Schick eine Challenge in eine andere Stadt. Bekomm ein Video zurück.",
-    "sub": "Wenn deine Stadt ruhig ist, ist die Welt es nicht. Fordere jemanden überall heraus - er schickt einen Beweis, du bestätigst aus der Ferne.",
+    "tagline": "Schick eine Challenge in eine andere Stadt. Krieg ein Video zurück.",
+    "sub": "Wenn in deiner Stadt nichts los ist, ist in der Welt trotzdem was los. Fordere irgendwen irgendwo heraus - die Person schickt einen Beweis, du bestätigst aus der Ferne.",
     "bullets": [
-      "Ziele auf eine konkrete Stadt oder lass es offen für alle, überall.",
-      "Foto mit Geotag - Beweis, dass es passiert ist.",
-      "Du bestätigst vom Sofa. Lehne mit Begründung ab, wenn was nicht stimmt."
+      "Nimm eine bestimmte Stadt ins Visier oder lass es offen für alle, überall.",
+      "Die Person schickt ein Foto mit Geotag - der Beweis, dass es passiert ist.",
+      "Du bestätigst vom Sofa aus. Passt was nicht, lehnst du mit Begründung ab."
     ],
     "cta": "Globale Challenge ausprobieren"
   },
   "stories": {
     "tagline": "Lokal spielen. Global vergleichen.",
-    "concept_tagline": "Fordere die Locals heraus. Triff Reisende. Werde local, überall.",
-    "screen1_invitation": "Du bist dran. Starte eine Challenge oder mach mit.",
+    "concept_tagline": "Fordere Locals heraus. Triff Reisende. Werde überall local.",
+    "screen1_invitation": "<hi>Du bist dran.</hi> Starte eine Challenge oder mach mit.",
     "fullSong": "Ganzer Song",
-    "screen2_invitation": "Sie sind schon dabei. Komm dazu.",
-    "screen3_invitation": "Einfach, oder? Du bist dran.",
-    "screen4_invitation": "Kein Feed. Nur echte Treffen.",
+    "screen2_invitation": "Sie sind schon dabei. <hi>Komm dazu.</hi>",
+    "screen3_invitation": "Einfach, oder? <hi>Jetzt du.</hi>",
+    "screen4_invitation": "Kein Feed. Nur <hi>echte Treffen.</hi>",
     "enterCity": "Komm nach {{city}}",
     "enterChallenge": "Nimm die Challenge an",
     "enterPicker": "Wähl deine Stadt",
     "swipeUp": "Nach oben wischen",
-    "liveHeadline": "{{city}} ist gerade jetzt live.",
+    "liveHeadline": "{{city}} ist gerade live.",
     "how": {
-      "title": "Triff Leute in echt — in 3 Schritten.",
-      "step1": "Wähl deine Seite — Local oder Reisender",
+      "title": "Triff Leute in echt, in 3 Schritten.",
+      "step1": "Wähl deine Seite - Local oder Reisender",
       "step2": "Starte eine Challenge oder mach mit",
       "step3": "Trefft euch in echt"
     },
@@ -132,7 +132,7 @@
       "line3": "Keine Algorithmen.",
       "line4": "Ein Grund, sich in echt zu treffen."
     },
-    "storePrompt": "Lieber die App? Push-Benachrichtigungen und das volle Erlebnis.",
+    "storePrompt": "Lieber die App? Mit Push-Benachrichtigungen und allem Drum und Dran.",
     "reassurance": "gratis · ohne Konto · 5 Sekunden"
   }
 }

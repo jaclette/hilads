@@ -10,11 +10,11 @@
     "recent": "Kürzlich",
     "last7": "Letzte 7 Tage",
     "last14": "Letzte 14 Tage",
-    "custom": "Benutzerdefiniert"
+    "custom": "Eigener Zeitraum"
   },
   "picker": {
-    "pickEnd": "Wähle jetzt den Endtag",
-    "pickStart": "Wähle einen Starttag (bis zu {{max}} Tage)",
+    "pickEnd": "Wähle jetzt den letzten Tag",
+    "pickStart": "Wähle einen Starttag (max. {{max}} Tage)",
     "apply": "Anwenden"
   },
   "public": "Öffentlich",
@@ -27,8 +27,8 @@
   "error": "Das Archiv konnte nicht geladen werden",
   "retry": "Erneut versuchen",
   "emptyTitle": "Hier ist noch nichts",
-  "emptyRecentSub": "Vergangene Events und Treffen erscheinen hier, sobald die Stadt etwas Verlauf hat.",
-  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuch einen größeren Bereich.",
+  "emptyRecentSub": "Vergangene Events und Treffen erscheinen hier, sobald in der Stadt etwas los war.",
+  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuch einen größeren Zeitraum.",
   "loadMore": "Mehr laden",
   "loading": "Wird geladen…"
 }

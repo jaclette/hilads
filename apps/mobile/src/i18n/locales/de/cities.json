@@ -1,5 +1,6 @@
 {
   "title": "Stadt wechseln",
+  "firstTimeTitle": "Wähl deine Stadt zum Starten",
   "searchPlaceholder": "Eine Stadt suchen…",
   "topCities": "Aktivste Städte gerade jetzt",
   "cities": "Städte",
@@ -23,7 +24,6 @@
   "loadError": "Städte konnten nicht geladen werden",
   "noResults": "Keine Stadt gefunden für „{{query}}“",
   "noCities": "Keine Städte gefunden",
-  "firstTimeTitle": "Wähl deine Stadt zum Starten",
   "playsIn": "Spielt in {{city}}",
   "hereTitle": "Wo bist du?",
   "useMyLocation": "Meinen Standort verwenden",

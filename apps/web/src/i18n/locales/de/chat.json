@@ -7,24 +7,24 @@
   "actionEdit": "Bearbeiten",
   "actionDelete": "Löschen",
   "deleteConfirmBody": "Diese Nachricht löschen? Sie wird für alle entfernt.",
-  "editFailed": "Bearbeitung konnte nicht gespeichert werden. Versuch's nochmal.",
+  "editFailed": "Änderung konnte nicht gespeichert werden. Versuch's nochmal.",
   "deleteFailed": "Nachricht konnte nicht gelöscht werden. Versuch's nochmal.",
   "actionDownload": "Speichern",
   "actionShare": "Teilen",
   "downloadSuccess": "In Fotos gespeichert",
   "downloadFailed": "Foto konnte nicht gespeichert werden",
   "shareFailed": "Foto konnte nicht geteilt werden",
-  "shareUnavailable": "Teilen ist hier nicht verfügbar",
+  "shareUnavailable": "Teilen geht hier nicht",
   "shareDialogTitle": "Foto teilen",
   "linkCopied": "Link kopiert",
-  "photoSavePermTitle": "Foto-Zugriff erforderlich",
-  "photoSavePermBody": "Erlaube den Foto-Zugriff, um Bilder zu speichern.",
-  "photoSavePermSettings": "Erlaube den Foto-Zugriff in den Einstellungen, um Bilder zu speichern.",
+  "photoSavePermTitle": "Fotozugriff nötig",
+  "photoSavePermBody": "Erlaube den Fotozugriff, um Bilder zu speichern.",
+  "photoSavePermSettings": "Erlaube den Fotozugriff in den Einstellungen, um Bilder zu speichern.",
   "actionTranslate": "Übersetzen",
   "tabTitle": "Hi",
   "people": {
     "hiNow": "Hi now",
-    "hiNowA11y_one": "{{count}} Leute haben gerade Lust auf was",
+    "hiNowA11y_one": "{{count}} Person hat gerade Lust auf was",
     "hiNowA11y_other": "{{count}} Leute haben gerade Lust auf was",
     "going_one": "{{count}} geht hin",
     "going_other": "{{count}} gehen hin",
@@ -38,19 +38,19 @@
     "hi": "👋 Hallo {{city}}!",
     "tonight": "Wer ist heute Abend unterwegs?",
     "theme": {
-      "hidden_gem": "Ein Geheimtipp in der Nähe?",
-      "taste": "Das beste Streetfood in der Nähe?",
+      "hidden_gem": "Kennt wer einen Geheimtipp in der Nähe?",
+      "taste": "Wo gibt's hier das beste Street Food?",
       "get_around": "Wie kommt man hier am besten rum?",
-      "local_find": "Der beste Markt in der Nähe?",
-      "night_out": "Wo ist heute Abend Party?",
-      "sip": "Der beste Ort für einen Drink?",
+      "local_find": "Wo ist hier der beste Markt?",
+      "night_out": "Wo steigt heute Abend die Party?",
+      "sip": "Wo trinkt man hier am besten was?",
       "only_here": "Was gibt's nur hier?"
     },
     "halloween": {
       "boo": "👻 Buh!",
       "happy": "🎃 Happy Halloween, {{city}}!",
       "happyNoCity": "🎃 Happy Halloween!",
-      "tonight": "Wer geht heute Abend zu Halloween aus?"
+      "tonight": "Wer geht heute Abend an Halloween raus?"
     }
   }
 }

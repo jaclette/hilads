@@ -6,7 +6,7 @@
   "modes": {
     "local": "Local",
     "localDesc": "Du kennst diese Stadt",
-    "exploring": "Exploring",
+    "exploring": "Auf Erkundung",
     "exploringDesc": "Du entdeckst sie gerade"
   },
   "tabs": {
@@ -41,39 +41,39 @@
     "beach": "Strand",
     "wellness": "Wellness",
     "travel": "Reisen",
-    "hangout": "Treffen",
+    "hangout": "Abhängen",
     "socializing": "Leute treffen",
     "gaming": "Gaming",
-    "tech": "Technik",
+    "tech": "Tech",
     "dating": "Dating"
   },
   "fields": {
-    "username": "Benutzername",
-    "usernamePlaceholder": "Benutzername",
+    "username": "Nutzername",
+    "usernamePlaceholder": "nutzername",
     "checking": "Wird geprüft…",
     "available": "@{{username}} ist verfügbar",
     "aboutMe": "Über mich",
     "charsLeft": "- {{count}} übrig",
-    "aboutPlaceholder": "Liebe Streetfood und spontane Gespräche",
+    "aboutPlaceholder": "Ich liebe Streetfood und spontane Gespräche",
     "email": "E-Mail",
-    "readOnly": "- nur lesbar",
+    "readOnly": "- nicht änderbar",
     "homeCity": "Heimatstadt",
     "homeCityPlaceholder": "Wo du wohnst",
     "age": "Alter",
     "agePlaceholder": "Dein Alter",
-    "myVibe": "Mein vibe",
+    "myVibe": "Mein Vibe",
     "interests": "Interessen",
-    "interestsHint": "- wähle bis zu 5"
+    "interestsHint": "- bis zu 5 wählen"
   },
   "ambassador": {
-    "title": "Tipps für die Stadt",
-    "subtitle": "Wird auf deinem Profil als Local Legend angezeigt.",
+    "title": "Stadt-Tipps",
+    "subtitle": "Erscheint auf deinem Profil als Local Legend.",
     "restaurant": "Lieblingsrestaurant",
-    "restaurantPlaceholder": "Ein Ort, zu dem du immer alle mitnimmst",
+    "restaurantPlaceholder": "Ein Ort, an den du alle immer mitnimmst",
     "spot": "Geheimtipp / Spot",
     "spotPlaceholder": "Ein Ort, den die meisten Touristen verpassen",
-    "tip": "Lokaler Tipp",
-    "tipPlaceholder": "Dein bester Rat für Neuankömmlinge",
+    "tip": "Local-Tipp",
+    "tipPlaceholder": "Dein bester Tipp für Neue in der Stadt",
     "story": "Stadtgeschichte",
     "storyPlaceholder": "Etwas, das du an dieser Stadt liebst"
   },
@@ -83,9 +83,9 @@
   },
   "events": {
     "going": "Dabei",
-    "goingEmpty": "Noch keine Pläne - finde etwas 🔥",
-    "hosting": "Hoste",
-    "hostingEmpty": "Noch nichts gehostet - starte etwas ✨",
+    "goingEmpty": "Noch keine Pläne - finde was 🔥",
+    "hosting": "Du hostest",
+    "hostingEmpty": "Noch nichts gehostet - starte was ✨",
     "live": "Live",
     "recurring": "↻ Wiederkehrend",
     "upcoming": "Demnächst",
@@ -93,15 +93,15 @@
   },
   "friends": {
     "requests": "Freundschaftsanfragen",
-    "empty": "Noch keine Freunde. Füge welche über Profile hinzu.",
+    "empty": "Noch keine Freunde. Füg welche über ihre Profile hinzu.",
     "mine": "Meine Freunde"
   },
   "vibesTab": {
     "received": "Erhaltene Vibes",
-    "score": "{{score}} vibe-Score",
-    "basedOn_one": "basierend auf {{count}} vibe",
-    "basedOn_other": "basierend auf {{count}} vibes",
-    "empty": "Noch keine Vibes",
+    "score": "{{score}} Vibe-Score",
+    "basedOn_one": "basierend auf {{count}} Vibe",
+    "basedOn_other": "basierend auf {{count}} Vibes",
+    "empty": "Noch keine vibes",
     "emptyHint": "Dein Score erscheint hier, sobald dir jemand eine Notiz hinterlässt ✨"
   },
   "save": {
@@ -121,12 +121,12 @@
     "cancel": "Abbrechen"
   },
   "errors": {
-    "photoUpload": "Foto-Upload fehlgeschlagen. Versuch es erneut.",
-    "usernameTooShort": "Der Benutzername muss mindestens 3 Zeichen lang sein",
-    "usernameTaken": "Dieser Benutzername ist bereits vergeben",
-    "usernameInvalid": "Ungültiger Benutzername",
-    "saveFailed": "Speichern fehlgeschlagen. Versuch es erneut.",
-    "generic": "Etwas ist schiefgelaufen. Versuch es erneut."
+    "photoUpload": "Foto-Upload hat nicht geklappt. Versuch's nochmal.",
+    "usernameTooShort": "Der Nutzername braucht mindestens 3 Zeichen",
+    "usernameTaken": "Der Nutzername ist schon vergeben",
+    "usernameInvalid": "Ungültiger Nutzername",
+    "saveFailed": "Speichern hat nicht geklappt. Versuch's nochmal.",
+    "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
   },
   "challenges": {
     "empty": "Noch keine Challenges - starte eine 🔥",
@@ -137,14 +137,14 @@
   "themeDark": "Dunkel",
   "pp": {
     "passport": {
-      "title": "Pass",
+      "title": "Reisepass",
       "weekRank": "Nr. {{rank}} diese Woche",
       "weekNone": "Diese Woche noch kein Rang",
       "mostLocalIn": "Most Local in {{city}}",
       "mostLocalWorld": "Most Local weltweit",
-      "hintToday": "Mach die Challenge von heute für deinen {{theme}}-Stempel.",
+      "hintToday": "Spiel die Challenge von heute für deinen {{theme}}-Stempel.",
       "hintTomorrow": "Morgen: {{theme}}",
-      "hintPass": "Local Pass erhalten. Alle Themen hier erledigt.",
+      "hintPass": "Local Pass geholt. Alle Themen hier geschafft.",
       "localPass": "Local Pass",
       "mySpots": "Meine Spots",
       "myProposals": "Meine Vorschläge",
@@ -154,13 +154,13 @@
       "howPoints": "So funktionieren Punkte",
       "gotIt": "Verstanden",
       "close": "Schließen",
-      "noSpots": "Noch keine Spots. Deine Fotos an Orten landen hier.",
+      "noSpots": "Noch keine Spots. Markier bei deinem Foto einen Ort, dann taucht er hier auf.",
       "pageA11y_one": "{{city}}: {{count}} Stempel",
       "pageA11y_other": "{{city}}: {{count}} Stempel",
-      "guestTitle": "Starte deinen Pass",
-      "guestBody": "Registriere dich, sammle in jeder Stadt einen Stempel pro Thema und hol dir den Local Pass.",
+      "guestTitle": "Starte deinen Reisepass",
+      "guestBody": "Registrier dich, sammle in jeder Stadt einen Stempel pro Thema und hol dir den Local Pass.",
       "signUp": "Registrieren",
-      "signIn": "Ich habe ein Konto",
+      "signIn": "Ich hab schon ein Konto",
       "best_one": "Rekord: {{count}} Tag",
       "best_other": "Rekord: {{count}} Tage",
       "stamps_one": "{{count}} von 7 Stempeln",
@@ -169,8 +169,8 @@
       "inReview_other": "{{count}} in Prüfung",
       "specialTitle": "Sonderstempel",
       "specialSub": "Limitierte Edition, einer pro Sondertag. Zählt nicht für den Local Pass.",
-      "compared_one": "Mit {{count}} Land verglichen",
-      "compared_other": "Mit {{count}} Ländern verglichen",
+      "compared_one": "Verglichen mit {{count}} Land",
+      "compared_other": "Verglichen mit {{count}} Ländern",
       "stampsOf_one": "{{count}} von {{total}} Stempeln",
       "stampsOf_other": "{{count}} von {{total}} Stempeln",
       "passEarned": "Erhalten in {{city}}",
@@ -180,13 +180,13 @@
       "comparedCities_other": "Verglichen mit {{count}} Städten",
       "myPhotos": "Meine Fotos",
       "noPhotos": "Deine Daily-Challenge-Fotos erscheinen hier.",
-      "share": "Meinen Pass teilen",
+      "share": "Meinen Reisepass teilen",
       "localSince": "Local in {{city}} seit {{date}}"
     },
     "points": {
       "title": "So sammelst du Punkte",
       "intro": "Daily-Challenge-Punkte zählen für das wöchentliche Most Local. Alle Punkte zählen für die Bestenliste aller Zeiten.",
-      "proof": "Dein Foto posten",
+      "proof": "Foto posten",
       "vote": "Abstimmen (pro Challenge)",
       "top": "Welt-Top-3 des Tages",
       "weekly": "Das wöchentliche Most Local startet jeden Montag neu."
@@ -194,7 +194,7 @@
     "tabFriends": "Freunde",
     "friendRequests": "Freundschaftsanfragen",
     "myFriends": "MEINE FREUNDE",
-    "noFriends": "Noch keine Freunde. Füge welche über Profile hinzu.",
+    "noFriends": "Noch keine Freunde. Füg welche über ihre Profile hinzu.",
     "vibesReceived": "ERHALTENE VIBES",
     "vibeScore": "{{score}} Vibe-Score",
     "noVibes": "Noch keine Vibes.",
@@ -208,7 +208,7 @@
         "desc": "Du kennst diese Stadt"
       },
       "exploring": {
-        "label": "Entdecken",
+        "label": "Auf Erkundung",
         "desc": "Du entdeckst sie gerade"
       }
     },
@@ -225,14 +225,14 @@
     "title": "Freundschaftsanfragen",
     "incoming": "Erhalten",
     "sent": "Gesendet",
-    "wantsToBeFriend": "möchte dein Freund sein",
+    "wantsToBeFriend": "will mit dir befreundet sein",
     "requestSent": "Anfrage gesendet",
     "decline": "Ablehnen",
     "accept": "Annehmen",
     "cancel": "Abbrechen",
     "emptyIncomingTitle": "Noch keine Freundschaftsanfragen",
     "emptySentTitle": "Du hast noch keine gesendet",
-    "emptyIncomingSub": "Wenn dich jemand als Freund anfragt, siehst du es hier.",
-    "emptySentSub": "Ausstehende Freundschaftsanfragen, die du gesendet hast, erscheinen hier."
+    "emptyIncomingSub": "Wenn dir jemand eine Freundschaftsanfrage schickt, siehst du sie hier.",
+    "emptySentSub": "Deine offenen Freundschaftsanfragen erscheinen hier."
   }
 }

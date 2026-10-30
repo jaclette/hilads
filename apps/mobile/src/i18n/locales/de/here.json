@@ -1,17 +1,17 @@
 {
-  "title": "Leute um dich herum",
+  "title": "Leute hier",
   "noCityTitle": "Keine Stadt ausgewählt",
   "noCitySub": "Wähle eine Stadt, um zu sehen, wer in der Nähe ist.",
-  "browseCities": "Städte durchsuchen",
+  "browseCities": "Städte entdecken",
   "filterBadge": "Abzeichen",
   "filterVibe": "Vibe",
   "filterMode": "Modus",
   "you": "(du)",
   "hereNow": "Jetzt hier",
-  "noMatchLive": "Im Moment passt niemand zu diesen Filtern.",
+  "noMatchLive": "Gerade passt niemand zu diesen Filtern.",
   "legends": "Hilads-Legenden",
   "legendsSub": "Sie bringen die Stadt zum Leben",
-  "cityCrew": "City-Crew",
+  "cityCrew": "Stadt-Crew",
   "noMatchCrew": "Kein Mitglied passt zu diesen Filtern.",
   "loadMore": "Mehr laden"
 }

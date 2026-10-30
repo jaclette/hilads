@@ -1,5 +1,5 @@
 {
-  "title": "Was kommt",
+  "title": "Demnächst",
   "openCalendar": "Kalender öffnen",
   "today": "Heute",
   "close": "Schließen",
@@ -8,7 +8,7 @@
   "emptyTitle": "Nichts geplant",
   "emptySub": "An diesem Tag gibt es noch keine Events.",
   "public": "Öffentlich",
-  "going_one": "{{count}} dabei",
-  "going_other": "{{count}} dabei",
+  "going_one": "{{count}} geht hin",
+  "going_other": "{{count}} gehen hin",
   "liveNow": "Jetzt live"
 }

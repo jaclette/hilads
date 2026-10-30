@@ -1,4 +1,5 @@
 {
+  "tabChallenges": "Challenges",
   "tabHangouts": "Hi now",
   "tabEvents": "Hi plan",
   "title": "Profil",
@@ -7,17 +8,17 @@
   "microcopy": {
     "ghost": "Nur am Stöbern",
     "fresh": "Gerade gelandet",
-    "regular": "Kommt oft vorbei",
+    "regular": "Ist oft hier",
     "local": "Kennt die Stadt",
-    "host": "Bringt es ins Rollen"
+    "host": "Bringt die Dinge ins Rollen"
   },
   "vibeCaption": {
     "party": "Immer für eine Party zu haben",
     "board_games": "Spieleabend, jeden Abend",
-    "coffee": "Die besten Gespräche bei einem Kaffee",
+    "coffee": "Die besten Gespräche gibt's beim Kaffee",
     "music": "Das Leben ist eine Playlist",
     "food": "Erst essen, dann reden",
-    "chill": "Nur entspannte Vibes"
+    "chill": "Nur entspannte vibes"
   },
   "localIn": "Local in {{city}}",
   "exploringIn": "Erkundet {{city}}",
@@ -25,7 +26,8 @@
   "from": "Aus",
   "age": "Alter",
   "tabFriends": "Freunde",
-  "tabPicks": "Empfehlungen",
+  "tabPicks": "Stadt-Tipps",
+  "noChallenges": "Noch keine Challenges",
   "noHangouts": "Noch keine Treffen",
   "noEvents": "Noch keine Events",
   "noFriends": "Noch keine Freunde",
@@ -33,13 +35,13 @@
   "vibeScore": "{{score}} Vibe-Score",
   "vibeBasis_one": "basierend auf {{count}} Vibe",
   "vibeBasis_other": "basierend auf {{count}} Vibes",
-  "updateNote": "Bearbeite deine Notiz ({{rating}}★)",
-  "leaveNote": "Hinterlasse eine Notiz",
+  "updateNote": "Notiz bearbeiten ({{rating}}★)",
+  "leaveNote": "Notiz hinterlassen",
   "vibePlaceholder": "Sag etwas Nettes… (optional)",
   "sendNote": "Notiz senden",
   "sending": "Wird gesendet…",
   "noNotesTitle": "Noch keine Notizen",
-  "noNotesSub": "Sei der Erste, der eine Notiz hinterlässt",
+  "noNotesSub": "Hinterlass die erste Notiz",
   "picks": {
     "restaurant": "Lieblingsrestaurant",
     "spot": "Geheimtipp",
@@ -47,9 +49,9 @@
     "story": "Story"
   },
   "message": "Nachricht",
-  "friend": "Freund",
+  "friend": "Befreundet",
   "requestSent": "Anfrage gesendet",
-  "acceptRequest": "Annehmen",
+  "acceptRequest": "Anfrage annehmen",
   "addFriend": "Hinzufügen",
   "moreOptions": "Weitere Optionen",
   "unfriendTitle": "Freund entfernen",
@@ -59,15 +61,13 @@
   "cancelReqBody": "Deine Freundschaftsanfrage an {{name}} zurückziehen?",
   "keep": "Behalten",
   "cancelReqConfirm": "Anfrage zurückziehen",
-  "alreadyReported": "Bereits gemeldet",
+  "alreadyReported": "Schon gemeldet",
   "reportUser": "Nutzer melden",
-  "alreadyReportedBody": "Du hast diesen Nutzer am {{date}} gemeldet. Deine Meldung wird geprüft.",
+  "alreadyReportedBody": "Du hast diese Person am {{date}} gemeldet. Wir prüfen deine Meldung.",
   "blockUser": "Nutzer blockieren",
   "blocking": "Wird blockiert…",
   "ghostName": "Ghost",
   "visiting": "Zu Besuch in {{city}}",
-  "ghostNote": "Schwebt hier als Ghost umher",
-  "tabChallenges": "Challenges",
-  "noChallenges": "Noch keine Challenges",
+  "ghostNote": "Schwebt hier als Ghost herum",
   "tabVibes": "Vibes"
 }

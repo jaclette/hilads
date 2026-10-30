@@ -12,24 +12,25 @@
   },
   "meta": {
     "cityTitle": "{{city}} auf Hilads - Lokal spielen. Global vergleichen.",
-    "cityDesc": "Eine Challenge pro Tag, in jeder Stadt dieselbe. Spiel in {{city}}, mach ein Foto und sieh, wie die Welt geantwortet hat.",
-    "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Komm zu {{title}} auf Hilads - ein Local Event, das gerade läuft. Sieh wer kommt und chatte live."
+    "cityDesc": "Eine Challenge pro Tag, in jeder Stadt dieselbe. Spiel für {{city}}, mach ein Foto und schau, was die Welt gepostet hat.",
+    "eventTitle": "Lokales Event: {{title}} | Hilads",
+    "eventDesc": "Komm zu {{title}} auf Hilads - ein lokales Event, das gerade läuft. Schau, wer kommt, und chatte live mit Leuten online."
   },
   "nowTitle": "Jetzt",
   "filterEvents": "🎉 Lokale Events",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Treffen",
-  "publicEventsSection": "🎫 Öffentliche Events",
+  "publicEventsSection": "🎫 Öffentliche lokale Events",
   "accountWelcome": {
     "title": "Glückwunsch, {{username}}!",
-    "subtitle": "Dein Konto ist bereit - das kannst du jetzt machen",
+    "subtitle": "Dein Konto steht. Das kannst du jetzt machen",
     "f1": "Starte ein Treffen und bring sofort Leute zusammen",
     "f2": "Organisiere ein Event in deiner Stadt",
-    "f3": "Schreib jedem eine private Nachricht",
+    "f3": "Schreib allen eine private Nachricht",
     "f4": "Sieh live, wer in der Nähe ist",
-    "f5": "Vernetze dich mit Locals und Reisenden",
+    "f5": "Lerne Locals und Reisende kennen",
     "fc1": "Fordere die Locals in deiner Stadt heraus",
-    "fc2": "Fordere eine andere Stadt weltweit heraus",
+    "fc2": "Fordere eine andere Stadt irgendwo auf der Welt heraus",
     "cta": "Los geht's"
   },
   "onboarding": {
@@ -38,22 +39,22 @@
     "fallbackCity": "deine Stadt",
     "slide1": {
       "title": "Lokal spielen. Global vergleichen.",
-      "body": "Hilads ist die App, die Reisende zu Locals macht - und Locals hilft zu teilen, was ihre Stadt lebendig macht."
+      "body": "Hilads ist die App, die Reisende zu Locals macht - und Locals zeigen lässt, was ihre Stadt lebendig macht."
     },
     "slide2": {
       "title": "Drei Wege, die Stadt zu erleben",
-      "itemChallenges": "🤝 Challenges - fordere oder werde gefordert, versteckte Spots zu entdecken, echtes Essen zu probieren, Kultur zu teilen oder zu helfen.",
-      "itemHangouts": "🗣️ Hi now - triff jemanden spontan",
-      "itemEvents": "🎉 Hi plan - plane einen Moment zum Treffen"
+      "itemChallenges": "🤝 Challenges - fordere andere heraus oder lass dich herausfordern: versteckte Spots entdecken, echtes Essen probieren, Kultur teilen oder helfen.",
+      "itemHangouts": "🗣️ Hi now - triff spontan jemanden",
+      "itemEvents": "🎉 Hi plan - verabrede dich für später"
     },
     "slide3": {
       "title": "Verdien dir deinen Platz in der Stadt",
-      "body": "Jede Challenge, die du schaffst, jedes Treffen, jeder Spot, den du entdeckst, bringt dir Punkte. Punkte zeigen, wie local du in {{city}} geworden bist. Klettere an die Spitze von Most Local und verdien dir deinen Platz unter denen, die die Stadt lebendig machen."
+      "body": "Jede Challenge, die du schaffst, jedes Treffen, jeder Spot, den du entdeckst, bringt dir Punkte. Sie zeigen, wie local du in {{city}} geworden bist. Schaff es an die Spitze von Most Local und hol dir deinen Platz unter denen, die die Stadt lebendig machen."
     },
     "slide4": {
-      "title": "Bereit anzufangen?",
-      "ctaChallenge": "📍 Starte deine erste Challenge in {{city}}",
-      "ctaMostLocal": "🤝 Entdecke Most Local von {{city}}",
+      "title": "Bereit loszulegen?",
+      "ctaChallenge": "📍 Nimm deine erste Challenge in {{city}} an",
+      "ctaMostLocal": "🤝 Entdecke Most Local in {{city}}",
       "ctaLookAround": "👀 Erst mal umschauen",
       "ctaHiNow": "🗣️ Hi now",
       "ctaHiLater": "🎉 Hi plan"
@@ -63,56 +64,56 @@
     "title": "So funktionieren Challenges",
     "slide1": {
       "title": "Challenges machen aus Reisen Geschichten",
-      "body": "Locals und Reisende fordern sich gegenseitig heraus, um die Stadt echt zu erleben - Essen, Orte, Kultur, Hilfe. Die Belohnung? Persönlich treffen - oder Beweis aus der Ferne schicken."
+      "body": "Locals und Reisende fordern sich gegenseitig heraus, zu zeigen, was eine Stadt wirklich ausmacht - Essen, Orte, Kultur, Hilfe. Die Belohnung? Ein echtes Treffen - oder ein Beweisfoto aus der Ferne."
     },
     "slide2": {
       "title": "Starte deine Challenge",
-      "body": "Essen, Ort, Kultur oder Hilfe. Wähle für wen, wie viele Plätze und wie ihr abschließt - persönlich oder per Foto."
+      "body": "Essen, Ort, Kultur oder Hilfe. Wähl, für wen sie ist, wie viele Plätze es gibt und wie ihr sie abschließt - Treffen oder Fotobeweis."
     },
     "slide3": {
       "title": "Jemand nimmt sie an",
-      "body": "Sie schicken eine Anfrage. Du prüfst und nimmst sie an - euer privater Thread öffnet sich zum Chatten und Planen."
+      "body": "Die Person schickt dir eine Anfrage. Du schaust sie dir an und nimmst an - euer privater Chat öffnet sich, damit ihr quatschen und planen könnt."
     },
     "slide4": {
-      "title": "Treffen oder Foto-Beweis",
-      "body": "Trefft euch persönlich oder schickt ein Foto aus der Ferne - du entscheidest. So oder so, jeder Schritt wird festgehalten."
+      "title": "Treffen oder Foto schicken",
+      "body": "Trefft euch persönlich oder schickt ein Foto aus der Ferne - wie ihr wollt. So oder so wird jeder Schritt festgehalten."
     },
     "slide5": {
-      "title": "Schließ es ab",
-      "body": "Nach dem Treffen (oder sobald das Foto da ist), als erledigt markieren. Deine Stadt, echt gelebt - eine Challenge nach der anderen."
+      "title": "Abschließen",
+      "body": "Nach dem Treffen (oder sobald das Foto da ist) als erledigt markieren. Deine Stadt, echt erlebt - Challenge für Challenge."
     },
     "next": "Weiter",
-    "done": "Verstanden!",
+    "done": "Alles klar!",
     "skip": "Überspringen ✕",
     "slide6": {
       "title": "Über deine Stadt hinaus",
-      "body": "Fordere jeden überall heraus. Die Person schickt Beweis - ein geotaggtes Foto - und du validierst aus der Ferne. Derselbe Foto-Flow geht auch lokal. Local oder global, jede Challenge zählt."
+      "body": "Fordere irgendwen irgendwo heraus. Die Person schickt einen Beweis - ein Foto mit Geotag - und du bestätigst aus der Ferne. Lokal klappt das genauso. Lokal oder global, jede Challenge zählt."
     },
     "slide7": {
       "title": "Werde Most Local",
-      "body": "Jede Challenge bringt dir Punkte - in deiner Stadt UND weltweit. Trefft euch persönlich für +50 Bonus obendrauf. Local oder Reisender, es zählt was du hier baust. Jeden Monat ein neues Ranking."
+      "body": "Jede Challenge bringt dir Punkte - in deiner Stadt UND weltweit. Trefft euch persönlich und holt euch +50 Bonus obendrauf. Ob Local oder Reisende: Es zählt, was du hier aufbaust. Jeden Monat neue Bestenlisten."
     },
     "createCta": "🔥 Challenge erstellen"
   },
   "share": {
-    "title": "Teile etwas",
+    "title": "Teile was",
     "snap": "Mach ein Foto",
-    "snapDesc": "Für die heutige Challenge oder einfach zum Spaß",
-    "spot": "Teile deinen Ort",
-    "spotDesc": "Teile deinen aktuellen Standort",
-    "spotLoading": "Dein Standort wird ermittelt…",
+    "snapDesc": "Für die Challenge von heute oder einfach so",
+    "spot": "Teile deinen Spot",
+    "spotDesc": "Teile, wo du gerade bist",
+    "spotLoading": "Standort wird ermittelt…",
     "plan": "Plan erstellen",
     "planDesc": "Wähle Zeit und Ort, andere kommen dazu",
     "hiNow": "Hi now",
-    "hiNowDesc": "Jetzt Lust auf was? Sag es"
+    "hiNowDesc": "Gerade Lust auf was? Sag's"
   },
   "locationPicker": {
     "title": "Wo bist du?",
     "search": "Adresse oder Ort suchen",
-    "moveHint": "Bewege die Karte zum Anpassen",
+    "moveHint": "Verschieb die Karte zum Anpassen",
     "noResults": "Keine Orte gefunden",
     "loading": "Standort wird ermittelt…",
-    "confirm": "Diesen Ort teilen",
+    "confirm": "Diesen Spot teilen",
     "yourLocation": "Dein Standort",
     "close": "Schließen",
     "clearSearch": "Suche löschen"
@@ -125,7 +126,7 @@
       "label": "Local"
     },
     "exploring": {
-      "label": "Entdecken"
+      "label": "Auf Erkundung"
     }
   },
   "composer": {
@@ -133,9 +134,9 @@
     "emoji": "Emoji",
     "placeholderCity": "Sag hallo zu deiner Stadt",
     "placeholderHangout": "Sag Bescheid, dass du dabei bist",
-    "placeholderEvent": "Chatte mit den Teilnehmern",
-    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp",
-    "placeholderWorld": "Frag die Welt, wie sie es macht"
+    "placeholderEvent": "Chatte mit den Leuten, die kommen",
+    "placeholderChallenge": "Feuer sie an oder teile deinen Tipp",
+    "placeholderWorld": "Frag die Welt, wie man's woanders macht"
   },
   "vibe": {
     "party": "Party",
@@ -149,18 +150,18 @@
     "clear": "klarer Himmel",
     "sunnyHot": "herrliches Wetter",
     "clearNight": "klare Nacht",
-    "mostlyClear": "überwiegend klar",
+    "mostlyClear": "meist klar",
     "partly": "ein paar Wolken",
     "overcast": "grauer Himmel",
     "fog": "neblig",
-    "drizzle": "leichter Nieselregen",
+    "drizzle": "Nieselregen",
     "rain": "Regen",
     "snow": "Schnee",
     "snowShowers": "Schneeschauer",
     "thunder": "Gewitter"
   },
   "time": {
-    "happeningNow": "jetzt los",
+    "happeningNow": "läuft gerade",
     "inMin": "in {{count}} Min.",
     "today": "Heute",
     "tomorrow": "Morgen",
@@ -180,10 +181,9 @@
   },
   "filterChallenges": "🔥 Challenges",
   "shareToCity": "In meiner Stadt teilen",
-  "shareToWorld": "In der Welt teilen",
-  "hiLocalTitle": "Hi Local",
+  "shareToWorld": "Mit der Welt teilen",
   "shareCta": {
-    "leaderboard": "Rangliste ansehen",
+    "leaderboard": "Bestenliste ansehen",
     "challenge": "Challenge ansehen",
     "event": "Hi plan ansehen",
     "topic": "Hi now ansehen"
@@ -192,7 +192,7 @@
     "today": "Heute",
     "map": "Karte",
     "chat": "Hi",
-    "passport": "Pass"
+    "passport": "Reisepass"
   },
   "scope": {
     "title": "Anzeigen",
@@ -211,7 +211,7 @@
   "firstLaunch": "Lokal spielen. Global vergleichen.",
   "subtitles": {
     "map": "Spots aus den Fotos der Welt.",
-    "hi": "Sag Hallo zu deiner Stadt. Mach bei einem Plan mit.",
+    "hi": "Sag hallo zu deiner Stadt. Mach bei einem Plan mit.",
     "passport": "Deine Städte, deine Fotos, deine Stempel."
   },
   "photoBy": "Foto von @{{username}}",
@@ -223,33 +223,33 @@
   },
   "shareLink": {
     "share": "Teilen",
-    "challengeFriend": "Fordere einen Freund heraus",
+    "challengeFriend": "Fordere Freunde heraus",
     "copied": "Kopiert",
-    "textToday": "Die heutige Daily Challenge auf Hilads: {{challenge}} Bist du dabei?",
+    "textToday": "Heute in der Daily Challenge auf Hilads: {{challenge}} Bist du dabei?",
     "textSpot": "{{name}} auf Hilads",
     "textSpotCity": "{{name}}, {{city}}, auf Hilads",
-    "textPassport": "Mein Hilads-Pass in {{city}}. Gleiche Challenge. Andere Welten.",
-    "textPassportNoCity": "Mein Hilads-Pass. Gleiche Challenge. Andere Welten."
+    "textPassport": "Mein Hilads-Reisepass in {{city}}. Dieselbe Challenge. Andere Welten.",
+    "textPassportNoCity": "Mein Hilads-Reisepass. Dieselbe Challenge. Andere Welten."
   },
   "represent": {
-    "empty": "{{city}} hat heute noch nicht gespielt. Sei die erste Person.",
-    "beFirst": "Spiel als Erste:r für {{city}}",
+    "empty": "{{city}} hat heute noch nicht gespielt. Mach den Anfang.",
+    "beFirst": "Mach den Anfang für {{city}}",
     "emptyThere": "{{city}} hat heute noch nicht gespielt.",
     "notIn": "Nicht in {{city}}?",
     "change": "Ändern",
-    "locationNeeded": "Erlaube den Standort, um für deinen Ort zu spielen.",
+    "locationNeeded": "Erlaube den Standort, um für die Stadt zu spielen, in der du gerade bist.",
     "button": "Spiel für {{city}}",
     "firstPosted": "Du hast {{city}} heute auf die Weltkarte gebracht.",
-    "pioneer": "Pionier von {{city}}",
+    "pioneer": "Pioneer von {{city}}",
     "spotOne": "Spot Nr. 1 in {{city}}",
     "streak_one": "{{city}} hat {{count}} Tag in Folge gespielt",
     "streak_other": "{{city}} hat {{count}} Tage in Folge gespielt",
-    "board_one": "{{count}} Stadt ist heute auf der Tafel. {{city}} noch nicht.",
-    "board_other": "{{count}} Städte sind heute auf der Tafel. {{city}} noch nicht.",
-    "mapEmpty": "{{city}} ist noch nicht auf der Weltkarte. Bring es dorthin.",
-    "invite": "Lade einen Freund ein",
+    "board_one": "{{count}} Stadt ist heute auf dem Board. {{city}} noch nicht.",
+    "board_other": "{{count}} Städte sind heute auf dem Board. {{city}} noch nicht.",
+    "mapEmpty": "{{city}} ist noch nicht auf der Weltkarte. Ändere das.",
+    "invite": "Freunde einladen",
     "share": "Spiel mit mir für {{city}} auf Hilads.",
-    "pioneerTitle": "Pionier-Abzeichen",
+    "pioneerTitle": "Pioneer-Abzeichen",
     "pioneerSub": "Das allererste freigegebene Foto in einer Stadt. Für immer deins."
   },
   "appModal": {
@@ -261,7 +261,7 @@
       "sayHi": "Lade die App, um {{city}} Hallo zu sagen",
       "propose": "Lade die App, um eine Challenge vorzuschlagen"
     },
-    "sub": "Kostenlos, und es dauert nur eine Minute.",
+    "sub": "Kostet nichts und dauert nur eine Minute.",
     "download": "App laden",
     "keepExploring": "Weiter entdecken",
     "scan": "Mit dem Handy scannen"
@@ -272,12 +272,45 @@
     "setting": "Route"
   },
   "promo": {
-    "askTitle": "Darf Hilads deine Fotos zeigen, immer mit Nennung?",
-    "askBody": "Deine Daily Challenge Fotos könnten in unseren Posts auf Instagram, TikTok und YouTube erscheinen, immer mit deinem @Namen. Du kannst das jederzeit in den Einstellungen ändern.",
+    "askTitle": "Darf Hilads deine Fotos zeigen? Immer mit deinem Namen.",
+    "askBody": "Deine Daily-Challenge-Fotos können in unseren Posts auf Instagram, TikTok und YouTube auftauchen, immer mit deinem @Nutzernamen. Das kannst du jederzeit in den Einstellungen ändern.",
     "allow": "Erlauben",
     "notNow": "Nicht jetzt",
     "setting": "Meine Fotos zeigen",
     "on": "An",
     "off": "Aus"
+  },
+  "a11y": {
+    "close": "Schließen",
+    "back": "Zurück",
+    "dismiss": "Schließen",
+    "mainNav": "Hauptnavigation",
+    "emojiPicker": "Emoji-Auswahl",
+    "cancelReply": "Antwort abbrechen",
+    "welcome": "Willkommen",
+    "approve": "Annehmen"
+  },
+  "tapToOpenMaps": "Tippen, um in Karten zu öffnen",
+  "openInApp": {
+    "text": "Mach in der Hilads-App weiter, da hast du alles",
+    "cta": "App öffnen"
+  },
+  "appPromo": {
+    "text": "Hol dir Hilads mit allem Drum und Dran",
+    "ctaIos": "Laden im App Store",
+    "ctaAndroid": "Jetzt bei Google Play",
+    "regionIos": "Hol dir die Hilads-App für iOS",
+    "regionAndroid": "Hol dir die Hilads-App für Android",
+    "pitchPush": "Push-Benachrichtigungen in Echtzeit",
+    "pitchFast": "Schnellerer, flüssigerer Feed",
+    "pitchAnim": "Animationen wie in einer echten App",
+    "ctaPlay": "Bei Google Play laden",
+    "continueBrowser": "Im Browser weitermachen"
+  },
+  "deleteAccount": {
+    "title": "Dein Konto löschen",
+    "body": "Um dein Hilads-Konto und alle zugehörigen Daten zu löschen, schick eine E-Mail an:",
+    "note": "Gib in der Anfrage deinen Benutzernamen an. Deine Daten werden innerhalb von 48 Stunden endgültig gelöscht.",
+    "back": "Zurück zu Hilads"
   }
 }

@@ -12,7 +12,7 @@
   },
   "delete": {
     "confirmTitle": "Dieses Event löschen?",
-    "confirmBody": "Damit werden das Event und alle Nachrichten entfernt. Das kann nicht rückgängig gemacht werden.",
+    "confirmBody": "Das Event und alle Nachrichten werden gelöscht. Das lässt sich nicht rückgängig machen.",
     "cancel": "Abbrechen",
     "deleting": "Wird gelöscht…",
     "confirm": "Löschen",
@@ -39,13 +39,13 @@
     "other": "Sonstiges"
   },
   "titleLabel": "Titel",
-  "titlePlaceholder": "z. B. Jazz-Abend in der Rooftop Bar",
+  "titlePlaceholder": "z. B. Jazz-Abend in der Rooftop-Bar",
   "date": "Datum",
   "today": "Heute",
   "tomorrow": "Morgen",
-  "todayHint": "Heute hosten bringt dir die meiste Sichtbarkeit",
-  "starts": "Beginnt",
-  "ends": "Endet",
+  "todayHint": "Events für heute werden am meisten gesehen",
+  "starts": "Beginn",
+  "ends": "Ende",
   "repeat": "Wiederholen",
   "recurrence": {
     "once": "Einmal",
@@ -65,20 +65,20 @@
   "intervalEvery": "Alle",
   "intervalDays": "Tage",
   "location": "Ort",
-  "locating": "Dein Standort wird ermittelt…",
-  "locationPlaceholder": "Optional · tippe, um auf der Karte zu setzen",
-  "clearLocation": "Ort löschen",
+  "locating": "Standort wird ermittelt…",
+  "locationPlaceholder": "Optional · tippen, um es auf der Karte zu setzen",
+  "clearLocation": "Ort entfernen",
   "errors": {
-    "endAfterStart": "Die Endzeit muss mindestens 15 Minuten nach der Startzeit liegen",
+    "endAfterStart": "Das Ende muss mindestens 15 Minuten nach dem Start liegen",
     "pickDay": "Wähle mindestens einen Wochentag",
-    "deleteFailed": "Event konnte nicht gelöscht werden. Versuch es erneut.",
+    "deleteFailed": "Event konnte nicht gelöscht werden. Versuch's nochmal.",
     "locUnavailable": "Der Standort ist in diesem Browser nicht verfügbar. Du kannst das Event auch ohne ihn erstellen.",
-    "locFailed": "Dein Standort konnte nicht ermittelt werden. Aktiviere den Standortzugriff oder überspring die Karte."
+    "locFailed": "Wir konnten deinen Standort nicht finden. Erlaub den Standortzugriff oder überspring die Karte."
   },
   "submit": {
     "saving": "Wird gespeichert…",
     "creating": "Wird erstellt…",
-    "saveChanges": "Änderungen speichern",
+    "saveChanges": "Speichern",
     "openSpot": "Hi plan",
     "startEvent": "Hi plan",
     "create": "Hi plan"
@@ -86,17 +86,18 @@
   "recur": {
     "everyday": "Jeden Tag",
     "weekly": "Wöchentlich",
-    "everyNDays_one": "Alle {{count}} Tag",
+    "everyNDays_one": "Jeden Tag",
     "everyNDays_other": "Alle {{count}} Tage"
   },
   "limit": {
     "title": "Du hast heute schon dein Event erstellt!",
-    "body": "Bei Hilads halten wir alles frisch - ein Event pro Tag, damit jeder Plan die Aufmerksamkeit bekommt, die er verdient. Komm morgen wieder, um ein weiteres zu erstellen.",
-    "legendLink": "Werde eine Legend, um unbegrenzt Events zu erstellen",
-    "legendA11y": "Erfahre mehr darüber, eine Legend zu werden",
-    "legendAlertTitle": "Werde eine Legend",
-    "legendAlertBody": "Legends sind Locals, die ausgewählt wurden, um ihre Stadt am Leben zu halten - sie können so viele Events hosten, wie sie wollen. Möchtest du eine werden? Melde dich unter contact@hilads.live.",
+    "body": "Bei Hilads bleibt alles frisch: ein Event pro Tag, damit jeder Plan die Aufmerksamkeit bekommt, die er verdient. Komm morgen wieder für dein nächstes.",
+    "legendLink": "Werde Legende und erstell unbegrenzt Events",
+    "legendA11y": "Mehr dazu, wie du Legende wirst",
+    "legendAlertTitle": "Werde Legende",
+    "legendAlertBody": "Legenden sind Locals, die ausgewählt wurden, um ihre Stadt lebendig zu halten: Sie können so viele Events hosten, wie sie wollen. Willst du auch eine werden? Schreib uns an contact@hilads.live.",
     "gotIt": "Verstanden",
-    "backToNow": "Zurück zu Now"
+    "backToNow": "Zurück zu Now",
+    "yourEvent": "Dein Event"
   }
 }
