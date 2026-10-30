@@ -1,10 +1,10 @@
 {
-  "title": "ما الذي حدث",
+  "title": "ما حدث",
   "filters": {
     "all": "الكل",
     "events": "فعاليات",
     "pulses": "لقاءات",
-    "challenges": "التحديات"
+    "challenges": "التحدّيات"
   },
   "range": {
     "recent": "الأحدث",
@@ -13,30 +13,30 @@
     "custom": "مخصّص"
   },
   "picker": {
-    "pickEnd": "الآن اختر يوم النهاية",
+    "pickEnd": "والآن اختر يوم النهاية",
     "pickStart": "اختر يوم البداية (حتى {{max}} يومًا)",
     "apply": "تطبيق"
   },
   "public": "عام",
-  "went_zero": "🙌 لم يحضر أحد",
+  "went_zero": "لم يحضر أحد",
   "went_one": "حضر شخص واحد",
-  "went_two": "🙌 حضر شخصان",
-  "went_few": "🙌 حضر {{count}} أشخاص",
-  "went_many": "🙌 حضر {{count}} شخصًا",
+  "went_two": "حضر شخصان",
+  "went_few": "حضر {{count}} أشخاص",
+  "went_many": "حضر {{count}} شخصًا",
   "went_other": "حضر {{count}} شخص",
   "hangoutTag": "لقاء",
-  "replies_zero": "💬 لا توجد ردود",
-  "replies_one": "رد واحد",
-  "replies_two": "💬 ردّان",
-  "replies_few": "💬 {{count}} ردود",
-  "replies_many": "💬 {{count}} ردًّا",
-  "replies_other": "{{count}} رد",
-  "noReplies": "لا توجد ردود",
+  "replies_zero": "لا ردود",
+  "replies_one": "ردّ واحد",
+  "replies_two": "ردّان",
+  "replies_few": "{{count}} ردود",
+  "replies_many": "{{count}} ردًّا",
+  "replies_other": "{{count}} ردّ",
+  "noReplies": "لا ردود",
   "error": "تعذّر تحميل الأرشيف",
-  "retry": "إعادة المحاولة",
+  "retry": "أعد المحاولة",
   "emptyTitle": "لا شيء هنا بعد",
-  "emptyRecentSub": "ستظهر الفعاليات واللقاءات السابقة هنا بمجرد أن يصبح للمدينة بعض السجل.",
-  "emptyWindowSub": "لا توجد فعاليات أو لقاءات في هذه الفترة. جرّب نطاقًا أوسع.",
+  "emptyRecentSub": "ستظهر هنا الفعاليات واللقاءات السابقة عندما يصبح للمدينة تاريخ.",
+  "emptyWindowSub": "لا فعاليات ولا لقاءات في هذه الفترة. جرّب فترة أطول.",
   "loadMore": "تحميل المزيد",
   "loading": "جارٍ التحميل…"
 }

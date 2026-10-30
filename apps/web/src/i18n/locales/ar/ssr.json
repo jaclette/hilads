@@ -4,34 +4,34 @@
   "ogLocale": "ar_AR",
   "home": {
     "title": "Hilads - العب محليًا. قارن عالميًا. | تحدّي صور السفر اليومي",
-    "description": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. التقط صورة وشاهد كيف أجاب العالم. BeReal للمسافرين.",
+    "description": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. التقط صورة وشاهد ما نشره العالم. BeReal للمسافرين.",
     "h1": "العب محليًا. قارن عالميًا.",
-    "intro": "Hilads هو تحدّي الصور اليومي للمسافرين والسكان المحليين. كل يوم يُطلَق تحدٍّ واحد للعالم كله. التقط صورتك حيث أنت، ثم شاهد كيف أجابت كل دولة.",
+    "intro": "Hilads هو تحدّي الصور اليومي للمسافرين والسكان المحليين. كل يوم يُطلَق تحدٍّ واحد للعالم كله. التقط صورتك حيث أنت، ثم شاهد ما نشرته كل دولة.",
     "howHeading": "كيف يعمل Hilads",
-    "howBody": "كل يوم يُطلَق Daily Challenge جديد، هو نفسه في كل مدينة. شارك فيه بصورة واحدة قبل أن يُطلَق التالي، ثم قارن: تحدٍّ واحد، وإجابات من كل دولة.",
+    "howBody": "كل يوم يُطلَق Daily Challenge جديد، هو نفسه في كل مدينة. العب بصورة واحدة قبل أن يُطلَق التالي، ثم قارن: تحدٍّ واحد، وصور من كل دولة.",
     "playCta": "العب تحدّي اليوم",
-    "archiveCta": "شاهد كيف أجاب العالم عن التحدّيات السابقة"
+    "archiveCta": "شاهد صور العالم في التحديات السابقة"
   },
   "city": {
     "title": "{city} على Hilads - تحدّي اليوم: {question}",
     "titleNoChallenge": "{city} على Hilads - العب محليًا. قارن عالميًا.",
-    "description": "Daily Challenge اليوم في {city}: {question} تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. التقط صورة وشاهد كيف أجاب العالم.",
-    "descriptionNoChallenge": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. العب في {city}، التقط صورة وشاهد كيف أجاب العالم.",
+    "description": "Daily Challenge اليوم في {city}: {question} تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. التقط صورة وشاهد ما نشره العالم.",
+    "descriptionNoChallenge": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. العب في {city}، والتقط صورة، وشاهد ما نشره العالم.",
     "h1": "{city} على Hilads",
     "todayHeading": "تحدّي اليوم",
-    "playCta": "العب من أجل {city}",
-    "recentHeading": "كيف أجابت {city}",
+    "playCta": "العب لأجل {city}",
+    "recentHeading": "ما نشرته {city}",
     "recentEmpty": "لم يلعب أحد في {city} بعد. التقط الصورة الأولى.",
     "archiveLink": "كل التحدّيات السابقة"
   },
   "daily": {
-    "title": "{question} إجابات من {countries} | Hilads",
+    "title": "{question} صور من {countries} | Hilads",
     "titleNone": "{question} | Hilads Daily Challenge",
     "descAnswers": "{answers} تحدٍّ واحد كل يوم، هو نفسه في كل مدينة.",
     "descPhotos": "{text} صور من {places}. تحدٍّ واحد كل يوم، هو نفسه في كل مدينة.",
-    "descEmpty": "{text} تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. التقط صورة وشاهد كيف أجاب العالم.",
+    "descEmpty": "{text} تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. التقط صورة وشاهد ما نشره العالم.",
     "kicker": "Daily Challenge · {date}",
-    "answersHeading": "كيف أجاب العالم",
+    "answersHeading": "ما نشره العالم",
     "photoBy": "صورة التقطها {user} في {city}",
     "noPhotos": "لا توجد صور لهذا التحدّي بعد.",
     "prev": "التحدّي السابق",
@@ -40,12 +40,12 @@
     "playSub": "كل يوم تحدٍّ جديد. التقط صورتك في تطبيق Hilads.",
     "archiveLink": "كل التحدّيات السابقة",
     "photosOne": "صورة واحدة",
-    "photosMany": "{count} صورة",
+    "photosMany": "الصور: {count}",
     "countriesOne": "دولة واحدة",
-    "countriesMany": "{count} دولة",
-    "archiveTitle": "تحدّيات Daily Challenge السابقة: كيف أجاب العالم | Hilads",
-    "archiveDescription": "كل تحدّيات Daily Challenge السابقة على Hilads: تحدٍّ واحد كل يوم، هو نفسه في كل مدينة، مع الصور والإجابات من كل دولة.",
+    "countriesMany": "الدول: {count}",
+    "archiveTitle": "تحديات Daily Challenge السابقة: ما نشره العالم | Hilads",
+    "archiveDescription": "كل تحديات Daily Challenge السابقة على Hilads: تحدٍّ واحد كل يوم، هو نفسه في كل مدينة، مع الصور والإجابات من كل دولة.",
     "archiveH1": "تحدّيات Daily Challenge السابقة",
-    "archiveIntro": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. إليك كيف أجاب العالم عن كل واحد منها."
+    "archiveIntro": "تحدٍّ واحد كل يوم، هو نفسه في كل مدينة. إليك ما نشره العالم في كل واحد منها."
   }
 }

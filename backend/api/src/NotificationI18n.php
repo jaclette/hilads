@@ -42,7 +42,7 @@ final class NotificationI18n
             'id'      => ["Kampanye Hilads: poin 2×", "{title}: dapat poin DOBEL! Ikut nggak?"],
             'hi'      => ["Hilads कैंपेन: डबल पॉइंट्स", "{title}: डबल पॉइंट्स कमाएं! आप तैयार हैं?"],
             'ru'      => ["Кампания Hilads — очки x2", "{title} — получи ДВОЙНЫЕ очки! Ты в деле?"],
-            'ar'      => ["حملة Hilads — نقاط مضاعفة",     "{title} — اربح نقاطًا مُضاعفة! هل أنت معنا؟"],
+            'ar'      => ["حملة Hilads: نقاط مضاعفة", "{title}: اربح نقاطًا مضاعفة! هل أنت معنا؟"],
         ],
         'city_join' => [
             'fr' => ["Quelqu'un est arrivé à {city}", "{name} vient d'arriver"],
@@ -62,7 +62,7 @@ final class NotificationI18n
             'id'      => ["Ada yang baru tiba di {city}", "{name} baru aja sampai"],
             'hi'      => ["{city} में कोई अभी-अभी पहुंचा", "{name} अभी-अभी पहुंचे"],
             'ru'      => ["{city}: кто-то только что приехал", "{name} уже здесь"],
-            'ar'      => ["وصل شخص للتو إلى {city}", "{name} وصل للتو"],
+            'ar'      => ["وصل أحدهم للتو إلى {city}", "{name} وصل للتو"],
         ],
         'new_event' => [
             'fr' => ["Nouvel événement à {city}", null],
@@ -182,7 +182,7 @@ final class NotificationI18n
             'id'      => ["{name} ngirim pesan ke kamu", null],
             'hi'      => ["{name} ने आपको मैसेज भेजा",            null],
             'ru'      => ["{name} пишет тебе", null],
-            'ar'      => ["{name} أرسل لك رسالة",                null],
+            'ar'      => ["رسالة جديدة من {name}", null],
         ],
         'event_join' => [
             'fr' => ["{name} a rejoint {title}",   null],
@@ -225,7 +225,7 @@ final class NotificationI18n
             'id'      => ["Tantangan divalidasi", "{name} memvalidasi \"{title}\""],
             'hi'      => ["चैलेंज वैलिडेट हो गया", "{name} ने \"{title}\" वैलिडेट किया"],
             'ru'      => ["Челлендж подтверждён", "{name} подтверждает «{title}»"],
-            'ar'      => ["تم التحقق من التحدي",                   "{name} تحقق من \"{title}\""],
+            'ar'      => ["تم اعتماد التحدي", "{name} اعتمد «{title}»"],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
@@ -245,7 +245,7 @@ final class NotificationI18n
             'id'      => ["{name} ngirim permintaan pertemanan", null],
             'hi'      => ["{name} ने आपको फ्रेंड रिक्वेस्ट भेजी",              null],
             'ru'      => ["{name} хочет добавить тебя в друзья", null],
-            'ar'      => ["{name} أرسل لك طلب صداقة",                       null],
+            'ar'      => ["طلب صداقة جديد من {name}", null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami",            null],
@@ -285,7 +285,7 @@ final class NotificationI18n
             'id'      => ["{name} ngasih kamu vibe", null],
             'hi'      => ["{name} ने आपको vibe भेजा",          null],
             'ru'      => ["Новый vibe от {name}", null],
-            'ar'      => ["{name} أرسل لك vibe",               null],
+            'ar'      => ["vibe جديدة من {name}", null],
         ],
         'profile_view' => [
             'fr' => ["{name} a regardé ton profil",   null],
@@ -305,7 +305,7 @@ final class NotificationI18n
             'id'      => ["{name} ngecek profilmu", null],
             'hi'      => ["{name} ने आपकी प्रोफ़ाइल देखी", null],
             'ru'      => ["{name} смотрит твой профиль", null],
-            'ar'      => ["{name} شاهد ملفك الشخصي", null],
+            'ar'      => ["{name} زار ملفك الشخصي", null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre", "{name} demande à rejoindre {title}"],
@@ -348,7 +348,7 @@ final class NotificationI18n
             'id'      => ["{name} udah milih foto pemenang", "{title} · Ketuk buat lihat siapa yang menang"],
             'hi'      => ["{name} ने जीतने वाली फ़ोटो चुन ली", "{title} · टैप करें और देखें कौन जीता"],
             'ru'      => ["{name}: победное фото выбрано", "{title} · Нажми, чтобы узнать победителя"],
-            'ar'      => ["{name} اختار الصورة الفائزة",          "{title} · اضغط لمعرفة الفائز"],
+            'ar'      => ["{name} اختار الصورة الفائزة", "{title} · اضغط لترى من فاز"],
         ],
         'challenge_group_result_meet' => [
             'fr'      => ["{name} a validé le rendez-vous", "{title} · Touche pour voir comment ça s'est passé"],
@@ -368,7 +368,7 @@ final class NotificationI18n
             'id'      => ["{name} memvalidasi ketemuan", "{title} · Ketuk buat lihat hasilnya"],
             'hi'      => ["{name} ने मीट वैलिडेट की", "{title} · टैप करें और देखें कैसा रहा"],
             'ru'      => ["{name}: встреча подтверждена", "{title} · Нажми, чтобы узнать, как прошло"],
-            'ar'      => ["{name} وثّق اللقاء",               "{title} · اضغط لمعرفة كيف جرى"],
+            'ar'      => ["{name} أكّد اللقاء", "{title} · اضغط لترى كيف جرى"],
         ],
         // Take-on request - fires to the CREATOR when a registered user
         // hits "Accept" on their open challenge. Body references the
@@ -391,7 +391,7 @@ final class NotificationI18n
             'id'      => ["Permintaan baru", "{name} mau ikut \"{title}\""],
             'hi'      => ["नई रिक्वेस्ट",                                  "{name} \"{title}\" लेना चाहते हैं"],
             'ru'      => ["Новая заявка",                                "{name} хочет принять «{title}»"],
-            'ar'      => ["طلب جديد",                                   "{name} يريد قبول \"{title}\""],
+            'ar'      => ["طلب جديد", "{name} يريد خوض «{title}»"],
         ],
         // Group join - fires to the CREATOR when a user JOINS their group
         // challenge (no approval; many can join). Body references the title.
@@ -413,7 +413,7 @@ final class NotificationI18n
             'id'      => ["Peserta baru", "{name} gabung ke tantanganmu \"{title}\""],
             'hi'      => ["नया खिलाड़ी", "{name} आपके चैलेंज \"{title}\" में शामिल हुए"],
             'ru'      => ["Новый участник", "{name} теперь в твоём челлендже «{title}»"],
-            'ar'      => ["مشارك جديد",              "{name} انضم إلى تحديك \"{title}\""],
+            'ar'      => ["مشارك جديد", "{name} انضم إلى تحدّيك «{title}»"],
         ],
         // Take-on approved - fires to the ACCEPTOR when the creator
         // accepts their request. Time to plan the meet-up.
@@ -435,7 +435,7 @@ final class NotificationI18n
             'id'      => ["Tantangan diterima", "{name} nerima permintaanmu untuk \"{title}\". Yuk, atur rencananya!"],
             'hi'      => ["चैलेंज मंज़ूर", "{name} ने \"{title}\" के लिए आपकी रिक्वेस्ट मान ली। अब प्लान बनाएं!"],
             'ru'      => ["Заявка принята", "{name}: заявка на «{title}» принята. Пора договариваться!"],
-            'ar'      => ["تم قبول التحدي",      "{name} قبل طلبك لـ \"{title}\". وقت التخطيط!"],
+            'ar'      => ["تم قبول طلبك", "{name} قبل طلبك لـ«{title}». حان وقت التخطيط!"],
         ],
         // Take-on rejected - same surface, less happy outcome.
         'challenge_takeon_rejected' => [
@@ -456,7 +456,7 @@ final class NotificationI18n
             'id'      => ["Permintaan ditolak",      "{name} menolak permintaanmu untuk \"{title}\"."],
             'hi'      => ["रिक्वेस्ट नामंज़ूर", "{name} ने \"{title}\" के लिए आपकी रिक्वेस्ट नहीं मानी।"],
             'ru'      => ["Заявка отклонена", "{name}: заявка на «{title}» отклонена."],
-            'ar'      => ["تم رفض الطلب",            "{name} رفض طلبك لـ \"{title}\"."],
+            'ar'      => ["تم رفض الطلب", "{name} رفض طلبك لـ«{title}»."],
         ],
         // Creator restarted the challenge from zero → the removed taker is told.
         'challenge_restarted' => [
@@ -477,7 +477,7 @@ final class NotificationI18n
             'id'      => ["Tantangan dimulai ulang", "{name} memulai ulang \"{title}\", partisipasimu direset"],
             'hi'      => ["चैलेंज फिर से शुरू", "{name} ने \"{title}\" फिर से शुरू किया, आपकी भागीदारी रीसेट हो गई"],
             'ru'      => ["Челлендж перезапущен", "{name}: «{title}» запущен заново, участие сброшено"],
-            'ar'      => ["تمت إعادة تشغيل التحدي",     "{name} أعاد تشغيل \"{title}\" - تمت إعادة تعيين مشاركتك"],
+            'ar'      => ["أُعيد إطلاق التحدي", "{name} أعاد إطلاق «{title}»، وأُعيد ضبط مشاركتك"],
         ],
         // Taker abandoned an active take-on → the creator's challenge reopens.
         'challenge_acceptor_left' => [
@@ -498,7 +498,7 @@ final class NotificationI18n
             'id'      => ["Tantangan ditinggal", "{name} keluar dari tantangan \"{title}\""],
             'hi'      => ["चैलेंज छोड़ा", "{name} ने \"{title}\" छोड़ दिया।"],
             'ru'      => ["Участник вышел", "{name} больше не участвует в «{title}»."],
-            'ar'      => ["غادر التحدي",              "{name} غادر التحدي \"{title}\"."],
+            'ar'      => ["انسحاب من التحدي", "{name} انسحب من التحدي «{title}»."],
         ],
         // Date proposed - fires to the OTHER party (whoever didn't
         // propose) when a date is put forward on the meet-up thread.
@@ -522,7 +522,7 @@ final class NotificationI18n
             'id'      => ["Ada usulan tanggal", "{name} ngusulin tanggal untuk \"{title}\""],
             'hi'      => ["नई तारीख़ का सुझाव", "{name} ने \"{title}\" के लिए तारीख़ सुझाई"],
             'ru'      => ["Новая дата", "{name} предлагает дату для «{title}»"],
-            'ar'      => ["تم اقتراح موعد",             "{name} اقترح موعداً لـ \"{title}\""],
+            'ar'      => ["موعد مقترح", "{name} اقترح موعدًا لـ«{title}»"],
         ],
         // Date approved - fires to the PROPOSER when the other party
         // signs off on their proposal. Counterpart to
@@ -545,7 +545,7 @@ final class NotificationI18n
             'id'      => ["Tanggal dikonfirmasi", "{name} setuju sama tanggalmu untuk \"{title}\""],
             'hi'      => ["तारीख़ पक्की", "{name} ने \"{title}\" के लिए आपकी तारीख़ मंज़ूर की"],
             'ru'      => ["Дата подтверждена", "{name} подтверждает твою дату для «{title}»"],
-            'ar'      => ["تم تأكيد الموعد",             "{name} أكّد موعدك لـ \"{title}\""],
+            'ar'      => ["تم تأكيد الموعد", "{name} أكّد موعدك لـ«{title}»"],
         ],
         // Verdict approved - fires to the ACCEPTOR after the meet-up,
         // the creator marked it as done.
@@ -567,7 +567,7 @@ final class NotificationI18n
             'id'      => ["Tantangan selesai", "{name} menandai \"{title}\" selesai"],
             'hi'      => ["चैलेंज पूरा!", "{name} ने \"{title}\" को पूरा मार्क किया"],
             'ru'      => ["Челлендж выполнен", "{name}: «{title}» выполнен!"],
-            'ar'      => ["تم إنجاز التحدي",            "{name} وضع علامة على \"{title}\" بأنه منتهي"],
+            'ar'      => ["تم إنجاز التحدي", "{name} أكّد إنجاز «{title}»"],
         ],
         // Verdict rejected - same surface, no-show / didn't really meet.
         'challenge_verdict_rejected' => [
@@ -588,7 +588,7 @@ final class NotificationI18n
             'id'      => ["Tantangan ditutup",        "{name} menutup \"{title}\""],
             'hi'      => ["चैलेंज बंद",                  "{name} ने \"{title}\" बंद किया"],
             'ru'      => ["Челлендж закрыт", "{name}: «{title}» закрыт"],
-            'ar'      => ["تم إغلاق التحدي",          "{name} أغلق \"{title}\""],
+            'ar'      => ["تم إغلاق التحدي", "{name} أغلق «{title}»"],
         ],
         // ── International mode notifications ────────────────────────────────
         // Proof submitted - fires to the CREATOR when the acceptor uploads
@@ -611,7 +611,7 @@ final class NotificationI18n
             'id'      => ["Ada bukti baru buat dicek", "{name} ngirim bukti untuk \"{title}\""],
             'hi'      => ["नया प्रूफ, चेक करें", "{name} ने \"{title}\" का प्रूफ भेजा"],
             'ru'      => ["Новое фото на проверку", "Фото от {name} для «{title}»"],
-            'ar'      => ["دليل جديد للمراجعة",                "{name} أرسل دليلاً لـ \"{title}\""],
+            'ar'      => ["إثبات جديد للمراجعة", "{name} أرسل إثباتًا لـ«{title}»"],
         ],
         // Proof approved - fires to the ACCEPTOR after the creator's verdict.
         // Final terminal state for the acceptance.
@@ -633,7 +633,7 @@ final class NotificationI18n
             'id'      => ["Bukti diterima", "{name} nerima buktimu untuk \"{title}\""],
             'hi'      => ["प्रूफ मंज़ूर", "{name} ने \"{title}\" के लिए आपका प्रूफ मंज़ूर किया"],
             'ru'      => ["Фото принято", "{name}: твоё фото для «{title}» принято"],
-            'ar'      => ["تم قبول الدليل",         "{name} قبل دليلك لـ \"{title}\""],
+            'ar'      => ["تم قبول الإثبات", "{name} قبل إثباتك لـ«{title}»"],
         ],
         // Proof rejected - fires to the ACCEPTOR. The reason is intentionally
         // NOT in the localized body: it's user-typed content that the creator
@@ -658,7 +658,7 @@ final class NotificationI18n
             'id'      => ["Bukti ditolak",          "{name} menolak buktimu untuk \"{title}\""],
             'hi'      => ["प्रूफ नामंज़ूर", "{name} ने \"{title}\" के लिए आपका प्रूफ नामंज़ूर किया"],
             'ru'      => ["Фото не принято", "{name}: твоё фото для «{title}» не принято"],
-            'ar'      => ["تم رفض الدليل",          "{name} رفض دليلك لـ \"{title}\""],
+            'ar'      => ["تم رفض الإثبات", "{name} رفض إثباتك لـ«{title}»"],
         ],
         // Cross-city heads-up - fires to users in CITY B when someone in
         // CITY A creates an international challenge targeting them. Two
@@ -685,7 +685,7 @@ final class NotificationI18n
             'id'      => ["Tantangan internasional baru", "Ada orang di {originCity} yang nyari penantang di {city}"],
             'hi'      => ["नया इंटरनेशनल चैलेंज", "{originCity} से कोई {city} में चैलेंजर ढूंढ रहा है"],
             'ru'      => ["Новый международный челлендж", "Кто-то из города {originCity} ищет участника в городе {city}"],
-            'ar'      => ["تحدي دولي جديد",                   "أحدهم من {originCity} يبحث عن متحدٍ في {city}"],
+            'ar'      => ["تحدٍّ دولي جديد", "شخص من {originCity} يبحث عن متحدٍّ في {city}"],
         ],
         // Personal challenge invitation: "{name} challenges you" with the
         // challenge title kept verbatim in the body (the title is a proper
@@ -708,7 +708,7 @@ final class NotificationI18n
             'id'      => ["{name} menantangmu",              null],
             'hi'      => ["{name} ने आपको चैलेंज दिया", null],
             'ru'      => ["{name} бросает тебе вызов",        null],
-            'ar'      => ["{name} يتحداك",                    null],
+            'ar'      => ["{name} يتحدّاك", null],
         ],
         // First rating just landed → the OTHER party (the recipient) hasn't
         // rated yet. Tapping the push opens the challenge so the
@@ -731,7 +731,7 @@ final class NotificationI18n
             'id'      => ["{name} udah ngasih kamu nilai", "Sekarang giliranmu ngasih nilai"],
             'hi'      => ["{name} ने आपको रेट किया",           "अब आपकी बारी"],
             'ru'      => ["{name} ставит тебе оценку", "Твоя очередь оценить"],
-            'ar'      => ["{name} قيّمك",                     "حان دورك"],
+            'ar'      => ["{name} قيّمك", "حان دورك للتقييم"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es !", "{name} t'a ajouté à {title}"],
@@ -751,7 +751,7 @@ final class NotificationI18n
             'id'      => ["Kamu masuk!", "{name} nambahin kamu ke {title}"],
             'hi'      => ["आप अंदर हैं!", "{name} ने आपको {title} में जोड़ लिया"],
             'ru'      => ["Ты в деле!", "{name} открывает тебе доступ к {title}"],
-            'ar'      => ["أنت مشارك الآن!", "{name} أضافك إلى {title}"],
+            'ar'      => ["أنت معهم الآن!", "{name} أضافك إلى {title}"],
         ],
     ];
 

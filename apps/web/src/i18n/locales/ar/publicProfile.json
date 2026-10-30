@@ -5,12 +5,12 @@
   "badgeMicro": {
     "ghost": "مجرد تصفّح",
     "fresh": "وصل للتو",
-    "regular": "يظهر كثيرًا",
-    "host": "يجعل الأمور تحدث"
+    "regular": "يحضر كثيرًا",
+    "host": "يصنع الحدث"
   },
   "modes": {
     "local": "محلي",
-    "exploring": "يستكشف"
+    "exploring": "مستكشف"
   },
   "vibes": {
     "party": "حفلة",
@@ -25,14 +25,14 @@
     "board_games": "أحضر الوجبات الخفيفة والنرد",
     "coffee": "القهوة أولًا، وكل شيء آخر لاحقًا",
     "music": "دائمًا في سعيٍ خلف إيقاع جميل",
-    "food": "نأكل أولًا، والأسئلة لاحقًا",
+    "food": "الأكل أولًا، والأسئلة لاحقًا",
     "chill": "هادئ، بأجواء رائعة"
   },
   "modeSub": {
     "localIn": "محلي في {{city}}",
     "local": "محلي",
     "exploringIn": "يستكشف {{city}}",
-    "exploring": "يستكشف"
+    "exploring": "مستكشف"
   },
   "from": "من",
   "age": "العمر",
@@ -41,22 +41,23 @@
     "events": "Hi plan",
     "friends": "الأصدقاء",
     "vibes": "Vibes",
-    "picks": "اختيارات المدينة",
-    "challenges": "التحديات"
+    "picks": "مختارات المدينة",
+    "challenges": "التحدّيات"
   },
   "host": "المضيف",
   "live": "مباشر",
+  "past": "السابقة",
   "empty": {
-    "hangouts": "لا توجد لقاءات بعد",
+    "hangouts": "لا لقاءات بعد",
     "events": "لا توجد فعاليات بعد",
     "friends": "لا يوجد أصدقاء بعد",
-    "challenges": "لا توجد تحديات بعد"
+    "challenges": "لا تحدّيات بعد"
   },
   "vibesTab": {
-    "score": "درجة vibe تبلغ {{score}}",
+    "score": "درجة vibe: {{score}}",
     "basedOn_zero": "بناءً على {{count}} vibe",
     "basedOn_one": "بناءً على vibe واحد",
-    "basedOn_two": "بناءً على vibe-ين",
+    "basedOn_two": "بناءً على اثنين من الـ vibes",
     "basedOn_few": "بناءً على {{count}} vibes",
     "basedOn_many": "بناءً على {{count}} vibe",
     "basedOn_other": "بناءً على {{count}} vibe",
@@ -88,17 +89,16 @@
     "cancel": "إلغاء",
     "cancelling": "جارٍ الإلغاء…",
     "cancelRequest": "إلغاء الطلب",
-    "keep": "الإبقاء",
+    "keep": "إبقاء",
     "reportTitle": "الإبلاغ عن المستخدم"
   },
   "report": {
-    "existing": "لقد أبلغت عن هذا المستخدم في {{date}}. تتم مراجعة بلاغك.",
+    "existing": "أبلغت عن هذا المستخدم في {{date}}، وبلاغك قيد المراجعة.",
     "sent": "تم إرسال البلاغ. شكرًا لإخبارنا.",
     "placeholder": "صف المشكلة (10 أحرف على الأقل)…",
     "error": "تعذّر إرسال البلاغ. حاول مرة أخرى.",
     "sending": "جارٍ الإرسال…",
     "submit": "إرسال البلاغ",
     "cancel": "إلغاء"
-  },
-  "past": "السابقة"
+  }
 }

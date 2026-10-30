@@ -6,12 +6,12 @@
   "feelLocal": "feel local",
   "anywhere": "anywhere",
   "vibe": {
-    "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "party": "حفلة",
+    "board_games": "ألعاب الطاولة",
+    "coffee": "قهوة",
+    "music": "موسيقى",
+    "food": "طعام",
+    "chill": "استرخاء"
   },
   "badge": {
     "ghost": "Ghost",
