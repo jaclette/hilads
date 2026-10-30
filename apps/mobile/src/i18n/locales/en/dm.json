@@ -1,7 +1,7 @@
 {
   "filterAll": "All",
-  "filterDms": "Direct Messages",
-  "filterEvents": "Local Event Chats",
+  "filterDms": "Direct messages",
+  "filterEvents": "Local Event chats",
   "markAllRead": "Mark all read",
   "upgradeTitle": "Messages are for members",
   "upgradeSub": "Create a free account to send direct messages and stay connected.",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "Create or join an event to chat with people going.",
   "emptyDmsSub": "Connect with people you meet in the city.",
   "sectionDms": "Direct messages",
-  "sectionEvents": "Local event chats",
+  "sectionEvents": "Local Event chats",
   "eventChatFallback": "Event chat",
   "goingCount": "{{count}} going",
   "prefTitle": "Notification preferences",

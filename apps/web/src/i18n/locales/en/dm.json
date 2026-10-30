@@ -1,6 +1,10 @@
 {
   "title": "Messages",
-  "filters": { "all": "All", "dms": "Direct Messages", "events": "Event Chats" },
+  "filters": {
+    "all": "All",
+    "dms": "Direct messages",
+    "events": "Event chats"
+  },
   "loading": "Loading…",
   "error": {
     "loadTitle": "Couldn't load messages",

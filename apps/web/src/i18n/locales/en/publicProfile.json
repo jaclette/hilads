@@ -14,14 +14,14 @@
   },
   "vibes": {
     "party": "Party",
-    "board_games": "Board Games",
+    "board_games": "Board games",
     "coffee": "Coffee",
     "music": "Music",
     "food": "Food",
     "chill": "Chill"
   },
   "vibeTaglines": {
-    "party": "Here for the night life",
+    "party": "Here for the nightlife",
     "board_games": "Bring snacks and dice",
     "coffee": "Coffee first, everything else later",
     "music": "Always chasing a good beat",
@@ -41,7 +41,7 @@
     "events": "Hi plan",
     "friends": "Friends",
     "vibes": "Vibes",
-    "picks": "City Picks",
+    "picks": "City picks",
     "challenges": "Challenges"
   },
   "host": "Host",
@@ -83,7 +83,7 @@
     "removing": "Removing…",
     "unfriend": "Unfriend",
     "cancel": "Cancel",
-    "cancelling": "Cancelling…",
+    "cancelling": "Canceling…",
     "cancelRequest": "Cancel request",
     "keep": "Keep",
     "reportTitle": "Report user"

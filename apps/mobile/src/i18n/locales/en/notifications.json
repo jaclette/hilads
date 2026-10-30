@@ -1,5 +1,5 @@
 {
-  "allTitle": "All Notifications",
+  "allTitle": "All notifications",
   "markAllRead": "Mark all read",
   "emptyTitle": "No notifications yet",
   "emptySub": "You'll see messages and event updates here.",
@@ -31,6 +31,6 @@
     "announceLabel": "Announcements from Hilads",
     "announceSub": "Occasional updates from the team",
     "commentLabel": "Comments",
-    "commentSub": "On your photos and on photos you commented"
+    "commentSub": "On your photos and on photos you commented on"
   }
 }

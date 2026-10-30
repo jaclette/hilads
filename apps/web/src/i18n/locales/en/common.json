@@ -80,7 +80,7 @@
     },
     "slide5": {
       "title": "Wrap it up",
-      "body": "After the meet-up (or once the photo lands), mark it accomplished. Your city, lived for real - one challenge at a time."
+      "body": "After the meetup (or once the photo lands), mark it accomplished. Your city, lived for real - one challenge at a time."
     },
     "next": "Next",
     "done": "Got it!",
@@ -140,7 +140,7 @@
   },
   "vibe": {
     "party": "Party",
-    "board_games": "Board Games",
+    "board_games": "Board games",
     "coffee": "Coffee",
     "music": "Music",
     "food": "Food",
@@ -152,7 +152,7 @@
     "clearNight": "clear tonight",
     "mostlyClear": "mostly clear",
     "partly": "a few clouds",
-    "overcast": "grey skies",
+    "overcast": "gray skies",
     "fog": "foggy",
     "drizzle": "light drizzle",
     "rain": "rain",

@@ -1,7 +1,7 @@
 {
   "showcase": {
-    "cta": "Success challenges",
-    "title": "✨ Success challenges",
+    "cta": "Success stories",
+    "title": "✨ Success stories",
     "allCities": "All cities",
     "clearCity": "Clear",
     "localTag": "Local",
@@ -13,7 +13,7 @@
     "tryCta": "Create a new challenge",
     "note": "What they said"
   },
-  "tabIntro": "Challenges between locals and explorers within a city - and across cities.",
+  "tabIntro": "Challenges between locals and travelers within a city - and across cities.",
   "howItWorks": "How it works",
   "mostLocal": "Most Local",
   "seeAll": "See all",
@@ -23,7 +23,7 @@
     "sub": "Be the first ranked - launch and finish a challenge"
   },
   "createTitle": "Create a challenge",
-  "allTitle": "All Challenges",
+  "allTitle": "All challenges",
   "editTitle": "Edit challenge",
   "audience": "Who's it for?",
   "aud": {
@@ -207,18 +207,18 @@
     "footnote": "Numbers can change as we tune the game.",
     "types": {
       "heading": "Two kinds of challenge",
-      "local": "🏙️ Meet — gather a group in person at a set time + place. Everyone who shows up earns big.",
-      "international": "🌍 Photo challenge — everyone submits a photo before the deadline; the challenger picks the winner."
+      "local": "🏙️ Meet - gather a group in person at a set time and place. Everyone who shows up earns big.",
+      "international": "🌍 Photo challenge - everyone submits a photo before the deadline; the challenger picks the winner."
     },
     "lifecycle": {
       "heading": "How it resolves",
-      "body": "The challenger frames it, people join, and the challenger validates at the end — who was present, or which photo won."
+      "body": "The challenger frames it, people join, and the challenger validates at the end - who was present, or which photo won."
     },
     "pointsHeading": "💯 How you earn points",
     "ways": {
       "join": "Join a challenge",
       "create": "Create a challenge",
-      "present": "Show up — validated present",
+      "present": "Show up - validated present",
       "host": "Host a meet",
       "submit": "Submit a photo to a challenge",
       "win": "Win the photo challenge"
@@ -273,7 +273,7 @@
   },
   "privacy": {
     "closedCloseCta": "Close to new joins",
-    "closedReopenCta": "Re-open to joins"
+    "closedReopenCta": "Reopen to joins"
   },
   "manage": {
     "cta": "Manage",
@@ -295,8 +295,8 @@
       "failed": "Couldn't cancel. Try again."
     },
     "cancelledByOther": {
-      "title": "Thread cancelled",
-      "body": "The other person cancelled this take-on."
+      "title": "Thread canceled",
+      "body": "The other person canceled this take-on."
     }
   },
   "threads": {
@@ -381,7 +381,7 @@
       "periodMonth": "this month",
       "periodAll": "all-time",
       "placeCity": "in {{city}}",
-      "placeWorld": "in the World",
+      "placeWorld": "in the world",
       "userNotTop": "🔥 I'm #{{rank}} {{place}} {{period}}: {{pts}} pts! Chasing @{{above}} ({{aPts}} pts) 👀 and keeping @{{below}} ({{bPts}} pts) behind me. Think you can climb past me? 🏆",
       "userTop": "👑 I'm #1 {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) and @{{below2}} ({{b2Pts}} pts) are on my tail. Come take the crown 😏",
       "cityNotTop": "🔥 {{place}} is #{{rank}} among all cities {{period}}: {{pts}} pts! Right behind {{above}} ({{aPts}} pts) 👀 and ahead of {{below}} ({{bPts}} pts). Locals, let's climb 🏆",
@@ -396,7 +396,7 @@
     "iProposedTitle": "Waiting for them to approve",
     "theyProposedTitle": "{{name}} proposed",
     "scheduled": {
-      "title": "Meet-up scheduled"
+      "title": "Meetup scheduled"
     },
     "withdraw": {
       "title": "Withdraw proposal?",
@@ -476,7 +476,7 @@
       "meetSoon": "See you on {{date}}",
       "creatorVerdict": "How did it go with {{name}}?",
       "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
-      "rateMeetup": "Rate your meet-up with {{name}}",
+      "rateMeetup": "Rate your meetup with {{name}}",
       "accomplished": "Challenge accomplished",
       "closed": "Challenge closed",
       "submitProof": "Submit your proof",
@@ -488,7 +488,7 @@
   "takeon": {
     "creator": {
       "pendingTitle": "{{name}} wants to take on your challenge",
-      "pendingBody": "Accept to start chatting and planning the meet-up, or reject to free the slot.",
+      "pendingBody": "Accept to start chatting and planning the meetup, or reject to free the slot.",
       "approve": "Accept",
       "reject": "Reject",
       "approveFailed": "Couldn't accept. Try again.",
@@ -526,11 +526,11 @@
   "locked": {
     "visitor": {
       "title": "Take on the challenge to unlock the chat",
-      "body": "Once you accept, you and the challenger get a private thread to plan your meet-up."
+      "body": "Once you accept, you and the challenger get a private thread to plan your meetup."
     },
     "creator": {
       "title": "Waiting for someone to take it on",
-      "body": "When a traveler accepts, you'll chat with them right here to plan your meet-up."
+      "body": "When a traveler accepts, you'll chat with them right here to plan your meetup."
     },
     "full": {
       "title": "Challenge full",
@@ -579,8 +579,8 @@
   "intl": {
     "targetCityLabel": "Target city",
     "targetCityAnywhere": "🌍 Anywhere in the world",
-    "targetCityHint": "Pick a target city — \"Anywhere in the world\" isn't available yet.",
-    "targetCityRequired": "\"Anywhere in the world\" isn't available yet — pick a target city to continue.",
+    "targetCityHint": "Pick a target city - \"Anywhere in the world\" isn't available yet.",
+    "targetCityRequired": "\"Anywhere in the world\" isn't available yet - pick a target city to continue.",
     "targetCityRequiredTitle": "Choose a target city",
     "proofRequirementsLabel": "What should the photo show?",
     "proofRequirementsPlaceholder": "e.g. The dish in daylight, with you in frame",
@@ -678,13 +678,13 @@
     "done": "This meet is done.",
     "validateCta": "Validate who showed up",
     "validateAfter": "You can validate after the meet · {{time}}",
-    "youreIn": "You're in — see you there!",
+    "youreIn": "You're in - see you there!",
     "joinCta": "Join the challenge (+2 pts)",
     "closed": "Closed to new joins",
-    "joinFailed": "Could not join — try again.",
-    "validateFailed": "Could not validate — try again.",
+    "joinFailed": "Could not join - try again.",
+    "validateFailed": "Could not validate - try again.",
     "validateTitle": "Who showed up?",
-    "validateSub": "Tick everyone who came to the meet. They each earn the reward.",
+    "validateSub": "Check everyone who came to the meet. They each earn the reward.",
     "rateMeet": "How was the meet?",
     "validateConfirm": "Validate {{count}} present",
     "noParticipants": "Nobody has joined yet.",
@@ -697,14 +697,14 @@
     "deadlineRequired": "Choose how long the challenge runs.",
     "deadlinePrefix": "Submit by",
     "contestDone": "This challenge is done.",
-    "youreInPhoto": "You're in — submit your photo below.",
+    "youreInPhoto": "You're in - submit your photo below.",
     "pickWinnerCta": "Pick the winner",
     "joinContestCta": "Join the challenge (+2 pts)",
     "winnerTitle": "Pick the winner",
     "winnerSub": "Choose the best photo. The winner earns the big reward.",
     "winnerConfirm": "Crown the winner",
     "winnerNoSubmission": "That person hasn't submitted a photo.",
-    "winnerFailed": "Could not pick the winner — try again.",
+    "winnerFailed": "Could not pick the winner - try again.",
     "submissionsHeader": "{{count}} photos",
     "tapToPick": "pick the best one",
     "winnerTag": "Winner",
@@ -712,13 +712,13 @@
     "winnerConfirmTitle": "Crown the winner?",
     "winnerConfirmBody": "{{name}} wins the big reward.",
     "pickHint": "Pick the winner from the photos below.",
-    "awaitingPhotos": "No photos yet — the challenge is heating up 🔥",
+    "awaitingPhotos": "No photos yet - the challenge is heating up 🔥",
     "checkPhotos": "Check out the {{count}} photos"
   },
   "challengeIntro": {
     "slide1": {
       "title": "Feel the city, now",
-      "body": "Challenges are little real-world dares between people in a city — and across cities."
+      "body": "Challenges are little real-world dares between people in a city - and across cities."
     },
     "slide2": {
       "title": "Frame a challenge",
@@ -726,11 +726,11 @@
     },
     "slide3": {
       "title": "Anyone just joins",
-      "body": "No asking, no waiting — whoever's in joins. You get +2 right away."
+      "body": "No asking, no waiting - whoever's in joins. You get +2 right away."
     },
     "slide4": {
       "title": "Make it happen",
-      "body": "Everyone shows up together at your meet — or submits their best photo before the deadline."
+      "body": "Everyone shows up together at your meet - or submits their best photo before the deadline."
     },
     "slide5": {
       "title": "You validate",
@@ -738,7 +738,7 @@
     },
     "slide6": {
       "title": "Across cities",
-      "body": "Photo challenges work at a distance — challenge a whole other city to send their best shot."
+      "body": "Photo challenges work at a distance - challenge a whole other city to send their best shot."
     },
     "slide7": {
       "title": "Climb Most Local",
@@ -752,7 +752,7 @@
     },
     "loser": {
       "title": "{{name}} won",
-      "body": "Nice shot! You earned {{points}} for joining — take another shot next time"
+      "body": "Nice shot! You earned {{points}} for joining - take another shot next time"
     },
     "present": {
       "title": "You showed up!",
@@ -760,7 +760,7 @@
     },
     "absent": {
       "title": "You missed this one",
-      "body": "Catch the next meet — your spot is waiting."
+      "body": "Catch the next meet - your spot is waiting."
     },
     "host": {
       "titlePhoto": "{{name}} won your challenge!",
@@ -781,8 +781,8 @@
   },
   "pointExamples": {
     "title": "3 real examples",
-    "intro": "How real challenges paid out — who earned what.",
-    "empty": "No examples yet — be the first to run a challenge!",
+    "intro": "How real challenges paid out - who earned what.",
+    "empty": "No examples yet - be the first to run a challenge!",
     "each": "each",
     "line": {
       "created": "{{name}} created it",

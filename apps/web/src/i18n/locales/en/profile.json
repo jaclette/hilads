@@ -1,5 +1,5 @@
 {
-  "pageTitle": "My Profile",
+  "pageTitle": "My profile",
   "changePhoto": "Change profile photo",
   "yourProfile": "Your profile",
   "mode": "Mode",
@@ -19,7 +19,7 @@
   },
   "vibes": {
     "party": "Party",
-    "board_games": "Board Games",
+    "board_games": "Board games",
     "coffee": "Coffee",
     "music": "Music",
     "food": "Food",
@@ -154,7 +154,7 @@
       "howPoints": "How points work",
       "gotIt": "Got it",
       "close": "Close",
-      "noSpots": "No spot yet. Your photos at places put them here.",
+      "noSpots": "No spots yet. Pin a place in your photo and it shows up here.",
       "pageA11y": "{{city}}: {{count}} stamps",
       "guestTitle": "Start your passport",
       "guestBody": "Sign up to collect a stamp for each theme in every city, and earn the Local Pass.",

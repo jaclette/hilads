@@ -1,7 +1,7 @@
 {
   "hero": {
     "sub": "You're not just visiting. You're becoming local.\nEvery challenge, every meet, every spot - earn your place in this city.",
-    "orPreview": "Or take a look in your browser — no install",
+    "orPreview": "Or take a look in your browser - no install",
     "storeDownloadOn": "Download on the",
     "storeGetItOn": "Get it on"
   },
@@ -22,7 +22,7 @@
     "tryAgain": "Try again",
     "useLocation": "Use my location instead",
     "joinCity": "Join {{city}}",
-    "joinChat": "Join Chat",
+    "joinChat": "Join chat",
     "hint": "// anonymous · instant access",
     "keepIdentity": "or keep your identity",
     "createAccount": "Create account",
@@ -122,7 +122,7 @@
     "liveHeadline": "{{city}} is live right now.",
     "how": {
       "title": "Meet people in person, in 3 steps.",
-      "step1": "Pick your side — local or traveler",
+      "step1": "Pick your side - local or traveler",
       "step2": "Launch or join a challenge",
       "step3": "Meet up for real"
     },

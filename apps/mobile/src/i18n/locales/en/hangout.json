@@ -11,7 +11,7 @@
     "meetup": "Meet up"
   },
   "titleLabel": "What's on your mind?",
-  "titlePlaceholder": "I want to take a coffee",
+  "titlePlaceholder": "I want to grab a coffee",
   "detailsLabel": "Add details",
   "optional": "(optional)",
   "detailsPlaceholder": "Give it some context…",
@@ -20,7 +20,7 @@
   "startCta": "Hi now",
   "errSave": "Failed to save changes",
   "errStart": "Failed to start hangout",
-  "geoRequired": "A Hi now tells people where to find you — enable location to continue.",
+  "geoRequired": "A Hi now tells people where to find you - enable location to continue.",
   "geoRequiredTitle": "Location needed",
   "geoRequiredSettings": "Enable location for Hilads in Settings to launch a Hi now.",
   "yourHangout": "your hangout",
@@ -50,5 +50,5 @@
   "requestToJoin": "Request to join",
   "emptyReplies": "No replies yet. Say something!",
   "inThisHangout": "in this hangout",
-  "geoHint": "Turn on location to see who’s around right now — and let nearby people catch your Hi"
+  "geoHint": "Turn on location to see who’s around right now - and let nearby people catch your Hi"
 }

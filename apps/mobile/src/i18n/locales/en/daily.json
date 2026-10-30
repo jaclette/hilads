@@ -40,8 +40,8 @@
   "priceOne": "{{amount}} {{currency}}",
   "priceFrom_one": "from {{count}} photo",
   "priceFrom_other": "from {{count}} photos",
-  "places_one": "{{count}} place pinned",
-  "places_other": "{{count}} places pinned",
+  "places_one": "{{count}} spot pinned",
+  "places_other": "{{count}} spots pinned",
   "unnamedPlace": "Pinned place",
   "tabWorld": "World",
   "local": "Local",
@@ -146,7 +146,7 @@
       "spam": "Spam",
       "other": "Something else"
     },
-    "thanks": "Thanks - we will check it.",
+    "thanks": "Thanks - we'll check it.",
     "already": "You already reported this photo."
   },
   "vote": {
@@ -239,10 +239,10 @@
   "map": {
     "see": "See the map",
     "button": "Map",
-    "empty": "No pinned places yet.",
-    "titleChallenge": "Pinned places",
-    "titleCity": "Pinned places in {{city}}",
-    "titleWorld": "Pinned places around the world",
+    "empty": "No pinned spots yet.",
+    "titleChallenge": "Pinned spots",
+    "titleCity": "Pinned spots in {{city}}",
+    "titleWorld": "Pinned spots around the world",
     "seeProof": "See the photo",
     "openChallenge": "Open the challenge",
     "search": "Search a dish, a café…",
@@ -554,7 +554,7 @@
         "story": "Story",
         "post": "Post"
       },
-      "shared": "Shared! Let's see who answers 🌍"
+      "shared": "Shared! Let's see who plays 🌍"
     },
     "textProofAsk": "I played for {{city}} on Hilads: {{challenge}} {{question}}"
   },
@@ -602,7 +602,7 @@
     "boardTitle": "What the world said",
     "cheapest": "Cheapest: {{city}} {{price}}",
     "priciest": "Priciest: {{city}} {{price}}",
-    "funFact": "{{ratio}}× the price in {{city}} than in {{other}}.",
+    "funFact": "{{ratio}}× more expensive in {{city}} than in {{other}}.",
     "worldAnswers": "Today's question",
     "seeAnswers": "Compare",
     "firstIn": "First photos coming in",
@@ -625,7 +625,7 @@
     "linePlaceholder": "For example: in Paris, a pint costs 7 €.",
     "skip": "Skip",
     "askTitle": "Where's home?",
-    "askSub": "Your city back home. Asked once, you can change it in Settings.",
+    "askSub": "Your city back home. We only ask once, and you can change it in Settings.",
     "searchPlaceholder": "Search cities…",
     "noMatch": "No city matches. Try \"My city isn't listed\".",
     "notListed": "My city isn't listed",
@@ -719,7 +719,7 @@
   },
   "worldSays": {
     "title": "The world says",
-    "first": "Be the first to answer",
+    "first": "Be the first to play",
     "more_one": "+{{count}} more",
     "more_other": "+{{count}} more"
   },
