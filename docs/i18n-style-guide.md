@@ -31,7 +31,7 @@ Open decisions (the 2026-10-30 brief vs earlier approved choices, not changed in
 - **Theme names** (Hidden gem, Taste, Get around, Local find, Night out, Drinks, Only here, Special). The brief lists them as English brand terms. On 2026-10-18 they were deliberately translated in all 19 locales (`common.json` `themes.*`, rendered with `themeName()`): fr "Pépite", ja "穴場", vi "Góc ẩn". Kept translated until confirmed; switching back is one commit (the `themes.*` values).
 - **Vietnamese "Thổ địa" for Most Local** (approved earlier, the only locale that translates it). Kept.
 - **Vietnamese guests: "Vãng lai / Khách vãng lai"** instead of "Ghost" (approved earlier). Kept.
-- **Taglines**: none of the 19 locales translates them as UI text; the landing pages use them in English. Nothing to flag.
+- **Taglines** ("Play local. Compare global.", "Same challenge. Different worlds."): most locales translate them (fr "Joue local. Compare global.", vi "Chơi địa phương. So toàn cầu.", es, it, de, nl, pt, ja, zh…) in share texts, SEO titles and the header line. Kept as they are and flagged in each review sheet; to make them English everywhere is one decision for all locales.
 
 ## 3. City names
 
