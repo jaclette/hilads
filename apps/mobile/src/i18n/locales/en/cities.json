@@ -1,11 +1,11 @@
 {
   "title": "Switch city",
   "firstTimeTitle": "Choose your city to start",
-  "searchPlaceholder": "Search a city…",
+  "searchPlaceholder": "Search for a city…",
   "topCities": "Top cities right now",
   "cities": "Cities",
   "filterActive": "🔥 Most active",
-  "filterEvents": "🎉 Most Local Events",
+  "filterEvents": "🎉 Most events",
   "filterOnline": "🟢 Most online",
   "filterChallenges": "⚡ Most challenges",
   "challenges_one": "{{count}} challenge",
