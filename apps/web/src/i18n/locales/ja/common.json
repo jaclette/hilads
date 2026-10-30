@@ -8,27 +8,28 @@
     "sip": "ドリンク",
     "only_here": "ここだけ",
     "special": "スペシャル",
-    "onlyIn": "{{city}}だけ"
+    "onlyIn": "{{city}}ならでは"
   },
   "meta": {
     "cityTitle": "Hiladsの{{city}} - 地元で遊ぶ。世界と比べる。",
-    "cityDesc": "1日1つのチャレンジ、どの街でも同じお題。{{city}}で参加して写真を撮り、世界の答えを見てみましょう。",
-    "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "{{title}}にHiladsで参加 - 今行われているLocal Event。誰が参加するか見て、ライブチャットで話そう。"
+    "cityDesc": "1日1つ、どの街でも同じチャレンジ。{{city}}で参加して写真を撮り、世界中の写真を見てみよう。",
+    "eventTitle": "ローカルイベント：{{title}} | Hilads",
+    "eventDesc": "Hiladsで{{title}}に参加しよう。今開催中のローカルイベント。誰が行くか見て、オンラインの人とライブチャットできます。"
   },
   "nowTitle": "今",
   "filterEvents": "🎉 ローカルイベント",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ 集まり",
-  "publicEventsSection": "🎫 公開イベント",
+  "publicEventsSection": "🎫 公開ローカルイベント",
   "accountWelcome": {
     "title": "おめでとう、{{username}}さん！",
-    "subtitle": "アカウントの準備ができました--今すぐできることはこちら",
+    "subtitle": "アカウントの準備ができました。今すぐできることはこちら",
     "f1": "集まりを立ち上げて、今すぐみんなを集めよう",
-    "f2": "あなたの街でイベントを企画しよう",
-    "f3": "だれにでもプライベートメッセージを送ろう",
+    "f2": "自分の街でイベントを企画しよう",
+    "f3": "誰にでもメッセージを送ろう",
     "f4": "近くにいる人をリアルタイムでチェック",
-    "f5": "地元の人や旅人とつながろう",
-    "fc1": "街の人たちにチャレンジしよう",
+    "f5": "地元の人や旅行者とつながろう",
+    "fc1": "自分の街の地元の人にチャレンジしよう",
     "fc2": "世界の別の街にチャレンジしよう",
     "cta": "さあ行こう"
   },
@@ -38,21 +39,21 @@
     "fallbackCity": "あなたの街",
     "slide1": {
       "title": "地元で遊ぶ。世界と比べる。",
-      "body": "Hiladsは、旅行者をローカルに変えるアプリ - そしてローカルが自分の街の魅力を共有する場所です。"
+      "body": "Hiladsは、旅行者を地元の人に変えるアプリ。地元の人が自分の街の魅力をシェアする場所でもあります。"
     },
     "slide2": {
-      "title": "街を生きる、3つの方法",
-      "itemChallenges": "🤝 チャレンジ - 隠れたスポットを発見、本物の料理を味わう、文化を分かち合う、手助けする。挑む側にも、挑まれる側にも。",
-      "itemHangouts": "🗣️ Hi now - 気軽に誰かと出会う",
-      "itemEvents": "🎉 Hi plan - 会う時間を決める"
+      "title": "街を楽しむ3つの方法",
+      "itemChallenges": "🤝 チャレンジ：隠れたスポットを見つけたり、本場の料理を味わったり、文化をシェアしたり、手を貸したり。挑むのも、挑まれるのもアリ。",
+      "itemHangouts": "🗣️ Hi now：その場で誰かと会う",
+      "itemEvents": "🎉 Hi plan：会う時間を決める"
     },
     "slide3": {
-      "title": "街での居場所を手に入れよう",
-      "body": "クリアしたチャレンジ、参加したミートアップ、見つけたスポット、すべてがポイントになります。ポイントは、あなたが{{city}}でどれだけローカルになったかを表します。Most Localの頂点に立って、街を生かす人たちの中での居場所を手に入れましょう。"
+      "title": "街に自分の居場所をつくろう",
+      "body": "クリアしたチャレンジ、参加したミート、見つけたスポット、そのすべてがポイントになります。ポイントは、{{city}}であなたがどれだけ地元の人になったかの証。Most Localのトップに立って、街を盛り上げる人たちの仲間入りをしよう。"
     },
     "slide4": {
-      "title": "始める準備はできましたか？",
-      "ctaChallenge": "📍 {{city}}で初めてのチャレンジを始める",
+      "title": "準備はいい？",
+      "ctaChallenge": "📍 {{city}}で最初のチャレンジに挑戦",
       "ctaMostLocal": "🤝 {{city}}のMost Localを見る",
       "ctaLookAround": "👀 今はとりあえず見るだけ",
       "ctaHiNow": "🗣️ Hi now",
@@ -62,53 +63,53 @@
   "challengeIntro": {
     "title": "チャレンジの仕組み",
     "slide1": {
-      "title": "チャレンジが旅をストーリーに変える",
-      "body": "ローカルと旅行者がお互いにチャレンジを出して、街のリアルを共有します - グルメ、場所、文化、助け合い。報酬は？直接会うか、遠くから証拠を送るか。"
+      "title": "チャレンジで旅がストーリーになる",
+      "body": "地元の人と旅行者がチャレンジを出し合って、街のリアルをシェア。グルメ、場所、文化、助け合い。ごほうびは？直接会うか、遠くから写真で証明するか。"
     },
     "slide2": {
-      "title": "チャレンジを始めよう",
-      "body": "グルメ、場所、文化、助け合い。誰向けか、何人入れるか、どう締めくくるかを選びます - 直接会うか写真で証明するか。"
+      "title": "チャレンジを出そう",
+      "body": "グルメ、場所、文化、助け合い。誰向けか、何人まで参加できるか、締めくくり方（直接会うか、写真で証明するか）を選ぼう。"
     },
     "slide3": {
       "title": "誰かが受けてくれる",
-      "body": "リクエストが届きます。確認して承認すると - プライベートスレッドが開いて、チャットや計画ができます。"
+      "body": "リクエストが届きます。確認して承認すると、2人だけのスレッドが開いて、チャットや予定決めができます。"
     },
     "slide4": {
-      "title": "直接会う?それとも写真で証明?",
-      "body": "直接会っても、遠くから写真を送ってもOK - あなた次第です。どちらでも各ステップが自動で記録されます。"
+      "title": "直接会う？それとも写真で証明？",
+      "body": "直接会っても、遠くから写真を送ってもOK。どちらでも、各ステップがちゃんと記録されます。"
     },
     "slide5": {
-      "title": "チャレンジを締めくくる",
-      "body": "会った後（または写真が届いたら)、達成済みにマークしてください。あなたの街を本当に生きる - 一つずつチャレンジを重ねて。"
+      "title": "チャレンジを締めくくろう",
+      "body": "会ったあと（または写真が届いたら）、達成にしよう。チャレンジを1つずつ重ねて、街をリアルに楽しもう。"
     },
     "next": "次へ",
     "done": "わかった！",
     "skip": "スキップ ✕",
     "slide6": {
       "title": "街の外へ",
-      "body": "誰でも、どこでもチャレンジできます。相手がジオタグ付きの写真で証拠を送り、あなたが遠隔で承認します。同じ写真フローはローカルでも使えます。ローカルでもグローバルでも、すべてのチャレンジがカウントされます。"
+      "body": "誰とでも、どこでもチャレンジできます。相手がジオタグ付きの写真を送って、あなたは遠くから承認。同じ写真の流れは地元でも使えます。地元でも世界でも、どのチャレンジもカウントされます。"
     },
     "slide7": {
       "title": "Most Localになろう",
-      "body": "チャレンジごとにポイントが入ります - 街でも世界でも。直接会えば+50ポイントのボーナスも。ローカルでも旅行者でも、ここで築くものが大切です。毎月リセットされます。"
+      "body": "チャレンジごとにポイントが入ります。街でも世界でも。直接会えばさらに+50ボーナス。地元の人でも旅行者でも、大事なのはここで何を築くか。ランキングは毎月リセット。"
     },
     "createCta": "🔥 チャレンジを作る"
   },
   "share": {
-    "title": "何かをシェア",
+    "title": "何かシェアしよう",
     "snap": "写真を撮る",
-    "snapDesc": "今日のチャレンジでも、ただの楽しみでも",
+    "snapDesc": "今日のチャレンジ用でも、ただの楽しみでも",
     "spot": "スポットをシェア",
     "spotDesc": "今いる場所をシェア",
-    "spotLoading": "現在地を取得しています…",
+    "spotLoading": "現在地を取得中…",
     "plan": "予定を作る",
-    "planDesc": "時間と場所を決めて、みんなを誘おう",
+    "planDesc": "時間と場所を決めて、みんなに参加してもらおう",
     "hiNow": "Hi now",
-    "hiNowDesc": "今なにかしたい？言ってみよう"
+    "hiNowDesc": "今なにかしたい？声をかけよう"
   },
   "locationPicker": {
     "title": "今どこにいる？",
-    "search": "住所または場所を検索",
+    "search": "住所や場所を検索",
     "moveHint": "地図を動かして調整",
     "noResults": "場所が見つかりません",
     "loading": "位置情報を取得中…",
@@ -122,10 +123,10 @@
   "loading": "読み込み中…",
   "mode": {
     "local": {
-      "label": "ローカル"
+      "label": "地元"
     },
     "exploring": {
-      "label": "探索中"
+      "label": "探検中"
     }
   },
   "composer": {
@@ -134,7 +135,7 @@
     "placeholderCity": "街にあいさつしよう",
     "placeholderHangout": "参加するって伝えよう",
     "placeholderEvent": "参加者と話そう",
-    "placeholderChallenge": "応援したり、コツを共有しよう",
+    "placeholderChallenge": "応援したり、コツを教えたりしよう",
     "placeholderWorld": "世界にやり方を聞いてみよう"
   },
   "vibe": {
@@ -146,9 +147,9 @@
     "chill": "チル"
   },
   "weather": {
-    "clear": "快晴",
+    "clear": "晴れ",
     "sunnyHot": "最高の天気",
-    "clearNight": "今夜は快晴",
+    "clearNight": "今夜は晴れ",
     "mostlyClear": "おおむね晴れ",
     "partly": "少し雲あり",
     "overcast": "どんより曇り",
@@ -171,7 +172,7 @@
     "hAgo": "{{count}}時間前",
     "dAgo": "{{count}}日前",
     "expired": "期限切れ",
-    "expiresSoon": "まもなく期限切れ",
+    "expiresSoon": "まもなく終了",
     "expiresInMin": "あと{{mins}}分で期限切れ",
     "expiresInHourMin": "あと{{hours}}時間{{mins}}分で期限切れ",
     "expiresInHour": "あと{{hours}}時間で期限切れ",
@@ -180,13 +181,12 @@
   },
   "filterChallenges": "🔥 チャレンジ",
   "shareToCity": "自分の街でシェア",
-  "shareToWorld": "ワールドに共有",
-  "hiLocalTitle": "Hi Local",
+  "shareToWorld": "「世界」でシェア",
   "shareCta": {
     "leaderboard": "ランキングを見る",
     "challenge": "チャレンジを見る",
-    "event": "Hi plan を見る",
-    "topic": "Hi now を見る"
+    "event": "Hi planを見る",
+    "topic": "Hi nowを見る"
   },
   "tabs": {
     "today": "今日",
@@ -197,66 +197,65 @@
   "scope": {
     "title": "表示",
     "world": "世界",
-    "pickCity": "都市を選ぶ",
-    "citySub": "あなたの都市の challenge、写真、スポット",
-    "worldSub": "すべての都市の写真とスポット",
-    "changeCity": "都市を変更",
+    "pickCity": "街を選ぶ",
+    "citySub": "自分の街のチャレンジ、写真、スポット",
+    "worldSub": "すべての街の写真とスポット",
+    "changeCity": "街を変更",
     "a11y": "{{scope}}を表示中。タップで変更",
-    "here": "今いるのは{{city}}",
+    "here": "{{city}}にいます",
     "hereUnknown": "今どこにいる？",
-    "hereSub": "違う？プレイする街を変更"
+    "hereSub": "違う？プレイする街を変えよう"
   },
   "signUp": "登録する",
   "settings": "設定",
   "firstLaunch": "地元で遊ぶ。世界と比べる。",
   "subtitles": {
     "map": "世界の写真から生まれたスポット。",
-    "hi": "街にあいさつ。プランに参加しよう。",
+    "hi": "街にあいさつ。予定に参加しよう。",
     "passport": "あなたの街、写真、スタンプ。"
   },
-  "photoBy": "写真: @{{username}}",
+  "photoBy": "写真：@{{username}}",
   "pick": {
-    "badge": "Hilads のおすすめ",
+    "badge": "Hiladsのおすすめ",
     "goodToKnow": "知っておきたいこと",
-    "credit": "写真: {{credit}}",
+    "credit": "写真：{{credit}}",
     "source": "出典"
   },
   "shareLink": {
     "share": "シェア",
-    "challengeFriend": "友だちに挑戦",
+    "challengeFriend": "友達に挑戦状",
     "copied": "コピーしました",
     "textToday": "Hilads の今日の Daily Challenge：{{challenge}} やってみる？",
-    "textSpot": "Hilads の {{name}}",
-    "textSpotCity": "Hilads の {{name}}（{{city}}）",
+    "textSpot": "Hilads の{{name}}",
+    "textSpotCity": "Hilads の{{name}}（{{city}}）",
     "textPassport": "{{city}}の私のHiladsパスポート。同じチャレンジ、違う世界。",
     "textPassportNoCity": "私のHiladsパスポート。同じチャレンジ、違う世界。"
   },
   "represent": {
-    "empty": "{{city}}は今日まだ参加していません。最初の一人になろう。",
+    "empty": "{{city}}は今日まだ誰も参加していません。一番乗りしよう。",
     "beFirst": "{{city}}代表の一番乗りになろう",
     "emptyThere": "{{city}}は今日まだ参加していません。",
     "notIn": "{{city}}にいない？",
     "change": "変更",
     "locationNeeded": "今いる場所の代表で参加するには位置情報を許可してください。",
     "button": "{{city}}代表で参加",
-    "firstPosted": "今日、{{city}}を世界地図にのせました。",
-    "pioneer": "{{city}}のパイオニア",
+    "firstPosted": "今日、{{city}}を世界地図に載せました。",
+    "pioneer": "{{city}}の Pioneer",
     "spotOne": "{{city}}のスポット第1号",
     "streak_other": "{{city}}は{{count}}日連続で参加中",
-    "board_other": "今日は{{count}}都市がボードに載っています。{{city}}はまだです。",
-    "mapEmpty": "{{city}}はまだ世界地図にありません。のせよう。",
-    "invite": "友だちを招待",
+    "board_other": "今日は{{count}}の街がボードに載っています。{{city}}はまだです。",
+    "mapEmpty": "{{city}}はまだ世界地図に載っていません。載せよう！",
+    "invite": "友達を招待",
     "share": "Hilads で一緒に{{city}}代表で参加しよう。",
-    "pioneerTitle": "パイオニアバッジ",
-    "pioneerSub": "その都市で最初に承認された写真。ずっとあなたのもの。",
-    "streak_one": "{{city}}は{{count}}日連続で参加中"
+    "pioneerTitle": "Pioneer バッジ",
+    "pioneerSub": "その街で初めて承認された写真。ずっとあなたのもの。"
   },
   "appModal": {
     "title": {
       "play": "アプリをダウンロードして参加しよう",
       "playCity": "アプリをダウンロードして{{city}}代表で参加しよう",
       "vote": "アプリをダウンロードして{{city}}に投票しよう",
-      "joinPlan": "アプリをダウンロードしてこのプランに参加しよう",
+      "joinPlan": "アプリをダウンロードしてこの予定に参加しよう",
       "sayHi": "アプリをダウンロードして{{city}}にあいさつしよう",
       "propose": "アプリをダウンロードしてチャレンジを提案しよう"
     },
@@ -271,12 +270,45 @@
     "setting": "経路"
   },
   "promo": {
-    "askTitle": "Hilads があなたの写真を紹介してもいいですか？必ずクレジットを入れます。",
-    "askBody": "あなたの Daily Challenge の写真が Instagram、TikTok、YouTube の投稿に登場することがあります。必ずあなたの @ユーザー名を表示します。設定からいつでも変更できます。",
+    "askTitle": "Hiladsで写真を紹介してもいいですか？クレジットは必ず入れます。",
+    "askBody": "Daily Challenge の写真が、Instagram・TikTok・YouTube の Hilads の投稿で紹介されることがあります。その際は必ず @ユーザー名 を表示します。設定からいつでも変更できます。",
     "allow": "許可する",
     "notNow": "あとで",
-    "setting": "写真を紹介する",
+    "setting": "写真の紹介を許可",
     "on": "オン",
     "off": "オフ"
+  },
+  "a11y": {
+    "close": "閉じる",
+    "back": "戻る",
+    "dismiss": "閉じる",
+    "mainNav": "メインナビゲーション",
+    "emojiPicker": "絵文字を選ぶ",
+    "cancelReply": "返信をキャンセル",
+    "welcome": "ようこそ",
+    "approve": "承認"
+  },
+  "tapToOpenMaps": "タップして地図で開く",
+  "openInApp": {
+    "text": "Hiladsアプリならもっと楽しめます",
+    "cta": "アプリを開く"
+  },
+  "appPromo": {
+    "text": "Hiladsをフルに楽しもう",
+    "ctaIos": "App Storeからダウンロード",
+    "ctaAndroid": "Google Playで手に入れよう",
+    "regionIos": "HiladsのiOSアプリを入手",
+    "regionAndroid": "HiladsのAndroidアプリを入手",
+    "pitchPush": "リアルタイムのプッシュ通知",
+    "pitchFast": "フィードがもっと速く、なめらかに",
+    "pitchAnim": "ネイティブ品質のアニメーション",
+    "ctaPlay": "Google Playでダウンロード",
+    "continueBrowser": "ブラウザで続ける"
+  },
+  "deleteAccount": {
+    "title": "アカウントを削除",
+    "body": "Hiladsのアカウントと関連するすべてのデータを削除するには、こちらにメールを送ってください：",
+    "note": "メールにはユーザー名を書いてください。データは48時間以内に完全に削除されます。",
+    "back": "Hiladsに戻る"
   }
 }

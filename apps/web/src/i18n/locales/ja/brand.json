@@ -6,12 +6,12 @@
   "feelLocal": "feel local",
   "anywhere": "anywhere",
   "vibe": {
-    "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "party": "パーティー",
+    "board_games": "ボードゲーム",
+    "coffee": "コーヒー",
+    "music": "音楽",
+    "food": "グルメ",
+    "chill": "チル"
   },
   "badge": {
     "ghost": "Ghost",

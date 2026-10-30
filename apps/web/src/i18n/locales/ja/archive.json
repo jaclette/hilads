@@ -13,22 +13,20 @@
     "custom": "カスタム"
   },
   "picker": {
-    "pickEnd": "終了日を選んでください",
-    "pickStart": "開始日を選んでください（最大{{max}}日）",
+    "pickEnd": "次は終了日を選ぼう",
+    "pickStart": "開始日を選ぼう（最大{{max}}日）",
     "apply": "適用"
   },
   "public": "公開",
-  "went_one": "{{count}}人が参加しました",
-  "went_other": "{{count}}人が参加しました",
+  "went_other": "{{count}}人が参加",
   "hangoutTag": "集まり",
-  "replies_one": "{{count}}件の返信",
   "replies_other": "{{count}}件の返信",
   "noReplies": "返信なし",
   "error": "アーカイブを読み込めませんでした",
-  "retry": "再試行",
+  "retry": "もう一度試す",
   "emptyTitle": "まだ何もありません",
-  "emptyRecentSub": "街に履歴がたまると、過去のイベントや集まりがここに表示されます。",
-  "emptyWindowSub": "この期間にはイベントも集まりもありません。もっと広い範囲を試してください。",
+  "emptyRecentSub": "街に少しずつ歴史ができると、過去のイベントや集まりがここに並びます。",
+  "emptyWindowSub": "この期間にはイベントも集まりもありません。期間を広げてみてください。",
   "loadMore": "もっと見る",
   "loading": "読み込み中…"
 }

@@ -3,31 +3,31 @@
   "markAllRead": "すべて既読にする",
   "empty": {
     "title": "すべて確認済み",
-    "sub": "通知はここに表示されます"
+    "sub": "通知はここに届きます"
   },
   "loading": "読み込み中…",
   "seeAll": "すべての通知を見る",
   "prefs": {
     "title": "通知の設定",
     "mentionName": "メンション @",
-    "mentionDesc": "メッセージや集まりであなたが@メンションされたとき",
-    "newEventName": "あなたの街の新しいイベント",
-    "newEventDesc": "あなたの街で誰かがイベントを作成したとき",
+    "mentionDesc": "メッセージや集まりで誰かに@メンションされたとき",
+    "newEventName": "街の新しいイベント",
+    "newEventDesc": "誰かが街でイベントを作ったとき",
+    "newChallengeName": "街の新しいチャレンジ",
+    "newChallengeDesc": "誰かが街でチャレンジを始めたとき",
+    "cityJoinName": "誰かが街にやってきた",
+    "cityJoinDesc": "今いる街のチャンネルに誰かが参加したとき",
+    "worldArrivalName": "世界中の新しいメンバー",
+    "worldArrivalDesc": "どこかの街から新しい人が参加したとき（Worldチャンネル）",
     "friendName": "友達リクエスト",
-    "friendDesc": "誰かが友達リクエストを送ったり、あなたのリクエストを承認したとき",
+    "friendDesc": "友達リクエストが届いたときや、承認されたとき",
     "notesName": "ノート",
-    "notesDesc": "誰かがあなたのプロフィールにノートを残したとき",
+    "notesDesc": "誰かがプロフィールにノートを残したとき",
     "profileViewName": "プロフィールの閲覧",
-    "profileViewDesc": "誰かがあなたのプロフィールを見たとき",
+    "profileViewDesc": "誰かがプロフィールを見たとき",
     "announcementName": "Hiladsからのお知らせ",
-    "announcementDesc": "チームからのときどきのアップデート",
-    "newChallengeName": "あなたの街の新しいチャレンジ",
-    "newChallengeDesc": "誰かがあなたの街でチャレンジを始めたとき",
-    "cityJoinName": "誰かがあなたの街に到着",
-    "cityJoinDesc": "あなたがいる街のチャンネルに誰かが参加したとき",
-    "worldArrivalName": "世界中からの新着",
-    "worldArrivalDesc": "どこかの都市から新しい人が参加したとき（Worldチャンネル）",
+    "announcementDesc": "チームからのときどきのお知らせ",
     "commentName": "コメント",
-    "commentDesc": "あなたの写真と、あなたがコメントした写真"
+    "commentDesc": "自分の写真と、コメントした写真"
   }
 }

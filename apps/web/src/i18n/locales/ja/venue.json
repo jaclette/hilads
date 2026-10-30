@@ -1,17 +1,17 @@
 {
   "loading": "読み込み中…",
-  "notFound": "この会場はHiladsにありません。",
-  "loadError": "この会場を読み込めませんでした。もう一度お試しください。",
+  "notFound": "この会場はHiladsに載っていません。",
+  "loadError": "この会場を読み込めませんでした。もう一度試してください。",
   "breadcrumb": "パンくずリスト",
   "category": {
-    "bar": "Bar / pub",
-    "cafe": "コーヒーショップ"
+    "bar": "バー・パブ",
+    "cafe": "カフェ"
   },
   "typeInCity": "{{city}}の{{category}}",
   "address": "住所",
   "hours": "営業時間",
   "openEveryDay": "毎日営業 · {{opens}} – {{closes}}",
-  "ctaText": "今{{city}}に誰がいるか見てみましょう。",
+  "ctaText": "今{{city}}に誰がいるか見てみよう。",
   "openCity": "{{city}}を開く",
-  "lastUpdated": "最終更新 {{date}}"
+  "lastUpdated": "最終更新：{{date}}"
 }

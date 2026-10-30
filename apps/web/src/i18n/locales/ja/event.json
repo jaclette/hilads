@@ -1,8 +1,8 @@
 {
   "share": {
-    "bringPeople": "人を集める",
+    "bringPeople": "みんなを誘う",
     "linkCopied": "リンクをコピーしました",
-    "vibeTitle": "この vibe をシェア",
+    "vibeTitle": "このvibeをシェア",
     "eventAria": "イベントをシェア"
   },
   "title": {
@@ -12,7 +12,7 @@
   },
   "delete": {
     "confirmTitle": "このイベントを削除しますか？",
-    "confirmBody": "イベントとすべてのメッセージが削除されます。この操作は取り消せません。",
+    "confirmBody": "イベントとすべてのメッセージが削除されます。元に戻せません。",
     "cancel": "キャンセル",
     "deleting": "削除中…",
     "confirm": "削除",
@@ -29,7 +29,7 @@
   },
   "category": "カテゴリー",
   "categories": {
-    "drinks": "お酒",
+    "drinks": "ドリンク",
     "party": "パーティー",
     "music": "音楽",
     "food": "グルメ",
@@ -39,8 +39,8 @@
     "other": "その他"
   },
   "titleLabel": "タイトル",
-  "titlePlaceholder": "例：ルーフトップバーでジャズの夜",
-  "date": "日付",
+  "titlePlaceholder": "例：ルーフトップバーでジャズナイト",
+  "date": "日程",
   "today": "今日",
   "tomorrow": "明日",
   "todayHint": "今日主催すると一番見てもらえます",
@@ -48,7 +48,7 @@
   "ends": "終了",
   "repeat": "繰り返し",
   "recurrence": {
-    "once": "1回のみ",
+    "once": "1回だけ",
     "daily": "毎日",
     "weekly": "毎週",
     "everyNDays": "N日ごと"
@@ -66,14 +66,14 @@
   "intervalDays": "日",
   "location": "場所",
   "locating": "現在地を取得中…",
-  "locationPlaceholder": "任意 · タップして地図上で設定",
-  "clearLocation": "場所をクリア",
+  "locationPlaceholder": "任意 · タップしてマップで設定",
+  "clearLocation": "場所を消す",
   "errors": {
-    "endAfterStart": "終了時刻は開始時刻の少なくとも15分後にしてください",
-    "pickDay": "曜日を少なくとも1つ選んでください",
-    "deleteFailed": "イベントを削除できませんでした。再試行してください。",
+    "endAfterStart": "終了時刻は開始の15分後以降にしてください",
+    "pickDay": "曜日を1つ以上選んでください",
+    "deleteFailed": "イベントを削除できませんでした。もう一度試してください。",
     "locUnavailable": "このブラウザでは位置情報を利用できません。位置情報なしでもイベントを作成できます。",
-    "locFailed": "現在地を取得できませんでした。位置情報へのアクセスを許可するか、地図をスキップしてください。"
+    "locFailed": "現在地を取得できませんでした。位置情報を許可するか、マップをスキップしてください。"
   },
   "submit": {
     "saving": "保存中…",
@@ -86,17 +86,17 @@
   "recur": {
     "everyday": "毎日",
     "weekly": "毎週",
-    "everyNDays_one": "{{count}}日ごと",
     "everyNDays_other": "{{count}}日ごと"
   },
   "limit": {
-    "title": "今日はもうイベントを作成済みです！",
-    "body": "Hiladsでは新鮮さを大切にしています - 1日1イベントにすることで、それぞれの予定がふさわしい注目を集められます。また明日、別のイベントを作りに来てください。",
-    "legendLink": "伝説になって無制限にイベントを作成",
-    "legendA11y": "伝説になる方法について知る",
-    "legendAlertTitle": "伝説になる",
-    "legendAlertBody": "伝説は街を活気づけるために選ばれた地元の人たち - 好きなだけイベントを主催できます。なってみたいですか？ contact@hilads.live までご連絡ください。",
+    "title": "今日のイベントはもう作成済みです！",
+    "body": "Hiladsはいつも新鮮に。1日1イベントにして、どの予定にもちゃんと注目が集まるようにしています。また明日、新しいイベントを作りに来てね。",
+    "legendLink": "「伝説」になると、イベントを好きなだけ作れます",
+    "legendA11y": "「伝説」になる方法を見る",
+    "legendAlertTitle": "「伝説」になろう",
+    "legendAlertBody": "「伝説」は、街を盛り上げるために選ばれた地元の人たち。イベントを好きなだけ主催できます。なってみたい？contact@hilads.live まで連絡してね。",
     "gotIt": "了解",
-    "backToNow": "Nowに戻る"
+    "backToNow": "Nowに戻る",
+    "yourEvent": "自分のイベント"
   }
 }

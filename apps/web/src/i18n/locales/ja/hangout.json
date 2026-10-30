@@ -5,36 +5,36 @@
     "category": "カテゴリー",
     "cat": {
       "general": "一般",
-      "tips": "豆知識",
+      "tips": "ヒント",
       "food": "グルメ",
-      "drinks": "お酒",
+      "drinks": "ドリンク",
       "help": "ヘルプ",
-      "meetup": "ミートアップ"
+      "meetup": "集合"
     },
-    "titleLabel": "今どんな気分？",
+    "titleLabel": "今なにしたい？",
     "titlePlaceholder": "コーヒーを飲みに行きたい",
     "detailsLabel": "詳細を追加",
     "optional": "（任意）",
-    "detailsPlaceholder": "少し背景を教えてください…",
-    "expiry": "8時間で自動的に期限切れ",
+    "detailsPlaceholder": "少し詳しく書いてみよう…",
+    "expiry": "8時間で自動的に終了",
     "saving": "保存中…",
     "starting": "開始中…",
     "saveChanges": "変更を保存",
     "startCta": "Hi now",
-    "limitHeader": "一度に1つ",
+    "limitHeader": "一度に1つまで",
     "limitTitle": "すでに集まりがあります",
-    "limitSub": "集まりは一度に1つだけ実行できます。「{{title}}」へ移動するか、削除して新しいものを始めてください。",
-    "limitGo": "私の集まりへ",
+    "limitSub": "集まりは一度に1つだけ。「{{title}}」に移動するか、削除して新しく始めてね。",
+    "limitGo": "自分の集まりへ",
     "yourHangout": "あなたの集まり",
-    "geoHint": "位置情報をオンにして、今近くにいる人をチェック — 周りの人にもあなたの Hi が届く",
-    "geoRequired": "Hi now は会う場所を相手に伝えます — 続けるには位置情報をオンにしてください。"
+    "geoHint": "位置情報をオンにして、今近くにいる人をチェック。近くの人にもあなたの Hi が届きます",
+    "geoRequired": "Hi now は、どこで会えるかをみんなに伝えます。続けるには位置情報をオンにしてください。"
   },
-  "deleteConfirm": "この集まりを削除しますか？全員にとって終了し、取り消せません。",
-  "deleteFailedAlert": "削除できませんでした。再試行してください。",
+  "deleteConfirm": "この集まりを削除しますか？全員の集まりが終了し、元に戻せません。",
+  "deleteFailedAlert": "削除できませんでした。もう一度試してください。",
   "shareAria": "集まりをシェア",
   "shareTitle": "この集まりをシェア",
   "members": {
-    "oneIn": "{{name}} が参加中",
+    "oneIn": "{{name}}が参加中",
     "countIn": "この集まりに{{count}}人",
     "seeAll": "すべて見る"
   },
@@ -44,41 +44,41 @@
   },
   "gated": {
     "title": "メンバー限定の集まり",
-    "pending": "リクエスト保留中 - メンバーが承認すると会話に参加できます。",
-    "prompt": "会話を見てチャットするには参加をリクエストしてください。",
+    "pending": "リクエスト保留中。メンバーが承認すると会話に参加できます。",
+    "prompt": "参加をリクエストすると、会話を見てチャットできます。",
     "requestBtn": "参加をリクエスト"
   },
   "feed": {
     "beginning": "会話のはじまり",
     "loading": "読み込み中…",
     "emptyTitle": "まだ返信はありません",
-    "emptySub": "最初に飛び込んでみよう"
+    "emptySub": "最初に参加してみよう"
   },
   "joinReq": {
     "someone": "誰か",
     "wantsToJoin": " が参加したがっています",
     "joined": " が集まりに参加しました",
-    "askedToJoin": " が参加を希望しました",
-    "decline": "拒否",
+    "askedToJoin": " が参加をリクエストしました",
+    "decline": "断る",
     "accept": "承認",
     "accepted": "承認済み",
-    "acceptedBy": "{{name}} が承認しました",
-    "declined": "リクエストを拒否しました"
+    "acceptedBy": "{{name}}が承認しました",
+    "declined": "リクエストを断りました"
   },
   "modes": {
-    "local": "ローカル",
-    "exploring": "探索中"
+    "local": "地元",
+    "exploring": "探検中"
   },
   "reply": {
     "photo": "写真",
-    "unavailable": "元のメッセージは利用できません"
+    "unavailable": "元のメッセージは表示できません"
   },
   "composer": {},
   "errors": {
-    "locFailed": "現在地を取得できませんでした。位置情報へのアクセスを許可して再試行してください。",
-    "imageType": "JPEG、PNG、または WebP の画像を選択してください。",
+    "locFailed": "現在地を取得できませんでした。位置情報を許可して、もう一度試してください。",
+    "imageType": "JPEG、PNG、WebPの画像を選んでください。",
     "imageTooLarge": "画像が大きすぎます。最大10MBです。",
-    "imageSend": "画像を送信できませんでした。再試行してください。",
+    "imageSend": "画像を送れませんでした。もう一度試してください。",
     "dismiss": "{{error}} · タップして閉じる"
   }
 }

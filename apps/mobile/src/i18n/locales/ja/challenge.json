@@ -2,98 +2,80 @@
   "showcase": {
     "cta": "成功したチャレンジ",
     "title": "✨ 成功したチャレンジ",
-    "allCities": "すべての都市",
+    "allCities": "すべての街",
     "clearCity": "クリア",
-    "localTag": "ローカル",
+    "localTag": "地元",
     "by": "{{name}}さん",
-    "loadMore": "もっと見る",
     "empty": {
-      "title": "まだ成功事例がありません",
-      "body": "完了して高評価のチャレンジがここに表示されます。最初の一人になろう！"
+      "title": "成功したチャレンジはまだありません",
+      "body": "達成されて高評価を集めたチャレンジがここに並びます。最初の一人になろう！"
     },
     "tryCta": "新しいチャレンジを作成",
-    "note": "感想"
+    "note": "感想",
+    "loadMore": "もっと見る"
   },
-  "myChallenges": {
-    "cta": "自分のチャレンジ",
-    "title": "自分のチャレンジ",
-    "create": "チャレンジを作成",
-    "filter": {
-      "all": "すべて",
-      "created": "作成した",
-      "taken": "受けた"
-    },
-    "empty": {
-      "title": "まだチャレンジがありません",
-      "body": "作成したチャレンジや受けたチャレンジがここに表示されます。"
-    },
-    "guestGate": {
-      "title": "ログインして自分のチャレンジを見る",
-      "body": "アカウントを作成してチャレンジを始めたり、ほかの人のチャレンジを受けたりしましょう。"
-    }
-  },
-  "tabIntro": "地元の人と旅行者による、街なかでのチャレンジ - そして街をまたいで。",
+  "tabIntro": "地元の人と旅行者が、街の中で、そして街を越えて楽しむチャレンジ。",
   "howItWorks": "使い方",
   "mostLocal": "Most Local",
   "seeAll": "すべて見る",
   "leaderboardCta": {
-    "title": "🏆 都市ランキング",
+    "title": "🏆 街のランキング",
     "view": "見る",
-    "sub": "最初にランクインしよう - チャレンジを出して完了させて"
+    "sub": "チャレンジを出して達成し、最初にランクインしよう"
   },
   "createTitle": "チャレンジを作成",
   "allTitle": "すべてのチャレンジ",
   "editTitle": "チャレンジを編集",
-  "audience": "誰に向けて?",
+  "audience": "誰向け？",
   "aud": {
-    "locals": "ローカル",
+    "locals": "地元の人",
     "explorers": "旅行者",
     "members": "メンバー"
   },
   "type": "タイプ",
   "tp": {
-    "food": "食",
+    "food": "グルメ",
     "place": "場所",
     "culture": "文化",
     "help": "クレイジー"
   },
-  "titleLabel": "あなたのチャレンジ",
-  "titlePlaceholder": "例:お気に入りのカフェに連れて行って",
+  "titleLabel": "チャレンジ内容",
+  "titlePlaceholder": "例：お気に入りの隠れ家カフェに連れて行って",
   "maxParticipantsLabel": {
-    "locals": "ローカルは最大何人?",
-    "explorers": "旅行者は最大何人?"
+    "locals": "地元の人は最大何人？",
+    "explorers": "旅行者は最大何人？"
   },
-  "returnClauseLabel": "それから?",
+  "returnClauseLabel": "そのあとは？",
   "returnClauseTemplates": {
-    "food": "…そして一緒にシェアしに来てください 🍜",
-    "place": "…そしてあなた自身が連れて行ってください 🗺️",
-    "culture": "…そして会って話しましょう 🎭",
+    "food": "…そして一緒に味わおう 🍜",
+    "place": "…そして自分で案内して 🗺️",
+    "culture": "…そして会って語ろう 🎭",
     "help": "…そして一緒に何かクレイジーなことをしよう 🤪"
   },
   "createCta": "チャレンジ開始 🔥",
   "saveChanges": "変更を保存",
-  "errSave": "保存できませんでした",
+  "errSave": "変更を保存できませんでした",
   "errStart": "チャレンジを開始できませんでした",
-  "deleteTitle": "チャレンジを削除?",
-  "deleteBody": "チャレンジは全員から削除されます。元に戻せません。",
+  "deleteTitle": "チャレンジを削除しますか？",
+  "deleteBody": "このチャレンジは全員の画面から消えます。元に戻せません。",
   "deleteConfirm": "削除",
   "acceptCta": "チャレンジを受ける",
-  "acceptedCta": "受けた ✓",
+  "acceptedCta": "受けました ✓",
   "validatedBadge": "確認済み",
   "card": {
     "open": "受付中",
     "full": "満員",
     "available": "受付中",
     "inProgress": "進行中",
-    "takeIt": "受ける",
+    "takeIt": "挑戦する",
     "takerLabel": "挑戦者",
-    "rankBadge": "{{rank}} 位",
-    "photoBadge": "フォト",
+    "rankBadge": "{{rank}}位",
+    "photoBadge": "写真で証明",
     "joinedCount": "{{count}}人が参加",
-    "meetBadge": "会う",
-    "photosCount_other": "{{count}}枚の写真",
+    "meetBadge": "対面",
+    "photosCount_other": "写真{{count}}枚",
     "noOneJoined": "まだ誰も参加していません",
-    "beFirst": "⚡ 最初の一人になろう · +2",
+    "beFirst": "⚡ 一番乗りしよう · +2",
     "daysLeft": "残り{{count}}日",
     "lastDay": "まもなく終了",
     "joinGroup": "チャレンジに参加",
@@ -103,24 +85,24 @@
   },
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",
-  "openBadge": "オープン",
-  "forLocals": "ローカル向け",
+  "openBadge": "受付中",
+  "forLocals": "地元の人向け",
   "forExplorers": "旅行者向け",
   "validation": {
-    "label": "どう認証する？",
+    "label": "どうやって確認する？",
     "meet": {
-      "label": "直接会う",
-      "hint": "実際に会って一緒に体験しましょう",
-      "bonusChip": "直接会うと+50ポイントのボーナス"
+      "label": "対面",
+      "hint": "実際に会って一緒に体験しよう",
+      "bonusChip": "全員そろえば対面ボーナス+50"
     },
     "photo_proof": {
       "label": "写真で証明",
-      "hint": "離れた場所から写真で証明を受けます"
+      "hint": "離れていても写真で証明できます"
     }
   },
   "notFound": "チャレンジが見つかりません",
   "typeBadge": {
-    "food": "食チャレンジ",
+    "food": "グルメチャレンジ",
     "place": "場所チャレンジ",
     "culture": "文化チャレンジ",
     "help": "クレイジーチャレンジ"
@@ -130,15 +112,26 @@
   "editBtn": "編集",
   "deleteBtn": "削除",
   "shareCta": "シェア",
-  "shareInvite": "一緒にこのチャレンジを受けよう！",
+  "shareInvite": "Hiladsで一緒にこのチャレンジに挑戦しよう 🔥",
   "shareCopied": "リンクをコピーしました ✓",
   "noun": "チャレンジ",
+  "byCreator": "{{name}}さん",
+  "inspiration": {
+    "heading": "チャレンジのアイデア",
+    "sub": "ほかの街の地元の人が出しているチャレンジを見て、ヒントにしよう",
+    "firstLocal": "🌱 {{city}}の地元の人で一番乗りしよう",
+    "firstLocalSub": "チャレンジを出そう · やって来た旅行者が挑戦してくれます",
+    "reward": "最初のチャレンジ · +10 🏆",
+    "launchFirst": "🔥 最初のチャレンジを出そう",
+    "createYours": "🔥 {{city}}で自分のチャレンジを作ろう",
+    "by": "{{name}} · {{city}}"
+  },
   "examples": {
-    "label": "アイデアない？タップして使う",
+    "label": "アイデアが欲しい？タップして使おう",
     "food": [
-      "街で一番のコーヒー",
-      "ローカルが本当にランチする店",
-      "この辺の最高のストリートフード"
+      "街で一番おいしいコーヒーを教えて",
+      "地元の人が本当にランチする店",
+      "この近くで一番の屋台グルメ"
     ],
     "place": [
       "夕日が一番きれいなスポット",
@@ -146,14 +139,14 @@
       "頭をリセットしに行く場所"
     ],
     "culture": [
-      "今週末の本物のローカル音楽の夜",
+      "今週末、地元の音楽で盛り上がる夜",
       "見る価値のあるストリートアート",
-      "忘れないローカルのショー"
+      "忘れられない地元のショー"
     ],
     "help": [
-      "週を台無しにしない美容院",
-      "英語を話す医者",
-      "スマホ画面を直せる場所"
+      "失敗しない美容院",
+      "英語が通じるお医者さん",
+      "スマホの画面を直せる場所"
     ]
   },
   "beFirstToAccept": "最初にチャレンジを受けよう",
@@ -166,520 +159,619 @@
         "body": "問題が発生しました。もう一度試してください。"
       },
       "not_creator": {
-        "title": "あなた自身のチャレンジです",
-        "body": "あなたが作ったチャレンジです - 他の人が受けるのを待ってください。"
+        "title": "自分のチャレンジです",
+        "body": "自分で作ったチャレンジです。ほかの人が受けるのを待ちましょう。"
       },
       "mode_required": {
-        "title": "まずローカルか旅行者を選んでください",
-        "body": "チャレンジを受ける前にプロフィールでモードを設定してください。"
+        "title": "まず地元の人か旅行者かを選んでください",
+        "body": "チャレンジを受ける前に、プロフィールでモードを設定してください。"
       },
       "mode_mismatch": {
-        "title": "あなた向けのチャレンジではありません",
-        "body": "受けたい場合はプロフィールでモードを切り替えてください。"
+        "title": "このチャレンジは対象外です",
+        "body": "挑戦したいなら、プロフィールでモードを切り替えてください。"
       },
       "cap_reached": {
-        "title": "チャレンジが満員です"
+        "title": "チャレンジは満員です"
       },
       "in_progress": {
-        "title": "今、別の人が挑戦中です",
-        "body": "今、別の旅行者がこのチャレンジを受けています。終わったら戻ってきてください - チャレンジは再びオープンになります。"
+        "title": "ほかの人が挑戦中です",
+        "body": "今ほかの旅行者が挑戦しています。終わればまた空くので、あとでのぞいてみてください。"
       },
       "completed": {
-        "title": "チャレンジは完了済み",
-        "body": "このチャレンジは完了しました。新しい参加は受け付けていません。"
+        "title": "このチャレンジは完了済みです",
+        "body": "このチャレンジは完了しました。新しい挑戦は受け付けていません。"
       }
     }
   },
-  "thread": {
-    "notFound": "スレッドが見つかりません",
-    "empty": "最初に何か書いてみよう。",
-    "emptyIntl": "ハロー - クリアしたら写真を送って。",
-    "cancel": {
-      "creatorTitle": "この参加をキャンセルしますか?",
-      "acceptorTitle": "このチャレンジを辞退しますか?",
-      "body": "スレッドとチャットは削除されます。気が変わったら後でまた受けられます。",
-      "confirm": "キャンセル",
-      "failed": "キャンセルできませんでした。もう一度試してください。"
-    },
-    "cancelledByOther": {
-      "title": "スレッドがキャンセルされました",
-      "body": "相手がこの参加をキャンセルしました。"
-    }
-  },
-  "threads": {
-    "title": "マイチャレンジスレッド",
-    "noMessagesYet": "まだメッセージはありません",
-    "empty": {
-      "title": "アクティブなスレッドはありません",
-      "body": "チャレンジを受けたり誰かがあなたのチャレンジを受けたりすると、ここに会話が表示されます。"
-    },
-    "guestGate": {
-      "title": "サインインしてスレッドを表示",
-      "body": "スレッドはあなたとチャレンジャーの1対1の会話です。始めるにはアカウントが必要です。"
-    }
-  },
-  "schedule": {
-    "proposeCta": "日程を提案する",
-    "counterCta": "対案を出す",
-    "editCta": "日付を変更",
-    "you": "あなた",
-    "iProposedTitle": "承認待ち",
-    "theyProposedTitle": "{{name}}さんが提案しました",
-    "scheduled": {
-      "title": "ミーティング設定済み"
-    },
-    "withdraw": {
-      "title": "提案を取り下げますか？",
-      "body": "提案した日程がクリアされます。相手に通知されます。",
-      "confirm": "取り下げる"
-    },
-    "today": "今日",
-    "tomorrow": "明日",
-    "picker": {
-      "title": "いつ会いますか？",
-      "whenLabel": "いつ",
-      "timeLabel": "開始時刻",
-      "whereLabel": "どこで（任意）",
-      "wherePlaceholder": "例：Le Comptoir, 17 rue de la Paix",
-      "otherDate": "別の日付",
-      "otherTime": "別の時間",
-      "endTimeLabel": "終了時刻",
-      "endAfterStart": "終了時刻は開始時刻より後にしてください。"
-    },
-    "err": {
-      "proposeFailed": "日程を提案できませんでした。もう一度お試しください。",
-      "approveFailed": "承認できませんでした。もう一度お試しください。",
-      "withdrawFailed": "取り下げできませんでした。もう一度お試しください。"
-    }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "どうでしたか?",
-      "body": "{{name}}さんはやり遂げましたか?"
-    },
-    "acceptorWaiting": {
-      "title": "判定を待っています",
-      "body": "{{name}}さんが結果をつけます。"
-    },
-    "approved": {
-      "title": "チャレンジ達成"
-    },
-    "rejected": {
-      "title": "チャレンジを終了しました"
-    },
-    "confirm": {
-      "approve": {
-        "title": "達成にしますか?",
-        "body": "これは最終決定です。あとから変更できません。",
-        "confirm": "達成にする"
-      },
-      "reject": {
-        "title": "判定なしで終了しますか?",
-        "body": "実際に集まりがなかった場合に使ってください。これは最終決定です。",
-        "confirm": "終了する"
-      }
-    },
-    "err": {
-      "approveFailed": "承認できませんでした。もう一度お試しください。",
-      "rejectFailed": "終了できませんでした。もう一度お試しください。"
-    }
-  },
-  "closeCta": "チャレンジを終了する",
-  "reopenCta": "再開する",
-  "pipeline": {
-    "step": {
-      "accept": "受ける",
-      "date": "日程",
-      "meet": "会う",
-      "wrap": "ふり返り",
-      "proof": "証拠",
-      "verdict": "判定"
-    },
-    "subcta": {
-      "tapToAccept": "チャレンジを受ける",
-      "creatorWaiting": "誰かが受けてくれるのを待っています",
-      "creatorReviewPending": "{{name}}さんのリクエストに返事しよう",
-      "acceptorAwaitingReview": "{{name}}さんの返事を待っています",
-      "proposeDate": "日程を提案する",
-      "dateAwaiting": "作成者の承認待ち",
-      "approveDate": "日程が提案されました",
-      "meetSoon": "{{date}}に会いましょう",
-      "creatorVerdict": "{{name}}さんとはどうでしたか?",
-      "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
-      "accomplished": "チャレンジ達成",
-      "closed": "チャレンジを終了しました",
-      "submitProof": "証拠を提出",
-      "waitingForProof": "証拠待ち",
-      "reviewProof": "証拠を確認",
-      "waitingForVerdict": "判定待ち",
-      "rateMeetup": "{{name}}さんとの集まりを評価"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}}さんがあなたのチャレンジを受けたいと言っています",
-      "pendingBody": "承認すればチャットを開始して会う日を決められます。断ると枠が再びオープンになります。",
-      "approve": "承認する",
-      "reject": "断る",
-      "approveFailed": "承認できませんでした。もう一度お試しください。",
-      "rejectFailed": "断れませんでした。もう一度お試しください。"
-    },
-    "acceptor": {
-      "waitingTitle": "返事を待っています",
-      "waitingBody": "{{name}}さんがあなたのリクエストに返事します。決まったらプッシュ通知が届きます。",
-      "rejectedTitle": "リクエストが断られました",
-      "rejectedBody": "{{name}}さんはこれを断りました。別のチャレンジを受けることもできます。"
-    }
-  },
-  "locked": {
-    "visitor": {
-      "title": "チャレンジを受けてチャットを解放しよう",
-      "body": "受けると、二人だけのスレッドで会う日を決められます。"
-    },
-    "creator": {
-      "title": "誰かが受けてくれるのを待っています",
-      "body": "旅行者が受けたら、ここでチャットして会う日を決められます。"
-    },
-    "full": {
-      "title": "チャレンジが満員です",
-      "body": "枠はすべて埋まっています。誰かが抜けたらまた見てみてください。"
-    },
-    "inProgress": {
-      "title": "今、別の人が挑戦中です",
-      "body": "ある旅行者がこのチャレンジを受けています。終わったら、また受付が再開します - 近いうちにまた見てみてください。"
-    }
-  },
-  "postCreate": {
-    "title": "チャレンジが公開された",
-    "subtitle": "種を蒔こう - 1時間以内に誰かに引き受けてもらう。",
-    "thisCity": "この街",
-    "ctaInvite": "{{city}}の誰かに送る",
-    "ctaInviteSub": "{{audience}}を何人か選ぶと通知を送る。",
-    "ctaShare": "Hilads外でシェア",
-    "skip": "あとで",
-    "pickerTitle": "{{city}}の{{audience}}",
-    "pickerSubtitle": "タップで選択。承諾 / 無視のプッシュが届く。",
-    "pickerEmpty": "近くに{{audience}}がいない。外でシェアしよう。",
-    "sendCta": "{{count}}人に送る",
-    "sendCtaEmpty": "まず選ぶ",
-    "sentTitle": "{{count}}人に送信",
-    "sentSubtitle": "今プッシュ通知が届く。",
-    "pickerSubtitleAll": "完全な一致なし - {{city}}の全員を表示中。"
-  },
-  "invitation": {
-    "accept": "承諾",
-    "ignore": "無視",
-    "acceptChallenge": "チャレンジを受ける"
-  },
-  "byCreator": "{{name}} さん",
-  "inspiration": {
-    "heading": "チャレンジのアイデア",
-    "sub": "他の街のローカルが何を始めてるか見て - ヒントに",
-    "firstLocal": "🌱 {{city}} で最初のローカルになろう",
-    "firstLocalSub": "チャレンジを出そう · 来た旅行者が受けてくれる",
-    "reward": "最初のチャレンジ · +10 🏆",
-    "launchFirst": "🔥 最初のチャレンジを出す",
-    "createYours": "🔥 {{city}} で自分のを作る",
-    "by": "{{name}} · {{city}}"
-  },
-  "typeFilter": {
-    "label": "タイプで絞り込み",
-    "all": "すべて",
-    "empty": "このカテゴリには何もない。"
-  },
-  "seeAllChallenges": "すべて見る →",
-  "mode": {
-    "label": "モード",
-    "local": "ローカル",
-    "international": "国際",
-    "localHint": "あなたの街で。対面の待ち合わせで終わる。",
-    "internationalHint": "世界中どこでも。証拠を送ってもらい、遠隔で承認する。",
-    "worldwide": "世界"
-  },
-  "intl": {
-    "targetCityLabel": "ターゲットの街",
-    "targetCityAnywhere": "🌍 世界中どこでも",
-    "targetCityHint": "対象都市を選んでください。「世界中のどこでも」はまだ利用できません。",
-    "proofRequirementsLabel": "写真に何を写しますか？",
-    "proofRequirementsPlaceholder": "例: 自然光で撮った料理、自分も写っているもの",
-    "proofRequirementsHint": "証拠は写真 📸 です。送信前に参加者がこれを見ます - 具体的に書いてください。",
-    "cityPicker": {
-      "title": "ターゲットの街を選ぶ",
-      "searchPlaceholder": "街を検索…",
-      "anywhere": "世界中どこでも"
-    },
-    "proof": {
-      "requirementsLabel": "作成者の要件",
-      "submitCta": "証拠を提出",
-      "tryAgainCta": "もう一度（残り{{count}}回）",
-      "waitingProof": "証拠待ち",
-      "waitingVerdict": "判定待ち",
-      "approvedLine": "チャレンジ達成",
-      "closedLine": "チャレンジ終了",
-      "lastReason": "理由: {{reason}}",
-      "geotagOk": "ジオタグ確認済み",
-      "geotagWarn": "ジオタグが範囲外",
-      "approveCta": "承認",
-      "rejectCta": "拒否",
-      "rejectModalTitle": "この証拠を拒否",
-      "rejectModalHint_other": "残り {{count}} 回。何を直すか伝えて。",
-      "reasonPlaceholder": "例：ぼやけている、料理が見えない",
-      "rejectConfirm": "拒否を送信",
-      "reasonRequiredTitle": "理由が必要",
-      "reasonRequiredBody": "短い理由（1〜200字）が助けになる。",
-      "permPhotoTitle": "カメラへのアクセスが必要",
-      "permPhotoBody": "設定でカメラへのアクセスを有効にしてください - 証拠はその場で撮影した写真である必要があります。",
-      "permGpsTitle": "位置情報が必要",
-      "permGpsBody": "ジオタグは必須。位置情報をオンに。",
-      "gpsFailTitle": "GPSが読めない",
-      "gpsFailBody": "屋外で再試行。",
-      "submitFailTitle": "送信失敗",
-      "submitFailBody": "接続を確認して再試行。",
-      "reviewFailTitle": "判定を保存できなかった"
-    },
-    "targetCityRequired": "「世界中のどこでも」はまだ利用できません。続けるには対象都市を選んでください。",
-    "targetCityRequiredTitle": "対象都市を選ぶ"
-  },
-  "modeFilter": {
-    "label": "モードで絞り込み",
-    "all": "すべて"
-  },
-  "chatPlaceholder": "チャンネルに何か書く…",
-  "messageCreator": "{{name}}に個別メッセージ",
+  "chatPlaceholder": "チャンネルに何か書こう…",
+  "messageCreator": "{{name}}に個別でメッセージ",
   "badge": {
     "challenger": "出題者",
     "taker": "挑戦者",
     "spectator": "観戦者"
   },
-  "cta": {
-    "takenBy": "現在 {{name}} さんが受けています",
-    "closed": "このチャレンジは終了しました"
-  },
-  "join": {
-    "gateTitle": "観戦者として参加",
-    "gateBody": "観戦者として入り、会話を追いかけて挑戦者を応援しよう。",
-    "cta": "観戦者として入る",
-    "leaveCta": "チャンネルを退出",
-    "errKicked": "このチャレンジから外されました。再参加できません。",
-    "errClosed": "このチャレンジは新規参加を締め切りました。",
-    "errGeneric": "入れませんでした。もう一度お試しください。"
-  },
-  "lock": {
-    "private": {
-      "title": "このチャレンジは非公開です",
-      "body": "作成者と挑戦者だけが会話を見られます。"
-    }
-  },
-  "members": {
-    "title": "チャンネル内",
-    "countIn": "{{count}}人がチャンネルにいます",
-    "seeAll": "すべて見る",
-    "empty": "まだ誰も参加していません - 最初の一人になろう。",
-    "kickCta": "削除",
-    "kickAria": "{{name}}をチャンネルから削除",
-    "errKick": "削除できませんでした - もう一度試してください。"
-  },
-  "notif": {
-    "on": "通知オン",
-    "off": "通知オフ"
-  },
-  "manage": {
-    "cta": "管理",
-    "title": "チャレンジを管理"
-  },
-  "visibility": {
-    "badge": {
-      "public": "公開",
-      "friends": "友達",
-      "private": "非公開"
-    },
-    "label": "誰が見られますか？",
-    "public": "🌍 公開",
-    "friends": "👯 友達",
-    "publicHint": "街の誰もが見て参加できます。",
-    "friendsHint": "あなたの友達と招待した人だけが見られます。",
-    "intlLocked": "国際チャレンジは常に公開です。",
-    "moderationBlocked": "テキストがフラグされました。言い換えてください。",
-    "optin": {
-      "title": "注意 — これは公開です",
-      "body": "公開チャレンジは街のフィードと公開ウェブに表示されます。あなたの名前とチャレンジの文章は、非会員や検索エンジンを含む誰にでも見えます。もっと限定したい場合は下で友達に切り替えられます。",
-      "cta": "了解、公開で投稿",
-      "switchToFriends": "友達にする",
-      "dontShowAgain": "今後表示しない"
-    }
-  },
-  "privacy": {
-    "closedCloseCta": "新規参加を締め切る",
-    "closedReopenCta": "新規参加を再開する"
-  },
-  "details": {
-    "collapseAria": "チャンネル詳細を隠す",
-    "expandAria": "チャンネル詳細を表示"
-  },
-  "ratePrompts": {
-    "banner": {
-      "title": "このチャレンジを評価しよう - どうだった？",
-      "titleUrgent": "あなたがこのチャレンジを評価する番です"
-    },
-    "sheet": {
-      "title": "チャレンジはどうだった？",
-      "starsAria": "{{n}}つ星",
-      "commentPlaceholder": "チャレンジについてのメモを残そう（任意）",
-      "submit": "評価を送信",
-      "later": "あとで",
-      "subtitle": "人ではなく、チャレンジを評価しよう。"
-    },
-    "errSubmit": "評価を送信できませんでした。もう一度お試しください。"
-  },
-  "leaderboard": {
-    "title": "Most Local",
-    "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 トップチャレンジャー"
-    },
-    "scope": {
-      "city": "My city",
-      "world": "世界",
-      "cities": "都市"
-    },
-    "period": {
-      "month": "今月",
-      "alltime": "全期間"
-    },
-    "points": "{{points}} pt",
-    "me": {
-      "ranked": "あなた · #{{rank}} · {{points}} pt",
-      "unranked": "チャレンジを引き受けてランクインしよう"
-    },
-    "empty": {
-      "title": "ランキングはまだ空です",
-      "body": "最初にチャレンジを引き受けてポイントを獲得しましょう。"
-    },
-    "errLoad": "ランキングを読み込めませんでした。引いて再試行してください。",
-    "neutral": "🏆 Most Local",
-    "cityPicker": {
-      "searchPlaceholder": "都市を検索…",
-      "empty": "一致する都市がありません。"
-    },
-    "titleCity": "Most {{demonym}}",
-    "share": {
-      "cta": "順位をシェア",
-      "periodMonth": "今月",
-      "periodAll": "歴代",
-      "placeCity": "{{city}}で",
-      "placeWorld": "ワールドで",
-      "userNotTop": "🔥 {{place}}{{period}} #{{rank}} 位: {{pts}} pts！@{{above}}（{{aPts}} pts）を追いかけ 👀、@{{below}}（{{bPts}} pts）を抑えてる。私を抜ける？🏆",
-      "userTop": "👑 {{place}}{{period}} #1: {{pts}} pts！@{{below1}}（{{b1Pts}} pts）と @{{below2}}（{{b2Pts}} pts）がすぐ後ろに。王座を奪いに来て 😏",
-      "cityNotTop": "🔥 {{place}} は全都市中{{period}} #{{rank}} 位: {{pts}} pts！{{above}}（{{aPts}} pts）のすぐ後ろ 👀、{{below}}（{{bPts}} pts）の前。ローカルのみんな、登ろう 🏆",
-      "cityTop": "👑 {{place}} は全都市中{{period}} #1: {{pts}} pts！{{below1}}（{{b1Pts}} pts）と {{below2}}（{{b2Pts}} pts）が追ってる。ローカルのみんな、首位をキープ 🔥"
-    }
-  },
   "scoringInfo": {
     "aria": "ポイントの仕組み",
     "helpLabel": "🏆 ポイントの稼ぎ方",
     "title": "🏆 チャレンジの仕組み",
-    "intro": "参加には小さなポイント。大きなポイントは、実際に来たり勝ったりしたときに。参加だけ稼いでも意味はありません。",
+    "intro": "参加だけなら小さなポイント。大きなポイントは実際に来たときや勝ったときに。参加だけ繰り返しても意味はありません。",
     "colStep": "ステップ",
     "steps": {
       "created": "チャレンジ作成",
       "accepted": "チャレンジ受諾",
-      "date": "日付決定",
-      "meet": "集まる",
+      "date": "日程確定",
+      "meet": "集合",
       "rate": "相互評価"
     },
     "noPoints": "-",
-    "totalLabel": "1チャレンジ合計",
+    "totalLabel": "1チャレンジの合計",
     "footnote": "ポイントはゲームの調整に合わせて変わることがあります。",
     "types": {
       "heading": "2種類のチャレンジ",
-      "local": "🏙️ ミート — 決めた日時と場所にグループで集まる。来た全員が大きく稼げる。",
-      "international": "🌍 写真チャレンジ — 全員が期限までに写真を提出し、出題者が勝者を選ぶ。"
+      "local": "🏙️ 対面：決めた日時と場所にグループで集まります。来た人全員が大きく稼げます。",
+      "international": "🌍 写真チャレンジ：全員が期限までに写真を投稿し、出題者が勝者を選びます。"
     },
     "lifecycle": {
-      "heading": "🔁 どう決まるか",
-      "body": "出題者がチャレンジを設定し、みんなが参加し、最後に出題者が確認します — 誰が来たか、またはどの写真が勝ったか。"
+      "heading": "結果の決まり方",
+      "body": "出題者がチャレンジを決め、みんなが参加し、最後に出題者が確認します。誰が来たか、どの写真が勝ったか。"
     },
     "pointsHeading": "💯 ポイントの稼ぎ方",
     "ways": {
       "join": "チャレンジに参加する",
-      "create": "チャレンジを作成する",
-      "present": "参加する — 出席が確認された",
+      "create": "チャレンジを作成",
+      "present": "実際に来る（出席確認済み）",
       "host": "対面の集まりを主催する",
       "submit": "チャレンジに写真を提出する",
       "win": "写真チャレンジで勝つ"
     },
     "seeExamples": "3つの実例を見る"
   },
+  "cta": {
+    "takenBy": "今は{{name}}さんが挑戦中です",
+    "closed": "このチャレンジは終了しました"
+  },
+  "join": {
+    "gateTitle": "観戦者として参加",
+    "gateBody": "観戦者として入って、会話を見守りながら挑戦者を応援しよう。",
+    "cta": "観戦者として入る",
+    "leaveCta": "チャンネルを抜ける",
+    "errKicked": "このチャレンジから外されました。",
+    "errClosed": "このチャレンジは新規参加を締め切りました。",
+    "errGeneric": "入れませんでした。もう一度試してください。"
+  },
+  "leaveTakeon": {
+    "pill": "退出",
+    "confirmTitle": "このチャレンジから退出しますか？",
+    "confirmBody": "進行状況はゼロに戻り、チャレンジはほかの人に再び開放されます。元に戻せません。",
+    "confirmCta": "退出",
+    "failed": "退出できませんでした。もう一度試してください。"
+  },
+  "restart": {
+    "cta": "チャレンジをやり直す",
+    "confirmTitle": "チャレンジをやり直しますか？",
+    "confirmBody": "今の挑戦者を外し、チャットを消して、チャレンジをゼロから再開します。元に戻せません。",
+    "confirmCta": "やり直す",
+    "failed": "やり直せませんでした。もう一度試してください。"
+  },
+  "lock": {
+    "private": {
+      "title": "このチャレンジは非公開です",
+      "body": "出題者と挑戦者だけが会話を見られます。"
+    }
+  },
+  "members": {
+    "title": "チャンネルのメンバー",
+    "countIn": "チャンネルに{{count}}人",
+    "seeAll": "すべて見る",
+    "empty": "まだ誰も参加していません。最初の一人になろう。",
+    "kickCta": "外す",
+    "kickAria": "{{name}}をチャンネルから外す",
+    "errKick": "外せませんでした。もう一度試してください。"
+  },
+  "notif": {
+    "on": "通知オン",
+    "off": "通知オフ"
+  },
+  "privacy": {
+    "closedCloseCta": "新規参加を締め切る",
+    "closedReopenCta": "新規参加を再開"
+  },
+  "manage": {
+    "cta": "管理",
+    "title": "チャレンジを管理"
+  },
+  "details": {
+    "collapseAria": "チャンネルの詳細を隠す",
+    "expandAria": "チャンネルの詳細を表示"
+  },
+  "thread": {
+    "notFound": "スレッドが見つかりません",
+    "empty": "最初に何か書いてみよう。",
+    "emptyIntl": "まずはあいさつしよう。達成したら写真を送ってね。",
+    "cancel": {
+      "creatorTitle": "この挑戦をキャンセルしますか？",
+      "acceptorTitle": "このチャレンジをやめますか？",
+      "body": "スレッドとチャットは削除されます。気が変わったら、あとでまた受けられます。",
+      "confirm": "挑戦をキャンセル",
+      "failed": "キャンセルできませんでした。もう一度試してください。"
+    },
+    "cancelledByOther": {
+      "title": "スレッドがキャンセルされました",
+      "body": "相手がこの挑戦をキャンセルしました。"
+    }
+  },
+  "threads": {
+    "title": "チャレンジのスレッド",
+    "noMessagesYet": "まだメッセージはありません",
+    "empty": {
+      "title": "進行中のスレッドはありません",
+      "body": "チャレンジを受けたり、自分のチャレンジを誰かが受けたりすると、ここに会話が表示されます。"
+    },
+    "guestGate": {
+      "title": "サインインしてスレッドを見よう",
+      "body": "スレッドは出題者との1対1の会話です。始めるにはアカウントが必要です。"
+    }
+  },
+  "myChallenges": {
+    "cta": "自分のチャレンジ",
+    "title": "自分のチャレンジ",
+    "create": "チャレンジを作成",
+    "filter": {
+      "all": "すべて",
+      "created": "作成した",
+      "taken": "受けた"
+    },
+    "empty": {
+      "title": "まだチャレンジはありません",
+      "body": "作成したチャレンジや挑戦したチャレンジがここに表示されます。"
+    },
+    "guestGate": {
+      "title": "サインインして自分のチャレンジを見よう",
+      "body": "アカウントを作って、チャレンジを出したり、ほかの人のチャレンジに挑戦したりしよう。"
+    }
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "このチャレンジを評価しよう。どうだった？",
+      "titleUrgent": "このチャレンジを評価する番です"
+    },
+    "sheet": {
+      "title": "チャレンジはどうだった？",
+      "subtitle": "人ではなく、チャレンジを評価しよう。",
+      "starsAria": "{{n}}つ星",
+      "commentPlaceholder": "チャレンジについてひとこと（任意）",
+      "submit": "評価を送信",
+      "later": "あとで"
+    },
+    "errSubmit": "評価を送信できませんでした。もう一度試してください。"
+  },
+  "leaderboard": {
+    "title": "Most Local",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 トップ挑戦者"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "世界",
+      "cities": "街"
+    },
+    "period": {
+      "month": "今月",
+      "alltime": "歴代"
+    },
+    "points": "{{points}}pt",
+    "me": {
+      "ranked": "あなた · #{{rank}} · {{points}}pt",
+      "unranked": "チャレンジに挑戦してランクインしよう"
+    },
+    "empty": {
+      "title": "まだランキングに誰もいません",
+      "body": "最初にチャレンジに挑戦して、ポイントをゲットしよう。"
+    },
+    "errLoad": "ランキングを読み込めませんでした。引っぱって再読み込みしてください。",
+    "cityPicker": {
+      "searchPlaceholder": "街を検索…",
+      "empty": "一致する街がありません。"
+    },
+    "neutral": "🏆 Most Local",
+    "titleCity": "Most {{demonym}}",
+    "share": {
+      "cta": "順位をシェア",
+      "periodMonth": "今月",
+      "periodAll": "歴代",
+      "placeCity": "{{city}}で",
+      "placeWorld": "世界で",
+      "userNotTop": "🔥 {{place}}{{period}}#{{rank}}、{{pts}}pt！@{{above}}（{{aPts}}pt）を追いかけつつ 👀、@{{below}}（{{bPts}}pt）を引き離し中。追い抜けるかな？🏆",
+      "userTop": "👑 {{place}}{{period}}#1、{{pts}}pt！@{{below1}}（{{b1Pts}}pt）と@{{below2}}（{{b2Pts}}pt）がすぐ後ろに迫ってる。王座を奪いに来て 😏",
+      "cityNotTop": "🔥 {{place}}は{{period}}すべての街の中で#{{rank}}、{{pts}}pt！{{above}}（{{aPts}}pt）のすぐ後ろ 👀、{{below}}（{{bPts}}pt）より上。地元のみんな、もっと上を目指そう 🏆",
+      "cityTop": "👑 {{place}}は{{period}}すべての街の中で#1、{{pts}}pt！{{below1}}（{{b1Pts}}pt）と{{below2}}（{{b2Pts}}pt）が追ってきてる。地元のみんな、トップを守ろう 🔥"
+    }
+  },
+  "schedule": {
+    "proposeCta": "日程を提案",
+    "counterCta": "対案を出す",
+    "editCta": "日程を変更",
+    "you": "あなた",
+    "iProposedTitle": "相手の承認待ち",
+    "theyProposedTitle": "{{name}}さんが提案しました",
+    "scheduled": {
+      "title": "会う日が決まりました"
+    },
+    "withdraw": {
+      "title": "提案を取り下げますか？",
+      "body": "提案した日程は取り消され、相手に通知されます。",
+      "confirm": "取り下げる"
+    },
+    "today": "今日",
+    "tomorrow": "明日",
+    "picker": {
+      "title": "いつ会う？",
+      "whenLabel": "いつ",
+      "timeLabel": "開始時刻",
+      "endTimeLabel": "終了時刻",
+      "endAfterStart": "終了時刻は開始時刻より後にしてください。",
+      "whereLabel": "どこで（任意）",
+      "wherePlaceholder": "例：Le Comptoir, 17 rue de la Paix",
+      "otherDate": "別の日",
+      "otherTime": "別の時間"
+    },
+    "err": {
+      "proposeFailed": "日程を提案できませんでした。もう一度試してください。",
+      "approveFailed": "承認できませんでした。もう一度試してください。",
+      "withdrawFailed": "取り下げられませんでした。もう一度試してください。"
+    }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "どうだった？",
+      "body": "{{name}}さんはやり遂げた？"
+    },
+    "acceptorWaiting": {
+      "title": "判定待ち",
+      "body": "{{name}}さんが結果をつけます。"
+    },
+    "approved": {
+      "title": "チャレンジ達成"
+    },
+    "rejected": {
+      "title": "チャレンジ終了"
+    },
+    "confirm": {
+      "approve": {
+        "title": "達成にしますか？",
+        "body": "これで確定です。あとから変更できません。",
+        "confirm": "達成にする"
+      },
+      "reject": {
+        "title": "判定なしで終了しますか？",
+        "body": "実際に会えなかった場合に使ってください。これで確定です。",
+        "confirm": "終了する"
+      }
+    },
+    "err": {
+      "approveFailed": "承認できませんでした。もう一度試してください。",
+      "rejectFailed": "終了できませんでした。もう一度試してください。"
+    }
+  },
+  "closeCta": "チャレンジを終了する",
+  "reopenCta": "再開する",
+  "pipeline": {
+    "step": {
+      "accept": "承認",
+      "date": "日程",
+      "meet": "対面",
+      "wrap": "ふり返り",
+      "proof": "写真",
+      "verdict": "判定"
+    },
+    "subcta": {
+      "tapToAccept": "このチャレンジに挑戦",
+      "creatorWaiting": "誰かが受けてくれるのを待っています",
+      "creatorReviewPending": "{{name}}さんの挑戦リクエストを確認しよう",
+      "acceptorAwaitingReview": "{{name}}さんの確認待ち",
+      "proposeDate": "日程を提案",
+      "dateAwaiting": "出題者の承認待ち",
+      "approveDate": "日程が提案されました",
+      "meetSoon": "{{date}}に会おう",
+      "creatorVerdict": "{{name}}さんとはどうだった？",
+      "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
+      "rateMeetup": "{{name}}さんとの集まりを評価しよう",
+      "accomplished": "チャレンジ達成",
+      "closed": "チャレンジ終了",
+      "submitProof": "写真を送ろう",
+      "waitingForProof": "写真待ち",
+      "reviewProof": "写真を確認",
+      "waitingForVerdict": "判定待ち"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}}さんがチャレンジに挑戦したがっています",
+      "pendingBody": "承認するとチャットで会う日を決められます。断ると枠がまた空きます。",
+      "approve": "承認",
+      "reject": "断る",
+      "approveFailed": "承認できませんでした。もう一度試してください。",
+      "rejectFailed": "断れませんでした。もう一度試してください。"
+    },
+    "acceptor": {
+      "waitingTitle": "確認待ち",
+      "waitingBody": "{{name}}さんが挑戦を承認するか決めます。決まったらプッシュ通知が届きます。",
+      "rejectedTitle": "挑戦が断られました",
+      "rejectedBody": "{{name}}さんに断られました。ほかのチャレンジを選ぶこともできます。"
+    }
+  },
+  "postCreate": {
+    "title": "チャレンジが公開されました",
+    "subtitle": "さあ広めよう。1時間以内に挑戦者を見つけよう。",
+    "thisCity": "この街",
+    "ctaInvite": "{{city}}の誰かに送ろう",
+    "ctaInviteSub": "{{audience}}を何人か選んでね。こちらから通知します。",
+    "ctaShare": "Hiladsの外でシェア",
+    "skip": "あとで",
+    "pickerTitle": "{{city}}の{{audience}}",
+    "pickerSubtitle": "タップして選択。相手には承諾／無視のプッシュ通知が届きます。",
+    "pickerEmpty": "今近くに{{audience}}がいません。代わりに外でシェアしよう。",
+    "sendCta": "{{count}}人に送る",
+    "sendCtaEmpty": "まず誰かを選んでね",
+    "sentTitle": "{{count}}人に送信しました",
+    "sentSubtitle": "すぐにプッシュ通知が届きます。",
+    "pickerSubtitleAll": "ぴったりの人がいないので、{{city}}の全員を表示しています。"
+  },
+  "invitation": {
+    "accept": "承認",
+    "ignore": "無視",
+    "acceptChallenge": "チャレンジを受ける"
+  },
+  "locked": {
+    "visitor": {
+      "title": "チャレンジを受けてチャットを解放しよう",
+      "body": "受けると、出題者と二人だけのスレッドで会う日を決められます。"
+    },
+    "creator": {
+      "title": "誰かが受けてくれるのを待っています",
+      "body": "旅行者が受けたら、ここでチャットして会う日を決められます。"
+    },
+    "full": {
+      "title": "チャレンジは満員です",
+      "body": "枠はすべて埋まっています。誰かが抜けたらまた見てみてください。"
+    },
+    "inProgress": {
+      "title": "今ほかの人が挑戦中です",
+      "body": "ある旅行者がこのチャレンジに挑戦中です。終わればまた空くので、少ししたらまた見てみてください。"
+    }
+  },
+  "typeFilter": {
+    "label": "タイプで絞り込み",
+    "all": "すべて",
+    "empty": "今このカテゴリには何もありません。"
+  },
+  "seeAllChallenges": "すべてのチャレンジを見る →",
+  "mode": {
+    "label": "モード",
+    "local": "地元",
+    "international": "国際",
+    "localHint": "自分の街で。最後は実際に会って終わります。",
+    "internationalHint": "世界中どこでも。相手が写真を送り、離れたところから承認します。",
+    "worldwide": "世界"
+  },
+  "visibility": {
+    "label": "誰が見られる？",
+    "public": "🌍 公開",
+    "friends": "👯 友達",
+    "badge": {
+      "public": "公開",
+      "friends": "友達",
+      "private": "非公開"
+    },
+    "publicHint": "街の誰でも見て受けられます。",
+    "friendsHint": "友達と招待した人だけが見られます。",
+    "intlLocked": "国際チャレンジは常に公開です。",
+    "moderationBlocked": "不適切な表現が見つかりました。言い換えてください。",
+    "optin": {
+      "title": "ちょっと待って、これは公開です",
+      "body": "公開チャレンジは街のフィードと公開ウェブに表示されます。名前とチャレンジの文章は、メンバー以外や検索エンジンも含めて誰にでも見えます。範囲を絞りたいなら、下で「友達」に切り替えられます。",
+      "cta": "OK、公開で投稿",
+      "switchToFriends": "「友達」にする",
+      "dontShowAgain": "今後表示しない"
+    }
+  },
+  "intl": {
+    "targetCityLabel": "対象の街",
+    "targetCityAnywhere": "🌍 世界中どこでも",
+    "targetCityHint": "対象の街を選んでください。「世界中どこでも」はまだ使えません。",
+    "targetCityRequired": "「世界中どこでも」はまだ使えません。続けるには対象の街を選んでください。",
+    "targetCityRequiredTitle": "対象の街を選ぶ",
+    "proofRequirementsLabel": "写真に何を写す？",
+    "proofRequirementsPlaceholder": "例：自然光で撮った料理、自分も一緒に写る",
+    "proofRequirementsHint": "証明は写真で 📸。挑戦者は送る前にこれを見るので、具体的に書いてください。",
+    "cityPicker": {
+      "title": "対象の街を選ぶ",
+      "searchPlaceholder": "街を検索…",
+      "anywhere": "世界中どこでも"
+    },
+    "proof": {
+      "requirementsLabel": "出題者からのお願い",
+      "submitCta": "写真を送ろう",
+      "tryAgainCta": "もう一度（残り{{count}}回）",
+      "waitingProof": "写真待ち",
+      "waitingVerdict": "判定待ち",
+      "approvedLine": "チャレンジ達成",
+      "closedLine": "チャレンジ終了",
+      "lastReason": "理由：{{reason}}",
+      "geotagOk": "ジオタグ確認済み",
+      "geotagWarn": "ジオタグが範囲外",
+      "approveCta": "承認",
+      "rejectCta": "断る",
+      "rejectModalTitle": "この写真を却下",
+      "rejectModalHint_other": "残り{{count}}回挑戦できます。どこを直せばいいか伝えてあげて。",
+      "reasonPlaceholder": "例：写真がぼやけていて料理が見えない",
+      "rejectConfirm": "却下を送る",
+      "reasonRequiredTitle": "理由を入力してください",
+      "reasonRequiredBody": "短い理由（1〜200文字）があると挑戦者の助けになります。",
+      "permPhotoTitle": "カメラへのアクセスが必要です",
+      "permPhotoBody": "設定でカメラへのアクセスをオンにしてください。写真はその場で撮ったものに限ります。",
+      "permGpsTitle": "位置情報が必要です",
+      "permGpsBody": "ジオタグは必須です。設定で位置情報をオンにしてください。",
+      "gpsFailTitle": "GPSを取得できませんでした",
+      "gpsFailBody": "屋外で、または位置情報サービスをオンにして、もう一度試してください。",
+      "submitFailTitle": "送信できませんでした",
+      "submitFailBody": "接続を確認して、もう一度試してください。",
+      "reviewFailTitle": "判定を保存できませんでした"
+    }
+  },
+  "modeFilter": {
+    "label": "モードで絞り込み",
+    "all": "すべて"
+  },
   "scoreCelebration": {
     "unit": "ポイント",
     "subtitle": {
-      "accepted": "チャレンジが受けられました",
-      "date_locked": "日程が決まりました - 行こう",
+      "accepted": "チャレンジに挑戦者が現れました",
+      "date_locked": "日程が決まりました。さあ行こう",
       "meetup": "ミッション達成",
       "debrief": "ミッション達成",
-      "ghost": "次回頑張ろう",
+      "ghost": "次はがんばろう",
       "default": "ランキングを駆け上がってる",
-      "meet_bonus": "直接会うボーナス獲得",
-      "challenge_created": "チャレンジを作成しました"
+      "meet_bonus": "対面ボーナス獲得",
+      "challenge_created": "チャレンジを出しました"
     },
     "rank": {
-      "city": "{{city}}で {{rank}}位",
+      "city": "{{city}}で{{rank}}位",
       "cityBeyond": "街のトップ{{topN}}圏外",
-      "world": "世界で {{rank}}位",
+      "world": "世界で{{rank}}位",
       "worldBeyond": "世界のトップ{{topN}}圏外",
-      "cityUnranked": "今月{{city}}でまだランクインなし",
-      "worldUnranked": "今月世界ランキング外",
-      "cities": "{{city}} は都市で #{{rank}} 位",
-      "citiesBeyond": "{{city}} は都市トップ {{topN}} 圏外"
+      "cityUnranked": "今月は{{city}}でランク外",
+      "worldUnranked": "今月は世界でランク外",
+      "cities": "{{city}}は街ランキングで{{rank}}位",
+      "citiesBeyond": "{{city}}は街のトップ{{topN}}圏外"
     },
-    "cta": "いこう",
+    "cta": "行こう",
     "kindShort": {
-      "accepted": "参加",
+      "accepted": "承認済み",
       "date_locked": "日程確定",
       "meetup": "対面",
       "debrief": "相互評価",
       "ghost": "すっぽかし",
       "default": "獲得",
-      "meet_bonus": "直接会うボーナス",
+      "meet_bonus": "対面ボーナス",
       "challenge_created": "チャレンジ作成"
     },
     "event": {
       "deletedChallenge": "削除されたチャレンジ",
-      "andMore": "ほか {{count}}件"
+      "andMore": "ほか{{count}}件"
     },
-    "total": "合計: {{total}} pts"
+    "total": "合計：{{total}}pt"
   },
   "welcomeGuest": {
-    "title": "ようこそ！登録なしで自由に話せます。",
-    "cta": "このチャレンジに挑戦したい？3秒で登録"
+    "title": "ようこそ！ここでは登録なしで自由に話せます。",
+    "cta": "このチャレンジに挑戦したい？3秒で登録できます"
+  },
+  "group": {
+    "meetLabel": "日時と場所",
+    "meetCta": "会う日を決める",
+    "meetHint": "参加した全員がここに集まります。誰が来たかはあとで確認します。",
+    "meetRequired": "会う日を選んでください。",
+    "meetRequiredTitle": "集まりを設定",
+    "meetSet": "集まりを設定",
+    "join": "参加",
+    "done": "この集まりは終了しました。",
+    "validateCta": "来た人を確認する",
+    "validateAfter": "集まりのあとに確認できます · {{time}}",
+    "youreIn": "参加決定！当日会おう！",
+    "joinCta": "チャレンジに参加（+2pt）",
+    "closed": "新規参加を締め切りました",
+    "joinFailed": "参加できませんでした。もう一度試してください。",
+    "validateFailed": "確認できませんでした。もう一度試してください。",
+    "validateTitle": "誰が来た？",
+    "validateSub": "集まりに来た人全員にチェックを入れてください。それぞれが報酬をもらえます。",
+    "rateMeet": "集まりはどうだった？",
+    "validateConfirm": "{{count}}人の出席を確定",
+    "noParticipants": "まだ誰も参加していません。",
+    "deadlineLabel": "提出期限",
+    "deadline24h": "24時間",
+    "deadline3d": "3日",
+    "deadline1w": "1週間",
+    "deadlineHint": "参加した全員が期限までに写真を投稿します。勝者はあとで選びます。",
+    "deadlineRequiredTitle": "期限を選ぶ",
+    "deadlineRequired": "チャレンジの期間を選んでください。",
+    "deadlinePrefix": "期限",
+    "contestDone": "このチャレンジは終了しました。",
+    "youreInPhoto": "参加決定！下から写真を投稿しよう。",
+    "pickWinnerCta": "勝者を選ぶ",
+    "joinContestCta": "チャレンジに参加（+2pt）",
+    "winnerTitle": "勝者を選ぶ",
+    "winnerSub": "一番いい写真を選んでください。勝者は大きな報酬をもらえます。",
+    "winnerConfirm": "勝者を決定",
+    "winnerNoSubmission": "その人はまだ写真を投稿していません。",
+    "winnerFailed": "勝者を選べませんでした。もう一度試してください。",
+    "submissionsHeader_other": "写真{{count}}枚",
+    "tapToPick": "一番いいのを選ぼう",
+    "winnerTag": "勝者",
+    "pickThis": "勝者に選ぶ",
+    "winnerConfirmTitle": "勝者を決定しますか？",
+    "winnerConfirmBody": "{{name}}さんが大きな報酬をもらえます。",
+    "pickHint": "下の写真から勝者を選ぼう。",
+    "awaitingPhotos": "まだ写真がありません。チャレンジは盛り上がってきてるよ 🔥",
+    "checkPhotos_other": "写真{{count}}枚を見る"
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "いま、街を感じよう",
+      "body": "チャレンジは、街の人どうしで、そして街と街のあいだで出し合う、ちょっとしたリアルな挑戦です。"
+    },
+    "slide2": {
+      "title": "チャレンジを出す",
+      "body": "集まり（日時＋場所）か、期限つきの写真チャレンジを設定。ホストは自分です。"
+    },
+    "slide3": {
+      "title": "誰でもすぐ参加",
+      "body": "申請も待ち時間もなし。参加したい人がそのまま参加。すぐに+2もらえます。"
+    },
+    "slide4": {
+      "title": "実現させよう",
+      "body": "みんなで集まりに来るか、期限までにベストな写真を投稿します。"
+    },
+    "slide5": {
+      "title": "確認するのは自分",
+      "body": "終わったら誰が来たかを確認するか、勝った写真を選びます。大きなポイントが入るのはここ。"
+    },
+    "slide6": {
+      "title": "街を越えて",
+      "body": "写真チャレンジは離れていてもOK。別の街まるごとに、ベストショットを送るよう挑戦しよう。"
+    },
+    "slide7": {
+      "title": "Most Localを駆け上がろう",
+      "body": "実際に来て、勝って、ランキングを上げよう。参加だけのポイントは小さめ。大事なのは本当にやること。"
+    }
   },
   "result": {
     "winner": {
       "title": "優勝！",
-      "body": "あなたの写真がチャレンジで優勝しました。"
+      "body": "写真がチャレンジで優勝しました。"
     },
     "loser": {
-      "title": "{{name}} が優勝",
-      "body": "ナイスショット！参加で {{points}} 獲得 — 次はきっと勝てる"
+      "title": "{{name}}さんが優勝",
+      "body": "ナイスショット！参加で{{points}}獲得。次こそ勝とう"
     },
     "present": {
-      "title": "参加しました！",
-      "body": "ミートへの参加が確認されました。"
+      "title": "出席しました！",
+      "body": "集まりへの出席が確認されました。"
     },
     "absent": {
       "title": "今回は逃しちゃった",
-      "body": "次のミートで会おう — 席は空けてあるよ。"
+      "body": "次の集まりで会おう。席は空けてあるよ。"
     },
     "host": {
-      "titlePhoto": "{{name}} があなたのチャレンジで優勝！",
-      "titleMeet": "ミートが終了しました！",
+      "titlePhoto": "{{name}}さんがあなたのチャレンジで優勝！",
+      "titleMeet": "集まりが終わりました！",
       "body": "ホストしてくれてありがとう。",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
-    "cta": "いいね！",
-    "total": "現在 {{total}} ポイント",
-    "rateTitle": "このチャレンジを評価",
+    "cta": "やった！",
+    "total": "これで合計{{total}}ポイント",
+    "rateTitle": "このチャレンジを評価しよう",
     "notePlaceholder": "メモを追加（任意）",
     "saveRating": "評価を保存"
   },
@@ -688,106 +780,14 @@
     "done": "完了",
     "ended": "終了"
   },
-  "group": {
-    "meetCta": "会う日を選ぶ",
-    "meetRequired": "会う日を選んでください。",
-    "meetLabel": "日時と場所",
-    "meetHint": "参加した全員がここで一緒に集まります。あとで誰が来たかをあなたが確認します。",
-    "meetRequiredTitle": "集まりを設定",
-    "meetSet": "集まりを設定",
-    "join": "参加",
-    "done": "この集まりは終了しました。",
-    "validateCta": "来た人を確認する",
-    "validateAfter": "集まりのあとに確認できます · {{time}}",
-    "youreIn": "参加しました — 当日会いましょう！",
-    "joinCta": "チャレンジに参加（+2 pt）",
-    "closed": "新規参加を締め切りました",
-    "joinFailed": "参加できませんでした。もう一度お試しください。",
-    "validateFailed": "確認できませんでした。もう一度お試しください。",
-    "validateTitle": "誰が来ましたか？",
-    "validateSub": "集まりに来た人全員にチェックを。それぞれが報酬を獲得します。",
-    "rateMeet": "集まりはどうでしたか？",
-    "validateConfirm": "{{count}}人の出席を確認",
-    "noParticipants": "まだ誰も参加していません。",
-    "deadlineLabel": "提出期限",
-    "deadline24h": "24h",
-    "deadline3d": "3日",
-    "deadline1w": "1週間",
-    "deadlineHint": "参加した全員が期限までに写真を提出します。あとであなたが勝者を選びます。",
-    "deadlineRequiredTitle": "期限を選ぶ",
-    "deadlineRequired": "チャレンジの期間を選んでください。",
-    "deadlinePrefix": "期限",
-    "contestDone": "このチャレンジは終了しました。",
-    "youreInPhoto": "参加しました — 下から写真を提出してください。",
-    "pickWinnerCta": "勝者を選ぶ",
-    "joinContestCta": "チャレンジに参加（+2 pt）",
-    "winnerTitle": "勝者を選ぶ",
-    "winnerSub": "ベスト写真を選んでください。勝者が大きな報酬を獲得します。",
-    "winnerConfirm": "勝者を決定",
-    "winnerNoSubmission": "その人はまだ写真を提出していません。",
-    "winnerFailed": "勝者を選べませんでした。もう一度お試しください。",
-    "submissionsHeader_other": "{{count}}枚の写真",
-    "tapToPick": "ベストを選ぶ",
-    "winnerTag": "勝者",
-    "pickThis": "選ぶ",
-    "winnerConfirmTitle": "勝者を決定しますか？",
-    "winnerConfirmBody": "{{name}}が大きな報酬を獲得します。",
-    "pickHint": "下の写真から勝者を選んでください。",
-    "awaitingPhotos": "まだ写真がありません — チャレンジは盛り上がってきています 🔥",
-    "checkPhotos_other": "{{count}}枚の写真を見る"
-  },
-  "leaveTakeon": {
-    "pill": "退出",
-    "confirmTitle": "このチャレンジから退出しますか？",
-    "confirmBody": "進行状況はゼロに戻り、チャレンジは他の人に再び開放されます。元に戻せません。",
-    "confirmCta": "退出",
-    "failed": "退出できませんでした。もう一度お試しください。"
-  },
-  "restart": {
-    "cta": "チャレンジをやり直す",
-    "confirmTitle": "チャレンジをやり直しますか？",
-    "confirmBody": "現在の参加者を外し、チャットを消去し、チャレンジをゼロから再開します。元に戻せません。",
-    "confirmCta": "やり直す",
-    "failed": "やり直せませんでした。もう一度お試しください。"
-  },
-  "challengeIntro": {
-    "slide1": {
-      "title": "いま、街を感じよう",
-      "body": "チャレンジは、街の人どうし、そして街と街のあいだの小さなリアルな挑戦です。"
-    },
-    "slide2": {
-      "title": "チャレンジを設定",
-      "body": "集まり（日時＋場所）か、期限つきの写真チャレンジを設定。あなたがホストです。"
-    },
-    "slide3": {
-      "title": "誰でもすぐ参加",
-      "body": "申請も待ちもなし — 参加したい人が参加。すぐに +2 を獲得。"
-    },
-    "slide4": {
-      "title": "実現させよう",
-      "body": "全員があなたの集まりに集合 — または期限までにベスト写真を提出します。"
-    },
-    "slide5": {
-      "title": "あなたが確認",
-      "body": "あとで誰が出席したかを確認、または勝者の写真を選びます。大きな点数はここで入ります。"
-    },
-    "slide6": {
-      "title": "街をまたいで",
-      "body": "写真チャレンジは遠隔でも成立 — 別の街に、ベストショットを送るよう挑戦しましょう。"
-    },
-    "slide7": {
-      "title": "Most Local を駆け上がる",
-      "body": "出席して勝つとランキングが上がります。参加のスパークは小さめ — 大事なのは実際にやることです。"
-    }
-  },
   "pointExamples": {
     "title": "3つの実例",
-    "intro": "実際のチャレンジでどう配点されたか — 誰が何を得たか。",
-    "empty": "まだ例がありません — 最初のチャレンジを始めましょう！",
+    "intro": "実際のチャレンジで、誰が何ポイントもらったか。",
+    "empty": "まだ例がありません。最初にチャレンジを開こう！",
     "each": "各",
     "line": {
       "created": "{{name}}が作成",
-      "winner": "{{name}}が勝利",
+      "winner": "{{name}}さんが優勝",
       "present": "{{count}}人が出席",
       "submission": "{{count}}人が写真を提出",
       "host": "{{name}}が主催"
@@ -800,10 +800,10 @@
     "help": "例：何かクレイジーなことに挑戦させて 🤪"
   },
   "relaunch": {
-    "cta": "再開",
-    "confirmTitle": "このチャレンジを再開しますか？",
-    "confirmBody": "最初に設定したのと同じカウントダウンで再開します。",
-    "confirmCta": "再開",
-    "failed": "再開できませんでした - もう一度お試しください。"
+    "cta": "やり直す",
+    "confirmTitle": "このチャレンジをやり直しますか？",
+    "confirmBody": "最初に設定したのと同じカウントダウンで再スタートします。",
+    "confirmCta": "やり直す",
+    "failed": "やり直せませんでした。もう一度試してください。"
   }
 }
