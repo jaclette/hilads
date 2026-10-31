@@ -1137,6 +1137,7 @@
       "./plugins/withSingleTopActivity",
       "./plugins/withLegacyBackHandling",
       "./plugins/withNetworkRecovery",
+      "./plugins/withPodsDeploymentTarget",
       [
         "./plugins/withNdkVersion",
         {
