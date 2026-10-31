@@ -56,7 +56,11 @@ export async function dualPreferred(): Promise<boolean> {
   return (await AsyncStorage.getItem(DUAL_KEY).catch(() => null)) !== '0';
 }
 const COUNTDOWN_FROM = 3;
-const FRONT_TIMEOUT_MS = 5000;
+// Long enough for the watchdog's two restarts below (2 × (2.5 s + the gap)) and an opening.
+const FRONT_TIMEOUT_MS = 9000;
+// A selfie shot that fails (the front camera still settling) is tried again, this many times.
+const SELFIE_RETRIES = 2;
+const SELFIE_RETRY_MS = 500;
 // A preview not ready by then is restarted (a black viewfinder), at most twice per camera.
 const WATCHDOG_MS = 2500;
 const WATCHDOG_MAX = 2;
@@ -106,6 +110,10 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
   const [lit, setLit] = useState(false);
   const frontTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tick = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // One countdown per selfie: Android can report "ready" twice (the back camera late, then the
+  // front one), and two countdowns took two shots at once, the second one failing.
+  const counting = useRef(false);
+  const shooting = useRef(false);
 
   useEffect(() => {
     AsyncStorage.getItem(DUAL_KEY).then(v => { if (v === '0') setDual(false); }).catch(() => {});
@@ -115,6 +123,7 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
     if (frontTimer.current) clearTimeout(frontTimer.current);
     if (tick.current) clearTimeout(tick.current);
     frontTimer.current = tick.current = null;
+    counting.current = false;
   };
   useEffect(() => clearTimers, []);
 
@@ -154,7 +163,8 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
   const numStyle = useAnimatedStyle(() => ({ transform: [{ scale: numScale.value }] }));
 
   const shoot = async (): Promise<string | null> => {
-    if (!camera.current) return null;
+    if (!camera.current || shooting.current) return null;
+    shooting.current = true;
     setTaking(true);
     try {
       const pic = await camera.current.takePictureAsync({ quality: 0.9, skipProcessing: false });
@@ -163,6 +173,7 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
       console.warn('[dual-camera] capture failed:', String(e));
       return null;
     } finally {
+      shooting.current = false;
       setTaking(false);
     }
   };
@@ -192,8 +203,9 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
   };
 
   const takeSelfie = async () => {
-    if (taking) return;
+    if (shooting.current) return;
     clearTimers();
+    counting.current = true;   // no new countdown until the next selfie
     setCount(null);
     setWink(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -205,7 +217,11 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
       if (b) { before = await b.getBrightnessAsync().catch(() => null); await b.setBrightnessAsync(1).catch(() => {}); }
       await new Promise(r => setTimeout(r, SCREEN_FLASH_MS));
     }
-    const uri = await shoot();
+    let uri = await shoot();
+    for (let i = 0; !uri && i < SELFIE_RETRIES; i++) {
+      await new Promise(r => setTimeout(r, SELFIE_RETRY_MS));
+      uri = await shoot();
+    }
     if (screenFlash) {
       if (before !== null) brightness()?.setBrightnessAsync(before).catch(() => {});
       setLit(false);
@@ -219,7 +235,8 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
   // The countdown starts when the front camera is ready: 3, 2, 1, snap.
   const onReady = () => {
     setReady(true);
-    if (phase !== 'selfie') return;
+    if (phase !== 'selfie' || counting.current) return;
+    counting.current = true;
     if (frontTimer.current) { clearTimeout(frontTimer.current); frontTimer.current = null; }
     const step = (n: number) => {
       if (n === 0) { takeSelfie(); return; }

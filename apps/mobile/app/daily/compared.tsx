@@ -8,7 +8,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, EmptyState, Screen, ScreenHeader, SectionTitle, Sheet, TextField } from '@/ui';
+import { Button, CityFlag, EmptyState, Screen, ScreenHeader, SectionTitle, Sheet, SheetScrollView, TextField } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
 import { ComparisonCard, comparisonShare, comparisonTitle, useComparisonValue } from '@/features/index/ComparisonCard';
@@ -177,14 +177,14 @@ export default function ComparedScreen() {
 
       <Sheet visible={picking !== null} onClose={() => setPicking(null)} closeLabel={t('close', { ns: 'common' })} style={styles.sheet}>
         <Text style={styles.sheetTitle}>{t('index.pickCity')}</Text>
-        <ScrollView style={styles.sheetList}>
+        <SheetScrollView style={styles.sheetList}>
           {cities.filter(c => c.id !== (picking === 0 ? b?.id : a?.id)).map(c => (
             <TouchableOpacity key={c.id} style={styles.cityRow} onPress={() => pickCity(c)} accessibilityRole="button">
               <CityFlag country={c.country} size={20} />
               <Text style={styles.cityRowText}>{shortCityName(c.name)}</Text>
             </TouchableOpacity>
           ))}
-        </ScrollView>
+        </SheetScrollView>
       </Sheet>
       <ShareSheet content={share} source="index_screen" onClose={() => setShare(null)} />
     </Screen>

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
-import { Avatar, Sheet } from '@/ui';
+import { Avatar, Sheet, SheetScrollView } from '@/ui';
 import { fetchDailyVoters, type DailyVoter } from '@/api/daily';
 
 /** Who voted for my photo: opened from the heart on my own photo. A row opens that person's profile. */
@@ -31,7 +31,7 @@ export function DailyVotersSheet({ proofId, onOpenUser, onClose }: {
         : voters === null ? <ActivityIndicator color={colors.primary} style={styles.loading} />
         : voters.length === 0 ? <Text style={styles.empty}>{t('vote.votersEmpty')}</Text>
         : (
-          <ScrollView style={styles.list} testID="voters-list">
+          <SheetScrollView style={styles.list} testID="voters-list">
             {voters.map(v => {
               const name = v.displayName || v.username;
               return (
@@ -44,7 +44,7 @@ export function DailyVotersSheet({ proofId, onOpenUser, onClose }: {
                 </TouchableOpacity>
               );
             })}
-          </ScrollView>
+          </SheetScrollView>
         )}
     </Sheet>
   );

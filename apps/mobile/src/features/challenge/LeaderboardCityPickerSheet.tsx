@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
-import { CityFlag, EmptyState, Sheet, TextField } from '@/ui';
+import { CityFlag, EmptyState, Sheet, SheetFlatList, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { City } from '@/types';
 
@@ -85,7 +85,7 @@ export function LeaderboardCityPickerSheet({
       ) : filtered.length === 0 ? (
         <EmptyState body={t('leaderboard.cityPicker.empty', { defaultValue: 'No cities match.' })} />
       ) : (
-        <FlatList
+        <SheetFlatList
           data={filtered}
           keyExtractor={(c) => c.channelId}
           keyboardShouldPersistTaps="handled"

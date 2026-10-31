@@ -25,7 +25,7 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { thumbUrl } from '@/lib/imageThumb';
 import { detectActiveMention } from '@/lib/mentions';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { Avatar, Sheet } from '@/ui';
+import { Avatar, Sheet, SheetFlatList } from '@/ui';
 import { Confetti, ThemeChipJoy, themeColor } from '@/ui/joy';
 import type { DailyProof, PhotoComment } from '@/types';
 import {
@@ -306,8 +306,8 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
             <Text style={styles.emptySub}>{t('comments.emptySub')}</Text>
           </View>
         ) : (
-          <FlatList
-            ref={listRef}
+          <SheetFlatList
+            listRef={listRef}
             data={items}
             keyExtractor={c => c.tempId ?? String(c.id)}
             keyboardShouldPersistTaps="handled"

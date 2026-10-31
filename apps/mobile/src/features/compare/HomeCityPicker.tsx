@@ -6,7 +6,7 @@ import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, CityFlag, EmptyState, Sheet, TextField } from '@/ui';
+import { Button, CityFlag, EmptyState, Sheet, SheetFlatList, TextField } from '@/ui';
 import { FLAGS } from '@/ui/flags';
 import type { City, HomeCityRef } from '@/types';
 
@@ -85,7 +85,7 @@ export function HomeCityPicker({ visible, selected, onPick, onClear, onClose }: 
         <Text style={styles.label}>{t('backHome.otherCountry')}</Text>
         <TextField variant="search" value={query} onChangeText={setQuery} onClear={() => setQuery('')}
                    clearLabel={t('clear', { ns: 'common' })} placeholder={t('backHome.countrySearch')} autoCorrect={false} />
-        <FlatList
+        <SheetFlatList
           data={countries}
           keyExtractor={c => c.code}
           keyboardShouldPersistTaps="handled"
@@ -119,7 +119,7 @@ export function HomeCityPicker({ visible, selected, onPick, onClear, onClose }: 
       ) : filtered.length === 0 ? (
         <EmptyState body={t('backHome.noMatch')} />
       ) : (
-        <FlatList
+        <SheetFlatList
           data={filtered}
           keyExtractor={c => c.channelId}
           keyboardShouldPersistTaps="handled"

@@ -2,7 +2,7 @@ import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { Button, Sheet } from '@/ui';
+import { Button, Sheet, SheetScrollView } from '@/ui';
 
 // The three ways to earn Daily Challenge points (DailyPoints::EARNING_KINDS,
 // values in score_rules). Keep in step if a value changes.
@@ -16,14 +16,14 @@ export function PointsHelpSheet({ visible, onClose }: { visible: boolean; onClos
     <Sheet visible={visible} onClose={onClose} closeLabel={t('passport.close')} style={styles.sheet}>
       <Text style={styles.title}>{t('points.title')}</Text>
       <Text style={styles.intro}>{t('points.intro')}</Text>
-      <ScrollView style={styles.list}>
+      <SheetScrollView style={styles.list}>
         {ROWS.map(([key, pts]) => (
           <View key={key} style={styles.row}>
             <Text style={styles.label}>{t(`points.${key}`)}</Text>
             <Text style={styles.pts}>+{pts}</Text>
           </View>
         ))}
-      </ScrollView>
+      </SheetScrollView>
       <Text style={styles.note}>{t('points.weekly')}</Text>
       <Button label={t('passport.gotIt')} onPress={onClose} style={styles.cta} />
     </Sheet>

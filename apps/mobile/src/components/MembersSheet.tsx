@@ -5,7 +5,7 @@ import type { UserDTO, BadgeKey } from '@/types';
 import { BADGE_META } from '@/types';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Avatar, Chip, Sheet } from '@/ui';
+import { Avatar, Chip, Sheet, SheetScrollView } from '@/ui';
 
 // Bottom-sheet list of members/attendees (a plan's "going", a hangout's
 // members). Tapping a registered member opens their profile; guests are inert.
@@ -33,7 +33,7 @@ export function MembersSheet({ visible, loading, participants, count, noun, titl
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
       <Text style={styles.title} accessibilityRole="header">{title ?? `${count} ${noun}`}</Text>
 
-      <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+      <SheetScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
         {loading ? (
           <ActivityIndicator color={colors.muted} style={styles.loading} />
         ) : participants.length === 0 ? (
@@ -63,7 +63,7 @@ export function MembersSheet({ visible, loading, participants, count, noun, titl
             );
           })
         )}
-      </ScrollView>
+      </SheetScrollView>
     </Sheet>
   );
 }

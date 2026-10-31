@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { setLocale, SUPPORTED, DEFAULT_LOCALE, type Locale } from '@/i18n';
-import { ListRow, Sheet } from '@/ui';
+import { ListRow, Sheet, SheetScrollView } from '@/ui';
 
 // Language names are always shown in their own language (not translated), the
 // standard convention so a user can recognize their language regardless of the
@@ -82,7 +82,7 @@ export function LanguageRow({ divider = false }: { divider?: boolean }) {
         <Text style={styles.sheetTitle} accessibilityRole="header">{t('language')}</Text>
         {/* Numeric maxHeight gives the ScrollView a definite bound so it
             sizes to content and scrolls inside the content-sized sheet. */}
-        <ScrollView style={{ maxHeight: height * 0.6 }} showsVerticalScrollIndicator={false}>
+        <SheetScrollView style={{ maxHeight: height * 0.6 }} showsVerticalScrollIndicator={false}>
           {SUPPORTED.map((code) => {
             const active = code === current;
             return (
@@ -100,7 +100,7 @@ export function LanguageRow({ divider = false }: { divider?: boolean }) {
               </TouchableOpacity>
             );
           })}
-        </ScrollView>
+        </SheetScrollView>
       </Sheet>
     </>
   );

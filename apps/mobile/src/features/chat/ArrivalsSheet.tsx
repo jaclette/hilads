@@ -19,7 +19,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { formatSmartTime } from '@/lib/messageTime';
 import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { Avatar, EmptyState, SectionTitle, Sheet } from '@/ui';
+import { Avatar, EmptyState, SectionTitle, Sheet, SheetScrollView } from '@/ui';
 
 const FEED_JOIN_VARIANTS = 5;
 
@@ -63,7 +63,7 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close', { ns: 'common' })} style={styles.sheet}>
       <SectionTitle title={t('arrivalsBar.sheetTitle')} />
-      <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+      <SheetScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         {arrivals.length === 0 ? (
           <EmptyState body={t('arrivalsBar.empty')} />
         ) : (
@@ -88,7 +88,7 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
               );
             })
         )}
-      </ScrollView>
+      </SheetScrollView>
     </Sheet>
   );
 }

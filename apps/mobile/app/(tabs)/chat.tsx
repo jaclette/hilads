@@ -47,7 +47,7 @@ import { useDailyToday } from '@/hooks/useDaily';
 import { isDailyCard } from '@/lib/dailyEvents';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Border, FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
-import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, SectionTitle, Segmented, Sheet } from '@/ui';
+import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, SectionTitle, Segmented, Sheet, SheetFlatList } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
@@ -1090,7 +1090,7 @@ export default function ChatTab() {
         {worldArrivals.length === 0 ? (
           <EmptyState body={t('world.arrivalsEmpty')} />
         ) : (
-          <FlatList
+          <SheetFlatList
             data={worldArrivals}
             keyExtractor={(a, i) => `${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
             renderItem={({ item: a, index }) => (
