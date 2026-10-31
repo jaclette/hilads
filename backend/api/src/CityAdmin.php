@@ -85,6 +85,37 @@ final class CityAdmin
         return self::rows("WHERE ci.auto_created AND ch.status = 'active'", [], 'ch.created_at DESC', $limit);
     }
 
+    /**
+     * When the "Created automatically" list was last opened (app_settings
+     * cities_auto_seen_at), '' before the first time: the cities created after
+     * it are the new ones (count on the nav's Cities, "new" on their rows).
+     */
+    public static function autoSeenAt(): string
+    {
+        $stmt = Database::pdo()->query("SELECT value FROM app_settings WHERE key = 'cities_auto_seen_at'");
+        return (string) ($stmt->fetchColumn() ?: '');
+    }
+
+    /** How many cities were created automatically since the list was last opened. */
+    public static function newAutoCount(): int
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT COUNT(*) FROM channels ch JOIN cities ci ON ci.channel_id = ch.id
+            WHERE ci.auto_created AND ch.status = 'active' AND ch.created_at > COALESCE(NULLIF(?, '')::timestamptz, '-infinity')
+        ");
+        $stmt->execute([self::autoSeenAt()]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** The list was opened: its cities aren't new any more. */
+    public static function markAutoSeen(string $by): void
+    {
+        Database::pdo()->prepare("
+            INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES ('cities_auto_seen_at', now()::text, now(), ?)
+            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now(), updated_by = EXCLUDED.updated_by
+        ")->execute([$by]);
+    }
+
     /** One city with everything the edit page shows, or null. */
     public static function get(string $channelId): ?array
     {

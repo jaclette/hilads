@@ -271,11 +271,18 @@ function admin_nav(string $current = ''): void
         ];
         // Proposals waiting for a review: a count on Daily (and on its Proposals tab, daily_subnav).
         $pending = admin_pending_proposals();
+        // Cities created automatically since the list was last opened (a first visit there).
+        try { $newCities = CityAdmin::newAutoCount(); } catch (\Throwable) { $newCities = 0; }
         foreach ($links as $href => $label) {
             $active = ($current === $href) ? ' class="active"' : '';
             $badge  = $href === '/admin/daily' && $pending > 0
                 ? ' <span class="nav-count" title="Proposals waiting">' . $pending . '</span>' : '';
-            echo '<a href="' . $href . '"' . $active . '>' . $label . $badge . '</a>';
+            $to = $href;
+            if ($href === '/admin/cities' && $newCities > 0) {
+                $to    = '/admin/cities?view=auto';
+                $badge = ' <span class="nav-count" title="New cities created automatically">' . min($newCities, 99) . ($newCities > 99 ? '+' : '') . '</span>';
+            }
+            echo '<a href="' . $to . '"' . $active . '>' . $label . $badge . '</a>';
         }
         echo '</nav>';
         echo '<div class="header-right">';

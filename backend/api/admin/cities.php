@@ -16,8 +16,14 @@ $view   = ($_GET['view'] ?? '') === 'auto' ? 'auto' : 'search';
 $merged = !empty($_GET['merged']);
 $err    = null;
 $rows   = [];
+$seenAt = '';
 try {
     $rows = $view === 'auto' ? CityAdmin::autoCreated() : CityAdmin::search($q, $merged);
+    if ($view === 'auto') {
+        // Opening the list clears the count on the nav; the rows created since the last visit say "new".
+        $seenAt = CityAdmin::autoSeenAt();
+        CityAdmin::markAutoSeen((string) (getenv('ADMIN_USERNAME') ?: 'admin'));
+    }
 } catch (\Throwable $e) {
     $err = 'Run php migrate.php first (' . $e->getMessage() . ').';
 }
@@ -67,7 +73,8 @@ admin_nav('/admin/cities');
                     <td><?= $c['members'] ?></td>
                     <td><?= $c['photos'] ?></td>
                     <td class="td-mono"><?= $c['geoname_id'] ?? '<span style="color:#f87171">unmapped</span>' ?></td>
-                    <td class="td-mono"><?= $h(substr((string) $c['created_at'], 0, 16)) ?><?= $c['auto_created'] ? ' <span class="badge badge-recurring">auto</span>' : '' ?></td>
+                    <td class="td-mono"><?= $h(substr((string) $c['created_at'], 0, 16)) ?><?= $c['auto_created'] ? ' <span class="badge badge-recurring">auto</span>' : '' ?>
+                        <?php if ($view === 'auto' && ($seenAt === '' || strtotime((string) $c['created_at']) > strtotime($seenAt))): ?><span class="badge badge-live">new</span><?php endif; ?></td>
                     <td><a class="btn btn-sm btn-secondary" href="/admin/cities/<?= $h($c['id']) ?>">Edit</a></td>
                 </tr>
             <?php endforeach; ?>
