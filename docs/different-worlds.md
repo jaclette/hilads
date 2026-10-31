@@ -25,6 +25,7 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
    ```
    and the video: `cd tools/promo && npm run worlds -- 2026-10-31 --file docs/worlds/2026-10-31.json` (saved in `tools/promo/out/worlds/`, not uploaded).
 4. **Import** it: Admin › Worlds › "Import packages", or the topic page.
+   - Select as many day files as you like: the page imports them one by one (one request each, so a month never hits a time limit) and lists the result of each.
    - Each import is a new version of the day's topic.
    - The server downloads each photo from Commons, crops it to a square, composes the 1080×1920 slides and stores everything on R2 under `dw/<topic>/v<n>/`.
 5. **Edit and publish**:

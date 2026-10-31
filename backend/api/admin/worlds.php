@@ -34,18 +34,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }, '', $self);
     }
     if ($action === 'import') {
-        $json = (string) ($_POST['json'] ?? '');
-        $file = $_FILES['file'] ?? null;
-        if ($file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && is_uploaded_file($file['tmp_name'])) {
-            $json = (string) file_get_contents($file['tmp_name']);
+        // One file, several files (each a request of its own when sent by the
+        // page's script, so a month of packages never hits a time limit), or pasted JSON.
+        $docs = [];
+        $files = $_FILES['files'] ?? null;
+        if ($files && is_array($files['tmp_name'] ?? null)) {
+            foreach ($files['tmp_name'] as $i => $tmp) {
+                if (($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && is_uploaded_file($tmp)) {
+                    $docs[] = [(string) $files['name'][$i], json_decode((string) file_get_contents($tmp), true)];
+                }
+            }
         }
-        $doc = json_decode($json, true);
-        if (!is_array($doc)) {
-            flash_set('error', 'That is not valid JSON.');
-            admin_redirect($self);
+        $json = trim((string) ($_POST['json'] ?? ''));
+        if ($docs === [] && $json !== '') {
+            $docs[] = ['pasted JSON', json_decode($json, true)];
         }
         set_time_limit(300);
-        $report = DwStudio::import($doc);
+        $report = [];
+        foreach ($docs as [$name, $doc]) {
+            $report = array_merge($report, is_array($doc) ? DwStudio::import($doc)
+                : [['date' => $name, 'ok' => false, 'errors' => ['That is not valid JSON.'], 'warnings' => []]]);
+        }
+        if (($_POST['format'] ?? '') === 'json') {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['report' => $report], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        if ($report === []) {
+            flash_set('error', 'Choose JSON files or paste JSON.');
+            admin_redirect($self);
+        }
     }
 }
 
@@ -110,14 +128,15 @@ worlds_styles();
             <a class="btn btn-primary" href="/admin/worlds?brief=1&days=14">Download brief (14 days)</a>
         </div>
 
-        <form method="POST" action="<?= wh($self) ?>" enctype="multipart/form-data" class="form-card">
+        <form method="POST" action="<?= wh($self) ?>" enctype="multipart/form-data" class="form-card" id="worlds-import">
             <?= csrf_input() ?>
             <input type="hidden" name="action" value="import">
             <h3 style="margin-bottom:8px">Import packages</h3>
-            <div class="form-group"><label>JSON file</label><input type="file" name="file" accept="application/json,.json"></div>
+            <div class="form-group"><label>JSON files (select as many days as you like)</label><input type="file" name="files[]" multiple accept="application/json,.json"></div>
             <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="4" style="font-family:monospace;width:100%"></textarea>
                 <div class="hint">{"packages": [{"date", "content"}]}: each package becomes a new version of its day's topic.</div></div>
             <button class="btn btn-primary" type="submit">Import and render</button>
+            <ul class="worlds-report" id="worlds-import-progress" style="margin-top:10px"></ul>
         </form>
 
         <form method="POST" action="<?= wh($self) ?>" class="form-card">
@@ -134,4 +153,48 @@ worlds_styles();
         </form>
     </div>
 </div>
+<script>
+// Several files: one request per file, in order, so each day renders within
+// its own time limit; then the page reloads on the calendar.
+document.getElementById('worlds-import').addEventListener('submit', async (e) => {
+    const form = e.currentTarget;
+    const files = [...form.querySelector('input[type=file]').files];
+    if (files.length < 2) return;
+    e.preventDefault();
+    const button = form.querySelector('button[type=submit]');
+    const list = document.getElementById('worlds-import-progress');
+    button.disabled = true;
+    list.innerHTML = '';
+    let failed = 0;
+    for (const [i, file] of files.entries()) {
+        const li = document.createElement('li');
+        li.textContent = `${file.name}: importing (${i + 1}/${files.length})…`;
+        list.appendChild(li);
+        const body = new FormData();
+        body.append('csrf_token', form.querySelector('[name=csrf_token]').value);
+        body.append('action', 'import');
+        body.append('format', 'json');
+        body.append('files[]', file);
+        try {
+            const res = await fetch(form.getAttribute('action'), { method: 'POST', body, credentials: 'same-origin' });
+            const { report } = await res.json();
+            const bad = report.filter((r) => !r.ok);
+            failed += bad.length;
+            li.style.color = bad.length ? '#f87171' : '#4ade80';
+            li.textContent = report.map((r) => r.ok
+                ? `${r.date}: ✓ version ${r.version}${r.warnings.length ? ` (${r.warnings.length} warnings)` : ''}`
+                : `${r.date}: not imported: ${r.errors.join(' ')}`).join(' · ') || `${file.name}: nothing in it`;
+        } catch (err) {
+            failed++;
+            li.style.color = '#f87171';
+            li.textContent = `${file.name}: failed (${err.message})`;
+        }
+    }
+    button.disabled = false;
+    const done = document.createElement('li');
+    done.innerHTML = (failed ? `<strong>${failed} not imported</strong>: fix and import those again.` : '<strong>All imported.</strong>')
+        + ' <a href="">Reload the calendar</a>';
+    list.appendChild(done);
+});
+</script>
 <?php admin_foot();
