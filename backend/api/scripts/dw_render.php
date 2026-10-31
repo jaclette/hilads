@@ -39,11 +39,19 @@ foreach ($items as $item) {
     $dir = rtrim($out, '/') . '/' . $date;
     @mkdir($dir, 0777, true);
     foreach (DwStudio::slidePlan($content) as $slide) {
+        $photo = null;
+        if ($slide['photo_src'] !== '') {
+            try {
+                $photo = DwStudio::fetchPhoto($slide['photo_src']);
+            } catch (Throwable $e) {
+                echo "{$date} warn  slide {$slide['position']}: photo not used ({$e->getMessage()})\n";
+            }
+        }
         $raw = $svgs[$slide['position']] ?? null;
-        $clean = is_string($raw) ? DwSlides::sanitizeSvg($raw) : null;
-        if ($clean === null) { echo "{$date} warn  slide {$slide['position']}: no usable illustration, plain background\n"; }
+        $clean = $photo === null && is_string($raw) ? DwSlides::sanitizeSvg($raw) : null;
+        if ($photo === null && $clean === null) { echo "{$date} warn  slide {$slide['position']}: no picture, plain background\n"; }
         $name = DwSlides::fileName($slide['position'], $slide['kind'], $slide['country'] ?? null);
-        file_put_contents("{$dir}/{$name}", DwSlides::toPng(DwSlides::compose($slide, $clean)));
+        file_put_contents("{$dir}/{$name}", DwSlides::toPng(DwSlides::compose($slide, $clean, $photo)));
         echo "{$date} ok    {$dir}/{$name}\n";
     }
 }

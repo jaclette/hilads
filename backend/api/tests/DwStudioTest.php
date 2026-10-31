@@ -31,7 +31,7 @@ final class DwStudioTest extends TestCase
     {
         [$errors, $warnings] = DwStudio::validate($this->content(), ['Vietnam']);
         $this->assertSame([], $errors);
-        $this->assertSame([], $warnings);
+        $this->assertSame(['The outro: no photo, plain background.'], $warnings);   // the fixture's outro has no picture
     }
 
     public function testCountriesRules(): void
@@ -80,13 +80,13 @@ final class DwStudioTest extends TestCase
     public function testEditTargets(): void
     {
         $c = $this->content(6);
-        $this->assertSame(['slide' => 1], DwStudio::editTarget($c, 'hook.on_screen_text'));
-        $this->assertSame(['slide' => null], DwStudio::editTarget($c, 'hook.illustration_brief'));
-        $this->assertSame(['slide' => 3], DwStudio::editTarget($c, 'slides.1.on_screen_text'));
-        $this->assertSame(['slide' => 3], DwStudio::editTarget($c, 'slides.1.flag'));
-        $this->assertSame(['slide' => null], DwStudio::editTarget($c, 'slides.1.caption_detail'));
-        $this->assertSame(['slide' => 8], DwStudio::editTarget($c, 'outro.question'));
-        $this->assertSame(['slide' => null], DwStudio::editTarget($c, 'caption'));
+        $this->assertSame(1, DwStudio::editTarget($c, 'hook.on_screen_text')['slide']);
+        $this->assertSame(null, DwStudio::editTarget($c, 'hook.illustration_brief')['slide']);
+        $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.on_screen_text')['slide']);
+        $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.flag')['slide']);
+        $this->assertSame(null, DwStudio::editTarget($c, 'slides.1.caption_detail')['slide']);
+        $this->assertSame(8, DwStudio::editTarget($c, 'outro.question')['slide']);
+        $this->assertSame(null, DwStudio::editTarget($c, 'caption')['slide']);
         $this->assertNull(DwStudio::editTarget($c, 'slides.6.country'));   // no 7th country
         $this->assertNull(DwStudio::editTarget($c, 'model'));
     }
@@ -96,6 +96,55 @@ final class DwStudioTest extends TestCase
         [$c] = DwStudio::splitSvgs($this->content());
         $this->assertSame("Different Worlds by Hilads. How does your city celebrate?\n\n#halloween #travel #culture #differentworlds #hilads\n\nIllustrations made with AI.",
             DwStudio::fullCaption($c));
+    }
+
+    public function testPhotoRules(): void
+    {
+        $c = $this->content();
+        $c['hook'] = ['on_screen_text' => 'Hook', 'photo_url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/A.jpg/1920px-A.jpg',
+                      'photo_credit' => 'Photo: A, CC0, Wikimedia Commons'];
+        $c['slides'][0]['photo_url'] = 'https://example.com/a.jpg';
+        $c['slides'][1]['photo_url'] = 'https://upload.wikimedia.org/wikipedia/commons/b/bb/B.jpg';
+        [$errors, $warnings] = DwStudio::validate($c, ['Vietnam']);
+        $this->assertContains('Country 1: photo_url must be an image file on https://upload.wikimedia.org.', $errors);
+        $this->assertContains('Country 2: the photo needs a photo_credit (author and license).', $errors);
+        $this->assertNotContains('The hook: the photo needs a photo_credit (author and license).', $errors);
+        $this->assertContains('The outro: no photo, plain background.', $warnings);
+
+        $this->assertTrue(DwStudio::photoSourceOk('https://upload.wikimedia.org/wikipedia/commons/3/30/Traditional_Irish_halloween_Jack-o%27-lantern.jpg'));
+        $this->assertFalse(DwStudio::photoSourceOk('http://upload.wikimedia.org/a.jpg'));
+        $this->assertFalse(DwStudio::photoSourceOk('https://upload.wikimedia.org.evil.test/a.jpg'));
+        $this->assertFalse(DwStudio::photoSourceOk('https://upload.wikimedia.org/a.svg'));
+
+        $plan = DwStudio::slidePlan($c);
+        $this->assertSame('Photo: A, CC0, Wikimedia Commons', $plan[0]['credit']);
+        $this->assertSame('', end($plan)['photo_src']);
+        $this->assertSame(['slide' => 3, 'photo' => false], DwStudio::editTarget($c, 'slides.1.photo_credit'));
+        $this->assertSame(['slide' => 1, 'photo' => true], DwStudio::editTarget($c, 'hook.photo_url'));
+    }
+
+    public function testSquarePhoto(): void
+    {
+        $im = imagecreatetruecolor(1600, 1000);
+        imagefill($im, 0, 0, imagecolorallocate($im, 200, 120, 40));
+        ob_start();
+        imagejpeg($im);
+        $jpeg = DwSlides::squarePhoto((string) ob_get_clean());
+        $this->assertSame([1080, 1080], array_slice(getimagesizefromstring($jpeg), 0, 2));
+
+        $small = imagecreatetruecolor(500, 400);
+        ob_start();
+        imagepng($small);
+        $this->expectException(InvalidArgumentException::class);
+        DwSlides::squarePhoto((string) ob_get_clean());
+    }
+
+    public function testComposeWithAPhotoAndItsCredit(): void
+    {
+        $svg = DwSlides::compose(['kind' => 'hook', 'text' => 'Hi', 'credit' => 'Photo: A, CC BY 4.0, Wikimedia Commons'], null, 'JPEGBYTES');
+        $this->assertStringContainsString('href="data:image/jpeg;base64,' . base64_encode('JPEGBYTES') . '"', $svg);
+        $this->assertStringContainsString('Photo: A, CC BY 4.0, Wikimedia Commons', $svg);
+        $this->assertStringNotContainsString('Photo:', DwSlides::compose(['kind' => 'hook', 'text' => 'Hi', 'credit' => 'Photo: A'], null, null));
     }
 
     public function testSanitizeRemovesWhatLoadsOrRuns(): void

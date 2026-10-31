@@ -147,13 +147,14 @@ final class DwStudio
     public static function deleteTopic(int $id): void
     {
         $stmt = Database::pdo()->prepare("
-            SELECT s.svg_url, s.png_url FROM dw_slides s JOIN dw_packages p ON p.id = s.package_id WHERE p.topic_id = ?
+            SELECT s.svg_url, s.png_url, s.photo_url, p.video_url FROM dw_slides s JOIN dw_packages p ON p.id = s.package_id WHERE p.topic_id = ?
         ");
         $stmt->execute([$id]);
         $urls = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
-            array_push($urls, $r['svg_url'], $r['png_url']);
+            array_push($urls, $r['svg_url'], $r['png_url'], $r['photo_url'], $r['video_url']);
         }
+        $urls = array_unique(array_filter($urls));
         Database::pdo()->prepare("DELETE FROM dw_topics WHERE id = ?")->execute([$id]);
         foreach (array_filter($urls) as $url) {
             self::deleteFile($url);
@@ -259,21 +260,26 @@ final class DwStudio
     }
 
     /**
-     * The slides a content gives, in order: [{position, kind, text, country?, flag?, brief}].
-     * 1 = hook, then one per country, then the outro.
+     * The slides a content gives, in order: [{position, kind, text, country?, flag?,
+     * brief, credit, photo_src}]. 1 = hook, then one per country, then the outro.
      */
     public static function slidePlan(array $c): array
     {
-        $plan = [['position' => 1, 'kind' => 'hook', 'text' => (string) ($c['hook']['on_screen_text'] ?? ''),
-                  'brief' => (string) ($c['hook']['illustration_brief'] ?? '')]];
+        $pic = static fn(array $part) => ['brief' => (string) ($part['illustration_brief'] ?? ''),
+            'credit' => (string) ($part['photo_credit'] ?? ''), 'photo_src' => (string) ($part['photo_url'] ?? '')];
+        $plan = [['position' => 1, 'kind' => 'hook', 'text' => (string) ($c['hook']['on_screen_text'] ?? '')] + $pic($c['hook'] ?? [])];
         foreach (array_values($c['slides'] ?? []) as $i => $s) {
             $plan[] = ['position' => $i + 2, 'kind' => 'country', 'text' => (string) ($s['on_screen_text'] ?? ''),
-                       'country' => (string) ($s['country'] ?? ''), 'flag' => (string) ($s['flag'] ?? ''),
-                       'brief' => (string) ($s['illustration_brief'] ?? '')];
+                       'country' => (string) ($s['country'] ?? ''), 'flag' => (string) ($s['flag'] ?? '')] + $pic($s);
         }
-        $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? ''),
-                   'brief' => (string) ($c['outro']['illustration_brief'] ?? '')];
+        $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? '')] + $pic($c['outro'] ?? []);
         return $plan;
+    }
+
+    /** A photo source we fetch: an https file on Wikimedia Commons' upload server. */
+    public static function photoSourceOk(string $url): bool
+    {
+        return (bool) preg_match('#^https://upload\.wikimedia\.org/\S+\.(jpe?g|png|webp)$#i', trim($url));
     }
 
     public static function words(string $s): int
@@ -356,6 +362,27 @@ final class DwStudio
         if (isset($c['warnings']) && !is_array($c['warnings'])) {
             $errors[] = '"warnings" must be a list.';
         }
+        $parts = [['the hook', $c['hook'] ?? []]];
+        foreach ($slides as $i => $s) {
+            $parts[] = ['country ' . ($i + 1), is_array($s) ? $s : []];
+        }
+        $parts[] = ['the outro', $c['outro'] ?? []];
+        foreach ($parts as [$label, $part]) {
+            $url = is_string($part['photo_url'] ?? null) ? trim($part['photo_url']) : '';
+            $credit = is_string($part['photo_credit'] ?? null) ? trim($part['photo_credit']) : '';
+            if ($url !== '' && !self::photoSourceOk($url)) {
+                $errors[] = ucfirst($label) . ': photo_url must be an image file on https://upload.wikimedia.org.';
+            }
+            if ($url !== '' && $credit === '') {
+                $errors[] = ucfirst($label) . ': the photo needs a photo_credit (author and license).';
+            }
+            if (mb_strlen($credit) > 90) {
+                $warn[] = ucfirst($label) . ': the photo credit is long (' . mb_strlen($credit) . ' characters), it may be cut on the slide.';
+            }
+            if ($url === '' && empty($part['illustration_svg'])) {
+                $warn[] = ucfirst($label) . ': no photo, plain background.';
+            }
+        }
         return [$errors, $warn];
     }
 
@@ -427,8 +454,17 @@ final class DwStudio
             [$pkgId, $version] = $stmt->fetch(PDO::FETCH_NUM);
             $pkg = self::packageById((int) $pkgId);
             foreach (self::slidePlan($content) as $slide) {
-                $res = self::renderSlide($pkg, $slide, is_string($svgs[$slide['position']] ?? null) ? $svgs[$slide['position']] : null);
-                if ($res !== null) {
+                $svg = is_string($svgs[$slide['position']] ?? null) ? $svgs[$slide['position']] : '';
+                $art = ['svg' => $svg];
+                if ($slide['photo_src'] !== '') {
+                    try {
+                        $art = ['photo' => self::fetchPhoto($slide['photo_src'])];
+                    } catch (InvalidArgumentException | RuntimeException $e) {
+                        $warn[] = "Slide {$slide['position']}: photo not used ({$e->getMessage()}).";
+                    }
+                }
+                $res = self::renderSlide($pkg, $slide, $art);
+                if ($res !== null && !str_contains($res, 'no picture')) {
                     $warn[] = $res;
                 }
             }
@@ -441,11 +477,11 @@ final class DwStudio
     }
 
     /**
-     * Composes one slide and stores it (illustration SVG + PNG on R2, a dw_slides
-     * row). $svg = a new illustration; null keeps the stored one, '' = none.
-     * Returns a warning (fallback used, render failed) or null.
+     * Composes one slide and stores it (the picture + the PNG on R2, a dw_slides
+     * row). $art: ['photo' => squared JPEG bytes], ['svg' => markup, '' = none],
+     * or null to keep the stored picture. Returns a warning or null.
      */
-    public static function renderSlide(array $pkg, array $slide, ?string $svg = null): ?string
+    public static function renderSlide(array $pkg, array $slide, ?array $art = null): ?string
     {
         $pos  = (int) $slide['position'];
         $name = DwSlides::fileName($pos, $slide['kind'], $slide['country'] ?? null);
@@ -454,47 +490,64 @@ final class DwStudio
         $old = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 
         $warning  = null;
-        $svgUrl   = $old['svg_url'] ?? null;
+        $photo    = null;
         $clean    = null;
-        if ($svg !== null) {
+        $photoUrl = $old['photo_url'] ?? null;
+        $svgUrl   = $old['svg_url'] ?? null;
+        if ($art === null) {
+            // Never redraw without the stored picture: the slide stays as it is.
+            $missing = null;
+            if ($photoUrl !== null) {
+                $photo = self::fetch($photoUrl);
+                $missing = $photo === null ? 'photo' : null;
+            } elseif ($svgUrl !== null) {
+                $clean = DwSlides::sanitizeSvg((string) self::fetch($svgUrl));
+                $missing = $clean === null ? 'illustration' : null;
+            }
+            if ($missing !== null) {
+                $error = "the stored {$missing} could not be read, the slide was not redrawn";
+                Database::pdo()->prepare("UPDATE dw_slides SET error = ? WHERE id = ?")->execute([$error, $old['id']]);
+                return "Slide {$pos}: not saved: {$error}";
+            }
+        } elseif (isset($art['photo'])) {
+            $photo = $art['photo'];
+        } else {
+            $svg = trim((string) ($art['svg'] ?? ''));
             $clean = $svg === '' ? null : DwSlides::sanitizeSvg($svg);
             if ($svg !== '' && $clean === null) {
                 $warning = "Slide {$pos}: the illustration is not a usable SVG, plain background used.";
             }
-        } elseif ($svgUrl !== null) {
-            $clean = DwSlides::sanitizeSvg((string) self::fetch($svgUrl));
-            if ($clean === null) {
-                // Never redraw without the stored illustration: the slide stays as it is.
-                $error = 'the stored illustration could not be read, the slide was not redrawn';
-                Database::pdo()->prepare("UPDATE dw_slides SET error = ? WHERE id = ?")->execute([$error, $old['id']]);
-                return "Slide {$pos}: not saved: {$error}";
-            }
         }
-        if ($clean === null && $warning === null) {
-            $warning = "Slide {$pos}: no illustration, plain background used.";
+        if ($photo === null && $clean === null && $warning === null) {
+            $warning = "Slide {$pos}: no picture, plain background used.";
         }
 
         $error = null;
         $pngUrl = $old['png_url'] ?? null;
         try {
-            if ($svg !== null) {
+            if ($art !== null) {
+                $photoUrl = $photo !== null ? self::store($pkg, $name, 'jpg', $photo, 'image/jpeg') : null;
                 $svgUrl = $clean !== null ? self::store($pkg, $name, 'svg', $clean, 'image/svg+xml') : null;
             }
-            $png = DwSlides::toPng(DwSlides::compose($slide, $clean));
+            $png = DwSlides::toPng(DwSlides::compose($slide, $clean, $photo));
             $pngUrl = self::store($pkg, $name, 'png', $png, 'image/png');
         } catch (Throwable $e) {
             $error = $e->getMessage();
             $warning = "Slide {$pos}: not saved: {$error}";
+            if ($art !== null) {
+                [$photoUrl, $svgUrl] = [$old['photo_url'] ?? null, $old['svg_url'] ?? null];
+            }
         }
 
         Database::pdo()->prepare("
-            INSERT INTO dw_slides (package_id, position, kind, svg_url, png_url, fallback, error)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO dw_slides (package_id, position, kind, svg_url, photo_url, png_url, fallback, error)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (package_id, position) DO UPDATE SET kind = EXCLUDED.kind, svg_url = EXCLUDED.svg_url,
-                png_url = EXCLUDED.png_url, fallback = EXCLUDED.fallback, error = EXCLUDED.error
-        ")->execute([$pkg['id'], $pos, $slide['kind'], $svgUrl, $pngUrl, $clean === null ? 'true' : 'false', $error]);
+                photo_url = EXCLUDED.photo_url, png_url = EXCLUDED.png_url, fallback = EXCLUDED.fallback, error = EXCLUDED.error
+        ")->execute([$pkg['id'], $pos, $slide['kind'], $svgUrl, $photoUrl, $pngUrl,
+                     $photoUrl === null && $svgUrl === null ? 'true' : 'false', $error]);
 
-        foreach ([['svg_url', $svgUrl], ['png_url', $pngUrl]] as [$col, $now]) {
+        foreach ([['svg_url', $svgUrl], ['photo_url', $photoUrl], ['png_url', $pngUrl]] as [$col, $now]) {
             if (($old[$col] ?? null) !== null && $old[$col] !== $now) {
                 self::deleteFile($old[$col]);
             }
@@ -509,15 +562,17 @@ final class DwStudio
         if (preg_match('/^(topic|why_today|caption|ai_disclosure|follow_up_idea|hashtags|warnings)$/', $path)) {
             return ['slide' => null];
         }
-        if (preg_match('/^hook\.(on_screen_text|illustration_brief)$/', $path, $m)) {
-            return ['slide' => $m[1] === 'on_screen_text' ? 1 : null];
+        $onScreen = ['on_screen_text', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
+        $pic = 'illustration_brief|photo_credit|photo_url';
+        if (preg_match("/^hook\\.(on_screen_text|{$pic})$/", $path, $m)) {
+            return ['slide' => in_array($m[1], $onScreen, true) ? 1 : null, 'photo' => $m[1] === 'photo_url'];
         }
-        if (preg_match('/^outro\.(question|illustration_brief)$/', $path, $m)) {
-            return ['slide' => $m[1] === 'question' ? $n + 2 : null];
+        if (preg_match("/^outro\\.(question|{$pic})$/", $path, $m)) {
+            return ['slide' => in_array($m[1], $onScreen, true) ? $n + 2 : null, 'photo' => $m[1] === 'photo_url'];
         }
-        if (preg_match('/^slides\.(\d+)\.(country|flag|on_screen_text|caption_detail|illustration_brief|source_url)$/', $path, $m)
+        if (preg_match("/^slides\\.(\\d+)\\.(country|flag|on_screen_text|caption_detail|source_url|{$pic})$/", $path, $m)
             && (int) $m[1] < $n) {
-            return ['slide' => in_array($m[2], ['country', 'flag', 'on_screen_text'], true) ? (int) $m[1] + 2 : null];
+            return ['slide' => in_array($m[2], $onScreen, true) ? (int) $m[1] + 2 : null, 'photo' => $m[2] === 'photo_url'];
         }
         return null;
     }
@@ -534,6 +589,13 @@ final class DwStudio
             throw new InvalidArgumentException('This field cannot be edited.');
         }
         $value = trim(str_replace("\r\n", "\n", $value));
+        $art = null;
+        if (!empty($target['photo'])) {
+            if ($value !== '' && !self::photoSourceOk($value)) {
+                throw new InvalidArgumentException('The photo must be an image file on https://upload.wikimedia.org.');
+            }
+            $art = $value === '' ? ['svg' => ''] : ['photo' => self::fetchPhoto($value)];
+        }
         $c = $pkg['content'];
         if ($path === 'hashtags' || $path === 'warnings') {
             $list = array_values(array_filter(array_map('trim', preg_split($path === 'hashtags' ? '/[\s,]+/u' : '/\n+/u', $value)), static fn($v) => $v !== ''));
@@ -553,7 +615,7 @@ final class DwStudio
         $out = [];
         if ($target['slide'] !== null) {
             $slide = self::slidePlan($c)[$target['slide'] - 1];
-            $warning = self::renderSlide($pkg, $slide);
+            $warning = self::renderSlide($pkg, $slide, $art);
             $row = array_values(array_filter(self::slides($packageId), static fn($s) => (int) $s['position'] === $target['slide']))[0] ?? null;
             $out['slide'] = ['position' => $target['slide'], 'png_url' => $row['png_url'] ?? null];
             if ($warning !== null && str_contains($warning, 'not saved')) {
@@ -563,15 +625,57 @@ final class DwStudio
         return $out;
     }
 
-    /** New illustration for one slide (empty = plain background). */
-    public static function replaceIllustration(int $packageId, int $position, string $svg): ?string
+    /**
+     * New picture for one slide: a Commons photo URL, an uploaded photo, or an
+     * SVG (all empty = plain background). A credit, when given, replaces the
+     * slide's photo_credit. Returns a warning or null.
+     */
+    public static function replaceArt(int $packageId, int $position, string $photoUrl, ?string $photoBytes, string $svg, string $credit): ?string
     {
         $pkg = self::packageById($packageId);
         $plan = $pkg !== null ? self::slidePlan($pkg['content']) : [];
         if (!isset($plan[$position - 1])) {
             throw new InvalidArgumentException('Unknown slide.');
         }
-        return self::renderSlide($pkg, $plan[$position - 1], trim($svg));
+        $photoUrl = trim($photoUrl);
+        if ($photoUrl !== '') {
+            if (!self::photoSourceOk($photoUrl)) {
+                throw new InvalidArgumentException('The photo must be an image file on https://upload.wikimedia.org.');
+            }
+            $art = ['photo' => self::fetchPhoto($photoUrl)];
+        } elseif ($photoBytes !== null) {
+            $art = ['photo' => DwSlides::squarePhoto($photoBytes)];
+            $photoUrl = 'uploaded';
+        } else {
+            $art = ['svg' => $svg];
+        }
+        if (isset($art['photo']) && trim($credit) === '' && $plan[$position - 1]['credit'] === '') {
+            throw new InvalidArgumentException('A photo needs its credit (author and license).');
+        }
+        $c = $pkg['content'];
+        $ref = &self::part($c, $position);
+        $ref['photo_url'] = $photoUrl;
+        if (trim($credit) !== '' || !isset($art['photo'])) {
+            $ref['photo_credit'] = trim($credit);
+        }
+        unset($ref);
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
+        $pkg['content'] = $c;
+        return self::renderSlide($pkg, self::slidePlan($c)[$position - 1], $art);
+    }
+
+    /** The content part (hook, a country, the outro) of slide $position, by reference. */
+    private static function &part(array &$c, int $position): array
+    {
+        $n = count($c['slides'] ?? []);
+        if ($position === 1) {
+            return $c['hook'];
+        }
+        if ($position === $n + 2) {
+            return $c['outro'];
+        }
+        return $c['slides'][$position - 2];
     }
 
     /** Builds the ZIP of a package's slides (01_hook.png …) in a temp file; returns its path. */
@@ -613,7 +717,76 @@ final class DwStudio
             . "\n\n" . trim((string) ($c['ai_disclosure'] ?? '')));
     }
 
+    // ── Video (tools/promo: npm run worlds) ─────────────────────────────────
+
+    /** What the video is made from: the topic, its latest package and slides, or null. */
+    public static function videoData(string $date): ?array
+    {
+        $topic = self::topicByDate($date);
+        $pkg = $topic !== null ? self::package($topic['id']) : null;
+        if ($pkg === null) {
+            return null;
+        }
+        $slides = [];
+        foreach (self::slides($pkg['id']) as $r) {
+            $slides[(int) $r['position']] = ['photoUrl' => $r['photo_url'], 'pngUrl' => $r['png_url'], 'svgUrl' => $r['svg_url']];
+        }
+        $plan = array_map(static fn($p) => $p + ($slides[$p['position']] ?? []), self::slidePlan($pkg['content']));
+        return ['date' => $topic['date'], 'title' => $topic['title'], 'version' => $pkg['version'],
+                'content' => $pkg['content'], 'slides' => $plan, 'videoUrl' => $pkg['video_url'] ?? null];
+    }
+
+    /** A presigned upload for a package's video: {key, putUrl, url}. */
+    public static function videoUpload(string $date, int $version): array
+    {
+        $topic = self::topicByDate($date);
+        $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
+        if ($pkg === null) {
+            throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
+        }
+        $key = sprintf('dw/%d/v%d/video-%s.mp4', $topic['id'], $version, bin2hex(random_bytes(6)));
+        return ['key' => $key, 'putUrl' => R2Uploader::presignPut($key, 'video/mp4'), 'url' => R2Uploader::publicUrl($key)];
+    }
+
+    /** Saves the uploaded video on its package (the previous one is deleted). */
+    public static function saveVideo(string $date, int $version, string $url): void
+    {
+        $topic = self::topicByDate($date);
+        $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
+        if ($pkg === null) {
+            throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
+        }
+        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/video-', $topic['id'], $version);
+        if (!str_starts_with($url, $prefix) || !str_ends_with($url, '.mp4')) {
+            throw new InvalidArgumentException('Not a video upload of this package: ' . $url);
+        }
+        Database::pdo()->prepare("UPDATE dw_packages SET video_url = ?, video_at = now() WHERE id = ?")->execute([$url, $pkg['id']]);
+        if (!empty($pkg['video_url']) && $pkg['video_url'] !== $url) {
+            self::deleteFile($pkg['video_url']);
+        }
+    }
+
     // ── Files (R2) ───────────────────────────────────────────────────────────
+
+    /** A Commons photo, downloaded and squared for a slide (JPEG bytes). */
+    public static function fetchPhoto(string $url): string
+    {
+        if (!self::photoSourceOk($url)) {
+            throw new InvalidArgumentException('not an image file on upload.wikimedia.org');
+        }
+        $ch = curl_init(trim($url));
+        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 30, CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXFILESIZE => 25 * 1024 * 1024, CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+            // Wikimedia refuses requests without a descriptive User-Agent.
+            CURLOPT_USERAGENT => 'HiladsWorlds/1.0 (https://hilads.live; Different Worlds slides)']);
+        $body = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+        if (!is_string($body) || $code !== 200) {
+            throw new RuntimeException("the photo could not be downloaded (HTTP {$code})");
+        }
+        return DwSlides::squarePhoto($body);
+    }
 
     private static function store(array $pkg, string $name, string $ext, string $bytes, string $mime): string
     {

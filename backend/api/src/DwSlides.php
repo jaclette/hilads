@@ -11,7 +11,9 @@ declare(strict_types=1);
  *   1120-1560   the text: 72 px left margin, 170 px right (the app's side buttons)
  *   1560-1920   empty (caption and buttons of TikTok / Reels / Shorts)
  *
- * The slide is built as one SVG (illustration nested, Be Vietnam Pro text, a
+ * The picture is a real photo (cropped to a square by squarePhoto(), its credit
+ * under the pill) or, for older packages, a drawn SVG illustration.
+ * The slide is built as one SVG (picture nested, Be Vietnam Pro text, a
  * Twemoji flag) and converted with rsvg-convert (librsvg, in the Dockerfile).
  * Lines are broken here with GD measuring the same TTF, since SVG text never wraps.
  * Pure apart from toPng(): DwStudio stores and uploads.
@@ -113,6 +115,35 @@ final class DwSlides
         return $doc->saveXML($root) ?: null;
     }
 
+    /**
+     * A photo as the slide's 1080x1080 JPEG: centre crop to a square, resized.
+     * Throws InvalidArgumentException when the bytes are not a usable photo.
+     */
+    public static function squarePhoto(string $bytes): string
+    {
+        $info = @getimagesizefromstring($bytes);
+        if ($info === false || !in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) {
+            throw new InvalidArgumentException('not a JPEG, PNG or WebP photo');
+        }
+        [$w, $h] = $info;
+        if ($w * $h > 40_000_000) {
+            throw new InvalidArgumentException("the photo is too big ({$w}x{$h}), use a smaller version");
+        }
+        if (min($w, $h) < 600) {
+            throw new InvalidArgumentException("the photo is too small ({$w}x{$h}), 1080 px or more is needed");
+        }
+        $src = @imagecreatefromstring($bytes);
+        if ($src === false) {
+            throw new InvalidArgumentException('the photo could not be read');
+        }
+        $side = min($w, $h);
+        $dst = imagecreatetruecolor(self::W, self::W);
+        imagecopyresampled($dst, $src, 0, 0, intdiv($w - $side, 2), intdiv($h - $side, 2), self::W, self::W, $side, $side);
+        ob_start();
+        imagejpeg($dst, null, 88);
+        return (string) ob_get_clean();
+    }
+
     /** Path of the Twemoji SVG for a flag emoji (🇻🇳, 🏴󠁧󠁢󠁥󠁮󠁧󠁿), or null. */
     public static function flagFile(string $flag): ?string
     {
@@ -180,10 +211,11 @@ final class DwSlides
     }
 
     /**
-     * The slide as SVG. $slide = {kind: hook|country|outro, text, country?, flag?},
-     * $illustration = a sanitizeSvg() result, or null for the plain fallback.
+     * The slide as SVG. $slide = {kind: hook|country|outro, text, country?, flag?, credit?},
+     * $photo = squarePhoto() JPEG bytes, else $illustration = a sanitizeSvg()
+     * result, else (both null) the plain fallback.
      */
-    public static function compose(array $slide, ?string $illustration): string
+    public static function compose(array $slide, ?string $illustration, ?string $photo = null): string
     {
         $kind  = (string) ($slide['kind'] ?? 'country');
         $text  = self::plain((string) ($slide['text'] ?? ''));
@@ -198,7 +230,9 @@ final class DwSlides
         $o[] = '<linearGradient id="dwPlain" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' . $c1 . '"/><stop offset="1" stop-color="' . $c2 . '"/></linearGradient></defs>';
         $o[] = '<rect width="1080" height="1920" fill="' . self::BG . '"/>';
 
-        if ($illustration !== null) {
+        if ($photo !== null) {
+            $o[] = '<image x="0" y="0" width="1080" height="1080" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,' . base64_encode($photo) . '"/>';
+        } elseif ($illustration !== null) {
             $o[] = preg_replace('/^<svg\b/', '<svg x="0" y="0" width="1080" height="1080" preserveAspectRatio="xMidYMid slice"', $illustration, 1);
         } else {
             $o[] = '<rect width="1080" height="1080" fill="url(#dwPlain)"/>'
@@ -219,6 +253,12 @@ final class DwSlides
         $o[] = '<text x="' . ($x + 28) . '" y="1033" font-family="Be Vietnam Pro" font-weight="800" font-size="24" letter-spacing="2" fill="' . self::ACCENT . '">' . self::esc($a) . '</text>';
         $o[] = '<text x="' . round($x + 28 + $wa + 12) . '" y="1033" font-family="Be Vietnam Pro" font-weight="600" font-size="24" fill="' . self::TEXT . '">' . self::esc($b) . '</text>';
 
+        $credit = self::plain((string) ($slide['credit'] ?? ''));
+        if ($credit !== '' && ($photo !== null || $illustration !== null)) {
+            [, $cl] = self::fit($credit, 18, 14, $width, 1, $semi);
+            $o[] = '<text x="' . $x . '" y="1090" font-family="Be Vietnam Pro" font-weight="600" font-size="' . (self::measure($credit, 18, $semi) <= $width ? 18 : 14)
+                 . '" fill="#FFFFFF" fill-opacity="0.55">' . self::esc($cl[0] ?? $credit) . '</text>';
+        }
         $o[] = '<rect x="' . $x . '" y="1120" width="88" height="8" rx="4" fill="' . self::ACCENT . '"/>';
 
         if ($kind === 'country') {

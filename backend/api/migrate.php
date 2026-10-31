@@ -3774,8 +3774,21 @@ run($pdo, "
         updated_at                TIMESTAMPTZ NOT NULL DEFAULT now()
     )
 ", 'dw_settings');
+// Real photos instead of drawn illustrations (2026-10-31): the 1080x1080 crop
+// stored on R2 (the source + credit stay in the package content), and the
+// silent video rendered on a Mac by tools/promo (npm run worlds).
+run($pdo, "ALTER TABLE dw_slides ADD COLUMN IF NOT EXISTS photo_url TEXT", 'dw_slides.photo_url');
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS video_url TEXT", 'dw_packages.video_url');
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS video_at TIMESTAMPTZ", 'dw_packages.video_at');
 require_once __DIR__ . '/src/DwSeed.php';
 try {
+    // The seeded drawing prompts become the photo prompts (each kept if it was edited).
+    $pdo->prepare("UPDATE dw_settings SET illustration_prompt = ? WHERE id = 1 AND illustration_prompt = ?")
+        ->execute([DwSeed::ILLUSTRATION_PROMPT, DwSeed::OLD_ILLUSTRATION_PROMPT]);
+    $pdo->prepare("UPDATE dw_settings SET visual_style = ? WHERE id = 1 AND visual_style = ?")
+        ->execute([DwSeed::VISUAL_STYLE, DwSeed::OLD_VISUAL_STYLE]);
+    $pdo->prepare("UPDATE dw_settings SET system_prompt = ? WHERE id = 1 AND system_prompt = ?")
+        ->execute([DwSeed::SYSTEM_PROMPT, DwSeed::OLD_SYSTEM_PROMPT]);
     $pdo->prepare("
         INSERT INTO dw_settings (id, system_prompt, illustration_prompt, visual_style, phase, countries_always_included)
         VALUES (1, ?, ?, ?, 1, '[\"Vietnam\"]'::jsonb) ON CONFLICT (id) DO NOTHING

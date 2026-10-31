@@ -40,13 +40,13 @@ worlds_styles();
             <input type="text" name="countries" value="<?= wh(implode(', ', $s['countries_always_included'])) ?>"></div>
         <div class="form-group"><label>Visual style</label>
             <input type="text" name="visual_style" value="<?= wh($s['visual_style']) ?>">
-            <div class="hint">Replaces {{VISUAL_STYLE}} in the illustration prompt.</div></div>
+            <div class="hint">Replaces {{VISUAL_STYLE}} in the photo prompt.</div></div>
         <div class="form-group"><label>System prompt</label>
             <textarea name="system_prompt" rows="24" style="font-family:monospace;font-size:12px;width:100%"><?= wh($s['system_prompt']) ?></textarea>
             <div class="hint">{{PHASE}} and {{COUNTRIES_ALWAYS}} are filled in from the fields above.</div></div>
-        <div class="form-group"><label>Illustration prompt</label>
+        <div class="form-group"><label>Photo prompt</label>
             <textarea name="illustration_prompt" rows="12" style="font-family:monospace;font-size:12px;width:100%"><?= wh($s['illustration_prompt']) ?></textarea>
-            <div class="hint">{{VISUAL_STYLE}} and {{BRIEF}} (the slide's illustration brief) are filled in.</div></div>
+            <div class="hint">{{VISUAL_STYLE}} and {{BRIEF}} (the slide's photo description) are filled in.</div></div>
         <div class="form-actions"><button class="btn btn-primary" type="submit">Save</button></div>
     </form>
 </div>

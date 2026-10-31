@@ -54,14 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         worlds_action(fn() => DwStudio::setStatus($id, $status, $status === 'published' ? (array) ($_POST['links'] ?? []) : null),
             'Marked ' . $status . '.', $back);
     }
-    if ($action === 'svg' && $pkg !== null) {
-        $svg  = (string) ($_POST['svg'] ?? '');
-        $file = $_FILES['svg_file'] ?? null;
-        if ($file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && is_uploaded_file($file['tmp_name'])) {
-            $svg = (string) file_get_contents($file['tmp_name']);
-        }
+    if ($action === 'art' && $pkg !== null) {
+        $file  = $_FILES['photo_file'] ?? null;
+        $bytes = $file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && is_uploaded_file($file['tmp_name'])
+            ? (string) file_get_contents($file['tmp_name']) : null;
         $pos = (int) ($_POST['position'] ?? 0);
-        worlds_action(fn() => DwStudio::replaceIllustration($pkg['id'], $pos, $svg) ?? "Slide {$pos} redrawn.", '', $back . '#slides');
+        worlds_action(fn() => DwStudio::replaceArt($pkg['id'], $pos, (string) ($_POST['photo_url'] ?? ''), $bytes,
+            (string) ($_POST['svg'] ?? ''), (string) ($_POST['credit'] ?? '')) ?? "Slide {$pos} redrawn.", '', $back . '#slides');
     }
     if ($action === 'import') {
         $json = (string) ($_POST['json'] ?? '');
@@ -142,6 +141,20 @@ worlds_styles();
             <button type="button" class="btn btn-secondary" data-full-caption>Copy full caption</button>
         </div>
 
+        <?php if (!empty($pkg['video_url'])): ?>
+            <div class="worlds-video">
+                <video src="<?= wh($pkg['video_url']) ?>" controls playsinline preload="metadata"></video>
+                <div>
+                    <strong>Video</strong>
+                    <p class="worlds-muted">Rendered <?= wh(date('j M H:i', strtotime((string) $pkg['video_at']))) ?> from version <?= $pkg['version'] ?>. Silent: add the music when you publish.</p>
+                    <a class="btn btn-primary" href="<?= wh($pkg['video_url']) ?>" download>⬇ Download the video</a>
+                    <p class="worlds-muted" style="margin-top:8px">After an edit, render it again on the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code></p>
+                </div>
+            </div>
+        <?php else: ?>
+            <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the latest version and uploads it here).</p>
+        <?php endif; ?>
+
         <div class="worlds-strip">
             <?php foreach ($plan as $p): $s = array_values(array_filter($slides, fn($r) => (int) $r['position'] === $p['position']))[0] ?? null; ?>
                 <div class="worlds-slide">
@@ -149,12 +162,15 @@ worlds_styles();
                     <div class="worlds-muted"><?= wh(DwSlides::fileName($p['position'], $p['kind'], $p['country'] ?? null)) ?>
                         <?= !empty($s['error']) ? '<br><span style="color:#f87171">' . wh($s['error']) . '</span>' : '' ?>
                         <?= ($s && filter_var($s['fallback'], FILTER_VALIDATE_BOOLEAN)) ? '<br><span style="color:#fbbf24">plain background</span>' : '' ?></div>
-                    <details><summary>Replace illustration</summary>
+                    <?php if ($p['credit'] !== ''): ?><div class="worlds-muted" title="<?= wh($p['credit']) ?>"><?= wh(mb_strimwidth($p['credit'], 0, 60, '…')) ?></div><?php endif; ?>
+                    <details><summary>Replace photo</summary>
                         <p class="worlds-muted" title="<?= wh($p['brief']) ?>"><?= wh(mb_strimwidth($p['brief'], 0, 90, '…')) ?></p>
                         <form method="POST" action="<?= wh($back) ?>" enctype="multipart/form-data">
-                            <?= csrf_input() ?><input type="hidden" name="action" value="svg"><input type="hidden" name="position" value="<?= $p['position'] ?>">
-                            <textarea name="svg" placeholder="<svg …> (empty = plain background)"></textarea>
-                            <input type="file" name="svg_file" accept=".svg,image/svg+xml" style="width:180px;font-size:11px">
+                            <?= csrf_input() ?><input type="hidden" name="action" value="art"><input type="hidden" name="position" value="<?= $p['position'] ?>">
+                            <input type="url" name="photo_url" placeholder="https://upload.wikimedia.org/…" style="width:180px;font-size:11px">
+                            <input type="file" name="photo_file" accept="image/jpeg,image/png,image/webp" style="width:180px;font-size:11px">
+                            <input type="text" name="credit" placeholder="Photo: author, license" value="<?= wh($p['credit']) ?>" style="width:180px;font-size:11px">
+                            <div class="worlds-muted">Empty = plain background.</div>
                             <button class="btn btn-secondary btn-sm" type="submit">Redraw</button>
                         </form></details>
                 </div>
@@ -169,9 +185,9 @@ worlds_styles();
             <div class="form-card">
                 <h3>Video</h3>
                 <?php worlds_field('hook.on_screen_text', 'Hook · on screen', (string) ($c['hook']['on_screen_text'] ?? ''), false, DwStudio::words((string) ($c['hook']['on_screen_text'] ?? '')) . ' words'); ?>
-                <?php worlds_field('hook.illustration_brief', 'Hook · illustration brief', (string) ($c['hook']['illustration_brief'] ?? ''), true); ?>
+                <?php worlds_field('hook.photo_credit', 'Hook · photo credit', (string) ($c['hook']['photo_credit'] ?? '')); ?>
                 <?php worlds_field('outro.question', 'Outro · question', (string) ($c['outro']['question'] ?? ''), false); ?>
-                <?php worlds_field('outro.illustration_brief', 'Outro · illustration brief', (string) ($c['outro']['illustration_brief'] ?? ''), true); ?>
+                <?php worlds_field('outro.photo_credit', 'Outro · photo credit', (string) ($c['outro']['photo_credit'] ?? '')); ?>
                 <?php worlds_field('topic', 'Topic', (string) ($c['topic'] ?? '')); ?>
                 <?php worlds_field('why_today', 'Why today', (string) ($c['why_today'] ?? ''), true); ?>
             </div>
@@ -196,7 +212,7 @@ worlds_styles();
                     <?php worlds_field("slides.{$i}.source_url", 'Source', (string) ($s['source_url'] ?? '')); ?>
                     <?php worlds_field("slides.{$i}.country", 'Country', (string) ($s['country'] ?? '')); ?>
                     <?php worlds_field("slides.{$i}.flag", 'Flag', (string) ($s['flag'] ?? '')); ?>
-                    <?php worlds_field("slides.{$i}.illustration_brief", 'Illustration brief', (string) ($s['illustration_brief'] ?? ''), true); ?>
+                    <?php worlds_field("slides.{$i}.photo_credit", 'Photo credit', (string) ($s['photo_credit'] ?? '')); ?>
                 </div>
             <?php endforeach; ?>
         </div>
