@@ -16035,6 +16035,42 @@ $router->add('POST', '/internal/promo/{date}/assets', function (array $params) {
     }
 });
 
+// ── Different Worlds video (tools/promo: npm run worlds) ───────────────────────
+// Same token as the Daily promo. The video is rendered on a Mac from the day's
+// latest package and shown on its topic page (Admin › Worlds).
+
+// GET /internal/worlds/{date}: the day's topic, latest package and slides.
+$router->add('GET', '/internal/worlds/{date}', function (array $params) {
+    promoGuard($params['date']);
+    $data = DwStudio::videoData($params['date']);
+    if ($data === null) {
+        Response::json(['error' => 'No package on this day: import one in Admin › Worlds first'], 404);
+    }
+    Response::json($data);
+});
+
+// POST /internal/worlds/{date}/upload {version} → {putUrl, url}: where to PUT the MP4.
+$router->add('POST', '/internal/worlds/{date}/upload', function (array $params) {
+    promoGuard($params['date']);
+    try {
+        Response::json(DwStudio::videoUpload($params['date'], (int) (Request::json()['version'] ?? 0)));
+    } catch (InvalidArgumentException $e) {
+        Response::json(['error' => $e->getMessage()], 422);
+    }
+});
+
+// POST /internal/worlds/{date}/video {version, url}: saves the uploaded video on its package.
+$router->add('POST', '/internal/worlds/{date}/video', function (array $params) {
+    promoGuard($params['date']);
+    $body = Request::json();
+    try {
+        DwStudio::saveVideo($params['date'], (int) ($body['version'] ?? 0), (string) ($body['url'] ?? ''));
+        Response::json(['saved' => true]);
+    } catch (InvalidArgumentException $e) {
+        Response::json(['error' => $e->getMessage()], 422);
+    }
+});
+
 // POST /api/v1/me/promo {answer: yes|no|later}: the one-time ask (yes, later) and the setting (yes, no).
 $router->add('POST', '/api/v1/me/promo', function () {
     $user   = AuthService::requireAuth();

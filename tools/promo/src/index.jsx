@@ -1,6 +1,7 @@
 import { Composition, Still, registerRoot } from 'remotion';
 import { PromoVideo, PromoSlide } from './Promo.jsx';
 import { StoryFrame } from './Stories.jsx';
+import { WorldsVideo, worldsTiming } from './Worlds.jsx';
 
 // Props come from render.mjs ({locale, data, cities, clip, timing}); the
 // defaults let `npm run studio` open without a render.
@@ -22,6 +23,9 @@ function Root() {
         defaultProps={sample} calculateMetadata={({ props }) => ({ durationInFrames: props.timing.total })} />
       <Composition id="Story" component={StoryFrame} width={1080} height={1920} fps={30} durationInFrames={150}
         defaultProps={{ frame: 'help', locale: 'en', halloween: true, photo: null, still: false, guide: false }} />
+      <Composition id="Worlds" component={WorldsVideo} width={1080} height={1920} fps={30} durationInFrames={90}
+        defaultProps={{ slides: [{ kind: 'hook', text: 'Same night, October 31. Seven countries, seven very different Halloweens.' }] }}
+        calculateMetadata={({ props }) => ({ durationInFrames: Math.max(1, worldsTiming(props.slides).total) })} />
       <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />
     </>
   );

@@ -7,7 +7,8 @@
     "promo": "node --env-file-if-exists=.env render.mjs",
     "stories": "node stories.mjs",
     "studio": "remotion studio src/index.jsx",
-    "test": "node --test captions.test.mjs"
+    "test": "node --test captions.test.mjs",
+    "worlds": "node --env-file-if-exists=.env worlds.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.535",
