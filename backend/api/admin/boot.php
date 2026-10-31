@@ -142,6 +142,20 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/campaigns' || $uri === '/admin/campaigns/create') {
     require __DIR__ . '/campaign_create.php';
 
+// ── Different Worlds by Hilads (video series studio) ───────────────────────
+} elseif ($uri === '/admin/worlds') {
+    require __DIR__ . '/worlds.php';
+
+} elseif ($uri === '/admin/worlds/settings') {
+    require __DIR__ . '/worlds_settings.php';
+
+} elseif ($uri === '/admin/worlds/api') {
+    require __DIR__ . '/worlds_api.php';
+
+} elseif (preg_match('#^/admin/worlds/(\d+)$#', $uri, $m)) {
+    $worldsTopicId = (int) $m[1];
+    require __DIR__ . '/worlds_topic.php';
+
 // ── Daily Challenge back office ─────────────────────────────────────────────
 } elseif ($uri === '/admin/daily') {
     require __DIR__ . '/daily.php';
