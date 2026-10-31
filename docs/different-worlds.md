@@ -39,7 +39,7 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
      4. the hashtags.
    - Mark ready, then mark published with the three platform links.
 6. **Video**: on the Mac, `cd tools/promo && npm run worlds -- <date>`.
-   - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders 31 s of video (`src/Worlds.jsx`): hook 3 s, each country 3.5 s, outro 3.5 s. The layout is the slides', with a slow zoom on each photo, the text rising in and a crossfade between slides.
+   - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders about 40 s of video (`src/Worlds.jsx`): hook 3.5 s, each country 4.5 s, outro 4.5 s. The layout is the slides', with a slow zoom on each photo, the text rising in and a crossfade between slides.
    - It uploads the video to the package, and the topic page then shows it with a download button.
    - After an edit or a new version, run it again: the new video replaces the old one.
 

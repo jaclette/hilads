@@ -24,7 +24,7 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
 
 export const FPS = 30;
 export const FADE = 8;                                    // frames of crossfade into a slide
-const SECONDS = { hook: 3, country: 3.5, outro: 3.5 };
+const SECONDS = { hook: 3.5, country: 4.5, outro: 4.5 };
 
 /** [{start, length}] in frames for each slide, and the total. Pure. */
 export function worldsTiming(slides) {
