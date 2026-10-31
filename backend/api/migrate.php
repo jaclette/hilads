@@ -3797,18 +3797,45 @@ try {
         INSERT INTO dw_settings (id, system_prompt, illustration_prompt, visual_style, phase, countries_always_included)
         VALUES (1, ?, ?, ?, 1, '[\"Vietnam\"]'::jsonb) ON CONFLICT (id) DO NOTHING
     ")->execute([DwSeed::SYSTEM_PROMPT, DwSeed::ILLUSTRATION_PROMPT, DwSeed::VISUAL_STYLE]);
+    // The humor rule (2026-10-31) goes right after the tone line, whatever was edited around it.
+    $prompt = (string) $pdo->query("SELECT system_prompt FROM dw_settings WHERE id = 1")->fetchColumn();
+    if ($prompt !== '' && !str_contains($prompt, '- Humor:')) {
+        $withHumor = preg_replace('/^(- Tone:.*)$/m', '$1' . "\n" . DwSeed::HUMOR_LINE, $prompt, 1, $n);
+        if ($n === 0) {
+            $withHumor = preg_replace('/^(Brand context:.*)$/m', '$1' . "\n" . DwSeed::HUMOR_LINE, $prompt, 1, $n);
+        }
+        if ($n > 0) {
+            $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$withHumor]);
+        } else {
+            echo "  WARN dw seed: no tone line in the system prompt, add the humor rule by hand\n";
+        }
+    }
     $seedTopic = $pdo->prepare("
-        INSERT INTO dw_topics (date, title, type, needs_date_check) VALUES (?, ?, ?, ?)
+        INSERT INTO dw_topics (date, title, notes, type, needs_date_check) VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (date) DO NOTHING
     ");
     // Only into an empty calendar: a topic deleted or moved in the admin must not come back.
     if ((int) $pdo->query("SELECT COUNT(*) FROM dw_topics")->fetchColumn() === 0) {
-        foreach (DwSeed::TOPICS as [$d, $t, $ty, $check]) {
-            $seedTopic->execute([$d, $t, $ty, $check ? 'true' : 'false']);
+        foreach (DwSeed::TOPICS as [$d, $t, $ty, $check, $notes]) {
+            $seedTopic->execute([$d, $t, $notes, $ty, $check ? 'true' : 'false']);
         }
+    }
+    // The funnier calendar (2026-10-31), once: every topic from Nov 1 not published is
+    // replaced (its packages go with it), published days are kept.
+    $pdo->exec("ALTER TABLE dw_settings ADD COLUMN IF NOT EXISTS calendar_rev INT NOT NULL DEFAULT 1");
+    if ((int) $pdo->query("SELECT calendar_rev FROM dw_settings WHERE id = 1")->fetchColumn() < 2) {
+        $pdo->beginTransaction();
+        $gone = $pdo->exec("DELETE FROM dw_topics WHERE date >= '2026-11-01' AND status <> 'published'");
+        foreach (DwSeed::TOPICS as [$d, $t, $ty, $check, $notes]) {
+            if ($d >= '2026-11-01') $seedTopic->execute([$d, $t, $notes, $ty, $check ? 'true' : 'false']);
+        }
+        $pdo->exec("UPDATE dw_settings SET calendar_rev = 2 WHERE id = 1");
+        $pdo->commit();
+        echo "  OK  dw calendar v2 ($gone old topics replaced)\n";
     }
     echo "  OK  dw seed\n";
 } catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
     echo "  ERR dw seed: " . $e->getMessage() . "\n";
 }
 

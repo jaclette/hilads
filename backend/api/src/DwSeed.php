@@ -16,6 +16,9 @@ final class DwSeed
     public const OUTRO_CTA   = 'Compare your city on hilads.live';
     public const CAPTION_CTA = 'Compare your city with the world on hilads.live 🌍 (link in bio)';
 
+    /** Added after the tone line of the production prompt by migrate.php (2026-10-31), edits kept. */
+    public const HUMOR_LINE = '- Humor: always pick the funniest and most surprising TRUE facts. The humor comes from real facts, never from mocking people or cultures.';
+
     public const SYSTEM_PROMPT = <<<'TXT'
 You are the content producer for "Different Worlds by Hilads", a daily short-form video series (TikTok, Instagram Reels, YouTube Shorts) that compares how one topic looks across countries.
 
@@ -23,6 +26,7 @@ Brand context:
 - Hilads is an app where people in different cities take the same daily photo challenge and compare results. Tagline: "Same challenge. Different worlds."
 - The series builds a curious, international community around everyday culture: prices, food, traditions, habits, holidays.
 - Tone: curious, warm, playful, never mocking. Celebrate differences, never rank cultures as better or worse.
+- Humor: always pick the funniest and most surprising TRUE facts. The humor comes from real facts, never from mocking people or cultures.
 - Language: English, simple enough for non-native speakers.
 
 Input: a date, a topic title, and optional notes.
@@ -186,43 +190,43 @@ Rules:
 Respond ONLY with the SVG code, nothing else.
 TXT;
 
-    /** [date, title, type, needs_date_check] */
+    /** [date, title, type, needs_date_check, notes] */
     public const TOPICS = [
-        ['2026-10-31', 'Halloween around the world', 'dated', false],
-        ['2026-11-01', 'How countries honor their dead (Día de Muertos, All Saints...)', 'dated', false],
-        ['2026-11-02', 'Price of a coffee', 'evergreen', false],
-        ['2026-11-03', 'What breakfast looks like', 'evergreen', false],
-        ['2026-11-04', 'Tipping rules', 'evergreen', false],
-        ['2026-11-05', 'Bonfire Night: fireworks traditions around the world', 'dated', false],
-        ['2026-11-06', 'Iconic street foods', 'evergreen', false],
-        ['2026-11-07', 'Price of a beer', 'evergreen', false],
-        ['2026-11-08', 'Diwali: festivals of light', 'dated', true],
-        ['2026-11-09', 'How people greet each other', 'evergreen', false],
-        ['2026-11-10', "McDonald's menu items you only find there", 'evergreen', false],
-        ['2026-11-11', "Singles' Day: the biggest shopping days", 'dated', false],
-        ['2026-11-12', 'Price of a public transport ticket', 'evergreen', false],
-        ['2026-11-13', 'Friday the 13th: superstitions and unlucky numbers', 'dated', false],
-        ['2026-11-14', 'What time people go out on Saturday night', 'evergreen', false],
-        ['2026-11-15', 'Chopsticks, hands or fork: how people eat', 'evergreen', false],
-        ['2026-11-16', 'School lunches', 'evergreen', false],
-        ['2026-11-17', 'Typical desserts', 'evergreen', false],
-        ['2026-11-18', 'Wedding traditions', 'evergreen', false],
-        ['2026-11-19', 'Birthday traditions', 'evergreen', false],
-        ['2026-11-20', "Vietnamese Teachers' Day: how countries celebrate teachers", 'dated', false],
-        ['2026-11-21', 'Price of a haircut', 'evergreen', false],
-        ['2026-11-22', 'Gestures that are rude elsewhere', 'evergreen', false],
-        ['2026-11-23', 'Most popular pets', 'evergreen', false],
-        ['2026-11-24', 'Loy Krathong: lantern and water festivals', 'dated', true],
-        ['2026-11-25', 'How long the lunch break is', 'evergreen', false],
-        ['2026-11-26', 'Thanksgiving: harvest and gratitude festivals', 'dated', false],
-        ['2026-11-27', 'Black Friday: price of an iPhone around the world', 'dated', false],
-        ['2026-11-28', 'A typical Saturday night', 'evergreen', false],
-        ['2026-11-29', 'Comfort foods of the season', 'evergreen', false],
-        ['2026-11-30', 'When people put up Christmas decorations', 'evergreen', false],
-        ['2026-12-06', 'Saint Nicholas Day traditions', 'dated', false],
-        ['2026-12-13', 'Saint Lucia and winter light festivals', 'dated', false],
-        ['2026-12-24', "What's on the Christmas dinner table", 'dated', false],
-        ['2026-12-25', 'Who brings the presents (and Christmas in summer)', 'dated', false],
-        ['2026-12-31', "New Year's Eve traditions", 'dated', false],
+        ['2026-10-31', 'Halloween around the world', 'dated', false, null],
+        ['2026-11-01', 'Day of the Dead: partying with the dead', 'dated', false, 'Picnics and music in cemeteries; how other countries visit their dead'],
+        ['2026-11-02', 'How dogs bark in other languages', 'evergreen', false, 'Woof, wan wan, gâu gâu, ouaf...'],
+        ['2026-11-03', 'How people laugh in text messages', 'evergreen', false, 'haha, 555, www, kkkk, jajaja...'],
+        ['2026-11-04', 'Price of a coffee', 'evergreen', false, 'Plus the weirdest local coffees (egg coffee in Hanoi...)'],
+        ['2026-11-05', 'Bonfire Night: the UK burns a "guy" every year', 'dated', false, 'Other countries that burn effigies'],
+        ['2026-11-06', 'Weird laws that are actually real', 'evergreen', false, 'Only laws still in force, double-checked'],
+        ['2026-11-07', 'What time is dinner?', 'evergreen', false, 'From 6pm to 10pm depending on the country'],
+        ['2026-11-08', 'Diwali: festivals of light', 'dated', true, 'Lights, sweets and fireworks; other festivals of light'],
+        ['2026-11-09', 'Foods locals love and tourists fear', 'evergreen', false, 'Durian, natto, balut... celebrate, never mock'],
+        ['2026-11-10', "McDonald's items you only find there", 'evergreen', false, 'Local menu items that surprise travelers'],
+        ['2026-11-11', "Singles' Day: singles have their own holiday", 'dated', false, "Other anti-Valentine's days"],
+        ['2026-11-12', 'What people say when you sneeze', 'evergreen', false, null],
+        ['2026-11-13', "Friday the 13th: what's unlucky elsewhere", 'dated', false, 'Tuesday 13, number 4, number 17...'],
+        ['2026-11-14', 'Birthday traditions that hurt', 'evergreen', false, 'Ear pulling, cinnamon at 25, face in the cake...'],
+        ['2026-11-15', 'National animals that make no sense', 'evergreen', false, "Scotland's unicorn..."],
+        ['2026-11-16', 'Price of a beer', 'evergreen', false, null],
+        ['2026-11-17', '"Raining cats and dogs" in other languages', 'evergreen', false, 'Weather idioms'],
+        ['2026-11-18', 'Cute nicknames for your partner', 'evergreen', false, '"My flea", "my cabbage"...'],
+        ['2026-11-19', 'World Toilet Day: toilets around the world', 'dated', false, null],
+        ['2026-11-20', "Vietnamese Teachers' Day", 'dated', false, 'How countries celebrate teachers'],
+        ['2026-11-21', 'World Hello Day: how people greet', 'dated', false, null],
+        ['2026-11-22', 'Napping at work: siesta, inemuri...', 'evergreen', false, null],
+        ['2026-11-23', 'Gestures that are rude elsewhere', 'evergreen', false, 'Thumbs up, OK sign...'],
+        ['2026-11-24', 'Loy Krathong: lantern and water festivals', 'dated', true, null],
+        ['2026-11-25', 'The weirdest pizza toppings by country', 'evergreen', false, null],
+        ['2026-11-26', 'Thanksgiving: the US president pardons a turkey', 'dated', false, 'Other harvest festivals'],
+        ['2026-11-27', 'Black Friday: price of an iPhone', 'dated', false, null],
+        ['2026-11-28', 'House rules: shoes off or on?', 'evergreen', false, null],
+        ['2026-11-29', 'Price of a haircut', 'evergreen', false, null],
+        ['2026-11-30', 'The Philippines starts Christmas in September', 'evergreen', false, 'When Christmas season starts elsewhere'],
+        ['2026-12-05', "Krampus: Santa's scary sidekick", 'dated', false, 'Other scary Christmas characters'],
+        ['2026-12-13', 'Saint Lucia and winter light festivals', 'dated', false, null],
+        ['2026-12-24', 'Christmas dinner: KFC in Japan', 'dated', false, "What's on the Christmas table elsewhere"],
+        ['2026-12-25', 'Who brings the presents: Caga Tió, Yule Cat...', 'dated', false, 'Gift-bringers around the world'],
+        ['2026-12-31', 'New Year: grapes, red underwear, smashed plates', 'dated', false, "New Year's Eve traditions"],
     ];
 }

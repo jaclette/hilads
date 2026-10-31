@@ -31,7 +31,6 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
    - Every text field can be edited inline. An on-screen text redraws its slide and keeps the illustration.
    - "Replace photo" swaps one slide's picture: a Commons URL or an uploaded photo, with its credit. Empty gives the plain background.
    - "Download all slides (ZIP)" gives `01_hook.png … 09_outro.png`.
-   - "Copy full caption" gives the caption, the hashtags and the AI disclosure.
    - "Copy full caption" gives, in this order:
      1. the caption's text;
      2. the AI disclosure;
@@ -103,4 +102,6 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
   - It adds `dw_slides.photo_url` and `dw_packages.video_url`.
   - It switches the seeded prompts to photos, unless they were edited. The system prompt also gets the caption ending and the reworded Phase 1.
   - It adds `dw_settings.outro_cta` and `caption_cta`.
+  - It adds the humor rule after the tone line of the system prompt (edits around it are kept).
+  - Once (`dw_settings.calendar_rev` 2): every topic from Nov 1, 2026 not published is replaced by the funnier calendar of `DwSeed::TOPICS` (title, fun angle in the notes, type, date check). Their packages go with them; their R2 files stay.
 - No new environment variable: the slides use the existing R2 settings, and the video uses the Daily promo's `PROMO_TOKEN`.
