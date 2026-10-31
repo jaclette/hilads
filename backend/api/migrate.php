@@ -3719,6 +3719,82 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS comment
 // pin. Reversal: ALTER TABLE daily_proofs DROP COLUMN selfie_url.
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS selfie_url TEXT", 'daily_proofs.selfie_url');
 
+// "Different Worlds by Hilads" (2026-10-31, Admin › Worlds): the daily video
+// series calendar, its packages (text + slides, one row per import, a topic can
+// be redone) and the slides composed by DwSlides (illustration SVG + 1080x1920
+// PNG on R2). Settings = one row. Reversal: DROP TABLE dw_slides, dw_packages,
+// dw_topics, dw_settings.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS dw_topics (
+        id               BIGSERIAL PRIMARY KEY,
+        date             DATE NOT NULL UNIQUE,
+        title            TEXT NOT NULL,
+        notes            TEXT,
+        type             TEXT NOT NULL DEFAULT 'evergreen' CHECK (type IN ('dated', 'evergreen')),
+        needs_date_check BOOLEAN NOT NULL DEFAULT false,
+        status           TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'generated', 'ready', 'published')),
+        published_links  JSONB NOT NULL DEFAULT '{}'::jsonb,
+        created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'dw_topics');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS dw_packages (
+        id         BIGSERIAL PRIMARY KEY,
+        topic_id   BIGINT NOT NULL REFERENCES dw_topics(id) ON DELETE CASCADE,
+        version    INT NOT NULL,
+        content    JSONB NOT NULL,
+        model      TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (topic_id, version)
+    )
+", 'dw_packages');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS dw_slides (
+        id         BIGSERIAL PRIMARY KEY,
+        package_id BIGINT NOT NULL REFERENCES dw_packages(id) ON DELETE CASCADE,
+        position   INT NOT NULL,
+        kind       TEXT NOT NULL CHECK (kind IN ('hook', 'country', 'outro')),
+        svg_url    TEXT,
+        png_url    TEXT,
+        fallback   BOOLEAN NOT NULL DEFAULT false,
+        error      TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (package_id, position)
+    )
+", 'dw_slides');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS dw_settings (
+        id                        INT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+        system_prompt             TEXT NOT NULL,
+        illustration_prompt       TEXT NOT NULL,
+        visual_style              TEXT NOT NULL,
+        phase                     INT NOT NULL DEFAULT 1 CHECK (phase IN (1, 2, 3)),
+        countries_always_included JSONB NOT NULL DEFAULT '[\"Vietnam\"]'::jsonb,
+        updated_at                TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'dw_settings');
+require_once __DIR__ . '/src/DwSeed.php';
+try {
+    $pdo->prepare("
+        INSERT INTO dw_settings (id, system_prompt, illustration_prompt, visual_style, phase, countries_always_included)
+        VALUES (1, ?, ?, ?, 1, '[\"Vietnam\"]'::jsonb) ON CONFLICT (id) DO NOTHING
+    ")->execute([DwSeed::SYSTEM_PROMPT, DwSeed::ILLUSTRATION_PROMPT, DwSeed::VISUAL_STYLE]);
+    $seedTopic = $pdo->prepare("
+        INSERT INTO dw_topics (date, title, type, needs_date_check) VALUES (?, ?, ?, ?)
+        ON CONFLICT (date) DO NOTHING
+    ");
+    // Only into an empty calendar: a topic deleted or moved in the admin must not come back.
+    if ((int) $pdo->query("SELECT COUNT(*) FROM dw_topics")->fetchColumn() === 0) {
+        foreach (DwSeed::TOPICS as [$d, $t, $ty, $check]) {
+            $seedTopic->execute([$d, $t, $ty, $check ? 'true' : 'false']);
+        }
+    }
+    echo "  OK  dw seed\n";
+} catch (PDOException $e) {
+    echo "  ERR dw seed: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
