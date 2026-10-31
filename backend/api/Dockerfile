@@ -45,6 +45,8 @@ opcache.enable_cli=0" \
 # full 1-3 MB original on every card. exif lets ImageProcessor::stripMetadata
 # read a JPEG's orientation before re-encoding (uploads are stored without
 # EXIF/GPS).
+# librsvg2-bin (rsvg-convert) renders the Different Worlds slides (DwSlides),
+# zip builds their download (ZipArchive).
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -55,8 +57,10 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libwebp-dev \
     libfreetype6-dev \
+    libzip-dev \
+    librsvg2-bin \
     && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
-    && docker-php-ext-install curl pdo_pgsql gd exif \
+    && docker-php-ext-install curl pdo_pgsql gd exif zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -67,6 +71,11 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Be Vietnam Pro for rsvg-convert (the slides' text; DwSlides measures the same TTFs).
+RUN mkdir -p /usr/local/share/fonts/hilads \
+    && cp /var/www/html/assets/fonts/*.ttf /usr/local/share/fonts/hilads/ \
+    && fc-cache -f
 
 RUN mkdir -p /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/storage \
