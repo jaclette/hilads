@@ -91,13 +91,6 @@ final class DwStudioTest extends TestCase
         $this->assertNull(DwStudio::editTarget($c, 'model'));
     }
 
-    public function testFullCaption(): void
-    {
-        [$c] = DwStudio::splitSvgs($this->content());
-        $this->assertSame("Different Worlds by Hilads. How does your city celebrate?\n\n#halloween #travel #culture #differentworlds #hilads\n\nIllustrations made with AI.",
-            DwStudio::fullCaption($c));
-    }
-
     public function testPhotoRules(): void
     {
         $c = $this->content();
@@ -121,6 +114,51 @@ final class DwStudioTest extends TestCase
         $this->assertSame('', end($plan)['photo_src']);
         $this->assertSame(['slide' => 3, 'photo' => false], DwStudio::editTarget($c, 'slides.1.photo_credit'));
         $this->assertSame(['slide' => 1, 'photo' => true], DwStudio::editTarget($c, 'hook.photo_url'));
+    }
+
+    public function testCaptionEnding(): void
+    {
+        $cta = 'Compare your city with the world on hilads.live 🌍 (link in bio)';
+        $q = 'What does October 31 look like in your city?';
+        $want = "Same night, different worlds. This is Different Worlds by Hilads.\n\n{$cta}\n{$q}";
+
+        // The question at the end of the last paragraph (how captions used to be written).
+        $this->assertSame($want, DwStudio::fixCaptionEnding("Same night, different worlds. This is Different Worlds by Hilads. {$q}", $cta, $q));
+        // Already right: unchanged; the CTA alone, or written after the question: fixed.
+        $this->assertSame($want, DwStudio::fixCaptionEnding($want, $cta, $q));
+        $this->assertSame($want, DwStudio::fixCaptionEnding("Same night, different worlds. This is Different Worlds by Hilads.\n{$cta}", $cta, $q));
+        $this->assertSame($want, DwStudio::fixCaptionEnding("Same night, different worlds. This is Different Worlds by Hilads.\n\n{$q}\n{$cta}", $cta, $q));
+        // A new question replaces the old one; a new CTA replaces the previous one.
+        $this->assertSame("Body.\n\n{$cta}\nYour city?", DwStudio::fixCaptionEnding("Body.\n\n{$cta}\n{$q}", $cta, 'Your city?', ['questions' => [$q]]));
+        $this->assertSame("Body.\n\nSee hilads.live\n{$q}", DwStudio::fixCaptionEnding("Body.\n\n{$cta}\n{$q}", 'See hilads.live', $q, ['ctas' => [$cta]]));
+        $this->assertSame("{$cta}\n{$q}", DwStudio::fixCaptionEnding('', $cta, $q));
+    }
+
+    public function testFullCaptionOrder(): void
+    {
+        $cta = 'Compare your city with the world on hilads.live 🌍 (link in bio)';
+        $c = ['caption' => "Body text.\n\n{$cta}\nYour city?", 'outro' => ['question' => 'Your city?'],
+              'hashtags' => ['#a', '#b'], 'ai_disclosure' => 'Made with AI help.'];
+        $this->assertSame("Body text.\n\nMade with AI help.\n\n{$cta}\nYour city?\n\n#a #b", DwStudio::fullCaption($c, $cta));
+        $c['caption'] = 'Body text. Your city?';   // an old caption: the ending is added
+        $this->assertSame("Body text.\n\nMade with AI help.\n\n{$cta}\nYour city?\n\n#a #b", DwStudio::fullCaption($c, $cta));
+    }
+
+    public function testOutroCta(): void
+    {
+        $with = DwSlides::compose(['kind' => 'outro', 'text' => 'What does October 31 look like in your city?', 'cta' => 'Compare your city on hilads.live'], null);
+        $this->assertStringContainsString('>Compare your city on </tspan>', $with);
+        $this->assertStringContainsString('fill="#FF7A3D">hilads.live</tspan>', $with);
+        $this->assertStringContainsString('viewBox="0 0 64 64"', $with);   // the logo
+        $doc = new DOMDocument();
+        $this->assertTrue($doc->loadXML($with));
+        // The question ends above the line, and stays at least twice its size.
+        preg_match('/font-size="(\d+)" fill="#FFFFFF"><tspan/', $with, $q);
+        preg_match('/<text x="\d+" y="(\d+)" font-family="Be Vietnam Pro" font-size="(\d+)" xml:space="preserve"><tspan font-weight/', $with, $cta);
+        $this->assertGreaterThanOrEqual(2 * (int) $cta[2], (int) $q[1]);
+        preg_match_all('/<tspan x="72" y="(\d+)">/', $with, $ys);
+        $this->assertLessThan(1472, max(array_map('intval', $ys[1])));
+        $this->assertStringNotContainsString('hilads.live', DwSlides::compose(['kind' => 'outro', 'text' => 'Q?'], null));
     }
 
     public function testSquarePhoto(): void

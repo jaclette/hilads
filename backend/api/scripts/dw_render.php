@@ -39,6 +39,9 @@ foreach ($items as $item) {
     $dir = rtrim($out, '/') . '/' . $date;
     @mkdir($dir, 0777, true);
     foreach (DwStudio::slidePlan($content) as $slide) {
+        if ($slide['kind'] === 'outro') {
+            $slide['cta'] = DwSeed::OUTRO_CTA;   // the seeded outro line (the admin uses dw_settings.outro_cta)
+        }
         $photo = null;
         if ($slide['photo_src'] !== '') {
             try {

@@ -22,6 +22,8 @@ const api = (process.env.API_URL ?? 'https://api.hilads.live').replace(/\/$/, ''
 const token = process.env.PROMO_TOKEN;
 // Wikimedia refuses downloads without a descriptive User-Agent.
 const UA = 'HiladsWorlds/1.0 (https://hilads.live; Different Worlds video)';
+// The outro line when rendering a file (from the API it's dw_settings.outro_cta).
+const DEFAULT_OUTRO_CTA = 'Compare your city on hilads.live';
 
 function localDate() {
   const d = new Date();
@@ -58,7 +60,7 @@ function planFromContent(c) {
   return [
     { position: 1, kind: 'hook', text: c.hook?.on_screen_text ?? '', ...pic(c.hook) },
     ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: s.on_screen_text, country: s.country, flag: s.flag, ...pic(s) })),
-    { position: (c.slides ?? []).length + 2, kind: 'outro', text: c.outro?.question ?? '', ...pic(c.outro) },
+    { position: (c.slides ?? []).length + 2, kind: 'outro', text: c.outro?.question ?? '', cta: DEFAULT_OUTRO_CTA, ...pic(c.outro) },
   ];
 }
 
@@ -83,6 +85,7 @@ async function main() {
   await mkdir(out, { recursive: true });
   await cp(path.join(repo, 'apps/mobile/assets/fonts'), path.join(pub, 'fonts'), { recursive: true });
   await cp(path.join(repo, 'backend/api/assets/flags'), path.join(pub, 'flags'), { recursive: true });
+  await cp(path.join(repo, 'backend/api/assets/logo.svg'), path.join(pub, 'logo.svg'));
 
   const slides = [];
   for (const s of data.slides) {
@@ -98,7 +101,8 @@ async function main() {
         photo = null;
       }
     }
-    slides.push({ kind: s.kind, text: s.text, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null, credit: s.credit ?? '', photo });
+    slides.push({ kind: s.kind, text: s.text, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null, credit: s.credit ?? '', photo,
+                  cta: s.kind === 'outro' ? (s.cta ?? '') : null });
   }
 
   console.log(`  ${slides.length} slides, bundling…`);

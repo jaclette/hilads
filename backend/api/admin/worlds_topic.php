@@ -138,7 +138,7 @@ worlds_styles();
                 </select>
             <?php endif; ?>
             <a class="btn btn-primary" href="<?= $self ?>?v=<?= $pkg['version'] ?>&zip=1">⬇ Download all slides (ZIP)</a>
-            <button type="button" class="btn btn-secondary" data-full-caption>Copy full caption</button>
+            <button type="button" class="btn btn-secondary" data-full-caption data-cta="<?= wh(DwStudio::settings()['caption_cta']) ?>">Copy full caption</button>
         </div>
 
         <?php if (!empty($pkg['video_url'])): ?>
@@ -265,10 +265,14 @@ worlds_styles();
   function copy(text, btn) {
     navigator.clipboard.writeText(text).then(() => { const t = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = t, 1200); });
   }
-  // Caption + hashtags + disclosure, as edited on the page (same as DwStudio::fullCaption).
-  const val = p => (document.querySelector('textarea[data-path="' + p + '"]') || {}).value || '';
-  document.querySelectorAll('[data-full-caption]').forEach(b => b.addEventListener('click', () =>
-    copy([val('caption'), val('hashtags'), val('ai_disclosure')].map(s => s.trim()).filter(Boolean).join('\n\n'), b)));
+  // As DwStudio::fullCaption: the caption's text, the disclosure, the hilads.live line, the question, the hashtags.
+  const val = p => ((document.querySelector('textarea[data-path="' + p + '"]') || {}).value || '').trim();
+  document.querySelectorAll('[data-full-caption]').forEach(b => b.addEventListener('click', () => {
+    const cta = b.dataset.cta.trim(), question = val('outro.question'), ending = cta + '\n' + question;
+    let body = val('caption').replace(/\r\n/g, '\n');
+    if (body.toLowerCase().endsWith(ending.toLowerCase())) body = body.slice(0, -ending.length).trim();
+    copy([body, val('ai_disclosure'), ending, val('hashtags')].filter(Boolean).join('\n\n'), b);
+  }));
   document.querySelectorAll('.worlds-field').forEach(field => {
     const area = field.querySelector('textarea');
     const state = field.querySelector('.state');
@@ -286,6 +290,12 @@ worlds_styles();
         const out = await res.json();
         if (!res.ok || !out.ok) throw new Error(out.error || res.status);
         saved = area.value;
+        if (out.caption !== undefined) {
+          // The caption's ending follows the question (and is put back if it was edited away).
+          const cap = document.querySelector('textarea[data-path="caption"]');
+          if (cap) { cap.value = out.caption; cap.dispatchEvent(new Event('input')); }
+          if (area.dataset.path === 'caption') saved = out.caption;
+        }
         state.className = 'state saved'; state.textContent = out.slide ? 'saved · slide redrawn' : 'saved';
         if (out.warning) { state.className = 'state failed'; state.textContent = out.warning; }
         if (out.slide && out.slide.png_url) {

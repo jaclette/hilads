@@ -10,6 +10,8 @@ declare(strict_types=1);
  *   ~1000       "DIFFERENT WORLDS by Hilads" pill over the illustration
  *   1120-1560   the text: 72 px left margin, 170 px right (the app's side buttons)
  *   1560-1920   empty (caption and buttons of TikTok / Reels / Shorts)
+ * The outro adds the hilads.live line (logo + dw_settings.outro_cta) at 1472-1536,
+ * under its question.
  *
  * The picture is a real photo (cropped to a square by squarePhoto(), its credit
  * under the pill) or, for older packages, a drawn SVG illustration.
@@ -31,6 +33,10 @@ final class DwSlides
     private const RIGHT  = 170;
     private const BOTTOM = 1560;
     private const MAX_SVG_BYTES = 400_000;
+    // The outro: the question ends above the hilads.live line (logo 64 px at 1468, text 34 px).
+    private const OUTRO_QUESTION_BOTTOM = 1436;
+    private const CTA_TOP  = 1472;
+    private const CTA_LOGO = 64;
 
     /** Background colours of an illustration that failed (a plain slide, still on brand). */
     private const FALLBACK = ['hook' => ['#FF7A3D', '#D9622A'], 'country' => ['#D9AE52', '#C98A45'], 'outro' => ['#D9622A', '#3A2216']];
@@ -276,7 +282,12 @@ final class DwSlides
             $o[] = self::block($text, $x, 1276, $width, 96, 48);
         } elseif ($kind === 'outro') {
             $o[] = '<text x="' . $x . '" y="1196" font-family="Be Vietnam Pro" font-weight="800" font-size="34" letter-spacing="3" fill="' . self::ACCENT . '">YOUR TURN</text>';
-            $o[] = self::block($text, $x, 1226, $width, 104, 52);
+            $cta = self::plain((string) ($slide['cta'] ?? ''));
+            // The question stays the main element; the hilads.live line sits under it, much smaller.
+            $o[] = self::block($text, $x, 1226, $width, 104, 56, $cta !== '' ? self::OUTRO_QUESTION_BOTTOM : self::BOTTOM, $qpx);
+            if ($cta !== '') {
+                $o[] = self::cta($cta, $x, $width, intdiv($qpx, 2));
+            }
         } else {
             $o[] = self::block($text, $x, 1164, $width, 112, 56);
         }
@@ -285,8 +296,31 @@ final class DwSlides
         return implode("\n", $o);
     }
 
-    /** A wrapped text block whose first line's top is $top: the biggest size that fits above the bottom safe zone. */
-    private static function block(string $text, int $x, int $top, int $width, int $max, int $min): string
+    /** The outro's hilads.live line: the app logo, then the text with "hilads.live" in the accent colour. */
+    private static function cta(string $cta, int $x, int $width, int $max): string
+    {
+        $semi = self::font('SemiBold');
+        $textX = $x + self::CTA_LOGO + 20;
+        $px = min(34, $max);    // at most half the question's size
+        while ($px > 24 && self::measure($cta, $px, $semi) > $width - ($textX - $x)) {
+            $px -= 2;
+        }
+        $logo = trim((string) file_get_contents(__DIR__ . '/../assets/logo.svg'));
+        $logo = preg_replace('/<!--.*?-->/s', '', $logo);
+        $out = preg_replace('/^<svg\b/', '<svg x="' . $x . '" y="' . self::CTA_TOP . '" width="' . self::CTA_LOGO . '" height="' . self::CTA_LOGO . '"', $logo, 1);
+        $parts = preg_split('/(hilads\.live)/i', $cta, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $spans = '';
+        foreach ($parts as $part) {
+            $hi = strcasecmp($part, 'hilads.live') === 0;
+            $spans .= '<tspan font-weight="' . ($hi ? 800 : 600) . '" fill="' . ($hi ? self::ACCENT : self::TEXT) . '"' . ($hi ? '' : ' fill-opacity="0.9"') . '>' . self::esc($part) . '</tspan>';
+        }
+        $baseline = self::CTA_TOP + (int) round(self::CTA_LOGO / 2 + $px * 0.36);
+        // xml:space keeps the space before "hilads.live" (SVG collapses it at a tspan boundary).
+        return $out . '<text x="' . $textX . '" y="' . $baseline . '" font-family="Be Vietnam Pro" font-size="' . $px . '" xml:space="preserve">' . $spans . '</text>';
+    }
+
+    /** A wrapped text block whose first line's top is $top: the biggest size that fits above $bottom. */
+    private static function block(string $text, int $x, int $top, int $width, int $max, int $min, int $bottom = self::BOTTOM, ?int &$used = null): string
     {
         $font = self::font('ExtraBold');
         $lines = [];
@@ -294,11 +328,12 @@ final class DwSlides
             $lines = self::wrap($text, $px, $width, $font);
             $height = $px * 0.95 + (count($lines) - 1) * $px * 1.16;
             $widest = max(array_map(static fn($l) => self::measure($l, $px, $font), $lines ?: ['']));
-            if ($top + $height <= self::BOTTOM && $widest <= $width) {
+            if ($top + $height <= $bottom && $widest <= $width) {
                 break;
             }
         }
         $px = max($px, $min);
+        $used = $px;
         $out = '<text font-family="Be Vietnam Pro" font-weight="800" font-size="' . $px . '" fill="' . self::TEXT . '">';
         foreach ($lines as $i => $line) {
             $out .= '<tspan x="' . $x . '" y="' . round($top + $px * 0.95 + $i * $px * 1.16) . '">' . self::esc($line) . '</tspan>';

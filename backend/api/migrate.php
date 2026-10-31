@@ -3780,6 +3780,10 @@ run($pdo, "
 run($pdo, "ALTER TABLE dw_slides ADD COLUMN IF NOT EXISTS photo_url TEXT", 'dw_slides.photo_url');
 run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS video_url TEXT", 'dw_packages.video_url');
 run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS video_at TIMESTAMPTZ", 'dw_packages.video_at');
+// The hilads.live lines (2026-10-31): under the outro's question, and before it
+// at the end of every caption. Edited in Admin › Worlds › Settings.
+run($pdo, "ALTER TABLE dw_settings ADD COLUMN IF NOT EXISTS outro_cta TEXT NOT NULL DEFAULT 'Compare your city on hilads.live'", 'dw_settings.outro_cta');
+run($pdo, "ALTER TABLE dw_settings ADD COLUMN IF NOT EXISTS caption_cta TEXT NOT NULL DEFAULT 'Compare your city with the world on hilads.live 🌍 (link in bio)'", 'dw_settings.caption_cta');
 require_once __DIR__ . '/src/DwSeed.php';
 try {
     // The seeded drawing prompts become the photo prompts (each kept if it was edited).
@@ -3787,8 +3791,8 @@ try {
         ->execute([DwSeed::ILLUSTRATION_PROMPT, DwSeed::OLD_ILLUSTRATION_PROMPT]);
     $pdo->prepare("UPDATE dw_settings SET visual_style = ? WHERE id = 1 AND visual_style = ?")
         ->execute([DwSeed::VISUAL_STYLE, DwSeed::OLD_VISUAL_STYLE]);
-    $pdo->prepare("UPDATE dw_settings SET system_prompt = ? WHERE id = 1 AND system_prompt = ?")
-        ->execute([DwSeed::SYSTEM_PROMPT, DwSeed::OLD_SYSTEM_PROMPT]);
+    $pdo->prepare("UPDATE dw_settings SET system_prompt = ? WHERE id = 1 AND system_prompt IN (?, ?)")
+        ->execute([DwSeed::SYSTEM_PROMPT, DwSeed::OLD_SYSTEM_PROMPT, DwSeed::OLD_SYSTEM_PROMPT_2]);
     $pdo->prepare("
         INSERT INTO dw_settings (id, system_prompt, illustration_prompt, visual_style, phase, countries_always_included)
         VALUES (1, ?, ?, ?, 1, '[\"Vietnam\"]'::jsonb) ON CONFLICT (id) DO NOTHING

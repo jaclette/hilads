@@ -27,34 +27,119 @@ final class DwStudio
             $row = ['system_prompt' => DwSeed::SYSTEM_PROMPT, 'illustration_prompt' => DwSeed::ILLUSTRATION_PROMPT,
                     'visual_style' => DwSeed::VISUAL_STYLE, 'phase' => 1, 'countries_always_included' => '["Vietnam"]'];
         }
+        $row['outro_cta'] = trim((string) ($row['outro_cta'] ?? DwSeed::OUTRO_CTA));
+        $row['caption_cta'] = trim((string) ($row['caption_cta'] ?? DwSeed::CAPTION_CTA));
         $row['phase'] = (int) $row['phase'];
         $row['countries_always_included'] = json_decode((string) $row['countries_always_included'], true) ?: [];
         return $row;
     }
 
-    public static function saveSettings(string $system, string $illustration, string $style, int $phase, array $countries): void
+    /**
+     * Saves the settings. When a hilads.live line changed, the unpublished
+     * packages follow (applyCtas). Returns that update's report, or null.
+     */
+    public static function saveSettings(string $system, string $illustration, string $style, int $phase, array $countries,
+                                        string $outroCta, string $captionCta): ?array
     {
         if (trim($system) === '' || trim($illustration) === '') {
             throw new InvalidArgumentException('The prompts cannot be empty.');
         }
+        [$outroCta, $captionCta] = [trim($outroCta), trim(str_replace(["\r", "\n"], ' ', $captionCta))];
+        if ($outroCta === '' || $captionCta === '' || mb_strlen($outroCta) > 60 || mb_strlen($captionCta) > 120) {
+            throw new InvalidArgumentException('The outro line (60 characters at most) and the caption line (120 at most) cannot be empty.');
+        }
+        $before = self::settings();
         if (!in_array($phase, [1, 2, 3], true)) {
             throw new InvalidArgumentException('The phase is 1, 2 or 3.');
         }
         $countries = array_values(array_filter(array_map('trim', $countries), static fn($c) => $c !== ''));
         Database::pdo()->prepare("
-            INSERT INTO dw_settings (id, system_prompt, illustration_prompt, visual_style, phase, countries_always_included, updated_at)
-            VALUES (1, ?, ?, ?, ?, ?::jsonb, now())
+            INSERT INTO dw_settings (id, system_prompt, illustration_prompt, visual_style, phase, countries_always_included, outro_cta, caption_cta, updated_at)
+            VALUES (1, ?, ?, ?, ?, ?::jsonb, ?, ?, now())
             ON CONFLICT (id) DO UPDATE SET system_prompt = EXCLUDED.system_prompt, illustration_prompt = EXCLUDED.illustration_prompt,
                 visual_style = EXCLUDED.visual_style, phase = EXCLUDED.phase,
-                countries_always_included = EXCLUDED.countries_always_included, updated_at = now()
-        ")->execute([$system, $illustration, trim($style), $phase, json_encode($countries, JSON_UNESCAPED_UNICODE)]);
+                countries_always_included = EXCLUDED.countries_always_included,
+                outro_cta = EXCLUDED.outro_cta, caption_cta = EXCLUDED.caption_cta, updated_at = now()
+        ")->execute([$system, $illustration, trim($style), $phase, json_encode($countries, JSON_UNESCAPED_UNICODE), $outroCta, $captionCta]);
+        if ($outroCta !== $before['outro_cta'] || $captionCta !== $before['caption_cta']) {
+            return self::applyCtas($before['caption_cta']);
+        }
+        return null;
     }
 
-    /** The system prompt with {{PHASE}} and {{COUNTRIES_ALWAYS}} filled in. */
+    /**
+     * The caption with its required ending: "…\n\n<caption_cta>\n<question>".
+     * A question or CTA already at the end (also the previous ones, after an
+     * edit) is removed first, so the ending is never doubled. Pure.
+     */
+    public static function fixCaptionEnding(string $caption, string $cta, string $question, array $previous = []): string
+    {
+        $body = trim(str_replace("\r\n", "\n", $caption));
+        $questions = array_values(array_filter(array_map('trim', [$question, ...($previous['questions'] ?? [])])));
+        $ctas = array_values(array_filter(array_map('trim', [$cta, ...($previous['ctas'] ?? [])])));
+        // Whole endings only (after a space or a line break), the longest first:
+        // a new question "Your city?" must not eat the end of an old "…in your city?".
+        $strip = static function (string $text, array $endings): string {
+            usort($endings, static fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+            foreach ($endings as $e) {
+                $n = mb_strlen($e);
+                $at = mb_strlen($text) - $n;
+                if ($e !== '' && $at >= 0 && mb_strtolower(mb_substr($text, $at)) === mb_strtolower($e)
+                    && ($at === 0 || preg_match('/\s/u', mb_substr($text, $at - 1, 1)))) {
+                    return rtrim(mb_substr($text, 0, $at));
+                }
+            }
+            return $text;
+        };
+        $body = $strip($body, $questions);
+        $body = $strip($body, $ctas);
+        $body = $strip($body, $questions);   // a caption written "question, then CTA"
+        return ($body !== '' ? $body . "\n\n" : '') . trim($cta) . "\n" . trim($question);
+    }
+
+    /**
+     * Every package of the topics not published yet: caption ending fixed, outro
+     * slide redrawn with the current outro line (its picture is kept).
+     * {packages, slides, warnings}.
+     */
+    public static function applyCtas(?string $previousCaptionCta = null): array
+    {
+        $s = self::settings();
+        $rows = Database::pdo()->query("
+            SELECT p.id FROM dw_packages p JOIN dw_topics t ON t.id = p.topic_id
+            WHERE t.status <> 'published' ORDER BY t.date, p.version
+        ")->fetchAll(PDO::FETCH_COLUMN);
+        $report = ['packages' => 0, 'slides' => 0, 'warnings' => []];
+        foreach ($rows as $id) {
+            $pkg = self::packageById((int) $id);
+            $c = $pkg['content'];
+            $question = (string) ($c['outro']['question'] ?? '');
+            $fixed = self::fixCaptionEnding((string) ($c['caption'] ?? ''), $s['caption_cta'], $question,
+                ['ctas' => array_filter([$previousCaptionCta, DwSeed::CAPTION_CTA])]);
+            if ($fixed !== ($c['caption'] ?? '')) {
+                $c['caption'] = $fixed;
+                Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+                    ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $pkg['id']]);
+                $pkg['content'] = $c;
+            }
+            $report['packages']++;
+            $plan = self::slidePlan($c);
+            $warning = self::renderSlide($pkg, end($plan));
+            if ($warning !== null && str_contains($warning, 'not saved')) {
+                $report['warnings'][] = "Package {$pkg['id']} (v{$pkg['version']}): {$warning}";
+            } else {
+                $report['slides']++;
+            }
+        }
+        return $report;
+    }
+
+    /** The system prompt with {{PHASE}}, {{COUNTRIES_ALWAYS}} and {{CAPTION_CTA}} filled in. */
     public static function systemPrompt(array $s): string
     {
         $countries = $s['countries_always_included'] ?: ['Vietnam'];
-        return strtr($s['system_prompt'], ['{{PHASE}}' => (string) $s['phase'], '{{COUNTRIES_ALWAYS}}' => implode(', ', $countries)]);
+        return strtr($s['system_prompt'], ['{{PHASE}}' => (string) $s['phase'], '{{COUNTRIES_ALWAYS}}' => implode(', ', $countries),
+                                           '{{CAPTION_CTA}}' => $s['caption_cta'] ?? DwSeed::CAPTION_CTA]);
     }
 
     /** The illustration prompt for one brief. */
@@ -418,7 +503,8 @@ final class DwStudio
         } else {
             $items = [['content' => $doc]];
         }
-        $always = self::settings()['countries_always_included'];
+        $settings = self::settings();
+        $always = $settings['countries_always_included'];
         $report = [];
         foreach ($items as $item) {
             $date = is_array($item) ? (string) ($item['date'] ?? '') : '';
@@ -443,6 +529,11 @@ final class DwStudio
                 continue;
             }
             [$content, $svgs] = self::splitSvgs($content);
+            $fixed = self::fixCaptionEnding((string) $content['caption'], $settings['caption_cta'], (string) $content['outro']['question']);
+            if ($fixed !== trim((string) $content['caption'])) {
+                $warn[] = 'The caption did not end with the hilads.live line and the question: its ending was fixed.';
+            }
+            $content['caption'] = $fixed;
             $pdo = Database::pdo();
             $stmt = $pdo->prepare("
                 INSERT INTO dw_packages (topic_id, version, content, model)
@@ -485,6 +576,9 @@ final class DwStudio
     {
         $pos  = (int) $slide['position'];
         $name = DwSlides::fileName($pos, $slide['kind'], $slide['country'] ?? null);
+        if ($slide['kind'] === 'outro' && !isset($slide['cta'])) {
+            $slide['cta'] = self::settings()['outro_cta'];
+        }
         $stmt = Database::pdo()->prepare("SELECT * FROM dw_slides WHERE package_id = ? AND position = ?");
         $stmt->execute([$pkg['id'], $pos]);
         $old = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -608,11 +702,17 @@ final class DwStudio
             $ref = $value;
             unset($ref);
         }
+        $out = [];
+        if ($path === 'caption' || $path === 'outro.question') {
+            // The caption always ends with the hilads.live line, then the (current) question.
+            $c['caption'] = self::fixCaptionEnding((string) ($c['caption'] ?? ''), self::settings()['caption_cta'],
+                (string) ($c['outro']['question'] ?? ''), ['questions' => [(string) ($pkg['content']['outro']['question'] ?? '')]]);
+            $out['caption'] = $c['caption'];
+        }
         Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
             ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
         $pkg['content'] = $c;
 
-        $out = [];
         if ($target['slide'] !== null) {
             $slide = self::slidePlan($c)[$target['slide'] - 1];
             $warning = self::renderSlide($pkg, $slide, $art);
@@ -710,11 +810,17 @@ final class DwStudio
         return $path;
     }
 
-    /** The full caption to paste: caption, hashtags, disclosure. */
-    public static function fullCaption(array $c): string
+    /**
+     * The full caption to paste: the caption's text, the AI disclosure, the
+     * hilads.live line, the question, then the hashtags. Pure.
+     */
+    public static function fullCaption(array $c, string $cta): string
     {
-        return trim(trim((string) ($c['caption'] ?? '')) . "\n\n" . implode(' ', $c['hashtags'] ?? [])
-            . "\n\n" . trim((string) ($c['ai_disclosure'] ?? '')));
+        $question = trim((string) ($c['outro']['question'] ?? ''));
+        $caption = self::fixCaptionEnding((string) ($c['caption'] ?? ''), $cta, $question);
+        $body = trim(mb_substr($caption, 0, mb_strlen($caption) - mb_strlen(trim($cta) . "\n" . $question)));
+        $parts = [$body, trim((string) ($c['ai_disclosure'] ?? '')), trim($cta) . "\n" . $question, implode(' ', $c['hashtags'] ?? [])];
+        return implode("\n\n", array_filter($parts, static fn($p) => $p !== ''));
     }
 
     // ── Video (tools/promo: npm run worlds) ─────────────────────────────────
@@ -731,7 +837,9 @@ final class DwStudio
         foreach (self::slides($pkg['id']) as $r) {
             $slides[(int) $r['position']] = ['photoUrl' => $r['photo_url'], 'pngUrl' => $r['png_url'], 'svgUrl' => $r['svg_url']];
         }
-        $plan = array_map(static fn($p) => $p + ($slides[$p['position']] ?? []), self::slidePlan($pkg['content']));
+        $cta = self::settings()['outro_cta'];
+        $plan = array_map(static fn($p) => $p + ($slides[$p['position']] ?? []) + ($p['kind'] === 'outro' ? ['cta' => $cta] : []),
+            self::slidePlan($pkg['content']));
         return ['date' => $topic['date'], 'title' => $topic['title'], 'version' => $pkg['version'],
                 'content' => $pkg['content'], 'slides' => $plan, 'videoUrl' => $pkg['video_url'] ?? null];
     }

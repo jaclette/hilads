@@ -14,6 +14,9 @@ const FONT = 'Be Vietnam Pro';
 const LEFT = 72;
 const WIDTH = 1080 - LEFT - 170;   // the right 170 px stay free for the apps' buttons
 const BOTTOM = 1560;               // under it: the apps' caption and buttons
+const OUTRO_QUESTION_BOTTOM = 1436; // the outro's question ends above its hilads.live line
+const CTA_TOP = 1472;
+const CTA_LOGO = 64;
 
 for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold', '800']]) {
   loadFont({ family: FONT, url: staticFile(`fonts/BeVietnamPro-${file}.ttf`), weight });
@@ -60,14 +63,14 @@ function wrap(text, px, width, weight) {
   return lines;
 }
 
-/** The biggest size from max down to min where the text fits above BOTTOM: {px, lines}. */
-function fit(text, top, max, min) {
+/** The biggest size from max down to min where the text fits above bottom: {px, lines}. */
+function fit(text, top, max, min, bottom = BOTTOM) {
   let lines = [];
   let px = max;
   for (; px >= min; px -= 4) {
     lines = wrap(text, px, WIDTH, 800);
     const height = px * 0.95 + (lines.length - 1) * px * 1.16;
-    if (top + height <= BOTTOM && Math.max(...lines.map((l) => measure(l, px))) <= WIDTH) break;
+    if (top + height <= bottom && Math.max(...lines.map((l) => measure(l, px))) <= WIDTH) break;
   }
   return { px: Math.max(px, min), lines };
 }
@@ -88,13 +91,30 @@ function Rise({ delay, children, style }) {
   return <div style={{ position: 'absolute', opacity: p, transform: `translateY(${(1 - p) * 36}px)`, ...style }}>{children}</div>;
 }
 
-function Lines({ text, top, max, min, delay }) {
-  const { px, lines } = fit(plain(text), top, max, min);
+function Lines({ text, top, max, min, delay, bottom }) {
+  const { px, lines } = fit(plain(text), top, max, min, bottom);
   return (
     <Rise delay={delay} style={{ left: LEFT, top, width: WIDTH }}>
       {lines.map((l, i) => (
         <div key={i} style={{ fontFamily: FONT, fontWeight: 800, fontSize: px, lineHeight: `${px * 1.16}px`, color: '#fff', whiteSpace: 'nowrap' }}>{l}</div>
       ))}
+    </Rise>
+  );
+}
+
+/** The outro's hilads.live line: the app logo and the text ("hilads.live" in orange), at most half the question's size. */
+function Cta({ text, question }) {
+  const { px: questionPx } = fit(question, 1226, 104, 56, OUTRO_QUESTION_BOTTOM);
+  const room = WIDTH - CTA_LOGO - 20;
+  let px = Math.min(34, Math.floor(questionPx / 2));
+  while (px > 24 && measure(text, px, 600) > room) px -= 2;
+  const parts = text.split(/(hilads\.live)/i).filter(Boolean);
+  return (
+    <Rise delay={24} style={{ left: LEFT, top: CTA_TOP, height: CTA_LOGO, display: 'flex', alignItems: 'center', gap: 20 }}>
+      <Img src={staticFile('logo.svg')} style={{ width: CTA_LOGO, height: CTA_LOGO }} />
+      <span style={{ fontFamily: FONT, fontSize: px, fontWeight: 600, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap' }}>
+        {parts.map((p, i) => /^hilads\.live$/i.test(p) ? <span key={i} style={{ fontWeight: 800, color: ACCENT }}>{p}</span> : <span key={i}>{p}</span>)}
+      </span>
     </Rise>
   );
 }
@@ -145,14 +165,15 @@ function Slide({ slide, length }) {
       {slide.kind === 'outro' && (
         <>
           <Rise delay={4} style={{ left: LEFT, top: 1162, fontFamily: FONT, fontWeight: 800, fontSize: 34, letterSpacing: 3, color: ACCENT }}>YOUR TURN</Rise>
-          <Lines text={slide.text} top={1226} max={104} min={52} delay={10} />
+          <Lines text={slide.text} top={1226} max={104} min={56} delay={10} bottom={slide.cta ? OUTRO_QUESTION_BOTTOM : BOTTOM} />
+          {slide.cta && <Cta text={plain(slide.cta)} question={plain(slide.text)} />}
         </>
       )}
     </AbsoluteFill>
   );
 }
 
-/** props: {slides: [{kind, text, country?, flag?, credit?, photo?}]} (paths in the public folder). */
+/** props: {slides: [{kind, text, country?, flag?, credit?, photo?, cta?}]} (paths in the public folder). */
 export function WorldsVideo({ slides }) {
   const { parts } = worldsTiming(slides);
   return (

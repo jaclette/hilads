@@ -32,6 +32,11 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
    - "Replace photo" swaps one slide's picture: a Commons URL or an uploaded photo, with its credit. Empty gives the plain background.
    - "Download all slides (ZIP)" gives `01_hook.png … 09_outro.png`.
    - "Copy full caption" gives the caption, the hashtags and the AI disclosure.
+   - "Copy full caption" gives, in this order:
+     1. the caption's text;
+     2. the AI disclosure;
+     3. the hilads.live line, then the question;
+     4. the hashtags.
    - Mark ready, then mark published with the three platform links.
 6. **Video**: on the Mac, `cd tools/promo && npm run worlds -- <date>`.
    - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders 31 s of video (`src/Worlds.jsx`): hook 3 s, each country 3.5 s, outro 3.5 s. The layout is the slides', with a slow zoom on each photo, the text rising in and a crossfade between slides.
@@ -67,6 +72,16 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
 - a slide without a photo, or a photo that can't be downloaded (the slide gets a plain background);
 - a credit over 90 characters.
 
+## hilads.live lines (Settings)
+
+- **`outro_cta`**, default "Compare your city on hilads.live". It sits under the outro's question with the app logo, with "hilads.live" in orange. It is at most half the question's size, and the question ends by 1436 px so the line fits above the 1560 px safe line.
+- **`caption_cta`**, default "Compare your city with the world on hilads.live 🌍 (link in bio)".
+  - Every caption ends with this line, then the outro question as its last line.
+  - The system prompt asks for it (`{{CAPTION_CTA}}`).
+  - `DwStudio::fixCaptionEnding` enforces it on import, and when the caption or the question is edited. It removes a question or line already at the end, then adds the two lines.
+- **When either line changes**, every version of the topics not marked published follows: the caption ending is fixed and the outro slide is redrawn, keeping its photo. The "Apply to unpublished packages" button does the same on demand.
+- Videos are rendered on the Mac: run `npm run worlds -- <date>` again after a change.
+
 ## Slides (src/DwSlides.php)
 
 - The photo covers the top 1080 px. It is cropped to a square from the centre, so the subject should be centred.
@@ -75,7 +90,7 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
 - The text block runs from 1120 to 1560 px, with a 72 px left margin and a 170 px right margin. It's set in Be Vietnam Pro ExtraBold at the biggest size that fits.
 - Below 1560 px is left empty for the apps' captions and buttons.
 - Country slides show a Twemoji flag (`backend/api/assets/flags`, CC-BY 4.0) and the country name in gold.
-- The outro has a "YOUR TURN" label.
+- The outro has a "YOUR TURN" label, the question, then the hilads.live line (`assets/logo.svg`, the app icon without its animation).
 - Rendering uses `rsvg-convert` (librsvg2-bin, in the Dockerfile). Emoji inside on-screen texts are dropped, because there's no emoji font in the renderer.
 - Photos come only from upload.wikimedia.org: downloaded with a User-Agent, at most 25 MB and 40 megapixels, at least 600 px on the short side.
 - Drawn SVG illustrations (older packages) are sanitized before rendering. Removed: scripts, images, foreignObject, external hrefs and `url()`, `@import`, event handlers, and text.
@@ -86,5 +101,6 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
 - Then run `php migrate.php`.
   - It creates the `dw_*` tables, the settings row and the 2026 calendar (seeded only into an empty calendar).
   - It adds `dw_slides.photo_url` and `dw_packages.video_url`.
-  - It switches the seeded prompts to photos, unless they were edited.
+  - It switches the seeded prompts to photos, unless they were edited. The system prompt also gets the caption ending and the reworded Phase 1.
+  - It adds `dw_settings.outro_cta` and `caption_cta`.
 - No new environment variable: the slides use the existing R2 settings, and the video uses the Daily promo's `PROMO_TOKEN`.
