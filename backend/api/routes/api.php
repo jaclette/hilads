@@ -4697,6 +4697,8 @@ $router->add('POST', '/api/v1/uploads', function () {
     // and the client falls back to the full-size URL - no broken images.
     $thumbUrl = null;
     $thumbTmp = ImageProcessor::generateAvatarThumbnail($cleanPath, $mimeType);
+    // The WebP sizes the apps load (cards, full screen), ready before the first view.
+    R2Uploader::putVariants($cleanPath, $mimeType, $filename, ['thumb', 'medium']);
     @unlink($cleanPath);
     if ($thumbTmp !== null) {
         try {
@@ -4735,11 +4737,11 @@ $router->add('GET', '/api/v1/img-thumb', function () {
     $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
     if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
 
-    $cover     = in_array((string) ($_GET['c'] ?? ''), ['600', '800', '1000'], true) ? (int) $_GET['c'] : null;
-    $medium    = $cover === null && (string) ($_GET['w'] ?? '') === '1080';
+    $c         = (string) ($_GET['c'] ?? '');
+    $key       = in_array($c, ['600', '800', '1000'], true) ? 'c' . $c : ((string) ($_GET['w'] ?? '') === '1080' ? 'medium' : 'thumb');
     $webp      = (string) ($_GET['fmt'] ?? '') === 'webp';
     $mimeOut   = $webp ? 'image/webp' : 'image/jpeg';
-    $thumbName = ($cover !== null ? "thumb_c{$cover}_" : ($medium ? 'thumb_w1080_' : 'thumb_')) . strtolower($m[1]) . ($webp ? '.webp' : '.jpg');
+    $thumbName = ImageProcessor::variantName($key, $m[1], $webp);
     $thumbUrl  = $r2Base . '/' . $thumbName;
     $origUrl   = $r2Base . '/' . $f;
 
@@ -4765,11 +4767,7 @@ $router->add('GET', '/api/v1/img-thumb', function () {
         $srcTmp = tempnam(sys_get_temp_dir(), 'thmb');
         file_put_contents($srcTmp, $orig);
         $mime  = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
-        $thumbTmp = match (true) {
-            $cover !== null => ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, $cover, $webp ? 65 : 78, true, $webp),
-            $medium         => ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, 1080, $webp ? 72 : 80, false, $webp),
-            default         => ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, 400, $webp ? 76 : 80, false, $webp),
-        };
+        $thumbTmp = ImageProcessor::variant($srcTmp, $mime, $key, $webp);
         @unlink($srcTmp);
         if ($thumbTmp === null) { header('Location: ' . $origUrl, true, 302); exit; }
         $bytes = file_get_contents($thumbTmp);

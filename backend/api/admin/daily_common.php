@@ -244,7 +244,11 @@ function daily_cover_upload(?array $file): string
         throw new InvalidArgumentException('Could not read the image (' . ImageProcessor::$lastError . ').');
     }
     try {
-        return R2Uploader::put($clean, bin2hex(random_bytes(16)) . '.' . $allowed[$mime], $mime);
+        $filename = bin2hex(random_bytes(16)) . '.' . $allowed[$mime];
+        $url      = R2Uploader::put($clean, $filename, $mime);
+        // The hero sizes (1x, 2x) and the thumbnail, ready before the first view.
+        R2Uploader::putVariants($clean, $mime, $filename, ['thumb', 'c600', 'c800']);
+        return $url;
     } finally {
         @unlink($clean);
     }

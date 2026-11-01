@@ -83,6 +83,7 @@ final class DailyDemo
         $filename = bin2hex(random_bytes(16)) . '.' . $allowed[$mime];
         try {
             $url = R2Uploader::put($clean, $filename, $mime);
+            R2Uploader::putVariants($clean, $mime, $filename, ['thumb', 'medium']);
             $thumb = ImageProcessor::generateAvatarThumbnail($clean, $mime);
             if ($thumb !== null) {
                 try {

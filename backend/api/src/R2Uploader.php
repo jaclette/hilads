@@ -53,6 +53,61 @@ class R2Uploader
         return rtrim(getenv('R2_PUBLIC_URL'), '/') . '/' . $filename;
     }
 
+    /**
+     * Store sizes of a just-uploaded image next to it (ImageProcessor::VARIANTS
+     * keys, as WebP), so its first view needs no resize. Best effort: a size that
+     * fails is made by GET /api/v1/img-thumb on its first request instead.
+     */
+    public static function putVariants(string $srcPath, string $mime, string $filename, array $keys): void
+    {
+        $base = pathinfo($filename, PATHINFO_FILENAME);
+        foreach ($keys as $key) {
+            $tmp = ImageProcessor::variant($srcPath, $mime, $key, true);
+            if ($tmp === null) {
+                continue;
+            }
+            try {
+                self::put($tmp, ImageProcessor::variantName($key, $base, true), 'image/webp');
+            } catch (\Throwable) {
+                // Made on the first view instead.
+            } finally {
+                @unlink($tmp);
+            }
+        }
+    }
+
+    /**
+     * Every object in the bucket as key => size in bytes (paged 1000 at a time),
+     * optionally under a prefix. For maintenance scripts, never a request.
+     *
+     * @return array<string,int>
+     */
+    public static function listKeys(string $prefix = ''): array
+    {
+        $out = [];
+        $pages = self::client()->getPaginator('ListObjectsV2', ['Bucket' => getenv('R2_BUCKET'), 'Prefix' => $prefix]);
+        foreach ($pages as $page) {
+            foreach ($page['Contents'] ?? [] as $o) {
+                $out[(string) $o['Key']] = (int) $o['Size'];
+            }
+        }
+        return $out;
+    }
+
+    /** Copy one object to another key in the bucket (a backup before replacing it). @throws RuntimeException */
+    public static function copy(string $fromKey, string $toKey): void
+    {
+        try {
+            self::client()->copyObject([
+                'Bucket'     => getenv('R2_BUCKET'),
+                'Key'        => $toKey,
+                'CopySource' => getenv('R2_BUCKET') . '/' . rawurlencode($fromKey),
+            ]);
+        } catch (AwsException $e) {
+            throw new RuntimeException('Copy failed: ' . ($e->getAwsErrorMessage() ?: $e->getMessage()));
+        }
+    }
+
     /** A presigned PUT for one object (a client uploads it without R2 keys, e.g. tools/promo), valid $minutes. */
     public static function presignPut(string $key, string $contentType, int $minutes = 30): string
     {

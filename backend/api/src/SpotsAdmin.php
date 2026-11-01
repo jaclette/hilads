@@ -750,6 +750,7 @@ final class SpotsAdmin
             throw new InvalidArgumentException('The photo upload failed: ' . $e->getMessage());
         }
         $thumb = ImageProcessor::generateAvatarThumbnail($clean, $mime);
+        R2Uploader::putVariants($clean, $mime, $filename, ['thumb', 'medium']);
         @unlink($clean);
         if ($thumb !== null) {
             try {

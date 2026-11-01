@@ -58,6 +58,26 @@ final class ImageStripTest extends TestCase
         $this->assertSame([20, 10], array_slice(getimagesize($out), 0, 2));
     }
 
+    public function testLargeUploadIsCappedAt1600(): void
+    {
+        $img = imagecreatetruecolor(3000, 1500);
+        $src = $this->tmp[] = tempnam(sys_get_temp_dir(), 'strip_big_');
+        imagejpeg($img, $src, 95);
+
+        $out = ImageProcessor::stripMetadata($src, 'image/jpeg');
+        $this->assertNotNull($out, (string) ImageProcessor::$lastError);
+        $this->tmp[] = $out;
+        $this->assertSame([1600, 800], array_slice(getimagesize($out), 0, 2));
+    }
+
+    public function testVariantNamesMatchTheProxy(): void
+    {
+        $base = str_repeat('ab', 16);
+        $this->assertSame("thumb_{$base}.jpg", ImageProcessor::variantName('thumb', $base, false));
+        $this->assertSame("thumb_w1080_{$base}.webp", ImageProcessor::variantName('medium', $base, true));
+        $this->assertSame("thumb_c800_{$base}.webp", ImageProcessor::variantName('c800', $base, true));
+    }
+
     public function testOrientationIsAppliedBeforeStripping(): void
     {
         if (!function_exists('exif_read_data')) {

@@ -84,10 +84,14 @@ final class DailyRules
     /** Every name a city goes by: its name, its short name (Saigon), its local short names, its aliases. */
     private static function cityNames(string $cityName, ?string $cityId): array
     {
-        if ($cityId === null) {
-            $cityId = CityRepository::findChannelIdByName($cityName);
+        try {
+            if ($cityId === null) {
+                $cityId = CityRepository::findChannelIdByName($cityName);
+            }
+            $city = $cityId !== null && preg_match('/^city_(\d+)$/', $cityId, $m) ? CityRepository::findById((int) $m[1]) : null;
+        } catch (\Throwable) {
+            $city = null;   // no city table at hand (unit tests, a DB hiccup): the name itself
         }
-        $city = $cityId !== null && preg_match('/^city_(\d+)$/', $cityId, $m) ? CityRepository::findById((int) $m[1]) : null;
         if ($city === null) {
             return [$cityName];
         }

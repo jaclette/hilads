@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 /**
- * Image utilities - currently just avatar thumbnail generation.
+ * Image utilities: upload clean-up (metadata, orientation, 1600 px cap), the
+ * served sizes (VARIANTS) and the map pin.
  *
  * Was a free function in routes/api.php; lifted into a class so the
  * admin thumb-backfill tool (which doesn't load routes/api.php) can
@@ -18,6 +19,36 @@ class ImageProcessor
      * the pipeline. Wiped to null at the start of each successful call.
      */
     public static ?string $lastError = null;
+
+    /** Uploads are stored at most this long on their longer side, at this quality (JPEG / WebP). */
+    public const UPLOAD_MAX_DIM = 1600;
+    public const UPLOAD_QUALITY = 75;
+
+    /**
+     * The sizes GET /api/v1/img-thumb serves, made at upload and by
+     * scripts/images_backfill.php too, each cached on R2 as
+     * <prefix><base>.jpg|.webp: [prefix, max px, bound the shorter side, JPEG q, WebP q].
+     */
+    public const VARIANTS = [
+        'thumb'  => ['thumb_',       400,  false, 80, 76],   // cards, tiles, avatars, insets
+        'medium' => ['thumb_w1080_', 1080, false, 80, 72],   // full-screen viewers
+        'c600'   => ['thumb_c600_',  600,  true,  78, 65],   // hero covers, 1x
+        'c800'   => ['thumb_c800_',  800,  true,  78, 65],   // hero covers, 2x+
+        'c1000'  => ['thumb_c1000_', 1000, true,  78, 65],   // hero covers, older apps
+    ];
+
+    /** The R2 name of a size of the upload <base> (its 32 hex chars). */
+    public static function variantName(string $key, string $base, bool $webp): string
+    {
+        return self::VARIANTS[$key][0] . strtolower($base) . ($webp ? '.webp' : '.jpg');
+    }
+
+    /** One size of an image (VARIANTS key), as a temporary file the caller unlinks, or null (see $lastError). */
+    public static function variant(string $srcPath, string $srcMime, string $key, bool $webp): ?string
+    {
+        [, $dim, $short, $jpegQ, $webpQ] = self::VARIANTS[$key];
+        return self::generateAvatarThumbnail($srcPath, $srcMime, $dim, $webp ? $webpQ : $jpegQ, $short, $webp);
+    }
 
     /**
      * Scale the source image down to ≤$maxDim px on its longest side
@@ -123,13 +154,14 @@ class ImageProcessor
      * PNG text chunks): GD decodes to raw pixels and writes a fresh file in
      * the same format. The JPEG EXIF orientation is applied first so the
      * pixels end up upright once the tag is gone (needs the exif extension;
-     * without it the image is still stripped, just not rotated).
+     * without it the image is still stripped, just not rotated). It is also
+     * scaled down to $maxDim px on its longer side and saved at quality 75.
      *
      * Returns the path to a temporary file (caller MUST unlink it), or null
      * on any failure with the reason in self::$lastError. Callers fail closed:
      * an image that cannot be stripped is never stored.
      */
-    public static function stripMetadata(string $srcPath, string $srcMime): ?string
+    public static function stripMetadata(string $srcPath, string $srcMime, int $maxDim = self::UPLOAD_MAX_DIM): ?string
     {
         self::$lastError = null;
 
@@ -154,6 +186,18 @@ class ImageProcessor
             $img  = self::applyOrientation($img, (int) ($exif['Orientation'] ?? 1));
         }
 
+        // Never stored longer than $maxDim on its longer side (a phone's 4032 px original weighs MBs).
+        $w = imagesx($img);
+        $h = imagesy($img);
+        if (max($w, $h) > $maxDim) {
+            $scale  = $maxDim / max($w, $h);
+            $scaled = imagescale($img, max(1, (int) round($w * $scale)), max(1, (int) round($h * $scale)), IMG_BICUBIC);
+            if ($scaled !== false) {
+                imagedestroy($img);
+                $img = $scaled;
+            }
+        }
+
         if ($srcMime !== 'image/jpeg') {
             imagealphablending($img, false);
             imagesavealpha($img, true);
@@ -161,9 +205,9 @@ class ImageProcessor
 
         $tmpPath = tempnam(sys_get_temp_dir(), 'hilads_strip_');
         $ok = match ($srcMime) {
-            'image/jpeg' => imagejpeg($img, $tmpPath, 88),
+            'image/jpeg' => imagejpeg($img, $tmpPath, self::UPLOAD_QUALITY),
             'image/png'  => imagepng($img, $tmpPath, 6),
-            'image/webp' => imagewebp($img, $tmpPath, 85),
+            'image/webp' => imagewebp($img, $tmpPath, self::UPLOAD_QUALITY),
         };
         imagedestroy($img);
 
