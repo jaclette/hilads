@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { fetchDailyProofsByIds, fetchDailyTodayCountries, fetchDailyTour } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
@@ -100,6 +100,7 @@ export default function TodayCountries({ today, data }) {
   const copy = seasonal?.theme.copy
   const challenge = today?.challenge ?? null
   const cities = todayCities(data)
+  const swiped = useSwipedStack()
   // Nobody played yet: yesterday's best cities teach the idea (the tour the recap card loads too).
   const [tour, setTour] = useState(null)
   const [touring, setTouring] = useState(null)
@@ -185,6 +186,8 @@ export default function TodayCountries({ today, data }) {
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
                 }} onOpen={() => setTouring(i)} />)}
           </div>
+          {/* Until the first swipe ever: the piles can be swiped. */}
+          {cities.length > 0 && !swiped && cards.some(g => g.count > 1) && <p className="dc-muted tc-hint">{t('mosaic.swipeHint')}</p>}
           {cities.length === 0 && yesterday.length === 0 && !slot && <p className="dc-muted">{t('countries.emptyBody')}</p>}
         </div>
       )}
@@ -224,7 +227,8 @@ function lean(id) {
 
 /**
  * A city's card: its most liked photo (a polaroid pile behind it when the city
- * has several), its answer large, its players and its likes. `faded`:
+ * has several, swipeable, a nudge until the first swipe), its answer large,
+ * its players and its likes. `faded`:
  * yesterday's card in the empty state.
  */
 function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
@@ -242,6 +246,10 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
   const pile = group.count > 1
   const swipeable = n > 1 && !faded
   const players = group.authorCount ?? 0
+  // Where the top photo sits in the pile ("1/3"), the pile's size as soon as its photos are in.
+  const total = n > 1 ? n : Math.min(group.count, PILE_MAX)
+  const counter = pile && !faded
+  const swiped = useSwipedStack()
   const reduce = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
   // The top photo follows the finger / mouse sideways (a slight tilt); past a third of the card, or a
@@ -258,6 +266,7 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
   }
   const next = () => {
     navigator.vibrate?.(8)
+    markSwiped()
     track('today_pile_swipe', { city: group.city.id, photos: n, platform_surface: 'web' })
     setFront(f => (f + 1) % n)
     const el = topRef.current
@@ -308,15 +317,16 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
     }
   }
 
-  // Once ever (on this browser): the first pile shown peeks aside, so the swipe is found.
+  // Until the first swipe ever (in this browser): a second after it shows, the first pile of the
+  // visit nudges aside and springs back, the next photo's edge in view.
   useEffect(() => {
-    if (!swipeable || reduce || !claimPileHint()) return
+    if (!swipeable || reduce || swiped || !claimNudge()) return
+    let back
     const id = setTimeout(() => {
-      const w = topRef.current?.offsetWidth || 160
-      setTop(-w * 0.22, 'transform 300ms ease-out')
-      setTimeout(() => setTop(0, 'transform 360ms cubic-bezier(.34,1.56,.64,1)'), 320)
-    }, 500)
-    return () => clearTimeout(id)
+      setTop(-35, 'transform 300ms ease-out')
+      back = setTimeout(() => setTop(0, 'transform 360ms cubic-bezier(.34,1.56,.64,1)'), 320)
+    }, 1000)
+    return () => { clearTimeout(id); clearTimeout(back) }
   }, [swipeable]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -340,8 +350,9 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
             <span className="tc-corner">
               {pile && (
                 <span className="tc-pill">
-                  <Icon name={players > 0 && players >= group.count ? 'people-outline' : 'camera'} size={12} />
-                  <span className="tc-pill-text">{players <= 0 ? group.count
+                  <Icon name={!counter && players > 0 && players >= group.count ? 'people-outline' : 'camera'} size={12} />
+                  <span className="tc-pill-text">{counter ? `${(front % total) + 1}/${total}`
+                    : players <= 0 ? group.count
                     : players >= group.count ? t('mosaic.players', { count: players })
                     : `${group.count} · ${t('mosaic.players', { count: players })}`}</span>
                 </span>
@@ -406,16 +417,25 @@ function usePilePhotos(group, locale) {
   return ids.map(id => (id === group.top.id ? group.top : pileCache.get(id))).filter(Boolean)
 }
 
-// The one-time peek: the first swipeable pile shown in this browser, never again.
-const PILE_HINT_KEY = 'hilads_pile_hint_v1'
-let pileHintTaken = false
-function claimPileHint() {
-  if (pileHintTaken) return false
-  pileHintTaken = true
-  try {
-    if (localStorage.getItem(PILE_HINT_KEY) === '1') return false
-    localStorage.setItem(PILE_HINT_KEY, '1')
-  } catch { return false }
+// Has this browser ever swiped a pile? Until then, the nudge and the hint show the swipe.
+const SWIPED_KEY = 'has_swiped_stack'
+let swipedStack = (() => { try { return localStorage.getItem(SWIPED_KEY) === '1' } catch { return false } })()
+const swipedListeners = new Set()
+const subscribeSwiped = l => { swipedListeners.add(l); return () => { swipedListeners.delete(l) } }
+function useSwipedStack() {
+  return useSyncExternalStore(subscribeSwiped, () => swipedStack, () => true)
+}
+function markSwiped() {
+  if (swipedStack) return
+  swipedStack = true
+  try { localStorage.setItem(SWIPED_KEY, '1') } catch { /* private mode */ }
+  swipedListeners.forEach(l => l())
+}
+// One nudge a visit: the first swipeable pile shown.
+let nudged = false
+function claimNudge() {
+  if (nudged) return false
+  nudged = true
   return true
 }
 

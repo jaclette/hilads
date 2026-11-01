@@ -790,7 +790,8 @@
     "missing": "Wala pa ang {{city}}!",
     "yesterday": "Kahapon, sabi ng mundo…",
     "beFirst": "I-represent ang {{city}}",
-    "beFirstSub": "Ikaw ang unang city ngayon"
+    "beFirstSub": "Ikaw ang unang city ngayon",
+    "swipeHint": "I-swipe para maglakbay 🌍"
   },
   "comments": {
     "title": "Comments",

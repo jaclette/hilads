@@ -1448,7 +1448,8 @@
       "missing": "{{city}} गायब है!",
       "yesterday": "कल दुनिया ने कहा…",
       "beFirst": "{{city}} का नाम रोशन करें",
-      "beFirstSub": "आज पहला शहर बनें"
+      "beFirstSub": "आज पहला शहर बनें",
+      "swipeHint": "घूमने के लिए स्वाइप करो 🌍"
     },
     "recap": {
       "label": "कल",

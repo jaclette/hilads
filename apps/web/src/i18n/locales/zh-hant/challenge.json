@@ -1421,7 +1421,8 @@
       "missing": "還缺{{city}}！",
       "yesterday": "昨天，全世界這樣說…",
       "beFirst": "為{{city}}出戰",
-      "beFirstSub": "當今天第一座城市"
+      "beFirstSub": "當今天第一座城市",
+      "swipeHint": "滑動去旅行 🌍"
     },
     "recap": {
       "label": "昨天",

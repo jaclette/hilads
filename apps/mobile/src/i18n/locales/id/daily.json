@@ -754,7 +754,8 @@
     "missing": "{{city}} belum ada!",
     "yesterday": "Kemarin dunia bilang…",
     "beFirst": "Wakili {{city}}",
-    "beFirstSub": "Jadilah kota pertama hari ini"
+    "beFirstSub": "Jadilah kota pertama hari ini",
+    "swipeHint": "Geser untuk menjelajah 🌍"
   },
   "comments": {
     "title": "Komentar",

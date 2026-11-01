@@ -17852,6 +17852,7 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
            border-radius: 8px; background: rgba(0,0,0,0.62); pointer-events: none; }
 .tc-dot { width: 5px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.35); }
 .tc-dot--on { background: #fff; }
+.tc-hint { text-align: center; font-weight: 600; }
 .tc-photo-box { position: relative; display: block; }
 /* Top-right, leaving the left 30 % to the selfie inset (.dp-mini, 24 %); a long count truncates. */
 .tc-corner { position: absolute; top: 6px; right: 6px; left: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 4px; pointer-events: none; }

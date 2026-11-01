@@ -790,7 +790,8 @@
     "missing": "{{city}} ontbreekt!",
     "yesterday": "Gisteren zei de wereld…",
     "beFirst": "Vertegenwoordig {{city}}",
-    "beFirstSub": "Word vandaag de eerste stad"
+    "beFirstSub": "Word vandaag de eerste stad",
+    "swipeHint": "Swipe om te reizen 🌍"
   },
   "comments": {
     "title": "Reacties",

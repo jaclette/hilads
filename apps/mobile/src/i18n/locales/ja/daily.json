@@ -754,7 +754,8 @@
     "missing": "{{city}}がまだ！",
     "yesterday": "昨日、世界はこう言った…",
     "beFirst": "{{city}}を代表しよう",
-    "beFirstSub": "今日最初の街になろう"
+    "beFirstSub": "今日最初の街になろう",
+    "swipeHint": "スワイプして旅しよう 🌍"
   },
   "comments": {
     "title": "コメント",

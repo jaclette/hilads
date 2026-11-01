@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { PanResponder, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -64,6 +64,7 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
   // Only the tour of the challenge just before today's: one kept from an earlier day
   // (the app left open overnight) showed the day before yesterday.
   const remembered = useLastTour();
+  const swiped = useSwipedStack();
   const tour = remembered && (!remembered.today || remembered.today.id === challenge?.id) ? remembered : null;
   useEffect(() => {
     if (!challenge || cities.length > 0 || tour) return;
@@ -152,6 +153,8 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
                 }} onPress={() => router.push('/daily/tour?source=today_empty' as never)} />)}
           </View>
+          {/* Until the first swipe ever: the piles can be swiped. */}
+          {cities.length > 0 && swiped === false && cards.some(g => g.count > 1) && <Text style={styles.hint}>{t('mosaic.swipeHint')}</Text>}
           {cities.length === 0 && yesterday.length === 0 && !slot && <Text style={styles.invite}>{t('countries.emptyBody')}</Text>}
         </View>
       )}
@@ -199,7 +202,7 @@ function lean(id: number): number {
  * them (the next ones peek out behind, theme-colored edges): swipe sideways to
  * bring the next to the front, endlessly; its answer, player, likes, comments
  * and selfie follow the photo on top, and a tap opens the stories at it. A
- * one-time peek shows the swipe. `faded`: yesterday's card in the empty state.
+ * nudge shows the swipe until the first one. `faded`: yesterday's card in the empty state.
  */
 function CityCard({ group, onPress, pileColor, badge, faded = false }: {
   group: DailyCityGroup; onPress: (photoId: string) => void; pileColor: string; badge?: string; faded?: boolean;
@@ -223,6 +226,10 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
   const pile = group.count > 1;
   const swipeable = n > 1 && !faded;
   const players = group.authorCount ?? 0;
+  // Where the top photo sits in the pile ("1/3"), the pile's size as soon as its photos are in.
+  const total = n > 1 ? n : Math.min(group.count, PILE_MAX);
+  const counter = pile && !faded;
+  const swiped = useSwipedStack();
 
   // The top photo follows the thumb sideways (a slight tilt); past a third of the card, or a
   // flick, it flies off and the next photo comes to the front, endlessly; short of it, it springs
@@ -234,6 +241,7 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
   const swiping = useRef(false);
   const next = () => {
     Haptics.selectionAsync().catch(() => {});
+    markSwiped();
     track('today_pile_swipe', { city: group.city.id, photos: n });
     setFront(f => (f + 1) % n);
     // The new top photo rises from the pile.
@@ -267,16 +275,12 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
     onPanResponderTerminate: () => { swiping.current = false; tx.value = withSpring(0); },
   }), [swipeable, reduced, tx, fade]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Once ever (on this phone): the first pile shown peeks aside, so the swipe is found.
+  // Until the first swipe ever (on this phone): a second after it shows, the first pile of the
+  // visit nudges aside and springs back, the next photo's edge in view.
   useEffect(() => {
-    if (!swipeable || reduced) return;
-    let live = true;
-    claimPileHint().then(mine => {
-      if (!live || !mine) return;
-      tx.value = withDelay(500, withSequence(withTiming(-width.current * 0.22, { duration: 300 }), withSpring(0, { damping: 12, stiffness: 160 })));
-    });
-    return () => { live = false; };
-  }, [swipeable, reduced, tx]);
+    if (!swipeable || reduced || swiped !== false || !claimNudge()) return;
+    tx.value = withDelay(1000, withSequence(withTiming(-35, { duration: 300 }), withSpring(0, { damping: 12, stiffness: 160 })));
+  }, [swipeable, reduced, swiped, tx]);
 
   const topStyle = useAnimatedStyle(() => ({
     opacity: fade.value,
@@ -311,9 +315,10 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
                 <View style={styles.corner} pointerEvents="none">
                   {pile && (
                     <View style={styles.pill}>
-                      <Ionicons name={players > 0 && players >= group.count ? 'people' : 'camera'} size={12} color={colors.white} />
+                      <Ionicons name={!counter && players > 0 && players >= group.count ? 'people' : 'camera'} size={12} color={colors.white} />
                       <Text style={styles.pillText} numberOfLines={1}>
-                        {players <= 0 ? group.count
+                        {counter ? `${(front % total) + 1}/${total}`
+                          : players <= 0 ? group.count
                           : players >= group.count ? t('mosaic.players', { count: players })
                           : `${group.count} · ${t('mosaic.players', { count: players })}`}
                       </Text>
@@ -393,18 +398,35 @@ function usePilePhotos(group: DailyCityGroup, guestId: string | null): DailyProo
   return ids.map(id => (id === group.top.id ? group.top : pileCache.get(id))).filter((x): x is DailyProof => !!x);
 }
 
-// The one-time peek: the first swipeable pile shown on this phone, never again.
-const PILE_HINT_KEY = 'hilads_pile_hint_v1';
-let pileHint: Promise<boolean> | null = null;
-function claimPileHint(): Promise<boolean> {
-  pileHint ??= AsyncStorage.getItem(PILE_HINT_KEY).then(v => {
-    if (v === '1') return false;
-    AsyncStorage.setItem(PILE_HINT_KEY, '1').catch(() => {});
-    return true;
-  }).catch(() => false);
-  const mine = pileHint;
-  pileHint = Promise.resolve(false);   // later cards: no
-  return mine;
+// Has this phone ever swiped a pile? Until then, the nudge and the hint show the swipe.
+// null while the flag is read.
+const SWIPED_KEY = 'has_swiped_stack';
+let swipedStack: boolean | null = null;
+let swipedRead = false;
+const swipedListeners = new Set<() => void>();
+const setSwiped = (v: boolean) => { swipedStack = v; swipedListeners.forEach(l => l()); };
+const subscribeSwiped = (l: () => void) => {
+  swipedListeners.add(l);
+  if (!swipedRead) {
+    swipedRead = true;
+    AsyncStorage.getItem(SWIPED_KEY).then(v => { if (swipedStack === null) setSwiped(v === '1'); }).catch(() => {});
+  }
+  return () => { swipedListeners.delete(l); };
+};
+function useSwipedStack(): boolean | null {
+  return useSyncExternalStore(subscribeSwiped, () => swipedStack);
+}
+function markSwiped() {
+  if (swipedStack === true) return;
+  setSwiped(true);
+  AsyncStorage.setItem(SWIPED_KEY, '1').catch(() => {});
+}
+// One nudge a visit: the first swipeable pile shown.
+let nudged = false;
+function claimNudge(): boolean {
+  if (nudged) return false;
+  nudged = true;
+  return true;
 }
 
 /** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
@@ -481,4 +503,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   slotTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
   slotSub:   { fontSize: 13, fontWeight: '600', color: c.primaryOnTint, textAlign: 'center' },
   invite:    { fontSize: 14, lineHeight: 20, fontWeight: '600', color: c.muted },
+  hint:      { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

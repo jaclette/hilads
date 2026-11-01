@@ -934,7 +934,8 @@
     "missing": "{{city}} غائبة!",
     "yesterday": "بالأمس قال العالم…",
     "beFirst": "مثّل {{city}}",
-    "beFirstSub": "اجعل مدينتك الأولى اليوم"
+    "beFirstSub": "اجعل مدينتك الأولى اليوم",
+    "swipeHint": "اسحب لتسافر 🌍"
   },
   "comments": {
     "title": "التعليقات",

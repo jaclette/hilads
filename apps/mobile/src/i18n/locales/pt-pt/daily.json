@@ -826,7 +826,8 @@
     "missing": "Falta {{city}}!",
     "yesterday": "Ontem o mundo disse…",
     "beFirst": "Representa {{city}}",
-    "beFirstSub": "Sê a primeira cidade hoje"
+    "beFirstSub": "Sê a primeira cidade hoje",
+    "swipeHint": "Desliza para viajar 🌍"
   },
   "comments": {
     "title": "Comentários",

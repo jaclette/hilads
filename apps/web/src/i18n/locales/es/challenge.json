@@ -1475,7 +1475,8 @@
       "missing": "¡Falta {{city}}!",
       "yesterday": "Ayer el mundo dijo…",
       "beFirst": "Representa a {{city}}",
-      "beFirstSub": "Sé la primera ciudad hoy"
+      "beFirstSub": "Sé la primera ciudad hoy",
+      "swipeHint": "Desliza para viajar 🌍"
     },
     "recap": {
       "label": "Ayer",

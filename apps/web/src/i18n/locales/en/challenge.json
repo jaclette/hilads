@@ -1448,7 +1448,8 @@
       "missing": "{{city}} is missing!",
       "yesterday": "Yesterday the world said…",
       "beFirst": "Represent {{city}}",
-      "beFirstSub": "Be the first city today"
+      "beFirstSub": "Be the first city today",
+      "swipeHint": "Swipe to travel 🌍"
     },
     "recap": {
       "label": "Yesterday",
