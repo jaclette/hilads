@@ -12,6 +12,7 @@ import { fetchMySpots } from '@/api/passport';
 import { themeName } from '@/features/daily/themes';
 import type { Spot } from '@/api/spots';
 import { Card, CityName, EmptyState, ScreenHeader } from '@/ui';
+import { thumbUrl } from '@/lib/imageThumb';
 
 /** My spots (V3-10, from Passport): the spots where I have an approved proof. */
 export default function MySpotsScreen() {
@@ -41,7 +42,7 @@ export default function MySpotsScreen() {
           renderItem={({ item: s }) => (
             <TouchableOpacity onPress={() => router.push(`/spot/${s.id}` as never)} accessibilityRole="button">
               <Card style={styles.row}>
-              {s.cover.thumbUrl ? <Image source={{ uri: s.cover.thumbUrl }} style={styles.photo} contentFit="cover" /> : <View style={styles.photo} />}
+              {s.cover.thumbUrl ? <Image source={{ uri: thumbUrl(s.cover.thumbUrl) }} style={styles.photo} contentFit="cover" /> : <View style={styles.photo} />}
               <View style={styles.info}>
                 <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
                 <View style={styles.metaRow}>

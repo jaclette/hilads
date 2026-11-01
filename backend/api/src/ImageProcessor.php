@@ -40,6 +40,7 @@ class ImageProcessor
         int $maxDim = 400,
         int $quality = 80,
         bool $shortSide = false,
+        bool $webp = false,
     ): ?string {
         self::$lastError = null;
 
@@ -103,14 +104,14 @@ class ImageProcessor
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $srcW, $srcH);
 
         $tmpPath = tempnam(sys_get_temp_dir(), 'hilads_thumb_');
-        $ok      = imagejpeg($dst, $tmpPath, $quality);
+        $ok      = $webp ? imagewebp($dst, $tmpPath, $quality) : imagejpeg($dst, $tmpPath, $quality);
 
         imagedestroy($src);
         imagedestroy($dst);
 
         if (!$ok) {
             @unlink($tmpPath);
-            self::$lastError = 'imagejpeg encoder failed';
+            self::$lastError = ($webp ? 'imagewebp' : 'imagejpeg') . ' encoder failed';
             return null;
         }
 

@@ -4,6 +4,8 @@ import {
   fetchProofs, submitProof, approveProof, rejectProof, uploadImage,
 } from '../api'
 import Icon from './Icon'
+import { mediumUrl } from '../lib/imageThumb'
+import { thumbFallback } from '../lib/thumbFallback'
 
 /**
  * Web mirror of mobile's ChallengeProofBlock - proof submission +
@@ -147,7 +149,7 @@ export default function ChallengeProofBlock({
     if (iAmCreator) return null
     return (
       <div className="proof-block">
-        <img src={latest.media_url} alt="" className="proof-media" />
+        <img src={mediumUrl(latest.media_url)} onError={thumbFallback(latest.media_url)} alt="" className="proof-media" />
         {/* PR59 - geotag chip removed; we no longer ask the client for
             coordinates, so a "geotag verified" badge would be misleading. */}
         {iAmCreator ? (

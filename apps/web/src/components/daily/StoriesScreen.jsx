@@ -14,6 +14,8 @@ import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoComment
 import { flushSeen, markSeen } from './seen'
 import { SeasonalZone } from '../event/seasonal'
 import { DualPhoto, selfieOf } from './DualPhoto'
+import { mediumUrl } from '../../lib/imageThumb'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 /** How long a photo stays before the next one (no auto-advance with reduced motion). */
 const PHOTO_MS = 5000
@@ -167,7 +169,8 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
         ? proof.selfieUrl
           ? <DualPhoto key={proof.id} className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)}
                        draggable insetTop={76} alt={proof.caption || ''} />
-          : <img key={proof.id} className="tour-photo" src={proof.photoUrl} alt={proof.caption || ''} onError={() => skipPhoto(proof.id)} />
+          : <img key={proof.id} className="tour-photo" src={mediumUrl(proof.photoUrl)} alt={proof.caption || ''} decoding="async"
+                 onError={e => { if (e.currentTarget.dataset.fallback === '1') skipPhoto(proof.id); else thumbFallback(proof.photoUrl)(e) }} />
         : <div className="dc-photos-center"><span className="dc-photos-spinner" aria-hidden="true" /></div>}
       <div className="tour-shade" />
 

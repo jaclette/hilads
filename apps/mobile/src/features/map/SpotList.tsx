@@ -10,6 +10,7 @@ import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
 import { PickBadge } from './PickBadge';
 import { Chip } from '@/ui';
+import { thumbUrl } from '@/lib/imageThumb';
 
 export type SpotSort = 'near' | 'week';
 
@@ -72,7 +73,7 @@ export function SpotList({ spots, sort, onSort, me, origin, onPick, topInset, bo
         return (
           <TouchableOpacity style={styles.row} onPress={() => onPick(s)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={s.name} testID="spot-row">
             {s.cover.thumbUrl || s.cover.photoUrl
-              ? <Image source={{ uri: s.cover.thumbUrl ?? s.cover.photoUrl ?? undefined }} style={styles.photo} contentFit="cover" />
+              ? <Image source={{ uri: thumbUrl(s.cover.thumbUrl ?? s.cover.photoUrl) }} style={styles.photo} contentFit="cover" />
               : <View style={[styles.photo, styles.photoEmpty]}><ThemeIcon theme={theme ?? 'only_here'} size={22} color={colors.primaryText} /></View>}
             <View style={styles.body}>
               <Text style={styles.name} numberOfLines={1}>{s.name}</Text>

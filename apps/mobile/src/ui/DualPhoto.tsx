@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'react-native-reanimated';
 import type { ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
+import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
 
 /**
  * A Daily photo with its selfie (dual photo, docs/dual-photo-audit.md): the
@@ -18,7 +19,10 @@ import { useTheme, useThemedStyles } from '@/context/ThemeContext';
  * - `inset="small"`: a smaller inset (~24 %), e.g. the mosaic's cards;
  * - `interactive={false}`: the inset is decoration (the card's own tap wins);
  * - `draggable`: the inset can be dragged to another corner (story viewer);
- * - the big layer lets touches through, so a parent's tap zones keep working.
+ * - the big layer lets touches through, so a parent's tap zones keep working;
+ * - sizes: callers pass the originals, both layers load one size so a swap never
+ *   reloads: the thumbnail on a card (`card`, a small inset or not interactive),
+ *   else the medium size over the thumbnail; the original only if it fails.
  */
 
 export interface PhotoSource { uri: string; thumb?: string | null }
@@ -46,8 +50,10 @@ type Rect = { x: number; y: number; w: number; h: number; r: number };
 
 export function DualPhoto({
   main, selfie, style, contentFit = 'cover', inset = 'normal', interactive = true, draggable = false,
-  insetTop = 0, transition = 150, onSwap, onInteract, onLoadMain, children,
+  insetTop = 0, transition = 150, onSwap, onInteract, onLoadMain, children, card = false,
 }: {
+  /** A feed card: thumbnails, even though the inset can swap. */
+  card?: boolean;
   main: PhotoSource;
   selfie?: PhotoSource | null;
   style?: StyleProp<ViewStyle>;
@@ -73,6 +79,10 @@ export function DualPhoto({
   const [selfieBig, setSelfieBig] = useState(false);
   const [tip, setTip] = useState(false);
   const [loaded, setLoaded] = useState({ main: false, selfie: false });
+  const [failed, setFailed] = useState({ main: false, selfie: false });
+  useEffect(() => { setFailed({ main: false, selfie: false }); }, [main.uri, selfie?.uri]);
+  const thumbOnly = card || inset === 'small' || !interactive;
+  const sized = (u: string) => (thumbOnly ? thumbUrl(u) : mediumUrl(u)) ?? u;
 
   const ratio = inset === 'small' ? 0.24 : 0.28;
   const m = inset === 'small' ? 6 : MARGIN;
@@ -206,7 +216,8 @@ export function DualPhoto({
       >
         {/* A swap resizes the layer: Android reloads an image sized for its view, fading in from the
             placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
-        <Image source={{ uri: src.uri }} placeholder={src.thumb && !loaded[which] ? { uri: src.thumb } : undefined} style={StyleSheet.absoluteFill}
+        <Image source={{ uri: failed[which] ? src.uri : sized(src.uri) }} placeholder={!thumbOnly && !loaded[which] ? { uri: thumbUrl(src.thumb ?? src.uri) } : undefined}
+               style={StyleSheet.absoluteFill} onError={() => setFailed(f => ({ ...f, [which]: true }))}
                contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : transition} allowDownscaling={false}
                onLoad={e => {
                  if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
@@ -222,7 +233,8 @@ export function DualPhoto({
         // In a View: expo-image doesn't honour pointerEvents on Android, so the image took the touches
         // meant for what lies under it (a story's tap zones: next / previous did nothing on a photo without a selfie).
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image source={{ uri: main.uri }} placeholder={main.thumb ? { uri: main.thumb } : undefined} style={StyleSheet.absoluteFill}
+          <Image source={{ uri: failed.main ? main.uri : sized(main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : undefined}
+                 style={StyleSheet.absoluteFill} onError={() => setFailed(f => ({ ...f, main: true }))}
                  contentFit={contentFit} transition={transition}
                  onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
         </View>

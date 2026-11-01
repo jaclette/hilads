@@ -3,6 +3,8 @@ import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
 import { fetchProofs, approveProof, rejectProof } from '../api'
 import Icon from './Icon'
+import { mediumUrl } from '../lib/imageThumb'
+import { thumbFallback } from '../lib/thumbFallback'
 
 /**
  * Web mirror of mobile's ProofReviewModal. Opens from the lifecycle
@@ -97,7 +99,7 @@ export default function ProofReviewModal({ visible, onClose, acceptanceId, onVer
             <div className="proof-review-empty">{t('intl.proof.waitingVerdict')}</div>
           ) : (
             <>
-              <img src={proof.media_url} alt="" className="proof-review-media" />
+              <img src={mediumUrl(proof.media_url)} onError={thumbFallback(proof.media_url)} alt="" className="proof-review-media" />
 
               {mode === 'verdict' ? (
                 <div className="proof-review-actions">

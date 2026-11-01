@@ -4716,14 +4716,17 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url, 'thumbUrl' => $thumbUrl], 201);
 });
 
-// GET /api/v1/img-thumb?f=<32hex>.<ext>[&c=600|1000]
+// GET /api/v1/img-thumb?f=<32hex>.<ext>[&c=600|800|1000][&w=1080][&fmt=webp]
 // On-the-fly thumbnail proxy: returns a ≤400px JPEG for an uploaded image so
 // feeds never load the full original. Works for EVERY image (existing + new) -
 // no backfill, no deterministic-name dependency. Lazily generates the thumb the
 // FIRST time and caches it on R2 (thumb_<base>.jpg); subsequent misses stream
 // that. Immutable cache headers so browsers/expo cache it after one fetch.
-// c=600|1000: a cover size (heroes): the SHORTER side ≤ c, cached as
+// c=600|800|1000: a cover size (heroes): the SHORTER side ≤ c, cached as
 // thumb_c<c>_<base>.jpg, for a photo cropped to fill a big frame.
+// w=1080: the medium size (full-screen viewers), the longer side ≤ 1080,
+// thumb_w1080_<base>.jpg. fmt=webp: the same sizes as WebP (.webp), a third
+// lighter; any other value keeps JPEG (old clients, push notifications).
 $router->add('GET', '/api/v1/img-thumb', function () {
     $f = (string) ($_GET['f'] ?? '');
     if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $f, $m)) {
@@ -4732,13 +4735,16 @@ $router->add('GET', '/api/v1/img-thumb', function () {
     $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
     if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
 
-    $cover     = in_array((string) ($_GET['c'] ?? ''), ['600', '1000'], true) ? (int) $_GET['c'] : null;
-    $thumbName = ($cover !== null ? "thumb_c{$cover}_" : 'thumb_') . $m[1] . '.jpg';
+    $cover     = in_array((string) ($_GET['c'] ?? ''), ['600', '800', '1000'], true) ? (int) $_GET['c'] : null;
+    $medium    = $cover === null && (string) ($_GET['w'] ?? '') === '1080';
+    $webp      = (string) ($_GET['fmt'] ?? '') === 'webp';
+    $mimeOut   = $webp ? 'image/webp' : 'image/jpeg';
+    $thumbName = ($cover !== null ? "thumb_c{$cover}_" : ($medium ? 'thumb_w1080_' : 'thumb_')) . strtolower($m[1]) . ($webp ? '.webp' : '.jpg');
     $thumbUrl  = $r2Base . '/' . $thumbName;
     $origUrl   = $r2Base . '/' . $f;
 
-    $emit = static function (string $bytes): void {
-        header('Content-Type: image/jpeg');
+    $emit = static function (string $bytes) use ($mimeOut): void {
+        header('Content-Type: ' . $mimeOut);
         header('Cache-Control: public, max-age=31536000, immutable');
         header('Content-Length: ' . strlen($bytes));
         echo $bytes;
@@ -4759,13 +4765,15 @@ $router->add('GET', '/api/v1/img-thumb', function () {
         $srcTmp = tempnam(sys_get_temp_dir(), 'thmb');
         file_put_contents($srcTmp, $orig);
         $mime  = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
-        $thumbTmp = $cover !== null
-            ? ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, $cover, 78, true)
-            : ImageProcessor::generateAvatarThumbnail($srcTmp, $mime);
+        $thumbTmp = match (true) {
+            $cover !== null => ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, $cover, $webp ? 65 : 78, true, $webp),
+            $medium         => ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, 1080, $webp ? 72 : 80, false, $webp),
+            default         => ImageProcessor::generateAvatarThumbnail($srcTmp, $mime, 400, $webp ? 76 : 80, false, $webp),
+        };
         @unlink($srcTmp);
         if ($thumbTmp === null) { header('Location: ' . $origUrl, true, 302); exit; }
         $bytes = file_get_contents($thumbTmp);
-        try { R2Uploader::put($thumbTmp, $thumbName, 'image/jpeg'); } catch (\Throwable $e) {}
+        try { R2Uploader::put($thumbTmp, $thumbName, $mimeOut); } catch (\Throwable $e) {}
         @unlink($thumbTmp);
         $emit($bytes);
     } catch (\Throwable $e) {

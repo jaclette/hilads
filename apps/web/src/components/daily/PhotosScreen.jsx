@@ -18,6 +18,8 @@ import {
 import { SeasonalZone } from '../event/seasonal'
 import { CommentButton, commentsTargetOf } from './PhotoCommentsSheet'
 import { DualPhoto, selfieOf } from './DualPhoto'
+import { mediumUrl } from '../../lib/imageThumb'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 const LIMIT = 60
 /** Two taps closer than this are a double tap (a vote). */
@@ -238,7 +240,7 @@ function Slide({ proof, hint, onProfile, onVoters }) {
       {proof.selfieUrl
         ? <DualPhoto className="dc-photos-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} fit="contain" insetTop={64}
                      alt={proof.caption || ''} onPointerUp={tap} onDoubleClick={doubleTap} title={t('feed.doubleTap')} />
-        : <img className="dc-photos-photo" src={proof.photoUrl} alt={proof.caption || ''} loading="lazy"
+        : <img className="dc-photos-photo" src={mediumUrl(proof.photoUrl)} onError={thumbFallback(proof.photoUrl)} decoding="async" alt={proof.caption || ''} loading="lazy"
                onPointerUp={tap} onDoubleClick={doubleTap}
                title={t('feed.doubleTap')} />}
       {burst > 0 && <span key={burst} className="dc-photos-burst" aria-hidden="true"><Icon name="heart" size={120} /></span>}

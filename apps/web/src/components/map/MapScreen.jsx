@@ -20,6 +20,7 @@ import { PickBadge, PhotoCredit } from './Pick'
 import { themeColor } from '../joy/Joy'
 import { useBackLayer } from '../../lib/backLayers'
 import { CommentButton } from '../daily/PhotoCommentsSheet'
+import { thumbUrl } from '../../lib/imageThumb'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -90,7 +91,7 @@ const spotIcon = (spot, label, side, selected, { theme, halo, grow }) => L.divIc
     : `<span class="wm-pin${selected ? ' wm-pin--on' : ''}${halo ? ' wm-pin--today' : grow ? ' wm-grow' : ''}" style="background: ${pinColor(theme)}; color: ${pinInk(theme)}${halo ? `; --halo: ${halo}` : ''}">${iconHtml(themeIcon(theme), 20)}</span>`)
     + (side ? `<span class="wm-pin-label wm-pin-label--${side}${selected ? ' wm-pin-label--on' : ''}${spot.cover?.thumbUrl ? ' wm-pin-label--photo' : ''}">`
       // The spot's photo before its name (like the app).
-      + (spot.cover?.thumbUrl ? `<img class="wm-pin-photo" src="${escapeHtml(spot.cover.thumbUrl)}" alt="" loading="lazy" /><span class="wm-pin-text">${escapeHtml(label)}</span>` : escapeHtml(label))
+      + (spot.cover?.thumbUrl ? `<img class="wm-pin-photo" src="${escapeHtml(thumbUrl(spot.cover.thumbUrl))}" alt="" loading="lazy" /><span class="wm-pin-text">${escapeHtml(label)}</span>` : escapeHtml(label))
       + '</span>' : ''),
   iconSize: [44, 44], iconAnchor: [22, 22],
 })
@@ -237,7 +238,7 @@ function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
         return (
           <button key={s.id} type="button" className="wm-row" onClick={() => onPick(s)}>
             {s.cover?.thumbUrl || s.cover?.photoUrl
-              ? <img className="wm-row-photo" src={s.cover.thumbUrl || s.cover.photoUrl} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" />
+              ? <img className="wm-row-photo" src={thumbUrl(s.cover.thumbUrl || s.cover.photoUrl)} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" />
               : <span className="wm-row-photo wm-row-photo--empty"><Icon name={th ? themeIcon(th) : 'location-outline'} size={22} /></span>}
             <span className="wm-row-body">
               <span className="wm-row-name">{s.name}</span>
@@ -615,7 +616,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             <div className="wm-sheet">
               <button type="button" className="wm-sheet-close" onClick={() => setSelected(null)} aria-label={t('map.closeSpot')}><Icon name="close" size={20} /></button>
               <button type="button" className="wm-sheet-body" onClick={() => setOpenSpotId(selected.id)}>
-                {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={selected.cover.thumbUrl} alt="" /> : <span className="wm-sheet-photo" />}
+                {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={thumbUrl(selected.cover.thumbUrl)} alt="" /> : <span className="wm-sheet-photo" />}
                 <span className="wm-sheet-info">
                   <span className="wm-sheet-title">{selected.name}</span>
                   {selected.pick && <PickBadge />}

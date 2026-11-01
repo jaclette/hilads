@@ -6,6 +6,7 @@ import { fetchDailyArchive } from '../../api'
 import { themeIcon } from '../../lib/icons'
 import { THEME_KEYS, themeName } from '../map/spotsShared'
 import { useDaily, useDc } from './dailyShared'
+import { thumbUrl } from '../../lib/imageThumb'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
@@ -79,7 +80,7 @@ export default function ArchiveScreen({ onBack }) {
                   <span className="archive-text">{c.text}</span>
                   {item.photos?.length > 0 && (
                     <span className={`archive-mosaic archive-mosaic--${Math.min(item.photos.length, 4)}`}>
-                      {item.photos.slice(0, 4).map(p => <img key={p.proofId} src={p.thumbUrl} alt="" loading="lazy" />)}
+                      {item.photos.slice(0, 4).map(p => <img key={p.proofId} src={thumbUrl(p.thumbUrl)} alt="" loading="lazy" />)}
                     </span>
                   )}
                   <span className="dc-muted">

@@ -12,6 +12,7 @@ import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import type { DailyArchiveItem, DailyThemeKey } from '@/types';
 import { Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
+import { thumbUrl } from '@/lib/imageThumb';
 
 /**
  * All past challenges (SPEC 9.3, Today's "All past challenges"): newest first,
@@ -83,7 +84,7 @@ function ArchiveCard({ item, world, onPress }: { item: DailyArchiveItem; world: 
       <Text style={styles.text}>{c.text}</Text>
       {photos.length > 0 && (
         <View style={styles.mosaic}>
-          {photos.map(p => <Image key={p.proofId} source={{ uri: p.thumbUrl ?? undefined }} style={styles.tile} contentFit="cover" />)}
+          {photos.map(p => <Image key={p.proofId} source={{ uri: thumbUrl(p.thumbUrl) }} style={styles.tile} contentFit="cover" />)}
         </View>
       )}
       <Text style={styles.muted}>

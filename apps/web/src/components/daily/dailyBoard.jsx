@@ -5,6 +5,7 @@ import { CityFlag, CityName } from '../CityName'
 import Icon from '../Icon'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { useDc, formatCountdown, personName, RankMedal, RoleLabel, LocalPassBadge, SheetSkeleton } from './dailyShared'
+import { thumbUrl } from '../../lib/imageThumb'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 const LINE = { display: 'flex', alignItems: 'center', gap: 6 }
@@ -88,7 +89,7 @@ function EntryRow({ entry, mine, hideCity = false, onOpen }) {
   return (
     <button type="button" className={`dc-row${mine ? ' dc-row--mine' : ''}`} onClick={onOpen}>
       <span className="dc-rank">{entry.rank <= 3 ? <RankMedal rank={entry.rank} /> : `#${entry.rank}`}</span>
-      {entry.thumbUrl ? <img className="dc-row-thumb" src={entry.thumbUrl} alt="" /> : <span className="dc-row-thumb" />}
+      {entry.thumbUrl ? <img className="dc-row-thumb" src={thumbUrl(entry.thumbUrl)} alt="" /> : <span className="dc-row-thumb" />}
       <span className="dc-row-body">
         <span className="dc-row-name">{personName(entry.user)} {entry.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">
@@ -105,7 +106,7 @@ function ResultRow({ proof, label, onOpen }) {
   return (
     <button type="button" className="dc-row" onClick={onOpen}>
       <span className="dc-rank">{label}</span>
-      <img className="dc-row-thumb" src={proof.thumbUrl || proof.photoUrl} onError={thumbFallback(proof.photoUrl)} alt="" />
+      <img className="dc-row-thumb" src={thumbUrl(proof.thumbUrl || proof.photoUrl)} onError={thumbFallback(proof.photoUrl)} alt="" />
       <span className="dc-row-body">
         <span className="dc-row-name">{personName(proof.user)} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">

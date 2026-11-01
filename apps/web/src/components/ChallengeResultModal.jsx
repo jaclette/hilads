@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { submitHostRating, submitTakerRating } from '../api'
 import Icon from './Icon'
+import { mediumUrl } from '../lib/imageThumb'
+import { thumbFallback } from '../lib/thumbFallback'
 
 /**
  * GROUP challenge result reveal modal (web). Role-specific, never-negative copy
@@ -98,7 +100,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
       <div className="crm-card" onClick={(e) => e.stopPropagation()}>
         {showPhoto ? (
           <div className="crm-photo-wrap">
-            <img className="crm-photo" src={winnerPhotoUrl} alt="" />
+            <img className="crm-photo" src={mediumUrl(winnerPhotoUrl)} onError={thumbFallback(winnerPhotoUrl)} alt="" />
             {winnerName ? <span className="crm-photo-caption" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Icon name="ribbon-outline" size={14} />{winnerName}</span> : null}
           </div>
         ) : (

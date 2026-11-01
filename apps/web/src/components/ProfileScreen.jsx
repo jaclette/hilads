@@ -240,7 +240,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
               aria-label={t('changePhoto')}
             >
               {photoUrl
-                ? <img className="online-avatar profile-avatar-identity" src={thumbPhotoUrl ?? photoUrl} alt={username} />
+                ? <img className="online-avatar profile-avatar-identity" src={thumbUrl(thumbPhotoUrl ?? photoUrl)} alt={username} />
                 : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {(username || account.username || account.display_name || '?')[0].toUpperCase()}
                   </span>

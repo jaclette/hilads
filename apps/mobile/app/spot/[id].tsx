@@ -18,6 +18,7 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
 import { PhotoCredit } from '@/features/map/PhotoCredit';
 import { GoodToKnow, PickBadge } from '@/features/map/PickBadge';
+import { mediumUrl } from '@/lib/imageThumb';
 
 /**
  * A spot (SPEC 9.5): its proofs' photos, themes, price range paid, proof
@@ -84,7 +85,7 @@ export default function SpotScreen() {
     <View style={styles.header}>
       {!!spot.cover.photoUrl && (
         <View>
-          <Image source={{ uri: spot.cover.photoUrl }} style={styles.cover} contentFit="cover" />
+          <Image source={{ uri: mediumUrl(spot.cover.photoUrl) }} style={styles.cover} contentFit="cover" />
           <PhotoCredit by={spot.cover.by} credit={spot.cover.credit} overlay style={styles.coverCredit} />
         </View>
       )}
@@ -169,7 +170,7 @@ function PhotoViewer({ photo, onClose }: { photo: SpotPhoto | null; onClose: () 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.viewer} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('map.closeSpot')}>
-        <Image source={{ uri: photo.photoUrl }} style={styles.viewerImage} contentFit="contain" />
+        <Image source={{ uri: mediumUrl(photo.photoUrl) }} style={styles.viewerImage} contentFit="contain" />
         <View style={[styles.viewerInfo, { paddingBottom: insets.bottom + 16 }]}>
           {/* A Hilads pick's photo: its credit, never votes. */}
           <Text style={styles.viewerUser}>

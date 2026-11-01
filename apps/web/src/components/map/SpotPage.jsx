@@ -13,6 +13,7 @@ import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { PickBadge, GoodToKnow } from './Pick'
+import { thumbUrl } from '../../lib/imageThumb'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
@@ -148,7 +149,7 @@ export default function SpotPage({ spotId, onBack }) {
                 <div className="wm-photos">
                   {photos.map(p => (
                     <figure key={p.id} className="wm-photo">
-                      <img src={p.thumbUrl || p.photoUrl} onError={thumbFallback(p.photoUrl)} alt={p.caption || ''} loading="lazy" />
+                      <img src={thumbUrl(p.thumbUrl || p.photoUrl)} onError={thumbFallback(p.photoUrl)} alt={p.caption || ''} loading="lazy" />
                       {/* A Hilads pick's photo: its credit, never votes. */}
                       <figcaption>
                         {p.pick

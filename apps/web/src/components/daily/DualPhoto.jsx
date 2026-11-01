@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useDc } from './dailyShared'
+import { mediumUrl, thumbUrl } from '../../lib/imageThumb'
+import { thumbFallback } from '../../lib/thumbFallback'
 
 // A Daily photo with its selfie (the app's ui/DualPhoto): the photo fills the
 // frame, the selfie sits in a rounded inset (top-left, ~28 % wide, 3:4). A
@@ -8,6 +10,9 @@ import { useDc } from './dailyShared'
 // card's click wins). `draggable`: drag the inset to another corner (stories).
 // The big layer lets clicks through to what's under it (tap zones, the card).
 // Callers render their usual <img> when there is no selfie.
+// Sizes: callers pass the originals; both layers load one size, so a swap never
+// reloads: the thumbnail on a card (`card`, `small` or not `interactive`), else
+// the medium size over the thumbnail while it loads; the original only if it fails.
 
 const MARGIN = 10
 const TIP_KEY = 'hilads_dual_swap_tip_v1'
@@ -25,7 +30,7 @@ function claimTip() {
 export const selfieOf = (p) => (p?.selfieUrl ? { url: p.selfieUrl, thumb: p.selfieThumbUrl ?? null } : null)
 
 export function DualPhoto({ main, selfie, className = '', fit = 'cover', small = false, interactive = true, draggable = false,
-                            insetTop = 0, onLoadMain, alt = '', ...frameProps }) {
+                            card = false, insetTop = 0, onLoadMain, alt = '', ...frameProps }) {
   const { t } = useDc()
   const frame = useRef(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
@@ -52,6 +57,8 @@ export function DualPhoto({ main, selfie, className = '', fit = 'cover', small =
     return () => clearTimeout(id)
   }, [interactive, selfie])
 
+  const thumbOnly = card || small || !interactive
+  const sized = (u) => (thumbOnly ? thumbUrl(u) : mediumUrl(u))
   const m = small ? 6 : MARGIN
   const iw = Math.round(size.w * (small ? 0.24 : 0.28))
   const ih = Math.min(Math.round(iw * 4 / 3), Math.max(0, size.h - 2 * m - insetTop))
@@ -107,8 +114,9 @@ export function DualPhoto({ main, selfie, className = '', fit = 'cover', small =
     return (
       <span key={which} className={`dp-layer${isInset ? ' dp-inset' : ''}${isInset && small ? ' dp-inset--small' : ''}${isInset && interactive ? ' dp-inset--live' : ''}`}
             style={style} {...handlers}>
-        <img src={src.url} alt={which === 'main' ? alt : ''} draggable={false}
-             style={{ objectFit: isInset ? 'cover' : fit, backgroundImage: src.thumb ? `url("${src.thumb}")` : undefined }}
+        <img src={sized(src.url)} alt={which === 'main' ? alt : ''} draggable={false}
+             loading={card ? 'lazy' : undefined} decoding="async" onError={thumbFallback(src.url)}
+             style={{ objectFit: isInset ? 'cover' : fit, backgroundImage: thumbOnly ? undefined : `url("${thumbUrl(src.thumb ?? src.url)}")` }}
              onLoad={which === 'main' && onLoadMain ? (e) => onLoadMain({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight }) : undefined} />
       </span>
     )

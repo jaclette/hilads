@@ -676,7 +676,7 @@ function DailyFeedCard({ item, t, onOpen }) {
         <div className="feed-daily-strip">
           {shown.map((e, i) => (
             <div key={e.proofId} className="feed-daily-strip-cell">
-              {e.thumbUrl ? <img src={e.thumbUrl} alt="" loading="lazy" /> : <span />}
+              {e.thumbUrl ? <img src={thumbUrl(e.thumbUrl)} alt="" loading="lazy" /> : <span />}
               {i === shown.length - 1 && count > shown.length && <span className="feed-daily-strip-more">+{count - shown.length + 1}</span>}
             </div>
           ))}
@@ -736,9 +736,9 @@ function DailyFeedCard({ item, t, onOpen }) {
         {p.isEarly && <span className="feed-daily-early"><Icon name="flash-outline" size={11} /> {t('daily.early')}</span>}
       </div>
       {p.selfieUrl ? (
-        <DualPhoto className="feed-daily-photo" main={{ url: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} alt={p.caption || ''}
+        <DualPhoto card className="feed-daily-photo" main={{ url: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} alt={p.caption || ''}
                    onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />
-      ) : <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy"
+      ) : <img className="feed-daily-photo" src={thumbUrl(p.thumbUrl || p.photoUrl)} alt={p.caption || ''} loading="lazy"
            onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />}
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-tags">

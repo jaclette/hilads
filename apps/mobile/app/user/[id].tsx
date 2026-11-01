@@ -1,4 +1,4 @@
-import { thumbUrl } from '@/lib/imageThumb';
+import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
 /**
  * Public profile screen - /user/[id]
  *
@@ -811,7 +811,7 @@ export default function PublicProfileScreen() {
           onRequestClose={() => setShowAvatarLightbox(false)}
         >
           <Pressable style={styles.lightboxOverlay} onPress={() => setShowAvatarLightbox(false)}>
-            <Image source={{ uri: user.avatarUrl }} style={styles.lightboxImage} resizeMode="contain" />
+            <Image source={{ uri: mediumUrl(user.avatarUrl) }} style={styles.lightboxImage} resizeMode="contain" />
             <IconButton icon="close" tone="onPhoto" label={t('close', { ns: 'common' })} onPress={() => setShowAvatarLightbox(false)} style={[styles.lightboxClose, { top: insets.top + Spacing.sm }]} />
           </Pressable>
         </Modal>

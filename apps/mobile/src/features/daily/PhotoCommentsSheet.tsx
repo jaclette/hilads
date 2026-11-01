@@ -277,7 +277,7 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
         {!!target.thumbUrl && (
           <View>
             <Image source={{ uri: thumbUrl(target.thumbUrl) }} style={styles.thumb} contentFit="cover" />
-            {!!target.selfieThumb && <Image source={{ uri: target.selfieThumb }} style={styles.thumbSelfie} contentFit="cover" />}
+            {!!target.selfieThumb && <Image source={{ uri: thumbUrl(target.selfieThumb) }} style={styles.thumbSelfie} contentFit="cover" />}
           </View>
         )}
         <View style={styles.headerBody}>

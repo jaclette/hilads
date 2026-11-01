@@ -14,6 +14,7 @@ import { shortCityName } from '@/i18n/cityName';
 import { PhotoCredit } from './PhotoCredit';
 import { PickBadge } from './PickBadge';
 import { useSwipeDown } from '@/ui/useSwipeDown';
+import { mediumUrl } from '@/lib/imageThumb';
 
 /**
  * The selected spot's card at the bottom of the map (map.html): photo, name,
@@ -44,7 +45,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
       </TouchableOpacity>
       <TouchableOpacity style={styles.top} onPress={onOpen} activeOpacity={0.85} accessibilityRole="button">
         {spot.cover.thumbUrl || spot.cover.photoUrl
-          ? <Image source={{ uri: spot.cover.photoUrl ?? spot.cover.thumbUrl ?? undefined }} style={styles.photo} contentFit="cover" />
+          ? <Image source={{ uri: mediumUrl(spot.cover.photoUrl ?? spot.cover.thumbUrl) }} style={styles.photo} contentFit="cover" />
           : <View style={styles.photo} />}
         <View style={styles.info}>
           <Text style={styles.name} numberOfLines={2}>{spot.name}</Text>

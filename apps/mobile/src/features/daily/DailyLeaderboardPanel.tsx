@@ -15,6 +15,7 @@ import { dailyTrackProps } from './track';
 import { useDailyLeaderboard } from './leaderboard';
 import { LocalPassBadge } from './LocalPassBadge';
 import type { DailyLeaderboardEntry, DailyProof, DailySheet } from '@/types';
+import { thumbUrl } from '@/lib/imageThumb';
 
 interface Props {
   sheet:       DailySheet;
@@ -150,7 +151,7 @@ function EntryRow({ entry, mine, hideCity = false, onPress }: {
     <TouchableOpacity style={[styles.row, mine && styles.rowMine]} onPress={onPress} accessibilityRole="button" accessibilityLabel={`#${entry.rank} ${name}`}>
       <RankMedal rank={entry.rank} size={28} style={styles.rank} />
       {entry.thumbUrl
-        ? <Image source={{ uri: entry.thumbUrl }} style={styles.thumb} contentFit="cover" />
+        ? <Image source={{ uri: thumbUrl(entry.thumbUrl) }} style={styles.thumb} contentFit="cover" />
         : <View style={styles.thumb} />}
       <View style={styles.body}>
         <View style={styles.nameRow}>

@@ -7,6 +7,7 @@ import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constant
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { submitHostRating, submitTakerRating, type ChallengeReveal } from '@/api/challenges';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { mediumUrl } from '@/lib/imageThumb';
 
 /**
  * GROUP challenge result reveal modal. Role-specific, never-negative copy +
@@ -145,7 +146,7 @@ export function ChallengeResultModal({
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
               {showPhoto ? (
                 <View style={styles.photoWrap}>
-                  <Image source={{ uri: winnerPhotoUrl! }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
+                  <Image source={{ uri: mediumUrl(winnerPhotoUrl) }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
                   {winnerName ? (
                     <View style={styles.photoCaption}>
                       <Ionicons name="ribbon-outline" size={14} color={colors.onGold} />

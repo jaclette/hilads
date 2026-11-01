@@ -10,6 +10,7 @@ import i18n from '@/i18n';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
+import { thumbUrl } from '@/lib/imageThumb';
 
 // ── Relative time ─────────────────────────────────────────────────────────────
 
@@ -74,7 +75,7 @@ export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () 
       {/* A comment: who wrote it, with the comment icon on it; else the type's icon. */}
       {notif.data?.actorPhoto ? (
         <View>
-          <Image source={{ uri: notif.data.actorPhoto }} style={styles.actor} contentFit="cover" />
+          <Image source={{ uri: thumbUrl(notif.data.actorPhoto) }} style={styles.actor} contentFit="cover" />
           <View style={styles.actorBadge}><NotifIcon type={notif.type} unread={unread} small /></View>
         </View>
       ) : <NotifIcon type={notif.type} unread={unread} />}
@@ -91,7 +92,7 @@ export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () 
         {time ? <Text style={styles.notifTime}>{time}</Text> : null}
       </View>
 
-      {!!notif.data?.photoThumb && <Image source={{ uri: notif.data.photoThumb }} style={styles.thumb} contentFit="cover" />}
+      {!!notif.data?.photoThumb && <Image source={{ uri: thumbUrl(notif.data.photoThumb) }} style={styles.thumb} contentFit="cover" />}
       {unread && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );

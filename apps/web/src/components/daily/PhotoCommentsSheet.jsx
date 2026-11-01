@@ -190,7 +190,7 @@ function Sheet({ initial, onClose }) {
           {target.thumbUrl && (
             <span className="pc-thumb-wrap">
               <img className="pc-thumb" src={thumbUrl(target.thumbUrl)} alt="" />
-              {target.selfieThumb && <img className="pc-thumb-selfie" src={target.selfieThumb} alt="" />}
+              {target.selfieThumb && <img className="pc-thumb-selfie" src={thumbUrl(target.selfieThumb)} alt="" />}
             </span>
           )}
           <div className="pc-head-body">

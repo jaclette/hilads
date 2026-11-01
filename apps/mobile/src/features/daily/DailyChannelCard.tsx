@@ -33,6 +33,7 @@ import { CommentPreview } from './CommentPreview';
 import type { CommentsTarget } from './PhotoCommentsSheet';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { EVENT_CARD } from '@/features/event/EventFrame';
+import { thumbUrl } from '@/lib/imageThumb';
 
 type TopProof = {
   rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
@@ -145,7 +146,7 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
               {p.yesterdayTop3.map(r => (
                 <TouchableOpacity key={r.proofId} style={styles.topRow} onPress={() => router.push(`/daily/${p.yesterday!.date}?proof=${r.proofId}` as never)} accessibilityRole="button">
                   <RankMedal rank={r.rank} size={24} />
-                  {r.thumbUrl ? <Image source={{ uri: r.thumbUrl }} style={styles.topThumb} contentFit="cover" /> : <View style={[styles.topThumb, styles.avatarEmpty]} />}
+                  {r.thumbUrl ? <Image source={{ uri: thumbUrl(r.thumbUrl) }} style={styles.topThumb} contentFit="cover" /> : <View style={[styles.topThumb, styles.avatarEmpty]} />}
                   <View style={styles.topWho}>
                     <Text style={styles.topName} numberOfLines={1}>{r.user.displayName || r.user.username}</Text>
                     {r.city && <CityName name={r.city.name} country={r.city.country} short style={styles.sub} size={14} />}
@@ -213,7 +214,7 @@ function GroupCard({ message, reactions, time, longPress }: {
         <View style={styles.strip}>
           {shown.map((e, i) => (
             <View key={e.proofId} style={styles.stripCell}>
-              {e.thumbUrl ? <Image source={{ uri: e.thumbUrl }} style={styles.stripPhoto} contentFit="cover" transition={150} /> : <View style={styles.stripPhoto} />}
+              {e.thumbUrl ? <Image source={{ uri: thumbUrl(e.thumbUrl) }} style={styles.stripPhoto} contentFit="cover" transition={150} /> : <View style={styles.stripPhoto} />}
               {i === shown.length - 1 && count > shown.length && (
                 <View style={styles.stripMore}><Text style={styles.stripMoreText}>+{count - shown.length + 1}</Text></View>
               )}
@@ -295,7 +296,7 @@ function ProofCard({ message, reactions, time, longPress }: {
         <View style={styles.authorRow}>
           <TouchableOpacity style={styles.author} onPress={openAuthor} accessibilityRole="button">
             {p.user?.photoUrl
-              ? <Image source={{ uri: p.user.photoUrl }} style={styles.avatar} />
+              ? <Image source={{ uri: thumbUrl(p.user.photoUrl) }} style={styles.avatar} />
               : <View style={[styles.avatar, styles.avatarEmpty]}><Text style={styles.avatarLetter}>{name.slice(0, 1).toUpperCase()}</Text></View>}
             <View style={styles.flex}>
               <View style={styles.nameRow}>
@@ -314,7 +315,7 @@ function ProofCard({ message, reactions, time, longPress }: {
         </View>
         {/* Dual photo: tap the selfie inset to swap (the rest of the card opens the photo). */}
         {p.selfieUrl
-          ? <DualPhoto main={{ uri: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} style={styles.photo} />
+          ? <DualPhoto card main={{ uri: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} style={styles.photo} />
           : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (

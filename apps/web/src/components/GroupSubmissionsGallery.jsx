@@ -1,10 +1,11 @@
-import { thumbUrl } from '../lib/imageThumb'
+import { mediumUrl, thumbUrl } from '../lib/imageThumb'
 import i18n from '../i18n'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchGroupSubmissions, pickWinner } from '../api'
 import { avatarColors } from '../lib/avatarColors'
 import Icon from './Icon'
+import { thumbFallback } from '../lib/thumbFallback'
 
 /**
  * GroupSubmissionsGallery (web) - a single CTA that opens a modal listing every
@@ -68,7 +69,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
       <button type="button" className="gsg-cta" onClick={() => setOpen(true)}>
         <span className="gsg-cta-thumbs">
           {subs.slice(0, 3).map((s) => (
-            <img key={s.id} src={s.media_url} alt="" className="gsg-cta-thumb" loading="lazy" />
+            <img key={s.id} src={thumbUrl(s.media_url)} alt="" className="gsg-cta-thumb" loading="lazy" />
           ))}
         </span>
         <span className="gsg-cta-label">
@@ -96,7 +97,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
                 return (
                   <div key={s.id} className={`gsg-tile${isWin ? ' gsg-tile--win' : ''}`}>
                     <button type="button" className="gsg-photo-btn" onClick={() => setPreview(s)}>
-                      <img className="gsg-photo" src={s.media_url} alt="" loading="lazy" />
+                      <img className="gsg-photo" src={thumbUrl(s.media_url)} alt="" loading="lazy" />
                       {isWin && <span className="gsg-win-badge"><Icon name="ribbon-outline" size={12} /> {t('group.winnerTag', { defaultValue: 'Winner' })}</span>}
                       {picking === s.user_id && <span className="gsg-picking">…</span>}
                     </button>
@@ -121,7 +122,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
 
       {preview && (
         <div className="gsg-preview-backdrop" onClick={() => setPreview(null)}>
-          <img className="gsg-preview-img" src={preview.media_url} alt="" onClick={(e) => e.stopPropagation()} />
+          <img className="gsg-preview-img" src={mediumUrl(preview.media_url)} onError={thumbFallback(preview.media_url)} alt="" onClick={(e) => e.stopPropagation()} />
           <div className="gsg-preview-name">{preview.display_name}</div>
           {canPick && (
             <button type="button" className="gsg-preview-pick" onClick={(e) => { e.stopPropagation(); handlePick(preview) }}>

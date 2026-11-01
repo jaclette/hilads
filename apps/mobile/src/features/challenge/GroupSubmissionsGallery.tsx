@@ -1,4 +1,4 @@
-import { thumbUrl } from '@/lib/imageThumb';
+import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
 /**
  * GroupSubmissionsGallery - the in-channel photo wall for a GROUP photo-proof
  * contest. EVERYONE who can see the challenge sees every submitter's photo +
@@ -106,7 +106,7 @@ export function GroupSubmissionsGallery({
       <TouchableOpacity style={styles.cta} activeOpacity={0.85} onPress={() => setOpen(true)}>
         <View style={styles.ctaThumbs}>
           {subs.slice(0, 3).map((s, i) => (
-            <Image key={s.id} source={{ uri: s.media_url }} style={[styles.ctaThumb, i > 0 && { marginLeft: -10 }]} contentFit="cover" cachePolicy="memory-disk" />
+            <Image key={s.id} source={{ uri: thumbUrl(s.media_url) }} style={[styles.ctaThumb, i > 0 && { marginLeft: -10 }]} contentFit="cover" cachePolicy="memory-disk" />
           ))}
         </View>
         <Ionicons name="eye-outline" size={16} color={colors.gold} />
@@ -137,7 +137,7 @@ export function GroupSubmissionsGallery({
           return (
             <View key={s.id} style={[styles.tile, isWin && styles.tileWin]}>
               <TouchableOpacity activeOpacity={0.85} onPress={() => setPreview(s)}>
-                <Image source={{ uri: s.media_url }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
+                <Image source={{ uri: thumbUrl(s.media_url) }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
                 {isWin ? (
                   <View style={styles.winBadge}>
                     <Ionicons name="ribbon-outline" size={11} color={colors.onGold} />
@@ -176,7 +176,7 @@ export function GroupSubmissionsGallery({
         <Pressable style={styles.previewBackdrop} onPress={() => setPreview(null)}>
           {preview ? (
             <>
-              <Image source={{ uri: preview.media_url }} style={styles.previewImg} contentFit="contain" />
+              <Image source={{ uri: mediumUrl(preview.media_url) }} style={styles.previewImg} contentFit="contain" />
               <Text style={styles.previewName}>{preview.display_name}</Text>
               {canPick ? (
                 <TouchableOpacity
