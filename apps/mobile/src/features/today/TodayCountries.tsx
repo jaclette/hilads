@@ -18,7 +18,7 @@ import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useHere } from '@/hooks/useDaily';
 import { useSeasonalLive } from '@/features/event/seasonal';
-import { lastTour, rememberTour } from '@/features/tour/store';
+import { rememberTour, useLastTour } from '@/features/tour/store';
 import { track } from '@/services/analytics';
 import { Avatar, DualPhoto, Photo, SectionTitle } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
@@ -61,12 +61,15 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
   const copy = seasonal?.theme.copy;
   const cities = todayCities(data);
   // Nobody played yet: yesterday's best cities teach the idea (the tour Today already loads).
-  const [tour, setTour] = useState<DailyTour | null>(lastTour());
+  // Only the tour of the challenge just before today's: one kept from an earlier day
+  // (the app left open overnight) showed the day before yesterday.
+  const remembered = useLastTour();
+  const tour = remembered && (!remembered.today || remembered.today.id === challenge?.id) ? remembered : null;
   useEffect(() => {
     if (!challenge || cities.length > 0 || tour) return;
     fetchDailyTour({ cityId: here?.id ?? today?.city?.id ?? null, guestId: account ? null : identity?.guestId ?? null })
-      .then(x => { rememberTour(x); setTour(x); }).catch(() => {});
-  }, [challenge?.id, cities.length > 0]); // eslint-disable-line react-hooks/exhaustive-deps
+      .then(rememberTour).catch(() => {});
+  }, [challenge?.id, cities.length > 0, !!tour]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!challenge || !data) return null;
   const myProof = today?.myProof ?? null;
