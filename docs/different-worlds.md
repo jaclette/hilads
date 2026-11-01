@@ -43,6 +43,21 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
    - It uploads the video to the package, and the topic page then shows it with a download button.
    - After an edit or a new version, run it again: the new video replaces the old one.
 
+## Video mode (stock clips)
+
+A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the photos, as above) or `video`: in the video, a stock clip plays behind each slide.
+
+- **Package**: a video topic (`"visual_mode": "video"` in the brief) also gets `"clip_query"` on the hook, each country and the outro: 3 to 6 English words a stock site would have (e.g. "street food stall night Bangkok"), no close-up faces, no children, no brands. The photo fields stay: the photo is the fallback, and the PNG slides and the ZIP still use it.
+- **Search** (`src/DwClips.php`, on import and from the admin): Pexels first (`PEXELS_API_KEY`), else Pixabay (`PIXABAY_API_KEY`):
+  1. portrait clips: the smallest file at least 1280 px tall, a 1920 px one when there is one;
+  2. else landscape clips cropped to 9:16, only from 1440 px tall (2560×1440 keeps 810×1440);
+  3. long enough for a slide (4.8 s with its crossfade); a 3.1 to 4.8 s clip is slowed down to fill it (never below ×0.65); at most 40 s; the first half second is skipped when it can be.
+  - Searches are cached 24 h (`dw_clip_searches`): Pixabay requires it, and Pexels allows 200 requests an hour (a month imported at once can hit it: those slides wait as "pending").
+- **Stored**: only the chosen clip's details in `dw_slides.clip` (provider, id, page, file and preview URLs, size, duration, speed, start, author, license, the query, the clips tried). Nothing is stored on R2 but the rendered video.
+- **Admin, per slide**: a muted preview (the provider's lightest file, loaded on play), the source, author and license links, **Find another clip** (skips the ones tried; keeps the current one when there's no other), **Use photo**. A slide without a clip shows "photo fallback" and why; **Find missing clips** retries them all (after a rate limit, a mode switch or a new key). The month list shows 🎬 and the slides without a clip.
+- **Video** (`npm run worlds`): each clip is downloaded once into `tools/promo/.cache/clips/` (reused by every render, deleted after 30 days unused) and fills the whole 1080×1920 frame, muted, cut to the slide, under a dark gradient from the series pill down; a slide without a clip shows its source photo full-frame with the slow zoom. Same text, flags, timings and outro. The credit line reads "Video: <author>, Pexels". `--file` (a package before import) has no chosen clips: photos only.
+- **Licenses** (checked 2026-11-01): the [Pexels License](https://www.pexels.com/license/) and the [Pixabay Content License](https://pixabay.com/service/license-summary/) allow social media and edits, no attribution required (Pexels' API asks to credit the videographer, Pixabay's to show the source: the slide credit and the admin links do both). Not allowed: identifiable people in a bad light or an offensive way, footage with logos used commercially for goods or services, reselling it unchanged.
+
 ## File format
 
 ```json
@@ -105,4 +120,5 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
   - It adds `dw_settings.outro_cta` and `caption_cta`.
   - It adds the humor rule after the tone line of the system prompt (edits around it are kept).
   - Once (`dw_settings.calendar_rev` 2): every topic from Nov 1, 2026 not published is replaced by the funnier calendar of `DwSeed::TOPICS` (title, fun angle in the notes, type, date check). Their packages go with them; their R2 files stay.
-- No new environment variable: the slides use the existing R2 settings, and the video uses the Daily promo's `PROMO_TOKEN`.
+- The slides use the existing R2 settings, and the video uses the Daily promo's `PROMO_TOKEN`.
+- Video mode (2026-11-01): `migrate.php` adds `dw_topics.visual_mode`, `dw_slides.clip`, the `dw_clip_searches` table, and the clip_query rule after the photo rule of the system prompt. Set `PEXELS_API_KEY` (free at pexels.com/api) and/or `PIXABAY_API_KEY` (pixabay.com/api/docs) on Render.

@@ -3,8 +3,11 @@
 // API renders (backend/api/src/DwSlides.php): the photo on top with a slow
 // zoom, the series pill and the photo credit, then the flag, the country and
 // the text rising in. Music is added in each app when publishing.
+// Video mode (`full`): a stock clip (or, without one, the photo with its slow
+// zoom) fills the whole frame, muted and cut to the slide, under a dark
+// gradient that keeps the pill and the text readable; same layout otherwise.
 
-import { AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
 
 const BG = '#16110D';
@@ -130,12 +133,29 @@ function Slide({ slide, length }) {
 
   return (
     <AbsoluteFill style={{ background: BG, opacity: fadeIn }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1080, overflow: 'hidden' }}>
-        {slide.photo
-          ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1080, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 45%' }} />
-          : <div style={{ width: 1080, height: 1080, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
-      </div>
-      <div style={{ position: 'absolute', left: 0, top: 930, width: 1080, height: 152, background: `linear-gradient(to bottom, rgba(22,17,13,0), ${BG})` }} />
+      {slide.full ? (
+        <>
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+            {slide.clip
+              ? <OffthreadVideo src={staticFile(slide.clip.src)} muted playbackRate={slide.clip.rate} trimBefore={Math.round(slide.clip.start * FPS)}
+                                style={{ width: 1080, height: 1920, objectFit: 'cover' }} />
+              : slide.photo
+                ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1920, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 40%' }} />
+                : <div style={{ width: 1080, height: 1920, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
+          </div>
+          {/* Clear on top, dark from the pill down: the text sits on it. */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(22,17,13,0.25) 0px, rgba(22,17,13,0) 220px, rgba(22,17,13,0) 700px, rgba(22,17,13,0.78) 1000px, rgba(22,17,13,0.9) 1240px, rgba(22,17,13,0.92) 1920px)' }} />
+        </>
+      ) : (
+        <>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1080, overflow: 'hidden' }}>
+            {slide.photo
+              ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1080, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 45%' }} />
+              : <div style={{ width: 1080, height: 1080, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
+          </div>
+          <div style={{ position: 'absolute', left: 0, top: 930, width: 1080, height: 152, background: `linear-gradient(to bottom, rgba(22,17,13,0), ${BG})` }} />
+        </>
+      )}
 
       {/* The series mark, on every slide. */}
       <div style={{ position: 'absolute', left: LEFT, top: 996, height: 56, borderRadius: 28, background: 'rgba(22,17,13,0.9)', display: 'flex', alignItems: 'center',
@@ -143,7 +163,7 @@ function Slide({ slide, length }) {
         <span style={{ fontWeight: 800, letterSpacing: 2, color: ACCENT }}>DIFFERENT WORLDS</span>
         <span style={{ fontWeight: 600, color: '#fff' }}>by Hilads</span>
       </div>
-      {credit && (slide.photo || slide.svg) && (
+      {credit && (slide.photo || slide.svg || slide.clip) && (
         <div style={{ position: 'absolute', left: LEFT, top: 1072, width: WIDTH, fontFamily: FONT, fontWeight: 600, fontSize: 18, color: 'rgba(255,255,255,0.55)',
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{credit}</div>
       )}
@@ -173,7 +193,7 @@ function Slide({ slide, length }) {
   );
 }
 
-/** props: {slides: [{kind, text, country?, flag?, credit?, photo?, cta?}]} (paths in the public folder). */
+/** props: {slides: [{kind, text, country?, flag?, credit?, photo?, clip?: {src, rate, start}, full?, cta?}]} (paths in the public folder). */
 export function WorldsVideo({ slides }) {
   const { parts } = worldsTiming(slides);
   return (

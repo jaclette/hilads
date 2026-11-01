@@ -62,6 +62,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         worlds_action(fn() => DwStudio::replaceArt($pkg['id'], $pos, (string) ($_POST['photo_url'] ?? ''), $bytes,
             (string) ($_POST['svg'] ?? ''), (string) ($_POST['credit'] ?? '')) ?? "Slide {$pos} redrawn.", '', $back . '#slides');
     }
+    // Video mode: one slide's next clip, its photo instead, or every slide still without a clip.
+    if (in_array($action, ['clip_next', 'clip_find', 'clip_drop'], true) && $pkg !== null) {
+        $pos = (int) ($_POST['position'] ?? 0);
+        worlds_action(fn() => match ($action) {
+            'clip_drop' => DwStudio::dropClip($pkg['id'], $pos) ?? "Slide {$pos}: photo used.",
+            default     => DwStudio::findClip($pkg['id'], $pos, $action === 'clip_next') ?? "Slide {$pos}: clip found.",
+        }, '', $back . '#slides');
+    }
+    if ($action === 'clips_missing' && $pkg !== null) {
+        set_time_limit(120);
+        worlds_action(fn() => implode(' ', DwStudio::findMissingClips($pkg['id'])) ?: 'Every slide has its clip.', '', $back . '#slides');
+    }
     if ($action === 'import') {
         $json = (string) ($_POST['json'] ?? '');
         $file = $_FILES['file'] ?? null;
@@ -90,6 +102,12 @@ $versions = DwStudio::versions($id);
 $slides   = $pkg !== null ? DwStudio::slides($pkg['id']) : [];
 $plan     = $pkg !== null ? DwStudio::slidePlan($pkg['content']) : [];
 $c        = $pkg['content'] ?? [];
+$video    = $topic['visual_mode'] === 'video';
+$clips    = [];
+foreach ($slides as $r) {
+    $clips[(int) $r['position']] = is_string($r['clip'] ?? null) ? (json_decode($r['clip'], true) ?: null) : null;
+}
+$clipsMissing = $video ? count(array_filter($plan, fn($p) => ($clips[$p['position']]['status'] ?? '') !== 'ok')) : 0;
 $links    = $topic['published_links'];
 
 /** One editable field: a textarea (or input) saved on change, with a copy button. */
@@ -139,6 +157,13 @@ worlds_styles();
             <?php endif; ?>
             <a class="btn btn-primary" href="<?= $self ?>?v=<?= $pkg['version'] ?>&zip=1">⬇ Download all slides (ZIP)</a>
             <button type="button" class="btn btn-secondary" data-full-caption data-cta="<?= wh(DwStudio::settings()['caption_cta']) ?>">Copy full caption</button>
+            <?php if ($video): ?>
+                <span class="worlds-muted">🎬 video mode<?= $clipsMissing > 0 ? ' · <span style="color:#fbbf24">' . $clipsMissing . ' slide' . ($clipsMissing > 1 ? 's' : '') . ' on the photo</span>' : ' · every slide has its clip' ?></span>
+                <?php if ($clipsMissing > 0): ?>
+                    <form method="POST" action="<?= wh($back) ?>" style="display:inline"><?= csrf_input() ?><input type="hidden" name="action" value="clips_missing">
+                        <button class="btn btn-secondary btn-sm" type="submit">Find missing clips</button></form>
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
 
         <?php if (!empty($pkg['video_url'])): ?>
@@ -163,6 +188,24 @@ worlds_styles();
                         <?= !empty($s['error']) ? '<br><span style="color:#f87171">' . wh($s['error']) . '</span>' : '' ?>
                         <?= ($s && filter_var($s['fallback'], FILTER_VALIDATE_BOOLEAN)) ? '<br><span style="color:#fbbf24">plain background</span>' : '' ?></div>
                     <?php if ($p['credit'] !== ''): ?><div class="worlds-muted" title="<?= wh($p['credit']) ?>"><?= wh(mb_strimwidth($p['credit'], 0, 60, '…')) ?></div><?php endif; ?>
+                    <?php if ($video): $clip = $clips[$p['position']] ?? null; $ok = ($clip['status'] ?? '') === 'ok'; ?>
+                        <div class="worlds-clip">
+                            <?php if ($ok): ?>
+                                <video src="<?= wh($clip['preview_url']) ?>" poster="<?= wh($clip['image'] ?? '') ?>" muted loop playsinline controls preload="none"></video>
+                                <div class="worlds-muted"><?= wh(DwClips::credit($clip)) ?> ·
+                                    <a href="<?= wh($clip['page_url']) ?>" target="_blank" rel="noopener">source ↗</a>
+                                    <?php if (!empty($clip['author_url'])): ?>· <a href="<?= wh($clip['author_url']) ?>" target="_blank" rel="noopener">author ↗</a><?php endif; ?><br>
+                                    <?= wh($clip['license']) ?> · <?= (int) $clip['width'] ?>×<?= (int) $clip['height'] ?> · <?= round((float) $clip['duration'], 1) ?> s<?= (float) $clip['rate'] < 1 ? ' · slowed ×' . $clip['rate'] : '' ?></div>
+                            <?php else: ?>
+                                <div class="worlds-muted"><span style="color:#fbbf24">photo fallback</span><?= $clip ? ' · ' . wh($clip['reason'] ?? '') : ' · not searched yet' ?></div>
+                            <?php endif; ?>
+                            <div class="worlds-muted" title="clip_query">🔎 <?= $p['clip_query'] !== '' ? wh($p['clip_query']) : '<em>no clip_query</em>' ?></div>
+                            <form method="POST" action="<?= wh($back) ?>" style="display:flex;gap:4px;flex-wrap:wrap"><?= csrf_input() ?><input type="hidden" name="position" value="<?= $p['position'] ?>">
+                                <button class="btn btn-secondary btn-sm" name="action" value="<?= $ok ? 'clip_next' : 'clip_find' ?>" type="submit"><?= $ok ? 'Find another clip' : 'Find a clip' ?></button>
+                                <?php if ($ok): ?><button class="btn btn-secondary btn-sm" name="action" value="clip_drop" type="submit">Use photo</button><?php endif; ?>
+                            </form>
+                        </div>
+                    <?php endif; ?>
                     <details><summary>Replace photo</summary>
                         <p class="worlds-muted" title="<?= wh($p['brief']) ?>"><?= wh(mb_strimwidth($p['brief'], 0, 90, '…')) ?></p>
                         <form method="POST" action="<?= wh($back) ?>" enctype="multipart/form-data">
@@ -250,6 +293,10 @@ worlds_styles();
             <div class="form-group"><label>Type</label><select name="type">
                 <?php foreach (['evergreen', 'dated'] as $ty): ?><option value="<?= $ty ?>"<?= $topic['type'] === $ty ? ' selected' : '' ?>><?= $ty ?></option><?php endforeach; ?></select></div>
             <div class="form-group"><label><input type="checkbox" name="needs_date_check" value="1"<?= $topic['needs_date_check'] ? ' checked' : '' ?>> The event date needs checking</label></div>
+            <div class="form-group"><label>Visual mode</label><select name="visual_mode">
+                <option value="image"<?= $video ? '' : ' selected' ?>>image (photos)</option>
+                <option value="video"<?= $video ? ' selected' : '' ?>>video (a stock clip behind each slide)</option></select>
+                <div class="worlds-muted">Video: the package needs a clip_query on every slide (see the brief). Switching after an import: "Find missing clips".</div></div>
             <div class="form-actions"><button class="btn btn-primary" type="submit">Save</button></div>
         </form>
     </div>

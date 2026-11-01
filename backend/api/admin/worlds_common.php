@@ -55,6 +55,8 @@ function worlds_styles(): void
 .worlds-slide img { width:180px; height:320px; object-fit:cover; border-radius:10px; background:#222; display:block; }
 .worlds-slide .worlds-muted { margin:4px 0; font-size:12px; }
 .worlds-slide details summary { cursor:pointer; color:#FF7A3C; font-size:12px; }
+.worlds-clip { margin:6px 0; display:flex; flex-direction:column; gap:4px; }
+.worlds-clip video { width:180px; height:320px; object-fit:cover; border-radius:10px; background:#222; }
 .worlds-slide textarea { width:180px; height:90px; font:11px monospace; background:#111; color:#ddd; border:1px solid #333; border-radius:6px; }
 /* the video, then its download */
 .worlds-video { display:flex; gap:16px; align-items:flex-start; background:#151515; border:1px solid #262626; border-radius:10px; padding:12px; margin-bottom:16px; }

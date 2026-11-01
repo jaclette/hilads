@@ -3810,6 +3810,16 @@ try {
             echo "  WARN dw seed: no tone line in the system prompt, add the humor rule by hand\n";
         }
     }
+    // Video clips (2026-11-01): the clip_query rule goes right after the photo rule, whatever was edited around it.
+    $prompt = (string) $pdo->query("SELECT system_prompt FROM dw_settings WHERE id = 1")->fetchColumn();
+    if ($prompt !== '' && !str_contains($prompt, 'clip_query')) {
+        $withClip = preg_replace('/^(- Each slide is illustrated by a real photo.*)$/m', '$1' . "\n" . str_replace('$', '\\$', DwSeed::CLIP_LINE), $prompt, 1, $n);
+        if ($n > 0) {
+            $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$withClip]);
+        } else {
+            echo "  WARN dw seed: no photo rule in the system prompt, add the clip_query rule by hand\n";
+        }
+    }
     $seedTopic = $pdo->prepare("
         INSERT INTO dw_topics (date, title, notes, type, needs_date_check) VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (date) DO NOTHING
@@ -3880,6 +3890,22 @@ try {
     if ($pdo->inTransaction()) $pdo->rollBack();
     echo "  ERR daily photos local by city names: " . $e->getMessage() . "\n";
 }
+
+// ── Different Worlds: video clips (2026-11-01) ─────────────────────────────
+// A topic in 'video' mode gets a stock clip (Pexels, else Pixabay) behind each
+// slide of its video: dw_slides.clip holds the chosen clip's details only (the
+// Mac downloads and caches the file), dw_clip_searches caches each search 24 h
+// (Pixabay's terms; it also spares Pexels' 200 requests an hour).
+// Reversal: ALTER TABLE dw_topics DROP COLUMN visual_mode; ALTER TABLE dw_slides DROP COLUMN clip; DROP TABLE dw_clip_searches.
+run($pdo, "ALTER TABLE dw_topics ADD COLUMN IF NOT EXISTS visual_mode TEXT NOT NULL DEFAULT 'image' CHECK (visual_mode IN ('image', 'video'))", 'dw_topics.visual_mode');
+run($pdo, "ALTER TABLE dw_slides ADD COLUMN IF NOT EXISTS clip JSONB", 'dw_slides.clip');
+run($pdo, "CREATE TABLE IF NOT EXISTS dw_clip_searches (
+    provider   TEXT NOT NULL,
+    query      TEXT NOT NULL,
+    results    JSONB NOT NULL,
+    fetched_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (provider, query)
+)", 'dw_clip_searches');
 
 // ── Photo placeholders (thumbhash) ────────────────────────────────────────
 // A ~25-byte blurred preview of each Daily photo and selfie, sent with the

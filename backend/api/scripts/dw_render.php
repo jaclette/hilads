@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../src/DwSeed.php';
 require_once __DIR__ . '/../src/DwSlides.php';
+require_once __DIR__ . '/../src/DwClips.php';
 require_once __DIR__ . '/../src/DwStudio.php';
 
 [$file, $out] = [$argv[1] ?? '', $argv[2] ?? ''];
