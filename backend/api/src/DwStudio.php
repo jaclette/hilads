@@ -517,9 +517,12 @@ final class DwStudio
      * Imports a file of packages: {"packages": [{date, model?, content}]}, one
      * package {date, model?, content}, or (with $topicId) a bare content.
      * Each package = a new version of its topic, slides rendered and stored.
-     * Returns [{date, ok, version?, errors, warnings}].
+     * Returns [{date, ok, version?, package_id?, slides?, errors, warnings}].
+     * $render false: the version is created but its slides are left to
+     * renderPlannedSlide(), one request each (the topic page's progress bar);
+     * a package with drawn illustrations is still rendered here.
      */
-    public static function import(array $doc, ?int $topicId = null): array
+    public static function import(array $doc, ?int $topicId = null, bool $render = true): array
     {
         if (isset($doc['packages']) && is_array($doc['packages'])) {
             $items = $doc['packages'];
@@ -569,23 +572,17 @@ final class DwStudio
                             mb_substr(trim((string) ($item['model'] ?? 'Claude Code')), 0, 120)]);
             [$pkgId, $version] = $stmt->fetch(PDO::FETCH_NUM);
             $pkg = self::packageById((int) $pkgId);
-            foreach (self::slidePlan($content) as $slide) {
-                $svg = is_string($svgs[$slide['position']] ?? null) ? $svgs[$slide['position']] : '';
-                $art = ['svg' => $svg];
-                if ($slide['photo_src'] !== '') {
-                    try {
-                        $art = ['photo' => self::fetchPhoto($slide['photo_src'])];
-                    } catch (InvalidArgumentException | RuntimeException $e) {
-                        $warn[] = "Slide {$slide['position']}: photo not used ({$e->getMessage()}).";
-                    }
-                }
-                $res = self::renderSlide($pkg, $slide, $art);
-                if ($res !== null && !str_contains($res, 'no picture')) {
-                    $warn[] = $res;
+            $plan = self::slidePlan($content);
+            // Drawn illustrations exist only in the file: those packages are rendered now.
+            $rendered = $render || array_filter($svgs, static fn($v) => is_string($v) && trim($v) !== '') !== [];
+            if ($rendered) {
+                foreach ($plan as $slide) {
+                    $svg = is_string($svgs[$slide['position']] ?? null) ? $svgs[$slide['position']] : '';
+                    array_push($warn, ...self::renderFromSource($pkg, $slide, $svg));
                 }
             }
             if ($topic['visual_mode'] === 'video') {
-                $none = array_filter(self::slidePlan($content), static fn($p) => $p['clip'] === null);
+                $none = array_filter($plan, static fn($p) => $p['clip'] === null);
                 if ($none !== []) {
                     $warn[] = 'Video mode: no clip on slide' . (count($none) > 1 ? 's ' : ' ') . implode(', ', array_column($none, 'position')) . ', their photo is used.';
                 }
@@ -593,9 +590,40 @@ final class DwStudio
             if ($topic['status'] === 'planned') {
                 self::setStatus($topic['id'], 'generated');
             }
-            $report[] = ['date' => $label, 'ok' => true, 'version' => (int) $version, 'errors' => [], 'warnings' => $warn];
+            $report[] = ['date' => $label, 'ok' => true, 'version' => (int) $version, 'package_id' => (int) $pkgId,
+                         'slides' => $rendered ? 0 : count($plan), 'errors' => [], 'warnings' => $warn];
         }
         return $report;
+    }
+
+    /** Renders slide $position of a package imported without its slides (import(…, false)): its warnings. */
+    public static function renderPlannedSlide(int $packageId, int $position): array
+    {
+        $pkg = self::packageById($packageId);
+        $slide = $pkg !== null ? (self::slidePlan($pkg['content'])[$position - 1] ?? null) : null;
+        if ($slide === null) {
+            throw new InvalidArgumentException('Unknown slide.');
+        }
+        return self::renderFromSource($pkg, $slide, '');
+    }
+
+    /** One slide from its package source: the photo downloaded from Commons (else $svg, else plain). Its warnings. */
+    private static function renderFromSource(array $pkg, array $slide, string $svg): array
+    {
+        $warn = [];
+        $art = ['svg' => $svg];
+        if ($slide['photo_src'] !== '') {
+            try {
+                $art = ['photo' => self::fetchPhoto($slide['photo_src'])];
+            } catch (InvalidArgumentException | RuntimeException $e) {
+                $warn[] = "Slide {$slide['position']}: photo not used ({$e->getMessage()}).";
+            }
+        }
+        $res = self::renderSlide($pkg, $slide, $art);
+        if ($res !== null && !str_contains($res, 'no picture')) {
+            $warn[] = $res;
+        }
+        return $warn;
     }
 
     /**

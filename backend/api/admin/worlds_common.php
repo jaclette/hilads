@@ -56,6 +56,10 @@ function worlds_styles(): void
 .worlds-slide .worlds-muted { margin:4px 0; font-size:12px; }
 .worlds-slide details summary { cursor:pointer; color:#FF7A3C; font-size:12px; }
 .worlds-clip { margin:6px 0; display:flex; flex-direction:column; gap:4px; }
+.worlds-progress { margin-top:12px; }
+.worlds-progress-bar { height:8px; border-radius:4px; background:#2a2a2a; overflow:hidden; }
+.worlds-progress-bar span { display:block; height:100%; width:0; background:#FF7A3C; transition:width .3s ease; }
+.worlds-progress-label { margin-top:6px; font-size:12px; }
 .worlds-clip video { width:180px; height:180px; object-fit:cover; border-radius:10px; background:#222; }
 .worlds-slide textarea { width:180px; height:90px; font:11px monospace; background:#111; color:#ddd; border:1px solid #333; border-radius:6px; }
 /* the video, then its download */

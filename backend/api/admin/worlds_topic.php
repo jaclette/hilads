@@ -264,12 +264,14 @@ worlds_styles();
             </div>
         </form>
 
-        <form method="POST" action="<?= wh($self) ?>" enctype="multipart/form-data" class="form-card">
+        <form method="POST" action="<?= wh($self) ?>" enctype="multipart/form-data" class="form-card" id="worlds-topic-import" data-topic="<?= $id ?>">
             <?= csrf_input() ?><input type="hidden" name="action" value="import">
             <h3 style="margin-bottom:8px"><?= $pkg ? 'Import a new version' : 'Import the package' ?></h3>
             <div class="form-group"><label>JSON file</label><input type="file" name="file" accept="application/json,.json"></div>
             <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="4" style="font-family:monospace;width:100%"></textarea></div>
             <button class="btn btn-primary" type="submit">Import and render</button>
+            <div class="worlds-progress" hidden><div class="worlds-progress-bar"><span></span></div><div class="worlds-muted worlds-progress-label"></div></div>
+            <ul class="worlds-report worlds-progress-errors"></ul>
         </form>
 
         <form method="POST" action="<?= wh($back) ?>" class="form-card">
@@ -308,6 +310,53 @@ worlds_styles();
     if (body.toLowerCase().endsWith(ending.toLowerCase())) body = body.slice(0, -ending.length).trim();
     copy([body, val('ai_disclosure'), ending, val('hashtags')].filter(Boolean).join('\n\n'), b);
   }));
+  // Import step by step: the version, then each slide (the bar fills), then the page reloads with the result.
+  const importForm = document.getElementById('worlds-topic-import');
+  importForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = importForm.querySelector('button[type="submit"]');
+    const box = importForm.querySelector('.worlds-progress');
+    const bar = box.querySelector('.worlds-progress-bar span');
+    const label = box.querySelector('.worlds-progress-label');
+    const errors = importForm.querySelector('.worlds-progress-errors');
+    const file = importForm.querySelector('input[type="file"]').files[0];
+    const json = file ? await file.text() : importForm.querySelector('textarea[name="json"]').value;
+    const show = (pct, text) => { box.hidden = false; bar.style.width = pct + '%'; label.textContent = text + ' · ' + Math.round(pct) + '%'; };
+    const call = async (fields) => {
+      const res = await fetch('/admin/worlds/api', { method: 'POST', body: new URLSearchParams({ csrf_token: csrf, ...fields }) });
+      const out = await res.json().catch(() => ({ ok: false, error: 'HTTP ' + res.status }));
+      if (!res.ok || !out.ok) throw new Error(out.error || res.status);
+      return out;
+    };
+    errors.innerHTML = '';
+    btn.disabled = true;
+    show(2, 'Checking the package and creating the version');
+    try {
+      const { report } = await call({ action: 'import_start', topic_id: importForm.dataset.topic, json });
+      if (!report.ok) {
+        box.hidden = true;
+        errors.innerHTML = '<li><strong style="color:#f87171">Not imported</strong></li>' + [...report.errors, ...report.warnings].map(m => `<li>${m.replace(/</g, '&lt;')}</li>`).join('');
+        btn.disabled = false;
+        return;
+      }
+      const warnings = [...report.warnings];
+      for (let pos = 1; pos <= report.slides; pos++) {
+        show(5 + 95 * (pos - 1) / report.slides, `Rendering slide ${pos}/${report.slides}`);
+        try {
+          warnings.push(...(await call({ action: 'import_slide', package_id: report.package_id, position: pos })).warnings);
+        } catch (err) {
+          warnings.push(`Slide ${pos}: not rendered (${err.message}): redraw it with "Replace photo".`);
+        }
+      }
+      show(100, 'Done');
+      await call({ action: 'import_done', version: report.version, warnings: JSON.stringify(warnings) });
+      location.href = <?= json_encode($self) ?>;
+    } catch (err) {
+      box.hidden = true;
+      errors.innerHTML = `<li style="color:#f87171">Import failed: ${err.message.replace(/</g, '&lt;')}</li>`;
+      btn.disabled = false;
+    }
+  });
   document.querySelectorAll('.worlds-field').forEach(field => {
     const area = field.querySelector('textarea');
     const state = field.querySelector('.state');
