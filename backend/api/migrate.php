@@ -3810,14 +3810,19 @@ try {
             echo "  WARN dw seed: no tone line in the system prompt, add the humor rule by hand\n";
         }
     }
-    // Video clips (2026-11-01): the clip_query rule goes right after the photo rule, whatever was edited around it.
+    // Video clips (2026-11-01): the clip rule goes right after the photo rule, whatever was edited around it
+    // (its first wording, a stock-site search query, is swapped for it).
     $prompt = (string) $pdo->query("SELECT system_prompt FROM dw_settings WHERE id = 1")->fetchColumn();
-    if ($prompt !== '' && !str_contains($prompt, 'clip_query')) {
+    if (str_contains($prompt, DwSeed::OLD_CLIP_LINE)) {
+        $prompt = str_replace(DwSeed::OLD_CLIP_LINE, DwSeed::CLIP_LINE, $prompt);
+        $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$prompt]);
+    }
+    if ($prompt !== '' && !str_contains($prompt, 'clip_url')) {
         $withClip = preg_replace('/^(- Each slide is illustrated by a real photo.*)$/m', '$1' . "\n" . str_replace('$', '\\$', DwSeed::CLIP_LINE), $prompt, 1, $n);
         if ($n > 0) {
             $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$withClip]);
         } else {
-            echo "  WARN dw seed: no photo rule in the system prompt, add the clip_query rule by hand\n";
+            echo "  WARN dw seed: no photo rule in the system prompt, add the clip rule by hand\n";
         }
     }
     $seedTopic = $pdo->prepare("
@@ -3892,20 +3897,14 @@ try {
 }
 
 // ── Different Worlds: video clips (2026-11-01) ─────────────────────────────
-// A topic in 'video' mode gets a stock clip (Pexels, else Pixabay) behind each
-// slide of its video: dw_slides.clip holds the chosen clip's details only (the
-// Mac downloads and caches the file), dw_clip_searches caches each search 24 h
-// (Pixabay's terms; it also spares Pexels' 200 requests an hour).
-// Reversal: ALTER TABLE dw_topics DROP COLUMN visual_mode; ALTER TABLE dw_slides DROP COLUMN clip; DROP TABLE dw_clip_searches.
+// A topic in 'video' mode plays a Commons clip in each slide's photo square
+// when its package gives one (clip_url / clip_start / clip_credit, chosen in
+// Claude Code like the photos). The first version searched Pexels / Pixabay
+// (no API keys to be had): its column and cache table go.
+// Reversal: ALTER TABLE dw_topics DROP COLUMN visual_mode.
 run($pdo, "ALTER TABLE dw_topics ADD COLUMN IF NOT EXISTS visual_mode TEXT NOT NULL DEFAULT 'image' CHECK (visual_mode IN ('image', 'video'))", 'dw_topics.visual_mode');
-run($pdo, "ALTER TABLE dw_slides ADD COLUMN IF NOT EXISTS clip JSONB", 'dw_slides.clip');
-run($pdo, "CREATE TABLE IF NOT EXISTS dw_clip_searches (
-    provider   TEXT NOT NULL,
-    query      TEXT NOT NULL,
-    results    JSONB NOT NULL,
-    fetched_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (provider, query)
-)", 'dw_clip_searches');
+run($pdo, "ALTER TABLE dw_slides DROP COLUMN IF EXISTS clip", 'dw_slides.clip dropped');
+run($pdo, "DROP TABLE IF EXISTS dw_clip_searches", 'dw_clip_searches dropped');
 
 // ── Photo placeholders (thumbhash) ────────────────────────────────────────
 // A ~25-byte blurred preview of each Daily photo and selfie, sent with the

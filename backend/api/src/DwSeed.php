@@ -17,7 +17,9 @@ final class DwSeed
     public const CAPTION_CTA = 'Compare your city with the world on hilads.live 🌍 (link in bio)';
 
     /** Added after the tone line of the production prompt by migrate.php (2026-10-31), edits kept. */
-    public const CLIP_LINE = '- Video topics (the topic\'s "visual_mode" is "video"): also write "clip_query" on the hook, each country and the outro: 3 to 6 English words a stock video site would have (e.g. "street food stall night Bangkok"): a place or a thing in motion, no faces in close-up, no children, no brands. The photo fields stay: the photo is used when no clip is found.';
+    public const CLIP_LINE = '- Video topics (the topic\'s "visual_mode" is "video"): where Wikimedia Commons has a fitting video, also give the hook, a country or the outro "clip_url" (the video file on upload.wikimedia.org, or its 1080p / 720p transcode), "clip_start" (the second its best 5 seconds start) and "clip_credit" ("Video: author, license, Wikimedia Commons"). Same licenses and rules as the photos; never an AI-generated video. It plays in the photo\'s square; the photo fields stay and are used where there is no clip.';
+    /** The first wording (stock-site search), replaced by CLIP_LINE where it is still in the prompt. */
+    public const OLD_CLIP_LINE = '- Video topics (the topic\'s "visual_mode" is "video"): also write "clip_query" on the hook, each country and the outro: 3 to 6 English words a stock video site would have (e.g. "street food stall night Bangkok"): a place or a thing in motion, no faces in close-up, no children, no brands. The photo fields stay: the photo is used when no clip is found.';
     public const HUMOR_LINE = '- Humor: always pick the funniest and most surprising TRUE facts. The humor comes from real facts, never from mocking people or cultures.';
 
     public const SYSTEM_PROMPT = <<<'TXT'
@@ -46,7 +48,7 @@ Video format:
 - 6 to 8 countries, always including {{COUNTRIES_ALWAYS}}, with a mix of continents.
 - Structure: hook slide (must grab attention in 2 seconds), one slide per country, outro slide with a question for comments.
 - Each slide is illustrated by a real photo (Wikimedia Commons, public domain or Creative Commons; the credit is shown on the slide). For each slide, write "illustration_brief": one short sentence describing the photo (the place and the thing: food, decoration, street scene, object), then "photo_url" (the image file on upload.wikimedia.org) and "photo_credit" (author and license, e.g. "Photo: Jane Doe, CC BY-SA 4.0, Wikimedia Commons"). No children, no recognizable faces, no logos or brands.
-- Video topics (the topic's "visual_mode" is "video"): also write "clip_query" on the hook, each country and the outro: 3 to 6 English words a stock video site would have (e.g. "street food stall night Bangkok"): a place or a thing in motion, no faces in close-up, no children, no brands. The photo fields stay: the photo is used when no clip is found.
+- Video topics (the topic's "visual_mode" is "video"): where Wikimedia Commons has a fitting video, also give the hook, a country or the outro "clip_url" (the video file on upload.wikimedia.org, or its 1080p / 720p transcode), "clip_start" (the second its best 5 seconds start) and "clip_credit" ("Video: author, license, Wikimedia Commons"). Same licenses and rules as the photos; never an AI-generated video. It plays in the photo's square; the photo fields stay and are used where there is no clip.
 
 Hilads mention, current phase: {{PHASE}}
 - Phase 1: Hilads appears as the series name, plus the hilads.live line on the outro slide and in the caption. No other app pitch.

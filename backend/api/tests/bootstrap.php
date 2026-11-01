@@ -96,6 +96,7 @@ require_once __DIR__ . '/../src/CityNames.php';
 require_once __DIR__ . '/../src/DailyTranslations.php';
 require_once __DIR__ . '/../src/DwSeed.php';
 require_once __DIR__ . '/../src/DwSlides.php';
+require_once __DIR__ . '/../src/DwClips.php';
 require_once __DIR__ . '/../src/DwStudio.php';
 require_once __DIR__ . '/../src/Currencies.php';
 require_once __DIR__ . '/../src/DailyCompare.php';

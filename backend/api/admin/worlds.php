@@ -113,8 +113,8 @@ worlds_styles();
                 <td style="white-space:nowrap"><?= wh((new DateTimeImmutable($t['date']))->format('D j M')) ?><?= $t['date'] === $today ? ' <span class="badge badge-live">today</span>' : '' ?></td>
                 <td><a href="/admin/worlds/<?= $t['id'] ?>"><?= wh($t['title']) ?></a>
                     <?= $t['needs_date_check'] ? ' <span title="Check the date of this event">⚠️</span>' : '' ?>
-                    <?php if ($t['visual_mode'] === 'video'): ?> <span title="Video clips">🎬</span><?php if ((int) $t['versions'] > 0 && (int) $t['clips_missing'] > 0): ?>
-                        <span class="worlds-muted" style="color:#fbbf24" title="Slides on their photo"><?= (int) $t['clips_missing'] ?> without clip</span><?php endif; endif; ?></td>
+                    <?php if ($t['visual_mode'] === 'video'): ?> <span title="Video clips">🎬</span><?php if (isset($t['clip_count'])): ?>
+                        <span class="worlds-muted" title="Slides with a clip (the others show their photo)"><?= (int) $t['clip_count'] ?>/<?= (int) $t['slide_count'] ?> clips</span><?php endif; endif; ?></td>
                 <td class="worlds-muted"><?= wh($t['type']) ?></td>
                 <td><?= worlds_status_badge($t['status']) ?></td>
                 <td class="worlds-muted"><?= (int) $t['versions'] ?: '-' ?></td>
@@ -152,7 +152,7 @@ worlds_styles();
                 <select name="type"><option value="evergreen">evergreen</option><option value="dated">dated (holiday / event)</option></select></div>
             <div class="form-group"><label><input type="checkbox" name="needs_date_check" value="1"> The event date needs checking</label></div>
             <div class="form-group"><label>Visual mode</label>
-                <select name="visual_mode"><option value="image">image (photos)</option><option value="video">video (stock clips)</option></select></div>
+                <select name="visual_mode"><option value="image">image (photos)</option><option value="video">video (clips in the photo square)</option></select></div>
             <button class="btn btn-primary" type="submit">Add</button>
         </form>
     </div>

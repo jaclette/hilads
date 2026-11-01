@@ -3,12 +3,12 @@
 // API renders (backend/api/src/DwSlides.php): the photo on top with a slow
 // zoom, the series pill and the photo credit, then the flag, the country and
 // the text rising in. Music is added in each app when publishing.
-// Video mode (`full`): a stock clip (or, without one, the photo with its slow
-// zoom) fills the whole frame, muted and cut to the slide, under a dark
-// gradient that keeps the pill and the text readable; same layout otherwise.
+// Video mode: a slide's clip plays in the photo's square instead, muted, from
+// its start, slowed down when it is a little short (worlds.mjs measures it).
 
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
+import { FADE, FPS, SECONDS } from './worldsTiming.js';
 
 const BG = '#16110D';
 const ACCENT = '#FF7A3D';
@@ -25,9 +25,7 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
   loadFont({ family: FONT, url: staticFile(`fonts/BeVietnamPro-${file}.ttf`), weight });
 }
 
-export const FPS = 30;
-export const FADE = 8;                                    // frames of crossfade into a slide
-const SECONDS = { hook: 3.5, country: 4.5, outro: 4.5 };
+export { FADE, FPS };
 
 /** [{start, length}] in frames for each slide, and the total. Pure. */
 export function worldsTiming(slides) {
@@ -133,29 +131,15 @@ function Slide({ slide, length }) {
 
   return (
     <AbsoluteFill style={{ background: BG, opacity: fadeIn }}>
-      {slide.full ? (
-        <>
-          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-            {slide.clip
-              ? <OffthreadVideo src={staticFile(slide.clip.src)} muted playbackRate={slide.clip.rate} trimBefore={Math.round(slide.clip.start * FPS)}
-                                style={{ width: 1080, height: 1920, objectFit: 'cover' }} />
-              : slide.photo
-                ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1920, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 40%' }} />
-                : <div style={{ width: 1080, height: 1920, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
-          </div>
-          {/* Clear on top, dark from the pill down: the text sits on it. */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(22,17,13,0.25) 0px, rgba(22,17,13,0) 220px, rgba(22,17,13,0) 700px, rgba(22,17,13,0.78) 1000px, rgba(22,17,13,0.9) 1240px, rgba(22,17,13,0.92) 1920px)' }} />
-        </>
-      ) : (
-        <>
-          <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1080, overflow: 'hidden' }}>
-            {slide.photo
-              ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1080, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 45%' }} />
-              : <div style={{ width: 1080, height: 1080, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
-          </div>
-          <div style={{ position: 'absolute', left: 0, top: 930, width: 1080, height: 152, background: `linear-gradient(to bottom, rgba(22,17,13,0), ${BG})` }} />
-        </>
-      )}
+      <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1080, overflow: 'hidden' }}>
+        {slide.clip
+          ? <OffthreadVideo src={staticFile(slide.clip.src)} muted playbackRate={slide.clip.rate} trimBefore={Math.round(slide.clip.start * FPS)}
+                            style={{ width: 1080, height: 1080, objectFit: 'cover' }} />
+          : slide.photo
+            ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1080, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 45%' }} />
+            : <div style={{ width: 1080, height: 1080, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
+      </div>
+      <div style={{ position: 'absolute', left: 0, top: 930, width: 1080, height: 152, background: `linear-gradient(to bottom, rgba(22,17,13,0), ${BG})` }} />
 
       {/* The series mark, on every slide. */}
       <div style={{ position: 'absolute', left: LEFT, top: 996, height: 56, borderRadius: 28, background: 'rgba(22,17,13,0.9)', display: 'flex', alignItems: 'center',
@@ -193,7 +177,7 @@ function Slide({ slide, length }) {
   );
 }
 
-/** props: {slides: [{kind, text, country?, flag?, credit?, photo?, clip?: {src, rate, start}, full?, cta?}]} (paths in the public folder). */
+/** props: {slides: [{kind, text, country?, flag?, credit?, photo?, clip?: {src, rate, start}, cta?}]} (paths in the public folder). */
 export function WorldsVideo({ slides }) {
   const { parts } = worldsTiming(slides);
   return (

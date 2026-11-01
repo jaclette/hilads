@@ -154,9 +154,9 @@ final class DwStudio
     {
         $stmt = Database::pdo()->prepare("
             SELECT t.*, (SELECT MAX(version) FROM dw_packages p WHERE p.topic_id = t.id) AS versions,
-                   -- Video topics: the latest version's slides without a clip (photo fallback).
-                   (SELECT COUNT(*) FROM dw_slides s WHERE s.package_id = (SELECT id FROM dw_packages p WHERE p.topic_id = t.id ORDER BY version DESC LIMIT 1)
-                      AND COALESCE(s.clip->>'status', '') <> 'ok') AS clips_missing
+                   -- Video topics: the latest version's content (the admin counts its clips).
+                   CASE WHEN t.visual_mode = 'video'
+                        THEN (SELECT content FROM dw_packages p WHERE p.topic_id = t.id ORDER BY version DESC LIMIT 1) END AS latest_content
             FROM dw_topics t
             WHERE t.date >= ?::date AND t.date < ?::date + INTERVAL '1 month'
             ORDER BY t.date
@@ -187,6 +187,12 @@ final class DwStudio
         $r['needs_date_check'] = filter_var($r['needs_date_check'], FILTER_VALIDATE_BOOLEAN);
         $r['published_links'] = json_decode((string) ($r['published_links'] ?? '{}'), true) ?: [];
         $r['visual_mode'] = ($r['visual_mode'] ?? 'image') === 'video' ? 'video' : 'image';
+        if (isset($r['latest_content'])) {
+            $plan = self::slidePlan(json_decode((string) $r['latest_content'], true) ?: []);
+            $r['clip_count'] = count(array_filter($plan, static fn($p) => $p['clip'] !== null));
+            $r['slide_count'] = count($plan);
+            unset($r['latest_content']);
+        }
         return $r;
     }
 
@@ -292,7 +298,7 @@ final class DwStudio
             'date' => $r['date'], 'title' => $r['title'], 'notes' => $r['notes'], 'type' => $r['type'],
             'needs_date_check' => filter_var($r['needs_date_check'], FILTER_VALIDATE_BOOLEAN),
             'status' => $r['status'], 'versions' => (int) $r['versions'],
-            // video: also a "clip_query" on every slide (the system prompt's video rule).
+            // video: also a Commons clip where one fits (the system prompt's clip rule).
             'visual_mode' => $r['visual_mode'] ?? 'image',
         ], $stmt->fetchAll(PDO::FETCH_ASSOC));
         return [
@@ -354,13 +360,13 @@ final class DwStudio
 
     /**
      * The slides a content gives, in order: [{position, kind, text, country?, flag?,
-     * brief, credit, photo_src, clip_query}]. 1 = hook, then one per country, then the outro.
+     * brief, credit, photo_src, clip|null}]. 1 = hook, then one per country, then the outro.
      */
     public static function slidePlan(array $c): array
     {
         $pic = static fn(array $part) => ['brief' => (string) ($part['illustration_brief'] ?? ''),
             'credit' => (string) ($part['photo_credit'] ?? ''), 'photo_src' => (string) ($part['photo_url'] ?? ''),
-            'clip_query' => is_string($part['clip_query'] ?? null) ? trim($part['clip_query']) : ''];
+            'clip' => DwClips::ofPart($part)];
         $plan = [['position' => 1, 'kind' => 'hook', 'text' => (string) ($c['hook']['on_screen_text'] ?? '')] + $pic($c['hook'] ?? [])];
         foreach (array_values($c['slides'] ?? []) as $i => $s) {
             $plan[] = ['position' => $i + 2, 'kind' => 'country', 'text' => (string) ($s['on_screen_text'] ?? ''),
@@ -476,8 +482,15 @@ final class DwStudio
             if ($url === '' && empty($part['illustration_svg'])) {
                 $warn[] = ucfirst($label) . ': no photo, plain background.';
             }
-            if (isset($part['clip_query']) && !is_string($part['clip_query'])) {
-                $errors[] = ucfirst($label) . ': clip_query must be a string.';
+            $clip = is_string($part['clip_url'] ?? null) ? trim($part['clip_url']) : '';
+            if ($clip !== '' && !DwClips::sourceOk($clip)) {
+                $errors[] = ucfirst($label) . ': clip_url must be a video file (webm, ogv, mp4) on https://upload.wikimedia.org.';
+            }
+            if ($clip !== '' && trim((string) ($part['clip_credit'] ?? '')) === '') {
+                $errors[] = ucfirst($label) . ': the clip needs a clip_credit (author and license).';
+            }
+            if (isset($part['clip_start']) && (!is_numeric($part['clip_start']) || $part['clip_start'] < 0)) {
+                $errors[] = ucfirst($label) . ': clip_start must be a number of seconds.';
             }
         }
         return [$errors, $warn];
@@ -572,7 +585,10 @@ final class DwStudio
                 }
             }
             if ($topic['visual_mode'] === 'video') {
-                array_push($warn, ...self::findMissingClips((int) $pkgId));
+                $none = array_filter(self::slidePlan($content), static fn($p) => $p['clip'] === null);
+                if ($none !== []) {
+                    $warn[] = 'Video mode: no clip on slide' . (count($none) > 1 ? 's ' : ' ') . implode(', ', array_column($none, 'position')) . ', their photo is used.';
+                }
             }
             if ($topic['status'] === 'planned') {
                 self::setStatus($topic['id'], 'generated');
@@ -796,91 +812,37 @@ final class DwStudio
     /** Builds the ZIP of a package's slides (01_hook.png …) in a temp file; returns its path. */
     // ── Video clips (topics in video mode) ───────────────────────────────────
 
-    /** Slide $position's clip ({status: ok|none|pending|off, ...DwClips::clip, tried}), or null when never searched. */
-    public static function clipOf(int $packageId, int $position): ?array
-    {
-        $stmt = Database::pdo()->prepare("SELECT clip FROM dw_slides WHERE package_id = ? AND position = ?");
-        $stmt->execute([$packageId, $position]);
-        $clip = $stmt->fetchColumn();
-        return is_string($clip) ? (json_decode($clip, true) ?: null) : null;
-    }
-
-    private static function saveClip(int $packageId, int $position, array $clip): void
-    {
-        Database::pdo()->prepare("UPDATE dw_slides SET clip = ?::jsonb WHERE package_id = ? AND position = ?")
-            ->execute([json_encode($clip, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), $packageId, $position]);
-    }
-
     /**
-     * Searches slide $position's clip from its clip_query, skipping the clips
-     * already tried ("Find another clip" adds the current one to them). Without
-     * a clip the slide keeps its photo. Returns a warning, or null when found.
+     * Sets slide $position's clip (a video file on Commons, the second it starts
+     * at, its credit), or removes it ($url empty: the photo). Saved in the
+     * package, like the photo; the next video render uses it.
      */
-    public static function findClip(int $packageId, int $position, bool $another = false): ?string
+    public static function replaceClip(int $packageId, int $position, string $url, float $start, string $credit): string
     {
         $pkg = self::packageById($packageId);
-        $slide = $pkg !== null ? (self::slidePlan($pkg['content'])[$position - 1] ?? null) : null;
-        if ($slide === null) {
+        if ($pkg === null || !isset(self::slidePlan($pkg['content'])[$position - 1])) {
             throw new InvalidArgumentException('Unknown slide.');
         }
-        $old = self::clipOf($packageId, $position) ?? [];
-        $tried = $old['tried'] ?? [];
-        if ($another && ($old['status'] ?? '') === 'ok') {
-            $tried[] = $old['provider'] . ':' . $old['id'];
-        }
-        $tried = array_values(array_unique($tried));
-        if ($slide['clip_query'] === '') {
-            self::saveClip($packageId, $position, ['status' => 'none', 'reason' => 'no clip_query', 'tried' => $tried]);
-            return "Slide {$position}: no clip_query, its photo is used.";
-        }
-        if (!DwClips::configured()) {
-            self::saveClip($packageId, $position, ['status' => 'pending', 'reason' => 'no PEXELS_API_KEY / PIXABAY_API_KEY', 'tried' => $tried]);
-            return "Slide {$position}: no clip search (PEXELS_API_KEY or PIXABAY_API_KEY is not set), its photo is used.";
-        }
-        try {
-            $clip = DwClips::pick($slide['clip_query'], $tried);
-        } catch (RuntimeException $e) {
-            self::saveClip($packageId, $position, ['status' => 'pending', 'reason' => $e->getMessage(), 'query' => $slide['clip_query'], 'tried' => $tried]);
-            return "Slide {$position}: clip search failed ({$e->getMessage()}), its photo is used until \"Find missing clips\".";
-        }
-        if ($clip === null && $another && ($old['status'] ?? '') === 'ok') {
-            return "Slide {$position}: no other usable clip for \"{$slide['clip_query']}\", this one is kept.";
-        }
-        if ($clip === null) {
-            self::saveClip($packageId, $position, ['status' => 'none', 'reason' => $tried === [] ? 'no usable clip' : 'no other usable clip',
-                'query' => $slide['clip_query'], 'tried' => $tried]);
-            return "Slide {$position}: no usable clip for \"{$slide['clip_query']}\", its photo is used.";
-        }
-        self::saveClip($packageId, $position, ['status' => 'ok'] + $clip + ['tried' => $tried]);
-        return null;
-    }
-
-    /** The photo instead of the clip on slide $position (its clip can be searched again). */
-    public static function dropClip(int $packageId, int $position): void
-    {
-        $old = self::clipOf($packageId, $position) ?? [];
-        $tried = $old['tried'] ?? [];
-        if (($old['status'] ?? '') === 'ok') {
-            $tried[] = $old['provider'] . ':' . $old['id'];
-        }
-        self::saveClip($packageId, $position, ['status' => 'off', 'reason' => 'photo chosen', 'tried' => array_values(array_unique($tried))]);
-    }
-
-    /** Searches every slide without a clip (never searched, or pending after a refusal). Returns the warnings. */
-    public static function findMissingClips(int $packageId): array
-    {
-        $pkg = self::packageById($packageId);
-        $warn = [];
-        foreach ($pkg !== null ? self::slidePlan($pkg['content']) : [] as $slide) {
-            $status = self::clipOf($packageId, $slide['position'])['status'] ?? null;
-            if ($status === null || $status === 'pending') {
-                $w = self::findClip($packageId, $slide['position']);
-                if ($w !== null) {
-                    $warn[] = $w;
-                }
+        $url = trim($url);
+        $c = $pkg['content'];
+        $ref = &self::part($c, $position);
+        if ($url === '') {
+            unset($ref['clip_url'], $ref['clip_start'], $ref['clip_credit']);
+        } else {
+            if (!DwClips::sourceOk($url)) {
+                throw new InvalidArgumentException('The clip must be a video file (webm, ogv, mp4) on https://upload.wikimedia.org.');
             }
+            if (trim($credit) === '') {
+                throw new InvalidArgumentException('A clip needs its credit (author and license).');
+            }
+            $ref['clip_url'] = DwClips::clean($url);
+            $ref['clip_start'] = max(0, round($start, 1));
+            $ref['clip_credit'] = trim($credit);
         }
-        return $warn;
+        unset($ref);
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
+        return $url === '' ? "Slide {$position}: photo used." : "Slide {$position}: clip saved (render the video again).";
     }
 
     public static function zip(int $packageId): string
@@ -938,15 +900,13 @@ final class DwStudio
             return null;
         }
         $slides = [];
-        $video = $topic['visual_mode'] === 'video';
         foreach (self::slides($pkg['id']) as $r) {
-            $clip = $video && is_string($r['clip'] ?? null) ? json_decode($r['clip'], true) : null;
-            $slides[(int) $r['position']] = ['photoUrl' => $r['photo_url'], 'pngUrl' => $r['png_url'], 'svgUrl' => $r['svg_url'],
-                // The clip behind the slide (video mode), with its credit line; null: the photo.
-                'clip' => ($clip['status'] ?? '') === 'ok' ? $clip + ['credit' => DwClips::credit($clip)] : null];
+            $slides[(int) $r['position']] = ['photoUrl' => $r['photo_url'], 'pngUrl' => $r['png_url'], 'svgUrl' => $r['svg_url']];
         }
+        // The clips play only in video mode (a package keeps them when its topic switches back).
+        $video = $topic['visual_mode'] === 'video';
         $cta = self::settings()['outro_cta'];
-        $plan = array_map(static fn($p) => $p + ($slides[$p['position']] ?? []) + ($p['kind'] === 'outro' ? ['cta' => $cta] : []),
+        $plan = array_map(static fn($p) => ['clip' => $video ? $p['clip'] : null] + $p + ($slides[$p['position']] ?? []) + ($p['kind'] === 'outro' ? ['cta' => $cta] : []),
             self::slidePlan($pkg['content']));
         return ['date' => $topic['date'], 'title' => $topic['title'], 'version' => $pkg['version'], 'visualMode' => $topic['visual_mode'],
                 'content' => $pkg['content'], 'slides' => $plan, 'videoUrl' => $pkg['video_url'] ?? null];

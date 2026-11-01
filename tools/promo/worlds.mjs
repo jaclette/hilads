@@ -4,17 +4,18 @@
 // uploads it to that package (the topic page shows it, with a download).
 // --file renders a package file before it is imported (photos from Commons),
 // and never uploads. Needs .env: API_URL, PROMO_TOKEN (the Daily promo's).
-// A topic in video mode: each slide's stock clip (chosen in the admin) plays
-// full-frame behind it, downloaded once into .cache/clips (kept between runs,
-// a clip unused for 30 days is deleted); a slide without one shows its photo
-// full-frame.
+// A topic in video mode: a slide's Commons clip (clip_url, from clip_start)
+// plays in the photo's square, downloaded once into .cache/clips (kept between
+// runs, a clip unused for 30 days is deleted); a slide without one shows its photo.
 
 import { cp, mkdir, readFile, readdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { renderMedia, selectComposition } from '@remotion/renderer';
+import { getVideoMetadata, renderMedia, selectComposition } from '@remotion/renderer';
+import { clipRate } from './src/worldsTiming.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
@@ -51,17 +52,18 @@ async function download(url, file) {
   await writeFile(file, Buffer.from(await res.arrayBuffer()));
 }
 
-// Stock clips, by provider, id and size: downloaded once, reused by every render.
+// Clips, by URL: downloaded once, reused by every render.
 const clipCache = path.join(here, '.cache', 'clips');
 const CLIP_KEEP_DAYS = 30;
 
 /** The cached file of a clip (downloaded when missing, its date refreshed when used). */
-async function cachedClip(clip) {
+async function cachedClip(url) {
   await mkdir(clipCache, { recursive: true });
-  const file = path.join(clipCache, `${clip.provider}-${clip.id}-${clip.width}x${clip.height}.mp4`);
+  const ext = path.extname(new URL(url).pathname).toLowerCase() || '.webm';
+  const file = path.join(clipCache, createHash('sha1').update(url).digest('hex').slice(0, 16) + ext);
   if (!existsSync(file)) {
-    process.stdout.write(`  clip ${clip.provider} ${clip.id} (${clip.width}×${clip.height})… `);
-    await download(clip.file_url, `${file}.part`);
+    process.stdout.write(`  clip ${decodeURIComponent(path.basename(new URL(url).pathname)).slice(0, 60)}… `);
+    await download(url, `${file}.part`);
     await cp(`${file}.part`, file);
     await rm(`${file}.part`, { force: true });
     console.log(`${((await stat(file)).size / 1e6).toFixed(1)} MB`);
@@ -90,7 +92,8 @@ function flagFile(flag) {
 
 /** The slides as the API's plan gives them: [{position, kind, text, country, flag, credit, photo_src, photoUrl?}]. */
 function planFromContent(c) {
-  const pic = (p) => ({ credit: p?.photo_credit ?? '', photo_src: p?.photo_url ?? '' });
+  const clip = (p) => (p?.clip_url ? { url: p.clip_url, start: Number(p.clip_start ?? 0), credit: p.clip_credit ?? '' } : null);
+  const pic = (p) => ({ credit: p?.photo_credit ?? '', photo_src: p?.photo_url ?? '', clip: clip(p) });
   return [
     { position: 1, kind: 'hook', text: c.hook?.on_screen_text ?? '', ...pic(c.hook) },
     ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: s.on_screen_text, country: s.country, flag: s.flag, ...pic(s) })),
@@ -121,23 +124,29 @@ async function main() {
   await cp(path.join(repo, 'backend/api/assets/flags'), path.join(pub, 'flags'), { recursive: true });
   await cp(path.join(repo, 'backend/api/assets/logo.svg'), path.join(pub, 'logo.svg'));
 
-  const video = data.visualMode === 'video';
   await mkdir(path.join(pub, 'clips'), { recursive: true });
   const slides = [];
+  let clips = 0;
   for (const s of data.slides) {
+    // The slide's clip (the API sends it in video mode only; a package file always), else its photo.
     let clip = null;
-    if (video && s.clip?.file_url) {
+    if (s.clip?.url) {
       try {
-        const name = `clips/${String(s.position).padStart(2, '0')}.mp4`;
-        await cp(await cachedClip(s.clip), path.join(pub, name));
-        clip = { src: name, rate: s.clip.rate ?? 1, start: s.clip.start ?? 0 };
+        const file = await cachedClip(s.clip.url);
+        const name = `clips/${String(s.position).padStart(2, '0')}${path.extname(file)}`;
+        await cp(file, path.join(pub, name));
+        const { durationInSeconds } = await getVideoMetadata(file);
+        const start = Math.min(Math.max(0, s.clip.start ?? 0), Math.max(0, durationInSeconds - 1));
+        const rate = clipRate(durationInSeconds - start, s.kind);
+        if (rate === null) throw new Error(`only ${(durationInSeconds - start).toFixed(1)} s from ${start} s`);
+        clip = { src: name, start, rate };
+        clips++;
       } catch (e) {
-        console.warn(`  slide ${s.position}: clip not downloaded (${e.message}), photo instead`);
+        console.warn(`  slide ${s.position}: clip not used (${e.message}), photo instead`);
       }
     }
     // The API's square crop when the package is imported, else the source photo (cropped by the frame).
-    // Video mode: the source photo, shown full-frame (the square crop would be too small).
-    const src = clip ? null : (video ? (s.photo_src || s.photoUrl) : (s.photoUrl || s.photo_src)) || null;
+    const src = clip ? null : (s.photoUrl || s.photo_src || null);
     let photo = null;
     if (src) {
       photo = `photos/${String(s.position).padStart(2, '0')}${path.extname(new URL(src).pathname).toLowerCase() || '.jpg'}`;
@@ -149,10 +158,11 @@ async function main() {
       }
     }
     slides.push({ kind: s.kind, text: s.text, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
-                  credit: clip ? s.clip.credit : (s.credit ?? ''), photo, clip, full: video,
+                  credit: clip ? s.clip.credit : (s.credit ?? ''), photo, clip,
                   cta: s.kind === 'outro' ? (s.cta ?? '') : null });
   }
-  if (video) await pruneClips();
+  if (clips) console.log(`  ${clips} clip${clips > 1 ? 's' : ''}`);
+  await pruneClips();
 
   console.log(`  ${slides.length} slides, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });

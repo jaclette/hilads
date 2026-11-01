@@ -91,6 +91,29 @@ final class DwStudioTest extends TestCase
         $this->assertNull(DwStudio::editTarget($c, 'model'));
     }
 
+    public function testClipRules(): void
+    {
+        $url = 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Parade.webm';
+        $c = $this->content();
+        $c['slides'][0] += ['clip_url' => $url . '?utm_source=commons.wikimedia.org', 'clip_start' => 6, 'clip_credit' => 'Video: A, CC BY-SA 4.0, Wikimedia Commons'];
+        [$errors] = DwStudio::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $plan = DwStudio::slidePlan($c);
+        $this->assertSame(['url' => $url, 'start' => 6.0, 'credit' => 'Video: A, CC BY-SA 4.0, Wikimedia Commons',
+                           'page' => 'https://commons.wikimedia.org/wiki/File:Parade.webm'], $plan[1]['clip']);
+        $this->assertNull($plan[0]['clip']);
+
+        $bad = $this->content();
+        $bad['slides'][0] += ['clip_url' => 'https://example.com/a.webm', 'clip_credit' => 'Video: C'];
+        $bad['slides'][1] += ['clip_url' => $url];   // no credit
+        $bad['slides'][2] += ['clip_url' => $url, 'clip_credit' => 'Video: B', 'clip_start' => -1];
+        [$errors] = DwStudio::validate($bad, ['Vietnam']);
+        $this->assertCount(3, $errors);
+
+        $this->assertSame('https://commons.wikimedia.org/wiki/File:Parade.webm',
+            DwClips::pageUrl('https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c3/Parade.webm/Parade.webm.1080p.vp9.webm'));
+    }
+
     public function testPhotoRules(): void
     {
         $c = $this->content();
