@@ -939,6 +939,9 @@ export interface DailyProof {
   thumbUrl:         string | null;
   selfieUrl?:       string | null;    // dual photo: the selfie shown as an inset (absent: an older API)
   selfieThumbUrl?:  string | null;
+  /** Thumbhash placeholders (base64), drawn while the photo / selfie loads (absent: an older API, not computed yet). */
+  thumbHash?:       string | null;
+  selfieThumbHash?: string | null;
   caption:          string | null;
   price:            DailyPrice | null;
   /** The proof's currency, with or without a price (its city's by default). */

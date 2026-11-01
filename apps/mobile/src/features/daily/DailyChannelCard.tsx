@@ -54,7 +54,7 @@ type ProofPayload = {
   user: DailyPerson; isLocal: boolean; city: { id: number; name: string; country?: string | null } | null;
   photoUrl: string; thumbUrl: string | null; caption: string | null;
   /** Dual photo (absent on older cards and single photos). */
-  selfieUrl?: string | null; selfieThumbUrl?: string | null;
+  selfieUrl?: string | null; selfieThumbUrl?: string | null; thumbHash?: string | null; selfieThumbHash?: string | null;
   isEarly?: boolean;
   /** V3-09 (absent on older cards). */
   theme?: { key: DailyThemeKey; name: string } | null;
@@ -315,8 +315,8 @@ function ProofCard({ message, reactions, time, longPress }: {
         </View>
         {/* Dual photo: tap the selfie inset to swap (the rest of the card opens the photo). */}
         {p.selfieUrl
-          ? <DualPhoto card main={{ uri: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} style={styles.photo} />
-          : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
+          ? <DualPhoto card main={{ uri: p.photoUrl, thumb: p.thumbUrl, hash: p.thumbHash }} selfie={selfieOf(p)} style={styles.photo} />
+          : <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (
           <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>

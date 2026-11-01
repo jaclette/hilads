@@ -64,7 +64,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
     <Modal visible={shown} animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen" statusBarTranslucent navigationBarTranslucent>
       <View style={styles.wrap} testID="proof-viewer">
       {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
-      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
+      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
       <View style={[StyleSheet.absoluteFill, styles.shade]} />
       <SafeAreaView style={styles.flex}>
         {/* Below the status bar / notch (an absolute child ignores the safe area's padding). */}
@@ -72,7 +72,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
         {/* Pulling down past the top (iOS bounce) closes it like a swipe-down modal; Android back closes it too. */}
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}
                     onScrollEndDrag={e => { if (e.nativeEvent.contentOffset.y < -70) onClose(); }}>
-        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} contentFit="contain"
+        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} contentFit="contain"
                    style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
                    onLoadMain={s => { if (s.width && s.height) setRatio(s.width / s.height); }} />
         <View style={styles.meta}>

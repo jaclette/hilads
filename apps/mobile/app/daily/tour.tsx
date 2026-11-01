@@ -145,7 +145,7 @@ export default function TourScreen() {
                  onLongPress={() => setPaused(true)} onPressOut={() => setPaused(false)} delayLongPress={250}
                  accessibilityRole="button" accessibilityLabel={t('tour.next')} />
       {!last && proof
-        ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
+        ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                      transition={120} insetTop={insets.top + 64} onInteract={setInteracting} />
         // In a View: expo-image ignores pointerEvents on Android, and would take the tap zones' touches.
         : cover && <View style={StyleSheet.absoluteFill} pointerEvents="none"><Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" transition={120} /></View>}

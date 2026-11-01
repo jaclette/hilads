@@ -15,6 +15,7 @@ import { hasUnseen, isSeen, useSeen } from '../daily/seen'
 import WorldTourViewer from '../daily/WorldTour'
 import { isEventDay, useSeasonal, useSeasonalLive } from '../event/seasonal'
 import { thumbUrl } from '../../lib/imageThumb'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 const CIRCLE = 64
 const RING = 3
@@ -344,8 +345,8 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
       {pile && <PileSheet proof={n > 1 ? at(1) : null} color={pileColor} />}
       <span className="tc-tile" ref={topRef}>
         <span className="tc-photo-box">
-          <img className="tc-photo" src={thumbUrl(p.thumbUrl || p.photoUrl)} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" draggable={false} />
-          {p.selfieUrl && <img className="dp-mini" src={thumbUrl(p.selfieThumbUrl ?? p.selfieUrl)} alt="" draggable={false} />}
+          <img className="tc-photo" src={thumbUrl(p.thumbUrl || p.photoUrl)} style={placeholderStyle(p.thumbHash)} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" draggable={false} />
+          {p.selfieUrl && <img loading="lazy" className="dp-mini" src={thumbUrl(p.selfieThumbUrl ?? p.selfieUrl)} style={placeholderStyle(p.selfieThumbHash)} alt="" draggable={false} />}
           {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
           {(pile || badge) && (
             <span className="tc-corner">
@@ -391,7 +392,7 @@ function PileSheet({ proof, color, back2 = false }) {
   return (
     <span className={`tc-layer ${back2 ? 'tc-layer--back2' : 'tc-layer--back'}${proof ? ' tc-layer--photo' : ''}`}
           style={proof ? { borderColor: color } : { background: color }} aria-hidden="true">
-      {proof && <img className="tc-photo" src={thumbUrl(proof.thumbUrl || proof.photoUrl)} alt="" loading="lazy" draggable={false} />}
+      {proof && <img className="tc-photo" src={thumbUrl(proof.thumbUrl || proof.photoUrl)} style={placeholderStyle(proof.thumbHash)} alt="" loading="lazy" draggable={false} />}
     </span>
   )
 }
@@ -506,7 +507,7 @@ export function YesterdayRecap({ today }) {
       </div>
       <button type="button" className="tc-recap" onClick={watch}>
         <span className="tc-recap-photo">
-          <img src={thumbUrl(win.proof.thumbUrl || win.proof.photoUrl)} onError={thumbFallback(win.proof.photoUrl)} alt="" loading="lazy" />
+          <img src={thumbUrl(win.proof.thumbUrl || win.proof.photoUrl)} style={placeholderStyle(win.proof.thumbHash)} onError={thumbFallback(win.proof.photoUrl)} alt="" loading="lazy" />
           {win.podium === 1 && <span className="tc-recap-medal"><RankMedal rank={1} size={22} /></span>}
         </span>
         <span className="tc-recap-body">

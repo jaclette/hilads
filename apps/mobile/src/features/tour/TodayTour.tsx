@@ -78,7 +78,7 @@ export function TodayTour({ today, refreshKey }: { today: DailyToday | null; ref
       <TouchableOpacity style={styles.row} onPress={open} activeOpacity={0.85} accessibilityRole="button" testID="yesterday-recap"
                         accessibilityLabel={[t('recap.label'), question, shortCityName(win.city.name), answer].filter(Boolean).join(', ')}>
         <View>
-          <Photo thumb={win.proof.thumbUrl} full={win.proof.photoUrl} style={styles.thumb} contentFit="cover" transition={150} />
+          <Photo thumb={win.proof.thumbUrl} full={win.proof.photoUrl} hash={win.proof.thumbHash} style={styles.thumb} contentFit="cover" transition={150} />
           {win.podium === 1 && <RankMedal rank={1} size={24} style={styles.medal} />}
         </View>
         <View style={styles.body}>

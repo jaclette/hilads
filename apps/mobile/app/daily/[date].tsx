@@ -319,7 +319,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
           {myProof && (
             <View style={styles.cardRow}>
               <TouchableOpacity onPress={() => setViewing(myProof)} accessibilityRole="button">
-                <Photo thumb={myProof.thumbUrl} full={myProof.photoUrl} style={styles.thumb} contentFit="cover" />
+                <Photo thumb={myProof.thumbUrl} full={myProof.photoUrl} hash={myProof.thumbHash} style={styles.thumb} contentFit="cover" />
               </TouchableOpacity>
               <View style={styles.flex}>
                 <View style={styles.row}>
@@ -345,7 +345,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
           {/* 4. My city: its top photo, or be its first. */}
           {cityShort && (mine?.top ? (
             <TouchableOpacity style={styles.cardRow} onPress={() => seeAll(myCountry)} accessibilityRole="button" testID="challenge-my-city">
-              <Photo thumb={mine.top.thumbUrl} full={mine.top.photoUrl} style={styles.thumb} contentFit="cover" />
+              <Photo thumb={mine.top.thumbUrl} full={mine.top.photoUrl} hash={mine.top.thumbHash} style={styles.thumb} contentFit="cover" />
               <View style={styles.flex}>
                 <Text style={styles.rowTitle} numberOfLines={1}>{t('myCity.in', { city: cityShort, count: mine.count })}</Text>
                 {(mine.top.answer && !mine.top.backHome) || mine.top.caption ? (

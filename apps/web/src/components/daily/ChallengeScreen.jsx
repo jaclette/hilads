@@ -18,6 +18,7 @@ import {
   StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofViewer, useHere, getLastToday, SheetSkeleton, challengeCover,
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 /**
  * A Daily Challenge on the web (the app's /daily/[date]), made to make people
@@ -245,7 +246,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
           {/* My photo (posted from the app): its status. */}
           {myProof && (
             <button type="button" className="dch-row" onClick={() => setViewing(myProof)}>
-              <img className="dch-thumb" src={thumbUrl(myProof.thumbUrl || myProof.photoUrl)} onError={thumbFallback(myProof.photoUrl)} alt="" loading="lazy" />
+              <img className="dch-thumb" src={thumbUrl(myProof.thumbUrl || myProof.photoUrl)} style={placeholderStyle(myProof.thumbHash)} onError={thumbFallback(myProof.photoUrl)} alt="" loading="lazy" />
               <span className="dch-row-body">
                 <span className="dch-row-title">{t('yourProof')} <StatusChip status={myProof.status} /></span>
                 {myProof.status === 'pending' && <span className="dc-muted">{t('pendingHint')}</span>}
@@ -257,7 +258,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
           {/* 4. My city: its top photo, or be its first. */}
           {cityShort && (mine?.top ? (
             <button type="button" className="dch-row" onClick={() => seeAll(myCountry)}>
-              <img className="dch-thumb" src={thumbUrl(mine.top.thumbUrl || mine.top.photoUrl)} onError={thumbFallback(mine.top.photoUrl)} alt="" loading="lazy" />
+              <img className="dch-thumb" src={thumbUrl(mine.top.thumbUrl || mine.top.photoUrl)} style={placeholderStyle(mine.top.thumbHash)} onError={thumbFallback(mine.top.photoUrl)} alt="" loading="lazy" />
               <span className="dch-row-body">
                 <span className="dch-row-title">{t('myCity.in', { city: cityShort, count: mine.count })}</span>
                 {(mine.top.answer && !mine.top.backHome) || mine.top.caption

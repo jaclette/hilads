@@ -4699,6 +4699,15 @@ $router->add('POST', '/api/v1/uploads', function () {
     $thumbTmp = ImageProcessor::generateAvatarThumbnail($cleanPath, $mimeType);
     // The WebP sizes the apps load (cards, full screen), ready before the first view.
     R2Uploader::putVariants($cleanPath, $mimeType, $filename, ['thumb', 'medium']);
+    // Its placeholder (thumbhash), picked up by the proof made with it.
+    $hash = ImageProcessor::thumbhash($cleanPath, $mimeType);
+    if ($hash !== null) {
+        try {
+            Database::pdo()->prepare("INSERT INTO image_hashes (name, hash) VALUES (?, ?) ON CONFLICT (name) DO NOTHING")->execute([$filename, $hash]);
+        } catch (\Throwable $e) {
+            error_log('[uploads] hash not saved: ' . $e->getMessage());
+        }
+    }
     @unlink($cleanPath);
     if ($thumbTmp !== null) {
         try {

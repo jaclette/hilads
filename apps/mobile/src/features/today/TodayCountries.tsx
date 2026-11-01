@@ -308,8 +308,8 @@ function CityCard({ group, onPress, pileColor, badge, faded = false }: {
           <View style={styles.card}>
             <View style={styles.photo}>
               {p.selfieUrl
-                ? <DualPhoto main={{ uri: p.thumbUrl ?? p.photoUrl }} selfie={selfieOf(p)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
-                : <Photo thumb={p.thumbUrl} full={p.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
+                ? <DualPhoto main={{ uri: p.thumbUrl ?? p.photoUrl, hash: p.thumbHash }} selfie={selfieOf(p)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
+                : <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
               {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
               {(pile || !!badge) && (
                 <View style={styles.corner} pointerEvents="none">

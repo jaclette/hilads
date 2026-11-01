@@ -47,8 +47,8 @@ export default function MyPhotosScreen() {
             <TouchableOpacity onPress={() => router.push(`/daily/${item.date}?proof=${item.id}` as never)} accessibilityRole="button"
                               accessibilityLabel={[item.city?.name, item.caption].filter(Boolean).join(', ')}>
               {item.selfieUrl
-                ? <DualPhoto main={{ uri: item.thumbUrl ?? item.photoUrl }} selfie={selfieOf(item)} style={[styles.photo, { width: size, height: size }]} inset="small" interactive={false} />
-                : <Photo thumb={item.thumbUrl} full={item.photoUrl} style={[styles.photo, { width: size, height: size }]} contentFit="cover" />}
+                ? <DualPhoto main={{ uri: item.thumbUrl ?? item.photoUrl, hash: item.thumbHash }} selfie={selfieOf(item)} style={[styles.photo, { width: size, height: size }]} inset="small" interactive={false} />
+                : <Photo thumb={item.thumbUrl} full={item.photoUrl} hash={item.thumbHash} style={[styles.photo, { width: size, height: size }]} contentFit="cover" />}
             </TouchableOpacity>
           )}
         />

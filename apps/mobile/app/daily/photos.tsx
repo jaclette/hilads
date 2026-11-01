@@ -324,11 +324,11 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
 
   return (
     <View style={{ height }}>
-      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
+      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
       <View style={[StyleSheet.absoluteFill, styles.blurShade]} />
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} accessibilityRole="image"
                  accessibilityLabel={[name, proof.city?.name, title].filter(Boolean).join(', ')} accessibilityHint={t('feed.doubleTap')}>
-        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
+        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                    contentFit="contain" insetTop={insetTop} />
       </Pressable>
       <Animated.View pointerEvents="none" style={[styles.burst, {

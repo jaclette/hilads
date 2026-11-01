@@ -34,8 +34,8 @@ export function DailyProofTile({ proof, onPress, compact = false, mainAnswer = n
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
       {proof.selfieUrl
-        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
-        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
+        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
+        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
       {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
       <View style={styles.meta}>
         <View style={styles.nameRow}>
@@ -81,8 +81,8 @@ function CompactTile({ proof, onPress, mainAnswer }: { proof: DailyProof; onPres
     <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button"
                       accessibilityLabel={[name, answer ? answerText(answer, i18n.language) : null, proof.caption].filter(Boolean).join(', ')}>
       {proof.selfieUrl
-        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
-        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} style={styles.photo} contentFit="cover" transition={150} />}
+        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
+        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
       {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
       <View style={styles.meta}>
         <View style={styles.compactRow}>

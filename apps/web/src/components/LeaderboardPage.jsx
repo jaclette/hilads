@@ -325,7 +325,7 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
         style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
       >
         {entry.thumbAvatarUrl
-          ? <img src={thumbUrl(entry.thumbAvatarUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? <img loading="lazy" src={thumbUrl(entry.thumbAvatarUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : (entry.displayName || '?')[0].toUpperCase()}
       </span>
       <span className="leaderboard-name-block">

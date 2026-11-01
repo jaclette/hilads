@@ -15,6 +15,7 @@ import {
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
 import { thumbUrl } from '../../lib/imageThumb'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 /** The server lists at most 50 photos per call. */
 const BATCH = 50
@@ -143,8 +144,8 @@ function CompactTile({ proof, mainAnswer, onOpen }) {
   return (
     <div className="dc-ctile">
       <button type="button" className="dc-ctile-photo" onClick={onOpen} aria-label={personName(proof.user)}>
-        <img src={thumbUrl(proof.thumbUrl || proof.photoUrl)} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
-        {proof.selfieUrl && <img className="dp-mini" src={thumbUrl(proof.selfieThumbUrl ?? proof.selfieUrl)} alt="" />}
+        <img src={thumbUrl(proof.thumbUrl || proof.photoUrl)} style={placeholderStyle(proof.thumbHash)} onError={thumbFallback(proof.photoUrl)} alt="" loading="lazy" />
+        {proof.selfieUrl && <img loading="lazy" className="dp-mini" src={thumbUrl(proof.selfieThumbUrl ?? proof.selfieUrl)} style={placeholderStyle(proof.selfieThumbHash)} alt="" />}
       </button>
       <div className="dc-ctile-meta">
         <div className="dc-ctile-name">

@@ -84,7 +84,7 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thumbs}>
                 {stats.bestProofs.map(p => (
                   <TouchableOpacity key={p.id} onPress={() => setViewing(p)} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
-                    <Photo thumb={p.thumbUrl} full={p.photoUrl} style={styles.thumb} contentFit="cover" />
+                    <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={styles.thumb} contentFit="cover" />
                     {p.worldRank !== null && p.worldRank <= 3 && <RankMedal rank={p.worldRank} size={22} style={styles.medal} />}
                   </TouchableOpacity>
                 ))}

@@ -153,8 +153,10 @@ final class DailyProofRepository
                 place_id, distance_m,
                 answer_text, answer_number, answer_minutes,
                 home_city_id, home_city_name, home_country, home_answer_text, home_answer_number, home_answer_minutes,
-                home_price_amount, home_price_currency, home_line
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                home_price_amount, home_price_currency, home_line, photo_hash, selfie_hash
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                      (SELECT hash FROM image_hashes WHERE name = substring(?::text from '[^/]+$')),
+                      (SELECT hash FROM image_hashes WHERE name = substring(?::text from '[^/]+$')))
             ON CONFLICT DO NOTHING
             RETURNING id
         ");
@@ -178,6 +180,9 @@ final class DailyProofRepository
             $fields['place_id'] ?? null,
             $fields['distance_m'] ?? null,
             ...array_map(static fn(string $c) => $fields[$c] ?? null, self::COMPARE_COLUMNS),
+            // The placeholders, computed at upload (image_hashes); else the tick fills them.
+            $fields['photo_url'],
+            $fields['selfie_url'] ?? null,
         ]);
         $id = $stmt->fetchColumn();
         return $id === false ? null : self::findById((string) $id);
@@ -197,6 +202,13 @@ final class DailyProofRepository
                 $args[] = $fields[$col];
             }
         }
+        // A new photo or selfie: its placeholder from the upload (else the tick fills it).
+        foreach (['photo_url' => 'photo_hash', 'selfie_url' => 'selfie_hash'] as $col => $hashCol) {
+            if (array_key_exists($col, $fields)) {
+                $sets[] = "$hashCol = (SELECT hash FROM image_hashes WHERE name = substring(?::text from '[^/]+$'))";
+                $args[] = $fields[$col];
+            }
+        }
         $sets[] = "moderation_status = 'pending'";
         $sets[] = "approved_at = NULL";
         $sets[] = "rejection_reason = NULL";
@@ -208,6 +220,80 @@ final class DailyProofRepository
             ->prepare("UPDATE daily_proofs SET " . implode(', ', $sets) . " WHERE id = ?")
             ->execute($args);
         return self::findById($id);
+    }
+
+    /**
+     * Placeholders still missing (any insert path: spots, back office, demo, older
+     * photos): first copied from image_hashes, then up to $limit computed from
+     * the photo's thumbnail on R2, the most recent first. Never throws.
+     */
+    public static function fillHashes(int $limit = 30): array
+    {
+        $out = ['copied' => 0, 'computed' => 0, 'failed' => 0];
+        try {
+            $pdo = Database::pdo();
+            foreach (['photo' => 'photo_url', 'selfie' => 'selfie_url'] as $kind => $col) {
+                $out['copied'] += $pdo->exec("
+                    UPDATE daily_proofs p SET {$kind}_hash = h.hash
+                    FROM image_hashes h
+                    WHERE p.{$kind}_hash IS NULL AND p.{$col} IS NOT NULL AND h.name = substring(p.{$col} from '[^/]+$')
+                ") ?: 0;
+            }
+            $rows = $pdo->query("
+                SELECT id, photo_url, selfie_url, photo_hash IS NULL AS need_photo, (selfie_url IS NOT NULL AND selfie_hash IS NULL) AS need_selfie
+                FROM daily_proofs
+                WHERE photo_hash IS NULL OR (selfie_url IS NOT NULL AND selfie_hash IS NULL)
+                ORDER BY created_at DESC
+                LIMIT " . max(1, $limit))->fetchAll(PDO::FETCH_ASSOC);
+            $save = $pdo->prepare("INSERT INTO image_hashes (name, hash) VALUES (?, ?) ON CONFLICT (name) DO NOTHING");
+            foreach ($rows as $r) {
+                foreach (['photo' => 'photo_url', 'selfie' => 'selfie_url'] as $kind => $col) {
+                    if (!self::bool($r["need_{$kind}"])) {
+                        continue;
+                    }
+                    $hash = self::hashOfUrl((string) $r[$col]);
+                    // A photo that can't be read gets '' so it isn't retried every tick.
+                    $pdo->prepare("UPDATE daily_proofs SET {$kind}_hash = ? WHERE id = ?")->execute([$hash ?? '', $r['id']]);
+                    if ($hash !== null) {
+                        $save->execute([basename((string) parse_url((string) $r[$col], PHP_URL_PATH)), $hash]);
+                        $out['computed']++;
+                    } else {
+                        $out['failed']++;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[proof-hashes] ' . $e->getMessage());
+            $out['error'] = $e->getMessage();
+        }
+        return $out;
+    }
+
+    /** The thumbhash of a stored photo, from its smallest stored size on R2 (else the image itself). */
+    private static function hashOfUrl(string $url): ?string
+    {
+        $name = basename((string) parse_url($url, PHP_URL_PATH));
+        $base = pathinfo($name, PATHINFO_FILENAME);
+        $tries = preg_match('/^[a-f0-9]{32}$/', $base)
+            ? [R2Uploader::publicUrl("thumb_{$base}.webp"), R2Uploader::publicUrl("thumb_{$base}.jpg"), $url]
+            : [$url];
+        foreach ($tries as $u) {
+            $bytes = @file_get_contents($u, false, stream_context_create(['http' => ['timeout' => 10]]));
+            if ($bytes === false || $bytes === '') {
+                continue;
+            }
+            $tmp = tempnam(sys_get_temp_dir(), 'ph_');
+            file_put_contents($tmp, $bytes);
+            try {
+                $hash = ImageProcessor::thumbhash($tmp, (new finfo(FILEINFO_MIME_TYPE))->file($tmp) ?: 'image/jpeg');
+            } finally {
+                @unlink($tmp);
+            }
+            if ($hash !== null) {
+                return $hash;
+            }
+        }
+        return null;
     }
 
     /** Hard delete: votes, results and points cascade (points reversed by trigger). */
@@ -642,6 +728,9 @@ final class DailyProofRepository
             // Never a spot's cover or a map pin: those stay on photo_url.
             'selfieUrl'        => $row['selfie_url'] ?? null,
             'selfieThumbUrl'   => ($row['selfie_url'] ?? null) !== null ? R2Uploader::thumbProxy($row['selfie_url']) : null,
+            // Thumbhash placeholders (base64), drawn while the photo / selfie loads; null until computed.
+            'thumbHash'        => ($row['photo_hash'] ?? null) ?: null,
+            'selfieThumbHash'  => ($row['selfie_url'] ?? null) !== null ? (($row['selfie_hash'] ?? null) ?: null) : null,
             'caption'          => $row['caption'],
             // amount and currency, plus eur: the amount in EUR (SPEC 10.5; null before the first rates).
             'price'            => $row['price_amount'] !== null

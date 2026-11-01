@@ -192,7 +192,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
                   {n.body && <span className="notif-body-text">{n.body}</span>}
                   <span className="notif-time">{timeAgo(n.created_at)}</span>
                 </div>
-                {n.data?.photoThumb && <img className="notif-thumb" src={thumbUrl(n.data.photoThumb)} alt="" />}
+                {n.data?.photoThumb && <img loading="lazy" className="notif-thumb" src={thumbUrl(n.data.photoThumb)} alt="" />}
                 {!n.is_read && <span className="notif-unread-dot" />}
               </button>
             ))}

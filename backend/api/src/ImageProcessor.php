@@ -37,6 +37,50 @@ class ImageProcessor
         'c1000'  => ['thumb_c1000_', 1000, true,  78, 65],   // hero covers, older apps
     ];
 
+    /**
+     * A photo's placeholder: its thumbhash (base64, ~25 bytes), a blurred
+     * preview the apps draw while it loads; null when the image can't be read.
+     */
+    public static function thumbhash(string $srcPath, string $srcMime): ?string
+    {
+        $img = match ($srcMime) {
+            'image/jpeg' => @imagecreatefromjpeg($srcPath),
+            'image/png'  => @imagecreatefrompng($srcPath),
+            'image/webp' => @imagecreatefromwebp($srcPath),
+            default      => false,
+        };
+        if (!$img) {
+            return null;
+        }
+        // At most 100 px: thumbhash keeps a handful of colours, more pixels only cost time.
+        $w = imagesx($img);
+        $h = imagesy($img);
+        $scale = min(1, 100 / max($w, $h));
+        $small = imagescale($img, max(1, (int) round($w * $scale)), max(1, (int) round($h * $scale)), IMG_BILINEAR_FIXED);
+        imagedestroy($img);
+        if ($small === false) {
+            return null;
+        }
+        $w = imagesx($small);
+        $h = imagesy($small);
+        $rgba = [];
+        for ($y = 0; $y < $h; $y++) {
+            for ($x = 0; $x < $w; $x++) {
+                $c = imagecolorat($small, $x, $y);
+                $rgba[] = ($c >> 16) & 0xFF;
+                $rgba[] = ($c >> 8) & 0xFF;
+                $rgba[] = $c & 0xFF;
+                $rgba[] = 255 - ((($c >> 24) & 0x7F) << 1);   // GD alpha: 0 opaque … 127 transparent
+            }
+        }
+        imagedestroy($small);
+        try {
+            return \Thumbhash\Thumbhash::convertHashToString(\Thumbhash\Thumbhash::RGBAToHash($w, $h, $rgba));
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
     /** The R2 name of a size of the upload <base> (its 32 hex chars). */
     public static function variantName(string $key, string $base, bool $webp): string
     {

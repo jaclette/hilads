@@ -25,7 +25,7 @@ import { mediumUrl, proxyFor, thumbUrl } from '@/lib/imageThumb';
  *   else the medium size over the thumbnail; the original only if it fails.
  */
 
-export interface PhotoSource { uri: string; thumb?: string | null }
+export interface PhotoSource { uri: string; thumb?: string | null; /** Thumbhash placeholder. */ hash?: string | null }
 
 const SWAP_MS = 250;
 const MARGIN = 10;
@@ -220,7 +220,7 @@ export function DualPhoto({
       >
         {/* A swap resizes the layer: Android reloads an image sized for its view, fading in from the
             placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
-        <Image source={{ uri: uriOf(which, src.uri) }} placeholder={!thumbOnly && !loaded[which] ? { uri: thumbUrl(src.thumb ?? src.uri) } : undefined}
+        <Image source={{ uri: uriOf(which, src.uri) }} placeholder={loaded[which] ? undefined : !thumbOnly ? { uri: thumbUrl(src.thumb ?? src.uri) } : src.hash ? { thumbhash: src.hash } : undefined}
                style={StyleSheet.absoluteFill} onError={() => fail(which)}
                contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : transition} allowDownscaling={false}
                onLoad={e => {
@@ -237,7 +237,7 @@ export function DualPhoto({
         // In a View: expo-image doesn't honour pointerEvents on Android, so the image took the touches
         // meant for what lies under it (a story's tap zones: next / previous did nothing on a photo without a selfie).
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image source={{ uri: uriOf('main', main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : undefined}
+          <Image source={{ uri: uriOf('main', main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : main.hash ? { thumbhash: main.hash } : undefined}
                  style={StyleSheet.absoluteFill} onError={() => fail('main')}
                  contentFit={contentFit} transition={transition}
                  onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />

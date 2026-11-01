@@ -32,7 +32,7 @@ if (file_exists($envFile)) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 foreach ([
-    'Database', 'Cache', 'Request', 'CityRepository', 'R2Uploader', 'ModerationService', 'DbRateLimiter',
+    'Database', 'Cache', 'Request', 'CityRepository', 'R2Uploader', 'ImageProcessor', 'ModerationService', 'DbRateLimiter',
     'NotificationI18n', 'BotAccountService', 'NotificationPreferencesRepository', 'PushService', 'MobilePushService',
     'NotificationRepository', 'DailyClock', 'DailyRules', 'DailyProofRepository', 'DailyChallengeRepository',
     'DailyAdminService', 'DailyCards', 'DailyPushes', 'DailyDrop', 'DailyVotes', 'DailyResults', 'DailyPoints',

@@ -10,6 +10,8 @@
  *                                                         # metadata stripped again), each first copied to
  *                                                         # backup/originals/<name>
  *   --limit=N   stop after N originals handled (run again to resume: done work is skipped)
+ *   php scripts/images_backfill.php --hashes              # only the photo placeholders (thumbhash) still
+ *                                                         # missing on daily photos (the tick does 30 / 5 min)
  *
  * Sizes made (ImageProcessor::VARIANTS, WebP): thumb + medium for every upload,
  * c600 + c800 for the challenge covers. Safe to rerun: a size already on R2 is
@@ -21,6 +23,7 @@ declare(strict_types=1);
 $args   = array_slice($argv, 1);
 $apply  = in_array('--apply', $args, true);
 $resize = in_array('--resize-originals', $args, true);
+$hashes = in_array('--hashes', $args, true);
 $limit  = null;
 foreach ($args as $a) {
     if (str_starts_with($a, '--limit=')) {
@@ -38,8 +41,23 @@ if (file_exists($envFile)) {
 }
 
 require_once __DIR__ . '/../vendor/autoload.php';
-foreach (['Database', 'R2Uploader', 'ImageProcessor'] as $class) {
+foreach (['Database', 'R2Uploader', 'ImageProcessor', 'DailyProofRepository'] as $class) {
     require_once __DIR__ . "/../src/{$class}.php";
+}
+
+if ($hashes) {
+    $total = ['copied' => 0, 'computed' => 0, 'failed' => 0];
+    do {
+        $r = DailyProofRepository::fillHashes(200);
+        foreach ($total as $k => $_) $total[$k] += $r[$k] ?? 0;
+        fwrite(STDERR, "… {$total['computed']} computed, {$total['failed']} unreadable\n");
+        if (isset($r['error'])) {
+            fwrite(STDERR, "FAILED: {$r['error']}\n");
+            exit(1);
+        }
+    } while (($r['computed'] + $r['failed']) > 0);
+    printf("placeholders: %d copied from uploads, %d computed, %d unreadable\n", $total['copied'], $total['computed'], $total['failed']);
+    exit(0);
 }
 
 const BACKUP = 'backup/originals/';

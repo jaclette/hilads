@@ -186,7 +186,7 @@ function Stories() {
       {/* The tap zones first: the photo over them lets touches through, its selfie inset catches its own (swap, drag to a corner). */}
       {proof && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
-        ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
+        ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                      transition={120} draggable insetTop={insets.top + 76} onInteract={setInteracting} />
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />

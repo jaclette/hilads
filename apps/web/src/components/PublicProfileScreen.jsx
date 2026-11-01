@@ -557,7 +557,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                           style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
                         >
                           {f.avatarUrl
-                            ? <img className="pub-profile-friend-avatar" src={thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl)} alt={f.displayName} />
+                            ? <img loading="lazy" className="pub-profile-friend-avatar" src={thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl)} alt={f.displayName} />
                             : <span
                                 className="pub-profile-friend-avatar pub-profile-friend-avatar--initials"
                                 style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}

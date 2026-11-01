@@ -16,6 +16,7 @@ import { SeasonalZone } from '../event/seasonal'
 import { DualPhoto, selfieOf } from './DualPhoto'
 import { mediumUrl } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 /** How long a photo stays before the next one (no auto-advance with reduced motion). */
 const PHOTO_MS = 5000
@@ -167,9 +168,9 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
     <div className="tour" role="dialog" aria-modal="true" aria-label={t('worlds.tagline')}>
       {proof
         ? proof.selfieUrl
-          ? <DualPhoto key={proof.id} className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)}
+          ? <DualPhoto key={proof.id} className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)}
                        draggable insetTop={76} alt={proof.caption || ''} />
-          : <img key={proof.id} className="tour-photo" src={mediumUrl(proof.photoUrl)} alt={proof.caption || ''} decoding="async"
+          : <img key={proof.id} className="tour-photo" src={mediumUrl(proof.photoUrl)} style={placeholderStyle(proof.thumbHash)} alt={proof.caption || ''} decoding="async"
                  onError={e => { if (e.currentTarget.dataset.fallback === '1') skipPhoto(proof.id); else thumbFallback(proof.photoUrl)(e) }} />
         : <div className="dc-photos-center"><span className="dc-photos-spinner" aria-hidden="true" /></div>}
       <div className="tour-shade" />

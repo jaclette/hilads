@@ -47,6 +47,8 @@ final class DailyDrop
         }
         // Daily reference exchange rates (SPEC 10.5): once a day, never blocks the tick.
         $out['rates'] = Currencies::refreshIfStale($now);
+        // Photo placeholders the inserts didn't get (spots, back office, demo): never throws.
+        $out['hashes'] = DailyProofRepository::fillHashes(30);
         try {
             $out['pushes'] = DailyPushes::sendDue($now);
         } catch (\Throwable $e) {

@@ -21,6 +21,7 @@ import { themeColor } from '../joy/Joy'
 import { useBackLayer } from '../../lib/backLayers'
 import { CommentButton } from '../daily/PhotoCommentsSheet'
 import { thumbUrl } from '../../lib/imageThumb'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 const IDLE_MS = 350
 // The last view (map or list), remembered on this device.
@@ -238,7 +239,7 @@ function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
         return (
           <button key={s.id} type="button" className="wm-row" onClick={() => onPick(s)}>
             {s.cover?.thumbUrl || s.cover?.photoUrl
-              ? <img className="wm-row-photo" src={thumbUrl(s.cover.thumbUrl || s.cover.photoUrl)} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" />
+              ? <img className="wm-row-photo" src={thumbUrl(s.cover.thumbUrl || s.cover.photoUrl)} style={placeholderStyle(s.cover.thumbHash)} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" />
               : <span className="wm-row-photo wm-row-photo--empty"><Icon name={th ? themeIcon(th) : 'location-outline'} size={22} /></span>}
             <span className="wm-row-body">
               <span className="wm-row-name">{s.name}</span>

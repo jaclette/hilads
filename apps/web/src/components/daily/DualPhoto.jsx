@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useDc } from './dailyShared'
 import { mediumUrl, thumbUrl } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { placeholderUrl } from '../../lib/thumbhash'
 
 // A Daily photo with its selfie (the app's ui/DualPhoto): the photo fills the
 // frame, the selfie sits in a rounded inset (top-left, ~28 % wide, 3:4). A
@@ -27,7 +28,13 @@ function claimTip() {
   return true
 }
 
-export const selfieOf = (p) => (p?.selfieUrl ? { url: p.selfieUrl, thumb: p.selfieThumbUrl ?? null } : null)
+export const selfieOf = (p) => (p?.selfieUrl ? { url: p.selfieUrl, thumb: p.selfieThumbUrl ?? null, hash: p.selfieThumbHash ?? null } : null)
+
+// Under a layer while it loads: the thumbnail (big layers loading the medium size), over the thumbhash.
+function layerBackground(src, thumbOnly) {
+  const urls = [thumbOnly ? null : thumbUrl(src.thumb ?? src.url), placeholderUrl(src.hash)].filter(Boolean)
+  return urls.length ? { backgroundImage: urls.map(u => `url("${u}")`).join(', '), backgroundSize: 'cover, 100% 100%' } : {}
+}
 
 export function DualPhoto({ main, selfie, className = '', fit = 'cover', small = false, interactive = true, draggable = false,
                             card = false, insetTop = 0, onLoadMain, alt = '', ...frameProps }) {
@@ -116,7 +123,7 @@ export function DualPhoto({ main, selfie, className = '', fit = 'cover', small =
             style={style} {...handlers}>
         <img src={sized(src.url)} alt={which === 'main' ? alt : ''} draggable={false}
              loading={card ? 'lazy' : undefined} decoding="async" onError={thumbFallback(src.url)}
-             style={{ objectFit: isInset ? 'cover' : fit, backgroundImage: thumbOnly ? undefined : `url("${thumbUrl(src.thumb ?? src.url)}")` }}
+             style={{ objectFit: isInset ? 'cover' : fit, ...layerBackground(src, thumbOnly) }}
              onLoad={which === 'main' && onLoadMain ? (e) => onLoadMain({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight }) : undefined} />
       </span>
     )

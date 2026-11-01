@@ -14,6 +14,7 @@ import { AnswerChip, BackHomeBlock, useMoney } from './compareShared'
 import { DualPhoto, selfieOf } from './DualPhoto'
 import { mediumUrl } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 const SLIDE_MS = 6000
 
@@ -81,8 +82,8 @@ export default function WorldTourViewer({ tour, start = 0, source = 'today', onC
          onTouchStart={(e) => { touch.current = e.touches[0].clientY; setPaused(true) }}
          onTouchEnd={(e) => { setPaused(false); if (touch.current !== null && e.changedTouches[0].clientY - touch.current > 80) onClose(); touch.current = null }}>
       {slide ? (proof.selfieUrl
-          ? <DualPhoto className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl }} selfie={selfieOf(proof)} insetTop={64} alt={proof.caption || ''} />
-          : <img className="tour-photo" src={mediumUrl(proof.photoUrl)} onError={thumbFallback(proof.photoUrl)} decoding="async" alt={proof.caption || ''} />)
+          ? <DualPhoto className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} insetTop={64} alt={proof.caption || ''} />
+          : <img className="tour-photo" src={mediumUrl(proof.photoUrl)} style={placeholderStyle(proof.thumbHash)} onError={thumbFallback(proof.photoUrl)} decoding="async" alt={proof.caption || ''} />)
         : today?.coverUrl ? <img className="tour-photo" src={mediumUrl(today.coverUrl)} onError={thumbFallback(today.coverUrl)} decoding="async" alt="" /> : null}
       <div className="tour-shade" />
       <button type="button" className="tour-tap" onClick={tap} onMouseDown={() => setPaused(true)} onMouseUp={() => setPaused(false)}

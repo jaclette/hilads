@@ -100,6 +100,7 @@ import ReactionBurstLayer from './components/ReactionBurstLayer'
 import { registerPush, unregisterPush } from './push'
 import { themeName } from './components/map/spotsShared'
 import { useBackLayer, useBackStack } from './lib/backLayers'
+import { placeholderStyle } from './lib/thumbhash'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -736,9 +737,9 @@ function DailyFeedCard({ item, t, onOpen }) {
         {p.isEarly && <span className="feed-daily-early"><Icon name="flash-outline" size={11} /> {t('daily.early')}</span>}
       </div>
       {p.selfieUrl ? (
-        <DualPhoto card className="feed-daily-photo" main={{ url: p.photoUrl, thumb: p.thumbUrl }} selfie={selfieOf(p)} alt={p.caption || ''}
+        <DualPhoto card className="feed-daily-photo" main={{ url: p.photoUrl, thumb: p.thumbUrl, hash: p.thumbHash }} selfie={selfieOf(p)} alt={p.caption || ''}
                    onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />
-      ) : <img className="feed-daily-photo" src={thumbUrl(p.thumbUrl || p.photoUrl)} alt={p.caption || ''} loading="lazy"
+      ) : <img className="feed-daily-photo" src={thumbUrl(p.thumbUrl || p.photoUrl)} style={placeholderStyle(p.thumbHash)} alt={p.caption || ''} loading="lazy"
            onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />}
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-tags">
@@ -6489,7 +6490,7 @@ export default function App() {
               onClick={(!user.isMe && (tappable || !account)) ? handleTap : undefined}
             >
               {user.avatarUrl
-                ? <img className="online-avatar" src={thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl)} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
+                ? <img loading="lazy" className="online-avatar" src={thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl)} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
                     {(user.nickname ?? '?')[0].toUpperCase()}
                   </span>
@@ -6543,7 +6544,7 @@ export default function App() {
               onClick={() => openProfile(m.id, m.displayName)}
             >
               {m.avatarUrl
-                ? <img className="online-avatar" src={thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                ? <img loading="lazy" className="online-avatar" src={thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {(m.displayName ?? '?')[0].toUpperCase()}
                   </span>
@@ -6635,7 +6636,7 @@ export default function App() {
                         onClick={() => openProfile(m.id, m.displayName)}
                       >
                         {m.avatarUrl
-                          ? <img className="online-avatar" src={thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                          ? <img loading="lazy" className="online-avatar" src={thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} />
                           : <span className="online-avatar online-avatar--legend" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                               {(m.displayName ?? '?')[0].toUpperCase()}
                             </span>
@@ -7145,7 +7146,7 @@ export default function App() {
                       onClick={isRegistered ? () => { setShowGoingModal(false); openProfile(p.id, p.displayName) } : undefined}
                     >
                       {p.avatarUrl ? (
-                        <img src={thumbUrl(p.thumbAvatarUrl ?? p.avatarUrl)} className="online-avatar" alt="" />
+                        <img loading="lazy" src={thumbUrl(p.thumbAvatarUrl ?? p.avatarUrl)} className="online-avatar" alt="" />
                       ) : (
                         <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                           {(p.displayName ?? '?')[0].toUpperCase()}

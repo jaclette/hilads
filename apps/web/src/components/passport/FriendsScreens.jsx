@@ -6,6 +6,7 @@ import { CityName } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { themeName } from '../map/spotsShared'
 import Icon from '../Icon'
+import { placeholderStyle } from '../../lib/thumbhash'
 
 /** Star rating as star icons: `on` filled (gold), the rest up to `of` outlined. */
 function Stars({ on, of = 0, size }) {
@@ -22,7 +23,7 @@ const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 
 function Avatar({ name, photo }) {
   return photo
-    ? <img className="pp-mini-avatar" src={thumbUrl(photo)} alt="" />
+    ? <img loading="lazy" className="pp-mini-avatar" src={thumbUrl(photo)} alt="" />
     : <span className="pp-mini-avatar pp-avatar--empty">{(name || '?')[0].toUpperCase()}</span>
 }
 
@@ -114,7 +115,7 @@ export function MySpotsScreen({ onBack, onOpenSpot }) {
         : spots.length === 0 ? <div className="dc-center"><span className="dc-big-emoji" style={{ color: 'var(--muted2)' }}><Icon name="location-outline" size={32} /></span><p className="dc-muted">{t('passport.noSpots')}</p></div>
         : spots.map(s => (
           <button key={s.id} type="button" className="pp-spot" onClick={() => onOpenSpot(s.id)}>
-            {s.cover?.thumbUrl ? <img src={thumbUrl(s.cover.thumbUrl)} alt="" /> : <span className="pp-spot-img" />}
+            {s.cover?.thumbUrl ? <img loading="lazy" src={thumbUrl(s.cover.thumbUrl)} alt="" /> : <span className="pp-spot-img" />}
             <span className="pp-spot-body">
               <span className="pp-person-name">{s.name}</span>
               <span className="dc-muted">{s.city?.name && <><CityName name={s.city.name} country={s.city.country} short />{' · '}</>}{s.themes.map(k => themeName(k)).join(', ')}</span>
@@ -146,8 +147,8 @@ export function MyPhotosScreen({ onBack, onOpenPhoto }) {
             {photos.map(p => (
               <button key={p.id} type="button" className="pp-photo" onClick={() => onOpenPhoto(p)}
                       aria-label={[p.city?.name, p.caption].filter(Boolean).join(', ')}>
-                <img src={thumbUrl(p.thumbUrl ?? p.photoUrl)} alt="" loading="lazy" />
-                {p.selfieUrl && <img className="dp-mini" src={thumbUrl(p.selfieThumbUrl ?? p.selfieUrl)} alt="" />}
+                <img src={thumbUrl(p.thumbUrl ?? p.photoUrl)} style={placeholderStyle(p.thumbHash)} alt="" loading="lazy" />
+                {p.selfieUrl && <img loading="lazy" className="dp-mini" src={thumbUrl(p.selfieThumbUrl ?? p.selfieUrl)} style={placeholderStyle(p.selfieThumbHash)} alt="" />}
               </button>
             ))}
           </div>

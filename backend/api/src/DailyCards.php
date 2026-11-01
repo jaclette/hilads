@@ -52,6 +52,9 @@ final class DailyCards
             // Dual photo: the selfie inset (null: a single photo; older apps ignore it).
             'selfieUrl'      => $proof['selfie_url'] ?? null,
             'selfieThumbUrl' => ($proof['selfie_url'] ?? null) !== null ? R2Uploader::thumbProxy($proof['selfie_url']) : null,
+            // Thumbhash placeholders, when computed by the time it's posted.
+            'thumbHash'       => ($proof['photo_hash'] ?? null) ?: null,
+            'selfieThumbHash' => ($proof['selfie_url'] ?? null) !== null ? (($proof['selfie_hash'] ?? null) ?: null) : null,
             'caption'       => $proof['caption'],
             // V3-09: the theme chip and the spot on the Chat card.
             'theme'         => DailyThemes::format($proof['challenge_theme'] ?? null, $proof['challenge_date'] ?? null),

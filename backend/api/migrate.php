@@ -3881,6 +3881,19 @@ try {
     echo "  ERR daily photos local by city names: " . $e->getMessage() . "\n";
 }
 
+// ── Photo placeholders (thumbhash) ────────────────────────────────────────
+// A ~25-byte blurred preview of each Daily photo and selfie, sent with the
+// proof and drawn while the photo loads. image_hashes: computed at upload,
+// by file name; daily_proofs copies it (create / edit / the tick / the backfill).
+// Reversal: DROP TABLE image_hashes; ALTER TABLE daily_proofs DROP COLUMN photo_hash, DROP COLUMN selfie_hash.
+run($pdo, "CREATE TABLE IF NOT EXISTS image_hashes (
+    name       TEXT PRIMARY KEY,
+    hash       TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+)", 'image_hashes');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS photo_hash TEXT", 'daily_proofs.photo_hash');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS selfie_hash TEXT", 'daily_proofs.selfie_hash');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

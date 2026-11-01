@@ -361,7 +361,7 @@ function Row({ c, first, flash, onProfile, onMenu, onLike, onRetry, onDiscard })
     <div className={`pc-row${c.pending ? ' pc-row--pending' : ''}${flash || c.liveAt ? ' pc-row--flash' : ''}`} data-comment={c.id}
          onContextMenu={(e) => { e.preventDefault(); onMenu() }}>
       <button type="button" className="pc-avatar" onClick={() => onProfile(c.user)} aria-label={name}>
-        {c.user.photoUrl ? <img src={thumbUrl(c.user.photoUrl)} alt="" /> : <span>{(c.user.displayName || name || '?').replace('@', '')[0]?.toUpperCase()}</span>}
+        {c.user.photoUrl ? <img loading="lazy" src={thumbUrl(c.user.photoUrl)} alt="" /> : <span>{(c.user.displayName || name || '?').replace('@', '')[0]?.toUpperCase()}</span>}
       </button>
       <div className="pc-row-body">
         <div className="pc-meta">
@@ -434,7 +434,7 @@ export function CommentPreview({ target }) {
       {fresh && <span className="pc-pill">{t('comments.newComments')}</span>}
       {latest.map(c => (
         <span key={c.id} className="pc-preview-row">
-          {c.user.photoUrl ? <img src={thumbUrl(c.user.photoUrl)} alt="" /> : <i>{(c.user.displayName || c.user.username || '?')[0].toUpperCase()}</i>}
+          {c.user.photoUrl ? <img loading="lazy" src={thumbUrl(c.user.photoUrl)} alt="" /> : <i>{(c.user.displayName || c.user.username || '?')[0].toUpperCase()}</i>}
           <span className="pc-preview-line"><strong>{c.user.username ? `@${c.user.username}` : c.user.displayName}</strong> {c.body.replace(/\s+/g, ' ')}</span>
         </span>
       ))}
