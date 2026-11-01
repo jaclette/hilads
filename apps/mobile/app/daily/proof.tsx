@@ -37,7 +37,7 @@ import { SharePanel } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, DualPhoto, TextField } from '@/ui';
+import { Button, CityFlag, DualPhoto, IconButton, TextField } from '@/ui';
 import { AnswerInput } from '@/features/compare/AnswerInput';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
@@ -151,7 +151,8 @@ function DailyProofScreenContent() {
   // Back (the navigation rule): every way out (Android back, the arrow, the iOS
   // swipe) goes one step back - home → details → answer → place → photo - and,
   // on the first step, asks before throwing away a new photo. Leaving after a
-  // post (leaving.current) is never held.
+  // post (leaving.current) is never held; on the sent screen, every way out
+  // leaves it (after the first-proof push ask).
   const navigation = useNavigation();
   const leaving = useRef(false);
   const stepBack = (): boolean => {
@@ -176,7 +177,12 @@ function DailyProofScreenContent() {
   const currencyNext = useNextField(currencyRef);
   const homeAmountNext = useNextField(homeAmountRef);
   const homeCurrencyNext = useNextField(homeCurrencyRef);
-  usePreventRemove(canStepBack || unsaved, ({ data }) => {
+  usePreventRemove(!!sent || canStepBack || unsaved, ({ data }) => {
+    if (sent && !leaving.current) {
+      leaving.current = true;
+      askFirstProofPush().finally(() => navigation.dispatch(data.action));
+      return;
+    }
     if (leaving.current || stepBack()) {
       if (leaving.current) navigation.dispatch(data.action);
       return;
@@ -450,14 +456,23 @@ function DailyProofScreenContent() {
   };
 
   // In-context push ask after the first proof (AUDIT Q9), once, then go on.
-  const afterProof = async (to: string) => {
+  async function askFirstProofPush() {
     const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
     if (!done) {
       await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
       await askDailyPush('first_proof', identity?.guestId);
     }
+  }
+  const afterProof = async (to: string) => {
+    await askFirstProofPush();
     leaving.current = true;
     router.replace(to as never);
+  };
+  // The sent screen's close: back where the post started (the prevent-remove above asks
+  // for push on the way), or Today when there's nothing behind it.
+  const closeSent = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+    else afterProof('/(tabs)/today');
   };
 
   const challenge = today?.challenge ?? null;
@@ -466,6 +481,9 @@ function DailyProofScreenContent() {
   if (sent && challenge) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
+        <View style={styles.sentNav}>
+          <IconButton icon="close" iconSize={24} label={t('close', { ns: 'common' })} onPress={closeSent} testID="proof-sent-close" />
+        </View>
         <ScrollView contentContainerStyle={styles.sent}>
           {/* A seasonal event's live day: a burst of bats instead of the checkmark. */}
           {seasonal?.key === 'halloween' ? <BatBurst />
@@ -799,7 +817,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   priceRow:    { flexDirection: 'row', gap: 8 },
   currency:    { width: 84, textAlign: 'center', fontWeight: '700' },
   muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  sent:        { alignItems: 'center', padding: Spacing.lg, gap: 12 },
+  sentNav:     { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: 4 },
+  sent:        { alignItems: 'center', padding: Spacing.lg, paddingTop: 0, gap: 12 },
   firstCity:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
   firstCityText: { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryOnTint },
   sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 12 },
