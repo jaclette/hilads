@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from 'react-native-reanimated';
 import type { ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
-import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
+import { mediumUrl, proxyFor, thumbUrl } from '@/lib/imageThumb';
 
 /**
  * A Daily photo with its selfie (dual photo, docs/dual-photo-audit.md): the
@@ -79,10 +79,14 @@ export function DualPhoto({
   const [selfieBig, setSelfieBig] = useState(false);
   const [tip, setTip] = useState(false);
   const [loaded, setLoaded] = useState({ main: false, selfie: false });
-  const [failed, setFailed] = useState({ main: false, selfie: false });
-  useEffect(() => { setFailed({ main: false, selfie: false }); }, [main.uri, selfie?.uri]);
+  // A layer that fails: its size through the resize proxy (missing on the CDN), then the original.
+  const [failed, setFailed] = useState({ main: 0, selfie: 0 });
+  useEffect(() => { setFailed({ main: 0, selfie: 0 }); }, [main.uri, selfie?.uri]);
   const thumbOnly = card || inset === 'small' || !interactive;
   const sized = (u: string) => (thumbOnly ? thumbUrl(u) : mediumUrl(u)) ?? u;
+  const tries = (u: string) => [sized(u), proxyFor(sized(u)), u].filter((x, i, all): x is string => !!x && all.indexOf(x) === i);
+  const uriOf = (which: 'main' | 'selfie', u: string) => { const list = tries(u); return list[Math.min(failed[which], list.length - 1)]; };
+  const fail = (which: 'main' | 'selfie') => setFailed(f => ({ ...f, [which]: f[which] + 1 }));
 
   const ratio = inset === 'small' ? 0.24 : 0.28;
   const m = inset === 'small' ? 6 : MARGIN;
@@ -216,8 +220,8 @@ export function DualPhoto({
       >
         {/* A swap resizes the layer: Android reloads an image sized for its view, fading in from the
             placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
-        <Image source={{ uri: failed[which] ? src.uri : sized(src.uri) }} placeholder={!thumbOnly && !loaded[which] ? { uri: thumbUrl(src.thumb ?? src.uri) } : undefined}
-               style={StyleSheet.absoluteFill} onError={() => setFailed(f => ({ ...f, [which]: true }))}
+        <Image source={{ uri: uriOf(which, src.uri) }} placeholder={!thumbOnly && !loaded[which] ? { uri: thumbUrl(src.thumb ?? src.uri) } : undefined}
+               style={StyleSheet.absoluteFill} onError={() => fail(which)}
                contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : transition} allowDownscaling={false}
                onLoad={e => {
                  if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
@@ -233,8 +237,8 @@ export function DualPhoto({
         // In a View: expo-image doesn't honour pointerEvents on Android, so the image took the touches
         // meant for what lies under it (a story's tap zones: next / previous did nothing on a photo without a selfie).
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image source={{ uri: failed.main ? main.uri : sized(main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : undefined}
-                 style={StyleSheet.absoluteFill} onError={() => setFailed(f => ({ ...f, main: true }))}
+          <Image source={{ uri: uriOf('main', main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : undefined}
+                 style={StyleSheet.absoluteFill} onError={() => fail('main')}
                  contentFit={contentFit} transition={transition}
                  onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
         </View>

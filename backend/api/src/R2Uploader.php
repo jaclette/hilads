@@ -44,6 +44,9 @@ class R2Uploader
                 'Key'         => $filename,
                 'SourceFile'  => $tmpPath,
                 'ContentType' => $mimeType,
+                // Every key is a random or content name, never rewritten in place
+                // (images_backfill keeps the picture): browsers and the CDN keep it.
+                'CacheControl' => 'public, max-age=31536000, immutable',
             ]);
         } catch (AwsException $e) {
             error_log('[hilads] R2 upload failed: ' . ($e->getAwsErrorMessage() ?: $e->getMessage()));

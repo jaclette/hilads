@@ -8,6 +8,8 @@ export interface AppConfig {
   challengeCreationClosed: boolean;
   /** Dual photo (photo + selfie) capture; absent or false: the previous camera. */
   dualPhoto?:              boolean;
+  /** The image CDN (e.g. https://media.hilads.live); absent or null: the resize proxy. */
+  mediaUrl?:               string | null;
 }
 
 export function fetchAppConfig(): Promise<AppConfig> {

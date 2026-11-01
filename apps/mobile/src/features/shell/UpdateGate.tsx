@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchAppConfig, type AppConfig } from '@/api/appConfig';
+import { setMediaUrl } from '@/lib/imageThumb';
 import { APP_BUILD_VERSION, isOlderVersion } from '@/lib/appVersion';
 import { Banner, Button } from '@/ui';
 
@@ -27,7 +28,7 @@ export function UpdateGate() {
   const [dismissed, setDismissed] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    fetchAppConfig().then(setConfig).catch(() => {});
+    fetchAppConfig().then(c => { setMediaUrl(c.mediaUrl); setConfig(c); }).catch(() => {});
   }, []);
   useEffect(() => {
     load();

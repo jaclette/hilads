@@ -4729,9 +4729,11 @@ $router->add('POST', '/api/v1/uploads', function () {
 // w=1080: the medium size (full-screen viewers), the longer side ≤ 1080,
 // thumb_w1080_<base>.jpg. fmt=webp: the same sizes as WebP (.webp), a third
 // lighter; any other value keeps JPEG (old clients, push notifications).
+// f=<32hex> without its extension: a client whose CDN copy of a size is missing
+// knows only the size's name; the original is then found by trying each type.
 $router->add('GET', '/api/v1/img-thumb', function () {
     $f = (string) ($_GET['f'] ?? '');
-    if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $f, $m)) {
+    if (!preg_match('/^([a-f0-9]{32})(?:\.(jpe?g|png|webp))?$/i', $f, $m)) {
         Response::json(['error' => 'Invalid image'], 400);
     }
     $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
@@ -4744,6 +4746,7 @@ $router->add('GET', '/api/v1/img-thumb', function () {
     $thumbName = ImageProcessor::variantName($key, $m[1], $webp);
     $thumbUrl  = $r2Base . '/' . $thumbName;
     $origUrl   = $r2Base . '/' . $f;
+    $names     = isset($m[2]) ? [$f] : array_map(static fn($ext) => strtolower($m[1]) . '.' . $ext, ['jpg', 'png', 'webp', 'jpeg']);
 
     $emit = static function (string $bytes) use ($mimeOut): void {
         header('Content-Type: ' . $mimeOut);
@@ -4759,7 +4762,14 @@ $router->add('GET', '/api/v1/img-thumb', function () {
 
     // First time: fetch original, resize, cache on R2, then stream.
     try {
-        $orig = @file_get_contents($origUrl);
+        $orig = false;
+        foreach ($names as $name) {
+            $orig = @file_get_contents($r2Base . '/' . $name);
+            if ($orig !== false && $orig !== '') {
+                $origUrl = $r2Base . '/' . $name;
+                break;
+            }
+        }
         if ($orig === false || $orig === '') {
             // Original gone - 302 to it so the client's onError fallback still shows something.
             header('Location: ' . $origUrl, true, 302); exit;

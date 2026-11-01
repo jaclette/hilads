@@ -312,6 +312,9 @@ final class AppConfig
             'storeUrls'               => self::STORE_URLS,
             'challengeCreationClosed' => self::challengeCreationClosed(),
             'dualPhoto'               => self::dualPhotoFor($userId),
+            // The image CDN (R2 behind a cached domain, e.g. https://media.hilads.live): the app loads the
+            // stored sizes from it directly. Null until MEDIA_PUBLIC_URL is set: the resize proxy.
+            'mediaUrl'                => rtrim((string) getenv('MEDIA_PUBLIC_URL'), '/') ?: null,
         ];
     }
 }
