@@ -111,7 +111,7 @@ final class DailyProposals
             ? $user['current_city_id'] : null;
         if ($f['twist_text'] !== null) {
             $cityName = $cityId !== null ? (CityRepository::findById((int) substr($cityId, 5))['name'] ?? null) : null;
-            if (!DailyRules::isLive($cityId) || !DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName)) {
+            if (!DailyRules::isLive($cityId) || !DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName, $cityId, $user['home_city_id'] ?? null)) {
                 throw new InvalidArgumentException('twist_not_allowed');
             }
         }

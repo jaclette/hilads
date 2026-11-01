@@ -3839,6 +3839,48 @@ try {
     echo "  ERR dw seed: " . $e->getMessage() . "\n";
 }
 
+// 2026-11-01 - Local/Traveler on Daily photos (DailyRules::isLocalFor) now
+// matches every name of the photo's city (Saigon for Ho Chi Minh City: short
+// name, local short names, aliases) and the home city picked from our list
+// (users.home_city_id). Once (app_settings is_local_names_v1): the photos marked
+// traveler whose author passes the new rule become local. Votes keep theirs.
+// Reversal: none needed (only false → true, by the rule the app now applies).
+require_once __DIR__ . '/src/DailyRules.php';
+try {
+    $done = $pdo->query("SELECT 1 FROM app_settings WHERE key = 'is_local_names_v1'")->fetchColumn();
+    if (!$done) {
+        $rows = $pdo->query("
+            SELECT p.id, p.city_id, u.home_city, u.home_city_id, ch.name, ci.short_name,
+                   ci.short_name_i18n::text AS i18n, array_to_json(ci.aliases)::text AS aliases
+            FROM daily_proofs p
+            JOIN users u     ON u.id = p.user_id AND u.mode = 'local'
+            JOIN channels ch ON ch.id = p.city_id
+            JOIN cities ci   ON ci.channel_id = p.city_id
+            WHERE NOT p.is_local
+        ")->fetchAll(PDO::FETCH_ASSOC);
+        $fix = [];
+        foreach ($rows as $r) {
+            $home = trim((string) $r['home_city']);
+            $names = array_merge([(string) $r['name'], (string) $r['short_name']],
+                array_values(json_decode((string) $r['i18n'], true) ?: []), json_decode((string) $r['aliases'], true) ?: []);
+            $match = $home !== '' && in_array(DailyRules::slug($home),
+                array_map(static fn($n) => DailyRules::slug((string) $n), array_filter($names, static fn($n) => (string) $n !== '')), true);
+            if ($match || ($r['home_city_id'] !== null && $r['home_city_id'] === $r['city_id'])) {
+                $fix[] = $r['id'];
+            }
+        }
+        $pdo->beginTransaction();
+        $up = $pdo->prepare("UPDATE daily_proofs SET is_local = true WHERE id = ?");
+        foreach ($fix as $id) $up->execute([$id]);
+        $pdo->exec("INSERT INTO app_settings (key, value, updated_by) VALUES ('is_local_names_v1', now()::text, 'migrate')");
+        $pdo->commit();
+        echo "  OK  daily photos local by city names (" . count($fix) . " of " . count($rows) . " traveler photos of locals)\n";
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR daily photos local by city names: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

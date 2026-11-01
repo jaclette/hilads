@@ -52,13 +52,50 @@ final class DailyRules
         }
     }
 
-    public static function isLocalFor(?string $mode, ?string $homeCity, ?string $cityName): bool
+    /**
+     * A "local" here: local mode, and a home city that is this city, picked from
+     * our list ($homeCityId, 'city_N') or typed (users.home_city) as any of the
+     * names the city goes by ("Saigon" for Ho Chi Minh City). No home city typed:
+     * local wherever they are. $cityId ('city_N') finds the city's other names,
+     * else it is looked up by $cityName.
+     */
+    public static function isLocalFor(?string $mode, ?string $homeCity, ?string $cityName,
+                                      ?string $cityId = null, ?string $homeCityId = null): bool
     {
         if ($mode !== 'local' || $cityName === null || trim($cityName) === '') {
             return false;
         }
+        if ($homeCityId !== null && $cityId !== null && $homeCityId === $cityId) {
+            return true;
+        }
         $home = trim((string) $homeCity);
-        return $home === '' || self::slug($home) === self::slug($cityName);
+        if ($home === '') {
+            return true;
+        }
+        $want = self::slug($home);
+        foreach (self::cityNames($cityName, $cityId) as $name) {
+            if ($name !== '' && self::slug($name) === $want) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Every name a city goes by: its name, its short name (Saigon), its local short names, its aliases. */
+    private static function cityNames(string $cityName, ?string $cityId): array
+    {
+        if ($cityId === null) {
+            $cityId = CityRepository::findChannelIdByName($cityName);
+        }
+        $city = $cityId !== null && preg_match('/^city_(\d+)$/', $cityId, $m) ? CityRepository::findById((int) $m[1]) : null;
+        if ($city === null) {
+            return [$cityName];
+        }
+        return array_map('strval', array_merge(
+            [$cityName, (string) $city['name'], (string) ($city['short_name'] ?? '')],
+            array_values($city['short_name_i18n'] ?? []),
+            $city['aliases'] ?? [],
+        ));
     }
 
     public static function isValidTimezone(string $tz): bool

@@ -28,7 +28,8 @@ final class DailyVotes
     public static function cast(array $proof, array $user): string
     {
         self::guard($proof, $user);
-        $isLocal = DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $proof['city_name'] ?? null);
+        $isLocal = DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $proof['city_name'] ?? null,
+                                              $proof['city_id'] ?? null, $user['home_city_id'] ?? null);
         $pdo     = Database::pdo();
 
         for ($attempt = 0; $attempt < 4; $attempt++) {

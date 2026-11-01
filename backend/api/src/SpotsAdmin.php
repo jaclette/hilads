@@ -415,7 +415,7 @@ final class SpotsAdmin
             $place  = self::find($place['id']);
         }
 
-        $stmt = Database::pdo()->prepare("SELECT mode, home_city FROM users WHERE id = ?");
+        $stmt = Database::pdo()->prepare("SELECT mode, home_city, home_city_id FROM users WHERE id = ?");
         $stmt->execute([$userId]);
         $user     = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
         $cityName = $place['city_name'];
@@ -431,7 +431,7 @@ final class SpotsAdmin
             ")->execute([
                 $proofId, self::seedChallenge($theme), $userId, $place['city_id'], $photoUrl, $caption === '' ? null : $caption,
                 $amount, $currency, $place['id'], $place['lat'], $place['lng'], $place['name'],
-                DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName) ? 'true' : 'false',
+                DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName, $place['city_id'] ?? null, $user['home_city_id'] ?? null) ? 'true' : 'false',
             ]);
             if ($pick) {
                 $pdo->prepare("UPDATE daily_proofs SET is_pick = true, photo_credit = ? WHERE id = ?")->execute([$credit, $proofId]);

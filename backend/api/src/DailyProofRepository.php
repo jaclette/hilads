@@ -171,7 +171,7 @@ final class DailyProofRepository
             $fields['place_lat'] ?? null,
             $fields['place_lng'] ?? null,
             $fields['place_name'] ?? null,
-            DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName) ? 'true' : 'false',
+            DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName, $cityId, $user['home_city_id'] ?? null) ? 'true' : 'false',
             // Speed bonus (V2-07): set once, here; an edit never changes it.
             DailyPushes::isEarly((string) $challenge['challenge_date'], DailyPushes::userTimezone($user['id']),
                                  new DateTimeImmutable('now')) ? 'true' : 'false',
