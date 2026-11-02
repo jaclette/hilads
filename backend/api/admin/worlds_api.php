@@ -48,7 +48,12 @@ try {
         case 'import_done':
             // The topic page shows the result once reloaded, as after a one-request import.
             $warnings = json_decode((string) ($_POST['warnings'] ?? '[]'), true);
-            $_SESSION['dw_import_warnings'] = array_values(array_filter(is_array($warnings) ? $warnings : [], 'is_string'));
+            $warnings = array_values(array_filter(is_array($warnings) ? $warnings : [], 'is_string'));
+            // Every slide is rendered: the older versions go.
+            if (($gone = DwStudio::pruneOlderVersions((int) ($_POST['package_id'] ?? 0))) > 0) {
+                $warnings[] = 'The older version' . ($gone > 1 ? 's were' : ' was') . ' deleted, with its slides and video.';
+            }
+            $_SESSION['dw_import_warnings'] = $warnings;
             flash_set('success', 'Version ' . (int) ($_POST['version'] ?? 0) . ' imported, slides rendered.');
             echo json_encode(['ok' => true]);
             break;

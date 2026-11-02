@@ -268,7 +268,8 @@ worlds_styles();
             <?= csrf_input() ?><input type="hidden" name="action" value="import">
             <h3 style="margin-bottom:8px"><?= $pkg ? 'Import a new version' : 'Import the package' ?></h3>
             <div class="form-group"><label>JSON file</label><input type="file" name="file" accept="application/json,.json"></div>
-            <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="4" style="font-family:monospace;width:100%"></textarea></div>
+            <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="4" style="font-family:monospace;width:100%"></textarea>
+                <?php if ($pkg): ?><div class="hint">Once the new version is rendered, the older ones are deleted (slides and video).</div><?php endif; ?></div>
             <button class="btn btn-primary" type="submit">Import and render</button>
             <div class="worlds-progress" hidden><div class="worlds-progress-bar"><span></span></div><div class="worlds-muted worlds-progress-label"></div></div>
             <ul class="worlds-report worlds-progress-errors"></ul>
@@ -349,7 +350,7 @@ worlds_styles();
         }
       }
       show(100, 'Done');
-      await call({ action: 'import_done', version: report.version, warnings: JSON.stringify(warnings) });
+      await call({ action: 'import_done', version: report.version, package_id: report.package_id, warnings: JSON.stringify(warnings) });
       location.href = <?= json_encode($self) ?>;
     } catch (err) {
       box.hidden = true;

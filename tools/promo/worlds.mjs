@@ -172,6 +172,12 @@ async function main() {
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s…`);
   await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: file, inputProps, muted: true });
   console.log(`  saved: ${file}`);
+  // Only the latest render of the day is kept on the Mac (a --file render stays: no version in its name).
+  if (data.version) {
+    for (const name of await readdir(out)) {
+      if (name !== path.basename(file) && /^different-worlds-.+-v\d+\.mp4$/.test(name)) await rm(path.join(out, name));
+    }
+  }
 
   if (!upload) {
     console.log('  not uploaded');

@@ -136,7 +136,7 @@ worlds_styles();
             <h3 style="margin-bottom:8px">Import packages</h3>
             <div class="form-group"><label>JSON files (select as many days as you like)</label><input type="file" name="files[]" multiple accept="application/json,.json"></div>
             <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="4" style="font-family:monospace;width:100%"></textarea>
-                <div class="hint">{"packages": [{"date", "content"}]}: each package becomes a new version of its day's topic.</div></div>
+                <div class="hint">{"packages": [{"date", "content"}]}: each package becomes a new version of its day's topic; the older versions are deleted (slides and video) once it is rendered.</div></div>
             <button class="btn btn-primary" type="submit">Import and render</button>
             <ul class="worlds-report" id="worlds-import-progress" style="margin-top:10px"></ul>
         </form>

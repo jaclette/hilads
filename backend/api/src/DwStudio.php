@@ -258,6 +258,40 @@ final class DwStudio
         }
     }
 
+    /**
+     * Deletes the versions of $packageId's topic older than it, with their slides,
+     * photos and video on R2 (best effort): only the latest version is kept.
+     * Returns how many versions were deleted.
+     */
+    public static function pruneOlderVersions(int $packageId): int
+    {
+        $pkg = self::packageById($packageId);
+        if ($pkg === null) {
+            return 0;
+        }
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare("
+            SELECT p.id, p.video_url, s.svg_url, s.png_url, s.photo_url
+            FROM dw_packages p LEFT JOIN dw_slides s ON s.package_id = p.id
+            WHERE p.topic_id = ? AND p.version < ?
+        ");
+        $stmt->execute([$pkg['topic_id'], $pkg['version']]);
+        $ids = [];
+        $urls = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $ids[(int) $r['id']] = true;
+            array_push($urls, $r['video_url'], $r['svg_url'], $r['png_url'], $r['photo_url']);
+        }
+        if ($ids === []) {
+            return 0;
+        }
+        $pdo->prepare("DELETE FROM dw_packages WHERE topic_id = ? AND version < ?")->execute([$pkg['topic_id'], $pkg['version']]);
+        foreach (array_unique(array_filter($urls)) as $url) {
+            self::deleteFile($url);
+        }
+        return count($ids);
+    }
+
     public static function setStatus(int $id, string $status, ?array $links = null): void
     {
         if (!in_array($status, self::STATUSES, true)) {
@@ -589,6 +623,10 @@ final class DwStudio
             }
             if ($topic['status'] === 'planned') {
                 self::setStatus($topic['id'], 'generated');
+            }
+            // Rendered now: the older versions go (else after the last slide, import_done).
+            if ($rendered && ($gone = self::pruneOlderVersions((int) $pkgId)) > 0) {
+                $warn[] = "The older version" . ($gone > 1 ? 's were' : ' was') . " deleted, with its slides and video.";
             }
             $report[] = ['date' => $label, 'ok' => true, 'version' => (int) $version, 'package_id' => (int) $pkgId,
                          'slides' => $rendered ? 0 : count($plan), 'errors' => [], 'warnings' => $warn];
