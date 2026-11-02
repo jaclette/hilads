@@ -39,7 +39,7 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
      4. the hashtags.
    - Mark ready, then mark published with the three platform links.
 6. **Video**: on the Mac, `cd tools/promo && npm run worlds -- <date>`.
-   - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders about 40 s of video (`src/Worlds.jsx`): hook 3.5 s, each country 4.5 s, outro 4.5 s. The layout is the slides', with a slow zoom on each photo, the text rising in and a crossfade between slides.
+   - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders about 49 s of video (`src/Worlds.jsx`): hook 4.5 s, each country 5.5 s, outro 6 s. The layout is the slides', with a slow zoom on each photo, the text rising in and a crossfade between slides.
    - It uploads the video to the package, and the topic page then shows it with a download button.
    - After an edit or a new version, run it again: the new video replaces the old one.
 
@@ -54,7 +54,7 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
   The photo fields stay: the photo shows where there is no clip, and the PNG slides and the ZIP always use it. Commons videos are mostly landscape 1920×1080 or 1280×720, hence the square: cut from a 1080 px tall frame it stays sharp, where full-frame 9:16 would be stretched. Expect clips on some slides only.
 - **Check before writing it**: look at frames of the part used (a passer-by's face can come into view).
 - **Admin, per slide**: the clip (a preview from its start), its credit and Commons page; **Replace clip** / **Add a clip** (URL, start, credit) and **Use photo**. The page and the month list show how many slides have a clip.
-- **Video** (`npm run worlds`, and `--file` too): each clip is downloaded once into `tools/promo/.cache/clips/` (reused by every render, deleted after 30 days unused), measured, and played muted from its start, cut to the slide (3.5 s hook, 4.5 s the others, plus the crossfade); a clip a little short is slowed down, never below ×0.65, and one too short leaves the slide on its photo. Same layout, text, flags and outro. A topic back in image mode keeps its clips in the package but plays the photos.
+- **Video** (`npm run worlds`, and `--file` too): each clip is downloaded once into `tools/promo/.cache/clips/` (reused by every render, deleted after 30 days unused), measured, and played muted from its start, cut to the slide (4.5 s hook, 5.5 s each country, 6 s outro, plus the crossfade); a clip a little short is slowed down, never below ×0.65, and one too short leaves the slide on its photo. Same layout, text, flags and outro. A topic back in image mode keeps its clips in the package but plays the photos.
 
 ## File format
 

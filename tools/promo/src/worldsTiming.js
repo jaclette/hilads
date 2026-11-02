@@ -2,7 +2,7 @@
 
 export const FPS = 30;
 export const FADE = 8;                                    // frames of crossfade into a slide
-export const SECONDS = { hook: 3.5, country: 4.5, outro: 4.5 };
+export const SECONDS = { hook: 4.5, country: 5.5, outro: 6 };
 export const MIN_RATE = 0.65;                             // a short clip is slowed down, never more
 
 /** How long a slide's clip plays: the slide plus its crossfade, in seconds. */
