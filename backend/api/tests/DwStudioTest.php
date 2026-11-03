@@ -74,6 +74,7 @@ final class DwStudioTest extends TestCase
         $plan = DwStudio::slidePlan($c);
         $this->assertSame([1, 'hook'], [$plan[0]['position'], $plan[0]['kind']]);
         $this->assertSame([2, 'country', 'Vietnam'], [$plan[1]['position'], $plan[1]['kind'], $plan[1]['country']]);
+        $this->assertSame('', $plan[1]['note']);
         $this->assertSame([9, 'outro', 'How does your city celebrate?'], [$plan[8]['position'], $plan[8]['kind'], $plan[8]['text']]);
     }
 
@@ -84,6 +85,7 @@ final class DwStudioTest extends TestCase
         $this->assertSame(null, DwStudio::editTarget($c, 'hook.illustration_brief')['slide']);
         $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.on_screen_text')['slide']);
         $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.flag')['slide']);
+        $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.on_screen_note')['slide']);
         $this->assertSame(null, DwStudio::editTarget($c, 'slides.1.caption_detail')['slide']);
         $this->assertSame(8, DwStudio::editTarget($c, 'outro.question')['slide']);
         $this->assertSame(null, DwStudio::editTarget($c, 'caption')['slide']);

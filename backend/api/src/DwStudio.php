@@ -393,8 +393,9 @@ final class DwStudio
     }
 
     /**
-     * The slides a content gives, in order: [{position, kind, text, country?, flag?,
+     * The slides a content gives, in order: [{position, kind, text, note?, country?, flag?,
      * brief, credit, photo_src, clip|null}]. 1 = hook, then one per country, then the outro.
+     * note: a country's optional on_screen_note, a smaller line under its text (a price, a figure).
      */
     public static function slidePlan(array $c): array
     {
@@ -404,6 +405,7 @@ final class DwStudio
         $plan = [['position' => 1, 'kind' => 'hook', 'text' => (string) ($c['hook']['on_screen_text'] ?? '')] + $pic($c['hook'] ?? [])];
         foreach (array_values($c['slides'] ?? []) as $i => $s) {
             $plan[] = ['position' => $i + 2, 'kind' => 'country', 'text' => (string) ($s['on_screen_text'] ?? ''),
+                       'note' => (string) ($s['on_screen_note'] ?? ''),
                        'country' => (string) ($s['country'] ?? ''), 'flag' => (string) ($s['flag'] ?? '')] + $pic($s);
         }
         $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? '')] + $pic($c['outro'] ?? []);
@@ -463,6 +465,9 @@ final class DwStudio
             }
             if (is_string($s['on_screen_text'] ?? null) && self::words($s['on_screen_text']) > 12) {
                 $warn[] = "Country {$n} ({$s['country']}): on-screen text is " . self::words($s['on_screen_text']) . ' words (max 12).';
+            }
+            if (is_string($s['on_screen_note'] ?? null) && self::words($s['on_screen_note']) > 6) {
+                $warn[] = "Country {$n} ({$s['country']}): on-screen note is " . self::words($s['on_screen_note']) . ' words (max 6).';
             }
             $countries[] = mb_strtolower(trim((string) ($s['country'] ?? '')));
         }
@@ -753,7 +758,7 @@ final class DwStudio
         if (preg_match('/^(topic|why_today|caption|ai_disclosure|follow_up_idea|hashtags|warnings)$/', $path)) {
             return ['slide' => null];
         }
-        $onScreen = ['on_screen_text', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
+        $onScreen = ['on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
         if (preg_match("/^hook\\.(on_screen_text|{$pic})$/", $path, $m)) {
             return ['slide' => in_array($m[1], $onScreen, true) ? 1 : null, 'photo' => $m[1] === 'photo_url'];
@@ -761,7 +766,7 @@ final class DwStudio
         if (preg_match("/^outro\\.(question|{$pic})$/", $path, $m)) {
             return ['slide' => in_array($m[1], $onScreen, true) ? $n + 2 : null, 'photo' => $m[1] === 'photo_url'];
         }
-        if (preg_match("/^slides\\.(\\d+)\\.(country|flag|on_screen_text|caption_detail|source_url|{$pic})$/", $path, $m)
+        if (preg_match("/^slides\\.(\\d+)\\.(country|flag|on_screen_text|on_screen_note|caption_detail|source_url|{$pic})$/", $path, $m)
             && (int) $m[1] < $n) {
             return ['slide' => in_array($m[2], $onScreen, true) ? (int) $m[1] + 2 : null, 'photo' => $m[2] === 'photo_url'];
         }

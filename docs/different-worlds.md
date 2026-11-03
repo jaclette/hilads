@@ -62,12 +62,14 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
 {"packages": [{"date": "2026-10-31", "model": "Claude Opus 5.5 (Claude Code)", "content": {
   "topic": "…", "why_today": "…",
   "hook": {"on_screen_text": "…", "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "Photo: …, CC0, Wikimedia Commons"},
-  "slides": [{"country": "Vietnam", "flag": "🇻🇳", "on_screen_text": "…", "caption_detail": "…",
+  "slides": [{"country": "Vietnam", "flag": "🇻🇳", "on_screen_text": "…", "on_screen_note": "…", "caption_detail": "…",
               "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "…", "source_url": "https://…"}],
   "outro": {"question": "…", "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "…"},
   "caption": "…", "hashtags": ["#…"], "ai_disclosure": "…", "follow_up_idea": "…", "warnings": ["…"]
 }}]}
 ```
+
+`on_screen_note` is optional: a smaller, dimmer line under the country's text, for the secondary fact (a price: "40,000 dong · $1.55"), so the text keeps the star. One line, up to 6 words; it can be edited on the topic page like the text.
 
 **What blocks an import:**
 - a missing field;
@@ -78,7 +80,7 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
 - a photo that isn't on upload.wikimedia.org, or a photo without a credit.
 
 **What gives a warning only:**
-- an on-screen text over 12 words;
+- an on-screen text over 12 words, or a note over 6;
 - a caption over 150 words or without "Different Worlds by Hilads";
 - not 5 to 8 hashtags;
 - a flag with no image;

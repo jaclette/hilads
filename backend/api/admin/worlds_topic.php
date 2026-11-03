@@ -239,6 +239,7 @@ worlds_styles();
                     <h4><?= wh(($s['flag'] ?? '') . ' ' . ($s['country'] ?? '')) ?>
                         <?php if (!empty($s['source_url'])): ?><a class="worlds-muted" href="<?= wh($s['source_url']) ?>" target="_blank" rel="noopener">source ↗</a><?php endif; ?></h4>
                     <?php worlds_field("slides.{$i}.on_screen_text", 'On screen', (string) ($s['on_screen_text'] ?? ''), false, DwStudio::words((string) ($s['on_screen_text'] ?? '')) . ' words'); ?>
+                    <?php worlds_field("slides.{$i}.on_screen_note", 'Small line under it (a price, a figure; optional)', (string) ($s['on_screen_note'] ?? '')); ?>
                     <?php worlds_field("slides.{$i}.caption_detail", 'Caption detail', (string) ($s['caption_detail'] ?? ''), true); ?>
                     <?php worlds_field("slides.{$i}.source_url", 'Source', (string) ($s['source_url'] ?? '')); ?>
                     <?php worlds_field("slides.{$i}.country", 'Country', (string) ($s['country'] ?? '')); ?>

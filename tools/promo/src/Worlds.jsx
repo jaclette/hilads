@@ -20,6 +20,10 @@ const BOTTOM = 1560;               // under it: the apps' caption and buttons
 const OUTRO_QUESTION_BOTTOM = 1436; // the outro's question ends above its hilads.live line
 const CTA_TOP = 1472;
 const CTA_LOGO = 64;
+// A country's note (a price, a figure): one smaller, dimmer line under its text (DwSlides::note).
+const NOTE_MAX = 48;
+const NOTE_MIN = 32;
+const NOTE_GAP = 22;
 
 for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold', '800']]) {
   loadFont({ family: FONT, url: staticFile(`fonts/BeVietnamPro-${file}.ttf`), weight });
@@ -76,6 +80,12 @@ function fit(text, top, max, min, bottom = BOTTOM) {
   return { px: Math.max(px, min), lines };
 }
 
+/** Where the last line of a Lines block ends (its first line's top is top). */
+function textEnd(text, top, max, min, bottom) {
+  const { px, lines } = fit(plain(text), top, max, min, bottom);
+  return Math.round(top + px * 0.95 + (lines.length - 1) * px * 1.16);
+}
+
 /** No emoji on screen (the slides drop them too). */
 const plain = (s) => (s ?? '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{E0020}-\u{E007F}]/gu, '').replace(/\s+/g, ' ').trim();
 
@@ -100,6 +110,16 @@ function Lines({ text, top, max, min, delay, bottom }) {
         <div key={i} style={{ fontFamily: FONT, fontWeight: 800, fontSize: px, lineHeight: `${px * 1.16}px`, color: '#fff', whiteSpace: 'nowrap' }}>{l}</div>
       ))}
     </Rise>
+  );
+}
+
+/** A country's note: one line under the text (whose last line ends at end), shrunk to fit. */
+function Note({ text, end, delay }) {
+  let px = NOTE_MAX;
+  while (px > NOTE_MIN && measure(text, px, 600) > WIDTH) px -= 2;
+  return (
+    <Rise delay={delay} style={{ left: LEFT, top: end + NOTE_GAP, fontFamily: FONT, fontWeight: 600, fontSize: px, lineHeight: `${px}px`,
+                                 color: 'rgba(255,255,255,0.75)', whiteSpace: 'nowrap' }}>{text}</Rise>
   );
 }
 
@@ -128,6 +148,7 @@ function Slide({ slide, length }) {
   const flagIn = useIn(4);
   const country = slide.kind === 'country';
   const credit = plain(slide.credit);
+  const note = plain(slide.note);
 
   return (
     <AbsoluteFill style={{ background: BG, opacity: fadeIn }}>
@@ -162,7 +183,12 @@ function Slide({ slide, length }) {
                                    fontFamily: FONT, fontWeight: 700, fontSize: 56, color: GOLD, whiteSpace: 'nowrap' }}>
             {plain(slide.country)}
           </Rise>
-          <Lines text={slide.text} top={1276} max={96} min={48} delay={10} />
+          {note
+            ? <>
+                <Lines text={slide.text} top={1276} max={96} min={48} delay={10} bottom={BOTTOM - NOTE_GAP - NOTE_MAX} />
+                <Note text={note} end={textEnd(slide.text, 1276, 96, 48, BOTTOM - NOTE_GAP - NOTE_MAX)} delay={16} />
+              </>
+            : <Lines text={slide.text} top={1276} max={96} min={48} delay={10} />}
         </>
       )}
       {slide.kind === 'hook' && <Lines text={slide.text} top={1164} max={112} min={56} delay={4} />}
@@ -177,7 +203,7 @@ function Slide({ slide, length }) {
   );
 }
 
-/** props: {slides: [{kind, text, country?, flag?, credit?, photo?, clip?: {src, rate, start}, cta?}]} (paths in the public folder). */
+/** props: {slides: [{kind, text, note?, country?, flag?, credit?, photo?, clip?: {src, rate, start}, cta?}]} (paths in the public folder). */
 export function WorldsVideo({ slides }) {
   const { parts } = worldsTiming(slides);
   return (

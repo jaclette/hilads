@@ -96,7 +96,7 @@ function planFromContent(c) {
   const pic = (p) => ({ credit: p?.photo_credit ?? '', photo_src: p?.photo_url ?? '', clip: clip(p) });
   return [
     { position: 1, kind: 'hook', text: c.hook?.on_screen_text ?? '', ...pic(c.hook) },
-    ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: s.on_screen_text, country: s.country, flag: s.flag, ...pic(s) })),
+    ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: s.on_screen_text, note: s.on_screen_note ?? '', country: s.country, flag: s.flag, ...pic(s) })),
     { position: (c.slides ?? []).length + 2, kind: 'outro', text: c.outro?.question ?? '', cta: DEFAULT_OUTRO_CTA, ...pic(c.outro) },
   ];
 }
@@ -157,7 +157,7 @@ async function main() {
         photo = null;
       }
     }
-    slides.push({ kind: s.kind, text: s.text, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
+    slides.push({ kind: s.kind, text: s.text, note: s.note ?? '', country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
                   credit: clip ? s.clip.credit : (s.credit ?? ''), photo, clip,
                   cta: s.kind === 'outro' ? (s.cta ?? '') : null });
   }
