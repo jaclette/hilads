@@ -56,6 +56,9 @@ function worlds_styles(): void
 .worlds-slide .worlds-muted { margin:4px 0; font-size:12px; }
 .worlds-slide details summary { cursor:pointer; color:#FF7A3C; font-size:12px; }
 .worlds-clip { margin:6px 0; display:flex; flex-direction:column; gap:4px; }
+/* video mode: what a slide plays */
+.worlds-badge { display:inline-block; margin:6px 0 2px; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; background:#2a2a2a; color:#ccc; }
+.worlds-badge.is-clip { background:rgba(255,122,60,0.18); color:#FF7A3C; }
 .worlds-progress { margin-top:12px; }
 .worlds-progress-bar { height:8px; border-radius:4px; background:#2a2a2a; overflow:hidden; }
 .worlds-progress-bar span { display:block; height:100%; width:0; background:#FF7A3C; transition:width .3s ease; }

@@ -621,9 +621,12 @@ final class DwStudio
                 }
             }
             if ($topic['visual_mode'] === 'video') {
+                // A clip only where it shows the slide's exact subject: the others show their photo, as intended.
                 $none = array_filter($plan, static fn($p) => $p['clip'] === null);
-                if ($none !== []) {
-                    $warn[] = 'Video mode: no clip on slide' . (count($none) > 1 ? 's ' : ' ') . implode(', ', array_column($none, 'position')) . ', their photo is used.';
+                if (count($none) === count($plan)) {
+                    $warn[] = 'Video mode: no clip, every slide shows its 📷 photo.';
+                } elseif ($none !== []) {
+                    $warn[] = 'Video mode: 📷 photo on slide' . (count($none) > 1 ? 's ' : ' ') . implode(', ', array_column($none, 'position')) . ', 🎬 clip on the others.';
                 }
             }
             if ($topic['status'] === 'planned') {

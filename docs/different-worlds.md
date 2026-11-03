@@ -47,13 +47,13 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
 
 A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the photos, as above) or `video`: in the video, a slide's clip plays in the photo's square.
 
-- **Package**: like the photos, the clips are chosen in Claude Code, on Wikimedia Commons (same licenses and rules: CC0, PD, CC BY, CC BY-SA; no children, no recognizable faces in the part used, no logos; never an AI-generated video). Where a fitting video exists, a slide also gets:
+- **Package**: like the photos, the clips are chosen in Claude Code, on Wikimedia Commons (same licenses and rules: CC0, PD, CC BY, CC BY-SA; no children, no recognizable faces in the part used, no logos; never an AI-generated video). A slide gets a clip **only if it clearly shows the slide's exact subject**, the specific food, object or place named on its text (a clip of the city, or of something similar, is not enough); otherwise it keeps its photo, which must show that exact subject. A precise photo is always better than a vague clip, and there is no minimum number of clips. A slide with a clip also gets:
   - `"clip_url"`: the video file on upload.wikimedia.org (webm, ogv or mp4), or its 1080p transcode (`…/transcoded/…/Name.webm.1080p.vp9.webm`); the `?utm_…` Commons adds is removed;
   - `"clip_start"`: the second its best 5 seconds start;
   - `"clip_credit"`: "Video: author, license, Wikimedia Commons", printed on the slide instead of the photo credit.
-  The photo fields stay: the photo shows where there is no clip, and the PNG slides and the ZIP always use it. Commons videos are mostly landscape 1920×1080 or 1280×720, hence the square: cut from a 1080 px tall frame it stays sharp, where full-frame 9:16 would be stretched. Expect clips on some slides only.
+  The photo fields stay: the photo shows where there is no clip, and the PNG slides and the ZIP always use it. Commons videos are mostly landscape 1920×1080 or 1280×720, hence the square: cut from a 1080 px tall frame it stays sharp, where full-frame 9:16 would be stretched. Expect clips on a few slides only.
 - **Check before writing it**: look at frames of the part used (a passer-by's face can come into view).
-- **Admin, per slide**: the clip (a preview from its start), its credit and Commons page; **Replace clip** / **Add a clip** (URL, start, credit) and **Use photo**. The page and the month list show how many slides have a clip.
+- **Admin, per slide**: the clip (a preview from its start), its credit and Commons page; **Replace clip** / **Add a clip** (URL, start, credit) and **Use photo**. Each slide has a badge, **🎬 Clip** or **📷 Photo**, and the line above the slides lists both (e.g. "🎬 clip: 1, 3, 9 · 📷 photo: 2, 4–8"); the import lists the photo slides the same way. The month list shows how many slides have a clip.
 - **Video** (`npm run worlds`, and `--file` too): each clip is downloaded once into `tools/promo/.cache/clips/` (reused by every render, deleted after 30 days unused), measured, and played muted from its start, cut to the slide (4.5 s hook, 5.5 s each country, 6 s outro, plus the crossfade); a clip a little short is slowed down, never below ×0.65, and one too short leaves the slide on its photo. Same layout, text, flags and outro. A topic back in image mode keeps its clips in the package but plays the photos.
 
 ## File format
@@ -121,4 +121,5 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
   - It adds the humor rule after the tone line of the system prompt (edits around it are kept).
   - Once (`dw_settings.calendar_rev` 2): every topic from Nov 1, 2026 not published is replaced by the funnier calendar of `DwSeed::TOPICS` (title, fun angle in the notes, type, date check). Their packages go with them; their R2 files stay.
 - The slides use the existing R2 settings, and the video uses the Daily promo's `PROMO_TOKEN`.
+- Clip rule (2026-11-03): `migrate.php` swaps the stored prompt's clip line (`DwSeed::PREV_CLIP_LINE`) for the stricter `CLIP_LINE` (a clip only where it shows the slide's exact subject, else the photo). No key or new variable.
 - Video mode (2026-11-01): `migrate.php` adds `dw_topics.visual_mode` and the clip rule after the photo rule of the system prompt (replacing the first, stock-search wording), and drops the `dw_slides.clip` column and `dw_clip_searches` table of that first version. No key or new variable.

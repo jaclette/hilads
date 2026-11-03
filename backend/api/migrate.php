@@ -3813,8 +3813,9 @@ try {
     // Video clips (2026-11-01): the clip rule goes right after the photo rule, whatever was edited around it
     // (its first wording, a stock-site search query, is swapped for it).
     $prompt = (string) $pdo->query("SELECT system_prompt FROM dw_settings WHERE id = 1")->fetchColumn();
-    if (str_contains($prompt, DwSeed::OLD_CLIP_LINE)) {
-        $prompt = str_replace(DwSeed::OLD_CLIP_LINE, DwSeed::CLIP_LINE, $prompt);
+    // 2026-11-03: a clip only where it shows the slide's exact subject, else the photo (PREV_CLIP_LINE swapped too).
+    if (str_contains($prompt, DwSeed::OLD_CLIP_LINE) || str_contains($prompt, DwSeed::PREV_CLIP_LINE)) {
+        $prompt = str_replace([DwSeed::OLD_CLIP_LINE, DwSeed::PREV_CLIP_LINE], DwSeed::CLIP_LINE, $prompt);
         $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$prompt]);
     }
     if ($prompt !== '' && !str_contains($prompt, 'clip_url')) {

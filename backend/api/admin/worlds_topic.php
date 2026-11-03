@@ -99,6 +99,9 @@ $plan     = $pkg !== null ? DwStudio::slidePlan($pkg['content']) : [];
 $c        = $pkg['content'] ?? [];
 $video    = $topic['visual_mode'] === 'video';
 $clipCount = count(array_filter($plan, fn($p) => $p['clip'] !== null));
+// Video mode: which slides play a clip and which show their photo.
+$clipSlides = array_column(array_filter($plan, fn($p) => $p['clip'] !== null), 'position');
+$photoSlides = array_column(array_filter($plan, fn($p) => $p['clip'] === null), 'position');
 $links    = $topic['published_links'];
 
 /** One editable field: a textarea (or input) saved on change, with a copy button. */
@@ -149,7 +152,8 @@ worlds_styles();
             <a class="btn btn-primary" href="<?= $self ?>?v=<?= $pkg['version'] ?>&zip=1">⬇ Download all slides (ZIP)</a>
             <button type="button" class="btn btn-secondary" data-full-caption data-cta="<?= wh(DwStudio::settings()['caption_cta']) ?>">Copy full caption</button>
             <?php if ($video): ?>
-                <span class="worlds-muted">🎬 video mode · <?= $clipCount ?>/<?= count($plan) ?> slides with a clip (the others show their photo)</span>
+                <span class="worlds-muted">🎬 video mode · <?= $clipCount ?>/<?= count($plan) ?> clips ·
+                    🎬 clip: <?= $clipSlides ? implode(', ', $clipSlides) : 'none' ?> · 📷 photo: <?= $photoSlides ? implode(', ', $photoSlides) : 'none' ?></span>
             <?php endif; ?>
         </div>
 
@@ -171,6 +175,7 @@ worlds_styles();
             <?php foreach ($plan as $p): $s = array_values(array_filter($slides, fn($r) => (int) $r['position'] === $p['position']))[0] ?? null; ?>
                 <div class="worlds-slide">
                     <a href="<?= wh($s['png_url'] ?? '#') ?>" target="_blank" rel="noopener"><img data-pos="<?= $p['position'] ?>" src="<?= wh($s['png_url'] ?? '') ?>" alt="" loading="lazy"></a>
+                    <?php if ($video): ?><span class="worlds-badge<?= $p['clip'] ? ' is-clip' : '' ?>"><?= $p['clip'] ? '🎬 Clip' : '📷 Photo' ?></span><?php endif; ?>
                     <div class="worlds-muted"><?= wh(DwSlides::fileName($p['position'], $p['kind'], $p['country'] ?? null)) ?>
                         <?= !empty($s['error']) ? '<br><span style="color:#f87171">' . wh($s['error']) . '</span>' : '' ?>
                         <?= ($s && filter_var($s['fallback'], FILTER_VALIDATE_BOOLEAN)) ? '<br><span style="color:#fbbf24">plain background</span>' : '' ?></div>
@@ -182,7 +187,7 @@ worlds_styles();
                                 <div class="worlds-muted" title="<?= wh($clip['credit']) ?>"><?= wh(mb_strimwidth($clip['credit'], 0, 60, '…')) ?> ·
                                     <a href="<?= wh($clip['page']) ?>" target="_blank" rel="noopener">source ↗</a> · from <?= wh((string) $clip['start']) ?> s</div>
                             <?php else: ?>
-                                <div class="worlds-muted">🎬 no clip: the photo plays</div>
+                                <div class="worlds-muted">No clip: the photo plays in the video</div>
                             <?php endif; ?>
                             <details><summary><?= $clip ? 'Replace clip' : 'Add a clip' ?></summary>
                                 <form method="POST" action="<?= wh($back) ?>"><?= csrf_input() ?><input type="hidden" name="action" value="clip"><input type="hidden" name="position" value="<?= $p['position'] ?>">
