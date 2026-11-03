@@ -172,6 +172,9 @@ async function main() {
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s…`);
   await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: file, inputProps, muted: true });
   console.log(`  saved: ${file}`);
+  // The work folder (copies of the clips, ~300 MB) is only needed for the render.
+  await rm(work, { recursive: true, force: true });
+  await rm(serveUrl, { recursive: true, force: true }).catch(() => {});
   // Only the latest render of the day is kept on the Mac (a --file render stays: no version in its name).
   if (data.version) {
     for (const name of await readdir(out)) {
