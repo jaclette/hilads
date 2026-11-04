@@ -10,7 +10,7 @@
       "distribution": "internal",
       "ios": {
         "simulator": false,
-        "image": "latest"
+        "image": "macos-tahoe-26.5-xcode-26.6"
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "http://10.0.2.2:8080",
@@ -23,7 +23,7 @@
       "distribution": "internal",
       "channel": "preview",
       "ios": {
-        "image": "latest"
+        "image": "macos-tahoe-26.5-xcode-26.6"
       },
       "android": {
         "buildType": "apk"
@@ -40,7 +40,7 @@
       "autoIncrement": true,
       "channel": "production",
       "ios": {
-        "image": "latest"
+        "image": "macos-tahoe-26.5-xcode-26.6"
       },
       "android": {
         "buildType": "app-bundle"
