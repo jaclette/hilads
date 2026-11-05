@@ -207,8 +207,8 @@ function lean(id: number): number {
 }
 
 // The pile's back poses (x, y, degrees): the next photo, then the one after; deeper ones are hidden.
-const BACK1 = [8, -2, 5] as const;
-const BACK2 = [-7, 3, -5] as const;
+const BACK1 = [3, -3, 2.5] as const;
+const BACK2 = [-3, 3, -2.5] as const;
 
 /**
  * A city's card: its most liked photo, and when the city has several, a pile of
@@ -240,6 +240,7 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
   // updated once a swipe has landed. Kept on the same photo when the pile's photos arrive.
   const top = useSharedValue(0);
   const count = useSharedValue(n);
+  const settle = useSharedValue(1);   // the photo just swiped away, settling back at the bottom of the pile
   const [front, setFront] = useState(0);
   const frontId = useRef(group.top.id);
   useEffect(() => {
@@ -249,6 +250,11 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
     setFront(i);
   }, [photos.map(x => x.id).join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
   const p: DailyProof = photos[front % n] ?? group.top;
+  // The photo just swiped away fades back in at the bottom of the pile, once React has re-stacked the
+  // layers (the z-order follows `front`): it never shows over the new front photo, even for a frame.
+  useEffect(() => {
+    if (settle.value < 1) settle.value = withDelay(34, withTiming(1, { duration: 220 }));
+  }, [front]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The top photo follows the thumb sideways (a slight tilt) while the next one rises from the pile;
   // past a third of the card, or a flick, it flies off and the next is on top, endlessly; short of
@@ -256,7 +262,6 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
   const w = useSharedValue(160);
   const tx = useSharedValue(0);
   const fade = useSharedValue(1);
-  const settle = useSharedValue(1);   // the photo just swiped away, settling back at the bottom of the pile
   const dragging = useRef(false);
   const setDragging = (v: boolean) => { dragging.current = v; };
   const landed = (i: number) => {
@@ -275,8 +280,7 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
       top.value = next;
       tx.value = 0;
       fade.value = 1;
-      settle.value = 0;
-      settle.value = withTiming(1, { duration: 220 });
+      settle.value = 0;   // hidden until React has put it at the bottom of the pile (below)
       runOnJS(landed)(next);
     };
     if (reduced) fade.value = withTiming(0, { duration: 150 }, done);
@@ -327,7 +331,7 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
             </>
           )}
           {(photos.length ? photos : [group.top]).map((x, i) => (
-            <PileLayer key={x.id} proof={x} index={i} n={n} motion={motion} pileColor={pileColor} lineColor={colors.line} guestId={guestId}
+            <PileLayer key={x.id} proof={x} index={i} n={n} front={front} motion={motion} pileColor={pileColor} lineColor={colors.line} guestId={guestId}
                        city={group} badge={badge} counter={pile && !faded} total={photos.length > 1 ? photos.length : Math.min(group.count, PILE_MAX)}
                        dots={swipeable ? photos.length : 0} />
           ))}
@@ -345,14 +349,15 @@ type PileMotion = {
 const lineOf = proofTitle;
 
 /**
- * One photo of a pile, mounted for good: in front it follows the drag; just behind, it rises to
- * the front as the drag goes on; further back it waits, hidden. Its z-order changes only when a
- * swipe lands (a style of its own, so the drag never resends it); its footer shows only in front.
+ * One photo of a pile, mounted for good, a whole opaque card (photo, selfie, caption, author,
+ * counts) moving as one block: in front it follows the drag; just behind, it rises to the front as
+ * the drag goes on; further back it waits, hidden. Its z-order follows the front photo in React,
+ * changed once a swipe lands (the drag itself never re-renders).
  * `n` (the pile's size) is a prop, not the shared count: a photo mounting as the pile loads gets
  * its depth right on its first frame.
  */
-const PileLayer = memo(function PileLayer({ proof, index, n, motion, pileColor, lineColor, guestId, city, badge, counter, total, dots }: {
-  proof: DailyProof; index: number; n: number; motion: PileMotion; pileColor: string; lineColor: string; guestId: string | null;
+const PileLayer = memo(function PileLayer({ proof, index, n, front, motion, pileColor, lineColor, guestId, city, badge, counter, total, dots }: {
+  proof: DailyProof; index: number; n: number; front: number; motion: PileMotion; pileColor: string; lineColor: string; guestId: string | null;
   city: DailyCityGroup; badge?: string; counter: boolean; total: number; dots: number;
 }) {
   const styles = useThemedStyles(makeStyles);
@@ -364,7 +369,9 @@ const PileLayer = memo(function PileLayer({ proof, index, n, motion, pileColor, 
     'worklet';
     return ((index - top.value) % n + n) % n;
   };
-  const order = useAnimatedStyle(() => ({ zIndex: n - depth() }));
+  // The z-order is a plain React style, set when a swipe lands: an animated zIndex isn't applied
+  // on Android (the swiped photo stayed drawn over the new front one, tilted, its footer blank).
+  const order = { zIndex: n - (((index - front) % n + n) % n) };
   const move = useAnimatedStyle(() => {
     const d = depth();
     const p = Math.min(1, Math.abs(tx.value) / Math.max(1, w.value));
@@ -385,23 +392,18 @@ const PileLayer = memo(function PileLayer({ proof, index, n, motion, pileColor, 
       transform: [{ translateX: at(0) }, { translateY: at(1) }, { rotate: `${at(2)}deg` }],
     };
   });
-  // The footer and the photo's labels: on the front photo, fading in on the one rising behind it.
-  const extras = useAnimatedStyle(() => {
-    const d = depth();
-    return { opacity: d === 0 ? 1 : d === 1 ? Math.min(1, Math.abs(tx.value) / Math.max(1, w.value)) : 0 };
-  });
 
   const players = city.authorCount ?? 0;
   const likes = state?.voteCount ?? proof.voteCount;
   const comments = proof.commentCount ?? 0;
   return (
-    <Animated.View pointerEvents="none" style={[index > 0 && styles.layerAbs, order]}>
-      <Animated.View style={[styles.card, move]}>
+    <View pointerEvents="none" style={[index > 0 && styles.layerAbs, order]}>
+      <Animated.View style={[styles.card, index > 0 && styles.cardFill, move]}>
         <View style={styles.photo}>
           {proof.selfieUrl
             ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill} inset="small" interactive={false} />
             : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />}
-          <Animated.View style={[StyleSheet.absoluteFill, extras]}>
+          <View style={StyleSheet.absoluteFill}>
             {/* Top-right, clear of the selfie inset (top-left): the count, then the event badge. */}
             {(city.count > 1 || !!badge) && (
               <View style={styles.corner}>
@@ -425,9 +427,9 @@ const PileLayer = memo(function PileLayer({ proof, index, n, motion, pileColor, 
                 {Array.from({ length: Math.min(dots, MAX_SEGMENTS) }, (_, i) => <View key={i} style={[styles.dot, i === index % MAX_SEGMENTS && styles.dotOn]} />)}
               </View>
             )}
-          </Animated.View>
+          </View>
         </View>
-        <Animated.View style={[styles.tileBody, extras]}>
+        <View style={styles.tileBody}>
           <View style={styles.cityRow}>
             <FlagSticker country={city.city.country} size={16} />
             <Text style={styles.city} numberOfLines={1}>{shortCityName(city.city.name)}</Text>
@@ -450,9 +452,9 @@ const PileLayer = memo(function PileLayer({ proof, index, n, motion, pileColor, 
               <Text style={styles.votesText}>{likes}</Text>
             </View>
           </View>
-        </Animated.View>
+        </View>
       </Animated.View>
-    </Animated.View>
+    </View>
   );
 });
 
@@ -559,6 +561,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   dot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: c.photoControl },
   dotOn:     { backgroundColor: c.white },
   card:      { borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  cardFill:  { flex: 1 },
   photo:     { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
   // Leaves the left 30 % to the selfie inset (24 % + its margin); a long count truncates.
   corner:    { position: 'absolute', top: 6, right: 6, left: '30%', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 4 },
