@@ -685,7 +685,8 @@
     "represent": "우리 도시를 대표해요",
     "emptyBody": "오늘은 아직 아무도 참여하지 않았어요. 가장 먼저 내 도시를 지도에 올려 보세요!",
     "openCountry": "{{city}}: 사진 보기",
-    "byCountry": "국가별"
+    "byCity": "도시별",
+    "topPhoto": "베스트 사진"
   },
   "recap": {
     "label": "어제",

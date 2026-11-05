@@ -7,7 +7,6 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProof, fetchDailyProofsByIds, fetchDailyTodayCountries } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
-import { answerText } from '@/features/compare/format';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import { compareCountryGroups, rankCountryProofs } from '@/features/daily/countryOrder';
 import { seedProofs } from '@/features/daily/votes';
@@ -25,12 +24,13 @@ import { handOffProof } from '@/lib/prefetch';
 /** The server lists at most 50 proofs per call. */
 const BATCH = 50;
 
-type Section = { group: DailyCountryGroup; data: DailyProof[][] };
+type Section = { group: DailyCountryGroup; data: DailyProof[][]; topId: string | null };
 
 /**
  * Same challenge. Different worlds. (Today's mosaic → "See all"): every
- * country that played today, one section each (flag, city, top answer,
- * photo count) with all its photos in a 2-column grid (light cards).
+ * city that played today, one section each (flag, city, photo count) with all
+ * its photos in a 2-column grid of cards like the mosaic's, each with its own
+ * caption, the most liked one crowned.
  * Countries in the mosaic's order (top photo's votes, then photos, then the
  * most recent), my country first; a country's photos best first, its mosaic
  * tile's photo leading (rankCountryProofs). A photo opens Today's photos
@@ -44,7 +44,7 @@ export default function CountriesScreen() {
 function CountriesScreenContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t, i18n } = useTranslation('daily');
+  const { t } = useTranslation('daily');
   const router = useRouter();
   const { source, date: dateParam, country, sort: sortParam } = useLocalSearchParams<{ source?: string; date?: string; country?: string; sort?: string }>();
   const lastToday = getLastToday();
@@ -88,7 +88,9 @@ function CountriesScreenContent() {
       if (list.length === 0) return [];
       const rows: DailyProof[][] = [];
       for (let i = 0; i < list.length; i += 2) rows.push(list.slice(i, i + 2));
-      return [{ group: g, data: rows }];
+      // 👑 the most liked photo, when the city has several and it has likes (ties: the best ranked).
+      const best = list.reduce((a, p) => (p.voteCount > a.voteCount ? p : a), list[0]);
+      return [{ group: g, data: rows, topId: list.length > 1 && best.voteCount > 0 ? best.id : null }];
     });
   }, [data, proofs, here?.country]);
 
@@ -117,7 +119,7 @@ function CountriesScreenContent() {
     <Screen>
       <ScreenHeader title={t('worlds.tagline')} testID="countries-screen" />
       <View style={styles.switch}>
-        <Segmented options={[{ key: 'country', label: t('countries.byCountry') }, { key: 'top10', label: t('leaderboard.tab') }]}
+        <Segmented options={[{ key: 'country', label: t('countries.byCity') }, { key: 'top10', label: t('leaderboard.tab') }]}
                    value={sort} onChange={k => { setSort(k); track('today_countries_sort', { sort: k }); }} />
       </View>
       {sort === 'top10' ? (
@@ -142,27 +144,18 @@ function CountriesScreenContent() {
           keyExtractor={row => row.map(p => p.id).join('|')}
           contentContainerStyle={styles.list}
           stickySectionHeadersEnabled={false}
-          renderSectionHeader={({ section: { group } }) => {
-            const top = group.top;
-            const answer = top.answer && !top.backHome ? answerText(top.answer, i18n.language) : null;
-            return (
-              <View style={styles.head}>
-                <FlagSticker country={group.country} size={24} />
-                <View style={styles.headBody}>
-                  <Text style={styles.city} numberOfLines={1}>
-                    {shortCityName(group.city.name)}{answer ? <Text style={styles.answer}>{` · ${answer}`}</Text> : null}
-                  </Text>
-                  <Text style={styles.count}>{t('today.proofs', { count: group.count })}</Text>
-                </View>
-              </View>
-            );
-          }}
-          renderItem={({ item: row, section: { group } }) => (
+          // The city only (flag, name, photo count): each photo carries its own caption.
+          renderSectionHeader={({ section: { group } }) => (
+            <View style={styles.head}>
+              <FlagSticker country={group.country} size={24} />
+              <Text style={styles.city} numberOfLines={1}>
+                {shortCityName(group.city.name)}<Text style={styles.count}>{` · ${t('today.proofs', { count: group.count })}`}</Text>
+              </Text>
+            </View>
+          )}
+          renderItem={({ item: row, section: { topId } }) => (
             <View style={styles.row}>
-              {row.map(p => (
-                <DailyProofTile key={p.id} proof={p} onPress={() => open(p)} compact
-                                mainAnswer={group.top.answer && !group.top.backHome ? answerText(group.top.answer, i18n.language) : null} />
-              ))}
+              {row.map(p => <DailyProofTile key={p.id} proof={p} onPress={() => open(p)} compact top={p.id === topId} />)}
               {row.length === 1 && <View style={styles.filler} />}
             </View>
           )}
@@ -199,10 +192,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   switch:   { paddingHorizontal: Spacing.md, paddingTop: 4 },
   list:     { padding: Spacing.md, paddingBottom: Spacing.xl },
   head:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 18, paddingBottom: 10 },
-  headBody: { flex: 1 },
-  city:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  answer:   { color: c.primaryText },
-  count:    { fontSize: 13, fontWeight: '600', color: c.muted, marginTop: 1 },
+  city:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  count:    { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   row:      { flexDirection: 'row', gap: 12, marginBottom: 12 },
   filler:   { flex: 1 },
 });

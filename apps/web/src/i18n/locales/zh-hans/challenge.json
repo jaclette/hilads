@@ -1407,7 +1407,8 @@
       "represent": "为你的城市出战",
       "emptyBody": "今天还没人出战。抢先把你的城市放上地图！",
       "openCountry": "{{city}}：查看照片",
-      "byCountry": "按国家"
+      "byCity": "按城市",
+      "topPhoto": "最佳照片"
     },
     "stories": {
       "played_other": "今天已有 {{count}} 座城市出战",

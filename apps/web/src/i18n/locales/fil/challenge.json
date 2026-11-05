@@ -1432,7 +1432,8 @@
       "represent": "I-represent ang city mo",
       "emptyBody": "Wala pang naglaro ngayon. Ikaw ang unang maglagay ng city mo sa mapa!",
       "openCountry": "{{city}}: tingnan ang photos",
-      "byCountry": "Per bansa"
+      "byCity": "Per city",
+      "topPhoto": "Top photo"
     },
     "stories": {
       "played_one": "{{count}} city ang naglaro ngayon",

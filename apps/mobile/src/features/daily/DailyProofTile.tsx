@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { CityName, DualPhoto, Photo } from '@/ui';
+import { Avatar, CityName, DualPhoto, Photo } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
 import { prefetchProof } from '@/lib/prefetch';
 import { DailyVoteButton } from './DailyVoteButton';
@@ -13,25 +13,26 @@ import { EarlyBadge } from './EarlyBadge';
 import { RankMedal } from './RankMedal';
 import { Chip, ModeLabel } from '@/ui';
 import { AnswerChip } from '@/features/compare/AnswerChip';
-import { captionRepeatsAnswer, answerText } from '@/features/compare/format';
+import { captionRepeatsAnswer, proofTitle, TITLE_FIT } from '@/features/compare/format';
 import type { DailyProof } from '@/types';
 import { PickBadge } from '@/features/map/PickBadge';
 
 /**
  * One proof in the sheet grid: photo (rank seal if World top 3), author with
- * Local/Traveler, city, caption, vote. `compact` (a country's section, "Same
- * challenge. Different worlds."): no city line (the section has it), small
- * labels on the name's line, "Validated by a local" as a check by the name
- * (a tap explains it), and the answer only when it differs from the
- * section's `mainAnswer`.
+ * Local/Traveler, city, caption, vote. `compact` (a city's section, "Same
+ * challenge. Different worlds."), laid out like Today's mosaic cards: photo,
+ * its own title (answer, else caption) in big type, the caption when it says
+ * more, the author row (avatar, handle, a check when validated by a local (a
+ * tap explains it), small labels wrapping), then comments and likes at the
+ * foot. `top`: the city's most liked photo ("👑 Top photo").
  */
-export function DailyProofTile({ proof, onPress, compact = false, mainAnswer = null }: {
-  proof: DailyProof; onPress: () => void; compact?: boolean; mainAnswer?: string | null;
+export function DailyProofTile({ proof, onPress, compact = false, top = false }: {
+  proof: DailyProof; onPress: () => void; compact?: boolean; top?: boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   const name = proof.user.displayName || proof.user.username || '';
-  if (compact) return <CompactTile proof={proof} onPress={onPress} mainAnswer={mainAnswer} />;
+  if (compact) return <CompactTile proof={proof} onPress={onPress} top={top} />;
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} onPressIn={() => prefetchProof(proof)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
       {proof.selfieUrl
@@ -64,7 +65,7 @@ export function DailyProofTile({ proof, onPress, compact = false, mainAnswer = n
 }
 
 /** The compact tile (see DailyProofTile). */
-function CompactTile({ proof, onPress, mainAnswer }: { proof: DailyProof; onPress: () => void; mainAnswer: string | null }) {
+function CompactTile({ proof, onPress, top }: { proof: DailyProof; onPress: () => void; top: boolean }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
@@ -75,19 +76,32 @@ function CompactTile({ proof, onPress, mainAnswer }: { proof: DailyProof; onPres
     return () => clearTimeout(id);
   }, [hint]);
   const name = proof.user.displayName || proof.user.username || '';
+  const handle = proof.user.username ? `@${proof.user.username}` : name;
   const answer = proof.answer && !proof.backHome ? proof.answer : null;
-  // The section's main answer is in its header: a photo repeats it only when it says something else.
-  const ownAnswer = !!answer && !(mainAnswer && captionRepeatsAnswer(mainAnswer, answer, i18n.language));
+  const title = proofTitle(proof, i18n.language);
+  // The caption under the title when the title is the answer and the caption says more.
+  const caption = answer && proof.caption && !captionRepeatsAnswer(proof.caption, answer, i18n.language) ? proof.caption : null;
+  const comments = proof.commentCount ?? 0;
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} onPressIn={() => prefetchProof(proof)} activeOpacity={0.85} accessibilityRole="button"
-                      accessibilityLabel={[name, answer ? answerText(answer, i18n.language) : null, proof.caption].filter(Boolean).join(', ')}>
-      {proof.selfieUrl
-        ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
-        : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
-      {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
-      <View style={styles.meta}>
+                      accessibilityLabel={[top ? t('countries.topPhoto') : null, title, caption, handle].filter(Boolean).join(', ')}>
+      <View>
+        {proof.selfieUrl
+          ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
+          : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
+        {proof.worldRank !== null && proof.worldRank <= 3 && <RankMedal rank={proof.worldRank} style={styles.medal} />}
+        {top && (
+          <View style={styles.top}>
+            <Text style={styles.topText} numberOfLines={1}>{`👑 ${t('countries.topPhoto')}`}</Text>
+          </View>
+        )}
+      </View>
+      <View style={styles.cbody}>
+        {!!title && <Text style={styles.title} {...TITLE_FIT}>{title}</Text>}
+        {!!caption && <Text style={styles.caption} numberOfLines={2} ellipsizeMode="tail" textBreakStrategy="simple">{caption}</Text>}
         <View style={styles.compactRow}>
-          <Text style={styles.name} numberOfLines={1}>{name}</Text>
+          <Avatar uri={proof.user.photoUrl ?? null} name={name} size={20} />
+          <Text style={styles.handle} numberOfLines={1}>{handle}</Text>
           {proof.validatedByLocal && (
             <Pressable onPress={() => setHint(h => !h)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('vote.validatedHint')}>
               <Ionicons name="checkmark-circle" size={15} color={colors.localText} />
@@ -102,11 +116,14 @@ function CompactTile({ proof, onPress, mainAnswer }: { proof: DailyProof; onPres
             <Text style={styles.hintText}>{t('vote.validatedHint')}</Text>
           </View>
         )}
-        {ownAnswer && <AnswerChip answer={answer!} />}
-        {!!proof.caption && !captionRepeatsAnswer(proof.caption, answer, i18n.language) && (
-          <Text style={styles.caption} numberOfLines={2}>{proof.caption}</Text>
-        )}
-        <View style={styles.voteRow}>
+        {/* Likes and comments at the card's foot: the cards of a row end level. */}
+        <View style={styles.cfoot}>
+          {comments > 0 && (
+            <View style={styles.comments}>
+              <Ionicons name="chatbubble-outline" size={14} color={colors.muted} />
+              <Text style={styles.commentsText}>{comments}</Text>
+            </View>
+          )}
           <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} cityId={proof.city?.id ?? null} source="countries_tile" variant="tile" />
         </View>
       </View>
@@ -126,7 +143,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   caption: { fontSize: FontSizes.xs, fontWeight: '400', color: c.text, marginTop: 2 },
   medal:   { position: 'absolute', top: 8, left: 8 },
   voteRow: { marginTop: 4 },
-  compactRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 4, rowGap: 3 },
+  compactRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 4, rowGap: 3, marginTop: 2 },
+  cbody:   { flex: 1, padding: 10, gap: 4 },
+  title:   { fontSize: FontSizes.lg, lineHeight: 22, fontWeight: '800', color: c.text, minHeight: 44 },
+  handle:  { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.text },
+  cfoot:   { marginTop: 'auto', paddingTop: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 10 },
+  comments: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  commentsText: { fontSize: 13, fontWeight: '700', color: c.muted },
+  top:     { position: 'absolute', left: 8, bottom: 8, maxWidth: '90%', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, backgroundColor: c.photoPill },
+  topText: { fontSize: 11, fontWeight: '800', color: c.white },
   hint:    { padding: 8, borderRadius: 10, backgroundColor: c.text },
   hintText: { fontSize: 12, lineHeight: 16, fontWeight: '600', color: c.bg },
 });

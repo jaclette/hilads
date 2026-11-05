@@ -1,4 +1,5 @@
-import type { DailyAnswer, DailyCompareType } from '@/types';
+import type { TextProps } from 'react-native';
+import type { DailyAnswer, DailyCompareType, DailyProof } from '@/types';
 
 /** The half-hours of a day, in minutes since midnight (the time wheel). */
 export const HALF_HOURS = Array.from({ length: 48 }, (_, i) => i * 30);
@@ -53,6 +54,19 @@ export function captionRepeatsAnswer(caption: string | null | undefined, answer:
   const c = norm(caption);
   return c !== '' && c === norm(answerText(answer, locale));
 }
+
+/** A photo's title on its cards (Today's mosaic, See all): its answer, else its caption, else its place. */
+export function proofTitle(p: DailyProof, locale?: string): string {
+  return p.answer && !p.backHome ? answerText(p.answer, locale) : p.caption ?? p.spot?.name ?? p.place?.name ?? '';
+}
+
+/**
+ * A card title's two lines: a long one shrinks a little, then ends with "…", never cut mid-word
+ * (Android's default break strategy measured some lines narrower than it drew them).
+ */
+export const TITLE_FIT: TextProps = {
+  numberOfLines: 2, ellipsizeMode: 'tail', adjustsFontSizeToFit: true, minimumFontScale: 0.85, textBreakStrategy: 'simple',
+};
 
 /** The value an input holds for a question type: text for word / text / number, minutes for time. */
 export type AnswerDraft = { text: string; minutes: number };

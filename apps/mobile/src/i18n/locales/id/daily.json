@@ -685,7 +685,8 @@
     "represent": "Wakili kotamu",
     "emptyBody": "Belum ada yang main hari ini. Taruh kotamu di peta duluan!",
     "openCountry": "{{city}}: lihat fotonya",
-    "byCountry": "Per negara"
+    "byCity": "Per kota",
+    "topPhoto": "Foto teratas"
   },
   "recap": {
     "label": "Kemarin",

@@ -711,7 +711,8 @@
     "represent": "Vertritt deine Stadt",
     "emptyBody": "Heute hat noch niemand gespielt. Bring deine Stadt als erste auf die Karte!",
     "openCountry": "{{city}}: Fotos ansehen",
-    "byCountry": "Nach Land"
+    "byCity": "Nach Stadt",
+    "topPhoto": "Top-Foto"
   },
   "recap": {
     "label": "Gestern",

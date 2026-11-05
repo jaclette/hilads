@@ -737,7 +737,8 @@
     "represent": "Representa a tua cidade",
     "emptyBody": "Ainda ninguém jogou hoje. Põe a tua cidade no mapa primeiro!",
     "openCountry": "{{city}}: ver as fotos",
-    "byCountry": "Por país"
+    "byCity": "Por cidade",
+    "topPhoto": "Foto top"
   },
   "recap": {
     "label": "Ontem",

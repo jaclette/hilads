@@ -685,7 +685,8 @@
     "represent": "Đại diện cho thành phố của bạn",
     "emptyBody": "Hôm nay chưa ai chơi. Đưa thành phố bạn lên bản đồ trước tiên nào!",
     "openCountry": "{{city}}: xem ảnh",
-    "byCountry": "Theo quốc gia"
+    "byCity": "Theo thành phố",
+    "topPhoto": "Ảnh hàng đầu"
   },
   "recap": {
     "label": "Hôm qua",

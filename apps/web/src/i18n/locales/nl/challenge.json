@@ -1432,7 +1432,8 @@
       "represent": "Vertegenwoordig je stad",
       "emptyBody": "Vandaag heeft nog niemand gespeeld. Zet jouw stad als eerste op de kaart!",
       "openCountry": "{{city}}: bekijk de foto's",
-      "byCountry": "Per land"
+      "byCity": "Per stad",
+      "topPhoto": "Topfoto"
     },
     "stories": {
       "played_one": "{{count}} stad deed vandaag mee",

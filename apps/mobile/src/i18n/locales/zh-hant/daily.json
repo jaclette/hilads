@@ -685,7 +685,8 @@
     "represent": "為你的城市出戰",
     "emptyBody": "今天還沒有人參加。搶先讓你的城市登上地圖！",
     "openCountry": "{{city}}：查看照片",
-    "byCountry": "依國家"
+    "byCity": "依城市",
+    "topPhoto": "最佳照片"
   },
   "recap": {
     "label": "昨天",

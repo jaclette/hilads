@@ -17809,7 +17809,7 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-photo { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--surface2); }
 .tc-tile-body { display: flex; flex-direction: column; gap: 4px; padding: 10px; }
 .tc-city { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: var(--text); min-width: 0; }
-.tc-answer { font-size: 18px; line-height: 22px; font-weight: 800; min-height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.tc-answer { font-size: 18px; line-height: 22px; font-weight: 800; min-height: 44px; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .tc-votes { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); }
 .tc-represent { align-items: center; justify-content: center; gap: 10px; min-height: 180px; padding: 16px; border: 2px dashed var(--primary-text); background: var(--primary-tint); }
 .tc-banner { display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 10px 14px; border-radius: 16px; border: 2px dashed var(--primary-text);
@@ -17878,13 +17878,15 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .dc-sort-btn--on { background: var(--primary); color: #fff; }
 .dc-country { display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 8px; }
 .dc-country-head { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
-.dc-country-body { display: flex; flex-direction: column; min-width: 0; }
-.dc-country-city { font-size: 18px; font-weight: 800; color: var(--text); }
-.dc-country-answer { color: var(--primary-text); }
+.dc-country-city { flex: 1; min-width: 0; font-size: 18px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-country-count { font-size: 14px; font-weight: 600; color: var(--muted); }
 .dc-ctile { display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1.5px solid var(--line); }
 .dc-ctile-photo { border: 0; padding: 0; cursor: pointer; background: var(--surface2); }
 .dc-ctile-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
-.dc-ctile-meta { display: flex; flex-direction: column; gap: 6px; padding: 10px; }
+.dc-ctile-meta { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 10px; }
+.dc-ctile-title { margin: 0; font-size: 18px; line-height: 22px; font-weight: 800; color: var(--text); min-height: 44px; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.dc-ctile-foot { margin-top: auto; padding-top: 4px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.dc-ctile-top { position: absolute; left: 8px; bottom: 8px; max-width: 90%; padding: 4px 8px; border-radius: 12px; background: rgba(0,0,0,0.62); color: #fff; font-size: 11px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dc-ctile-name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 5px; font-size: 14px; color: var(--text); }
 .dc-ctile-name strong { font-weight: 800; }
 .dc-ctile-check { display: inline-flex; border: 0; background: none; padding: 0; color: #17864C; cursor: pointer; }

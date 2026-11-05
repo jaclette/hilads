@@ -15,7 +15,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
-import { answerText } from '@/features/compare/format';
+import { proofTitle, TITLE_FIT } from '@/features/compare/format';
 import { hasUnseen, isSeen, useSeen } from '@/features/daily/seen';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -342,9 +342,7 @@ type PileMotion = {
   fade: SharedValue<number>; settle: SharedValue<number>; reduced: boolean;
 };
 
-function lineOf(p: DailyProof, lang: string): string {
-  return p.answer && !p.backHome ? answerText(p.answer, lang) : p.caption ?? p.spot?.name ?? p.place?.name ?? '';
-}
+const lineOf = proofTitle;
 
 /**
  * One photo of a pile, mounted for good: in front it follows the drag; just behind, it rises to
@@ -434,7 +432,7 @@ const PileLayer = memo(function PileLayer({ proof, index, n, motion, pileColor, 
             <FlagSticker country={city.city.country} size={16} />
             <Text style={styles.city} numberOfLines={1}>{shortCityName(city.city.name)}</Text>
           </View>
-          <Text style={styles.answer} numberOfLines={2}>{lineOf(proof, i18n.language)}</Text>
+          <Text style={styles.answer} {...TITLE_FIT}>{lineOf(proof, i18n.language)}</Text>
           <View style={styles.foot}>
             <View style={styles.avatars}>
               <View style={styles.avatar}>

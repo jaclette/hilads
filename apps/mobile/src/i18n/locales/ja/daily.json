@@ -685,7 +685,8 @@
     "represent": "自分の街を代表しよう",
     "emptyBody": "今日はまだ誰も参加していません。一番乗りで街を地図に載せよう！",
     "openCountry": "{{city}}：写真を見る",
-    "byCountry": "国別"
+    "byCity": "都市別",
+    "topPhoto": "トップ写真"
   },
   "recap": {
     "label": "昨日",

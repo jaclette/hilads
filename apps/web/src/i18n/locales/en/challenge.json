@@ -1432,7 +1432,8 @@
       "represent": "Represent your city",
       "emptyBody": "Nobody has played yet today. Put your city on the map first!",
       "openCountry": "{{city}}: see the photos",
-      "byCountry": "By country"
+      "byCity": "By city",
+      "topPhoto": "Top photo"
     },
     "stories": {
       "played_one": "{{count}} city played today",
