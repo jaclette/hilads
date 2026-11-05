@@ -13,6 +13,7 @@ import { Stack, router, useRootNavigationState } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
@@ -290,7 +291,9 @@ export default function RootLayout() {
 // Inside ThemeProvider so the root safe-area bg + status-bar style follow the theme.
 function ThemedRoot() {
   const { theme, colors } = useTheme();
+  // Gesture handler at the root: gestures that run on the UI thread (the Today pile).
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider style={{ backgroundColor: colors.bg }}>
       {/* The keyboard rule (src/ui/keyboard.tsx): one keyboard handling for every
           screen, Android edge-to-edge included (adjustResize no longer resizes it). */}
@@ -303,5 +306,6 @@ function ThemedRoot() {
       </AppProvider>
       </KeyboardProvider>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

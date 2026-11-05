@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Animated, FlatList, Pressable, Text, TouchableOpacity, View, StyleSheet,
+  ActivityIndicator, Animated, Dimensions, FlatList, Pressable, Text, TouchableOpacity, View, StyleSheet,
   type ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
+import { prefetchProof, takeHandedProof } from '@/lib/prefetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -83,9 +83,10 @@ function PhotosScreenContent() {
 
   const [tab, setTab] = useState<Tab>(tabParam === 'city' ? 'city' : 'world');
   const [proofs, setProofs] = useState<DailyProof[] | null>(null);
-  const [pinned, setPinned] = useState<DailyProof | null>(null);
+  // Opened from a grid: the tapped photo is there from the first frame (the feed loads under it).
+  const [pinned, setPinned] = useState<DailyProof | null>(() => takeHandedProof(pinnedId));
   const [failed, setFailed] = useState(false);
-  const [height, setHeight] = useState(0);
+  const [height, setHeight] = useState(() => Dimensions.get('window').height);
   const [index, setIndex] = useState(0);
   const [share, setShare] = useState<ShareContent | null>(null);
   const [votersOf, setVotersOf] = useState<string | null>(null);
@@ -139,6 +140,7 @@ function PhotosScreenContent() {
   }, [country, proofs]);
 
   const items: Item[] = useMemo(() => {
+    if (proofs === null) return pinned ? [{ kind: 'photo' as const, proof: pinned }] : [];
     if (story && tab === 'world') {
       // Photos posted since Today loaded follow the story.
       const ordered = [...(proofs ?? [])].sort((a, b) => (story.get(a.id) ?? 1e9) - (story.get(b.id) ?? 1e9));
@@ -170,8 +172,8 @@ function PhotosScreenContent() {
       markSeen(item.proof.id, !!account);   // Today's story ring turns neutral once a country is all seen
       track('daily_photos_viewed', { index, city: item.proof.city?.name ?? null, tab });
     }
-    const next = items.slice(index + 1, index + 3).flatMap(i => (i.kind === 'photo' ? [i.proof.photoUrl] : []));
-    if (next.length) Image.prefetch(next).catch(() => {});
+    // The size the viewer shows (DualPhoto's medium, not the original), and the selfie.
+    items.slice(index + 1, index + 3).forEach(i => { if (i.kind === 'photo') prefetchProof(i.proof); });
   }, [index, items]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openProfile = (userId: string) => {
@@ -195,7 +197,7 @@ function PhotosScreenContent() {
 
   return (
     <View style={styles.wrap} onLayout={e => setHeight(e.nativeEvent.layout.height)} testID="daily-photos">
-      {height > 0 && proofs !== null && (
+      {height > 0 && (proofs !== null || !!pinned) && (
         <FlatList
           ref={list}
           data={items}
@@ -221,7 +223,7 @@ function PhotosScreenContent() {
           )}
         />
       )}
-      {(proofs === null || height === 0) && (
+      {((proofs === null && !pinned) || height === 0) && (
         <View style={[StyleSheet.absoluteFill, styles.center]}>
           {failed ? (
             <View style={styles.centerBox}>

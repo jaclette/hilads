@@ -20,6 +20,7 @@ import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
 import { FlagSticker } from '@/ui/joy';
 import type { DailyCountryGroup, DailyProof, DailyTodayCountries } from '@/types';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
+import { handOffProof } from '@/lib/prefetch';
 
 /** The server lists at most 50 proofs per call. */
 const BATCH = 50;
@@ -92,7 +93,11 @@ function CountriesScreenContent() {
   }, [data, proofs, here?.country]);
 
   // Today: Today's photos on it; a past day: the photo on its own.
-  const open = (p: DailyProof) => (date ? setViewing(p) : router.push(`/daily/photos?proof=${p.id}&source=today_all` as never));
+  const open = (p: DailyProof) => {
+    if (date) { setViewing(p); return; }
+    handOffProof(p);
+    router.push(`/daily/photos?proof=${p.id}&source=today_all` as never);
+  };
 
   // ?country=XX (a bubble of the challenge screen): that country's section, once.
   const scrolled = useRef(false);

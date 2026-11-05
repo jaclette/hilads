@@ -17,6 +17,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
 import { Avatar, DualPhoto, IconButton } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
+import { prefetchProof } from '@/lib/prefetch';
 import { FlagSticker } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
@@ -27,6 +28,7 @@ import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import { CommentButton } from '@/features/daily/CommentButton';
 import { commentsTargetOf, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
+import { cachedPileProof } from '@/features/today/TodayCountries';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
 import { themeColor } from '@/ui/joy';
 import { getLastToday } from '@/hooks/useDaily';
@@ -69,8 +71,16 @@ function Stories() {
   });
   const [failed, setFailed] = useState(false);
   const [cityIndex, setCityIndex] = useState(0);
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [proofs, setProofs] = useState<Record<string, DailyProof>>({});
+  // Opened from Today (its cities already loaded): the first frame is the photo tapped, never a
+  // loader nor the city's top photo first; the photos Today has are there from the start.
+  const first = cities?.find(c => String(c.city.id) === String(startCity)) ?? cities?.[0] ?? null;
+  const [photoIndex, setPhotoIndex] = useState(() => Math.max(0, startPhoto && first ? first.ids.indexOf(startPhoto) : 0));
+  const [proofs, setProofs] = useState<Record<string, DailyProof>>(() => {
+    const known: Record<string, DailyProof> = {};
+    (cities ?? []).forEach(c => { known[c.top.id] = c.top; });
+    first?.ids.forEach(id => { const p = cachedPileProof(id); if (p) known[id] = p; });
+    return known;
+  });
   // Photos that couldn't load (removed, a network error): skipped, never a stuck loader.
   const [gone, setGone] = useState<Set<string>>(new Set());
   const [paused, setPaused] = useState(false);
@@ -101,7 +111,7 @@ function Stories() {
   const proof = ids[photoIndex] ? proofs[ids[photoIndex]] ?? null : null;
 
   // Opened from a mosaic pile: start at the photo that was on top of it.
-  const startedAt = useRef(false);
+  const startedAt = useRef(!!first);
   useEffect(() => {
     if (startedAt.current || !startPhoto || !group || cityIndex !== 0) return;
     startedAt.current = true;
@@ -124,6 +134,14 @@ function Stories() {
   }, [group?.city.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (proof) markSeen(proof.id, !!account); }, [proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The next two photos (the next city's best after the last one) load meanwhile: a tap shows them at once.
+  useEffect(() => {
+    if (!proof) return;
+    const after = ids.slice(photoIndex + 1, photoIndex + 3).map(id => proofs[id]);
+    if (after.length < 2) after.push(order[cityIndex + 1]?.top);
+    after.forEach(prefetchProof);
+  }, [proof?.id, proofs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const close = () => goBack();
   const next = () => {
@@ -187,7 +205,7 @@ function Stories() {
       {proof && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                     transition={120} draggable insetTop={insets.top + 76} onInteract={setInteracting} />
+                     draggable insetTop={insets.top + 76} onInteract={setInteracting} />
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />

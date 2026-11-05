@@ -19,10 +19,14 @@
 
 import { useEffect, useState } from 'react';
 import {
-  View, Image, TouchableOpacity, ActivityIndicator, Text, StyleSheet,
+  View, TouchableOpacity, ActivityIndicator, Text, StyleSheet,
   type ImageStyle, type StyleProp,
 } from 'react-native';
+// expo-image, like the viewer (ImagePreviewModal): the bubble's thumbnail sits in the same memory
+// cache, so the viewer opens on it at once instead of a black frame.
+import { Image } from 'expo-image';
 import { thumbUrl } from '@/lib/imageThumb';
+import { prefetchFull } from '@/lib/prefetch';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { type ThemeColors } from '@/constants';
@@ -79,6 +83,7 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={!disabled ? onPress : undefined}
+      onPressIn={!disabled && onPress ? () => prefetchFull(uri) : undefined}
       onLongPress={onLongPress}
       delayLongPress={350}
       disabled={disabled && !onLongPress}
@@ -90,13 +95,14 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
         style={[imageStyle, ratio ? fitBox(ratio) : null]}
         // 'contain' guarantees the whole photo is visible even before the box is
         // sized (and if onLoad never reports dimensions) - no cover-crop / zoom-in.
-        resizeMode="contain"
+        contentFit="contain"
+        cachePolicy="memory-disk"
         onLoad={(e) => {
-          const s = e?.nativeEvent?.source;
+          const s = e?.source;
           if (s?.width && s?.height) setRatio(s.width / s.height);
         }}
         onError={(e) => {
-          const reason = e?.nativeEvent?.error ?? 'unknown';
+          const reason = e?.error ?? 'unknown';
           // Thumb missing (legacy upload) → retry with the full image once.
           if (src !== uri) { setSrc(uri); return; }
           console.warn(`[${surface}-image] load error - uri=${uri} reason=${reason}`);

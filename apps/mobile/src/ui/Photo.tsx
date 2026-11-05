@@ -14,7 +14,9 @@ export function Photo({ thumb, full, hash, ...rest }: Omit<ImageProps, 'source'>
   const [step, setStep] = useState(0);
   useEffect(() => { setStep(0); }, [thumb, full]);
   const uri = tries[Math.min(step, tries.length - 1)];
-  return <Image {...rest} source={uri ? { uri } : undefined} placeholder={rest.placeholder ?? (hash ? { thumbhash: hash } : undefined)} onError={e => {
+  // Kept in memory too: the viewer opening on this photo shows the same thumbnail at once.
+  return <Image cachePolicy="memory-disk" placeholderContentFit={rest.contentFit} {...rest} source={uri ? { uri } : undefined}
+                placeholder={rest.placeholder ?? (hash ? { thumbhash: hash } : undefined)} onError={e => {
     if (step < tries.length - 1) setStep(step + 1);
     else rest.onError?.(e);
   }} />;

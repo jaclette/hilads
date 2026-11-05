@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import {
-  Modal, View, Image, TouchableOpacity, Text, StyleSheet,
+  Modal, View, TouchableOpacity, Text, StyleSheet,
   Dimensions, StatusBar, PanResponder, Animated, Alert, Platform, Linking,
 } from 'react-native';
 import * as FileSystem from 'expo-file-system';
@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { IconButton } from '@/ui';
+import { Image } from 'expo-image';
+import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -50,6 +52,9 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
   const translateY = useRef(new Animated.Value(0)).current;
   const bgOpacity  = useRef(new Animated.Value(1)).current;
   const [busy, setBusy] = useState<'download' | 'share' | null>(null);
+  // The viewer size of the photo; the original once that size failed for this photo.
+  const [mediumFailed, setMediumFailed] = useState<string | null>(null);
+  const full = uri ? (mediumFailed === uri ? uri : mediumUrl(uri) ?? uri) : null;
 
   // Reset position whenever a new image opens
   useEffect(() => {
@@ -185,11 +190,18 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
           style={[styles.imageWrap, { transform: [{ translateY }], opacity: bgOpacity }]}
           {...panResponder.panHandlers}
         >
+          {/* The bubble's thumbnail at once, stretched to the photo's final box (never small in the
+              middle), then a crossfade to the 1080 px size; the original only if that fails. */}
           {uri && (
             <Image
-              source={{ uri }}
+              source={{ uri: full ?? uri }}
+              placeholder={{ uri: thumbUrl(uri) ?? uri }}
+              placeholderContentFit="contain"
+              contentFit="contain"
+              transition={200}
+              cachePolicy="memory-disk"
+              onError={() => { if (full !== uri) setMediumFailed(uri); }}
               style={styles.image}
-              resizeMode="contain"
             />
           )}
         </Animated.View>

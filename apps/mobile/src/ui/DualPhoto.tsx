@@ -23,6 +23,9 @@ import { mediumUrl, proxyFor, thumbUrl } from '@/lib/imageThumb';
  * - sizes: callers pass the originals, both layers load one size so a swap never
  *   reloads: the thumbnail on a card (`card`, a small inset or not interactive),
  *   else the medium size over the thumbnail; the original only if it fails.
+ * - a viewer opens on the card's thumbnail (same URL, already in memory) stretched
+ *   to the photo's final box (the placeholder takes the photo's contentFit, never
+ *   its small native size in the middle), then crossfades to the medium size.
  */
 
 export interface PhotoSource { uri: string; thumb?: string | null; /** Thumbhash placeholder. */ hash?: string | null }
@@ -50,7 +53,7 @@ type Rect = { x: number; y: number; w: number; h: number; r: number };
 
 export function DualPhoto({
   main, selfie, style, contentFit = 'cover', inset = 'normal', interactive = true, draggable = false,
-  insetTop = 0, transition = 150, onSwap, onInteract, onLoadMain, children, card = false,
+  insetTop = 0, transition, onSwap, onInteract, onLoadMain, children, card = false,
 }: {
   /** A feed card: thumbnails, even though the inset can swap. */
   card?: boolean;
@@ -83,6 +86,8 @@ export function DualPhoto({
   const [failed, setFailed] = useState({ main: 0, selfie: 0 });
   useEffect(() => { setFailed({ main: 0, selfie: 0 }); }, [main.uri, selfie?.uri]);
   const thumbOnly = card || inset === 'small' || !interactive;
+  // A card fades in from its thumbhash; a viewer crossfades from the thumbnail to the medium size.
+  const fade = transition ?? (thumbOnly ? 150 : 200);
   const sized = (u: string) => (thumbOnly ? thumbUrl(u) : mediumUrl(u)) ?? u;
   const tries = (u: string) => [sized(u), proxyFor(sized(u)), u].filter((x, i, all): x is string => !!x && all.indexOf(x) === i);
   const uriOf = (which: 'main' | 'selfie', u: string) => { const list = tries(u); return list[Math.min(failed[which], list.length - 1)]; };
@@ -221,8 +226,9 @@ export function DualPhoto({
         {/* A swap resizes the layer: Android reloads an image sized for its view, fading in from the
             placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
         <Image source={{ uri: uriOf(which, src.uri) }} placeholder={loaded[which] ? undefined : !thumbOnly ? { uri: thumbUrl(src.thumb ?? src.uri) } : src.hash ? { thumbhash: src.hash } : undefined}
+               placeholderContentFit={big ? contentFit : 'cover'} cachePolicy="memory-disk"
                style={StyleSheet.absoluteFill} onError={() => fail(which)}
-               contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : transition} allowDownscaling={false}
+               contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : fade} allowDownscaling={false}
                onLoad={e => {
                  if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
                  if (which === 'main') onLoadMain?.({ width: e.source.width, height: e.source.height });
@@ -238,8 +244,9 @@ export function DualPhoto({
         // meant for what lies under it (a story's tap zones: next / previous did nothing on a photo without a selfie).
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image source={{ uri: uriOf('main', main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : main.hash ? { thumbhash: main.hash } : undefined}
+                 placeholderContentFit={contentFit} cachePolicy="memory-disk"
                  style={StyleSheet.absoluteFill} onError={() => fail('main')}
-                 contentFit={contentFit} transition={transition}
+                 contentFit={contentFit} transition={fade}
                  onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
         </View>
       ) : ready ? (

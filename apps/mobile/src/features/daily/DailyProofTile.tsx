@@ -6,6 +6,7 @@ import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityName, DualPhoto, Photo } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
+import { prefetchProof } from '@/lib/prefetch';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
@@ -32,7 +33,7 @@ export function DailyProofTile({ proof, onPress, compact = false, mainAnswer = n
   const name = proof.user.displayName || proof.user.username || '';
   if (compact) return <CompactTile proof={proof} onPress={onPress} mainAnswer={mainAnswer} />;
   return (
-    <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
+    <TouchableOpacity style={styles.tile} onPress={onPress} onPressIn={() => prefetchProof(proof)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
       {proof.selfieUrl
         ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
         : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
@@ -78,7 +79,7 @@ function CompactTile({ proof, onPress, mainAnswer }: { proof: DailyProof; onPres
   // The section's main answer is in its header: a photo repeats it only when it says something else.
   const ownAnswer = !!answer && !(mainAnswer && captionRepeatsAnswer(mainAnswer, answer, i18n.language));
   return (
-    <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button"
+    <TouchableOpacity style={styles.tile} onPress={onPress} onPressIn={() => prefetchProof(proof)} activeOpacity={0.85} accessibilityRole="button"
                       accessibilityLabel={[name, answer ? answerText(answer, i18n.language) : null, proof.caption].filter(Boolean).join(', ')}>
       {proof.selfieUrl
         ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
