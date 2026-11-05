@@ -215,7 +215,7 @@ const BACK2 = [-7, 3, -5] as const;
  * them (the next ones peek out behind, theme-colored edges): swipe sideways to
  * bring the next to the front, endlessly; its answer, player, likes, comments
  * and selfie follow the photo on top, and a tap opens the stories at it. A
- * nudge shows the swipe until the first one. `faded`: yesterday's card in the empty state.
+ * nudge shows the swipe once a visit. `faded`: yesterday's card in the empty state.
  *
  * Smoothness: every photo of the pile is mounted once (keyed by photo, card-sized
  * thumbnails) and never reloads; a swipe only changes transforms and z-order. The
@@ -235,7 +235,6 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
   const n = Math.max(1, photos.length);
   const pile = group.count > 1;
   const swipeable = photos.length > 1 && !faded;
-  const swiped = useSwipedStack();
 
   // The front photo: `top` on the UI thread (drives the pile), `front` in React (labels, the tap),
   // updated once a swipe has landed. Kept on the same photo when the pile's photos arrive.
@@ -295,12 +294,12 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
     })
     .onFinalize(() => { runOnJS(setDragging)(false); });
 
-  // Until the first swipe ever (on this phone): a second after it shows, the first pile of the
-  // visit nudges aside and springs back, the next photo's edge in view.
+  // Every visit, for everyone: a second after it shows, the first pile of the visit nudges
+  // aside and springs back, the next photo's edge in view.
   useEffect(() => {
-    if (!swipeable || reduced || swiped !== false || !claimNudge()) return;
+    if (!swipeable || reduced || !claimNudge()) return;
     tx.value = withDelay(1000, withSequence(withTiming(-35, { duration: 300 }), withSpring(0, { damping: 12, stiffness: 160 })));
-  }, [swipeable, reduced, swiped, tx]);
+  }, [swipeable, reduced, tx]);
 
   const line = lineOf(p, i18n.language);
   const state = useVoteState(p.id, guestId);
@@ -483,7 +482,7 @@ function usePilePhotos(group: DailyCityGroup, guestId: string | null): DailyProo
   return ids.map(id => (id === group.top.id ? group.top : pileCache.get(id))).filter((x): x is DailyProof => !!x);
 }
 
-// Has this phone ever swiped a pile? Until then, the nudge and the hint show the swipe.
+// Has this phone ever swiped a pile? Until then, the hint shows the swipe.
 // null while the flag is read.
 const SWIPED_KEY = 'has_swiped_stack';
 let swipedStack: boolean | null = null;

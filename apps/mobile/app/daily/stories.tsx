@@ -24,6 +24,7 @@ import { captionRepeatsAnswer } from '@/features/compare/format';
 import { seedProofs } from '@/features/daily/votes';
 import { flushSeen, markSeen } from '@/features/daily/seen';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
+import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import { CommentButton } from '@/features/daily/CommentButton';
 import { commentsTargetOf, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
@@ -84,6 +85,8 @@ function Stories() {
   // Photos that couldn't load (removed, a network error): skipped, never a stuck loader.
   const [gone, setGone] = useState<Set<string>>(new Set());
   const [paused, setPaused] = useState(false);
+  // My own photo's heart lists who liked it.
+  const [votersOf, setVotersOf] = useState<string | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
   const progress = useRef(new Animated.Value(0)).current;
 
@@ -160,20 +163,20 @@ function Stories() {
   };
 
   // The current photo's segment fills, then the next photo (paused while held, while a finger is on the
-  // selfie inset, while its comments are open, or with reduce motion). A pause resumes where it stopped;
+  // selfie inset, while its comments or its likes are open, or with reduce motion). A pause resumes where it stopped;
   // only another photo starts the segment over.
   const commentsOpen = useCommentsOpen();
   const [interacting, setInteracting] = useState(false);
   useEffect(() => { progress.setValue(0); }, [proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!proof || paused || interacting || commentsOpen || reduceMotion) return;
+    if (!proof || paused || interacting || commentsOpen || votersOf || reduceMotion) return;
     let anim: Animated.CompositeAnimation | null = null;
     progress.stopAnimation(at => {
       anim = Animated.timing(progress, { toValue: 1, duration: Math.max(0, (1 - at) * PHOTO_MS), easing: Easing.linear, useNativeDriver: false });
       anim.start(({ finished }) => { if (finished) next(); });
     });
     return () => { anim?.stop(); };
-  }, [proof?.id, paused, interacting, commentsOpen, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [proof?.id, paused, interacting, commentsOpen, votersOf, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pan = useRef(PanResponder.create({
     onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
@@ -236,7 +239,12 @@ function Stories() {
         </View>
       </View>
 
-      {proof && <Bottom proof={proof} insetBottom={insets.bottom} onProfile={() => openProfile(proof)} />}
+      {proof && <Bottom proof={proof} insetBottom={insets.bottom} onProfile={() => openProfile(proof)} onVoters={() => setVotersOf(proof.id)} />}
+      <DailyVotersSheet proofId={votersOf} onClose={() => setVotersOf(null)}
+                        onOpenUser={id => {
+                          setVotersOf(null);
+                          router.push((canAccessProfile(account) ? `/user/${id}` : '/auth-gate?reason=view_profile') as never);
+                        }} />
     </View>
   );
 }
@@ -274,8 +282,10 @@ function TapZones({ proof, onPrev, onNext, onHold }: {
   );
 }
 
-/** The photo's player, answer, caption and heart. */
-function Bottom({ proof, insetBottom, onProfile }: { proof: DailyProof; insetBottom: number; onProfile: () => void }) {
+/** The photo's player, answer, caption and heart (on my own photo: who liked it). */
+function Bottom({ proof, insetBottom, onProfile, onVoters }: {
+  proof: DailyProof; insetBottom: number; onProfile: () => void; onVoters: () => void;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
@@ -285,7 +295,8 @@ function Bottom({ proof, insetBottom, onProfile }: { proof: DailyProof; insetBot
   const pop = useRef(new Animated.Value(1)).current;
   const name = proof.user.displayName || proof.user.username || '';
   const vote = () => {
-    if (!state || state.isMine || (!canVote && !state.myVote)) return;
+    if (state?.isMine) { if (state.voteCount > 0) onVoters(); return; }
+    if (!state || (!canVote && !state.myVote)) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     pop.setValue(0.6);
     Animated.spring(pop, { toValue: 1, friction: 3, useNativeDriver: true }).start();
@@ -306,9 +317,9 @@ function Bottom({ proof, insetBottom, onProfile }: { proof: DailyProof; insetBot
       </View>
       {proof.status === 'approved' && (
         <View style={styles.rail}>
-        <TouchableOpacity onPress={vote} accessibilityRole="button" testID="stories-vote" disabled={!state || state.isMine}
+        <TouchableOpacity onPress={vote} accessibilityRole="button" testID="stories-vote" disabled={!state || (state.isMine && state.voteCount === 0)}
                           accessibilityState={{ selected: !!state?.myVote }}
-                          accessibilityLabel={state?.myVote ? t('vote.withdraw') : voteLabel}>
+                          accessibilityLabel={state?.isMine ? t('vote.votersTitle') : state?.myVote ? t('vote.withdraw') : voteLabel}>
           <Animated.View style={[styles.heart, state?.myVote && styles.heartOn, { transform: [{ scale: pop }] }]}>
             <Ionicons name={state?.myVote || state?.isMine ? 'heart' : 'heart-outline'} size={28} color={colors.white} />
           </Animated.View>
