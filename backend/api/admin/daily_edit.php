@@ -338,7 +338,7 @@ daily_styles();
                             <button class="btn btn-secondary btn-sm" type="submit" name="action" value="cover_remove" formnovalidate>Use the theme's default</button>
                         <?php endif; ?>
                     </div>
-                    <div class="hint" style="margin-top:8px">Every theme's default cover: <a href="/admin/daily/specials#themes">Specials → Theme covers</a>.</div>
+                    <div class="hint" style="margin-top:8px">Every theme's default cover: <a href="/admin/daily/specials#themes">Specials → Theme covers</a>. Many days at once: <a href="/admin/daily/covers">Covers</a>.</div>
                 </form>
             <?php endif; ?>
 
