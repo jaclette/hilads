@@ -13525,7 +13525,7 @@ $router->add('GET', '/api/v1/leaderboard/week', function () {
 
 // GET /api/v1/ranks?tab=players|cities|photos&period=today|yesterday|week|alltime&scope=city|world&cityId=
 // The Ranks tab (V6). players: {entries[{rank, prevRank, points, user, city}], me{…, gap, next}}; cities:
-// {entries[{rank, prevRank, city, photos, players, likes}], mine{…, gap, next}}; photos: {items[{rank, proof}] (a page:
+// {entries[{rank, prevRank, city, photos, players, likes}], mine{…, gap, next}}; photos: {items[{rank, proof, prevRank (week)}] (a page:
 // offset / limit, nextOffset, total; ranked by likes, comments, earliest posted), me{rank, proofId, votes, comments, gap},
 // cityBest[{cityId, proof}] (yesterday), endsAt + played (today)}; players today: played too. prevRank null = new (or today: no movement).
 $router->add('GET', '/api/v1/ranks', function () {
@@ -13574,9 +13574,12 @@ $router->add('GET', '/api/v1/ranks', function () {
     $page   = array_slice($rows, $offset, $limit);
     $rankOf = [];
     foreach ($page as $i => $r) $rankOf[$r['id']] = $offset + $i + 1;
+    // Week: each photo's movement since yesterday (prevRank null = new on the board).
+    $prevOf = $period === 'week' ? Ranks::photoPrevRanks($rows) : null;
     $items = [];
     foreach ($format(array_column($page, 'id')) as $proof) {
-        $items[] = ['rank' => $rankOf[$proof['id']], 'proof' => $proof];
+        $items[] = ['rank' => $rankOf[$proof['id']], 'proof' => $proof]
+            + ($prevOf !== null ? ['prevRank' => $prevOf[$proof['id']] ?? null] : []);
     }
     $out = $base + [
         'items'      => $items,

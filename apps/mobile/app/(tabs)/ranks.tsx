@@ -292,7 +292,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         onScrollToIndexFailed={() => {}}
         initialNumToRender={12}
         windowSize={9}
-        renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} onPress={() => open(proofs, item.proof)} />}
+        renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} week={period === 'week'} onPress={() => open(proofs, item.proof)} />}
       />
       {data && <YouBar text={youText} onPress={onYou} />}
     </>
@@ -303,7 +303,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
  * A photo from #4: the big rank, the thumbnail, the challenge (its text and theme), the author
  * (avatar, @handle, flag), and "4 ❤️ · 2 💬" (ties are ranked by comments, then the earliest posted).
  */
-const PhotoRankRow = memo(function PhotoRankRow({ item, mine, onPress }: { item: PhotosRanks['items'][number]; mine: boolean; onPress: () => void }) {
+const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, onPress }: { item: PhotosRanks['items'][number]; mine: boolean; week: boolean; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const p = item.proof;
   const theme = p.context?.theme?.key ?? null;
@@ -312,7 +312,11 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, onPress }: { item:
   return (
     <Pressable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
                accessibilityLabel={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
-      <Text style={styles.pRank} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{item.rank}</Text>
+      <View style={styles.pRankBox}>
+        <Text style={styles.pRank} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{item.rank}</Text>
+        {/* Week: since yesterday (▲2, ▼1, new), when the server sends it. */}
+        {week && item.prevRank !== undefined && <Movement rank={item.rank} prevRank={item.prevRank ?? null} show />}
+      </View>
       <Image source={{ uri: thumbUrl(p.thumbUrl ?? p.photoUrl) ?? undefined }} style={styles.pThumb} contentFit="cover" />
       <View style={styles.pBody}>
         {!!p.context?.text && <Text style={styles.pTitle} numberOfLines={1}>{p.context.text}</Text>}
@@ -485,6 +489,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bestCity:     { flex: 1, fontSize: 12, fontWeight: '800', color: c.text },
   pRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.card },
   pRowMine:     { backgroundColor: c.primaryTint },
+  pRankBox:     { width: 40, alignItems: 'center', gap: 1 },
   pRank:        { width: 40, fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.text, textAlign: 'center' },
   pThumb:       { width: 52, height: 52, borderRadius: 12, backgroundColor: c.bg3 },
   pBody:        { flex: 1, minWidth: 0, gap: 3 },

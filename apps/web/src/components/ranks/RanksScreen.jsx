@@ -193,7 +193,7 @@ function Photos({ data, failed, period, ghost, loadMore }) {
         </div>
       )}
       <div className="r6-list r6-list--you">
-        {rest.map(i => <PhotoRow key={i.proof.id} item={i} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
+        {rest.map(i => <PhotoRow key={i.proof.id} item={i} week={period === 'week'} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
         <div ref={end} className="r6-more">{loading && <span className="r6-spinner" />}</div>
       </div>
       <YouBar text={you} onClick={onYou} />
@@ -202,14 +202,18 @@ function Photos({ data, failed, period, ghost, loadMore }) {
 }
 
 /** A photo from #4: the big rank, the thumbnail, the challenge and its theme, the author, "4 ❤️ · 2 💬" (ties: comments, then the earliest posted). */
-function PhotoRow({ item, mine, onClick, rowRef }) {
+function PhotoRow({ item, mine, week, onClick, rowRef }) {
   const p = item.proof
   const theme = p.context?.theme?.key ?? null
   const who = handle(p.user)
   return (
     <button type="button" ref={rowRef} className={`r6-prow${mine ? ' r6-row--mine' : ''}`} onClick={onClick}
             aria-label={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
-      <span className="r6-prank">{item.rank}</span>
+      <span className="r6-prank-box">
+        <span className="r6-prank">{item.rank}</span>
+        {/* Week: since yesterday (▲2, ▼1, new), when the server sends it. */}
+        {week && item.prevRank !== undefined && <Movement rank={item.rank} prevRank={item.prevRank} show />}
+      </span>
       <img className="r6-pthumb" src={thumbUrl(p.thumbUrl || p.photoUrl)} alt="" loading="lazy" />
       <span className="r6-pbody">
         {p.context?.text && <span className="r6-ptitle">{p.context.text}</span>}

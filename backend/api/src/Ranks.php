@@ -199,11 +199,23 @@ final class Ranks
      */
     public static function photoRows(string $period, ?string $cityId, string $today): array
     {
-        $key = 'ranks_photos_v2_' . md5("{$period}|{$cityId}|{$today}");
+        $key = 'ranks_photos_v3_' . md5("{$period}|{$cityId}|{$today}");
         return Cache::remember($key, self::CACHE_TTL, static function () use ($period, $cityId, $today): array {
             $dates = self::dates($period, $today);
             $args  = [];
             $where = '';
+            // Week: the likes and comments added since today's challenge dropped, so the ranking
+            // without them (yesterday's) gives each photo its movement.
+            $since = '';
+            $sinceArgs = [];
+            if ($period === 'week') {
+                $cut = DailyClock::window($today)[0]->format(DATE_ATOM);
+                $since = ", (SELECT count(*) FROM daily_votes v WHERE v.proof_id = p.id AND v.created_at >= ?::timestamptz) AS new_votes,
+                           (SELECT count(*) FROM photo_comments c WHERE c.photo_id = p.id AND c.created_at >= ?::timestamptz
+                                AND c.deleted_at IS NULL AND c.hidden_at IS NULL) AS new_comments,
+                           (p.created_at >= ?::timestamptz) AS is_new";
+                $sinceArgs = [$cut, $cut, $cut];
+            }
             if ($dates !== null) {
                 $where .= ' AND dc.challenge_date BETWEEN ?::date AND ?::date';
                 array_push($args, $dates[0], $dates[1]);
@@ -213,7 +225,7 @@ final class Ranks
                 $args[] = $cityId;
             }
             $stmt = Database::pdo()->prepare("
-                SELECT p.id, p.user_id, p.vote_count AS votes, p.comment_count AS comments, extract(epoch FROM p.created_at)::bigint AS at
+                SELECT p.id, p.user_id, p.vote_count AS votes, p.comment_count AS comments, extract(epoch FROM p.created_at)::bigint AS at {$since}
                 FROM daily_proofs p
                 JOIN daily_challenges dc ON dc.id = p.challenge_id
                 JOIN users u             ON u.id = p.user_id
@@ -222,11 +234,35 @@ final class Ranks
                 ORDER BY p.vote_count DESC, p.comment_count DESC, p.created_at ASC, p.id
                 LIMIT 1000
             ");
-            $stmt->execute($args);
+            $stmt->execute(array_merge($sinceArgs, $args));
             return array_map(static fn(array $r): array => [
                 'id' => (string) $r['id'], 'user_id' => $r['user_id'], 'votes' => (int) $r['votes'], 'comments' => (int) $r['comments'], 'at' => (int) $r['at'],
-            ], $stmt->fetchAll(PDO::FETCH_ASSOC));
+            ] + (array_key_exists('new_votes', $r) ? [
+                // Yesterday's standing: the photo posted today wasn't there, else its likes and comments without today's.
+                'prev_votes'    => self::bool($r['is_new']) ? 0 : max(0, (int) $r['votes'] - (int) $r['new_votes']),
+                'prev_comments' => max(0, (int) $r['comments'] - (int) $r['new_comments']),
+            ] : []), $stmt->fetchAll(PDO::FETCH_ASSOC));
         }) ?? [];
+    }
+
+    /**
+     * Each photo's rank in yesterday's standing (week): the same order (likes, comments, earliest
+     * posted) on the likes and comments it had before today; [id => rank], a photo with no like
+     * then left out (new). Empty when the rows carry no previous counts.
+     */
+    public static function photoPrevRanks(array $rows): array
+    {
+        $prev = array_values(array_filter($rows, static fn(array $r): bool => ($r['prev_votes'] ?? 0) > 0));
+        usort($prev, static fn(array $a, array $b): int =>
+            [$b['prev_votes'], $b['prev_comments'], $a['at'], $a['id']] <=> [$a['prev_votes'], $a['prev_comments'], $b['at'], $b['id']]);
+        $out = [];
+        foreach ($prev as $i => $r) $out[$r['id']] = $i + 1;
+        return $out;
+    }
+
+    private static function bool(mixed $v): bool
+    {
+        return $v === true || $v === 't' || $v === 1 || $v === '1' || $v === 'true';
     }
 
     /**

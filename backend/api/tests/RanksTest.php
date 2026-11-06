@@ -41,4 +41,16 @@ final class RanksTest extends TestCase
         $this->assertNull(Ranks::myBestPhoto($rows, 'x')['gap']);
         $this->assertNull(Ranks::myBestPhoto($rows, 'nobody'));
     }
+
+    public function testPhotoPrevRanksUseYesterdaysLikesAndComments(): void
+    {
+        $rows = [
+            ['id' => 'a', 'votes' => 6, 'comments' => 0, 'at' => 10, 'prev_votes' => 2, 'prev_comments' => 0],   // 4 likes today: up
+            ['id' => 'b', 'votes' => 5, 'comments' => 1, 'at' => 20, 'prev_votes' => 5, 'prev_comments' => 1],
+            ['id' => 'c', 'votes' => 3, 'comments' => 0, 'at' => 30, 'prev_votes' => 2, 'prev_comments' => 2],   // ties a on likes, more comments
+            ['id' => 'd', 'votes' => 2, 'comments' => 0, 'at' => 40, 'prev_votes' => 0, 'prev_comments' => 0],   // posted today: new
+        ];
+        $this->assertSame(['b' => 1, 'c' => 2, 'a' => 3], Ranks::photoPrevRanks($rows));
+        $this->assertSame([], Ranks::photoPrevRanks([['id' => 'x', 'votes' => 1, 'comments' => 0, 'at' => 1]]));
+    }
 }

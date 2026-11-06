@@ -24,7 +24,8 @@ export type CitiesRanks  = Base & { entries: CityEntry[]; mine: CityEntry | null
 export interface MyBestPhoto { rank: number; proofId: string; votes: number; comments: number; gap: number | null }
 /** A page of the photos ranking (likes, then comments, then the earliest posted); rank comes from the server. */
 export type PhotosRanks  = Base & {
-  items: { rank: number; proof: DailyProof }[]; total?: number; nextOffset?: number | null; me?: MyBestPhoto | null;
+  /** prevRank (week): the rank in yesterday's standing, null = new on the board. */
+  items: { rank: number; prevRank?: number | null; proof: DailyProof }[]; total?: number; nextOffset?: number | null; me?: MyBestPhoto | null;
   cityBest?: { proof: DailyProof }[]; endsAt?: number | null; played?: boolean;
 };
 
