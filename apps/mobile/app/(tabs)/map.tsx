@@ -31,11 +31,12 @@ import { SpotSheet } from '@/features/map/SpotSheet';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
 import { EmptyCity } from '@/features/map/EmptyCity';
+import { MAP_FLAGS } from '@/features/map/mapFlags';
 import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapSheet';
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
-import { Avatar, Chip, CityFlag, IconButton, TextField } from '@/ui';
+import { Avatar, Chip, IconButton, TextField } from '@/ui';
 import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
@@ -76,6 +77,19 @@ const BLOCKERS = {
   blockPlanSide: require('../../assets/map/block-plan-side.png'),
   blockSelected: require('../../assets/map/block-selected.png'),
 };
+// The World view's city bubbles, as map layers (were up to 150 marker views, each a native
+// view moved on every camera frame): a pill ring in the theme's primary, the pill in the card
+// color, and inside it the flag and the spot count. The pills are white and recolored (sdf);
+// they stretch in the middle (3x pixels) to fit the text.
+const BUBBLE_IMAGES = {
+  // Only @3x files: the image always resolves at scale 3, so the stretch columns (image pixels) hold on every phone.
+  bubbleRing: { image: require('../../assets/map/bubble-pill-34.png'), sdf: true, stretchX: [[50, 55]] as [number, number][] },
+  bubbleFill: { image: require('../../assets/map/bubble-pill-30.png'), sdf: true, stretchX: [[44, 49]] as [number, number][] },
+};
+const BUBBLE_FONT = ['DIN Pro Bold', 'Arial Unicode MS Bold'];
+const BUBBLE_TEXT = ['case', ['!=', ['get', 'flag'], ''],
+  ['format', ['image', ['get', 'flag']], { 'vertical-align': 'center' }, '  ', {}, ['to-string', ['get', 'spots']], {}],
+  ['to-string', ['get', 'spots']]] as never;
 type PlanSide = 'top' | 'bottom' | 'right' | 'left';
 // Where a plan card goes, first that hides no pin: above its point, below, right, left (px boxes from the point).
 const PLAN_BOXES: [PlanSide, [number, number, number, number]][] = [
@@ -284,6 +298,28 @@ export default function MapScreen() {
     fetchMapCities(themeFilter).then(r => { if (alive) setBubbles(r.items); }).catch(() => {});
     return () => { alive = false; };
   }, [scope, themeFilter]);
+
+  // The bubbles' source: one point per city (flag image name, spot count), and the flags it uses.
+  const bubbleShape = useMemo<GeoJSON.FeatureCollection>(() => ({
+    type: 'FeatureCollection',
+    features: bubbles.map(b => {
+      const cc = (b.city.country ?? '').toUpperCase();
+      return {
+        type: 'Feature', id: String(b.city.id), geometry: { type: 'Point', coordinates: [b.city.lng, b.city.lat] },
+        properties: { id: b.city.id, spots: b.spots, flag: MAP_FLAGS[cc] ? `flag-${cc}` : '' },
+      };
+    }),
+  }), [bubbles]);
+  const bubbleImages = useMemo(() => ({
+    ...BUBBLE_IMAGES,
+    ...Object.fromEntries([...new Set(bubbles.map(b => (b.city.country ?? '').toUpperCase()))]
+      .filter(cc => MAP_FLAGS[cc]).map(cc => [`flag-${cc}`, { image: MAP_FLAGS[cc] }])),
+  }), [bubbles]);
+  const onBubblePress = (e: { features: GeoJSON.Feature[] }) => {
+    const id = e.features[0]?.properties?.id;
+    const b = bubbles.find(x => x.city.id === id);
+    if (b) openBubble(b);
+  };
 
   // A bubble opens its city: framed on its spots (its stored centre can be kilometres away).
   const openBubble = (b: MapCity) => {
@@ -547,15 +583,23 @@ export default function MapScreen() {
         {WORLD_HIDDEN_LAYERS.map(id => id.includes('boundary')
           ? <LineLayer key={id} id={id} existing style={{ visibility: worldView ? 'none' : 'visible' }} />
           : <SymbolLayer key={id} id={id} existing style={{ visibility: worldView || (DEFAULT_STYLE && id === 'poi-label') ? 'none' : 'visible' }} />)}
-        {worldView && bubbles.slice(0, 150).map(b => (
-          <MarkerView key={b.city.id} coordinate={[b.city.lng, b.city.lat]} anchor={{ x: 0.5, y: 0.5 }} allowOverlap>
-            <TouchableOpacity style={styles.bubble} onPress={() => openBubble(b)} accessibilityRole="button"
-                              accessibilityLabel={t('map.cityBubbleA11y', { city: shortCityName(b.city.name), count: b.spots })}>
-              <CityFlag country={b.city.country} size={16} />
-              <Text style={styles.bubbleText}>{b.spots}</Text>
-            </TouchableOpacity>
-          </MarkerView>
-        ))}
+        {worldView && (
+          <>
+            <Images images={bubbleImages} />
+            <ShapeSource id="city-bubbles" shape={bubbleShape} hitbox={{ width: 24, height: 24 }} onPress={onBubblePress}>
+              <SymbolLayer id="city-bubble-ring" style={{
+                iconImage: 'bubbleRing', iconColor: colors.primary, iconTextFit: 'width', iconTextFitPadding: [0, 12, 0, 12],
+                textField: BUBBLE_TEXT, textFont: BUBBLE_FONT, textSize: 14, textOpacity: 0,
+                iconAllowOverlap: true, textAllowOverlap: true, iconIgnorePlacement: true, textIgnorePlacement: true, symbolSortKey: ['get', 'spots'],
+              }} />
+              <SymbolLayer id="city-bubble" style={{
+                iconImage: 'bubbleFill', iconColor: colors.bg2, iconTextFit: 'width', iconTextFitPadding: [0, 10, 0, 10],
+                textField: BUBBLE_TEXT, textFont: BUBBLE_FONT, textSize: 14, textColor: colors.text,
+                iconAllowOverlap: true, textAllowOverlap: true, iconIgnorePlacement: true, textIgnorePlacement: true, symbolSortKey: ['get', 'spots'],
+              }} />
+            </ShapeSource>
+          </>
+        )}
 
         {selected && (
           <MarkerView coordinate={[selected.lng, selected.lat]} anchor={{ x: 0.5, y: 1 }} allowOverlap>
@@ -778,9 +822,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   searchRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
   scope:         { flex: 0, maxWidth: 150, height: 48 },
   search:        { flex: 1 },
-  bubble:        { flexDirection: 'row', alignItems: 'center', gap: 5, height: 34, paddingHorizontal: 10, borderRadius: Radius.full,
-                   backgroundColor: c.bg2, borderWidth: 2, borderColor: c.primary },
-  bubbleText:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   loading:       { position: 'absolute', alignSelf: 'center' },
   floating:      { position: 'absolute', left: 8, right: 8, gap: 10 },
   floatRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginRight: 8 },
