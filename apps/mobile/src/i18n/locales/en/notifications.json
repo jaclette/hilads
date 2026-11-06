@@ -32,5 +32,22 @@
     "announceSub": "Occasional updates from the team",
     "commentLabel": "Comments",
     "commentSub": "On your photos and on photos you commented on"
+  },
+  "away": {
+    "title": "While you were away",
+    "rankWorld": "🏆 #{{rank}} in the world yesterday",
+    "cityBest": "🏆 Best photo in {{city}} yesterday",
+    "rankCity": "🏆 #{{rank}} in {{city}} yesterday",
+    "votes": "🏆 {{count}} ❤️ on yesterday's photo",
+    "localPass": "🎟️ Local Pass of {{city}}!",
+    "comment": "💬 {{name}} commented on your photo",
+    "comments": "💬 New comments on your photo",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} mentioned you",
+    "friend": "👋 {{name}} wants to be friends",
+    "view": "👀 {{name}} checked your profile",
+    "other": "🔔 Something new for you",
+    "dismiss": "Dismiss",
+    "open": "See what's new"
   }
 }

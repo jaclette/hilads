@@ -1,5 +1,6 @@
 import '@/polyfills'; // must be first - polyfills WeakRef for Hermes + old arch
 import '@/i18n';       // init i18next (sync, device-locale default) before any render
+import { useNotifCountsSync } from '@/features/notifications/counts';
 import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
@@ -138,6 +139,7 @@ function RootLayoutInner() {
   usePresenceHeartbeat();     // keep presence alive
   usePresence();              // sync online users list to AppContext
   useGlobalNotifications();        // always-on notification badge updates
+  useNotifCountsSync(!!account && !booting);   // V6: unread counts per category (bell, cards, tab badges)
   useEventChatNotifications();     // always-on unread event chat badge + preview updates
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available

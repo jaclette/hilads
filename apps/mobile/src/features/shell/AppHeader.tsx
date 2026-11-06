@@ -17,6 +17,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { BrandMark, IconButton } from '@/ui';
 import { ScopeSelector } from './ScopeSelector';
 import { LogoHat } from '@/features/event/SeasonalArt';
+import { BellButton } from '@/features/notifications/BellButton';
 
 interface Props {
   /** Optional nodes injected before the messages / bell buttons. */
@@ -29,7 +30,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('common');
-  const { account, unreadDMs, setUnreadDMs, unreadNotifications, clearEventChatCounts } = useApp();
+  const { account, unreadDMs, setUnreadDMs, clearEventChatCounts } = useApp();
 
   return (
     <View style={styles.bar}>
@@ -46,9 +47,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
       )}
 
       {account ? (
-        <IconButton icon="notifications-outline" iconSize={21} badge={unreadNotifications > 0}
-                    label={unreadNotifications > 0 ? t('notificationsUnread', { count: unreadNotifications }) : t('notifications')}
-                    onPress={() => router.push('/notifications' as never)} />
+        <BellButton onPress={() => router.push('/notifications' as never)} />
       ) : (
         <TouchableOpacity
           style={styles.signUp}

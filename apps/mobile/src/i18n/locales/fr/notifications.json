@@ -32,5 +32,22 @@
     "announceSub": "Des nouvelles de l'équipe, de temps en temps",
     "commentLabel": "Commentaires",
     "commentSub": "Sur tes photos et les photos que tu as commentées"
+  },
+  "away": {
+    "title": "Pendant ton absence",
+    "rankWorld": "🏆 #{{rank}} dans le monde hier",
+    "cityBest": "🏆 Meilleure photo de {{city}} hier",
+    "rankCity": "🏆 #{{rank}} à {{city}} hier",
+    "votes": "🏆 {{count}} ❤️ sur ta photo d'hier",
+    "localPass": "🎟️ Local Pass de {{city}} !",
+    "comment": "💬 {{name}} a commenté ta photo",
+    "comments": "💬 Nouveaux commentaires sur ta photo",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} t'a mentionné",
+    "friend": "👋 {{name}} veut être ton ami",
+    "view": "👀 {{name}} a regardé ton profil",
+    "other": "🔔 Du nouveau pour toi",
+    "dismiss": "Fermer",
+    "open": "Voir les nouveautés"
   }
 }

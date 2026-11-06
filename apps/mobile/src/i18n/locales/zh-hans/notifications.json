@@ -32,5 +32,22 @@
     "announceSub": "团队不定期的动态",
     "commentLabel": "评论",
     "commentSub": "你的照片，以及你评论过的照片"
+  },
+  "away": {
+    "title": "你不在的时候",
+    "rankWorld": "🏆 昨天全球第 {{rank}} 名",
+    "cityBest": "🏆 昨天 {{city}} 最佳照片",
+    "rankCity": "🏆 昨天 {{city}} 第 {{rank}} 名",
+    "votes": "🏆 昨天的照片收到 {{count}} ❤️",
+    "localPass": "🎟️ {{city}} 的 Local Pass！",
+    "comment": "💬 {{name}} 评论了你的照片",
+    "comments": "💬 你的照片有新评论",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} 提到了你",
+    "friend": "👋 {{name}} 想加你为好友",
+    "view": "👀 {{name}} 看了你的主页",
+    "other": "🔔 有新动态",
+    "dismiss": "关闭",
+    "open": "查看新动态"
   }
 }

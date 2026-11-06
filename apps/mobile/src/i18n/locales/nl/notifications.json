@@ -32,5 +32,22 @@
     "announceSub": "Af en toe nieuws van het team",
     "commentLabel": "Reacties",
     "commentSub": "Op je foto's en op foto's waar je op hebt gereageerd"
+  },
+  "away": {
+    "title": "Terwijl je weg was",
+    "rankWorld": "🏆 Gisteren #{{rank}} wereldwijd",
+    "cityBest": "🏆 Gisteren beste foto van {{city}}",
+    "rankCity": "🏆 Gisteren #{{rank}} in {{city}}",
+    "votes": "🏆 {{count}} ❤️ op je foto van gisteren",
+    "localPass": "🎟️ Local Pass van {{city}}!",
+    "comment": "💬 {{name}} reageerde op je foto",
+    "comments": "💬 Nieuwe reacties op je foto",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} noemde je",
+    "friend": "👋 {{name}} wil vrienden worden",
+    "view": "👀 {{name}} bekeek je profiel",
+    "other": "🔔 Er is nieuws voor je",
+    "dismiss": "Sluiten",
+    "open": "Bekijk wat nieuw is"
   }
 }

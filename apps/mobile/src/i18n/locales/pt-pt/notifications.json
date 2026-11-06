@@ -32,5 +32,22 @@
     "announceSub": "Novidades ocasionais da equipa",
     "commentLabel": "Comentários",
     "commentSub": "Nas tuas fotos e nas fotos que comentaste"
+  },
+  "away": {
+    "title": "Enquanto estavas fora",
+    "rankWorld": "🏆 #{{rank}} no mundo ontem",
+    "cityBest": "🏆 Melhor foto de {{city}} ontem",
+    "rankCity": "🏆 #{{rank}} em {{city}} ontem",
+    "votes": "🏆 {{count}} ❤️ na foto de ontem",
+    "localPass": "🎟️ Local Pass de {{city}}!",
+    "comment": "💬 {{name}} comentou a tua foto",
+    "comments": "💬 Novos comentários na tua foto",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} mencionou-te",
+    "friend": "👋 {{name}} quer ser teu amigo",
+    "view": "👀 {{name}} viu o teu perfil",
+    "other": "🔔 Há novidades para ti",
+    "dismiss": "Fechar",
+    "open": "Ver novidades"
   }
 }

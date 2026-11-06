@@ -32,5 +32,22 @@
     "announceSub": "تحديثات من الفريق بين الحين والآخر",
     "commentLabel": "التعليقات",
     "commentSub": "على صورك وعلى الصور التي علّقت عليها"
+  },
+  "away": {
+    "title": "أثناء غيابك",
+    "rankWorld": "🏆 الأمس: المركز {{rank}} عالميًا",
+    "cityBest": "🏆 الأمس: أفضل صورة في {{city}}",
+    "rankCity": "🏆 الأمس: المركز {{rank}} في {{city}}",
+    "votes": "🏆 {{count}} ❤️ على صورة الأمس",
+    "localPass": "🎟️ Local Pass في {{city}}!",
+    "comment": "💬 علّق {{name}} على صورتك",
+    "comments": "💬 تعليقات جديدة على صورتك",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 ذكرك {{name}}",
+    "friend": "👋 {{name}} يريد مصادقتك",
+    "view": "👀 شاهد {{name}} ملفك",
+    "other": "🔔 لديك جديد",
+    "dismiss": "إغلاق",
+    "open": "شاهد الجديد"
   }
 }

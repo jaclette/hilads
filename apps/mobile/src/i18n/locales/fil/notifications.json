@@ -32,5 +32,22 @@
     "announceSub": "Paminsan-minsang update mula sa team",
     "commentLabel": "Comments",
     "commentSub": "Sa mga photo mo at sa mga photo na kinomentuhan mo"
+  },
+  "away": {
+    "title": "Habang wala ka",
+    "rankWorld": "🏆 #{{rank}} sa mundo kahapon",
+    "cityBest": "🏆 Best photo sa {{city}} kahapon",
+    "rankCity": "🏆 #{{rank}} sa {{city}} kahapon",
+    "votes": "🏆 {{count}} ❤️ sa photo mo kahapon",
+    "localPass": "🎟️ Local Pass ng {{city}}!",
+    "comment": "💬 Nag-comment si {{name}} sa photo mo",
+    "comments": "💬 May bagong comments sa photo mo",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 Na-mention ka ni {{name}}",
+    "friend": "👋 Gusto kang i-friend ni {{name}}",
+    "view": "👀 Tiningnan ni {{name}} ang profile mo",
+    "other": "🔔 May bago para sa'yo",
+    "dismiss": "Isara",
+    "open": "Tingnan ang bago"
   }
 }

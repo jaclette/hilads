@@ -32,5 +32,22 @@
     "announceSub": "팀에서 가끔 전하는 소식",
     "commentLabel": "댓글",
     "commentSub": "내 사진, 그리고 내가 댓글 단 사진에 달린 댓글"
+  },
+  "away": {
+    "title": "자리 비운 사이에",
+    "rankWorld": "🏆 어제 세계 {{rank}}위",
+    "cityBest": "🏆 어제 {{city}} 베스트 사진",
+    "rankCity": "🏆 어제 {{city}} {{rank}}위",
+    "votes": "🏆 어제 사진에 {{count}} ❤️",
+    "localPass": "🎟️ {{city}} Local Pass!",
+    "comment": "💬 {{name}} 님이 사진에 댓글을 남겼어요",
+    "comments": "💬 사진에 새 댓글이 있어요",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} 님이 언급했어요",
+    "friend": "👋 {{name}} 님이 친구 신청을 했어요",
+    "view": "👀 {{name}} 님이 프로필을 봤어요",
+    "other": "🔔 새 소식이 있어요",
+    "dismiss": "닫기",
+    "open": "새 소식 보기"
   }
 }

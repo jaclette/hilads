@@ -610,7 +610,19 @@ class NotificationRepository
             $unread[$c] += (int) $r['unread'];
             $unseen[$c] += (int) $r['unseen'];
         }
-        return ['total' => array_sum($unread), 'unread' => $unread, 'unseen' => $unseen];
+        // Tab badges (V6): Hi = unread chat mentions, Passport = a new Local Pass,
+        // Ranks = results not opened yet.
+        $stmt = Database::pdo()->prepare("
+            SELECT count(*) FILTER (WHERE type IN ('mention', 'city_here')) AS chat,
+                   count(*) FILTER (WHERE type = 'daily_local_pass')        AS passport,
+                   count(*) FILTER (WHERE type IN ('daily_result', 'daily_rank')) AS ranks
+            FROM notifications
+            WHERE user_id = ? AND is_read = FALSE AND type IN ('mention', 'city_here', 'daily_local_pass', 'daily_result', 'daily_rank')
+        ");
+        $stmt->execute([$userId]);
+        $b = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $badges = ['chat' => (int) ($b['chat'] ?? 0), 'passport' => (int) ($b['passport'] ?? 0), 'ranks' => (int) ($b['ranks'] ?? 0)];
+        return ['total' => array_sum($unread), 'unread' => $unread, 'unseen' => $unseen, 'badges' => $badges];
     }
 
     /** Seen (not read): the "While you were away" card was dismissed. $ids or every unseen row of $categories. */
@@ -629,6 +641,25 @@ class NotificationRepository
             array_push($args, ...$categories);
         }
         Database::pdo()->prepare($sql)->execute($args);
+    }
+
+    /** Mark read every unread row of these types (a tab's badge, V6). */
+    public static function markReadTypes(string $userId, array $types): void
+    {
+        $types = array_values(array_filter(array_map('strval', $types), static fn($t) => preg_match('/^[a-z_]{1,50}$/', $t)));
+        if ($types === []) return;
+        Database::pdo()->prepare('UPDATE notifications SET is_read = TRUE WHERE user_id = ? AND is_read = FALSE AND type IN ('
+            . implode(',', array_fill(0, count($types), '?')) . ')')->execute([$userId, ...$types]);
+    }
+
+    /** Mark read every unread row of these categories ("Mark all read" on a filter, V6). */
+    public static function markReadCategories(string $userId, array $categories): void
+    {
+        $categories = array_values(array_intersect($categories, NotificationCategory::ALL));
+        if ($categories === []) return;
+        Database::pdo()->prepare('UPDATE notifications SET is_read = TRUE WHERE user_id = ? AND is_read = FALSE AND '
+            . self::bellExclusionSql() . ' AND category IN (' . implode(',', array_fill(0, count($categories), '?')) . ')')
+            ->execute([$userId, ...$categories]);
     }
 
     /** Back to unread (swipe right on a read row). */

@@ -10,6 +10,15 @@ import { useTheme } from '@/context/ThemeContext';
 import { FontSizes } from '@/constants';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { PumpkinIcon, SeasonalScope, TabGhost } from '@/features/event/SeasonalArt';
+import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features/notifications/counts';
+import { markNotificationTypesRead } from '@/api/notifications';
+
+// V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
+const TAB_BADGE: Record<string, { key: 'chat' | 'passport' | 'ranks'; types: string[]; count: boolean }> = {
+  chat:     { key: 'chat',     types: ['mention', 'city_here'],            count: true },
+  passport: { key: 'passport', types: ['daily_local_pass'],                count: false },
+  ranks:    { key: 'ranks',    types: ['daily_result', 'daily_rank'],      count: false },
+};
 
 // ── Tabs (V3, SPEC 9.1 and the mockups): stroke icons with a label; the
 // active tab sits on a primary-tint pill. ─────────────────────────────────────
@@ -46,14 +55,23 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
     return () => { onShow.remove(); onHide.remove(); };
   }, []);
-  if (keyboardUp) return null;
-
   // A hidden route (challenges, me...) highlights the tab it belongs to.
   const current = state.routes[state.index]?.name;
   const activeTab = current === 'me' ? 'passport'
     : current === 'challenges' ? 'today'
     : current === 'events' || current === 'here' ? 'chat'
     : current;
+
+  // Opening a tab clears its badge (the notifications behind it are read).
+  const { badges } = useNotifCounts();
+  useEffect(() => {
+    const b = activeTab ? TAB_BADGE[activeTab] : undefined;
+    if (!b || !badges[b.key]) return;
+    patchNotifCounts(c => ({ ...c, badges: { ...c.badges, [b.key]: 0 } }));
+    markNotificationTypesRead(b.types).then(refreshNotifCounts);
+  }, [activeTab, badges]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (keyboardUp) return null;
 
   return (
     <View style={[styles.container, {
@@ -87,13 +105,27 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             }}
           >
             {focused && <TabGhost />}
-            {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} /> : <Ionicons name={tab.icon} size={24} color={color} />}
+            <View>
+              {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} /> : <Ionicons name={tab.icon} size={24} color={color} />}
+              <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
+            </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>
           </Pressable>
         );
       })}
     </View>
   );
+}
+
+/** A tab's badge: a number (Hi: mentions) or a dot (Passport, Ranks). */
+function TabBadge({ n, count }: { n: number; count: boolean }) {
+  const { colors } = useTheme();
+  if (n <= 0) return null;
+  return count ? (
+    <View style={[styles.badge, { backgroundColor: colors.cta, borderColor: colors.bg2 }]}>
+      <Text style={[styles.badgeText, { color: colors.onCta }]}>{n > 9 ? '9+' : n}</Text>
+    </View>
+  ) : <View style={[styles.dot, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />;
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -115,6 +147,10 @@ const styles = StyleSheet.create({
     borderRadius:   16,
   },
   label:       { fontSize: FontSizes.tiny + 1, fontWeight: '600' },
+  badge:       { position: 'absolute', top: -5, right: -10, minWidth: 18, height: 18, paddingHorizontal: 4, borderRadius: 9,
+                 borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  badgeText:   { fontSize: 10, lineHeight: 12, fontWeight: '800' },
+  dot:         { position: 'absolute', top: -2, right: -4, width: 11, height: 11, borderRadius: 6, borderWidth: 2 },
   labelActive: { fontWeight: '700' },
 });
 

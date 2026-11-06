@@ -48,3 +48,70 @@ export async function updateNotificationPreferences(
   const data = await api.put<{ preferences: NotificationPreferences }>('/notification-preferences', prefs);
   return data.preferences;
 }
+
+// ── V6 inbox (grouped items, categories, counts) ─────────────────────────────
+
+export type NotifCategory = 'social' | 'game' | 'plans' | 'city' | 'hilads';
+export const NOTIF_CATEGORIES: NotifCategory[] = ['social', 'game', 'plans', 'city', 'hilads'];
+
+export interface InboxActor { id: string | null; name: string; photoUrl: string | null }
+export interface InboxItem {
+  id:         number;
+  ids:        number[];           // every row folded into this item (mark read / delete them all)
+  category:   NotifCategory;
+  type:       string;
+  title:      string;
+  body:       string | null;
+  data:       Record<string, any>;
+  actors:     InboxActor[];       // newest first, max 3
+  count:      number;             // people (or rows) behind the item
+  object:     { kind: 'photo'; id: string; date: string | null; thumbUrl: string | null }
+            | { kind: 'plan'; id: string; title: string | null }
+            | { kind: 'challenge'; date: string } | null;
+  deep_link:  string | null;
+  created_at: string;
+  read:       boolean;
+  seen:       boolean;
+}
+export interface NotifCounts {
+  total:  number;
+  unread: Record<NotifCategory, number>;
+  unseen: Record<NotifCategory, number>;
+  badges: { chat: number; passport: number; ranks: number };
+}
+
+export async function fetchInbox(opts: { categories?: NotifCategory[]; cursor?: string | null; limit?: number; unseen?: boolean } = {}):
+  Promise<{ items: InboxItem[]; nextCursor: string | null }> {
+  const q = new URLSearchParams();
+  if (opts.categories?.length) q.set('categories', opts.categories.join(','));
+  if (opts.cursor) q.set('cursor', opts.cursor);
+  if (opts.limit) q.set('limit', String(opts.limit));
+  if (opts.unseen) q.set('unseen', '1');
+  return api.get(`/notifications/inbox?${q.toString()}`);
+}
+
+export async function fetchNotifCounts(): Promise<NotifCounts> {
+  return api.get('/notifications/counts');
+}
+
+export async function markNotificationsSeen(body: { ids?: number[]; categories?: NotifCategory[] }): Promise<void> {
+  await api.post('/notifications/seen', body).catch(() => {});
+}
+
+export async function markNotificationsUnread(ids: number[]): Promise<void> {
+  await api.post('/notifications/mark-unread', { ids }).catch(() => {});
+}
+
+export async function deleteNotifications(ids: number[]): Promise<void> {
+  await api.post('/notifications/delete', { ids }).catch(() => {});
+}
+
+/** Mark read every unread notification of these types (opening a tab clears its badge). */
+export async function markNotificationTypesRead(types: string[]): Promise<void> {
+  await api.post('/notifications/mark-read', { types }).catch(() => {});
+}
+
+/** Mark read every unread notification of these categories ("Mark all read" on a filter). */
+export async function markNotificationCategoriesRead(categories: NotifCategory[]): Promise<void> {
+  await api.post('/notifications/mark-read', { categories }).catch(() => {});
+}

@@ -32,5 +32,22 @@
     "announceSub": "Tin mới từ đội Hilads, thỉnh thoảng thôi",
     "commentLabel": "Bình luận",
     "commentSub": "Trên ảnh của bạn và ảnh bạn đã bình luận"
+  },
+  "away": {
+    "title": "Trong lúc bạn vắng",
+    "rankWorld": "🏆 Hạng #{{rank}} thế giới hôm qua",
+    "cityBest": "🏆 Ảnh đỉnh nhất {{city}} hôm qua",
+    "rankCity": "🏆 Hạng #{{rank}} ở {{city}} hôm qua",
+    "votes": "🏆 {{count}} ❤️ cho ảnh hôm qua",
+    "localPass": "🎟️ Local Pass {{city}}!",
+    "comment": "💬 {{name}} vừa bình luận ảnh của bạn",
+    "comments": "💬 Ảnh của bạn có bình luận mới",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} nhắc tới bạn",
+    "friend": "👋 {{name}} muốn kết bạn",
+    "view": "👀 {{name}} vừa xem hồ sơ của bạn",
+    "other": "🔔 Có tin mới cho bạn nè",
+    "dismiss": "Đóng",
+    "open": "Xem tin mới"
   }
 }

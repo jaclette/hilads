@@ -32,5 +32,22 @@
     "announceSub": "Sesekali kabar terbaru dari tim",
     "commentLabel": "Komentar",
     "commentSub": "Di fotomu dan foto yang kamu komentari"
+  },
+  "away": {
+    "title": "Selama kamu pergi",
+    "rankWorld": "🏆 Kemarin #{{rank}} di dunia",
+    "cityBest": "🏆 Kemarin foto terbaik di {{city}}",
+    "rankCity": "🏆 Kemarin #{{rank}} di {{city}}",
+    "votes": "🏆 {{count}} ❤️ di foto kemarin",
+    "localPass": "🎟️ Local Pass {{city}}!",
+    "comment": "💬 {{name}} komentar di fotomu",
+    "comments": "💬 Ada komentar baru di fotomu",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}} menyebut kamu",
+    "friend": "👋 {{name}} mau berteman",
+    "view": "👀 {{name}} lihat profilmu",
+    "other": "🔔 Ada yang baru buat kamu",
+    "dismiss": "Tutup",
+    "open": "Lihat yang baru"
   }
 }

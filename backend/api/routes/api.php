@@ -7411,8 +7411,13 @@ $router->add('POST', '/api/v1/notifications/mark-read', function () {
         NotificationRepository::markAllRead($user['id']);
     } elseif (!empty($body['ids']) && is_array($body['ids'])) {
         NotificationRepository::markRead($user['id'], $body['ids']);
+    } elseif (!empty($body['types']) && is_array($body['types'])) {
+        // V6: opening a tab clears its badge (Hi: mentions, Passport: Local Pass, Ranks: results).
+        NotificationRepository::markReadTypes($user['id'], $body['types']);
+    } elseif (!empty($body['categories']) && is_array($body['categories'])) {
+        NotificationRepository::markReadCategories($user['id'], $body['categories']);
     } else {
-        Response::json(['error' => 'Provide ids or all:true'], 400);
+        Response::json(['error' => 'Provide ids, types, categories or all:true'], 400);
     }
 
     Response::json(['ok' => true]);

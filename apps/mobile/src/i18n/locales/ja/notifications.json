@@ -32,5 +32,22 @@
     "announceSub": "チームからのときどきのお知らせ",
     "commentLabel": "コメント",
     "commentSub": "自分の写真と、コメントした写真"
+  },
+  "away": {
+    "title": "留守中のできごと",
+    "rankWorld": "🏆 昨日は世界{{rank}}位",
+    "cityBest": "🏆 昨日の{{city}}ベストフォト",
+    "rankCity": "🏆 昨日は{{city}}で{{rank}}位",
+    "votes": "🏆 昨日の写真に{{count}} ❤️",
+    "localPass": "🎟️ {{city}}のLocal Pass！",
+    "comment": "💬 {{name}}さんが写真にコメント",
+    "comments": "💬 写真に新しいコメント",
+    "likes": "❤️ +{{count}}",
+    "mention": "💬 {{name}}さんからメンション",
+    "friend": "👋 {{name}}さんから友だち申請",
+    "view": "👀 {{name}}さんがプロフィールを見たよ",
+    "other": "🔔 新しいお知らせ",
+    "dismiss": "閉じる",
+    "open": "新着を見る"
   }
 }

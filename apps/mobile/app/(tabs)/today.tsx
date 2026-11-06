@@ -17,6 +17,7 @@ import { SpotsNear } from '@/features/today/SpotsNear';
 import { ProposeLink } from '@/features/today/ProposeLink';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
+import { WhileAwayCard } from '@/features/notifications/WhileAwayCard';
 import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
 
 /**
@@ -67,6 +68,8 @@ function TodayContent() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]}
                                         title={t('today.refreshing')} titleColor={colors.muted} />}
       >
+        {/* V6: unseen comments, likes and results since the last visit. */}
+        <WhileAwayCard />
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} countries={countries} loading={daily.loading} error={daily.error} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
