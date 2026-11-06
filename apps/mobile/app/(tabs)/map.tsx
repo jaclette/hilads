@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Keyboard, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Keyboard, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Location from 'expo-location';
@@ -36,7 +36,7 @@ import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapShe
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
-import { Avatar, Chip, IconButton, TextField } from '@/ui';
+import { Avatar, Chip, CityFlag, IconButton, TextField } from '@/ui';
 import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
@@ -315,6 +315,9 @@ export default function MapScreen() {
     ...Object.fromEntries([...new Set(bubbles.map(b => (b.city.country ?? '').toUpperCase()))]
       .filter(cc => MAP_FLAGS[cc]).map(cc => [`flag-${cc}`, { image: MAP_FLAGS[cc] }])),
   }), [bubbles]);
+  // Map layers can't be focused by VoiceOver / TalkBack: with a screen reader on, the World
+  // view's cities are also listed in the sheet, as buttons.
+  const screenReader = useScreenReader();
   const onBubblePress = (e: { features: GeoJSON.Feature[] }) => {
     const id = e.features[0]?.properties?.id;
     const b = bubbles.find(x => x.city.id === id);
@@ -699,7 +702,8 @@ export default function MapScreen() {
               ? () => { track('map_play_here', { spot: selected.id }); router.push('/daily/proof' as never); } : undefined}
           />
         ) : null}
-        topNote={showEmpty ? <EmptyCity today={today.data} /> : emptyArea ? (
+        topNote={worldView && screenReader ? <WorldCityList bubbles={bubbles} onOpen={openBubble} />
+          : showEmpty ? <EmptyCity today={today.data} /> : emptyArea ? (
           <TouchableOpacity style={styles.pioneer} onPress={() => router.push('/daily/proof' as never)} accessibilityRole="button">
             <Text style={styles.pioneerText}>{t('map.sheet.pioneer')}</Text>
           </TouchableOpacity>
@@ -753,6 +757,42 @@ const PLAN_LAYOUT: Record<PlanSide, object> = {
   top: { flexDirection: 'column' }, bottom: { flexDirection: 'column-reverse' },
   right: { flexDirection: 'row-reverse', alignItems: 'center' }, left: { flexDirection: 'row', alignItems: 'center' },
 };
+
+/** True while VoiceOver / TalkBack is on. */
+function useScreenReader(): boolean {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    AccessibilityInfo.isScreenReaderEnabled().then(v => { if (alive) setOn(v); }).catch(() => {});
+    const sub = AccessibilityInfo.addEventListener('screenReaderChanged', setOn);
+    return () => { alive = false; sub.remove(); };
+  }, []);
+  return on;
+}
+
+/**
+ * The World view's cities as a list of buttons (screen readers: the bubbles are map layers,
+ * which can't be focused): flag, name and spot count, most spots first; one opens its city.
+ */
+function WorldCityList({ bubbles, onOpen }: { bubbles: MapCity[]; onOpen: (b: MapCity) => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  return (
+    <View style={styles.worldList}>
+      {bubbles.map(b => {
+        const name = shortCityName(b.city.name);
+        return (
+          <TouchableOpacity key={b.city.id} style={styles.worldRow} onPress={() => onOpen(b)} accessibilityRole="button"
+                            accessibilityLabel={t('map.cityBubbleA11y', { city: name, count: b.spots })}>
+            <CityFlag country={b.city.country} size={20} />
+            <Text style={styles.worldName} numberOfLines={1}>{name}</Text>
+            <Text style={styles.worldCount}>{b.spots}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
 
 /**
  * Today's photos: a soft halo that breathes under the pin (V6). Its own little component, so
@@ -829,6 +869,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   surprise:      { flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full,
                    backgroundColor: c.text },
   surpriseText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
+  worldList:     { paddingHorizontal: Spacing.md, paddingBottom: 8 },
+  worldRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line },
+  worldName:     { flex: 1, fontSize: 16, fontWeight: '700', color: c.text },
+  worldCount:    { fontSize: 15, fontWeight: '800', color: c.muted },
   pioneer:       { marginHorizontal: Spacing.md, marginVertical: 8, padding: 14, borderRadius: Radius.card, backgroundColor: c.primaryTint },
   pioneerText:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
   me:            { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
