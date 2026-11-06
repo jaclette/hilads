@@ -193,13 +193,14 @@ final class Ranks
     // ── Photos ──────────────────────────────────────────────────────────────
 
     /**
-     * Most liked photos of the period: ids, best first. Yesterday: the official
-     * results (World top 3, or the city's) then the rest by likes.
+     * The photos ranking of the period, best first: [{id, user_id, votes, comments, at}]. Ties
+     * (many photos have the same likes) are broken by comments, then the earliest posted, so
+     * every photo has one rank and the order never flips between two loads.
      */
-    public static function photoIds(string $period, ?string $cityId, string $today, int $limit = 30): array
+    public static function photoRows(string $period, ?string $cityId, string $today): array
     {
-        $key = 'ranks_photos_v1_' . md5("{$period}|{$cityId}|{$today}|{$limit}");
-        return Cache::remember($key, self::CACHE_TTL, static function () use ($period, $cityId, $today, $limit): array {
+        $key = 'ranks_photos_v2_' . md5("{$period}|{$cityId}|{$today}");
+        return Cache::remember($key, self::CACHE_TTL, static function () use ($period, $cityId, $today): array {
             $dates = self::dates($period, $today);
             $args  = [];
             $where = '';
@@ -212,18 +213,40 @@ final class Ranks
                 $args[] = $cityId;
             }
             $stmt = Database::pdo()->prepare("
-                SELECT p.id, p.vote_count
+                SELECT p.id, p.user_id, p.vote_count AS votes, p.comment_count AS comments, extract(epoch FROM p.created_at)::bigint AS at
                 FROM daily_proofs p
                 JOIN daily_challenges dc ON dc.id = p.challenge_id
                 JOIN users u             ON u.id = p.user_id
                 WHERE p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion AND NOT u.is_demo
-                  AND p.vote_count > 0 {$where}
-                ORDER BY p.vote_count DESC, p.approved_at ASC NULLS LAST, p.id
-                LIMIT " . (int) $limit . "
+                  AND NOT u.hidden_from_rankings AND p.vote_count > 0 {$where}
+                ORDER BY p.vote_count DESC, p.comment_count DESC, p.created_at ASC, p.id
+                LIMIT 1000
             ");
             $stmt->execute($args);
-            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+            return array_map(static fn(array $r): array => [
+                'id' => (string) $r['id'], 'user_id' => $r['user_id'], 'votes' => (int) $r['votes'], 'comments' => (int) $r['comments'], 'at' => (int) $r['at'],
+            ], $stmt->fetchAll(PDO::FETCH_ASSOC));
         }) ?? [];
+    }
+
+    /**
+     * The viewer's best photo of the period: {rank, proofId, votes, comments, gap} where gap is
+     * the likes it needs to pass the photo just above (null at #1), or null without one.
+     */
+    public static function myBestPhoto(array $rows, string $viewerId): ?array
+    {
+        foreach ($rows as $i => $r) {
+            if ($r['user_id'] !== $viewerId) continue;
+            $gap = null;
+            if ($i > 0) {
+                $above = $rows[$i - 1];
+                // Equal likes: mine passes with more comments, or the same comments and posted first.
+                $winsTie = $r['comments'] > $above['comments'] || ($r['comments'] === $above['comments'] && $r['at'] < $above['at']);
+                $gap = max(1, $above['votes'] - $r['votes'] + ($winsTie ? 0 : 1));
+            }
+            return ['rank' => $i + 1, 'proofId' => $r['id'], 'votes' => $r['votes'], 'comments' => $r['comments'], 'gap' => $gap];
+        }
+        return null;
     }
 
     /** Yesterday's best photo of each city (official results): [cityId => proofId]. */

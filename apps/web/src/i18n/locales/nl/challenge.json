@@ -1614,7 +1614,11 @@
       "you": {
         "top": "Jij · #1 · Niemand boven je 👑",
         "player": "Jij · #{{rank}} · {{gap}} ptn om {{name}} in te halen ▲",
-        "none": "Speel vandaag om op het bord te komen 🙋"
+        "none": "Speel vandaag om op het bord te komen 🙋",
+        "photo_one": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
+        "photo_other": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
+        "photoTop": "Jouw beste: #1 · niemand boven je 👑",
+        "photoNone": "Nog geen foto van jou in de ranking ❤️"
       },
       "city": {
         "lineTop": "{{city}} leidt de race! 🏁",
@@ -1646,7 +1650,9 @@
       "ghost": {
         "photo": "Jouw foto hier? 📸",
         "player": "Pak deze plek 🙋",
-        "city": "Jouw stad hier? 🌍"
+        "city": "Jouw stad hier? 🌍",
+        "invite": "🎯 Wie pakt #{{rank}}? Nodig iemand uit",
+        "empty": "Niemand pakte deze plek"
       }
     },
     "rivals": {

@@ -44,8 +44,12 @@ export function Movement({ rank, prevRank, show }: { rank: number; prevRank: num
 }
 
 export type PodiumItem = { key: string; rank: number; label: string; lead: ReactNode; value: number; format: (n: number) => string; onPress?: () => void };
-/** An empty podium place, as an invitation: "Your photo here? 📸", a tap goes to the camera or Today. */
-export type PodiumGhost = { label: string; onPress: () => void };
+/**
+ * An empty podium place, per rank: an invitation ("Your photo here? 📸" → the camera; "🎯 Who
+ * takes #3? Invite a friend" → the share sheet) or, for a past period, just "Nobody took this
+ * spot" (no onPress).
+ */
+export type PodiumGhost = (rank: number) => { label: string; icon: React.ComponentProps<typeof Ionicons>['name']; onPress?: () => void };
 
 // Confetti once per session, the first time a podium shows.
 let celebrated = false;
@@ -97,17 +101,19 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
 }
 
 /** A missing podium place: a dashed block in its medal color, a camera, "Your photo here? 📸". */
-function GhostStep({ rank, ghost }: { rank: number; ghost: PodiumGhost }) {
+function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) {
   const styles = useThemedStyles(makeStyles);
+  const ghost = make(rank);
   const color = MEDAL[rank - 1];
   return (
-    <Pressable style={styles.step} onPress={ghost.onPress} accessibilityRole="button" accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
+    <Pressable style={styles.step} onPress={ghost.onPress} disabled={!ghost.onPress} accessibilityRole={ghost.onPress ? 'button' : 'text'}
+               accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
       <View style={styles.lead}>
         <View style={[styles.ghostLead, { borderColor: color, backgroundColor: tint(color, 0.14) }]}>
-          <Ionicons name="camera-outline" size={24} color={color} />
+          <Ionicons name={ghost.icon} size={24} color={color} />
         </View>
       </View>
-      <Text style={styles.ghostLabel} numberOfLines={2}>{ghost.label}</Text>
+      <Text style={[styles.ghostLabel, !ghost.onPress && styles.ghostMuted]} numberOfLines={3}>{ghost.label}</Text>
       <View style={[styles.ghostBlock, { height: HEIGHTS[rank - 1], borderColor: color, backgroundColor: tint(color, 0.12) }]}>
         <Text style={styles.ghostRank}>{rank}</Text>
       </View>
@@ -217,6 +223,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   blockRank:   { fontSize: 26, lineHeight: 32, fontWeight: '900', color: '#2A1C13' },
   ghostLead:   { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   ghostLabel:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 6, minHeight: 34 },
+  ghostMuted:  { color: c.muted, fontWeight: '700' },
   ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: 6 },
   ghostRank:   { fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.muted },
   toggle:      { flexDirection: 'row', alignItems: 'center', height: 34, padding: 3, borderRadius: 17, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, flexShrink: 0 },

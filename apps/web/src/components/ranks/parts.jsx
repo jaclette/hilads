@@ -53,7 +53,7 @@ let celebrated = false   // confetti once per session, the first podium shown
 
 /**
  * The top 3 on gold, silver and bronze blocks (2-1-3), a crown on #1, rising blocks, counting numbers.
- * With fewer than 3, the missing places are dashed ghosts (`ghost`: {label, onClick}), never a lone block.
+ * With fewer than 3, the missing places are dashed ghosts (`ghost(rank)`: {label, icon, onClick?}), never a lone block.
  */
 export function Podium({ items, ghost }) {
   const [party] = useState(() => { const first = !celebrated && items.length > 0; if (first) celebrated = true; return first })
@@ -68,14 +68,8 @@ export function Podium({ items, ghost }) {
           <CountUp value={it.value} format={it.format} className="r6-podium-value" />
           <span className={`r6-block r6-block--${it.rank}`} style={{ background: MEDAL[it.rank - 1] }}><span>{it.rank}</span></span>
         </button>
-      ) : ghost ? (
-        <button key={`g${i}`} type="button" className="r6-step r6-step--ghost" onClick={ghost.onClick} aria-label={`#${[2, 1, 3][i]} ${ghost.label}`}
-                style={{ '--medal': MEDAL[[2, 1, 3][i] - 1], animationDelay: `${[120, 0, 240][i]}ms` }}>
-          <span className="r6-lead"><span className="r6-ghost-lead"><Icon name="camera-outline" size={24} /></span></span>
-          <span className="r6-ghost-label">{ghost.label}</span>
-          <span className={`r6-block r6-block--${[2, 1, 3][i]} r6-ghost-block`}><span>{[2, 1, 3][i]}</span></span>
-        </button>
-      ) : <span key={`e${i}`} className="r6-step" />))}
+      ) : ghost ? <GhostStep key={`g${i}`} rank={[2, 1, 3][i]} ghost={ghost(([2, 1, 3][i]))} delay={[120, 0, 240][i]} />
+        : <span key={`e${i}`} className="r6-step" />))}
       <Confetti run={party} />
     </div>
   )
@@ -127,6 +121,19 @@ export function ScopeToggle({ value, onChange, city, country, worldLabel }) {
         🌍 {worldLabel}
       </button>
     </span>
+  )
+}
+
+/** An empty podium place: an invitation (a button), or, for a past period, just "Nobody took this spot". */
+function GhostStep({ rank, ghost, delay }) {
+  const Tag = ghost.onClick ? 'button' : 'span'
+  return (
+    <Tag type={ghost.onClick ? 'button' : undefined} className={`r6-step r6-step--ghost${ghost.onClick ? '' : ' r6-step--muted'}`} onClick={ghost.onClick}
+         aria-label={`#${rank} ${ghost.label}`} style={{ '--medal': MEDAL[rank - 1], animationDelay: `${delay}ms` }}>
+      <span className="r6-lead"><span className="r6-ghost-lead"><Icon name={ghost.icon} size={24} /></span></span>
+      <span className="r6-ghost-label">{ghost.label}</span>
+      <span className={`r6-block r6-block--${rank} r6-ghost-block`}><span>{rank}</span></span>
+    </Tag>
   )
 }
 

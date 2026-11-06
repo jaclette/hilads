@@ -1614,7 +1614,11 @@
       "you": {
         "top": "Du · #1 · Niemand vor dir 👑",
         "player": "Du · #{{rank}} · {{gap}} Pkt. bis {{name}} ▲",
-        "none": "Spiel heute, um aufs Board zu kommen 🙋"
+        "none": "Spiel heute, um aufs Board zu kommen 🙋",
+        "photo_one": "Dein bestes: #{{rank}} · {{count}} ❤️ bis #{{next}}",
+        "photo_other": "Dein bestes: #{{rank}} · {{count}} ❤️ bis #{{next}}",
+        "photoTop": "Dein bestes: #1 · niemand vor dir 👑",
+        "photoNone": "Noch keins deiner Fotos ist platziert ❤️"
       },
       "city": {
         "lineTop": "{{city}} führt das Rennen an! 🏁",
@@ -1646,7 +1650,9 @@
       "ghost": {
         "photo": "Dein Foto hier? 📸",
         "player": "Hol dir den Platz 🙋",
-        "city": "Deine Stadt hier? 🌍"
+        "city": "Deine Stadt hier? 🌍",
+        "invite": "🎯 Wer holt Platz {{rank}}? Lade jemanden ein",
+        "empty": "Diesen Platz hat niemand geholt"
       }
     },
     "rivals": {

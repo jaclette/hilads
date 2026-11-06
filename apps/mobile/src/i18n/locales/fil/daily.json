@@ -906,7 +906,11 @@
     "you": {
       "top": "Ikaw · #1 · Wala nang nasa taas mo 👑",
       "player": "Ikaw · #{{rank}} · {{gap}} pts para malampasan si {{name}} ▲",
-      "none": "Maglaro ngayon para makapasok sa board 🙋"
+      "none": "Maglaro ngayon para makapasok sa board 🙋",
+      "photo_one": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
+      "photo_other": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
+      "photoTop": "Pinakamaganda mo: #1 · walang nasa itaas mo 👑",
+      "photoNone": "Wala ka pang litrato sa ranking ❤️"
     },
     "city": {
       "lineTop": "Nangunguna ang {{city}}! 🏁",
@@ -938,7 +942,9 @@
     "ghost": {
       "photo": "Litrato mo rito? 📸",
       "player": "Kunin ang puwestong ito 🙋",
-      "city": "Lungsod mo rito? 🌍"
+      "city": "Lungsod mo rito? 🌍",
+      "invite": "🎯 Sino ang kukuha ng #{{rank}}? Mag-imbita ng kaibigan",
+      "empty": "Walang kumuha ng puwestong ito"
     }
   },
   "rivals": {

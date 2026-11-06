@@ -6,7 +6,11 @@ import { thumbUrl } from '../../lib/imageThumb'
 import AvatarWithFlag from '../AvatarWithFlag'
 import { FlagSticker, themeColor } from '../joy/Joy'
 import { getLastToday, useDaily, useDc } from '../daily/dailyShared'
-import { FitText, MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
+import { shareLink } from '../../lib/shareLink'
+import i18n from '../../i18n'
+import Icon from '../Icon'
+import { themeIcon } from '../../lib/icons'
+import { FitText, MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
 
 const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
 const GOLD = themeColor('sip')
@@ -61,10 +65,21 @@ export default function RanksScreen({ header, initial }) {
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3600000)) : null
   const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')
   const showToggle = tab !== 'cities' && !!cityId
-  // An empty podium place leads to Today (the web has no camera: photos are taken in the app).
-  const ghost = {
-    label: t(tab === 'photos' ? 'ranks.ghost.photo' : tab === 'players' ? 'ranks.ghost.player' : 'ranks.ghost.city'),
-    onClick: () => { track('ranks_ghost_tapped', { tab, period, platform_surface: 'web' }); openToday() },
+  // An empty podium place (as the app): a past period has nobody to call ("Nobody took this spot");
+  // today, before I've played: play (Today: the web has no camera); once I've played: invite a
+  // friend (my photo's link, else today's challenge).
+  const played = !!data?.played
+  const tap = (action, go) => () => { track('ranks_ghost_tapped', { tab, period, action, platform_surface: 'web' }); go() }
+  const invite = () => {
+    const today = getLastToday()
+    if (today?.myProof?.id) shareLink({ type: 'proof', path: `/p/${today.myProof.id}`, text: t('worlds.tagline'), source: 'ranks_ghost' })
+    else shareLink({ type: 'today', path: '/today', text: i18n.t('shareLink.textToday', { ns: 'common', challenge: today?.challenge?.text ?? '' }), source: 'ranks_ghost' })
+  }
+  const ghost = (rank) => {
+    if (period !== 'today') return { label: t('ranks.ghost.empty'), icon: 'close' }
+    if (tab === 'cities') return { label: t('ranks.ghost.city'), icon: 'flag-outline', onClick: tap('today', openToday) }
+    if (played) return { label: t('ranks.ghost.invite', { rank }), icon: 'person-add-outline', onClick: tap('invite', invite) }
+    return { label: t(tab === 'photos' ? 'ranks.ghost.photo' : 'ranks.ghost.player'), icon: 'camera-outline', onClick: tap('play', openToday) }
   }
 
   return (
@@ -93,7 +108,8 @@ export default function RanksScreen({ header, initial }) {
             </div>
           )}
         </div>
-        {tab === 'photos' && <Photos data={data} failed={failed} period={period} ghost={ghost} />}
+        {tab === 'photos' && <Photos data={data} failed={failed} period={period} ghost={ghost}
+                                     loadMore={(offset) => fetchRanks('photos', { period, scope: scopeNow, cityId, offset })} />}
         {tab === 'players' && <Players data={data} failed={failed} period={period} ghost={ghost} />}
         {tab === 'cities' && <Cities data={data} failed={failed} period={period} myCityId={Number(browsedCity) || null} ghost={ghost} />}
       </div>
@@ -113,22 +129,56 @@ function Empty({ text, failed, loading }) {
 
 const handle = (u) => (u?.username ? `@${u.username}` : u?.displayName ?? '')
 
-function Photos({ data, failed, period, ghost }) {
+function Photos({ data, failed, period, ghost, loadMore }) {
   const { t } = useDc()
-  const { openDaily } = useDaily()
-  const items = data?.items ?? []
+  const { openDaily, account } = useDaily()
+  const rows = useRef({})
+  const end = useRef(null)
+  // Later pages, appended at the end of the list (each photo keeps the rank the server gave it).
+  const [more, setMore] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const extra = more?.base === data ? more : null
+  const items = data ? [...(data.items ?? []), ...(extra?.items ?? [])] : []
+  const next = extra ? extra.next : data?.nextOffset ?? null
   const proofs = items.map(i => i.proof)
   const open = (list, p) => openDaily('photos', { list, proofId: p.id, source: 'ranks' })
-  const grid = period === 'week' || period === 'alltime'
-  const podium = items.slice(0, 3).map(i => ({
+  useEffect(() => {
+    const el = end.current
+    if (!el || next === null || next === undefined || !data || typeof IntersectionObserver === 'undefined') return undefined
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting || loading) return
+      setLoading(true)
+      loadMore(next)
+        .then(p => setMore(m => ({ base: data, items: [...(m?.base === data ? m.items : []), ...p.items], next: p.nextOffset ?? null })))
+        .catch(() => {})
+        .finally(() => setLoading(false))
+    }, { rootMargin: '400px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [next, data, loading]) // eslint-disable-line react-hooks/exhaustive-deps
+  if (!data) return <Empty loading={!failed} failed={failed} />
+
+  const top = items.filter(i => i.rank <= 3)
+  const rest = items.filter(i => i.rank > 3)
+  const podium = top.map(i => ({
     key: i.proof.id, rank: i.rank, label: handle(i.proof.user), value: i.proof.voteCount, format: n => `${n} ❤️`, onClick: () => open(proofs, i.proof),
     lead: <img className="r6-podium-photo" style={{ borderColor: MEDAL[i.rank - 1] }} src={thumbUrl(i.proof.thumbUrl || i.proof.photoUrl)} alt="" loading="lazy" />,
   }))
-  if (!data) return <Empty loading={!failed} failed={failed} />
+  // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
+  const me = data.me ?? null
+  const you = me
+    ? me.rank === 1 ? t('ranks.you.photoTop') : t('ranks.you.photo', { rank: me.rank, count: me.gap ?? 1, next: me.rank - 1 })
+    : !account || (period === 'today' && !data.played) ? t('ranks.you.none') : t('ranks.you.photoNone')
+  const onYou = () => {
+    if (!me) return
+    const el = rows.current[me.proofId]
+    if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    else { const p = items.find(x => x.proof.id === me.proofId); if (p) open(proofs, p.proof) }
+  }
   return (
     <>
       {!items.length && <Empty text={t('ranks.empty.photos')} />}
-      {items.length > 0 && !grid && <Podium items={podium} ghost={ghost} />}
+      {items.length > 0 && <Podium items={podium} ghost={ghost} />}
       {period === 'yesterday' && data.cityBest?.length > 0 && (
         <div className="r6-best">
           <h3>{t('ranks.bestPerCity')}</h3>
@@ -142,26 +192,40 @@ function Photos({ data, failed, period, ghost }) {
           </div>
         </div>
       )}
-      {grid ? (
-        <div className="r6-hof">
-          {items.map(i => (
-            <button key={i.proof.id} type="button" className="r6-hof-item" onClick={() => open(proofs, i.proof)} aria-label={`#${i.rank}, ${i.proof.voteCount} ❤️`}>
-              <img src={thumbUrl(i.proof.thumbUrl || i.proof.photoUrl)} alt="" loading="lazy" />
-              {i.rank <= 3 && <span className="r6-hof-medal">{MEDAL_EMOJI[i.rank - 1]}</span>}
-              <span className="r6-hof-likes">{i.proof.voteCount} ❤️</span>
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div className="r6-list">
-          {items.slice(3).map(i => (
-            <RankRow key={i.proof.id} rank={i.rank} value={`${i.proof.voteCount} ❤️`} onClick={() => open(proofs, i.proof)} title={handle(i.proof.user)}
-                     lead={<img className="r6-row-photo" src={thumbUrl(i.proof.thumbUrl || i.proof.photoUrl)} alt="" loading="lazy" />}
-                     sub={<><FlagSticker country={i.proof.city?.country} size={14} />{shortCityName(i.proof.city?.name ?? '')}</>} />
-          ))}
-        </div>
-      )}
+      <div className="r6-list r6-list--you">
+        {rest.map(i => <PhotoRow key={i.proof.id} item={i} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
+        <div ref={end} className="r6-more">{loading && <span className="r6-spinner" />}</div>
+      </div>
+      <YouBar text={you} onClick={onYou} />
     </>
+  )
+}
+
+/** A photo from #4: the big rank, the thumbnail, the challenge and its theme, the author, "4 ❤️ · 2 💬" (ties: comments, then the earliest posted). */
+function PhotoRow({ item, mine, onClick, rowRef }) {
+  const p = item.proof
+  const theme = p.context?.theme?.key ?? null
+  const who = handle(p.user)
+  return (
+    <button type="button" ref={rowRef} className={`r6-prow${mine ? ' r6-row--mine' : ''}`} onClick={onClick}
+            aria-label={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
+      <span className="r6-prank">{item.rank}</span>
+      <img className="r6-pthumb" src={thumbUrl(p.thumbUrl || p.photoUrl)} alt="" loading="lazy" />
+      <span className="r6-pbody">
+        {p.context?.text && <span className="r6-ptitle">{p.context.text}</span>}
+        {theme && (
+          <span className="r6-pchip" style={{ '--chip': themeColor(theme).fill }}>
+            <Icon name={themeIcon(theme)} size={11} /><span>{p.context.theme.name}</span>
+          </span>
+        )}
+        <span className="r6-pwho">
+          <AvatarWithFlag userId={p.user.id} displayName={p.user.displayName ?? p.user.username} photoUrl={p.user.photoUrl} size={18} />
+          <span className="r6-pname">{who}</span>
+          <FlagSticker country={p.city?.country} size={14} />
+        </span>
+      </span>
+      <span className="r6-pill">{p.voteCount} ❤️ · {p.commentCount ?? 0} 💬</span>
+    </button>
   )
 }
 

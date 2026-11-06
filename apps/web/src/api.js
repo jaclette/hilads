@@ -2106,9 +2106,10 @@ export const markNotificationCategoriesRead = (categories) => postJson('/notific
 // ── V6 Ranks (GET /ranks) ────────────────────────────────────────────────────
 
 /** tab: photos | players | cities; period: today | yesterday | week | alltime; scope: city | world. */
-export async function fetchRanks(tab, { period = 'today', scope = 'world', cityId = null } = {}) {
+export async function fetchRanks(tab, { period = 'today', scope = 'world', cityId = null, offset = 0 } = {}) {
   const q = new URLSearchParams({ tab, period, scope })
   if (cityId) q.set('cityId', String(cityId))
+  if (offset) q.set('offset', String(offset))   // photos: the next page
   const res = await fetch(`${BASE}/ranks?${q}`, { credentials: 'include' })
   if (!res.ok) throw new Error('ranks')
   return res.json()

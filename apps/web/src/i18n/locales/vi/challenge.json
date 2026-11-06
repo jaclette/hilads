@@ -1574,7 +1574,11 @@
       "you": {
         "top": "Bạn · #1 · Không ai trên bạn 👑",
         "player": "Bạn · #{{rank}} · thêm {{gap}} điểm để vượt {{name}} ▲",
-        "none": "Chơi hôm nay để lên bảng nha 🙋"
+        "none": "Chơi hôm nay để lên bảng nha 🙋",
+        "photo_one": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
+        "photo_other": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
+        "photoTop": "Ảnh tốt nhất của bạn: #1 · không ai trên bạn 👑",
+        "photoNone": "Chưa có ảnh nào của bạn được xếp hạng ❤️"
       },
       "city": {
         "lineTop": "{{city}} đang dẫn đầu! 🏁",
@@ -1602,7 +1606,9 @@
       "ghost": {
         "photo": "Ảnh của bạn ở đây? 📸",
         "player": "Giành vị trí này 🙋",
-        "city": "Thành phố của bạn ở đây? 🌍"
+        "city": "Thành phố của bạn ở đây? 🌍",
+        "invite": "🎯 Ai giành hạng #{{rank}}? Mời bạn bè",
+        "empty": "Chưa ai giành vị trí này"
       }
     },
     "rivals": {

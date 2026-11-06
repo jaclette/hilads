@@ -906,7 +906,11 @@
     "you": {
       "top": "You · #1 · Nobody above you 👑",
       "player": "You · #{{rank}} · {{gap}} pts to pass {{name}} ▲",
-      "none": "Play today to get on the board 🙋"
+      "none": "Play today to get on the board 🙋",
+      "photo_one": "Your best: #{{rank}} · {{count}} ❤️ to #{{next}}",
+      "photo_other": "Your best: #{{rank}} · {{count}} ❤️ to #{{next}}",
+      "photoTop": "Your best: #1 · nobody above you 👑",
+      "photoNone": "None of your photos is ranked yet ❤️"
     },
     "city": {
       "lineTop": "{{city}} leads the race! 🏁",
@@ -938,7 +942,9 @@
     "ghost": {
       "photo": "Your photo here? 📸",
       "player": "Take this spot 🙋",
-      "city": "Your city here? 🌍"
+      "city": "Your city here? 🌍",
+      "invite": "🎯 Who takes #{{rank}}? Invite a friend",
+      "empty": "Nobody took this spot"
     }
   },
   "rivals": {

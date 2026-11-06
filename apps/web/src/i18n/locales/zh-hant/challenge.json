@@ -1574,7 +1574,11 @@
       "you": {
         "top": "你 · 第 1 名 · 無人能及 👑",
         "player": "你 · 第 {{rank}} 名 · 再拿 {{gap}} 分超過 {{name}} ▲",
-        "none": "今天出戰就能上榜 🙋"
+        "none": "今天出戰就能上榜 🙋",
+        "photo_one": "你的最佳：第 {{rank}} 名 · 再 {{count}} ❤️ 到第 {{next}} 名",
+        "photo_other": "你的最佳：第 {{rank}} 名 · 再 {{count}} ❤️ 到第 {{next}} 名",
+        "photoTop": "你的最佳：第 1 名 · 沒人在你之上 👑",
+        "photoNone": "你還沒有照片上榜 ❤️"
       },
       "city": {
         "lineTop": "{{city}} 領先！🏁",
@@ -1602,7 +1606,9 @@
       "ghost": {
         "photo": "你的照片放這裡？📸",
         "player": "搶下這個位置 🙋",
-        "city": "你的城市放這裡？🌍"
+        "city": "你的城市放這裡？🌍",
+        "invite": "🎯 誰能拿下第 {{rank}} 名？邀請朋友",
+        "empty": "這個位置還沒人拿下"
       }
     },
     "rivals": {

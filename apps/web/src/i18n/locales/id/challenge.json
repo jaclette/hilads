@@ -1574,7 +1574,11 @@
       "you": {
         "top": "Kamu · #1 · Nggak ada di atasmu 👑",
         "player": "Kamu · #{{rank}} · {{gap}} poin lagi buat nyalip {{name}} ▲",
-        "none": "Main hari ini biar masuk papan 🙋"
+        "none": "Main hari ini biar masuk papan 🙋",
+        "photo_one": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
+        "photo_other": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
+        "photoTop": "Terbaikmu: #1 · tak ada yang di atasmu 👑",
+        "photoNone": "Belum ada fotomu di peringkat ❤️"
       },
       "city": {
         "lineTop": "{{city}} memimpin balapan! 🏁",
@@ -1602,7 +1606,9 @@
       "ghost": {
         "photo": "Fotomu di sini? 📸",
         "player": "Ambil posisi ini 🙋",
-        "city": "Kotamu di sini? 🌍"
+        "city": "Kotamu di sini? 🌍",
+        "invite": "🎯 Siapa ambil #{{rank}}? Ajak teman",
+        "empty": "Belum ada yang ambil posisi ini"
       }
     },
     "rivals": {

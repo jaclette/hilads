@@ -1652,7 +1652,11 @@
       "you": {
         "top": "Tu · #1 · Nessuno sopra di te 👑",
         "player": "Tu · #{{rank}} · {{gap}} pt per superare {{name}} ▲",
-        "none": "Gioca oggi per entrare in classifica 🙋"
+        "none": "Gioca oggi per entrare in classifica 🙋",
+        "photo_one": "La tua migliore: #{{rank}} · {{count}} ❤️ al #{{next}}",
+        "photo_other": "La tua migliore: #{{rank}} · {{count}} ❤️ al #{{next}}",
+        "photoTop": "La tua migliore: #1 · nessuno sopra di te 👑",
+        "photoNone": "Nessuna tua foto è in classifica ❤️"
       },
       "city": {
         "lineTop": "{{city}} guida la gara! 🏁",
@@ -1688,7 +1692,9 @@
       "ghost": {
         "photo": "La tua foto qui? 📸",
         "player": "Prenditi questo posto 🙋",
-        "city": "La tua città qui? 🌍"
+        "city": "La tua città qui? 🌍",
+        "invite": "🎯 Chi prende il #{{rank}}? Invita un amico",
+        "empty": "Nessuno ha preso questo posto"
       }
     },
     "rivals": {

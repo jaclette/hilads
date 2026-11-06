@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -10,7 +10,10 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
-import { Avatar, Segmented } from '@/ui';
+import { Avatar, Segmented, ThemeIcon } from '@/ui';
+import { useDailyToday } from '@/hooks/useDaily';
+import { ShareSheet } from '@/features/share/ShareSheet';
+import { proofShare, todayShare, type ShareContent } from '@/features/share/content';
 import { FlagSticker, themeColor, tint } from '@/ui/joy';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -21,7 +24,7 @@ import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
-import { MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
 
 // The last answer of each view (segment, period, scope, city), in memory.
 const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
@@ -104,15 +107,34 @@ function RanksContent() {
   const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin');
   const showToggle = tab !== 'cities' && !!cityId;
   // An empty podium place sends to the camera (today's photos) or to Today.
-  const ghost: PodiumGhost = {
-    label: t(tab === 'photos' ? 'ranks.ghost.photo' : tab === 'players' ? 'ranks.ghost.player' : 'ranks.ghost.city'),
-    onPress: () => {
-      Haptics.selectionAsync().catch(() => {});
-      track('ranks_ghost_tapped', { tab, period });
-      if (tab === 'photos' && period === 'today') router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
-      else router.navigate('/(tabs)/today' as never);
-    },
+  // An empty podium place depends on where I stand: a past period has nobody to call ("Nobody
+  // took this spot"); today, before I've played: play (the camera, never the edit of a photo I
+  // posted); once I've played: invite a friend (today's share card, "Your turn", and its link).
+  const today = useDailyToday(city?.channelId);
+  const [share, setShare] = useState<ShareContent | null>(null);
+  const played = !!(data as { played?: boolean } | null)?.played;
+  const tap = (action: string, go: () => void) => () => {
+    Haptics.selectionAsync().catch(() => {});
+    track('ranks_ghost_tapped', { tab, period, action });
+    go();
   };
+  const invite = () => {
+    const d = today.data;
+    if (d?.challenge && d.myProof) setShare(proofShare(d.myProof, d.challenge));
+    else if (d?.challenge && city) setShare(todayShare(d.challenge, city));
+    else router.navigate('/(tabs)/today' as never);
+  };
+  const ghost: PodiumGhost = (rank) => {
+    if (period !== 'today') return { label: t('ranks.ghost.empty'), icon: 'close-outline' };
+    if (tab === 'cities') return { label: t('ranks.ghost.city'), icon: 'flag-outline', onPress: tap('today', () => router.navigate('/(tabs)/today' as never)) };
+    if (played) return { label: t('ranks.ghost.invite', { rank }), icon: 'person-add-outline', onPress: tap('invite', invite) };
+    if (tab === 'photos') {
+      return { label: t('ranks.ghost.photo'), icon: 'camera-outline',
+               onPress: tap('play', () => router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never)) };
+    }
+    return { label: t('ranks.ghost.player'), icon: 'camera-outline', onPress: tap('play', () => router.navigate('/(tabs)/today' as never)) };
+  };
+  const loadMorePhotos = useCallback((offset: number) => fetchRanks('photos', { period, scope: scopeNow, cityId, offset }), [period, scopeNow, cityId]);
 
   const header = (
     <View style={styles.controls}>
@@ -141,12 +163,14 @@ function RanksContent() {
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header} testID="ranks-screen"><AppHeader /></View>
       <View style={styles.flex}>
-        {tab === 'photos' && <PhotosView data={data as PhotosRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} period={period} ghost={ghost} />}
+        {tab === 'photos' && <PhotosView data={data as PhotosRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} period={period} ghost={ghost}
+                                         loadMore={loadMorePhotos} list={list} />}
         {tab === 'players' && <PlayersView data={data as PlayersRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} ghost={ghost}
                                            period={period} list={list} onOpen={id => { if (canAccessProfile(account)) router.push(`/user/${id}` as never); }} />}
         {tab === 'cities' && <CitiesView data={data as CitiesRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} ghost={ghost}
                                          period={period} list={list} myCityId={cityId} />}
       </View>
+      <ShareSheet content={share} source="ranks_ghost" onClose={() => setShare(null)} />
     </SafeAreaView>
   );
 }
@@ -183,29 +207,55 @@ function useOpenPhoto() {
 
 // ── Photos ──────────────────────────────────────────────────────────────────
 
-function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost }: {
+function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost, loadMore, list }: {
   data: PhotosRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod; ghost: PodiumGhost;
+  loadMore: (offset: number) => Promise<PhotosRanks>; list: React.RefObject<FlatList<unknown> | null>;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
-  const { width } = useWindowDimensions();
+  const { account } = useApp();
   const open = useOpenPhoto();
-  const items = data?.items ?? [];
-  const proofs = items.map(i => i.proof);
-  const grid = period === 'week' || period === 'alltime';
-  const tile = (width - Spacing.md * 2 - 16) / 3;
+  // Later pages, appended as the list scrolls (each photo keeps the rank the server gave it).
+  const [more, setMore] = useState<{ base: PhotosRanks; items: PhotosRanks['items']; next: number | null } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const extra = more?.base === data ? more : null;
+  const items = useMemo(() => [...(data?.items ?? []), ...(extra?.items ?? [])], [data, extra]);
+  const next = extra ? extra.next : data?.nextOffset ?? null;
+  const proofs = useMemo(() => items.map(i => i.proof), [items]);
+  const onEnd = () => {
+    if (!data || next === null || loading) return;
+    setLoading(true);
+    loadMore(next)
+      .then(p => setMore(m => ({ base: data, items: [...(m?.base === data ? m.items : []), ...p.items.filter(x => !items.some(y => y.proof.id === x.proof.id))], next: p.nextOffset ?? null })))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
 
-  const podium: PodiumItem[] = items.slice(0, 3).map(i => ({
+  const top = items.filter(i => i.rank <= 3);
+  const rest = items.filter(i => i.rank > 3);
+  const podium: PodiumItem[] = top.map(i => ({
     key: i.proof.id, rank: i.rank, label: i.proof.user.username ? `@${i.proof.user.username}` : i.proof.user.displayName ?? '',
     lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: MEDAL[i.rank - 1] }]} contentFit="cover" />,
     value: i.proof.voteCount, format: n => `${n} ❤️`, onPress: () => open(proofs, i.proof),
   }));
 
-  const top = (
+  // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
+  const me = data?.me ?? null;
+  const youText = me
+    ? me.rank === 1 ? t('ranks.you.photoTop') : t('ranks.you.photo', { rank: me.rank, count: me.gap ?? 1, next: me.rank - 1 })
+    : !account || (period === 'today' && !data?.played) ? t('ranks.you.none') : t('ranks.you.photoNone');
+  const onYou = () => {
+    if (!me) return;
+    const i = rest.findIndex(x => x.proof.id === me.proofId);
+    if (i >= 0) list.current?.scrollToIndex({ index: i, viewPosition: 0.5 });
+    else { const p = items.find(x => x.proof.id === me.proofId); if (p) open(proofs, p.proof); }
+  };
+
+  const headerBlock = (
     <View>
       {header}
-      {items.length > 0 && !grid && <Podium items={podium} ghost={ghost} />}
+      {items.length > 0 && <Podium items={podium} ghost={ghost} />}
       {period === 'yesterday' && !!data?.cityBest?.length && (
         <View style={styles.cityBest}>
           <Text style={styles.sectionTitle}>{t('ranks.bestPerCity')}</Text>
@@ -226,50 +276,64 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
     </View>
   );
 
-  if (grid) {
-    return (
-      <FlatList
-        key="grid"
-        data={items}
-        numColumns={3}
-        keyExtractor={i => i.proof.id}
-        ListHeaderComponent={top}
-        columnWrapperStyle={{ gap: 8, paddingHorizontal: Spacing.md }}
-        contentContainerStyle={styles.listPad}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-        ListEmptyComponent={data || failed ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : null}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => open(proofs, item.proof)} style={{ width: tile, marginBottom: 8 }} accessibilityRole="button"
-                     accessibilityLabel={`#${item.rank}, ${item.proof.voteCount} ❤️`}>
-            <Image source={{ uri: thumbUrl(item.proof.thumbUrl ?? item.proof.photoUrl) ?? undefined }} style={[styles.hof, { width: tile, height: tile }]} contentFit="cover" />
-            {item.rank <= 3 && <Text style={styles.hofMedal}>{MEDAL_EMOJI[item.rank - 1]}</Text>}
-            <View style={styles.hofLikes}><Text style={styles.hofLikesText}>{item.proof.voteCount} ❤️</Text></View>
-          </Pressable>
-        )}
-      />
-    );
-  }
-
   return (
-    <FlatList
-      key="list"
-      data={items.slice(3)}
-      keyExtractor={i => i.proof.id}
-      ListHeaderComponent={top}
-      contentContainerStyle={styles.listPad}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-      ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : null}
-      renderItem={({ item }) => (
-        <View style={styles.rowPad}>
-          <RankRow rank={item.rank} value={`${item.proof.voteCount} ❤️`} onPress={() => open(proofs, item.proof)}
-                   lead={<Image source={{ uri: thumbUrl(item.proof.thumbUrl ?? item.proof.photoUrl) ?? undefined }} style={styles.rowPhoto} contentFit="cover" />}
-                   title={item.proof.user.username ? `@${item.proof.user.username}` : item.proof.user.displayName ?? ''}
-                   sub={<><FlagSticker country={item.proof.city?.country} size={14} /><Text style={styles.sub} numberOfLines={1}>{shortCityName(item.proof.city?.name ?? '')}</Text></>} />
-        </View>
-      )}
-    />
+    <>
+      <FlatList
+        ref={list as React.RefObject<FlatList<typeof rest[number]>>}
+        data={rest}
+        keyExtractor={i => i.proof.id}
+        ListHeaderComponent={headerBlock}
+        contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
+        ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 16 }} color={colors.primary} /> : null}
+        onEndReached={onEnd}
+        onEndReachedThreshold={0.6}
+        onScrollToIndexFailed={() => {}}
+        initialNumToRender={12}
+        windowSize={9}
+        renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} onPress={() => open(proofs, item.proof)} />}
+      />
+      {data && <YouBar text={youText} onPress={onYou} />}
+    </>
   );
 }
+
+/**
+ * A photo from #4: the big rank, the thumbnail, the challenge (its text and theme), the author
+ * (avatar, @handle, flag), and "4 ❤️ · 2 💬" (ties are ranked by comments, then the earliest posted).
+ */
+const PhotoRankRow = memo(function PhotoRankRow({ item, mine, onPress }: { item: PhotosRanks['items'][number]; mine: boolean; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const p = item.proof;
+  const theme = p.context?.theme?.key ?? null;
+  const c = theme ? themeColor(theme) : null;
+  const who = p.user.username ? `@${p.user.username}` : p.user.displayName ?? '';
+  return (
+    <Pressable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
+               accessibilityLabel={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
+      <Text style={styles.pRank} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{item.rank}</Text>
+      <Image source={{ uri: thumbUrl(p.thumbUrl ?? p.photoUrl) ?? undefined }} style={styles.pThumb} contentFit="cover" />
+      <View style={styles.pBody}>
+        {!!p.context?.text && <Text style={styles.pTitle} numberOfLines={1}>{p.context.text}</Text>}
+        <View style={styles.pMeta}>
+          {!!theme && c && (
+            <View style={[styles.pChip, { backgroundColor: tint(c.fill, 0.2) }]}>
+              <ThemeIcon theme={theme} size={11} color={c.fill} />
+              <Text style={styles.pChipText} numberOfLines={1}>{p.context?.theme?.name}</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.pMeta}>
+          <Avatar uri={p.user.photoUrl} name={p.user.displayName ?? p.user.username ?? ''} size={18} />
+          <Text style={styles.sub} numberOfLines={1}>{who}</Text>
+          <FlagSticker country={p.city?.country} size={14} />
+        </View>
+      </View>
+      <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>{p.voteCount} ❤️ · {p.commentCount ?? 0} 💬</Text></View>
+    </Pressable>
+  );
+});
 
 // ── Players ─────────────────────────────────────────────────────────────────
 
@@ -409,7 +473,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rowPad:       { paddingHorizontal: Spacing.md - 4 },
   podiumPhoto:  { width: 72, height: 72, borderRadius: 16, borderWidth: 3, backgroundColor: c.bg3 },
   podiumAvatar: { borderRadius: 32, borderWidth: 3, padding: 1 },
-  rowPhoto:     { width: 44, height: 44, borderRadius: 10, backgroundColor: c.bg3 },
   sub:          { fontSize: 13, lineHeight: 17, color: c.muted, flexShrink: 1 },
   badge:        { fontSize: 11, fontWeight: '800', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 8, overflow: 'hidden' },
   badgeLocal:   { backgroundColor: tint('#1FB5A8', 0.2), color: c.localText },
@@ -420,10 +483,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bestPhoto:    { width: 112, height: 112, backgroundColor: c.bg3 },
   bestFoot:     { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 6 },
   bestCity:     { flex: 1, fontSize: 12, fontWeight: '800', color: c.text },
-  hof:          { borderRadius: 12, backgroundColor: c.bg3 },
-  hofMedal:     { position: 'absolute', top: 4, left: 6, fontSize: 22 },
-  hofLikes:     { position: 'absolute', right: 6, bottom: 6, paddingHorizontal: 6, height: 22, borderRadius: 11, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center' },
-  hofLikesText: { fontSize: 11, fontWeight: '800', color: '#FFFFFF' },
+  pRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.card },
+  pRowMine:     { backgroundColor: c.primaryTint },
+  pRank:        { width: 40, fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.text, textAlign: 'center' },
+  pThumb:       { width: 52, height: 52, borderRadius: 12, backgroundColor: c.bg3 },
+  pBody:        { flex: 1, minWidth: 0, gap: 3 },
+  pTitle:       { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
+  pMeta:        { flexDirection: 'row', alignItems: 'center', gap: 5, minWidth: 0 },
+  pChip:        { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, height: 18, borderRadius: 9, maxWidth: '100%' },
+  pChipText:    { fontSize: 11, lineHeight: 14, fontWeight: '800', color: c.text, flexShrink: 1 },
+  pill:         { paddingHorizontal: 8, height: 26, borderRadius: 13, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
+  pillText:     { fontSize: 12, fontWeight: '800', color: c.text },
   funLine:      { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: Spacing.md, marginTop: 10, padding: 12,
                   borderRadius: Radius.card, backgroundColor: tint(themeColor('sip').fill, 0.2) },
   funText:      { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },

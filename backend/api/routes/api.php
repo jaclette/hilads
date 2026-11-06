@@ -13525,8 +13525,9 @@ $router->add('GET', '/api/v1/leaderboard/week', function () {
 
 // GET /api/v1/ranks?tab=players|cities|photos&period=today|yesterday|week|alltime&scope=city|world&cityId=
 // The Ranks tab (V6). players: {entries[{rank, prevRank, points, user, city}], me{…, gap, next}}; cities:
-// {entries[{rank, prevRank, city, photos, players, likes}], mine{…, gap, next}}; photos: {items[{rank, proof}],
-// cityBest[{cityId, proof}] (yesterday), endsAt (today)}. prevRank null = new (or today: no movement).
+// {entries[{rank, prevRank, city, photos, players, likes}], mine{…, gap, next}}; photos: {items[{rank, proof}] (a page:
+// offset / limit, nextOffset, total; ranked by likes, comments, earliest posted), me{rank, proofId, votes, comments, gap},
+// cityBest[{cityId, proof}] (yesterday), endsAt + played (today)}; players today: played too. prevRank null = new (or today: no movement).
 $router->add('GET', '/api/v1/ranks', function () {
     spotsRateLimit();
     $user   = AuthService::currentUser();
@@ -13543,7 +13544,13 @@ $router->add('GET', '/api/v1/ranks', function () {
 
     if ($tab === 'players') {
         if ($period === 'yesterday') $period = 'today';
-        Response::json($base + Ranks::players($period, $cityId, $user['id'] ?? null, $today));
+        $out = $base + Ranks::players($period, $cityId, $user['id'] ?? null, $today);
+        if ($period === 'today') {
+            // Whether I've played today (the podium's empty places: play, or invite a friend).
+            $challenge = DailyChallengeRepository::findPublishedByDate($today);
+            $out['played'] = $user !== null && $challenge !== null && DailyProofRepository::findMine((string) $challenge['id'], $user['id']) !== null;
+        }
+        Response::json($out);
     }
     if ($tab === 'cities') {
         if ($period === 'yesterday') $period = 'today';
@@ -13559,11 +13566,25 @@ $router->add('GET', '/api/v1/ranks', function () {
         foreach ($rows as $r) $byId[$r['id']] = DailyProofRepository::format($r, $user['id'] ?? null);
         return array_values(array_filter(array_map(static fn($id) => $byId[$id] ?? null, $ids)));
     };
+    // The ranking (likes, then comments, then the earliest posted), a page at a time: each
+    // photo keeps its rank in the whole ranking (a hidden author's photo leaves a gap, not a shift).
+    $rows   = Ranks::photoRows($period, $cityId, $today);
+    $limit  = max(1, min(50, (int) ($_GET['limit'] ?? 30)));
+    $offset = max(0, (int) ($_GET['offset'] ?? 0));
+    $page   = array_slice($rows, $offset, $limit);
+    $rankOf = [];
+    foreach ($page as $i => $r) $rankOf[$r['id']] = $offset + $i + 1;
     $items = [];
-    foreach ($format(Ranks::photoIds($period, $cityId, $today)) as $i => $proof) {
-        $items[] = ['rank' => $i + 1, 'proof' => $proof];
+    foreach ($format(array_column($page, 'id')) as $proof) {
+        $items[] = ['rank' => $rankOf[$proof['id']], 'proof' => $proof];
     }
-    $out = $base + ['items' => $items];
+    $out = $base + [
+        'items'      => $items,
+        'total'      => count($rows),
+        'nextOffset' => $offset + $limit < count($rows) ? $offset + $limit : null,
+        // My best photo of the period (the "You" bar), and today: whether I've played (the podium's empty places).
+        'me'         => $user !== null ? Ranks::myBestPhoto($rows, $user['id']) : null,
+    ];
     if ($period === 'yesterday' && $cityId === null) {
         $best = Ranks::cityBestIds(Ranks::dates('yesterday', $today)[0]);
         $out['cityBest'] = array_map(static fn(array $p) => ['proof' => $p], $format(array_values($best)));
@@ -13571,6 +13592,7 @@ $router->add('GET', '/api/v1/ranks', function () {
     if ($period === 'today') {
         $challenge = DailyChallengeRepository::findPublishedByDate($today);
         $out['endsAt'] = $challenge !== null ? DailyClock::window($today)[1]->getTimestamp() : null;
+        $out['played'] = $user !== null && $challenge !== null && DailyProofRepository::findMine((string) $challenge['id'], $user['id']) !== null;
     }
     Response::json($out);
 });
