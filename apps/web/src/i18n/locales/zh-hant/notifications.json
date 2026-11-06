@@ -103,7 +103,8 @@
     "names": {
       "two": "{{a}} 和 {{b}}",
       "many_other": "{{a}} 等 {{count}} 人"
-    }
+    },
+    "more": "更多操作"
   },
   "settings": {
     "title": "通知設定",

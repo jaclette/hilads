@@ -113,7 +113,8 @@
       "many_few": "{{a}} و{{count}} آخرين",
       "many_many": "{{a}} و{{count}} آخر",
       "many_other": "{{a}} و{{count}} آخرين"
-    }
+    },
+    "more": "إجراءات أخرى"
   },
   "settings": {
     "title": "إعدادات الإشعارات",

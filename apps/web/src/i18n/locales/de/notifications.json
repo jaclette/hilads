@@ -105,7 +105,8 @@
       "two": "{{a}} und {{b}}",
       "many_one": "{{a}} und {{count}} weitere Person",
       "many_other": "{{a}} und {{count}} weitere"
-    }
+    },
+    "more": "Weitere Aktionen"
   },
   "settings": {
     "title": "Benachrichtigungen",

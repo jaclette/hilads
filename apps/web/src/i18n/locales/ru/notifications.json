@@ -109,7 +109,8 @@
       "many_few": "{{a}} и ещё {{count}}",
       "many_many": "{{a}} и ещё {{count}}",
       "many_other": "{{a}} и ещё {{count}}"
-    }
+    },
+    "more": "Ещё действия"
   },
   "settings": {
     "title": "Настройки уведомлений",

@@ -16456,7 +16456,7 @@ body.has-app-promo-banner .page-header {
 /* ── Tab bar like the app's (W1): 4 tabs, stroke icon over a label, the
    active tab on a primary-tint pill. Overrides the older glowing tab bar. ── */
 .bottom-nav {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;   /* Today · Map · Ranks · Hi · Passport (V6) */
   gap: 6px;
   border-radius: 0;
   background: var(--bg);
@@ -16471,7 +16471,15 @@ body.has-app-promo-banner .page-header {
 [data-theme="light"] .bottom-nav-tab.active { color: var(--primary-on-tint); background: var(--primary-tint); }
 .bottom-nav-tab.active .bottom-nav-icon { filter: none; }
 .bottom-nav-icon svg { width: 24px; height: 24px; }
-.bottom-nav-label { font-size: 12px; font-weight: 600; line-height: 1.2; text-transform: none; letter-spacing: 0; }
+.bottom-nav-label { font-size: 12px; font-weight: 600; line-height: 1.2; text-transform: none; letter-spacing: 0;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.bottom-nav-tab { min-width: 0; }
+/* Five tabs on a narrow phone (320-360 px): tighter gaps and labels, so none is cut or wraps. */
+@media (max-width: 360px) {
+  .bottom-nav { gap: 2px; padding-left: 6px; padding-right: 6px; }
+  .bottom-nav-tab { padding: 6px 2px; }
+  .bottom-nav-label { font-size: 11px; }
+}
 .bottom-nav-tab.active .bottom-nav-label { font-weight: 700; }
 
 /* ── Today (W1): the Daily Challenge ticket, like the app (SPEC 9.3) ─────── */
@@ -18181,18 +18189,17 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .n6-chip-count { min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: rgba(0,0,0,0.12); font-size: 11px; line-height: 20px; text-align: center; }
 .n6-body { position: relative; overflow-x: hidden; }
 .n6-section { margin: 0; padding: 16px 16px 4px; font-size: 13px; font-weight: 800; color: var(--muted); }
-.n6-row-wrap { position: relative; overflow: hidden; }
+.n6-row-wrap { position: relative; }
 .n6-row-wrap--fresh { animation: n6-drop 0.45s cubic-bezier(.34,1.56,.64,1); }
-.n6-swipe { position: absolute; top: 0; bottom: 0; width: 120px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; }
-.n6-swipe--read { left: 0; }
-.n6-swipe--delete { right: 0; background: #C0264A; }
-.n6-row { position: relative; display: flex; align-items: center; background: var(--bg); touch-action: pan-y; transition: transform 0.15s; }
+.n6-row { position: relative; display: flex; align-items: center; background: var(--bg); }
 .n6-row-main { flex: 1; display: flex; align-items: center; gap: 12px; padding: 12px 22px 12px 16px; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; min-width: 0; }
 .n6-lead { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
 .n6-game { width: 46px; height: 46px; border-radius: 23px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 .n6-stack { position: relative; display: block; width: 46px; height: 46px; }
 .n6-stack-back { position: absolute; top: 0; right: 0; display: flex; border-radius: 50%; border: 2px solid var(--bg); }
 .n6-stack-front { position: absolute; bottom: 0; left: 0; display: flex; border-radius: 50%; border: 2px solid var(--bg); }
+.n6-logo { display: block; width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: var(--surface); }
+.n6-logo img { display: block; width: 100%; height: 100%; }
 .n6-cat { position: absolute; right: -4px; bottom: -4px; width: 22px; height: 22px; border-radius: 11px; border: 2px solid var(--bg); display: flex;
   align-items: center; justify-content: center; font-size: 11px; }
 .n6-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -18204,7 +18211,24 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .n6-actions { display: none; gap: 4px; padding-right: 10px; }
 .n6-actions button { width: 32px; height: 32px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; }
-@media (hover: hover) { .n6-row:hover .n6-actions { display: inline-flex; } .n6-row:hover .n6-dot { display: none; } }
+.n6-actions button:hover { color: var(--text); border-color: var(--muted); }
+/* No swipe on the web: icons on hover (desktop, a mouse); a "…" menu where there's no hover (touch). */
+@media (hover: hover) and (pointer: fine) {
+  .n6-row:hover .n6-actions, .n6-row:focus-within .n6-actions { display: inline-flex; }
+  .n6-row:hover .n6-dot, .n6-row:focus-within .n6-dot { display: none; }
+  .n6-more { display: none; }
+}
+.n6-more { position: relative; z-index: 5; flex-shrink: 0; padding-right: 6px; }
+.n6-more-btn { width: 40px; height: 40px; border-radius: 20px; border: 0; background: none; color: var(--muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; }
+.n6-menu { position: absolute; right: 6px; top: calc(100% - 4px); z-index: 10; min-width: 190px; display: flex; flex-direction: column; padding: 6px;
+  border-radius: 14px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(36, 26, 18, 0.18); }
+.n6-menu button { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: none;
+  color: var(--text); font: inherit; font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
+.n6-menu button:hover { background: var(--surface2); }
+.n6-menu .n6-menu-danger { color: #C0264A; }
+/* With the "…" on touch screens, the unread dot sits left of it. */
+@media (hover: none), (pointer: coarse) { .n6-dot { right: 52px; } }
 .n6-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 60px 40px; }
 .n6-empty-bubble { width: 96px; height: 96px; border-radius: 48px; display: flex; align-items: center; justify-content: center; font-size: 44px; }
 .n6-empty-text { margin: 0; font-size: 16px; line-height: 22px; font-weight: 700; color: var(--text); text-align: center; }

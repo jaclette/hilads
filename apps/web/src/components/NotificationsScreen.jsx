@@ -189,38 +189,41 @@ export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings
 
 function Row({ item, fresh, onOpen, onToggleRead, onDelete }) {
   const { t } = useTranslation('notifications')
-  const [dx, setDx] = useState(0)
-  const start = useRef(null)
-  const moved = useRef(false)
+  const [menu, setMenu] = useState(false)
+  const menuRef = useRef(null)
   const text = rowText(item, t)
   const c = categoryColor(item.category)
   const icon = GAME_ICON[item.type]
   const thumb = item.object?.kind === 'photo' ? item.object.thumbUrl : null
-  const end = () => {
-    if (dx > 80) onToggleRead(item)
-    else if (dx < -80) onDelete(item)
-    setDx(0)
-    start.current = null
-  }
+  // A Hilads notification (an announcement, a reminder) or one without a person: the Hilads logo.
+  const system = item.category === 'hilads' || !item.actors?.[0]?.name
+  const readLabel = item.read ? t('inbox.unread') : t('inbox.read')
+  useEffect(() => {
+    if (!menu) return undefined
+    const close = (e) => { if (!menuRef.current?.contains(e.target)) setMenu(false) }
+    const esc = (e) => { if (e.key === 'Escape') setMenu(false) }
+    document.addEventListener('pointerdown', close)
+    document.addEventListener('keydown', esc)
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', esc) }
+  }, [menu])
+  // The web has no swipe actions (the app's are native only): a plain, opaque row; ✓ and 🗑 on hover
+  // (desktop), a "…" menu on touch screens.
+  const tinted = tint(c.fill, 0.12)
   return (
     <div className={`n6-row-wrap${fresh ? ' n6-row-wrap--fresh' : ''}`}>
-      <div className="n6-swipe n6-swipe--read" style={{ background: 'var(--primary)' }}>{item.read ? t('inbox.unread') : t('inbox.read')}</div>
-      <div className="n6-swipe n6-swipe--delete">{t('inbox.delete')}</div>
       <div className={`n6-row${item.read ? '' : ' n6-row--unread'}`}
-           style={{ transform: `translateX(${dx}px)`, background: item.read ? undefined : tint(c.fill, 0.12) }}
-           onPointerDown={e => { if (e.pointerType !== 'mouse') { start.current = e.clientX; moved.current = false } }}
-           onPointerMove={e => { if (start.current !== null) { const d = e.clientX - start.current; if (Math.abs(d) > 8) moved.current = true; setDx(Math.max(-120, Math.min(120, d))) } }}
-           onPointerUp={end} onPointerCancel={() => { setDx(0); start.current = null }}>
-        <button type="button" className="n6-row-main" onClick={() => { if (!moved.current) onOpen(item) }}
+           style={item.read ? undefined : { background: `linear-gradient(${tinted}, ${tinted}), var(--bg)` }}>
+        <button type="button" className="n6-row-main" onClick={() => onOpen(item)}
                 aria-label={[text.parts.map(p => p.text).join(''), text.quote, timeAgo(item.created_at)].filter(Boolean).join('. ')}>
           <span className="n6-lead">
             {icon ? <span className="n6-game" style={{ background: tint(c.fill, 0.25) }}>{icon}</span>
+              : system ? <span className="n6-logo"><img src="/logo/icon.svg" alt="" /></span>
               : item.actors.length > 1 ? (
                 <span className="n6-stack">
                   <span className="n6-stack-back"><AvatarWithFlag userId={item.actors[1].id} displayName={item.actors[1].name} photoUrl={item.actors[1].photoUrl} size={32} /></span>
                   <span className="n6-stack-front"><AvatarWithFlag userId={item.actors[0].id} displayName={item.actors[0].name} photoUrl={item.actors[0].photoUrl} size={32} /></span>
                 </span>
-              ) : <AvatarWithFlag userId={item.actors[0]?.id} displayName={item.actors[0]?.name ?? '✨'} photoUrl={item.actors[0]?.photoUrl} size={46} />}
+              ) : <AvatarWithFlag userId={item.actors[0].id} displayName={item.actors[0].name} photoUrl={item.actors[0].photoUrl} size={46} />}
             {!icon && <span className="n6-cat" style={{ background: c.fill }}>{CATEGORY_EMOJI[item.category]}</span>}
           </span>
           <span className="n6-text">
@@ -231,11 +234,28 @@ function Row({ item, fresh, onOpen, onToggleRead, onDelete }) {
           {thumb && <img loading="lazy" className="notif-thumb" src={thumbUrl(thumb)} alt="" />}
           {!item.read && <span className="n6-dot" style={{ background: c.fill }} />}
         </button>
+        {/* Desktop: on hover. */}
         <span className="n6-actions">
-          <button type="button" onClick={() => onToggleRead(item)} aria-label={item.read ? t('inbox.unread') : t('inbox.read')} title={item.read ? t('inbox.unread') : t('inbox.read')}>
-            <Icon name={item.read ? 'ellipse' : 'checkmark-circle-outline'} size={16} />
+          <button type="button" onClick={() => onToggleRead(item)} aria-label={readLabel} title={readLabel}>
+            <Icon name={item.read ? 'ellipse' : 'checkmark'} size={16} />
           </button>
           <button type="button" onClick={() => onDelete(item)} aria-label={t('inbox.delete')} title={t('inbox.delete')}><Icon name="trash-outline" size={16} /></button>
+        </span>
+        {/* Touch screens: a "…" menu. */}
+        <span className="n6-more" ref={menuRef}>
+          <button type="button" className="n6-more-btn" onClick={() => setMenu(m => !m)} aria-haspopup="menu" aria-expanded={menu} aria-label={t('inbox.more')}>
+            <Icon name="ellipsis-horizontal" size={18} />
+          </button>
+          {menu && (
+            <span className="n6-menu" role="menu">
+              <button type="button" role="menuitem" onClick={() => { setMenu(false); onToggleRead(item) }}>
+                <Icon name={item.read ? 'ellipse' : 'checkmark'} size={16} />{readLabel}
+              </button>
+              <button type="button" role="menuitem" className="n6-menu-danger" onClick={() => { setMenu(false); onDelete(item) }}>
+                <Icon name="trash-outline" size={16} />{t('inbox.delete')}
+              </button>
+            </span>
+          )}
         </span>
       </div>
     </div>

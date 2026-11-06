@@ -103,7 +103,8 @@
     "names": {
       "two": "{{a}}さんと{{b}}さん",
       "many_other": "{{a}}さんほか{{count}}人"
-    }
+    },
+    "more": "その他の操作"
   },
   "settings": {
     "title": "通知設定",

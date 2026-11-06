@@ -103,7 +103,8 @@
     "names": {
       "two": "{{a}} 님과 {{b}} 님",
       "many_other": "{{a}} 님 외 {{count}}명"
-    }
+    },
+    "more": "더보기"
   },
   "settings": {
     "title": "알림 설정",

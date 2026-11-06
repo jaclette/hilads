@@ -105,7 +105,8 @@
       "two": "{{a}} en {{b}}",
       "many_one": "{{a}} en {{count}} ander",
       "many_other": "{{a}} en {{count}} anderen"
-    }
+    },
+    "more": "Meer acties"
   },
   "settings": {
     "title": "Meldingen",

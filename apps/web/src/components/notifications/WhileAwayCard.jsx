@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchInbox, markNotificationsSeen } from '../../api'
 import AvatarWithFlag from '../AvatarWithFlag'
@@ -9,21 +9,20 @@ import { awayLine } from './inboxText'
 /**
  * "While you were away" (V6), at the top of Today: unseen Social or Game
  * notifications as stacked avatars and one line. A click opens the
- * notifications; ✕ or a swipe sideways dismisses it (seen, not read), so the
- * same items never show twice.
+ * notifications; ✕ dismisses it (seen, not read), so the same items never
+ * show twice. No swipe on the web (the app's is native only): a drag ended
+ * in a click that opened the notifications.
  */
 export default function WhileAwayCard({ account, onOpen }) {
   const { t } = useTranslation('notifications')
   const { unseen } = useNotifCounts()
   const pending = (unseen.social ?? 0) + (unseen.game ?? 0)
   const [items, setItems] = useState(null)
-  const [dx, setDx] = useState(0)
-  const start = useRef(null)
 
   useEffect(() => {
     if (!account || pending === 0) { setItems(null); return undefined }
     let alive = true
-    fetchInbox({ categories: ['social', 'game'], unseen: true, limit: 8 }).then(r => { if (alive) { setItems(r.items); setDx(0) } }).catch(() => {})
+    fetchInbox({ categories: ['social', 'game'], unseen: true, limit: 8 }).then(r => { if (alive) setItems(r.items) }).catch(() => {})
     return () => { alive = false }
   }, [account, pending])
 
@@ -41,11 +40,7 @@ export default function WhileAwayCard({ account, onOpen }) {
   const line = awayLine(items, t)
 
   return (
-    <div className="n6-away" style={{ transform: `translateX(${dx}px)`, opacity: 1 - Math.min(0.6, Math.abs(dx) / 400) }}
-         onPointerDown={e => { start.current = e.clientX }}
-         onPointerMove={e => { if (start.current !== null && e.pointerType !== 'mouse') setDx(e.clientX - start.current) }}
-         onPointerUp={() => { if (Math.abs(dx) > 110) seen(); else setDx(0); start.current = null }}
-         onPointerCancel={() => { setDx(0); start.current = null }}>
+    <div className="n6-away">
       <button type="button" className="n6-away-body" onClick={() => { seen(); onOpen() }} aria-label={`${t('away.title')}. ${line}`}>
         {actors.length > 0 && (
           <span className="n6-away-stack" style={{ width: 30 + (actors.length - 1) * 18 }}>

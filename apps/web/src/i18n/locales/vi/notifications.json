@@ -103,7 +103,8 @@
     "names": {
       "two": "{{a}} và {{b}}",
       "many_other": "{{a}} và {{count}} người khác"
-    }
+    },
+    "more": "Thao tác khác"
   },
   "settings": {
     "title": "Cài đặt thông báo",

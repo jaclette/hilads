@@ -103,7 +103,8 @@
     "names": {
       "two": "{{a}} dan {{b}}",
       "many_other": "{{a}} dan {{count}} lainnya"
-    }
+    },
+    "more": "Tindakan lain"
   },
   "settings": {
     "title": "Pengaturan notifikasi",

@@ -105,7 +105,8 @@
       "two": "{{a}} at {{b}}",
       "many_one": "{{a}} at {{count}} pa",
       "many_other": "{{a}} at {{count}} pa"
-    }
+    },
+    "more": "Iba pang aksyon"
   },
   "settings": {
     "title": "Notification settings",

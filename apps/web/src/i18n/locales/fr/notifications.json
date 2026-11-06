@@ -107,7 +107,8 @@
       "many_one": "{{a}} et {{count}} autre",
       "many_other": "{{a}} et {{count}} autres",
       "many_many": "{{a}} et {{count}} autres"
-    }
+    },
+    "more": "Plus d'actions"
   },
   "settings": {
     "title": "Réglages des notifications",
