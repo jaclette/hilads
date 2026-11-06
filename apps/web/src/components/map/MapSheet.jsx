@@ -56,7 +56,7 @@ function SpotRow({ spot: s, me, km, onPick }) {
  * page ends above the bottom nav, so the sheet never goes under it.
  */
 const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, filterLabel, selectedCard, topNote, emptyArea, onPick, onPeek }, ref) {
-  const { t } = useTranslation('challenge')
+  const { t, i18n } = useTranslation('challenge')
   const [snap, setSnap] = useState('peek')
   const [sort, setSort] = useState('near')
   const [drag, setDrag] = useState(null)   // { start, dy } while the handle is dragged
@@ -102,11 +102,15 @@ const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, fi
   }
 
   const data = sortSpots(spots, sort, me ?? origin, km)
-  const sortLabel = t(sort === 'near' ? 'dc.map.sheet.byNear' : sort === 'liked' ? 'dc.map.sheet.byLiked' : 'dc.map.sheet.byNew')
-  const headline = emptyArea ? t('dc.map.sheet.emptyArea')
-    : place ? t('dc.map.sheet.count', { count: spots.length, city: place }) : t('dc.map.sheet.countHere', { count: spots.length })
-  // The peek's one line: "24 spots in Saigon · Taste · nearest first".
-  const line = [headline, filterLabel, emptyArea ? null : sortLabel].filter(Boolean).join(' · ')
+  // The ticket (as in the app): "📍 [6] spots to explore", the number in its pill (§ marks where it goes in each language).
+  const count = emptyArea ? 0 : spots.length
+  const [before, after = ''] = t('dc.map.sheet.peekTitle', { count, num: '§' }).split('§')
+  const nearest = me && count ? sortSpots(spots, 'near', me, km)[0] : null
+  const sub = count === 0 ? t('dc.map.sheet.peekEmpty')
+    : [filterLabel, nearest ? t('dc.map.sheet.peekNearest', { distance: formatDistance(km(me, [nearest.lat, nearest.lng]) * 1000, i18n.language) }) : null,
+       t('dc.map.sheet.peekSwipe')].filter(Boolean).join(' · ')
+  // The three nearest with a photo: the polaroids.
+  const near = sortSpots(spots, 'near', me ?? origin, km).filter(s => s.cover?.thumbUrl || s.cover?.photoUrl).slice(0, 3)
   const sorts = [['near', t('map.sortNearest')], ['liked', t('dc.map.sheet.sortLiked')], ['new', t('dc.map.sheet.sortNew')]]
 
   return (
@@ -116,8 +120,26 @@ const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, fi
            onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => setDrag(null)}
            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(snap === 'peek' ? 'half' : 'peek') } }}>
         <span className="wm-msheet-handle" aria-hidden="true" />
-        <span className="wm-msheet-headline">{line}</span>
-        {hint && <span className="wm-msheet-hint"><Icon name="chevron-up" size={14} />{t('dc.map.sheet.hint')}</span>}
+        <span className="wm-ticket" aria-label={`${before}${count}${after}${place ? ` (${place})` : ''}. ${sub}`}>
+          {near.length ? (
+            <span className="wm-polaroids" style={{ width: 48 + (near.length - 1) * 16 }} aria-hidden="true">
+              {near.map((s, i) => (
+                <span key={i} className={`wm-polaroid wm-polaroid--${i}`}>
+                  <img key={s.id} src={thumbUrl(s.cover.thumbUrl || s.cover.photoUrl)} onError={thumbFallback(s.cover.photoUrl)} alt="" decoding="async" />
+                </span>
+              ))}
+            </span>
+          ) : <span className="wm-ticket-pin" aria-hidden="true">📍</span>}
+          <span className="wm-ticket-text" aria-hidden="true">
+            <span className="wm-ticket-title">
+              {before.trim() && <span>{before.trim()}</span>}
+              <span className="wm-ticket-count"><span key={count} className="wm-ticket-num">{count}</span></span>
+              {after.trim() && <span>{after.trim()}</span>}
+            </span>
+            <span className="wm-ticket-sub">{sub}</span>
+          </span>
+          <span className={`wm-ticket-chevron${hint && snap === 'peek' ? ' wm-ticket-chevron--bounce' : ''}`} aria-hidden="true"><Icon name="chevron-up" size={20} /></span>
+        </span>
       </div>
       {data.length > 1 && (
         <div className="wm-msheet-sorts" aria-hidden={snap === 'peek'}>

@@ -1129,7 +1129,12 @@
         "count_one": "{{city}} में {{count}} जगह",
         "count_other": "{{city}} में {{count}} जगहें",
         "countHere_one": "यहां {{count}} जगह",
-        "countHere_other": "यहां {{count}} जगहें"
+        "countHere_other": "यहां {{count}} जगहें",
+        "peekNearest": "सबसे पास {{distance}} दूर",
+        "peekSwipe": "ऊपर स्वाइप करें 👆",
+        "peekEmpty": "यहाँ अभी कोई स्पॉट नहीं, पहले बनें 📍",
+        "peekTitle_one": "📍 घूमने के लिए {{num}} स्पॉट",
+        "peekTitle_other": "📍 घूमने के लिए {{num}} स्पॉट"
       },
       "surprise": "सरप्राइज़ करो"
     },

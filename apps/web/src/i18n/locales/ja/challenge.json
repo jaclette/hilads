@@ -1113,7 +1113,11 @@
         "emptyArea": "ここにはまだ何もないよ",
         "pioneer": "パイオニアになろう：今日ここで参加 📍",
         "count_other": "{{city}}のスポット{{count}}件",
-        "countHere_other": "このあたりのスポット{{count}}件"
+        "countHere_other": "このあたりのスポット{{count}}件",
+        "peekNearest": "いちばん近くて {{distance}}",
+        "peekSwipe": "上にスワイプ 👆",
+        "peekEmpty": "まだスポットがありません。最初の一人になろう 📍",
+        "peekTitle_other": "📍 探検できるスポット {{num}} 件"
       },
       "surprise": "おまかせ"
     },

@@ -281,7 +281,11 @@
       "emptyArea": "ยังไม่มีอะไรตรงนี้",
       "pioneer": "เป็นผู้บุกเบิก: เล่นที่นี่วันนี้เลย 📍",
       "count_other": "{{count}} ที่ใน{{city}}",
-      "countHere_other": "{{count}} ที่แถวนี้"
+      "countHere_other": "{{count}} ที่แถวนี้",
+      "peekNearest": "ใกล้สุด {{distance}}",
+      "peekSwipe": "ปัดขึ้น 👆",
+      "peekEmpty": "ยังไม่มีสปอตตรงนี้ มาเป็นคนแรกกัน 📍",
+      "peekTitle_other": "📍 {{num}} สปอตให้สำรวจ"
     }
   },
   "leaderboard": {

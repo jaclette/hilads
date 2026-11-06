@@ -1145,7 +1145,12 @@
         "count_many": "{{count}} sítios em {{city}}",
         "countHere_one": "{{count}} sítio aqui",
         "countHere_other": "{{count}} sítios aqui",
-        "countHere_many": "{{count}} sítios aqui"
+        "countHere_many": "{{count}} sítios aqui",
+        "peekNearest": "O mais perto a {{distance}}",
+        "peekSwipe": "desliza para cima 👆",
+        "peekEmpty": "Ainda não há spots aqui, sê o pioneiro 📍",
+        "peekTitle_one": "📍 {{num}} spot para explorar",
+        "peekTitle_other": "📍 {{num}} spots para explorar"
       },
       "surprise": "Surpreende-me"
     },

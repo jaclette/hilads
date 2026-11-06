@@ -1113,7 +1113,11 @@
         "emptyArea": "여기는 아직 아무것도 없어요",
         "pioneer": "개척자가 되어 보세요: 오늘 여기서 참여 📍",
         "count_other": "{{city}}의 장소 {{count}}곳",
-        "countHere_other": "이 근처 장소 {{count}}곳"
+        "countHere_other": "이 근처 장소 {{count}}곳",
+        "peekNearest": "가장 가까운 곳 {{distance}}",
+        "peekSwipe": "위로 스와이프 👆",
+        "peekEmpty": "아직 스팟이 없어요. 첫 번째가 되어 보세요 📍",
+        "peekTitle_other": "📍 탐험할 스팟 {{num}}곳"
       },
       "surprise": "랜덤 추천"
     },

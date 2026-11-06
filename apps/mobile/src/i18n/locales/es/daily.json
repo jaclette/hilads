@@ -303,7 +303,12 @@
       "count_many": "{{count}} sitios en {{city}}",
       "countHere_one": "{{count}} sitio aquí",
       "countHere_other": "{{count}} sitios aquí",
-      "countHere_many": "{{count}} sitios aquí"
+      "countHere_many": "{{count}} sitios aquí",
+      "peekNearest": "El más cercano a {{distance}}",
+      "peekSwipe": "desliza hacia arriba 👆",
+      "peekEmpty": "Aún no hay spots aquí, sé el pionero 📍",
+      "peekTitle_one": "📍 {{num}} spot por explorar",
+      "peekTitle_other": "📍 {{num}} spots por explorar"
     }
   },
   "leaderboard": {

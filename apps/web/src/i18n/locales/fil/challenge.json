@@ -1129,7 +1129,12 @@
         "count_one": "{{count}} spot sa {{city}}",
         "count_other": "{{count}} spots sa {{city}}",
         "countHere_one": "{{count}} spot dito",
-        "countHere_other": "{{count}} spots dito"
+        "countHere_other": "{{count}} spots dito",
+        "peekNearest": "Pinakamalapit: {{distance}}",
+        "peekSwipe": "mag-swipe pataas 👆",
+        "peekEmpty": "Wala pang spot dito, ikaw na ang mauna 📍",
+        "peekTitle_one": "📍 {{num}} spot na matutuklasan",
+        "peekTitle_other": "📍 {{num}} spot na matutuklasan"
       },
       "surprise": "Surprise me"
     },

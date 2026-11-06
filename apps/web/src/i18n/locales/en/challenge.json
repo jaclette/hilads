@@ -1129,7 +1129,12 @@
         "count_one": "{{count}} spot in {{city}}",
         "count_other": "{{count}} spots in {{city}}",
         "countHere_one": "{{count}} spot here",
-        "countHere_other": "{{count}} spots here"
+        "countHere_other": "{{count}} spots here",
+        "peekNearest": "Nearest {{distance}} away",
+        "peekSwipe": "swipe up 👆",
+        "peekEmpty": "No spots here yet, be the pioneer 📍",
+        "peekTitle_one": "📍 {{num}} spot to explore",
+        "peekTitle_other": "📍 {{num}} spots to explore"
       },
       "surprise": "Surprise me"
     },

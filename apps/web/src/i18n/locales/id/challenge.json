@@ -1113,7 +1113,11 @@
         "emptyArea": "Belum ada apa-apa di sini",
         "pioneer": "Jadi pelopor: main di sini hari ini 📍",
         "count_other": "{{count}} tempat di {{city}}",
-        "countHere_other": "{{count}} tempat di sini"
+        "countHere_other": "{{count}} tempat di sini",
+        "peekNearest": "Terdekat {{distance}}",
+        "peekSwipe": "geser ke atas 👆",
+        "peekEmpty": "Belum ada spot di sini, jadilah pelopor 📍",
+        "peekTitle_other": "📍 {{num}} spot untuk dijelajahi"
       },
       "surprise": "Kejutkan aku"
     },

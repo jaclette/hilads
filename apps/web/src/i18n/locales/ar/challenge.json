@@ -1193,7 +1193,16 @@
         "countHere_two": "مكانان هنا",
         "countHere_few": "{{count}} أماكن هنا",
         "countHere_many": "{{count}} مكانًا هنا",
-        "countHere_other": "{{count}} مكان هنا"
+        "countHere_other": "{{count}} مكان هنا",
+        "peekNearest": "الأقرب على بُعد {{distance}}",
+        "peekSwipe": "اسحب للأعلى 👆",
+        "peekEmpty": "لا أماكن هنا بعد، كن الرائد 📍",
+        "peekTitle_zero": "📍 {{num}} أماكن لاستكشافها",
+        "peekTitle_one": "📍 {{num}} مكان لاستكشافه",
+        "peekTitle_two": "📍 {{num}} مكانان لاستكشافهما",
+        "peekTitle_few": "📍 {{num}} أماكن لاستكشافها",
+        "peekTitle_many": "📍 {{num}} مكانًا لاستكشافه",
+        "peekTitle_other": "📍 {{num}} مكان لاستكشافه"
       },
       "surprise": "فاجئني"
     },

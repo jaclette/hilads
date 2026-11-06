@@ -281,7 +281,11 @@
       "emptyArea": "這裡還沒有地點",
       "pioneer": "成為先鋒：今天就在這裡出戰 📍",
       "count_other": "{{city}} 有 {{count}} 個地點",
-      "countHere_other": "這裡有 {{count}} 個地點"
+      "countHere_other": "這裡有 {{count}} 個地點",
+      "peekNearest": "最近的 {{distance}}",
+      "peekSwipe": "向上滑 👆",
+      "peekEmpty": "這裡還沒有地點，來當第一個 📍",
+      "peekTitle_other": "📍 {{num}} 個地點等你探索"
     }
   },
   "leaderboard": {

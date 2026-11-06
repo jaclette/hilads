@@ -314,7 +314,14 @@
       "countHere_one": "{{count}} место рядом",
       "countHere_few": "{{count}} места рядом",
       "countHere_many": "{{count}} мест рядом",
-      "countHere_other": "{{count}} места рядом"
+      "countHere_other": "{{count}} места рядом",
+      "peekNearest": "Ближайшее в {{distance}}",
+      "peekSwipe": "смахни вверх 👆",
+      "peekEmpty": "Здесь пока нет мест, стань первым 📍",
+      "peekTitle_one": "📍 {{num}} место для открытий",
+      "peekTitle_few": "📍 {{num}} места для открытий",
+      "peekTitle_many": "📍 {{num}} мест для открытий",
+      "peekTitle_other": "📍 {{num}} мест для открытий"
     }
   },
   "leaderboard": {

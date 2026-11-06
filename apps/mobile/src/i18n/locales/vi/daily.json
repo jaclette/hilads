@@ -281,7 +281,11 @@
       "emptyArea": "Chỗ này chưa có gì",
       "pioneer": "Làm người tiên phong: chơi ở đây hôm nay nha 📍",
       "count_other": "{{count}} địa điểm ở {{city}}",
-      "countHere_other": "{{count}} địa điểm ở đây"
+      "countHere_other": "{{count}} địa điểm ở đây",
+      "peekNearest": "Gần nhất cách {{distance}}",
+      "peekSwipe": "vuốt lên 👆",
+      "peekEmpty": "Chưa có spot nào ở đây, hãy là người tiên phong 📍",
+      "peekTitle_other": "📍 {{num}} spot để khám phá"
     }
   },
   "leaderboard": {

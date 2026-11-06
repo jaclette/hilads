@@ -66,6 +66,36 @@ const PUMPKIN = EVENT_CARD.halloween.accent;
 const PULSE_MS = 1200;
 // Plans show from this zoom, where clusters have mostly broken up (they never cover a cluster).
 const PLAN_MIN_ZOOM = 14;
+// Collision boxes (transparent): pins, plan cards and the selected spot block the labels' placement,
+// so a label never covers them (Mapbox only knows its symbols; circles and RN markers it can't see).
+const BLOCKERS = {
+  blockDot: require('../../assets/map/block-dot.png'),
+  blockPhoto: require('../../assets/map/block-photo.png'),
+  blockPlan: require('../../assets/map/block-plan.png'),
+  blockPlanSide: require('../../assets/map/block-plan-side.png'),
+  blockSelected: require('../../assets/map/block-selected.png'),
+};
+type PlanSide = 'top' | 'bottom' | 'right' | 'left';
+// Where a plan card goes, first that hides no pin: above its point, below, right, left (px boxes from the point).
+const PLAN_BOXES: [PlanSide, [number, number, number, number]][] = [
+  ['top', [-75, -66, 75, 0]], ['bottom', [-75, 0, 75, 66]], ['right', [0, -29, 158, 29]], ['left', [-158, -29, 0, 29]],
+];
+/** The side of a plan card that covers none of the spots' pins at this zoom (above when all are taken). */
+function planSide(plan: { lat: number; lng: number }, spots: { lat: number; lng: number }[], zoom: number): PlanSide {
+  const w = 512 * 2 ** zoom;
+  const px = (lng: number, lat: number) => {
+    const s = Math.sin((lat * Math.PI) / 180);
+    return [((lng + 180) / 360) * w, (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * w];
+  };
+  const [x0, y0] = px(plan.lng, plan.lat);
+  const near = spots.map(s => { const [x, y] = px(s.lng, s.lat); return [x - x0, y - y0]; })
+    .filter(([dx, dy]) => Math.abs(dx) < 200 && Math.abs(dy) < 120 && Math.hypot(dx, dy) > 8);   // a pin on the plan's own point stays under its stem
+  const pad = PHOTO_RING;
+  for (const [side, [x1, y1, x2, y2]] of PLAN_BOXES) {
+    if (!near.some(([dx, dy]) => dx > x1 - pad && dx < x2 + pad && dy > y1 - pad && dy < y2 + pad)) return side;
+  }
+  return 'top';
+}
 /** The Hilads palette over the standard Mapbox style (until a Studio style is set): warm land, soft water and parks, fewer POIs. */
 const PALETTE = {
   light: { land: '#FBF1E6', water: '#BFE3F2', park: '#DDF0D3' },
@@ -368,6 +398,23 @@ export default function MapScreen() {
   // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
   const isToday = (s: Spot) => !!todayDate && s.lastProofDate === todayDate;
   const shown = todayOnly ? spots.filter(isToday) : spots;
+  const showPlans = zoom >= PLAN_MIN_ZOOM;
+  // Zoom changes by fractions: the sides follow it in steps of a quarter level.
+  const zoomStep = Math.round(zoom * 4) / 4;
+  const planSides = useMemo(() => new Map(plans.slice(0, 30).map(p => [`${p.id}@${p.startsAt}`, planSide(p, shown, zoomStep)])), [plans, shown, zoomStep]);
+  const blockers = useMemo(() => ({
+    type: 'FeatureCollection' as const,
+    features: [
+      ...(showPlans ? plans.slice(0, 30).map(p => {
+        const side = planSides.get(`${p.id}@${p.startsAt}`) ?? 'top';
+        const anchor = side === 'top' ? 'bottom' : side === 'bottom' ? 'top' : side === 'right' ? 'left' : 'right';
+        return { type: 'Feature' as const, id: `plan-${p.id}-${p.startsAt}`, geometry: { type: 'Point' as const, coordinates: [p.lng, p.lat] },
+                 properties: { img: side === 'top' || side === 'bottom' ? 'blockPlan' : 'blockPlanSide', anchor } };
+      }) : []),
+      ...(selected ? [{ type: 'Feature' as const, id: 'selected', geometry: { type: 'Point' as const, coordinates: [selected.lng, selected.lat] },
+                        properties: { img: 'blockSelected', anchor: 'bottom' } }] : []),
+    ],
+  }), [plans, planSides, showPlans, selected]);
   const shape = useMemo<GeoJSON.FeatureCollection>(() => ({
     type: 'FeatureCollection',
     features: worldView ? [] : shown.filter(s => s.id !== selected?.id).map(s => ({
@@ -485,11 +532,22 @@ export default function MapScreen() {
             textVariableAnchor: ['left', 'right'], textRadialOffset: 1.3, textJustify: 'auto', textMaxWidth: 20,
             textAllowOverlap: false, textIgnorePlacement: false, symbolSortKey: ['get', 'rank'],
           }} />
+          {/* Above the labels, so placed first: each pin's box (always shown, invisible) keeps labels off it. */}
+          <SymbolLayer id="spot-blockers" filter={['!', ['has', 'point_count']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
+            iconImage: ['case', ['!=', ['get', 'img'], ''], 'blockPhoto', 'blockDot'] as never, iconAllowOverlap: true, iconIgnorePlacement: false,
+          }} />
         </ShapeSource>
-        <Images images={pinImages} />
+        <Images images={{ ...pinImages, ...BLOCKERS }} />
 
-        {/* Plans from PLAN_MIN_ZOOM, where they no longer sit on top of clusters. */}
-        {zoom >= PLAN_MIN_ZOOM && plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} />)}
+        {/* The plan cards' and the selected spot's boxes: labels never go under them (plans and the selection win). */}
+        <ShapeSource id="label-blockers" shape={blockers}>
+          <SymbolLayer id="label-blockers" minZoomLevel={LABEL_MIN_ZOOM} style={{
+            iconImage: ['get', 'img'], iconAnchor: ['get', 'anchor'] as never, iconAllowOverlap: true, iconIgnorePlacement: false,
+          }} />
+        </ShapeSource>
+
+        {/* Plans from PLAN_MIN_ZOOM, where they no longer sit on top of clusters; each on the side that hides no pin. */}
+        {showPlans && plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} side={planSides.get(`${p.id}@${p.startsAt}`) ?? 'top'} />)}
 
         {/* World view: the base style's labels and borders hidden, one bubble per city. */}
         {/* (Points of interest stay hidden on the standard style: the spots are the map's places.) */}
@@ -616,7 +674,7 @@ export default function MapScreen() {
 }
 
 /** A Hi plan as a dated pin: "Birdy, now · 10 going", "Birdy, in 2 hours". Caramel; opens the plan. */
-function PlanMarker({ plan }: { plan: PlanPin }) {
+function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
   const styles = useThemedStyles(makeStyles);
   const { i18n, t } = useTranslation('daily');
   const router = useRouter();
@@ -634,8 +692,9 @@ function PlanMarker({ plan }: { plan: PlanPin }) {
   const day = start.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' });
   return (
     // A little calendar page on a stem: the day on top, then the title, the time and who's going.
-    <MarkerView coordinate={[plan.lng, plan.lat]} anchor={{ x: 0.5, y: 1 }}>
-      <TouchableOpacity style={styles.planWrap} onPress={() => router.push(`/event/${plan.id}` as never)} accessibilityRole="button"
+    // Its stem points at the plan's place from the side that hides no pin (planSide).
+    <MarkerView coordinate={[plan.lng, plan.lat]} anchor={PLAN_ANCHOR[side]}>
+      <TouchableOpacity style={[styles.planWrap, PLAN_LAYOUT[side]]} onPress={() => router.push(`/event/${plan.id}` as never)} accessibilityRole="button"
                         accessibilityLabel={[t('map.planA11y', { title: plan.title, time }), going].filter(Boolean).join(', ')}>
         <View style={[styles.plan, ongoing && styles.planNow]}>
           <View style={[styles.planTop, ongoing && styles.planTopNow]}>
@@ -645,11 +704,18 @@ function PlanMarker({ plan }: { plan: PlanPin }) {
           <Text style={styles.planText} numberOfLines={1}>{plan.title}</Text>
           <Text style={styles.planMeta} numberOfLines={1}>{[ongoing ? null : time, going].filter(Boolean).join(' · ')}</Text>
         </View>
-        <View style={[styles.planStem, ongoing && styles.planStemNow]} />
+        <View style={[styles.planStem, (side === 'left' || side === 'right') && styles.planStemSide, ongoing && styles.planStemNow]} />
       </TouchableOpacity>
     </MarkerView>
   );
 }
+
+const PLAN_ANCHOR: Record<PlanSide, { x: number; y: number }> = { top: { x: 0.5, y: 1 }, bottom: { x: 0.5, y: 0 }, right: { x: 0, y: 0.5 }, left: { x: 1, y: 0.5 } };
+// The card, then its stem towards the point: column above, reversed below, row-reversed on the right, row on the left.
+const PLAN_LAYOUT: Record<PlanSide, object> = {
+  top: { flexDirection: 'column' }, bottom: { flexDirection: 'column-reverse' },
+  right: { flexDirection: 'row-reverse', alignItems: 'center' }, left: { flexDirection: 'row', alignItems: 'center' },
+};
 
 /** Me on the map: my avatar, a soft ring breathing around it. */
 function MeMarker({ photo, name, pulse }: { photo: string | null; name: string; pulse: boolean }) {
@@ -722,5 +788,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   planText:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.text, paddingHorizontal: 8, paddingTop: 3 },
   planMeta:      { fontSize: 11, fontWeight: '700', color: c.muted, paddingHorizontal: 8, paddingBottom: 4 },
   planStem:      { width: 2, height: 8, backgroundColor: c.caramel },
+  planStemSide:  { width: 8, height: 2 },
   planStemNow:   { backgroundColor: c.primary },
 });
