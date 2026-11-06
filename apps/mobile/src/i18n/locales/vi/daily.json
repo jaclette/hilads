@@ -881,5 +881,18 @@
     },
     "timeLeft_other": "⏳ Còn {{count}} giờ để bình chọn",
     "pts_other": "{{count}} điểm"
+  },
+  "rivals": {
+    "title": "Bạn vs {{city}}",
+    "you": "Bạn",
+    "leading": "Bạn đang dẫn trước! 🏆",
+    "behind": "{{city}} đang dẫn. Lội ngược dòng thôi 💪",
+    "tied": "Hòa! Trận tới quyết định 🔥",
+    "notToday": "{{city}} chưa chơi thử thách hôm nay. Thách đấu họ không?",
+    "send": "Gửi lời thách đấu",
+    "empty": "Chưa có trận nào với {{city}}",
+    "yours": "Của bạn",
+    "theirBest": "Đỉnh nhất {{city}}",
+    "duels_other": "{{count}} trận"
   }
 }

@@ -344,6 +344,19 @@ export async function fetchUserDaily(userId: string): Promise<DailyUserStats> {
   return api.get<DailyUserStats>(`/users/${userId}/daily`, { params: { locale: locale() } });
 }
 
+/** A face-off (V6): every challenge a user and a city both played, my photo vs the city's best. */
+export interface RivalDuel { date: string; challenge: { text: string; theme: string | null }; mine: DailyProof; theirs: DailyProof; winner: 'me' | 'them' | 'tie' }
+export interface RivalFaceoff {
+  city: { id: number; name: string; country: string | null };
+  score: { me: number; them: number };
+  duels: RivalDuel[];
+  playedToday: boolean;
+  date: string;
+}
+export async function fetchRivalFaceoff(userId: string, cityId: number): Promise<RivalFaceoff> {
+  return api.get<RivalFaceoff>(`/users/${userId}/daily/rivals/${cityId}`, { params: { locale: locale() } });
+}
+
 /** Tomorrow's Local Twist proposal screen (signed in). */
 export async function fetchTwistProposal(): Promise<DailyTwistProposalScreen> {
   return api.get<DailyTwistProposalScreen>('/daily/twist-proposal', { params: { locale: locale() } });

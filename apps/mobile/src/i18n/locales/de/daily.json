@@ -925,5 +925,19 @@
     "timeLeft_other": "⏳ Noch {{count}} Stunden zum Abstimmen",
     "pts_one": "{{count}} Pkt.",
     "pts_other": "{{count}} Pkt."
+  },
+  "rivals": {
+    "title": "Du vs {{city}}",
+    "you": "Du",
+    "leading": "Du liegst vorn! 🏆",
+    "behind": "{{city}} liegt vorn. Zeit für ein Comeback 💪",
+    "tied": "Unentschieden! Das nächste Duell entscheidet 🔥",
+    "notToday": "{{city}} hat die Challenge von heute noch nicht gespielt. Forderst du sie heraus?",
+    "send": "Herausfordern",
+    "empty": "Noch kein Duell mit {{city}}",
+    "yours": "Deins",
+    "theirBest": "Das beste aus {{city}}",
+    "duels_one": "{{count}} Duell",
+    "duels_other": "{{count}} Duelle"
   }
 }

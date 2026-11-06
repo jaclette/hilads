@@ -138,7 +138,11 @@
     "myPhotos": "मेरी फ़ोटो",
     "noPhotos": "आपकी Daily Challenge फ़ोटो यहाँ दिखेंगी।",
     "share": "मेरा पासपोर्ट शेयर करें",
-    "localSince": "{{date}} से {{city}} का लोकल"
+    "localSince": "{{date}} से {{city}} का लोकल",
+    "rivals": "आपके राइवल",
+    "rivalsEmpty": "कुछ चैलेंज खेलें और अपने पहले राइवल से मिलें 🌍",
+    "duels_one": "{{count}} मुकाबला",
+    "duels_other": "{{count}} मुकाबले"
   },
   "points": {
     "title": "पॉइंट कैसे कमाएँ",

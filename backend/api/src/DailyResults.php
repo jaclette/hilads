@@ -395,15 +395,65 @@ final class DailyResults
                   AND o.city_id NOT IN (SELECT city_id FROM mine)
                 GROUP BY o.city_id, ch.name, cc.country
                 ORDER BY shared DESC, ch.name
-                LIMIT 12
+                LIMIT 30
             ");
             $stmt->execute([$userId, $userId]);
+            // duels (V6, "Your rivals"): the challenges shared with that city.
             return array_map(static fn(array $r): array => [
-                'id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['name'], 'country' => $r['country'],
+                'id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['name'], 'country' => $r['country'], 'duels' => (int) $r['shared'],
             ], $stmt->fetchAll(PDO::FETCH_ASSOC));
         } catch (\Throwable $e) {
             return [];
         }
+    }
+
+    /**
+     * A face-off (V6): every challenge the user and $cityId both played, newest
+     * first, with the user's best photo and that city's best photo (most liked,
+     * then the earliest approved), and who won it (more likes; equal = tie).
+     * Returns [{challenge_id, challenge_date, theme, text_i18n, mine_id, mine_votes, theirs_id, theirs_votes}].
+     */
+    public static function faceoff(string $userId, string $cityId, int $limit = 60): array
+    {
+        $stmt = Database::pdo()->prepare("
+            WITH mine AS (
+                SELECT DISTINCT ON (p.challenge_id) p.challenge_id, p.id, p.vote_count
+                FROM daily_proofs p
+                WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed AND NOT p.is_demo
+                ORDER BY p.challenge_id, p.vote_count DESC, p.approved_at
+            ),
+            theirs AS (
+                SELECT DISTINCT ON (o.challenge_id) o.challenge_id, o.id, o.vote_count
+                FROM daily_proofs o
+                JOIN users u ON u.id = o.user_id AND NOT u.is_demo
+                WHERE o.city_id = ? AND o.user_id <> ? AND o.moderation_status = 'approved'
+                  AND NOT o.is_seed AND NOT o.is_demo AND NOT o.is_suggestion
+                  AND o.challenge_id IN (SELECT challenge_id FROM mine)
+                ORDER BY o.challenge_id, o.vote_count DESC, o.approved_at
+            )
+            SELECT dc.id AS challenge_id, dc.challenge_date, dc.theme, dc.text_i18n,
+                   m.id AS mine_id, m.vote_count AS mine_votes, t.id AS theirs_id, t.vote_count AS theirs_votes
+            FROM mine m
+            JOIN theirs t           ON t.challenge_id = m.challenge_id
+            JOIN daily_challenges dc ON dc.id = m.challenge_id
+            ORDER BY dc.challenge_date DESC
+            LIMIT " . (int) $limit . "
+        ");
+        $stmt->execute([$userId, $cityId, $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Whether $cityId has an approved player photo on $date's challenge. */
+    public static function cityPlayed(string $cityId, string $date): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM daily_proofs p JOIN daily_challenges dc ON dc.id = p.challenge_id
+            WHERE dc.challenge_date = ?::date AND p.city_id = ? AND p.moderation_status = 'approved'
+              AND NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion
+            LIMIT 1
+        ");
+        $stmt->execute([$date, $cityId]);
+        return $stmt->fetchColumn() !== false;
     }
 
     /**

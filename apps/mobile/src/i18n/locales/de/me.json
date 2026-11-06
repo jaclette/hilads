@@ -138,7 +138,11 @@
     "myPhotos": "Meine Fotos",
     "noPhotos": "Deine Daily-Challenge-Fotos erscheinen hier.",
     "share": "Meinen Reisepass teilen",
-    "localSince": "Local in {{city}} seit {{date}}"
+    "localSince": "Local in {{city}} seit {{date}}",
+    "rivals": "Deine Rivalen",
+    "rivalsEmpty": "Spiel ein paar Challenges, um deine ersten Rivalen zu treffen 🌍",
+    "duels_one": "{{count}} Duell",
+    "duels_other": "{{count}} Duelle"
   },
   "points": {
     "title": "So sammelst du Punkte",

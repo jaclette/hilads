@@ -147,7 +147,12 @@
     "myPhotos": "Mis fotos",
     "noPhotos": "Tus fotos del Daily Challenge aparecerán aquí.",
     "share": "Compartir mi pasaporte",
-    "localSince": "Local de {{city}} desde {{date}}"
+    "localSince": "Local de {{city}} desde {{date}}",
+    "rivals": "Tus rivales",
+    "rivalsEmpty": "Juega unos retos para conocer a tus primeros rivales 🌍",
+    "duels_one": "{{count}} duelo",
+    "duels_other": "{{count}} duelos",
+    "duels_many": "{{count}} duelos"
   },
   "points": {
     "title": "Cómo ganar puntos",

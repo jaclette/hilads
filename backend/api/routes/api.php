@@ -15606,6 +15606,63 @@ $router->add('GET', '/api/v1/users/{userId}/daily', function (array $params) {
     Response::json(DailyResults::userStats($user['id'], $viewer['id']));
 });
 
+// GET /api/v1/users/{userId}/daily/rivals/{cityId}?locale= - a face-off (V6): every challenge
+// the user and that city both played, newest first, the user's photo vs the city's best, the
+// score (more likes wins a duel), and whether the city played today. Same access as /daily.
+$router->add('GET', '/api/v1/users/{userId}/daily/rivals/{cityId}', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    $cityN  = filter_var($params['cityId'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId) || $cityN === false) {
+        Response::json(['error' => 'Invalid userId or cityId'], 400);
+    }
+    $viewer = AuthService::currentUser();
+    if ($viewer === null) {
+        Response::json(['error' => 'PROFILE_LOCKED', 'message' => 'Profile access requires registration'], 403);
+    }
+    $user = UserRepository::findById($userId);
+    $city = CityRepository::findById($cityN);
+    $blocks = dailyBlocks($viewer);
+    if ($user === null || !empty($user['deleted_at']) || $city === null
+        || in_array($user['id'], viewerBlockSet($viewer['id'], null)['user_ids'], true)) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    $locale = DailyI18n::normalize($_GET['locale'] ?? ($viewer['locale'] ?? null));
+    $rows   = DailyResults::faceoff($user['id'], 'city_' . $cityN);
+    $ids    = array_values(array_unique(array_merge(array_column($rows, 'mine_id'), array_column($rows, 'theirs_id'))));
+    $proofs = [];
+    foreach (array_chunk($ids, 50) as $chunk) {
+        $found = DailyVotes::annotate(filterByBlocks(DailyProofRepository::findApprovedMany($chunk), $blocks, 'user_id', 'guest_id'), $viewer['id']);
+        foreach ($found as $r) $proofs[$r['id']] = DailyProofRepository::format($r, $viewer['id']);
+    }
+    $duels = [];
+    $me = $them = 0;
+    foreach ($rows as $r) {
+        $mine   = $proofs[$r['mine_id']] ?? null;
+        $theirs = $proofs[$r['theirs_id']] ?? null;
+        if ($mine === null || $theirs === null) continue;
+        $winner = (int) $r['mine_votes'] > (int) $r['theirs_votes'] ? 'me' : ((int) $r['mine_votes'] < (int) $r['theirs_votes'] ? 'them' : 'tie');
+        $me   += $winner === 'me' ? 1 : 0;
+        $them += $winner === 'them' ? 1 : 0;
+        $i18n = json_decode((string) ($r['text_i18n'] ?? ''), true) ?: [];
+        $duels[] = [
+            'date'      => (string) $r['challenge_date'],
+            'challenge' => ['text' => DailyI18n::localize($i18n, (string) ($i18n['en'] ?? ''), $locale)[0],
+                            'theme' => DailyThemes::effective($r['theme'], (string) $r['challenge_date'])],
+            'mine'      => $mine,
+            'theirs'    => $theirs,
+            'winner'    => $winner,
+        ];
+    }
+    $today = DailyClock::currentDate();
+    Response::json([
+        'city'        => ['id' => $cityN, 'name' => $city['name'], 'country' => $city['country'] ?? null],
+        'score'       => ['me' => $me, 'them' => $them],
+        'duels'       => $duels,
+        'playedToday' => DailyResults::cityPlayed('city_' . $cityN, $today),
+        'date'        => $today,
+    ]);
+});
+
 const DAILY_TWIST_ERRORS = [
     'no_city'            => [409, 'Set your city first.'],
     'city_not_live'      => [409, 'Local Twists are only proposed in live cities.'],

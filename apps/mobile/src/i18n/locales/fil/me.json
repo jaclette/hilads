@@ -138,7 +138,11 @@
     "myPhotos": "Mga photo ko",
     "noPhotos": "Dito lalabas ang Daily Challenge photos mo.",
     "share": "I-share ang passport ko",
-    "localSince": "Local ng {{city}} mula {{date}}"
+    "localSince": "Local ng {{city}} mula {{date}}",
+    "rivals": "Mga rival mo",
+    "rivalsEmpty": "Maglaro ng ilang challenge para makilala ang mga unang rival mo 🌍",
+    "duels_one": "{{count}} duel",
+    "duels_other": "{{count}} duels"
   },
   "points": {
     "title": "Paano makakuha ng points",

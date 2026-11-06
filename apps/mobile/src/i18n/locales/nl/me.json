@@ -138,7 +138,11 @@
     "myPhotos": "Mijn foto's",
     "noPhotos": "Je Daily Challenge-foto's verschijnen hier.",
     "share": "Deel mijn paspoort",
-    "localSince": "Local van {{city}} sinds {{date}}"
+    "localSince": "Local van {{city}} sinds {{date}}",
+    "rivals": "Je rivalen",
+    "rivalsEmpty": "Speel een paar challenges om je eerste rivalen te ontmoeten 🌍",
+    "duels_one": "{{count}} duel",
+    "duels_other": "{{count}} duels"
   },
   "points": {
     "title": "Zo verdien je punten",

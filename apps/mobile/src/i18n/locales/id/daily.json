@@ -881,5 +881,18 @@
     },
     "timeLeft_other": "⏳ Sisa {{count}} jam untuk vote",
     "pts_other": "{{count}} poin"
+  },
+  "rivals": {
+    "title": "Kamu vs {{city}}",
+    "you": "Kamu",
+    "leading": "Kamu memimpin! 🏆",
+    "behind": "{{city}} di depan. Saatnya comeback 💪",
+    "tied": "Seri! Duel berikutnya penentunya 🔥",
+    "notToday": "{{city}} belum main tantangan hari ini. Tantang mereka?",
+    "send": "Kirim tantangan",
+    "empty": "Belum ada duel dengan {{city}}",
+    "yours": "Punyamu",
+    "theirBest": "Terbaik di {{city}}",
+    "duels_other": "{{count}} duel"
   }
 }

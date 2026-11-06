@@ -925,5 +925,19 @@
     "timeLeft_other": "⏳ {{count}} oras na lang para mag-vote",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts"
+  },
+  "rivals": {
+    "title": "Ikaw vs {{city}}",
+    "you": "Ikaw",
+    "leading": "Lamang ka! 🏆",
+    "behind": "Lamang ang {{city}}. Oras na para bumawi 💪",
+    "tied": "Tabla! Ang susunod na duel ang magdedesisyon 🔥",
+    "notToday": "Hindi pa naglalaro ang {{city}} sa challenge ngayon. Hamunin mo sila?",
+    "send": "Mag-send ng challenge",
+    "empty": "Wala pang duel kasama ang {{city}}",
+    "yours": "Sa'yo",
+    "theirBest": "Best ng {{city}}",
+    "duels_one": "{{count}} duel",
+    "duels_other": "{{count}} duels"
   }
 }

@@ -881,5 +881,18 @@
     },
     "timeLeft_other": "⏳ 투표 마감까지 {{count}}시간",
     "pts_other": "{{count}}점"
+  },
+  "rivals": {
+    "title": "나 vs {{city}}",
+    "you": "나",
+    "leading": "앞서고 있어요! 🏆",
+    "behind": "{{city}}가 앞서요. 역전할 시간이에요 💪",
+    "tied": "동점! 다음 대결에서 결정돼요 🔥",
+    "notToday": "{{city}}는 아직 오늘의 챌린지를 안 했어요. 도전장을 보낼까요?",
+    "send": "도전장 보내기",
+    "empty": "아직 {{city}}와 대결이 없어요",
+    "yours": "내 사진",
+    "theirBest": "{{city}} 베스트",
+    "duels_other": "{{count}}번의 대결"
   }
 }

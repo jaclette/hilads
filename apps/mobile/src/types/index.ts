@@ -1332,7 +1332,7 @@ export interface DailyUserStats {
   homeCity?:       { id: number; name: string | null; country: string | null } | null;
   memberSince?:    number | null;
   /** The cities (not mine) compared with my photos, the most shared first (12 at most). */
-  comparedCities?: { id: number; name: string | null; country: string | null }[];
+  comparedCities?: { id: number; name: string | null; country: string | null; duels?: number }[];   // duels: shared challenges (V6)
 }
 
 /** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */

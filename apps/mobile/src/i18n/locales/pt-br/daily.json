@@ -969,5 +969,20 @@
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts",
     "pts_many": "{{count}} pts"
+  },
+  "rivals": {
+    "title": "Você vs {{city}}",
+    "you": "Você",
+    "leading": "Você tá na frente! 🏆",
+    "behind": "{{city}} tá na frente. Hora da virada 💪",
+    "tied": "Empate! O próximo duelo decide 🔥",
+    "notToday": "{{city}} ainda não jogou o desafio de hoje. Vai desafiar?",
+    "send": "Desafiar",
+    "empty": "Nenhum duelo com {{city}} ainda",
+    "yours": "A sua",
+    "theirBest": "A melhor de {{city}}",
+    "duels_one": "{{count}} duelo",
+    "duels_other": "{{count}} duelos",
+    "duels_many": "{{count}} duelos"
   }
 }

@@ -129,7 +129,10 @@
     "myPhotos": "我的照片",
     "noPhotos": "你的 Daily Challenge 照片会出现在这里。",
     "share": "分享我的护照",
-    "localSince": "{{date}} 起成为 {{city}} 本地人"
+    "localSince": "{{date}} 起成为 {{city}} 本地人",
+    "rivals": "你的对手",
+    "rivalsEmpty": "玩几个挑战，认识你的第一批对手 🌍",
+    "duels_other": "{{count}} 场对决"
   },
   "points": {
     "title": "怎么赚积分",

@@ -881,5 +881,18 @@
     },
     "timeLeft_other": "⏳ 還剩 {{count}} 小時投票",
     "pts_other": "{{count}} 分"
+  },
+  "rivals": {
+    "title": "你 vs {{city}}",
+    "you": "你",
+    "leading": "你領先了！🏆",
+    "behind": "{{city}} 領先。來個大逆轉 💪",
+    "tied": "平手！下一場決勝負 🔥",
+    "notToday": "{{city}} 還沒參加今天的挑戰。要向他們發起挑戰嗎？",
+    "send": "發起挑戰",
+    "empty": "還沒和 {{city}} 對決過",
+    "yours": "你的",
+    "theirBest": "{{city}} 最佳",
+    "duels_other": "{{count}} 場對決"
   }
 }

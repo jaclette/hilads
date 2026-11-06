@@ -156,24 +156,27 @@ export default function PassportScreen() {
             </Card>
           </TouchableOpacity>
         </View>
-        {/* The cities I've been compared with: their flags (a tap opens that city's photos today). */}
-        {(stats?.comparedCities?.length ?? 0) > 0 ? (
-          <View style={styles.comparedBlock}>
-            <Text style={styles.comparedText}>{t('passport.comparedCities', { count: stats!.comparedCities!.length })}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsRow}>
-              {stats!.comparedCities!.map(c => (
-                <TouchableOpacity key={c.id} style={styles.flagChip} onPress={() => router.push(`/daily/stories?city=${c.id}&name=${encodeURIComponent(c.name ?? '')}&source=passport` as never)}
-                                  accessibilityRole="button" accessibilityLabel={c.name ?? ''}>
-                  <FlagSticker country={c.country} size={22} />
-                  <Text style={styles.flagName} numberOfLines={1}>{shortCityName(c.name ?? '')}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        ) : (stats?.comparedCountries ?? 0) > 0 && (
-          <View style={styles.compared}>
-            <Ionicons name="earth-outline" size={16} color={colors.muted} />
-            <Text style={styles.comparedText}>{t('passport.compared', { count: stats!.comparedCountries })}</Text>
+        {/* Your rivals (V6): the cities I played the same challenges as, most duels first; a tap opens the face-off. */}
+        {stats && (
+          <View style={styles.comparedBlock} testID="passport-rivals">
+            <Text style={styles.rivalsTitle}>⚔️ {t('passport.rivals')}</Text>
+            {(stats.comparedCities?.length ?? 0) > 0 ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsRow}>
+                {stats.comparedCities!.map(c => (
+                  <TouchableOpacity key={c.id} style={styles.flagChip} accessibilityRole="button"
+                                    accessibilityLabel={`${shortCityName(c.name ?? '')}, ${t('passport.duels', { count: c.duels ?? 1 })}`}
+                                    onPress={() => account && router.push(`/rivals/${c.id}?user=${account.id}` as never)}>
+                    <FlagSticker country={c.country} size={22} />
+                    <View>
+                      <Text style={styles.flagName} numberOfLines={1}>{shortCityName(c.name ?? '')}</Text>
+                      {!!c.duels && <Text style={styles.duels}>{t('passport.duels', { count: c.duels })}</Text>}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            ) : (
+              <Text style={styles.comparedText}>{t('passport.rivalsEmpty')}</Text>
+            )}
           </View>
         )}
 
@@ -275,6 +278,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cards:          { flexDirection: 'row', gap: 10 },
   card:           { flex: 1, paddingHorizontal: 14, paddingVertical: 12, gap: 3 },
   cardTap:        { flex: 1 },
+  rivalsTitle:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  duels:          { fontSize: 11, fontWeight: '700', color: c.muted },
   cardFill:       { flex: 1 },
   cardHead:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
@@ -282,7 +287,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   compared:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   comparedBlock:  { gap: 8 },
   flagsRow:       { gap: 8 },
-  flagChip:       { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingLeft: 6, paddingRight: 12, borderRadius: Radius.full,
+  flagChip:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingLeft: 6, paddingRight: 12, borderRadius: Radius.full,
                     borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   flagName:       { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: 120 },
   pagesWrap:      { gap: 8 },

@@ -1013,5 +1013,21 @@
     "pts_few": "{{count}} очка",
     "pts_many": "{{count}} очков",
     "pts_other": "{{count}} очка"
+  },
+  "rivals": {
+    "title": "Ты vs {{city}}",
+    "you": "Ты",
+    "leading": "Ты впереди! 🏆",
+    "behind": "{{city}} впереди. Время отыграться 💪",
+    "tied": "Ничья! Всё решит следующая дуэль 🔥",
+    "notToday": "{{city}} ещё не сыграл сегодняшний челлендж. Бросишь вызов?",
+    "send": "Бросить вызов",
+    "empty": "Пока нет дуэлей с городом {{city}}",
+    "yours": "Твоё",
+    "theirBest": "Лучшее — {{city}}",
+    "duels_one": "{{count}} дуэль",
+    "duels_few": "{{count}} дуэли",
+    "duels_many": "{{count}} дуэлей",
+    "duels_other": "{{count}} дуэли"
   }
 }

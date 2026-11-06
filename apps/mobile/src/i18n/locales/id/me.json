@@ -129,7 +129,10 @@
     "myPhotos": "Fotoku",
     "noPhotos": "Foto Daily Challenge-mu akan muncul di sini.",
     "share": "Bagikan pasporku",
-    "localSince": "Warga lokal {{city}} sejak {{date}}"
+    "localSince": "Warga lokal {{city}} sejak {{date}}",
+    "rivals": "Rivalmu",
+    "rivalsEmpty": "Main beberapa tantangan buat ketemu rival pertamamu 🌍",
+    "duels_other": "{{count}} duel"
   },
   "points": {
     "title": "Cara dapat poin",
