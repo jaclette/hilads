@@ -112,11 +112,41 @@ const meIcon = L.divIcon({
   iconSize: [22, 22], iconAnchor: [11, 11],
 })
 // A Hi plan as a dated pill: "Birdy, now · 10 going", "Birdy, in 2 hours" (caramel; now: primary).
-const planIcon = (text, now) => L.divIcon({
+// A plan card: a pill on a short stem, on the side of its point that hides no pin (planSides).
+const PLAN_H = 36
+const PLAN_STEM = 10
+const planIcon = (text, now, side = 'top') => L.divIcon({
   className: 'wm-pin-wrap wm-plan-wrap',
-  html: `<span class="wm-plan${now ? ' wm-plan--now' : ''}">${iconHtml(now ? 'radio-button-on' : 'calendar-outline', 14)}<span class="wm-plan-text">${escapeHtml(text)}</span></span>`,
-  iconSize: [240, 36], iconAnchor: [120, 18],
+  html: `<span class="wm-plan-at wm-plan-at--${side}${now ? ' wm-plan-at--now' : ''}"><span class="wm-plan${now ? ' wm-plan--now' : ''}">${iconHtml(now ? 'radio-button-on' : 'calendar-outline', 14)}<span class="wm-plan-text">${escapeHtml(text)}</span></span></span>`,
+  iconSize: [0, 0], iconAnchor: [0, 0],
 })
+
+/**
+ * Where each plan card goes (as in the app): above its point, else below, right, left, the
+ * first side whose box covers no pin, cluster or plan already placed (above when all are
+ * taken). A pin on the plan's own point stays under its stem. Returns the sides and the
+ * cards' boxes (the labels then avoid them).
+ */
+function planSides(plans, taken, project) {
+  const sides = new Map()
+  const boxes = []
+  for (const { plan, text } of plans) {
+    const p = project(plan.lat, plan.lng)
+    const w = Math.min(240, labelWidth(text) + 30)
+    const cand = {
+      top:    { x1: p.x - w / 2, y1: p.y - PLAN_STEM - PLAN_H, x2: p.x + w / 2, y2: p.y - PLAN_STEM },
+      bottom: { x1: p.x - w / 2, y1: p.y + PLAN_STEM, x2: p.x + w / 2, y2: p.y + PLAN_STEM + PLAN_H },
+      right:  { x1: p.x + PLAN_STEM, y1: p.y - PLAN_H / 2, x2: p.x + PLAN_STEM + w, y2: p.y + PLAN_H / 2 },
+      left:   { x1: p.x - PLAN_STEM - w, y1: p.y - PLAN_H / 2, x2: p.x - PLAN_STEM, y2: p.y + PLAN_H / 2 },
+    }
+    const others = taken.filter(o => Math.hypot((o.x1 + o.x2) / 2 - p.x, (o.y1 + o.y2) / 2 - p.y) > 8).concat(boxes)
+    const hits = (b) => others.some(o => b.x1 < o.x2 && b.x2 > o.x1 && b.y1 < o.y2 && b.y2 > o.y1)
+    const side = ['top', 'bottom', 'right', 'left'].find(k => !hits(cand[k])) ?? 'top'
+    sides.set(plan.id, side)
+    boxes.push({ ...cand[side], id: `plan:${plan.id}` })
+  }
+  return { sides, boxes }
+}
 
 /** A plan's pill text and whether it is on now: soon is relative ("in 2 hours", localized), later the day and time. */
 function planLabel(plan, t, lang) {
@@ -179,7 +209,7 @@ function defaultThemeFor(date) {
  * Pins grouped by screen distance at the current zoom (the selected spot
  * stays out of the groups), with labels where they fit: see placeLabels.
  */
-function Pins({ spots, zoom, selected, onSpot, onCluster, theme, halo, isToday, grow }) {
+function Pins({ spots, zoom, selected, onSpot, onCluster, theme, halo, isToday, grow, plans = [], onPlan }) {
   const map = useMap()
   const { i18n } = useTranslation()
   const groups = useMemo(() => {
@@ -201,10 +231,17 @@ function Pins({ spots, zoom, selected, onSpot, onCluster, theme, halo, isToday, 
       pins.push({ id: s.id, x: p.x, y: p.y, w: labelWidth(label) + (s.cover?.thumbUrl ? PHOTO_W : 0), ...(s.cover?.thumbUrl ? { h: PHOTO_H } : {}), selected: isSelected, rank: -(s.proofCount * 1000 + s.votes) })
     })
     const vb = map.getPixelBounds()
-    const sides = placeLabels(pins.filter(p => !p.off), [...obstacles, ...pins.filter(p => p.off).map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))],
+    // Plans first (they win over spot labels), on the side that hides no pin; their cards are obstacles for the labels.
+    const pinBoxes = pins.map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))
+    const planPlaces = planSides(plans, [...obstacles, ...pinBoxes], (lat, lng) => map.project([lat, lng], zoom))
+    const sides = placeLabels(pins.filter(p => !p.off), [...obstacles, ...planPlaces.boxes, ...pins.filter(p => p.off).map(p => ({ x1: p.x - 22, y1: p.y - 22, x2: p.x + 22, y2: p.y + 22, id: p.id }))],
                               { view: { x1: vb.min.x, y1: vb.min.y, x2: vb.max.x, y2: vb.max.y } })
-    return { text, sides }
-  }, [groups, zoom, map, selected?.id, i18n.language])
+    return { text, sides, planSides: planPlaces.sides }
+  }, [groups, zoom, map, selected?.id, i18n.language, plans])
+  const planMarkers = plans.map(({ plan, text, ongoing }) => (
+    <Marker key={`p:${plan.id}`} position={[plan.lat, plan.lng]} icon={planIcon(text, ongoing, labels.planSides.get(plan.id))} title={text}
+            zIndexOffset={500} eventHandlers={{ click: () => onPlan?.(plan.id) }} />
+  ))
   return groups.map(g => g.items.length === 1 ? (
     <Marker key={g.items[0].id} position={[g.lat, g.lng]} zIndexOffset={g.items[0].id === selected?.id ? 1000 : 0}
             icon={spotIcon(g.items[0], labels.text.get(g.items[0].id), labels.sides.get(g.items[0].id), g.items[0].id === selected?.id,
@@ -213,7 +250,7 @@ function Pins({ spots, zoom, selected, onSpot, onCluster, theme, halo, isToday, 
   ) : (
     <Marker key={`c:${g.items.map(s => s.id).join(',')}`} position={[g.lat, g.lng]} icon={clusterIcon(g.items.length, clusterTheme(g.items, theme), grow)}
             eventHandlers={{ click: () => onCluster(g) }} />
-  ))
+  )).concat(planMarkers)
 }
 
 /**
@@ -270,6 +307,8 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
   const [plans, setPlans]     = useState([])
+  // The plans' pill texts ("Birdy, in 2 hours · 4 going"): the Pins layer places their cards.
+  const planItems = useMemo(() => plans.map(p => ({ plan: p, ...planLabel(p, t, i18n.language) })), [plans, t, i18n.language])
   const [zoom, setZoom]       = useState(CITY_ZOOM)
   const [theme, setTheme]     = useState(initialTheme)   // the challenge screen's "Places pinned": opened on its theme
   // "Today": only the spots of today's challenge photos (a chip after All).
@@ -544,13 +583,9 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             ))}
             <Pins spots={worldView ? [] : shown} zoom={zoom} selected={selected} onSpot={s => select(s)}
                   onCluster={g => setCamera({ scope, lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })}
-                  theme={theme} halo={todayOnly ? pinColor(todayTheme ?? 'taste') : null} isToday={isToday} grow={grow} />
+                  theme={theme} halo={todayOnly ? pinColor(todayTheme ?? 'taste') : null} isToday={isToday} grow={grow}
+                  plans={planItems} onPlan={id => onOpenPlan?.(id)} />
             {me && <Marker position={me} icon={meIcon} interactive={false} />}
-            {plans.map(p => {
-              const { text, ongoing } = planLabel(p, t, i18n.language)
-              return <Marker key={`p:${p.id}`} position={[p.lat, p.lng]} icon={planIcon(text, ongoing)} title={text}
-                             eventHandlers={{ click: () => onOpenPlan?.(p.id) }} />
-            })}
           </MapContainer>
         ) : (
           <div className="wm-loading">{failed ? t('map.unavailable') : <span className="wm-spinner" aria-hidden="true" />}</div>
