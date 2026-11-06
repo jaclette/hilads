@@ -36,6 +36,14 @@
   --primary-text: #C9501A;
   --primary-tint: #FFE6D8;
   --primary-on-tint: #8A3A12;
+  /* The map sheet's orange wave (as the app's peek* tokens): brand orange on the crest, terracotta
+     under the text (white 4.8:1+, the 88% subtitle 4.6:1+), the count / chevron ink on white. */
+  --peek-top: #F2783A;
+  --peek-mid: #C24E1C;
+  --peek-bottom: #A8401A;
+  --peek-ink: #C24E1C;
+  --on-peek: #FFFFFF;
+  --on-peek-muted: rgba(255, 255, 255, 0.88);
   /* The joyful primary action (DESIGN.md): tangerine, ink text on it (6.4:1). */
   --cta: #FF7A3D;
   --on-cta: #2A1C13;
@@ -93,6 +101,10 @@
   --primary-text: #FF8A50;
   --primary-tint: #3A2216;
   --primary-on-tint: #FFB48A;
+  --peek-top: #D9622A;
+  --peek-mid: #A8401A;
+  --peek-bottom: #8A3412;
+  --peek-ink: #A8401A;
   --cta: #FF7A3D;   /* same in both themes, ink text (7.6:1) */
   --on-cta: #2A1C13;
   --highlight-bg: #FFD2C2;   /* same in both themes: a fill */
@@ -17983,6 +17995,10 @@ html[data-event="halloween"],
   --primary-text: #FFA552;
   --primary-tint: #4A2A3A;
   --primary-on-tint: #FFC48A;
+  --peek-top: #D9622A;
+  --peek-mid: #A8401A;
+  --peek-bottom: #8A3412;
+  --peek-ink: #A8401A;
   --cta: #FF8A1F;
   --on-cta: #1A1030;
   --step-bg: #2A1C4A;
@@ -18359,30 +18375,25 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 }
 
 /* ── V6 map sheet (wm-msheet): peek · half · full, replaces the List button ── */
-.wm-msheet { --wm-h: var(--wm-peek, 84px); position: absolute; left: 0; right: 0; bottom: 0; z-index: 1100; height: calc(var(--wm-h) - var(--wm-drag, 0px));
-  max-height: calc(100% - var(--wm-top-h, 0px) - 8px); min-height: 56px; display: flex; flex-direction: column;
-  /* V6.2: a ticket. Opaque cream under a scalloped top edge (the bumps in the top 9 px), a soft shadow that follows them. */
-  background: linear-gradient(transparent 9px, var(--bg) 9px);
-  filter: drop-shadow(0 -3px 10px rgba(36, 26, 18, 0.22)); transition: height 0.32s cubic-bezier(.22, 1, .36, 1); }
-.wm-msheet::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 18px; pointer-events: none;
-  background: radial-gradient(circle at 11px 9px, var(--bg) 8px, transparent 8.5px) 0 0 / 22px 18px repeat-x; }
-.wm-msheet { overflow: hidden; }   /* at the peek, only the head shows */
+.wm-msheet { --wm-h: var(--wm-peek, 84px); --wm-wave: 34px; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1100; height: calc(var(--wm-h) - var(--wm-drag, 0px));
+  max-height: calc(100% - var(--wm-top-h, 0px) - 8px); min-height: 56px; display: flex; flex-direction: column; overflow: hidden;
+  /* V6.3: the orange wave. Transparent above the wave's curve, a soft shadow that follows it. */
+  filter: drop-shadow(0 -6px 12px rgba(80, 30, 5, 0.18)); transition: height 0.32s cubic-bezier(.22, 1, .36, 1); }
 .wm-msheet--half { --wm-h: 50%; }
 .wm-msheet--full { --wm-h: 100%; }
 .wm-msheet--drag { transition: none; }
-.wm-msheet-head { position: relative; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px 14px 16px; cursor: grab; touch-action: none; user-select: none; }
+/* The head: the wave (SVG, the top 34 px) then the gradient down to terracotta; the list below keeps the light ground. */
+.wm-msheet-head { position: relative; flex-shrink: 0; padding: calc(var(--wm-wave) + 2px) 12px 14px 16px; cursor: grab; touch-action: none; user-select: none;
+  background: linear-gradient(var(--peek-mid), var(--peek-bottom)) 0 calc(var(--wm-wave) - 1px) / 100% calc(100% - var(--wm-wave) + 1px) no-repeat; }
 .wm-msheet--drag .wm-msheet-head { cursor: grabbing; }
-.wm-msheet-handle { position: relative; align-self: center; width: 52px; height: 6px; border-radius: 3px; background: var(--primary); margin: 6px 0 8px; }
-.wm-msheet-headline { font-size: 16px; line-height: 21px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wm-wave { position: absolute; top: 0; left: 0; width: 100%; height: var(--wm-wave); display: block; overflow: visible; }
+.wm-msheet-handle { position: absolute; top: 11px; left: calc(100% * 140 / 360 - 22px); width: 44px; height: 5px; border-radius: 3px; background: var(--on-peek); }
 /* The sort chips: one row scrolling sideways under the head, shown from half (never cut at the peek). */
-.wm-msheet-sorts { flex-shrink: 0; display: flex; gap: 8px; padding: 0 16px 10px; overflow-x: auto; scrollbar-width: none; transition: opacity 0.2s; }
+.wm-msheet-sorts { flex-shrink: 0; display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; transition: opacity 0.2s; background: var(--bg); }
 .wm-msheet-sorts::-webkit-scrollbar { display: none; }
 .wm-msheet-sorts .wm-chip { flex-shrink: 0; white-space: nowrap; }
 .wm-msheet--peek .wm-msheet-sorts { opacity: 0; visibility: hidden; }
-.wm-msheet-hint { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 0 10px; height: 26px; border-radius: 13px;
-  background: var(--primary-tint); color: var(--primary-on-tint); font-size: 12px; font-weight: 800; animation: wm-hint 0.9s ease-in-out 4; }
-@keyframes wm-hint { 50% { transform: translateY(-4px) } }
-.wm-msheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: max(40px, env(safe-area-inset-bottom)); }
+.wm-msheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: max(40px, env(safe-area-inset-bottom)); background: var(--bg); }
 .wm-msheet--peek .wm-msheet-body { overflow: hidden; }
 .wm-msheet .wm-sheet { position: relative; left: auto; right: auto; bottom: auto; margin: 0 12px 10px; box-shadow: none; }
 .wm-msheet .wm-list-sorts { padding-top: 4px; }
@@ -18393,28 +18404,31 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
   color: var(--primary-on-tint); font-size: 14px; font-weight: 800; text-align: center; cursor: pointer; }
 .wm-map .wm-mapbox-logo { bottom: calc(var(--wm-peek, 84px) + 8px); }
 .wm-map .leaflet-control-attribution { margin-bottom: var(--wm-peek, 84px); }
-@media (prefers-reduced-motion: reduce) { .wm-msheet { transition: none; } .wm-msheet-hint { animation: none; } }
-/* The ticket row: polaroids, "📍 [6] spots to explore" over "Nearest 120 m away · swipe up 👆", the chevron. */
+@media (prefers-reduced-motion: reduce) { .wm-msheet { transition: none; } }
+/* The content row: polaroids, "📍 [6] spots to explore" over "Nearest 120 m away · swipe up 👆", the chevron. */
 .wm-ticket { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.wm-polaroids { position: relative; flex-shrink: 0; height: 54px; }
-.wm-polaroid { position: absolute; top: 2px; width: 46px; padding: 3px 3px 9px; border-radius: 4px; background: var(--surface); box-shadow: 0 1px 4px rgba(36, 26, 18, 0.22); }
-.wm-polaroid img { display: block; width: 40px; height: 40px; border-radius: 2px; object-fit: cover; background: var(--surface2); animation: wm-fade 0.25s ease; }
-.wm-polaroid--0 { left: 0; z-index: 3; transform: rotate(-8deg); }
-.wm-polaroid--1 { left: 16px; z-index: 2; transform: rotate(5deg); }
-.wm-polaroid--2 { left: 32px; z-index: 1; transform: rotate(12deg); }
+.wm-polaroids { position: relative; flex-shrink: 0; height: 56px; }
+.wm-polaroid { position: absolute; top: 6px; width: 40px; padding: 3px 3px 8px; border-radius: 3px; background: var(--on-peek); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); }
+.wm-polaroid img { display: block; width: 34px; height: 35px; border-radius: 2px; object-fit: cover; background: var(--surface2); animation: wm-fade 0.25s ease; }
+.wm-polaroid--0 { left: 0; z-index: 3; transform: rotate(-9deg); }
+.wm-polaroid--1 { left: 12px; top: 2px; z-index: 2; transform: rotate(3deg); }
+.wm-polaroid--2 { left: 22px; z-index: 1; transform: rotate(11deg); }
 @keyframes wm-fade { from { opacity: 0 } }
-.wm-ticket-pin { flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px; background: var(--primary-tint); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.wm-ticket-pin { flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px; background: var(--on-peek); display: flex; align-items: center; justify-content: center; font-size: 24px; }
 .wm-ticket-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.wm-ticket-title { display: flex; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 2px; font-size: 19px; line-height: 24px; font-weight: 900; color: var(--text); }
-.wm-ticket-count { position: relative; display: inline-flex; justify-content: center; min-width: 30px; height: 26px; padding: 0 9px; border-radius: 13px;
-  background: var(--cta); color: var(--on-cta); font-size: 16px; line-height: 26px; overflow: hidden; }
+/* One line: the font shrinks (down to 70 %) when a language needs it (--wm-title-scale, measured). */
+.wm-ticket-title { display: flex; flex-wrap: nowrap; align-items: center; column-gap: 6px; font-size: calc(19px * var(--wm-title-scale, 1)); line-height: 24px; font-weight: 900; color: var(--on-peek); white-space: nowrap; min-width: 0; }
+.wm-ticket-title > span:not(.wm-ticket-count) { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.wm-ticket-title--wrap > span:last-child:not(.wm-ticket-count) { white-space: normal; line-height: 18px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.wm-ticket-count { position: relative; flex-shrink: 0; display: inline-flex; justify-content: center; min-width: 30px; height: 26px; padding: 0 9px; border-radius: 13px;
+  background: var(--on-peek); color: var(--peek-ink); font-size: 16px; line-height: 26px; overflow: hidden; }
 .wm-ticket-num { display: block; animation: wm-roll 0.24s ease; }
 @keyframes wm-roll { from { transform: translateY(16px); opacity: 0 } }
-.wm-ticket-sub { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.wm-ticket-chevron { flex-shrink: 0; width: 36px; height: 36px; border-radius: 18px; background: var(--primary-tint); color: var(--primary-on-tint);
+.wm-ticket-sub { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--on-peek-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wm-ticket-chevron { flex-shrink: 0; width: 36px; height: 36px; border-radius: 18px; background: var(--on-peek); color: var(--peek-ink);
   display: flex; align-items: center; justify-content: center; }
-.wm-ticket-chevron--bounce { animation: wm-chev 3.4s ease-in-out infinite; }
-@keyframes wm-chev { 0%, 76%, 100% { transform: none } 82% { transform: translateY(-7px) } 88% { transform: none } 93% { transform: translateY(-3px) } }
+.wm-ticket-chevron--bounce { animation: wm-chev 2.5s ease-in-out infinite; }
+@keyframes wm-chev { 0%, 68%, 100% { transform: none } 76% { transform: translateY(-7px) } 84% { transform: none } 91% { transform: translateY(-3px) } }
 .wm-msheet:not(.wm-msheet--peek) .wm-ticket-chevron { transform: rotate(180deg); }
 @media (prefers-reduced-motion: reduce) { .wm-ticket-chevron--bounce, .wm-ticket-num, .wm-polaroid img { animation: none; } }
 

@@ -171,6 +171,15 @@ export const Colors = {
   // A round button over a photo or the camera: a dark disc, visible on bright photos too.
   photoButton:    'rgba(0,0,0,0.42)',
   photoPill:      'rgba(0,0,0,0.62)',          // a count on a photo: readable on bright pictures
+  // The map sheet's orange wave (peek header): brand orange on the crest, terracotta under the
+  // text (white 4.9:1+, the 88% subtitle 4.6:1+), a deeper end; the count / chevron ink on white.
+  peekTop:        '#D9622A',
+  peekMid:        '#A8401A',
+  peekBottom:     '#8A3412',
+  peekInk:        '#A8401A',
+  onPeek:         '#FFFFFF',
+  onPeekMuted:    'rgba(255,255,255,0.88)',
+  peekShadow:     'rgba(0,0,0,0.30)',
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -249,6 +258,13 @@ export const LightColors: ThemeColors = {
   // A round button over a photo or the camera: a dark disc, visible on bright photos too.
   photoButton:    'rgba(0,0,0,0.42)',
   photoPill:      'rgba(0,0,0,0.62)',          // a count on a photo: readable on bright pictures
+  peekTop:        '#F2783A',
+  peekMid:        '#C24E1C',
+  peekBottom:     '#A8401A',
+  peekInk:        '#C24E1C',
+  onPeek:         '#FFFFFF',
+  onPeekMuted:    'rgba(255,255,255,0.88)',
+  peekShadow:     'rgba(42,28,19,0.12)',
 };
 
 export type ThemeName = 'light' | 'dark';
