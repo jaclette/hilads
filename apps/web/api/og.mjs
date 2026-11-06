@@ -35,7 +35,7 @@ const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live';  // 
 const SITE_BASE = 'https://hilads.live';
 
 // Bump on each deploy so `?ping=1` confirms which build is actually live.
-const OG_BUILD = 'og-v8-challenge';
+const OG_BUILD = 'og-v9-wave';
 
 // Brand tokens - kept in sync with apps/web/src/index.css :root vars.
 const BG     = '#0d0b09';
@@ -132,35 +132,62 @@ function TodayCard({ challenge }) {
 }
 
 // ── Sharing V1: proof / spot / day cards (the landscape share card) ───────────
-// Photo full-height on the left, the text on the right, and the Hilads footer
-// (logo, tagline, hilads.live/<path>) - the 1200x630 sibling of the app's
-// 1080x1920 story card.
-const PHOTO_W = 520;
+// Photo full-height on the left; on the right the orange wave panel (as the map
+// sheet and the share page): its left edge is the same asymmetric wave, turned
+// on its side, rising over the photo; brand orange on the crest to terracotta
+// under the white text (AA); the Hilads footer (logo, tagline, hilads.live/<path>).
+// The 1200x630 sibling of the app's 1080x1920 story card.
+const PHOTO_W = 556;
+const WAVE_W  = 36;   // how far the wave's crest reaches into the photo
+const PEEK_TOP = '#F2783A';
+const PEEK_MID = '#C24E1C';
+const PEEK_BOTTOM = '#A8401A';
+
+/** The wave (reference path in a 360×30 box) turned on its side: along the height, the crest at the left. */
+function waveEdgeSvg() {
+  const X = (v) => +(v * WAVE_W / 30).toFixed(2);   // depth: the box's y
+  const Y = (v) => +(v * H / 360).toFixed(2);        // along the edge: the box's x
+  const d = `M${X(24)} 0 C${X(26)} ${Y(55)} ${X(2)} ${Y(85)} ${X(3)} ${Y(140)}`
+    + ` C${X(4)} ${Y(195)} ${X(20)} ${Y(215)} ${X(19)} ${Y(262)}`
+    + ` C${X(18)} ${Y(302)} ${X(9)} ${Y(328)} ${X(12)} ${H} L${WAVE_W + 1} ${H} L${WAVE_W + 1} 0Z`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${WAVE_W + 1}" height="${H}" viewBox="0 0 ${WAVE_W + 1} ${H}">`
+    + `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${PEEK_TOP}"/><stop offset="1" stop-color="${PEEK_MID}"/></linearGradient></defs>`
+    + `<path d="${d}" fill="url(#g)"/></svg>`;
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+}
 
 function ShareCard({ photo, kicker, title, lines, badge, path }) {
-  return h('div', { style: { width: W, height: H, display: 'flex', background: BG, color: TEXT } },
-    h('div', { style: { width: PHOTO_W, height: H, display: 'flex', position: 'relative', background: '#1e1812' } },
+  const panelX = PHOTO_W;
+  return h('div', { style: { width: W, height: H, display: 'flex', position: 'relative', background: BG, color: '#fff' } },
+    h('div', { style: { position: 'absolute', left: 0, top: 0, width: PHOTO_W, height: H, display: 'flex', background: '#1e1812' } },
       photo ? h('img', { src: photo, width: PHOTO_W, height: H, style: { width: PHOTO_W, height: H, objectFit: 'cover' } }) : null,
       badge ? h('div', {
         style: { position: 'absolute', top: 28, left: 28, display: 'flex', padding: '8px 18px', borderRadius: 999,
                  background: '#B98A2E', color: '#fff', fontSize: 26, fontWeight: 800 },
       }, badge) : null,
     ),
-    h('div', { style: { flex: 1, height: H, display: 'flex', flexDirection: 'column', padding: '48px 50px 40px' } },
+    // A soft shadow under the wave's edge, then the edge itself.
+    h('div', { style: { position: 'absolute', left: panelX - WAVE_W - 14, top: 0, width: WAVE_W + 14, height: H, display: 'flex',
+                        background: 'linear-gradient(90deg, rgba(80,30,5,0) 0%, rgba(80,30,5,0.22) 100%)' } }),
+    h('img', { src: waveEdgeSvg(), width: WAVE_W + 1, height: H, style: { position: 'absolute', left: panelX - WAVE_W, top: 0 } }),
+    h('div', {
+      style: { position: 'absolute', left: panelX, top: 0, width: W - panelX, height: H, display: 'flex', flexDirection: 'column', padding: '48px 50px 40px 44px',
+               background: `linear-gradient(90deg, ${PEEK_MID} 0%, ${PEEK_BOTTOM} 100%)` },
+    },
       kicker ? h('div', {
-        style: { alignSelf: 'flex-start', display: 'flex', background: 'rgba(255,122,60,0.15)', border: `1.5px solid ${ACCENT}`,
-                 borderRadius: 999, padding: '6px 18px', fontSize: 22, fontWeight: 800, color: ACCENT },
+        style: { alignSelf: 'flex-start', display: 'flex', background: '#fff', borderRadius: 999, padding: '6px 18px', fontSize: 22, fontWeight: 800, color: PEEK_MID },
       }, kicker) : null,
       h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 18 } },
-        h('div', { style: { display: 'flex', fontSize: title.length > 70 ? 38 : 46, lineHeight: 1.12, fontWeight: 800, letterSpacing: -1, maxHeight: 270, overflow: 'hidden' } }, title),
-        ...lines.filter(Boolean).map(l => h('div', { style: { display: 'flex', fontSize: 26, color: MUTED, fontWeight: 600 } }, l)),
+        h('div', { style: { display: 'flex', fontSize: title.length > 70 ? 38 : 46, lineHeight: 1.12, fontWeight: 800, letterSpacing: -1, maxHeight: 270, overflow: 'hidden', color: '#fff' } }, title),
+        ...lines.filter(Boolean).map(l => h('div', { style: { display: 'flex', fontSize: 26, color: 'rgba(255,255,255,0.88)', fontWeight: 600 } }, l)),
       ),
       h('div', { style: { display: 'flex', alignItems: 'center', gap: 14 } },
-        HiladsMark(48),
+        // The mark on a white tile (its own orange would melt into the panel).
+        h('div', { style: { display: 'flex', padding: 4, borderRadius: 15, background: '#fff' } }, HiladsMark(44)),
         h('div', { style: { display: 'flex', flexDirection: 'column' } },
           // SPEC 10.1: share cards say why Hilads is unique.
-          h('div', { style: { display: 'flex', fontSize: 22, color: TEXT, fontWeight: 700 } }, 'Same challenge. Different worlds.'),
-          h('div', { style: { display: 'flex', fontSize: 20, color: MUTED2, fontWeight: 600 } }, `hilads.live${path}`),
+          h('div', { style: { display: 'flex', fontSize: 22, color: '#fff', fontWeight: 700 } }, 'Same challenge. Different worlds.'),
+          h('div', { style: { display: 'flex', fontSize: 20, color: 'rgba(255,255,255,0.88)', fontWeight: 600 } }, `hilads.live${path}`),
         ),
       ),
     ),
