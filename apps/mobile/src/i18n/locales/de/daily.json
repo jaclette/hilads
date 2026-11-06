@@ -858,5 +858,57 @@
     "retakeAll": "Alles neu",
     "addFace": "Zeig dein Gesicht 🤳",
     "swapA11y": "Fotos tauschen"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 Fotos",
+      "players": "🙋 Spieler",
+      "cities": "🌍 Städte"
+    },
+    "period": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "week": "Diese Woche",
+      "alltime": "Allzeit"
+    },
+    "scope": {
+      "city": "Meine Stadt",
+      "world": "Welt"
+    },
+    "timeLeftMin": "⏳ Weniger als eine Stunde zum Abstimmen",
+    "bestPerCity": "Bestes Foto pro Stadt",
+    "new": "neu",
+    "you": {
+      "top": "Du · #1 · Niemand vor dir 👑",
+      "player": "Du · #{{rank}} · {{gap}} Pkt. bis {{name}} ▲",
+      "none": "Spiel heute, um aufs Board zu kommen 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}} führt das Rennen an! 🏁",
+      "line_one": "{{city}} ist #{{rank}}. Noch {{count}} Foto, um {{next}} einzuholen!",
+      "line_other": "{{city}} ist #{{rank}}. Noch {{count}} Fotos, um {{next}} einzuholen!",
+      "youBar_one": "{{city}} · #{{rank}} · {{count}} Foto hinter {{next}}",
+      "youBar_other": "{{city}} · #{{rank}} · {{count}} Fotos hinter {{next}}"
+    },
+    "empty": {
+      "photos": "Noch keine gelikten Fotos. Stimm für deine Favoriten ab ❤️",
+      "players": "Noch hat niemand Punkte. Spiel und hol dir Platz 1 🙋",
+      "cities": "Noch keine Stadt im Ranking. Bring deine nach vorn 🌍"
+    },
+    "race": {
+      "title": "🏁 Das Rennen von heute",
+      "you": "{{city}} ist #{{rank}}",
+      "youNone": "{{city}} ist noch nicht im Rennen",
+      "see": "Zum Ranking"
+    },
+    "results": {
+      "title": "🏆 Die Ergebnisse sind da!",
+      "sub": "Schau, wie dein Foto gestern abgeschnitten hat",
+      "dismiss": "Schließen"
+    },
+    "timeLeft_one": "⏳ Noch {{count}} Stunde zum Abstimmen",
+    "timeLeft_other": "⏳ Noch {{count}} Stunden zum Abstimmen",
+    "pts_one": "{{count}} Pkt.",
+    "pts_other": "{{count}} Pkt."
   }
 }

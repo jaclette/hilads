@@ -18,6 +18,7 @@ import { ProposeLink } from '@/features/today/ProposeLink';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
 import { WhileAwayCard } from '@/features/notifications/WhileAwayCard';
+import { ResultsCard, TodayRace } from '@/features/ranks/TodayRace';
 import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
 
 /**
@@ -73,10 +74,14 @@ function TodayContent() {
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} countries={countries} loading={daily.loading} error={daily.error} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
+        {/* V6: yesterday's results are out (once). */}
+        <ResultsCard />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
         <TodayCountries today={daily.data} data={countries} />
+        {/* V6: the city race of the day, live. */}
+        <TodayRace refreshKey={refreshKey} />
         {/* Your week: the streak, tomorrow's theme and the week strip. */}
         <TodayWeek today={daily.data} />
         {/* Yesterday around the world (SPEC 10.7) and every past challenge. */}

@@ -13523,6 +13523,58 @@ $router->add('GET', '/api/v1/leaderboard/week', function () {
     ]);
 });
 
+// GET /api/v1/ranks?tab=players|cities|photos&period=today|yesterday|week|alltime&scope=city|world&cityId=
+// The Ranks tab (V6). players: {entries[{rank, prevRank, points, user, city}], me{…, gap, next}}; cities:
+// {entries[{rank, prevRank, city, photos, players, likes}], mine{…, gap, next}}; photos: {items[{rank, proof}],
+// cityBest[{cityId, proof}] (yesterday), endsAt (today)}. prevRank null = new (or today: no movement).
+$router->add('GET', '/api/v1/ranks', function () {
+    spotsRateLimit();
+    $user   = AuthService::currentUser();
+    $tab    = in_array($_GET['tab'] ?? '', ['players', 'cities', 'photos'], true) ? $_GET['tab'] : 'photos';
+    $period = in_array($_GET['period'] ?? '', Ranks::PERIODS, true) ? $_GET['period'] : 'today';
+    $scope  = ($_GET['scope'] ?? 'world') === 'city' ? 'city' : 'world';
+    $today  = DailyClock::currentDate();
+    $cityId = null;
+    if ($scope === 'city' && $tab !== 'cities') {
+        $cityId = dailyCityParam($user);
+        if ($cityId === null) $scope = 'world';
+    }
+    $base = ['tab' => $tab, 'period' => $period, 'scope' => $scope, 'cityId' => $cityId !== null ? (int) substr($cityId, 5) : null, 'date' => $today];
+
+    if ($tab === 'players') {
+        if ($period === 'yesterday') $period = 'today';
+        Response::json($base + Ranks::players($period, $cityId, $user['id'] ?? null, $today));
+    }
+    if ($tab === 'cities') {
+        if ($period === 'yesterday') $period = 'today';
+        $mineCity = dailyCityParam($user);
+        Response::json($base + Ranks::cities($period, $mineCity, $today));
+    }
+
+    // Photos: formatted proofs in ranking order (blocked authors left out).
+    $format = static function (array $ids) use ($user): array {
+        if ($ids === []) return [];
+        $rows = DailyVotes::annotate(filterByBlocks(DailyProofRepository::findApprovedMany($ids), dailyBlocks($user), 'user_id', 'guest_id'), $user['id'] ?? null);
+        $byId = [];
+        foreach ($rows as $r) $byId[$r['id']] = DailyProofRepository::format($r, $user['id'] ?? null);
+        return array_values(array_filter(array_map(static fn($id) => $byId[$id] ?? null, $ids)));
+    };
+    $items = [];
+    foreach ($format(Ranks::photoIds($period, $cityId, $today)) as $i => $proof) {
+        $items[] = ['rank' => $i + 1, 'proof' => $proof];
+    }
+    $out = $base + ['items' => $items];
+    if ($period === 'yesterday' && $cityId === null) {
+        $best = Ranks::cityBestIds(Ranks::dates('yesterday', $today)[0]);
+        $out['cityBest'] = array_map(static fn(array $p) => ['proof' => $p], $format(array_values($best)));
+    }
+    if ($period === 'today') {
+        $challenge = DailyChallengeRepository::findPublishedByDate($today);
+        $out['endsAt'] = $challenge !== null ? DailyClock::window($today)[1]->getTimestamp() : null;
+    }
+    Response::json($out);
+});
+
 // GET /api/v1/app/config - versions and switches for the app (V3-04). From
 // 1.8.0 the app reads it at launch and on foreground: below latestVersion an
 // "Update available" banner, below minVersion a blocking "Update required".

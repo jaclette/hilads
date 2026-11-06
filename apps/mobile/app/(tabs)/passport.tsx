@@ -144,13 +144,17 @@ export default function PassportScreen() {
             </View>
             <Text style={styles.cardSub}>{t('passport.best', { count: stats?.bestStreak ?? 0 })}</Text>
           </Card>
-          <Card style={styles.card}>
-            <View style={styles.cardHead}>
-              <Ionicons name="trophy-outline" size={18} color={colors.text} />
-              <Text style={styles.cardTitle}>{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</Text>
-            </View>
-            <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
-          </Card>
+          {/* V6: opens Ranks › Players › This week. */}
+          <TouchableOpacity style={styles.cardTap} activeOpacity={0.8} accessibilityRole="button" testID="passport-week-rank"
+                            onPress={() => router.push(`/ranks?tab=players&period=week&scope=${cityKey ? 'city' : 'world'}` as never)}>
+            <Card style={[styles.card, styles.cardFill]}>
+              <View style={styles.cardHead}>
+                <Ionicons name="trophy-outline" size={18} color={colors.text} />
+                <Text style={styles.cardTitle}>{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</Text>
+              </View>
+              <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
+            </Card>
+          </TouchableOpacity>
         </View>
         {/* The cities I've been compared with: their flags (a tap opens that city's photos today). */}
         {(stats?.comparedCities?.length ?? 0) > 0 ? (
@@ -208,7 +212,7 @@ export default function PassportScreen() {
           <ListRow divider title={t('passport.mostLocalAllTime')}
                    leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={26} /> : undefined}
                    value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
-                   onPress={() => router.push(`/leaderboard?scope=${cityKey ? 'city' : 'world'}&period=alltime` as never)} />
+                   onPress={() => router.push(`/ranks?tab=players&period=alltime&scope=${cityKey ? 'city' : 'world'}` as never)} />
         </RowGroup>
 
         <Button icon="share-social-outline" label={t('passport.share')} onPress={sharePassport} testID="passport-share" />
@@ -270,6 +274,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chipCityText:   { fontSize: 12, fontWeight: '600', color: c.muted },
   cards:          { flexDirection: 'row', gap: 10 },
   card:           { flex: 1, paddingHorizontal: 14, paddingVertical: 12, gap: 3 },
+  cardTap:        { flex: 1 },
+  cardFill:       { flex: 1 },
   cardHead:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },

@@ -114,6 +114,12 @@ export type AnalyticsEvent =
   | 'today_countries_play'
   | 'today_countries_all'
   | 'today_countries_sort'
+  // V6
+  | 'ranks_viewed'
+  | 'rivals_opened'
+  | 'rival_challenge_shared'
+  | 'map_surprise'
+  | 'map_sheet_snap'
   | 'challenge_bubble_tapped'
   | 'challenge_cta_tapped'
   // The Hilads Index (SPEC 10.9): viewed { source, week }, shared { card }.

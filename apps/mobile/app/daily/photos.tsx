@@ -4,7 +4,7 @@ import {
   type ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { prefetchProof, takeHandedProof } from '@/lib/prefetch';
+import { prefetchProof, takeHandedList, takeHandedProof } from '@/lib/prefetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -74,7 +74,9 @@ function PhotosScreenContent() {
   const router = useRouter();
   const { account, identity, city } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
-  const { proof: pinnedId, source, tab: tabParam, country } = useLocalSearchParams<{ proof?: string; source?: string; tab?: string; country?: string }>();
+  const { proof: pinnedId, source, tab: tabParam, country, list: listKey } = useLocalSearchParams<{ proof?: string; source?: string; tab?: string; country?: string; list?: string }>();
+  // A ranked list (the Ranks tab, V6): played in its order from the tapped photo, no tabs.
+  const [ranked] = useState<DailyProof[] | null>(() => takeHandedList(listKey));
   const today = useDailyToday(city?.channelId).data;
   const here = useHere();
   const challenge = today?.challenge ?? null;
@@ -115,6 +117,7 @@ function PhotosScreenContent() {
 
   const load = useCallback(async () => {
     setFailed(false);
+    if (ranked) { setProofs(ranked); return; }
     try {
       const res = await fetchDailyTodayProofs({ scope: tab, cityId: tab === 'city' ? cityId : null, guestId, order: 'new', limit: LIMIT });
       // A city with no photo yet falls back to World on the server: here it's an empty city.
@@ -140,6 +143,10 @@ function PhotosScreenContent() {
   }, [country, proofs]);
 
   const items: Item[] = useMemo(() => {
+    if (ranked) {
+      const at = Math.max(0, ranked.findIndex(p => p.id === pinnedId));
+      return [...ranked.slice(at).map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
+    }
     if (proofs === null) return pinned ? [{ kind: 'photo' as const, proof: pinned }] : [];
     if (story && tab === 'world') {
       // Photos posted since Today loaded follow the story.
@@ -149,7 +156,7 @@ function PhotosScreenContent() {
     const rest = (proofs ?? []).filter(p => p.id !== pinned?.id);
     const photos = pinned && tab === 'world' ? [pinned, ...rest] : pinned && pinned.city?.id === cityId ? [pinned, ...rest] : rest;
     return [...photos.map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
-  }, [proofs, pinned, tab, cityId, story]);
+  }, [proofs, pinned, tab, cityId, story, ranked, pinnedId]);
 
   const switchTab = (next: Tab) => {
     if (next === tab) return;
@@ -240,14 +247,14 @@ function PhotosScreenContent() {
         <View style={styles.head}>
           <IconButton icon="close" tone="onPhoto" onPress={goBack} label={t('back')} testID="photos-close" />
           <View style={styles.tabs}>
-            <TabPill label={t('feed.world')} icon="earth" on={tab === 'world'} onPress={() => switchTab('world')} />
-            {!!cityName && (
+            {!ranked && <TabPill label={t('feed.world')} icon="earth" on={tab === 'world'} onPress={() => switchTab('world')} />}
+            {!ranked && !!cityName && (
               <TabPill label={cityName} country={today?.city?.country ?? null} on={tab === 'city'} onPress={() => switchTab('city')} />
             )}
           </View>
           <View style={styles.headSide} />
         </View>
-        {challenge && pill && (
+        {challenge && pill && !ranked && (
           <TouchableOpacity style={[styles.pill, { backgroundColor: pill.fill }]} activeOpacity={0.85} accessibilityRole="button"
                             onPress={() => { track('daily_photos_challenge_opened', {}); router.push('/daily/today?source=photos' as never); }}>
             <Text style={[styles.pillText, { color: onFillOf(pill.fill) }]} numberOfLines={1}>

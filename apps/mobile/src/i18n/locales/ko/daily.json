@@ -820,5 +820,53 @@
     "retakeAll": "모두 다시 찍기",
     "addFace": "얼굴도 넣어요 🤳",
     "swapA11y": "사진 바꾸기"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 사진",
+      "players": "🙋 참가자",
+      "cities": "🌍 도시"
+    },
+    "period": {
+      "today": "오늘",
+      "yesterday": "어제",
+      "week": "이번 주",
+      "alltime": "역대"
+    },
+    "scope": {
+      "city": "우리 도시",
+      "world": "전 세계"
+    },
+    "timeLeftMin": "⏳ 투표 마감까지 1시간도 안 남았어요",
+    "bestPerCity": "도시별 베스트 사진",
+    "new": "NEW",
+    "you": {
+      "top": "나 · 1위 · 위에 아무도 없어요 👑",
+      "player": "나 · {{rank}}위 · {{gap}}점 더 얻으면 {{name}} 추월 ▲",
+      "none": "오늘 참여하고 순위에 올라 보세요 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}}가 레이스 선두예요! 🏁",
+      "line_other": "{{city}}는 {{rank}}위예요. 사진 {{count}}장만 더 올리면 {{next}}를 따라잡아요!",
+      "youBar_other": "{{city}} · {{rank}}위 · {{next}}보다 사진 {{count}}장 뒤처짐"
+    },
+    "empty": {
+      "photos": "아직 좋아요 받은 사진이 없어요. 좋아하는 사진에 투표해 보세요 ❤️",
+      "players": "아직 점수를 얻은 사람이 없어요. 참여해서 1위를 차지하세요 🙋",
+      "cities": "아직 순위에 오른 도시가 없어요. 우리 도시를 1등으로 🌍"
+    },
+    "race": {
+      "title": "🏁 오늘의 레이스",
+      "you": "{{city}}는 {{rank}}위",
+      "youNone": "{{city}}는 아직 레이스에 없어요",
+      "see": "랭킹 보기"
+    },
+    "results": {
+      "title": "🏆 결과가 나왔어요!",
+      "sub": "어제 사진의 결과를 확인해 보세요",
+      "dismiss": "닫기"
+    },
+    "timeLeft_other": "⏳ 투표 마감까지 {{count}}시간",
+    "pts_other": "{{count}}점"
   }
 }

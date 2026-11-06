@@ -1010,5 +1010,73 @@
     "retakeAll": "إعادة الكل",
     "addFace": "أضف وجهك 🤳",
     "swapA11y": "تبديل الصورتين"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 الصور",
+      "players": "🙋 اللاعبون",
+      "cities": "🌍 المدن"
+    },
+    "period": {
+      "today": "اليوم",
+      "yesterday": "أمس",
+      "week": "هذا الأسبوع",
+      "alltime": "كل الأوقات"
+    },
+    "scope": {
+      "city": "مدينتي",
+      "world": "العالم"
+    },
+    "timeLeftMin": "⏳ بقي أقل من ساعة للتصويت",
+    "bestPerCity": "أفضل صورة في كل مدينة",
+    "new": "جديد",
+    "you": {
+      "top": "أنت · #1 · لا أحد فوقك 👑",
+      "player": "أنت · #{{rank}} · {{gap}} نقطة لتتجاوز {{name}} ▲",
+      "none": "العب اليوم لتظهر في الترتيب 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}} تتصدر السباق! 🏁",
+      "line_zero": "{{city}} في المركز {{rank}}. {{count}} صورة لتلحق بـ{{next}}!",
+      "line_one": "{{city}} في المركز {{rank}}. صورة واحدة لتلحق بـ{{next}}!",
+      "line_two": "{{city}} في المركز {{rank}}. صورتان لتلحق بـ{{next}}!",
+      "line_few": "{{city}} في المركز {{rank}}. {{count}} صور لتلحق بـ{{next}}!",
+      "line_many": "{{city}} في المركز {{rank}}. {{count}} صورة لتلحق بـ{{next}}!",
+      "line_other": "{{city}} في المركز {{rank}}. {{count}} صورة لتلحق بـ{{next}}!",
+      "youBar_zero": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صورة",
+      "youBar_one": "{{city}} · #{{rank}} · خلف {{next}} بصورة",
+      "youBar_two": "{{city}} · #{{rank}} · خلف {{next}} بصورتين",
+      "youBar_few": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صور",
+      "youBar_many": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صورة",
+      "youBar_other": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صورة"
+    },
+    "empty": {
+      "photos": "لا صور معجب بها بعد. صوّت لصورك المفضلة ❤️",
+      "players": "لم يسجل أحد نقاطًا بعد. العب واحصل على المركز الأول 🙋",
+      "cities": "لا مدن في الترتيب بعد. ضع مدينتك أولًا 🌍"
+    },
+    "race": {
+      "title": "🏁 سباق اليوم",
+      "you": "{{city}} في المركز {{rank}}",
+      "youNone": "{{city}} ليست في السباق بعد",
+      "see": "عرض الترتيب"
+    },
+    "results": {
+      "title": "🏆 النتائج وصلت!",
+      "sub": "شاهد كيف كان أداء صورتك أمس",
+      "dismiss": "إغلاق"
+    },
+    "timeLeft_zero": "⏳ بقيت {{count}} ساعة للتصويت",
+    "timeLeft_one": "⏳ بقيت ساعة للتصويت",
+    "timeLeft_two": "⏳ بقيت ساعتان للتصويت",
+    "timeLeft_few": "⏳ بقيت {{count}} ساعات للتصويت",
+    "timeLeft_many": "⏳ بقيت {{count}} ساعة للتصويت",
+    "timeLeft_other": "⏳ بقيت {{count}} ساعة للتصويت",
+    "pts_zero": "{{count}} نقطة",
+    "pts_one": "نقطة واحدة",
+    "pts_two": "نقطتان",
+    "pts_few": "{{count}} نقاط",
+    "pts_many": "{{count}} نقطة",
+    "pts_other": "{{count}} نقطة"
   }
 }

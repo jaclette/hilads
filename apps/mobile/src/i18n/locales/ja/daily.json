@@ -820,5 +820,53 @@
     "retakeAll": "全部撮り直す",
     "addFace": "顔も入れよう 🤳",
     "swapA11y": "写真を入れ替える"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 写真",
+      "players": "🙋 参加者",
+      "cities": "🌍 街"
+    },
+    "period": {
+      "today": "今日",
+      "yesterday": "昨日",
+      "week": "今週",
+      "alltime": "歴代"
+    },
+    "scope": {
+      "city": "自分の街",
+      "world": "世界"
+    },
+    "timeLeftMin": "⏳ 投票はあと1時間もないよ",
+    "bestPerCity": "街ごとのベストフォト",
+    "new": "NEW",
+    "you": {
+      "top": "あなた · 1位 · 上には誰もいないよ 👑",
+      "player": "あなた · {{rank}}位 · あと{{gap}}ptで{{name}}を抜ける ▲",
+      "none": "今日参加してランクインしよう 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}}がトップを独走中！🏁",
+      "line_other": "{{city}}は{{rank}}位。あと{{count}}枚で{{next}}に追いつく！",
+      "youBar_other": "{{city}} · {{rank}}位 · {{next}}まであと{{count}}枚"
+    },
+    "empty": {
+      "photos": "いいねされた写真はまだないよ。お気に入りに投票しよう ❤️",
+      "players": "まだ誰も得点してないよ。参加して1位を取ろう 🙋",
+      "cities": "まだランクインした街はないよ。あなたの街を一番に 🌍"
+    },
+    "race": {
+      "title": "🏁 今日のレース",
+      "you": "{{city}}は{{rank}}位",
+      "youNone": "{{city}}はまだレースに参加してないよ",
+      "see": "ランキングを見る"
+    },
+    "results": {
+      "title": "🏆 結果発表！",
+      "sub": "昨日の写真の結果をチェック",
+      "dismiss": "閉じる"
+    },
+    "timeLeft_other": "⏳ 投票はあと{{count}}時間",
+    "pts_other": "{{count}}pt"
   }
 }

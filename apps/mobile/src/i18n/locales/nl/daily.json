@@ -858,5 +858,57 @@
     "retakeAll": "Alles opnieuw",
     "addFace": "Laat je gezicht zien 🤳",
     "swapA11y": "Foto's wisselen"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 Foto's",
+      "players": "🙋 Spelers",
+      "cities": "🌍 Steden"
+    },
+    "period": {
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "week": "Deze week",
+      "alltime": "Aller tijden"
+    },
+    "scope": {
+      "city": "Mijn stad",
+      "world": "Wereld"
+    },
+    "timeLeftMin": "⏳ Nog minder dan een uur om te stemmen",
+    "bestPerCity": "Beste foto per stad",
+    "new": "nieuw",
+    "you": {
+      "top": "Jij · #1 · Niemand boven je 👑",
+      "player": "Jij · #{{rank}} · {{gap}} ptn om {{name}} in te halen ▲",
+      "none": "Speel vandaag om op het bord te komen 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}} leidt de race! 🏁",
+      "line_one": "{{city}} is #{{rank}}. Nog {{count}} foto om {{next}} in te halen!",
+      "line_other": "{{city}} is #{{rank}}. Nog {{count}} foto's om {{next}} in te halen!",
+      "youBar_one": "{{city}} · #{{rank}} · {{count}} foto achter {{next}}",
+      "youBar_other": "{{city}} · #{{rank}} · {{count}} foto's achter {{next}}"
+    },
+    "empty": {
+      "photos": "Nog geen gelikete foto's. Ga stemmen op je favorieten ❤️",
+      "players": "Nog niemand heeft punten. Speel en pak de #1 🙋",
+      "cities": "Nog geen stad op de ranglijst. Zet de jouwe bovenaan 🌍"
+    },
+    "race": {
+      "title": "🏁 De race van vandaag",
+      "you": "{{city}} is #{{rank}}",
+      "youNone": "{{city}} doet nog niet mee",
+      "see": "Bekijk ranglijst"
+    },
+    "results": {
+      "title": "🏆 De uitslagen zijn er!",
+      "sub": "Bekijk hoe je foto het gisteren deed",
+      "dismiss": "Sluiten"
+    },
+    "timeLeft_one": "⏳ Nog {{count}} uur om te stemmen",
+    "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",
+    "pts_one": "{{count}} pt",
+    "pts_other": "{{count}} ptn"
   }
 }

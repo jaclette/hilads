@@ -178,7 +178,8 @@
     "today": "Today",
     "map": "Map",
     "chat": "Hi",
-    "passport": "Passport"
+    "passport": "Passport",
+    "ranks": "Ranks"
   },
   "scope": {
     "title": "Show",

@@ -896,5 +896,61 @@
     "retakeAll": "Tout refaire",
     "addFace": "Ajoute ta tête 🤳",
     "swapA11y": "Inverser les photos"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 Photos",
+      "players": "🙋 Joueurs",
+      "cities": "🌍 Villes"
+    },
+    "period": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "week": "Cette semaine",
+      "alltime": "Depuis toujours"
+    },
+    "scope": {
+      "city": "Ma ville",
+      "world": "Monde"
+    },
+    "timeLeftMin": "⏳ Moins d'une heure pour voter",
+    "bestPerCity": "Meilleure photo par ville",
+    "new": "nouveau",
+    "you": {
+      "top": "Toi · #1 · Personne devant toi 👑",
+      "player": "Toi · #{{rank}} · {{gap}} pts pour dépasser {{name}} ▲",
+      "none": "Joue aujourd'hui pour entrer au classement 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}} mène la course ! 🏁",
+      "line_one": "{{city}} est #{{rank}}. Encore {{count}} photo pour rattraper {{next}} !",
+      "line_other": "{{city}} est #{{rank}}. Encore {{count}} photos pour rattraper {{next}} !",
+      "line_many": "{{city}} est #{{rank}}. Encore {{count}} photos pour rattraper {{next}} !",
+      "youBar_one": "{{city}} · #{{rank}} · {{count}} photo derrière {{next}}",
+      "youBar_other": "{{city}} · #{{rank}} · {{count}} photos derrière {{next}}",
+      "youBar_many": "{{city}} · #{{rank}} · {{count}} photos derrière {{next}}"
+    },
+    "empty": {
+      "photos": "Pas encore de photo aimée. Va voter pour tes préférées ❤️",
+      "players": "Personne n'a encore marqué. Joue et prends la 1re place 🙋",
+      "cities": "Aucune ville au classement. Mets la tienne en premier 🌍"
+    },
+    "race": {
+      "title": "🏁 La course du jour",
+      "you": "{{city}} est #{{rank}}",
+      "youNone": "{{city}} n'est pas encore dans la course",
+      "see": "Voir le classement"
+    },
+    "results": {
+      "title": "🏆 Les résultats sont là !",
+      "sub": "Découvre comment ta photo s'en est sortie hier",
+      "dismiss": "Fermer"
+    },
+    "timeLeft_one": "⏳ Encore {{count}} heure pour voter",
+    "timeLeft_other": "⏳ Encore {{count}} heures pour voter",
+    "timeLeft_many": "⏳ Encore {{count}} heures pour voter",
+    "pts_one": "{{count}} pt",
+    "pts_other": "{{count}} pts",
+    "pts_many": "{{count}} pts"
   }
 }

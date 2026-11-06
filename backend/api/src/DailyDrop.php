@@ -180,6 +180,7 @@ final class DailyDrop
         $points = DailyPoints::awardClose($challenge['id'], $plan);
         // V6: each player's outcome in the bell (Game); never fails the close.
         $notified = DailyNotify::onResults($challenge);
+        $notified += Ranks::notifyRankUps($challenge);
         // Yesterday around the world (SPEC 10.7), after the results (the podium leads it). Never fails the close.
         try {
             $tour = DailyTour::build($challenge);

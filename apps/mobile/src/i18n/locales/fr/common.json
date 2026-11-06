@@ -179,7 +179,8 @@
     "today": "Aujourd'hui",
     "map": "Carte",
     "chat": "Hi",
-    "passport": "Passeport"
+    "passport": "Passeport",
+    "ranks": "Classement"
   },
   "scope": {
     "title": "Afficher",

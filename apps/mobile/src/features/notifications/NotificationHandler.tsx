@@ -353,8 +353,8 @@ function resolvePushRoute(data: NotifData): string | null {
       return '/daily/countries?source=push';
 
     case 'daily_top10':
-      // My proof entered today's top 10 → the Top 10, in "See all" (the challenge screen has no tabs).
-      return '/daily/countries?sort=top10&source=push';
+      // My proof entered today's top 10 → Ranks › Photos › Today (V6).
+      return '/ranks?tab=photos&period=today&source=push';
 
     case 'daily_proposal_approved':
     case 'daily_proposal_rejected':

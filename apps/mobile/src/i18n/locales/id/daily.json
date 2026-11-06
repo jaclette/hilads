@@ -820,5 +820,53 @@
     "retakeAll": "Ulangi semua",
     "addFace": "Tambahkan wajahmu 🤳",
     "swapA11y": "Tukar foto"
+  },
+  "ranks": {
+    "seg": {
+      "photos": "📸 Foto",
+      "players": "🙋 Pemain",
+      "cities": "🌍 Kota"
+    },
+    "period": {
+      "today": "Hari ini",
+      "yesterday": "Kemarin",
+      "week": "Minggu ini",
+      "alltime": "Sepanjang masa"
+    },
+    "scope": {
+      "city": "Kotaku",
+      "world": "Dunia"
+    },
+    "timeLeftMin": "⏳ Sisa kurang dari satu jam untuk vote",
+    "bestPerCity": "Foto terbaik tiap kota",
+    "new": "baru",
+    "you": {
+      "top": "Kamu · #1 · Nggak ada di atasmu 👑",
+      "player": "Kamu · #{{rank}} · {{gap}} poin lagi buat nyalip {{name}} ▲",
+      "none": "Main hari ini biar masuk papan 🙋"
+    },
+    "city": {
+      "lineTop": "{{city}} memimpin balapan! 🏁",
+      "line_other": "{{city}} di #{{rank}}. {{count}} foto lagi buat ngejar {{next}}!",
+      "youBar_other": "{{city}} · #{{rank}} · kalah {{count}} foto dari {{next}}"
+    },
+    "empty": {
+      "photos": "Belum ada foto yang disukai. Yuk vote favoritmu ❤️",
+      "players": "Belum ada yang dapat poin. Main dan rebut #1 🙋",
+      "cities": "Belum ada kota di papan. Taruh kotamu di depan 🌍"
+    },
+    "race": {
+      "title": "🏁 Balapan hari ini",
+      "you": "{{city}} di #{{rank}}",
+      "youNone": "{{city}} belum ikut balapan",
+      "see": "Lihat peringkat"
+    },
+    "results": {
+      "title": "🏆 Hasilnya udah keluar!",
+      "sub": "Lihat gimana fotomu kemarin",
+      "dismiss": "Tutup"
+    },
+    "timeLeft_other": "⏳ Sisa {{count}} jam untuk vote",
+    "pts_other": "{{count}} poin"
   }
 }

@@ -12,6 +12,9 @@ import { useSeasonalLive } from '@/features/event/seasonal';
 import { PumpkinIcon, SeasonalScope, TabGhost } from '@/features/event/SeasonalArt';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features/notifications/counts';
 import { markNotificationTypesRead } from '@/api/notifications';
+import { themeColor, tint } from '@/ui/joy';
+
+const GOLD = themeColor('sip');
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
 const TAB_BADGE: Record<string, { key: 'chat' | 'passport' | 'ranks'; types: string[]; count: boolean }> = {
@@ -32,13 +35,15 @@ type TabDef = {
 const TABS: TabDef[] = [
   { name: 'today',    label: 'tabs.today',    icon: 'flame-outline' },
   { name: 'map',      label: 'tabs.map',      icon: 'map-outline' },
+  // V6: the game hub, gold when active.
+  { name: 'ranks',    label: 'tabs.ranks',    icon: 'trophy-outline' },
   { name: 'chat',     label: 'tabs.chat',     icon: 'chatbubble-outline' },
   { name: 'passport', label: 'tabs.passport', icon: 'id-card-outline' },
 ];
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const { t } = useTranslation('common');
   // A seasonal event's live day: Today wears its icon (Halloween: a pumpkin) and a ghost peeks over the active tab.
   const halloween = useSeasonalLive()?.key === 'halloween';
@@ -82,7 +87,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       {TABS.map(tab => {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = activeTab === tab.name;
-        const color      = focused ? colors.primaryOnTint : colors.muted;
+        const gold       = tab.name === 'ranks' && focused;
+        const color      = gold ? (theme === 'dark' ? GOLD.textDark : GOLD.textLight) : focused ? colors.primaryOnTint : colors.muted;
         const label      = t(tab.label);
         return (
           <Pressable
@@ -91,7 +97,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             accessibilityLabel={label}
             testID={`tab-${tab.name}`}
             accessibilityState={{ selected: focused }}
-            style={[styles.tab, focused && { backgroundColor: colors.primaryTint }]}
+            style={[styles.tab, focused && { backgroundColor: gold ? tint(GOLD.fill, 0.22) : colors.primaryTint }]}
             onPress={() => {
               const event = navigation.emit({
                 type:              'tabPress',
@@ -106,7 +112,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {focused && <TabGhost />}
             <View>
-              {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} /> : <Ionicons name={tab.icon} size={24} color={color} />}
+              {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} />
+                : <Ionicons name={gold ? 'trophy' : tab.icon} size={24} color={color} />}
               <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
             </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>
@@ -193,6 +200,7 @@ export default function TabsLayout() {
       {/* ── 4 tabs: TODAY · MAP · CHAT · PASSPORT ───────────────────────── */}
       <Tabs.Screen name="today"    options={{ title: 'Today' }} />
       <Tabs.Screen name="map"      options={{ title: 'Map' }} />
+      <Tabs.Screen name="ranks"    options={{ title: 'Ranks' }} />
       <Tabs.Screen name="chat"     options={{ title: 'Chat' }} />
       <Tabs.Screen name="passport" options={{ title: 'Passport' }} />
       {/* Off the bar, still routes so every push and link keeps working:
