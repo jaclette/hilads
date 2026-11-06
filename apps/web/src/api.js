@@ -2072,6 +2072,37 @@ export async function updateNotificationPreferences(prefs) {
   return res.json() // { preferences }
 }
 
+// ── V6 inbox: grouped items, categories, counts (same API as the app) ───────
+
+const postJson = (path, body) => fetch(`${BASE}${path}`, {
+  method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body),
+}).catch(() => {})
+
+/** {items: [{id, ids, category, type, title, body, data, actors[≤3], count, object, deep_link, created_at, read, seen}], nextCursor}. */
+export async function fetchInbox({ categories = [], cursor = null, limit = 30, unseen = false } = {}) {
+  const q = new URLSearchParams()
+  if (categories.length) q.set('categories', categories.join(','))
+  if (cursor) q.set('cursor', cursor)
+  q.set('limit', String(limit))
+  if (unseen) q.set('unseen', '1')
+  const res = await fetch(`${BASE}/notifications/inbox?${q}`, { credentials: 'include' })
+  if (!res.ok) throw Object.assign(new Error('inbox'), { status: res.status })
+  return res.json()
+}
+
+/** {total, unread{social,game,plans,city,hilads}, unseen{…}, badges{chat,passport,ranks}}. */
+export async function fetchNotifCounts() {
+  const res = await fetch(`${BASE}/notifications/counts`, { credentials: 'include' })
+  if (!res.ok) throw Object.assign(new Error('counts'), { status: res.status })
+  return res.json()
+}
+
+export const markNotificationsSeen = (body) => postJson('/notifications/seen', body)
+export const markNotificationsUnread = (ids) => postJson('/notifications/mark-unread', { ids })
+export const deleteNotifications = (ids) => postJson('/notifications/delete', { ids })
+export const markNotificationTypesRead = (types) => postJson('/notifications/mark-read', { types })
+export const markNotificationCategoriesRead = (categories) => postJson('/notifications/mark-read', { categories })
+
 // ── Push subscriptions ────────────────────────────────────────────────────────
 // Note: push.js handles the full registration flow (SW + browser permission).
 // These helpers are thin HTTP wrappers used internally by push.js.

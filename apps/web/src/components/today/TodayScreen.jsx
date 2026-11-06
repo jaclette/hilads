@@ -9,6 +9,7 @@ import { openAppModal } from '../AppModal'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { IndexCarousel } from '../daily/Comparisons'
+import WhileAwayCard from '../notifications/WhileAwayCard'
 import TodayCountries, { YesterdayRecap, todayCities, useTodayCountries } from './TodayCountries'
 import {
   challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
@@ -38,7 +39,7 @@ export default function TodayScreen({ header }) {
   const { i18n } = useDc()
   // A seasonal event's live look (Halloween...) re-colors the whole tab.
   const seasonalAttr = useSeasonalAttr()
-  const { cityId, here, hereVersion } = useDaily()
+  const { cityId, here, hereVersion, account, openNotifications } = useDaily()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const hereKey = here ? `${here.cityId}:${here.gps}` : ''
@@ -72,6 +73,8 @@ export default function TodayScreen({ header }) {
       {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
       <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
+        {/* V6: unseen comments, likes and results since the last visit. */}
+        <WhileAwayCard account={account} onOpen={openNotifications} />
         <Ticket data={data} countries={countries} loading={loading} />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />

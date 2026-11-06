@@ -98,6 +98,10 @@ import ShareActionSheet from './components/ShareActionSheet'
 import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
 import { registerPush, unregisterPush } from './push'
+import BellButton from './components/notifications/BellButton'
+import NotificationSettings from './components/notifications/NotificationSettings'
+import { bumpNotifCounts, patchNotifCounts, refreshNotifCounts, useNotifCounts, useNotifCountsSync } from './lib/notifCounts'
+import { markNotificationTypesRead } from './api'
 import { themeName } from './components/map/spotsShared'
 import { useBackLayer, useBackStack } from './lib/backLayers'
 import { placeholderStyle } from './lib/thumbhash'
@@ -1266,6 +1270,10 @@ export default function App() {
     }
   }, [account?.theme, account?.id])
   const [showNotifications, setShowNotifications] = useState(false)
+  // V6: the notification preferences, their own page (from the ⚙️ of Notifications).
+  const [showNotifSettings, setShowNotifSettings] = useState(false)
+  // V6: what the Ranks tab opens on (a deep link, a notification, Passport).
+  const [ranksParams, setRanksParams] = useState({ tab: 'photos', period: 'today', scope: 'world', at: 0 })
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
   const [liveNotif, setLiveNotif] = useState(null)  // the last notification pushed live (WS newNotification)
@@ -1791,6 +1799,22 @@ export default function App() {
     }, 2000)
     return () => { cancelled = true; clearTimeout(t) }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // V6: unread counts per category (the bell, "While you were away", the tab badges).
+  useNotifCountsSync(!!account)
+  const notifCounts = useNotifCounts()
+
+  // V6: opening a tab clears its badge (the notifications behind it are read).
+  const chatTabActive = !showToday && !showMap && !showProfileDrawer && !showEventDrawer && !showCityPicker
+    && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard
+  const badgeTab = chatTabActive ? 'chat' : showProfileDrawer ? 'passport' : showLeaderboard ? 'ranks' : null
+  useEffect(() => {
+    const types = { chat: ['mention', 'city_here'], passport: ['daily_local_pass'], ranks: ['daily_result', 'daily_rank'] }[badgeTab]
+    if (!types || !notifCounts.badges[badgeTab]) return
+    patchNotifCounts(c => ({ ...c, badges: { ...c.badges, [badgeTab]: 0 } }))
+    markNotificationTypesRead(types).then(refreshNotifCounts)
+  }, [badgeTab, notifCounts.badges]) // eslint-disable-line react-hooks/exhaustive-deps
+
 
   // Register push when account becomes available (login/register or page reload with session).
   // Also handles silent re-registration when permission was already granted.
@@ -3308,6 +3332,7 @@ export default function App() {
         if (!notif?.id || notif.type === 'dm_message') return
         setNotifUnreadCount(c => c + 1)
         setLiveNotif(notif)
+        bumpNotifCounts()   // V6: the counts per category (bell, cards, tab badges)
       })
 
       // Reaction updates - PHP sends "city_N" for city channels, plain eventId for events.
@@ -3996,6 +4021,12 @@ export default function App() {
     setShowProfileDrawer(true)
   }
 
+  // V6: the Ranks tab, on a segment (photos / players / cities), period and scope.
+  function openRanks({ tab = 'photos', period = 'today', scope = 'world' } = {}) {
+    setRanksParams({ tab, period, scope, at: Date.now() })
+    setShowLeaderboard(true)
+  }
+
   function changeCityFilter(f) {
     setCityFilter(f)
     loadChannels(f)
@@ -4051,12 +4082,7 @@ export default function App() {
           {account && hasAnyUnread && <span className="v3-dot" />}
         </button>
         {account ? (
-          <button type="button" className="v3-round" onClick={() => setShowNotifications(true)} aria-label={t('header.notifications')}>
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            {notifUnreadCount > 0 && <span className="v3-dot" />}
-          </button>
+          <BellButton onClick={() => setShowNotifications(true)} label={t('header.notifications')} />
         ) : (
           <button
             type="button"
@@ -5132,6 +5158,9 @@ export default function App() {
     openSpot: (id) => { goToMapTab(); setMapTheme(null); setMapSpotId(id ?? null) },
     openMapTheme: (theme) => { goToMapTab(); setMapSpotId(null); setMapTheme(theme ?? null) },
     needAccount: (reason, extra = {}) => setGuestGate({ reason, ...extra }),
+    // V6: the notifications (the "While you were away" card) and the Ranks tab.
+    openNotifications: () => setShowNotifications(true),
+    openRanks: (params) => openRanks(params),
   }
 
   return (
@@ -5218,24 +5247,7 @@ export default function App() {
                 <div className="header-desktop-zone header-desktop-zone--right">
                   <div className="header-desktop-right">
                     <div className="header-desktop-actions">
-                      {account && (
-                        <button
-                          className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
-                          onClick={() => setShowNotifications(true)}
-                          title={t('header.notifications')}
-                          aria-label={t('header.notifications')}
-                        >
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                          </svg>
-                          {notifUnreadCount > 0 && (
-                            <span className="header-icon-badge">
-                              {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
-                            </span>
-                          )}
-                        </button>
-                      )}
+                      {account && <BellButton variant="desktop" onClick={() => setShowNotifications(true)} label={t('header.notifications')} />}
                       {city && (
                         <button
                           className="header-icon-btn"
@@ -5921,11 +5933,17 @@ export default function App() {
               { key: 'chat',     active: onChat,                               onClick: goToCityChannel, Icon: NavIconChat },
               { key: 'passport', active: onPassport,                           onClick: goToMeTab,       Icon: NavIconPassport },
             ]
+            // V6 tab badges: Hi = unread chat mentions (a count), Passport = a new Local Pass, Ranks = results out (dots).
+            const badge = { chat: notifCounts.badges.chat, passport: notifCounts.badges.passport, ranks: notifCounts.badges.ranks }
             return tabs.map(({ key, active, onClick, Icon }) => (
               <button key={key} type="button" className={`bottom-nav-tab${active ? ' active' : ''}`} onClick={onClick}
                       aria-current={active ? 'page' : undefined}>
                 {active && <TabGhost />}
-                <span className="bottom-nav-icon">{key === 'today' && seasonalLive?.key === 'halloween' ? <SeasonalDayIcon themeKey="halloween" size={26} /> : <Icon />}</span>
+                <span className="bottom-nav-icon">{key === 'today' && seasonalLive?.key === 'halloween' ? <SeasonalDayIcon themeKey="halloween" size={26} /> : <Icon />}
+                  {!active && badge[key] > 0 && (key === 'chat'
+                    ? <span className="n6-tab-badge">{badge[key] > 9 ? '9+' : badge[key]}</span>
+                    : <span className="n6-tab-dot" />)}
+                </span>
                 <span className="bottom-nav-label">{t(`tabs.${key}`, { ns: 'common' })}</span>
               </button>
             ))
@@ -7046,14 +7064,20 @@ export default function App() {
       {/* Notifications - full-screen page */}
       {showNotifications && (
         <NotificationsScreen
-          account={account}
           onBack={() => setShowNotifications(false)}
-          onUnreadChange={setNotifUnreadCount}
+          onOpenSettings={() => setShowNotifSettings(true)}
           incoming={liveNotif}
           onNavigate={(notif) => {
             setShowNotifications(false)
             const d = notif.data ?? {}
-            if (notif.type === 'dm_message') {
+            if (notif.type === 'daily_result') {
+              // V6: yesterday's results → the ranking of that day's photos.
+              openRanks({ tab: 'photos', period: 'yesterday' })
+            } else if (notif.type === 'daily_rank') {
+              openRanks({ tab: 'players', period: 'week', scope: d.scope === 'world' ? 'world' : 'city' })
+            } else if (notif.type === 'daily_local_pass') {
+              goToMeTab()
+            } else if (notif.type === 'dm_message') {
               setShowConversations(true)
             } else if (notif.type === 'event_message' || notif.type === 'event_join') {
               const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
@@ -7103,6 +7127,9 @@ export default function App() {
           }}
         />
       )}
+
+      {/* V6: notification preferences, their own page. */}
+      {showNotifSettings && <NotificationSettings onBack={() => setShowNotifSettings(false)} />}
 
       {/* Edit event - full-screen page (reuses CreateEventPage in edit mode) */}
       {showEditEvent && activeEvent && (

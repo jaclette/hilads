@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import {
-  fetchNotifications,
-  markNotificationsRead,
-  fetchNotificationPreferences,
-  updateNotificationPreferences,
+  deleteNotifications, fetchInbox, markNotificationCategoriesRead, markNotificationsRead, markNotificationsSeen, markNotificationsUnread,
 } from '../api'
+import { registerPush } from '../push'
 import BackButton from './BackButton'
 import Icon from './Icon'
+import AvatarWithFlag from './AvatarWithFlag'
 import { thumbUrl } from '../lib/imageThumb'
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
+import { CATEGORIES, patchNotifCounts, refreshNotifCounts, useNotifCounts } from '../lib/notifCounts'
+import { rowText, sectionOf } from './notifications/inboxText'
+import { CATEGORY_EMOJI, categoryColor } from './notifications/categories'
 
 function timeAgo(isoString) {
   const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000)
@@ -21,145 +21,142 @@ function timeAgo(isoString) {
   return i18n.t('time.dAgo', { ns: 'common', count: Math.floor(diff / 86400) })
 }
 
-// Stroke icon per type (same as mobile NotifRow).
-const TYPE_ICONS = {
-  dm_message:              'chatbubble-outline',
-  event_message:           'chatbox-outline',
-  event_join:              'people-outline',
-  new_event:               'flash-outline',
-  mention:                 'at-outline',
-  channel_message:         'chatbubbles-outline',
-  city_join:               'person-add-outline',
-  friend_request_received: 'person-add-outline',
-  friend_request_accepted: 'people-outline',
-  friend_added:            'person-add-outline',  // legacy
-  vibe_received:           'star-outline',
-  profile_view:            'eye-outline',
-  challenge_invitation:    'flame-outline',
-  challenge_takeon_request:'flame-outline',
-  daily_vote:              'heart-outline',
-  daily_twist_completed:   'leaf-outline',
-  daily_twist_picked:      'leaf-outline',
-  photo_comment:           'chatbubble-ellipses-outline',
-  photo_mention:           'at-outline',
-}
+const SECTIONS = ['new', 'today', 'yesterday', 'week', 'earlier']
+const EMPTY_EMOJI = { all: '📸', social: '💬', game: '🏆', plans: '📅', city: '👋', hilads: '✨' }
+const GAME_ICON = { daily_result: '🏆', daily_local_pass: '🎟️', daily_rank: '📈', daily_twist_completed: '🌀', daily_twist_picked: '🌀' }
+const PUSH_DISMISSED = 'hilads_push_off_banner_dismissed'
+const tint = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})` }
 
-// ── Toggle component ──────────────────────────────────────────────────────────
-
-function Toggle({ checked, onChange, disabled }) {
-  return (
-    <button
-      role="switch"
-      aria-checked={checked}
-      className={`notif-toggle${checked ? ' on' : ''}`}
-      onClick={() => !disabled && onChange(!checked)}
-      disabled={disabled}
-    />
-  )
-}
-
-// ── Main component ────────────────────────────────────────────────────────────
-
-const PREVIEW_LIMIT = 5
-
-export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange, account, incoming }) {
+/**
+ * Notifications (V6, as in the app): filter chips per category with unread
+ * counts, sections (New, Today, Yesterday, This week, Earlier), grouped rows
+ * ("Lan and 3 others liked your photo") that open their target, read / unread
+ * and delete (buttons on the row, or a swipe on touch screens), endless scroll,
+ * a skeleton, a playful empty state per filter, "Mark all read" with a sweep,
+ * ⚙️ to the preferences (their own page) and a banner when push is off.
+ * `onNavigate(item)` opens an item's target; the list refreshes when new ones arrive.
+ */
+export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings, incoming }) {
   const { t } = useTranslation('notifications')
-  const [notifications, setNotifications] = useState([])
-  const [loading, setLoading]             = useState(true)
-  const [loadingAll, setLoadingAll]       = useState(false)
-  const [showAll, setShowAll]             = useState(false)
-  const [unreadCount, setUnreadCount]     = useState(0)
-  const [prefs, setPrefs]                 = useState(null)
-  const [prefsSaving, setPrefsSaving]     = useState(false)
+  const counts = useNotifCounts()
+  const [filter, setFilter] = useState('all')
+  const [items, setItems] = useState(null)
+  const [cursor, setCursor] = useState(null)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [sweep, setSweep] = useState(0)
+  const current = useRef(filter)
+  current.current = filter
+  const fresh = useRef(new Set())
+  const sentinel = useRef(null)
 
-  // A notification pushed live over the WebSocket while this screen is open (prompt 12).
-  useEffect(() => {
-    if (!incoming?.id) return
-    setNotifications(prev => prev.some(n => n.id === incoming.id) ? prev : [incoming, ...prev])
-    setUnreadCount(c => c + 1)
-  }, [incoming])
-
-  useEffect(() => {
-    if (!account) return  // preferences require a registered account
-
-    let cancelled = false
-    setLoading(true)
-    fetchNotifications({ limit: PREVIEW_LIMIT })
-      .then(data => {
-        if (cancelled) return
-        setNotifications(data.notifications)
-        setUnreadCount(data.unread_count)
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setLoading(false) })
-
-    fetchNotificationPreferences()
-      .then(data => { if (!cancelled) setPrefs(data.preferences) })
-      .catch((err) => { console.error('[notifications] preferences fetch failed:', err) })
-
-    return () => { cancelled = true }
-  }, [account])
-
-  function handleSeeAll() {
-    if (showAll) return
-    setLoadingAll(true)
-    fetchNotifications({ limit: 100 })
-      .then(data => {
-        setNotifications(data.notifications)
-        setShowAll(true)
-      })
-      .catch(() => {})
-      .finally(() => setLoadingAll(false))
-  }
-
-  function handleMarkAllRead() {
-    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
-    setUnreadCount(0)
-    onUnreadChange(0)
-    markNotificationsRead(true)
-  }
-
-  function handleClickNotif(notif) {
-    if (!notif.is_read) {
-      setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n))
-      setUnreadCount(prev => Math.max(0, prev - 1))
-      onUnreadChange(Math.max(0, unreadCount - 1))
-      markNotificationsRead([notif.id])
-    }
-    onNavigate(notif)
-  }
-
-  async function handleTogglePref(key, value) {
-    const next = { ...prefs, [key]: value }
-    setPrefs(next)
-    setPrefsSaving(true)
+  const load = useCallback(async (mode) => {
+    if (mode === 'more' && (!cursor || loadingMore)) return
+    if (mode === 'more') setLoadingMore(true)
+    const asked = filter
     try {
-      const data = await updateNotificationPreferences(next)
-      setPrefs(data.preferences)
+      const page = await fetchInbox({ categories: filter === 'all' ? [] : [filter], cursor: mode === 'more' ? cursor : null })
+      if (current.current !== asked) return
+      setItems(prev => {
+        if (mode === 'refresh' && prev) page.items.forEach(i => { if (!prev.some(p => p.id === i.id)) fresh.current.add(i.id) })
+        return mode === 'more' && prev ? [...prev, ...page.items.filter(i => !prev.some(p => p.id === i.id))] : page.items
+      })
+      setCursor(page.nextCursor)
     } catch {
-      setPrefs(prefs) // revert on error
+      if (current.current === asked) setItems(prev => prev ?? [])
     } finally {
-      setPrefsSaving(false)
+      setLoadingMore(false)
     }
+  }, [filter, cursor, loadingMore])
+
+  useEffect(() => { setItems(null); setCursor(null); load('first') }, [filter]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Once the first page is drawn (its "New" section), everything is seen.
+  const markedSeen = useRef(false)
+  useEffect(() => {
+    if (items === null || markedSeen.current) return
+    markedSeen.current = true
+    markNotificationsSeen({ categories: CATEGORIES })
+    patchNotifCounts(c => ({ ...c, unseen: { social: 0, game: 0, plans: 0, city: 0, hilads: 0 } }))
+  }, [items])
+
+  // New ones (a live notification, or the counts going up): they slide in at the top.
+  const lastTotal = useRef(counts.total)
+  useEffect(() => {
+    if (counts.total > lastTotal.current && items) load('refresh')
+    lastTotal.current = counts.total
+  }, [counts.total]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (incoming?.id && items) load('refresh') }, [incoming]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Endless scroll.
+  useEffect(() => {
+    const el = sentinel.current
+    if (!el || !cursor) return undefined
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) load('more') }, { rootMargin: '300px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [cursor, load])
+
+  const readLocally = (ids, read) => setItems(prev => prev?.map(i => (i.ids.some(id => ids.includes(id)) ? { ...i, read } : i)) ?? prev)
+  const open = (item) => {
+    if (!item.read) { readLocally(item.ids, true); markNotificationsRead(item.ids).then(refreshNotifCounts) }
+    onNavigate(item)
   }
+  const toggleRead = (item) => {
+    readLocally(item.ids, !item.read)
+    ;(item.read ? markNotificationsUnread(item.ids) : markNotificationsRead(item.ids)).then(refreshNotifCounts)
+  }
+  const remove = (item) => {
+    setItems(prev => prev?.filter(i => i.id !== item.id) ?? prev)
+    deleteNotifications(item.ids).then(refreshNotifCounts)
+  }
+  const markAll = () => {
+    setSweep(s => s + 1)
+    setItems(prev => prev?.map(i => ({ ...i, read: true })) ?? prev)
+    patchNotifCounts(c => ({ ...c, total: filter === 'all' ? 0 : Math.max(0, c.total - (c.unread[filter] ?? 0)),
+      unread: filter === 'all' ? { social: 0, game: 0, plans: 0, city: 0, hilads: 0 } : { ...c.unread, [filter]: 0 } }))
+    ;(filter === 'all' ? markNotificationsRead(true) : markNotificationCategoriesRead([filter])).then(refreshNotifCounts)
+  }
+
+  const sections = useMemo(() => {
+    const by = new Map()
+    for (const i of items ?? []) { const k = sectionOf(i); by.set(k, [...(by.get(k) ?? []), i]) }
+    return SECTIONS.filter(k => by.has(k)).map(k => ({ key: k, items: by.get(k) }))
+  }, [items])
+  const anyUnread = filter === 'all' ? counts.total > 0 : (counts.unread[filter] ?? 0) > 0
 
   return (
-    <div className="full-page notif-page">
+    <div className="full-page notif-page n6-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
         <span className="page-title">{t('title')}</span>
-        {unreadCount > 0 && (
-          <button className="notif-mark-all" onClick={handleMarkAllRead}>
-            {t('markAllRead')}
-          </button>
-        )}
+        {anyUnread && <button type="button" className="notif-mark-all" onClick={markAll}>{t('markAllRead')}</button>}
+        <button type="button" className="n6-gear" onClick={onOpenSettings} aria-label={t('inbox.settings')} title={t('inbox.settings')}>
+          <Icon name="settings-outline" size={20} />
+        </button>
       </div>
 
-      <div className="page-body notif-body">
-        {/* ── Notification list ── */}
-        {loading ? (
+      <div className="n6-chips" role="tablist">
+        {['all', ...CATEGORIES].map(f => {
+          const on = filter === f
+          const c = f === 'all' ? null : categoryColor(f)
+          const n = f === 'all' ? counts.total : counts.unread[f] ?? 0
+          return (
+            <button key={f} type="button" role="tab" aria-selected={on} className={`n6-chip${on ? ' n6-chip--on' : ''}`}
+                    style={on && c ? { background: c.fill, borderColor: c.fill, color: c.onFill } : undefined} onClick={() => setFilter(f)}>
+              {f === 'all' ? t('inbox.all') : `${CATEGORY_EMOJI[f]} ${t(`inbox.cat.${f}`)}`}
+              {n > 0 && <span className="n6-chip-count">{n > 99 ? '99+' : n}</span>}
+            </button>
+          )
+        })}
+      </div>
+
+      <PushOffBanner />
+
+      <div className="page-body notif-body n6-body">
+        {sweep > 0 && <span key={sweep} className="n6-sweep" aria-hidden="true" />}
+        {items === null ? (
           <div className="notif-loading">
-            {[...Array(4)].map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <div key={i} className="notif-skeleton">
                 <div className="skel skel-icon" />
                 <div className="notif-skeleton-text">
@@ -169,174 +166,100 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
               </div>
             ))}
           </div>
-        ) : notifications.length === 0 ? (
-          <div className="notif-empty">
-            <p className="notif-empty-icon" style={{ color: 'var(--muted2)' }}><Icon name="notifications-outline" size={32} /></p>
-            <p className="notif-empty-title">{t('empty.title')}</p>
-            <p className="notif-empty-sub">{t('empty.sub')}</p>
+        ) : items.length === 0 ? (
+          <div className="n6-empty">
+            <span className="n6-empty-bubble" style={{ background: filter === 'all' ? 'var(--primary-tint)' : tint(categoryColor(filter).fill, 0.25) }}>{EMPTY_EMOJI[filter]}</span>
+            <p className="n6-empty-text">{t(`inbox.empty.${filter}`)}</p>
           </div>
         ) : (
-          <div className="notif-list">
-            {notifications.map(n => (
-              <button
-                key={n.id}
-                className={`notif-row${n.is_read ? ' read' : ''}`}
-                onClick={() => handleClickNotif(n)}
-              >
-                {/* A comment: who wrote it (the icon on it), the photo's thumbnail at the end. */}
-                {n.data?.actorPhoto
-                  ? <span className="notif-actor"><img src={n.data.actorPhoto} alt="" /><Icon name={TYPE_ICONS[n.type]} size={12} /></span>
-                  : <span className="notif-icon" style={{ color: n.is_read ? 'var(--muted2)' : 'var(--primary-text)' }}><Icon name={TYPE_ICONS[n.type] ?? 'notifications-outline'} size={20} /></span>}
-                <div className="notif-content">
-                  <span className="notif-title">{n.title}</span>
-                  {n.body && <span className="notif-body-text">{n.body}</span>}
-                  <span className="notif-time">{timeAgo(n.created_at)}</span>
-                </div>
-                {n.data?.photoThumb && <img loading="lazy" className="notif-thumb" src={thumbUrl(n.data.photoThumb)} alt="" />}
-                {!n.is_read && <span className="notif-unread-dot" />}
-              </button>
-            ))}
-          </div>
+          sections.map(s => (
+            <section key={s.key}>
+              <h3 className="n6-section">{t(`inbox.sec.${s.key}`)}</h3>
+              {s.items.map(item => (
+                <Row key={item.id} item={item} fresh={fresh.current.has(item.id)} onOpen={open} onToggleRead={toggleRead} onDelete={remove} />
+              ))}
+            </section>
+          ))
         )}
-
-        {/* ── See all CTA ── */}
-        {!loading && !showAll && (
-          <button
-            className="notif-see-all"
-            onClick={handleSeeAll}
-            disabled={loadingAll}
-          >
-            {loadingAll ? t('loading') : t('seeAll')}
-          </button>
-        )}
-
-        {/* ── Preferences ──
-            DM, event-chat, and city-chat toggles live on the Conversations
-            screen now - they govern the envelope icon's behaviour, not the bell. */}
-        <div className="notif-prefs">
-          <div className="notif-prefs-title">{t('prefs.title')}</div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.mentionName')}</span>
-              <span className="notif-pref-desc">{t('prefs.mentionDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.mention_push ?? true}
-              onChange={v => handleTogglePref('mention_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.commentName')}</span>
-              <span className="notif-pref-desc">{t('prefs.commentDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.comment_push ?? true}
-              onChange={v => handleTogglePref('comment_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.newEventName')}</span>
-              <span className="notif-pref-desc">{t('prefs.newEventDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.new_event_push ?? false}
-              onChange={v => handleTogglePref('new_event_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.newChallengeName')}</span>
-              <span className="notif-pref-desc">{t('prefs.newChallengeDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.new_challenge_push ?? true}
-              onChange={v => handleTogglePref('new_challenge_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.cityJoinName')}</span>
-              <span className="notif-pref-desc">{t('prefs.cityJoinDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.city_join_push ?? false}
-              onChange={v => handleTogglePref('city_join_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.worldArrivalName')}</span>
-              <span className="notif-pref-desc">{t('prefs.worldArrivalDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.world_arrival_push ?? false}
-              onChange={v => handleTogglePref('world_arrival_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.friendName')}</span>
-              <span className="notif-pref-desc">{t('prefs.friendDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.friend_request_push ?? true}
-              onChange={v => handleTogglePref('friend_request_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.notesName')}</span>
-              <span className="notif-pref-desc">{t('prefs.notesDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.vibe_received_push ?? true}
-              onChange={v => handleTogglePref('vibe_received_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.profileViewName')}</span>
-              <span className="notif-pref-desc">{t('prefs.profileViewDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.profile_view_push ?? true}
-              onChange={v => handleTogglePref('profile_view_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">{t('prefs.announcementName')}</span>
-              <span className="notif-pref-desc">{t('prefs.announcementDesc')}</span>
-            </div>
-            <Toggle
-              checked={prefs?.admin_announcement_push ?? true}
-              onChange={v => handleTogglePref('admin_announcement_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-        </div>
+        {cursor && <div ref={sentinel} className="n6-sentinel">{loadingMore ? t('loading') : ''}</div>}
       </div>
+    </div>
+  )
+}
+
+function Row({ item, fresh, onOpen, onToggleRead, onDelete }) {
+  const { t } = useTranslation('notifications')
+  const [dx, setDx] = useState(0)
+  const start = useRef(null)
+  const moved = useRef(false)
+  const text = rowText(item, t)
+  const c = categoryColor(item.category)
+  const icon = GAME_ICON[item.type]
+  const thumb = item.object?.kind === 'photo' ? item.object.thumbUrl : null
+  const end = () => {
+    if (dx > 80) onToggleRead(item)
+    else if (dx < -80) onDelete(item)
+    setDx(0)
+    start.current = null
+  }
+  return (
+    <div className={`n6-row-wrap${fresh ? ' n6-row-wrap--fresh' : ''}`}>
+      <div className="n6-swipe n6-swipe--read" style={{ background: 'var(--primary)' }}>{item.read ? t('inbox.unread') : t('inbox.read')}</div>
+      <div className="n6-swipe n6-swipe--delete">{t('inbox.delete')}</div>
+      <div className={`n6-row${item.read ? '' : ' n6-row--unread'}`}
+           style={{ transform: `translateX(${dx}px)`, background: item.read ? undefined : tint(c.fill, 0.12) }}
+           onPointerDown={e => { if (e.pointerType !== 'mouse') { start.current = e.clientX; moved.current = false } }}
+           onPointerMove={e => { if (start.current !== null) { const d = e.clientX - start.current; if (Math.abs(d) > 8) moved.current = true; setDx(Math.max(-120, Math.min(120, d))) } }}
+           onPointerUp={end} onPointerCancel={() => { setDx(0); start.current = null }}>
+        <button type="button" className="n6-row-main" onClick={() => { if (!moved.current) onOpen(item) }}
+                aria-label={[text.parts.map(p => p.text).join(''), text.quote, timeAgo(item.created_at)].filter(Boolean).join('. ')}>
+          <span className="n6-lead">
+            {icon ? <span className="n6-game" style={{ background: tint(c.fill, 0.25) }}>{icon}</span>
+              : item.actors.length > 1 ? (
+                <span className="n6-stack">
+                  <span className="n6-stack-back"><AvatarWithFlag userId={item.actors[1].id} displayName={item.actors[1].name} photoUrl={item.actors[1].photoUrl} size={32} /></span>
+                  <span className="n6-stack-front"><AvatarWithFlag userId={item.actors[0].id} displayName={item.actors[0].name} photoUrl={item.actors[0].photoUrl} size={32} /></span>
+                </span>
+              ) : <AvatarWithFlag userId={item.actors[0]?.id} displayName={item.actors[0]?.name ?? '✨'} photoUrl={item.actors[0]?.photoUrl} size={46} />}
+            {!icon && <span className="n6-cat" style={{ background: c.fill }}>{CATEGORY_EMOJI[item.category]}</span>}
+          </span>
+          <span className="n6-text">
+            <span className="n6-sentence">{text.parts.map((p, i) => (p.bold ? <strong key={i}>{p.text}</strong> : <span key={i}>{p.text}</span>))}</span>
+            {text.quote && <span className="n6-quote">“{text.quote}”</span>}
+            <span className="n6-time">{timeAgo(item.created_at)}</span>
+          </span>
+          {thumb && <img loading="lazy" className="notif-thumb" src={thumbUrl(thumb)} alt="" />}
+          {!item.read && <span className="n6-dot" style={{ background: c.fill }} />}
+        </button>
+        <span className="n6-actions">
+          <button type="button" onClick={() => onToggleRead(item)} aria-label={item.read ? t('inbox.unread') : t('inbox.read')} title={item.read ? t('inbox.unread') : t('inbox.read')}>
+            <Icon name={item.read ? 'ellipse' : 'checkmark-circle-outline'} size={16} />
+          </button>
+          <button type="button" onClick={() => onDelete(item)} aria-label={t('inbox.delete')} title={t('inbox.delete')}><Icon name="trash-outline" size={16} /></button>
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/** "Push is off, you might miss your results 🏆 · Turn on" (V6), until on or dismissed. */
+export function PushOffBanner() {
+  const { t } = useTranslation('notifications')
+  const supported = typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator
+  const [perm, setPerm] = useState(supported ? Notification.permission : 'unsupported')
+  const [dismissed, setDismissed] = useState(() => { try { return localStorage.getItem(PUSH_DISMISSED) === '1' } catch { return false } })
+  if (!supported || perm === 'granted' || dismissed) return null
+  return (
+    <div className="n6-push">
+      <span className="n6-push-text">{t('inbox.pushOff.text')}</span>
+      <span className="n6-push-actions">
+        <button type="button" className="n6-push-later" onClick={() => { setDismissed(true); try { localStorage.setItem(PUSH_DISMISSED, '1') } catch { /* private mode */ } }}>
+          {t('inbox.pushOff.dismiss')}
+        </button>
+        {perm !== 'denied' && (
+          <button type="button" className="n6-push-on" onClick={() => registerPush().finally(() => setPerm(Notification.permission))}>{t('inbox.pushOff.on')}</button>
+        )}
+      </span>
     </div>
   )
 }
