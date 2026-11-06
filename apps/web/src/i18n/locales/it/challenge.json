@@ -1130,7 +1130,24 @@
       "planA11y": "Piano: {{title}}, {{time}}",
       "proofs_one": "{{count}} foto",
       "proofs_many": "{{count}} di foto",
-      "proofs_other": "{{count}} foto"
+      "proofs_other": "{{count}} foto",
+      "sheet": {
+        "byNear": "prima i più vicini",
+        "byLiked": "prima i più amati",
+        "byNew": "prima i più nuovi",
+        "sortLiked": "Più amati",
+        "sortNew": "Più nuovi",
+        "hint": "Scorri su per la lista",
+        "emptyArea": "Ancora niente qui",
+        "pioneer": "Sii il pioniere: gioca qui oggi 📍",
+        "count_one": "{{count}} posto a {{city}}",
+        "count_other": "{{count}} posti a {{city}}",
+        "count_many": "{{count}} posti a {{city}}",
+        "countHere_one": "{{count}} posto qui",
+        "countHere_other": "{{count}} posti qui",
+        "countHere_many": "{{count}} posti qui"
+      },
+      "surprise": "Sorprendimi"
     },
     "leaderboard": {
       "tab": "Top 10",

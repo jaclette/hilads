@@ -1116,7 +1116,22 @@
       "emptyTitle": "Setz den ersten Spot hier",
       "planA11y": "Plan: {{title}}, {{time}}",
       "proofs_one": "{{count}} Foto",
-      "proofs_other": "{{count}} Fotos"
+      "proofs_other": "{{count}} Fotos",
+      "sheet": {
+        "byNear": "die nächsten zuerst",
+        "byLiked": "die beliebtesten zuerst",
+        "byNew": "die neuesten zuerst",
+        "sortLiked": "Beliebteste",
+        "sortNew": "Neueste",
+        "hint": "Nach oben wischen für die Liste",
+        "emptyArea": "Hier ist noch nichts",
+        "pioneer": "Sei Pionier: Spiel heute hier 📍",
+        "count_one": "{{count}} Spot in {{city}}",
+        "count_other": "{{count}} Spots in {{city}}",
+        "countHere_one": "{{count}} Spot hier",
+        "countHere_other": "{{count}} Spots hier"
+      },
+      "surprise": "Überrasch mich"
     },
     "leaderboard": {
       "tab": "Top 10",

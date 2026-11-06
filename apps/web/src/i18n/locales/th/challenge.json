@@ -1102,7 +1102,20 @@
       "closeSpot": "ปิด",
       "emptyTitle": "มาเป็นคนแรกที่ปักสปอตตรงนี้",
       "planA11y": "แพลน: {{title}}, {{time}}",
-      "proofs_other": "{{count}} รูป"
+      "proofs_other": "{{count}} รูป",
+      "sheet": {
+        "byNear": "ใกล้สุดก่อน",
+        "byLiked": "ไลก์เยอะสุดก่อน",
+        "byNew": "ใหม่สุดก่อน",
+        "sortLiked": "ไลก์เยอะสุด",
+        "sortNew": "ใหม่สุด",
+        "hint": "ปัดขึ้นเพื่อดูรายการ",
+        "emptyArea": "ยังไม่มีอะไรตรงนี้",
+        "pioneer": "เป็นผู้บุกเบิก: เล่นที่นี่วันนี้เลย 📍",
+        "count_other": "{{count}} ที่ใน{{city}}",
+        "countHere_other": "{{count}} ที่แถวนี้"
+      },
+      "surprise": "เซอร์ไพรส์ฉัน"
     },
     "leaderboard": {
       "tab": "Top 10",

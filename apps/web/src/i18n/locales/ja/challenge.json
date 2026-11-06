@@ -1102,7 +1102,20 @@
       "closeSpot": "閉じる",
       "emptyTitle": "ここに最初のスポットを置こう",
       "planA11y": "予定：{{title}}、{{time}}",
-      "proofs_other": "写真{{count}}枚"
+      "proofs_other": "写真{{count}}枚",
+      "sheet": {
+        "byNear": "近い順",
+        "byLiked": "いいね順",
+        "byNew": "新しい順",
+        "sortLiked": "いいね順",
+        "sortNew": "新しい順",
+        "hint": "上にスワイプでリスト",
+        "emptyArea": "ここにはまだ何もないよ",
+        "pioneer": "パイオニアになろう：今日ここで参加 📍",
+        "count_other": "{{city}}のスポット{{count}}件",
+        "countHere_other": "このあたりのスポット{{count}}件"
+      },
+      "surprise": "おまかせ"
     },
     "leaderboard": {
       "tab": "Top 10",

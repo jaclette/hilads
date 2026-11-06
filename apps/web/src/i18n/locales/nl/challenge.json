@@ -1116,7 +1116,22 @@
       "emptyTitle": "Pin hier als eerste een plek",
       "planA11y": "Plan: {{title}}, {{time}}",
       "proofs_one": "{{count}} foto",
-      "proofs_other": "{{count}} foto's"
+      "proofs_other": "{{count}} foto's",
+      "sheet": {
+        "byNear": "dichtstbij eerst",
+        "byLiked": "meest geliket eerst",
+        "byNew": "nieuwste eerst",
+        "sortLiked": "Meest geliket",
+        "sortNew": "Nieuwste",
+        "hint": "Veeg omhoog voor de lijst",
+        "emptyArea": "Hier is nog niks",
+        "pioneer": "Wees de pionier: speel hier vandaag 📍",
+        "count_one": "{{count}} plek in {{city}}",
+        "count_other": "{{count}} plekken in {{city}}",
+        "countHere_one": "{{count}} plek hier",
+        "countHere_other": "{{count}} plekken hier"
+      },
+      "surprise": "Verras me"
     },
     "leaderboard": {
       "tab": "Top 10",

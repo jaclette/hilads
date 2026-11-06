@@ -145,6 +145,8 @@ export function formatDistance(m, locale) {
 export function sortSpots(spots, sort, origin, distanceKm) {
   const out = [...spots]
   if (sort === 'week') out.sort((a, b) => b.votesWeek - a.votesWeek || b.votes - a.votes || b.proofCount - a.proofCount)
+  else if (sort === 'liked') out.sort((a, b) => b.votes - a.votes || b.votesWeek - a.votesWeek || b.proofCount - a.proofCount)
+  else if (sort === 'new') out.sort((a, b) => (b.lastProofDate ?? '').localeCompare(a.lastProofDate ?? '') || b.votes - a.votes)
   else if (origin) out.sort((a, b) => distanceKm(origin, [a.lat, a.lng]) - distanceKm(origin, [b.lat, b.lng]))
   return out
 }

@@ -1102,7 +1102,20 @@
       "closeSpot": "關閉",
       "emptyTitle": "來當第一個在這裡放地點的人",
       "planA11y": "計畫：{{title}}，{{time}}",
-      "proofs_other": "{{count}} 張照片"
+      "proofs_other": "{{count}} 張照片",
+      "sheet": {
+        "byNear": "最近的在前",
+        "byLiked": "最多讚的在前",
+        "byNew": "最新的在前",
+        "sortLiked": "最多讚",
+        "sortNew": "最新",
+        "hint": "上滑查看列表",
+        "emptyArea": "這裡還沒有地點",
+        "pioneer": "成為先鋒：今天就在這裡出戰 📍",
+        "count_other": "{{city}} 有 {{count}} 個地點",
+        "countHere_other": "這裡有 {{count}} 個地點"
+      },
+      "surprise": "給我驚喜"
     },
     "leaderboard": {
       "tab": "Top 10",

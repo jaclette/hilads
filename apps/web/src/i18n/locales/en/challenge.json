@@ -1116,7 +1116,22 @@
       "emptyTitle": "Be the first to put a spot here",
       "planA11y": "Plan: {{title}}, {{time}}",
       "proofs_one": "{{count}} photo",
-      "proofs_other": "{{count}} photos"
+      "proofs_other": "{{count}} photos",
+      "sheet": {
+        "byNear": "nearest first",
+        "byLiked": "most liked first",
+        "byNew": "newest first",
+        "sortLiked": "Most liked",
+        "sortNew": "Newest",
+        "hint": "Swipe up for the list",
+        "emptyArea": "Nothing here yet",
+        "pioneer": "Be the pioneer: play here today 📍",
+        "count_one": "{{count}} spot in {{city}}",
+        "count_other": "{{count}} spots in {{city}}",
+        "countHere_one": "{{count}} spot here",
+        "countHere_other": "{{count}} spots here"
+      },
+      "surprise": "Surprise me"
     },
     "leaderboard": {
       "tab": "Top 10",

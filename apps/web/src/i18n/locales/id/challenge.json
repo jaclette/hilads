@@ -1102,7 +1102,20 @@
       "closeSpot": "Tutup",
       "emptyTitle": "Jadilah yang pertama menandai tempat di sini",
       "planA11y": "Rencana: {{title}}, {{time}}",
-      "proofs_other": "{{count}} foto"
+      "proofs_other": "{{count}} foto",
+      "sheet": {
+        "byNear": "terdekat dulu",
+        "byLiked": "paling disukai dulu",
+        "byNew": "terbaru dulu",
+        "sortLiked": "Paling disukai",
+        "sortNew": "Terbaru",
+        "hint": "Geser ke atas untuk daftar",
+        "emptyArea": "Belum ada apa-apa di sini",
+        "pioneer": "Jadi pelopor: main di sini hari ini 📍",
+        "count_other": "{{count}} tempat di {{city}}",
+        "countHere_other": "{{count}} tempat di sini"
+      },
+      "surprise": "Kejutkan aku"
     },
     "leaderboard": {
       "tab": "Top 10",

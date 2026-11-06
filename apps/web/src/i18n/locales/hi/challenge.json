@@ -1116,7 +1116,22 @@
       "emptyTitle": "यहाँ सबसे पहले जगह पिन करें",
       "planA11y": "प्लान: {{title}}, {{time}}",
       "proofs_one": "{{count}} फ़ोटो",
-      "proofs_other": "{{count}} फ़ोटो"
+      "proofs_other": "{{count}} फ़ोटो",
+      "sheet": {
+        "byNear": "सबसे पास पहले",
+        "byLiked": "सबसे ज़्यादा लाइक पहले",
+        "byNew": "सबसे नई पहले",
+        "sortLiked": "सबसे ज़्यादा लाइक",
+        "sortNew": "सबसे नई",
+        "hint": "लिस्ट के लिए ऊपर स्वाइप करें",
+        "emptyArea": "यहां अभी कुछ नहीं",
+        "pioneer": "पायनियर बनें: आज यहां खेलें 📍",
+        "count_one": "{{city}} में {{count}} जगह",
+        "count_other": "{{city}} में {{count}} जगहें",
+        "countHere_one": "यहां {{count}} जगह",
+        "countHere_other": "यहां {{count}} जगहें"
+      },
+      "surprise": "सरप्राइज़ करो"
     },
     "leaderboard": {
       "tab": "Top 10",

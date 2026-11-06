@@ -1102,7 +1102,20 @@
       "closeSpot": "Đóng",
       "emptyTitle": "Ghim địa điểm đầu tiên ở đây nhé",
       "planA11y": "Kèo: {{title}}, {{time}}",
-      "proofs_other": "{{count}} ảnh"
+      "proofs_other": "{{count}} ảnh",
+      "sheet": {
+        "byNear": "gần nhất trước",
+        "byLiked": "nhiều tim nhất trước",
+        "byNew": "mới nhất trước",
+        "sortLiked": "Nhiều tim nhất",
+        "sortNew": "Mới nhất",
+        "hint": "Vuốt lên để xem danh sách",
+        "emptyArea": "Chỗ này chưa có gì",
+        "pioneer": "Làm người tiên phong: chơi ở đây hôm nay nha 📍",
+        "count_other": "{{count}} địa điểm ở {{city}}",
+        "countHere_other": "{{count}} địa điểm ở đây"
+      },
+      "surprise": "Bất ngờ đi"
     },
     "leaderboard": {
       "tab": "Top 10",

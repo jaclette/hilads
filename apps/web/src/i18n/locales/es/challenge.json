@@ -1130,7 +1130,24 @@
       "planA11y": "Plan: {{title}}, {{time}}",
       "proofs_one": "{{count}} foto",
       "proofs_many": "{{count}} fotos",
-      "proofs_other": "{{count}} fotos"
+      "proofs_other": "{{count}} fotos",
+      "sheet": {
+        "byNear": "los más cercanos primero",
+        "byLiked": "los más gustados primero",
+        "byNew": "los más nuevos primero",
+        "sortLiked": "Más gustados",
+        "sortNew": "Más nuevos",
+        "hint": "Desliza hacia arriba para ver la lista",
+        "emptyArea": "Aún no hay nada aquí",
+        "pioneer": "Sé el pionero: juega aquí hoy 📍",
+        "count_one": "{{count}} sitio en {{city}}",
+        "count_other": "{{count}} sitios en {{city}}",
+        "count_many": "{{count}} sitios en {{city}}",
+        "countHere_one": "{{count}} sitio aquí",
+        "countHere_other": "{{count}} sitios aquí",
+        "countHere_many": "{{count}} sitios aquí"
+      },
+      "surprise": "Sorpréndeme"
     },
     "leaderboard": {
       "tab": "Top 10",

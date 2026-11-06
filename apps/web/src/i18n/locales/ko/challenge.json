@@ -1102,7 +1102,20 @@
       "closeSpot": "닫기",
       "emptyTitle": "여기에 첫 장소를 올려 보세요",
       "planA11y": "약속: {{title}}, {{time}}",
-      "proofs_other": "사진 {{count}}장"
+      "proofs_other": "사진 {{count}}장",
+      "sheet": {
+        "byNear": "가까운 순",
+        "byLiked": "좋아요 많은 순",
+        "byNew": "최신순",
+        "sortLiked": "좋아요 많은 순",
+        "sortNew": "최신순",
+        "hint": "위로 밀어서 목록 보기",
+        "emptyArea": "여기는 아직 아무것도 없어요",
+        "pioneer": "개척자가 되어 보세요: 오늘 여기서 참여 📍",
+        "count_other": "{{city}}의 장소 {{count}}곳",
+        "countHere_other": "이 근처 장소 {{count}}곳"
+      },
+      "surprise": "랜덤 추천"
     },
     "leaderboard": {
       "tab": "Top 10",

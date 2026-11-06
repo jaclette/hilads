@@ -5,9 +5,10 @@ import 'leaflet/dist/leaflet.css'
 import '../../lib/leafletGuard'
 import { useTranslation } from 'react-i18next'
 import SpotPage from './SpotPage'
+import MapSheet, { SHEET_PEEK } from './MapSheet'
 import { fetchMap, fetchMapCities, searchSpots, fetchDailyToday } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, deviceStore, compactPrice, formatDistance, sortSpots } from './spotsShared'
+import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, deviceStore, } from './spotsShared'
 import { openAppModal } from '../AppModal'
 import Icon, { iconHtml } from '../Icon'
 import { themeIcon } from '../../lib/icons'
@@ -24,8 +25,6 @@ import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
 const IDLE_MS = 350
-// The last view (map or list), remembered on this device.
-const VIEW_KEY = 'hilads_map_view'
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 /** A selected theme chip wears the theme's color (the pins' color: the Map's legend). */
 const chipOn = (k) => { const c = themeColor(k); return { background: c.fill, borderColor: c.line ?? c.fill, color: c.onFill } }
@@ -160,7 +159,12 @@ function CameraTo({ target, top }) {
   useEffect(() => {
     // The header sits over the map: frame below it.
     if (target?.bounds) map.fitBounds(target.bounds, { paddingTopLeft: [48, 48 + top], paddingBottomRight: [48, 48], maxZoom: CITY_ZOOM + 1, animate: false })
-    else if (target) map.setView([target.lat, target.lng], target.zoom, { animate: true })
+    else if (target?.lift) {
+      // The sheet covers the lower half: the pin lands midway between the header and the sheet.
+      const h = map.getSize().y
+      const p = map.project([target.lat, target.lng], target.zoom).add([0, h / 4 - top / 2])
+      map.setView(map.unproject(p, target.zoom), target.zoom, { animate: true })
+    } else if (target) map.setView([target.lat, target.lng], target.zoom, { animate: true })
   }, [target, map]) // eslint-disable-line react-hooks/exhaustive-deps
   return null
 }
@@ -210,53 +214,6 @@ function Pins({ spots, zoom, selected, onSpot, onCluster, theme, halo, isToday, 
     <Marker key={`c:${g.items.map(s => s.id).join(',')}`} position={[g.lat, g.lng]} icon={clusterIcon(g.items.length, clusterTheme(g.items, theme), grow)}
             eventHandlers={{ click: () => onCluster(g) }} />
   ))
-}
-
-/**
- * The list view (like the app's): the area's spots with the map's search and
- * theme filter, by distance or this week's votes. A row: proof photo, name,
- * theme, distance (when my position is known), median price, votes,
- * "validated by a local". Tapping opens the spot sheet.
- */
-function SpotListView({ spots, sort, onSort, me, origin, onPick, empty, t }) {
-  const { i18n } = useTranslation()
-  const data = sortSpots(spots, sort, origin, km)
-  return (
-    <div className="wm-list">
-      <div className="wm-list-sorts">
-        <button type="button" className={`wm-chip${sort === 'near' ? ' wm-chip--on' : ''}`} onClick={() => onSort('near')}>{t('map.sortNearest')}</button>
-        <button type="button" className={`wm-chip${sort === 'week' ? ' wm-chip--on' : ''}`} onClick={() => onSort('week')}>{t('map.sortWeek')}</button>
-      </div>
-      {data.length === 0 && empty && <p className="wm-empty">{t('map.noResults')}</p>}
-      {data.map(s => {
-        const th = s.themes?.[0] ?? null
-        const p = s.priceRange
-        const median = p ? (p.median ?? (p.min === p.max ? p.min : null)) : null
-        const meta = [
-          me ? formatDistance(km(me, [s.lat, s.lng]) * 1000, i18n.language) : null,
-          median != null ? compactPrice(median, p.currency, i18n.language) : null,
-        ].filter(Boolean).join(' · ')
-        return (
-          <button key={s.id} type="button" className="wm-row" onClick={() => onPick(s)}>
-            {s.cover?.thumbUrl || s.cover?.photoUrl
-              ? <img className="wm-row-photo" src={thumbUrl(s.cover.thumbUrl || s.cover.photoUrl)} style={placeholderStyle(s.cover.thumbHash)} onError={thumbFallback(s.cover.photoUrl)} alt="" loading="lazy" />
-              : <span className="wm-row-photo wm-row-photo--empty"><Icon name={th ? themeIcon(th) : 'location-outline'} size={22} /></span>}
-            <span className="wm-row-body">
-              <span className="wm-row-name">{s.name}</span>
-              <span className="wm-row-chips">
-                {th && <span className="wm-row-theme" style={ROW}><Icon name={themeIcon(th)} size={12} />{themeName(th)}</span>}
-                {s.validatedByLocal && <span className="wm-row-local" style={ROW}><Icon name="checkmark" size={12} />{t('map.validated')}</span>}
-              </span>
-              <span className="wm-row-meta">
-                {meta && <span>{meta}</span>}
-                <span style={ROW}><Icon name="heart" size={12} />{sort === 'week' ? s.votesWeek : s.votes}</span>
-              </span>
-            </span>
-          </button>
-        )
-      })}
-    </div>
-  )
 }
 
 /**
@@ -331,8 +288,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [me, setMe]           = useState(null)      // my position, once the browser gives it
   const [nearMe, setNearMe]   = useState(false)     // far from the city: the map is around me
   const [notice, setNotice]   = useState(null)
-  const [view, setView]       = useState(() => { try { return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'map' } catch { return 'map' } })
-  const [sort, setSort]       = useState('near')
+  const sheet = useRef(null)
   const [cityEmpty, setCityEmpty] = useState(false)  // the city really has no spot (not just the visible area)
   const [today, setToday]     = useState(null)
   const [bubbles, setBubbles] = useState([])
@@ -475,15 +431,13 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
 
   const focusSpot = (s) => {
     setQuery(''); setResults(null)
-    setSelected(s)
-    setCamera({ scope, lat: s.lat, lng: s.lng, zoom: Math.max(zoom, 16) })
+    select(s, true)
   }
-
-  const toggleView = () => {
-    const next = view === 'map' ? 'list' : 'map'
-    setView(next); setSelected(null)
-    track('web_map_view_switched', { view: next })
-    try { localStorage.setItem(VIEW_KEY, next) } catch { /* private mode */ }
+  // A pin or a row: its card leads the sheet (half open); from the list or a surprise, the map flies to it.
+  const select = (s, fly = false) => {
+    setSelected(s)
+    sheet.current?.snapTo('half')
+    if (fly) setCamera({ scope, lat: s.lat, lng: s.lng, zoom: Math.max(zoom, 16), lift: true })
   }
   // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
   const todayTheme = today?.challenge?.theme?.key ?? null
@@ -496,6 +450,18 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const canPlayHere = !!selected && !!todayTheme && selected.themes.includes(todayTheme) && today?.challenge?.isActive && !today?.myProof
   const areaCentre = areaRef.current ? [(areaRef.current[1] + areaRef.current[3]) / 2, (areaRef.current[0] + areaRef.current[2]) / 2] : center
   const showEmpty = center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty)
+  // Zoomed into a place with no spot (the city has some): "Nothing here yet · Be the pioneer 📍".
+  const emptyArea = !!center && !worldView && !showEmpty && !cityEmpty && shown.length === 0 && results === null
+  // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
+  const surprise = () => {
+    const pool = shown.filter(x => x.id !== selected?.id)
+    const good = pool.filter(x => (x.cover?.photoUrl || x.cover?.thumbUrl) && x.votes > 0)
+    const list = good.length ? good : pool
+    if (!list.length) return
+    const pick = list[Math.floor(Math.random() * list.length)]
+    track('web_map_surprise', { spot: pick.id })
+    select(pick, true)
+  }
 
   if (openSpotId) {
     return <SpotPage spotId={openSpotId} onBack={() => setOpenSpotId(null)} />
@@ -512,7 +478,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
 
       <div className="wm-map" style={{ '--wm-top-h': `${topH}px` }}>
         {/* The scope, search and chips in one translucent header over the map. */}
-        <div ref={topRef} className={`wm-top${view === 'list' ? ' wm-top--list' : ''}`}>
+        <div ref={topRef} className="wm-top">
           <div className="wm-search-row">
           {scopePill}
           <div className="wm-search">
@@ -527,7 +493,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
           </div>
           </div>
-          {results === null || view === 'list' ? (
+          {results === null ? (
             <div className="wm-chips" role="toolbar">
               <button type="button" className={`wm-chip${theme === null && !todayOnly ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
               {todayDate && (
@@ -574,7 +540,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                       title={t('map.cityBubbleA11y', { city: shortCityName(b.city.name), count: b.spots })}
                       eventHandlers={{ click: () => openBubble(b) }} />
             ))}
-            <Pins spots={worldView ? [] : shown} zoom={zoom} selected={selected} onSpot={setSelected}
+            <Pins spots={worldView ? [] : shown} zoom={zoom} selected={selected} onSpot={s => select(s)}
                   onCluster={g => setCamera({ scope, lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })}
                   theme={theme} halo={todayOnly ? pinColor(todayTheme ?? 'taste') : null} isToday={isToday} grow={grow} />
             {me && <Marker position={me} icon={meIcon} interactive={false} />}
@@ -587,7 +553,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         ) : (
           <div className="wm-loading">{failed ? t('map.unavailable') : <span className="wm-spinner" aria-hidden="true" />}</div>
         )}
-        {center && view === 'map' && (
+        {center && (
           <button type="button" className="wm-locate" onClick={() => { if (world) onScopeCity?.(); locate(true) }} aria-label={t('map.locate')} title={t('map.locate')}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               <circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
@@ -595,59 +561,68 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
           </button>
         )}
         {notice && <div className="wm-notice" role="status">{notice}</div>}
-        {view === 'map' && <SeasonalMapSky />}
+        <SeasonalMapSky />
         {tiles.mapbox && (
           <a className="wm-mapbox-logo" href="https://www.mapbox.com/" target="_blank" rel="noopener noreferrer" aria-label="Mapbox">mapbox</a>
         )}
-        {view === 'list' && center && (
-          <SpotListView spots={listSpots} sort={sort} onSort={k => { setSort(k); track('web_map_list_sorted', { sort: k }) }}
-                        me={me} origin={me ?? areaCentre} onPick={setSelected} empty={!showEmpty} t={t} />
+        {/* Above the sheet: 🎲 Surprise me. */}
+        {center && !worldView && shown.length > 0 && (
+          <button type="button" className="wm-surprise" style={{ bottom: SHEET_PEEK + 12 }} onClick={surprise} data-testid="map-surprise">🎲 {t('dc.map.surprise')}</button>
         )}
-        {/* Bottom: the List / Map switch, then the selected spot or the empty city. */}
-        <div className="wm-bottom">
-          {center && (
-            <button type="button" className="wm-toggle" onClick={toggleView}>
-              <Icon name={view === 'map' ? 'list-outline' : 'map-outline'} size={18} />{view === 'map' ? t('map.list') : t('map.mapView')}
-            </button>
-          )}
-          {showEmpty && (
-            <EmptyCard today={today} t={t} />
-          )}
-          {selected && (
-            <div className="wm-sheet">
-              <button type="button" className="wm-sheet-close" onClick={() => setSelected(null)} aria-label={t('map.closeSpot')}><Icon name="close" size={20} /></button>
-              <button type="button" className="wm-sheet-body" onClick={() => setOpenSpotId(selected.id)}>
-                {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={thumbUrl(selected.cover.thumbUrl)} alt="" /> : <span className="wm-sheet-photo" />}
-                <span className="wm-sheet-info">
-                  <span className="wm-sheet-title">{selected.name}</span>
-                  {selected.pick && <PickBadge />}
-                  <span className="wm-sheet-meta">
-                    {selected.themes.map((k, i) => (
-                      <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={themeIcon(k)} size={13} />{themeName(k)}</span>
-                    ))}
-                  </span>
-                  {/* A pick alone has no answers to count. */}
-                  {selected.proofCount > 0 && (
-                    <span className="wm-sheet-meta">
-                      {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
-                      {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
-                    </span>
-                  )}
-                  <PhotoCredit cover={selected.cover} className="wm-sheet-meta" />
-                </span>
+        {/* The sticky sheet: the visible area's spots, a selected pin's card first. */}
+        {center && (
+          <MapSheet
+            ref={sheet}
+            spots={worldView ? [] : listSpots}
+            me={me}
+            origin={areaCentre}
+            km={km}
+            place={!world && !nearMe && cityName ? shortCityName(cityName) : null}
+            filterLabel={todayOnly ? t('map.todayChip') : theme === SPECIAL ? t('map.halloween') : theme ? themeName(theme) : null}
+            emptyArea={emptyArea}
+            onPick={s => { track('web_map_list_picked', { spot: s.id }); select(s, true) }}
+            topNote={showEmpty ? <EmptyCard today={today} t={t} /> : emptyArea ? (
+              <button type="button" className="wm-pioneer"
+                      onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_pioneer' }); openAppModal({ action: 'play', surface: 'map_pioneer' }) }}>
+                {t('dc.map.sheet.pioneer')}
               </button>
-              {canPlayHere && (
-                <button type="button" className="wm-sheet-cta"
-                        onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_spot' }); openAppModal({ action: 'play', surface: 'map_spot' }) }}>
-                  <Icon name="camera-outline" size={18} />{t('map.playHere')}
-                </button>
-              )}
-              <button type="button" className={`wm-sheet-cta${canPlayHere ? ' wm-btn--ghost' : ''}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
-              {/* The cover photo's comments (their header loads from the photo). */}
-              {selected.cover?.proofId && <CommentButton target={{ proofId: selected.cover.proofId, thumbUrl: selected.cover.thumbUrl ?? selected.cover.photoUrl }} variant="inline" />}
-            </div>
-          )}
-        </div>
+            ) : null}
+            selectedCard={selected ? (
+      <div className="wm-sheet">
+        <button type="button" className="wm-sheet-close" onClick={() => { setSelected(null); sheet.current?.snapTo('peek') }} aria-label={t('map.closeSpot')}><Icon name="close" size={20} /></button>
+        <button type="button" className="wm-sheet-body" onClick={() => setOpenSpotId(selected.id)}>
+          {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={thumbUrl(selected.cover.thumbUrl)} alt="" /> : <span className="wm-sheet-photo" />}
+          <span className="wm-sheet-info">
+            <span className="wm-sheet-title">{selected.name}</span>
+            {selected.pick && <PickBadge />}
+            <span className="wm-sheet-meta">
+              {selected.themes.map((k, i) => (
+                <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={themeIcon(k)} size={13} />{themeName(k)}</span>
+              ))}
+            </span>
+            {/* A pick alone has no answers to count. */}
+            {selected.proofCount > 0 && (
+              <span className="wm-sheet-meta">
+                {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
+                {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
+              </span>
+            )}
+            <PhotoCredit cover={selected.cover} className="wm-sheet-meta" />
+          </span>
+        </button>
+        {canPlayHere && (
+          <button type="button" className="wm-sheet-cta"
+                  onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_spot' }); openAppModal({ action: 'play', surface: 'map_spot' }) }}>
+            <Icon name="camera-outline" size={18} />{t('map.playHere')}
+          </button>
+        )}
+        <button type="button" className={`wm-sheet-cta${canPlayHere ? ' wm-btn--ghost' : ''}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
+        {/* The cover photo's comments (their header loads from the photo). */}
+        {selected.cover?.proofId && <CommentButton target={{ proofId: selected.cover.proofId, thumbUrl: selected.cover.thumbUrl ?? selected.cover.photoUrl }} variant="inline" />}
+      </div>
+            ) : null}
+          />
+        )}
       </div>
     </div>
   )

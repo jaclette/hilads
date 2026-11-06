@@ -1116,7 +1116,22 @@
       "emptyTitle": "Ikaw na ang unang maglagay ng spot dito",
       "planA11y": "Lakad: {{title}}, {{time}}",
       "proofs_one": "{{count}} photo",
-      "proofs_other": "{{count}} photos"
+      "proofs_other": "{{count}} photos",
+      "sheet": {
+        "byNear": "pinakamalapit muna",
+        "byLiked": "pinaka-liked muna",
+        "byNew": "pinakabago muna",
+        "sortLiked": "Pinaka-liked",
+        "sortNew": "Pinakabago",
+        "hint": "I-swipe pataas para sa listahan",
+        "emptyArea": "Wala pang spot dito",
+        "pioneer": "Maging pioneer: maglaro dito ngayon 📍",
+        "count_one": "{{count}} spot sa {{city}}",
+        "count_other": "{{count}} spots sa {{city}}",
+        "countHere_one": "{{count}} spot dito",
+        "countHere_other": "{{count}} spots dito"
+      },
+      "surprise": "Surprise me"
     },
     "leaderboard": {
       "tab": "Top 10",

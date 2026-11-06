@@ -18330,3 +18330,31 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
   .r6-step, .r6-you, .r6-results, .r6-confetti i { animation: none !important; }
   .r6-fill { transition: none; }
 }
+
+/* ── V6 map sheet (wm-msheet): peek · half · full, replaces the List button ── */
+.wm-msheet { --wm-h: 112px; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1100; height: calc(var(--wm-h) - var(--wm-drag, 0px));
+  max-height: calc(100% - var(--wm-top-h, 0px) - 8px); min-height: 72px; display: flex; flex-direction: column; background: var(--bg);
+  border-radius: 24px 24px 0 0; box-shadow: 0 -6px 24px rgba(36, 26, 18, 0.16); transition: height 0.32s cubic-bezier(.22, 1, .36, 1); }
+.wm-msheet--half { --wm-h: 50%; }
+.wm-msheet--full { --wm-h: 100%; }
+.wm-msheet--drag { transition: none; }
+.wm-msheet-head { flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px; cursor: grab; touch-action: none; user-select: none; }
+.wm-msheet--drag .wm-msheet-head { cursor: grabbing; }
+.wm-msheet-handle { align-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--line); margin-bottom: 8px; }
+.wm-msheet-headline { font-size: 17px; line-height: 22px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wm-msheet-sub { font-size: 13px; line-height: 17px; font-weight: 600; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-height: 17px; }
+.wm-msheet-hint { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 0 10px; height: 26px; border-radius: 13px;
+  background: var(--primary-tint); color: var(--primary-on-tint); font-size: 12px; font-weight: 800; animation: wm-hint 0.9s ease-in-out 4; }
+@keyframes wm-hint { 50% { transform: translateY(-4px) } }
+.wm-msheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: max(40px, env(safe-area-inset-bottom)); }
+.wm-msheet--peek .wm-msheet-body { overflow: hidden; }
+.wm-msheet .wm-sheet { position: relative; left: auto; right: auto; bottom: auto; margin: 0 12px 10px; box-shadow: none; }
+.wm-msheet .wm-list-sorts { padding-top: 4px; }
+.wm-surprise { position: absolute; left: 12px; z-index: 1050; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--text); color: var(--bg);
+  font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.22); }
+.wm-surprise:active { transform: scale(0.96); }
+.wm-pioneer { display: block; width: calc(100% - 24px); margin: 4px 12px 10px; padding: 14px; border: 0; border-radius: 18px; background: var(--primary-tint);
+  color: var(--primary-on-tint); font-size: 14px; font-weight: 800; text-align: center; cursor: pointer; }
+.wm-map .wm-mapbox-logo { bottom: 120px; }
+.wm-map .leaflet-control-attribution { margin-bottom: 112px; }
+@media (prefers-reduced-motion: reduce) { .wm-msheet { transition: none; } .wm-msheet-hint { animation: none; } }

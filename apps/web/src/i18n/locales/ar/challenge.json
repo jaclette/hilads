@@ -1172,7 +1172,30 @@
       "proofs_two": "صورتان",
       "proofs_few": "{{count}} صور",
       "proofs_many": "{{count}} صورة",
-      "proofs_other": "{{count}} صورة"
+      "proofs_other": "{{count}} صورة",
+      "sheet": {
+        "byNear": "الأقرب أولًا",
+        "byLiked": "الأكثر إعجابًا أولًا",
+        "byNew": "الأحدث أولًا",
+        "sortLiked": "الأكثر إعجابًا",
+        "sortNew": "الأحدث",
+        "hint": "اسحب للأعلى لرؤية القائمة",
+        "emptyArea": "لا شيء هنا بعد",
+        "pioneer": "كن الرائد: العب هنا اليوم 📍",
+        "count_zero": "{{count}} مكان في {{city}}",
+        "count_one": "مكان واحد في {{city}}",
+        "count_two": "مكانان في {{city}}",
+        "count_few": "{{count}} أماكن في {{city}}",
+        "count_many": "{{count}} مكانًا في {{city}}",
+        "count_other": "{{count}} مكان في {{city}}",
+        "countHere_zero": "{{count}} مكان هنا",
+        "countHere_one": "مكان واحد هنا",
+        "countHere_two": "مكانان هنا",
+        "countHere_few": "{{count}} أماكن هنا",
+        "countHere_many": "{{count}} مكانًا هنا",
+        "countHere_other": "{{count}} مكان هنا"
+      },
+      "surprise": "فاجئني"
     },
     "leaderboard": {
       "tab": "Top 10",
