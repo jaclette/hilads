@@ -137,27 +137,31 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
             <span className="pp-card-title" style={ROW}><Icon name="flame-outline" size={18} />{tc('dc.streak', { count: streak })}</span>
             <span className="dc-muted">{t('passport.best', { count: stats?.bestStreak ?? 0 })}</span>
           </div>
-          <div className="pp-card">
+          <button type="button" className="pp-card pp-card--tap" onClick={() => onOpen('week')}>
             <span className="pp-card-title" style={ROW}><Icon name="trophy-outline" size={18} />{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</span>
             <span className="dc-muted pp-ellipsis">{city ? t('passport.mostLocalIn', { city }) : t('passport.mostLocalWorld')}</span>
-          </div>
+          </button>
         </div>
-        {/* The cities I've been compared with: their flags (a click opens that city's stories). */}
-        {(stats?.comparedCities?.length ?? 0) > 0 ? (
-          <div className="pp-compared-block">
-            <span className="dc-muted pp-compared">{t('passport.comparedCities', { count: stats.comparedCities.length })}</span>
-            <div className="pp-flags">
-              {stats.comparedCities.map(c => (
-                <button key={c.id} type="button" className="pp-flag-chip" aria-label={c.name ?? ''}
-                        onClick={() => onOpen('stories', { city: c.id, source: 'passport' })}>
-                  <FlagSticker country={c.country} size={22} />
-                  <span className="pp-flag-name">{shortCityName(c.name ?? '')}</span>
-                </button>
-              ))}
-            </div>
+        {/* Your rivals (V6): the cities I played the same challenges as, most duels first; a click opens the face-off. */}
+        {stats && (
+          <div className="pp-compared-block" data-testid="passport-rivals">
+            <span className="pp-rivals-title">⚔️ {t('passport.rivals')}</span>
+            {(stats.comparedCities?.length ?? 0) > 0 ? (
+              <div className="pp-flags">
+                {stats.comparedCities.map(c => (
+                  <button key={c.id} type="button" className="pp-flag-chip"
+                          aria-label={`${shortCityName(c.name ?? '')}, ${t('passport.duels', { count: c.duels ?? 1 })}`}
+                          onClick={() => onOpen('rivals', { city: c.id, user: account.id })}>
+                    <FlagSticker country={c.country} size={22} />
+                    <span className="pp-flag-name">{shortCityName(c.name ?? '')}</span>
+                    {!!c.duels && <span className="pp-duels">{t('passport.duels', { count: c.duels })}</span>}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <span className="dc-muted pp-compared">{t('passport.rivalsEmpty')}</span>
+            )}
           </div>
-        ) : stats?.comparedCountries > 0 && (
-          <span className="dc-muted pp-compared" style={ROW}><Icon name="earth-outline" size={16} />{t('passport.compared', { count: stats.comparedCountries })}</span>
         )}
 
         {progress.length > 0 && (

@@ -1591,6 +1591,19 @@
       },
       "timeLeft_other": "⏳ 投票はあと{{count}}時間",
       "pts_other": "{{count}}pt"
+    },
+    "rivals": {
+      "title": "あなた vs {{city}}",
+      "you": "あなた",
+      "leading": "リード中！🏆",
+      "behind": "{{city}}がリード。逆転しよう 💪",
+      "tied": "引き分け！次の対決で決まる 🔥",
+      "notToday": "{{city}}はまだ今日のチャレンジに参加してないよ。挑戦状を送る？",
+      "send": "挑戦状を送る",
+      "empty": "{{city}}との対決はまだないよ",
+      "yours": "あなたの写真",
+      "theirBest": "{{city}}のベスト",
+      "duels_other": "{{count}}戦"
     }
   }
 }

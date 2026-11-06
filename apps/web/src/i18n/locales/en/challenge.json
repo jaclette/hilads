@@ -1633,6 +1633,20 @@
       "timeLeft_other": "⏳ {{count}} hours left to vote",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pts"
+    },
+    "rivals": {
+      "title": "You vs {{city}}",
+      "you": "You",
+      "leading": "You're leading! 🏆",
+      "behind": "{{city}} is ahead. Time for a comeback 💪",
+      "tied": "Tied! The next duel decides 🔥",
+      "notToday": "{{city}} hasn't played today's challenge yet. Send them a challenge?",
+      "send": "Send a challenge",
+      "empty": "No duels with {{city}} yet",
+      "yours": "Yours",
+      "theirBest": "Best in {{city}}",
+      "duels_one": "{{count}} duel",
+      "duels_other": "{{count}} duels"
     }
   }
 }

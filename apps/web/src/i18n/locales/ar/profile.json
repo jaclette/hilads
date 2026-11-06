@@ -217,7 +217,15 @@
       "myPhotos": "صوري",
       "noPhotos": "ستظهر هنا صورك في Daily Challenge.",
       "share": "شارك جواز سفري",
-      "localSince": "من سكان {{city}} منذ {{date}}"
+      "localSince": "من سكان {{city}} منذ {{date}}",
+      "rivals": "منافسوك",
+      "rivalsEmpty": "العب بعض التحديات لتلتقي بأول منافسيك 🌍",
+      "duels_zero": "{{count}} مواجهة",
+      "duels_one": "مواجهة واحدة",
+      "duels_two": "مواجهتان",
+      "duels_few": "{{count}} مواجهات",
+      "duels_many": "{{count}} مواجهة",
+      "duels_other": "{{count}} مواجهة"
     },
     "points": {
       "title": "كيف تكسب النقاط",

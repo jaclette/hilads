@@ -172,7 +172,10 @@
       "myPhotos": "내 사진",
       "noPhotos": "Daily Challenge 사진이 여기에 모여요.",
       "share": "내 여권 공유하기",
-      "localSince": "{{date}}부터 {{city}} 현지인"
+      "localSince": "{{date}}부터 {{city}} 현지인",
+      "rivals": "내 라이벌",
+      "rivalsEmpty": "챌린지를 몇 번 하면 첫 라이벌을 만날 수 있어요 🌍",
+      "duels_other": "{{count}}번의 대결"
     },
     "points": {
       "title": "포인트 받는 법",

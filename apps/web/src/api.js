@@ -2704,6 +2704,11 @@ export function fetchUserDaily(userId, locale) {
   return daily('GET', `/users/${encodeURIComponent(userId)}/daily`, { params: { locale } })
 }
 
+/** A face-off (V6, Passport › Your rivals): every challenge a user and a city both played, my photo vs the city's best. */
+export function fetchRivalFaceoff(userId, cityId, locale) {
+  return daily('GET', `/users/${encodeURIComponent(userId)}/daily/rivals/${encodeURIComponent(cityId)}`, { params: { locale } })
+}
+
 /** GET /me/daily-photos: my Daily Challenge photos, newest first (Passport's "My photos"). */
 export async function fetchMyDailyPhotos(locale) {
   return (await daily('GET', '/me/daily-photos', { params: { locale } })).items ?? []

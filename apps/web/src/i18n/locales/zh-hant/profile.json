@@ -172,7 +172,10 @@
       "myPhotos": "我的照片",
       "noPhotos": "你的 Daily Challenge 照片會顯示在這裡。",
       "share": "分享我的護照",
-      "localSince": "{{date}} 起成為{{city}}在地人"
+      "localSince": "{{date}} 起成為{{city}}在地人",
+      "rivals": "你的對手",
+      "rivalsEmpty": "玩幾個挑戰，認識你的第一批對手 🌍",
+      "duels_other": "{{count}} 場對決"
     },
     "points": {
       "title": "如何賺積分",

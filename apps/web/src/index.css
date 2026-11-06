@@ -18358,3 +18358,36 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .wm-map .wm-mapbox-logo { bottom: 120px; }
 .wm-map .leaflet-control-attribution { margin-bottom: 112px; }
 @media (prefers-reduced-motion: reduce) { .wm-msheet { transition: none; } .wm-msheet-hint { animation: none; } }
+
+/* ── V6 Passport rivals + face-off (rv-*) ── */
+.pp-rivals-title { display: block; font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.pp-duels { font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.pp-card--tap { font: inherit; text-align: left; color: inherit; cursor: pointer; }
+.pp-card--tap:active { transform: scale(0.98); }
+.rv-body { display: flex; flex-direction: column; gap: 14px; padding-bottom: 40px; }
+.rv-center { display: flex; justify-content: center; padding: 60px 0; }
+.rv-versus { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 12px 0; overflow: hidden; }
+.rv-side { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.rv-name { font-size: 16px; font-weight: 800; color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rv-trophy { font-size: 20px; }
+.rv-mid { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.rv-vs { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 18px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); }
+.rv-score { display: flex; align-items: center; gap: 6px; font-size: 30px; line-height: 36px; font-weight: 900; color: var(--text); }
+.rv-dash { font-size: 24px; font-weight: 800; color: var(--muted); }
+.rv-mood { margin: 0; font-size: 15px; line-height: 20px; font-weight: 700; color: var(--text); text-align: center; }
+.rv-nudge { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 18px; font-size: 15px; line-height: 20px; font-weight: 700; color: var(--text); }
+.rv-send { align-self: flex-start; height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 800; cursor: pointer; }
+.rv-section { font-size: 13px; font-weight: 800; color: var(--muted); }
+.rv-empty { margin: 0; padding: 32px 0; font-size: 15px; color: var(--muted); text-align: center; }
+.rv-duel { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 18px; background: var(--surface); border: 1.5px solid var(--line); }
+.rv-duel-text { font-size: 15px; line-height: 20px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rv-theme { align-self: flex-start; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--text); }
+.rv-pair { display: flex; gap: 10px; }
+.rv-photo { position: relative; flex: 1; min-width: 0; padding: 0; border-radius: 14px; overflow: hidden; border: 3px solid transparent; background: var(--surface2); cursor: pointer; }
+.rv-photo--win { border-color: #FFC93C; }
+.rv-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.rv-crown { position: absolute; top: 6px; right: 8px; font-size: 22px; }
+.rv-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 8px; background: var(--surface); }
+.rv-label { flex: 1; min-width: 0; font-size: 12px; font-weight: 700; color: var(--muted); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rv-likes { font-size: 13px; font-weight: 800; color: var(--text); }

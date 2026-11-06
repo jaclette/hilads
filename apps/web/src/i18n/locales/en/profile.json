@@ -181,7 +181,11 @@
       "myPhotos": "My photos",
       "noPhotos": "Your Daily Challenge photos will show up here.",
       "share": "Share my passport",
-      "localSince": "Local of {{city}} since {{date}}"
+      "localSince": "Local of {{city}} since {{date}}",
+      "rivals": "Your rivals",
+      "rivalsEmpty": "Play a few challenges to meet your first rivals 🌍",
+      "duels_one": "{{count}} duel",
+      "duels_other": "{{count}} duels"
     },
     "points": {
       "title": "How to earn points",

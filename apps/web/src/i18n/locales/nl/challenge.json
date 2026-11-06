@@ -1633,6 +1633,20 @@
       "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} ptn"
+    },
+    "rivals": {
+      "title": "Jij vs {{city}}",
+      "you": "Jij",
+      "leading": "Je staat voor! 🏆",
+      "behind": "{{city}} staat voor. Tijd voor een comeback 💪",
+      "tied": "Gelijk! Het volgende duel beslist 🔥",
+      "notToday": "{{city}} heeft de challenge van vandaag nog niet gespeeld. Daag je ze uit?",
+      "send": "Daag uit",
+      "empty": "Nog geen duels met {{city}}",
+      "yours": "Die van jou",
+      "theirBest": "De beste uit {{city}}",
+      "duels_one": "{{count}} duel",
+      "duels_other": "{{count}} duels"
     }
   }
 }

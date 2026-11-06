@@ -1633,6 +1633,20 @@
       "timeLeft_other": "⏳ वोट के लिए {{count}} घंटे बाकी",
       "pts_one": "{{count}} पॉइंट",
       "pts_other": "{{count}} पॉइंट"
+    },
+    "rivals": {
+      "title": "आप vs {{city}}",
+      "you": "आप",
+      "leading": "आप आगे हैं! 🏆",
+      "behind": "{{city}} आगे है। अब वापसी का समय 💪",
+      "tied": "बराबरी! अगला मुकाबला तय करेगा 🔥",
+      "notToday": "{{city}} ने अभी आज का चैलेंज नहीं खेला। उन्हें चैलेंज भेजें?",
+      "send": "चैलेंज भेजें",
+      "empty": "{{city}} से अभी कोई मुकाबला नहीं",
+      "yours": "आपकी",
+      "theirBest": "{{city}} की बेस्ट",
+      "duels_one": "{{count}} मुकाबला",
+      "duels_other": "{{count}} मुकाबले"
     }
   }
 }

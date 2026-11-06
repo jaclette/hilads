@@ -63,6 +63,7 @@ import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
 import RanksScreen        from './components/ranks/RanksScreen'
+import RivalsScreen       from './components/daily/RivalsScreen'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
@@ -6005,6 +6006,7 @@ export default function App() {
           : top.name === 'photos'    ? <PhotosScreen key={key} {...top.params} onBack={closeDaily} />
           : top.name === 'countries' ? <CountriesScreen key={key} {...top.params} onBack={closeDaily} />
           : top.name === 'stories'   ? <StoriesScreen key={key} {...top.params} onBack={closeDaily} />
+          : top.name === 'rivals'    ? <RivalsScreen key={key} {...top.params} onBack={closeDaily} />
           : top.name === 'propose'   ? <ProposeScreen key={key} {...top.params} onBack={closeDaily} />
           : top.name === 'twist'     ? <TwistScreen key={key} onBack={closeDaily} />
           : top.name === 'proposals' ? <ProposalsScreen key={key} onBack={closeDaily} />
@@ -6844,8 +6846,9 @@ export default function App() {
           onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
           onSignIn={() => setGateAuth({ tab: 'login', action: 'passport' })}
           onOpen={(row, params) => {
-            if (['proposals', 'propose', 'challenge', 'stories'].includes(row)) openDaily(row, params)
+            if (['proposals', 'propose', 'challenge', 'stories', 'rivals'].includes(row)) openDaily(row, params)
             else if (row === 'alltime') { openRanks({ tab: 'players', period: 'alltime', scope: channelId ? 'city' : 'world' }) }
+            else if (row === 'week') { openRanks({ tab: 'players', period: 'week', scope: channelId ? 'city' : 'world' }) }
             else setPassportSub(row)
           }}
         />

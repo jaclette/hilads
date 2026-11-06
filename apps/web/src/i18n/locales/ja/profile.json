@@ -172,7 +172,10 @@
       "myPhotos": "自分の写真",
       "noPhotos": "Daily Challengeの写真がここに表示されます。",
       "share": "パスポートをシェア",
-      "localSince": "{{date}}から{{city}}のローカル"
+      "localSince": "{{date}}から{{city}}のローカル",
+      "rivals": "ライバル",
+      "rivalsEmpty": "チャレンジをいくつか遊んで、最初のライバルに出会おう 🌍",
+      "duels_other": "{{count}}戦"
     },
     "points": {
       "title": "ポイントのもらい方",

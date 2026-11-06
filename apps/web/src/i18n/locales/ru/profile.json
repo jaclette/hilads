@@ -199,7 +199,13 @@
       "myPhotos": "Мои фото",
       "noPhotos": "Здесь появятся твои фото Daily Challenge.",
       "share": "Поделиться паспортом",
-      "localSince": "В городе {{city}} с {{date}}"
+      "localSince": "В городе {{city}} с {{date}}",
+      "rivals": "Твои соперники",
+      "rivalsEmpty": "Сыграй несколько челленджей, чтобы встретить первых соперников 🌍",
+      "duels_one": "{{count}} дуэль",
+      "duels_few": "{{count}} дуэли",
+      "duels_many": "{{count}} дуэлей",
+      "duels_other": "{{count}} дуэли"
     },
     "points": {
       "title": "Как заработать очки",

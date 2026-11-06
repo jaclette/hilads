@@ -1675,6 +1675,21 @@
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pt",
       "pts_many": "{{count}} pt"
+    },
+    "rivals": {
+      "title": "Tu vs {{city}}",
+      "you": "Tu",
+      "leading": "Sei in vantaggio! 🏆",
+      "behind": "{{city}} è avanti. Tempo di rimonta 💪",
+      "tied": "Pareggio! Il prossimo duello decide 🔥",
+      "notToday": "{{city}} non ha ancora giocato la sfida di oggi. Li sfidi?",
+      "send": "Lancia la sfida",
+      "empty": "Ancora nessun duello con {{city}}",
+      "yours": "La tua",
+      "theirBest": "La migliore di {{city}}",
+      "duels_one": "{{count}} duello",
+      "duels_other": "{{count}} duelli",
+      "duels_many": "{{count}} duelli"
     }
   }
 }

@@ -1801,6 +1801,24 @@
       "pts_few": "{{count}} نقاط",
       "pts_many": "{{count}} نقطة",
       "pts_other": "{{count}} نقطة"
+    },
+    "rivals": {
+      "title": "أنت ضد {{city}}",
+      "you": "أنت",
+      "leading": "أنت في المقدمة! 🏆",
+      "behind": "{{city}} في المقدمة. حان وقت العودة 💪",
+      "tied": "تعادل! المواجهة القادمة تحسم 🔥",
+      "notToday": "لم تلعب {{city}} تحدي اليوم بعد. هل ترسل لهم تحديًا؟",
+      "send": "أرسل تحديًا",
+      "empty": "لا مواجهات مع {{city}} بعد",
+      "yours": "صورتك",
+      "theirBest": "الأفضل في {{city}}",
+      "duels_zero": "{{count}} مواجهة",
+      "duels_one": "مواجهة واحدة",
+      "duels_two": "مواجهتان",
+      "duels_few": "{{count}} مواجهات",
+      "duels_many": "{{count}} مواجهة",
+      "duels_other": "{{count}} مواجهة"
     }
   }
 }

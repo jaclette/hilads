@@ -172,7 +172,10 @@
       "myPhotos": "Ảnh của tôi",
       "noPhotos": "Ảnh Daily Challenge của bạn sẽ hiện ở đây.",
       "share": "Chia sẻ hộ chiếu",
-      "localSince": "Dân {{city}} từ {{date}}"
+      "localSince": "Dân {{city}} từ {{date}}",
+      "rivals": "Đối thủ của bạn",
+      "rivalsEmpty": "Chơi vài thử thách để gặp đối thủ đầu tiên nha 🌍",
+      "duels_other": "{{count}} trận"
     },
     "points": {
       "title": "Cách kiếm điểm",

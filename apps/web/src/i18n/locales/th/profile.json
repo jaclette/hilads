@@ -172,7 +172,10 @@
       "myPhotos": "รูปของฉัน",
       "noPhotos": "รูป Daily Challenge ของคุณจะขึ้นตรงนี้",
       "share": "แชร์พาสปอร์ตของฉัน",
-      "localSince": "คนท้องถิ่น {{city}} ตั้งแต่ {{date}}"
+      "localSince": "คนท้องถิ่น {{city}} ตั้งแต่ {{date}}",
+      "rivals": "คู่แข่งของคุณ",
+      "rivalsEmpty": "เล่นชาเลนจ์สักหน่อยเพื่อเจอคู่แข่งคนแรก 🌍",
+      "duels_other": "{{count}} ดวล"
     },
     "points": {
       "title": "วิธีได้คะแนน",
