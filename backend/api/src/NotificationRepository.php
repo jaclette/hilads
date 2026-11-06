@@ -93,6 +93,11 @@ class NotificationRepository
         // just validated): they get the celebration modal directly via the WS
         // ping + reveal refetch, so a push would be redundant/confusing. The bell
         // row above is still written (the reveal gate reads it, ack on close).
+        // Arrivals (someone landed in my city, a friend landed somewhere) push only to a few
+        // accounts for now; everyone else keeps the row in the inbox, without a push.
+        if ($push && in_array($type, self::ARRIVAL_TYPES, true) && !self::arrivalPushAllowed($userId)) {
+            $push = false;
+        }
         if ($push) {
             // Web push (browser VAPID) - fire-and-forget
             PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data), $data);
@@ -102,6 +107,21 @@ class NotificationRepository
         }
 
         return $notif;
+    }
+
+    /** Arrival notifications: their push goes only to ARRIVAL_PUSH_USERNAMES (2026-11-06). */
+    private const ARRIVAL_TYPES = ['city_join', 'world_arrival'];
+    private const ARRIVAL_PUSH_USERNAMES = ['jaclette', 'kitty_3'];
+
+    private static function arrivalPushAllowed(string $userId): bool
+    {
+        static $byUser = [];
+        if (!array_key_exists($userId, $byUser)) {
+            $stmt = Database::pdo()->prepare("SELECT LOWER(username) FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            $byUser[$userId] = in_array((string) $stmt->fetchColumn(), self::ARRIVAL_PUSH_USERNAMES, true);
+        }
+        return $byUser[$userId];
     }
 
     private static function typeToColumn(string $type): ?string
