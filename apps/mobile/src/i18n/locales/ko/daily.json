@@ -851,7 +851,7 @@
     "period": {
       "today": "오늘",
       "yesterday": "어제",
-      "week": "이번 주",
+      "week": "주간",
       "alltime": "역대"
     },
     "scope": {
@@ -888,7 +888,12 @@
       "dismiss": "닫기"
     },
     "timeLeft_other": "⏳ 투표 마감까지 {{count}}시간",
-    "pts_other": "{{count}}점"
+    "pts_other": "{{count}}점",
+    "ghost": {
+      "photo": "여기에 네 사진을? 📸",
+      "player": "이 자리를 차지해 🙋",
+      "city": "여기에 네 도시를? 🌍"
+    }
   },
   "rivals": {
     "title": "나 vs {{city}}",

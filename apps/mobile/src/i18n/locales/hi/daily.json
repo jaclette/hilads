@@ -893,7 +893,7 @@
     "period": {
       "today": "आज",
       "yesterday": "कल",
-      "week": "इस हफ़्ते",
+      "week": "हफ़्ता",
       "alltime": "अब तक"
     },
     "scope": {
@@ -934,7 +934,12 @@
     "timeLeft_one": "⏳ वोट के लिए {{count}} घंटा बाकी",
     "timeLeft_other": "⏳ वोट के लिए {{count}} घंटे बाकी",
     "pts_one": "{{count}} पॉइंट",
-    "pts_other": "{{count}} पॉइंट"
+    "pts_other": "{{count}} पॉइंट",
+    "ghost": {
+      "photo": "तुम्हारी फ़ोटो यहाँ? 📸",
+      "player": "ये जगह ले लो 🙋",
+      "city": "तुम्हारा शहर यहाँ? 🌍"
+    }
   },
   "rivals": {
     "title": "आप vs {{city}}",

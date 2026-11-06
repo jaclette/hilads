@@ -1601,7 +1601,7 @@
       "period": {
         "today": "Vandaag",
         "yesterday": "Gisteren",
-        "week": "Deze week",
+        "week": "Week",
         "alltime": "Aller tijden"
       },
       "scope": {
@@ -1642,7 +1642,12 @@
       "timeLeft_one": "⏳ Nog {{count}} uur om te stemmen",
       "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",
       "pts_one": "{{count}} pt",
-      "pts_other": "{{count}} ptn"
+      "pts_other": "{{count}} ptn",
+      "ghost": {
+        "photo": "Jouw foto hier? 📸",
+        "player": "Pak deze plek 🙋",
+        "city": "Jouw stad hier? 🌍"
+      }
     },
     "rivals": {
       "title": "Jij vs {{city}}",

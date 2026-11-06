@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring, withTiming, Easing } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Confetti, tint } from '@/ui/joy';
+import { Confetti, FlagSticker, tint } from '@/ui/joy';
 
 /** Podium block colors: gold, silver, bronze. */
 export const MEDAL = ['#FFC93C', '#C9CED6', '#E3A06B'];
@@ -43,6 +44,8 @@ export function Movement({ rank, prevRank, show }: { rank: number; prevRank: num
 }
 
 export type PodiumItem = { key: string; rank: number; label: string; lead: ReactNode; value: number; format: (n: number) => string; onPress?: () => void };
+/** An empty podium place, as an invitation: "Your photo here? 📸", a tap goes to the camera or Today. */
+export type PodiumGhost = { label: string; onPress: () => void };
 
 // Confetti once per session, the first time a podium shows.
 let celebrated = false;
@@ -50,15 +53,18 @@ let celebrated = false;
 /**
  * The top 3 on gold, silver and bronze blocks of different heights (2-1-3),
  * a crown on #1; the blocks rise in, the numbers count up, and the first
- * podium of the session gets a little confetti.
+ * podium of the session gets a little confetti. With fewer than 3, the missing
+ * places are dashed ghost blocks (`ghost`): never a lone block in empty space.
  */
-export function Podium({ items }: { items: PodiumItem[] }) {
+export function Podium({ items, ghost }: { items: PodiumItem[]; ghost?: PodiumGhost }) {
   const styles = useThemedStyles(makeStyles);
   const [party] = useState(() => { const first = !celebrated && items.length > 0; if (first) celebrated = true; return first; });
   const order = [items[1], items[0], items[2]];
   return (
     <View style={styles.podium} testID="ranks-podium">
-      {order.map((it, i) => (it ? <PodiumStep key={it.key} item={it} delay={[120, 0, 240][i]} /> : <View key={`empty-${i}`} style={styles.step} />))}
+      {order.map((it, i) => (it ? <PodiumStep key={it.key} item={it} delay={[120, 0, 240][i]} />
+        : ghost ? <GhostStep key={`ghost-${i}`} rank={[2, 1, 3][i]} ghost={ghost} />
+        : <View key={`empty-${i}`} style={styles.step} />))}
       <Confetti run={party} count={30} />
     </View>
   );
@@ -87,6 +93,65 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
         <Text style={styles.blockRank}>{item.rank}</Text>
       </Animated.View>
     </Pressable>
+  );
+}
+
+/** A missing podium place: a dashed block in its medal color, a camera, "Your photo here? 📸". */
+function GhostStep({ rank, ghost }: { rank: number; ghost: PodiumGhost }) {
+  const styles = useThemedStyles(makeStyles);
+  const color = MEDAL[rank - 1];
+  return (
+    <Pressable style={styles.step} onPress={ghost.onPress} accessibilityRole="button" accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
+      <View style={styles.lead}>
+        <View style={[styles.ghostLead, { borderColor: color, backgroundColor: tint(color, 0.14) }]}>
+          <Ionicons name="camera-outline" size={24} color={color} />
+        </View>
+      </View>
+      <Text style={styles.ghostLabel} numberOfLines={2}>{ghost.label}</Text>
+      <View style={[styles.ghostBlock, { height: HEIGHTS[rank - 1], borderColor: color, backgroundColor: tint(color, 0.12) }]}>
+        <Text style={styles.ghostRank}>{rank}</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+/**
+ * The scope toggle: "🇻🇳 Saigon | 🌍 World", the flag of the city chosen in the header; the
+ * selected side on a gold thumb that slides across (still with reduced motion).
+ */
+export function ScopeToggle({ value, onChange, city, country, worldLabel }: {
+  value: 'city' | 'world'; onChange: (v: 'city' | 'world') => void; city: string; country: string | null | undefined; worldLabel: string;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const reduced = useReducedMotion();
+  const [w, setW] = useState<[number, number]>([0, 0]);
+  const x = useSharedValue(0);
+  const tw = useSharedValue(0);
+  useEffect(() => {
+    const left = value === 'city' ? 0 : w[0];
+    const width = value === 'city' ? w[0] : w[1];
+    if (!width) return;
+    const first = tw.value === 0;
+    x.value = reduced || first ? left : withTiming(left, { duration: 220, easing: Easing.out(Easing.cubic) });
+    tw.value = reduced || first ? width : withTiming(width, { duration: 220, easing: Easing.out(Easing.cubic) });
+  }, [value, w[0], w[1], reduced]); // eslint-disable-line react-hooks/exhaustive-deps
+  const thumb = useAnimatedStyle(() => ({ width: tw.value, transform: [{ translateX: x.value }], opacity: tw.value ? 1 : 0 }));
+  const side = (v: 'city' | 'world', label: ReactNode, a11y: string, i: 0 | 1) => (
+    <Pressable onPress={() => { if (v !== value) onChange(v); }} style={styles.toggleSide} accessibilityRole="tab" accessibilityState={{ selected: value === v }}
+               accessibilityLabel={a11y} testID={`ranks-scope-${v}`}
+               onLayout={e => { const lw = e.nativeEvent.layout.width; setW(prev => (Math.abs(prev[i] - lw) < 0.5 ? prev : (i === 0 ? [lw, prev[1]] : [prev[0], lw]))); }}>
+      {label}
+    </Pressable>
+  );
+  return (
+    <View style={styles.toggle} accessibilityRole="tablist">
+      <Animated.View style={[styles.toggleThumb, thumb]} />
+      {side('city', <>
+        <FlagSticker country={country} size={16} />
+        <Text style={[styles.toggleText, value === 'city' && styles.toggleTextOn, styles.toggleCity]} numberOfLines={1}>{city}</Text>
+      </>, city, 0)}
+      {side('world', <Text style={[styles.toggleText, value === 'world' && styles.toggleTextOn]} numberOfLines={1}>🌍 {worldLabel}</Text>, worldLabel, 1)}
+    </View>
   );
 }
 
@@ -150,6 +215,16 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   podiumValue: { fontSize: 13, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: 6 },
   block:       { width: '100%', borderTopLeftRadius: 14, borderTopRightRadius: 14, alignItems: 'center', paddingTop: 8, overflow: 'hidden' },
   blockRank:   { fontSize: 26, lineHeight: 32, fontWeight: '900', color: '#2A1C13' },
+  ghostLead:   { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
+  ghostLabel:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 6, minHeight: 34 },
+  ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: 6 },
+  ghostRank:   { fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.muted },
+  toggle:      { flexDirection: 'row', alignItems: 'center', height: 34, padding: 3, borderRadius: 17, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, flexShrink: 0 },
+  toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: MEDAL[0] },
+  toggleSide:  { flexDirection: 'row', alignItems: 'center', gap: 5, height: 28, paddingHorizontal: 10 },
+  toggleText:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text },
+  toggleTextOn: { color: c.onGold },
+  toggleCity:  { maxWidth: 96 },
   row:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 12, borderRadius: Radius.card },
   rowMine:     { backgroundColor: c.primaryTint },
   rank:        { width: 28, fontSize: 16, fontWeight: '900', color: c.muted, textAlign: 'center' },

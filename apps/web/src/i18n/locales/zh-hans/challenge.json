@@ -1598,7 +1598,12 @@
         "dismiss": "关闭"
       },
       "timeLeft_other": "⏳ 还剩 {{count}} 小时投票",
-      "pts_other": "{{count}} 分"
+      "pts_other": "{{count}} 分",
+      "ghost": {
+        "photo": "你的照片放这里？📸",
+        "player": "抢下这个位置 🙋",
+        "city": "你的城市放这里？🌍"
+      }
     },
     "rivals": {
       "title": "你 vs {{city}}",

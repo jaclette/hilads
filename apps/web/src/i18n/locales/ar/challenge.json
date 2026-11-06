@@ -1761,7 +1761,7 @@
       "period": {
         "today": "اليوم",
         "yesterday": "أمس",
-        "week": "هذا الأسبوع",
+        "week": "الأسبوع",
         "alltime": "كل الأوقات"
       },
       "scope": {
@@ -1818,7 +1818,12 @@
       "pts_two": "نقطتان",
       "pts_few": "{{count}} نقاط",
       "pts_many": "{{count}} نقطة",
-      "pts_other": "{{count}} نقطة"
+      "pts_other": "{{count}} نقطة",
+      "ghost": {
+        "photo": "صورتك هنا؟ 📸",
+        "player": "خذ هذا المركز 🙋",
+        "city": "مدينتك هنا؟ 🌍"
+      }
     },
     "rivals": {
       "title": "أنت ضد {{city}}",

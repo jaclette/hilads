@@ -1561,7 +1561,7 @@
       "period": {
         "today": "Hôm nay",
         "yesterday": "Hôm qua",
-        "week": "Tuần này",
+        "week": "Tuần",
         "alltime": "Mọi lúc"
       },
       "scope": {
@@ -1598,7 +1598,12 @@
         "dismiss": "Đóng"
       },
       "timeLeft_other": "⏳ Còn {{count}} giờ để bình chọn",
-      "pts_other": "{{count}} điểm"
+      "pts_other": "{{count}} điểm",
+      "ghost": {
+        "photo": "Ảnh của bạn ở đây? 📸",
+        "player": "Giành vị trí này 🙋",
+        "city": "Thành phố của bạn ở đây? 🌍"
+      }
     },
     "rivals": {
       "title": "Bạn vs {{city}}",

@@ -893,7 +893,7 @@
     "period": {
       "today": "Ngayon",
       "yesterday": "Kahapon",
-      "week": "Ngayong linggo",
+      "week": "Linggo",
       "alltime": "All time"
     },
     "scope": {
@@ -934,7 +934,12 @@
     "timeLeft_one": "⏳ {{count}} oras na lang para mag-vote",
     "timeLeft_other": "⏳ {{count}} oras na lang para mag-vote",
     "pts_one": "{{count}} pt",
-    "pts_other": "{{count}} pts"
+    "pts_other": "{{count}} pts",
+    "ghost": {
+      "photo": "Litrato mo rito? 📸",
+      "player": "Kunin ang puwestong ito 🙋",
+      "city": "Lungsod mo rito? 🌍"
+    }
   },
   "rivals": {
     "title": "Ikaw vs {{city}}",

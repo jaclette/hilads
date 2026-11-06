@@ -1305,7 +1305,7 @@ export default function App() {
   // V6: the notification preferences, their own page (from the ⚙️ of Notifications).
   const [showNotifSettings, setShowNotifSettings] = useState(false)
   // V6: what the Ranks tab opens on (a deep link, a notification, Passport).
-  const [ranksParams, setRanksParams] = useState({ tab: 'photos', period: 'today', scope: 'world', at: 0 })
+  const [ranksParams, setRanksParams] = useState({ tab: 'photos', period: 'today', scope: null, at: 0 })
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
   const [liveNotif, setLiveNotif] = useState(null)  // the last notification pushed live (WS newNotification)
@@ -4049,7 +4049,7 @@ export default function App() {
   }
 
   // V6: the Ranks tab, on a segment (photos / players / cities), period and scope.
-  function openRanks({ tab = 'photos', period = 'today', scope = 'world', cityId = null } = {}) {
+  function openRanks({ tab = 'photos', period = 'today', scope = null, cityId = null } = {}) {
     setShowCityPicker(false)
     setShowEventDrawer(false)
     setShowPeopleDrawer(false)
@@ -5201,6 +5201,8 @@ export default function App() {
     // V6: the notifications (the "While you were away" card) and the Ranks tab.
     openNotifications: () => setShowNotifications(true),
     openRanks: (params) => openRanks(params),
+    // Ranks' empty podium places lead to Today.
+    openToday: () => goToTodayTab(),
   }
 
   return (

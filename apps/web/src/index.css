@@ -18295,13 +18295,27 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .r6-body { padding-bottom: 96px; }
 .r6-controls { padding: 6px 16px 0; display: flex; flex-direction: column; gap: 10px; }
 .r6-seg { display: flex; }
-.r6-seg .leaderboard-seg-item { flex: 1; }
-.r6-chips { display: flex; gap: 8px; align-items: center; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
-.r6-chips::-webkit-scrollbar { display: none; }
-.r6-chip { flex-shrink: 0; height: 36px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text);
+.r6-seg .leaderboard-seg-item { flex: 1; min-width: 0; padding: 0 6px; }
+.r6-chips { display: flex; gap: 6px; }   /* V6.4: equal chips across the width, no scrolling */
+.r6-chip { flex: 1; min-width: 0; height: 36px; padding: 0 6px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text);
   font-size: 14px; font-weight: 800; cursor: pointer; white-space: nowrap; }
-.r6-sep { width: 1px; height: 20px; background: var(--line); flex-shrink: 0; }
-.r6-banner { margin: 8px 16px 0; padding: 8px 12px; border-radius: 16px; background: var(--primary-tint); color: var(--primary-on-tint); font-size: 14px; font-weight: 800; text-align: center; }
+.r6-fit { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* The info line (time left to vote) on the left, the scope toggle on the right (same place with no text). */
+.r6-info-row { display: flex; align-items: center; gap: 10px; min-height: 34px; padding-bottom: 4px; }
+.r6-info { flex: 1; min-width: 0; font-size: 14px; font-weight: 800; color: var(--text); }
+.r6-scope { position: relative; flex-shrink: 0; display: inline-flex; align-items: center; height: 34px; padding: 3px; border-radius: 17px; background: var(--surface); border: 1.5px solid var(--line); }
+.r6-scope-thumb { position: absolute; top: 3px; bottom: 3px; border-radius: 14px; background: #FFC93C; transition: left 0.22s cubic-bezier(.22,1,.36,1), width 0.22s cubic-bezier(.22,1,.36,1); }
+.r6-scope-side { font-family: inherit; position: relative; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border: 0; background: none; border-radius: 14px;
+  font-size: 13px; font-weight: 800; color: var(--text); cursor: pointer; white-space: nowrap; }
+.r6-scope-side.is-on { color: #1A1206; }
+.r6-scope-city { max-width: 96px; overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: reduce) { .r6-scope-thumb { transition: none; } }
+/* An empty podium place: dashed in its medal color, a camera, "Your photo here? 📸". */
+.r6-ghost-lead { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%;
+  border: 2px dashed var(--medal); color: var(--medal); background: color-mix(in srgb, var(--medal) 14%, transparent); }
+.r6-ghost-label { font-family: inherit; font-size: 13px; line-height: 17px; font-weight: 800; color: var(--text); text-align: center; margin-bottom: 6px; min-height: 34px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.r6-block.r6-ghost-block { background: color-mix(in srgb, var(--medal) 12%, transparent); border: 2px dashed var(--medal); border-radius: 14px; color: var(--muted); font-size: 24px; }
 .r6-podium { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 8px; padding: 12px 16px 4px; overflow: hidden; }
 .r6-step { flex: 1; max-width: 130px; display: flex; flex-direction: column; align-items: center; background: none; border: 0; padding: 0; cursor: pointer; color: inherit;
   animation: r6-rise 0.55s cubic-bezier(.34,1.56,.64,1) both; }

@@ -6,7 +6,7 @@ import { thumbUrl } from '../../lib/imageThumb'
 import AvatarWithFlag from '../AvatarWithFlag'
 import { FlagSticker, themeColor } from '../joy/Joy'
 import { getLastToday, useDaily, useDc } from '../daily/dailyShared'
-import { MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, YouBar } from './parts'
+import { FitText, MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
 
 const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
 const GOLD = themeColor('sip')
@@ -17,18 +17,24 @@ const GOLD = themeColor('sip')
  * city or the World. A podium for the top 3, a list with movement since
  * yesterday, a sticky "You" bar. `initial`: {tab, period, scope, cityId} from
  * a deep link, a notification or Passport.
+ * Filters (V6.4): the periods as equal chips (no scrolling), then the info line
+ * with the scope toggle on its right ("🇻🇳 Saigon | 🌍 World", the header's city;
+ * none on Cities); a podium short of 3 shows dashed ghost places leading to Today.
  */
 export default function RanksScreen({ header, initial }) {
   const { t } = useDc()
-  const { cityId: browsedCity } = useDaily()
+  const { cityId: browsedCity, openToday } = useDaily()
   const [tab, setTab] = useState(initial?.tab ?? 'photos')
   const [period, setPeriod] = useState(initial?.period ?? 'today')
-  const [scope, setScope] = useState(initial?.scope ?? 'world')
+  // The scope follows the city chosen in the header (World without one).
+  const [scope, setScope] = useState(initial?.scope ?? 'city')
   const [resp, setResp] = useState(null)
   const [failed, setFailed] = useState(false)
   const cityId = Number(initial?.cityId) || Number(browsedCity) || null
   const cityName = getLastToday()?.city?.name ?? null
-  const key = `${tab}|${period}|${scope}|${cityId}`
+  const cityCountry = getLastToday()?.city?.country ?? null
+  const scopeNow = cityId ? scope : 'world'
+  const key = `${tab}|${period}|${scopeNow}|${cityId}`
   // Each answer is kept with what it was asked for: a view only gets its own shape.
   const data = resp?.key === key ? resp.data : null
 
@@ -43,12 +49,23 @@ export default function RanksScreen({ header, initial }) {
   useEffect(() => {
     let alive = true
     setFailed(false)
-    fetchRanks(tab, { period, scope, cityId })
+    fetchRanks(tab, { period, scope: scopeNow, cityId })
       .then(d => { if (alive) setResp({ key, data: d }) })
       .catch(() => { if (alive) setFailed(true) })
-    track('ranks_viewed', { tab, period, scope, platform_surface: 'web' })
+    track('ranks_viewed', { tab, period, scope: scopeNow, platform_surface: 'web' })
     return () => { alive = false }
   }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The info line (today's photos: the time left to vote), on the left of the scope toggle.
+  const endsAt = tab === 'photos' && period === 'today' ? data?.endsAt ?? null : null
+  const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3600000)) : null
+  const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')
+  const showToggle = tab !== 'cities' && !!cityId
+  // An empty podium place leads to Today (the web has no camera: photos are taken in the app).
+  const ghost = {
+    label: t(tab === 'photos' ? 'ranks.ghost.photo' : tab === 'players' ? 'ranks.ghost.player' : 'ranks.ghost.city'),
+    onClick: () => { track('ranks_ghost_tapped', { tab, period, platform_surface: 'web' }); openToday() },
+  }
 
   return (
     <div className="full-page full-page--tab r6-page">
@@ -58,30 +75,34 @@ export default function RanksScreen({ header, initial }) {
           <div className="leaderboard-seg r6-seg" role="tablist">
             {['photos', 'players', 'cities'].map(k => (
               <button key={k} type="button" role="tab" aria-selected={tab === k} className={`leaderboard-seg-item${tab === k ? ' is-active' : ''}`} onClick={() => setTab(k)}>
-                {t(`ranks.seg.${k}`)}
+                <FitText>{t(`ranks.seg.${k}`)}</FitText>
               </button>
             ))}
           </div>
-          <div className="r6-chips">
-            {PERIODS[tab].map(p => <Chip key={p} on={period === p} onClick={() => setPeriod(p)}>{t(`ranks.period.${p}`)}</Chip>)}
-            {tab !== 'cities' && <span className="r6-sep" />}
-            {tab !== 'cities' && ['city', 'world'].map(s => (
-              <Chip key={s} on={scope === s} onClick={() => setScope(s)}>
-                {s === 'city' ? (cityName ? shortCityName(cityName) : t('ranks.scope.city')) : t('ranks.scope.world')}
-              </Chip>
-            ))}
+          {/* The periods: equal chips across the width, no scrolling (nothing hidden off screen). */}
+          <div className="r6-chips" role="tablist">
+            {PERIODS[tab].map(p => <Chip key={p} on={period === p} onClick={() => setPeriod(p)}><FitText>{t(`ranks.period.${p}`)}</FitText></Chip>)}
           </div>
+          {(showToggle || info) && (
+            <div className="r6-info-row">
+              <span className="r6-info"><FitText min={0.75}>{info}</FitText></span>
+              {showToggle && (
+                <ScopeToggle value={scope} onChange={setScope} worldLabel={t('ranks.scope.world')} country={cityCountry}
+                             city={cityName ? shortCityName(cityName) : t('ranks.scope.city')} />
+              )}
+            </div>
+          )}
         </div>
-        {tab === 'photos' && <Photos data={data} failed={failed} period={period} />}
-        {tab === 'players' && <Players data={data} failed={failed} period={period} />}
-        {tab === 'cities' && <Cities data={data} failed={failed} period={period} myCityId={Number(browsedCity) || null} />}
+        {tab === 'photos' && <Photos data={data} failed={failed} period={period} ghost={ghost} />}
+        {tab === 'players' && <Players data={data} failed={failed} period={period} ghost={ghost} />}
+        {tab === 'cities' && <Cities data={data} failed={failed} period={period} myCityId={Number(browsedCity) || null} ghost={ghost} />}
       </div>
     </div>
   )
 }
 
 function Chip({ on, onClick, children }) {
-  return <button type="button" className={`r6-chip${on ? ' r6-chip--on' : ''}`} style={on ? { background: GOLD.fill, borderColor: GOLD.fill, color: GOLD.onFill } : undefined} onClick={onClick}>{children}</button>
+  return <button type="button" role="tab" aria-selected={on} className={`r6-chip${on ? ' r6-chip--on' : ''}`} style={on ? { background: GOLD.fill, borderColor: GOLD.fill, color: GOLD.onFill } : undefined} onClick={onClick}>{children}</button>
 }
 
 function Empty({ text, failed, loading }) {
@@ -92,13 +113,12 @@ function Empty({ text, failed, loading }) {
 
 const handle = (u) => (u?.username ? `@${u.username}` : u?.displayName ?? '')
 
-function Photos({ data, failed, period }) {
+function Photos({ data, failed, period, ghost }) {
   const { t } = useDc()
   const { openDaily } = useDaily()
   const items = data?.items ?? []
   const proofs = items.map(i => i.proof)
   const open = (list, p) => openDaily('photos', { list, proofId: p.id, source: 'ranks' })
-  const hours = data?.endsAt ? Math.max(0, Math.floor((data.endsAt * 1000 - Date.now()) / 3600000)) : null
   const grid = period === 'week' || period === 'alltime'
   const podium = items.slice(0, 3).map(i => ({
     key: i.proof.id, rank: i.rank, label: handle(i.proof.user), value: i.proof.voteCount, format: n => `${n} ❤️`, onClick: () => open(proofs, i.proof),
@@ -107,9 +127,8 @@ function Photos({ data, failed, period }) {
   if (!data) return <Empty loading={!failed} failed={failed} />
   return (
     <>
-      {period === 'today' && hours !== null && <p className="r6-banner">{hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')}</p>}
       {!items.length && <Empty text={t('ranks.empty.photos')} />}
-      {items.length > 0 && !grid && <Podium items={podium} />}
+      {items.length > 0 && !grid && <Podium items={podium} ghost={ghost} />}
       {period === 'yesterday' && data.cityBest?.length > 0 && (
         <div className="r6-best">
           <h3>{t('ranks.bestPerCity')}</h3>
@@ -146,7 +165,7 @@ function Photos({ data, failed, period }) {
   )
 }
 
-function Players({ data, failed, period }) {
+function Players({ data, failed, period, ghost }) {
   const { t } = useDc()
   const { openProfile } = useDaily()
   const rows = useRef({})
@@ -162,7 +181,7 @@ function Players({ data, failed, period }) {
   return (
     <>
       {!entries.length && <Empty text={t('ranks.empty.players')} />}
-      {entries.length > 0 && <Podium items={podium} />}
+      {entries.length > 0 && <Podium items={podium} ghost={ghost} />}
       <div className="r6-list r6-list--you">
         {entries.slice(3).map(e => (
           <RankRow key={e.user.id} rowRef={el => { rows.current[e.user.id] = el }} rank={e.rank} title={handle(e.user)} value={pts(e.points)} mine={me?.user.id === e.user.id}
@@ -177,7 +196,7 @@ function Players({ data, failed, period }) {
   )
 }
 
-function Cities({ data, failed, period, myCityId }) {
+function Cities({ data, failed, period, myCityId, ghost }) {
   const { t } = useDc()
   const { openDaily } = useDaily()
   const rows = useRef({})
@@ -197,7 +216,7 @@ function Cities({ data, failed, period, myCityId }) {
     <>
       {line && <p className="r6-fun">{mine && <FlagSticker country={mine.city.country} size={22} />}<span>{line}</span></p>}
       {!entries.length && <Empty text={t('ranks.empty.cities')} />}
-      {entries.length > 0 && <Podium items={podium} />}
+      {entries.length > 0 && <Podium items={podium} ghost={ghost} />}
       <div className="r6-list r6-list--you">
         {entries.map((e, i) => (
           <RankRow key={e.city.id} rowRef={el => { rows.current[e.city.id] = el }} rank={e.rank} title={name(e.city)} value={t('today.proofs', { count: e.photos })}

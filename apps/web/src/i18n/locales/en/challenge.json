@@ -1601,7 +1601,7 @@
       "period": {
         "today": "Today",
         "yesterday": "Yesterday",
-        "week": "This week",
+        "week": "Week",
         "alltime": "All time"
       },
       "scope": {
@@ -1642,7 +1642,12 @@
       "timeLeft_one": "⏳ {{count}} hour left to vote",
       "timeLeft_other": "⏳ {{count}} hours left to vote",
       "pts_one": "{{count}} pt",
-      "pts_other": "{{count}} pts"
+      "pts_other": "{{count}} pts",
+      "ghost": {
+        "photo": "Your photo here? 📸",
+        "player": "Take this spot 🙋",
+        "city": "Your city here? 🌍"
+      }
     },
     "rivals": {
       "title": "You vs {{city}}",

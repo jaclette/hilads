@@ -1601,7 +1601,7 @@
       "period": {
         "today": "Heute",
         "yesterday": "Gestern",
-        "week": "Diese Woche",
+        "week": "Woche",
         "alltime": "Allzeit"
       },
       "scope": {
@@ -1642,7 +1642,12 @@
       "timeLeft_one": "⏳ Noch {{count}} Stunde zum Abstimmen",
       "timeLeft_other": "⏳ Noch {{count}} Stunden zum Abstimmen",
       "pts_one": "{{count}} Pkt.",
-      "pts_other": "{{count}} Pkt."
+      "pts_other": "{{count}} Pkt.",
+      "ghost": {
+        "photo": "Dein Foto hier? 📸",
+        "player": "Hol dir den Platz 🙋",
+        "city": "Deine Stadt hier? 🌍"
+      }
     },
     "rivals": {
       "title": "Du vs {{city}}",

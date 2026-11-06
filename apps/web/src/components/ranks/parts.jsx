@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import Icon from '../Icon'
+import { FlagSticker } from '../joy/Joy'
 import { useDc } from '../daily/dailyShared'
 
 /** Podium block colors: gold, silver, bronze. */
@@ -49,8 +51,11 @@ export function Confetti({ run }) {
 
 let celebrated = false   // confetti once per session, the first podium shown
 
-/** The top 3 on gold, silver and bronze blocks (2-1-3), a crown on #1, rising blocks, counting numbers. */
-export function Podium({ items }) {
+/**
+ * The top 3 on gold, silver and bronze blocks (2-1-3), a crown on #1, rising blocks, counting numbers.
+ * With fewer than 3, the missing places are dashed ghosts (`ghost`: {label, onClick}), never a lone block.
+ */
+export function Podium({ items, ghost }) {
   const [party] = useState(() => { const first = !celebrated && items.length > 0; if (first) celebrated = true; return first })
   const order = [items[1], items[0], items[2]]
   return (
@@ -63,9 +68,65 @@ export function Podium({ items }) {
           <CountUp value={it.value} format={it.format} className="r6-podium-value" />
           <span className={`r6-block r6-block--${it.rank}`} style={{ background: MEDAL[it.rank - 1] }}><span>{it.rank}</span></span>
         </button>
+      ) : ghost ? (
+        <button key={`g${i}`} type="button" className="r6-step r6-step--ghost" onClick={ghost.onClick} aria-label={`#${[2, 1, 3][i]} ${ghost.label}`}
+                style={{ '--medal': MEDAL[[2, 1, 3][i] - 1], animationDelay: `${[120, 0, 240][i]}ms` }}>
+          <span className="r6-lead"><span className="r6-ghost-lead"><Icon name="camera-outline" size={24} /></span></span>
+          <span className="r6-ghost-label">{ghost.label}</span>
+          <span className={`r6-block r6-block--${[2, 1, 3][i]} r6-ghost-block`}><span>{[2, 1, 3][i]}</span></span>
+        </button>
       ) : <span key={`e${i}`} className="r6-step" />))}
       <Confetti run={party} />
     </div>
+  )
+}
+
+/** Text on one line that shrinks (to `min` of its size) rather than being cut when its box is too narrow. */
+export function FitText({ children, min = 0.7 }) {
+  const ref = useRef(null)
+  const [scale, setScale] = useState(1)
+  const now = useRef(1)
+  now.current = scale
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return undefined
+    const measure = () => {
+      const full = el.scrollWidth / now.current
+      const room = el.clientWidth
+      setScale(full > room && full > 0 ? Math.max(min, Math.floor((room / full) * 100) / 100) : 1)
+    }
+    measure()
+    document.fonts?.ready?.then(measure).catch(() => {})   // the web font changes the width once loaded
+    if (typeof ResizeObserver === 'undefined') return undefined
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [children, min])
+  return <span ref={ref} className="r6-fit" style={scale < 1 ? { fontSize: `${scale}em` } : undefined}>{children}</span>
+}
+
+/**
+ * The scope toggle: "🇻🇳 Saigon | 🌍 World" (the flag of the header's city); the selected side
+ * on a gold thumb that slides across (still with reduced motion), a little vibration.
+ */
+export function ScopeToggle({ value, onChange, city, country, worldLabel }) {
+  const box = useRef(null)
+  const [thumb, setThumb] = useState(null)
+  useLayoutEffect(() => {
+    const el = box.current?.querySelector(`[data-scope="${value}"]`)
+    if (el) setThumb({ left: el.offsetLeft, width: el.offsetWidth })
+  }, [value, city, worldLabel])
+  const pick = (v) => { if (v === value) return; navigator.vibrate?.(8); onChange(v) }
+  return (
+    <span ref={box} className="r6-scope" role="tablist">
+      {thumb && <span className="r6-scope-thumb" style={{ left: thumb.left, width: thumb.width }} aria-hidden="true" />}
+      <button type="button" role="tab" data-scope="city" aria-selected={value === 'city'} className={`r6-scope-side${value === 'city' ? ' is-on' : ''}`} onClick={() => pick('city')}>
+        <FlagSticker country={country} size={16} /><span className="r6-scope-city">{city}</span>
+      </button>
+      <button type="button" role="tab" data-scope="world" aria-selected={value === 'world'} className={`r6-scope-side${value === 'world' ? ' is-on' : ''}`} onClick={() => pick('world')}>
+        🌍 {worldLabel}
+      </button>
+    </span>
   )
 }
 

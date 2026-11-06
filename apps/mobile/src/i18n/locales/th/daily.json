@@ -851,7 +851,7 @@
     "period": {
       "today": "วันนี้",
       "yesterday": "เมื่อวาน",
-      "week": "สัปดาห์นี้",
+      "week": "สัปดาห์",
       "alltime": "ตลอดกาล"
     },
     "scope": {
@@ -888,7 +888,12 @@
       "dismiss": "ปิด"
     },
     "timeLeft_other": "⏳ เหลือเวลาโหวตอีก {{count}} ชั่วโมง",
-    "pts_other": "{{count}} แต้ม"
+    "pts_other": "{{count}} แต้ม",
+    "ghost": {
+      "photo": "รูปของคุณตรงนี้? 📸",
+      "player": "คว้าที่นี้ไปเลย 🙋",
+      "city": "เมืองของคุณตรงนี้? 🌍"
+    }
   },
   "rivals": {
     "title": "คุณ vs {{city}}",

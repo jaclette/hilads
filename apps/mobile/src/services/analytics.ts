@@ -116,6 +116,7 @@ export type AnalyticsEvent =
   | 'today_countries_sort'
   // V6
   | 'ranks_viewed'
+  | 'ranks_ghost_tapped'
   | 'rivals_opened'
   | 'rival_challenge_shared'
   | 'map_surprise'

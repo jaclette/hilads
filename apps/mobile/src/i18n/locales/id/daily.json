@@ -851,7 +851,7 @@
     "period": {
       "today": "Hari ini",
       "yesterday": "Kemarin",
-      "week": "Minggu ini",
+      "week": "Minggu",
       "alltime": "Sepanjang masa"
     },
     "scope": {
@@ -888,7 +888,12 @@
       "dismiss": "Tutup"
     },
     "timeLeft_other": "⏳ Sisa {{count}} jam untuk vote",
-    "pts_other": "{{count}} poin"
+    "pts_other": "{{count}} poin",
+    "ghost": {
+      "photo": "Fotomu di sini? 📸",
+      "player": "Ambil posisi ini 🙋",
+      "city": "Kotamu di sini? 🌍"
+    }
   },
   "rivals": {
     "title": "Kamu vs {{city}}",

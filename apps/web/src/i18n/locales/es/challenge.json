@@ -1639,7 +1639,7 @@
       "period": {
         "today": "Hoy",
         "yesterday": "Ayer",
-        "week": "Esta semana",
+        "week": "Semana",
         "alltime": "Histórico"
       },
       "scope": {
@@ -1684,7 +1684,12 @@
       "timeLeft_many": "⏳ Quedan {{count}} horas para votar",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pts",
-      "pts_many": "{{count}} pts"
+      "pts_many": "{{count}} pts",
+      "ghost": {
+        "photo": "¿Tu foto aquí? 📸",
+        "player": "Quédate este puesto 🙋",
+        "city": "¿Tu ciudad aquí? 🌍"
+      }
     },
     "rivals": {
       "title": "Tú vs {{city}}",

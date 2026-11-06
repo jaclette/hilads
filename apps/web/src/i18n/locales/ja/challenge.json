@@ -1598,7 +1598,12 @@
         "dismiss": "閉じる"
       },
       "timeLeft_other": "⏳ 投票はあと{{count}}時間",
-      "pts_other": "{{count}}pt"
+      "pts_other": "{{count}}pt",
+      "ghost": {
+        "photo": "ここに君の写真を? 📸",
+        "player": "この順位を取ろう 🙋",
+        "city": "ここに君の街を? 🌍"
+      }
     },
     "rivals": {
       "title": "あなた vs {{city}}",

@@ -21,7 +21,7 @@ import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
-import { MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumItem } from '@/features/ranks/parts';
+import { MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
 
 const PERIODS: Record<RanksTab, RanksPeriod[]> = {
   photos:  ['today', 'yesterday', 'week', 'alltime'],
@@ -34,6 +34,10 @@ const PERIODS: Record<RanksTab, RanksPeriod[]> = {
  * week or all time (photos: also yesterday's results), in my city or the World.
  * A podium for the top 3, then a list with movement since yesterday, and a
  * sticky "You" bar. Deep links: /ranks?tab=&period=&scope=.
+ * Filters (V6.4): the periods as equal chips across the width (no scrolling),
+ * then the info line (time left to vote) with the scope toggle on its right
+ * ("🇻🇳 Saigon | 🌍 World", the header's city; none on Cities). A podium short
+ * of 3 shows the missing places as dashed ghosts that lead to the camera or Today.
  */
 export default function RanksScreen() {
   return <SeasonalScope><RanksContent /></SeasonalScope>;
@@ -48,7 +52,8 @@ function RanksContent() {
   const params = useLocalSearchParams<{ tab?: string; period?: string; scope?: string; cityId?: string }>();
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
-  const [scope, setScope] = useState<RanksScope>('world');
+  // The scope follows the city chosen in the header (World without one).
+  const [scope, setScope] = useState<RanksScope>('city');
   // Each response is kept with what it was asked for: a view only ever gets its own shape (switching
   // tabs, or a slow answer for the previous tab, used to hand Cities rows to the Players view).
   const [resp, setResp] = useState<{ key: string; data: PlayersRanks | CitiesRanks | PhotosRanks } | null>(null);
@@ -58,7 +63,8 @@ function RanksContent() {
   // A rank-up notification names its city (cityId); else my city.
   const myCityId = city?.channelId ? Number(String(city.channelId).replace('city_', '')) || null : null;
   const cityId = Number(params.cityId) || myCityId;
-  const key = `${tab}|${period}|${scope}|${cityId}`;
+  const scopeNow: RanksScope = cityId ? scope : 'world';
+  const key = `${tab}|${period}|${scopeNow}|${cityId}`;
   const data = resp?.key === key ? resp.data : null;
 
   // A deep link (push, Passport, a notification) picks the segment, period and scope.
@@ -75,33 +81,54 @@ function RanksContent() {
     setFailed(false);
     const asked = key;
     try {
-      const o = { period, scope, cityId };
+      const o = { period, scope: scopeNow, cityId };
       const next = tab === 'players' ? await fetchRanks('players', o) : tab === 'cities' ? await fetchRanks('cities', o) : await fetchRanks('photos', o);
       setResp({ key: asked, data: next });
     } catch {
       setFailed(true);
     }
-  }, [tab, period, scope, cityId, key]);
-  useEffect(() => { load(); track('ranks_viewed', { tab, period, scope }); }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tab, period, scopeNow, cityId, key]);
+  useEffect(() => { load(); track('ranks_viewed', { tab, period, scope: scopeNow }); }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
   const pick = <T,>(set: (v: T) => void, v: T) => { Haptics.selectionAsync().catch(() => {}); set(v); };
+
+  // The info line (today's photos: the time left to vote), on the left of the scope toggle.
+  const endsAt = tab === 'photos' && period === 'today' ? (data as PhotosRanks | null)?.endsAt ?? null : null;
+  const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3_600_000)) : null;
+  const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin');
+  const showToggle = tab !== 'cities' && !!cityId;
+  // An empty podium place sends to the camera (today's photos) or to Today.
+  const ghost: PodiumGhost = {
+    label: t(tab === 'photos' ? 'ranks.ghost.photo' : tab === 'players' ? 'ranks.ghost.player' : 'ranks.ghost.city'),
+    onPress: () => {
+      Haptics.selectionAsync().catch(() => {});
+      track('ranks_ghost_tapped', { tab, period });
+      if (tab === 'photos' && period === 'today') router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
+      else router.navigate('/(tabs)/today' as never);
+    },
+  };
 
   const header = (
     <View style={styles.controls}>
       <Segmented<RanksTab> value={tab} onChange={v => pick(setTab, v)} options={[
         { key: 'photos', label: t('ranks.seg.photos') }, { key: 'players', label: t('ranks.seg.players') }, { key: 'cities', label: t('ranks.seg.cities') },
       ]} />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+      {/* The periods: equal chips across the width, no scrolling (nothing hidden off screen). */}
+      <View style={styles.periods} accessibilityRole="tablist">
         {PERIODS[tab].map(p => (
           <Chip key={p} on={period === p} label={t(`ranks.period.${p}`)} onPress={() => pick(setPeriod, p)} />
         ))}
-        {tab !== 'cities' && <View style={styles.sep} />}
-        {tab !== 'cities' && (['city', 'world'] as RanksScope[]).map(s => (
-          <Chip key={s} on={scope === s} label={s === 'city' ? (city?.name ? shortCityName(city.name) : t('ranks.scope.city')) : t('ranks.scope.world')}
-                onPress={() => pick(setScope, s)} />
-        ))}
-      </ScrollView>
+      </View>
+      {(showToggle || !!info) && (
+        <View style={styles.infoRow}>
+          <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
+          {showToggle && (
+            <ScopeToggle value={scope} onChange={v => pick(setScope, v)} worldLabel={t('ranks.scope.world')}
+                         city={city?.name ? shortCityName(city.name) : t('ranks.scope.city')} country={city?.country} />
+          )}
+        </View>
+      )}
     </View>
   );
 
@@ -109,10 +136,10 @@ function RanksContent() {
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header} testID="ranks-screen"><AppHeader /></View>
       <View style={styles.flex}>
-        {tab === 'photos' && <PhotosView data={data as PhotosRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} period={period} />}
-        {tab === 'players' && <PlayersView data={data as PlayersRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh}
+        {tab === 'photos' && <PhotosView data={data as PhotosRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} period={period} ghost={ghost} />}
+        {tab === 'players' && <PlayersView data={data as PlayersRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} ghost={ghost}
                                            period={period} list={list} onOpen={id => { if (canAccessProfile(account)) router.push(`/user/${id}` as never); }} />}
-        {tab === 'cities' && <CitiesView data={data as CitiesRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh}
+        {tab === 'cities' && <CitiesView data={data as CitiesRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} ghost={ghost}
                                          period={period} list={list} myCityId={cityId} />}
       </View>
     </SafeAreaView>
@@ -122,8 +149,8 @@ function RanksContent() {
 function Chip({ on, label, onPress }: { on: boolean; label: string; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   return (
-    <Pressable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }}>
-      <Text style={[styles.chipText, on && styles.chipTextOn]} numberOfLines={1}>{label}</Text>
+    <Pressable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }} accessibilityLabel={label}>
+      <Text style={[styles.chipText, on && styles.chipTextOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{label}</Text>
     </Pressable>
   );
 }
@@ -151,8 +178,8 @@ function useOpenPhoto() {
 
 // ── Photos ──────────────────────────────────────────────────────────────────
 
-function PhotosView({ data, header, failed, refreshing, onRefresh, period }: {
-  data: PhotosRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod;
+function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost }: {
+  data: PhotosRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod; ghost: PodiumGhost;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -161,7 +188,6 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period }: {
   const open = useOpenPhoto();
   const items = data?.items ?? [];
   const proofs = items.map(i => i.proof);
-  const hours = data?.endsAt ? Math.max(0, Math.floor((data.endsAt * 1000 - Date.now()) / 3_600_000)) : null;
   const grid = period === 'week' || period === 'alltime';
   const tile = (width - Spacing.md * 2 - 16) / 3;
 
@@ -174,8 +200,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period }: {
   const top = (
     <View>
       {header}
-      {period === 'today' && hours !== null && <Text style={styles.banner}>{hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')}</Text>}
-      {items.length > 0 && !grid && <Podium items={podium} />}
+      {items.length > 0 && !grid && <Podium items={podium} ghost={ghost} />}
       {period === 'yesterday' && !!data?.cityBest?.length && (
         <View style={styles.cityBest}>
           <Text style={styles.sectionTitle}>{t('ranks.bestPerCity')}</Text>
@@ -243,8 +268,8 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period }: {
 
 // ── Players ─────────────────────────────────────────────────────────────────
 
-function PlayersView({ data, header, failed, refreshing, onRefresh, period, list, onOpen }: {
-  data: PlayersRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod;
+function PlayersView({ data, header, failed, refreshing, onRefresh, period, list, onOpen, ghost }: {
+  data: PlayersRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod; ghost: PodiumGhost;
   list: React.RefObject<FlatList<unknown> | null>; onOpen: (userId: string) => void;
 }) {
   const styles = useThemedStyles(makeStyles);
@@ -269,7 +294,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
         ref={list as React.RefObject<FlatList<typeof rest[number]>>}
         data={rest}
         keyExtractor={e => e.user.id}
-        ListHeaderComponent={<View>{header}{entries.length > 0 && <Podium items={podium} />}</View>}
+        ListHeaderComponent={<View>{header}{entries.length > 0 && <Podium items={podium} ghost={ghost} />}</View>}
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
         ListEmptyComponent={entries.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.players')} failed={failed} /> : null}
@@ -295,8 +320,8 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
 
 // ── Cities ──────────────────────────────────────────────────────────────────
 
-function CitiesView({ data, header, failed, refreshing, onRefresh, period, list, myCityId }: {
-  data: CitiesRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod;
+function CitiesView({ data, header, failed, refreshing, onRefresh, period, list, myCityId, ghost }: {
+  data: CitiesRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod; ghost: PodiumGhost;
   list: React.RefObject<FlatList<unknown> | null>; myCityId: number | null;
 }) {
   const styles = useThemedStyles(makeStyles);
@@ -336,7 +361,7 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
                 <Text style={styles.funText}>{line}</Text>
               </View>
             )}
-            {entries.length > 0 && <Podium items={podium} />}
+            {entries.length > 0 && <Podium items={podium} ghost={ghost} />}
           </View>
         )}
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
@@ -368,16 +393,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   header:       { paddingHorizontal: Spacing.md, backgroundColor: c.bg },
   flex:         { flex: 1 },
   controls:     { paddingHorizontal: Spacing.md, paddingTop: 6, gap: 10 },
-  chips:        { gap: 8, paddingBottom: 6, alignItems: 'center' },
-  chip:         { height: 36, paddingHorizontal: 14, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
+  periods:      { flexDirection: 'row', gap: 6 },
+  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 34, paddingBottom: 4 },
+  info:         { flex: 1, minWidth: 0, fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
+  chip:         { flex: 1, minWidth: 0, alignItems: 'center', height: 36, paddingHorizontal: 6, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
   chipOn:       { backgroundColor: themeColor('sip').fill, borderColor: themeColor('sip').fill },
   chipText:     { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
   chipTextOn:   { color: themeColor('sip').onFill },
-  sep:          { width: 1, height: 20, backgroundColor: c.line, marginHorizontal: 2 },
   listPad:      { paddingBottom: 32 },
   rowPad:       { paddingHorizontal: Spacing.md - 4 },
-  banner:       { marginHorizontal: Spacing.md, marginTop: 8, paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.card,
-                  backgroundColor: c.primaryTint, color: c.primaryOnTint, fontSize: 14, fontWeight: '800', overflow: 'hidden', textAlign: 'center' },
   podiumPhoto:  { width: 72, height: 72, borderRadius: 16, borderWidth: 3, backgroundColor: c.bg3 },
   podiumAvatar: { borderRadius: 32, borderWidth: 3, padding: 1 },
   rowPhoto:     { width: 44, height: 44, borderRadius: 10, backgroundColor: c.bg3 },

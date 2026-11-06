@@ -1681,7 +1681,7 @@
       "period": {
         "today": "Сегодня",
         "yesterday": "Вчера",
-        "week": "На этой неделе",
+        "week": "Неделя",
         "alltime": "За всё время"
       },
       "scope": {
@@ -1730,7 +1730,12 @@
       "pts_one": "{{count}} очко",
       "pts_few": "{{count}} очка",
       "pts_many": "{{count}} очков",
-      "pts_other": "{{count}} очка"
+      "pts_other": "{{count}} очка",
+      "ghost": {
+        "photo": "Твоё фото здесь? 📸",
+        "player": "Займи это место 🙋",
+        "city": "Твой город здесь? 🌍"
+      }
     },
     "rivals": {
       "title": "Ты vs {{city}}",
