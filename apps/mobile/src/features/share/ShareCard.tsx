@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef } from 'react';
 import { PixelRatio, Text, View, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
+import { mediumUrl } from '@/lib/imageThumb';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { appFont } from '@/scaling';
@@ -55,7 +56,8 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
   const theme = content.type !== 'spot' && content.themeLabel ? content.themeLabel
     : content.theme ? themeName(content.theme, { city: content.city?.name }) : '';
   const kicker = content.type === 'spot' ? theme : [content.type === 'index' ? HILADS_INDEX : DAILY_CHALLENGE, theme].filter(Boolean).join(' · ');
-  const cover = content.photoUrl ? { uri: content.photoUrl }
+  // ≤1080 px: the card is captured at 1080 wide, the original adds nothing but weight.
+  const cover = content.photoUrl ? { uri: mediumUrl(content.photoUrl) ?? content.photoUrl }
     : themeCover(content.theme ?? 'only_here', content.type === 'today' ? content.date : null) ?? THEME_COVERS.only_here;
   const flag = content.city?.country ? FLAGS[content.city.country.toUpperCase()] : undefined;
   const city = content.city?.name ? localizeCityName(content.city.name) : null;
@@ -84,7 +86,7 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
         <View style={s.passportTop}>
           <Text style={s.passportKicker}>{t('share.passportKicker').toUpperCase()}</Text>
           {content.photoUrl
-            ? <Image source={{ uri: content.photoUrl }} style={s.passportPhoto} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />
+            ? <Image source={{ uri: mediumUrl(content.photoUrl) ?? content.photoUrl }} style={s.passportPhoto} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />
             : <View style={[s.passportPhoto, s.passportNoPhoto]} onLayout={loadedOne} />}
           {!!content.username && <Text style={s.passportName}>@{content.username}</Text>}
           {city && (

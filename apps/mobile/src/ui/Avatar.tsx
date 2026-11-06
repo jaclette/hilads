@@ -3,10 +3,12 @@ import { Image } from 'expo-image';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
+import { thumbUrl } from '@/lib/imageThumb';
 
 /**
  * Round avatar: the photo, else the initial on a tinted ground (`tint`) or on
  * the person's own color (`color`). `ring` adds the primary ring (Passport).
+ * An uploaded photo shows at its ≤400 px size (never the original, up to 1600 px).
  */
 export function Avatar({ uri, name, size, fallback = 'tint', ring = false }: {
   uri?: string | null;
@@ -19,7 +21,7 @@ export function Avatar({ uri, name, size, fallback = 'tint', ring = false }: {
   const box = { width: size, height: size };
   const tint = fallback === 'tint';
   if (uri) {
-    return <Image source={{ uri }} style={[styles.round, box, tint && styles.tint, ring && styles.ring]} contentFit="cover" />;
+    return <Image source={{ uri: thumbUrl(uri) ?? uri }} style={[styles.round, box, tint && styles.tint, ring && styles.ring]} contentFit="cover" cachePolicy="memory-disk" />;
   }
   const initial = (name.replace('@', '') || '?')[0].toUpperCase();
   const textSize = size >= 80 ? styles.xl : size >= 56 ? styles.lg : size >= 36 ? styles.md : styles.sm;

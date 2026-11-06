@@ -26,7 +26,7 @@ import { lastTour } from '@/features/tour/store';
 import { proofShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { themeCover } from '@/features/today/covers';
-import { coverThumbUrl } from '@/lib/imageThumb';
+import { coverThumbUrl, mediumUrl } from '@/lib/imageThumb';
 import { useHere } from '@/hooks/useDaily';
 import type { DailyTour } from '@/types';
 import { goBack } from '@/lib/nav';
@@ -131,7 +131,7 @@ export default function TourScreen() {
   const todayChallenge = tour.today;
   const cover = last && todayChallenge
     ? (todayChallenge.coverUrl ? { uri: coverThumbUrl(todayChallenge.coverUrl) } : themeCover(todayChallenge.theme?.key ?? 'only_here', todayChallenge.date))
-    : proof ? { uri: proof.photoUrl } : null;
+    : proof ? { uri: mediumUrl(proof.photoUrl) ?? proof.photoUrl } : null;
   const takeIt = () => {
     goBack();
     router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);

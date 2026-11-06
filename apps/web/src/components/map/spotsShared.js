@@ -54,6 +54,19 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || ''
  * public token restricted to hilads.live). Without a token (local dev), the
  * standard OpenStreetMap tiles, like the location picker.
  */
+/**
+ * @2x tiles (1024 px, ~450 KB each) only where they show: a high-density screen on a
+ * connection that isn't known to be slow. A 1x screen, Save-Data or a 2G/3G / <2 Mbps
+ * connection gets the 512 px tiles (about a quarter of the weight). Safari doesn't say,
+ * so an iPhone keeps the sharp ones.
+ */
+function retinaTiles() {
+  if (typeof window === 'undefined' || (window.devicePixelRatio ?? 1) < 1.5) return false
+  const c = navigator.connection
+  if (!c) return true
+  return !c.saveData && !/^(slow-2g|2g|3g)$/.test(c.effectiveType ?? '') && !(c.downlink > 0 && c.downlink < 2)
+}
+
 export function mapTiles(dark) {
   if (!MAPBOX_TOKEN) {
     return {
@@ -64,7 +77,7 @@ export function mapTiles(dark) {
   }
   const style = dark ? 'dark-v11' : 'light-v11'
   return {
-    url: `https://api.mapbox.com/styles/v1/mapbox/${style}/tiles/512/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    url: `https://api.mapbox.com/styles/v1/mapbox/${style}/tiles/512/{z}/{x}/{y}${retinaTiles() ? '@2x' : ''}?access_token=${MAPBOX_TOKEN}`,
     attribution: '&copy; <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener">Mapbox</a> '
       + '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> '
       + '<a href="https://www.mapbox.com/map-feedback/" target="_blank" rel="noopener"><strong>Improve this map</strong></a>',
