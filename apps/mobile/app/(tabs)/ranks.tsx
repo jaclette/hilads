@@ -45,15 +45,21 @@ function RanksContent() {
   const { t } = useTranslation('daily');
   const router = useRouter();
   const { city, account } = useApp();
-  const params = useLocalSearchParams<{ tab?: string; period?: string; scope?: string }>();
+  const params = useLocalSearchParams<{ tab?: string; period?: string; scope?: string; cityId?: string }>();
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
   const [scope, setScope] = useState<RanksScope>('world');
-  const [data, setData] = useState<PlayersRanks | CitiesRanks | PhotosRanks | null>(null);
+  // Each response is kept with what it was asked for: a view only ever gets its own shape (switching
+  // tabs, or a slow answer for the previous tab, used to hand Cities rows to the Players view).
+  const [resp, setResp] = useState<{ key: string; data: PlayersRanks | CitiesRanks | PhotosRanks } | null>(null);
   const [failed, setFailed] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const list = useRef<FlatList<unknown>>(null);
-  const cityId = city?.channelId ? Number(String(city.channelId).replace('city_', '')) || null : null;
+  // A rank-up notification names its city (cityId); else my city.
+  const myCityId = city?.channelId ? Number(String(city.channelId).replace('city_', '')) || null : null;
+  const cityId = Number(params.cityId) || myCityId;
+  const key = `${tab}|${period}|${scope}|${cityId}`;
+  const data = resp?.key === key ? resp.data : null;
 
   // A deep link (push, Passport, a notification) picks the segment, period and scope.
   useEffect(() => {
@@ -67,15 +73,16 @@ function RanksContent() {
 
   const load = useCallback(async () => {
     setFailed(false);
+    const asked = key;
     try {
       const o = { period, scope, cityId };
       const next = tab === 'players' ? await fetchRanks('players', o) : tab === 'cities' ? await fetchRanks('cities', o) : await fetchRanks('photos', o);
-      setData(next);
+      setResp({ key: asked, data: next });
     } catch {
       setFailed(true);
     }
-  }, [tab, period, scope, cityId]);
-  useEffect(() => { setData(null); load(); track('ranks_viewed', { tab, period, scope }); }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tab, period, scope, cityId, key]);
+  useEffect(() => { load(); track('ranks_viewed', { tab, period, scope }); }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
   const pick = <T,>(set: (v: T) => void, v: T) => { Haptics.selectionAsync().catch(() => {}); set(v); };

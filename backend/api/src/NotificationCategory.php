@@ -128,7 +128,10 @@ final class NotificationCategory
                 => '/daily/' . ($data['date'] ?? 'today') . '?' . $q(['proof' => $data['proofId']]),
             $type === 'daily_twist_picked'                        => '/daily/twist',
             $type === 'daily_result'                              => '/ranks?' . $q(['tab' => 'photos', 'period' => 'yesterday']),
-            $type === 'daily_rank'                                => '/ranks?' . $q(['tab' => 'players', 'period' => 'week', 'scope' => $data['scope'] ?? null]),
+            // A city rank-up opens that city's weekly players (scope city + its id); a world one, the World.
+            $type === 'daily_rank'                                => '/ranks?' . $q(['tab' => 'players', 'period' => 'week',
+                'scope' => ($data['scope'] ?? 'world') === 'world' ? 'world' : 'city',
+                'cityId' => isset($data['cityId']) && preg_match('/^city_(\d+)$/', (string) $data['cityId'], $m) ? $m[1] : null]),
             $type === 'daily_local_pass'                          => '/(tabs)/passport',
             in_array($type, ['channel_message', 'city_join', 'city_here'], true) => '/(tabs)/chat',
             $type === 'friend_request_received'                   => '/friend-requests',

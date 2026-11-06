@@ -33,9 +33,7 @@ export function takeHandedProof(id: string | null | undefined): DailyProof | nul
 // A ranked list of photos (the Ranks tab) handed to the photo feed, which plays it in that order.
 let handedList: { key: string; proofs: DailyProof[] } | null = null;
 export function handOffList(key: string, proofs: DailyProof[]): void { handedList = { key, proofs }; }
+/** The list handed under `key`, or null. Kept (not cleared) so a double render (StrictMode) reads it too; the next hand-off replaces it. */
 export function takeHandedList(key: string | null | undefined): DailyProof[] | null {
-  if (!key || handedList?.key !== key) return null;
-  const list = handedList.proofs;
-  handedList = null;
-  return list;
+  return key && handedList?.key === key ? handedList.proofs : null;
 }

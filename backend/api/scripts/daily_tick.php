@@ -37,6 +37,8 @@ foreach ([
     'NotificationRepository', 'DailyClock', 'DailyRules', 'DailyProofRepository', 'DailyChallengeRepository',
     'DailyAdminService', 'DailyCards', 'DailyPushes', 'DailyDrop', 'DailyVotes', 'DailyResults', 'DailyPoints',
     'MonthlyRankService', 'DailyTwistProposals', 'DailyI18n', 'DailyPushText', 'DailyLeaderboard', 'DailyThemes', 'DailySpecials', 'DailyPresence', 'AnalyticsService', 'CityNames', 'Currencies', 'DailyCompare', 'DailyBoard', 'DailyTour', 'DailyIndex', 'DailyLocalPass', 'DailyProposals', 'DailyDemo', 'DailyNotify',
+    // V6: notification categories (every bell row), the rank-up rows at the close (Ranks uses Spots::week).
+    'NotificationCategory', 'Spots', 'Ranks',
 ] as $class) {
     require_once __DIR__ . "/../src/{$class}.php";
 }

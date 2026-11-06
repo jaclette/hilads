@@ -178,9 +178,13 @@ final class DailyDrop
         }
         $plan   = DailyResults::compute($challenge['id']);
         $points = DailyPoints::awardClose($challenge['id'], $plan);
-        // V6: each player's outcome in the bell (Game); never fails the close.
-        $notified = DailyNotify::onResults($challenge);
-        $notified += Ranks::notifyRankUps($challenge);
+        // V6: each player's outcome and rank-ups in the bell (Game); never fails the close.
+        try {
+            $notified = DailyNotify::onResults($challenge) + Ranks::notifyRankUps($challenge);
+        } catch (\Throwable $e) {
+            $notified = 'failed: ' . $e->getMessage();
+            error_log("[daily-drop] result notifications of {$date} failed: " . $e->getMessage());
+        }
         // Yesterday around the world (SPEC 10.7), after the results (the podium leads it). Never fails the close.
         try {
             $tour = DailyTour::build($challenge);

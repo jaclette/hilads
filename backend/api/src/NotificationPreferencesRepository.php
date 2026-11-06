@@ -35,6 +35,7 @@ class NotificationPreferencesRepository
             'profile_view_push'    => true,
             'topic_reply_push'     => true,   // replies in topics I joined
             'new_topic_push'       => false,  // new topics in my city
+            'join_request_push'    => true,   // someone asks to join / I was accepted (plans); was missing, so the toggle never saved
             'admin_announcement_push' => true, // product announcements from /admin/push
             'daily_challenge_push' => true,   // Daily Challenge morning/reminder/digest pushes
             'comment_push'         => true,   // comments on my photos and in threads I joined (mentions: mention_push)

@@ -106,6 +106,8 @@ export function WhileAwayCard() {
       }
     });
   const move = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }], opacity: 1 - Math.min(0.6, Math.abs(tx.value) / 400) }));
+  // New items: the card comes back in place (a swipe left it off-screen).
+  useEffect(() => { tx.value = 0; }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!items?.length) return null;
   const actors: InboxActor[] = [];

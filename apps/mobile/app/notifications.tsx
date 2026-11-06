@@ -53,17 +53,22 @@ export default function NotificationsScreen() {
   const fresh = useRef(new Set<number>());
 
   const categories = filter === 'all' ? undefined : [filter];
+  // The filter shown now: an answer for another one (a chip tapped while loading) is dropped.
+  const current = useRef(filter);
+  current.current = filter;
   const load = useCallback(async (mode: 'first' | 'refresh' | 'more') => {
     if (mode === 'more' && (!cursor || loadingMore)) return;
     if (mode === 'more') setLoadingMore(true);
+    const asked = filter;
     try {
       const page = await fetchInbox({ categories, cursor: mode === 'more' ? cursor : null, limit: 30 });
+      if (current.current !== asked) return;
       if (mode !== 'first') page.items.forEach(i => { if (!known.current.has(i.id)) fresh.current.add(i.id); });
       page.items.forEach(i => known.current.add(i.id));
       setItems(prev => (mode === 'more' && prev ? [...prev, ...page.items.filter(i => !prev.some(p => p.id === i.id))] : page.items));
       setCursor(page.nextCursor);
     } catch {
-      setItems(prev => prev ?? []);
+      if (current.current === asked) setItems(prev => prev ?? []);
     } finally {
       setLoadingMore(false);
     }
