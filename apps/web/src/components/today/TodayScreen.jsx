@@ -10,6 +10,7 @@ import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
 import { IndexCarousel } from '../daily/Comparisons'
 import WhileAwayCard from '../notifications/WhileAwayCard'
+import { ResultsCard, TodayRace } from '../ranks/TodayRace'
 import TodayCountries, { YesterdayRecap, todayCities, useTodayCountries } from './TodayCountries'
 import {
   challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
@@ -76,10 +77,14 @@ export default function TodayScreen({ header }) {
         {/* V6: unseen comments, likes and results since the last visit. */}
         <WhileAwayCard account={account} onOpen={openNotifications} />
         <Ticket data={data} countries={countries} loading={loading} />
+        {/* V6: yesterday's results are out (once). */}
+        <ResultsCard />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
         <TodayCountries today={data} data={countries} />
+        {/* V6: the city race of the day, live. */}
+        <TodayRace />
         {/* Your week: the streak, tomorrow's theme and the week strip. */}
         <Week today={data} />
         {/* Yesterday's recap (the winning photo, the question, how many cities played) and every past challenge. */}

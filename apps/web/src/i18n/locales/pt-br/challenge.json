@@ -1602,6 +1602,62 @@
       "retakeAll": "Refazer tudo",
       "addFace": "Mostre seu rosto 🤳",
       "swapA11y": "Trocar as fotos"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Fotos",
+        "players": "🙋 Jogadores",
+        "cities": "🌍 Cidades"
+      },
+      "period": {
+        "today": "Hoje",
+        "yesterday": "Ontem",
+        "week": "Esta semana",
+        "alltime": "Desde sempre"
+      },
+      "scope": {
+        "city": "Minha cidade",
+        "world": "Mundo"
+      },
+      "timeLeftMin": "⏳ Falta menos de uma hora pra votar",
+      "bestPerCity": "Melhor foto por cidade",
+      "new": "novo",
+      "you": {
+        "top": "Você · #1 · Ninguém acima de você 👑",
+        "player": "Você · #{{rank}} · {{gap}} pts pra passar {{name}} ▲",
+        "none": "Jogue hoje pra entrar no ranking 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} lidera a corrida! 🏁",
+        "line_one": "{{city}} é #{{rank}}. Mais {{count}} foto pra alcançar {{next}}!",
+        "line_other": "{{city}} é #{{rank}}. Mais {{count}} fotos pra alcançar {{next}}!",
+        "line_many": "{{city}} é #{{rank}}. Mais {{count}} fotos pra alcançar {{next}}!",
+        "youBar_one": "{{city}} · #{{rank}} · {{count}} foto atrás de {{next}}",
+        "youBar_other": "{{city}} · #{{rank}} · {{count}} fotos atrás de {{next}}",
+        "youBar_many": "{{city}} · #{{rank}} · {{count}} fotos atrás de {{next}}"
+      },
+      "empty": {
+        "photos": "Nenhuma foto curtida ainda. Vai votar nas suas favoritas ❤️",
+        "players": "Ninguém pontuou ainda. Jogue e pegue o #1 🙋",
+        "cities": "Nenhuma cidade no ranking ainda. Coloque a sua em primeiro 🌍"
+      },
+      "race": {
+        "title": "🏁 A corrida de hoje",
+        "you": "{{city}} é #{{rank}}",
+        "youNone": "{{city}} ainda não entrou na corrida",
+        "see": "Ver ranking"
+      },
+      "results": {
+        "title": "🏆 Saíram os resultados!",
+        "sub": "Veja como foi sua foto ontem",
+        "dismiss": "Fechar"
+      },
+      "timeLeft_one": "⏳ Falta {{count}} hora pra votar",
+      "timeLeft_other": "⏳ Faltam {{count}} horas pra votar",
+      "timeLeft_many": "⏳ Faltam {{count}} horas pra votar",
+      "pts_one": "{{count}} pt",
+      "pts_other": "{{count}} pts",
+      "pts_many": "{{count}} pts"
     }
   }
 }

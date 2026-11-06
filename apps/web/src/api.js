@@ -2103,6 +2103,17 @@ export const deleteNotifications = (ids) => postJson('/notifications/delete', { 
 export const markNotificationTypesRead = (types) => postJson('/notifications/mark-read', { types })
 export const markNotificationCategoriesRead = (categories) => postJson('/notifications/mark-read', { categories })
 
+// ── V6 Ranks (GET /ranks) ────────────────────────────────────────────────────
+
+/** tab: photos | players | cities; period: today | yesterday | week | alltime; scope: city | world. */
+export async function fetchRanks(tab, { period = 'today', scope = 'world', cityId = null } = {}) {
+  const q = new URLSearchParams({ tab, period, scope })
+  if (cityId) q.set('cityId', String(cityId))
+  const res = await fetch(`${BASE}/ranks?${q}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('ranks')
+  return res.json()
+}
+
 // ── Push subscriptions ────────────────────────────────────────────────────────
 // Note: push.js handles the full registration flow (SW + browser permission).
 // These helpers are thin HTTP wrappers used internally by push.js.

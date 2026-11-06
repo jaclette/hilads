@@ -1530,6 +1530,54 @@
       "retakeAll": "全部重拍",
       "addFace": "加上你的臉 🤳",
       "swapA11y": "切換照片"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 照片",
+        "players": "🙋 玩家",
+        "cities": "🌍 城市"
+      },
+      "period": {
+        "today": "今天",
+        "yesterday": "昨天",
+        "week": "本週",
+        "alltime": "歷來"
+      },
+      "scope": {
+        "city": "我的城市",
+        "world": "全球"
+      },
+      "timeLeftMin": "⏳ 投票剩不到一小時",
+      "bestPerCity": "每座城市的最佳照片",
+      "new": "新",
+      "you": {
+        "top": "你 · 第 1 名 · 無人能及 👑",
+        "player": "你 · 第 {{rank}} 名 · 再拿 {{gap}} 分超過 {{name}} ▲",
+        "none": "今天出戰就能上榜 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} 領先！🏁",
+        "line_other": "{{city}} 排第 {{rank}}。再多 {{count}} 張照片就能追上 {{next}}！",
+        "youBar_other": "{{city}} · 第 {{rank}} 名 · 落後 {{next}} {{count}} 張照片"
+      },
+      "empty": {
+        "photos": "還沒有被按讚的照片。去幫喜歡的照片投票吧 ❤️",
+        "players": "還沒人得分。出戰搶下第 1 名 🙋",
+        "cities": "還沒有城市上榜。讓你的城市第一個上 🌍"
+      },
+      "race": {
+        "title": "🏁 今日競賽",
+        "you": "{{city}} 排第 {{rank}}",
+        "youNone": "{{city}} 還沒參賽",
+        "see": "查看排行"
+      },
+      "results": {
+        "title": "🏆 結果出爐了！",
+        "sub": "看看你昨天的照片表現如何",
+        "dismiss": "關閉"
+      },
+      "timeLeft_other": "⏳ 還剩 {{count}} 小時投票",
+      "pts_other": "{{count}} 分"
     }
   }
 }

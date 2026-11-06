@@ -1602,6 +1602,62 @@
       "retakeAll": "Repetir tudo",
       "addFace": "Mostra a tua cara 🤳",
       "swapA11y": "Trocar as fotos"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Fotos",
+        "players": "🙋 Jogadores",
+        "cities": "🌍 Cidades"
+      },
+      "period": {
+        "today": "Hoje",
+        "yesterday": "Ontem",
+        "week": "Esta semana",
+        "alltime": "Desde sempre"
+      },
+      "scope": {
+        "city": "A minha cidade",
+        "world": "Mundo"
+      },
+      "timeLeftMin": "⏳ Falta menos de uma hora para votar",
+      "bestPerCity": "Melhor foto por cidade",
+      "new": "novo",
+      "you": {
+        "top": "Tu · #1 · Ninguém acima de ti 👑",
+        "player": "Tu · #{{rank}} · {{gap}} pts para passar {{name}} ▲",
+        "none": "Joga hoje para entrar no ranking 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} lidera a corrida! 🏁",
+        "line_one": "{{city}} é #{{rank}}. Mais {{count}} foto para apanhar {{next}}!",
+        "line_other": "{{city}} é #{{rank}}. Mais {{count}} fotos para apanhar {{next}}!",
+        "line_many": "{{city}} é #{{rank}}. Mais {{count}} fotos para apanhar {{next}}!",
+        "youBar_one": "{{city}} · #{{rank}} · {{count}} foto atrás de {{next}}",
+        "youBar_other": "{{city}} · #{{rank}} · {{count}} fotos atrás de {{next}}",
+        "youBar_many": "{{city}} · #{{rank}} · {{count}} fotos atrás de {{next}}"
+      },
+      "empty": {
+        "photos": "Ainda sem fotos com gostos. Vai votar nas tuas favoritas ❤️",
+        "players": "Ninguém pontuou ainda. Joga e fica com o #1 🙋",
+        "cities": "Ainda sem cidades no ranking. Põe a tua em primeiro 🌍"
+      },
+      "race": {
+        "title": "🏁 A corrida de hoje",
+        "you": "{{city}} é #{{rank}}",
+        "youNone": "{{city}} ainda não está na corrida",
+        "see": "Ver ranking"
+      },
+      "results": {
+        "title": "🏆 Já há resultados!",
+        "sub": "Vê como correu a tua foto ontem",
+        "dismiss": "Fechar"
+      },
+      "timeLeft_one": "⏳ Falta {{count}} hora para votar",
+      "timeLeft_other": "⏳ Faltam {{count}} horas para votar",
+      "timeLeft_many": "⏳ Faltam {{count}} horas para votar",
+      "pts_one": "{{count}} pt",
+      "pts_other": "{{count}} pts",
+      "pts_many": "{{count}} pts"
     }
   }
 }

@@ -1566,6 +1566,58 @@
       "retakeAll": "Kunan ulit lahat",
       "addFace": "Isama ang mukha mo 🤳",
       "swapA11y": "Pagpalitin ang photos"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Photos",
+        "players": "🙋 Players",
+        "cities": "🌍 Cities"
+      },
+      "period": {
+        "today": "Ngayon",
+        "yesterday": "Kahapon",
+        "week": "Ngayong linggo",
+        "alltime": "All time"
+      },
+      "scope": {
+        "city": "City ko",
+        "world": "Mundo"
+      },
+      "timeLeftMin": "⏳ Wala nang isang oras para mag-vote",
+      "bestPerCity": "Best photo kada city",
+      "new": "bago",
+      "you": {
+        "top": "Ikaw · #1 · Wala nang nasa taas mo 👑",
+        "player": "Ikaw · #{{rank}} · {{gap}} pts para malampasan si {{name}} ▲",
+        "none": "Maglaro ngayon para makapasok sa board 🙋"
+      },
+      "city": {
+        "lineTop": "Nangunguna ang {{city}}! 🏁",
+        "line_one": "#{{rank}} ang {{city}}. {{count}} photo pa para mahabol ang {{next}}!",
+        "line_other": "#{{rank}} ang {{city}}. {{count}} photos pa para mahabol ang {{next}}!",
+        "youBar_one": "{{city}} · #{{rank}} · {{count}} photo ang layo sa {{next}}",
+        "youBar_other": "{{city}} · #{{rank}} · {{count}} photos ang layo sa {{next}}"
+      },
+      "empty": {
+        "photos": "Wala pang naka-like na photo. Mag-vote sa mga paborito mo ❤️",
+        "players": "Wala pang may points. Maglaro at kunin ang #1 🙋",
+        "cities": "Wala pang city sa board. Unahin mo ang city mo 🌍"
+      },
+      "race": {
+        "title": "🏁 Karera ngayon",
+        "you": "#{{rank}} ang {{city}}",
+        "youNone": "Wala pa sa karera ang {{city}}",
+        "see": "Tingnan ang ranks"
+      },
+      "results": {
+        "title": "🏆 Lumabas na ang results!",
+        "sub": "Tingnan kung kumusta ang photo mo kahapon",
+        "dismiss": "Isara"
+      },
+      "timeLeft_one": "⏳ {{count}} oras na lang para mag-vote",
+      "timeLeft_other": "⏳ {{count}} oras na lang para mag-vote",
+      "pts_one": "{{count}} pt",
+      "pts_other": "{{count}} pts"
     }
   }
 }

@@ -42,7 +42,8 @@ export default function PhotosScreen(props) {
   return <SeasonalZone><PhotosScreenContent {...props} /></SeasonalZone>
 }
 
-function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, country = null, source = 'today', onBack }) {
+// `list` (V6, the Ranks tab, a face-off): these photos, played in their order from `proofId`, no tabs.
+function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, country = null, source = 'today', list = null, onBack }) {
   const { t } = useDc()
   const { cityId, account, openDaily, openProfile } = useDaily()
   const today = getLastToday()
@@ -70,7 +71,7 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
 
   // The notification's photo leads; one from another day opens on its challenge instead.
   useEffect(() => {
-    if (!proofId) return
+    if (!proofId || list) return
     fetchDailyProof(proofId).then(p => {
       if (challenge && p.date !== challenge.date) { onBack(); openDaily('challenge', { date: p.date, proofId: p.id }); return }
       seedProofs([p], true)
@@ -80,6 +81,7 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
 
   const load = () => {
     setFailed(false)
+    if (list) { setProofs(list); return }
     setProofs(null)
     fetchDailyTodayProofs({ scope: tab, cityId: tab === 'city' ? cityId : null, order: 'new', limit: LIMIT })
       .then(res => {
@@ -105,11 +107,12 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
   }, [country, proofs])
 
   const photos = useMemo(() => {
+    if (list) return list.slice(Math.max(0, list.findIndex(p => p.id === proofId)))
     if (story && tab === 'world') return [...(proofs ?? [])].sort((a, b) => (story.get(a.id) ?? 1e9) - (story.get(b.id) ?? 1e9))
     const rest = (proofs ?? []).filter(p => p.id !== pinned?.id)
     const lead = pinned && (tab === 'world' || pinned.city?.id === city?.id)
     return lead ? [pinned, ...rest] : rest
-  }, [proofs, pinned, tab, city?.id, story])
+  }, [proofs, pinned, tab, city?.id, story, list, proofId])
 
   const switchTab = (next) => {
     if (next === tab) return
@@ -180,16 +183,16 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
         <div className="dc-photos-head">
           <button type="button" className="dc-photos-close" onClick={onBack} aria-label={t('back')}><Icon name="close" size={22} /></button>
           <div className="dc-photos-tabs" role="tablist">
-            <button type="button" role="tab" aria-selected={tab === 'world'} className={`dc-photos-tab${tab === 'world' ? ' dc-photos-tab--on' : ''}`}
-                    onClick={() => switchTab('world')}><Icon name="earth-outline" size={15} />{t('feed.world')}</button>
-            {city?.name && (
+            {!list && <button type="button" role="tab" aria-selected={tab === 'world'} className={`dc-photos-tab${tab === 'world' ? ' dc-photos-tab--on' : ''}`}
+                    onClick={() => switchTab('world')}><Icon name="earth-outline" size={15} />{t('feed.world')}</button>}
+            {!list && city?.name && (
               <button type="button" role="tab" aria-selected={tab === 'city'} className={`dc-photos-tab${tab === 'city' ? ' dc-photos-tab--on' : ''}`}
                       onClick={() => switchTab('city')}><FlagSticker country={city.country} size={16} /><span>{shortCityName(city.name)}</span></button>
             )}
           </div>
           <span className="dc-photos-side" />
         </div>
-        {challenge && pill && (
+        {challenge && pill && !list && (
           <button type="button" className="dc-photos-pill" style={{ background: pill.fill, color: onFillOf(pill.fill) }}
                   onClick={() => { track('daily_photos_challenge_opened', { platform_surface: 'web' }); onBack(); openDaily('challenge', { date: 'today', source: 'photos' }) }}>
             <span>{plain(challenge.compare?.question ?? challenge.text)}</span><Icon name="chevron-forward" size={14} />

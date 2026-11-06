@@ -1602,6 +1602,62 @@
       "retakeAll": "Rifai tutto",
       "addFace": "Aggiungi la tua faccia 🤳",
       "swapA11y": "Scambia le foto"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Foto",
+        "players": "🙋 Giocatori",
+        "cities": "🌍 Città"
+      },
+      "period": {
+        "today": "Oggi",
+        "yesterday": "Ieri",
+        "week": "Questa settimana",
+        "alltime": "Di sempre"
+      },
+      "scope": {
+        "city": "La mia città",
+        "world": "Mondo"
+      },
+      "timeLeftMin": "⏳ Manca meno di un'ora per votare",
+      "bestPerCity": "Foto migliore per città",
+      "new": "nuovo",
+      "you": {
+        "top": "Tu · #1 · Nessuno sopra di te 👑",
+        "player": "Tu · #{{rank}} · {{gap}} pt per superare {{name}} ▲",
+        "none": "Gioca oggi per entrare in classifica 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} guida la gara! 🏁",
+        "line_one": "{{city}} è #{{rank}}. Ancora {{count}} foto per raggiungere {{next}}!",
+        "line_other": "{{city}} è #{{rank}}. Ancora {{count}} foto per raggiungere {{next}}!",
+        "line_many": "{{city}} è #{{rank}}. Ancora {{count}} foto per raggiungere {{next}}!",
+        "youBar_one": "{{city}} · #{{rank}} · {{count}} foto dietro {{next}}",
+        "youBar_other": "{{city}} · #{{rank}} · {{count}} foto dietro {{next}}",
+        "youBar_many": "{{city}} · #{{rank}} · {{count}} foto dietro {{next}}"
+      },
+      "empty": {
+        "photos": "Ancora nessuna foto con mi piace. Vai a votare le tue preferite ❤️",
+        "players": "Nessuno ha ancora fatto punti. Gioca e prenditi il #1 🙋",
+        "cities": "Ancora nessuna città in classifica. Metti la tua per prima 🌍"
+      },
+      "race": {
+        "title": "🏁 La gara di oggi",
+        "you": "{{city}} è #{{rank}}",
+        "youNone": "{{city}} non è ancora in gara",
+        "see": "Vedi la classifica"
+      },
+      "results": {
+        "title": "🏆 Ci sono i risultati!",
+        "sub": "Scopri com'è andata la tua foto ieri",
+        "dismiss": "Chiudi"
+      },
+      "timeLeft_one": "⏳ Manca {{count}} ora per votare",
+      "timeLeft_other": "⏳ Mancano {{count}} ore per votare",
+      "timeLeft_many": "⏳ Mancano {{count}} ore per votare",
+      "pts_one": "{{count}} pt",
+      "pts_other": "{{count}} pt",
+      "pts_many": "{{count}} pt"
     }
   }
 }

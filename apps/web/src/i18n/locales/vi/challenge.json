@@ -1530,6 +1530,54 @@
       "retakeAll": "Chụp lại hết",
       "addFace": "Thêm mặt bạn vào 🤳",
       "swapA11y": "Đổi ảnh"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Ảnh",
+        "players": "🙋 Người chơi",
+        "cities": "🌍 Thành phố"
+      },
+      "period": {
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "week": "Tuần này",
+        "alltime": "Mọi lúc"
+      },
+      "scope": {
+        "city": "Thành phố của tôi",
+        "world": "Thế giới"
+      },
+      "timeLeftMin": "⏳ Còn chưa tới một giờ để bình chọn",
+      "bestPerCity": "Ảnh đỉnh nhất mỗi thành phố",
+      "new": "mới",
+      "you": {
+        "top": "Bạn · #1 · Không ai trên bạn 👑",
+        "player": "Bạn · #{{rank}} · thêm {{gap}} điểm để vượt {{name}} ▲",
+        "none": "Chơi hôm nay để lên bảng nha 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} đang dẫn đầu! 🏁",
+        "line_other": "{{city}} đang hạng #{{rank}}. Thêm {{count}} ảnh nữa là đuổi kịp {{next}}!",
+        "youBar_other": "{{city}} · #{{rank}} · kém {{next}} {{count}} ảnh"
+      },
+      "empty": {
+        "photos": "Chưa có ảnh nào được thả tim. Đi bình chọn ảnh bạn thích nha ❤️",
+        "players": "Chưa ai có điểm. Chơi ngay để giành hạng #1 🙋",
+        "cities": "Chưa có thành phố nào trên bảng. Đưa thành phố bạn lên đầu nha 🌍"
+      },
+      "race": {
+        "title": "🏁 Cuộc đua hôm nay",
+        "you": "{{city}} đang hạng #{{rank}}",
+        "youNone": "{{city}} chưa vào cuộc đua",
+        "see": "Xem xếp hạng"
+      },
+      "results": {
+        "title": "🏆 Có kết quả rồi!",
+        "sub": "Xem ảnh hôm qua của bạn thế nào",
+        "dismiss": "Đóng"
+      },
+      "timeLeft_other": "⏳ Còn {{count}} giờ để bình chọn",
+      "pts_other": "{{count}} điểm"
     }
   }
 }

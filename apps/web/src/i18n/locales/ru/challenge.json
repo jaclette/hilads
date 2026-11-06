@@ -1638,6 +1638,66 @@
       "retakeAll": "Переснять всё",
       "addFace": "Добавь своё лицо 🤳",
       "swapA11y": "Поменять фото местами"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Фото",
+        "players": "🙋 Игроки",
+        "cities": "🌍 Города"
+      },
+      "period": {
+        "today": "Сегодня",
+        "yesterday": "Вчера",
+        "week": "На этой неделе",
+        "alltime": "За всё время"
+      },
+      "scope": {
+        "city": "Мой город",
+        "world": "Мир"
+      },
+      "timeLeftMin": "⏳ До конца голосования меньше часа",
+      "bestPerCity": "Лучшее фото каждого города",
+      "new": "новый",
+      "you": {
+        "top": "Ты · #1 · Выше никого 👑",
+        "player": "Ты · #{{rank}} · {{gap}} очк. до {{name}} ▲",
+        "none": "Сыграй сегодня, чтобы попасть в рейтинг 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} лидирует в гонке! 🏁",
+        "line_one": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "line_few": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "line_many": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "line_other": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "youBar_one": "{{city}} · #{{rank}} · {{count}} фото до {{next}}",
+        "youBar_few": "{{city}} · #{{rank}} · {{count}} фото до {{next}}",
+        "youBar_many": "{{city}} · #{{rank}} · {{count}} фото до {{next}}",
+        "youBar_other": "{{city}} · #{{rank}} · {{count}} фото до {{next}}"
+      },
+      "empty": {
+        "photos": "Пока нет фото с лайками. Проголосуй за любимые ❤️",
+        "players": "Пока никто не набрал очков. Сыграй и займи #1 🙋",
+        "cities": "В рейтинге пока нет городов. Поставь свой первым 🌍"
+      },
+      "race": {
+        "title": "🏁 Гонка дня",
+        "you": "{{city}} на #{{rank}}",
+        "youNone": "{{city}} пока не в гонке",
+        "see": "К рейтингу"
+      },
+      "results": {
+        "title": "🏆 Итоги готовы!",
+        "sub": "Посмотри, как вчера выступило твоё фото",
+        "dismiss": "Закрыть"
+      },
+      "timeLeft_one": "⏳ До конца голосования {{count}} час",
+      "timeLeft_few": "⏳ До конца голосования {{count}} часа",
+      "timeLeft_many": "⏳ До конца голосования {{count}} часов",
+      "timeLeft_other": "⏳ До конца голосования {{count}} часа",
+      "pts_one": "{{count}} очко",
+      "pts_few": "{{count}} очка",
+      "pts_many": "{{count}} очков",
+      "pts_other": "{{count}} очка"
     }
   }
 }

@@ -62,7 +62,7 @@ import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
-import LeaderboardPage    from './components/LeaderboardPage'
+import RanksScreen        from './components/ranks/RanksScreen'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
@@ -432,6 +432,14 @@ function NavIconPassport() {
   return (
     <svg {...NAV_ICON_PROPS}>
       <rect x="5" y="3" width="14" height="18" rx="2.5" /><circle cx="12" cy="10" r="3" /><path d="M9 16h6" />
+    </svg>
+  )
+}
+
+function NavIconRanks() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" /><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
     </svg>
   )
 }
@@ -1361,7 +1369,7 @@ export default function App() {
   // Thread chat retired in step D - the 1:1 surface moved into the
   // unified public challenge channel. State + setter kept off the tree
   // to avoid a dead handle lingering elsewhere.
-  const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
+  const [showLeaderboard,       setShowLeaderboard]       = useState(false) // the Ranks tab (V6; was LeaderboardPage)
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
   const [leaderboardPeriod,     setLeaderboardPeriod]     = useState('month') // initial period (for share deeplink)
   const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 - bumps on WS mutual_rating_complete
@@ -3077,7 +3085,7 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'map')           { setShowMap(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
-      if (openScreenOnJoinRef.current === 'leaderboard')   { setShowLeaderboard(true);  openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'leaderboard')   { openRanks(ranksFromLeaderboard(leaderboardScope, leaderboardPeriod));  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
       scheduleActivity(true)
@@ -3864,6 +3872,7 @@ export default function App() {
   // a stuck Topic/Challenge/Create page. Called from every goTo* handler.
   function dismissFullPageOverlays() {
     setShowSettings(false)
+    setShowLeaderboard(false)
     setPassportSub(null)
     setShowMap(false)
     setShowToday(false)
@@ -3922,13 +3931,6 @@ export default function App() {
     switchScope('world')
   }
 
-  // Leaderboard "Share my rank" → post to my city (city/cities scope) or World
-  // (world scope). Message + neighbour @mentions are built by the LeaderboardPage.
-  function shareRank(content, mentions, scope) {
-    setShowLeaderboard(false)
-    if (scope === 'world') shareToWorld(content, mentions)
-    else                   shareToMyCity(content, mentions)
-  }
 
   // From a profile's rank rows → open the leaderboard in the tapped scope
   // (city rank → city board; worldwide rank → world board). Close the profile
@@ -3936,18 +3938,14 @@ export default function App() {
   function openLeaderboardFromProfile(scope) {
     setViewingProfile(null)
     setShowProfileDrawer(false)
-    setLeaderboardScope(scope === 'world' ? 'world' : 'city')
-    setLeaderboardPeriod('month')
-    setShowLeaderboard(true)
+    openRanks({ tab: 'players', period: 'week', scope: scope === 'world' ? 'world' : 'city' })
   }
 
   // Open a shared internal link (from a feed CTA) in-app - no full navigation.
   function openSharedLink(link) {
     if (!link) return
     if (link.kind === 'leaderboard') {
-      setLeaderboardScope(link.scope === 'world' ? 'world' : link.scope === 'cities' ? 'cities' : 'city')
-      setLeaderboardPeriod(link.period === 'alltime' ? 'alltime' : 'month')
-      setShowLeaderboard(true)
+      openRanks(ranksFromLeaderboard(link.scope, link.period))
     } else if (link.kind === 'challenge') {
       fetchChallengeById(link.id).then(d => { if (d?.challenge) setActiveChallenge(d.challenge) }).catch(() => {})
     } else if (link.kind === 'event') {
@@ -4022,10 +4020,23 @@ export default function App() {
   }
 
   // V6: the Ranks tab, on a segment (photos / players / cities), period and scope.
-  function openRanks({ tab = 'photos', period = 'today', scope = 'world' } = {}) {
-    setRanksParams({ tab, period, scope, at: Date.now() })
+  function openRanks({ tab = 'photos', period = 'today', scope = 'world', cityId = null } = {}) {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    dismissFullPageOverlays()
+    setRanksParams({ tab, period, scope, cityId, at: Date.now() })
     setShowLeaderboard(true)
   }
+  function goToRanksTab() { openRanks({ ...ranksParams }) }
+  // An old leaderboard link (scope city / cities / world, period month / alltime) → its Ranks segment.
+  const ranksFromLeaderboard = (scope, period) => ({
+    tab: scope === 'cities' ? 'cities' : 'players', period: period === 'alltime' ? 'alltime' : 'week', scope: scope === 'world' ? 'world' : 'city',
+  })
 
   function changeCityFilter(f) {
     setCityFilter(f)
@@ -5113,7 +5124,7 @@ export default function App() {
               <button
                 type="button"
                 className="header-city-leaderboard"
-                onClick={() => setShowLeaderboard(true)}
+                onClick={() => openRanks({ tab: 'players', period: 'week', scope: 'city' })}
                 aria-label={
                   myCityRank
                     ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
@@ -5926,10 +5937,12 @@ export default function App() {
           {(() => {
             const onPassport = showProfileDrawer
             const onChat = !showToday && !showMap && !onPassport && !showEventDrawer &&
-              !showCityPicker && !showPeopleDrawer && !showConversations && !showNotifications
+              !showCityPicker && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard
             const tabs = [
-              { key: 'today',    active: showToday && !showMap && !onPassport, onClick: goToTodayTab,    Icon: NavIconToday },
+              { key: 'today',    active: showToday && !showMap && !onPassport && !showLeaderboard, onClick: goToTodayTab, Icon: NavIconToday },
               { key: 'map',      active: showMap,                              onClick: goToMapTab,      Icon: NavIconMap },
+              // V6: the game hub.
+              { key: 'ranks',    active: showLeaderboard && !showMap && !onPassport, onClick: goToRanksTab, Icon: NavIconRanks },
               { key: 'chat',     active: onChat,                               onClick: goToCityChannel, Icon: NavIconChat },
               { key: 'passport', active: onPassport,                           onClick: goToMeTab,       Icon: NavIconPassport },
             ]
@@ -5954,7 +5967,10 @@ export default function App() {
       {/* ── Full-screen pages ─────────────────────────── */}
 
       <>
-        {showToday && !showMap && !showProfileDrawer && (
+        {showLeaderboard && !showMap && !showProfileDrawer && (
+          <RanksScreen header={renderAppHeader()} initial={ranksParams} />
+        )}
+        {showToday && !showMap && !showProfileDrawer && !showLeaderboard && (
           <TodayScreen header={renderAppHeader()} />
         )}
       </>
@@ -6829,7 +6845,7 @@ export default function App() {
           onSignIn={() => setGateAuth({ tab: 'login', action: 'passport' })}
           onOpen={(row, params) => {
             if (['proposals', 'propose', 'challenge', 'stories'].includes(row)) openDaily(row, params)
-            else if (row === 'alltime') { setLeaderboardScope(channelId ? 'city' : 'world'); setLeaderboardPeriod('alltime'); setShowLeaderboard(true) }
+            else if (row === 'alltime') { openRanks({ tab: 'players', period: 'alltime', scope: channelId ? 'city' : 'world' }) }
             else setPassportSub(row)
           }}
         />
@@ -7367,36 +7383,7 @@ export default function App() {
       {/* PR2 - "My challenge threads" index. Taps now route to the challenge
           channel (where the inline thread chat lives) - single surface, no
 
-      {/* PR7 - Leaderboard screen. Opened from the 🏆 chip in renderCityHero. */}
-      {showLeaderboard && (
-        <LeaderboardPage
-          account={account}
-          city={city}
-          cityChannelId={channelId}
-          initialScope={leaderboardScope}
-          initialPeriod={leaderboardPeriod}
-          onShareRank={shareRank}
-          onBack={() => setShowLeaderboard(false)}
-          onOpenProfile={(userId, displayName) => {
-            // Tapping a row opens the user's profile drawer (the same one
-            // the chat surfaces hit via openProfile). Self-row routes to
-            // the Me profile via the existing drawer.
-            if (account && userId === account.id) {
-              setShowLeaderboard(false)
-              setShowProfileDrawer(true)
-              return
-            }
-            setShowLeaderboard(false)
-            openProfile(userId, displayName ?? '')
-          }}
-          onCreateChallenge={() => {
-            // Challenge creation is retired (as in the app): the unranked
-            // CTA sends to Today, where the Daily Challenge earns points.
-            setShowLeaderboard(false)
-            goToTodayTab()
-          }}
-        />
-      )}
+
 
       {/* PR17 - "+X points!" popin once per page load when the user has
           unacknowledged score_events. Lands first so the celebratory moment

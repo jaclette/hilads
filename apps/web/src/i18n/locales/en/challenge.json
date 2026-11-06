@@ -1566,6 +1566,58 @@
       "retakeAll": "Retake all",
       "addFace": "Add your face 🤳",
       "swapA11y": "Swap the photos"
+    },
+    "ranks": {
+      "seg": {
+        "photos": "📸 Photos",
+        "players": "🙋 Players",
+        "cities": "🌍 Cities"
+      },
+      "period": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "week": "This week",
+        "alltime": "All time"
+      },
+      "scope": {
+        "city": "My city",
+        "world": "World"
+      },
+      "timeLeftMin": "⏳ Less than an hour left to vote",
+      "bestPerCity": "Best photo per city",
+      "new": "new",
+      "you": {
+        "top": "You · #1 · Nobody above you 👑",
+        "player": "You · #{{rank}} · {{gap}} pts to pass {{name}} ▲",
+        "none": "Play today to get on the board 🙋"
+      },
+      "city": {
+        "lineTop": "{{city}} leads the race! 🏁",
+        "line_one": "{{city}} is #{{rank}}. {{count}} more photo to catch {{next}}!",
+        "line_other": "{{city}} is #{{rank}}. {{count}} more photos to catch {{next}}!",
+        "youBar_one": "{{city}} · #{{rank}} · {{count}} photo behind {{next}}",
+        "youBar_other": "{{city}} · #{{rank}} · {{count}} photos behind {{next}}"
+      },
+      "empty": {
+        "photos": "No liked photos yet. Go vote for your favorites ❤️",
+        "players": "Nobody scored yet. Play and grab the #1 spot 🙋",
+        "cities": "No city on the board yet. Put yours first 🌍"
+      },
+      "race": {
+        "title": "🏁 Today's race",
+        "you": "{{city}} is #{{rank}}",
+        "youNone": "{{city}} isn't in the race yet",
+        "see": "See ranks"
+      },
+      "results": {
+        "title": "🏆 Results are in!",
+        "sub": "See how your photo did yesterday",
+        "dismiss": "Dismiss"
+      },
+      "timeLeft_one": "⏳ {{count}} hour left to vote",
+      "timeLeft_other": "⏳ {{count}} hours left to vote",
+      "pts_one": "{{count}} pt",
+      "pts_other": "{{count}} pts"
     }
   }
 }
