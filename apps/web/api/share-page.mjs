@@ -95,10 +95,35 @@ function dateLabel(date, locale) {
   }
 }
 
+// The card's orange wave (as the map sheet's peek): one asymmetric swell in a 360×30 box, the
+// higher hump at 140, gently undulating (5 s loop; the script drops the animation with reduced motion).
+function wavePath(p) {
+  const a = Math.sin(p * Math.PI * 2) * 1.6
+  const d = Math.cos(p * Math.PI * 2) * 5
+  const n = (v) => +v.toFixed(2)
+  return `M0 ${n(24 - a / 2)} C${n(55 + d)} 26 ${n(85 + d)} ${n(2 + a)} 140 ${n(3 + a)}`
+    + ` C${n(195 - d)} ${n(4 + a)} ${n(215 - d)} ${n(20 - a)} 262 ${n(19 - a)}`
+    + ` C${n(302 + d)} ${n(18 - a)} ${n(328 + d)} ${n(9 + a / 2)} 360 ${n(12 + a / 2)} L360 31 L0 31Z`
+}
+const WAVE_SVG = `<svg class="wave" viewBox="0 0 360 30" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="wave-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2783A"/><stop offset=".82" stop-color="#C24E1C"/><stop offset="1" stop-color="#C24E1C"/></linearGradient></defs>
+        <path d="${wavePath(0)}" fill="url(#wave-fill)"><animate attributeName="d" dur="5s" repeatCount="indefinite" values="${Array.from({ length: 9 }, (_, i) => wavePath(i / 8)).join(';')}"/></path>
+      </svg>`
+
+/** A card: the orange wave header (white text) over the white body. */
+function card(head, rest = '') {
+  return `<section class="card">
+      <div class="card-head">${WAVE_SVG}${head}
+      </div>${rest.trim() ? `
+      <div class="card-body">${rest}
+      </div>` : ''}
+    </section>`
+}
+
 /** The page's main block for its content. */
 function body(data, S, SS, locale) {
   if (!data) {
-    return `<section class="card"><h1>${esc(SS.notFound)}</h1><a class="link" href="/today">${esc(SS.seeToday)}</a></section>`
+    return card(`<h1>${esc(SS.notFound)}</h1>`, `<a class="link" href="/today">${esc(SS.seeToday)}</a>`)
   }
   const c = data.challenge
   // The theme and the comparison question ("Drinks · How do locals say cheers?"), then the challenge.
@@ -108,10 +133,9 @@ function body(data, S, SS, locale) {
       <h1>${esc(c.text)}</h1>` : ''
 
   if (data.kind === 'proof' && data.state === 'review') {
-    return `<section class="card">
-      <div class="kicker">Daily Challenge</div>
-      <p class="review"><b>${esc(SS.review)}</b><br />${esc(SS.reviewSub)}</p>${challenge}
-    </section>`
+    return card(`
+      <div class="kicker">Daily Challenge</div>${challenge}`, `
+      <p class="review"><b>${esc(SS.review)}</b><br />${esc(SS.reviewSub)}</p>`)
   }
   if (data.kind === 'proof') {
     const p = data.proof
@@ -122,28 +146,25 @@ function body(data, S, SS, locale) {
     const rank = p.worldRank && p.worldRank <= 3 ? fmt(SS.rankWorld, { rank: p.worldRank })
       : p.cityRank && p.cityRank <= 3 && p.city ? fmt(SS.rankCity, { rank: p.cityRank, city: p.city.name }) : null
     return `${ask}<figure class="photo"><img src="${esc(sizedPhoto(p.photoUrl, 'medium'))}" alt="${esc(p.caption || '')}" decoding="async" />${rank ? `<span class="rank">${esc(rank)}</span>` : ''}</figure>
-    <section class="card">
-      <div class="kicker">Daily Challenge</div>${challenge}
+    ${card(`
+      <div class="kicker">Daily Challenge</div>${challenge}`, `
       <div class="meta">${p.city ? `<span>${flagImg(p.city.country)}${esc(p.city.name)}</span>` : ''}${p.user && p.user.username ? `<span>${esc(fmt(SS.by, { user: p.user.username }))}</span>` : ''}<span>${HEART}${p.voteCount}</span></div>
-      ${p.caption ? `<p class="caption">“${esc(p.caption)}”</p>` : ''}
-    </section>`
+      ${p.caption ? `<p class="caption">“${esc(p.caption)}”</p>` : ''}`)}`
   }
   if (data.kind === 'spot') {
     const s = data.spot
     const grid = data.photos.slice(0, 9).map(ph => `<img src="${esc(ph.thumbUrl || sizedPhoto(ph.photoUrl))}" alt="" loading="lazy" decoding="async" />`).join('')
     return `${s.cover && s.cover.photoUrl ? `<figure class="photo"><img src="${esc(sizedPhoto(s.cover.photoUrl, 'medium'))}" alt="" decoding="async" />${s.cover.by ? `<span class="credit">${esc(fmt(SS.photoBy, { user: s.cover.by }))}</span>` : ''}</figure>` : ''}
-    <section class="card">
-      <h1>${esc(s.name)}</h1>
+    ${card(`
+      <h1>${esc(s.name)}</h1>`, `
       <div class="meta">${s.city ? `<span>${flagImg(s.city.country)}${esc(s.city.name)}</span>` : ''}<span>${HEART}${s.votes}</span></div>
-      ${grid ? `<div class="grid-title">${esc(SS.spotPhotos)}</div><div class="grid">${grid}</div>` : ''}
-    </section>`
+      ${grid ? `<div class="grid-title">${esc(SS.spotPhotos)}</div><div class="grid">${grid}</div>` : ''}`)}`
   }
   // day
   const grid = data.proofs.map(p => `<img src="${esc(p.thumbUrl || sizedPhoto(p.photoUrl))}" alt="" loading="lazy" decoding="async" />`).join('')
-  return `<section class="card">
-      <div class="kicker">${esc(fmt(SS.dayOf, { date: dateLabel(c.date, locale) }))}</div>${challenge}
-      ${grid ? `<div class="grid-title">${esc(SS.best)}</div><div class="grid">${grid}</div>` : ''}
-    </section>`
+  return card(`
+      <div class="kicker">${esc(fmt(SS.dayOf, { date: dateLabel(c.date, locale) }))}</div>${challenge}`,
+      grid ? `<div class="grid-title">${esc(SS.best)}</div><div class="grid">${grid}</div>` : '')
 }
 
 export function renderShare(type, id, data, locale) {
@@ -201,10 +222,16 @@ export function renderShare(type, id, data, locale) {
     .photo img{ display:block; width:100%; max-height:70svh; object-fit:cover; }
     .rank{ position:absolute; top:12px; left:12px; padding:5px 12px; border-radius:999px; background:#B98A2E; color:#fff; font-size:13px; font-weight:800; }
     .credit{ position:absolute; left:10px; bottom:10px; padding:3px 9px; border-radius:999px; background:rgba(0,0,0,.58); color:#fff; font-size:12px; font-weight:700; }
-    .card{ padding:20px 18px; border-radius:22px; background:var(--surface); border:1px solid var(--line); box-shadow:0 8px 28px rgba(28,20,14,.08);
-      display:flex; flex-direction:column; gap:10px; }
-    .kicker{ font-size:13px; font-weight:800; color:var(--muted); }
-    .theme{ align-self:flex-start; font-size:13px; font-weight:800; background:var(--surface2); border-radius:999px; padding:5px 12px; }
+    /* The card (as the map sheet): an orange wave header with the white title (terracotta under the text:
+       white 4.8:1+, the 88% kicker 4.6:1+), then the white body; transparent above the wave's curve. */
+    .card{ border-radius:0 0 22px 22px; filter:drop-shadow(0 -6px 12px rgba(80,30,5,.14)) drop-shadow(0 8px 14px rgba(28,20,14,.06)); }
+    .card-head{ position:relative; padding:44px 18px 18px; display:flex; flex-direction:column; gap:10px; color:#fff;
+      background:linear-gradient(#C24E1C, #A8401A) 0 33px / 100% calc(100% - 33px) no-repeat; }
+    .card-head:last-child{ border-radius:0 0 22px 22px; }
+    .card-head .wave{ position:absolute; top:0; left:0; width:100%; height:34px; display:block; overflow:visible; }
+    .card-body{ padding:16px 18px 20px; display:flex; flex-direction:column; gap:10px; background:var(--surface); border-radius:0 0 22px 22px; }
+    .kicker{ font-size:13px; font-weight:800; color:rgba(255,255,255,.88); }
+    .theme{ align-self:flex-start; font-size:13px; font-weight:800; background:#fff; color:#C24E1C; border-radius:999px; padding:5px 12px; }
     h1{ margin:0; font-weight:800; letter-spacing:-.4px; line-height:1.2; font-size:clamp(21px,6vw,26px); text-wrap:balance; }
     .meta{ display:flex; flex-wrap:wrap; gap:6px 14px; color:var(--muted); font-size:14px; font-weight:600; }
     .meta span{ display:inline-flex; align-items:center; gap:5px; }
@@ -276,6 +303,8 @@ export function renderShare(type, id, data, locale) {
     function cap(ev, props){ try { posthog.capture(ev, props); } catch (e) {} }
     function $(id){ return document.getElementById(id); }
     var B = window.__SHARE || {};
+    // The wave stays still with reduced motion.
+    try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('.wave animate').forEach(function (a) { a.remove(); }); } catch (e) {}
 
     /* UTM passthrough: super props + the signup CTA. */
     var KEEP = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid','ttclid','ref'];
