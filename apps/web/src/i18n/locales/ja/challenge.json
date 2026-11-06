@@ -1219,7 +1219,10 @@
         "moderation_blocked": "提案がモデレーションに引っかかりました。書き直してください。"
       },
       "linkAsk": "チャレンジのアイデアある？",
-      "linkCta": "提案する"
+      "linkCta": "提案する",
+      "cardBody": "あなたのアイデアが、明日の世界中のチャレンジになるかも 🌍",
+      "cardHide": "1週間非表示にする",
+      "cardPlayed_other": "あなたのアイデア「{{text}}」は{{count}}都市でプレイされました 🎉"
     },
     "early": {
       "badge": "早め",

@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
@@ -8,8 +8,8 @@ import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 import { themeName, compactPrice, formatDistance, sortSpots } from './spotsShared'
 
-/** Peek height: the handle and one line ("23 spots in Saigon · nearest first"). */
-export const SHEET_PEEK = 112
+/** Peek height before the head is measured: the handle and one line ("23 spots in Saigon · nearest first"). */
+export const SHEET_PEEK = 84
 const HINT_KEY = 'hilads_map_sheet_hint_seen'
 const SNAPS = ['peek', 'half', 'full']
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
@@ -50,15 +50,30 @@ function SpotRow({ spot: s, me, km, onPick }) {
  * handle, or tap it to go up / back down. It lists the visible area's spots
  * with the active filters, Nearest · Most liked · Newest; a selected pin's
  * card leads it. The first visit shows a "swipe up" hint.
+ * The peek is the head as measured (that one line, wrapped when a language
+ * needs it, and the hint), so nothing shows half cut at its edge; the sort
+ * chips (one row scrolling sideways) come under the head from half. The map
+ * page ends above the bottom nav, so the sheet never goes under it.
  */
-const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, filterLabel, selectedCard, topNote, emptyArea, onPick }, ref) {
+const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, filterLabel, selectedCard, topNote, emptyArea, onPick, onPeek }, ref) {
   const { t } = useTranslation('challenge')
   const [snap, setSnap] = useState('peek')
   const [sort, setSort] = useState('near')
   const [drag, setDrag] = useState(null)   // { start, dy } while the handle is dragged
   const [hint, setHint] = useState(() => { try { return localStorage.getItem(HINT_KEY) !== '1' } catch { return false } })
   const box = useRef(null)
+  const head = useRef(null)
   const moved = useRef(false)
+  // The peek = the head's height (measured; it changes with the language, the hint and the width).
+  const [peek, setPeek] = useState(SHEET_PEEK)
+  useEffect(() => {
+    const el = head.current
+    if (!el || typeof ResizeObserver === 'undefined') return undefined
+    const ro = new ResizeObserver(() => setPeek(Math.ceil(el.getBoundingClientRect().height)))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  useEffect(() => { onPeek?.(peek) }, [peek, onPeek])
 
   const go = (next) => {
     setSnap(next)
@@ -90,30 +105,31 @@ const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, fi
   const sortLabel = t(sort === 'near' ? 'dc.map.sheet.byNear' : sort === 'liked' ? 'dc.map.sheet.byLiked' : 'dc.map.sheet.byNew')
   const headline = emptyArea ? t('dc.map.sheet.emptyArea')
     : place ? t('dc.map.sheet.count', { count: spots.length, city: place }) : t('dc.map.sheet.countHere', { count: spots.length })
+  // The peek's one line: "24 spots in Saigon · Taste · nearest first".
+  const line = [headline, filterLabel, emptyArea ? null : sortLabel].filter(Boolean).join(' · ')
   const sorts = [['near', t('map.sortNearest')], ['liked', t('dc.map.sheet.sortLiked')], ['new', t('dc.map.sheet.sortNew')]]
 
   return (
     <div ref={box} className={`wm-msheet wm-msheet--${snap}${drag ? ' wm-msheet--drag' : ''}`}
-         style={drag ? { '--wm-drag': `${drag.dy}px` } : undefined} data-testid="map-sheet">
-      <div className="wm-msheet-head" role="button" tabIndex={0} aria-expanded={snap !== 'peek'}
+         style={{ '--wm-peek': `${peek}px`, ...(drag ? { '--wm-drag': `${drag.dy}px` } : null) }} data-testid="map-sheet">
+      <div ref={head} className="wm-msheet-head" role="button" tabIndex={0} aria-expanded={snap !== 'peek'}
            onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => setDrag(null)}
            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(snap === 'peek' ? 'half' : 'peek') } }}>
         <span className="wm-msheet-handle" aria-hidden="true" />
-        <span className="wm-msheet-headline">{headline}</span>
-        <span className="wm-msheet-sub">{[filterLabel, emptyArea ? null : sortLabel].filter(Boolean).join(' · ')}</span>
+        <span className="wm-msheet-headline">{line}</span>
         {hint && <span className="wm-msheet-hint"><Icon name="chevron-up" size={14} />{t('dc.map.sheet.hint')}</span>}
       </div>
+      {data.length > 1 && (
+        <div className="wm-msheet-sorts" aria-hidden={snap === 'peek'}>
+          {sorts.map(([k, label]) => (
+            <button key={k} type="button" tabIndex={snap === 'peek' ? -1 : 0} className={`wm-chip${sort === k ? ' wm-chip--on' : ''}`}
+                    onClick={() => { setSort(k); track('web_map_list_sorted', { sort: k }) }}>{label}</button>
+          ))}
+        </div>
+      )}
       <div className="wm-msheet-body">
         {selectedCard}
         {topNote}
-        {data.length > 1 && (
-          <div className="wm-list-sorts">
-            {sorts.map(([k, label]) => (
-              <button key={k} type="button" className={`wm-chip${sort === k ? ' wm-chip--on' : ''}`}
-                      onClick={() => { setSort(k); track('web_map_list_sorted', { sort: k }) }}>{label}</button>
-            ))}
-          </div>
-        )}
         {data.map(s => <SpotRow key={s.id} spot={s} me={me} km={km} onPick={onPick} />)}
       </div>
     </div>

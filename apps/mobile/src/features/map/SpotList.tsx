@@ -1,4 +1,5 @@
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -27,16 +28,16 @@ export function sortSpots(spots: Spot[], sort: SpotSort, origin: [number, number
   return out;
 }
 
-/** The sort chips: Nearest · Most liked · Newest. */
+/** The sort chips: Nearest · Most liked · Newest, one row that scrolls sideways (long labels never wrap or cut). */
 export function SortChips({ sort, onSort }: { sort: SpotSort; onSort: (s: SpotSort) => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   return (
-    <View style={styles.sorts}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sorts} testID="map-sort-chips">
       <Chip variant="filter" label={t('map.sortNearest')} selected={sort === 'near'} onPress={() => onSort('near')} />
       <Chip variant="filter" label={t('map.sheet.sortLiked')} selected={sort === 'liked'} onPress={() => onSort('liked')} />
       <Chip variant="filter" label={t('map.sheet.sortNew')} selected={sort === 'new'} onPress={() => onSort('new')} />
-    </View>
+    </ScrollView>
   );
 }
 

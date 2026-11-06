@@ -16720,8 +16720,6 @@ body.has-app-promo-banner .page-header {
 
 /* Today (W2): ticket extras, week strip, today's proofs, spots near you */
 .today-mine { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.today-propose { display: flex; align-items: center; gap: 8px; min-height: 40px; border: none; background: none; padding: 0; font: inherit; font-size: 13px; font-weight: 700; color: var(--primary-text); text-align: left; cursor: pointer; }
-.today-propose-text { flex: 1; }
 .week { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--surface); }
 .week-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .week-streak { flex-shrink: 0; min-height: 32px; border: none; background: none; padding: 0; font: inherit; font-size: 15px; font-weight: 800; color: var(--text); cursor: pointer; }
@@ -16798,15 +16796,7 @@ body.has-app-promo-banner .page-header {
 .proof-strip-city { font-size: 13px; font-weight: 700; }
 .proof-strip-votes { font-size: 12px; }
 /* Spots near you (V3 polish 3.4): one slim row to the Map. */
-.spots-teaser { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; color: var(--text); text-align: left; cursor: pointer; }
-.spots-teaser:active, .spots-teaser:hover { background: var(--surface2); }
-.spots-teaser-pin { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--primary-tint); color: var(--primary-text); display: flex; align-items: center; justify-content: center; }
-.spots-teaser-text { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spots-teaser-open { flex-shrink: 0; display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 800; color: var(--primary-text); }
 /* The bottom of Today (V3 polish 3.3): "Got a challenge idea? Propose it". */
-.today-propose { align-self: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 12px; border: none; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); text-align: center; cursor: pointer; }
-.today-propose svg { flex-shrink: 0; }
-.today-propose-cta { font-weight: 800; color: var(--primary-text); text-decoration: underline; }
 
 /* Cards in the Today / Daily columns keep their height (no flex squeeze). */
 .today-body > *, .dc-body > * { flex-shrink: 0; }
@@ -18332,17 +18322,22 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 }
 
 /* ── V6 map sheet (wm-msheet): peek · half · full, replaces the List button ── */
-.wm-msheet { --wm-h: 112px; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1100; height: calc(var(--wm-h) - var(--wm-drag, 0px));
-  max-height: calc(100% - var(--wm-top-h, 0px) - 8px); min-height: 72px; display: flex; flex-direction: column; background: var(--bg);
+.wm-msheet { --wm-h: var(--wm-peek, 84px); position: absolute; left: 0; right: 0; bottom: 0; z-index: 1100; height: calc(var(--wm-h) - var(--wm-drag, 0px));
+  max-height: calc(100% - var(--wm-top-h, 0px) - 8px); min-height: 56px; display: flex; flex-direction: column; background: var(--bg);
   border-radius: 24px 24px 0 0; box-shadow: 0 -6px 24px rgba(36, 26, 18, 0.16); transition: height 0.32s cubic-bezier(.22, 1, .36, 1); }
+.wm-msheet { overflow: hidden; }   /* at the peek, only the head shows */
 .wm-msheet--half { --wm-h: 50%; }
 .wm-msheet--full { --wm-h: 100%; }
 .wm-msheet--drag { transition: none; }
-.wm-msheet-head { flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px; cursor: grab; touch-action: none; user-select: none; }
+.wm-msheet-head { flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 18px 14px; cursor: grab; touch-action: none; user-select: none; }
 .wm-msheet--drag .wm-msheet-head { cursor: grabbing; }
 .wm-msheet-handle { align-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--line); margin-bottom: 8px; }
-.wm-msheet-headline { font-size: 17px; line-height: 22px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wm-msheet-sub { font-size: 13px; line-height: 17px; font-weight: 600; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-height: 17px; }
+.wm-msheet-headline { font-size: 16px; line-height: 21px; font-weight: 800; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* The sort chips: one row scrolling sideways under the head, shown from half (never cut at the peek). */
+.wm-msheet-sorts { flex-shrink: 0; display: flex; gap: 8px; padding: 0 16px 10px; overflow-x: auto; scrollbar-width: none; transition: opacity 0.2s; }
+.wm-msheet-sorts::-webkit-scrollbar { display: none; }
+.wm-msheet-sorts .wm-chip { flex-shrink: 0; white-space: nowrap; }
+.wm-msheet--peek .wm-msheet-sorts { opacity: 0; visibility: hidden; }
 .wm-msheet-hint { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 0 10px; height: 26px; border-radius: 13px;
   background: var(--primary-tint); color: var(--primary-on-tint); font-size: 12px; font-weight: 800; animation: wm-hint 0.9s ease-in-out 4; }
 @keyframes wm-hint { 50% { transform: translateY(-4px) } }
@@ -18355,8 +18350,8 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .wm-surprise:active { transform: scale(0.96); }
 .wm-pioneer { display: block; width: calc(100% - 24px); margin: 4px 12px 10px; padding: 14px; border: 0; border-radius: 18px; background: var(--primary-tint);
   color: var(--primary-on-tint); font-size: 14px; font-weight: 800; text-align: center; cursor: pointer; }
-.wm-map .wm-mapbox-logo { bottom: 120px; }
-.wm-map .leaflet-control-attribution { margin-bottom: 112px; }
+.wm-map .wm-mapbox-logo { bottom: calc(var(--wm-peek, 84px) + 8px); }
+.wm-map .leaflet-control-attribution { margin-bottom: var(--wm-peek, 84px); }
 @media (prefers-reduced-motion: reduce) { .wm-msheet { transition: none; } .wm-msheet-hint { animation: none; } }
 
 /* ── V6 Passport rivals + face-off (rv-*) ── */
@@ -18400,3 +18395,20 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .tc-slot-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .tc-slot-title { font-size: 16px; font-weight: 800; }
 .tc-slot-sub { font-size: 13px; font-weight: 600; }
+
+/* V6.1 Today: "Got a challenge idea?", a small playful card (pc-*), as in the app. */
+.pc-card { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 18px;
+  background: rgba(255, 201, 60, 0.2); border: 1.5px solid rgba(255, 201, 60, 0.55); }
+.pc-close { position: absolute; top: 6px; right: 6px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: none; color: var(--muted);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.pc-top { display: flex; align-items: center; gap: 14px; padding-right: 24px; }
+.pc-bulb { flex-shrink: 0; display: block; width: 58px; height: 58px; transform-origin: 50% 85%; }
+.pc-bulb--wiggle { animation: pc-wiggle 0.65s ease-in-out; }
+@keyframes pc-wiggle { 18% { transform: rotate(-12deg) } 40% { transform: rotate(10deg) } 60% { transform: rotate(-7deg) } 80% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+.pc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.pc-title { font-size: 16px; line-height: 21px; font-weight: 800; color: var(--text); }
+.pc-text { font-size: 14px; line-height: 19px; font-weight: 600; color: var(--text); opacity: 0.85; }
+.pc-proof { margin: 0; padding: 8px 12px; border-radius: 12px; background: var(--surface); font-size: 13px; line-height: 18px; font-weight: 700; color: var(--text); }
+.pc-button { min-height: 48px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--primary); color: #fff; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.pc-button:active { transform: scale(0.98); opacity: 0.9; }
+@media (prefers-reduced-motion: reduce) { .pc-bulb--wiggle { animation: none; } }

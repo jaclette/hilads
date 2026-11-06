@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday, fetchSpotsNear } from '../../api'
+import { fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday } from '../../api'
+import ProposeCard from './ProposeCard'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
@@ -91,8 +92,7 @@ export default function TodayScreen({ header }) {
         <YesterdayRecap today={data} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel />
-        <SpotsNear />
-        <ProposeLink />
+        <ProposeCard />
       </div>
     </div>
   )
@@ -462,68 +462,6 @@ function LinkRow({ icon, title, sub, onClick, accent }) {
         <span className="link-row-sub">{sub}</span>
       </span>
       <Icon name="chevron-forward" size={18} className="link-row-chevron" />
-    </button>
-  )
-}
-
-/**
- * Spots near you (SPEC 9.3, V3 polish 3.4): one slim row, "12 spots near you ·
- * Open map" (the Map owns the spots); hidden when there's none around, or only
- * the nearest ones anywhere. Position only if already allowed, else the city
- * centre. In a city I'm not in: "3 spots in <city>", around its centre.
- */
-function SpotsNear() {
-  const { t } = useDc()
-  const { cityId, scope, openSpot } = useDaily()
-  const [spots, setSpots] = useState(null)
-  const [fallback, setFallback] = useState(false)
-  // Centred on the chosen city when I'm not in it: "3 spots in <city>".
-  const [away, setAway] = useState(null)
-
-  useEffect(() => {
-    let alive = true
-    const load = (pos) => {
-      if (!pos && !cityId) { setSpots([]); return }
-      fetchSpotsNear({ ...(pos ?? {}), cityId: pos ? (scope === 'city' ? cityId : null) : cityId })
-        .then(r => { if (alive) { setSpots(r.items); setFallback(r.fallback); setAway(scope === 'city' && r.center === 'city' ? r.city : null) } })
-        .catch(() => { if (alive) setSpots(s => s ?? []) })
-    }
-    const granted = scope === 'city' && navigator.permissions
-      ? navigator.permissions.query({ name: 'geolocation' }).then(p => p.state === 'granted').catch(() => false)
-      : Promise.resolve(false)
-    granted.then(ok => {
-      if (!ok || !navigator.geolocation) { load(null); return }
-      navigator.geolocation.getCurrentPosition(
-        p => load({ lat: p.coords.latitude, lng: p.coords.longitude }),
-        () => load(null),
-        { maximumAge: 10 * 60000, timeout: 5000 },
-      )
-    })
-    return () => { alive = false }
-  }, [cityId, scope])
-
-  if (spots === null || spots.length === 0 || fallback) return null
-  const label = away ? t('today.spotsTeaserIn', { count: spots.length, city: shortCityName(away.name) }) : t('today.spotsTeaser', { count: spots.length })
-  return (
-    <button type="button" className="spots-teaser" onClick={() => openSpot(null)} aria-label={`${label}. ${t('today.openMap')}`}>
-      <span className="spots-teaser-pin"><Icon name="location" size={18} /></span>
-      <span className="spots-teaser-text">{label}</span>
-      <span className="spots-teaser-open">{t('today.openMap')}<Icon name="chevron-forward" size={16} /></span>
-    </button>
-  )
-}
-
-/**
- * The bottom of Today (V3 polish 3.3): a friendly text link, "Got a challenge
- * idea? Propose it" (SPEC 8.6: guests get the sign-up sheet, then the form).
- */
-function ProposeLink() {
-  const { t } = useDc()
-  const { account, openDaily, needAccount } = useDaily()
-  return (
-    <button type="button" className="today-propose" onClick={() => (account ? openDaily('propose', { source: 'today_link' }) : needAccount('create_challenge'))}>
-      <Icon name="bulb-outline" size={16} />
-      <span>{t('propose.linkAsk')} <span className="today-propose-cta">{t('propose.linkCta')}</span></span>
     </button>
   )
 }

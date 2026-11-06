@@ -119,6 +119,8 @@ export type AnalyticsEvent =
   | 'rivals_opened'
   | 'rival_challenge_shared'
   | 'map_surprise'
+  | 'propose_card_tapped'
+  | 'propose_card_hidden'
   | 'map_sheet_snap'
   | 'challenge_bubble_tapped'
   | 'challenge_cta_tapped'

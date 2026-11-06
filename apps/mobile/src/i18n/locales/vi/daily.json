@@ -386,7 +386,10 @@
       "moderation_blocked": "Đề xuất bị bộ lọc chặn. Viết lại nhé."
     },
     "linkAsk": "Có ý tưởng thử thách?",
-    "linkCta": "Đề xuất ngay"
+    "linkCta": "Đề xuất ngay",
+    "cardBody": "Ý tưởng của bạn có thể thành thử thách ngày mai cho cả thế giới 🌍",
+    "cardHide": "Ẩn trong một tuần",
+    "cardPlayed_other": "Ý tưởng “{{text}}” của bạn đã được chơi ở {{count}} thành phố 🎉"
   },
   "early": {
     "badge": "Sớm",

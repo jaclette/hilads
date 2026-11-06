@@ -1251,7 +1251,11 @@
         "moderation_blocked": "Ta proposition a été bloquée par la modération. Reformule-la."
       },
       "linkAsk": "Une idée de défi ?",
-      "linkCta": "Propose-la"
+      "linkCta": "Propose-la",
+      "cardBody": "Ton idée pourrait devenir le défi de demain pour le monde entier 🌍",
+      "cardHide": "Masquer une semaine",
+      "cardPlayed_one": "Ton idée « {{text}} » a été jouée dans {{count}} ville 🎉",
+      "cardPlayed_other": "Ton idée « {{text}} » a été jouée dans {{count}} villes 🎉"
     },
     "early": {
       "badge": "En avance",

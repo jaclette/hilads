@@ -1251,7 +1251,11 @@
         "moderation_blocked": "Sua proposta foi barrada pela moderação. Reescreva, por favor."
       },
       "linkAsk": "Tem uma ideia de desafio?",
-      "linkCta": "Proponha"
+      "linkCta": "Proponha",
+      "cardBody": "Sua ideia pode virar o desafio de amanhã para o mundo inteiro 🌍",
+      "cardHide": "Ocultar por uma semana",
+      "cardPlayed_one": "Sua ideia “{{text}}” foi jogada em {{count}} cidade 🎉",
+      "cardPlayed_other": "Sua ideia “{{text}}” foi jogada em {{count}} cidades 🎉"
     },
     "early": {
       "badge": "Adiantado",

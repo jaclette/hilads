@@ -1251,7 +1251,11 @@
         "moderation_blocked": "La moderación bloqueó tu propuesta. Intenta reformularla."
       },
       "linkAsk": "¿Tienes una idea de reto?",
-      "linkCta": "Proponla"
+      "linkCta": "Proponla",
+      "cardBody": "Tu idea podría ser el reto de mañana para todo el mundo 🌍",
+      "cardHide": "Ocultar una semana",
+      "cardPlayed_one": "Tu idea «{{text}}» se jugó en {{count}} ciudad 🎉",
+      "cardPlayed_other": "Tu idea «{{text}}» se jugó en {{count}} ciudades 🎉"
     },
     "early": {
       "badge": "Temprano",

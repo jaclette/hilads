@@ -289,6 +289,8 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [nearMe, setNearMe]   = useState(false)     // far from the city: the map is around me
   const [notice, setNotice]   = useState(null)
   const sheet = useRef(null)
+  // The sheet's measured peek: Surprise me and the map's credits sit above it.
+  const [peekH, setPeekH] = useState(SHEET_PEEK)
   const [cityEmpty, setCityEmpty] = useState(false)  // the city really has no spot (not just the visible area)
   const [today, setToday]     = useState(null)
   const [bubbles, setBubbles] = useState([])
@@ -476,7 +478,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         </div>
       </div>
 
-      <div className="wm-map" style={{ '--wm-top-h': `${topH}px` }}>
+      <div className="wm-map" style={{ '--wm-top-h': `${topH}px`, '--wm-peek': `${peekH}px` }}>
         {/* The scope, search and chips in one translucent header over the map. */}
         <div ref={topRef} className="wm-top">
           <div className="wm-search-row">
@@ -567,12 +569,13 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         )}
         {/* Above the sheet: 🎲 Surprise me. */}
         {center && !worldView && shown.length > 0 && (
-          <button type="button" className="wm-surprise" style={{ bottom: SHEET_PEEK + 12 }} onClick={surprise} data-testid="map-surprise">🎲 {t('dc.map.surprise')}</button>
+          <button type="button" className="wm-surprise" style={{ bottom: peekH + 12 }} onClick={surprise} data-testid="map-surprise">🎲 {t('dc.map.surprise')}</button>
         )}
         {/* The sticky sheet: the visible area's spots, a selected pin's card first. */}
         {center && (
           <MapSheet
             ref={sheet}
+            onPeek={setPeekH}
             spots={worldView ? [] : listSpots}
             me={me}
             origin={areaCentre}

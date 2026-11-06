@@ -31,24 +31,6 @@ export interface Spot {
   distanceM?:       number;
 }
 
-/**
- * The nearest spots (Today's "Spots near you"): around a position when given,
- * else the city centre. fallback: the city has none, these are the nearest anywhere.
- */
-/** center 'city': around the chosen city's centre because I'm not in it ("Spots in <city>"). */
-export function fetchSpotsNear(opts: { lat?: number; lng?: number; cityId?: string | number | null }): Promise<{
-  items: Spot[]; fallback: boolean; center?: 'me' | 'city' | 'unknown';
-  city?: { id: number; name: string; country: string | null } | null;
-}> {
-  return api.get('/spots/near', {
-    params: {
-      lat:    opts.lat !== undefined ? opts.lat.toFixed(4) : undefined,
-      lng:    opts.lng !== undefined ? opts.lng.toFixed(4) : undefined,
-      cityId: cityNumber(opts.cityId),
-    },
-  });
-}
-
 /** A Hi plan as a dated pin (GET /map with a cityId). */
 export interface PlanPin {
   id:               string;

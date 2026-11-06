@@ -397,7 +397,11 @@
       "moderation_blocked": "Na-flag ng moderation ang suggestion mo. Paki-rephrase."
     },
     "linkAsk": "May challenge idea ka?",
-    "linkCta": "I-suggest"
+    "linkCta": "I-suggest",
+    "cardBody": "Puwedeng maging challenge bukas ng buong mundo ang idea mo 🌍",
+    "cardHide": "Itago nang isang linggo",
+    "cardPlayed_one": "Nilaro ang idea mong “{{text}}” sa {{count}} lungsod 🎉",
+    "cardPlayed_other": "Nilaro ang idea mong “{{text}}” sa {{count}} lungsod 🎉"
   },
   "early": {
     "badge": "Maaga",

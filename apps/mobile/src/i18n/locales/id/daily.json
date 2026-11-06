@@ -386,7 +386,10 @@
       "moderation_blocked": "Usulanmu ditandai moderasi. Coba tulis ulang ya."
     },
     "linkAsk": "Punya ide tantangan?",
-    "linkCta": "Usulkan"
+    "linkCta": "Usulkan",
+    "cardBody": "Idemu bisa jadi tantangan besok untuk seluruh dunia 🌍",
+    "cardHide": "Sembunyikan seminggu",
+    "cardPlayed_other": "Idemu “{{text}}” dimainkan di {{count}} kota 🎉"
   },
   "early": {
     "badge": "Gercep",

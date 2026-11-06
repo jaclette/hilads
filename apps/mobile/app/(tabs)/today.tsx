@@ -13,8 +13,7 @@ import { TodayCountries } from '@/features/today/TodayCountries';
 import { useTodayCountries } from '@/features/today/useTodayCountries';
 import { TodayTour } from '@/features/tour/TodayTour';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
-import { SpotsNear } from '@/features/today/SpotsNear';
-import { ProposeLink } from '@/features/today/ProposeLink';
+import { ProposeCard } from '@/features/today/ProposeCard';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
 import { WhileAwayCard } from '@/features/notifications/WhileAwayCard';
@@ -24,9 +23,9 @@ import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
 /**
  * TODAY, the home (SPEC 9.3, V3 polish): the Daily Challenge hero, the
  * seasonal banner, today's photos by city (stories row and mosaic), your week
- * (streak, tomorrow), yesterday with every past challenge, the Index, a slim
- * row to the spots near you and "Got a challenge idea? Propose it". Never
- * empty: without photos it shows yesterday's best cities and my city's slot.
+ * (streak, tomorrow), yesterday with every past challenge, the Index and the
+ * "Got a challenge idea?" card (the spots live on the Map tab). Never empty:
+ * without photos it shows yesterday's best cities and my city's slot.
  */
 export default function TodayScreen() {
   // A seasonal event's live look (Halloween...) re-colors the whole tab.
@@ -46,10 +45,22 @@ function TodayContent() {
   // The card's "I'm in" pulses only while the card is on screen.
   const [ticketVisible, setTicketVisible] = useState(true);
   const ticketBottom = useRef(Number.POSITIVE_INFINITY);
+  // The propose card at the bottom: its lightbulb wiggles when it scrolls into view.
+  const [proposeInView, setProposeInView] = useState(false);
+  const proposeTop = useRef(Number.POSITIVE_INFINITY);
+  const viewportH = useRef(0);
+  const scrollY = useRef(0);
+  const checkPropose = useCallback(() => {
+    const next = scrollY.current + viewportH.current > proposeTop.current + 60;
+    setProposeInView(v => (v === next ? v : next));
+  }, []);
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const next = e.nativeEvent.contentOffset.y < ticketBottom.current - 24;
     setTicketVisible(v => (v === next ? v : next));
-  }, []);
+    scrollY.current = e.nativeEvent.contentOffset.y;
+    viewportH.current = e.nativeEvent.layoutMeasurement.height;
+    checkPropose();
+  }, [checkPropose]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -65,6 +76,7 @@ function TodayContent() {
       <ScrollView
         contentContainerStyle={styles.content}
         onScroll={onScroll}
+        onLayout={e => { viewportH.current = e.nativeEvent.layout.height; checkPropose(); }}
         scrollEventThrottle={100}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]}
                                         title={t('today.refreshing')} titleColor={colors.muted} />}
@@ -88,8 +100,9 @@ function TodayContent() {
         <TodayTour today={daily.data} refreshKey={refreshKey} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel refreshKey={refreshKey} />
-        <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
-        <ProposeLink />
+        <View onLayout={e => { proposeTop.current = e.nativeEvent.layout.y; checkPropose(); }}>
+          <ProposeCard inView={proposeInView} />
+        </View>
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />
     </SafeAreaView>

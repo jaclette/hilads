@@ -1235,7 +1235,11 @@
         "moderation_blocked": "Je voorstel is door de moderatie tegengehouden. Probeer het anders te zeggen."
       },
       "linkAsk": "Een idee voor een challenge?",
-      "linkCta": "Stel het voor"
+      "linkCta": "Stel het voor",
+      "cardBody": "Jouw idee kan morgen de challenge voor de hele wereld zijn 🌍",
+      "cardHide": "Een week verbergen",
+      "cardPlayed_one": "Jouw idee “{{text}}” is in {{count}} stad gespeeld 🎉",
+      "cardPlayed_other": "Jouw idee “{{text}}” is in {{count}} steden gespeeld 🎉"
     },
     "early": {
       "badge": "Vroeg",

@@ -386,7 +386,10 @@
       "moderation_blocked": "你的提议被拦截了，换个说法吧。"
     },
     "linkAsk": "有挑战的点子？",
-    "linkCta": "提出来"
+    "linkCta": "提出来",
+    "cardBody": "你的点子可能成为明天全世界的挑战 🌍",
+    "cardHide": "隐藏一周",
+    "cardPlayed_other": "你的点子“{{text}}”已在 {{count}} 座城市被玩过 🎉"
   },
   "early": {
     "badge": "抢先",

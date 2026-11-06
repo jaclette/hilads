@@ -141,6 +141,8 @@ export default function MapScreen() {
   const [results, setResults]   = useState<Spot[] | null>(null);
   const [notice, setNotice]     = useState<string | null>(null);
   const sheet = useRef<MapSheetHandle>(null);
+  // The sheet's measured peek: the floating buttons sit just above it.
+  const [peekH, setPeekH] = useState(SHEET_PEEK);
   const [topH, setTopH]         = useState(0);
   const [zoom, setZoom]         = useState(CITY_ZOOM);
   const [bubbles, setBubbles]   = useState<MapCity[]>([]);
@@ -567,7 +569,7 @@ export default function MapScreen() {
       {!loaded && <View style={[styles.loading, { top: insets.top + 120 }]}><ActivityIndicator color={colors.primary} /></View>}
 
       {/* Above the sheet: a notice, 🎲 Surprise me and locate-me. */}
-      <View style={[styles.floating, { bottom: SHEET_PEEK + 12 }]} pointerEvents="box-none">
+      <View style={[styles.floating, { bottom: peekH + 12 }]} pointerEvents="box-none">
         {notice && <Text style={styles.notice}>{notice}</Text>}
         <View style={styles.floatRow} pointerEvents="box-none">
           {!worldView && shown.length > 0 && (
@@ -582,6 +584,7 @@ export default function MapScreen() {
       {/* The sticky sheet: the visible area's spots, a selected pin's card first. */}
       <MapSheet
         ref={sheet}
+        onPeek={setPeekH}
         spots={listSpots}
         me={me}
         origin={bboxCentre}

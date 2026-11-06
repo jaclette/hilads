@@ -1251,7 +1251,11 @@
         "moderation_blocked": "La tua proposta è stata bloccata dalla moderazione. Riformulala."
       },
       "linkAsk": "Hai un'idea per una sfida?",
-      "linkCta": "Proponila"
+      "linkCta": "Proponila",
+      "cardBody": "La tua idea potrebbe diventare la sfida di domani per tutto il mondo 🌍",
+      "cardHide": "Nascondi per una settimana",
+      "cardPlayed_one": "La tua idea «{{text}}» è stata giocata in {{count}} città 🎉",
+      "cardPlayed_other": "La tua idea «{{text}}» è stata giocata in {{count}} città 🎉"
     },
     "early": {
       "badge": "In anticipo",

@@ -2680,13 +2680,6 @@ export async function proposeTwist(text)  { return (await daily('POST', '/daily/
 export async function editTwistProposal(text) { return (await daily('PATCH', '/daily/twist-proposal', { body: { text } })).proposal }
 export function withdrawTwistProposal()   { return daily('DELETE', '/daily/twist-proposal') }
 
-/** The nearest spots (Today's "Spots near you"); fallback: the nearest anywhere. */
-export function fetchSpotsNear({ lat, lng, cityId }) {
-  return daily('GET', '/spots/near', { params: {
-    lat: lat !== undefined ? lat.toFixed(4) : null, lng: lng !== undefined ? lng.toFixed(4) : null, cityId: cityNum(cityId),
-  } })
-}
-
 /** GET /channels/{cityId}/people (V3-04): Hi now, tonight's plans, arrivals, here now; counts below `min` are null. */
 export function fetchPeopleCounts(cityId) {
   return daily('GET', `/channels/${cityNum(cityId)}/people`)

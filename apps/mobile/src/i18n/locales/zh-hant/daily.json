@@ -386,7 +386,10 @@
       "moderation_blocked": "你的提議被系統擋下了，換個說法吧。"
     },
     "linkAsk": "有挑戰的點子嗎？",
-    "linkCta": "提出來"
+    "linkCta": "提出來",
+    "cardBody": "你的點子可能成為明天全世界的挑戰 🌍",
+    "cardHide": "隱藏一週",
+    "cardPlayed_other": "你的點子「{{text}}」已在 {{count}} 座城市被玩過 🎉"
   },
   "early": {
     "badge": "早鳥",

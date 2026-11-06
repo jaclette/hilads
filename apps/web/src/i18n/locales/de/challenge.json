@@ -1235,7 +1235,11 @@
         "moderation_blocked": "Dein Vorschlag wurde von der Moderation geblockt. Formulier ihn bitte um."
       },
       "linkAsk": "Eine Idee für eine Challenge?",
-      "linkCta": "Schlag sie vor"
+      "linkCta": "Schlag sie vor",
+      "cardBody": "Deine Idee könnte morgen die Challenge für die ganze Welt sein 🌍",
+      "cardHide": "Eine Woche ausblenden",
+      "cardPlayed_one": "Deine Idee „{{text}}“ wurde in {{count}} Stadt gespielt 🎉",
+      "cardPlayed_other": "Deine Idee „{{text}}“ wurde in {{count}} Städten gespielt 🎉"
     },
     "early": {
       "badge": "Früh",

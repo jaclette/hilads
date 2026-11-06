@@ -858,6 +858,8 @@ export interface DailyProposal {
   date:            string | null;
   rejectionReason: string | null;
   createdAt:       number | null;
+  /** Published and already played: how many cities played it (V6.1, Today's propose card). */
+  playedCities?:   number;
 }
 
 /** A weekly theme (V2-03). Names are English content. */

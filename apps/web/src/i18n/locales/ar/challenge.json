@@ -1299,7 +1299,15 @@
         "moderation_blocked": "اقتراحك غير مقبول. أعد صياغته من فضلك."
       },
       "linkAsk": "لديك فكرة لتحدٍّ؟",
-      "linkCta": "اقترحها"
+      "linkCta": "اقترحها",
+      "cardBody": "قد تصبح فكرتك تحدي الغد للعالم كله 🌍",
+      "cardHide": "إخفاء لمدة أسبوع",
+      "cardPlayed_zero": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
+      "cardPlayed_one": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
+      "cardPlayed_two": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
+      "cardPlayed_few": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
+      "cardPlayed_many": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
+      "cardPlayed_other": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉"
     },
     "early": {
       "badge": "مبكر",

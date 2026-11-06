@@ -1235,7 +1235,11 @@
         "moderation_blocked": "Your proposal was flagged by moderation. Please rephrase."
       },
       "linkAsk": "Got a challenge idea?",
-      "linkCta": "Propose it"
+      "linkCta": "Propose it",
+      "cardBody": "Your idea could become tomorrow's challenge for the whole world 🌍",
+      "cardHide": "Hide for a week",
+      "cardPlayed_one": "Your idea “{{text}}” was played in {{count}} city 🎉",
+      "cardPlayed_other": "Your idea “{{text}}” was played in {{count}} cities 🎉"
     },
     "early": {
       "badge": "Early",

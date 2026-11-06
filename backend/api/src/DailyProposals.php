@@ -150,7 +150,20 @@ final class DailyProposals
         $pdo  = Database::pdo();
         $stmt = $pdo->prepare(self::SELECT . " WHERE p.user_id = ? ORDER BY p.created_at DESC LIMIT 50");
         $stmt->execute([$userId]);
-        $items = array_map([self::class, 'format'], $stmt->fetchAll(PDO::FETCH_ASSOC));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = array_map([self::class, 'format'], $rows);
+        // A proposal that became a challenge already played: how many cities played it (Today's social proof).
+        $played = $pdo->prepare("
+            SELECT COUNT(DISTINCT city_id) FROM daily_proofs
+            WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_suggestion AND city_id IS NOT NULL
+        ");
+        $today = DailyClock::currentDate();
+        foreach ($rows as $i => $row) {
+            if ($items[$i]['status'] === 'published' && $row['created_challenge_id'] !== null && $row['challenge_date'] !== null && $row['challenge_date'] <= $today) {
+                $played->execute([$row['created_challenge_id']]);
+                $items[$i]['playedCities'] = (int) $played->fetchColumn();
+            }
+        }
 
         $stmt = $pdo->prepare("
             SELECT t.id, t.text, t.status, t.rejection_reason, t.proposed_at, t.city_id, ch.name AS city_name,
