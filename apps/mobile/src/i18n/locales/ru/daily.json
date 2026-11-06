@@ -296,7 +296,26 @@
     "planGoing_few": "идут {{count}}",
     "planGoing_many": "идут {{count}}",
     "planGoing_other": "идут {{count}}",
-    "halloween": "🎃 Хэллоуин"
+    "halloween": "🎃 Хэллоуин",
+    "surprise": "Удиви меня",
+    "sheet": {
+      "byNear": "сначала ближайшие",
+      "byLiked": "сначала популярные",
+      "byNew": "сначала новые",
+      "sortLiked": "Популярные",
+      "sortNew": "Новые",
+      "hint": "Потяни вверх, чтобы увидеть список",
+      "emptyArea": "Здесь пока пусто",
+      "pioneer": "Стань первопроходцем: сыграй здесь сегодня 📍",
+      "count_one": "{{count}} место — {{city}}",
+      "count_few": "{{count}} места — {{city}}",
+      "count_many": "{{count}} мест — {{city}}",
+      "count_other": "{{count}} места — {{city}}",
+      "countHere_one": "{{count}} место рядом",
+      "countHere_few": "{{count}} места рядом",
+      "countHere_many": "{{count}} мест рядом",
+      "countHere_other": "{{count}} места рядом"
+    }
   },
   "leaderboard": {
     "tab": "Топ-10",

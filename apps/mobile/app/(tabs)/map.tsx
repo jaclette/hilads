@@ -5,7 +5,9 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Camera, CircleLayer, Images, LineLayer, LocationPuck, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
+import { BackgroundLayer, Camera, CircleLayer, FillLayer, Images, LineLayer, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { SeasonalMapSky } from '@/features/event/SeasonalArt';
@@ -28,12 +30,11 @@ import { SpotSheet } from '@/features/map/SpotSheet';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { spotShare, type ShareContent } from '@/features/share/content';
 import { EmptyCity } from '@/features/map/EmptyCity';
-import { SpotList, type SpotSort } from '@/features/map/SpotList';
+import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapSheet';
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { DailyThemeKey } from '@/types';
-import { Chip, CityFlag, IconButton, TextField } from '@/ui';
+import { Avatar, Chip, CityFlag, IconButton, TextField } from '@/ui';
 import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
@@ -55,13 +56,22 @@ const CLUSTER_COLOR = ['case',
   ]),
   '#C9501A'];
 const PIN_RADIUS = 11;
+// A photo pin: the round cover (a 72 pt image, drawn at 30 pt) inside an 18 pt ring of its theme's color.
+const PHOTO_RING = 18;
+const PHOTO_ICON_SIZE = 0.42;
 /** The event's filter (Halloween first): the spots of special-day photos, as pumpkin pins. */
 const SPECIAL = 'special';
 const PUMPKIN = EVENT_CARD.halloween.accent;
 /** The "Today" pins breathe: their halo grows and fades every 1.2 s. */
 const PULSE_MS = 1200;
-// The last view (map or list), remembered on the device.
-const VIEW_KEY = 'hilads_map_view';
+// Plans show from this zoom, where clusters have mostly broken up (they never cover a cluster).
+const PLAN_MIN_ZOOM = 14;
+/** The Hilads palette over the standard Mapbox style (until a Studio style is set): warm land, soft water and parks, fewer POIs. */
+const PALETTE = {
+  light: { land: '#FBF1E6', water: '#BFE3F2', park: '#DDF0D3' },
+  dark:  { land: '#1E1712', water: '#17303D', park: '#1E2A1C' },
+};
+const DEFAULT_STYLE = !process.env.EXPO_PUBLIC_MAPBOX_STYLE_LIGHT;
 
 /** [sw, ne] around some spots, or null without any. */
 function spotsFrame(spots: Spot[]): [[number, number], [number, number]] | null {
@@ -88,7 +98,7 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ spot?: string; source?: string; theme?: string }>();
-  const { city } = useApp();
+  const { city, account } = useApp();
   const { scope, setScope } = useScope();
   const today = useDailyToday(city?.channelId);
   const hasToken = useMemo(() => setupMapbox(), []);
@@ -130,8 +140,7 @@ export default function MapScreen() {
   const [query, setQuery]       = useState('');
   const [results, setResults]   = useState<Spot[] | null>(null);
   const [notice, setNotice]     = useState<string | null>(null);
-  const [view, setView]         = useState<'map' | 'list'>('map');
-  const [sort, setSort]         = useState<SpotSort>('near');
+  const sheet = useRef<MapSheetHandle>(null);
   const [topH, setTopH]         = useState(0);
   const [zoom, setZoom]         = useState(CITY_ZOOM);
   const [bubbles, setBubbles]   = useState<MapCity[]>([]);
@@ -143,27 +152,26 @@ export default function MapScreen() {
   const cityId = city?.channelId ?? null;
   const todayTheme = today.data?.challenge?.theme?.key ?? null;
   const todayDate = today.data?.challenge?.date ?? null;
+  // Today's photos pulse softly, always (V6), unless motion is reduced.
   useEffect(() => {
-    if (!todayOnly || reduceMotion) { setPulse(false); return; }
+    if (reduceMotion) { setPulse(false); return; }
     const id = setInterval(() => setPulse(p => !p), PULSE_MS);
     return () => clearInterval(id);
-  }, [todayOnly, reduceMotion]);
+  }, [reduceMotion]);
   useEffect(() => {
     if (grown || spots.length === 0) return;
     const id = setTimeout(() => setGrown(true), reduceMotion ? 0 : 50);
     return () => clearTimeout(id);
   }, [spots.length, grown, reduceMotion]);
 
+  // The pins drop in again when the filters change.
+  const firstFilter = useRef(true);
   useEffect(() => {
-    AsyncStorage.getItem(VIEW_KEY).then(v => { if (v === 'list' || v === 'map') setView(v); }).catch(() => {});
-  }, []);
-  const toggleView = () => {
-    const next = view === 'map' ? 'list' : 'map';
-    setView(next);
-    setSelected(null);
-    track('map_view_switched', { view: next });
-    AsyncStorage.setItem(VIEW_KEY, next).catch(() => {});
-  };
+    if (firstFilter.current) { firstFilter.current = false; return; }
+    setGrown(false);
+    const id = setTimeout(() => setGrown(true), reduceMotion ? 0 : 120);
+    return () => clearTimeout(id);
+  }, [themeFilter, todayOnly]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // map_viewed once per focus, with where it was opened from.
   useFocusEffect(useCallback(() => {
@@ -283,6 +291,7 @@ export default function MapScreen() {
 
   const select = useCallback((spot: Spot, source: string, fly = false) => {
     setSelected(spot);
+    sheet.current?.snapTo(1);   // its card leads the sheet, at half
     track('spot_opened', { source, spot: spot.id, view: 'sheet' });
     if (fly) cameraRef.current?.setCamera({ centerCoordinate: [spot.lng, spot.lat], zoomLevel: Math.max(CITY_ZOOM + 1, 15), animationDuration: 600 });
   }, []);
@@ -385,6 +394,20 @@ export default function MapScreen() {
   const listSpots = results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
   const bboxCentre: [number, number] | null = lastBbox.current
     ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
+  // Zoomed into a place with no spot (the city has some): "Nothing here yet. Be the pioneer 📍".
+  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && results === null;
+
+  // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
+  const surprise = () => {
+    const pool = shown.filter(x => x.id !== selected?.id);
+    const good = pool.filter(x => (x.cover.photoUrl || x.cover.thumbUrl) && x.votes > 0);
+    const list = good.length ? good : pool;
+    if (!list.length) return;
+    const pick = list[Math.floor(Math.random() * list.length)];
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    track('map_surprise', { spot: pick.id });
+    select(pick, 'surprise', true);
+  };
 
   return (
     <View style={styles.container}>
@@ -399,18 +422,32 @@ export default function MapScreen() {
         onPress={() => { Keyboard.dismiss(); setSelected(null); }}
       >
         <Camera ref={cameraRef} minZoomLevel={scope === 'world' ? WORLD_MIN_ZOOM : MIN_ZOOM} defaultSettings={{ centerCoordinate: center ?? [106.7009, 10.7769], zoomLevel: CITY_ZOOM }} />
-        {me && <LocationPuck visible puckBearingEnabled={false} pulsing={{ isEnabled: false }} />}
+        {/* Me: my avatar with a soft pulse (V6), instead of the blue dot. */}
+        {me && (
+          <MarkerView coordinate={me} anchor={{ x: 0.5, y: 0.5 }} allowOverlap>
+            <MeMarker photo={account?.thumbAvatarUrl ?? account?.profile_photo_url ?? null} name={account?.display_name ?? ''} pulse={!reduceMotion} />
+          </MarkerView>
+        )}
+        {/* The Hilads palette over the standard style: warm land, soft water and parks. */}
+        {DEFAULT_STYLE && <BackgroundLayer id="land" existing style={{ backgroundColor: PALETTE[uiTheme === 'dark' ? 'dark' : 'light'].land }} />}
+        {DEFAULT_STYLE && <FillLayer id="water" existing style={{ fillColor: PALETTE[uiTheme === 'dark' ? 'dark' : 'light'].water }} />}
+        {DEFAULT_STYLE && <FillLayer id="landuse" existing style={{ fillColor: PALETTE[uiTheme === 'dark' ? 'dark' : 'light'].park, fillOpacity: 0.9 }} />}
 
         <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} hitbox={PIN_HITBOX} onPress={onSourcePress}
                      clusterProperties={CLUSTER_PROPS}>
+          {/* Clusters look like a little stack: a second disc peeking out behind. */}
+          <CircleLayer id="spot-clusters-back" filter={['has', 'point_count']} style={{
+            circleColor: CLUSTER_COLOR as never, circleOpacity: 0.45, circleRadius: grown ? 20 : 0, circleTranslate: [6, -6],
+            circleRadiusTransition: { duration: 350, delay: 0 }, circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2,
+          }} />
           <CircleLayer id="spot-clusters" filter={['has', 'point_count']} style={{
             circleColor: CLUSTER_COLOR as never, circleRadius: grown ? 20 : 0, circleRadiusTransition: { duration: 350, delay: 0 },
             circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
           }} />
           {/* Today's photos: a soft halo that breathes under the pin. */}
           <CircleLayer id="spot-today-halo" filter={['all', ['!', ['has', 'point_count']], ['get', 'today']]} style={{
-            circleColor: pinColor(todayTheme ?? 'taste'), circleRadius: todayOnly ? (pulse ? 24 : 15) : 0,
-            circleOpacity: todayOnly ? (pulse ? 0 : 0.45) : 0,
+            circleColor: pinColor(todayTheme ?? 'taste'), circleRadius: grown ? (pulse ? 30 : 20) : 0,
+            circleOpacity: pulse ? 0 : 0.4,
             circleRadiusTransition: { duration: PULSE_MS, delay: 0 }, circleOpacityTransition: { duration: PULSE_MS, delay: 0 },
           }} />
           <SymbolLayer id="spot-cluster-count" filter={['has', 'point_count']} style={{
@@ -420,18 +457,26 @@ export default function MapScreen() {
             // A pin wears its theme's color; a Hilads pick stays gold with its star.
             circleColor: ['case', ['get', 'pick'], colors.gold, ['match', ['get', 'theme'],
               ...PLACE_THEMES.flatMap(k => [k, pinColor(k)]), SPECIAL, PUMPKIN, colors.primary]] as never,
-            circleRadius: grown ? PIN_RADIUS : 0, circleRadiusTransition: { duration: 350, delay: 0 },
+            // A spot with a photo: a bigger ring in its theme's color around the round photo (mini polaroid).
+            circleRadius: grown ? ['case', ['!=', ['get', 'img'], ''], PHOTO_RING, PIN_RADIUS] as never : 0,
+            circleRadiusTransition: { duration: 350, delay: 0 },
             circleStrokeColor: ['case', ['==', ['get', 'theme'], SPECIAL], '#4A1F5E', '#FFFFFF'] as never, circleStrokeWidth: 2.5,
           }} />
-          <SymbolLayer id="spot-pick-stars" filter={['all', ['!', ['has', 'point_count']], ['get', 'pick']]} style={{
-            textField: '★', textColor: '#FFFFFF', textSize: 13, textAllowOverlap: true, textIgnorePlacement: true,
+          {/* The round photo inside its ring, at every zoom. */}
+          <SymbolLayer id="spot-photos" filter={['all', ['!', ['has', 'point_count']], ['!=', ['get', 'img'], '']]} style={{
+            iconImage: ['get', 'img'], iconSize: grown ? PHOTO_ICON_SIZE : 0.01, iconAllowOverlap: true, iconIgnorePlacement: true,
           }} />
-          {/* A spot with a photo: the round photo, then its label, on the pin's right. */}
+          {/* A Hilads pick: a little ⭐ (on the photo's corner when it has one). */}
+          <SymbolLayer id="spot-pick-stars" filter={['all', ['!', ['has', 'point_count']], ['get', 'pick']]} style={{
+            textField: ['case', ['!=', ['get', 'img'], ''], '⭐', '★'] as never, textColor: '#FFFFFF', textSize: 13,
+            textOffset: ['case', ['!=', ['get', 'img'], ''], ['literal', [1.1, -1.1]], ['literal', [0, 0]]] as never,
+            textAllowOverlap: true, textIgnorePlacement: true,
+          }} />
+          {/* A spot with a photo: its label on the ring's right. */}
           <SymbolLayer id="spot-labels-photo" filter={['all', ['!', ['has', 'point_count']], ['!=', ['get', 'img'], '']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
-            iconImage: ['get', 'img'], iconAnchor: 'left', iconOffset: [16, 0],
             textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
-            textAnchor: 'left', textOffset: [7.8, 0], textJustify: 'left', textMaxWidth: 20,
-            textAllowOverlap: false, iconAllowOverlap: false, symbolSortKey: ['get', 'rank'],
+            textAnchor: 'left', textOffset: [1.9, 0], textJustify: 'left', textMaxWidth: 20,
+            textAllowOverlap: false, symbolSortKey: ['get', 'rank'],
           }} />
           <SymbolLayer id="spot-labels" filter={['all', ['!', ['has', 'point_count']], ['==', ['get', 'img'], '']]} minZoomLevel={LABEL_MIN_ZOOM} style={{
             textField: ['get', 'label'], textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
@@ -441,12 +486,14 @@ export default function MapScreen() {
         </ShapeSource>
         <Images images={pinImages} />
 
-        {plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} />)}
+        {/* Plans from PLAN_MIN_ZOOM, where they no longer sit on top of clusters. */}
+        {zoom >= PLAN_MIN_ZOOM && plans.slice(0, 30).map(p => <PlanMarker key={`${p.id}@${p.startsAt}`} plan={p} />)}
 
         {/* World view: the base style's labels and borders hidden, one bubble per city. */}
+        {/* (Points of interest stay hidden on the standard style: the spots are the map's places.) */}
         {WORLD_HIDDEN_LAYERS.map(id => id.includes('boundary')
           ? <LineLayer key={id} id={id} existing style={{ visibility: worldView ? 'none' : 'visible' }} />
-          : <SymbolLayer key={id} id={id} existing style={{ visibility: worldView ? 'none' : 'visible' }} />)}
+          : <SymbolLayer key={id} id={id} existing style={{ visibility: worldView || (DEFAULT_STYLE && id === 'poi-label') ? 'none' : 'visible' }} />)}
         {worldView && bubbles.slice(0, 150).map(b => (
           <MarkerView key={b.city.id} coordinate={[b.city.lng, b.city.lat]} anchor={{ x: 0.5, y: 0.5 }} allowOverlap>
             <TouchableOpacity style={styles.bubble} onPress={() => openBubble(b)} accessibilityRole="button"
@@ -461,34 +508,21 @@ export default function MapScreen() {
           <MarkerView coordinate={[selected.lng, selected.lat]} anchor={{ x: 0.5, y: 1 }} allowOverlap>
             <View style={styles.selectedWrap} pointerEvents="none">
               <Text style={styles.selectedLabel} numberOfLines={1}>{pinLabel(selected.name, selected.priceRange, i18n.language)}</Text>
-              <View style={styles.selectedPin}>
-                <ThemeIcon theme={selected.themes[0] ?? 'taste'} size={22} color="#FFFFFF" />
-              </View>
+              <BouncePin key={selected.id}>
+                <View style={styles.selectedPin}>
+                  <ThemeIcon theme={selected.themes[0] ?? 'taste'} size={22} color="#FFFFFF" />
+                </View>
+              </BouncePin>
             </View>
           </MarkerView>
         )}
       </MapView>
 
-      {/* List view: over the map, which stays mounted (same area, same state). */}
-      {view === 'list' && (
-        <SpotList
-          spots={listSpots}
-          sort={sort}
-          onSort={k => { setSort(k); track('map_list_sorted', { sort: k }); }}
-          me={me}
-          origin={bboxCentre}
-          onPick={s => select(s, 'map_list')}
-          topInset={topH + 8}
-          bottomInset={selected ? 320 : 96}
-          empty={showEmpty ? null : <Text style={styles.listEmpty}>{t('map.noResults')}</Text>}
-        />
-      )}
-
       {/* A seasonal event's live day: the night sky (moon, bats) over the map. */}
-      {view === 'map' && <SeasonalMapSky top={topH} />}
+      <SeasonalMapSky top={topH} />
 
       {/* Top overlay: the Map's subtitle (no title bar over the map), search + theme chips. */}
-      <View style={[styles.top, { paddingTop: insets.top + 10 }, view === 'list' && styles.topList]} pointerEvents="box-none"
+      <View style={[styles.top, { paddingTop: insets.top + 10 }]} pointerEvents="box-none"
             onLayout={e => setTopH(e.nativeEvent.layout.height)}>
         <View style={styles.searchRow}>
           <ScopeSelector style={styles.scope} />
@@ -506,7 +540,7 @@ export default function MapScreen() {
             />
           </View>
         </View>
-        {results !== null && view === 'map' && (
+        {results !== null && (
           <View style={styles.results}>
             {results.length === 0 ? <Text style={styles.resultEmpty}>{t('map.noResults')}</Text> : results.slice(0, 6).map(s => (
               <TouchableOpacity key={s.id} style={styles.result} accessibilityRole="button"
@@ -532,15 +566,30 @@ export default function MapScreen() {
 
       {!loaded && <View style={[styles.loading, { top: insets.top + 120 }]}><ActivityIndicator color={colors.primary} /></View>}
 
-      {/* Bottom: notice, locate-me, then the selected spot or the empty city. */}
-      <View style={styles.bottom} pointerEvents="box-none">
+      {/* Above the sheet: a notice, 🎲 Surprise me and locate-me. */}
+      <View style={[styles.floating, { bottom: SHEET_PEEK + 12 }]} pointerEvents="box-none">
         {notice && <Text style={styles.notice}>{notice}</Text>}
-        {view === 'map' && <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />}
-        <TouchableOpacity style={styles.toggle} onPress={toggleView} activeOpacity={0.85} accessibilityRole="button" testID="map-view-toggle">
-          <Ionicons name={view === 'map' ? 'list-outline' : 'map-outline'} size={18} color={colors.bg} />
-          <Text style={styles.toggleText}>{view === 'map' ? t('map.list') : t('map.mapView')}</Text>
-        </TouchableOpacity>
-        {selected ? (
+        <View style={styles.floatRow} pointerEvents="box-none">
+          {!worldView && shown.length > 0 && (
+            <TouchableOpacity style={styles.surprise} onPress={surprise} activeOpacity={0.85} accessibilityRole="button" testID="map-surprise">
+              <Text style={styles.surpriseText}>🎲 {t('map.surprise')}</Text>
+            </TouchableOpacity>
+          )}
+          <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />
+        </View>
+      </View>
+
+      {/* The sticky sheet: the visible area's spots, a selected pin's card first. */}
+      <MapSheet
+        ref={sheet}
+        spots={listSpots}
+        me={me}
+        origin={bboxCentre}
+        place={scope === 'city' && city?.name ? shortCityName(city.name) : null}
+        filterLabel={todayOnly ? t('map.todayChip') : themeFilter === SPECIAL ? t('map.halloween') : themeFilter ? themeName(themeFilter) : null}
+        emptyArea={emptyArea}
+        onPick={s => select(s, 'map_list', true)}
+        selectedCard={selected ? (
           <SpotSheet
             spot={selected}
             distanceM={me ? meters(me, [selected.lng, selected.lat]) : null}
@@ -551,10 +600,13 @@ export default function MapScreen() {
             onPlayToday={selected.themes.includes(todayTheme as DailyThemeKey) && today.data?.challenge?.isActive && !today.data?.myProof
               ? () => { track('map_play_here', { spot: selected.id }); router.push('/daily/proof' as never); } : undefined}
           />
-        ) : showEmpty ? (
-          <EmptyCity today={today.data} />
         ) : null}
-      </View>
+        topNote={showEmpty ? <EmptyCity today={today.data} /> : emptyArea ? (
+          <TouchableOpacity style={styles.pioneer} onPress={() => router.push('/daily/proof' as never)} accessibilityRole="button">
+            <Text style={styles.pioneerText}>{t('map.sheet.pioneer')}</Text>
+          </TouchableOpacity>
+        ) : null}
+      />
       <ShareSheet content={share} source="spot_sheet" onClose={() => setShare(null)} />
     </View>
   );
@@ -576,15 +628,48 @@ function PlanMarker({ plan }: { plan: PlanPin }) {
     : start.toLocaleString(i18n.language, start.toDateString() === new Date().toDateString()
         ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' });
   const going = plan.participantCount > 1 ? t('map.planGoing', { count: plan.participantCount }) : null;
+  const day = start.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' });
   return (
-    <MarkerView coordinate={[plan.lng, plan.lat]} anchor={{ x: 0.5, y: 0.5 }}>
-      <TouchableOpacity style={[styles.plan, ongoing && styles.planNow]} onPress={() => router.push(`/event/${plan.id}` as never)} accessibilityRole="button"
+    // A little calendar page on a stem: the day on top, then the title, the time and who's going.
+    <MarkerView coordinate={[plan.lng, plan.lat]} anchor={{ x: 0.5, y: 1 }}>
+      <TouchableOpacity style={styles.planWrap} onPress={() => router.push(`/event/${plan.id}` as never)} accessibilityRole="button"
                         accessibilityLabel={[t('map.planA11y', { title: plan.title, time }), going].filter(Boolean).join(', ')}>
-        <Ionicons name={ongoing ? 'radio-button-on' : 'calendar-outline'} size={14} color="#FFFFFF" />
-        <Text style={styles.planText} numberOfLines={1}>{plan.title}, {time}{going ? ` · ${going}` : ''}</Text>
+        <View style={[styles.plan, ongoing && styles.planNow]}>
+          <View style={[styles.planTop, ongoing && styles.planTopNow]}>
+            <Ionicons name={ongoing ? 'radio-button-on' : 'calendar'} size={11} color="#FFFFFF" />
+            <Text style={styles.planDay} numberOfLines={1}>{ongoing ? time : day}</Text>
+          </View>
+          <Text style={styles.planText} numberOfLines={1}>{plan.title}</Text>
+          <Text style={styles.planMeta} numberOfLines={1}>{[ongoing ? null : time, going].filter(Boolean).join(' · ')}</Text>
+        </View>
+        <View style={[styles.planStem, ongoing && styles.planStemNow]} />
       </TouchableOpacity>
     </MarkerView>
   );
+}
+
+/** Me on the map: my avatar, a soft ring breathing around it. */
+function MeMarker({ photo, name, pulse }: { photo: string | null; name: string; pulse: boolean }) {
+  const styles = useThemedStyles(makeStyles);
+  const ring = useSharedValue(0);
+  useEffect(() => {
+    if (pulse) ring.value = withRepeat(withTiming(1, { duration: 1600 }), -1, false);
+  }, [pulse]); // eslint-disable-line react-hooks/exhaustive-deps
+  const st = useAnimatedStyle(() => ({ opacity: 0.5 * (1 - ring.value), transform: [{ scale: 1 + ring.value * 0.9 }] }));
+  return (
+    <View style={styles.me} pointerEvents="none">
+      <Animated.View style={[styles.meRing, st]} />
+      <View style={styles.meAvatar}><Avatar uri={photo} name={name || '🙂'} size={30} /></View>
+    </View>
+  );
+}
+
+/** The selected pin bounces in when a list row or 🎲 picks it. */
+function BouncePin({ children }: { children: React.ReactNode }) {
+  const y = useSharedValue(-18);
+  useEffect(() => { y.value = withSequence(withSpring(0, { damping: 6, stiffness: 220 })); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const st = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
+  return <Animated.View style={st}>{children}</Animated.View>;
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
@@ -607,13 +692,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                    backgroundColor: c.bg2, borderWidth: 2, borderColor: c.primary },
   bubbleText:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   loading:       { position: 'absolute', alignSelf: 'center' },
-  bottom:        { position: 'absolute', left: 8, right: 8, bottom: 12, gap: 10 },
-  locate:        { alignSelf: 'flex-end', marginRight: 8 },
-  topList:       { backgroundColor: c.bg, paddingBottom: 10 },
-  listEmpty:     { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', padding: Spacing.lg },
-  toggle:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18,
-                   borderRadius: Radius.full, backgroundColor: c.text },
-  toggleText:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
+  floating:      { position: 'absolute', left: 8, right: 8, gap: 10 },
+  floatRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginRight: 8 },
+  locate:        {},
+  surprise:      { flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full,
+                   backgroundColor: c.text },
+  surpriseText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
+  pioneer:       { marginHorizontal: Spacing.md, marginVertical: 8, padding: 14, borderRadius: Radius.card, backgroundColor: c.primaryTint },
+  pioneerText:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
+  me:            { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
+  meRing:        { position: 'absolute', width: 40, height: 40, borderRadius: 20, backgroundColor: c.primary },
+  meAvatar:      { borderRadius: 19, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: c.bg2 },
   notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: 16,
                    paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
   selectedWrap:  { alignItems: 'center', gap: 6 },
@@ -621,8 +710,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                    borderWidth: 1.5, borderColor: c.line, paddingHorizontal: 12, paddingVertical: 6, overflow: 'hidden' },
   selectedPin:   { width: 50, height: 50, borderRadius: Radius.full, backgroundColor: c.primary, borderWidth: 4, borderColor: c.primaryTint,
                    alignItems: 'center', justifyContent: 'center' },
-  plan:          { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingLeft: 10, paddingRight: 12, maxWidth: 240,
-                   borderRadius: Radius.full, borderWidth: 2.5, borderColor: '#FFFFFF', backgroundColor: c.caramel },
-  planNow:       { backgroundColor: c.primary },
-  planText:      { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: '#FFFFFF' },
+  planWrap:      { alignItems: 'center' },
+  plan:          { minWidth: 96, maxWidth: 170, borderRadius: 12, borderWidth: 2, borderColor: '#FFFFFF', backgroundColor: c.bg2, overflow: 'hidden' },
+  planNow:       { borderColor: c.primary },
+  planTop:       { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: c.caramel },
+  planTopNow:    { backgroundColor: c.primary },
+  planDay:       { fontSize: 11, fontWeight: '800', color: '#FFFFFF' },
+  planText:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.text, paddingHorizontal: 8, paddingTop: 3 },
+  planMeta:      { fontSize: 11, fontWeight: '700', color: c.muted, paddingHorizontal: 8, paddingBottom: 4 },
+  planStem:      { width: 2, height: 8, backgroundColor: c.caramel },
+  planStemNow:   { backgroundColor: c.primary },
 });

@@ -269,7 +269,20 @@
     "playHere": "今天就在這裡參加",
     "planNow": "進行中",
     "planGoing_other": "{{count}} 人要去",
-    "halloween": "🎃 萬聖節"
+    "halloween": "🎃 萬聖節",
+    "surprise": "給我驚喜",
+    "sheet": {
+      "byNear": "最近的在前",
+      "byLiked": "最多讚的在前",
+      "byNew": "最新的在前",
+      "sortLiked": "最多讚",
+      "sortNew": "最新",
+      "hint": "上滑查看列表",
+      "emptyArea": "這裡還沒有地點",
+      "pioneer": "成為先鋒：今天就在這裡出戰 📍",
+      "count_other": "{{city}} 有 {{count}} 個地點",
+      "countHere_other": "這裡有 {{count}} 個地點"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

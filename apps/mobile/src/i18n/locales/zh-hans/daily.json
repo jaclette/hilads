@@ -269,7 +269,20 @@
     "playHere": "今天在这里出战",
     "planNow": "进行中",
     "planGoing_other": "{{count}} 人参加",
-    "halloween": "🎃 万圣节"
+    "halloween": "🎃 万圣节",
+    "surprise": "给我惊喜",
+    "sheet": {
+      "byNear": "最近的在前",
+      "byLiked": "最多赞的在前",
+      "byNew": "最新的在前",
+      "sortLiked": "最多赞",
+      "sortNew": "最新",
+      "hint": "上滑查看列表",
+      "emptyArea": "这里还没有地点",
+      "pioneer": "成为先锋：今天就在这里出战 📍",
+      "count_other": "{{city}} 有 {{count}} 个地点",
+      "countHere_other": "这里有 {{count}} 个地点"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

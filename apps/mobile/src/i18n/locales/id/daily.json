@@ -269,7 +269,20 @@
     "playHere": "Main di sini hari ini",
     "planNow": "sekarang",
     "planGoing_other": "{{count}} ikut",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "surprise": "Kejutkan aku",
+    "sheet": {
+      "byNear": "terdekat dulu",
+      "byLiked": "paling disukai dulu",
+      "byNew": "terbaru dulu",
+      "sortLiked": "Paling disukai",
+      "sortNew": "Terbaru",
+      "hint": "Geser ke atas untuk daftar",
+      "emptyArea": "Belum ada apa-apa di sini",
+      "pioneer": "Jadi pelopor: main di sini hari ini 📍",
+      "count_other": "{{count}} tempat di {{city}}",
+      "countHere_other": "{{count}} tempat di sini"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

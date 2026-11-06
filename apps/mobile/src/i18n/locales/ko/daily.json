@@ -269,7 +269,20 @@
     "playHere": "오늘 여기서 참여하기",
     "planNow": "지금",
     "planGoing_other": "{{count}}명 참여",
-    "halloween": "🎃 할로윈"
+    "halloween": "🎃 할로윈",
+    "surprise": "랜덤 추천",
+    "sheet": {
+      "byNear": "가까운 순",
+      "byLiked": "좋아요 많은 순",
+      "byNew": "최신순",
+      "sortLiked": "좋아요 많은 순",
+      "sortNew": "최신순",
+      "hint": "위로 밀어서 목록 보기",
+      "emptyArea": "여기는 아직 아무것도 없어요",
+      "pioneer": "개척자가 되어 보세요: 오늘 여기서 참여 📍",
+      "count_other": "{{city}}의 장소 {{count}}곳",
+      "countHere_other": "이 근처 장소 {{count}}곳"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

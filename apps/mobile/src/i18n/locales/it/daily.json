@@ -287,7 +287,24 @@
     "planGoing_one": "{{count}} ci va",
     "planGoing_many": "{{count}} ci vanno",
     "planGoing_other": "{{count}} ci vanno",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "surprise": "Sorprendimi",
+    "sheet": {
+      "byNear": "prima i più vicini",
+      "byLiked": "prima i più amati",
+      "byNew": "prima i più nuovi",
+      "sortLiked": "Più amati",
+      "sortNew": "Più nuovi",
+      "hint": "Scorri su per la lista",
+      "emptyArea": "Ancora niente qui",
+      "pioneer": "Sii il pioniere: gioca qui oggi 📍",
+      "count_one": "{{count}} posto a {{city}}",
+      "count_other": "{{count}} posti a {{city}}",
+      "count_many": "{{count}} posti a {{city}}",
+      "countHere_one": "{{count}} posto qui",
+      "countHere_other": "{{count}} posti qui",
+      "countHere_many": "{{count}} posti qui"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

@@ -278,7 +278,22 @@
     "planNow": "ngayon",
     "planGoing_one": "{{count}} pupunta",
     "planGoing_other": "{{count}} pupunta",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "surprise": "Surprise me",
+    "sheet": {
+      "byNear": "pinakamalapit muna",
+      "byLiked": "pinaka-liked muna",
+      "byNew": "pinakabago muna",
+      "sortLiked": "Pinaka-liked",
+      "sortNew": "Pinakabago",
+      "hint": "I-swipe pataas para sa listahan",
+      "emptyArea": "Wala pang spot dito",
+      "pioneer": "Maging pioneer: maglaro dito ngayon 📍",
+      "count_one": "{{count}} spot sa {{city}}",
+      "count_other": "{{count}} spots sa {{city}}",
+      "countHere_one": "{{count}} spot dito",
+      "countHere_other": "{{count}} spots dito"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

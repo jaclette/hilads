@@ -278,7 +278,22 @@
     "planNow": "nu",
     "planGoing_one": "{{count}} gaat",
     "planGoing_other": "{{count}} gaan",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "surprise": "Verras me",
+    "sheet": {
+      "byNear": "dichtstbij eerst",
+      "byLiked": "meest geliket eerst",
+      "byNew": "nieuwste eerst",
+      "sortLiked": "Meest geliket",
+      "sortNew": "Nieuwste",
+      "hint": "Veeg omhoog voor de lijst",
+      "emptyArea": "Hier is nog niks",
+      "pioneer": "Wees de pionier: speel hier vandaag 📍",
+      "count_one": "{{count}} plek in {{city}}",
+      "count_other": "{{count}} plekken in {{city}}",
+      "countHere_one": "{{count}} plek hier",
+      "countHere_other": "{{count}} plekken hier"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

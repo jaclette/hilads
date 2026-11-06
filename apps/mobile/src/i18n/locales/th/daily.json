@@ -269,7 +269,20 @@
     "playHere": "เล่นที่นี่วันนี้",
     "planNow": "ตอนนี้",
     "planGoing_other": "ไป {{count}} คน",
-    "halloween": "🎃 ฮาโลวีน"
+    "halloween": "🎃 ฮาโลวีน",
+    "surprise": "เซอร์ไพรส์ฉัน",
+    "sheet": {
+      "byNear": "ใกล้สุดก่อน",
+      "byLiked": "ไลก์เยอะสุดก่อน",
+      "byNew": "ใหม่สุดก่อน",
+      "sortLiked": "ไลก์เยอะสุด",
+      "sortNew": "ใหม่สุด",
+      "hint": "ปัดขึ้นเพื่อดูรายการ",
+      "emptyArea": "ยังไม่มีอะไรตรงนี้",
+      "pioneer": "เป็นผู้บุกเบิก: เล่นที่นี่วันนี้เลย 📍",
+      "count_other": "{{count}} ที่ใน{{city}}",
+      "countHere_other": "{{count}} ที่แถวนี้"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

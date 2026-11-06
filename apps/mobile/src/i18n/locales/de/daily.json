@@ -278,7 +278,22 @@
     "planNow": "jetzt",
     "planGoing_one": "{{count}} geht hin",
     "planGoing_other": "{{count}} gehen hin",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "surprise": "Überrasch mich",
+    "sheet": {
+      "byNear": "die nächsten zuerst",
+      "byLiked": "die beliebtesten zuerst",
+      "byNew": "die neuesten zuerst",
+      "sortLiked": "Beliebteste",
+      "sortNew": "Neueste",
+      "hint": "Nach oben wischen für die Liste",
+      "emptyArea": "Hier ist noch nichts",
+      "pioneer": "Sei Pionier: Spiel heute hier 📍",
+      "count_one": "{{count}} Spot in {{city}}",
+      "count_other": "{{count}} Spots in {{city}}",
+      "countHere_one": "{{count}} Spot hier",
+      "countHere_other": "{{count}} Spots hier"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",

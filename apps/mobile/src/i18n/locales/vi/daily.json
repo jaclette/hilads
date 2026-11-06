@@ -269,7 +269,20 @@
     "playHere": "Chơi ở đây hôm nay",
     "planNow": "bây giờ",
     "planGoing_other": "{{count}} người đi",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "surprise": "Bất ngờ đi",
+    "sheet": {
+      "byNear": "gần nhất trước",
+      "byLiked": "nhiều tim nhất trước",
+      "byNew": "mới nhất trước",
+      "sortLiked": "Nhiều tim nhất",
+      "sortNew": "Mới nhất",
+      "hint": "Vuốt lên để xem danh sách",
+      "emptyArea": "Chỗ này chưa có gì",
+      "pioneer": "Làm người tiên phong: chơi ở đây hôm nay nha 📍",
+      "count_other": "{{count}} địa điểm ở {{city}}",
+      "countHere_other": "{{count}} địa điểm ở đây"
+    }
   },
   "leaderboard": {
     "tab": "Top 10",
