@@ -33,7 +33,9 @@ final class DailyNotify
             // voterName: the inbox shows who ("Lan and 3 others liked your photo").
             $data = ['proofId' => $p['id'], 'date' => $date, 'voterId' => $voter['id'], 'voterName' => $name];
             // Once per voter and photo (a vote withdrawn and cast again tells nothing new).
-            if (!self::alreadyTold($p['user_id'], self::TYPE_VOTE, $data, 'voterId')) {
+            // V6: the "Likes" toggle mutes both the row and the push.
+            if (NotificationRepository::enabledFor($p['user_id'], self::TYPE_VOTE)
+                && !self::alreadyTold($p['user_id'], self::TYPE_VOTE, $data, 'voterId')) {
                 $body = DailyPushText::render('bell_vote', self::locale($p['user_id']), ['name' => $name])
                         ?? "{$name} voted for your photo.";
                 self::bell($p['user_id'], self::TYPE_VOTE, $body, $data);
@@ -113,7 +115,7 @@ final class DailyNotify
                     'cityName'  => $p['city_name'],
                 ];
                 $line = DailyPushes::outcomeLine($mine, null, $loc);
-                if ($line === null) continue;
+                if ($line === null || !NotificationRepository::enabledFor((string) $p['user_id'], 'daily_result')) continue;
                 $data = ['date' => $date, 'proofId' => $p['id'], 'cityId' => $p['city_id'], 'cityName' => $p['city_name'],
                          'worldRank' => $mine['worldRank'], 'cityRank' => $cityRank, 'cityBest' => $mine['cityBest'],
                          'votes' => $mine['votes'], 'theme' => $challenge['theme'] ?? null];
@@ -129,6 +131,7 @@ final class DailyNotify
     public static function onLocalPass(array $proof): void
     {
         try {
+            if (!NotificationRepository::enabledFor((string) $proof['user_id'], 'daily_local_pass')) return;
             $loc  = self::locale((string) $proof['user_id']);
             $stmt = Database::pdo()->prepare("SELECT name FROM channels WHERE id = ?");
             $stmt->execute([$proof['city_id']]);

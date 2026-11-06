@@ -31,7 +31,25 @@
     "announceLabel": "Annunci di Hilads",
     "announceSub": "Qualche novità dal team, ogni tanto",
     "commentLabel": "Commenti",
-    "commentSub": "Sulle tue foto e su quelle che hai commentato"
+    "commentSub": "Sulle tue foto e su quelle che hai commentato",
+    "likeLabel": "Mi piace",
+    "likeSub": "Quando a qualcuno piace la tua foto",
+    "resultsLabel": "Risultati del giorno",
+    "resultsSub": "Come è andata la tua foto ieri",
+    "rankLabel": "Cambi di classifica",
+    "rankSub": "Quando sali in classifica",
+    "stampLabel": "Timbri e Local Pass",
+    "stampSub": "Quando ottieni un timbro o un Local Pass",
+    "reminderLabel": "Promemoria serie",
+    "reminderSub": "Un promemoria la sera prima che la sfida finisca",
+    "planJoinLabel": "Qualcuno si è unito al tuo piano",
+    "planJoinSub": "Quando qualcuno si unisce o chiede di unirsi ai tuoi piani",
+    "newPlansLabel": "Nuovi piani nella tua città",
+    "newPlansSub": "Quando qualcuno crea un piano vicino a te",
+    "friendArrivalLabel": "Amici in arrivo",
+    "friendArrivalSub": "Quando un amico arriva in una città",
+    "dailyLabel": "Nuova Daily Challenge",
+    "dailySub": "La nuova sfida ogni mattina"
   },
   "away": {
     "title": "Mentre eri via",
@@ -49,5 +67,77 @@
     "other": "🔔 Novità per te",
     "dismiss": "Chiudi",
     "open": "Vedi le novità"
+  },
+  "inbox": {
+    "settings": "Impostazioni notifiche",
+    "all": "Tutte",
+    "cat": {
+      "social": "Social",
+      "game": "Gioco",
+      "plans": "Piani",
+      "city": "Città",
+      "hilads": "Hilads"
+    },
+    "sec": {
+      "new": "Nuove",
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "week": "Questa settimana",
+      "earlier": "Prima"
+    },
+    "read": "Letta",
+    "unread": "Non letta",
+    "delete": "Elimina",
+    "allRead": "Tutto letto ✨",
+    "row": {
+      "like": "A {{names}} piace la tua foto",
+      "comment": "{{names}} ha commentato la tua foto",
+      "photoMention": "{{names}} ti ha menzionato in un commento",
+      "mention": "{{names}} ti ha menzionato",
+      "friendRequest": "{{names}} vuole essere tuo amico",
+      "friendAccepted": "{{names}} ha accettato la tua richiesta di amicizia",
+      "profileView": "{{names}} ha visto il tuo profilo",
+      "vibe": "{{names}} ti ha lasciato una vibe",
+      "planJoin": "{{names}} si è unito a {{plan}}",
+      "joinRequest": "{{names}} vuole unirsi a {{plan}}",
+      "joinAccepted": "Ci sei! {{plan}}",
+      "landed": "{{names}} è appena arrivato a {{city}}",
+      "result": "🏆 I risultati di ieri",
+      "localPass": "🎟️ Local Pass di {{city}}!",
+      "rankUp": "▲ Sei salito al #{{rank}} a {{where}}",
+      "landedMany_one": "{{count}} nuovo giocatore è arrivato a {{city}} oggi",
+      "landedMany_other": "{{count}} nuovi giocatori sono arrivati a {{city}} oggi",
+      "landedMany_many": "{{count}} nuovi giocatori sono arrivati a {{city}} oggi",
+      "rankUpWorld": "▲ Sei salito al #{{rank}} nel mondo"
+    },
+    "empty": {
+      "all": "Niente di nuovo. Vai a scattare una foto 📸",
+      "social": "Ancora niente commenti o mi piace. Pubblica una foto e fai reagire la città 💬",
+      "game": "Gioca la sfida di oggi e i tuoi risultati arriveranno qui 🏆",
+      "plans": "Ancora nessuna novità sui piani. Creane uno e guarda chi si unisce 📅",
+      "city": "Città tranquilla per ora. I nuovi giocatori appariranno qui 👋",
+      "hilads": "Ancora niente da noi ✨"
+    },
+    "pushOff": {
+      "text": "Le notifiche sono spente, potresti perderti i risultati 🏆",
+      "on": "Attiva",
+      "dismiss": "Non ora"
+    },
+    "names": {
+      "two": "{{a}} e {{b}}",
+      "many_one": "{{a}} e {{count}} altro",
+      "many_other": "{{a}} e altri {{count}}",
+      "many_many": "{{a}} e altri {{count}}"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni notifiche",
+    "pushOn": "Notifiche attive ✅",
+    "pushOff": "Notifiche spente",
+    "pushOffSub": "Attivale per sapere dei tuoi risultati e commenti",
+    "turnOn": "Attiva",
+    "saved": "Salvato",
+    "quiet": "Ore tranquille",
+    "quietSub": "Niente notifiche dalle {{from}} alle {{to}}"
   }
 }

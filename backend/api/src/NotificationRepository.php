@@ -142,6 +142,11 @@ class NotificationRepository
             'admin_announcement'                                        => 'admin_announcement_push',
             'photo_comment'                                             => 'comment_push',
             'photo_mention'                                             => 'mention_push',
+            // V6 game and likes toggles
+            'daily_vote'                                                => 'like_push',
+            'daily_result'                                              => 'results_push',
+            'daily_rank'                                                => 'rank_push',
+            'daily_local_pass'                                          => 'stamp_push',
             default                                                     => null,
         };
     }
@@ -168,7 +173,18 @@ class NotificationRepository
             'admin_announcement_push' => true,
             'daily_challenge_push' => true,
             'comment_push'         => true,
+            'like_push'            => true,
+            'results_push'         => true,
+            'rank_push'            => true,
+            'stamp_push'           => true,
+            'reminder_push'        => true,
         ];
+    }
+
+    /** Whether $userId wants $type (callers that write with createUnchecked check it first). */
+    public static function enabledFor(string $userId, string $type): bool
+    {
+        return self::isEnabledForUser($userId, $type);
     }
 
     private static function isEnabledForUser(string $userId, string $type): bool

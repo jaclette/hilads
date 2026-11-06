@@ -656,7 +656,7 @@ final class DailyPushes
     public static function queueReminders(string $date, DateTimeImmutable $now): array
     {
         [$start, $end] = DailyClock::window($date);
-        $users = self::userRecipients(null, $now->modify('-' . self::ACTIVE_DAYS . ' days'));
+        $users = self::withoutReminder(self::userRecipients(null, $now->modify('-' . self::ACTIVE_DAYS . ' days')));
         $rows  = [];
         foreach ($users as $u) {
             $at = self::reminderSendAt($start, $end, $u['tz']);
@@ -667,6 +667,20 @@ final class DailyPushes
             }
         }
         return ['active' => count($users), 'queued' => self::insert($rows)];
+    }
+
+    /** V6: users who turned the evening reminder off (reminder_push) are left out. */
+    private static function withoutReminder(array $users): array
+    {
+        if ($users === []) return [];
+        try {
+            $stmt = Database::pdo()->prepare("SELECT user_id FROM notification_preferences WHERE reminder_push = false AND user_id = ANY (string_to_array(?, ','))");
+            $stmt->execute([implode(',', array_column($users, 'id'))]);
+            $off = array_flip($stmt->fetchAll(PDO::FETCH_COLUMN));
+        } catch (\PDOException $e) {
+            return $users;   // before the V6 migration
+        }
+        return array_values(array_filter($users, static fn(array $u): bool => !isset($off[$u['id']])));
     }
 
     /**

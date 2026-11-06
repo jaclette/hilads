@@ -31,7 +31,25 @@
     "announceLabel": "إعلانات من Hilads",
     "announceSub": "تحديثات من الفريق بين الحين والآخر",
     "commentLabel": "التعليقات",
-    "commentSub": "على صورك وعلى الصور التي علّقت عليها"
+    "commentSub": "على صورك وعلى الصور التي علّقت عليها",
+    "likeLabel": "الإعجابات",
+    "likeSub": "عندما يُعجب أحدهم بصورتك",
+    "resultsLabel": "نتائج اليوم",
+    "resultsSub": "كيف كان أداء صورتك أمس",
+    "rankLabel": "تغيّر الترتيب",
+    "rankSub": "عندما يرتفع ترتيبك",
+    "stampLabel": "الأختام وLocal Pass",
+    "stampSub": "عندما تحصل على ختم أو Local Pass",
+    "reminderLabel": "تذكير السلسلة",
+    "reminderSub": "تذكير مسائي قبل انتهاء التحدي",
+    "planJoinLabel": "انضم أحدهم إلى خطتك",
+    "planJoinSub": "عندما ينضم أحدهم إلى خططك أو يطلب الانضمام",
+    "newPlansLabel": "خطط جديدة في مدينتك",
+    "newPlansSub": "عندما يبدأ أحدهم خطة قريبة منك",
+    "friendArrivalLabel": "وصول الأصدقاء",
+    "friendArrivalSub": "عندما يصل صديق إلى مدينة",
+    "dailyLabel": "Daily Challenge جديد",
+    "dailySub": "التحدي الجديد كل صباح"
   },
   "away": {
     "title": "أثناء غيابك",
@@ -49,5 +67,83 @@
     "other": "🔔 لديك جديد",
     "dismiss": "إغلاق",
     "open": "شاهد الجديد"
+  },
+  "inbox": {
+    "settings": "إعدادات الإشعارات",
+    "all": "الكل",
+    "cat": {
+      "social": "اجتماعي",
+      "game": "اللعبة",
+      "plans": "الخطط",
+      "city": "المدينة",
+      "hilads": "Hilads"
+    },
+    "sec": {
+      "new": "جديد",
+      "today": "اليوم",
+      "yesterday": "أمس",
+      "week": "هذا الأسبوع",
+      "earlier": "أقدم"
+    },
+    "read": "مقروء",
+    "unread": "غير مقروء",
+    "delete": "حذف",
+    "allRead": "قرأت كل شيء ✨",
+    "row": {
+      "like": "أُعجب {{names}} بصورتك",
+      "comment": "علّق {{names}} على صورتك",
+      "photoMention": "ذكرك {{names}} في تعليق",
+      "mention": "ذكرك {{names}}",
+      "friendRequest": "{{names}} يريد مصادقتك",
+      "friendAccepted": "قبل {{names}} طلب صداقتك",
+      "profileView": "شاهد {{names}} ملفك",
+      "vibe": "أرسل لك {{names}} vibe",
+      "planJoin": "انضم {{names}} إلى {{plan}}",
+      "joinRequest": "يريد {{names}} الانضمام إلى {{plan}}",
+      "joinAccepted": "أنت مشارك: {{plan}}",
+      "landed": "وصل {{names}} للتو إلى {{city}}",
+      "result": "🏆 نتائج الأمس",
+      "localPass": "🎟️ Local Pass في {{city}}!",
+      "rankUp": "▲ صعدت إلى المركز {{rank}} في {{where}}",
+      "landedMany_zero": "وصل {{count}} لاعب جديد إلى {{city}} اليوم",
+      "landedMany_one": "وصل لاعب جديد إلى {{city}} اليوم",
+      "landedMany_two": "وصل لاعبان جديدان إلى {{city}} اليوم",
+      "landedMany_few": "وصل {{count}} لاعبين جدد إلى {{city}} اليوم",
+      "landedMany_many": "وصل {{count}} لاعبًا جديدًا إلى {{city}} اليوم",
+      "landedMany_other": "وصل {{count}} لاعب جديد إلى {{city}} اليوم",
+      "rankUpWorld": "▲ صعدت إلى المركز {{rank}} عالميًا"
+    },
+    "empty": {
+      "all": "لا شيء هنا. التقط صورة 📸",
+      "social": "لا تعليقات ولا إعجابات بعد. انشر صورة ودع المدينة تتفاعل 💬",
+      "game": "العب تحدي اليوم وستصل نتائجك هنا 🏆",
+      "plans": "لا أخبار عن الخطط بعد. ابدأ خطة وشاهد من ينضم 📅",
+      "city": "المدينة هادئة الآن. سيظهر اللاعبون الجدد هنا 👋",
+      "hilads": "لا شيء منا بعد ✨"
+    },
+    "pushOff": {
+      "text": "الإشعارات متوقفة، قد تفوتك نتائجك 🏆",
+      "on": "تفعيل",
+      "dismiss": "ليس الآن"
+    },
+    "names": {
+      "two": "{{a}} و{{b}}",
+      "many_zero": "{{a}} و{{count}} آخرين",
+      "many_one": "{{a}} وشخص آخر",
+      "many_two": "{{a}} وشخصان آخران",
+      "many_few": "{{a}} و{{count}} آخرين",
+      "many_many": "{{a}} و{{count}} آخر",
+      "many_other": "{{a}} و{{count}} آخرين"
+    }
+  },
+  "settings": {
+    "title": "إعدادات الإشعارات",
+    "pushOn": "الإشعارات مفعّلة ✅",
+    "pushOff": "الإشعارات متوقفة",
+    "pushOffSub": "فعّلها لتعرف نتائجك وتعليقاتك",
+    "turnOn": "تفعيل",
+    "saved": "تم الحفظ",
+    "quiet": "ساعات الهدوء",
+    "quietSub": "لا إشعارات من {{from}} إلى {{to}}"
   }
 }

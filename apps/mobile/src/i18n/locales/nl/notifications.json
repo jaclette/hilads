@@ -31,7 +31,25 @@
     "announceLabel": "Aankondigingen van Hilads",
     "announceSub": "Af en toe nieuws van het team",
     "commentLabel": "Reacties",
-    "commentSub": "Op je foto's en op foto's waar je op hebt gereageerd"
+    "commentSub": "Op je foto's en op foto's waar je op hebt gereageerd",
+    "likeLabel": "Likes",
+    "likeSub": "Als iemand je foto leuk vindt",
+    "resultsLabel": "Dagelijkse uitslagen",
+    "resultsSub": "Hoe je foto het gisteren deed",
+    "rankLabel": "Ranglijst-wijzigingen",
+    "rankSub": "Als je stijgt in de ranglijst",
+    "stampLabel": "Stempels en Local Pass",
+    "stampSub": "Als je een stempel of een Local Pass krijgt",
+    "reminderLabel": "Reeks-herinnering",
+    "reminderSub": "Een seintje in de avond voordat de challenge eindigt",
+    "planJoinLabel": "Iemand doet mee met je plan",
+    "planJoinSub": "Als iemand meedoet of vraagt mee te doen",
+    "newPlansLabel": "Nieuwe plannen in je stad",
+    "newPlansSub": "Als iemand een plan start bij jou in de buurt",
+    "friendArrivalLabel": "Vrienden die landen",
+    "friendArrivalSub": "Als een vriend in een stad aankomt",
+    "dailyLabel": "Nieuwe Daily Challenge",
+    "dailySub": "De nieuwe challenge elke ochtend"
   },
   "away": {
     "title": "Terwijl je weg was",
@@ -49,5 +67,75 @@
     "other": "🔔 Er is nieuws voor je",
     "dismiss": "Sluiten",
     "open": "Bekijk wat nieuw is"
+  },
+  "inbox": {
+    "settings": "Meldingen",
+    "all": "Alles",
+    "cat": {
+      "social": "Sociaal",
+      "game": "Spel",
+      "plans": "Plannen",
+      "city": "Stad",
+      "hilads": "Hilads"
+    },
+    "sec": {
+      "new": "Nieuw",
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "week": "Deze week",
+      "earlier": "Eerder"
+    },
+    "read": "Gelezen",
+    "unread": "Ongelezen",
+    "delete": "Verwijderen",
+    "allRead": "Alles bijgewerkt ✨",
+    "row": {
+      "like": "{{names}} vindt je foto leuk",
+      "comment": "{{names}} reageerde op je foto",
+      "photoMention": "{{names}} noemde je in een reactie",
+      "mention": "{{names}} noemde je",
+      "friendRequest": "{{names}} wil vrienden worden",
+      "friendAccepted": "{{names}} accepteerde je vriendschapsverzoek",
+      "profileView": "{{names}} bekeek je profiel",
+      "vibe": "{{names}} liet een vibe achter",
+      "planJoin": "{{names}} doet mee met {{plan}}",
+      "joinRequest": "{{names}} wil meedoen met {{plan}}",
+      "joinAccepted": "Je bent erbij: {{plan}}",
+      "landed": "{{names}} is net in {{city}} geland",
+      "result": "🏆 De uitslagen van gisteren",
+      "localPass": "🎟️ Local Pass van {{city}}!",
+      "rankUp": "▲ Je bent gestegen naar #{{rank}} in {{where}}",
+      "landedMany_one": "{{count}} nieuwe speler is vandaag in {{city}} geland",
+      "landedMany_other": "{{count}} nieuwe spelers zijn vandaag in {{city}} geland",
+      "rankUpWorld": "▲ Je bent gestegen naar #{{rank}} wereldwijd"
+    },
+    "empty": {
+      "all": "Niks aan de hand. Ga een foto maken 📸",
+      "social": "Nog geen reacties of likes. Post een foto en laat de stad reageren 💬",
+      "game": "Speel de challenge van vandaag en je uitslagen komen hier 🏆",
+      "plans": "Nog geen nieuws over plannen. Start er een en kijk wie meedoet 📅",
+      "city": "Rustige stad voor nu. Nieuwe spelers verschijnen hier 👋",
+      "hilads": "Nog niks van ons ✨"
+    },
+    "pushOff": {
+      "text": "Meldingen staan uit, je kunt je uitslagen missen 🏆",
+      "on": "Aanzetten",
+      "dismiss": "Niet nu"
+    },
+    "names": {
+      "two": "{{a}} en {{b}}",
+      "many_one": "{{a}} en {{count}} ander",
+      "many_other": "{{a}} en {{count}} anderen"
+    }
+  },
+  "settings": {
+    "title": "Meldingen",
+    "pushOn": "Meldingen staan aan ✅",
+    "pushOff": "Meldingen staan uit",
+    "pushOffSub": "Zet ze aan om je uitslagen en reacties te horen",
+    "turnOn": "Aanzetten",
+    "saved": "Opgeslagen",
+    "quiet": "Stille uren",
+    "quietSub": "Geen meldingen van {{from}} tot {{to}}"
   }
 }

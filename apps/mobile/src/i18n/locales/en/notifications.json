@@ -31,7 +31,25 @@
     "announceLabel": "Announcements from Hilads",
     "announceSub": "Occasional updates from the team",
     "commentLabel": "Comments",
-    "commentSub": "On your photos and on photos you commented on"
+    "commentSub": "On your photos and on photos you commented on",
+    "likeLabel": "Likes",
+    "likeSub": "When someone likes your photo",
+    "resultsLabel": "Daily results",
+    "resultsSub": "How your photo did yesterday",
+    "rankLabel": "Rank changes",
+    "rankSub": "When you climb in the ranks",
+    "stampLabel": "Stamps and Local Pass",
+    "stampSub": "When you earn a stamp or a Local Pass",
+    "reminderLabel": "Streak reminder",
+    "reminderSub": "An evening nudge before the challenge ends",
+    "planJoinLabel": "Someone joined your plan",
+    "planJoinSub": "When people join or ask to join your plans",
+    "newPlansLabel": "New plans in your city",
+    "newPlansSub": "When someone starts a plan near you",
+    "friendArrivalLabel": "Friends landing",
+    "friendArrivalSub": "When a friend arrives in a city",
+    "dailyLabel": "Daily Challenge drop",
+    "dailySub": "The new challenge every morning"
   },
   "away": {
     "title": "While you were away",
@@ -49,5 +67,75 @@
     "other": "🔔 Something new for you",
     "dismiss": "Dismiss",
     "open": "See what's new"
+  },
+  "inbox": {
+    "settings": "Notification settings",
+    "all": "All",
+    "cat": {
+      "social": "Social",
+      "game": "Game",
+      "plans": "Plans",
+      "city": "City",
+      "hilads": "Hilads"
+    },
+    "sec": {
+      "new": "New",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "week": "This week",
+      "earlier": "Earlier"
+    },
+    "read": "Read",
+    "unread": "Unread",
+    "delete": "Delete",
+    "allRead": "All caught up ✨",
+    "row": {
+      "like": "{{names}} liked your photo",
+      "comment": "{{names}} commented on your photo",
+      "photoMention": "{{names}} mentioned you in a comment",
+      "mention": "{{names}} mentioned you",
+      "friendRequest": "{{names}} wants to be friends",
+      "friendAccepted": "{{names}} accepted your friend request",
+      "profileView": "{{names}} checked your profile",
+      "vibe": "{{names}} left you a vibe",
+      "planJoin": "{{names}} joined {{plan}}",
+      "joinRequest": "{{names}} wants to join {{plan}}",
+      "joinAccepted": "You're in: {{plan}}",
+      "landed": "{{names}} just landed in {{city}}",
+      "result": "🏆 Yesterday's results",
+      "localPass": "🎟️ Local Pass of {{city}}!",
+      "rankUp": "▲ You climbed to #{{rank}} in {{where}}",
+      "landedMany_one": "{{count}} new player landed in {{city}} today",
+      "landedMany_other": "{{count}} new players landed in {{city}} today",
+      "rankUpWorld": "▲ You climbed to #{{rank}} in the world"
+    },
+    "empty": {
+      "all": "No drama here. Go snap something 📸",
+      "social": "No comments or likes yet. Post a photo and let the city react 💬",
+      "game": "Play today's challenge and your results land here 🏆",
+      "plans": "No plans news yet. Start one and see who joins 📅",
+      "city": "Quiet city for now. New players will pop up here 👋",
+      "hilads": "Nothing from us yet ✨"
+    },
+    "pushOff": {
+      "text": "Push is off, you might miss your results 🏆",
+      "on": "Turn on",
+      "dismiss": "Not now"
+    },
+    "names": {
+      "two": "{{a}} and {{b}}",
+      "many_one": "{{a}} and {{count}} other",
+      "many_other": "{{a}} and {{count}} others"
+    }
+  },
+  "settings": {
+    "title": "Notification settings",
+    "pushOn": "Push is on ✅",
+    "pushOff": "Push is off",
+    "pushOffSub": "Turn it on to hear about your results and comments",
+    "turnOn": "Turn on",
+    "saved": "Saved",
+    "quiet": "Quiet hours",
+    "quietSub": "No push from {{from}} to {{to}}"
   }
 }

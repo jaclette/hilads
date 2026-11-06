@@ -116,12 +116,23 @@ class MobilePushService
 
             // 1. Check user preference for this notification type
             $prefCol = self::prefColumn($type);
+            $prefs   = null;
             if ($prefCol !== null) {
                 $prefs = NotificationPreferencesRepository::get($userId);
                 $prefValue = $prefs[$prefCol] ?? null;
                 error_log("[push-send] pref[$prefCol]=" . json_encode($prefValue) . " for user=$userId");
                 if (!$prefValue) {
                     error_log("[push-send] skipping $type for user=$userId - preference disabled");
+                    return;
+                }
+            }
+
+            // 1b. Quiet hours (V6): the bell row is written, the phone stays quiet.
+            $prefs ??= NotificationPreferencesRepository::get($userId);
+            if (($prefs['quiet_start'] ?? null) !== null) {
+                $local = new DateTimeImmutable('now', new DateTimeZone(DailyPushes::userTimezone($userId)));
+                if (NotificationPreferencesRepository::inQuietHours($prefs, $local)) {
+                    error_log("[push-send] skipping $type for user=$userId - quiet hours");
                     return;
                 }
             }

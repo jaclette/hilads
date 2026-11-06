@@ -3941,6 +3941,18 @@ run($pdo, "UPDATE notifications SET category = " . NotificationCategory::caseSql
 run($pdo, "UPDATE notifications SET seen_at = created_at WHERE seen_at IS NULL AND is_read = TRUE", 'notifications.seen_at backfill');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_arrival_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.friend_arrival_push');
 
+// ── V6 notification preferences (2026-11-06) ──────────────────────────────
+// New toggles grouped like the inbox: likes (Social), results / rank changes /
+// stamps / the evening reminder (Game), and quiet hours (minutes of the day in
+// the user's timezone; null = off) when no push is sent.
+// Reversal: ALTER TABLE notification_preferences DROP COLUMN like_push, DROP COLUMN results_push,
+// DROP COLUMN rank_push, DROP COLUMN stamp_push, DROP COLUMN reminder_push, DROP COLUMN quiet_start, DROP COLUMN quiet_end.
+foreach (['like_push', 'results_push', 'rank_push', 'stamp_push', 'reminder_push'] as $col) {
+    run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS {$col} BOOLEAN NOT NULL DEFAULT TRUE", "notification_preferences.{$col}");
+}
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS quiet_start SMALLINT CHECK (quiet_start BETWEEN 0 AND 1439)", 'notification_preferences.quiet_start');
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS quiet_end SMALLINT CHECK (quiet_end BETWEEN 0 AND 1439)", 'notification_preferences.quiet_end');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

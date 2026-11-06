@@ -225,6 +225,7 @@ function RootLayoutInner() {
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />
+            <Stack.Screen name="notification-settings" />
             <Stack.Screen name="leaderboard" />
             <Stack.Screen
               name="debug"

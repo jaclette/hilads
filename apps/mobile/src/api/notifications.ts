@@ -18,6 +18,17 @@ export interface NotificationPreferences {
   new_topic_push:       boolean;
   admin_announcement_push: boolean;
   comment_push?:        boolean;   // comments on my photos and threads I joined (absent: an older API)
+  // V6 (absent: an older API)
+  friend_arrival_push?: boolean;
+  join_request_push?:   boolean;
+  daily_challenge_push?: boolean;
+  like_push?:           boolean;
+  results_push?:        boolean;
+  rank_push?:           boolean;
+  stamp_push?:          boolean;
+  reminder_push?:       boolean;
+  quiet_start?:         number | null;   // minutes of the day, local time
+  quiet_end?:           number | null;
 }
 
 export async function fetchNotifications(

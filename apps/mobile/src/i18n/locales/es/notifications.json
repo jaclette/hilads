@@ -31,7 +31,25 @@
     "announceLabel": "Anuncios de Hilads",
     "announceSub": "Alguna novedad del equipo de vez en cuando",
     "commentLabel": "Comentarios",
-    "commentSub": "En tus fotos y en las fotos que comentaste"
+    "commentSub": "En tus fotos y en las fotos que comentaste",
+    "likeLabel": "Me gusta",
+    "likeSub": "Cuando a alguien le gusta tu foto",
+    "resultsLabel": "Resultados diarios",
+    "resultsSub": "Cómo le fue a tu foto ayer",
+    "rankLabel": "Cambios de ranking",
+    "rankSub": "Cuando subes en el ranking",
+    "stampLabel": "Sellos y Local Pass",
+    "stampSub": "Cuando ganas un sello o un Local Pass",
+    "reminderLabel": "Recordatorio de racha",
+    "reminderSub": "Un aviso por la tarde antes de que acabe el reto",
+    "planJoinLabel": "Alguien se unió a tu plan",
+    "planJoinSub": "Cuando se unen o piden unirse a tus planes",
+    "newPlansLabel": "Planes nuevos en tu ciudad",
+    "newPlansSub": "Cuando alguien crea un plan cerca",
+    "friendArrivalLabel": "Amigos que llegan",
+    "friendArrivalSub": "Cuando un amigo llega a una ciudad",
+    "dailyLabel": "Nuevo Daily Challenge",
+    "dailySub": "El reto nuevo cada mañana"
   },
   "away": {
     "title": "Mientras no estabas",
@@ -49,5 +67,77 @@
     "other": "🔔 Hay novedades para ti",
     "dismiss": "Cerrar",
     "open": "Ver novedades"
+  },
+  "inbox": {
+    "settings": "Ajustes de notificaciones",
+    "all": "Todo",
+    "cat": {
+      "social": "Social",
+      "game": "Juego",
+      "plans": "Planes",
+      "city": "Ciudad",
+      "hilads": "Hilads"
+    },
+    "sec": {
+      "new": "Nuevo",
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "week": "Esta semana",
+      "earlier": "Antes"
+    },
+    "read": "Leído",
+    "unread": "No leído",
+    "delete": "Borrar",
+    "allRead": "Todo al día ✨",
+    "row": {
+      "like": "A {{names}} le gustó tu foto",
+      "comment": "{{names}} comentó tu foto",
+      "photoMention": "{{names}} te mencionó en un comentario",
+      "mention": "{{names}} te mencionó",
+      "friendRequest": "{{names}} quiere ser tu amigo",
+      "friendAccepted": "{{names}} aceptó tu solicitud de amistad",
+      "profileView": "{{names}} miró tu perfil",
+      "vibe": "{{names}} te dejó una vibe",
+      "planJoin": "{{names}} se unió a {{plan}}",
+      "joinRequest": "{{names}} quiere unirse a {{plan}}",
+      "joinAccepted": "¡Estás dentro! {{plan}}",
+      "landed": "{{names}} acaba de llegar a {{city}}",
+      "result": "🏆 Resultados de ayer",
+      "localPass": "🎟️ ¡Local Pass de {{city}}!",
+      "rankUp": "▲ Subiste al #{{rank}} en {{where}}",
+      "landedMany_one": "{{count}} jugador nuevo llegó hoy a {{city}}",
+      "landedMany_other": "{{count}} jugadores nuevos llegaron hoy a {{city}}",
+      "landedMany_many": "{{count}} jugadores nuevos llegaron hoy a {{city}}",
+      "rankUpWorld": "▲ Subiste al #{{rank}} del mundo"
+    },
+    "empty": {
+      "all": "Nada por aquí. Ve a sacar una foto 📸",
+      "social": "Aún no hay comentarios ni me gusta. Sube una foto y deja que la ciudad reaccione 💬",
+      "game": "Juega el reto de hoy y tus resultados llegarán aquí 🏆",
+      "plans": "Aún no hay noticias de planes. Crea uno y mira quién se une 📅",
+      "city": "Ciudad tranquila por ahora. Los nuevos jugadores aparecerán aquí 👋",
+      "hilads": "Nada nuestro por ahora ✨"
+    },
+    "pushOff": {
+      "text": "Las notificaciones están apagadas, podrías perderte tus resultados 🏆",
+      "on": "Activar",
+      "dismiss": "Ahora no"
+    },
+    "names": {
+      "two": "{{a}} y {{b}}",
+      "many_one": "{{a}} y {{count}} más",
+      "many_other": "{{a}} y {{count}} más",
+      "many_many": "{{a}} y {{count}} más"
+    }
+  },
+  "settings": {
+    "title": "Ajustes de notificaciones",
+    "pushOn": "Notificaciones activadas ✅",
+    "pushOff": "Notificaciones apagadas",
+    "pushOffSub": "Actívalas para enterarte de tus resultados y comentarios",
+    "turnOn": "Activar",
+    "saved": "Guardado",
+    "quiet": "Horas tranquilas",
+    "quietSub": "Sin notificaciones de {{from}} a {{to}}"
   }
 }

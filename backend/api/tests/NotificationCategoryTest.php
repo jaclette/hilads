@@ -5,6 +5,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../src/NotificationCategory.php';
+require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
 
 /** V6 notifications: categories, dedupe keys, grouping, actors, deep links. */
 final class NotificationCategoryTest extends TestCase
@@ -61,5 +62,18 @@ final class NotificationCategoryTest extends TestCase
         $this->assertSame('/event/e1', NotificationCategory::deepLink('event_join', ['eventId' => 'e1']));
         $this->assertSame('/user/u9', NotificationCategory::deepLink('profile_view', ['viewerId' => 'u9']));
         $this->assertStringStartsWith('/ranks?', NotificationCategory::deepLink('daily_result', ['date' => '2026-11-05']));
+    }
+
+    public function testQuietHours(): void
+    {
+        $at = static fn(string $hm): DateTimeImmutable => new DateTimeImmutable("2026-11-06 {$hm}");
+        $night = ['quiet_start' => 23 * 60, 'quiet_end' => 8 * 60];
+        $this->assertTrue(NotificationPreferencesRepository::inQuietHours($night, $at('23:30')));
+        $this->assertTrue(NotificationPreferencesRepository::inQuietHours($night, $at('07:59')));
+        $this->assertFalse(NotificationPreferencesRepository::inQuietHours($night, $at('08:00')));
+        $this->assertFalse(NotificationPreferencesRepository::inQuietHours($night, $at('12:00')));
+        $day = ['quiet_start' => 13 * 60, 'quiet_end' => 14 * 60];
+        $this->assertTrue(NotificationPreferencesRepository::inQuietHours($day, $at('13:15')));
+        $this->assertFalse(NotificationPreferencesRepository::inQuietHours(['quiet_start' => null, 'quiet_end' => null], $at('13:15')));
     }
 }

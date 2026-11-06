@@ -31,7 +31,25 @@
     "announceLabel": "Annonces de Hilads",
     "announceSub": "Des nouvelles de l'équipe, de temps en temps",
     "commentLabel": "Commentaires",
-    "commentSub": "Sur tes photos et les photos que tu as commentées"
+    "commentSub": "Sur tes photos et les photos que tu as commentées",
+    "likeLabel": "J'aime",
+    "likeSub": "Quand quelqu'un aime ta photo",
+    "resultsLabel": "Résultats du jour",
+    "resultsSub": "Comment ta photo s'en est sortie hier",
+    "rankLabel": "Changements de classement",
+    "rankSub": "Quand tu grimpes au classement",
+    "stampLabel": "Tampons et Local Pass",
+    "stampSub": "Quand tu gagnes un tampon ou un Local Pass",
+    "reminderLabel": "Rappel de série",
+    "reminderSub": "Un petit rappel le soir avant la fin du défi",
+    "planJoinLabel": "Quelqu'un a rejoint ton plan",
+    "planJoinSub": "Quand on rejoint ou demande à rejoindre tes plans",
+    "newPlansLabel": "Nouveaux plans dans ta ville",
+    "newPlansSub": "Quand quelqu'un lance un plan près de toi",
+    "friendArrivalLabel": "Amis qui arrivent",
+    "friendArrivalSub": "Quand un ami arrive dans une ville",
+    "dailyLabel": "Nouveau Daily Challenge",
+    "dailySub": "Le nouveau défi chaque matin"
   },
   "away": {
     "title": "Pendant ton absence",
@@ -49,5 +67,77 @@
     "other": "🔔 Du nouveau pour toi",
     "dismiss": "Fermer",
     "open": "Voir les nouveautés"
+  },
+  "inbox": {
+    "settings": "Réglages des notifications",
+    "all": "Tout",
+    "cat": {
+      "social": "Social",
+      "game": "Jeu",
+      "plans": "Plans",
+      "city": "Ville",
+      "hilads": "Hilads"
+    },
+    "sec": {
+      "new": "Nouveau",
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "week": "Cette semaine",
+      "earlier": "Plus tôt"
+    },
+    "read": "Lu",
+    "unread": "Non lu",
+    "delete": "Supprimer",
+    "allRead": "Tout est lu ✨",
+    "row": {
+      "like": "{{names}} a aimé ta photo",
+      "comment": "{{names}} a commenté ta photo",
+      "photoMention": "{{names}} t'a mentionné dans un commentaire",
+      "mention": "{{names}} t'a mentionné",
+      "friendRequest": "{{names}} veut être ton ami",
+      "friendAccepted": "{{names}} a accepté ta demande d'ami",
+      "profileView": "{{names}} a regardé ton profil",
+      "vibe": "{{names}} t'a laissé une vibe",
+      "planJoin": "{{names}} a rejoint {{plan}}",
+      "joinRequest": "{{names}} veut rejoindre {{plan}}",
+      "joinAccepted": "C'est bon, tu es dans {{plan}}",
+      "landed": "{{names}} vient d'arriver à {{city}}",
+      "result": "🏆 Les résultats d'hier",
+      "localPass": "🎟️ Local Pass de {{city}} !",
+      "rankUp": "▲ Tu passes #{{rank}} à {{where}}",
+      "landedMany_one": "{{count}} nouveau joueur est arrivé à {{city}} aujourd'hui",
+      "landedMany_other": "{{count}} nouveaux joueurs sont arrivés à {{city}} aujourd'hui",
+      "landedMany_many": "{{count}} nouveaux joueurs sont arrivés à {{city}} aujourd'hui",
+      "rankUpWorld": "▲ Tu passes #{{rank}} dans le monde"
+    },
+    "empty": {
+      "all": "Rien à signaler. Va prendre une photo 📸",
+      "social": "Pas encore de commentaires ni de j'aime. Poste une photo et laisse la ville réagir 💬",
+      "game": "Joue au défi du jour et tes résultats arrivent ici 🏆",
+      "plans": "Pas encore de nouvelles de plans. Lance-en un et vois qui vient 📅",
+      "city": "Ville calme pour l'instant. Les nouveaux joueurs apparaîtront ici 👋",
+      "hilads": "Rien de notre part pour l'instant ✨"
+    },
+    "pushOff": {
+      "text": "Les notifs sont coupées, tu pourrais rater tes résultats 🏆",
+      "on": "Activer",
+      "dismiss": "Plus tard"
+    },
+    "names": {
+      "two": "{{a}} et {{b}}",
+      "many_one": "{{a}} et {{count}} autre",
+      "many_other": "{{a}} et {{count}} autres",
+      "many_many": "{{a}} et {{count}} autres"
+    }
+  },
+  "settings": {
+    "title": "Réglages des notifications",
+    "pushOn": "Notifs activées ✅",
+    "pushOff": "Notifs coupées",
+    "pushOffSub": "Active-les pour suivre tes résultats et tes commentaires",
+    "turnOn": "Activer",
+    "saved": "Enregistré",
+    "quiet": "Heures calmes",
+    "quietSub": "Pas de notif de {{from}} à {{to}}"
   }
 }

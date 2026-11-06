@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 class NotificationPreferencesRepository
 {
+    /** Integer preferences (minutes of the day, or null); every other key is a boolean. */
+    public const MINUTE_KEYS = ['quiet_start', 'quiet_end'];
+
+    /** True when $now falls in the user's quiet hours (prefs from get()). */
+    public static function inQuietHours(array $prefs, DateTimeImmutable $localNow): bool
+    {
+        $from = $prefs['quiet_start'] ?? null;
+        $to   = $prefs['quiet_end'] ?? null;
+        if ($from === null || $to === null || $from === $to) return false;
+        $m = (int) $localNow->format('G') * 60 + (int) $localNow->format('i');
+        return $from < $to ? ($m >= $from && $m < $to) : ($m >= $from || $m < $to);
+    }
+
     public static function defaults(): array
     {
         return [
@@ -25,6 +38,15 @@ class NotificationPreferencesRepository
             'admin_announcement_push' => true, // product announcements from /admin/push
             'daily_challenge_push' => true,   // Daily Challenge morning/reminder/digest pushes
             'comment_push'         => true,   // comments on my photos and in threads I joined (mentions: mention_push)
+            // V6
+            'like_push'            => true,   // likes on my photos (bell row and push)
+            'results_push'         => true,   // yesterday's results in the bell
+            'rank_push'            => true,   // my rank changes
+            'stamp_push'           => true,   // stamps, Local Pass
+            'reminder_push'        => true,   // the evening reminder (and the city streak at risk)
+            // Quiet hours, minutes in the user's local time (null = off): no push between them.
+            'quiet_start'          => null,
+            'quiet_end'            => null,
         ];
     }
 
@@ -39,7 +61,10 @@ class NotificationPreferencesRepository
             $out = self::defaults();
             if ($row) {
                 foreach ($out as $k => $default) {
-                    if (array_key_exists($k, $row) && $row[$k] !== null) {
+                    if (!array_key_exists($k, $row)) continue;
+                    if (in_array($k, self::MINUTE_KEYS, true)) {
+                        $out[$k] = $row[$k] === null ? null : (int) $row[$k];
+                    } elseif ($row[$k] !== null) {
                         $out[$k] = DailyProofRepository::bool($row[$k]);
                     }
                 }
@@ -77,7 +102,14 @@ class NotificationPreferencesRepository
         // a toggle of that specific missing column would fail.
         $presentCols = array_keys($present);
         $params      = [$userId];
-        foreach ($presentCols as $c) $params[] = $b((bool) $present[$c]);
+        foreach ($presentCols as $c) {
+            if (in_array($c, self::MINUTE_KEYS, true)) {
+                $v = $present[$c];
+                $params[] = is_numeric($v) && (int) $v >= 0 && (int) $v < 1440 ? (int) $v : null;
+            } else {
+                $params[] = $b((bool) $present[$c]);
+            }
+        }
 
         $insertCols   = 'user_id, ' . implode(', ', $presentCols);
         $placeholders = implode(', ', array_fill(0, count($presentCols) + 1, '?'));
