@@ -10,6 +10,19 @@
 
 export const API_BASE = process.env.HILADS_API_BASE || 'https://api.hilads.live'
 
+/**
+ * An uploaded photo at a size (as the app's imageThumb.js): 'thumb' ≤400 px for
+ * cards and tiles, 'medium' ≤1080 px for a big photo, WebP, through the API's
+ * resize proxy (it makes the size once, then serves it with a year of cache).
+ * The 1-5 MB originals never go in a server-rendered page. Anything else (a
+ * bundled image, an older thumb_ file) comes back unchanged.
+ */
+export function sizedPhoto(url, size = 'thumb') {
+  const m = String(url ?? '').match(/(?:\/|[?&]f=)([a-f0-9]{32}\.(?:jpe?g|png|webp))(?=$|[&#])/i)
+  if (!m) return url
+  return `${API_BASE}/api/v1/img-thumb?f=${m[1].toLowerCase()}${size === 'medium' ? '&w=1080' : ''}&fmt=webp`
+}
+
 const MIN_TTL = 60
 const MAX_TTL = 86400
 const NO_CHALLENGE_TTL = 300   // an admin may still publish today's challenge

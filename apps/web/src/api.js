@@ -2531,10 +2531,41 @@ export async function fetchSpot(id, offset = 0) {
 // Same endpoints as the app (docs/daily-challenge/API.md). Reads send the UI
 // language; errors carry the API's status and machine code (err.status/.code).
 
-async function daily(method, path, { params, body } = {}) {
+// Identical GETs in flight share one request (Today asked /daily/today twice at boot), and a
+// GET prefetched by prefetchDaily() is handed to its first caller within 15 s (exact URL only).
+const dailyInFlight = new Map()
+const dailyPrefetched = new Map()
+function dailyUrl(path, params) {
   const q = new URLSearchParams(THEMES_V2)
   Object.entries(params || {}).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') q.set(k, v) })
-  const res = await fetch(`${BASE}${path}${q.toString() ? `?${q}` : ''}`, {
+  return `${BASE}${path}${q.toString() ? `?${q}` : ''}`
+}
+
+function daily(method, path, opts = {}) {
+  if (method !== 'GET') return dailyRequest(method, path, opts)
+  const url = dailyUrl(path, opts.params)
+  const pre = dailyPrefetched.get(url)
+  if (pre) {
+    dailyPrefetched.delete(url)
+    if (Date.now() - pre.at < 15000) return pre.promise
+  }
+  if (dailyInFlight.has(url)) return dailyInFlight.get(url)
+  const promise = dailyRequest(method, path, opts).finally(() => dailyInFlight.delete(url))
+  dailyInFlight.set(url, promise)
+  return promise
+}
+
+/** Starts a Daily GET early (the boot, before the city's join answers); its first caller gets it. */
+function prefetchDaily(path, params) {
+  const url = dailyUrl(path, params)
+  const promise = daily('GET', path, { params })
+  promise.catch(() => dailyPrefetched.delete(url))
+  dailyPrefetched.set(url, { promise, at: Date.now() })
+  return promise
+}
+
+async function dailyRequest(method, path, { params, body } = {}) {
+  const res = await fetch(dailyUrl(path, params), {
     method,
     credentials: 'include',
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
@@ -2554,11 +2585,16 @@ const cityNum = (cityId) => (cityId ? String(cityId).replace(/^city_/, '') : nul
 
 /** GET /daily/today: today's challenge, the city's Local Twist, my proof, streak… */
 /** `here`: a guest's own city ({cityId, gps}); an account's comes from the server. */
+const todayParams = (cityId, locale, here) => ({
+  cityId: cityNum(cityId), locale,
+  hereId: here ? cityNum(here.cityId) : undefined, hereSource: here ? (here.gps ? 'gps' : 'ip') : undefined,
+})
 export function fetchDailyToday(cityId, locale, here = null) {
-  return daily('GET', '/daily/today', { params: {
-    cityId: cityNum(cityId), locale,
-    hereId: here ? cityNum(here.cityId) : undefined, hereSource: here ? (here.gps ? 'gps' : 'ip') : undefined,
-  } })
+  return daily('GET', '/daily/today', { params: todayParams(cityId, locale, here) })
+}
+/** The boot starts Today's request as soon as the city is known (Today mounts after the join). */
+export function prefetchDailyToday(cityId, locale, here = null) {
+  return prefetchDaily('/daily/today', todayParams(cityId, locale, here))
 }
 
 /** GET /daily/challenges/{date}: the sheet (proofs paged by `before`, results once closed). */

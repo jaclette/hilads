@@ -18436,3 +18436,7 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .pc-button { min-height: 48px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--primary); color: #fff; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
 .pc-button:active { transform: scale(0.98); opacity: 0.9; }
 @media (prefers-reduced-motion: reduce) { .pc-bulb--wiggle { animation: none; } }
+
+/* A screen whose code is still loading (lazyScreen in App.jsx): the page's ground and a spinner. */
+.lazy-screen { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: var(--bg);
+  padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom)); }

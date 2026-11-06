@@ -1,5 +1,5 @@
 import { thumbUrl } from './lib/imageThumb'
-import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName, shortCityName } from './i18n/cityName'
@@ -7,26 +7,19 @@ import { CityFlag, CityName } from './components/CityName'
 import HeaderArt from './components/HeaderArt'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates, prefetchDailyToday } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
 import ExampleEventCard from './components/ExampleEventCard'
 import AppMapCard from './components/AppMapCard'
-import MapScreen from './components/map/MapScreen'
 import { deviceStore } from './components/map/spotsShared'
 import { openAppModal } from './components/AppModal'
-import TodayScreen from './components/today/TodayScreen'
+import TodayScreen, { preloadTodayHero } from './components/today/TodayScreen'
 import { LogoHat, SeasonalDayIcon, TabGhost, useEventFeature, useSeasonalLive } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
-import ChallengeScreen from './components/daily/ChallengeScreen'
-import PhotosScreen from './components/daily/PhotosScreen'
-import CountriesScreen from './components/daily/CountriesScreen'
-import StoriesScreen from './components/daily/StoriesScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
-import ArchiveScreen from './components/daily/ArchiveScreen'
-import IndexScreen from './components/daily/IndexScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
 import { CommentButton, CommentPreview, PhotoCommentsHost, openPhotoComments } from './components/daily/PhotoCommentsSheet'
@@ -58,12 +51,6 @@ import { splitContentByMentions } from './lib/mentions'
 import { countryToFlag } from './lib/countryFlag'
 import { linkifyText, extractFirstUrl } from './linkify.jsx'
 import LinkPreviewCard from './components/LinkPreviewCard'
-import CreateEventPage from './components/CreateEventModal'
-import CreateTopicPage from './components/CreateTopicPage'
-import TopicChatPage from './components/TopicChatPage'
-import ChallengeChatPage from './components/ChallengeChatPage'
-import RanksScreen        from './components/ranks/RanksScreen'
-import RivalsScreen       from './components/daily/RivalsScreen'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
@@ -76,16 +63,9 @@ import AccountWelcome from './components/AccountWelcome'
 import PromoAsk from './components/PromoAsk'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
-import ProfileScreen from './components/ProfileScreen'
-import PublicProfileScreen from './components/PublicProfileScreen'
-import VenueScreen from './components/VenueScreen'
 import GuestProfileCard from './components/GuestProfileCard'
 import AppearanceLanguageCard from './components/AppearanceLanguageCard'
-import ConversationsScreen from './components/ConversationsScreen'
 import ShowcasePreviewModal from './components/ShowcasePreviewModal'
-import DirectMessageScreen from './components/DirectMessageScreen'
-import NotificationsScreen from './components/NotificationsScreen'
-import FriendRequestsScreen from './components/FriendRequestsScreen'
 import { fetchIncomingFriendRequestCount } from './api'
 import { fetchLeaderboard } from './api'
 import BackButton from './components/BackButton'
@@ -96,7 +76,6 @@ import AppPromoBanner from './components/AppPromoBanner'
 import AppPromoInterstitial from './components/AppPromoInterstitial'
 import MessageComposer from './components/MessageComposer'
 import ShareActionSheet from './components/ShareActionSheet'
-import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
 import { registerPush, unregisterPush } from './push'
 import BellButton from './components/notifications/BellButton'
@@ -106,6 +85,50 @@ import { markNotificationTypesRead } from './api'
 import { themeName } from './components/map/spotsShared'
 import { useBackLayer, useBackStack } from './lib/backLayers'
 import { placeholderStyle } from './lib/thumbhash'
+
+// Screens that are never the first one, in their own chunks (Leaflet and the map with the
+// Map tab, the Daily stack, chats, profiles...): the first screen loads ~half the JavaScript.
+// Each has its own boundary, so the rest of the app never blanks while a chunk loads.
+function lazyScreen(load, { quiet = false } = {}) {
+  const Screen = lazy(load)
+  const Lazy = (props) => (
+    <Suspense fallback={quiet ? null : <div className="lazy-screen" aria-busy="true"><span className="r6-spinner" /></div>}>
+      <Screen {...props} />
+    </Suspense>
+  )
+  Lazy.preload = load
+  return Lazy
+}
+const MapScreen = lazyScreen(() => import('./components/map/MapScreen'))
+const RanksScreen = lazyScreen(() => import('./components/ranks/RanksScreen'))
+const RivalsScreen = lazyScreen(() => import('./components/daily/RivalsScreen'))
+const ChallengeScreen = lazyScreen(() => import('./components/daily/ChallengeScreen'))
+const CountriesScreen = lazyScreen(() => import('./components/daily/CountriesScreen'))
+const StoriesScreen = lazyScreen(() => import('./components/daily/StoriesScreen'))
+const ArchiveScreen = lazyScreen(() => import('./components/daily/ArchiveScreen'))
+const IndexScreen = lazyScreen(() => import('./components/daily/IndexScreen'))
+const PhotosScreen = lazyScreen(() => import('./components/daily/PhotosScreen'))
+const NotificationsScreen = lazyScreen(() => import('./components/NotificationsScreen'))
+const ProfileScreen = lazyScreen(() => import('./components/ProfileScreen'))
+const PublicProfileScreen = lazyScreen(() => import('./components/PublicProfileScreen'))
+const VenueScreen = lazyScreen(() => import('./components/VenueScreen'))
+const ConversationsScreen = lazyScreen(() => import('./components/ConversationsScreen'))
+const DirectMessageScreen = lazyScreen(() => import('./components/DirectMessageScreen'))
+const FriendRequestsScreen = lazyScreen(() => import('./components/FriendRequestsScreen'))
+const CreateEventPage = lazyScreen(() => import('./components/CreateEventModal'))
+const CreateTopicPage = lazyScreen(() => import('./components/CreateTopicPage'))
+const TopicChatPage = lazyScreen(() => import('./components/TopicChatPage'))
+const ChallengeChatPage = lazyScreen(() => import('./components/ChallengeChatPage'))
+// The location picker (Leaflet): its own overlay, nothing to show while it loads.
+const LocationPicker = lazyScreen(() => import('./components/LocationPicker'), { quiet: true })
+// Once the first screen is in, the tabs' screens load in the background (the Map tab opens at once).
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => setTimeout(() => {
+    const go = () => { for (const s of [MapScreen, RanksScreen, NotificationsScreen, ChallengeScreen, PhotosScreen]) s.preload().catch(() => {}) }
+    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(go, { timeout: 5000 })
+    else go()
+  }, 10000), { once: true })
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -2928,6 +2951,11 @@ export default function App() {
       SELF_IDENTITY.guestId = session.guestId
       setGuest(session)
       setChannelId(location.channelId)
+      // Today's data now, not after the join (~2 s sooner on Slow 4G): the same request
+      // Today will make (here as in dailyCtx), handed over by the API client.
+      prefetchDailyToday(location.channelId, i18n.language,
+        accountRef.current ? null : geoChannelId ? { cityId: geoChannelId, gps: true } : ipChannelId ? { cityId: ipChannelId, gps: false } : null)
+        .then(preloadTodayHero).catch(() => {})
       setCityTimezone(location.timezone ?? 'UTC')
       activeChannelRef.current = location.channelId
 

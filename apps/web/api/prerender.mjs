@@ -32,6 +32,7 @@
  */
 
 import { readFile }      from 'node:fs/promises'
+import { sizedPhoto }    from './_daily.mjs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
@@ -390,7 +391,8 @@ function photoFigure({ photo, country, answer, photos, question, locale }) {
   const city   = cityName(photo.city, locale)
   const credit = T(locale, 'daily.photoBy', { user: `@${photo.username}`, city })
   const alt    = [answer || question, credit].filter(Boolean).join(' - ')
-  return `<li><figure><img src="${htmlEscape(photo.url)}" alt="${htmlEscape(alt)}" loading="lazy" width="300" height="400" />`
+  // A 300 px card: the ≤400 px size, never the original (they loaded before the app did: 6.8 MB on /city/berlin).
+  return `<li><figure><img src="${htmlEscape(sizedPhoto(photo.url))}" alt="${htmlEscape(alt)}" loading="lazy" decoding="async" width="300" height="400" />`
     + `<figcaption><b>${htmlEscape(place)}${answer ? `: ${htmlEscape(answer)}` : ''}</b><br />`
     + `${photos ? `${htmlEscape(Tn(locale, 'daily.photos', photos))} · ` : ''}${htmlEscape(credit)}</figcaption></figure></li>`
 }

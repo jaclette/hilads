@@ -6,7 +6,7 @@ import App from './App'
 import OpenInAppBanner from './components/OpenInAppBanner'
 import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 
-import posthog from 'posthog-js'
+import { posthogOff, posthogReady } from './lib/posthogQueue'
 import { captureUtm } from './lib/utm'
 import { initTheme } from './lib/theme'
 import { installKeyboardViewport } from './lib/keyboardViewport'
@@ -36,14 +36,19 @@ const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://hi.hilads.liv
 
 if (!IS_BOT) {
 
-if (POSTHOG_KEY)
-posthog.init(POSTHOG_KEY, {
+// PostHog loads once the page has loaded and the browser is idle (not in the main
+// bundle); track() calls made before wait in lib/posthogQueue and run then.
+const loadPosthog = () => import('posthog-js').then(({ default: posthog }) => posthog.init(POSTHOG_KEY, {
     // Events route through the managed reverse proxy; ui_host keeps the toolbar
     // and PostHog UI features pointed at the real EU instance.
     api_host: POSTHOG_HOST,
     ui_host: 'https://eu.posthog.com',
     disable_toolbar: true,
     autocapture: false,        // all events tracked manually via track()
+    // Not used, and ~60 KB of extra scripts on a slow network (surveys, dead clicks, web vitals).
+    disable_surveys: true,
+    capture_dead_clicks: false,
+    capture_performance: false,
     capture_pageleave: false,  // not useful for a SPA chat context
     // Session recording generates a continuous stream of `s/?ip=0` requests
     // (DOM snapshots sent throughout the session) - stop it so it doesn't
@@ -57,8 +62,15 @@ posthog.init(POSTHOG_KEY, {
         // enables console debugging AND the window.posthog.capture() calls used
         // elsewhere in the app (PastArchive, calendar) which otherwise no-op.
         window.posthog = ph
+        posthogReady(ph)
     },
-})
+})).catch(() => posthogOff())
+if (!POSTHOG_KEY) posthogOff()
+else {
+    const idle = (fn) => (typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(fn, { timeout: 4000 }) : setTimeout(fn, 1500))
+    if (document.readyState === 'complete') idle(loadPosthog)
+    else window.addEventListener('load', () => idle(loadPosthog), { once: true })
+}
 
 // Capture ad UTM/click-ids from the entry URL as PostHog super properties so the
 // whole landing→join funnel is attributable to the creative that drove the click.
@@ -153,3 +165,4 @@ function BootShellDone() {
 bootstrap()
 
 } // end if (!IS_BOT)
+if (IS_BOT) posthogOff()

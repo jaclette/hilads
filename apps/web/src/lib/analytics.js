@@ -1,4 +1,4 @@
-import posthog from 'posthog-js'
+import { withPosthog } from './posthogQueue'
 
 const PLATFORM = 'web'
 let _ctx = {}
@@ -10,7 +10,8 @@ export function setAnalyticsContext(ctx) {
 // Immediate capture - use only for interaction events (button taps, sends, etc.)
 // where the timing precision matters.
 export function track(event, props = {}) {
-  posthog.capture(event, { platform: PLATFORM, ..._ctx, ...props })
+  const payload = { platform: PLATFORM, ..._ctx, ...props }
+  withPosthog(ph => ph.capture(event, payload))
 }
 
 // Deferred capture - fires on the next idle callback (requestIdleCallback with
@@ -22,14 +23,14 @@ const _ric = typeof window !== 'undefined' && typeof window.requestIdleCallback 
 
 export function trackDeferred(event, props = {}) {
   const snapshot = { ..._ctx }   // capture context at call-time, not callback-time
-  _ric(() => posthog.capture(event, { platform: PLATFORM, ...snapshot, ...props }))
+  _ric(() => withPosthog(ph => ph.capture(event, { platform: PLATFORM, ...snapshot, ...props })))
 }
 
 export function identifyUser(id, props = {}) {
-  posthog.identify(id, props)
+  withPosthog(ph => ph.identify(id, props))
 }
 
 export function resetAnalytics() {
   _ctx = {}
-  posthog.reset()
+  withPosthog(ph => ph.reset())
 }

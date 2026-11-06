@@ -22,7 +22,7 @@
  * PostHog: share_link_visit, share_link_install_click (open / stores / web).
  */
 
-import { API_BASE } from './_daily.mjs'
+import { API_BASE, sizedPhoto } from './_daily.mjs'
 import { TODAY_STRINGS } from './_today-i18n.mjs'
 import { SHARE_STRINGS } from './_share-i18n.mjs'
 
@@ -121,7 +121,7 @@ function body(data, S, SS, locale) {
     </section>`
     const rank = p.worldRank && p.worldRank <= 3 ? fmt(SS.rankWorld, { rank: p.worldRank })
       : p.cityRank && p.cityRank <= 3 && p.city ? fmt(SS.rankCity, { rank: p.cityRank, city: p.city.name }) : null
-    return `${ask}<figure class="photo"><img src="${esc(p.photoUrl)}" alt="${esc(p.caption || '')}" />${rank ? `<span class="rank">${esc(rank)}</span>` : ''}</figure>
+    return `${ask}<figure class="photo"><img src="${esc(sizedPhoto(p.photoUrl, 'medium'))}" alt="${esc(p.caption || '')}" decoding="async" />${rank ? `<span class="rank">${esc(rank)}</span>` : ''}</figure>
     <section class="card">
       <div class="kicker">Daily Challenge</div>${challenge}
       <div class="meta">${p.city ? `<span>${flagImg(p.city.country)}${esc(p.city.name)}</span>` : ''}${p.user && p.user.username ? `<span>${esc(fmt(SS.by, { user: p.user.username }))}</span>` : ''}<span>${HEART}${p.voteCount}</span></div>
@@ -130,8 +130,8 @@ function body(data, S, SS, locale) {
   }
   if (data.kind === 'spot') {
     const s = data.spot
-    const grid = data.photos.slice(0, 9).map(ph => `<img src="${esc(ph.thumbUrl || ph.photoUrl)}" alt="" loading="lazy" />`).join('')
-    return `${s.cover && s.cover.photoUrl ? `<figure class="photo"><img src="${esc(s.cover.photoUrl)}" alt="" />${s.cover.by ? `<span class="credit">${esc(fmt(SS.photoBy, { user: s.cover.by }))}</span>` : ''}</figure>` : ''}
+    const grid = data.photos.slice(0, 9).map(ph => `<img src="${esc(ph.thumbUrl || sizedPhoto(ph.photoUrl))}" alt="" loading="lazy" decoding="async" />`).join('')
+    return `${s.cover && s.cover.photoUrl ? `<figure class="photo"><img src="${esc(sizedPhoto(s.cover.photoUrl, 'medium'))}" alt="" decoding="async" />${s.cover.by ? `<span class="credit">${esc(fmt(SS.photoBy, { user: s.cover.by }))}</span>` : ''}</figure>` : ''}
     <section class="card">
       <h1>${esc(s.name)}</h1>
       <div class="meta">${s.city ? `<span>${flagImg(s.city.country)}${esc(s.city.name)}</span>` : ''}<span>${HEART}${s.votes}</span></div>
@@ -139,7 +139,7 @@ function body(data, S, SS, locale) {
     </section>`
   }
   // day
-  const grid = data.proofs.map(p => `<img src="${esc(p.thumbUrl || p.photoUrl)}" alt="" loading="lazy" />`).join('')
+  const grid = data.proofs.map(p => `<img src="${esc(p.thumbUrl || sizedPhoto(p.photoUrl))}" alt="" loading="lazy" decoding="async" />`).join('')
   return `<section class="card">
       <div class="kicker">${esc(fmt(SS.dayOf, { date: dateLabel(c.date, locale) }))}</div>${challenge}
       ${grid ? `<div class="grid-title">${esc(SS.best)}</div><div class="grid">${grid}</div>` : ''}

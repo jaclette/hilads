@@ -37,6 +37,23 @@ const addDays = (date, n) => ymd(new Date(Date.parse(`${date}T12:00:00Z`) + n * 
  * row to the spots near you and "Got a challenge idea? Propose it". Proofs are
  * posted from the app: "Take the challenge" opens the store.
  */
+/**
+ * Starts the hero's cover download as soon as Today's data is in (App's boot prefetch), ahead
+ * of the feed's thumbnails: the same srcset as the <img>, which then finds it in the cache.
+ */
+export function preloadTodayHero(data) {
+  const cover = coverImage(challengeCover(data?.challenge))
+  if (!cover?.src || typeof document === 'undefined' || document.querySelector('link[data-today-hero]')) return
+  const link = document.createElement('link')
+  link.rel = 'preload'
+  link.as = 'image'
+  link.href = cover.src
+  if (cover.srcSet) link.setAttribute('imagesrcset', cover.srcSet)
+  link.setAttribute('fetchpriority', 'high')
+  link.dataset.todayHero = '1'
+  document.head.appendChild(link)
+}
+
 export default function TodayScreen({ header }) {
   const { i18n } = useDc()
   // A seasonal event's live look (Halloween...) re-colors the whole tab.

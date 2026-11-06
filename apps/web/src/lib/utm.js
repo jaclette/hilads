@@ -1,4 +1,4 @@
-import posthog from 'posthog-js'
+import { withPosthog } from './posthogQueue'
 
 // Ad-attribution params we care about from the entry URL (Instagram/TikTok/Google).
 const UTM_KEYS = [
@@ -20,8 +20,8 @@ export function captureUtm() {
       const v = p.get(k)
       if (v) out[k] = v
     }
-    if (Object.keys(out).length && typeof posthog.register === 'function') {
-      posthog.register(out)
+    if (Object.keys(out).length) {
+      withPosthog(ph => { if (typeof ph.register === 'function') ph.register(out) })
     }
     return out
   } catch {
