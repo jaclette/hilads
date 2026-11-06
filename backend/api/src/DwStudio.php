@@ -697,24 +697,33 @@ final class DwStudio
 
     /**
      * Why $pkg no longer matches its topic's title or notes, or null. A package keeps the
-     * title and notes it was made from; one imported before that (2026-11-06) is compared
-     * with the calendar it was prepared from (DwSeed::TOPICS), when its date is in it.
+     * title and notes it was made from (dw_packages.brief). One imported before that
+     * (2026-11-06) is judged by what it carries: its "topic" is the title it was made with,
+     * so a topic renamed in the calendar (DwSeed::TOPICS) changed after it only when the
+     * package doesn't carry the new title; a topic still titled as in the calendar changed
+     * after it when its notes differ from the calendar's.
      */
     public static function briefChanged(array $topic, array $pkg): ?string
     {
         $now = self::briefOf($topic);
         $then = is_string($pkg['brief'] ?? null) ? json_decode($pkg['brief'], true) : null;
-        if (!is_array($then)) {
+        if (is_array($then)) {
+            $what = ['title' => $now['title'] !== trim((string) ($then['title'] ?? '')), 'notes' => $now['notes'] !== trim((string) ($then['notes'] ?? ''))];
+        } else {
+            $made = trim((string) ($pkg['content']['topic'] ?? ''));
+            $seed = null;
             foreach (DwSeed::TOPICS as [$d, $title, , , $notes]) {
                 if ($d === $topic['date']) {
-                    $then = ['title' => trim($title), 'notes' => trim((string) $notes)];
+                    $seed = ['title' => trim($title), 'notes' => trim((string) $notes)];
                 }
             }
+            if ($seed !== null && $now['title'] === $seed['title']) {
+                $what = ['notes' => $now['notes'] !== $seed['notes']];
+            } else {
+                $what = ['title' => $made !== '' && $now['title'] !== $made];
+            }
         }
-        if (!is_array($then)) {
-            return null;
-        }
-        $what = array_keys(array_filter(['title' => $now['title'] !== trim((string) ($then['title'] ?? '')), 'notes' => $now['notes'] !== trim((string) ($then['notes'] ?? ''))]));
+        $what = array_keys(array_filter($what));
         return $what === [] ? null : 'The ' . implode(' and ', $what) . ' changed after this package was made: prepare a new package (text, photos and clips).';
     }
 

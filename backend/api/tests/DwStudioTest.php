@@ -114,11 +114,16 @@ final class DwStudioTest extends TestCase
         $this->assertNull(DwStudio::briefChanged($topic, ['brief' => json_encode(['title' => 'New Year', 'notes' => 'Fireworks'])]));
         $this->assertStringStartsWith('The notes changed', (string) DwStudio::briefChanged($topic, ['brief' => json_encode(['title' => 'New Year', 'notes' => 'Food'])]));
         $this->assertStringStartsWith('The title and notes changed', (string) DwStudio::briefChanged($topic, ['brief' => json_encode(['title' => 'NYE', 'notes' => ''])]));
-        // A package from before the snapshot: compared with the calendar it was prepared from.
+        // A package from before the snapshot: judged by the title it carries and the calendar.
         $seeded = ['date' => '2026-11-06', 'title' => 'Weird laws that are actually real', 'notes' => 'Only laws still in force, double-checked'];
-        $this->assertNull(DwStudio::briefChanged($seeded, ['brief' => null]));
-        $this->assertNotNull(DwStudio::briefChanged(['title' => 'Weird laws'] + $seeded, ['brief' => null]));
-        $this->assertNull(DwStudio::briefChanged($topic, ['brief' => null]));      // not in the calendar: nothing to compare with
+        $old = ['brief' => null, 'content' => ['topic' => 'Weird laws that are actually real']];
+        $this->assertNull(DwStudio::briefChanged($seeded, $old));
+        $this->assertStringStartsWith('The notes changed', (string) DwStudio::briefChanged(['notes' => 'Funnier ones'] + $seeded, $old));
+        // Renamed in the calendar, then packaged under the new title: not a change since.
+        $renamed = ['date' => '2026-11-07', 'title' => 'The dinner time clash', 'notes' => 'Anything'];
+        $this->assertNull(DwStudio::briefChanged($renamed, ['brief' => null, 'content' => ['topic' => 'The dinner time clash']]));
+        $this->assertStringStartsWith('The title changed', (string) DwStudio::briefChanged($renamed, ['brief' => null, 'content' => ['topic' => 'What time is dinner?']]));
+        $this->assertNull(DwStudio::briefChanged($topic, ['brief' => null, 'content' => ['topic' => 'New Year']]));   // not in the calendar
     }
 
     public function testEditTargets(): void
