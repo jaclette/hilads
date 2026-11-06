@@ -7,6 +7,8 @@ import { useHere } from '@/hooks/useDaily';
 import type { DailyCityGroup, DailyToday, DailyTodayCountries } from '@/types';
 
 let last: DailyTodayCountries | null = null;
+let lastAt = 0;
+let lastKey = '';
 /** The last list Today showed: Today's photos follows its story order. */
 export function lastCountries(): DailyTodayCountries | null { return last; }
 
@@ -23,18 +25,23 @@ export function useTodayCountries(today: DailyToday | null, refreshKey: number):
   const challenge = today?.challenge ?? null;
   const guestId = account ? null : identity?.guestId ?? null;
 
-  const load = useCallback(async () => {
+  const key = `${challenge?.id ?? ''}|${here?.id ?? today?.city?.id ?? ''}|${guestId ?? ''}`;
+  const load = useCallback(async (force = false) => {
     if (!challenge) return;
+    // A tab switch back to Today within 30 s keeps the list it has (no refetch, no re-render).
+    if (!force && key === lastKey && Date.now() - lastAt < 30_000) return;
     try {
       // My city first: where I am, else the city I'm browsing.
       const next = await fetchDailyTodayCountries({ cityId: here?.id ?? today?.city?.id ?? null, guestId });
       seedProofs([...next.items.map(i => i.top), ...(next.cities ?? []).map(c => c.top)], challenge.isActive);
       last = next;
+      lastAt = Date.now();
+      lastKey = key;
       setData(next);
     } catch { /* keep what we have */ }
-  }, [challenge?.id, challenge?.isActive, here?.id, today?.city?.id, guestId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [challenge?.id, challenge?.isActive, here?.id, today?.city?.id, guestId, key]); // eslint-disable-line react-hooks/exhaustive-deps
   useFocusEffect(useCallback(() => { load(); }, [load]));
-  useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (refreshKey > 0) load(true); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
   return challenge ? data : null;
 }
 

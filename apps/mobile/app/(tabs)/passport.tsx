@@ -39,6 +39,11 @@ interface Counts { spots: number | null; proposals: number | null; friends: numb
  * behind the gear; "How points work" as a help sheet. Guests get an
  * invitation to start theirs.
  */
+// The Passport's numbers from the last visit, per account and city (in memory).
+const passportCache = new Map<string, { at: number; stats: DailyUserStats | null; counts: Counts }>();
+const PASSPORT_FRESH_MS = 60_000;
+const EMPTY_COUNTS: Counts = { spots: null, proposals: null, friends: null, week: null, alltime: null };
+
 export default function PassportScreen() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -47,8 +52,10 @@ export default function PassportScreen() {
   const { width } = useWindowDimensions();
   const { account, identity, city } = useApp();
   const today = useDailyToday(city?.channelId);
-  const [stats, setStats]   = useState<DailyUserStats | null>(null);
-  const [counts, setCounts] = useState<Counts>({ spots: null, proposals: null, friends: null, week: null, alltime: null });
+  const cacheKey = account ? `${account.id}|${city?.channelId ?? ''}` : '';
+  // Shown at once from the last visit (stale-while-revalidate), refreshed below.
+  const [stats, setStats]   = useState<DailyUserStats | null>(() => passportCache.get(cacheKey)?.stats ?? null);
+  const [counts, setCounts] = useState<Counts>(() => passportCache.get(cacheKey)?.counts ?? EMPTY_COUNTS);
   const [help, setHelp]     = useState(false);
   const [page, setPage]     = useState(0);
   const [share, setShare]   = useState<ShareContent | null>(null);
@@ -57,19 +64,40 @@ export default function PassportScreen() {
   const cityNum = cityKey ? Number(cityKey.slice(5)) : null;
   const cityName = city?.name ? shortCityName(city.name) : null;
 
+  // On focus: the cached numbers right away; fetched again when older than a minute, all six
+  // requests together and set once (one render, not six).
   useFocusEffect(useCallback(() => {
     if (!account) return;
+    const cached = passportCache.get(cacheKey);
+    if (cached) { setStats(cached.stats); setCounts(cached.counts); }
+    if (cached && Date.now() - cached.at < PASSPORT_FRESH_MS) return;
     let alive = true;
-    const set = (patch: Partial<Counts>) => { if (alive) setCounts(c => ({ ...c, ...patch })); };
-    fetchUserDaily(account.id).then(s => { if (alive) setStats(s); }).catch(() => {});
-    fetchMySpots().then(s => set({ spots: s.length })).catch(() => {});
-    fetchMyProposals().then(p => set({ proposals: p.items.filter(x => x.status === 'pending').length })).catch(() => {});
-    fetchUserFriends(account.id, 1, 1).then(f => set({ friends: f.total })).catch(() => {});
-    fetchWeeklyRank(cityKey).then(r => set({ week: r.rank })).catch(() => {});
-    fetchLeaderboard({ scope: cityKey ? 'city' : 'world', period: 'alltime', limit: 1, cityId: cityKey ?? undefined })
-      .then(r => set({ alltime: r?.me?.rank ?? null })).catch(() => {});
+    const val = <T,>(r: PromiseSettledResult<T>): T | null => (r.status === 'fulfilled' ? r.value : null);
+    Promise.allSettled([
+      fetchUserDaily(account.id),
+      fetchMySpots(),
+      fetchMyProposals(),
+      fetchUserFriends(account.id, 1, 1),
+      fetchWeeklyRank(cityKey),
+      fetchLeaderboard({ scope: cityKey ? 'city' : 'world', period: 'alltime', limit: 1, cityId: cityKey ?? undefined }),
+    ]).then(([st, sp, pr, fr, wk, at]) => {
+      if (!alive) return;
+      const prev = passportCache.get(cacheKey);
+      const s1 = val(st) ?? prev?.stats ?? null;
+      const p = val(pr);
+      const c: Counts = {
+        spots:     val(sp)?.length ?? prev?.counts.spots ?? null,
+        proposals: p ? p.items.filter(x => x.status === 'pending').length : prev?.counts.proposals ?? null,
+        friends:   val(fr)?.total ?? prev?.counts.friends ?? null,
+        week:      val(wk)?.rank ?? prev?.counts.week ?? null,
+        alltime:   val(at)?.me?.rank ?? prev?.counts.alltime ?? null,
+      };
+      passportCache.set(cacheKey, { at: Date.now(), stats: s1, counts: c });
+      setStats(s1);
+      setCounts(c);
+    });
     return () => { alive = false; };
-  }, [account, cityKey]));
+  }, [account, cityKey, cacheKey]));
 
   const header = (
     <ScreenHeader variant="tab" title={t('passport.title')} subtitle={t('subtitles.passport', { ns: 'common' })} art="passport"

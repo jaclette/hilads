@@ -6,7 +6,8 @@ import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { BackgroundLayer, Camera, CircleLayer, FillLayer, Images, LineLayer, MapView, MarkerView, ShapeSource, SymbolLayer, type MapState } from '@rnmapbox/maps';
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { useIsFocused } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -147,7 +148,6 @@ export default function MapScreen() {
   // "Today": only the spots of today's challenge photos (a chip before the themes).
   const [todayOnly, setTodayOnly] = useState(false);
   const reduceMotion = useReducedMotion();
-  const [pulse, setPulse] = useState(false);
   // The pins grow in once, when the first spots arrive.
   const [grown, setGrown] = useState(false);
   // ?theme=<key> (the challenge screen's "Places pinned"): open on that theme's spots.
@@ -184,12 +184,6 @@ export default function MapScreen() {
   const cityId = city?.channelId ?? null;
   const todayTheme = today.data?.challenge?.theme?.key ?? null;
   const todayDate = today.data?.challenge?.date ?? null;
-  // Today's photos pulse softly, always (V6), unless motion is reduced.
-  useEffect(() => {
-    if (reduceMotion) { setPulse(false); return; }
-    const id = setInterval(() => setPulse(p => !p), PULSE_MS);
-    return () => clearInterval(id);
-  }, [reduceMotion]);
   useEffect(() => {
     if (grown || spots.length === 0) return;
     const id = setTimeout(() => setGrown(true), reduceMotion ? 0 : 50);
@@ -215,7 +209,10 @@ export default function MapScreen() {
     Location.getForegroundPermissionsAsync().then(async p => {
       if (!p.granted) return;
       const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60_000 });
-      if (last) setMe([last.coords.longitude, last.coords.latitude]);
+      // Same place (within ~10 m) as last time: keep the same value, so coming back to the map
+      // doesn't re-render it and re-sort the list for nothing.
+      if (last) setMe(prev => (prev && Math.abs(prev[0] - last.coords.longitude) < 1e-4 && Math.abs(prev[1] - last.coords.latitude) < 1e-4
+        ? prev : [last.coords.longitude, last.coords.latitude]));
     }).catch(() => {});
   }, []));
 
@@ -494,11 +491,7 @@ export default function MapScreen() {
             circleStrokeColor: '#FFFFFF', circleStrokeWidth: 2.5,
           }} />
           {/* Today's photos: a soft halo that breathes under the pin. */}
-          <CircleLayer id="spot-today-halo" filter={['all', ['!', ['has', 'point_count']], ['get', 'today']]} style={{
-            circleColor: pinColor(todayTheme ?? 'taste'), circleRadius: grown ? (pulse ? 30 : 20) : 0,
-            circleOpacity: pulse ? 0 : 0.4,
-            circleRadiusTransition: { duration: PULSE_MS, delay: 0 }, circleOpacityTransition: { duration: PULSE_MS, delay: 0 },
-          }} />
+          <TodayHalo color={pinColor(todayTheme ?? 'taste')} grown={grown} run={!reduceMotion} />
           <SymbolLayer id="spot-cluster-count" filter={['has', 'point_count']} style={{
             textField: ['get', 'point_count_abbreviated'], textColor: '#FFFFFF', textSize: 15, textAllowOverlap: true, textIgnorePlacement: true,
           }} />
@@ -717,12 +710,40 @@ const PLAN_LAYOUT: Record<PlanSide, object> = {
   right: { flexDirection: 'row-reverse', alignItems: 'center' }, left: { flexDirection: 'row', alignItems: 'center' },
 };
 
+/**
+ * Today's photos: a soft halo that breathes under the pin (V6). Its own little component, so
+ * the breathing (a state flip every PULSE_MS, the map eases the radius and opacity) re-renders
+ * this one layer, not the whole map screen; it only runs while the Map tab is shown. Inside the
+ * ShapeSource, which hands it its sourceID.
+ */
+function TodayHalo({ color, grown, run: canRun, sourceID }: { color: string; grown: boolean; run: boolean; sourceID?: string }) {
+  // Asked here, not in the map screen: a focus change re-renders this layer only.
+  const run = useIsFocused() && canRun;
+  const [pulse, setPulse] = useState(false);
+  useEffect(() => {
+    if (!run) { setPulse(false); return; }
+    const id = setInterval(() => setPulse(p => !p), PULSE_MS);
+    return () => clearInterval(id);
+  }, [run]);
+  return (
+    <CircleLayer id="spot-today-halo" sourceID={sourceID} filter={['all', ['!', ['has', 'point_count']], ['get', 'today']]} style={{
+      circleColor: color, circleRadius: grown ? (pulse ? 30 : 20) : 0,
+      circleOpacity: pulse ? 0 : 0.4,
+      circleRadiusTransition: { duration: PULSE_MS, delay: 0 }, circleOpacityTransition: { duration: PULSE_MS, delay: 0 },
+    }} />
+  );
+}
+
 /** Me on the map: my avatar, a soft ring breathing around it. */
-function MeMarker({ photo, name, pulse }: { photo: string | null; name: string; pulse: boolean }) {
+function MeMarker({ photo, name, pulse: canPulse }: { photo: string | null; name: string; pulse: boolean }) {
   const styles = useThemedStyles(makeStyles);
+  // Only while the Map tab is shown (asked here so a focus change re-renders this marker only).
+  const pulse = useIsFocused() && canPulse;
   const ring = useSharedValue(0);
   useEffect(() => {
-    if (pulse) ring.value = withRepeat(withTiming(1, { duration: 1600 }), -1, false);
+    if (!pulse) { cancelAnimation(ring); ring.value = 0; return; }
+    ring.value = withRepeat(withTiming(1, { duration: 1600 }), -1, false);
+    return () => cancelAnimation(ring);
   }, [pulse]); // eslint-disable-line react-hooks/exhaustive-deps
   const st = useAnimatedStyle(() => ({ opacity: 0.5 * (1 - ring.value), transform: [{ scale: 1 + ring.value * 0.9 }] }));
   return (

@@ -381,13 +381,14 @@ export default function ChatTab() {
 
   // Keep World pills (online / arrivals) fresh - the aggregate is server-cached,
   // so a single fetch on entry can be stale. Re-poll every 30s while viewing World.
-  useEffect(() => {
+  // (Only while the Hi tab is shown: a tab you left stays mounted.)
+  useFocusEffect(useCallback(() => {
     if (channelScope !== 'world') return;
     const id = setInterval(() => {
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
     }, 30000);
     return () => clearInterval(id);
-  }, [channelScope]);
+  }, [channelScope]));
 
   // Join the World room on mount (additive - keeps the city room) + seed badges.
   useEffect(() => {

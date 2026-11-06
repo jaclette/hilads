@@ -23,6 +23,8 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { Border, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
+import { getOnlineUsers } from '@/lib/presenceStore';
+import { useIsFocused } from '@react-navigation/native';
 import type { ReplyRef } from '@/types';
 import { AndroidCameraCapture } from './AndroidCameraCapture';
 import { EmojiPanel } from './EmojiPanel';
@@ -84,11 +86,9 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
   const editStyles  = useThemedStyles(makeEditStyles);
   const { colors }  = useTheme();
   const { t } = useTranslation('common');
-  const { account, identity, onlineUsers } = useApp();
+  const { account, identity } = useApp();
   // Presence mirror - read at suggest time so a guest joining/leaving doesn't
   // re-fire the debounced fetch on every keystroke.
-  const onlineUsersRef = useRef(onlineUsers);
-  onlineUsersRef.current = onlineUsers;
   const [text,          setText]        = useState('');
   const textRef         = useRef('');
   // @mention autocomplete state
@@ -144,9 +144,12 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing?.id]);
 
-  // Pulse loop when channel has live activity
+  // Pulse loop when channel has live activity. JS-driven (shadowOpacity can't use the native
+  // driver), so it runs only while this screen is the one shown: from a tab you left it kept
+  // the JS thread busy every frame.
+  const focused = useIsFocused();
   useEffect(() => {
-    if (!pulse) { vibGlow.stopAnimation(); vibGlow.setValue(0); return; }
+    if (!pulse || !focused) { vibGlow.stopAnimation(); vibGlow.setValue(0); return; }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(vibGlow, { toValue: 1, duration: 1200, useNativeDriver: false }),
@@ -155,7 +158,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse]);
+  }, [pulse, focused]);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef     = useRef(false); // true while typingStart has been emitted
@@ -210,7 +213,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       if (mentionContext === 'city') {
         const q = (mentionQuery ?? '').toLowerCase();
         const myGuestId = identity?.guestId;
-        guests = (onlineUsersRef.current ?? [])
+        guests = getOnlineUsers()
           .filter(u => !u.isRegistered && u.guestId && u.guestId !== myGuestId && (u.nickname || '').toLowerCase().startsWith(q))
           .slice(0, 6)
           .map(u => ({ guestId: u.guestId, username: u.nickname, displayName: u.nickname, avatarUrl: null, isGuest: true }));

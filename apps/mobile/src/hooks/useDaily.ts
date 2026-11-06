@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import i18n from '@/i18n';
 import { useFocusEffect } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { readOffline, writeOffline } from '@/lib/offlineCache';
 import { fetchDailyArchive, fetchDailyBoard, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
@@ -17,21 +18,30 @@ import type { DailyArchiveItem, DailyCalendar, DailyGuide, DailyProof, DailyShee
 // next drop.
 
 /**
- * Seconds until `nextDropAt`, ticking every second. Uses the server clock
- * (serverTime at fetch) so a wrong phone clock never shows a wrong countdown.
+ * Seconds until `nextDropAt`. Uses the server clock (serverTime at fetch) so a wrong phone
+ * clock never shows a wrong countdown. It only wakes when the text changes: over an hour the
+ * countdown shows hours and minutes, so once a minute; in the last hour, every second. It
+ * stops while its screen isn't the one shown (a tab you left) and catches up when it is.
  */
 export function useCountdown(nextDropAt: number | null | undefined, serverTime: number | null | undefined): number | null {
   const offset = useRef(0);
   const [left, setLeft] = useState<number | null>(null);
+  const focused = useIsFocused();
 
   useEffect(() => {
     if (!nextDropAt) { setLeft(null); return; }
     offset.current = serverTime ? serverTime - Math.floor(Date.now() / 1000) : 0;
-    const tick = () => setLeft(Math.max(0, nextDropAt - (Math.floor(Date.now() / 1000) + offset.current)));
+    if (!focused) return;
+    let id: ReturnType<typeof setTimeout> | null = null;
+    const tick = () => {
+      const l = Math.max(0, nextDropAt - (Math.floor(Date.now() / 1000) + offset.current));
+      setLeft(l);
+      if (l <= 0) return;
+      id = setTimeout(tick, l > 3600 ? ((l % 60) || 60) * 1000 : 1000);
+    };
     tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [nextDropAt, serverTime]);
+    return () => { if (id) clearTimeout(id); };
+  }, [nextDropAt, serverTime, focused]);
 
   return left;
 }
@@ -107,79 +117,133 @@ export function prefetchSheet(date: string, scope: 'world' | 'city', cityId: str
     .catch(() => {});
 }
 
-export function useDailyToday(cityId: string | null | undefined) {
-  const { account, detectedCity, identity } = useApp();
-  const guestIdRef = useRef<string | null>(null);
-  guestIdRef.current = identity?.guestId ?? null;
-  const [data, setData]       = useState<DailyToday | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(false);
-  const dataRef = useRef(data);
-  dataRef.current = data;
-  const failures = useRef(0);
-  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // A guest's own city: where the app placed them (GPS, else the IP guess). An account's comes from the server.
-  const hereId  = account ? null : detectedCity?.channelId ?? null;
-  const hereGps = isGpsCity(hereId);
+// ── Today's data: one shared store per city (stale-while-revalidate) ─────────────
+// Today, Map, Passport, Hi, the photo feed… all show today's challenge. They share one
+// answer per city: a screen opened again shows it at once, and it's fetched again only when
+// it's older than FRESH_MS (on focus), when the app comes back to the foreground, when the
+// challenge drops, or on pull to refresh. (Each screen used to fetch its own on every focus
+// and tick its own countdown every second, even from a tab you had left.)
+const FRESH_MS = 30_000;
+type TodayState = { data: DailyToday | null; loading: boolean; error: boolean };
+type TodayEntry = {
+  state: TodayState;
+  listeners: Set<() => void>;
+  inflight: Promise<void> | null;
+  fetchedAt: number;
+  failures: number;
+  retry: ReturnType<typeof setTimeout> | null;
+  drop: ReturnType<typeof setTimeout> | null;
+  ctx: { cityId: string | null | undefined; hereId: string | null; hereGps: boolean; guestId: string | null; account: boolean };
+};
+const todayStores = new Map<string, TodayEntry>();
 
-  const load = useCallback(async () => {
+function todayEntry(key: string, ctx: TodayEntry['ctx']): TodayEntry {
+  let e = todayStores.get(key);
+  if (!e) {
+    e = { state: { data: null, loading: true, error: false }, listeners: new Set(), inflight: null, fetchedAt: 0, failures: 0, retry: null, drop: null, ctx };
+    todayStores.set(key, e);
+    const entry = e;
+    // Instant: today's last answer kept on the phone, while its challenge still runs.
+    keptToday(ctx.cityId).then(kept => { if (kept && !entry.state.data) setTodayState(entry, { data: kept }); }).catch(() => {});
+  }
+  return e;
+}
+
+function setTodayState(e: TodayEntry, patch: Partial<TodayState>) {
+  e.state = { ...e.state, ...patch };
+  e.listeners.forEach(l => l());
+}
+
+function loadToday(e: TodayEntry, force: boolean): Promise<void> {
+  if (e.inflight) return e.inflight;
+  if (!force && e.state.data && Date.now() - e.fetchedAt < FRESH_MS) return Promise.resolve();
+  const { cityId, hereId, hereGps } = e.ctx;
+  e.inflight = (async () => {
     try {
       const d = await fetchDailyToday(cityId, hereId ? { cityId: hereId, gps: hereGps } : null);
-      setData(d);
+      e.fetchedAt = Date.now();
+      e.failures = 0;
+      if (e.retry) { clearTimeout(e.retry); e.retry = null; }
+      setTodayState(e, { data: d, loading: false, error: false });
       lastToday = d;
       setLastHere(d.here);
       setSeasonalEvent(d.event);
       // The sheet's photos and the Compare board, so the hero's tap opens them ready.
+      const guestId = e.ctx.account ? null : e.ctx.guestId;
       if (d.challenge) {
-        prefetchSheet(d.challenge.date, 'world', cityId, account ? null : guestIdRef.current);
+        prefetchSheet(d.challenge.date, 'world', cityId, guestId);
         const boardKey = `board|${d.challenge.date}`;
         if (d.challenge.compare && Date.now() - (prefetchedAt.get(boardKey) ?? 0) > 60_000) {
           prefetchedAt.set(boardKey, Date.now());
-          fetchDailyBoard(d.challenge.date, account ? null : guestIdRef.current).catch(() => {});
+          fetchDailyBoard(d.challenge.date, guestId).catch(() => {});
         }
       }
       if (d.challenge?.isActive) seedVotesLeft(d.myVotes?.left ?? null);
-      setError(false);
-      failures.current = 0;
-      if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; }
       writeOffline(`today:${cityId ?? ''}`, { at: Date.now(), data: d });
+      // A new challenge drops when the countdown ends: fetch again a few seconds after.
+      if (e.drop) clearTimeout(e.drop);
+      const wait = (d.nextDropAt - d.serverTime + 5) * 1000;
+      e.drop = wait > 0 && wait < 2 ** 31 - 1 ? setTimeout(() => { e.drop = null; if (e.listeners.size) loadToday(e, true); }, wait) : null;
     } catch (err) {
       console.warn('[daily] today failed:', String(err));
-      setError(true);
       // Unreachable (a deploy, no network): keep what's shown, else today's last answer kept on
       // the phone, and ask again on its own (5 s, 10 s, 20 s… at most a minute apart).
-      if (!dataRef.current) {
-        const kept = await keptToday(cityId);
-        if (kept && !dataRef.current) setData(kept);
-      }
-      if (retryTimer.current) clearTimeout(retryTimer.current);
-      retryTimer.current = setTimeout(() => loadRef.current(), Math.min(5000 * 2 ** failures.current++, 60_000));
+      const kept = e.state.data ? null : await keptToday(cityId);
+      setTodayState(e, { loading: false, error: true, ...(kept && !e.state.data ? { data: kept } : null) });
+      if (e.retry) clearTimeout(e.retry);
+      e.retry = setTimeout(() => { e.retry = null; if (e.listeners.size) loadToday(e, true); }, Math.min(5000 * 2 ** e.failures++, 60_000));
     } finally {
-      setLoading(false);
+      e.inflight = null;
     }
-  }, [cityId, hereId, hereGps]);
-  const loadRef = useRef(load);
-  loadRef.current = load;
-  useEffect(() => () => { if (retryTimer.current) clearTimeout(retryTimer.current); }, []);
+  })();
+  return e.inflight;
+}
 
-  useEffect(() => { setLoading(true); load(); }, [load]);
-  useFocusEffect(useCallback(() => { load(); }, [load]));
+// The app back in the foreground, or a drop announced (push / realtime): every city on screen fetches again.
+let todayWatchers = 0;
+let offTodayGlobal: (() => void) | null = null;
+function watchTodayGlobal() {
+  if (todayWatchers++ > 0) return;
+  const reloadAll = () => todayStores.forEach(e => { if (e.listeners.size) loadToday(e, true); });
+  const sub = AppState.addEventListener('change', s => { if (s === 'active') reloadAll(); });
+  const offDrop = onDailyDropped(reloadAll);
+  offTodayGlobal = () => { sub.remove(); offDrop?.(); };
+}
+function unwatchTodayGlobal() {
+  if (--todayWatchers > 0) return;
+  offTodayGlobal?.();
+  offTodayGlobal = null;
+}
+
+/**
+ * Today's challenge for a city (shared, see above). `countdown`: also the seconds until the
+ * next drop (Today's ticket), ticking only while that screen is shown.
+ */
+export function useDailyToday(cityId: string | null | undefined, opts?: { countdown?: boolean }) {
+  const { account, detectedCity, identity } = useApp();
+  // A guest's own city: where the app placed them (GPS, else the IP guess). An account's comes from the server.
+  const hereId  = account ? null : detectedCity?.channelId ?? null;
+  const hereGps = isGpsCity(hereId);
+  const key = `${cityId ?? ''}|${hereId ?? ''}|${hereGps ? 1 : 0}|${i18n.language}`;
+  const entry = todayEntry(key, { cityId, hereId, hereGps, guestId: null, account: false });
+  entry.ctx.guestId = identity?.guestId ?? null;
+  entry.ctx.account = !!account;
+  const [, rerender] = useState(0);
+
   useEffect(() => {
-    const sub = AppState.addEventListener('change', (s) => { if (s === 'active') load(); });
-    return () => sub.remove();
-  }, [load]);
-  useEffect(() => onDailyDropped(load), [load]);
+    const l = () => rerender(n => n + 1);
+    entry.listeners.add(l);
+    watchTodayGlobal();
+    loadToday(entry, false);
+    l();
+    return () => { entry.listeners.delete(l); unwatchTodayGlobal(); };
+  }, [entry]);
+  useFocusEffect(useCallback(() => { loadToday(entry, false); }, [entry]));
 
-  // A new challenge drops when the countdown ends: refetch a few seconds after.
-  const left = useCountdown(data?.nextDropAt, data?.serverTime);
-  const dropped = left === 0;
-  useEffect(() => {
-    if (!dropped) return;
-    const id = setTimeout(load, 5000);
-    return () => clearTimeout(id);
-  }, [dropped, load]);
-
-  return { data, loading, error, reload: load, secondsLeft: left };
+  const { data, loading, error } = entry.state;
+  const left = useCountdown(opts?.countdown ? data?.nextDropAt : null, data?.serverTime);
+  const reload = useCallback(() => loadToday(entry, true), [entry]);
+  return { data, loading, error, reload, secondsLeft: opts?.countdown ? left : null };
 }
 
 /**

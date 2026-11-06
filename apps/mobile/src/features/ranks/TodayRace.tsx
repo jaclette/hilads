@@ -3,6 +3,7 @@ import { Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { FadeIn, LinearTransition, useReducedMotion } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -30,13 +31,16 @@ export function TodayRace({ refreshKey }: { refreshKey: number }) {
   const [data, setData] = useState<CitiesRanks | null>(null);
   const cityId = city?.channelId ? Number(String(city.channelId).replace('city_', '')) || null : null;
 
+  // The race refreshes every minute while Today is the tab shown (not from a tab you left).
+  const focused = useIsFocused();
   useEffect(() => {
+    if (!focused) return undefined;
     let alive = true;
     const load = () => fetchRanks('cities', { period: 'today', cityId }).then(d => { if (alive) setData(d); }).catch(() => {});
     load();
     const id = setInterval(load, 60_000);
     return () => { alive = false; clearInterval(id); };
-  }, [refreshKey, cityId]);
+  }, [refreshKey, cityId, focused]);
 
   const top = data?.entries.slice(0, 3) ?? [];
   if (top.length < 2) return null;

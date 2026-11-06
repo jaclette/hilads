@@ -37,7 +37,7 @@ function TodayContent() {
   const { colors } = useTheme();
   const { city, account } = useApp();
   const { t } = useTranslation('daily');
-  const daily = useDailyToday(city?.channelId);
+  const daily = useDailyToday(city?.channelId, { countdown: true });
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   // Today's cities, one list for the hero's live strip and the compare section.

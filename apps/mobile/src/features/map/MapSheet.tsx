@@ -7,6 +7,7 @@ import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -70,6 +71,8 @@ export const MapSheet = forwardRef<MapSheetHandle, {
   const [sort, setSort] = useState<SpotSort>('near');
   const [hint, setHint] = useState(false);
   const reduced = useReducedMotion();
+  // The wave and the chevron loop on the UI thread: only while the Map tab is the one shown.
+  const focused = useIsFocused();
   const [headH, setHeadH] = useState(0);
   const peek = headH > 0 ? Math.ceil(WAVE + headH) : SHEET_PEEK;
   const snapPoints = useMemo(() => [peek, '50%', '92%'], [peek]);
@@ -106,7 +109,7 @@ export const MapSheet = forwardRef<MapSheetHandle, {
   const near = useMemo(() => sortSpots(spots, 'near', me ?? origin).filter(s => s.cover.thumbUrl || s.cover.photoUrl).slice(0, 3), [spots, me, origin]);
 
   return (
-    <PeekCtx.Provider value={{ headH, waving: hint && atPeek && !reduced }}>
+    <PeekCtx.Provider value={{ headH, waving: hint && atPeek && !reduced && focused }}>
     <BottomSheet
       ref={sheet}
       index={0}
@@ -129,7 +132,7 @@ export const MapSheet = forwardRef<MapSheetHandle, {
           </View>
           <Text style={styles.sub} numberOfLines={2}>{sub}</Text>
         </View>
-        <Bounce active={hint && atPeek} reduced={reduced} />
+        <Bounce active={hint && atPeek && focused} reduced={reduced} />
       </Pressable>
       {data.length > 1 && (
         <Animated.View style={chipsStyle}>
@@ -190,6 +193,7 @@ function WaveBackground({ style }: BottomSheetBackgroundProps) {
     if (!waving) { cancelAnimation(phase); phase.value = withTiming(0, { duration: 400 }); return; }
     phase.value = 0;
     phase.value = withRepeat(withTiming(1, { duration: 5000, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(phase);
   }, [waving]); // eslint-disable-line react-hooks/exhaustive-deps
   const wave = useAnimatedProps(() => ({ d: wavePath(w, total, phase.value) }));
   const shadow1 = useAnimatedProps(() => ({ d: wavePath(w, total, phase.value, 2) }));
@@ -277,6 +281,7 @@ function Bounce({ active, reduced }: { active: boolean; reduced: boolean }) {
       withDelay(1800, withTiming(-7, { duration: 200 })), withTiming(0, { duration: 220 }),
       withTiming(-3, { duration: 140 }), withTiming(0, { duration: 160 }),
     ), -1);
+    return () => cancelAnimation(y);
   }, [active, reduced]); // eslint-disable-line react-hooks/exhaustive-deps
   const st = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
   return (

@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { useOnlineUsers } from '@/lib/presenceStore';
 import { fetchCityMembers, fetchCityAmbassadors, fetchMessageBadges, type CityMember, type CityAmbassador, type UserBadgeInfo } from '@/api/channels';
 import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
@@ -124,7 +125,8 @@ export default function HereScreen() {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('here');
-  const { city, sessionId, account, onlineUsers, blockedSet } = useApp();
+  const { city, sessionId, account, blockedSet } = useApp();
+  const onlineUsers = useOnlineUsers();
 
   const [filterBadge, setFilterBadge] = useState<string | null>(null);
   const [filterVibe,  setFilterVibe]  = useState<string | null>(null);

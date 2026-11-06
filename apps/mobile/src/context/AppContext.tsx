@@ -9,6 +9,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import type { GuestIdentity, City, Message, User, OnlineUser, EventChatPreview } from '@/types';
+import { setOnlineUsers as setPresence } from '@/lib/presenceStore';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 import { clearOffline, writeOffline } from '@/lib/offlineCache';
@@ -53,7 +54,6 @@ interface AppState {
   detectedCity:         City | null;     // geo-resolved city, shown on landing screen
   justPlacedCity:       City | null;     // IP-auto-placed city (first launch) → one-shot banner
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
-  onlineUsers:          OnlineUser[];    // live presence list for the current city
   bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
   showAccountWelcome:   boolean;         // one-time congrats screen shown right after signup
   // Monotonic counter bumped when a chat reminder card auto-dismisses; the tab
@@ -123,7 +123,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
   const [justPlacedCity, setJustPlacedCity] = useState<City | null>(null);
   const [joined,         setJoined]         = useState(false);
-  const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
   const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
   const [showAccountWelcome, setShowAccountWelcome] = useState(false);
   const [nowPulse,       setNowPulse]       = useState(0);
@@ -228,7 +227,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setGeoStateCb           = useCallback((s: GeoState) => setGeoState(s), []);
   const setDetectedCityCb       = useCallback((c: City | null) => setDetectedCity(c), []);
   const setJoinedCb             = useCallback((j: boolean) => setJoined(j), []);
-  const setOnlineUsersCb        = useCallback((u: OnlineUser[]) => setOnlineUsers(u), []);
+  // Presence lives in its own store (lib/presenceStore): it changes too often for the context.
+  const setOnlineUsersCb        = useCallback((u: OnlineUser[]) => setPresence(u), []);
   const setBootstrapDataCb      = useCallback((d: BootstrapData | null) => setBootstrapData(d), []);
   const setShowAccountWelcomeCb = useCallback((s: boolean) => setShowAccountWelcome(s), []);
 
@@ -241,7 +241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showAccountWelcome, nowPulse, blockedSet,
+    geoState, detectedCity, justPlacedCity, joined, bootstrapData, showAccountWelcome, nowPulse, blockedSet,
     setBooting, setBootError,
     setIdentity,
     setSessionId:            setSessionIdCb,
@@ -270,7 +270,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }), [
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showAccountWelcome, nowPulse, blockedSet,
+    geoState, detectedCity, justPlacedCity, joined, bootstrapData, showAccountWelcome, nowPulse, blockedSet,
     setIdentity, setSessionIdCb, setAccount, setCityCb, setEventChatPreview,
     removeEventChatPreview, clearEventChatCounts, setActiveEventIdCb, setActiveDmIdCb,
     setGeoStateCb, setDetectedCityCb, setJoinedCb, setOnlineUsersCb, setBootstrapDataCb,

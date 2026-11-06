@@ -13,6 +13,7 @@ import { PumpkinIcon, SeasonalScope, TabGhost } from '@/features/event/SeasonalA
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features/notifications/counts';
 import { markNotificationTypesRead } from '@/api/notifications';
 import { themeColor, tint } from '@/ui/joy';
+import { markTabFocus, markTabPress } from '@/lib/perfProbe';
 
 const GOLD = themeColor('sip');
 
@@ -105,6 +106,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 canPreventDefault: true,
               });
               if (state.index !== routeIndex && !event.defaultPrevented) {
+                markTabPress(tab.name);
                 if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
                 navigation.navigate(tab.name);
               }
@@ -195,7 +197,10 @@ export default function TabsLayout() {
       initialRouteName="today"
       backBehavior="firstRoute"
       tabBar={props => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
+      // A tab you left stops rendering (frozen) until you come back: context ticks, presence,
+      // countdowns and data arriving no longer re-render every tab visited so far.
+      screenOptions={{ headerShown: false, freezeOnBlur: true }}
+      screenListeners={({ route }) => ({ focus: () => markTabFocus(route.name) })}
     >
       {/* ── 4 tabs: TODAY · MAP · CHAT · PASSPORT ───────────────────────── */}
       <Tabs.Screen name="today"    options={{ title: 'Today' }} />

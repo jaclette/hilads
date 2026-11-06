@@ -1,4 +1,5 @@
 import { WS_URL } from '@/constants';
+import { setSocketHandlerCounter } from '@/lib/perfProbe';
 
 type Handler = (data: Record<string, unknown>) => void;
 
@@ -75,6 +76,13 @@ class HiladsSocket {
   // ── Subscriptions ───────────────────────────────────────────────────────────
 
   /** Subscribe to a WS event name. Returns an unsubscribe function. */
+  /** How many handlers are registered (the perf probe's leak counter). */
+  handlerCount(): number {
+    let n = 0;
+    this.handlers.forEach(set => { n += set.size; });
+    return n;
+  }
+
   on(event: string, handler: Handler): () => void {
     if (!this.handlers.has(event)) {
       this.handlers.set(event, new Set());
@@ -366,3 +374,4 @@ class HiladsSocket {
 }
 
 export const socket = new HiladsSocket();
+setSocketHandlerCounter(() => socket.handlerCount());

@@ -23,6 +23,9 @@ import {
 import type { DailyProof } from '@/types';
 import { MEDAL, MEDAL_EMOJI, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
 
+// The last answer of each view (segment, period, scope, city), in memory.
+const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
+
 const PERIODS: Record<RanksTab, RanksPeriod[]> = {
   photos:  ['today', 'yesterday', 'week', 'alltime'],
   players: ['today', 'week', 'alltime'],
@@ -65,7 +68,8 @@ function RanksContent() {
   const cityId = Number(params.cityId) || myCityId;
   const scopeNow: RanksScope = cityId ? scope : 'world';
   const key = `${tab}|${period}|${scopeNow}|${cityId}`;
-  const data = resp?.key === key ? resp.data : null;
+  // A view seen before shows its last answer at once (stale-while-revalidate), refreshed below.
+  const data = resp?.key === key ? resp.data : ranksCache.get(key) ?? null;
 
   // A deep link (push, Passport, a notification) picks the segment, period and scope.
   useEffect(() => {
@@ -83,6 +87,7 @@ function RanksContent() {
     try {
       const o = { period, scope: scopeNow, cityId };
       const next = tab === 'players' ? await fetchRanks('players', o) : tab === 'cities' ? await fetchRanks('cities', o) : await fetchRanks('photos', o);
+      ranksCache.set(asked, next);
       setResp({ key: asked, data: next });
     } catch {
       setFailed(true);

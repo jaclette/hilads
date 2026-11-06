@@ -5,6 +5,7 @@ import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-nativ
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { appFont } from '@/scaling';
+import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { FLAGS } from '@/ui/flags';
 import { INK, themeColor } from '@/ui/joy';
@@ -178,9 +179,10 @@ function Polaroid({ photo, selfie, width, height, rotate, label, flag, onLoad, c
   const pad = compact ? u(5) : u(8);
   return (
     <View style={[s.polaroid, { width: width + pad * 2, padding: pad, paddingBottom: compact ? u(18) : u(30), transform: [{ rotate: `${rotate}deg` }] }]}>
-      <Image source={{ uri: photo }} style={{ width, height, backgroundColor: '#EEE6DC' }} contentFit="cover" onLoad={onLoad} onError={onLoad} />
+      {/* At most 1080 px wide (the card's own width): the original was 3-5 MB in memory per photo. */}
+      <Image source={{ uri: mediumUrl(photo) ?? photo }} style={{ width, height, backgroundColor: '#EEE6DC' }} contentFit="cover" onLoad={onLoad} onError={onLoad} />
       {!!selfie && (
-        <Image source={{ uri: selfie }} contentFit="cover" onLoad={onLoad} onError={onLoad}
+        <Image source={{ uri: thumbUrl(selfie) ?? selfie }} contentFit="cover" onLoad={onLoad} onError={onLoad}
                style={[s.selfie, { top: pad + u(6), left: pad + u(6), width: width * 0.3, height: width * 0.4, borderRadius: u(8) }]} />
       )}
       {!!label && (
