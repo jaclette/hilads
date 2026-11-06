@@ -959,7 +959,8 @@
     "yesterday": "بالأمس قال العالم…",
     "beFirst": "مثّل {{city}}",
     "beFirstSub": "اجعل مدينتك الأولى اليوم",
-    "swipeHint": "اسحب لتسافر 🌍"
+    "swipeHint": "اسحب لتسافر 🌍",
+    "slotCta": "📸 {{city}}؟ كن الأول اليوم"
   },
   "comments": {
     "title": "التعليقات",

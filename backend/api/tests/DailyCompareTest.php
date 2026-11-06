@@ -47,7 +47,7 @@ final class DailyCompareTest extends TestCase
     {
         $this->assertSame(['Prost!', null, null], DailyCompare::cleanAnswer('word', "  Prost! "));
         $this->assertSame(['Một, hai, ba, dzô!', null, null], DailyCompare::cleanAnswer('word', 'Một, hai, ba, dzô!'));
-        $this->assertNull(DailyCompare::cleanAnswer('word', str_repeat('a', 31)));
+        $this->assertNull(DailyCompare::cleanAnswer('word', str_repeat('a', 41)));
         $this->assertNull(DailyCompare::cleanAnswer('word', '   '));
         $this->assertNull(DailyCompare::cleanAnswer('word', 12));
         $this->assertSame([str_repeat('a', 80), null, null], DailyCompare::cleanAnswer('text', str_repeat('a', 80)));
@@ -124,7 +124,7 @@ final class DailyCompareTest extends TestCase
             ['city' => ['id' => 99], 'line' => 'x'],                          // unknown city
             ['city' => ['name' => 'Paris'], 'line' => 'x'],                   // no country
             ['city' => ['name' => 'Paris', 'country' => 'FR']],               // a city alone
-            ['city' => ['name' => 'Paris', 'country' => 'FR'], 'answer' => str_repeat('a', 31)],
+            ['city' => ['name' => 'Paris', 'country' => 'FR'], 'answer' => str_repeat('a', 41)],
             ['city' => ['name' => 'Paris', 'country' => 'FR'], 'price' => ['amount' => 2]],
             ['city' => ['name' => 'Paris', 'country' => 'FR'], 'line' => str_repeat('a', 81)],
             'Paris',

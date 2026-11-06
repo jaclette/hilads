@@ -81,7 +81,8 @@ export function draftFrom(a: DailyAnswer | null | undefined): AnswerDraft {
 }
 
 /** Max characters of a text answer. */
-export const maxLength = (type: DailyCompareType): number => (type === 'word' ? 30 : type === 'text' ? 80 : 12);
+// word: 40 (V6; the API's DailyCompare::TYPES).
+export const maxLength = (type: DailyCompareType): number => (type === 'word' ? 40 : type === 'text' ? 80 : 12);
 
 /**
  * The API value of a draft ("Prost!", 37, "19:30"), or null when it isn't a

@@ -28,7 +28,8 @@ declare(strict_types=1);
 final class DailyCompare
 {
     /** type => max characters (text types) or null. */
-    public const TYPES = ['word' => 30, 'text' => 80, 'number' => null, 'time' => null];
+    // word: 40 since V6 (30 cut real answers mid-word: "A requirement to move in Berli"); older apps still cap at 30.
+    public const TYPES = ['word' => 40, 'text' => 80, 'number' => null, 'time' => null];
 
     public const QUESTION_MAX    = 60;   // English
     public const QUESTION_TR_MAX = 90;   // other locales

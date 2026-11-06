@@ -152,9 +152,10 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
         <View style={styles.block}>
           <SectionTitle small title={t('worlds.tagline')}
                         action={cities.length > 0 ? { label: t('today.seeAll'), onPress: () => router.push('/daily/countries?source=today_mosaic' as never) } : undefined} />
+          {/* My city's slot (V6): a compact call above the grid, not a big empty card in it. */}
+          {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onPress={play} />}
           {cities.length === 0 && yesterday.length > 0 && <Text style={styles.invite}>{t('mosaic.yesterday')}</Text>}
           <View style={styles.grid}>
-            {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onPress={play} />}
             {cities.length > 0
               ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={openTile} />)
               : yesterday.map(s => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
@@ -324,7 +325,7 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
                           accessibilityActions={swipeable ? [{ name: 'next', label: t('stories.next') }] : undefined}
                           onAccessibilityAction={e => { if (e.nativeEvent.actionName === 'next') runOnUI(fly)(1); }}>
           {/* Plain theme-colored sheets while the pile's photos load. */}
-          {pile && photos.length < Math.min(group.count, 3) && (
+          {pile && !faded && photos.length < Math.min(group.count, 3) && (
             <>
               {group.count > 2 && photos.length < 3 && <View pointerEvents="none" style={[styles.layer, styles.layerBack2, { backgroundColor: pileColor }]} />}
               {photos.length < 2 && <View pointerEvents="none" style={[styles.layer, styles.layerBack, { backgroundColor: pileColor }]} />}
@@ -518,16 +519,19 @@ function SlotCard({ city, first, label, onPress }: { city: string | null; first:
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
-  const title = first ? (city ? t('mosaic.beFirst', { city }) : t(label ?? 'countries.represent'))
+  const title = first ? (city ? t('mosaic.slotCta', { city }) : t(label ?? 'countries.represent'))
     : city ? t('mosaic.missing', { city }) : t(label ?? 'countries.represent');
   // Under the title: the call when the title names the city, else nothing to repeat.
   const sub = first ? t('mosaic.beFirstSub') : city ? t(label ?? 'countries.represent') : null;
   return (
-    <TouchableOpacity style={[styles.cardWrap, styles.slot]} onPress={onPress} accessibilityRole="button" testID="represent-tile"
+    <TouchableOpacity style={styles.slot} onPress={onPress} accessibilityRole="button" testID="represent-tile"
                       accessibilityLabel={[title, sub].filter(Boolean).join('. ')}>
-      <View style={styles.camera}><Ionicons name="camera-outline" size={28} color={colors.primaryText} /></View>
-      <Text style={styles.slotTitle}>{title}</Text>
-      {!!sub && <Text style={styles.slotSub}>{sub}</Text>}
+      <View style={styles.camera}><Ionicons name="camera" size={22} color={colors.primaryText} /></View>
+      <View style={styles.slotBody}>
+        <Text style={styles.slotTitle} numberOfLines={2}>{title}</Text>
+        {!!sub && <Text style={styles.slotSub} numberOfLines={2}>{sub}</Text>}
+      </View>
+      <Ionicons name="chevron-forward" size={20} color={colors.primaryOnTint} />
     </TouchableOpacity>
   );
 }
@@ -548,7 +552,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   storySeen: { color: c.muted },
   grid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 16, paddingTop: 4 },
   cardWrap:  { width: '48.5%' },
-  faded:     { opacity: 0.55 },
+  faded:     { opacity: 0.92 },   // yesterday's cards stay readable (V6: 0.55 read washed out)
   // The polaroid pile: theme-colored sheets peeking out behind the card.
   layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 16, opacity: 0.55 },
   layerBack: { transform: [{ rotate: '5deg' }, { translateX: 8 }, { translateY: -2 }] },
@@ -583,11 +587,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   votes:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
   votesText: { fontSize: 13, fontWeight: '700', color: c.muted },
   commentsText: { marginRight: 6 },
-  slot:      { minHeight: 200, alignItems: 'center', justifyContent: 'center', gap: 8, padding: Spacing.md, borderRadius: 16,
-               borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 2, backgroundColor: c.primaryTint },
-  camera:    { width: 52, height: 52, borderRadius: 26, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  slotTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
-  slotSub:   { fontSize: 13, fontWeight: '600', color: c.primaryOnTint, textAlign: 'center' },
+  slot:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 16,
+               borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 1.5, backgroundColor: c.primaryTint },
+  camera:    { width: 42, height: 42, borderRadius: 21, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
+  slotBody:  { flex: 1, gap: 2 },
+  slotTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.primaryOnTint },
+  slotSub:   { fontSize: 13, fontWeight: '600', color: c.primaryOnTint },
   invite:    { fontSize: 14, lineHeight: 20, fontWeight: '600', color: c.muted },
   hint:      { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

@@ -807,7 +807,8 @@
     "yesterday": "Yesterday the world said…",
     "beFirst": "Represent {{city}}",
     "beFirstSub": "Be the first city today",
-    "swipeHint": "Swipe to travel 🌍"
+    "swipeHint": "Swipe to travel 🌍",
+    "slotCta": "📸 {{city}}? Be first today"
   },
   "comments": {
     "title": "Comments",

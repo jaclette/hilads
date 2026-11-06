@@ -5465,7 +5465,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
             $cityChannelId,
             $authUser['id'] ?? null,
             'new_event',
-            'New event in ' . $cityName,
+            'New event in ' . ($cityName === 'your city' ? $cityName : CityNames::short($cityName)),   // the Hilads name (Saigon)
             $notifBody,
             ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'cityName' => $cityName, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
         );
@@ -9199,8 +9199,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
                     $userId, // exclude the creator
                     'challenge_international_target',
                     "New cross-city challenge",
-                    'Someone in ' . ($originCity['name'] ?? 'another city')
-                        . ' wants a taker in ' . ($targetCity['name'] ?? 'your city'),
+                    'Someone in ' . (isset($originCity['name']) ? CityNames::short($originCity['name']) : 'another city')
+                        . ' wants a taker in ' . (isset($targetCity['name']) ? CityNames::short($targetCity['name']) : 'your city'),
                     [
                         'challengeId'     => $challenge['id'],
                         'challengeTitle' => $challenge['title'] ?? '',
@@ -9229,7 +9229,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
                     'city_' . $channelId,
                     $userId, // exclude the creator
                     'new_challenge',
-                    'New challenge in ' . ($cityRow['name'] ?? 'your city'),
+                    'New challenge in ' . (isset($cityRow['name']) ? CityNames::short($cityRow['name']) : 'your city'),
                     $challenge['title'] ?? null,
                     [
                         'challengeId'    => $challenge['id'],

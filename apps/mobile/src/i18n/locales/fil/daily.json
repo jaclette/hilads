@@ -807,7 +807,8 @@
     "yesterday": "Kahapon, sabi ng mundo…",
     "beFirst": "I-represent ang {{city}}",
     "beFirstSub": "Ikaw ang unang city ngayon",
-    "swipeHint": "I-swipe para maglakbay 🌍"
+    "swipeHint": "I-swipe para maglakbay 🌍",
+    "slotCta": "📸 {{city}}? Mauna ka na ngayon"
   },
   "comments": {
     "title": "Comments",

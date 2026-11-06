@@ -769,7 +769,8 @@
     "yesterday": "昨天，全世界是这样说的…",
     "beFirst": "为 {{city}} 出战",
     "beFirstSub": "来当今天第一座城市",
-    "swipeHint": "滑动去旅行 🌍"
+    "swipeHint": "滑动去旅行 🌍",
+    "slotCta": "📸 {{city}}？今天第一个出战"
   },
   "comments": {
     "title": "评论",

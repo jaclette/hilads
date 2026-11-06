@@ -845,7 +845,8 @@
     "yesterday": "Ontem o mundo disse…",
     "beFirst": "Represente {{city}}",
     "beFirstSub": "Seja a primeira cidade hoje",
-    "swipeHint": "Deslize para viajar 🌍"
+    "swipeHint": "Deslize para viajar 🌍",
+    "slotCta": "📸 {{city}}? Seja o primeiro hoje"
   },
   "comments": {
     "title": "Comentários",

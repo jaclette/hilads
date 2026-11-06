@@ -769,7 +769,8 @@
     "yesterday": "어제 세계는 이렇게 말했어요…",
     "beFirst": "{{city}} 대표하기",
     "beFirstSub": "오늘 첫 번째 도시가 되어 보세요",
-    "swipeHint": "스와이프해서 여행해 봐 🌍"
+    "swipeHint": "스와이프해서 여행해 봐 🌍",
+    "slotCta": "📸 {{city}}? 오늘 첫 번째로 참여하세요"
   },
   "comments": {
     "title": "댓글",

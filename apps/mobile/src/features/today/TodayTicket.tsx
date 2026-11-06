@@ -172,8 +172,11 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
   const fallbackCover = themeCover(challenge.theme?.key ?? null, challenge.date, challenge.special?.id);
   const original = showOriginal && challenge.original ? challenge.original.text : null;
   const headline = original ?? (challenge.headline || challenge.text);
-  // The full ask under a short headline ("...and share its local name"): the subtitle, else the text.
-  const ask = original ? null : challenge.subtitle || (challenge.headline && challenge.headline !== challenge.text ? challenge.text : null);
+  // The full ask under a short headline ("...and share its local name"): the subtitle, else the text,
+  // unless the text only says the headline again in other words (V6: "Find where locals hang out at
+  // night." / "Find the place where locals gather after dark.").
+  const ask = original ? null : challenge.subtitle
+    || (challenge.headline && challenge.headline !== challenge.text && !sameAsk(challenge.headline, challenge.text) ? challenge.text : null);
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
   const tc = themeColor(challenge.special ? 'special' : challenge.theme?.key);
   // A seasonal event's live day (Halloween: "Snap something spooky for Lisbon") replaces the label.
@@ -354,3 +357,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   meta:        { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
   cta:         { minHeight: 56 },
 });
+
+/**
+ * The subtitle only says the headline again: at least half of the headline's
+ * words (3+ letters) are in it and it is barely longer (at most 1.5×), so it
+ * adds no "how" and no local twist. Scripts without spaces (CJK, Thai): the same
+ * on characters, 60% shared. Exported for tests.
+ */
+export function sameAsk(headline: string, subtitle: string): boolean {
+  const norm = (v: string) => v.toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?¡¿;:'"‘’“”«»()…\-–—]/g, ' ');
+  const words = (v: string) => new Set(norm(v).split(/\s+/).filter(w => w.length >= 3));
+  const share = (a: Set<string>, b: Set<string>) => { let n = 0; a.forEach(x => { if (b.has(x)) n++; }); return a.size ? n / a.size : 0; };
+  const wh = words(headline), ws = words(subtitle);
+  if (wh.size >= 2 && ws.size >= 2) return share(wh, ws) >= 0.5 && ws.size <= wh.size * 1.5;
+  const ch = new Set([...norm(headline).replace(/\s/g, '')]), cs = new Set([...norm(subtitle).replace(/\s/g, '')]);
+  return share(ch, cs) >= 0.6 && cs.size <= ch.size * 1.5;
+}
