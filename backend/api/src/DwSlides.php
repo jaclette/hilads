@@ -8,8 +8,8 @@ declare(strict_types=1);
  *
  *   0-1080      the 1080x1080 illustration (TikTok's top bar only covers picture)
  *   ~1000       "DIFFERENT WORLDS by Hilads" pill over the illustration
- *   1120-1560   the text: 72 px left margin, 170 px right (the app's side buttons);
- *               a country's note (a price) is a smaller, dimmer line under it
+ *   1120-1560   the text: 72 px left margin, 170 px right (the app's side buttons):
+ *               the headline, big, then its detail, smaller and lighter (1-2 lines)
  *   1560-1920   empty (caption and buttons of TikTok / Reels / Shorts)
  * The outro adds the hilads.live line (logo + dw_settings.outro_cta) at 1472-1536,
  * under its question.
@@ -38,10 +38,12 @@ final class DwSlides
     private const OUTRO_QUESTION_BOTTOM = 1436;
     private const CTA_TOP  = 1472;
     private const CTA_LOGO = 64;
-    // A country's note (on_screen_note: a price, a figure): one smaller line under its text.
-    private const NOTE_MAX = 48;
-    private const NOTE_MIN = 32;
-    private const NOTE_GAP = 22;
+    // The detail under a headline (the context, the twist, the hook's kicker): smaller, lighter, 1-2 lines.
+    public const DETAIL_MAX = 52;
+    public const DETAIL_MIN = 34;
+    public const DETAIL_LINES = 2;
+    public const DETAIL_GAP = 30;
+    public const DETAIL_LEADING = 1.2;
 
     /** Background colours of an illustration that failed (a plain slide, still on brand). */
     private const FALLBACK = ['hook' => ['#FF7A3D', '#D9622A'], 'country' => ['#D9AE52', '#C98A45'], 'outro' => ['#D9622A', '#3A2216']];
@@ -284,13 +286,7 @@ final class DwSlides
             $name = self::plain((string) ($slide['country'] ?? ''));
             [$npx, $nlines] = self::fit($name, 56, 36, $width - ($nameX - $x), 1, self::font('Bold'));
             $o[] = '<text x="' . $nameX . '" y="' . ($top + 38 + round($npx * 0.36)) . '" font-family="Be Vietnam Pro" font-weight="700" font-size="' . $npx . '" fill="' . self::GOLD . '">' . self::esc($nlines[0] ?? $name) . '</text>';
-            $note = self::plain((string) ($slide['note'] ?? ''));
-            if ($note === '') {
-                $o[] = self::block($text, $x, 1276, $width, 96, 48);
-            } else {
-                $o[] = self::block($text, $x, 1276, $width, 96, 48, self::BOTTOM - self::NOTE_GAP - self::NOTE_MAX, $tpx, $end);
-                $o[] = self::note($note, $x, $end + self::NOTE_GAP, $width);
-            }
+            array_push($o, ...self::twoLevel($text, self::plain((string) ($slide['detail'] ?? '')), $x, 1276, $width, 96, 48));
         } elseif ($kind === 'outro') {
             $o[] = '<text x="' . $x . '" y="1196" font-family="Be Vietnam Pro" font-weight="800" font-size="34" letter-spacing="3" fill="' . self::ACCENT . '">YOUR TURN</text>';
             $cta = self::plain((string) ($slide['cta'] ?? ''));
@@ -300,7 +296,7 @@ final class DwSlides
                 $o[] = self::cta($cta, $x, $width, intdiv($qpx, 2));
             }
         } else {
-            $o[] = self::block($text, $x, 1164, $width, 112, 56);
+            array_push($o, ...self::twoLevel($text, self::plain((string) ($slide['detail'] ?? '')), $x, 1164, $width, 112, 56));
         }
 
         $o[] = '</svg>';
@@ -330,16 +326,32 @@ final class DwSlides
         return $out . '<text x="' . $textX . '" y="' . $baseline . '" font-family="Be Vietnam Pro" font-size="' . $px . '" xml:space="preserve">' . $spans . '</text>';
     }
 
-    /** A country's note: one line, top at $top, 48 px or smaller to fit, dimmer than the text. */
-    private static function note(string $note, int $x, int $top, int $width): string
+    /**
+     * The headline from $top (the biggest size that fits), then its detail under it: the detail's
+     * size is chosen first (DETAIL_MAX down, at most DETAIL_LINES lines) so the headline keeps
+     * room above it. No detail: the headline alone, down to the safe line.
+     */
+    private static function twoLevel(string $headline, string $detail, int $x, int $top, int $width, int $max, int $min): array
     {
-        $semi = self::font('SemiBold');
-        $px = self::NOTE_MAX;
-        while ($px > self::NOTE_MIN && self::measure($note, $px, $semi) > $width) {
-            $px -= 2;
+        if ($detail === '') {
+            return [self::block($headline, $x, $top, $width, $max, $min)];
         }
-        return '<text x="' . $x . '" y="' . round($top + $px * 0.95) . '" font-family="Be Vietnam Pro" font-weight="600" font-size="' . $px
-             . '" fill="' . self::TEXT . '" fill-opacity="0.75">' . self::esc($note) . '</text>';
+        [$dpx, $dlines] = self::detailFit($detail, $width);
+        $dHeight = (int) round($dpx * 0.95 + (count($dlines) - 1) * $dpx * self::DETAIL_LEADING);
+        $out = [self::block($headline, $x, $top, $width, $max, $min, self::BOTTOM - self::DETAIL_GAP - $dHeight, $used, $end)];
+        $dTop = $end + self::DETAIL_GAP;
+        $t = '<text font-family="Be Vietnam Pro" font-weight="600" font-size="' . $dpx . '" fill="' . self::TEXT . '" fill-opacity="0.78">';
+        foreach ($dlines as $i => $line) {
+            $t .= '<tspan x="' . $x . '" y="' . round($dTop + $dpx * 0.95 + $i * $dpx * self::DETAIL_LEADING) . '">' . self::esc($line) . '</tspan>';
+        }
+        $out[] = $t . '</text>';
+        return $out;
+    }
+
+    /** The detail's size and lines: the biggest from DETAIL_MAX that fits in DETAIL_LINES lines of $width. */
+    public static function detailFit(string $detail, int $width): array
+    {
+        return self::fit($detail, self::DETAIL_MAX, self::DETAIL_MIN, $width, self::DETAIL_LINES, self::font('SemiBold'));
     }
 
     /**

@@ -393,23 +393,42 @@ final class DwStudio
     }
 
     /**
-     * The slides a content gives, in order: [{position, kind, text, note?, country?, flag?,
+     * The slides a content gives, in order: [{position, kind, text, detail, country?, flag?,
      * brief, credit, photo_src, clip|null}]. 1 = hook, then one per country, then the outro.
-     * note: a country's optional on_screen_note, a smaller line under its text (a price, a figure).
+     * text = the headline (big), detail = the smaller line under it (the context, the twist,
+     * the hook's kicker); older packages give on_screen_text and a country's on_screen_note.
      */
     public static function slidePlan(array $c): array
     {
         $pic = static fn(array $part) => ['brief' => (string) ($part['illustration_brief'] ?? ''),
             'credit' => (string) ($part['photo_credit'] ?? ''), 'photo_src' => (string) ($part['photo_url'] ?? ''),
             'clip' => DwClips::ofPart($part)];
-        $plan = [['position' => 1, 'kind' => 'hook', 'text' => (string) ($c['hook']['on_screen_text'] ?? '')] + $pic($c['hook'] ?? [])];
+        $plan = [['position' => 1, 'kind' => 'hook', 'text' => self::headline($c['hook'] ?? []), 'detail' => self::detail($c['hook'] ?? [])] + $pic($c['hook'] ?? [])];
         foreach (array_values($c['slides'] ?? []) as $i => $s) {
-            $plan[] = ['position' => $i + 2, 'kind' => 'country', 'text' => (string) ($s['on_screen_text'] ?? ''),
-                       'note' => (string) ($s['on_screen_note'] ?? ''),
+            $plan[] = ['position' => $i + 2, 'kind' => 'country', 'text' => self::headline($s), 'detail' => self::detail($s),
                        'country' => (string) ($s['country'] ?? ''), 'flag' => (string) ($s['flag'] ?? '')] + $pic($s);
         }
-        $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? '')] + $pic($c['outro'] ?? []);
+        $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? ''), 'detail' => ''] + $pic($c['outro'] ?? []);
         return $plan;
+    }
+
+    /** A hook's or a country's big line: its headline, else (older packages) its on_screen_text. */
+    public static function headline(array $part): string
+    {
+        $h = trim((string) ($part['headline'] ?? ''));
+        return $h !== '' ? $h : trim((string) ($part['on_screen_text'] ?? ''));
+    }
+
+    /** Its smaller line: the detail, else (older packages, a country) its on_screen_note. */
+    public static function detail(array $part): string
+    {
+        return trim((string) (array_key_exists('headline', $part) || array_key_exists('detail', $part) ? ($part['detail'] ?? '') : ($part['on_screen_note'] ?? '')));
+    }
+
+    /** Words of an on-screen line, emoji-only tokens left out (the slides don't draw them). */
+    public static function screenWords(string $s): int
+    {
+        return self::words(DwSlides::plain($s));
     }
 
     /** A photo source we fetch: an https file on Wikimedia Commons' upload server. */
@@ -436,8 +455,8 @@ final class DwStudio
                 $errors[] = "\"{$f}\" is missing.";
             }
         }
-        if (!is_string($c['hook']['on_screen_text'] ?? null) || trim($c['hook']['on_screen_text']) === '') {
-            $errors[] = 'The hook has no on_screen_text.';
+        if (self::headline(is_array($c['hook'] ?? null) ? $c['hook'] : []) === '') {
+            $errors[] = 'The hook has no headline.';
         }
         if (!is_string($c['outro']['question'] ?? null) || trim($c['outro']['question']) === '') {
             $errors[] = 'The outro has no question.';
@@ -452,10 +471,13 @@ final class DwStudio
         $countries = [];
         foreach ($slides as $i => $s) {
             $n = $i + 1;
-            foreach (['country', 'flag', 'on_screen_text', 'caption_detail', 'source_url'] as $f) {
+            foreach (['country', 'flag', 'caption_detail', 'source_url'] as $f) {
                 if (!is_string($s[$f] ?? null) || trim($s[$f]) === '') {
                     $errors[] = "Country {$n}: \"{$f}\" is missing.";
                 }
+            }
+            if (self::headline(is_array($s) ? $s : []) === '') {
+                $errors[] = "Country {$n}: \"headline\" is missing.";
             }
             if (is_string($s['source_url'] ?? null) && !preg_match('#^https?://\S+$#', trim($s['source_url']))) {
                 $errors[] = "Country {$n}: source_url is not a URL.";
@@ -463,11 +485,8 @@ final class DwStudio
             if (is_string($s['flag'] ?? null) && DwSlides::flagFile($s['flag']) === null) {
                 $warn[] = "Country {$n}: no flag image for \"{$s['flag']}\" (the slide shows the name only).";
             }
-            if (is_string($s['on_screen_text'] ?? null) && self::words($s['on_screen_text']) > 12) {
-                $warn[] = "Country {$n} ({$s['country']}): on-screen text is " . self::words($s['on_screen_text']) . ' words (max 12).';
-            }
-            if (is_string($s['on_screen_note'] ?? null) && self::words($s['on_screen_note']) > 6) {
-                $warn[] = "Country {$n} ({$s['country']}): on-screen note is " . self::words($s['on_screen_note']) . ' words (max 6).';
+            if (is_array($s)) {
+                array_push($warn, ...self::lineWarnings($s, "Country {$n} (" . ($s['country'] ?? '?') . ')'));
             }
             $countries[] = mb_strtolower(trim((string) ($s['country'] ?? '')));
         }
@@ -479,10 +498,11 @@ final class DwStudio
         if (count($countries) !== count(array_unique($countries))) {
             $errors[] = 'A country appears twice.';
         }
-        foreach ([['hook', 'on_screen_text'], ['outro', 'question']] as [$k, $f]) {
-            if (is_string($c[$k][$f] ?? null) && self::words($c[$k][$f]) > 12) {
-                $warn[] = "The {$k} text is " . self::words($c[$k][$f]) . ' words (max 12).';
-            }
+        if (is_array($c['hook'] ?? null)) {
+            array_push($warn, ...self::lineWarnings($c['hook'], 'The hook'));
+        }
+        if (is_string($c['outro']['question'] ?? null) && self::words($c['outro']['question']) > 12) {
+            $warn[] = 'The outro question is ' . self::words($c['outro']['question']) . ' words (max 12).';
         }
         if (is_string($c['caption'] ?? null)) {
             if (self::words($c['caption']) > 150) {
@@ -535,6 +555,28 @@ final class DwStudio
         return [$errors, $warn];
     }
 
+    /** Word-count warnings of a hook or a country: headline max 6, detail max 10 (older packages: text 12, note 6). */
+    public static function lineWarnings(array $part, string $label): array
+    {
+        $warn = [];
+        if (array_key_exists('headline', $part)) {
+            if (($w = self::screenWords((string) $part['headline'])) > 6) {
+                $warn[] = "{$label}: the headline is {$w} words (max 6).";
+            }
+            if (($w = self::screenWords((string) ($part['detail'] ?? ''))) > 10) {
+                $warn[] = "{$label}: the detail is {$w} words (max 10).";
+            }
+            return $warn;
+        }
+        if (($w = self::screenWords((string) ($part['on_screen_text'] ?? ''))) > 12) {
+            $warn[] = "{$label}: the on-screen text is {$w} words (max 12).";
+        }
+        if (($w = self::screenWords((string) ($part['on_screen_note'] ?? ''))) > 6) {
+            $warn[] = "{$label}: the on-screen note is {$w} words (max 6).";
+        }
+        return $warn;
+    }
+
     /** Removes the illustration_svg fields from a content: [content, svgs by slide position]. */
     public static function splitSvgs(array $c): array
     {
@@ -585,6 +627,10 @@ final class DwStudio
                 $report[] = ['date' => $label, 'ok' => false, 'errors' => ["This package is for {$date}, not for this topic ({$topic['date']})."], 'warnings' => []];
                 continue;
             }
+            if (($item['mode'] ?? null) === 'text') {
+                $report[] = ['date' => $label] + self::importText($topic, is_array($item['content'] ?? null) ? $item['content'] : []);
+                continue;
+            }
             $content = is_array($item['content'] ?? null) ? $item['content'] : null;
             if ($content === null) {
                 $report[] = ['date' => $label, 'ok' => false, 'errors' => ['"content" is missing.'], 'warnings' => []];
@@ -603,12 +649,13 @@ final class DwStudio
             $content['caption'] = $fixed;
             $pdo = Database::pdo();
             $stmt = $pdo->prepare("
-                INSERT INTO dw_packages (topic_id, version, content, model)
-                VALUES (?, COALESCE((SELECT MAX(version) FROM dw_packages WHERE topic_id = ?), 0) + 1, ?::jsonb, ?)
+                INSERT INTO dw_packages (topic_id, version, content, model, brief)
+                VALUES (?, COALESCE((SELECT MAX(version) FROM dw_packages WHERE topic_id = ?), 0) + 1, ?::jsonb, ?, ?::jsonb)
                 RETURNING id, version
             ");
+            // The topic's title and notes it was made from: a later change asks for a new package (briefChanged).
             $stmt->execute([$topic['id'], $topic['id'], json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                            mb_substr(trim((string) ($item['model'] ?? 'Claude Code')), 0, 120)]);
+                            mb_substr(trim((string) ($item['model'] ?? 'Claude Code')), 0, 120), json_encode(self::briefOf($topic), JSON_UNESCAPED_UNICODE)]);
             [$pkgId, $version] = $stmt->fetch(PDO::FETCH_NUM);
             $pkg = self::packageById((int) $pkgId);
             $plan = self::slidePlan($content);
@@ -640,6 +687,129 @@ final class DwStudio
                          'slides' => $rendered ? 0 : count($plan), 'errors' => [], 'warnings' => $warn];
         }
         return $report;
+    }
+
+    /** What a package is made from: the topic's title and notes. */
+    public static function briefOf(array $topic): array
+    {
+        return ['title' => trim((string) $topic['title']), 'notes' => trim((string) ($topic['notes'] ?? ''))];
+    }
+
+    /**
+     * Why $pkg no longer matches its topic's title or notes, or null. A package keeps the
+     * title and notes it was made from; one imported before that (2026-11-06) is compared
+     * with the calendar it was prepared from (DwSeed::TOPICS), when its date is in it.
+     */
+    public static function briefChanged(array $topic, array $pkg): ?string
+    {
+        $now = self::briefOf($topic);
+        $then = is_string($pkg['brief'] ?? null) ? json_decode($pkg['brief'], true) : null;
+        if (!is_array($then)) {
+            foreach (DwSeed::TOPICS as [$d, $title, , , $notes]) {
+                if ($d === $topic['date']) {
+                    $then = ['title' => trim($title), 'notes' => trim((string) $notes)];
+                }
+            }
+        }
+        if (!is_array($then)) {
+            return null;
+        }
+        $what = array_keys(array_filter(['title' => $now['title'] !== trim((string) ($then['title'] ?? '')), 'notes' => $now['notes'] !== trim((string) ($then['notes'] ?? ''))]));
+        return $what === [] ? null : 'The ' . implode(' and ', $what) . ' changed after this package was made: prepare a new package (text, photos and clips).';
+    }
+
+    /**
+     * A text update (mode "text"): the two-level text of the hook and each country
+     * ({hook: {headline, detail}, slides: [{country, headline, detail}]}, the countries
+     * in the order to show them) written into the topic's latest version in place,
+     * its slides redrawn with their stored photos; clips, outro and caption kept.
+     * Not for a published topic, nor one whose title or notes changed since (briefChanged).
+     * Returns {ok, errors, warnings, version?, package_id?, skipped?, slides: 0}.
+     */
+    public static function importText(array $topic, array $text): array
+    {
+        $no = static fn(array $errors, array $warn = [], bool $skipped = false) => ['ok' => false, 'skipped' => $skipped, 'errors' => $errors, 'warnings' => $warn];
+        if ($topic['status'] === 'published') {
+            return $no(['Published: left as it is.'], [], true);
+        }
+        $pkg = self::package($topic['id']);
+        if ($pkg === null) {
+            return $no(['No package yet: import a full package first.']);
+        }
+        if (($why = self::briefChanged($topic, $pkg)) !== null) {
+            return $no([$why], [], true);
+        }
+        $c = $pkg['content'];
+        $old = array_values($c['slides'] ?? []);
+        $byCountry = [];
+        foreach ($old as $i => $s) {
+            $byCountry[mb_strtolower(trim((string) ($s['country'] ?? '')))] = $i;
+        }
+        $hook = is_array($text['hook'] ?? null) ? $text['hook'] : [];
+        $rows = is_array($text['slides'] ?? null) && array_is_list($text['slides']) ? $text['slides'] : [];
+        $errors = [];
+        if (trim((string) ($hook['headline'] ?? '')) === '') {
+            $errors[] = 'The hook has no headline.';
+        }
+        $order = [];
+        foreach ($rows as $n => $row) {
+            $key = mb_strtolower(trim((string) ($row['country'] ?? '')));
+            if (!isset($byCountry[$key])) {
+                $errors[] = 'Country ' . ($n + 1) . ' ("' . ($row['country'] ?? '') . '") is not in version ' . $pkg['version'] . '.';
+            } elseif (in_array($byCountry[$key], $order, true)) {
+                $errors[] = '"' . $row['country'] . '" appears twice.';
+            } elseif (trim((string) ($row['headline'] ?? '')) === '') {
+                $errors[] = '"' . $row['country'] . '" has no headline.';
+            } else {
+                $order[] = $byCountry[$key];
+            }
+        }
+        if ($errors === [] && count($order) !== count($old)) {
+            $missing = array_diff(array_keys($old), $order);
+            $errors[] = 'Missing: ' . implode(', ', array_map(static fn($i) => (string) $old[$i]['country'], $missing)) . '.';
+        }
+        if ($errors !== []) {
+            return $no($errors);
+        }
+
+        $line = static fn(array $part, array $in) => ['headline' => trim((string) $in['headline']), 'detail' => trim((string) ($in['detail'] ?? ''))]
+            + array_diff_key($part, ['on_screen_text' => 1, 'on_screen_note' => 1, 'headline' => 1, 'detail' => 1]);
+        $c['hook'] = $line($c['hook'] ?? [], $hook);
+        $c['slides'] = array_map(static fn($i, $row) => $line($old[$i], $row), $order, $rows);
+        $warn = self::lineWarnings($c['hook'], 'The hook');
+        foreach ($c['slides'] as $n => $s) {
+            array_push($warn, ...self::lineWarnings($s, 'Country ' . ($n + 1) . ' (' . $s['country'] . ')'));
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+                ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $pkg['id']]);
+            if ($order !== array_keys($old)) {
+                // The countries' slides move with their pictures: out of the way first (unique positions), then in place.
+                $n = count($old);
+                $pdo->prepare("UPDATE dw_slides SET position = position + 1000 WHERE package_id = ? AND position BETWEEN 2 AND ?")->execute([$pkg['id'], $n + 1]);
+                $move = $pdo->prepare("UPDATE dw_slides SET position = ? WHERE package_id = ? AND position = ?");
+                foreach ($order as $to => $from) {
+                    $move->execute([$to + 2, $pkg['id'], $from + 1002]);
+                }
+                $warn[] = 'Countries reordered: ' . implode(', ', array_column($c['slides'], 'country')) . '.';
+            }
+            $pdo->commit();
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+        $pkg['content'] = $c;
+        // Every slide but the outro is redrawn with its stored picture.
+        foreach (array_slice(self::slidePlan($c), 0, -1) as $slide) {
+            if (($w = self::renderSlide($pkg, $slide)) !== null && !str_contains($w, 'no picture')) {
+                $warn[] = $w;
+            }
+        }
+        $warn[] = 'Text updated in version ' . $pkg['version'] . ', pictures and clips kept: render the video again.';
+        return ['ok' => true, 'text' => true, 'skipped' => false, 'version' => $pkg['version'], 'package_id' => $pkg['id'], 'slides' => 0, 'errors' => [], 'warnings' => $warn];
     }
 
     /** Renders slide $position of a package imported without its slides (import(…, false)): its warnings. */
@@ -761,15 +931,15 @@ final class DwStudio
         if (preg_match('/^(topic|why_today|caption|ai_disclosure|follow_up_idea|hashtags|warnings)$/', $path)) {
             return ['slide' => null];
         }
-        $onScreen = ['on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
+        $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
-        if (preg_match("/^hook\\.(on_screen_text|{$pic})$/", $path, $m)) {
+        if (preg_match("/^hook\\.(headline|detail|on_screen_text|{$pic})$/", $path, $m)) {
             return ['slide' => in_array($m[1], $onScreen, true) ? 1 : null, 'photo' => $m[1] === 'photo_url'];
         }
         if (preg_match("/^outro\\.(question|{$pic})$/", $path, $m)) {
             return ['slide' => in_array($m[1], $onScreen, true) ? $n + 2 : null, 'photo' => $m[1] === 'photo_url'];
         }
-        if (preg_match("/^slides\\.(\\d+)\\.(country|flag|on_screen_text|on_screen_note|caption_detail|source_url|{$pic})$/", $path, $m)
+        if (preg_match("/^slides\\.(\\d+)\\.(country|flag|headline|detail|on_screen_text|on_screen_note|caption_detail|source_url|{$pic})$/", $path, $m)
             && (int) $m[1] < $n) {
             return ['slide' => in_array($m[2], $onScreen, true) ? (int) $m[1] + 2 : null, 'photo' => $m[2] === 'photo_url'];
         }
@@ -800,11 +970,19 @@ final class DwStudio
             $list = array_values(array_filter(array_map('trim', preg_split($path === 'hashtags' ? '/[\s,]+/u' : '/\n+/u', $value)), static fn($v) => $v !== ''));
             $c[$path] = $path === 'hashtags' ? array_map(static fn($t) => '#' . ltrim($t, '#'), $list) : $list;
         } else {
+            $keys = explode('.', $path);
+            $field = array_pop($keys);
             $ref = &$c;
-            foreach (explode('.', $path) as $k) {
+            foreach ($keys as $k) {
                 $ref = &$ref[ctype_digit($k) ? (int) $k : $k];
             }
-            $ref = $value;
+            if ($field === 'headline' || $field === 'detail') {
+                // The two-level text replaces an older package's on_screen_text / on_screen_note on that slide.
+                $ref['headline'] = self::headline($ref);
+                $ref['detail'] = self::detail($ref);
+                unset($ref['on_screen_text'], $ref['on_screen_note']);
+            }
+            $ref[$field] = $value;
             unset($ref);
         }
         $out = [];
@@ -983,6 +1161,7 @@ final class DwStudio
         $plan = array_map(static fn($p) => ['clip' => $video ? $p['clip'] : null] + $p + ($slides[$p['position']] ?? []) + ($p['kind'] === 'outro' ? ['cta' => $cta] : []),
             self::slidePlan($pkg['content']));
         return ['date' => $topic['date'], 'title' => $topic['title'], 'version' => $pkg['version'], 'visualMode' => $topic['visual_mode'],
+                'status' => $topic['status'], 'briefChanged' => self::briefChanged($topic, $pkg),
                 'content' => $pkg['content'], 'slides' => $plan, 'videoUrl' => $pkg['video_url'] ?? null];
     }
 

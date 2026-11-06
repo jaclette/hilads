@@ -59,7 +59,7 @@ final class DwStudioTest extends TestCase
         $c['caption'] = 'A caption without the series name.';
         [$errors, $warnings] = DwStudio::validate($c, ['Vietnam']);
         $this->assertSame([], $errors);
-        $this->assertContains('Country 1 (Vietnam): on-screen text is 13 words (max 12).', $warnings);
+        $this->assertContains('Country 1 (Vietnam): the on-screen text is 13 words (max 12).', $warnings);
         $this->assertContains('The caption does not mention "Different Worlds by Hilads".', $warnings);
     }
 
@@ -74,8 +74,51 @@ final class DwStudioTest extends TestCase
         $plan = DwStudio::slidePlan($c);
         $this->assertSame([1, 'hook'], [$plan[0]['position'], $plan[0]['kind']]);
         $this->assertSame([2, 'country', 'Vietnam'], [$plan[1]['position'], $plan[1]['kind'], $plan[1]['country']]);
-        $this->assertSame('', $plan[1]['note']);
+        $this->assertSame(['Halloween in Vietnam', ''], [$plan[1]['text'], $plan[1]['detail']]);   // an older package: on_screen_text
         $this->assertSame([9, 'outro', 'How does your city celebrate?'], [$plan[8]['position'], $plan[8]['kind'], $plan[8]['text']]);
+    }
+
+    public function testTwoLevelText(): void
+    {
+        $c = $this->content();
+        $c['hook'] = ['headline' => '6 Halloweens that sound fake 🎃', 'detail' => 'All real. The last one is wild.'] + $c['hook'];
+        unset($c['hook']['on_screen_text']);
+        $c['slides'][0] = ['headline' => 'Ghosts get a feast.', 'detail' => 'Rice, fruit and paper money for the wandering souls.'] + $c['slides'][0];
+        $c['slides'][1]['on_screen_note'] = '40,000 dong · $1.55';     // an older package's note is its detail
+        [$errors, $warnings] = DwStudio::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame(['The outro: no photo, plain background.'], $warnings);
+        $plan = DwStudio::slidePlan($c);
+        $this->assertSame(['6 Halloweens that sound fake 🎃', 'All real. The last one is wild.'], [$plan[0]['text'], $plan[0]['detail']]);
+        $this->assertSame(['Ghosts get a feast.', 'Rice, fruit and paper money for the wandering souls.'], [$plan[1]['text'], $plan[1]['detail']]);
+        $this->assertSame(['Halloween in Mexico', '40,000 dong · $1.55'], [$plan[2]['text'], $plan[2]['detail']]);
+        $this->assertSame('', $plan[7]['detail']);    // the outro keeps its question alone
+
+        // Headline max 6 words (an emoji isn't one), detail max 10: warnings.
+        $c['hook']['headline'] = 'one two three four five six seven 🎃';
+        $c['slides'][0]['detail'] = 'one two three four five six seven eight nine ten eleven';
+        [, $warnings] = DwStudio::validate($c, ['Vietnam']);
+        $this->assertContains('The hook: the headline is 7 words (max 6).', $warnings);
+        $this->assertContains('Country 1 (Vietnam): the detail is 11 words (max 10).', $warnings);
+
+        // A slide needs a headline (or an older on_screen_text).
+        $c['slides'][2]['headline'] = '';
+        unset($c['slides'][2]['on_screen_text']);
+        [$errors] = DwStudio::validate($c, ['Vietnam']);
+        $this->assertContains('Country 3: "headline" is missing.', $errors);
+    }
+
+    public function testBriefChanged(): void
+    {
+        $topic = ['date' => '2030-01-01', 'title' => 'New Year', 'notes' => 'Fireworks'];
+        $this->assertNull(DwStudio::briefChanged($topic, ['brief' => json_encode(['title' => 'New Year', 'notes' => 'Fireworks'])]));
+        $this->assertStringStartsWith('The notes changed', (string) DwStudio::briefChanged($topic, ['brief' => json_encode(['title' => 'New Year', 'notes' => 'Food'])]));
+        $this->assertStringStartsWith('The title and notes changed', (string) DwStudio::briefChanged($topic, ['brief' => json_encode(['title' => 'NYE', 'notes' => ''])]));
+        // A package from before the snapshot: compared with the calendar it was prepared from.
+        $seeded = ['date' => '2026-11-06', 'title' => 'Weird laws that are actually real', 'notes' => 'Only laws still in force, double-checked'];
+        $this->assertNull(DwStudio::briefChanged($seeded, ['brief' => null]));
+        $this->assertNotNull(DwStudio::briefChanged(['title' => 'Weird laws'] + $seeded, ['brief' => null]));
+        $this->assertNull(DwStudio::briefChanged($topic, ['brief' => null]));      // not in the calendar: nothing to compare with
     }
 
     public function testEditTargets(): void
@@ -86,6 +129,10 @@ final class DwStudioTest extends TestCase
         $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.on_screen_text')['slide']);
         $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.flag')['slide']);
         $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.on_screen_note')['slide']);
+        $this->assertSame(1, DwStudio::editTarget($c, 'hook.headline')['slide']);
+        $this->assertSame(1, DwStudio::editTarget($c, 'hook.detail')['slide']);
+        $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.headline')['slide']);
+        $this->assertSame(3, DwStudio::editTarget($c, 'slides.1.detail')['slide']);
         $this->assertSame(null, DwStudio::editTarget($c, 'slides.1.caption_detail')['slide']);
         $this->assertSame(8, DwStudio::editTarget($c, 'outro.question')['slide']);
         $this->assertSame(null, DwStudio::editTarget($c, 'caption')['slide']);

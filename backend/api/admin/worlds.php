@@ -85,8 +85,9 @@ worlds_styles();
             <h3 style="margin-bottom:8px">Import</h3>
             <?php foreach ($report as $r): ?>
                 <p><strong><?= wh($r['date']) ?></strong>
-                    <?= $r['ok'] ? '<span style="color:#4ade80">✓ version ' . (int) $r['version'] . ' saved, slides rendered</span>'
-                                 : '<span style="color:#f87171">not imported</span>' ?>
+                    <?= $r['ok'] ? (!empty($r['text']) ? '<span style="color:#4ade80">✓ text only: version ' . (int) $r['version'] . ' updated, slides redrawn</span>'
+                                                         : '<span style="color:#4ade80">✓ version ' . (int) $r['version'] . ' saved, slides rendered</span>')
+                                 : (!empty($r['skipped']) ? '<span style="color:#fbbf24">skipped</span>' : '<span style="color:#f87171">not imported</span>') ?>
                     <?php $t = DailyClock::isValidDate($r['date']) ? DwStudio::topicByDate($r['date']) : null; if ($t): ?>
                         · <a href="/admin/worlds/<?= $t['id'] ?>">open</a><?php endif; ?></p>
                 <ul class="worlds-report">
@@ -136,7 +137,7 @@ worlds_styles();
             <h3 style="margin-bottom:8px">Import packages</h3>
             <div class="form-group"><label>JSON files (select as many days as you like)</label><input type="file" name="files[]" multiple accept="application/json,.json"></div>
             <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="4" style="font-family:monospace;width:100%"></textarea>
-                <div class="hint">{"packages": [{"date", "content"}]}: each package becomes a new version of its day's topic; the older versions are deleted (slides and video) once it is rendered.</div></div>
+                <div class="hint">{"packages": [{"date", "content"}]}: each package becomes a new version of its day's topic; the older versions are deleted (slides and video) once it is rendered. With "mode": "text", only the headlines and details change, in the latest version, pictures and clips kept (not for a published topic, nor one whose title or notes changed since).</div></div>
             <button class="btn btn-primary" type="submit">Import and render</button>
             <ul class="worlds-report" id="worlds-import-progress" style="margin-top:10px"></ul>
         </form>
@@ -182,12 +183,20 @@ document.getElementById('worlds-import').addEventListener('submit', async (e) =>
         try {
             const res = await fetch(form.getAttribute('action'), { method: 'POST', body, credentials: 'same-origin' });
             const { report } = await res.json();
-            const bad = report.filter((r) => !r.ok);
+            const bad = report.filter((r) => !r.ok && !r.skipped);
             failed += bad.length;
-            li.style.color = bad.length ? '#f87171' : '#4ade80';
+            li.style.color = bad.length ? '#f87171' : report.some((r) => r.skipped) ? '#fbbf24' : '#4ade80';
             li.textContent = report.map((r) => r.ok
-                ? `${r.date}: ✓ version ${r.version}${r.warnings.length ? ` (${r.warnings.length} warnings)` : ''}`
-                : `${r.date}: not imported: ${r.errors.join(' ')}`).join(' · ') || `${file.name}: nothing in it`;
+                ? `${r.date}: ✓ ${r.text ? `text only (version ${r.version} updated, slides redrawn)` : `version ${r.version}`}`
+                : r.skipped ? `${r.date}: skipped: ${r.errors.join(' ')}` : `${r.date}: not imported: ${r.errors.join(' ')}`).join(' · ') || `${file.name}: nothing in it`;
+            // Each day's warnings under it (a text update lists what it did).
+            const notes = report.flatMap((r) => r.warnings);
+            if (notes.length) {
+                const ul = document.createElement('ul');
+                ul.style.cssText = 'color:#fbbf24;margin:2px 0 6px 16px';
+                for (const w of notes) { const n = document.createElement('li'); n.textContent = w; ul.appendChild(n); }
+                li.appendChild(ul);
+            }
         } catch (err) {
             failed++;
             li.style.color = '#f87171';

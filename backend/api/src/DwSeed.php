@@ -22,6 +22,13 @@ final class DwSeed
     public const PREV_CLIP_LINE = '- Video topics (the topic\'s "visual_mode" is "video"): where Wikimedia Commons has a fitting video, also give the hook, a country or the outro "clip_url" (the video file on upload.wikimedia.org, or its 1080p / 720p transcode), "clip_start" (the second its best 5 seconds start) and "clip_credit" ("Video: author, license, Wikimedia Commons"). Same licenses and rules as the photos; never an AI-generated video. It plays in the photo\'s square; the photo fields stay and are used where there is no clip.';
     /** The first wording (stock-site search), replaced by CLIP_LINE where it is still in the prompt. */
     public const OLD_CLIP_LINE = '- Video topics (the topic\'s "visual_mode" is "video"): also write "clip_query" on the hook, each country and the outro: 3 to 6 English words a stock video site would have (e.g. "street food stall night Bangkok"): a place or a thing in motion, no faces in close-up, no children, no brands. The photo fields stay: the photo is used when no clip is found.';
+    /** The two-level text (2026-11-06): migrate.php swaps these into a stored prompt (OLD → new). */
+    public const TEXT_SWAPS = [
+        ['- Each slide stays about 3 to 4 seconds, so on-screen text is max 12 words.', self::TEXT_LINE],
+        ['"hook": { "on_screen_text": string, "illustration_brief"', '"hook": { "headline": string, "detail": string, "illustration_brief"'],
+        ['{ "country": string, "flag": string, "on_screen_text": string, "caption_detail"', '{ "country": string, "flag": string, "headline": string, "detail": string, "caption_detail"'],
+    ];
+    public const TEXT_LINE = '- Two levels of text on the hook and on every country slide: "headline" (large type, max 6 words) and "detail" (smaller type, max 10 words). On a country slide, the headline is the punchy fact itself and the detail the context or the funny twist (headline "Don\'t clink your beer.", detail "A grudge from 1849, still going strong."). On the hook, the headline is a curiosity hook that contains a PROMISE the video delivers: a number ("7 laws that sound fake"), an escalation ("the last one is wild") or a direct stake for the viewer ("Never do this in Hungary"); the detail is the kicker ("All real. The last one is wild."). Keep the promise: if the hook promises the craziest one last, order the slides so it really is last. The outro keeps its question. Emoji are not drawn on the slides.';
     public const HUMOR_LINE = '- Humor: always pick the funniest and most surprising TRUE facts. The humor comes from real facts, never from mocking people or cultures.';
 
     public const SYSTEM_PROMPT = <<<'TXT'
@@ -46,7 +53,7 @@ Research and accuracy rules (most important):
 
 Video format:
 - Vertical 9:16, 25 to 40 seconds, silent: no voiceover, no music. All information must be readable on screen.
-- Each slide stays about 3 to 4 seconds, so on-screen text is max 12 words.
+- Two levels of text on the hook and on every country slide: "headline" (large type, max 6 words) and "detail" (smaller type, max 10 words). On a country slide, the headline is the punchy fact itself and the detail the context or the funny twist (headline "Don't clink your beer.", detail "A grudge from 1849, still going strong."). On the hook, the headline is a curiosity hook that contains a PROMISE the video delivers: a number ("7 laws that sound fake"), an escalation ("the last one is wild") or a direct stake for the viewer ("Never do this in Hungary"); the detail is the kicker ("All real. The last one is wild."). Keep the promise: if the hook promises the craziest one last, order the slides so it really is last. The outro keeps its question. Emoji are not drawn on the slides.
 - 6 to 8 countries, always including {{COUNTRIES_ALWAYS}}, with a mix of continents.
 - Structure: hook slide (must grab attention in 2 seconds), one slide per country, outro slide with a question for comments.
 - Each slide is illustrated by a real photo (Wikimedia Commons, public domain or Creative Commons; the credit is shown on the slide). For each slide, write "illustration_brief": one short sentence describing the photo (the place and the thing: food, decoration, street scene, object), then "photo_url" (the image file on upload.wikimedia.org) and "photo_credit" (author and license, e.g. "Photo: Jane Doe, CC BY-SA 4.0, Wikimedia Commons"). No children, no recognizable faces, no logos or brands.
@@ -61,9 +68,9 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
 {
   "topic": string,
   "why_today": string,
-  "hook": { "on_screen_text": string, "illustration_brief": string, "photo_url": string, "photo_credit": string },
+  "hook": { "headline": string, "detail": string, "illustration_brief": string, "photo_url": string, "photo_credit": string },
   "slides": [
-    { "country": string, "flag": string, "on_screen_text": string, "caption_detail": string, "illustration_brief": string, "photo_url": string, "photo_credit": string, "source_url": string }
+    { "country": string, "flag": string, "headline": string, "detail": string, "caption_detail": string, "illustration_brief": string, "photo_url": string, "photo_credit": string, "source_url": string }
   ],
   "outro": { "question": string, "illustration_brief": string, "photo_url": string, "photo_credit": string },
   "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),

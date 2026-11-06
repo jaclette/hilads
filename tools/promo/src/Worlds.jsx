@@ -1,14 +1,17 @@
 // "Different Worlds by Hilads" video (Admin › Worlds): the day's package as a
 // silent 1080×1920 video, one part per slide, the same layout as the slides the
 // API renders (backend/api/src/DwSlides.php): the photo on top with a slow
-// zoom, the series pill and the photo credit, then the flag, the country and
-// the text rising in. Music is added in each app when publishing.
+// zoom or pan (Ken Burns, alternating), the series pill and the photo credit,
+// then the flag, the country, the headline rising in and its detail 0.6 s
+// later. The hook grabs: its photo punches in (115% → 100%, a small spring),
+// then its headline pops (90% → 100%). Each slide lasts as long as its text
+// needs (worldsTiming.js). Music is added in each app when publishing.
 // Video mode: a slide's clip plays in the photo's square instead, muted, from
 // its start, slowed down when it is a little short (worlds.mjs measures it).
 
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
-import { FADE, FPS, SECONDS } from './worldsTiming.js';
+import { DETAIL_DELAY, FADE, FPS, slideSeconds } from './worldsTiming.js';
 
 const BG = '#16110D';
 const ACCENT = '#FF7A3D';
@@ -20,10 +23,12 @@ const BOTTOM = 1560;               // under it: the apps' caption and buttons
 const OUTRO_QUESTION_BOTTOM = 1436; // the outro's question ends above its hilads.live line
 const CTA_TOP = 1472;
 const CTA_LOGO = 64;
-// A country's note (a price, a figure): one smaller, dimmer line under its text (DwSlides::note).
-const NOTE_MAX = 48;
-const NOTE_MIN = 32;
-const NOTE_GAP = 22;
+// The detail under a headline: smaller, lighter, 1-2 lines (DwSlides::twoLevel).
+const DETAIL_MAX = 52;
+const DETAIL_MIN = 34;
+const DETAIL_LINES = 2;
+const DETAIL_GAP = 30;
+const DETAIL_LEADING = 1.2;
 
 for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold', '800']]) {
   loadFont({ family: FONT, url: staticFile(`fonts/BeVietnamPro-${file}.ttf`), weight });
@@ -35,7 +40,7 @@ export { FADE, FPS };
 export function worldsTiming(slides) {
   let at = 0;
   const parts = slides.map((s) => {
-    const length = Math.round((SECONDS[s.kind] ?? 3.5) * FPS);
+    const length = Math.round(slideSeconds(s) * FPS);
     const part = { start: at, length };
     at += length;
     return part;
@@ -113,13 +118,62 @@ function Lines({ text, top, max, min, delay, bottom }) {
   );
 }
 
-/** A country's note: one line under the text (whose last line ends at end), shrunk to fit. */
-function Note({ text, end, delay }) {
-  let px = NOTE_MAX;
-  while (px > NOTE_MIN && measure(text, px, 600) > WIDTH) px -= 2;
+/** The detail's size and lines: the biggest from DETAIL_MAX that fits in DETAIL_LINES lines (DwSlides::detailFit). */
+function detailFit(text) {
+  for (let px = DETAIL_MAX; px > DETAIL_MIN; px -= 4) {
+    const lines = wrap(text, px, WIDTH, 600);
+    if (lines.length <= DETAIL_LINES && Math.max(...lines.map((l) => measure(l, px, 600))) <= WIDTH) return { px, lines };
+  }
+  return { px: DETAIL_MIN, lines: wrap(text, DETAIL_MIN, WIDTH, 600) };
+}
+
+/** A detail block (top at top), fading and rising in at delay. */
+function Detail({ text, top, delay }) {
+  const { px, lines } = detailFit(text);
   return (
-    <Rise delay={delay} style={{ left: LEFT, top: end + NOTE_GAP, fontFamily: FONT, fontWeight: 600, fontSize: px, lineHeight: `${px}px`,
-                                 color: 'rgba(255,255,255,0.75)', whiteSpace: 'nowrap' }}>{text}</Rise>
+    <Rise delay={delay} style={{ left: LEFT, top, width: WIDTH }}>
+      {lines.map((l, i) => (
+        <div key={i} style={{ fontFamily: FONT, fontWeight: 600, fontSize: px, lineHeight: `${px * DETAIL_LEADING}px`, color: 'rgba(255,255,255,0.78)',
+                              whiteSpace: 'nowrap' }}>{l}</div>
+      ))}
+    </Rise>
+  );
+}
+
+/**
+ * The headline from top, then its detail DETAIL_DELAY frames later, laid out as the slides
+ * (DwSlides::twoLevel): the detail's size first, the headline in the room left above it.
+ * pop: the hook's headline scales up (90% → 100%) instead of rising.
+ */
+function TwoLevel({ text, detail, top, max, min, delay, pop = false }) {
+  const head = plain(text);
+  const det = plain(detail);
+  let bottom = BOTTOM;
+  if (det) {
+    const { px, lines } = detailFit(det);
+    bottom = BOTTOM - DETAIL_GAP - Math.round(px * 0.95 + (lines.length - 1) * px * DETAIL_LEADING);
+  }
+  return (
+    <>
+      {pop ? <Pop text={head} top={top} max={max} min={min} delay={delay} bottom={bottom} />
+           : <Lines text={head} top={top} max={max} min={min} delay={delay} bottom={bottom} />}
+      {det && <Detail text={det} top={textEnd(head, top, max, min, bottom) + DETAIL_GAP} delay={delay + DETAIL_DELAY} />}
+    </>
+  );
+}
+
+/** The hook's headline: a quick scale-up (90% → 100%) and fade in, a slight spring. */
+function Pop({ text, top, max, min, delay, bottom }) {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = spring({ frame: frame - delay, fps, config: { damping: 10, stiffness: 210, mass: 0.6 } });
+  const { px, lines } = fit(text, top, max, min, bottom);
+  return (
+    <div style={{ position: 'absolute', left: LEFT, top, width: WIDTH, opacity: Math.min(1, p * 1.6), transform: `scale(${0.9 + 0.1 * p})`, transformOrigin: '0% 50%' }}>
+      {lines.map((l, i) => (
+        <div key={i} style={{ fontFamily: FONT, fontWeight: 800, fontSize: px, lineHeight: `${px * 1.16}px`, color: '#fff', whiteSpace: 'nowrap' }}>{l}</div>
+      ))}
+    </div>
   );
 }
 
@@ -140,15 +194,34 @@ function Cta({ text, question }) {
   );
 }
 
-function Slide({ slide, length }) {
+/**
+ * The photo's movement. Hook: a punch-in (115% → 100% in about 0.35 s, a small overshoot),
+ * then a slow zoom. Other slides: a slow Ken Burns, zooming in or out and drifting left or
+ * right by turns (about 8%), so two slides in a row never move the same way.
+ */
+function photoMotion(kind, index, frame, length, fps) {
+  if (kind === 'hook') {
+    const punch = spring({ frame, fps, config: { damping: 11, stiffness: 260, mass: 0.7 } });
+    // The slow zoom starts at 103%, so the punch's overshoot never shows an edge.
+    const slow = interpolate(frame, [0, length], [1.03, 1.11], { extrapolateRight: 'clamp' });
+    return { transform: `scale(${slow * (1 + 0.15 * (1 - punch))})`, transformOrigin: '50% 45%' };
+  }
+  const t = interpolate(frame, [0, length + FADE], [0, 1], { extrapolateRight: 'clamp' });
+  const zoomIn = index % 2 === 1;
+  const scale = zoomIn ? 1.02 + 0.08 * t : 1.10 - 0.08 * t;
+  const drift = (index % 4 < 2 ? 1 : -1) * 24 * (t - 0.5);
+  return { transform: `translateX(${drift}px) scale(${scale})`, transformOrigin: '50% 45%' };
+}
+
+function Slide({ slide, index, length }) {
   const frame = useCurrentFrame();
-  const fadeIn = interpolate(frame, [0, FADE], [0, 1], { extrapolateRight: 'clamp' });
-  const zoom = interpolate(frame, [0, length + FADE], [1, 1.07]);
+  const { fps } = useVideoConfig();
+  const fadeIn = index === 0 ? 1 : interpolate(frame, [0, FADE], [0, 1], { extrapolateRight: 'clamp' });
+  const hook = slide.kind === 'hook';
   const bar = interpolate(frame, [4, 14], [0, 88], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   const flagIn = useIn(4);
   const country = slide.kind === 'country';
   const credit = plain(slide.credit);
-  const note = plain(slide.note);
 
   return (
     <AbsoluteFill style={{ background: BG, opacity: fadeIn }}>
@@ -157,7 +230,7 @@ function Slide({ slide, length }) {
           ? <OffthreadVideo src={staticFile(slide.clip.src)} muted playbackRate={slide.clip.rate} trimBefore={Math.round(slide.clip.start * FPS)}
                             style={{ width: 1080, height: 1080, objectFit: 'cover' }} />
           : slide.photo
-            ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1080, objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 45%' }} />
+            ? <Img src={staticFile(slide.photo)} style={{ width: 1080, height: 1080, objectFit: 'cover', ...photoMotion(slide.kind, index, frame, length, fps) }} />
             : <div style={{ width: 1080, height: 1080, background: `linear-gradient(135deg, ${ACCENT}, #D9622A)` }} />}
       </div>
       <div style={{ position: 'absolute', left: 0, top: 930, width: 1080, height: 152, background: `linear-gradient(to bottom, rgba(22,17,13,0), ${BG})` }} />
@@ -183,15 +256,11 @@ function Slide({ slide, length }) {
                                    fontFamily: FONT, fontWeight: 700, fontSize: 56, color: GOLD, whiteSpace: 'nowrap' }}>
             {plain(slide.country)}
           </Rise>
-          {note
-            ? <>
-                <Lines text={slide.text} top={1276} max={96} min={48} delay={10} bottom={BOTTOM - NOTE_GAP - NOTE_MAX} />
-                <Note text={note} end={textEnd(slide.text, 1276, 96, 48, BOTTOM - NOTE_GAP - NOTE_MAX)} delay={16} />
-              </>
-            : <Lines text={slide.text} top={1276} max={96} min={48} delay={10} />}
+          <TwoLevel text={slide.text} detail={slide.detail} top={1276} max={96} min={48} delay={10} />
         </>
       )}
-      {slide.kind === 'hook' && <Lines text={slide.text} top={1164} max={112} min={56} delay={4} />}
+      {/* The hook's headline pops right after the photo's punch-in (with a clip: at once). */}
+      {hook && <TwoLevel text={slide.text} detail={slide.detail} top={1164} max={112} min={56} delay={slide.clip ? 3 : 9} pop />}
       {slide.kind === 'outro' && (
         <>
           <Rise delay={4} style={{ left: LEFT, top: 1162, fontFamily: FONT, fontWeight: 800, fontSize: 34, letterSpacing: 3, color: ACCENT }}>YOUR TURN</Rise>
@@ -203,14 +272,14 @@ function Slide({ slide, length }) {
   );
 }
 
-/** props: {slides: [{kind, text, note?, country?, flag?, credit?, photo?, clip?: {src, rate, start}, cta?}]} (paths in the public folder). */
+/** props: {slides: [{kind, text, detail?, country?, flag?, credit?, photo?, clip?: {src, rate, start}, cta?}]} (paths in the public folder). */
 export function WorldsVideo({ slides }) {
   const { parts } = worldsTiming(slides);
   return (
     <AbsoluteFill style={{ background: BG }}>
       {slides.map((slide, i) => (
         <Sequence key={i} from={parts[i].start - (i === 0 ? 0 : FADE)} durationInFrames={parts[i].length + (i === 0 ? 0 : FADE)}>
-          <Slide slide={slide} length={parts[i].length} />
+          <Slide slide={slide} index={i} length={parts[i].length} />
         </Sequence>
       ))}
     </AbsoluteFill>

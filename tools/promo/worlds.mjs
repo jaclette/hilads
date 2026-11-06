@@ -1,7 +1,10 @@
-// npm run worlds [-- YYYY-MM-DD] [--no-upload] [--file docs/worlds/<date>.json]
+// npm run worlds [-- YYYY-MM-DD [YYYY-MM-DD]] [--no-upload] [--file docs/worlds/<date>.json]
 // Renders a "Different Worlds by Hilads" day as a silent 1080×1920 video
 // (src/Worlds.jsx) from the day's latest package in Admin › Worlds, then
 // uploads it to that package (the topic page shows it, with a download).
+// Two dates: every day from the first to the second, one after the other;
+// a published topic, or one whose title or notes changed since its package,
+// is skipped (listed at the end).
 // --file renders a package file before it is imported (photos from Commons),
 // and never uploads. Needs .env: API_URL, PROMO_TOKEN (the Daily promo's).
 // A topic in video mode: a slide's Commons clip (clip_url, from clip_start)
@@ -15,14 +18,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { getVideoMetadata, renderMedia, selectComposition } from '@remotion/renderer';
-import { clipRate } from './src/worldsTiming.js';
+import { clipRate, slideSeconds } from './src/worldsTiming.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
 const args = process.argv.slice(2);
 const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : null;
 const upload = !args.includes('--no-upload') && !fileArg;
-const date = args.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a)) ?? localDate();
+const dates = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
+const range = dates.length === 2 && !fileArg;
 const api = (process.env.API_URL ?? 'https://api.hilads.live').replace(/\/$/, '');
 const token = process.env.PROMO_TOKEN;
 // Wikimedia refuses downloads without a descriptive User-Agent.
@@ -90,18 +94,55 @@ function flagFile(flag) {
   return cps.length && existsSync(path.join(repo, 'backend/api/assets/flags', name)) ? `flags/${name}` : null;
 }
 
-/** The slides as the API's plan gives them: [{position, kind, text, country, flag, credit, photo_src, photoUrl?}]. */
+/** A hook's or a country's headline and detail (older packages: on_screen_text, on_screen_note), as DwStudio::headline / detail. */
+const headline = (p) => (p?.headline ?? '').trim() || (p?.on_screen_text ?? '').trim();
+const detail = (p) => (('headline' in (p ?? {}) || 'detail' in (p ?? {})) ? (p.detail ?? '') : (p?.on_screen_note ?? '')).trim();
+
+/** The slides as the API's plan gives them: [{position, kind, text, detail, country, flag, credit, photo_src, photoUrl?}]. */
 function planFromContent(c) {
   const clip = (p) => (p?.clip_url ? { url: p.clip_url, start: Number(p.clip_start ?? 0), credit: p.clip_credit ?? '' } : null);
   const pic = (p) => ({ credit: p?.photo_credit ?? '', photo_src: p?.photo_url ?? '', clip: clip(p) });
   return [
-    { position: 1, kind: 'hook', text: c.hook?.on_screen_text ?? '', ...pic(c.hook) },
-    ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: s.on_screen_text, note: s.on_screen_note ?? '', country: s.country, flag: s.flag, ...pic(s) })),
+    { position: 1, kind: 'hook', text: headline(c.hook), detail: detail(c.hook), ...pic(c.hook) },
+    ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: headline(s), detail: detail(s), country: s.country, flag: s.flag, ...pic(s) })),
     { position: (c.slides ?? []).length + 2, kind: 'outro', text: c.outro?.question ?? '', cta: DEFAULT_OUTRO_CTA, ...pic(c.outro) },
   ];
 }
 
+/** Every date from $from to $to, inclusive. */
+function datesBetween(from, to) {
+  const out = [];
+  for (let d = new Date(`${from}T12:00:00Z`); d <= new Date(`${to}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + 1)) out.push(d.toISOString().slice(0, 10));
+  return out;
+}
+
 async function main() {
+  if (!range) {
+    await renderDay(dates[0] ?? localDate());
+    return;
+  }
+  if (!token) throw new Error('PROMO_TOKEN is missing: copy .env.example to .env and fill it in.');
+  const done = [];
+  const skipped = [];
+  for (const day of datesBetween(dates[0], dates[1])) {
+    try {
+      const data = await apiCall(`/internal/worlds/${day}`).catch((e) => ({ missing: e.message }));
+      if (data.missing) skipped.push(`${day}: no package (${data.missing})`);
+      else if (data.status === 'published') skipped.push(`${day}: published, left as it is`);
+      else if (data.briefChanged) skipped.push(`${day}: ${data.briefChanged}`);
+      else {
+        await renderDay(day, data);
+        done.push(day);
+      }
+    } catch (e) {
+      skipped.push(`${day}: failed (${e.message})`);
+    }
+  }
+  console.log(`\n${done.length} rendered${upload ? ' and uploaded' : ''}: ${done.join(', ') || '-'}`);
+  if (skipped.length) console.log(`Not rendered:\n  ${skipped.join('\n  ')}`);
+}
+
+async function renderDay(date, fetched = null) {
   let data;
   if (fileArg) {
     const doc = JSON.parse(await readFile(path.resolve(repo, fileArg), 'utf8'));
@@ -110,7 +151,7 @@ async function main() {
     console.log(`Different Worlds ${data.date} from ${fileArg} (not uploaded)`);
   } else {
     if (!token) throw new Error('PROMO_TOKEN is missing: copy .env.example to .env and fill it in.');
-    data = await apiCall(`/internal/worlds/${date}`);
+    data = fetched ?? await apiCall(`/internal/worlds/${date}`);
     console.log(`Different Worlds ${date}: "${data.title}", version ${data.version}, from ${api}`);
   }
 
@@ -129,6 +170,8 @@ async function main() {
   let clips = 0;
   for (const s of data.slides) {
     // The slide's clip (the API sends it in video mode only; a package file always), else its photo.
+    // The API's plan before the two-level text (2026-11-06) sends a country's note instead of a detail.
+    const text = { kind: s.kind, text: s.text, detail: s.detail ?? s.note ?? '' };
     let clip = null;
     if (s.clip?.url) {
       try {
@@ -137,7 +180,7 @@ async function main() {
         await cp(file, path.join(pub, name));
         const { durationInSeconds } = await getVideoMetadata(file);
         const start = Math.min(Math.max(0, s.clip.start ?? 0), Math.max(0, durationInSeconds - 1));
-        const rate = clipRate(durationInSeconds - start, s.kind);
+        const rate = clipRate(durationInSeconds - start, slideSeconds(text));
         if (rate === null) throw new Error(`only ${(durationInSeconds - start).toFixed(1)} s from ${start} s`);
         clip = { src: name, start, rate };
         clips++;
@@ -157,7 +200,7 @@ async function main() {
         photo = null;
       }
     }
-    slides.push({ kind: s.kind, text: s.text, note: s.note ?? '', country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
+    slides.push({ ...text, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
                   credit: clip ? s.clip.credit : (s.credit ?? ''), photo, clip,
                   cta: s.kind === 'outro' ? (s.cta ?? '') : null });
   }

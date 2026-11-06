@@ -3780,6 +3780,8 @@ run($pdo, "
 run($pdo, "ALTER TABLE dw_slides ADD COLUMN IF NOT EXISTS photo_url TEXT", 'dw_slides.photo_url');
 run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS video_url TEXT", 'dw_packages.video_url');
 run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS video_at TIMESTAMPTZ", 'dw_packages.video_at');
+// 2026-11-06: the topic's title and notes a package was made from (a later change asks for a new package).
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS brief JSONB", 'dw_packages.brief');
 // The hilads.live lines (2026-10-31): under the outro's question, and before it
 // at the end of every caption. Edited in Admin › Worlds › Settings.
 run($pdo, "ALTER TABLE dw_settings ADD COLUMN IF NOT EXISTS outro_cta TEXT NOT NULL DEFAULT 'Compare your city on hilads.live'", 'dw_settings.outro_cta');
@@ -3825,6 +3827,18 @@ try {
         } else {
             echo "  WARN dw seed: no photo rule in the system prompt, add the clip rule by hand\n";
         }
+    }
+    // 2026-11-06: two levels of text (headline + detail) on the hook and the countries, in the rules and the schema.
+    $prompt = (string) $pdo->query("SELECT system_prompt FROM dw_settings WHERE id = 1")->fetchColumn();
+    $twoLevel = $prompt;
+    foreach (DwSeed::TEXT_SWAPS as [$old, $new]) {
+        $twoLevel = str_replace($old, $new, $twoLevel);
+    }
+    if ($twoLevel !== $prompt) {
+        $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$twoLevel]);
+    }
+    if ($twoLevel !== '' && !str_contains($twoLevel, '"headline"')) {
+        echo "  WARN dw seed: the system prompt was edited, add the headline / detail rule and schema by hand (DwSeed::TEXT_LINE)\n";
     }
     $seedTopic = $pdo->prepare("
         INSERT INTO dw_topics (date, title, notes, type, needs_date_check) VALUES (?, ?, ?, ?, ?)

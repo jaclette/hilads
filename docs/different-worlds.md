@@ -39,7 +39,12 @@ A daily short video series (TikTok, Reels, Shorts): one topic, 6 to 8 countries,
      4. the hashtags.
    - Mark ready, then mark published with the three platform links.
 6. **Video**: on the Mac, `cd tools/promo && npm run worlds -- <date>`.
-   - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders about 49 s of video (`src/Worlds.jsx`): hook 4.5 s, each country 5.5 s, outro 6 s. The layout is the slides', with a slow zoom on each photo, the text rising in and a crossfade between slides.
+   - It reads the day's latest version (`GET /internal/worlds/<date>`, the Daily promo's `PROMO_TOKEN`) and renders it (`src/Worlds.jsx`). The layout is the slides', with a crossfade between slides.
+   - Each slide lasts as long as its text needs (`src/worldsTiming.js`): base + time per word of headline and detail. That is a hook of 3.5 to 6 s, a country of 4.5 to 7.5 s and an outro of 5.5 to 8 s.
+   - The headline rises in, and its detail fades and slides in 0.6 s later, on every slide.
+   - **Hook animation**, still photo: a punch-in, the photo starting at about 115% and settling to 100% in about 0.35 s with a small spring overshoot. Right after, the headline pops: it scales from 90% to 100% and fades in, with a slight spring. Then the photo zooms slowly for the rest of the hook. A hook with a clip keeps the headline pop, without the punch-in. No shake, flash or glitch.
+   - Other slides with a still photo get a slow Ken Burns: about 8% of zoom, in or out and drifting left or right by turns, so two slides in a row never move the same way. Their text stays still once it is in.
+   - Two dates render every day between them, one after the other, and upload each: `npm run worlds -- 2026-11-06 2026-11-30`. A published topic, or one whose title or notes changed since its package, is skipped and listed at the end.
    - It uploads the video to the package, and the topic page then shows it with a download button.
    - After an edit or a new version, run it again: the new video replaces the old one, and on the Mac only the day's latest render is kept in `out/worlds/<date>/` (a `--file` render stays).
 
@@ -61,15 +66,35 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
 ```json
 {"packages": [{"date": "2026-10-31", "model": "Claude Opus 5.5 (Claude Code)", "content": {
   "topic": "…", "why_today": "…",
-  "hook": {"on_screen_text": "…", "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "Photo: …, CC0, Wikimedia Commons"},
-  "slides": [{"country": "Vietnam", "flag": "🇻🇳", "on_screen_text": "…", "on_screen_note": "…", "caption_detail": "…",
+  "hook": {"headline": "…", "detail": "…", "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "Photo: …, CC0, Wikimedia Commons"},
+  "slides": [{"country": "Vietnam", "flag": "🇻🇳", "headline": "…", "detail": "…", "caption_detail": "…",
               "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "…", "source_url": "https://…"}],
   "outro": {"question": "…", "illustration_brief": "…", "photo_url": "https://upload.wikimedia.org/…", "photo_credit": "…"},
   "caption": "…", "hashtags": ["#…"], "ai_disclosure": "…", "follow_up_idea": "…", "warnings": ["…"]
 }}]}
 ```
 
-`on_screen_note` is optional: a smaller, dimmer line under the country's text, for the secondary fact (a price: "40,000 dong · $1.55"), so the text keeps the star. One line, up to 6 words; it can be edited on the topic page like the text.
+**Two levels of text** (2026-11-06), on the hook and every country:
+- **`headline`**: large type, at most 6 words. On a country slide it's the punchy fact itself ("Don't clink your beer."). On the hook it's a curiosity hook containing a promise the video keeps: a number, an escalation ("the last one is wild") or a direct stake ("Never do this in Hungary"). If the hook promises the craziest one last, the slides are ordered so it really is last.
+- **`detail`**: smaller, lighter type, at most 10 words, 1 or 2 lines. On a country slide it's the context or the twist ("A grudge from 1849, still going strong."), on the hook the kicker ("All real. The last one is wild."). It is optional.
+- The outro keeps its question, and the hilads.live line under it.
+- Both fields are edited separately on the topic page.
+- Older packages have `on_screen_text` (and a country's `on_screen_note`), read as the headline and the detail. The first edit of either one turns that slide into the two fields.
+- Emoji count as no words and are not drawn on the slides.
+
+**Text only** (`"mode": "text"`): only the headlines and details of a day change, with the pictures and clips kept.
+```json
+{"packages": [{"date": "2026-11-06", "mode": "text", "content": {
+  "hook": {"headline": "…", "detail": "…"},
+  "slides": [{"country": "Vietnam", "headline": "…", "detail": "…"}]
+}}]}
+```
+- It updates the topic's latest version in place.
+- `slides` lists that version's countries, in the order to show them; a new order moves their pictures with them.
+- The hook and country slides are redrawn with their stored pictures. The clips, outro and caption are kept.
+- Render the video again afterwards.
+- It is refused for a published topic, and for a topic whose title or notes changed after its package was made (prepare a new package then). The import report lists those as "skipped".
+- **How "changed" is known:** each package keeps the title and notes it was made from (`dw_packages.brief`). A package imported before that is compared with the calendar it was prepared from (`DwSeed::TOPICS`).
 
 **What blocks an import:**
 - a missing field;
@@ -80,7 +105,7 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
 - a photo that isn't on upload.wikimedia.org, or a photo without a credit.
 
 **What gives a warning only:**
-- an on-screen text over 12 words, or a note over 6;
+- a headline over 6 words or a detail over 10 (older packages: an on-screen text over 12, a note over 6);
 - a caption over 150 words or without "Different Worlds by Hilads";
 - not 5 to 8 hashtags;
 - a flag with no image;
@@ -102,7 +127,9 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
 - The photo covers the top 1080 px. It is cropped to a square from the centre, so the subject should be centred.
 - The credit sits small under the pill.
 - The "DIFFERENT WORLDS by Hilads" pill sits over the bottom of the illustration.
-- The text block runs from 1120 to 1560 px, with a 72 px left margin and a 170 px right margin. It's set in Be Vietnam Pro ExtraBold at the biggest size that fits.
+- The text block runs from 1120 to 1560 px, with a 72 px left margin and a 170 px right margin.
+  - The headline is set in Be Vietnam Pro ExtraBold at the biggest size that fits.
+  - The detail sits 30 px under it, in SemiBold at 78% white, 52 px or smaller, in 1 or 2 lines. Its size is chosen first, and the headline fits in the room left above it.
 - Below 1560 px is left empty for the apps' captions and buttons.
 - Country slides show a Twemoji flag (`backend/api/assets/flags`, CC-BY 4.0) and the country name in gold.
 - The outro has a "YOUR TURN" label, the question, then the hilads.live line (`assets/logo.svg`, the app icon without its animation).
@@ -121,5 +148,6 @@ A topic's **Visual mode** (topic page, or when adding a topic) is `image` (the p
   - It adds the humor rule after the tone line of the system prompt (edits around it are kept).
   - Once (`dw_settings.calendar_rev` 2): every topic from Nov 1, 2026 not published is replaced by the funnier calendar of `DwSeed::TOPICS` (title, fun angle in the notes, type, date check). Their packages go with them; their R2 files stay.
 - The slides use the existing R2 settings, and the video uses the Daily promo's `PROMO_TOKEN`.
+- Two-level text (2026-11-06): `migrate.php` adds `dw_packages.brief`. It also swaps the stored prompt's "max 12 words" line and the schema's `on_screen_text` for the headline / detail rule (`DwSeed::TEXT_SWAPS`), and warns when the prompt was edited there.
 - Clip rule (2026-11-03): `migrate.php` swaps the stored prompt's clip line (`DwSeed::PREV_CLIP_LINE`) for the stricter `CLIP_LINE` (a clip only where it shows the slide's exact subject, else the photo). No key or new variable.
 - Video mode (2026-11-01): `migrate.php` adds `dw_topics.visual_mode` and the clip rule after the photo rule of the system prompt (replacing the first, stock-search wording), and drops the `dw_slides.clip` column and `dw_clip_searches` table of that first version. No key or new variable.

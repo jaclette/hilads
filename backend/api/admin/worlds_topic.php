@@ -220,7 +220,9 @@ worlds_styles();
         <div class="worlds-grid" data-package="<?= $pkg['id'] ?>">
             <div class="form-card">
                 <h3>Video</h3>
-                <?php worlds_field('hook.on_screen_text', 'Hook · on screen', (string) ($c['hook']['on_screen_text'] ?? ''), false, DwStudio::words((string) ($c['hook']['on_screen_text'] ?? '')) . ' words'); ?>
+                <?php $hh = DwStudio::headline($c['hook'] ?? []); $hd = DwStudio::detail($c['hook'] ?? []); ?>
+                <?php worlds_field('hook.headline', 'Hook · headline (big, the promise)', $hh, false, DwStudio::screenWords($hh) . ' / 6 words'); ?>
+                <?php worlds_field('hook.detail', 'Hook · detail (smaller, the kicker; optional)', $hd, false, DwStudio::screenWords($hd) . ' / 10 words'); ?>
                 <?php worlds_field('hook.photo_credit', 'Hook · photo credit', (string) ($c['hook']['photo_credit'] ?? '')); ?>
                 <?php worlds_field('outro.question', 'Outro · question', (string) ($c['outro']['question'] ?? ''), false); ?>
                 <?php worlds_field('outro.photo_credit', 'Outro · photo credit', (string) ($c['outro']['photo_credit'] ?? '')); ?>
@@ -243,8 +245,9 @@ worlds_styles();
                 <div class="worlds-country">
                     <h4><?= wh(($s['flag'] ?? '') . ' ' . ($s['country'] ?? '')) ?>
                         <?php if (!empty($s['source_url'])): ?><a class="worlds-muted" href="<?= wh($s['source_url']) ?>" target="_blank" rel="noopener">source ↗</a><?php endif; ?></h4>
-                    <?php worlds_field("slides.{$i}.on_screen_text", 'On screen', (string) ($s['on_screen_text'] ?? ''), false, DwStudio::words((string) ($s['on_screen_text'] ?? '')) . ' words'); ?>
-                    <?php worlds_field("slides.{$i}.on_screen_note", 'Small line under it (a price, a figure; optional)', (string) ($s['on_screen_note'] ?? '')); ?>
+                    <?php $sh = DwStudio::headline($s); $sd = DwStudio::detail($s); ?>
+                    <?php worlds_field("slides.{$i}.headline", 'Headline (big, the fact)', $sh, false, DwStudio::screenWords($sh) . ' / 6 words'); ?>
+                    <?php worlds_field("slides.{$i}.detail", 'Detail (smaller, the context or the twist; optional)', $sd, false, DwStudio::screenWords($sd) . ' / 10 words'); ?>
                     <?php worlds_field("slides.{$i}.caption_detail", 'Caption detail', (string) ($s['caption_detail'] ?? ''), true); ?>
                     <?php worlds_field("slides.{$i}.source_url", 'Source', (string) ($s['source_url'] ?? '')); ?>
                     <?php worlds_field("slides.{$i}.country", 'Country', (string) ($s['country'] ?? '')); ?>
