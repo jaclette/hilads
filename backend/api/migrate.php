@@ -3920,6 +3920,27 @@ run($pdo, "CREATE TABLE IF NOT EXISTS image_hashes (
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS photo_hash TEXT", 'daily_proofs.photo_hash');
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS selfie_hash TEXT", 'daily_proofs.selfie_hash');
 
+// ── V6 notifications: category, dedupe, seen (2026-11-06) ─────────────────
+// category: social / game / plans / city / hilads (inbox filters, counts,
+// preferences), written at insert by NotificationCategory::of and backfilled
+// here. dedupe_key: the same event writes one row per recipient (unique per
+// user; NULL = may repeat). seen_at: the "While you were away" card was
+// dismissed (seen is not read). friend_arrival_push: a friend landed somewhere
+// (worldwide arrivals are friends-only since V6).
+// Reversal: DROP INDEX notifications_dedupe, notifications_unread_category;
+// ALTER TABLE notifications DROP COLUMN category, DROP COLUMN dedupe_key, DROP COLUMN seen_at;
+// ALTER TABLE notification_preferences DROP COLUMN friend_arrival_push.
+require_once __DIR__ . '/src/NotificationCategory.php';
+run($pdo, "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS category VARCHAR(16)", 'notifications.category');
+run($pdo, "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS dedupe_key TEXT", 'notifications.dedupe_key');
+run($pdo, "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS seen_at TIMESTAMPTZ", 'notifications.seen_at');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS notifications_dedupe ON notifications (user_id, dedupe_key) WHERE dedupe_key IS NOT NULL", 'notifications_dedupe');
+run($pdo, "CREATE INDEX IF NOT EXISTS notifications_unread_category ON notifications (user_id, category) WHERE is_read = FALSE", 'notifications_unread_category');
+run($pdo, "UPDATE notifications SET category = " . NotificationCategory::caseSql('type') . " WHERE category IS NULL", 'notifications.category backfill');
+// Rows read long ago count as seen.
+run($pdo, "UPDATE notifications SET seen_at = created_at WHERE seen_at IS NULL AND is_read = TRUE", 'notifications.seen_at backfill');
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_arrival_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.friend_arrival_push');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

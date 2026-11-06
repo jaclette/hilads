@@ -58,14 +58,36 @@ class NotificationRepository
             }
         }
 
-        $stmt = Database::pdo()->prepare("
-            INSERT INTO notifications (user_id, type, title, body, data)
-            VALUES (?, ?, ?, ?, ?::jsonb)
-            RETURNING id, user_id, type, title, body, data::text, is_read,
-                      to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS created_at
-        ");
-        $stmt->execute([$userId, $type, $title, $body, json_encode($data)]);
-        $notif = self::normalise($stmt->fetch(\PDO::FETCH_ASSOC));
+        // V6: the category (inbox filters, counts) and the dedupe key: the same
+        // event writes one row per recipient (a unique index), and a duplicate
+        // writes nothing and pushes nothing.
+        $returning = "RETURNING id, user_id, type, title, body, data::text, is_read,
+                      to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS created_at";
+        $category  = NotificationCategory::of($type);
+        $dedupeKey = NotificationCategory::dedupeKey($type, $data);
+        try {
+            $stmt = Database::pdo()->prepare("
+                INSERT INTO notifications (user_id, type, title, body, data, category, dedupe_key)
+                VALUES (?, ?, ?, ?, ?::jsonb, ?, ?)
+                ON CONFLICT (user_id, dedupe_key) WHERE dedupe_key IS NOT NULL DO NOTHING
+                $returning
+            ");
+            $stmt->execute([$userId, $type, $title, $body, json_encode($data), $category, $dedupeKey]);
+        } catch (\PDOException $e) {
+            // Before the V6 migration (no category / dedupe_key yet): the old insert.
+            if (!in_array($e->getCode(), ['42703', '42P10'], true)) throw $e;
+            $stmt = Database::pdo()->prepare("
+                INSERT INTO notifications (user_id, type, title, body, data)
+                VALUES (?, ?, ?, ?, ?::jsonb)
+                $returning
+            ");
+            $stmt->execute([$userId, $type, $title, $body, json_encode($data)]);
+        }
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if ($row === false) {
+            return [];   // a duplicate of a row already written
+        }
+        $notif = self::normalise($row);
 
         // Push is suppressed for the actor's own reveal (e.g. the challenger who
         // just validated): they get the celebration modal directly via the WS
@@ -100,7 +122,7 @@ class NotificationRepository
             // World channel: a genuinely-new user arrived from another city.
             // Opt-in (default OFF) so only people who want global-arrival noise
             // get it - keeps city_join (current city only) clean.
-            'world_arrival'                                             => 'world_arrival_push',
+            'world_arrival'                                             => 'friend_arrival_push',
             // friend_request_received + friend_request_accepted are the new
             // request-flow types; friend_added is kept as a legacy alias so
             // historical rows from before the refactor still display correctly.
@@ -136,6 +158,7 @@ class NotificationRepository
             'channel_message_push' => false,
             'city_join_push'       => false,
             'world_arrival_push'   => false,
+            'friend_arrival_push'  => true,
             'friend_request_push'  => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
@@ -364,7 +387,10 @@ class NotificationRepository
     {
         // Inlined - types are hardcoded constants, no injection surface.
         $quoted = array_map(fn($t) => "'" . $t . "'", self::BELL_EXCLUDED_TYPES);
-        return 'type NOT IN (' . implode(',', $quoted) . ')';
+        // V6: worldwide arrivals only from friends ("New arrival in Omaha" for a
+        // Saigon player was noise); older rows without the flag stay out too.
+        return 'type NOT IN (' . implode(',', $quoted) . ")"
+            . " AND (type <> 'world_arrival' OR data->>'friend' = 'true')";
     }
 
     // ── Read ──────────────────────────────────────────────────────────────────
@@ -420,6 +446,207 @@ class NotificationRepository
             UPDATE notifications SET is_read = TRUE
             WHERE user_id = ? AND is_read = FALSE AND $exclude
         ")->execute([$userId]);
+    }
+
+    // ── V6 inbox: categories, grouping, seen / unread / delete ────────────────
+
+    /**
+     * The inbox, newest first: similar rows within a day folded into one item
+     * ("Lan and 3 others liked your photo"), with actors (max 3), count, object,
+     * deep link. $categories: filter (empty = all); $unseenOnly: what the user
+     * hasn't seen yet ("While you were away"). Cursor: "createdAt|id" of the
+     * last row read. Needs the V6 columns (migrate.php).
+     * Returns {items, nextCursor}.
+     */
+    public static function inbox(string $userId, array $categories = [], ?string $cursor = null, int $limit = 30,
+                                 bool $unseenOnly = false, array $blockedUserIds = []): array
+    {
+        $where = ['user_id = ?', self::bellExclusionSql()];
+        $args  = [$userId];
+        $categories = array_values(array_intersect($categories, NotificationCategory::ALL));
+        if ($categories !== []) {
+            $where[] = 'category IN (' . implode(',', array_fill(0, count($categories), '?')) . ')';
+            array_push($args, ...$categories);
+        }
+        if ($unseenOnly) {
+            $where[] = 'seen_at IS NULL AND is_read = FALSE';
+        }
+        if ($cursor !== null && preg_match('/^(\d{4}-\d\d-\d\dT[\d:.]+Z)\|(\d+)$/', $cursor, $m)) {
+            $where[] = '(created_at, id) < (?::timestamptz, ?)';
+            array_push($args, $m[1], (int) $m[2]);
+        }
+        // Enough raw rows for $limit items once grouped.
+        $stmt = Database::pdo()->prepare("
+            SELECT id, type, category, title, body, data::text AS data, is_read, seen_at IS NOT NULL AS seen,
+                   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_at,
+                   extract(epoch FROM created_at)::bigint AS ts
+            FROM notifications
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY created_at DESC, id DESC
+            LIMIT " . (int) min(400, $limit * 8) . "
+        ");
+        $stmt->execute($args);
+        $rows    = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $blocked = array_flip($blockedUserIds);
+
+        $items = [];
+        $open  = [];   // type|groupKey => index in $items
+        $last  = null; // the last row read (the cursor)
+        $full  = false;
+        foreach ($rows as $r) {
+            $data = json_decode($r['data'] ?? '{}', true) ?: [];
+            [$actorId, $actorName] = NotificationCategory::actor($data);
+            $gk    = NotificationCategory::groupKey($r['type'], $data);
+            $key   = $gk !== null ? $r['type'] . '|' . $gk : null;
+            $joins = $key !== null && isset($open[$key])
+                && $items[$open[$key]]['ts'] - (int) $r['ts'] <= NotificationCategory::GROUP_WINDOW_SECONDS;
+            // A full page stops before the row that would start a new item (the next page starts there).
+            if (!$joins && count($items) >= $limit) { $full = true; break; }
+            $last = $r;
+            if ($actorId !== null && isset($blocked[$actorId])) continue;
+            if ($joins) {
+                $it = &$items[$open[$key]];
+                $it['ids'][] = (int) $r['id'];
+                $it['read']  = $it['read'] && DailyProofRepository::bool($r['is_read']);
+                $it['seen']  = $it['seen'] && DailyProofRepository::bool($r['seen']);
+                if ($actorName !== null && !isset($it['actorKeys'][$actorId ?? $actorName])) {
+                    $it['actorKeys'][$actorId ?? $actorName] = true;
+                    $it['actors'][] = ['id' => $actorId, 'name' => $actorName];
+                }
+                unset($it);
+                continue;
+            }
+            if ($key !== null) $open[$key] = count($items);
+            $items[] = [
+                'id'        => (int) $r['id'],
+                'ids'       => [(int) $r['id']],
+                'category'  => $r['category'] ?: NotificationCategory::of($r['type']),
+                'type'      => $r['type'],
+                'title'     => $r['title'],
+                'body'      => $r['body'],
+                'data'      => $data,
+                'actors'    => $actorName !== null ? [['id' => $actorId, 'name' => $actorName]] : [],
+                'actorKeys' => $actorName !== null ? [($actorId ?? $actorName) => true] : [],
+                'deep_link' => NotificationCategory::deepLink($r['type'], $data),
+                'created_at' => $r['created_at'],
+                'ts'        => (int) $r['ts'],
+                'read'      => DailyProofRepository::bool($r['is_read']),
+                'seen'      => DailyProofRepository::bool($r['seen']),
+            ];
+        }
+
+        // Actor avatars and photo thumbnails, one query each.
+        $userIds = $proofIds = [];
+        foreach ($items as $it) {
+            foreach ($it['actors'] as $a) if ($a['id'] !== null) $userIds[$a['id']] = true;
+            if (!empty($it['data']['proofId'])) $proofIds[(string) $it['data']['proofId']] = true;
+        }
+        $avatars = $thumbs = [];
+        if ($userIds !== []) {
+            $ids  = array_keys($userIds);
+            $stmt = Database::pdo()->prepare('SELECT id, profile_photo_url FROM users WHERE id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')');
+            $stmt->execute($ids);
+            foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $u) $avatars[$u['id']] = R2Uploader::thumbProxy($u['profile_photo_url'] ?? null);
+        }
+        if ($proofIds !== []) {
+            $ids  = array_keys($proofIds);
+            $stmt = Database::pdo()->prepare('SELECT id, photo_url FROM daily_proofs WHERE id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')');
+            $stmt->execute($ids);
+            foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $p) $thumbs[$p['id']] = R2Uploader::thumbProxy($p['photo_url'] ?? null);
+        }
+
+        $out = [];
+        foreach ($items as $it) {
+            $d = $it['data'];
+            $object = null;
+            if (!empty($d['proofId'])) {
+                $object = ['kind' => 'photo', 'id' => (string) $d['proofId'], 'date' => $d['date'] ?? null,
+                           'thumbUrl' => $thumbs[(string) $d['proofId']] ?? ($d['photoThumb'] ?? null)];
+            } elseif (!empty($d['eventId']) || !empty($d['topicId'])) {
+                $object = ['kind' => 'plan', 'id' => (string) ($d['eventId'] ?? $d['topicId']),
+                           'title' => $d['eventTitle'] ?? $d['topicTitle'] ?? null];
+            } elseif (!empty($d['date']) && str_starts_with($it['type'], 'daily_')) {
+                $object = ['kind' => 'challenge', 'date' => (string) $d['date']];
+            }
+            $actors = array_map(static fn(array $a): array => $a + ['photoUrl' => $a['id'] !== null ? ($avatars[$a['id']] ?? null) : null], $it['actors']);
+            $out[] = [
+                'id'         => $it['id'],
+                'ids'        => $it['ids'],
+                'category'   => $it['category'],
+                'type'       => $it['type'],
+                'title'      => $it['title'],
+                'body'       => $it['body'],
+                'data'       => $d,
+                'actors'     => array_slice($actors, 0, 3),
+                'count'      => max(count($it['actors']), count($it['ids'])),
+                'object'     => $object,
+                'deep_link'  => $it['deep_link'],
+                'created_at' => $it['created_at'],
+                'read'       => $it['read'],
+                'seen'       => $it['seen'],
+            ];
+        }
+        $more = $full || count($rows) >= min(400, $limit * 8);
+        return [
+            'items'      => $out,
+            'nextCursor' => $more && $last !== null ? $last['created_at'] . '|' . $last['id'] : null,
+        ];
+    }
+
+    /** Unread rows per category, and unseen ones (the bell, the tab badges, the filters). */
+    public static function counts(string $userId): array
+    {
+        $unread = array_fill_keys(NotificationCategory::ALL, 0);
+        $unseen = $unread;
+        $stmt = Database::pdo()->prepare("
+            SELECT category, count(*) AS unread, count(*) FILTER (WHERE seen_at IS NULL) AS unseen
+            FROM notifications
+            WHERE user_id = ? AND is_read = FALSE AND " . self::bellExclusionSql() . "
+            GROUP BY category
+        ");
+        $stmt->execute([$userId]);
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $c = in_array($r['category'], NotificationCategory::ALL, true) ? $r['category'] : NotificationCategory::HILADS;
+            $unread[$c] += (int) $r['unread'];
+            $unseen[$c] += (int) $r['unseen'];
+        }
+        return ['total' => array_sum($unread), 'unread' => $unread, 'unseen' => $unseen];
+    }
+
+    /** Seen (not read): the "While you were away" card was dismissed. $ids or every unseen row of $categories. */
+    public static function markSeen(string $userId, array $ids = [], array $categories = []): void
+    {
+        $ids        = array_values(array_filter(array_map('intval', $ids)));
+        $categories = array_values(array_intersect($categories, NotificationCategory::ALL));
+        if ($ids === [] && $categories === []) return;
+        $sql  = "UPDATE notifications SET seen_at = now() WHERE user_id = ? AND seen_at IS NULL";
+        $args = [$userId];
+        if ($ids !== []) {
+            $sql .= ' AND id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')';
+            array_push($args, ...$ids);
+        } else {
+            $sql .= ' AND category IN (' . implode(',', array_fill(0, count($categories), '?')) . ')';
+            array_push($args, ...$categories);
+        }
+        Database::pdo()->prepare($sql)->execute($args);
+    }
+
+    /** Back to unread (swipe right on a read row). */
+    public static function markUnread(string $userId, array $ids): void
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if ($ids === []) return;
+        Database::pdo()->prepare('UPDATE notifications SET is_read = FALSE WHERE user_id = ? AND id IN ('
+            . implode(',', array_fill(0, count($ids), '?')) . ')')->execute([$userId, ...$ids]);
+    }
+
+    /** Delete rows from the user's inbox (swipe left). */
+    public static function deleteFor(string $userId, array $ids): void
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if ($ids === []) return;
+        Database::pdo()->prepare('DELETE FROM notifications WHERE user_id = ? AND id IN ('
+            . implode(',', array_fill(0, count($ids), '?')) . ')')->execute([$userId, ...$ids]);
     }
 
     // ── Bulk notification helpers ─────────────────────────────────────────────
@@ -751,23 +978,26 @@ class NotificationRepository
                     WorldRepository::emitSystem('new_user',
                         "{$arriverNickname}: {$cityName}",
                         ['guest_id' => $arriverGuestId, 'nickname' => $arriverNickname, 'city' => $cityName]);
-                    // Opt-in global push (default OFF). Bounded by the same
-                    // genuine-new-user gate above (deduped per guest, ≤10/day).
-                    // Pass the arriver's city so members of it (who get the city
-                    // push) are excluded - one push per arrival, city takes priority.
-                    self::notifyWorldArrival($arriverUserId, $arriverNickname, $cityName, $cityChannelId);
                 }
             }
         } catch (\Throwable $e) {
             error_log('[world] new_user hook failed (non-fatal): ' . $e->getMessage());
         }
 
-        // Push to opted-in city members, excluding the arriver.
+        // V6: friends anywhere hear that a friend landed (not the whole world:
+        // "New arrival in Omaha" for a Saigon player was noise). Members of the
+        // city get the city push below instead.
+        if ($arriverUserId !== null && $cityName) {
+            self::notifyWorldArrival($arriverUserId, $arriverNickname, $cityName, $cityChannelId);
+        }
+
+        // Push to opted-in city members, excluding the arriver. The Hilads name
+        // ("Saigon"), other locales get theirs from NotificationI18n.
         self::notifyCityOnlineUsers(
             $cityChannelId,
             $arriverUserId,
             'city_join',
-            'Someone arrived in ' . ($cityName ?? 'your city'),
+            'Someone arrived in ' . ($cityName ? CityNames::short($cityName) : 'your city'),
             $arriverNickname . ' just landed',
             ['channelId' => $cityChannelId, 'arriverName' => $arriverNickname, 'cityName' => $cityName ?? 'your city'],
         );
@@ -973,10 +1203,10 @@ class NotificationRepository
     }
 
     /**
-     * World-channel arrival push: a genuinely-new user landed (from any city).
-     * Global fan-out to users who opted IN via world_arrival_push (default OFF),
-     * so the recipient set is naturally small; still capped + TTL-bounded like the
-     * city fan-out. The arriver is excluded. Best-effort; never throws.
+     * A friend landed in a city (V6): their friends hear it wherever they are,
+     * except members of that city (they get the city_join push, which takes
+     * priority). Gated by friend_arrival_push (default on). One per friend,
+     * city and day (dedupe key). Best-effort; never throws.
      */
     public static function notifyWorldArrival(
         ?string $arriverUserId,
@@ -984,39 +1214,38 @@ class NotificationRepository
         string  $cityName,
         ?string $arriverCityChannelId = null
     ): void {
+        if ($arriverUserId === null) return;
         try {
-            $cap = self::CITY_PUSH_FANOUT_CAP;
-            // Select opted-in, recently-active, non-deleted users, excluding the
-            // arriver. Driving off the preference table keeps this cheap - almost
-            // nobody has the (default-OFF) flag on.
-            //
-            // EXCLUDE members of the arriver's own city: they already receive the
-            // city_join push for this arrival, which takes priority. Without this,
-            // a city member who also opted into World arrivals got TWO pushes for
-            // the same person.
+            $cap  = self::CITY_PUSH_FANOUT_CAP;
             $stmt = Database::pdo()->prepare("
-                SELECT np.user_id
-                FROM notification_preferences np
-                JOIN users u ON u.id = np.user_id
-                WHERE np.world_arrival_push = true
+                SELECT u.id
+                FROM user_friends f
+                JOIN users u ON u.id = f.friend_id
+                LEFT JOIN notification_preferences np ON np.user_id = u.id
+                WHERE f.user_id = ?
                   AND u.deleted_at IS NULL
-                  AND u.current_city_last_confirmed_at > now() - interval '30 days'
-                  AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
+                  AND COALESCE(np.friend_arrival_push, true)
                   AND (CAST(? AS text) IS NULL OR u.current_city_id IS DISTINCT FROM CAST(? AS text))
                 ORDER BY u.current_city_last_confirmed_at DESC NULLS LAST
                 LIMIT {$cap}
             ");
-            $stmt->execute([$arriverUserId, $arriverUserId, $arriverCityChannelId, $arriverCityChannelId]);
+            try {
+                $stmt->execute([$arriverUserId, $arriverCityChannelId, $arriverCityChannelId]);
+            } catch (\PDOException $e) {
+                if ($e->getCode() !== '42703') throw $e;
+                return;   // before the V6 migration (no friend_arrival_push): nobody, as V6 wants
+            }
             $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
             if (empty($userIds)) return;
 
-            $title = 'New arrival';
-            $body  = $arriverNickname . ' just landed in ' . $cityName;
-            $data  = ['scope' => 'world', 'nickname' => $arriverNickname, 'cityName' => $cityName];
+            $city  = CityNames::short($cityName);
+            $title = 'A friend landed';
+            $body  = $arriverNickname . ' just landed in ' . $city;
+            $data  = ['scope' => 'world', 'friend' => true, 'actorId' => $arriverUserId,
+                      'nickname' => $arriverNickname, 'cityName' => $cityName, 'channelId' => $arriverCityChannelId];
 
             $locales = self::batchLocale($userIds);
             foreach ($userIds as $uid) {
-                // Light per-recipient floor so a burst of arrivals can't spam.
                 if (!RateLimiter::allow("notif:world_arrival:{$uid}", 1, 300)) continue;
                 self::createUnchecked($uid, 'world_arrival', $title, $body, $data, $locales[$uid] ?? 'en');
             }

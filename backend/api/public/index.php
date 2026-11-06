@@ -82,6 +82,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/RateLimiter.php';
     require_once __DIR__ . '/../src/NotificationI18n.php';
     require_once __DIR__ . '/../src/BotAccountService.php';
+    require_once __DIR__ . '/../src/NotificationCategory.php';
     require_once __DIR__ . '/../src/NotificationRepository.php';
     require_once __DIR__ . '/../src/PushService.php';
     require_once __DIR__ . '/../src/MobilePushService.php';
@@ -254,6 +255,7 @@ require_once __DIR__ . '/../src/FriendRequestRepository.php';
 require_once __DIR__ . '/../src/BlockRepository.php';
 require_once __DIR__ . '/../src/NotificationI18n.php';
 require_once __DIR__ . '/../src/BotAccountService.php';
+require_once __DIR__ . '/../src/NotificationCategory.php';
 require_once __DIR__ . '/../src/NotificationRepository.php';
 require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
 require_once __DIR__ . '/../src/PushBroadcastService.php';

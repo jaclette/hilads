@@ -170,6 +170,9 @@ final class DailyPushes
      */
     public static function outcomeLine(?array $mine, ?array $winner, string $locale = 'en'): ?string
     {
+        // The Hilads city name ("Saigon", "Sài Gòn"), not the official one.
+        if ($mine !== null && $mine['cityName'] !== null) $mine['cityName'] = CityNames::short($mine['cityName'], $locale);
+        if ($winner !== null && $winner['cityName'] !== null) $winner['cityName'] = CityNames::short($winner['cityName'], $locale);
         if ($locale !== 'en' && DailyPushText::has($locale)) {
             return self::outcomeLineIn($locale, $mine, $winner);
         }

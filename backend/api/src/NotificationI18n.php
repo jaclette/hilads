@@ -64,6 +64,27 @@ final class NotificationI18n
             'ru'      => ["{city}: кто-то только что приехал", "{name} уже здесь"],
             'ar'      => ["وصل أحدهم للتو إلى {city}", "{name} وصل للتو"],
         ],
+        // V6: a friend landed somewhere (worldwide arrivals are friends-only).
+        'world_arrival' => [
+            'fr' => ["Un ami a atterri", "{name} vient d'arriver à {city}"],
+            'vi' => ["Bạn bè vừa tới nơi", "{name} vừa tới {city}"],
+            'es' => ["Un amigo acaba de llegar", "{name} acaba de llegar a {city}"],
+            'it' => ["Un amico è appena arrivato", "{name} è appena arrivato a {city}"],
+            'pt-br' => ["Um amigo acabou de chegar", "{name} acabou de chegar em {city}"],
+            'pt-pt' => ["Um amigo acabou de chegar", "{name} acabou de chegar a {city}"],
+            'de'    => ["Ein Freund ist gelandet", "{name} ist gerade in {city} angekommen"],
+            'nl'    => ["Een vriend is geland", "{name} is net in {city} aangekomen"],
+            'zh-hans' => ["好友刚落地", "{name} 刚到 {city}"],
+            'zh-hant' => ["朋友剛落地", "{name} 剛到 {city}"],
+            'ja'      => ["友だちが到着", "{name}さんが{city}に着いたよ"],
+            'ko'      => ["친구가 도착했어요", "{name} 님이 방금 {city}에 도착했어요"],
+            'fil'     => ["May friend na dumating", "Kararating lang ni {name} sa {city}"],
+            'th'      => ["เพื่อนมาถึงแล้ว", "{name} เพิ่งมาถึง{city}"],
+            'id'      => ["Temanmu baru tiba", "{name} baru aja sampai di {city}"],
+            'hi'      => ["आपका दोस्त पहुंच गया", "{name} अभी-अभी {city} पहुंचे"],
+            'ru'      => ["Друг приземлился", "{name} только что прилетел в {city}"],
+            'ar'      => ["وصل صديقك", "{name} وصل للتو إلى {city}"],
+        ],
         'new_event' => [
             'fr' => ["Nouvel événement à {city}", null],
             'vi' => ["Sự kiện mới ở {city}",     null],
@@ -899,6 +920,7 @@ final class NotificationI18n
     {
         $key = match ($type) {
             'city_join'                => 'arriverName',
+            'world_arrival'            => 'nickname',
             'friend_request_accepted',
             'friend_added'             => 'accepterName',
             'vibe_received'            => 'actorName',

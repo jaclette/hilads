@@ -7418,6 +7418,80 @@ $router->add('POST', '/api/v1/notifications/mark-read', function () {
     Response::json(['ok' => true]);
 });
 
+// ── V6 inbox ─────────────────────────────────────────────────────────────────
+// The v1 list above stays for older apps and the web.
+
+/** A V6 route before migrate.php added the columns: 503 instead of a 500. */
+function notifV6(callable $fn): void
+{
+    try {
+        $fn();
+    } catch (\PDOException $e) {
+        if ($e->getCode() !== '42703') throw $e;
+        Response::json(['error' => 'Not ready', 'code' => 'not_migrated'], 503);
+    }
+}
+
+/** ?categories=social,game → the valid ones. */
+function notifCategories(?string $raw): array
+{
+    return array_values(array_intersect(array_map('trim', explode(',', (string) $raw)), NotificationCategory::ALL));
+}
+
+// GET /api/v1/notifications/inbox?categories=social,game&cursor=&limit=30&unseen=1
+// Grouped items: {id, ids[], category, type, title, body, data, actors[≤3]{id,name,photoUrl},
+// count, object{kind:photo|plan|challenge,…}, deep_link, created_at, read, seen}.
+$router->add('GET', '/api/v1/notifications/inbox', function () {
+    $user = AuthService::requireAuth();
+    notifV6(function () use ($user) {
+        $blocks = viewerBlockSet($user['id'], null);
+        $page   = NotificationRepository::inbox(
+            $user['id'],
+            notifCategories($_GET['categories'] ?? null),
+            isset($_GET['cursor']) ? (string) $_GET['cursor'] : null,
+            max(1, min(50, (int) ($_GET['limit'] ?? 30))),
+            ($_GET['unseen'] ?? '') === '1',
+            $blocks['user_ids'] ?? [],
+        );
+        Response::json($page);
+    });
+});
+
+// GET /api/v1/notifications/counts → {total, unread{social,game,plans,city,hilads}, unseen{…}}
+// One cheap call for the bell, the tab badges and the filter chips.
+$router->add('GET', '/api/v1/notifications/counts', function () {
+    $user = AuthService::requireAuth();
+    notifV6(fn() => Response::json(NotificationRepository::counts($user['id'])));
+});
+
+// POST /api/v1/notifications/seen  Body: {ids:[…]} or {categories:['social','game']}
+// Seen, not read: the "While you were away" card was dismissed.
+$router->add('POST', '/api/v1/notifications/seen', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json() ?? [];
+    notifV6(function () use ($user, $body) {
+        NotificationRepository::markSeen($user['id'], is_array($body['ids'] ?? null) ? $body['ids'] : [],
+            is_array($body['categories'] ?? null) ? $body['categories'] : []);
+        Response::json(['ok' => true]);
+    });
+});
+
+// POST /api/v1/notifications/mark-unread  Body: {ids:[…]}
+$router->add('POST', '/api/v1/notifications/mark-unread', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json() ?? [];
+    NotificationRepository::markUnread($user['id'], is_array($body['ids'] ?? null) ? $body['ids'] : []);
+    Response::json(['ok' => true]);
+});
+
+// POST /api/v1/notifications/delete  Body: {ids:[…]}
+$router->add('POST', '/api/v1/notifications/delete', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json() ?? [];
+    NotificationRepository::deleteFor($user['id'], is_array($body['ids'] ?? null) ? $body['ids'] : []);
+    Response::json(['ok' => true]);
+});
+
 // GET /api/v1/notification-preferences
 $router->add('GET', '/api/v1/notification-preferences', function () {
     $user = AuthService::requireAuth();

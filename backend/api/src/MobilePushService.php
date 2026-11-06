@@ -46,7 +46,7 @@ class MobilePushService
             'channel_message' => 'channel_message_push',
             'city_here'       => 'mention_push',
             'city_join'       => 'city_join_push',
-            'world_arrival'   => 'world_arrival_push',
+            'world_arrival'   => 'friend_arrival_push',
             'vibe_received'   => 'vibe_received_push',
             'profile_view'    => 'profile_view_push',
             'topic_message'   => 'topic_reply_push',

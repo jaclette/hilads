@@ -93,7 +93,10 @@ final class DailyModerationService
         Places::approveForProof(DailyProofRepository::findById($proofId) ?? []);
         // Local Pass first (V2-03), so the card of the proof that completes it shows it.
         try {
-            DailyLocalPass::checkAfterApproval(DailyProofRepository::findById($proofId));
+            $approvedProof = DailyProofRepository::findById($proofId);
+            if (DailyLocalPass::checkAfterApproval($approvedProof)) {
+                DailyNotify::onLocalPass($approvedProof);   // V6: in the bell (Game)
+            }
         } catch (\Throwable $e) {
             error_log("[daily] local pass for proof {$proofId} failed: " . $e->getMessage());
         }

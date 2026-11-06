@@ -163,16 +163,16 @@ final class DailyPushesTest extends TestCase
     {
         $this->assertSame('Yesterday your photo ranked 2nd in the world.',
             DailyPushes::outcomeLine(self::mine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9]), null));
-        $this->assertSame('Yesterday your photo was the best in Ho Chi Minh City.',
+        $this->assertSame('Yesterday your photo was the best in Saigon.',
             DailyPushes::outcomeLine(self::mine(['cityRank' => 1, 'cityBest' => true, 'votes' => 3]), null));
-        $this->assertSame('Yesterday your photo ranked 4th in Ho Chi Minh City.',
+        $this->assertSame('Yesterday your photo ranked 4th in Saigon.',
             DailyPushes::outcomeLine(self::mine(['cityRank' => 4, 'votes' => 1]), null));
         $this->assertSame('Yesterday your photo got 1 vote.',
             DailyPushes::outcomeLine(self::mine(['cityName' => null, 'votes' => 1]), null));
         $this->assertNull(DailyPushes::outcomeLine(self::mine(['cityName' => null]), null));
 
         $winner = ['name' => 'Anh', 'cityName' => 'Ho Chi Minh City', 'votes' => 14];
-        $this->assertSame("Yesterday's winner: Anh in Ho Chi Minh City, 14 votes.", DailyPushes::outcomeLine(null, $winner));
+        $this->assertSame("Yesterday's winner: Anh in Saigon, 14 votes.", DailyPushes::outcomeLine(null, $winner));
         $this->assertSame("Yesterday's winner: Anh, 1 vote.", DailyPushes::outcomeLine(null, ['cityName' => null, 'votes' => 1] + $winner));
         $this->assertNull(DailyPushes::outcomeLine(null, null));
     }
