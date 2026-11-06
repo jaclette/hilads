@@ -179,8 +179,9 @@ export default function TodayCountries({ today, data }) {
             {cities.length > 0 && <button type="button" className="dc-link" onClick={() => openDaily('countries', { source: 'today_mosaic' })}>{t('today.seeAll')}</button>}
           </div>
           {cities.length === 0 && yesterday.length > 0 && <p className="dc-muted">{t('mosaic.yesterday')}</p>}
+          {/* My city's slot (V6): a compact call above the grid, not a big empty card in it. */}
+          {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onOpen={play} />}
           <div className="tc-grid">
-            {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onOpen={play} />}
             {cities.length > 0
               ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={photo => openCity(g, 'today_mosaic', photo)} />)
               : yesterday.map(({ s, i }) => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
@@ -341,8 +342,8 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
             aria-label={[shortCityName(group.city.name), line, pile && players > 0 ? t('mosaic.players', { count: players }) : null,
                          swipeable ? t('stories.of', { index: front + 1, total: n }) : null, likes].filter(x => x !== null && x !== '').join(', ')}>
       {/* The pile: the next photos themselves, offset and tilted, a theme-colored edge; plain sheets until they load. */}
-      {pile && group.count > 2 && <PileSheet proof={n > 2 ? at(2) : null} color={pileColor} back2 />}
-      {pile && <PileSheet proof={n > 1 ? at(1) : null} color={pileColor} />}
+      {pile && !faded && group.count > 2 && <PileSheet proof={n > 2 ? at(2) : null} color={pileColor} back2 />}
+      {pile && !faded && <PileSheet proof={n > 1 ? at(1) : null} color={pileColor} />}
       <span className="tc-tile" ref={topRef}>
         <span className="tc-photo-box">
           <img className="tc-photo" src={thumbUrl(p.thumbUrl || p.photoUrl)} style={placeholderStyle(p.thumbHash)} onError={thumbFallback(p.photoUrl)} alt="" loading="lazy" draggable={false} />
@@ -444,15 +445,18 @@ function claimNudge() {
 /** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
 function SlotCard({ city, first, label, onOpen }) {
   const { t } = useDc()
-  const title = first ? (city ? t('mosaic.beFirst', { city }) : t(label ?? 'countries.represent'))
+  const title = first ? (city ? t('mosaic.slotCta', { city }) : t(label ?? 'countries.represent'))
     : city ? t('mosaic.missing', { city }) : t(label ?? 'countries.represent')
   // Under the title: the call when the title names the city, else nothing to repeat.
   const sub = first ? t('mosaic.beFirstSub') : city ? t(label ?? 'countries.represent') : null
   return (
-    <button type="button" className="tc-tile tc-represent" onClick={onOpen}>
-      <span className="tc-camera"><Icon name="camera-outline" size={24} /></span>
-      <span className="tc-represent-text">{title}</span>
-      {sub && <span className="tc-represent-sub">{sub}</span>}
+    <button type="button" className="tc-slot" onClick={onOpen} data-testid="represent-tile">
+      <span className="tc-slot-camera"><Icon name="camera" size={22} /></span>
+      <span className="tc-slot-body">
+        <span className="tc-slot-title">{title}</span>
+        {sub && <span className="tc-slot-sub">{sub}</span>}
+      </span>
+      <Icon name="chevron-forward" size={20} />
     </button>
   )
 }

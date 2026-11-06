@@ -1436,7 +1436,8 @@
       "yesterday": "昨日、世界はこう言った…",
       "beFirst": "{{city}}を代表しよう",
       "beFirstSub": "今日最初の街になろう",
-      "swipeHint": "スワイプして旅しよう 🌍"
+      "swipeHint": "スワイプして旅しよう 🌍",
+      "slotCta": "📸 {{city}}は？今日いちばん乗りしよう"
     },
     "recap": {
       "label": "昨日",

@@ -1436,7 +1436,8 @@
       "yesterday": "Kemarin dunia bilang…",
       "beFirst": "Wakili {{city}}",
       "beFirstSub": "Jadilah kota pertama hari ini",
-      "swipeHint": "Geser untuk menjelajah 🌍"
+      "swipeHint": "Geser untuk menjelajah 🌍",
+      "slotCta": "📸 {{city}}? Jadi yang pertama hari ini"
     },
     "recap": {
       "label": "Kemarin",

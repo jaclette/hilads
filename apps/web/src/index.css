@@ -17840,7 +17840,7 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-grid { row-gap: 16px; padding-top: 4px; align-items: start; }
 .tc-card { position: relative; display: block; min-width: 0; border: 0; background: none; padding: 0; font: inherit; text-align: left; color: var(--text); cursor: pointer; }
 .tc-card > .tc-tile { position: relative; z-index: 1; height: 100%; }
-.tc-card--faded { opacity: 0.55; }
+.tc-card--faded { opacity: 0.92; }   /* yesterday's cards stay readable (V6: 0.55 read washed out) */
 .tc-layer { position: absolute; inset: 0; border-radius: 16px; opacity: 0.55; }
 .tc-layer--back { transform: translate(8px, -2px) rotate(5deg); }
 .tc-layer--back2 { opacity: 0.3; transform: translate(-7px, 3px) rotate(-5deg); }
@@ -18391,3 +18391,12 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .rv-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 8px; background: var(--surface); }
 .rv-label { flex: 1; min-width: 0; font-size: 12px; font-weight: 700; color: var(--muted); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rv-likes { font-size: 13px; font-weight: 800; color: var(--text); }
+
+/* V6: my city's slot, a compact call above the mosaic grid. */
+.tc-slot { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; margin-bottom: 12px; padding: 10px 12px; border-radius: 16px;
+  border: 1.5px dashed var(--primary-text); background: var(--primary-tint); color: var(--primary-on-tint); font: inherit; text-align: left; cursor: pointer; }
+.tc-slot:active { transform: scale(0.98); }
+.tc-slot-camera { flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; background: var(--surface); color: var(--primary-text); display: flex; align-items: center; justify-content: center; }
+.tc-slot-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tc-slot-title { font-size: 16px; font-weight: 800; }
+.tc-slot-sub { font-size: 13px; font-weight: 600; }

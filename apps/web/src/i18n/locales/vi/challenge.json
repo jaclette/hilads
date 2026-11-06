@@ -1436,7 +1436,8 @@
       "yesterday": "Hôm qua thế giới nói…",
       "beFirst": "Đại diện cho {{city}}",
       "beFirstSub": "Làm thành phố đầu tiên hôm nay",
-      "swipeHint": "Vuốt để đi du lịch 🌍"
+      "swipeHint": "Vuốt để đi du lịch 🌍",
+      "slotCta": "📸 {{city}} đâu rồi? Chơi đầu tiên hôm nay nha"
     },
     "recap": {
       "label": "Hôm qua",

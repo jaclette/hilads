@@ -1465,7 +1465,8 @@
       "yesterday": "Gisteren zei de wereld…",
       "beFirst": "Vertegenwoordig {{city}}",
       "beFirstSub": "Word vandaag de eerste stad",
-      "swipeHint": "Swipe om te reizen 🌍"
+      "swipeHint": "Swipe om te reizen 🌍",
+      "slotCta": "📸 {{city}}? Wees vandaag de eerste"
     },
     "recap": {
       "label": "Gisteren",

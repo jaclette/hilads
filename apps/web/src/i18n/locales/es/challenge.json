@@ -1494,7 +1494,8 @@
       "yesterday": "Ayer el mundo dijo…",
       "beFirst": "Representa a {{city}}",
       "beFirstSub": "Sé la primera ciudad hoy",
-      "swipeHint": "Desliza para viajar 🌍"
+      "swipeHint": "Desliza para viajar 🌍",
+      "slotCta": "📸 ¿{{city}}? Sé el primero hoy"
     },
     "recap": {
       "label": "Ayer",

@@ -217,8 +217,10 @@ function Ticket({ data, countries, loading }) {
   const photo = cover
   const original = showOriginal && challenge.original ? challenge.original.text : null
   const headline = original ?? (challenge.headline || challenge.text)
-  // The full ask under a short headline ("...and share its local name"): the subtitle, else the text.
-  const ask = original ? null : challenge.subtitle || (challenge.headline && challenge.headline !== challenge.text ? challenge.text : null)
+  // The full ask under a short headline ("...and share its local name"): the subtitle, else the text,
+  // unless the text only says the headline again in other words (V6, as in the app).
+  const ask = original ? null : challenge.subtitle
+    || (challenge.headline && challenge.headline !== challenge.text && !sameAsk(challenge.headline, challenge.text) ? challenge.text : null)
   // A seasonal event's live day (Halloween: "Haunt Lisbon 👻") replaces the label.
   const ctaLabel = seasonal ? (cityShort ? t(seasonal.theme.copy.cta, { city: cityShort }) : t(seasonal.theme.copy.ctaNoCity))
     : cityShort ? t('hero.cta', { city: cityShort }) : t('hero.ctaNoCity')
@@ -524,4 +526,20 @@ function ProposeLink() {
       <span>{t('propose.linkAsk')} <span className="today-propose-cta">{t('propose.linkCta')}</span></span>
     </button>
   )
+}
+
+/**
+ * The subtitle only says the headline again: at least half of the headline's
+ * words (3+ letters) are in it and it is barely longer (at most 1.5×), so it
+ * adds no "how" and no local twist. Scripts without spaces (CJK, Thai): the same
+ * on characters, 60% shared. Same rule as the app's TodayTicket.
+ */
+export function sameAsk(headline, subtitle) {
+  const norm = (v) => v.toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?¡¿;:'"‘’“”«»()…\-–—]/g, ' ')
+  const words = (v) => new Set(norm(v).split(/\s+/).filter(w => w.length >= 3))
+  const share = (a, b) => { let n = 0; a.forEach(x => { if (b.has(x)) n++ }); return a.size ? n / a.size : 0 }
+  const wh = words(headline), ws = words(subtitle)
+  if (wh.size >= 2 && ws.size >= 2) return share(wh, ws) >= 0.5 && ws.size <= wh.size * 1.5
+  const ch = new Set([...norm(headline).replace(/\s/g, '')]), cs = new Set([...norm(subtitle).replace(/\s/g, '')])
+  return share(ch, cs) >= 0.6 && cs.size <= ch.size * 1.5
 }
