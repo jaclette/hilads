@@ -305,9 +305,12 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
  */
 const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, onPress }: { item: PhotosRanks['items'][number]; mine: boolean; week: boolean; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
+  const { theme: mode } = useTheme();
   const p = item.proof;
   const theme = p.context?.theme?.key ?? null;
-  const c = theme ? themeColor(theme) : null;
+  // The theme's text color, not its fill: the peach ones (Taste, Only here, and the retired themes of
+  // older challenges, which fall back to the special day's peach) vanished on their own peach tint.
+  const ink = theme ? (mode === 'dark' ? themeColor(theme).textDark : themeColor(theme).textLight) : null;
   const who = p.user.username ? `@${p.user.username}` : p.user.displayName ?? '';
   return (
     <Pressable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
@@ -321,9 +324,9 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, onPress }: {
       <View style={styles.pBody}>
         {!!p.context?.text && <Text style={styles.pTitle} numberOfLines={1}>{p.context.text}</Text>}
         <View style={styles.pMeta}>
-          {!!theme && c && (
-            <View style={[styles.pChip, { backgroundColor: tint(c.fill, 0.2) }]}>
-              <ThemeIcon theme={theme} size={11} color={c.fill} />
+          {!!theme && ink && (
+            <View style={[styles.pChip, { backgroundColor: tint(ink, 0.14) }]}>
+              <ThemeIcon theme={theme} size={11} color={ink} />
               <Text style={styles.pChipText} numberOfLines={1}>{p.context?.theme?.name}</Text>
             </View>
           )}

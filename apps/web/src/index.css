@@ -18370,8 +18370,9 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .r6-pthumb { width: 52px; height: 52px; flex-shrink: 0; border-radius: 12px; object-fit: cover; background: var(--surface2); }
 .r6-pbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .r6-ptitle { font-size: 14px; line-height: 18px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.r6-pchip { align-self: flex-start; display: inline-flex; align-items: center; gap: 3px; max-width: 100%; height: 18px; padding: 0 6px; border-radius: 9px;
-  background: color-mix(in srgb, var(--chip) 20%, transparent); color: var(--chip); font-size: 11px; font-weight: 800; }
+.r6-pchip { --chip: var(--chip-l); align-self: flex-start; display: inline-flex; align-items: center; gap: 3px; max-width: 100%; height: 18px; padding: 0 6px; border-radius: 9px;
+  background: color-mix(in srgb, var(--chip) 14%, transparent); color: var(--chip); font-size: 11px; font-weight: 800; }
+[data-theme="dark"] .r6-pchip { --chip: var(--chip-d); }
 .r6-pchip span { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .r6-pwho { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 13px; color: var(--muted); }
 .r6-pname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

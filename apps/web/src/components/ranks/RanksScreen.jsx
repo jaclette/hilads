@@ -218,7 +218,9 @@ function PhotoRow({ item, mine, week, onClick, rowRef }) {
       <span className="r6-pbody">
         {p.context?.text && <span className="r6-ptitle">{p.context.text}</span>}
         {theme && (
-          <span className="r6-pchip" style={{ '--chip': themeColor(theme).fill }}>
+          // The theme's text color (light / dark), not its fill: the peach ones (and the retired themes of
+          // older challenges, on the special day's peach) vanished on their own tint.
+          <span className="r6-pchip" style={{ '--chip-l': themeColor(theme).light, '--chip-d': themeColor(theme).dark }}>
             <Icon name={themeIcon(theme)} size={11} /><span>{p.context.theme.name}</span>
           </span>
         )}
