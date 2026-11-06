@@ -58,7 +58,7 @@ export default function TodayScreen({ header }) {
   const { i18n } = useDc()
   // A seasonal event's live look (Halloween...) re-colors the whole tab.
   const seasonalAttr = useSeasonalAttr()
-  const { cityId, here, hereVersion, account, openNotifications } = useDaily()
+  const { cityId, here, hereVersion, account } = useDaily()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const hereKey = here ? `${here.cityId}:${here.gps}` : ''
@@ -93,7 +93,7 @@ export default function TodayScreen({ header }) {
       <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
         {/* V6: unseen comments, likes and results since the last visit. */}
-        <WhileAwayCard account={account} onOpen={openNotifications} />
+        <WhileAwayCard account={account} />
         <Ticket data={data} countries={countries} loading={loading} />
         {/* V6: yesterday's results are out (once). */}
         <ResultsCard />

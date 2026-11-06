@@ -45,7 +45,9 @@
     "view": "👀 {{name}} 님이 프로필을 봤어요",
     "other": "🔔 새 소식이 있어요",
     "dismiss": "닫기",
-    "open": "새 소식 보기"
+    "open": "새 소식 보기",
+    "more_one": "{{count}}개 더",
+    "more_other": "{{count}}개 더"
   },
   "inbox": {
     "settings": "알림 설정",

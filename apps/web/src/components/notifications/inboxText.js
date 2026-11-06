@@ -55,42 +55,84 @@ export function rowText(item, t) {
   return { parts, quote: ['comment', 'photoMention', 'mention'].includes(key) ? item.body : null }
 }
 
-/** Unseen first, then by day. */
+/**
+ * A server time as epoch ms: ISO 8601 or Postgres' "2026-11-05 14:00:00.123+00" (Safari can't
+ * parse the space or the short offset). NaN when unknown.
+ */
+export function parseTime(raw) {
+  if (raw === null || raw === undefined || raw === '') return NaN
+  if (typeof raw === 'number') return raw < 1e10 ? raw * 1000 : raw
+  let ms = Date.parse(raw)
+  if (isNaN(ms)) {
+    const iso = String(raw).trim().replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00').replace(/([+-]\d{2})(\d{2})$/, '$1:$2')
+    ms = Date.parse(/[zZ]|[+-]\d{2}:\d{2}$/.test(iso) ? iso : `${iso}Z`)
+  }
+  return ms
+}
+
+/** Calendar days between that moment and now, in the reader's time zone (0 = today, 1 = yesterday). */
+export function calendarDaysAgo(ms, now = new Date()) {
+  const at = new Date(ms)
+  const day = (d) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+  return Math.round((day(now) - day(at)) / 86400000)
+}
+
+/** Unseen first, then by calendar day in the reader's time zone (the same count as the row's "1d"). */
 export function sectionOf(item, now = new Date()) {
   if (!item.seen && !item.read) return 'new'
-  const at = new Date(item.created_at)
-  const day = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
-  const diff = Math.round((day(now) - day(at)) / 86400000)
+  const ms = parseTime(item.created_at)
+  if (isNaN(ms)) return 'earlier'
+  const diff = calendarDaysAgo(ms, now)
   return diff <= 0 ? 'today' : diff === 1 ? 'yesterday' : diff < 7 ? 'week' : 'earlier'
 }
 
-/** Unseen items as one fun line ("🏆 #2 in the world yesterday · 💬 Lan commented on your photo · ❤️ +12"). */
-export function awayLine(items, t, max = 3) {
-  const parts = []
-  for (const g of items.filter(i => i.category === 'game')) {
-    const d = g.data ?? {}
-    if (g.type === 'daily_result') {
+// What counts most, first (as the app): results, comments, mentions, likes, friends, the Local Pass, profile views.
+const PRIORITY = ['daily_result', 'daily_rank', 'photo_comment', 'photo_mention', 'mention', 'daily_vote',
+  'friend_request_received', 'daily_local_pass', 'profile_view']
+const prio = (i) => { const r = PRIORITY.indexOf(i.type); return r < 0 ? PRIORITY.length : r }
+
+/** The unseen items, the most important first (newest first within a type). */
+export function byImportance(items) {
+  return [...items].sort((a, b) => prio(a) - prio(b) || String(b.created_at).localeCompare(String(a.created_at)))
+}
+
+function fragment(i, items, t) {
+  const d = i.data ?? {}
+  const name = i.actors?.[0]?.name
+  switch (i.type) {
+    case 'daily_result': {
       const city = shortCityName(d.cityName)
-      parts.push(d.worldRank ? t('away.rankWorld', { rank: d.worldRank })
+      return d.worldRank ? t('away.rankWorld', { rank: d.worldRank })
         : d.cityBest ? t('away.cityBest', { city })
         : d.cityRank ? t('away.rankCity', { rank: d.cityRank, city })
-        : t('away.votes', { count: d.votes ?? 0 }))
-    } else if (g.type === 'daily_local_pass') {
-      parts.push(t('away.localPass', { city: shortCityName(d.cityName ?? '') }))
+        : t('away.votes', { count: d.votes ?? 0 })
     }
+    case 'daily_local_pass': return t('away.localPass', { city: shortCityName(d.cityName ?? '') })
+    case 'photo_comment': {
+      const all = items.filter(x => x.type === 'photo_comment')
+      return all.length === 1 && i.count === 1 && name ? t('away.comment', { name }) : t('away.comments')
+    }
+    case 'daily_vote': return t('away.likes', { count: items.filter(x => x.type === 'daily_vote').reduce((n, x) => n + x.count, 0) })
+    case 'mention': case 'photo_mention': return name ? t('away.mention', { name }) : null
+    case 'friend_request_received': return name ? t('away.friend', { name }) : null
+    case 'profile_view': return name ? t('away.view', { name }) : null
+    default: return null
   }
-  const comments = items.filter(i => i.type === 'photo_comment')
-  if (comments.length === 1 && comments[0].count === 1 && comments[0].actors[0]) parts.push(t('away.comment', { name: comments[0].actors[0].name }))
-  else if (comments.length) parts.push(t('away.comments'))
-  const likes = items.filter(i => i.type === 'daily_vote').reduce((n, i) => n + i.count, 0)
-  if (likes > 0) parts.push(t('away.likes', { count: likes }))
-  for (const i of items) {
-    const name = i.actors?.[0]?.name
-    if (!name) continue
-    if (i.type === 'mention' || i.type === 'photo_mention') parts.push(t('away.mention', { name }))
-    else if (i.type === 'friend_request_received') parts.push(t('away.friend', { name }))
-    else if (i.type === 'profile_view') parts.push(t('away.view', { name }))
+}
+
+/** Unseen items as one line, most important first, each kind once ("💬 New comments on your photo · ❤️ +12"). */
+export function awayLine(items, t, max = 3) {
+  const parts = []
+  for (const i of byImportance(items)) {
+    const f = fragment(i, items, t)
+    if (f && !parts.includes(f)) parts.push(f)
   }
   if (!parts.length) parts.push(t('away.other'))
   return parts.slice(0, max).join(' · ')
+}
+
+/** The object (photo, plan) every item is about, when they all are about the same one. */
+export function sameObject(items) {
+  const keys = items.map(i => (i.object?.id ? `${i.object.kind}:${i.object.id}` : null))
+  return keys[0] && keys.every(k => k === keys[0]) ? keys[0] : null
 }

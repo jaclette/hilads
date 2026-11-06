@@ -1303,6 +1303,7 @@ export default function App() {
   }, [account?.theme, account?.id])
   const [showNotifications, setShowNotifications] = useState(false)
   // V6: the notification preferences, their own page (from the ⚙️ of Notifications).
+  const [notifOnly, setNotifOnly] = useState(null)
   const [showNotifSettings, setShowNotifSettings] = useState(false)
   // V6: what the Ranks tab opens on (a deep link, a notification, Passport).
   const [ranksParams, setRanksParams] = useState({ tab: 'photos', period: 'today', scope: null, at: 0 })
@@ -5183,6 +5184,66 @@ export default function App() {
     : false
 
   // What the Daily screens, the chat's pinned challenge and its Daily cards need.
+  // A notification opened (the Notifications screen, or Today's "While you were away" card): the thing itself.
+  function openNotification(notif) {
+    setShowNotifications(false)
+    const d = notif.data ?? {}
+    if (notif.type === 'daily_result') {
+      // V6: yesterday's results → the ranking of that day's photos.
+      openRanks({ tab: 'photos', period: 'yesterday' })
+    } else if (notif.type === 'daily_rank') {
+      openRanks({ tab: 'players', period: 'week', scope: d.scope === 'world' ? 'world' : 'city' })
+    } else if (notif.type === 'daily_local_pass') {
+      goToMeTab()
+    } else if (notif.type === 'dm_message') {
+      setShowConversations(true)
+    } else if (notif.type === 'event_message' || notif.type === 'event_join') {
+      const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
+      if (ev) handleSelectEvent(ev)
+      else setShowEventDrawer(true)
+    } else if (notif.type === 'new_event') {
+      const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
+      if (ev) handleSelectEvent(ev)
+      else setShowEventDrawer(true)
+    } else if (notif.type === 'mention') {
+      // Route to the exact channel the mention happened in.
+      if (d.challengeId) {
+        fetchChallengeById(d.challengeId).then(x => { if (x?.challenge) setActiveChallenge(x.challenge) }).catch(() => {})
+      } else if (d.eventId) {
+        const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
+        if (ev) handleSelectEvent(ev); else setShowEventDrawer(true)
+      } else if (d.topicId) {
+        const t = (topics || []).find(tp => tp.id === d.topicId)
+        if (t) setActiveTopic(t)
+      } else if (d.scope === 'world' || d.channelId === 'world') {
+        switchScope('world')
+      }
+      // city-channel mentions: closing the panel returns to the city chat.
+    } else if (notif.type === 'friend_request_received') {
+      setShowFriendRequests(true)
+    } else if (notif.type === 'friend_request_accepted' && d.accepterUserId) {
+      openProfile(d.accepterUserId, d.accepterName ?? '')
+    } else if (notif.type === 'friend_added' && d.senderUserId) {
+      // Legacy notifications from before the request flow shipped
+      openProfile(d.senderUserId, d.senderName ?? '')
+    } else if (notif.type === 'vibe_received') {
+      setShowProfileDrawer(true)
+    } else if (notif.type === 'profile_view' && d.viewerId) {
+      openProfile(d.viewerId, d.viewerName ?? '')
+    } else if ((notif.type === 'photo_comment' || notif.type === 'photo_mention') && d.proofId) {
+      // A comment on a photo → its comments, on that comment (the header shows the photo).
+      openPhotoComments({ proofId: d.proofId, focusCommentId: d.commentId ?? null })
+    } else if (notif.type === 'daily_vote' && d.proofId) {
+      // A vote on my photo → Today's photos on it (a photo of another day opens on its challenge).
+      openDaily('photos', { proofId: d.proofId, source: 'notification' })
+    } else if (notif.type === 'daily_twist_completed' && d.proofId) {
+      // A completion of my Local Twist → that proof in its sheet.
+      openDaily('challenge', { date: d.date ?? 'today', proofId: d.proofId })
+    } else if (notif.type === 'daily_twist_picked') {
+      openDaily('twist')
+    }
+  }
+
   const dailyCtx = {
     // The browsed city (the header's), before joining too.
     account, cityId: channelId ?? previewChannelId, scope: channelScope,
@@ -5199,7 +5260,9 @@ export default function App() {
     openMapTheme: (theme) => { goToMapTab(); setMapSpotId(null); setMapTheme(theme ?? null) },
     needAccount: (reason, extra = {}) => setGuestGate({ reason, ...extra }),
     // V6: the notifications (the "While you were away" card) and the Ranks tab.
-    openNotifications: () => setShowNotifications(true),
+    // only: the item ids to show (the card's "+3"), else everything.
+    openNotifications: (only = null) => { setNotifOnly(only); setShowNotifications(true) },
+    openNotification,
     openRanks: (params) => openRanks(params),
     // Ranks' empty podium places lead to Today.
     openToday: () => goToTodayTab(),
@@ -7116,64 +7179,8 @@ export default function App() {
           onBack={() => setShowNotifications(false)}
           onOpenSettings={() => setShowNotifSettings(true)}
           incoming={liveNotif}
-          onNavigate={(notif) => {
-            setShowNotifications(false)
-            const d = notif.data ?? {}
-            if (notif.type === 'daily_result') {
-              // V6: yesterday's results → the ranking of that day's photos.
-              openRanks({ tab: 'photos', period: 'yesterday' })
-            } else if (notif.type === 'daily_rank') {
-              openRanks({ tab: 'players', period: 'week', scope: d.scope === 'world' ? 'world' : 'city' })
-            } else if (notif.type === 'daily_local_pass') {
-              goToMeTab()
-            } else if (notif.type === 'dm_message') {
-              setShowConversations(true)
-            } else if (notif.type === 'event_message' || notif.type === 'event_join') {
-              const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
-              if (ev) handleSelectEvent(ev)
-              else setShowEventDrawer(true)
-            } else if (notif.type === 'new_event') {
-              const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
-              if (ev) handleSelectEvent(ev)
-              else setShowEventDrawer(true)
-            } else if (notif.type === 'mention') {
-              // Route to the exact channel the mention happened in.
-              if (d.challengeId) {
-                fetchChallengeById(d.challengeId).then(x => { if (x?.challenge) setActiveChallenge(x.challenge) }).catch(() => {})
-              } else if (d.eventId) {
-                const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
-                if (ev) handleSelectEvent(ev); else setShowEventDrawer(true)
-              } else if (d.topicId) {
-                const t = (topics || []).find(tp => tp.id === d.topicId)
-                if (t) setActiveTopic(t)
-              } else if (d.scope === 'world' || d.channelId === 'world') {
-                switchScope('world')
-              }
-              // city-channel mentions: closing the panel returns to the city chat.
-            } else if (notif.type === 'friend_request_received') {
-              setShowFriendRequests(true)
-            } else if (notif.type === 'friend_request_accepted' && d.accepterUserId) {
-              openProfile(d.accepterUserId, d.accepterName ?? '')
-            } else if (notif.type === 'friend_added' && d.senderUserId) {
-              // Legacy notifications from before the request flow shipped
-              openProfile(d.senderUserId, d.senderName ?? '')
-            } else if (notif.type === 'vibe_received') {
-              setShowProfileDrawer(true)
-            } else if (notif.type === 'profile_view' && d.viewerId) {
-              openProfile(d.viewerId, d.viewerName ?? '')
-            } else if ((notif.type === 'photo_comment' || notif.type === 'photo_mention') && d.proofId) {
-              // A comment on a photo → its comments, on that comment (the header shows the photo).
-              openPhotoComments({ proofId: d.proofId, focusCommentId: d.commentId ?? null })
-            } else if (notif.type === 'daily_vote' && d.proofId) {
-              // A vote on my photo → Today's photos on it (a photo of another day opens on its challenge).
-              openDaily('photos', { proofId: d.proofId, source: 'notification' })
-            } else if (notif.type === 'daily_twist_completed' && d.proofId) {
-              // A completion of my Local Twist → that proof in its sheet.
-              openDaily('challenge', { date: d.date ?? 'today', proofId: d.proofId })
-            } else if (notif.type === 'daily_twist_picked') {
-              openDaily('twist')
-            }
-          }}
+          only={notifOnly}
+          onNavigate={openNotification}
         />
       )}
 

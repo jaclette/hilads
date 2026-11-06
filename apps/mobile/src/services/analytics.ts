@@ -117,6 +117,8 @@ export type AnalyticsEvent =
   // V6
   | 'ranks_viewed'
   | 'ranks_ghost_tapped'
+  | 'away_card_opened'
+  | 'away_card_more'
   | 'rivals_opened'
   | 'rival_challenge_shared'
   | 'map_surprise'

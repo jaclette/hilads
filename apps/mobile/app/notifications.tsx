@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, SectionList, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withTiming, Easing } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
@@ -39,6 +39,12 @@ export default function NotificationsScreen() {
   const { t } = useTranslation('notifications');
   const { t: tc } = useTranslation('common');
   const router = useRouter();
+  // ?only=<item ids>: just the items the "While you were away" card stood for (its "+3"), until "All".
+  const params = useLocalSearchParams<{ only?: string }>();
+  const [only, setOnly] = useState<Set<number> | null>(() => {
+    const ids = (params.only ?? '').split(',').map(Number).filter(Boolean);
+    return ids.length ? new Set(ids) : null;
+  });
   const { account } = useApp();
   const counts = useNotifCounts();
   const reduced = useReducedMotion();
@@ -136,11 +142,12 @@ export default function NotificationsScreen() {
   const sections = useMemo(() => {
     const by = new Map<SectionKey, InboxItem[]>();
     for (const i of items ?? []) {
+      if (only && !only.has(i.id)) continue;
       const k = sectionOf(i);
       by.set(k, [...(by.get(k) ?? []), i]);
     }
     return SECTIONS.filter(k => by.has(k)).map(k => ({ key: k, data: by.get(k)! }));
-  }, [items]);
+  }, [items, only]);
 
   const anyUnread = filter === 'all' ? counts.total > 0 : (counts.unread[filter] ?? 0) > 0;
   const chips: Filter[] = ['all', ...NOTIF_CATEGORIES];
@@ -166,7 +173,7 @@ export default function NotificationsScreen() {
             const c = f === 'all' ? null : categoryColor(f, theme === 'dark');
             const n = f === 'all' ? counts.total : counts.unread[f] ?? 0;
             return (
-              <Pressable key={f} onPress={() => { Haptics.selectionAsync().catch(() => {}); setFilter(f); }} accessibilityRole="tab"
+              <Pressable key={f} onPress={() => { Haptics.selectionAsync().catch(() => {}); setOnly(null); setFilter(f); }} accessibilityRole="tab"
                          accessibilityState={{ selected: on }} testID={`inbox-chip-${f}`}
                          style={[styles.chip, on && { backgroundColor: c ? c.fill : colors.text, borderColor: c ? c.fill : colors.text }]}>
                 <Text style={[styles.chipText, on && { color: c ? c.onFill : colors.bg }]}>
@@ -184,6 +191,14 @@ export default function NotificationsScreen() {
       </View>
 
       <PushOffBanner />
+      {only && (
+        <View style={styles.onlyBar}>
+          <Text style={styles.onlyText} numberOfLines={1}>{t('away.title')}</Text>
+          <Pressable onPress={() => setOnly(null)} hitSlop={8} accessibilityRole="button" style={styles.onlyAll} testID="inbox-only-all">
+            <Text style={styles.onlyAllText}>{t('inbox.all')}</Text>
+          </Pressable>
+        </View>
+      )}
 
       <View style={styles.flex}>
         {items === null ? <Skeleton /> : (
@@ -250,6 +265,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chipCount:     { minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   chipCountText: { fontSize: 11, lineHeight: 14, fontWeight: '800', color: c.text },
   list:          { paddingBottom: 32 },
+  onlyBar:       { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginTop: 8, paddingVertical: 8, paddingLeft: 14, paddingRight: 8,
+                   borderRadius: 16, backgroundColor: c.primaryTint },
+  onlyText:      { flex: 1, fontSize: 14, fontWeight: '800', color: c.primaryOnTint },
+  onlyAll:       { height: 30, paddingHorizontal: 12, borderRadius: 15, backgroundColor: c.bg2, justifyContent: 'center' },
+  onlyAllText:   { fontSize: 13, fontWeight: '800', color: c.text },
   section:       { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4, fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.muted, backgroundColor: c.bg },
   emptyWrap:     { flexGrow: 1 },
   empty:         { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingVertical: 60, gap: 16 },

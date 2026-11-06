@@ -10,15 +10,22 @@ import Icon from './Icon'
 import AvatarWithFlag from './AvatarWithFlag'
 import { thumbUrl } from '../lib/imageThumb'
 import { CATEGORIES, patchNotifCounts, refreshNotifCounts, useNotifCounts } from '../lib/notifCounts'
-import { rowText, sectionOf } from './notifications/inboxText'
+import { calendarDaysAgo, parseTime, rowText, sectionOf } from './notifications/inboxText'
 import { CATEGORY_EMOJI, categoryColor } from './notifications/categories'
 
-function timeAgo(isoString) {
-  const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000)
+/**
+ * "now", "5m", "3h" today; from yesterday on, by calendar day in the reader's time zone, so
+ * "1d" is always yesterday, as the sections are (never 24 h blocks).
+ */
+function timeAgo(raw) {
+  const ms = parseTime(raw)
+  if (isNaN(ms)) return ''
+  const days = calendarDaysAgo(ms)
+  if (days >= 1) return i18n.t('time.dAgo', { ns: 'common', count: days })
+  const diff = Math.max(0, Math.floor((Date.now() - ms) / 1000))
   if (diff < 60)  return i18n.t('time.justNow', { ns: 'common' })
   if (diff < 3600) return i18n.t('time.mAgo', { ns: 'common', count: Math.floor(diff / 60) })
-  if (diff < 86400) return i18n.t('time.hAgo', { ns: 'common', count: Math.floor(diff / 3600) })
-  return i18n.t('time.dAgo', { ns: 'common', count: Math.floor(diff / 86400) })
+  return i18n.t('time.hAgo', { ns: 'common', count: Math.floor(diff / 3600) })
 }
 
 const SECTIONS = ['new', 'today', 'yesterday', 'week', 'earlier']
@@ -36,7 +43,9 @@ const tint = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${
  * ⚙️ to the preferences (their own page) and a banner when push is off.
  * `onNavigate(item)` opens an item's target; the list refreshes when new ones arrive.
  */
-export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings, incoming }) {
+export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings, incoming, only: onlyIds = null }) {
+  // only: the item ids from the "While you were away" card's "+3", until "All".
+  const [only, setOnly] = useState(() => (onlyIds?.length ? new Set(onlyIds) : null))
   const { t } = useTranslation('notifications')
   const counts = useNotifCounts()
   const [filter, setFilter] = useState('all')
@@ -119,9 +128,12 @@ export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings
 
   const sections = useMemo(() => {
     const by = new Map()
-    for (const i of items ?? []) { const k = sectionOf(i); by.set(k, [...(by.get(k) ?? []), i]) }
+    for (const i of items ?? []) {
+      if (only && !only.has(i.id)) continue
+      const k = sectionOf(i); by.set(k, [...(by.get(k) ?? []), i])
+    }
     return SECTIONS.filter(k => by.has(k)).map(k => ({ key: k, items: by.get(k) }))
-  }, [items])
+  }, [items, only])
   const anyUnread = filter === 'all' ? counts.total > 0 : (counts.unread[filter] ?? 0) > 0
 
   return (
@@ -142,7 +154,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings
           const n = f === 'all' ? counts.total : counts.unread[f] ?? 0
           return (
             <button key={f} type="button" role="tab" aria-selected={on} className={`n6-chip${on ? ' n6-chip--on' : ''}`}
-                    style={on && c ? { background: c.fill, borderColor: c.fill, color: c.onFill } : undefined} onClick={() => setFilter(f)}>
+                    style={on && c ? { background: c.fill, borderColor: c.fill, color: c.onFill } : undefined} onClick={() => { setOnly(null); setFilter(f) }}>
               {f === 'all' ? t('inbox.all') : `${CATEGORY_EMOJI[f]} ${t(`inbox.cat.${f}`)}`}
               {n > 0 && <span className="n6-chip-count">{n > 99 ? '99+' : n}</span>}
             </button>
@@ -151,6 +163,12 @@ export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings
       </div>
 
       <PushOffBanner />
+      {only && (
+        <div className="n6-only">
+          <span>{t('away.title')}</span>
+          <button type="button" onClick={() => setOnly(null)}>{t('inbox.all')}</button>
+        </div>
+      )}
 
       <div className="page-body notif-body n6-body">
         {sweep > 0 && <span key={sweep} className="n6-sweep" aria-hidden="true" />}

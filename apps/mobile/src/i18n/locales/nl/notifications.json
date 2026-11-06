@@ -66,7 +66,9 @@
     "view": "👀 {{name}} bekeek je profiel",
     "other": "🔔 Er is nieuws voor je",
     "dismiss": "Sluiten",
-    "open": "Bekijk wat nieuw is"
+    "open": "Bekijk wat nieuw is",
+    "more_one": "{{count}} meer",
+    "more_other": "{{count}} meer"
   },
   "inbox": {
     "settings": "Meldingen",

@@ -45,7 +45,9 @@
     "view": "👀 {{name}}さんがプロフィールを見たよ",
     "other": "🔔 新しいお知らせ",
     "dismiss": "閉じる",
-    "open": "新着を見る"
+    "open": "新着を見る",
+    "more_one": "ほか{{count}}件",
+    "more_other": "ほか{{count}}件"
   },
   "inbox": {
     "settings": "通知設定",

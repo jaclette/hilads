@@ -66,7 +66,9 @@
     "view": "👀 Tiningnan ni {{name}} ang profile mo",
     "other": "🔔 May bago para sa'yo",
     "dismiss": "Isara",
-    "open": "Tingnan ang bago"
+    "open": "Tingnan ang bago",
+    "more_one": "{{count}} pa",
+    "more_other": "{{count}} pa"
   },
   "inbox": {
     "settings": "Notification settings",

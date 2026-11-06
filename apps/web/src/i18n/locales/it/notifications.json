@@ -45,7 +45,9 @@
     "view": "👀 {{name}} ha visto il tuo profilo",
     "other": "🔔 Novità per te",
     "dismiss": "Chiudi",
-    "open": "Vedi le novità"
+    "open": "Vedi le novità",
+    "more_one": "Altri {{count}}",
+    "more_other": "Altri {{count}}"
   },
   "inbox": {
     "settings": "Impostazioni notifiche",

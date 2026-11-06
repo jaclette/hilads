@@ -66,7 +66,13 @@
     "view": "👀 شاهد {{name}} ملفك",
     "other": "🔔 لديك جديد",
     "dismiss": "إغلاق",
-    "open": "شاهد الجديد"
+    "open": "شاهد الجديد",
+    "more_one": "{{count}} أخرى",
+    "more_zero": "{{count}} أخرى",
+    "more_two": "{{count}} أخرى",
+    "more_few": "{{count}} أخرى",
+    "more_many": "{{count}} أخرى",
+    "more_other": "{{count}} أخرى"
   },
   "inbox": {
     "settings": "إعدادات الإشعارات",

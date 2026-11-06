@@ -1,5 +1,6 @@
 import { shortCityName } from '@/i18n/cityName';
 import type { InboxItem } from '@/api/notifications';
+import { calendarDaysAgo, parseTime } from './NotifRow';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -77,8 +78,9 @@ export function rowText(item: InboxItem, t: TFn): RowText {
 export type SectionKey = 'new' | 'today' | 'yesterday' | 'week' | 'earlier';
 export function sectionOf(item: InboxItem, now = new Date()): SectionKey {
   if (!item.seen && !item.read) return 'new';
-  const at = new Date(item.created_at);
-  const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-  const diff = Math.round((day(now) - day(at)) / 86_400_000);
+  // By calendar day in the phone's time zone, the same count as the row's "1d" (relativeTime).
+  const ms = parseTime(item.created_at);
+  if (isNaN(ms)) return 'earlier';
+  const diff = calendarDaysAgo(ms, now);
   return diff <= 0 ? 'today' : diff === 1 ? 'yesterday' : diff < 7 ? 'week' : 'earlier';
 }

@@ -18197,15 +18197,24 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .n6-tab-dot { position: absolute; top: -2px; right: -4px; width: 11px; height: 11px; border-radius: 6px; background: var(--cta); border: 2px solid var(--surface); }
 .bottom-nav-icon { position: relative; }
 
+.n6-only { display: flex; align-items: center; gap: 10px; margin: 8px 16px 0; padding: 8px 8px 8px 14px; border-radius: 16px; background: var(--primary-tint); }
+.n6-only span { flex: 1; min-width: 0; font-size: 14px; font-weight: 800; color: var(--primary-on-tint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.n6-only button { height: 30px; padding: 0 12px; border: 0; border-radius: 15px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
 .n6-away { display: flex; align-items: center; gap: 6px; padding: 10px 8px 10px 12px; border-radius: 18px; background: var(--primary-tint);
   border: 1.5px solid var(--primary); margin-bottom: 14px; touch-action: pan-y; animation: n6-drop 0.45s cubic-bezier(.34,1.56,.64,1); }
 @keyframes n6-drop { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 .n6-away-body { flex: 1; display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: inherit; min-width: 0; }
 .n6-away-stack { position: relative; height: 34px; flex-shrink: 0; }
 .n6-away-avatar { position: absolute; top: 0; display: flex; border-radius: 50%; border: 2px solid var(--primary-tint); }
-.n6-away-text { display: flex; flex-direction: column; min-width: 0; }
+.n6-away-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .n6-away-title { font-size: 12px; line-height: 16px; font-weight: 800; color: var(--primary-on-tint); }
-.n6-away-line { font-size: 14px; line-height: 19px; font-weight: 700; color: var(--text); }
+.n6-away-line { font-size: 14px; line-height: 19px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The other unread items: a small pill next to ✕ (opens the notifications on them). */
+.n6-away-more { flex-shrink: 0; min-width: 34px; height: 26px; padding: 0 8px; border: 0; border-radius: 13px; background: var(--primary); color: #fff;
+  font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.n6-away { transition: transform 0.2s ease, opacity 0.2s ease; }
+.n6-away--leaving { transform: translateX(-110%); opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .n6-away { transition: none; } }
 .n6-away-close { width: 32px; height: 32px; border-radius: 16px; border: 0; background: none; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 
 .n6-gear { margin-left: 8px; width: 40px; height: 40px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text);

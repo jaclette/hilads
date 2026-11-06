@@ -45,7 +45,9 @@
     "view": "👀 {{name}} checked your profile",
     "other": "🔔 Something new for you",
     "dismiss": "Dismiss",
-    "open": "See what's new"
+    "open": "See what's new",
+    "more_one": "{{count}} more",
+    "more_other": "{{count}} more"
   },
   "inbox": {
     "settings": "Notification settings",
