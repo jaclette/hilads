@@ -3,7 +3,7 @@ import '@/i18n';       // init i18next (sync, device-locale default) before any 
 import { useNotifCountsSync } from '@/features/notifications/counts';
 import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { Linking, LogBox } from 'react-native';
 import { acceptEula, updateProfile } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
@@ -38,6 +38,10 @@ import { ScopeProvider } from '@/context/ScopeContext';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
 import { PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
 import { track } from '@/services/analytics';
+
+// Development builds on a simulator have no keychain entitlement (unsigned): expo-notifications logs that
+// error at launch and LogBox would cover the app with it. Store builds are signed and never hit it.
+if (__DEV__) LogBox.ignoreLogs(['[expo-notifications] Error reading persisted server registration info']);
 
 // ── Sentry - init before any render ──────────────────────────────────────────
 if (process.env.EXPO_PUBLIC_SENTRY_DSN) {

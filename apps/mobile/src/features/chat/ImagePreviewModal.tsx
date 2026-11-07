@@ -3,7 +3,7 @@ import {
   Modal, View, TouchableOpacity, Text, StyleSheet,
   Dimensions, StatusBar, PanResponder, Animated, Alert, Platform, Linking,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';

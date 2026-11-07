@@ -700,6 +700,7 @@ export default function ChatTab() {
   }, []);
 
   const handleReply = useCallback((msg: Message) => {
+    if (!msg.id) return;
     setReplyingTo({
       id:       msg.id,
       nickname: msg.nickname,
