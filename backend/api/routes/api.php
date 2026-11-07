@@ -16304,17 +16304,18 @@ $router->add('GET', '/internal/worlds/{date}', function (array $params) {
     Response::json($data);
 });
 
-// POST /internal/worlds/{date}/upload {version} → {putUrl, url}: where to PUT the MP4.
+// POST /internal/worlds/{date}/upload {version, png?} → {putUrl, url}: where to PUT the MP4 (png: the reaction screen's PNG).
 $router->add('POST', '/internal/worlds/{date}/upload', function (array $params) {
     promoGuard($params['date']);
     try {
-        Response::json(DwStudio::videoUpload($params['date'], (int) (Request::json()['version'] ?? 0)));
+        $body = Request::json();
+        Response::json(DwStudio::videoUpload($params['date'], (int) ($body['version'] ?? 0), !empty($body['png'])));
     } catch (InvalidArgumentException $e) {
         Response::json(['error' => $e->getMessage()], 422);
     }
 });
 
-// POST /internal/worlds/{date}/video {version, url}: saves the uploaded video on its package.
+// POST /internal/worlds/{date}/video {version, url}: saves the uploaded video (or PNG) on its package.
 $router->add('POST', '/internal/worlds/{date}/video', function (array $params) {
     promoGuard($params['date']);
     $body = Request::json();

@@ -3978,6 +3978,60 @@ foreach (['like_push', 'results_push', 'rank_push', 'stamp_push', 'reminder_push
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS quiet_start SMALLINT CHECK (quiet_start BETWEEN 0 AND 1439)", 'notification_preferences.quiet_start');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS quiet_end SMALLINT CHECK (quiet_end BETWEEN 0 AND 1439)", 'notification_preferences.quiet_end');
 
+// ── Different Worlds: the reaction + ranking format (2026-11-07) ──────────
+// dw_topics.format: 'slides' (the slides video) or 'reaction' (one 8 s screen:
+// a Pixabay reaction clip on top, a ranking of up to 20 countries under it,
+// DwReaction). dw_packages.still_url: the screen as a PNG (tools/promo).
+// Reversal: ALTER TABLE dw_topics DROP COLUMN format; ALTER TABLE dw_packages DROP COLUMN still_url.
+run($pdo, "ALTER TABLE dw_topics ADD COLUMN IF NOT EXISTS format TEXT NOT NULL DEFAULT 'slides' CHECK (format IN ('slides', 'reaction'))", 'dw_topics.format');
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS still_url TEXT", 'dw_packages.still_url');
+// The first reaction topic, once: "The 20 biggest beer drinkers in the world" on Nov 8; "Hangover
+// cures around the world" moves from Nov 8 to Nov 9, "Foods locals love and tourists fear" from
+// Nov 9 to the next free date. A topic not where it is expected stays put (the step says so).
+try {
+    $beer = 'The 20 biggest beer drinkers in the world';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$beer]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $at = static function (string $date, string $prefix) use ($pdo): ?array {
+            $q = $pdo->prepare("SELECT id, title, status FROM dw_topics WHERE date = ?::date");
+            $q->execute([$date]);
+            $row = $q->fetch(PDO::FETCH_ASSOC);
+            return $row !== false && stripos($row['title'], $prefix) === 0 ? $row : null;
+        };
+        $taken = static function (string $date) use ($pdo): bool {
+            $q = $pdo->prepare("SELECT 1 FROM dw_topics WHERE date = ?::date");
+            $q->execute([$date]);
+            return $q->fetchColumn() !== false;
+        };
+        $move = $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?");
+        if ($foods = $at('2026-11-09', 'Foods locals love')) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-10'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $move->execute([$free, $foods['id']]);
+            echo "  OK  dw: \"{$foods['title']}\" moved from 2026-11-09 to {$free}\n";
+        }
+        if (($hang = $at('2026-11-08', 'Hangover cures')) && !$taken('2026-11-09')) {
+            $move->execute(['2026-11-09', $hang['id']]);
+            echo "  OK  dw: \"{$hang['title']}\" moved from 2026-11-08 to 2026-11-09\n";
+        }
+        if (!$taken('2026-11-08')) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-08', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$beer, 'Kirin Global Beer Consumption Report 2024 (Dec 2025), liters per person, top 20. Keep it light: never encourage excessive drinking.']);
+            echo "  OK  dw: \"{$beer}\" on 2026-11-08 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-08 is still taken: \"{$beer}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw reaction topic: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

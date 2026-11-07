@@ -117,7 +117,7 @@ final class DwStudio
         foreach ($rows as $id) {
             $pkg = self::packageById((int) $id);
             $c = $pkg['content'];
-            $question = (string) ($c['outro']['question'] ?? '');
+            $question = self::question($c);
             $fixed = self::fixCaptionEnding((string) ($c['caption'] ?? ''), $s['caption_cta'], $question,
                 ['ctas' => array_filter([$previousCaptionCta, DwSeed::CAPTION_CTA])]);
             if ($fixed !== ($c['caption'] ?? '')) {
@@ -127,6 +127,9 @@ final class DwStudio
                 $pkg['content'] = $c;
             }
             $report['packages']++;
+            if (DwReaction::isReaction($c)) {
+                continue;   // no slides: the screen's line is drawn by the video render
+            }
             $plan = self::slidePlan($c);
             $warning = self::renderSlide($pkg, end($plan));
             if ($warning !== null && str_contains($warning, 'not saved')) {
@@ -144,6 +147,14 @@ final class DwStudio
         $countries = $s['countries_always_included'] ?: ['Vietnam'];
         return strtr($s['system_prompt'], ['{{PHASE}}' => (string) $s['phase'], '{{COUNTRIES_ALWAYS}}' => implode(', ', $countries),
                                            '{{CAPTION_CTA}}' => $s['caption_cta'] ?? DwSeed::CAPTION_CTA]);
+    }
+
+    /** The reaction format's prompt (topics whose format is "reaction") with its placeholders filled in. */
+    public static function reactionPrompt(array $s): string
+    {
+        $countries = $s['countries_always_included'] ?: ['Vietnam'];
+        return strtr(DwSeed::REACTION_PROMPT, ['{{COUNTRIES_ALWAYS}}' => implode(', ', $countries),
+                                               '{{CAPTION_CTA}}' => $s['caption_cta'] ?? DwSeed::CAPTION_CTA]);
     }
 
     /** The illustration prompt for one brief. */
@@ -191,6 +202,7 @@ final class DwStudio
         $r['needs_date_check'] = filter_var($r['needs_date_check'], FILTER_VALIDATE_BOOLEAN);
         $r['published_links'] = json_decode((string) ($r['published_links'] ?? '{}'), true) ?: [];
         $r['visual_mode'] = ($r['visual_mode'] ?? 'image') === 'video' ? 'video' : 'image';
+        $r['format'] = ($r['format'] ?? 'slides') === 'reaction' ? 'reaction' : 'slides';
         if (isset($r['latest_content'])) {
             $plan = self::slidePlan(json_decode((string) $r['latest_content'], true) ?: []);
             $r['clip_count'] = count(array_filter($plan, static fn($p) => $p['clip'] !== null));
@@ -200,7 +212,7 @@ final class DwStudio
         return $r;
     }
 
-    /** Validated topic fields from a form: [date, title, notes|null, type, needs_date_check, visual_mode]. */
+    /** Validated topic fields from a form: [date, title, notes|null, type, needs_date_check, visual_mode, format]. */
     public static function topicInput(array $in): array
     {
         $date  = trim((string) ($in['date'] ?? ''));
@@ -218,42 +230,45 @@ final class DwStudio
         $notes = trim((string) ($in['notes'] ?? ''));
         // image: the photos; video: a stock clip behind each slide of the video (DwClips).
         $mode = ($in['visual_mode'] ?? 'image') === 'video' ? 'video' : 'image';
-        return [$date, $title, $notes === '' ? null : $notes, $type, !empty($in['needs_date_check']), $mode];
+        // slides: the slides video; reaction: one screen, a reaction clip over a ranking (DwReaction).
+        $format = ($in['format'] ?? 'slides') === 'reaction' ? 'reaction' : 'slides';
+        return [$date, $title, $notes === '' ? null : $notes, $type, !empty($in['needs_date_check']), $mode, $format];
     }
 
     public static function createTopic(array $in): int
     {
-        [$date, $title, $notes, $type, $check, $mode] = self::topicInput($in);
+        [$date, $title, $notes, $type, $check, $mode, $format] = self::topicInput($in);
         if (self::topicByDate($date) !== null) {
             throw new InvalidArgumentException("There is already a topic on {$date}.");
         }
-        $stmt = Database::pdo()->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, visual_mode) VALUES (?, ?, ?, ?, ?, ?) RETURNING id");
-        $stmt->execute([$date, $title, $notes, $type, $check ? 'true' : 'false', $mode]);
+        $stmt = Database::pdo()->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, visual_mode, format) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id");
+        $stmt->execute([$date, $title, $notes, $type, $check ? 'true' : 'false', $mode, $format]);
         return (int) $stmt->fetchColumn();
     }
 
     public static function updateTopic(int $id, array $in): void
     {
-        [$date, $title, $notes, $type, $check, $mode] = self::topicInput($in);
+        [$date, $title, $notes, $type, $check, $mode, $format] = self::topicInput($in);
         $other = self::topicByDate($date);
         if ($other !== null && $other['id'] !== $id) {
             throw new InvalidArgumentException("There is already a topic on {$date}: {$other['title']}.");
         }
         Database::pdo()->prepare("
-            UPDATE dw_topics SET date = ?, title = ?, notes = ?, type = ?, needs_date_check = ?, visual_mode = ?, updated_at = now() WHERE id = ?
-        ")->execute([$date, $title, $notes, $type, $check ? 'true' : 'false', $mode, $id]);
+            UPDATE dw_topics SET date = ?, title = ?, notes = ?, type = ?, needs_date_check = ?, visual_mode = ?, format = ?, updated_at = now() WHERE id = ?
+        ")->execute([$date, $title, $notes, $type, $check ? 'true' : 'false', $mode, $format, $id]);
     }
 
     /** Deletes the topic, its packages and slides, and their files on R2 (best effort). */
     public static function deleteTopic(int $id): void
     {
         $stmt = Database::pdo()->prepare("
-            SELECT s.svg_url, s.png_url, s.photo_url, p.video_url FROM dw_slides s JOIN dw_packages p ON p.id = s.package_id WHERE p.topic_id = ?
+            SELECT s.svg_url, s.png_url, s.photo_url, p.video_url, p.still_url, p.content->'clip'->>'url' AS clip_url
+            FROM dw_packages p LEFT JOIN dw_slides s ON s.package_id = p.id WHERE p.topic_id = ?
         ");
         $stmt->execute([$id]);
         $urls = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
-            array_push($urls, $r['svg_url'], $r['png_url'], $r['photo_url'], $r['video_url']);
+            array_push($urls, $r['svg_url'], $r['png_url'], $r['photo_url'], $r['video_url'], $r['still_url'], $r['clip_url']);
         }
         $urls = array_unique(array_filter($urls));
         Database::pdo()->prepare("DELETE FROM dw_topics WHERE id = ?")->execute([$id]);
@@ -275,7 +290,7 @@ final class DwStudio
         }
         $pdo = Database::pdo();
         $stmt = $pdo->prepare("
-            SELECT p.id, p.video_url, s.svg_url, s.png_url, s.photo_url
+            SELECT p.id, p.video_url, p.still_url, p.content->'clip'->>'url' AS clip_url, s.svg_url, s.png_url, s.photo_url
             FROM dw_packages p LEFT JOIN dw_slides s ON s.package_id = p.id
             WHERE p.topic_id = ? AND p.version < ?
         ");
@@ -284,11 +299,13 @@ final class DwStudio
         $urls = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
             $ids[(int) $r['id']] = true;
-            array_push($urls, $r['video_url'], $r['svg_url'], $r['png_url'], $r['photo_url']);
+            array_push($urls, $r['video_url'], $r['still_url'], $r['clip_url'], $r['svg_url'], $r['png_url'], $r['photo_url']);
         }
         if ($ids === []) {
             return 0;
         }
+        // A file the kept version still uses (the same R2 clip) stays.
+        $urls = array_diff($urls, array_filter([$pkg['video_url'] ?? null, $pkg['still_url'] ?? null, $pkg['content']['clip']['url'] ?? null]));
         $pdo->prepare("DELETE FROM dw_packages WHERE topic_id = ? AND version < ?")->execute([$pkg['topic_id'], $pkg['version']]);
         foreach (array_unique(array_filter($urls)) as $url) {
             self::deleteFile($url);
@@ -326,7 +343,7 @@ final class DwStudio
     {
         $s = self::settings();
         $stmt = Database::pdo()->prepare("
-            SELECT t.date::text AS date, t.title, t.notes, t.type, t.needs_date_check, t.status, t.visual_mode,
+            SELECT t.date::text AS date, t.title, t.notes, t.type, t.needs_date_check, t.status, t.visual_mode, t.format,
                    (SELECT MAX(version) FROM dw_packages p WHERE p.topic_id = t.id) AS versions
             FROM dw_topics t WHERE t.date BETWEEN ?::date AND ?::date + ?::int ORDER BY t.date
         ");
@@ -338,12 +355,15 @@ final class DwStudio
             'status' => $r['status'], 'versions' => (int) $r['versions'],
             // video: also a Commons clip where one fits (the system prompt's clip rule).
             'visual_mode' => $r['visual_mode'] ?? 'image',
+            // reaction: one screen, written with reaction_prompt instead of system_prompt.
+            'format' => $r['format'] ?? 'slides',
         ], $stmt->fetchAll(PDO::FETCH_ASSOC));
         return [
             '_note' => 'Different Worlds by Hilads brief, exported ' . gmdate('Y-m-d H:i') . ' UTC. For each topic, write a package '
                 . '(the system prompt\'s JSON, plus "illustration_svg" next to every "illustration_brief", drawn with the illustration '
                 . 'prompt) and import it in Admin › Worlds. File: {"packages": [{"date": "YYYY-MM-DD", "model": "...", "content": {...}}]}.',
             'system_prompt'       => self::systemPrompt($s),
+            'reaction_prompt'     => self::reactionPrompt($s),
             'illustration_prompt' => $s['illustration_prompt'],
             'visual_style'        => $s['visual_style'],
             'phase'               => $s['phase'],
@@ -692,6 +712,16 @@ final class DwStudio
                 $report[] = ['date' => $label, 'ok' => false, 'errors' => ['"content" is missing.'], 'warnings' => []];
                 continue;
             }
+            if (DwReaction::isReaction($content) !== ($topic['format'] === 'reaction')) {
+                $report[] = ['date' => $label, 'ok' => false, 'warnings' => [], 'errors' => [$topic['format'] === 'reaction'
+                    ? 'This topic is in the reaction format: its package needs "format": "reaction" (the brief\'s reaction_prompt).'
+                    : 'This package is in the reaction format: switch the topic\'s format to reaction first.']];
+                continue;
+            }
+            if ($topic['format'] === 'reaction') {
+                $report[] = ['date' => $label] + self::importReaction($topic, $content, (string) ($item['model'] ?? 'Claude Code'), $always);
+                continue;
+            }
             [$errors, $warn] = self::validate($content, $always);
             if ($errors !== []) {
                 $report[] = ['date' => $label, 'ok' => false, 'errors' => $errors, 'warnings' => $warn];
@@ -1010,6 +1040,10 @@ final class DwStudio
         if (preg_match('/^(topic|why_today|caption|ai_disclosure|follow_up_idea|hashtags|warnings)$/', $path)) {
             return ['slide' => null];
         }
+        if (DwReaction::isReaction($c)) {
+            // The reaction screen has no slides: its text and rows are saved, the video render draws them.
+            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|clip_query|outro_question)$/', $path) ? ['slide' => null] : null;
+        }
         $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
         if (preg_match("/^hook\\.(headline|detail|on_screen_text|{$pic})$/", $path, $m)) {
@@ -1065,10 +1099,16 @@ final class DwStudio
             unset($ref);
         }
         $out = [];
-        if ($path === 'caption' || $path === 'outro.question') {
+        if ($path === 'data_year') {
+            if (!ctype_digit($value) || (int) $value < 1950 || (int) $value > (int) gmdate('Y')) {
+                throw new InvalidArgumentException('The year of the data, e.g. 2024.');
+            }
+            $c['data_year'] = (int) $value;
+        }
+        if ($path === 'caption' || $path === 'outro.question' || $path === 'outro_question') {
             // The caption always ends with the hilads.live line, then the (current) question.
             $c['caption'] = self::fixCaptionEnding((string) ($c['caption'] ?? ''), self::settings()['caption_cta'],
-                (string) ($c['outro']['question'] ?? ''), ['questions' => [(string) ($pkg['content']['outro']['question'] ?? '')]]);
+                self::question($c), ['questions' => [self::question($pkg['content'])]]);
             $out['caption'] = $c['caption'];
         }
         Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
@@ -1207,13 +1247,19 @@ final class DwStudio
         return $path;
     }
 
+    /** The question the caption ends with: the outro's (slides) or outro_question (reaction). Pure. */
+    public static function question(array $c): string
+    {
+        return (string) (DwReaction::isReaction($c) ? ($c['outro_question'] ?? '') : ($c['outro']['question'] ?? ''));
+    }
+
     /**
      * The full caption to paste: the caption's text, the AI disclosure, the
      * hilads.live line, the question, then the hashtags. Pure.
      */
     public static function fullCaption(array $c, string $cta): string
     {
-        $question = trim((string) ($c['outro']['question'] ?? ''));
+        $question = trim(self::question($c));
         $caption = self::fixCaptionEnding((string) ($c['caption'] ?? ''), $cta, $question);
         $body = trim(mb_substr($caption, 0, mb_strlen($caption) - mb_strlen(trim($cta) . "\n" . $question)));
         $parts = [$body, trim((string) ($c['ai_disclosure'] ?? '')), trim($cta) . "\n" . $question, implode(' ', $c['hashtags'] ?? [])];
@@ -1230,6 +1276,9 @@ final class DwStudio
         if ($pkg === null) {
             return null;
         }
+        if ($topic['format'] === 'reaction') {
+            return self::reactionVideoData($topic, $pkg);
+        }
         $slides = [];
         foreach (self::slides($pkg['id']) as $r) {
             $slides[(int) $r['position']] = ['photoUrl' => $r['photo_url'], 'pngUrl' => $r['png_url'], 'svgUrl' => $r['svg_url']];
@@ -1244,34 +1293,160 @@ final class DwStudio
                 'content' => $pkg['content'], 'slides' => $plan, 'videoUrl' => $pkg['video_url'] ?? null];
     }
 
-    /** A presigned upload for a package's video: {key, putUrl, url}. */
-    public static function videoUpload(string $date, int $version): array
+    /** A presigned upload for a package's video (or, $png, its screen as a PNG): {key, putUrl, url}. */
+    public static function videoUpload(string $date, int $version, bool $png = false): array
     {
         $topic = self::topicByDate($date);
         $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
         if ($pkg === null) {
             throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
         }
-        $key = sprintf('dw/%d/v%d/video-%s.mp4', $topic['id'], $version, bin2hex(random_bytes(6)));
-        return ['key' => $key, 'putUrl' => R2Uploader::presignPut($key, 'video/mp4'), 'url' => R2Uploader::publicUrl($key)];
+        $key = sprintf('dw/%d/v%d/%s-%s.%s', $topic['id'], $version, $png ? 'still' : 'video', bin2hex(random_bytes(6)), $png ? 'png' : 'mp4');
+        return ['key' => $key, 'putUrl' => R2Uploader::presignPut($key, $png ? 'image/png' : 'video/mp4'), 'url' => R2Uploader::publicUrl($key)];
     }
 
-    /** Saves the uploaded video on its package (the previous one is deleted). */
+    /** Saves the uploaded video (or PNG) on its package (the previous one is deleted). */
     public static function saveVideo(string $date, int $version, string $url): void
     {
+        $png = str_ends_with($url, '.png');
         $topic = self::topicByDate($date);
         $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
         if ($pkg === null) {
             throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
         }
-        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/video-', $topic['id'], $version);
-        if (!str_starts_with($url, $prefix) || !str_ends_with($url, '.mp4')) {
+        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/%s-', $topic['id'], $version, $png ? 'still' : 'video');
+        if (!str_starts_with($url, $prefix) || !(str_ends_with($url, '.mp4') || $png)) {
             throw new InvalidArgumentException('Not a video upload of this package: ' . $url);
         }
-        Database::pdo()->prepare("UPDATE dw_packages SET video_url = ?, video_at = now() WHERE id = ?")->execute([$url, $pkg['id']]);
-        if (!empty($pkg['video_url']) && $pkg['video_url'] !== $url) {
-            self::deleteFile($pkg['video_url']);
+        $col = $png ? 'still_url' : 'video_url';
+        Database::pdo()->prepare($png ? "UPDATE dw_packages SET still_url = ? WHERE id = ?" : "UPDATE dw_packages SET video_url = ?, video_at = now() WHERE id = ?")
+            ->execute([$url, $pkg['id']]);
+        if (!empty($pkg[$col]) && $pkg[$col] !== $url) {
+            self::deleteFile($pkg[$col]);
         }
+    }
+
+    // ── Reaction format (DwReaction, DwPixabay) ──────────────────────────────
+
+    /**
+     * Imports a reaction package as a new version of its topic: checked, its clip ({pixabay_id})
+     * looked up on Pixabay and copied to R2; without a clip (or when Pixabay fails) it is
+     * imported anyway and flagged ("Find another clip" in the admin). {ok, version?, package_id?, slides: 0, errors, warnings}.
+     */
+    public static function importReaction(array $topic, array $content, string $model, array $highlight): array
+    {
+        [$errors, $warn] = DwReaction::validate($content, $highlight);
+        if ($errors !== []) {
+            return ['ok' => false, 'errors' => $errors, 'warnings' => $warn];
+        }
+        $content = DwReaction::normalize($content);
+        $want = (int) ($content['clip']['pixabay_id'] ?? 0);
+        unset($content['clip']);
+        $fixed = self::fixCaptionEnding((string) $content['caption'], self::settings()['caption_cta'], $content['outro_question']);
+        if ($fixed !== trim((string) $content['caption'])) {
+            $warn[] = 'The caption did not end with the hilads.live line and the question: its ending was fixed.';
+        }
+        $content['caption'] = $fixed;
+        $stmt = Database::pdo()->prepare("
+            INSERT INTO dw_packages (topic_id, version, content, model, brief)
+            VALUES (?, COALESCE((SELECT MAX(version) FROM dw_packages WHERE topic_id = ?), 0) + 1, ?::jsonb, ?, ?::jsonb)
+            RETURNING id, version
+        ");
+        $stmt->execute([$topic['id'], $topic['id'], json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        mb_substr(trim($model), 0, 120), json_encode(self::briefOf($topic), JSON_UNESCAPED_UNICODE)]);
+        [$pkgId, $version] = $stmt->fetch(PDO::FETCH_NUM);
+        if ($want > 0) {
+            try {
+                $clip = self::setReactionClip((int) $pkgId, $want);
+                if ($clip['ai_generated']) {
+                    $warn[] = 'The clip is AI-generated: turn on the AI label when you publish.';
+                }
+            } catch (InvalidArgumentException | RuntimeException $e) {
+                $warn[] = "No clip: Pixabay video {$want} not used ({$e->getMessage()}): find one in the admin.";
+            }
+        } else {
+            $warn[] = 'No clip: find one in the admin ("Find another clip").';
+        }
+        if ($topic['status'] === 'planned') {
+            self::setStatus($topic['id'], 'generated');
+        }
+        if (($gone = self::pruneOlderVersions((int) $pkgId)) > 0) {
+            $warn[] = 'The older version' . ($gone > 1 ? 's were' : ' was') . ' deleted, with its clip and video.';
+        }
+        return ['ok' => true, 'version' => (int) $version, 'package_id' => (int) $pkgId, 'slides' => 0, 'errors' => [], 'warnings' => $warn];
+    }
+
+    /** Sets a reaction package's clip: Pixabay video $pixabayId, copied to R2 (the old copy deleted). The stored clip. */
+    public static function setReactionClip(int $packageId, int $pixabayId): array
+    {
+        $pkg = self::packageById($packageId);
+        if ($pkg === null || !DwReaction::isReaction($pkg['content'])) {
+            throw new InvalidArgumentException('Unknown reaction package.');
+        }
+        $hit = DwPixabay::byId($pixabayId);
+        if ($hit === null) {
+            throw new InvalidArgumentException("no Pixabay video {$pixabayId}");
+        }
+        $url = self::store($pkg, "clip-{$hit['id']}", 'mp4', DwPixabay::download($hit['url']), 'video/mp4');
+        $c = $pkg['content'];
+        $old = (string) ($c['clip']['url'] ?? '');
+        $c['clip'] = DwReaction::clipOf($hit, $url);
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
+        if ($old !== '' && $old !== $url) {
+            self::deleteFile($old);
+        }
+        return $c['clip'];
+    }
+
+    /** Marks a reaction package's clip as AI-generated or not (the admin's checkbox; Pixabay's tags set it first). */
+    public static function setClipAi(int $packageId, bool $ai): void
+    {
+        $pkg = self::packageById($packageId);
+        if ($pkg === null || !isset($pkg['content']['clip'])) {
+            throw new InvalidArgumentException('This package has no clip.');
+        }
+        $c = $pkg['content'];
+        $c['clip']['ai_generated'] = $ai;
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
+    }
+
+    /** Saves a reaction package's edited rows (the admin's table). Returns the warnings. */
+    public static function saveRows(int $packageId, array $rows): array
+    {
+        $pkg = self::packageById($packageId);
+        if ($pkg === null || !DwReaction::isReaction($pkg['content'])) {
+            throw new InvalidArgumentException('Unknown reaction package.');
+        }
+        $rows = array_values(array_filter($rows, static fn($r) => is_array($r) && trim((string) ($r['country'] ?? '')) !== ''));
+        $rows = array_map(static fn($r) => ['rank' => (int) ($r['rank'] ?? 0), 'country' => (string) $r['country'], 'flag' => (string) ($r['flag'] ?? ''),
+            'value' => is_numeric($r['value'] ?? null) ? (float) $r['value'] : null, 'unit' => (string) ($r['unit'] ?? '')], $rows);
+        [$errors, $warn] = DwReaction::checkRows($rows, self::settings()['countries_always_included']);
+        if ($errors !== []) {
+            throw new InvalidArgumentException(implode(' ', $errors));
+        }
+        $c = DwReaction::normalize(['rows' => $rows] + $pkg['content']);
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
+        return $warn;
+    }
+
+    /** What the reaction video is made from (tools/promo: Reaction.jsx). */
+    private static function reactionVideoData(array $topic, array $pkg): array
+    {
+        $c = $pkg['content'];
+        $clip = $c['clip'] ?? null;
+        return ['date' => $topic['date'], 'title' => $topic['title'], 'version' => $pkg['version'], 'format' => 'reaction',
+                'status' => $topic['status'], 'briefChanged' => self::briefChanged($topic, $pkg), 'content' => $c,
+                'screen' => [
+                    'headline' => (string) ($c['headline'] ?? ''), 'detail' => (string) ($c['detail'] ?? ''),
+                    'rows' => $c['rows'] ?? [], 'source' => DwReaction::sourceLine($c),
+                    'highlight' => self::settings()['countries_always_included'],
+                    'clip' => $clip !== null ? ['url' => $clip['url'], 'credit' => DwReaction::clipCredit($clip)] : null,
+                    'seconds' => DwReaction::VIDEO_SECONDS,
+                ],
+                'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null];
     }
 
     // ── Files (R2) ───────────────────────────────────────────────────────────

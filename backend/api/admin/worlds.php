@@ -114,7 +114,8 @@ worlds_styles();
                 <td style="white-space:nowrap"><?= wh((new DateTimeImmutable($t['date']))->format('D j M')) ?><?= $t['date'] === $today ? ' <span class="badge badge-live">today</span>' : '' ?></td>
                 <td><a href="/admin/worlds/<?= $t['id'] ?>"><?= wh($t['title']) ?></a>
                     <?= $t['needs_date_check'] ? ' <span title="Check the date of this event">⚠️</span>' : '' ?>
-                    <?php if ($t['visual_mode'] === 'video'): ?> <span title="Video clips">🎬</span><?php if (isset($t['clip_count'])): ?>
+                    <?= $t['format'] === 'reaction' ? ' <span title="Reaction + ranking format">📊</span>' : '' ?>
+                    <?php if ($t['format'] === 'slides' && $t['visual_mode'] === 'video'): ?> <span title="Video clips">🎬</span><?php if (isset($t['clip_count'])): ?>
                         <span class="worlds-muted" title="Slides with a clip (the others show their photo)"><?= (int) $t['clip_count'] ?>/<?= (int) $t['slide_count'] ?> clips</span><?php endif; endif; ?></td>
                 <td class="worlds-muted"><?= wh($t['type']) ?></td>
                 <td><?= worlds_status_badge($t['status']) ?></td>
@@ -152,7 +153,9 @@ worlds_styles();
             <div class="form-group"><label>Type</label>
                 <select name="type"><option value="evergreen">evergreen</option><option value="dated">dated (holiday / event)</option></select></div>
             <div class="form-group"><label><input type="checkbox" name="needs_date_check" value="1"> The event date needs checking</label></div>
-            <div class="form-group"><label>Visual mode</label>
+            <div class="form-group"><label>Format</label>
+                <select name="format"><option value="slides">slides (hook, 5 to 6 countries, outro)</option><option value="reaction">reaction + ranking (one 8 s screen)</option></select></div>
+            <div class="form-group"><label>Visual mode <span class="worlds-muted">(slides format)</span></label>
                 <select name="visual_mode"><option value="image">image (photos)</option><option value="video">video (clips in the photo square)</option></select></div>
             <button class="btn btn-primary" type="submit">Add</button>
         </form>

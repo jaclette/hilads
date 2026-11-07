@@ -10,6 +10,10 @@
 // A topic in video mode: a slide's Commons clip (clip_url, from clip_start)
 // plays in the photo's square, downloaded once into .cache/clips (kept between
 // runs, a clip unused for 30 days is deleted); a slide without one shows its photo.
+// A topic in the reaction + ranking format (src/Reaction.jsx): one 8 s screen, its
+// Pixabay clip (the R2 copy) on top, the ranking under it; the video and a PNG of the
+// last frame are uploaded. --file: its clip ({pixabay_id}) is looked up on Pixabay
+// with PIXABAY_API_KEY from .env (never printed).
 
 import { cp, mkdir, readFile, readdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -17,7 +21,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { getVideoMetadata, renderMedia, selectComposition } from '@remotion/renderer';
+import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -109,6 +113,27 @@ function planFromContent(c) {
   ];
 }
 
+/** A reaction package file's screen, as DwStudio::reactionVideoData gives it (its clip looked up on Pixabay). */
+async function screenFromContent(c) {
+  const label = [c.value_label, c.data_year].filter(Boolean).join(', ');
+  let clip = null;
+  const id = c.clip?.pixabay_id;
+  if (id) {
+    const key = process.env.PIXABAY_API_KEY;
+    if (!key) throw new Error('PIXABAY_API_KEY is missing in .env (needed to look up the clip of a --file render).');
+    const res = await fetch(`https://pixabay.com/api/videos/?${new URLSearchParams({ key, id: String(id) })}`);
+    if (!res.ok) throw new Error(`Pixabay: HTTP ${res.status}`);
+    const hit = (await res.json()).hits?.[0];
+    if (!hit) throw new Error(`no Pixabay video ${id}`);
+    // As DwPixabay::hit: the smallest rendition covering 1080 × 640.
+    const files = Object.values(hit.videos ?? {}).filter((v) => v?.url).sort((a, b) => a.width - b.width);
+    const pick = files.find((v) => v.width >= 1080 && v.height >= 640) ?? files[files.length - 1];
+    clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
+  }
+  return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'],
+           source: `${label ? `${label} · ` : ''}Source: ${c.source ?? ''}`, clip, seconds: 8 };
+}
+
 /** Every date from $from to $to, inclusive. */
 function datesBetween(from, to) {
   const out = [];
@@ -147,7 +172,10 @@ async function renderDay(date, fetched = null) {
   if (fileArg) {
     const doc = JSON.parse(await readFile(path.resolve(repo, fileArg), 'utf8'));
     const pkg = (doc.packages ?? [doc]).find((p) => !p.date || p.date === date) ?? doc.packages?.[0];
-    data = { date: pkg.date ?? date, version: 0, slides: planFromContent(pkg.content ?? pkg) };
+    const content = pkg.content ?? pkg;
+    data = content.format === 'reaction'
+      ? { date: pkg.date ?? date, version: 0, format: 'reaction', screen: await screenFromContent(content) }
+      : { date: pkg.date ?? date, version: 0, slides: planFromContent(content) };
     console.log(`Different Worlds ${data.date} from ${fileArg} (not uploaded)`);
   } else {
     if (!token) throw new Error('PROMO_TOKEN is missing: copy .env.example to .env and fill it in.');
@@ -164,8 +192,12 @@ async function renderDay(date, fetched = null) {
   await cp(path.join(repo, 'apps/mobile/assets/fonts'), path.join(pub, 'fonts'), { recursive: true });
   await cp(path.join(repo, 'backend/api/assets/flags'), path.join(pub, 'flags'), { recursive: true });
   await cp(path.join(repo, 'backend/api/assets/logo.svg'), path.join(pub, 'logo.svg'));
-
   await mkdir(path.join(pub, 'clips'), { recursive: true });
+  if (data.format === 'reaction') {
+    await renderReaction(data, { work, pub, out });
+    return;
+  }
+
   const slides = [];
   let clips = 0;
   for (const s of data.slides) {
@@ -229,11 +261,59 @@ async function renderDay(date, fetched = null) {
     console.log('  not uploaded');
     return;
   }
-  console.log('  uploading…');
-  const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version });
-  const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': 'video/mp4' }, body: await readFile(file) });
+  await uploadFile(data, file);
+  console.log(`Done: ${api}/admin/worlds (${data.date})`);
+}
+
+/** Uploads a rendered file (the MP4, or the reaction screen's PNG) to its package. */
+async function uploadFile(data, file) {
+  const png = file.endsWith('.png');
+  console.log(`  uploading the ${png ? 'PNG' : 'video'}…`);
+  const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, png });
+  const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': png ? 'image/png' : 'video/mp4' }, body: await readFile(file) });
   if (!res.ok) throw new Error(`upload: ${res.status} ${await res.text()}`);
   await apiCall(`/internal/worlds/${data.date}/video`, { version: data.version, url });
+}
+
+/** The reaction + ranking screen (src/Reaction.jsx): the 8 s video and its last frame as a PNG. */
+async function renderReaction(data, { work, pub, out }) {
+  const s = data.screen;
+  let clip = null;
+  if (s.clip?.url) {
+    const file = await cachedClip(s.clip.url);
+    const name = `clips/reaction${path.extname(file)}`;
+    await cp(file, path.join(pub, name));
+    const { durationInSeconds } = await getVideoMetadata(file);
+    clip = { src: name, seconds: durationInSeconds, credit: s.clip.credit ?? '' };
+    console.log(`  clip ${durationInSeconds.toFixed(1)} s${durationInSeconds < s.seconds ? ' (loops)' : ''}`);
+  } else {
+    console.warn('  ⚠ no clip: the top third stays dark (Admin › Worlds › Find another clip)');
+  }
+  await pruneClips();
+  const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), flag: r.flag ? flagFile(r.flag) : null }));
+  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip };
+
+  console.log(`  ${rows.length} rows, bundling…`);
+  const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
+  const composition = await selectComposition({ serveUrl, id: 'Reaction', inputProps });
+  const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
+  console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNG…`);
+  await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
+  await renderStill({ composition, serveUrl, output: `${base}.png`, inputProps, frame: composition.durationInFrames - 1 });
+  console.log(`  saved: ${base}.mp4 and .png`);
+  await rm(work, { recursive: true, force: true });
+  await rm(serveUrl, { recursive: true, force: true }).catch(() => {});
+  if (data.version) {
+    for (const name of await readdir(out)) {
+      if (!name.startsWith(path.basename(base) + '.') && /^different-worlds-.+-v\d+\.(mp4|png)$/.test(name)) await rm(path.join(out, name));
+    }
+  }
+  if (!upload) {
+    console.log('  not uploaded');
+    return;
+  }
+  await uploadFile(data, `${base}.mp4`);
+  await uploadFile(data, `${base}.png`);
   console.log(`Done: ${api}/admin/worlds (${data.date})`);
 }
 
