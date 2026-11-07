@@ -40,7 +40,8 @@ export function CommentButton({ target, variant, style }: {
     return (
       <Pressable onPress={open} style={[styles.side, style]} hitSlop={8} accessibilityRole="button" accessibilityLabel={label}>
         <Ionicons name="chatbubble-ellipses" size={30} color={colors.white} style={styles.shadow} />
-        <Text style={[styles.sideText, styles.shadow]}>{count > 0 ? count : t('comments.comment')}</Text>
+        {/* The count, 0 included (a number reads at a glance; "Comment" didn't say how many). */}
+        <Text style={[styles.sideText, styles.shadow]}>{count}</Text>
       </Pressable>
     );
   }

@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardState } from 'react-native-keyboard-controller';
 import Animated, {
-  Easing, FadeInDown, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withTiming,
+  Easing, FadeInDown, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withSequence, withTiming,
 } from 'react-native-reanimated';
 import { fetchDailyProof, fetchPhotoMentionSuggestions } from '@/api/daily';
 import type { MentionSuggestion } from '@/api/mentions';
@@ -35,6 +35,7 @@ import {
 } from './comments';
 import { themeName } from './themes';
 import { relativeTime } from '@/features/notifications/NotifRow';
+import { localizeCityName } from '@/i18n/cityName';
 
 // The comments of a Daily photo (docs/photo-comments-audit.md): one sheet for
 // every place a photo shows. Open it with openPhotoComments(); the topmost
@@ -283,7 +284,7 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
             {t('comments.title')}{count > 0 ? ` · ${count}` : ''}
           </Text>
           <Text style={styles.byline} numberOfLines={1}>
-            {[authorName, target.city?.name ? `${flag ? flag + ' ' : ''}${target.city.name}` : null].filter(Boolean).join(' · ')}
+            {[authorName, target.city?.name ? `${flag ? flag + ' ' : ''}${localizeCityName(target.city.name)}` : null].filter(Boolean).join(' · ')}
           </Text>
         </View>
         {!!target.theme && <ThemeChipJoy theme={target.theme} label={themeName(target.theme)} />}
@@ -292,7 +293,8 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
       {/* ── The thread ── */}
       <View style={styles.listWrap}>
         {thread.loading && !thread.loaded ? (
-          <ActivityIndicator style={styles.center} color={colors.muted} />
+          // Loading (the first time: a thread seen before shows at once from memory): placeholder rows.
+          <CommentSkeleton />
         ) : thread.error && !thread.loaded ? (
           <View style={styles.center}><Text style={styles.muted}>{t('loadFailed')}</Text></View>
         ) : items.length === 0 ? (
@@ -468,7 +470,7 @@ function CommentRow({ c, first, flash, live, onProfile, onLongPress, onLike, onR
         <View style={styles.flex}>
           <View style={styles.meta}>
             <Text style={styles.handle} onPress={() => onProfile(c.user.id)} numberOfLines={1}>{name}</Text>
-            {!!flag && <Text style={styles.flag} accessibilityLabel={c.user.city?.name ?? undefined}>{flag}</Text>}
+            {!!flag && <Text style={styles.flag} accessibilityLabel={c.user.city?.name ? localizeCityName(c.user.city.name) : undefined}>{flag}</Text>}
             {c.isAuthor && <View style={styles.authorPill}><Text style={styles.authorText}>{t('comments.author')}</Text></View>}
             {first && <View style={styles.firstPill}><Text style={styles.firstText}>{t('comments.first')}</Text></View>}
             <Text style={styles.time}>{c.pending === 'sending' ? t('comments.sending') : ago(c.createdAt)}</Text>
@@ -571,7 +573,37 @@ function MenuRow({ icon, label, onPress, danger = false }: { icon: keyof typeof 
   );
 }
 
+/** Placeholder comment rows while a thread loads: an avatar and two lines each, softly pulsing. */
+function CommentSkeleton() {
+  const styles = useThemedStyles(makeStyles);
+  const reduced = useReducedMotion();
+  const o = useSharedValue(1);
+  useEffect(() => {
+    if (reduced) return;
+    o.value = withRepeat(withSequence(withTiming(0.45, { duration: 650 }), withTiming(1, { duration: 650 })), -1);
+  }, [reduced, o]);
+  const st = useAnimatedStyle(() => ({ opacity: o.value }));
+  return (
+    <Animated.View style={[styles.skeleton, st]} accessibilityLabel="…">
+      {[0.8, 0.55, 0.7, 0.45].map((w, i) => (
+        <View key={i} style={styles.skRow}>
+          <View style={styles.skAvatar} />
+          <View style={styles.skBody}>
+            <View style={[styles.skLine, { width: '35%' }]} />
+            <View style={[styles.skLine, { width: `${w * 100}%` }]} />
+          </View>
+        </View>
+      ))}
+    </Animated.View>
+  );
+}
+
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  skeleton:    { paddingTop: 8, gap: 18 },
+  skRow:       { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
+  skAvatar:    { width: 32, height: 32, borderRadius: 16, backgroundColor: c.bg3 },
+  skBody:      { flex: 1, gap: 7, paddingTop: 2 },
+  skLine:      { height: 11, borderRadius: 6, backgroundColor: c.bg3 },
   sheet:       { paddingHorizontal: 0, gap: 0 },
   flex:        { flex: 1, minWidth: 0 },
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center' },

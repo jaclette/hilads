@@ -909,7 +909,9 @@
       },
       "thanks": "Valeu, a gente vai conferir.",
       "already": "Você já denunciou este comentário."
-    }
+    },
+    "sent": "Enviado",
+    "send": "Enviar"
   },
   "dual": {
     "toggle": "Dual",

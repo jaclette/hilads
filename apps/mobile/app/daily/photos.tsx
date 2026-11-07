@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Animated, Dimensions, FlatList, Pressable, Text, TouchableOpacity, View, StyleSheet,
+  ActivityIndicator, Animated, Dimensions, FlatList, Keyboard, Pressable, Text, TouchableOpacity, View, StyleSheet,
   type ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,6 +27,7 @@ import { flushSeen, markSeen } from '@/features/daily/seen';
 import { lastCountries } from '@/features/today/useTodayCountries';
 import { rankCountryProofs } from '@/features/daily/countryOrder';
 import { CommentButton } from '@/features/daily/CommentButton';
+import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar';
 import { commentsTargetOf, PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
@@ -90,6 +91,7 @@ function PhotosScreenContent() {
   const [failed, setFailed] = useState(false);
   const [height, setHeight] = useState(() => Dimensions.get('window').height);
   const [index, setIndex] = useState(0);
+  const [composing, setComposing] = useState(false);
   const [share, setShare] = useState<ShareContent | null>(null);
   const [votersOf, setVotersOf] = useState<string | null>(null);
   const [confetti, setConfetti] = useState(false);
@@ -201,6 +203,9 @@ function PhotosScreenContent() {
   const pill = challenge ? themeColor(challenge.special ? 'special' : challenge.theme?.key) : null;
   const canPlay = !!challenge?.isActive && !today?.myProof;
   const photoCount = items.length - 1;
+  // The inline comment bar, for the photo on screen; typing: the feed holds still, the photo dims.
+  const currentItem = items[index];
+  const barProof = currentItem?.kind === 'photo' && currentItem.proof.status === 'approved' ? currentItem.proof : null;
 
   return (
     <View style={styles.wrap} onLayout={e => setHeight(e.nativeEvent.layout.height)} testID="daily-photos">
@@ -210,6 +215,7 @@ function PhotosScreenContent() {
           data={items}
           keyExtractor={(it, i) => (it.kind === 'photo' ? it.proof.id : `end-${i}`)}
           pagingEnabled
+          scrollEnabled={!composing}
           showsVerticalScrollIndicator={false}
           decelerationRate="fast"
           getItemLayout={(_, i) => ({ length: height, offset: height * i, index: i })}
@@ -219,7 +225,8 @@ function PhotosScreenContent() {
           initialNumToRender={2}
           maxToRenderPerBatch={2}
           renderItem={({ item, index: i }) => item.kind === 'photo' ? (
-            <Slide proof={item.proof} height={height} first={i === 0 && photoCount > 1} insetBottom={insets.bottom}
+            <Slide proof={item.proof} height={height} first={i === 0 && photoCount > 1}
+                   insetBottom={insets.bottom + (item.proof.status === 'approved' ? COMMENT_BAR_H : 0)}
                    onProfile={openProfile} onVoted={onVoted}
                    onShare={challenge && item.proof.challengeId === challenge.id ? () => setShare(proofShare(item.proof, challenge)) : null}
                    onVoters={() => setVotersOf(item.proof.id)} />
@@ -230,6 +237,8 @@ function PhotosScreenContent() {
           )}
         />
       )}
+      {composing && <Pressable style={[StyleSheet.absoluteFill, styles.dim]} onPress={() => Keyboard.dismiss()} accessibilityRole="button" accessibilityLabel={t('back')} />}
+      {barProof && height > 0 && <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />}
       {((proofs === null && !pinned) || height === 0) && (
         <View style={[StyleSheet.absoluteFill, styles.center]}>
           {failed ? (
@@ -433,6 +442,7 @@ function End({ height, empty, tab, cityName, playLabel, onPlay, onClose }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  dim:         { backgroundColor: 'rgba(0,0,0,0.35)' },
   wrap:        { flex: 1, backgroundColor: c.photoScrim },
   flex:        { flex: 1 },
   center:      { alignItems: 'center', justifyContent: 'center' },

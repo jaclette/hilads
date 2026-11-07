@@ -119,6 +119,7 @@ export type AnalyticsEvent =
   | 'ranks_ghost_tapped'
   | 'away_card_opened'
   | 'away_card_more'
+  | 'photo_comment_inline'
   | 'rivals_opened'
   | 'rival_challenge_shared'
   | 'map_surprise'

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AccessibilityInfo, ActivityIndicator, Animated, Easing, PanResponder, Pressable, Text, TouchableOpacity, View, StyleSheet,
+  AccessibilityInfo, ActivityIndicator, Animated, Easing, Keyboard, PanResponder, Pressable, Text, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -28,6 +28,7 @@ import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import { CommentButton } from '@/features/daily/CommentButton';
 import { commentsTargetOf, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
+import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar';
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
 import { cachedPileProof } from '@/features/today/TodayCountries';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
@@ -166,20 +167,25 @@ function Stories() {
   // selfie inset, while its comments or its likes are open, or with reduce motion). A pause resumes where it stopped;
   // only another photo starts the segment over.
   const commentsOpen = useCommentsOpen();
+  // Typing in the inline comment bar: the story waits, the photo dims, the viewer's gestures rest.
+  const [composing, setComposing] = useState(false);
+  // While the comments sheet is open or a comment is being typed, the viewer's own gestures are off.
+  const gesturesOff = useRef(false);
+  gesturesOff.current = commentsOpen || composing;
   const [interacting, setInteracting] = useState(false);
   useEffect(() => { progress.setValue(0); }, [proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!proof || paused || interacting || commentsOpen || votersOf || reduceMotion) return;
+    if (!proof || paused || interacting || commentsOpen || composing || votersOf || reduceMotion) return;
     let anim: Animated.CompositeAnimation | null = null;
     progress.stopAnimation(at => {
       anim = Animated.timing(progress, { toValue: 1, duration: Math.max(0, (1 - at) * PHOTO_MS), easing: Easing.linear, useNativeDriver: false });
       anim.start(({ finished }) => { if (finished) next(); });
     });
     return () => { anim?.stop(); };
-  }, [proof?.id, paused, interacting, commentsOpen, votersOf, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [proof?.id, paused, interacting, commentsOpen, composing, votersOf, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pan = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, g) => g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
+    onMoveShouldSetPanResponder: (_, g) => !gesturesOff.current && g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
     onPanResponderRelease: (_, g) => { if (g.dy > 80) goBack(); },
   })).current;
 
@@ -205,7 +211,7 @@ function Stories() {
   return (
     <View style={styles.wrap} {...pan.panHandlers} testID="today-stories">
       {/* The tap zones first: the photo over them lets touches through, its selfie inset catches its own (swap, drag to a corner). */}
-      {proof && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
+      {proof && !composing && !commentsOpen && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                      draggable insetTop={insets.top + 76} onInteract={setInteracting} />
@@ -239,7 +245,11 @@ function Stories() {
         </View>
       </View>
 
-      {proof && <Bottom proof={proof} insetBottom={insets.bottom} onProfile={() => openProfile(proof)} onVoters={() => setVotersOf(proof.id)} />}
+      {/* Typing a comment: the photo dims; a tap on it closes the keyboard. */}
+      {composing && <Pressable style={[StyleSheet.absoluteFill, styles.dim]} onPress={() => Keyboard.dismiss()} accessibilityRole="button" accessibilityLabel={t('back')} />}
+      {proof && <Bottom proof={proof} insetBottom={insets.bottom + (proof.status === 'approved' ? COMMENT_BAR_H : 0)} onProfile={() => openProfile(proof)} onVoters={() => setVotersOf(proof.id)} />}
+      {/* The inline comment bar (on my own photo too: people reply there). */}
+      {proof?.status === 'approved' && <StoryCommentBar proof={proof} onComposing={setComposing} />}
       <DailyVotersSheet proofId={votersOf} onClose={() => setVotersOf(null)}
                         onOpenUser={id => {
                           setVotersOf(null);
@@ -338,6 +348,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:        { flex: 1 },
   close:       { position: 'absolute', right: 12 },
   shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 170 },
+  dim:         { backgroundColor: 'rgba(0,0,0,0.35)' },
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
   top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 10, gap: 10 },
   bars:        { flexDirection: 'row', gap: 4 },

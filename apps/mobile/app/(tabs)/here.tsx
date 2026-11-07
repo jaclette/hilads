@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useOnlineUsers } from '@/lib/presenceStore';
+import { localizeCityName } from '@/i18n/cityName';
 import { fetchCityMembers, fetchCityAmbassadors, fetchMessageBadges, type CityMember, type CityAmbassador, type UserBadgeInfo } from '@/api/channels';
 import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
@@ -246,7 +247,7 @@ export default function HereScreen() {
 
   const header = (
     <ScreenHeader title={t('title')} onBack={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chat' as never))}
-                  right={city ? <Text style={styles.headerSub} numberOfLines={1}>{city.name}</Text> : undefined} />
+                  right={city ? <Text style={styles.headerSub} numberOfLines={1}>{localizeCityName(city.name)}</Text> : undefined} />
   );
 
   if (!city) {

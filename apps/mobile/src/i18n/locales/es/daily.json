@@ -909,7 +909,9 @@
       },
       "thanks": "Gracias, lo revisaremos.",
       "already": "Ya reportaste este comentario."
-    }
+    },
+    "sent": "Enviado",
+    "send": "Enviar"
   },
   "dual": {
     "toggle": "Doble",

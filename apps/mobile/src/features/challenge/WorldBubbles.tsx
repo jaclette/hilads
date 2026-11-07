@@ -1,3 +1,4 @@
+import { localizeCityName } from '@/i18n/cityName';
 import { useEffect } from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
@@ -81,7 +82,7 @@ export function WorldBubbles({ items, seed, onOpen, onFirst }: {
         return (
           <Bubble key={g.country} index={i} rotate={(h % 41) / 10 - 2} tail={i % 2 === 0 ? 'left' : 'right'}
                   style={{ backgroundColor: colors[i] }}
-                  onPress={() => onOpen(g.country)} label={`${g.city.name}: ${text}`} testID="world-bubble">
+                  onPress={() => onOpen(g.country)} label={`${localizeCityName(g.city.name)}: ${text}`} testID="world-bubble">
             <FlagSticker country={g.country} size={18} />
             <Text style={styles.text} numberOfLines={2}>{text}</Text>
           </Bubble>

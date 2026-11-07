@@ -869,7 +869,9 @@
       },
       "thanks": "Thanks - we'll check it.",
       "already": "You already reported this comment."
-    }
+    },
+    "sent": "Sent",
+    "send": "Send"
   },
   "dual": {
     "toggle": "Dual",
