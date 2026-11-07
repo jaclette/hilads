@@ -3840,6 +3840,17 @@ try {
     if ($twoLevel !== '' && !str_contains($twoLevel, '"headline"')) {
         echo "  WARN dw seed: the system prompt was edited, add the headline / detail rule and schema by hand (DwSeed::TEXT_LINE)\n";
     }
+    // 2026-11-07: 5 to 6 countries, about 35 s (40 at most) with the slides' durations.
+    $shorter = $twoLevel;
+    foreach (DwSeed::LENGTH_SWAPS as [$old, $new]) {
+        $shorter = str_replace($old, $new, $shorter);
+    }
+    if ($shorter !== $twoLevel) {
+        $pdo->prepare("UPDATE dw_settings SET system_prompt = ?, updated_at = now() WHERE id = 1")->execute([$shorter]);
+    }
+    if ($shorter !== '' && !str_contains($shorter, '5 to 6 countries')) {
+        echo "  WARN dw seed: the system prompt was edited, set 5 to 6 countries and about 35 s by hand (DwSeed::LENGTH_SWAPS)\n";
+    }
     $seedTopic = $pdo->prepare("
         INSERT INTO dw_topics (date, title, notes, type, needs_date_check) VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (date) DO NOTHING

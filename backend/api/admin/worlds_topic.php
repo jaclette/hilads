@@ -143,6 +143,9 @@ worlds_styles();
     <?php else: ?>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
             <strong>Version <?= $pkg['version'] ?></strong>
+            <?php $secs = DwStudio::videoSeconds($pkg['content']); ?>
+            <span class="worlds-muted" title="Hook 3.5 s, each country 4 to 5 s (from its text), outro 4 s"<?= $secs > DwStudio::MAX_VIDEO_SECONDS ? ' style="color:#f87171;font-weight:700"' : '' ?>>
+                ⏱ <?= wh(number_format($secs, 1)) ?> s<?= $secs > DwStudio::MAX_VIDEO_SECONDS ? ' · over ' . DwStudio::MAX_VIDEO_SECONDS . ' s' : '' ?></span>
             <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
             <?php if (count($versions) > 1): ?>
                 <select onchange="location.href='<?= $self ?>?v='+this.value">

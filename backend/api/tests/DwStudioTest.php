@@ -36,8 +36,13 @@ final class DwStudioTest extends TestCase
 
     public function testCountriesRules(): void
     {
+        // 5 to 6 countries (2026-11-07): 5 passes, 4 and 7 don't.
         [$errors] = DwStudio::validate($this->content(5), ['Vietnam']);
-        $this->assertContains('There must be 6 to 8 countries (5).', $errors);
+        $this->assertNotContains('There must be 5 to 6 countries (5).', $errors);
+        [$errors] = DwStudio::validate($this->content(4), ['Vietnam']);
+        $this->assertContains('There must be 5 to 6 countries (4).', $errors);
+        [$errors] = DwStudio::validate($this->content(7), ['Vietnam']);
+        $this->assertContains('There must be 5 to 6 countries (7).', $errors);
 
         [$errors] = DwStudio::validate($this->content(6), ['Kenya']);
         $this->assertContains('Kenya must be one of the countries.', $errors);
@@ -336,5 +341,19 @@ final class DwStudioTest extends TestCase
         $plain = DwSlides::compose(['kind' => 'outro', 'text' => 'Your city?'], null);
         $this->assertStringContainsString('url(#dwPlain)', $plain);
         $this->assertStringContainsString('YOUR TURN', $plain);
+    }
+
+    public function testVideoTimingAndReadWarnings(): void
+    {
+        // Hook 3.5 s, a country 4 to 5 s from its text, the outro 4 s (as tools/promo/src/worldsTiming.js).
+        $this->assertSame(3.5, DwStudio::slideSeconds(['kind' => 'hook', 'text' => '7 laws that sound fake 🤨', 'detail' => 'All real. The last one is wild.']));
+        $this->assertSame(4.0, DwStudio::slideSeconds(['kind' => 'country', 'text' => 'Short.', 'detail' => '']));
+        $this->assertSame(5.0, DwStudio::slideSeconds(['kind' => 'country', 'text' => str_repeat('word ', 12), 'detail' => str_repeat('more ', 10)]));
+        $this->assertSame(4.0, DwStudio::slideSeconds(['kind' => 'outro', 'text' => 'Which one would you break?', 'detail' => '']));
+        $c = $this->content(6);
+        $c['slides'][0]['headline'] = str_repeat('word ', 12);
+        $c['slides'][0]['detail'] = str_repeat('more ', 10);
+        $this->assertNotEmpty(array_filter(DwStudio::readWarnings($c), fn($w) => str_contains($w, 'shorten or drop its detail')));
+        $this->assertLessThanOrEqual(DwStudio::MAX_VIDEO_SECONDS, DwStudio::videoSeconds($this->content(6)));
     }
 }

@@ -4,8 +4,8 @@
 // zoom or pan (Ken Burns, alternating), the series pill and the photo credit,
 // then the flag, the country, the headline rising in and its detail 0.6 s
 // later. The hook grabs: its photo punches in (115% → 100%, a small spring),
-// then its headline pops (90% → 100%). Each slide lasts as long as its text
-// needs (worldsTiming.js). Music is added in each app when publishing.
+// its headline, readable from the first frame, pops (92% → 100%) with it. The hook lasts 3.5 s, a country 4 to 5 s
+// from its text, the outro 4 s (worldsTiming.js): about 35 s, 40 at most. Music is added in each app when publishing.
 // Video mode: a slide's clip plays in the photo's square instead, muted, from
 // its start, slowed down when it is a little short (worlds.mjs measures it).
 
@@ -143,7 +143,7 @@ function Detail({ text, top, delay }) {
 /**
  * The headline from top, then its detail DETAIL_DELAY frames later, laid out as the slides
  * (DwSlides::twoLevel): the detail's size first, the headline in the room left above it.
- * pop: the hook's headline scales up (90% → 100%) instead of rising.
+ * pop: the hook's headline scales up (92% → 100%) instead of rising.
  */
 function TwoLevel({ text, detail, top, max, min, delay, pop = false }) {
   const head = plain(text);
@@ -162,14 +162,17 @@ function TwoLevel({ text, detail, top, max, min, delay, pop = false }) {
   );
 }
 
-/** The hook's headline: a quick scale-up (90% → 100%) and fade in, a slight spring. */
+/**
+ * The hook's headline: readable from the very first frame (92% scale, nearly opaque), then a
+ * quick spring to 100% in about 0.25 s, at the same time as the photo's punch-in.
+ */
 function Pop({ text, top, max, min, delay, bottom }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const p = spring({ frame: frame - delay, fps, config: { damping: 10, stiffness: 210, mass: 0.6 } });
+  const p = spring({ frame: frame - delay, fps, config: { damping: 12, stiffness: 320, mass: 0.5 } });
   const { px, lines } = fit(text, top, max, min, bottom);
   return (
-    <div style={{ position: 'absolute', left: LEFT, top, width: WIDTH, opacity: Math.min(1, p * 1.6), transform: `scale(${0.9 + 0.1 * p})`, transformOrigin: '0% 50%' }}>
+    <div style={{ position: 'absolute', left: LEFT, top, width: WIDTH, opacity: 0.92 + 0.08 * Math.min(1, p), transform: `scale(${0.92 + 0.08 * p})`, transformOrigin: '0% 50%' }}>
       {lines.map((l, i) => (
         <div key={i} style={{ fontFamily: FONT, fontWeight: 800, fontSize: px, lineHeight: `${px * 1.16}px`, color: '#fff', whiteSpace: 'nowrap' }}>{l}</div>
       ))}
@@ -259,8 +262,8 @@ function Slide({ slide, index, length }) {
           <TwoLevel text={slide.text} detail={slide.detail} top={1276} max={96} min={48} delay={10} />
         </>
       )}
-      {/* The hook's headline pops right after the photo's punch-in (with a clip: at once). */}
-      {hook && <TwoLevel text={slide.text} detail={slide.detail} top={1164} max={112} min={56} delay={slide.clip ? 3 : 9} pop />}
+      {/* The hook's headline is there from the first frame and pops with the photo's punch-in (with a clip too); its detail 0.6 s later. */}
+      {hook && <TwoLevel text={slide.text} detail={slide.detail} top={1164} max={112} min={56} delay={0} pop />}
       {slide.kind === 'outro' && (
         <>
           <Rise delay={4} style={{ left: LEFT, top: 1162, fontFamily: FONT, fontWeight: 800, fontSize: 34, letterSpacing: 3, color: ACCENT }}>YOUR TURN</Rise>

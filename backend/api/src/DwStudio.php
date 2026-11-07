@@ -15,6 +15,10 @@ declare(strict_types=1);
  */
 final class DwStudio
 {
+    /** Countries per video (2026-11-07: 5 to 6, about 35 s, 40 at most). */
+    public const MIN_COUNTRIES = 5;
+    public const MAX_COUNTRIES = 6;
+
     public const STATUSES  = ['planned', 'generated', 'ready', 'published'];
     public const PLATFORMS = ['tiktok', 'instagram', 'youtube'];
 
@@ -465,8 +469,8 @@ final class DwStudio
         if (!is_array($slides) || !array_is_list($slides)) {
             $errors[] = '"slides" must be a list.';
             $slides = [];
-        } elseif (count($slides) < 6 || count($slides) > 8) {
-            $errors[] = 'There must be 6 to 8 countries (' . count($slides) . ').';
+        } elseif (count($slides) < self::MIN_COUNTRIES || count($slides) > self::MAX_COUNTRIES) {
+            $errors[] = 'There must be ' . self::MIN_COUNTRIES . ' to ' . self::MAX_COUNTRIES . ' countries (' . count($slides) . ').';
         }
         $countries = [];
         foreach ($slides as $i => $s) {
@@ -552,7 +556,59 @@ final class DwStudio
                 $errors[] = ucfirst($label) . ': clip_start must be a number of seconds.';
             }
         }
+        if ($errors === []) {
+            array_push($warn, ...self::readWarnings($c));
+        }
         return [$errors, $warn];
+    }
+
+    /**
+     * How long a slide shows in the video, in seconds (tools/promo/src/worldsTiming.js, keep both
+     * the same): the hook 3.5 and the outro 4, fixed; a country 4 to 5 from its text.
+     */
+    private const READ = ['hook' => [3.5, 3.5], 'country' => [4.0, 5.0], 'outro' => [4.0, 4.0]];
+    public const MAX_VIDEO_SECONDS = 40;
+
+    /** The seconds a slide's text needs (headline + detail; the outro's question), uncapped. */
+    public static function readSeconds(array $slide): float
+    {
+        // The hook reads a little faster (a short punchy kicker, up to ~12 words in its 3.5 s).
+        $perWord = ($slide['kind'] ?? '') === 'hook' ? 0.16 : 0.21;
+        return round(1.6 + $perWord * (self::screenWords((string) ($slide['text'] ?? '')) + self::screenWords((string) ($slide['detail'] ?? ''))), 1);
+    }
+
+    /** A slide's length in the video: its reading time within its kind's range. */
+    public static function slideSeconds(array $slide): float
+    {
+        [$min, $max] = self::READ[$slide['kind'] ?? 'country'] ?? self::READ['country'];
+        return round(min($max, max($min, self::readSeconds($slide))), 1);
+    }
+
+    /** A package's video length, in seconds. */
+    public static function videoSeconds(array $content): float
+    {
+        return round(array_sum(array_map([self::class, 'slideSeconds'], self::slidePlan($content))), 1);
+    }
+
+    /**
+     * Text a slide can't be read in its time (the slide isn't made longer: its detail is shortened
+     * or dropped instead), and a video over 40 s.
+     */
+    public static function readWarnings(array $content): array
+    {
+        $warn = [];
+        foreach (self::slidePlan($content) as $s) {
+            if ($s['kind'] === 'outro') continue;
+            [, $max] = self::READ[$s['kind']];
+            if (($need = self::readSeconds($s)) > $max + 0.05) {
+                $label = $s['kind'] === 'hook' ? 'The hook' : 'Country ' . ($s['position'] - 1) . ' (' . ($s['country'] ?? '') . ')';
+                $warn[] = "{$label}: its text needs {$need} s to read, the slide lasts {$max} s: shorten or drop its detail.";
+            }
+        }
+        if (($total = self::videoSeconds($content)) > self::MAX_VIDEO_SECONDS) {
+            $warn[] = "The video lasts {$total} s (max " . self::MAX_VIDEO_SECONDS . ' s).';
+        }
+        return $warn;
     }
 
     /** Word-count warnings of a hook or a country: headline max 6, detail max 10 (older packages: text 12, note 6). */
@@ -773,10 +829,11 @@ final class DwStudio
                 $order[] = $byCountry[$key];
             }
         }
-        if ($errors === [] && count($order) !== count($old)) {
-            $missing = array_diff(array_keys($old), $order);
-            $errors[] = 'Missing: ' . implode(', ', array_map(static fn($i) => (string) $old[$i]['country'], $missing)) . '.';
+        // A country left out is dropped with its slide (5 to 6 countries since 2026-11-07).
+        if ($errors === [] && (count($order) < self::MIN_COUNTRIES || count($order) > self::MAX_COUNTRIES)) {
+            $errors[] = 'There must be ' . self::MIN_COUNTRIES . ' to ' . self::MAX_COUNTRIES . ' countries (' . count($order) . ').';
         }
+        $dropped = array_values(array_diff(array_keys($old), $order));
         if ($errors !== []) {
             return $no($errors);
         }
@@ -789,6 +846,7 @@ final class DwStudio
         foreach ($c['slides'] as $n => $s) {
             array_push($warn, ...self::lineWarnings($s, 'Country ' . ($n + 1) . ' (' . $s['country'] . ')'));
         }
+        array_push($warn, ...self::readWarnings($c));
 
         $pdo = Database::pdo();
         $pdo->beginTransaction();
@@ -796,14 +854,22 @@ final class DwStudio
             $pdo->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
                 ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $pkg['id']]);
             if ($order !== array_keys($old)) {
-                // The countries' slides move with their pictures: out of the way first (unique positions), then in place.
+                // The countries' slides move with their pictures: out of the way first (unique positions), then in place;
+                // the outro follows the last country; a dropped country's slide goes.
                 $n = count($old);
-                $pdo->prepare("UPDATE dw_slides SET position = position + 1000 WHERE package_id = ? AND position BETWEEN 2 AND ?")->execute([$pkg['id'], $n + 1]);
+                $pdo->prepare("UPDATE dw_slides SET position = position + 1000 WHERE package_id = ? AND position BETWEEN 2 AND ?")->execute([$pkg['id'], $n + 2]);
                 $move = $pdo->prepare("UPDATE dw_slides SET position = ? WHERE package_id = ? AND position = ?");
                 foreach ($order as $to => $from) {
                     $move->execute([$to + 2, $pkg['id'], $from + 1002]);
                 }
-                $warn[] = 'Countries reordered: ' . implode(', ', array_column($c['slides'], 'country')) . '.';
+                $move->execute([count($order) + 2, $pkg['id'], $n + 1002]);
+                $pdo->prepare("DELETE FROM dw_slides WHERE package_id = ? AND position >= 1000")->execute([$pkg['id']]);
+                if ($dropped !== []) {
+                    $warn[] = 'Dropped: ' . implode(', ', array_map(static fn($i) => (string) $old[$i]['country'], $dropped)) . '.';
+                }
+                if (array_values(array_intersect(array_keys($old), $order)) !== $order) {
+                    $warn[] = 'Countries reordered: ' . implode(', ', array_column($c['slides'], 'country')) . '.';
+                }
             }
             $pdo->commit();
         } catch (Throwable $e) {
@@ -811,8 +877,12 @@ final class DwStudio
             throw $e;
         }
         $pkg['content'] = $c;
-        // Every slide but the outro is redrawn with its stored picture.
-        foreach (array_slice(self::slidePlan($c), 0, -1) as $slide) {
+        // Every slide but the outro is redrawn with its stored picture (the outro too when it moved).
+        $redraw = self::slidePlan($c);
+        if ($dropped === []) {
+            $redraw = array_slice($redraw, 0, -1);
+        }
+        foreach ($redraw as $slide) {
             if (($w = self::renderSlide($pkg, $slide)) !== null && !str_contains($w, 'no picture')) {
                 $warn[] = $w;
             }
