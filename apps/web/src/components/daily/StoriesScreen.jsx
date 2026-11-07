@@ -169,6 +169,8 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
 
   return createPortal(
     <div className={`tour${proof?.status === 'approved' ? ' scb-on' : ''}`} role="dialog" aria-modal="true" aria-label={t('worlds.tagline')}>
+      {/* The tap zone first (as the app): the photo over it lets taps through, its selfie inset catches its own (swap, drag). */}
+      {proof && !composing && !commentsOpen && <TapZone proof={proof} onPrev={prev} onNext={next} onHold={setHeld} />}
       {proof
         ? proof.selfieUrl
           ? <DualPhoto key={proof.id} className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)}
@@ -178,7 +180,6 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
         : <div className="dc-photos-center"><span className="dc-photos-spinner" aria-hidden="true" /></div>}
       <div className="tour-shade" />
 
-      {proof && !composing && !commentsOpen && <TapZone proof={proof} onPrev={prev} onNext={next} onHold={setHeld} />}
 
       <div className="tour-top">
         {/* One segment per photo of the city: done, filling, to come. */}
