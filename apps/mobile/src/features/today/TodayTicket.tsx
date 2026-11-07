@@ -199,7 +199,9 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
       <AmbientBats />
 
       <View style={styles.heroTop} pointerEvents="box-none">
-        <View style={[styles.chip, styles.themeChip, { backgroundColor: tc.fill }]}>
+        {/* Not buttons: taps go through to the photo, which opens the challenge (New Architecture: a
+            view catches a touch even without a handler). */}
+        <View style={[styles.chip, styles.themeChip, { backgroundColor: tc.fill }]} pointerEvents="none">
           {/* Halloween's live day: the chip wears a pumpkin. */}
           {challenge.theme && (seasonal?.key === 'halloween' && challenge.special
             ? <PumpkinIcon size={15} color={tc.onFill} />
@@ -207,7 +209,7 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
           {/* The theme alone, with its icon (never cut): "Daily Challenge" is the screen's own name. */}
           <Text style={[styles.chipText, { color: tc.onFill }]} numberOfLines={1}>{themeLabel || DAILY_CHALLENGE}</Text>
         </View>
-        <View style={styles.heroTopRight}>
+        <View style={styles.heroTopRight} pointerEvents="none">
           {secondsLeft !== null && (
             <View style={styles.chip}>
               <Ionicons name="time-outline" size={14} color="#FFFFFF" />
@@ -218,7 +220,7 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
       </View>
 
       <View style={styles.heroBottom} pointerEvents="box-none">
-        <View style={styles.titles}>
+        <View style={styles.titles} pointerEvents="none">
           <Text style={styles.headline} numberOfLines={3}>{headline}</Text>
           {!!ask && <Text style={styles.ask} numberOfLines={2}>{ask}</Text>}
         </View>
@@ -272,7 +274,7 @@ function Steps({ compareType, price }: { compareType: DailyCompareType | null; p
     : ['chatbubble-ellipses-outline', 'hero.steps.tell'];
   const steps: [StepIcon, string][] = [['camera-outline', 'hero.steps.snap'], second, ['earth-outline', 'hero.steps.compare']];
   return (
-    <View style={styles.steps} accessibilityRole="text" accessibilityLabel={steps.map(([, k]) => t(k)).join(', ')}>
+    <View style={styles.steps} pointerEvents="none" accessibilityRole="text" accessibilityLabel={steps.map(([, k]) => t(k)).join(', ')}>
       {steps.map(([icon, key], i) => (
         <View key={key} style={styles.stepWrap}>
           {i > 0 && <Ionicons name="chevron-forward" size={13} color="rgba(255,255,255,0.75)" />}
