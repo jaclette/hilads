@@ -8,6 +8,7 @@ import { useBackLayer } from '../../lib/backLayers'
 import { openAppModal } from '../AppModal'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
+import StoryCommentBar from './StoryCommentBar'
 import { FlagSticker, onFillOf, plain, themeColor } from '../joy/Joy'
 import { AnswerChip, captionRepeatsAnswer } from './compareShared'
 import { lastCountries, rankCountryProofs } from './countryOrder'
@@ -55,6 +56,7 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
   const [failed, setFailed] = useState(false)
   const [voters, setVoters] = useState(null)
   const [index, setIndex] = useState(0)
+  const [composing, setComposing] = useState(false)
   const scroller = useRef(null)
   const seen = useRef(new Set())
   useBackLayer(voters !== null, () => setVoters(null))   // the list closes before the photos
@@ -113,6 +115,8 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
     const lead = pinned && (tab === 'world' || pinned.city?.id === city?.id)
     return lead ? [pinned, ...rest] : rest
   }, [proofs, pinned, tab, city?.id, story, list, proofId])
+  // The inline comment bar's photo: the one on screen, once approved.
+  const barProof = photos[index]?.status === 'approved' ? photos[index] : null
 
   const switchTab = (next) => {
     if (next === tab) return
@@ -157,7 +161,7 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
   const pill = challenge ? themeColor(challenge.special ? 'special' : challenge.theme?.key) : null
 
   return createPortal(
-    <div className="dc-photos" role="dialog" aria-modal="true" aria-label={t('feed.title')}>
+    <div className={`dc-photos${barProof ? ' scb-on' : ''}${composing ? ' scb-typing' : ''}`} role="dialog" aria-modal="true" aria-label={t('feed.title')}>
       {proofs === null ? (
         <div className="dc-photos-center">
           {failed ? (
@@ -177,6 +181,10 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
                canPlay={!!challenge?.isActive && !today?.myProof} onClose={onBack} />
         </div>
       )}
+
+      {/* The inline comment bar, for the photo on screen; typing: the feed holds still, the photo dims. */}
+      {composing && <div className="scb-dim" aria-hidden="true" />}
+      {barProof && <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />}
 
       {/* On top: close, World / my city, and today's challenge as a pill. */}
       <div className="dc-photos-top">

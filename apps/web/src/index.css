@@ -18529,3 +18529,24 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 /* A screen whose code is still loading (lazyScreen in App.jsx): the page's ground and a spinner. */
 .lazy-screen { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: var(--bg);
   padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom)); }
+
+/* ── Photo viewers' inline comment bar (scb, as the app): a translucent pill and 🔥 😍 😂 ── */
+.scb { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1010; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); }
+.scb-row { display: flex; align-items: center; gap: 8px; }
+.scb-pill { flex: 1; min-width: 0; display: flex; align-items: center; min-height: 44px; padding: 0 6px 0 16px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55); background: rgba(0, 0, 0, 0.28); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.scb-pill input { flex: 1; min-width: 0; height: 42px; border: 0; background: none; color: #fff; font: inherit; font-size: 16px; outline: none; }
+.scb-pill input::placeholder { color: rgba(255, 255, 255, 0.75); }
+.scb-send { width: 32px; height: 32px; flex-shrink: 0; border: 0; border-radius: 50%; background: var(--cta); color: #2A1C13; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; }
+.scb-quick { position: relative; width: 40px; height: 44px; flex-shrink: 0; border: 0; background: none; font-size: 26px; line-height: 1; cursor: pointer; }
+.scb-quick:active { transform: scale(0.9); }
+.scb-float { position: absolute; left: 50%; top: 0; font-size: 30px; pointer-events: none; animation: scb-float 1s ease-out forwards; }
+@keyframes scb-float { 0% { transform: translate(-50%, 0) scale(0.8); opacity: 1 } 25% { transform: translate(-50%, -40px) scale(1.5) } 70% { opacity: 1 } 100% { transform: translate(-50%, -170px) scale(1.2); opacity: 0 } }
+.scb-toast { width: max-content; max-width: 100%; margin: 0 auto 6px; padding: 7px 14px; border-radius: 999px; background: rgba(0, 0, 0, 0.7); color: #fff; font-size: 14px; font-weight: 800; }
+.scb-mentions.mention-dropdown { position: static; margin: 0 0 6px; max-height: 200px; }
+.scb-dim { position: absolute; inset: 0; z-index: 5; background: rgba(0, 0, 0, 0.35); pointer-events: none; }
+/* The author, caption and buttons sit above the bar. */
+.scb-on .dc-photos-bottom { padding-bottom: calc(max(18px, env(safe-area-inset-bottom)) + 60px); }
+.scb-typing .dc-photos-scroll { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .scb-float { animation: none; opacity: 0; } }

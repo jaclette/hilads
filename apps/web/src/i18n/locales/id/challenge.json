@@ -1537,7 +1537,9 @@
         },
         "thanks": "Makasih, nanti kami cek ya.",
         "already": "Kamu sudah melaporkan komentar ini."
-      }
+      },
+      "sent": "Terkirim",
+      "send": "Kirim"
     },
     "dual": {
       "toggle": "Dual",

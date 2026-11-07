@@ -417,7 +417,7 @@ export function CommentButton({ target, variant }) {
     <button type="button" className={`pc-btn pc-btn--${variant}`} onClick={open} aria-label={label}>
       <Icon name={variant === 'inline' ? 'chatbubble-outline' : 'chatbubble-ellipses-outline'} size={variant === 'side' ? 28 : 18} />
       {variant === 'pill' ? <span>{count > 0 ? label : t('comments.comment')}</span>
-        : count > 0 ? <span>{count}</span> : variant === 'side' ? <span>{t('comments.comment')}</span> : null}
+        : variant === 'side' ? <span>{count}</span> : count > 0 ? <span>{count}</span> : null}
     </button>
   )
 }

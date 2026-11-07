@@ -1577,7 +1577,9 @@
         },
         "thanks": "Bedankt, we kijken ernaar.",
         "already": "Je hebt deze reactie al gemeld."
-      }
+      },
+      "sent": "Verstuurd",
+      "send": "Versturen"
     },
     "dual": {
       "toggle": "Dubbel",

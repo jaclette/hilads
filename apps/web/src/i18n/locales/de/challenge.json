@@ -1577,7 +1577,9 @@
         },
         "thanks": "Danke - wir schauen es uns an.",
         "already": "Du hast diesen Kommentar schon gemeldet."
-      }
+      },
+      "sent": "Gesendet",
+      "send": "Senden"
     },
     "dual": {
       "toggle": "Dual",

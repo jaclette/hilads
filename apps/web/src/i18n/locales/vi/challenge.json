@@ -1537,7 +1537,9 @@
         },
         "thanks": "Cảm ơn nha, tụi mình sẽ kiểm tra.",
         "already": "Bạn đã báo cáo bình luận này rồi."
-      }
+      },
+      "sent": "Đã gửi",
+      "send": "Gửi"
     },
     "dual": {
       "toggle": "Dual",

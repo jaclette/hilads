@@ -11,6 +11,7 @@ import { AnswerChip, captionRepeatsAnswer } from './compareShared'
 import { lastCountries, rememberCountries } from './countryOrder'
 import { LocalPassBadge, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc } from './dailyShared'
 import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoCommentsSheet'
+import StoryCommentBar from './StoryCommentBar'
 import { flushSeen, markSeen } from './seen'
 import { SeasonalZone } from '../event/seasonal'
 import { DualPhoto, selfieOf } from './DualPhoto'
@@ -59,7 +60,9 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
   const [held, setHeld] = useState(false)
   // Paused while held, and while the photo's comments are open.
   const commentsOpen = useCommentsOpen()
-  const paused = held || commentsOpen
+  // Typing in the inline comment bar: the story waits, the photo dims, the taps rest.
+  const [composing, setComposing] = useState(false)
+  const paused = held || commentsOpen || composing
   const reduce = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
   // Start at the city asked for; the cities before it come at the end.
@@ -165,7 +168,7 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
   const barColor = tc.line ?? tc.fill
 
   return createPortal(
-    <div className="tour" role="dialog" aria-modal="true" aria-label={t('worlds.tagline')}>
+    <div className={`tour${proof?.status === 'approved' ? ' scb-on' : ''}`} role="dialog" aria-modal="true" aria-label={t('worlds.tagline')}>
       {proof
         ? proof.selfieUrl
           ? <DualPhoto key={proof.id} className="tour-photo" main={{ url: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)}
@@ -175,7 +178,7 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
         : <div className="dc-photos-center"><span className="dc-photos-spinner" aria-hidden="true" /></div>}
       <div className="tour-shade" />
 
-      {proof && <TapZone proof={proof} onPrev={prev} onNext={next} onHold={setHeld} />}
+      {proof && !composing && !commentsOpen && <TapZone proof={proof} onPrev={prev} onNext={next} onHold={setHeld} />}
 
       <div className="tour-top">
         {/* One segment per photo of the city: done, filling, to come. */}
@@ -201,7 +204,10 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
         </div>
       </div>
 
+      {composing && <div className="scb-dim" aria-hidden="true" />}
       {proof && <Bottom proof={proof} onProfile={() => openProfile(proof.user.id, proof.user.username)} />}
+      {/* The inline comment bar (my own photo too: people reply there). */}
+      {proof?.status === 'approved' && <StoryCommentBar proof={proof} onComposing={setComposing} />}
     </div>,
     document.getElementById('root') ?? document.body,
   )

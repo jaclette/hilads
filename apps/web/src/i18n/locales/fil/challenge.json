@@ -1577,7 +1577,9 @@
         },
         "thanks": "Salamat - titingnan namin.",
         "already": "Na-report mo na ang comment na 'to."
-      }
+      },
+      "sent": "Naipadala",
+      "send": "Ipadala"
     },
     "dual": {
       "toggle": "Dual",

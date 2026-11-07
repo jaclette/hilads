@@ -1615,7 +1615,9 @@
         },
         "thanks": "Grazie, lo controlliamo.",
         "already": "Hai già segnalato questo commento."
-      }
+      },
+      "sent": "Inviato",
+      "send": "Invia"
     },
     "dual": {
       "toggle": "Doppia",
