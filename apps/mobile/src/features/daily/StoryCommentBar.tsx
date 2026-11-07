@@ -12,6 +12,10 @@ import { useApp } from '@/context/AppContext';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import type { DailyProof } from '@/types';
+import { fetchPhotoMentionSuggestions } from '@/api/daily';
+import type { MentionSuggestion } from '@/api/mentions';
+import { MentionSuggestions } from '@/features/chat/MentionSuggestions';
+import { detectActiveMention } from '@/lib/mentions';
 import { sendComment } from './comments';
 import { COMMENT_MAX } from './PhotoCommentsSheet';
 
@@ -24,8 +28,8 @@ export const COMMENT_BAR_H = 60;
  * The photo viewer's inline comment bar (like a Story's "Send message"): a translucent pill
  * "Add a comment…" and three quick reactions. Focused, it rides on the keyboard (its real
  * height on every change: ABC ↔ emoji ↔ GIF) and `onComposing(true)` lets the viewer pause and
- * dim the photo. Send posts to the photo's thread (the comments sheet's API; @mentions in the
- * text work the same), a "✓ Sent" toast, the count goes up, the keyboard closes. A reaction
+ * dim the photo. Typing "@" suggests who to mention (the photo's author and commenters first,
+ * as in the comments sheet). Send posts to the photo's thread (the comments sheet's API), a "✓ Sent" toast, the count goes up, the keyboard closes. A reaction
  * posts that emoji at once, floating up, with a haptic. Guests go to sign-up first.
  */
 export function StoryCommentBar({ proof, onComposing }: { proof: DailyProof; onComposing: (composing: boolean) => void }) {
@@ -40,11 +44,35 @@ export function StoryCommentBar({ proof, onComposing }: { proof: DailyProof; onC
   const [floats, setFloats] = useState<{ id: number; emoji: string; left: number }[]>([]);
   const input = useRef<TextInput>(null);
   const seq = useRef(0);
+  // @ autocomplete, as in the comments sheet: the photo's author and its commenters first (server side).
+  const cursor = useRef(0);
+  const [mention, setMention] = useState<{ query: string; at: number } | null>(null);
+  const [suggestions, setSuggestions] = useState<MentionSuggestion[]>([]);
+  useEffect(() => {
+    if (!mention || !account) { setSuggestions([]); return; }
+    let live = true;
+    const id = setTimeout(() => {
+      fetchPhotoMentionSuggestions(proof.id, mention.query).then(r => { if (live) setSuggestions(r); });
+    }, 250);
+    return () => { live = false; clearTimeout(id); };
+  }, [mention, proof.id, account]);
+  const onChangeText = (v: string) => {
+    const next = v.slice(0, COMMENT_MAX);
+    setText(next);
+    setMention(detectActiveMention(next.slice(0, cursor.current || next.length)));
+  };
+  const onSelectMention = (m: MentionSuggestion) => {
+    if (!mention) return;
+    Haptics.selectionAsync().catch(() => {});
+    const end = mention.at + 1 + mention.query.length;
+    setText(`${text.slice(0, mention.at)}@${m.username} ${text.slice(end)}`.slice(0, COMMENT_MAX));
+    setMention(null);
+  };
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { onComposing(focused); }, [focused]); // eslint-disable-line react-hooks/exhaustive-deps
   // Another photo: a fresh bar.
-  useEffect(() => { setText(''); }, [proof.id]);
+  useEffect(() => { setText(''); setMention(null); }, [proof.id]);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); onComposing(false); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const say = (msg: string) => {
@@ -78,6 +106,7 @@ export function StoryCommentBar({ proof, onComposing }: { proof: DailyProof; onC
     if (!body || needAccount()) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setText('');
+    setMention(null);
     input.current?.blur();
     Keyboard.dismiss();
     post(body, 'bar');
@@ -96,17 +125,22 @@ export function StoryCommentBar({ proof, onComposing }: { proof: DailyProof; onC
   return (
     <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }} style={styles.wrap} pointerEvents="box-none">
       {!!notice && <View style={styles.toast} pointerEvents="none"><Text style={styles.toastText}>{notice}</Text></View>}
+      {/* Typing "@lan": who to mention, right above the bar. */}
+      {focused && mention !== null && suggestions.length > 0 && (
+        <View style={styles.mentions}><MentionSuggestions suggestions={suggestions} onSelect={onSelectMention} /></View>
+      )}
       <View style={[styles.row, { paddingBottom: insets.bottom + 8 }]}>
         <View style={styles.pill}>
           <TextInput
             ref={input}
             value={text}
-            onChangeText={v => setText(v.slice(0, COMMENT_MAX))}
+            onChangeText={onChangeText}
+            onSelectionChange={({ nativeEvent: { selection } }) => { cursor.current = selection.end; }}
             placeholder={account ? t('comments.placeholder') : t('comments.placeholderGuest')}
             placeholderTextColor="rgba(255,255,255,0.75)"
             style={styles.input}
             onFocus={() => { if (needAccount()) { input.current?.blur(); return; } setFocused(true); }}
-            onBlur={() => setFocused(false)}
+            onBlur={() => { setFocused(false); setMention(null); }}
             returnKeyType="send"
             submitBehavior="blurAndSubmit"
             onSubmitEditing={send}
@@ -159,6 +193,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   quick:     { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
   quickText: { fontSize: 26 },
   float:     { position: 'absolute', top: 0, fontSize: 30 },
+  mentions:  { marginHorizontal: 12, marginBottom: 4, borderRadius: Radius.card, overflow: 'hidden' },
   toast:     { alignSelf: 'center', marginBottom: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: Radius.full, backgroundColor: 'rgba(0,0,0,0.7)' },
   toastText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
 });
