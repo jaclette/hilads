@@ -1641,7 +1641,14 @@
       "results": {
         "title": "🏆 Results are in!",
         "sub": "See how your photo did yesterday",
-        "dismiss": "Dismiss"
+        "dismiss": "Dismiss",
+        "world": "🏆 Your photo finished #{{rank}} in the world yesterday",
+        "city": "🏆 Your photo finished #{{rank}} in {{city}} yesterday",
+        "best": "🏆 Your photo was the best in {{city}} yesterday",
+        "votes_one": "🏆 Your photo got {{count}} ❤️ yesterday",
+        "votes_other": "🏆 Your photo got {{count}} ❤️ yesterday",
+        "generic": "🏆 Yesterday's results are in",
+        "see": "See results →"
       },
       "timeLeft_one": "⏳ {{count}} hour left to vote",
       "timeLeft_other": "⏳ {{count}} hours left to vote",

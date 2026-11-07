@@ -1641,7 +1641,14 @@
       "results": {
         "title": "🏆 Die Ergebnisse sind da!",
         "sub": "Schau, wie dein Foto gestern abgeschnitten hat",
-        "dismiss": "Schließen"
+        "dismiss": "Schließen",
+        "world": "🏆 Dein Foto wurde gestern #{{rank}} weltweit",
+        "city": "🏆 Dein Foto wurde gestern #{{rank}} in {{city}}",
+        "best": "🏆 Dein Foto war gestern das beste in {{city}}",
+        "votes_one": "🏆 Dein Foto bekam gestern {{count}} ❤️",
+        "votes_other": "🏆 Dein Foto bekam gestern {{count}} ❤️",
+        "generic": "🏆 Die Ergebnisse von gestern sind da",
+        "see": "Ergebnisse ansehen →"
       },
       "timeLeft_one": "⏳ Noch {{count}} Stunde zum Abstimmen",
       "timeLeft_other": "⏳ Noch {{count}} Stunden zum Abstimmen",

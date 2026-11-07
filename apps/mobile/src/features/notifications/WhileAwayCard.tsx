@@ -15,6 +15,7 @@ import { fetchInbox, markNotificationsRead, markNotificationsSeen, type InboxAct
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from './counts';
+import { setAwayShowsResults } from './awayResults';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -126,6 +127,11 @@ export function WhileAwayCard() {
       }
     });
   const move = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }], opacity: 1 - Math.min(0.6, Math.abs(tx.value) / 400) }));
+  // Yesterday's results among the items: this card carries them (the results card stays hidden).
+  useEffect(() => {
+    setAwayShowsResults(!!items?.some(i => i.type === 'daily_result'));
+    return () => setAwayShowsResults(false);
+  }, [items]);
   // New items: the card comes back in place (a swipe left it off-screen).
   useEffect(() => { tx.value = 0; }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -154,7 +160,8 @@ export function WhileAwayCard() {
     track('away_card_opened', { type: main.type, single, more });
     leave(() => {
       if (!link || (link.startsWith('/user/') && !canAccessProfile(account))) { router.push('/notifications' as never); return; }
-      router.push(link as never);
+      // Results: yesterday's photos ranking, on my photo (with a little confetti).
+      router.push((main.type === 'daily_result' ? '/ranks?tab=photos&period=yesterday&focus=me' : link) as never);
     }, readIds);
   };
   const openMore = () => {

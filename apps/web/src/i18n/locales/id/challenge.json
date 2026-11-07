@@ -1599,7 +1599,14 @@
       "results": {
         "title": "🏆 Hasilnya udah keluar!",
         "sub": "Lihat gimana fotomu kemarin",
-        "dismiss": "Tutup"
+        "dismiss": "Tutup",
+        "world": "🏆 Fotomu peringkat #{{rank}} dunia kemarin",
+        "city": "🏆 Fotomu peringkat #{{rank}} di {{city}} kemarin",
+        "best": "🏆 Fotomu yang terbaik di {{city}} kemarin",
+        "votes_one": "🏆 Fotomu dapat {{count}} ❤️ kemarin",
+        "votes_other": "🏆 Fotomu dapat {{count}} ❤️ kemarin",
+        "generic": "🏆 Hasil kemarin sudah keluar",
+        "see": "Lihat hasil →"
       },
       "timeLeft_other": "⏳ Sisa {{count}} jam untuk vote",
       "pts_other": "{{count}} poin",

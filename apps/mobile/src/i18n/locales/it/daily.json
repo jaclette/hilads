@@ -975,7 +975,14 @@
     "results": {
       "title": "🏆 Ci sono i risultati!",
       "sub": "Scopri com'è andata la tua foto ieri",
-      "dismiss": "Chiudi"
+      "dismiss": "Chiudi",
+      "world": "🏆 La tua foto è arrivata #{{rank}} nel mondo ieri",
+      "city": "🏆 La tua foto è arrivata #{{rank}} a {{city}} ieri",
+      "best": "🏆 La tua foto è stata la migliore di {{city}} ieri",
+      "votes_one": "🏆 La tua foto ha ricevuto {{count}} ❤️ ieri",
+      "votes_other": "🏆 La tua foto ha ricevuto {{count}} ❤️ ieri",
+      "generic": "🏆 I risultati di ieri sono arrivati",
+      "see": "Vedi i risultati →"
     },
     "timeLeft_one": "⏳ Manca {{count}} ora per votare",
     "timeLeft_other": "⏳ Mancano {{count}} ore per votare",

@@ -889,7 +889,14 @@
     "results": {
       "title": "🏆 결과가 나왔어요!",
       "sub": "어제 사진의 결과를 확인해 보세요",
-      "dismiss": "닫기"
+      "dismiss": "닫기",
+      "world": "🏆 어제 내 사진이 세계 #{{rank}}위를 했어요",
+      "city": "🏆 어제 내 사진이 {{city}}에서 #{{rank}}위를 했어요",
+      "best": "🏆 어제 내 사진이 {{city}}에서 최고였어요",
+      "votes_one": "🏆 어제 내 사진이 {{count}} ❤️를 받았어요",
+      "votes_other": "🏆 어제 내 사진이 {{count}} ❤️를 받았어요",
+      "generic": "🏆 어제 결과가 나왔어요",
+      "see": "결과 보기 →"
     },
     "timeLeft_other": "⏳ 투표 마감까지 {{count}}시간",
     "pts_other": "{{count}}점",

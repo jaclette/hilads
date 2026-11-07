@@ -6,7 +6,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, useKeyboardState } from 'react-native-keyboard-controller';
 
 // A drag down from this close to the sheet's top (grabber, header) always moves it, even over buttons.
 const HEADER_ZONE = 110;
@@ -71,6 +71,8 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
 }) {
   const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
+  // With the keyboard open, the field sits right on it (the bottom safe area is under the keyboard).
+  const keyboardOpen = useKeyboardState(s => s.isVisible);
   const close = useRef(onClose);
   close.current = onClose;
 
@@ -109,7 +111,7 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
         <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} />
         <Animated.View
           ref={sheet}
-          style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.md }, style, { transform: [{ translateY: drag }] }]}
+          style={[styles.sheet, { paddingBottom: keyboardOpen ? Spacing.sm : insets.bottom + Spacing.md }, style, { transform: [{ translateY: drag }] }]}
           onLayout={() => sheet.current?.measure((_x, _y, _w, _h, _px, py) => { sheetTop.current = py; })}
           {...pan}
         >

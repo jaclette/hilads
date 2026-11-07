@@ -10,7 +10,7 @@ import { shareLink } from '../../lib/shareLink'
 import i18n from '../../i18n'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
-import { FitText, MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
+import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
 
 const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
 const GOLD = themeColor('sip')
@@ -109,7 +109,8 @@ export default function RanksScreen({ header, initial }) {
           )}
         </div>
         {tab === 'photos' && <Photos data={data} failed={failed} period={period} ghost={ghost}
-                                     loadMore={(offset) => fetchRanks('photos', { period, scope: scopeNow, cityId, offset })} />}
+                                     loadMore={(offset) => fetchRanks('photos', { period, scope: scopeNow, cityId, offset })}
+                                     focusAt={initial?.focus === 'me' ? initial.at : null} />}
         {tab === 'players' && <Players data={data} failed={failed} period={period} ghost={ghost} />}
         {tab === 'cities' && <Cities data={data} failed={failed} period={period} myCityId={Number(browsedCity) || null} ghost={ghost} />}
       </div>
@@ -129,7 +130,7 @@ function Empty({ text, failed, loading }) {
 
 const handle = (u) => (u?.username ? `@${u.username}` : u?.displayName ?? '')
 
-function Photos({ data, failed, period, ghost, loadMore }) {
+function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   const { t } = useDc()
   const { openDaily, account } = useDaily()
   const rows = useRef({})
@@ -156,6 +157,20 @@ function Photos({ data, failed, period, ghost, loadMore }) {
     io.observe(el)
     return () => io.disconnect()
   }, [next, data, loading]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The results card's click (focusAt): my photo's row in view and a burst of confetti, once.
+  const [burst, setBurst] = useState(false)
+  const handled = useRef(null)
+  useEffect(() => {
+    if (!focusAt || !data || handled.current === focusAt) return undefined
+    handled.current = focusAt
+    const mine = data.me
+    if (!mine) return undefined
+    setBurst(true)
+    navigator.vibrate?.([10, 40, 10])
+    const id = setTimeout(() => rows.current[mine.proofId]?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350)
+    const end = setTimeout(() => setBurst(false), 2200)
+    return () => { clearTimeout(id); clearTimeout(end) }
+  }, [focusAt, data])
   if (!data) return <Empty loading={!failed} failed={failed} />
 
   const top = items.filter(i => i.rank <= 3)
@@ -197,6 +212,7 @@ function Photos({ data, failed, period, ghost, loadMore }) {
         <div ref={end} className="r6-more">{loading && <span className="r6-spinner" />}</div>
       </div>
       <YouBar text={you} onClick={onYou} />
+      {burst && <div className="r6-burst"><Confetti run /></div>}
     </>
   )
 }

@@ -1641,7 +1641,14 @@
       "results": {
         "title": "🏆 De uitslagen zijn er!",
         "sub": "Bekijk hoe je foto het gisteren deed",
-        "dismiss": "Sluiten"
+        "dismiss": "Sluiten",
+        "world": "🏆 Je foto werd gisteren #{{rank}} van de wereld",
+        "city": "🏆 Je foto werd gisteren #{{rank}} in {{city}}",
+        "best": "🏆 Je foto was gisteren de beste van {{city}}",
+        "votes_one": "🏆 Je foto kreeg gisteren {{count}} ❤️",
+        "votes_other": "🏆 Je foto kreeg gisteren {{count}} ❤️",
+        "generic": "🏆 De uitslag van gisteren is er",
+        "see": "Bekijk de uitslag →"
       },
       "timeLeft_one": "⏳ Nog {{count}} uur om te stemmen",
       "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",

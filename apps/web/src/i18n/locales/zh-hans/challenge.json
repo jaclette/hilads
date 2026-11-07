@@ -1599,7 +1599,14 @@
       "results": {
         "title": "🏆 结果出来了！",
         "sub": "看看你昨天的照片表现如何",
-        "dismiss": "关闭"
+        "dismiss": "关闭",
+        "world": "🏆 你的照片昨天全球第 {{rank}} 名",
+        "city": "🏆 你的照片昨天在{{city}}第 {{rank}} 名",
+        "best": "🏆 你的照片昨天是{{city}}最佳",
+        "votes_one": "🏆 你的照片昨天获得 {{count}} ❤️",
+        "votes_other": "🏆 你的照片昨天获得 {{count}} ❤️",
+        "generic": "🏆 昨天的结果出来了",
+        "see": "查看结果 →"
       },
       "timeLeft_other": "⏳ 还剩 {{count}} 小时投票",
       "pts_other": "{{count}} 分",

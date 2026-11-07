@@ -1681,7 +1681,14 @@
       "results": {
         "title": "🏆 Saíram os resultados!",
         "sub": "Veja como foi sua foto ontem",
-        "dismiss": "Fechar"
+        "dismiss": "Fechar",
+        "world": "🏆 Sua foto ficou em #{{rank}} no mundo ontem",
+        "city": "🏆 Sua foto ficou em #{{rank}} em {{city}} ontem",
+        "best": "🏆 Sua foto foi a melhor de {{city}} ontem",
+        "votes_one": "🏆 Sua foto recebeu {{count}} ❤️ ontem",
+        "votes_other": "🏆 Sua foto recebeu {{count}} ❤️ ontem",
+        "generic": "🏆 Os resultados de ontem saíram",
+        "see": "Ver resultados →"
       },
       "timeLeft_one": "⏳ Falta {{count}} hora pra votar",
       "timeLeft_other": "⏳ Faltam {{count}} horas pra votar",

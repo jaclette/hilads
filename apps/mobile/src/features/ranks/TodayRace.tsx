@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
-import Animated, { FadeIn, LinearTransition, useReducedMotion } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition, useReducedMotion } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useIsFocused } from '@react-navigation/native';
@@ -11,7 +11,8 @@ import { useApp } from '@/context/AppContext';
 import { FlagSticker, themeColor, tint } from '@/ui/joy';
 import { shortCityName } from '@/i18n/cityName';
 import { fetchRanks, type CitiesRanks } from '@/api/ranks';
-import { markNotificationTypesRead } from '@/api/notifications';
+import { fetchInbox, markNotificationTypesRead, type InboxItem } from '@/api/notifications';
+import { useAwayShowsResults } from '@/features/notifications/awayResults';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features/notifications/counts';
 import { MEDAL_EMOJI } from './parts';
 
@@ -71,10 +72,23 @@ export function TodayRace({ refreshKey }: { refreshKey: number }) {
   );
 }
 
+/** The results line for my photo's daily_result ("🏆 Your photo finished #2 in the world yesterday"). */
+export function resultsLine(d: Record<string, any> | null, t: (k: string, o?: Record<string, unknown>) => string): string {
+  if (!d) return t('ranks.results.generic');
+  const city = shortCityName(d.cityName ?? '');
+  return d.worldRank ? t('ranks.results.world', { rank: d.worldRank })
+    : d.cityBest ? t('ranks.results.best', { city })
+    : d.cityRank ? t('ranks.results.city', { rank: d.cityRank, city })
+    : typeof d.votes === 'number' ? t('ranks.results.votes', { count: d.votes })
+    : t('ranks.results.generic');
+}
+
 /**
- * "🏆 Results are in!" on Today (V6), once: shown while yesterday's results
- * (or a rank change) are unread; a tap opens Ranks › Photos › Yesterday, ✕
- * dismisses it (both mark them read, so it never comes back for them).
+ * Yesterday's results on Today (V6), above the hero in the "While you were away" card's place and
+ * style, never over the hero: "🏆 Your photo finished #2 in the world yesterday · See results →".
+ * Only one results block: hidden while the away card carries them. A tap opens Ranks › Photos ›
+ * Yesterday on my photo (a little confetti); ✕ dismisses it. Both mark the results read (and clear
+ * the Ranks tab's dot), so it never comes back for them.
  */
 export function ResultsCard() {
   const styles = useThemedStyles(makeStyles);
@@ -82,23 +96,34 @@ export function ResultsCard() {
   const { t } = useTranslation('daily');
   const router = useRouter();
   const reduced = useReducedMotion();
+  const { account } = useApp();
   const { badges } = useNotifCounts();
-  if (!badges.ranks) return null;
+  const inAway = useAwayShowsResults();
+  const pending = !!account && badges.ranks > 0;
+  const [result, setResult] = useState<InboxItem | null | undefined>(undefined);
+  useEffect(() => {
+    if (!pending) { setResult(undefined); return; }
+    let alive = true;
+    fetchInbox({ categories: ['game'], limit: 10 })
+      .then(r => { if (alive) setResult(r.items.find(i => i.type === 'daily_result' && !i.read) ?? null); })
+      .catch(() => { if (alive) setResult(null); });
+    return () => { alive = false; };
+  }, [pending]);
+  if (!pending || inAway || result === undefined) return null;
   const done = () => {
     patchNotifCounts(c => ({ ...c, badges: { ...c.badges, ranks: 0 } }));
     markNotificationTypesRead(['daily_result', 'daily_rank']).then(refreshNotifCounts);
   };
+  const line = resultsLine(result?.data ?? null, t);
   return (
-    <Animated.View entering={reduced ? undefined : FadeIn.duration(400)} style={[styles.results, { backgroundColor: tint(GOLD.fill, 0.28) }]}>
-      <Pressable style={styles.resultsBody} accessibilityRole="button" testID="results-card"
-                 onPress={() => { done(); router.push('/ranks?tab=photos&period=yesterday' as never); }}>
-        <Text style={styles.trophy}>🏆</Text>
-        <View style={styles.flex}>
-          <Text style={styles.resultsTitle}>{t('ranks.results.title')}</Text>
-          <Text style={styles.resultsSub}>{t('ranks.results.sub')}</Text>
-        </View>
+    <Animated.View entering={reduced ? undefined : FadeIn.duration(400)} exiting={reduced ? undefined : FadeOut.duration(200)} style={styles.results}>
+      <Pressable style={styles.resultsBody} accessibilityRole="button" testID="results-card" accessibilityLabel={`${line}. ${t('ranks.results.see')}`}
+                 onPress={() => { done(); router.push('/ranks?tab=photos&period=yesterday&focus=me' as never); }}>
+        <Text style={styles.resultsTitle} numberOfLines={2}>
+          {line}<Text style={styles.resultsSee}>{'  '}{t('ranks.results.see')}</Text>
+        </Text>
       </Pressable>
-      <Pressable onPress={done} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('ranks.results.dismiss')}>
+      <Pressable onPress={done} hitSlop={10} style={styles.resultsClose} accessibilityRole="button" accessibilityLabel={t('ranks.results.dismiss')}>
         <Ionicons name="close" size={18} color={colors.muted} />
       </Pressable>
     </Animated.View>
@@ -118,9 +143,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   city:         { fontSize: 13, fontWeight: '800', color: c.text, maxWidth: '92%' },
   count:        { fontSize: 12, fontWeight: '700', color: c.muted },
   where:        { fontSize: 14, lineHeight: 19, fontWeight: '700', color: c.text, textAlign: 'center' },
-  results:      { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: Radius.card, paddingVertical: 12, paddingLeft: 12, paddingRight: 12 },
-  resultsBody:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  trophy:       { fontSize: 30, lineHeight: 36 },
-  resultsTitle: { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
-  resultsSub:   { fontSize: 14, lineHeight: 19, color: c.text },
+  results:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, paddingRight: 8, paddingVertical: 12,
+                  borderRadius: Radius.card, backgroundColor: c.primaryTint, borderWidth: 1.5, borderColor: c.primary },
+  resultsBody:  { flex: 1 },
+  resultsClose: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  resultsTitle: { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
+  resultsSee:   { fontSize: 15, fontWeight: '800', color: c.primaryOnTint },
 });

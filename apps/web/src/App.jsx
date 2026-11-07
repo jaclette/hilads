@@ -4050,7 +4050,7 @@ export default function App() {
   }
 
   // V6: the Ranks tab, on a segment (photos / players / cities), period and scope.
-  function openRanks({ tab = 'photos', period = 'today', scope = null, cityId = null } = {}) {
+  function openRanks({ tab = 'photos', period = 'today', scope = null, cityId = null, focus = null } = {}) {
     setShowCityPicker(false)
     setShowEventDrawer(false)
     setShowPeopleDrawer(false)
@@ -4059,10 +4059,10 @@ export default function App() {
     setShowNotifications(false)
     setViewingProfile(null)
     dismissFullPageOverlays()
-    setRanksParams({ tab, period, scope, cityId, at: Date.now() })
+    setRanksParams({ tab, period, scope, cityId, focus, at: Date.now() })
     setShowLeaderboard(true)
   }
-  function goToRanksTab() { openRanks({ ...ranksParams }) }
+  function goToRanksTab() { openRanks({ ...ranksParams, focus: null }) }
   // An old leaderboard link (scope city / cities / world, period month / alltime) → its Ranks segment.
   const ranksFromLeaderboard = (scope, period) => ({
     tab: scope === 'cities' ? 'cities' : 'players', period: period === 'alltime' ? 'alltime' : 'week', scope: scope === 'world' ? 'world' : 'city',
@@ -5189,8 +5189,8 @@ export default function App() {
     setShowNotifications(false)
     const d = notif.data ?? {}
     if (notif.type === 'daily_result') {
-      // V6: yesterday's results → the ranking of that day's photos.
-      openRanks({ tab: 'photos', period: 'yesterday' })
+      // V6: yesterday's results → the ranking of that day's photos, on mine (a little confetti).
+      openRanks({ tab: 'photos', period: 'yesterday', focus: 'me' })
     } else if (notif.type === 'daily_rank') {
       openRanks({ tab: 'players', period: 'week', scope: d.scope === 'world' ? 'world' : 'city' })
     } else if (notif.type === 'daily_local_pass') {

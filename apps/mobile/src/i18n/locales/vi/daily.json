@@ -889,7 +889,14 @@
     "results": {
       "title": "🏆 Có kết quả rồi!",
       "sub": "Xem ảnh hôm qua của bạn thế nào",
-      "dismiss": "Đóng"
+      "dismiss": "Đóng",
+      "world": "🏆 Ảnh của bạn đứng #{{rank}} thế giới hôm qua",
+      "city": "🏆 Ảnh của bạn đứng #{{rank}} ở {{city}} hôm qua",
+      "best": "🏆 Ảnh của bạn đẹp nhất {{city}} hôm qua",
+      "votes_one": "🏆 Ảnh của bạn nhận {{count}} ❤️ hôm qua",
+      "votes_other": "🏆 Ảnh của bạn nhận {{count}} ❤️ hôm qua",
+      "generic": "🏆 Đã có kết quả hôm qua",
+      "see": "Xem kết quả →"
     },
     "timeLeft_other": "⏳ Còn {{count}} giờ để bình chọn",
     "pts_other": "{{count}} điểm",

@@ -889,7 +889,14 @@
     "results": {
       "title": "🏆 結果発表！",
       "sub": "昨日の写真の結果をチェック",
-      "dismiss": "閉じる"
+      "dismiss": "閉じる",
+      "world": "🏆 昨日、あなたの写真は世界#{{rank}}でした",
+      "city": "🏆 昨日、あなたの写真は{{city}}で#{{rank}}でした",
+      "best": "🏆 昨日、あなたの写真が{{city}}でいちばんでした",
+      "votes_one": "🏆 昨日、あなたの写真に{{count}} ❤️",
+      "votes_other": "🏆 昨日、あなたの写真に{{count}} ❤️",
+      "generic": "🏆 昨日の結果が出ました",
+      "see": "結果を見る →"
     },
     "timeLeft_other": "⏳ 投票はあと{{count}}時間",
     "pts_other": "{{count}}pt",

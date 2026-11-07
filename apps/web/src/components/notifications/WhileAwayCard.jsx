@@ -6,6 +6,7 @@ import Icon from '../Icon'
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '../../lib/notifCounts'
 import { track } from '../../lib/analytics'
 import { useDaily } from '../daily/dailyShared'
+import { setAwayShowsResults } from '../../lib/awayResults'
 import { awayLine, byImportance, sameObject } from './inboxText'
 
 /**
@@ -32,6 +33,12 @@ export default function WhileAwayCard({ account }) {
     fetchInbox({ categories: ['social', 'game'], unseen: true, limit: 8 }).then(r => { if (alive) { setItems(r.items); setLeaving(false) } }).catch(() => {})
     return () => { alive = false }
   }, [account, pending])
+
+  // Yesterday's results among the items: this card carries them (the results card stays hidden).
+  useEffect(() => {
+    setAwayShowsResults(!!items?.some(i => i.type === 'daily_result'))
+    return () => setAwayShowsResults(false)
+  }, [items])
 
   const ids = useMemo(() => (items ?? []).flatMap(i => i.ids), [items])
   const seen = () => {

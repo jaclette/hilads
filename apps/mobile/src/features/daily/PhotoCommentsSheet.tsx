@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboardState } from 'react-native-keyboard-controller';
 import Animated, {
   Easing, FadeInDown, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withTiming,
 } from 'react-native-reanimated';
@@ -148,7 +149,9 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const [replyTo, setReplyTo] = useState<PhotoComment | null>(null);
   const [menu, setMenu] = useState<Menu>(null);
   const [showEmoji, setShowEmoji] = useState(false);
-  const [keyboard, setKeyboard] = useState(0);   // its height while open
+  // The keyboard's real height while open, on every change (ABC ↔ emoji ↔ GIF, the suggestions
+  // bar): the same value the sheet's keyboard padding uses, so the input stays right above it.
+  const keyboard = useKeyboardState(s => (s.isVisible ? s.height : 0));
   const [mentionQuery, setMentionQuery] = useState<{ query: string; at: number } | null>(null);
   const [suggestions, setSuggestions] = useState<MentionSuggestion[]>([]);
   const [confetti, setConfetti] = useState(false);
@@ -157,12 +160,6 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const inputRef = useRef<TextInput>(null);
   const listRef = useRef<FlatList<CommentItem>>(null);
   const cursor = useRef(0);
-
-  useEffect(() => {
-    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', e => setKeyboard(e.endCoordinates.height));
-    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboard(0));
-    return () => { show.remove(); hide.remove(); };
-  }, []);
 
   // A notice (error, report thanks) fades after a moment.
   useEffect(() => {
@@ -267,8 +264,9 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const authorName = target.author?.username ? `@${target.author.username}` : target.author?.displayName ?? '';
   const flag = countryToFlag(target.city?.country);
   const firstId = !thread.hasMore ? items.find(c => !c.pending)?.id ?? null : null;
-  // Full height above the keyboard while typing (the sheet rises with it), else 78% of the screen.
-  const sheetStyle = { height: keyboard > 0 ? height - keyboard - insets.top - 8 : Math.round(height * 0.78) };
+  // Full height above the keyboard while typing (the sheet rises with it), its top under the status
+  // bar's safe area; else 78% of the screen (never above the safe area either).
+  const sheetStyle = { height: keyboard > 0 ? Math.max(200, height - keyboard - insets.top - 8) : Math.min(Math.round(height * 0.78), height - insets.top - 8) };
 
   return (
     <Sheet visible onClose={onClose} closeLabel={t('comments.close')} style={[styles.sheet, sheetStyle]}>

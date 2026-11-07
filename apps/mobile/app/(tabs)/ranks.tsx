@@ -14,7 +14,7 @@ import { Avatar, Segmented, ThemeIcon } from '@/ui';
 import { useDailyToday } from '@/hooks/useDaily';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, todayShare, type ShareContent } from '@/features/share/content';
-import { FlagSticker, themeColor, tint } from '@/ui/joy';
+import { Confetti, FlagSticker, themeColor, tint } from '@/ui/joy';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
 import { handOffList } from '@/lib/prefetch';
@@ -55,7 +55,10 @@ function RanksContent() {
   const { t } = useTranslation('daily');
   const router = useRouter();
   const { city, account } = useApp();
-  const params = useLocalSearchParams<{ tab?: string; period?: string; scope?: string; cityId?: string }>();
+  const params = useLocalSearchParams<{ tab?: string; period?: string; scope?: string; cityId?: string; focus?: string }>();
+  // ?focus=me (the results card): the photos ranking opens on my photo, with a little confetti.
+  const [focusMe, setFocusMe] = useState(false);
+  useEffect(() => { if (params.focus === 'me') setFocusMe(true); }, [params.focus]);
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
   // The scope follows the city chosen in the header (World without one).
@@ -164,7 +167,7 @@ function RanksContent() {
       <View style={styles.header} testID="ranks-screen"><AppHeader /></View>
       <View style={styles.flex}>
         {tab === 'photos' && <PhotosView data={data as PhotosRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} period={period} ghost={ghost}
-                                         loadMore={loadMorePhotos} list={list} />}
+                                         loadMore={loadMorePhotos} list={list} focusMe={focusMe} onFocused={() => setFocusMe(false)} />}
         {tab === 'players' && <PlayersView data={data as PlayersRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} ghost={ghost}
                                            period={period} list={list} onOpen={id => { if (canAccessProfile(account)) router.push(`/user/${id}` as never); }} />}
         {tab === 'cities' && <CitiesView data={data as CitiesRanks | null} header={header} failed={failed} refreshing={refreshing} onRefresh={onRefresh} ghost={ghost}
@@ -207,9 +210,11 @@ function useOpenPhoto() {
 
 // ── Photos ──────────────────────────────────────────────────────────────────
 
-function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost, loadMore, list }: {
+function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost, loadMore, list, focusMe = false, onFocused }: {
   data: PhotosRanks | null; header: React.ReactNode; failed: boolean; refreshing: boolean; onRefresh: () => void; period: RanksPeriod; ghost: PodiumGhost;
   loadMore: (offset: number) => Promise<PhotosRanks>; list: React.RefObject<FlatList<unknown> | null>;
+  /** Open on my photo (scrolled to its row) with a confetti burst, once the data is here. */
+  focusMe?: boolean; onFocused?: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -251,6 +256,20 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
     if (i >= 0) list.current?.scrollToIndex({ index: i, viewPosition: 0.5 });
     else { const p = items.find(x => x.proof.id === me.proofId); if (p) open(proofs, p.proof); }
   };
+
+  // The results card's tap: my photo's row in view, a burst of confetti, a success buzz.
+  const [burst, setBurst] = useState(false);
+  useEffect(() => {
+    if (!focusMe || !data) return;
+    onFocused?.();
+    if (!me) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    setBurst(true);
+    const i = rest.findIndex(x => x.proof.id === me.proofId);
+    const id = i >= 0 ? setTimeout(() => list.current?.scrollToIndex({ index: i, viewPosition: 0.4 }), 350) : null;
+    const end = setTimeout(() => setBurst(false), 2200);
+    return () => { if (id) clearTimeout(id); clearTimeout(end); };
+  }, [focusMe, data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const headerBlock = (
     <View>
@@ -295,6 +314,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} week={period === 'week'} onPress={() => open(proofs, item.proof)} />}
       />
       {data && <YouBar text={youText} onPress={onYou} />}
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}><Confetti run={burst} count={36} /></View>
     </>
   );
 }

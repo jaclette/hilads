@@ -1641,7 +1641,14 @@
       "results": {
         "title": "🏆 Lumabas na ang results!",
         "sub": "Tingnan kung kumusta ang photo mo kahapon",
-        "dismiss": "Isara"
+        "dismiss": "Isara",
+        "world": "🏆 Pang-#{{rank}} sa mundo ang litrato mo kahapon",
+        "city": "🏆 Pang-#{{rank}} sa {{city}} ang litrato mo kahapon",
+        "best": "🏆 Ang litrato mo ang pinakamaganda sa {{city}} kahapon",
+        "votes_one": "🏆 Nakakuha ng {{count}} ❤️ ang litrato mo kahapon",
+        "votes_other": "🏆 Nakakuha ng {{count}} ❤️ ang litrato mo kahapon",
+        "generic": "🏆 Lumabas na ang resulta kahapon",
+        "see": "Tingnan ang resulta →"
       },
       "timeLeft_one": "⏳ {{count}} oras na lang para mag-vote",
       "timeLeft_other": "⏳ {{count}} oras na lang para mag-vote",

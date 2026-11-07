@@ -94,9 +94,9 @@ export default function TodayScreen({ header }) {
       <div className="page-body today-body">
         {/* V6: unseen comments, likes and results since the last visit. */}
         <WhileAwayCard account={account} />
+        {/* V6: yesterday's results, here when the away card doesn't carry them (never over the hero). */}
+        <ResultsCard account={account} />
         <Ticket data={data} countries={countries} loading={loading} />
-        {/* V6: yesterday's results are out (once). */}
-        <ResultsCard />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
