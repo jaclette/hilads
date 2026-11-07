@@ -23,6 +23,8 @@ export type ShareContent =
       /** Event mode: a photo of the live event's days gets its share frame (e.g. "halloween"). */
       eventKey?: string | null;
       rank: { rank: number; city: string | null } | null;
+      /** The card's rank line instead of "#1 in Saigon" (the points reward: "I'm #1 in Saigon today"). */
+      rankText?: string | null;
       /** The photo's challenge date, votes and the share card's question (the challenge's, else the apps' default). */
       date?: string; voteCount?: number; shareQuestion?: string | null;
       /** Today's question and my answer, for the share line (COPY.md). */
@@ -102,6 +104,10 @@ export function proofUrl(id: string): string {
 /** The line that goes with the link (never containing it). */
 export function shareText(c: ShareContent): string {
   const t = (key: string, opts?: Record<string, unknown>) => i18n.t(`share.${key}`, { ns: 'daily', ...opts });
+  if (c.type === 'proof' && c.rankText) {
+    // The points reward: "I'm #1 in Saigon today 🏆" before the usual line.
+    return `${c.rankText} 🏆 ${shareText({ ...c, rankText: null })}`;
+  }
   if (c.type === 'proof') {
     // "How do locals say cheers? In Saigon: Một, hai, ba, dzô! And in your city? Play local. Compare global."
     const city = c.city?.name ? shortCityName(c.city.name) : null;

@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useContext, useEffect, useMemo, useRef, type ReactNode, type Ref } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useId, useMemo, useRef, type ReactNode, type Ref } from 'react';
 import {
   Animated, FlatList, Modal, Pressable, ScrollView, View, StyleSheet,
   type FlatListProps, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewProps, type StyleProp, type ViewStyle,
@@ -8,6 +8,7 @@ import { Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { KeyboardAvoidingView, useKeyboardState } from 'react-native-keyboard-controller';
 import { Gesture, GestureDetector, GestureHandlerRootView, type NativeGesture } from 'react-native-gesture-handler';
+import { holdScreen } from '@/lib/celebrationQueue';
 
 // A drag down from this close to the sheet's top (grabber, header) always moves it, even over buttons.
 const HEADER_ZONE = 110;
@@ -95,6 +96,9 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
   const fromHeader = useRef(false);
   const base = useRef<number | null>(null);
   useEffect(() => { if (visible) { drag.setValue(0); atTop.current = true; } }, [visible, drag]);
+  // An open sheet holds the screen: no celebration pops over it (lib/celebrationQueue).
+  const holdId = useId();
+  useEffect(() => (visible ? holdScreen(`sheet${holdId}`) : undefined), [visible, holdId]);
 
   const scroll = useMemo(() => Gesture.Native(), []);
   const api = useMemo<SheetScrollApi>(() => ({

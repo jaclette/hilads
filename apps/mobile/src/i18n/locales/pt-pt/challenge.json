@@ -813,5 +813,49 @@
     "confirmBody": "Reabre com a mesma contagem decrescente que definiste da primeira vez.",
     "confirmCta": "Reiniciar",
     "failed": "Não foi possível reiniciar - tenta novamente."
+  },
+  "scoreWin": {
+    "close": "Fechar",
+    "a11yPoints": "Pontos ganhos: {{count}}",
+    "a11yTotal": "Total: {{total}} pontos",
+    "pts": "pts",
+    "proud": "{{city}} tem orgulho em ti",
+    "proudNoCity": "Bem jogado!",
+    "yourPhoto": "A tua foto",
+    "source": {
+      "photo": "Foto",
+      "votes": "Votos",
+      "top": "Top 3",
+      "streak": "Série",
+      "early": "Cedo",
+      "stamp": "Carimbo",
+      "other": "Bónus"
+    },
+    "medal": {
+      "city": "em {{city}}",
+      "world": "Mundo",
+      "cities": "{{city}} entre as cidades",
+      "citiesTop": "{{city}} cidade n.º 1"
+    },
+    "up": "subiste {{count}}",
+    "new": "Novo",
+    "goal": {
+      "pass": "{{gap}} pts para passar {{name}}",
+      "streak": "🔥 Dia {{day}} amanhã",
+      "stamp": "🎟️ Próximo carimbo em {{city}}"
+    },
+    "ranks": "🏆 Ver a classificação",
+    "share": "📤 Partilhar a minha vitória",
+    "shareLine": {
+      "city_today": "Sou o n.º {{rank}} em {{city}} hoje",
+      "city_week": "Sou o n.º {{rank}} em {{city}} esta semana",
+      "city_alltime": "Sou o n.º {{rank}} em {{city}}",
+      "world_today": "Sou o n.º {{rank}} no mundo hoje",
+      "world_week": "Sou o n.º {{rank}} no mundo esta semana",
+      "world_alltime": "Sou o n.º {{rank}} no mundo",
+      "cities_today": "{{city}} é a n.º {{rank}} entre as cidades hoje",
+      "cities_week": "{{city}} é a n.º {{rank}} entre as cidades esta semana",
+      "cities_alltime": "{{city}} é a n.º {{rank}} entre as cidades"
+    }
   }
 }

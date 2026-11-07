@@ -825,5 +825,49 @@
     "confirmBody": "سيُفتح من جديد بالعدّ التنازلي نفسه الذي حدّدته أول مرة.",
     "confirmCta": "إعادة البدء",
     "failed": "تعذّرت إعادة البدء، حاول مرة أخرى."
+  },
+  "scoreWin": {
+    "close": "إغلاق",
+    "a11yPoints": "النقاط المكتسبة: {{count}}",
+    "a11yTotal": "المجموع: {{total}} نقطة",
+    "pts": "نقطة",
+    "proud": "{{city}} فخورة بك",
+    "proudNoCity": "أحسنت!",
+    "yourPhoto": "صورتك",
+    "source": {
+      "photo": "صورة",
+      "votes": "أصوات",
+      "top": "أفضل 3",
+      "streak": "سلسلة",
+      "early": "مبكرًا",
+      "stamp": "ختم",
+      "other": "مكافأة"
+    },
+    "medal": {
+      "city": "في {{city}}",
+      "world": "العالم",
+      "cities": "{{city}} بين المدن",
+      "citiesTop": "{{city}} المدينة الأولى"
+    },
+    "up": "تقدّم {{count}}",
+    "new": "جديد",
+    "goal": {
+      "pass": "{{gap}} نقطة لتتجاوز {{name}}",
+      "streak": "🔥 اليوم {{day}} غدًا",
+      "stamp": "🎟️ الختم التالي في {{city}}"
+    },
+    "ranks": "🏆 شاهد الترتيب",
+    "share": "📤 شارك فوزي",
+    "shareLine": {
+      "city_today": "أنا رقم {{rank}} في {{city}} اليوم",
+      "city_week": "أنا رقم {{rank}} في {{city}} هذا الأسبوع",
+      "city_alltime": "أنا رقم {{rank}} في {{city}}",
+      "world_today": "أنا رقم {{rank}} في العالم اليوم",
+      "world_week": "أنا رقم {{rank}} في العالم هذا الأسبوع",
+      "world_alltime": "أنا رقم {{rank}} في العالم",
+      "cities_today": "{{city}} رقم {{rank}} بين المدن اليوم",
+      "cities_week": "{{city}} رقم {{rank}} بين المدن هذا الأسبوع",
+      "cities_alltime": "{{city}} رقم {{rank}} بين المدن"
+    }
   }
 }

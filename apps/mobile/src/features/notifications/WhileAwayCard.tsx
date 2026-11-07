@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { FadeInDown, FadeOutUp, runOnJS, useAnimatedStyle, useReducedMotion, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -16,6 +16,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from './counts';
 import { setAwayShowsResults } from './awayResults';
+import { holdScreen } from '@/lib/celebrationQueue';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -113,9 +114,24 @@ export function WhileAwayCard() {
     seen();
   }, [seen]);
 
+  // No celebration pops over the card while it arrives (a moment to read it) or while it's being swiped.
+  const showing = !!items?.length;
+  useEffect(() => {
+    if (!showing) return;
+    const release = holdScreen('away-intro');
+    const id = setTimeout(release, 2500);
+    return () => { clearTimeout(id); release(); };
+  }, [showing]);
+  const panHold = useRef<(() => void) | null>(null);
+  const holdPan = useCallback(() => { panHold.current?.(); panHold.current = holdScreen('away-pan'); }, []);
+  const releasePan = useCallback(() => { panHold.current?.(); panHold.current = null; }, []);
+  useEffect(() => releasePan, [releasePan]);
+
   // Swipe it away sideways; short of the threshold it springs back.
   const tx = useSharedValue(0);
   const pan = Gesture.Pan()
+    .onBegin(() => { runOnJS(holdPan)(); })
+    .onFinalize(() => { runOnJS(releasePan)(); })
     .activeOffsetX([-14, 14])
     .failOffsetY([-10, 10])
     .onUpdate(e => { tx.value = e.translationX; })

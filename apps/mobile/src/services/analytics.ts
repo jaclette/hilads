@@ -158,7 +158,11 @@ export type AnalyticsEvent =
   | 'place_picker_opened'
   | 'place_picked'
   | 'proof_too_far'
-  | 'stamp_earned';
+  | 'stamp_earned'
+  // The points reward's victory screen (2026-11-07).
+  | 'score_win_shown'
+  | 'score_win_ranks'
+  | 'score_win_share';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

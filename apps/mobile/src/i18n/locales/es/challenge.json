@@ -813,5 +813,49 @@
     "confirmBody": "Se reabre con la misma cuenta atrás que fijaste la primera vez.",
     "confirmCta": "Reiniciar",
     "failed": "No se pudo reiniciar. Inténtalo de nuevo."
+  },
+  "scoreWin": {
+    "close": "Cerrar",
+    "a11yPoints": "Puntos ganados: {{count}}",
+    "a11yTotal": "Total: {{total}} puntos",
+    "pts": "pts",
+    "proud": "{{city}} está orgullosa de ti",
+    "proudNoCity": "¡Bien jugado!",
+    "yourPhoto": "Tu foto",
+    "source": {
+      "photo": "Foto",
+      "votes": "Votos",
+      "top": "Top 3",
+      "streak": "Racha",
+      "early": "Temprano",
+      "stamp": "Sello",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "en {{city}}",
+      "world": "Mundo",
+      "cities": "{{city}} entre ciudades",
+      "citiesTop": "{{city}} ciudad n.º 1"
+    },
+    "up": "subes {{count}}",
+    "new": "Nuevo",
+    "goal": {
+      "pass": "{{gap}} pts para pasar a {{name}}",
+      "streak": "🔥 Día {{day}} mañana",
+      "stamp": "🎟️ Próximo sello en {{city}}"
+    },
+    "ranks": "🏆 Ver el ranking",
+    "share": "📤 Compartir mi victoria",
+    "shareLine": {
+      "city_today": "Soy el n.º {{rank}} en {{city}} hoy",
+      "city_week": "Soy el n.º {{rank}} en {{city}} esta semana",
+      "city_alltime": "Soy el n.º {{rank}} en {{city}}",
+      "world_today": "Soy el n.º {{rank}} del mundo hoy",
+      "world_week": "Soy el n.º {{rank}} del mundo esta semana",
+      "world_alltime": "Soy el n.º {{rank}} del mundo",
+      "cities_today": "{{city}} es n.º {{rank}} entre ciudades hoy",
+      "cities_week": "{{city}} es n.º {{rank}} entre ciudades esta semana",
+      "cities_alltime": "{{city}} es n.º {{rank}} entre ciudades"
+    }
   }
 }

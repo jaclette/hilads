@@ -111,7 +111,7 @@ export const ProofCard = forwardRef<View, {
       </View>
     );
   } else {
-    const rank = content.rank
+    const rank = content.rankText ? content.rankText : content.rank
       ? (content.rank.city ? t('share.rankCity', { rank: content.rank.rank, city: localizeCityName(content.rank.city) }) : t('share.rankWorld', { rank: content.rank.rank }))
       : null;
     const votes = content.voteCount ? t('share.card.votes', { count: content.voteCount }) : null;

@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type { MentionSuggestion } from './mentions';
+import { requestScoreCelebration } from '@/lib/celebrationQueue';
 import type {
   DailyBoard, DailyCompared, DailyRates, DailyTour,
   NearbyPlace,
@@ -179,6 +180,8 @@ export async function fetchDailyProof(id: string): Promise<DailyProof> {
 /** cityFirstToday: no other proof from its city today yet ("You put Saigon on the world map today."). */
 export async function createDailyProof(input: DailyProofInput): Promise<{ proof: DailyProof; cityFirstToday: boolean }> {
   const r = await api.post<{ proof: DailyProof; cityFirstToday?: boolean }>('/daily/proofs', input);
+  // Its points: the reward screen shows once the photo flow is closed (it waits for a tab).
+  requestScoreCelebration();
   return { proof: r.proof, cityFirstToday: !!r.cityFirstToday };
 }
 

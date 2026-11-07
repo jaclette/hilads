@@ -13,6 +13,7 @@ import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { DailyLocalPassProgress, DailyThemeKey } from '@/types';
 import { Button } from '@/ui';
 import { Confetti, themeColor, tint } from '@/ui/joy';
+import { useCelebrationTurn } from '@/lib/celebrationQueue';
 
 // v2: themes v2 renamed every key, so the v1 record would read as all new stamps.
 const KEY = (userId: string, cityId: number) => `hilads_stamps_v2_${userId}_${cityId}`;
@@ -52,16 +53,18 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
     return () => { alive = false; };
   }, [themes, userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // One celebration at a time (lib/celebrationQueue): the stamp waits for its turn.
+  const turn = useCelebrationTurn('stamp', stamp !== null);
   useEffect(() => {
-    if (!stamp) return;
+    if (!stamp || !turn) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     anim.setValue(reduceMotion ? 1 : 0);
     if (!reduceMotion) {
       Animated.timing(anim, { toValue: 1, duration: 420, easing: Easing.out(Easing.back(1.6)), useNativeDriver: true }).start();
     }
-  }, [stamp, reduceMotion, anim]);
+  }, [stamp, turn, reduceMotion, anim]);
 
-  if (!stamp) return null;
+  if (!stamp || !turn) return null;
   const scale  = anim.interpolate({ inputRange: [0, 1], outputRange: [1.8, 1] });
   const rotate = anim.interpolate({ inputRange: [0, 1], outputRange: ['-24deg', '-8deg'] });
   const close = () => setStamp(null);

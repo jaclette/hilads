@@ -75,7 +75,8 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
   const [failed, setFailed] = useState(false);
   // My photo: the templates (Versus once other cities' photos of the day are in) and the one on screen.
   const [others, setOthers] = useState<VersusPhoto[] | null>(proof ? null : []);
-  const [template, setTemplate] = useState<ShareTemplate>('turn');
+  // The points reward's "Share my win" opens on the Result card (its rank line).
+  const [template, setTemplate] = useState<ShareTemplate>(proof?.rankText ? 'result' : 'turn');
   const [still, setStill] = useState(false);
   const [pageW, setPageW] = useState(0);
   const pager = useRef<ScrollView>(null);

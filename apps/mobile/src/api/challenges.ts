@@ -8,6 +8,8 @@ import type {
   Message,
   UserDTO,
   RatePrompt,
+  DailyChallenge,
+  DailyProof,
 } from '@/types';
 
 // ── Reads ─────────────────────────────────────────────────────────────────────
@@ -434,6 +436,35 @@ export interface ScoreCelebration {
   // city). Distinct from rank_*.city which ranks the USER within that city.
   city_rank_alltime?: number | null;
   city_rank_month?:   number | null;
+  /** The victory screen (2026-11-07): null/absent from an older API. */
+  win?: ScoreWin | null;
+}
+
+/** A medal of the victory screen: me in my city, me in the World, my city among the cities. */
+export interface ScoreWinMedal {
+  key:      'city' | 'world' | 'cities';
+  rank:     number;
+  /** The rank before this reward (▲ when it improved); null = new on the board. */
+  prevRank: number | null;
+  city?:    { id: number; name: string; country: string | null } | null;
+}
+
+export type ScoreWinGoal =
+  | { type: 'pass'; scope: 'city' | 'world'; gap: number; username: string | null; displayName: string | null; progress: number }
+  | { type: 'streak'; day: number; milestone: number; progress: number }
+  | { type: 'stamp'; done: number; total: number; city: { id: number; name: string; country: string | null } | null; progress: number };
+
+export interface ScoreWin {
+  /** The Ranks period the reward lands in. */
+  period:    'today' | 'week' | 'alltime';
+  /** The rewarded challenge's theme key (the screen's color). */
+  theme:     string | null;
+  challenge: DailyChallenge | null;
+  /** My photo for it (the chip's thumbnail, the share card). */
+  proof:     DailyProof | null;
+  sources:   { source: 'photo' | 'votes' | 'top' | 'streak' | 'early' | 'stamp' | 'other'; points: number }[];
+  medals:    ScoreWinMedal[];
+  goal:      ScoreWinGoal | null;
 }
 
 /** A pending GROUP challenge result reveal for the viewer (one per resolved

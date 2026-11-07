@@ -805,5 +805,49 @@
     "confirmBody": "처음 설정한 카운트다운 그대로 다시 열려요.",
     "confirmCta": "다시 시작",
     "failed": "다시 시작하지 못했어요. 다시 시도해 주세요."
+  },
+  "scoreWin": {
+    "close": "닫기",
+    "a11yPoints": "획득 포인트: {{count}}",
+    "a11yTotal": "합계: {{total}}포인트",
+    "pts": "점",
+    "proud": "{{city}}가 당신을 자랑스러워해요",
+    "proudNoCity": "잘했어요!",
+    "yourPhoto": "내 사진",
+    "source": {
+      "photo": "사진",
+      "votes": "투표",
+      "top": "톱 3",
+      "streak": "연속",
+      "early": "일찍",
+      "stamp": "스탬프",
+      "other": "보너스"
+    },
+    "medal": {
+      "city": "{{city}}에서",
+      "world": "세계",
+      "cities": "도시 중 {{city}}",
+      "citiesTop": "{{city}} 1위 도시"
+    },
+    "up": "{{count}}계단 상승",
+    "new": "NEW",
+    "goal": {
+      "pass": "{{gap}}점이면 {{name}} 추월",
+      "streak": "🔥 내일이면 {{day}}일째",
+      "stamp": "🎟️ {{city}}의 다음 스탬프"
+    },
+    "ranks": "🏆 랭킹 보기",
+    "share": "📤 내 승리 공유",
+    "shareLine": {
+      "city_today": "오늘 {{city}}에서 {{rank}}위!",
+      "city_week": "이번 주 {{city}}에서 {{rank}}위!",
+      "city_alltime": "{{city}}에서 {{rank}}위!",
+      "world_today": "오늘 세계 {{rank}}위!",
+      "world_week": "이번 주 세계 {{rank}}위!",
+      "world_alltime": "세계 {{rank}}위!",
+      "cities_today": "오늘 {{city}}는 도시 중 {{rank}}위!",
+      "cities_week": "이번 주 {{city}}는 도시 중 {{rank}}위!",
+      "cities_alltime": "{{city}}는 도시 중 {{rank}}위!"
+    }
   }
 }

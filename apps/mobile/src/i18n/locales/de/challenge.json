@@ -809,5 +809,49 @@
     "confirmBody": "Sie startet wieder mit demselben Countdown wie beim ersten Mal.",
     "confirmCta": "Neu starten",
     "failed": "Neustart hat nicht geklappt, versuch's nochmal."
+  },
+  "scoreWin": {
+    "close": "Schließen",
+    "a11yPoints": "Punkte verdient: {{count}}",
+    "a11yTotal": "Gesamt: {{total}} Punkte",
+    "pts": "Pkt.",
+    "proud": "{{city}} ist stolz auf dich",
+    "proudNoCity": "Gut gespielt!",
+    "yourPhoto": "Dein Foto",
+    "source": {
+      "photo": "Foto",
+      "votes": "Stimmen",
+      "top": "Top 3",
+      "streak": "Serie",
+      "early": "Früh",
+      "stamp": "Stempel",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "in {{city}}",
+      "world": "Welt",
+      "cities": "{{city}} unter den Städten",
+      "citiesTop": "{{city}} Top-Stadt"
+    },
+    "up": "{{count}} Plätze hoch",
+    "new": "Neu",
+    "goal": {
+      "pass": "{{gap}} Pkt. bis du {{name}} überholst",
+      "streak": "🔥 Morgen Tag {{day}}",
+      "stamp": "🎟️ Nächster Stempel in {{city}}"
+    },
+    "ranks": "🏆 Rangliste ansehen",
+    "share": "📤 Meinen Sieg teilen",
+    "shareLine": {
+      "city_today": "Ich bin heute #{{rank}} in {{city}}",
+      "city_week": "Ich bin diese Woche #{{rank}} in {{city}}",
+      "city_alltime": "Ich bin #{{rank}} in {{city}}",
+      "world_today": "Ich bin heute #{{rank}} weltweit",
+      "world_week": "Ich bin diese Woche #{{rank}} weltweit",
+      "world_alltime": "Ich bin #{{rank}} weltweit",
+      "cities_today": "{{city}} ist heute #{{rank}} der Städte",
+      "cities_week": "{{city}} ist diese Woche #{{rank}} der Städte",
+      "cities_alltime": "{{city}} ist #{{rank}} der Städte"
+    }
   }
 }

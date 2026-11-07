@@ -5,6 +5,7 @@ import { fetchRatePrompts } from '@/api/challenges';
 import { RateSheet } from '@/components/RateSheet';
 import { socket } from '@/lib/socket';
 import type { RatePrompt } from '@/types';
+import { useCelebrationTurn } from '@/lib/celebrationQueue';
 
 /**
  * Auto-open the RateSheet when the caller has at least one rate-eligible
@@ -85,6 +86,9 @@ export function RatePromptLaunchGate() {
   // RateSheet's onSubmitted fires after a successful POST. It also fires on
   // recoverable races (409 / 403) where the prompt was stale - either way
   // we treat it as "this prompt is done" and don't re-show.
+  // One celebration at a time (lib/celebrationQueue).
+  const turn = useCelebrationTurn('rate_prompt', prompt !== null);
+
   function handleSubmitted() {
     setPrompt(null);
     setClosed(true);
@@ -93,7 +97,7 @@ export function RatePromptLaunchGate() {
   return (
     <RateSheet
       prompt={prompt}
-      visible={prompt !== null}
+      visible={turn && prompt !== null}
       onClose={handleClose}
       onSubmitted={handleSubmitted}
     />

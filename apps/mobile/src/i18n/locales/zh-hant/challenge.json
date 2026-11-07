@@ -805,5 +805,49 @@
     "confirmBody": "挑戰會重新開放，倒數時間和你第一次設定的一樣。",
     "confirmCta": "重新開始",
     "failed": "重新開始失敗，再試一次。"
+  },
+  "scoreWin": {
+    "close": "關閉",
+    "a11yPoints": "獲得積分：{{count}}",
+    "a11yTotal": "總計：{{total}} 分",
+    "pts": "分",
+    "proud": "{{city}}以你為傲",
+    "proudNoCity": "幹得好！",
+    "yourPhoto": "你的照片",
+    "source": {
+      "photo": "照片",
+      "votes": "投票",
+      "top": "前三",
+      "streak": "連續",
+      "early": "提早",
+      "stamp": "印章",
+      "other": "獎勵"
+    },
+    "medal": {
+      "city": "在{{city}}",
+      "world": "全球",
+      "cities": "城市中的{{city}}",
+      "citiesTop": "{{city}} 第一城市"
+    },
+    "up": "上升 {{count}}",
+    "new": "新",
+    "goal": {
+      "pass": "再得 {{gap}} 分超越 {{name}}",
+      "streak": "🔥 明天第 {{day}} 天",
+      "stamp": "🎟️ {{city}}的下一個印章"
+    },
+    "ranks": "🏆 查看排行榜",
+    "share": "📤 分享我的勝利",
+    "shareLine": {
+      "city_today": "我今天在{{city}}排名第 {{rank}}",
+      "city_week": "我本週在{{city}}排名第 {{rank}}",
+      "city_alltime": "我在{{city}}排名第 {{rank}}",
+      "world_today": "我今天全球排名第 {{rank}}",
+      "world_week": "我本週全球排名第 {{rank}}",
+      "world_alltime": "我全球排名第 {{rank}}",
+      "cities_today": "{{city}}今天在城市中排名第 {{rank}}",
+      "cities_week": "{{city}}本週在城市中排名第 {{rank}}",
+      "cities_alltime": "{{city}}在城市中排名第 {{rank}}"
+    }
   }
 }

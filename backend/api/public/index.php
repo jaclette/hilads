@@ -109,6 +109,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/SeasonalEvents.php';
     require_once __DIR__ . '/../src/WeeklyLeaderboard.php';
     require_once __DIR__ . '/../src/Ranks.php';
+    require_once __DIR__ . '/../src/ScoreWin.php';
     require_once __DIR__ . '/../src/PeopleCounts.php';
     require_once __DIR__ . '/../src/SpotsAdmin.php';
     require_once __DIR__ . '/../src/PlacesMigration.php';
@@ -287,6 +288,7 @@ require_once __DIR__ . '/../src/AppConfig.php';
 require_once __DIR__ . '/../src/SeasonalEvents.php';
 require_once __DIR__ . '/../src/WeeklyLeaderboard.php';
 require_once __DIR__ . '/../src/Ranks.php';
+require_once __DIR__ . '/../src/ScoreWin.php';
 require_once __DIR__ . '/../src/PeopleCounts.php';
 require_once __DIR__ . '/../src/SpotsAdmin.php';
 require_once __DIR__ . '/../src/PlacesMigration.php';

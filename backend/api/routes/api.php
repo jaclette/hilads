@@ -12781,10 +12781,25 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
     if ($cityId !== null && preg_match('/^city_(\d+)$/', $cityId, $cm)) {
         $cityRow = CityRepository::findById((int) $cm[1]);
         if ($cityRow !== null) {
-            $cityName    = $cityRow['name']    ?? null;
+            // Hilads' short name ("Saigon", not "Ho Chi Minh City"), in the viewer's language.
+            $cityName    = CityNames::short($cityRow['name'] ?? null, DailyI18n::current()) ?: null;
             $cityCountry = $cityRow['country'] ?? null;
         }
     }
+
+    // The victory screen (ScoreWin): every unacknowledged event with its challenge date.
+    $winStmt = $pdo->prepare("
+        SELECT se.kind, se.points, se.daily_challenge_id, se.city_id, dc.challenge_date::text AS challenge_date
+        FROM score_events se
+        LEFT JOIN daily_challenges dc ON dc.id = se.daily_challenge_id
+        WHERE se.user_id = :uid
+          AND se.created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+          AND se.kind NOT IN ('winner','present','present_host','present_host_base','photo_host','submission')
+        ORDER BY se.created_at DESC
+        LIMIT 200
+    ");
+    $winStmt->execute(['uid' => $callerId, 'wm' => $watermark]);
+    $win = ScoreWin::build($winStmt->fetchAll(\PDO::FETCH_ASSOC) ?: [], ['id' => $callerId, 'current_city_id' => $cityId]);
 
     // Per-event breakdown - the popin's "what did I just earn?" surface.
     // Title comes from channel_challenges; LEFT JOIN handles the rare case
@@ -12855,6 +12870,8 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         // the USER among other users in the same city.
         'city_rank_alltime' => $cityRankInCitiesAlltime,
         'city_rank_month'   => $cityRankInCitiesMonth,
+        // The redesigned victory screen (2026-11-07); older apps ignore it.
+        'win'               => $win,
     ]);
 });
 

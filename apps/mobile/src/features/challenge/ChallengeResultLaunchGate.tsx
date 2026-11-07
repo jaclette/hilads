@@ -6,6 +6,7 @@ import { socket } from '@/lib/socket';
 import { fetchChallengeReveals, type ChallengeReveal } from '@/api/challenges';
 import { markNotificationsRead } from '@/api/notifications';
 import { ChallengeResultModal } from './ChallengeResultModal';
+import { useCelebrationTurn } from '@/lib/celebrationQueue';
 
 /**
  * Auto-open the GROUP challenge result reveal (winning photo / present / absent +
@@ -74,10 +75,12 @@ export function ChallengeResultLaunchGate() {
       : { pathname: '/leaderboard' });
   }, [handleClose]);
 
+  // One celebration at a time (lib/celebrationQueue).
+  const turn = useCelebrationTurn('challenge_result', current !== null);
   return (
     <ChallengeResultModal
-      reveal={current}
-      visible={current !== null}
+      reveal={turn ? current : null}
+      visible={turn && current !== null}
       onClose={handleClose}
       onOpenLeaderboard={handleOpenLeaderboard}
     />
