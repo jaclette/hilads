@@ -1721,5 +1721,49 @@
       "duels_other": "{{count}} duels",
       "duels_many": "{{count}} duels"
     }
+  },
+  "scoreWin": {
+    "close": "Fermer",
+    "a11yPoints": "Points gagnés : {{count}}",
+    "a11yTotal": "Total : {{total}} points",
+    "pts": "pts",
+    "proud": "{{city}} est fière de toi",
+    "proudNoCity": "Bien joué !",
+    "yourPhoto": "Ta photo",
+    "source": {
+      "photo": "Photo",
+      "votes": "Votes",
+      "top": "Top 3",
+      "streak": "Série",
+      "early": "En avance",
+      "stamp": "Tampon",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "à {{city}}",
+      "world": "Monde",
+      "cities": "{{city}} parmi les villes",
+      "citiesTop": "{{city}} ville n°1"
+    },
+    "up": "+{{count}} places",
+    "new": "Nouveau",
+    "goal": {
+      "pass": "{{gap}} pts pour dépasser {{name}}",
+      "streak": "🔥 Jour {{day}} demain",
+      "stamp": "🎟️ Prochain tampon à {{city}}"
+    },
+    "ranks": "🏆 Voir le classement",
+    "share": "📤 Partager ma victoire",
+    "shareLine": {
+      "city_today": "Je suis n°{{rank}} à {{city}} aujourd’hui",
+      "city_week": "Je suis n°{{rank}} à {{city}} cette semaine",
+      "city_alltime": "Je suis n°{{rank}} à {{city}}",
+      "world_today": "Je suis n°{{rank}} dans le monde aujourd’hui",
+      "world_week": "Je suis n°{{rank}} dans le monde cette semaine",
+      "world_alltime": "Je suis n°{{rank}} dans le monde",
+      "cities_today": "{{city}} est n°{{rank}} des villes aujourd’hui",
+      "cities_week": "{{city}} est n°{{rank}} des villes cette semaine",
+      "cities_alltime": "{{city}} est n°{{rank}} des villes"
+    }
   }
 }

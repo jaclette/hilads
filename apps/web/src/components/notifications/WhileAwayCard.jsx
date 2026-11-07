@@ -7,6 +7,7 @@ import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '../../lib/
 import { track } from '../../lib/analytics'
 import { useDaily } from '../daily/dailyShared'
 import { setAwayShowsResults } from '../../lib/awayResults'
+import { holdScreen } from '../../lib/celebrationQueue'
 import { awayLine, byImportance, sameObject } from './inboxText'
 
 /**
@@ -39,6 +40,15 @@ export default function WhileAwayCard({ account }) {
     setAwayShowsResults(!!items?.some(i => i.type === 'daily_result'))
     return () => setAwayShowsResults(false)
   }, [items])
+
+  // No celebration pops over the card while it arrives (a moment to read it).
+  const showing = !!items?.length
+  useEffect(() => {
+    if (!showing) return undefined
+    const release = holdScreen('away-intro')
+    const id = setTimeout(release, 2500)
+    return () => { clearTimeout(id); release() }
+  }, [showing])
 
   const ids = useMemo(() => (items ?? []).flatMap(i => i.ids), [items])
   const seen = () => {

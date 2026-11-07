@@ -1678,5 +1678,49 @@
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels"
     }
+  },
+  "scoreWin": {
+    "close": "Sluiten",
+    "a11yPoints": "Punten verdiend: {{count}}",
+    "a11yTotal": "Totaal: {{total}} punten",
+    "pts": "ptn",
+    "proud": "{{city}} is trots op je",
+    "proudNoCity": "Goed gespeeld!",
+    "yourPhoto": "Jouw foto",
+    "source": {
+      "photo": "Foto",
+      "votes": "Stemmen",
+      "top": "Top 3",
+      "streak": "Reeks",
+      "early": "Vroeg",
+      "stamp": "Stempel",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "in {{city}}",
+      "world": "Wereld",
+      "cities": "{{city}} tussen de steden",
+      "citiesTop": "{{city}} topstad"
+    },
+    "up": "{{count}} omhoog",
+    "new": "Nieuw",
+    "goal": {
+      "pass": "{{gap}} ptn om {{name}} in te halen",
+      "streak": "🔥 Morgen dag {{day}}",
+      "stamp": "🎟️ Volgende stempel in {{city}}"
+    },
+    "ranks": "🏆 Bekijk de ranglijst",
+    "share": "📤 Deel mijn winst",
+    "shareLine": {
+      "city_today": "Ik ben vandaag #{{rank}} in {{city}}",
+      "city_week": "Ik ben deze week #{{rank}} in {{city}}",
+      "city_alltime": "Ik ben #{{rank}} in {{city}}",
+      "world_today": "Ik ben vandaag #{{rank}} van de wereld",
+      "world_week": "Ik ben deze week #{{rank}} van de wereld",
+      "world_alltime": "Ik ben #{{rank}} van de wereld",
+      "cities_today": "{{city}} is vandaag #{{rank}} van de steden",
+      "cities_week": "{{city}} is deze week #{{rank}} van de steden",
+      "cities_alltime": "{{city}} is #{{rank}} van de steden"
+    }
   }
 }

@@ -1,247 +1,229 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
+import { themeIcon } from '../lib/icons'
+import { thumbUrl } from '../lib/imageThumb'
+import { useBackLayer } from '../lib/backLayers'
+import { shortCityName } from '../i18n/cityName'
+import { themeName } from './map/spotsShared'
+import { themeColor } from './joy/Joy'
 import Icon from './Icon'
 
-// Per-kind subtitle key - same mapping as the native modal. Falls through
-// to `default` when top_kind is null or unknown (older / ghost events).
-const KIND_KEYS = {
-  challenge_created: 'scoreCelebration.subtitle.challenge_created',
-  accepted:    'scoreCelebration.subtitle.accepted',
-  date_locked: 'scoreCelebration.subtitle.date_locked',
-  meetup:      'scoreCelebration.subtitle.meetup',
-  debrief:     'scoreCelebration.subtitle.debrief',
-  ghost:       'scoreCelebration.subtitle.ghost',
-  meet_bonus:  'scoreCelebration.subtitle.meet_bonus',
+// The mockup's timeline (ms), as the app (docs/mockups/hilads_reward_mockup.html).
+const T = { coins: 850, coinGap: 90, coinDur: 650, odo: 1150, odoDur: 1100, medals: [2000, 2250, 2500], end: 4100 }
+const CONFETTI = ['#F2783A', '#FFC93C', '#2E6FD8', '#1A9E6B', '#F27AA8', '#7C5CE0', '#FFFFFF']
+
+function mix(a, b, t) {
+  const p = (h) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))
+  const [x, y] = [p(a), p(b)]
+  return `#${x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('')}`
 }
 
-// Short kind label + icon for the per-event rows. Distinct keys from the
-// subtitle copy above (which is a full sentence for the headline path).
-const KIND_SHORT_KEYS = {
-  challenge_created: 'scoreCelebration.kindShort.challenge_created',
-  accepted:    'scoreCelebration.kindShort.accepted',
-  date_locked: 'scoreCelebration.kindShort.date_locked',
-  meetup:      'scoreCelebration.kindShort.meetup',
-  debrief:     'scoreCelebration.kindShort.debrief',
-  ghost:       'scoreCelebration.kindShort.ghost',
-  meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
+/** The victory screen data from the API, or built from an older API's fields. */
+function winOf(d) {
+  if (d.win) return d.win
+  const medals = []
+  const city = d.city_name ? { id: 0, name: d.city_name, country: d.city_country ?? null } : null
+  const cityRank = d.rank_month?.city ?? d.rank_alltime?.city ?? null
+  const worldRank = d.rank_month?.global ?? d.rank_alltime?.global ?? null
+  const cities = d.city_rank_month ?? d.city_rank_alltime ?? null
+  if (cityRank) medals.push({ key: 'city', rank: cityRank, prevRank: cityRank, city })
+  if (worldRank) medals.push({ key: 'world', rank: worldRank, prevRank: worldRank })
+  if (cities && city) medals.push({ key: 'cities', rank: cities, prevRank: cities, city })
+  return { period: 'alltime', theme: null, challenge: null, proof: null, sources: [{ source: 'other', points: d.points }], medals, goal: null }
 }
-const KIND_ICON = {
-  challenge_created: 'locate-outline',
-  accepted:    'people-outline',
-  date_locked: 'calendar-outline',
-  meetup:      'sparkles-outline',
-  debrief:     'sparkles-outline',
-  ghost:       'eye-off-outline',
-  meet_bonus:  'people-outline',
-}
+
+const buzz = (p) => { try { navigator.vibrate?.(p) } catch { /* not supported */ } }
 
 /**
- * Web "+X points!" celebration modal - parity with the native version.
- *
- * Animation:
- *   - Fade-in backdrop + scale-in card via CSS keyframes (in index.css).
- *   - JS-driven count-up on the points headline using requestAnimationFrame
- *     so the integer ticks discretely.
- *   - Rank rows stagger via CSS animation-delay.
- *
- * The CTA + backdrop both fire onClose; the parent (LaunchGate) acks the
- * server watermark there so the same delta is never re-celebrated.
+ * The points reward (as the app's): a victory card in the day's theme color with slowly turning
+ * light rays and doodles, confetti, the trophy dropping in and wobbling, "+10" bouncing, coins
+ * flying into the total, which rolls from the old to the new value, then what earned it, three
+ * medals popping one by one (▲ when the reward moved me up; a click opens that ranking), the next
+ * goal's bar filling, and the two buttons. A short vibration per step where the browser has one.
+ * A click anywhere jumps to the end; with reduced motion everything is simply there.
  */
-export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboard }) {
+export default function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onShare }) {
   const { t } = useTranslation('challenge')
-  const [displayPoints, setDisplayPoints] = useState(0)
-  const rafRef = useRef(null)
+  const win = useMemo(() => (data ? winOf(data) : null), [data])
+  const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const [done, setDone] = useState(false)
+  const [rolled, setRolled] = useState(false)
+  const card = useRef(null)
+  const total = useRef(null)
+  const timers = useRef([])
 
-  // Count-up effect - restarts whenever a new payload becomes visible.
-  // Easing matches the native modal's out-cubic curve so the two feel the
-  // same across platforms; duration scales with point count but is clamped
-  // so a +500 doesn't roll forever.
+  const totalPts = data ? ((data.total_month ?? 0) > 0 ? data.total_month : data.total_alltime ?? 0) : 0
+  const delta = data?.points ?? 0
+  const from = Math.max(0, totalPts - delta)
+
+  const clear = () => { timers.current.forEach(clearTimeout); timers.current = [] }
+  const finish = () => {
+    clear()
+    card.current?.querySelectorAll('.win-flycoin').forEach(n => n.remove())
+    setRolled(true); setDone(true)
+  }
+
   useEffect(() => {
-    if (!visible || !data || data.points <= 0) {
-      setDisplayPoints(0)
-      return
-    }
-    const target   = data.points
-    const duration = Math.min(2400, 600 + target * 55)
-    const startedAt = performance.now()
-    const tick = (now) => {
-      const t = Math.min(1, (now - startedAt) / duration)
-      const eased = 1 - Math.pow(1 - t, 3)
-      setDisplayPoints(Math.round(target * eased))
-      if (t < 1) rafRef.current = requestAnimationFrame(tick)
-    }
-    rafRef.current = requestAnimationFrame(tick)
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
-  }, [visible, data])
+    if (!visible || !win) return undefined
+    clear(); setDone(false); setRolled(false)
+    if (reduced) { finish(); buzz([12, 40, 18]); return clear }
+    const at = (ms, fn) => { timers.current.push(setTimeout(fn, ms)) }
+    buzz(8)
+    at(670, () => buzz(8))
+    // Coins: from "+10" to the total's coin (Web Animations, as the mockup).
+    at(T.coins - 20, () => {
+      const c = card.current, tt = total.current
+      if (!c || !tt) return
+      const cr = c.getBoundingClientRect(), tr = tt.getBoundingClientRect()
+      for (let i = 0; i < 5; i++) {
+        const coin = document.createElement('div')
+        coin.className = 'win-flycoin'
+        const sx = cr.width / 2 - 11 + (i - 2) * 26, sy = 150
+        const ex = tr.left - cr.left + 10, ey = tr.top - cr.top
+        coin.style.left = `${sx}px`; coin.style.top = `${sy}px`
+        c.appendChild(coin)
+        coin.animate([
+          { opacity: 1, transform: 'translate(0,0) scale(1)' },
+          { opacity: 1, transform: `translate(${(ex - sx) / 2}px,-40px) scale(1.2)` },
+          { opacity: 0, transform: `translate(${ex - sx}px,${ey - sy}px) scale(.6)` },
+        ], { duration: T.coinDur, delay: 20 + i * T.coinGap, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => coin.remove()
+        at(20 + i * T.coinGap + T.coinDur, () => buzz(6))
+      }
+    })
+    at(T.odo, () => setRolled(true))
+    at(T.odo + T.odoDur, () => buzz([12, 40, 18]))
+    T.medals.forEach(ms => at(ms + 40, () => buzz(5)))
+    at(T.end, () => setDone(true))
+    return clear
+  }, [visible, win]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!visible || !data || data.points <= 0) return null
+  const close = () => { clear(); onClose() }
+  useBackLayer(visible && !!win, close)
+  useEffect(() => {
+    if (!visible) return undefined
+    const onKey = (e) => { if (e.key === 'Escape') close() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [visible]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const subtitleKey = data.top_kind && KIND_KEYS[data.top_kind]
-    ? KIND_KEYS[data.top_kind]
-    : 'scoreCelebration.subtitle.default'
+  const confetti = useMemo(() => Array.from({ length: 70 }, (_, i) => ({
+    left: `${Math.random() * 100}%`, bg: CONFETTI[i % CONFETTI.length],
+    dx: `${Math.random() * 120 - 60}px`, r: `${Math.random() * 720 - 360}deg`,
+    anim: `win-fall ${1.6 + Math.random() * 1.4}s ${0.2 + Math.random() * 0.6}s ease-in forwards`,
+  })), [visible]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const topN      = data.top_n ?? 100
-  // Prefer monthly rank when present (more current); fall back to alltime
-  // so the popin still reads useful copy when a user is unranked monthly.
-  const cityRank         = data.rank_month?.city   ?? data.rank_alltime?.city   ?? null
-  const worldRank        = data.rank_month?.global ?? data.rank_alltime?.global ?? null
-  const cityInCitiesRank = data.city_rank_month    ?? data.city_rank_alltime    ?? null
+  if (!visible || !win || delta <= 0) return null
 
-  // Running total after the delta. Prefer the in-month total when present
-  // (matches the monthly rank lens above) and fall back to alltime.
-  const totalPoints = (data.total_month && data.total_month > 0)
-    ? data.total_month
-    : (data.total_alltime ?? 0)
-
-  // Running total climbs in sync with the "+X" count-up: starts at the score
-  // before this gain (total - delta), ends at the final total.
-  const displayTotal = Math.max(0, totalPoints - data.points) + displayPoints
-
-  const cityRankCopy = cityRank !== null
-    ? t('scoreCelebration.rank.city',       { rank: cityRank, city: data.city_name ?? '' })
-    : t('scoreCelebration.rank.cityBeyond', { topN })
-  const worldRankCopy = worldRank !== null
-    ? t('scoreCelebration.rank.world',       { rank: worldRank })
-    : t('scoreCelebration.rank.worldBeyond', { topN })
-  const cityInCitiesCopy = cityInCitiesRank !== null
-    ? t('scoreCelebration.rank.cities',       { rank: cityInCitiesRank, city: data.city_name ?? '' })
-    : t('scoreCelebration.rank.citiesBeyond', { topN,                   city: data.city_name ?? '' })
-
-  const cityFlag   = countryToFlag(data.city_country)
-  const rowIconStyle = { color: 'var(--muted2)', lineHeight: 0 }
+  const skip = () => { if (!done) { finish(); buzz([12, 40, 18]) } }
+  const tc = themeColor(win.theme)
+  const light = tc.onFill === '#FFFFFF'
+  const vars = {
+    '--win-top': mix(tc.fill, '#FFFFFF', 0.45), '--win-fill': tc.fill, '--win-end': mix(tc.fill, '#F2783A', 0.18),
+    '--win-tag': light ? '#FFFFFF' : mix(tc.fill, '#000000', 0.62),
+  }
+  const medals = win.medals.slice(0, 3)
+  const target = (m) => ({ tab: m.key === 'cities' ? 'cities' : 'players', scope: m.key === 'city' ? 'city' : 'world', period: win.period })
+  const mainTarget = { tab: 'players', scope: medals.some(m => m.key === 'city') ? 'city' : 'world', period: win.period }
+  const cityMedal = medals.find(m => m.city?.name)?.city ?? null
+  const city = cityMedal ? shortCityName(cityMedal.name) : null
+  const themeKey = win.challenge?.theme?.key ?? win.theme
+  const themeLabel = themeKey ? themeName(themeKey, { special: win.challenge?.special, city: win.proof?.city?.name }) : null
+  const sub = [win.proof ? t('scoreWin.yourPhoto') : null, win.challenge?.headline ?? null].filter(Boolean).join(' · ')
+    || win.sources.map(s => t(`scoreWin.source.${s.source}`)).join(' · ')
+  const best = [...medals].sort((a, b) => a.rank - b.rank)[0] ?? null
+  const g = win.goal
+  const goalLeft = !g ? null
+    : g.type === 'pass' ? t('scoreWin.goal.pass', { gap: g.gap, name: g.username ? `@${g.username}` : (g.displayName ?? '') })
+    : g.type === 'streak' ? t('scoreWin.goal.streak', { day: g.day })
+    : t('scoreWin.goal.stamp', { city: shortCityName(g.city?.name ?? '') })
+  const goalRight = !g ? null : g.type === 'streak' ? `${g.day - 1} / ${g.milestone}` : g.type === 'stamp' ? `${g.done} / ${g.total}` : null
+  const digits = String(totalPts).length
 
   return (
-    <div className="score-celebration-backdrop" onClick={onClose}>
-      <div
-        className="score-celebration-card"
-        onClick={e => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="score-celebration-confetti" aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, color: 'var(--gold)', letterSpacing: 0 }}>
-          <Icon name="sparkles-outline" size={14} />
-          <Icon name="sparkles" size={16} />
-          <Icon name="sparkles-outline" size={14} />
-        </div>
-        <div
-          className="score-celebration-trophy"
-          aria-hidden="true"
-          style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 72, height: 72, borderRadius: '50%',
-            background: 'color-mix(in srgb, var(--gold) 16%, transparent)', color: 'var(--gold)',
-          }}
-        >
-          <Icon name="trophy-outline" size={38} />
-        </div>
+    <div className="win-dim" onClick={done ? close : skip}>
+      <div ref={card} className={`win${done ? ' is-done' : ''}`} style={vars} role="dialog" aria-modal="true" aria-label={t('scoreWin.a11yPoints', { count: delta })}
+           onClick={(e) => { e.stopPropagation(); skip() }}>
+        <div className="win-rays" aria-hidden="true" />
+        <span className="win-doodle" style={{ left: 16, top: 120 }} aria-hidden="true">✦</span>
+        <span className="win-doodle" style={{ right: 20, top: 170 }} aria-hidden="true"><Icon name={themeIcon(themeKey, win.challenge?.special)} size={22} /></span>
+        <span className="win-doodle" style={{ left: 24, top: 200 }} aria-hidden="true">〰</span>
+        <button type="button" className="win-close" onClick={(e) => { e.stopPropagation(); close() }} aria-label={t('scoreWin.close')}>✕</button>
 
-        <div className="score-celebration-points">
-          +{displayPoints}
-          <span className="score-celebration-points-unit"> {t('scoreCelebration.unit')}</span>
-        </div>
-
-        {totalPoints > 0 && (
-          <div className={`score-celebration-total${data.points > 0 && displayPoints >= data.points ? ' is-lit' : ''}`}>
-            {t('scoreCelebration.total', { total: displayTotal })}
-          </div>
-        )}
-
-        <div className="score-celebration-subtitle">
-          {t(subtitleKey)}
-        </div>
-
-        {/* Per-event breakdown - same shape as the native modal. Each row
-            shows the challenge title + which step earned the points so the
-            popin reads as a recap, not just a number. */}
-        {data.events && data.events.length > 0 && (
-          <div className="score-celebration-events">
-            {data.events.map(ev => {
-              const icon    = KIND_ICON[ev.kind] ?? 'trophy-outline'
-              const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default'
-              const title   = ev.challenge_title ?? t('scoreCelebration.event.deletedChallenge')
-              const isBonus = ev.kind === 'meet_bonus'
+        <div className="win-trophy" aria-hidden="true">🏆</div>
+        <div className="win-plus">+{delta}<small>{t('scoreWin.pts')}</small></div>
+        <div className="win-total" ref={total} aria-label={t('scoreWin.a11yTotal', { total: totalPts })}>
+          <span className="win-coin">H</span>
+          <span className="win-odo" aria-hidden="true">
+            {String(rolled ? totalPts : from).padStart(digits, ' ').split('').map((_, i) => {
+              const startCh = String(from).padStart(digits, ' ')[i]
+              const endCh = String(totalPts).padStart(digits, ' ')[i]
+              const row = (ch) => (ch === ' ' ? 0 : Number(ch) + 1)
               return (
-                <div
-                  key={ev.id}
-                  className={`score-celebration-event${isBonus ? ' score-celebration-event--bonus' : ''}`}
-                >
-                  <span className="score-celebration-event-points">+{ev.points}</span>
-                  <span className="score-celebration-event-body">
-                    <span className="score-celebration-event-title">{title}</span>
-                    <span className="score-celebration-event-kind">
-                      <Icon name={icon} size={12} /> {t(kindKey)}
-                    </span>
-                  </span>
-                </div>
+                <span key={i} className="win-digit" style={{ transform: `translateY(-${(rolled ? row(endCh) : row(startCh)) * 22}px)`, transition: rolled && !done ? undefined : 'none' }}>
+                  <span>&nbsp;</span>{Array.from({ length: 10 }, (_, n) => <span key={n}>{n}</span>)}
+                </span>
               )
             })}
-            {data.events_truncated && data.event_count != null && (
-              <div className="score-celebration-events-more">
-                {t('scoreCelebration.event.andMore', {
-                  count: Math.max(0, (data.event_count ?? 0) - data.events.length),
-                })}
-              </div>
-            )}
+          </span>
+          <span className="win-unit">{t('scoreWin.pts')}</span>
+        </div>
+        <div className="win-tag">{city ? `${t('scoreWin.proud', { city })} ${countryToFlag(cityMedal?.country ?? null) ?? ''}`.trim() : t('scoreWin.proudNoCity')}</div>
+
+        <div className="win-chip">
+          {win.proof && <img className="win-th" src={thumbUrl(win.proof.thumbUrl ?? win.proof.photoUrl) ?? win.proof.photoUrl} alt="" />}
+          <div className="win-chip-body">
+            <b>{themeKey && <Icon name={themeIcon(themeKey, win.challenge?.special)} size={13} />}{themeLabel ?? t('scoreWin.source.other')}</b>
+            {sub && <em>{sub}</em>}
+          </div>
+          <span className="win-pills">
+            {win.sources.map(s => (
+              <span key={s.source} className="win-pts">{win.sources.length > 1 ? `+${s.points} ${t(`scoreWin.source.${s.source}`)}` : `+${s.points}`}</span>
+            ))}
+          </span>
+        </div>
+
+        {medals.length > 0 && (
+          <div className="win-medals">
+            {medals.map(m => {
+              const c = shortCityName(m.city?.name ?? '')
+              const label = m.key === 'world' ? t('scoreWin.medal.world')
+                : m.key === 'cities' ? (m.rank === 1 ? t('scoreWin.medal.citiesTop', { city: c }) : t('scoreWin.medal.cities', { city: c }))
+                : t('scoreWin.medal.city', { city: c })
+              const up = m.prevRank === null || m.prevRank === undefined ? null : m.prevRank - m.rank
+              const icon = m.key === 'world' ? '🌍' : m.key === 'cities' ? '🏙️' : (countryToFlag(m.city?.country ?? null) || '📍')
+              return (
+                <button key={m.key} type="button" className={`win-medal win-medal--${m.key}`} onClick={(e) => { e.stopPropagation(); onOpenRanks(target(m)) }}
+                        aria-label={`#${m.rank}, ${label}${up > 0 ? `, ${t('scoreWin.up', { count: up })}` : ''}`}>
+                  <span className="win-m">{icon}</span>
+                  <span className="win-r">#{m.rank}</span>
+                  <span className="win-l">{label}</span>
+                  {up > 0 ? <span className="win-up">▲ {up}</span> : m.prevRank == null ? <span className="win-up">{t('scoreWin.new')}</span> : null}
+                </button>
+              )
+            })}
           </div>
         )}
 
-        <div className="score-celebration-divider" />
+        {goalLeft && (
+          <div className="win-goal">
+            <div className="win-goal-t"><span>{goalLeft}</span>{goalRight && <span>{goalRight}</span>}</div>
+            <div className="win-bar"><i style={{ '--p': `${Math.round(Math.max(0, Math.min(1, g.progress ?? 0)) * 100)}%` }} /></div>
+          </div>
+        )}
 
-        {/* PR38 - rank rows are clickable when a handler is provided. Tap
-            opens the leaderboard pre-scoped to that row's lens (city or
-            world). The handler is responsible for acking the watermark
-            before navigating so the popin doesn't re-appear. */}
-        {(() => {
-          const cityTappable  = typeof onOpenLeaderboard === 'function'
-          const worldTappable = typeof onOpenLeaderboard === 'function'
-          return (
-            <>
-              <div
-                className={`score-celebration-row score-celebration-row--1${cityTappable ? ' score-celebration-row--tappable' : ''}`}
-                role={cityTappable ? 'button' : undefined}
-                tabIndex={cityTappable ? 0 : undefined}
-                onClick={cityTappable ? () => onOpenLeaderboard('city') : undefined}
-                onKeyDown={cityTappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('city') } } : undefined}
-              >
-                {cityFlag
-                  ? <span className="score-celebration-row-flag" aria-hidden="true">{cityFlag}</span>
-                  : <span className="score-celebration-row-flag" aria-hidden="true" style={rowIconStyle}><Icon name="location-outline" size={20} /></span>}
-                <span className="score-celebration-row-label">{cityRankCopy}</span>
-                {cityTappable && <span className="score-celebration-row-chevron" aria-hidden="true" style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={18} /></span>}
-              </div>
-              <div
-                className={`score-celebration-row score-celebration-row--2${worldTappable ? ' score-celebration-row--tappable' : ''}`}
-                role={worldTappable ? 'button' : undefined}
-                tabIndex={worldTappable ? 0 : undefined}
-                onClick={worldTappable ? () => onOpenLeaderboard('world') : undefined}
-                onKeyDown={worldTappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('world') } } : undefined}
-              >
-                <span className="score-celebration-row-flag" aria-hidden="true" style={rowIconStyle}><Icon name="globe-outline" size={20} /></span>
-                <span className="score-celebration-row-label">{worldRankCopy}</span>
-                {worldTappable && <span className="score-celebration-row-chevron" aria-hidden="true" style={{ lineHeight: 0 }}><Icon name="chevron-forward" size={18} /></span>}
-              </div>
-              {/* City-in-cities - where the user's home city ranks among
-                  all cities. Rendered only when there's a current city
-                  set; uses the same row chrome as the other two. */}
-              {data.city_id && (
-                <div className="score-celebration-row score-celebration-row--2">
-                  <span className="score-celebration-row-flag" aria-hidden="true" style={rowIconStyle}><Icon name="business-outline" size={20} /></span>
-                  <span className="score-celebration-row-label">{cityInCitiesCopy}</span>
-                </div>
-              )}
-            </>
-          )
-        })()}
-
-        <button
-          type="button"
-          className="score-celebration-cta"
-          onClick={onClose}
-        >
-          {t('scoreCelebration.cta')}
-        </button>
+        <div className="win-ctas">
+          <button type="button" className="win-btn win-btn--p" onClick={(e) => { e.stopPropagation(); onOpenRanks(mainTarget) }}>{t('scoreWin.ranks')}</button>
+          {onShare && win.proof && (
+            <button type="button" className="win-btn win-btn--s" onClick={(e) => { e.stopPropagation(); onShare(win, best) }}>{t('scoreWin.share')}</button>
+          )}
+        </div>
       </div>
+      {!reduced && !done && (
+        <div className="win-confetti" aria-hidden="true">
+          {confetti.map((p, i) => <i key={i} style={{ left: p.left, background: p.bg, '--dx': p.dx, '--r': p.r, animation: p.anim }} />)}
+        </div>
+      )}
     </div>
   )
 }

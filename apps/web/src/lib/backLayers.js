@@ -9,6 +9,13 @@ import { useEffect, useRef } from 'react'
 let seq = 0
 const layers = []   // open layers, oldest first: { id, close }
 
+// Who's watching how many layers are open (lib/celebrationQueue: no celebration over one).
+const watchers = new Set()
+const changed = () => watchers.forEach(fn => fn())
+/** Open layers right now (sheets, modals, viewers, screens over the tabs, a tab other than Today). */
+export const openLayerCount = () => layers.length
+export function onLayersChange(fn) { watchers.add(fn); return () => { watchers.delete(fn) } }
+
 function onPop(e) {
   const at = e.state?.hlLayer ?? 0
   // Close every layer opened after the entry we landed on, newest first.
@@ -16,12 +23,14 @@ function onPop(e) {
     const [layer] = layers.splice(i, 1)
     layer.close()
   }
+  changed()
 }
 if (typeof window !== 'undefined') window.addEventListener('popstate', onPop)
 
 function push(close) {
   const layer = { id: ++seq, close }
   layers.push(layer)
+  changed()
   window.history.pushState({ ...(window.history.state ?? {}), hlLayer: layer.id }, '')
   return layer
 }
@@ -30,6 +39,7 @@ function drop(layer) {
   const i = layers.indexOf(layer)
   if (i === -1) return   // closed by back: its entry is already gone
   layers.splice(i, 1)
+  changed()
   // Closed in the page: step back over its entry, once this render is done -
   // unless another layer opened meanwhile (one action closing a sheet and
   // opening a screen): then the entry stays, and back closes the new one first.

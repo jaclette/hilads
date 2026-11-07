@@ -1678,5 +1678,49 @@
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels"
     }
+  },
+  "scoreWin": {
+    "close": "Close",
+    "a11yPoints": "Points earned: {{count}}",
+    "a11yTotal": "Total: {{total}} points",
+    "pts": "pts",
+    "proud": "{{city}} is proud of you",
+    "proudNoCity": "Well played!",
+    "yourPhoto": "Your photo",
+    "source": {
+      "photo": "Photo",
+      "votes": "Votes",
+      "top": "Top 3",
+      "streak": "Streak",
+      "early": "Early",
+      "stamp": "Stamp",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "in {{city}}",
+      "world": "World",
+      "cities": "{{city}} among cities",
+      "citiesTop": "{{city}}\ntop city"
+    },
+    "up": "up {{count}}",
+    "new": "New",
+    "goal": {
+      "pass": "{{gap}} pts to pass {{name}}",
+      "streak": "🔥 Day {{day}} tomorrow",
+      "stamp": "🎟️ Next stamp in {{city}}"
+    },
+    "ranks": "🏆 See the ranking",
+    "share": "📤 Share my win",
+    "shareLine": {
+      "city_today": "I'm #{{rank}} in {{city}} today",
+      "city_week": "I'm #{{rank}} in {{city}} this week",
+      "city_alltime": "I'm #{{rank}} in {{city}}",
+      "world_today": "I'm #{{rank}} in the world today",
+      "world_week": "I'm #{{rank}} in the world this week",
+      "world_alltime": "I'm #{{rank}} in the world",
+      "cities_today": "{{city}} is #{{rank}} among cities today",
+      "cities_week": "{{city}} is #{{rank}} among cities this week",
+      "cities_alltime": "{{city}} is #{{rank}} among cities"
+    }
   }
 }

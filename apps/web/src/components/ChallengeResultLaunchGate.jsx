@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchChallengeReveals, markNotificationsRead } from '../api'
 import ChallengeResultModal from './ChallengeResultModal'
+import { useCelebrationTurn } from '../lib/celebrationQueue'
 
 /**
  * Web parity for the mobile ChallengeResultLaunchGate. Surfaces a GROUP
@@ -45,10 +46,12 @@ export default function ChallengeResultLaunchGate({ account, refetchKey = 0, onO
     onOpenLeaderboard?.(scope)
   }, [handleClose, onOpenLeaderboard])
 
+  // One celebration at a time (lib/celebrationQueue).
+  const turn = useCelebrationTurn('challenge_result', current !== null)
   return (
     <ChallengeResultModal
-      reveal={current}
-      visible={current !== null}
+      reveal={turn ? current : null}
+      visible={turn && current !== null}
       onClose={handleClose}
       onOpenLeaderboard={onOpenLeaderboard ? handleOpenLeaderboard : undefined}
     />

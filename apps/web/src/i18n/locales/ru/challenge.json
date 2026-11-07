@@ -1772,5 +1772,49 @@
       "duels_many": "{{count}} дуэлей",
       "duels_other": "{{count}} дуэли"
     }
+  },
+  "scoreWin": {
+    "close": "Закрыть",
+    "a11yPoints": "Заработано очков: {{count}}",
+    "a11yTotal": "Всего очков: {{total}}",
+    "pts": "оч.",
+    "proud": "{{city}} гордится тобой",
+    "proudNoCity": "Отлично сыграно!",
+    "yourPhoto": "Твоё фото",
+    "source": {
+      "photo": "Фото",
+      "votes": "Голоса",
+      "top": "Топ-3",
+      "streak": "Серия",
+      "early": "Рано",
+      "stamp": "Штамп",
+      "other": "Бонус"
+    },
+    "medal": {
+      "city": "в городе {{city}}",
+      "world": "Мир",
+      "cities": "{{city}} среди городов",
+      "citiesTop": "{{city}} — город №1"
+    },
+    "up": "вверх на {{count}}",
+    "new": "Новое",
+    "goal": {
+      "pass": "{{gap}} оч. до {{name}}",
+      "streak": "🔥 Завтра день {{day}}",
+      "stamp": "🎟️ Следующий штамп: {{city}}"
+    },
+    "ranks": "🏆 Смотреть рейтинг",
+    "share": "📤 Поделиться победой",
+    "shareLine": {
+      "city_today": "Я №{{rank}} в городе {{city}} сегодня",
+      "city_week": "Я №{{rank}} в городе {{city}} на этой неделе",
+      "city_alltime": "Я №{{rank}} в городе {{city}}",
+      "world_today": "Я №{{rank}} в мире сегодня",
+      "world_week": "Я №{{rank}} в мире на этой неделе",
+      "world_alltime": "Я №{{rank}} в мире",
+      "cities_today": "{{city}} — №{{rank}} среди городов сегодня",
+      "cities_week": "{{city}} — №{{rank}} среди городов на этой неделе",
+      "cities_alltime": "{{city}} — №{{rank}} среди городов"
+    }
   }
 }

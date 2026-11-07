@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchRatePrompts } from '../api'
 import RateSheet from './RateSheet'
+import { useCelebrationTurn } from '../lib/celebrationQueue'
 
 /**
  * Web parity for the mobile RatePromptLaunchGate.
@@ -68,6 +69,9 @@ export default function RatePromptLaunchGate({ account, refetchKey = 0 }) {
     return () => { cancelled = true }
   }, [account?.id, closed, nonce])
 
+  // One celebration at a time (lib/celebrationQueue).
+  const turn = useCelebrationTurn('rate_prompt', prompt !== null)
+
   function handleClose() {
     setPrompt(null)
     setClosed(true)
@@ -83,7 +87,7 @@ export default function RatePromptLaunchGate({ account, refetchKey = 0 }) {
   return (
     <RateSheet
       prompt={prompt}
-      visible={prompt !== null}
+      visible={turn && prompt !== null}
       onClose={handleClose}
       onSubmitted={handleSubmitted}
     />

@@ -18554,3 +18554,88 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .scb-on .dc-photos-bottom { padding-bottom: calc(max(18px, env(safe-area-inset-bottom)) + 60px); }
 .scb-typing .dc-photos-scroll { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .scb-float { animation: none; opacity: 0; } }
+
+/* ── The points reward: a victory card (docs/mockups/hilads_reward_mockup.html) ──────────── */
+/* Its own colors: it sits on the day's theme color, the same in every palette (like the joy layer). */
+.win-dim { position: fixed; inset: 0; z-index: 2000; background: rgba(30,15,5,.55); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; padding: 22px 14px; }
+.win { position: relative; box-sizing: border-box; width: 100%; max-width: 400px; max-height: 100%; overflow: hidden auto; border-radius: 30px;
+  background: radial-gradient(circle at 50% 22%, var(--win-top) 0, var(--win-fill) 38%, var(--win-end) 100%);
+  box-shadow: 0 20px 50px rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; padding: 22px 18px 18px;
+  color: #2B1A12; font-family: inherit; transform: scale(.6); opacity: 0; animation: win-pop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes win-pop { to { transform: scale(1); opacity: 1 } }
+.win-doodle { position: absolute; opacity: .35; font-size: 22px; color: var(--win-tag); pointer-events: none }
+.win-rays { position: absolute; top: -60px; left: 50%; width: 420px; height: 420px; margin-left: -210px; pointer-events: none;
+  background: repeating-conic-gradient(rgba(255,255,255,.28) 0 10deg, transparent 10deg 24deg); border-radius: 50%;
+  animation: win-spin 18s linear infinite;
+  mask: radial-gradient(circle, #000 25%, transparent 65%); -webkit-mask: radial-gradient(circle, #000 25%, transparent 65%) }
+@keyframes win-spin { to { transform: rotate(360deg) } }
+.win-close { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(255,255,255,.6); display: grid; place-items: center; font-weight: 900; font-size: 14px; color: #2B1A12; z-index: 3 }
+.win-trophy { position: relative; font-size: 60px; line-height: 1; filter: drop-shadow(0 6px 0 rgba(160,90,0,.35)); transform: scale(0) rotate(-20deg); z-index: 2;
+  animation: win-trophy .7s .25s cubic-bezier(.2,1.8,.4,1) forwards, win-wobble 2.6s 1.2s ease-in-out infinite }
+@keyframes win-trophy { to { transform: scale(1) rotate(0) } }
+@keyframes win-wobble { 0%, 100% { transform: rotate(0) } 50% { transform: rotate(-6deg) } 75% { transform: rotate(5deg) } }
+.win-plus { font-size: 54px; font-weight: 900; color: #fff; -webkit-text-stroke: 3px #C24E1C; paint-order: stroke fill; line-height: 1; margin-top: 6px;
+  text-shadow: 0 5px 0 #C24E1C; transform: scale(0); z-index: 2; letter-spacing: -2px; animation: win-bounce .6s .55s cubic-bezier(.2,1.9,.4,1) forwards }
+.win-plus small { font-size: 22px; -webkit-text-stroke: 0; color: #C24E1C; text-shadow: none; letter-spacing: 0; margin-left: 4px }
+@keyframes win-bounce { to { transform: scale(1) } }
+.win-total { margin-top: 6px; background: #fff; border-radius: 16px; padding: 5px 12px 5px 8px; font-weight: 900; display: flex; align-items: center; gap: 6px;
+  box-shadow: 0 3px 0 rgba(160,90,0,.25); z-index: 2 }
+.win-coin, .win-flycoin { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFE680, #F2B200); border: 2px solid #D08E00;
+  display: grid; place-items: center; font-size: 11px; font-weight: 900; color: #8A5A00; box-sizing: border-box }
+.win-flycoin { position: absolute; z-index: 4; opacity: 0; pointer-events: none }
+.win-odo { display: inline-flex; height: 22px; overflow: hidden; font-size: 18px; line-height: 22px; font-variant-numeric: tabular-nums }
+.win-digit { display: flex; flex-direction: column; transition: transform 1.1s cubic-bezier(.2,.9,.3,1) }
+.win-digit span { display: block; height: 22px }
+.win-unit { font-size: 13px; color: #7A6558 }
+.win-tag { margin-top: 12px; font-weight: 800; color: var(--win-tag); font-size: 14px; z-index: 2; text-align: center }
+.win-chip { margin-top: 10px; display: flex; align-items: center; gap: 8px; align-self: stretch; background: rgba(255,255,255,.75); border-radius: 16px;
+  padding: 6px 10px 6px 6px; z-index: 2; opacity: 0; animation: win-fade-up .4s 1.6s forwards }
+.win-th { width: 34px; height: 34px; border-radius: 8px; border: 2px solid #fff; transform: rotate(-5deg); object-fit: cover; flex: none }
+.win-chip-body { flex: 1; min-width: 0; text-align: left }
+.win-chip b { font-size: 13px; display: flex; align-items: center; gap: 4px }
+.win-chip em { font-style: normal; font-size: 11px; color: #7A6558; display: block; line-height: 1.25 }
+.win-pills { display: flex; flex-direction: column; align-items: flex-end; gap: 3px }
+.win-pts { background: #F2783A; color: #fff; font-weight: 900; font-size: 12px; border-radius: 10px; padding: 3px 7px; white-space: nowrap }
+@keyframes win-fade-up { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+.win-medals { display: flex; gap: 7px; margin-top: 12px; z-index: 2; width: 100% }
+.win-medal { flex: 1; min-width: 0; border: 0; cursor: pointer; font: inherit; border-radius: 18px; background: #fff; padding: 9px 4px 8px; text-align: center;
+  box-shadow: 0 4px 0 rgba(160,90,0,.25); transform: scale(0) rotate(-8deg); display: flex; flex-direction: column; align-items: center; color: #2B1A12 }
+.win-medal:nth-child(1) { animation: win-medal .45s 2s cubic-bezier(.2,1.8,.4,1) forwards }
+.win-medal:nth-child(2) { animation: win-medal .45s 2.25s cubic-bezier(.2,1.8,.4,1) forwards }
+.win-medal:nth-child(3) { animation: win-medal .45s 2.5s cubic-bezier(.2,1.8,.4,1) forwards }
+.win-medal:active { filter: brightness(.96) }
+@keyframes win-medal { to { transform: scale(1) rotate(0) } }
+.win-m { width: 40px; height: 40px; margin: 0 auto 4px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; position: relative }
+.win-m::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 3px dashed currentColor; opacity: .5 }
+.win-medal--city .win-m { background: #FFE6E0; color: #D7372B }
+.win-medal--world .win-m { background: #DDEBFF; color: #2E6FD8 }
+.win-medal--cities .win-m { background: #E3F6EC; color: #1A9E6B }
+.win-r { font-weight: 900; font-size: 17px }
+.win-l { font-size: 10.5px; font-weight: 700; color: #7A6558; line-height: 1.15; white-space: pre-line; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+.win-up { color: #1A9E6B; font-size: 10px; font-weight: 900 }
+.win-goal { width: 100%; margin-top: 12px; background: rgba(255,255,255,.75); border-radius: 16px; padding: 9px 12px; z-index: 2; opacity: 0;
+  animation: win-fade-up .4s 2.9s forwards; box-sizing: border-box }
+.win-goal-t { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; text-align: left }
+.win-bar { height: 10px; border-radius: 6px; background: #F3E3C3; margin-top: 6px; overflow: hidden }
+.win-bar i { display: block; height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, #F2783A, #C24E1C); animation: win-fill 1s 3.1s ease-out forwards }
+@keyframes win-fill { to { width: var(--p) } }
+.win-ctas { margin-top: 12px; width: 100%; display: flex; flex-direction: column; gap: 8px; z-index: 2; opacity: 0; animation: win-fade-up .4s 3.3s forwards }
+.win-btn { border: 0; cursor: pointer; font: inherit; border-radius: 18px; padding: 11px; text-align: center; font-weight: 900; font-size: 15px }
+.win-btn--p { background: #C24E1C; color: #fff; box-shadow: 0 4px 0 #8A330F }
+.win-btn--s { background: #fff; color: #C24E1C }
+.win-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 2001; overflow: hidden }
+.win-confetti i { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; opacity: 0 }
+@keyframes win-fall { 0% { opacity: 1; transform: translate(0,0) rotate(0) } 100% { opacity: 0; transform: translate(var(--dx), 100vh) rotate(var(--r)) } }
+/* A click anywhere: everything at its final state at once (the trophy keeps wobbling). */
+.win.is-done, .win.is-done .win-plus, .win.is-done .win-chip, .win.is-done .win-medal, .win.is-done .win-goal, .win.is-done .win-ctas {
+  animation: none; opacity: 1; transform: none }
+.win.is-done .win-trophy { transform: none; animation: win-wobble 2.6s ease-in-out infinite }
+.win.is-done .win-bar i { animation: none; width: var(--p) }
+@media (prefers-reduced-motion: reduce) {
+  .win, .win-plus, .win-chip, .win-medal, .win-goal, .win-ctas, .win-trophy { animation: none; opacity: 1; transform: none }
+  .win-rays { animation: none }
+  .win-bar i { animation: none; width: var(--p) }
+}

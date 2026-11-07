@@ -1633,5 +1633,49 @@
       "theirBest": "{{city}}のベスト",
       "duels_other": "{{count}}戦"
     }
+  },
+  "scoreWin": {
+    "close": "閉じる",
+    "a11yPoints": "獲得ポイント: {{count}}",
+    "a11yTotal": "合計: {{total}}ポイント",
+    "pts": "pt",
+    "proud": "{{city}}があなたを誇りに思っています",
+    "proudNoCity": "ナイス！",
+    "yourPhoto": "あなたの写真",
+    "source": {
+      "photo": "写真",
+      "votes": "投票",
+      "top": "トップ3",
+      "streak": "連続",
+      "early": "早め",
+      "stamp": "スタンプ",
+      "other": "ボーナス"
+    },
+    "medal": {
+      "city": "{{city}}で",
+      "world": "世界",
+      "cities": "都市の中の{{city}}",
+      "citiesTop": "{{city}} 1位の都市"
+    },
+    "up": "{{count}}位アップ",
+    "new": "NEW",
+    "goal": {
+      "pass": "あと{{gap}}ptで{{name}}を抜ける",
+      "streak": "🔥 明日で{{day}}日目",
+      "stamp": "🎟️ {{city}}の次のスタンプ"
+    },
+    "ranks": "🏆 ランキングを見る",
+    "share": "📤 勝利をシェア",
+    "shareLine": {
+      "city_today": "今日、{{city}}で{{rank}}位！",
+      "city_week": "今週、{{city}}で{{rank}}位！",
+      "city_alltime": "{{city}}で{{rank}}位！",
+      "world_today": "今日、世界で{{rank}}位！",
+      "world_week": "今週、世界で{{rank}}位！",
+      "world_alltime": "世界で{{rank}}位！",
+      "cities_today": "今日、{{city}}は都市で{{rank}}位！",
+      "cities_week": "今週、{{city}}は都市で{{rank}}位！",
+      "cities_alltime": "{{city}}は都市で{{rank}}位！"
+    }
   }
 }

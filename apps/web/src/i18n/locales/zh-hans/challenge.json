@@ -1633,5 +1633,49 @@
       "theirBest": "{{city}} 最佳",
       "duels_other": "{{count}} 场对决"
     }
+  },
+  "scoreWin": {
+    "close": "关闭",
+    "a11yPoints": "获得积分：{{count}}",
+    "a11yTotal": "总计：{{total}} 分",
+    "pts": "分",
+    "proud": "{{city}}为你骄傲",
+    "proudNoCity": "干得漂亮！",
+    "yourPhoto": "你的照片",
+    "source": {
+      "photo": "照片",
+      "votes": "投票",
+      "top": "前三",
+      "streak": "连续",
+      "early": "提早",
+      "stamp": "印章",
+      "other": "奖励"
+    },
+    "medal": {
+      "city": "在{{city}}",
+      "world": "全球",
+      "cities": "城市中的{{city}}",
+      "citiesTop": "{{city}} 第一城市"
+    },
+    "up": "上升 {{count}}",
+    "new": "新",
+    "goal": {
+      "pass": "再得 {{gap}} 分超过 {{name}}",
+      "streak": "🔥 明天第 {{day}} 天",
+      "stamp": "🎟️ {{city}}的下一个印章"
+    },
+    "ranks": "🏆 查看排行榜",
+    "share": "📤 分享我的胜利",
+    "shareLine": {
+      "city_today": "我今天在{{city}}排名第 {{rank}}",
+      "city_week": "我本周在{{city}}排名第 {{rank}}",
+      "city_alltime": "我在{{city}}排名第 {{rank}}",
+      "world_today": "我今天全球排名第 {{rank}}",
+      "world_week": "我本周全球排名第 {{rank}}",
+      "world_alltime": "我全球排名第 {{rank}}",
+      "cities_today": "{{city}}今天在城市中排名第 {{rank}}",
+      "cities_week": "{{city}}本周在城市中排名第 {{rank}}",
+      "cities_alltime": "{{city}}在城市中排名第 {{rank}}"
+    }
   }
 }

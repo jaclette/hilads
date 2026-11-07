@@ -1678,5 +1678,49 @@
       "duels_one": "{{count}} मुकाबला",
       "duels_other": "{{count}} मुकाबले"
     }
+  },
+  "scoreWin": {
+    "close": "बंद करें",
+    "a11yPoints": "कमाए अंक: {{count}}",
+    "a11yTotal": "कुल: {{total}} अंक",
+    "pts": "अंक",
+    "proud": "{{city}} को तुम पर गर्व है",
+    "proudNoCity": "शानदार खेला!",
+    "yourPhoto": "तुम्हारी फ़ोटो",
+    "source": {
+      "photo": "फ़ोटो",
+      "votes": "वोट",
+      "top": "टॉप 3",
+      "streak": "स्ट्रीक",
+      "early": "जल्दी",
+      "stamp": "स्टैम्प",
+      "other": "बोनस"
+    },
+    "medal": {
+      "city": "{{city}} में",
+      "world": "दुनिया",
+      "cities": "शहरों में {{city}}",
+      "citiesTop": "{{city}} नंबर 1 शहर"
+    },
+    "up": "{{count}} ऊपर",
+    "new": "नया",
+    "goal": {
+      "pass": "{{name}} से आगे निकलने के लिए {{gap}} अंक",
+      "streak": "🔥 कल दिन {{day}}",
+      "stamp": "🎟️ {{city}} में अगला स्टैम्प"
+    },
+    "ranks": "🏆 रैंकिंग देखो",
+    "share": "📤 मेरी जीत शेयर करो",
+    "shareLine": {
+      "city_today": "मैं आज {{city}} में #{{rank}} हूँ",
+      "city_week": "मैं इस हफ़्ते {{city}} में #{{rank}} हूँ",
+      "city_alltime": "मैं {{city}} में #{{rank}} हूँ",
+      "world_today": "मैं आज दुनिया में #{{rank}} हूँ",
+      "world_week": "मैं इस हफ़्ते दुनिया में #{{rank}} हूँ",
+      "world_alltime": "मैं दुनिया में #{{rank}} हूँ",
+      "cities_today": "{{city}} आज शहरों में #{{rank}} है",
+      "cities_week": "{{city}} इस हफ़्ते शहरों में #{{rank}} है",
+      "cities_alltime": "{{city}} शहरों में #{{rank}} है"
+    }
   }
 }

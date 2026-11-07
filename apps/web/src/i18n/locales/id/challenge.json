@@ -1633,5 +1633,49 @@
       "theirBest": "Terbaik di {{city}}",
       "duels_other": "{{count}} duel"
     }
+  },
+  "scoreWin": {
+    "close": "Tutup",
+    "a11yPoints": "Poin didapat: {{count}}",
+    "a11yTotal": "Total: {{total}} poin",
+    "pts": "poin",
+    "proud": "{{city}} bangga padamu",
+    "proudNoCity": "Mantap!",
+    "yourPhoto": "Fotomu",
+    "source": {
+      "photo": "Foto",
+      "votes": "Suara",
+      "top": "Top 3",
+      "streak": "Beruntun",
+      "early": "Awal",
+      "stamp": "Stempel",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "di {{city}}",
+      "world": "Dunia",
+      "cities": "{{city}} di antara kota",
+      "citiesTop": "{{city}} kota teratas"
+    },
+    "up": "naik {{count}}",
+    "new": "Baru",
+    "goal": {
+      "pass": "{{gap}} poin lagi untuk menyalip {{name}}",
+      "streak": "🔥 Hari ke-{{day}} besok",
+      "stamp": "🎟️ Stempel berikutnya di {{city}}"
+    },
+    "ranks": "🏆 Lihat peringkat",
+    "share": "📤 Bagikan kemenanganku",
+    "shareLine": {
+      "city_today": "Aku #{{rank}} di {{city}} hari ini",
+      "city_week": "Aku #{{rank}} di {{city}} minggu ini",
+      "city_alltime": "Aku #{{rank}} di {{city}}",
+      "world_today": "Aku #{{rank}} di dunia hari ini",
+      "world_week": "Aku #{{rank}} di dunia minggu ini",
+      "world_alltime": "Aku #{{rank}} di dunia",
+      "cities_today": "{{city}} #{{rank}} di antara kota hari ini",
+      "cities_week": "{{city}} #{{rank}} di antara kota minggu ini",
+      "cities_alltime": "{{city}} #{{rank}} di antara kota"
+    }
   }
 }

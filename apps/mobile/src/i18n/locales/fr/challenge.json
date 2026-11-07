@@ -815,11 +815,11 @@
   },
   "scoreWin": {
     "close": "Fermer",
-    "a11yPoints": "Points gagnés : {{count}}",
-    "a11yTotal": "Total : {{total}} points",
+    "a11yPoints": "Points gagnés : {{count}}",
+    "a11yTotal": "Total : {{total}} points",
     "pts": "pts",
     "proud": "{{city}} est fière de toi",
-    "proudNoCity": "Bien joué !",
+    "proudNoCity": "Bien joué !",
     "yourPhoto": "Ta photo",
     "source": {
       "photo": "Photo",

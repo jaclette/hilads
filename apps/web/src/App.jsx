@@ -7438,15 +7438,12 @@ export default function App() {
           setShowLeaderboard(true)
         }}
       />
+      {/* The points reward's victory screen: a medal or "See the ranking" opens that Ranks segment and period. */}
       <ScoreCelebrationLaunchGate
         account={account}
         refetchKey={celebrationRefetchKey}
-        onOpenLeaderboard={(scope) => {
-          // PR38 - rank-row tap on the celebration modal jumps straight
-          // to the leaderboard pre-scoped to that row's lens.
-          setLeaderboardScope(scope === 'world' ? 'world' : 'city')
-          setShowLeaderboard(true)
-        }}
+        onOpenRanks={({ tab, period, scope }) => openRanks({ tab, period, scope })}
+        onToast={(msg) => { setSuccessToast({ msg }); setTimeout(() => setSuccessToast(null), 2500) }}
       />
 
       {/* PR11 - auto-open the RateSheet once per page load when the caller

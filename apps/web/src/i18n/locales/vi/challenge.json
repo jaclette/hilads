@@ -1633,5 +1633,49 @@
       "theirBest": "Đỉnh nhất {{city}}",
       "duels_other": "{{count}} trận"
     }
+  },
+  "scoreWin": {
+    "close": "Đóng",
+    "a11yPoints": "Điểm nhận được: {{count}}",
+    "a11yTotal": "Tổng: {{total}} điểm",
+    "pts": "điểm",
+    "proud": "{{city}} tự hào về bạn",
+    "proudNoCity": "Chơi hay lắm!",
+    "yourPhoto": "Ảnh của bạn",
+    "source": {
+      "photo": "Ảnh",
+      "votes": "Lượt bình chọn",
+      "top": "Top 3",
+      "streak": "Chuỗi",
+      "early": "Sớm",
+      "stamp": "Con dấu",
+      "other": "Thưởng"
+    },
+    "medal": {
+      "city": "ở {{city}}",
+      "world": "Thế giới",
+      "cities": "{{city}} giữa các thành phố",
+      "citiesTop": "{{city}} thành phố số 1"
+    },
+    "up": "tăng {{count}}",
+    "new": "Mới",
+    "goal": {
+      "pass": "Còn {{gap}} điểm để vượt {{name}}",
+      "streak": "🔥 Ngày {{day}} vào ngày mai",
+      "stamp": "🎟️ Con dấu tiếp theo ở {{city}}"
+    },
+    "ranks": "🏆 Xem bảng xếp hạng",
+    "share": "📤 Chia sẻ chiến thắng",
+    "shareLine": {
+      "city_today": "Mình hạng #{{rank}} ở {{city}} hôm nay",
+      "city_week": "Mình hạng #{{rank}} ở {{city}} tuần này",
+      "city_alltime": "Mình hạng #{{rank}} ở {{city}}",
+      "world_today": "Mình hạng #{{rank}} thế giới hôm nay",
+      "world_week": "Mình hạng #{{rank}} thế giới tuần này",
+      "world_alltime": "Mình hạng #{{rank}} thế giới",
+      "cities_today": "{{city}} hạng #{{rank}} giữa các thành phố hôm nay",
+      "cities_week": "{{city}} hạng #{{rank}} giữa các thành phố tuần này",
+      "cities_alltime": "{{city}} hạng #{{rank}} giữa các thành phố"
+    }
   }
 }

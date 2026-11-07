@@ -1678,5 +1678,49 @@
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels"
     }
+  },
+  "scoreWin": {
+    "close": "Isara",
+    "a11yPoints": "Nakuhang puntos: {{count}}",
+    "a11yTotal": "Kabuuan: {{total}} puntos",
+    "pts": "pts",
+    "proud": "Proud sa’yo ang {{city}}",
+    "proudNoCity": "Galing!",
+    "yourPhoto": "Ang photo mo",
+    "source": {
+      "photo": "Photo",
+      "votes": "Boto",
+      "top": "Top 3",
+      "streak": "Streak",
+      "early": "Maaga",
+      "stamp": "Stamp",
+      "other": "Bonus"
+    },
+    "medal": {
+      "city": "sa {{city}}",
+      "world": "Mundo",
+      "cities": "{{city}} sa mga lungsod",
+      "citiesTop": "{{city}} top na lungsod"
+    },
+    "up": "umakyat ng {{count}}",
+    "new": "Bago",
+    "goal": {
+      "pass": "{{gap}} pts para malampasan si {{name}}",
+      "streak": "🔥 Day {{day}} bukas",
+      "stamp": "🎟️ Susunod na stamp sa {{city}}"
+    },
+    "ranks": "🏆 Tingnan ang ranking",
+    "share": "📤 I-share ang panalo ko",
+    "shareLine": {
+      "city_today": "#{{rank}} ako sa {{city}} ngayon",
+      "city_week": "#{{rank}} ako sa {{city}} ngayong linggo",
+      "city_alltime": "#{{rank}} ako sa {{city}}",
+      "world_today": "#{{rank}} ako sa mundo ngayon",
+      "world_week": "#{{rank}} ako sa mundo ngayong linggo",
+      "world_alltime": "#{{rank}} ako sa mundo",
+      "cities_today": "#{{rank}} ang {{city}} sa mga lungsod ngayon",
+      "cities_week": "#{{rank}} ang {{city}} sa mga lungsod ngayong linggo",
+      "cities_alltime": "#{{rank}} ang {{city}} sa mga lungsod"
+    }
   }
 }
