@@ -4,7 +4,7 @@ import Animated, {
   Easing, cancelAnimation, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withRepeat, withSequence, withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router/react-navigation';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing } from '@/constants';
@@ -35,7 +35,7 @@ export function SeasonalScope({ children }: { children: ReactNode }) {
   const focused = useIsFocused();
   return (
     <ThemeOverride colors={live?.theme.colors ?? null} theme={live?.theme.mode ?? 'dark'}>
-      {live && focused && <StatusBar style="light" backgroundColor={live.theme.colors.bg} />}
+      {live && focused && <StatusBar style="light" />}
       {children}
     </ThemeOverride>
   );

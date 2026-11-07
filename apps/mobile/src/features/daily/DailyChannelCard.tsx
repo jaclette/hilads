@@ -396,7 +396,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   strip:         { flexDirection: 'row', gap: 6 },
   stripCell:     { flex: 1, aspectRatio: 1 },
   stripPhoto:    { width: '100%', height: '100%', borderRadius: Radius.md, backgroundColor: c.bg3 },
-  stripMore:     { ...StyleSheet.absoluteFillObject, borderRadius: Radius.md, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
+  stripMore:     { ...StyleSheet.absoluteFill, borderRadius: Radius.md, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
   stripMoreText: { color: c.white, fontSize: FontSizes.md, fontWeight: '900' },
   proposedBy:    { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 },
   proposedByText:{ flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.primaryText },

@@ -306,7 +306,7 @@ function ThemedRoot() {
           screen, Android edge-to-edge included (adjustResize no longer resizes it). */}
       <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
       <AppProvider>
-        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.bg} />
+        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         <ScopeProvider>
           <RootLayoutInner />
         </ScopeProvider>

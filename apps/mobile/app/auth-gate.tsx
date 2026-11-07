@@ -65,7 +65,7 @@ export default function AuthGateScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   root:          { flex: 1, justifyContent: 'flex-end' },
-  scrim:         { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
+  scrim:         { ...StyleSheet.absoluteFill, backgroundColor: c.scrim },
   sheet:         { backgroundColor: c.bg, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: Spacing.md, alignItems: 'center', gap: 12 },
   handle:        { width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
   title:         { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3 },

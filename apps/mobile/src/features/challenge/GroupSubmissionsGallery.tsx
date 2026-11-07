@@ -244,7 +244,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
   },
   winBadgeText: { fontSize: 11, fontWeight: '800', color: c.onGold },
-  pickingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
+  pickingOverlay: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
 
   tileFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8 },
   avatar: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },

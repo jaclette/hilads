@@ -391,7 +391,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   icon:      { width: SIZE, height: SIZE, borderRadius: Radius.full, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   plain:     { backgroundColor: c.bg3, borderWidth: 1, borderColor: c.line },
   label:     { fontSize: 12, lineHeight: 15, fontWeight: '600', color: c.text, textAlign: 'center' },
-  spin:      { ...StyleSheet.absoluteFillObject, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
+  spin:      { ...StyleSheet.absoluteFill, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
   tabs:      { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 12 },
   tab:       { paddingHorizontal: 14, minHeight: 36, justifyContent: 'center', borderRadius: Radius.full, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2 },
   tabOn:     { backgroundColor: c.text, borderColor: c.text },

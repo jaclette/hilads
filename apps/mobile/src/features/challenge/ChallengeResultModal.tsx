@@ -318,7 +318,7 @@ function PopIcon({ name }: { name: IconName }) {
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
+  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: c.scrim },
   wrap:     { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   card: {
     width: '100%', maxWidth: 420, maxHeight: '88%',

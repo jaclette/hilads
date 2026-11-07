@@ -222,8 +222,8 @@ export default function HereScreen() {
       mode:            crew?.mode ?? b?.mode ?? u.mode,
       // profilePhotoUrl just needs to be truthy for OnlineUserRow to render the
       // image; the thumb URL from onlineBadges works for both fields.
-      profilePhotoUrl:      crew?.avatarUrl      ?? b?.thumbAvatarUrl ?? (isSelf ? (account?.profile_photo_url       ?? undefined) : undefined) ?? u.profilePhotoUrl,
-      profileThumbPhotoUrl: crew?.thumbAvatarUrl ?? b?.thumbAvatarUrl ?? (isSelf ? (account?.profile_thumb_photo_url ?? undefined) : undefined) ?? u.profileThumbPhotoUrl,
+      profilePhotoUrl:      crew?.avatarUrl      ?? b?.thumbAvatarUrl ?? ((isSelf && account?.profile_photo_url)       || u.profilePhotoUrl),
+      profileThumbPhotoUrl: crew?.thumbAvatarUrl ?? b?.thumbAvatarUrl ?? ((isSelf && account?.profile_thumb_photo_url) || u.profileThumbPhotoUrl),
     };
   }), [onlineUsers, crewLookup, onlineBadges, mySessionId, account]);
 

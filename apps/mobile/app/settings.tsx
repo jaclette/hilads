@@ -580,7 +580,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Member identity
   identityRow:     { flexDirection: 'row', alignItems: 'center', gap: 14 },
   avatarWrap:      { width: 72, height: 72 },
-  avatarOverlay:   { ...StyleSheet.absoluteFillObject, borderRadius: Radius.full, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
+  avatarOverlay:   { ...StyleSheet.absoluteFill, borderRadius: Radius.full, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
   cameraBadge:     { position: 'absolute', right: -2, bottom: -2, width: 28, height: 28, borderRadius: Radius.full, backgroundColor: c.primary,
                      borderWidth: 2, borderColor: c.bg, alignItems: 'center', justifyContent: 'center' },
   identityInfo:    { flex: 1, gap: 6 },

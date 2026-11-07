@@ -1208,7 +1208,7 @@
       [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsVersion": "11.16.2"
+          "RNMapboxMapsVersion": "11.33.0"
         }
       ],
       "@sentry/react-native",

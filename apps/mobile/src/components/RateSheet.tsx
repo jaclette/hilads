@@ -160,7 +160,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
+  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: c.scrim },
   kavWrap:  { flex: 1, justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: c.bg2,

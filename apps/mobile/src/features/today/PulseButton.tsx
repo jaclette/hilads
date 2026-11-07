@@ -4,7 +4,7 @@ import Animated, {
   Easing, cancelAnimation, runOnJS, useAnimatedStyle, useReducedMotion, useSharedValue,
   withDelay, withRepeat, withSequence, withTiming, type SharedValue,
 } from 'react-native-reanimated';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router/react-navigation';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { FontSizes } from '@/constants';
@@ -137,7 +137,7 @@ const RADIUS = 16;
 
 const styles = StyleSheet.create({
   wrap:   { height: HEIGHT, justifyContent: 'center' },
-  ring:   { ...StyleSheet.absoluteFillObject, borderWidth: 2, borderRadius: RADIUS },
+  ring:   { ...StyleSheet.absoluteFill, borderWidth: 2, borderRadius: RADIUS },
   button: { height: HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: RADIUS, paddingHorizontal: 16 },
   label:  { fontSize: FontSizes.md, fontWeight: '800', color: INK },
   // The disc the camera "opens from": centred on the button, grown by scale.

@@ -665,7 +665,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sendWrap:    { flexShrink: 0 },
   send:        { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   dim:         { opacity: 0.35 },
-  menuScrim:   { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim, justifyContent: 'flex-end', borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet },
+  menuScrim:   { ...StyleSheet.absoluteFill, backgroundColor: c.scrim, justifyContent: 'flex-end', borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet },
   menu:        { backgroundColor: c.bg2, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingTop: 14, paddingHorizontal: Spacing.md },
   menuQuote:   { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, paddingBottom: 8 },
   menuRow:     { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 52 },

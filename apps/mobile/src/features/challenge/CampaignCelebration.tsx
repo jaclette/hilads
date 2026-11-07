@@ -90,9 +90,9 @@ export function CampaignCelebration({ onDone }: { onDone: () => void }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFillObject, zIndex: 50 },
+  overlay: { ...StyleSheet.absoluteFill, zIndex: 50 },
   piece:   { position: 'absolute', top: 0 },
-  badgeWrap: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  badgeWrap: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center' },
   badge: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: c.gold,
