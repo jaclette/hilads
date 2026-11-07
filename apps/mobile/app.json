@@ -15,7 +15,6 @@
     "orientation": "portrait",
     "scheme": "hilads",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
