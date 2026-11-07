@@ -1,5 +1,5 @@
 import { useEffect, useMemo, type ReactNode } from 'react';
-import { Pressable, Text, View, StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Dimensions, Pressable, Text, View, StyleSheet, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { Image } from 'expo-image';
@@ -188,10 +188,13 @@ export function Confetti({ run, count = 28 }: { run: boolean; count?: number }) 
 
 function Piece({ x, delay, color, rot, drift }: { x: number; delay: number; color: string; rot: number; drift: number }) {
   const t = useSharedValue(0);
-  useEffect(() => { t.value = withDelay(delay, withTiming(1, { duration: 1200, easing: Easing.out(Easing.quad) })); }, [delay, t]);
+  // A burst of ~1.5 s: the pieces fall the screen's height and fade out completely (they used to
+  // stop 420 pt down at 10 % opacity: a faded strip left behind the content).
+  const fall = Dimensions.get('window').height;
+  useEffect(() => { t.value = withDelay(delay, withTiming(1, { duration: 1500, easing: Easing.out(Easing.quad) })); }, [delay, t]);
   const st = useAnimatedStyle(() => ({
-    opacity: 1 - t.value * 0.9,
-    transform: [{ translateY: -20 + t.value * 420 }, { translateX: drift * t.value }, { rotate: `${rot + t.value * 360}deg` }],
+    opacity: t.value < 0.6 ? 1 : Math.max(0, (1 - t.value) / 0.4),
+    transform: [{ translateY: -20 + t.value * fall }, { translateX: drift * t.value }, { rotate: `${rot + t.value * 360}deg` }],
   }));
   return <Animated.View style={[styles.piece, { left: `${x}%`, backgroundColor: color }, st]} />;
 }

@@ -4,7 +4,7 @@ import RNShare, { Social } from 'react-native-share';
 
 /** Where a share went: the utm_source of its link and the `channel` of share_completed. */
 export type ShareChannel =
-  | 'instagram_story' | 'facebook_story' | 'whatsapp' | 'messenger' | 'telegram' | 'x'
+  | 'instagram_story' | 'facebook_story' | 'whatsapp' | 'zalo' | 'messenger' | 'telegram' | 'x'
   | 'copy_link' | 'share_sheet';
 
 // Instagram and Facebook Stories need the Meta app's ID: without it, no Story buttons.
@@ -20,13 +20,15 @@ const DIRECT: { channel: ShareChannel; ios: string | null; android: string | nul
   { channel: 'instagram_story', ios: 'instagram-stories://', android: 'com.instagram.android', meta: true },
   { channel: 'facebook_story',  ios: 'facebook-stories://',  android: 'com.facebook.katana', meta: true },
   { channel: 'whatsapp',        ios: 'whatsapp://',          android: 'com.whatsapp' },
+  // Zalo (Vietnam): no share intent of its own; its button opens the system sheet with the card and the link.
+  { channel: 'zalo',            ios: 'zalo://',              android: 'com.zing.zalo' },
   { channel: 'messenger',       ios: 'fb-messenger://',      android: 'com.facebook.orca' },
   { channel: 'telegram',        ios: 'tg://',                android: 'org.telegram.messenger' },
   { channel: 'x',               ios: null,                   android: null },
 ];
 
 /** Channels that send the card image (the rest send the link, whose preview is the card). */
-export const IMAGE_CHANNELS: ShareChannel[] = ['instagram_story', 'facebook_story', 'share_sheet'];
+export const IMAGE_CHANNELS: ShareChannel[] = ['instagram_story', 'facebook_story', 'zalo', 'share_sheet'];
 
 async function installed(ios: string | null, android: string | null): Promise<boolean> {
   try {
@@ -98,6 +100,7 @@ export async function shareTo(channel: ShareChannel, { file, url, text }: { file
     case 'copy_link':
       await Clipboard.setStringAsync(link);
       return { done: true };
+    case 'zalo':
     case 'share_sheet': {
       // The card and the line with the link: every other app (Zalo, LINE,
       // KakaoTalk, Snapchat, TikTok, Messages...) picks what it can use.

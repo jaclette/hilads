@@ -1222,14 +1222,16 @@
             "facebook-stories",
             "whatsapp",
             "fb-messenger",
-            "tg"
+            "tg",
+            "zalo"
           ],
           "android": [
             "com.instagram.android",
             "com.facebook.katana",
             "com.whatsapp",
             "com.facebook.orca",
-            "org.telegram.messenger"
+            "org.telegram.messenger",
+            "com.zing.zalo"
           ]
         }
       ]

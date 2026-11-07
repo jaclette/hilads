@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ComponentProps } from 'react';
-import { ActivityIndicator, Alert, AppState, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ComponentProps } from 'react';
+import { ActivityIndicator, Alert, AppState, Modal, Pressable, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import * as MediaLibrary from 'expo-media-library';
 import Animated, { FadeInDown, FadeInRight, FadeOut } from 'react-native-reanimated';
@@ -24,7 +24,7 @@ type Target = ShareChannel | 'save_image';
 
 // Brand names stay as they are in every language.
 const LABEL: Record<ShareChannel, string> = {
-  instagram_story: 'Instagram Story', facebook_story: 'Facebook Story', whatsapp: 'WhatsApp',
+  instagram_story: 'Instagram Story', facebook_story: 'Facebook Story', whatsapp: 'WhatsApp', zalo: 'Zalo',
   messenger: 'Messenger', telegram: 'Telegram', x: 'X', copy_link: '', share_sheet: '',
 };
 
@@ -44,7 +44,22 @@ const LABEL: Record<ShareChannel, string> = {
  * in, the "?" wiggles, a tick on each swipe, and "Shared! Let's see who
  * answers 🌍" with a success haptic once a share went out.
  */
-export function SharePanel({ content, source, previewHeight = 300 }: { content: ShareContent; source: string; previewHeight?: number }) {
+/** The compact panel's targets, in order (each one only when its app is installed; … and Save always). */
+const COMPACT: Target[] = ['instagram_story', 'whatsapp', 'zalo', 'messenger', 'share_sheet', 'save_image'];
+
+export type SharePanelHandle = {
+  /** The system share sheet with the card on screen (the screen's own Share button). */
+  shareSheet: () => void;
+};
+
+/**
+ * `compact` (the screen right after a post): the card swipes between its templates with page
+ * dots and opens full screen on a tap; under it one row of targets (Instagram Story, WhatsApp,
+ * Zalo, Messenger, …, Save image); feeds (Save, the system sheet) get the 4:5 card, Stories the
+ * 9:16; no Story / Post switch. A ref's shareSheet() opens the system sheet.
+ */
+export const SharePanel = forwardRef<SharePanelHandle, { content: ShareContent; source: string; previewHeight?: number; compact?: boolean }>(
+function SharePanel({ content, source, previewHeight = 300, compact = false }, ref) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
@@ -53,6 +68,8 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState<Target | null>(null);
   const [format, setFormat] = useState<ShareFormat>('story');
+  const [full, setFull] = useState(false);
+  const { width: winW, height: winH } = useWindowDimensions();
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [failed, setFailed] = useState(false);
@@ -149,6 +166,10 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
     track('share_template_selected', { ...props, template: next, method });
   };
 
+  useImperativeHandle(ref, () => ({ shareSheet: () => { go('share_sheet'); } }));
+
+  // Compact: Stories take the 9:16 card, the rest (Save, the system sheet: feeds) the 4:5.
+  const feedKey = proof ? `${template}:post` : 'card:story';
   const go = async (channel: Target) => {
     if (busy) return;
     setBusy(channel);
@@ -157,7 +178,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
       if (channel === 'save_image') return await save();
       // Stories take the 9:16 card whatever the format on screen.
       const story = STORY_CHANNELS.includes(channel);
-      const file = IMAGE_CHANNELS.includes(channel) ? await fileFor(story ? storyKey : key) : null;
+      const file = IMAGE_CHANNELS.includes(channel) ? await fileFor(story ? storyKey : compact ? feedKey : key) : null;
       if (story) {
         if (!file) return;
         // shareTo copies the link: say so (and how to add it) before Instagram opens.
@@ -181,7 +202,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   const save = async () => {
     const perm = await MediaLibrary.requestPermissionsAsync(true /* add only */);
     if (!perm.granted) { Alert.alert(t('share.card.savePermission')); return; }
-    const file = await fileFor(key);
+    const file = await fileFor(compact ? feedKey : key);
     if (!file) { Alert.alert(t('share.failed')); return; }
     await MediaLibrary.saveToLibraryAsync(file);
     say(t('share.card.saved'));
@@ -189,16 +210,16 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   };
 
   const cardW = previewHeight * 9 / 16;
-  type Layer = { k: string; dp: { width: number; height: number }; node: (ref: (v: View | null) => void, onReady: () => void) => React.ReactNode };
+  type Layer = { k: string; dp: { width: number; height: number }; hidden?: boolean; node: (ref: (v: View | null) => void, onReady: () => void) => React.ReactNode };
   /** A preview box: its cards at full size, scaled to the box's height (the last one on top: the one on screen). */
-  const scaled = (layers: Layer[], boxW = cardW) => (
-    <View style={[styles.preview, { height: previewHeight, width: boxW }]}
+  const scaled = (layers: Layer[], boxW = cardW, boxH = previewHeight) => (
+    <View style={[styles.preview, { height: boxH, width: boxW }]}
           accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      {layers.map(({ k, dp, node }) => (
+      {layers.map(({ k, dp, node, hidden }) => (
         <View key={k} style={{
-          position: 'absolute', width: dp.width, height: dp.height,
-          left: (boxW - dp.width) / 2, top: (previewHeight - dp.height) / 2,
-          transform: [{ scale: previewHeight / dp.height }],
+          position: 'absolute', width: dp.width, height: dp.height, opacity: hidden ? 0 : 1,
+          left: (boxW - dp.width) / 2, top: (boxH - dp.height) / 2,
+          transform: [{ scale: boxH / dp.height }],
         }}>
           {node(v => { card(k).view = v; }, () => { card(k).ready = true; })}
         </View>
@@ -211,7 +232,10 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
   });
 
   // No card (a capture failed): no Stories; More sends the link alone.
-  const all: Target[] = [...channels.filter(ch => !failed || !IMAGE_CHANNELS.includes(ch)), 'copy_link', ...(failed ? [] : ['save_image' as const]), 'share_sheet'];
+  const all: Target[] = compact
+    ? COMPACT.filter(ch => (ch === 'share_sheet' || ch === 'save_image' ? !(failed && ch === 'save_image') : channels.includes(ch) && !(failed && IMAGE_CHANNELS.includes(ch))))
+    : [...channels.filter(ch => ch !== 'zalo' && (!failed || !IMAGE_CHANNELS.includes(ch))), 'copy_link', ...(failed ? [] : ['save_image' as const]), 'share_sheet'];
+  const index = templates.indexOf(template);
   return (
     <View style={styles.wrap}>
       {/* The card at full size, scaled down to the preview: what gets captured. */}
@@ -226,13 +250,32 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
                 // The cards slide in one after the other (a plain fade with Reduce motion: reanimated's default).
                 <Animated.View key={tp} entering={FadeInRight.delay(i * 90).springify().damping(16)} style={{ width: pageW, alignItems: 'center' }}>
                   {/* The Post (4:5) covers its template's Story, still drawn for the Stories targets. */}
-                  {tp === template && format === 'post'
+                  {compact ? (
+                    // Compact: the Story on screen (a tap: full screen), its Post drawn under it for the feeds.
+                    <Pressable onPress={() => setFull(true)} accessibilityRole="imagebutton" accessibilityLabel={t(`share.card.template.${tp}`)}>
+                      {scaled(tp === template ? [{ ...proofLayer(tp, 'post'), hidden: true }, proofLayer(tp, 'story')] : [proofLayer(tp, 'story')])}
+                    </Pressable>
+                  ) : tp === template && format === 'post'
                     ? scaled([proofLayer(tp, 'story'), proofLayer(tp, 'post')], previewHeight * 4 / 5)
                     : scaled([proofLayer(tp, 'story')])}
                 </Animated.View>
               ))}
             </ScrollView>
           )}
+          {compact ? (
+            // Compact: page dots and the template's name.
+            <View style={styles.dotsRow}>
+              <View style={styles.dots} accessibilityRole="tablist">
+                {templates.map((tp, i) => (
+                  <Pressable key={tp} hitSlop={8} onPress={() => { pager.current?.scrollTo({ x: i * pageW, animated: true }); pick(tp, 'tap'); }}
+                             accessibilityRole="tab" accessibilityState={{ selected: tp === template }} accessibilityLabel={t(`share.card.template.${tp}`)}>
+                    <View style={[styles.dot, i === index && styles.dotOn]} />
+                  </Pressable>
+                ))}
+              </View>
+              <Text style={styles.dotsLabel}>{t(`share.card.template.${template}`)}</Text>
+            </View>
+          ) : <>
           <View style={styles.tabs} accessibilityRole="tablist">
             {templates.map((tp, i) => (
               <TouchableOpacity key={tp} style={[styles.tab, tp === template && styles.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: tp === template }}
@@ -250,6 +293,7 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
               </TouchableOpacity>
             ))}
           </View>
+          </>}
         </View>
       )}
       {!!toast && (
@@ -257,12 +301,12 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
           <Text style={styles.toastText}>{toast}</Text>
         </Animated.View>
       )}
-      <View style={styles.grid}>
+      <View style={compact ? styles.row : styles.grid}>
         {all.map(ch => {
           const label = ch === 'copy_link' ? (copied ? t('share.copied') : t('share.copyLink')) : ch === 'share_sheet' ? t('share.more')
             : ch === 'save_image' ? t('share.card.save') : LABEL[ch];
           return (
-            <TouchableOpacity key={ch} style={[styles.target, !!busy && busy !== ch && styles.waiting]} onPress={() => go(ch)} disabled={!!busy}
+            <TouchableOpacity key={ch} style={[compact ? styles.rowTarget : styles.target, !!busy && busy !== ch && styles.waiting]} onPress={() => go(ch)} disabled={!!busy}
                               accessibilityRole="button" accessibilityLabel={label}>
               <View>
                 <TargetIcon channel={ch} copied={copied} />
@@ -273,14 +317,25 @@ export function SharePanel({ content, source, previewHeight = 300 }: { content: 
           );
         })}
       </View>
+      {/* Full screen: the card on screen, as big as it fits; a tap anywhere closes it. */}
+      {compact && proof && (
+        <Modal visible={full} transparent animationType="fade" onRequestClose={() => setFull(false)} statusBarTranslucent>
+          <Pressable style={styles.full} onPress={() => setFull(false)} accessibilityRole="button" accessibilityLabel={t('close', { ns: 'common' })}>
+            {(() => {
+              const h = Math.min(winH * 0.86, (winW - 32) * 16 / 9);
+              return scaled([{ ...proofLayer(template, 'story'), k: `full:${template}` }], h * 9 / 16, h);
+            })()}
+          </Pressable>
+        </Modal>
+      )}
     </View>
   );
-}
+});
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 const BRAND: Partial<Record<ShareChannel, string>> = {
-  facebook_story: '#1877F2', whatsapp: '#25D366', messenger: '#0A7CFF', telegram: '#229ED9', x: '#000000',
+  facebook_story: '#1877F2', whatsapp: '#25D366', zalo: '#0068FF', messenger: '#0A7CFF', telegram: '#229ED9', x: '#000000',
 };
 const ICON: Partial<Record<ShareChannel, IconName>> = {
   instagram_story: 'logo-instagram', facebook_story: 'logo-facebook', whatsapp: 'logo-whatsapp', telegram: 'paper-plane',
@@ -312,6 +367,8 @@ function TargetIcon({ channel, copied }: { channel: Target; copied: boolean }) {
         <Svg width={24} height={24} viewBox="0 0 24 24">
           <Path fill="#FFFFFF" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </Svg>
+      ) : channel === 'zalo' ? (
+        <Text style={styles.zalo}>Zalo</Text>
       ) : channel === 'messenger' ? (
         <Svg width={28} height={28} viewBox="0 0 24 24">
           <Path fill="#FFFFFF" d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.53-.04.92.25 1.9.39 2.9.39 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm6 7.46-2.94 4.66c-.47.74-1.47.93-2.17.4l-2.34-1.75a.6.6 0 0 0-.72 0l-3.16 2.4c-.42.32-.97-.18-.69-.63l2.94-4.66c.47-.74 1.47-.93 2.17-.4l2.34 1.75a.6.6 0 0 0 .72 0l3.16-2.4c.42-.32.97.18.69.63z" />
@@ -344,6 +401,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   formatOn:  { backgroundColor: c.bg3 },
   formatText: { fontSize: 12, fontWeight: '700', color: c.muted },
   formatTextOn: { color: c.text },
+  row:       { flexDirection: 'row', justifyContent: 'space-between' },
+  rowTarget: { flex: 1, alignItems: 'center', gap: 6, paddingHorizontal: 1 },
+  dotsRow:   { alignItems: 'center', gap: 4, marginTop: 10 },
+  dots:      { flexDirection: 'row', gap: 8 },
+  dot:       { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },
+  dotOn:     { width: 20, backgroundColor: c.text },
+  dotsLabel: { fontSize: 12, fontWeight: '700', color: c.muted },
+  full:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.88)', alignItems: 'center', justifyContent: 'center' },
   toast:     { alignSelf: 'center', backgroundColor: c.text, borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 10, maxWidth: '100%' },
+  zalo:      { fontSize: 15, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.3 },
   toastText: { fontSize: 13, fontWeight: '700', color: c.bg, textAlign: 'center' },
 });

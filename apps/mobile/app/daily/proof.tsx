@@ -33,7 +33,7 @@ import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { isPlaceTheme } from '@/features/daily/themes';
-import { SharePanel } from '@/features/share/SharePanel';
+import { SharePanel, type SharePanelHandle } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { shortCityName } from '@/i18n/cityName';
@@ -106,6 +106,7 @@ function DailyProofScreenContent() {
   const [position, setPosition] = useState<Position | null>(null);
   const [photo, setPhoto]       = useState<Photo | null>(null);
   const [invite, setInvite]     = useState<ShareContent | null>(null);
+  const sharePanel = useRef<SharePanelHandle>(null);
   const [sent, setSent]         = useState<{ proof: DailyProof; body: string; next: string; nudge: boolean; cityFirst: boolean } | null>(null);
   const [citiesToday, setCitiesToday] = useState<number | null>(null);
   const [caption, setCaption]   = useState('');
@@ -503,15 +504,9 @@ function DailyProofScreenContent() {
           {sent.next.startsWith('/(tabs)/map') && (
             <Button variant="link" icon="location-outline" label={t('proof.onMap')} onPress={() => afterProof(sent.next)} />
           )}
-          {/* Represent your city (SPEC 9.16): the city's first proof of the day. */}
-          {sent.cityFirst && !!sent.proof.city?.name && (
-            <View style={styles.firstCity}>
-              <CityFlag country={sent.proof.city.country} size={18} />
-              <Text style={styles.firstCityText}>{t('represent.firstPosted', { city: shortCityName(sent.proof.city.name) })}</Text>
-            </View>
-          )}
           <Text style={styles.sentShare}>{t('share.afterProof')}</Text>
-          <SharePanel content={proofShare(sent.proof, challenge)} source="after_proof" previewHeight={320} />
+          {/* The card (swipe: its templates; tap: full screen), the targets right under it. */}
+          <SharePanel ref={sharePanel} compact content={proofShare(sent.proof, challenge)} source="after_proof" previewHeight={320} />
           {sent.cityFirst && !!sent.proof.city?.name && (
             <Button variant="link" icon="paper-plane-outline" label={t('represent.invite')}
                     onPress={() => setInvite(representShare(challenge, sent.proof.city!))} />
@@ -522,8 +517,11 @@ function DailyProofScreenContent() {
         <View style={styles.footer}>
           {/* Votes go to the other cities: straight to how the world answered (COPY.md). */}
           <Text style={styles.votesNext}>{t('vote.afterPost')}</Text>
-          {/* Compare now: the world's cities side by side (the compare view). */}
-          <Button icon="earth-outline" label={t('proof.compareNow')} onPress={() => afterProof('/daily/countries?source=after_proof')} />
+          {/* Share (the system sheet, the template on screen) and Compare (the world's cities side by side). */}
+          <View style={styles.footerRow}>
+            <Button label={`📤 ${t('share.title')}`} onPress={() => sharePanel.current?.shareSheet()} style={styles.footerBtn} testID="proof-sent-share" />
+            <Button variant="secondary" label={`🌍 ${t('proof.compareNow')}`} onPress={() => afterProof('/daily/countries?source=after_proof')} style={styles.footerBtn} />
+          </View>
           {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
         </View>
         <AmbientBats top={60} />
@@ -819,8 +817,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   sentNav:     { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: 4 },
   sent:        { alignItems: 'center', padding: Spacing.lg, paddingTop: 0, gap: 12 },
-  firstCity:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, backgroundColor: c.primaryTint },
-  firstCityText: { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryOnTint },
+  footerBtn:   { flex: 1 },
   sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 12 },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
