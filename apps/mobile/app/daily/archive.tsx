@@ -55,7 +55,7 @@ export default function DailyArchiveScreen() {
         ListEmptyComponent={archive.loading
           ? <ActivityIndicator color={colors.primary} style={styles.loading} />
           : <EmptyState icon="calendar-outline" body={t('today.archiveEmpty')} />}
-        ListFooterComponent={archive.loadingMore ? <ActivityIndicator color={colors.primary} style={styles.loading} /> : null}
+        ListFooterComponent={archive.loadingMore ? <ActivityIndicator color={colors.primary} style={styles.loading} /> : undefined}
         onEndReached={archive.loadMore}
         onEndReachedThreshold={0.5}
         renderItem={({ item }) => (

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useNextField } from './keyboard';
+import type { TextInputInstance } from 'react-native';
 
 /**
  * Text input. "search": a pill with a search icon and a clear button (map).
@@ -24,7 +25,7 @@ export function TextField({ variant = 'field', label, error, onClear, clearLabel
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
-  const ref = useRef<TextInput>(null);
+  const ref = useRef<TextInputInstance>(null);
   const next = useNextField(ref);
   const auto = variant === 'field' && !input.multiline && input.returnKeyType === undefined;
 

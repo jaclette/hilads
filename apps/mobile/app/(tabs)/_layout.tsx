@@ -42,7 +42,10 @@ const TABS: TabDef[] = [
   { name: 'passport', label: 'tabs.passport', icon: 'id-card-outline' },
 ];
 
-function CustomTabBar({ state, navigation }: BottomTabBarProps) {
+// expo-router 58: the first tab is set here (Tabs no longer takes initialRouteName).
+export const unstable_settings = { initialRouteName: 'today' };
+
+function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { colors, theme } = useTheme();
   const { t } = useTranslation('common');
@@ -100,7 +103,9 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             accessibilityState={{ selected: focused }}
             style={[styles.tab, focused && { backgroundColor: gold ? tint(GOLD.fill, 0.22) : colors.primaryTint }]}
             onPress={() => {
-              const event = navigation.emit({
+              const route = state.routes[routeIndex];
+              // expo-router 58: the bar gets an emitter and navigateToTab (no navigation object).
+              const event = emitter.emit({
                 type:              'tabPress',
                 target:            state.routes[routeIndex]?.key,
                 canPreventDefault: true,
@@ -108,7 +113,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               if (state.index !== routeIndex && !event.defaultPrevented) {
                 markTabPress(tab.name);
                 if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
-                navigation.navigate(tab.name);
+                if (route) navigateToTab(route.key);
               }
             }}
           >
@@ -194,7 +199,6 @@ export default function TabsLayout() {
   return (
     <SeasonalScope>
     <Tabs
-      initialRouteName="today"
       backBehavior="firstRoute"
       tabBar={props => <CustomTabBar {...props} />}
       // A tab you left stops rendering (frozen) until you come back: context ticks, presence,

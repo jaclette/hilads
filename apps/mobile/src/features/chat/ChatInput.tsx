@@ -33,6 +33,7 @@ import { LocationPicker } from './LocationPicker';
 import { MentionSuggestions } from './MentionSuggestions';
 import { fetchMentionSuggestions, type MentionContext, type MentionSuggestion } from '@/api/mentions';
 import { buildMentionsFromText, detectActiveMention, type SelectedMention, type MentionRef } from '@/lib/mentions';
+import type { TextInputInstance } from 'react-native';
 
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -102,7 +103,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
   const [showEmoji,     setShowEmoji]   = useState(false);
   const [showShareSheet,   setShowShareSheet]   = useState(false);
   const [locationCoords,   setLocationCoords]   = useState<{ lat: number; lng: number } | null>(null);
-  const inputRef        = useRef<TextInput>(null);
+  const inputRef        = useRef<TextInputInstance>(null);
 
   // ── Vibe button animations ─────────────────────────────────────────────────
   const vibScale  = useRef(new Animated.Value(1)).current;

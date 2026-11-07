@@ -7,8 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { KeyboardAvoidingView, useKeyboardState } from 'react-native-keyboard-controller';
-import { Gesture, GestureDetector, GestureHandlerRootView, type NativeGesture } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { holdScreen } from '@/lib/celebrationQueue';
+import type { ScrollViewInstance, ViewInstance } from 'react-native';
 
 // A drag down from this close to the sheet's top (grabber, header) always moves it, even over buttons.
 const HEADER_ZONE = 110;
@@ -16,7 +17,7 @@ const HEADER_ZONE = 110;
 const CLOSE_DISTANCE = 100;
 const CLOSE_VELOCITY = 1200;   // px/s
 
-type SheetScrollApi = { setAtTop: (atTop: boolean) => void; close: () => void; scroll: NativeGesture | null };
+type SheetScrollApi = { setAtTop: (atTop: boolean) => void; close: () => void; scroll: ReturnType<typeof Gesture.Native> | null };
 const SheetScroll = createContext<SheetScrollApi | null>(null);
 
 /**
@@ -56,7 +57,7 @@ function useMergedScroll(own: ScrollHandlers) {
 }
 
 /** A vertical ScrollView inside a Sheet (see useSheetScroll). */
-export const SheetScrollView = forwardRef<ScrollView, ScrollViewProps>(function SheetScrollView(props, ref) {
+export const SheetScrollView = forwardRef<ScrollViewInstance, ScrollViewProps>(function SheetScrollView(props, ref) {
   return <WithSheetScroll><ScrollView ref={ref} {...props} {...useMergedScroll(props)} /></WithSheetScroll>;
 });
 
@@ -90,7 +91,7 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
 
   const drag = useRef(new Animated.Value(0)).current;
   const atTop = useRef(true);
-  const sheet = useRef<View>(null);
+  const sheet = useRef<ViewInstance>(null);
   const sheetTop = useRef(0);
   // The current drag: started on the header, and the finger's travel when the sheet started following it.
   const fromHeader = useRef(false);

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { formatTime, HALF_HOURS } from './format';
+import type { ScrollViewInstance } from 'react-native';
 
 const ROW = 48;
 const VISIBLE = 5;   // odd: the middle row is the value
@@ -19,7 +20,7 @@ const PAD = { paddingVertical: ROW * Math.floor(VISIBLE / 2) };
 export function TimeWheel({ value, onChange }: { value: number; onChange: (minutes: number) => void }) {
   const styles = useThemedStyles(makeStyles);
   const { i18n } = useTranslation();
-  const ref = useRef<ScrollView>(null);
+  const ref = useRef<ScrollViewInstance>(null);
   const index = Math.max(0, HALF_HOURS.indexOf(value));
   const last = useRef(index);
   const initialOffset = useRef({ x: 0, y: index * ROW }).current;

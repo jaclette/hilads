@@ -11,6 +11,7 @@ import { FLAGS } from '@/ui/flags';
 import { INK, themeColor } from '@/ui/joy';
 import { EVENT_CARD, EventFrame } from '@/features/event/EventFrame';
 import type { ShareContent } from './content';
+import type { ViewInstance } from 'react-native';
 
 const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
 
@@ -40,7 +41,7 @@ export const PROOF_CARD_DP = { story: { width: W, height: u(640) }, post: { widt
 const READY_TIMEOUT_MS = 6000;
 const WHITE = '#FFFFFF';
 
-export const ProofCard = forwardRef<View, {
+export const ProofCard = forwardRef<ViewInstance, {
   content: ProofContent; template: ShareTemplate; format: ShareFormat; others?: VersusPhoto[]; still?: boolean; onReady: () => void;
 }>(function ProofCard({ content, template, format, others = [], still = false, onReady }, ref) {
   const { t } = useTranslation('daily');

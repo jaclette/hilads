@@ -139,6 +139,7 @@ const MapWebView = memo(
   }) {
     const styles = useThemedStyles(makeStyles);
     return (
+      // @ts-expect-error react-native-webview 13.16's class types predate React Native 0.88's stricter component types (works at runtime)
       <WebView
         ref={innerRef}
         style={styles.webview}

@@ -408,17 +408,17 @@ export default function TopicChatScreen() {
               <View style={styles.loadingOlderWrap}>
                 <Text style={styles.beginningText}>{t('beginning', { ns: 'chat' })}</Text>
               </View>
-            ) : null
+            ) : undefined
           }
           ListHeaderComponent={
             msgsLoading ? (
               <View style={styles.msgsLoading}>
                 <ActivityIndicator color={colors.muted} />
               </View>
-            ) : null
+            ) : undefined
           }
           ListEmptyComponent={
-            msgsLoading ? null : (
+            msgsLoading ? undefined : (
               // A View: the inverted list flips its empty component back through `style`.
               <View style={styles.emptyWrap}>
                 <EmptyState icon="chatbubbles-outline" body={t('emptyReplies')} />

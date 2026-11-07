@@ -304,8 +304,8 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         ListHeaderComponent={headerBlock}
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-        ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : null}
-        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 16 }} color={colors.primary} /> : null}
+        ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : undefined}
+        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 16 }} color={colors.primary} /> : undefined}
         onEndReached={onEnd}
         onEndReachedThreshold={0.6}
         onScrollToIndexFailed={() => {}}
@@ -393,7 +393,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
         ListHeaderComponent={<View>{header}{entries.length > 0 && <Podium items={podium} ghost={ghost} />}</View>}
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-        ListEmptyComponent={entries.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.players')} failed={failed} /> : null}
+        ListEmptyComponent={entries.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.players')} failed={failed} /> : undefined}
         onScrollToIndexFailed={() => {}}
         renderItem={({ item: e }) => (
           <View style={styles.rowPad}>
@@ -462,7 +462,7 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
         )}
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-        ListEmptyComponent={data || failed ? <Empty text={t('ranks.empty.cities')} failed={failed} /> : null}
+        ListEmptyComponent={data || failed ? <Empty text={t('ranks.empty.cities')} failed={failed} /> : undefined}
         onScrollToIndexFailed={() => {}}
         renderItem={({ item: e, index }) => (
           <View style={styles.rowPad}>

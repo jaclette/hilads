@@ -14,6 +14,7 @@ import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 import { Button } from '@/ui';
 import { FRAMES, Frame, STICKERS, Sticker, type FrameId, type StickerId } from './stickers';
+import type { ViewInstance } from 'react-native';
 
 /**
  * The sticker step (event mode, Halloween first): after the photo, before the
@@ -59,7 +60,7 @@ export function StickerStep({ visible, main, selfie, remote, onDone, onSkip }: {
   const [overTrash, setOverTrash] = useState(false);
   const [baking, setBaking] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  const canvas = useRef<View>(null);
+  const canvas = useRef<ViewInstance>(null);
   const seq = useRef(0);
 
   const pack = remote && remote.length > 0 ? remote.map(r => r.id) : STICKERS;

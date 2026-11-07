@@ -15,6 +15,7 @@ import { CARD_DP, ShareCard } from './ShareCard';
 import { PROOF_CARD_DP, ProofCard, type ShareFormat, type ShareTemplate, type VersusPhoto } from './ProofCard';
 import { shareText, shareUrl, type ShareContent } from './content';
 import { IMAGE_CHANNELS, directChannels, shareTo, type ShareChannel } from './targets';
+import type { ScrollViewInstance, ViewInstance } from 'react-native';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -79,7 +80,7 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
   const [template, setTemplate] = useState<ShareTemplate>(proof?.rankText ? 'result' : 'turn');
   const [still, setStill] = useState(false);
   const [pageW, setPageW] = useState(0);
-  const pager = useRef<ScrollView>(null);
+  const pager = useRef<ScrollViewInstance>(null);
   const templates: ShareTemplate[] = others && others.length > 0 ? ['turn', 'versus', 'result'] : ['turn', 'result'];
   // Card keys: "<template>:<format>" (my photo), "card:story" (the rest).
   const key = proof ? `${template}:${format}` : 'card:story';
@@ -88,7 +89,7 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
                   ...(proof ? { template } : {}) };
 
   // Each card: its view, whether it's drawn, and its captured file.
-  const cards = useRef(new Map<string, { view: View | null; ready: boolean; file: string | null }>());
+  const cards = useRef(new Map<string, { view: ViewInstance | null; ready: boolean; file: string | null }>());
   const card = (k: string) => {
     let c = cards.current.get(k);
     if (!c) { c = { view: null, ready: false, file: null }; cards.current.set(k, c); }
@@ -211,7 +212,7 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
   };
 
   const cardW = previewHeight * 9 / 16;
-  type Layer = { k: string; dp: { width: number; height: number }; hidden?: boolean; node: (ref: (v: View | null) => void, onReady: () => void) => React.ReactNode };
+  type Layer = { k: string; dp: { width: number; height: number }; hidden?: boolean; node: (ref: (v: ViewInstance | null) => void, onReady: () => void) => React.ReactNode };
   /** A preview box: its cards at full size, scaled to the box's height (the last one on top: the one on screen). */
   const scaled = (layers: Layer[], boxW = cardW, boxH = previewHeight) => (
     <View style={[styles.preview, { height: boxH, width: boxW }]}

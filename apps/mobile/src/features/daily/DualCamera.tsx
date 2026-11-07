@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, Platform, StyleSheet, Text, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -139,7 +139,7 @@ export function DualCamera({ visible, initial, selfieFor = null, night = false, 
   };
 
   // Pinch to zoom on the photo's viewfinder (Android; iOS uses the system camera's lenses).
-  const onTouchMove = (e: { nativeEvent: { touches: { pageX: number; pageY: number }[] } }) => {
+  const onTouchMove = (e: GestureResponderEvent) => {
     const t2 = e.nativeEvent.touches;
     if (t2.length !== 2) { pinch.current = null; return; }
     const dist = Math.hypot(t2[0].pageX - t2[1].pageX, t2[0].pageY - t2[1].pageY);

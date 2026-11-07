@@ -117,7 +117,7 @@ export default function RivalScreen() {
         <FlatList
           data={data.duels}
           keyExtractor={d => d.date}
-          ListHeaderComponent={head}
+          ListHeaderComponent={head ?? undefined}
           contentContainerStyle={styles.list}
           ListEmptyComponent={<Text style={styles.empty}>{t('rivals.empty', { city: rival })}</Text>}
           renderItem={({ item: d }) => (

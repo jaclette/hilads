@@ -46,6 +46,7 @@ import { goBack as leave } from '@/lib/nav';
 import { KeyboardForm, useNextField } from '@/ui/keyboard';
 import { AmbientBats, BatBurst, SeasonalScope } from '@/features/event/SeasonalArt';
 import { setSeasonalEvent, useEventFeature, useSeasonalLive } from '@/features/event/seasonal';
+import type { TextInputInstance } from 'react-native';
 
 /** A position older than this is refreshed before posting (the distance check). */
 const POSITION_MAX_AGE_MS = 2 * 60 * 1000;
@@ -168,11 +169,11 @@ function DailyProofScreenContent() {
     || ((step === 'details' || step === 'answer') && !original && needsPlace) || (step === 'place' && !!photo);
   const unsaved = !sent && !original && !!photo;
   // Next / Done on the raw fields (TextField has it built in).
-  const captionRef = useRef<TextInput>(null);
-  const amountRef = useRef<TextInput>(null);
-  const currencyRef = useRef<TextInput>(null);
-  const homeAmountRef = useRef<TextInput>(null);
-  const homeCurrencyRef = useRef<TextInput>(null);
+  const captionRef = useRef<TextInputInstance>(null);
+  const amountRef = useRef<TextInputInstance>(null);
+  const currencyRef = useRef<TextInputInstance>(null);
+  const homeAmountRef = useRef<TextInputInstance>(null);
+  const homeCurrencyRef = useRef<TextInputInstance>(null);
   const captionNext = useNextField(captionRef);
   const amountNext = useNextField(amountRef);
   const currencyNext = useNextField(currencyRef);

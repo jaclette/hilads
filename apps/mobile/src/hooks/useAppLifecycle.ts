@@ -14,7 +14,7 @@ import { joinChannel } from '@/api/channels';
 
 export function useAppLifecycle(onForeground?: () => void): void {
   const { city, identity, sessionId, account } = useApp();
-  const appState = useRef<AppStateStatus>(AppState.currentState);
+  const appState = useRef<AppStateStatus>(AppState.currentState as AppStateStatus);
 
   // Stable reference to the callback so the effect doesn't re-run on every render
   const onForegroundRef = useRef(onForeground);

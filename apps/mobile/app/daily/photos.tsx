@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator, Animated, Dimensions, FlatList, Keyboard, Pressable, Text, TouchableOpacity, View, StyleSheet,
-  type ViewToken,
+  type ListViewToken as ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { prefetchProof, takeHandedList, takeHandedProof } from '@/lib/prefetch';
@@ -168,7 +168,7 @@ function PhotosScreenContent() {
     list.current?.scrollToOffset({ offset: 0, animated: false });
   };
 
-  const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken<Item>[] }) => {
+  const onViewable = useRef(({ viewableItems }: { viewableItems: (ViewToken & { item: Item })[] }) => {
     const first = viewableItems[0];
     if (first?.index != null) setIndex(first.index);
   }).current;

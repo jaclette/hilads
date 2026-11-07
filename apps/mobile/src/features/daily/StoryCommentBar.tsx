@@ -18,6 +18,7 @@ import { MentionSuggestions } from '@/features/chat/MentionSuggestions';
 import { detectActiveMention } from '@/lib/mentions';
 import { sendComment } from './comments';
 import { COMMENT_MAX } from './PhotoCommentsSheet';
+import type { TextInputInstance } from 'react-native';
 
 const QUICK = ['🔥', '😍', '😂'];
 
@@ -42,7 +43,7 @@ export function StoryCommentBar({ proof, onComposing }: { proof: DailyProof; onC
   const [focused, setFocused] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [floats, setFloats] = useState<{ id: number; emoji: string; left: number }[]>([]);
-  const input = useRef<TextInput>(null);
+  const input = useRef<TextInputInstance>(null);
   const seq = useRef(0);
   // @ autocomplete, as in the comments sheet: the photo's author and its commenters first (server side).
   const cursor = useRef(0);

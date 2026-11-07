@@ -36,6 +36,7 @@ import {
 import { themeName } from './themes';
 import { relativeTime } from '@/features/notifications/NotifRow';
 import { localizeCityName } from '@/i18n/cityName';
+import type { TextInputInstance } from 'react-native';
 
 // The comments of a Daily photo (docs/photo-comments-audit.md): one sheet for
 // every place a photo shows. Open it with openPhotoComments(); the topmost
@@ -158,7 +159,7 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
   const [confetti, setConfetti] = useState(false);
   const [flash, setFlash] = useState<number | null>(initial.focusCommentId ?? null);
   const [notice, setNotice] = useState<string | null>(null);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const listRef = useRef<FlatList<CommentItem>>(null);
   const cursor = useRef(0);
 
@@ -317,7 +318,7 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
               <TouchableOpacity style={styles.older} onPress={() => loadOlder(target.proofId, guestId)} accessibilityRole="button">
                 {thread.loading ? <ActivityIndicator size="small" color={colors.muted} /> : <Text style={styles.olderText}>{t('comments.older')}</Text>}
               </TouchableOpacity>
-            ) : null}
+            ) : undefined}
             renderItem={({ item }) => (
               <CommentRow
                 c={item}

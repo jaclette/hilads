@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useState, type ReactNode, type RefObject } from 
 import { View, StyleSheet, type StyleProp, type TextInput, type TextInputProps, type ViewStyle } from 'react-native';
 import { FocusedInputEvents, KeyboardAvoidingView, KeyboardAwareScrollView, KeyboardController, KeyboardStickyView, type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { TextInputInstance } from 'react-native';
 
 // The keyboard rule, the same on every screen (Android edge-to-edge and iOS):
 // the focused field scrolls into view GAP above the keyboard, the screen's
@@ -63,7 +64,7 @@ export function KeyboardArea({ children, style, offset = 0 }: { children: ReactN
  * screen, Done (the last field) closes the keyboard. TextField uses it by
  * default; a raw TextInput spreads it with its ref.
  */
-export function useNextField(inputRef: RefObject<TextInput | null>): Pick<TextInputProps, 'returnKeyType' | 'submitBehavior' | 'onSubmitEditing'> {
+export function useNextField(inputRef: RefObject<TextInputInstance | null>): Pick<TextInputProps, 'returnKeyType' | 'submitBehavior' | 'onSubmitEditing'> {
   const [last, setLast] = useState(false);
   useEffect(() => {
     const sub = FocusedInputEvents.addListener('focusDidSet', e => {

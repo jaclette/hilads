@@ -10,7 +10,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity, Pressable,
   ActivityIndicator, StyleSheet, Platform,
-  Animated, Alert, Linking, InteractionManager, Keyboard,
+  Animated, Alert, Linking, Keyboard,
 } from 'react-native';
 import { EmojiPanel } from '@/features/chat/EmojiPanel';
 import { ShareSheet } from '@/features/chat/ShareSheet';
@@ -485,8 +485,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   function handlePickImage() {
     if (busy) return;
     Alert.alert(t('composer.sendPhotoTitle', { ns: 'common' }), undefined, [
-      { text: t('composer.takePhoto', { ns: 'common' }),     onPress: () => InteractionManager.runAfterInteractions(() => openCamera()) },
-      { text: t('composer.chooseLibrary', { ns: 'common' }), onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
+      { text: t('composer.takePhoto', { ns: 'common' }),     onPress: () => requestIdleCallback(() => openCamera()) },
+      { text: t('composer.chooseLibrary', { ns: 'common' }), onPress: () => requestIdleCallback(() => openLibrary()) },
       { text: t('cancel', { ns: 'common' }), style: 'cancel' },
     ]);
   }
@@ -617,7 +617,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
               <View style={styles.loadingOlderWrap}>
                 <Text style={styles.beginningText}>{t('beginning', { ns: 'chat' })}</Text>
               </View>
-            ) : null
+            ) : undefined
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>

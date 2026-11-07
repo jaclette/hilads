@@ -12,6 +12,7 @@ import { THEME_KEYS } from '@/features/daily/themes';
 import { FLAGS } from '@/ui/flags';
 import { themeColor } from '@/ui/joy';
 import type { ShareContent } from './content';
+import type { ViewInstance } from 'react-native';
 
 const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
 
@@ -35,7 +36,7 @@ const READY_TIMEOUT_MS = 6000;
  * scaling (StyleSheet.create) must not touch a fixed-size image.
  * `onReady` once the photo and the logo are drawn (or after a timeout).
  */
-export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () => void }>(function ShareCard({ content, onReady }, ref) {
+export const ShareCard = forwardRef<ViewInstance, { content: ShareContent; onReady: () => void }>(function ShareCard({ content, onReady }, ref) {
   const { t } = useTranslation('daily');
   const loaded = useRef(0);
   const done = useRef(false);

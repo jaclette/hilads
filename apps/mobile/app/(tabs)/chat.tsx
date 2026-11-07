@@ -990,7 +990,7 @@ export default function ChatTab() {
                 <View style={styles.loadingOlderWrap}>
                   <Text style={styles.beginningText}>{t('beginning')}</Text>
                 </View>
-              ) : null
+              ) : undefined
             }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>

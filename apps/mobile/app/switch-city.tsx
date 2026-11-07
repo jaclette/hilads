@@ -399,7 +399,7 @@ export default function SwitchCityScreen() {
           }
           ListHeaderComponent={sectionLabel && query.trim().length < 2 ? (
             <Text style={styles.sectionLabel}>{sectionLabel}</Text>
-          ) : null}
+          ) : undefined}
           contentContainerStyle={displayList.length === 0 ? styles.flex1 : styles.listContent}
           ListEmptyComponent={
             <View style={styles.center}>

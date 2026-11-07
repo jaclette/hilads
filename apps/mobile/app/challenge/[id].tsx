@@ -1798,7 +1798,7 @@ export default function ChallengeChatScreen() {
               onEndReachedThreshold={0.2}
               ListFooterComponent={loadingOlder ? (
                 <View style={styles.loadingOlderWrap}><ActivityIndicator size="small" color={colors.muted} /></View>
-              ) : null}
+              ) : undefined}
               ListEmptyComponent={!msgsLoading ? (
                 <View style={styles.emptyChat}>
                   <Ionicons name="hand-right-outline" size={36} color={colors.muted} style={styles.emptyChatEmoji} />
@@ -1812,7 +1812,7 @@ export default function ChallengeChatScreen() {
                       : 'thread.empty')}
                   </Text>
                 </View>
-              ) : null}
+              ) : undefined}
             />
 
             {/* Schedule band - Local-MEET only (skip on photo-proof: no
