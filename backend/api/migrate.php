@@ -4271,6 +4271,42 @@ try {
     echo "  ERR dw couch topic: " . $e->getMessage() . "\n";
 }
 
+// Once: the singles topic (Nov 9) and the noodles topic (Nov 11) swap dates, so the singles one lands on Singles'
+// Day (11/11); their packages are kept as they are. The singles package's caption gets a first line "Happy Singles'
+// Day 🎉 11/11" and #SinglesDay is added to its hashtags (once each). Nothing moves unless both are where expected
+// and not published.
+try {
+    $q = $pdo->prepare("SELECT id, date::text AS date, status FROM dw_topics WHERE title = ?");
+    $q->execute(['The countries with the most singles']);
+    $singles = $q->fetch(PDO::FETCH_ASSOC);
+    $q->execute(['The countries that eat the most instant noodles']);
+    $noodles = $q->fetch(PDO::FETCH_ASSOC);
+    if ($singles && $noodles && $singles['date'] === '2026-11-09' && $noodles['date'] === '2026-11-11') {
+        if ($singles['status'] === 'published' || $noodles['status'] === 'published') {
+            echo "  --  dw: singles / noodles not swapped: one of them is published (Admin › Worlds)\n";
+        } else {
+            $pdo->beginTransaction();
+            $move = $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?");
+            $move->execute(['1900-01-01', $singles['id']]);   // dw_topics.date is unique: park it while the other moves
+            $move->execute(['2026-11-09', $noodles['id']]);
+            $move->execute(['2026-11-11', $singles['id']]);
+            $pdo->prepare("
+                UPDATE dw_packages SET content = jsonb_set(content, '{caption}', to_jsonb(? || E'\n\n' || (content->>'caption')))
+                WHERE topic_id = ? AND position('Happy Singles'' Day' IN content->>'caption') = 0
+            ")->execute(["Happy Singles' Day 🎉 11/11", $singles['id']]);
+            $pdo->prepare("
+                UPDATE dw_packages SET content = jsonb_set(content, '{hashtags}', COALESCE(content->'hashtags', '[]'::jsonb) || '[\"#SinglesDay\"]'::jsonb)
+                WHERE topic_id = ? AND NOT (COALESCE(content->'hashtags', '[]'::jsonb) @> '[\"#SinglesDay\"]'::jsonb)
+            ")->execute([$singles['id']]);
+            $pdo->commit();
+            echo "  OK  dw: \"The countries with the most singles\" on 2026-11-11, \"The countries that eat the most instant noodles\" on 2026-11-09 (packages kept; Singles' Day line + #SinglesDay)\n";
+        }
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw singles / noodles swap: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
