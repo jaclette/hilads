@@ -192,9 +192,12 @@ final class DwReaction
         return ($first !== '' ? $first . ' · ' : '') . 'Source: ' . trim((string) ($c['source'] ?? ''));
     }
 
-    /** The clip's credit on the screen: "Video: author / Pixabay". Pure. */
+    /** The clip's credit on the screen: its own (an uploaded clip), else "Video: author / Pixabay". Pure. */
     public static function clipCredit(?array $clip): string
     {
+        if ($clip !== null && trim((string) ($clip['credit'] ?? '')) !== '') {
+            return trim($clip['credit']);
+        }
         return $clip !== null && trim((string) ($clip['author'] ?? '')) !== '' ? 'Video: ' . trim($clip['author']) . ' / Pixabay' : '';
     }
 

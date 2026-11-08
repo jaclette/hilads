@@ -31,6 +31,8 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
 }
 
 export const REACTION_SECONDS = 8;
+// A clip of at least 90% of the screen's length plays once (slowed a little when short); a shorter one loops.
+export const clipFills = (seconds) => seconds >= REACTION_SECONDS * 0.9;
 
 let ctx = null;
 function measure(text, px) {
@@ -59,10 +61,13 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   return (
     <AbsoluteFill style={{ background: BG, fontFamily: FONT }}>
       <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: CLIP_H, overflow: 'hidden', background: '#000' }}>
-        {clip && (
-          <Loop durationInFrames={Math.max(1, Math.floor(clip.seconds * fps))}>
-            <OffthreadVideo src={staticFile(clip.src)} muted style={{ width: 1080, height: CLIP_H, objectFit: 'cover' }} />
-          </Loop>
+        {clip && (clipFills(clip.seconds)
+          // Played once over the whole screen (a clip a little short is slowed to fill it).
+          ? <OffthreadVideo src={staticFile(clip.src)} muted playbackRate={Math.min(1, clip.seconds / REACTION_SECONDS)}
+                            style={{ width: 1080, height: CLIP_H, objectFit: 'cover' }} />
+          : <Loop durationInFrames={Math.max(1, Math.floor(clip.seconds * fps))}>
+              <OffthreadVideo src={staticFile(clip.src)} muted style={{ width: 1080, height: CLIP_H, objectFit: 'cover' }} />
+            </Loop>
         )}
       </div>
       <div style={{ position: 'absolute', left: 0, top: CLIP_H - 60, width: 1080, height: 60, background: `linear-gradient(to bottom, rgba(22,17,13,0), ${BG})` }} />

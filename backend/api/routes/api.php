@@ -16304,12 +16304,12 @@ $router->add('GET', '/internal/worlds/{date}', function (array $params) {
     Response::json($data);
 });
 
-// POST /internal/worlds/{date}/upload {version, png?} → {putUrl, url}: where to PUT the MP4 (png: the reaction screen's PNG).
+// POST /internal/worlds/{date}/upload {version, png?, kind?} → {putUrl, url}: where to PUT the MP4 (png: the reaction screen's PNG; kind clip: its own reaction clip).
 $router->add('POST', '/internal/worlds/{date}/upload', function (array $params) {
     promoGuard($params['date']);
     try {
         $body = Request::json();
-        Response::json(DwStudio::videoUpload($params['date'], (int) ($body['version'] ?? 0), !empty($body['png'])));
+        Response::json(DwStudio::videoUpload($params['date'], (int) ($body['version'] ?? 0), !empty($body['png']) ? 'png' : (string) ($body['kind'] ?? 'video')));
     } catch (InvalidArgumentException $e) {
         Response::json(['error' => $e->getMessage()], 422);
     }
@@ -16322,6 +16322,18 @@ $router->add('POST', '/internal/worlds/{date}/video', function (array $params) {
     try {
         DwStudio::saveVideo($params['date'], (int) ($body['version'] ?? 0), (string) ($body['url'] ?? ''));
         Response::json(['saved' => true]);
+    } catch (InvalidArgumentException $e) {
+        Response::json(['error' => $e->getMessage()], 422);
+    }
+});
+
+// POST /internal/worlds/{date}/clip {version, url, credit, ai}: a reaction package's own clip, uploaded with kind clip.
+$router->add('POST', '/internal/worlds/{date}/clip', function (array $params) {
+    promoGuard($params['date']);
+    $body = Request::json();
+    try {
+        Response::json(['clip' => DwStudio::saveUploadedClip($params['date'], (int) ($body['version'] ?? 0), (string) ($body['url'] ?? ''),
+            (string) ($body['credit'] ?? ''), !empty($body['ai']))]);
     } catch (InvalidArgumentException $e) {
         Response::json(['error' => $e->getMessage()], 422);
     }

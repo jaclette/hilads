@@ -103,6 +103,7 @@ final class DwReactionTest extends TestCase
         $this->assertSame('Liters per person per year, 2024 · Source: Kirin', DwReaction::sourceLine($c));
         $this->assertSame('Video: Solarselle77 / Pixabay', DwReaction::clipCredit(['author' => 'Solarselle77']));
         $this->assertSame('', DwReaction::clipCredit(null));
+        $this->assertSame('AI video: Google Flow (Veo)', DwReaction::clipCredit(['source' => 'upload', 'credit' => 'AI video: Google Flow (Veo)', 'ai_generated' => true]));
     }
 
     public function testPixabayHit(): void

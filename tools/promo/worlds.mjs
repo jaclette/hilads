@@ -13,7 +13,8 @@
 // A topic in the reaction + ranking format (src/Reaction.jsx): one 8 s screen, its
 // Pixabay clip (the R2 copy) on top, the ranking under it; the video and a PNG of the
 // last frame are uploaded. --file: its clip ({pixabay_id}) is looked up on Pixabay
-// with PIXABAY_API_KEY from .env (never printed).
+// with PIXABAY_API_KEY from .env (never printed). --clip <file> --clip-credit "…" [--clip-ai]
+// uploads our own clip to the day's reaction package first (renderDay, uploadOwnClip).
 
 import { cp, mkdir, readFile, readdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -28,6 +29,11 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
 const args = process.argv.slice(2);
 const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : null;
+// --clip <file> --clip-credit "<line>" [--clip-ai]: a reaction topic's own clip (e.g. an AI video), uploaded to
+// the day's latest package (R2, like the other clips) before the render, its credit shown on the screen.
+const clipArg = args.includes('--clip') ? args[args.indexOf('--clip') + 1] : null;
+const clipCredit = args.includes('--clip-credit') ? args[args.indexOf('--clip-credit') + 1] : null;
+const clipAi = args.includes('--clip-ai');
 const upload = !args.includes('--no-upload') && !fileArg;
 const dates = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
 const range = dates.length === 2 && !fileArg;
@@ -174,13 +180,18 @@ async function renderDay(date, fetched = null) {
     const pkg = (doc.packages ?? [doc]).find((p) => !p.date || p.date === date) ?? doc.packages?.[0];
     const content = pkg.content ?? pkg;
     data = content.format === 'reaction'
-      ? { date: pkg.date ?? date, version: 0, format: 'reaction', screen: await screenFromContent(content) }
+      ? { date: pkg.date ?? date, version: 0, format: 'reaction', screen: await screenFromContent(clipArg ? { ...content, clip: null } : content) }
       : { date: pkg.date ?? date, version: 0, slides: planFromContent(content) };
     console.log(`Different Worlds ${data.date} from ${fileArg} (not uploaded)`);
+    // --clip with --file: the local clip as is (nothing uploaded).
+    if (clipArg && data.screen) data.screen.clip = { local: ownClipFile(), credit: clipCredit ?? '' };
   } else {
     if (!token) throw new Error('PROMO_TOKEN is missing: copy .env.example to .env and fill it in.');
     data = fetched ?? await apiCall(`/internal/worlds/${date}`);
     console.log(`Different Worlds ${date}: "${data.title}", version ${data.version}, from ${api}`);
+    if (clipArg) {
+      data = await uploadOwnClip(data);
+    }
   }
 
   const work = path.join(here, '.cache', `worlds-${data.date}`);
@@ -265,6 +276,28 @@ async function renderDay(date, fetched = null) {
   console.log(`Done: ${api}/admin/worlds (${data.date})`);
 }
 
+/** The --clip file (relative to the current folder or to the repo). */
+function ownClipFile() {
+  const file = [path.resolve(clipArg), path.resolve(repo, clipArg)].find((f) => existsSync(f));
+  if (!file || path.extname(file).toLowerCase() !== '.mp4') throw new Error(`--clip: no mp4 at ${clipArg}`);
+  return file;
+}
+
+/** --clip: uploads our own clip to the day's reaction package, saves it with its credit, returns the refreshed data. */
+async function uploadOwnClip(data) {
+  if (data.format !== 'reaction') throw new Error('--clip is for a topic in the reaction format.');
+  if (!clipCredit) throw new Error('--clip needs --clip-credit "<the credit line on screen>".');
+  const file = ownClipFile();
+  const { durationInSeconds, width, height } = await getVideoMetadata(file);
+  console.log(`  own clip ${path.basename(file)}: ${width}×${height}, ${durationInSeconds.toFixed(2)} s, uploading…`);
+  const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, kind: 'clip' });
+  const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': 'video/mp4' }, body: await readFile(file) });
+  if (!res.ok) throw new Error(`clip upload: ${res.status} ${await res.text()}`);
+  await apiCall(`/internal/worlds/${data.date}/clip`, { version: data.version, url, credit: clipCredit, ai: clipAi });
+  console.log(`  clip saved: "${clipCredit}"${clipAi ? ', AI-generated' : ''}`);
+  return apiCall(`/internal/worlds/${data.date}`);
+}
+
 /** Uploads a rendered file (the MP4, or the reaction screen's PNG) to its package. */
 async function uploadFile(data, file) {
   const png = file.endsWith('.png');
@@ -279,13 +312,14 @@ async function uploadFile(data, file) {
 async function renderReaction(data, { work, pub, out }) {
   const s = data.screen;
   let clip = null;
-  if (s.clip?.url) {
-    const file = await cachedClip(s.clip.url);
+  if (s.clip?.url || s.clip?.local) {
+    const file = s.clip.local ?? await cachedClip(s.clip.url);
     const name = `clips/reaction${path.extname(file)}`;
     await cp(file, path.join(pub, name));
     const { durationInSeconds } = await getVideoMetadata(file);
     clip = { src: name, seconds: durationInSeconds, credit: s.clip.credit ?? '' };
-    console.log(`  clip ${durationInSeconds.toFixed(1)} s${durationInSeconds < s.seconds ? ' (loops)' : ''}`);
+    const once = durationInSeconds >= s.seconds * 0.9;   // as clipFills (src/Reaction.jsx)
+    console.log(`  clip ${durationInSeconds.toFixed(2)} s, ${once ? `played once${durationInSeconds < s.seconds ? ` at ${(durationInSeconds / s.seconds).toFixed(3)}× to fill ${s.seconds} s` : ''}` : 'loops'}`);
   } else {
     console.warn('  ⚠ no clip: the top third stays dark (Admin › Worlds › Find another clip)');
   }

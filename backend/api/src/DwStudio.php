@@ -1293,15 +1293,17 @@ final class DwStudio
                 'content' => $pkg['content'], 'slides' => $plan, 'videoUrl' => $pkg['video_url'] ?? null];
     }
 
-    /** A presigned upload for a package's video (or, $png, its screen as a PNG): {key, putUrl, url}. */
-    public static function videoUpload(string $date, int $version, bool $png = false): array
+    /** A presigned upload for a package's video, its screen as a PNG ($kind png) or its own reaction clip ($kind clip): {key, putUrl, url}. */
+    public static function videoUpload(string $date, int $version, string $kind = 'video'): array
     {
+        $kind = in_array($kind, ['png', 'clip'], true) ? $kind : 'video';
         $topic = self::topicByDate($date);
         $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
         if ($pkg === null) {
             throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
         }
-        $key = sprintf('dw/%d/v%d/%s-%s.%s', $topic['id'], $version, $png ? 'still' : 'video', bin2hex(random_bytes(6)), $png ? 'png' : 'mp4');
+        $png = $kind === 'png';
+        $key = sprintf('dw/%d/v%d/%s-%s.%s', $topic['id'], $version, $png ? 'still' : $kind, bin2hex(random_bytes(6)), $png ? 'png' : 'mp4');
         return ['key' => $key, 'putUrl' => R2Uploader::presignPut($key, $png ? 'image/png' : 'video/mp4'), 'url' => R2Uploader::publicUrl($key)];
     }
 
@@ -1393,6 +1395,37 @@ final class DwStudio
         $c['clip'] = DwReaction::clipOf($hit, $url);
         Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
             ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $packageId]);
+        if ($old !== '' && $old !== $url) {
+            self::deleteFile($old);
+        }
+        return $c['clip'];
+    }
+
+    /**
+     * Sets a reaction package's clip to one of our own (made elsewhere, e.g. an AI video), already
+     * uploaded to R2 by tools/promo (videoUpload(…, 'clip')): {source: "upload", url, credit,
+     * ai_generated}. The old copy is deleted. The stored clip.
+     */
+    public static function saveUploadedClip(string $date, int $version, string $url, string $credit, bool $ai): array
+    {
+        $topic = self::topicByDate($date);
+        $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
+        if ($pkg === null || !DwReaction::isReaction($pkg['content'])) {
+            throw new InvalidArgumentException('No reaction package ' . $version . ' on ' . $date);
+        }
+        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/clip-', $topic['id'], $version);
+        if (!str_starts_with($url, $prefix) || !str_ends_with($url, '.mp4')) {
+            throw new InvalidArgumentException('Not a clip upload of this package: ' . $url);
+        }
+        $credit = trim($credit);
+        if ($credit === '' || mb_strlen($credit) > 80) {
+            throw new InvalidArgumentException('The clip needs its credit line (80 characters at most).');
+        }
+        $c = $pkg['content'];
+        $old = (string) ($c['clip']['url'] ?? '');
+        $c['clip'] = ['source' => 'upload', 'url' => $url, 'credit' => $credit, 'ai_generated' => $ai];
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $pkg['id']]);
         if ($old !== '' && $old !== $url) {
             self::deleteFile($old);
         }
