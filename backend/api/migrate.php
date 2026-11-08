@@ -4174,6 +4174,38 @@ try {
     echo "  ERR dw Big Mac topic: " . $e->getMessage() . "\n";
 }
 
+// Once: "The countries where people laugh the most" (reaction) takes Nov 13 (Friday the 13th); the Nov 13 topic
+// with "Friday the 13th" in its title moves to the next free date. Another Nov 13 topic stays put (the step says so).
+try {
+    $laugh = 'The countries where people laugh the most';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$laugh]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov13 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-13'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov13 !== false && stripos($nov13['title'], 'friday the 13th') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-14'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov13['id']]);
+            echo "  OK  dw: \"{$nov13['title']}\" moved from 2026-11-13 to {$free}\n";
+            $nov13 = false;
+        }
+        if ($nov13 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-13', ?, ?, 'dated', false, 'reaction')")
+                ->execute([$laugh, "Friday the 13th. Gallup Global Emotions 2026: % who smiled or laughed a lot yesterday (2025, 140 countries), top 20."]);
+            echo "  OK  dw: \"{$laugh}\" on 2026-11-13 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-13 is taken by \"{$nov13['title']}\": \"{$laugh}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw laughing topic: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

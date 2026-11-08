@@ -171,6 +171,20 @@ final class DwReactionTest extends TestCase
         $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
     }
 
+    public function testTheNovember13Package(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-13-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame([], $warn);
+        $this->assertCount(20, $c['rows']);
+        $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
+    }
+
     public function testOneExtraHighlightedRowWithItsRealRank(): void
     {
         $rows = $this->rows();
