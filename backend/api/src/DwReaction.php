@@ -9,7 +9,8 @@ declare(strict_types=1);
  * (tools/promo/src/Reaction.jsx renders the video and a PNG).
  *
  * A package's content: {format: "reaction", topic, headline, detail?, rows: [{rank,
- * country, flag, value, unit}], source, source_url?, data_year, value_label?,
+ * country, flag, value, unit}], source, source_url?, data_year, data_years? (a range when the latest
+ * year differs by country, e.g. "2010s"), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
@@ -44,6 +45,9 @@ final class DwReaction
         $year = $c['data_year'] ?? null;
         if (!is_numeric($year) || (int) $year < 1950 || (int) $year > (int) gmdate('Y')) {
             $errors[] = '"data_year" must be the year of the data (e.g. 2024).';
+        }
+        if (isset($c['data_years']) && (!is_string($c['data_years']) || mb_strlen(trim($c['data_years'])) > 20)) {
+            $errors[] = '"data_years" is the years of the data as text, e.g. "2015–2018" or "2010s" (20 characters at most).';
         }
         if (isset($c['source_url']) && trim((string) $c['source_url']) !== '' && !preg_match('#^https?://\S+$#', trim((string) $c['source_url']))) {
             $errors[] = 'source_url is not a URL.';
@@ -86,7 +90,7 @@ final class DwReaction
     }
 
     /**
-     * The ranking's rules: 1 to 20 rows ranked 1, 2, 3…, one unit, a value each, no country
+     * The ranking's rules: 1 to 20 rows ranked 1, 2, 3… (equal values share the rank above), one unit, a value each, no country
      * twice; then at most one extra row further down (a highlighted country outside the
      * top, with its real rank). [errors, warnings]. Pure.
      */
@@ -110,7 +114,8 @@ final class DwReaction
             $country = trim((string) ($r['country'] ?? ''));
             if (!is_int($rank) && !(is_string($rank) && ctype_digit($rank))) {
                 $errors[] = "Row {$n}: \"rank\" must be a whole number.";
-            } elseif ((int) $rank === $n && $top === $i) {
+            } elseif ($top === $i && ((int) $rank === $n || ($i > 0 && self::tiesWith($r, $rows[$i - 1])))) {
+                // 1, 2, 3…, or the rank of the row above when both values are equal (a shared rank: 6, 6, 6, 9…).
                 $top = $n;
             } elseif ($i === count($rows) - 1 && $i === $top && (int) $rank > $top + 1) {
                 // The extra row: its real rank, further down.
@@ -164,6 +169,14 @@ final class DwReaction
         return [$errors, $warn];
     }
 
+    /** A row tied with the one above: the same rank and the same value. Pure. */
+    private static function tiesWith(array $row, mixed $above): bool
+    {
+        return is_array($above) && is_numeric($row['rank'] ?? null) && is_numeric($above['rank'] ?? null)
+            && (int) $row['rank'] === (int) $above['rank'] && is_numeric($row['value'] ?? null) && is_numeric($above['value'] ?? null)
+            && (float) $row['value'] === (float) $above['value'];
+    }
+
     /** The content as stored: rows typed, hashtags with #, warnings a list. Pure. */
     public static function normalize(array $c): array
     {
@@ -173,7 +186,7 @@ final class DwReaction
             'value' => round((float) $r['value'], 2), 'unit' => trim((string) $r['unit']),
         ], array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'clip_query', 'outro_question'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'clip_query', 'outro_question'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }
@@ -187,8 +200,9 @@ final class DwReaction
     public static function sourceLine(array $c): string
     {
         $label = trim((string) ($c['value_label'] ?? ''));
-        $year = (int) ($c['data_year'] ?? 0);
-        $first = trim($label . ($year > 0 ? ($label !== '' ? ', ' : '') . $year : ''));
+        // data_years: the range when the source's latest year differs by country ("2015–2018"), else data_year.
+        $year = trim((string) ($c['data_years'] ?? '')) ?: ((int) ($c['data_year'] ?? 0) > 0 ? (string) (int) $c['data_year'] : '');
+        $first = trim($label . ($year !== '' ? ($label !== '' ? ', ' : '') . $year : ''));
         return ($first !== '' ? $first . ' · ' : '') . 'Source: ' . trim((string) ($c['source'] ?? ''));
     }
 

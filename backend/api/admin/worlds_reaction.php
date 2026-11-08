@@ -108,6 +108,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
         <?php worlds_field('detail', 'Detail (optional)', $d, false, DwStudio::screenWords($d) . ' / ' . DwReaction::DETAIL_WORDS . ' words'); ?>
         <?php worlds_field('value_label', 'What the value measures', (string) ($c['value_label'] ?? '')); ?>
         <?php worlds_field('data_year', 'Year of the data', (string) ($c['data_year'] ?? '')); ?>
+        <?php worlds_field('data_years', 'Years shown (optional, when they differ by country, e.g. 2010s)', (string) ($c['data_years'] ?? '')); ?>
         <?php worlds_field('source', 'Source', (string) ($c['source'] ?? '')); ?>
         <?php worlds_field('source_url', 'Source URL', (string) ($c['source_url'] ?? '')); ?>
         <?php worlds_field('clip_query', 'Clip search', (string) ($c['clip_query'] ?? '')); ?>
@@ -180,7 +181,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const ok = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
     const max = Math.max(1, ...ok.map(r => +r.value));
     const BAR_X = 520, BAR_MAX = 1008 - BAR_X - 130, TOP = 812, H = 44;
-    const year = field('data_year'), label = field('value_label');
+    const year = field('data_years') || field('data_year'), label = field('value_label');
     const first = [label, year].filter(Boolean).join(', ');
     let html = clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline></video><div class="credit">${esc(clip.credit)}</div>`
                     : '<div class="noclip">🚩 No clip yet</div>';
@@ -192,7 +193,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
       html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${TOP + i * H}px">
         <div class="rank">${esc(r.rank)}</div><div class="flag">${esc(r.flag)}</div><div class="name">${esc(r.country)}</div>
         <div class="bar" style="left:${BAR_X - 56}px;width:${Math.max(8, w)}px"></div>
-        <div class="val" style="left:${BAR_X - 56 + w + 14}px">${esc((+r.value).toFixed(1))} ${esc(r.unit)}</div></div>`;
+        <div class="val" style="left:${BAR_X - 56 + w + 14}px">${esc((+r.value).toFixed(1))}${r.unit === '%' ? '' : ' '}${esc(r.unit)}</div></div>`;
     });
     html += `<div class="source" style="top:${TOP + ok.length * H + 14}px">${esc((first ? first + ' · ' : '') + 'Source: ' + field('source'))}</div>`;
     html += '<div class="mark"><div><i>DIFFERENT WORLDS</i> by Hilads</div><div>Compare your city on <i style="letter-spacing:0">hilads.live</i></div></div>';

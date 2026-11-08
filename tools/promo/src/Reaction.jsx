@@ -35,19 +35,20 @@ export const REACTION_SECONDS = 8;
 export const clipFills = (seconds) => seconds >= REACTION_SECONDS * 0.9;
 
 let ctx = null;
-function measure(text, px) {
+function measure(text, px, weight = 800) {
   ctx ??= document.createElement('canvas').getContext('2d');
-  ctx.font = `800 ${px}px "${FONT}"`;
+  ctx.font = `${weight} ${px}px "${FONT}"`;
   return ctx.measureText(text).width;
 }
 
-/** The headline's size: the biggest that fits on one line. */
-function headlineSize(text) {
-  for (let px = HEADLINE_MAX; px > HEADLINE_MIN; px -= 2) {
-    if (measure(text, px) <= RIGHT - LEFT) return px;
+/** The biggest size from max down to min where the text fits on one line. */
+function fitSize(text, max, min, weight = 800) {
+  for (let px = max; px > min; px -= 1) {
+    if (measure(text, px, weight) <= RIGHT - LEFT) return px;
   }
-  return HEADLINE_MIN;
+  return min;
 }
+const headlineSize = (text) => fitSize(text, HEADLINE_MAX, HEADLINE_MIN);
 
 /** props: {headline, detail, rows: [{rank, country, flag (file in public/flags or null), value, unit}], source, highlight: [country], clip: {src, seconds, credit} | null}. */
 export function ReactionRanking({ headline, detail, rows, source, highlight = [], clip }) {
@@ -101,14 +102,14 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
                           background: isHot ? ACCENT : GOLD, opacity: isHot ? 1 : 0.85 }} />
             <div style={{ position: 'absolute', left: BAR_X - LEFT + 16 + bar + 14, top: 0, height: ROW_H - 4, display: 'flex', alignItems: 'center',
                           fontSize: 27, fontWeight: 800, color: isHot ? ACCENT : '#fff', whiteSpace: 'nowrap' }}>
-              {Number(r.value).toFixed(1)} {r.unit}
+              {Number(r.value).toFixed(1)}{r.unit === '%' ? '' : ' '}{r.unit}
             </div>
           </div>
         );
       })}
 
-      <div style={{ position: 'absolute', left: LEFT, top: ROWS_TOP + rows.length * ROW_H + 14, width: RIGHT - LEFT, fontSize: 20, fontWeight: 600,
-                    color: 'rgba(255,255,255,0.55)' }}>{source}</div>
+      <div style={{ position: 'absolute', left: LEFT, top: ROWS_TOP + rows.length * ROW_H + 14, width: RIGHT - LEFT, fontSize: fitSize(source, 20, 15, 600),
+                    fontWeight: 600, whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.55)' }}>{source}</div>
 
       <div style={{ position: 'absolute', left: LEFT, top: 1792, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Img src={staticFile('logo.svg')} style={{ width: 48, height: 48 }} />

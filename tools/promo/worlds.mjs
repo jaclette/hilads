@@ -122,7 +122,7 @@ function planFromContent(c) {
 
 /** A reaction package file's screen, as DwStudio::reactionVideoData gives it (its clip looked up on Pixabay). */
 async function screenFromContent(c) {
-  const label = [c.value_label, c.data_year].filter(Boolean).join(', ');
+  const label = [c.value_label, c.data_years || c.data_year].filter(Boolean).join(', ');
   let clip = null;
   const id = c.clip?.pixabay_id;
   if (id) {

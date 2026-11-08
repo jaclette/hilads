@@ -1042,7 +1042,7 @@ final class DwStudio
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
-            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|clip_query|outro_question)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question)$/', $path) ? ['slide' => null] : null;
         }
         $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';

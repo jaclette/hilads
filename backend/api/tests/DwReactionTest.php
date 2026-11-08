@@ -66,6 +66,48 @@ final class DwReactionTest extends TestCase
         $this->assertStringContainsString('At most 20', implode(' ', DwReaction::checkRows($many)[0]));
     }
 
+    public function testEqualValuesShareARank(): void
+    {
+        $rows = [['rank' => 1, 'country' => 'A', 'flag' => '🇨🇿', 'value' => 54.6, 'unit' => '%'],
+                 ['rank' => 2, 'country' => 'B', 'flag' => '🇨🇿', 'value' => 54.5, 'unit' => '%'],
+                 ['rank' => 2, 'country' => 'C', 'flag' => '🇨🇿', 'value' => 54.5, 'unit' => '%'],
+                 ['rank' => 4, 'country' => 'D', 'flag' => '🇨🇿', 'value' => 54.3, 'unit' => '%'],
+                 ['rank' => 125, 'country' => 'Vietnam', 'flag' => '🇻🇳', 'value' => 8.2, 'unit' => '%']];
+        $this->assertSame([], DwReaction::checkRows($rows, ['Vietnam'])[0]);
+
+        $rows[2]['value'] = 54.4;   // a shared rank needs the same value
+        $this->assertNotEmpty(DwReaction::checkRows($rows, ['Vietnam'])[0]);
+
+        $rows[2]['value'] = 54.5;
+        $rows[3]['rank'] = 3;       // after a tie the next rank skips (competition ranking)
+        $this->assertNotEmpty(DwReaction::checkRows($rows, ['Vietnam'])[0]);
+    }
+
+    public function testDataYearsInTheSourceLine(): void
+    {
+        $c = ['value_label' => '% of women aged 30–34 never married', 'data_year' => 2018, 'data_years' => '2010s', 'source' => 'UN World Marriage Data 2019'];
+        $this->assertSame('% of women aged 30–34 never married, 2010s · Source: UN World Marriage Data 2019', DwReaction::sourceLine($c));
+        unset($c['data_years']);
+        $this->assertStringContainsString(', 2018 · ', DwReaction::sourceLine($c));
+        $bad = $this->content();
+        $bad['data_years'] = str_repeat('x', 30);
+        $this->assertNotEmpty(DwReaction::validate($bad)[0]);
+    }
+
+    public function testTheNovember9Package(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-09-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame([], $warn);
+        $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
+        $this->assertStringEndsWith("\nSingle or taken? 👀", $c['caption']);
+    }
+
     public function testOneExtraHighlightedRowWithItsRealRank(): void
     {
         $rows = $this->rows();

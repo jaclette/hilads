@@ -96,7 +96,7 @@ Data rules (most important):
 - The whole ranking comes from ONE single source: the same year, the same method, the same definition for every row. Never mix sources, never compute a value from a second source (e.g. a total divided by a population from elsewhere).
 - If no single source ranks enough countries, do not write a package: answer {"error": "no single source", "proposed_topic": "..."} with another topic that has one.
 - Use web search and the source's own table. Copy the values and ranks exactly; give the source's name, its URL, the year of the data ("data_year") and what the value measures ("value_label", e.g. "Liters per person per year").
-- Up to 20 rows, ranked 1, 2, 3… as the source ranks them. Highlighted on screen: #1 and {{COUNTRIES_ALWAYS}}. If a highlighted country is outside the top rows but the same source ranks it, add it as one extra last row with its real rank; if the source doesn't rank it, leave it out and say so in "warnings" (a caption line may use another figure of the same source).
+- Up to 20 rows, ranked 1, 2, 3… as the source ranks them (rows with the same value shown share a rank: 6, 6, 8…). When the latest year differs by country, give "data_years" (e.g. "2015–2018" or "2010s"), shown instead of data_year. Highlighted on screen: #1 and {{COUNTRIES_ALWAYS}}. If a highlighted country is outside the top rows but the same source ranks it, add it as one extra last row with its real rank; if the source doesn't rank it, leave it out and say so in "warnings" (a caption line may use another figure of the same source).
 - Country names: the common English name, short enough for a row (e.g. "Ireland", "Slovakia", "Bosnia & Herz."); the value as a number, the unit short ("L", "kg", "h", "%").
 
 Screen text:
@@ -118,6 +118,7 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "source": string (the source's name and edition),
   "source_url": string,
   "data_year": number,
+  "data_years": string (optional),
   "value_label": string,
   "clip_query": string,
   "clip": { "pixabay_id": number } (optional),
