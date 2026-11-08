@@ -1478,7 +1478,7 @@ final class DwStudio
                     'rows' => $c['rows'] ?? [], 'source' => DwReaction::sourceLine($c),
                     'highlight' => self::settings()['countries_always_included'],
                     'clip' => $clip !== null ? ['url' => $clip['url'], 'credit' => DwReaction::clipCredit($clip)] : null,
-                    'seconds' => DwReaction::VIDEO_SECONDS,
+                    'seconds' => DwReaction::VIDEO_SECONDS, 'valueFormat' => $c['value_format'] ?? null,
                 ],
                 'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null];
     }

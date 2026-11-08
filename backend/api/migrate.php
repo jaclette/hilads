@@ -4206,6 +4206,38 @@ try {
     echo "  ERR dw laughing topic: " . $e->getMessage() . "\n";
 }
 
+// Once: "Places with more tourists than locals" (reaction) takes Nov 14; the topic there (not published) moves
+// to the next free date.
+try {
+    $tourists = 'Places with more tourists than locals';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$tourists]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov14 = $pdo->query("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-14'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov14 !== false && $nov14['status'] !== 'published') {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-15'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov14['id']]);
+            echo "  OK  dw: \"{$nov14['title']}\" moved from 2026-11-14 to {$free}\n";
+            $nov14 = false;
+        }
+        if ($nov14 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-14', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$tourists, 'UN Tourism overnight visitors / UN WPP 2024 population, 2019 (last year before the pandemic), countries & territories, top 20. Approved two-source exception.']);
+            echo "  OK  dw: \"{$tourists}\" on 2026-11-14 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-14 is taken by a published topic, \"{$nov14['title']}\": \"{$tourists}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw tourists topic: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

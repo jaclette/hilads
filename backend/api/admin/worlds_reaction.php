@@ -148,7 +148,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .bar { border-radius:8px; background:#D9AE52; }
 .rx-screen .hot .bar { background:#FF7A3D; }
 .rx-screen .val { font-weight:800; }
-.rx-screen .source { position:absolute; left:72px; width:936px; white-space:nowrap; font-size:20px; font-weight:600; color:rgba(255,255,255,.55); }
+.rx-screen .source { position:absolute; left:72px; width:936px; font-size:18px; line-height:1.25; font-weight:600; color:rgba(255,255,255,.55); }
 .rx-screen .mark { position:absolute; left:72px; top:1792px; font-size:22px; line-height:28px; }
 .rx-screen .mark i { font-style:normal; font-weight:800; letter-spacing:2px; color:#FF7A3D; }
 .rx-rows { width:100%; border-collapse:collapse; }
@@ -184,20 +184,26 @@ $highlight = DwStudio::settings()['countries_always_included'];
   function render() {
     const screen = document.getElementById('rx-screen');
     const ok = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
-    const max = Math.max(1, ...ok.map(r => +r.value));
-    const TOP = 812, END = 1736;
+    // One runaway value (over 2.5× the next): its bar is broken, the others scaled to the second (as Reaction.jsx).
+    const vals = ok.map(r => +r.value).sort((a, b) => b - a);
+    const broken = vals.length > 2 && vals[0] > 2.5 * vals[1];
+    const max = Math.max(1e-9, broken ? vals[1] * 1.15 : (vals[0] || 1));
+    const year = field('data_years') || field('data_year'), what = field('value_label');
+    const first = [what, year].filter(Boolean).join(', ');
+    const srcText = (first ? first + ' · ' : '') + (field('source').includes(', ') ? 'Sources: ' : 'Source: ') + field('source');
+    const srcTwo = textW(srcText, 16, 600) > 936;   // as Reaction.jsx: two lines, the rows giving them room
+    const TOP = 812, END = 1736 - (srcTwo ? 24 : 0);
     const GAP = 0.7, gaps = ok.filter(r => r.gap_before).length;
     const H = Math.max(44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length + GAP * gaps)))), k = H / 44;
     const tops = []; ok.reduce((y, r) => { const t = y + (r.gap_before ? H * GAP : 0); tops.push(t); return t + H; }, TOP);
     const rowsEnd = ok.length ? tops[tops.length - 1] + H : TOP;
-    const fmt = v => (+v).toFixed(Number.isInteger(+v) ? 0 : 1);
+    const ratio = <?= json_encode(($c['value_format'] ?? null) === 'ratio') ?>;
+    const fmt = v => (+v).toFixed(ratio ? (+v < 10 ? 1 : 0) : (Number.isInteger(+v) ? 0 : 1));
     const val = (r, i) => r.unit === '$' ? '$' + (+r.value).toFixed(2)
       : (fmt(r.value) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
     const rankW = 50 * k, flagX = 14 + rankW + 16, nameX = flagX + 30 * k + 14;
     const barX = Math.max(464, nameX + Math.max(0, ...ok.map(r => textW(r.country, 29 * k, 700))) + 24);
     const barMax = Math.min(358, 968 - 18 - barX - 14 - Math.max(0, ...ok.map((r, i) => textW(val(r, i), 27 * k, 800))));
-    const year = field('data_years') || field('data_year'), what = field('value_label');
-    const first = [what, year].filter(Boolean).join(', ');
     let html = clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline></video>${clip.credit ? `<div class="credit">${esc(clip.credit)}</div>` : ''}`
                     : '<div class="noclip">🚩 No clip yet</div>';
     html += '<div class="fade"></div>';
@@ -206,15 +212,17 @@ $highlight = DwStudio::settings()['countries_always_included'];
     ok.forEach((r, i) => {
       const hot = +r.rank === 1 || r.highlight === true || highlight.includes(String(r.country).trim().toLowerCase());
       if (r.gap_before) html += `<div class="gap" style="top:${tops[i] - H * GAP}px;height:${H * GAP}px;font-size:${26 * k}px;letter-spacing:${14 * k}px">• • •</div>`;
-      const w = Math.max(8, barMax * (+r.value) / max);
+      const isBroken = broken && +r.value > max;
+      const w = isBroken ? barMax : Math.max(8, barMax * (+r.value) / max);
       html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${tops[i]}px;height:${H}px">
         <div class="rank" style="width:${rankW}px;height:${H - 4}px;font-size:${28 * k}px">${esc(r.rank)}</div>
         <div class="flag" style="left:${flagX}px;height:${H - 4}px;font-size:${28 * k}px">${esc(r.flag)}</div>
         <div class="name" style="left:${nameX}px;height:${H - 4}px;font-size:${29 * k}px">${esc(r.country)}</div>
         <div class="bar" style="left:${barX}px;top:${(H - 4 - 16 * k) / 2}px;height:${16 * k}px;width:${w}px"></div>
+        ${isBroken ? `<div style="left:${barX + w * 0.62}px;color:#fff;font-weight:800;font-style:italic;font-size:${24 * k}px">//</div>` : ''}
         <div class="val" style="left:${barX + w + 14}px;height:${H - 4}px;font-size:${27 * k}px">${esc(val(r, i))}</div></div>`;
     });
-    html += `<div class="source" style="top:${rowsEnd + 14}px">${esc((first ? first + ' · ' : '') + 'Source: ' + field('source'))}</div>`;
+    html += `<div class="source" style="top:${rowsEnd + (srcTwo ? 8 : 14)}px;font-size:${srcTwo ? 16 : 18}px">${esc(srcText)}</div>`;
     html += '<div class="mark"><div><i>DIFFERENT WORLDS</i> by Hilads</div><div>Compare your city on <i style="letter-spacing:0">hilads.live</i></div></div>';
     screen.innerHTML = html;
   }

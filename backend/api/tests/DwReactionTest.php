@@ -90,7 +90,7 @@ final class DwReactionTest extends TestCase
         unset($c['data_years']);
         $this->assertStringContainsString(', 2018 · ', DwReaction::sourceLine($c));
         $bad = $this->content();
-        $bad['data_years'] = str_repeat('x', 30);
+        $bad['data_years'] = str_repeat('x', 70);
         $this->assertNotEmpty(DwReaction::validate($bad)[0]);
     }
 
@@ -183,6 +183,24 @@ final class DwReactionTest extends TestCase
         $this->assertSame([], $warn);
         $this->assertCount(20, $c['rows']);
         $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
+    }
+
+    public function testTheNovember14Package(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-14-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame(['Vietnam is not in the ranking: add its row with its real rank only if the same source ranks it.'], $warn);
+        $this->assertSame('International tourists per resident, countries & territories, 2019, last year before the pandemic · Sources: UN Tourism, UN World Population Prospects',
+            DwReaction::sourceLine($c));
+        $this->assertSame('ratio', DwReaction::normalize($c)['value_format']);
+        $bad = $c;
+        $bad['value_format'] = 'money';
+        $this->assertNotEmpty(DwReaction::validate($bad)[0]);
     }
 
     public function testOneExtraHighlightedRowWithItsRealRank(): void

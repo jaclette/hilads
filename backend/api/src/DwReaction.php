@@ -11,7 +11,7 @@ declare(strict_types=1);
  * A package's content: {format: "reaction", topic, headline, detail?, rows: [{rank,
  * country, flag, value, unit ("$": a price, shown $9.04), gap_before? (a "…" separator above, the ranking
  * skips to this row), highlight? (this row in the accent color too, e.g. a reference country)}], source, source_url?, data_year, data_years? (a range when the latest
- * year differs by country, e.g. "2010s"), value_label?,
+ * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
@@ -47,8 +47,11 @@ final class DwReaction
         if (!is_numeric($year) || (int) $year < 1950 || (int) $year > (int) gmdate('Y')) {
             $errors[] = '"data_year" must be the year of the data (e.g. 2024).';
         }
-        if (isset($c['data_years']) && (!is_string($c['data_years']) || mb_strlen(trim($c['data_years'])) > 20)) {
-            $errors[] = '"data_years" is the years of the data as text, e.g. "2015–2018" or "2010s" (20 characters at most).';
+        if (isset($c['data_years']) && (!is_string($c['data_years']) || mb_strlen(trim($c['data_years'])) > 60)) {
+            $errors[] = '"data_years" is the years of the data as text, e.g. "2015–2018", "2010s" or "2019, last year before the pandemic" (60 characters at most).';
+        }
+        if (isset($c['value_format']) && $c['value_format'] !== 'ratio') {
+            $errors[] = '"value_format" is "ratio" (one decimal below 10, whole numbers from 10) or absent.';
         }
         if (isset($c['source_url']) && trim((string) $c['source_url']) !== '' && !preg_match('#^https?://\S+$#', trim((string) $c['source_url']))) {
             $errors[] = 'source_url is not a URL.';
@@ -198,7 +201,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'clip_query', 'outro_question'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }
@@ -215,7 +218,9 @@ final class DwReaction
         // data_years: the range when the source's latest year differs by country ("2015–2018"), else data_year.
         $year = trim((string) ($c['data_years'] ?? '')) ?: ((int) ($c['data_year'] ?? 0) > 0 ? (string) (int) $c['data_year'] : '');
         $first = trim($label . ($year !== '' ? ($label !== '' ? ', ' : '') . $year : ''));
-        return ($first !== '' ? $first . ' · ' : '') . 'Source: ' . trim((string) ($c['source'] ?? ''));
+        $source = trim((string) ($c['source'] ?? ''));
+        // "Sources:" for more than one (an approved exception, e.g. "UN Tourism, UN World Population Prospects").
+        return ($first !== '' ? $first . ' · ' : '') . (str_contains($source, ', ') ? 'Sources: ' : 'Source: ') . $source;
     }
 
     /**

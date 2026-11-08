@@ -137,8 +137,8 @@ async function screenFromContent(c) {
     const pick = files.find((v) => v.width >= 1080 && v.height >= 640) ?? files[files.length - 1];
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
-  return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'],
-           source: `${label ? `${label} · ` : ''}Source: ${c.source ?? ''}`, clip, seconds: 8 };
+  return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
+           source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
 /** Every date from $from to $to, inclusive. */
@@ -327,7 +327,7 @@ async function renderReaction(data, { work, pub, out }) {
   }
   await pruneClips();
   const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), flag: r.flag ? flagFile(r.flag) : null }));
-  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip };
+  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null };
 
   console.log(`  ${rows.length} rows, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });

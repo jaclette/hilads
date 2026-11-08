@@ -58,15 +58,20 @@ const headlineSize = (text) => fitSize(text, HEADLINE_MAX, HEADLINE_MIN);
  * source, highlight: [country], clip: {src, seconds, credit} | null}. gap_before: a "…" separator above the row (the
  * ranking skips to it); highlight: that row in the accent color too (e.g. a reference country).
  */
-export function ReactionRanking({ headline, detail, rows, source, highlight = [], clip }) {
+export function ReactionRanking({ headline, detail, rows, source, highlight = [], clip, valueFormat = null }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const pop = spring({ frame, fps, config: { damping: 12, stiffness: 320, mass: 0.5 } });
-  const max = Math.max(1, ...rows.map((r) => r.value));
+  // One runaway value (more than 2.5× the next): its bar is broken (drawn full with a "//" mark), the others
+  // are scaled to the second, so they stay readable.
+  const sortedVals = rows.map((r) => Number(r.value)).sort((a, b) => b - a);
+  const broken = sortedVals.length > 2 && sortedVals[0] > 2.5 * sortedVals[1];
+  const max = Math.max(1e-9, broken ? sortedVals[1] * 1.15 : sortedVals[0] ?? 1);
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
   const px = headlineSize(headline);
   // Each value as the source gives it: 81, 79.2 (a whole number shows no decimal); a price in dollars: $9.04.
-  const fmt = (v) => Number(v).toFixed(Number.isInteger(Number(v)) ? 0 : 1);
+  // valueFormat "ratio": one decimal below 10, whole numbers from 10 (4.0, 8.9, 45).
+  const fmt = (v) => Number(v).toFixed(valueFormat === 'ratio' ? (Number(v) < 10 ? 1 : 0) : (Number.isInteger(Number(v)) ? 0 : 1));
   // A short unit (%, L) on every row; a long one ("servings") on the first row only, the source line says it.
   const label = (r, i) => r.unit === '$' ? `$${Number(r.value).toFixed(2)}`
     : `${fmt(r.value)}${r.unit === '%' ? '' : ' '}${r.unit.length <= 3 || i === 0 ? r.unit : ''}`.trim();
@@ -76,8 +81,12 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
     const at = rows.length > 1 ? ((STAGGER - ROW_IN) * i) / (rows.length - 1) : 0;
     return interpolate(frame, [at, at + ROW_IN], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   };
+  // The source line: one line (20 down to 16 px), else two lines at 16 px, the rows giving it room.
+  const srcPx = fitSize(source, 20, 16, 600);
+  const srcTwoLines = measure(source, 16, 600) > RIGHT - LEFT;
+  const rowsLimit = ROWS_END - (srcTwoLines ? 24 : 0);
   const gaps = rows.filter((r) => r.gap_before).length;
-  const rowH = Math.max(ROW_H, Math.min(Math.round(ROW_H * ROW_SCALE_MAX), Math.floor((ROWS_END - ROWS_TOP) / Math.max(1, rows.length + GAP * gaps))));
+  const rowH = Math.max(ROW_H, Math.min(Math.round(ROW_H * ROW_SCALE_MAX), Math.floor((rowsLimit - ROWS_TOP) / Math.max(1, rows.length + GAP * gaps))));
   // Each row's top: a "…" separator (GAP of a row) above a row that follows a skip in the ranking.
   const tops = [];
   rows.reduce((y, r) => { const top = y + (r.gap_before ? rowH * GAP : 0); tops.push(top); return top + rowH; }, ROWS_TOP);
@@ -115,7 +124,8 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
       {rows.map((r, i) => {
         const p = rowIn(i);
         const isHot = r.rank === 1 || r.highlight === true || hot.has(String(r.country).trim().toLowerCase());
-        const bar = Math.max(8, (barMax * r.value) / max);
+        const isBroken = broken && Number(r.value) > max;
+        const bar = isBroken ? barMax : Math.max(8, (barMax * r.value) / max);
         return (
           <div key={`${r.rank}-${r.country}`} style={{ position: 'absolute', left: LEFT - 16, top: tops[i], width: RIGHT - LEFT + 32, height: rowH,
                                      borderRadius: 10, boxSizing: 'border-box', opacity: p, transform: `translateY(${(1 - p) * 10}px)`,
@@ -128,6 +138,11 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
                           fontSize: 29 * k, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap' }}>{r.country}</div>
             <div style={{ position: 'absolute', left: barX, top: (rowH - 4 - 16 * k) / 2, height: 16 * k, borderRadius: 8 * k, width: bar,
                           background: isHot ? ACCENT : GOLD, opacity: isHot ? 1 : 0.85 }} />
+            {isBroken && (
+              <div style={{ position: 'absolute', left: barX + bar * 0.62, top: (rowH - 4 - 30 * k) / 2, height: 30 * k, width: 16 * k,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', background: isHot ? 'rgba(61,30,16,1)' : BG,
+                            color: '#fff', fontSize: 24 * k, fontWeight: 800, fontStyle: 'italic' }}>//</div>
+            )}
             <div style={{ position: 'absolute', left: barX + bar + 14, top: 0, height: rowH - 4, display: 'flex', alignItems: 'center',
                           fontSize: 27 * k, fontWeight: 800, color: isHot ? ACCENT : '#fff', whiteSpace: 'nowrap' }}>
               {label(r, i)}
@@ -144,8 +159,8 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
                                        color: 'rgba(255,255,255,0.5)', letterSpacing: 14 * k }}>• • •</div>
       ) : null)}
 
-      <div style={{ position: 'absolute', left: LEFT, top: rowsEnd + 14, width: RIGHT - LEFT, fontSize: fitSize(source, 20, 15, 600),
-                    fontWeight: 600, whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.55)' }}>{source}</div>
+      <div style={{ position: 'absolute', left: LEFT, top: rowsEnd + (srcTwoLines ? 8 : 14), width: RIGHT - LEFT, fontSize: srcPx, lineHeight: 1.25,
+                    fontWeight: 600, whiteSpace: srcTwoLines ? 'normal' : 'nowrap', color: 'rgba(255,255,255,0.55)' }}>{source}</div>
 
       <div style={{ position: 'absolute', left: LEFT, top: 1792, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Img src={staticFile('logo.svg')} style={{ width: 48, height: 48 }} />
