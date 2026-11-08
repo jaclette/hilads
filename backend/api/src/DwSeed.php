@@ -97,6 +97,7 @@ Data rules (most important):
 - If no single source ranks enough countries, do not write a package: answer {"error": "no single source", "proposed_topic": "..."} with another topic that has one.
 - Use web search and the source's own table. Copy the values and ranks exactly; give the source's name, its URL, the year of the data ("data_year") and what the value measures ("value_label", e.g. "Liters per person per year").
 - Up to 20 rows, ranked 1, 2, 3… as the source ranks them (rows with the same value shown share a rank: 6, 6, 8…). When the latest year differs by country, give "data_years" (e.g. "2015–2018" or "2010s"), shown instead of data_year. Highlighted on screen: #1 and {{COUNTRIES_ALWAYS}}. If a highlighted country is outside the top rows but the same source ranks it, add it as one extra last row with its real rank; if the source doesn't rank it, leave it out and say so in "warnings" (a caption line may use another figure of the same source).
+- A ranking that shows both ends (e.g. the dearest and the cheapest): the top rows, then the bottom rows with their real ranks, the first of them with "gap_before": true (a "…" separator). A reference country (e.g. the United States for prices) can be added in its place with "highlight": true; a price in US dollars has the unit "$" (shown $9.04).
 - Country names: the common English name, short enough for a row (e.g. "Ireland", "Slovakia", "Bosnia & Herz."); the value as a number, the unit short ("L", "kg", "h", "%").
 
 Screen text:
@@ -114,7 +115,7 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "topic": string,
   "headline": string,
   "detail": string,
-  "rows": [ { "rank": number, "country": string, "flag": string (the flag emoji), "value": number, "unit": string } ],
+  "rows": [ { "rank": number, "country": string, "flag": string (the flag emoji), "value": number, "unit": string, "gap_before": boolean (optional), "highlight": boolean (optional) } ],
   "source": string (the source's name and edition),
   "source_url": string,
   "data_year": number,

@@ -1454,7 +1454,8 @@ final class DwStudio
         }
         $rows = array_values(array_filter($rows, static fn($r) => is_array($r) && trim((string) ($r['country'] ?? '')) !== ''));
         $rows = array_map(static fn($r) => ['rank' => (int) ($r['rank'] ?? 0), 'country' => (string) $r['country'], 'flag' => (string) ($r['flag'] ?? ''),
-            'value' => is_numeric($r['value'] ?? null) ? (float) $r['value'] : null, 'unit' => (string) ($r['unit'] ?? '')], $rows);
+            'value' => is_numeric($r['value'] ?? null) ? (float) $r['value'] : null, 'unit' => (string) ($r['unit'] ?? ''),
+            'gap_before' => !empty($r['gap_before']), 'highlight' => !empty($r['highlight'])], $rows);
         [$errors, $warn] = DwReaction::checkRows($rows, self::settings()['countries_always_included']);
         if ($errors !== []) {
             throw new InvalidArgumentException(implode(' ', $errors));

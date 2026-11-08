@@ -9,7 +9,8 @@ declare(strict_types=1);
  * (tools/promo/src/Reaction.jsx renders the video and a PNG).
  *
  * A package's content: {format: "reaction", topic, headline, detail?, rows: [{rank,
- * country, flag, value, unit}], source, source_url?, data_year, data_years? (a range when the latest
+ * country, flag, value, unit ("$": a price, shown $9.04), gap_before? (a "…" separator above, the ranking
+ * skips to this row), highlight? (this row in the accent color too, e.g. a reference country)}], source, source_url?, data_year, data_years? (a range when the latest
  * year differs by country, e.g. "2010s"), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
@@ -103,7 +104,10 @@ final class DwReaction
         }
         $units = [];
         $countries = [];
-        $top = 0;
+        $group = 0;         // the current rank
+        $same = 0;          // rows with it so far
+        $next = 1;          // the rank a new row takes: $group + $same (competition ranking: 6, 6, 8…)
+        $lastJump = false;  // the last row is an extra one further down (no separator)
         foreach ($rows as $i => $r) {
             $n = $i + 1;
             if (!is_array($r)) {
@@ -114,16 +118,23 @@ final class DwReaction
             $country = trim((string) ($r['country'] ?? ''));
             if (!is_int($rank) && !(is_string($rank) && ctype_digit($rank))) {
                 $errors[] = "Row {$n}: \"rank\" must be a whole number.";
-            } elseif ($top === $i && ((int) $rank === $n || ($i > 0 && self::tiesWith($r, $rows[$i - 1])))) {
-                // 1, 2, 3…, or the rank of the row above when both values are equal (a shared rank: 6, 6, 6, 9…).
-                $top = $n;
-            } elseif ($i === count($rows) - 1 && $i === $top && (int) $rank > $top + 1) {
+            } elseif ($i > 0 && self::tiesWith($r, $rows[$i - 1])) {
+                $same++;    // the rank of the row above, both values equal (a shared rank: 6, 6, 6, 9…)
+            } elseif ((int) $rank === $next || ((int) $rank > $next && $i > 0 && !empty($r['gap_before']))) {
+                // 1, 2, 3…, or further down after a "…" separator (gap_before: the cheapest ones under the dearest).
+                [$group, $same] = [(int) $rank, 1];
+            } elseif ($i === count($rows) - 1 && (int) $rank > $next) {
                 // The extra row: its real rank, further down.
-                if (!in_array(mb_strtolower($country), array_map('mb_strtolower', $highlight), true)) {
-                    $warn[] = "Row {$n} ({$country}, #{$rank}) is outside the top {$top}: only a highlighted country (" . implode(', ', $highlight) . ') is added that way.';
+                $lastJump = true;
+                if (empty($r['highlight']) && !in_array(mb_strtolower($country), array_map('mb_strtolower', $highlight), true)) {
+                    $warn[] = "Row {$n} ({$country}, #{$rank}) is outside the top " . ($next - 1) . ': only a highlighted country (' . implode(', ', $highlight) . ') is added that way.';
                 }
             } else {
-                $errors[] = "Row {$n}: rank {$rank}, expected " . ($top + 1) . ' (the ranks go 1, 2, 3…; one extra row with a larger rank may end the list).';
+                $errors[] = "Row {$n}: rank {$rank}, expected {$next} (the ranks go 1, 2, 3…; a row further down needs \"gap_before\" (a \"…\" separator above it), or is one extra last row).";
+            }
+            $next = $group + $same;
+            if ($i === 0 && !empty($r['gap_before'])) {
+                $errors[] = 'Row 1 cannot have a "…" separator above it.';
             }
             if ($country === '') {
                 $errors[] = "Row {$n}: \"country\" is missing.";
@@ -144,8 +155,8 @@ final class DwReaction
             $units[$unit] = true;
             $countries[] = mb_strtolower($country);
         }
-        if ($top > self::MAX_ROWS) {
-            $errors[] = 'At most ' . self::MAX_ROWS . " ranked rows ({$top}).";
+        if (count($rows) - ($lastJump ? 1 : 0) > self::MAX_ROWS) {
+            $errors[] = 'At most ' . self::MAX_ROWS . ' rows (' . count($rows) . '), plus one extra last row.';
         }
         if (count($units) > 1) {
             $errors[] = 'Every row needs the same unit (one source, one definition): ' . implode(', ', array_keys($units)) . '.';
@@ -154,7 +165,7 @@ final class DwReaction
             $errors[] = 'A country appears twice.';
         }
         if ($errors === []) {
-            $values = array_map(static fn($r) => (float) $r['value'], array_slice($rows, 0, $top));
+            $values = array_map(static fn($r) => (float) $r['value'], array_slice($rows, 0, count($rows) - ($lastJump ? 1 : 0)));
             $sorted = $values;
             rsort($sorted);
             if ($values !== $sorted) {
@@ -184,7 +195,8 @@ final class DwReaction
         $c['rows'] = array_map(static fn($r) => [
             'rank' => (int) $r['rank'], 'country' => trim((string) $r['country']), 'flag' => trim((string) $r['flag']),
             'value' => round((float) $r['value'], 2), 'unit' => trim((string) $r['unit']),
-        ], array_values($c['rows'] ?? []));
+        ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
+            array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
         foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'clip_query', 'outro_question'] as $f) {
             if (isset($c[$f])) {

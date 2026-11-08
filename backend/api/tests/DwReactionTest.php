@@ -135,6 +135,42 @@ final class DwReactionTest extends TestCase
         $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
     }
 
+    public function testASeparatorBeforeTheBottomRows(): void
+    {
+        $row = static fn($rank, $c, $v, $extra = []) => ['rank' => $rank, 'country' => $c, 'flag' => '🇨🇭', 'value' => $v, 'unit' => '$'] + $extra;
+        $rows = [$row(1, 'A', 9.04), $row(2, 'B', 8.94), $row(3, 'US', 8.0, ['highlight' => true]),
+                 $row(49, 'Vietnam', 2.89, ['gap_before' => true]), $row(50, 'C', 2.87), $row(51, 'D', 2.38)];
+        [$errors, $warn] = DwReaction::checkRows($rows, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame([], $warn);
+
+        unset($rows[3]['gap_before']);      // a skip needs its separator
+        $this->assertNotEmpty(DwReaction::checkRows($rows, ['Vietnam'])[0]);
+
+        $rows[3]['gap_before'] = true;
+        $rows[4]['rank'] = 52;              // after the separator the ranks go on 1 by 1
+        $this->assertNotEmpty(DwReaction::checkRows($rows, ['Vietnam'])[0]);
+
+        $first = [$row(1, 'A', 9.0, ['gap_before' => true]), $row(2, 'B', 8.0)];
+        $this->assertNotEmpty(DwReaction::checkRows($first)[0]);
+
+        $c = DwReaction::normalize(['rows' => [$row(49, 'Vietnam', 2.8946, ['gap_before' => true, 'highlight' => false])]]);
+        $this->assertSame(['rank' => 49, 'country' => 'Vietnam', 'flag' => '🇨🇭', 'value' => 2.89, 'unit' => '$', 'gap_before' => true], $c['rows'][0]);
+    }
+
+    public function testTheNovember12Package(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-12-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame(['The detail is 10 words (max 8).'], $warn);   // "1 Big Mac in Switzerland = almost 4 in Indonesia", as asked
+        $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
+    }
+
     public function testOneExtraHighlightedRowWithItsRealRank(): void
     {
         $rows = $this->rows();

@@ -88,7 +88,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 
         <div class="form-card" style="max-width:none;margin-bottom:16px">
             <h3 style="margin-bottom:8px">Ranking</h3>
-            <table class="rx-rows"><thead><tr><th>#</th><th>Flag</th><th>Country</th><th>Value</th><th>Unit</th><th></th></tr></thead>
+            <table class="rx-rows"><thead><tr><th>#</th><th>Flag</th><th>Country</th><th>Value</th><th>Unit</th><th title="A “• • •” separator above this row (the ranking skips to it)">…</th><th title="Highlighted (e.g. a reference country)">★</th><th></th></tr></thead>
                 <tbody id="rx-rows"></tbody></table>
             <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
                 <button type="button" class="btn btn-secondary btn-sm" id="rx-add">+ Row</button>
@@ -137,6 +137,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .head b { display:block; font-size:60px; line-height:74px; font-weight:800; white-space:nowrap; }
 .rx-screen .head span { display:block; font-size:34px; font-weight:600; color:rgba(255,255,255,.78); margin-top:6px; }
 .rx-screen .row { position:absolute; left:56px; width:968px; height:44px; border-radius:10px; border:2px solid transparent; box-sizing:border-box; }
+.rx-screen .gap { position:absolute; left:56px; width:968px; display:flex; align-items:center; justify-content:center; font-weight:800; color:rgba(255,255,255,.5); }
 .rx-screen .row.alt { background:rgba(255,255,255,.045); }
 .rx-screen .row.hot { background:rgba(255,122,61,.18); border-color:#FF7A3D; }
 .rx-screen .row > * { position:absolute; top:0; height:40px; display:flex; align-items:center; white-space:nowrap; }
@@ -154,7 +155,8 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-rows th { text-align:left; color:#888; font-size:12px; font-weight:600; padding:2px 4px; }
 .rx-rows td { padding:2px 4px; }
 .rx-rows input { width:100%; background:#111; border:1px solid #333; color:#eee; padding:5px 6px; border-radius:5px; font-size:13px; }
-.rx-rows td:nth-child(1) { width:56px; } .rx-rows td:nth-child(2) { width:56px; } .rx-rows td:nth-child(4) { width:90px; } .rx-rows td:nth-child(5) { width:60px; } .rx-rows td:nth-child(6) { width:28px; }
+.rx-rows td:nth-child(1) { width:56px; } .rx-rows td:nth-child(2) { width:56px; } .rx-rows td:nth-child(4) { width:90px; } .rx-rows td:nth-child(5) { width:60px; } .rx-rows td:nth-child(6), .rx-rows td:nth-child(7) { width:26px; } .rx-rows td:nth-child(8) { width:28px; }
+.rx-rows input[type=checkbox] { width:auto; }
 .rx-options { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; margin:10px 0; }
 .rx-options .opt { background:#151515; border:1px solid #262626; border-radius:8px; padding:6px; font-size:12px; color:#aaa; }
 .rx-options video { display:block; width:100%; height:auto; aspect-ratio:1080/640; object-fit:cover; border-radius:6px; background:#000; }
@@ -184,9 +186,13 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const ok = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
     const max = Math.max(1, ...ok.map(r => +r.value));
     const TOP = 812, END = 1736;
-    const H = Math.max(44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length)))), k = H / 44;
+    const GAP = 0.7, gaps = ok.filter(r => r.gap_before).length;
+    const H = Math.max(44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length + GAP * gaps)))), k = H / 44;
+    const tops = []; ok.reduce((y, r) => { const t = y + (r.gap_before ? H * GAP : 0); tops.push(t); return t + H; }, TOP);
+    const rowsEnd = ok.length ? tops[tops.length - 1] + H : TOP;
     const fmt = v => (+v).toFixed(Number.isInteger(+v) ? 0 : 1);
-    const val = (r, i) => (fmt(r.value) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
+    const val = (r, i) => r.unit === '$' ? '$' + (+r.value).toFixed(2)
+      : (fmt(r.value) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
     const rankW = 50 * k, flagX = 14 + rankW + 16, nameX = flagX + 30 * k + 14;
     const barX = Math.max(464, nameX + Math.max(0, ...ok.map(r => textW(r.country, 29 * k, 700))) + 24);
     const barMax = Math.min(358, 968 - 18 - barX - 14 - Math.max(0, ...ok.map((r, i) => textW(val(r, i), 27 * k, 800))));
@@ -198,16 +204,17 @@ $highlight = DwStudio::settings()['countries_always_included'];
     let hp = 60; while (hp > 40 && textW(field('headline'), hp, 800) > 936) hp -= 2;   // as Reaction.jsx: one line
     html += `<div class="head"><b style="font-size:${hp}px">${esc(field('headline'))}</b>${field('detail') ? `<span>${esc(field('detail'))}</span>` : ''}</div>`;
     ok.forEach((r, i) => {
-      const hot = +r.rank === 1 || highlight.includes(String(r.country).trim().toLowerCase());
+      const hot = +r.rank === 1 || r.highlight === true || highlight.includes(String(r.country).trim().toLowerCase());
+      if (r.gap_before) html += `<div class="gap" style="top:${tops[i] - H * GAP}px;height:${H * GAP}px;font-size:${26 * k}px;letter-spacing:${14 * k}px">• • •</div>`;
       const w = Math.max(8, barMax * (+r.value) / max);
-      html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${TOP + i * H}px;height:${H}px">
+      html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${tops[i]}px;height:${H}px">
         <div class="rank" style="width:${rankW}px;height:${H - 4}px;font-size:${28 * k}px">${esc(r.rank)}</div>
         <div class="flag" style="left:${flagX}px;height:${H - 4}px;font-size:${28 * k}px">${esc(r.flag)}</div>
         <div class="name" style="left:${nameX}px;height:${H - 4}px;font-size:${29 * k}px">${esc(r.country)}</div>
         <div class="bar" style="left:${barX}px;top:${(H - 4 - 16 * k) / 2}px;height:${16 * k}px;width:${w}px"></div>
         <div class="val" style="left:${barX + w + 14}px;height:${H - 4}px;font-size:${27 * k}px">${esc(val(r, i))}</div></div>`;
     });
-    html += `<div class="source" style="top:${TOP + ok.length * H + 14}px">${esc((first ? first + ' · ' : '') + 'Source: ' + field('source'))}</div>`;
+    html += `<div class="source" style="top:${rowsEnd + 14}px">${esc((first ? first + ' · ' : '') + 'Source: ' + field('source'))}</div>`;
     html += '<div class="mark"><div><i>DIFFERENT WORLDS</i> by Hilads</div><div>Compare your city on <i style="letter-spacing:0">hilads.live</i></div></div>';
     screen.innerHTML = html;
   }
@@ -218,12 +225,14 @@ $highlight = DwStudio::settings()['countries_always_included'];
     tbody.innerHTML = rows.map((r, i) => `<tr data-i="${i}">
       <td><input data-k="rank" value="${esc(r.rank)}" inputmode="numeric"></td><td><input data-k="flag" value="${esc(r.flag)}"></td>
       <td><input data-k="country" value="${esc(r.country)}"></td><td><input data-k="value" value="${esc(r.value)}" inputmode="decimal"></td>
-      <td><input data-k="unit" value="${esc(r.unit)}"></td><td><button type="button" class="btn btn-secondary btn-sm" data-del>✕</button></td></tr>`).join('');
+      <td><input data-k="unit" value="${esc(r.unit)}"></td>
+      <td><input type="checkbox" data-k="gap_before"${r.gap_before ? ' checked' : ''}></td><td><input type="checkbox" data-k="highlight"${r.highlight ? ' checked' : ''}></td>
+      <td><button type="button" class="btn btn-secondary btn-sm" data-del>✕</button></td></tr>`).join('');
   }
   tbody.addEventListener('input', e => {
     const tr = e.target.closest('tr'), k = e.target.dataset.k;
     if (!tr || !k) return;
-    rows[+tr.dataset.i][k] = e.target.value;
+    rows[+tr.dataset.i][k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     document.getElementById('rx-rows-state').textContent = 'not saved';
     render();
   });
