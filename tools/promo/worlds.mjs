@@ -29,8 +29,9 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
 const args = process.argv.slice(2);
 const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : null;
-// --clip <file> --clip-credit "<line>" [--clip-ai]: a reaction topic's own clip (e.g. an AI video), uploaded to
-// the day's latest package (R2, like the other clips) before the render, its credit shown on the screen.
+// --clip <file> [--clip-credit "<note>"] [--clip-ai]: a reaction topic's own clip (e.g. an AI video), uploaded to
+// the day's latest package (R2, like the other clips) before the render; no credit on the screen (the note and
+// the AI-generated mark stay in the admin).
 const clipArg = args.includes('--clip') ? args[args.indexOf('--clip') + 1] : null;
 const clipCredit = args.includes('--clip-credit') ? args[args.indexOf('--clip-credit') + 1] : null;
 const clipAi = args.includes('--clip-ai');
@@ -184,7 +185,7 @@ async function renderDay(date, fetched = null) {
       : { date: pkg.date ?? date, version: 0, slides: planFromContent(content) };
     console.log(`Different Worlds ${data.date} from ${fileArg} (not uploaded)`);
     // --clip with --file: the local clip as is (nothing uploaded).
-    if (clipArg && data.screen) data.screen.clip = { local: ownClipFile(), credit: clipCredit ?? '' };
+    if (clipArg && data.screen) data.screen.clip = { local: ownClipFile(), credit: '' };
   } else {
     if (!token) throw new Error('PROMO_TOKEN is missing: copy .env.example to .env and fill it in.');
     data = fetched ?? await apiCall(`/internal/worlds/${date}`);
@@ -286,15 +287,14 @@ function ownClipFile() {
 /** --clip: uploads our own clip to the day's reaction package, saves it with its credit, returns the refreshed data. */
 async function uploadOwnClip(data) {
   if (data.format !== 'reaction') throw new Error('--clip is for a topic in the reaction format.');
-  if (!clipCredit) throw new Error('--clip needs --clip-credit "<the credit line on screen>".');
   const file = ownClipFile();
   const { durationInSeconds, width, height } = await getVideoMetadata(file);
   console.log(`  own clip ${path.basename(file)}: ${width}×${height}, ${durationInSeconds.toFixed(2)} s, uploading…`);
   const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, kind: 'clip' });
   const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': 'video/mp4' }, body: await readFile(file) });
   if (!res.ok) throw new Error(`clip upload: ${res.status} ${await res.text()}`);
-  await apiCall(`/internal/worlds/${data.date}/clip`, { version: data.version, url, credit: clipCredit, ai: clipAi });
-  console.log(`  clip saved: "${clipCredit}"${clipAi ? ', AI-generated' : ''}`);
+  await apiCall(`/internal/worlds/${data.date}/clip`, { version: data.version, url, credit: clipCredit ?? '', ai: clipAi });
+  console.log(`  clip saved${clipCredit ? ` (note: "${clipCredit}")` : ''}${clipAi ? ', AI-generated' : ''}, no credit on screen`);
   return apiCall(`/internal/worlds/${data.date}`);
 }
 
@@ -311,6 +311,8 @@ async function uploadFile(data, file) {
 /** The reaction + ranking screen (src/Reaction.jsx): the 8 s video and its last frame as a PNG. */
 async function renderReaction(data, { work, pub, out }) {
   const s = data.screen;
+  // Our own clip shows no credit (DwReaction::clipCredit; also before that API change is deployed).
+  if (data.content?.clip?.source === 'upload' && s.clip) s.clip.credit = '';
   let clip = null;
   if (s.clip?.url || s.clip?.local) {
     const file = s.clip.local ?? await cachedClip(s.clip.url);

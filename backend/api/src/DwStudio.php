@@ -1403,8 +1403,8 @@ final class DwStudio
 
     /**
      * Sets a reaction package's clip to one of our own (made elsewhere, e.g. an AI video), already
-     * uploaded to R2 by tools/promo (videoUpload(…, 'clip')): {source: "upload", url, credit,
-     * ai_generated}. The old copy is deleted. The stored clip.
+     * uploaded to R2 by tools/promo (videoUpload(…, 'clip')): {source: "upload", url, credit (an admin
+     * note, no credit on the screen), ai_generated}. The old copy is deleted. The stored clip.
      */
     public static function saveUploadedClip(string $date, int $version, string $url, string $credit, bool $ai): array
     {
@@ -1417,9 +1417,9 @@ final class DwStudio
         if (!str_starts_with($url, $prefix) || !str_ends_with($url, '.mp4')) {
             throw new InvalidArgumentException('Not a clip upload of this package: ' . $url);
         }
-        $credit = trim($credit);
-        if ($credit === '' || mb_strlen($credit) > 80) {
-            throw new InvalidArgumentException('The clip needs its credit line (80 characters at most).');
+        $credit = trim($credit);   // a note for the admin (not shown on the screen)
+        if (mb_strlen($credit) > 80) {
+            throw new InvalidArgumentException('The clip note is 80 characters at most.');
         }
         $c = $pkg['content'];
         $old = (string) ($c['clip']['url'] ?? '');

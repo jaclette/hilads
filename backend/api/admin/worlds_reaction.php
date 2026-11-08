@@ -63,7 +63,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
                 <?php if ($clip !== null): ?>
                     <video src="<?= wh($clip['url']) ?>" muted loop autoplay playsinline style="width:100%;max-width:360px;aspect-ratio:1080/640;object-fit:cover;border-radius:8px;background:#000"></video>
                     <?php if (($clip['source'] ?? 'pixabay') === 'upload'): ?>
-                        <p class="worlds-muted">Our own clip (uploaded from the Mac: <code>npm run worlds -- <?= wh($topic['date']) ?> --clip …</code>) · on screen: “<?= wh(DwReaction::clipCredit($clip)) ?>”</p>
+                        <p class="worlds-muted">Our own clip (uploaded from the Mac: <code>npm run worlds -- <?= wh($topic['date']) ?> --clip …</code>)<?= trim((string) ($clip['credit'] ?? '')) !== '' ? ' · ' . wh($clip['credit']) : '' ?> · no credit on screen</p>
                     <?php else: ?>
                     <p class="worlds-muted">Pixabay #<?= (int) $clip['pixabay_id'] ?> · by <?= wh($clip['author']) ?> · <?= (int) ($clip['duration'] ?? 0) ?> s ·
                         <a href="<?= wh($clip['source_url']) ?>" target="_blank" rel="noopener">source ↗</a> ·
