@@ -58,6 +58,8 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   const max = Math.max(1, ...rows.map((r) => r.value));
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
   const px = headlineSize(headline);
+  // One decimal, or none when the source gives whole numbers (56%).
+  const digits = rows.some((r) => !Number.isInteger(Number(r.value))) ? 1 : 0;
 
   return (
     <AbsoluteFill style={{ background: BG, fontFamily: FONT }}>
@@ -102,7 +104,7 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
                           background: isHot ? ACCENT : GOLD, opacity: isHot ? 1 : 0.85 }} />
             <div style={{ position: 'absolute', left: BAR_X - LEFT + 16 + bar + 14, top: 0, height: ROW_H - 4, display: 'flex', alignItems: 'center',
                           fontSize: 27, fontWeight: 800, color: isHot ? ACCENT : '#fff', whiteSpace: 'nowrap' }}>
-              {Number(r.value).toFixed(1)}{r.unit === '%' ? '' : ' '}{r.unit}
+              {Number(r.value).toFixed(digits)}{r.unit === '%' ? '' : ' '}{r.unit}
             </div>
           </div>
         );

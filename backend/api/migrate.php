@@ -4064,6 +4064,52 @@ try {
     echo "  ERR dw singles topic: " . $e->getMessage() . "\n";
 }
 
+// Once: "The most cat-obsessed countries in Europe 🐱" (reaction) takes Nov 10 and "What people shout when they
+// get hurt" (slides) Nov 11; the McDonald's topic (Nov 10) and the singles / dating one (Nov 11, right after the
+// Nov 9 singles video) move to the next free dates. A topic not matching stays put (the step says so).
+try {
+    $cats = 'The most cat-obsessed countries in Europe 🐱';
+    $hurt = 'What people shout when they get hurt';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title IN (?, ?)");
+    $has->execute([$cats, $hurt]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nextFree = static fn() => (string) $pdo->query("
+            SELECT d::date::text FROM generate_series('2026-11-12'::date, '2027-12-31'::date, '1 day') d
+            WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+        ")->fetchColumn();
+        $move = $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?");
+        $plan = [
+            ['2026-11-10', static fn($t) => stripos($t, 'mcdonald') !== false, $cats, 'evergreen', 'reaction',
+             'FEDIAF Facts & Figures 2026: % of households owning at least one cat (2024), the 15 countries with national association data. Europe only.'],
+            ['2026-11-11', static fn($t) => stripos($t, 'single') !== false || stripos($t, 'dating') !== false, $hurt, 'evergreen', 'slides',
+             "Angle: what people shout when they get hurt in each language (ouch, aïe, ui da in Vietnam, itai in Japan...). Pick the funniest and most surprising ones. Hook: 'Stub your toe in Japan and you'll shout… 🦶💥'. Outro question: 'What do YOU shout when you get hurt?'"],
+        ];
+        foreach ($plan as [$date, $matches, $title, $type, $format, $notes]) {
+            $q = $pdo->prepare("SELECT id, title FROM dw_topics WHERE date = ?::date");
+            $q->execute([$date]);
+            $old = $q->fetch(PDO::FETCH_ASSOC);
+            if ($old !== false && $matches($old['title'])) {
+                $free = $nextFree();
+                $move->execute([$free, $old['id']]);
+                echo "  OK  dw: \"{$old['title']}\" moved from {$date} to {$free}\n";
+                $old = false;
+            }
+            if ($old === false) {
+                $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES (?::date, ?, ?, ?, false, ?)")
+                    ->execute([$date, $title, $notes, $type, $format]);
+                echo "  OK  dw: \"{$title}\" on {$date} ({$format})\n";
+            } else {
+                echo "  --  dw: {$date} is taken by \"{$old['title']}\": \"{$title}\" not created (Admin › Worlds)\n";
+            }
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw Nov 10-11 topics: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

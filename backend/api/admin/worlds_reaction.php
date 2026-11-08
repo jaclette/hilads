@@ -180,6 +180,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const screen = document.getElementById('rx-screen');
     const ok = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
     const max = Math.max(1, ...ok.map(r => +r.value));
+    const digits = ok.some(r => !Number.isInteger(+r.value)) ? 1 : 0;
     const BAR_X = 520, BAR_MAX = 1008 - BAR_X - 130, TOP = 812, H = 44;
     const year = field('data_years') || field('data_year'), label = field('value_label');
     const first = [label, year].filter(Boolean).join(', ');
@@ -193,7 +194,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
       html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${TOP + i * H}px">
         <div class="rank">${esc(r.rank)}</div><div class="flag">${esc(r.flag)}</div><div class="name">${esc(r.country)}</div>
         <div class="bar" style="left:${BAR_X - 56}px;width:${Math.max(8, w)}px"></div>
-        <div class="val" style="left:${BAR_X - 56 + w + 14}px">${esc((+r.value).toFixed(1))}${r.unit === '%' ? '' : ' '}${esc(r.unit)}</div></div>`;
+        <div class="val" style="left:${BAR_X - 56 + w + 14}px">${esc((+r.value).toFixed(digits))}${r.unit === '%' ? '' : ' '}${esc(r.unit)}</div></div>`;
     });
     html += `<div class="source" style="top:${TOP + ok.length * H + 14}px">${esc((first ? first + ' · ' : '') + 'Source: ' + field('source'))}</div>`;
     html += '<div class="mark"><div><i>DIFFERENT WORLDS</i> by Hilads</div><div>Compare your city on <i style="letter-spacing:0">hilads.live</i></div></div>';
