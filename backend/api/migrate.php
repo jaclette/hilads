@@ -4110,6 +4110,38 @@ try {
     echo "  ERR dw Nov 10-11 topics: " . $e->getMessage() . "\n";
 }
 
+// Once: "The countries that eat the most instant noodles" (reaction) takes Nov 11; the Nov 11 topic with
+// "shout" in its title moves to the next free date. Another Nov 11 topic stays put (the step says so).
+try {
+    $noodles = 'The countries that eat the most instant noodles';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$noodles]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov11 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-11'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov11 !== false && stripos($nov11['title'], 'shout') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-12'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov11['id']]);
+            echo "  OK  dw: \"{$nov11['title']}\" moved from 2026-11-11 to {$free}\n";
+            $nov11 = false;
+        }
+        if ($nov11 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-11', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$noodles, "WINA per capita servings, 2024 top 10 (WINA's 2025 data confirms Vietnam #1). Vietnam vs South Korea duel."]);
+            echo "  OK  dw: \"{$noodles}\" on 2026-11-11 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-11 is taken by \"{$nov11['title']}\": \"{$noodles}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw noodles topic: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

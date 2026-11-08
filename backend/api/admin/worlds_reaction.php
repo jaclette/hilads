@@ -140,14 +140,14 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .row.alt { background:rgba(255,255,255,.045); }
 .rx-screen .row.hot { background:rgba(255,122,61,.18); border-color:#FF7A3D; }
 .rx-screen .row > * { position:absolute; top:0; height:40px; display:flex; align-items:center; white-space:nowrap; }
-.rx-screen .rank { left:14px; width:50px; justify-content:flex-end; font-size:28px; font-weight:800; color:rgba(255,255,255,.6); }
+.rx-screen .rank { left:14px; justify-content:flex-end; font-weight:800; color:rgba(255,255,255,.6); }
 .rx-screen .hot .rank, .rx-screen .hot .val { color:#FF7A3D; }
-.rx-screen .flag { left:80px; font-size:28px; }
-.rx-screen .name { left:124px; font-size:29px; font-weight:700; }
-.rx-screen .bar { top:12px; height:16px; border-radius:8px; background:#D9AE52; }
+.rx-screen .flag { }
+.rx-screen .name { font-weight:700; }
+.rx-screen .bar { border-radius:8px; background:#D9AE52; }
 .rx-screen .hot .bar { background:#FF7A3D; }
-.rx-screen .val { font-size:27px; font-weight:800; }
-.rx-screen .source { position:absolute; left:72px; width:936px; font-size:20px; font-weight:600; color:rgba(255,255,255,.55); }
+.rx-screen .val { font-weight:800; }
+.rx-screen .source { position:absolute; left:72px; width:936px; white-space:nowrap; font-size:20px; font-weight:600; color:rgba(255,255,255,.55); }
 .rx-screen .mark { position:absolute; left:72px; top:1792px; font-size:22px; line-height:28px; }
 .rx-screen .mark i { font-style:normal; font-weight:800; letter-spacing:2px; color:#FF7A3D; }
 .rx-rows { width:100%; border-collapse:collapse; }
@@ -175,26 +175,37 @@ $highlight = DwStudio::settings()['countries_always_included'];
     return out;
   };
 
-  // The screen as Reaction.jsx draws it (its last frame).
+  // The screen as Reaction.jsx draws it (its last frame): taller rows when there are fewer, units, bars after the names.
+  let ctx = null;
+  const textW = (t, px, weight) => { ctx = ctx || document.createElement('canvas').getContext('2d');
+    ctx.font = `${weight} ${px}px 'Be Vietnam Pro', system-ui, sans-serif`; return ctx.measureText(String(t)).width; };
   function render() {
     const screen = document.getElementById('rx-screen');
     const ok = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
     const max = Math.max(1, ...ok.map(r => +r.value));
-    const digits = ok.some(r => !Number.isInteger(+r.value)) ? 1 : 0;
-    const BAR_X = 520, BAR_MAX = 1008 - BAR_X - 130, TOP = 812, H = 44;
-    const year = field('data_years') || field('data_year'), label = field('value_label');
-    const first = [label, year].filter(Boolean).join(', ');
-    let html = clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline></video><div class="credit">${esc(clip.credit)}</div>`
+    const TOP = 812, END = 1736;
+    const H = Math.max(44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length)))), k = H / 44;
+    const fmt = v => (+v).toFixed(Number.isInteger(+v) ? 0 : 1);
+    const val = (r, i) => (fmt(r.value) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
+    const rankW = 50 * k, flagX = 14 + rankW + 16, nameX = flagX + 30 * k + 14;
+    const barX = Math.max(464, nameX + Math.max(0, ...ok.map(r => textW(r.country, 29 * k, 700))) + 24);
+    const barMax = Math.min(358, 968 - 18 - barX - 14 - Math.max(0, ...ok.map((r, i) => textW(val(r, i), 27 * k, 800))));
+    const year = field('data_years') || field('data_year'), what = field('value_label');
+    const first = [what, year].filter(Boolean).join(', ');
+    let html = clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline></video>${clip.credit ? `<div class="credit">${esc(clip.credit)}</div>` : ''}`
                     : '<div class="noclip">🚩 No clip yet</div>';
     html += '<div class="fade"></div>';
-    html += `<div class="head"><b>${esc(field('headline'))}</b>${field('detail') ? `<span>${esc(field('detail'))}</span>` : ''}</div>`;
+    let hp = 60; while (hp > 40 && textW(field('headline'), hp, 800) > 936) hp -= 2;   // as Reaction.jsx: one line
+    html += `<div class="head"><b style="font-size:${hp}px">${esc(field('headline'))}</b>${field('detail') ? `<span>${esc(field('detail'))}</span>` : ''}</div>`;
     ok.forEach((r, i) => {
       const hot = +r.rank === 1 || highlight.includes(String(r.country).trim().toLowerCase());
-      const w = BAR_MAX * (+r.value) / max;
-      html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${TOP + i * H}px">
-        <div class="rank">${esc(r.rank)}</div><div class="flag">${esc(r.flag)}</div><div class="name">${esc(r.country)}</div>
-        <div class="bar" style="left:${BAR_X - 56}px;width:${Math.max(8, w)}px"></div>
-        <div class="val" style="left:${BAR_X - 56 + w + 14}px">${esc((+r.value).toFixed(digits))}${r.unit === '%' ? '' : ' '}${esc(r.unit)}</div></div>`;
+      const w = Math.max(8, barMax * (+r.value) / max);
+      html += `<div class="row${hot ? ' hot' : i % 2 ? ' alt' : ''}" style="top:${TOP + i * H}px;height:${H}px">
+        <div class="rank" style="width:${rankW}px;height:${H - 4}px;font-size:${28 * k}px">${esc(r.rank)}</div>
+        <div class="flag" style="left:${flagX}px;height:${H - 4}px;font-size:${28 * k}px">${esc(r.flag)}</div>
+        <div class="name" style="left:${nameX}px;height:${H - 4}px;font-size:${29 * k}px">${esc(r.country)}</div>
+        <div class="bar" style="left:${barX}px;top:${(H - 4 - 16 * k) / 2}px;height:${16 * k}px;width:${w}px"></div>
+        <div class="val" style="left:${barX + w + 14}px;height:${H - 4}px;font-size:${27 * k}px">${esc(val(r, i))}</div></div>`;
     });
     html += `<div class="source" style="top:${TOP + ok.length * H + 14}px">${esc((first ? first + ' · ' : '') + 'Source: ' + field('source'))}</div>`;
     html += '<div class="mark"><div><i>DIFFERENT WORLDS</i> by Hilads</div><div>Compare your city on <i style="letter-spacing:0">hilads.live</i></div></div>';

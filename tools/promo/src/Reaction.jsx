@@ -17,8 +17,10 @@ const FONT = 'Be Vietnam Pro';
 const LEFT = 72;
 const RIGHT = 1080 - 72;
 const CLIP_H = 640;
-const ROW_H = 44;
+const ROW_H = 44;                         // a row's height with 20 rows; fewer rows grow (rowSize)
 const ROWS_TOP = 812;
+const ROWS_END = 1736;                    // the source line and the mark come after
+const ROW_SCALE_MAX = 1.4;
 const BAR_X = 520;                        // where the bars start
 const BAR_MAX = RIGHT - BAR_X - 130;      // the longest bar leaves room for its value
 const STAGGER = 15;                       // frames: the rows appear within 0.5 s
@@ -58,8 +60,17 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   const max = Math.max(1, ...rows.map((r) => r.value));
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
   const px = headlineSize(headline);
-  // One decimal, or none when the source gives whole numbers (56%).
-  const digits = rows.some((r) => !Number.isInteger(Number(r.value))) ? 1 : 0;
+  // Each value as the source gives it: 81, 79.2 (a whole number shows no decimal).
+  const fmt = (v) => Number(v).toFixed(Number.isInteger(Number(v)) ? 0 : 1);
+  // A short unit (%, L) on every row; a long one ("servings") on the first row only, the source line says it.
+  const label = (r, i) => `${fmt(r.value)}${r.unit === '%' ? '' : ' '}${r.unit.length <= 3 || i === 0 ? r.unit : ''}`.trim();
+  // Fewer rows are taller, with everything in them larger (up to 1.4×), to fill the space.
+  const rowH = Math.max(ROW_H, Math.min(Math.round(ROW_H * ROW_SCALE_MAX), Math.floor((ROWS_END - ROWS_TOP) / Math.max(1, rows.length))));
+  const k = rowH / ROW_H;
+  const rankW = 50 * k, flagX = 14 + rankW + 16, flagS = 30 * k, nameX = flagX + flagS + 14;
+  // The bars start after the longest name, and the longest bar leaves room for the widest value ("79.2 servings").
+  const barX = Math.max(BAR_X - LEFT + 16, nameX + Math.max(...rows.map((r) => measure(String(r.country), 29 * k, 700))) + 24);
+  const barMax = Math.min(BAR_MAX, RIGHT - LEFT + 32 - 18 - barX - 14 - Math.max(...rows.map((r, i) => measure(label(r, i), 27 * k))));
 
   return (
     <AbsoluteFill style={{ background: BG, fontFamily: FONT }}>
@@ -89,28 +100,28 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
         const at = rows.length > 1 ? ((STAGGER - ROW_IN) * i) / (rows.length - 1) : 0;
         const p = interpolate(frame, [at, at + ROW_IN], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
         const isHot = r.rank === 1 || hot.has(String(r.country).trim().toLowerCase());
-        const bar = Math.max(8, (BAR_MAX * r.value) / max);
+        const bar = Math.max(8, (barMax * r.value) / max);
         return (
-          <div key={`${r.rank}-${r.country}`} style={{ position: 'absolute', left: LEFT - 16, top: ROWS_TOP + i * ROW_H, width: RIGHT - LEFT + 32, height: ROW_H,
+          <div key={`${r.rank}-${r.country}`} style={{ position: 'absolute', left: LEFT - 16, top: ROWS_TOP + i * rowH, width: RIGHT - LEFT + 32, height: rowH,
                                      borderRadius: 10, boxSizing: 'border-box', opacity: p, transform: `translateY(${(1 - p) * 10}px)`,
                                      background: isHot ? 'rgba(255,122,61,0.18)' : i % 2 ? 'rgba(255,255,255,0.045)' : 'transparent',
                                      border: `2px solid ${isHot ? ACCENT : 'transparent'}` }}>
-            <div style={{ position: 'absolute', left: 14, top: 0, width: 50, height: ROW_H - 4, display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-                          fontSize: 28, fontWeight: 800, color: isHot ? ACCENT : 'rgba(255,255,255,0.6)' }}>{r.rank}</div>
-            {r.flag && <Img src={staticFile(r.flag)} style={{ position: 'absolute', left: 80, top: 5, width: 30, height: 30 }} />}
-            <div style={{ position: 'absolute', left: 124, top: 0, height: ROW_H - 4, display: 'flex', alignItems: 'center',
-                          fontSize: 29, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap' }}>{r.country}</div>
-            <div style={{ position: 'absolute', left: BAR_X - LEFT + 16, top: 12, height: 16, borderRadius: 8, width: bar,
+            <div style={{ position: 'absolute', left: 14, top: 0, width: rankW, height: rowH - 4, display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                          fontSize: 28 * k, fontWeight: 800, color: isHot ? ACCENT : 'rgba(255,255,255,0.6)' }}>{r.rank}</div>
+            {r.flag && <Img src={staticFile(r.flag)} style={{ position: 'absolute', left: flagX, top: (rowH - 4 - flagS) / 2, width: flagS, height: flagS }} />}
+            <div style={{ position: 'absolute', left: nameX, top: 0, height: rowH - 4, display: 'flex', alignItems: 'center',
+                          fontSize: 29 * k, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap' }}>{r.country}</div>
+            <div style={{ position: 'absolute', left: barX, top: (rowH - 4 - 16 * k) / 2, height: 16 * k, borderRadius: 8 * k, width: bar,
                           background: isHot ? ACCENT : GOLD, opacity: isHot ? 1 : 0.85 }} />
-            <div style={{ position: 'absolute', left: BAR_X - LEFT + 16 + bar + 14, top: 0, height: ROW_H - 4, display: 'flex', alignItems: 'center',
-                          fontSize: 27, fontWeight: 800, color: isHot ? ACCENT : '#fff', whiteSpace: 'nowrap' }}>
-              {Number(r.value).toFixed(digits)}{r.unit === '%' ? '' : ' '}{r.unit}
+            <div style={{ position: 'absolute', left: barX + bar + 14, top: 0, height: rowH - 4, display: 'flex', alignItems: 'center',
+                          fontSize: 27 * k, fontWeight: 800, color: isHot ? ACCENT : '#fff', whiteSpace: 'nowrap' }}>
+              {label(r, i)}
             </div>
           </div>
         );
       })}
 
-      <div style={{ position: 'absolute', left: LEFT, top: ROWS_TOP + rows.length * ROW_H + 14, width: RIGHT - LEFT, fontSize: fitSize(source, 20, 15, 600),
+      <div style={{ position: 'absolute', left: LEFT, top: ROWS_TOP + rows.length * rowH + 14, width: RIGHT - LEFT, fontSize: fitSize(source, 20, 15, 600),
                     fontWeight: 600, whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.55)' }}>{source}</div>
 
       <div style={{ position: 'absolute', left: LEFT, top: 1792, display: 'flex', alignItems: 'center', gap: 16 }}>
