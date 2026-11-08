@@ -71,6 +71,11 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   const label = (r, i) => r.unit === '$' ? `$${Number(r.value).toFixed(2)}`
     : `${fmt(r.value)}${r.unit === '%' ? '' : ' '}${r.unit.length <= 3 || i === 0 ? r.unit : ''}`.trim();
   // Fewer rows are taller, with everything in them larger (up to 1.4×), to fill the space.
+  // Row i appears (0 → 1) at its turn: top to bottom within 0.5 s.
+  const rowIn = (i) => {
+    const at = rows.length > 1 ? ((STAGGER - ROW_IN) * i) / (rows.length - 1) : 0;
+    return interpolate(frame, [at, at + ROW_IN], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  };
   const gaps = rows.filter((r) => r.gap_before).length;
   const rowH = Math.max(ROW_H, Math.min(Math.round(ROW_H * ROW_SCALE_MAX), Math.floor((ROWS_END - ROWS_TOP) / Math.max(1, rows.length + GAP * gaps))));
   // Each row's top: a "…" separator (GAP of a row) above a row that follows a skip in the ranking.
@@ -108,8 +113,7 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
       </div>
 
       {rows.map((r, i) => {
-        const at = rows.length > 1 ? ((STAGGER - ROW_IN) * i) / (rows.length - 1) : 0;
-        const p = interpolate(frame, [at, at + ROW_IN], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+        const p = rowIn(i);
         const isHot = r.rank === 1 || r.highlight === true || hot.has(String(r.country).trim().toLowerCase());
         const bar = Math.max(8, (barMax * r.value) / max);
         return (
@@ -133,7 +137,9 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
       })}
 
       {rows.map((r, i) => r.gap_before ? (
+        // It appears with the row under it.
         <div key={`gap-${i}`} style={{ position: 'absolute', left: LEFT - 16, top: tops[i] - rowH * GAP, width: RIGHT - LEFT + 32, height: rowH * GAP,
+                                       opacity: rowIn(i),
                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 * k, fontWeight: 800,
                                        color: 'rgba(255,255,255,0.5)', letterSpacing: 14 * k }}>• • •</div>
       ) : null)}
