@@ -203,6 +203,21 @@ final class DwReactionTest extends TestCase
         $this->assertNotEmpty(DwReaction::validate($bad)[0]);
     }
 
+    public function testTheNovember15Package(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-15-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame([], $warn);
+        $this->assertSame(['rank' => 73, 'country' => 'Vietnam'], array_intersect_key(end($c['rows']), ['rank' => 1, 'country' => 1]));
+        $this->assertSame('one_decimal', DwReaction::normalize($c)['value_format']);
+        $this->assertSame('% of adults not physically active enough, 2022 · Source: WHO', DwReaction::sourceLine($c));
+    }
+
     public function testOneExtraHighlightedRowWithItsRealRank(): void
     {
         $rows = $this->rows();

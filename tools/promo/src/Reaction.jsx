@@ -70,8 +70,8 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
   const px = headlineSize(headline);
   // Each value as the source gives it: 81, 79.2 (a whole number shows no decimal); a price in dollars: $9.04.
-  // valueFormat "ratio": one decimal below 10, whole numbers from 10 (4.0, 8.9, 45).
-  const fmt = (v) => Number(v).toFixed(valueFormat === 'ratio' ? (Number(v) < 10 ? 1 : 0) : (Number.isInteger(Number(v)) ? 0 : 1));
+  // valueFormat "ratio": one decimal below 10, whole numbers from 10 (4.0, 8.9, 45); "one_decimal": always one (52.0).
+  const fmt = (v) => Number(v).toFixed(valueFormat === 'ratio' ? (Number(v) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1 : (Number.isInteger(Number(v)) ? 0 : 1));
   // A short unit (%, L) on every row; a long one ("servings") on the first row only, the source line says it.
   const label = (r, i) => r.unit === '$' ? `$${Number(r.value).toFixed(2)}`
     : `${fmt(r.value)}${r.unit === '%' ? '' : ' '}${r.unit.length <= 3 || i === 0 ? r.unit : ''}`.trim();

@@ -197,8 +197,8 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const H = Math.max(44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length + GAP * gaps)))), k = H / 44;
     const tops = []; ok.reduce((y, r) => { const t = y + (r.gap_before ? H * GAP : 0); tops.push(t); return t + H; }, TOP);
     const rowsEnd = ok.length ? tops[tops.length - 1] + H : TOP;
-    const ratio = <?= json_encode(($c['value_format'] ?? null) === 'ratio') ?>;
-    const fmt = v => (+v).toFixed(ratio ? (+v < 10 ? 1 : 0) : (Number.isInteger(+v) ? 0 : 1));
+    const vf = <?= json_encode($c['value_format'] ?? null) ?>;
+    const fmt = v => (+v).toFixed(vf === 'ratio' ? (+v < 10 ? 1 : 0) : vf === 'one_decimal' ? 1 : (Number.isInteger(+v) ? 0 : 1));
     const val = (r, i) => r.unit === '$' ? '$' + (+r.value).toFixed(2)
       : (fmt(r.value) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
     const rankW = 50 * k, flagX = 14 + rankW + 16, nameX = flagX + 30 * k + 14;

@@ -120,7 +120,7 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "source_url": string,
   "data_year": number,
   "data_years": string (optional),
-  "value_format": "ratio" (optional: one decimal below 10, whole numbers from 10, for a ratio like tourists per resident),
+  "value_format": "ratio" or "one_decimal" (optional: "ratio" = one decimal below 10, whole numbers from 10, for a ratio like tourists per resident; "one_decimal" = always one decimal, when the source gives one, e.g. 52.0),
   "value_label": string,
   "clip_query": string,
   "clip": { "pixabay_id": number } (optional),

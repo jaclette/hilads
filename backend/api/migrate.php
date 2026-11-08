@@ -4238,6 +4238,39 @@ try {
     echo "  ERR dw tourists topic: " . $e->getMessage() . "\n";
 }
 
+// Once: "Sunday couch champions: where adults move the least" (reaction) takes Nov 15 (a Sunday); the Nov 15
+// topic with "breakfast" in its title moves to the next free date (its date only: title, notes and packages kept).
+// Another Nov 15 topic stays put (the step says so).
+try {
+    $couch = 'Sunday couch champions: where adults move the least';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$couch]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov15 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-15'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov15 !== false && stripos($nov15['title'], 'breakfast') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-16'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov15['id']]);
+            echo "  OK  dw: \"{$nov15['title']}\" moved from 2026-11-15 to {$free}\n";
+            $nov15 = false;
+        }
+        if ($nov15 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-15', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$couch, 'WHO GHO NCD_PAA: % of adults 18+ insufficiently physically active, age-standardized, 2022, top 20 + Vietnam (#73). Light, never shaming.']);
+            echo "  OK  dw: \"{$couch}\" on 2026-11-15 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-15 is taken by \"{$nov15['title']}\": \"{$couch}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw couch topic: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
