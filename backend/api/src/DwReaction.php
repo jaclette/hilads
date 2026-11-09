@@ -21,14 +21,14 @@ final class DwReaction
 {
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
-    public const VIDEO_SECONDS = 11.5;   // the ranking 8.5 s (the headline big alone 2 s, all shown by 4.6 s, then still), the closing slide 3 s
+    public const VIDEO_SECONDS = 11;     // the ranking 8 s (the headline big alone 1.5 s, all shown by 4.1 s, then still), the closing slide 3 s
     /** The closing slide's invitation (cta_line): a few words, with hilads.live. */
     public const CTA_WORDS = 8;
     /** The video shows the first 10 rows (the podium + #4 to #10), "Top 10" in its source line when there are more. */
     public const SHOWN_ROWS = 10;
     public const HEADLINE_WORDS = 6;
     public const DETAIL_WORDS = 8;
-    /** The question: the closing slide's main text (8.5 to 11.5 s) and the caption's last line. */
+    /** The question: the closing slide's main text (8 to 11 s) and the caption's last line. */
     public const QUESTION_WORDS = 7;
     /** The ranking card's colors by name (tools/promo/src/Reaction.jsx: CARD_THEMES); any light #rrggbb works too. */
     public const CARD_THEMES = ['cream', 'yellow', 'green', 'pink', 'blue'];

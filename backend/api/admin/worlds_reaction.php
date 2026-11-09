@@ -13,7 +13,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?> · closing slide 8.5–11.5 s</span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?> · closing slide 8–11 s</span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -45,7 +45,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
         </div>
     </div>
 <?php else: ?>
-    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 11.5 s video and the PNGs, and uploads them here).</p>
+    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 11 s video and the PNGs, and uploads them here).</p>
 <?php endif; ?>
 
 <?php if (!empty($c['warnings'])): ?>
@@ -120,7 +120,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (the closing slide, 8.5 to 11.5 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (the closing slide, 8 to 11 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php $cta = (string) ($c['cta_line'] ?? ''); worlds_field('cta_line', 'Invitation (the closing slide\'s button, with hilads.live)', $cta, false, ($cta === '' ? 'missing · ' : '') . DwStudio::screenWords($cta) . ' / ' . DwReaction::CTA_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
