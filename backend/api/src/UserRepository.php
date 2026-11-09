@@ -143,6 +143,26 @@ class UserRepository
     }
 
     /**
+     * The store review account (App Store / Google Play reviewers, users.is_review): never tracked,
+     * never pushed, out of every ranking (hidden_from_rankings), kept when "deleted". Ids cached per request.
+     */
+    private static ?array $reviewIds = null;
+    public static function isReview(?string $userId): bool
+    {
+        if ($userId === null || $userId === '') {
+            return false;
+        }
+        if (self::$reviewIds === null) {
+            try {
+                self::$reviewIds = array_flip(Database::pdo()->query("SELECT id FROM users WHERE is_review")->fetchAll(PDO::FETCH_COLUMN));
+            } catch (Throwable) {
+                self::$reviewIds = [];   // before the column exists
+            }
+        }
+        return isset(self::$reviewIds[$userId]);
+    }
+
+    /**
      * Admin-only user creation - skips cooldowns, allows is_fake flag.
      */
     public static function adminCreate(array $data): array

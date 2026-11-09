@@ -15,6 +15,10 @@ class AnalyticsService
 {
     public static function capture(string $event, string $distinctId, array $properties = []): void
     {
+        // The store review account (users.is_review) is never tracked.
+        if (UserRepository::isReview($distinctId)) {
+            return;
+        }
         $apiKey = getenv('POSTHOG_API_KEY');
         $host   = rtrim(getenv('POSTHOG_HOST') ?: 'https://eu.i.posthog.com', '/');
 

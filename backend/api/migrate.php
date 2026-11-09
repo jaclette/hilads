@@ -4388,6 +4388,23 @@ try {
     echo "  ERR dw Nov 9 question: " . $e->getMessage() . "\n";
 }
 
+// The store review account (App Store / Google Play "App access"): created through the normal signup,
+// flagged here: is_review (no push, no analytics, kept when "deleted", login not rate limited) and
+// hidden_from_rankings (out of every ranking). It never posts photos of its own to real users.
+// Reversal: UPDATE users SET is_review = false; ALTER TABLE users DROP COLUMN is_review.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_review BOOLEAN NOT NULL DEFAULT false", 'users.is_review');
+try {
+    $n = $pdo->exec("UPDATE users SET is_review = true, hidden_from_rankings = true
+                     WHERE lower(email) = 'review@hilads.live' AND username = 'hilads_review' AND deleted_at IS NULL
+                       AND (NOT is_review OR NOT hidden_from_rankings)");
+    if ($n > 0) {
+        $pdo->exec("DELETE FROM mobile_push_tokens WHERE user_id IN (SELECT id FROM users WHERE is_review)");
+        echo "  OK  users: hilads_review flagged as the store review account\n";
+    }
+} catch (PDOException $e) {
+    echo "  ERR review account: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

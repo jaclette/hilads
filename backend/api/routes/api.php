@@ -1507,8 +1507,11 @@ $router->add('POST', '/api/v1/auth/signup', function () {
 });
 
 $router->add('POST', '/api/v1/auth/login', function () {
-    enforceRateLimit('auth_login', 12, 600);
     $body = Request::json();
+    // The store review account's sign-in is not rate limited: reviewers often share IPs.
+    if (strtolower(trim((string) ($body['email'] ?? ''))) !== AuthService::REVIEW_EMAIL) {
+        enforceRateLimit('auth_login', 12, 600);
+    }
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
     $user = AuthService::login(
@@ -1532,7 +1535,10 @@ $router->add('POST', '/api/v1/auth/login', function () {
 $router->add('DELETE', '/api/v1/auth/me', function () {
     $user = AuthService::requireAuth();
     enforceRateLimit('delete_account', 3, 3600);
-    UserRepository::softDelete($user['id']);
+    // The store review account is signed out but kept, so the next review can still sign in.
+    if (!UserRepository::isReview($user['id'])) {
+        UserRepository::softDelete($user['id']);
+    }
     // Destroy the current session cookie so the client is immediately signed out
     AuthService::destroyDbSession();
     Response::json(['ok' => true]);
@@ -7621,6 +7627,10 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     $timezone = is_string($body['timezone'] ?? null) && DailyRules::isValidTimezone(trim($body['timezone']))
         ? trim($body['timezone']) : null;
 
+    // The store review account gets no push of any kind: its devices are not registered.
+    if ($userId !== null && UserRepository::isReview($userId)) {
+        Response::json(['ok' => true, 'skipped' => 'review_account']);
+    }
     if ($userId === null && $guestId === '') {
         error_log("[push-subscribe] REJECTED - no user and no guestId");
         Response::json(['error' => 'Auth or guestId required'], 401);
