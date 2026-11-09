@@ -13,7 +13,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?> · end card</span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?> · closing slide 7–10 s</span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -39,13 +39,13 @@ $highlight = DwStudio::settings()['countries_always_included'];
             <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <?php if (!empty($pkg['video_url'])): ?><a class="btn btn-primary" href="<?= wh($pkg['video_url']) ?>" download>⬇ Video</a><?php endif; ?>
                 <?php if (!empty($pkg['still_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still_url']) ?>" download>⬇ PNG 01 (table)</a><?php endif; ?>
-                <?php if (!empty($pkg['still2_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still2_url']) ?>" download>⬇ PNG 02 (end card)</a><?php endif; ?>
+                <?php if (!empty($pkg['still2_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still2_url']) ?>" download>⬇ PNG 02 (closing slide)</a><?php endif; ?>
             </div>
             <p class="worlds-muted" style="margin-top:8px">After an edit, render it again on the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code></p>
         </div>
     </div>
 <?php else: ?>
-    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 12.5 s video and the PNGs, and uploads them here).</p>
+    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 10 s video and the PNGs, and uploads them here).</p>
 <?php endif; ?>
 
 <?php if (!empty($c['warnings'])): ?>
@@ -120,7 +120,8 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (the closing slide, 7 to 10 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php $cta = (string) ($c['cta_line'] ?? ''); worlds_field('cta_line', 'Invitation (the closing slide\'s button, with hilads.live)', $cta, false, ($cta === '' ? 'missing · ' : '') . DwStudio::screenWords($cta) . ' / ' . DwReaction::CTA_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
     </div>
@@ -162,6 +163,8 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .val { font-weight:800; }
 .rx-screen .hot .rank, .rx-screen .hot .val { color:#C24E1C; }
 .rx-screen .source { position:absolute; left:48px; width:892px; font-size:24px; line-height:30px; font-weight:600; color:#6E5444; }
+.rx-screen .mark { position:absolute; left:48px; top:1560px; font-size:22px; font-weight:600; }
+.rx-screen .mark i { font-style:normal; font-weight:800; letter-spacing:2px; color:#C24E1C; }
 .rx-screen .safe { position:absolute; left:0; top:1600px; width:1080px; height:320px; background:repeating-linear-gradient(45deg, rgba(0,0,0,.04) 0 12px, transparent 12px 24px); }
 .rx-rows { width:100%; border-collapse:collapse; }
 .rx-rows th { text-align:left; color:#888; font-size:12px; font-weight:600; padding:2px 4px; }
@@ -218,7 +221,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     let lines = 1; if (textW(head, px, 800, BALOO) > W) { lines = 2; px = 48; while (px > 36 && textW(head, px, 800, BALOO) > 2 * W * 0.92) px -= 2; }
     const lh = Math.round(px * 1.04), titleEnd = 936 + lines * lh;
     const headHtml = at < 0 ? esc(head) : esc(head.slice(0, at)) + `<em>${esc(head.slice(at, at + acc.length))}</em>` + esc(head.slice(at + acc.length));
-    const srcLines = Math.min(3, Math.ceil(textW(srcText, 24, 600) * 1.06 / W)), srcTop = 1600 - 62 - 14 - srcLines * 30;
+    const srcLines = Math.min(3, Math.ceil(textW(srcText, 24, 600) * 1.06 / W)), srcTop = 1600 - 44 - 10 - srcLines * 30;
     // The podium gets smaller (down to 70%) to keep the rows ≥ 40 px apart (as Reaction.jsx).
     const podAt = ps => {
       const d = (lines > 1 ? [66, 56, 56] : [74, 62, 62]).map(x => Math.round(x * ps));
@@ -262,7 +265,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
         <div class="bar" style="left:${barX}px;top:${(H - 14) / 2}px;height:14px;width:${w}px"></div>
         <div class="val" style="left:${barX + w + 12}px;height:${H}px;font-size:${tp}px">${esc(val(r))}</div></div>`;
     });
-    html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="ask" style="top:1538px"><b>What's YOUR country's answer? 🌍</b><span>hilads.live 👉</span></div><div class="safe"></div>`;
+    html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="mark"><i>DIFFERENT WORLDS</i> by Hilads</div><div class="safe"></div>`;
     screen.innerHTML = html;
   }
 

@@ -4462,6 +4462,39 @@ try {
     echo "  ERR dw top 10 headlines: " . $e->getMessage() . "\n";
 }
 
+// Once: the reaction format's closing slide (7 to 10 s) shows the topic's own question and its invitation to Hilads
+// (cta_line, with hilads.live): one per unpublished reaction package, through DwStudio::updateField (as the admin's
+// field), only where none is set; and Nov 8's headline says 10 (the video shows the top 10).
+try {
+    $ctas = [
+        '2026-11-08' => 'Snap your local beer on hilads.live 🍻',
+        '2026-11-09' => 'Show the world your bowl on hilads.live 🍜',
+        '2026-11-10' => 'Show us your cat on hilads.live 🐱',
+        '2026-11-11' => "Snap your city's best date spot on hilads.live 💘",
+        '2026-11-12' => 'Show us your local burger on hilads.live 🍔',
+        '2026-11-13' => 'Share what made you laugh on hilads.live 😂',
+        '2026-11-14' => 'Show us your tourist hotspot on hilads.live 📸',
+        '2026-11-15' => 'Show us your Sunday couch on hilads.live 🛋️',
+    ];
+    foreach ($ctas as $date => $cta) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || $topic['status'] === 'published' || !DwReaction::isReaction($pkg['content'])) {
+            continue;
+        }
+        if (trim((string) ($pkg['content']['cta_line'] ?? '')) === '') {
+            DwStudio::updateField($pkg['id'], 'cta_line', $cta);
+            echo "  OK  dw: {$date} invitation \"{$cta}\"\n";
+        }
+        if ($date === '2026-11-08' && ($pkg['content']['headline'] ?? null) === 'The 20 biggest beer drinkers 🍺') {
+            DwStudio::updateField($pkg['id'], 'headline', 'The 10 biggest beer drinkers 🍺');
+            echo "  OK  dw: 2026-11-08 headline \"The 10 biggest beer drinkers 🍺\"\n";
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw invitations: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

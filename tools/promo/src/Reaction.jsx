@@ -1,8 +1,9 @@
 // "Different Worlds by Hilads", reaction + ranking format (Admin › Worlds, DwReaction): a silent 1080×1920
-// video of 12.5 s. 0–10 s, the light ranking card revealed step by step (TableScreen, below): the clip alone with its
-// sticker (the hook), the headline, the podium #3 → #2 → #1, the rows one by one, the source line, then the CTA in the
-// ranking area, held. 10–12.5 s, the end card (EndCard): the question, the topic, the Hilads logo and hilads.live.
-// worlds.mjs renders the video and two PNGs (carousels): 01 the ranking's last frame, 02 the end card.
+// video of 10 s. 0–7 s, the light ranking card revealed step by step (TableScreen, below): the clip alone with its
+// sticker (the hook), the headline, the podium #3 → #2 → #1, the rows one by one, the source line and the series
+// mark; no call to action. 7–10 s, the closing slide (EndCard): the topic's own question and its invitation to
+// Hilads (cta_line, a button with hilads.live).
+// worlds.mjs renders the video and two PNGs (carousels): 01 the ranking's last frame, 02 the closing slide.
 
 import { AbsoluteFill, Img, Loop, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
@@ -42,10 +43,10 @@ function fitSize(text, max, min, weight = 800, width = RIGHT - LEFT) {
  * cardBg (a theme name or a light #rrggbb, cream by default), accent (the headline's words in terracotta)}. gap_before: a "…" separator above the row (the
  * ranking skips to it); highlight: that row in the accent color too (e.g. a reference country).
  */
-export function ReactionRanking({ topic = null, question = null, ...props }) {
+export function ReactionRanking({ topic = null, question = null, cta = null, ...props }) {
   const frame = useCurrentFrame();
   const end = S(END_SECONDS);
-  const card = { headline: props.headline, topic, cardBg: props.cardBg };
+  const card = { headline: props.headline, question, cta, cardBg: props.cardBg };
   // The ranking eases out (a little smaller), the end card pops in over it.
   const out = clamp01((frame - end) / 8);
   return (
@@ -84,11 +85,10 @@ const C_LEFT = 48;
 const C_RIGHT = 940;                      // the apps' buttons: the right 140 px
 const MEDIA_H = 960;                      // the clip: the top half
 const SAFE_BOTTOM = 1600;                 // the apps' caption: the bottom 320 px
-const CTA_H = 62;                         // the ranking's CTA row
+const MARK_H = 44;                        // the series mark under the source line
 const MAX_ROWS = 10;                      // the podium + #4 to #10
 const S = (sec) => Math.round(sec * 30);  // seconds → frames
 const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
-const ASK = "What's YOUR country's answer? 🌍";
 
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
 const hexRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
@@ -215,12 +215,12 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const titleTop = MEDIA_H - 24;                               // just under the wave
   const titleEnd = titleTop + titleLines.length * titleLH;
 
-  // From the bottom up: the CTA row just above the apps' caption, the source line (24 px, up to 3 lines) above it,
+  // From the bottom up: the series mark just above the apps' caption, the source line (24 px, up to 3 lines) above it,
   // then the rows fill what is left under the podium; the podium gets smaller (down to 70%) to keep the rows ≥ 40 px apart.
-  const ctaTop = SAFE_BOTTOM - CTA_H;
+  const markTop = SAFE_BOTTOM - MARK_H;
   const srcPx = 24;
   const srcLines = Math.min(3, Math.ceil((measure(sourceLine, srcPx, 600) * 1.06) / W));
-  const srcTop = ctaTop - 14 - srcLines * 30;
+  const srcTop = markTop - 10 - srcLines * 30;
   const twoLineTitle = titleLines.length > 1;
   const slots = Math.max(list.length, 1);
   const podiumAt = (ps) => {
@@ -252,13 +252,12 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
 
   // ── Timeline ──
   const stickerIn = spr(S(0.3), { damping: 9, stiffness: 220, mass: 0.6 });
-  const titleIn = spr(S(1.5), { damping: 16, stiffness: 160, mass: 0.8 });
-  const podAt = { 2: S(2.5), 1: S(3.05), 0: S(3.6) };           // #3, #2, #1 (row index → start)
-  const crownAt = S(4.15);
+  const titleIn = spr(S(1.2), { damping: 16, stiffness: 160, mass: 0.8 });
+  const podAt = { 2: S(2.0), 1: S(2.45), 0: S(2.9) };           // #3, #2, #1 (row index → start)
+  const crownAt = S(3.35);
   const crown = spr(crownAt, { damping: 9, stiffness: 260, mass: 0.6 });
-  const rowAt = (i) => S(4.5) + (list.length > 1 ? Math.round((S(3.0) * i) / Math.max(6, list.length - 1)) : 0);
-  const ctaIn = spr(S(8), { damping: 10, stiffness: 200, mass: 0.7 });
-  const srcIn = clamp01((frame - S(4.5)) / 12);
+  const rowAt = (i) => S(3.7) + (list.length > 1 ? Math.round((S(2.4) * i) / Math.max(6, list.length - 1)) : 0);
+  const srcIn = clamp01((frame - S(3.7)) / 12);
 
   const stickerLines = detail ? [detail] : [];
   let stickerPx = 30;
@@ -267,15 +266,13 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const stickerTop = MEDIA_H - 52 - stickerPx * 1.15 - 18;
   const doodle = lastEmoji(headline);
   const BALOO = `"${Q_FONT}", "${FONT}"`;
-  const askPx = (() => { const room = W - 32 - 14 - measure('hilads.live 👉', 30, 800, Q_FONT) - 40 - 6;
-    for (let px = 36; px > 24; px -= 1) if (measure(ASK, px, 800, Q_FONT) <= room) return px; return 24; })();
 
   return (
     <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
       {/* Doodles, faint, behind the ranking. */}
       {[[doodle, 958, podTop + 10, 56, 14], ['〰', 8, listTop - 40, 60, -8], ['✦', 975, listTop + 160, 40, 0]]
         .filter(([e]) => e).map(([e, x, y, px, rot], i) => (
-          <div key={`d${i}`} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.15 * clamp01((frame - S(1.5)) / 15),
+          <div key={`d${i}`} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.15 * clamp01((frame - S(1.2)) / 15),
                                       color: TERRA, fontWeight: 800, transform: `rotate(${rot}deg)` }}>{e}</div>
         ))}
 
@@ -390,72 +387,73 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
       <div style={{ position: 'absolute', left: C_LEFT, top: srcTop, width: W, fontSize: srcPx, lineHeight: '30px', fontWeight: 600,
                     color: '#6E5444', opacity: srcIn }}>{sourceLine}</div>
 
-      {/* The CTA at 8 s: one row under the source line, just above the apps' caption. */}
-      <div style={{ position: 'absolute', left: C_LEFT, top: ctaTop, width: W, height: CTA_H, display: 'flex', alignItems: 'center',
-                    justifyContent: 'space-between', gap: 14, background: '#fff', borderRadius: 24, padding: '0 10px 0 22px', boxSizing: 'border-box',
-                    boxShadow: '0 5px 0 rgba(150,90,40,0.16)', transformOrigin: 'center center',
-                    transform: `scale(${Math.max(0, 0.6 + 0.4 * ctaIn)})`, opacity: clamp01(ctaIn * 2) }}>
-        <div style={{ fontFamily: BALOO, fontWeight: 800, fontSize: askPx, lineHeight: 1.08, whiteSpace: 'nowrap', paddingTop: 4 }}>{ASK}</div>
-        <div style={{ flex: 'none', background: TERRA, color: '#fff', fontFamily: BALOO, fontWeight: 800, fontSize: 30, borderRadius: 18,
-                      padding: '8px 20px 3px', boxShadow: '0 5px 0 #8A330F', whiteSpace: 'nowrap' }}>hilads.live 👉</div>
+      {/* The series mark (no call to action on this screen). */}
+      <div style={{ position: 'absolute', left: C_LEFT, top: markTop, height: MARK_H, display: 'flex', alignItems: 'center', gap: 12, opacity: srcIn }}>
+        <Img src={staticFile('logo.svg')} style={{ width: 38, height: 38 }} />
+        <div style={{ fontSize: 22 }}><span style={{ fontWeight: 800, letterSpacing: 2, color: TERRA }}>DIFFERENT WORLDS</span> <span style={{ fontWeight: 600 }}>by Hilads</span></div>
       </div>
     </AbsoluteFill>
   );
 }
 
 /**
- * The end card (10–12.5 s; PNG 02 at rest): the card's color and doodles, the Hilads logo, the topic in one line, the
- * big question (YOUR in terracotta) and a big hilads.live button, popping in one after the other. Centered in the area
- * the apps leave free (not the bottom 320 px, not the right 140 px).
+ * The closing slide (7–10 s; PNG 02): the card's color and doodles, the Hilads logo and series mark, the topic's own
+ * question (big, YOU/YOUR in terracotta) and its invitation to Hilads as a button (cta_line, with hilads.live), popping
+ * in one after the other. Centered in the area the apps leave free (not the bottom 320 px, not the right 140 px).
  */
-function EndCard({ headline, topic, cardBg, from, still = false }) {
+function EndCard({ headline, question, cta, cardBg, from, still = false }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
   const pop = (delay, config = { damping: 9, stiffness: 220, mass: 0.6 }) => (still ? 1 : spring({ frame: frame - from - delay, fps, config }));
   const W = C_RIGHT - C_LEFT;
-  const cx = (C_LEFT + C_RIGHT) / 2;
   const BALOO = `"${Q_FONT}", "${FONT}"`;
-  const topicText = String(topic ?? '').trim();
-  let topicPx = 26;
-  for (let px = 42; px >= 26; px -= 1) { topicPx = px; if (measure(topicText, px, 700) <= W) break; }
-  // The question: as big as fits in 2 lines (YOUR in terracotta).
-  const qWords = ASK.split(' ').map((word) => ({ word, hot: word === 'YOUR' }));
-  let qPx = 70;
+  // The question: as big as fits in 2 lines (3 for a long one), YOU / YOUR in terracotta.
+  const qWords = String(question ?? '').trim().split(/\s+/).filter(Boolean).map((word) => ({ word, hot: /^YOU(R)?\b/.test(word) }));
+  let qPx = 64;
   let qLines = null;
-  for (let px = 128; px >= 70 && !qLines; px -= 2) { qLines = wrapWords(qWords, px, W, 2, 800, Q_FONT); qPx = px; }
+  for (let px = 124; px >= 76 && !qLines; px -= 2) { qLines = wrapWords(qWords, px, W, 2, 800, Q_FONT); qPx = px; }
+  for (let px = 96; px >= 64 && !qLines; px -= 2) { qLines = wrapWords(qWords, px, W, 3, 800, Q_FONT); qPx = px; }
   qLines ??= [qWords];
-  const doodle = lastEmoji(headline);
-  const logo = pop(2), topicIn = pop(6), q = pop(10, { damping: 8, stiffness: 180, mass: 0.7 }), btn = pop(18, { damping: 7, stiffness: 200, mass: 0.6 });
+  // The button: one line from 60 down to 40 px, else two lines.
+  const ctaText = String(cta ?? '').trim();
+  const ctaW = W - 2 * 44;
+  let ctaPx = 40;
+  for (let px = 60; px >= 40; px -= 1) { ctaPx = px; if (measure(ctaText, px, 800, Q_FONT) <= ctaW) break; }
+  const ctaLines = measure(ctaText, ctaPx, 800, Q_FONT) <= ctaW ? [ctaText]
+    : (wrapWords(ctaText.split(' ').map((word) => ({ word })), 44, ctaW, 2, 800, Q_FONT) ?? [[{ word: ctaText }]]).map((l) => l.map((x) => x.word).join(' '));
+  if (ctaLines.length > 1) ctaPx = 44;
+  const doodle = lastEmoji(question) ?? lastEmoji(headline);
+  const logo = pop(2), q = pop(6, { damping: 8, stiffness: 180, mass: 0.7 }), btn = pop(16, { damping: 7, stiffness: 200, mass: 0.6 });
   const fade = (p) => clamp01(p * 2);
+  const groupH = 120 + 14 + 36 + 60 + qLines.length * qPx * 1.1 + 64 + ctaLines.length * ctaPx * 1.15 + 40;
   return (
     <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
-      {[[doodle, 90, 260, 110, -12], ['〰', 780, 330, 90, 10], ['✦', 120, 1180, 70, 0], [doodle, 820, 1260, 96, 16], ['〰', 60, 1430, 80, -8], ['✦', 860, 560, 56, 0]]
+      {[[doodle, 90, 230, 110, -12], ['〰', 780, 300, 90, 10], ['✦', 120, 1250, 70, 0], [doodle, 820, 1300, 96, 16], ['〰', 60, 1450, 80, -8], ['✦', 860, 600, 56, 0]]
         .filter(([e]) => e).map(([e, x, y, px, rot], i) => (
           <div key={i} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.18 * (still ? 1 : clamp01((frame - from) / 10)),
                                 color: TERRA, fontWeight: 800, transform: `rotate(${rot}deg)` }}>{e}</div>
         ))}
-      {/* The group centered between the top bar and the apps' caption (its height estimated from its parts). */}
-      <div style={{ position: 'absolute', left: C_LEFT, top: Math.max(170, 880 - (150 + 18 + 40 + (topicText ? 64 + topicPx * 1.3 : 0) + 26 + qLines.length * qPx * 1.1 + 70 + 120) / 2),
-                    width: W, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Img src={staticFile('logo.svg')} style={{ width: 150, height: 150, transform: `scale(${logo})`, opacity: fade(logo) }} />
-        <div style={{ marginTop: 18, fontSize: 30, letterSpacing: 3, fontWeight: 800, color: TERRA, opacity: fade(logo) }}>
+      {/* The group centered between the top bar and the apps' caption. */}
+      <div style={{ position: 'absolute', left: C_LEFT, top: Math.max(170, 880 - groupH / 2), width: W, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Img src={staticFile('logo.svg')} style={{ width: 120, height: 120, transform: `scale(${logo})`, opacity: fade(logo) }} />
+        <div style={{ marginTop: 14, fontSize: 28, letterSpacing: 3, fontWeight: 800, color: TERRA, opacity: fade(logo) }}>
           DIFFERENT WORLDS <span style={{ letterSpacing: 0, fontWeight: 600, color: INK }}>by Hilads</span>
         </div>
-        {topicText && (
-          <div style={{ marginTop: 64, fontSize: topicPx, fontWeight: 700, color: MUTED, whiteSpace: 'nowrap', opacity: fade(topicIn),
-                        transform: `translateY(${(1 - topicIn) * 20}px)` }}>{topicText}</div>
-        )}
-        <div style={{ marginTop: 26, transform: `scale(${0.6 + 0.4 * q}) rotate(-2deg)`, opacity: fade(q), textAlign: 'center' }}>
+        <div style={{ marginTop: 60, transform: `scale(${0.6 + 0.4 * q}) rotate(-2deg)`, opacity: fade(q), textAlign: 'center' }}>
           {qLines.map((l, i) => (
             <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: qPx, lineHeight: 1.02, whiteSpace: 'nowrap', paddingTop: qPx * 0.08 }}>
               {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 70, background: TERRA, color: '#fff', fontFamily: BALOO, fontWeight: 800, fontSize: 76, borderRadius: 40,
-                      padding: '22px 56px 10px', boxShadow: '0 12px 0 #8A330F', whiteSpace: 'nowrap', transform: `scale(${0.5 + 0.5 * btn})`,
-                      opacity: fade(btn) }}>hilads.live 👉</div>
+        {ctaText && (
+          <div style={{ marginTop: 64, maxWidth: W, background: TERRA, color: '#fff', fontFamily: BALOO, fontWeight: 800, fontSize: ctaPx, lineHeight: 1.15,
+                        borderRadius: 36, padding: '20px 44px 10px', boxShadow: '0 10px 0 #8A330F', textAlign: 'center', boxSizing: 'border-box',
+                        transform: `scale(${0.5 + 0.5 * btn})`, opacity: fade(btn) }}>
+            {ctaLines.map((l, i) => <div key={i} style={{ whiteSpace: 'nowrap' }}>{l}</div>)}
+          </div>
+        )}
       </div>
     </AbsoluteFill>
   );

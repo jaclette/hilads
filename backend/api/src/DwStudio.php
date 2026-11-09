@@ -1042,7 +1042,7 @@ final class DwStudio
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
-            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|card_bg|headline_accent)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent)$/', $path) ? ['slide' => null] : null;
         }
         $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
@@ -1110,6 +1110,9 @@ final class DwStudio
         }
         if ($path === 'headline_accent' && $value !== '' && mb_stripos((string) ($c['headline'] ?? ''), $value) === false) {
             throw new InvalidArgumentException('The orange words must be words of the headline, as written there.');
+        }
+        if ($path === 'cta_line' && $value !== '' && stripos($value, 'hilads.live') === false) {
+            throw new InvalidArgumentException('The invitation must include hilads.live.');
         }
         if (($path === 'card_bg' || $path === 'headline_accent') && $value === '') {
             unset($c[$path]);
@@ -1492,6 +1495,7 @@ final class DwStudio
                     'seconds' => DwReaction::VIDEO_SECONDS, 'valueFormat' => $c['value_format'] ?? null,
                     'question' => trim((string) ($c['outro_question'] ?? '')) ?: null,
                     'cardBg' => $c['card_bg'] ?? null, 'accent' => $c['headline_accent'] ?? null,
+                    'cta' => trim((string) ($c['cta_line'] ?? '')) ?: null,
                 ],
                 'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null, 'still2Url' => $pkg['still2_url'] ?? null];
     }

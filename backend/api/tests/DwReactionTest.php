@@ -21,7 +21,7 @@ final class DwReactionTest extends TestCase
             'rows' => $this->rows(), 'source' => 'Kirin', 'source_url' => 'https://www.kirinholdings.com/x.pdf', 'data_year' => 2024,
             'value_label' => 'Liters per person per year', 'clip_query' => 'shocked face', 'clip' => ['pixabay_id' => 329144],
             'caption' => "Different Worlds by Hilads.\n\nCompare your city\nWhere does your country rank?",
-            'outro_question' => 'Where does your country rank?', 'hashtags' => ['#a', '#b', '#c', '#d', '#e'], 'warnings' => [],
+            'outro_question' => 'Where does your country rank?', 'cta_line' => 'Snap your local beer on hilads.live 🍻', 'hashtags' => ['#a', '#b', '#c', '#d', '#e'], 'warnings' => [],
         ];
     }
 
@@ -101,6 +101,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
@@ -116,6 +117,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors] = DwReaction::validate($c, ['Vietnam']);
         $this->assertSame([], $errors);
         $this->assertCount(15, $c['rows']);
@@ -129,6 +131,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
@@ -167,6 +170,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
@@ -181,6 +185,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
@@ -196,6 +201,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
@@ -215,6 +221,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
@@ -237,10 +244,29 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [, $warn] = DwReaction::validate($c, ['Vietnam']);
         $this->assertContains('21 rows: the video shows the top 10 ("Top 10" in its source line); the others are for the caption only.', $warn);
         $c['rows'] = array_slice($c['rows'], 0, 10);
         $this->assertSame([], array_values(array_filter(DwReaction::validate($c, ['Vietnam'])[1], fn($w) => str_contains($w, 'the video shows the top'))));
+    }
+
+    public function testTheClosingSlideNeedsItsInvitation(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-09-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        unset($c['cta_line']);
+        $this->assertContains('"cta_line" is missing.', DwReaction::validate($c, ['Vietnam'])[0]);
+        $c['cta_line'] = 'Show the world your bowl 🍜';
+        $this->assertNotEmpty(array_filter(DwReaction::validate($c, ['Vietnam'])[0], fn($e) => str_contains($e, 'hilads.live')));
+        $c['cta_line'] = 'Show the world your bowl on hilads.live 🍜';
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame([], array_values(array_filter($warn, fn($w) => str_contains($w, 'cta_line'))));
+        $this->assertSame('Show the world your bowl on hilads.live 🍜', DwReaction::normalize($c)['cta_line']);
     }
 
     public function testOneExtraHighlightedRowWithItsRealRank(): void
@@ -312,6 +338,7 @@ final class DwReactionTest extends TestCase
             $this->markTestSkipped('docs/worlds is untracked');
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
+        $c['cta_line'] ??= 'Show us yours on hilads.live';   // the files predate cta_line
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
         $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);

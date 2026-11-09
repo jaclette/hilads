@@ -12,7 +12,7 @@ declare(strict_types=1);
  * country, flag, value, unit ("$": a price, shown $9.04), gap_before? (a "…" separator above, the ranking
  * skips to this row), highlight? (this row in the accent color too, e.g. a reference country)}], source, source_url?, data_year, data_years? (a range when the latest
  * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0), value_label?,
- * clip_query, clip?, caption, hashtags, outro_question, card_bg? (the ranking card's color: a CARD_THEMES name or a
+ * clip_query, clip?, caption, hashtags, outro_question, cta_line (the closing slide's invitation to Hilads, with hilads.live), card_bg? (the ranking card's color: a CARD_THEMES name or a
  * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
@@ -21,12 +21,14 @@ final class DwReaction
 {
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
-    public const VIDEO_SECONDS = 12.5;   // the ranking 10 s, the end card 2.5 s
+    public const VIDEO_SECONDS = 10;     // the ranking 7 s, the closing slide 3 s
+    /** The closing slide's invitation (cta_line): a few words, with hilads.live. */
+    public const CTA_WORDS = 8;
     /** The video shows the first 10 rows (the podium + #4 to #10), "Top 10" in its source line when there are more. */
     public const SHOWN_ROWS = 10;
     public const HEADLINE_WORDS = 6;
     public const DETAIL_WORDS = 8;
-    /** The question: the caption's last line (the video's end card asks "What's YOUR country's answer?"). */
+    /** The question: the closing slide's main text (7 to 10 s) and the caption's last line. */
     public const QUESTION_WORDS = 7;
     /** The ranking card's colors by name (tools/promo/src/Reaction.jsx: CARD_THEMES); any light #rrggbb works too. */
     public const CARD_THEMES = ['cream', 'yellow', 'green', 'pink', 'blue'];
@@ -45,7 +47,7 @@ final class DwReaction
     {
         $errors = [];
         $warn = [];
-        foreach (['topic', 'headline', 'source', 'clip_query', 'caption', 'outro_question'] as $f) {
+        foreach (['topic', 'headline', 'source', 'clip_query', 'caption', 'outro_question', 'cta_line'] as $f) {
             if (!is_string($c[$f] ?? null) || trim($c[$f]) === '') {
                 $errors[] = "\"{$f}\" is missing.";
             }
@@ -97,7 +99,14 @@ final class DwReaction
             }
         }
         if (is_string($c['outro_question'] ?? null) && ($w = DwStudio::screenWords($c['outro_question'])) > self::QUESTION_WORDS) {
-            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': the caption\'s last line).';
+            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': the closing slide\'s question).';
+        }
+        if (is_string($c['cta_line'] ?? null) && trim($c['cta_line']) !== '') {
+            if (stripos($c['cta_line'], 'hilads.live') === false) {
+                $errors[] = '"cta_line" must include hilads.live (e.g. "Show the world your bowl on hilads.live 🍜").';
+            } elseif (($w = DwStudio::screenWords($c['cta_line'])) > self::CTA_WORDS) {
+                $warn[] = "The invitation (cta_line) is {$w} words (max about " . self::CTA_WORDS . ').';
+            }
         }
         $tags = $c['hashtags'] ?? null;
         if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {
@@ -233,7 +242,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'card_bg', 'headline_accent'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }
