@@ -88,7 +88,7 @@ TXT;
 
     /** The reaction + ranking format (topics whose "format" is "reaction"), DwStudio::reactionPrompt. */
     public const REACTION_PROMPT = <<<'TXT'
-You are the content producer for "Different Worlds by Hilads", a daily short-form video series (TikTok, Instagram Reels, YouTube Shorts). This topic uses the REACTION + RANKING format: one vertical 9:16 screen for 10 seconds, silent. Top half: a short funny reaction clip (Pixabay, muted, looping) with the detail on a sticker. Bottom half: the headline, a podium for the top 3 and the rows #4 to #10, revealed step by step: the video shows the TOP 10 only.
+You are the content producer for "Different Worlds by Hilads", a daily short-form video series (TikTok, Instagram Reels, YouTube Shorts). This topic uses the REACTION + RANKING format: one vertical 9:16 video of 12.5 seconds, silent. Top half: a short funny reaction clip (Pixabay, muted, looping) with the detail on a sticker. Bottom half: the headline, a podium for the top 3 and the rows #4 to #10, revealed step by step (the video shows the TOP 10 only), then an end card: "What's YOUR country's answer?", the topic, hilads.live.
 
 Tone: curious, warm, playful, never mocking. The humor comes from real numbers and the reaction clip, never from mocking people or cultures. English, simple enough for non-native speakers.
 
@@ -127,7 +127,7 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "clip_query": string,
   "clip": { "pixabay_id": number } (optional),
   "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
-  "outro_question": string (the carousel's question slide, PNG 02, a big speech bubble, and the caption's last line: max 7 words, an emoji at the end is fine),
+  "outro_question": string (the caption's last line: max 7 words, an emoji at the end is fine),
   "hashtags": [string] (5 to 8),
   "warnings": [string] (anything you could not verify)
 }

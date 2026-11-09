@@ -1,33 +1,24 @@
 // "Different Worlds by Hilads", reaction + ranking format (Admin › Worlds, DwReaction): a silent 1080×1920
-// video of 10 s, the light ranking card revealed step by step (TableScreen, below): the clip alone with its sticker
-// (the hook), the headline, the podium #3 → #2 → #1, the rows one by one, then the CTA, held to the end.
-// worlds.mjs renders the video and two PNGs (carousels): 01 its last frame, 02 the question slide (ClosingSlide:
-// the clip blurred and darkened, the #1's flag, the question in a big tilted speech bubble, the series mark).
+// video of 12.5 s. 0–10 s, the light ranking card revealed step by step (TableScreen, below): the clip alone with its
+// sticker (the hook), the headline, the podium #3 → #2 → #1, the rows one by one, the source line, then the CTA in the
+// ranking area, held. 10–12.5 s, the end card (EndCard): the question, the topic, the Hilads logo and hilads.live.
+// worlds.mjs renders the video and two PNGs (carousels): 01 the ranking's last frame, 02 the end card.
 
-import { AbsoluteFill, Img, Loop, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Img, Loop, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
 import { flagColor } from './flagColors.js';
 
-const ACCENT = '#FF7A3D';
 const FONT = 'Be Vietnam Pro';
 const LEFT = 72;
 const RIGHT = 1080 - 72;
-// The closing slide's question: a speech bubble (accent, white text, a tail down-left, tilted) in a rounder,
-// playful font (Baloo 2, Be Vietnam Pro as the fallback), as big as fits in up to 3 lines.
-const Q_FONT = 'Baloo 2';
-const Q_MAX_PX = 132;
-const Q_MIN_PX = 64;
-const Q_TEXT_W = 820;                     // the bubble's text width at most (safe margins, the apps' side buttons)
-const Q_PAD_X = 46;
-const Q_PAD_Y = 26;
-const Q_TILT = -2;
+const Q_FONT = 'Baloo 2';                 // rounder, playful: titles, sticker, CTA, end card
 
 for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold', '800']]) {
   loadFont({ family: FONT, url: staticFile(`fonts/BeVietnamPro-${file}.ttf`), weight });
 }
 loadFont({ family: Q_FONT, url: staticFile('fonts/Baloo2-Variable.ttf'), weight: '400 800' });
 
-import { reactionSeconds } from './reactionTiming.js';
+import { END_SECONDS, reactionSeconds } from './reactionTiming.js';
 export { reactionSeconds };
 
 let ctx = null;
@@ -51,11 +42,18 @@ function fitSize(text, max, min, weight = 800, width = RIGHT - LEFT) {
  * cardBg (a theme name or a light #rrggbb, cream by default), accent (the headline's words in terracotta)}. gap_before: a "…" separator above the row (the
  * ranking skips to it); highlight: that row in the accent color too (e.g. a reference country).
  */
-export function ReactionRanking({ question = null, closing = false, ...props }) {
-  // closing: the question slide alone, at rest (PNG 02).
-  const q = (question ?? '').trim();
-  if (closing && q) return <ClosingSlide question={q} clip={props.clip} first={props.rows?.[0] ?? null} from={0} still />;
-  return <TableScreen {...props} />;
+export function ReactionRanking({ topic = null, question = null, ...props }) {
+  const frame = useCurrentFrame();
+  const end = S(END_SECONDS);
+  const card = { headline: props.headline, topic, cardBg: props.cardBg };
+  // The ranking eases out (a little smaller), the end card pops in over it.
+  const out = clamp01((frame - end) / 8);
+  return (
+    <AbsoluteFill style={{ background: cardColor(props.cardBg) }}>
+      {frame < end + 8 && <AbsoluteFill style={{ opacity: 1 - out, transform: `scale(${1 - 0.06 * out})` }}><TableScreen {...props} /></AbsoluteFill>}
+      {frame >= end && <AbsoluteFill style={{ opacity: clamp01((frame - end + 1) / 7) }}><EndCard {...card} from={end} /></AbsoluteFill>}
+    </AbsoluteFill>
+  );
 }
 
 /** The clip, playing at its speed from the video's start, looping when it ends (the same timing on both scenes). */
@@ -65,82 +63,6 @@ function ClipLoop({ clip, style }) {
     <Loop durationInFrames={Math.max(1, Math.floor(clip.seconds * fps))}>
       <OffthreadVideo src={staticFile(clip.src)} muted style={style} />
     </Loop>
-  );
-}
-
-/** The question wrapped for the bubble: the biggest size (Q_MAX_PX to Q_MIN_PX) where it fits in 1 to 3 lines. */
-function bubbleLines(text) {
-  for (let px = Q_MAX_PX; px >= Q_MIN_PX; px -= 2) {
-    for (const max of [1, 2, 3]) {
-      const lines = [];
-      let line = '';
-      let ok = true;
-      for (const word of text.split(/\s+/)) {
-        const next = line ? `${line} ${word}` : word;
-        if (measure(next, px, 800, Q_FONT) <= Q_TEXT_W) line = next;
-        else if (!line) { ok = false; break; }
-        else { lines.push(line); line = word; }
-      }
-      if (line) lines.push(line);
-      // Never leave an emoji or a lone short word alone on the last line.
-      if (ok && lines.length <= max && !(lines.length > 1 && lines[lines.length - 1].length <= 3)) return { px, lines };
-    }
-  }
-  return { px: Q_MIN_PX, lines: [text] };
-}
-
-/** The closing slide: the blurred clip, the #1's flag, the question's bubble, the series mark. */
-function ClosingSlide({ question, clip, first, from, still }) {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const pop = still ? 1 : spring({ frame: frame - from - 3, fps, config: { damping: 7, stiffness: 220, mass: 0.6 } });
-  const { px, lines } = bubbleLines(question);
-  const lineH = px * 1.06;
-  const w = Math.max(...lines.map((l) => measure(l, px, 800, Q_FONT))) + 2 * Q_PAD_X;
-  const h = lines.length * lineH + 2 * Q_PAD_Y;
-  const tail = Math.round(px * 0.42);
-  const flag = first?.flag ? first.flag : null;
-  // The group (flag, bubble, mark), a little above the middle (the apps' captions cover the bottom).
-  const flagS = 96, markH = 120, gap = 46;
-  const total = (flag ? flagS + gap : 0) + h + tail + gap + markH;
-  const top0 = Math.max(220, 900 - total / 2);
-  const bubbleTop = top0 + (flag ? flagS + gap : 0);
-  return (
-    <AbsoluteFill style={{ background: '#000', overflow: 'hidden' }}>
-      {clip && (
-        <div style={{ position: 'absolute', inset: 0, transform: 'scale(1.12)', filter: 'blur(24px) brightness(0.6) saturate(1.15)' }}>
-          <ClipLoop clip={clip} style={{ width: 1080, height: 1920, objectFit: 'cover' }} />
-        </div>
-      )}
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(22,17,13,0.28)' }} />
-      {flag && (
-        <Img src={staticFile(flag)} style={{ position: 'absolute', left: (1080 - flagS) / 2, top: top0, width: flagS, height: flagS,
-                                              opacity: still ? 1 : Math.min(1, pop * 1.6) }} />
-      )}
-      <div style={{ position: 'absolute', left: (1080 - w) / 2, top: bubbleTop, width: w, height: h + tail,
-                    transformOrigin: '22% 100%', opacity: still ? 1 : Math.min(1, pop * 2),
-                    transform: `rotate(${Q_TILT}deg) scale(${still ? 1 : 0.55 + 0.45 * pop})` }}>
-        <div style={{ height: h, borderRadius: Math.min(h * 0.38, 70), background: ACCENT, display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', justifyContent: 'center', boxShadow: '0 16px 44px rgba(0,0,0,0.45)' }}>
-          {lines.map((l, i) => (
-            <div key={i} style={{ fontFamily: `"${Q_FONT}", "${FONT}"`, fontWeight: 800, fontSize: px, lineHeight: `${lineH}px`, color: '#fff',
-                                  whiteSpace: 'nowrap', paddingTop: px * 0.1 }}>{l}</div>
-          ))}
-        </div>
-        {/* The tail, down-left: the bubble talks to the viewer. */}
-        <svg width={tail * 1.7} height={tail + 2} style={{ position: 'absolute', left: w * 0.18, top: h - 1 }}>
-          <path d={`M0 0 L${tail * 1.7} 0 L${tail * 0.12} ${tail} Z`} fill={ACCENT} />
-        </svg>
-      </div>
-      <div style={{ position: 'absolute', left: 0, width: 1080, top: bubbleTop + h + tail + gap, display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', gap: 14, fontFamily: FONT, opacity: still ? 1 : interpolate(frame, [from + 6, from + 14], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }) }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Img src={staticFile('logo.svg')} style={{ width: 56, height: 56 }} />
-          <div style={{ fontSize: 30 }}><span style={{ fontWeight: 800, letterSpacing: 3, color: ACCENT }}>DIFFERENT WORLDS</span> <span style={{ fontWeight: 600, color: '#fff' }}>by Hilads</span></div>
-        </div>
-        <div style={{ fontSize: 30, fontWeight: 600, color: 'rgba(255,255,255,0.92)' }}>Compare your city on <span style={{ fontWeight: 800, color: ACCENT }}>hilads.live</span></div>
-      </div>
-    </AbsoluteFill>
   );
 }
 
@@ -162,6 +84,7 @@ const C_LEFT = 48;
 const C_RIGHT = 940;                      // the apps' buttons: the right 140 px
 const MEDIA_H = 960;                      // the clip: the top half
 const SAFE_BOTTOM = 1600;                 // the apps' caption: the bottom 320 px
+const CTA_H = 62;                         // the ranking's CTA row
 const MAX_ROWS = 10;                      // the podium + #4 to #10
 const S = (sec) => Math.round(sec * 30);  // seconds → frames
 const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
@@ -275,7 +198,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const W = C_RIGHT - C_LEFT;
   let titlePx = 56;
   let titleLines = null;
-  for (let px = 56; px >= 46 && !titleLines; px -= 2) { titleLines = wrapWords(words, px, W, 1, 800, Q_FONT); titlePx = px; }
+  for (let px = 56; px >= 40 && !titleLines; px -= 2) { titleLines = wrapWords(words, px, W, 1, 800, Q_FONT); titlePx = px; }
   for (let px = 48; px >= 36 && !titleLines; px -= 2) { titleLines = wrapWords(words, px, W, 2, 800, Q_FONT); titlePx = px; }
   titleLines ??= [words];
   if (titleLines.length === 2) {                // balanced: no word alone on the second line
@@ -289,24 +212,32 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
     titleLines = best;
   }
   const titleLH = Math.round(titlePx * 1.04);
-  const titleTop = MEDIA_H - 6;
+  const titleTop = MEDIA_H - 24;                               // just under the wave
   const titleEnd = titleTop + titleLines.length * titleLH;
 
-  // The source line at the bottom (24 px, up to 3 lines), the rows fill what is left between it and the podium.
+  // From the bottom up: the CTA row just above the apps' caption, the source line (24 px, up to 3 lines) above it,
+  // then the rows fill what is left under the podium; the podium gets smaller (down to 70%) to keep the rows ≥ 40 px apart.
+  const ctaTop = SAFE_BOTTOM - CTA_H;
   const srcPx = 24;
   const srcLines = Math.min(3, Math.ceil((measure(sourceLine, srcPx, 600) * 1.06) / W));
-  const srcTop = SAFE_BOTTOM - srcLines * 30;
+  const srcTop = ctaTop - 14 - srcLines * 30;
   const twoLineTitle = titleLines.length > 1;
-  const d = twoLineTitle ? [66, 56, 56] : [74, 62, 62];        // flag badges, 30% over their block
-  const inner = 92;                                            // a block's name and value
-  const h = [0, 1, 2].map((i) => Math.round(d[i] * 0.3 + inner + [twoLineTitle ? 18 : 26, twoLineTitle ? 8 : 12, 0][i]));
-  const crownRoom = 24;
-  const podTop = titleEnd + 6 + crownRoom;
-  const podBase = podTop + d[0] * 0.7 + h[0];
+  const slots = Math.max(list.length, 1);
+  const podiumAt = (ps) => {
+    const d = (twoLineTitle ? [66, 56, 56] : [74, 62, 62]).map((x) => Math.round(x * ps));   // flag badges, 30% over their block
+    const namePx = Math.max(22, Math.round(26 * ps)), valPx = Math.max(34, Math.round(44 * ps));
+    const inner = namePx * 1.1 + valPx + 18;                                                // a block's name and value
+    const h = [0, 1, 2].map((i) => Math.round(d[i] * 0.3 + inner + [26, 12, 0][i] * ps));
+    const podTop = titleEnd + 4 + 24 * ps;                                                  // the crown's room
+    const podBase = podTop + d[0] * 0.7 + h[0];
+    return { d, h, namePx, valPx, podTop, podBase, stride: Math.min(64, (srcTop - 10 - podBase - 12) / slots) };
+  };
+  let pod = podiumAt(1);
+  for (let ps = 0.95; ps >= 0.7 && pod.stride < 40; ps -= 0.05) pod = podiumAt(ps);
+  const { d, h, podTop, podBase } = pod;
   const blockW = (W - 2 * 16) / 3;
   const listTop = podBase + 12;
-  const slots = Math.max(list.length, 1);
-  const stride = Math.min(64, (srcTop - 10 - listTop) / slots);
+  const stride = pod.stride;
   const rowH = Math.round(stride - 5);
   const textPx = Math.max(28, Math.min(34, Math.round(rowH * 0.62)));
   const flagS = Math.round(rowH * 0.62);
@@ -331,12 +262,13 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
 
   const stickerLines = detail ? [detail] : [];
   let stickerPx = 30;
-  for (let px = 44; px >= 30; px -= 1) { stickerPx = px; if (measure(detail ?? '', px, 800, Q_FONT) <= 860) break; }
-  const stickerTop = MEDIA_H - 100 - stickerPx * 1.15 - 22;
+  for (let px = 40; px >= 28; px -= 1) { stickerPx = px; if (measure(detail ?? '', px, 800, Q_FONT) <= 820) break; }
+  // The sticker at the very bottom of the clip, on the wave's edge: under the subject's face and the food.
+  const stickerTop = MEDIA_H - 52 - stickerPx * 1.15 - 18;
   const doodle = lastEmoji(headline);
   const BALOO = `"${Q_FONT}", "${FONT}"`;
-  const askPx = (() => { const room = W - 40 - 14 - measure('hilads.live 👉', 32, 800, Q_FONT) - 44 - 14;
-    for (let px = 38; px > 24; px -= 1) if (measure(ASK, px, 800, Q_FONT) <= room) return px; return 24; })();
+  const askPx = (() => { const room = W - 32 - 14 - measure('hilads.live 👉', 30, 800, Q_FONT) - 40 - 6;
+    for (let px = 36; px > 24; px -= 1) if (measure(ASK, px, 800, Q_FONT) <= room) return px; return 24; })();
 
   return (
     <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
@@ -391,7 +323,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
         const dd = d[ri];
         const x = C_LEFT + col * (blockW + 16);
         const blockTop = podBase - bh;
-        const nm = fitName(r.country, 26, blockW - 20, 30);
+        const nm = fitName(r.country, pod.namePx, blockW - 20, pod.namePx * 1.2);
         const isFirst = r.rank === 1;
         return (
           <div key={`p${ri}`} style={{ opacity: frame >= at ? 1 : 0 }}>
@@ -401,7 +333,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
                           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 10,
                           boxSizing: 'border-box', color: light ? INK : '#fff' }}>
               {nm.lines.map((l, j) => <div key={j} style={{ fontSize: nm.px, fontWeight: 800, lineHeight: 1.1, whiteSpace: 'nowrap' }}>{l}</div>)}
-              <div style={{ fontFamily: BALOO, fontWeight: 800, fontSize: 44, lineHeight: 1, paddingTop: 6 }}>{label(r, count)}</div>
+              <div style={{ fontFamily: BALOO, fontWeight: 800, fontSize: pod.valPx, lineHeight: 1, paddingTop: 6 }}>{label(r, count)}</div>
             </div>
             {isFirst && (
               <div style={{ position: 'absolute', left: x + blockW - 104, top: blockTop - 12, background: STICKER, color: INK, fontSize: 15, fontWeight: 800,
@@ -458,14 +390,72 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
       <div style={{ position: 'absolute', left: C_LEFT, top: srcTop, width: W, fontSize: srcPx, lineHeight: '30px', fontWeight: 600,
                     color: '#6E5444', opacity: srcIn }}>{sourceLine}</div>
 
-      {/* The CTA at 8 s: one row over the clip's lower part, above the sticker (the face stays visible). */}
-      <div style={{ position: 'absolute', left: C_LEFT, top: (stickerLines.length ? stickerTop - 34 : MEDIA_H - 120) - 104, width: W, height: 100,
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, background: 'rgba(255,246,233,0.97)',
-                    borderRadius: 28, padding: '0 14px 0 26px', boxSizing: 'border-box', boxShadow: '0 10px 26px rgba(40,20,5,0.3)',
-                    transformOrigin: 'center bottom', transform: `scale(${Math.max(0, 0.6 + 0.4 * ctaIn)})`, opacity: clamp01(ctaIn * 2) }}>
+      {/* The CTA at 8 s: one row under the source line, just above the apps' caption. */}
+      <div style={{ position: 'absolute', left: C_LEFT, top: ctaTop, width: W, height: CTA_H, display: 'flex', alignItems: 'center',
+                    justifyContent: 'space-between', gap: 14, background: '#fff', borderRadius: 24, padding: '0 10px 0 22px', boxSizing: 'border-box',
+                    boxShadow: '0 5px 0 rgba(150,90,40,0.16)', transformOrigin: 'center center',
+                    transform: `scale(${Math.max(0, 0.6 + 0.4 * ctaIn)})`, opacity: clamp01(ctaIn * 2) }}>
         <div style={{ fontFamily: BALOO, fontWeight: 800, fontSize: askPx, lineHeight: 1.08, whiteSpace: 'nowrap', paddingTop: 4 }}>{ASK}</div>
-        <div style={{ flex: 'none', background: TERRA, color: '#fff', fontFamily: BALOO, fontWeight: 800, fontSize: 32, borderRadius: 22,
-                      padding: '10px 22px 4px', boxShadow: '0 6px 0 #8A330F', whiteSpace: 'nowrap' }}>hilads.live 👉</div>
+        <div style={{ flex: 'none', background: TERRA, color: '#fff', fontFamily: BALOO, fontWeight: 800, fontSize: 30, borderRadius: 18,
+                      padding: '8px 20px 3px', boxShadow: '0 5px 0 #8A330F', whiteSpace: 'nowrap' }}>hilads.live 👉</div>
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+/**
+ * The end card (10–12.5 s; PNG 02 at rest): the card's color and doodles, the Hilads logo, the topic in one line, the
+ * big question (YOUR in terracotta) and a big hilads.live button, popping in one after the other. Centered in the area
+ * the apps leave free (not the bottom 320 px, not the right 140 px).
+ */
+function EndCard({ headline, topic, cardBg, from, still = false }) {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bg = cardColor(cardBg);
+  const pop = (delay, config = { damping: 9, stiffness: 220, mass: 0.6 }) => (still ? 1 : spring({ frame: frame - from - delay, fps, config }));
+  const W = C_RIGHT - C_LEFT;
+  const cx = (C_LEFT + C_RIGHT) / 2;
+  const BALOO = `"${Q_FONT}", "${FONT}"`;
+  const topicText = String(topic ?? '').trim();
+  let topicPx = 26;
+  for (let px = 42; px >= 26; px -= 1) { topicPx = px; if (measure(topicText, px, 700) <= W) break; }
+  // The question: as big as fits in 2 lines (YOUR in terracotta).
+  const qWords = ASK.split(' ').map((word) => ({ word, hot: word === 'YOUR' }));
+  let qPx = 70;
+  let qLines = null;
+  for (let px = 128; px >= 70 && !qLines; px -= 2) { qLines = wrapWords(qWords, px, W, 2, 800, Q_FONT); qPx = px; }
+  qLines ??= [qWords];
+  const doodle = lastEmoji(headline);
+  const logo = pop(2), topicIn = pop(6), q = pop(10, { damping: 8, stiffness: 180, mass: 0.7 }), btn = pop(18, { damping: 7, stiffness: 200, mass: 0.6 });
+  const fade = (p) => clamp01(p * 2);
+  return (
+    <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
+      {[[doodle, 90, 260, 110, -12], ['〰', 780, 330, 90, 10], ['✦', 120, 1180, 70, 0], [doodle, 820, 1260, 96, 16], ['〰', 60, 1430, 80, -8], ['✦', 860, 560, 56, 0]]
+        .filter(([e]) => e).map(([e, x, y, px, rot], i) => (
+          <div key={i} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.18 * (still ? 1 : clamp01((frame - from) / 10)),
+                                color: TERRA, fontWeight: 800, transform: `rotate(${rot}deg)` }}>{e}</div>
+        ))}
+      {/* The group centered between the top bar and the apps' caption (its height estimated from its parts). */}
+      <div style={{ position: 'absolute', left: C_LEFT, top: Math.max(170, 880 - (150 + 18 + 40 + (topicText ? 64 + topicPx * 1.3 : 0) + 26 + qLines.length * qPx * 1.1 + 70 + 120) / 2),
+                    width: W, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Img src={staticFile('logo.svg')} style={{ width: 150, height: 150, transform: `scale(${logo})`, opacity: fade(logo) }} />
+        <div style={{ marginTop: 18, fontSize: 30, letterSpacing: 3, fontWeight: 800, color: TERRA, opacity: fade(logo) }}>
+          DIFFERENT WORLDS <span style={{ letterSpacing: 0, fontWeight: 600, color: INK }}>by Hilads</span>
+        </div>
+        {topicText && (
+          <div style={{ marginTop: 64, fontSize: topicPx, fontWeight: 700, color: MUTED, whiteSpace: 'nowrap', opacity: fade(topicIn),
+                        transform: `translateY(${(1 - topicIn) * 20}px)` }}>{topicText}</div>
+        )}
+        <div style={{ marginTop: 26, transform: `scale(${0.6 + 0.4 * q}) rotate(-2deg)`, opacity: fade(q), textAlign: 'center' }}>
+          {qLines.map((l, i) => (
+            <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: qPx, lineHeight: 1.02, whiteSpace: 'nowrap', paddingTop: qPx * 0.08 }}>
+              {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 70, background: TERRA, color: '#fff', fontFamily: BALOO, fontWeight: 800, fontSize: 76, borderRadius: 40,
+                      padding: '22px 56px 10px', boxShadow: '0 12px 0 #8A330F', whiteSpace: 'nowrap', transform: `scale(${0.5 + 0.5 * btn})`,
+                      opacity: fade(btn) }}>hilads.live 👉</div>
       </div>
     </AbsoluteFill>
   );

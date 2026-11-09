@@ -13,7 +13,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?><?= trim((string) ($c['outro_question'] ?? '')) !== '' ? ' · PNG 02: the question' : '' ?></span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?> · end card</span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -39,13 +39,13 @@ $highlight = DwStudio::settings()['countries_always_included'];
             <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <?php if (!empty($pkg['video_url'])): ?><a class="btn btn-primary" href="<?= wh($pkg['video_url']) ?>" download>⬇ Video</a><?php endif; ?>
                 <?php if (!empty($pkg['still_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still_url']) ?>" download>⬇ PNG 01 (table)</a><?php endif; ?>
-                <?php if (!empty($pkg['still2_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still2_url']) ?>" download>⬇ PNG 02 (question)</a><?php endif; ?>
+                <?php if (!empty($pkg['still2_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still2_url']) ?>" download>⬇ PNG 02 (end card)</a><?php endif; ?>
             </div>
             <p class="worlds-muted" style="margin-top:8px">After an edit, render it again on the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code></p>
         </div>
     </div>
 <?php else: ?>
-    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 10 s video and the PNGs, and uploads them here).</p>
+    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 12.5 s video and the PNGs, and uploads them here).</p>
 <?php endif; ?>
 
 <?php if (!empty($c['warnings'])): ?>
@@ -120,7 +120,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (PNG 02\'s bubble, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
     </div>
@@ -138,12 +138,12 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .wave { position:absolute; left:0; }
 .rx-screen .credit { position:absolute; right:24px; top:24px; font-size:18px; font-weight:600; color:rgba(255,255,255,.85); background:rgba(0,0,0,.4); border-radius:14px; padding:4px 12px; }
 .rx-screen .sticker { position:absolute; left:40px; background:#FFC93C; border-radius:24px; padding:11px 24px 7px; box-shadow:0 7px 0 #C9940F; white-space:nowrap;
-                      font:800 44px 'Baloo 2', 'Be Vietnam Pro', sans-serif; transform:rotate(-4deg); transform-origin:10% 100%; }
-.rx-screen .ask { position:absolute; left:48px; width:892px; height:100px; display:flex; align-items:center; justify-content:space-between; gap:14px;
-                  background:rgba(255,246,233,.97); border-radius:28px; padding:0 14px 0 26px; box-sizing:border-box; box-shadow:0 10px 26px rgba(40,20,5,.3);
+                      font:800 40px 'Baloo 2', 'Be Vietnam Pro', sans-serif; transform:rotate(-4deg); transform-origin:10% 100%; }
+.rx-screen .ask { position:absolute; left:48px; width:892px; height:62px; display:flex; align-items:center; justify-content:space-between; gap:14px;
+                  background:#fff; border-radius:24px; padding:0 10px 0 22px; box-sizing:border-box; box-shadow:0 5px 0 rgba(150,90,40,.16);
                   font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; font-weight:800; }
-.rx-screen .ask b { font-size:34px; white-space:nowrap; }
-.rx-screen .ask span { background:#C24E1C; color:#fff; font-size:32px; border-radius:22px; padding:10px 22px 4px; box-shadow:0 6px 0 #8A330F; white-space:nowrap; }
+.rx-screen .ask b { font-size:32px; white-space:nowrap; }
+.rx-screen .ask span { background:#C24E1C; color:#fff; font-size:30px; border-radius:18px; padding:8px 20px 3px; box-shadow:0 5px 0 #8A330F; white-space:nowrap; }
 .rx-screen .head { position:absolute; left:48px; width:892px; font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; font-weight:800; letter-spacing:-.5px; white-space:nowrap; }
 .rx-screen .head em { font-style:normal; color:#C24E1C; }
 .rx-screen .pod { position:absolute; border-radius:22px 22px 10px 10px; background:linear-gradient(#F59A6A, #C9612C); box-shadow:0 6px 0 #9C4A20; color:#fff;
@@ -214,15 +214,22 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const bg = cardColor(field('card_bg'));
     const podium = ok.slice(0, 3), list = ok.slice(3), W = 892;
     const head = field('headline'), acc = field('headline_accent').toLowerCase(), at = acc ? head.toLowerCase().indexOf(acc) : -1;
-    let px = 56; while (px > 46 && textW(head, px, 800, BALOO) > W) px -= 2;
+    let px = 56; while (px > 40 && textW(head, px, 800, BALOO) > W) px -= 2;
     let lines = 1; if (textW(head, px, 800, BALOO) > W) { lines = 2; px = 48; while (px > 36 && textW(head, px, 800, BALOO) > 2 * W * 0.92) px -= 2; }
-    const lh = Math.round(px * 1.04), titleEnd = 954 + lines * lh;
+    const lh = Math.round(px * 1.04), titleEnd = 936 + lines * lh;
     const headHtml = at < 0 ? esc(head) : esc(head.slice(0, at)) + `<em>${esc(head.slice(at, at + acc.length))}</em>` + esc(head.slice(at + acc.length));
-    const srcLines = Math.min(3, Math.ceil(textW(srcText, 24, 600) * 1.06 / W)), srcTop = 1600 - srcLines * 30;
-    const d = lines > 1 ? [66, 56, 56] : [74, 62, 62];
-    const h = [0, 1, 2].map(i => Math.round(d[i] * 0.3 + 92 + [lines > 1 ? 18 : 26, lines > 1 ? 8 : 12, 0][i]));
-    const podTop = titleEnd + 30, podBase = podTop + d[0] * 0.7 + h[0], blockW = (W - 32) / 3;
-    const listTop = podBase + 12, stride = Math.min(64, (srcTop - 10 - listTop) / Math.max(1, list.length)), H = Math.round(stride - 5);
+    const srcLines = Math.min(3, Math.ceil(textW(srcText, 24, 600) * 1.06 / W)), srcTop = 1600 - 62 - 14 - srcLines * 30;
+    // The podium gets smaller (down to 70%) to keep the rows ≥ 40 px apart (as Reaction.jsx).
+    const podAt = ps => {
+      const d = (lines > 1 ? [66, 56, 56] : [74, 62, 62]).map(x => Math.round(x * ps));
+      const np = Math.max(22, Math.round(26 * ps)), vp = Math.max(34, Math.round(44 * ps));
+      const h = [0, 1, 2].map(i => Math.round(d[i] * 0.3 + np * 1.1 + vp + 18 + [26, 12, 0][i] * ps));
+      const podBase = titleEnd + 4 + 24 * ps + d[0] * 0.7 + h[0];
+      return { d, h, np, vp, podBase, stride: Math.min(64, (srcTop - 10 - podBase - 12) / Math.max(1, list.length)) };
+    };
+    let P = podAt(1); for (let ps = 0.95; ps >= 0.7 && P.stride < 40; ps -= 0.05) P = podAt(ps);
+    const { d, h, podBase } = P, blockW = (W - 32) / 3;
+    const listTop = podBase + 12, stride = P.stride, H = Math.round(stride - 5);
     const tp = Math.max(28, Math.min(34, Math.round(H * 0.62)));
     const vals = list.map(r => +r.value).sort((a, b) => b - a);
     const broken = vals.length > 2 && vals[0] > 2.5 * vals[1];
@@ -235,14 +242,13 @@ $highlight = DwStudio::settings()['countries_always_included'];
     let html = '<div class="photo" style="height:960px">' + (clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline style="height:960px"></video>` : '<div class="noclip">🚩 No clip yet</div>') + '</div>';
     html += `<svg class="wave" style="top:872px" width="1080" height="90" viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0 22 C70 34 120 4 200 10 C270 15 320 30 400 14 L400 35 L0 35Z" fill="${bg}"/></svg>`;
     if (clip && clip.credit) html += `<div class="credit" style="top:150px">${esc(clip.credit)}</div>`;
-    const stickerTop = 960 - 100 - 44 * 1.15 - 22;
+    const stickerTop = 960 - 52 - 40 * 1.15 - 18;
     if (field('detail')) html += `<div class="sticker" style="top:${stickerTop}px">${esc(field('detail'))}</div>`;
-    html += `<div class="ask" style="top:${(field('detail') ? stickerTop - 34 : 840) - 104}px"><b>What's YOUR country's answer? 🌍</b><span>hilads.live 👉</span></div>`;
-    html += `<div class="head" style="top:954px;font-size:${px}px;line-height:${lh}px">${headHtml}</div>`;
+    html += `<div class="head" style="top:936px;font-size:${px}px;line-height:${lh}px">${headHtml}</div>`;
     [1, 0, 2].forEach((ri, col) => {
       const r = podium[ri]; if (!r) return;
       const x = 48 + col * (blockW + 16), top = podBase - h[ri];
-      html += `<div class="pod" style="left:${x}px;top:${top}px;width:${blockW}px;height:${h[ri]}px"><div>${esc(r.country)}</div><div class="v">${esc(val(r))}</div></div>`;
+      html += `<div class="pod" style="left:${x}px;top:${top}px;width:${blockW}px;height:${h[ri]}px;font-size:${P.np}px"><div>${esc(r.country)}</div><div class="v" style="font-size:${P.vp}px">${esc(val(r))}</div></div>`;
       if (+r.rank === 1) html += `<div class="champ" style="left:${x + blockW - 104}px;top:${top - 12}px">CHAMPION</div>`;
       html += `<div class="badge" style="left:${x + (blockW - d[ri]) / 2}px;top:${top - d[ri] * 0.7}px;width:${d[ri]}px;height:${d[ri]}px;font-size:${d[ri] * 0.5}px">${esc(r.flag)}<span class="medal">${['🥇', '🥈', '🥉'][+r.rank - 1] || ''}</span>${+r.rank === 1 ? '<span class="crown">👑</span>' : ''}</div>`;
     });
@@ -256,7 +262,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
         <div class="bar" style="left:${barX}px;top:${(H - 14) / 2}px;height:14px;width:${w}px"></div>
         <div class="val" style="left:${barX + w + 12}px;height:${H}px;font-size:${tp}px">${esc(val(r))}</div></div>`;
     });
-    html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="safe"></div>`;
+    html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="ask" style="top:1538px"><b>What's YOUR country's answer? 🌍</b><span>hilads.live 👉</span></div><div class="safe"></div>`;
     screen.innerHTML = html;
   }
 

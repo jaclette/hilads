@@ -22,6 +22,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
+import { END_SECONDS } from './src/reactionTiming.js';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
 
@@ -143,7 +144,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
-           question: c.outro_question ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
+           question: c.outro_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -336,6 +337,7 @@ async function renderReaction(data, { work, pub, out }) {
   // The on-screen question: the package's outro question (also read from its content, before the API sends it).
   const question = s.question ?? data.content?.outro_question ?? null;
   const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
+                       topic: s.topic ?? data.content?.topic ?? data.title ?? null,
                        // The card's color and the headline's accent words (also read from the content, before the API sends them);
                        // --card-bg / --accent try one before it is saved in the package.
                        cardBg: cardBgArg ?? s.cardBg ?? data.content?.card_bg ?? null, accent: accentArg ?? s.accent ?? data.content?.headline_accent ?? null };
@@ -346,13 +348,10 @@ async function renderReaction(data, { work, pub, out }) {
   const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNG…`);
   if (!pngOnly) await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
-  // The PNGs (carousels): 01 the video's last frame (everything shown), 02 the question slide at rest (with a question).
-  const pngs = [`${base}-01.png`];
-  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: composition.durationInFrames - 1 });
-  if (question) {
-    pngs.push(`${base}-02.png`);
-    await renderStill({ composition, serveUrl, output: pngs[1], inputProps: { ...inputProps, closing: true }, frame: 0 });
-  }
+  // The PNGs (carousels): 01 the ranking's last frame (everything shown, the CTA), 02 the video's last frame (the end card at rest).
+  const pngs = [`${base}-01.png`, `${base}-02.png`];
+  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: END_SECONDS * composition.fps - 1 });
+  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: composition.durationInFrames - 1 });
   console.log(`  saved: ${base}.mp4 and ${pngs.map((f) => path.basename(f).slice(-6)).join(', ')}`);
   await rm(work, { recursive: true, force: true });
   await rm(serveUrl, { recursive: true, force: true }).catch(() => {});

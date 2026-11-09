@@ -21,12 +21,12 @@ final class DwReaction
 {
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
-    public const VIDEO_SECONDS = 10;
+    public const VIDEO_SECONDS = 12.5;   // the ranking 10 s, the end card 2.5 s
     /** The video shows the first 10 rows (the podium + #4 to #10), "Top 10" in its source line when there are more. */
     public const SHOWN_ROWS = 10;
     public const HEADLINE_WORDS = 6;
     public const DETAIL_WORDS = 8;
-    /** The question: the carousel's question slide (PNG 02, a speech bubble) and the caption's last line. */
+    /** The question: the caption's last line (the video's end card asks "What's YOUR country's answer?"). */
     public const QUESTION_WORDS = 7;
     /** The ranking card's colors by name (tools/promo/src/Reaction.jsx: CARD_THEMES); any light #rrggbb works too. */
     public const CARD_THEMES = ['cream', 'yellow', 'green', 'pink', 'blue'];
@@ -97,7 +97,7 @@ final class DwReaction
             }
         }
         if (is_string($c['outro_question'] ?? null) && ($w = DwStudio::screenWords($c['outro_question'])) > self::QUESTION_WORDS) {
-            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': it is the question slide\'s bubble).';
+            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': the caption\'s last line).';
         }
         $tags = $c['hashtags'] ?? null;
         if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {
