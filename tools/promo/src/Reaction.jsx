@@ -1,8 +1,9 @@
 // "Different Worlds by Hilads", reaction + ranking format (Admin › Worlds, DwReaction): a silent 1080×1920
-// video of 10 s. 0–7 s, the light ranking card revealed step by step (TableScreen, below): the clip alone with its
-// sticker (the hook), the headline, the podium #3 → #2 → #1, the rows one by one, the source line and the series
-// mark; no call to action. 7–10 s, the closing slide (EndCard): the topic's own question and its invitation to
-// Hilads (cta_line, a button with hilads.live).
+// video of 12.5 s. 0–9.5 s, the light ranking card revealed in sequence (TableScreen, below): 0–3 s the clip and
+// the headline (its pop) alone, the hook; 3 s the detail's sticker; 4 s the podium #3, #2, #1, then the crown and
+// CHAMPION; 5–6 s the rows cascade top to bottom, then the source line and the series mark; then still, to read or
+// pause. No call to action. 9.5–12.5 s, the closing slide (EndCard): the topic's own question and its invitation to Hilads
+// (cta_line, a button with hilads.live).
 // worlds.mjs renders the video and two PNGs (carousels): 01 the ranking's last frame, 02 the closing slide.
 
 import { AbsoluteFill, Img, Loop, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
@@ -72,9 +73,9 @@ function ClipLoop({ clip, style }) {
 // in it. Bottom half: the headline (its accent words in terracotta), a compact podium for the top 3 (#1 in the middle,
 // the flags' colors), the rows #4 to #10 (a bar in the country's flag color), the source line. The CTA pops in over
 // the clip's lower part at the end. Nothing that matters in the apps' bottom 320 px or right 140 px.
-// Timeline (30 fps): 0–1.5 s the clip, the sticker pops; 1.5–2.5 s the headline slides in; 2.5–4.5 s the podium
-// #3, #2, #1 (blocks rise, values count up, the crown drops with confetti); 4.5–8 s the rows one by one (slide in,
-// the bar fills); 8 s the CTA; held to 10 s.
+// Timeline (30 fps): 0–3 s the clip and the headline alone (it pops); 3 s the sticker; 4 s the podium #3, 4.3 s #2,
+// 4.6 s #1 (blocks rise, values count up), 4.9 s the crown and CHAMPION (confetti); 5–6 s the rows cascade
+// (slide in, the bar fills); 6 s the source line and the mark fade in; still until the closing slide (9.5 s).
 
 const INK = '#2B1A12';
 const MUTED = '#8A6E5C';
@@ -251,13 +252,13 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const max = Math.max(1e-9, broken ? vals[1] * 1.15 : vals[0] ?? 1);
 
   // ── Timeline ──
-  const stickerIn = spr(S(0.3), { damping: 9, stiffness: 220, mass: 0.6 });
-  const titleIn = spr(S(1.2), { damping: 16, stiffness: 160, mass: 0.8 });
-  const podAt = { 2: S(2.0), 1: S(2.45), 0: S(2.9) };           // #3, #2, #1 (row index → start)
-  const crownAt = S(3.35);
+  const stickerIn = spr(S(3), { damping: 9, stiffness: 220, mass: 0.6 });
+  const titleIn = spr(0, { damping: 10, stiffness: 200, mass: 0.6 });
+  const podAt = { 2: S(4), 1: S(4.3), 0: S(4.6) };              // #3, #2, #1 (row index → start)
+  const crownAt = S(4.9);
   const crown = spr(crownAt, { damping: 9, stiffness: 260, mass: 0.6 });
-  const rowAt = (i) => S(3.7) + (list.length > 1 ? Math.round((S(2.4) * i) / Math.max(6, list.length - 1)) : 0);
-  const srcIn = clamp01((frame - S(3.7)) / 12);
+  const rowAt = (i) => S(5) + (list.length > 1 ? Math.round((S(0.75) * i) / (list.length - 1)) : 0);     // the last starts at 5.75 s
+  const srcIn = clamp01((frame - S(6)) / 9);
 
   const stickerLines = detail ? [detail] : [];
   let stickerPx = 30;
@@ -272,7 +273,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
       {/* Doodles, faint, behind the ranking. */}
       {[[doodle, 958, podTop + 10, 56, 14], ['〰', 8, listTop - 40, 60, -8], ['✦', 975, listTop + 160, 40, 0]]
         .filter(([e]) => e).map(([e, x, y, px, rot], i) => (
-          <div key={`d${i}`} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.15 * clamp01((frame - S(1.2)) / 15),
+          <div key={`d${i}`} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.15 * clamp01((frame - S(6)) / 9),
                                       color: TERRA, fontWeight: 800, transform: `rotate(${rot}deg)` }}>{e}</div>
         ))}
 
@@ -295,9 +296,9 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
                       transform: `rotate(-4deg) scale(${0.5 + 0.5 * stickerIn})`, opacity: clamp01(stickerIn * 2) }}>{detail}</div>
       )}
 
-      {/* The headline slides in from the left. */}
-      <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W, opacity: clamp01(titleIn * 1.5),
-                    transform: `translateX(${(1 - titleIn) * -120}px)` }}>
+      {/* The headline: on screen from the first frame, with a pop. */}
+      <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W, opacity: clamp01(0.4 + titleIn), transformOrigin: 'left center',
+                    transform: `scale(${0.85 + 0.15 * titleIn})` }}>
         {titleLines.map((l, i) => (
           <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: titlePx, lineHeight: `${titleLH}px`, whiteSpace: 'nowrap',
                                 letterSpacing: -0.5, paddingTop: titlePx * 0.08 }}>
