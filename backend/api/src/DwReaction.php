@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * The "reaction + ranking" format of a Different Worlds topic (dw_topics.format
  * = 'reaction'): one 8 s screen, a short funny reaction clip (Pixabay, DwPixabay)
- * in the top third and a ranking of up to 20 countries from ONE source under it
+ * in the top half and a ranking from ONE source under it (the video shows the top 10)
  * (tools/promo/src/Reaction.jsx renders the video and a PNG).
  *
  * A package's content: {format: "reaction", topic, headline, detail?, rows: [{rank,
@@ -21,10 +21,12 @@ final class DwReaction
 {
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
-    public const VIDEO_SECONDS = 8;
+    public const VIDEO_SECONDS = 10;
+    /** The video shows the first 10 rows (the podium + #4 to #10), "Top 10" in its source line when there are more. */
+    public const SHOWN_ROWS = 10;
     public const HEADLINE_WORDS = 6;
     public const DETAIL_WORDS = 8;
-    /** The question: the video's closing slide (7 to 10 s, a speech bubble) and the caption's last line. */
+    /** The question: the carousel's question slide (PNG 02, a speech bubble) and the caption's last line. */
     public const QUESTION_WORDS = 7;
     /** The ranking card's colors by name (tools/promo/src/Reaction.jsx: CARD_THEMES); any light #rrggbb works too. */
     public const CARD_THEMES = ['cream', 'yellow', 'green', 'pink', 'blue'];
@@ -76,6 +78,9 @@ final class DwReaction
             $warn[] = "The detail is {$w} words (max " . self::DETAIL_WORDS . ').';
         }
         [$rowErrors, $rowWarn] = self::checkRows($c['rows'] ?? null, $highlight);
+        if (is_array($c['rows'] ?? null) && count($c['rows']) > self::SHOWN_ROWS) {
+            $rowWarn[] = count($c['rows']) . ' rows: the video shows the top ' . self::SHOWN_ROWS . ' ("Top ' . self::SHOWN_ROWS . '" in its source line); the others are for the caption only.';
+        }
         array_push($errors, ...$rowErrors);
         array_push($warn, ...$rowWarn);
 
@@ -92,7 +97,7 @@ final class DwReaction
             }
         }
         if (is_string($c['outro_question'] ?? null) && ($w = DwStudio::screenWords($c['outro_question'])) > self::QUESTION_WORDS) {
-            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': it is the closing slide\'s bubble).';
+            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': it is the question slide\'s bubble).';
         }
         $tags = $c['hashtags'] ?? null;
         if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {

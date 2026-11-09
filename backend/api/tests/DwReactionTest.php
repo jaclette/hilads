@@ -102,6 +102,7 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame([], $warn);
         $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
@@ -129,6 +130,7 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame([], $warn);
         $this->assertSame('Vietnam', $c['rows'][0]['country']);
@@ -166,6 +168,7 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame(['The detail is 10 words (max 8).'], $warn);   // "1 Big Mac in Switzerland = almost 4 in Indonesia", as asked
         $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);
@@ -179,6 +182,7 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame([], $warn);
         $this->assertCount(20, $c['rows']);
@@ -193,6 +197,7 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame(['Vietnam is not in the ranking: add its row with its real rank only if the same source ranks it.'], $warn);
         $this->assertSame('International tourists per resident, countries & territories, 2019, last year before the pandemic · Sources: UN Tourism, UN World Population Prospects',
@@ -211,11 +216,31 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame(['The detail is 9 words (max 8).'], $warn);   // "UAE: 2 in 3 adults are dating their sofa", as asked
         $this->assertSame(['rank' => 73, 'country' => 'Vietnam'], array_intersect_key(end($c['rows']), ['rank' => 1, 'country' => 1]));
         $this->assertSame('one_decimal', DwReaction::normalize($c)['value_format']);
         $this->assertSame('% of adults not physically active enough, 2022 · Source: WHO', DwReaction::sourceLine($c));
+    }
+
+    /** The package tests predate the top 10 cut: its note is tested on its own (testMoreThanTenRowsAreNoted). */
+    private static function withoutTopTenNote(array $warn): array
+    {
+        return array_values(array_filter($warn, static fn($w) => !str_contains($w, 'the video shows the top')));
+    }
+
+    public function testMoreThanTenRowsAreNoted(): void
+    {
+        $file = __DIR__ . '/../../../docs/worlds/2026-11-15-reaction.json';
+        if (!is_file($file)) {
+            $this->markTestSkipped('docs/worlds is untracked');
+        }
+        $c = json_decode((string) file_get_contents($file), true)['content'];
+        [, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertContains('21 rows: the video shows the top 10 ("Top 10" in its source line); the others are for the caption only.', $warn);
+        $c['rows'] = array_slice($c['rows'], 0, 10);
+        $this->assertSame([], array_values(array_filter(DwReaction::validate($c, ['Vietnam'])[1], fn($w) => str_contains($w, 'the video shows the top'))));
     }
 
     public function testOneExtraHighlightedRowWithItsRealRank(): void
@@ -288,6 +313,7 @@ final class DwReactionTest extends TestCase
         }
         $c = json_decode((string) file_get_contents($file), true)['content'];
         [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $warn = self::withoutTopTenNote($warn);
         $this->assertSame([], $errors);
         $this->assertSame(['Vietnam is not in the ranking: add its row with its real rank only if the same source ranks it.'], $warn);
         $this->assertSame(DwStudio::fixCaptionEnding($c['caption'], DwSeed::CAPTION_CTA, $c['outro_question']), $c['caption']);

@@ -301,7 +301,7 @@ worlds_styles();
             <div class="form-group"><label>Format</label><select name="format">
                 <option value="slides"<?= $topic['format'] === 'slides' ? ' selected' : '' ?>>slides (hook, 5 to 6 countries, outro)</option>
                 <option value="reaction"<?= $topic['format'] === 'reaction' ? ' selected' : '' ?>>reaction + ranking (one 8 s screen)</option></select>
-                <div class="worlds-muted">Reaction: a Pixabay reaction clip on top, a ranking of up to 20 countries from one source under it. A new format needs a new package.</div></div>
+                <div class="worlds-muted">Reaction: a Pixabay reaction clip on top, the top 10 of a ranking from one source revealed under it. A new format needs a new package.</div></div>
             <div class="form-group"><label>Visual mode <span class="worlds-muted">(slides format)</span></label><select name="visual_mode">
                 <option value="image"<?= $video ? '' : ' selected' ?>>image (photos)</option>
                 <option value="video"<?= $video ? ' selected' : '' ?>>video (clips in the photo square)</option></select>

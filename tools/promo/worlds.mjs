@@ -24,7 +24,6 @@ import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
-import { TABLE_SECONDS, ZOOM_FRAMES } from './src/reactionTiming.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
@@ -347,13 +346,12 @@ async function renderReaction(data, { work, pub, out }) {
   const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNG…`);
   if (!pngOnly) await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
-  // The PNGs (carousels): 01 the table screen (its last frame before the closing slide), 02 the closing slide at rest;
-  // without a question, 01 alone (the last frame).
+  // The PNGs (carousels): 01 the video's last frame (everything shown), 02 the question slide at rest (with a question).
   const pngs = [`${base}-01.png`];
-  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: question ? TABLE_SECONDS * composition.fps - ZOOM_FRAMES - 1 : composition.durationInFrames - 1 });
+  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: composition.durationInFrames - 1 });
   if (question) {
     pngs.push(`${base}-02.png`);
-    await renderStill({ composition, serveUrl, output: pngs[1], inputProps: { ...inputProps, still: true }, frame: composition.durationInFrames - 1 });
+    await renderStill({ composition, serveUrl, output: pngs[1], inputProps: { ...inputProps, closing: true }, frame: 0 });
   }
   console.log(`  saved: ${base}.mp4 and ${pngs.map((f) => path.basename(f).slice(-6)).join(', ')}`);
   await rm(work, { recursive: true, force: true });

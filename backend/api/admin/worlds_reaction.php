@@ -13,7 +13,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= trim((string) ($c['outro_question'] ?? '')) !== '' ? '10 s (table 7 s + question 3 s)' : DwReaction::VIDEO_SECONDS . ' s' ?></span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?><?= trim((string) ($c['outro_question'] ?? '')) !== '' ? ' · PNG 02: the question' : '' ?></span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -45,7 +45,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
         </div>
     </div>
 <?php else: ?>
-    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 8 s video and the PNG, and uploads them here).</p>
+    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 10 s video and the PNGs, and uploads them here).</p>
 <?php endif; ?>
 
 <?php if (!empty($c['warnings'])): ?>
@@ -55,7 +55,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 <div class="rx-layout" data-package="<?= $pkg['id'] ?>">
     <div>
         <div class="rx-frame"><div class="rx-screen" id="rx-screen"></div></div>
-        <div class="worlds-muted" style="margin-top:6px">Live preview of the last frame (the video and the PNG are rendered on the Mac).</div>
+        <div class="worlds-muted" style="margin-top:6px">Live preview of the video's last frame (striped: the apps' caption zone; the video and the PNGs are rendered on the Mac).</div>
     </div>
     <div>
         <div class="form-card" style="max-width:none;margin-bottom:16px">
@@ -120,7 +120,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (the closing slide\'s bubble, 7 to 10 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (PNG 02\'s bubble, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
     </div>
@@ -137,30 +137,32 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .noclip { width:1080px; height:100%; display:flex; align-items:center; justify-content:center; background:#2a0f0f; color:#f87171; font-size:48px; font-weight:800; }
 .rx-screen .wave { position:absolute; left:0; }
 .rx-screen .credit { position:absolute; right:24px; top:24px; font-size:18px; font-weight:600; color:rgba(255,255,255,.85); background:rgba(0,0,0,.4); border-radius:14px; padding:4px 12px; }
-.rx-screen .sticker { position:absolute; left:44px; max-width:900px; background:#FFC93C; border-radius:26px; padding:12px 26px 8px; box-shadow:0 8px 0 #C9940F;
-                      font:800 40px 'Baloo 2', 'Be Vietnam Pro', sans-serif; transform:rotate(-4deg); transform-origin:10% 100%; }
-.rx-screen .head { position:absolute; left:56px; width:968px; font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; font-weight:800; letter-spacing:-.5px; }
+.rx-screen .sticker { position:absolute; left:40px; background:#FFC93C; border-radius:24px; padding:11px 24px 7px; box-shadow:0 7px 0 #C9940F; white-space:nowrap;
+                      font:800 44px 'Baloo 2', 'Be Vietnam Pro', sans-serif; transform:rotate(-4deg); transform-origin:10% 100%; }
+.rx-screen .ask { position:absolute; left:48px; width:892px; height:100px; display:flex; align-items:center; justify-content:space-between; gap:14px;
+                  background:rgba(255,246,233,.97); border-radius:28px; padding:0 14px 0 26px; box-sizing:border-box; box-shadow:0 10px 26px rgba(40,20,5,.3);
+                  font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; font-weight:800; }
+.rx-screen .ask b { font-size:34px; white-space:nowrap; }
+.rx-screen .ask span { background:#C24E1C; color:#fff; font-size:32px; border-radius:22px; padding:10px 22px 4px; box-shadow:0 6px 0 #8A330F; white-space:nowrap; }
+.rx-screen .head { position:absolute; left:48px; width:892px; font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; font-weight:800; letter-spacing:-.5px; white-space:nowrap; }
 .rx-screen .head em { font-style:normal; color:#C24E1C; }
-.rx-screen .pod { position:absolute; border-radius:26px 26px 12px 12px; background:linear-gradient(#F59A6A, #C9612C); box-shadow:0 8px 0 #9C4A20; color:#fff;
-                  display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:14px; box-sizing:border-box; font-weight:800; text-align:center; }
-.rx-screen .pod .v { font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; }
-.rx-screen .pod .champ { background:#FFC93C; color:#2B1A12; border-radius:10px; padding:3px 12px; letter-spacing:1.5px; transform:rotate(-3deg); margin-top:4px; }
-.rx-screen .badge { position:absolute; border-radius:50%; background:#fff; border-style:solid; border-color:#F2783A; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
-.rx-screen .crown { position:absolute; top:-38%; transform:rotate(-10deg); }
-.rx-screen .row { position:absolute; left:56px; width:888px; background:#fff; box-shadow:0 4px 0 rgba(150,90,40,.13); box-sizing:border-box; }
+.rx-screen .pod { position:absolute; border-radius:22px 22px 10px 10px; background:linear-gradient(#F59A6A, #C9612C); box-shadow:0 6px 0 #9C4A20; color:#fff;
+                  display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:10px; box-sizing:border-box; font-weight:800; font-size:26px; }
+.rx-screen .pod .v { font:800 44px 'Baloo 2', 'Be Vietnam Pro', sans-serif; padding-top:6px; }
+.rx-screen .champ { position:absolute; background:#FFC93C; color:#2B1A12; font-size:15px; font-weight:800; letter-spacing:1.2px; border-radius:8px; padding:2px 8px; transform:rotate(6deg); }
+.rx-screen .badge { position:absolute; border-radius:50%; background:#fff; border:6px solid #F2783A; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+.rx-screen .badge .medal { position:absolute; right:-20px; bottom:-8px; font-size:36px; }
+.rx-screen .badge .crown { position:absolute; top:-46px; font-size:44px; transform:rotate(-10deg); }
+.rx-screen .row { position:absolute; left:48px; width:892px; background:#fff; border-radius:16px; box-shadow:0 3px 0 rgba(150,90,40,.13); box-sizing:border-box; }
 .rx-screen .row.hot { background:#FFF0E4; border:3px solid #C24E1C; }
 .rx-screen .row > * { position:absolute; top:0; display:flex; align-items:center; white-space:nowrap; }
-.rx-screen .rank { left:14px; justify-content:flex-end; font-weight:800; color:#8A6E5C; }
-.rx-screen .name { font-weight:800; overflow:visible; }
-.rx-screen .bar { border-radius:8px; background:#F2783A; }
+.rx-screen .rank { left:12px; justify-content:flex-end; font-weight:800; color:#8A6E5C; }
+.rx-screen .name { font-weight:800; }
+.rx-screen .bar { border-radius:7px; background:#F2783A; }
 .rx-screen .val { font-weight:800; }
 .rx-screen .hot .rank, .rx-screen .hot .val { color:#C24E1C; }
-.rx-screen .gap { position:absolute; left:56px; width:888px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#8A6E5C; }
-.rx-screen .ask { position:absolute; left:56px; top:1650px; width:888px; display:flex; align-items:center; justify-content:space-between; gap:20px;
-                  font-family:'Baloo 2', 'Be Vietnam Pro', sans-serif; font-weight:800; }
-.rx-screen .ask b { font-size:38px; white-space:nowrap; }
-.rx-screen .ask span { background:#C24E1C; color:#fff; font-size:34px; border-radius:24px; padding:14px 26px 8px; box-shadow:0 7px 0 #8A330F; white-space:nowrap; }
-.rx-screen .source { position:absolute; left:56px; top:1746px; width:888px; font-size:20px; line-height:1.25; font-weight:600; color:#8A6E5C; }
+.rx-screen .source { position:absolute; left:48px; width:892px; font-size:24px; line-height:30px; font-weight:600; color:#6E5444; }
+.rx-screen .safe { position:absolute; left:0; top:1600px; width:1080px; height:320px; background:repeating-linear-gradient(45deg, rgba(0,0,0,.04) 0 12px, transparent 12px 24px); }
 .rx-rows { width:100%; border-collapse:collapse; }
 .rx-rows th { text-align:left; color:#888; font-size:12px; font-weight:600; padding:2px 4px; }
 .rx-rows td { padding:2px 4px; }
@@ -197,63 +199,64 @@ $highlight = DwStudio::settings()['countries_always_included'];
   const cardColor = v => { v = String(v || '').trim().toLowerCase(); return THEMES[v] || (/^#[0-9a-f]{6}$/.test(v) ? v : THEMES.cream); };
   const BALOO = "'Baloo 2', 'Be Vietnam Pro', system-ui, sans-serif";
   function render() {
+    // The video's last frame (Reaction.jsx TableScreen, simplified): the clip on the top half, the sticker and the CTA
+    // over its lower part, the headline, the podium and the rows #4 to #10 above the apps' caption (bottom 320 px).
     const screen = document.getElementById('rx-screen');
-    const ok = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
+    const all = rows.filter(r => r.country && r.value !== '' && !isNaN(+r.value));
+    const ok = all.slice(0, 10), cut = all.length > 10;
     const year = field('data_years') || field('data_year'), what = field('value_label');
     const first = [what, year].filter(Boolean).join(', ');
-    const srcText = (first ? first + ' · ' : '') + (field('source').includes(', ') ? 'Sources: ' : 'Source: ') + field('source');
+    const srcText = (cut ? 'Top 10 · ' : '') + (first ? first + ' · ' : '') + (field('source').includes(', ') ? 'Sources: ' : 'Source: ') + field('source');
     const vf = <?= json_encode($c['value_format'] ?? null) ?>;
-    const pctDec = rows.some(r => r.unit === '%' && !Number.isInteger(+r.value));
+    const pctDec = ok.some(r => r.unit === '%' && !Number.isInteger(+r.value));
     const fmt = (v, unit) => (+v).toFixed(vf === 'ratio' ? (+v < 10 ? 1 : 0) : vf === 'one_decimal' ? 1 : unit === '%' ? (pctDec ? 1 : 0) : (Number.isInteger(+v) ? 0 : 1));
     const val = r => r.unit === '$' ? '$' + (+r.value).toFixed(2) : fmt(r.value, r.unit) + (r.unit === '%' ? '%' : String(r.unit).length <= 3 ? ' ' + r.unit : '');
     const bg = cardColor(field('card_bg'));
-    const podium = ok.slice(0, 3), list = ok.slice(3), gaps = list.filter(r => r.gap_before).length;
-    const t = Math.max(0, Math.min(1, (list.length - 7) / 10)), photoH = Math.round(560 - 150 * t), s = 1 - 0.3 * t;
-    // The headline: up to 2 lines from 64 px down to 44.
+    const podium = ok.slice(0, 3), list = ok.slice(3), W = 892;
     const head = field('headline'), acc = field('headline_accent').toLowerCase(), at = acc ? head.toLowerCase().indexOf(acc) : -1;
-    let px = 64; while (px > 44 && textW(head, px, 800, BALOO) > 2 * 968 * 0.95) px -= 2;
-    const lines = Math.min(3, Math.ceil(textW(head, px, 800, BALOO) / 968)), lh = Math.round(px * 1.08);
+    let px = 56; while (px > 46 && textW(head, px, 800, BALOO) > W) px -= 2;
+    let lines = 1; if (textW(head, px, 800, BALOO) > W) { lines = 2; px = 48; while (px > 36 && textW(head, px, 800, BALOO) > 2 * W * 0.92) px -= 2; }
+    const lh = Math.round(px * 1.04), titleEnd = 954 + lines * lh;
     const headHtml = at < 0 ? esc(head) : esc(head.slice(0, at)) + `<em>${esc(head.slice(at, at + acc.length))}</em>` + esc(head.slice(at + acc.length));
-    const titleEnd = photoH + 4 + lines * lh;
-    const d = [150 * s, 118 * s, 118 * s], h = [236 * s, 196 * s, 172 * s], blockW = (888 - 44) / 3;
-    const podTop = titleEnd + 22 + 44 * s, podBase = podTop + d[0] * 0.82 + h[0];
-    const listTop = podBase + 26, slot = list.length ? (1650 - 26 - listTop) / (list.length + 0.6 * gaps) : 0;
-    const H = Math.min(76, Math.round(slot * 0.86)), stride = Math.min(slot, H + 12), k = H / 70;
+    const srcLines = Math.min(3, Math.ceil(textW(srcText, 24, 600) * 1.06 / W)), srcTop = 1600 - srcLines * 30;
+    const d = lines > 1 ? [66, 56, 56] : [74, 62, 62];
+    const h = [0, 1, 2].map(i => Math.round(d[i] * 0.3 + 92 + [lines > 1 ? 18 : 26, lines > 1 ? 8 : 12, 0][i]));
+    const podTop = titleEnd + 30, podBase = podTop + d[0] * 0.7 + h[0], blockW = (W - 32) / 3;
+    const listTop = podBase + 12, stride = Math.min(64, (srcTop - 10 - listTop) / Math.max(1, list.length)), H = Math.round(stride - 5);
+    const tp = Math.max(28, Math.min(34, Math.round(H * 0.62)));
     const vals = list.map(r => +r.value).sort((a, b) => b - a);
     const broken = vals.length > 2 && vals[0] > 2.5 * vals[1];
     const max = Math.max(1e-9, broken ? vals[1] * 1.15 : (vals[0] || 1));
-    const valW = Math.max(0, ...list.map(r => textW(val(r), 30 * k, 800))) + 6;
-    const nameX = 14 + 44 * k + 12 + H * 0.6 + 14;
-    const nameW = Math.min(888 * 0.44, Math.max(888 * 0.26, ...list.map(r => textW(r.country, 30 * k, 800))));
-    const barX = nameX + nameW + 18, barMax = Math.max(40, 888 - 20 - valW - 16 - barX);
+    const valW = Math.max(0, ...list.map(r => textW(val(r), tp, 800))) + 6;
+    const nameX = 12 + 40 + 10 + Math.round(H * 0.62) + 12;
+    const nameW = Math.min(W * 0.42, Math.max(W * 0.24, ...list.map(r => textW(r.country, tp, 800))));
+    const barX = nameX + nameW + 16, barMax = Math.max(40, W - 16 - valW - 14 - barX);
     screen.style.background = bg;
-    let html = `<div class="photo" style="height:${photoH}px">` + (clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline style="height:${photoH}px"></video>` : '<div class="noclip">🚩 No clip yet</div>') + '</div>';
-    html += `<svg class="wave" style="top:${photoH - 94}px" width="1080" height="96" viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0 22 C70 34 120 4 200 10 C270 15 320 30 400 14 L400 35 L0 35Z" fill="${bg}"/></svg>`;
-    if (clip && clip.credit) html += `<div class="credit">${esc(clip.credit)}</div>`;
-    if (field('detail')) html += `<div class="sticker" style="bottom:${1920 - photoH + 110}px">${esc(field('detail'))}</div>`;
-    html += `<div class="head" style="top:${photoH + 4}px;font-size:${px}px;line-height:${lh}px">${headHtml}</div>`;
+    let html = '<div class="photo" style="height:960px">' + (clip ? `<video class="clip" src="${esc(clip.url)}" muted loop autoplay playsinline style="height:960px"></video>` : '<div class="noclip">🚩 No clip yet</div>') + '</div>';
+    html += `<svg class="wave" style="top:872px" width="1080" height="90" viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0 22 C70 34 120 4 200 10 C270 15 320 30 400 14 L400 35 L0 35Z" fill="${bg}"/></svg>`;
+    if (clip && clip.credit) html += `<div class="credit" style="top:150px">${esc(clip.credit)}</div>`;
+    const stickerTop = 960 - 100 - 44 * 1.15 - 22;
+    if (field('detail')) html += `<div class="sticker" style="top:${stickerTop}px">${esc(field('detail'))}</div>`;
+    html += `<div class="ask" style="top:${(field('detail') ? stickerTop - 34 : 840) - 104}px"><b>What's YOUR country's answer? 🌍</b><span>hilads.live 👉</span></div>`;
+    html += `<div class="head" style="top:954px;font-size:${px}px;line-height:${lh}px">${headHtml}</div>`;
     [1, 0, 2].forEach((ri, col) => {
       const r = podium[ri]; if (!r) return;
-      const x = 56 + col * (blockW + 22), top = podBase - h[ri];
-      html += `<div class="pod" style="left:${x}px;top:${top}px;width:${blockW}px;height:${h[ri]}px;font-size:${32 * s}px">
-        <div style="font-size:${52 * s}px">${['🥇', '🥈', '🥉'][+r.rank - 1] || ''}</div><div>${esc(r.country)}</div>
-        <div class="v" style="font-size:${54 * s}px">${esc(val(r))}</div>${+r.rank === 1 ? `<div class="champ" style="font-size:${20 * s}px">CHAMPION</div>` : ''}</div>
-        <div class="badge" style="left:${x + (blockW - d[ri]) / 2}px;top:${top - d[ri] * 0.82}px;width:${d[ri]}px;height:${d[ri]}px;border-width:${8 * s}px;font-size:${d[ri] * 0.5}px">${esc(r.flag)}${+r.rank === 1 ? `<span class="crown" style="font-size:${60 * s}px">👑</span>` : ''}</div>`;
+      const x = 48 + col * (blockW + 16), top = podBase - h[ri];
+      html += `<div class="pod" style="left:${x}px;top:${top}px;width:${blockW}px;height:${h[ri]}px"><div>${esc(r.country)}</div><div class="v">${esc(val(r))}</div></div>`;
+      if (+r.rank === 1) html += `<div class="champ" style="left:${x + blockW - 104}px;top:${top - 12}px">CHAMPION</div>`;
+      html += `<div class="badge" style="left:${x + (blockW - d[ri]) / 2}px;top:${top - d[ri] * 0.7}px;width:${d[ri]}px;height:${d[ri]}px;font-size:${d[ri] * 0.5}px">${esc(r.flag)}<span class="medal">${['🥇', '🥈', '🥉'][+r.rank - 1] || ''}</span>${+r.rank === 1 ? '<span class="crown">👑</span>' : ''}</div>`;
     });
-    let y = listTop;
     list.forEach((r, i) => {
-      if (r.gap_before) { html += `<div class="gap" style="top:${y}px;height:${stride * 0.6}px;font-size:${26 * k}px;letter-spacing:${14 * k}px">• • •</div>`; y += stride * 0.6; }
       const hot = r.highlight === true || highlight.includes(String(r.country).trim().toLowerCase());
       const isBroken = broken && +r.value > max, w = isBroken ? barMax : Math.max(10, barMax * (+r.value) / max);
-      html += `<div class="row${hot ? ' hot' : ''}" style="top:${y}px;height:${H}px;border-radius:${18 * k}px">
-        <div class="rank" style="width:${44 * k}px;height:${H}px;font-size:${28 * k}px">${esc(r.rank)}</div>
-        <div style="left:${14 + 44 * k + 12}px;height:${H}px;font-size:${H * 0.5}px">${esc(r.flag)}</div>
-        <div class="name" style="left:${nameX}px;width:${nameW}px;height:${H}px;font-size:${30 * k}px">${esc(r.country)}</div>
-        <div class="bar" style="left:${barX}px;top:${(H - 16 * k) / 2}px;height:${16 * k}px;width:${w}px"></div>
-        <div class="val" style="left:${barX + w + 12}px;height:${H}px;font-size:${30 * k}px">${esc(val(r))}</div></div>`;
-      y += stride;
+      html += `<div class="row${hot ? ' hot' : ''}" style="top:${listTop + i * stride}px;height:${H}px">
+        <div class="rank" style="width:40px;height:${H}px;font-size:${tp - 2}px">${esc(r.rank)}</div>
+        <div style="left:62px;height:${H}px;font-size:${H * 0.5}px">${esc(r.flag)}</div>
+        <div class="name" style="left:${nameX}px;width:${nameW}px;height:${H}px;font-size:${tp}px">${esc(r.country)}</div>
+        <div class="bar" style="left:${barX}px;top:${(H - 14) / 2}px;height:14px;width:${w}px"></div>
+        <div class="val" style="left:${barX + w + 12}px;height:${H}px;font-size:${tp}px">${esc(val(r))}</div></div>`;
     });
-    html += `<div class="ask"><b>What's YOUR country's answer? 🌍</b><span>hilads.live 👉</span></div><div class="source">${esc(srcText)}</div>`;
+    html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="safe"></div>`;
     screen.innerHTML = html;
   }
 

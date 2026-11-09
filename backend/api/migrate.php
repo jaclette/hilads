@@ -4446,6 +4446,22 @@ try {
     echo "  ERR dw Nov 10 texts: " . $e->getMessage() . "\n";
 }
 
+// Once: the reaction video now shows the top 10: two headlines that promised 20, through DwStudio::updateField
+// (as the admin's field); only while the old headline is there.
+try {
+    foreach (['2026-11-11' => ['20 countries full of singles 😎', '10 countries full of singles 😎'],
+              '2026-11-15' => ['The 20 Sunday couch champions 🛋️', 'The 10 Sunday couch champions 🛋️']] as $date => [$old, $new]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg !== null && ($pkg['content']['headline'] ?? null) === $old) {
+            DwStudio::updateField($pkg['id'], 'headline', $new);
+            echo "  OK  dw: {$date} headline \"{$new}\" (the video shows the top 10)\n";
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw top 10 headlines: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
