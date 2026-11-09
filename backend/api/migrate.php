@@ -4349,6 +4349,29 @@ JSON, true, 512, JSON_THROW_ON_ERROR);
     echo "  ERR daily 2026-11-09 replacement: " . $e->getMessage() . "\n";
 }
 
+// Once: two reaction questions shortened to fit the on-screen question (max 7 words), through DwStudio::updateField
+// (as the admin's field: the caption's last line follows). Only while each still has its old text.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $short = [
+        '2026-11-09' => ['How many packs did YOU eat this week? 🍜', 'How many packs this week? 🍜'],
+        '2026-11-12' => ['How much is a Big Mac where you live? 🍔', 'Big Mac price where you live? 🍔'],
+    ];
+    foreach ($short as $date => [$old, $new]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg !== null && ($pkg['content']['outro_question'] ?? null) === $old) {
+            DwStudio::updateField($pkg['id'], 'outro_question', $new);
+            echo "  OK  dw: {$date} question \"{$new}\"\n";
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw short questions: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

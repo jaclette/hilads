@@ -20,6 +20,11 @@ const CLIP_H = 640;
 const ROW_H = 44;                         // a row's height with 20 rows; fewer rows grow (rowSize)
 const ROWS_TOP = 812;
 const ROWS_END = 1736;                    // the source line and the mark come after
+const ROW_MIN = 38;                       // rows shrink down to this before the question does
+const Q_PX = 42;                          // the question under the source line, bold, accent
+const Q_MIN_PX = 32;
+const Q_SPACE = 66;                       // its line and the gap above it
+const Q_AT = 3.5;                         // seconds: it pops in, then stays
 const ROW_SCALE_MAX = 1.4;
 const GAP = 0.7;                          // a "…" separator, in rows
 const BAR_X = 520;                        // where the bars start
@@ -58,10 +63,13 @@ const headlineSize = (text) => fitSize(text, HEADLINE_MAX, HEADLINE_MIN);
  * source, highlight: [country], clip: {src, seconds, credit} | null}. gap_before: a "…" separator above the row (the
  * ranking skips to it); highlight: that row in the accent color too (e.g. a reference country).
  */
-export function ReactionRanking({ headline, detail, rows, source, highlight = [], clip, valueFormat = null }) {
+export function ReactionRanking({ headline, detail, rows, source, highlight = [], clip, valueFormat = null, question = null }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const pop = spring({ frame, fps, config: { damping: 12, stiffness: 320, mass: 0.5 } });
+  // The question (the package's outro question): at 3.5 s, with the headline's pop, then still to the end.
+  const q = (question ?? '').trim();
+  const qPop = spring({ frame: frame - Math.round(Q_AT * fps), fps, config: { damping: 12, stiffness: 320, mass: 0.5 } });
   // One runaway value (more than 2.5× the next): its bar is broken (drawn full with a "//" mark), the others
   // are scaled to the second, so they stay readable.
   const sortedVals = rows.map((r) => Number(r.value)).sort((a, b) => b - a);
@@ -71,10 +79,13 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   const px = headlineSize(headline);
   // Each value as the source gives it: 81, 79.2 (a whole number shows no decimal); a price in dollars: $9.04.
   // valueFormat "ratio": one decimal below 10, whole numbers from 10 (4.0, 8.9, 45); "one_decimal": always one (52.0).
-  const fmt = (v) => Number(v).toFixed(valueFormat === 'ratio' ? (Number(v) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1 : (Number.isInteger(Number(v)) ? 0 : 1));
+  // Default: percentages all with one decimal as soon as one has it (52.0% next to 51.8%); other units as given (81, 79.2).
+  const pctDecimals = rows.some((r) => r.unit === '%' && !Number.isInteger(Number(r.value)));
+  const fmt = (v, unit) => Number(v).toFixed(valueFormat === 'ratio' ? (Number(v) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1
+    : unit === '%' ? (pctDecimals ? 1 : 0) : (Number.isInteger(Number(v)) ? 0 : 1));
   // A short unit (%, L) on every row; a long one ("servings") on the first row only, the source line says it.
   const label = (r, i) => r.unit === '$' ? `$${Number(r.value).toFixed(2)}`
-    : `${fmt(r.value)}${r.unit === '%' ? '' : ' '}${r.unit.length <= 3 || i === 0 ? r.unit : ''}`.trim();
+    : `${fmt(r.value, r.unit)}${r.unit === '%' ? '' : ' '}${r.unit.length <= 3 || i === 0 ? r.unit : ''}`.trim();
   // Fewer rows are taller, with everything in them larger (up to 1.4×), to fill the space.
   // Row i appears (0 → 1) at its turn: top to bottom within 0.5 s.
   const rowIn = (i) => {
@@ -84,9 +95,9 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
   // The source line: one line (20 down to 16 px), else two lines at 16 px, the rows giving it room.
   const srcPx = fitSize(source, 20, 16, 600);
   const srcTwoLines = measure(source, 16, 600) > RIGHT - LEFT;
-  const rowsLimit = ROWS_END - (srcTwoLines ? 24 : 0);
+  const rowsLimit = ROWS_END - (srcTwoLines ? 24 : 0) - (q ? Q_SPACE : 0);
   const gaps = rows.filter((r) => r.gap_before).length;
-  const rowH = Math.max(ROW_H, Math.min(Math.round(ROW_H * ROW_SCALE_MAX), Math.floor((rowsLimit - ROWS_TOP) / Math.max(1, rows.length + GAP * gaps))));
+  const rowH = Math.max(q ? ROW_MIN : ROW_H, Math.min(Math.round(ROW_H * ROW_SCALE_MAX), Math.floor((rowsLimit - ROWS_TOP) / Math.max(1, rows.length + GAP * gaps))));
   // Each row's top: a "…" separator (GAP of a row) above a row that follows a skip in the ranking.
   const tops = [];
   rows.reduce((y, r) => { const top = y + (r.gap_before ? rowH * GAP : 0); tops.push(top); return top + rowH; }, ROWS_TOP);
@@ -161,6 +172,12 @@ export function ReactionRanking({ headline, detail, rows, source, highlight = []
 
       <div style={{ position: 'absolute', left: LEFT, top: rowsEnd + (srcTwoLines ? 8 : 14), width: RIGHT - LEFT, fontSize: srcPx, lineHeight: 1.25,
                     fontWeight: 600, whiteSpace: srcTwoLines ? 'normal' : 'nowrap', color: 'rgba(255,255,255,0.55)' }}>{source}</div>
+
+      {q ? (
+        <div style={{ position: 'absolute', left: LEFT, top: rowsEnd + (srcTwoLines ? 8 : 14) + (srcTwoLines ? 42 : 26) + 14, width: RIGHT - LEFT,
+                      fontSize: fitSize(q, Q_PX, Q_MIN_PX), lineHeight: 1.2, fontWeight: 800, color: ACCENT, whiteSpace: 'nowrap',
+                      transformOrigin: 'left center', opacity: frame < Q_AT * fps ? 0 : Math.min(1, qPop * 1.4), transform: `scale(${0.92 + 0.08 * qPop})` }}>{q}</div>
+      ) : null}
 
       <div style={{ position: 'absolute', left: LEFT, top: 1792, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Img src={staticFile('logo.svg')} style={{ width: 48, height: 48 }} />

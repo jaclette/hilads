@@ -117,7 +117,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Outro question (caption only)', (string) ($c['outro_question'] ?? '')); ?>
+        <?php worlds_field('outro_question', 'Question (on screen from 3.5 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
     </div>
@@ -137,6 +137,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 .rx-screen .head b { display:block; font-size:60px; line-height:74px; font-weight:800; white-space:nowrap; }
 .rx-screen .head span { display:block; font-size:34px; font-weight:600; color:rgba(255,255,255,.78); margin-top:6px; }
 .rx-screen .row { position:absolute; left:56px; width:968px; height:44px; border-radius:10px; border:2px solid transparent; box-sizing:border-box; }
+.rx-screen .question { position:absolute; left:72px; width:936px; font-weight:800; color:#FF7A3D; white-space:nowrap; line-height:1.2; }
 .rx-screen .gap { position:absolute; left:56px; width:968px; display:flex; align-items:center; justify-content:center; font-weight:800; color:rgba(255,255,255,.5); }
 .rx-screen .row.alt { background:rgba(255,255,255,.045); }
 .rx-screen .row.hot { background:rgba(255,122,61,.18); border-color:#FF7A3D; }
@@ -192,15 +193,17 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const first = [what, year].filter(Boolean).join(', ');
     const srcText = (first ? first + ' · ' : '') + (field('source').includes(', ') ? 'Sources: ' : 'Source: ') + field('source');
     const srcTwo = textW(srcText, 16, 600) > 936;   // as Reaction.jsx: two lines, the rows giving them room
-    const TOP = 812, END = 1736 - (srcTwo ? 24 : 0);
+    const question = field('outro_question');   // shown under the source line (Reaction.jsx), from 3.5 s in the video
+    const TOP = 812, END = 1736 - (srcTwo ? 24 : 0) - (question ? 66 : 0);
     const GAP = 0.7, gaps = ok.filter(r => r.gap_before).length;
-    const H = Math.max(44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length + GAP * gaps)))), k = H / 44;
+    const H = Math.max(question ? 38 : 44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length + GAP * gaps)))), k = H / 44;
     const tops = []; ok.reduce((y, r) => { const t = y + (r.gap_before ? H * GAP : 0); tops.push(t); return t + H; }, TOP);
     const rowsEnd = ok.length ? tops[tops.length - 1] + H : TOP;
     const vf = <?= json_encode($c['value_format'] ?? null) ?>;
-    const fmt = v => (+v).toFixed(vf === 'ratio' ? (+v < 10 ? 1 : 0) : vf === 'one_decimal' ? 1 : (Number.isInteger(+v) ? 0 : 1));
+    const pctDec = rows.some(r => r.unit === '%' && !Number.isInteger(+r.value));
+    const fmt = (v, unit) => (+v).toFixed(vf === 'ratio' ? (+v < 10 ? 1 : 0) : vf === 'one_decimal' ? 1 : unit === '%' ? (pctDec ? 1 : 0) : (Number.isInteger(+v) ? 0 : 1));
     const val = (r, i) => r.unit === '$' ? '$' + (+r.value).toFixed(2)
-      : (fmt(r.value) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
+      : (fmt(r.value, r.unit) + (r.unit === '%' ? '' : ' ') + (String(r.unit).length <= 3 || i === 0 ? r.unit : '')).trim();
     const rankW = 50 * k, flagX = 14 + rankW + 16, nameX = flagX + 30 * k + 14;
     const barX = Math.max(464, nameX + Math.max(0, ...ok.map(r => textW(r.country, 29 * k, 700))) + 24);
     const barMax = Math.min(358, 968 - 18 - barX - 14 - Math.max(0, ...ok.map((r, i) => textW(val(r, i), 27 * k, 800))));
@@ -223,6 +226,10 @@ $highlight = DwStudio::settings()['countries_always_included'];
         <div class="val" style="left:${barX + w + 14}px;height:${H - 4}px;font-size:${27 * k}px">${esc(val(r, i))}</div></div>`;
     });
     html += `<div class="source" style="top:${rowsEnd + (srcTwo ? 8 : 14)}px;font-size:${srcTwo ? 16 : 18}px">${esc(srcText)}</div>`;
+    if (question) {
+      let qp = 42; while (qp > 32 && textW(question, qp, 800) > 936) qp -= 1;
+      html += `<div class="question" style="top:${rowsEnd + (srcTwo ? 8 : 14) + (srcTwo ? 42 : 26) + 14}px;font-size:${qp}px">${esc(question)}</div>`;
+    }
     html += '<div class="mark"><div><i>DIFFERENT WORLDS</i> by Hilads</div><div>Compare your city on <i style="letter-spacing:0">hilads.live</i></div></div>';
     screen.innerHTML = html;
   }

@@ -138,6 +138,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
+           question: c.outro_question ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -327,7 +328,9 @@ async function renderReaction(data, { work, pub, out }) {
   }
   await pruneClips();
   const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), flag: r.flag ? flagFile(r.flag) : null }));
-  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null };
+  // The on-screen question: the package's outro question (also read from its content, before the API sends it).
+  const question = s.question ?? data.content?.outro_question ?? null;
+  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question };
 
   console.log(`  ${rows.length} rows, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });

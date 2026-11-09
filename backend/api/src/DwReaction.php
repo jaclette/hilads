@@ -23,6 +23,8 @@ final class DwReaction
     public const VIDEO_SECONDS = 8;
     public const HEADLINE_WORDS = 6;
     public const DETAIL_WORDS = 8;
+    /** The question, on screen under the table (and the caption's last line). */
+    public const QUESTION_WORDS = 7;
 
     /** A content in this format (its "format" or, older files, its rows). Pure. */
     public static function isReaction(array $c): bool
@@ -78,8 +80,8 @@ final class DwReaction
                 $warn[] = 'The caption does not mention "Different Worlds by Hilads".';
             }
         }
-        if (is_string($c['outro_question'] ?? null) && DwStudio::words($c['outro_question']) > 12) {
-            $warn[] = 'The outro question is ' . DwStudio::words($c['outro_question']) . ' words (max 12).';
+        if (is_string($c['outro_question'] ?? null) && ($w = DwStudio::screenWords($c['outro_question'])) > self::QUESTION_WORDS) {
+            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': it is on screen under the table).';
         }
         $tags = $c['hashtags'] ?? null;
         if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {

@@ -1479,6 +1479,7 @@ final class DwStudio
                     'highlight' => self::settings()['countries_always_included'],
                     'clip' => $clip !== null ? ['url' => $clip['url'], 'credit' => DwReaction::clipCredit($clip)] : null,
                     'seconds' => DwReaction::VIDEO_SECONDS, 'valueFormat' => $c['value_format'] ?? null,
+                    'question' => trim((string) ($c['outro_question'] ?? '')) ?: null,
                 ],
                 'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null];
     }
