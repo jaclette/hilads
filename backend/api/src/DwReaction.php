@@ -12,7 +12,8 @@ declare(strict_types=1);
  * country, flag, value, unit ("$": a price, shown $9.04), gap_before? (a "…" separator above, the ranking
  * skips to this row), highlight? (this row in the accent color too, e.g. a reference country)}], source, source_url?, data_year, data_years? (a range when the latest
  * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0), value_label?,
- * clip_query, clip?, caption, hashtags, outro_question, warnings?}. clip, once
+ * clip_query, clip?, caption, hashtags, outro_question, card_bg? (the ranking card's color: a CARD_THEMES name or a
+ * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
  */
@@ -25,6 +26,8 @@ final class DwReaction
     public const DETAIL_WORDS = 8;
     /** The question: the video's closing slide (7 to 10 s, a speech bubble) and the caption's last line. */
     public const QUESTION_WORDS = 7;
+    /** The ranking card's colors by name (tools/promo/src/Reaction.jsx: CARD_THEMES); any light #rrggbb works too. */
+    public const CARD_THEMES = ['cream', 'yellow', 'green', 'pink', 'blue'];
 
     /** A content in this format (its "format" or, older files, its rows). Pure. */
     public static function isReaction(array $c): bool
@@ -54,6 +57,14 @@ final class DwReaction
         }
         if (isset($c['value_format']) && !in_array($c['value_format'], ['ratio', 'one_decimal'], true)) {
             $errors[] = '"value_format" is "ratio" (one decimal below 10, whole numbers from 10), "one_decimal" (always one: 52.0) or absent (as given).';
+        }
+        if (isset($c['card_bg']) && !self::cardBgOk($c['card_bg'])) {
+            $errors[] = '"card_bg" is ' . implode(', ', self::CARD_THEMES) . ' or a light color as #rrggbb (the text stays dark on it).';
+        }
+        if (isset($c['headline_accent']) && trim((string) $c['headline_accent']) !== ''
+            && (!is_string($c['headline_accent']) || !is_string($c['headline'] ?? null)
+                || mb_stripos($c['headline'], trim($c['headline_accent'])) === false)) {
+            $errors[] = '"headline_accent" must be words of the headline (they are drawn in terracotta).';
         }
         if (isset($c['source_url']) && trim((string) $c['source_url']) !== '' && !preg_match('#^https?://\S+$#', trim((string) $c['source_url']))) {
             $errors[] = 'source_url is not a URL.';
@@ -193,6 +204,20 @@ final class DwReaction
             && (float) $row['value'] === (float) $above['value'];
     }
 
+    /** A card color: a CARD_THEMES name or a light #rrggbb (as Reaction.jsx cardColor: luminance 0.6 or more). Pure. */
+    public static function cardBgOk(mixed $bg): bool
+    {
+        $v = strtolower(trim((string) (is_string($bg) ? $bg : '')));
+        if (in_array($v, self::CARD_THEMES, true)) {
+            return true;
+        }
+        if (!preg_match('/^#[0-9a-f]{6}$/', $v)) {
+            return false;
+        }
+        [$r, $g, $b] = array_map('hexdec', str_split(substr($v, 1), 2));
+        return (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255 >= 0.6;
+    }
+
     /** The content as stored: rows typed, hashtags with #, warnings a list. Pure. */
     public static function normalize(array $c): array
     {
@@ -203,7 +228,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'card_bg', 'headline_accent'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }

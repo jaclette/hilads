@@ -122,6 +122,8 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "data_years": string (optional),
   "value_format": "ratio" or "one_decimal" (optional: "ratio" = one decimal below 10, whole numbers from 10, for a ratio like tourists per resident; "one_decimal" = always one decimal, when the source gives one, e.g. 52.0),
   "value_label": string,
+  "headline_accent": string (optional: 1 to 3 key words of the headline, exactly as written there, drawn in Hilads orange, e.g. "instant noodle"),
+  "card_bg": "cream", "yellow", "green", "pink" or "blue" (optional: the ranking card's color, matching the topic, e.g. yellow for noodles, green for coffee; cream by default),
   "clip_query": string,
   "clip": { "pixabay_id": number } (optional),
   "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),

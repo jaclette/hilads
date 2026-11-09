@@ -4,4 +4,5 @@
 export const TABLE_SECONDS = 7;
 export const REACTION_SECONDS = 10;
 export const TABLE_ONLY_SECONDS = 8;
+export const ZOOM_FRAMES = 6;             // the fast zoom from the table to the closing slide, ending at TABLE_SECONDS
 export const reactionSeconds = (question) => ((question ?? '').trim() ? REACTION_SECONDS : TABLE_ONLY_SECONDS);

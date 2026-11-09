@@ -4405,6 +4405,31 @@ try {
     echo "  ERR review account: " . $e->getMessage() . "\n";
 }
 
+// Once: the light ranking card's color and orange headline words for the reaction packages of Nov 9 to 15,
+// through DwStudio::updateField (as the admin's fields); only where no color is set yet and the words are in the headline.
+try {
+    $cards = [
+        '2026-11-09' => ['yellow', 'instant noodle'], '2026-11-10' => ['pink', 'cat-obsessed'],
+        '2026-11-11' => ['pink', 'full of singles'], '2026-11-12' => ['yellow', 'Very different price'],
+        '2026-11-13' => ['blue', 'still laughing'], '2026-11-14' => ['blue', 'more tourists than locals'],
+        '2026-11-15' => ['green', 'couch champions'],
+    ];
+    foreach ($cards as $date => [$bg, $accent]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || !DwReaction::isReaction($pkg['content']) || isset($pkg['content']['card_bg'])) {
+            continue;
+        }
+        DwStudio::updateField($pkg['id'], 'card_bg', $bg);
+        if (mb_stripos((string) ($pkg['content']['headline'] ?? ''), $accent) !== false) {
+            DwStudio::updateField($pkg['id'], 'headline_accent', $accent);
+        }
+        echo "  OK  dw: {$date} card {$bg}, \"{$accent}\" in orange\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw card colors: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

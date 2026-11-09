@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
-import { TABLE_SECONDS } from './src/reactionTiming.js';
+import { TABLE_SECONDS, ZOOM_FRAMES } from './src/reactionTiming.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
@@ -36,7 +36,12 @@ const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : nul
 const clipArg = args.includes('--clip') ? args[args.indexOf('--clip') + 1] : null;
 const clipCredit = args.includes('--clip-credit') ? args[args.indexOf('--clip-credit') + 1] : null;
 const clipAi = args.includes('--clip-ai');
-const upload = !args.includes('--no-upload') && !fileArg;
+// --card-bg <theme|#rrggbb> --accent "<words>": a reaction card's color and accent words, to try before saving them in the package.
+const cardBgArg = args.includes('--card-bg') ? args[args.indexOf('--card-bg') + 1] : null;
+const accentArg = args.includes('--accent') ? args[args.indexOf('--accent') + 1] : null;
+// --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
+const pngOnly = args.includes('--png-only');
+const upload = !args.includes('--no-upload') && !args.includes('--png-only') && !fileArg;
 const dates = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
 const range = dates.length === 2 && !fileArg;
 const api = (process.env.API_URL ?? 'https://api.hilads.live').replace(/\/$/, '');
@@ -139,7 +144,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
-           question: c.outro_question ?? null,
+           question: c.outro_question ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -328,21 +333,24 @@ async function renderReaction(data, { work, pub, out }) {
     console.warn('  ⚠ no clip: the top third stays dark (Admin › Worlds › Find another clip)');
   }
   await pruneClips();
-  const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), flag: r.flag ? flagFile(r.flag) : null }));
+  const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), emoji: r.flag ?? null, flag: r.flag ? flagFile(r.flag) : null }));
   // The on-screen question: the package's outro question (also read from its content, before the API sends it).
   const question = s.question ?? data.content?.outro_question ?? null;
-  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question };
+  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
+                       // The card's color and the headline's accent words (also read from the content, before the API sends them);
+                       // --card-bg / --accent try one before it is saved in the package.
+                       cardBg: cardBgArg ?? s.cardBg ?? data.content?.card_bg ?? null, accent: accentArg ?? s.accent ?? data.content?.headline_accent ?? null };
 
   console.log(`  ${rows.length} rows, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
   const composition = await selectComposition({ serveUrl, id: 'Reaction', inputProps });
   const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNG…`);
-  await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
+  if (!pngOnly) await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
   // The PNGs (carousels): 01 the table screen (its last frame before the closing slide), 02 the closing slide at rest;
   // without a question, 01 alone (the last frame).
   const pngs = [`${base}-01.png`];
-  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: question ? TABLE_SECONDS * composition.fps - 1 : composition.durationInFrames - 1 });
+  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: question ? TABLE_SECONDS * composition.fps - ZOOM_FRAMES - 1 : composition.durationInFrames - 1 });
   if (question) {
     pngs.push(`${base}-02.png`);
     await renderStill({ composition, serveUrl, output: pngs[1], inputProps: { ...inputProps, still: true }, frame: composition.durationInFrames - 1 });
