@@ -80,7 +80,15 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
   const [still, setStill] = useState(false);
   const [pageW, setPageW] = useState(0);
   const pager = useRef<ScrollView>(null);
-  const templates: ShareTemplate[] = others && others.length > 0 ? ['turn', 'versus', 'result'] : ['turn', 'result'];
+  // Only the templates that exist, never one twice: Your turn always; Versus when another city played the
+  // same challenge (2+ cities); Result once the results are out (the challenge closed, or the points reward's rank).
+  const resultsOut = !!proof && (proof.resultsOut === true || !!proof.rankText);
+  const templates: ShareTemplate[] = [
+    'turn',
+    ...(others && others.length > 0 ? ['versus' as const] : []),
+    ...(resultsOut ? ['result' as const] : []),
+  ];
+  const paged = templates.length > 1;
   // Card keys: "<template>:<format>" (my photo), "card:story" (the rest).
   const key = proof ? `${template}:${format}` : 'card:story';
   const storyKey = proof ? `${template}:story` : 'card:story';
@@ -245,7 +253,10 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
       ) : (
         <View onLayout={e => setPageW(e.nativeEvent.layout.width)}>
           {pageW > 0 && (
-            <ScrollView ref={pager} horizontal pagingEnabled showsHorizontalScrollIndicator={false}
+            // One page = the container's width (one card, centered); snaps page by page; one template: no swipe.
+            <ScrollView ref={pager} horizontal pagingEnabled scrollEnabled={paged} showsHorizontalScrollIndicator={false}
+                        contentOffset={{ x: Math.max(0, templates.indexOf(template)) * pageW, y: 0 }}
+                        snapToInterval={pageW} decelerationRate="fast" disableIntervalMomentum
                         onMomentumScrollEnd={e => pick(templates[Math.round(e.nativeEvent.contentOffset.x / pageW)] ?? template, 'swipe')}>
               {templates.map((tp, i) => (
                 // The cards slide in one after the other (a plain fade with Reduce motion: reanimated's default).
@@ -263,8 +274,8 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
               ))}
             </ScrollView>
           )}
-          {compact ? (
-            // Compact: page dots and the template's name.
+          {compact ? (!paged ? null : (
+            // Compact: page dots and the template's name (only with 2+ templates).
             <View style={styles.dotsRow}>
               <View style={styles.dots} accessibilityRole="tablist">
                 {templates.map((tp, i) => (
@@ -276,7 +287,7 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
               </View>
               <Text style={styles.dotsLabel}>{t(`share.card.template.${template}`)}</Text>
             </View>
-          ) : <>
+          )) : <>
           <View style={styles.tabs} accessibilityRole="tablist">
             {templates.map((tp, i) => (
               <TouchableOpacity key={tp} style={[styles.tab, tp === template && styles.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: tp === template }}
@@ -382,7 +393,8 @@ function TargetIcon({ channel, copied }: { channel: Target; copied: boolean }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:      { gap: 16 },
+  // Full width even in a centered column (the post screen): one page = this width, the targets row fits.
+  wrap:      { gap: 16, alignSelf: 'stretch' },
   preview:   { alignSelf: 'center', borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg3 },
   loading:   { alignItems: 'center', justifyContent: 'center' },
   grid:      { flexDirection: 'row', flexWrap: 'wrap', rowGap: 14 },
