@@ -4430,6 +4430,22 @@ try {
     echo "  ERR dw card colors: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 10 (cats) headline, orange words, banner and question, through DwStudio::updateField (as the admin's
+// fields: the caption's last line follows the question); only while the old headline is there.
+try {
+    $topic = DwStudio::topicByDate('2026-11-10');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && ($pkg['content']['headline'] ?? null) === "Europe's most cat-obsessed countries 🐱") {
+        DwStudio::updateField($pkg['id'], 'headline', "Europe's most cat-addicted countries 🐱");
+        DwStudio::updateField($pkg['id'], 'headline_accent', 'cat-addicted');
+        DwStudio::updateField($pkg['id'], 'detail', '🇪🇸 Spain: cats rule over half the homes 🐈');
+        DwStudio::updateField($pkg['id'], 'outro_question', 'Asia, Americas, Africa: are YOU cat people too? 🐱');
+        echo "  OK  dw: 2026-11-10 headline \"Europe's most cat-addicted countries 🐱\", banner and question updated\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 10 texts: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
