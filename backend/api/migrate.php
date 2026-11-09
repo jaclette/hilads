@@ -4307,6 +4307,48 @@ try {
     echo "  ERR dw singles / noodles swap: " . $e->getMessage() . "\n";
 }
 
+// Once: today's challenge (2026-11-09, live) "Look up and find a year written on a facade." was too hard: replaced
+// by "Snap a building facade that looks typical of your city." through the admin's own service functions
+// (DailyAdminService: the English, its 18 translations, the headline, the comparison question, the Saigon Local
+// Twist and its translations). Theme, cover, status and posted photos untouched. Runs only while the old text is there.
+try {
+    $nov9 = $pdo->query("SELECT id, text_i18n->>'en' AS en FROM daily_challenges WHERE challenge_date = '2026-11-09'")->fetch(PDO::FETCH_ASSOC);
+    if ($nov9 && $nov9['en'] === 'Look up and find a year written on a facade.') {
+        spl_autoload_register(static function (string $class): void {
+            $file = __DIR__ . '/src/' . $class . '.php';
+            if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+        });
+        $new = json_decode(<<<'JSON'
+{"headline": {"en": "Find your city's signature facade.", "fr": "Trouve la façade typique de ta ville.", "vi": "Tìm mặt tiền đậm chất thành phố bạn.", "es": "Encuentra la fachada típica de tu ciudad.", "it": "Trova la facciata tipica della tua città.", "pt-br": "Encontre a fachada típica da sua cidade.", "pt-pt": "Encontra a fachada típica da tua cidade.", "de": "Finde die typische Fassade deiner Stadt.", "nl": "Vind de typische gevel van jouw stad.", "zh-hans": "找到你所在城市的标志性立面。", "zh-hant": "找到你所在城市的代表性立面。", "ja": "あなたの街らしい外観を探しましょう。", "ko": "우리 도시다운 건물을 찾아보세요.", "fil": "Hanapin ang tipikal na harapan sa city mo.", "th": "หาหน้าตึกที่เป็นเอกลักษณ์ของเมืองคุณ", "id": "Temukan fasad khas kotamu.", "hi": "अपने शहर की खास इमारत ढूँढें।", "ru": "Найди фасад, типичный для твоего города.", "ar": "ابحث عن الواجهة التي تميّز مدينتك."}, "text": {"en": "Snap a building facade that looks typical of your city.", "fr": "Prends en photo une façade typique de ta ville.", "vi": "Chụp một mặt tiền nhà mang đậm chất thành phố của bạn.", "es": "Haz una foto de una fachada típica de tu ciudad.", "it": "Fotografa una facciata tipica della tua città.", "pt-br": "Fotografe uma fachada típica da sua cidade.", "pt-pt": "Fotografa uma fachada típica da tua cidade.", "de": "Fotografiere eine Fassade, die typisch für deine Stadt ist.", "nl": "Fotografeer een gevel die typisch is voor jouw stad.", "zh-hans": "拍一栋最能代表你所在城市的建筑立面。", "zh-hant": "拍一棟最能代表你所在城市的建築立面。", "ja": "あなたの街らしい建物の外観を撮ってみましょう。", "ko": "우리 도시다운 건물 외관을 사진으로 찍어 보세요.", "fil": "Kunan ng photo ang harapan ng gusaling tipikal sa city mo.", "th": "ถ่ายรูปหน้าตึกที่เป็นเอกลักษณ์ของเมืองคุณ", "id": "Foto fasad bangunan yang khas kotamu.", "hi": "अपने शहर की पहचान वाली किसी इमारत के सामने वाले हिस्से की फ़ोटो लें।", "ru": "Сфотографируй фасад, типичный для твоего города.", "ar": "صوّر واجهة مبنى تعبّر عن طابع مدينتك."}, "context": {"en": "Tube houses, Haussmann, brownstones: every city has its own look.", "fr": "Maisons-tubes, haussmannien, brownstones : chaque ville a son style.", "vi": "Nhà ống, kiểu Haussmann, brownstone: thành phố nào cũng có nét riêng.", "es": "Casas tubo, edificios Haussmann, brownstones: cada ciudad tiene su estilo.", "it": "Case tubo, palazzi Haussmann, brownstone: ogni città ha il suo stile.", "pt-br": "Casas-tubo, prédios Haussmann, brownstones: cada cidade tem seu estilo.", "pt-pt": "Casas-tubo, prédios Haussmann, brownstones: cada cidade tem o seu estilo.", "de": "Röhrenhäuser, Haussmann-Bauten, Brownstones: Jede Stadt hat ihren eigenen Look.", "nl": "Buishuizen, Haussmann-gevels, brownstones: elke stad heeft zijn eigen look.", "zh-hans": "竹筒屋、奥斯曼式建筑、褐石屋：每座城市都有自己的模样。", "zh-hant": "竹筒屋、奧斯曼式建築、褐石屋：每座城市都有自己的模樣。", "ja": "チューブハウス、オスマン様式、ブラウンストーン。どの街にも、その街らしい顔があります。", "ko": "튜브하우스, 오스만 양식, 브라운스톤까지. 도시마다 고유의 모습이 있어요.", "fil": "Tube house, Haussmann, brownstone: bawat city ay may sariling itsura.", "th": "บ้านทรงหลอด ตึกแบบโอสมานน์ บราวน์สโตน ทุกเมืองมีหน้าตาเป็นของตัวเอง", "id": "Rumah tabung, gaya Haussmann, brownstone: setiap kota punya wajahnya sendiri.", "hi": "ट्यूब हाउस, हॉसमैन इमारतें, ब्राउनस्टोन: हर शहर का अपना अलग रूप होता है।", "ru": "Дома-трубки, османовские фасады, браунстоуны: у каждого города свой облик.", "ar": "بيوت أنبوبية، وعمارة هوسمان، ومنازل البراونستون: لكل مدينة طابعها الخاص."}, "compare": {"en": "What year was it built? A guess is fine.", "fr": "Elle date de quelle année ? Une estimation suffit.", "vi": "Nhà này xây năm nào? Đoán thôi cũng được.", "es": "¿De qué año es? Basta con adivinar.", "it": "Di che anno è? Va bene anche a occhio.", "pt-br": "De que ano é? Pode chutar.", "pt-pt": "De que ano é? Um palpite chega.", "de": "Aus welchem Jahr ist es? Schätzen ist erlaubt.", "nl": "Uit welk jaar is het? Gokken mag.", "zh-hans": "它是哪一年建的？猜一猜也行。", "zh-hant": "它是哪一年建的？猜一猜也行。", "ja": "何年に建てられたと思いますか？予想でOKです。", "ko": "몇 년에 지어졌을까요? 짐작해도 괜찮아요.", "fil": "Anong taon ito itinayo? Puwede ang hula.", "th": "ตึกนี้สร้างปีไหน เดาก็ได้", "id": "Dibangun tahun berapa? Tebak saja boleh.", "hi": "यह किस साल बनी थी? अंदाज़ा भी चलेगा।", "ru": "В каком году его построили? Можно наугад.", "ar": "في أي عام بُني؟ يكفي التخمين."}, "twist": {"en": "Look for a narrow nhà ống with colorful balconies, plants and tangled wires.", "fr": "Cherche une nhà ống étroite avec des balcons colorés, des plantes et des fils emmêlés.", "vi": "Tìm một căn nhà ống hẹp với ban công nhiều màu, cây xanh và dây điện chằng chịt.", "es": "Busca una nhà ống estrecha con balcones de colores, plantas y cables enredados.", "it": "Cerca una nhà ống stretta con balconi colorati, piante e fili aggrovigliati.", "pt-br": "Procure uma nhà ống estreita com varandas coloridas, plantas e fios emaranhados.", "pt-pt": "Procura uma nhà ống estreita com varandas coloridas, plantas e fios emaranhados.", "de": "Such ein schmales nhà ống mit bunten Balkonen, Pflanzen und Kabelsalat.", "nl": "Zoek een smal nhà ống met kleurrijke balkons, planten en kluwens kabels.", "zh-hans": "找一栋窄窄的 nhà ống，阳台五颜六色，摆满绿植，电线缠成一团。", "zh-hant": "找一棟窄窄的 nhà ống，陽台五顏六色，擺滿綠植，電線纏成一團。", "ja": "カラフルなバルコニーに植物、絡まった電線のある細長い nhà ống を探してみましょう。", "ko": "알록달록한 발코니와 화분, 엉킨 전선이 있는 좁은 nhà ống을 찾아보세요.", "fil": "Maghanap ng makitid na nhà ống na may makukulay na balkonahe, mga halaman at gusot na kable.", "th": "มองหา nhà ống แคบๆ ที่มีระเบียงสีสดใส ต้นไม้ และสายไฟพันกันยุ่ง", "id": "Cari nhà ống sempit dengan balkon warna-warni, tanaman, dan kabel yang kusut.", "hi": "रंग-बिरंगी बालकनियों, पौधों और उलझे तारों वाला कोई पतला nhà ống खोजें।", "ru": "Найди узкий nhà ống с разноцветными балконами, растениями и спутанными проводами.", "ar": "ابحث عن بيت nhà ống ضيّق بشرفات ملوّنة ونباتات وأسلاك متشابكة."}}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $tr = static fn(array $m): array => array_diff_key($m, ['en' => 1]);
+        $id = (string) $nov9['id'];
+        DailyAdminService::updateChallenge($id, ['text' => $new['text']['en'], 'context' => $new['context']['en']]);
+        DailyAdminService::setChallengeTranslations($id, $tr($new['text']), $tr($new['context']));
+        DailyAdminService::setChallengeHeadline($id, $new['headline']['en'], $tr($new['headline']));
+        // The comparison question: the same type, key, title, unit and price, a new question (no one had answered).
+        $row = $pdo->query("SELECT compare_type, compare_key, compare_title_i18n, compare_unit_i18n, price_key, price_label_i18n FROM daily_challenges WHERE id = " . $pdo->quote($id))->fetch(PDO::FETCH_ASSOC);
+        $j = static fn(?string $v): ?array => $v !== null ? array_diff_key(json_decode($v, true) ?: [], ['_src' => 1]) : null;
+        DailyAdminService::setChallengeCompare($id, [
+            'type' => $row['compare_type'] ?: 'word', 'question' => $new['compare'], 'key' => $row['compare_key'],
+            'title' => $j($row['compare_title_i18n']), 'unit' => $j($row['compare_unit_i18n']),
+            'price' => $row['price_key'] !== null ? ['key' => $row['price_key'], 'label' => $j($row['price_label_i18n'])] : null,
+        ]);
+        // The Saigon Local Twist: its author and credit kept.
+        $saigon = DailyAdminService::cityIdForSlug('ho-chi-minh-city');
+        $tw = $pdo->prepare("SELECT id, city_id, author_user_id, author_credit FROM daily_twists WHERE challenge_id = ? AND city_id = ? AND status = 'selected'");
+        $tw->execute([$id, (string) $saigon]);
+        $twist = $tw->fetch(PDO::FETCH_ASSOC);
+        if ($twist) {
+            $saved = DailyAdminService::setTwist($id, (string) $twist['city_id'], $new['twist']['en'], $twist['author_user_id'], $twist['author_credit']);
+            DailyAdminService::setTwistTranslations((string) $saved['id'], $tr($new['twist']));
+        }
+        echo "  OK  daily: 2026-11-09 replaced by \"{$new['text']['en']}\" (19 locales: text, context, headline, comparison question" . ($twist ? ', Saigon Local Twist' : ', no Saigon Local Twist found') . ")\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR daily 2026-11-09 replacement: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
