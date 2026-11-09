@@ -125,7 +125,7 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "clip_query": string,
   "clip": { "pixabay_id": number } (optional),
   "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
-  "outro_question": string (on screen under the table from 3.5 s, and the caption's last line: max 7 words, an emoji at the end is fine),
+  "outro_question": string (the video's closing slide, a big speech bubble from 7 to 10 s, and the caption's last line: max 7 words, an emoji at the end is fine),
   "hashtags": [string] (5 to 8),
   "warnings": [string] (anything you could not verify)
 }

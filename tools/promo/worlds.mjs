@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
+import { TABLE_SECONDS } from './src/reactionTiming.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
@@ -203,6 +204,7 @@ async function renderDay(date, fetched = null) {
   await mkdir(path.join(pub, 'photos'), { recursive: true });
   await mkdir(out, { recursive: true });
   await cp(path.join(repo, 'apps/mobile/assets/fonts'), path.join(pub, 'fonts'), { recursive: true });
+  await cp(path.join(here, 'fonts'), path.join(pub, 'fonts'), { recursive: true });   // Baloo 2 (the reaction question)
   await cp(path.join(repo, 'backend/api/assets/flags'), path.join(pub, 'flags'), { recursive: true });
   await cp(path.join(repo, 'backend/api/assets/logo.svg'), path.join(pub, 'logo.svg'));
   await mkdir(path.join(pub, 'clips'), { recursive: true });
@@ -300,10 +302,10 @@ async function uploadOwnClip(data) {
 }
 
 /** Uploads a rendered file (the MP4, or the reaction screen's PNG) to its package. */
-async function uploadFile(data, file) {
+async function uploadFile(data, file, kind = null) {
   const png = file.endsWith('.png');
-  console.log(`  uploading the ${png ? 'PNG' : 'video'}…`);
-  const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, png });
+  console.log(`  uploading ${kind === 'png2' ? 'PNG 02' : png ? 'the PNG' : 'the video'}…`);
+  const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, ...(kind ? { kind } : { png }) });
   const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': png ? 'image/png' : 'video/mp4' }, body: await readFile(file) });
   if (!res.ok) throw new Error(`upload: ${res.status} ${await res.text()}`);
   await apiCall(`/internal/worlds/${data.date}/video`, { version: data.version, url });
@@ -321,8 +323,7 @@ async function renderReaction(data, { work, pub, out }) {
     await cp(file, path.join(pub, name));
     const { durationInSeconds } = await getVideoMetadata(file);
     clip = { src: name, seconds: durationInSeconds, credit: s.clip.credit ?? '' };
-    const once = durationInSeconds >= s.seconds * 0.9;   // as clipFills (src/Reaction.jsx)
-    console.log(`  clip ${durationInSeconds.toFixed(2)} s, ${once ? `played once${durationInSeconds < s.seconds ? ` at ${(durationInSeconds / s.seconds).toFixed(3)}× to fill ${s.seconds} s` : ''}` : 'loops'}`);
+    console.log(`  clip ${durationInSeconds.toFixed(2)} s, at its speed, looping when it ends`);
   } else {
     console.warn('  ⚠ no clip: the top third stays dark (Admin › Worlds › Find another clip)');
   }
@@ -338,13 +339,20 @@ async function renderReaction(data, { work, pub, out }) {
   const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNG…`);
   await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
-  await renderStill({ composition, serveUrl, output: `${base}.png`, inputProps, frame: composition.durationInFrames - 1 });
-  console.log(`  saved: ${base}.mp4 and .png`);
+  // The PNGs (carousels): 01 the table screen (its last frame before the closing slide), 02 the closing slide at rest;
+  // without a question, 01 alone (the last frame).
+  const pngs = [`${base}-01.png`];
+  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: question ? TABLE_SECONDS * composition.fps - 1 : composition.durationInFrames - 1 });
+  if (question) {
+    pngs.push(`${base}-02.png`);
+    await renderStill({ composition, serveUrl, output: pngs[1], inputProps: { ...inputProps, still: true }, frame: composition.durationInFrames - 1 });
+  }
+  console.log(`  saved: ${base}.mp4 and ${pngs.map((f) => path.basename(f).slice(-6)).join(', ')}`);
   await rm(work, { recursive: true, force: true });
   await rm(serveUrl, { recursive: true, force: true }).catch(() => {});
   if (data.version) {
     for (const name of await readdir(out)) {
-      if (!name.startsWith(path.basename(base) + '.') && /^different-worlds-.+-v\d+\.(mp4|png)$/.test(name)) await rm(path.join(out, name));
+      if (!name.startsWith(path.basename(base) + '.') && !name.startsWith(path.basename(base) + '-0') && /^different-worlds-.+-v\d+(-0\d)?\.(mp4|png)$/.test(name)) await rm(path.join(out, name));
     }
   }
   if (!upload) {
@@ -352,7 +360,8 @@ async function renderReaction(data, { work, pub, out }) {
     return;
   }
   await uploadFile(data, `${base}.mp4`);
-  await uploadFile(data, `${base}.png`);
+  await uploadFile(data, pngs[0]);
+  if (pngs[1]) await uploadFile(data, pngs[1], 'png2');
   console.log(`Done: ${api}/admin/worlds (${data.date})`);
 }
 

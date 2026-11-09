@@ -13,7 +13,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s</span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= trim((string) ($c['outro_question'] ?? '')) !== '' ? '10 s (table 7 s + question 3 s)' : DwReaction::VIDEO_SECONDS . ' s' ?></span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -32,13 +32,14 @@ $highlight = DwStudio::settings()['countries_always_included'];
 <?php if (!empty($pkg['video_url']) || !empty($pkg['still_url'])): ?>
     <div class="worlds-video">
         <?php if (!empty($pkg['video_url'])): ?><video src="<?= wh($pkg['video_url']) ?>" controls playsinline preload="metadata"></video><?php endif; ?>
-        <?php if (!empty($pkg['still_url'])): ?><a href="<?= wh($pkg['still_url']) ?>" target="_blank" rel="noopener"><img src="<?= wh($pkg['still_url']) ?>" alt="" style="width:220px;aspect-ratio:9/16;border-radius:8px;background:#000"></a><?php endif; ?>
+        <?php foreach (array_filter([$pkg['still_url'] ?? null, $pkg['still2_url'] ?? null]) as $still): ?><a href="<?= wh($still) ?>" target="_blank" rel="noopener"><img src="<?= wh($still) ?>" alt="" style="width:160px;aspect-ratio:9/16;border-radius:8px;background:#000"></a><?php endforeach; ?>
         <div>
-            <strong>Video and PNG</strong>
+            <strong>Video and PNGs</strong>
             <p class="worlds-muted">Rendered <?= wh(date('j M H:i', strtotime((string) ($pkg['video_at'] ?? 'now')))) ?> from version <?= $pkg['version'] ?>. Silent: add the music when you publish.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <?php if (!empty($pkg['video_url'])): ?><a class="btn btn-primary" href="<?= wh($pkg['video_url']) ?>" download>⬇ Video</a><?php endif; ?>
-                <?php if (!empty($pkg['still_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still_url']) ?>" download>⬇ PNG</a><?php endif; ?>
+                <?php if (!empty($pkg['still_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still_url']) ?>" download>⬇ PNG 01 (table)</a><?php endif; ?>
+                <?php if (!empty($pkg['still2_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still2_url']) ?>" download>⬇ PNG 02 (question)</a><?php endif; ?>
             </div>
             <p class="worlds-muted" style="margin-top:8px">After an edit, render it again on the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code></p>
         </div>
@@ -117,7 +118,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (on screen from 3.5 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (the closing slide\'s bubble, 7 to 10 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
     </div>
@@ -193,7 +194,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const first = [what, year].filter(Boolean).join(', ');
     const srcText = (first ? first + ' · ' : '') + (field('source').includes(', ') ? 'Sources: ' : 'Source: ') + field('source');
     const srcTwo = textW(srcText, 16, 600) > 936;   // as Reaction.jsx: two lines, the rows giving them room
-    const question = field('outro_question');   // shown under the source line (Reaction.jsx), from 3.5 s in the video
+    const question = '';   // the question is the video's closing slide (Reaction.jsx), not under the table
     const TOP = 812, END = 1736 - (srcTwo ? 24 : 0) - (question ? 66 : 0);
     const GAP = 0.7, gaps = ok.filter(r => r.gap_before).length;
     const H = Math.max(question ? 38 : 44, Math.min(Math.round(44 * 1.4), Math.floor((END - TOP) / Math.max(1, ok.length + GAP * gaps)))), k = H / 44;

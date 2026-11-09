@@ -23,7 +23,7 @@ final class DwReaction
     public const VIDEO_SECONDS = 8;
     public const HEADLINE_WORDS = 6;
     public const DETAIL_WORDS = 8;
-    /** The question, on screen under the table (and the caption's last line). */
+    /** The question: the video's closing slide (7 to 10 s, a speech bubble) and the caption's last line. */
     public const QUESTION_WORDS = 7;
 
     /** A content in this format (its "format" or, older files, its rows). Pure. */
@@ -81,7 +81,7 @@ final class DwReaction
             }
         }
         if (is_string($c['outro_question'] ?? null) && ($w = DwStudio::screenWords($c['outro_question'])) > self::QUESTION_WORDS) {
-            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': it is on screen under the table).';
+            $warn[] = "The question is {$w} words (max " . self::QUESTION_WORDS . ': it is the closing slide\'s bubble).';
         }
         $tags = $c['hashtags'] ?? null;
         if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {

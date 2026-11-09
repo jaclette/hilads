@@ -2,7 +2,7 @@ import { Composition, Still, registerRoot } from 'remotion';
 import { PromoVideo, PromoSlide } from './Promo.jsx';
 import { StoryFrame } from './Stories.jsx';
 import { WorldsVideo, worldsTiming } from './Worlds.jsx';
-import { REACTION_SECONDS, ReactionRanking } from './Reaction.jsx';
+import { ReactionRanking, reactionSeconds } from './Reaction.jsx';
 
 // Props come from render.mjs ({locale, data, cities, clip, timing}); the
 // defaults let `npm run studio` open without a render.
@@ -27,7 +27,8 @@ function Root() {
       <Composition id="Worlds" component={WorldsVideo} width={1080} height={1920} fps={30} durationInFrames={90}
         defaultProps={{ slides: [{ kind: 'hook', text: 'Same night, October 31. Seven countries, seven very different Halloweens.' }] }}
         calculateMetadata={({ props }) => ({ durationInFrames: Math.max(1, worldsTiming(props.slides).total) })} />
-      <Composition id="Reaction" component={ReactionRanking} width={1080} height={1920} fps={30} durationInFrames={REACTION_SECONDS * 30}
+      <Composition id="Reaction" component={ReactionRanking} width={1080} height={1920} fps={30} durationInFrames={10 * 30}
+        calculateMetadata={({ props }) => ({ durationInFrames: Math.round(reactionSeconds(props.question) * 30) })}
         defaultProps={{ headline: 'The 20 biggest beer drinkers 🍺', detail: '#1 has won for 32 years.', source: 'Source: Kirin', highlight: ['Vietnam'], clip: null,
                         rows: [{ rank: 1, country: 'Czech Republic', flag: null, value: 148.8, unit: 'L' }, { rank: 2, country: 'Lithuania', flag: null, value: 110.6, unit: 'L' }] }} />
       <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />

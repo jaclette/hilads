@@ -4372,6 +4372,22 @@ try {
     echo "  ERR dw short questions: " . $e->getMessage() . "\n";
 }
 
+// The reaction format's second PNG (its closing slide, the question), for carousels.
+// Reversal: ALTER TABLE dw_packages DROP COLUMN still2_url.
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS still2_url TEXT", 'dw_packages.still2_url');
+// Once: Nov 9 (noodles) question and detail, through DwStudio::updateField (as the admin's fields: the caption follows).
+try {
+    $topic = DwStudio::topicByDate('2026-11-09');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && ($pkg['content']['outro_question'] ?? null) === 'How many packs this week? 🍜') {
+        DwStudio::updateField($pkg['id'], 'outro_question', 'How many did YOU eat this week? 🍜');
+        DwStudio::updateField($pkg['id'], 'detail', 'Vietnam 🇻🇳 beats Korea 🇰🇷. Again. 🍜');
+        echo "  OK  dw: 2026-11-09 question \"How many did YOU eat this week? 🍜\", detail \"Vietnam 🇻🇳 beats Korea 🇰🇷. Again. 🍜\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 9 question: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
