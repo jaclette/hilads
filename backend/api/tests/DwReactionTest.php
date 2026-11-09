@@ -269,6 +269,28 @@ final class DwReactionTest extends TestCase
         $this->assertSame('Show the world your bowl on hilads.live 🍜', DwReaction::normalize($c)['cta_line']);
     }
 
+    public function testQuizMode(): void
+    {
+        $c = $this->content();
+        $this->assertSame('classic', DwReaction::mode($c));
+        $this->assertSame(11.0, (float) DwReaction::videoSeconds($c));
+        $c['mode'] = 'quiz';
+        $this->assertContains('Quiz mode needs a "quiz_question" (its answer is the #1).', DwReaction::validate($c, ['Vietnam'])[0]);
+        $this->assertSame('classic', DwReaction::mode($c), 'no quiz without its question');
+        $c['quiz_question'] = 'Which country drinks the most beer? 🍺';
+        [$errors, $warn] = DwReaction::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);
+        $this->assertSame([], array_values(array_filter($warn, fn($w) => str_contains($w, 'quiz'))));
+        $this->assertSame('quiz', DwReaction::mode($c));
+        $this->assertSame(12.0, (float) DwReaction::videoSeconds($c));
+        $c['quiz_question'] = 'Which country in the whole wide world drinks the most beer';
+        $warn = DwReaction::validate($c, ['Vietnam'])[1];
+        $this->assertNotEmpty(array_filter($warn, fn($w) => str_contains($w, 'quiz question is')));
+        $this->assertNotEmpty(array_filter($warn, fn($w) => str_contains($w, 'end with an emoji')));
+        $c['mode'] = 'trivia';
+        $this->assertContains('"mode" is "classic" or "quiz".', DwReaction::validate($c, ['Vietnam'])[0]);
+    }
+
     public function testOneExtraHighlightedRowWithItsRealRank(): void
     {
         $rows = $this->rows();

@@ -20,7 +20,7 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
 }
 loadFont({ family: Q_FONT, url: staticFile('fonts/Baloo2-Variable.ttf'), weight: '400 800' });
 
-import { END_SECONDS, reactionSeconds } from './reactionTiming.js';
+import { endSeconds, reactionSeconds } from './reactionTiming.js';
 export { reactionSeconds };
 
 let ctx = null;
@@ -46,7 +46,7 @@ function fitSize(text, max, min, weight = 800, width = RIGHT - LEFT) {
  */
 export function ReactionRanking({ topic = null, question = null, cta = null, ...props }) {
   const frame = useCurrentFrame();
-  const end = S(END_SECONDS);
+  const end = S(endSeconds(props.mode));
   const card = { headline: props.headline, question, cta, cardBg: props.cardBg };
   // The ranking eases out (a little smaller), the end card pops in over it.
   const out = clamp01((frame - end) / 8);
@@ -169,7 +169,8 @@ function Confetti({ x, y, at }) {
   });
 }
 
-function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null }) {
+function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
+                       mode = 'classic', quiz = null, guessStill = false }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
@@ -266,14 +267,19 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const max = Math.max(1e-9, broken ? vals[1] * 1.15 : vals[0] ?? 1);
 
   // ── Timeline ──
-  const stickerIn = spr(S(1.5), { damping: 9, stiffness: 220, mass: 0.6 });
+  // Quiz mode: the quiz question and a 3, 2, 1 countdown until the reveal (2.6 s), then the classic sequence 1 s later.
+  const isQuiz = mode === 'quiz' && String(quiz ?? '').trim() !== '';
+  const reveal = isQuiz ? S(2.6) : S(1.5);
+  const shift = isQuiz ? S(1.0) : 0;
+  const stickerIn = spr(reveal, { damping: 9, stiffness: 220, mass: 0.6 });
   const titleIn = spr(0, { damping: 10, stiffness: 200, mass: 0.6 });
-  const podAt = { 2: S(2.1), 1: S(2.4), 0: S(2.7) };            // #3, #2, #1 (row index → start)
-  const crownAt = S(3.0);
+  const podAt = { 2: S(2.1) + shift, 1: S(2.4) + shift, 0: S(2.7) + shift };   // #3, #2, #1 (row index → start)
+  const crownAt = S(3.0) + shift;
   const crown = spr(crownAt, { damping: 9, stiffness: 260, mass: 0.6 });
-  const rowAt = (i) => S(3.1) + (list.length > 1 ? Math.round((S(0.75) * i) / (list.length - 1)) : 0);   // the last starts at 3.85 s
-  const srcIn = clamp01((frame - S(4.1)) / 9);
-  const move = ease((frame - S(1.5)) / 12);                     // the hook → the header, 1.5 to 1.9 s
+  const rowAt = (i) => S(3.1) + shift + (list.length > 1 ? Math.round((S(0.75) * i) / (list.length - 1)) : 0);   // the last starts at 3.85 s
+  const srcIn = clamp01((frame - S(4.1) - shift) / 9);
+  // Classic: the hook → the header, 1.5 to 1.9 s. Quiz: the header appears in place at the reveal.
+  const move = isQuiz ? (frame >= reveal ? 1 : 0) : ease((frame - S(1.5)) / 12);
 
   const stickerLines = detail ? [detail] : [];
   let stickerPx = 30;
@@ -288,7 +294,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
       {/* Doodles, faint, behind the ranking. */}
       {[[doodle, 958, podTop + 10, 56, 14], ['〰', 8, listTop - 40, 60, -8], ['✦', 975, listTop + 160, 40, 0]]
         .filter(([e]) => e).map(([e, x, y, px, rot], i) => (
-          <div key={`d${i}`} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.15 * clamp01((frame - S(4.1)) / 9),
+          <div key={`d${i}`} style={{ position: 'absolute', left: x, top: y, fontSize: px, opacity: 0.15 * clamp01((frame - S(4.1) - shift) / 9),
                                       color: TERRA, fontWeight: 800, transform: `rotate(${rot}deg)` }}>{e}</div>
         ))}
 
@@ -312,7 +318,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
       )}
 
       {/* The hook: the headline very big and centered from the first frame (a pop), then shrinking up into the header. */}
-      {move < 1 && (
+      {!isQuiz && move < 1 && (
         <div style={{ position: 'absolute', left: C_LEFT, top: hookTop + (titleTop - hookTop) * move, width: W, textAlign: 'center',
                       transformOrigin: 'center top', opacity: clamp01(0.4 + titleIn) * (1 - clamp01((move - 0.4) / 0.2)),
                       transform: `scale(${(0.85 + 0.15 * titleIn) * (1 + (titlePx / hookPx - 1) * move)})` }}>
@@ -324,9 +330,11 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
           ))}
         </div>
       )}
+      {isQuiz && frame < reveal + 6 && <QuizHook quiz={quiz} frame={frame} fps={fps} reveal={reveal} guessStill={guessStill} />}
       {/* The header: it takes over once the big headline has faded (never both at once). */}
-      <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W, opacity: clamp01((move - 0.6) / 0.25), transformOrigin: 'left top',
-                    transform: `scale(${1.08 - 0.08 * move})` }}>
+      <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W, transformOrigin: 'left top',
+                    opacity: isQuiz ? clamp01((frame - reveal) / 5) : clamp01((move - 0.6) / 0.25),
+                    transform: `scale(${isQuiz ? 1.06 - 0.06 * clamp01((frame - reveal) / 6) : 1.08 - 0.08 * move})` }}>
         {titleLines.map((l, i) => (
           <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: titlePx, lineHeight: `${titleLH}px`, whiteSpace: 'nowrap',
                                 letterSpacing: -0.5, paddingTop: titlePx * 0.08 }}>
@@ -486,5 +494,60 @@ function EndCard({ headline, question, cta, cardBg, from, still = false }) {
         )}
       </div>
     </AbsoluteFill>
+  );
+}
+
+/**
+ * The quiz hook (quiz mode, 0 to 2.6 s; PNG 01 with "Guess before you swipe 👉"): under the clip, the quiz question
+ * very big in a speech bubble (accent, white text, Baloo 2, tilted, a tail), from the first frame; from 0.5 s a fast
+ * countdown 3, 2, 1 under it (0.7 s each, a punchy pop on each number); at the reveal the bubble pops away.
+ */
+function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
+  const W = C_RIGHT - C_LEFT;
+  const BALOO = `"${Q_FONT}", "${FONT}"`;
+  const words = String(quiz).trim().split(/\s+/).map((word) => ({ word }));
+  const textW = W - 2 * 44;
+  let px = 60;
+  let lines = null;
+  for (let p = 112; p >= 60 && !lines; p -= 2) { lines = wrapWords(words, p, textW, 3, 800, Q_FONT); px = p; }
+  lines ??= [words];
+  const lineH = Math.round(px * 1.06);
+  const bubbleH = lines.length * lineH + 2 * 28;
+  const tail = 44;
+  const countH = 200;
+  const area = { top: MEDIA_H + 20, h: SAFE_BOTTOM - MEDIA_H - 40 };
+  const top = area.top + (area.h - (bubbleH + tail + 24 + countH)) / 2;
+  const pop = guessStill ? 1 : spring({ frame, fps, config: { damping: 9, stiffness: 260, mass: 0.5 } });
+  const away = guessStill ? 0 : clamp01((frame - reveal) / 5);
+  // The countdown: 3 from 0.5 s, 2 from 1.2 s, 1 from 1.9 s.
+  const step = Math.floor((frame - S(0.5)) / S(0.7));
+  const n = 3 - step;
+  const numPop = spring({ frame: frame - S(0.5) - step * S(0.7), fps, config: { damping: 7, stiffness: 320, mass: 0.45 } });
+  return (
+    <div style={{ position: 'absolute', left: C_LEFT, top, width: W, display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  transform: `scale(${(0.85 + 0.15 * pop) * (1 - 0.6 * away)})`, opacity: 1 - away, transformOrigin: 'center 40%' }}>
+      <div style={{ position: 'relative', transform: 'rotate(-2deg)' }}>
+        <div style={{ background: TERRA, color: '#fff', borderRadius: 44, padding: '28px 44px', boxShadow: '0 12px 30px rgba(120,50,15,0.28)',
+                      textAlign: 'center', maxWidth: W, boxSizing: 'border-box' }}>
+          {lines.map((l, i) => (
+            <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: px, lineHeight: `${lineH}px`, whiteSpace: 'nowrap', paddingTop: px * 0.08 }}>
+              {l.map((w) => w.word).join(' ')}
+            </div>
+          ))}
+        </div>
+        <svg width={tail * 1.6} height={tail} style={{ position: 'absolute', left: '18%', top: '100%', marginTop: -1 }}>
+          <path d={`M0 0 L${tail * 1.6} 0 L${tail * 0.1} ${tail} Z`} fill={TERRA} />
+        </svg>
+      </div>
+      <div style={{ height: countH, marginTop: tail + 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {guessStill ? (
+          <div style={{ fontFamily: BALOO, fontWeight: 800, fontSize: 64, color: INK, whiteSpace: 'nowrap' }}>Guess before you swipe 👉</div>
+        ) : n >= 1 && n <= 3 && frame >= S(0.5) ? (
+          <div style={{ width: countH, height: countH, borderRadius: '50%', background: STICKER, boxShadow: '0 10px 0 #C9940F', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', fontFamily: BALOO, fontWeight: 800, fontSize: 150, color: INK,
+                        paddingTop: 18, boxSizing: 'border-box', transform: `scale(${0.4 + 0.6 * numPop}) rotate(${(1 - numPop) * -20}deg)` }}>{n}</div>
+        ) : null}
+      </div>
+    </div>
   );
 }

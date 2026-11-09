@@ -128,6 +128,8 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "clip": { "pixabay_id": number } (optional),
   "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
   "outro_question": string (the closing slide's big question, specific to the topic, never generic like "What's your country's answer?", and the caption's last line: max 7 words, an emoji at the end is fine),
+  "mode": "classic" or "quiz" (optional, classic by default: quiz only when the #1 is surprising for the audience, e.g. a small or unexpected country; the video then opens on the quiz question and a 3, 2, 1 countdown before the ranking),
+  "quiz_question": string (quiz mode only: a real question whose answer is the #1 of the ranking, matching exactly what the table measures, max about 7 words, ending with an emoji, e.g. "Which country eats the most rice? 🍚"; in quiz mode the outro_question is about the guess and speaks to the viewer, e.g. "Did YOU guess right? 🍚"; if the answer seems too predictable for the audience, say so in "warnings"),
   "cta_line": string (the closing slide's button under the question: an invitation to share a photo on Hilads, specific to the topic, starting with an action verb, always with "hilads.live", max about 8 words, an emoji at the end is fine; e.g. noodles "Show the world your bowl on hilads.live 🍜", cats "Show us your cat on hilads.live 🐱", beer "Snap your local beer on hilads.live 🍻"),
   "hashtags": [string] (5 to 8),
   "warnings": [string] (anything you could not verify)

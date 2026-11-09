@@ -262,13 +262,13 @@ final class DwStudio
     public static function deleteTopic(int $id): void
     {
         $stmt = Database::pdo()->prepare("
-            SELECT s.svg_url, s.png_url, s.photo_url, p.video_url, p.still_url, p.still2_url, p.content->'clip'->>'url' AS clip_url
+            SELECT s.svg_url, s.png_url, s.photo_url, p.video_url, p.still_url, p.still2_url, p.still3_url, p.content->'clip'->>'url' AS clip_url
             FROM dw_packages p LEFT JOIN dw_slides s ON s.package_id = p.id WHERE p.topic_id = ?
         ");
         $stmt->execute([$id]);
         $urls = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
-            array_push($urls, $r['svg_url'], $r['png_url'], $r['photo_url'], $r['video_url'], $r['still_url'], $r['still2_url'], $r['clip_url']);
+            array_push($urls, $r['svg_url'], $r['png_url'], $r['photo_url'], $r['video_url'], $r['still_url'], $r['still2_url'], $r['still3_url'], $r['clip_url']);
         }
         $urls = array_unique(array_filter($urls));
         Database::pdo()->prepare("DELETE FROM dw_topics WHERE id = ?")->execute([$id]);
@@ -290,7 +290,7 @@ final class DwStudio
         }
         $pdo = Database::pdo();
         $stmt = $pdo->prepare("
-            SELECT p.id, p.video_url, p.still_url, p.still2_url, p.content->'clip'->>'url' AS clip_url, s.svg_url, s.png_url, s.photo_url
+            SELECT p.id, p.video_url, p.still_url, p.still2_url, p.still3_url, p.content->'clip'->>'url' AS clip_url, s.svg_url, s.png_url, s.photo_url
             FROM dw_packages p LEFT JOIN dw_slides s ON s.package_id = p.id
             WHERE p.topic_id = ? AND p.version < ?
         ");
@@ -299,13 +299,13 @@ final class DwStudio
         $urls = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
             $ids[(int) $r['id']] = true;
-            array_push($urls, $r['video_url'], $r['still_url'], $r['still2_url'], $r['clip_url'], $r['svg_url'], $r['png_url'], $r['photo_url']);
+            array_push($urls, $r['video_url'], $r['still_url'], $r['still2_url'], $r['still3_url'], $r['clip_url'], $r['svg_url'], $r['png_url'], $r['photo_url']);
         }
         if ($ids === []) {
             return 0;
         }
         // A file the kept version still uses (the same R2 clip) stays.
-        $urls = array_diff($urls, array_filter([$pkg['video_url'] ?? null, $pkg['still_url'] ?? null, $pkg['still2_url'] ?? null, $pkg['content']['clip']['url'] ?? null]));
+        $urls = array_diff($urls, array_filter([$pkg['video_url'] ?? null, $pkg['still_url'] ?? null, $pkg['still2_url'] ?? null, $pkg['still3_url'] ?? null, $pkg['content']['clip']['url'] ?? null]));
         $pdo->prepare("DELETE FROM dw_packages WHERE topic_id = ? AND version < ?")->execute([$pkg['topic_id'], $pkg['version']]);
         foreach (array_unique(array_filter($urls)) as $url) {
             self::deleteFile($url);
@@ -1042,7 +1042,7 @@ final class DwStudio
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
-            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent|mode|quiz_question)$/', $path) ? ['slide' => null] : null;
         }
         $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
@@ -1110,6 +1110,15 @@ final class DwStudio
         }
         if ($path === 'headline_accent' && $value !== '' && mb_stripos((string) ($c['headline'] ?? ''), $value) === false) {
             throw new InvalidArgumentException('The orange words must be words of the headline, as written there.');
+        }
+        if ($path === 'mode' && !in_array($value, DwReaction::MODES, true)) {
+            throw new InvalidArgumentException('The mode: ' . implode(' or ', DwReaction::MODES) . '.');
+        }
+        if ($path === 'mode' && $value === 'quiz' && trim((string) ($c['quiz_question'] ?? '')) === '') {
+            throw new InvalidArgumentException('Write the quiz question first.');
+        }
+        if ($path === 'quiz_question' && $value === '' && ($c['mode'] ?? null) === 'quiz') {
+            throw new InvalidArgumentException('A quiz needs its question: switch the topic to classic first.');
         }
         if ($path === 'cta_line' && $value !== '' && stripos($value, 'hilads.live') === false) {
             throw new InvalidArgumentException('The invitation must include hilads.live.');
@@ -1308,15 +1317,16 @@ final class DwStudio
     /** A presigned upload for a package's video, its screen as a PNG ($kind png) or its own reaction clip ($kind clip): {key, putUrl, url}. */
     public static function videoUpload(string $date, int $version, string $kind = 'video'): array
     {
-        // png: the (first) PNG; png2: the reaction format's second PNG (its closing slide); clip: our own reaction clip.
-        $kind = in_array($kind, ['png', 'png2', 'clip'], true) ? $kind : 'video';
+        // png: the (first) PNG; png2, png3: the reaction format's next PNGs (classic: the closing slide; quiz: the ranking, the
+        // closing slide); clip: our own reaction clip.
+        $kind = in_array($kind, ['png', 'png2', 'png3', 'clip'], true) ? $kind : 'video';
         $topic = self::topicByDate($date);
         $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
         if ($pkg === null) {
             throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
         }
-        $png = $kind === 'png' || $kind === 'png2';
-        $key = sprintf('dw/%d/v%d/%s-%s.%s', $topic['id'], $version, $kind === 'png2' ? 'still2' : ($png ? 'still' : $kind), bin2hex(random_bytes(6)), $png ? 'png' : 'mp4');
+        $png = in_array($kind, ['png', 'png2', 'png3'], true);
+        $key = sprintf('dw/%d/v%d/%s-%s.%s', $topic['id'], $version, $png ? 'still' . substr($kind, 3) : $kind, bin2hex(random_bytes(6)), $png ? 'png' : 'mp4');
         return ['key' => $key, 'putUrl' => R2Uploader::presignPut($key, $png ? 'image/png' : 'video/mp4'), 'url' => R2Uploader::publicUrl($key)];
     }
 
@@ -1324,17 +1334,17 @@ final class DwStudio
     public static function saveVideo(string $date, int $version, string $url): void
     {
         $png = str_ends_with($url, '.png');
-        $second = $png && str_contains($url, '/still2-');   // the reaction format's second PNG (its closing slide)
+        $n = $png && preg_match('#/still([23])-#', $url, $m) ? $m[1] : '';   // the reaction format's second or third PNG
         $topic = self::topicByDate($date);
         $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
         if ($pkg === null) {
             throw new InvalidArgumentException('No package ' . $version . ' on ' . $date);
         }
-        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/%s-', $topic['id'], $version, $second ? 'still2' : ($png ? 'still' : 'video'));
+        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/%s-', $topic['id'], $version, $png ? 'still' . $n : 'video');
         if (!str_starts_with($url, $prefix) || !(str_ends_with($url, '.mp4') || $png)) {
             throw new InvalidArgumentException('Not a video upload of this package: ' . $url);
         }
-        $col = $second ? 'still2_url' : ($png ? 'still_url' : 'video_url');
+        $col = $png ? "still{$n}_url" : 'video_url';
         Database::pdo()->prepare($png ? "UPDATE dw_packages SET {$col} = ? WHERE id = ?" : "UPDATE dw_packages SET video_url = ?, video_at = now() WHERE id = ?")
             ->execute([$url, $pkg['id']]);
         if (!empty($pkg[$col]) && $pkg[$col] !== $url) {
@@ -1492,12 +1502,13 @@ final class DwStudio
                     'rows' => $c['rows'] ?? [], 'source' => DwReaction::sourceLine($c),
                     'highlight' => self::settings()['countries_always_included'],
                     'clip' => $clip !== null ? ['url' => $clip['url'], 'credit' => DwReaction::clipCredit($clip)] : null,
-                    'seconds' => DwReaction::VIDEO_SECONDS, 'valueFormat' => $c['value_format'] ?? null,
+                    'seconds' => DwReaction::videoSeconds($c), 'valueFormat' => $c['value_format'] ?? null,
                     'question' => trim((string) ($c['outro_question'] ?? '')) ?: null,
                     'cardBg' => $c['card_bg'] ?? null, 'accent' => $c['headline_accent'] ?? null,
                     'cta' => trim((string) ($c['cta_line'] ?? '')) ?: null,
+                    'mode' => DwReaction::mode($c), 'quiz' => trim((string) ($c['quiz_question'] ?? '')) ?: null,
                 ],
-                'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null, 'still2Url' => $pkg['still2_url'] ?? null];
+                'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null, 'still2Url' => $pkg['still2_url'] ?? null, 'still3Url' => $pkg['still3_url'] ?? null];
     }
 
     // ── Files (R2) ───────────────────────────────────────────────────────────

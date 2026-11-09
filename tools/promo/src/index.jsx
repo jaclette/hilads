@@ -28,7 +28,7 @@ function Root() {
         defaultProps={{ slides: [{ kind: 'hook', text: 'Same night, October 31. Seven countries, seven very different Halloweens.' }] }}
         calculateMetadata={({ props }) => ({ durationInFrames: Math.max(1, worldsTiming(props.slides).total) })} />
       <Composition id="Reaction" component={ReactionRanking} width={1080} height={1920} fps={30} durationInFrames={10 * 30}
-        calculateMetadata={({ props }) => ({ durationInFrames: Math.round(reactionSeconds(props.question) * 30) })}
+        calculateMetadata={({ props }) => ({ durationInFrames: Math.round(reactionSeconds(props.mode) * 30) })}
         defaultProps={{ headline: 'The 20 biggest beer drinkers 🍺', detail: '#1 has won for 32 years.', source: 'Source: Kirin', highlight: ['Vietnam'], clip: null,
                         rows: [{ rank: 1, country: 'Czech Republic', flag: null, value: 148.8, unit: 'L' }, { rank: 2, country: 'Lithuania', flag: null, value: 110.6, unit: 'L' }] }} />
       <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />

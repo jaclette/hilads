@@ -9,11 +9,16 @@ declare(strict_types=1);
 // In scope: $topic, $pkg, $c, $self, $versions.
 
 $clip = $c['clip'] ?? null;
+$quizMode = DwReaction::mode($c) === 'quiz';
+// The PNGs in order: quiz 01 the quiz question, 02 the ranking, 03 the closing slide; classic 01 the ranking, 02 the closing slide.
+$stills = $quizMode
+    ? ['still_url' => 'PNG 01 (quiz question)', 'still2_url' => 'PNG 02 (ranking)', 'still3_url' => 'PNG 03 (closing slide)']
+    : ['still_url' => 'PNG 01 (ranking)', 'still2_url' => 'PNG 02 (closing slide)'];
 $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= DwReaction::VIDEO_SECONDS ?> s · top <?= DwReaction::SHOWN_ROWS ?> · closing slide 8–11 s</span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= $quizMode ? 'Quiz · ' . DwReaction::QUIZ_SECONDS . ' s · question + 3, 2, 1 until 2.6 s · closing slide 9–12 s' : 'Classic · ' . DwReaction::VIDEO_SECONDS . ' s · headline hook 0–1.5 s · closing slide 8–11 s' ?> · top <?= DwReaction::SHOWN_ROWS ?></span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -32,20 +37,19 @@ $highlight = DwStudio::settings()['countries_always_included'];
 <?php if (!empty($pkg['video_url']) || !empty($pkg['still_url'])): ?>
     <div class="worlds-video">
         <?php if (!empty($pkg['video_url'])): ?><video src="<?= wh($pkg['video_url']) ?>" controls playsinline preload="metadata"></video><?php endif; ?>
-        <?php foreach (array_filter([$pkg['still_url'] ?? null, $pkg['still2_url'] ?? null]) as $still): ?><a href="<?= wh($still) ?>" target="_blank" rel="noopener"><img src="<?= wh($still) ?>" alt="" style="width:160px;aspect-ratio:9/16;border-radius:8px;background:#000"></a><?php endforeach; ?>
+        <?php foreach (array_filter(array_map(fn($col) => $pkg[$col] ?? null, array_keys($stills))) as $still): ?><a href="<?= wh($still) ?>" target="_blank" rel="noopener"><img src="<?= wh($still) ?>" alt="" style="width:160px;aspect-ratio:9/16;border-radius:8px;background:#000"></a><?php endforeach; ?>
         <div>
             <strong>Video and PNGs</strong>
             <p class="worlds-muted">Rendered <?= wh(date('j M H:i', strtotime((string) ($pkg['video_at'] ?? 'now')))) ?> from version <?= $pkg['version'] ?>. Silent: add the music when you publish.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <?php if (!empty($pkg['video_url'])): ?><a class="btn btn-primary" href="<?= wh($pkg['video_url']) ?>" download>⬇ Video</a><?php endif; ?>
-                <?php if (!empty($pkg['still_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still_url']) ?>" download>⬇ PNG 01 (table)</a><?php endif; ?>
-                <?php if (!empty($pkg['still2_url'])): ?><a class="btn btn-secondary" href="<?= wh($pkg['still2_url']) ?>" download>⬇ PNG 02 (closing slide)</a><?php endif; ?>
+                <?php foreach ($stills as $col => $label): if (!empty($pkg[$col])): ?><a class="btn btn-secondary" href="<?= wh($pkg[$col]) ?>" download>⬇ <?= wh($label) ?></a><?php endif; endforeach; ?>
             </div>
             <p class="worlds-muted" style="margin-top:8px">After an edit, render it again on the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code></p>
         </div>
     </div>
 <?php else: ?>
-    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the 11 s video and the PNGs, and uploads them here).</p>
+    <p class="worlds-muted" style="margin-bottom:12px">No video yet. On the Mac: <code>cd tools/promo && npm run worlds -- <?= wh($topic['date']) ?></code> (renders the video and the PNGs, and uploads them here).</p>
 <?php endif; ?>
 
 <?php if (!empty($c['warnings'])): ?>
@@ -104,6 +108,13 @@ $highlight = DwStudio::settings()['countries_always_included'];
 <div class="worlds-grid" data-package="<?= $pkg['id'] ?>">
     <div class="form-card">
         <h3>Screen</h3>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px" id="rx-mode">
+            <span class="worlds-muted">Mode</span>
+            <button type="button" class="btn btn-sm <?= $quizMode ? 'btn-secondary' : 'btn-primary' ?>" data-mode="classic">Classic (headline hook)</button>
+            <button type="button" class="btn btn-sm <?= $quizMode ? 'btn-primary' : 'btn-secondary' ?>" data-mode="quiz">Quiz (question + 3, 2, 1)</button>
+            <span class="worlds-muted" id="rx-mode-state">Quiz only when the #1 is surprising.</span>
+        </div>
+        <?php $qz = (string) ($c['quiz_question'] ?? ''); worlds_field('quiz_question', 'Quiz question (quiz mode: its answer is the #1, 0 to 2.6 s)', $qz, false, DwStudio::screenWords($qz) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php $h = (string) ($c['headline'] ?? ''); $d = (string) ($c['detail'] ?? ''); ?>
         <?php worlds_field('headline', 'Headline (the promise)', $h, false, DwStudio::screenWords($h) . ' / ' . DwReaction::HEADLINE_WORDS . ' words'); ?>
         <?php worlds_field('detail', 'Detail (optional)', $d, false, DwStudio::screenWords($d) . ' / ' . DwReaction::DETAIL_WORDS . ' words'); ?>
@@ -120,7 +131,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (the closing slide, 8 to 11 s, and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (the closing slide, ' . ($quizMode ? '9 to 12 s: about the guess, e.g. Did YOU guess right?' : '8 to 11 s') . ', and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php $cta = (string) ($c['cta_line'] ?? ''); worlds_field('cta_line', 'Invitation (the closing slide\'s button, with hilads.live)', $cta, false, ($cta === '' ? 'missing · ' : '') . DwStudio::screenWords($cta) . ' / ' . DwReaction::CTA_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
@@ -268,6 +279,14 @@ $highlight = DwStudio::settings()['countries_always_included'];
     html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="mark"><i>DIFFERENT WORLDS</i> by Hilads</div><div class="safe"></div>`;
     screen.innerHTML = html;
   }
+
+  // Classic / quiz: saved like a field, then the page reloads (the labels and PNGs follow the mode).
+  document.querySelectorAll('#rx-mode [data-mode]').forEach(b => b.addEventListener('click', async () => {
+    const st = document.getElementById('rx-mode-state');
+    st.textContent = 'saving…';
+    try { await api({ action: 'update_field', package_id: pkgId, path: 'mode', value: b.dataset.mode }); location.reload(); }
+    catch (e) { st.textContent = e.message; st.style.color = '#f87171'; }
+  }));
 
   // The rows table.
   const tbody = document.getElementById('rx-rows');

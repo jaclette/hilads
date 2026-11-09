@@ -13,7 +13,8 @@ declare(strict_types=1);
  * skips to this row), highlight? (this row in the accent color too, e.g. a reference country)}], source, source_url?, data_year, data_years? (a range when the latest
  * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, cta_line (the closing slide's invitation to Hilads, with hilads.live), card_bg? (the ranking card's color: a CARD_THEMES name or a
- * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), warnings?}. clip, once
+ * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), mode? (classic | quiz),
+ * quiz_question? (quiz: a question whose answer is the #1), warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
  */
@@ -21,7 +22,10 @@ final class DwReaction
 {
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
-    public const VIDEO_SECONDS = 11;     // the ranking 8 s (the headline big alone 1.5 s, all shown by 4.1 s, then still), the closing slide 3 s
+    public const VIDEO_SECONDS = 11;     // classic: the ranking 8 s (the headline big alone 1.5 s, all shown by 4.1 s, then still), the closing slide 3 s
+    public const QUIZ_SECONDS = 12;      // quiz: the quiz question + 3, 2, 1 until 2.6 s, the ranking until 9 s, the closing slide 3 s
+    /** classic (the headline hook) or quiz (the quiz question and a countdown, then the reveal); classic when absent. */
+    public const MODES = ['classic', 'quiz'];
     /** The closing slide's invitation (cta_line): a few words, with hilads.live. */
     public const CTA_WORDS = 8;
     /** The video shows the first 10 rows (the podium + #4 to #10), "Top 10" in its source line when there are more. */
@@ -106,6 +110,22 @@ final class DwReaction
                 $errors[] = '"cta_line" must include hilads.live (e.g. "Show the world your bowl on hilads.live 🍜").';
             } elseif (($w = DwStudio::screenWords($c['cta_line'])) > self::CTA_WORDS) {
                 $warn[] = "The invitation (cta_line) is {$w} words (max about " . self::CTA_WORDS . ').';
+            }
+        }
+        if (isset($c['mode']) && !in_array($c['mode'], self::MODES, true)) {
+            $errors[] = '"mode" is "classic" or "quiz".';
+        }
+        if (($c['mode'] ?? null) === 'quiz') {
+            $quiz = trim((string) ($c['quiz_question'] ?? ''));
+            if ($quiz === '') {
+                $errors[] = 'Quiz mode needs a "quiz_question" (its answer is the #1).';
+            } else {
+                if (($w = DwStudio::screenWords($quiz)) > self::QUESTION_WORDS) {
+                    $warn[] = "The quiz question is {$w} words (max about " . self::QUESTION_WORDS . ').';
+                }
+                if (!preg_match('/\p{Extended_Pictographic}\x{FE0F}?\s*$/u', $quiz)) {
+                    $warn[] = 'The quiz question should end with an emoji.';
+                }
             }
         }
         $tags = $c['hashtags'] ?? null;
@@ -218,6 +238,18 @@ final class DwReaction
             && (float) $row['value'] === (float) $above['value'];
     }
 
+    /** The package's mode: quiz only when set so (with its quiz question), else classic. Pure. */
+    public static function mode(array $c): string
+    {
+        return ($c['mode'] ?? null) === 'quiz' && trim((string) ($c['quiz_question'] ?? '')) !== '' ? 'quiz' : 'classic';
+    }
+
+    /** The video's length for this package (seconds). Pure. */
+    public static function videoSeconds(array $c): float
+    {
+        return self::mode($c) === 'quiz' ? self::QUIZ_SECONDS : self::VIDEO_SECONDS;
+    }
+
     /** A card color: a CARD_THEMES name or a light #rrggbb (as Reaction.jsx cardColor: luminance 0.6 or more). Pure. */
     public static function cardBgOk(mixed $bg): bool
     {
@@ -242,7 +274,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'quiz_question'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }

@@ -4495,6 +4495,31 @@ try {
     echo "  ERR dw invitations: " . $e->getMessage() . "\n";
 }
 
+// The reaction format's quiz mode: a third PNG (quiz: 01 the quiz question, 02 the ranking, 03 the closing slide).
+// Reversal: ALTER TABLE dw_packages DROP COLUMN still3_url.
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS still3_url TEXT", 'dw_packages.still3_url');
+// Once: Nov 11 (singles) and Nov 14 (tourists) in quiz mode, through DwStudio::updateField (as the admin's fields: the
+// caption's last line follows the question); only while they have no mode and are not published.
+try {
+    $quizzes = [
+        '2026-11-11' => ['Where have most women 30–34 never married? 💍', 'Did YOU guess right? 💍'],
+        '2026-11-14' => ['Where do tourists outnumber locals the most? ✈️', 'Did YOU guess right? ✈️'],
+    ];
+    foreach ($quizzes as $date => [$quiz, $question]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || $topic['status'] === 'published' || !DwReaction::isReaction($pkg['content']) || isset($pkg['content']['mode'])) {
+            continue;
+        }
+        DwStudio::updateField($pkg['id'], 'quiz_question', $quiz);
+        DwStudio::updateField($pkg['id'], 'outro_question', $question);
+        DwStudio::updateField($pkg['id'], 'mode', 'quiz');
+        echo "  OK  dw: {$date} quiz \"{$quiz}\", closing \"{$question}\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw quizzes: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

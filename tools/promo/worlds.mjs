@@ -22,7 +22,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { END_SECONDS } from './src/reactionTiming.js';
+import { endSeconds } from './src/reactionTiming.js';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
 
@@ -41,6 +41,10 @@ const cardBgArg = args.includes('--card-bg') ? args[args.indexOf('--card-bg') + 
 const accentArg = args.includes('--accent') ? args[args.indexOf('--accent') + 1] : null;
 // --cta "<line>": a reaction topic's invitation (its cta_line), to try before saving it in the package.
 const ctaArg = args.includes('--cta') ? args[args.indexOf('--cta') + 1] : null;
+// --mode quiz --quiz "<question>" --question "<outro>": a reaction topic in quiz mode, to try before saving it.
+const modeArg = args.includes('--mode') ? args[args.indexOf('--mode') + 1] : null;
+const quizArg = args.includes('--quiz') ? args[args.indexOf('--quiz') + 1] : null;
+const questionArg = args.includes('--question') ? args[args.indexOf('--question') + 1] : null;
 // --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
 const pngOnly = args.includes('--png-only');
 const upload = !args.includes('--no-upload') && !args.includes('--png-only') && !fileArg;
@@ -146,7 +150,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
-           question: c.outro_question ?? null, cta: c.cta_line ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
+           question: c.outro_question ?? null, cta: c.cta_line ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -311,7 +315,7 @@ async function uploadOwnClip(data) {
 /** Uploads a rendered file (the MP4, or the reaction screen's PNG) to its package. */
 async function uploadFile(data, file, kind = null) {
   const png = file.endsWith('.png');
-  console.log(`  uploading ${kind === 'png2' ? 'PNG 02' : png ? 'the PNG' : 'the video'}…`);
+  console.log(`  uploading ${kind === 'png2' ? 'PNG 02' : kind === 'png3' ? 'PNG 03' : png ? 'the PNG' : 'the video'}…`);
   const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, ...(kind ? { kind } : { png }) });
   const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': png ? 'image/png' : 'video/mp4' }, body: await readFile(file) });
   if (!res.ok) throw new Error(`upload: ${res.status} ${await res.text()}`);
@@ -337,10 +341,11 @@ async function renderReaction(data, { work, pub, out }) {
   await pruneClips();
   const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), emoji: r.flag ?? null, flag: r.flag ? flagFile(r.flag) : null }));
   // The on-screen question: the package's outro question (also read from its content, before the API sends it).
-  const question = s.question ?? data.content?.outro_question ?? null;
+  const question = questionArg ?? s.question ?? data.content?.outro_question ?? null;
   const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
                        topic: s.topic ?? data.content?.topic ?? data.title ?? null,
                        cta: ctaArg ?? s.cta ?? data.content?.cta_line ?? null,
+                       mode: modeArg ?? s.mode ?? data.content?.mode ?? 'classic', quiz: quizArg ?? s.quiz ?? data.content?.quiz_question ?? null,
                        // The card's color and the headline's accent words (also read from the content, before the API sends them);
                        // --card-bg / --accent try one before it is saved in the package.
                        cardBg: cardBgArg ?? s.cardBg ?? data.content?.card_bg ?? null, accent: accentArg ?? s.accent ?? data.content?.headline_accent ?? null };
@@ -354,10 +359,19 @@ async function renderReaction(data, { work, pub, out }) {
   const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
   console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNG…`);
   if (!pngOnly) await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
-  // The PNGs (carousels): 01 the ranking's last frame (everything shown), 02 the video's last frame (the closing slide at rest).
-  const pngs = [`${base}-01.png`, `${base}-02.png`];
-  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: END_SECONDS * composition.fps - 1 });
-  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: composition.durationInFrames - 1 });
+  // The PNGs (carousels). Classic: 01 the complete ranking (the frame before the closing slide), 02 the closing slide
+  // (the video's last frame). Quiz: 01 the quiz question with "Guess before you swipe 👉", 02 the ranking, 03 the closing
+  // slide. (A still's own props need their own composition: renderStill keeps the composition's.)
+  const quiz = inputProps.mode === 'quiz';
+  if (quiz && !String(inputProps.quiz ?? '').trim()) throw new Error(`quiz mode without a quiz_question (${data.date})`);
+  const pngs = (quiz ? ['01', '02', '03'] : ['01', '02']).map((n) => `${base}-${n}.png`);
+  const lastRanking = endSeconds(inputProps.mode) * composition.fps - 1;
+  if (quiz) {
+    const guess = await selectComposition({ serveUrl, id: 'Reaction', inputProps: { ...inputProps, guessStill: true } });
+    await renderStill({ composition: guess, serveUrl, output: pngs[0], inputProps: { ...inputProps, guessStill: true }, frame: 0 });
+  }
+  await renderStill({ composition, serveUrl, output: pngs[quiz ? 1 : 0], inputProps, frame: lastRanking });
+  await renderStill({ composition, serveUrl, output: pngs[quiz ? 2 : 1], inputProps, frame: composition.durationInFrames - 1 });
   console.log(`  saved: ${base}.mp4 and ${pngs.map((f) => path.basename(f).slice(-6)).join(', ')}`);
   await rm(work, { recursive: true, force: true });
   await rm(serveUrl, { recursive: true, force: true }).catch(() => {});
@@ -373,6 +387,7 @@ async function renderReaction(data, { work, pub, out }) {
   await uploadFile(data, `${base}.mp4`);
   await uploadFile(data, pngs[0]);
   if (pngs[1]) await uploadFile(data, pngs[1], 'png2');
+  if (pngs[2]) await uploadFile(data, pngs[2], 'png3');
   console.log(`Done: ${api}/admin/worlds (${data.date})`);
 }
 
