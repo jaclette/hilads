@@ -1042,7 +1042,7 @@ final class DwStudio
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
-            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent|mode|quiz_question)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent|mode|quiz_question|clip_speed)$/', $path) ? ['slide' => null] : null;
         }
         $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
@@ -1116,6 +1116,16 @@ final class DwStudio
         }
         if ($path === 'mode' && $value === 'quiz' && trim((string) ($c['quiz_question'] ?? '')) === '') {
             throw new InvalidArgumentException('Write the quiz question first.');
+        }
+        if ($path === 'clip_speed') {
+            if ($value !== '' && !DwReaction::clipSpeedOk($value)) {
+                throw new InvalidArgumentException('The clip speed: a number from 0.5 to 3 (1.5 for slow-motion footage).');
+            }
+            if ($value === '' || (float) $value === 1.0) {
+                unset($c['clip_speed']);
+            } else {
+                $c['clip_speed'] = (float) $value;
+            }
         }
         if ($path === 'quiz_question' && $value === '' && ($c['mode'] ?? null) === 'quiz') {
             throw new InvalidArgumentException('A quiz needs its question: switch the topic to classic first.');
@@ -1506,6 +1516,7 @@ final class DwStudio
                     'question' => trim((string) ($c['outro_question'] ?? '')) ?: null,
                     'cardBg' => $c['card_bg'] ?? null, 'accent' => $c['headline_accent'] ?? null,
                     'cta' => trim((string) ($c['cta_line'] ?? '')) ?: null,
+                    'clipSpeed' => isset($c['clip_speed']) ? (float) $c['clip_speed'] : null,
                     'mode' => DwReaction::mode($c), 'quiz' => trim((string) ($c['quiz_question'] ?? '')) ?: null,
                 ],
                 'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null, 'still2Url' => $pkg['still2_url'] ?? null, 'still3Url' => $pkg['still3_url'] ?? null];

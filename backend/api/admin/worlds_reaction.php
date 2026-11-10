@@ -125,6 +125,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
         <?php worlds_field('data_years', 'Years shown (optional, when they differ by country, e.g. 2010s)', (string) ($c['data_years'] ?? '')); ?>
         <?php worlds_field('source', 'Source', (string) ($c['source'] ?? '')); ?>
         <?php worlds_field('source_url', 'Source URL', (string) ($c['source_url'] ?? '')); ?>
+        <?php worlds_field('clip_speed', 'Clip speed (optional: 1.5 plays slow-motion footage 1.5× faster; 0.5 to 3)', isset($c['clip_speed']) ? (string) $c['clip_speed'] : ''); ?>
         <?php worlds_field('clip_query', 'Clip search', (string) ($c['clip_query'] ?? '')); ?>
         <?php worlds_field('topic', 'Topic', (string) ($c['topic'] ?? '')); ?>
     </div>

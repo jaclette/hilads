@@ -4541,6 +4541,20 @@ try {
     echo "  ERR dw Nov 10 clip: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 10's kitten clip (Pixabay 131919) is slow-motion footage: played 1.5× faster (it then covers the main
+// screen, 8.3 s, without looping), through DwStudio::updateField (as the admin's field). Only while no speed is set.
+try {
+    $topic = DwStudio::topicByDate('2026-11-10');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && (int) ($pkg['content']['clip']['pixabay_id'] ?? 0) === 131919
+        && !isset($pkg['content']['clip_speed'])) {
+        DwStudio::updateField($pkg['id'], 'clip_speed', '1.5');
+        echo "  OK  dw: 2026-11-10 clip at 1.5×\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 10 clip speed: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

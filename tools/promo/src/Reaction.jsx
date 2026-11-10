@@ -58,12 +58,13 @@ export function ReactionRanking({ topic = null, question = null, cta = null, ...
   );
 }
 
-/** The clip, playing at its speed from the video's start, looping when it ends (the same timing on both scenes). */
+/** The clip, playing at its speed (× clip.speed, e.g. 1.5 for slow-motion footage) from the video's start, looping when it ends. */
 function ClipLoop({ clip, style }) {
   const { fps } = useVideoConfig();
+  const speed = Number(clip.speed) > 0 ? Number(clip.speed) : 1;
   return (
-    <Loop durationInFrames={Math.max(1, Math.floor(clip.seconds * fps))}>
-      <OffthreadVideo src={staticFile(clip.src)} muted style={style} />
+    <Loop durationInFrames={Math.max(1, Math.floor((clip.seconds / speed) * fps))}>
+      <OffthreadVideo src={staticFile(clip.src)} muted playbackRate={speed} style={style} />
     </Loop>
   );
 }

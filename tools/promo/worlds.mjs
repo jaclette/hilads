@@ -47,6 +47,7 @@ const quizArg = args.includes('--quiz') ? args[args.indexOf('--quiz') + 1] : nul
 const questionArg = args.includes('--question') ? args[args.indexOf('--question') + 1] : null;
 // --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
 const pngOnly = args.includes('--png-only');
+const clipSpeedArg = args.includes('--clip-speed') ? args[args.indexOf('--clip-speed') + 1] : null;
 const upload = !args.includes('--no-upload') && !args.includes('--png-only') && !fileArg;
 const dates = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
 const range = dates.length === 2 && !fileArg;
@@ -333,8 +334,10 @@ async function renderReaction(data, { work, pub, out }) {
     const name = `clips/reaction${path.extname(file)}`;
     await cp(file, path.join(pub, name));
     const { durationInSeconds } = await getVideoMetadata(file);
-    clip = { src: name, seconds: durationInSeconds, credit: s.clip.credit ?? '' };
-    console.log(`  clip ${durationInSeconds.toFixed(2)} s, at its speed, looping when it ends`);
+    // clip_speed: the clip faster (or slower) than filmed, e.g. 1.5 for slow-motion footage; --clip-speed to try one.
+    const speed = Number(clipSpeedArg ?? s.clipSpeed ?? data.content?.clip_speed ?? 1) || 1;
+    clip = { src: name, seconds: durationInSeconds, credit: s.clip.credit ?? '', speed };
+    console.log(`  clip ${durationInSeconds.toFixed(2)} s${speed !== 1 ? `, at ${speed}× (${(durationInSeconds / speed).toFixed(2)} s)` : ', at its speed'}, looping when it ends`);
   } else {
     console.warn('  ⚠ no clip: the top third stays dark (Admin › Worlds › Find another clip)');
   }

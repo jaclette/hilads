@@ -14,7 +14,8 @@ declare(strict_types=1);
  * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, cta_line (the closing slide's invitation to Hilads, with hilads.live), card_bg? (the ranking card's color: a CARD_THEMES name or a
  * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), mode? (classic | quiz),
- * quiz_question? (quiz: a question whose answer is the #1), warnings?}. clip, once
+ * quiz_question? (quiz: a question whose answer is the #1), clip_speed? (the clip faster or slower than filmed, 0.5 to 3,
+ * e.g. 1.5 for slow-motion footage), warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
  */
@@ -111,6 +112,9 @@ final class DwReaction
             } elseif (($w = DwStudio::screenWords($c['cta_line'])) > self::CTA_WORDS) {
                 $warn[] = "The invitation (cta_line) is {$w} words (max about " . self::CTA_WORDS . ').';
             }
+        }
+        if (isset($c['clip_speed']) && !self::clipSpeedOk($c['clip_speed'])) {
+            $errors[] = '"clip_speed" is a number from 0.5 to 3 (1.5: slow-motion footage played 1.5× faster).';
         }
         if (isset($c['mode']) && !in_array($c['mode'], self::MODES, true)) {
             $errors[] = '"mode" is "classic" or "quiz".';
@@ -236,6 +240,12 @@ final class DwReaction
         return is_array($above) && is_numeric($row['rank'] ?? null) && is_numeric($above['rank'] ?? null)
             && (int) $row['rank'] === (int) $above['rank'] && is_numeric($row['value'] ?? null) && is_numeric($above['value'] ?? null)
             && (float) $row['value'] === (float) $above['value'];
+    }
+
+    /** A clip speed: a number from 0.5 to 3. Pure. */
+    public static function clipSpeedOk(mixed $v): bool
+    {
+        return is_numeric($v) && (float) $v >= 0.5 && (float) $v <= 3;
     }
 
     /** The package's mode: quiz only when set so (with its quiz question), else classic. Pure. */
