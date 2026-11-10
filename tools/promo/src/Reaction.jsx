@@ -286,10 +286,11 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const max = Math.max(1e-9, broken ? vals[1] * 1.15 : vals[0] ?? 1);
 
   // ── Timeline ──
-  // Quiz mode: the quiz question and a 3, 2, 1 countdown until the reveal (2.6 s), then the classic sequence 1 s later.
+  // Quiz mode: the quiz question alone 1 s, then a 3, 2, 1 countdown (1 s each) until the reveal (4 s), then the
+  // classic sequence 2.4 s later.
   const isQuiz = mode === 'quiz' && String(quiz ?? '').trim() !== '';
-  const reveal = isQuiz ? S(2.6) : S(1.5);
-  const shift = isQuiz ? S(1.0) : 0;
+  const reveal = isQuiz ? S(4) : S(1.5);
+  const shift = isQuiz ? S(2.4) : 0;
   const stickerIn = spr(reveal, { damping: 9, stiffness: 220, mass: 0.6 });
   const titleIn = spr(0, { damping: 10, stiffness: 200, mass: 0.6 });
   const podAt = { 2: S(2.1) + shift, 1: S(2.4) + shift, 0: S(2.7) + shift };   // #3, #2, #1 (row index → start)
@@ -522,9 +523,9 @@ function EndCard({ headline, question, cta, cardBg, from, still = false }) {
 }
 
 /**
- * The quiz hook (quiz mode, 0 to 2.6 s; PNG 01 with "Guess before you swipe 👉"): under the clip, the quiz question
- * very big in a speech bubble (accent, white text, Baloo 2, tilted, a tail), from the first frame; from 0.5 s a fast
- * countdown 3, 2, 1 under it (0.7 s each, a punchy pop on each number); at the reveal the bubble pops away.
+ * The quiz hook (quiz mode, 0 to 4 s; PNG 01 with "Guess before you swipe 👉"): under the clip, the quiz question
+ * very big in a speech bubble (accent, white text, Baloo 2, tilted, a tail), from the first frame, alone for 1 s
+ * (to read it); then a countdown 3, 2, 1 under it (1 s each, a punchy pop on each number); at 4 s the bubble pops away.
  */
 function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
   const W = C_RIGHT - C_LEFT;
@@ -543,10 +544,10 @@ function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
   const top = area.top + (area.h - (bubbleH + tail + 24 + countH)) / 2;
   const pop = guessStill ? 1 : spring({ frame, fps, config: { damping: 9, stiffness: 260, mass: 0.5 } });
   const away = guessStill ? 0 : clamp01((frame - reveal) / 5);
-  // The countdown: 3 from 0.5 s, 2 from 1.2 s, 1 from 1.9 s.
-  const step = Math.floor((frame - S(0.5)) / S(0.7));
+  // The countdown: 3 from 1 s, 2 from 2 s, 1 from 3 s.
+  const step = Math.floor((frame - S(1)) / S(1));
   const n = 3 - step;
-  const numPop = spring({ frame: frame - S(0.5) - step * S(0.7), fps, config: { damping: 7, stiffness: 320, mass: 0.45 } });
+  const numPop = spring({ frame: frame - S(1) - step * S(1), fps, config: { damping: 7, stiffness: 320, mass: 0.45 } });
   return (
     <div style={{ position: 'absolute', left: C_LEFT, top, width: W, display: 'flex', flexDirection: 'column', alignItems: 'center',
                   transform: `scale(${(0.85 + 0.15 * pop) * (1 - 0.6 * away)})`, opacity: 1 - away, transformOrigin: 'center 40%' }}>
@@ -566,7 +567,7 @@ function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
       <div style={{ height: countH, marginTop: tail + 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {guessStill ? (
           <div style={{ fontFamily: BALOO, fontWeight: 800, fontSize: 64, color: INK, whiteSpace: 'nowrap' }}>Guess before you swipe 👉</div>
-        ) : n >= 1 && n <= 3 && frame >= S(0.5) ? (
+        ) : n >= 1 && n <= 3 && frame >= S(1) ? (
           <div style={{ width: countH, height: countH, borderRadius: '50%', background: STICKER, boxShadow: '0 10px 0 #C9940F', display: 'flex',
                         alignItems: 'center', justifyContent: 'center', fontFamily: BALOO, fontWeight: 800, fontSize: 150, color: INK,
                         paddingTop: 18, boxSizing: 'border-box', transform: `scale(${0.4 + 0.6 * numPop}) rotate(${(1 - numPop) * -20}deg)` }}>{n}</div>

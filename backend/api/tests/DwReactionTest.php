@@ -282,7 +282,7 @@ final class DwReactionTest extends TestCase
         $this->assertSame([], $errors);
         $this->assertSame([], array_values(array_filter($warn, fn($w) => str_contains($w, 'quiz'))));
         $this->assertSame('quiz', DwReaction::mode($c));
-        $this->assertSame(12.0, (float) DwReaction::videoSeconds($c));
+        $this->assertSame(13.5, (float) DwReaction::videoSeconds($c));
         $c['quiz_question'] = 'Which country in the whole wide world drinks the most beer';
         $warn = DwReaction::validate($c, ['Vietnam'])[1];
         $this->assertNotEmpty(array_filter($warn, fn($w) => str_contains($w, 'quiz question is')));

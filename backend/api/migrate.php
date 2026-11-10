@@ -4570,6 +4570,18 @@ try {
     echo "  ERR dw Nov 12: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 11's quiz question in the banner's words, through DwStudio::updateField; only while the old one is there.
+try {
+    $topic = DwStudio::topicByDate('2026-11-11');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['quiz_question'] ?? null) === 'Where have most women 30–34 never married? 💍') {
+        DwStudio::updateField($pkg['id'], 'quiz_question', 'Where are most women unmarried at 30? 💍');
+        echo "  OK  dw: 2026-11-11 quiz \"Where are most women unmarried at 30? 💍\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 11 quiz: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

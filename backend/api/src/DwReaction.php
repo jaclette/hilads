@@ -25,7 +25,7 @@ final class DwReaction
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
     public const VIDEO_SECONDS = 11;     // classic: the ranking 8 s (the headline big alone 1.5 s, all shown by 4.1 s, then still), the closing slide 3 s
-    public const QUIZ_SECONDS = 12;      // quiz: the quiz question + 3, 2, 1 until 2.6 s, the ranking until 9 s, the closing slide 3 s
+    public const QUIZ_SECONDS = 13.5;    // quiz: the quiz question alone 1 s, 3, 2, 1 (1 s each) until 4 s, the ranking until 10.5 s, the closing slide 3 s
     /** classic (the headline hook) or quiz (the quiz question and a countdown, then the reveal); classic when absent. */
     public const MODES = ['classic', 'quiz'];
     /** The closing slide's invitation (cta_line): a few words, with hilads.live. */

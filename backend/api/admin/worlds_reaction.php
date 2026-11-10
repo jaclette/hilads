@@ -18,7 +18,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= $quizMode ? 'Quiz · ' . DwReaction::QUIZ_SECONDS . ' s · question + 3, 2, 1 until 2.6 s · closing slide 9–12 s' : 'Classic · ' . DwReaction::VIDEO_SECONDS . ' s · headline hook 0–1.5 s · closing slide 8–11 s' ?> · top <?= DwReaction::SHOWN_ROWS ?></span>
+    <span class="worlds-badge is-clip">📊 Reaction + ranking · <?= $quizMode ? 'Quiz · ' . DwReaction::QUIZ_SECONDS . ' s · question 1 s + 3, 2, 1 until 4 s · closing slide 10.5–13.5 s' : 'Classic · ' . DwReaction::VIDEO_SECONDS . ' s · headline hook 0–1.5 s · closing slide 8–11 s' ?> · top <?= DwReaction::SHOWN_ROWS ?></span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -114,7 +114,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
             <button type="button" class="btn btn-sm <?= $quizMode ? 'btn-primary' : 'btn-secondary' ?>" data-mode="quiz">Quiz (question + 3, 2, 1)</button>
             <span class="worlds-muted" id="rx-mode-state">Quiz only when the #1 is surprising.</span>
         </div>
-        <?php $qz = (string) ($c['quiz_question'] ?? ''); worlds_field('quiz_question', 'Quiz question (quiz mode: its answer is the #1, 0 to 2.6 s)', $qz, false, DwStudio::screenWords($qz) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php $qz = (string) ($c['quiz_question'] ?? ''); worlds_field('quiz_question', 'Quiz question (quiz mode: its answer is the #1, 0 to 4 s)', $qz, false, DwStudio::screenWords($qz) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php $h = (string) ($c['headline'] ?? ''); $d = (string) ($c['detail'] ?? ''); ?>
         <?php worlds_field('headline', 'Headline (the promise)', $h, false, DwStudio::screenWords($h) . ' / ' . DwReaction::HEADLINE_WORDS . ' words'); ?>
         <?php worlds_field('detail', 'Detail (optional)', $d, false, DwStudio::screenWords($d) . ' / ' . DwReaction::DETAIL_WORDS . ' words'); ?>
@@ -133,7 +133,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     <div class="form-card">
         <h3>Post</h3>
         <?php worlds_field('caption', 'Caption', (string) ($c['caption'] ?? ''), true, DwStudio::words((string) ($c['caption'] ?? '')) . ' words'); ?>
-        <?php worlds_field('outro_question', 'Question (the closing slide, ' . ($quizMode ? '9 to 12 s: about the guess, e.g. Did YOU guess right?' : '8 to 11 s') . ', and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('outro_question', 'Question (the closing slide, ' . ($quizMode ? '10.5 to 13.5 s: about the guess, e.g. Did YOU guess right?' : '8 to 11 s') . ', and the caption\'s last line)', (string) ($c['outro_question'] ?? ''), false, DwStudio::screenWords((string) ($c['outro_question'] ?? '')) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php $cta = (string) ($c['cta_line'] ?? ''); worlds_field('cta_line', 'Invitation (the closing slide\'s button, with hilads.live)', $cta, false, ($cta === '' ? 'missing · ' : '') . DwStudio::screenWords($cta) . ' / ' . DwReaction::CTA_WORDS . ' words'); ?>
         <?php worlds_field('hashtags', 'Hashtags', implode(' ', $c['hashtags'] ?? []), false, count($c['hashtags'] ?? []) . ''); ?>
         <?php worlds_field('warnings', 'Warnings (one per line)', implode("\n", $c['warnings'] ?? []), true); ?>
