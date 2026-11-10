@@ -15,7 +15,8 @@ declare(strict_types=1);
  * clip_query, clip?, caption, hashtags, outro_question, cta_line (the closing slide's invitation to Hilads, with hilads.live), card_bg? (the ranking card's color: a CARD_THEMES name or a
  * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), mode? (classic | quiz),
  * quiz_question? (quiz: a question whose answer is the #1), clip_speed? (the clip faster or slower than filmed, 0.5 to 3,
- * e.g. 1.5 for slow-motion footage), warnings?}. clip, once
+ * e.g. 1.5 for slow-motion footage), extra_row? (one country of the rows below the top 10, e.g. "Vietnam", shown after the top
+ * 10 under a "• • •" separator, highlighted), warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
  * ai_generated, duration}; an import gives {pixabay_id} only (the server looks it up).
  */
@@ -112,6 +113,9 @@ final class DwReaction
             } elseif (($w = DwStudio::screenWords($c['cta_line'])) > self::CTA_WORDS) {
                 $warn[] = "The invitation (cta_line) is {$w} words (max about " . self::CTA_WORDS . ').';
             }
+        }
+        if (isset($c['extra_row']) && trim((string) $c['extra_row']) !== '' && !self::extraRowOk($c, (string) $c['extra_row'])) {
+            $errors[] = '"extra_row" must be a country of the rows below the top ' . self::SHOWN_ROWS . ' (it is shown after them, highlighted).';
         }
         if (isset($c['clip_speed']) && !self::clipSpeedOk($c['clip_speed'])) {
             $errors[] = '"clip_speed" is a number from 0.5 to 3 (1.5: slow-motion footage played 1.5× faster).';
@@ -242,6 +246,13 @@ final class DwReaction
             && (float) $row['value'] === (float) $above['value'];
     }
 
+    /** extra_row: a country of the rows after the top SHOWN_ROWS. Pure. */
+    public static function extraRowOk(array $c, string $country): bool
+    {
+        $names = array_map(static fn($r) => mb_strtolower(trim((string) ($r['country'] ?? ''))), array_slice($c['rows'] ?? [], self::SHOWN_ROWS));
+        return in_array(mb_strtolower(trim($country)), $names, true);
+    }
+
     /** A clip speed: a number from 0.5 to 3. Pure. */
     public static function clipSpeedOk(mixed $v): bool
     {
@@ -284,7 +295,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'quiz_question'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'quiz_question', 'extra_row'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }

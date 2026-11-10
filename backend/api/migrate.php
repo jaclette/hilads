@@ -4555,6 +4555,21 @@ try {
     echo "  ERR dw Nov 10 clip speed: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 12 (Big Mac) shows Vietnam (#49, $2.89, the same July 2026 edition) after the top 10, under "• • •", highlighted;
+// the banner gets its flags (Indonesia kept: 9.0419 / 2.3803 = 3.80, "almost 4", beats Vietnam's 9.0419 / 2.8946 = 3.12).
+// Through DwStudio::updateField (as the admin's fields), only while the old banner is there.
+try {
+    $topic = DwStudio::topicByDate('2026-11-12');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['detail'] ?? null) === '1 Big Mac in Switzerland = almost 4 in Indonesia 😳') {
+        DwStudio::updateField($pkg['id'], 'extra_row', 'Vietnam');
+        DwStudio::updateField($pkg['id'], 'detail', '🇨🇭 1 Big Mac in Switzerland = almost 4 in Indonesia 🇮🇩');
+        echo "  OK  dw: 2026-11-12 Vietnam after the top 10, banner with flags\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 12: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

@@ -48,6 +48,9 @@ const questionArg = args.includes('--question') ? args[args.indexOf('--question'
 // --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
 const pngOnly = args.includes('--png-only');
 const clipSpeedArg = args.includes('--clip-speed') ? args[args.indexOf('--clip-speed') + 1] : null;
+// --extra-row "<country>" --detail "<banner>": a reaction topic's extra highlighted row and banner, to try before saving them.
+const extraArg = args.includes('--extra-row') ? args[args.indexOf('--extra-row') + 1] : null;
+const detailArg = args.includes('--detail') ? args[args.indexOf('--detail') + 1] : null;
 const upload = !args.includes('--no-upload') && !args.includes('--png-only') && !fileArg;
 const dates = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
 const range = dates.length === 2 && !fileArg;
@@ -151,7 +154,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
-           question: c.outro_question ?? null, cta: c.cta_line ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
+           question: c.outro_question ?? null, cta: c.cta_line ?? null, extraRow: c.extra_row ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -345,9 +348,10 @@ async function renderReaction(data, { work, pub, out }) {
   const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), emoji: r.flag ?? null, flag: r.flag ? flagFile(r.flag) : null }));
   // The on-screen question: the package's outro question (also read from its content, before the API sends it).
   const question = questionArg ?? s.question ?? data.content?.outro_question ?? null;
-  const inputProps = { headline: s.headline, detail: s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
+  const inputProps = { headline: s.headline, detail: detailArg ?? s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
                        topic: s.topic ?? data.content?.topic ?? data.title ?? null,
                        cta: ctaArg ?? s.cta ?? data.content?.cta_line ?? null,
+                       extraRow: extraArg ?? s.extraRow ?? data.content?.extra_row ?? null,
                        mode: modeArg ?? s.mode ?? data.content?.mode ?? 'classic', quiz: quizArg ?? s.quiz ?? data.content?.quiz_question ?? null,
                        // The card's color and the headline's accent words (also read from the content, before the API sends them);
                        // --card-bg / --accent try one before it is saved in the package.

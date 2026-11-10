@@ -171,7 +171,7 @@ function Confetti({ x, y, at }) {
 }
 
 function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
-                       mode = 'classic', quiz = null, guessStill = false }) {
+                       mode = 'classic', quiz = null, guessStill = false, extraRow = null }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
@@ -179,7 +179,10 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
 
   // At most 10 countries (the first 10 rows, as ranked by the source); more: "Top 10" in the source line.
-  const rows = allRows.slice(0, MAX_ROWS);
+  // extraRow: one country further down (e.g. Vietnam #49), shown after the top 10 under a "• • •" separator, highlighted.
+  const extraName = String(extraRow ?? '').trim().toLowerCase();
+  const extra = extraName ? allRows.slice(MAX_ROWS).find((r) => String(r.country).trim().toLowerCase() === extraName) : null;
+  const rows = [...allRows.slice(0, MAX_ROWS), ...(extra ? [{ ...extra, gap_before: true, highlight: true }] : [])];
   const cut = allRows.length > MAX_ROWS;
   const sourceLine = cut ? `Top ${MAX_ROWS} · ${source}` : source;
 
@@ -200,25 +203,29 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   // ── Layout (bottom half, above the apps' caption) ──
   const words = accentWords(headline, accent);
   const W = C_RIGHT - C_LEFT;
-  // The header: the strongest text of the screen, 1 line from 76 down to 64 px, else 2 lines from 72 down to 56.
-  let titlePx = 56;
-  let titleLines = null;
-  for (let px = 76; px >= 64 && !titleLines; px -= 2) { titleLines = wrapWords(words, px, W, 1, 800, Q_FONT); titlePx = px; }
-  for (let px = 72; px >= 56 && !titleLines; px -= 2) { titleLines = wrapWords(words, px, W, 2, 800, Q_FONT); titlePx = px; }
-  titleLines ??= [words];
-  if (titleLines.length === 2) {                // balanced: no word alone on the second line
-    const all = titleLines.flat();
-    const w = (ws) => measure(ws.map((x) => x.word).join(' '), titlePx, 800, Q_FONT);
-    let best = titleLines;
-    for (let cutAt = 1; cutAt < all.length; cutAt++) {
-      const a = all.slice(0, cutAt), b = all.slice(cutAt);
-      if (w(a) <= W && w(b) <= W && Math.max(w(a), w(b)) < Math.max(w(best[0]), w(best[1]))) best = [a, b];
+  // The header: the strongest text of the screen, 1 line from 76 down to 64 px, else 2 lines from 72 (maxTwo) down to 56.
+  const headerAt = (maxTwo) => {
+    let px = 56;
+    let lines = null;
+    for (let p = 76; p >= 64 && !lines; p -= 2) { lines = wrapWords(words, p, W, 1, 800, Q_FONT); px = p; }
+    for (let p = maxTwo; p >= 56 && !lines; p -= 2) { lines = wrapWords(words, p, W, 2, 800, Q_FONT); px = p; }
+    lines ??= [words];
+    if (lines.length === 2) {                   // balanced: no word alone on the second line
+      const all = lines.flat();
+      const w = (ws) => measure(ws.map((x) => x.word).join(' '), px, 800, Q_FONT);
+      let best = lines;
+      for (let cutAt = 1; cutAt < all.length; cutAt++) {
+        const l1 = all.slice(0, cutAt), l2 = all.slice(cutAt);
+        if (w(l1) <= W && w(l2) <= W && Math.max(w(l1), w(l2)) < Math.max(w(best[0]), w(best[1]))) best = [l1, l2];
+      }
+      lines = best;
     }
-    titleLines = best;
-  }
-  const titleLH = Math.round(titlePx * 1.04);
+    return { px, lines };
+  };
+  let { px: titlePx, lines: titleLines } = headerAt(72);
   const titleTop = MEDIA_H - 28;                               // just under the wave
-  const titleEnd = titleTop + titleLines.length * titleLH;
+  let titleLH = Math.round(titlePx * 1.04);
+  let titleEnd = titleTop + titleLines.length * titleLH;
   // The hook (0–1.5 s): the same headline as big as fits in the empty area under the clip (up to 2.5× the header, 2 or 3
   // lines), centered; at 1.5 s it shrinks and moves up into the header (0.4 s, eased), crossfading with it.
   const hookArea = { top: MEDIA_H + 20, h: SAFE_BOTTOM - MEDIA_H - 40 };
@@ -239,7 +246,9 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const srcLines = Math.min(3, Math.ceil((measure(sourceLine, srcPx, 600) * 1.06) / W));
   const srcTop = SAFE_BOTTOM - srcLines * 30;
   const twoLineTitle = titleLines.length > 1;
-  const slots = Math.max(list.length, 1);
+  const gapAt = list.findIndex((r) => r.gap_before);          // the extra row's index (−1: none)
+  const GAP = 0.45;                                              // the "• • •" separator, in rows
+  const slots = Math.max(list.length + (gapAt >= 0 ? GAP : 0), 1);
   const podiumAt = (ps) => {
     const d = (twoLineTitle ? [66, 56, 56] : [74, 62, 62]).map((x) => Math.round(x * ps));   // flag badges, 30% over their block
     const namePx = Math.max(22, Math.round(26 * ps)), valPx = Math.max(34, Math.round(44 * ps));
@@ -251,9 +260,18 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   };
   let pod = podiumAt(1);
   for (let ps = 0.95; ps >= 0.6 && pod.stride < 40; ps -= 0.05) pod = podiumAt(ps);
+  // Still tight (many rows, an extra row): a two-line header a little smaller (down to 56 px), then the podium again.
+  for (let maxTwo = 68; maxTwo >= 56 && pod.stride < 38 && titleLines.length > 1; maxTwo -= 4) {
+    ({ px: titlePx, lines: titleLines } = headerAt(maxTwo));
+    titleLH = Math.round(titlePx * 1.04);
+    titleEnd = titleTop + titleLines.length * titleLH;
+    pod = podiumAt(1);
+    for (let ps = 0.95; ps >= 0.5 && pod.stride < 38; ps -= 0.05) pod = podiumAt(ps);
+  }
   const { d, h, podTop, podBase } = pod;
   const blockW = (W - 2 * 16) / 3;
   const listTop = podBase + 12;
+  const rowTop = (i) => listTop + i * stride + (gapAt >= 0 && i >= gapAt ? GAP * stride : 0);
   const stride = pod.stride;
   const rowH = Math.round(stride - 5);
   const textPx = Math.max(28, Math.min(34, Math.round(rowH * 0.62)));
@@ -400,9 +418,9 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
         const bar = (isBroken ? barMax : Math.max(10, (barMax * r.value) / max)) * fill;
         const nm = fitName(r.country, textPx, nameW, rowH - 4);
         return (
-          <div key={`r${i}`} style={{ position: 'absolute', left: C_LEFT, top: listTop + i * stride, width: W, height: rowH, borderRadius: 16,
-                                      background: isHot ? '#FFF0E4' : '#fff', boxSizing: 'border-box', border: isHot ? `3px solid ${TERRA}` : 'none',
-                                      boxShadow: '0 3px 0 rgba(150,90,40,0.13)', opacity: p, transform: `translateX(${(1 - p) * -80}px)` }}>
+          <div key={`r${i}`} style={{ position: 'absolute', left: C_LEFT, top: rowTop(i), width: W, height: rowH, borderRadius: 16,
+                                      background: isHot ? '#FFF0E4' : '#fff', boxSizing: 'border-box',
+                                      boxShadow: `${isHot ? `inset 0 0 0 3px ${TERRA}, ` : ''}0 3px 0 rgba(150,90,40,0.13)`, opacity: p, transform: `translateX(${(1 - p) * -80}px)` }}>
             <div style={{ position: 'absolute', left: 12, top: 0, width: rankW, height: rowH, display: 'flex', alignItems: 'center',
                           justifyContent: 'flex-end', fontSize: textPx - 2, fontWeight: 800, color: isHot ? TERRA : MUTED }}>{r.rank}</div>
             {r.flag && <Img src={staticFile(r.flag)} style={{ position: 'absolute', left: flagX, top: (rowH - flagS) / 2, width: flagS, height: flagS }} />}
@@ -422,6 +440,11 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
         );
       })}
 
+      {gapAt >= 0 && (
+        <div style={{ position: 'absolute', left: C_LEFT, top: rowTop(gapAt) - GAP * stride, width: W, height: GAP * stride, display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: MUTED, letterSpacing: 14,
+                      opacity: ease((frame - rowAt(gapAt)) / 9) }}>• • •</div>
+      )}
       <div style={{ position: 'absolute', left: C_LEFT, top: srcTop, width: W, fontSize: srcPx, lineHeight: '30px', fontWeight: 600,
                     color: '#6E5444', opacity: srcIn }}>{sourceLine}</div>
 
