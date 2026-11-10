@@ -11,7 +11,9 @@ declare(strict_types=1);
  * closing slide.
  *
  * A package's content: {format: "race", topic, headline, headline_accent?, detail? (the banner), banner_year?, series:
- * [{country, flag (emoji), values: {"2000": 77.2, …}}] (every country with a value for every year), unit? ("M"),
+ * [{country, flag (emoji), values: {"2000": 77.2, …}, ranks?: {"2000": 1, …}}] (every country with a value for every year), unit? ("M"),
+ * decimals? (0: whole numbers, default 1), extra_row? (a country of the series shown under the top 10, its real rank each
+ * year from its ranks, e.g. Vietnam),
  * value_label, data_years, source, source_url?, outro_question, cta_line, card_bg?, highlight? [country], caption,
  * hashtags, warnings?}.
  */
@@ -64,7 +66,11 @@ final class DwRace
             $errors[] = '"cta_line" must include hilads.live.';
         }
         $series = $c['series'] ?? null;
-        if (!is_array($series) || !array_is_list($series) || count($series) < self::SHOWN) {
+        $extra = mb_strtolower(trim((string) ($c['extra_row'] ?? '')));
+        if ($extra !== '' && is_array($series) && !in_array($extra, array_map(static fn($s) => mb_strtolower(trim((string) ($s['country'] ?? ''))), $series), true)) {
+            $errors[] = '"extra_row" must be one of the series\' countries.';
+        }
+        if (!is_array($series) || !array_is_list($series) || count($series) - ($extra !== '' ? 1 : 0) < self::SHOWN) {
             $errors[] = '"series" must be a list of at least ' . self::SHOWN . ' countries: {country, flag, values: {year: number}}.';
             return [$errors, $warn];
         }
@@ -138,9 +144,17 @@ final class DwRace
                 $values[(string) (int) $y] = round((float) $v, 2);
             }
             ksort($values);
-            return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values];
+            $ranks = [];
+            foreach (is_array($s['ranks'] ?? null) ? $s['ranks'] : [] as $y => $r) {
+                $ranks[(string) (int) $y] = (int) $r;
+            }
+            ksort($ranks);
+            return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values] + ($ranks ? ['ranks' => $ranks] : []);
         }, array_values($c['series'] ?? []));
-        foreach (['topic', 'headline', 'headline_accent', 'detail', 'value_label', 'data_years', 'source', 'source_url', 'unit', 'outro_question', 'cta_line', 'card_bg'] as $f) {
+        if (isset($c['decimals'])) {
+            $c['decimals'] = max(0, min(2, (int) $c['decimals']));
+        }
+        foreach (['extra_row', 'topic', 'headline', 'headline_accent', 'detail', 'value_label', 'data_years', 'source', 'source_url', 'unit', 'outro_question', 'cta_line', 'card_bg'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }

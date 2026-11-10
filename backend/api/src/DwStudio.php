@@ -1054,7 +1054,7 @@ final class DwStudio
         }
         if (DwRace::isRace($c)) {
             // The race has no slides: its texts and series (JSON) are saved, the video render draws them.
-            return preg_match('/^(headline|headline_accent|detail|banner_year|source|source_url|value_label|data_years|unit|outro_question|cta_line|card_bg|series)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|headline_accent|detail|banner_year|source|source_url|value_label|data_years|unit|outro_question|cta_line|card_bg|series|extra_row)$/', $path) ? ['slide' => null] : null;
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.

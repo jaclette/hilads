@@ -410,7 +410,7 @@ async function renderReaction(data, { work, pub, out }) {
  */
 async function renderRace(data, { work, pub, out }) {
   const c = data.content;
-  const series = (c.series ?? []).map((r) => ({ country: r.country, emoji: r.flag, flag: r.flag ? flagFile(r.flag) : null, values: r.values }));
+  const series = (c.series ?? []).map((r) => ({ country: r.country, emoji: r.flag, flag: r.flag ? flagFile(r.flag) : null, values: r.values, ranks: r.ranks ?? null }));
   const years = [...new Set(series.flatMap((r) => Object.keys(r.values)))].map(Number).sort((a, b) => a - b);
   const label = [c.value_label, c.data_years || c.data_year].filter(Boolean).join(', ');
   const source = `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`;
@@ -420,7 +420,8 @@ async function renderRace(data, { work, pub, out }) {
   if (missing.length) throw new Error(`no ${missing.join(' and no ')} for the closing slide (${data.date})`);
   const inputProps = { headline: c.headline, accent: accentArg ?? c.headline_accent ?? null, years: years.map(String), series, unit: c.unit ?? '',
                        source, detail: detailArg ?? c.detail ?? null, bannerYear: c.banner_year ?? null, highlight: c.highlight ?? [],
-                       cardBg: cardBgArg ?? c.card_bg ?? null, question, cta };
+                       cardBg: cardBgArg ?? c.card_bg ?? null, question, cta,
+                       extraRow: c.extra_row ?? null, decimals: Number.isInteger(c.decimals) ? c.decimals : 1 };
   console.log(`  ${series.length} countries, ${years[0]}–${years[years.length - 1]}, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
   const composition = await selectComposition({ serveUrl, id: 'Race', inputProps });

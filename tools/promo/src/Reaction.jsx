@@ -599,9 +599,11 @@ function raceValues(series, years, t) {
   });
 }
 /** Each country's rank (0 = first) at t. */
-function raceRanks(series, years, t) {
-  const v = raceValues(series, years, t);
-  const order = v.map((x, k) => [x, k]).sort((p, q) => q[0] - p[0]);
+function raceRanks(series, years, t, dec = 1) {
+  // On the values as shown (rounded to `dec` decimals): ties in the alphabetical order.
+  const f = 10 ** dec;
+  const v = raceValues(series, years, t).map((x) => Math.round(x * f) / f);
+  const order = v.map((x, k) => [x, k]).sort((p, q) => (q[0] - p[0]) || String(series[p[1]].country).localeCompare(String(series[q[1]].country)));
   const r = new Array(series.length);
   order.forEach(([, k], n) => { r[k] = n; });
   return r;
@@ -619,7 +621,8 @@ export function RaceVideo({ question = null, cta = null, ...props }) {
   );
 }
 
-function RaceScreen({ headline, accent = null, years, series, unit = '', source, detail = null, bannerYear = null, highlight = [], cardBg = null }) {
+function RaceScreen({ headline, accent = null, years, series, unit = '', source, detail = null, bannerYear = null, highlight = [], cardBg = null,
+                     extraRow = null, decimals = 1 }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
@@ -627,6 +630,12 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const W = C_RIGHT - C_LEFT;
   const n = years.length;
   const hot = new Set(highlight.map((h) => String(h).trim().toLowerCase()));
+  // extraRow: one country shown under the top 10 (a "• • •" separator), highlighted, with its real rank each year (its
+  // series' ranks), e.g. Vietnam; it never races in the top 10.
+  const extraIdx = extraRow ? series.findIndex((c) => String(c.country).trim().toLowerCase() === String(extraRow).trim().toLowerCase()) : -1;
+  const extra = extraIdx >= 0 ? series[extraIdx] : null;
+  if (extra) series = series.filter((_, i) => i !== extraIdx);
+  const roundShown = (v) => Math.round(v * 10 ** decimals) / 10 ** decimals;
 
   // The race clock: year index t (0 … n−1).
   const tAt = (f) => clamp01((f / fps - RACE.START) / (RACE.PER_YEAR * Math.max(1, n - 1))) * (n - 1);
@@ -639,9 +648,9 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   // Ranks: the exact rank of the values shown (the label), and the position slides to it as soon as the values cross
   // (each rank change eases over SLIDE frames): the order on screen always follows the values, the rows stay even.
   const SLIDE = 8;
-  const rankNow = raceRanks(series, years, t);
+  const rankNow = raceRanks(series, years, t, decimals);
   const hist = [];
-  for (let k = SLIDE; k >= 0; k--) hist.push(raceRanks(series, years, tAt(frame - k)));
+  for (let k = SLIDE; k >= 0; k--) hist.push(raceRanks(series, years, tAt(frame - k), decimals));
   const pos = series.map((_, c) => {
     let p = hist[0][c];
     for (let k = 1; k <= SLIDE; k++) {
@@ -678,7 +687,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const lineX0 = C_LEFT + 8, lineX1 = C_RIGHT - yearW * 1.25 - 40;   // room for the year's pop
   const chartTop = yearRowTop + yearRowH + 8;
   const chartBottom = srcTop - 24;
-  const rowH = (chartBottom - chartTop) / RACE_ROWS;
+  const rowH = (chartBottom - chartTop) / (RACE_ROWS + (extra ? 1.5 : 0));
   const barH = Math.round(rowH * 0.62);
   const flagS = Math.round(barH * 0.92);
   const rankW = 54, flagX = C_LEFT + rankW + 10, barX = flagX + flagS + 14;
@@ -686,7 +695,11 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const valPx = namePx;
   const barMax = C_RIGHT - barX - 150;
   const grow = ease(frame / S(0.45));                        // the first year's bars grow in (0 → 0.45 s)
-  const label = (v) => `${v.toFixed(1)}${unit ? ` ${unit}` : ''}`;
+  const label = (v) => `${v.toFixed(decimals)}${unit ? ` ${unit}` : ''}`;
+  // The rank shown: tied values (as shown) share a rank, the next one is +1 (as the Henley index ranks).
+  const shown = values.map(roundShown);
+  const distinct = [...new Set(shown)].sort((a, b) => b - a);
+  const denseRank = (k) => distinct.indexOf(shown[k]) + 1;
 
   // The banner at the striking year (it pops while the race goes on), the crown on #1 at the freeze.
   const bIdx = bannerYear != null ? years.map(String).indexOf(String(bannerYear)) : -1;
@@ -738,7 +751,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
         const isHot = hot.has(String(c.country).trim().toLowerCase());
         const nameW = measure(c.country, namePx, 800);
         const inside = nameW + 36 <= w;
-        const rank = rankNow[k] + 1;
+        const rank = denseRank(k);
         return (
           <div key={c.country} style={{ position: 'absolute', left: 0, top: y, width: 1080, height: rowH, opacity: fade }}>
             <div style={{ position: 'absolute', left: C_LEFT, top: 0, width: rankW, height: rowH, display: 'flex', alignItems: 'center',
@@ -763,6 +776,39 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
           </div>
         );
       })}
+
+      {/* The extra row (e.g. Vietnam): under a "• • •" separator, its real rank and value each year, highlighted. */}
+      {extra && (() => {
+        const v = raceValues([extra], years, t)[0];
+        const y = chartTop + (RACE_ROWS + 0.5) * rowH;
+        const w = Math.max(6, (barMax * v) / scaleMax) * grow;
+        const color = flagColor(extra.emoji);
+        const nameW = measure(extra.country, namePx, 800);
+        const inside = nameW + 36 <= w;
+        const rank = extra.ranks?.[years[Math.min(n - 1, Math.round(t))]] ?? '';
+        return (
+          <>
+            <div style={{ position: 'absolute', left: C_LEFT, top: chartTop + RACE_ROWS * rowH, width: W, height: rowH * 0.5, display: 'flex',
+                          alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: MUTED, letterSpacing: 14 }}>• • •</div>
+            <div style={{ position: 'absolute', left: C_LEFT - 12, top: y + 4, width: W + 24, height: rowH - 8, borderRadius: 18, background: '#FFF0E4',
+                          boxShadow: `inset 0 0 0 3px ${TERRA}` }} />
+            <div style={{ position: 'absolute', left: C_LEFT, top: y, width: rankW, height: rowH, display: 'flex', alignItems: 'center',
+                          justifyContent: 'flex-end', fontSize: namePx - 2, fontWeight: 800, color: TERRA }}>{rank}</div>
+            {extra.flag && <Img src={staticFile(extra.flag)} style={{ position: 'absolute', left: flagX, top: y + (rowH - flagS) / 2, width: flagS, height: flagS }} />}
+            <div style={{ position: 'absolute', left: barX, top: y + (rowH - barH) / 2, width: w, height: barH, borderRadius: barH * 0.28,
+                          background: `linear-gradient(90deg, ${mix(color, '#ffffff', 0.12)}, ${mix(color, '#000000', 0.1)})` }} />
+            <div style={{ position: 'absolute', left: inside ? barX + 18 : barX + w + 14, top: y, height: rowH, display: 'flex', alignItems: 'center',
+                          gap: 14, whiteSpace: 'nowrap', fontWeight: 800, fontSize: namePx }}>
+              <span style={{ color: inside ? (luminance(color) > 0.62 ? INK : '#fff') : INK }}>{extra.country}</span>
+              {!inside && <span style={{ fontSize: valPx, color: TERRA }}>{label(v)}</span>}
+            </div>
+            {inside && (
+              <div style={{ position: 'absolute', left: barX + w + 14, top: y, height: rowH, display: 'flex', alignItems: 'center',
+                            fontSize: valPx, fontWeight: 800, color: TERRA, whiteSpace: 'nowrap' }}>{label(v)}</div>
+            )}
+          </>
+        );
+      })()}
 
       {/* The striking moment: a pop banner over the chart, the race goes on. */}
       {bannerOn > 0 && bannerOff < 1 && (
