@@ -4520,6 +4520,25 @@ try {
     echo "  ERR dw quizzes: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 10 (cats) gets real footage instead of our AI kitten: Pixabay 131919 (a ginger kitten walking toward the
+// camera in a sunny garden, by Marsel_beijing), through DwStudio::setReactionClip (as "Use this clip": copied to R2,
+// author, license, source page, not AI; the AI copy is deleted); its warning about the AI label is replaced. Only
+// while the AI clip is there and the topic is not published.
+try {
+    $topic = DwStudio::topicByDate('2026-11-10');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['clip']['source'] ?? null) === 'upload'
+        && !empty($pkg['content']['clip']['ai_generated'])) {
+        $clip = DwStudio::setReactionClip($pkg['id'], 131919);
+        $warnings = array_map(static fn($w) => str_starts_with($w, 'Clip: our own AI video')
+            ? 'Clip: Pixabay 131919 by Marsel_beijing (real footage, not AI), replacing our AI kitten.' : $w, $pkg['content']['warnings'] ?? []);
+        DwStudio::updateField($pkg['id'], 'warnings', implode("\n", $warnings));
+        echo "  OK  dw: 2026-11-10 clip Pixabay 131919 by " . ($clip['author'] ?? '?') . " (not AI)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 10 clip: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
