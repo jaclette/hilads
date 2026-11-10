@@ -57,4 +57,21 @@ final class DwRaceTest extends TestCase
         $this->assertSame(11.5, $c['series'][0]['values']['2001']);
         $this->assertSame(2004, $c['banner_year']);
     }
+
+    public function testCountRaceFields(): void
+    {
+        $c = $this->content() + ['value_prefix' => '👑 x', 'step_seconds' => 0.25, 'slow_from' => 2003, 'slow_step' => 0.6];
+        $c['series'][0]['order'] = ['2000' => 2, '2001' => 1];
+        $this->assertSame([], DwRace::validate($c)[0]);
+        // 2001, 2002 fast (0.25), 2003 to 2005 slow (0.6)
+        $this->assertEqualsWithDelta(0.6 + 2 * 0.25 + 3 * 0.6 + 2 + 3, DwRace::videoSeconds($c), 1e-9);
+        $n = DwRace::normalize($c);
+        $this->assertSame('👑 x', $n['value_prefix']);
+        $this->assertSame(2003, $n['slow_from']);
+        $this->assertSame(['2000' => 2, '2001' => 1], $n['series'][0]['order']);
+        $bad = ['slow_from' => 1990] + $c;
+        $this->assertNotEmpty(array_filter(DwRace::validate($bad)[0], fn($e) => str_contains($e, 'slow_from')));
+        $bad = ['value_prefix' => 'way too long'] + $c;
+        $this->assertNotEmpty(array_filter(DwRace::validate($bad)[0], fn($e) => str_contains($e, 'value_prefix')));
+    }
 }

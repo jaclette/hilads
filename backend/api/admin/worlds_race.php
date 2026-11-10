@@ -18,7 +18,7 @@ $secs = DwRace::videoSeconds($c);
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">🏁 Race · <?= wh(number_format($secs, 1)) ?> s · <?= $years ? $years[0] . ' → ' . end($years) : '' ?> · <?= count($years) ?> years, <?= wh(number_format((float) ($c['step_seconds'] ?? DwRace::PER_YEAR), 1)) ?> s each · closing slide the last 3 s · no clip</span>
+    <span class="worlds-badge is-clip">🏁 Race · <?= wh(number_format($secs, 1)) ?> s · <?= $years ? $years[0] . ' → ' . end($years) : '' ?> · <?= count($years) ?> years, <?= wh(number_format((float) ($c['step_seconds'] ?? DwRace::PER_YEAR), 1)) ?> s each<?= !empty($c['slow_from']) ? ' (' . (int) $c['slow_from'] . ' on: ' . wh(number_format((float) ($c['slow_step'] ?? 0), 2)) . ' s)' : '' ?> · closing slide the last 3 s · no clip</span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -60,7 +60,7 @@ $secs = DwRace::videoSeconds($c);
                     <span style="width:18px;text-align:right;color:#888"><?= $i + 1 ?></span><span><?= wh($flag) ?></span>
                     <span style="width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= wh($country) ?></span>
                     <span style="flex:1"><span style="display:block;height:10px;border-radius:5px;background:#F2783A;width:<?= round(100 * $v / $max, 1) ?>%"></span></span>
-                    <span style="width:64px;text-align:right;font-weight:700"><?= wh(number_format($v, 1)) ?><?= !empty($c['unit']) ? ' ' . wh($c['unit']) : '' ?></span>
+                    <span style="width:64px;text-align:right;font-weight:700"><?= wh((string) ($c['value_prefix'] ?? '')) ?><?= wh(number_format($v, (int) ($c['decimals'] ?? 1))) ?><?= !empty($c['unit']) ? ' ' . wh($c['unit']) : '' ?></span>
                 </div>
             <?php endforeach; ?>
         </div>

@@ -410,7 +410,7 @@ async function renderReaction(data, { work, pub, out }) {
  */
 async function renderRace(data, { work, pub, out }) {
   const c = data.content;
-  const series = (c.series ?? []).map((r) => ({ country: r.country, emoji: r.flag, flag: r.flag ? flagFile(r.flag) : null, values: r.values, ranks: r.ranks ?? null }));
+  const series = (c.series ?? []).map((r) => ({ country: r.country, emoji: r.flag, flag: r.flag ? flagFile(r.flag) : null, values: r.values, ranks: r.ranks ?? null, order: r.order ?? null }));
   const years = [...new Set(series.flatMap((r) => Object.keys(r.values)))].map(Number).sort((a, b) => a - b);
   const label = [c.value_label, c.data_years || c.data_year].filter(Boolean).join(', ');
   const source = `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`;
@@ -422,7 +422,8 @@ async function renderRace(data, { work, pub, out }) {
                        source, detail: detailArg ?? c.detail ?? null, bannerYear: c.banner_year ?? null, highlight: c.highlight ?? [],
                        cardBg: cardBgArg ?? c.card_bg ?? null, question, cta,
                        extraRow: c.extra_row ?? null, decimals: Number.isInteger(c.decimals) ? c.decimals : 1,
-                       yearLabels: c.year_labels ?? null, stepSeconds: c.step_seconds ?? undefined, startSeconds: c.start_seconds ?? undefined, hold: c.hold ?? undefined };
+                       yearLabels: c.year_labels ?? null, stepSeconds: c.step_seconds ?? undefined, startSeconds: c.start_seconds ?? undefined, hold: c.hold ?? undefined,
+                       slowFrom: c.slow_from ?? undefined, slowStep: c.slow_step ?? undefined, valuePrefix: c.value_prefix ?? '' };
   console.log(`  ${series.length} countries, ${years[0]}–${years[years.length - 1]}, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
   const composition = await selectComposition({ serveUrl, id: 'Race', inputProps });
@@ -432,7 +433,7 @@ async function renderRace(data, { work, pub, out }) {
   const pngs = ['01', '02', '03'].map((n) => `${base}-${n}.png`);
   const fps = composition.fps;
   await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: Math.round(raceOpts(inputProps).start * fps) - 2 });
-  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: Math.round(raceEndSeconds(years.length, inputProps) * fps) - 1 });
+  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: Math.round(raceEndSeconds(years, inputProps) * fps) - 1 });
   await renderStill({ composition, serveUrl, output: pngs[2], inputProps, frame: composition.durationInFrames - 1 });
   console.log(`  saved: ${base}.mp4 and 01.png, 02.png, 03.png`);
   await rm(work, { recursive: true, force: true });

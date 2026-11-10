@@ -16,12 +16,13 @@ declare(strict_types=1);
  * year from its ranks, e.g. Vietnam), year_labels? ({"2022": "2022/23"}: an edition's label), step_seconds? (a year's step,
  * 0.7 by default; few editions: 2.5), start_seconds? (0.6), hold? (the share of a step held still after its move, 0 to 0.8),
  * value_label, data_years, source, source_url?, outro_question, cta_line, card_bg?, highlight? [country], caption,
- * hashtags, warnings?}.
+ * hashtags, warnings?}. Count races: value_prefix? ("👑 x", before each value), slow_from? + slow_step? (the years from
+ * slow_from go at slow_step: fast early decades), a series' order? ({"2009": 1, …}: its place among tied values at a year).
  */
 final class DwRace
 {
     public const MIN_YEARS = 4;
-    public const MAX_YEARS = 40;
+    public const MAX_YEARS = 80;
     public const SHOWN = 10;
     public const START = 0.6;          // tools/promo/src/reactionTiming.js RACE (no hook: the race starts right away)
     public const PER_YEAR = 0.7;
@@ -52,7 +53,13 @@ final class DwRace
     {
         $start = (float) ($c['start_seconds'] ?? self::START);
         $step = (float) ($c['step_seconds'] ?? self::PER_YEAR);
-        return $start + max(0, count(self::years($c)) - 1) * $step + self::FREEZE + self::CLOSING;
+        $slowFrom = isset($c['slow_from']) && $c['slow_from'] !== null ? (int) $c['slow_from'] : null;
+        $slowStep = (float) ($c['slow_step'] ?? $step);
+        $total = $start;
+        foreach (array_slice(self::years($c), 1) as $y) {   // a step ends at year $y (reactionTiming.js raceSteps)
+            $total += $slowFrom !== null && $y >= $slowFrom ? $slowStep : $step;
+        }
+        return $total + self::FREEZE + self::CLOSING;
     }
 
     /** Checks a race content: [errors (block the import), warnings]. Pure (but for DwStudio::screenWords). */
@@ -114,10 +121,16 @@ final class DwRace
         if (isset($c['banner_year']) && $c['banner_year'] !== null && !in_array((int) $c['banner_year'], $years, true)) {
             $errors[] = '"banner_year" must be one of the race\'s years.';
         }
-        foreach (['step_seconds' => [0.4, 4], 'start_seconds' => [0.3, 4], 'hold' => [0, 0.8]] as $f => [$lo, $hi]) {
+        foreach (['step_seconds' => [0.25, 4], 'slow_step' => [0.25, 4], 'start_seconds' => [0.3, 4], 'hold' => [0, 0.8]] as $f => [$lo, $hi]) {
             if (isset($c[$f]) && (!is_numeric($c[$f]) || (float) $c[$f] < $lo || (float) $c[$f] > $hi)) {
                 $errors[] = "\"{$f}\" is a number from {$lo} to {$hi}.";
             }
+        }
+        if (isset($c['slow_from']) && $c['slow_from'] !== null && !in_array((int) $c['slow_from'], $years, true)) {
+            $errors[] = '"slow_from" must be one of the race\'s years (the years from it go at slow_step).';
+        }
+        if (isset($c['value_prefix']) && mb_strlen((string) $c['value_prefix']) > 6) {
+            $errors[] = '"value_prefix" is a short text before each value (6 characters at most, e.g. "👑 x").';
         }
         if (isset($c['year_labels']) && (!is_array($c['year_labels']) || array_diff(array_map('intval', array_keys($c['year_labels'])), $years) !== [])) {
             $errors[] = '"year_labels" maps the race\'s years to their labels (e.g. {"2022": "2022/23"}).';
@@ -160,9 +173,15 @@ final class DwRace
                 $ranks[(string) (int) $y] = (int) $r;
             }
             ksort($ranks);
-            return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values] + ($ranks ? ['ranks' => $ranks] : []);
+            $order = [];
+            foreach (is_array($s['order'] ?? null) ? $s['order'] : [] as $y => $o) {
+                $order[(string) (int) $y] = (int) $o;
+            }
+            ksort($order);
+            return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values]
+                + ($ranks ? ['ranks' => $ranks] : []) + ($order ? ['order' => $order] : []);
         }, array_values($c['series'] ?? []));
-        foreach (['step_seconds', 'start_seconds', 'hold'] as $f) {
+        foreach (['step_seconds', 'slow_step', 'start_seconds', 'hold'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = (float) $c[$f];
             }
@@ -177,6 +196,12 @@ final class DwRace
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }
+        }
+        if (array_key_exists('slow_from', $c)) {
+            $c['slow_from'] = $c['slow_from'] === null || $c['slow_from'] === '' ? null : (int) $c['slow_from'];
+        }
+        if (isset($c['value_prefix'])) {
+            $c['value_prefix'] = (string) $c['value_prefix'];   // kept as is: "👑 x" ends without a space
         }
         if (isset($c['banner_year'])) {
             $c['banner_year'] = $c['banner_year'] === null || $c['banner_year'] === '' ? null : (int) $c['banner_year'];
