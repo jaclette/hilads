@@ -22,7 +22,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { RACE, endSeconds, raceEndSeconds } from './src/reactionTiming.js';
+import { endSeconds, raceEndSeconds, raceOpts } from './src/reactionTiming.js';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
 
@@ -421,7 +421,8 @@ async function renderRace(data, { work, pub, out }) {
   const inputProps = { headline: c.headline, accent: accentArg ?? c.headline_accent ?? null, years: years.map(String), series, unit: c.unit ?? '',
                        source, detail: detailArg ?? c.detail ?? null, bannerYear: c.banner_year ?? null, highlight: c.highlight ?? [],
                        cardBg: cardBgArg ?? c.card_bg ?? null, question, cta,
-                       extraRow: c.extra_row ?? null, decimals: Number.isInteger(c.decimals) ? c.decimals : 1 };
+                       extraRow: c.extra_row ?? null, decimals: Number.isInteger(c.decimals) ? c.decimals : 1,
+                       yearLabels: c.year_labels ?? null, stepSeconds: c.step_seconds ?? undefined, startSeconds: c.start_seconds ?? undefined, hold: c.hold ?? undefined };
   console.log(`  ${series.length} countries, ${years[0]}–${years[years.length - 1]}, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
   const composition = await selectComposition({ serveUrl, id: 'Race', inputProps });
@@ -430,8 +431,8 @@ async function renderRace(data, { work, pub, out }) {
   if (!pngOnly) await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
   const pngs = ['01', '02', '03'].map((n) => `${base}-${n}.png`);
   const fps = composition.fps;
-  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: Math.round(RACE.START * fps) - 2 });
-  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: Math.round(raceEndSeconds(years.length) * fps) - 1 });
+  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: Math.round(raceOpts(inputProps).start * fps) - 2 });
+  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: Math.round(raceEndSeconds(years.length, inputProps) * fps) - 1 });
   await renderStill({ composition, serveUrl, output: pngs[2], inputProps, frame: composition.durationInFrames - 1 });
   console.log(`  saved: ${base}.mp4 and 01.png, 02.png, 03.png`);
   await rm(work, { recursive: true, force: true });

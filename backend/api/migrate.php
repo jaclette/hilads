@@ -4648,6 +4648,42 @@ JSON, true, 512, JSON_THROW_ON_ERROR);
     echo "  ERR dw Nov 17 race: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 18 becomes the race "The world's best cuisines" (TasteAtlas Awards, editions 2022/23 to 2025/26, user ratings;
+// Greece dethrones Italy in 2024/25), Vietnam as the extra row; "Cute nicknames for your partner" moves to the first date
+// with no topic; the unpublished birth rate topic is dropped (DwStudio::deleteTopic, its files on R2 too). As Nov 16.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $old = $pdo->query("SELECT id, status FROM dw_topics WHERE date = '2026-11-18' AND title = 'Cute nicknames for your partner'")->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-19'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $old['id']]);
+        echo "  OK  dw: \"Cute nicknames for your partner\" moved from 2026-11-18 to {$free}\n";
+    }
+    foreach ($pdo->query("SELECT id, date::text AS date, title FROM dw_topics WHERE status <> 'published'
+                          AND (title ILIKE '%birth rate%' OR title ILIKE '%birthrate%' OR title ILIKE '%fertility%' OR title ILIKE '%births per%' OR title ILIKE '%babies per%')")
+             ->fetchAll(PDO::FETCH_ASSOC) as $t) {
+        DwStudio::deleteTopic((int) $t['id']);
+        echo "  OK  dw: dropped {$t['date']} \"{$t['title']}\"\n";
+    }
+    $title = "The world's best cuisines, 2022/23 to 2025/26";
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-18'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-18', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: TasteAtlas Awards Best Cuisines, the top 10 of each edition from 2022/23 to 2025/26 (average user ratings out of 5), Vietnam as the extra row. Italy #1, Greece takes the crown in 2024/25, Italy back in 2025/26, Peru to #3.']);
+        echo "  OK  dw: 2026-11-18 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-18');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The world's best cuisines, TasteAtlas Awards 2022/23 to 2025/26","headline":"The world's best cuisines, 2022/23 → 2025/26 🍝","headline_accent":"best cuisines","detail":"Greece dethrones Italy 🇬🇷","banner_year":2024,"extra_row":"Vietnam","year_labels":{"2022":"2022/23","2023":"2023/24","2024":"2024/25","2025":"2025/26"},"step_seconds":2.5,"start_seconds":1.5,"hold":0.55,"value_label":"Average user rating out of 5","data_years":"2022/23–2025/26","unit":"","decimals":2,"source":"TasteAtlas Awards","source_url":"https://www.tasteatlas.com/best/cuisines","series":[{"country":"United States","flag":"🇺🇸","values":{"2022":4.51,"2023":4.48,"2024":4.42,"2025":4.42},"ranks":{"2022":8,"2023":16,"2024":13,"2025":15}},{"country":"China","flag":"🇨🇳","values":{"2022":4.49,"2023":4.59,"2024":4.45,"2025":4.48},"ranks":{"2022":11,"2023":5,"2024":10,"2025":8}},{"country":"France","flag":"🇫🇷","values":{"2022":4.51,"2023":4.55,"2024":4.48,"2025":4.48},"ranks":{"2022":9,"2023":8,"2024":8,"2025":9}},{"country":"Greece","flag":"🇬🇷","values":{"2022":4.69,"2023":4.64,"2024":4.6,"2025":4.6},"ranks":{"2022":2,"2023":3,"2024":1,"2025":2}},{"country":"India","flag":"🇮🇳","values":{"2022":4.54,"2023":4.52,"2024":4.42,"2025":4.43},"ranks":{"2022":5,"2023":11,"2024":12,"2025":13}},{"country":"Indonesia","flag":"🇮🇩","values":{"2022":4.37,"2023":4.57,"2024":4.48,"2025":4.48},"ranks":{"2022":16,"2023":6,"2024":7,"2025":10}},{"country":"Italy","flag":"🇮🇹","values":{"2022":4.72,"2023":4.65,"2024":4.59,"2025":4.64},"ranks":{"2022":1,"2023":1,"2024":2,"2025":1}},{"country":"Japan","flag":"🇯🇵","values":{"2022":4.59,"2023":4.65,"2024":4.47,"2025":4.49},"ranks":{"2022":4,"2023":2,"2024":9,"2025":6}},{"country":"Mexico","flag":"🇲🇽","values":{"2022":4.53,"2023":4.56,"2024":4.52,"2025":4.46},"ranks":{"2022":6,"2023":7,"2024":3,"2025":11}},{"country":"Peru","flag":"🇵🇪","values":{"2022":4.51,"2023":4.54,"2024":4.4,"2025":4.54},"ranks":{"2022":10,"2023":10,"2024":14,"2025":3}},{"country":"Poland","flag":"🇵🇱","values":{"2022":4.44,"2023":4.5,"2024":4.42,"2025":4.42},"ranks":{"2022":14,"2023":13,"2024":11,"2025":14}},{"country":"Portugal","flag":"🇵🇹","values":{"2022":4.47,"2023":4.61,"2024":4.5,"2025":4.53},"ranks":{"2022":13,"2023":4,"2024":5,"2025":4}},{"country":"Spain","flag":"🇪🇸","values":{"2022":4.59,"2023":4.55,"2024":4.5,"2025":4.53},"ranks":{"2022":3,"2023":9,"2024":4,"2025":5}},{"country":"Türkiye","flag":"🇹🇷","values":{"2022":4.52,"2023":4.49,"2024":4.5,"2025":4.49},"ranks":{"2022":7,"2023":15,"2024":6,"2025":7}},{"country":"Vietnam","flag":"🇻🇳","values":{"2022":4.31,"2023":4.44,"2024":4.34,"2025":4.36},"ranks":{"2022":20,"2023":22,"2024":19,"2025":16}}],"card_bg":"yellow","outro_question":"Is YOUR country's food ranked too low? 😤","cta_line":"Show us your favorite local dish on hilads.live 🍜","caption":"Italy topped TasteAtlas's world cuisine ranking in 2022/23 and 2023/24, then Greece took the crown in 2024/25 by 0.01 point… before Italy won it back in 2025/26, with Peru jumping to #3. Vietnam keeps climbing: #16 this year, its best ever. These are average user ratings of each country's dishes on TasteAtlas. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#Food","#TasteAtlas","#Foodie","#Italy","#Greece","#VietnameseFood"],"warnings":["TasteAtlas Awards 'Best Cuisines in the World', from TasteAtlas's own ranking page (archived copies: Dec 2022, Jan 2024 + its ranks 16-100, Dec 2024, Jan 2026): 2022 (shown 2022/23), 23/24, 24/25, 25/26. The 2021 edition is left out: its archived page has only #36-50.","Scores are average user ratings out of 5 (TasteAtlas's method: ratings of each country's dishes and products); the ratings counted grow each edition, so scores move a little between editions.","Ranks are TasteAtlas's own (2023/24: Italy #1 and Japan #2 both at 4.65, ordered by more decimals).","Vietnam: #20 (4.31), #22 (4.44), #19 (4.34), #16 (4.36)."]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-18 race package v{$r['version']}\n" : "  ERR dw Nov 18 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 18 race: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

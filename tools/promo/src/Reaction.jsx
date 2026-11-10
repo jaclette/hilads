@@ -20,7 +20,7 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
 }
 loadFont({ family: Q_FONT, url: staticFile('fonts/Baloo2-Variable.ttf'), weight: '400 800' });
 
-import { RACE, endSeconds, raceEndSeconds, reactionSeconds } from './reactionTiming.js';
+import { RACE, endSeconds, raceEndSeconds, raceOpts, reactionSeconds } from './reactionTiming.js';
 export { reactionSeconds };
 
 let ctx = null;
@@ -600,10 +600,13 @@ function raceValues(series, years, t) {
 }
 /** Each country's rank (0 = first) at t. */
 function raceRanks(series, years, t, dec = 1) {
-  // On the values as shown (rounded to `dec` decimals): ties in the alphabetical order.
+  // At a year itself, with the source's ranks: its order (ties as the source breaks them). Else on the values as shown
+  // (rounded to `dec` decimals), ties in the alphabetical order.
   const f = 10 ** dec;
   const v = raceValues(series, years, t).map((x) => Math.round(x * f) / f);
-  const order = v.map((x, k) => [x, k]).sort((p, q) => (q[0] - p[0]) || String(series[p[1]].country).localeCompare(String(series[q[1]].country)));
+  const at = Number.isInteger(t) && series.every((c) => c.ranks?.[years[t]] != null) ? years[t] : null;
+  const order = v.map((x, k) => [x, k]).sort((p, q) => at != null ? series[p[1]].ranks[at] - series[q[1]].ranks[at]
+    : (q[0] - p[0]) || String(series[p[1]].country).localeCompare(String(series[q[1]].country)));
   const r = new Array(series.length);
   order.forEach(([, k], n) => { r[k] = n; });
   return r;
@@ -611,7 +614,7 @@ function raceRanks(series, years, t, dec = 1) {
 
 export function RaceVideo({ question = null, cta = null, ...props }) {
   const frame = useCurrentFrame();
-  const end = S(raceEndSeconds(props.years.length));
+  const end = S(raceEndSeconds(props.years.length, props));
   const out = clamp01((frame - end) / 8);
   return (
     <AbsoluteFill style={{ background: cardColor(props.cardBg) }}>
@@ -622,7 +625,8 @@ export function RaceVideo({ question = null, cta = null, ...props }) {
 }
 
 function RaceScreen({ headline, accent = null, years, series, unit = '', source, detail = null, bannerYear = null, highlight = [], cardBg = null,
-                     extraRow = null, decimals = 1 }) {
+                     extraRow = null, decimals = 1, yearLabels = null, stepSeconds, startSeconds, hold }) {
+  const { start: START, step: STEP, hold: HOLD } = raceOpts({ stepSeconds, startSeconds, hold });
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
@@ -637,8 +641,12 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   if (extra) series = series.filter((_, i) => i !== extraIdx);
   const roundShown = (v) => Math.round(v * 10 ** decimals) / 10 ** decimals;
 
-  // The race clock: year index t (0 … n−1).
-  const tAt = (f) => clamp01((f / fps - RACE.START) / (RACE.PER_YEAR * Math.max(1, n - 1))) * (n - 1);
+  // The race clock: year index t (0 … n−1); within each step the move takes its first (1 − HOLD), then it holds.
+  const tAt = (f) => {
+    const raw = clamp01((f / fps - START) / (STEP * Math.max(1, n - 1))) * (n - 1);
+    const i = Math.floor(raw);
+    return i >= n - 1 ? n - 1 : i + clamp01((raw - i) / (1 - HOLD));
+  };
   const t = tAt(frame);
   const values = raceValues(series, years, t);
   // The bars' scale: the highest value so far (the collapse of a year shows as bars shrinking, not as a new scale).
@@ -660,7 +668,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
     return p;
   });
   const year = years[Math.min(n - 1, Math.round(t))];
-  const raceEnd = S(RACE.START + (n - 1) * RACE.PER_YEAR);
+  const raceEnd = S(START + (n - 1) * STEP);
 
   // The header (as the reaction format: the strongest text) and the hook (very big, centered, with its emoji).
   const words = accentWords(headline, accent);
@@ -680,10 +688,11 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const markTop = SAFE_BOTTOM - 40;
   const srcTop = markTop - 10 - srcLines * 30;
   // Under the headline: the timeline (first → last year, a moving marker) and the year, big, in the accent color.
-  const yearPx = 120;
+  const yearLabel = (y) => String(yearLabels?.[y] ?? y);
+  const yearPx = Math.max(...years.map((y) => yearLabel(y).length)) > 4 ? 96 : 120;
   const yearRowTop = titleEnd + 14;
   const yearRowH = 128;
-  const yearW = measure(String(years[n - 1]), yearPx, 800, Q_FONT) + 10;
+  const yearW = Math.max(...years.map((y) => measure(yearLabel(y), yearPx, 800, Q_FONT))) + 10;
   const lineX0 = C_LEFT + 8, lineX1 = C_RIGHT - yearW * 1.25 - 40;   // room for the year's pop
   const chartTop = yearRowTop + yearRowH + 8;
   const chartBottom = srcTop - 24;
@@ -703,7 +712,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
 
   // The banner at the striking year (it pops while the race goes on), the crown on #1 at the freeze.
   const bIdx = bannerYear != null ? years.map(String).indexOf(String(bannerYear)) : -1;
-  const bannerAt = bIdx >= 0 ? S(RACE.START + (bIdx - 0.4) * RACE.PER_YEAR) : null;
+  const bannerAt = bIdx >= 0 ? S(START + (bIdx - 1 + 0.6 * (1 - HOLD)) * STEP) : null;
   const bannerOn = bannerAt != null && detail ? spring({ frame: frame - bannerAt, fps, config: { damping: 8, stiffness: 220, mass: 0.6 } }) : 0;
   const bannerOff = bannerAt != null ? clamp01((frame - bannerAt - S(1.4)) / 6) : 0;
   const crown = spring({ frame: frame - raceEnd - 3, fps, config: { damping: 9, stiffness: 260, mass: 0.6 } });
@@ -711,9 +720,11 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const chartIn = 1;
   // The year pops each time it changes (the moment the race passes half-way between two years).
   const yi = Math.min(n - 1, Math.round(t));
-  const since = yi > 0 ? frame - S(RACE.START + (yi - 0.5) * RACE.PER_YEAR) : 99;
+  const since = yi > 0 ? frame - S(START + (yi - 1 + 0.5 * (1 - HOLD)) * STEP) : 99;
   const yearPop = since >= 0 && since < 10 ? 1 + 0.22 * (1 - ease(since / 10)) : 1;
   const progress = n > 1 ? t / (n - 1) : 1;
+  // At a year itself, the source's rank (when the series has them); between years the rank of the values shown.
+  const atYear = Number.isInteger(t) && series.every((c) => c.ranks?.[years[t]] != null) ? years[t] : null;
 
   return (
     <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
@@ -733,11 +744,11 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
       <div style={{ position: 'absolute', left: lineX0, top: yearRowTop + yearRowH / 2 - 4, width: (lineX1 - lineX0) * progress, height: 8, borderRadius: 4, background: TERRA }} />
       <div style={{ position: 'absolute', left: lineX0 + (lineX1 - lineX0) * progress - 14, top: yearRowTop + yearRowH / 2 - 14, width: 28, height: 28,
                     borderRadius: 14, background: TERRA, boxShadow: '0 0 0 6px rgba(194,78,28,0.22)' }} />
-      <div style={{ position: 'absolute', left: lineX0, top: yearRowTop + yearRowH / 2 + 18, fontSize: 24, fontWeight: 700, color: MUTED }}>{years[0]}</div>
-      <div style={{ position: 'absolute', left: lineX1 - 80, width: 80, textAlign: 'right', top: yearRowTop + yearRowH / 2 + 18, fontSize: 24, fontWeight: 700, color: MUTED }}>{years[n - 1]}</div>
+      <div style={{ position: 'absolute', left: lineX0, top: yearRowTop + yearRowH / 2 + 18, fontSize: 24, fontWeight: 700, color: MUTED }}>{yearLabel(years[0])}</div>
+      <div style={{ position: 'absolute', left: lineX1 - 80, width: 80, textAlign: 'right', top: yearRowTop + yearRowH / 2 + 18, fontSize: 24, fontWeight: 700, color: MUTED }}>{yearLabel(years[n - 1])}</div>
       <div style={{ position: 'absolute', right: 1080 - C_RIGHT, top: yearRowTop, height: yearRowH, display: 'flex', alignItems: 'center',
                     fontFamily: BALOO, fontWeight: 800, fontSize: yearPx, color: TERRA, letterSpacing: -2, paddingTop: yearPx * 0.1,
-                    transformOrigin: 'right center', transform: `scale(${yearPop})` }}>{year}</div>
+                    transformOrigin: 'right center', transform: `scale(${yearPop})` }}>{yearLabel(year)}</div>
 
       {/* The bars: the top 10 at each moment, positions smoothed (overtakes slide), entering / leaving at the bottom. */}
       {series.map((c, k) => {
@@ -751,7 +762,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
         const isHot = hot.has(String(c.country).trim().toLowerCase());
         const nameW = measure(c.country, namePx, 800);
         const inside = nameW + 36 <= w;
-        const rank = denseRank(k);
+        const rank = atYear != null ? c.ranks[atYear] : denseRank(k);
         return (
           <div key={c.country} style={{ position: 'absolute', left: 0, top: y, width: 1080, height: rowH, opacity: fade }}>
             <div style={{ position: 'absolute', left: C_LEFT, top: 0, width: rankW, height: rowH, display: 'flex', alignItems: 'center',

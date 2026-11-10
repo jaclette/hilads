@@ -18,7 +18,7 @@ $secs = DwRace::videoSeconds($c);
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">🏁 Race · <?= wh(number_format($secs, 1)) ?> s · <?= $years ? $years[0] . ' → ' . end($years) : '' ?> · <?= count($years) ?> years, 0.7 s each · closing slide the last 3 s · no clip</span>
+    <span class="worlds-badge is-clip">🏁 Race · <?= wh(number_format($secs, 1)) ?> s · <?= $years ? $years[0] . ' → ' . end($years) : '' ?> · <?= count($years) ?> years, <?= wh(number_format((float) ($c['step_seconds'] ?? DwRace::PER_YEAR), 1)) ?> s each · closing slide the last 3 s · no clip</span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">

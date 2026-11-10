@@ -13,13 +13,14 @@ declare(strict_types=1);
  * A package's content: {format: "race", topic, headline, headline_accent?, detail? (the banner), banner_year?, series:
  * [{country, flag (emoji), values: {"2000": 77.2, …}, ranks?: {"2000": 1, …}}] (every country with a value for every year), unit? ("M"),
  * decimals? (0: whole numbers, default 1), extra_row? (a country of the series shown under the top 10, its real rank each
- * year from its ranks, e.g. Vietnam),
+ * year from its ranks, e.g. Vietnam), year_labels? ({"2022": "2022/23"}: an edition's label), step_seconds? (a year's step,
+ * 0.7 by default; few editions: 2.5), start_seconds? (0.6), hold? (the share of a step held still after its move, 0 to 0.8),
  * value_label, data_years, source, source_url?, outro_question, cta_line, card_bg?, highlight? [country], caption,
  * hashtags, warnings?}.
  */
 final class DwRace
 {
-    public const MIN_YEARS = 5;
+    public const MIN_YEARS = 4;
     public const MAX_YEARS = 40;
     public const SHOWN = 10;
     public const START = 0.6;          // tools/promo/src/reactionTiming.js RACE (no hook: the race starts right away)
@@ -49,7 +50,9 @@ final class DwRace
     /** The video's length (seconds). Pure. */
     public static function videoSeconds(array $c): float
     {
-        return self::START + max(0, count(self::years($c)) - 1) * self::PER_YEAR + self::FREEZE + self::CLOSING;
+        $start = (float) ($c['start_seconds'] ?? self::START);
+        $step = (float) ($c['step_seconds'] ?? self::PER_YEAR);
+        return $start + max(0, count(self::years($c)) - 1) * $step + self::FREEZE + self::CLOSING;
     }
 
     /** Checks a race content: [errors (block the import), warnings]. Pure (but for DwStudio::screenWords). */
@@ -111,6 +114,14 @@ final class DwRace
         if (isset($c['banner_year']) && $c['banner_year'] !== null && !in_array((int) $c['banner_year'], $years, true)) {
             $errors[] = '"banner_year" must be one of the race\'s years.';
         }
+        foreach (['step_seconds' => [0.4, 4], 'start_seconds' => [0.3, 4], 'hold' => [0, 0.8]] as $f => [$lo, $hi]) {
+            if (isset($c[$f]) && (!is_numeric($c[$f]) || (float) $c[$f] < $lo || (float) $c[$f] > $hi)) {
+                $errors[] = "\"{$f}\" is a number from {$lo} to {$hi}.";
+            }
+        }
+        if (isset($c['year_labels']) && (!is_array($c['year_labels']) || array_diff(array_map('intval', array_keys($c['year_labels'])), $years) !== [])) {
+            $errors[] = '"year_labels" maps the race\'s years to their labels (e.g. {"2022": "2022/23"}).';
+        }
         if (isset($c['card_bg']) && !DwReaction::cardBgOk($c['card_bg'])) {
             $errors[] = '"card_bg" is ' . implode(', ', DwReaction::CARD_THEMES) . ' or a light color as #rrggbb.';
         }
@@ -151,6 +162,14 @@ final class DwRace
             ksort($ranks);
             return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values] + ($ranks ? ['ranks' => $ranks] : []);
         }, array_values($c['series'] ?? []));
+        foreach (['step_seconds', 'start_seconds', 'hold'] as $f) {
+            if (isset($c[$f])) {
+                $c[$f] = (float) $c[$f];
+            }
+        }
+        if (isset($c['year_labels']) && is_array($c['year_labels'])) {
+            $c['year_labels'] = array_map(static fn($l) => trim((string) $l), $c['year_labels']);
+        }
         if (isset($c['decimals'])) {
             $c['decimals'] = max(0, min(2, (int) $c['decimals']));
         }
