@@ -71,7 +71,7 @@ $secs = DwRace::videoSeconds($c);
 <div class="worlds-grid" data-package="<?= $pkg['id'] ?>">
     <div class="form-card">
         <h3>Screen</h3>
-        <?php $h = (string) ($c['headline'] ?? ''); worlds_field('headline', 'Headline (the hook, then the header)', $h, false, DwStudio::screenWords($h) . ' / ' . DwRace::HEADLINE_WORDS . ' words'); ?>
+        <?php $h = (string) ($c['headline'] ?? ''); worlds_field('headline', 'Headline (the header, from the first frame)', $h, false, DwStudio::screenWords($h) . ' / ' . DwRace::HEADLINE_WORDS . ' words'); ?>
         <?php worlds_field('headline_accent', 'Headline words in orange (optional, exactly as in the headline)', (string) ($c['headline_accent'] ?? '')); ?>
         <?php worlds_field('detail', 'Banner (pops at the banner year, the race goes on)', (string) ($c['detail'] ?? '')); ?>
         <?php worlds_field('banner_year', 'Banner year (one of the years, or empty)', (string) ($c['banner_year'] ?? '')); ?>

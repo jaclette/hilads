@@ -30,7 +30,7 @@ final class DwRaceTest extends TestCase
         $this->assertSame([], $errors);
         $this->assertSame([], $warn);
         $this->assertSame(range(2000, 2005), DwRace::years($this->content()));
-        $this->assertEqualsWithDelta(2.2 + 5 * 0.7 + 2 + 3, DwRace::videoSeconds($this->content()), 1e-9);
+        $this->assertEqualsWithDelta(0.6 + 5 * 0.7 + 2 + 3, DwRace::videoSeconds($this->content()), 1e-9);
         $this->assertTrue(DwRace::isRace($this->content()));
     }
 

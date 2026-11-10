@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 /**
  * "Different Worlds by Hilads", race format (dw_topics.format 'race'): a bar chart race over the years from ONE source
- * and one definition, no clip (tools/promo/src/Reaction.jsx RaceVideo renders it): the headline hook, the top 10 of each
+ * and one definition, no clip (tools/promo/src/Reaction.jsx RaceVideo renders it): no hook (the headline in its header,
+ * the year big under it with a timeline), the top 10 of each
  * year (0.7 s a year, smooth overtakes), a pop banner at the striking year, a 2 s freeze on the last year (the crown on
  * #1), the closing slide (the question, the cta_line button). PNGs: 01 the first year, 02 the final ranking, 03 the
  * closing slide.
@@ -19,7 +20,7 @@ final class DwRace
     public const MIN_YEARS = 5;
     public const MAX_YEARS = 40;
     public const SHOWN = 10;
-    public const START = 2.2;          // tools/promo/src/reactionTiming.js RACE
+    public const START = 0.6;          // tools/promo/src/reactionTiming.js RACE (no hook: the race starts right away)
     public const PER_YEAR = 0.7;
     public const FREEZE = 2.0;
     public const CLOSING = 3.0;
