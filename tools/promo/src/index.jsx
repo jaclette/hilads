@@ -2,7 +2,8 @@ import { Composition, Still, registerRoot } from 'remotion';
 import { PromoVideo, PromoSlide } from './Promo.jsx';
 import { StoryFrame } from './Stories.jsx';
 import { WorldsVideo, worldsTiming } from './Worlds.jsx';
-import { ReactionRanking, reactionSeconds } from './Reaction.jsx';
+import { RaceVideo, ReactionRanking, reactionSeconds } from './Reaction.jsx';
+import { raceSeconds } from './reactionTiming.js';
 
 // Props come from render.mjs ({locale, data, cities, clip, timing}); the
 // defaults let `npm run studio` open without a render.
@@ -31,6 +32,9 @@ function Root() {
         calculateMetadata={({ props }) => ({ durationInFrames: Math.round(reactionSeconds(props.mode) * 30) })}
         defaultProps={{ headline: 'The 20 biggest beer drinkers 🍺', detail: '#1 has won for 32 years.', source: 'Source: Kirin', highlight: ['Vietnam'], clip: null,
                         rows: [{ rank: 1, country: 'Czech Republic', flag: null, value: 148.8, unit: 'L' }, { rank: 2, country: 'Lithuania', flag: null, value: 110.6, unit: 'L' }] }} />
+      <Composition id="Race" component={RaceVideo} width={1080} height={1920} fps={30} durationInFrames={20 * 30}
+        calculateMetadata={({ props }) => ({ durationInFrames: Math.round(raceSeconds(props.years?.length ?? 1) * 30) })}
+        defaultProps={{ headline: 'Race', years: [2000], series: [], source: '' }} />
       <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />
     </>
   );

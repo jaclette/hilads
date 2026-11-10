@@ -20,7 +20,7 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
 }
 loadFont({ family: Q_FONT, url: staticFile('fonts/Baloo2-Variable.ttf'), weight: '400 800' });
 
-import { endSeconds, reactionSeconds } from './reactionTiming.js';
+import { RACE, endSeconds, raceEndSeconds, reactionSeconds } from './reactionTiming.js';
 export { reactionSeconds };
 
 let ctx = null;
@@ -574,5 +574,213 @@ function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+// ── The race format: a bar chart race over the years ─────────────────────────────────────────────
+// No clip: the race is the motion. The headline hook (very big, centered, with its emoji), then the header at the top;
+// the top 10 of each year as bars (rank, flag, name, value; the flag's color), the year very big in the chart's corner,
+// values and positions interpolated between years (smooth swaps); a pop banner at the striking year (detail); a 2 s
+// freeze on the last year with the crown on #1; the source line and the series mark at the bottom; the closing slide.
+// props: {headline, accent, years: [2000, …], series: [{country, flag (file), emoji, values: {year: number}}], unit,
+// source, detail (the banner), bannerYear, highlight: [country], cardBg, question, cta}.
+
+const RACE_ROWS = 10;
+const smooth = (x) => x * x * (3 - 2 * x);
+
+/** Each country's value at a fractional year index t (eased between two years). */
+function raceValues(series, years, t) {
+  const i = Math.min(years.length - 1, Math.floor(t));
+  const j = Math.min(years.length - 1, i + 1);
+  const e = smooth(t - i);
+  return series.map((c) => {
+    const a = Number(c.values[years[i]] ?? 0), b = Number(c.values[years[j]] ?? 0);
+    return a + (b - a) * e;
+  });
+}
+/** Each country's rank (0 = first) at t. */
+function raceRanks(series, years, t) {
+  const v = raceValues(series, years, t);
+  const order = v.map((x, k) => [x, k]).sort((p, q) => q[0] - p[0]);
+  const r = new Array(series.length);
+  order.forEach(([, k], n) => { r[k] = n; });
+  return r;
+}
+
+export function RaceVideo({ question = null, cta = null, ...props }) {
+  const frame = useCurrentFrame();
+  const end = S(raceEndSeconds(props.years.length));
+  const out = clamp01((frame - end) / 8);
+  return (
+    <AbsoluteFill style={{ background: cardColor(props.cardBg) }}>
+      {frame < end + 8 && <AbsoluteFill style={{ opacity: 1 - out, transform: `scale(${1 - 0.06 * out})` }}><RaceScreen {...props} /></AbsoluteFill>}
+      {frame >= end && <AbsoluteFill style={{ opacity: clamp01((frame - end + 1) / 7) }}><EndCard headline={props.headline} question={question} cta={cta} cardBg={props.cardBg} from={end} /></AbsoluteFill>}
+    </AbsoluteFill>
+  );
+}
+
+function RaceScreen({ headline, accent = null, years, series, unit = '', source, detail = null, bannerYear = null, highlight = [], cardBg = null }) {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bg = cardColor(cardBg);
+  const BALOO = `"${Q_FONT}", "${FONT}"`;
+  const W = C_RIGHT - C_LEFT;
+  const n = years.length;
+  const hot = new Set(highlight.map((h) => String(h).trim().toLowerCase()));
+
+  // The race clock: year index t (0 … n−1).
+  const tAt = (f) => clamp01((f / fps - RACE.START) / (RACE.PER_YEAR * Math.max(1, n - 1))) * (n - 1);
+  const t = tAt(frame);
+  const values = raceValues(series, years, t);
+  // Positions smoothed over the last 8 frames: overtakes slide instead of jumping.
+  const SMOOTH = 8;
+  const pos = series.map(() => 0);
+  for (let k = 0; k < SMOOTH; k++) raceRanks(series, years, tAt(frame - k)).forEach((r, c) => { pos[c] += Math.min(r, RACE_ROWS) / SMOOTH; });
+  // Never two bars on the same row: in that order, each at least 0.8 of a row under the one above (bars passing each
+  // other push instead of stacking, when a year reshuffles many places).
+  const order = pos.map((p, c) => [p, c]).sort((a, b) => a[0] - b[0]);
+  for (let i = 1; i < order.length; i++) {
+    if (order[i][0] < RACE_ROWS && order[i][0] < order[i - 1][0] + 0.8) order[i][0] = order[i - 1][0] + 0.8;
+  }
+  order.forEach(([p, c]) => { pos[c] = p; });
+  // The bars' scale: the highest value so far (the collapse of a year shows as bars shrinking, not as a new scale).
+  let scaleMax = 1e-9;
+  for (let y = 0; y <= Math.floor(t); y++) scaleMax = Math.max(scaleMax, ...series.map((c) => Number(c.values[years[y]] ?? 0)));
+  scaleMax = Math.max(scaleMax, ...values);
+  const year = years[Math.min(n - 1, Math.round(t))];
+  const raceEnd = S(RACE.START + (n - 1) * RACE.PER_YEAR);
+
+  // The header (as the reaction format: the strongest text) and the hook (very big, centered, with its emoji).
+  const words = accentWords(headline, accent);
+  let titlePx = 56;
+  let titleLines = null;
+  for (let p = 76; p >= 64 && !titleLines; p -= 2) { titleLines = wrapWords(words, p, W, 1, 800, Q_FONT); titlePx = p; }
+  for (let p = 72; p >= 56 && !titleLines; p -= 2) { titleLines = wrapWords(words, p, W, 2, 800, Q_FONT); titlePx = p; }
+  titleLines ??= [words];
+  const titleLH = Math.round(titlePx * 1.04);
+  const titleTop = 150;                                       // under the apps' top bar
+  const titleEnd = titleTop + titleLines.length * titleLH;
+  const emoji = lastEmoji(headline);
+  const hookWords = emoji ? words.filter((w) => w.word !== emoji) : words;
+  let hookPx = titlePx;
+  let hookLines = titleLines;
+  for (let p = Math.round(titlePx * 2.2); p > titlePx; p -= 4) {
+    const lines = wrapWords(hookWords, p, W, 3, 800, Q_FONT);
+    if (lines && lines.length * p * 1.04 <= 900) { hookPx = p; hookLines = lines; break; }
+  }
+  const hookLH = Math.round(hookPx * 1.04);
+  const hookTop = 960 - (hookLines.length * hookLH + (emoji ? 260 : 0)) / 2 + (emoji ? 260 : 0);
+  const titleIn = spring({ frame, fps, config: { damping: 10, stiffness: 200, mass: 0.6 } });
+  const move = ease((frame - S(RACE.HOOK)) / 12);
+
+  // The chart: from under the header to the source line and the mark (above the apps' caption).
+  const srcPx = 24;
+  const srcLines = Math.min(3, Math.ceil((measure(source, srcPx, 600) * 1.06) / W));
+  const markTop = SAFE_BOTTOM - 40;
+  const srcTop = markTop - 10 - srcLines * 30;
+  const chartTop = titleEnd + 34;
+  const chartBottom = srcTop - 24;
+  const rowH = (chartBottom - chartTop) / RACE_ROWS;
+  const barH = Math.round(rowH * 0.62);
+  const flagS = Math.round(barH * 0.92);
+  const rankW = 54, flagX = C_LEFT + rankW + 10, barX = flagX + flagS + 14;
+  const namePx = Math.max(26, Math.min(36, Math.round(barH * 0.5)));
+  const valPx = namePx;
+  const barMax = C_RIGHT - barX - 150;
+  const grow = ease((frame - S(RACE.HOOK)) / S(0.6));         // the first year's bars grow in (1.5 → 2.1 s)
+  const label = (v) => `${v.toFixed(1)}${unit ? ` ${unit}` : ''}`;
+
+  // The banner at the striking year (it pops while the race goes on), the crown on #1 at the freeze.
+  const bIdx = bannerYear != null ? years.map(String).indexOf(String(bannerYear)) : -1;
+  const bannerAt = bIdx >= 0 ? S(RACE.START + (bIdx - 0.4) * RACE.PER_YEAR) : null;
+  const bannerOn = bannerAt != null && detail ? spring({ frame: frame - bannerAt, fps, config: { damping: 8, stiffness: 220, mass: 0.6 } }) : 0;
+  const bannerOff = bannerAt != null ? clamp01((frame - bannerAt - S(1.4)) / 6) : 0;
+  const crown = spring({ frame: frame - raceEnd - 3, fps, config: { damping: 9, stiffness: 260, mass: 0.6 } });
+  const first = raceRanks(series, years, t).indexOf(0);
+  const chartIn = clamp01((frame - S(RACE.HOOK)) / 8);
+
+  return (
+    <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
+      {/* The year, very big, in the chart's bottom right corner, behind the bars (the labels stay readable over it). */}
+      <div style={{ position: 'absolute', right: 1080 - C_RIGHT, top: chartBottom - 250, fontFamily: BALOO, fontWeight: 800, fontSize: 240,
+                    lineHeight: '250px', color: TERRA, opacity: 0.26 * chartIn, letterSpacing: -6 }}>{year}</div>
+      {/* The hook: the headline very big and centered (its emoji above), then it shrinks up into the header. */}
+      {move < 1 && (
+        <div style={{ position: 'absolute', left: C_LEFT, top: hookTop + (titleTop - hookTop) * move, width: W, textAlign: 'center',
+                      transformOrigin: 'center top', opacity: clamp01(0.4 + titleIn) * (1 - clamp01((move - 0.4) / 0.2)),
+                      transform: `scale(${(0.85 + 0.15 * titleIn) * (1 + (titlePx / hookPx - 1) * move)})` }}>
+          {emoji && <div style={{ fontSize: 220, lineHeight: '240px', marginTop: -260 }}>{emoji}</div>}
+          {hookLines.map((l, i) => (
+            <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: hookPx, lineHeight: `${hookLH}px`, whiteSpace: 'nowrap',
+                                  letterSpacing: -1, paddingTop: hookPx * 0.08 }}>
+              {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W, opacity: clamp01((move - 0.6) / 0.25), transformOrigin: 'left top',
+                    transform: `scale(${1.08 - 0.08 * move})` }}>
+        {titleLines.map((l, i) => (
+          <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: titlePx, lineHeight: `${titleLH}px`, whiteSpace: 'nowrap',
+                                letterSpacing: -0.5, paddingTop: titlePx * 0.08 }}>
+            {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
+          </div>
+        ))}
+      </div>
+
+      {/* The bars: the top 10 at each moment, positions smoothed (overtakes slide), entering / leaving at the bottom. */}
+      {series.map((c, k) => {
+        const p = pos[k];
+        if (p >= RACE_ROWS) return null;
+        const v = values[k];
+        const y = chartTop + p * rowH;
+        const fade = clamp01(RACE_ROWS - p) * chartIn;
+        const w = Math.max(6, (barMax * v) / scaleMax) * grow;
+        const color = flagColor(c.emoji);
+        const isHot = hot.has(String(c.country).trim().toLowerCase());
+        const nameW = measure(c.country, namePx, 800);
+        const inside = nameW + 36 <= w;
+        const rank = Math.round(p) + 1;
+        return (
+          <div key={c.country} style={{ position: 'absolute', left: 0, top: y, width: 1080, height: rowH, opacity: fade }}>
+            <div style={{ position: 'absolute', left: C_LEFT, top: 0, width: rankW, height: rowH, display: 'flex', alignItems: 'center',
+                          justifyContent: 'flex-end', fontSize: namePx - 2, fontWeight: 800, color: isHot ? TERRA : MUTED }}>{rank}</div>
+            {c.flag && <Img src={staticFile(c.flag)} style={{ position: 'absolute', left: flagX, top: (rowH - flagS) / 2, width: flagS, height: flagS }} />}
+            {k === first && frame >= raceEnd && (
+              <div style={{ position: 'absolute', left: flagX + flagS * 0.15, top: (rowH - flagS) / 2 - 46 - (1 - crown) * 80, fontSize: 48,
+                            transform: 'rotate(-12deg)', opacity: clamp01(crown * 2) }}>👑</div>
+            )}
+            <div style={{ position: 'absolute', left: barX, top: (rowH - barH) / 2, width: w, height: barH, borderRadius: barH * 0.28,
+                          background: `linear-gradient(90deg, ${mix(color, '#ffffff', 0.12)}, ${mix(color, '#000000', 0.1)})`,
+                          boxShadow: isHot ? `0 0 0 4px ${TERRA}` : '0 3px 0 rgba(80,40,10,0.15)' }} />
+            <div style={{ position: 'absolute', left: inside ? barX + 18 : barX + w + 14, top: 0, height: rowH, display: 'flex', alignItems: 'center',
+                          gap: 14, whiteSpace: 'nowrap', fontWeight: 800, fontSize: namePx }}>
+              <span style={{ color: inside ? (luminance(color) > 0.62 ? INK : '#fff') : INK }}>{c.country}</span>
+              {!inside && <span style={{ fontSize: valPx, color: isHot ? TERRA : INK }}>{label(v)}</span>}
+            </div>
+            {inside && (
+              <div style={{ position: 'absolute', left: barX + w + 14, top: 0, height: rowH, display: 'flex', alignItems: 'center',
+                            fontSize: valPx, fontWeight: 800, color: isHot ? TERRA : INK, whiteSpace: 'nowrap' }}>{label(v)}</div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* The striking moment: a pop banner over the chart, the race goes on. */}
+      {bannerOn > 0 && bannerOff < 1 && (
+        <div style={{ position: 'absolute', left: 0, width: 1080 - 140, top: chartTop + rowH * 3.6, display: 'flex', justifyContent: 'center',
+                      opacity: clamp01(bannerOn * 2) * (1 - bannerOff) }}>
+          <div style={{ background: STICKER, color: INK, borderRadius: 30, padding: '18px 36px 12px', boxShadow: '0 9px 0 #C9940F, 0 18px 40px rgba(60,30,10,0.25)',
+                        fontFamily: BALOO, fontWeight: 800, fontSize: 64, whiteSpace: 'nowrap', transform: `rotate(-4deg) scale(${0.5 + 0.5 * bannerOn})` }}>{detail}</div>
+        </div>
+      )}
+
+      <div style={{ position: 'absolute', left: C_LEFT, top: srcTop, width: W, fontSize: srcPx, lineHeight: '30px', fontWeight: 600, color: '#6E5444',
+                    opacity: chartIn }}>{source}</div>
+      <div style={{ position: 'absolute', left: C_LEFT, top: markTop, height: 40, display: 'flex', alignItems: 'center', gap: 10, opacity: chartIn }}>
+        <Img src={staticFile('logo.svg')} style={{ width: 34, height: 34 }} />
+        <div style={{ fontSize: 21 }}><span style={{ fontWeight: 800, letterSpacing: 2, color: TERRA }}>DIFFERENT WORLDS</span> <span style={{ fontWeight: 600 }}>by Hilads</span></div>
+      </div>
+    </AbsoluteFill>
   );
 }

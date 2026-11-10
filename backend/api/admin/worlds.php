@@ -114,7 +114,7 @@ worlds_styles();
                 <td style="white-space:nowrap"><?= wh((new DateTimeImmutable($t['date']))->format('D j M')) ?><?= $t['date'] === $today ? ' <span class="badge badge-live">today</span>' : '' ?></td>
                 <td><a href="/admin/worlds/<?= $t['id'] ?>"><?= wh($t['title']) ?></a>
                     <?= $t['needs_date_check'] ? ' <span title="Check the date of this event">⚠️</span>' : '' ?>
-                    <?= $t['format'] === 'reaction' ? ' <span title="Reaction + ranking format">📊</span>' : '' ?>
+                    <?= $t['format'] === 'reaction' ? ' <span title="Reaction + ranking format">📊</span>' : ($t['format'] === 'race' ? ' <span title="Race format">🏁</span>' : '') ?>
                     <?php if ($t['format'] === 'slides' && $t['visual_mode'] === 'video'): ?> <span title="Video clips">🎬</span><?php if (isset($t['clip_count'])): ?>
                         <span class="worlds-muted" title="Slides with a clip (the others show their photo)"><?= (int) $t['clip_count'] ?>/<?= (int) $t['slide_count'] ?> clips</span><?php endif; endif; ?></td>
                 <td class="worlds-muted"><?= wh($t['type']) ?></td>

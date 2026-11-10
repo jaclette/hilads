@@ -131,6 +131,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DwClips.php';
     require_once __DIR__ . '/../src/DwPixabay.php';
     require_once __DIR__ . '/../src/DwReaction.php';
+    require_once __DIR__ . '/../src/DwRace.php';
     require_once __DIR__ . '/../src/DwStudio.php';
     require_once __DIR__ . '/../src/DailyBoard.php';
     require_once __DIR__ . '/../src/DailyWeb.php';
@@ -311,6 +312,7 @@ require_once __DIR__ . '/../src/DwSlides.php';
 require_once __DIR__ . '/../src/DwClips.php';
 require_once __DIR__ . '/../src/DwPixabay.php';
 require_once __DIR__ . '/../src/DwReaction.php';
+require_once __DIR__ . '/../src/DwRace.php';
 require_once __DIR__ . '/../src/DwStudio.php';
 require_once __DIR__ . '/../src/DailyBoard.php';
 require_once __DIR__ . '/../src/DailyWeb.php';

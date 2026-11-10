@@ -6,3 +6,10 @@
 export const CLOSING_SECONDS = 3;
 export const endSeconds = (mode) => (mode === 'quiz' ? 10.5 : 8);
 export const reactionSeconds = (mode) => endSeconds(mode) + CLOSING_SECONDS;
+
+// The race format (src/Reaction.jsx RaceVideo): the headline hook until 1.5 s (it shrinks into the header until 1.9 s),
+// the first year's bars grow in until 2.1 s and hold, the race from 2.2 s (0.7 s a year), a 2 s freeze on the last
+// year (the crown on #1), then the closing slide (3 s).
+export const RACE = { HOOK: 1.5, START: 2.2, PER_YEAR: 0.7, FREEZE: 2 };
+export const raceEndSeconds = (years) => RACE.START + Math.max(0, years - 1) * RACE.PER_YEAR + RACE.FREEZE;
+export const raceSeconds = (years) => raceEndSeconds(years) + CLOSING_SECONDS;

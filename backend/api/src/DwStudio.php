@@ -127,7 +127,7 @@ final class DwStudio
                 $pkg['content'] = $c;
             }
             $report['packages']++;
-            if (DwReaction::isReaction($c)) {
+            if (DwReaction::isReaction($c) || DwRace::isRace($c)) {
                 continue;   // no slides: the screen's line is drawn by the video render
             }
             $plan = self::slidePlan($c);
@@ -202,7 +202,7 @@ final class DwStudio
         $r['needs_date_check'] = filter_var($r['needs_date_check'], FILTER_VALIDATE_BOOLEAN);
         $r['published_links'] = json_decode((string) ($r['published_links'] ?? '{}'), true) ?: [];
         $r['visual_mode'] = ($r['visual_mode'] ?? 'image') === 'video' ? 'video' : 'image';
-        $r['format'] = ($r['format'] ?? 'slides') === 'reaction' ? 'reaction' : 'slides';
+        $r['format'] = in_array($r['format'] ?? 'slides', ['reaction', 'race'], true) ? $r['format'] : 'slides';
         if (isset($r['latest_content'])) {
             $plan = self::slidePlan(json_decode((string) $r['latest_content'], true) ?: []);
             $r['clip_count'] = count(array_filter($plan, static fn($p) => $p['clip'] !== null));
@@ -230,8 +230,9 @@ final class DwStudio
         $notes = trim((string) ($in['notes'] ?? ''));
         // image: the photos; video: a stock clip behind each slide of the video (DwClips).
         $mode = ($in['visual_mode'] ?? 'image') === 'video' ? 'video' : 'image';
-        // slides: the slides video; reaction: one screen, a reaction clip over a ranking (DwReaction).
-        $format = ($in['format'] ?? 'slides') === 'reaction' ? 'reaction' : 'slides';
+        // slides: the slides video; reaction: one screen, a reaction clip over a ranking (DwReaction); race: a bar chart
+        // race over the years (DwRace).
+        $format = in_array($in['format'] ?? 'slides', ['reaction', 'race'], true) ? $in['format'] : 'slides';
         return [$date, $title, $notes === '' ? null : $notes, $type, !empty($in['needs_date_check']), $mode, $format];
     }
 
@@ -712,6 +713,17 @@ final class DwStudio
                 $report[] = ['date' => $label, 'ok' => false, 'errors' => ['"content" is missing.'], 'warnings' => []];
                 continue;
             }
+            $kind = DwRace::isRace($content) ? 'race' : (DwReaction::isReaction($content) ? 'reaction' : 'slides');
+            if ($kind !== $topic['format'] && ($kind === 'race' || $topic['format'] === 'race')) {
+                $report[] = ['date' => $label, 'ok' => false, 'warnings' => [], 'errors' => [$topic['format'] === 'race'
+                    ? 'This topic is in the race format: its package needs "format": "race".'
+                    : 'This package is in the race format: switch the topic\'s format to race first.']];
+                continue;
+            }
+            if ($topic['format'] === 'race') {
+                $report[] = ['date' => $label] + self::importRace($topic, $content, (string) ($item['model'] ?? 'Claude Code'));
+                continue;
+            }
             if (DwReaction::isReaction($content) !== ($topic['format'] === 'reaction')) {
                 $report[] = ['date' => $label, 'ok' => false, 'warnings' => [], 'errors' => [$topic['format'] === 'reaction'
                     ? 'This topic is in the reaction format: its package needs "format": "reaction" (the brief\'s reaction_prompt).'
@@ -1040,6 +1052,10 @@ final class DwStudio
         if (preg_match('/^(topic|why_today|caption|ai_disclosure|follow_up_idea|hashtags|warnings)$/', $path)) {
             return ['slide' => null];
         }
+        if (DwRace::isRace($c)) {
+            // The race has no slides: its texts and series (JSON) are saved, the video render draws them.
+            return preg_match('/^(headline|headline_accent|detail|banner_year|source|source_url|value_label|data_years|unit|outro_question|cta_line|card_bg|series)$/', $path) ? ['slide' => null] : null;
+        }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
             return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent|mode|quiz_question|clip_speed|extra_row)$/', $path) ? ['slide' => null] : null;
@@ -1116,6 +1132,22 @@ final class DwStudio
         }
         if ($path === 'mode' && $value === 'quiz' && trim((string) ($c['quiz_question'] ?? '')) === '') {
             throw new InvalidArgumentException('Write the quiz question first.');
+        }
+        if ($path === 'series' && DwRace::isRace($c)) {
+            $series = json_decode($value, true);
+            $try = ['series' => $series] + $c;
+            $bad = array_values(array_filter(DwRace::validate($try)[0], static fn($e) => !str_starts_with($e, '"')
+                || str_starts_with($e, '"series"')));
+            if (!is_array($series) || $bad !== []) {
+                throw new InvalidArgumentException('The series: ' . ($bad[0] ?? 'not valid JSON.'));
+            }
+            $c['series'] = DwRace::normalize($try)['series'];
+        }
+        if ($path === 'banner_year' && DwRace::isRace($c)) {
+            if ($value !== '' && !in_array((int) $value, DwRace::years($c), true)) {
+                throw new InvalidArgumentException('The banner year must be one of the race\'s years.');
+            }
+            $c['banner_year'] = $value === '' ? null : (int) $value;
         }
         if ($path === 'extra_row') {
             if ($value !== '' && !DwReaction::extraRowOk($c, $value)) {
@@ -1289,7 +1321,7 @@ final class DwStudio
     /** The question the caption ends with: the outro's (slides) or outro_question (reaction). Pure. */
     public static function question(array $c): string
     {
-        return (string) (DwReaction::isReaction($c) ? ($c['outro_question'] ?? '') : ($c['outro']['question'] ?? ''));
+        return (string) (DwReaction::isReaction($c) || DwRace::isRace($c) ? ($c['outro_question'] ?? '') : ($c['outro']['question'] ?? ''));
     }
 
     /**
@@ -1317,6 +1349,13 @@ final class DwStudio
         }
         if ($topic['format'] === 'reaction') {
             return self::reactionVideoData($topic, $pkg);
+        }
+        if ($topic['format'] === 'race') {
+            // The race is rendered from its content (tools/promo worlds.mjs renderRace).
+            return ['date' => $topic['date'], 'title' => $topic['title'], 'version' => $pkg['version'], 'format' => 'race',
+                    'status' => $topic['status'], 'briefChanged' => self::briefChanged($topic, $pkg), 'content' => $pkg['content'],
+                    'seconds' => DwRace::videoSeconds($pkg['content']), 'videoUrl' => $pkg['video_url'] ?? null,
+                    'stillUrl' => $pkg['still_url'] ?? null, 'still2Url' => $pkg['still2_url'] ?? null, 'still3Url' => $pkg['still3_url'] ?? null];
         }
         $slides = [];
         foreach (self::slides($pkg['id']) as $r) {
@@ -1377,6 +1416,36 @@ final class DwStudio
      * looked up on Pixabay and copied to R2; without a clip (or when Pixabay fails) it is
      * imported anyway and flagged ("Find another clip" in the admin). {ok, version?, package_id?, slides: 0, errors, warnings}.
      */
+    /** Imports a race package (DwRace): no clip, the video and PNGs are rendered on the Mac. */
+    public static function importRace(array $topic, array $content, string $model): array
+    {
+        [$errors, $warn] = DwRace::validate($content);
+        if ($errors !== []) {
+            return ['ok' => false, 'errors' => $errors, 'warnings' => $warn];
+        }
+        $content = DwRace::normalize($content);
+        $fixed = self::fixCaptionEnding((string) $content['caption'], self::settings()['caption_cta'], $content['outro_question']);
+        if ($fixed !== trim((string) $content['caption'])) {
+            $warn[] = 'The caption did not end with the hilads.live line and the question: its ending was fixed.';
+        }
+        $content['caption'] = $fixed;
+        $stmt = Database::pdo()->prepare("
+            INSERT INTO dw_packages (topic_id, version, content, model, brief)
+            VALUES (?, COALESCE((SELECT MAX(version) FROM dw_packages WHERE topic_id = ?), 0) + 1, ?::jsonb, ?, ?::jsonb)
+            RETURNING id, version
+        ");
+        $stmt->execute([$topic['id'], $topic['id'], json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        mb_substr(trim($model), 0, 120), json_encode(self::briefOf($topic), JSON_UNESCAPED_UNICODE)]);
+        [$pkgId, $version] = $stmt->fetch(PDO::FETCH_NUM);
+        if ($topic['status'] === 'planned') {
+            self::setStatus($topic['id'], 'generated');
+        }
+        if (($gone = self::pruneOlderVersions((int) $pkgId)) > 0) {
+            $warn[] = 'The older version' . ($gone > 1 ? 's were' : ' was') . ' deleted, with its video.';
+        }
+        return ['ok' => true, 'version' => (int) $version, 'package_id' => (int) $pkgId, 'slides' => 0, 'errors' => [], 'warnings' => $warn];
+    }
+
     public static function importReaction(array $topic, array $content, string $model, array $highlight): array
     {
         [$errors, $warn] = DwReaction::validate($content, $highlight);

@@ -22,7 +22,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { endSeconds } from './src/reactionTiming.js';
+import { RACE, endSeconds, raceEndSeconds } from './src/reactionTiming.js';
 import { getVideoMetadata, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { clipRate, slideSeconds } from './src/worldsTiming.js';
 
@@ -197,7 +197,8 @@ async function renderDay(date, fetched = null) {
     const doc = JSON.parse(await readFile(path.resolve(repo, fileArg), 'utf8'));
     const pkg = (doc.packages ?? [doc]).find((p) => !p.date || p.date === date) ?? doc.packages?.[0];
     const content = pkg.content ?? pkg;
-    data = content.format === 'reaction'
+    data = content.format === 'race' ? { date: pkg.date ?? date, version: 0, format: 'race', content }
+      : content.format === 'reaction'
       ? { date: pkg.date ?? date, version: 0, format: 'reaction', screen: await screenFromContent(clipArg ? { ...content, clip: null } : content) }
       : { date: pkg.date ?? date, version: 0, slides: planFromContent(content) };
     console.log(`Different Worlds ${data.date} from ${fileArg} (not uploaded)`);
@@ -225,6 +226,10 @@ async function renderDay(date, fetched = null) {
   await mkdir(path.join(pub, 'clips'), { recursive: true });
   if (data.format === 'reaction') {
     await renderReaction(data, { work, pub, out });
+    return;
+  }
+  if (data.format === 'race') {
+    await renderRace(data, { work, pub, out });
     return;
   }
 
@@ -395,6 +400,49 @@ async function renderReaction(data, { work, pub, out }) {
   await uploadFile(data, pngs[0]);
   if (pngs[1]) await uploadFile(data, pngs[1], 'png2');
   if (pngs[2]) await uploadFile(data, pngs[2], 'png3');
+  console.log(`Done: ${api}/admin/worlds (${data.date})`);
+}
+
+/**
+ * The race format (src/Reaction.jsx RaceVideo): a bar chart race over the package's years (content.series:
+ * [{country, flag, values: {year: number}}]), the video and three PNGs: 01 the first year, 02 the final ranking (the
+ * freeze, the crown), 03 the closing slide.
+ */
+async function renderRace(data, { work, pub, out }) {
+  const c = data.content;
+  const series = (c.series ?? []).map((r) => ({ country: r.country, emoji: r.flag, flag: r.flag ? flagFile(r.flag) : null, values: r.values }));
+  const years = [...new Set(series.flatMap((r) => Object.keys(r.values)))].map(Number).sort((a, b) => a - b);
+  const label = [c.value_label, c.data_years || c.data_year].filter(Boolean).join(', ');
+  const source = `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`;
+  const question = questionArg ?? c.outro_question ?? null;
+  const cta = ctaArg ?? c.cta_line ?? null;
+  const missing = [!String(question ?? '').trim() && 'outro_question', !String(cta ?? '').trim() && 'cta_line'].filter(Boolean);
+  if (missing.length) throw new Error(`no ${missing.join(' and no ')} for the closing slide (${data.date})`);
+  const inputProps = { headline: c.headline, accent: accentArg ?? c.headline_accent ?? null, years: years.map(String), series, unit: c.unit ?? '',
+                       source, detail: detailArg ?? c.detail ?? null, bannerYear: c.banner_year ?? null, highlight: c.highlight ?? [],
+                       cardBg: cardBgArg ?? c.card_bg ?? null, question, cta };
+  console.log(`  ${series.length} countries, ${years[0]}–${years[years.length - 1]}, bundling…`);
+  const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
+  const composition = await selectComposition({ serveUrl, id: 'Race', inputProps });
+  const base = path.join(out, `different-worlds-${data.date}${data.version ? `-v${data.version}` : ''}`);
+  console.log(`  rendering ${(composition.durationInFrames / composition.fps).toFixed(1)} s and the PNGs…`);
+  if (!pngOnly) await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: `${base}.mp4`, inputProps, muted: true });
+  const pngs = ['01', '02', '03'].map((n) => `${base}-${n}.png`);
+  const fps = composition.fps;
+  await renderStill({ composition, serveUrl, output: pngs[0], inputProps, frame: Math.round(RACE.START * fps) - 2 });
+  await renderStill({ composition, serveUrl, output: pngs[1], inputProps, frame: Math.round(raceEndSeconds(years.length) * fps) - 1 });
+  await renderStill({ composition, serveUrl, output: pngs[2], inputProps, frame: composition.durationInFrames - 1 });
+  console.log(`  saved: ${base}.mp4 and 01.png, 02.png, 03.png`);
+  await rm(work, { recursive: true, force: true });
+  await rm(serveUrl, { recursive: true, force: true }).catch(() => {});
+  if (!upload) {
+    console.log('  not uploaded');
+    return;
+  }
+  await uploadFile(data, `${base}.mp4`);
+  await uploadFile(data, pngs[0]);
+  await uploadFile(data, pngs[1], 'png2');
+  await uploadFile(data, pngs[2], 'png3');
   console.log(`Done: ${api}/admin/worlds (${data.date})`);
 }
 

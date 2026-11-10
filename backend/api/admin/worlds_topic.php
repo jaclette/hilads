@@ -142,6 +142,8 @@ worlds_styles();
         </div>
     <?php elseif ($topic['format'] === 'reaction'): ?>
         <?php require __DIR__ . '/worlds_reaction.php'; ?>
+    <?php elseif ($topic['format'] === 'race'): ?>
+        <?php require __DIR__ . '/worlds_race.php'; ?>
     <?php else: ?>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
             <strong>Version <?= $pkg['version'] ?></strong>
@@ -300,8 +302,9 @@ worlds_styles();
             <div class="form-group"><label><input type="checkbox" name="needs_date_check" value="1"<?= $topic['needs_date_check'] ? ' checked' : '' ?>> The event date needs checking</label></div>
             <div class="form-group"><label>Format</label><select name="format">
                 <option value="slides"<?= $topic['format'] === 'slides' ? ' selected' : '' ?>>slides (hook, 5 to 6 countries, outro)</option>
-                <option value="reaction"<?= $topic['format'] === 'reaction' ? ' selected' : '' ?>>reaction + ranking (one 8 s screen)</option></select>
-                <div class="worlds-muted">Reaction: a Pixabay reaction clip on top, the top 10 of a ranking from one source revealed under it. A new format needs a new package.</div></div>
+                <option value="reaction"<?= $topic['format'] === 'reaction' ? ' selected' : '' ?>>reaction + ranking (one screen, a clip over a top 10)</option>
+                <option value="race"<?= $topic['format'] === 'race' ? ' selected' : '' ?>>race (a bar chart race over the years, no clip)</option></select>
+                <div class="worlds-muted">Reaction: a Pixabay reaction clip on top, the top 10 of a ranking from one source revealed under it. Race: the top 10 of each year from one source, racing year by year. A new format needs a new package.</div></div>
             <div class="form-group"><label>Visual mode <span class="worlds-muted">(slides format)</span></label><select name="visual_mode">
                 <option value="image"<?= $video ? '' : ' selected' ?>>image (photos)</option>
                 <option value="video"<?= $video ? ' selected' : '' ?>>video (clips in the photo square)</option></select>
