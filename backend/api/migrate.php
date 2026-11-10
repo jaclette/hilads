@@ -4523,8 +4523,10 @@ try {
 // Once: Nov 10 (cats) gets real footage instead of our AI kitten: Pixabay 131919 (a ginger kitten walking toward the
 // camera in a sunny garden, by Marsel_beijing), through DwStudio::setReactionClip (as "Use this clip": copied to R2,
 // author, license, source page, not AI; the AI copy is deleted); its warning about the AI label is replaced. Only
-// while the AI clip is there and the topic is not published.
+// while the AI clip is there and the topic is not published. The copy to R2 needs the Composer libraries (AWS SDK),
+// which migrate.php doesn't load otherwise.
 try {
+    require_once __DIR__ . '/vendor/autoload.php';
     $topic = DwStudio::topicByDate('2026-11-10');
     $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
     if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['clip']['source'] ?? null) === 'upload'
