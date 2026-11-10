@@ -128,17 +128,17 @@ export const ShareCard = forwardRef<View, { content: ShareContent; onReady: () =
       {!!selfie && <Image source={{ uri: selfie }} style={s.selfie} contentFit="cover" onLoad={loadedOne} onError={loadedOne} />}
       <Svg width={W} height={u(640)} style={s.fill}>
         <Defs>
-          <LinearGradient id="shareTop" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#000" stopOpacity={0.45} />
-            <Stop offset="0.22" stopColor="#000" stopOpacity={0} />
-          </LinearGradient>
+          {/* Behind the text only (as CoverScrim): the photo keeps its real brightness above it, no top shade (the badge
+              has its own fill); an eased ramp from 30% of the card, 50% black where the text starts, 80% at the bottom. */}
           <LinearGradient id="shareBottom" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0.22" stopColor="#0C0805" stopOpacity={0} />
-            <Stop offset="0.5" stopColor="#0C0805" stopOpacity={0.8} />
-            <Stop offset="1" stopColor="#0C0805" stopOpacity={0.94} />
+            <Stop offset="0.3" stopColor="#0C0805" stopOpacity={0} />
+            <Stop offset="0.38" stopColor="#0C0805" stopOpacity={0.12} />
+            <Stop offset="0.46" stopColor="#0C0805" stopOpacity={0.32} />
+            <Stop offset="0.54" stopColor="#0C0805" stopOpacity={0.5} />
+            <Stop offset="0.7" stopColor="#0C0805" stopOpacity={0.64} />
+            <Stop offset="1" stopColor="#0C0805" stopOpacity={0.8} />
           </LinearGradient>
         </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill="url(#shareTop)" />
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#shareBottom)" />
       </Svg>
 
@@ -195,7 +195,8 @@ const s = {
   lineCity:  { flex: 1, fontFamily: appFont('700'), fontSize: u(17), color: white },
   lineValue: { fontFamily: appFont('800'), fontSize: u(17), color: white },
   kicker:    { fontFamily: appFont('800'), fontSize: u(12), letterSpacing: u(1.4), color: '#FFB48A', marginBottom: u(8) },
-  title:     { fontFamily: appFont('800'), fontSize: u(26), lineHeight: u(32), color: white, letterSpacing: u(-0.3) },
+  title:     { fontFamily: appFont('800'), fontSize: u(26), lineHeight: u(32), color: white, letterSpacing: u(-0.3),
+               textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: u(1) }, textShadowRadius: u(6) },
   name:      { fontFamily: appFont('800'), fontSize: u(32), lineHeight: u(38), color: white, letterSpacing: u(-0.4) },
   metaRow:   { flexDirection: 'row', alignItems: 'center', marginTop: u(14) },
   flag:      { width: u(21), height: u(16), borderRadius: u(2), marginRight: u(8) },

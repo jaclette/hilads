@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,17 +30,16 @@ import { WorldBubbles } from '@/features/challenge/WorldBubbles';
 import { themeCover } from '@/features/today/covers';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
-import { Avatar, Button, Chip, CityFlag, CoverPhoto, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
+import { Avatar, Button, Chip, CityFlag, CoverPhoto, CoverScrim, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
 import type { DailyProof, DailySheet, DailyTodayCountries } from '@/types';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
 
 /** The hero takes this share of the screen height. */
 const HERO_SHARE = 0.4;
-// The hero is always a photo: dark shades in both themes (fixed photo tokens).
-const SHADE_TOP = ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)'] as const;
 /** Back and the timer on the photo: dark enough to read on any cover. */
 const ON_PHOTO = 'rgba(0,0,0,0.5)';
-const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)'] as const;
+/** A safety net on bright covers, on top of the scrim (CoverScrim). */
+const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 };
 
 /**
  * The Daily Challenge screen (/daily/today or /daily/YYYY-MM-DD), made to
@@ -243,9 +241,9 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
         {/* 1. The hero: the cover, back and timer on top, the theme, question and instruction at the bottom. */}
         <View style={[styles.hero, { height: Math.max(300, height * HERO_SHARE) }]}>
           <CoverPhoto url={challenge.coverUrl} fallback={fallbackCover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
-          <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
-          <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
           <View style={styles.heroBottom}>
+            {/* The shade behind the text only: the photo keeps its real brightness; back and the timer carry their own pills. */}
+            <CoverScrim />
             {!!challenge.theme && <Chip theme={challenge.theme.key} special={challenge.special?.icon} label={themeName(challenge.theme.key, { special: challenge.special })} style={styles.theme} />}
             <Text style={styles.question}>{question ?? text}</Text>
             {/* Under the question: its subtitle (set in the back office), else the challenge text. */}
@@ -405,8 +403,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.md },
   flex:        { flex: 1 },
   hero:        { backgroundColor: c.photoScrim, justifyContent: 'flex-end', overflow: 'hidden' },
-  shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 130 },
-  shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
   heroTop:     { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12 },
   heroTopRight:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
   onPhoto:     { backgroundColor: ON_PHOTO },
@@ -415,8 +411,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   timerWarn:   { color: c.warning },
   heroBottom:  { padding: Spacing.md, paddingBottom: 18, gap: 8 },
   theme:       { alignSelf: 'flex-start' },
-  question:    { fontSize: FontSizes.xxl, lineHeight: 34, fontWeight: '800', color: c.white },
-  instruction: { fontSize: FontSizes.sm, lineHeight: 20, fontWeight: '600', color: 'rgba(255,255,255,0.88)' },
+  question:    { fontSize: FontSizes.xxl, lineHeight: 34, fontWeight: '800', color: c.white, ...ON_PHOTO_SHADOW },
+  instruction: { fontSize: FontSizes.sm, lineHeight: 20, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
   body:        { padding: Spacing.md, gap: 18 },
   meta:        { gap: 4, marginTop: -6 },
   block:       { gap: 10 },

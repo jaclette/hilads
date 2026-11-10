@@ -175,7 +175,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
         {/* 1. The hero: the cover, the theme, the question and the instruction. */}
         <div className="dch-hero">
           {cover && <img className="dch-hero-photo" {...coverImage(cover)} onError={thumbFallback(cover)} alt="" fetchPriority="high" decoding="async" />}
-          <div className="dch-hero-bottom">
+          <div className="dch-hero-bottom cover-scrim">
             {challenge.theme && (
               <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>
                 <Icon name={themeIcon(challenge.theme.key, challenge.special)} size={15} />{themeName(challenge.theme.key, { special: challenge.special })}

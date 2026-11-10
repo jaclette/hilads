@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +16,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { CoverPhoto } from '@/ui/Photo';
+import { CoverScrim } from '@/ui/CoverScrim';
 import { FlagSticker, themeColor } from '@/ui/joy';
 import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
@@ -175,7 +175,9 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
   // The full ask under a short headline ("...and share its local name"): the subtitle, else the text,
   // unless the text only says the headline again in other words (V6: "Find where locals hang out at
   // night." / "Find the place where locals gather after dark.").
-  const ask = original ? null : challenge.subtitle
+  // The subtitle (back office) too, only when it adds something: context or a local twist.
+  const subtitle = challenge.subtitle && !sameAsk(headline, challenge.subtitle) ? challenge.subtitle : null;
+  const ask = original ? null : subtitle
     || (challenge.headline && challenge.headline !== challenge.text && !sameAsk(challenge.headline, challenge.text) ? challenge.text : null);
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
   const tc = themeColor(challenge.special ? 'special' : challenge.theme?.key);
@@ -191,8 +193,6 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
       <Pressable style={StyleSheet.absoluteFill} onPress={openSheet} accessibilityRole="button" testID="today-hero"
                  accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
         <CoverPhoto url={challenge.coverUrl} fallback={fallbackCover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
-        <LinearGradient colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']} style={styles.shadeTop} />
-        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)']} locations={[0, 0.4, 1]} style={styles.shadeBottom} />
       </Pressable>
       <SeasonalHeroDecor visible={visible} />
       {/* Event mode: bats drifting across the hero. */}
@@ -218,6 +218,8 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
       </View>
 
       <View style={styles.heroBottom} pointerEvents="box-none">
+        {/* The shade behind the text only: the photo keeps its real brightness above it. */}
+        <CoverScrim />
         <View style={styles.titles}>
           <Text style={styles.headline} numberOfLines={3}>{headline}</Text>
           {!!ask && <Text style={styles.ask} numberOfLines={2}>{ask}</Text>}
@@ -321,12 +323,11 @@ function LiveStrip({ cities, mineIn, city, active, onPress }: {
 // White on the photo: a soft shadow keeps 4.5:1 over the gradients (SPEC 9.3).
 // On the photo the button is white (or "sun orange"); the primary stays for small accents.
 const HERO_CTA_TONE: PulseTone = 'white';
-const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 };
+// A safety net on bright covers, on top of the scrim (CoverScrim).
+const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 };
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   hero:        { aspectRatio: 4 / 5, borderRadius: 24, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
-  shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: '32%' },
-  shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '72%' },
   heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, padding: 14 },
   heroTopRight: { alignItems: 'flex-end', gap: 6, flexShrink: 1 },
   chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1, paddingHorizontal: 10, paddingVertical: 6,
@@ -358,18 +359,26 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cta:         { minHeight: 56 },
 });
 
+/** Words every challenge uses, ignored when checking that a subtitle adds something (sameAsk). */
+const FILLER = new Set('find snap show share take spot photo picture your you the and for from with that this its their our city cities local locals love loves loved favorite favourite favorites best most one people where what which who how can get here there only every any just like'.split(' '));
+
 /**
- * The subtitle only says the headline again: at least half of the headline's
- * words (3+ letters) are in it and it is barely longer (at most 1.5×), so it
- * adds no "how" and no local twist. Scripts without spaces (CJK, Thai): the same
- * on characters, 60% shared. Exported for tests.
+ * The subtitle only says the headline again, so it is hidden (it must add context or a local twist):
+ * - at least half of the headline's words (3+ letters) are in it and it is barely longer (at most 1.5×);
+ * - or, without the words every challenge uses ("find", "your", "city", "locals", "love", "favorite"...),
+ *   it shares a word with the headline and adds at most one new one ("Find your city's favorite sweet." /
+ *   "Find the sweet treat locals love.": "sweet" shared, only "treat" new).
+ * Scripts without spaces (CJK, Thai): the same on characters, 60% shared. Exported for tests.
  */
 export function sameAsk(headline: string, subtitle: string): boolean {
   const norm = (v: string) => v.toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?¡¿;:'"‘’“”«»()…\-–—]/g, ' ');
   const words = (v: string) => new Set(norm(v).split(/\s+/).filter(w => w.length >= 3));
   const share = (a: Set<string>, b: Set<string>) => { let n = 0; a.forEach(x => { if (b.has(x)) n++; }); return a.size ? n / a.size : 0; };
   const wh = words(headline), ws = words(subtitle);
-  if (wh.size >= 2 && ws.size >= 2) return share(wh, ws) >= 0.5 && ws.size <= wh.size * 1.5;
+  if (wh.size >= 2 && ws.size >= 2 && share(wh, ws) >= 0.5 && ws.size <= wh.size * 1.5) return true;
+  const kh = [...wh].filter(w => !FILLER.has(w)), ks = [...ws].filter(w => !FILLER.has(w));
+  if (kh.length && ks.length) return kh.some(w => ks.includes(w)) && ks.filter(w => !kh.includes(w)).length <= 1;
+  if (wh.size >= 2 && ws.size >= 2) return false;
   const ch = new Set([...norm(headline).replace(/\s/g, '')]), cs = new Set([...norm(subtitle).replace(/\s/g, '')]);
   return share(ch, cs) >= 0.6 && cs.size <= ch.size * 1.5;
 }
