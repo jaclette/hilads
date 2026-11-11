@@ -114,6 +114,13 @@ $highlight = DwStudio::settings()['countries_always_included'];
             <button type="button" class="btn btn-sm <?= $quizMode ? 'btn-primary' : 'btn-secondary' ?>" data-mode="quiz">Quiz (question + 3, 2, 1)</button>
             <span class="worlds-muted" id="rx-mode-state">Quiz only when the #1 is surprising.</span>
         </div>
+        <?php $static = ($c['layout'] ?? null) === 'static'; ?>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px" id="rx-layout">
+            <span class="worlds-muted">Layout</span>
+            <button type="button" class="btn btn-sm <?= $static ? 'btn-secondary' : 'btn-primary' ?>" data-layout="animated">Animated (podium, reveal)</button>
+            <button type="button" class="btn btn-sm <?= $static ? 'btn-primary' : 'btn-secondary' ?>" data-layout="static">Static (plain list, no animation)</button>
+            <span class="worlds-muted" id="rx-layout-state">Static: everything still from the first frame, only the clip moves.</span>
+        </div>
         <?php $qz = (string) ($c['quiz_question'] ?? ''); worlds_field('quiz_question', 'Quiz question (quiz mode: its answer is the #1, 0 to 4 s)', $qz, false, DwStudio::screenWords($qz) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
         <?php $h = (string) ($c['headline'] ?? ''); $d = (string) ($c['detail'] ?? ''); ?>
         <?php worlds_field('headline', 'Headline (the promise)', $h, false, DwStudio::screenWords($h) . ' / ' . DwReaction::HEADLINE_WORDS . ' words'); ?>
@@ -281,6 +288,14 @@ $highlight = DwStudio::settings()['countries_always_included'];
     html += `<div class="source" style="top:${srcTop}px">${esc(srcText)}</div><div class="mark"><i>DIFFERENT WORLDS</i> by Hilads</div><div class="safe"></div>`;
     screen.innerHTML = html;
   }
+
+  // Animated / static layout: saved like a field, then the page reloads.
+  document.querySelectorAll('#rx-layout [data-layout]').forEach(b => b.addEventListener('click', async () => {
+    const st = document.getElementById('rx-layout-state');
+    st.textContent = 'saving…';
+    try { await api({ action: 'update_field', package_id: pkgId, path: 'layout', value: b.dataset.layout }); location.reload(); }
+    catch (e) { st.textContent = e.message; st.style.color = '#f87171'; }
+  }));
 
   // Classic / quiz: saved like a field, then the page reloads (the labels and PNGs follow the mode).
   document.querySelectorAll('#rx-mode [data-mode]').forEach(b => b.addEventListener('click', async () => {

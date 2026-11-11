@@ -1058,7 +1058,7 @@ final class DwStudio
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
-            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent|mode|quiz_question|clip_speed|extra_row)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|detail|source|source_url|value_label|data_year|data_years|clip_query|outro_question|cta_line|card_bg|headline_accent|mode|layout|quiz_question|clip_speed|extra_row)$/', $path) ? ['slide' => null] : null;
         }
         $onScreen = ['headline', 'detail', 'on_screen_text', 'on_screen_note', 'question', 'country', 'flag', 'photo_credit', 'photo_url'];
         $pic = 'illustration_brief|photo_credit|photo_url';
@@ -1126,6 +1126,9 @@ final class DwStudio
         }
         if ($path === 'headline_accent' && $value !== '' && mb_stripos((string) ($c['headline'] ?? ''), $value) === false) {
             throw new InvalidArgumentException('The orange words must be words of the headline, as written there.');
+        }
+        if ($path === 'layout' && !in_array($value, DwReaction::LAYOUTS, true)) {
+            throw new InvalidArgumentException('The layout: ' . implode(' or ', DwReaction::LAYOUTS) . '.');
         }
         if ($path === 'mode' && !in_array($value, DwReaction::MODES, true)) {
             throw new InvalidArgumentException('The mode: ' . implode(' or ', DwReaction::MODES) . '.');
@@ -1595,7 +1598,7 @@ final class DwStudio
                     'cta' => trim((string) ($c['cta_line'] ?? '')) ?: null,
                     'extraRow' => trim((string) ($c['extra_row'] ?? '')) ?: null,
                     'clipSpeed' => isset($c['clip_speed']) ? (float) $c['clip_speed'] : null,
-                    'mode' => DwReaction::mode($c), 'quiz' => trim((string) ($c['quiz_question'] ?? '')) ?: null,
+                    'mode' => DwReaction::mode($c), 'layout' => ($c['layout'] ?? null) === 'static' ? 'static' : 'animated', 'quiz' => trim((string) ($c['quiz_question'] ?? '')) ?: null,
                 ],
                 'videoUrl' => $pkg['video_url'] ?? null, 'stillUrl' => $pkg['still_url'] ?? null, 'still2Url' => $pkg['still2_url'] ?? null, 'still3Url' => $pkg['still3_url'] ?? null];
     }

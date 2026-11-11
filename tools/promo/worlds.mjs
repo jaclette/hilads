@@ -44,6 +44,8 @@ const ctaArg = args.includes('--cta') ? args[args.indexOf('--cta') + 1] : null;
 // --mode quiz --quiz "<question>" --question "<outro>": a reaction topic in quiz mode, to try before saving it.
 const modeArg = args.includes('--mode') ? args[args.indexOf('--mode') + 1] : null;
 const quizArg = args.includes('--quiz') ? args[args.indexOf('--quiz') + 1] : null;
+// --layout static: the static ranking (no animation, a plain list), to try before saving it in the package.
+const layoutArg = args.includes('--layout') ? args[args.indexOf('--layout') + 1] : null;
 const questionArg = args.includes('--question') ? args[args.indexOf('--question') + 1] : null;
 // --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
 const pngOnly = args.includes('--png-only');
@@ -357,6 +359,7 @@ async function renderReaction(data, { work, pub, out }) {
                        topic: s.topic ?? data.content?.topic ?? data.title ?? null,
                        cta: ctaArg ?? s.cta ?? data.content?.cta_line ?? null,
                        extraRow: extraArg ?? s.extraRow ?? data.content?.extra_row ?? null,
+                       layout: layoutArg ?? s.layout ?? data.content?.layout ?? 'animated',
                        mode: modeArg ?? s.mode ?? data.content?.mode ?? 'classic', quiz: quizArg ?? s.quiz ?? data.content?.quiz_question ?? null,
                        // The card's color and the headline's accent words (also read from the content, before the API sends them);
                        // --card-bg / --accent try one before it is saved in the package.

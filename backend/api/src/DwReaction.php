@@ -28,6 +28,9 @@ final class DwReaction
     public const QUIZ_SECONDS = 13.5;    // quiz: the quiz question alone 1 s, 3, 2, 1 (1 s each) until 4 s, the ranking until 10.5 s, the closing slide 3 s
     /** classic (the headline hook) or quiz (the quiz question and a countdown, then the reveal); classic when absent. */
     public const MODES = ['classic', 'quiz'];
+    /** The ranking screen: 'animated' (the hook, the podium, the reveal; default) or 'static' (everything still from the first
+     *  frame, a plain list of 10 rows, #1 in the accent color with a 👑, the closing slide cut in; only the clip moves). */
+    public const LAYOUTS = ['animated', 'static'];
     /** The closing slide's invitation (cta_line): a few words, with hilads.live. */
     public const CTA_WORDS = 8;
     /** The video shows the first 10 rows (the podium + #4 to #10), "Top 10" in its source line when there are more. */
@@ -119,6 +122,9 @@ final class DwReaction
         }
         if (isset($c['clip_speed']) && !self::clipSpeedOk($c['clip_speed'])) {
             $errors[] = '"clip_speed" is a number from 0.5 to 3 (1.5: slow-motion footage played 1.5× faster).';
+        }
+        if (isset($c['layout']) && !in_array($c['layout'], self::LAYOUTS, true)) {
+            $errors[] = '"layout" is "animated" or "static".';
         }
         if (isset($c['mode']) && !in_array($c['mode'], self::MODES, true)) {
             $errors[] = '"mode" is "classic" or "quiz".';
@@ -295,7 +301,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'quiz_question', 'extra_row'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'layout', 'quiz_question', 'extra_row'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }

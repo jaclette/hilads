@@ -50,6 +50,14 @@ export function ReactionRanking({ topic = null, question = null, cta = null, ...
   const card = { headline: props.headline, question, cta, cardBg: props.cardBg };
   // The ranking eases out (a little smaller), the end card pops in over it.
   const out = clamp01((frame - end) / 8);
+  // Static layout: the ranking still from the first frame (only the clip moves), then the closing slide on a cut.
+  if (props.layout === 'static') {
+    return (
+      <AbsoluteFill style={{ background: cardColor(props.cardBg) }}>
+        {frame < end ? <StaticTableScreen {...props} /> : <EndCard {...card} from={end} still />}
+      </AbsoluteFill>
+    );
+  }
   return (
     <AbsoluteFill style={{ background: cardColor(props.cardBg) }}>
       {frame < end + 8 && <AbsoluteFill style={{ opacity: 1 - out, transform: `scale(${1 - 0.06 * out})` }}><TableScreen {...props} /></AbsoluteFill>}
@@ -168,6 +176,127 @@ function Confetti({ x, y, at }) {
                             transform: `rotate(${(i * 47 + t * 540) % 360}deg)` }} />
     );
   });
+}
+
+/**
+ * The static ranking screen (layout 'static'): the clip on the top half (the only thing that moves), the detail sticker,
+ * the header, a plain list of the top 10 (same height each, #1 in the accent color with a 👑), the extra row under a
+ * "• • •" separator, the source line and the series mark: all still from the first frame. No hook, no podium, no
+ * counting values.
+ */
+function StaticTableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
+                             extraRow = null }) {
+  const bg = cardColor(cardBg);
+  const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
+  const extraName = String(extraRow ?? '').trim().toLowerCase();
+  const extra = extraName ? allRows.slice(MAX_ROWS).find((r) => String(r.country).trim().toLowerCase() === extraName) : null;
+  const top = allRows.slice(0, MAX_ROWS);
+  const rows = [...top, ...(extra ? [{ ...extra, highlight: true }] : [])];
+  const sourceLine = allRows.length > MAX_ROWS ? `Top ${MAX_ROWS} · ${source}` : source;
+  const pctDecimals = rows.some((r) => r.unit === '%' && !Number.isInteger(Number(r.value)));
+  const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1
+    : r.unit === '%' ? (pctDecimals ? 1 : 0) : (Number.isInteger(Number(r.value)) ? 0 : 1);
+  const label = (r) => {
+    const v = Number(r.value).toFixed(decimals(r));
+    return r.unit === '$' ? `$${v}` : `${v}${r.unit === '%' ? '%' : r.unit.length <= 3 ? ` ${r.unit}` : ''}`;
+  };
+
+  const words = accentWords(headline, accent);
+  const W = C_RIGHT - C_LEFT;
+  let titlePx = 56, titleLines = null;
+  for (let p = 76; p >= 64 && !titleLines; p -= 2) { titleLines = wrapWords(words, p, W, 1, 800, Q_FONT); titlePx = p; }
+  for (let p = 68; p >= 52 && !titleLines; p -= 2) { titleLines = wrapWords(words, p, W, 2, 800, Q_FONT); titlePx = p; }
+  titleLines ??= [words];
+  const titleTop = MEDIA_H - 28;
+  const titleLH = Math.round(titlePx * 1.04);
+  const titleEnd = titleTop + titleLines.length * titleLH;
+
+  const srcPx = 24;
+  const srcLines = Math.min(3, Math.ceil((measure(sourceLine, srcPx, 600) * 1.06) / W));
+  const srcTop = SAFE_BOTTOM - srcLines * 30;
+  const GAP = 0.45;
+  const listTop = titleEnd + 14;
+  const stride = Math.min(72, (srcTop - 12 - listTop) / (rows.length + (extra ? GAP : 0)));
+  const rowTop = (i) => listTop + i * stride + (extra && i >= MAX_ROWS ? GAP * stride : 0);
+  const rowH = Math.round(stride - 6);
+  const textPx = Math.max(26, Math.min(34, Math.round(rowH * 0.6)));
+  const flagS = Math.round(rowH * 0.62);
+  const rankW = 40, flagX = 12 + rankW + 10, nameX = flagX + flagS + 12;
+  const crownW = measure('👑', textPx) + 8;
+  const valW = Math.max(0, ...rows.map((r) => measure(label(r), textPx))) + 6;
+  const nameW = Math.min(W * 0.42, Math.max(W * 0.24, ...rows.map((r, i) => measure(r.country, textPx) + (i === 0 ? crownW : 0))));
+  const barX = nameX + nameW + 16;
+  const barMax = Math.max(40, W - 16 - valW - 14 - barX);
+  const max = Math.max(1e-9, ...top.map((r) => Number(r.value)));
+
+  let stickerPx = 30;
+  for (let px = 40; px >= 28; px -= 1) { stickerPx = px; if (measure(detail ?? '', px, 800, Q_FONT) <= 820) break; }
+  const stickerTop = MEDIA_H - 52 - stickerPx * 1.15 - 18;
+  const BALOO = `"${Q_FONT}", "${FONT}"`;
+  const ACCENT_BG = mix(TERRA, '#ffffff', 0.84);
+
+  return (
+    <AbsoluteFill style={{ background: bg, fontFamily: FONT, color: INK, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: MEDIA_H, overflow: 'hidden', background: '#7a3b1a' }}>
+        {clip && <ClipLoop clip={clip} style={{ width: 1080, height: MEDIA_H, objectFit: 'cover' }} />}
+      </div>
+      <svg width={1080} height={90} viewBox="0 0 400 34" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, top: MEDIA_H - 88 }}>
+        <path d="M0 22 C70 34 120 4 200 10 C270 15 320 30 400 14 L400 35 L0 35Z" fill={bg} />
+      </svg>
+      {clip?.credit && (
+        <div style={{ position: 'absolute', right: 24, top: 150, fontSize: 18, fontWeight: 600, color: 'rgba(255,255,255,0.85)',
+                      background: 'rgba(0,0,0,0.4)', borderRadius: 14, padding: '4px 12px' }}>{clip.credit}</div>
+      )}
+      {detail && (
+        <div style={{ position: 'absolute', left: 40, top: stickerTop, background: STICKER, color: INK, borderRadius: 24,
+                      padding: '11px 24px 7px', boxShadow: '0 7px 0 #C9940F', fontFamily: BALOO, fontWeight: 800, fontSize: stickerPx,
+                      lineHeight: 1.15, whiteSpace: 'nowrap', transform: 'rotate(-4deg)', transformOrigin: '10% 100%' }}>{detail}</div>
+      )}
+      <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W }}>
+        {titleLines.map((l, i) => (
+          <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: titlePx, lineHeight: `${titleLH}px`, whiteSpace: 'nowrap',
+                                letterSpacing: -0.5, paddingTop: titlePx * 0.08 }}>
+            {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
+          </div>
+        ))}
+      </div>
+
+      {rows.map((r, i) => {
+        const first = i === 0;
+        const isHot = first || r.highlight === true || hot.has(String(r.country).trim().toLowerCase());
+        const bar = Math.max(10, (barMax * Math.min(Number(r.value), max)) / max);
+        const nm = fitName(r.country, textPx, nameW - (first ? crownW : 0), rowH - 4);
+        return (
+          <div key={i} style={{ position: 'absolute', left: C_LEFT, top: rowTop(i), width: W, height: rowH, borderRadius: 16, boxSizing: 'border-box',
+                                background: first ? ACCENT_BG : isHot ? '#FFF0E4' : '#fff',
+                                boxShadow: `${isHot ? `inset 0 0 0 3px ${TERRA}, ` : ''}0 3px 0 rgba(150,90,40,0.13)` }}>
+            <div style={{ position: 'absolute', left: 12, top: 0, width: rankW, height: rowH, display: 'flex', alignItems: 'center',
+                          justifyContent: 'flex-end', fontSize: textPx - 2, fontWeight: 800, color: isHot ? TERRA : MUTED }}>{r.rank}</div>
+            {r.flag && <Img src={staticFile(r.flag)} style={{ position: 'absolute', left: flagX, top: (rowH - flagS) / 2, width: flagS, height: flagS }} />}
+            <div style={{ position: 'absolute', left: nameX, top: 0, width: nameW, height: rowH, display: 'flex', alignItems: 'center',
+                          fontSize: nm.px, fontWeight: 800, lineHeight: 1.05, color: first ? TERRA : INK }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>{nm.lines.map((l, j) => <div key={j} style={{ whiteSpace: 'nowrap' }}>{l}</div>)}</div>
+              {first && <span style={{ marginLeft: 8, fontSize: textPx }}>👑</span>}
+            </div>
+            <div style={{ position: 'absolute', left: barX, top: (rowH - 14) / 2, height: 14, width: bar, borderRadius: 7, background: flagColor(r.emoji) }} />
+            <div style={{ position: 'absolute', left: barX + bar + 12, top: 0, height: rowH, display: 'flex', alignItems: 'center',
+                          fontSize: textPx, fontWeight: 800, color: isHot ? TERRA : INK, whiteSpace: 'nowrap' }}>{label(r)}</div>
+          </div>
+        );
+      })}
+      {extra && (
+        <div style={{ position: 'absolute', left: C_LEFT, top: rowTop(MAX_ROWS) - GAP * stride, width: W, height: GAP * stride, display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, color: MUTED, letterSpacing: 14 }}>• • •</div>
+      )}
+      <div style={{ position: 'absolute', left: C_LEFT, top: srcTop, width: W, fontSize: srcPx, lineHeight: '30px', fontWeight: 600,
+                    color: '#6E5444' }}>{sourceLine}</div>
+      <div style={{ position: 'absolute', left: 32, top: 150, height: MARK_H, display: 'flex', alignItems: 'center', gap: 10,
+                    background: 'rgba(255,246,233,0.92)', borderRadius: 22, padding: '0 16px 0 6px' }}>
+        <Img src={staticFile('logo.svg')} style={{ width: 34, height: 34 }} />
+        <div style={{ fontSize: 21 }}><span style={{ fontWeight: 800, letterSpacing: 2, color: TERRA }}>DIFFERENT WORLDS</span> <span style={{ fontWeight: 600 }}>by Hilads</span></div>
+      </div>
+    </AbsoluteFill>
+  );
 }
 
 function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
