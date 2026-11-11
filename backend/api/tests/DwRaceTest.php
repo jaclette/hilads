@@ -74,4 +74,18 @@ final class DwRaceTest extends TestCase
         $bad = ['value_prefix' => 'way too long'] + $c;
         $this->assertNotEmpty(array_filter(DwRace::validate($bad)[0], fn($e) => str_contains($e, 'value_prefix')));
     }
+
+    public function testPaceFields(): void
+    {
+        $c = $this->content() + ['year_step' => 2, 'hold_first' => true, 'step_seconds' => 1.6, 'hold' => 0.75, 'freeze_seconds' => 2.5, 'bar_scale' => 'step'];
+        $c['banner_year'] = 2004;
+        $this->assertSame([], DwRace::validate($c)[0]);
+        $this->assertSame([2000, 2002, 2004, 2005], DwRace::shownYears($c));
+        $this->assertEqualsWithDelta(0.6 + 3 * 1.6 + 2.5 + 3, DwRace::videoSeconds($c), 1e-9);
+        $this->assertNotEmpty(DwRace::validate(['banner_year' => 2003] + $c)[0]);
+        $this->assertNotEmpty(DwRace::validate(['bar_scale' => 'log'] + $c)[0]);
+        $this->assertTrue(DwRace::paceValue('hold_first', 'true'));
+        $this->assertSame(2, DwRace::paceValue('year_step', '2'));
+        $this->assertNull(DwRace::paceValue('freeze_seconds', ''));
+    }
 }

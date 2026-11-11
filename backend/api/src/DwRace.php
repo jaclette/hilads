@@ -18,6 +18,9 @@ declare(strict_types=1);
  * value_label, data_years, source, source_url?, outro_question, cta_line, card_bg?, highlight? [country], caption,
  * hashtags, warnings?}. Count races: value_prefix? ("👑 x", before each value), slow_from? + slow_step? (the years from
  * slow_from go at slow_step: fast early decades), a series' order? ({"2009": 1, …}: its place among tied values at a year).
+ * Pace: year_step? (one year out of N, always with the last), hold_first? (each step holds still `hold` of its length,
+ * then moves), freeze_seconds? (2 by default), bar_scale? ('step': each year's bars start just below its top 10's lowest
+ * value, the source line says so; 'zero' by default).
  */
 final class DwRace
 {
@@ -29,6 +32,9 @@ final class DwRace
     public const FREEZE = 2.0;
     public const CLOSING = 3.0;
     public const HEADLINE_WORDS = 9;
+    /** The pace fields an editor can change on a race (DwStudio::updateField), typed by paceValue(). */
+    public const PACE_FIELDS = ['year_step', 'hold_first', 'step_seconds', 'hold', 'freeze_seconds', 'bar_scale', 'slow_from', 'slow_step'];
+    public const BAR_SCALES = ['zero', 'step'];
 
     public static function isRace(array $c): bool
     {
@@ -48,6 +54,36 @@ final class DwRace
         return array_keys($years);
     }
 
+    /** The years the video shows: one out of year_step from the first, always with the last (worlds.mjs). Pure. */
+    public static function shownYears(array $c): array
+    {
+        $years = self::years($c);
+        $every = max(1, (int) ($c['year_step'] ?? 1));
+        return array_values(array_filter($years, static fn($y, $i) => $i % $every === 0 || $i === count($years) - 1, ARRAY_FILTER_USE_BOTH));
+    }
+
+    /** A pace field from the editor's text, typed (null: back to the default). Throws when out of range. */
+    public static function paceValue(string $field, string $value): mixed
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+        if ($field === 'hold_first') {
+            return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
+        }
+        if ($field === 'bar_scale') {
+            if (!in_array($value, self::BAR_SCALES, true)) {
+                throw new InvalidArgumentException('The bar scale: zero, or step (each year\'s bars start just below its top 10).');
+            }
+            return $value;
+        }
+        if (!is_numeric($value)) {
+            throw new InvalidArgumentException("\"{$field}\" is a number.");
+        }
+        return in_array($field, ['year_step', 'slow_from'], true) ? (int) $value : (float) $value;
+    }
+
     /** The video's length (seconds). Pure. */
     public static function videoSeconds(array $c): float
     {
@@ -56,10 +92,10 @@ final class DwRace
         $slowFrom = isset($c['slow_from']) && $c['slow_from'] !== null ? (int) $c['slow_from'] : null;
         $slowStep = (float) ($c['slow_step'] ?? $step);
         $total = $start;
-        foreach (array_slice(self::years($c), 1) as $y) {   // a step ends at year $y (reactionTiming.js raceSteps)
+        foreach (array_slice(self::shownYears($c), 1) as $y) {   // a step ends at year $y (reactionTiming.js raceSteps)
             $total += $slowFrom !== null && $y >= $slowFrom ? $slowStep : $step;
         }
-        return $total + self::FREEZE + self::CLOSING;
+        return $total + (float) ($c['freeze_seconds'] ?? self::FREEZE) + self::CLOSING;
     }
 
     /** Checks a race content: [errors (block the import), warnings]. Pure (but for DwStudio::screenWords). */
@@ -126,6 +162,20 @@ final class DwRace
                 $errors[] = "\"{$f}\" is a number from {$lo} to {$hi}.";
             }
         }
+        foreach (['year_step' => [1, 5], 'freeze_seconds' => [1, 5]] as $f => [$lo, $hi]) {
+            if (isset($c[$f]) && (!is_numeric($c[$f]) || (float) $c[$f] < $lo || (float) $c[$f] > $hi)) {
+                $errors[] = "\"{$f}\" is a number from {$lo} to {$hi}.";
+            }
+        }
+        if (isset($c['bar_scale']) && !in_array($c['bar_scale'], self::BAR_SCALES, true)) {
+            $errors[] = '"bar_scale" is "zero" or "step".';
+        }
+        if (isset($c['hold_first']) && !is_bool($c['hold_first'])) {
+            $errors[] = '"hold_first" is true or false.';
+        }
+        if (isset($c['banner_year'], $c['year_step']) && $c['banner_year'] !== null && !in_array((int) $c['banner_year'], self::shownYears($c), true)) {
+            $errors[] = '"banner_year" must be one of the years shown (year_step ' . (int) $c['year_step'] . ').';
+        }
         if (isset($c['slow_from']) && $c['slow_from'] !== null && !in_array((int) $c['slow_from'], $years, true)) {
             $errors[] = '"slow_from" must be one of the race\'s years (the years from it go at slow_step).';
         }
@@ -181,7 +231,15 @@ final class DwRace
             return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values]
                 + ($ranks ? ['ranks' => $ranks] : []) + ($order ? ['order' => $order] : []);
         }, array_values($c['series'] ?? []));
-        foreach (['step_seconds', 'slow_step', 'start_seconds', 'hold'] as $f) {
+        foreach (['year_step'] as $f) {
+            if (isset($c[$f])) {
+                $c[$f] = (int) $c[$f];
+            }
+        }
+        if (isset($c['hold_first'])) {
+            $c['hold_first'] = (bool) $c['hold_first'];
+        }
+        foreach (['step_seconds', 'slow_step', 'start_seconds', 'hold', 'freeze_seconds'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = (float) $c[$f];
             }

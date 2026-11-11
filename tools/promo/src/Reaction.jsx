@@ -729,16 +729,28 @@ function raceValues(series, years, t) {
 }
 /** Each country's rank (0 = first) at t. */
 function raceRanks(series, years, t, dec = 1) {
-  // At a year itself, with the source's ranks: its order (ties as the source breaks them). Else on the values as shown
-  // (rounded to `dec` decimals), ties in the alphabetical order.
+  // On the values as shown (rounded to `dec` decimals). Ties keep a stable order: the one ahead in the previous years
+  // (the year this step starts from, then the years before) stays ahead, then the series' order, then alphabetical; so
+  // tied rows never swap places (they share a rank number, each on its own row).
   const f = 10 ** dec;
+  const shown = (k, y) => Math.round(Number(series[k].values[y] ?? 0) * f) / f;
   const v = raceValues(series, years, t).map((x) => Math.round(x * f) / f);
-  // Ties: the source's order (series' order, e.g. the first to reach a count stays above), else alphabetical.
-  const at = Number.isInteger(t) && series.every((c) => c.ranks?.[years[t]] != null) ? years[t] : null;
-  const next = years[Math.min(years.length - 1, Math.ceil(t))];
-  const tie = (a, b) => ((series[a].order?.[next] ?? 0) - (series[b].order?.[next] ?? 0)) || String(series[a].country).localeCompare(String(series[b].country));
-  const order = v.map((x, k) => [x, k]).sort((p, q) => at != null ? (series[p[1]].ranks[at] - series[q[1]].ranks[at]) || tie(p[1], q[1])
-    : (q[0] - p[0]) || tie(p[1], q[1]));
+  const from = Math.min(years.length - 1, Math.floor(t));
+  const to = years[Math.min(years.length - 1, Math.ceil(t))];
+  const tie = (a, b) => {
+    // The source's own rank for the year reached (e.g. hidden decimals), then the package's tie order (e.g. the first
+    // to reach a count), then who was ahead the years before, then the name.
+    const sr = (series[a].ranks?.[to] ?? 0) - (series[b].ranks?.[to] ?? 0);
+    if (sr !== 0) return sr;
+    const so = (series[a].order?.[to] ?? 0) - (series[b].order?.[to] ?? 0);
+    if (so !== 0) return so;
+    for (let y = from; y >= 0; y--) {
+      const d = shown(b, years[y]) - shown(a, years[y]);
+      if (d !== 0) return d;
+    }
+    return String(series[a].country).localeCompare(String(series[b].country));
+  };
+  const order = v.map((x, k) => [x, k]).sort((p, q) => (q[0] - p[0]) || tie(p[1], q[1]));
   const r = new Array(series.length);
   order.forEach(([, k], n) => { r[k] = n; });
   return r;
@@ -757,8 +769,11 @@ export function RaceVideo({ question = null, cta = null, ...props }) {
 }
 
 function RaceScreen({ headline, accent = null, years, series, unit = '', source, detail = null, bannerYear = null, highlight = [], cardBg = null,
-                     extraRow = null, decimals = 1, yearLabels = null, stepSeconds, startSeconds, hold, slowFrom, slowStep, valuePrefix = '' }) {
-  const { start: START, hold: HOLD } = raceOpts({ stepSeconds, startSeconds, hold });
+                     extraRow = null, decimals = 1, yearLabels = null, stepSeconds, startSeconds, hold, slowFrom, slowStep, valuePrefix = '',
+                     holdFirst = false, freezeSeconds, barScale = 'zero' }) {
+  const { start: START, hold: HOLD, holdFirst: HOLD_FIRST } = raceOpts({ stepSeconds, startSeconds, hold, holdFirst });
+  // When step i's move starts (seconds from START): right away, or after its hold (holdFirst: read, then move).
+  const moveFrom = (i) => HOLD_FIRST ? HOLD * steps[i] : 0;
   // Each step's length (a faster pace for early years, slower from slowFrom) and when each step starts.
   const steps = raceSteps(years, { stepSeconds, slowFrom, slowStep });
   const stepAt = [0];
@@ -783,7 +798,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
     if (s <= 0 || n < 2) return 0;
     let i = 0;
     while (i < n - 1 && stepAt[i + 1] <= s) i++;
-    return i >= n - 1 ? n - 1 : i + clamp01((s - stepAt[i]) / steps[i] / (1 - HOLD));
+    return i >= n - 1 ? n - 1 : i + clamp01((s - stepAt[i] - moveFrom(i)) / steps[i] / (1 - HOLD));
   };
   const t = tAt(frame);
   const values = raceValues(series, years, t);
@@ -791,13 +806,29 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   let scaleMax = 1e-9;
   for (let y = 0; y <= Math.floor(t); y++) scaleMax = Math.max(scaleMax, ...series.map((c) => Number(c.values[years[y]] ?? 0)));
   scaleMax = Math.max(scaleMax, ...values);
+  // barScale 'step': close values (174 to 177) would all look the same from zero, so each year's bars start just below
+  // its top 10's lowest value and end at its highest (eased between years as the values move); the exact values are
+  // still written next to the bars, and the source line says the scale doesn't start at zero.
+  let scaleMin = 0;
+  if (barScale === 'step') {
+    const lim = (y) => {
+      const top = series.map((c) => Number(c.values[y] ?? 0)).sort((a, b) => b - a).slice(0, RACE_ROWS);
+      const hi = top[0] ?? 1, lo = top[top.length - 1] ?? 0;
+      return [lo - Math.max(3, 0.6 * (hi - lo)), hi];
+    };
+    const i = Math.min(n - 1, Math.floor(t)), j = Math.min(n - 1, i + 1), e = smooth(t - i);
+    const [a0, a1] = lim(years[i]), [b0, b1] = lim(years[j]);
+    scaleMin = Math.max(0, a0 + (b0 - a0) * e);
+    scaleMax = a1 + (b1 - a1) * e;
+  }
+  const barW = (v) => Math.max(6, (barMax * Math.max(0, v - scaleMin)) / Math.max(1e-9, scaleMax - scaleMin));
   // Ranks: the exact rank of the values shown (the label), and the position slides to it as soon as the values cross
   // (each rank change eases over SLIDE frames): the order on screen always follows the values, the rows stay even.
   const SLIDE = 8;
   const rankNow = raceRanks(series, years, t, decimals);
   const hist = [];
   for (let k = SLIDE; k >= 0; k--) hist.push(raceRanks(series, years, tAt(frame - k), decimals));
-  const pos = series.map((_, c) => {
+  let pos = series.map((_, c) => {
     let p = hist[0][c];
     for (let k = 1; k <= SLIDE; k++) {
       const d = hist[k][c] - hist[k - 1][c];
@@ -805,6 +836,13 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
     }
     return p;
   });
+  // Hold-then-move: each row glides from its place in the year the step leaves to its place in the year it reaches
+  // (eased as the values), so a short transition stays one clean move, ties keep their stable order.
+  if (HOLD_FIRST) {
+    const i0 = Math.min(n - 1, Math.floor(t)), i1 = Math.min(n - 1, i0 + 1), e = smooth(t - i0);
+    const r0 = raceRanks(series, years, i0, decimals), r1 = raceRanks(series, years, i1, decimals);
+    pos = series.map((_, c) => r0[c] + (r1[c] - r0[c]) * e);
+  }
   const year = years[Math.min(n - 1, Math.round(t))];
   const raceEnd = S(START + stepAt[n - 1]);
 
@@ -850,7 +888,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
 
   // The banner at the striking year (it pops while the race goes on), the crown on #1 at the freeze.
   const bIdx = bannerYear != null ? years.map(String).indexOf(String(bannerYear)) : -1;
-  const bannerAt = bIdx > 0 ? S(START + stepAt[bIdx - 1] + 0.6 * (1 - HOLD) * steps[bIdx - 1]) : bIdx === 0 ? S(START) : null;
+  const bannerAt = bIdx > 0 ? S(START + stepAt[bIdx - 1] + moveFrom(bIdx - 1) + 0.6 * (1 - HOLD) * steps[bIdx - 1]) : bIdx === 0 ? S(START) : null;
   const bannerOn = bannerAt != null && detail ? spring({ frame: frame - bannerAt, fps, config: { damping: 8, stiffness: 220, mass: 0.6 } }) : 0;
   const bannerOff = bannerAt != null ? clamp01((frame - bannerAt - S(1.4)) / 6) : 0;
   const crown = spring({ frame: frame - raceEnd - 3, fps, config: { damping: 9, stiffness: 260, mass: 0.6 } });
@@ -861,7 +899,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const chartIn = 1;
   // The year pops each time it changes (the moment the race passes half-way between two years).
   const yi = Math.min(n - 1, Math.round(t));
-  const since = yi > 0 ? frame - S(START + stepAt[yi - 1] + 0.5 * (1 - HOLD) * steps[yi - 1]) : 99;
+  const since = yi > 0 ? frame - S(START + stepAt[yi - 1] + moveFrom(yi - 1) + 0.5 * (1 - HOLD) * steps[yi - 1]) : 99;
   const yearPop = since >= 0 && since < 10 ? 1 + 0.22 * (1 - ease(since / 10)) : 1;
   const progress = n > 1 ? t / (n - 1) : 1;
   // At a year itself, the source's rank (when the series has them); between years the rank of the values shown.
@@ -899,7 +937,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
         if (p >= RACE_ROWS || roundShown(v) <= 0) return null;
         const y = chartTop + p * rowH;
         const fade = clamp01(RACE_ROWS - p) * chartIn;
-        const w = Math.max(6, (barMax * v) / scaleMax) * grow;
+        const w = barW(v) * grow;
         const color = flagColor(c.emoji);
         const isHot = hot.has(String(c.country).trim().toLowerCase());
         const nameW = measure(c.country, namePx, 800);
@@ -934,7 +972,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
       {extra && (() => {
         const v = raceValues([extra], years, t)[0];
         const y = chartTop + (RACE_ROWS + 0.5) * rowH;
-        const w = Math.max(6, (barMax * v) / scaleMax) * grow;
+        const w = barW(v) * grow;
         const color = flagColor(extra.emoji);
         const nameW = measure(extra.country, namePx, 800);
         const inside = nameW + 36 <= w;

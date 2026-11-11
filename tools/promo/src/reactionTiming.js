@@ -14,6 +14,9 @@ export const reactionSeconds = (mode) => endSeconds(mode) + CLOSING_SECONDS;
 export const RACE = { START: 0.6, PER_YEAR: 0.7, FREEZE: 2 };
 export const raceOpts = (o = {}) => ({ start: Number(o.startSeconds ?? o.start ?? RACE.START), step: Number(o.stepSeconds ?? o.step ?? RACE.PER_YEAR),
                                        hold: Math.max(0, Math.min(0.8, Number(o.hold ?? 0))),
+                                       // holdFirst: each step holds still first (to read the ranking), then moves (default: moves, then holds).
+                                       holdFirst: o.holdFirst === true,
+                                       freeze: Number(o.freezeSeconds ?? o.freeze ?? RACE.FREEZE),
                                        slowFrom: o.slowFrom != null ? Number(o.slowFrom) : null, slowStep: Number(o.slowStep ?? o.stepSeconds ?? RACE.PER_YEAR) });
 /** Each step's length (seconds, step i goes from years[i] to years[i + 1]): `step`, or `slowStep` from the year `slowFrom`. */
 export const raceSteps = (years, o = {}) => {
@@ -21,5 +24,5 @@ export const raceSteps = (years, o = {}) => {
   const ys = Array.isArray(years) ? years.map(Number) : Array.from({ length: years }, (_, i) => i);
   return ys.slice(1).map((y) => (r.slowFrom != null && Array.isArray(years) && y >= r.slowFrom ? r.slowStep : r.step));
 };
-export const raceEndSeconds = (years, o = {}) => raceOpts(o).start + raceSteps(years, o).reduce((a, b) => a + b, 0) + RACE.FREEZE;
+export const raceEndSeconds = (years, o = {}) => raceOpts(o).start + raceSteps(years, o).reduce((a, b) => a + b, 0) + raceOpts(o).freeze;
 export const raceSeconds = (years, o = {}) => raceEndSeconds(years, o) + CLOSING_SECONDS;

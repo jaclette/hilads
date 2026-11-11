@@ -6,7 +6,7 @@ declare(strict_types=1);
 // and its three PNGs, a preview of the first and the last year's top 10, the text fields and the year-by-year series
 // (JSON), saved on change like the other formats. In scope: $topic, $pkg, $c, $self, $versions.
 
-$years = DwRace::years($c);
+$years = DwRace::shownYears($c);
 $stills = ['still_url' => 'PNG 01 (first year)', 'still2_url' => 'PNG 02 (final ranking)', 'still3_url' => 'PNG 03 (closing slide)'];
 /** A year's top 10: [[country, flag, value]]. */
 $topOf = static function (array $c, int $year): array {
@@ -83,6 +83,13 @@ $secs = DwRace::videoSeconds($c);
         <?php worlds_field('card_bg', 'Card color (optional: ' . implode(', ', DwReaction::CARD_THEMES) . ' or a light #rrggbb; cream by default)', (string) ($c['card_bg'] ?? '')); ?>
         <?php worlds_field('series', 'Year-by-year data (JSON: [{country, flag, values: {"2000": 77.2, …}}], every country every year)',
             json_encode($c['series'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), true, count($c['series'] ?? []) . ' countries'); ?>
+        <h3 style="margin-top:12px">Pace</h3>
+        <?php worlds_field('year_step', 'Years shown: one out of N (1: every year; 2: 2010, 2012, …, always with the last)', (string) ($c['year_step'] ?? '')); ?>
+        <?php worlds_field('hold_first', 'Hold, then move (true: each step holds still to read, then a short transition)', !empty($c['hold_first']) ? 'true' : ''); ?>
+        <?php worlds_field('step_seconds', 'Seconds per step (0.7 by default; hold then move: e.g. 1.6)', (string) ($c['step_seconds'] ?? '')); ?>
+        <?php worlds_field('hold', 'Share of a step held still (0 to 0.8; e.g. 0.75 = 1.2 s of a 1.6 s step)', (string) ($c['hold'] ?? '')); ?>
+        <?php worlds_field('freeze_seconds', 'Final freeze on the last year, seconds (2 by default)', (string) ($c['freeze_seconds'] ?? '')); ?>
+        <?php worlds_field('bar_scale', 'Bar scale: zero (default), or step (bars start just below each year\'s top 10, for close values)', (string) ($c['bar_scale'] ?? '')); ?>
         <?php worlds_field('topic', 'Topic', (string) ($c['topic'] ?? '')); ?>
     </div>
     <div class="form-card">

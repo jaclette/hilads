@@ -46,6 +46,7 @@ const modeArg = args.includes('--mode') ? args[args.indexOf('--mode') + 1] : nul
 const quizArg = args.includes('--quiz') ? args[args.indexOf('--quiz') + 1] : null;
 // --layout static: the static ranking (no animation, a plain list), to try before saving it in the package.
 const layoutArg = args.includes('--layout') ? args[args.indexOf('--layout') + 1] : null;
+const raceArg = args.includes('--race') ? args[args.indexOf('--race') + 1] : null;
 const questionArg = args.includes('--question') ? args[args.indexOf('--question') + 1] : null;
 // --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
 const pngOnly = args.includes('--png-only');
@@ -412,11 +413,16 @@ async function renderReaction(data, { work, pub, out }) {
  * freeze, the crown), 03 the closing slide.
  */
 async function renderRace(data, { work, pub, out }) {
-  const c = data.content;
+  // --race '<json>': race fields to try before saving them (e.g. '{"year_step":2,"hold_first":true}').
+  const c = { ...data.content, ...(raceArg ? JSON.parse(raceArg) : {}) };
   const series = (c.series ?? []).map((r) => ({ country: r.country, emoji: r.flag, flag: r.flag ? flagFile(r.flag) : null, values: r.values, ranks: r.ranks ?? null, order: r.order ?? null }));
-  const years = [...new Set(series.flatMap((r) => Object.keys(r.values)))].map(Number).sort((a, b) => a - b);
+  const allYears = [...new Set(series.flatMap((r) => Object.keys(r.values)))].map(Number).sort((a, b) => a - b);
+  // year_step: one year out of N from the first, always with the last (e.g. 2010, 2012, …, 2026).
+  const every = Math.max(1, Number(c.year_step ?? 1) || 1);
+  const years = allYears.filter((y, i) => i % every === 0 || i === allYears.length - 1);
   const label = [c.value_label, c.data_years || c.data_year].filter(Boolean).join(', ');
-  const source = `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`;
+  const source = `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`
+    + (c.bar_scale === 'step' ? " · Bars don't start at zero" : '');
   const question = questionArg ?? c.outro_question ?? null;
   const cta = ctaArg ?? c.cta_line ?? null;
   const missing = [!String(question ?? '').trim() && 'outro_question', !String(cta ?? '').trim() && 'cta_line'].filter(Boolean);
@@ -426,7 +432,8 @@ async function renderRace(data, { work, pub, out }) {
                        cardBg: cardBgArg ?? c.card_bg ?? null, question, cta,
                        extraRow: c.extra_row ?? null, decimals: Number.isInteger(c.decimals) ? c.decimals : 1,
                        yearLabels: c.year_labels ?? null, stepSeconds: c.step_seconds ?? undefined, startSeconds: c.start_seconds ?? undefined, hold: c.hold ?? undefined,
-                       slowFrom: c.slow_from ?? undefined, slowStep: c.slow_step ?? undefined, valuePrefix: c.value_prefix ?? '' };
+                       slowFrom: c.slow_from ?? undefined, slowStep: c.slow_step ?? undefined, valuePrefix: c.value_prefix ?? '',
+                       holdFirst: c.hold_first === true, freezeSeconds: c.freeze_seconds ?? undefined, barScale: c.bar_scale === 'step' ? 'step' : 'zero' };
   console.log(`  ${series.length} countries, ${years[0]}–${years[years.length - 1]}, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
   const composition = await selectComposition({ serveUrl, id: 'Race', inputProps });

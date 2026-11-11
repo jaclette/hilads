@@ -1054,7 +1054,7 @@ final class DwStudio
         }
         if (DwRace::isRace($c)) {
             // The race has no slides: its texts and series (JSON) are saved, the video render draws them.
-            return preg_match('/^(headline|headline_accent|detail|banner_year|source|source_url|value_label|data_years|unit|outro_question|cta_line|card_bg|series|extra_row)$/', $path) ? ['slide' => null] : null;
+            return preg_match('/^(headline|headline_accent|detail|banner_year|source|source_url|value_label|data_years|unit|outro_question|cta_line|card_bg|series|extra_row|year_step|hold_first|step_seconds|hold|freeze_seconds|bar_scale|slow_from|slow_step)$/', $path) ? ['slide' => null] : null;
         }
         if (DwReaction::isReaction($c)) {
             // The reaction screen has no slides: its text and rows are saved, the video render draws them.
@@ -1151,6 +1151,20 @@ final class DwStudio
                 throw new InvalidArgumentException('The banner year must be one of the race\'s years.');
             }
             $c['banner_year'] = $value === '' ? null : (int) $value;
+        }
+        if (DwRace::isRace($c) && in_array($path, DwRace::PACE_FIELDS, true)) {
+            $typed = DwRace::paceValue($path, $value);
+            $try = $c;
+            if ($typed === null) {
+                unset($try[$path]);
+            } else {
+                $try[$path] = $typed;
+            }
+            $bad = array_values(array_filter(DwRace::validate($try)[0], static fn($e) => str_contains($e, $path) || str_contains($e, 'banner_year')));
+            if ($bad !== []) {
+                throw new InvalidArgumentException($bad[0]);
+            }
+            $c = $try;
         }
         if ($path === 'extra_row') {
             if ($value !== '' && !DwReaction::extraRowOk($c, $value)) {
