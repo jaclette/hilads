@@ -4912,6 +4912,37 @@ try {
     echo "  ERR dw Nov 17-22 race pace: " . $e->getMessage() . "\n";
 }
 
+// Once: the races of Nov 17 to 22 back to the race format's default pace (every step: 0.8 s still, a 0.3 s move, a 2.5 s
+// freeze; few steps held 2 s; a race over 25 s keeps the normal pace for its last 12 to 15 steps, the early ones fast,
+// the banner year held 1 s if it falls there), clearing their own pace fields through DwStudio::updateField. Nov 22 now
+// starts in 2000 (first_year: the towers built since 1990 already counted; the 1990s add little to the story).
+// Only while a race still has its own pace (hold_first set).
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $clear = ['year_step' => '', 'step_seconds' => '', 'hold' => '', 'freeze_seconds' => '', 'slow_from' => '', 'slow_step' => '', 'hold_first' => ''];
+    $races = [
+        '2026-11-17' => [], '2026-11-18' => [], '2026-11-19' => [], '2026-11-20' => [], '2026-11-21' => [],
+        '2026-11-22' => ['first_year' => '2000', 'headline' => 'The countries with the most skyscrapers, 2000 → 2025 🏙️', 'data_years' => '2000–2025'],
+    ];
+    foreach ($races as $date => $fields) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || !DwRace::isRace($pkg['content']) || !array_key_exists('hold_first', $pkg['content'])) {
+            continue;
+        }
+        foreach ($clear + $fields as $path => $value) {
+            DwStudio::updateField($pkg['id'], $path, $value);
+        }
+        $after = DwStudio::package($topic['id']);
+        echo "  OK  dw: {$date} race default pace (" . number_format(DwRace::videoSeconds($after['content']), 1) . " s)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 17-22 default pace: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
