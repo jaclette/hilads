@@ -4797,6 +4797,31 @@ JSON, true, 512, JSON_THROW_ON_ERROR);
     echo "  ERR dw Nov 22 race: " . $e->getMessage() . "\n";
 }
 
+// Once: today's challenge (2026-11-11, live) "Hop on public transport and get off at a stop you've never seen." made
+// easier: "Snap a typical public transport stop in your city." through the admin's own service functions
+// (DailyAdminService: the English, its 18 translations, the headline). The comparison question ("Which stop?"), theme,
+// cover, status and posted photos untouched. Runs only while the old text is there.
+try {
+    $nov11 = $pdo->query("SELECT id, text_i18n->>'en' AS en FROM daily_challenges WHERE challenge_date = '2026-11-11'")->fetch(PDO::FETCH_ASSOC);
+    if ($nov11 && $nov11['en'] === "Hop on public transport and get off at a stop you've never seen.") {
+        spl_autoload_register(static function (string $class): void {
+            $file = __DIR__ . '/src/' . $class . '.php';
+            if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+        });
+        $new = json_decode(<<<'JSON'
+{"text": {"en": "Snap a typical public transport stop in your city.", "fr": "Prends en photo un arrêt de transport typique de ta ville.", "vi": "Chụp một trạm giao thông công cộng đặc trưng ở thành phố bạn.", "es": "Haz una foto de una parada típica del transporte público de tu ciudad.", "it": "Fotografa una tipica fermata dei mezzi pubblici della tua città.", "pt-br": "Fotografe um ponto típico de transporte público da sua cidade.", "pt-pt": "Fotografa uma paragem típica dos transportes públicos da tua cidade.", "de": "Fotografiere eine typische Haltestelle in deiner Stadt.", "nl": "Maak een foto van een typische ov-halte in jouw stad.", "zh-hans": "拍一个你所在城市最典型的公共交通站点。", "zh-hant": "拍一個你所在城市最典型的大眾運輸站點。", "ja": "あなたの街の、いかにも地元らしい駅やバス停を撮ろう。", "ko": "우리 도시의 전형적인 대중교통 정류장을 찍어 보세요.", "fil": "Kunan ng litrato ang isang tipikal na sakayan sa lungsod mo.", "th": "ถ่ายรูปป้ายรถหรือสถานีขนส่งสาธารณะที่เป็นแบบฉบับของเมืองคุณ", "id": "Foto halte transportasi umum yang khas di kotamu.", "hi": "अपने शहर का कोई आम पब्लिक ट्रांसपोर्ट स्टॉप क्लिक करें।", "ru": "Сфотографируй типичную остановку общественного транспорта в своём городе.", "ar": "صوّر محطة نقل عام نموذجية في مدينتك."}, "context": {"en": "Bus stop, metro, tram or ferry: whatever locals use every day.", "fr": "Arrêt de bus, métro, tram ou ferry : ce que les gens d'ici prennent tous les jours.", "vi": "Trạm xe buýt, metro, tàu điện hay bến phà: chỗ người dân ở đây dùng mỗi ngày.", "es": "Parada de bus, metro, tranvía o ferri: lo que la gente de aquí usa a diario.", "it": "Fermata del bus, metro, tram o traghetto: quella che la gente del posto usa ogni giorno.", "pt-br": "Ponto de ônibus, metrô, VLT ou barca: o que o pessoal daqui usa todo dia.", "pt-pt": "Paragem de autocarro, metro, elétrico ou barco: o que a malta daqui usa todos os dias.", "de": "Bushaltestelle, U-Bahn, Tram oder Fähre: was die Leute hier jeden Tag nehmen.", "nl": "Bushalte, metro, tram of pont: wat de mensen hier elke dag gebruiken.", "zh-hans": "公交站、地铁站、有轨电车站或轮渡码头：本地人每天都在用的就行。", "zh-hant": "公車站、捷運站、輕軌站或渡輪碼頭：在地人每天都在用的就行。", "ja": "バス停、地下鉄、路面電車、フェリー乗り場：地元の人が毎日使う場所ならOK。", "ko": "버스 정류장, 지하철역, 트램, 페리 선착장: 현지인이 매일 이용하는 곳이면 돼요.", "fil": "Bus stop, MRT, jeep o bangka: kung ano ang sinasakyan ng mga taga-rito araw-araw.", "th": "ป้ายรถเมล์ รถไฟฟ้า รถราง หรือท่าเรือ: อะไรก็ได้ที่คนท้องถิ่นใช้ทุกวัน", "id": "Halte bus, stasiun MRT, trem, atau dermaga feri: apa pun yang dipakai warga tiap hari.", "hi": "बस स्टॉप, मेट्रो, ट्राम या फ़ेरी: जो भी लोकल लोग रोज़ इस्तेमाल करते हैं।", "ru": "Автобусная остановка, метро, трамвай или паром: то, чем местные пользуются каждый день.", "ar": "موقف باص، مترو، ترام أو عبّارة: أي شيء يستخدمه أهل المدينة كل يوم."}, "headline": {"en": "Snap your city's everyday stop.", "fr": "Photographie l'arrêt typique de ta ville.", "vi": "Chụp trạm xe quen thuộc ở thành phố bạn.", "es": "Fotografía la parada típica de tu ciudad.", "it": "Fotografa la fermata tipica della tua città.", "pt-br": "Fotografe o ponto típico da sua cidade.", "pt-pt": "Fotografa a paragem típica da tua cidade.", "de": "Knips die typische Haltestelle deiner Stadt.", "nl": "Fotografeer de typische halte van jouw stad.", "zh-hans": "拍下你城市最日常的那一站。", "zh-hant": "拍下你城市最日常的那一站。", "ja": "街らしい駅やバス停を撮ろう。", "ko": "우리 도시다운 정류장을 찍어 보세요.", "fil": "Kunan ang tipikal na sakayan sa lungsod mo.", "th": "ถ่ายป้ายรถแบบฉบับเมืองคุณ", "id": "Foto halte khas di kotamu.", "hi": "अपने शहर का रोज़ वाला स्टॉप क्लिक करें।", "ru": "Сфоткай типичную остановку своего города.", "ar": "صوّر المحطة المعتادة في مدينتك."}}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $tr = static fn(array $m): array => array_diff_key($m, ['en' => 1]);
+        $id = (string) $nov11['id'];
+        DailyAdminService::updateChallenge($id, ['text' => $new['text']['en'], 'context' => $new['context']['en']]);
+        DailyAdminService::setChallengeTranslations($id, $tr($new['text']), $tr($new['context']));
+        DailyAdminService::setChallengeHeadline($id, $new['headline']['en'], $tr($new['headline']));
+        echo "  OK  daily: 2026-11-11 replaced by \"{$new['text']['en']}\" (19 locales: text, context, headline)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR daily 2026-11-11 replacement: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
