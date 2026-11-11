@@ -224,7 +224,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
   const rankW = 40, flagX = 12 + rankW + 10, nameX = flagX + flagS + 12;
   const crownW = measure('👑', textPx) + 8;
   const valW = Math.max(0, ...rows.map((r) => measure(label(r), textPx))) + 6;
-  const nameW = Math.min(W * 0.42, Math.max(W * 0.24, ...rows.map((r, i) => measure(r.country, textPx) + (i === 0 ? crownW : 0))));
+  const nameW = Math.min(W * 0.42, Math.max(W * 0.24, ...rows.map((r, i) => measure(r.country, textPx) + (i < MAX_ROWS && Number(r.rank) === 1 ? crownW : 0))));
   const barX = nameX + nameW + 16;
   const barMax = Math.max(40, W - 16 - valW - 14 - barX);
   const max = Math.max(1e-9, ...top.map((r) => Number(r.value)));
@@ -262,7 +262,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
       </div>
 
       {rows.map((r, i) => {
-        const first = i === 0;
+        const first = i < MAX_ROWS && Number(r.rank) === 1;   // #1 (every one when tied): the accent and a 👑
         const isHot = first || r.highlight === true || hot.has(String(r.country).trim().toLowerCase());
         const bar = Math.max(10, (barMax * Math.min(Number(r.value), max)) / max);
         const nm = fitName(r.country, textPx, nameW - (first ? crownW : 0), rowH - 4);
