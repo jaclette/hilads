@@ -4822,6 +4822,29 @@ JSON, true, 512, JSON_THROW_ON_ERROR);
     echo "  ERR daily 2026-11-11 replacement: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 11 (singles) back to classic, with the static layout (no animation, a plain list, #1 with a 👑), Vietnam as
+// the extra row, the banner with its flag and the question "Single or taken? 👀", through DwStudio::updateField (as the
+// admin's fields: the caption's last line follows); the quiz PNG 03 dropped (classic renders two). Only while in quiz mode.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $topic = DwStudio::topicByDate('2026-11-11');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && ($pkg['content']['mode'] ?? null) === 'quiz') {
+        DwStudio::updateField($pkg['id'], 'mode', 'classic');
+        DwStudio::updateField($pkg['id'], 'layout', 'static');
+        DwStudio::updateField($pkg['id'], 'extra_row', 'Vietnam');
+        DwStudio::updateField($pkg['id'], 'detail', '🇯🇲 Jamaica: 75% of women unmarried at 30 💍');
+        DwStudio::updateField($pkg['id'], 'outro_question', 'Single or taken? 👀');
+        $pdo->prepare("UPDATE dw_packages SET still3_url = NULL WHERE id = ?")->execute([$pkg['id']]);
+        echo "  OK  dw: 2026-11-11 classic, static layout, Vietnam row, \"Single or taken? 👀\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 11 static: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
