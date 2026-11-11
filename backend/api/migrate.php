@@ -4878,6 +4878,40 @@ try {
     echo "  ERR dw Nov 12-15 static: " . $e->getMessage() . "\n";
 }
 
+// Once: the races of Nov 17 to 22 hold, then move (each step still 1.2 s to read, a 0.4 s transition, a 2.5 s freeze on
+// the last year), through DwStudio::updateField (the admin's Pace fields). Years shown: every edition on Nov 18 (4),
+// one out of 2 on Nov 17, 20 and 21, one out of 3 on Nov 19 (fast until 2009) and Nov 22, each banner year kept.
+// Close values (Nov 17 passports, Nov 18 cuisine ratings): bars start just below each year's top 10. Nov 17's headline
+// ends with ✈️ (🛂 rendered as a box). Only while a race does not hold first yet.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $pace = ['hold_first' => 'true', 'step_seconds' => '1.6', 'hold' => '0.75', 'freeze_seconds' => '2.5'];
+    $races = [
+        '2026-11-17' => ['year_step' => '2', 'bar_scale' => 'step', 'headline' => "The world's most powerful passports, 2010 → 2026 ✈️"] + $pace,
+        '2026-11-18' => ['bar_scale' => 'step'] + $pace,
+        '2026-11-19' => ['year_step' => '3', 'step_seconds' => '0.8', 'slow_from' => '2009', 'slow_step' => '1.6'] + $pace,
+        '2026-11-20' => ['year_step' => '2'] + $pace,
+        '2026-11-21' => ['year_step' => '2'] + $pace,
+        '2026-11-22' => ['year_step' => '3'] + $pace,
+    ];
+    foreach ($races as $date => $fields) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || !DwRace::isRace($pkg['content']) || !empty($pkg['content']['hold_first'])) {
+            continue;
+        }
+        foreach ($fields as $path => $value) {
+            DwStudio::updateField($pkg['id'], $path, $value);
+        }
+        echo "  OK  dw: {$date} race pace (hold, then move)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 17-22 race pace: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
