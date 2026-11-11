@@ -7,7 +7,7 @@
 // worlds.mjs renders the video and two PNGs (carousels): 01 the ranking's last frame, 02 the closing slide.
 
 import { AbsoluteFill, Img, Loop, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
-import { loadFont } from '@remotion/fonts';
+import { loadFont } from './fonts.jsx';
 import { flagColor } from './flagColors.js';
 
 const FONT = 'Be Vietnam Pro';

@@ -10,7 +10,7 @@
 // its start, slowed down when it is a little short (worlds.mjs measures it).
 
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
-import { loadFont } from '@remotion/fonts';
+import { loadFont } from './fonts.jsx';
 import { DETAIL_DELAY, FADE, FPS, slideSeconds } from './worldsTiming.js';
 
 const BG = '#16110D';

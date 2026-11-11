@@ -4,6 +4,11 @@ import { StoryFrame } from './Stories.jsx';
 import { WorldsVideo, worldsTiming } from './Worlds.jsx';
 import { RaceVideo, ReactionRanking, reactionSeconds } from './Reaction.jsx';
 import { raceSeconds } from './reactionTiming.js';
+import { withFonts } from './fonts.jsx';
+
+// Every composition lays out once its fonts are loaded (fonts.jsx).
+const Video = withFonts(PromoVideo), Story = withFonts(StoryFrame), Worlds = withFonts(WorldsVideo), Reaction = withFonts(ReactionRanking),
+  Race = withFonts(RaceVideo), Slide = withFonts(PromoSlide);
 
 // Props come from render.mjs ({locale, data, cities, clip, timing}); the
 // defaults let `npm run studio` open without a render.
@@ -21,21 +26,21 @@ const sample = {
 function Root() {
   return (
     <>
-      <Composition id="Video" component={PromoVideo} width={1080} height={1920} fps={30} durationInFrames={60}
+      <Composition id="Video" component={Video} width={1080} height={1920} fps={30} durationInFrames={60}
         defaultProps={sample} calculateMetadata={({ props }) => ({ durationInFrames: props.timing.total })} />
-      <Composition id="Story" component={StoryFrame} width={1080} height={1920} fps={30} durationInFrames={150}
+      <Composition id="Story" component={Story} width={1080} height={1920} fps={30} durationInFrames={150}
         defaultProps={{ frame: 'help', locale: 'en', halloween: true, photo: null, still: false, guide: false }} />
-      <Composition id="Worlds" component={WorldsVideo} width={1080} height={1920} fps={30} durationInFrames={90}
+      <Composition id="Worlds" component={Worlds} width={1080} height={1920} fps={30} durationInFrames={90}
         defaultProps={{ slides: [{ kind: 'hook', text: 'Same night, October 31. Seven countries, seven very different Halloweens.' }] }}
         calculateMetadata={({ props }) => ({ durationInFrames: Math.max(1, worldsTiming(props.slides).total) })} />
-      <Composition id="Reaction" component={ReactionRanking} width={1080} height={1920} fps={30} durationInFrames={10 * 30}
+      <Composition id="Reaction" component={Reaction} width={1080} height={1920} fps={30} durationInFrames={10 * 30}
         calculateMetadata={({ props }) => ({ durationInFrames: Math.round(reactionSeconds(props.mode) * 30) })}
         defaultProps={{ headline: 'The 20 biggest beer drinkers 🍺', detail: '#1 has won for 32 years.', source: 'Source: Kirin', highlight: ['Vietnam'], clip: null,
                         rows: [{ rank: 1, country: 'Czech Republic', flag: null, value: 148.8, unit: 'L' }, { rank: 2, country: 'Lithuania', flag: null, value: 110.6, unit: 'L' }] }} />
-      <Composition id="Race" component={RaceVideo} width={1080} height={1920} fps={30} durationInFrames={20 * 30}
+      <Composition id="Race" component={Race} width={1080} height={1920} fps={30} durationInFrames={20 * 30}
         calculateMetadata={({ props }) => ({ durationInFrames: Math.round(raceSeconds(props.years ?? [0], props) * 30) })}
         defaultProps={{ headline: 'Race', years: [2000], series: [], source: '' }} />
-      <Still id="Slide" component={PromoSlide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />
+      <Still id="Slide" component={Slide} width={1080} height={1350} defaultProps={{ ...sample, slide: { kind: 'end' } }} />
     </>
   );
 }
