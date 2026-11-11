@@ -18,7 +18,7 @@ $secs = DwRace::videoSeconds($c);
 ?>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
     <strong>Version <?= $pkg['version'] ?></strong>
-    <span class="worlds-badge is-clip">🏁 Race · <?= wh(number_format($secs, 1)) ?> s · <?= $years ? $years[0] . ' → ' . end($years) : '' ?> · <?= count($years) ?> years, <?= wh(number_format((float) ($c['step_seconds'] ?? DwRace::PER_YEAR), 1)) ?> s each<?= !empty($c['slow_from']) ? ' (' . (int) $c['slow_from'] . ' on: ' . wh(number_format((float) ($c['slow_step'] ?? 0), 2)) . ' s)' : '' ?> · closing slide the last 3 s · no clip</span>
+    <span class="worlds-badge is-clip">🏁 Race · <?= wh(number_format($secs, 1)) ?> s · <?= $years ? $years[0] . ' → ' . end($years) : '' ?> · <?php $sched = DwRace::schedule($c); $fast = count(array_filter($sched, static fn($x) => $x[1] == 0)); ?><?= count($years) ?> years<?= $fast ? ', the first ' . $fast . ' fast (' . wh(number_format($sched[0][0], 2)) . ' s)' : '' ?>, then held <?= wh(number_format(end($sched)[1] ?? 0, 1)) ?> s + a <?= wh(number_format((end($sched)[0] ?? 0) - (end($sched)[1] ?? 0), 1)) ?> s move · closing slide the last 3 s · no clip</span>
     <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
     <?php if (count($versions) > 1): ?>
         <select onchange="location.href='<?= $self ?>?v='+this.value">
@@ -84,6 +84,7 @@ $secs = DwRace::videoSeconds($c);
         <?php worlds_field('series', 'Year-by-year data (JSON: [{country, flag, values: {"2000": 77.2, …}}], every country every year)',
             json_encode($c['series'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), true, count($c['series'] ?? []) . ' countries'); ?>
         <h3 style="margin-top:12px">Pace</h3>
+        <?php worlds_field('first_year', 'First year shown (optional: the race starts there; empty: the first year of the data)', (string) ($c['first_year'] ?? '')); ?>
         <?php worlds_field('year_step', 'Years shown: one out of N (1: every year; 2: 2010, 2012, …, always with the last)', (string) ($c['year_step'] ?? '')); ?>
         <?php worlds_field('hold_first', 'Hold, then move (true: each step holds still to read, then a short transition)', !empty($c['hold_first']) ? 'true' : ''); ?>
         <?php worlds_field('step_seconds', 'Seconds per step (0.7 by default; hold then move: e.g. 1.6)', (string) ($c['step_seconds'] ?? '')); ?>

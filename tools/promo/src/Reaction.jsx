@@ -20,7 +20,7 @@ for (const [file, weight] of [['SemiBold', '600'], ['Bold', '700'], ['ExtraBold'
 }
 loadFont({ family: Q_FONT, url: staticFile('fonts/Baloo2-Variable.ttf'), weight: '400 800' });
 
-import { RACE, endSeconds, raceEndSeconds, raceOpts, raceSteps, reactionSeconds } from './reactionTiming.js';
+import { RACE, endSeconds, raceEndSeconds, raceOpts, raceSchedule, reactionSeconds } from './reactionTiming.js';
 export { reactionSeconds };
 
 let ctx = null;
@@ -770,12 +770,14 @@ export function RaceVideo({ question = null, cta = null, ...props }) {
 
 function RaceScreen({ headline, accent = null, years, series, unit = '', source, detail = null, bannerYear = null, highlight = [], cardBg = null,
                      extraRow = null, decimals = 1, yearLabels = null, stepSeconds, startSeconds, hold, slowFrom, slowStep, valuePrefix = '',
-                     holdFirst = false, freezeSeconds, barScale = 'zero' }) {
-  const { start: START, hold: HOLD, holdFirst: HOLD_FIRST } = raceOpts({ stepSeconds, startSeconds, hold, holdFirst });
-  // When step i's move starts (seconds from START): right away, or after its hold (holdFirst: read, then move).
-  const moveFrom = (i) => HOLD_FIRST ? HOLD * steps[i] : 0;
+                     holdFirst, freezeSeconds, barScale = 'zero' }) {
+  const { start: START, holdFirst: HOLD_FIRST } = raceOpts({ startSeconds, holdFirst });
+  // The schedule: each step's length and how long it holds still (before its move, or after it).
+  const sched = raceSchedule(years, { stepSeconds, startSeconds, hold, holdFirst, slowFrom, slowStep, freezeSeconds, bannerYear });
+  const moveFrom = (i) => HOLD_FIRST ? sched[i].hold : 0;
+  const moveLen = (i) => sched[i].len - sched[i].hold;
   // Each step's length (a faster pace for early years, slower from slowFrom) and when each step starts.
-  const steps = raceSteps(years, { stepSeconds, slowFrom, slowStep });
+  const steps = sched.map((x) => x.len);
   const stepAt = [0];
   steps.forEach((d) => stepAt.push(stepAt[stepAt.length - 1] + d));
   const frame = useCurrentFrame();
@@ -792,13 +794,13 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   if (extra) series = series.filter((_, i) => i !== extraIdx);
   const roundShown = (v) => Math.round(v * 10 ** decimals) / 10 ** decimals;
 
-  // The race clock: year index t (0 … n−1); within each step the move takes its first (1 − HOLD), then it holds.
+  // The race clock: year index t (0 … n−1); each step holds still, then moves (or moves, then holds).
   const tAt = (f) => {
     const s = f / fps - START;
     if (s <= 0 || n < 2) return 0;
     let i = 0;
     while (i < n - 1 && stepAt[i + 1] <= s) i++;
-    return i >= n - 1 ? n - 1 : i + clamp01((s - stepAt[i] - moveFrom(i)) / steps[i] / (1 - HOLD));
+    return i >= n - 1 ? n - 1 : i + clamp01((s - stepAt[i] - moveFrom(i)) / Math.max(1e-6, moveLen(i)));
   };
   const t = tAt(frame);
   const values = raceValues(series, years, t);
@@ -838,10 +840,18 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   });
   // Hold-then-move: each row glides from its place in the year the step leaves to its place in the year it reaches
   // (eased as the values), so a short transition stays one clean move, ties keep their stable order.
+  // Rows that swap places can't pass through each other in one column: during a move each row is sized by its distance
+  // to the nearest other row (full size 1 slot or more apart), so two rows never overlap: rows moving together stay full
+  // size, a row passing others squeezes past them, every row lands full size and settled.
+  let rowScale = null;
   if (HOLD_FIRST) {
     const i0 = Math.min(n - 1, Math.floor(t)), i1 = Math.min(n - 1, i0 + 1), e = smooth(t - i0);
     const r0 = raceRanks(series, years, i0, decimals), r1 = raceRanks(series, years, i1, decimals);
     pos = series.map((_, c) => r0[c] + (r1[c] - r0[c]) * e);
+    if (e > 0 && e < 1) {
+      const vis = series.map((_, c) => c).filter((c) => pos[c] < RACE_ROWS + 1);
+      rowScale = series.map((_, c) => Math.min(1, ...vis.filter((d) => d !== c).map((d) => Math.abs(pos[c] - pos[d]))));
+    }
   }
   const year = years[Math.min(n - 1, Math.round(t))];
   const raceEnd = S(START + stepAt[n - 1]);
@@ -856,7 +866,7 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const titleLH = Math.round(titlePx * 1.04);
   const titleTop = 150;                                       // under the apps' top bar
   const titleEnd = titleTop + titleLines.length * titleLH;
-  const titleIn = spring({ frame, fps, config: { damping: 10, stiffness: 200, mass: 0.6 } });
+  const titleIn = HOLD_FIRST ? 1 : spring({ frame, fps, config: { damping: 10, stiffness: 200, mass: 0.6 } });
 
   // The chart: from under the header to the source line and the mark (above the apps' caption).
   const srcPx = 24;
@@ -879,7 +889,8 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
   const namePx = Math.max(26, Math.min(36, Math.round(barH * 0.5)));
   const valPx = namePx;
   const barMax = C_RIGHT - barX - 150;
-  const grow = ease(frame / S(0.45));                        // the first year's bars grow in (0 → 0.45 s)
+  // Hold-first races: settled from the first frame (no grow-in); else the first year's bars grow in (0 → 0.45 s).
+  const grow = HOLD_FIRST ? 1 : ease(frame / S(0.45));
   const label = (v) => `${valuePrefix}${v.toFixed(decimals)}${unit ? ` ${unit}` : ''}`;
   // The rank shown: tied values (as shown) share a rank, the next one is +1 (as the Henley index ranks).
   const shown = values.map(roundShown);
@@ -888,18 +899,34 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
 
   // The banner at the striking year (it pops while the race goes on), the crown on #1 at the freeze.
   const bIdx = bannerYear != null ? years.map(String).indexOf(String(bannerYear)) : -1;
-  const bannerAt = bIdx > 0 ? S(START + stepAt[bIdx - 1] + moveFrom(bIdx - 1) + 0.6 * (1 - HOLD) * steps[bIdx - 1]) : bIdx === 0 ? S(START) : null;
+  const bannerAt = bIdx > 0 ? S(START + stepAt[bIdx - 1] + moveFrom(bIdx - 1) + 0.6 * moveLen(bIdx - 1)) : bIdx === 0 ? S(START) : null;
   const bannerOn = bannerAt != null && detail ? spring({ frame: frame - bannerAt, fps, config: { damping: 8, stiffness: 220, mass: 0.6 } }) : 0;
   const bannerOff = bannerAt != null ? clamp01((frame - bannerAt - S(1.4)) / 6) : 0;
   const crown = spring({ frame: frame - raceEnd - 3, fps, config: { damping: 9, stiffness: 260, mass: 0.6 } });
   // The banner's text as big as fits (64 down to 36 px) inside the safe width.
   let bannerPx = 36;
   for (let px = 64; px >= 36; px -= 2) { bannerPx = px; if (measure(detail ?? '', px, 800, Q_FONT) + 72 <= 1080 - 140 - 60) break; }
+  // Hold-first races: the banner sits in the year row, over the timeline, left of the big year: never on the ranking.
+  // One line from 44 down to 28 px, else two lines.
+  const slotW = lineX1 - lineX0 + 24;
+  let slotPx = 28, slotLines = null;
+  for (let px = 44; px >= 28 && !slotLines; px -= 2) { if (measure(detail ?? '', px, 800, Q_FONT) + 48 <= slotW) { slotPx = px; slotLines = [detail]; } }
+  if (!slotLines) {
+    const ws = String(detail ?? '').split(' ');
+    for (let px = 36; px >= 24 && !slotLines; px -= 2) {
+      for (let k = 1; k < ws.length; k++) {
+        const l1 = ws.slice(0, k).join(' '), l2 = ws.slice(k).join(' ');
+        if (Math.max(measure(l1, px, 800, Q_FONT), measure(l2, px, 800, Q_FONT)) + 48 <= slotW
+            && (!slotLines || Math.abs(measure(l1, px) - measure(l2, px)) < Math.abs(measure(slotLines[0], px) - measure(slotLines[1], px)))) { slotLines = [l1, l2]; slotPx = px; }
+      }
+    }
+    slotLines ??= [detail];
+  }
   const first = rankNow.indexOf(0);
   const chartIn = 1;
   // The year pops each time it changes (the moment the race passes half-way between two years).
   const yi = Math.min(n - 1, Math.round(t));
-  const since = yi > 0 ? frame - S(START + stepAt[yi - 1] + moveFrom(yi - 1) + 0.5 * (1 - HOLD) * steps[yi - 1]) : 99;
+  const since = yi > 0 ? frame - S(START + stepAt[yi - 1] + moveFrom(yi - 1) + 0.5 * moveLen(yi - 1)) : 99;
   const yearPop = since >= 0 && since < 10 ? 1 + 0.22 * (1 - ease(since / 10)) : 1;
   const progress = n > 1 ? t / (n - 1) : 1;
   // At a year itself, the source's rank (when the series has them); between years the rank of the values shown.
@@ -944,7 +971,8 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
         const inside = nameW + 36 <= w;
         const rank = atYear != null ? c.ranks[atYear] : denseRank(k);
         return (
-          <div key={c.country} style={{ position: 'absolute', left: 0, top: y, width: 1080, height: rowH, opacity: fade }}>
+          <div key={c.country} style={{ position: 'absolute', left: 0, top: y, width: 1080, height: rowH, opacity: fade, transformOrigin: `${C_LEFT}px 50%`,
+                                        transform: rowScale && rowScale[k] < 1 ? `scale(${Math.max(0, rowScale[k])})` : 'none' }}>
             <div style={{ position: 'absolute', left: C_LEFT, top: 0, width: rankW, height: rowH, display: 'flex', alignItems: 'center',
                           justifyContent: 'flex-end', fontSize: namePx - 2, fontWeight: 800, color: isHot ? TERRA : MUTED }}>{rank}</div>
             {c.flag && <Img src={staticFile(c.flag)} style={{ position: 'absolute', left: flagX, top: (rowH - flagS) / 2, width: flagS, height: flagS }} />}
@@ -1002,7 +1030,15 @@ function RaceScreen({ headline, accent = null, years, series, unit = '', source,
       })()}
 
       {/* The striking moment: a pop banner over the chart, the race goes on. */}
-      {bannerOn > 0 && bannerOff < 1 && (
+      {HOLD_FIRST && bannerOn > 0 && bannerOff < 1 && (
+        <div style={{ position: 'absolute', left: lineX0 - 12, top: yearRowTop, height: yearRowH, display: 'flex', alignItems: 'center',
+                      opacity: clamp01(bannerOn * 2) * (1 - bannerOff) }}>
+          <div style={{ background: STICKER, color: INK, borderRadius: 24, padding: '12px 24px 6px', boxShadow: '0 7px 0 #C9940F, 0 14px 30px rgba(60,30,10,0.22)',
+                        fontFamily: BALOO, fontWeight: 800, fontSize: slotPx, lineHeight: 1.1, whiteSpace: 'nowrap', transformOrigin: 'left center',
+                        transform: `rotate(-2deg) scale(${0.6 + 0.4 * bannerOn})` }}>{slotLines.map((l, i) => <div key={i}>{l}</div>)}</div>
+        </div>
+      )}
+      {!HOLD_FIRST && bannerOn > 0 && bannerOff < 1 && (
         <div style={{ position: 'absolute', left: 0, width: 1080 - 140, top: chartTop + rowH * 3.6, display: 'flex', justifyContent: 'center',
                       opacity: clamp01(bannerOn * 2) * (1 - bannerOff) }}>
           <div style={{ background: STICKER, color: INK, borderRadius: 30, padding: '18px 36px 12px', boxShadow: '0 9px 0 #C9940F, 0 18px 40px rgba(60,30,10,0.25)',

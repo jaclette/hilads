@@ -28,12 +28,22 @@ final class DwRace
     public const MAX_YEARS = 80;
     public const SHOWN = 10;
     public const START = 0.6;          // tools/promo/src/reactionTiming.js RACE (no hook: the race starts right away)
-    public const PER_YEAR = 0.7;
-    public const FREEZE = 2.0;
+    public const HOLD = 0.8;           // the default pace: every step held still 0.8 s, then a 0.3 s move
+    public const HOLD_FEW = 2.0;       // a race of FEW steps or less: held 2 s
+    public const MOVE = 0.3;
+    public const FEW = 5;
+    public const PER_YEAR = 1.1;       // HOLD + MOVE
+    public const FREEZE = 2.5;
     public const CLOSING = 3.0;
     public const HEADLINE_WORDS = 9;
     /** The pace fields an editor can change on a race (DwStudio::updateField), typed by paceValue(). */
-    public const PACE_FIELDS = ['year_step', 'hold_first', 'step_seconds', 'hold', 'freeze_seconds', 'bar_scale', 'slow_from', 'slow_step'];
+    public const PACE_FIELDS = ['first_year', 'year_step', 'hold_first', 'step_seconds', 'hold', 'freeze_seconds', 'bar_scale', 'slow_from', 'slow_step'];
+    public const MAX_RACE = 25.0;      // the race itself at most (before the closing slide): early steps go fast
+    public const FAST = 0.3;
+    public const MIN_FAST = 0.1;
+    public const KEY = 1.0;            // the banner year, in the fast part: held 1 s
+    public const NORMAL_MAX = 15;
+    public const NORMAL_MIN = 12;
     public const BAR_SCALES = ['zero', 'step'];
 
     public static function isRace(array $c): bool
@@ -57,7 +67,7 @@ final class DwRace
     /** The years the video shows: one out of year_step from the first, always with the last (worlds.mjs). Pure. */
     public static function shownYears(array $c): array
     {
-        $years = self::years($c);
+        $years = array_values(array_filter(self::years($c), static fn($y) => !isset($c['first_year']) || $y >= (int) $c['first_year']));
         $every = max(1, (int) ($c['year_step'] ?? 1));
         return array_values(array_filter($years, static fn($y, $i) => $i % $every === 0 || $i === count($years) - 1, ARRAY_FILTER_USE_BOTH));
     }
@@ -81,21 +91,68 @@ final class DwRace
         if (!is_numeric($value)) {
             throw new InvalidArgumentException("\"{$field}\" is a number.");
         }
-        return in_array($field, ['year_step', 'slow_from'], true) ? (int) $value : (float) $value;
+        return in_array($field, ['year_step', 'slow_from', 'first_year'], true) ? (int) $value : (float) $value;
+    }
+
+    /**
+     * The race's schedule: [[len, hold]] a step (seconds), as tools/promo/src/reactionTiming.js raceSchedule: every step
+     * held still HOLD then a MOVE (few steps: HOLD_FEW); over MAX_RACE, the last 12 to 15 steps keep that pace and the
+     * early ones go fast without holds (the banner year, there, holds KEY). A package's own step_seconds / hold /
+     * slow_from / hold_first false: its pace. Pure.
+     */
+    public static function schedule(array $c): array
+    {
+        $ys = self::shownYears($c);
+        $m = max(0, count($ys) - 1);
+        $start = (float) ($c['start_seconds'] ?? self::START);
+        $freeze = (float) ($c['freeze_seconds'] ?? self::FREEZE);
+        $holdFirst = !isset($c['hold_first']) || $c['hold_first'] === true;
+        $steps = array_slice($ys, 1);
+        if (isset($c['step_seconds']) || isset($c['slow_from']) || isset($c['hold']) || !$holdFirst) {
+            $base = (float) ($c['step_seconds'] ?? self::HOLD + self::MOVE);
+            return array_map(static function ($y) use ($c, $base, $holdFirst) {
+                $len = isset($c['slow_from']) && $c['slow_from'] !== null && $y >= (int) $c['slow_from'] ? (float) ($c['slow_step'] ?? $base) : $base;
+                $share = isset($c['hold']) ? (float) $c['hold'] : ($holdFirst ? max(0, ($len - self::MOVE) / $len) : 0);
+                return [$len, max(0, min(0.95, $share)) * $len];
+            }, $steps);
+        }
+        $normal = [self::HOLD + self::MOVE, self::HOLD];
+        if ($m <= self::FEW) {
+            return array_map(static fn() => [self::HOLD_FEW + self::MOVE, self::HOLD_FEW], $steps);
+        }
+        $budget = self::MAX_RACE - $start - $freeze;
+        if ($m * $normal[0] <= $budget + 1e-9) {
+            return array_map(static fn() => $normal, $steps);
+        }
+        $key = isset($c['banner_year']) && $c['banner_year'] !== null ? array_search((int) $c['banner_year'], $ys, true) : false;
+        $key = $key === false ? -1 : $key;
+        $plan = null;
+        for ($k = self::NORMAL_MAX; $k >= self::NORMAL_MIN && $plan === null; $k--) {
+            $f = $m - $k;
+            $extra = $key >= 0 && $key < $f ? self::KEY : 0;
+            if ($f * self::FAST + $extra + $k * $normal[0] <= $budget + 1e-9) {
+                $plan = [$k, self::FAST];
+            }
+        }
+        if ($plan === null) {
+            $k = self::NORMAL_MIN;
+            $f = $m - $k;
+            $extra = $key >= 0 && $key < $f ? self::KEY : 0;
+            $plan = [$k, max(self::MIN_FAST, ($budget - $extra - $k * $normal[0]) / $f)];
+        }
+        $f = $m - $plan[0];
+        $out = [];
+        for ($i = 0; $i < $m; $i++) {
+            $out[] = $i >= $f ? $normal : ($i === $key ? [$plan[1] + self::KEY, self::KEY] : [$plan[1], 0.0]);
+        }
+        return $out;
     }
 
     /** The video's length (seconds). Pure. */
     public static function videoSeconds(array $c): float
     {
-        $start = (float) ($c['start_seconds'] ?? self::START);
-        $step = (float) ($c['step_seconds'] ?? self::PER_YEAR);
-        $slowFrom = isset($c['slow_from']) && $c['slow_from'] !== null ? (int) $c['slow_from'] : null;
-        $slowStep = (float) ($c['slow_step'] ?? $step);
-        $total = $start;
-        foreach (array_slice(self::shownYears($c), 1) as $y) {   // a step ends at year $y (reactionTiming.js raceSteps)
-            $total += $slowFrom !== null && $y >= $slowFrom ? $slowStep : $step;
-        }
-        return $total + (float) ($c['freeze_seconds'] ?? self::FREEZE) + self::CLOSING;
+        return (float) ($c['start_seconds'] ?? self::START) + array_sum(array_column(self::schedule($c), 0))
+            + (float) ($c['freeze_seconds'] ?? self::FREEZE) + self::CLOSING;
     }
 
     /** Checks a race content: [errors (block the import), warnings]. Pure (but for DwStudio::screenWords). */
@@ -157,10 +214,13 @@ final class DwRace
         if (isset($c['banner_year']) && $c['banner_year'] !== null && !in_array((int) $c['banner_year'], $years, true)) {
             $errors[] = '"banner_year" must be one of the race\'s years.';
         }
-        foreach (['step_seconds' => [0.25, 4], 'slow_step' => [0.25, 4], 'start_seconds' => [0.3, 4], 'hold' => [0, 0.8]] as $f => [$lo, $hi]) {
+        foreach (['step_seconds' => [0.25, 4], 'slow_step' => [0.25, 4], 'start_seconds' => [0.3, 4], 'hold' => [0, 0.95]] as $f => [$lo, $hi]) {
             if (isset($c[$f]) && (!is_numeric($c[$f]) || (float) $c[$f] < $lo || (float) $c[$f] > $hi)) {
                 $errors[] = "\"{$f}\" is a number from {$lo} to {$hi}.";
             }
+        }
+        if (isset($c['first_year']) && $c['first_year'] !== null && !in_array((int) $c['first_year'], $years, true)) {
+            $errors[] = '"first_year" must be one of the race\'s years.';
         }
         foreach (['year_step' => [1, 5], 'freeze_seconds' => [1, 5]] as $f => [$lo, $hi]) {
             if (isset($c[$f]) && (!is_numeric($c[$f]) || (float) $c[$f] < $lo || (float) $c[$f] > $hi)) {
@@ -231,7 +291,7 @@ final class DwRace
             return ['country' => trim((string) $s['country']), 'flag' => trim((string) $s['flag']), 'values' => $values]
                 + ($ranks ? ['ranks' => $ranks] : []) + ($order ? ['order' => $order] : []);
         }, array_values($c['series'] ?? []));
-        foreach (['year_step'] as $f) {
+        foreach (['year_step', 'first_year'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = (int) $c[$f];
             }

@@ -419,7 +419,9 @@ async function renderRace(data, { work, pub, out }) {
   const allYears = [...new Set(series.flatMap((r) => Object.keys(r.values)))].map(Number).sort((a, b) => a - b);
   // year_step: one year out of N from the first, always with the last (e.g. 2010, 2012, …, 2026).
   const every = Math.max(1, Number(c.year_step ?? 1) || 1);
-  const years = allYears.filter((y, i) => i % every === 0 || i === allYears.length - 1);
+  // first_year: the race starts there (the values are the source's, e.g. cumulative counts since an earlier year).
+  const from = allYears.filter((y) => c.first_year == null || y >= Number(c.first_year));
+  const years = from.filter((y, i) => i % every === 0 || i === from.length - 1);
   const label = [c.value_label, c.data_years || c.data_year].filter(Boolean).join(', ');
   const source = `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`
     + (c.bar_scale === 'step' ? " · Bars don't start at zero" : '');
@@ -433,7 +435,7 @@ async function renderRace(data, { work, pub, out }) {
                        extraRow: c.extra_row ?? null, decimals: Number.isInteger(c.decimals) ? c.decimals : 1,
                        yearLabels: c.year_labels ?? null, stepSeconds: c.step_seconds ?? undefined, startSeconds: c.start_seconds ?? undefined, hold: c.hold ?? undefined,
                        slowFrom: c.slow_from ?? undefined, slowStep: c.slow_step ?? undefined, valuePrefix: c.value_prefix ?? '',
-                       holdFirst: c.hold_first === true, freezeSeconds: c.freeze_seconds ?? undefined, barScale: c.bar_scale === 'step' ? 'step' : 'zero' };
+                       holdFirst: typeof c.hold_first === 'boolean' ? c.hold_first : undefined, freezeSeconds: c.freeze_seconds ?? undefined, barScale: c.bar_scale === 'step' ? 'step' : 'zero' };
   console.log(`  ${series.length} countries, ${years[0]}–${years[years.length - 1]}, bundling…`);
   const serveUrl = await bundle({ entryPoint: path.join(here, 'src/index.jsx'), publicDir: pub });
   const composition = await selectComposition({ serveUrl, id: 'Race', inputProps });

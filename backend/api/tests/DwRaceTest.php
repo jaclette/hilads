@@ -30,7 +30,7 @@ final class DwRaceTest extends TestCase
         $this->assertSame([], $errors);
         $this->assertSame([], $warn);
         $this->assertSame(range(2000, 2005), DwRace::years($this->content()));
-        $this->assertEqualsWithDelta(0.6 + 5 * 0.7 + 2 + 3, DwRace::videoSeconds($this->content()), 1e-9);
+        $this->assertEqualsWithDelta(0.6 + 5 * 2.3 + 2.5 + 3, DwRace::videoSeconds($this->content()), 1e-9);   // 6 years, 5 steps: few, held 2 s
         $this->assertTrue(DwRace::isRace($this->content()));
     }
 
@@ -64,7 +64,7 @@ final class DwRaceTest extends TestCase
         $c['series'][0]['order'] = ['2000' => 2, '2001' => 1];
         $this->assertSame([], DwRace::validate($c)[0]);
         // 2001, 2002 fast (0.25), 2003 to 2005 slow (0.6)
-        $this->assertEqualsWithDelta(0.6 + 2 * 0.25 + 3 * 0.6 + 2 + 3, DwRace::videoSeconds($c), 1e-9);
+        $this->assertEqualsWithDelta(0.6 + 2 * 0.25 + 3 * 0.6 + 2.5 + 3, DwRace::videoSeconds($c), 1e-9);
         $n = DwRace::normalize($c);
         $this->assertSame('👑 x', $n['value_prefix']);
         $this->assertSame(2003, $n['slow_from']);
@@ -87,5 +87,23 @@ final class DwRaceTest extends TestCase
         $this->assertTrue(DwRace::paceValue('hold_first', 'true'));
         $this->assertSame(2, DwRace::paceValue('year_step', '2'));
         $this->assertNull(DwRace::paceValue('freeze_seconds', ''));
+    }
+
+    public function testScheduleKeepsTheRaceUnder25Seconds(): void
+    {
+        $c = $this->content();
+        foreach ($c['series'] as &$row) {
+            $row['values'] = array_fill_keys(array_map('strval', range(1952, 2025)), 1.0);
+        }
+        unset($row);
+        $c['banner_year'] = 2009;
+        $sched = DwRace::schedule($c);
+        $this->assertCount(73, $sched);
+        $this->assertSame([1.1, 0.8], array_map(static fn($x) => round($x, 3), end($sched)));
+        $this->assertEqualsWithDelta(1.0, $sched[57][1], 1e-9);                       // 2009 held 1 s in the fast part
+        $this->assertEqualsWithDelta(25.0 + 3, DwRace::videoSeconds($c), 1e-6);       // the race 25 s, then the closing slide
+        $c['first_year'] = 2000;
+        $this->assertSame(2000, DwRace::shownYears($c)[0]);
+        $this->assertEqualsWithDelta(0.6 + 10 * 0.3 + 1.0 + 15 * 1.1 + 2.5 + 3, DwRace::videoSeconds($c), 1e-6);   // 2009 still in the fast part: its 1 s hold
     }
 }
