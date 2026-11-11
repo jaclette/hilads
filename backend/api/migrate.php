@@ -4845,6 +4845,39 @@ try {
     echo "  ERR dw Nov 11 static: " . $e->getMessage() . "\n";
 }
 
+// Once: Nov 12 to 15 in Nov 11's format (classic, static layout) through DwStudio::updateField (as the admin's fields:
+// the caption's last line follows a new question): Nov 13 and 14 banners with their flags, Nov 14 out of quiz mode
+// (its quiz question kept, unused; the question 'Did YOU guess right?' becomes 'Too many tourists in YOUR city? ✈️';
+// its quiz PNG 03 dropped), Vietnam as Nov 15's extra row (#73). Only while a package is not static yet.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $static = [
+        '2026-11-12' => [],
+        '2026-11-13' => ['detail' => '🇮🇩🇱🇦 Indonesia & Laos: 9 in 10 laughed yesterday 😄'],
+        '2026-11-14' => ['mode' => 'classic', 'detail' => '🇦🇩 Andorra: 40 tourists for every local 🙈', 'outro_question' => 'Too many tourists in YOUR city? ✈️'],
+        '2026-11-15' => ['extra_row' => 'Vietnam'],
+    ];
+    foreach ($static as $date => $fields) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || ($pkg['content']['layout'] ?? null) === 'static') {
+            continue;
+        }
+        foreach ($fields + ['layout' => 'static'] as $path => $value) {
+            DwStudio::updateField($pkg['id'], $path, $value);
+        }
+        if (isset($fields['mode'])) {
+            $pdo->prepare("UPDATE dw_packages SET still3_url = NULL WHERE id = ?")->execute([$pkg['id']]);
+        }
+        echo "  OK  dw: {$date} static layout\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 12-15 static: " . $e->getMessage() . "\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any
