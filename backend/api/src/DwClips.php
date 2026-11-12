@@ -16,7 +16,14 @@ final class DwClips
     /** A clip source we accept: a video file on Wikimedia Commons' upload server. */
     public static function sourceOk(string $url): bool
     {
-        return (bool) preg_match('#^https://upload\.wikimedia\.org/wikipedia/commons/\S+\.(webm|ogv|mp4)$#i', self::clean($url));
+        return (bool) preg_match('#^https://upload\.wikimedia\.org/wikipedia/commons/\S+\.(webm|ogv|mp4)$#i', self::clean($url)) || self::ownUpload($url);
+    }
+
+    /** One of our own clips (e.g. an AI video), uploaded to the package's R2 folder by tools/promo. Pure but for the env. */
+    public static function ownUpload(string $url): bool
+    {
+        $base = rtrim((string) getenv('R2_PUBLIC_URL'), '/');
+        return $base !== '' && (bool) preg_match('#^' . preg_quote($base, '#') . '/dw/\d+/v\d+/clip-[0-9a-f]+\.mp4$#', self::clean($url));
     }
 
     /** The URL without the query Commons' API adds (?utm_source=…) and any fragment. Pure. */
@@ -45,7 +52,8 @@ final class DwClips
             'url'    => $url,
             'start'  => max(0.0, (float) ($part['clip_start'] ?? 0)),
             'credit' => trim((string) ($part['clip_credit'] ?? '')),
-            'page'   => self::pageUrl($url),
+            'page'   => self::ownUpload($url) ? null : self::pageUrl($url),
+            'ai'     => !empty($part['clip_ai']),
         ];
     }
 }

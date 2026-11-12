@@ -230,12 +230,12 @@ final class DwStudioTest extends TestCase
     {
         $with = DwSlides::compose(['kind' => 'outro', 'text' => 'What does October 31 look like in your city?', 'cta' => 'Compare your city on hilads.live'], null);
         $this->assertStringContainsString('>Compare your city on </tspan>', $with);
-        $this->assertStringContainsString('fill="#FF7A3D">hilads.live</tspan>', $with);
+        $this->assertStringContainsString('fill="#C24E1C">hilads.live</tspan>', $with);   // the light identity's terracotta
         $this->assertStringContainsString('viewBox="0 0 64 64"', $with);   // the logo
         $doc = new DOMDocument();
         $this->assertTrue($doc->loadXML($with));
         // The question ends above the line, and stays at least twice its size.
-        preg_match('/font-size="(\d+)" fill="#FFFFFF"><tspan/', $with, $q);
+        preg_match('/font-size="(\d+)" fill="#2B1A12" xml:space="preserve"><tspan/', $with, $q);
         preg_match('/<text x="\d+" y="(\d+)" font-family="Be Vietnam Pro" font-size="(\d+)" xml:space="preserve"><tspan font-weight/', $with, $cta);
         $this->assertGreaterThanOrEqual(2 * (int) $cta[2], (int) $q[1]);
         preg_match_all('/<tspan x="72" y="(\d+)">/', $with, $ys);

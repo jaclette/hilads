@@ -16337,13 +16337,14 @@ $router->add('POST', '/internal/worlds/{date}/video', function (array $params) {
     }
 });
 
-// POST /internal/worlds/{date}/clip {version, url, credit, ai}: a reaction package's own clip, uploaded with kind clip.
+// POST /internal/worlds/{date}/clip {version, url, credit, ai, position?}: a package's own clip, uploaded with kind clip (a
+// reaction package's clip; with position, a slides package's slide: 1 the hook, then the countries, then the outro).
 $router->add('POST', '/internal/worlds/{date}/clip', function (array $params) {
     promoGuard($params['date']);
     $body = Request::json();
     try {
         Response::json(['clip' => DwStudio::saveUploadedClip($params['date'], (int) ($body['version'] ?? 0), (string) ($body['url'] ?? ''),
-            (string) ($body['credit'] ?? ''), !empty($body['ai']))]);
+            (string) ($body['credit'] ?? ''), !empty($body['ai']), isset($body['position']) ? (int) $body['position'] : null)]);
     } catch (InvalidArgumentException $e) {
         Response::json(['error' => $e->getMessage()], 422);
     }

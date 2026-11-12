@@ -428,12 +428,20 @@ final class DwStudio
         $pic = static fn(array $part) => ['brief' => (string) ($part['illustration_brief'] ?? ''),
             'credit' => (string) ($part['photo_credit'] ?? ''), 'photo_src' => (string) ($part['photo_url'] ?? ''),
             'clip' => DwClips::ofPart($part)];
-        $plan = [['position' => 1, 'kind' => 'hook', 'text' => self::headline($c['hook'] ?? []), 'detail' => self::detail($c['hook'] ?? [])] + $pic($c['hook'] ?? [])];
+        // The light identity (2026-11-12): a slide's number ("#2") and its headline's accent words; a hook may show its
+        // country too (e.g. #1 France); the outro may carry its own invitation (cta_line, else the settings' one).
+        $extra = static fn(array $part) => array_filter(['number' => isset($part['number']) ? (int) $part['number'] : null,
+            'accent' => trim((string) ($part['headline_accent'] ?? '')) ?: null], static fn($v) => $v !== null);
+        $hook = $c['hook'] ?? [];
+        $plan = [['position' => 1, 'kind' => 'hook', 'text' => self::headline($hook), 'detail' => self::detail($hook)] + $extra($hook)
+            + (trim((string) ($hook['country'] ?? '')) !== '' ? ['country' => (string) $hook['country'], 'flag' => (string) ($hook['flag'] ?? '')] : []) + $pic($hook)];
         foreach (array_values($c['slides'] ?? []) as $i => $s) {
             $plan[] = ['position' => $i + 2, 'kind' => 'country', 'text' => self::headline($s), 'detail' => self::detail($s),
-                       'country' => (string) ($s['country'] ?? ''), 'flag' => (string) ($s['flag'] ?? '')] + $pic($s);
+                       'country' => (string) ($s['country'] ?? ''), 'flag' => (string) ($s['flag'] ?? '')] + $extra($s) + $pic($s);
         }
-        $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? ''), 'detail' => ''] + $pic($c['outro'] ?? []);
+        $outroCta = trim((string) ($c['outro']['cta_line'] ?? ''));
+        $plan[] = ['position' => count($plan) + 1, 'kind' => 'outro', 'text' => (string) ($c['outro']['question'] ?? ''), 'detail' => '']
+            + ($outroCta !== '' ? ['cta' => $outroCta] : []) + $pic($c['outro'] ?? []);
         return $plan;
     }
 
@@ -570,7 +578,10 @@ final class DwStudio
             if ($clip !== '' && !DwClips::sourceOk($clip)) {
                 $errors[] = ucfirst($label) . ': clip_url must be a video file (webm, ogv, mp4) on https://upload.wikimedia.org.';
             }
-            if ($clip !== '' && trim((string) ($part['clip_credit'] ?? '')) === '') {
+            if ($clip === '' && DwStudio::needsClip($part)) {
+                $warn[] = ucfirst($label) . ': AI clip needed (see its illustration_brief), the slot is empty.';
+            }
+            if ($clip !== '' && !DwClips::ownUpload($clip) && trim((string) ($part['clip_credit'] ?? '')) === '') {
                 $errors[] = ucfirst($label) . ': the clip needs a clip_credit (author and license).';
             }
             if (isset($part['clip_start']) && (!is_numeric($part['clip_start']) || $part['clip_start'] < 0)) {
@@ -630,6 +641,12 @@ final class DwStudio
             $warn[] = "The video lasts {$total} s (max " . self::MAX_VIDEO_SECONDS . ' s).';
         }
         return $warn;
+    }
+
+    /** A slide waiting for its own (AI) clip: its brief says so. Pure. */
+    public static function needsClip(array $part): bool
+    {
+        return (bool) preg_match('/^AI clip (needed|\(Google Flow\))/i', trim((string) ($part['illustration_brief'] ?? '')));
     }
 
     /** Word-count warnings of a hook or a country: headline max 6, detail max 10 (older packages: text 12, note 6). */
@@ -1534,10 +1551,13 @@ final class DwStudio
      * uploaded to R2 by tools/promo (videoUpload(…, 'clip')): {source: "upload", url, credit (an admin
      * note, no credit on the screen), ai_generated}. The old copy is deleted. The stored clip.
      */
-    public static function saveUploadedClip(string $date, int $version, string $url, string $credit, bool $ai): array
+    public static function saveUploadedClip(string $date, int $version, string $url, string $credit, bool $ai, ?int $position = null): array
     {
         $topic = self::topicByDate($date);
         $pkg = $topic !== null ? self::package($topic['id'], $version) : null;
+        if ($pkg !== null && $position !== null && !DwReaction::isReaction($pkg['content']) && !DwRace::isRace($pkg['content'])) {
+            return self::saveSlideClip($topic, $pkg, $position, $url, $credit, $ai);
+        }
         if ($pkg === null || !DwReaction::isReaction($pkg['content'])) {
             throw new InvalidArgumentException('No reaction package ' . $version . ' on ' . $date);
         }
@@ -1558,6 +1578,44 @@ final class DwStudio
             self::deleteFile($old);
         }
         return $c['clip'];
+    }
+
+    /**
+     * A slides package's slide plays one of our own clips (e.g. an AI video), uploaded to R2 by tools/promo (kind clip):
+     * its part gets clip_url (the upload), clip_start 0, clip_credit (an admin note, '' for none) and clip_ai. Position:
+     * 1 the hook, then the countries, then the outro. The old upload is deleted. The slide's clip (DwClips::ofPart).
+     */
+    private static function saveSlideClip(array $topic, array $pkg, int $position, string $url, string $credit, bool $ai): array
+    {
+        $prefix = rtrim((string) getenv('R2_PUBLIC_URL'), '/') . sprintf('/dw/%d/v%d/clip-', $topic['id'], $pkg['version']);
+        if (!str_starts_with($url, $prefix) || !str_ends_with($url, '.mp4')) {
+            throw new InvalidArgumentException('Not a clip upload of this package: ' . $url);
+        }
+        $c = $pkg['content'];
+        $n = count($c['slides'] ?? []);
+        if ($position < 1 || $position > $n + 2) {
+            throw new InvalidArgumentException("Slide {$position}: the package has slides 1 to " . ($n + 2) . '.');
+        }
+        $ref = &$c;
+        if ($position === 1) {
+            $ref = &$c['hook'];
+        } elseif ($position === $n + 2) {
+            $ref = &$c['outro'];
+        } else {
+            $ref = &$c['slides'][$position - 2];
+        }
+        $old = (string) ($ref['clip_url'] ?? '');
+        $ref['clip_url'] = $url;
+        $ref['clip_start'] = 0;
+        $ref['clip_credit'] = mb_substr(trim($credit), 0, 80);
+        $ref['clip_ai'] = $ai;
+        unset($ref);
+        Database::pdo()->prepare("UPDATE dw_packages SET content = ?::jsonb WHERE id = ?")
+            ->execute([json_encode($c, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $pkg['id']]);
+        if ($old !== '' && $old !== $url && DwClips::ownUpload($old)) {
+            self::deleteFile($old);
+        }
+        return DwClips::ofPart($position === 1 ? $c['hook'] : ($position === $n + 2 ? $c['outro'] : $c['slides'][$position - 2])) ?? [];
     }
 
     /** Marks a reaction package's clip as AI-generated or not (the admin's checkbox; Pixabay's tags set it first). */

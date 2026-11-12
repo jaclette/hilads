@@ -47,6 +47,8 @@ const quizArg = args.includes('--quiz') ? args[args.indexOf('--quiz') + 1] : nul
 // --layout static: the static ranking (no animation, a plain list), to try before saving it in the package.
 const layoutArg = args.includes('--layout') ? args[args.indexOf('--layout') + 1] : null;
 const raceArg = args.includes('--race') ? args[args.indexOf('--race') + 1] : null;
+// --clip <file> --slide <n> [--clip-ai]: a slides topic's own clip for slide n (1 = the hook), uploaded and saved on the package.
+const slideArg = args.includes('--slide') ? args[args.indexOf('--slide') + 1] : null;
 const questionArg = args.includes('--question') ? args[args.indexOf('--question') + 1] : null;
 // --png-only: a reaction topic's PNGs alone (a quick look; nothing uploaded).
 const pngOnly = args.includes('--png-only');
@@ -133,9 +135,11 @@ function planFromContent(c) {
   const clip = (p) => (p?.clip_url ? { url: p.clip_url, start: Number(p.clip_start ?? 0), credit: p.clip_credit ?? '' } : null);
   const pic = (p) => ({ credit: p?.photo_credit ?? '', photo_src: p?.photo_url ?? '', clip: clip(p) });
   return [
-    { position: 1, kind: 'hook', text: headline(c.hook), detail: detail(c.hook), ...pic(c.hook) },
-    ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: headline(s), detail: detail(s), country: s.country, flag: s.flag, ...pic(s) })),
-    { position: (c.slides ?? []).length + 2, kind: 'outro', text: c.outro?.question ?? '', cta: DEFAULT_OUTRO_CTA, ...pic(c.outro) },
+    { position: 1, kind: 'hook', text: headline(c.hook), detail: detail(c.hook), accent: c.hook?.headline_accent ?? null, number: c.hook?.number ?? null,
+      country: c.hook?.country ?? null, flag: c.hook?.flag ?? null, ...pic(c.hook) },
+    ...(c.slides ?? []).map((s, i) => ({ position: i + 2, kind: 'country', text: headline(s), detail: detail(s), accent: s.headline_accent ?? null,
+                                         number: s.number ?? null, country: s.country, flag: s.flag, ...pic(s) })),
+    { position: (c.slides ?? []).length + 2, kind: 'outro', text: c.outro?.question ?? '', cta: c.outro?.cta_line || DEFAULT_OUTRO_CTA, ...pic(c.outro) },
   ];
 }
 
@@ -270,7 +274,7 @@ async function renderDay(date, fetched = null) {
         photo = null;
       }
     }
-    slides.push({ ...text, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
+    slides.push({ ...text, accent: s.accent ?? null, number: s.number ?? null, country: s.country ?? null, flag: s.flag ? flagFile(s.flag) : null,
                   credit: clip ? s.clip.credit : (s.credit ?? ''), photo, clip,
                   cta: s.kind === 'outro' ? (s.cta ?? '') : null });
   }
@@ -312,15 +316,18 @@ function ownClipFile() {
 
 /** --clip: uploads our own clip to the day's reaction package, saves it with its credit, returns the refreshed data. */
 async function uploadOwnClip(data) {
-  if (data.format !== 'reaction') throw new Error('--clip is for a topic in the reaction format.');
+  // A slides package: --slide N says which slide plays it (1 the hook, then the countries, then the outro).
+  const slides = data.format !== 'reaction' && data.format !== 'race';
+  if (data.format === 'race') throw new Error('--clip is for a topic in the reaction or slides format.');
+  if (slides && !slideArg) throw new Error('--clip on a slides topic needs --slide <n> (1 = the hook).');
   const file = ownClipFile();
   const { durationInSeconds, width, height } = await getVideoMetadata(file);
   console.log(`  own clip ${path.basename(file)}: ${width}×${height}, ${durationInSeconds.toFixed(2)} s, uploading…`);
   const { putUrl, url } = await apiCall(`/internal/worlds/${data.date}/upload`, { version: data.version, kind: 'clip' });
   const res = await fetch(putUrl, { method: 'PUT', headers: { 'Content-Type': 'video/mp4' }, body: await readFile(file) });
   if (!res.ok) throw new Error(`clip upload: ${res.status} ${await res.text()}`);
-  await apiCall(`/internal/worlds/${data.date}/clip`, { version: data.version, url, credit: clipCredit ?? '', ai: clipAi });
-  console.log(`  clip saved${clipCredit ? ` (note: "${clipCredit}")` : ''}${clipAi ? ', AI-generated' : ''}, no credit on screen`);
+  await apiCall(`/internal/worlds/${data.date}/clip`, { version: data.version, url, credit: clipCredit ?? '', ai: clipAi, ...(slides ? { position: Number(slideArg) } : {}) });
+  console.log(`  clip saved${slides ? ` on slide ${slideArg}` : ''}${clipCredit ? ` (note: "${clipCredit}")` : ''}${clipAi ? ', AI-generated' : ''}, no credit on screen`);
   return apiCall(`/internal/worlds/${data.date}`);
 }
 
