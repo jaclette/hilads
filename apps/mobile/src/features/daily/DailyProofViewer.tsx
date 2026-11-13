@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { usePhotoZoom } from '@/ui/usePhotoZoom';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -52,6 +54,8 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const { width, height } = useWindowDimensions();
   // The photo's width / height once loaded (square until then): its box hugs it.
   const [ratio, setRatio] = useState(1);
+  // Pinch-to-zoom on the photo (or the selfie swapped big): springs back on release; the page holds still meanwhile.
+  const zoom = usePhotoZoom();
   useEffect(() => { setRatio(1); }, [proof?.id]);
   const shareable = !!proof && proof.isMine && !!challenge && proof.challengeId === challenge.id
     && (proof.status === 'approved' || proof.status === 'pending');
@@ -62,6 +66,8 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
   const name = proof.user.displayName || proof.user.username || '';
   return (
     <Modal visible={shown} animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen" statusBarTranslucent navigationBarTranslucent>
+      {/* A Modal is its own native root: the pinch needs its own gesture-handler root here. */}
+      <GestureHandlerRootView style={styles.flex}>
       <View style={styles.wrap} testID="proof-viewer">
       {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
       <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
@@ -70,11 +76,16 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
         {/* Below the status bar / notch (an absolute child ignores the safe area's padding). */}
         <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={[styles.close, { top: insets.top + Spacing.sm }]} testID="viewer-close" />
         {/* Pulling down past the top (iOS bounce) closes it like a swipe-down modal; Android back closes it too. */}
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} scrollEnabled={!zoom.zooming}
                     onScrollEndDrag={e => { if (e.nativeEvent.contentOffset.y < -70) onClose(); }}>
-        <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} contentFit="contain"
-                   style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
-                   onLoadMain={s => { if (s.width && s.height) setRatio(s.width / s.height); }} />
+        <GestureDetector gesture={zoom.gesture}>
+          <View onLayout={zoom.onLayout} style={styles.zoomFront}>
+            <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} fit="screen"
+                       zoomStyle={zoom.style} sharp={zoom.zooming}
+                       style={{ width, height: Math.min(width / ratio, height * PHOTO_MAX_HEIGHT) }}
+                       onLoadMain={s => { if (s.width && s.height) setRatio(s.width / s.height); }} />
+          </View>
+        </GestureDetector>
         <View style={styles.meta}>
           <View style={styles.nameRow}>
             <Text style={styles.name}>{name}</Text>
@@ -146,6 +157,7 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
       {/* Comments open above this modal; a profile from them closes it. */}
       <PhotoCommentsHost onLeave={onClose} />
       </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
@@ -154,6 +166,8 @@ export function DailyProofViewer({ proof, challenge, autoShare = false, onClose 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:     { flex: 1, backgroundColor: c.photoScrim },
   flex:     { flex: 1 },
+  // The zoomed photo draws over the text under it (then springs back).
+  zoomFront: { zIndex: 2 },
   shade:    { backgroundColor: c.photoBlurShade },
   // The photo and its information block stay together, centred when they fit.
   scroll:   { flexGrow: 1, justifyContent: 'center', paddingTop: 56 },

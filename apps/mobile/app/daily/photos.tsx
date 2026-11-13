@@ -17,7 +17,9 @@ import { track } from '@/services/analytics';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
-import { Avatar, Button, DualPhoto, IconButton, ModeLabel, Photo } from '@/ui';
+import { Avatar, Button, DualPhoto, IconButton, ModeLabel } from '@/ui';
+import { usePhotoZoom } from '@/ui/usePhotoZoom';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { selfieOf } from '@/features/daily/selfie';
 import { Confetti, FlagSticker, onFillOf, themeColor } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
@@ -96,6 +98,8 @@ function PhotosScreenContent() {
   const [votersOf, setVotersOf] = useState<string | null>(null);
   const [confetti, setConfetti] = useState(false);
   const voted = useRef(false);
+  // A photo is pinch-zoomed: the feed holds still and its overlays hide.
+  const [zooming, setZooming] = useState(false);
   const list = useRef<FlatList<Item>>(null);
   const seen = useRef(new Set<string>());
 
@@ -215,7 +219,7 @@ function PhotosScreenContent() {
           data={items}
           keyExtractor={(it, i) => (it.kind === 'photo' ? it.proof.id : `end-${i}`)}
           pagingEnabled
-          scrollEnabled={!composing}
+          scrollEnabled={!composing && !zooming}
           showsVerticalScrollIndicator={false}
           decelerationRate="fast"
           getItemLayout={(_, i) => ({ length: height, offset: height * i, index: i })}
@@ -227,7 +231,7 @@ function PhotosScreenContent() {
           renderItem={({ item, index: i }) => item.kind === 'photo' ? (
             <Slide proof={item.proof} height={height} first={i === 0 && photoCount > 1}
                    insetBottom={insets.bottom + (item.proof.status === 'approved' ? COMMENT_BAR_H : 0)}
-                   onProfile={openProfile} onVoted={onVoted}
+                   onProfile={openProfile} onVoted={onVoted} onZoom={setZooming}
                    onShare={challenge && item.proof.challengeId === challenge.id ? () => setShare(proofShare(item.proof, challenge)) : null}
                    onVoters={() => setVotersOf(item.proof.id)} />
           ) : (
@@ -238,7 +242,11 @@ function PhotosScreenContent() {
         />
       )}
       {composing && <Pressable style={[StyleSheet.absoluteFill, styles.dim]} onPress={() => Keyboard.dismiss()} accessibilityRole="button" accessibilityLabel={t('back')} />}
-      {barProof && height > 0 && <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />}
+      {barProof && height > 0 && (
+        <View style={[StyleSheet.absoluteFill, zooming && styles.hidden]} pointerEvents={zooming ? 'none' : 'box-none'}>
+          <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />
+        </View>
+      )}
       {((proofs === null && !pinned) || height === 0) && (
         <View style={[StyleSheet.absoluteFill, styles.center]}>
           {failed ? (
@@ -250,9 +258,9 @@ function PhotosScreenContent() {
         </View>
       )}
 
-      {/* On top: close, World / my city, and today's challenge as a pill. */}
-      <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
-      <View style={[styles.top, { paddingTop: insets.top + 6 }]} pointerEvents="box-none">
+      {/* On top: close, World / my city, and today's challenge as a pill (hidden while a photo is zoomed). */}
+      <LinearGradient colors={SHADE_TOP} style={[styles.shadeTop, zooming && styles.hidden]} pointerEvents="none" />
+      <View style={[styles.top, { paddingTop: insets.top + 6 }, zooming && styles.hidden]} pointerEvents={zooming ? 'none' : 'box-none'}>
         <View style={styles.head}>
           <IconButton icon="close" tone="onPhoto" onPress={goBack} label={t('back')} testID="photos-close" />
           <View style={styles.tabs}>
@@ -298,9 +306,10 @@ function TabPill({ label, icon, country, on, onPress }: {
 }
 
 /** One photo, full screen: the photo (blurred around it), its player and answer, the heart and Share. */
-function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare, onVoters }: {
+function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare, onVoters, onZoom }: {
   proof: DailyProof; height: number; first: boolean; insetBottom: number;
   onProfile: (id: string) => void; onVoted: () => void; onShare: (() => void) | null; onVoters: () => void;
+  onZoom: (zooming: boolean) => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -315,6 +324,9 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
   const pop = useRef(new Animated.Value(1)).current;
   const name = proof.user.displayName || proof.user.username || '';
   const title = proof.spot?.name ?? proof.place?.name ?? null;
+  // Pinch-to-zoom on the big picture (springs back on release); the feed and its overlays wait meanwhile.
+  const zoom = usePhotoZoom();
+  useEffect(() => { onZoom(zoom.zooming); }, [zoom.zooming]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const celebrate = () => {
     burst.setValue(0);
@@ -341,13 +353,13 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
   };
 
   return (
-    <View style={{ height }}>
-      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
-      <View style={[StyleSheet.absoluteFill, styles.blurShade]} />
+    <GestureDetector gesture={zoom.gesture}>
+    <View style={{ height }} onLayout={zoom.onLayout}>
+      {/* The picture whole over a blurred copy of itself (DualPhoto fit="screen"), the photo or the selfie swapped big. */}
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} accessibilityRole="image"
                  accessibilityLabel={[name, proof.city?.name, title].filter(Boolean).join(', ')} accessibilityHint={t('feed.doubleTap')}>
         <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                   contentFit="contain" insetTop={insetTop} />
+                   fit="screen" zoomStyle={zoom.style} sharp={zoom.zooming} insetTop={insetTop} />
       </Pressable>
       <Animated.View pointerEvents="none" style={[styles.burst, {
         opacity: burst.interpolate({ inputRange: [0, 0.15, 0.7, 1], outputRange: [0, 1, 1, 0] }),
@@ -355,9 +367,9 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
       }]}>
         <Ionicons name="heart" size={120} color={colors.primary} />
       </Animated.View>
-      <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
+      <LinearGradient colors={SHADE_BOTTOM} style={[styles.shadeBottom, zoom.zooming && styles.hidden]} pointerEvents="none" />
 
-      <View style={[styles.bottom, { paddingBottom: insetBottom + 18 }]} pointerEvents="box-none">
+      <View style={[styles.bottom, { paddingBottom: insetBottom + 18 }, zoom.zooming && styles.hidden]} pointerEvents={zoom.zooming ? 'none' : 'box-none'}>
         <View style={styles.info} pointerEvents="box-none">
           <TouchableOpacity style={styles.who} onPress={() => onProfile(proof.user.id)} accessibilityRole="button" hitSlop={6}>
             <Avatar uri={proof.user.photoUrl} name={name} size={40} ring />
@@ -416,6 +428,7 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
         </View>
       </View>
     </View>
+    </GestureDetector>
   );
 }
 
@@ -449,7 +462,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   centerBox:   { alignItems: 'center', gap: 12, paddingHorizontal: 24 },
   shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 170 },
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
-  blurShade:   { backgroundColor: c.photoBlurShade },
+  hidden:      { opacity: 0 },
   top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 12, gap: 10 },
   head:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headSide:    { width: 44 },

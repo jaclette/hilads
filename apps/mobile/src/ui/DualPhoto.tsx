@@ -4,7 +4,7 @@ import { Image, type ImageContentFit } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-import { useReducedMotion } from 'react-native-reanimated';
+import Reanimated, { useReducedMotion } from 'react-native-reanimated';
 import type { ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 import { mediumUrl, proxyFor, thumbUrl } from '@/lib/imageThumb';
@@ -26,6 +26,13 @@ import { mediumUrl, proxyFor, thumbUrl } from '@/lib/imageThumb';
  * - a viewer opens on the card's thumbnail (same URL, already in memory) stretched
  *   to the photo's final box (the placeholder takes the photo's contentFit, never
  *   its small native size in the middle), then crossfades to the medium size.
+ * - `fit="screen"` (full-screen viewers): the big picture is shown whole (contain),
+ *   centred, over a blurred, darkened copy of itself (Instagram style, never black
+ *   bars); cover only when its shape is within ~10 % of the frame's. The same for the
+ *   photo and for the selfie once swapped big.
+ * - `zoomStyle` (usePhotoZoom): the big picture's pinch-to-zoom transform (not its
+ *   blurred backdrop, nor the inset); `sharp`: the big picture loads its large size
+ *   (the original) over the medium one, for a zoom that stays sharp.
  */
 
 export interface PhotoSource { uri: string; thumb?: string | null; /** Thumbhash placeholder. */ hash?: string | null }
@@ -53,8 +60,14 @@ type Rect = { x: number; y: number; w: number; h: number; r: number };
 
 export function DualPhoto({
   main, selfie, style, contentFit = 'cover', inset = 'normal', interactive = true, draggable = false,
-  insetTop = 0, transition, onSwap, onInteract, onLoadMain, children, card = false,
+  insetTop = 0, transition, onSwap, onInteract, onLoadMain, children, card = false, fit, zoomStyle, sharp = false,
 }: {
+  /** "screen": a full-screen viewer (contain over a blurred copy; cover when the shapes are close). */
+  fit?: 'screen';
+  /** The pinch-to-zoom transform of the big picture (usePhotoZoom's style). */
+  zoomStyle?: StyleProp<ViewStyle>;
+  /** Load the big picture's large size (zooming). */
+  sharp?: boolean;
   /** A feed card: thumbnails, even though the inset can swap. */
   card?: boolean;
   main: PhotoSource;
@@ -82,6 +95,18 @@ export function DualPhoto({
   const [selfieBig, setSelfieBig] = useState(false);
   const [tip, setTip] = useState(false);
   const [loaded, setLoaded] = useState({ main: false, selfie: false });
+  // fit="screen": each picture's width / height once known (cover when close to the frame's, else contain).
+  const [aspect, setAspect] = useState<{ main: number; selfie: number }>({ main: 0, selfie: 0 });
+  useEffect(() => { setAspect({ main: 0, selfie: 0 }); }, [main.uri, selfie?.uri]);
+  const fitOf = (which: 'main' | 'selfie'): ImageContentFit => {
+    if (fit !== 'screen') return contentFit;
+    const a = aspect[which];
+    const frame = size.h > 0 ? size.w / size.h : 0;
+    return a > 0 && frame > 0 && Math.abs(a / frame - 1) <= 0.1 ? 'cover' : 'contain';
+  };
+  const noteAspect = (which: 'main' | 'selfie', w: number, h: number) => {
+    if (fit === 'screen' && w > 0 && h > 0 && Math.abs(aspect[which] - w / h) > 0.001) setAspect(x => ({ ...x, [which]: w / h }));
+  };
   // A layer that fails: its size through the resize proxy (missing on the CDN), then the original.
   const [failed, setFailed] = useState({ main: 0, selfie: 0 });
   useEffect(() => { setFailed({ main: 0, selfie: 0 }); }, [main.uri, selfie?.uri]);
@@ -91,6 +116,15 @@ export function DualPhoto({
   const sized = (u: string) => (thumbOnly ? thumbUrl(u) : mediumUrl(u)) ?? u;
   const tries = (u: string) => [sized(u), proxyFor(sized(u)), u].filter((x, i, all): x is string => !!x && all.indexOf(x) === i);
   const uriOf = (which: 'main' | 'selfie', u: string) => { const list = tries(u); return list[Math.min(failed[which], list.length - 1)]; };
+  // Zooming: the large size (the original) over the medium one already shown (its placeholder: no flash).
+  const bigUri = (which: 'main' | 'selfie', u: string) => (sharp && !thumbOnly && failed[which] === 0 ? u : uriOf(which, u));
+  // fit="screen": the blurred, darkened copy behind the whole picture (its thumbnail: already in memory).
+  const backdrop = (src: PhotoSource) => fit === 'screen' ? (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Image source={{ uri: thumbUrl(src.thumb ?? src.uri) ?? src.uri }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={30} cachePolicy="memory-disk" />
+      <View style={[StyleSheet.absoluteFill, styles.backdropShade]} />
+    </View>
+  ) : null;
   const fail = (which: 'main' | 'selfie') => setFailed(f => ({ ...f, [which]: f[which] + 1 }));
 
   const ratio = inset === 'small' ? 0.24 : 0.28;
@@ -223,16 +257,21 @@ export function DualPhoto({
         accessibilityLabel={isInset && interactive ? t('dual.swapA11y') : undefined}
         {...(isInset && interactive ? pan.panHandlers : {})}
       >
+        {big && backdrop(src)}
         {/* A swap resizes the layer: Android reloads an image sized for its view, fading in from the
             placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
-        <Image source={{ uri: uriOf(which, src.uri) }} placeholder={loaded[which] ? undefined : !thumbOnly ? { uri: thumbUrl(src.thumb ?? src.uri) } : src.hash ? { thumbhash: src.hash } : undefined}
-               placeholderContentFit={big ? contentFit : 'cover'} cachePolicy="memory-disk"
-               style={StyleSheet.absoluteFill} onError={() => fail(which)}
-               contentFit={big ? contentFit : 'cover'} transition={loaded[which] ? 0 : fade} allowDownscaling={false}
-               onLoad={e => {
-                 if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
-                 if (which === 'main') onLoadMain?.({ width: e.source.width, height: e.source.height });
-               }} />
+        <Reanimated.View style={[StyleSheet.absoluteFill, big ? zoomStyle : null]}>
+          <Image source={{ uri: big ? bigUri(which, src.uri) : uriOf(which, src.uri) }}
+                 placeholder={big && sharp ? { uri: uriOf(which, src.uri) } : loaded[which] ? undefined : !thumbOnly ? { uri: thumbUrl(src.thumb ?? src.uri) } : src.hash ? { thumbhash: src.hash } : undefined}
+                 placeholderContentFit={big ? fitOf(which) : 'cover'} cachePolicy="memory-disk"
+                 style={StyleSheet.absoluteFill} onError={() => fail(which)}
+                 contentFit={big ? fitOf(which) : 'cover'} transition={loaded[which] && !(big && sharp) ? 0 : big && sharp ? 150 : fade} allowDownscaling={false}
+                 onLoad={e => {
+                   if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
+                   noteAspect(which, e.source.width, e.source.height);
+                   if (which === 'main') onLoadMain?.({ width: e.source.width, height: e.source.height });
+                 }} />
+        </Reanimated.View>
       </Animated.View>
     );
   };
@@ -243,11 +282,18 @@ export function DualPhoto({
         // In a View: expo-image doesn't honour pointerEvents on Android, so the image took the touches
         // meant for what lies under it (a story's tap zones: next / previous did nothing on a photo without a selfie).
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image source={{ uri: uriOf('main', main.uri) }} placeholder={!thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : main.hash ? { thumbhash: main.hash } : undefined}
-                 placeholderContentFit={contentFit} cachePolicy="memory-disk"
-                 style={StyleSheet.absoluteFill} onError={() => fail('main')}
-                 contentFit={contentFit} transition={fade}
-                 onLoad={onLoadMain ? e => onLoadMain({ width: e.source.width, height: e.source.height }) : undefined} />
+          {backdrop(main)}
+          <Reanimated.View style={[StyleSheet.absoluteFill, zoomStyle]}>
+            <Image source={{ uri: bigUri('main', main.uri) }}
+                   placeholder={sharp ? { uri: uriOf('main', main.uri) } : !thumbOnly ? { uri: thumbUrl(main.thumb ?? main.uri) } : main.hash ? { thumbhash: main.hash } : undefined}
+                   placeholderContentFit={fitOf('main')} cachePolicy="memory-disk"
+                   style={StyleSheet.absoluteFill} onError={() => fail('main')}
+                   contentFit={fitOf('main')} transition={fade}
+                   onLoad={e => {
+                     noteAspect('main', e.source.width, e.source.height);
+                     onLoadMain?.({ width: e.source.width, height: e.source.height });
+                   }} />
+          </Reanimated.View>
         </View>
       ) : ready ? (
         <>
@@ -270,5 +316,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   layer:      { position: 'absolute', overflow: 'hidden', backgroundColor: c.bg3 },
   tip:        { position: 'absolute', zIndex: 3, maxWidth: 200, backgroundColor: c.photoButton, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
   tipText:    { color: c.white, fontSize: 13, fontWeight: '700' },
+  // The blurred copy, slightly darkened (the photo viewers' fixed token, lighter here: about a third).
+  backdropShade: { backgroundColor: c.photoBlurShade, opacity: 0.6 },
   insetFrame: { borderWidth: 2, shadowColor: c.photoScrim, shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
 });

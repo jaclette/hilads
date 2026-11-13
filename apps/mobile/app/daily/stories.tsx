@@ -3,6 +3,7 @@ import {
   AccessibilityInfo, ActivityIndicator, Animated, Easing, Keyboard, PanResponder, Pressable, Text, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -16,6 +17,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
 import { Avatar, DualPhoto, IconButton } from '@/ui';
+import { usePhotoZoom } from '@/ui/usePhotoZoom';
 import { selfieOf } from '@/features/daily/selfie';
 import { prefetchProof } from '@/lib/prefetch';
 import { FlagSticker } from '@/ui/joy';
@@ -52,6 +54,9 @@ const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.9)'] as
  * (Today's order), auto-advancing every 5 s (never with Reduce motion). Each
  * photo: its player (a tap opens the profile), the answer, the caption and a
  * heart (a double tap votes too). Each photo shown counts as seen (the rings).
+ * The photo shows whole over a blurred copy of itself (DualPhoto fit="screen");
+ * a pinch zooms it (up to 4×, springs back on release, Instagram style): the
+ * story waits, the taps and the swipe down rest and the overlays hide meanwhile.
  * `city` = the city to start with.
  */
 export default function StoriesScreen() {
@@ -173,19 +178,25 @@ function Stories() {
   const gesturesOff = useRef(false);
   gesturesOff.current = commentsOpen || composing;
   const [interacting, setInteracting] = useState(false);
+  // Pinch-to-zoom on the big picture (photo or selfie): not while typing or with the comments open.
+  const zoom = usePhotoZoom(!!proof && !composing && !commentsOpen);
+  const zooming = useRef(false);
+  zooming.current = zoom.zooming;
   useEffect(() => { progress.setValue(0); }, [proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!proof || paused || interacting || commentsOpen || composing || votersOf || reduceMotion) return;
+    if (!proof || paused || interacting || commentsOpen || composing || votersOf || reduceMotion || zoom.zooming) return;
     let anim: Animated.CompositeAnimation | null = null;
     progress.stopAnimation(at => {
       anim = Animated.timing(progress, { toValue: 1, duration: Math.max(0, (1 - at) * PHOTO_MS), easing: Easing.linear, useNativeDriver: false });
       anim.start(({ finished }) => { if (finished) next(); });
     });
     return () => { anim?.stop(); };
-  }, [proof?.id, paused, interacting, commentsOpen, composing, votersOf, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [proof?.id, paused, interacting, commentsOpen, composing, votersOf, reduceMotion, zoom.zooming]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Swipe down closes; never with two fingers (a pinch) nor while zoomed.
   const pan = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, g) => !gesturesOff.current && g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
+    onMoveShouldSetPanResponder: (_, g) => !gesturesOff.current && !zooming.current && g.numberActiveTouches < 2
+      && g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
     onPanResponderRelease: (_, g) => { if (g.dy > 80) goBack(); },
   })).current;
 
@@ -209,13 +220,17 @@ function Stories() {
   };
 
   return (
-    <View style={styles.wrap} {...pan.panHandlers} testID="today-stories">
+    <GestureDetector gesture={zoom.gesture}>
+    <View style={styles.wrap} {...pan.panHandlers} onLayout={zoom.onLayout} testID="today-stories">
       {/* The tap zones first: the photo over them lets touches through, its selfie inset catches its own (swap, drag to a corner). */}
       {proof && !composing && !commentsOpen && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                     draggable insetTop={insets.top + 76} onInteract={setInteracting} />
+                     draggable={!zoom.zooming} insetTop={insets.top + 76} onInteract={setInteracting}
+                     fit="screen" zoomStyle={zoom.style} sharp={zoom.zooming} />
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
+      {/* The overlays (shades only at the top and the bottom): hidden while zoomed. */}
+      <View style={[StyleSheet.absoluteFill, zoom.zooming && styles.hidden]} pointerEvents={zoom.zooming ? 'none' : 'box-none'}>
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
 
@@ -250,12 +265,14 @@ function Stories() {
       {proof && <Bottom proof={proof} insetBottom={insets.bottom + (proof.status === 'approved' ? COMMENT_BAR_H : 0)} onProfile={() => openProfile(proof)} onVoters={() => setVotersOf(proof.id)} />}
       {/* The inline comment bar (on my own photo too: people reply there). */}
       {proof?.status === 'approved' && <StoryCommentBar proof={proof} onComposing={setComposing} />}
+      </View>
       <DailyVotersSheet proofId={votersOf} onClose={() => setVotersOf(null)}
                         onOpenUser={id => {
                           setVotersOf(null);
                           router.push((canAccessProfile(account) ? `/user/${id}` : '/auth-gate?reason=view_profile') as never);
                         }} />
     </View>
+    </GestureDetector>
   );
 }
 
@@ -347,6 +364,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { alignItems: 'center', justifyContent: 'center' },
   flex:        { flex: 1 },
   close:       { position: 'absolute', right: 12 },
+  hidden:      { opacity: 0 },
   shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 170 },
   dim:         { backgroundColor: 'rgba(0,0,0,0.35)' },
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
