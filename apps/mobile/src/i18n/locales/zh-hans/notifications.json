@@ -58,8 +58,6 @@
     "rankCity": "🏆 昨天 {{city}} 第 {{rank}} 名",
     "votes": "🏆 昨天的照片收到 {{count}} ❤️",
     "localPass": "🎟️ {{city}} 的 Local Pass！",
-    "comment": "💬 {{name}} 评论了你的照片",
-    "comments": "💬 你的照片有新评论",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} 提到了你",
     "friend": "👋 {{name}} 想加你为好友",
@@ -93,8 +91,6 @@
     "allRead": "全部看完了 ✨",
     "row": {
       "like": "{{names}} 赞了你的照片",
-      "comment": "{{names}} 评论了你的照片",
-      "photoMention": "{{names}} 在评论里提到了你",
       "mention": "{{names}} 提到了你",
       "friendRequest": "{{names}} 想加你为好友",
       "friendAccepted": "{{names}} 接受了你的好友请求",
@@ -137,5 +133,16 @@
     "saved": "已保存",
     "quiet": "免打扰时段",
     "quietSub": "{{from}} 到 {{to}} 不推送"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} 评论了你的照片",
+    "author_many": "💬 {{name}} 和另外 {{n}} 人评论了你的照片",
+    "author_many_one": "💬 {{name}} 和另外 1 人评论了你的照片",
+    "mention": "👋 {{name}} 提到了你",
+    "reply": "↩️ {{name}} 回复了你的评论",
+    "previous": "💬 {{name}} 也评论了 {{owner}} 的照片",
+    "previous_many": "💬 {{name}} 和另外 {{n}} 人评论了 {{owner}} 的照片",
+    "previous_many_one": "💬 {{name}} 和另外 1 人评论了 {{owner}} 的照片",
+    "previous_self": "💬 {{name}} 在自己的照片下回复了"
   }
 }

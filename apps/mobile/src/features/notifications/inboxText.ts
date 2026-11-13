@@ -1,6 +1,7 @@
 import { shortCityName } from '@/i18n/cityName';
 import type { InboxItem } from '@/api/notifications';
 import { calendarDaysAgo, parseTime } from './NotifRow';
+import { COMMENT_TYPES, commentLine } from './commentLine';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -22,8 +23,6 @@ export function namesOf(item: InboxItem, t: TFn): string {
 function keyOf(item: InboxItem): string | null {
   switch (item.type) {
     case 'daily_vote':              return 'like';
-    case 'photo_comment':           return item.data.kind === 'author' ? 'comment' : null;
-    case 'photo_mention':           return 'photoMention';
     case 'mention':
     case 'city_here':               return 'mention';
     case 'friend_request_received': return 'friendRequest';
@@ -56,6 +55,16 @@ export function rowText(item: InboxItem, t: TFn): RowText {
     return plain(d.scope === 'world' ? t('inbox.row.rankUpWorld', { rank: d.rank }) : t('inbox.row.rankUp', { rank: d.rank, where: city }));
   }
 
+  // Comments on Daily photos: the same line as the Today card and the push (commentLine), the actor's name in bold.
+  if (COMMENT_TYPES.includes(item.type)) {
+    const parts: RowText['parts'] = [];
+    commentLine(item, t, MARK).split(MARK).forEach((chunk, i) => {
+      if (i > 0) parts.push({ text: item.actors[0]?.name ?? d.actorName ?? '', bold: true });
+      if (chunk) parts.push({ text: chunk, bold: false });
+    });
+    return { parts, quote: item.body };
+  }
+
   const key = keyOf(item);
   const names = namesOf(item, t);
   if (key === null || (!names && key !== 'joinAccepted' && key !== 'landedMany')) {
@@ -70,7 +79,7 @@ export function rowText(item: InboxItem, t: TFn): RowText {
     if (i > 0) parts.push({ text: names, bold: true });
     if (chunk) parts.push({ text: chunk, bold: false });
   });
-  const quoted = ['comment', 'photoMention', 'mention'].includes(key) ? item.body : null;
+  const quoted = key === 'mention' ? item.body : null;
   return { parts, quote: quoted };
 }
 

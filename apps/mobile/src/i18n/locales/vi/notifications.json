@@ -58,8 +58,6 @@
     "rankCity": "🏆 Hạng #{{rank}} ở {{city}} hôm qua",
     "votes": "🏆 {{count}} ❤️ cho ảnh hôm qua",
     "localPass": "🎟️ Local Pass {{city}}!",
-    "comment": "💬 {{name}} vừa bình luận ảnh của bạn",
-    "comments": "💬 Ảnh của bạn có bình luận mới",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} nhắc tới bạn",
     "friend": "👋 {{name}} muốn kết bạn",
@@ -93,8 +91,6 @@
     "allRead": "Đã xem hết rồi ✨",
     "row": {
       "like": "{{names}} đã thả tim ảnh của bạn",
-      "comment": "{{names}} đã bình luận ảnh của bạn",
-      "photoMention": "{{names}} nhắc tới bạn trong bình luận",
       "mention": "{{names}} nhắc tới bạn",
       "friendRequest": "{{names}} muốn kết bạn",
       "friendAccepted": "{{names}} đã đồng ý kết bạn",
@@ -137,5 +133,16 @@
     "saved": "Đã lưu",
     "quiet": "Giờ yên tĩnh",
     "quietSub": "Không thông báo từ {{from}} đến {{to}}"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} đã bình luận ảnh của bạn",
+    "author_many": "💬 {{name}} và {{n}} người khác đã bình luận ảnh của bạn",
+    "author_many_one": "💬 {{name}} và 1 người khác đã bình luận ảnh của bạn",
+    "mention": "👋 {{name}} đã nhắc đến bạn",
+    "reply": "↩️ {{name}} đã trả lời bình luận của bạn",
+    "previous": "💬 {{name}} cũng đã bình luận ảnh của {{owner}}",
+    "previous_many": "💬 {{name}} và {{n}} người khác đã bình luận ảnh của {{owner}}",
+    "previous_many_one": "💬 {{name}} và 1 người khác đã bình luận ảnh của {{owner}}",
+    "previous_self": "💬 {{name}} đã trả lời dưới ảnh của mình"
   }
 }

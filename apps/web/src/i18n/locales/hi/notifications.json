@@ -37,8 +37,6 @@
     "rankCity": "🏆 कल {{city}} में #{{rank}}",
     "votes": "🏆 कल की फ़ोटो पर {{count}} ❤️",
     "localPass": "🎟️ {{city}} का Local Pass!",
-    "comment": "💬 {{name}} ने आपकी फ़ोटो पर कमेंट किया",
-    "comments": "💬 आपकी फ़ोटो पर नए कमेंट",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} ने आपको मेंशन किया",
     "friend": "👋 {{name}} आपसे दोस्ती करना चाहते हैं",
@@ -72,8 +70,6 @@
     "allRead": "सब देख लिया ✨",
     "row": {
       "like": "{{names}} ने आपकी फ़ोटो लाइक की",
-      "comment": "{{names}} ने आपकी फ़ोटो पर कमेंट किया",
-      "photoMention": "{{names}} ने कमेंट में आपको मेंशन किया",
       "mention": "{{names}} ने आपको मेंशन किया",
       "friendRequest": "{{names}} आपसे दोस्ती करना चाहते हैं",
       "friendAccepted": "{{names}} ने आपकी फ़्रेंड रिक्वेस्ट मान ली",
@@ -165,5 +161,16 @@
     "friendArrivalSub": "जब कोई दोस्त किसी शहर पहुंचे",
     "dailyLabel": "नया Daily Challenge",
     "dailySub": "हर सुबह नया चैलेंज"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} ने आपकी फ़ोटो पर कमेंट किया",
+    "author_many": "💬 {{name}} और {{n}} अन्य ने आपकी फ़ोटो पर कमेंट किया",
+    "author_many_one": "💬 {{name}} और 1 अन्य ने आपकी फ़ोटो पर कमेंट किया",
+    "mention": "👋 {{name}} ने आपको मेंशन किया",
+    "reply": "↩️ {{name}} ने आपके कमेंट का जवाब दिया",
+    "previous": "💬 {{name}} ने भी {{owner}} की फ़ोटो पर कमेंट किया",
+    "previous_many": "💬 {{name}} और {{n}} अन्य ने {{owner}} की फ़ोटो पर कमेंट किया",
+    "previous_many_one": "💬 {{name}} और 1 अन्य ने {{owner}} की फ़ोटो पर कमेंट किया",
+    "previous_self": "💬 {{name}} ने अपनी फ़ोटो पर जवाब दिया"
   }
 }

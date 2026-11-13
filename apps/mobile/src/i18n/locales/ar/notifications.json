@@ -58,8 +58,6 @@
     "rankCity": "🏆 الأمس: المركز {{rank}} في {{city}}",
     "votes": "🏆 {{count}} ❤️ على صورة الأمس",
     "localPass": "🎟️ Local Pass في {{city}}!",
-    "comment": "💬 علّق {{name}} على صورتك",
-    "comments": "💬 تعليقات جديدة على صورتك",
     "likes": "❤️ +{{count}}",
     "mention": "💬 ذكرك {{name}}",
     "friend": "👋 {{name}} يريد مصادقتك",
@@ -97,8 +95,6 @@
     "allRead": "قرأت كل شيء ✨",
     "row": {
       "like": "أُعجب {{names}} بصورتك",
-      "comment": "علّق {{names}} على صورتك",
-      "photoMention": "ذكرك {{names}} في تعليق",
       "mention": "ذكرك {{names}}",
       "friendRequest": "{{names}} يريد مصادقتك",
       "friendAccepted": "قبل {{names}} طلب صداقتك",
@@ -151,5 +147,16 @@
     "saved": "تم الحفظ",
     "quiet": "ساعات الهدوء",
     "quietSub": "لا إشعارات من {{from}} إلى {{to}}"
+  },
+  "photoComment": {
+    "author": "💬 علّق {{name}} على صورتك",
+    "author_many": "💬 علّق {{name}} و{{n}} آخرون على صورتك",
+    "author_many_one": "💬 علّق {{name}} وشخص آخر على صورتك",
+    "mention": "👋 أشار إليك {{name}}",
+    "reply": "↩️ ردّ {{name}} على تعليقك",
+    "previous": "💬 علّق {{name}} أيضًا على صورة {{owner}}",
+    "previous_many": "💬 علّق {{name}} و{{n}} آخرون على صورة {{owner}}",
+    "previous_many_one": "💬 علّق {{name}} وشخص آخر على صورة {{owner}}",
+    "previous_self": "💬 ردّ {{name}} على صورته"
   }
 }

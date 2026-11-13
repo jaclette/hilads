@@ -37,8 +37,6 @@
     "rankCity": "🏆 昨天 {{city}} 第 {{rank}} 名",
     "votes": "🏆 昨天的照片拿到 {{count}} ❤️",
     "localPass": "🎟️ {{city}} 的 Local Pass！",
-    "comment": "💬 {{name}} 在你的照片留言",
-    "comments": "💬 你的照片有新留言",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} 提到你",
     "friend": "👋 {{name}} 想加你好友",
@@ -72,8 +70,6 @@
     "allRead": "全部看完了 ✨",
     "row": {
       "like": "{{names}} 對你的照片按讚",
-      "comment": "{{names}} 在你的照片留言",
-      "photoMention": "{{names}} 在留言中提到你",
       "mention": "{{names}} 提到你",
       "friendRequest": "{{names}} 想加你好友",
       "friendAccepted": "{{names}} 接受了你的好友邀請",
@@ -163,5 +159,16 @@
     "friendArrivalSub": "朋友抵達某個城市時",
     "dailyLabel": "新的 Daily Challenge",
     "dailySub": "每天早上的新挑戰"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} 在你的照片留言了",
+    "author_many": "💬 {{name}} 和另外 {{n}} 人在你的照片留言了",
+    "author_many_one": "💬 {{name}} 和另外 1 人在你的照片留言了",
+    "mention": "👋 {{name}} 提到了你",
+    "reply": "↩️ {{name}} 回覆了你的留言",
+    "previous": "💬 {{name}} 也在 {{owner}} 的照片留言了",
+    "previous_many": "💬 {{name}} 和另外 {{n}} 人在 {{owner}} 的照片留言了",
+    "previous_many_one": "💬 {{name}} 和另外 1 人在 {{owner}} 的照片留言了",
+    "previous_self": "💬 {{name}} 在自己的照片下回覆了"
   }
 }

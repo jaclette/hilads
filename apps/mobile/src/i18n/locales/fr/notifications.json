@@ -58,8 +58,6 @@
     "rankCity": "🏆 #{{rank}} à {{city}} hier",
     "votes": "🏆 {{count}} ❤️ sur ta photo d'hier",
     "localPass": "🎟️ Local Pass de {{city}} !",
-    "comment": "💬 {{name}} a commenté ta photo",
-    "comments": "💬 Nouveaux commentaires sur ta photo",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} t'a mentionné",
     "friend": "👋 {{name}} veut être ton ami",
@@ -93,8 +91,6 @@
     "allRead": "Tout est lu ✨",
     "row": {
       "like": "{{names}} a aimé ta photo",
-      "comment": "{{names}} a commenté ta photo",
-      "photoMention": "{{names}} t'a mentionné dans un commentaire",
       "mention": "{{names}} t'a mentionné",
       "friendRequest": "{{names}} veut être ton ami",
       "friendAccepted": "{{names}} a accepté ta demande d'ami",
@@ -141,5 +137,16 @@
     "saved": "Enregistré",
     "quiet": "Heures calmes",
     "quietSub": "Pas de notif de {{from}} à {{to}}"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} a commenté ta photo",
+    "author_many": "💬 {{name}} et {{n}} autres ont commenté ta photo",
+    "author_many_one": "💬 {{name}} et 1 autre personne ont commenté ta photo",
+    "mention": "👋 {{name}} t'a mentionné",
+    "reply": "↩️ {{name}} a répondu à ton commentaire",
+    "previous": "💬 {{name}} a aussi commenté la photo de {{owner}}",
+    "previous_many": "💬 {{name}} et {{n}} autres ont commenté la photo de {{owner}}",
+    "previous_many_one": "💬 {{name}} et 1 autre personne ont commenté la photo de {{owner}}",
+    "previous_self": "💬 {{name}} a répondu sur sa photo"
   }
 }

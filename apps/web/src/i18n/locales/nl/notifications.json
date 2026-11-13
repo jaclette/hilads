@@ -37,8 +37,6 @@
     "rankCity": "🏆 Gisteren #{{rank}} in {{city}}",
     "votes": "🏆 {{count}} ❤️ op je foto van gisteren",
     "localPass": "🎟️ Local Pass van {{city}}!",
-    "comment": "💬 {{name}} reageerde op je foto",
-    "comments": "💬 Nieuwe reacties op je foto",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} noemde je",
     "friend": "👋 {{name}} wil vrienden worden",
@@ -72,8 +70,6 @@
     "allRead": "Alles bijgewerkt ✨",
     "row": {
       "like": "{{names}} vindt je foto leuk",
-      "comment": "{{names}} reageerde op je foto",
-      "photoMention": "{{names}} noemde je in een reactie",
       "mention": "{{names}} noemde je",
       "friendRequest": "{{names}} wil vrienden worden",
       "friendAccepted": "{{names}} accepteerde je vriendschapsverzoek",
@@ -165,5 +161,16 @@
     "friendArrivalSub": "Als een vriend in een stad aankomt",
     "dailyLabel": "Nieuwe Daily Challenge",
     "dailySub": "De nieuwe challenge elke ochtend"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} reageerde op je foto",
+    "author_many": "💬 {{name}} en {{n}} anderen reageerden op je foto",
+    "author_many_one": "💬 {{name}} en 1 ander reageerden op je foto",
+    "mention": "👋 {{name}} noemde je",
+    "reply": "↩️ {{name}} reageerde op je reactie",
+    "previous": "💬 {{name}} reageerde ook op de foto van {{owner}}",
+    "previous_many": "💬 {{name}} en {{n}} anderen reageerden op de foto van {{owner}}",
+    "previous_many_one": "💬 {{name}} en 1 ander reageerden op de foto van {{owner}}",
+    "previous_self": "💬 {{name}} reageerde op de eigen foto"
   }
 }

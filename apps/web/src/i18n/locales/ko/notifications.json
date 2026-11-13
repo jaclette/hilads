@@ -37,8 +37,6 @@
     "rankCity": "🏆 어제 {{city}} {{rank}}위",
     "votes": "🏆 어제 사진에 {{count}} ❤️",
     "localPass": "🎟️ {{city}} Local Pass!",
-    "comment": "💬 {{name}} 님이 사진에 댓글을 남겼어요",
-    "comments": "💬 사진에 새 댓글이 있어요",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} 님이 언급했어요",
     "friend": "👋 {{name}} 님이 친구 신청을 했어요",
@@ -72,8 +70,6 @@
     "allRead": "다 확인했어요 ✨",
     "row": {
       "like": "{{names}} 님이 사진을 좋아해요",
-      "comment": "{{names}} 님이 사진에 댓글을 남겼어요",
-      "photoMention": "{{names}} 님이 댓글에서 언급했어요",
       "mention": "{{names}} 님이 언급했어요",
       "friendRequest": "{{names}} 님이 친구 신청을 했어요",
       "friendAccepted": "{{names}} 님이 친구 신청을 수락했어요",
@@ -163,5 +159,16 @@
     "friendArrivalSub": "친구가 도시에 도착할 때",
     "dailyLabel": "새 Daily Challenge",
     "dailySub": "매일 아침 새 챌린지"
+  },
+  "photoComment": {
+    "author": "💬 {{name}}님이 내 사진에 댓글을 남겼어요",
+    "author_many": "💬 {{name}}님 외 {{n}}명이 내 사진에 댓글을 남겼어요",
+    "author_many_one": "💬 {{name}}님 외 1명이 내 사진에 댓글을 남겼어요",
+    "mention": "👋 {{name}}님이 나를 언급했어요",
+    "reply": "↩️ {{name}}님이 내 댓글에 답글을 남겼어요",
+    "previous": "💬 {{name}}님도 {{owner}}님의 사진에 댓글을 남겼어요",
+    "previous_many": "💬 {{name}}님 외 {{n}}명이 {{owner}}님의 사진에 댓글을 남겼어요",
+    "previous_many_one": "💬 {{name}}님 외 1명이 {{owner}}님의 사진에 댓글을 남겼어요",
+    "previous_self": "💬 {{name}}님이 자기 사진에 답글을 남겼어요"
   }
 }

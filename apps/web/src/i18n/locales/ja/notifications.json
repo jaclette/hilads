@@ -37,8 +37,6 @@
     "rankCity": "🏆 昨日は{{city}}で{{rank}}位",
     "votes": "🏆 昨日の写真に{{count}} ❤️",
     "localPass": "🎟️ {{city}}のLocal Pass！",
-    "comment": "💬 {{name}}さんが写真にコメント",
-    "comments": "💬 写真に新しいコメント",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}}さんからメンション",
     "friend": "👋 {{name}}さんから友だち申請",
@@ -72,8 +70,6 @@
     "allRead": "すべて既読 ✨",
     "row": {
       "like": "{{names}}さんが写真にいいね",
-      "comment": "{{names}}さんが写真にコメント",
-      "photoMention": "{{names}}さんがコメントでメンション",
       "mention": "{{names}}さんからメンション",
       "friendRequest": "{{names}}さんから友だち申請",
       "friendAccepted": "{{names}}さんが友だち申請を承認",
@@ -163,5 +159,16 @@
     "friendArrivalSub": "友だちが街に着いたとき",
     "dailyLabel": "新しいDaily Challenge",
     "dailySub": "毎朝の新しいチャレンジ"
+  },
+  "photoComment": {
+    "author": "💬 {{name}}さんがあなたの写真にコメントしました",
+    "author_many": "💬 {{name}}さんほか{{n}}人があなたの写真にコメントしました",
+    "author_many_one": "💬 {{name}}さんほか1人があなたの写真にコメントしました",
+    "mention": "👋 {{name}}さんがあなたをメンションしました",
+    "reply": "↩️ {{name}}さんがあなたのコメントに返信しました",
+    "previous": "💬 {{name}}さんも{{owner}}さんの写真にコメントしました",
+    "previous_many": "💬 {{name}}さんほか{{n}}人が{{owner}}さんの写真にコメントしました",
+    "previous_many_one": "💬 {{name}}さんほか1人が{{owner}}さんの写真にコメントしました",
+    "previous_self": "💬 {{name}}さんが自分の写真に返信しました"
   }
 }

@@ -37,8 +37,6 @@
     "rankCity": "🏆 #{{rank}} in {{city}} yesterday",
     "votes": "🏆 {{count}} ❤️ on yesterday's photo",
     "localPass": "🎟️ Local Pass of {{city}}!",
-    "comment": "💬 {{name}} commented on your photo",
-    "comments": "💬 New comments on your photo",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} mentioned you",
     "friend": "👋 {{name}} wants to be friends",
@@ -72,8 +70,6 @@
     "allRead": "All caught up ✨",
     "row": {
       "like": "{{names}} liked your photo",
-      "comment": "{{names}} commented on your photo",
-      "photoMention": "{{names}} mentioned you in a comment",
       "mention": "{{names}} mentioned you",
       "friendRequest": "{{names}} wants to be friends",
       "friendAccepted": "{{names}} accepted your friend request",
@@ -165,5 +161,16 @@
     "friendArrivalSub": "When a friend arrives in a city",
     "dailyLabel": "Daily Challenge drop",
     "dailySub": "The new challenge every morning"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} commented on your photo",
+    "author_many": "💬 {{name}} and {{n}} others commented on your photo",
+    "author_many_one": "💬 {{name}} and 1 other commented on your photo",
+    "mention": "👋 {{name}} mentioned you",
+    "reply": "↩️ {{name}} replied to your comment",
+    "previous": "💬 {{name}} also commented on {{owner}}'s photo",
+    "previous_many": "💬 {{name}} and {{n}} others commented on {{owner}}'s photo",
+    "previous_many_one": "💬 {{name}} and 1 other commented on {{owner}}'s photo",
+    "previous_self": "💬 {{name}} replied on their photo"
   }
 }

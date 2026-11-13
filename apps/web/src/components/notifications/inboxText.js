@@ -1,4 +1,5 @@
 import { shortCityName } from '../../i18n/cityName'
+import { COMMENT_TYPES, commentLine } from '../../lib/commentLine'
 
 /** "Lan", "Lan and Minh", "Lan and 3 others" (notifications:inbox.names). */
 export function namesOf(item, t) {
@@ -13,8 +14,6 @@ function keyOf(item) {
   const d = item.data ?? {}
   switch (item.type) {
     case 'daily_vote': return 'like'
-    case 'photo_comment': return d.kind === 'author' ? 'comment' : null
-    case 'photo_mention': return 'photoMention'
     case 'mention': case 'city_here': return 'mention'
     case 'friend_request_received': return 'friendRequest'
     case 'friend_request_accepted': case 'friend_added': return 'friendAccepted'
@@ -41,6 +40,15 @@ export function rowText(item, t) {
   if (item.type === 'daily_rank') {
     return plain(d.scope === 'world' ? t('inbox.row.rankUpWorld', { rank: d.rank }) : t('inbox.row.rankUp', { rank: d.rank, where: city }))
   }
+  // Comments on Daily photos: the same line as the Today card and the push (commentLine), the actor's name in bold.
+  if (COMMENT_TYPES.includes(item.type)) {
+    const parts = []
+    commentLine(item, t, MARK).split(MARK).forEach((chunk, i) => {
+      if (i > 0) parts.push({ text: item.actors?.[0]?.name ?? d.actorName ?? '', bold: true })
+      if (chunk) parts.push({ text: chunk, bold: false })
+    })
+    return { parts, quote: item.body }
+  }
   const key = keyOf(item)
   const names = namesOf(item, t)
   if (key === null || (!names && key !== 'joinAccepted' && key !== 'landedMany')) {
@@ -52,7 +60,7 @@ export function rowText(item, t) {
     if (i > 0) parts.push({ text: names, bold: true })
     if (chunk) parts.push({ text: chunk, bold: false })
   })
-  return { parts, quote: ['comment', 'photoMention', 'mention'].includes(key) ? item.body : null }
+  return { parts, quote: key === 'mention' ? item.body : null }
 }
 
 /**
@@ -108,19 +116,17 @@ function fragment(i, items, t) {
         : t('away.votes', { count: d.votes ?? 0 })
     }
     case 'daily_local_pass': return t('away.localPass', { city: shortCityName(d.cityName ?? '') })
-    case 'photo_comment': {
-      const all = items.filter(x => x.type === 'photo_comment')
-      return all.length === 1 && i.count === 1 && name ? t('away.comment', { name }) : t('away.comments')
-    }
+    // Comments and photo mentions: the same line as the Notifications rows and the push (commentLine).
+    case 'photo_comment': case 'photo_mention': return commentLine(i, t)
     case 'daily_vote': return t('away.likes', { count: items.filter(x => x.type === 'daily_vote').reduce((n, x) => n + x.count, 0) })
-    case 'mention': case 'photo_mention': return name ? t('away.mention', { name }) : null
+    case 'mention': return name ? t('away.mention', { name }) : null
     case 'friend_request_received': return name ? t('away.friend', { name }) : null
     case 'profile_view': return name ? t('away.view', { name }) : null
     default: return null
   }
 }
 
-/** Unseen items as one line, most important first, each kind once ("💬 New comments on your photo · ❤️ +12"). */
+/** Unseen items as one line, most important first, each kind once ("💬 Lan also commented on Maxime's photo · ❤️ +12"). */
 export function awayLine(items, t, max = 3) {
   const parts = []
   for (const i of byImportance(items)) {

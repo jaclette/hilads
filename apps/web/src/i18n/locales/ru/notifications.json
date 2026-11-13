@@ -37,8 +37,6 @@
     "rankCity": "🏆 Вчера #{{rank}} — {{city}}",
     "votes": "🏆 {{count}} ❤️ на вчерашнем фото",
     "localPass": "🎟️ Local Pass: {{city}}!",
-    "comment": "💬 Новый комментарий от {{name}}",
-    "comments": "💬 Новые комментарии к твоему фото",
     "likes": "❤️ +{{count}}",
     "mention": "💬 Тебя упомянули: {{name}}",
     "friend": "👋 Заявка в друзья от {{name}}",
@@ -74,8 +72,6 @@
     "allRead": "Всё прочитано ✨",
     "row": {
       "like": "{{names}}: лайк твоему фото",
-      "comment": "{{names}}: комментарий к твоему фото",
-      "photoMention": "{{names}}: упоминание в комментарии",
       "mention": "{{names}}: упоминание",
       "friendRequest": "{{names}}: заявка в друзья",
       "friendAccepted": "{{names}}: заявка в друзья принята",
@@ -171,5 +167,16 @@
     "friendArrivalSub": "Когда друг прилетает в город",
     "dailyLabel": "Новый Daily Challenge",
     "dailySub": "Новый челлендж каждое утро"
+  },
+  "photoComment": {
+    "author": "💬 {{name}}: новый комментарий к твоему фото",
+    "author_many": "💬 {{name}} и ещё {{n}}: новые комментарии к твоему фото",
+    "author_many_one": "💬 {{name}} и ещё 1: новые комментарии к твоему фото",
+    "mention": "👋 {{name}} упоминает тебя",
+    "reply": "↩️ {{name}} отвечает на твой комментарий",
+    "previous": "💬 {{name}} тоже комментирует фото {{owner}}",
+    "previous_many": "💬 {{name}} и ещё {{n}}: новые комментарии к фото {{owner}}",
+    "previous_many_one": "💬 {{name}} и ещё 1: новые комментарии к фото {{owner}}",
+    "previous_self": "💬 {{name}} отвечает под своим фото"
   }
 }

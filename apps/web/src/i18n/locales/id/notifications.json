@@ -37,8 +37,6 @@
     "rankCity": "🏆 Kemarin #{{rank}} di {{city}}",
     "votes": "🏆 {{count}} ❤️ di foto kemarin",
     "localPass": "🎟️ Local Pass {{city}}!",
-    "comment": "💬 {{name}} komentar di fotomu",
-    "comments": "💬 Ada komentar baru di fotomu",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} menyebut kamu",
     "friend": "👋 {{name}} mau berteman",
@@ -72,8 +70,6 @@
     "allRead": "Sudah kebaca semua ✨",
     "row": {
       "like": "{{names}} suka fotomu",
-      "comment": "{{names}} komentar di fotomu",
-      "photoMention": "{{names}} menyebut kamu di komentar",
       "mention": "{{names}} menyebut kamu",
       "friendRequest": "{{names}} mau berteman",
       "friendAccepted": "{{names}} menerima permintaan pertemananmu",
@@ -163,5 +159,16 @@
     "friendArrivalSub": "Saat temanmu tiba di sebuah kota",
     "dailyLabel": "Daily Challenge baru",
     "dailySub": "Tantangan baru tiap pagi"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} mengomentari fotomu",
+    "author_many": "💬 {{name}} dan {{n}} lainnya mengomentari fotomu",
+    "author_many_one": "💬 {{name}} dan 1 lainnya mengomentari fotomu",
+    "mention": "👋 {{name}} menyebutmu",
+    "reply": "↩️ {{name}} membalas komentarmu",
+    "previous": "💬 {{name}} juga mengomentari foto {{owner}}",
+    "previous_many": "💬 {{name}} dan {{n}} lainnya mengomentari foto {{owner}}",
+    "previous_many_one": "💬 {{name}} dan 1 lainnya mengomentari foto {{owner}}",
+    "previous_self": "💬 {{name}} membalas di fotonya sendiri"
   }
 }

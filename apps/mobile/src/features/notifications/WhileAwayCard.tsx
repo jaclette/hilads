@@ -17,6 +17,7 @@ import { track } from '@/services/analytics';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from './counts';
 import { setAwayShowsResults } from './awayResults';
 import { holdScreen } from '@/lib/celebrationQueue';
+import { commentLine } from './commentLine';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -30,7 +31,10 @@ export function byImportance(items: InboxItem[]): InboxItem[] {
   return [...items].sort((a, b) => rank(a) - rank(b) || b.created_at.localeCompare(a.created_at));
 }
 
-/** One item's fragment ("🏆 #2 in the world yesterday", "💬 Lan commented on your photo"); likes are summed. */
+/**
+ * One item's fragment ("🏆 #2 in the world yesterday", "💬 Lan also commented on Maxime's photo"); likes are summed.
+ * Comments and photo mentions: the same line as the Notifications rows and the push (commentLine).
+ */
 function fragment(i: InboxItem, items: InboxItem[], t: TFn): string | null {
   const d = i.data;
   const name = i.actors[0]?.name;
@@ -43,19 +47,16 @@ function fragment(i: InboxItem, items: InboxItem[], t: TFn): string | null {
         : t('away.votes', { count: d.votes ?? 0 });
     }
     case 'daily_local_pass': return t('away.localPass', { city: shortCityName(d.cityName ?? '') });
-    case 'photo_comment': {
-      const all = items.filter(x => x.type === 'photo_comment');
-      return all.length === 1 && i.count === 1 && name ? t('away.comment', { name }) : t('away.comments');
-    }
+    case 'photo_comment': case 'photo_mention': return commentLine(i, t);
     case 'daily_vote': return t('away.likes', { count: items.filter(x => x.type === 'daily_vote').reduce((n, x) => n + x.count, 0) });
-    case 'mention': case 'photo_mention': return name ? t('away.mention', { name }) : null;
+    case 'mention': return name ? t('away.mention', { name }) : null;
     case 'friend_request_received': return name ? t('away.friend', { name }) : null;
     case 'profile_view': return name ? t('away.view', { name }) : null;
     default: return null;
   }
 }
 
-/** The one-liner: the fragments, most important first, each kind once ("💬 New comments on your photo · ❤️ +3"). */
+/** The one-liner: the fragments, most important first, each kind once ("💬 Lan also commented on Maxime's photo · ❤️ +3"). */
 export function awayLine(items: InboxItem[], t: TFn, max = 3): string {
   const parts: string[] = [];
   for (const i of byImportance(items)) {

@@ -37,8 +37,6 @@
     "rankCity": "🏆 เมื่อวานอันดับ {{rank}} ใน{{city}}",
     "votes": "🏆 รูปเมื่อวานได้ {{count}} ❤️",
     "localPass": "🎟️ Local Pass ของ{{city}}!",
-    "comment": "💬 {{name}} คอมเมนต์รูปของคุณ",
-    "comments": "💬 มีคอมเมนต์ใหม่ในรูปของคุณ",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} พูดถึงคุณ",
     "friend": "👋 {{name}} อยากเป็นเพื่อนกับคุณ",
@@ -72,8 +70,6 @@
     "allRead": "อ่านครบแล้ว ✨",
     "row": {
       "like": "{{names}} ไลก์รูปของคุณ",
-      "comment": "{{names}} คอมเมนต์รูปของคุณ",
-      "photoMention": "{{names}} พูดถึงคุณในคอมเมนต์",
       "mention": "{{names}} พูดถึงคุณ",
       "friendRequest": "{{names}} อยากเป็นเพื่อนกับคุณ",
       "friendAccepted": "{{names}} ตอบรับคำขอเป็นเพื่อนแล้ว",
@@ -163,5 +159,16 @@
     "friendArrivalSub": "เมื่อเพื่อนมาถึงเมืองไหนสักเมือง",
     "dailyLabel": "Daily Challenge ใหม่",
     "dailySub": "ชาเลนจ์ใหม่ทุกเช้า"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} แสดงความคิดเห็นในรูปของคุณ",
+    "author_many": "💬 {{name}} และอีก {{n}} คนแสดงความคิดเห็นในรูปของคุณ",
+    "author_many_one": "💬 {{name}} และอีก 1 คนแสดงความคิดเห็นในรูปของคุณ",
+    "mention": "👋 {{name}} กล่าวถึงคุณ",
+    "reply": "↩️ {{name}} ตอบกลับความคิดเห็นของคุณ",
+    "previous": "💬 {{name}} แสดงความคิดเห็นในรูปของ {{owner}} ด้วย",
+    "previous_many": "💬 {{name}} และอีก {{n}} คนแสดงความคิดเห็นในรูปของ {{owner}}",
+    "previous_many_one": "💬 {{name}} และอีก 1 คนแสดงความคิดเห็นในรูปของ {{owner}}",
+    "previous_self": "💬 {{name}} ตอบกลับในรูปของตัวเอง"
   }
 }

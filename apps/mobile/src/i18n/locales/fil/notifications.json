@@ -58,8 +58,6 @@
     "rankCity": "🏆 #{{rank}} sa {{city}} kahapon",
     "votes": "🏆 {{count}} ❤️ sa photo mo kahapon",
     "localPass": "🎟️ Local Pass ng {{city}}!",
-    "comment": "💬 Nag-comment si {{name}} sa photo mo",
-    "comments": "💬 May bagong comments sa photo mo",
     "likes": "❤️ +{{count}}",
     "mention": "💬 Na-mention ka ni {{name}}",
     "friend": "👋 Gusto kang i-friend ni {{name}}",
@@ -93,8 +91,6 @@
     "allRead": "Updated ka na ✨",
     "row": {
       "like": "Nag-like si {{names}} sa photo mo",
-      "comment": "Nag-comment si {{names}} sa photo mo",
-      "photoMention": "Na-mention ka ni {{names}} sa comment",
       "mention": "Na-mention ka ni {{names}}",
       "friendRequest": "Gusto kang i-friend ni {{names}}",
       "friendAccepted": "Tinanggap ni {{names}} ang friend request mo",
@@ -139,5 +135,16 @@
     "saved": "Na-save",
     "quiet": "Quiet hours",
     "quietSub": "Walang push mula {{from}} hanggang {{to}}"
+  },
+  "photoComment": {
+    "author": "💬 Nag-comment si {{name}} sa photo mo",
+    "author_many": "💬 Nag-comment si {{name}} at {{n}} iba pa sa photo mo",
+    "author_many_one": "💬 Nag-comment si {{name}} at 1 iba pa sa photo mo",
+    "mention": "👋 Binanggit ka ni {{name}}",
+    "reply": "↩️ Sinagot ni {{name}} ang comment mo",
+    "previous": "💬 Nag-comment din si {{name}} sa photo ni {{owner}}",
+    "previous_many": "💬 Nag-comment si {{name}} at {{n}} iba pa sa photo ni {{owner}}",
+    "previous_many_one": "💬 Nag-comment si {{name}} at 1 iba pa sa photo ni {{owner}}",
+    "previous_self": "💬 Sumagot si {{name}} sa sarili niyang photo"
   }
 }
