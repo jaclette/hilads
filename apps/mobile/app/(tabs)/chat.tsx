@@ -698,6 +698,7 @@ export default function ChatTab() {
   }, []);
 
   const handleReply = useCallback((msg: Message) => {
+    if (!msg.id) return; // id-less system rows can't be replied to
     setReplyingTo({
       id:       msg.id,
       nickname: msg.nickname,

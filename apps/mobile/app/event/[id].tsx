@@ -613,8 +613,8 @@ export default function EventDetailScreen() {
             console.warn('[event] reaction failed:', e);
           }
         }}
-        onReply={actionSheetMsg ? () => {
-          setReplyingTo({ id: actionSheetMsg.id, nickname: actionSheetMsg.nickname, content: actionSheetMsg.content ?? '', type: actionSheetMsg.type });
+        onReply={actionSheetMsg?.id ? () => {
+          setReplyingTo({ id: actionSheetMsg.id!, nickname: actionSheetMsg.nickname, content: actionSheetMsg.content ?? '', type: actionSheetMsg.type });
         } : undefined}
         onCopy={actionSheetMsg?.content ? () => {
           Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
