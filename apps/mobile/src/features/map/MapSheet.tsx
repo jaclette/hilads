@@ -120,6 +120,9 @@ export const MapSheet = forwardRef<MapSheetHandle, {
       backgroundComponent={WaveBackground}
       handleComponent={WaveHandle}
       enableDynamicSizing={false}
+      // The library makes the whole sheet ONE accessibility element by default: VoiceOver (and the
+      // UI tests) could reach its head but not the spot rows. Its children are reachable one by one.
+      accessible={false}
     >
       <Pressable onLayout={onHead} onPress={atPeek ? openHalf : undefined} disabled={!atPeek} style={styles.head} testID="map-sheet"
                  accessibilityRole="button" accessibilityLabel={`${before}${emptyArea ? 0 : count}${after}${place ? ` (${place})` : ''}. ${sub}`} accessibilityHint={t('map.sheet.hint')}>
