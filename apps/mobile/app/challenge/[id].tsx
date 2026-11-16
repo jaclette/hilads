@@ -248,7 +248,7 @@ export default function ChallengeChatScreen() {
         },
       },
     ]);
-  }, [id, identity, router, t]);
+  }, [id, identity, t]);
 
 
   // Creator relaunches an ENDED challenge: reopens with the SAME countdown it was
@@ -605,14 +605,15 @@ export default function ChallengeChatScreen() {
   // them, the second render (challenge loaded) reaches them, hook count
   // mismatch → React throws "Rendered more hooks than during the previous
   // render" and the screen crashes.
+  const createdBy      = challenge?.created_by;
+  const creatorGuestId = challenge?.guest_id;
   const creator = useMemo(
-    () => challenge
-      ? participants.find(p =>
-          (challenge.created_by && p.id === challenge.created_by) ||
-          (challenge.guest_id   && p.id === challenge.guest_id)
-        )
-      : undefined,
-    [participants, challenge?.created_by, challenge?.guest_id],
+    // No challenge → both ids are undefined → no match (undefined), as before.
+    () => participants.find(p =>
+      (createdBy      && p.id === createdBy) ||
+      (creatorGuestId && p.id === creatorGuestId)
+    ),
+    [participants, createdBy, creatorGuestId],
   );
 
   // Active taker - derived from challenge.acceptor_user_id so it stays

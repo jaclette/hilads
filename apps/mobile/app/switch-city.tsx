@@ -62,7 +62,7 @@ function ActivityDot({ live }: { live: boolean }) {
     );
     loop.start();
     return () => loop.stop();
-  }, [live]);
+  }, [live, scale]);
 
   return (
     <Animated.View style={[

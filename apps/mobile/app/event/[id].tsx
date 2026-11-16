@@ -259,7 +259,7 @@ export default function EventDetailScreen() {
     // joined_event is tracked server-side - no frontend duplicate
     await toggleParticipation();
     fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
-  }, [event, toggleParticipation, id, identity?.guestId]);
+  }, [toggleParticipation, id, identity?.guestId]);
 
   // Auto-join when arriving from the "Join" push action (?autojoin=1). Fires once,
   // and only if not already in - never toggles an existing participant back out.
@@ -272,12 +272,15 @@ export default function EventDetailScreen() {
   }, [autojoin, event, toggling, handleToggle]);
 
   // Join / leave WS event room so the server routes newMessage events here
+  // The nickname rides along on (re)joins but is not a reason to leave/rejoin the room: a ref keeps
+  // the reconnect re-join on the current name instead of the one captured when the room was joined.
+  const nicknameRef = useRef(identity?.nickname);
+  nicknameRef.current = identity?.nickname;
   useEffect(() => {
     if (!event?.id || !sessionId) return;
-    const nick = identity?.nickname;
-    if (socket.isConnected) socket.joinEvent(event.id, sessionId, nick);
+    if (socket.isConnected) socket.joinEvent(event.id, sessionId, nicknameRef.current);
     const offConnect = socket.on('connected', () => {
-      socket.joinEvent(event.id, sessionId, nick);
+      socket.joinEvent(event.id, sessionId, nicknameRef.current);
     });
     return () => {
       offConnect();

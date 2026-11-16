@@ -111,6 +111,7 @@ export default function SettingsScreen() {
     setSelectedVibe(account?.vibe ?? 'chill');
     setSelectedMode(account?.mode ?? identity?.mode ?? null);
     setSelectedInterests(account?.interests ?? []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- re-seed from the account only; identity.mode changes come from this screen's own guest picker
   }, [account?.username, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
   // Version tap easter egg

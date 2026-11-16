@@ -157,7 +157,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse, focused]);
+  }, [pulse, focused, vibGlow]);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef     = useRef(false); // true while typingStart has been emitted
@@ -220,7 +220,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       setSuggestions([...members, ...guests]);
     }, 250);
     return () => clearTimeout(t);
-  }, [mentionQuery, mentionsEnabled, mentionContext, mentionChannelId]);
+  }, [mentionQuery, mentionsEnabled, mentionContext, mentionChannelId, identity?.guestId]);
 
   function onSelectMention(s: MentionSuggestion) {
     const cursor = lastSel.current.end;

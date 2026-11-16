@@ -139,7 +139,7 @@ function PhotosScreenContent() {
     } catch {
       setFailed(true);
     }
-  }, [tab, cityId, guestId, challenge?.isActive]);
+  }, [tab, cityId, guestId, challenge?.isActive, ranked]);
   useEffect(() => { setProofs(null); load(); }, [load]);
 
   // A country's story (Today's stories row, a mosaic tile): its photos best first (its top photo

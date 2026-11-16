@@ -39,6 +39,18 @@ function makeLocalId(prefix = 'local'): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+// Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
+function toMs(ts: number | string | undefined): number {
+  if (!ts) return 0;
+  if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
+  return new Date(ts).getTime();
+}
+
+// Stable dedup key - system messages may lack id, fall back to guestId+createdAt
+function msgKey(m: Message): string {
+  return m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
+}
+
 export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initialData }: Params): Result {
   const { identity, account, blockedSet } = useApp();
 
@@ -69,18 +81,6 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   // Monotonic token so a slow load() from the PREVIOUS channel can't clobber the
   // new channel's messages after a fast city switch (A→B before A's fetch lands).
   const loadSeqRef      = useRef(0);
-
-  // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
-  function toMs(ts: number | string | undefined): number {
-    if (!ts) return 0;
-    if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
-    return new Date(ts).getTime();
-  }
-
-  // Stable dedup key - system messages may lack id, fall back to guestId+createdAt
-  function msgKey(m: Message): string {
-    return m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
-  }
 
     // join_request feed items are mutable (pending → accepted/rejected): the
     // resolve re-broadcasts the SAME id with updated content. Upsert those in
@@ -124,7 +124,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       if (toInsert.length === 0) return prev;
       return [...toInsert, ...prev];
     });
-  }, []);
+  }, [upsertJoinRequests]);
 
   // Initial load
   const load = useCallback(async () => {
@@ -157,6 +157,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       return;
     }
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- once per channel; callers reload() themselves when their loadFn's gating changes (challenge participation), auto-reloading on it would double-fetch
   }, [channelId]);
 
   // WebSocket - live new messages + reaction updates + reconnect catch-up
@@ -355,7 +356,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       markFailed(localId);
       setError('Failed to send message');
     }
-  }, [postTextFn, identity, account, channelId, maybeAskGuestForPush]);
+  }, [postTextFn, identity, account, maybeAskGuestForPush]);
 
   // ── Send image (optimistic with local URI preview) ─────────────────────────
 

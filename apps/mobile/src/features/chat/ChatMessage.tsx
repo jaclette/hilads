@@ -160,6 +160,7 @@ function useEntryAnimation(duration = 200) {
       Animated.timing(opacity,    { toValue: 1, duration, useNativeDriver: true }),
       Animated.timing(translateY, { toValue: 0, duration, useNativeDriver: true }),
     ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- entry animation: plays once on mount
   }, []);
 
   return { opacity, translateY };
@@ -316,6 +317,7 @@ function AnimatedEventPill({
         useNativeDriver: true,
       }),
     ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- entry animation: plays once on mount (a later index shift must not replay the stagger)
   }, []);
 
   const cancelDismiss = useAutoDismissFade({
@@ -560,7 +562,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
     if (!isHighlighted) return;
     highlightAnim.setValue(0.28);
     Animated.timing(highlightAnim, { toValue: 0, duration: 1400, useNativeDriver: false }).start();
-  }, [isHighlighted]);
+  }, [isHighlighted, highlightAnim]);
 
   // Image preview state - must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);

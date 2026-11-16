@@ -62,7 +62,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
       translateY.setValue(0);
       bgOpacity.setValue(1);
     }
-  }, [uri]);
+  }, [uri, translateY, bgOpacity]);
 
   const panResponder = useRef(
     PanResponder.create({

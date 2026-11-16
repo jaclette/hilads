@@ -71,7 +71,7 @@ function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
 
   useEffect(() => {
     Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }).start();
-  }, []);
+  }, [opacity]);
 
   function handleJoin() {
     onDismiss();
@@ -236,6 +236,7 @@ export default function ChatTab() {
   // banners reset on channel change (they're per-city).
   useEffect(() => {
     if (!channelId) return;
+    const timers = bannerTimers.current; // the same Map for the screen's life
     seenEventIds.current.clear();
     setEventFeedItems([]);
     setEventBanners([]);
@@ -278,18 +279,18 @@ export default function ChatTab() {
       }
 
       // Per-banner 20s auto-expire timer.
-      if (bannerTimers.current.has(id)) clearTimeout(bannerTimers.current.get(id)!);
+      if (timers.has(id)) clearTimeout(timers.get(id)!);
       const t = setTimeout(() => {
         setEventBanners(prev => prev.filter(b => b.id !== id));
-        bannerTimers.current.delete(id);
+        timers.delete(id);
       }, 20_000);
-      bannerTimers.current.set(id, t);
+      timers.set(id, t);
     });
 
     return () => {
       off();
-      bannerTimers.current.forEach(t => clearTimeout(t));
-      bannerTimers.current.clear();
+      timers.forEach(t => clearTimeout(t));
+      timers.clear();
     };
   }, [channelId]);
 

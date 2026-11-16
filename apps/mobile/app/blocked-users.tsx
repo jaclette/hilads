@@ -38,7 +38,7 @@ export default function BlockedUsersScreen() {
     if (!canAccessProfile(account)) {
       router.replace('/auth-gate');
     }
-  }, [account]);
+  }, [account, router]);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true); else setLoading(true);

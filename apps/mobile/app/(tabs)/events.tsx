@@ -208,6 +208,7 @@ export default function NowScreen() {
     console.log('[NowScreen] focus -', city?.name ?? 'no city');
     readUserLocation();
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the city id: load() is recreated every render (adding it would refetch on every render)
   }, [city?.channelId, readUserLocation]));
 
   // Safety trigger: if city loads after the screen is already focused,
@@ -217,6 +218,7 @@ export default function NowScreen() {
       console.log('[NowScreen] city changed →', city.name);
       load();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the city id; load() and city are read from this render
   }, [city?.channelId]);
 
   // Once boot completes with no city and no join, stop the spinner.

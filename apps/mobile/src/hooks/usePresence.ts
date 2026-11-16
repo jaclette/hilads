@@ -55,10 +55,9 @@ export function usePresence(): void {
     }
   }, [blockedSet, setOnlineUsers]);
 
+  const channelId = city?.channelId;
   useEffect(() => {
-    if (!city) return;
-
-    const channelId = city.channelId;
+    if (!channelId) return;
 
     // Server echoes back cityId as integer (e.g. 1), native stores as string ("1").
     // Use string coercion so "1" matches 1.
@@ -148,5 +147,5 @@ export function usePresence(): void {
       usersRef.current = [];
       setOnlineUsers([]);
     };
-  }, [city?.channelId]);
+  }, [channelId, setOnlineUsers]);
 }

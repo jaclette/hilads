@@ -100,7 +100,7 @@ export default function TopicChatScreen() {
         },
       },
     ]);
-  }, [id, identity, router, t]);
+  }, [id, identity, t]);
 
   async function handleShare() {
     if (!id) return;
@@ -252,6 +252,7 @@ export default function TopicChatScreen() {
       offConnected();
       appSub.remove();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- sessionId kept on purpose: a new WS session re-runs this (topic refresh + poll state), as before
   }, [id, sessionId]));
 
   // Join the WS topic room ONLY as a confirmed member. The WS server can't
