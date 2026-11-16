@@ -133,7 +133,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
         {noGeo ? (
           <>
             <button type="submit" className="ob-btn btn-primary">{t('join.browseCities')}</button>
-            <label className="ob-label" style={{ marginTop: 4 }}>{t('join.yourName')}</label>
+            <label className="ob-label" style={{ marginTop: 'var(--sp-4)' }}>{t('join.yourName')}</label>
             <div className="ob-input-row">
               <span
                 className="ob-avatar-preview"

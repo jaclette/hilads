@@ -43,7 +43,6 @@
     "view": "👀 شاهد {{name}} ملفك",
     "other": "🔔 لديك جديد",
     "dismiss": "إغلاق",
-    "open": "شاهد الجديد",
     "more_one": "{{count}} أخرى",
     "more_zero": "{{count}} أخرى",
     "more_two": "{{count}} أخرى",
@@ -71,7 +70,6 @@
     "read": "مقروء",
     "unread": "غير مقروء",
     "delete": "حذف",
-    "allRead": "قرأت كل شيء ✨",
     "row": {
       "like": "أُعجب {{names}} بصورتك",
       "mention": "ذكرك {{names}}",

@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Modifica ritrovo",
-    "category": "Categoria",
-    "cat": {
-      "general": "Generale",
-      "tips": "Consigli",
-      "food": "Cibo",
-      "drinks": "Drink",
-      "help": "Aiuto",
-      "meetup": "Incontro"
-    },
     "titleLabel": "A cosa stai pensando?",
     "titlePlaceholder": "Ho voglia di un caffè",
-    "detailsLabel": "Aggiungi dettagli",
-    "optional": "(facoltativo)",
-    "detailsPlaceholder": "Dai un po' di contesto…",
     "expiry": "Scade tra 8 h",
     "saving": "Salvataggio…",
     "starting": "Avvio…",
@@ -73,7 +61,6 @@
     "photo": "Foto",
     "unavailable": "Messaggio originale non disponibile"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Impossibile trovare la tua posizione. Attiva l'accesso alla posizione e riprova.",
     "imageType": "Scegli un'immagine JPEG, PNG o WebP.",

@@ -16,7 +16,7 @@ import { PickBadge, GoodToKnow } from './Pick'
 import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
 /** The ranking line ("Top voted this week in Saigon"), week first. */
 function rankingLine(t, ranking) {
@@ -109,7 +109,7 @@ export default function SpotPage({ spotId, onBack }) {
                 <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={themeIcon(k)} size={14} />{themeName(k)}</span>
               ))}
             </p>
-            {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{rank}</p>}
+            {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-8)' }}><Icon name="trophy-outline" size={16} />{rank}</p>}
             {spot.pick && <PickBadge />}
             {/* A pick alone has no answers to count. */}
             {(spot.proofCount > 0 || price) && (

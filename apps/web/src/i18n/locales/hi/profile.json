@@ -1,5 +1,4 @@
 {
-  "pageTitle": "मेरी प्रोफ़ाइल",
   "changePhoto": "प्रोफ़ाइल फ़ोटो बदलें",
   "yourProfile": "आपकी प्रोफ़ाइल",
   "mode": "मोड",
@@ -77,32 +76,11 @@
     "story": "शहर की कहानी",
     "storyPlaceholder": "इस शहर की कोई बात जो आपको बहुत पसंद है"
   },
-  "hangouts": {
-    "empty": "अभी कोई मुलाक़ात नहीं, एक शुरू करें 🗣️",
-    "host": "होस्ट"
-  },
-  "events": {
-    "going": "जा रहे हैं",
-    "goingEmpty": "अभी कोई प्लान नहीं, कुछ ढूँढें 🔥",
-    "hosting": "होस्ट कर रहे हैं",
-    "hostingEmpty": "अभी कुछ होस्ट नहीं किया, कुछ शुरू करें ✨",
-    "live": "लाइव",
-    "recurring": "↻ रेगुलर",
-    "upcoming": "आने वाले",
-    "deleteEvent": "इवेंट डिलीट करें"
-  },
-  "friends": {
-    "requests": "फ़्रेंड रिक्वेस्ट",
-    "empty": "अभी कोई दोस्त नहीं। प्रोफ़ाइल से जोड़ें।",
-    "mine": "मेरे दोस्त"
-  },
   "vibesTab": {
-    "received": "मिले हुए vibes",
     "score": "{{score}} vibe स्कोर",
     "basedOn_one": "{{count}} vibe पर आधारित",
     "basedOn_other": "{{count}} vibes पर आधारित",
-    "empty": "अभी कोई vibes नहीं",
-    "emptyHint": "लोग जब आपके लिए नोट लिखेंगे, आपका स्कोर यहाँ दिखेगा ✨"
+    "empty": "अभी कोई vibes नहीं"
   },
   "save": {
     "uploading": "अपलोड हो रहा है…",
@@ -127,10 +105,6 @@
     "usernameInvalid": "यह यूज़रनेम नहीं चलेगा",
     "saveFailed": "सेव नहीं हुआ। फिर से कोशिश करें।",
     "generic": "कुछ गड़बड़ हो गई। फिर से कोशिश करें।"
-  },
-  "challenges": {
-    "empty": "अभी कोई चैलेंज नहीं, एक लॉन्च करें 🔥",
-    "challenger": "चैलेंजर"
   },
   "appearance": "अपीयरेंस",
   "themeLight": "लाइट",
@@ -169,15 +143,11 @@
       "inReview_other": "{{count}} रिव्यू में",
       "specialTitle": "स्पेशल स्टैम्प",
       "specialSub": "लिमिटेड एडिशन, हर ख़ास दिन का एक। Local Pass में नहीं गिना जाता।",
-      "compared_one": "{{count}} देश से तुलना की",
-      "compared_other": "{{count}} देशों से तुलना की",
       "stampsOf_one": "{{total}} में से {{count}} स्टैम्प",
       "stampsOf_other": "{{total}} में से {{count}} स्टैम्प",
       "passEarned": "{{city}} में मिला",
       "passToGo_one": "बस {{count}} स्टैम्प और",
       "passToGo_other": "बस {{count}} स्टैम्प और",
-      "comparedCities_one": "{{count}} शहर से तुलना",
-      "comparedCities_other": "{{count}} शहरों से तुलना",
       "myPhotos": "मेरी फ़ोटो",
       "noPhotos": "आपकी Daily Challenge फ़ोटो यहाँ दिखेंगी।",
       "share": "मेरा पासपोर्ट शेयर करें",

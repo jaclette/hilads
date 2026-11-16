@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Mon profil",
   "changePhoto": "Changer la photo de profil",
   "yourProfile": "Ton profil",
   "mode": "Mode",
@@ -77,33 +76,12 @@
     "story": "Ton histoire avec la ville",
     "storyPlaceholder": "Quelque chose que tu adores dans cette ville"
   },
-  "hangouts": {
-    "empty": "Pas encore de sortie - lance-en une 🗣️",
-    "host": "Hôte"
-  },
-  "events": {
-    "going": "Je participe",
-    "goingEmpty": "Aucun plan pour l'instant, trouve un truc à faire 🔥",
-    "hosting": "J'organise",
-    "hostingEmpty": "Rien d'organisé pour l'instant, lance quelque chose ✨",
-    "live": "En direct",
-    "recurring": "↻ Récurrent",
-    "upcoming": "À venir",
-    "deleteEvent": "Supprimer l'événement"
-  },
-  "friends": {
-    "requests": "Demandes d'ami",
-    "empty": "Pas encore d'amis. Ajoutes-en depuis les profils.",
-    "mine": "Mes amis"
-  },
   "vibesTab": {
-    "received": "Vibes reçues",
     "score": "Score vibe : {{score}}",
     "basedOn_one": "basé sur {{count}} vibe",
     "basedOn_many": "basé sur {{count}} de vibes",
     "basedOn_other": "basé sur {{count}} vibes",
-    "empty": "Pas encore de vibes",
-    "emptyHint": "Ton score apparaîtra ici quand des gens t'auront laissé une note ✨"
+    "empty": "Pas encore de vibes"
   },
   "save": {
     "uploading": "Envoi…",
@@ -128,10 +106,6 @@
     "usernameInvalid": "Pseudo invalide",
     "saveFailed": "L'enregistrement a échoué. Réessaie.",
     "generic": "Ça n'a pas marché. Réessaie."
-  },
-  "challenges": {
-    "empty": "Pas encore de défi - lance-en un 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Apparence",
   "themeLight": "Clair",
@@ -174,9 +148,6 @@
       "inReview_other": "{{count}} en validation",
       "specialTitle": "Tampons spéciaux",
       "specialSub": "Édition limitée, un par jour spécial. Ils ne comptent pas pour le Local Pass.",
-      "compared_one": "Comparé avec {{count}} pays",
-      "compared_many": "Comparé avec {{count}} de pays",
-      "compared_other": "Comparé avec {{count}} pays",
       "stampsOf_one": "{{count}} tampon sur {{total}}",
       "stampsOf_many": "{{count}} de tampons sur {{total}}",
       "stampsOf_other": "{{count}} tampons sur {{total}}",
@@ -184,9 +155,6 @@
       "passToGo_one": "Encore {{count}} tampon",
       "passToGo_many": "Encore {{count}} de tampons",
       "passToGo_other": "Encore {{count}} tampons",
-      "comparedCities_one": "Comparé avec {{count}} ville",
-      "comparedCities_many": "Comparé avec {{count}} de villes",
-      "comparedCities_other": "Comparé avec {{count}} villes",
       "myPhotos": "Mes photos",
       "noPhotos": "Tes photos du Daily Challenge apparaîtront ici.",
       "share": "Partager mon passeport",

@@ -1,28 +1,17 @@
 {
   "world": {
     "tab": "Mundo",
-    "banner_one": "{{count}} desafio entre cidades ao vivo",
-    "banner_many": "{{count}} de desafios entre cidades ao vivo",
-    "banner_other": "{{count}} desafios entre cidades ao vivo",
-    "online": "{{count}} online",
-    "cities_one": "{{count}} cidade",
-    "cities_many": "{{count}} de cidades",
-    "cities_other": "{{count}} cidades",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} lançou um desafio {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} de {{city}} acabou de entrar no Hilads",
       "challengeWon": "🏆 {{nickname}} de {{city}} venceu o desafio {{challenge}}"
     },
     "quietCard": "Tá calmo aqui? {{count}} não lidas no Mundo. Toque pra abrir",
-    "heroEmpty": "Seja o primeiro a desafiar uma cidade",
-    "heroEmptySub": "Lance um desafio entre cidades",
-    "leaderboard": "Ranking",
     "arrivals_one": "{{count}} chegada",
     "arrivals_many": "{{count}} de chegadas",
     "arrivals_other": "{{count}} chegadas",
     "arrivalsTitle": "Chegadas recentes",
-    "arrivalsEmpty": "Sem chegadas recentes",
-    "seeAll": "Ver tudo"
+    "arrivalsEmpty": "Sem chegadas recentes"
   },
   "inspiration": {
     "heading": "Ideias de rolês",
@@ -34,37 +23,7 @@
   },
   "guestGate": {
     "createAccount": "Criar conta",
-    "signIn": "Entrar",
-    "create_event": {
-      "pageTitle": "Criar evento",
-      "title": "Ghosts podem dar uma olhada, mas não podem organizar.",
-      "sub": "Crie uma conta para organizar seu próprio evento e colocar sua cidade no mapa."
-    },
-    "view_profile": {
-      "pageTitle": "Perfil",
-      "title": "Ghosts podem dar uma olhada, mas perfis são só para membros.",
-      "sub": "Crie uma conta pra ver perfis, conhecer gente e montar sua turma na cidade."
-    },
-    "join_hangout": {
-      "pageTitle": "Participar de um rolê",
-      "title": "Ghosts podem dar uma olhada, mas não podem participar de rolês.",
-      "sub": "Cadastre-se pra entrar em rolês, salvar seu nome e ser avisado quando alguém quiser se encontrar."
-    },
-    "create_hangout": {
-      "pageTitle": "Começar um rolê",
-      "title": "Ghosts podem dar uma olhada, mas não podem organizar.",
-      "sub": "Cadastre-se pra começar um rolê, salvar seu nome e chamar a galera."
-    },
-    "create_challenge": {
-      "pageTitle": "Lançar um desafio",
-      "title": "Ghosts podem dar uma olhada, mas não podem desafiar.",
-      "sub": "Cadastre-se pra lançar um desafio pra moradores ou viajantes e cuidar da validação."
-    },
-    "accept_challenge": {
-      "pageTitle": "Aceitar um desafio",
-      "title": "Cadastre-se pra aceitar este desafio",
-      "sub": "Leva 3 segundos. Você volta direto pro desafio."
-    }
+    "signIn": "Entrar"
   },
   "welcome": {
     "live": "{{city}} está ao vivo",
@@ -115,15 +74,12 @@
   "joiningDefault": "Entrando no chat…",
   "tryAgain": "Tentar de novo",
   "feed": {
-    "hangoutTag": "Rolê",
-    "eventTag": "Evento",
     "nowTag": "Now",
     "laterTag": "Plan",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Público",
     "activeNow": "Ativo agora",
-    "repliesNew": "Ainda sem respostas. Seja o primeiro",
     "sayHi": "Dá um oi pra {{name}}",
     "sayHiGeneric": "Mandar um oi",
     "hostWaiting": "Esperando o primeiro oi",
@@ -138,8 +94,6 @@
     "groupPublic": "Eventos locais públicos",
     "groupPublicTicket": "Eventos locais públicos",
     "createEvent": "Criar evento local",
-    "startHangout": "Começar um rolê",
-    "openPlace": "Abra seu lugar",
     "loadError": "Não deu pra carregar os eventos",
     "loadErrorSub": "Tente de novo mais tarde ou crie algo novo em {{city}}.",
     "emptyLocalTitle": "Anime seu lugar",
@@ -147,29 +101,16 @@
     "emptyLocalSub": "Deixe {{city}} mais viva. Crie um evento recorrente no seu lugar favorito.",
     "emptySub": "Seja a primeira pessoa a agitar {{city}}",
     "noEvents": "Nenhum evento local agora",
-    "noHangouts": "Nenhum rolê ainda",
-    "noEventsSub": "Crie o primeiro em {{city}}",
-    "noHangoutsSub": "Comece um rolê e bote a cidade pra conversar",
-    "filterAll": "Tudo",
-    "seeComing": "Veja o que vem por aí",
-    "seeHappened": "veja o que rolou",
-    "createNew": "Criar",
-    "hiNowHint": "rolê agora",
-    "hiLaterHint": "planejar um evento"
+    "noEventsSub": "Crie o primeiro em {{city}}"
   },
   "header": {
     "online": "{{count}} por perto",
     "liveNow": "ao vivo",
     "seeWhosHere": "Ver quem está aqui",
-    "onlineAria_one": "{{count}} pessoa por perto, toque pra ver quem",
-    "onlineAria_many": "{{count}} de pessoas por perto, toque pra ver quem",
-    "onlineAria_other": "{{count}} pessoas por perto, toque pra ver quem",
     "notifications": "Notificações",
     "messages": "Mensagens",
     "shareCity": "Compartilhar cidade",
-    "switchCity": "Trocar de cidade",
-    "changeCity": "Trocar de cidade",
-    "currentWeather": "Clima atual: {{label}}"
+    "switchCity": "Trocar de cidade"
   },
   "here": {
     "title": "Pessoas por perto",
@@ -178,7 +119,6 @@
     "filterMode": "Modo",
     "you": "(você)",
     "hereNow": "Aqui agora",
-    "noMatchLive": "Ninguém combina com esses filtros agora.",
     "legends": "Lendas do Hilads",
     "legendsSub": "Fazem a cidade acontecer",
     "cityCrew": "Turma da cidade",
@@ -187,7 +127,6 @@
     "messageAria": "Mandar mensagem para {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "Seu evento",
     "edit": "Editar",
     "join": "Participar",
     "joined": "Participando",
@@ -205,26 +144,7 @@
     "firstHi": "Seja o primeiro a mandar um oi"
   },
   "create": {
-    "title": "Qual é a boa?",
-    "hangoutTitle": "Começar um rolê",
-    "hangoutSub": "Na hora - a galera entra com você agora",
-    "eventTitle": "Criar um evento",
-    "eventSub": "Planeje algo pra galera participar",
-    "challengeTitle": "Lançar um desafio",
-    "challengeSub": "Moradores e viajantes, conectados por um desafio",
-    "challengePageTitle": "Criar um desafio",
-    "challengeAudience": "Para quem?",
-    "challengeAudLocals": "Locais",
-    "challengeAudExplorers": "Viajantes",
-    "challengeType": "Tipo",
-    "challengeTypeFood": "Comida",
-    "challengeTypePlace": "Lugar",
-    "challengeTypeCulture": "Cultura",
-    "challengeTypeHelp": "Maluco",
-    "challengeTitleLabel": "Seu desafio",
-    "challengeTitlePlaceholder": "Ex.: Me leva no seu café escondido favorito",
-    "challengeCta": "Lançar desafio",
-    "challengeErrStart": "Não deu pra lançar o desafio"
+    "title": "Qual é a boa?"
   },
   "goingModal": {
     "going": "vão",
@@ -299,9 +219,6 @@
     "challengeValidated": "Desafio cumprido! {{name}} validou \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Desafio internacional: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 Foto"
-  },
   "typing": {
     "one": "{{name}} está digitando…",
     "two": "{{a}} e {{b}} estão digitando…",
@@ -318,33 +235,11 @@
     "sheetTitle": "Chegadas",
     "empty": "Ainda sem chegadas"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 ainda sem desafios em {{city}}",
-    "subRanked": "Toque pra topar seu próximo desafio →",
-    "subUnranked": "Aceite seu primeiro desafio pra começar a subir →",
-    "subTop": "Defenda seu título →",
-    "subEmpty": "Crie o primeiro pros viajantes toparem →",
-    "members_one": "{{count}} membro",
-    "members_many": "{{count}} de membros",
-    "members_other": "{{count}} membros",
-    "nearby": "{{count}} por perto",
-    "recent": "{{count}} recentes",
-    "mainUnranked_one": "🔥 {{count}} desafio em {{city}}",
-    "mainUnranked_many": "🔥 {{count}} de desafios em {{city}}",
-    "mainUnranked_other": "🔥 {{count}} desafios em {{city}}",
-    "mainRanked_one": "🔥 {{count}} desafio · 🏆 #{{rank}} em {{city}}",
-    "mainRanked_many": "🔥 {{count}} de desafios · 🏆 #{{rank}} em {{city}}",
-    "mainRanked_other": "🔥 {{count}} desafios · 🏆 #{{rank}} em {{city}}",
-    "mainTop_one": "🔥 {{count}} desafio · 🏆 #1 em {{city}}",
-    "mainTop_many": "🔥 {{count}} de desafios · 🏆 #1 em {{city}}",
-    "mainTop_other": "🔥 {{count}} desafios · 🏆 #1 em {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Viajante",
-    "ctaApp": "Jogue o desafio no app",
     "localPass": "Local Pass",
     "early": "Adiantado",
     "proposedBy": "Proposto por {{name}}",

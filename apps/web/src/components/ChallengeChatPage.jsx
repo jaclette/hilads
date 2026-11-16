@@ -93,9 +93,9 @@ function formatTime(ts) {
 // Solid fill = unmistakably tappable. The old translucent/outlined style read
 // as an already-done state ("✓ validated") rather than a primary CTA.
 const GROUP_BTN_STYLE = {
-  width: '100%', padding: '14px', borderRadius: 16, textAlign: 'center',
+  width: '100%', padding: 'var(--sp-16)', borderRadius: 16, textAlign: 'center',
   background: 'var(--primary)', border: 'none',
-  color: '#fff', fontSize: 15, fontWeight: 800, cursor: 'pointer',
+  color: '#fff', fontSize: 'var(--fs-body)', fontWeight: 800, cursor: 'pointer',
 }
 
 export default function ChallengeChatPage({
@@ -858,7 +858,7 @@ export default function ChallengeChatPage({
             date passed, not validated) must NOT read "Live": the creator gets a
             tappable Restart pill (sets a new date + reopens), others see "Ended". */}
         {(isValidated || challenge.closed) ? (
-          <span className="challenge-status-pill challenge-status-pill--done" style={{ gap: 4 }}>
+          <span className="challenge-status-pill challenge-status-pill--done" style={{ gap: 'var(--sp-4)' }}>
             <Icon name="checkmark" size={11} />{t('status.done', { ns: 'challenge', defaultValue: 'Done' })}
           </span>
         ) : isEnded ? (
@@ -868,17 +868,17 @@ export default function ChallengeChatPage({
               className="challenge-status-pill challenge-status-pill--restart"
               onClick={handleRelaunch}
               disabled={busy !== null}
-              style={{ gap: 4 }}
+              style={{ gap: 'var(--sp-4)' }}
             >
               <Icon name="refresh-outline" size={11} />{busy === 'relaunch' ? '…' : t('relaunch.cta', { ns: 'challenge', defaultValue: 'Restart' })}
             </button>
           ) : (
-            <span className="challenge-status-pill challenge-status-pill--ended" style={{ gap: 4 }}>
+            <span className="challenge-status-pill challenge-status-pill--ended" style={{ gap: 'var(--sp-4)' }}>
               <Icon name="hourglass-outline" size={11} />{t('status.ended', { ns: 'challenge', defaultValue: 'Ended' })}
             </span>
           )
         ) : (
-          <span className="challenge-status-pill challenge-status-pill--live" style={{ gap: 4 }}>
+          <span className="challenge-status-pill challenge-status-pill--live" style={{ gap: 'var(--sp-4)' }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: 3, background: 'currentColor' }} />{t('status.live', { ns: 'challenge', defaultValue: 'Live' })}
           </span>
         )}
@@ -891,7 +891,7 @@ export default function ChallengeChatPage({
             ? `${fromFlag} → ${toFlag}${targetCityNameOnly ? '  ·  ' + targetCityNameOnly : ''}`
             : `${targetCityNameOnly || t('mode.international')}`
           return (
-            <span className="challenge-badge challenge-badge--international" style={{ gap: 4 }}>{!fromFlag && <Icon name="globe-outline" size={12} />}{label}</span>
+            <span className="challenge-badge challenge-badge--international" style={{ gap: 'var(--sp-4)' }}>{!fromFlag && <Icon name="globe-outline" size={12} />}{label}</span>
           )
         })() : null /* Local = for everyone in the city; no audience pill. */}
         <button
@@ -981,9 +981,9 @@ export default function ChallengeChatPage({
           PHOTO-PROOF → submission deadline + "pick the winner"; joined takers
           submit via the ChallengeProofBlock rendered below. */}
       {isGroup && (
-        <div style={{ padding: '2px 12px 6px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ padding: 'var(--sp-2) var(--sp-12) var(--sp-8)', display: 'flex', flexDirection: 'column', gap: 'var(--sp-8)' }}>
           {(meetSummary || challenge.venue) ? (
-            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 10, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600, color: 'var(--muted,#9a9088)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 10, padding: 'var(--sp-8) var(--sp-16)', fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--muted,#9a9088)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ flex: 1 }}>
                 {isGroupPhoto
                   ? <><Icon name="hourglass-outline" size={12} />{` ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ${meetSummary ?? ''}`}</>
@@ -1000,7 +1000,7 @@ export default function ChallengeChatPage({
             // MEET: open the presence sheet. PHOTO: the winner is picked from the
             // "N photos · pick the best one" card below (no extra hint).
             isGroupPhoto ? null : !meetStarted ? (
-              <div style={{ textAlign: 'center', fontWeight: 700, color: 'var(--muted,#9a9088)', padding: '8px 0', fontSize: '0.86rem' }}>
+              <div style={{ textAlign: 'center', fontWeight: 700, color: 'var(--muted,#9a9088)', padding: 'var(--sp-8) 0', fontSize: 'var(--fs-sm)' }}>
                 <Icon name="hourglass-outline" size={14} /> {t('group.validateAfter', { ns: 'challenge', time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
               </div>
             ) : (
@@ -1009,7 +1009,7 @@ export default function ChallengeChatPage({
               </button>
             )
           ) : iAmJoined ? (
-            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>
+            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: 'var(--sp-8) 0' }}>
               <Icon name="checkmark" size={14} /> {isGroupPhoto
                 ? t('group.youreInPhoto', { ns: 'challenge', defaultValue: "You're in — submit your photo below." })
                 : t('group.youreIn', { ns: 'challenge', defaultValue: "You're in — see you there!" })}
@@ -1074,7 +1074,7 @@ export default function ChallengeChatPage({
           modal the user gets right after creation so they can re-ping more
           city members or re-share at any later moment. */}
       {isOwner && !isValidated && !challenge.is_in_progress && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 16px 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--sp-8) var(--sp-16) var(--sp-4)' }}>
           <button
             type="button"
             className="challenge-owner-invite-cta"
@@ -1089,7 +1089,7 @@ export default function ChallengeChatPage({
       {/* Share-to-my-city: owner OR a taker can drop the challenge
           deeplink into their own city feed in one tap. */}
       {(isOwner || !!myAcceptance) && onShareToCity && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 16px 8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--sp-4) var(--sp-16) var(--sp-8)' }}>
           <button
             type="button"
             className="share-to-city-pill"
@@ -1109,7 +1109,7 @@ export default function ChallengeChatPage({
       {/* Share-on-World: only INTERNATIONAL challenges, owner (or active taker),
           posts the deeplink into the global World channel as a clickable card. */}
       {(challenge.mode ?? 'local') === 'international' && (isOwner || !!myAcceptance) && onShareToWorld && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '0 16px 8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '0 var(--sp-16) var(--sp-8)' }}>
           <button
             type="button"
             className="share-to-city-pill"
@@ -1513,24 +1513,24 @@ export default function ChallengeChatPage({
       {/* Group presence validation (challenger-only). */}
       {isGroup && validateOpen && (
         <div onClick={() => setValidateOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px calc(96px + env(safe-area-inset-bottom))', maxHeight: '85vh', overflowY: 'auto' }}>
-            <h3 style={{ margin: '0 0 4px', fontSize: 18 }}>{t('group.validateTitle', { ns: 'challenge', defaultValue: 'Who showed up?' })}</h3>
-            <p style={{ margin: '0 0 12px', color: 'var(--muted,#999)', fontSize: 14 }}>{t('group.validateSub', { ns: 'challenge', defaultValue: 'Tick everyone who came to the meet. They each earn the reward.' })}</p>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 'var(--gutter) var(--gutter) calc(96px + env(safe-area-inset-bottom))', maxHeight: '85vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 var(--sp-4)', fontSize: 'var(--fs-md)' }}>{t('group.validateTitle', { ns: 'challenge', defaultValue: 'Who showed up?' })}</h3>
+            <p style={{ margin: '0 0 var(--sp-12)', color: 'var(--muted,#999)', fontSize: 'var(--fs-sm)' }}>{t('group.validateSub', { ns: 'challenge', defaultValue: 'Tick everyone who came to the meet. They each earn the reward.' })}</p>
             {participants.length === 0 ? (
-              <p style={{ color: 'var(--muted,#999)', textAlign: 'center', padding: '20px 0' }}>{t('group.noParticipants', { ns: 'challenge', defaultValue: 'Nobody has joined yet.' })}</p>
+              <p style={{ color: 'var(--muted,#999)', textAlign: 'center', padding: 'var(--sp-24) 0' }}>{t('group.noParticipants', { ns: 'challenge', defaultValue: 'Nobody has joined yet.' })}</p>
             ) : participants.map(p => {
               const on = presentChecked[p.id] !== false
               return (
-                <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', cursor: 'pointer' }}>
+                <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-12)', padding: 'var(--sp-8) 0', cursor: 'pointer' }}>
                   <input type="checkbox" checked={on} onChange={() => setPresentChecked(prev => ({ ...prev, [p.id]: !on }))} />
                   <span style={{ fontWeight: 600 }}>{p.displayName}</span>
                 </label>
               )
             })}
             {/* Meet rating - required before validating. */}
-            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text,#f3ede4)' }}>{t('group.rateMeet', { ns: 'challenge', defaultValue: 'How was the meet?' })}</div>
-              <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ marginTop: 'var(--sp-16)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--sp-8)' }}>
+              <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--text,#f3ede4)' }}>{t('group.rateMeet', { ns: 'challenge', defaultValue: 'How was the meet?' })}</div>
+              <div style={{ display: 'flex', gap: 'var(--sp-8)' }}>
                 {[1, 2, 3, 4, 5].map(n => (
                   <span
                     key={n}
@@ -1548,7 +1548,7 @@ export default function ChallengeChatPage({
 
             <button
               type="button"
-              style={{ ...GROUP_BTN_STYLE, marginTop: 14, opacity: (validating || participants.length === 0 || presentRating <= 0) ? 0.5 : 1 }}
+              style={{ ...GROUP_BTN_STYLE, marginTop: 'var(--sp-16)', opacity: (validating || participants.length === 0 || presentRating <= 0) ? 0.5 : 1 }}
               disabled={validating || participants.length === 0 || presentRating <= 0}
               onClick={handleValidatePresence}
             >

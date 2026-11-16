@@ -98,7 +98,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             className="limit-legend-link"
             onClick={() => setShowLegendInfo(true)}
           >
-            <Icon name="ribbon-outline" size={16} style={{ marginRight: 6 }} />{t('limit.legendLink')}
+            <Icon name="ribbon-outline" size={16} style={{ marginRight: 'var(--sp-8)' }} />{t('limit.legendLink')}
           </button>
         </div>
 

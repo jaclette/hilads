@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "揪人一起來",
     "linkCopied": "已複製連結",
     "vibeTitle": "分享這個 vibe",
     "eventAria": "分享活動"
@@ -92,7 +91,6 @@
     "title": "你今天已經建立過活動了！",
     "body": "Hilads 想讓一切保持新鮮：每天只能建立一個活動，讓每個計畫都被看見。明天再來建立下一個吧。",
     "legendLink": "成為傳奇，就能無限建立活動",
-    "legendA11y": "了解如何成為傳奇",
     "legendAlertTitle": "成為傳奇",
     "legendAlertBody": "傳奇是被選出來讓城市保持熱鬧的在地人，想辦多少活動都可以。想成為傳奇嗎？寫信到 contact@hilads.live。",
     "gotIt": "知道了",

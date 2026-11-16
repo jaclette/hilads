@@ -450,7 +450,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
               return (
                 <div className="pub-profile-events">
                   {/* Mode sub-tabs - All / Local / International. */}
-                  <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '0 0 8px' }}>
+                  <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '0 0 var(--sp-8)' }}>
                     {[
                       { key: 'all',           icon: 'sparkles-outline' },
                       { key: 'local',         icon: 'location-outline' },
@@ -484,7 +484,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                           <span className="pub-profile-event-icon"><Icon name={CHALLENGE_TYPE_ICONS[c.challenge_type] ?? 'flame-outline'} size={20} /></span>
                           <div className="pub-profile-event-info">
                             <span className="pub-profile-event-title">
-                              {(c.mode ?? 'local') === 'international' && <Icon name="globe-outline" size={14} style={{ marginRight: 4 }} />}{c.title}
+                              {(c.mode ?? 'local') === 'international' && <Icon name="globe-outline" size={14} style={{ marginRight: 'var(--sp-4)' }} />}{c.title}
                             </span>
                             {c.status === 'validated' && (
                               <span className="pub-profile-event-live">{t('validatedBadge', { ns: 'challenge' })}</span>

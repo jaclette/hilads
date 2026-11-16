@@ -43,7 +43,6 @@
     "view": "👀 {{name}} 님이 프로필을 봤어요",
     "other": "🔔 새 소식이 있어요",
     "dismiss": "닫기",
-    "open": "새 소식 보기",
     "more_one": "{{count}}개 더",
     "more_other": "{{count}}개 더"
   },
@@ -67,7 +66,6 @@
     "read": "읽음",
     "unread": "안 읽음",
     "delete": "삭제",
-    "allRead": "다 확인했어요 ✨",
     "row": {
       "like": "{{names}} 님이 사진을 좋아해요",
       "mention": "{{names}} 님이 언급했어요",

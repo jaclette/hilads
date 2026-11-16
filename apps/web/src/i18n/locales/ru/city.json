@@ -1,31 +1,18 @@
 {
   "world": {
     "tab": "Мир",
-    "banner_one": "{{count}} межгородской челлендж в эфире",
-    "banner_few": "{{count}} межгородских челленджа в эфире",
-    "banner_many": "{{count}} межгородских челленджей в эфире",
-    "banner_other": "{{count}} межгородского челленджа в эфире",
-    "online": "{{count}} онлайн",
-    "cities_one": "{{count}} город",
-    "cities_few": "{{count}} города",
-    "cities_many": "{{count}} городов",
-    "cities_other": "{{count}} города",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} запускает челлендж {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} из города {{city}} теперь в Hilads",
       "challengeWon": "🏆 {{nickname}} из города {{city}} побеждает в челлендже {{challenge}}"
     },
     "quietCard": "Тихо тут? В Мире непрочитанных: {{count}} — нажми, чтобы открыть",
-    "heroEmpty": "Стань первым, кто бросит вызов городу",
-    "heroEmptySub": "Запусти межгородской челлендж",
-    "leaderboard": "Рейтинг",
     "arrivals_one": "{{count}} прибытие",
     "arrivals_few": "{{count}} прибытия",
     "arrivals_many": "{{count}} прибытий",
     "arrivals_other": "{{count}} прибытия",
     "arrivalsTitle": "Недавно прибыли",
-    "arrivalsEmpty": "Пока никто не прибыл",
-    "seeAll": "Смотреть все"
+    "arrivalsEmpty": "Пока никто не прибыл"
   },
   "inspiration": {
     "heading": "Идеи для тусовок",
@@ -37,37 +24,7 @@
   },
   "guestGate": {
     "createAccount": "Создать аккаунт",
-    "signIn": "Войти",
-    "create_event": {
-      "pageTitle": "Создать событие",
-      "title": "В режиме Ghost можно смотреть, но не организовывать.",
-      "sub": "Создай аккаунт, чтобы устроить своё событие и прославить свой город."
-    },
-    "view_profile": {
-      "pageTitle": "Профиль",
-      "title": "В режиме Ghost можно смотреть, но профили — только для участников.",
-      "sub": "Создай аккаунт, чтобы открыть профили, знакомиться и собрать свою компанию в городе."
-    },
-    "join_hangout": {
-      "pageTitle": "Присоединиться к тусовке",
-      "title": "В режиме Ghost можно смотреть, но не присоединяться к тусовкам.",
-      "sub": "Зарегистрируйся, чтобы ходить на тусовки, сохранить имя и узнавать, когда кто-то хочет встретиться."
-    },
-    "create_hangout": {
-      "pageTitle": "Запустить тусовку",
-      "title": "В режиме Ghost можно смотреть, но не организовывать.",
-      "sub": "Зарегистрируйся, чтобы запустить тусовку, сохранить имя и собрать людей."
-    },
-    "create_challenge": {
-      "pageTitle": "Запустить челлендж",
-      "title": "В режиме Ghost можно смотреть, но не бросать вызов.",
-      "sub": "Зарегистрируйся, чтобы бросить вызов местным или путешественникам и решать, кто справился."
-    },
-    "accept_challenge": {
-      "pageTitle": "Принять челлендж",
-      "title": "Зарегистрируйся, чтобы принять этот челлендж",
-      "sub": "3 секунды — и ты снова в челлендже."
-    }
+    "signIn": "Войти"
   },
   "welcome": {
     "live": "{{city}} на связи",
@@ -123,15 +80,12 @@
   "joiningDefault": "Заходим в чат…",
   "tryAgain": "Повторить",
   "feed": {
-    "hangoutTag": "Тусовка",
-    "eventTag": "Событие",
     "nowTag": "Сейчас",
     "laterTag": "План",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Для всех",
     "activeNow": "Активно сейчас",
-    "repliesNew": "Пока нет ответов — будь первым",
     "sayHi": "Поздоровайся с {{name}}",
     "sayHiGeneric": "Поздоровайся",
     "hostWaiting": "Ждём первое приветствие",
@@ -148,8 +102,6 @@
     "groupPublic": "События для всех",
     "groupPublicTicket": "События для всех",
     "createEvent": "Создать местное событие",
-    "startHangout": "Запустить тусовку",
-    "openPlace": "Открой своё место",
     "loadError": "Не удалось загрузить события",
     "loadErrorSub": "Потяни вниз, чтобы обновить, или создай что-то новое в городе {{city}}.",
     "emptyLocalTitle": "Оживи своё место",
@@ -157,30 +109,16 @@
     "emptyLocalSub": "Пусть {{city}} оживёт. Запусти регулярное событие в любимом месте.",
     "emptySub": "Стань первым, кто устроит движ в городе {{city}}",
     "noEvents": "Сейчас нет местных событий",
-    "noHangouts": "Пока нет тусовок",
-    "noEventsSub": "Создай первое событие в городе {{city}}",
-    "noHangoutsSub": "Запусти тусовку и разговори город",
-    "filterAll": "Всё",
-    "seeComing": "Посмотреть, что впереди",
-    "seeHappened": "посмотри, что было",
-    "createNew": "Создать",
-    "hiNowHint": "тусить сейчас",
-    "hiLaterHint": "запланировать событие"
+    "noEventsSub": "Создай первое событие в городе {{city}}"
   },
   "header": {
     "online": "{{count}} рядом",
     "liveNow": "в эфире",
     "seeWhosHere": "Посмотри, кто здесь",
-    "onlineAria_one": "{{count}} человек рядом — нажми, чтобы посмотреть, кто",
-    "onlineAria_few": "{{count}} человека рядом — нажми, чтобы посмотреть, кто",
-    "onlineAria_many": "{{count}} человек рядом — нажми, чтобы посмотреть, кто",
-    "onlineAria_other": "{{count}} человека рядом — нажми, чтобы посмотреть, кто",
     "notifications": "Уведомления",
     "messages": "Сообщения",
     "shareCity": "Поделиться городом",
-    "switchCity": "Сменить город",
-    "changeCity": "Сменить город",
-    "currentWeather": "Погода сейчас: {{label}}"
+    "switchCity": "Сменить город"
   },
   "here": {
     "title": "Люди рядом",
@@ -189,7 +127,6 @@
     "filterMode": "Режим",
     "you": "(ты)",
     "hereNow": "Сейчас здесь",
-    "noMatchLive": "Сейчас под эти фильтры никто не подходит.",
     "legends": "Легенды Hilads",
     "legendsSub": "Они оживляют город",
     "cityCrew": "Команда города",
@@ -198,7 +135,6 @@
     "messageAria": "Написать {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "Твоё событие",
     "edit": "Изменить",
     "join": "Присоединиться",
     "joined": "Ты идёшь",
@@ -217,26 +153,7 @@
     "firstHi": "Поздоровайся первым"
   },
   "create": {
-    "title": "Что делаем?",
-    "hangoutTitle": "Запустить тусовку",
-    "hangoutSub": "Прямо сейчас — зови людей к себе",
-    "eventTitle": "Создать событие",
-    "eventSub": "Запланируй что-то, куда смогут прийти другие",
-    "challengeTitle": "Запустить челлендж",
-    "challengeSub": "Местные и путешественники — знакомьтесь через челлендж",
-    "challengePageTitle": "Создать челлендж",
-    "challengeAudience": "Для кого?",
-    "challengeAudLocals": "Местные",
-    "challengeAudExplorers": "Путешественники",
-    "challengeType": "Тип",
-    "challengeTypeFood": "Еда",
-    "challengeTypePlace": "Место",
-    "challengeTypeCulture": "Культура",
-    "challengeTypeHelp": "Безумие",
-    "challengeTitleLabel": "Твой челлендж",
-    "challengeTitlePlaceholder": "напр. Отведи меня в свою любимую секретную кофейню",
-    "challengeCta": "Запустить челлендж",
-    "challengeErrStart": "Не удалось запустить челлендж"
+    "title": "Что делаем?"
   },
   "goingModal": {
     "going": "идут",
@@ -312,9 +229,6 @@
     "challengeValidated": "Челлендж выполнен! {{name}} подтверждает «{{title}}».",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 Фото"
-  },
   "typing": {
     "one": "{{name}} печатает…",
     "two": "{{a}} и {{b}} печатают…",
@@ -331,37 +245,11 @@
     "sheetTitle": "Прибытия",
     "empty": "Пока никто не прибыл"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 в городе {{city}} пока нет челленджей",
-    "subRanked": "Нажми, чтобы принять следующий челлендж →",
-    "subUnranked": "Прими первый челлендж и начни подниматься →",
-    "subTop": "Защити свой титул →",
-    "subEmpty": "Создай первый — путешественники его примут →",
-    "members_one": "{{count}} участник",
-    "members_few": "{{count}} участника",
-    "members_many": "{{count}} участников",
-    "members_other": "{{count}} участника",
-    "nearby": "{{count}} рядом",
-    "recent": "{{count}} недавно",
-    "mainUnranked_one": "🔥 {{count}} челлендж в городе {{city}}",
-    "mainUnranked_few": "🔥 {{count}} челленджа в городе {{city}}",
-    "mainUnranked_many": "🔥 {{count}} челленджей в городе {{city}}",
-    "mainUnranked_other": "🔥 {{count}} челленджа в городе {{city}}",
-    "mainRanked_one": "🔥 {{count}} челлендж · 🏆 #{{rank}} в городе {{city}}",
-    "mainRanked_few": "🔥 {{count}} челленджа · 🏆 #{{rank}} в городе {{city}}",
-    "mainRanked_many": "🔥 {{count}} челленджей · 🏆 #{{rank}} в городе {{city}}",
-    "mainRanked_other": "🔥 {{count}} челленджа · 🏆 #{{rank}} в городе {{city}}",
-    "mainTop_one": "🔥 {{count}} челлендж · 🏆 #1 в городе {{city}}",
-    "mainTop_few": "🔥 {{count}} челленджа · 🏆 #1 в городе {{city}}",
-    "mainTop_many": "🔥 {{count}} челленджей · 🏆 #1 в городе {{city}}",
-    "mainTop_other": "🔥 {{count}} челленджа · 🏆 #1 в городе {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Местный",
     "traveler": "Путешественник",
-    "ctaApp": "Прими челлендж в приложении",
     "localPass": "Local Pass",
     "early": "Ранний",
     "proposedBy": "Идея: {{name}}",

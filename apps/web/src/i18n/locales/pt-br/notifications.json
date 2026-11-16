@@ -43,7 +43,6 @@
     "view": "👀 {{name}} viu seu perfil",
     "other": "🔔 Tem novidade pra você",
     "dismiss": "Fechar",
-    "open": "Ver novidades",
     "more_one": "Mais {{count}}",
     "more_other": "Mais {{count}}"
   },
@@ -67,7 +66,6 @@
     "read": "Lida",
     "unread": "Não lida",
     "delete": "Apagar",
-    "allRead": "Tudo em dia ✨",
     "row": {
       "like": "{{names}} curtiu sua foto",
       "mention": "{{names}} te mencionou",

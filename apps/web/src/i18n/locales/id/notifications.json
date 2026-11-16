@@ -43,7 +43,6 @@
     "view": "👀 {{name}} lihat profilmu",
     "other": "🔔 Ada yang baru buat kamu",
     "dismiss": "Tutup",
-    "open": "Lihat yang baru",
     "more_one": "{{count}} lagi",
     "more_other": "{{count}} lagi"
   },
@@ -67,7 +66,6 @@
     "read": "Dibaca",
     "unread": "Belum dibaca",
     "delete": "Hapus",
-    "allRead": "Sudah kebaca semua ✨",
     "row": {
       "like": "{{names}} suka fotomu",
       "mention": "{{names}} menyebut kamu",

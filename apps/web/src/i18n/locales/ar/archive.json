@@ -6,17 +6,6 @@
     "pulses": "لقاءات",
     "challenges": "التحدّيات"
   },
-  "range": {
-    "recent": "الأحدث",
-    "last7": "آخر 7 أيام",
-    "last14": "آخر 14 يومًا",
-    "custom": "مخصّص"
-  },
-  "picker": {
-    "pickEnd": "والآن اختر يوم النهاية",
-    "pickStart": "اختر يوم البداية (حتى {{max}} يومًا)",
-    "apply": "تطبيق"
-  },
   "public": "عام",
   "went_zero": "لم يحضر أحد",
   "went_one": "حضر شخص واحد",
@@ -24,19 +13,15 @@
   "went_few": "حضر {{count}} أشخاص",
   "went_many": "حضر {{count}} شخصًا",
   "went_other": "حضر {{count}} شخص",
-  "hangoutTag": "لقاء",
   "replies_zero": "لا ردود",
   "replies_one": "ردّ واحد",
   "replies_two": "ردّان",
   "replies_few": "{{count}} ردود",
   "replies_many": "{{count}} ردًّا",
   "replies_other": "{{count}} ردّ",
-  "noReplies": "لا ردود",
   "error": "تعذّر تحميل الأرشيف",
   "retry": "أعد المحاولة",
   "emptyTitle": "لا شيء هنا بعد",
-  "emptyRecentSub": "ستظهر هنا الفعاليات واللقاءات السابقة عندما يصبح للمدينة تاريخ.",
-  "emptyWindowSub": "لا فعاليات ولا لقاءات في هذه الفترة. جرّب فترة أطول.",
   "loadMore": "تحميل المزيد",
   "loading": "جارٍ التحميل…"
 }

@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Мой профиль",
   "changePhoto": "Сменить фото профиля",
   "yourProfile": "Твой профиль",
   "mode": "Режим",
@@ -77,34 +76,13 @@
     "story": "История города",
     "storyPlaceholder": "Что ты любишь в этом городе"
   },
-  "hangouts": {
-    "empty": "Пока нет тусовок — запусти свою 🗣️",
-    "host": "Организатор"
-  },
-  "events": {
-    "going": "Иду",
-    "goingEmpty": "Пока нет планов. Найди что-нибудь 🔥",
-    "hosting": "Организую",
-    "hostingEmpty": "Ты пока ничего не организуешь. Начни что-нибудь ✨",
-    "live": "В эфире",
-    "recurring": "↻ Регулярное",
-    "upcoming": "Скоро",
-    "deleteEvent": "Удалить событие"
-  },
-  "friends": {
-    "requests": "Запросы в друзья",
-    "empty": "Пока нет друзей. Добавляй из профилей.",
-    "mine": "Мои друзья"
-  },
   "vibesTab": {
-    "received": "Полученные vibes",
     "score": "Рейтинг vibe: {{score}}",
     "basedOn_one": "на основе {{count}} vibe",
     "basedOn_few": "на основе {{count}} vibes",
     "basedOn_many": "на основе {{count}} vibes",
     "basedOn_other": "на основе {{count}} vibes",
-    "empty": "Пока нет vibes",
-    "emptyHint": "Твой рейтинг появится здесь, когда тебе начнут оставлять заметки ✨"
+    "empty": "Пока нет vibes"
   },
   "save": {
     "uploading": "Загрузка…",
@@ -129,10 +107,6 @@
     "usernameInvalid": "Недопустимое имя пользователя",
     "saveFailed": "Не удалось сохранить. Попробуй ещё раз.",
     "generic": "Что-то пошло не так. Попробуй ещё раз."
-  },
-  "challenges": {
-    "empty": "Пока нет челленджей — запусти первый 🔥",
-    "challenger": "Челленджер"
   },
   "appearance": "Оформление",
   "themeLight": "Светлая",
@@ -179,10 +153,6 @@
       "inReview_other": "{{count}} на проверке",
       "specialTitle": "Особые штампы",
       "specialSub": "Лимитированный выпуск, по одному за каждый особый день. В Local Pass не засчитываются.",
-      "compared_one": "Сравнение с {{count}} страной",
-      "compared_few": "Сравнение с {{count}} странами",
-      "compared_many": "Сравнение с {{count}} странами",
-      "compared_other": "Сравнение с {{count}} странами",
       "stampsOf_one": "{{count}} из {{total}} штампов",
       "stampsOf_few": "{{count}} из {{total}} штампов",
       "stampsOf_many": "{{count}} из {{total}} штампов",
@@ -192,10 +162,6 @@
       "passToGo_few": "Осталось {{count}} штампа",
       "passToGo_many": "Осталось {{count}} штампов",
       "passToGo_other": "Осталось {{count}} штампа",
-      "comparedCities_one": "Сравнение с {{count}} городом",
-      "comparedCities_few": "Сравнение с {{count}} городами",
-      "comparedCities_many": "Сравнение с {{count}} городами",
-      "comparedCities_other": "Сравнение с {{count}} городами",
       "myPhotos": "Мои фото",
       "noPhotos": "Здесь появятся твои фото Daily Challenge.",
       "share": "Поделиться паспортом",

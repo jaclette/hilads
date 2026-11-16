@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "친구 부르기",
     "linkCopied": "링크를 복사했어요",
     "vibeTitle": "이 vibe 공유하기",
     "eventAria": "이벤트 공유"
@@ -92,7 +91,6 @@
     "title": "오늘은 이미 이벤트를 만들었어요!",
     "body": "Hilads는 늘 새로운 걸 좋아해요. 하루에 이벤트 하나씩만 열어서 모든 약속이 제대로 관심을 받게 해요. 내일 다시 와서 또 만들어 보세요.",
     "legendLink": "전설이 되어 이벤트를 무제한으로 만들기",
-    "legendA11y": "전설이 되는 방법 알아보기",
     "legendAlertTitle": "전설 되기",
     "legendAlertBody": "전설은 도시를 살아 있게 만들도록 뽑힌 현지인이에요. 이벤트를 원하는 만큼 열 수 있어요. 전설이 되고 싶다면 contact@hilads.live로 연락 주세요.",
     "gotIt": "알겠어요",

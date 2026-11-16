@@ -16,11 +16,7 @@
     "eventTitle": "Acara lokal: {{title}} | Hilads",
     "eventDesc": "Gabung {{title}} di Hilads, acara lokal yang lagi berlangsung. Lihat siapa aja yang datang dan ngobrol langsung sama yang online."
   },
-  "nowTitle": "Sekarang",
   "filterEvents": "🎉 Acara lokal",
-  "hiLocalTitle": "Hi Local",
-  "filterHangouts": "🗣️ Nongkrong",
-  "publicEventsSection": "🎫 Acara lokal publik",
   "accountWelcome": {
     "title": "Selamat, {{username}}!",
     "subtitle": "Akunmu sudah siap. Ini yang bisa kamu lakukan sekarang",
@@ -32,68 +28,6 @@
     "fc1": "Tantang warga lokal di kotamu",
     "fc2": "Tantang kota lain di dunia",
     "cta": "Yuk mulai"
-  },
-  "onboarding": {
-    "skip": "Lewati ✕",
-    "next": "Lanjut",
-    "fallbackCity": "kotamu",
-    "slide1": {
-      "title": "Main lokal. Bandingkan global.",
-      "body": "Hilads bikin pelancong jadi warga lokal, dan bantu warga lokal berbagi hal yang bikin kotanya hidup."
-    },
-    "slide2": {
-      "title": "Tiga cara menikmati kota",
-      "itemChallenges": "🤝 Tantangan: tantang atau ditantang buat nemuin tempat tersembunyi, nyobain makanan asli, berbagi budaya, atau bantu orang.",
-      "itemHangouts": "🗣️ Hi now: ketemuan dadakan",
-      "itemEvents": "🎉 Hi plan: atur waktu buat ketemuan"
-    },
-    "slide3": {
-      "title": "Dapatkan tempatmu di kota ini",
-      "body": "Tiap tantangan yang kamu selesaikan, tiap ketemuan, tiap tempat yang kamu temukan kasih kamu poin. Poin nunjukin seberapa lokal kamu di {{city}}. Naik ke puncak Most Local dan dapatkan tempatmu di antara orang-orang yang bikin kota ini hidup."
-    },
-    "slide4": {
-      "title": "Siap mulai petualanganmu?",
-      "ctaChallenge": "📍 Ikut tantangan pertamamu di {{city}}",
-      "ctaMostLocal": "🤝 Lihat Most Local {{city}}",
-      "ctaLookAround": "👀 Lihat-lihat dulu aja",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Cara main tantangan",
-    "slide1": {
-      "title": "Tantangan bikin perjalanan jadi cerita",
-      "body": "Warga lokal dan pelancong saling tantang buat berbagi sisi asli kota: makanan, tempat, budaya, bantuan. Hadiahnya? Ketemuan langsung, atau kirim bukti dari jauh."
-    },
-    "slide2": {
-      "title": "Bikin tantanganmu",
-      "body": "Makanan, tempat, budaya, atau bantuan. Pilih buat siapa, berapa slot, dan cara menutupnya: ketemuan atau bukti foto."
-    },
-    "slide3": {
-      "title": "Ada yang nerima",
-      "body": "Mereka kirim permintaan. Kamu cek lalu terima, dan thread privat kalian terbuka buat ngobrol dan atur rencana."
-    },
-    "slide4": {
-      "title": "Ketemuan atau kirim bukti",
-      "body": "Ketemu langsung atau kirim foto dari jauh, kamu yang tentuin. Apa pun caranya, tiap langkah tercatat."
-    },
-    "slide5": {
-      "title": "Tutup tantangannya",
-      "body": "Setelah ketemuan (atau begitu fotonya masuk), tandai selesai. Kotamu, dijalani beneran, satu tantangan demi satu tantangan."
-    },
-    "next": "Lanjut",
-    "done": "Oke, paham!",
-    "skip": "Lewati ✕",
-    "slide6": {
-      "title": "Di luar kotamu",
-      "body": "Tantang siapa aja, di mana aja. Mereka kirim bukti berupa foto dengan geotag, dan kamu validasi dari jauh. Alur foto yang sama juga bisa dipakai di kotamu. Lokal atau global, tiap tantangan dihitung."
-    },
-    "slide7": {
-      "title": "Jadi Most Local",
-      "body": "Tiap tantangan kasih kamu poin, di kotamu DAN di seluruh dunia. Ketemuan langsung dapat bonus +50. Warga lokal atau pelancong, yang penting apa yang kamu bangun di sini. Papan peringkat baru tiap bulan."
-    },
-    "createCta": "🔥 Bikin tantangan"
   },
   "share": {
     "title": "Bagikan sesuatu",
@@ -211,7 +145,6 @@
   "settings": "Pengaturan",
   "firstLaunch": "Main lokal. Bandingkan global.",
   "subtitles": {
-    "map": "Tempat dari foto-foto seluruh dunia.",
     "hi": "Sapa kotamu. Ikut rencana.",
     "passport": "Kotamu, fotomu, stempelmu."
   },
@@ -233,18 +166,9 @@
     "textPassportNoCity": "Paspor Hilads-ku. Tantangan sama. Dunia berbeda."
   },
   "represent": {
-    "empty": "{{city}} belum main hari ini. Jadilah yang pertama.",
-    "beFirst": "Jadilah yang pertama main untuk {{city}}",
-    "emptyThere": "{{city}} belum main hari ini.",
-    "notIn": "Nggak di {{city}}?",
-    "change": "Ganti",
     "locationNeeded": "Izinkan lokasi buat main dari tempatmu sekarang.",
-    "button": "Main untuk {{city}}",
-    "firstPosted": "Kamu bikin {{city}} muncul di peta dunia hari ini.",
     "pioneer": "Pioneer {{city}}",
     "spotOne": "Tempat #1 di {{city}}",
-    "streak_other": "{{city}} sudah main {{count}} hari beruntun",
-    "board_other": "{{count}} kota sudah ada di papan hari ini. {{city}} belum.",
     "mapEmpty": "{{city}} belum ada di peta dunia. Yuk, taruh di sana.",
     "invite": "Ajak teman",
     "share": "Main untuk {{city}} bareng aku di Hilads.",
@@ -286,8 +210,7 @@
     "mainNav": "Utama",
     "emojiPicker": "Pilih emoji",
     "cancelReply": "Batalkan balasan",
-    "welcome": "Selamat datang",
-    "approve": "Setujui"
+    "welcome": "Selamat datang"
   },
   "tapToOpenMaps": "Ketuk untuk buka di peta",
   "openInApp": {

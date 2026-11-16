@@ -92,7 +92,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           {/* Expiry note */}
           {!isEdit && (
-            <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <p style={{ fontSize: 'var(--fs-xs)', color: '#888', margin: 'var(--sp-4) 0 0', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--sp-8)' }}>
               <Icon name="time-outline" size={14} />{t('create.expiry')}
             </p>
           )}
@@ -100,7 +100,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           {/* Geo explainer - why turning on location matters (parity with native). */}
           {!isEdit && (
             <div className="topic-geohint">
-              <Icon name="location-outline" size={16} style={{ marginRight: 6 }} />{t('create.geoHint')}
+              <Icon name="location-outline" size={16} style={{ marginRight: 'var(--sp-8)' }} />{t('create.geoHint')}
             </div>
           )}
 

@@ -1,5 +1,4 @@
 {
-  "pageTitle": "My profile",
   "changePhoto": "Change profile photo",
   "yourProfile": "Your profile",
   "mode": "Mode",
@@ -77,32 +76,11 @@
     "story": "City story",
     "storyPlaceholder": "Something you love about this city"
   },
-  "hangouts": {
-    "empty": "No hangouts yet - start one 🗣️",
-    "host": "Host"
-  },
-  "events": {
-    "going": "Going",
-    "goingEmpty": "No plans yet - find something 🔥",
-    "hosting": "Hosting",
-    "hostingEmpty": "Nothing hosted yet - start something ✨",
-    "live": "Live",
-    "recurring": "↻ Recurring",
-    "upcoming": "Upcoming",
-    "deleteEvent": "Delete event"
-  },
-  "friends": {
-    "requests": "Friend requests",
-    "empty": "No friends yet. Add some from profiles.",
-    "mine": "My friends"
-  },
   "vibesTab": {
-    "received": "Vibes received",
     "score": "{{score}} vibe score",
     "basedOn_one": "based on {{count}} vibe",
     "basedOn_other": "based on {{count}} vibes",
-    "empty": "No vibes yet",
-    "emptyHint": "Your score will appear here once people leave you a note ✨"
+    "empty": "No vibes yet"
   },
   "save": {
     "uploading": "Uploading…",
@@ -127,10 +105,6 @@
     "usernameInvalid": "Invalid username",
     "saveFailed": "Save failed. Try again.",
     "generic": "Something went wrong. Try again."
-  },
-  "challenges": {
-    "empty": "No challenges yet - launch one 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Appearance",
   "themeLight": "Light",
@@ -169,15 +143,11 @@
       "inReview_other": "{{count}} in review",
       "specialTitle": "Special stamps",
       "specialSub": "Limited edition, one per special day. Not counted for the Local Pass.",
-      "compared_one": "Compared with {{count}} country",
-      "compared_other": "Compared with {{count}} countries",
       "stampsOf_one": "{{count}} of {{total}} stamps",
       "stampsOf_other": "{{count}} of {{total}} stamps",
       "passEarned": "Earned in {{city}}",
       "passToGo_one": "{{count}} stamp to go",
       "passToGo_other": "{{count}} stamps to go",
-      "comparedCities_one": "Compared with {{count}} city",
-      "comparedCities_other": "Compared with {{count}} cities",
       "myPhotos": "My photos",
       "noPhotos": "Your Daily Challenge photos will show up here.",
       "share": "Share my passport",

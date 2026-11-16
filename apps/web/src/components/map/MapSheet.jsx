@@ -12,7 +12,7 @@ import { themeName, compactPrice, formatDistance, sortSpots } from './spotsShare
 export const SHEET_PEEK = 84
 const HINT_KEY = 'hilads_map_sheet_hint_seen'
 const SNAPS = ['peek', 'half', 'full']
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
 /**
  * The wave (as the app): one asymmetric swell in a 360×30 box, the higher hump at 140, the

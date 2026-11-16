@@ -570,7 +570,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
 
           if (item.type === 'system') {
             return (
-              <div key={item.id ?? idx} className="activity-msg" style={{ textAlign: 'center', color: 'var(--muted2)', fontSize: 13, padding: '4px 0' }}>
+              <div key={item.id ?? idx} className="activity-msg" style={{ textAlign: 'center', color: 'var(--muted2)', fontSize: 'var(--fs-xs)', padding: 'var(--sp-4) 0' }}>
                 {item.content}
               </div>
             )
@@ -670,7 +670,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
 
       {/* Error */}
       {error && (
-        <div style={{ background: 'rgba(248,113,113,0.12)', color: '#f87171', fontSize: 13, padding: '6px 16px', textAlign: 'center', cursor: 'pointer' }}
+        <div style={{ background: 'rgba(248,113,113,0.12)', color: '#f87171', fontSize: 'var(--fs-xs)', padding: 'var(--sp-8) var(--sp-16)', textAlign: 'center', cursor: 'pointer' }}
           onClick={() => setError(null)}>
           {t('errors.dismiss', { error })}
         </div>
@@ -737,7 +737,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <div className="modal-overlay" onClick={() => setShowMembers(false)}>
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <span className="modal-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="people-outline" size={14} />{t('members.countIn', { count: participants.length })}</span>
+              <span className="modal-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }}><Icon name="people-outline" size={14} />{t('members.countIn', { count: participants.length })}</span>
               <button className="going-modal-close" onClick={() => setShowMembers(false)} aria-label={t('locationPicker.close', { ns: 'common', defaultValue: 'Close' })}><Icon name="close" size={18} /></button>
             </div>
             <div className="going-modal-body">

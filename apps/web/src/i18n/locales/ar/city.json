@@ -1,28 +1,12 @@
 {
   "world": {
     "tab": "العالم",
-    "banner_zero": "لا تحدّيات جارية بين المدن",
-    "banner_one": "تحدٍّ واحد جارٍ بين المدن",
-    "banner_two": "تحدّيان جاريان بين المدن",
-    "banner_few": "{{count}} تحدّيات جارية بين المدن",
-    "banner_many": "{{count}} تحدّيًا جاريًا بين المدن",
-    "banner_other": "{{count}} تحدٍّ جارٍ بين المدن",
-    "online": "{{count}} متصل",
-    "cities_zero": "لا مدن",
-    "cities_one": "مدينة واحدة",
-    "cities_two": "مدينتان",
-    "cities_few": "{{count}} مدن",
-    "cities_many": "{{count}} مدينة",
-    "cities_other": "{{count}} مدينة",
     "sys": {
       "challengeCreated": "🔥 أطلق {{nickname}} تحدّيًا {{cityA}} ← {{cityB}}",
       "newUser": "🎉 انضم {{nickname}} من {{city}} إلى Hilads للتو",
       "challengeWon": "🏆 فاز {{nickname}} من {{city}} بالتحدّي {{challenge}}"
     },
     "quietCard": "الجو هادئ هنا؟ لديك رسائل غير مقروءة في العالم ({{count}})، اضغط لفتحها",
-    "heroEmpty": "كن أول من يتحدّى مدينة",
-    "heroEmptySub": "أطلق تحدّيًا بين المدن",
-    "leaderboard": "الترتيب",
     "arrivals_zero": "لا وافدين",
     "arrivals_one": "وافد واحد",
     "arrivals_two": "وافدان",
@@ -30,8 +14,7 @@
     "arrivals_many": "{{count}} وافدًا",
     "arrivals_other": "{{count}} وافد",
     "arrivalsTitle": "وصلوا حديثًا",
-    "arrivalsEmpty": "لم يصل أحد حديثًا",
-    "seeAll": "عرض الكل"
+    "arrivalsEmpty": "لم يصل أحد حديثًا"
   },
   "inspiration": {
     "heading": "أفكار للقاءات",
@@ -43,37 +26,7 @@
   },
   "guestGate": {
     "createAccount": "إنشاء حساب",
-    "signIn": "تسجيل الدخول",
-    "create_event": {
-      "pageTitle": "إنشاء فعالية",
-      "title": "بصفتك Ghost، يمكنك التصفّح لكن لا يمكنك الاستضافة.",
-      "sub": "أنشئ حسابًا لتنظّم فعاليتك وتضع مدينتك على الخريطة."
-    },
-    "view_profile": {
-      "pageTitle": "الملف الشخصي",
-      "title": "بصفتك Ghost، يمكنك التصفّح، لكن الملفات الشخصية للأعضاء فقط.",
-      "sub": "أنشئ حسابًا لترى الملفات الشخصية، وتتعرّف على الناس، وتكوّن مجموعتك في المدينة."
-    },
-    "join_hangout": {
-      "pageTitle": "انضم إلى لقاء",
-      "title": "بصفتك Ghost، يمكنك التصفّح لكن لا يمكنك الانضمام إلى اللقاءات.",
-      "sub": "سجّل لتنضم إلى اللقاءات، وتحفظ اسمك، ويصلك إشعار عندما يرغب الناس في الالتقاء."
-    },
-    "create_hangout": {
-      "pageTitle": "ابدأ لقاءً",
-      "title": "بصفتك Ghost، يمكنك التصفّح لكن لا يمكنك الاستضافة.",
-      "sub": "سجّل لتبدأ لقاءً، وتحفظ اسمك، وتدعو الناس للانضمام إليك."
-    },
-    "create_challenge": {
-      "pageTitle": "أطلق تحدّيًا",
-      "title": "بصفتك Ghost، يمكنك التصفّح لكن لا يمكنك إطلاق تحدّيات.",
-      "sub": "سجّل لتطلق تحدّيًا للسكان المحليين أو المسافرين وتتولّى التحقّق منه."
-    },
-    "accept_challenge": {
-      "pageTitle": "اقبل تحدّيًا",
-      "title": "سجّل لتقبل هذا التحدّي",
-      "sub": "3 ثوانٍ فقط، وستعود مباشرة إلى التحدي."
-    }
+    "signIn": "تسجيل الدخول"
   },
   "welcome": {
     "live": "{{city}} تنبض بالحياة",
@@ -139,15 +92,12 @@
   "joiningDefault": "جارٍ الانضمام إلى الدردشة…",
   "tryAgain": "حاول مرة أخرى",
   "feed": {
-    "hangoutTag": "لقاء",
-    "eventTag": "فعالية",
     "nowTag": "الآن",
     "laterTag": "خطة",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "عام",
     "activeNow": "نشط الآن",
-    "repliesNew": "لا ردود بعد، كن أول من يرد",
     "sayHi": "قل مرحبًا لـ{{name}}",
     "sayHiGeneric": "قل مرحبًا",
     "hostWaiting": "بانتظار أول تحية",
@@ -168,8 +118,6 @@
     "groupPublic": "فعاليات محلية عامة",
     "groupPublicTicket": "فعاليات محلية عامة",
     "createEvent": "أنشئ فعالية محلية",
-    "startHangout": "ابدأ لقاءً",
-    "openPlace": "افتح مكانك",
     "loadError": "تعذّر تحميل الفعاليات",
     "loadErrorSub": "اسحب لإعادة المحاولة أو أنشئ شيئًا جديدًا في {{city}}.",
     "emptyLocalTitle": "استضف مكانك",
@@ -177,32 +125,16 @@
     "emptyLocalSub": "اجعل {{city}} تنبض بالحياة. ابدأ فعالية متكررة في مكانك المفضّل.",
     "emptySub": "كن أول من يحرّك شيئًا في {{city}}",
     "noEvents": "لا توجد فعاليات محلية الآن",
-    "noHangouts": "لا لقاءات بعد",
-    "noEventsSub": "كن أول من ينشئ فعالية في {{city}}",
-    "noHangoutsSub": "ابدأ لقاءً واجعل المدينة تتحدّث",
-    "filterAll": "الكل",
-    "seeComing": "شاهد ما هو قادم",
-    "seeHappened": "شاهد ما حدث",
-    "createNew": "إنشاء جديد",
-    "hiNowHint": "التقِ بأحد الآن",
-    "hiLaterHint": "خطّط لفعالية"
+    "noEventsSub": "كن أول من ينشئ فعالية في {{city}}"
   },
   "header": {
     "online": "{{count}} بالقرب منك",
     "liveNow": "مباشر الآن",
     "seeWhosHere": "شاهد من هنا",
-    "onlineAria_zero": "لا أحد بالقرب منك",
-    "onlineAria_one": "شخص واحد بالقرب منك، اضغط لتراه",
-    "onlineAria_two": "شخصان بالقرب منك، اضغط لتراهما",
-    "onlineAria_few": "{{count}} أشخاص بالقرب منك، اضغط لتراهم",
-    "onlineAria_many": "{{count}} شخصًا بالقرب منك، اضغط لتراهم",
-    "onlineAria_other": "{{count}} شخص بالقرب منك، اضغط لتراهم",
     "notifications": "الإشعارات",
     "messages": "الرسائل",
     "shareCity": "مشاركة المدينة",
-    "switchCity": "تغيير المدينة",
-    "changeCity": "تغيير المدينة",
-    "currentWeather": "الطقس الآن: {{label}}"
+    "switchCity": "تغيير المدينة"
   },
   "here": {
     "title": "الناس هنا",
@@ -211,7 +143,6 @@
     "filterMode": "الوضع",
     "you": "(أنت)",
     "hereNow": "هنا الآن",
-    "noMatchLive": "لا أحد يطابق هذه الفلاتر الآن.",
     "legends": "أساطير Hilads",
     "legendsSub": "هم من يجعلون المدينة تنبض بالحياة",
     "cityCrew": "طاقم المدينة",
@@ -220,7 +151,6 @@
     "messageAria": "إرسال رسالة إلى {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "فعاليتك",
     "edit": "تعديل",
     "join": "انضم",
     "joined": "انضممت",
@@ -241,26 +171,7 @@
     "firstHi": "كن أول من يقول مرحبًا"
   },
   "create": {
-    "title": "ما الخطة؟",
-    "hangoutTitle": "ابدأ لقاءً",
-    "hangoutSub": "فوري - دع الناس ينضمّون إليك الآن",
-    "eventTitle": "أنشئ فعالية",
-    "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه",
-    "challengeTitle": "أطلق تحدّيًا",
-    "challengeSub": "محليون ومسافرون - تواصلوا عبر تحدٍّ",
-    "challengePageTitle": "أنشئ تحدّيًا",
-    "challengeAudience": "لمن هو؟",
-    "challengeAudLocals": "السكان المحليون",
-    "challengeAudExplorers": "المسافرون",
-    "challengeType": "النوع",
-    "challengeTypeFood": "طعام",
-    "challengeTypePlace": "مكان",
-    "challengeTypeCulture": "ثقافة",
-    "challengeTypeHelp": "جنون",
-    "challengeTitleLabel": "تحدّيك",
-    "challengeTitlePlaceholder": "مثال: خذني إلى مقهاك المفضّل المخفي",
-    "challengeCta": "أطلق التحدي",
-    "challengeErrStart": "تعذّر إطلاق التحدّي"
+    "title": "ما الخطة؟"
   },
   "goingModal": {
     "going": "سيحضرون",
@@ -338,9 +249,6 @@
     "challengeValidated": "اكتمل التحدّي! أكّد {{name}} إنجاز \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} ← {{toFlag}} تحدٍّ دولي: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 صورة"
-  },
   "typing": {
     "one": "{{name}} يكتب…",
     "two": "{{a}} و{{b}} يكتبان…",
@@ -357,45 +265,11 @@
     "sheetTitle": "الوافدون",
     "empty": "لم يصل أحد بعد"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 لا تحدّيات بعد في {{city}}",
-    "subRanked": "اضغط لتقبل تحدّيك التالي →",
-    "subUnranked": "اقبل أول تحدٍّ لتبدأ الصعود →",
-    "subTop": "دافع عن لقبك →",
-    "subEmpty": "أنشئ أول تحدٍّ ليخوضه المسافرون →",
-    "members_zero": "لا أعضاء",
-    "members_one": "عضو واحد",
-    "members_two": "عضوان",
-    "members_few": "{{count}} أعضاء",
-    "members_many": "{{count}} عضوًا",
-    "members_other": "{{count}} عضو",
-    "nearby": "{{count}} بالقرب منك",
-    "recent": "{{count}} وصلوا حديثًا",
-    "mainUnranked_zero": "🔥 لا تحدّيات في {{city}}",
-    "mainUnranked_one": "🔥 تحدٍّ واحد في {{city}}",
-    "mainUnranked_two": "🔥 تحدّيان في {{city}}",
-    "mainUnranked_few": "🔥 {{count}} تحدّيات في {{city}}",
-    "mainUnranked_many": "🔥 {{count}} تحدّيًا في {{city}}",
-    "mainUnranked_other": "🔥 {{count}} تحدٍّ في {{city}}",
-    "mainRanked_zero": "🔥 لا تحدّيات · 🏆 #{{rank}} في {{city}}",
-    "mainRanked_one": "🔥 تحدٍّ واحد · 🏆 #{{rank}} في {{city}}",
-    "mainRanked_two": "🔥 تحدّيان · 🏆 #{{rank}} في {{city}}",
-    "mainRanked_few": "🔥 {{count}} تحدّيات · 🏆 #{{rank}} في {{city}}",
-    "mainRanked_many": "🔥 {{count}} تحدّيًا · 🏆 #{{rank}} في {{city}}",
-    "mainRanked_other": "🔥 {{count}} تحدٍّ · 🏆 #{{rank}} في {{city}}",
-    "mainTop_zero": "🔥 لا تحدّيات · 🏆 #1 في {{city}}",
-    "mainTop_one": "🔥 تحدٍّ واحد · 🏆 #1 في {{city}}",
-    "mainTop_two": "🔥 تحدّيان · 🏆 #1 في {{city}}",
-    "mainTop_few": "🔥 {{count}} تحدّيات · 🏆 #1 في {{city}}",
-    "mainTop_many": "🔥 {{count}} تحدّيًا · 🏆 #1 في {{city}}",
-    "mainTop_other": "🔥 {{count}} تحدٍّ · 🏆 #1 في {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "محلي",
     "traveler": "مسافر",
-    "ctaApp": "خُض التحدي في التطبيق",
     "localPass": "Local Pass",
     "early": "مبكر",
     "proposedBy": "اقترحه {{name}}",

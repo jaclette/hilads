@@ -21,7 +21,7 @@ const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
 // The three ways to earn Daily Challenge points, same rows as the app's sheet.
 const POINTS = [['proof', 10], ['vote', 2], ['top', '30 / 20 / 10']]
 
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
 const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 
@@ -187,7 +187,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
                onClick={() => onOpen('alltime')} />
         </div>
 
-        <button type="button" className="today-cta dc-full btn-primary" style={{ gap: 8 }} onClick={share}>
+        <button type="button" className="today-cta dc-full btn-primary" style={{ gap: 'var(--sp-8)' }} onClick={share}>
           <Icon name="share-social-outline" size={18} />{copied ? i18n.t('shareLink.copied', { ns: 'common' }) : t('passport.share')}
         </button>
         <button type="button" className="dc-link pp-help" style={ROW} onClick={() => setHelp(true)}><Icon name="information-circle-outline" size={16} />{t('passport.howPoints')}</button>
@@ -214,7 +214,7 @@ function Identity({ name, photo, mode, city, country, since = null, stats = null
         {since && <span className="pp-since">{since}</span>}
         <div className="pp-chips">
           {mode && <span className={`pp-chip ${local ? 'pp-chip--local' : 'pp-chip--traveler'}`}>{t(`mode.${local ? 'local' : 'exploring'}.label`)}</span>}
-          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 4 }}>{country ? <CityFlag country={country} size={14} /> : <Icon name="location-outline" size={13} />}{city}</span>}
+          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 'var(--sp-4)' }}>{country ? <CityFlag country={country} size={14} /> : <Icon name="location-outline" size={13} />}{city}</span>}
         </div>
         {stats && (
           <div className="pp-stats">

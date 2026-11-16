@@ -1,5 +1,4 @@
 {
-  "pageTitle": "我的個人資料",
   "changePhoto": "更換大頭貼",
   "yourProfile": "你的個人資料",
   "mode": "模式",
@@ -77,31 +76,10 @@
     "story": "城市故事",
     "storyPlaceholder": "你愛這座城市的一件事"
   },
-  "hangouts": {
-    "empty": "還沒有聚會，發起一個吧 🗣️",
-    "host": "主辦人"
-  },
-  "events": {
-    "going": "要去",
-    "goingEmpty": "還沒有計畫，找點事做吧 🔥",
-    "hosting": "主辦中",
-    "hostingEmpty": "還沒辦過活動，來辦一個吧 ✨",
-    "live": "進行中",
-    "recurring": "↻ 定期",
-    "upcoming": "即將舉行",
-    "deleteEvent": "刪除活動"
-  },
-  "friends": {
-    "requests": "好友邀請",
-    "empty": "還沒有好友。去個人資料加幾個吧。",
-    "mine": "我的好友"
-  },
   "vibesTab": {
-    "received": "收到的 vibe",
     "score": "vibe 分數 {{score}}",
     "basedOn_other": "根據 {{count}} 個 vibe",
-    "empty": "還沒有 vibes",
-    "emptyHint": "有人留言給你之後，你的分數就會顯示在這裡 ✨"
+    "empty": "還沒有 vibes"
   },
   "save": {
     "uploading": "上傳中…",
@@ -126,10 +104,6 @@
     "usernameInvalid": "使用者名稱無效",
     "saveFailed": "儲存失敗，再試一次吧。",
     "generic": "出了點問題，再試一次。"
-  },
-  "challenges": {
-    "empty": "還沒有挑戰，發起一個吧 🔥",
-    "challenger": "挑戰者"
   },
   "appearance": "外觀",
   "themeLight": "淺色",
@@ -164,11 +138,9 @@
       "inReview_other": "{{count}} 張審核中",
       "specialTitle": "特別印章",
       "specialSub": "限量版，每個特別日一枚。不計入 Local Pass。",
-      "compared_other": "已與 {{count}} 個國家/地區比較",
       "stampsOf_other": "{{count}}/{{total}} 枚印章",
       "passEarned": "在{{city}}獲得",
       "passToGo_other": "還差 {{count}} 枚印章",
-      "comparedCities_other": "已與 {{count}} 座城市比較",
       "myPhotos": "我的照片",
       "noPhotos": "你的 Daily Challenge 照片會顯示在這裡。",
       "share": "分享我的護照",
