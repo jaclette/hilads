@@ -789,7 +789,7 @@
         "week": "Week",
         "alltime": "Aller tijden"
       },
-      "timeLeftMin": "⏳ Nog minder dan een uur om te stemmen",
+      "timeLeftMin": "Nog minder dan een uur om te stemmen",
       "bestPerCity": "Beste foto per stad",
       "new": "nieuw",
       "you": {
@@ -823,8 +823,8 @@
         "generic": "🏆 De uitslag van gisteren is er",
         "see": "Bekijk de uitslag →"
       },
-      "timeLeft_one": "⏳ Nog {{count}} uur om te stemmen",
-      "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",
+      "timeLeft_one": "Nog {{count}} uur om te stemmen",
+      "timeLeft_other": "Nog {{count}} uur om te stemmen",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} ptn",
       "ghost": {

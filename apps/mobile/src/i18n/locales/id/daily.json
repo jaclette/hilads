@@ -809,7 +809,7 @@
       "city": "Kotaku",
       "world": "Dunia"
     },
-    "timeLeftMin": "⏳ Sisa kurang dari satu jam untuk vote",
+    "timeLeftMin": "Sisa kurang dari satu jam untuk vote",
     "bestPerCity": "Foto terbaik tiap kota",
     "new": "baru",
     "you": {
@@ -849,7 +849,7 @@
       "generic": "🏆 Hasil kemarin sudah keluar",
       "see": "Lihat hasil →"
     },
-    "timeLeft_other": "⏳ Sisa {{count}} jam untuk vote",
+    "timeLeft_other": "Sisa {{count}} jam untuk vote",
     "pts_other": "{{count}} poin",
     "ghost": {
       "photo": "Fotomu di sini? 📸",

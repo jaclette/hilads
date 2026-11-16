@@ -811,7 +811,7 @@
         "week": "Semana",
         "alltime": "Histórico"
       },
-      "timeLeftMin": "⏳ Queda menos de una hora para votar",
+      "timeLeftMin": "Queda menos de una hora para votar",
       "bestPerCity": "Mejor foto por ciudad",
       "new": "nuevo",
       "you": {
@@ -847,9 +847,9 @@
         "generic": "🏆 Ya están los resultados de ayer",
         "see": "Ver resultados →"
       },
-      "timeLeft_one": "⏳ Queda {{count}} hora para votar",
-      "timeLeft_other": "⏳ Quedan {{count}} horas para votar",
-      "timeLeft_many": "⏳ Quedan {{count}} horas para votar",
+      "timeLeft_one": "Queda {{count}} hora para votar",
+      "timeLeft_other": "Quedan {{count}} horas para votar",
+      "timeLeft_many": "Quedan {{count}} horas para votar",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pts",
       "pts_many": "{{count}} pts",

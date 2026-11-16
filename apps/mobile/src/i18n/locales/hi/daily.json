@@ -846,7 +846,7 @@
       "city": "मेरा शहर",
       "world": "दुनिया"
     },
-    "timeLeftMin": "⏳ वोट के लिए एक घंटे से कम बाकी",
+    "timeLeftMin": "वोट के लिए एक घंटे से कम बाकी",
     "bestPerCity": "हर शहर की बेस्ट फ़ोटो",
     "new": "नया",
     "you": {
@@ -888,8 +888,8 @@
       "generic": "🏆 कल के नतीजे आ गए",
       "see": "नतीजे देखो →"
     },
-    "timeLeft_one": "⏳ वोट के लिए {{count}} घंटा बाकी",
-    "timeLeft_other": "⏳ वोट के लिए {{count}} घंटे बाकी",
+    "timeLeft_one": "वोट के लिए {{count}} घंटा बाकी",
+    "timeLeft_other": "वोट के लिए {{count}} घंटे बाकी",
     "pts_one": "{{count}} पॉइंट",
     "pts_other": "{{count}} पॉइंट",
     "ghost": {

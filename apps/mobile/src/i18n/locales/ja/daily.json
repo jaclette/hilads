@@ -809,7 +809,7 @@
       "city": "自分の街",
       "world": "世界"
     },
-    "timeLeftMin": "⏳ 投票はあと1時間もないよ",
+    "timeLeftMin": "投票はあと1時間もないよ",
     "bestPerCity": "街ごとのベストフォト",
     "new": "NEW",
     "you": {
@@ -849,7 +849,7 @@
       "generic": "🏆 昨日の結果が出ました",
       "see": "結果を見る →"
     },
-    "timeLeft_other": "⏳ 投票はあと{{count}}時間",
+    "timeLeft_other": "投票はあと{{count}}時間",
     "pts_other": "{{count}}pt",
     "ghost": {
       "photo": "ここに君の写真を? 📸",

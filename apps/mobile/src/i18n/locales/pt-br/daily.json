@@ -882,7 +882,7 @@
       "city": "Minha cidade",
       "world": "Mundo"
     },
-    "timeLeftMin": "⏳ Falta menos de uma hora pra votar",
+    "timeLeftMin": "Falta menos de uma hora pra votar",
     "bestPerCity": "Melhor foto por cidade",
     "new": "novo",
     "you": {
@@ -926,9 +926,9 @@
       "generic": "🏆 Os resultados de ontem saíram",
       "see": "Ver resultados →"
     },
-    "timeLeft_one": "⏳ Falta {{count}} hora pra votar",
-    "timeLeft_other": "⏳ Faltam {{count}} horas pra votar",
-    "timeLeft_many": "⏳ Faltam {{count}} horas pra votar",
+    "timeLeft_one": "Falta {{count}} hora pra votar",
+    "timeLeft_other": "Faltam {{count}} horas pra votar",
+    "timeLeft_many": "Faltam {{count}} horas pra votar",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts",
     "pts_many": "{{count}} pts",

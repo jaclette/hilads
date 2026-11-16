@@ -789,7 +789,7 @@
         "week": "Woche",
         "alltime": "Allzeit"
       },
-      "timeLeftMin": "⏳ Weniger als eine Stunde zum Abstimmen",
+      "timeLeftMin": "Weniger als eine Stunde zum Abstimmen",
       "bestPerCity": "Bestes Foto pro Stadt",
       "new": "neu",
       "you": {
@@ -823,8 +823,8 @@
         "generic": "🏆 Die Ergebnisse von gestern sind da",
         "see": "Ergebnisse ansehen →"
       },
-      "timeLeft_one": "⏳ Noch {{count}} Stunde zum Abstimmen",
-      "timeLeft_other": "⏳ Noch {{count}} Stunden zum Abstimmen",
+      "timeLeft_one": "Noch {{count}} Stunde zum Abstimmen",
+      "timeLeft_other": "Noch {{count}} Stunden zum Abstimmen",
       "pts_one": "{{count}} Pkt.",
       "pts_other": "{{count}} Pkt.",
       "ghost": {

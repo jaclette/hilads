@@ -27,3 +27,4 @@ export { TextField } from './TextField';
 export { ThemeIcon, THEME_ICON } from './ThemeIcon';
 export { DualPhoto, type PhotoSource } from './DualPhoto';
 export { Tappable } from './Tappable';
+export { Crown } from './Crown';

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring, withTiming, Easing } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Radius, Type, Elevation, Gutter, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Confetti, tint } from '@/ui/joy';
+import { Crown } from '@/ui/Crown';
+import { Tappable } from '@/ui/Tappable';
 
 /** A podium place's medal color (1 gold, 2 silver, 3 bronze): the saturated medal fills, ink (`onMedal`) on top. */
 export function medalColor(c: ThemeColors, rank: number): string {
@@ -44,7 +46,8 @@ export function Movement({ rank, prevRank, show }: { rank: number; prevRank: num
   return <Text style={[styles.move, { color: d > 0 ? colors.green : colors.red }]}>{d > 0 ? `▲${d}` : `▼${-d}`}</Text>;
 }
 
-export type PodiumItem = { key: string; rank: number; label: string; lead: ReactNode; value: number; format: (n: number) => string; onPress?: () => void };
+/** `heart`: the value is a like count, drawn with the heart icon (never the ❤️ emoji). */
+export type PodiumItem = { key: string; rank: number; label: string; lead: ReactNode; value: number; format: (n: number) => string; onPress?: () => void; heart?: boolean };
 /**
  * An empty podium place, per rank: an invitation ("Your photo here? 📸" → the camera; "🎯 Who
  * takes #3? Invite a friend" → the share sheet) or, for a past period, just "Nobody took this
@@ -87,18 +90,21 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
   const { colors } = useTheme();
   const color = medalColor(colors, item.rank);
   return (
-    <Pressable style={styles.step} onPress={item.onPress} disabled={!item.onPress} accessibilityRole="button"
-               accessibilityLabel={`#${item.rank} ${item.label}`}>
+    <Tappable style={styles.step} onPress={item.onPress} disabled={!item.onPress} accessibilityRole="button"
+              accessibilityLabel={`#${item.rank} ${item.label}`}>
       <Animated.View style={[styles.lead, lead]}>
-        {item.rank === 1 && <Text style={styles.crown}>👑</Text>}
+        {item.rank === 1 && <View style={styles.crown}><Crown size={30} fill={colors.medalGold} stroke={colors.onMedal} /></View>}
         {item.lead}
       </Animated.View>
       <Text style={styles.podiumName} numberOfLines={1}>{item.label}</Text>
-      <CountUp value={item.value} format={item.format} style={styles.podiumValue} />
+      <View style={styles.valueRow}>
+        {item.heart && <Ionicons name="heart" size={IconSize.sm} color={colors.primary} />}
+        <CountUp value={item.value} format={item.format} style={styles.podiumValue} />
+      </View>
       <Animated.View style={[styles.block, { backgroundColor: color }, block]}>
         <Text style={styles.blockRank}>{item.rank}</Text>
       </Animated.View>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -109,8 +115,8 @@ function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) 
   const { colors } = useTheme();
   const color = medalColor(colors, rank);
   return (
-    <Pressable style={styles.step} onPress={ghost.onPress} disabled={!ghost.onPress} accessibilityRole={ghost.onPress ? 'button' : 'text'}
-               accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
+    <Tappable style={styles.step} onPress={ghost.onPress} disabled={!ghost.onPress} accessibilityRole={ghost.onPress ? 'button' : 'text'}
+              accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
       <View style={styles.lead}>
         <View style={[styles.ghostLead, { borderColor: color, backgroundColor: tint(color, 0.14) }]}>
           <Ionicons name={ghost.icon} size={24} color={color} />
@@ -120,7 +126,7 @@ function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) 
       <View style={[styles.ghostBlock, { height: HEIGHTS[rank - 1], borderColor: color, backgroundColor: tint(color, 0.12) }]}>
         <Text style={styles.ghostRank}>{rank}</Text>
       </View>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -130,8 +136,8 @@ export function RankRow({ rank, lead, title, sub, movement, value, mine, onPress
 }) {
   const styles = useThemedStyles(makeStyles);
   return (
-    <Pressable onPress={onPress} disabled={!onPress} style={[styles.row, mine && styles.rowMine]} accessibilityRole="button"
-               accessibilityLabel={`#${rank} ${title}, ${value}`}>
+    <Tappable onPress={onPress} disabled={!onPress} style={[styles.row, mine && styles.rowMine]} accessibilityRole="button"
+              accessibilityLabel={`#${rank} ${title}, ${value}`}>
       <Text style={styles.rank}>{rank}</Text>
       {lead}
       <View style={styles.rowBody}>
@@ -141,22 +147,27 @@ export function RankRow({ rank, lead, title, sub, movement, value, mine, onPress
       </View>
       {movement}
       <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>{value}</Text></View>
-    </Pressable>
+    </Tappable>
   );
 }
 
-/** The sticky "You" bar at the bottom: where you stand and who's next; a tap scrolls to your row. */
+/**
+ * The sticky "You" bar at the bottom: where you stand and who's next; a tap scrolls to your row.
+ * The shared floating bar (design pass, BottomBar): inside the gutter, tangerine and ink in both themes.
+ */
 export function YouBar({ text, onPress }: { text: string; onPress?: () => void }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const reduced = useReducedMotion();
   const y = useSharedValue(reduced ? 0 : 80);
   useEffect(() => { if (!reduced) y.value = withTiming(0, { duration: 350, easing: Easing.out(Easing.back(1.4)) }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const st = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
   return (
     <Animated.View style={[styles.youWrap, st]} pointerEvents="box-none">
-      <Pressable onPress={onPress} style={styles.you} accessibilityRole="button" testID="ranks-you">
+      <Tappable onPress={onPress} style={styles.you} accessibilityRole="button" testID="ranks-you">
         <Text style={styles.youText} numberOfLines={2}>{text}</Text>
-      </Pressable>
+        {!!onPress && <Ionicons name="arrow-down" size={IconSize.md} color={colors.onCta} />}
+      </Tappable>
     </Animated.View>
   );
 }
@@ -176,34 +187,37 @@ export function RaceBar({ ratio, color, delay = 0 }: { ratio: number; color: str
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  podium:      { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: Space.sm, paddingTop: Space.sm, paddingBottom: Space.xs },
+  // Inside the gutter (design pass): the podium never runs edge to edge.
+  podium:      { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: Space.sm, paddingTop: Space.md, paddingBottom: Space.xs, paddingHorizontal: Gutter },
   step:        { flex: 1, alignItems: 'center', maxWidth: 130 },
   lead:        { alignItems: 'center', marginBottom: Space.sm },
-  crown:       { fontSize: 24, lineHeight: 30, marginBottom: -4 },
-  podiumName:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, maxWidth: '100%' },
-  podiumValue: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: Space.sm },
-  block:       { width: '100%', borderTopLeftRadius: 14, borderTopRightRadius: 14, alignItems: 'center', paddingTop: Space.sm, overflow: 'hidden' },
-  blockRank:   { fontSize: FontSizes.xl, lineHeight: 32, fontWeight: '800', color: c.onGold },
+  crown:       { marginBottom: -2, zIndex: 1 },
+  podiumName:  { ...Type.caption, fontWeight: '800', color: c.text, maxWidth: '100%' },
+  valueRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginBottom: Space.sm },
+  podiumValue: { ...Type.caption, color: c.muted },
+  block:       { width: '100%', borderTopLeftRadius: Radius.card, borderTopRightRadius: Radius.card, alignItems: 'center', paddingTop: Space.sm, overflow: 'hidden' },
+  blockRank:   { ...Type.display, color: c.onMedal },
   ghostLead:   { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
-  ghostLabel:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: Space.sm, minHeight: 34 },
+  ghostLabel:  { ...Type.caption, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: Space.sm, minHeight: 34 },
   ghostMuted:  { color: c.muted, fontWeight: '700' },
-  ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: Space.sm },
-  ghostRank:   { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.muted },
-  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.md, paddingHorizontal: Space.md, borderRadius: Radius.card },
-  rowMine:     { backgroundColor: c.primaryTint },
-  rank:        { width: 28, fontSize: FontSizes.body, fontWeight: '800', color: c.muted, textAlign: 'center' },
+  ghostBlock:  { width: '100%', borderTopLeftRadius: Radius.card, borderTopRightRadius: Radius.card, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: Space.sm },
+  ghostRank:   { ...Type.display, color: c.muted },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.md, paddingHorizontal: Space.sm, borderRadius: Radius.card },
+  rowMine:     { backgroundColor: c.selected },
+  rank:        { width: 28, ...Type.label, color: c.muted, textAlign: 'center' },
   rowBody:     { flex: 1, gap: Space.xxs },
-  rowTitle:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
+  rowTitle:    { ...Type.body, fontWeight: '800', color: c.text },
   rowSub:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexWrap: 'wrap' },
-  pill:        { paddingHorizontal: Space.md, height: 28, borderRadius: 14, backgroundColor: tint(c.gold, 0.25), alignItems: 'center', justifyContent: 'center' },
-  pillText:    { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
-  move:        { fontSize: FontSizes.xs, fontWeight: '800', minWidth: 28, textAlign: 'right' },
-  newChip:     { paddingHorizontal: Space.sm, height: 20, borderRadius: 10, backgroundColor: c.primaryTint, justifyContent: 'center' },
-  newText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
-  youWrap:     { position: 'absolute', left: 12, right: 12, bottom: 10 },
-  you:         { minHeight: 52, paddingHorizontal: 16, paddingVertical: 10, borderRadius: Radius.full, backgroundColor: c.text, justifyContent: 'center',
-                 shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
-  youText:     { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.bg },
+  // The one score pill: neutral, the value in ink (the heart, where there is one, is an icon in primary).
+  pill:        { paddingHorizontal: Space.md, height: 28, borderRadius: Radius.control, backgroundColor: c.bg3, alignItems: 'center', justifyContent: 'center' },
+  pillText:    { ...Type.caption, fontWeight: '800', color: c.text },
+  move:        { ...Type.caption, fontWeight: '800', minWidth: 28, textAlign: 'right' },
+  newChip:     { paddingHorizontal: Space.sm, height: 20, borderRadius: Radius.control, backgroundColor: c.selected, justifyContent: 'center' },
+  newText:     { ...Type.caption, fontWeight: '800', color: c.onSelected },
+  youWrap:     { position: 'absolute', left: Gutter, right: Gutter, bottom: Space.lg },
+  you:         { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Space.xl, paddingVertical: Space.md,
+                 borderRadius: Radius.control, backgroundColor: c.cta, ...Elevation(c, 'float') },
+  youText:     { flex: 1, ...Type.body, fontWeight: '800', color: c.onCta },
   track:       { height: 8, borderRadius: 4, backgroundColor: c.bg3, overflow: 'hidden', marginTop: Space.xs },
   fill:        { height: 8, borderRadius: 4 },
 });

@@ -63,9 +63,9 @@ export function Podium({ items, ghost }) {
       {order.map((it, i) => (it ? (
         <button key={it.key} type="button" className="r6-step" onClick={it.onClick} disabled={!it.onClick} aria-label={`#${it.rank} ${it.label}`}
                 style={{ animationDelay: `${[120, 0, 240][i]}ms` }}>
-          <span className="r6-lead">{it.rank === 1 && <span className="r6-crown">👑</span>}{it.lead}</span>
+          <span className="r6-lead">{it.rank === 1 && <Crown />}{it.lead}</span>
           <span className="r6-podium-name">{it.label}</span>
-          <CountUp value={it.value} format={it.format} className="r6-podium-value" />
+          <span className="r6-value-row">{it.heart && <Icon name="heart" size={16} className="r6-heart" />}<CountUp value={it.value} format={it.format} className="r6-podium-value" /></span>
           <span className={`r6-block r6-block--${it.rank}`} style={{ background: MEDAL[it.rank - 1] }}><span>{it.rank}</span></span>
         </button>
       ) : ghost ? <GhostStep key={`g${i}`} rank={[2, 1, 3][i]} ghost={ghost(([2, 1, 3][i]))} delay={[120, 0, 240][i]} />
@@ -139,4 +139,16 @@ export function RaceBar({ ratio, color, delay = 0 }) {
   const [w, setW] = useState(reduced() ? ratio : 0)
   useEffect(() => { const id = setTimeout(() => setW(ratio), reduced() ? 0 : 40 + delay); return () => clearTimeout(id) }, [ratio, delay])
   return <span className="r6-track"><span className="r6-fill" style={{ width: `${Math.max(4, w * 100)}%`, background: color }} /></span>
+}
+
+/** The #1 crown (design pass): drawn in the medal gold with an ink outline, never the 👑 emoji (the app's Crown). */
+function Crown() {
+  return (
+    <svg className="r6-crown" width="30" height="24" viewBox="0 0 30 24" aria-hidden="true">
+      <path d="M3 8.5 L8.5 14 L15 4.5 L21.5 14 L27 8.5 L25 21 L5 21 Z" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.8" strokeLinejoin="round" />
+      <circle cx="3" cy="7.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" />
+      <circle cx="15" cy="3.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" />
+      <circle cx="27" cy="7.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" />
+    </svg>
+  )
 }

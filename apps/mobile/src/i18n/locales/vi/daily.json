@@ -809,7 +809,7 @@
       "city": "Thành phố của tôi",
       "world": "Thế giới"
     },
-    "timeLeftMin": "⏳ Còn chưa tới một giờ để bình chọn",
+    "timeLeftMin": "Còn chưa tới một giờ để bình chọn",
     "bestPerCity": "Ảnh đỉnh nhất mỗi thành phố",
     "new": "mới",
     "you": {
@@ -849,7 +849,7 @@
       "generic": "🏆 Đã có kết quả hôm qua",
       "see": "Xem kết quả →"
     },
-    "timeLeft_other": "⏳ Còn {{count}} giờ để bình chọn",
+    "timeLeft_other": "Còn {{count}} giờ để bình chọn",
     "pts_other": "{{count}} điểm",
     "ghost": {
       "photo": "Ảnh của bạn ở đây? 📸",

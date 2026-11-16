@@ -766,7 +766,7 @@
         "week": "本周",
         "alltime": "历史"
       },
-      "timeLeftMin": "⏳ 投票还剩不到一小时",
+      "timeLeftMin": "投票还剩不到一小时",
       "bestPerCity": "每座城市的最佳照片",
       "new": "新",
       "you": {
@@ -796,7 +796,7 @@
         "generic": "🏆 昨天的结果出来了",
         "see": "查看结果 →"
       },
-      "timeLeft_other": "⏳ 还剩 {{count}} 小时投票",
+      "timeLeft_other": "还剩 {{count}} 小时投票",
       "pts_other": "{{count}} 分",
       "ghost": {
         "photo": "你的照片放这里？📸",

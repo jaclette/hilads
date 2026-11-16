@@ -994,7 +994,7 @@
       "city": "مدينتي",
       "world": "العالم"
     },
-    "timeLeftMin": "⏳ بقي أقل من ساعة للتصويت",
+    "timeLeftMin": "بقي أقل من ساعة للتصويت",
     "bestPerCity": "أفضل صورة في كل مدينة",
     "new": "جديد",
     "you": {
@@ -1052,12 +1052,12 @@
       "generic": "🏆 نتائج الأمس صدرت",
       "see": "عرض النتائج ←"
     },
-    "timeLeft_zero": "⏳ بقيت {{count}} ساعة للتصويت",
-    "timeLeft_one": "⏳ بقيت ساعة للتصويت",
-    "timeLeft_two": "⏳ بقيت ساعتان للتصويت",
-    "timeLeft_few": "⏳ بقيت {{count}} ساعات للتصويت",
-    "timeLeft_many": "⏳ بقيت {{count}} ساعة للتصويت",
-    "timeLeft_other": "⏳ بقيت {{count}} ساعة للتصويت",
+    "timeLeft_zero": "بقيت {{count}} ساعة للتصويت",
+    "timeLeft_one": "بقيت ساعة للتصويت",
+    "timeLeft_two": "بقيت ساعتان للتصويت",
+    "timeLeft_few": "بقيت {{count}} ساعات للتصويت",
+    "timeLeft_many": "بقيت {{count}} ساعة للتصويت",
+    "timeLeft_other": "بقيت {{count}} ساعة للتصويت",
     "pts_zero": "{{count}} نقطة",
     "pts_one": "نقطة واحدة",
     "pts_two": "نقطتان",
