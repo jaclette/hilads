@@ -20,7 +20,7 @@ env:
       visible:
         id: "city-search"
     commands:
-      - tapOn: "Ho Chi Minh City.*"
+      - tapOn: "(Ho Chi Minh City|Saigon).*"   # the list shows the short name (Saigon)
 - extendedWaitUntil:
     visible:
       id: "tab-today"

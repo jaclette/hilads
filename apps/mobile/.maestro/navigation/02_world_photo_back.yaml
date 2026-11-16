@@ -1,6 +1,6 @@
 # Bug: Today → a photo of today's mosaic ("Same challenge. Different
-# worlds.") → back closed Today's photos but the app stopped navigating.
-# Expected: back closes Today's photos, then everything keeps working.
+# worlds.") → back closed the viewer but the app stopped navigating.
+# Expected: back closes the stories viewer (a mosaic card opens it), then everything keeps working.
 appId: com.hilads.app
 tags: [navigation]
 ---
@@ -18,15 +18,15 @@ tags: [navigation]
     id: "mosaic-tile"
 - extendedWaitUntil:
     visible:
-      id: "daily-photos"
+      id: "today-stories"
     timeout: 30000
-# Today's photos scrolls vertically: iOS closes it with its own button.
+# The stories viewer closes with a swipe down (iOS) or back (Android).
 - runFlow:
     file: ../subflows/back.yaml
-    env: { KIND: "tap", TAP: "photos-close" }
+    env: { KIND: "modal" }
 - extendedWaitUntil:
     notVisible:
-      id: "daily-photos"
+      id: "today-stories"
     timeout: 20000
 - assertVisible:
     id: "today-screen"

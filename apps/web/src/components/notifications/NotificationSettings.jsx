@@ -108,8 +108,8 @@ export default function NotificationSettings({ onBack }) {
           <div className="n6-card">
             <div className="n6-group-head">
               <span className="n6-group-emoji" style={{ background: 'var(--primary-tint)' }}>💬</span>
-              <span className="n6-group-title">{tdm('prefs.title')}</span>
-              <Toggle checked={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} label={tdm('prefs.title')} />
+              <span className="n6-group-title">{tdm('title')}</span>
+              <Toggle checked={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} label={tdm('title')} />
             </div>
             {MESSAGE_TOGGLES.map(x => (
               <div key={x.label} className="n6-pref">

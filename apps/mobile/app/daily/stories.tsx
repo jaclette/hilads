@@ -117,6 +117,10 @@ function Stories() {
   const group = absent ? null : order[cityIndex] ?? null;
   const ids = (group?.ids ?? []).filter(id => !gone.has(id));
   const proof = ids[photoIndex] ? proofs[ids[photoIndex]] ?? null : null;
+  // Every photo of the city failed to load: say so instead of spinning forever.
+  const nothing = !!group && ids.length === 0;
+  // Photos dropped out (removed, failed): stay on the last one there is.
+  useEffect(() => { if (ids.length > 0 && photoIndex >= ids.length) setPhotoIndex(ids.length - 1); }, [ids.length, photoIndex]);
 
   // Opened from a mosaic pile: start at the photo that was on top of it.
   const startedAt = useRef(!!first);
@@ -227,6 +231,7 @@ function Stories() {
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                      draggable={!zoom.zooming} insetTop={insets.top + 76} onInteract={setInteracting}
                      fit="screen" zoomStyle={zoom.style} sharp={zoom.zooming} />
+        : nothing ? <View style={[StyleSheet.absoluteFill, styles.center]}><Text style={styles.caption}>{t('loadFailed')}</Text></View>
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
       {/* The overlays (shades only at the top and the bottom): hidden while zoomed. */}
       <View style={[StyleSheet.absoluteFill, zoom.zooming && styles.hidden]} pointerEvents={zoom.zooming ? 'none' : 'box-none'}>

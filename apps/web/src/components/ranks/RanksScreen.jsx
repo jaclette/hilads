@@ -315,7 +315,8 @@ function Cities({ data, failed, period, myCityId, ghost }) {
       </div>
       {/* Under the city ranking: my rivals (moved from Passport), then how the cities answered (the Hilads Index). */}
       <div className="r6-index"><RivalsBlock /><IndexCarousel alwaysLink source="ranks" /></div>
-      {mine && (
+      {/* #1: the line at the top already says so (the bar would repeat it, over the Index). */}
+      {mine && mine.rank !== 1 && (
         <YouBar text={mine.rank === 1 ? t('ranks.city.lineTop', { city: name(mine.city) })
           : t('ranks.city.youBar', { city: name(mine.city), rank: mine.rank, count: mine.gap ?? 1, next: mine.next ? shortCityName(mine.next.name) : '' })}
                 onClick={() => rows.current[mine.city.id]?.scrollIntoView({ block: 'center', behavior: 'smooth' })} />

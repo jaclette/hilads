@@ -138,8 +138,8 @@ export default function NotificationSettingsScreen() {
           <View style={styles.card} testID="prefs-messages">
             <View style={styles.groupHead}>
               <View style={[styles.groupEmoji, { backgroundColor: colors.primaryTint }]}><Text style={styles.emoji}>💬</Text></View>
-              <Text style={styles.groupTitle}>{t('prefTitle', { ns: 'dm' })}</Text>
-              <PrefSwitch value={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} color={colors.primary} label={t('prefTitle', { ns: 'dm' })} />
+              <Text style={styles.groupTitle}>{t('messages', { ns: 'common' })}</Text>
+              <PrefSwitch value={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} color={colors.primary} label={t('messages', { ns: 'common' })} />
             </View>
             {MESSAGE_TOGGLES.map(x => (
               <View key={x.label} style={styles.row}>

@@ -479,7 +479,8 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
           </View>
         )}
       />
-      {mine && (
+      {/* #1: the line at the top already says so (the bar would repeat it, over the Index). */}
+      {mine && mine.rank !== 1 && (
         <YouBar text={mine.rank === 1 ? t('ranks.city.lineTop', { city: name(mine.city) })
           : t('ranks.city.youBar', { city: name(mine.city), rank: mine.rank, count: mine.gap ?? 1, next: mine.next ? shortCityName(mine.next.name) : '' })}
                 onPress={() => list.current?.scrollToIndex({ index: Math.max(0, mine.rank - 1), viewPosition: 0.5 })} />
