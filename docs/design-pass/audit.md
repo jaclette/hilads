@@ -107,3 +107,37 @@ All four recommendations taken: keep `scaling.ts` (no size-matters), peach selec
 2. **The tab bar's gold highlight on World** (`_layout.tsx`, deliberate). One selected color everywhere (peach) is what Phase 1 implies. **Recommendation:** peach everywhere, and keep gold for prizes only.
 3. **Repeated challenge titles in World's photo rows** (Today/Yesterday boards, one challenge). Hiding the title when every row shares it is a content change, not just design. **Recommendation:** show the place or caption instead, and keep the title on Week/All time.
 4. **Emoji in copy** (🙋 🏁 👆 📍 🌍 ❤️ 👑). These live in the 19 locale files. **Recommendation:** replace them with icons in UI chrome (hearts, crown, pins). Keep emoji only where they're the voice of a sentence. That touches translations, with keys unchanged.
+
+---
+
+## Results (2026-11-16, branch `design-pass`, not pushed)
+
+One commit per step, each with app and web together. Before / after shots are in `docs/design-pass/after/<step>/`, with side-by-side sheets in `docs/design-pass/compare-*.png`.
+
+| Step | Commit | What changed |
+|---|---|---|
+| Phase 1, design system | 3f295a07 | Tokens (spacing, type, radius, elevation, motion, icon sizes, selected, medals), Tappable, Badge, BottomBar, one avatar fallback; see `design-system.md` |
+| Today | 20a4f5a4 | Display hero title, square 2-column catalogue with even 2-line titles, no "Represent your city" tile, the week card on the shared card |
+| World | 72aae48f | Podium inside the gutter on saturated medals with a drawn crown, one-challenge rows lead with the player, icon score pill, peach periods, tangerine "You" bar, trophy empty state |
+| Map | aa361ba6 | Sheet head on the type roles without emoji, "Surprise me" on the floating surface with a dice icon, theme chips in their own colors, floating buttons on the gutter |
+| Passport | 02fa7579 | 72 avatar and a stat strip, equal streak and rank cards with icon discs, the menu in theme-colored discs, the city page on the hero card |
+
+### Still open
+
+**Clean-up, not decided here:**
+- The i18n keys of the removed tile: `mosaic.slotCta`, `mosaic.missing`, `mosaic.beFirstSub`, `countries.represent`, and the seasonal `copy.represent`. They're unused now, in app and web.
+
+**Not covered by the shots:**
+- The Halloween palette got its own selected pair, but the event is off on the local stack, so it wasn't seen.
+- Android was not shot in this pass; the shared code is the same.
+
+**Long strings and diacritics:** checked on the small phone in Vietnamese and German (`after/locales/`, `compare-locales.png`). Nothing is cut or overflows.
+
+**Bug found, not from this pass:**
+- In Vietnamese, a count of 1 falls back to English ("1 city", "1 photo", "1 player") while other counts are translated ("7 ảnh"). Vietnamese has only the `other` plural form, so a `_one` lookup ends in the English fallback. Worth a look in the i18n config.
+
+**Seen but left as is:**
+- Today's header (logo row plus brand line, about 110 pt before the hero).
+- Web `/world` ignores a `tab` in the URL.
+- The web header's extra messages button.
+- The web map's raster tiles.

@@ -7,7 +7,7 @@
 //   node scripts/design-pass/shots.mjs --out=docs/design-pass/after --only=today --app=<Hilads.app>
 //
 // Options: --devices=small,large  --themes=light,dark  --only=today,world,map,passport
-//          --no-web / --web-only   --app (default: the store pipeline's last release build)
+//          --no-web / --web-only   --app (default: the store pipeline's last release build)   --lang=vi
 // Files: <out>/<device>-<theme>-<screen>.png (device = small, large, web).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -28,6 +28,8 @@ const APP = path.resolve(ROOT, arg('app', path.join(STORE, '.cache/app/Hilads.ap
 const DEVICES = arg('devices', 'small,large').split(',');
 const THEMES = arg('themes', 'light,dark').split(',');
 const ONLY = arg('only', 'today,world,map,passport').split(',');
+// An app language for a long-strings / diacritics check (vi, de...): files get a -<lang> suffix.
+const LANG = arg('lang', 'en');
 const SEED = JSON.parse(fs.readFileSync(path.join(STORE, '.cache/seed.json'), 'utf8'));
 const BUNDLE = 'com.hilads.app';
 const MAESTRO = path.join(process.env.HOME, '.maestro/bin/maestro');
@@ -56,7 +58,7 @@ const SCREENS = {
   ],
   map: [
     { id: 'map', link: 'hilads://map', wait: { text: '(.*\\D)?10\\D.*' } },
-    { id: 'map-sheet', link: 'hilads://map', wait: { text: '(.*\\D)?10\\D.*' }, tap: '.*spots to explore.*' },
+    { id: 'map-sheet', link: 'hilads://map', wait: { text: '(.*\\D)?10\\D.*' }, tapId: 'map-sheet' },
   ],
   passport: [
     { id: 'passport-top', link: 'hilads://passport', wait: { id: 'passport-settings' } },
@@ -91,7 +93,7 @@ function openLink(url) {
 }
 
 function flowFor(shots) {
-  const steps = ['- launchApp:', `    appId: ${BUNDLE}`, '    stopApp: true', '    arguments:', '      AppleLanguages: "(en)"',
+  const steps = ['- launchApp:', `    appId: ${BUNDLE}`, '    stopApp: true', '    arguments:', `      AppleLanguages: "(${LANG})"`,
                  '- waitForAnimationToEnd:', '    timeout: 8000'];
   for (const s of shots) {
     steps.push(...openLink(s.link));
@@ -100,7 +102,7 @@ function flowFor(shots) {
     if (s.scrollTo) steps.push('- scrollUntilVisible:', '    element:', `      id: "${s.scrollTo}"`, '    direction: DOWN', '    timeout: 30000',
                                '    visibilityPercentage: 100', '    centerElement: true', '    speed: 40');
     for (let i = 0; i < (s.swipes ?? 0); i++) steps.push('- swipe:', '    start: 50%, 75%', '    end: 50%, 25%', '    duration: 500');
-    if (s.tap) steps.push('- tapOn:', `    text: ${q(s.tap)}`, '    optional: true');
+    if (s.tapId) steps.push('- tapOn:', `    id: ${q(s.tapId)}`, '    optional: true');
     steps.push('- waitForAnimationToEnd:', '    timeout: 8000', `- takeScreenshot: ${q(s.id)}`);
   }
   return [`appId: ${BUNDLE}`, '---', ...steps].join('\n') + '\n';
@@ -163,7 +165,7 @@ function captureApp(device) {
     }
     for (const s of shots) {
       const f = findFile(out, `${s.id}.png`);
-      if (f) fs.copyFileSync(f, path.join(OUT, `${device}-${theme}-${s.id}.png`));
+      if (f) fs.copyFileSync(f, path.join(OUT, `${device}-${theme}-${s.id}${LANG === 'en' ? '' : `-${LANG}`}.png`));
       else console.log(`  missing ${tag} ${s.id}`);
     }
   }
