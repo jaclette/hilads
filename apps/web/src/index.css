@@ -65,6 +65,15 @@
   --gold: #B98A2E;
   --silver: #7E8A97;
   --bronze: #A0643A;
+  /* Design pass: the one selected state (peach), the saturated medal fills, one warm shadow. */
+  --selected: #FFE6D8;
+  --on-selected: #8A3A12;
+  --medal-gold: #F7B733;
+  --medal-silver: #A9C1E0;
+  --medal-bronze: #EE8F4F;
+  --on-medal: #2A1C13;
+  --elev-rest: 0 3px 10px rgba(90, 52, 24, 0.07);
+  --elev-float: 0 10px 22px rgba(90, 52, 24, 0.16);
   --overlay-weak: rgba(28, 20, 14, 0.03);
   --overlay: rgba(28, 20, 14, 0.05);
   --overlay-strong: rgba(28, 20, 14, 0.08);
@@ -82,35 +91,53 @@
 }
 
 /* ── Type scale: the app's (constants.ts), theme-independent ─────────────────
-   In rem so it follows the responsive root size below (exact px at >=457px,
-   down to ~0.78x on the narrowest phones, like the app's SCREEN_SCALE).
-   tiny = badges and count pips only. */
+   Design pass: five sizes (display 28, title 20, label 17, body 15, caption 13); the older
+   steps point at them. In rem so it follows the responsive root size below (exact px at
+   >=457px, down to ~0.78x on the narrowest phones, like the app's SCREEN_SCALE).
+   tiny = badges and count pips only; hero = celebration numbers only. */
 :root {
   --fs-tiny: 0.6875rem;   /* 11 */
-  --fs-xs: 0.8125rem;     /* 13 */
-  --fs-sm: 0.875rem;      /* 14 */
-  --fs-body: 0.9375rem;   /* 15 */
-  --fs-md: 1.0625rem;     /* 17: primary button */
-  --fs-lg: 1.25rem;       /* 20 */
-  --fs-xl: 1.5rem;        /* 24 */
-  --fs-title: 1.625rem;   /* 26: tab titles */
-  --fs-xxl: 2rem;         /* 32 */
-  --fs-hero: 2.5rem;      /* 40 */
+  --fs-xs: 0.8125rem;     /* 13 caption */
+  --fs-sm: 0.8125rem;     /* 13 caption (was 14) */
+  --fs-body: 0.9375rem;   /* 15 body */
+  --fs-md: 1.0625rem;     /* 17 label: buttons, row and tile titles */
+  --fs-lg: 1.25rem;       /* 20 title */
+  --fs-xl: 1.25rem;       /* 20 title (was 24) */
+  --fs-title: 1.75rem;    /* 28 display: tab titles */
+  --fs-xxl: 1.75rem;      /* 28 display (was 32) */
+  --fs-hero: 2.5rem;      /* 40 celebration numbers only */
 
-  /* Radii (the app's): cards, the ticket / hero, buttons and inputs, pills. */
-  --r-card: 18px;
-  --r-ticket: 22px;
-  --r-button: 16px;
+  /* Radii (design pass): control (chips, buttons, segments: a pill), card, hero; inner = media in a card. */
+  --r-control: 999px;
+  --r-card: 20px;
+  --r-hero: 28px;
+  --r-inner: 12px;
+  --r-ticket: 28px;       /* → hero */
+  --r-button: 999px;      /* → control */
   --r-chip: 999px;
 
-  /* Spacing grid (the app's): padding, margin and gap; 18 = the screen gutter. */
+  /* Spacing grid: 4 / 8 / 12 / 16 / 24 / 32; the screen gutter is 16 everywhere. */
   --sp-2: 2px;
   --sp-4: 4px;
   --sp-8: 8px;
   --sp-12: 12px;
   --sp-16: 16px;
   --sp-24: 24px;
-  --gutter: 18px;
+  --sp-32: 32px;
+  --gutter: 16px;
+
+  /* Motion: one set of durations and one spring-like ease. */
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The one press feedback (the app's Tappable): scale 0.97 on press, plain with reduce motion. */
+.tappable { transition: transform var(--dur-fast) ease-out; -webkit-tap-highlight-color: transparent; }
+.tappable:active { transform: scale(0.97); transition-timing-function: var(--ease-spring); }
+@media (prefers-reduced-motion: reduce) {
+  .tappable, .tappable:active { transform: none; transition: none; }
+  .tappable:active { opacity: 0.85; }
 }
 
 /* DARK — the app's original look, now opt-in via the toggle. */
@@ -162,6 +189,14 @@
   --gold: #D9AE52;
   --silver: #B4BDC7;
   --bronze: #C98B5C;
+  --selected: #3A2216;
+  --on-selected: #FFB48A;
+  --medal-gold: #F7B733;
+  --medal-silver: #A9C1E0;
+  --medal-bronze: #EE8F4F;
+  --on-medal: #2A1C13;
+  --elev-rest: 0 3px 10px rgba(0, 0, 0, 0.22);
+  --elev-float: 0 10px 22px rgba(0, 0, 0, 0.4);
   --overlay-weak: rgba(255, 255, 255, 0.04);
   --overlay: rgba(255, 255, 255, 0.07);
   --overlay-strong: rgba(255, 255, 255, 0.12);
@@ -8799,19 +8834,19 @@ body.has-app-promo-banner .page-header {
    as 3D. Number colour is a dark tint of the same hue so it stays
    legible against the metal. */
 .rank-badge--podium-1 {
-  background: linear-gradient(155deg, #FFE17A 0%, #C8A02E 100%);
+  background: var(--medal-gold);
 }
-.rank-badge--podium-1 .rank-badge-number { color: #3B2F00; }
+.rank-badge--podium-1 .rank-badge-number { color: var(--on-medal); }
 
 .rank-badge--podium-2 {
-  background: linear-gradient(155deg, #E9E9E9 0%, #9C9C9C 100%);
+  background: var(--medal-silver);
 }
-.rank-badge--podium-2 .rank-badge-number { color: #2A2A2A; }
+.rank-badge--podium-2 .rank-badge-number { color: var(--on-medal); }
 
 .rank-badge--podium-3 {
-  background: linear-gradient(155deg, #E0A36F 0%, #8B5A33 100%);
+  background: var(--medal-bronze);
 }
-.rank-badge--podium-3 .rank-badge-number { color: #3A1F0A; }
+.rank-badge--podium-3 .rank-badge-number { color: var(--on-medal); }
 
 /* Top-left highlight on podium discs - a near-white slice that reads
    as a specular reflection on the metal. Pure decoration. */
@@ -10387,7 +10422,7 @@ body.has-app-promo-banner .page-header {
 [data-theme="light"] .bottom-nav { box-shadow: none; }
 .bottom-nav-tab::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: transparent; transition: background 0.15s ease, box-shadow 0.15s ease; z-index: -1; display: none; }
 .bottom-nav-tab.active,
-[data-theme="light"] .bottom-nav-tab.active { color: var(--primary-on-tint); background: var(--primary-tint); }
+[data-theme="light"] .bottom-nav-tab.active { color: var(--on-selected); background: var(--selected); }
 .bottom-nav-tab.active .bottom-nav-icon { filter: none; }
 .bottom-nav-icon svg { width: 24px; height: 24px; }
 .bottom-nav-label { position: relative; white-space: nowrap; font-size: var(--fs-xs); font-weight: 600; line-height: 1.2; text-transform: none; letter-spacing: 0;
@@ -10530,9 +10565,9 @@ body.has-app-promo-banner .page-header {
 .dc-tile-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--surface2); }
 .dc-tile-medal { position: absolute; top: 6px; left: 6px; font-size: var(--fs-xl); }
 .dc-medal { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; font-size: var(--fs-xs); font-weight: 800; line-height: 1; background: var(--primary-tint); color: var(--primary-on-tint); }
-.dc-medal--gold { background: var(--gold); color: var(--surface); }
-.dc-medal--silver { background: var(--silver); color: var(--surface); }
-.dc-medal--bronze { background: var(--bronze); color: var(--surface); }
+.dc-medal--gold { background: var(--medal-gold); color: var(--on-medal); }
+.dc-medal--silver { background: var(--medal-silver); color: var(--on-medal); }
+.dc-medal--bronze { background: var(--medal-bronze); color: var(--on-medal); }
 .dc-tile-meta { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--sp-4); align-items: flex-start; }
 .dc-tile-name { font-size: var(--fs-xs); font-weight: 700; color: var(--text); }
 .dc-tile-sub { font-size: var(--fs-xs); color: var(--muted2); }

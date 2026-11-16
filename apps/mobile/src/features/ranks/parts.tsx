@@ -7,9 +7,9 @@ import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Confetti, tint } from '@/ui/joy';
 
-/** A podium place's medal color (1 gold, 2 silver, 3 bronze): the theme's medal tokens, one palette in every theme. */
+/** A podium place's medal color (1 gold, 2 silver, 3 bronze): the saturated medal fills, ink (`onMedal`) on top. */
 export function medalColor(c: ThemeColors, rank: number): string {
-  return [c.gold, c.silver, c.bronze][rank - 1] ?? c.gold;
+  return [c.medalGold, c.medalSilver, c.medalBronze][rank - 1] ?? c.medalGold;
 }
 
 /** A number counting up from 0 (once), plain with "reduce motion". */

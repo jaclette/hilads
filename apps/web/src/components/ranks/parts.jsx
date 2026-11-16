@@ -3,8 +3,8 @@ import Icon from '../Icon'
 import { FlagSticker } from '../joy/Joy'
 import { useDc } from '../daily/dailyShared'
 
-/** Podium block colors: gold, silver, bronze. */
-export const MEDAL = ['#FFC93C', '#C9CED6', '#E3A06B']
+/** Podium block colors: gold, silver, bronze (the saturated medal tokens, ink on top). */
+export const MEDAL = ['var(--medal-gold)', 'var(--medal-silver)', 'var(--medal-bronze)']
 export const MEDAL_EMOJI = ['🥇', '🥈', '🥉']
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 

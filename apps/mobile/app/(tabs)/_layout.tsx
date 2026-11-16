@@ -7,16 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/ThemeContext';
-import { Space, FontSizes } from '@/constants';
+import { Space, FontSizes, IconSize } from '@/constants';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { PumpkinIcon, SeasonalScope, TabGhost } from '@/features/event/SeasonalArt';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features/notifications/counts';
 import { markNotificationTypesRead } from '@/api/notifications';
-import { themeColor, tint } from '@/ui/joy';
 import { markTabFocus, markTabPress } from '@/lib/perfProbe';
 import { track } from '@/services/analytics';
-
-const GOLD = themeColor('sip');
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
 // (Hi is no longer a tab: its mentions reach the bell and the inbox.)
@@ -46,7 +43,7 @@ const TABS: TabDef[] = [
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const { colors, theme } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation('common');
   // A seasonal event's live day: Today wears its icon (Halloween: a pumpkin) and a ghost peeks over the active tab.
   const halloween = useSeasonalLive()?.key === 'halloween';
@@ -89,8 +86,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       {TABS.map(tab => {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = activeTab === tab.name;
-        const gold       = tab.name === 'ranks' && focused;
-        const color      = gold ? (theme === 'dark' ? GOLD.textDark : GOLD.textLight) : focused ? colors.primaryOnTint : colors.muted;
+        // One selected state for every tab (design pass): the shared peach. Gold is for prizes only.
+        const color      = focused ? colors.onSelected : colors.muted;
         const label      = t(tab.label);
         return (
           <Pressable
@@ -99,7 +96,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             accessibilityLabel={label}
             testID={`tab-${tab.name}`}
             accessibilityState={{ selected: focused }}
-            style={[styles.tab, focused && { backgroundColor: gold ? tint(GOLD.fill, 0.22) : colors.primaryTint }]}
+            style={[styles.tab, focused && { backgroundColor: colors.selected }]}
             onPress={() => {
               const event = navigation.emit({
                 type:              'tabPress',
@@ -117,7 +114,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             {focused && <TabGhost />}
             <View>
               {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} />
-                : <Ionicons name={gold ? 'earth' : tab.icon} size={24} color={color} />}
+                : <Ionicons name={tab.icon} size={IconSize.lg} color={color} />}
               <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
             </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>

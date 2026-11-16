@@ -153,6 +153,15 @@ export const Colors = {
   onPeek:         '#FFFFFF',
   onPeekMuted:    'rgba(255,255,255,0.88)',
   peekShadow:     'rgba(0,0,0,0.30)',
+  // Design pass (docs/design-pass/design-system.md).
+  onPrimary:      '#FFFFFF',   // text / icons on primary
+  selected:       '#3A2216',   // THE selected state (tab, segment, period, filter): peach ground…
+  onSelected:     '#FFB48A',   // …and its text / icon
+  shadow:         '#000000',   // one shadow color; opacity comes from Elevation
+  medalGold:      '#F7B733',   // podium / crown fills (joyful, saturated), ink on top
+  medalSilver:    '#A9C1E0',
+  medalBronze:    '#EE8F4F',
+  onMedal:        '#2A1C13',
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -228,6 +237,14 @@ export const LightColors: ThemeColors = {
   onPeek:         '#FFFFFF',
   onPeekMuted:    'rgba(255,255,255,0.88)',
   peekShadow:     'rgba(42,28,19,0.12)',
+  onPrimary:      '#FFFFFF',
+  selected:       '#FFE6D8',
+  onSelected:     '#8A3A12',
+  shadow:         '#5A3418',   // warm ink, never grey
+  medalGold:      '#F7B733',
+  medalSilver:    '#A9C1E0',
+  medalBronze:    '#EE8F4F',
+  onMedal:        '#2A1C13',
 };
 
 export type ThemeName = 'light' | 'dark';
@@ -245,51 +262,99 @@ export const Themes: Record<ThemeName, ThemeColors> = { dark: Colors, light: Lig
 // pre-scale here or it would double-scale.
 export const FontSizes = {
   tiny: 11,  // badges + count pips ONLY (not visible body text)
-  xs:   13,
-  sm:   14,
-  body: 15,  // running text in cards and rows (between sm and md)
-  md:   17,
-  lg:   20,
-  xl:   24,
-  title: 26, // a tab's / screen's large title (ScreenHeader tab)
-  xxl:  32,
-  hero: 40,  // city name hero, large screen titles
+  xs:   13,  // caption
+  sm:   13,  // caption (was 14: folded into the 5-size scale)
+  body: 15,  // body
+  md:   17,  // label
+  lg:   20,  // title
+  xl:   20,  // title (was 24)
+  title: 28, // display (a tab's large title)
+  xxl:  28,  // display (was 32)
+  hero: 40,  // celebration numbers ONLY (score pop, victory): not a screen title
 } as const;
 
-export const Radius = {
-  sm:     6,
-  md:     10,
-  lg:     18,   // bumped to match web 18px card radius
-  full:   999,
-  // V3 (SPEC 9.11): cards 18-22, buttons 16, chips full.
-  button: 16,
-  card:   18,
-  ticket: 22,
-  sheet:  22,
+/**
+ * The type scale (design pass): five roles, each with its size, weight and line height. Spread one
+ * into a style (`...Type.title`) and override only the color. Titles: `numberOfLines={2}` and a
+ * tail ellipsis, never a mid-word cut. RAW sizes, scaled once by src/scaling.ts.
+ */
+export const Type = {
+  display: { fontSize: 28, lineHeight: 34, fontWeight: '800', letterSpacing: -0.4 },   // a tab's title, a podium number
+  title:   { fontSize: 20, lineHeight: 25, fontWeight: '800', letterSpacing: -0.3 },   // section and card titles
+  label:   { fontSize: 17, lineHeight: 22, fontWeight: '800' },                        // buttons, row and tile titles
+  body:    { fontSize: 15, lineHeight: 21, fontWeight: '500' },                        // running text
+  caption: { fontSize: 13, lineHeight: 17, fontWeight: '600' },                        // meta, chips, counts
 } as const;
+
+/**
+ * Three radii (design pass): control (chips, buttons, segments: a pill), card, hero (the big Today
+ * ticket, sheets). `inner` is the one derived value: media nested inside a card (card - 8).
+ * The older keys point at these.
+ */
+export const Radius = {
+  control: 999,
+  card:    20,
+  hero:    28,
+  inner:   12,
+  full:    999,
+  sm:      12,   // → inner
+  md:      12,   // → inner
+  lg:      20,   // → card
+  button:  999,  // → control
+  ticket:  28,   // → hero
+  sheet:   28,   // → hero
+} as const;
+
+/** Two elevations, one shadow color (`colors.shadow`); dark mode gets the softer opacity. */
+export function Elevation(c: ThemeColors, level: 'rest' | 'float') {
+  // A dark ground (dark theme, Halloween): the softer shadow reads the same.
+  const n = parseInt(c.bg.slice(1, 7), 16);
+  const dark = (((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114) < 128;
+  const rest = level === 'rest';
+  return {
+    shadowColor: c.shadow,
+    shadowOpacity: rest ? (dark ? 0.22 : 0.07) : (dark ? 0.4 : 0.16),
+    shadowRadius: rest ? 10 : 22,
+    shadowOffset: { width: 0, height: rest ? 3 : 10 },
+    elevation: rest ? 2 : 8,
+  } as const;
+}
+
+/** Motion (design pass): one set of durations and one spring. Respect reduce motion (useReducedMotion). */
+export const Motion = {
+  fast: 150,
+  base: 250,
+  spring: { damping: 14, stiffness: 220, mass: 0.8 },
+  pressScale: 0.97,
+} as const;
+
+/** Icon sizes: Ionicons outline everywhere in UI chrome (filled = the "on" state). */
+export const IconSize = { sm: 16, md: 20, lg: 24 } as const;
 
 /** V3 border width for cards, chips, inputs and round buttons. */
 export const Border = 1.5;
 
-export const Spacing = {
-  xs:   5,
-  sm:   9,
-  md:   18,
-  lg:   27,
-  xl:   36,
-  xxl:  54,
-} as const;
-
 /**
- * The spacing grid for padding, margins and gaps inside components (4-based). Spacing.md (18)
- * stays the screen gutter; the other Spacing steps remain for the layouts already built on them.
+ * The spacing grid (design pass): 4 / 8 / 12 / 16 / 24 / 32. The screen gutter is 16 on every screen.
  */
 export const Space = {
-  xxs: 2,
+  xxs: 2,   // hairline nudges only (badge padding)
   xs:  4,
   sm:  8,
   md:  12,
   lg:  16,
   xl:  24,
+  xxl: 32,
 } as const;
 
+export const Gutter = 16;
+
+/** The older layout scale, snapped onto the grid (md = the gutter). Prefer Space / Gutter in new code. */
+export const Spacing = {
+  xs:   4,
+  sm:   8,
+  md:   16,
+  lg:   24,
+  xl:   32,
+  xxl:  48,
+} as const;

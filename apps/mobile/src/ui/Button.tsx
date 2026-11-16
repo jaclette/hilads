@@ -1,13 +1,15 @@
-import { ActivityIndicator, Text, TouchableOpacity, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Text, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, Radius, Type, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Tappable } from './Tappable';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 /**
- * V3 button (SPEC 9.11): primary = tangerine with ink text (DESIGN.md), secondary = card with a
- * line border, danger = red outline (delete), link = primary text. md is 48 high, sm 44; radius 16 (14 sm).
+ * Button (design pass): a pill. primary = tangerine with ink text (the same in both themes),
+ * secondary = card with a line border, danger = red outline (delete), link = primary text.
+ * md 48 high, sm 44. Pressed: scale 0.97 + haptic (Tappable); disabled 50%; loading = spinner.
  */
 export function Button({ label, onPress, variant = 'primary', size = 'md', icon, loading = false, disabled = false, style, accessibilityLabel, testID }: {
   label: string;
@@ -25,11 +27,10 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
   const { colors } = useTheme();
   const color = variant === 'primary' ? colors.onCta : variant === 'secondary' ? colors.text : variant === 'danger' ? colors.red : colors.primaryText;
   return (
-    <TouchableOpacity
+    <Tappable
       style={[styles.base, variant !== 'link' && (size === 'sm' ? styles.sm : styles.md), styles[variant], disabled && styles.disabled, style]}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.85}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       testID={testID}
@@ -37,23 +38,23 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
     >
       {loading ? <ActivityIndicator color={color} /> : (
         <>
-          {icon && <Ionicons name={icon} size={variant === 'link' ? 20 : 18} color={color} />}
+          {icon && <Ionicons name={icon} size={IconSize.md} color={color} />}
           <Text style={[styles.label, size === 'sm' || variant === 'link' ? styles.labelSm : null, { color }]} numberOfLines={1}>{label}</Text>
         </>
       )}
-    </TouchableOpacity>
+    </Tappable>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   base:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, minHeight: 44 },
-  md:        { minHeight: 48, borderRadius: Radius.button, paddingHorizontal: Space.lg },
-  sm:        { minHeight: 44, borderRadius: 14, paddingHorizontal: Space.lg },
+  md:        { minHeight: 48, borderRadius: Radius.control, paddingHorizontal: Space.xl },
+  sm:        { minHeight: 44, borderRadius: Radius.control, paddingHorizontal: Space.lg },
   primary:   { backgroundColor: c.cta },
   secondary: { backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
   danger:    { borderWidth: Border, borderColor: c.red },
   link:      {},
   disabled:  { opacity: 0.5 },
-  label:     { fontSize: FontSizes.md, fontWeight: '800' },
-  labelSm:   { fontSize: FontSizes.sm, fontWeight: '800' },
+  label:     { ...Type.label },
+  labelSm:   { ...Type.body, fontWeight: '800' },
 });
