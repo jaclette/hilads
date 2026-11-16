@@ -2,15 +2,7 @@
   "title": "これまでの出来事",
   "loadError": "アーカイブを読み込めませんでした",
   "filterAll": "すべて",
-  "rangeRecent": "最近",
-  "range7": "過去7日間",
-  "range14": "過去14日間",
   "custom": "カスタム",
-  "pickEnd": "次は終了日を選ぼう",
-  "pickStart": "開始日を選ぼう（最大{{max}}日）",
-  "apply": "適用",
   "emptyTitle": "まだ何もありません",
-  "emptyRecentSub": "街に少しずつ歴史ができると、過去のイベントや集まりがここに並びます。",
-  "emptyWindowSub": "この期間にはイベントも集まりもありません。期間を広げてみてください。",
   "filterChallenges": "チャレンジ"
 }

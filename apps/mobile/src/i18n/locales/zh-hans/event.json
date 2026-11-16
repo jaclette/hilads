@@ -69,7 +69,6 @@
   "goingTitle": "要去的人",
   "hostedBy": "{{name}} 发起",
   "bringPeople": "拉人来",
-  "seeAll": "查看全部",
   "oneGoing": "{{name}} 要去",
   "manyGoing": "{{name}} 和另外 {{count}} 人要去",
   "goingEmpty": "还没有人，来当第一个加入的吧！",

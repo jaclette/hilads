@@ -10,10 +10,7 @@
     "special": "Đặc biệt",
     "onlyIn": "Chỉ có ở {{city}}"
   },
-  "nowTitle": "Bây giờ",
   "filterEvents": "Sự kiện địa phương",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Tụ tập",
   "publicEventsSection": "Sự kiện công khai",
   "accountWelcome": {
     "title": "Chúc mừng {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "Không tìm thấy địa điểm nào",
     "loading": "Đang lấy vị trí…",
     "confirm": "Gửi vị trí này",
-    "yourLocation": "Vị trí của bạn",
-    "close": "Đóng",
-    "clearSearch": "Xóa tìm kiếm"
+    "yourLocation": "Vị trí của bạn"
   },
   "language": "Ngôn ngữ",
   "cancel": "Hủy",
   "loading": "Đang tải…",
   "retry": "Thử lại",
-  "save": "Lưu",
   "done": "Xong",
   "close": "Đóng",
   "clear": "Xóa",
@@ -176,9 +170,7 @@
   "tabs": {
     "today": "Hôm nay",
     "map": "Bản đồ",
-    "chat": "Hi",
-    "passport": "Hộ chiếu",
-    "ranks": "Xếp hạng"
+    "passport": "Hộ chiếu"
   },
   "scope": {
     "title": "Xem",
@@ -200,7 +192,6 @@
     "requiredTitle": "Cập nhật Hilads",
     "requiredBody": "Phiên bản này không còn được hỗ trợ. Cập nhật app để tiếp tục dùng Hilads nhé."
   },
-  "mapSoon": "Bản đồ địa điểm sắp có rồi.",
   "firstLaunch": "Chơi địa phương. So toàn cầu.",
   "signUp": "Đăng ký",
   "open": "Mở",
@@ -225,7 +216,6 @@
     "errorBody": "Không gửi được báo cáo. Thử lại nhé."
   },
   "subtitles": {
-    "map": "Địa điểm từ ảnh khắp thế giới.",
     "hi": "Chào thành phố. Vào một kèo.",
     "passport": "Thành phố, ảnh và con dấu của bạn."
   },

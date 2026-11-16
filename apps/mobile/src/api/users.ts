@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { HiladsEvent, UserDTO, PublicProfile, FriendUser } from '@/types';
+import type { HiladsEvent, UserDTO, PublicProfile } from '@/types';
 
 export async function fetchPublicProfile(userId: string): Promise<PublicProfile> {
   const data = await api.get<{ user: PublicProfile }>(`/users/${userId}`);

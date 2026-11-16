@@ -1,9 +1,7 @@
 {
-  "allTitle": "すべての通知",
   "markAllRead": "すべて既読にする",
   "emptyTitle": "まだ通知はありません",
   "emptySub": "メッセージやイベントのお知らせがここに届きます。",
-  "seeAll": "すべての通知を見る",
   "prefTitle": "通知の設定",
   "pref": {
     "mentionLabel": "メンション @",
@@ -88,7 +86,6 @@
     "read": "既読",
     "unread": "未読",
     "delete": "削除",
-    "allRead": "すべて既読 ✨",
     "row": {
       "like": "{{names}}さんが写真にいいね",
       "mention": "{{names}}さんからメンション",

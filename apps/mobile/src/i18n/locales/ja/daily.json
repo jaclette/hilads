@@ -4,19 +4,11 @@
   "nextIn": "次の Daily Challenge まであと{{time}}",
   "nothingLive": "次の Daily Challenge はもうすぐです",
   "cta": "挑戦する",
-  "ctaIn": "やってみる",
-  "ctaTaken": "挑戦済み · 自分の写真を見る",
-  "seeProofs": "今日の写真を見る",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}}の Local Twist",
   "twistBy": "{{name}}さん",
   "count_other": "今日{{count}}人が参加しました",
-  "countCity": "{{city}}で{{count}}人",
-  "countZero": "まだ誰もいません。一番乗りしよう！",
   "beFirst": "今日の一番乗りになろう",
   "beFirstSub": "まだ写真はありません。一番乗りしよう！世界が待っています。",
-  "firstYours": "写真を投稿しました",
-  "firstYoursSub": "承認されると、みんなの写真と一緒にここに表示されます。",
   "yourProof": "あなたの写真",
   "status": {
     "pending": "確認中",
@@ -40,14 +32,12 @@
   "priceFrom_other": "写真{{count}}枚から",
   "places_other": "{{count}}か所をピン留め",
   "unnamedPlace": "ピン留めした場所",
-  "tabWorld": "世界",
   "local": "地元",
   "traveler": "旅行者",
   "validatedByLocal": "地元の人のお墨付き",
   "loadFailed": "Daily Challenge を読み込めませんでした。",
   "retry": "もう一度試す",
   "notFound": "この Daily Challenge は存在しません。",
-  "cityRowEmpty": "{{city}}で最初のチャレンジを作ろう",
   "proof": {
     "titleNew": "あなたの写真",
     "titleEdit": "写真を編集",
@@ -116,8 +106,6 @@
     "invalid_back_home": "「あなたの地元では？」には街と、答え・値段・ひとことのどれかが必要です。"
   },
   "push": {
-    "bannerTitle": "毎朝 Daily Challenge を受け取ろう",
-    "bannerCta": "オンにする",
     "askTitle": "Daily Challenge",
     "askBody": "毎朝、好きな時間に Daily Challenge が届きます。",
     "askBodyBlocked": "Hilads の通知がオフになっています。毎朝 Daily Challenge を受け取るには、設定でオンにしてください。",
@@ -324,23 +312,15 @@
     "prev": "前の月",
     "next": "次の月"
   },
-  "guide": {
-    "title": "シティガイド",
-    "all": "すべて",
-    "emptyCity": "{{city}}の{{theme}}チャレンジはまだありません。次は{{day}}。",
-    "emptyWorld": "{{theme}}チャレンジはまだありません。次は{{day}}。"
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}}テーマ",
     "earned": "獲得",
-    "hint": "{{city}}で7つのテーマをすべて達成すると、Local Pass がもらえます。",
     "profileTitle": "Local Pass",
     "badgeA11y": "Local Pass 保持者"
   },
   "propose": {
     "cta": "チャレンジを提案",
-    "short": "提案",
     "title": "チャレンジを提案",
     "textLabel": "チャレンジ内容（英語で）",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist は280文字以内にしてください。",
       "twist_not_allowed": "Local Twist を追加できるのは、公開中の街の地元の人だけです。",
       "moderation_blocked": "提案がモデレーションに引っかかりました。書き直してください。"
-    },
-    "linkAsk": "チャレンジのアイデアある？",
-    "linkCta": "提案する",
-    "cardBody": "あなたのアイデアが、明日の世界中のチャレンジになるかも 🌍",
-    "cardHide": "1週間非表示にする",
-    "cardPlayed_other": "あなたのアイデア「{{text}}」は{{count}}都市でプレイされました 🎉"
+    }
   },
   "early": {
     "badge": "早め",
@@ -496,7 +471,6 @@
   },
   "takeIt": "挑戦する",
   "proofHint": {
-    "title": "写真を撮ろう",
     "place": "いちばん票を集めた写真がスポットの写真に。",
     "noPlace": "いちばん票を集めた写真が表彰台へ。"
   },
@@ -637,23 +611,6 @@
     "clear": "地元の街を削除",
     "hereIn": "今いる街：{{city}}"
   },
-  "tour": {
-    "title": "*きのう*の世界一周",
-    "watch": "見る",
-    "openCity": "{{city}}を開く",
-    "next": "次へ",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "朝",
-      "afternoon": "昼",
-      "evening": "夕方",
-      "night": "夜"
-    },
-    "yourTurn": "次はあなたの番。",
-    "todayIs": "今日の質問：{{question}}",
-    "close": "閉じる",
-    "sub_other": "{{count}}の街で同じチャレンジ"
-  },
   "worlds": {
     "tagline": "同じチャレンジ、違う世界。"
   },
@@ -696,16 +653,11 @@
     "endTitle": "今のところ全部見ました！",
     "endBody": "新しい写真が一日中届きます。また見に来てね。",
     "endPlay": "次はあなたの番：自分の街を世界に見せよう。",
-    "backToday": "「今日」に戻る",
-    "seeAll": "すべての写真を見る"
+    "backToday": "「今日」に戻る"
   },
   "countries": {
-    "played_other": "今日は{{count}}か国が参加",
-    "yourCity": "あなたの街",
     "represent": "自分の街を代表しよう",
     "emptyBody": "今日はまだ誰も参加していません。一番乗りで街を地図に載せよう！",
-    "openCountry": "{{city}}：写真を見る",
-    "byCity": "都市別",
     "topPhoto": "トップ写真"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "撮ろう",
     "played": "参加済み · 世界を見る",
     "firstCity": "今日、世界で最初の街になろう",
-    "citiesIn_other": "{{count}}の街が参加",
-    "citiesMissing_other": "{{count}}の街が参加中。{{city}}はまだ！",
     "steps": {
       "snap": "撮る",
       "name": "名前を書く",
@@ -774,7 +724,6 @@
     "players_other": "{{count}}人",
     "missing": "{{city}}がまだ！",
     "yesterday": "昨日、世界はこう言った…",
-    "beFirst": "{{city}}を代表しよう",
     "beFirstSub": "今日最初の街になろう",
     "swipeHint": "スワイプして旅しよう 🌍",
     "slotCta": "📸 {{city}}は？今日いちばん乗りしよう"

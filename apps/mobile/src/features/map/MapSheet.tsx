@@ -1,5 +1,5 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Platform, Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
+import { Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import BottomSheet, { BottomSheetFlatList, type BottomSheetBackgroundProps } from '@gorhom/bottom-sheet';
 import Animated, { cancelAnimation, Easing, Extrapolation, interpolate, useAnimatedProps, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';

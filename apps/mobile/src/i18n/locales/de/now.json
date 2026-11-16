@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Noch ist nichts los",
-  "emptyBeFirst": "Mach den Anfang in {{city}}",
-  "emptyStartNow": "Starte jetzt was",
-  "emptyCreateLine": "Erstelle ein Event oder starte ein Treffen.",
   "hostSpotTitle": "Hol Leute an deinen Spot",
   "hostSpotCity": "Bring Leben nach {{city}}.",
   "hostSpotNoCity": "Bring Leben in deine Stadt.",
@@ -11,8 +8,6 @@
   "noHangouts": "Noch keine Treffen",
   "beFirstEventCity": "Erstell das erste in {{city}}",
   "beFirstEvent": "Erstell das erste",
-  "hangoutTalk": "Starte ein Treffen und bring die Stadt zum Reden",
-  "startHangout": "Treffen starten 🗣️",
   "inspiration": {
     "heading": "Treffen-Ideen",
     "sub": "Was Locals woanders organisieren - lass dich inspirieren",
@@ -31,26 +26,7 @@
   "browseCities": "Städte entdecken",
   "filterAll": "Alle",
   "filterChallenges": "Challenges",
-  "challengesSection": "Challenges",
-  "seeAllChallenges": "Alle ansehen →",
   "noChallenges": "Noch keine Challenges",
-  "noChallengesCity": "Starte die erste in {{city}}",
-  "noChallengesGeneric": "Starte die erste Challenge.",
-  "seeComing": "Schau, was kommt",
-  "createNew": "Neu erstellen",
-  "seeHappened": "schau, was los war →",
   "going": "dabei",
-  "inThisHangout": "in diesem Treffen",
-  "create": {
-    "title": "Was geht?",
-    "challengeLabel": "Challenge starten",
-    "challengeSub": "Locals & Reisende - lernt euch über eine Challenge kennen",
-    "hangoutLabel": "Treffen starten",
-    "hangoutSub": "Sofort - lass Leute jetzt gleich dazukommen",
-    "eventLabel": "Event erstellen",
-    "eventSub": "Plane etwas, bei dem andere mitmachen können",
-    "cancel": "Abbrechen"
-  },
-  "hiNowHint": "jetzt treffen",
-  "hiLaterHint": "ein Event planen"
+  "inThisHangout": "in diesem Treffen"
 }

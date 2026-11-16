@@ -69,7 +69,6 @@
   "goingTitle": "참여자",
   "hostedBy": "{{name}}님 주최",
   "bringPeople": "친구 부르기",
-  "seeAll": "전체 보기",
   "oneGoing": "{{name}}님이 참여해요",
   "manyGoing": "{{name}}님 외 {{count}}명 참여",
   "goingEmpty": "아직 아무도 없어요. 가장 먼저 참여해 보세요!",

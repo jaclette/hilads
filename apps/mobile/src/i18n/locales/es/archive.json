@@ -2,15 +2,7 @@
   "title": "Actividad pasada",
   "loadError": "No se pudo cargar el historial",
   "filterAll": "Todo",
-  "rangeRecent": "Recientes",
-  "range7": "Últimos 7 días",
-  "range14": "Últimos 14 días",
   "custom": "Personalizado",
-  "pickEnd": "Ahora elige el último día",
-  "pickStart": "Elige el primer día (hasta {{max}} días)",
-  "apply": "Aplicar",
   "emptyTitle": "Aún no hay nada",
-  "emptyRecentSub": "Los eventos y quedadas pasados aparecerán aquí cuando la ciudad tenga algo de historial.",
-  "emptyWindowSub": "No hay eventos ni quedadas en este periodo. Prueba con un rango más amplio.",
   "filterChallenges": "Retos"
 }

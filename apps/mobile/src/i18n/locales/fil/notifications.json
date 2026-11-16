@@ -1,9 +1,7 @@
 {
-  "allTitle": "Lahat ng notifications",
   "markAllRead": "Markahang nabasa lahat",
   "emptyTitle": "Wala pang notification",
   "emptySub": "Dito mo makikita ang mga message at update ng events.",
-  "seeAll": "Tingnan lahat ng notification",
   "prefTitle": "Mga notification setting",
   "pref": {
     "mentionLabel": "Mga mention @",
@@ -88,7 +86,6 @@
     "read": "Nabasa",
     "unread": "Hindi pa nabasa",
     "delete": "Burahin",
-    "allRead": "Updated ka na ✨",
     "row": {
       "like": "Nag-like si {{names}} sa photo mo",
       "mention": "Na-mention ka ni {{names}}",

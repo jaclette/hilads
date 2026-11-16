@@ -2,15 +2,7 @@
   "title": "Yang udah lewat",
   "loadError": "Arsip nggak bisa dimuat",
   "filterAll": "Semua",
-  "rangeRecent": "Terbaru",
-  "range7": "7 hari terakhir",
-  "range14": "14 hari terakhir",
   "custom": "Atur sendiri",
-  "pickEnd": "Sekarang pilih hari terakhir",
-  "pickStart": "Pilih hari pertama (maks. {{max}} hari)",
-  "apply": "Terapkan",
   "emptyTitle": "Belum ada apa-apa di sini",
-  "emptyRecentSub": "Acara dan nongkrong yang udah lewat bakal muncul di sini begitu kota ini punya sedikit riwayat.",
-  "emptyWindowSub": "Nggak ada acara atau nongkrong di rentang ini. Coba rentang yang lebih panjang.",
   "filterChallenges": "Tantangan"
 }

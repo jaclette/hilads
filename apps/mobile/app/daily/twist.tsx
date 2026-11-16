@@ -213,7 +213,6 @@ function StatusChip({ status }: { status: DailyTwistProposalStatus }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  flex:          { flex: 1 },
   center:        { flex: 1, justifyContent: 'center', padding: Spacing.md },
   body:          { padding: Spacing.md, paddingTop: Spacing.sm, gap: Space.md, paddingBottom: 30 },
   card:          { padding: Space.lg, gap: Space.sm },

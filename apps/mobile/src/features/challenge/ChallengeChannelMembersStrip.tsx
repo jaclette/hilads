@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import { socket } from '@/lib/socket';
 import { fetchChannelParticipants, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import type { Challenge, UserDTO } from '@/types';
 

@@ -1,8 +1,5 @@
 {
   "emptyTitle": "لا شيء يحدث بعد",
-  "emptyBeFirst": "كن الأول في {{city}}",
-  "emptyStartNow": "ابدأ شيئًا الآن",
-  "emptyCreateLine": "أنشئ فعالية أو ابدأ لقاءً.",
   "hostSpotTitle": "استضف مكانك",
   "hostSpotCity": "اجعل {{city}} تنبض بالحياة.",
   "hostSpotNoCity": "اجعل مدينتك تنبض بالحياة.",
@@ -11,8 +8,6 @@
   "noHangouts": "لا لقاءات بعد",
   "beFirstEventCity": "كن أول من ينشئ فعالية في {{city}}",
   "beFirstEvent": "كن أول من ينشئ فعالية",
-  "hangoutTalk": "ابدأ لقاءً واجعل المدينة تتحدّث",
-  "startHangout": "ابدأ لقاءً 🗣️",
   "inspiration": {
     "heading": "أفكار للقاءات",
     "sub": "ما ينظّمه السكان المحليون في مدن أخرى - استلهم منه",
@@ -31,26 +26,7 @@
   "browseCities": "تصفّح المدن",
   "filterAll": "الكل",
   "filterChallenges": "التحدّيات",
-  "challengesSection": "التحدّيات",
-  "seeAllChallenges": "عرض الكل →",
   "noChallenges": "لا تحدّيات بعد",
-  "noChallengesCity": "كن أول من يطلق تحدّيًا في {{city}}",
-  "noChallengesGeneric": "كن أول من يطلق تحديًا.",
-  "seeComing": "شاهد ما هو قادم",
-  "createNew": "إنشاء جديد",
-  "seeHappened": "شاهد ما حدث →",
   "going": "سيحضرون",
-  "inThisHangout": "في هذا اللقاء",
-  "create": {
-    "title": "ما الخطة؟",
-    "challengeLabel": "أطلق تحدّيًا",
-    "challengeSub": "محليون ومسافرون - تواصلوا عبر تحدٍّ",
-    "hangoutLabel": "ابدأ لقاءً",
-    "hangoutSub": "فوري - دع الناس ينضمّون إليك الآن",
-    "eventLabel": "أنشئ فعالية",
-    "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه",
-    "cancel": "إلغاء"
-  },
-  "hiNowHint": "التقِ بأحد الآن",
-  "hiLaterHint": "خطّط لفعالية"
+  "inThisHangout": "في هذا اللقاء"
 }

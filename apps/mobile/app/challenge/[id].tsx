@@ -18,8 +18,8 @@ import {
   validateChallenge, unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
-  fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
-  setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
+  fetchMyChallengeParticipation, leaveChallengeChannel,
+  setChallengeVisibility, toggleChallengeReaction,
   relaunchChallenge, validatePresence,
 } from '@/api/challenges';
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
@@ -30,7 +30,6 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import i18n from '@/i18n';
-import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { CampaignCelebration } from '@/features/challenge/CampaignCelebration';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
@@ -51,7 +50,7 @@ import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Space, Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
+import type { Challenge, ChallengeType, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 import { goBack } from '@/lib/nav';
 
 // Outline icon per challenge type (V3: no emoji as chrome).
@@ -112,7 +111,6 @@ export default function ChallengeChatScreen() {
   // to the channel's pushes without any join row. Drives the notif pill so a
   // talker can mute what they now receive.
   const [iCanSubscribe, setICanSubscribe] = useState(false);
-  const [joiningChannel, setJoiningChannel] = useState(false);
 
   // "How challenges work" carousel - same primitive the city chat
   // surfaces from its delayed feed prompt. Mounting it here too so a
@@ -142,13 +140,6 @@ export default function ChallengeChatScreen() {
     challenge?.created_by != null
       ? (account?.id && account.id === challenge.created_by)
       : (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
-  );
-
-
-  // "Am I currently a participant?" - derived from the participant list.
-  const isParticipant = !!(
-    (account?.id   && participants.some(p => p.id === account.id)) ||
-    (identity?.guestId && participants.some(p => p.id === identity.guestId))
   );
 
   // Public channels are open to anyone - guests included. The conversation
@@ -310,8 +301,6 @@ export default function ChallengeChatScreen() {
   // Bumped on proof-submitted / validated WS events so the group submissions
   // gallery re-fetches when someone else's photo (or the winner) lands.
   const [galleryTick,  setGalleryTick]  = useState(0);
-  // How many photos have been submitted - drives the owner's hint copy.
-  const [submissionCount, setSubmissionCount] = useState(0);
   // Bumped to open the submissions gallery (e.g. proof-submitted push deep-link).
   const [gallerySignal, setGallerySignal] = useState(0);
   const [validating,   setValidating]   = useState(false);
@@ -334,30 +323,8 @@ export default function ChallengeChatScreen() {
     }
   }, [reviewProof, isOwner, challenge, router]);
 
-  // Creator-only visibility flip (Public ↔ Friends). Private isn't
-  // reachable here - that's the mutual go-private flow. International
-  // rows are forced Public; the pill renders read-only for them.
+  // Creator-only visibility picker state (see handlePickVisibility).
   const [visBusy, setVisBusy] = useState(false);
-  const handleToggleVisibility = useCallback(async () => {
-    if (!challenge || visBusy) return;
-    if ((challenge.mode ?? 'local') === 'international') return;
-    const current = challenge.visibility ?? 'public';
-    if (current === 'private') return; // can't flip out of private here
-    const next: 'public' | 'friends' = current === 'public' ? 'friends' : 'public';
-    setVisBusy(true);
-    try {
-      await setChallengeVisibility(id, next);
-      setChallenge(prev => prev ? { ...prev, visibility: next } : prev);
-    } catch {
-      Alert.alert(t('errSave'));
-    } finally {
-      setVisBusy(false);
-    }
-  }, [id, challenge, visBusy, t]);
-
-  // Creator-only close-to-new-joins toggle. Existing participants stay;
-  // /join refuses new ones while this is on.
-  const [closeBusy, setCloseBusy] = useState(false);
   // Unified visibility picker - Public / Friends / Private. Private maps
   // to closed_to_new_joins=true; Public / Friends clear that flag and
   // align the visibility column.
@@ -371,7 +338,7 @@ export default function ChallengeChatScreen() {
     setDetailsOpen(v => !v);
   }, []);
   const handlePickVisibility = useCallback(async (choice: 'public' | 'friends' | 'private') => {
-    if (visBusy || closeBusy || !challenge) return;
+    if (visBusy || !challenge) return;
     setVisMenuOpen(false);
     try {
       // Picker is the single source of truth for "who can see this and
@@ -398,24 +365,10 @@ export default function ChallengeChatScreen() {
         setVisBusy(false);
       }
     } catch {
-      setVisBusy(false); setCloseBusy(false);
+      setVisBusy(false);
       Alert.alert(t('errSave'));
     }
-  }, [id, challenge, visBusy, closeBusy, t]);
-
-  const handleToggleClosedToJoins = useCallback(async () => {
-    if (!challenge || closeBusy) return;
-    const next = !challenge.closed_to_new_joins;
-    setCloseBusy(true);
-    try {
-      await setChallengeCloseToJoins(id, next);
-      setChallenge(prev => prev ? { ...prev, closed_to_new_joins: next } : prev);
-    } catch {
-      Alert.alert(t('errSave'));
-    } finally {
-      setCloseBusy(false);
-    }
-  }, [id, challenge, closeBusy, t]);
+  }, [id, challenge, visBusy, t]);
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────
 
@@ -629,27 +582,6 @@ export default function ChallengeChatScreen() {
   }, [id, account?.id]);
   useEffect(() => { loadParticipation(); }, [loadParticipation, myAcceptance?.id]);
 
-  async function handleJoinChannel() {
-    if (joiningChannel || !id) return;
-    if (!account?.id) {
-      router.push('/auth-gate?reason=join_challenge' as never);
-      return;
-    }
-    setJoiningChannel(true);
-    try {
-      await joinChallengeChannel(id);
-      setIAmParticipant(true);
-      loadParticipants();
-    } catch (err) {
-      const e = err as { code?: string; message?: string };
-      if (e?.code === 'kicked')                  Alert.alert(t('join.errKicked'));
-      else if (e?.code === 'closed_to_new_joins') Alert.alert(t('join.errClosed'));
-      else                                       Alert.alert(e?.message || t('join.errGeneric'));
-    } finally {
-      setJoiningChannel(false);
-    }
-  }
-
   async function handleLeaveChannel() {
     if (!id || !account?.id) return;
     try {
@@ -682,15 +614,11 @@ export default function ChallengeChatScreen() {
       : undefined,
     [participants, challenge?.created_by, challenge?.guest_id],
   );
-  const otherParticipants = useMemo(
-    () => participants.filter(p => p !== creator),
-    [participants, creator],
-  );
 
   // Active taker - derived from challenge.acceptor_user_id so it stays
   // accurate when the channel reopens after a finished round. The
   // previous taker often lingers in `participants` (they joined the
-  // channel), so falling back to otherParticipants[0] would surface
+  // channel), so falling back to the first non-creator participant would surface
   // their TAKER pill even after the LATERAL slot was vacated. Hydrate
   // from `participants` when available (richer DTO - vibe/mode) and
   // fall back to the acceptor_* snapshot shipped on the challenge.
@@ -793,10 +721,6 @@ export default function ChallengeChatScreen() {
     );
   }
 
-  const audienceLabel: Record<ChallengeAudience, string> = {
-    locals:    t('forLocals'),
-    explorers: t('forExplorers'),
-  };
   const typeIcon: IoniconName = TYPE_ICONS[challenge.challenge_type] ?? 'flame-outline';
   const isValidated = challenge.status === 'validated';
   // Ended = meet date / deadline passed and never validated. The creator gets a
@@ -1024,7 +948,7 @@ export default function ChallengeChatScreen() {
               effective === 'friends' ? colors.travelerText :
               effective === 'private' ? colors.red :
               colors.primaryOnTint;
-            const busyAny = visBusy || closeBusy;
+            const busyAny = visBusy;
             return (
               <TouchableOpacity
                 style={[styles.sharePillInline, pillTint]}
@@ -1159,7 +1083,6 @@ export default function ChallengeChatScreen() {
             isValidated={isValidated}
             refreshKey={galleryTick}
             onChanged={() => { loadChallenge(); loadParticipants(); }}
-            onCount={setSubmissionCount}
             openSignal={gallerySignal}
           />
         )}
@@ -1590,7 +1513,7 @@ export default function ChallengeChatScreen() {
                   key={opt}
                   style={[styles.manageRow, selected && { backgroundColor: colors.primaryTint, borderWidth: Border, borderColor: colors.primary }]}
                   onPress={() => handlePickVisibility(opt)}
-                  disabled={visBusy || closeBusy}
+                  disabled={visBusy}
                   activeOpacity={0.75}
                 >
                   <View style={{ flex: 1 }}>
@@ -1784,16 +1707,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   statusPillTextRestart: { color: c.onCta },
   statusLiveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: c.green },
 
-  // Violet tint - see ChallengeVersusCard for the rationale (distinct from
-  // orange brand + green validated, the other pills on the same row).
-  audiencePill: {
-    backgroundColor:   c.primaryTint,
-    borderRadius:      Radius.full,
-    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
-    borderWidth:       Border, borderColor: c.primary,
-  },
-  audiencePillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
-
   // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
   intlPill: {
@@ -1869,33 +1782,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   visibilityPillTextFriends: { color: c.travelerText },
   visibilityPillTextPrivate: { color: c.red },
 
-  // Close-to-new-joins pill - on-state retints to a deeper orange so the
-  // creator can see at a glance whether the channel is locked.
-  closedPillOn: {
-    backgroundColor: c.primaryTint,
-    borderColor:     c.primary,
-  },
-
   // (Old status-pill styles removed - the ChallengePipeline component owns
   // the lifecycle visual now. The close-challenge action moved to the
   // owner-secondary row as a small ghost button.)
-
-  // Secondary housekeeping row - icon + small label, ghost styling so the
-  // eye lands on the orange CTA above first.
-  ownerSecondaryRow: {
-    flexDirection:  'row',
-    justifyContent: 'center',
-    gap:            Spacing.lg,
-    marginTop:      Spacing.sm,
-  },
-  ownerIconBtn: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            Space.xs,
-    paddingVertical:   Space.xs,
-    paddingHorizontal: Space.sm,
-  },
-  ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
   // Primary owner CTA - "Send it to someone in {city}". Cyan rather than
   // orange so it visually separates from the share pill above (which IS
@@ -1946,76 +1835,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   challengerTag:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
 
-  // Inline quick-action group - Share is a labeled pill (verb is the
-  // social hook), Accept is the compact icon-only round next to it.
-  quickActions: { flexDirection: 'row', gap: Space.sm, alignItems: 'center' },
-  sharePill: {
-    flexDirection:    'row',
-    alignItems:       'center',
-    gap:              Space.sm,
-    height:           36,
-    paddingHorizontal: Space.md,
-    borderRadius:     18,
-    backgroundColor:  c.primaryTint,
-    borderWidth:      Border,
-    borderColor:      c.primary,
-    maxWidth:         200,
-  },
-  sharePillText: { color: c.primaryText, fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.1 },
-  quickBtn: {
-    width:           36,
-    height:          36,
-    borderRadius:    18,
-    alignItems:      'center',
-    justifyContent:  'center',
-    backgroundColor: c.primaryTint,
-    borderWidth:     Border,
-    borderColor:     c.primary,
-  },
-  quickBtnAcceptIn: {
-    backgroundColor: c.primary,
-    borderColor:     c.primary,
-  },
-
-  // Participants row - always shown for non-owners so the Accept button
-  // has a permanent home; for owners only when somebody else accepted.
-  participantsRow: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: c.line,
-  },
-  participantsInfo: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    minWidth: 0,
-  },
-  membersLabel: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
-  participantsEmpty: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
-
-  // Labeled Accept button - full-width when nobody has taken on yet (replaces
-  // the old "Be the first to accept" + tiny + duo) and compact when there are
-  // already acceptors (sits to the right of the avatars).
-  acceptCtaFull: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: Space.sm,
-    paddingHorizontal: Spacing.md, paddingVertical: Space.md,
-    borderRadius: 999,
-    backgroundColor: c.primaryTint,
-    borderWidth: Border, borderColor: c.primary,
-  },
-  acceptCtaFullText: {
-    color: c.primaryText, fontWeight: '800', fontSize: FontSizes.sm,
-  },
-  acceptCompact: {
-    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
-    paddingHorizontal: Space.md, paddingVertical: Space.sm,
-    borderRadius: 999,
-    backgroundColor: c.primaryTint,
-    borderWidth: Border, borderColor: c.primary,
-  },
-  acceptCompactText: {
-    color: c.primaryText, fontWeight: '700', fontSize: FontSizes.xs ?? 12,
-  },
-
   // Inline thread chat
   chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: Space.xs },
   loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
@@ -2042,11 +1861,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     justifyContent:    'center',
     borderRadius:      Radius.button,
     backgroundColor:   c.cta,
-  },
-  joinCtaText: {
-    color:      c.onCta,
-    fontSize:   FontSizes.md,
-    fontWeight: '800',
   },
 
   // Manage / proof-spec modal - bottom-sheet style with backdrop. Reuses
@@ -2075,37 +1889,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // V3: red outline on a transparent ground instead of a red tint.
   manageRowDanger: { backgroundColor: 'transparent', borderWidth: Border, borderColor: c.red },
   manageRowText:   { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  proofSpecBody:   {
-    fontSize: FontSizes.sm, lineHeight: FontSizes.sm * 1.5,
-    color: c.text,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm + 2,
-    backgroundColor:   c.bg3,
-    borderRadius:      Radius.md,
-  },
-
-  // PR5 - creator's review banner inside the locked state. Inline Reject /
-  // Accept buttons let the creator triage without leaving the challenge page.
-  takeonReviewActions: {
-    flexDirection: 'row',
-    gap:           Spacing.sm,
-    marginTop:     Spacing.md,
-  },
-  takeonRejectBtn: {
-    paddingHorizontal: Space.lg,
-    paddingVertical:   Space.md,
-    borderRadius:      999,
-    backgroundColor:   c.bg3,
-    borderWidth:       Border,
-    borderColor:       c.line,
-  },
-  takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
-  takeonAcceptBtn: {
-    paddingHorizontal: Space.lg,
-    minHeight:         44,
-    justifyContent:    'center',
-    borderRadius:      14,
-    backgroundColor:   c.cta,
-  },
-  takeonAcceptText: { color: c.onCta, fontSize: FontSizes.sm, fontWeight: '800' },
 });

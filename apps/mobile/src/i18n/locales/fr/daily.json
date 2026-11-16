@@ -4,21 +4,13 @@
   "nextIn": "Prochain Daily Challenge dans {{time}}",
   "nothingLive": "Le prochain Daily Challenge arrive bientôt",
   "cta": "Relever le challenge",
-  "ctaIn": "Je relève le challenge",
-  "ctaTaken": "Challenge relevé · Voir ma photo",
-  "seeProofs": "Voir les photos du jour",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist de {{city}}",
   "twistBy": "par {{name}}",
   "count_one": "{{count}} personne l'a fait aujourd'hui",
   "count_many": "{{count}} de personnes l'ont fait aujourd'hui",
   "count_other": "{{count}} personnes l'ont fait aujourd'hui",
-  "countCity": "{{count}} à {{city}}",
-  "countZero": "Personne pour l'instant - sois le premier",
   "beFirst": "Sois le premier aujourd'hui",
   "beFirstSub": "Pas encore de photo. Sois le premier, le monde t'attend.",
-  "firstYours": "Ta photo est partie",
-  "firstYoursSub": "Elle apparaît ici une fois validée, avec les photos des autres.",
   "yourProof": "Ta photo",
   "status": {
     "pending": "En attente",
@@ -46,14 +38,12 @@
   "places_many": "{{count}} de spots épinglés",
   "places_other": "{{count}} spots épinglés",
   "unnamedPlace": "Lieu épinglé",
-  "tabWorld": "Monde",
   "local": "Local",
   "traveler": "Voyageur",
   "validatedByLocal": "Validé par un local",
   "loadFailed": "Impossible de charger le Daily Challenge.",
   "retry": "Réessayer",
   "notFound": "Ce Daily Challenge n'existe pas.",
-  "cityRowEmpty": "Sois le premier à créer un défi à {{city}}",
   "proof": {
     "titleNew": "Ta photo",
     "titleEdit": "Modifier ta photo",
@@ -124,8 +114,6 @@
     "invalid_back_home": "Pour « Et chez toi ? », il faut une ville et une réponse, un prix ou une phrase."
   },
   "push": {
-    "bannerTitle": "Reçois le Daily Challenge chaque matin",
-    "bannerCta": "Activer",
     "askTitle": "Daily Challenge",
     "askBody": "Reçois le Daily Challenge chaque matin, à une heure qui te va.",
     "askBodyBlocked": "Les notifications de Hilads sont coupées. Active-les dans tes réglages pour recevoir le Daily Challenge chaque matin.",
@@ -347,23 +335,15 @@
     "prev": "Mois précédent",
     "next": "Mois suivant"
   },
-  "guide": {
-    "title": "Guide de la ville",
-    "all": "Tous",
-    "emptyCity": "Pas encore de défi {{theme}} à {{city}}. Le prochain : {{day}}.",
-    "emptyWorld": "Pas encore de défi {{theme}}. Le prochain : {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} thèmes",
     "earned": "Obtenu",
-    "hint": "Complète les 7 thèmes à {{city}} pour obtenir son Local Pass.",
     "profileTitle": "Local Passes",
     "badgeA11y": "Titulaire du Local Pass"
   },
   "propose": {
     "cta": "Proposer un défi",
-    "short": "Proposer",
     "title": "Proposer un défi",
     "textLabel": "Ton défi (en anglais)",
     "textPlaceholder": "Find a…",
@@ -411,13 +391,7 @@
       "invalid_twist": "Le Local Twist doit faire moins de 280 caractères.",
       "twist_not_allowed": "Seuls les locaux d'une ville live peuvent ajouter un Local Twist.",
       "moderation_blocked": "Ta proposition a été bloquée par la modération. Reformule-la."
-    },
-    "linkAsk": "Une idée de défi ?",
-    "linkCta": "Propose-la",
-    "cardBody": "Ton idée pourrait devenir le défi de demain pour le monde entier 🌍",
-    "cardHide": "Masquer une semaine",
-    "cardPlayed_one": "Ton idée « {{text}} » a été jouée dans {{count}} ville 🎉",
-    "cardPlayed_other": "Ton idée « {{text}} » a été jouée dans {{count}} villes 🎉"
+    }
   },
   "early": {
     "badge": "En avance",
@@ -530,7 +504,6 @@
   },
   "takeIt": "Je le relève",
   "proofHint": {
-    "title": "Prends ta photo",
     "place": "La photo la plus votée devient celle du spot.",
     "noPlace": "La photo la plus votée monte sur le podium."
   },
@@ -689,25 +662,6 @@
     "clear": "Retirer ma ville d'origine",
     "hereIn": "Ici à {{city}}"
   },
-  "tour": {
-    "title": "Le tour du monde d'*hier*",
-    "watch": "Regarder",
-    "openCity": "Ouvrir {{city}}",
-    "next": "Suivant",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "Le matin",
-      "afternoon": "L'après-midi",
-      "evening": "Le soir",
-      "night": "La nuit"
-    },
-    "yourTurn": "À toi de jouer.",
-    "todayIs": "La question du jour : {{question}}",
-    "close": "Fermer",
-    "sub_one": "{{count}} ville, le même défi",
-    "sub_many": "{{count}} de villes, le même défi",
-    "sub_other": "{{count}} villes, le même défi"
-  },
   "worlds": {
     "tagline": "Même défi. Des mondes différents."
   },
@@ -752,18 +706,11 @@
     "endTitle": "Tu as tout vu pour l'instant !",
     "endBody": "De nouvelles photos arrivent toute la journée. Reviens vite.",
     "endPlay": "À toi de jouer : montre ta ville au monde.",
-    "backToday": "Retour à Aujourd'hui",
-    "seeAll": "Voir toutes les photos"
+    "backToday": "Retour à Aujourd'hui"
   },
   "countries": {
-    "played_one": "{{count}} pays a joué aujourd'hui",
-    "played_many": "{{count}} de pays ont joué aujourd'hui",
-    "played_other": "{{count}} pays ont joué aujourd'hui",
-    "yourCity": "Ta ville",
     "represent": "Représente ta ville",
     "emptyBody": "Personne n'a encore joué aujourd'hui. Mets ta ville sur la carte en premier !",
-    "openCountry": "{{city}} : voir les photos",
-    "byCity": "Par ville",
     "topPhoto": "Top photo"
   },
   "recap": {
@@ -821,12 +768,6 @@
     "ctaNoCity": "Prends la photo",
     "played": "Tu as joué · Voir le monde",
     "firstCity": "Sois la première ville du monde aujourd'hui",
-    "citiesIn_one": "{{count}} ville a joué",
-    "citiesIn_many": "{{count}} de villes ont joué",
-    "citiesIn_other": "{{count}} villes ont joué",
-    "citiesMissing_one": "{{count}} ville a joué. Pas encore {{city}} !",
-    "citiesMissing_many": "{{count}} de villes ont joué. Pas encore {{city}} !",
-    "citiesMissing_other": "{{count}} villes ont joué. Pas encore {{city}} !",
     "steps": {
       "snap": "Photographie",
       "name": "Nomme",
@@ -852,7 +793,6 @@
     "players_other": "{{count}} joueurs",
     "missing": "Il manque {{city}} !",
     "yesterday": "Hier, le monde a répondu…",
-    "beFirst": "Représente {{city}}",
     "beFirstSub": "Sois la première ville aujourd'hui",
     "swipeHint": "Fais glisser pour voyager 🌍",
     "slotCta": "📸 {{city}} ? Sois le premier aujourd'hui"

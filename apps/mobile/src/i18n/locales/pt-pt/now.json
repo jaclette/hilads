@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Ainda não se passa nada",
-  "emptyBeFirst": "Sê o primeiro em {{city}}",
-  "emptyStartNow": "Começa algo agora",
-  "emptyCreateLine": "Cria um evento ou começa um convívio.",
   "hostSpotTitle": "Anima o teu sítio",
   "hostSpotCity": "Dá vida a {{city}}.",
   "hostSpotNoCity": "Dá vida à tua cidade.",
@@ -11,8 +8,6 @@
   "noHangouts": "Ainda não há convívios",
   "beFirstEventCity": "Sê o primeiro a criar um em {{city}}",
   "beFirstEvent": "Sê o primeiro a criar um",
-  "hangoutTalk": "Começa um convívio e põe a cidade a falar",
-  "startHangout": "Começar um convívio 🗣️",
   "inspiration": {
     "heading": "Ideias de convívios",
     "sub": "O que os locais organizam noutros sítios - inspira-te",
@@ -31,26 +26,7 @@
   "browseCities": "Explorar cidades",
   "filterAll": "Tudo",
   "filterChallenges": "Desafios",
-  "challengesSection": "Desafios",
-  "seeAllChallenges": "Ver todos →",
   "noChallenges": "Ainda sem desafios",
-  "noChallengesCity": "Sê o primeiro a lançar um em {{city}}",
-  "noChallengesGeneric": "Sê o primeiro a lançar um desafio.",
-  "seeComing": "Ver o que aí vem",
-  "createNew": "Criar",
-  "seeHappened": "vê o que aconteceu →",
   "going": "vão",
-  "inThisHangout": "neste convívio",
-  "create": {
-    "title": "O que vai ser?",
-    "challengeLabel": "Lançar um desafio",
-    "challengeSub": "Locais e viajantes, ligados por um desafio",
-    "hangoutLabel": "Começar um convívio",
-    "hangoutSub": "Na hora - deixa a malta juntar-se a ti já",
-    "eventLabel": "Criar um evento",
-    "eventSub": "Organiza algo para outros se juntarem",
-    "cancel": "Cancelar"
-  },
-  "hiNowHint": "sair agora",
-  "hiLaterHint": "planear um evento"
+  "inThisHangout": "neste convívio"
 }

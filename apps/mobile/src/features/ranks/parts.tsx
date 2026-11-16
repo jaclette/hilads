@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Confetti, FlagSticker, tint } from '@/ui/joy';
+import { Confetti, tint } from '@/ui/joy';
 
 /** A podium place's medal color (1 gold, 2 silver, 3 bronze): the theme's medal tokens, one palette in every theme. */
 export function medalColor(c: ThemeColors, rank: number): string {
@@ -190,12 +190,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ghostMuted:  { color: c.muted, fontWeight: '700' },
   ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: Space.sm },
   ghostRank:   { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.muted },
-  toggle:      { flexDirection: 'row', alignItems: 'center', height: 34, padding: 3, borderRadius: 17, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, flexShrink: 0 },
-  toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: c.gold },
-  toggleSide:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 28, paddingHorizontal: Space.md },
-  toggleText:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text },
-  toggleTextOn: { color: c.onGold },
-  toggleCity:  { maxWidth: 96 },
   row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.md, paddingHorizontal: Space.md, borderRadius: Radius.card },
   rowMine:     { backgroundColor: c.primaryTint },
   rank:        { width: 28, fontSize: FontSizes.body, fontWeight: '800', color: c.muted, textAlign: 'center' },

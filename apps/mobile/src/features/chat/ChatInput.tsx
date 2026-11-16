@@ -18,7 +18,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { Space, FontSizes, Border, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';

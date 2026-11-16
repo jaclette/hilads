@@ -1,9 +1,7 @@
 {
-  "allTitle": "Todas as notificações",
   "markAllRead": "Marcar tudo como lido",
   "emptyTitle": "Nenhuma notificação ainda",
   "emptySub": "Suas mensagens e novidades de eventos aparecem aqui.",
-  "seeAll": "Ver todas as notificações",
   "prefTitle": "Preferências de notificação",
   "pref": {
     "mentionLabel": "Menções @",
@@ -88,7 +86,6 @@
     "read": "Lida",
     "unread": "Não lida",
     "delete": "Apagar",
-    "allRead": "Tudo em dia ✨",
     "row": {
       "like": "{{names}} curtiu sua foto",
       "mention": "{{names}} te mencionou",

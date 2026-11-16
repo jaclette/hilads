@@ -1,9 +1,7 @@
 {
-  "allTitle": "All notifications",
   "markAllRead": "Mark all read",
   "emptyTitle": "No notifications yet",
   "emptySub": "You'll see messages and event updates here.",
-  "seeAll": "See all notifications",
   "prefTitle": "Notification preferences",
   "pref": {
     "mentionLabel": "Mentions @",
@@ -88,7 +86,6 @@
     "read": "Read",
     "unread": "Unread",
     "delete": "Delete",
-    "allRead": "All caught up ✨",
     "row": {
       "like": "{{names}} liked your photo",
       "mention": "{{names}} mentioned you",

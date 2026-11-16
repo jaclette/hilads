@@ -171,7 +171,6 @@ export default function DailyProposeScreen() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  flex:        { flex: 1 },
   center:      { flex: 1, justifyContent: 'center', padding: Spacing.lg },
   stretch:     { alignSelf: 'stretch', marginTop: Spacing.sm },
   body:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: Space.md, paddingBottom: 48 },

@@ -1,5 +1,5 @@
 import { thumbUrl } from '@/lib/imageThumb';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Modal, View, Text, ScrollView, TouchableOpacity, StyleSheet,
   ActivityIndicator, Pressable,

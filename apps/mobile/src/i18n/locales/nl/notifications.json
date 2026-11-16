@@ -1,9 +1,7 @@
 {
-  "allTitle": "Alle meldingen",
   "markAllRead": "Alles als gelezen markeren",
   "emptyTitle": "Nog geen meldingen",
   "emptySub": "Hier zie je berichten en updates over evenementen.",
-  "seeAll": "Alle meldingen bekijken",
   "prefTitle": "Meldingsvoorkeuren",
   "pref": {
     "mentionLabel": "Vermeldingen @",
@@ -88,7 +86,6 @@
     "read": "Gelezen",
     "unread": "Ongelezen",
     "delete": "Verwijderen",
-    "allRead": "Alles bijgewerkt ✨",
     "row": {
       "like": "{{names}} vindt je foto leuk",
       "mention": "{{names}} noemde je",

@@ -4,21 +4,13 @@
   "nextIn": "Próximo Daily Challenge em {{time}}",
   "nothingLive": "O próximo Daily Challenge já está chegando",
   "cta": "Topar o desafio",
-  "ctaIn": "Tô dentro",
-  "ctaTaken": "Desafio feito · Ver minha foto",
-  "seeProofs": "Ver as fotos de hoje",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist de {{city}}",
   "twistBy": "por {{name}}",
   "count_one": "{{count}} pessoa jogou hoje",
   "count_many": "{{count}} de pessoas jogaram hoje",
   "count_other": "{{count}} pessoas jogaram hoje",
-  "countCity": "{{count}} em {{city}}",
-  "countZero": "Ninguém ainda, saia na frente",
   "beFirst": "Saia na frente hoje",
   "beFirstSub": "Nenhuma foto ainda. Saia na frente, o mundo está esperando.",
-  "firstYours": "Sua foto foi enviada",
-  "firstYoursSub": "Ela aparece aqui depois de aprovada, junto com as fotos dos outros.",
   "yourProof": "Sua foto",
   "status": {
     "pending": "Pendente",
@@ -46,14 +38,12 @@
   "places_many": "{{count}} de lugares marcados",
   "places_other": "{{count}} lugares marcados",
   "unnamedPlace": "Lugar marcado",
-  "tabWorld": "Mundo",
   "local": "Local",
   "traveler": "Viajante",
   "validatedByLocal": "Validado por um morador",
   "loadFailed": "Não deu pra carregar o Daily Challenge.",
   "retry": "Tentar de novo",
   "notFound": "Esse Daily Challenge não existe.",
-  "cityRowEmpty": "Crie o primeiro desafio em {{city}}",
   "proof": {
     "titleNew": "Sua foto",
     "titleEdit": "Editar sua foto",
@@ -124,8 +114,6 @@
     "invalid_back_home": "\"E na sua cidade?\" precisa de uma cidade e uma resposta, um preço ou uma linha."
   },
   "push": {
-    "bannerTitle": "Receba o Daily Challenge toda manhã",
-    "bannerCta": "Ativar",
     "askTitle": "Daily Challenge",
     "askBody": "Receba o Daily Challenge toda manhã, num horário bom pra você.",
     "askBodyBlocked": "As notificações do Hilads estão desativadas. Ative nas configurações para receber o Daily Challenge toda manhã.",
@@ -347,23 +335,15 @@
     "prev": "Mês anterior",
     "next": "Próximo mês"
   },
-  "guide": {
-    "title": "Guia da cidade",
-    "all": "Todos",
-    "emptyCity": "Ainda não teve desafio de {{theme}} em {{city}}. Próximo: {{day}}.",
-    "emptyWorld": "Ainda não teve desafio de {{theme}}. Próximo: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} temas",
     "earned": "Conquistado",
-    "hint": "Complete os 7 temas em {{city}} para ganhar o Local Pass da cidade.",
     "profileTitle": "Local Passes",
     "badgeA11y": "Tem o Local Pass"
   },
   "propose": {
     "cta": "Propor um desafio",
-    "short": "Propor",
     "title": "Propor um desafio",
     "textLabel": "Seu desafio (em inglês)",
     "textPlaceholder": "Find a…",
@@ -411,13 +391,7 @@
       "invalid_twist": "O Local Twist precisa ter menos de 280 caracteres.",
       "twist_not_allowed": "Só moradores de uma cidade ativa podem adicionar um Local Twist.",
       "moderation_blocked": "Sua proposta foi barrada pela moderação. Reescreva, por favor."
-    },
-    "linkAsk": "Tem uma ideia de desafio?",
-    "linkCta": "Proponha",
-    "cardBody": "Sua ideia pode virar o desafio de amanhã para o mundo inteiro 🌍",
-    "cardHide": "Ocultar por uma semana",
-    "cardPlayed_one": "Sua ideia “{{text}}” foi jogada em {{count}} cidade 🎉",
-    "cardPlayed_other": "Sua ideia “{{text}}” foi jogada em {{count}} cidades 🎉"
+    }
   },
   "early": {
     "badge": "Adiantado",
@@ -530,7 +504,6 @@
   },
   "takeIt": "Topar",
   "proofHint": {
-    "title": "Tire sua foto",
     "place": "A foto mais votada vira a foto do lugar.",
     "noPlace": "A foto mais votada sobe ao pódio."
   },
@@ -689,25 +662,6 @@
     "clear": "Remover minha cidade",
     "hereIn": "Aqui em {{city}}"
   },
-  "tour": {
-    "title": "A volta ao mundo de *ontem*",
-    "watch": "Ver",
-    "openCity": "Abrir {{city}}",
-    "next": "Próximo",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "De manhã",
-      "afternoon": "À tarde",
-      "evening": "À noitinha",
-      "night": "De madrugada"
-    },
-    "yourTurn": "Sua vez.",
-    "todayIs": "A pergunta do dia: {{question}}",
-    "close": "Fechar",
-    "sub_one": "{{count}} cidade, o mesmo desafio",
-    "sub_many": "{{count}} de cidades, o mesmo desafio",
-    "sub_other": "{{count}} cidades, o mesmo desafio"
-  },
   "worlds": {
     "tagline": "Mesmo desafio. Mundos diferentes."
   },
@@ -752,18 +706,11 @@
     "endTitle": "Você viu tudo por enquanto!",
     "endBody": "Fotos novas chegam o dia todo. Volte mais tarde.",
     "endPlay": "Sua vez: mostre sua cidade para o mundo.",
-    "backToday": "Voltar para Hoje",
-    "seeAll": "Ver todas as fotos"
+    "backToday": "Voltar para Hoje"
   },
   "countries": {
-    "played_one": "{{count}} país jogou hoje",
-    "played_many": "{{count}} de países jogaram hoje",
-    "played_other": "{{count}} países jogaram hoje",
-    "yourCity": "Sua cidade",
     "represent": "Represente sua cidade",
     "emptyBody": "Ninguém jogou ainda hoje. Coloque sua cidade no mapa primeiro!",
-    "openCountry": "{{city}}: ver as fotos",
-    "byCity": "Por cidade",
     "topPhoto": "Foto top"
   },
   "recap": {
@@ -821,12 +768,6 @@
     "ctaNoCity": "Tire a foto",
     "played": "Você jogou · Veja o mundo",
     "firstCity": "Seja a primeira cidade do mundo hoje",
-    "citiesIn_one": "{{count}} cidade jogou",
-    "citiesIn_many": "{{count}} de cidades jogaram",
-    "citiesIn_other": "{{count}} cidades jogaram",
-    "citiesMissing_one": "{{count}} cidade jogou. {{city}} ainda não!",
-    "citiesMissing_many": "{{count}} de cidades jogaram. {{city}} ainda não!",
-    "citiesMissing_other": "{{count}} cidades jogaram. {{city}} ainda não!",
     "steps": {
       "snap": "Tire a foto",
       "name": "Diga o nome",
@@ -852,7 +793,6 @@
     "players_other": "{{count}} jogadores",
     "missing": "Falta {{city}}!",
     "yesterday": "Ontem o mundo disse…",
-    "beFirst": "Represente {{city}}",
     "beFirstSub": "Seja a primeira cidade hoje",
     "swipeHint": "Deslize para viajar 🌍",
     "slotCta": "📸 {{city}}? Seja o primeiro hoje"

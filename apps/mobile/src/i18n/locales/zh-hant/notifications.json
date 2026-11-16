@@ -1,9 +1,7 @@
 {
-  "allTitle": "所有通知",
   "markAllRead": "全部標示為已讀",
   "emptyTitle": "還沒有通知",
   "emptySub": "訊息和活動的最新動態都會出現在這裡。",
-  "seeAll": "查看所有通知",
   "prefTitle": "通知設定",
   "pref": {
     "mentionLabel": "提及 @",
@@ -88,7 +86,6 @@
     "read": "已讀",
     "unread": "未讀",
     "delete": "刪除",
-    "allRead": "全部看完了 ✨",
     "row": {
       "like": "{{names}} 對你的照片按讚",
       "mention": "{{names}} 提到你",

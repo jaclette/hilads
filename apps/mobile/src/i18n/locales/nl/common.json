@@ -10,10 +10,7 @@
     "special": "Speciaal",
     "onlyIn": "Alleen in {{city}}"
   },
-  "nowTitle": "Nu",
   "filterEvents": "Lokale evenementen",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Meetups",
   "publicEventsSection": "Openbare evenementen",
   "accountWelcome": {
     "title": "Gefeliciteerd, {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "Geen plekken gevonden",
     "loading": "Locatie ophalen…",
     "confirm": "Deel deze plek",
-    "yourLocation": "Je locatie",
-    "close": "Sluiten",
-    "clearSearch": "Zoekopdracht wissen"
+    "yourLocation": "Je locatie"
   },
   "language": "Taal",
   "cancel": "Annuleren",
   "loading": "Laden…",
   "retry": "Opnieuw proberen",
-  "save": "Opslaan",
   "done": "Klaar",
   "close": "Sluiten",
   "clear": "Wissen",
@@ -177,9 +171,7 @@
   "tabs": {
     "today": "Vandaag",
     "map": "Kaart",
-    "chat": "Hi",
-    "passport": "Paspoort",
-    "ranks": "Ranglijst"
+    "passport": "Paspoort"
   },
   "scope": {
     "title": "Tonen",
@@ -202,7 +194,6 @@
     "requiredTitle": "Hilads updaten",
     "requiredBody": "Deze versie wordt niet meer ondersteund. Update de app om Hilads te blijven gebruiken."
   },
-  "mapSoon": "De kaart met plekken komt binnenkort.",
   "firstLaunch": "Speel lokaal. Vergelijk wereldwijd.",
   "signUp": "Aanmelden",
   "open": "Open",
@@ -227,7 +218,6 @@
     "errorBody": "Melding versturen mislukt. Probeer het opnieuw."
   },
   "subtitles": {
-    "map": "Plekken uit de foto's van de hele wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
     "passport": "Je steden, je foto's, je stempels."
   },

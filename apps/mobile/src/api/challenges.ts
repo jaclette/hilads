@@ -421,35 +421,6 @@ export async function toggleChallengeReaction(
   return data.reactions;
 }
 
-/** Creator's view of who took on a specific challenge. */
-export async function fetchChallengeAcceptances(challengeId: string): Promise<ChallengeAcceptance[]> {
-  const data = await api.get<{ acceptances: ChallengeAcceptance[] }>(`/challenges/${challengeId}/acceptances`);
-  return data.acceptances ?? [];
-}
-
-// ── Thread chat (per-acceptance 1:1 channel) ────────────────────────────────
-
-/** Paginated thread chat messages. Members-only (acceptor + creator). */
-export async function fetchThreadMessages(
-  threadChannelId: string,
-  opts: { beforeId?: string; limit?: number } = {},
-): Promise<{ messages: Message[]; hasMore: boolean }> {
-  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
-  if (opts.beforeId) q.set('before_id', opts.beforeId);
-  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
-    `/threads/${threadChannelId}/messages?${q}`,
-  );
-  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
-}
-
-export async function sendThreadMessage(threadChannelId: string, content: string): Promise<Message> {
-  return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'text', content });
-}
-
-export async function sendThreadImageMessage(threadChannelId: string, imageUrl: string): Promise<Message> {
-  return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'image', imageUrl });
-}
-
 // ── International - proof submission ────────────────────────────────────────
 
 export interface ChallengeProof {
@@ -611,10 +582,6 @@ export async function fetchMyChallengeParticipation(challengeId: string): Promis
   }
 }
 
-export async function joinChallengeChannel(challengeId: string): Promise<{ count: number; isIn: boolean }> {
-  return api.post<{ count: number; isIn: boolean }>(`/challenges/${challengeId}/join`, {});
-}
-
 export async function leaveChallengeChannel(challengeId: string): Promise<{ ok: boolean; isIn: false; count: number }> {
   return api.delete<{ ok: boolean; isIn: false; count: number }>(`/challenges/${challengeId}/participants/me`);
 }
@@ -633,13 +600,6 @@ export async function setChallengeVisibility(
   return api.post<{ ok: boolean; visibility: 'public' | 'friends' | 'private'; closed_to_new_joins?: boolean }>(
     `/challenges/${challengeId}/visibility`,
     { visibility },
-  );
-}
-
-export async function setChallengeCloseToJoins(challengeId: string, closed: boolean): Promise<{ ok: boolean; closed_to_new_joins: boolean }> {
-  return api.post<{ ok: boolean; closed_to_new_joins: boolean }>(
-    `/challenges/${challengeId}/close-to-new-joins`,
-    { closed },
   );
 }
 

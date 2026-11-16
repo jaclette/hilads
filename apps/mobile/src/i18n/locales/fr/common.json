@@ -10,10 +10,7 @@
     "special": "Spécial",
     "onlyIn": "Seulement à {{city}}"
   },
-  "nowTitle": "Maintenant",
   "filterEvents": "Événements locaux",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Sorties",
   "publicEventsSection": "Événements publics",
   "accountWelcome": {
     "title": "Bravo, {{username}} !",
@@ -46,15 +43,12 @@
     "noResults": "Aucun lieu trouvé",
     "loading": "Localisation…",
     "confirm": "Partager ce spot",
-    "yourLocation": "Ta position",
-    "close": "Fermer",
-    "clearSearch": "Effacer la recherche"
+    "yourLocation": "Ta position"
   },
   "language": "Langue",
   "cancel": "Annuler",
   "loading": "Chargement…",
   "retry": "Réessayer",
-  "save": "Enregistrer",
   "done": "Terminé",
   "close": "Fermer",
   "clear": "Effacer",
@@ -178,9 +172,7 @@
   "tabs": {
     "today": "Aujourd'hui",
     "map": "Carte",
-    "chat": "Hi",
-    "passport": "Passeport",
-    "ranks": "Classement"
+    "passport": "Passeport"
   },
   "scope": {
     "title": "Afficher",
@@ -204,7 +196,6 @@
     "requiredTitle": "Mets Hilads à jour",
     "requiredBody": "Cette version n'est plus prise en charge. Mets l'app à jour pour continuer à utiliser Hilads."
   },
-  "mapSoon": "La carte des spots arrive bientôt.",
   "firstLaunch": "Joue local. Compare global.",
   "signUp": "S'inscrire",
   "open": "Ouvrir",
@@ -229,7 +220,6 @@
     "errorBody": "Impossible d'envoyer le signalement. Réessaie."
   },
   "subtitles": {
-    "map": "Les spots repérés dans les photos du monde entier.",
     "hi": "Dis bonjour à ta ville. Rejoins un plan.",
     "passport": "Tes villes, tes photos, tes tampons."
   },

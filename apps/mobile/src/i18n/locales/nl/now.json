@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Er gebeurt nog niets",
-  "emptyBeFirst": "Wees de eerste in {{city}}",
-  "emptyStartNow": "Start nu iets",
-  "emptyCreateLine": "Maak een evenement of start een meetup.",
   "hostSpotTitle": "Host op jouw plek",
   "hostSpotCity": "Breng {{city}} tot leven.",
   "hostSpotNoCity": "Breng je stad tot leven.",
@@ -11,8 +8,6 @@
   "noHangouts": "Nog geen meetups",
   "beFirstEventCity": "Maak als eerste een evenement in {{city}}",
   "beFirstEvent": "Maak als eerste een evenement",
-  "hangoutTalk": "Start een meetup en breng leven in de stad",
-  "startHangout": "Start een meetup 🗣️",
   "inspiration": {
     "heading": "Meetup-ideeën",
     "sub": "Wat locals elders organiseren - laat je inspireren",
@@ -31,26 +26,7 @@
   "browseCities": "Steden bekijken",
   "filterAll": "Alles",
   "filterChallenges": "Challenges",
-  "challengesSection": "Challenges",
-  "seeAllChallenges": "Alles bekijken →",
   "noChallenges": "Nog geen challenges",
-  "noChallengesCity": "Start er als eerste een in {{city}}",
-  "noChallengesGeneric": "Start als eerste een challenge.",
-  "seeComing": "Kijk wat eraan komt",
-  "createNew": "Nieuw maken",
-  "seeHappened": "bekijk wat er gebeurd is →",
   "going": "erbij",
-  "inThisHangout": "in deze meetup",
-  "create": {
-    "title": "Wat gaan we doen?",
-    "challengeLabel": "Start een challenge",
-    "challengeSub": "Locals & reizigers - leer elkaar kennen via een challenge",
-    "hangoutLabel": "Start een meetup",
-    "hangoutSub": "Direct - mensen sluiten nu meteen bij je aan",
-    "eventLabel": "Maak een evenement",
-    "eventSub": "Plan iets waar anderen aan mee kunnen doen",
-    "cancel": "Annuleren"
-  },
-  "hiNowHint": "nu afspreken",
-  "hiLaterHint": "een evenement plannen"
+  "inThisHangout": "in deze meetup"
 }

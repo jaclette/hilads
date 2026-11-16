@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Wala pang nangyayari",
-  "emptyBeFirst": "Ikaw na ang una sa {{city}}",
-  "emptyStartNow": "Magsimula ng ganap ngayon",
-  "emptyCreateLine": "Gumawa ng event o magsimula ng tambayan.",
   "hostSpotTitle": "I-host ang spot mo",
   "hostSpotCity": "Buhayin ang {{city}}.",
   "hostSpotNoCity": "Buhayin ang city mo.",
@@ -11,8 +8,6 @@
   "noHangouts": "Wala pang tambayan",
   "beFirstEventCity": "Mauna kang gumawa sa {{city}}",
   "beFirstEvent": "Mauna kang gumawa ng isa",
-  "hangoutTalk": "Magsimula ng tambayan at pag-usapin ang city",
-  "startHangout": "Magsimula ng tambayan 🗣️",
   "inspiration": {
     "heading": "Mga ideya para sa tambayan",
     "sub": "Ganito ang ginagawa ng locals sa ibang city - ma-inspire ka",
@@ -31,26 +26,7 @@
   "browseCities": "Mag-browse ng mga city",
   "filterAll": "Lahat",
   "filterChallenges": "Mga challenge",
-  "challengesSection": "Mga challenge",
-  "seeAllChallenges": "Tingnan lahat →",
   "noChallenges": "Wala pang challenge",
-  "noChallengesCity": "Mauna kang mag-launch sa {{city}}",
-  "noChallengesGeneric": "Mauna kang mag-launch ng challenge.",
-  "seeComing": "Tingnan ang paparating",
-  "createNew": "Gumawa ng bago",
-  "seeHappened": "tingnan kung anong nangyari →",
   "going": "pupunta",
-  "inThisHangout": "sa tambayan na 'to",
-  "create": {
-    "title": "Anong ganap?",
-    "challengeLabel": "Mag-launch ng challenge",
-    "challengeSub": "Locals at biyahero - mag-connect sa isang challenge",
-    "hangoutLabel": "Magsimula ng tambayan",
-    "hangoutSub": "Instant - pwede kang samahan ng iba ngayon din",
-    "eventLabel": "Gumawa ng event",
-    "eventSub": "Magplano ng pwedeng salihan ng iba",
-    "cancel": "I-cancel"
-  },
-  "hiNowHint": "tumambay ngayon",
-  "hiLaterHint": "magplano ng event"
+  "inThisHangout": "sa tambayan na 'to"
 }

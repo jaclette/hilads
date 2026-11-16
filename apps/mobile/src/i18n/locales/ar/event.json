@@ -69,7 +69,6 @@
   "goingTitle": "الحضور",
   "hostedBy": "باستضافة {{name}}",
   "bringPeople": "ادعُ الناس",
-  "seeAll": "عرض الكل",
   "oneGoing": "{{name}} سيحضر",
   "manyGoing": "{{name}} + {{count}} سيحضرون",
   "goingEmpty": "لا أحد بعد، كن أول من ينضم!",

@@ -1,5 +1,4 @@
 import { api } from './client';
-import type { MentionRef } from '@/types';
 
 export interface MentionSuggestion {
   userId?:        string;   // member suggestion

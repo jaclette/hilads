@@ -49,7 +49,6 @@ export function PasswordEye({ shown, onPress }: { shown: boolean; onPress: () =>
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  flex:      { flex: 1 },
   body:      { flexGrow: 1, paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm, paddingBottom: Spacing.xxl, gap: Spacing.md },
   head:      { gap: Space.sm, marginBottom: Space.xs },
   title:     { fontSize: FontSizes.xxl, fontWeight: '800', color: c.text, letterSpacing: -0.5, marginTop: Space.sm },

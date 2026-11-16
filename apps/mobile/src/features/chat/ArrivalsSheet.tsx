@@ -8,7 +8,7 @@
  * join pill uses.
  */
 
-import { Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { thumbUrl } from '@/lib/imageThumb';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';

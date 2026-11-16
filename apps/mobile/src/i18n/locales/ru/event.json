@@ -69,7 +69,6 @@
   "goingTitle": "Идут",
   "hostedBy": "Организатор: {{name}}",
   "bringPeople": "Позови людей",
-  "seeAll": "Показать всех",
   "oneGoing": "{{name}} идёт",
   "manyGoing": "{{name}} и ещё {{count}} идут",
   "goingEmpty": "Пока никого. Присоединяйся первым!",

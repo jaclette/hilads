@@ -294,7 +294,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardHead:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },
-  compared:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   pagesWrap:      { gap: Space.sm },
   dots:           { flexDirection: 'row', justifyContent: 'center', gap: Space.sm },
   dot:            { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },

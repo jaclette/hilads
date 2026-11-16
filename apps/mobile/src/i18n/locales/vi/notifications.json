@@ -1,9 +1,7 @@
 {
-  "allTitle": "Tất cả thông báo",
   "markAllRead": "Đánh dấu đã đọc hết",
   "emptyTitle": "Chưa có thông báo nào",
   "emptySub": "Tin nhắn và cập nhật sự kiện sẽ hiện ở đây.",
-  "seeAll": "Xem tất cả thông báo",
   "prefTitle": "Tùy chọn thông báo",
   "pref": {
     "mentionLabel": "Nhắc đến @",
@@ -88,7 +86,6 @@
     "read": "Đã đọc",
     "unread": "Chưa đọc",
     "delete": "Xóa",
-    "allRead": "Đã xem hết rồi ✨",
     "row": {
       "like": "{{names}} đã thả tim ảnh của bạn",
       "mention": "{{names}} nhắc tới bạn",

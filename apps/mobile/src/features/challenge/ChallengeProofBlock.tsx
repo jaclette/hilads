@@ -24,7 +24,6 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   ActivityIndicator, Alert, Platform,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
@@ -244,24 +243,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor:      c.line,
     gap:              Spacing.sm,
   },
-  reqsBlock: {
-    borderLeftWidth: 3,
-    borderLeftColor: c.primary,
-    paddingLeft:     Spacing.sm,
-    gap:             Space.xxs,
-  },
-  reqsLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.6, textTransform: 'uppercase' },
-  reqsText:  { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
-
-  media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: c.photoScrim },
-
-
-  verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Space.xs },
-  verdictBtn: { flex: 1, paddingVertical: Spacing.sm + 2, borderRadius: Radius.full, alignItems: 'center' },
-  verdictApprove: { backgroundColor: c.green },
-  verdictReject:  { borderWidth: Border, borderColor: c.red, backgroundColor: 'transparent' },
-  verdictApproveText: { color: c.white, fontWeight: '800', fontSize: FontSizes.sm },
-  verdictRejectText:  { color: c.red, fontWeight: '800', fontSize: FontSizes.sm },
 
   // The shared primary look (Button): tangerine with ink text.
   submitBtn: {
@@ -282,54 +263,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm },
   terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: Space.xs },
   reasonLine:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 18 },
-  // Inline-rendered proof requirements (no popin, no separate button).
-  // The pipeline carries the "Submit your proof →" CTA; this just reminds
-  // the acceptor what the creator asked for.
-  requirementsLine: {
-    fontSize:   FontSizes.sm,
-    color:      c.text,
-    lineHeight: 18,
-    marginTop:  Spacing.xs,
-  },
-  // Inline submitting indicator - replaces the old big-button spinner.
-  busyRow: {
-    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
-    marginTop: Spacing.sm,
-  },
-  busyText: { fontSize: FontSizes.sm, color: c.muted },
-
-  modalBackdrop: { flex: 1, backgroundColor: c.scrim },
-  modalSheet: {
-    position: 'absolute', left: 0, right: 0, bottom: 0,
-    backgroundColor: c.bg2,
-    borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
-    padding: Spacing.md, paddingBottom: Spacing.xl, gap: Spacing.sm,
-  },
-  modalHandle: {
-    alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.line, marginBottom: Spacing.sm,
-  },
-  modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  modalHint:  { fontSize: FontSizes.sm, color: c.muted },
-  reasonInput: {
-    minHeight:         96,
-    textAlignVertical: 'top',
-    backgroundColor:   c.bg3,
-    borderWidth:       Border,
-    borderColor:       c.line,
-    borderRadius:      Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    fontSize:          FontSizes.md,
-    color:             c.text,
-  },
-  charCount: { fontSize: FontSizes.xs, color: c.mutedDim, textAlign: 'right' },
-  modalSubmit: {
-    backgroundColor: c.red,
-    paddingVertical: Spacing.md,
-    borderRadius:    Radius.full,
-    alignItems:      'center',
-    marginTop:       Spacing.xs,
-  },
-  modalSubmitText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md },
 });

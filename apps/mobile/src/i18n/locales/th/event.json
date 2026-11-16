@@ -69,7 +69,6 @@
   "goingTitle": "จะไป",
   "hostedBy": "จัดโดย {{name}}",
   "bringPeople": "ชวนคนมา",
-  "seeAll": "ดูทั้งหมด",
   "oneGoing": "{{name}} จะไป",
   "manyGoing": "{{name}} + {{count}} คนจะไป",
   "goingEmpty": "ยังไม่มีใคร มาเป็นคนแรกเลย!",

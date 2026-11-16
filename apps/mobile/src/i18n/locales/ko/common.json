@@ -10,10 +10,7 @@
     "special": "스페셜",
     "onlyIn": "{{city}}에만"
   },
-  "nowTitle": "지금",
   "filterEvents": "현지 이벤트",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ 모임",
   "publicEventsSection": "공개 이벤트",
   "accountWelcome": {
     "title": "축하해요, {{username}}님!",
@@ -46,15 +43,12 @@
     "noResults": "장소를 찾지 못했어요",
     "loading": "위치를 가져오는 중…",
     "confirm": "이 장소 공유",
-    "yourLocation": "내 위치",
-    "close": "닫기",
-    "clearSearch": "검색 지우기"
+    "yourLocation": "내 위치"
   },
   "language": "언어",
   "cancel": "취소",
   "loading": "불러오는 중…",
   "retry": "다시 시도",
-  "save": "저장",
   "done": "완료",
   "close": "닫기",
   "clear": "지우기",
@@ -176,9 +170,7 @@
   "tabs": {
     "today": "오늘",
     "map": "지도",
-    "chat": "Hi",
-    "passport": "여권",
-    "ranks": "랭킹"
+    "passport": "여권"
   },
   "scope": {
     "title": "보기",
@@ -200,7 +192,6 @@
     "requiredTitle": "Hilads 업데이트",
     "requiredBody": "이 버전은 더 이상 지원되지 않아요. Hilads를 계속 쓰려면 앱을 업데이트해 주세요."
   },
-  "mapSoon": "장소 지도가 곧 나와요.",
   "firstLaunch": "로컬에서 놀고, 세계와 비교하자.",
   "signUp": "가입하기",
   "open": "열기",
@@ -225,7 +216,6 @@
     "errorBody": "신고를 보내지 못했어요. 다시 시도해 주세요."
   },
   "subtitles": {
-    "map": "전 세계 사진 속 장소들.",
     "hi": "도시에 인사하고 약속에 함께해요.",
     "passport": "내 도시, 내 사진, 내 스탬프."
   },

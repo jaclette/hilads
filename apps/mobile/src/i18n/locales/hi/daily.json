@@ -4,20 +4,12 @@
   "nextIn": "अगला Daily Challenge {{time}} में",
   "nothingLive": "अगला Daily Challenge आने वाला है",
   "cta": "चैलेंज लें",
-  "ctaIn": "मैं तैयार हूँ",
-  "ctaTaken": "चैलेंज पूरा · मेरी फ़ोटो देखें",
-  "seeProofs": "आज की फ़ोटो देखें",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} का Local Twist",
   "twistBy": "{{name}} द्वारा",
   "count_one": "आज {{count}} खिलाड़ी ने खेला",
   "count_other": "आज {{count}} खिलाड़ियों ने खेला",
-  "countCity": "{{city}} में {{count}}",
-  "countZero": "अभी तक कोई नहीं, सबसे पहले आप खेलें",
   "beFirst": "आज सबसे पहले खेलें",
   "beFirstSub": "अभी तक कोई फ़ोटो नहीं। सबसे पहले आप खेलें, दुनिया इंतज़ार कर रही है।",
-  "firstYours": "आपकी फ़ोटो पहुँच गई",
-  "firstYoursSub": "मंज़ूरी मिलते ही यह यहाँ बाकी सबकी फ़ोटो के साथ दिखेगी।",
   "yourProof": "आपकी फ़ोटो",
   "status": {
     "pending": "पेंडिंग",
@@ -43,14 +35,12 @@
   "places_one": "{{count}} जगह पिन की गई",
   "places_other": "{{count}} जगहें पिन की गईं",
   "unnamedPlace": "पिन की गई जगह",
-  "tabWorld": "दुनिया",
   "local": "लोकल",
   "traveler": "यात्री",
   "validatedByLocal": "लोकल ने वैलिडेट किया",
   "loadFailed": "Daily Challenge लोड नहीं हो सका।",
   "retry": "फिर से कोशिश करें",
   "notFound": "यह Daily Challenge मौजूद नहीं है।",
-  "cityRowEmpty": "{{city}} में सबसे पहले चैलेंज बनाएँ",
   "proof": {
     "titleNew": "आपकी फ़ोटो",
     "titleEdit": "अपनी फ़ोटो एडिट करें",
@@ -120,8 +110,6 @@
     "invalid_back_home": "\"और आपके शहर में?\" के लिए एक शहर और एक जवाब, कीमत या लाइन चाहिए।"
   },
   "push": {
-    "bannerTitle": "हर सुबह Daily Challenge पाएँ",
-    "bannerCta": "चालू करें",
     "askTitle": "Daily Challenge",
     "askBody": "हर सुबह, आपके लिए सही समय पर Daily Challenge पाएँ।",
     "askBodyBlocked": "Hilads के नोटिफ़िकेशन बंद हैं। हर सुबह Daily Challenge पाने के लिए इन्हें सेटिंग्स में चालू करें।",
@@ -336,23 +324,15 @@
     "prev": "पिछला महीना",
     "next": "अगला महीना"
   },
-  "guide": {
-    "title": "शहर गाइड",
-    "all": "सभी",
-    "emptyCity": "{{city}} में अभी कोई {{theme}} चैलेंज नहीं। अगला {{day}} को।",
-    "emptyWorld": "अभी कोई {{theme}} चैलेंज नहीं। अगला {{day}} को।"
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} थीम",
     "earned": "कमाए",
-    "hint": "{{city}} में सभी 7 थीम पूरी करें और उसका Local Pass पाएँ।",
     "profileTitle": "Local Pass",
     "badgeA11y": "Local Pass होल्डर"
   },
   "propose": {
     "cta": "चैलेंज सुझाएँ",
-    "short": "सुझाएँ",
     "title": "चैलेंज सुझाएँ",
     "textLabel": "आपका चैलेंज (अंग्रेज़ी में)",
     "textPlaceholder": "Find a…",
@@ -400,13 +380,7 @@
       "invalid_twist": "Local Twist 280 अक्षरों से कम रखें।",
       "twist_not_allowed": "सिर्फ़ लाइव शहर के लोकल्स ही Local Twist जोड़ सकते हैं।",
       "moderation_blocked": "मॉडरेशन ने आपका सुझाव रोक दिया। इसे दूसरे शब्दों में लिखें।"
-    },
-    "linkAsk": "चैलेंज का कोई आइडिया है?",
-    "linkCta": "सुझाएँ",
-    "cardBody": "आपका आइडिया कल पूरी दुनिया का चैलेंज बन सकता है 🌍",
-    "cardHide": "एक हफ़्ते के लिए छिपाएँ",
-    "cardPlayed_one": "आपका आइडिया “{{text}}” {{count}} शहर में खेला गया 🎉",
-    "cardPlayed_other": "आपका आइडिया “{{text}}” {{count}} शहरों में खेला गया 🎉"
+    }
   },
   "early": {
     "badge": "अर्ली",
@@ -514,7 +488,6 @@
   },
   "takeIt": "खेलें",
   "proofHint": {
-    "title": "अपनी फ़ोटो लें",
     "place": "सबसे ज़्यादा वोट वाली फ़ोटो उस जगह की फ़ोटो बनती है।",
     "noPlace": "सबसे ज़्यादा वोट वाली फ़ोटो पोडियम पर पहुँचती है।"
   },
@@ -664,24 +637,6 @@
     "clear": "मेरा शहर हटाएँ",
     "hereIn": "यहाँ {{city}} में"
   },
-  "tour": {
-    "title": "*कल* दुनिया भर में",
-    "watch": "देखें",
-    "openCity": "{{city}} खोलें",
-    "next": "आगे",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "सुबह",
-      "afternoon": "दोपहर",
-      "evening": "शाम",
-      "night": "रात"
-    },
-    "yourTurn": "अब आपकी बारी।",
-    "todayIs": "आज का सवाल: {{question}}",
-    "close": "बंद करें",
-    "sub_one": "{{count}} शहर, एक ही चैलेंज",
-    "sub_other": "{{count}} शहर, एक ही चैलेंज"
-  },
   "worlds": {
     "tagline": "एक ही चैलेंज। अलग-अलग दुनिया।"
   },
@@ -725,17 +680,11 @@
     "endTitle": "अभी तक बस इतने ही!",
     "endBody": "दिन भर नई फ़ोटो आती रहती हैं। बाद में फिर आइए।",
     "endPlay": "अब आपकी बारी: दुनिया को अपना शहर दिखाएँ।",
-    "backToday": "आज पर वापस",
-    "seeAll": "सभी फ़ोटो देखें"
+    "backToday": "आज पर वापस"
   },
   "countries": {
-    "played_one": "आज {{count}} देश ने खेला",
-    "played_other": "आज {{count}} देशों ने खेला",
-    "yourCity": "आपका शहर",
     "represent": "अपने शहर का नाम रोशन करें",
     "emptyBody": "आज अभी तक किसी ने नहीं खेला। सबसे पहले अपने शहर को मैप पर लाएँ!",
-    "openCountry": "{{city}}: फ़ोटो देखें",
-    "byCity": "शहर के हिसाब से",
     "topPhoto": "टॉप फ़ोटो"
   },
   "recap": {
@@ -787,10 +736,6 @@
     "ctaNoCity": "फ़ोटो खींचें",
     "played": "आपने खेल लिया · दुनिया देखें",
     "firstCity": "आज दुनिया का पहला शहर बनें",
-    "citiesIn_one": "{{count}} शहर ने खेला",
-    "citiesIn_other": "{{count}} शहरों ने खेला",
-    "citiesMissing_one": "{{count}} शहर ने खेला। {{city}} अभी नहीं!",
-    "citiesMissing_other": "{{count}} शहरों ने खेला। {{city}} अभी नहीं!",
     "steps": {
       "snap": "फ़ोटो खींचें",
       "name": "नाम बताएँ",
@@ -814,7 +759,6 @@
     "players_other": "{{count}} खिलाड़ी",
     "missing": "{{city}} गायब है!",
     "yesterday": "कल दुनिया ने कहा…",
-    "beFirst": "{{city}} का नाम रोशन करें",
     "beFirstSub": "आज पहला शहर बनें",
     "swipeHint": "घूमने के लिए स्वाइप करो 🌍",
     "slotCta": "📸 {{city}}? आज सबसे पहले खेलें"

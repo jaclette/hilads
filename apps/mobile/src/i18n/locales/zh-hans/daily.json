@@ -4,19 +4,11 @@
   "nextIn": "下一个 Daily Challenge 还有 {{time}}",
   "nothingLive": "下一个 Daily Challenge 快来了",
   "cta": "接受挑战",
-  "ctaIn": "我来挑战",
-  "ctaTaken": "已完成挑战 · 看我的照片",
-  "seeProofs": "看看今天的照片",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "来自 {{name}}",
   "count_other": "今天有 {{count}} 人完成了",
-  "countCity": "{{city}} {{count}} 人",
-  "countZero": "还没人参加，来当第一个",
   "beFirst": "来当今天第一个",
   "beFirstSub": "还没有照片。来当第一个吧，全世界都在等。",
-  "firstYours": "照片已提交",
-  "firstYoursSub": "审核通过后，会和大家的照片一起出现在这里。",
   "yourProof": "你的照片",
   "status": {
     "pending": "待审核",
@@ -40,14 +32,12 @@
   "priceFrom_other": "来自 {{count}} 张照片",
   "places_other": "已标记 {{count}} 个地点",
   "unnamedPlace": "已标记地点",
-  "tabWorld": "全球",
   "local": "本地人",
   "traveler": "旅行者",
   "validatedByLocal": "本地人认证",
   "loadFailed": "无法加载 Daily Challenge。",
   "retry": "重试",
   "notFound": "这个 Daily Challenge 不存在。",
-  "cityRowEmpty": "来当第一个在 {{city}} 发起挑战的人",
   "proof": {
     "titleNew": "你的照片",
     "titleEdit": "编辑你的照片",
@@ -116,8 +106,6 @@
     "invalid_back_home": "“你家乡呢？”需要填一个城市，再加一个回答、价格或一句话。"
   },
   "push": {
-    "bannerTitle": "每天早上收到 Daily Challenge",
-    "bannerCta": "开启",
     "askTitle": "Daily Challenge",
     "askBody": "每天早上，在你方便的时间收到 Daily Challenge。",
     "askBodyBlocked": "Hilads 的通知已关闭。去设置里打开，每天早上就能收到 Daily Challenge。",
@@ -324,23 +312,15 @@
     "prev": "上个月",
     "next": "下个月"
   },
-  "guide": {
-    "title": "城市指南",
-    "all": "全部",
-    "emptyCity": "{{city}} 还没有 {{theme}} 主题的挑战。下一次：{{day}}。",
-    "emptyWorld": "还没有 {{theme}} 主题的挑战。下一次：{{day}}。"
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} 个主题",
     "earned": "已获得",
-    "hint": "在 {{city}} 集齐全部 7 个主题，就能拿到这里的 Local Pass。",
     "profileTitle": "Local Pass",
     "badgeA11y": "Local Pass 持有者"
   },
   "propose": {
     "cta": "提一个挑战",
-    "short": "提议",
     "title": "提一个挑战",
     "textLabel": "你的挑战（用英文写）",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist 不要超过 280 个字符。",
       "twist_not_allowed": "只有已上线城市的本地人才能添加 Local Twist。",
       "moderation_blocked": "你的提议被拦截了，换个说法吧。"
-    },
-    "linkAsk": "有挑战的点子？",
-    "linkCta": "提出来",
-    "cardBody": "你的点子可能成为明天全世界的挑战 🌍",
-    "cardHide": "隐藏一周",
-    "cardPlayed_other": "你的点子“{{text}}”已在 {{count}} 座城市被玩过 🎉"
+    }
   },
   "early": {
     "badge": "抢先",
@@ -496,7 +471,6 @@
   },
   "takeIt": "去参加",
   "proofHint": {
-    "title": "拍下你的照片",
     "place": "票数最高的照片会成为这个地点的照片。",
     "noPlace": "票数最高的照片会登上领奖台。"
   },
@@ -637,23 +611,6 @@
     "clear": "删除我的家乡",
     "hereIn": "这里：{{city}}"
   },
-  "tour": {
-    "title": "*昨天*的环球之旅",
-    "watch": "观看",
-    "openCity": "打开 {{city}}",
-    "next": "下一个",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "早上",
-      "afternoon": "下午",
-      "evening": "晚上",
-      "night": "夜里"
-    },
-    "yourTurn": "轮到你了。",
-    "todayIs": "今日问题：{{question}}",
-    "close": "关闭",
-    "sub_other": "{{count}} 座城市，同一个挑战"
-  },
   "worlds": {
     "tagline": "同一个挑战，不同的世界。"
   },
@@ -696,16 +653,11 @@
     "endTitle": "目前的照片都看完啦！",
     "endBody": "新照片一整天都在上传，晚点再来看看。",
     "endPlay": "轮到你了：让全世界看看你的城市。",
-    "backToday": "回到今日",
-    "seeAll": "查看所有照片"
+    "backToday": "回到今日"
   },
   "countries": {
-    "played_other": "今天有 {{count}} 个国家出战",
-    "yourCity": "你的城市",
     "represent": "为你的城市出战",
     "emptyBody": "今天还没人出战。抢先把你的城市放上地图！",
-    "openCountry": "{{city}}：查看照片",
-    "byCity": "按城市",
     "topPhoto": "最佳照片"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "拍一张",
     "played": "你已出战 · 看看全世界",
     "firstCity": "来当今天全球第一座城市",
-    "citiesIn_other": "{{count}} 座城市已出战",
-    "citiesMissing_other": "{{count}} 座城市已出战，{{city}} 还没有！",
     "steps": {
       "snap": "拍一张",
       "name": "说出名字",
@@ -774,7 +724,6 @@
     "players_other": "{{count}} 位玩家",
     "missing": "还缺 {{city}}！",
     "yesterday": "昨天，全世界是这样说的…",
-    "beFirst": "为 {{city}} 出战",
     "beFirstSub": "来当今天第一座城市",
     "swipeHint": "滑动去旅行 🌍",
     "slotCta": "📸 {{city}}？今天第一个出战"
