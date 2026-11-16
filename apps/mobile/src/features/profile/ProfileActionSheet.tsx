@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, Sheet } from '@/ui';
+import { Button, Sheet, SheetTitle } from '@/ui';
 
 export interface ProfileSheetAction {
   key:          string;
@@ -38,7 +38,7 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('cancel')}>
-      {title ? <Text style={styles.title} numberOfLines={1}>{title}</Text> : null}
+      {title ? <SheetTitle style={styles.title} numberOfLines={1}>{title}</SheetTitle> : null}
 
       {actions.map((a, idx) => (
         <TouchableOpacity
@@ -61,7 +61,7 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title:                  { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingBottom: Space.xs },
+  title:                  { paddingBottom: Space.xs },
   action:                 { flexDirection: 'row', alignItems: 'center', gap: Space.lg, minHeight: 52 },
   actionDivider:          { borderTopWidth: 1, borderTopColor: c.line },
   actionDisabled:         { opacity: 0.4 },

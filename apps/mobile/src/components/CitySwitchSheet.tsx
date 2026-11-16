@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { localizeCityName } from '@/i18n/cityName';
 import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { Button, CityFlag, Sheet } from '@/ui';
+import { Button, CityFlag, Sheet, SheetTitle } from '@/ui';
 import type { CityProposal } from '@/hooks/useGpsCityCorrection';
 
 // GPS found the user in another city than the one their account keeps
@@ -21,7 +21,7 @@ export function CitySwitchSheet({ proposal, onSwitch, onStay }: {
     <Sheet visible={!!proposal} onClose={onStay} closeLabel={t('close')} style={styles.sheet}>
       <View style={styles.titleLine}>
         <CityFlag country={proposal?.to.country} />
-        <Text style={styles.title} numberOfLines={2}>{t('citySwitch.title', { city: to })}</Text>
+        <SheetTitle style={styles.title} numberOfLines={2}>{t('citySwitch.title', { city: to })}</SheetTitle>
       </View>
       <Text style={styles.body}>{t('citySwitch.body', { from, city: to })}</Text>
       <Button label={t('citySwitch.switch', { city: to })} onPress={onSwitch} />
@@ -33,6 +33,6 @@ export function CitySwitchSheet({ proposal, onSwitch, onStay }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:     { gap: Space.md },
   titleLine: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
-  title:     { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  title:     { flexShrink: 1 },
   body:      { fontSize: FontSizes.sm, color: c.muted, marginBottom: Space.xs },
 });

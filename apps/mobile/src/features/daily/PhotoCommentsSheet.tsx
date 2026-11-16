@@ -26,7 +26,7 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { thumbUrl } from '@/lib/imageThumb';
 import { detectActiveMention } from '@/lib/mentions';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { Avatar, Sheet, SheetFlatList } from '@/ui';
+import { Avatar, Sheet, SheetFlatList, SheetTitle } from '@/ui';
 import { Confetti, ThemeChipJoy, themeColor } from '@/ui/joy';
 import type { DailyProof, PhotoComment } from '@/types';
 import {
@@ -280,9 +280,9 @@ function PhotoCommentsSheet({ target: initial, onClose, onLeave }: { target: Com
           </View>
         )}
         <View style={styles.headerBody}>
-          <Text style={styles.title} accessibilityRole="header">
+          <SheetTitle>
             {t('comments.title')}{count > 0 ? ` · ${count}` : ''}
-          </Text>
+          </SheetTitle>
           <Text style={styles.byline} numberOfLines={1}>
             {[authorName, target.city?.name ? `${flag ? flag + ' ' : ''}${localizeCityName(target.city.name)}` : null].filter(Boolean).join(' · ')}
           </Text>
@@ -613,7 +613,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   thumb:       { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3 },
   thumbSelfie: { position: 'absolute', right: -6, bottom: -6, width: 22, height: 28, borderRadius: 6, borderWidth: 1.5, borderColor: c.bg2, backgroundColor: c.bg3 },
   headerBody:  { flex: 1, minWidth: 0 },
-  title:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   byline:      { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: Space.xxs },
   listWrap:    { flex: 1 },
   listContent: { paddingVertical: Space.sm },

@@ -13,6 +13,7 @@ import type { Challenge, UserDTO } from '@/types';
 import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
+import { IconButton } from '@/ui/IconButton';
 
 type Props = {
   visible:        boolean;
@@ -246,9 +247,7 @@ function PickerView({
   return (
     <View style={styles.body}>
       <View style={styles.pickerHeader}>
-        <TouchableOpacity onPress={onBack} hitSlop={12} style={styles.headerBack}>
-          <Ionicons name="chevron-back" size={18} color={colors.muted} />
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={onBack} label={t('back', { ns: 'common' })} />
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{t('postCreate.pickerTitle', { audience: audienceLabel, city })}</Text>
           <Text style={styles.subtitle}>
@@ -362,12 +361,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   // ── Picker view ────────────────────────────────────────────────────────────
   pickerHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm, paddingBottom: Space.xs },
-  headerBack: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: c.bg3,
-    alignItems: 'center', justifyContent: 'center',
-    marginTop: Space.xxs,
-  },
   list:        { maxHeight: 360 },
   listContent: { paddingBottom: Spacing.sm, gap: Space.xs },
   empty:       { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },

@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { IconButton } from '@/ui/IconButton';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import {
@@ -997,10 +998,7 @@ export default function ChallengeChatScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.nav}>
-          <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={18} color={colors.text} />
-            <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
-          </TouchableOpacity>
+          <IconButton icon="chevron-back" onPress={() => goBack()} label={t('back', { ns: 'common' })} testID="header-back" />
         </View>
         <View style={styles.center}><Text style={styles.errorText}>{t('notFound')}</Text></View>
       </SafeAreaView>
@@ -1046,10 +1044,7 @@ export default function ChallengeChatScreen() {
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={colors.text} />
-          <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={() => goBack()} label={t('back', { ns: 'common' })} testID="header-back" />
         <View style={styles.navCenter}>
           <CopyTranslateText value={challenge.title} style={styles.navTitle} numberOfLines={2} />
           {challenge.creator_display_name ? (
@@ -2304,14 +2299,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomColor: c.line,
     gap:               Spacing.sm,
   },
-  backPill: {
-    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
-    paddingHorizontal: Space.md, paddingVertical: Space.sm,
-    borderRadius: Radius.full,
-    backgroundColor: c.bg3,
-    borderWidth: Border, borderColor: c.line,
-  },
-  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, flexShrink: 1, textAlign: 'center' },
   navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: Space.xxs },
@@ -2320,7 +2307,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   navCreatorText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
   // without needing a manual right-side spacer.
-  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },
+  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 44, textAlign: 'center' },
 
   // Hero (badge + audience + status + actions)
   hero: {

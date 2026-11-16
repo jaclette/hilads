@@ -5,7 +5,7 @@ import type { UserDTO, BadgeKey } from '@/types';
 import { BADGE_META } from '@/types';
 import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Avatar, Chip, Sheet, SheetScrollView } from '@/ui';
+import { Avatar, Chip, Sheet, SheetScrollView, SheetTitle } from '@/ui';
 
 // Bottom-sheet list of members/attendees (a plan's "going", a hangout's
 // members). Tapping a registered member opens their profile; guests are inert.
@@ -31,7 +31,7 @@ export function MembersSheet({ visible, loading, participants, count, noun, titl
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
-      <Text style={styles.title} accessibilityRole="header">{title ?? `${count} ${noun}`}</Text>
+      <SheetTitle style={styles.title}>{title ?? `${count} ${noun}`}</SheetTitle>
 
       <SheetScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
         {loading ? (
@@ -70,7 +70,7 @@ export function MembersSheet({ visible, loading, participants, count, noun, titl
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:       { maxHeight: '72%' },
-  title:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: Space.xs },
+  title:       { paddingVertical: Space.xs },
   list:        { flexGrow: 0 },
   listContent: { paddingBottom: Spacing.sm },
   loading:     { marginVertical: Spacing.lg },

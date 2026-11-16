@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, Sheet } from '@/ui';
+import { Button, IconButton, Sheet, SheetTitle } from '@/ui';
 
 // ── Category grid ────────────────────────────────────────────────────────────
 
@@ -136,7 +136,7 @@ export function TimePicker({ label, value, onChange }: { label: string; value: D
       </View>
 
       <Sheet visible={open} onClose={() => setOpen(false)} closeLabel={t('cancel')}>
-        <Text style={styles.title}>{label}</Text>
+        <SheetTitle style={styles.title}>{label}</SheetTitle>
         <View style={styles.clock}>
           <Column value={h} onUp={() => setH(v => (v + 1) % 24)} onDown={() => setH(v => (v + 23) % 24)} />
           <Text style={styles.colon}>:</Text>
@@ -154,7 +154,6 @@ export function DatePicker({ value, onChange, onClose, maxDays = 180 }: {
   value: Date; onChange: (d: Date) => void; onClose: () => void; maxDays?: number;
 }) {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
   const { t } = useTranslation('common');
   const [view, setView] = useState<Date>(() => new Date(value.getFullYear(), value.getMonth(), 1));
 
@@ -177,15 +176,11 @@ export function DatePicker({ value, onChange, onClose, maxDays = 180 }: {
   return (
     <Sheet visible onClose={onClose} closeLabel={t('cancel')}>
       <View style={styles.dpHeader}>
-        <TouchableOpacity style={[styles.arrow, prevDisabled && styles.disabled]} disabled={prevDisabled} accessibilityRole="button"
-                          onPress={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>{monthLabel}</Text>
-        <TouchableOpacity style={[styles.arrow, nextDisabled && styles.disabled]} disabled={nextDisabled} accessibilityRole="button"
-                          onPress={() => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1))}>
-          <Ionicons name="chevron-forward" size={22} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" label={t('calendar.prev', { ns: 'daily' })} style={prevDisabled && styles.disabled}
+                    onPress={() => { if (!prevDisabled) setView(new Date(view.getFullYear(), view.getMonth() - 1, 1)); }} />
+        <SheetTitle style={styles.title}>{monthLabel}</SheetTitle>
+        <IconButton icon="chevron-forward" label={t('calendar.next', { ns: 'daily' })} style={nextDisabled && styles.disabled}
+                    onPress={() => { if (!nextDisabled) setView(new Date(view.getFullYear(), view.getMonth() + 1, 1)); }} />
       </View>
 
       <View style={styles.row}>
@@ -233,7 +228,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   field:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, paddingHorizontal: Space.lg,
                borderRadius: Radius.button, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   fieldText: { fontSize: FontSizes.md, fontWeight: '700', color: c.text, fontVariant: ['tabular-nums'] },
-  title:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
+  title:     { textAlign: 'center' },
   clock:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.lg, paddingVertical: Space.sm },
   col:       { alignItems: 'center', gap: Space.xs },
   arrow:     { width: 44, height: 44, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', borderWidth: Border, borderColor: c.line },

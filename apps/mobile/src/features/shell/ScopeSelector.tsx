@@ -17,7 +17,7 @@ import { useScope, type Scope } from '@/context/ScopeContext';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { CityFlag, Sheet } from '@/ui';
+import { CityFlag, Sheet, SheetTitle } from '@/ui';
 import { useHere } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
 
@@ -112,7 +112,7 @@ function ScopeSheet({ visible, scope, cityName, cityCountry, hereName, hereCount
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
-      <Text style={styles.sheetTitle}>{t('scope.title')}</Text>
+      <SheetTitle style={styles.sheetTitle}>{t('scope.title')}</SheetTitle>
       {/* The pill's name ("Saigon"), so the sheet reads like the header. */}
       <Row icon="location-outline" title={cityName ?? t('scope.pickCity')} flag={cityName ? cityCountry : null} sub={t('scope.citySub')}
            active={scope === 'city' && !!cityName} onPress={() => onPick('city')} />
@@ -131,7 +131,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                     borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   scopeText:      { flexShrink: 1, flexGrow: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   sheet:          { gap: Space.sm },
-  sheetTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: Space.xs },
+  sheetTitle:     { marginBottom: Space.xs },
   row:            { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingHorizontal: Space.md, paddingVertical: Space.md, borderRadius: Radius.card },
   rowActive:      { backgroundColor: c.primaryTint },
   rowBody:        { flex: 1 },

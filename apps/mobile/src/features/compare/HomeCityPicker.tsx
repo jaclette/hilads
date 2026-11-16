@@ -6,7 +6,7 @@ import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
 import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, CityFlag, EmptyState, Sheet, SheetFlatList, TextField } from '@/ui';
+import { Button, CityFlag, EmptyState, Sheet, SheetFlatList, TextField, SheetTitle } from '@/ui';
 import { FLAGS } from '@/ui/flags';
 import type { City, HomeCityRef } from '@/types';
 
@@ -79,7 +79,7 @@ export function HomeCityPicker({ visible, selected, onPick, onClear, onClose }: 
     const ready = name.trim() !== '' && country !== null;
     return (
       <Sheet visible={visible} onClose={onClose} closeLabel={closeLabel} style={styles.sheet}>
-        <Text style={styles.title}>{t('backHome.otherTitle')}</Text>
+        <SheetTitle>{t('backHome.otherTitle')}</SheetTitle>
         <TextField label={t('backHome.otherName')} value={name} onChangeText={v => setName(v.slice(0, 60))} maxLength={60}
                    placeholder={t('backHome.otherNamePlaceholder')} autoFocus />
         <Text style={styles.label}>{t('backHome.otherCountry')}</Text>
@@ -109,7 +109,7 @@ export function HomeCityPicker({ visible, selected, onPick, onClear, onClose }: 
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={closeLabel} style={styles.sheet}>
-      <Text style={styles.title}>{t('backHome.askTitle')}</Text>
+      <SheetTitle>{t('backHome.askTitle')}</SheetTitle>
       <Text style={styles.sub}>{t('backHome.askSub')}</Text>
       <TextField variant="search" value={query} onChangeText={setQuery} onClear={() => setQuery('')}
                  clearLabel={t('clear', { ns: 'common' })} placeholder={t('backHome.searchPlaceholder')}
@@ -147,7 +147,6 @@ export function HomeCityPicker({ visible, selected, onPick, onClear, onClose }: 
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:    { maxHeight: '85%' },
-  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   sub:      { fontSize: FontSizes.sm, color: c.muted, marginTop: -4 },
   label:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   list:     { flexGrow: 0, maxHeight: 300 },

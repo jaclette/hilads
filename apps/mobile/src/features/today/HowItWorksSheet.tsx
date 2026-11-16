@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, Sheet } from '@/ui';
+import { Button, Sheet, SheetTitle } from '@/ui';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -26,7 +26,7 @@ export function HowItWorksSheet({ visible, placeTheme, onCamera, onLater, onClos
   ];
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('howItWorks.later')}>
-      <Text style={styles.title} accessibilityRole="header">{t('howItWorks.title')}</Text>
+      <SheetTitle style={styles.title}>{t('howItWorks.title')}</SheetTitle>
       <View style={styles.steps}>
         {steps.map(([icon, label], i) => (
           <View key={icon} style={styles.step}>
@@ -42,7 +42,7 @@ export function HowItWorksSheet({ visible, placeTheme, onCamera, onLater, onClos
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: Space.lg },
+  title:    { marginBottom: Space.lg },
   steps:    { gap: Space.lg, marginBottom: Space.xl },
   step:     { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   icon:     { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },

@@ -4,7 +4,7 @@ import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { answerPromo } from '@/api/auth';
-import { Button, Sheet } from '@/ui';
+import { Button, Sheet, SheetTitle } from '@/ui';
 
 // Daily promo (SPEC 10.13): asked once to players with photos from before the
 // terms' promo clause. Allow lets Hilads feature those too; Not now (or
@@ -24,7 +24,7 @@ export function PromoAskSheet({ blocked }: { blocked: boolean }) {
 
   return (
     <Sheet visible={visible} onClose={() => answer('later')} closeLabel={t('close')} style={styles.sheet}>
-      <Text style={styles.title}>{t('promo.askTitle')}</Text>
+      <SheetTitle>{t('promo.askTitle')}</SheetTitle>
       <Text style={styles.body}>{t('promo.askBody')}</Text>
       <Button label={t('promo.allow')} onPress={() => answer('yes')} />
       <Button variant="secondary" label={t('promo.notNow')} onPress={() => answer('later')} />
@@ -34,6 +34,5 @@ export function PromoAskSheet({ blocked }: { blocked: boolean }) {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet: { gap: Space.md },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   body:  { fontSize: FontSizes.sm, color: c.muted, marginBottom: Space.xs },
 });

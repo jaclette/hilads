@@ -536,15 +536,7 @@ function DailyProofScreenContent() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
       <View style={styles.nav}>
-        <TouchableOpacity
-          style={styles.back}
-          onPress={leave}
-          testID="header-back"
-          accessibilityRole="button"
-          accessibilityLabel={t('back')}
-        >
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={leave} label={t('back')} testID="header-back" />
         <Text style={styles.navTitle}>{original ? t('proof.titleEdit') : t('proof.titleNew')}</Text>
       </View>
       {challenge && !loading && !closed && <Text style={styles.challenge} numberOfLines={3}>{challenge.text}</Text>}
@@ -775,7 +767,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:        { flex: 1 },
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Space.md },
   nav:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
-  back:        { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
   navTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   challenge:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingHorizontal: Spacing.md, paddingBottom: Space.sm },
   icon:        { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },

@@ -2,7 +2,7 @@ import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { Button, Sheet, SheetScrollView } from '@/ui';
+import { Button, Sheet, SheetScrollView, SheetTitle } from '@/ui';
 
 // The three ways to earn Daily Challenge points (DailyPoints::EARNING_KINDS,
 // values in score_rules). Keep in step if a value changes.
@@ -14,7 +14,7 @@ export function PointsHelpSheet({ visible, onClose }: { visible: boolean; onClos
   const { t } = useTranslation('me');
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('passport.close')} style={styles.sheet}>
-      <Text style={styles.title}>{t('points.title')}</Text>
+      <SheetTitle>{t('points.title')}</SheetTitle>
       <Text style={styles.intro}>{t('points.intro')}</Text>
       <SheetScrollView style={styles.list}>
         {ROWS.map(([key, pts]) => (
@@ -32,7 +32,6 @@ export function PointsHelpSheet({ visible, onClose }: { visible: boolean; onClos
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:   { maxHeight: '80%' },
-  title:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   intro:   { fontSize: FontSizes.sm, color: c.muted },
   list:    { flexGrow: 0 },
   row:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.md, minHeight: 44, borderBottomWidth: 1, borderBottomColor: c.line },

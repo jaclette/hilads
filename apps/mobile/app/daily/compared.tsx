@@ -8,7 +8,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, EmptyState, Screen, ScreenHeader, SectionTitle, Sheet, SheetScrollView, TextField } from '@/ui';
+import { Button, CityFlag, EmptyState, Screen, ScreenHeader, SectionTitle, Sheet, SheetScrollView, TextField, SheetTitle } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
 import { ComparisonCard, comparisonShare, comparisonTitle, useComparisonValue } from '@/features/index/ComparisonCard';
@@ -176,7 +176,7 @@ export default function ComparedScreen() {
       )}
 
       <Sheet visible={picking !== null} onClose={() => setPicking(null)} closeLabel={t('close', { ns: 'common' })} style={styles.sheet}>
-        <Text style={styles.sheetTitle}>{t('index.pickCity')}</Text>
+        <SheetTitle style={styles.sheetTitle}>{t('index.pickCity')}</SheetTitle>
         <SheetScrollView style={styles.sheetList}>
           {cities.filter(c => c.id !== (picking === 0 ? b?.id : a?.id)).map(c => (
             <TouchableOpacity key={c.id} style={styles.cityRow} onPress={() => pickCity(c)} accessibilityRole="button">
@@ -214,7 +214,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pairCityName: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   pairValue:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   sheet:        { gap: Space.sm, maxHeight: '80%' },
-  sheetTitle:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: Space.xs },
+  sheetTitle:   { marginBottom: Space.xs },
   sheetList:    { flexGrow: 0 },
   cityRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 48, paddingHorizontal: Space.xs },
   cityRowText:  { fontSize: FontSizes.md, fontWeight: '700', color: c.text },

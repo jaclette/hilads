@@ -47,7 +47,7 @@ import { useDailyToday } from '@/hooks/useDaily';
 import { isDailyCard } from '@/lib/dailyEvents';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Space, Border, FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
-import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, SectionTitle, Segmented, Sheet, SheetFlatList } from '@/ui';
+import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, Segmented, Sheet, SheetFlatList, SheetTitle } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
@@ -1088,7 +1088,7 @@ export default function ChatTab() {
 
       {/* World arrivals sheet - global "who just landed", each with city + flag. */}
       <Sheet visible={showWorldArrivals} onClose={() => setShowWorldArrivals(false)} closeLabel={t('close', { ns: 'common' })} style={styles.waSheet}>
-        <SectionTitle title={t('world.arrivalsTitle')} />
+        <SheetTitle>{t('world.arrivalsTitle')}</SheetTitle>
         {worldArrivals.length === 0 ? (
           <EmptyState body={t('world.arrivalsEmpty')} />
         ) : (
