@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { useTranslation } from 'react-i18next'
 import { track } from '../lib/analytics'
+import { useBackLayer } from '../lib/backLayers'
 import { getLink, storeForAgent, storeLink } from '../lib/storeLinks.mjs'
 import Icon from './Icon'
 
@@ -46,6 +47,11 @@ function AppModal() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [opts]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Browser back closes it, like every other sheet (lib/backLayers).
+  useBackLayer(!!opts, () => {
+    track('web_app_modal_dismissed', { action, surface: opts?.surface ?? null, how: 'back' })
+    setOpts(null)
+  })
 
   if (!opts) return null
   const close = (how) => {

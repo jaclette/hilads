@@ -284,10 +284,16 @@ function localizePath(path) {
   return `/${lang}${path}`
 }
 
-function pushUrl(path) {
+// The URL shows where you are (a city, an event) for reloads, sharing and SEO.
+// It REPLACES the current history entry, never adds one: history entries belong
+// to the back layers (lib/backLayers), so browser back always closes the top
+// layer. `state` is merged into the entry (hlHome: the entry was Today's).
+let currentUrlPath = null
+function setUrl(path, state = null) {
   const target = localizePath(path)
-  if (window.location.pathname !== target) {
-    window.history.pushState(null, '', target)
+  currentUrlPath = target
+  if (window.location.pathname !== target || state) {
+    window.history.replaceState({ ...(window.history.state ?? {}), ...(state ?? {}) }, '', target)
   }
 }
 
@@ -1050,7 +1056,12 @@ export default function App() {
   const [showMap, setShowMap] = useState(false)
   // Today, the home (W1, web = the app's 4 tabs): shown on entry unless the
   // URL points at content (a city, an event, a challenge…), which opens Chat.
-  const [showToday, setShowToday] = useState(() => parseDeepLink() === null)
+  // A city URL that replaced the bare root after the first join (hlHome) is
+  // still Today on reload, not that city's chat.
+  const [showToday, setShowToday] = useState(() => {
+    const link = parseDeepLink()
+    return link === null || (link.type === 'city' && window.history.state?.hlHome === true)
+  })
   const [showScopeSheet, setShowScopeSheet] = useState(false)
   // The Daily screens (W2): a small stack over the tabs - the challenge
   // screen, propose, tomorrow's twist, my proposals, the calendar.
@@ -1516,6 +1527,70 @@ export default function App() {
   useBackLayer(showCreateTopic, () => { setShowCreateTopic(false); setEditTopic(null) })
   useBackLayer(activeTopic !== null, () => setActiveTopic(null))
   useBackLayer(activeChallenge !== null, () => setActiveChallenge(null))
+  useBackLayer(activeEventId !== null, () => handleBackToCity())   // an event chat (Hi, a Map plan pin)
+  useBackLayer(showCreateEvent, () => closeCreateEvent())
+  useBackLayer(showNotifSettings, () => setShowNotifSettings(false))
+  useBackLayer(showForgotPassword, () => closeForgotPassword())
+  useBackLayer(viewingVenueId !== null, () => closeVenue())
+  useBackLayer(guestProfile !== null, () => setGuestProfile(null))
+  useBackLayer(showGoingModal, () => setShowGoingModal(false))
+  // Their own back buttons and browser back close them the same way.
+  function closeCreateEvent() {
+    setShowCreateEvent(false)
+    if (createFromDrawer) { setShowEventDrawer(true) }
+    setCreateFromDrawer(false)
+  }
+  function closeForgotPassword() { setShowForgotPassword(false); setShowAuthScreen(true); setShowAuthScreenTab('login') }
+  function closeVenue() {
+    setViewingVenueId(null)
+    // If the cold-load URL was /venue/, send user to home so the
+    // landing flow takes over rather than a blank app shell.
+    if (window.location.pathname.startsWith('/venue/')) {
+      window.location.assign('/')
+    }
+  }
+
+  // ── Screen views (analytics) ──────────────────────────────────────────────
+  // One `$screen` per change of the screen on top, named like the app's routes
+  // ("today", "daily/[date]", "user/[id]"…) so one query covers both platforms.
+  // Topmost first, in the render order below (a later layer covers an earlier one).
+  const DAILY_SCREEN = { challenge: 'daily/[date]', index: 'daily/compared', rivals: 'rivals/[city]' }
+  const topDaily = dailyStack[dailyStack.length - 1]
+  const screenName = !ready ? null
+    : activeChallenge ? 'challenge/[id]'
+    : activeTopic ? 'topic/[id]'
+    : showEventLimitReached ? 'event/limit-reached'
+    : showCreateEvent ? 'event/create'
+    : showEditEvent ? 'event/[id]/edit'
+    : showNotifSettings ? 'notification-settings'
+    : showNotifications ? 'notifications'
+    : showFriendRequests ? 'friend-requests'
+    : showForgotPassword ? 'forgot-password'
+    : showProfileDrawer && showAuthScreen ? 'sign-up'
+    : showProfileDrawer && showSettings ? 'settings'
+    : showProfileDrawer && passportSub ? ({ photos: 'my-photos', spots: 'my-spots', friends: 'friends' }[passportSub] ?? passportSub)
+    : showProfileDrawer ? 'passport'
+    : showConversations && activeDm ? 'dm/[id]'
+    : showConversations ? 'messages'
+    : viewingProfile ? 'user/[id]'
+    : viewingVenueId ? 'venue/[id]'
+    : showPeopleDrawer ? 'here'
+    : showEventDrawer ? 'events'
+    : showCityPicker ? 'switch-city'
+    : showMap ? 'map'
+    : topDaily ? (DAILY_SCREEN[topDaily.name] ?? `daily/${topDaily.name}`)
+    : showLeaderboard ? 'ranks'
+    : showToday ? 'today'
+    : activeEventId ? 'event/[id]'
+    : 'chat'
+  const lastScreenRef = useRef(null)
+  useEffect(() => {
+    if (!screenName || screenName === lastScreenRef.current) return
+    const from = lastScreenRef.current
+    lastScreenRef.current = screenName
+    trackDeferred('$screen', { $screen_name: screenName, from_screen: from })
+  }, [screenName])
+
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [citySearchQuery, setCitySearchQuery] = useState('')
@@ -1641,7 +1716,6 @@ export default function App() {
   // from firing twice under React StrictMode in dev.
   const guestAutoJoinedRef = useRef(false)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
-  const switchCityRef = useRef(null) // latest switchCity closure, for the popstate handler
   const chatInputRef = useRef(null)
   // @mention autocomplete for the shared city/event composer. Context follows the
   // active event (event chat) or falls back to the city channel.
@@ -2120,26 +2194,19 @@ export default function App() {
     if (link.type === 'forgot-password') setShowForgotPassword(true)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keep a live reference to switchCity so the popstate handler (registered once)
-  // always invokes the latest closure (current channelId), never a stale one.
-  useEffect(() => { switchCityRef.current = switchCity })
 
-  // Back/forward between cities changes the URL client-side with no reload; without
-  // this the app keeps the previous city's feed/events/presence/WS room. Re-resolve
-  // the city from the URL and run the full switch (reset + refetch + WS re-subscribe).
+  // Back only closes layers (lib/backLayers); a city or event change is never a
+  // history step (setUrl replaces). An entry made before a city switch still has
+  // the old city's URL: landing on it, keep the URL on where you are now.
   useEffect(() => {
     const onPop = () => {
-      if (statusRef.current !== 'ready') return
-      const link = parseDeepLink()
-      if (!link || link.type !== 'city') return
-      fetchCityBySlug(link.slug).then(data => {
-        if (!data || data.channelId === activeChannelRef.current) return
-        switchCityRef.current?.(data.channelId, data.city, data.timezone, data.country, { fromPop: true })
-      }).catch(() => {})
+      if (currentUrlPath && window.location.pathname !== currentUrlPath) {
+        window.history.replaceState(window.history.state, '', currentUrlPath)
+      }
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     // Resolve the target city. The stories ad-landing (bare / or /c/:id) features
@@ -3052,13 +3119,13 @@ export default function App() {
 
       // If the user entered via the bare root (hilads.live, /fr, /vi) and then
       // joined a city - onboarding pick or returning-user auto-rejoin - reflect
-      // the city in the URL (localized via pushUrl). Without this the URL stays
+      // the city in the URL (localized via setUrl; hlHome keeps a reload on Today). Without this the URL stays
       // on the root shell, so a fresh load / view-source returns the static
       // English index.html instead of the city's localized SSR meta. Deep-link
-      // entries (/city, /event, …) already carry the right URL; pushUrl no-ops
+      // entries (/city, /event, …) already carry the right URL; setUrl no-ops
       // when the localized target matches the current path.
       if (/^\/(fr|vi|es)?$/.test(window.location.pathname) && location.city) {
-        pushUrl(`/city/${cityToSlug(location.city)}`)
+        setUrl(`/city/${cityToSlug(location.city)}`, { hlHome: true })
       }
 
       // ── Deferred badge enrichment ────────────────────────────────────────────
@@ -4290,7 +4357,7 @@ export default function App() {
     }
   }
 
-  async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry, opts = {}) {
+  async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry) {
     if (newChannelId === channelId) {
       setShowCityPicker(false)
       // Picking my city from World shows it.
@@ -4343,7 +4410,7 @@ export default function App() {
     setTopics([])
     setHotEventsStatus('loading')
     setActiveEventId(null)
-    if (!opts.fromPop) pushUrl(`/city/${cityToSlug(newCityName)}`)
+    setUrl(`/city/${cityToSlug(newCityName)}`)
     setPageMeta(
       i18n.t('meta.cityTitle', { ns: 'common', city: localizeCityName(newCityName) }),
       i18n.t('meta.cityDesc',  { ns: 'common', city: localizeCityName(newCityName) }),
@@ -4524,7 +4591,7 @@ export default function App() {
     oldestMessageIdRef.current = null
     hasMoreMessagesRef.current = false
     setHasMoreMessages(false)
-    pushUrl(`/event/${eventSlug(event)}`)
+    setUrl(`/event/${eventSlug(event)}`)
     setPageMeta(
       i18n.t('meta.eventTitle', { ns: 'common', title: event.title }),
       i18n.t('meta.eventDesc',  { ns: 'common', title: event.title }),
@@ -4635,7 +4702,7 @@ export default function App() {
     setActiveEventId(null)
     setActiveEvent(null)
     if (city) {
-      pushUrl(`/city/${cityToSlug(city)}`)
+      setUrl(`/city/${cityToSlug(city)}`)
       setPageMeta(
         i18n.t('meta.cityTitle', { ns: 'common', city: localizeCityName(city) }),
         i18n.t('meta.cityDesc',  { ns: 'common', city: localizeCityName(city) }),
@@ -6823,14 +6890,7 @@ export default function App() {
       {viewingVenueId && (
         <VenueScreen
           venueId={viewingVenueId}
-          onBack={() => {
-            setViewingVenueId(null)
-            // If the cold-load URL was /venue/, send user to home so the
-            // landing flow takes over rather than a blank app shell.
-            if (window.location.pathname.startsWith('/venue/')) {
-              window.location.assign('/')
-            }
-          }}
+          onBack={closeVenue}
           onOpenCity={(cityInfo) => {
             // Navigate to the venue's city page - full page nav, lets the
             // normal city deep-link flow handle join + render.
@@ -7160,7 +7220,7 @@ export default function App() {
 
       {showForgotPassword && (
         <ForgotPasswordScreen
-          onBack={() => { setShowForgotPassword(false); setShowAuthScreen(true); setShowAuthScreenTab('login') }}
+          onBack={closeForgotPassword}
         />
       )}
 
@@ -7302,11 +7362,7 @@ export default function App() {
             setCreateFromDrawer(false)
             setShowEventLimitReached(true)
           }}
-          onBack={() => {
-            setShowCreateEvent(false)
-            if (createFromDrawer) { setShowEventDrawer(true) }
-            setCreateFromDrawer(false)
-          }}
+          onBack={closeCreateEvent}
         />
       )}
 
@@ -7479,7 +7535,7 @@ export default function App() {
       {mentionNudge && !account && (
         <div className="mention-nudge" role="status">
           <span className="mention-nudge-text">You're getting mentioned! Create an account so you never miss it.</span>
-          <button className="mention-nudge-btn" onClick={() => { setMentionNudge(false); setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>{i18n.t('signUp', { ns: 'common' })}</button>
+          <button className="mention-nudge-btn" onClick={() => { setMentionNudge(false); setShowAuthScreenTab('signup'); setShowProfileDrawer(true); setShowAuthScreen(true) }}>{i18n.t('signUp', { ns: 'common' })}</button>
           <button className="mention-nudge-dismiss" onClick={() => setMentionNudge(false)} aria-label={i18n.t('a11y.dismiss', { ns: 'common' })}>×</button>
         </div>
       )}

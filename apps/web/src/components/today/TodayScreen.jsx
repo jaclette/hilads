@@ -109,7 +109,8 @@ export default function TodayScreen({ header }) {
         <YesterdayRecap today={data} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel />
-        <ProposeCard />
+        {/* Not while today's challenge is loading or can't be reached (a dead end under a missing today). */}
+        {data && <ProposeCard />}
       </div>
     </div>
   )

@@ -271,11 +271,12 @@ export default function SwitchCityScreen() {
       setJoined(true);
       track('first_launch_city_selected', { chosen_city: item.name, method: 'manual_picker' });
     }
-    // mode=here: back to Today, which reloads for the new city.
-    if (isHere && router.canGoBack()) { router.back(); return; }
-    // replace (not push) - back shouldn't return here. First launch lands
-    // on Today, the home (V3-11); a later switch returns to the city chat.
-    router.replace((isFirstTime ? '/(tabs)/today' : '/(tabs)/chat') as never);
+    // A later switch returns to the screen it was opened from (Today, Map,
+    // Ranks, Hi...), which shows the new city: the scope is now 'city'.
+    if (!isFirstTime && router.canGoBack()) { router.back(); return; }
+    // Opened with replace (first launch, sign-in, boot with no city): land on
+    // Today, the home (V3-11). replace - back shouldn't return here.
+    router.replace('/(tabs)/today' as never);
   }
 
   // Section label - "Top cities right now" when any city has activity, else "Cities"

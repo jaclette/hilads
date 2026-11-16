@@ -14,6 +14,7 @@ import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features
 import { markNotificationTypesRead } from '@/api/notifications';
 import { themeColor, tint } from '@/ui/joy';
 import { markTabFocus, markTabPress } from '@/lib/perfProbe';
+import { track } from '@/services/analytics';
 
 const GOLD = themeColor('sip');
 
@@ -107,6 +108,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               });
               if (state.index !== routeIndex && !event.defaultPrevented) {
                 markTabPress(tab.name);
+                track('tab_pressed', { from: activeTab ?? null, to: tab.name });
                 if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
                 navigation.navigate(tab.name);
               }

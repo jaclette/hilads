@@ -114,6 +114,8 @@ export type AnalyticsEvent =
   | 'today_countries_play'
   | 'today_countries_all'
   | 'today_countries_sort'
+  // Navigation: tab_pressed { from, to } (the $screen events come from trackScreen)
+  | 'tab_pressed'
   // V6
   | 'ranks_viewed'
   | 'ranks_ghost_tapped'
@@ -191,6 +193,17 @@ export function track(event: AnalyticsEvent, payload?: Payload): void {
     return;
   }
   posthog.capture(event, { platform: 'mobile', ..._ctx, ...payload });
+}
+
+/** A screen view (`$screen`, `$screen_name` = the route pattern, e.g. "daily/[date]"). Sent by
+ *  useScreenTracking on every route change; web sends the same event with its own screen names. */
+export function trackScreen(name: string, payload?: Payload): void {
+  if (__DEV__) {
+    // eslint-disable-next-line no-console
+    console.log('[analytics] screen', name, payload ?? '');
+    return;
+  }
+  posthog.screen(name, { platform: 'mobile', ..._ctx, ...payload } as Parameters<typeof posthog.screen>[1]);
 }
 
 export function identifyUser(id: string, props?: Payload): void {

@@ -100,9 +100,13 @@ function TodayContent() {
         <TodayTour today={daily.data} refreshKey={refreshKey} />
         {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
         <IndexCarousel refreshKey={refreshKey} />
-        <View onLayout={e => { proposeTop.current = e.nativeEvent.layout.y; checkPropose(); }}>
-          <ProposeCard inView={proposeInView} />
-        </View>
+        {/* Not while today's challenge is loading or can't be reached: proposing tomorrow's
+            under a missing today reads as a dead end. */}
+        {daily.data && (
+          <View onLayout={e => { proposeTop.current = e.nativeEvent.layout.y; checkPropose(); }}>
+            <ProposeCard inView={proposeInView} />
+          </View>
+        )}
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />
     </SafeAreaView>

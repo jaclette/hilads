@@ -28,6 +28,7 @@ import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
 import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
 import { usePushRegistration } from '@/hooks/usePushRegistration';
 import { useDeviceTimezone } from '@/hooks/useDeviceTimezone';
+import { useScreenTracking } from '@/hooks/useScreenTracking';
 import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
 import { CitySwitchSheet } from '@/components/CitySwitchSheet';
@@ -144,6 +145,7 @@ function RootLayoutInner() {
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
   useDeviceTimezone();             // device IANA timezone → backend (Daily pushes at local time)
+  useScreenTracking();             // one $screen per route change (analytics)
   // fix an IP-mislocated city when precise GPS becomes available; ask before moving a kept city
   const citySwitch = useGpsCityCorrection();
 

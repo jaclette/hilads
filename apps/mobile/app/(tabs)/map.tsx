@@ -144,6 +144,8 @@ export default function MapScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ spot?: string; source?: string; theme?: string }>();
   const { city, account } = useApp();
+  // The camera, or the sign-up sheet for a guest (like every other Play button).
+  const playToday = (reason: string) => router.push((account ? '/daily/proof' : `/auth-gate?reason=${reason}&returnTo=%2Fdaily%2Fproof`) as never);
   const { scope, setScope } = useScope();
   const today = useDailyToday(city?.channelId);
   const hasToken = useMemo(() => setupMapbox(), []);
@@ -699,12 +701,12 @@ export default function MapScreen() {
             onShare={() => setShare(spotShare(selected))}
             onClose={() => setSelected(null)}
             onPlayToday={selected.themes.includes(todayTheme as DailyThemeKey) && today.data?.challenge?.isActive && !today.data?.myProof
-              ? () => { track('map_play_here', { spot: selected.id }); router.push('/daily/proof' as never); } : undefined}
+              ? () => { track('map_play_here', { spot: selected.id }); playToday('daily_proof'); } : undefined}
           />
         ) : null}
         topNote={worldView && screenReader ? <WorldCityList bubbles={bubbles} onOpen={openBubble} />
           : showEmpty ? <EmptyCity today={today.data} /> : emptyArea ? (
-          <TouchableOpacity style={styles.pioneer} onPress={() => router.push('/daily/proof' as never)} accessibilityRole="button">
+          <TouchableOpacity style={styles.pioneer} onPress={() => playToday('first_spot')} accessibilityRole="button">
             <Text style={styles.pioneerText}>{t('map.sheet.pioneer')}</Text>
           </TouchableOpacity>
         ) : null}
