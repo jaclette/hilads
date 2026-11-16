@@ -21,6 +21,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useHere } from '@/hooks/useDaily';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { rememberTour, useLastTour } from '@/features/tour/store';
+import { openPhotoFeed } from '@/features/daily/openFeed';
 import { track } from '@/services/analytics';
 import { Avatar, DualPhoto, Photo, SectionTitle } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
@@ -42,7 +43,7 @@ const MOSAIC_MAX = 6;
  *   large, its players' avatars and its likes; cards lean a little, each its
  *   own way. My city's empty slot comes first until I play.
  * - Nobody played yet: yesterday's top 3 cities, greyed ("Yesterday the world
- *   said…"), and my city's slot to be the first.
+ *   said…"; a tap plays yesterday's photos in the feed), and my city's slot to be the first.
  */
 export function TodayCountries({ today, data }: { today: DailyToday | null; data: DailyTodayCountries | null }) {
   const styles = useThemedStyles(makeStyles);
@@ -111,7 +112,7 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
               : yesterday.map(s => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
                   city: { id: s.city.id, name: s.city.name, country: s.city.country ?? '' }, count: s.count, authorCount: null,
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
-                }} onOpen={() => router.push('/daily/tour?source=today_empty' as never)} />)}
+                }} onOpen={() => openPhotoFeed((tour?.slides ?? []).map(x => x.proof), s.proof.id, 'today_empty')} />)}
           </View>
           {/* Until the first swipe ever: the piles can be swiped. */}
           {cities.length > 0 && swiped === false && cards.some(g => g.count > 1) && <Text style={styles.hint}>{t('mosaic.swipeHint')}</Text>}

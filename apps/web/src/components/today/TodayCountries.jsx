@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { fetchDailyProofsByIds, fetchDailyTodayCountries, fetchDailyTour } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { useBackLayer } from '../../lib/backLayers'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { openAppModal } from '../AppModal'
 import AvatarWithFlag from '../AvatarWithFlag'
@@ -12,7 +11,6 @@ import { answerText } from '../daily/compareShared'
 import { rememberCountries } from '../daily/countryOrder'
 import { RankMedal, getLastToday, personName, seedProofs, useDaily, useDc, useHere, useVoteCount } from '../daily/dailyShared'
 import { hasUnseen, useSeen } from '../daily/seen'
-import WorldTourViewer from '../daily/WorldTour'
 import { useSeasonalLive } from '../event/seasonal'
 import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
@@ -103,8 +101,6 @@ export default function TodayCountries({ today, data }) {
   const swiped = useSwipedStack()
   // Nobody played yet: yesterday's best cities teach the idea.
   const [tour, setTour] = useState(null)
-  const [touring, setTouring] = useState(null)
-  useBackLayer(touring !== null, () => setTouring(null))
   const empty = !!data && cities.length === 0
   const tourCity = today?.city?.id ?? null
   useEffect(() => {
@@ -155,14 +151,13 @@ export default function TodayCountries({ today, data }) {
               : yesterday.map(({ s, i }) => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
                   city: { id: s.city.id, name: s.city.name, country: s.city.country ?? '' }, count: s.count ?? 1, authorCount: null,
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
-                }} onOpen={() => setTouring(i)} />)}
+                }} onOpen={() => openDaily('photos', { list: slides.map(x => x.proof), proofId: slides[i].proof.id, source: 'today_empty' })} />)}
           </div>
           {/* Until the first swipe ever: the piles can be swiped. */}
           {cities.length > 0 && !swiped && cards.some(g => g.count > 1) && <p className="dc-muted tc-hint">{t('mosaic.swipeHint')}</p>}
           {cities.length === 0 && yesterday.length === 0 && !slot && <p className="dc-muted">{t('countries.emptyBody')}</p>}
         </div>
       )}
-      {touring !== null && tour && <WorldTourViewer tour={tour} start={touring} source="today_empty" onClose={() => setTouring(null)} />}
     </div>
   )
 }

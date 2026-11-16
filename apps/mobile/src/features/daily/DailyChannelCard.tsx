@@ -11,7 +11,8 @@ import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { formatSmartTime } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { dailyErrorCode, reportDailyProof, type DailyReportReason } from '@/api/daily';
+import { dailyErrorCode, fetchDailyProofsByIds, reportDailyProof, type DailyReportReason } from '@/api/daily';
+import { openPhotoFeed } from './openFeed';
 import { ReactionPills } from '@/features/chat/ReactionPills';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
@@ -179,14 +180,14 @@ type GroupPayload = {
   proofs: { proofId: string; date: string; thumbUrl: string | null; city: { id: number; name: string } | null }[];
 };
 
-/** The hour's extra proofs of a busy channel (V2-08): a photo strip, the count and cities; opens their gallery. */
+/** The hour's extra proofs of a busy channel (V2-08): a photo strip, the count and cities; opens them in the photo feed. */
 function GroupCard({ message, reactions, time, longPress }: {
   message: Message; reactions: ReactNode; time: string | null; longPress?: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
-  const router = useRouter();
+  const { account, identity } = useApp();
   const p = (message.payload ?? {}) as Partial<GroupPayload>;
   if (!p.proofIds?.length || !p.proofs?.length) return null;
   const count  = p.count ?? p.proofIds.length;
@@ -196,7 +197,12 @@ function GroupCard({ message, reactions, time, longPress }: {
   const more   = count - named.length;
   const where  = named.length === 0 ? '' : more > 0 ? t('group.citiesMore', { cities: named.join(', '), n: more }) : named.join(', ');
   const shown  = p.proofs.slice(0, 4);
-  const open = () => router.push(`/daily/gallery?ids=${p.proofIds!.join(',')}&date=${p.proofs![0].date}` as never);
+  // The hour's photos in the feed (the one viewer for a set of photos), from the first.
+  const open = () => {
+    fetchDailyProofsByIds(p.proofIds!, account ? null : identity?.guestId ?? null)
+      .then(proofs => openPhotoFeed(proofs, null, 'chat_group'))
+      .catch(() => {});
+  };
   return (
     <View style={styles.wrap}>
       <TouchableOpacity style={styles.card} onPress={open} onLongPress={longPress} activeOpacity={0.9} accessibilityRole="button"

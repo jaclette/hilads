@@ -222,7 +222,8 @@ function RootLayoutInner() {
               options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
             />
             {/* Yesterday around the world (SPEC 10.7): a full-screen story viewer; it handles swipe down itself. */}
-            <Stack.Screen name="daily/tour" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
+            {/* The two photo viewers (stories by city, the feed) open alike: full screen, fade, closed by their own swipe down / X. */}
+            <Stack.Screen name="daily/stories" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
             <Stack.Screen name="daily/photos" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />

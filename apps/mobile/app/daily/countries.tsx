@@ -1,20 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, SectionList, Text, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, SectionList, Text, View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { fetchDailyProof, fetchDailyProofsByIds, fetchDailyTodayCountries } from '@/api/daily';
+import { fetchDailyProofsByIds, fetchDailyTodayCountries } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import { compareCountryGroups, rankCountryProofs } from '@/features/daily/countryOrder';
 import { seedProofs } from '@/features/daily/votes';
 import { lastCountries } from '@/features/today/useTodayCountries';
-import { getLastToday, useCountdown, useDailySheet, useHere } from '@/hooks/useDaily';
+import { getLastToday, useHere } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
-import { Button, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
-import { DailyLeaderboardPanel } from '@/features/daily/DailyLeaderboardPanel';
+import { Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
 import { FlagSticker } from '@/ui/joy';
 import type { DailyCountryGroup, DailyProof, DailyTodayCountries } from '@/types';
@@ -46,11 +45,10 @@ function CountriesScreenContent() {
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
-  const { source, date: dateParam, country, sort: sortParam } = useLocalSearchParams<{ source?: string; date?: string; country?: string; sort?: string }>();
+  const { source, date: dateParam, country } = useLocalSearchParams<{ source?: string; date?: string; country?: string }>();
   const lastToday = getLastToday();
   // A past day (the challenge screen of that day), else today.
   const date = dateParam && dateParam !== lastToday?.challenge?.date ? dateParam : null;
-  const [sort, setSort] = useState<'country' | 'top10'>(sortParam === 'top10' ? 'top10' : 'country');
   const [viewing, setViewing] = useState<DailyProof | null>(null);
   const list = useRef<SectionList<DailyProof[], Section>>(null);
   const { account, identity } = useApp();
@@ -75,7 +73,7 @@ function CountriesScreenContent() {
       setFailed(true);
     }
   }, [here?.id, guestId, date]);
-  useEffect(() => { track('today_countries_all', { source: source ?? 'today', past: !!date, sort }); load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { track('today_countries_all', { source: source ?? 'today', past: !!date }); load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sections: Section[] = useMemo(() => {
     if (!data || !proofs) return [];
@@ -106,25 +104,20 @@ function CountriesScreenContent() {
   const target = useRef<number | null>(null);
   const retries = useRef(0);
   useEffect(() => {
-    if (!country || scrolled.current || sort !== 'country' || sections.length === 0) return;
+    if (!country || scrolled.current || sections.length === 0) return;
     const at = sections.findIndex(s => s.group.country === country.toUpperCase());
     scrolled.current = true;
     if (at > 0) {
       target.current = at;
       setTimeout(() => list.current?.scrollToLocation({ sectionIndex: at, itemIndex: 0, viewOffset: 64, animated: false }), 50);
     }
-  }, [sections, country, sort]);
+  }, [sections, country]);
 
   return (
     <Screen>
       <ScreenHeader title={t('worlds.tagline')} testID="countries-screen" />
-      <View style={styles.switch}>
-        <Segmented options={[{ key: 'country', label: t('countries.byCity') }, { key: 'top10', label: t('leaderboard.tab') }]}
-                   value={sort} onChange={k => { setSort(k); track('today_countries_sort', { sort: k }); }} />
-      </View>
-      {sort === 'top10' ? (
-        <TopTen date={data?.date ?? date ?? lastToday?.challenge?.date ?? null} onOpen={open} />
-      ) : failed ? (
+      {/* By city only: the photo ranking is World › Photos (its Top 10 tab here went in the UX audit). */}
+      {failed ? (
         <View style={styles.center}>
           <EmptyState icon="cloud-offline-outline" body={t('loadFailed')}
                       action={<Button variant="secondary" size="sm" label={t('retry')} onPress={load} />} />
@@ -167,29 +160,8 @@ function CountriesScreenContent() {
   );
 }
 
-/**
- * Top 10 (the challenge screen's old tab): the live leaderboard while the
- * challenge is open, the official podium once closed (DailyLeaderboardPanel).
- */
-function TopTen({ date, onOpen }: { date: string | null; onOpen: (p: DailyProof) => void }) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  const { city } = useApp();
-  const { sheet } = useDailySheet(date ?? 'none', 'world', city?.channelId);
-  const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null, sheet?.serverTime);
-  if (!sheet) return <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>;
-  const known = [...sheet.proofs, ...(sheet.results?.world ?? []), ...(sheet.results?.cities ?? [])];
-  return (
-    <ScrollView contentContainerStyle={styles.list}>
-      <DailyLeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} source="see_all"
-                             onOpenProof={id => { const p = known.find(x => x.id === id); if (p) onOpen(p); else fetchDailyProof(id).then(onOpen).catch(() => {}); }} />
-    </ScrollView>
-  );
-}
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:   { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  switch:   { paddingHorizontal: Spacing.md, paddingTop: 4 },
   list:     { padding: Spacing.md, paddingBottom: Spacing.xl },
   head:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 18, paddingBottom: 10 },
   city:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
