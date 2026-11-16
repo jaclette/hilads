@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import type { FeedItem } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Card, Chip } from '@/ui';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
@@ -93,13 +93,13 @@ export function TopicCard({
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:     { padding: Spacing.md, gap: 8, borderColor: c.primary },
-  chips:    { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  card:     { padding: Spacing.md, gap: Space.sm, borderColor: c.primary },
+  chips:    { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.sm },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   icon:     { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   title:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   desc:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
-  metaRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  metaRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   location: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   meta:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });

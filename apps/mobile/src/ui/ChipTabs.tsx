@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityFlag } from './CityName';
 
@@ -45,8 +45,8 @@ export function ChipTabs<K extends string>({ options, value, onChange }: { optio
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row:     { gap: 8, paddingVertical: 2 },
-  chip:    { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: Radius.full,
+  row:     { gap: Space.sm, paddingVertical: Space.xxs },
+  chip:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 40, paddingHorizontal: Space.lg, borderRadius: Radius.full,
              borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   chipOn:  { backgroundColor: c.primary, borderColor: c.primary },
   label:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },

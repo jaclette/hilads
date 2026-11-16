@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { DebugPanel } from '@/features/debug/DebugPanel';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { goBack } from '@/lib/nav';
 
@@ -29,13 +29,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   header: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               12,
+    gap:               Space.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: c.border,
   },
-  backBtn:  { padding: 4 },
+  backBtn:  { padding: Space.xs },
   backIcon: { fontSize: 22, color: c.text },
   title:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
 });

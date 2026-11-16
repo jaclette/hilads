@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Avatar } from '@/ui';
@@ -229,15 +229,15 @@ function sameKey(a: InboxItem, b: InboxItem): boolean {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:   { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 12, paddingRight: 8, paddingVertical: 10,
+  card:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingLeft: Space.md, paddingRight: Space.sm, paddingVertical: Space.md,
             borderRadius: Radius.card, backgroundColor: c.primaryTint, borderWidth: 1.5, borderColor: c.primary },
-  row:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  row:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.md },
   stack:  { height: 34 },
   avatar: { position: 'absolute', top: 0, borderRadius: 17, borderWidth: 2, borderColor: c.primaryTint },
   body:   { flex: 1 },
   title:  { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '800', color: c.primaryOnTint },
   line:   { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.text, marginTop: 1 },
-  more:   { minWidth: 34, height: 26, paddingHorizontal: 8, borderRadius: 13, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  more:   { minWidth: 34, height: 26, paddingHorizontal: Space.sm, borderRadius: 13, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
   moreText: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.white },
   close:  { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
 });

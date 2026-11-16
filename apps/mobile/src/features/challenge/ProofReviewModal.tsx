@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import {
   fetchProofs, approveProof, rejectProof, type ChallengeProof,
 } from '@/api/challenges';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
@@ -230,7 +230,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.line, marginTop: 8, marginBottom: 4,
+    backgroundColor: c.line, marginTop: Space.sm, marginBottom: Space.xs,
   },
   scroll: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.md },
   loadingWrap: { padding: Spacing.xl, alignItems: 'center' },
@@ -240,7 +240,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emptyText:{ fontSize: FontSizes.sm, color: c.muted },
 
   verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.xs },
-  btn: { flex: 1, flexDirection: 'row', gap: 6, paddingVertical: 14, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  btn: { flex: 1, flexDirection: 'row', gap: Space.sm, paddingVertical: Space.lg, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   // Green tint + border (V3 local tokens) - readable in both themes.
   btnApprove: { backgroundColor: c.localBg, borderWidth: Border, borderColor: c.localText },
   btnApproveText: { color: c.localText, fontSize: FontSizes.md, fontWeight: '800' },
@@ -252,7 +252,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   reasonInput: {
     minHeight: 96,
-    padding: 12,
+    padding: Space.md,
     borderRadius: Radius.md,
     backgroundColor: c.bg3,
     borderWidth: Border, borderColor: c.line,
@@ -261,5 +261,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     textAlignVertical: 'top',
   },
   charCount: { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.mutedDim },
-  errorLine: { color: c.red, fontSize: FontSizes.sm, marginTop: 4 },
+  errorLine: { color: c.red, fontSize: FontSizes.sm, marginTop: Space.xs },
 });

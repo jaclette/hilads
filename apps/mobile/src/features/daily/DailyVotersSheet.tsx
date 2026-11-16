@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
 import { Avatar, Sheet, SheetScrollView } from '@/ui';
@@ -54,9 +54,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:   { maxHeight: '75%' },
   title:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   list:    { flexGrow: 0 },
-  loading: { marginVertical: 24 },
-  empty:   { fontSize: FontSizes.sm, color: c.muted, marginVertical: 12 },
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, borderBottomWidth: 1, borderBottomColor: c.line },
+  loading: { marginVertical: Space.xl },
+  empty:   { fontSize: FontSizes.sm, color: c.muted, marginVertical: Space.md },
+  row:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, borderBottomWidth: 1, borderBottomColor: c.line },
   text:    { flex: 1 },
   name:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   city:    { fontSize: FontSizes.xs, color: c.muted },

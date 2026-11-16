@@ -22,7 +22,7 @@ import { setCurrentCity } from '@/api/channels';
 import { isLegend as accountIsLegend } from '@/lib/canCreateEvent';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { localizeCityName } from '@/i18n/cityName';
-import { Border, FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LanguageRow } from '@/features/settings/LanguageRow';
@@ -583,46 +583,46 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   content:    { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 18 },
 
   // Member identity
-  identityRow:     { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  identityRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.lg },
   avatarWrap:      { width: 72, height: 72 },
   avatarOverlay:   { ...StyleSheet.absoluteFillObject, borderRadius: Radius.full, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
   cameraBadge:     { position: 'absolute', right: -2, bottom: -2, width: 28, height: 28, borderRadius: Radius.full, backgroundColor: c.primary,
                      borderWidth: 2, borderColor: c.bg, alignItems: 'center', justifyContent: 'center' },
-  identityInfo:    { flex: 1, gap: 6 },
+  identityInfo:    { flex: 1, gap: Space.sm },
   identityName:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  identityMetaRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
-  metaItem:        { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1 },
+  identityMetaRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.sm },
+  metaItem:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1 },
   identityMeta:    { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
   // Guest
-  guestHead:    { alignItems: 'center', gap: 8, paddingTop: Spacing.sm },
+  guestHead:    { alignItems: 'center', gap: Space.sm, paddingTop: Spacing.sm },
   guestName:    { fontSize: FontSizes.xl, fontWeight: '800', color: c.text },
   guestMeta:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
-  upgradeCard:  { padding: Spacing.md, gap: 10 },
+  upgradeCard:  { padding: Spacing.md, gap: Space.md },
   upgradeTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   upgradeSub:   { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   upgradeHint:  { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, textAlign: 'center' },
 
   // Fields
-  fieldGroup:           { gap: 6 },
+  fieldGroup:           { gap: Space.sm },
   fieldLabel:           { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   fieldHint:            { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   counter:              { alignSelf: 'flex-end', fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   uOkHint:              { marginTop: -12, fontSize: FontSizes.xs, fontWeight: '600', color: c.localText },
-  readField:            { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 14, borderRadius: Radius.button,
+  readField:            { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 48, paddingHorizontal: Space.lg, borderRadius: Radius.button,
                           borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   readFieldText:        { flex: 1, fontSize: FontSizes.md, fontWeight: '400', color: c.text },
   readFieldPlaceholder: { color: c.mutedDim },
-  chipsWrap:            { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chipsWrap:            { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
 
-  settingsTitle: { marginTop: 6, marginBottom: -8 },
-  versionWrap:   { alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 20 },
+  settingsTitle: { marginTop: Space.sm, marginBottom: -8 },
+  versionWrap:   { alignSelf: 'center', paddingVertical: Space.md, paddingHorizontal: Space.xl },
   version:       { fontSize: FontSizes.xs, fontWeight: '500', color: c.mutedDim },
   credit:        { textAlign: 'center', fontSize: FontSizes.xs, color: c.mutedDim },
 
   // Sticky save
   stickyWrap:      { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  stickyCta:       { paddingHorizontal: Spacing.md, paddingTop: 10, gap: 4,
+  stickyCta:       { paddingHorizontal: Spacing.md, paddingTop: Space.md, gap: Space.xs,
                      backgroundColor: c.bg, borderTopWidth: Border, borderTopColor: c.line },
   saveError:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.red, textAlign: 'center' },
   stickyBottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

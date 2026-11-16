@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchChannelParticipants, kickChallengeParticipant, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, UserDTO } from '@/types';
 
@@ -219,23 +219,23 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginTop: 8, marginBottom: 4 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginTop: Space.sm, marginBottom: Space.xs },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   title:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   list:   { paddingHorizontal: Spacing.md },
   listContent: { paddingBottom: Spacing.md },
   empty:  { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg, fontStyle: 'italic' },
 
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 },
-  rowMain:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, minWidth: 0 },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: Space.sm },
+  rowMain:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.md, minWidth: 0 },
   avatar:     { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarText: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
   rowInfo:    { flex: 1, minWidth: 0 },
-  nameRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  nameRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexWrap: 'wrap' },
   name:       { fontSize: FontSizes.md, fontWeight: '600', color: c.text, flexShrink: 1 },
 
-  roleBadge:  { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: Border },
+  roleBadge:  { borderRadius: Radius.full, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderWidth: Border },
   roleBadgeChallenger: { backgroundColor: c.primaryTint, borderColor: c.primary },
   roleBadgeTaker:      { backgroundColor: c.localBg,     borderColor: c.localText },
   roleBadgeSpectator:  { backgroundColor: c.bg3,         borderColor: c.line },
@@ -244,6 +244,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   roleBadgeTextTaker:      { color: c.localText },
   roleBadgeTextSpectator:  { color: c.muted },
 
-  kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: Border, borderColor: c.line },
+  kickBtn:    { paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: 8, borderWidth: Border, borderColor: c.line },
   kickBtnText:{ fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });

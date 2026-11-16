@@ -3,7 +3,7 @@ import { ActivityIndicator, Linking, Text, TextInput, TouchableOpacity, View, St
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { requestFeatureLocation } from '@/lib/geoFeature';
@@ -225,29 +225,29 @@ export function PlaceStep({ theme, onPicked }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  center:        { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: 12 },
+  center:        { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Space.md },
   icon:          { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:          { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   cta:           { alignSelf: 'stretch' },
-  list:          { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
+  list:          { padding: Spacing.md, gap: Space.md, paddingBottom: Spacing.xl },
   footer:        { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
-  warn:          { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  warn:          { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   warnText:      { flex: 1, fontSize: FontSizes.xs, color: c.text },
-  refresh:       { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 },
+  refresh:       { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 36 },
   link:          { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  search:        { flexDirection: 'row', alignItems: 'center', gap: 8, height: 44, paddingHorizontal: 14, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  search:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm, height: 44, paddingHorizontal: Space.lg, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   searchInput:   { flex: 1, fontSize: FontSizes.sm, color: c.text, paddingVertical: 0 },
-  row:           { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 10, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  row:           { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingHorizontal: Space.lg, paddingVertical: Space.md, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   newRow:        { borderStyle: 'dashed' },
-  section:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 6 },
+  section:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: Space.sm },
   credit:        { fontSize: FontSizes.xs, color: c.muted, alignSelf: 'flex-end', marginTop: -4 },
   rowBody:       { flex: 1 },
   rowName:       { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  rowMeta:       { fontSize: FontSizes.xs, color: c.muted, marginTop: 2 },
-  newBox:        { gap: 8 },
-  label:         { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 6 },
-  input:         { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, fontSize: FontSizes.md, color: c.text },
+  rowMeta:       { fontSize: FontSizes.xs, color: c.muted, marginTop: Space.xxs },
+  newBox:        { gap: Space.sm },
+  label:         { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: Space.sm },
+  input:         { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: Space.lg, paddingVertical: Space.md, fontSize: FontSizes.md, color: c.text },
   hint:          { fontSize: FontSizes.xs, color: c.muted },
   backToList:    { alignSelf: 'center', minHeight: 44, justifyContent: 'center' },
 });

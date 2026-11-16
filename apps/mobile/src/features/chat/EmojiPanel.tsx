@@ -10,7 +10,7 @@
  */
 
 import { ScrollView, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { type ThemeColors } from '@/constants';
+import { Space, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 // ~120 frequently-used emojis - mirrors web EmojiPicker.jsx
@@ -77,7 +77,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap:      'wrap',
-    padding:       6,
+    padding:       Space.sm,
   },
   item: {
     width:          '12.5%', // 8 columns

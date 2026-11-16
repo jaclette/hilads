@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { DailyProofStatus } from '@/types';
 
@@ -22,7 +22,7 @@ export function DailyStatusChip({ status }: { status: DailyProofStatus }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  chip: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 26, borderRadius: Radius.full, paddingHorizontal: 10 },
+  chip: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 26, borderRadius: Radius.full, paddingHorizontal: Space.md },
   ok:   { backgroundColor: c.localBg },
   wait: { backgroundColor: c.primaryTint },
   bad:  { borderWidth: 1, borderColor: c.red },

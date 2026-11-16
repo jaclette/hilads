@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
 import { CityFlag, IconButton } from '@/ui';
@@ -86,13 +86,13 @@ export function ComparisonCard({ card, onPress, onShare, rows, style }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:  { padding: 14, gap: 6, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  head:  { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 2 },
-  title: { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: 8 },
-  line:  { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 28 },
+  card:  { padding: 14, gap: Space.sm, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  head:  { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: Space.sm, marginBottom: Space.xxs },
+  title: { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: Space.sm },
+  line:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 28 },
   city:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   value: { maxWidth: '55%', fontSize: FontSizes.sm, fontWeight: '800', color: c.text, fontVariant: ['tabular-nums'] },
   word:  { fontWeight: '700' },
   more:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  fun:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText, marginTop: 2 },
+  fun:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText, marginTop: Space.xxs },
 });

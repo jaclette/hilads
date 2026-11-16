@@ -12,7 +12,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
 import { tint, themeColor } from '@/ui/joy';
@@ -88,13 +88,13 @@ function Wave({ visible, children }: { visible: boolean; children: React.ReactNo
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, textAlign: 'center', marginBottom: 4 },
-  actions:     { gap: 8 },
-  action:      { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 60, paddingHorizontal: 14, paddingVertical: 10,
+  title:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, textAlign: 'center', marginBottom: Space.xs },
+  actions:     { gap: Space.sm },
+  action:      { flexDirection: 'row', alignItems: 'center', gap: Space.lg, minHeight: 60, paddingHorizontal: Space.lg, paddingVertical: Space.md,
                  borderRadius: Radius.button, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   actionIcon:  { width: 40, height: 40, borderRadius: 12, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  actionBody:  { flex: 1, gap: 2 },
+  actionBody:  { flex: 1, gap: Space.xxs },
   actionLabel: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   actionDesc:  { fontSize: FontSizes.xs, color: c.muted },
-  cancel:      { alignSelf: 'center', marginTop: 4 },
+  cancel:      { alignSelf: 'center', marginTop: Space.xs },
 });

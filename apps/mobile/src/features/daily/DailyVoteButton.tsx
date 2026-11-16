@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
@@ -130,9 +130,9 @@ export function useCastVote({ proofId, date, cityName = null, cityId = null, sou
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  btn:       { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', minHeight: 36, paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  btnTile:   { paddingHorizontal: 8, paddingVertical: 4, gap: 4 },
-  btnStrip:  { alignSelf: 'stretch', justifyContent: 'center', minHeight: 40, paddingHorizontal: 8, gap: 4, marginTop: 4, borderRadius: 14 },
+  btn:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, alignSelf: 'flex-start', minHeight: 36, paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  btnTile:   { paddingHorizontal: Space.sm, paddingVertical: Space.xs, gap: Space.xs },
+  btnStrip:  { alignSelf: 'stretch', justifyContent: 'center', minHeight: 40, paddingHorizontal: Space.sm, gap: Space.xs, marginTop: Space.xs, borderRadius: 14 },
   btnDark:   { backgroundColor: c.photoControl, borderColor: c.photoControl },
   btnOn:     { borderColor: c.primary, backgroundColor: c.primaryTint },
   count:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },

@@ -9,7 +9,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Spacing, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { IconButton } from '@/ui';
 import { Image } from 'expo-image';
@@ -251,8 +251,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   imageWrap:     { width: SW, height: SH, justifyContent: 'center', alignItems: 'center' },
   image:         { width: SW, height: SH },
   closeBtn:      { position: 'absolute', right: 16 },
-  actionBar:     { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 12 },
-  actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18, borderRadius: Radius.full,
+  actionBar:     { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: Space.md },
+  actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Spacing.md, borderRadius: Radius.full,
                    backgroundColor: c.photoControl },
   actionBtnBusy: { opacity: 0.5 },
   actionLabel:   { color: c.white, fontSize: FontSizes.body, fontWeight: '700' },

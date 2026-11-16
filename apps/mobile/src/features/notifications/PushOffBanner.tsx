@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AppState, Linking, Pressable, Text, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { hasPushPermission } from '@/services/push';
 import { Button } from '@/ui/Button';
@@ -43,8 +43,8 @@ export function PushOffBanner() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  banner:  { marginHorizontal: 16, marginBottom: 10, padding: 12, borderRadius: Radius.card, backgroundColor: c.primaryTint, gap: 8 },
+  banner:  { marginHorizontal: Space.lg, marginBottom: Space.md, padding: Space.md, borderRadius: Radius.card, backgroundColor: c.primaryTint, gap: Space.sm },
   text:    { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.text },
-  actions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 16 },
+  actions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: Space.lg },
   later:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
 });

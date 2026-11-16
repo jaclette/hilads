@@ -13,7 +13,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Avatar, Button, Chip, Screen, ScreenHeader } from '@/ui';
 import { ReportModal } from '@/features/profile/ReportModal';
@@ -143,7 +143,7 @@ export default function GuestProfileScreen() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  hero:        { alignItems: 'center', paddingTop: Spacing.xl, paddingBottom: Spacing.md, gap: 12 },
+  hero:        { alignItems: 'center', paddingTop: Spacing.xl, paddingBottom: Spacing.md, gap: Space.md },
   displayName: { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5, textAlign: 'center' },
   cityLabel:   { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   note:        { textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, paddingHorizontal: Spacing.xl, marginTop: Spacing.sm },

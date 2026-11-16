@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Button, CityFlag, Sheet } from '@/ui';
 import type { CityProposal } from '@/hooks/useGpsCityCorrection';
@@ -31,8 +31,8 @@ export function CitySwitchSheet({ proposal, onSwitch, onStay }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sheet:     { gap: 12 },
-  titleLine: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sheet:     { gap: Space.md },
+  titleLine: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   title:     { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  body:      { fontSize: FontSizes.sm, color: c.muted, marginBottom: 4 },
+  body:      { fontSize: FontSizes.sm, color: c.muted, marginBottom: Space.xs },
 });

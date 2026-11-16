@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Radius, FontSizes, type ThemeColors } from '@/constants';
+import { Space, Spacing, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
@@ -292,25 +292,25 @@ const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: 
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   hero:        { aspectRatio: 4 / 5, borderRadius: Radius.ticket, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
-  heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, padding: 14 },
-  heroTopRight: { alignItems: 'flex-end', gap: 6, flexShrink: 1 },
-  chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1, paddingHorizontal: 10, paddingVertical: 6,
+  heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: Space.sm, padding: Space.lg },
+  heroTopRight: { alignItems: 'flex-end', gap: Space.sm, flexShrink: 1 },
+  chip:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexShrink: 1, paddingHorizontal: Space.md, paddingVertical: Space.sm,
                  borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.42)' },
   chipText:    { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: '#FFFFFF' },
-  themeChip:   { borderRadius: 999, paddingHorizontal: 11 },
-  heroBottom:  { gap: 12, padding: 16 },
-  titles:      { gap: 4 },
+  themeChip:   { borderRadius: 999, paddingHorizontal: Space.md },
+  heroBottom:  { gap: Space.md, padding: Space.lg },
+  titles:      { gap: Space.xs },
   headline:    { fontSize: FontSizes.xl, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3, ...ON_PHOTO_SHADOW },
   ask:         { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
-  steps:       { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', rowGap: 6 },
-  stepWrap:    { flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 4 },
-  step:        { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999,
+  steps:       { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', rowGap: Space.sm },
+  stepWrap:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginRight: Space.xs },
+  step:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs, borderRadius: 999,
                  backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)' },
   stepText:    { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF' },
   ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: Radius.ticket },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
-  top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8, zIndex: 2 },
-  kicker:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  top:         { paddingHorizontal: Spacing.md, paddingTop: Space.lg, paddingBottom: Space.md, gap: Space.sm, zIndex: 2 },
+  kicker:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   kickerText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   text:        { fontSize: FontSizes.lg, lineHeight: 25, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
   meta:        { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },

@@ -5,7 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
-import { FontSizes, Highlight } from '@/constants';
+import { Space, Spacing, FontSizes, Highlight } from '@/constants';
 import { FLAGS } from './flags';
 import { ThemeIcon } from './ThemeIcon';
 
@@ -140,7 +140,7 @@ export function Stamp({ theme, label, earned = true, size = 72 }: { theme: strin
   const c = themeColor(theme);
   const line = earned ? c.line ?? c.fill : mode === 'dark' ? '#4A3E34' : '#D9CBBD';
   return (
-    <View style={{ alignItems: 'center', gap: 4, width: size + 8 }}>
+    <View style={{ alignItems: 'center', gap: Space.xs, width: size + 8 }}>
       <View style={[styles.stamp, { width: size, height: size, borderRadius: size / 2, borderColor: line, backgroundColor: earned ? tint(c.fill, 0.18) : 'transparent',
                                     transform: [{ rotate: earned ? '-8deg' : '0deg' }] }]}>
         <ThemeIcon theme={theme} size={size * 0.4} color={earned ? (mode === 'dark' ? c.textDark : c.textLight) : line} />
@@ -220,13 +220,13 @@ const styles = StyleSheet.create({
   bubbleText: { fontWeight: '800' },
   tail:       { position: 'absolute', transform: [{ rotate: '45deg' }], borderRadius: 2 },
   hl:         { fontWeight: '800', borderRadius: 6 },
-  btn:        { height: 52, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 18 },
+  btn:        { height: 52, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, paddingHorizontal: Spacing.md },
   btnText:    { fontSize: FontSizes.body, fontWeight: '800', color: INK },
-  chip:       { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 11, paddingVertical: 6, borderRadius: 999 },
+  chip:       { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: 999 },
   chipText:   { fontSize: FontSizes.xs, fontWeight: '800' },
   stamp:      { borderWidth: 2.5, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   stampLabel: { fontSize: 11, fontWeight: '700', textAlign: 'center' },
-  lockup:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  lockup:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   word:       { fontWeight: '800', letterSpacing: -0.9 },
   piece:      { position: 'absolute', top: 0, width: 9, height: 14, borderRadius: 2 },
 });

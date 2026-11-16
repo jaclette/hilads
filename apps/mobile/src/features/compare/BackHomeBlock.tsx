@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
 import { CityFlag } from '@/ui';
@@ -45,11 +45,11 @@ export function BackHomeBlock({ proof }: { proof: DailyProof }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:     { gap: 8, padding: 12, borderRadius: Radius.card, backgroundColor: c.onPhotoFill },
-  row:      { flexDirection: 'row', gap: 12 },
-  side:     { flex: 1, gap: 6 },
+  wrap:     { gap: Space.sm, padding: Space.md, borderRadius: Radius.card, backgroundColor: c.onPhotoFill },
+  row:      { flexDirection: 'row', gap: Space.md },
+  side:     { flex: 1, gap: Space.sm },
   divider:  { width: 1, backgroundColor: c.onPhotoLine },
-  head:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  head:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   label:    { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.white },
   none:     { fontSize: FontSizes.xs, color: c.onCaramelMuted },
   price:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.white },

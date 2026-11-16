@@ -4,7 +4,7 @@ import {
   type FlatListProps, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewProps, type StyleProp, type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { KeyboardAvoidingView, useKeyboardState } from 'react-native-keyboard-controller';
 import { Gesture, GestureDetector, GestureHandlerRootView, type NativeGesture } from 'react-native-gesture-handler';
@@ -158,6 +158,6 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:    { flex: 1 },
   scrim:   { flex: 1, backgroundColor: c.scrim },
-  sheet:   { backgroundColor: c.bg2, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.md, paddingTop: 8, gap: 8 },
-  grabber: { alignSelf: 'center', width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
+  sheet:   { backgroundColor: c.bg2, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.md, paddingTop: Space.sm, gap: Space.sm },
+  grabber: { alignSelf: 'center', width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: Space.sm },
 });

@@ -6,7 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Button, Card, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -215,30 +215,30 @@ function StatusChip({ status }: { status: DailyTwistProposalStatus }) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:          { flex: 1 },
   center:        { flex: 1, justifyContent: 'center', padding: Spacing.md },
-  body:          { padding: Spacing.md, paddingTop: Spacing.sm, gap: 12, paddingBottom: 30 },
-  card:          { padding: 16, gap: 8 },
-  iconRow:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  body:          { padding: Spacing.md, paddingTop: Spacing.sm, gap: Space.md, paddingBottom: 30 },
+  card:          { padding: Space.lg, gap: Space.sm },
+  iconRow:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   kicker:        { fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.primaryText },
   challenge:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 26 },
   context:       { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
   intro:         { fontSize: FontSizes.sm, fontWeight: '500', color: c.text, lineHeight: 20 },
   deadline:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   deadlineClosed:{ color: c.muted },
-  mine:          { padding: 14, gap: 8 },
-  mineTop:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  mine:          { padding: Space.lg, gap: Space.sm },
+  mineTop:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   mineTitle:     { fontSize: FontSizes.body, fontWeight: '800', color: c.text },
   mineText:      { fontSize: FontSizes.md, fontWeight: '500', color: c.text, lineHeight: 22 },
-  actions:       { flexDirection: 'row', alignItems: 'center', gap: 20 },
+  actions:       { flexDirection: 'row', alignItems: 'center', gap: Space.xl },
   dangerBtn:     { minHeight: 44, justifyContent: 'center' },
   danger:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.red },
   counter:       { alignSelf: 'flex-end', fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   counterNear:   { color: c.primaryText, fontWeight: '700' },
   muted:         { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, lineHeight: 18 },
-  chip:          { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  chip:          { paddingHorizontal: Space.md, paddingVertical: Space.xs, borderRadius: Radius.full, backgroundColor: c.primaryTint },
   chipPicked:    { backgroundColor: c.primary },
   chipOff:       { backgroundColor: c.bg3 },
   chipText:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
   chipTextPicked:{ color: c.white },
-  footer:        { flexDirection: 'row', alignItems: 'center', gap: 16, padding: Spacing.md, borderTopWidth: Border, borderTopColor: c.line, backgroundColor: c.bg },
+  footer:        { flexDirection: 'row', alignItems: 'center', gap: Space.lg, padding: Spacing.md, borderTopWidth: Border, borderTopColor: c.line, backgroundColor: c.bg },
   submit:        { flex: 1 },
 });

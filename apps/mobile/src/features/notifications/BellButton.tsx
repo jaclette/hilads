@@ -3,7 +3,7 @@ import { Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Border, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Border, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useNotifCounts } from './counts';
 
@@ -54,7 +54,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   round:     { width: 44, height: 44, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2,
                alignItems: 'center', justifyContent: 'center' },
   on:        { backgroundColor: c.cta, borderColor: c.cta },
-  badge:     { position: 'absolute', top: -4, right: -4, minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10,
+  badge:     { position: 'absolute', top: -4, right: -4, minWidth: 20, height: 20, paddingHorizontal: Space.xs, borderRadius: 10,
                backgroundColor: c.text, borderWidth: 2, borderColor: c.bg, alignItems: 'center', justifyContent: 'center' },
   badgeText: { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800', color: c.bg },
 });

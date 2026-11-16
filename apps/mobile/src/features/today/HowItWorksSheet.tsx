@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
 
@@ -42,11 +42,11 @@ export function HowItWorksSheet({ visible, placeTheme, onCamera, onLater, onClos
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: 14 },
-  steps:    { gap: 14, marginBottom: 20 },
-  step:     { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: Space.lg },
+  steps:    { gap: Space.lg, marginBottom: Space.xl },
+  step:     { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   icon:     { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   stepText: { flex: 1, fontSize: FontSizes.md, lineHeight: 22, fontWeight: '600', color: c.text },
   stepNum:  { fontWeight: '800' },
-  cta:      { minHeight: 56, marginBottom: 4 },
+  cta:      { minHeight: 56, marginBottom: Space.xs },
 });

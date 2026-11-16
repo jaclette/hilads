@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SectionList, Text, View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTodayCountries } from '@/api/daily';
@@ -163,9 +163,9 @@ function CountriesScreenContent() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:   { flex: 1, alignItems: 'center', justifyContent: 'center' },
   list:     { padding: Spacing.md, paddingBottom: Spacing.xl },
-  head:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 18, paddingBottom: 10 },
+  head:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingTop: 18, paddingBottom: Space.md },
   city:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   count:    { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  row:      { flexDirection: 'row', gap: 12, marginBottom: 12 },
+  row:      { flexDirection: 'row', gap: Space.md, marginBottom: Space.md },
   filler:   { flex: 1 },
 });

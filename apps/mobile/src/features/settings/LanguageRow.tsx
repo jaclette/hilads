@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { setLocale, SUPPORTED, DEFAULT_LOCALE, type Locale } from '@/i18n';
 import { ListRow, Sheet, SheetScrollView } from '@/ui';
@@ -107,8 +107,8 @@ export function LanguageRow({ divider = false }: { divider?: boolean }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sheetTitle:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: 4 },
-  option:           { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
+  sheetTitle:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: Space.xs },
+  option:           { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52 },
   optionFlag:       { fontSize: 20, lineHeight: 24 },
   optionText:       { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text },
   optionTextActive: { color: c.primaryText, fontWeight: '700' },

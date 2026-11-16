@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTodayCountries } from '@/api/daily';
@@ -368,22 +368,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 170 },
   dim:         { backgroundColor: 'rgba(0,0,0,0.35)' },
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
-  top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 10, gap: 10 },
-  bars:        { flexDirection: 'row', gap: 4 },
+  top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: Space.md, gap: Space.md },
+  bars:        { flexDirection: 'row', gap: Space.xs },
   // A dark edge keeps each segment (and the gap between them) visible on a bright photo.
   bar:         { flex: 1, height: 3, borderRadius: 2, backgroundColor: c.photoControl, overflow: 'hidden',
                  borderWidth: StyleSheet.hairlineWidth, borderColor: c.photoButton },
   barFill:     { height: 3, backgroundColor: c.white },
-  head:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 4 },
+  head:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Space.xs },
   cityName:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.white },
   cityMeta:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.onCaramelMuted },
-  bottom:      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'flex-end', gap: 12, paddingHorizontal: 16 },
-  info:        { flex: 1, gap: 8 },
-  who:         { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  bottom:      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'flex-end', gap: Space.md, paddingHorizontal: Space.lg },
+  info:        { flex: 1, gap: Space.sm },
+  who:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   name:        { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.white },
   caption:     { fontSize: FontSizes.md, fontWeight: '500', color: c.white },
-  rail:        { alignItems: 'center', gap: 14 },
+  rail:        { alignItems: 'center', gap: Space.lg },
   heart:       { width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl },
   heartOn:     { backgroundColor: c.primary },
-  count:       { marginTop: 4, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
+  count:       { marginTop: Space.xs, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
 });

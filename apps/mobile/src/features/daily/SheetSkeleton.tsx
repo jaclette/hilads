@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import { Spacing, type ThemeColors } from '@/constants';
+import { Space, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
@@ -35,11 +35,11 @@ export function SheetSkeleton({ rows = false }: { rows?: boolean }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  grid:  { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12, paddingTop: 4 },
-  tile:  { width: '48.5%', gap: 6 },
+  grid:  { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: Space.md, paddingTop: Space.xs },
+  tile:  { width: '48.5%', gap: Space.sm },
   photo: { aspectRatio: 1, borderRadius: 16, backgroundColor: c.bg3 },
   line:  { height: 12, borderRadius: 6, backgroundColor: c.bg3 },
-  rows:  { gap: 12, paddingVertical: Spacing.md },
-  row:   { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  rows:  { gap: Space.md, paddingVertical: Spacing.md },
+  row:   { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   flag:  { width: 24, height: 16, borderRadius: 3, backgroundColor: c.bg3 },
 });

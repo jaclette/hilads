@@ -40,7 +40,7 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
 import type { City } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, TextField, WakingUp } from '@/ui';
 import { readOffline, writeOffline } from '@/lib/offlineCache';
@@ -416,24 +416,24 @@ export default function SwitchCityScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex1:          { flex: 1 },
-  search:         { paddingHorizontal: Spacing.md, paddingTop: 4 },
+  search:         { paddingHorizontal: Spacing.md, paddingTop: Space.xs },
   filtersWrap:    { flexGrow: 0 },
-  filters:        { gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  backToLocation: { marginHorizontal: Spacing.md, marginBottom: 4 },
+  filters:        { gap: Space.sm, paddingHorizontal: Spacing.md, paddingVertical: Space.md },
+  backToLocation: { marginHorizontal: Spacing.md, marginBottom: Space.xs },
   center:         { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Spacing.md },
   emptyText:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, textAlign: 'center' },
-  sectionLabel:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: 6, paddingBottom: 8 },
+  sectionLabel:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: Space.sm, paddingBottom: Space.sm },
   listContent:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
-  cardTouch:      { marginBottom: 10 },
-  card:           { paddingHorizontal: 14, paddingVertical: 12, gap: 6 },
+  cardTouch:      { marginBottom: Space.md },
+  card:           { paddingHorizontal: Space.lg, paddingVertical: Space.md, gap: Space.sm },
   cardActive:     { borderColor: c.primary },
-  cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  cardTop:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   cityName:       { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
-  statsRow:       { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 2, paddingLeft: 16 },
+  statsRow:       { flexDirection: 'row', flexWrap: 'wrap', columnGap: Space.md, rowGap: Space.xxs, paddingLeft: Space.lg },
   stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   statStrong:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   statOnline:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.green },
-  playsIn:        { paddingLeft: 26 },
+  playsIn:        { paddingLeft: Space.xl },
   activityDot:    { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: c.line },
   activityDotLive:{ backgroundColor: c.green },
 });

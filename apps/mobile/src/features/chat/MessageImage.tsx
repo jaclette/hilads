@@ -29,7 +29,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { prefetchFull } from '@/lib/prefetch';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 interface Props {
@@ -127,6 +127,6 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  overlay:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: 4 },
+  overlay:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: Space.xs },
   failedLabel: { color: c.white, fontSize: FontSizes.xs, fontWeight: '700' },
 });

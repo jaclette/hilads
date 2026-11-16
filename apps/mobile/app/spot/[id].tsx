@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
@@ -192,26 +192,26 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:     { flex: 1, backgroundColor: c.bg },
   center:        { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   list:          { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
-  header:        { gap: 10, paddingBottom: 10 },
+  header:        { gap: Space.md, paddingBottom: Space.md },
   cover:         { height: 200, borderRadius: 22, backgroundColor: c.primaryTint },
   coverCredit:   { left: 10, bottom: 10 },
   name:          { fontSize: FontSizes.xl, fontWeight: '800', color: c.text },
   muted:         { fontSize: FontSizes.sm, color: c.muted },
-  rank:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 6 },
+  rank:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.sm, backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: Space.md, paddingVertical: Space.sm },
   rankText:      { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryOnTint },
-  chips:         { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chips:         { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
   stats:         { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  actions:       { flexDirection: 'row', gap: 10, marginTop: 4 },
+  actions:       { flexDirection: 'row', gap: Space.md, marginTop: Space.xs },
   share:         { alignSelf: 'center' },
   btn:           { flex: 1 },
-  captions:      { gap: 6, marginTop: 4 },
-  section:       { marginTop: 6 },
+  captions:      { gap: Space.sm, marginTop: Space.xs },
+  section:       { marginTop: Space.sm },
   caption:       { fontSize: FontSizes.sm, color: c.text },
-  row:           { gap: 8, marginBottom: 8 },
+  row:           { gap: Space.sm, marginBottom: Space.sm },
   tile:          { borderRadius: 12, backgroundColor: c.bg3 },
   viewer:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center' },
   viewerImage:   { flex: 1 },
-  viewerInfo:    { paddingHorizontal: Spacing.md, paddingTop: 12, gap: 4 },
+  viewerInfo:    { paddingHorizontal: Spacing.md, paddingTop: Space.md, gap: Space.xs },
   viewerUser:    { fontSize: FontSizes.sm, fontWeight: '700', color: '#FFFFFF' },
   viewerCaption: { fontSize: FontSizes.md, color: '#FFFFFF' },
   viewerMeta:    { fontSize: FontSizes.xs, color: 'rgba(255,255,255,0.75)' },

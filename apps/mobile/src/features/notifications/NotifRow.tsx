@@ -7,7 +7,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import i18n from '@/i18n';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -135,7 +135,7 @@ export function NotifSeparator() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  notifRow:         { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: Spacing.md, paddingVertical: 14, gap: 12 },
+  notifRow:         { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: Spacing.md, paddingVertical: Space.lg, gap: Space.md },
   notifRowUnread:   { backgroundColor: c.bg2 },
   notifIcon:        { width: 44, height: 44, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2,
                       alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
@@ -144,12 +144,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   actor:            { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.bg3 },
   actorBadge:       { position: 'absolute', right: -4, bottom: -4 },
   thumb:            { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3, flexShrink: 0 },
-  notifBody:        { flex: 1, gap: 3 },
+  notifBody:        { flex: 1, gap: Space.xs },
   notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
   notifTitleRead:   { color: c.muted, fontWeight: '500' },
   notifPreview:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 18 },
   notifPreviewRead: { color: c.muted },
-  notifTime:        { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginTop: 2 },
-  unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary, marginTop: 6, flexShrink: 0 },
+  notifTime:        { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginTop: Space.xxs },
+  unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary, marginTop: Space.sm, flexShrink: 0 },
   separator:        { height: 1, backgroundColor: c.line, marginLeft: Spacing.md + 44 + 12 },
 });

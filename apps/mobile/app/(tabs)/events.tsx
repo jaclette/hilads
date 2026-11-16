@@ -16,7 +16,7 @@ import { ExampleEventCard } from '@/components/ExampleEventCard';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent, UserDTO } from '@/types';
-import { Border, FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, EmptyState, Screen, ScreenHeader, SectionTitle } from '@/ui';
 import { EventCard } from '@/components/EventCard';
@@ -585,12 +585,12 @@ export default function NowScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   headerSub:    { maxWidth: 160, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   center:       { flex: 1, justifyContent: 'center', padding: Spacing.lg },
-  sectionLabel: { paddingTop: Spacing.md, paddingBottom: 4 },
-  list:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 10 },
+  sectionLabel: { paddingTop: Spacing.md, paddingBottom: Space.xs },
+  list:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Space.md },
 
   emptyScroll:      { flexGrow: 1, paddingTop: Spacing.lg, paddingBottom: Spacing.xl },
   inspirationBlock: { paddingHorizontal: Spacing.md, gap: Spacing.sm, marginTop: Spacing.md },
-  inspirationSub:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, marginBottom: 2 },
+  inspirationSub:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, marginBottom: Space.xxs },
 
   // Sticky bottom block, pinned above the tab bar: Hi now (primary) over Hi plan.
   bottomActions: {
@@ -598,9 +598,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     left:              0,
     right:             0,
     bottom:            0,
-    gap:               8,
+    gap:               Space.sm,
     paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
+    paddingVertical:   Space.md,
     backgroundColor:   c.bg,
     borderTopWidth:    Border,
     borderTopColor:    c.line,

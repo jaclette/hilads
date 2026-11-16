@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Radius, FontSizes, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyUserStats } from '@/types';
@@ -35,11 +35,11 @@ export function PioneerBadges({ pioneers }: { pioneers: Pioneer[] }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  page:      { padding: 16, gap: 8, borderRadius: Radius.ticket, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  page:      { padding: Space.lg, gap: Space.sm, borderRadius: Radius.ticket, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
   title:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   sub:       { fontSize: FontSizes.xs, color: c.muted, lineHeight: 18 },
-  list:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  badge:     { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingHorizontal: 12, borderRadius: 999,
+  list:      { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm, marginTop: Space.xs },
+  badge:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 36, paddingHorizontal: Space.md, borderRadius: 999,
                borderWidth: 1.5, borderColor: c.gold, backgroundColor: c.goldTint },
   badgeText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.text, flexShrink: 1 },
 });

@@ -53,7 +53,7 @@ import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { ShareToWorldPill } from '@/components/ShareToWorldPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 import { goBack } from '@/lib/nav';
@@ -1254,7 +1254,7 @@ export default function ChallengeChatScreen() {
                   {busyAny ? '…' : t(labelKey)}
                 </Text>
                 {tapable && (
-                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: 2 }} />
+                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: Space.xxs }} />
                 )}
               </TouchableOpacity>
             );
@@ -2157,7 +2157,7 @@ export default function ChallengeChatScreen() {
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.manageRowText}>{t(`visibility.badge.${opt}`)}</Text>
-                    <Text style={{ fontSize: FontSizes.xs, color: colors.muted, marginTop: 2 }}>{hint}</Text>
+                    <Text style={{ fontSize: FontSizes.xs, color: colors.muted, marginTop: Space.xxs }}>{hint}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -2264,12 +2264,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   guestWelcome: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               8,
+    gap:               Space.sm,
     marginHorizontal:  Spacing.md,
     marginTop:         Spacing.xs,
     marginBottom:      Spacing.xs,
-    paddingVertical:   10,
-    paddingHorizontal: 12,
+    paddingVertical:   Space.md,
+    paddingHorizontal: Space.md,
     backgroundColor:   c.bg2,
     borderRadius:      Radius.card,
     borderWidth:       Border,
@@ -2277,7 +2277,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   guestWelcomeBody: {
     flex: 1,
-    gap:  2,
+    gap:  Space.xxs,
   },
   guestWelcomeText: {
     color:      c.text,
@@ -2291,7 +2291,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   guestWelcomeClose: {
     alignSelf: 'flex-start',
-    paddingTop: 2,
+    paddingTop: Space.xxs,
   },
 
   // Nav
@@ -2305,8 +2305,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap:               Spacing.sm,
   },
   backPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
+    paddingHorizontal: Space.md, paddingVertical: Space.sm,
     borderRadius: Radius.full,
     backgroundColor: c.bg3,
     borderWidth: Border, borderColor: c.line,
@@ -2314,8 +2314,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, flexShrink: 1, textAlign: 'center' },
-  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
+  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: Space.xxs },
+  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1 },
   navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
   navCreatorText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
@@ -2330,19 +2330,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: c.line,
   },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: Space.sm },
 
   kindBadge: {
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
   kindBadgeText: { fontSize: FontSizes.tiny, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
 
   // Row so the leading stroke icon (checkmark / refresh / hourglass / live
   // dot) sits next to the label.
-  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: Border },
+  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: Space.xs, borderRadius: Radius.full, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderWidth: Border },
   statusPillDone:      { backgroundColor: c.localBg,  borderColor: c.localText },
   statusPillLive:      { backgroundColor: c.goldTint, borderColor: c.gold },
   statusPillEnded:     { backgroundColor: c.bg3, borderColor: c.line },
@@ -2359,7 +2359,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   audiencePill: {
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
   audiencePillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
@@ -2367,10 +2367,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
   intlPill: {
-    flexDirection:     'row', alignItems: 'center', gap: 4,
+    flexDirection:     'row', alignItems: 'center', gap: Space.xs,
     backgroundColor:   c.travelerBg,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.travelerText,
     flexShrink:        1,
   },
@@ -2380,10 +2380,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // the three sit on a single row without alignment drift. Orange brand tint
   // because Share is the most user-facing growth lever on this screen.
   sharePillInline: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
   sharePillInlineText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
@@ -2412,18 +2412,18 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   detailsBlock: { },
 
   // Group challenge block (meet info + join / validate).
-  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
+  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: Space.sm },
   groupMeetCard:  {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
     backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line,
-    paddingHorizontal: Spacing.md, paddingVertical: 6,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.sm,
   },
   groupMeetLine:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: 4 },
+  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: Space.xs },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
-    minHeight: 48, paddingVertical: 12, paddingHorizontal: 16, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
+    minHeight: 48, paddingVertical: Space.md, paddingHorizontal: Space.lg, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
     // V3: the shared primary look (Button): tangerine with ink text.
     backgroundColor: c.cta,
   },
@@ -2461,9 +2461,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ownerIconBtn: {
     flexDirection:  'row',
     alignItems:     'center',
-    gap:            4,
-    paddingVertical:   4,
-    paddingHorizontal: 6,
+    gap:            Space.xs,
+    paddingVertical:   Space.xs,
+    paddingHorizontal: Space.sm,
   },
   ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
@@ -2477,7 +2477,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               8,
+    gap:               Space.sm,
     paddingVertical:   Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     borderRadius:      Radius.full,
@@ -2512,19 +2512,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     overflow: 'hidden',
   },
   challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
-  challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
+  challengerInfo: { flex: 1, gap: Space.xxs, minWidth: 0 },
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   challengerTag:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
 
   // Inline quick-action group - Share is a labeled pill (verb is the
   // social hook), Accept is the compact icon-only round next to it.
-  quickActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  quickActions: { flexDirection: 'row', gap: Space.sm, alignItems: 'center' },
   sharePill: {
     flexDirection:    'row',
     alignItems:       'center',
-    gap:              6,
+    gap:              Space.sm,
     height:           36,
-    paddingHorizontal: 12,
+    paddingHorizontal: Space.md,
     borderRadius:     18,
     backgroundColor:  c.primaryTint,
     borderWidth:      Border,
@@ -2566,8 +2566,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // already acceptors (sits to the right of the avatars).
   acceptCtaFull: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6,
-    paddingHorizontal: Spacing.md, paddingVertical: 10,
+    gap: Space.sm,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.md,
     borderRadius: 999,
     backgroundColor: c.primaryTint,
     borderWidth: Border, borderColor: c.primary,
@@ -2576,8 +2576,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     color: c.primaryText, fontWeight: '800', fontSize: FontSizes.sm,
   },
   acceptCompact: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 12, paddingVertical: 7,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
+    paddingHorizontal: Space.md, paddingVertical: Space.sm,
     borderRadius: 999,
     backgroundColor: c.primaryTint,
     borderWidth: Border, borderColor: c.primary,
@@ -2587,9 +2587,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
 
   // Inline thread chat
-  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },
+  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: Space.xs },
   loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
-  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
+  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: Space.sm },
   emptyChatEmoji:   { },
   emptyChatText:    { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 
@@ -2598,7 +2598,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // participants row.
   lockedWrap: {
     flex: 1, alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: Spacing.xl, gap: 10,
+    paddingHorizontal: Spacing.xl, gap: Space.md,
   },
   lockedEmoji: { opacity: 0.7 },
   lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
@@ -2662,8 +2662,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     marginTop:     Spacing.md,
   },
   takeonRejectBtn: {
-    paddingHorizontal: 16,
-    paddingVertical:   10,
+    paddingHorizontal: Space.lg,
+    paddingVertical:   Space.md,
     borderRadius:      999,
     backgroundColor:   c.bg3,
     borderWidth:       Border,
@@ -2671,7 +2671,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
   takeonAcceptBtn: {
-    paddingHorizontal: 14,
+    paddingHorizontal: Space.lg,
     minHeight:         44,
     justifyContent:    'center',
     borderRadius:      14,

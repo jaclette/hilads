@@ -3,7 +3,7 @@ import { Animated, Easing, Modal, Pressable, Text, View, StyleSheet } from 'reac
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { shortCityName } from '@/i18n/cityName';
@@ -96,13 +96,13 @@ const SIZE = 168;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scrim:      { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
-  card:       { alignSelf: 'stretch', backgroundColor: c.bg2, borderRadius: Radius.ticket, padding: Spacing.lg, alignItems: 'center', gap: 10, overflow: 'hidden' },
-  stamp:      { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 4, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  card:       { alignSelf: 'stretch', backgroundColor: c.bg2, borderRadius: Radius.ticket, padding: Spacing.lg, alignItems: 'center', gap: Space.md, overflow: 'hidden' },
+  stamp:      { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 4, alignItems: 'center', justifyContent: 'center', marginBottom: Space.sm },
   inner:      { width: SIZE - 20, height: SIZE - 20, borderRadius: (SIZE - 20) / 2, borderWidth: 2,
-                borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 10 },
+                borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: Space.xs, paddingHorizontal: 10 },
   stampTheme: { fontSize: FontSizes.sm, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
   stampCity:  { fontSize: 12, fontWeight: '700' },
   title:      { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  cta:        { alignSelf: 'stretch', marginTop: 6 },
+  cta:        { alignSelf: 'stretch', marginTop: Space.sm },
 });

@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
@@ -21,8 +21,8 @@ export function LocalPassBadge({ label = false, onDark = false }: { label?: bool
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  pill:     { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: Radius.full, borderWidth: 1,
-              borderColor: c.gold, paddingHorizontal: 6, paddingVertical: 1 },
+  pill:     { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: Space.xs, borderRadius: Radius.full, borderWidth: 1,
+              borderColor: c.gold, paddingHorizontal: Space.sm, paddingVertical: 1 },
   pillDark: { backgroundColor: c.photoControl, borderColor: c.photoControl },
   text:     { fontSize: FontSizes.tiny, fontWeight: '800', color: c.gold },
   textDark: { color: c.white },

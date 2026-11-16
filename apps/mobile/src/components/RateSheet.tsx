@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { submitRating } from '@/api/challenges';
 import { ApiError } from '@/api/client';
 import { avatarColor } from '@/lib/avatarColors';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { RatePrompt } from '@/types';
 import { Button } from '@/ui/Button';
@@ -172,11 +172,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   avatarStar:    { backgroundColor: c.goldTint },
   headerTextWrap:{ flex: 1, minWidth: 0 },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  subtitle:      { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
+  subtitle:      { fontSize: FontSizes.sm, color: c.muted, marginTop: Space.xxs },
   hint:          { fontSize: FontSizes.xs, color: c.mutedDim, marginBottom: Spacing.sm },
 
   starsRow:      { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm },
-  starTap:       { padding: 4 },
+  starTap:       { padding: Space.xs },
 
   commentWrap:   { marginBottom: Spacing.md },
   comment: {
@@ -188,9 +188,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     color: c.text,
     fontSize: FontSizes.md,
   },
-  charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: c.mutedDim },
+  charCount: { alignSelf: 'flex-end', marginTop: Space.xs, fontSize: FontSizes.xs, color: c.mutedDim },
 
 
-  skip:     { paddingVertical: Spacing.sm, alignItems: 'center', marginTop: 4 },
+  skip:     { paddingVertical: Spacing.sm, alignItems: 'center', marginTop: Space.xs },
   skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 });

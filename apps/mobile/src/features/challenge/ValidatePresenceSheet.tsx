@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { avatarColor } from '@/lib/avatarColors';
 import type { UserDTO } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 interface Props {
@@ -149,14 +149,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     backgroundColor: c.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
-    paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: 34, maxHeight: '80%',
+    paddingHorizontal: Spacing.lg, paddingTop: Space.md, paddingBottom: 34, maxHeight: '80%',
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginBottom: 12 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginBottom: Space.md },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  sub:   { fontSize: FontSizes.sm, color: c.muted, marginTop: 4, marginBottom: 12 },
-  empty: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 24 },
+  sub:   { fontSize: FontSizes.sm, color: c.muted, marginTop: Space.xs, marginBottom: Space.md },
+  empty: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: Space.xl },
   list:  { maxHeight: 360 },
-  row:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
+  row:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.sm },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.body },
   name:  { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
@@ -164,12 +164,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   checkOn: { backgroundColor: c.green, borderColor: c.green },
   radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
   radioOn: { backgroundColor: c.gold, borderColor: c.gold },
-  rateBlock: { marginTop: 14, alignItems: 'center', gap: 8 },
+  rateBlock: { marginTop: Space.lg, alignItems: 'center', gap: Space.sm },
   rateLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  stars:     { flexDirection: 'row', gap: 8 },
+  stars:     { flexDirection: 'row', gap: Space.sm },
   confirmBtn: {
     // Solid fill - reads as a primary action, not an already-done state.
-    marginTop: 14, minHeight: 48, paddingHorizontal: 16, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
+    marginTop: Space.lg, minHeight: 48, paddingHorizontal: Space.lg, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
     backgroundColor: c.cta,
   },
   confirmText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },

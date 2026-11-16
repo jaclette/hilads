@@ -3,7 +3,7 @@ import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
@@ -83,11 +83,11 @@ export function IndexCarousel({ refreshKey = 0, source = 'ranks' }: { refreshKey
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:    { gap: 4 },
-  sub:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginBottom: 4 },
-  row:     { gap: 10, paddingRight: 4 },
+  wrap:    { gap: Space.xs },
+  sub:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginBottom: Space.xs },
+  row:     { gap: Space.md, paddingRight: Space.xs },
   card:    { width: CARD_W },
-  all:     { alignItems: 'center', justifyContent: 'center', gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: Border,
+  all:     { alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: 14, borderRadius: Radius.card, borderWidth: Border,
              borderColor: c.line, backgroundColor: c.bg2, minHeight: 180 },
   allText: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
 });

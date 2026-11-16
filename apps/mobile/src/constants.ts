@@ -315,3 +315,16 @@ export const Spacing = {
   xxl:  54,
 } as const;
 
+/**
+ * The spacing grid for padding, margins and gaps inside components (4-based). Spacing.md (18)
+ * stays the screen gutter; the other Spacing steps remain for the layouts already built on them.
+ */
+export const Space = {
+  xxs: 2,
+  xs:  4,
+  sm:  8,
+  md:  12,
+  lg:  16,
+  xl:  24,
+} as const;
+

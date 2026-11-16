@@ -6,7 +6,7 @@ import {
   fetchMyChallengeParticipation,
   setChallengeNotificationPreference,
 } from '@/api/challenges';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
@@ -84,9 +84,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pill: {
     flexDirection:   'row',
     alignItems:      'center',
-    gap:             5,
-    paddingHorizontal: 10,
-    paddingVertical:   6,
+    gap:             Space.xs,
+    paddingHorizontal: Space.md,
+    paddingVertical:   Space.sm,
     borderRadius:      Radius.full,
     borderWidth:       Border,
     borderColor:       c.line,

@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /** "Early": a proof posted within 3 hours of its author's start time (speed bonus, V2-07). */
@@ -18,11 +18,11 @@ export function EarlyBadge({ onDark = false, small = false }: { onDark?: boolean
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  pill:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: Radius.full, borderWidth: 1,
-              borderColor: c.warning, paddingHorizontal: 7, paddingVertical: 1 },
+  pill:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs, borderRadius: Radius.full, borderWidth: 1,
+              borderColor: c.warning, paddingHorizontal: Space.sm, paddingVertical: 1 },
   pillDark: { backgroundColor: c.photoControl, borderColor: c.photoControl },
   text:     { fontSize: FontSizes.tiny, fontWeight: '800', color: c.warning },
   textDark: { color: c.white },
-  pillSmall: { paddingHorizontal: 5, paddingVertical: 0 },
+  pillSmall: { paddingHorizontal: Space.xs, paddingVertical: 0 },
   textSmall: { fontSize: FontSizes.xs, fontWeight: '800' },
 });

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
 import { FlagSticker } from '@/ui/joy';
 import { RankMedal } from '@/features/daily/RankMedal';
@@ -303,41 +303,41 @@ function Identity({ name, photo, mode, cityName, cityCountry, since = null, stat
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:      { flex: 1, backgroundColor: c.bg },
-  body:           { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: 14 },
-  identity:       { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  identityBody:   { flex: 1, gap: 6 },
+  body:           { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: Space.lg },
+  identity:       { flexDirection: 'row', alignItems: 'center', gap: Space.lg },
+  identityBody:   { flex: 1, gap: Space.sm },
   name:           { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  chips:          { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
-  chip:           { flexDirection: 'row', alignItems: 'center', gap: 4, height: 26, paddingHorizontal: 10, borderRadius: Radius.full },
+  chips:          { flexDirection: 'row', gap: Space.sm, flexWrap: 'wrap' },
+  chip:           { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 26, paddingHorizontal: Space.md, borderRadius: Radius.full },
   chipCity:       { backgroundColor: c.bg3, maxWidth: 200 },
   chipCityText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  cards:          { flexDirection: 'row', gap: 10 },
-  card:           { flex: 1, paddingHorizontal: 14, paddingVertical: 12, gap: 3 },
+  cards:          { flexDirection: 'row', gap: Space.md },
+  card:           { flex: 1, paddingHorizontal: Space.lg, paddingVertical: Space.md, gap: Space.xs },
   cardTap:        { flex: 1 },
   rivalsTitle:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   duels:          { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   cardFill:       { flex: 1 },
-  cardHead:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  cardHead:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },
-  compared:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  comparedBlock:  { gap: 8 },
-  flagsRow:       { gap: 8 },
-  flagChip:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingLeft: 6, paddingRight: 12, borderRadius: Radius.full,
+  compared:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  comparedBlock:  { gap: Space.sm },
+  flagsRow:       { gap: Space.sm },
+  flagChip:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingLeft: Space.sm, paddingRight: Space.md, borderRadius: Radius.full,
                     borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   flagName:       { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: 120 },
-  pagesWrap:      { gap: 8 },
-  dots:           { flexDirection: 'row', justifyContent: 'center', gap: 6 },
+  pagesWrap:      { gap: Space.sm },
+  dots:           { flexDirection: 'row', justifyContent: 'center', gap: Space.sm },
   dot:            { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },
   dotOn:          { backgroundColor: c.primary, width: 18 },
   since:          { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  stats:          { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12 },
+  stats:          { flexDirection: 'row', flexWrap: 'wrap', columnGap: Space.md },
   stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   statN:          { fontWeight: '800', color: c.text },
   comparedText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  pages:          { gap: 10 },
+  pages:          { gap: Space.md },
   center:         { alignSelf: 'center' },
-  guest:          { gap: 10, padding: 16, borderRadius: Radius.card },
+  guest:          { gap: Space.md, padding: Space.lg, borderRadius: Radius.card },
   guestTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   guestBody:      { fontSize: FontSizes.sm, color: c.muted },
 });

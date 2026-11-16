@@ -17,7 +17,7 @@ import type { Message } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { formatSmartTime } from '@/lib/messageTime';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Avatar, EmptyState, SectionTitle, Sheet, SheetScrollView } from '@/ui';
 
@@ -96,7 +96,7 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:   { maxHeight: '70%' },
   list:    { flexGrow: 0 },
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingVertical: 8 },
+  row:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingVertical: Space.sm },
   divider: { borderTopWidth: 1, borderTopColor: c.line },
   rowText: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   rowTime: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },

@@ -12,7 +12,7 @@ import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
-import { type ThemeColors } from '@/constants';
+import { Space, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { BrandMark, Button, IconButton } from '@/ui';
 import { ScopeSelector } from './ScopeSelector';
@@ -57,6 +57,6 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // No horizontal padding: each tab's header container sets it.
-  bar:            { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 10, paddingBottom: 6 },
+  bar:            { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingTop: Space.md, paddingBottom: Space.sm },
   logo:           { overflow: 'visible' },
 });

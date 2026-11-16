@@ -3,7 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Button, Card, Chip, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -174,19 +174,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:        { flex: 1 },
   center:      { flex: 1, justifyContent: 'center', padding: Spacing.lg },
   stretch:     { alignSelf: 'stretch', marginTop: Spacing.sm },
-  body:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: 10, paddingBottom: 48 },
-  label:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, marginTop: 4 },
+  body:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: Space.md, paddingBottom: 48 },
+  label:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, marginTop: Space.xs },
   counter:     { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.muted, fontWeight: '700' },
   counterNear: { color: c.warning },
   counterOver: { color: c.red },
-  themes:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  rules:       { padding: 14, gap: 6, marginTop: 8 },
-  rulesTitle:  { fontSize: FontSizes.body, fontWeight: '800', color: c.text, marginBottom: 2 },
-  ruleRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  themes:      { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
+  rules:       { padding: Space.lg, gap: Space.sm, marginTop: Space.sm },
+  rulesTitle:  { fontSize: FontSizes.body, fontWeight: '800', color: c.text, marginBottom: Space.xxs },
+  ruleRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm },
   rule:        { flex: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.text },
-  reviewed:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginTop: 4 },
-  errorBox:    { borderRadius: Radius.button, borderWidth: 1.5, borderColor: c.red, padding: 12, gap: 4 },
+  reviewed:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginTop: Space.xs },
+  errorBox:    { borderRadius: Radius.button, borderWidth: 1.5, borderColor: c.red, padding: Space.md, gap: Space.xs },
   errorText:   { fontSize: FontSizes.xs, color: c.red, fontWeight: '600' },
   linkBtn:     { alignSelf: 'flex-start' },
-  footer:      { padding: Spacing.md, paddingTop: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  footer:      { padding: Spacing.md, paddingTop: Space.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
 });

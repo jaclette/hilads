@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { submitHostRating, submitTakerRating, type ChallengeReveal } from '@/api/challenges';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
@@ -329,36 +329,36 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   photoWrap: { width: '100%', borderRadius: Radius.md, overflow: 'hidden', backgroundColor: c.photoScrim },
   photo:     { width: '100%', aspectRatio: 1 },
-  photoCaption: { position: 'absolute', left: 8, bottom: 8, flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c.gold, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3 },
+  photoCaption: { position: 'absolute', left: 8, bottom: 8, flexDirection: 'row', alignItems: 'center', gap: Space.xs, backgroundColor: c.gold, borderRadius: Radius.full, paddingHorizontal: Space.md, paddingVertical: Space.xs },
   photoCaptionText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.onGold },
 
   bigIcon: { marginTop: Spacing.sm },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: Spacing.sm },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, marginTop: Spacing.sm },
   title: { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3 },
   body:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
-  challengeNameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 2 },
+  challengeNameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.xs, marginTop: Space.xxs },
   challengeName: { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center' },
 
-  rankBlock: { alignSelf: 'stretch', marginTop: Spacing.md, gap: 8 },
-  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.bg3, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
+  rankBlock: { alignSelf: 'stretch', marginTop: Spacing.md, gap: Space.sm },
+  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, backgroundColor: c.bg3, borderRadius: Radius.md, paddingHorizontal: Space.md, paddingVertical: Space.md },
   rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
 
-  rateBlock: { alignSelf: 'stretch', alignItems: 'center', gap: 8, marginTop: Spacing.md },
+  rateBlock: { alignSelf: 'stretch', alignItems: 'center', gap: Space.sm, marginTop: Spacing.md },
   rateTitle: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  rateStars: { flexDirection: 'row', gap: 8 },
+  rateStars: { flexDirection: 'row', gap: Space.sm },
   noteInput: {
     alignSelf: 'stretch', minHeight: 44, maxHeight: 100, borderRadius: Radius.md,
     backgroundColor: c.bg3, color: c.text,
-    paddingHorizontal: 12, paddingVertical: 10, fontSize: FontSizes.sm, textAlignVertical: 'top',
+    paddingHorizontal: Space.md, paddingVertical: Space.md, fontSize: FontSizes.sm, textAlignVertical: 'top',
   },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: FontSizes.hero, fontWeight: '800', color: c.gold, letterSpacing: -1 },
-  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: c.mutedDim, marginTop: 2 },
-  breakdownIconGap: { marginLeft: 12 },
-  popIcon:   { marginTop: 2 },
-  breakdownRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 },
-  total:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, marginTop: 4 },
+  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: c.mutedDim, marginTop: Space.xxs },
+  breakdownIconGap: { marginLeft: Space.md },
+  popIcon:   { marginTop: Space.xxs },
+  breakdownRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginTop: Space.xxs },
+  total:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, marginTop: Space.xs },
 
   cta: {
     marginTop: Spacing.md, alignSelf: 'stretch',

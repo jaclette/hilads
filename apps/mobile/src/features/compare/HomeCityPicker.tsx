@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, CityFlag, EmptyState, Sheet, SheetFlatList, TextField } from '@/ui';
 import { FLAGS } from '@/ui/flags';
@@ -152,7 +152,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   label:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   list:     { flexGrow: 0, maxHeight: 300 },
   empty:    { padding: Spacing.lg, alignItems: 'center' },
-  row:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
+  row:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52 },
   cityName: { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   selected: { color: c.primaryText },
   sep:      { height: 1, backgroundColor: c.line, marginLeft: 34 },

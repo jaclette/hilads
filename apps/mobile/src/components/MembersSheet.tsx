@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator
 import { useTranslation } from 'react-i18next';
 import type { UserDTO, BadgeKey } from '@/types';
 import { BADGE_META } from '@/types';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Chip, Sheet, SheetScrollView } from '@/ui';
 
@@ -70,12 +70,12 @@ export function MembersSheet({ visible, loading, participants, count, noun, titl
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:       { maxHeight: '72%' },
-  title:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: 4 },
+  title:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: Space.xs },
   list:        { flexGrow: 0 },
   listContent: { paddingBottom: Spacing.sm },
   loading:     { marginVertical: Spacing.lg },
   empty:       { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },
-  row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingVertical: 6 },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingVertical: Space.sm },
   rowInfo:     { flex: 1 },
   name:        { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   handle:      { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted },

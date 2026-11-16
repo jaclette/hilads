@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchMySpots } from '@/api/passport';
@@ -65,12 +65,12 @@ export default function MySpotsScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list:      { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10 },
+  list:      { padding: Spacing.md, gap: Space.md, paddingBottom: Spacing.xl },
+  row:       { flexDirection: 'row', alignItems: 'center', gap: Space.md, padding: Space.md },
   photo:     { width: 56, height: 56, borderRadius: 12, backgroundColor: c.primaryTint },
-  info:      { flex: 1, gap: 2 },
+  info:      { flex: 1, gap: Space.xxs },
   name:      { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   meta:      { fontSize: FontSizes.xs, color: c.muted },
-  metaRow:   { flexDirection: 'row', alignItems: 'center', gap: 4, minWidth: 0 },
+  metaRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minWidth: 0 },
   metaThemes: { flexShrink: 1 },
 });

@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, ScrollView, Text, TouchableOpacity, View, 
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
@@ -95,14 +95,14 @@ function ArchiveCard({ item, world, onPress }: { item: DailyArchiveItem; world: 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  list:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: 12 },
-  header:  { gap: 14 },
-  chips:   { gap: 8, paddingBottom: 4 },
-  loading: { marginVertical: 24 },
-  card:    { gap: 8, padding: 14, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  head:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  list:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: Space.md },
+  header:  { gap: Space.lg },
+  chips:   { gap: Space.sm, paddingBottom: Space.xs },
+  loading: { marginVertical: Space.xl },
+  card:    { gap: Space.sm, padding: 14, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  head:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   text:    { fontSize: FontSizes.md, lineHeight: 22, fontWeight: '800', color: c.text },
-  mosaic:  { flexDirection: 'row', gap: 4, height: 120, borderRadius: Radius.md, overflow: 'hidden' },
+  mosaic:  { flexDirection: 'row', gap: Space.xs, height: 120, borderRadius: Radius.md, overflow: 'hidden' },
   tile:    { flex: 1, height: '100%', backgroundColor: c.bg3 },
   muted:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 });

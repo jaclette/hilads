@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Spacing, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useApp } from '@/context/AppContext';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 import { useCommentSummary } from './comments';
@@ -62,14 +62,14 @@ export function CommentButton({ target, variant, style }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  countRow:   { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  countRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   countText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
-  side:       { alignItems: 'center', gap: 2, minWidth: 48 },
+  side:       { alignItems: 'center', gap: Space.xxs, minWidth: 48 },
   sideText:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.white },
   shadow:     { textShadowColor: c.photoBlurShade, textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
-  inline:     { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 32, paddingHorizontal: 4 },
+  inline:     { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 32, paddingHorizontal: Space.xs },
   inlineText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  pill:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, borderRadius: Radius.full,
-                paddingHorizontal: 18, backgroundColor: c.photoButton },
+  pill:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, minHeight: 44, borderRadius: Radius.full,
+                paddingHorizontal: Spacing.md, backgroundColor: c.photoButton },
   pillText:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
 });

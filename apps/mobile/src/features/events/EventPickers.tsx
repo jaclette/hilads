@@ -8,7 +8,7 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
 
@@ -221,27 +221,27 @@ export function DatePicker({ value, onChange, onClose, maxDays = 180 }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  catGrid:   { gap: 8 },
-  catRow:    { flexDirection: 'row', gap: 8 },
-  tile:      { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 4,
+  catGrid:   { gap: Space.sm },
+  catRow:    { flexDirection: 'row', gap: Space.sm },
+  tile:      { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', gap: Space.sm, paddingHorizontal: Space.xs,
                borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   tileOn:    { borderColor: c.primary, backgroundColor: c.primaryTint },
   tileLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   tileLabelOn: { color: c.primaryOnTint },
-  timeGroup: { flex: 1, gap: 6 },
+  timeGroup: { flex: 1, gap: Space.sm },
   label:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
-  field:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, paddingHorizontal: 14,
+  field:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, paddingHorizontal: Space.lg,
                borderRadius: Radius.button, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   fieldText: { fontSize: FontSizes.md, fontWeight: '700', color: c.text, fontVariant: ['tabular-nums'] },
   title:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
-  clock:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, paddingVertical: 8 },
-  col:       { alignItems: 'center', gap: 4 },
+  clock:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.lg, paddingVertical: Space.sm },
+  col:       { alignItems: 'center', gap: Space.xs },
   arrow:     { width: 44, height: 44, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', borderWidth: Border, borderColor: c.line },
   val:       { fontSize: FontSizes.hero, fontWeight: '800', color: c.text, fontVariant: ['tabular-nums'] },
   colon:     { fontSize: FontSizes.xxl, fontWeight: '800', color: c.muted },
   dpHeader:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   row:       { flexDirection: 'row' },
-  dow:       { flex: 1, textAlign: 'center', fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, paddingVertical: 4 },
+  dow:       { flex: 1, textAlign: 'center', fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, paddingVertical: Space.xs },
   cell:      { flex: 1, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: Radius.full },
   cellOn:    { backgroundColor: c.primary },
   cellText:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getLinkPreview, type LinkPreview } from '@/lib/linkPreviewCache';
-import { Radius, FontSizes, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
@@ -61,12 +61,12 @@ export function LinkPreviewCard({ url, isMine = false }: Props) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:     { marginTop: 6, flexDirection: 'row', borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2,
+  card:     { marginTop: Space.sm, flexDirection: 'row', borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2,
               borderWidth: 1, borderColor: c.line, maxWidth: 320, alignSelf: 'stretch' },
   // On the caramel bubble: a slightly darker inset, white text.
   cardMine: { backgroundColor: c.caramel, borderColor: c.onCaramelMuted },
   image:    { width: 80, height: 80, backgroundColor: c.bg3 },
-  body:     { flex: 1, paddingHorizontal: 10, paddingVertical: 8, justifyContent: 'center', gap: 2 },
+  body:     { flex: 1, paddingHorizontal: Space.md, paddingVertical: Space.sm, justifyContent: 'center', gap: Space.xxs },
   site:     { fontSize: FontSizes.xs, fontWeight: '600', letterSpacing: 0.5, color: c.muted },
   title:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, lineHeight: 17 },
   desc:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 16, marginTop: 1 },

@@ -1,6 +1,6 @@
 import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Button, Sheet, SheetScrollView } from '@/ui';
 
@@ -35,9 +35,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   title:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   intro:   { fontSize: FontSizes.sm, color: c.muted },
   list:    { flexGrow: 0 },
-  row:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 44, borderBottomWidth: 1, borderBottomColor: c.line },
+  row:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.md, minHeight: 44, borderBottomWidth: 1, borderBottomColor: c.line },
   label:   { flex: 1, fontSize: FontSizes.sm, color: c.text },
   pts:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText },
   note:    { fontSize: FontSizes.xs, color: c.muted },
-  cta:     { marginTop: 4 },
+  cta:     { marginTop: Space.xs },
 });

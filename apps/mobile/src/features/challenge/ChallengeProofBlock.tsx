@@ -36,7 +36,7 @@ import {
 } from '@/api/challenges';
 import { uploadFile } from '@/api/uploads';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
@@ -358,7 +358,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: c.primary,
     paddingLeft:     Spacing.sm,
-    gap:             2,
+    gap:             Space.xxs,
   },
   reqsLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.6, textTransform: 'uppercase' },
   reqsText:  { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
@@ -366,7 +366,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: c.photoScrim },
 
 
-  verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: 4 },
+  verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Space.xs },
   verdictBtn: { flex: 1, paddingVertical: Spacing.sm + 2, borderRadius: Radius.full, alignItems: 'center' },
   verdictApprove: { backgroundColor: c.green },
   verdictReject:  { borderWidth: Border, borderColor: c.red, backgroundColor: 'transparent' },
@@ -377,7 +377,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   submitBtn: {
     backgroundColor: c.cta,
     minHeight:       48,
-    paddingHorizontal: 16,
+    paddingHorizontal: Space.lg,
     borderRadius:    Radius.button,
     alignItems:      'center',
     justifyContent:  'center',
@@ -389,8 +389,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   submitBtnCompact: { minHeight: 44, marginTop: 0 },
   submitBtnTextCompact: { fontSize: FontSizes.sm },
 
-  iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
-  terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: 4 },
+  iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm },
+  terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: Space.xs },
   reasonLine:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 18 },
   // Inline-rendered proof requirements (no popin, no separate button).
   // The pipeline carries the "Submit your proof →" CTA; this just reminds
@@ -403,7 +403,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   // Inline submitting indicator - replaces the old big-button spinner.
   busyRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
     marginTop: Spacing.sm,
   },
   busyText: { fontSize: FontSizes.sm, color: c.muted },

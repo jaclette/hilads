@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import type { FriendRequest } from '@/types';
@@ -100,13 +100,13 @@ export default function FriendRequestsScreen() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  tabs:        { paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: 8 },
+  tabs:        { paddingHorizontal: Spacing.md, paddingTop: Space.xs, paddingBottom: Space.sm },
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   listContent: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
   separator:   { height: 1, backgroundColor: c.line },
-  row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 64, paddingVertical: Space.md },
   body:        { flex: 1, minWidth: 0 },
   name:        { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
-  sub:         { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: 2 },
-  actions:     { flexDirection: 'row', gap: 8 },
+  sub:         { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: Space.xxs },
+  actions:     { flexDirection: 'row', gap: Space.sm },
 });

@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useScope, type Scope } from '@/context/ScopeContext';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityFlag, Sheet } from '@/ui';
 import { useHere } from '@/hooks/useDaily';
@@ -127,16 +127,16 @@ function ScopeSheet({ visible, scope, cityName, cityCountry, hereName, hereCount
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  scope:          { flex: 1, height: 44, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14,
+  scope:          { flex: 1, height: 44, flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Space.lg,
                     borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   scopeText:      { flexShrink: 1, flexGrow: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
-  sheet:          { gap: 6 },
-  sheetTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 4 },
-  row:            { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 12, paddingVertical: 10, borderRadius: Radius.card },
+  sheet:          { gap: Space.sm },
+  sheetTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: Space.xs },
+  row:            { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingHorizontal: Space.md, paddingVertical: Space.md, borderRadius: Radius.card },
   rowActive:      { backgroundColor: c.primaryTint },
   rowBody:        { flex: 1 },
-  rowTitleLine:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rowTitleLine:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   rowTitle:       { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   rowTitleActive: { color: c.primaryOnTint },
-  rowSub:         { fontSize: FontSizes.xs, color: c.muted, marginTop: 2 },
+  rowSub:         { fontSize: FontSizes.xs, color: c.muted, marginTop: Space.xxs },
 });

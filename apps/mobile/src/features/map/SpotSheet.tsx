@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { themeName } from '@/features/daily/themes';
 import { compactPrice, distance } from '@/features/today/format';
@@ -86,21 +86,21 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sheet:        { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: Radius.sheet, paddingHorizontal: 16, paddingBottom: 16, gap: 10 },
-  grabZone:     { alignItems: 'center', paddingTop: 10, paddingBottom: 2 },
+  sheet:        { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: Radius.sheet, paddingHorizontal: Space.lg, paddingBottom: Space.lg, gap: Space.md },
+  grabZone:     { alignItems: 'center', paddingTop: Space.md, paddingBottom: Space.xxs },
   grabber:      { width: 36, height: 4, borderRadius: Radius.full, backgroundColor: c.line },
-  top:          { flexDirection: 'row', gap: 12 },
+  top:          { flexDirection: 'row', gap: Space.md },
   photo:        { width: 92, height: 92, borderRadius: 14, backgroundColor: c.primaryTint },
-  info:         { flex: 1, gap: 4 },
+  info:         { flex: 1, gap: Space.xs },
   name:         { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  line:         { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 10 },
-  inline:       { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  line:         { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: Space.md },
+  inline:       { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   meta:         { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  badge:        { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: Radius.full, backgroundColor: c.localBg },
+  badge:        { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs, borderRadius: Radius.full, backgroundColor: c.localBg },
   badgeText:    { fontSize: FontSizes.tiny, fontWeight: '700', color: c.localText },
   caption:      { fontSize: FontSizes.sm, fontStyle: 'italic', color: c.text },
   credit:       { marginTop: -4 },
-  actions:      { flexDirection: 'row', gap: 10 },
+  actions:      { flexDirection: 'row', gap: Space.md },
   btn:          { flex: 1 },
   share:        { alignSelf: 'center' },
   pioneer:      { alignSelf: 'flex-start' },

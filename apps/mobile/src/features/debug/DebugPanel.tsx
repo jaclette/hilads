@@ -9,7 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { clearIdentity } from '@/lib/identity';
 import { clearToken } from '@/services/session';
-import { FontSizes, Spacing, Radius, API_URL, WS_URL, APP_VERSION, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, API_URL, WS_URL, APP_VERSION, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { setSeasonalPreview } from '@/features/event/seasonal';
 
@@ -137,7 +137,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginTop:     Spacing.sm,
-    marginBottom:  2,
+    marginBottom:  Space.xxs,
   },
 
   card: {
@@ -152,7 +152,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     justifyContent:    'space-between',
     alignItems:        'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
+    paddingVertical:   Space.md,
     borderBottomWidth: 1,
     borderBottomColor: c.border,
   },

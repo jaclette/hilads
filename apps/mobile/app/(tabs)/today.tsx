@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, View, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Spacing, type ThemeColors } from '@/constants';
+import { Space, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useDailyToday } from '@/hooks/useDaily';
@@ -92,5 +92,5 @@ function TodayContent() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
   header:    { paddingHorizontal: Spacing.md, backgroundColor: c.bg },
-  content:   { paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: Spacing.xl, gap: 14 },
+  content:   { paddingHorizontal: Spacing.md, paddingTop: Space.xs, paddingBottom: Spacing.xl, gap: Space.lg },
 });

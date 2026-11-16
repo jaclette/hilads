@@ -10,7 +10,7 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
 
@@ -61,11 +61,11 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title:                  { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingBottom: 4 },
-  action:                 { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 52 },
+  title:                  { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingBottom: Space.xs },
+  action:                 { flexDirection: 'row', alignItems: 'center', gap: Space.lg, minHeight: 52 },
   actionDivider:          { borderTopWidth: 1, borderTopColor: c.line },
   actionDisabled:         { opacity: 0.4 },
   actionLabel:            { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
   actionLabelDestructive: { color: c.red },
-  cancel:                 { marginTop: 6 },
+  cancel:                 { marginTop: Space.sm },
 });

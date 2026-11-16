@@ -27,7 +27,7 @@ import {
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { Avatar, Button, Chip, EmptyState, IconButton, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
@@ -828,22 +828,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:         { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   flex1:          { flex: 1 },
   tabContent:     { flex: 1 },
-  tabContentBody: { paddingHorizontal: Spacing.md, gap: 12 },
+  tabContentBody: { paddingHorizontal: Spacing.md, gap: Space.md },
 
   // ── Identity ──
-  identitySection:  { gap: 12 },
-  identityRow:      { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  identityInfo:     { flex: 1, gap: 6 },
+  identitySection:  { gap: Space.md },
+  identityRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.lg },
+  identityInfo:     { flex: 1, gap: Space.sm },
   displayName:      { fontSize: FontSizes.xl, fontWeight: '800', color: c.text },
-  identityMetaRow:  { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  identityMetaRow:  { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.sm },
   identityMetaCity: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   badgeMicrocopy:   { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   aboutMe:          { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
-  identityCards:    { flexDirection: 'row', gap: 10 },
-  identityCard:     { flex: 1, gap: 4, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  identityCards:    { flexDirection: 'row', gap: Space.md },
+  identityCard:     { flex: 1, gap: Space.xs, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   identityCardTitle:{ fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   identityCardSub:  { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
-  detailsCard:      { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  detailsCard:      { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: Space.lg },
   detailRow:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, borderTopWidth: 1, borderTopColor: c.line },
   detailRowFirst:   { borderTopWidth: 0 },
   detailLabel:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
@@ -851,47 +851,47 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   // ── Tabs ──
   tabBarWrap:        { marginHorizontal: -Spacing.md },
-  tabBar:            { gap: 8, paddingHorizontal: Spacing.md },
-  profileSubTabsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  tabBar:            { gap: Space.sm, paddingHorizontal: Spacing.md },
+  profileSubTabsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
 
   // ── Lists ──
-  eventList:    { gap: 8 },
-  hangoutRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderRadius: Radius.card,
+  eventList:    { gap: Space.sm },
+  hangoutRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52, paddingHorizontal: Space.lg, borderRadius: Radius.card,
                   borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   hangoutTitle: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
-  hostTag:      { height: 22, justifyContent: 'center', paddingHorizontal: 8, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  hostTag:      { height: 22, justifyContent: 'center', paddingHorizontal: Space.sm, borderRadius: Radius.full, backgroundColor: c.primaryTint },
   hostTagText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint },
-  friendList:   { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
-  friendRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: c.line },
-  friendInfo:   { flex: 1, minWidth: 0, gap: 2 },
+  friendList:   { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: Space.lg },
+  friendRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 60, paddingVertical: Space.sm, borderBottomWidth: 1, borderBottomColor: c.line },
+  friendInfo:   { flex: 1, minWidth: 0, gap: Space.xxs },
   friendName:   { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   friendBadge:  { fontSize: FontSizes.tiny, fontWeight: '400', color: c.muted },
 
   // ── Vibes ──
-  vibeScoreCard:  { alignItems: 'center', gap: 4, padding: 16, borderRadius: Radius.card, borderWidth: Border, borderColor: c.gold, backgroundColor: c.bg2 },
-  vibeStarsRow:   { flexDirection: 'row', gap: 4 },
+  vibeScoreCard:  { alignItems: 'center', gap: Space.xs, padding: Space.lg, borderRadius: Radius.card, borderWidth: Border, borderColor: c.gold, backgroundColor: c.bg2 },
+  vibeStarsRow:   { flexDirection: 'row', gap: Space.xs },
   vibeScoreAvg:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   vibeScoreCount: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
-  vibeForm:        { gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  vibeForm:        { gap: Space.md, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   vibeFormStars:   { flexDirection: 'row', justifyContent: 'center' },
   vibeFormStar:    { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-  vibeFormActions: { flexDirection: 'row', gap: 10 },
-  vibeList:    { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
-  vibeRow:     { flexDirection: 'row', gap: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.line },
-  vibeContent: { flex: 1, gap: 3 },
-  vibeHeader:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  vibeFormActions: { flexDirection: 'row', gap: Space.md },
+  vibeList:    { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: Space.lg },
+  vibeRow:     { flexDirection: 'row', gap: Space.md, paddingVertical: Space.md, borderBottomWidth: 1, borderBottomColor: c.line },
+  vibeContent: { flex: 1, gap: Space.xs },
+  vibeHeader:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   vibeAuthor:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   vibeRating:  { flexDirection: 'row', gap: 1 },
   vibeMsg:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
 
   // ── City Picks (legends) ──
-  picksGrid:       { gap: 10 },
-  pickCard:        { gap: 4, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.gold, backgroundColor: c.bg2 },
+  picksGrid:       { gap: Space.md },
+  pickCard:        { gap: Space.xs, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.gold, backgroundColor: c.bg2 },
   pickCardTitle:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.gold },
   pickCardContent: { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
 
   // ── Bottom bar ──
-  stickyBar: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', gap: 10, paddingHorizontal: Spacing.md, paddingTop: 12,
+  stickyBar: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', gap: Space.md, paddingHorizontal: Spacing.md, paddingTop: Space.md,
                borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
 
   // ── Avatar lightbox ──

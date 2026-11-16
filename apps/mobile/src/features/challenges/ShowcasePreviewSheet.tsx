@@ -10,7 +10,7 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
 import { fetchGroupSubmissions, type ShowcaseItem, type GroupSubmission } from '@/api/challenges';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -235,49 +235,49 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth: Border, borderColor: c.line,
     paddingBottom: Spacing.lg,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginTop: 10, marginBottom: 6 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.line, marginTop: Space.md, marginBottom: Space.sm },
   scroll: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm },
 
-  proof: { width: '100%', height: 220, borderRadius: 14, marginBottom: 14, backgroundColor: c.photoScrim },
+  proof: { width: '100%', height: 220, borderRadius: 14, marginBottom: Space.lg, backgroundColor: c.photoScrim },
 
   // Multi-taker photo carousel: winner tile first with a gold pill.
-  carouselWrap: { position: 'relative', marginBottom: 14 },
+  carouselWrap: { position: 'relative', marginBottom: Space.lg },
   carouselImg:  { width: '100%', height: 220, borderRadius: 14, backgroundColor: c.photoScrim },
   winnerPill: {
     position: 'absolute', top: 10, left: 10,
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: c.gold, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
+    backgroundColor: c.gold, paddingHorizontal: Space.md, paddingVertical: Space.xs, borderRadius: Radius.full,
   },
   winnerPillText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.onGold, letterSpacing: 0.2 },
   nameChip: {
     position: 'absolute', bottom: 12, left: 10, maxWidth: '68%',
-    backgroundColor: c.scrim, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
+    backgroundColor: c.scrim, paddingHorizontal: Space.md, paddingVertical: Space.xs, borderRadius: Radius.full,
   },
   nameChipText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.white },
   counter: {
     position: 'absolute', bottom: 12, right: 10,
-    backgroundColor: c.scrim, paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full,
+    backgroundColor: c.scrim, paddingHorizontal: Space.sm, paddingVertical: Space.xs, borderRadius: Radius.full,
   },
   counterText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.white },
 
-  badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  modePill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full },
+  badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Space.md },
+  modePill: { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.md, paddingVertical: Space.xs, borderRadius: Radius.full },
   modeIntl: { backgroundColor: c.travelerBg },
   modeLocal: { backgroundColor: c.bg3 },
   modeText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
-  starsRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  starsRow: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   stars: { fontSize: FontSizes.sm, fontWeight: '800', color: c.gold },
 
-  titleRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 14 },
-  titleIcon: { marginTop: 2 },
+  titleRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm, marginBottom: Space.lg },
+  titleIcon: { marginTop: Space.xxs },
   title: { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 24 },
-  cityRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: -8, marginBottom: 14 },
+  cityRow: { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: -8, marginBottom: Space.lg },
   city:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
 
-  people: { gap: 8, marginBottom: 14 },
+  people: { gap: Space.sm, marginBottom: Space.lg },
   person: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12,
+    flexDirection: 'row', alignItems: 'center', gap: Space.md,
+    paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: 12,
     backgroundColor: c.bg3, borderWidth: Border, borderColor: c.line,
   },
   personAvatar: { width: 36, height: 36, borderRadius: 18 },
@@ -287,12 +287,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   personName: { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
 
   noteBox: {
-    padding: 12, borderRadius: 12, marginBottom: 8,
+    padding: Space.md, borderRadius: 12, marginBottom: Space.sm,
     backgroundColor: c.goldTint, borderWidth: Border, borderColor: c.gold,
   },
-  noteLabel: { fontSize: FontSizes.xs, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: c.gold, marginBottom: 6 },
+  noteLabel: { fontSize: FontSizes.xs, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: c.gold, marginBottom: Space.sm },
   noteQuote: { gap: 1 },
-  noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.line },
+  noteQuoteDivider: { marginTop: Space.sm, paddingTop: Space.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.line },
   noteWho: { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   noteRole: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   noteText: { fontSize: FontSizes.sm, lineHeight: 20, color: c.text, fontStyle: 'italic' },
