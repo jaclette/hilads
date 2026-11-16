@@ -7,8 +7,10 @@ import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Confetti, FlagSticker, tint } from '@/ui/joy';
 
-/** Podium block colors: gold, silver, bronze. */
-export const MEDAL = ['#FFC93C', '#C9CED6', '#E3A06B'];
+/** A podium place's medal color (1 gold, 2 silver, 3 bronze): the theme's medal tokens, one palette in every theme. */
+export function medalColor(c: ThemeColors, rank: number): string {
+  return [c.gold, c.silver, c.bronze][rank - 1] ?? c.gold;
+}
 export const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
 
 /** A number counting up from 0 (once), plain with "reduce motion". */
@@ -83,7 +85,8 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
   useEffect(() => { if (!reduced) grow.value = withDelay(delay, withSpring(1, { damping: 12, stiffness: 120 })); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const block = useAnimatedStyle(() => ({ height: HEIGHTS[item.rank - 1] * grow.value }));
   const lead = useAnimatedStyle(() => ({ opacity: grow.value, transform: [{ scale: 0.7 + 0.3 * grow.value }] }));
-  const color = MEDAL[item.rank - 1];
+  const { colors } = useTheme();
+  const color = medalColor(colors, item.rank);
   return (
     <Pressable style={styles.step} onPress={item.onPress} disabled={!item.onPress} accessibilityRole="button"
                accessibilityLabel={`#${item.rank} ${item.label}`}>
@@ -104,7 +107,8 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
 function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) {
   const styles = useThemedStyles(makeStyles);
   const ghost = make(rank);
-  const color = MEDAL[rank - 1];
+  const { colors } = useTheme();
+  const color = medalColor(colors, rank);
   return (
     <Pressable style={styles.step} onPress={ghost.onPress} disabled={!ghost.onPress} accessibilityRole={ghost.onPress ? 'button' : 'text'}
                accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
@@ -180,14 +184,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   podiumName:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, maxWidth: '100%' },
   podiumValue: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: Space.sm },
   block:       { width: '100%', borderTopLeftRadius: 14, borderTopRightRadius: 14, alignItems: 'center', paddingTop: Space.sm, overflow: 'hidden' },
-  blockRank:   { fontSize: FontSizes.xl, lineHeight: 32, fontWeight: '800', color: '#2A1C13' },
+  blockRank:   { fontSize: FontSizes.xl, lineHeight: 32, fontWeight: '800', color: c.onGold },
   ghostLead:   { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   ghostLabel:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: Space.sm, minHeight: 34 },
   ghostMuted:  { color: c.muted, fontWeight: '700' },
   ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: Space.sm },
   ghostRank:   { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.muted },
   toggle:      { flexDirection: 'row', alignItems: 'center', height: 34, padding: 3, borderRadius: 17, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, flexShrink: 0 },
-  toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: MEDAL[0] },
+  toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: c.gold },
   toggleSide:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 28, paddingHorizontal: Space.md },
   toggleText:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text },
   toggleTextOn: { color: c.onGold },
@@ -198,7 +202,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rowBody:     { flex: 1, gap: Space.xxs },
   rowTitle:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
   rowSub:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexWrap: 'wrap' },
-  pill:        { paddingHorizontal: Space.md, height: 28, borderRadius: 14, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
+  pill:        { paddingHorizontal: Space.md, height: 28, borderRadius: 14, backgroundColor: tint(c.gold, 0.25), alignItems: 'center', justifyContent: 'center' },
   pillText:    { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
   move:        { fontSize: FontSizes.xs, fontWeight: '800', minWidth: 28, textAlign: 'right' },
   newChip:     { paddingHorizontal: Space.sm, height: 20, borderRadius: 10, backgroundColor: c.primaryTint, justifyContent: 'center' },

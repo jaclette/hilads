@@ -32,7 +32,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical:   Space.lg,
     borderTopWidth:    1,
-    borderTopColor:    c.border,
+    borderTopColor:    c.line,
     backgroundColor:   c.elevated,
     shadowColor:       '#000',
     shadowOffset:      { width: 0, height: -5 },

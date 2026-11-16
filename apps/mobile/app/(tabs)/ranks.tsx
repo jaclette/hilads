@@ -24,7 +24,7 @@ import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
-import { MEDAL, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { medalColor, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
 import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 
@@ -243,7 +243,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
   const rest = items.filter(i => i.rank > 3);
   const podium: PodiumItem[] = top.map(i => ({
     key: i.proof.id, rank: i.rank, label: i.proof.user.username ? `@${i.proof.user.username}` : i.proof.user.displayName ?? '',
-    lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: MEDAL[i.rank - 1] }]} contentFit="cover" />,
+    lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: medalColor(colors, i.rank) }]} contentFit="cover" />,
     value: i.proof.voteCount, format: n => `${n} ❤️`, onPress: () => open(proofs, i.proof),
   }));
 
@@ -378,7 +378,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
   const pts = (n: number) => t('ranks.pts', { count: n });
   const podium: PodiumItem[] = entries.slice(0, 3).map(e => ({
     key: e.user.id, rank: e.rank, label: nameOf(e.user), value: e.points, format: pts, onPress: () => onOpen(e.user.id),
-    lead: <View style={[styles.podiumAvatar, { borderColor: MEDAL[e.rank - 1] }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
+    lead: <View style={[styles.podiumAvatar, { borderColor: medalColor(colors, e.rank) }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
   }));
   const me = data?.me ?? null;
   const youText = me
@@ -525,7 +525,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pMeta:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minWidth: 0 },
   pChip:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, height: 18, borderRadius: 9, maxWidth: '100%' },
   pChipText:    { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '800', color: c.text, flexShrink: 1 },
-  pill:         { paddingHorizontal: Space.sm, height: 26, borderRadius: 13, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
+  pill:         { paddingHorizontal: Space.sm, height: 26, borderRadius: 13, backgroundColor: tint(c.gold, 0.25), alignItems: 'center', justifyContent: 'center' },
   pillText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
   funLine:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginHorizontal: Spacing.md, marginTop: Space.md, padding: Space.md,
                   borderRadius: Radius.card, backgroundColor: tint(themeColor('sip').fill, 0.2) },

@@ -90,12 +90,10 @@ export const Colors = {
   bg:       '#0d0b09',   // web --bg
   bg2:      '#161210',   // web --surface
   bg3:      '#1e1812',   // web --surface2
-  border:   '#272018',   // web --border (warm brown)
 
   // Text - contrast targets on bg #0d0b09 (≈ pure black at L≈0):
   //   text     ~16.6:1   primary
   //   muted     ~5.5:1   secondary (still WCAG AA at all sizes)
-  //   muted2    ~4.7:1   tertiary  (WCAG AA at normal sizes)
   //   mutedDim  ~2.4:1   reserved for visually-disabled affordances ONLY,
   //                      e.g. inactive button labels, dot pagers. NEVER on
   //                      visible body or secondary text. Apple Guideline 4
@@ -103,20 +101,15 @@ export const Colors = {
   //                      when used for body / timestamps / sub-labels.
   text:     '#ede9e5',   // web --text   (warm off-white)
   muted:    '#968880',   // web --muted2 (visible secondary)
-  muted2:   '#8a7d75',   // tertiary - bumped from #635650 for WCAG AA on dark bg
   mutedDim: '#635650',   // disabled-only - opt-in, not a default. See note above.
 
   // Brand
   accent:   '#FF7A3C',   // web --hot-dot (energy orange - active states, FAB)
-  accentDim:'rgba(255,122,60,0.15)',
-  accent2:  '#C24A38',   // web --accent  (deep red-orange - CTA buttons)
-  accent3:  '#B87228',   // web --accent2 (gradient end - CTA buttons)
 
   // Semantic
   green:    '#3ddc84',   // web --green  (online / live)
   red:      '#f87171',
   warning:  '#F5A524',   // amber - time running out (Daily countdown, last 3h)
-  violet:   '#8B5CF6',   // web --profile-dot (member badge)
   white:    '#ffffff',
 
   // Bright orange used as TEXT (the `accent` above stays #FF7A3C for FILLS —
@@ -126,12 +119,9 @@ export const Colors = {
   // Overlay / structural tokens — the vocabulary the theme migration routes the
   // ~256 hardcoded rgba(255,255,255,.x) literals through (dark values here).
   separator:     'rgba(255,255,255,0.08)',
-  overlayWeak:   'rgba(255,255,255,0.04)',
   overlay:       'rgba(255,255,255,0.07)',
-  overlayStrong: 'rgba(255,255,255,0.12)',
   scrim:         'rgba(0,0,0,0.6)',
   elevated:      '#1e1812',
-  inputBg:       '#0d0b09',
 
   // V3 tokens (SPEC 9.11; dark values derived from this palette).
   primary:       '#D9622A',   // buttons, pins, active (white text on it)
@@ -198,28 +188,19 @@ export const LightColors: ThemeColors = {
   bg:       '#FBF5EE',   // ground (SPEC 9.11)
   bg2:      '#FFFFFF',   // card / surface
   bg3:      '#F3EAE0',   // sand inset
-  border:   '#EADCCD',   // line (SPEC 9.11)
   text:     '#2A1C13',   // ink (SPEC 9.11)
   muted:    '#6F5B4D',   // muted ink (SPEC 9.11)
-  muted2:   '#6F5B4D',   // tertiary
   mutedDim: '#9A8877',   // disabled-only
   accent:   '#C9501A',   // primary (SPEC 9.11): white text on it passes 4.5:1
-  accentDim:'rgba(201,80,26,0.12)',
-  accent2:  '#C24A38',   // deep CTA orange
-  accent3:  '#B87228',
   green:    '#17864C',   // darkened so it reads as text/dots on white
   red:      '#C0264A',
   warning:  '#B45309',   // amber, dark enough to read as text on cream
-  violet:   '#7C4DE0',
   white:    '#ffffff',
   accentText: '#C24A38', // readable deep orange as text on cream
   separator:     '#EADCCD',
-  overlayWeak:   'rgba(28,20,14,0.03)',
   overlay:       'rgba(28,20,14,0.05)',
-  overlayStrong: 'rgba(28,20,14,0.08)',
   scrim:         'rgba(28,20,14,0.35)',
   elevated:      '#FFFFFF',
-  inputBg:       '#FFFFFF',
 
   // V3 tokens (SPEC 9.11).
   primary:       '#C9501A',

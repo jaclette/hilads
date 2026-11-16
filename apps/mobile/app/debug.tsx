@@ -33,7 +33,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: c.border,
+    borderBottomColor: c.line,
   },
   backBtn:  { padding: Space.xs },
   backIcon: { fontSize: 22, color: c.text },
